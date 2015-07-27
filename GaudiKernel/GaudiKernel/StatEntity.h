@@ -65,7 +65,7 @@
  *  @date    26/11/1999
  *  @date    2005-08-02
  */
-class GAUDI_API StatEntity
+class GAUDI_API StatEntity final
 {
 public:
   // ==========================================================================
@@ -88,7 +88,7 @@ public:
                const double        minFlag ,
                const double        maxFlag ) ;
   /// destructor
-  ~StatEntity () {}
+  ~StatEntity () = default;
   // ==========================================================================
 public: // the basic quantities
   // ==========================================================================

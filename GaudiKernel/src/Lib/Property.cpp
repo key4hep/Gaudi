@@ -23,9 +23,9 @@
 #include "GaudiKernel/PropertyCallbackFunctor.h"
 #include "GaudiKernel/GaudiHandle.h"
 // ============================================================================
-// Boost 
+// Boost
 // ============================================================================
-#include "boost/algorithm/string/case_conv.hpp"
+#include "boost/algorithm/string/compare.hpp"
 // ============================================================================
 /** @file
  *  The implementation file for the class Property ans related classes
@@ -33,59 +33,51 @@
  *  @date 2006-02-27
  */
 // ============================================================================
-// The output operator for friendly printout 
+// The output operator for friendly printout
 // ============================================================================
-std::ostream& operator<<( std::ostream&   stream , 
+std::ostream& operator<<( std::ostream&   stream ,
                           const Property& prop   )
-{ return prop.fillStream ( stream ) ; } 
+{ return prop.fillStream ( stream ) ; }
 // ============================================================================
-/*  constructor from the property name and the type 
- *  @param name proeprty name 
- *  @param type property C++/RTTI type 
+/*  constructor from the property name and the type
+ *  @param name proeprty name
+ *  @param type property C++/RTTI type
  */
 // ============================================================================
 Property::Property
-( const std::type_info&  type , 
-  std::string     name ) 
-  : m_name            (  std::move(name) ) 
-  , m_documentation   ( name )
+( const std::type_info&  type ,
+  std::string     name )
+  : m_name            ( std::move(name) )
+  , m_documentation   ( m_name )
   , m_typeinfo        ( &type )
-  , m_readCallBack    (  0  ) 
-  , m_updateCallBack  (  0  )
-{}  
+{}
 // ============================================================================
-/*  constructor from the property name and the type 
- *  @param type property C++/RTTI type 
- *  @param name proeprty name 
+/*  constructor from the property name and the type
+ *  @param type property C++/RTTI type
+ *  @param name proeprty name
  */
 // ============================================================================
 Property::Property
 ( std::string     name ,
   const std::type_info&  type )
-  : m_name            (  std::move(name) ) 
-  , m_documentation   ( name )
+  : m_name            ( std::move(name) )
+  , m_documentation   ( m_name )
   , m_typeinfo        ( &type )
-  , m_readCallBack    (  0  ) 
-  , m_updateCallBack  (  0  )
-{}  
+{}
 // ============================================================================
-// copy contructor 
+// copy contructor
 // ============================================================================
-Property::Property 
+Property::Property
 ( const Property& right )
-  : m_name     ( right.m_name     ) 
+  : m_name     ( right.m_name     )
   , m_documentation ( right.m_documentation )
   , m_typeinfo ( right.m_typeinfo )
-  , m_readCallBack   ( 0 ) 
-  , m_updateCallBack ( 0 )
+  , m_readCallBack( right.m_readCallBack ? right.m_readCallBack->clone() : nullptr )
+  , m_updateCallBack( right.m_updateCallBack ? right.m_updateCallBack->clone() : nullptr )
 {
-  if ( 0 != right.m_readCallBack   ) 
-  { m_readCallBack   = right.m_readCallBack   -> clone () ; }
-  if ( 0 != right.m_updateCallBack ) 
-  { m_updateCallBack = right.m_updateCallBack -> clone () ; }  
 }
 // ============================================================================
-// Assignement 
+// Assignement
 // ============================================================================
 Property& Property::operator=( const Property& right )
 {
@@ -93,153 +85,143 @@ Property& Property::operator=( const Property& right )
   //
   m_name     = right.m_name ;
   m_documentation = right.m_documentation ;
-  m_typeinfo = right.m_typeinfo ;  
+  m_typeinfo = right.m_typeinfo ;
   //
-  if ( 0 !=       m_readCallBack   ) 
-  { delete m_readCallBack   ; m_readCallBack   = 0 ; }
-  if ( 0 !=       m_updateCallBack ) 
-  { delete m_updateCallBack ; m_updateCallBack = 0 ; }
-  if ( 0 != right.m_readCallBack   ) 
-  { m_readCallBack   = right.m_readCallBack   -> clone () ; }
-  if ( 0 != right.m_updateCallBack ) 
-  { m_updateCallBack = right.m_updateCallBack -> clone () ; }  
-  // 
+  m_readCallBack.reset( right.m_readCallBack ? right.m_readCallBack->clone() : nullptr );
+  m_updateCallBack.reset( right.m_updateCallBack ? right.m_updateCallBack->clone () : nullptr );
+  //
   return *this ;
-} 
+}
 // ============================================================================
 // virtual destructor
 // ============================================================================
 Property::~Property()
 {
-  delete m_readCallBack    ; m_readCallBack    = 0 ;
-  delete m_updateCallBack  ; m_updateCallBack  = 0 ;
-} 
+}
 // ============================================================================
 // Call-back functor at reading: the functor is ownered by property!
 // ============================================================================
-const PropertyCallbackFunctor* Property::readCallBack   () const 
-{ return m_readCallBack ; }  
+const PropertyCallbackFunctor* Property::readCallBack   () const
+{ return m_readCallBack.get() ; }
 // ============================================================================
 // Call-back functor for update: the funtor is ownered by property!
 // ============================================================================
-const PropertyCallbackFunctor* Property::updateCallBack () const 
-{ return m_updateCallBack ; }
+const PropertyCallbackFunctor* Property::updateCallBack () const
+{ return m_updateCallBack.get() ; }
 // ============================================================================
-// set new callback for reading 
+// set new callback for reading
 // ============================================================================
-void  Property::declareReadHandler   ( PropertyCallbackFunctor* pf ) 
+void  Property::declareReadHandler   ( PropertyCallbackFunctor* pf )
 {
-  delete m_readCallBack;
-  m_readCallBack = pf ;
-} 
+  m_readCallBack.reset( pf );
+}
 // ============================================================================
-// set new callback for update  
+// set new callback for update
 // ============================================================================
-void  Property::declareUpdateHandler ( PropertyCallbackFunctor* pf ) 
+void  Property::declareUpdateHandler ( PropertyCallbackFunctor* pf )
 {
-  delete m_updateCallBack;
-  m_updateCallBack = pf ;
-} 
+  m_updateCallBack.reset( pf );
+}
 // ============================================================================
-// use the call-back function at reading 
+// use the call-back function at reading
 // ============================================================================
-void Property::useReadHandler   () const 
+void Property::useReadHandler   () const
 {
   if ( !m_readCallBack ) { return ; }               // RETURN
   const Property& p = *this ;
-  PropertyCallbackFunctor* theCallBack = m_readCallBack;
   // avoid infinite loop
-  m_readCallBack = nullptr;
+  std::unique_ptr<PropertyCallbackFunctor> theCallBack;
+  theCallBack.swap(m_readCallBack);
   (*theCallBack)( const_cast<Property&>(p) ) ;
-  m_readCallBack = theCallBack;
-} 
+  m_readCallBack.swap(theCallBack);
+}
 // ============================================================================
 // use the call-back function at update
 // ============================================================================
-bool Property::useUpdateHandler () 
+bool Property::useUpdateHandler ()
 {
   bool sc(true);
   if ( !m_updateCallBack ) { return sc; }  // RETURN
-  PropertyCallbackFunctor* theCallBack = m_updateCallBack;
   // avoid infinite loop
-  m_updateCallBack = nullptr;
+  std::unique_ptr<PropertyCallbackFunctor> theCallBack;
+  theCallBack.swap(m_updateCallBack);
   try {
     (*theCallBack)( *this ) ;
   } catch(...) {
     sc = false;
-  }    
-  m_updateCallBack = theCallBack;
+  }
+  m_updateCallBack.swap(theCallBack);
   return sc;
-} 
+}
 // ============================================================================
 // the printout of the property value
 // ============================================================================
-std::ostream& 
+std::ostream&
 Property::fillStream ( std::ostream& stream ) const
 { return stream << " '" <<name() << "':" << toString() ; }
 // ============================================================================
-/*  simple function which check the existence of the property with 
- *  the given name. 
- *  
- *  @code 
- * 
+/*  simple function which check the existence of the property with
+ *  the given name.
+ *
+ *  @code
+ *
  *  IInterface* p = .
- *  
- *  const bool = hasProperty( p , "Context" ) ;
- * 
- *  @endcode 
  *
- *  @param  p    pointer to IInterface   object (any component) 
- *  @param  name property name (case insensitive) 
- *  @return true if "p" has a property with such name 
+ *  const bool = hasProperty( p , "Context" ) ;
+ *
+ *  @endcode
+ *
+ *  @param  p    pointer to IInterface   object (any component)
+ *  @param  name property name (case insensitive)
+ *  @return true if "p" has a property with such name
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
  *  @date   2006-09-09
  */
 // ============================================================================
-bool Gaudi::Utils::hasProperty 
-( const IInterface*  p    , 
-  const std::string& name ) 
+bool Gaudi::Utils::hasProperty
+( const IInterface*  p    ,
+  const std::string& name )
 {
-  // trivial check 
-  if ( !p ) { return false ; }                                // RETURN 
-  // gelegate to another method 
-  return 0 != getProperty ( p , name ) ;
-} 
+  // trivial check
+  if ( !p ) { return false ; }                                // RETURN
+  // gelegate to another method
+  return getProperty ( p , name ) ;
+}
 // ============================================================================
-/*  simple function which check the existence of the property with 
- *  the given name. 
- *  
- *  @code 
- * 
- *  const IProperty* p = ... ;
- *  
- *  const bool = hasProperty( p , "Context" ) ;
- * 
- *  @endcode 
+/*  simple function which check the existence of the property with
+ *  the given name.
  *
- *  @param  p    pointer to IProperty object 
- *  @param  name property name (case insensitive) 
- *  @return true if "p" has a property with such name 
+ *  @code
+ *
+ *  const IProperty* p = ... ;
+ *
+ *  const bool = hasProperty( p , "Context" ) ;
+ *
+ *  @endcode
+ *
+ *  @param  p    pointer to IProperty object
+ *  @param  name property name (case insensitive)
+ *  @return true if "p" has a property with such name
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
  *  @date   2006-09-09
  */
 // ============================================================================
-bool Gaudi::Utils::hasProperty 
-( const IProperty*   p    , 
-  const std::string& name ) 
+bool Gaudi::Utils::hasProperty
+( const IProperty*   p    ,
+  const std::string& name )
 {
   if ( !p ) { return false ; }
   // delegate the actual work to another method ;
-  return 0 != getProperty ( p , name ) ;
-} 
+  return getProperty ( p , name ) ;
+}
 // ============================================================================
 //
 // GaudiHandleProperty implementation
 //
 GaudiHandleProperty::GaudiHandleProperty
-( const std::string& name, GaudiHandleBase& ref ) 
-  : Property( name, typeid( GaudiHandleBase ) ), m_pValue( &ref ) 
-{ 
+( const std::string& name, GaudiHandleBase& ref )
+  : Property( name, typeid( GaudiHandleBase ) ), m_pValue( &ref )
+{
   m_pValue->setPropertyName( name );
 }
 
@@ -258,7 +240,7 @@ void GaudiHandleProperty::toStream(std::ostream& out) const {
   out << m_pValue->typeAndName();
 }
 
-StatusCode GaudiHandleProperty::fromString( const std::string& s) { 
+StatusCode GaudiHandleProperty::fromString( const std::string& s) {
   m_pValue->setTypeAndName( s );
   return useUpdateHandler()?StatusCode::SUCCESS:StatusCode::FAILURE;
 }
@@ -267,9 +249,9 @@ StatusCode GaudiHandleProperty::fromString( const std::string& s) {
 //
 // GaudiHandlePropertyArray implementation
 //
-GaudiHandleArrayProperty::GaudiHandleArrayProperty( const std::string& name, GaudiHandleArrayBase& ref ) 
-  : Property( name, typeid( GaudiHandleArrayBase ) ), m_pValue( &ref ) 
-{ 
+GaudiHandleArrayProperty::GaudiHandleArrayProperty( const std::string& name, GaudiHandleArrayBase& ref )
+  : Property( name, typeid( GaudiHandleArrayBase ) ), m_pValue( &ref )
+{
   m_pValue->setPropertyName( name );
 }
 
@@ -302,239 +284,236 @@ StatusCode GaudiHandleArrayProperty::fromString( const std::string& source ) {
 
 
 // ============================================================================
-namespace 
+namespace
 {
-  // get the property by name (case insensitive)
-  struct _ByName_ : public std::unary_function<const Property*,bool>
+  template <typename C, typename BinaryPredicate>
+  bool equal_(const C& c1,  const C& c2, BinaryPredicate&& p) {
+    return c1.size() == c2.size() &&
+           std::equal(std::begin(c1), std::end(c1), std::begin(c2),
+                      std::forward<BinaryPredicate>(p) );
+  }
+
+  // match (case insensitive) property by name
+  struct is_iByName
   {
-    /// constructor fomr the name 
-    _ByName_ ( const std::string& name ) 
-      : m_name ( boost::algorithm::to_lower_copy( name ) ) {}
+    /// constructor from name
+    is_iByName ( const std::string& name ) : m_name ( name ) {}
     /// the most essential method:
-    bool operator () ( const Property* p ) const 
+    bool operator () ( const Property* p ) const
     {
-      if ( !p ) { return false ; }
-      return m_name == boost::algorithm::to_lower_copy( p->name() ) ;
+      return p && equal_(m_name,p->name(),boost::algorithm::is_iequal{});
     } ;
-  protected:
-    _ByName_();
   private:
-    std::string m_name ;    
+    const std::string& m_name ;
   } ;
-} 
+}
 // ============================================================================
-/*  simple function which gets the property with given name 
- *  from the component 
- *  
- *  @code 
- * 
- *  const IProperty* p = ... ;
- *  
- *  const Property* pro = getProperty( p , "Context" ) ;
- * 
- *  @endcode 
+/*  simple function which gets the property with given name
+ *  from the component
  *
- *  @param  p    pointer to IProperty object 
- *  @param  name property name (case insensitive) 
+ *  @code
+ *
+ *  const IProperty* p = ... ;
+ *
+ *  const Property* pro = getProperty( p , "Context" ) ;
+ *
+ *  @endcode
+ *
+ *  @param  p    pointer to IProperty object
+ *  @param  name property name (case insensitive)
  *  @return property with the given name (if exists), NULL otherwise
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
  *  @date   2006-09-09
  */
 // ============================================================================
-Property* Gaudi::Utils::getProperty 
-( const IProperty*   p    , 
-  const std::string& name ) 
+Property* Gaudi::Utils::getProperty
+( const IProperty*   p    ,
+  const std::string& name )
 {
-  // trivial check 
-  if ( !p      ) { return nullptr ; }                          // RETURN 
-  // get all properties 
+  // trivial check
+  if ( !p      ) { return nullptr ; }                          // RETURN
+  // get all properties
   const auto& props = p->getProperties() ;
   // comparison criteria:
-  auto ifound = std::find_if ( props.begin() , props.end() , _ByName_( name ) ) ;
-  if ( ifound == props.end() ) { return nullptr ; }                  // RETURN 
-  // OK 
-  return *ifound ;
-} 
+  auto ifound = std::find_if ( props.begin() , props.end() , is_iByName{ name } ) ;
+  return ifound != props.end() ? *ifound : nullptr;
+}
 // ============================================================================
-/*  simple function which gets the property with given name 
- *  from the component 
- *  
- *  @code 
- * 
- *  const IInterface* p = ... ;
- *  
- *  const Property* pro = getProperty( p , "Context" ) ;
- * 
- *  @endcode 
+/*  simple function which gets the property with given name
+ *  from the component
  *
- *  @param  p    pointer to IInterface object 
- *  @param  name property name (case insensitive) 
+ *  @code
+ *
+ *  const IInterface* p = ... ;
+ *
+ *  const Property* pro = getProperty( p , "Context" ) ;
+ *
+ *  @endcode
+ *
+ *  @param  p    pointer to IInterface object
+ *  @param  name property name (case insensitive)
  *  @return property with the given name (if exists), NULL otherwise
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
  *  @date   2006-09-09
  */
 // ============================================================================
-Property* Gaudi::Utils::getProperty 
-( const IInterface*   p , const std::string& name ) 
+Property* Gaudi::Utils::getProperty
+( const IInterface*   p , const std::string& name )
 {
-  // trivial check 
-  if ( !p        ) { return nullptr ; }                                // RETURN 
-  // remove const-qualifier 
+  // trivial check
+  if ( !p        ) { return nullptr ; }                                // RETURN
+  // remove const-qualifier
   IInterface* _i = const_cast<IInterface*>( p ) ;
   if ( !_i        ) { return nullptr ; }                                // RETURN
   SmartIF<IProperty> property ( _i ) ;
-  if ( !property      ) { return nullptr ; }                                // RETURN
-  return getProperty ( property , name ) ;
-} 
+  return property ? getProperty ( property , name ) : nullptr;
+}
 // ============================================================================
 /*  check  the property by name from  the list of the properties
- *  
+ *
  *  @code
- * 
+ *
  *   IJobOptionsSvc* svc = ... ;
- *  
+ *
  *   const std::string client = ... ;
- * 
+ *
  *  // get the property:
- *  bool context = 
- *      hasProperty ( svc->getProperties( client ) , "Context" ) 
+ *  bool context =
+ *      hasProperty ( svc->getProperties( client ) , "Context" )
  *
- *  @endcode 
+ *  @endcode
  *
- *  @see IJobOptionsSvc 
+ *  @see IJobOptionsSvc
  *
- *  @param  p    list of properties 
- *  @param  name property name (case insensitive) 
- *  @return true if the property exists 
+ *  @param  p    list of properties
+ *  @param  name property name (case insensitive)
+ *  @return true if the property exists
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
  *  @date   2006-09-09
  */
 // ============================================================================
-bool Gaudi::Utils::hasProperty 
-( const std::vector<const Property*>* p    , 
-  const std::string&                  name ) 
+bool Gaudi::Utils::hasProperty
+( const std::vector<const Property*>* p    ,
+  const std::string&                  name )
 {
-  // delegate to another method 
-  return 0 != getProperty ( p , name ) ;
-} 
+  // delegate to another method
+  return getProperty ( p , name ) ;
+}
 // ============================================================================
 /*  get the property by name from  the list of the properties
- *  
+ *
  *  @code
- * 
+ *
  *   IJobOptionsSvc* svc = ... ;
- *  
+ *
  *   const std::string client = ... ;
- * 
+ *
  *  // get the property:
- *  const Property* context = 
- *      getProperty ( svc->getProperties( client ) , "Context" ) 
+ *  const Property* context =
+ *      getProperty ( svc->getProperties( client ) , "Context" )
  *
- *  @endcode 
+ *  @endcode
  *
- *  @see IJobOptionsSvc 
+ *  @see IJobOptionsSvc
  *
- *  @param  p    list of properties 
- *  @param  name property name (case insensitive) 
+ *  @param  p    list of properties
+ *  @param  name property name (case insensitive)
  *  @return property with the given name (if exists), NULL otherwise
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
  *  @date   2006-09-09
  */
 // ============================================================================
-const Property* Gaudi::Utils::getProperty 
-( const std::vector<const Property*>* p    , 
-  const std::string&                  name ) 
+const Property* Gaudi::Utils::getProperty
+( const std::vector<const Property*>* p    ,
+  const std::string&                  name )
 {
-  // trivial check 
-  if ( !p             ) { return nullptr ; }                 // RETURN 
-  auto ifound = std::find_if ( p->begin() , p->end() , _ByName_( name ) ) ;
-  if ( p->end() == ifound ) { return nullptr ; }                 // RETURN 
-  // OK 
-  return *ifound ;
+  // trivial check
+  if ( !p             ) { return nullptr ; }                 // RETURN
+  auto ifound = std::find_if ( p->begin() , p->end() , is_iByName{ name } ) ;
+  return p->end() != ifound ? *ifound : nullptr ; // RETURN
 }
 // ============================================================================
-/* the full specialization of the 
- *  method setProperty( IProperty, std::string, const TYPE&) 
- *  for C-strings 
+/* the full specialization of the
+ *  method setProperty( IProperty, std::string, const TYPE&)
+ *  for C-strings
  *
- *  @param component component which needs to be configured 
- *  @param name      name of the property 
+ *  @param component component which needs to be configured
+ *  @param name      name of the property
  *  @param value     value of the property
- *  @param doc       the new documentation string 
+ *  @param doc       the new documentation string
  *
- *  @see IProperty 
+ *  @see IProperty
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
- *  @date 2007-05-13 
+ *  @date 2007-05-13
  */
 // ============================================================================
-StatusCode Gaudi::Utils::setProperty 
-( IProperty*         component , 
-  const std::string& name      , 
+StatusCode Gaudi::Utils::setProperty
+( IProperty*         component ,
+  const std::string& name      ,
   const char*        value     ,
-  const std::string& doc       ) 
+  const std::string& doc       )
 {
-  const std::string val = std::string( value ) ;
-  return Gaudi::Utils::setProperty ( component , name , val , doc ) ;   
+  return Gaudi::Utils::setProperty ( component , name , std::string{value} , doc ) ;
 }
 // ============================================================================
-/* the full specialization of the 
- * method Gaudi::Utils::setProperty( IProperty, std::string, const TYPE&) 
- * for standard strings 
+/* the full specialization of the
+ * method Gaudi::Utils::setProperty( IProperty, std::string, const TYPE&)
+ * for standard strings
  *
- *  @param component component which needs to be configured 
- *  @param name      name of the property 
+ *  @param component component which needs to be configured
+ *  @param name      name of the property
  *  @param value     value of the property
  *
- *  @see IProperty 
+ *  @see IProperty
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
- *  @date 2007-05-13 
+ *  @date 2007-05-13
  */
 // ============================================================================
-StatusCode Gaudi::Utils::setProperty 
-( IProperty*         component , 
-  const std::string& name      , 
+StatusCode Gaudi::Utils::setProperty
+( IProperty*         component ,
+  const std::string& name      ,
   const std::string& value     ,
-  const std::string& doc       ) 
+  const std::string& doc       )
 {
-  if ( 0 == component ) { return StatusCode::FAILURE ; }   // RETURN
+  if ( !component ) { return StatusCode::FAILURE ; }   // RETURN
   if ( !hasProperty ( component , name ) ) { return StatusCode::FAILURE ; }
   StatusCode sc = component -> setProperty ( name , value ) ;
-  if ( !doc.empty() ) 
+  if ( !doc.empty() )
   {
     Property* p = getProperty( component , name ) ;
-    if ( 0 != p ) { p -> setDocumentation ( doc ) ; }
+    if ( p ) { p -> setDocumentation ( doc ) ; }
   }
   sc.ignore() ;
   return sc ;
 }
 // ============================================================================
-/*  simple function to set the property of the given object from another 
- *  property 
- *   
+/*  simple function to set the property of the given object from another
+ *  property
+ *
  *  @code
- * 
+ *
  *  IProperty* component = ... ;
- *  
+ *
  *  const Property* prop = ... ;
  *  StatusCode sc = setProperty ( component , "Data" ,  prop  ) ;
  *
- *  @endcode 
- *  
- * @param component component which needs to be configured 
- * @param name      name of the property 
- * @param property  the property 
- * @param doc       the new documentation string 
+ *  @endcode
  *
- * @see IProperty 
+ * @param component component which needs to be configured
+ * @param name      name of the property
+ * @param property  the property
+ * @param doc       the new documentation string
+ *
+ * @see IProperty
  * @author Vanya BELYAEV ibelyaev@physics.syr.edu
- * @date 2007-05-13 
+ * @date 2007-05-13
  */
 // ============================================================================
-StatusCode Gaudi::Utils::setProperty 
-( IProperty*         component , 
-  const std::string& name      , 
+StatusCode Gaudi::Utils::setProperty
+( IProperty*         component ,
+  const std::string& name      ,
   const Property*    property  ,
-  const std::string& doc       ) 
+  const std::string& doc       )
 {
   if ( !component || !property || !hasProperty ( component , name )  ) { return StatusCode::FAILURE ; }
   Property* p = getProperty ( component , name ) ;
@@ -543,53 +522,53 @@ StatusCode Gaudi::Utils::setProperty
   return StatusCode::SUCCESS ;
 }
 // ============================================================================
-/* simple function to set the property of the given object from another 
- *  property 
- *   
+/* simple function to set the property of the given object from another
+ *  property
+ *
  *  @code
- * 
+ *
  *  IProperty* component = ... ;
- *  
+ *
  *  const Property& prop = ... ;
  *  StatusCode sc = setProperty ( component , "Data" ,  prop  ) ;
  *
- *  @endcode 
- *  
- * @param component component which needs to be configured 
- * @param name      name of the property 
- * @param property  the property 
- * @param doc       the new documentation string 
+ *  @endcode
  *
- * @see IProperty 
+ * @param component component which needs to be configured
+ * @param name      name of the property
+ * @param property  the property
+ * @param doc       the new documentation string
+ *
+ * @see IProperty
  * @author Vanya BELYAEV ibelyaev@physics.syr.edu
- * @date 2007-05-13 
+ * @date 2007-05-13
  */
 // ============================================================================
-StatusCode Gaudi::Utils::setProperty 
-( IProperty*         component , 
-  const std::string& name      , 
+StatusCode Gaudi::Utils::setProperty
+( IProperty*         component ,
+  const std::string& name      ,
   const Property&    property  ,
-  const std::string& doc       ) 
+  const std::string& doc       )
 { return setProperty ( component , name , &property , doc ) ; }
 // ============================================================================
-/*  the full specialization of the 
- *  method setProperty( IInterface , std::string, const TYPE&) 
- *  for standard strings 
+/*  the full specialization of the
+ *  method setProperty( IInterface , std::string, const TYPE&)
+ *  for standard strings
  *
- *  @param component component which needs to be configured 
- *  @param name      name of the property 
+ *  @param component component which needs to be configured
+ *  @param name      name of the property
  *  @param value     value of the property
- *  @param doc       the new documentation string 
+ *  @param doc       the new documentation string
  *
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
- *  @date 2007-05-13 
+ *  @date 2007-05-13
  */
 // ============================================================================
-StatusCode Gaudi::Utils::setProperty 
-( IInterface*        component , 
-  const std::string& name      , 
+StatusCode Gaudi::Utils::setProperty
+( IInterface*        component ,
+  const std::string& name      ,
   const std::string& value     ,
-  const std::string& doc       ) 
+  const std::string& doc       )
 {
   if ( !component ) { return StatusCode::FAILURE ; }
   SmartIF<IProperty> property ( component ) ;
@@ -597,55 +576,55 @@ StatusCode Gaudi::Utils::setProperty
   return setProperty ( property , name , value , doc ) ;
 }
 // ============================================================================
-/*  the full specialization of the 
- *  method setProperty( IInterface , std::string, const TYPE&) 
- *  for C-strings 
+/*  the full specialization of the
+ *  method setProperty( IInterface , std::string, const TYPE&)
+ *  for C-strings
  *
- *  @param component component which needs to be configured 
- *  @param name      name of the property 
+ *  @param component component which needs to be configured
+ *  @param name      name of the property
  *  @param value     value of the property
- *  @param doc       the new documentation string 
+ *  @param doc       the new documentation string
  *
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
- *  @date 2007-05-13 
+ *  @date 2007-05-13
  */
 // ============================================================================
-StatusCode Gaudi::Utils::setProperty 
-( IInterface*        component , 
-  const std::string& name      , 
+StatusCode Gaudi::Utils::setProperty
+( IInterface*        component ,
+  const std::string& name      ,
   const char*        value     ,
-  const std::string& doc       ) 
+  const std::string& doc       )
 {
   return setProperty ( component , name , std::string{ value } , doc ) ;
 }
 // ============================================================================
-/*  simple function to set the property of the given object from another 
- *  property 
- *   
+/*  simple function to set the property of the given object from another
+ *  property
+ *
  *  @code
- * 
+ *
  *  IInterface* component = ... ;
- *  
+ *
  *  const Property* prop = ... ;
  *  StatusCode sc = setProperty ( component , "Data" ,  prop  ) ;
  *
- *  @endcode 
- *  
- * @param component component which needs to be configured 
- * @param name      name of the property 
- * @param property  the property 
- * @param doc       the new documentation string 
+ *  @endcode
  *
- * @see IProperty 
+ * @param component component which needs to be configured
+ * @param name      name of the property
+ * @param property  the property
+ * @param doc       the new documentation string
+ *
+ * @see IProperty
  * @author Vanya BELYAEV ibelyaev@physics.syr.edu
- * @date 2007-05-13 
+ * @date 2007-05-13
  */
 // ============================================================================
-StatusCode Gaudi::Utils::setProperty 
-( IInterface*        component , 
-  const std::string& name      , 
+StatusCode Gaudi::Utils::setProperty
+( IInterface*        component ,
+  const std::string& name      ,
   const Property*    property  ,
-  const std::string& doc       ) 
+  const std::string& doc       )
 {
   if ( !component ) { return StatusCode::FAILURE ; }
   SmartIF<IProperty> prop  ( component ) ;
@@ -653,40 +632,36 @@ StatusCode Gaudi::Utils::setProperty
   return setProperty ( prop  , name , property , doc ) ;
 }
 // ============================================================================
-/*  simple function to set the property of the given object from another 
- *  property 
- *   
+/*  simple function to set the property of the given object from another
+ *  property
+ *
  *  @code
- * 
+ *
  *  IInterface* component = ... ;
- *  
+ *
  *  const Property& prop = ... ;
  *  StatusCode sc = setProperty ( component , "Data" ,  prop  ) ;
  *
- *  @endcode 
- *  
- * @param component component which needs to be configured 
- * @param name      name of the property 
- * @param property  the property 
- * @param doc       the new documentation string 
+ *  @endcode
  *
- * @see IProperty 
+ * @param component component which needs to be configured
+ * @param name      name of the property
+ * @param property  the property
+ * @param doc       the new documentation string
+ *
+ * @see IProperty
  * @author Vanya BELYAEV ibelyaev@physics.syr.edu
- * @date 2007-05-13 
+ * @date 2007-05-13
  */
 // ============================================================================
-StatusCode Gaudi::Utils::setProperty 
-( IInterface*        component , 
-  const std::string& name      , 
+StatusCode Gaudi::Utils::setProperty
+( IInterface*        component ,
+  const std::string& name      ,
   const Property&    property  ,
-  const std::string& doc       ) 
+  const std::string& doc       )
 { return setProperty ( component , name , &property , doc ) ; }
 // ============================================================================
 
-
-
-
-
 // ============================================================================
-// The END 
+// The END
 // ============================================================================

@@ -252,7 +252,7 @@ AlgTool::AlgTool( const std::string& type,
       throw GaudiException("Could not locate ApplicationMgr","AlgTool",0);
     }
     const Property* p = Gaudi::Utils::getProperty( appMgr , "AuditTools");
-    if ( 0 != p ) { m_auditInit.assign ( *p ) ; }
+    if ( p ) { m_auditInit.assign ( *p ) ; }
     declareProperty ( "AuditTools", m_auditInit );
     bool audit = m_auditInit.value();
     // Declare common AlgTool properties with their defaults
@@ -568,7 +568,7 @@ AlgTool::~AlgTool()
 {
   if( m_ptoolSvc ) m_ptoolSvc->release();
   if( m_pAuditorSvc ) m_pAuditorSvc->release();
-  if ( m_pMonitorSvc ) { m_pMonitorSvc->undeclareAll(this); m_pMonitorSvc->release(); }
+  if( m_pMonitorSvc ) { m_pMonitorSvc->undeclareAll(this); m_pMonitorSvc->release(); }
 }
 
 //------------------------------------------------------------------------------
@@ -600,7 +600,7 @@ SmartIF<IService> AlgTool::service(const std::string& name, const bool createIf,
 //-----------------------------------------------------------------------------
 IAuditorSvc* AlgTool::auditorSvc() const {
 //---------------------------------------------------------------------------
-  if ( 0 == m_pAuditorSvc ) {
+  if ( !m_pAuditorSvc ) {
     StatusCode sc = service( "AuditorSvc", m_pAuditorSvc, true );
     if( sc.isFailure() ) {
       throw GaudiException("Service [AuditorSvc] not found", name(), sc);

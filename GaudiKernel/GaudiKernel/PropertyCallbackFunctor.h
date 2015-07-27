@@ -59,7 +59,7 @@ public:
 
   // Constructors - None, abstract base class
   // Destructor
-  virtual ~PropertyCallbackFunctor() {}
+  virtual ~PropertyCallbackFunctor() = default;
 
   // Operators
   virtual void operator() ( Property& ) const = 0;
@@ -93,10 +93,10 @@ public:
   // Destructor - Compiler generated version will be Ok
 
   // Operators
-  virtual void operator() ( Property& prop ) const
+  void operator() ( Property& prop ) const override
   { m_pCF( prop ); }
 
-  virtual PropertyCallbackPointerFunctor* clone() const
+  PropertyCallbackPointerFunctor* clone() const override
   { return new PropertyCallbackPointerFunctor(*this); }
 
 private:
@@ -134,10 +134,10 @@ public:
   // Destructor - Compiler generated version will be Ok
 
   // Operators
-  virtual void operator() ( Property& prop ) const
+  void operator() ( Property& prop ) const override
   { ( m_instance->*m_pCM )( prop ); }
 
-  virtual  PropertyCallbackMemberFunctor* clone() const
+  PropertyCallbackMemberFunctor* clone() const override
   { return new PropertyCallbackMemberFunctor(*this); }
 
 private:

@@ -118,7 +118,7 @@ namespace Gaudi
      */
     Range_( iterator ibegin       ) : m_base( ibegin , ibegin ) {}
     /// destructor
-    ~Range_(){}
+    ~Range_() = default;
     // ========================================================================
     /// empty sequence ?
     inline bool   empty () const { return m_base.second == m_base.first  ; }
@@ -134,14 +134,9 @@ namespace Gaudi
     /// access to begin of the reversed sequence (const)
     inline reverse_iterator rend     () const { return reverse_iterator ( begin () ) ; }
     /// access for the first element (only for non-empty ranges!)
-    inline const_reference front () const { return *( begin ()     ) ; }
+    inline const_reference front () const { return *begin() ; }
     /// access for the back  element (only for non-empty ranges!)
-    inline const_reference back  () const
-    {
-      const_iterator i = end() ;
-      std::advance ( i , -1 ) ;
-      return *i ;
-    }
+    inline const_reference back  () const { return *std::prev( end() ); }
     // ========================================================================
     /// get a "slice" of a range, in Python style
     inline Range_ slice( long index1 , long index2 ) const
@@ -158,12 +153,9 @@ namespace Gaudi
       if ( index1 > (long) size () ) { return  Range_() ; }     // RETURN
       if ( index2 > (long) size () ) { index2  = size() ; }
 
-      const_iterator i1 = begin()  ;
-      std::advance ( i1 , index1 ) ;
-      const_iterator i2 = begin()  ;
-      std::advance ( i2 , index2 ) ;
       // construct the slice
-      return Range_( i1 , i2 ) ;                                 // RETURN
+      return Range_( std::next ( begin() , index1 ) , 
+                     std::next ( begin() , index2 ) ) ;        // RETURN
     }
     // ========================================================================
     /** non-checked access to the elements by index
@@ -172,9 +164,7 @@ namespace Gaudi
      */
     inline const_reference operator () ( const size_t index ) const
     {
-      const_iterator i = begin() ;
-      std::advance ( i , index ) ;
-      return *i ;
+      return *std::next ( begin() , index ) ;
     }
     /** non-checked access to the elements by index
      *  (valid only for non-empty sequences)
@@ -215,14 +205,14 @@ namespace Gaudi
     bool operator==( const Range_& right ) const
     {
       if ( &right        == this    ) { return true  ; } // RETURN
-      if ( right.size () != size () ) { return false ; } // RETURN
-      return std::equal ( begin () , end () , right.begin() ) ;
+      return right.size() == size() &&  
+             std::equal ( begin () , end () , right.begin() ) ;
     }
     /// equality with the base container
     bool operator==( const Container& right ) const
     {
-      if ( right.size () != size () ) { return false ; } // RETURN
-      return std::equal ( begin () , end () , right.begin() ) ;
+      return right.size() == size() && 
+             std::equal ( begin () , end () , right.begin() ) ;
     }
     // ========================================================================
   public:

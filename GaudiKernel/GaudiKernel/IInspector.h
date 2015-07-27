@@ -27,7 +27,7 @@ protected:
   class IValue  {
   protected:
     void* m_P;
-    IValue()                      {                            }
+    IValue() = default;
   public:
     virtual ~IValue() = default;
     virtual void release()        {      delete this;          }
@@ -39,12 +39,11 @@ protected:
 
   /**
   */
-  class Tag  {
-  public:
+  struct Tag  {
     long             first;
     const std::type_info& second;
     Tag(long f, const std::type_info& s) : first(f), second(s) {    }
-    Tag(const Tag& t) : first(t.first), second(t.second)  {    }
+    Tag(const Tag&) = default;
   };
 
 private:
@@ -54,9 +53,9 @@ private:
     T m_O;
   public:
     _V(const T& v) : m_O(v)       {      m_P = &m_O;           }
-    virtual ~_V()                 {                            }
-    virtual long size()  const    {      return sizeof(T);     }
-    void construct(void* b) const {      ::new(b) T();         }
+    virtual ~_V() = default;
+    virtual long size()  const  {      return sizeof(T);     }
+    virtual void construct(void* b) const { ::new(b) T();     }
   };
 
   /**

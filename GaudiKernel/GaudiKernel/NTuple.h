@@ -128,7 +128,7 @@ namespace NTuple
   template <class TYP> class GAUDI_API _Item : virtual public _Data<TYP>  {
   public:
     /// Destructor.
-    virtual ~_Item()  = default;
+    ~_Item() override = default;
     /// Create instance
     static _Item* create(INTuple* tup,
                          const std::string& name,
@@ -175,9 +175,9 @@ namespace NTuple
       return *this;
     }
     /// Access to data by reference (CONST)
-    const TYP& data(long i)  const  { return *(this->m_buffer + i);        }
+    const TYP& data(long i)  const  { return this->m_buffer[i];        }
     /// Access to data by reference (CONST)
-    TYP&       data(long i)         { return *(this->m_buffer + i);        }
+    TYP&       data(long i)         { return this->m_buffer[i];        }
   };
   // ==========================================================================
   /** Abstract class describing a matrix column in a N tuple.
@@ -211,9 +211,9 @@ namespace NTuple
       return *this;
     }
     /// Access to data by reference
-    TYP*       column(long i)       { return (this->m_buffer + i*m_rows);  }
+    TYP*       column(long i)       { return this->m_buffer + i*m_rows;  }
     /// Access to data by reference (CONST)
-    const TYP* column(long i) const { return (this->m_buffer + i*m_rows);  }
+    const TYP* column(long i) const { return this->m_buffer + i*m_rows;  }
   };
   // ==========================================================================
   /** Class acting as a smart pointer holding a N tuple entry.

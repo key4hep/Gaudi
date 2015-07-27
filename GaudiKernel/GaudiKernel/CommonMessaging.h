@@ -38,7 +38,7 @@ public:
     BASE(), m_streamWithService(false) {}
 
   /// Virtual destructor
-  virtual ~CommonMessaging() {}
+  ~CommonMessaging() override = default;
 
   /// Needed to locate the message service
   virtual SmartIF<ISvcLocator>& serviceLocator() const = 0;

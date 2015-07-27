@@ -32,7 +32,7 @@ namespace Rndm   {
     Gauss(double m, double s)
     : IRndmGen::Param(IID_IRndmGauss), m_mean(m), m_sigma(s)  { }
     /// Standard Destructor
-    virtual ~Gauss()                          {  }
+    ~Gauss() override = default;
     /// Access mean value of the distribution
     double mean()  const                      {   return m_mean; }
     /// Access width of the distribution
@@ -56,7 +56,7 @@ namespace Rndm   {
     Exponential(double m)
     : IRndmGen::Param(IID_IRndmExponential), m_mean(m)  { }
     /// Standard Destructor
-    virtual ~Exponential()                 {  }
+    ~Exponential() override = default;
     /// Access mean value of the distribution
     double mean()  const                   { return m_mean; }
     /// Identifier for factory
@@ -76,7 +76,7 @@ namespace Rndm   {
     /// Standard Constructor
     Chi2(long   n_dof) : IRndmGen::Param(IID_IRndmChi2), m_nDOF(n_dof) { }
     /// Standard Destructor
-    virtual ~Chi2()                           { }
+    ~Chi2() override = default;
     /// Access mean value of the distribution
     long nDOF()  const                        { return m_nDOF; }
     /// Identifier for factory
@@ -97,7 +97,7 @@ namespace Rndm   {
     BreitWigner(double m, double g)
     : IRndmGen::Param(IID_IRndmBreitWigner), m_mean(m), m_gamma(g) { }
     /// Standard Destructor
-    virtual ~BreitWigner()                    { }
+    ~BreitWigner() override = default;
     /// Access mean value of the distribution
     double mean()  const                      { return m_mean;                }
     /// Access width of the distribution
@@ -122,7 +122,7 @@ namespace Rndm   {
     Landau(double m, double s)
     : IRndmGen::Param(IID_IRndmLandau), m_mean(m), m_sigma(s) { }
     /// Standard Destructor
-    virtual ~Landau()                         { }
+    ~Landau() override = default;
     /// Access mean value of the distribution
     double mean()  const                      { return m_mean;                }
     /// Access width of the distribution
@@ -151,7 +151,7 @@ namespace Rndm   {
       m_gamma(g),
       m_cut(c) {  }
     /// Standard Destructor
-    virtual ~BreitWignerCutOff()              { }
+    ~BreitWignerCutOff() override = default;
     /// Access mean value of the distribution
     double mean()  const                      { return m_mean; }
     /// Access width of the distribution
@@ -177,7 +177,7 @@ namespace Rndm   {
     /// Standard Constructor
     StudentT(double a) : IRndmGen::Param(IID_IRndmStudentT), m_aValue(a) { }
     /// Standard Destructor
-    virtual ~StudentT()                       { }
+    ~StudentT() override = default;
     /// Access A parameter
     double aValue()  const                    { return m_aValue;              }
     /// Identifier for factory
@@ -200,7 +200,7 @@ namespace Rndm   {
     Gamma(double k, double l)
     : IRndmGen::Param(IID_IRndmGamma), m_kValue(k), m_lambda(l) { }
     /// Standard Destructor
-    virtual ~Gamma()                          {  }
+    ~Gamma() override = default;
     /// Access K parameter
     double kValue()  const                    { return m_kValue;              }
     /// Access Lambda parameter
@@ -225,7 +225,7 @@ namespace Rndm   {
     /// Standard Constructor
     Poisson(double m) : IRndmGen::Param(IID_IRndmPoisson), m_mean(m) { }
     /// Standard Destructor
-    virtual ~Poisson()                        {  }
+    ~Poisson() override = default;
     /// Access mean value of the distribution
     double mean()  const                      { return m_mean;                }
     /// Identifier for factory
@@ -248,7 +248,7 @@ namespace Rndm   {
     Binomial(long n, double p)
     : IRndmGen::Param(IID_IRndmBinomial), m_nEvent(n), m_probability(p) { }
     /// Standard Destructor
-    virtual ~Binomial()                       {  }
+    ~Binomial() override = default;
     /// Access number of events
     long nEvent()  const                      { return m_nEvent;              }
     /// Access number of events
@@ -275,7 +275,7 @@ namespace Rndm   {
     Flat(double mi, double ma)
     : IRndmGen::Param(IID_IRndmFlat), m_minimum(mi), m_maximum(ma) { }
     /// Standard Destructor
-    virtual ~Flat()                           {  }
+    ~Flat() override = default;
     /// Access lower edge
     double minimum()  const                   { return m_minimum;             }
     /// Access upper edge
@@ -295,7 +295,7 @@ namespace Rndm   {
     /// Standard Constructor
     Bit() : IRndmGen::Param(IID_IRndmBit)     {  }
     /// Standard Destructor
-    virtual ~Bit()                            {  }
+    ~Bit() override = default;
     /// Identifier for factory
     static const InterfaceID& typeID()        { return IID_IRndmBit; }
     /// Clone parameters
@@ -331,7 +331,7 @@ namespace Rndm   {
       m_pdf(pdf),
       m_interpolation(intpol)  {     }
     /// Standard Destructor
-    virtual ~DefinedPdf()                     {  }
+    ~DefinedPdf() override = default;
     /// Access pdf
     std::vector<double>& pdf()                { return m_pdf;                 }
     /// Access interpolation type
@@ -357,7 +357,7 @@ namespace Rndm   {
     GaussianTail(double a, double s)
       : IRndmGen::Param(IID_IRndmGaussianTail), m_cut(a), m_sigma(s)  { }
     /// Standard Destructor
-    virtual ~GaussianTail() { }
+    ~GaussianTail() override = default;
     /// Access cut value of the distribution
     double cut()  const { return m_cut; }
     /// Access sigma of the distribution

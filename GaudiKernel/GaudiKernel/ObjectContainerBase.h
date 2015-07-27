@@ -22,10 +22,10 @@ class GAUDI_API ObjectContainerBase : public DataObject  {
 protected:
 
   /// Constructor
-  ObjectContainerBase() { }
+  ObjectContainerBase() = default;
 
   /// Destructor
-  virtual ~ObjectContainerBase() { }
+  virtual ~ObjectContainerBase() = default;
 
 public:
 

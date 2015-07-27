@@ -37,9 +37,8 @@ namespace NTuple    {
   /** Concrete class discribing basic data items in an N tuple.
   */
   template <class TYP> class _DataImp : virtual public _Data<TYP>  {
-  private:
     /// Inhibit Copy Constructor
-    _DataImp(const _DataImp&)    {}
+    _DataImp(const _DataImp&)  = delete;
   protected:
     typedef const std::string& CSTR;
     typedef const std::type_info& CTYPE;
@@ -52,7 +51,7 @@ namespace NTuple    {
     /// Check that values are within a certain range while filling
     std::string           m_index;
     /// Pointer to index item
-    mutable INTupleItem*  m_indexItem;
+    mutable INTupleItem*  m_indexItem = nullptr;
     /// _Column type
     DataTypeInfo::Type    m_type;
     /// Buffer with default value
@@ -65,18 +64,17 @@ namespace NTuple    {
     /// Set type definition to make life more easy easy
     typedef Range<TYP>  ItemRange;
     /// Standard Constructor
-    _DataImp(INTuple* tup,const std::string& name,const std::type_info& info,const std::string& index,long len,TYP low,TYP high,TYP def)
-    : m_length(len), m_tuple(tup), m_name(name), m_index(index),
-      m_def(def), m_range(low, high), m_info(info)
+    _DataImp(INTuple* tup,std::string name,const std::type_info& info,std::string index,long len,TYP low,TYP high,TYP def)
+    : m_length(len), m_tuple(tup), m_name(std::move(name)), m_index(std::move(index)),
+      m_def(std::move(def)), m_range(std::move(low), std::move(high)), m_info(info)
     {
-      m_indexItem = 0;
       m_type = typeid(TYP) == typeid(void*) ? DataTypeInfo::POINTER : DataTypeInfo::ID(info);
       this->m_buffer = new TYP[m_length];
       reset();
     }
     /// Standard destructor
     virtual ~_DataImp()                      {
-      if ( 0 != this->m_buffer ) delete [] this->m_buffer;
+      delete [] this->m_buffer;
     }
     /// Get proper type name
     virtual std::string typeName()   const   {
@@ -84,10 +82,7 @@ namespace NTuple    {
     }
     /// Reset to default
     virtual void reset()                      {
-      TYP* buff = this->m_buffer;
-      for ( size_t i = 0; i < static_cast<size_t>(m_length); i++ )    {
-        *buff++ = m_def;
-      }
+      std::fill_n(this->m_buffer, m_length, m_def );
     }
     /// Number of items filled
     virtual long filled()  const              {
@@ -109,16 +104,12 @@ namespace NTuple    {
     }
     /// Pointer to index column (if present, 0 else)
     virtual INTupleItem* indexItem()                  {
-      if ( 0 == m_indexItem )   {
-        m_indexItem = m_tuple->find(m_index);
-      }
+      if ( !m_indexItem ) m_indexItem = m_tuple->find(m_index);
       return m_indexItem;
     }
     /// Pointer to index column (if present, 0 else) (CONST)
     virtual const INTupleItem* indexItem() const      {
-      if ( 0 == m_indexItem )   {
-        m_indexItem = m_tuple->find(m_index);
-      }
+      if ( !m_indexItem )   m_indexItem = m_tuple->find(m_index);
       return m_indexItem;
     }
     /// Compiler type ID
@@ -167,7 +158,7 @@ namespace NTuple    {
     _ItemImp(INTuple* tup, const std::string& name, const std::type_info& info, TYP min, TYP max, TYP def)
     : _DataImp<TYP>(tup, name, info, "", 1, min, max, def) {                       }
     /// Standard Destructor
-    virtual ~_ItemImp()                      {                                     }
+    ~_ItemImp() override = default;
     /// Compiler type ID
     //virtual const std::type_info& typeID() const             { return typeid(NTuple::_Item<TYP>);  }
     /// Set default value
@@ -189,7 +180,7 @@ namespace NTuple    {
     _ArrayImp(INTuple* tup,const std::string& name,const std::type_info& typ,const std::string& index,long len,TYP min,TYP max,TYP def)
     : _DataImp<TYP>(tup, name, typ, index, len, min, max, def)    {                }
     /// Standard Destructor
-    virtual ~_ArrayImp()                     {                                     }
+    ~_ArrayImp() override = default;
     /// Compiler type ID
     //virtual const std::type_info& typeID() const             { return typeid(NTuple::_Array<TYP>); }
     /// Set default value
@@ -220,7 +211,7 @@ namespace NTuple    {
       this->m_rows = nrow;
     }
     /// Standard Destructor
-    virtual ~_MatrixImp()                    {                                     }
+    ~_MatrixImp() override = default;
     /// Compiler type ID
     //virtual const std::type_info& typeID() const             { return typeid(NTuple::_Matrix<TYP>);}
     /// Set default value

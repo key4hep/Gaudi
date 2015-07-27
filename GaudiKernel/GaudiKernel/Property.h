@@ -118,9 +118,9 @@ private:
   const std::type_info*    m_typeinfo       ;
 protected:
   // call back functor for reading
-  mutable PropertyCallbackFunctor* m_readCallBack   ;
+  mutable std::unique_ptr<PropertyCallbackFunctor> m_readCallBack;
   // call back functor for update
-  PropertyCallbackFunctor* m_updateCallBack ;
+  std::unique_ptr<PropertyCallbackFunctor> m_updateCallBack;
 };
 // ============================================================================
 #include "GaudiKernel/PropertyCallbackFunctor.h"
@@ -408,7 +408,7 @@ protected:
     , m_verifier ( verifier )
   {}
   /// virtual destructor
-  virtual ~PropertyWithVerifier() {}
+  ~PropertyWithVerifier() override = default;
   // ==========================================================================
 public:
   // ==========================================================================
@@ -529,7 +529,7 @@ public:
   /// copy constructor (must be!)
   SimpleProperty ( const SimpleProperty& right ) ;
   /// virtual Destructor
-  virtual ~SimpleProperty() ;
+  ~SimpleProperty() override;
   /// implementation of Property::clone
   virtual SimpleProperty* clone() const ;
   /// assignment form the value

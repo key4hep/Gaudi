@@ -27,7 +27,7 @@ class IStatusCodeSvc;
 
 class IgnoreError {};
 
-class StatusCode {
+class StatusCode final {
 public:
   enum {
     FAILURE = 0,
