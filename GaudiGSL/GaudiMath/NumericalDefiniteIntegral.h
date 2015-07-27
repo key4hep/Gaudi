@@ -378,13 +378,14 @@ namespace Genfun
       // assignement is disabled
       NumericalDefiniteIntegral& operator=( const NumericalDefiniteIntegral& );
 
-    private:
+    public:
       struct gsl_ws_deleter {
           void operator()(_Workspace *p) const {
             if (p) gsl_integration_workspace_free ( p->ws ) ;
             delete p;
           }
       };
+    private:
 
       std::unique_ptr<const AbsFunction>  m_function ;
       size_t                              m_DIM      ;

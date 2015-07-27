@@ -355,7 +355,7 @@ namespace Genfun
       NumericalIndefiniteIntegral& operator=
       ( const NumericalIndefiniteIntegral& ) ;
 
-    private:
+    public:
 
       struct gsl_ws_deleter {
           void operator()(_Workspace* p) const {
@@ -363,6 +363,7 @@ namespace Genfun
             delete p;
           }
       };
+    private:
 
       std::unique_ptr<const AbsFunction>  m_function ;
       size_t                              m_DIM      ;
