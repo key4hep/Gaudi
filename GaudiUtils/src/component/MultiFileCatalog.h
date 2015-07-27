@@ -29,13 +29,16 @@ namespace Gaudi {
     typedef std::vector<std::string>   CatalogNames;
 
     template <class T> void _exec(T pmf)  const  {
-      for(Catalogs::const_iterator i=m_catalogs.begin(); i != m_catalogs.end(); ++i)
-        ((*i)->*pmf)();
+        std::for_each( std::begin(m_catalogs), std::end(m_catalogs),
+                       [&](Catalogs::const_reference i ) { (i->*pmf)();
+        } );
     }
     template <class A1,class F> std::string _find(A1& arg1,F pmf)  const {
       std::string result;
-      for(Catalogs::const_iterator i=m_catalogs.begin(); i != m_catalogs.end(); ++i)
-        if ( !(result= ((*i)->*pmf)(arg1)).empty() ) break;
+      for(Catalogs::const_iterator i=m_catalogs.begin(); i != m_catalogs.end(); ++i) {
+        result= ((*i)->*pmf)(arg1);
+        if ( !result.empty() ) break;
+      }
       return result;
     }
     template <class A1,class F> void _collect(A1 arg1,F pmf)  const {

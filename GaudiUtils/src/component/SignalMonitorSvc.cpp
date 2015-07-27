@@ -216,12 +216,8 @@ namespace {
     }
     /// Return the signal number corresponding to a signal name or description (-1 if not known).
     inline int signum(const std::string &str) const {
-      GaudiUtils::HashMap<std::string, int>::const_iterator it;
-      it = m_name2num.find(str);
-      if (it == m_name2num.end()) {
-        return -1;
-      }
-      return it->second;
+      auto it = m_name2num.find(str);
+      return it != m_name2num.end() ? it->second : -1;
     }
   private:
     /// Constructor.
@@ -378,24 +374,22 @@ namespace Gaudi {
                        "the return code will not be changed" << endmsg;
         }
         // Decode the signal names
-        std::pair<int, bool> sigid;
         for (std::vector<std::string>::const_iterator signame = m_usedSignals.begin();
             signame != m_usedSignals.end(); ++signame) {
-          sigid = i_decodeSignal(*signame);
+          auto sigid = i_decodeSignal(*signame);
           if (sigid.first >= 0) {
             m_signals[sigid.first] = sigid.second;
           }
         }
         debug() << "Stopping on the signals:" << endmsg;
         const SigMap& sigmap(SigMap::instance());
-        for (std::map<int, bool>::const_iterator s = m_signals.begin();
-            s != m_signals.end(); ++s) {
-          debug() << "\t" << sigmap.name(s->first) << ": "
-                  << sigmap.desc(s->first) << " (" << s->first << ")";
-          if (s->second) debug() << " propagated";
+        for (const auto& s : m_signals ) {
+          debug() << "\t" << sigmap.name(s.first) << ": "
+                  << sigmap.desc(s.first) << " (" << s.first << ")";
+          if (s.second) debug() << " propagated";
           debug() << endmsg;
           // tell the signal monitor that we are interested in these signals
-          m_signalMonitor->monitorSignal(s->first, s->second);
+          m_signalMonitor->monitorSignal(s.first, s.second);
         }
         m_stopRequested = false;
         debug() << "Register to the IncidentSvc" << endmsg;
@@ -406,11 +400,11 @@ namespace Gaudi {
         m_incidentSvc->removeListener(this, IncidentType::BeginEvent);
         m_incidentSvc.reset();
         // disable the monitoring of the signals
-        for (std::map<int, bool>::const_iterator s = m_signals.begin();
-            s != m_signals.end(); ++s) {
-          // tell the signal monitor that we are interested in these signals
-          m_signalMonitor->ignoreSignal(s->first);
-        }
+        std::for_each( std::begin(m_signals), std::end(m_signals),
+                       [&](const std::pair<int,bool>& s) {
+            // tell the signal monitor that we are interested in these signals
+            m_signalMonitor->ignoreSignal(s.first);
+        } );
         m_signalMonitor.reset();
         return Service::finalize();
       }
@@ -418,25 +412,22 @@ namespace Gaudi {
       virtual void handle(const Incident&) {
         if (!m_stopRequested) {
           const SigMap& sigmap(SigMap::instance());
-          for (std::map<int, bool>::const_iterator s = m_signals.begin();
-              s != m_signals.end(); ++s) {
-            if (m_signalMonitor->gotSignal(s->first)) {
-              warning() << "Received signal '" << sigmap.name(s->first)
-                        << "' (" << s->first;
-              const std::string &desc = sigmap.desc(s->first);
-              if ( ! desc.empty() ) {
-                warning() << ", " << desc;
-              }
-              warning() << ")" << endmsg;
-              m_stopRequested = true;
-              // Report the termination by signal at the end of the application
-              using Gaudi::ReturnCode::SignalOffset;
-              if (Gaudi::setAppReturnCode(m_appProperty, SignalOffset + s->first).isFailure()) {
-                error() << "Could not set return code of the application ("
-                    << SignalOffset + s->first << ")"
-                    << endmsg;
-              }
+          for (const auto& s : m_signals ) {
+            if (!m_signalMonitor->gotSignal(s.first)) continue;
+            warning() << "Received signal '" << sigmap.name(s.first)
+                      << "' (" << s.first;
+            const std::string &desc = sigmap.desc(s.first);
+            if ( ! desc.empty() ) warning() << ", " << desc;
+            warning() << ")" << endmsg;
+            m_stopRequested = true;
+            // Report the termination by signal at the end of the application
+            using Gaudi::ReturnCode::SignalOffset;
+            if (Gaudi::setAppReturnCode(m_appProperty, SignalOffset + s.first).isFailure()) {
+              error() << "Could not set return code of the application ("
+                  << SignalOffset + s.first << ")"
+                  << endmsg;
             }
+            
           }
           if (m_stopRequested) {
             SmartIF<IEventProcessor> ep(serviceLocator());

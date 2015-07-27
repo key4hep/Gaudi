@@ -32,13 +32,14 @@ namespace Gaudi
       template <typename T> bool matchOr(const std::string & test, const T & regexps)
       {
         //compares the string in test, to the regexps in a container
-        for (typename T::const_iterator i = regexps.begin();
-             i != regexps.end(); ++i)
-        {
-          const boost::regex pattern(*i);
-          if (boost::regex_match(test, pattern)) return true;
-        }
-        return false;
+        //
+        //@TODO: would be better the container contaied boost::regex
+        //       instead of strings that need to be turned in boost::regex
+        //       again and again...
+        return std::any_of( std::begin(regexps), std::end(regexps),
+                            [&](typename T::const_reference i) {
+                return  boost::regex_match(test, boost::regex{i});
+        });
       }
 
       /** return true if the string is in all of the regex's
@@ -49,13 +50,14 @@ namespace Gaudi
       template <typename T> bool matchAnd(const std::string & test, const T & regexps)
       {
         //compares the string in test, to the regexps in a container
-        for (typename T::const_iterator i = regexps.begin();
-             i != regexps.end(); ++i)
-        {
-          const boost::regex pattern(*i);
-          if (!boost::regex_match(test, pattern)) return false;
-        }
-        return true;
+        //
+        //@TODO: would be better the container contaied boost::regex
+        //       instead of strings that need to be turned in boost::regex
+        //       again and again...
+        return std::all_of( std::begin(regexps), std::end(regexps),
+                            [&](typename T::const_reference i) {
+                return  boost::regex_match(test, boost::regex{i});
+        });
       }
     }
   }
