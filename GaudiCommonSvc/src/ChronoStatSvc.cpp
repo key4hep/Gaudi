@@ -578,8 +578,10 @@ void ChronoStatSvc::printStats()
     typedef std::pair<const StatEntity*,const StatTag*>  SPair;
     typedef std::vector<SPair>                           SCont;
     SCont tmpCont;
-    for( const auto& it : m_statEntities )
-    { tmpCont.emplace_back( &it.second , &it.first ) ; }
+    std::transform( std::begin(m_statEntities), std::end(m_statEntities),
+                    std::back_inserter(tmpCont),
+                    [](StatMap::const_reference i) 
+                    { return std::make_pair( &i.second, &i.first); } );
     // sort it
     if ( m_statOrderFlag ) std::sort( tmpCont.begin(), tmpCont.end(),
                                       CompareFirstOfPointerPair );

@@ -228,8 +228,8 @@ StatusCode GslSvc::handle
                                    m_ignore.end   () ,
                                    error.code        ) ) { return sc ; }
   // invoke all handlers
-  for( Handlers::const_iterator handler = m_handlers.begin() ;
-       sc.isSuccess() && m_handlers.end() != handler ; ++handler )
+  for( auto handler = m_handlers.cbegin() ;
+       sc.isSuccess() && m_handlers.cend() != handler ; ++handler )
     { sc = (*handler)->handle( error  ); }
   //
   return sc ;
