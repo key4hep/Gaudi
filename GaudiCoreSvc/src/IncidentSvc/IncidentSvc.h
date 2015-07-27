@@ -72,7 +72,7 @@ public:
   void fireIncident( const Incident& incident) override;
   //TODO: return by value instead...
   void getListeners (std::vector<IIncidentListener*>& lis,
-			     const std::string& type = "") const override;
+                     const std::string& type = "") const override;
 
   // Standard Constructor.
   IncidentSvc( const std::string& name, ISvcLocator* svc );

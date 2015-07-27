@@ -739,8 +739,7 @@ void MessageSvc::setOutputLevel(const std::string& source, int level)    {
   boost::recursive_mutex::scoped_lock lock(m_thresholdMapMutex);
 
   /*
-  std::pair<ThresholdMap::iterator, bool> p;
-  p = m_thresholdMap.insert(ThresholdMap::value_type( source, level) );
+  auto p = m_thresholdMap.insert(ThresholdMap::value_type( source, level) );
   if( p.second == false ) {
     // Already esisting an output level for that source. Erase and enter it again
     m_thresholdMap.erase ( p.first );

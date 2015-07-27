@@ -116,35 +116,28 @@ public:
     // ========================================================================
     /// the actual class
     ClassH        clazz      ;                              // the actual class
-    bool          executing  ;
     std::string   name       ;
-    unsigned long num        ;
+    unsigned long num        = 0;
+    bool          executing  = false;
     /// trivial object? DataObject?
-    bool          dataObject ;                  // trivial object? DataObject?
+    bool          dataObject = false ;          // trivial object? DataObject?
     // =======================================================================
-    Node()
-      : clazz      (       )
-      , executing  ( false )
-      , name       (       )
-      , num        ( 0     )
-      , dataObject ( false )
-    {}
+    Node() = default;
     // ========================================================================
-    Node ( ClassH             c ,
-           bool               e ,
-           const std::string& n )
+    Node ( ClassH      c ,
+           bool        e ,
+           std::string n )
       : clazz     ( c )
+      , name      ( std::move(n) )
       , executing ( e )
-      , name      ( n )
-      , num       ( 0 )
-      , dataObject ( "DataObject" == n )
+      , dataObject ( "DataObject" == name )
     {}
     //
     Node( const Node& c )
       : clazz      ( c.clazz      )
-      , executing  ( c.executing  )
       , name       ( c.name       )
       , num        ( c.num        )
+      , executing  ( c.executing  )
       , dataObject ( c.dataObject )
     {}
     // ========================================================================
@@ -153,17 +146,15 @@ public:
   /// @struct Leaf
   struct Leaf
   {
-    IAlgorithm*   algorithm ;
-    bool          executing ;
+    IAlgorithm*   algorithm = nullptr;
     std::string   name      ;
     std::string   type      ;
-    unsigned long num       ;
-    Leaf() : algorithm ( 0 ) , executing (false ) , name() , type() , num ( 0 ) {}
-    Leaf(const Leaf& l)
-      : algorithm(l.algorithm),
-        executing(l.executing), name(l.name), type(l.type), num(l.num)  {}
-    Leaf(const std::string& t, const std::string& n)
-      : algorithm(0), executing(false), name(n), type(t), num(0)  {}
+    unsigned long num       = 0;
+    bool          executing = false;
+    Leaf() = default;
+    Leaf(const Leaf& l) = default;
+    Leaf(std::string t, std::string n)
+      : name(std::move(n)), type(std::move(t))  {}
   };
   // ==========================================================================
 public:
@@ -171,13 +162,13 @@ public:
   typedef GaudiUtils::HashMap<Gaudi::StringKey, Node>  NodeMap;
   typedef GaudiUtils::HashMap<Gaudi::StringKey, Leaf>  AlgMap;
   /// Inherited Service overrides: Service initialization
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
   /// Inherited Service overrides: Service finalization
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
   /// Inherited Service overrides: Service reinitialization
-  virtual StatusCode reinitialize();
+  StatusCode reinitialize() override;
   /// IIncidentListener interfaces overrides: incident handling
-  virtual void handle(const Incident& incident);
+  void handle(const Incident& incident) override;
   /** Standard initializing service constructor.
    *  @param   name   [IN]    Service instance name
    *  @param   svc    [IN]    Pointer to service locator
@@ -187,7 +178,7 @@ public:
   ( const std::string& name ,                    //       Service instance name
     ISvcLocator*       svc  ) ;                  //  Pointer to service locator
   /// Standard destructor.
-  virtual ~DataOnDemandSvc() = default;         // Standard destructor
+  ~DataOnDemandSvc() override = default;         // Standard destructor
   // ==========================================================================
 protected:
   // ==========================================================================

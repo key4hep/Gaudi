@@ -66,9 +66,7 @@ DECLARE_COMPONENT(ToolSvc)
 //------------------------------------------------------------------------------
 ToolSvc::ToolSvc( const std::string& name, ISvcLocator* svc )
   //------------------------------------------------------------------------------
-  : base_class( name, svc),
-    m_pHistorySvc(nullptr)
- { }
+  : base_class( name, svc) { }
 
 //------------------------------------------------------------------------------
 StatusCode ToolSvc::initialize()

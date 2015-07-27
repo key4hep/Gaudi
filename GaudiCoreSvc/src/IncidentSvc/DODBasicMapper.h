@@ -20,13 +20,13 @@ class DODBasicMapper: public extends2<AlgTool, IDODAlgMapper, IDODNodeMapper> {
 public:
   /// Standard constructor
   DODBasicMapper(const std::string& type, const std::string& name, const IInterface* parent);
-  virtual ~DODBasicMapper() = default; ///< Destructor
+  ~DODBasicMapper() override = default; ///< Destructor
 
   /// @see IDODAlgMapper
-  virtual Gaudi::Utils::TypeNameString algorithmForPath(const std::string &path);
+  Gaudi::Utils::TypeNameString algorithmForPath(const std::string &path) override;
 
   /// @see IDODNodeMapper
-  virtual std::string nodeTypeForPath(const std::string &path);
+  std::string nodeTypeForPath(const std::string &path) override;
 
 private:
   GaudiUtils::HashMap<std::string, Gaudi::Utils::TypeNameString>  m_algMap;

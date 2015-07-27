@@ -100,7 +100,7 @@ EventSelector::firstOfNextStream(bool shutDown, EvtSelectorContext& iter) const 
     if ( status.isSuccess() ) {
       const IEvtSelector* sel = s->selector();
       if ( sel )    {
-        Context* ctxt = 0;
+        Context* ctxt = nullptr;
         status = sel->createContext(ctxt);
         if ( status.isSuccess() )   {
           status = sel->resetCriteria(s->criteria(), *ctxt);

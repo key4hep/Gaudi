@@ -106,7 +106,7 @@ private: // data
   ListTools    m_instancesTools;        // List of all instances of tools
 
   /// Pointer to HistorySvc
-  IHistorySvc* m_pHistorySvc;
+  IHistorySvc* m_pHistorySvc = nullptr;
 
   std::vector<IToolSvc::Observer*> m_observers;
 };
