@@ -25,7 +25,7 @@
 namespace {
     //@FIXME/@TODO remove once we can assume C++14...
     template <typename T, class... Args>
-    std::unique_ptr<T> make_unique(Args&&... args) {
+    std::unique_ptr<T> make_unique_(Args&&... args) {
         return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
     }
 }
@@ -177,9 +177,9 @@ StatusCode ParticlePropertySvc::push_back
 {
   //
   auto i = m_owned.insert(  
-    make_unique<ParticleProperty>( particle , geantId  , jetsetId ,
-                                   charge   , mass     , tlife    ,
-                                   evtName  , pythiaId , maxWidth ) 
+    make_unique_<ParticleProperty>( particle , geantId  , jetsetId ,
+                                    charge   , mass     , tlife    ,
+                                    evtName  , pythiaId , maxWidth ) 
   ) ;
   //
   return i.second ? push_back( i.first->get() ) : StatusCode::FAILURE;
