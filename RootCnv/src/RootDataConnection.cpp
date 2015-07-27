@@ -1,9 +1,9 @@
 // $Id: RootDataConnection.cpp,v 1.16 2010-09-27 15:43:53 frankb Exp $
 //====================================================================
-//	RootDataConnection.cpp
+//        RootDataConnection.cpp
 //--------------------------------------------------------------------
 //
-//	Author     : M.Frank
+//        Author     : M.Frank
 //====================================================================
 // $Header: /afs/cern.ch/project/cvs/reps/lhcb/Online/RootCnv/src/RootDataConnection.cpp,v 1.16 2010-09-27 15:43:53 frankb Exp $
 
@@ -88,15 +88,15 @@ starCheck:
 }
 
 /// Standard constructor
-RootConnectionSetup::RootConnectionSetup() : refCount(1), m_msgSvc(0), m_incidentSvc(0)
+RootConnectionSetup::RootConnectionSetup() 
+: refCount(1)
 {
 }
 
 /// Standard destructor
 RootConnectionSetup::~RootConnectionSetup() {
   if ( m_incidentSvc ) m_incidentSvc->release();
-  m_incidentSvc = 0;
-  deletePtr(m_msgSvc);
+  m_incidentSvc = nullptr;
 }
 
 /// Set the global compression level
@@ -151,9 +151,7 @@ void RootConnectionSetup::release() {
 
 /// Set message service reference
 void RootConnectionSetup::setMessageSvc(MsgStream* m) {
-  MsgStream* tmp = m_msgSvc;
-  m_msgSvc = m;
-  deletePtr(tmp);
+  m_msgSvc.reset(m);
 }
 
 /// Set incident service reference
@@ -174,8 +172,8 @@ RootDataConnection::RootDataConnection(const IInterface* owner, CSTR fname, Root
   }
   m_setup->addRef();
   m_age  = 0;
-  m_file = 0;
-  m_refs = 0;
+  m_file = nullptr;
+  m_refs = nullptr;
   addClient(owner);
 }
 
@@ -192,7 +190,7 @@ void RootDataConnection::addClient(const IInterface* client) {
 
 /// Remove client from this data source
 size_t RootDataConnection::removeClient(const IInterface* client) {
-  Clients::iterator i=m_clients.find(client);
+  auto i=m_clients.find(client);
   if ( i != m_clients.end() ) m_clients.erase(i);
   return m_clients.size();
 }
@@ -220,7 +218,7 @@ void RootDataConnection::saveStatistics(CSTR statisticsFile) {
 
 /// Enable TTreePerStats
 void RootDataConnection::enableStatistics(CSTR section) {
-  if ( 0 == m_statistics ) {
+  if ( m_statistics ) {
     TTree* t=getSection(section,false);
     if ( t ) {
       m_statistics = new TTreePerfStats((section+"_ioperf").c_str(),t);
@@ -259,10 +257,10 @@ StatusCode RootDataConnection::connectRead()  {
       sc.ignore();
 #if ROOT_VERSION_CODE >= ROOT_VERSION(5,33,0)
       if ( sc.getCode() == ROOT_READ_ERROR ) {
-	IIncidentSvc* inc = m_setup->incidentSvc();
-	if ( inc ) {
-	  inc->fireIncident(Incident(pfn(),IncidentType::CorruptedInputFile));
-	}
+        IIncidentSvc* inc = m_setup->incidentSvc();
+        if ( inc ) {
+          inc->fireIncident(Incident(pfn(),IncidentType::CorruptedInputFile));
+        }
       }
 #endif
     }
@@ -330,17 +328,17 @@ StatusCode RootDataConnection::connectWrite(IoType typ)  {
     msgSvc() << "Opened file " << m_pfn << " in mode UPDATE. [" << m_fid << "]" << endmsg;
     if ( m_file && !m_file->IsZombie() )  {
       if ( makeTool() )   {
-	StatusCode sc = m_tool->readRefs();
-	sc.ignore();
-	if ( sc.getCode() == ROOT_READ_ERROR ) {
+        StatusCode sc = m_tool->readRefs();
+        sc.ignore();
+        if ( sc.getCode() == ROOT_READ_ERROR ) {
 #if ROOT_VERSION_CODE >= ROOT_VERSION(5,33,0)
-	  IIncidentSvc* inc = m_setup->incidentSvc();
-	  if ( inc ) {
-	    inc->fireIncident(Incident(pfn(),IncidentType::CorruptedInputFile));
-	  }
+          IIncidentSvc* inc = m_setup->incidentSvc();
+          if ( inc ) {
+            inc->fireIncident(Incident(pfn(),IncidentType::CorruptedInputFile));
+          }
 #endif
-	}
-	return sc;
+        }
+        return sc;
       }
       TDirectory::TContext ctxt(m_file);
       m_refs = new TTree("Refs","Root reference data");
@@ -349,11 +347,11 @@ StatusCode RootDataConnection::connectWrite(IoType typ)  {
     }
     break;
   default:
-    m_refs = 0;
-    m_file = 0;
+    m_refs = nullptr;
+    m_file = nullptr;
     return StatusCode::FAILURE;
   }
-  return 0==m_file ? StatusCode::FAILURE : StatusCode::SUCCESS;
+  return m_file ? StatusCode::SUCCESS : StatusCode::FAILURE ;
 }
 
 /// Release data stream and release implementation dependent resources
@@ -367,10 +365,10 @@ StatusCode RootDataConnection::disconnect()    {
           if ( !m_tool->saveRefs().isSuccess() ) badWriteError("Saving References");
           if ( m_refs->Write() < 0 ) badWriteError("Write Reference branch");
         }
-        for(Sections::iterator i=m_sections.begin(); i!= m_sections.end();++i) {
-          if ( (*i).second ) {
-            if ( (*i).second->Write() < 0 ) badWriteError("Write section:"+(*i).first);
-            msgSvc() << "Disconnect section " << (*i).first << " " << (*i).second->GetName() << endmsg;
+        for( auto& i : m_sections ) {
+          if ( i.second ) {
+            if ( i.second->Write() < 0 ) badWriteError("Write section:"+i.first);
+            msgSvc() << "Disconnect section " << i.first << " " << i.second->GetName() << endmsg;
           }
         }
         m_sections.clear();
@@ -412,17 +410,17 @@ TTree* RootDataConnection::getSection(CSTR section, bool create) {
           msg << "Tree:" << section << "Setting up tree cache:" << cacheSize << endmsg;
         }
         else {
-	  const StringVec& vB = m_setup->vetoBranches;
-	  const StringVec& cB = m_setup->cacheBranches;
+          const StringVec& vB = m_setup->vetoBranches;
+          const StringVec& cB = m_setup->cacheBranches;
           msg << "Tree:" << section << " Setting up tree cache:" << cacheSize << " Add all branches." << endmsg;
           msg << "Tree:" << section << " Learn for " << learnEntries << " entries." << endmsg;
 
-	  if ( cB.size()==0 && vB.size()== 0 ) {
-	    msg << "Adding (default) all branches to tree cache." << endmsg;
+          if ( cB.empty() && vB.empty()) {
+            msg << "Adding (default) all branches to tree cache." << endmsg;
             t->AddBranchToCache("*",kTRUE);
           }
           if ( cB.size()==1 && cB[0]=="*" ) {
-	    msg << "Adding all branches to tree cache according to option \"CacheBranches\"." << endmsg;
+            msg << "Adding all branches to tree cache according to option \"CacheBranches\"." << endmsg;
             t->AddBranchToCache("*",kTRUE);
           }
           else {
@@ -443,9 +441,9 @@ TTree* RootDataConnection::getSection(CSTR section, bool create) {
                 msg << "Add " << n << " to branch cache." << endmsg;
                 t->AddBranchToCache(n,kTRUE);
               }
-	      else {
+              else {
                 msg << "Do not cache branch " << n << endmsg;
-	      }
+              }
             }
           }
         }
@@ -458,29 +456,25 @@ TTree* RootDataConnection::getSection(CSTR section, bool create) {
 
 /// Access data branch by name: Get existing branch in write mode
 TBranch* RootDataConnection::getBranch(CSTR section, CSTR branch_name, TClass* cl, void* ptr, int buff_siz, int split_lvl) {
-  string n = branch_name+".";
-  for(int i=0, m=n.length()-1; i<m; ++i) if ( !isalnum(n[i]) ) n[i]='_';
+  string n = branch_name;
+  std::replace_if(std::begin(n),std::end(n),
+                  [](const char c) { return !isalnum(c); },
+                  '_');
+  n += ".";
   TTree* t = getSection(section,true);
   TBranch* b = t->GetBranch(n.c_str());
   if ( !b && cl && m_file->IsWritable() ) {
     b = t->Branch(n.c_str(),cl->GetName(),(void*)(ptr ? &ptr : 0),buff_siz,split_lvl);
   }
-  if ( !b ) {
-    b = t->GetBranch(branch_name.c_str());
-  }
-  if ( b )   {
-    b->SetAutoDelete(kFALSE);
-  }
+  if ( !b ) b = t->GetBranch(branch_name.c_str());
+  if ( b )   b->SetAutoDelete(kFALSE);
   return b;
 }
 
 /// Convert path string to path index
 int RootDataConnection::makeLink(CSTR p) {
-  int cnt = 0;
-  StringVec::iterator ip;
-  for(ip=m_links.begin();ip!=m_links.end();++ip,++cnt) {
-    if( (*ip) == p ) return cnt;
-  }
+  auto ip = std::find(std::begin(m_links),std::end(m_links),p);
+  if (ip!=std::end(m_links)) return std::distance(std::begin(m_links),ip);
   m_links.push_back(p);
   return m_links.size()-1;
 }
@@ -519,12 +513,12 @@ RootDataConnection::save(CSTR section, CSTR cnt, TClass* cl, void* pObj, int buf
       Long64_t num, nevt = b->GetTree()->GetEntries();
       if ( nevt > evt )   {
         b->SetAddress(0);
-	num = nevt - evt;
-	while( num > 0 ) { b->Fill(); --num; }
+        num = nevt - evt;
+        while( num > 0 ) { b->Fill(); --num; }
         msgSvc() << MSG::DEBUG << "Added " << long(nevt-evt)
-		 << " / Tree: " << nevt << " / Branch: " << b->GetEntries()+1
-		 << " NULL entries to:" << cnt << endmsg;
-	evt = b->GetEntries();
+                 << " / Tree: " << nevt << " / Branch: " << b->GetEntries()+1
+                 << " NULL entries to:" << cnt << endmsg;
+        evt = b->GetEntries();
       }
     }
     b->SetAddress(&pObj);
@@ -545,47 +539,47 @@ int RootDataConnection::loadObj(CSTR section, CSTR cnt, unsigned long entry, Dat
       int nb = -1;
       pObj = (DataObject*)cl->New();
       {
-	DataObjectPush push(pObj);
-	b->SetAddress(&pObj);
-	if ( section == m_setup->loadSection ) {
-	  TTree* t = b->GetTree();
-	  if ( Long64_t(entry) != t->GetReadEntry() ) {
-	    t->LoadTree(Long64_t(entry));
-	  }
-	}
-	nb = b->GetEntry(entry);
-	msgSvc() << MSG::VERBOSE;
-	if ( msgSvc().isActive() ) {
-	  msgSvc() << "Load [" << entry << "] --> " << section
-		   << ":" << cnt << "  " << nb << " bytes."
-		   << endmsg;
-	}
-	if ( nb < 0 )   {	// This is definitely an error...ROOT says if reads fail, -1 is issued.
+        DataObjectPush push(pObj);
+        b->SetAddress(&pObj);
+        if ( section == m_setup->loadSection ) {
+          TTree* t = b->GetTree();
+          if ( Long64_t(entry) != t->GetReadEntry() ) {
+            t->LoadTree(Long64_t(entry));
+          }
+        }
+        nb = b->GetEntry(entry);
+        msgSvc() << MSG::VERBOSE;
+        if ( msgSvc().isActive() ) {
+          msgSvc() << "Load [" << entry << "] --> " << section
+                   << ":" << cnt << "  " << nb << " bytes."
+                   << endmsg;
+        }
+        if ( nb < 0 )   {        // This is definitely an error...ROOT says if reads fail, -1 is issued.
 #if ROOT_VERSION_CODE >= ROOT_VERSION(5,33,0)
-	  IIncidentSvc* inc = m_setup->incidentSvc();
-	  if ( inc ) {
-	    inc->fireIncident(Incident(pfn(),IncidentType::CorruptedInputFile));
-	  }
+          IIncidentSvc* inc = m_setup->incidentSvc();
+          if ( inc ) {
+            inc->fireIncident(Incident(pfn(),IncidentType::CorruptedInputFile));
+          }
 #endif
-	}
-	else if ( nb == 0 && pObj->clID() == CLID_DataObject) {
-	  TFile* f = b->GetFile();
-	  int vsn = f->GetVersion();
-	  if ( vsn < 52400 ) {
-	    // For Gaudi v21r5 (ROOT 5.24.00b) DataObject::m_version was not written!
-	    // Still this call be well be successful.
-	    nb = 1;
-	  }
-	  else if ( vsn>1000000 && (vsn%1000000)<52400 ) {
-	    // dto. Some POOL files have for unknown reasons a version
-	    // not according to ROOT standards. Hack this explicitly.
-	    nb = 1;
-	  }
-	}
-	if ( nb < 0 ) {
-	  delete pObj;
-	  pObj = 0;
-	}
+        }
+        else if ( nb == 0 && pObj->clID() == CLID_DataObject) {
+          TFile* f = b->GetFile();
+          int vsn = f->GetVersion();
+          if ( vsn < 52400 ) {
+            // For Gaudi v21r5 (ROOT 5.24.00b) DataObject::m_version was not written!
+            // Still this call be well be successful.
+            nb = 1;
+          }
+          else if ( vsn>1000000 && (vsn%1000000)<52400 ) {
+            // dto. Some POOL files have for unknown reasons a version
+            // not according to ROOT standards. Hack this explicitly.
+            nb = 1;
+          }
+        }
+        if ( nb < 0 ) {
+          delete pObj;
+          pObj = nullptr;
+        }
       }
       return nb;
     }
@@ -595,7 +589,7 @@ int RootDataConnection::loadObj(CSTR section, CSTR cnt, unsigned long entry, Dat
 
 /// Load references object
 int RootDataConnection::loadRefs(const std::string& section, const std::string& cnt, 
-				 unsigned long entry, RootObjectRefs& refs)
+                                 unsigned long entry, RootObjectRefs& refs)
 {
   int nbytes = m_tool->loadRefs(section,cnt,entry,refs); 
 #if ROOT_VERSION_CODE >= ROOT_VERSION(5,33,0)
@@ -630,7 +624,7 @@ RootDataConnection::getMergeSection(const string& container, int entry) const {
               << "  [" << entry << "]" << endmsg
               << "FID:" << m_fid << " -> PFN:" << m_pfn << endmsg;
           }
-          return make_pair(&(m_linkSects[cnt]), &c);
+          return { &(m_linkSects[cnt]), &c };
         }
       }
     }
@@ -638,7 +632,7 @@ RootDataConnection::getMergeSection(const string& container, int entry) const {
   msgSvc() << MSG::DEBUG << "Return INVALID MergeSection for:" << container
     << "  [" << entry << "]" << endmsg
     << "FID:" << m_fid << " -> PFN:" << m_pfn << endmsg;
-  return make_pair((const RootRef*)0,(const ContainerSection*)0);
+  return { nullptr, nullptr };
 }
 
 /// Create reference object from registry entry
@@ -686,9 +680,8 @@ void RootDataConnection::makeRef(CSTR name, long clid, int tech, CSTR dbase, CST
   ref.clid      = clid;
   ref.svc       = tech;
   if ( ref.svc == POOL_ROOT_StorageType ||
-    ref.svc == POOL_ROOTKEY_StorageType ||
-    ref.svc == POOL_ROOTTREE_StorageType ) {
-      ref.svc = ROOT_StorageType;
-    }
+       ref.svc == POOL_ROOTKEY_StorageType ||
+       ref.svc == POOL_ROOTTREE_StorageType ) {
+    ref.svc = ROOT_StorageType;
+  }
 }
-

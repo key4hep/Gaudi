@@ -44,9 +44,9 @@ StatusCode RootHistCnv::PersSvc::initialize()
   if (m_outputEnabled) {
     // Initialize ROOT if output file name is defined
     if( undefFileName != m_defFileName ) {
-      m_hfile = TFile::Open(m_defFileName.c_str(),"RECREATE","GAUDI Histograms");
+      m_hfile.reset( TFile::Open(m_defFileName.c_str(),"RECREATE","GAUDI Histograms") );
     } else {
-      m_hfile = 0;
+      m_hfile.reset();
     }
     log << MSG::INFO << "Writing ROOT histograms to: " << m_defFileName
         << endmsg;
@@ -84,7 +84,7 @@ StatusCode RootHistCnv::PersSvc::createRep(DataObject* pObject,
       IRegistry* pReg = top->registry();
       if ( pReg )   {
         if ( top.ptr() == pObject )   {
-          TDirectory* pDir = m_hfile;
+          TDirectory* pDir = m_hfile.get();
           refpAddress = new RootObjAddress( repSvcType(),
                                             CLID_DataObject,
                                             stat_dir,
@@ -126,19 +126,9 @@ StatusCode RootHistCnv::PersSvc::createRep(DataObject* pObject,
 //-----------------------------------------------------------------------------
 RootHistCnv::PersSvc::PersSvc(const std::string& name, ISvcLocator* svc)
 //-----------------------------------------------------------------------------
-: ConversionSvc(name, svc, ROOT_StorageType), m_hfile(0), m_prtWar(false) {
+: ConversionSvc(name, svc, ROOT_StorageType) {
   declareProperty("OutputFile", m_defFileName = undefFileName);
   declareProperty("ForceAlphaIds", m_alphaIds = false);
   declareProperty("OutputEnabled", m_outputEnabled = true,
                   "Flag to enable/disable the output to file.");
-}
-
-//-----------------------------------------------------------------------------
-RootHistCnv::PersSvc::~PersSvc()
-//-----------------------------------------------------------------------------
-{
-  if ( m_hfile != 0 ) {
-    delete m_hfile;
-    m_hfile = 0;
-  }
 }

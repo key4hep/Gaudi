@@ -123,12 +123,13 @@ template <class T> static inline void putRange(ostream& os, NTuple::_Data<T>* it
   os << x.lower() << ';' << x.upper() << ';';
 }
 
-static inline string _tr(const string& s) {
-  string local = s;
-  char* p = (char*)local.c_str();
-  if ( strncmp(p,"<local>",7)==0 ) p += 7;
-  for(;*p;++p)
-    if ( !isalnum(*p) ) *p = '_';
+static inline string _tr(string s) {
+  string local = std::move(s);
+  auto p = std::begin(local);
+  if ( local.compare(0,7,"<local>")==0 ) p+=7;
+  std::replace_if(p,std::end(local),
+                  [](const char& c) { return !isalnum(c); },
+                  '_');
   return local;
 }
 

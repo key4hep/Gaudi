@@ -28,16 +28,12 @@ RootDatabaseCnv::RootDatabaseCnv(long typ, const CLID& cl, ISvcLocator* svc, Roo
 {
 }
 
-// Standard destructor
-RootDatabaseCnv::~RootDatabaseCnv()   {
-}
-
 // Create database object
 StatusCode
 RootDatabaseCnv::createObj(IOpaqueAddress* pAddr, DataObject*& refpObj)  {
   StatusCode status = StatusCode::FAILURE;
   if ( pAddr ) {
-    RootDataConnection* con = 0;
+    RootDataConnection* con = nullptr;
     IRegistry* pReg = pAddr->registry();
     const unsigned long* ipars = pAddr->ipar();
     const string*   spars = pAddr->par();

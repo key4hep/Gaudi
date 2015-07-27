@@ -32,12 +32,12 @@ namespace RootHistCnv {
     PersSvc( const std::string& name, ISvcLocator* svc );
 
     /// Standard destructor
-    virtual ~PersSvc();
+    ~PersSvc() override = default;
 
   private:
     std::string m_defFileName;  ///< Default file name
-    TFile *m_hfile;             ///< Pointer to the ROOT file
-    bool m_prtWar;              ///< Already printed a Warning
+    std::unique_ptr<TFile> m_hfile; ///< Pointer to the ROOT file
+    bool m_prtWar = false;      ///< Already printed a Warning
     bool m_alphaIds;            ///< Force alphabetic histograms/ntuple IDs
     bool m_outputEnabled;       ///< Flag to enable/disable the output to file
   };

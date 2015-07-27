@@ -17,20 +17,17 @@ bool RootCd(const std::string& full)
 //-----------------------------------------------------------------------------
 {
   int p,i=1;
-  std::string cur,sdir;
 
   gDirectory->cd("/");
   while ( (p = full.find("/",i)) != -1) {
-    sdir = full.substr(i,p-i);
+    auto sdir = full.substr(i,p-i);
     if (! gDirectory->GetKey(sdir.c_str()) ) {
       return false;
     }
     gDirectory->cd(sdir.c_str());
-
     i = p+1;
   }
   gDirectory->cd( full.substr(i).c_str() );
-
   return true;
 
 }
@@ -41,42 +38,32 @@ bool RootMkdir(const std::string& full)
 //-----------------------------------------------------------------------------
 {
 
-  int p,i;
-  std::string fil,cur,s;
-  TDirectory *gDir;
+  TDirectory *gDir = gDirectory;
 
-  gDir = gDirectory;
-
-  std::list<std::string> lpath;
-  i = 1;
-
-  if ( (p=full.find(":",0)) != -1 ) {
-    fil = full.substr(0,p);
+  int i = 1;
+  auto  p=full.find(":",0);
+  if ( p != std::string::npos ) {
+    auto fil = full.substr(0,p);
     i = p+1;
     fil += ":/";
     gDirectory->cd(fil.c_str());
   }
 
-  while ( (p = full.find("/",i)) != -1) {
-    s = full.substr(i,p-i);
-    lpath.push_back(s);
+  std::vector<std::string> lpath;
+  while ( (p = full.find("/",i)) != std::string::npos ) {
+    lpath.push_back(full.substr(i,p-i));
     i = p+1;
   }
   lpath.push_back( full.substr(i) );
 
-  if ( full.compare(0,1,"/") == 0 ) {
-    gDirectory->cd("/");
-  }
+  if ( full.compare(0,1,"/") == 0 ) gDirectory->cd("/");
 
-  std::list<std::string>::const_iterator litr;
-  for(litr=lpath.begin(); litr!=lpath.end(); ++litr) {
-    cur = *litr;
-    if (! gDirectory->GetKey(litr->c_str()) ) {
-      gDirectory->mkdir(litr->c_str());
+  for(const auto& lp : lpath) {
+    if (! gDirectory->GetKey(lp.c_str()) ) {
+      gDirectory->mkdir(lp.c_str());
     }
-    gDirectory->cd(litr->c_str());
+    gDirectory->cd(lp.c_str());
   }
-
   gDirectory = gDir;
 
   return true;

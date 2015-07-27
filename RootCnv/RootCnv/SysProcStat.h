@@ -23,7 +23,7 @@ public:
 	long time;
 
 	SysProcStat();
-	virtual ~SysProcStat();
+	virtual ~SysProcStat() =default;
 
 	// updates the values by calling /proc/self/stat
 	virtual int update();

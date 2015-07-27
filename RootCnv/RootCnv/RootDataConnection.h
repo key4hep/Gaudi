@@ -49,9 +49,9 @@ namespace Gaudi  {
     /// Object refrfence count
     int refCount;
     /// Reference to message service
-    MsgStream*    m_msgSvc;
+    std::unique_ptr<MsgStream>    m_msgSvc;
     /// Reference to incident service
-    IIncidentSvc* m_incidentSvc;
+    IIncidentSvc* m_incidentSvc = nullptr;
 
   public:
     /// Vector of strings with branches to be cached for input files
@@ -249,20 +249,20 @@ namespace Gaudi  {
     /// Standard constructor
     RootDataConnection(const IInterface* own, const std::string& nam, RootConnectionSetup* setup);
     /// Standard destructor
-    virtual ~RootDataConnection();
+    ~RootDataConnection() override;
 
     /// Direct access to TFile structure
-    TFile* file() const                         {  return m_file;                              }
+    TFile* file() const                         { return m_file;                         }
     /// Check if connected to data source
-    virtual bool isConnected() const            {  return m_file != 0;                         }
+    virtual bool isConnected() const            { return m_file;                         }
     /// Is the file writable?
-    bool isWritable() const                     {  return m_file != 0 && m_file->IsWritable(); }
+    bool isWritable() const                     { return m_file && m_file->IsWritable(); }
     /// Access tool
-    Tool* tool() const                          {  return m_tool;                              }
+    Tool* tool() const                          { return m_tool;                         }
     /// Access merged data section inventory
-    const MergeSections& mergeSections() const  {  return m_mergeSects;                        }
+    const MergeSections& mergeSections() const  { return m_mergeSects;                   }
     /// Access merged FIDs
-    const StringVec& mergeFIDs() const          {  return m_mergeFIDs;                         }
+    const StringVec& mergeFIDs() const          { return m_mergeFIDs;                    }
 
 
     /// Add new client to this data source

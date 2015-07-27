@@ -47,4 +47,3 @@ RootCompressionSettings( const std::string & settings )
 }
 
 //=============================================================================
-
