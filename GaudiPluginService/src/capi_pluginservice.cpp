@@ -1,4 +1,5 @@
 #include <vector>
+#include <algorithm>
 #include "capi_pluginservice.h"
 #include <Gaudi/PluginService.h>
 
@@ -21,6 +22,14 @@ cgaudi_pluginsvc_get_factory_size(cgaudi_pluginsvc_t self)
   return int(fmap.size());
 }
 
+constexpr struct select1st_t {
+    template <typename S,typename T>
+    const S& operator()(const std::pair<S,T>& p) const 
+    { return p.first; }
+    template <typename S,typename T>
+    S& operator()(std::pair<S,T>& p) const 
+    { return p.first; }
+} select1st {};
 
 cgaudi_factory_t
 cgaudi_pluginsvc_get_factory_at(cgaudi_pluginsvc_t self, int n)
@@ -28,13 +37,9 @@ cgaudi_pluginsvc_get_factory_at(cgaudi_pluginsvc_t self, int n)
   const Registry *reg = ((const Registry*)self.registry);
   std::vector<Registry::KeyType> keys;
   keys.reserve(reg->factories().size());
-  for (Registry::FactoryMap::const_iterator
-         itr = reg->factories().begin(),
-         iend= reg->factories().end();
-       itr != iend;
-       itr++) {
-    keys.push_back(itr->first);
-  }
+  std::transform(reg->factories().begin(),reg->factories().end(),
+                 std::back_inserter(keys),
+                 select1st );
   const char *key = keys[n].c_str();
   cgaudi_factory_t fac;
   fac.registry = self;
@@ -46,8 +51,7 @@ const char*
 cgaudi_factory_get_library(cgaudi_factory_t self)
 {
   Registry &reg = Registry::instance();
-  std::string id = self.id;
-  const Registry::FactoryInfo& fi = reg.getInfo(id);
+  const Registry::FactoryInfo& fi = reg.getInfo(self.id);
   return fi.library.c_str();
 }
 
@@ -55,8 +59,7 @@ const char*
 cgaudi_factory_get_type(cgaudi_factory_t self)
 {
   Registry &reg = Registry::instance();
-  std::string id = self.id;
-  const Registry::FactoryInfo& fi = reg.getInfo(id);
+  const Registry::FactoryInfo& fi = reg.getInfo(self.id);
   return fi.type.c_str();
 }
 
@@ -64,8 +67,7 @@ const char*
 cgaudi_factory_get_rtype(cgaudi_factory_t self)
 {
   Registry &reg = Registry::instance();
-  std::string id = self.id;
-  const Registry::FactoryInfo& fi = reg.getInfo(id);
+  const Registry::FactoryInfo& fi = reg.getInfo(self.id);
   return fi.rtype.c_str();
 }
 
@@ -73,8 +75,7 @@ const char*
 cgaudi_factory_get_classname(cgaudi_factory_t self)
 {
   Registry &reg = Registry::instance();
-  std::string id = self.id;
-  const Registry::FactoryInfo& fi = reg.getInfo(id);
+  const Registry::FactoryInfo& fi = reg.getInfo(self.id);
   return fi.className.c_str();
 }
 
@@ -82,8 +83,7 @@ int
 cgaudi_factory_get_property_size(cgaudi_factory_t self)
 {
   Registry &reg = Registry::instance();
-  std::string id = self.id;
-  const Registry::FactoryInfo& fi = reg.getInfo(id);
+  const Registry::FactoryInfo& fi = reg.getInfo(self.id);
   return int(fi.properties.size());
 }
 
@@ -94,20 +94,12 @@ cgaudi_factory_get_property_at(cgaudi_factory_t self, int n)
   cgaudi_property_t cprop;
   cprop.registry = self.registry;
   cprop.id = self.id;
-  cprop.key = NULL;
+  cprop.key = nullptr;
   Registry &reg = Registry::instance();
-  std::string id = cprop.id;
-  const Registry::FactoryInfo& fi = reg.getInfo(id);
-  int i = 0;
-  for (Registry::Properties::const_iterator
-         itr = fi.properties.begin(),
-         iend = fi.properties.end();
-       itr != iend;
-       itr++, i++) {
-    if (i == n) {
-      cprop.key = itr->first.c_str();
-      return cprop;
-    }
+  const Registry::FactoryInfo& fi = reg.getInfo(cprop.id);
+  if (n<(long)fi.properties.size()) {
+    auto itr = std::next(fi.properties.cbegin(),n);
+    cprop.key = itr->first.c_str();
   }
   return cprop;
 }
@@ -122,12 +114,8 @@ const char*
 cgaudi_property_get_value(cgaudi_property_t self)
 {
   Registry &reg = Registry::instance();
-  std::string id = self.id;
-  const Registry::FactoryInfo& fi = reg.getInfo(id);
+  const Registry::FactoryInfo& fi = reg.getInfo(self.id);
   Registry::KeyType key = self.key;
   Registry::Properties::const_iterator prop = fi.properties.find(key);
-  if (prop == fi.properties.end()) {
-    return NULL;
-  }
-  return prop->second.c_str();
+  return  prop != fi.properties.end() ? prop->second.c_str() : nullptr;
 }
