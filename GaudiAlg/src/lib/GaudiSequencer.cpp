@@ -6,6 +6,69 @@
 #include "GaudiAlg/ISequencerTimerTool.h"
 #include "GaudiKernel/IJobOptionsSvc.h"
 
+
+
+namespace
+{
+
+  //TODO: this  adds C++14 'make_unique'... remove once we move to C++14...
+  template<typename T, typename ...Args>
+  std::unique_ptr<T> make_unique_( Args&& ...args ) {
+          return std::unique_ptr<T>( new T( std::forward<Args>(args)... ) );
+  }
+
+  bool isDefault(const std::string& s) { return s.empty(); }
+  constexpr bool isDefault(double x) { return x == 0; }
+
+   // utility class to populate some properties in the job options service 
+   // for a given instance name in case those options are not explicitly 
+   // set a-priori (effectively inheriting their values from the GaudiSequencer)
+  class populate_JobOptionsSvc_t {
+    std::vector<std::unique_ptr<Property>> m_props;
+    IJobOptionsSvc* m_jos;
+    std::string m_name;
+
+    template <typename T> void process(T&& t) {
+        static_assert( std::tuple_size<T>::value == 2, "Expecting an std::tuple key-value pair" );
+        using type = typename std::decay<typename std::tuple_element<1,T>::type>::type;
+        using prop_t = SimpleProperty<type>;
+        if (!isDefault(std::get<1>(t))) m_props.push_back( make_unique_<prop_t>( std::get<0>(t), std::get<1>(t) ) ) ;
+    }
+    template <typename T, typename... Args> void process(T&& t, Args&&... args) {
+        process(std::forward<T>(t)); process(std::forward<Args>(args)...);
+    }
+    void check_veto() { // avoid changing properties expliclty present in the JOS...
+        const auto* props = m_jos->getProperties(m_name);
+        if (!props) return;
+        for ( const auto& i : *props ) {
+            auto j = std::find_if( std::begin(m_props), std::end(m_props), 
+                                   [&i](const std::unique_ptr<Property>& prop) {
+                return prop->name() == i->name();
+            } );
+            if (j==std::end(m_props)) continue;
+            m_props.erase( j );
+            if (m_props.empty()) break; // done!
+        }
+    }
+
+  public:
+    template <typename... Args>
+    populate_JobOptionsSvc_t( std::string name, IJobOptionsSvc* jos, Args&&... args ) : m_jos{jos},m_name{ std::move(name) }   {
+        process(std::forward<Args>(args)...);
+        if (!m_props.empty()) check_veto();
+        std::for_each( std::begin(m_props), std::end(m_props), [&](const std::unique_ptr<Property>& i ) {
+            m_jos->addPropertyToCatalogue( m_name, *i ).ignore();
+        } );
+    }
+    ~populate_JobOptionsSvc_t() {
+        std::for_each( std::begin(m_props), std::end(m_props), [&](const std::unique_ptr<Property>& i ) {
+            m_jos->removePropertyFromCatalogue( m_name, i->name() ).ignore();
+        } );
+    }
+  };
+}
+
+
 //-----------------------------------------------------------------------------
 // Implementation file for class : GaudiSequencer
 //
@@ -18,7 +81,6 @@
 GaudiSequencer::GaudiSequencer( const std::string& name,
                                 ISvcLocator* pSvcLocator)
   : GaudiAlgorithm ( name , pSvcLocator )
-  , m_timerTool( 0 )
 {
   declareProperty( "Members"             , m_names                  );
   declareProperty( "ModeOR"              , m_modeOR         = false );
@@ -29,11 +91,6 @@ GaudiSequencer::GaudiSequencer( const std::string& name,
 
   m_names.declareUpdateHandler (& GaudiSequencer::membershipHandler, this );
 }
-//=============================================================================
-// Destructor
-//=============================================================================
-GaudiSequencer::~GaudiSequencer() {}
-
 //=============================================================================
 // Initialisation. Check parameters
 //=============================================================================
@@ -57,14 +114,14 @@ StatusCode GaudiSequencer::initialize() {
   }
 
   //== Initialize the algorithms
-  for (auto  itE = m_entries.begin(); m_entries.end() != itE; itE++ ) {
+  for (auto&  entry : m_entries ) {
     if ( m_measureTime ) {
-      itE->setTimer( m_timerTool->addTimer( itE->algorithm()->name() ) );
+      entry.setTimer( m_timerTool->addTimer( entry.algorithm()->name() ) );
     }
 
-    status = itE->algorithm()->sysInitialize();
+    status = entry.algorithm()->sysInitialize();
     if ( !status.isSuccess() ) {
-      return Error( "Can not initialize " + itE->algorithm()->name(),
+      return Error( "Can not initialize " + entry.algorithm()->name(),
                     status );
     }
   }
@@ -88,13 +145,13 @@ StatusCode GaudiSequencer::execute() {
                             //  for AND, result will be true, unless (at least) one is false
                             //    also see comment below ....
 
-  for (auto  itE = m_entries.begin(); m_entries.end() != itE; ++itE ) {
-    Algorithm* myAlg = itE->algorithm();
+  for (auto&  entry : m_entries) {
+    Algorithm* myAlg = entry.algorithm();
     if ( ! myAlg->isEnabled() ) continue;
     if ( ! myAlg->isExecuted() ) {
-      if ( m_measureTime ) m_timerTool->start( itE->timer() );
+      if ( m_measureTime ) m_timerTool->start( entry.timer() );
       result = myAlg->sysExecute();
-      if ( m_measureTime ) m_timerTool->stop( itE->timer() );
+      if ( m_measureTime ) m_timerTool->stop( entry.timer() );
       myAlg->setExecuted( true );
       if ( ! result.isSuccess() ) break;  //== Abort and return bad status
     }
@@ -104,7 +161,7 @@ StatusCode GaudiSequencer::execute() {
       if (msgLevel(MSG::VERBOSE))
         verbose() << "Algorithm " << myAlg->name() << " returned filter passed "
                   << (passed ? "true" : "false") << endmsg;
-      if ( itE->reverse() ) passed = !passed;
+      if ( entry.reverse() ) passed = !passed;
 
 
       //== indicate our own result. For OR, exit as soon as true.
@@ -156,7 +213,6 @@ StatusCode GaudiSequencer::finalize() {
 StatusCode GaudiSequencer::beginRun ( ) {
 
   if ( !isEnabled() ) return StatusCode::SUCCESS;
-
   if (msgLevel(MSG::DEBUG)) debug() << "==> beginRun" << endmsg;
   return StatusCode::SUCCESS;
 }
@@ -167,7 +223,6 @@ StatusCode GaudiSequencer::beginRun ( ) {
 StatusCode GaudiSequencer::endRun ( ) {
 
   if ( !isEnabled() ) return StatusCode::SUCCESS;
-
   if (msgLevel(MSG::DEBUG)) debug() << "==> endRun" << endmsg;
   return StatusCode::SUCCESS;
 }
@@ -175,12 +230,6 @@ StatusCode GaudiSequencer::endRun ( ) {
 //=========================================================================
 //  Decode the input names and fills the m_algs vector.
 //=========================================================================
-#ifdef __ICC
-// disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
-//   The comparison are meant
-#pragma warning(push)
-#pragma warning(disable:1572)
-#endif
 StatusCode GaudiSequencer::decodeNames( )  {
 
   StatusCode final = StatusCode::SUCCESS;
@@ -188,16 +237,11 @@ StatusCode GaudiSequencer::decodeNames( )  {
 
   //== Get the "Context" option if in the file...
   IJobOptionsSvc* jos = svc<IJobOptionsSvc>( "JobOptionsSvc" );
-  bool addedContext = false;  //= Have we added the context ?
-  bool addedRootInTES = false;  //= Have we added the rootInTES ?
-  bool addedGlobalTimeOffset = false;  //= Have we added the globalTimeOffset ?
-
 
   //= Get the Application manager, to see if algorithm exist
   IAlgManager* appMgr = svc<IAlgManager>("ApplicationMgr");
-  const std::vector<std::string>& nameVector = m_names.value();
-  for (auto  it = nameVector.begin(); nameVector.end() != it; it++ ) {
-    const Gaudi::Utils::TypeNameString typeName(*it);
+  for (const auto& item : m_names.value() ) {
+    const Gaudi::Utils::TypeNameString typeName(item);
     const std::string &theName = typeName.name();
     const std::string &theType = typeName.type();
 
@@ -205,55 +249,17 @@ StatusCode GaudiSequencer::decodeNames( )  {
     StatusCode result = StatusCode::SUCCESS;
     SmartIF<IAlgorithm> myIAlg = appMgr->algorithm(typeName, false); // do not create it now
     if ( !myIAlg.isValid() ) {
-      //== Set the Context if not in the jobOptions list
-      if ( ""  != context() ||
-           ""  != rootInTES() ||
-           0.0 != globalTimeOffset() ) {
-        bool foundContext = false;
-        bool foundRootInTES = false;
-        bool foundGlobalTimeOffset = false;
-        const auto* properties = jos->getProperties( theName );
-        if ( properties ) {
-          // Iterate over the list to set the options
-          for ( auto itProp = properties->begin();
-               itProp != properties->end();
-               itProp++ )   {
-            const StringProperty* sp = dynamic_cast<const StringProperty*>(*itProp);
-            if ( sp )    {
-              if ( "Context" == (*itProp)->name() ) {
-                foundContext = true;
-              }
-              if ( "RootInTES" == (*itProp)->name() ) {
-                foundRootInTES = true;
-              }
-              if ( "GlobalTimeOffset" == (*itProp)->name() ) {
-                foundGlobalTimeOffset = true;
-              }
-            }
-          }
-        }
-        if ( !foundContext && "" != context() ) {
-          StringProperty contextProperty( "Context", context() );
-          jos->addPropertyToCatalogue( theName, contextProperty ).ignore();
-          addedContext = true;
-        }
-        if ( !foundRootInTES && "" != rootInTES() ) {
-          StringProperty rootInTESProperty( "RootInTES", rootInTES() );
-          jos->addPropertyToCatalogue( theName, rootInTESProperty ).ignore();
-          addedRootInTES = true;
-        }
-        if ( !foundGlobalTimeOffset && 0.0 != globalTimeOffset() ) {
-          DoubleProperty globalTimeOffsetProperty( "GlobalTimeOffset", globalTimeOffset() );
-          jos->addPropertyToCatalogue( theName, globalTimeOffsetProperty ).ignore();
-          addedGlobalTimeOffset = true;
-        }
-      }
-
+      // ensure some magic properties are set while we create the subalgorithm so 
+      // that it effectively inherites 'our' settings -- if they have non-default
+      // values...
+      populate_JobOptionsSvc_t populate_guard{ theName, jos,
+           std::forward_as_tuple( "Context",          context() ),
+           std::forward_as_tuple( "RootInTES",        rootInTES() ),
+           std::forward_as_tuple( "GlobalTimeOffset", globalTimeOffset() )
+      };
       Algorithm *myAlg = nullptr;
       result = createSubAlgorithm( theType, theName, myAlg );
-      // (MCl) this should prevent bug #35199... even if I didn't manage to
-      // reproduce it with a simple test.
-      if (result.isSuccess()) myIAlg = myAlg;
+      myIAlg = myAlg; // ensure that myIAlg.isValid() from here onwards!
     } else {
       Algorithm *myAlg = dynamic_cast<Algorithm*>(myIAlg.get());
       if (myAlg) {
@@ -261,20 +267,6 @@ StatusCode GaudiSequencer::decodeNames( )  {
         // when the algorithm is not created, the ref count is short by one, so we have to fix it.
         myAlg->addRef();
       }
-    }
-
-    //== Remove the property, in case this is not a GaudiAlgorithm...
-    if ( addedContext ) {
-      jos->removePropertyFromCatalogue( theName, "Context" ).ignore();
-      addedContext = false;
-    }
-    if ( addedRootInTES ) {
-      jos->removePropertyFromCatalogue( theName, "RootInTES" ).ignore();
-      addedRootInTES = false;
-    }
-    if ( addedGlobalTimeOffset ) {
-      jos->removePropertyFromCatalogue( theName, "GlobalTimeOffset" ).ignore();
-      addedGlobalTimeOffset = false;
     }
 
     // propagate the sub-algorithm into own state.
@@ -304,7 +296,7 @@ StatusCode GaudiSequencer::decodeNames( )  {
       Algorithm*  myAlg = dynamic_cast<Algorithm*>(myIAlg.get());
       if (myAlg) {
         // Note: The reference counting is kept by the system of sub-algorithms
-        m_entries.push_back( AlgorithmEntry( myAlg ) );
+        m_entries.emplace_back( myAlg );
         if (msgLevel(MSG::DEBUG)) debug () << "Added algorithm " << theName << endmsg;
       } else {
         warning() << theName << " is not an Algorithm - failed dynamic_cast"
@@ -317,7 +309,6 @@ StatusCode GaudiSequencer::decodeNames( )  {
     }
 
   }
-
   release(appMgr).ignore();
   release(jos).ignore();
 
@@ -326,7 +317,7 @@ StatusCode GaudiSequencer::decodeNames( )  {
   if ( m_modeOR ) msg << "OR ";
   msg << "Member list: ";
   for (auto itE = m_entries.begin(); m_entries.end() != itE; itE++ ) {
-    Algorithm* myAlg = (*itE).algorithm();
+    Algorithm* myAlg = itE->algorithm();
     std::string myAlgType = System::typeinfoName( typeid( *myAlg) ) ;
     if ( myAlg->name() == myAlgType ) {
       msg << myAlg->name();
@@ -335,18 +326,14 @@ StatusCode GaudiSequencer::decodeNames( )  {
     }
     if ( itE+1 != m_entries.end() ) msg << ", ";
   }
-  if ( "" != context() ) msg << ", with context '" << context() << "'";
-  if ( "" != rootInTES() ) msg << ", with rootInTES '" << rootInTES() << "'";
-  if ( 0. != globalTimeOffset() ) msg << ", with globalTimeOffset " << globalTimeOffset();
+  if ( !isDefault(context())  ) msg << ", with context '" << context() << "'";
+  if ( !isDefault(rootInTES()) ) msg << ", with rootInTES '" << rootInTES() << "'";
+  if ( !isDefault(globalTimeOffset()) ) msg << ", with globalTimeOffset " << globalTimeOffset();
   msg << endmsg;
 
   return final;
 
 }
-#ifdef __ICC
-// re-enable icc remark #1572
-#pragma warning(pop)
-#endif
 
 //=========================================================================
 //  Interface for the Property manager

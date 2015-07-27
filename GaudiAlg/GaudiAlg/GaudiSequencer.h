@@ -29,7 +29,7 @@ public:
   /// Standard constructor
   GaudiSequencer( const std::string& name, ISvcLocator* pSvcLocator );
 
-  ~GaudiSequencer( ) override; ///< Destructor
+  ~GaudiSequencer( ) override = default; ///< Destructor
 
   StatusCode initialize() override;    ///< Algorithm initialization
   StatusCode execute   () override;    ///< Algorithm execution
@@ -81,7 +81,7 @@ private:
   bool m_isInitialized;                  ///< Indicate that we are ready
   bool m_measureTime;                    ///< Flag to measure time
   bool m_returnOK;                       ///< Forces the sequencer to return a good status
-  ISequencerTimerTool* m_timerTool;      ///< Pointer to the timer tool
+  ISequencerTimerTool* m_timerTool = nullptr;      ///< Pointer to the timer tool
   int  m_timer;                          ///< Timer number for the sequencer
 };
 #endif // GAUDISEQUENCER_H
