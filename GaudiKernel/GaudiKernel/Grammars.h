@@ -28,7 +28,6 @@
 #include <boost/spirit.hpp>
 #include <boost/spirit/phoenix.hpp>
 #endif
-#include <boost/bind.hpp>
 
 // ============================================================================
 /** @file
@@ -284,7 +283,7 @@ namespace Gaudi
                             (anychar_p-'\'') ))
                 [self.val = construct_<std::string>
                  (arg1,arg2)]>>
-                '\'')])[boost::bind(&StringGrammar::matchString,&self)];
+                '\'')])[std::bind(&StringGrammar::matchString,&self)];
           }
           rule<ScannerT> const& start() const { return string_literal; }
           rule<ScannerT> string_literal;
@@ -387,9 +386,9 @@ namespace Gaudi
           para
             = (
                str_p("(")
-               >> (grkey[boost::bind(&PairGrammar::matchFirst,&self,_1)])
+               >> (grkey[std::bind(&PairGrammar::matchFirst,&self,std::placeholders::_1)])
                >> self.delim().c_str()
-               >> (grvalue[boost::bind(&PairGrammar::matchSecond,&self,_1)])
+               >> (grvalue[std::bind(&PairGrammar::matchSecond,&self,std::placeholders::_1)])
                >> str_p(")")
                ) ;
         }

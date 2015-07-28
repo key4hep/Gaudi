@@ -17,9 +17,6 @@
 #include "GaudiKernel/IIoComponentMgr.h"
 #include "GaudiKernel/IFileMgr.h"
 
-#include "boost/bind.hpp"
-
-
 #include "TROOT.h"
 #include "TFile.h"
 #include "TDirectory.h"
@@ -147,13 +144,13 @@ THistSvc::initialize() {
 
   // Register open/close callback actions
 
-  Io::bfcn_action_t boa = boost::bind(&THistSvc::rootOpenAction, this, _1,_2);
+  Io::bfcn_action_t boa = std::bind(&THistSvc::rootOpenAction, this, std::placeholders::_1,std::placeholders::_2);
   if (p_fileMgr->regAction(boa, Io::OPEN, Io::ROOT).isFailure()) {
     m_log << MSG::ERROR
 	  << "unable to register ROOT file open action with FileMgr"
 	  << endmsg;
   }
-  Io::bfcn_action_t bea = boost::bind(&THistSvc::rootOpenErrAction, this, _1,_2);
+  Io::bfcn_action_t bea = std::bind(&THistSvc::rootOpenErrAction, this, std::placeholders::_1,std::placeholders::_2);
   if (p_fileMgr->regAction(bea, Io::OPEN_ERR, Io::ROOT).isFailure()) {
     m_log << MSG::ERROR
 	  << "unable to register ROOT file open Error action with FileMgr"

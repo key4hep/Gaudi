@@ -8,7 +8,6 @@
 
 #include "RootFileHandler.h"
 #include "POSIXFileHandler.h"
-#include "boost/bind.hpp"
 #include "boost/function.hpp"
 
 #define ON_DEBUG if (UNLIKELY(outputLevel() <= MSG::DEBUG))
