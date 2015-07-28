@@ -1,8 +1,4 @@
 // ============================================================================
-// Boost:
-// ============================================================================
-#include <boost/foreach.hpp>
-// ============================================================================
 // Local:
 // ============================================================================
 #include "JobOptionsSvc.h"
@@ -154,7 +150,7 @@ void JobOptionsSvc::dump (const std::string& file,
 }
 
 void JobOptionsSvc::fillServiceCatalog(const gp::Catalog& catalog) {
-  BOOST_FOREACH(const gp::Catalog::value_type& client, catalog) {
+  for (const auto&  client : catalog) {
     for (gp::Catalog::CatalogSet::mapped_type::const_iterator current
           = client.second.begin(); current != client.second.end();
                                                                   ++current) {

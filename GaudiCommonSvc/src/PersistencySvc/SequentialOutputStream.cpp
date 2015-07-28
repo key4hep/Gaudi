@@ -1,7 +1,6 @@
 // boost
 #include <boost/numeric/conversion/bounds.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
 
 // Framework include files

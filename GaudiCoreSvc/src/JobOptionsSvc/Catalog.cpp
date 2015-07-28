@@ -3,7 +3,6 @@
 // ============================================================================
 // Boost:
 // ============================================================================
-#include <boost/foreach.hpp>
 #include <boost/format.hpp>
 // ============================================================================
 // Namesapce aliases:
@@ -12,7 +11,7 @@ namespace gp = Gaudi::Parsers;
 // ============================================================================
 std::vector<std::string> gp::Catalog::ClientNames() const {
     std::vector<std::string> result;
-    BOOST_FOREACH(const CatalogSet::value_type& prop, catalog_) {
+    for (const auto& prop : catalog_) {
         result.push_back(prop.first);
     }
     return result;
@@ -47,7 +46,7 @@ gp::Property* gp::Catalog::Find(const std::string& client,
 // ============================================================================
 std::string gp::Catalog::ToString() const {
   std::string result;
-  BOOST_FOREACH(const CatalogSet::value_type& client, catalog_) {
+  for (const auto& client : catalog_) {
     for (CatalogSet::mapped_type::const_iterator current = client.second.begin();
         current != client.second.end(); ++current) {
       result += current->ToString()+"\n";
@@ -67,7 +66,7 @@ std::ostream& Gaudi::Parsers::Catalog::fillStream ( std::ostream& o ) const
   size_t nComponents = 0 ;
   size_t nProperties = 0 ;
 
-  BOOST_FOREACH(const CatalogSet::value_type& client, catalog_)   {
+  for (const auto& client : catalog_)   {
     o << boost::format("// Properties of '%1%' %|43t|# = %2%" )
         % client.first % client.second.size() << std::endl ;
         ++nComponents ;

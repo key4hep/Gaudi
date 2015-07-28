@@ -5,7 +5,6 @@
 // ============================================================================
 // BOOST:
 // ============================================================================
-#include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/format.hpp>
 // ============================================================================
@@ -32,7 +31,7 @@ static bool IncludeNode(gp::Node* node,
             messages, &include_root);
     if (status) {
         node->value = include_root.value;  // Save absolute file path
-        BOOST_FOREACH(const gp::Node& child, include_root.children) {
+        for(const auto& child : include_root.children) {
           node->children.push_back(child);
         }
     } else {
@@ -49,7 +48,7 @@ static bool UnitsNode(gp::Node* node,
             included, messages, &units_root);
     if (status) {
         node->value = units_root.value;  // Save absolute file path
-        BOOST_FOREACH(const gp::Node& child, units_root.children) {
+        for(const auto& child : units_root.children) {
           node->children.push_back(child);
         }
     } else {
@@ -120,7 +119,7 @@ static void GetPropertyValue(const gp::Node* node,
     // ------------------------------------------------------------------------
     case gp::Node::kVector: {
       std::vector<std::string> result;
-      BOOST_FOREACH(const gp::Node& child, node->children) {
+      for(const auto& child : node->children) {
         gp::PropertyValue::ScopedPtr vvalue;
         GetPropertyValue(&child, vvalue, catalog, units);
         result.push_back(vvalue->ToString());
@@ -131,7 +130,7 @@ static void GetPropertyValue(const gp::Node* node,
     // ------------------------------------------------------------------------
     case gp::Node::kMap: {
       std::map<std::string, std::string> result;
-      BOOST_FOREACH(const gp::Node& child, node->children) {
+      for(const auto& child : node->children) {
         gp::PropertyValue::ScopedPtr kvalue;
         gp::PropertyValue::ScopedPtr vvalue;
         GetPropertyValue(&child.children[0], kvalue, catalog, units);
@@ -400,7 +399,7 @@ static bool Analyze(gp::Node* node,
     if (result) result = local_result;
 
     if (!skip_childs && (next_root!=NULL)) {
-      BOOST_FOREACH(gp::Node& child, next_root->children) {
+      for(auto& child : next_root->children) {
         local_result =
             Analyze(&child, search_path, included, messages, catalog, units,
                 pragma);
@@ -412,7 +411,7 @@ static bool Analyze(gp::Node* node,
 
 bool Unreference(gp::Catalog& catalog, gp::Messages* messages) {
   bool unreference_result = true;
-  BOOST_FOREACH(gp::Catalog::value_type& client, catalog) {
+  for(auto& client : catalog) {
     for (gp::Catalog::CatalogSet::mapped_type::iterator current
         = client.second.begin(); current != client.second.end();
         ++current) {
