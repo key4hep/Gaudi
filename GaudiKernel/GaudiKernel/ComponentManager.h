@@ -3,7 +3,6 @@
 
 #include "GaudiKernel/IComponentManager.h"
 #include "GaudiKernel/CommonMessaging.h"
-#include "GaudiKernel/HashMap.h"
 
 /** @class ComponentManager ComponentManager.h
  *

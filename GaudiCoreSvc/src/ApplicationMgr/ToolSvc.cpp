@@ -11,12 +11,6 @@
 #include <map>
 #include <string>
 #include <cassert>
-#ifdef __ICC
-// disable icc remark #177: declared but never referenced
-// TODO: Remove. Problem with boost::lambda
-#pragma warning(disable:177)
-#endif
-#include "boost/lambda/bind.hpp"
 
 #define ON_DEBUG if (UNLIKELY(outputLevel() <= MSG::DEBUG))
 #define ON_VERBOSE if (UNLIKELY(outputLevel() <= MSG::VERBOSE))
@@ -24,8 +18,6 @@
 // Instantiation of a static factory class used by clients to create
 //  instances of this service
 DECLARE_COMPONENT(ToolSvc)
-
-namespace bl = boost::lambda;
 
 //------------------------------------------------------------------------------
 ToolSvc::ToolSvc( const std::string& name, ISvcLocator* svc )
@@ -98,8 +90,8 @@ StatusCode ToolSvc::finalize()
   ON_DEBUG {
     MsgStream &log = debug();
     log << "  Tool List : ";
-    for ( ListTools::const_iterator iTool = m_instancesTools.begin();
-        iTool != m_instancesTools.end(); ++iTool ) {
+    for ( auto iTool = m_instancesTools.cbegin();
+        iTool != m_instancesTools.cend(); ++iTool ) {
       log << (*iTool)->name() << ":" << refCountTool( *iTool ) << " ";
     }
     log << endmsg;
@@ -358,8 +350,8 @@ StatusCode ToolSvc::retrieve ( const std::string& tooltype ,
   if (!m_observers.empty()) {
      std::for_each( m_observers.begin(),
                     m_observers.end(),
-                    bl::bind(&IToolSvc::Observer::onRetrieve,
-                             bl::_1,
+                    std::bind(&IToolSvc::Observer::onRetrieve,
+			      std::placeholders::_1,
                              itool));
   }
 
@@ -621,8 +613,8 @@ StatusCode ToolSvc::create(const std::string& tooltype,
   if (!m_observers.empty()) {
       std::for_each( m_observers.begin(),
                      m_observers.end(),
-                     bl::bind(&IToolSvc::Observer::onCreate,
-                              bl::_1,
+                     std::bind(&IToolSvc::Observer::onCreate,
+                              std::placeholders::_1,
                               tool));
   }
   // TODO: replace by generic callback
