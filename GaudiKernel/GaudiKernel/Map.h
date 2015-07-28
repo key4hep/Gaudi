@@ -246,31 +246,26 @@ namespace GaudiUtils
      */
     inline const result_type & at ( const argument_type &key ) const
     {
-      auto  it = m_map.find ( key ) ;
-      if ( it == m_map.end() ) { this->throw_out_of_range_exception () ; }
-      return it->second ;
+      return m_map.at(key);
     }
     // ========================================================================
     /// Merge two maps.
     inline Map& merge ( const map_type& other )
     {
-      for ( auto it = other.begin() ; other.end() != it ; ++it )
-      { (*this)[it->first] = it->second ; }
+      m_map.insert( std::begin(other), std::end(other) );
       return *this;
     }
     /// Merge two maps.
     inline Map& merge ( const Map& other )
     {
-      for ( auto  it = other.begin() ; other.end() != it ; ++it )
-      { (*this)[it->first] = it->second ; }
+      m_map.insert( std::begin(other), std::end(other) );
       return *this;
     }
     /// Merge two maps.
     template <class K1,class K2, class K3>
     inline Map& merge ( const Map<K1,K2,K3>& other )
     {
-      for ( auto it = other.begin() ; other.end() != it ; ++it )
-      { (*this)[it->first] = it->second ; }
+      m_map.insert( std::begin(other), std::end(other) );
       return *this;
     }
     // update the key

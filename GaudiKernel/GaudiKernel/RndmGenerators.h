@@ -40,9 +40,7 @@ namespace Rndm   {
     /// Identifier for factory
     static const InterfaceID& typeID()        {   return IID_IRndmGauss; }
     /// Clone parameters
-    virtual IRndmGen::Param* clone() const {
-      return new Gauss(m_mean, m_sigma);
-    }
+    Gauss* clone() const override { return new Gauss(m_mean, m_sigma); }
   };
 
   /** Parameters for the Gauss random number generation
@@ -62,7 +60,7 @@ namespace Rndm   {
     /// Identifier for factory
     static const InterfaceID& typeID()     { return IID_IRndmExponential; }
     /// Clone parameters
-    virtual IRndmGen::Param* clone() const { return new Exponential(m_mean); }
+    IRndmGen::Param* clone() const override { return new Exponential(m_mean); }
   };
 
   /** Parameters for the Chi2 distributed random number generation
@@ -82,7 +80,7 @@ namespace Rndm   {
     /// Identifier for factory
     static const InterfaceID& typeID()        { return IID_IRndmChi2; }
     /// Clone parameters
-    virtual IRndmGen::Param* clone()  const   { return new Chi2(m_nDOF); }
+    Chi2* clone()  const override   { return new Chi2(m_nDOF); }
   };
 
   /** Parameters for the BreitWigner distributed random number generation
@@ -105,9 +103,7 @@ namespace Rndm   {
     /// Identifier for factory
     static const InterfaceID& typeID()        { return IID_IRndmBreitWigner;  }
     /// Clone parameters
-    virtual IRndmGen::Param* clone()  const   {
-      return new BreitWigner(m_mean, m_gamma);
-    }
+    BreitWigner* clone()  const  override  { return new BreitWigner(m_mean, m_gamma); }
   };
 
   /** Parameters for the Landau distributed random number generation
@@ -130,9 +126,7 @@ namespace Rndm   {
     /// Identifier for factory
     static const InterfaceID& typeID()        { return IID_IRndmLandau;       }
     /// Clone parameters
-    virtual IRndmGen::Param* clone() const    {
-      return new Landau(m_mean, m_sigma);
-    }
+    Landau* clone() const  override   { return new Landau(m_mean, m_sigma); }
   };
 
   /** Parameters for the BreitWigner distributed random number generation
@@ -161,9 +155,7 @@ namespace Rndm   {
     /// Identifier for factory
     static const InterfaceID& typeID()        { return IID_IRndmBreitWignerCutOff;}
     /// Clone parameters
-    virtual IRndmGen::Param* clone() const {
-      return new BreitWignerCutOff(m_mean, m_gamma, m_cut);
-    }
+    BreitWignerCutOff* clone() const  override{ return new BreitWignerCutOff(m_mean, m_gamma, m_cut); }
   };
 
   /** Parameters for the StudentT distributed random number generation
@@ -183,7 +175,7 @@ namespace Rndm   {
     /// Identifier for factory
     static const InterfaceID& typeID()        { return IID_IRndmStudentT;     }
     /// Clone parameters
-    virtual IRndmGen::Param* clone()  const   { return new StudentT(m_aValue);}
+    StudentT* clone()  const override   { return new StudentT(m_aValue);}
   };
 
   /** Parameters for the Gamma distributed  random number generation
@@ -208,9 +200,7 @@ namespace Rndm   {
     /// Identifier for factory
     static const InterfaceID& typeID()        { return IID_IRndmGamma;        }
     /// Clone parameters
-    virtual IRndmGen::Param* clone()  const   {
-      return new Gamma(m_kValue, m_lambda);
-    }
+    Gamma* clone() const override     { return new Gamma(m_kValue, m_lambda); }
   };
 
   /** Parameters for the Poisson distributed random number generation with
@@ -231,7 +221,7 @@ namespace Rndm   {
     /// Identifier for factory
     static const InterfaceID& typeID()        { return IID_IRndmPoisson;      }
     /// Clone parameters
-    virtual IRndmGen::Param* clone()  const   { return new Poisson(m_mean);   }
+    Poisson* clone() const override           { return new Poisson(m_mean);   }
   };
 
   /** Parameters for the Binomial distributed random number generation.
@@ -256,9 +246,7 @@ namespace Rndm   {
     /// Identifier for factory
     static const InterfaceID& typeID()        { return IID_IRndmBinomial;     }
     /// Clone parameters
-    virtual IRndmGen::Param* clone()  const   {
-      return new Binomial(m_nEvent, m_probability);
-    }
+    Binomial* clone() const override { return new Binomial(m_nEvent, m_probability); }
   };
 
   /** Parameters for the flat random number generation within boundaries
@@ -283,9 +271,7 @@ namespace Rndm   {
     /// Identifier for factory
     static const InterfaceID& typeID()        { return IID_IRndmFlat;         }
     /// Clone parameters
-    virtual IRndmGen::Param* clone()  const   {
-      return new Flat(m_minimum, m_maximum);
-    }
+    Flat* clone()  const override  { return new Flat(m_minimum, m_maximum); }
   };
 
   /** Parameters for the bit value generation: returns values 0 and 1
@@ -299,7 +285,7 @@ namespace Rndm   {
     /// Identifier for factory
     static const InterfaceID& typeID()        { return IID_IRndmBit; }
     /// Clone parameters
-    virtual IRndmGen::Param* clone()  const   { return new Bit(); }
+    Bit* clone() const override   { return new Bit(); }
   };
 
   /** Generate a random number Generator following generally distributed random
@@ -339,9 +325,7 @@ namespace Rndm   {
     /// Identifier for factory
     static const InterfaceID& typeID()        { return IID_IRndmDefinedPdf;   }
     /// Clone parameters
-    virtual IRndmGen::Param* clone()  const   {
-      return new DefinedPdf(m_pdf,m_interpolation);
-    }
+    DefinedPdf* clone()  const override { return new DefinedPdf(m_pdf,m_interpolation); }
   };
 
   /** Parameters for the Gaussian tail number generation
@@ -365,9 +349,7 @@ namespace Rndm   {
     /// Identifier for factory
     static const InterfaceID& typeID() { return IID_IRndmGaussianTail; }
     /// Clone parameters
-    virtual IRndmGen::Param* clone() const {
-      return new GaussianTail(m_cut, m_sigma);
-    }
+    GaussianTail* clone() const override { return new GaussianTail(m_cut, m_sigma); }
   };
 
 

@@ -57,8 +57,8 @@ public:
   // Assignment Operator - compiler generated default is ok
 
   // Accessor members (const)
-  virtual bool isValid
-  ( const typename Gaudi::Utils::PropertyTypeTraits<T>::CVal /* val */ ) const
+  bool isValid
+  ( const typename Gaudi::Utils::PropertyTypeTraits<T>::CVal /* val */ ) const override
   { return true; }
 
 };
@@ -80,7 +80,7 @@ public:
   ~BoundedVerifier() override = default;
 
   /// Check if the value is within bounds
-  bool isValid( const typename Gaudi::Utils::PropertyTypeTraits<T>::CVal value ) const
+  bool isValid( const typename Gaudi::Utils::PropertyTypeTraits<T>::CVal value ) const override
   {
     return
       (( m_hasLowerBound && ( *value < m_lowerBound ) ) ? false : true ) &&

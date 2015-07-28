@@ -109,7 +109,7 @@ FileMgr::initialize() {
 
   // Super ugly hack to make sure we have the OutputLevel set first, so we
   // can see DEBUG printouts in update handlers.
-  IJobOptionsSvc* jos(0);
+  IJobOptionsSvc* jos = nullptr;
   if( serviceLocator()->service( "JobOptionsSvc", jos, true ).isSuccess() ) {
     const std::vector<const Property*> *props = jos->getProperties( name() );
 
@@ -602,9 +602,7 @@ FileMgr::close( Fd fd, const std::string& caller ) {
   FileAttr* fa = itr->second;
 
   // find how many times this file is open
-  pair<fileMap::const_iterator, fileMap::const_iterator> fitr =
-    m_files.equal_range(fa->name());
-
+  auto fitr = m_files.equal_range(fa->name());
   int i = std::count_if(fitr.first, fitr.second, [&](fileMap::const_reference f) { 
                         return f.second->fd()==fd; } ); 
 

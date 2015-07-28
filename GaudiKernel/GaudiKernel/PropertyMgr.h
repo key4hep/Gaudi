@@ -97,45 +97,45 @@ public:
   /** set the property form another property
    *  @see IProperty
    */
-  StatusCode setProperty(const Property& p);
+  StatusCode setProperty(const Property& p) override;
   // ==========================================================================
   /** set the property from the property formatted string
    *  @see IProperty
    */
-  StatusCode setProperty( const std::string& s );
+  StatusCode setProperty( const std::string& s ) override;
   // ==========================================================================
   /** set the property from name and the value
    *  @see IProperty
    */
-  StatusCode setProperty( const std::string& n, const std::string& v);
+  StatusCode setProperty( const std::string& n, const std::string& v) override;
   // ==========================================================================
   /** get the property
    *  @see IProperty
    */
-  StatusCode getProperty(Property* p) const;
+  StatusCode getProperty(Property* p) const override;
   // ==========================================================================
   /** get the property by name
    *  @see IProperty
    */
-  const Property& getProperty( const std::string& name) const;
+  const Property& getProperty( const std::string& name) const override;
   // ==========================================================================
   /** convert the property to the string
    *  @see IProperty
    */
-  StatusCode getProperty( const std::string& n, std::string& v ) const;
+  StatusCode getProperty( const std::string& n, std::string& v ) const override;
   // ==========================================================================
   /** get all properties
    *  @see IProperty
    */
-  const std::vector<Property*>& getProperties( ) const;
+  const std::vector<Property*>& getProperties( ) const override;
   // ==========================================================================
   /** Return true if we have a property with the given name.
    *  @see IProperty
    */
-  bool hasProperty(const std::string& name) const;
+  bool hasProperty(const std::string& name) const override;
   // ==========================================================================
   // IInterface implementation
-  StatusCode queryInterface(const InterfaceID& iid, void** pinterface);
+  StatusCode queryInterface(const InterfaceID& iid, void** pinterface) override;
   // ==========================================================================
 protected:
 

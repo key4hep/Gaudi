@@ -417,7 +417,7 @@ public:
   /// update the value of the property/check the verifier
   bool set( const TYPE& value ) ;
   /// implementation of PropertyWithValue::setValue
-  virtual bool setValue( const TYPE& value ) { return set( value ) ; }
+  bool setValue( const TYPE& value ) override { return set( value ) ; }
   /// templated assignment
   template <class OTHER,class OTHERVERIFIER>
   PropertyWithVerifier& operator=
@@ -531,7 +531,7 @@ public:
   /// virtual Destructor
   ~SimpleProperty() override;
   /// implementation of Property::clone
-  virtual SimpleProperty* clone() const ;
+  SimpleProperty* clone() const override;
   /// assignment form the value
   SimpleProperty& operator=( const TYPE& value ) ;
   /// assignment form the other property type

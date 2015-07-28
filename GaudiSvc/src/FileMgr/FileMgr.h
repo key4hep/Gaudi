@@ -154,7 +154,6 @@ private:
   fileMap m_files;
   std::map<IoTech, FileHdlr> m_handlers;
   std::map<Fd, FileAttr*> m_descriptors;
-  std::map<void*, FileAttr*> m_fptr;
   std::vector<std::unique_ptr<FileAttr>> m_attr;
 
   std::vector<FileAttr*> m_oldFiles;

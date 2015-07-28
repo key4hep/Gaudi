@@ -47,7 +47,6 @@
 // Boost
 // ============================================================================
 #include "boost/format.hpp"
-#include "boost/lexical_cast.hpp"
 // ============================================================================
 // Disable warning on windows
 #ifdef _WIN32

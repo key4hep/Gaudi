@@ -38,10 +38,10 @@ public:
   StatusCode configure() override {return StatusCode::SUCCESS;}
 
   /// Initialization (from CONFIGURED to INITIALIZED).
-  virtual StatusCode initialize() override {return StatusCode::SUCCESS;}
+  StatusCode initialize() override {return StatusCode::SUCCESS;}
 
   /// Start (from INITIALIZED to RUNNING).
-  virtual StatusCode start() override {return StatusCode::SUCCESS;}
+  StatusCode start() override {return StatusCode::SUCCESS;}
 
   /// Stop (from RUNNING to INITIALIZED).
   StatusCode stop() override {return StatusCode::SUCCESS;}

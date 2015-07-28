@@ -2,11 +2,10 @@
 
 #include "GaudiKernel/IMessageSvc.h"
 
-#include <stdexcept>
 #include <fstream>
 
 StreamLogger::StreamLogger(const std::string& file)
-    : m_ost{ new std::ofstream(file.c_str()), true }
+    : m_oost{ new std::ofstream(file.c_str()) }, m_ost{ m_oost.get() }
 {
   m_name = "file:" + file;
   if (!m_ost) {
@@ -23,7 +22,7 @@ StreamLogger::StreamLogger(IMessageSvc *svc, MSG::Level lev):
 
 StreamLogger::StreamLogger(std::ostream& ost)
 {
-  m_ost = std::unique_ptr<std::ostream,maybeDelete>( &ost, false );
+  m_ost = &ost;
   if (ost == std::cerr) {
     m_name = "STDERR";
   } else if ( ost == std::cout) {
