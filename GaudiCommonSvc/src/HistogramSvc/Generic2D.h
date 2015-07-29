@@ -40,9 +40,9 @@ namespace Gaudi {
     /// Destructor.
     ~Generic2D() override  = default;
     /// ROOT object implementation
-    TObject* representation() const                      { return m_rep.get();                       }
+    TObject* representation() const override             { return m_rep.get();                       }
     /// Adopt ROOT histogram representation
-    virtual void adoptRepresentation(TObject* rep);
+    void adoptRepresentation(TObject* rep) override;
     /// Get the title of the object
     virtual std::string title() const                    {  return m_annotation.value( "Title" );    }
     /// Set the title of the object
@@ -129,11 +129,11 @@ namespace Gaudi {
     /// Get the Histogram's dimension.
     virtual int  dimension() const  { return 2; }
     /// Print (ASCII) the histogram into the output stream
-    virtual std::ostream& print( std::ostream& s ) const;
+    std::ostream& print( std::ostream& s ) const override;
     /// Write (ASCII) the histogram table into the output stream
-    virtual std::ostream& write( std::ostream& s ) const;
+    std::ostream& write( std::ostream& s ) const override;
     /// Write (ASCII) the histogram table into a file
-    virtual int write( const char* file_name ) const;
+    int write( const char* file_name ) const override;
 
   protected:
     /// X axis member
@@ -288,11 +288,9 @@ namespace Gaudi {
   template <class INTERFACE, class IMPLEMENTATION>
   bool Generic2D<INTERFACE,IMPLEMENTATION>::add ( const INTERFACE & hist ) {
     const Base* p = dynamic_cast<const Base*>(&hist);
-    if ( p )  {
-      m_rep->Add(p->m_rep.get());
-      return true;
-    }
-    throw std::runtime_error("Cannot add profile histograms of different implementations.");
+    if ( !p ) throw std::runtime_error("Cannot add profile histograms of different implementations.");
+    m_rep->Add(p->m_rep.get());
+    return true;
   }
 
   template <class INTERFACE, class IMPLEMENTATION>

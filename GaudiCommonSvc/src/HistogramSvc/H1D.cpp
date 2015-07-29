@@ -16,21 +16,22 @@
 #include "GaudiKernel/ObjectFactory.h"
 
 std::pair<DataObject*,AIDA::IHistogram1D*> Gaudi::createH1D(const std::string& title,int nBins,double xlow, double xup)  {
-  Histogram1D* p = new Histogram1D(new TH1D(title.c_str(),title.c_str(),nBins,xlow,xup));
-  return std::pair<DataObject*,AIDA::IHistogram1D*>(p,p);
+  auto p = new Histogram1D(new TH1D(title.c_str(),title.c_str(),nBins,xlow,xup));
+  return { p, p };
 }
 
 std::pair<DataObject*,AIDA::IHistogram1D*> Gaudi::createH1D(const std::string& title, const Edges& e)  {
-  Histogram1D* p = new Histogram1D(new TH1D(title.c_str(),title.c_str(),e.size()-1,&e.front()));
-  return std::pair<DataObject*,AIDA::IHistogram1D*>(p,p);
+  auto p = new Histogram1D(new TH1D(title.c_str(),title.c_str(),e.size()-1,&e.front()));
+  return { p, p };
 }
 
 std::pair<DataObject*,AIDA::IHistogram1D*> Gaudi::createH1D(const AIDA::IHistogram1D& hist)  {
   TH1D *h = getRepresentation<AIDA::IHistogram1D,TH1D>(hist);
-  Histogram1D *n = h ? new Histogram1D(new TH1D(*h)) : 0;
-  return std::pair<DataObject*,AIDA::IHistogram1D*>(n,n);
+  auto n = ( h ? new Histogram1D(new TH1D(*h)) : nullptr );
+  return { n, n };
 }
 namespace Gaudi {
+
   template<> void *Generic1D<AIDA::IHistogram1D,TH1D>::cast(const std::string & className) const  {
     if (className == "AIDA::IHistogram1D")
       return const_cast<AIDA::IHistogram1D*>((AIDA::IHistogram1D*)this);
@@ -38,6 +39,7 @@ namespace Gaudi {
       return const_cast<AIDA::IHistogram*>((AIDA::IHistogram*)this);
     return nullptr;
   }
+
 
   template<> int Generic1D<AIDA::IHistogram1D,TH1D>::binEntries (int index) const  {
     if (binHeight(index)<=0) return 0;

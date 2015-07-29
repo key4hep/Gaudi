@@ -39,9 +39,9 @@ namespace Gaudi {
     /// Destructor.
     ~Generic3D() override = default;
     /// ROOT object implementation
-    TObject* representation() const                      { return m_rep.get();                       }
+    TObject* representation() const override             { return m_rep.get();                       }
     /// Adopt ROOT histogram representation
-    virtual void adoptRepresentation(TObject* rep);
+    void adoptRepresentation(TObject* rep) override;
 
     /// Get the Histogram's dimension.
     virtual int  dimension() const  { return 3; }
@@ -200,11 +200,11 @@ namespace Gaudi {
         binEntries(AIDA::IAxis::OVERFLOW_BIN, AIDA::IAxis::OVERFLOW_BIN,AIDA::IAxis::OVERFLOW_BIN);
     }
     /// Print (ASCII) the histogram into the output stream
-    virtual std::ostream& print( std::ostream& s ) const;
+    std::ostream& print( std::ostream& s ) const override;
     /// Write (ASCII) the histogram table into the output stream
-    virtual std::ostream& write( std::ostream& s ) const;
+    std::ostream& write( std::ostream& s ) const override;
     /// Write (ASCII) the histogram table into a file
-    virtual int write( const char* file_name ) const;
+    int write( const char* file_name ) const override;
 
   protected:
     Gaudi::Axis              m_xAxis;
