@@ -251,7 +251,7 @@ StatusCode
 EventCollectionSelector::createContext(Context*& refpCtxt) const
 {
   refpCtxt = 0;
-  std::auto_ptr<MyContextType> ctxt(new MyContextType());
+  std::unique_ptr<MyContextType> ctxt(new MyContextType());
   StatusCode status = connectCollection(ctxt.get());
   if( !status.isSuccess() )  {
     MsgStream log(msgSvc(), name());

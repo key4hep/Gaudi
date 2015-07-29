@@ -32,7 +32,7 @@ public:
   StatusCode finalize() override;
 
   /// @see IFileAccess::open
-  std::auto_ptr<std::istream> open(const std::string &url) override;
+  std::unique_ptr<std::istream> open(const std::string &url) override;
 
   /// @see IFileAccess::protocols
   const std::vector<std::string> &protocols() const override;

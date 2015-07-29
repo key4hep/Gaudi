@@ -79,7 +79,7 @@ StatusCode VFSSvc::finalize() {
   return Service::finalize();
 }
 //------------------------------------------------------------------------------
-std::auto_ptr<std::istream> VFSSvc::open(const std::string &url){
+std::unique_ptr<std::istream> VFSSvc::open(const std::string &url){
 
   // get the url prefix endpos
   auto pos = url.find("://");

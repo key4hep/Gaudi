@@ -125,7 +125,7 @@ RootStatCnv::saveDescription(const string&  path,
     TClass* cl = gROOT->GetClass("Gaudi::RootNTupleDescriptor",kTRUE);
     if ( cl ) {
       RootNTupleDescriptor* ptr;
-      auto_ptr<RootNTupleDescriptor> dsc(ptr=new RootNTupleDescriptor());
+      std::unique_ptr<RootNTupleDescriptor> dsc(ptr=new RootNTupleDescriptor());
       TBranch* b = con->getBranch("##Descriptors","GaudiStatisticsDescription",cl,ptr,512,0);
       if ( b ) {
         dsc->description = desc;
