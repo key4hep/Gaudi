@@ -8,9 +8,6 @@
 // ROOT
 #include "Compression.h"
 
-// boost
-#include "boost/lexical_cast.hpp"
-
 //-----------------------------------------------------------------------------
 // Implementation file for class : RootCompressionSettings
 //
@@ -41,7 +38,7 @@ RootCompressionSettings( const std::string & settings )
 
     // get compression level
     const std::string slev = m_compSettings.substr(idx+1);
-    const int         ilev = boost::lexical_cast<int>(slev);
+    const int         ilev = std::stoi(slev);
     
     // set the level
     m_level = ROOT::CompressionSettings(alg_code,ilev);

@@ -5,7 +5,6 @@
 // ============================================================================
 // BOOST:
 // ============================================================================
-#include <boost/lexical_cast.hpp>
 #include <boost/format.hpp>
 // ============================================================================
 #include "Analyzer.h"
@@ -91,9 +90,9 @@ static void GetPropertyValue(const gp::Node* node,
         double unit_value = 0;
         if (units->Find(unit_name, unit_value)) {
           // We have found a unit
-          double val = boost::lexical_cast<double>(node->value);
+          double val = std::stod(node->value);
           std::string store =
-              boost::lexical_cast<std::string>(val * unit_value);
+	    std::to_string(val * unit_value);
           value.reset(new gp::PropertyValue(store));
         }else {
           // Unit not found
@@ -269,9 +268,9 @@ static bool AssignNode(const gp::Node* node,
 static bool UnitNode(const gp::Node* node,
         gp::Messages* messages, gp::Units* units, bool is_print) {
   // --------------------------------------------------------------------------
-  double left  = boost::lexical_cast<double>(node->children[0].value);
+  double left  = std::stod(node->children[0].value);
   std::string name  = node->children[1].value;
-  double right  = boost::lexical_cast<double>(node->children[2].value);
+  double right  = std::stod(node->children[2].value);
   // --------------------------------------------------------------------------
   gp::Units::Container::mapped_type exists;
   if (units->Find(name, exists)) {

@@ -10,15 +10,6 @@
 // ============================================================================
 #include "GaudiAlg/GaudiAlg.h"
 // ============================================================================
-// Boots
-// ============================================================================
-#ifdef __ICC
-// disable icc remark #2259: non-pointer conversion from "X" to "Y" may lose significant bits
-//   coming from boost/lexical_cast.hpp
-#pragma warning(disable:2259)
-#endif
-#include "boost/lexical_cast.hpp"
-// ============================================================================
 
 /** @file
  *  Implementation file for functions from namespace GaudiAlg
@@ -35,5 +26,5 @@
  */
 // ============================================================================
 std::string fileLine( const int number ) 
-{ return boost::lexical_cast<std::string>( number ) ; }
+{ return std::to_string( number ) ; }
 // ============================================================================

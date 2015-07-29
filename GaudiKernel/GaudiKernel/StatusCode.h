@@ -6,11 +6,7 @@
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/IssueSeverity.h"
 
-#if defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L
 #include <memory>
-#else
-#include "boost/shared_ptr.hpp"
-#endif
 
 /**
  * @class StatusCode StatusCode.h GaudiKernel/StatusCode.h
@@ -41,11 +37,7 @@ public:
   StatusCode( unsigned long code, const IssueSeverity& sev ):
     d_code(code),m_checked(false), m_severity() {
     try { // ensure that we do not throw even if we cannot copy the severity
-#if (defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L) && ! defined(__GCCXML__)
       m_severity = std::make_shared<IssueSeverity>(sev);
-#else
-      m_severity = SeverityPtr(new IssueSeverity(sev));
-#endif
     }
     catch (...) {}
   }
@@ -176,15 +168,7 @@ protected:
   /// The status code.
   unsigned long   d_code;      ///< The status code
   mutable bool    m_checked;   ///< If the Status code has been checked
-#if defined(__GCCXML__)
-  // This is because GCCXML needs to see something that is not too in conflict with
-  // boost or std
-  typedef IssueSeverity* SeverityPtr;
-#elif defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L
   typedef std::shared_ptr<IssueSeverity> SeverityPtr;
-#else
-  typedef boost::shared_ptr<IssueSeverity> SeverityPtr;
-#endif
   SeverityPtr     m_severity;  ///< Pointer to a IssueSeverity
 
   static bool     s_checking;  ///< Global flag to control if StatusCode need to be checked

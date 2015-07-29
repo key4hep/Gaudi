@@ -1,7 +1,8 @@
+// standard headers
+#include <limits>
+
 // boost
-#include <boost/numeric/conversion/bounds.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/lexical_cast.hpp>
 
 // Framework include files
 #include "GaudiKernel/IRegistry.h"
@@ -18,8 +19,6 @@ DECLARE_COMPONENT( SequentialOutputStream )
 
 using namespace std;
 namespace bf = boost::filesystem;
-using boost::lexical_cast;
-using boost::bad_lexical_cast;
 
 //=============================================================================
 SequentialOutputStream::SequentialOutputStream( const string& name,
@@ -27,7 +26,7 @@ SequentialOutputStream::SequentialOutputStream( const string& name,
 : OutputStream( name, svc ), m_events( 0 ), m_iFile( 1 )
 {
    declareProperty( "EventsPerFile", m_eventsPerFile
-		    = boost::numeric::bounds< unsigned int>::highest() );
+		    = std::numeric_limits< unsigned int>::max() );
    declareProperty( "NumericFilename", m_numericFilename = false );
    declareProperty( "NumbersAdded", m_nNumbersAdded = 6 );
 }
@@ -82,8 +81,8 @@ void SequentialOutputStream::makeFilename()
    if ( m_numericFilename ) {
       if ( m_events == 0 ) {
          try {
-            m_iFile = lexical_cast< unsigned int >( stem );
-         } catch( const bad_lexical_cast& /* cast */ ) {
+	   m_iFile = std::stoul( stem );
+         } catch( const std::invalid_argument& /* cast */ ) {
             stringstream stream;
             stream << "Filename " << filename
                    << " is not a number, which was needed.";

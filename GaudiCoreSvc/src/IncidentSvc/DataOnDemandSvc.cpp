@@ -37,7 +37,6 @@
 #pragma warning(disable:2259)
 #endif
 #include "boost/format.hpp"
-#include "boost/lexical_cast.hpp"
 #include "GaudiKernel/Property.h"
 // ============================================================================
 // Constructors and Destructor
@@ -883,7 +882,7 @@ void DataOnDemandSvc::dump
     //
     std::string val ;
     if ( mode ) { val = ( 0 == l.algorithm ) ? "F" : "T" ; }
-    else { val = boost::lexical_cast<std::string>( l.num ) ; }
+    else { val = std::to_string( l.num ) ; }
     //
     _m[ no_prefix ( alg->first , m_prefix ) ] = std::make_pair ( nam , val ) ;
   }
@@ -907,7 +906,7 @@ void DataOnDemandSvc::dump
     if ( !mode && 0 == n.num ) { continue ; }
 
     if ( mode ) { val = ( 0 == n.clazz ) ? "F" : "T" ; }
-    else { val = boost::lexical_cast<std::string>( n.num ) ; }
+    else { val = std::to_string( n.num ) ; }
     //
     _m[ no_prefix ( node->first , m_prefix ) ] = std::make_pair ( nam , val ) ;
   }

@@ -6,7 +6,6 @@
 #include "GaudiKernel/IssueSeverity.h"
 #include "GaudiKernel/Property.h"
 #include "StreamLogger.h"
-#include "boost/function.hpp"
 #include <string>
 #include <vector>
 #include <map>
@@ -39,7 +38,7 @@ private:
   IssueSeverity::Level m_reportLevel, m_traceLevel;
 
   StreamLogger *m_logger[IssueSeverity::NUM_LEVELS];
-  boost::function<void (const std::string&)> m_log[IssueSeverity::NUM_LEVELS];
+  std::function<void (const std::string&)> m_log[IssueSeverity::NUM_LEVELS];
 
   std::map<MSG::Level, IssueSeverity::Level> m_msgSevMap;
   std::map<IssueSeverity::Level, MSG::Level> m_sevMsgMap;
