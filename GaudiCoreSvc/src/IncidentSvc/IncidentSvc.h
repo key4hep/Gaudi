@@ -17,10 +17,6 @@
 #include "GaudiKernel/HashMap.h"
 #include "GaudiKernel/ChronoEntity.h"
 // ============================================================================
-// Boost
-// ============================================================================
-#include "boost/thread/recursive_mutex.hpp"
-// ============================================================================
 /**
  * @class IncidentSvc
  * @brief Default implementation of the IIncidentSvc interface.
@@ -94,7 +90,7 @@ private:
   const std::string *m_currentIncidentType;
 
   /// Mutex to synchronize access to m_listenerMap
-  mutable boost::recursive_mutex m_listenerMapMutex;
+  mutable std::recursive_mutex m_listenerMapMutex;
 
   /// timer & it's lock
   mutable ChronoEntity m_timer     ;

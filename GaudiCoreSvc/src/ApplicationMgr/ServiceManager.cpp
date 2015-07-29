@@ -157,7 +157,7 @@ SmartIF<IService> &ServiceManager::service(const Gaudi::Utils::TypeNameString &t
   const std::string &name = typeName.name();
 
   // Acquire the RAII lock to avoid simultaneous attempts from different threads to initialize a service
-  boost::lock_guard<boost::recursive_mutex> lck(m_svcinitmutex);
+  std::lock_guard<std::recursive_mutex> lck(m_svcinitmutex);
 
   ListSvc::iterator it = find(name);
 

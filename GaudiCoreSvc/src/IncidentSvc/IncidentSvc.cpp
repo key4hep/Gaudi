@@ -56,7 +56,7 @@ IncidentSvc::IncidentSvc( const std::string& name, ISvcLocator* svc )
 // ============================================================================
 IncidentSvc::~IncidentSvc()
 {
-  boost::recursive_mutex::scoped_lock lock(m_listenerMapMutex);
+  std::unique_lock<std::recursive_mutex> lock(m_listenerMapMutex);
 
   for (ListenerMap::iterator i = m_listenerMap.begin();
        i != m_listenerMap.end();
@@ -108,7 +108,7 @@ void IncidentSvc::addListener
   long prio, bool rethrow, bool singleShot)
 {
 
-  boost::recursive_mutex::scoped_lock lock(m_listenerMapMutex);
+  std::unique_lock<std::recursive_mutex> lock(m_listenerMapMutex);
 
   std::string ltype;
   if( type == "" ) ltype = "ALL";
@@ -143,7 +143,7 @@ void IncidentSvc::removeListener
   const std::string& type )
 {
 
-  boost::recursive_mutex::scoped_lock lock(m_listenerMapMutex);
+  std::unique_lock<std::recursive_mutex> lock(m_listenerMapMutex);
 
   if( type == "") {
     // remove Listener from all the lists
@@ -212,7 +212,7 @@ void IncidentSvc::i_fireIncident
   const std::string& listenerType )
 {
 
-  boost::recursive_mutex::scoped_lock lock(m_listenerMapMutex);
+  std::unique_lock<std::recursive_mutex> lock(m_listenerMapMutex);
 
   // Special case: FailInputFile incident must set the application return code
   if (incident.type() == IncidentType::FailInputFile
@@ -300,7 +300,7 @@ IncidentSvc::getListeners(std::vector<IIncidentListener*>& lis,
 			  const std::string& type) const
 {
 
-  boost::recursive_mutex::scoped_lock lock(m_listenerMapMutex);
+  std::unique_lock<std::recursive_mutex> lock(m_listenerMapMutex);
 
   std::string ltype;
   if (type == "") { ltype = "ALL"; } else { ltype = type; }
