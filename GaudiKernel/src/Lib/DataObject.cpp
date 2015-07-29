@@ -13,19 +13,13 @@ static std::string _sDataObjectCppNotRegistered("NotRegistered");
 
 /// Standard Constructor
 DataObject::DataObject()
- : m_refCount(0),
-   m_version(0),
-   m_pRegistry(nullptr),
-   m_pLinkMgr{  LinkManager::newInstance() }
+  : m_pLinkMgr{  LinkManager::newInstance() }
 {
 }
 
 /// Standard Constructor
 DataObject::DataObject(const DataObject&)
- : m_refCount(0),
-   m_version(0),
-   m_pRegistry(nullptr),
-   m_pLinkMgr{  LinkManager::newInstance() }
+ : m_pLinkMgr{  LinkManager::newInstance() }
 {
 }
 
@@ -75,7 +69,7 @@ static DataObject**      s_currObj = &s_objPtr;
 
 static std::vector<DataObject**>& objectStack() {
   static std::unique_ptr<std::vector<DataObject**>> s_current{new std::vector<DataObject**>()};
-  return *(s_current.get());
+  return *s_current;
 }
 
 DataObject* Gaudi::getCurrentDataObject() {
@@ -87,7 +81,6 @@ void Gaudi::pushCurrentDataObject(DataObject** pobjAddr) {
   c.push_back(pobjAddr);
   s_currObj = pobjAddr ? pobjAddr : &s_objPtr;
 }
-
 
 void Gaudi::popCurrentDataObject() {
   static std::vector<DataObject**>& c = objectStack();

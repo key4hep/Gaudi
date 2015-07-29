@@ -31,11 +31,11 @@ static const CLID CLID_DataObject = 1;
 class GAUDI_API DataObject {
 private:
   /// Reference count
-  unsigned long       m_refCount;
+  unsigned long       m_refCount = 0;
   /// Version number
-  unsigned char       m_version;
+  unsigned char       m_version = 0;
   /// Pointer to the Registry Object
-  IRegistry*          m_pRegistry;
+  IRegistry*          m_pRegistry = nullptr;
   /// Store of symbolic links
   std::unique_ptr<LinkManager> m_pLinkMgr;
 
