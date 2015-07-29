@@ -14,6 +14,31 @@
 #include <iostream>
 #include <fstream>
 
+
+namespace {
+
+  template < typename Container, typename Iterator, typename Predicate >
+  void erase_if( Container& c, Iterator first, Iterator last, Predicate pred) {
+    while ( first!=last ) {
+      if ( pred(*first) ) first = c.erase(first);
+      else ++first;
+    }
+  }
+
+  template< typename Container, typename Predicate >
+  void erase_if( Container& c, Predicate pred ) {
+    return erase_if(c, std::begin(c), std::end(c), 
+                    std::forward<Predicate>(pred) );
+  }
+
+  template< typename Container, typename Iterator, typename Predicate >
+  void erase_if( Container& c, std::pair<Iterator,Iterator> range, Predicate pred ) {
+    return erase_if(c, std::move(range.first), std::move(range.second), 
+                    std::forward<Predicate>(pred) );
+  }
+
+}
+
 using namespace std;
 
 // Instantiation of a static factory class used by clients to create
@@ -612,19 +637,10 @@ void MessageSvc::eraseStream( int message_type )
 //
 
 void MessageSvc::eraseStream( int key, std::ostream* stream )   {
-  if ( stream )    {
-    bool changed = true;
-    while( changed ) {
-      changed = false;
-      auto first = m_streamMap.lower_bound( key );
-      auto last = m_streamMap.upper_bound( key );
-      auto i = std::find_if( first, last, 
-                             [&](StreamMap::const_reference j) { return j.second.second == stream; } );
-      if ( i != last ) {
-          m_streamMap.erase( i );
-          changed = true;
-      }
-    }
+  if ( stream ) {
+    erase_if( m_streamMap, m_streamMap.equal_range(key),
+              [&](StreamMap::const_reference j) 
+              { return j.second.second == stream; } );
   }
 }
 
@@ -636,17 +652,9 @@ void MessageSvc::eraseStream( int key, std::ostream* stream )   {
 //
 
 void MessageSvc::eraseStream( std::ostream* stream )    {
-  if ( stream )    {
-    bool changed = true;
-    while( changed ) {
-      changed = false;
-      auto i = std::find_if( m_streamMap.begin(), m_streamMap.end(),
-                             [&](StreamMap::const_reference j) { return j.second.second == stream; } );
-      if ( i != m_streamMap.end() ) {
-          m_streamMap.erase( i );
-          changed = true;
-      }
-    }
+  if ( stream ) {
+    erase_if( m_streamMap, [&](StreamMap::const_reference j) 
+              { return j.second.second == stream; } );
   }
 }
 
@@ -700,17 +708,8 @@ void MessageSvc::eraseMessage( const StatusCode& key, const Message& msg )
 {
   std::unique_lock<std::recursive_mutex> lock(m_messageMapMutex);
 
-  bool changed = true;
-  while( changed ) {
-    changed = false;
-    auto first = m_messageMap.lower_bound( key );
-    auto last = m_messageMap.upper_bound( key );
-    auto i = std::find_if( first, last, [&](MessageMap::const_reference j) { return j.second==msg; } );
-    if ( i!=last ) {
-        m_messageMap.erase( i );
-        changed = true;
-    }
-  }
+  erase_if( m_messageMap, m_messageMap.equal_range(key),
+            [&](const auto& j) { return j.second==msg; } ) ;
 }
 
 // ---------------------------------------------------------------------------
