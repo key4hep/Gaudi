@@ -440,8 +440,8 @@ namespace Gaudi
         definition(SelfT const &self)
         {
           inner =
-            !(gr[boost::bind(&VectorGrammar::matchItem,&self,_1)]
-              >> *(','>>gr[boost::bind(&VectorGrammar::matchItem,&self,_1)]));
+            !(gr[std::bind(&VectorGrammar::matchItem,&self,std::placeholders::_1)]
+              >> *(','>>gr[std::bind(&VectorGrammar::matchItem,&self,std::placeholders::_1)]));
           vec =
             '[' >> inner >> ']' |  // a'la python list
             '(' >> inner >> ')' |  // a'la python tuple
@@ -503,15 +503,15 @@ namespace Gaudi
             = ('{'>> inner_list >> '}') | ('['>>inner_list>>']');
           inner_list
             =
-            !( inner[boost::bind(&MapGrammar::matchItem,&self)]
+            !( inner[std::bind(&MapGrammar::matchItem,&self)]
                >> *( ch_p(',') >>
-                     inner[boost::bind(&MapGrammar::matchItem,&self)] )
+                     inner[std::bind(&MapGrammar::matchItem,&self)] )
                );
           inner
             =
-            grKey[boost ::bind(&MapGrammar::matchFirst,&self,_1)]
+            grKey[std::bind(&MapGrammar::matchFirst,&self,std::placeholders::_1)]
               >> ( ch_p('=') | ch_p(':'))
-              >> grValue[boost::bind(&MapGrammar::matchSecond,&self,_1)] ;
+              >> grValue[std::bind(&MapGrammar::matchSecond,&self,std::placeholders::_1)] ;
         }
         KeyGrammarT grKey;
         ValueGrammarT grValue;
