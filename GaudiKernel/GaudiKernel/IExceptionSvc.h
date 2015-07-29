@@ -45,7 +45,7 @@ public:
     const StatusCode&      s ) const = 0 ; ///< Handle errors
 protected :
   // virtual and protected destructor
-  virtual ~IExceptionSvc() ; ///< virtual and protected destructor
+  virtual ~IExceptionSvc() = default; ///< virtual and protected destructor
 } ;
 // ============================================================================
 
