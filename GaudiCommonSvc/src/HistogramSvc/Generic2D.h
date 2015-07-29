@@ -4,6 +4,7 @@
 #include "AIDA_visibility_hack.h"
 
 #include <stdexcept>
+#include <memory>
 #include "AIDA/IProfile2D.h"
 #include "GaudiKernel/HistogramBase.h"
 #include "Annotation.h"
@@ -31,15 +32,17 @@ namespace Gaudi {
   public:
     typedef Generic2D<INTERFACE,IMPLEMENTATION> Base;
 
-    Generic2D() : m_rep(0) {}
-
+    Generic2D() = default;
+  protected:
+    /// constructor
+    Generic2D(IMPLEMENTATION* p) : m_rep(p) { }
+ public:
     /// Destructor.
-    virtual ~Generic2D()   {  delete m_rep;    }
-
+    ~Generic2D() override  = default;
     /// ROOT object implementation
-    TObject* representation() const                      { return m_rep;                       }
+    TObject* representation() const override             { return m_rep.get();                       }
     /// Adopt ROOT histogram representation
-    virtual void adoptRepresentation(TObject* rep);
+    void adoptRepresentation(TObject* rep) override;
     /// Get the title of the object
     virtual std::string title() const                    {  return m_annotation.value( "Title" );    }
     /// Set the title of the object
@@ -126,11 +129,11 @@ namespace Gaudi {
     /// Get the Histogram's dimension.
     virtual int  dimension() const  { return 2; }
     /// Print (ASCII) the histogram into the output stream
-    virtual std::ostream& print( std::ostream& s ) const;
+    std::ostream& print( std::ostream& s ) const override;
     /// Write (ASCII) the histogram table into the output stream
-    virtual std::ostream& write( std::ostream& s ) const;
+    std::ostream& write( std::ostream& s ) const override;
     /// Write (ASCII) the histogram table into a file
-    virtual int write( const char* file_name ) const;
+    int write( const char* file_name ) const override;
 
   protected:
     /// X axis member
@@ -140,11 +143,11 @@ namespace Gaudi {
     /// Object annotations
     mutable AIDA::Annotation m_annotation;
     /// Reference to underlying implementation
-    IMPLEMENTATION*          m_rep;
+    std::unique_ptr<IMPLEMENTATION> m_rep;
     /// class type
     std::string              m_classType;
     /// cache sumEntries (allEntries)   when setting contents since Root can't compute by himself
-    int                      m_sumEntries;
+    int                      m_sumEntries = 0;
   };
 
   template <class INTERFACE, class IMPLEMENTATION>
@@ -166,12 +169,12 @@ namespace Gaudi {
 
   template <class INTERFACE, class IMPLEMENTATION>
   int Generic2D<INTERFACE,IMPLEMENTATION>::entries() const                       {
-    return (int)m_rep->GetEntries();
+    return m_rep->GetEntries();
   }
 
   template <class INTERFACE, class IMPLEMENTATION>
   int Generic2D<INTERFACE,IMPLEMENTATION>::allEntries (  ) const  {
-    return int(m_rep->GetEntries());
+    return m_rep->GetEntries();
   }
 
   template <class INTERFACE, class IMPLEMENTATION>
@@ -201,12 +204,12 @@ namespace Gaudi {
 
   template <class INTERFACE, class IMPLEMENTATION>
   double Generic2D<INTERFACE,IMPLEMENTATION>::binMeanX(int indexX,int ) const {
-    return (m_rep->GetXaxis())->GetBinCenter( rIndexX(indexX) );
+    return m_rep->GetXaxis()->GetBinCenter( rIndexX(indexX) );
   }
 
   template <class INTERFACE, class IMPLEMENTATION>
   double Generic2D<INTERFACE,IMPLEMENTATION>::binMeanY(int,int indexY) const  {
-    return (m_rep->GetYaxis())->GetBinCenter( rIndexY(indexY) );
+    return m_rep->GetYaxis()->GetBinCenter( rIndexY(indexY) );
   }
 
   template <class INTERFACE, class IMPLEMENTATION>
@@ -285,11 +288,9 @@ namespace Gaudi {
   template <class INTERFACE, class IMPLEMENTATION>
   bool Generic2D<INTERFACE,IMPLEMENTATION>::add ( const INTERFACE & hist ) {
     const Base* p = dynamic_cast<const Base*>(&hist);
-    if ( p )  {
-      m_rep->Add(p->m_rep);
-      return true;
-    }
-    throw std::runtime_error("Cannot add profile histograms of different implementations.");
+    if ( !p ) throw std::runtime_error("Cannot add profile histograms of different implementations.");
+    m_rep->Add(p->m_rep.get());
+    return true;
   }
 
   template <class INTERFACE, class IMPLEMENTATION>

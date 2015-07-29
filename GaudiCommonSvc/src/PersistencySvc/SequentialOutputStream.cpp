@@ -23,7 +23,7 @@ namespace bf = boost::filesystem;
 //=============================================================================
 SequentialOutputStream::SequentialOutputStream( const string& name,
 						ISvcLocator* svc )
-: OutputStream( name, svc ), m_events( 0 ), m_iFile( 1 )
+: OutputStream( name, svc )
 {
    declareProperty( "EventsPerFile", m_eventsPerFile
 		    = std::numeric_limits< unsigned int>::max() );
@@ -53,7 +53,7 @@ StatusCode SequentialOutputStream::execute()
    if ( isEventAccepted() )  {
       StatusCode sc = writeObjects();
       clearSelection();
-      m_events++;
+      ++m_events;
       return sc;
    }
    return StatusCode::SUCCESS;
@@ -81,17 +81,14 @@ void SequentialOutputStream::makeFilename()
    if ( m_numericFilename ) {
       if ( m_events == 0 ) {
          try {
-	   m_iFile = std::stoul( stem );
+            m_iFile = std::stoul( stem );
          } catch( const std::invalid_argument& /* cast */ ) {
-            stringstream stream;
-            stream << "Filename " << filename
-                   << " is not a number, which was needed.";
-            throw GaudiException( stream.str(), "error", StatusCode::FAILURE );
+            string msg = "Filename " +  filename
+                       + " is not a number, which was needed.";
+            throw GaudiException( msg, "error", StatusCode::FAILURE );
          }
       }
-      stringstream iFileStream;
-      iFileStream << m_iFile;
-      string iFile( iFileStream.str() );
+      string iFile = std::to_string(m_iFile);
       unsigned int length = 0;
 
       if ( stem.length() > iFile.length() ) {
@@ -99,9 +96,7 @@ void SequentialOutputStream::makeFilename()
       }
 
       stringstream name;
-      if ( !dir.empty() ) {
-         name << dir << "/";
-      }
+      if ( !dir.empty() ) name << dir << "/";
       for ( unsigned int i = 0; i < length; ++i ) {
          name << "0";
       }
@@ -113,9 +108,7 @@ void SequentialOutputStream::makeFilename()
          stem = stem.substr( 0, pos );
       }
 
-      stringstream iFileStream;
-      iFileStream << m_iFile;
-      string iFile( iFileStream.str() );
+      string iFile = std::to_string(m_iFile);
 
       unsigned int length = 0;
       if ( m_nNumbersAdded > iFile.length() ) {

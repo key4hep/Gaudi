@@ -21,7 +21,7 @@ static std::string clean(const std::string& s)  {
 
 std::string GaudiDict::typeName(const std::type_info& typ)  {
   std::string r = clean(System::typeinfoName(typ));
-  //if ( r.substr(0,4) == "enum" )  {
+  //if ( r.compare(0,4,"enum") == 0 )  {
   //  r = "int";
   //}
   return r;

@@ -25,7 +25,7 @@ public:
       m_type   ( type   ) { }
 
   /// Destructor
-  virtual ~Incident() { }
+  virtual ~Incident() = default;
 
   /** Access to the incident type
    *

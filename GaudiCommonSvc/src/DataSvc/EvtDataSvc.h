@@ -14,15 +14,15 @@
  */
 class EvtDataSvc  : public DataSvc   {
 public:
-  virtual StatusCode initialize();
-  virtual StatusCode reinitialize();
-  virtual StatusCode finalize();
+  StatusCode initialize() override;
+  StatusCode reinitialize() override;
+  StatusCode finalize() override;
 
   /// Standard Constructor
   EvtDataSvc(const std::string& name, ISvcLocator* svc);
 
   /// Standard Destructor
-  virtual ~EvtDataSvc();
+  ~EvtDataSvc() override = default;
 private:
   SmartIF<IConversionSvc> m_cnvSvc;
 };

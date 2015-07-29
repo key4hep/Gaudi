@@ -102,8 +102,8 @@ public:
   {
   }
   /// Standard Destructor
-  virtual ~EvtSelectorContext() { 
-  }
+  virtual ~EvtSelectorContext() = default;
+
   /// Copy constructor
   virtual EvtSelectorContext& operator=(const EvtSelectorContext& copy)   {
     m_streamID  = copy.m_streamID;

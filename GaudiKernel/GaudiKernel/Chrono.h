@@ -50,10 +50,17 @@ public:
    *  @param tag the unique tag
    */
   Chrono
-  ( IChronoSvc*        svc = 0 ,                  // the service
+  ( IChronoSvc*        svc = nullptr ,            // the service
     const std::string& tag = "CHRONO::UNNAMED" )  // the unique tag/name
-    : m_chrono ( 0 )
-  { if ( 0 != svc ) { m_chrono = svc -> chronoStart ( tag ) ; } }
+  { if ( svc ) { m_chrono = svc -> chronoStart ( tag ) ; } }
+
+  // =========================================================================
+  /** Move Constructor
+   **/
+
+  Chrono(Chrono&& rhs)
+  { m_chrono = rhs.m_chrono; rhs.m_chrono = nullptr; }
+
   // =========================================================================
   /** Constructor from Chrono Service and the tag
    *
@@ -79,8 +86,7 @@ public:
   Chrono
   ( const std::string& tag ,   // the unique tag/name
     IChronoSvc*        svc )   // the service
-    : m_chrono ( 0 )
-  { if ( 0 != svc ) { m_chrono = svc -> chronoStart ( tag ) ; } }
+  { if ( svc ) { m_chrono = svc -> chronoStart ( tag ) ; } }
   // =========================================================================
   /** Constructor from Chrono Object/Entity
    *
@@ -103,7 +109,7 @@ public:
    *  @param c the pointer to Chrono Object/Entity
    */
   Chrono ( ChronoEntity* c ) : m_chrono ( c )
-  { if ( 0 != m_chrono ) { m_chrono -> start () ; } }
+  { if ( m_chrono ) { m_chrono -> start () ; } }
   // =========================================================================
   /** Constructor from Chrono Object/Entity
    *
@@ -128,19 +134,18 @@ public:
   Chrono ( ChronoEntity& c ) : m_chrono ( &c ) { m_chrono -> start () ; }
   // =========================================================================
   /// Destructor , stop the chrono
-  ~Chrono () { if ( 0 != m_chrono ) { m_chrono->stop() ; } }
+  ~Chrono () { if ( m_chrono ) { m_chrono->stop() ; } }
   // =========================================================================
 private:
   // =========================================================================
-  /// the copy constructor is disabled
-  Chrono           ( const Chrono& ) ;  // no copy constructor
-  /// the assignment operator is disabled
-  Chrono& operator=( const Chrono& ) ;  // no assignment
+  /// delete the copy constructor and assignment operators
+  Chrono           ( const Chrono& ) = delete;
+  Chrono& operator=( const Chrono& ) = delete;
   // =========================================================================
 private:
   // ==========================================================================
   /// The actual chronometer
-  ChronoEntity* m_chrono; // The actual chronometer
+  ChronoEntity* m_chrono = nullptr; // The actual chronometer
   // ==========================================================================
 };
 // ============================================================================

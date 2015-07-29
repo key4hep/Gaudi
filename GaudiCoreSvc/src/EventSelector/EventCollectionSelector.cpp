@@ -87,9 +87,6 @@ EventCollectionSelector::EventCollectionSelector(const std::string& name, ISvcLo
   declareProperty("Function",      m_statement= "NTuple::Selector");
 }
 
-EventCollectionSelector::~EventCollectionSelector()   {
-}
-
 // IService implementation: Db event selector override
 StatusCode EventCollectionSelector::initialize()    {
   // Initialize base class
@@ -141,21 +138,17 @@ EventCollectionSelector::connectTuple(const std::string& nam, const std::string&
   if ( status.isSuccess() )    {
     item = new NTuple::Item<IOpaqueAddress*>();
     status = tup->item(itName, *item);
-    if ( status.isSuccess() )   {
-      return status;
-    }
-    else    {
-      MsgStream log(msgSvc(), name());
-      log << MSG::ERROR << "Item " << itName << " is not part of the collection:" << top << endmsg;
-    }
+    if ( status.isSuccess() )   return status;
+    MsgStream log(msgSvc(), name());
+    log << MSG::ERROR << "Item " << itName << " is not part of the collection:" << top << endmsg;
     delete item;
-    item = 0;
+    item = nullptr;
   }
   else  {
     MsgStream err(msgSvc(), name());
     err << MSG::ERROR << "Cannot connect to collection:" << top << endmsg;
   }
-  tup = 0;
+  tup = nullptr;
   return status;
 }
 
@@ -360,7 +353,7 @@ EventCollectionSelector::releaseContext(Context*& refCtxt) const
   MyContextType *ctxt  = dynamic_cast<MyContextType*>(refCtxt);
   if ( ctxt )   {
     delete ctxt;
-    ctxt = 0;
+    ctxt = nullptr;
     return StatusCode::SUCCESS;
   }
   return StatusCode::FAILURE;

@@ -4,6 +4,7 @@
 // STL includes
 #include <vector>
 #include <string>
+#include <memory>
 // Gaudi
 #include "GaudiKernel/Kernel.h"
 
@@ -39,12 +40,12 @@ public:
     long        m_id;
   public:
     /// Standard constructor
-    Link(long id, const std::string& path, const DataObject* pObject=0)
-    : m_path(path), m_id(id) {
+    Link(long id, std::string path, const DataObject* pObject=nullptr)
+    : m_path(std::move(path)), m_id(id) {
       setObject(pObject);
     }
     /// Standard constructor
-    Link() : m_path(""), m_pObject(0), m_id(INVALID) {
+    Link() : m_pObject(nullptr), m_id(INVALID) {
     }
     /// Equality operator: check pathes only
     Link& operator=(const Link& link)  {
@@ -54,8 +55,7 @@ public:
       return *this;
     }
     /// Default destructor
-    virtual ~Link() {
-    }
+    virtual ~Link() = default;
     /// Update the link content
     void set(long id, const std::string& path, const DataObject* pObject)   {
       setObject(pObject);
@@ -85,20 +85,16 @@ public:
     /// Access to the object's address
     virtual IOpaqueAddress* address();
   };
-  typedef std::vector<Link*>           LinkVector;
-  /// Data type: iterator over leaf links
-  typedef LinkVector::iterator         LinkIterator;
-  /// Data type: iterator over leaf links (CONST)
-  typedef LinkVector::const_iterator   ConstLinkIterator;
 
+private:
   /// The vector containing all links which are non-tree like
-  mutable LinkVector m_linkVector;
+  mutable std::vector<std::unique_ptr<Link>> m_linkVector;
 
 public:
   /// Standard Constructor
-  LinkManager();
+  LinkManager() = default;
   /// Standard Destructor
-  virtual ~LinkManager();
+  virtual ~LinkManager() = default;
   /// Static instantiation
   static LinkManager* newInstance();
   /// Assign new instantiator

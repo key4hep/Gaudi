@@ -80,17 +80,11 @@ StatusCode RecordDataSvc::initialize()    {
   return sc;
 }
 
-/// Service reinitialisation
-StatusCode RecordDataSvc::reinitialize()    {
-  // Do nothing for this service
-  return StatusCode::SUCCESS;
-}
-
 /// Service finalization
 StatusCode RecordDataSvc::finalize()    {
   if( m_incidentSvc ) m_incidentSvc->removeListener(this);
   if( m_cnvSvc ) m_cnvSvc->release();
-  m_cnvSvc = 0;
+  m_cnvSvc = nullptr;
   DataSvc::finalize().ignore();
   return StatusCode::SUCCESS ;
 }
@@ -99,14 +93,14 @@ StatusCode RecordDataSvc::finalize()    {
 void RecordDataSvc::handle(const Incident& incident) {
   if ( incident.type() == "FILE_OPEN_READ" ) {
     typedef ContextIncident<IOpaqueAddress*> Ctxt;
-    const Ctxt* inc = dynamic_cast<const Ctxt*>(&incident);
+    auto inc = dynamic_cast<const Ctxt*>(&incident);
     if ( inc ) {
       registerRecord(inc->source(),inc->tag());
       if ( !m_incidentName.empty() ) {
-	StringV incidents(m_incidents);
-	m_incidents.clear();
-	for( StringV::const_iterator i=incidents.begin(); i!=incidents.end();++i)
-	  m_incidentSvc->fireIncident(Incident(*i,m_incidentName));
+        auto  incidents = m_incidents;
+        m_incidents.clear();
+        for( const auto& i : incidents) 
+            m_incidentSvc->fireIncident(Incident{i,m_incidentName});
       }
       return;
     }
@@ -121,30 +115,27 @@ void RecordDataSvc::handle(const Incident& incident) {
 
 /// Load dependent records into memory
 void RecordDataSvc::loadRecords(IRegistry* pObj) {
-  if ( 0 != pObj )    {
-    typedef vector<IRegistry*> Leaves;
-    Leaves leaves;
-    DataObject* p = 0;
-    MsgStream log(msgSvc(),name());
+  MsgStream log(msgSvc(),name());
+  if ( !pObj )    {
+      log << MSG::ERROR << "Failed to load records object: " << pObj->identifier() << endmsg;
+  } else {
+    vector<IRegistry*> leaves;
+    DataObject* p = nullptr;
     const string& id0 = pObj->identifier();
     StatusCode sc = retrieveObject(id0, p);
     if ( sc.isSuccess() ) {
       log << MSG::DEBUG << "Loaded records object: " << id0 << endmsg;
       sc = objectLeaves(pObj, leaves);
       if ( sc.isSuccess() )  {
-	for ( Leaves::const_iterator i=leaves.begin(); i != leaves.end(); i++ )
-	  loadRecords(*i);
+        for ( const auto& i : leaves) loadRecords(i);
       }
-    }
-    else  {
-      log << MSG::ERROR << "Failed to load records object: " << pObj->identifier() << endmsg;
     }
   }
 }
 
 /// Load new run record into the data store if necessary
 void RecordDataSvc::registerRecord(const string& data, IOpaqueAddress* pAddr)   {
-  if ( !data.empty() && 0 != pAddr ) {
+  if ( !data.empty() && pAddr ) {
     MsgStream log(msgSvc(),name());
     string fid = data;
     log << MSG::DEBUG << "Request to load record for file " << fid << endmsg;
@@ -167,15 +158,11 @@ void RecordDataSvc::registerRecord(const string& data, IOpaqueAddress* pAddr)   
 
 /// Standard Constructor
 RecordDataSvc::RecordDataSvc(const string& name,ISvcLocator* svc)
-: base_class(name,svc), m_cnvSvc(0)
+: base_class(name,svc)
 {
   m_rootName = "/Records";
   declareProperty("AutoLoad",       m_autoLoad = true);
   declareProperty("IncidentName",   m_incidentName = "");
   declareProperty("SaveIncident",   m_saveIncidentName = "SAVE_RECORD");
   declareProperty("PersistencySvc", m_persSvcName = "PersistencySvc/RecordPersistencySvc");
-}
-
-/// Standard Destructor
-RecordDataSvc::~RecordDataSvc()  {
 }

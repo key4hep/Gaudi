@@ -39,13 +39,7 @@ public:
       given mass range and returns true if it does.
   */
   bool operator() ( const ParticleProperty* pp ) const                        {
-    bool in_range = false;
-    if ( pp ) {
-      if ( pp->mass() >= m_low && pp->mass() <= m_high ) {
-	      in_range = true;
-      }
-    }
-    return in_range;
+    return pp && pp->mass() >= m_low && pp->mass() <= m_high;
   }
 
 private:

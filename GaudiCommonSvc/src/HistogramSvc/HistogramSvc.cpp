@@ -51,9 +51,9 @@ namespace
   ( const DataObject*  obj ,
     const std::string& rel )
   {
-    if ( 0 == obj      ) { return rel  ; }
+    if ( !obj      ) { return rel  ; }
     IRegistry* reg = obj->registry() ;
-    if ( 0 == reg      ) { return rel  ; }
+    if ( !reg      ) { return rel  ; }
     const std::string& name = reg->identifier() ;
     //
     if ( rel  .empty() ) { return histoAddr ( name ) ; }
@@ -62,11 +62,6 @@ namespace
     return histoAddr ( name + "/" + rel ) ;
   }
   // ==========================================================================
-}
-//------------------------------------------------------------------------------
-std::string HistogramSvc::_STR(int i)  {
-  std::ostringstream txt; txt << i;
-  return txt.str();
 }
 //------------------------------------------------------------------------------
 StatusCode HistogramSvc::registerObject(CSTR full, IBaseHistogram* obj)  {
@@ -104,7 +99,7 @@ HistogramSvc::i_project(CSTR nameAndTitle,const IHistogram3D& h, CSTR dir)  {
       }
     }
   }
-  return 0;
+  return nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -112,7 +107,7 @@ HistogramSvc::i_project(CSTR nameAndTitle,const IHistogram3D& h, CSTR dir)  {
 //------------------------------------------------------------------------------
 std::ostream& HistogramSvc::print(IBaseHistogram* h, std::ostream& s) const  {
   Gaudi::HistogramBase* b = dynamic_cast<Gaudi::HistogramBase*>(h);
-  if(0 != b) return b->print(s);
+  if (b) return b->print(s);
   MsgStream log(msgSvc(), name());
   log << MSG::ERROR << "Unknown histogram type: Cannot cast to Gaudi::HistogramBase."
       << endmsg;
@@ -121,7 +116,7 @@ std::ostream& HistogramSvc::print(IBaseHistogram* h, std::ostream& s) const  {
 //------------------------------------------------------------------------------
 std::ostream& HistogramSvc::write(IBaseHistogram* h, std::ostream& s) const  {
   Gaudi::HistogramBase* b = dynamic_cast<Gaudi::HistogramBase*>(h);
-  if(0 != b) return b->write(s);
+  if (b) return b->write(s);
   MsgStream log(msgSvc(), name());
   log << MSG::ERROR << "Unknown histogram type: Cannot cast to Gaudi::HistogramBase."
       << endmsg;
@@ -130,7 +125,7 @@ std::ostream& HistogramSvc::write(IBaseHistogram* h, std::ostream& s) const  {
 //------------------------------------------------------------------------------
 int HistogramSvc::write(IBaseHistogram* h, const char* file_name) const  {
   Gaudi::HistogramBase* b = dynamic_cast<Gaudi::HistogramBase*>(h);
-  if(0 != b) return b->write(file_name);
+  if (b) return b->write(file_name);
   MsgStream log(msgSvc(), name());
   log << MSG::ERROR << "Unknown histogram type: Cannot cast to Gaudi::HistogramBase."
       << endmsg;
@@ -148,8 +143,7 @@ std::pair<std::string,std::string> HistogramSvc::i_splitPath(CSTR full)   {
     tmp.erase(tmp.rfind(SEPARATOR),1);
   }
   int sep = tmp.rfind(SEPARATOR);
-  return std::pair<std::string,std::string>
-    (tmp.substr(0,sep),tmp.substr(sep,tmp.length()-sep));
+  return { tmp.substr(0,sep), tmp.substr(sep) };
 }
 //------------------------------------------------------------------------------
 DataObject* HistogramSvc::createPath(CSTR newPath)  {
@@ -162,7 +156,7 @@ DataObject* HistogramSvc::createPath(CSTR newPath)  {
   if (tmpPath.rfind(SEPARATOR) == tmpPath.length()-1) {
     tmpPath.erase(tmpPath.rfind(SEPARATOR),1);
   }
-  DataObject* pObject = 0;
+  DataObject* pObject = nullptr;
   StatusCode sc = DataSvc::findObject(tmpPath, pObject);
   if(sc.isSuccess()) {
     return pObject;
@@ -176,36 +170,34 @@ DataObject* HistogramSvc::createPath(CSTR newPath)  {
   else {
     MsgStream log(msgSvc(), name());
     log << MSG::ERROR << "Unable to create the histogram path" << endmsg;
-    return 0;
+    return nullptr;
   }
   pObject = createDirectory(subPath, rest);
   return pObject;
 }
 //------------------------------------------------------------------------------
 DataObject* HistogramSvc::createDirectory(CSTR parentDir,CSTR subDir) {
-  DataObject*  directory = new DataObject();
-  if (0 != directory)  {
+  std::unique_ptr<DataObject>  directory{ new DataObject() };
+  if (directory)  {
     DataObject* pnode;
     StatusCode status = DataSvc::retrieveObject(parentDir, pnode);
     if(status.isSuccess()) {
-      status = DataSvc::registerObject(pnode, subDir, directory);
+      status = DataSvc::registerObject(pnode, subDir, directory.get());
       if (!status.isSuccess())   {
         MsgStream log(msgSvc(), name());
         log << MSG::ERROR << "Unable to create the histogram directory: "
                           << parentDir << "/" << subDir << endmsg;
-        delete directory;
-        return 0;
+        return nullptr;
       }
     }
     else {
       MsgStream log(msgSvc(), name());
       log << MSG::ERROR << "Unable to create the histogram directory: "
                         << parentDir << "/" << subDir << endmsg;
-      delete directory;
-      return 0;
+      return nullptr;
     }
   }
-  return directory;
+  return directory.release();
 }
 //------------------------------------------------------------------------------
 HistogramSvc::~HistogramSvc()   {
@@ -216,7 +208,7 @@ HistogramSvc::~HistogramSvc()   {
 StatusCode HistogramSvc::connectInput(CSTR ident) {
   using Parser = Gaudi::Utils::AttribStringParser;
   MsgStream log (msgSvc(), name());
-  DataObject* pO = 0;
+  DataObject* pO = nullptr;
   StatusCode status = this->findObject(m_rootName, pO);
   if (status.isSuccess())   {
     std::string::size_type loc = ident.find(" ");
@@ -271,14 +263,15 @@ StatusCode HistogramSvc::initialize()   {
   StatusCode status = DataSvc::initialize();
   // Set root object
   if (status.isSuccess()) {
-    DataObject* rootObj = new DataObject();
-    status = setRoot("/stat", rootObj);
-    if (!status.isSuccess()) {
+    std::unique_ptr<DataObject> rootObj{ new DataObject() };
+    status = setRoot("/stat", rootObj.get());
+    if (status.isSuccess()) { 
+        rootObj.release();
+    } else {
       log << MSG::ERROR << "Unable to set hstogram data store root." << endmsg;
-      delete rootObj;
       return status;
     }
-    IConversionSvc* svc = 0;
+    IConversionSvc* svc = nullptr;
     status = service("HistogramPersistencySvc",svc,true);
     if ( status.isSuccess() )   {
       setDataLoader( svc ).ignore();
@@ -289,22 +282,19 @@ StatusCode HistogramSvc::initialize()   {
       return status;
     }
     // Connect all input streams (if any)
-    for (DBaseEntries::iterator j = m_input.begin(); j != m_input.end(); j++)    {
-      status = connectInput(*j);
-      if (!status.isSuccess())  {
-        return status;
-      }
+    for (auto & j : m_input) {
+      status = connectInput(j);
+      if (!status.isSuccess())  return status;
     }
   }
   if ( !m_defs1D.empty() )
   {
     log << MSG::INFO << " Predefined 1D-Histograms: " << endmsg ;
-    for ( Histo1DMap::const_iterator ih = m_defs1D.begin() ;
-          m_defs1D.end() != ih ; ++ih )
+    for ( const auto& ih : m_defs1D )
     {
       log << MSG::INFO
-          << " Path='"       << ih->first  << "'"
-          << " Description " << ih->second << endmsg ;
+          << " Path='"       << ih.first  << "'"
+          << " Description " << ih.second << endmsg ;
     }
   }
   return status;
@@ -358,7 +348,7 @@ HistogramSvc::sliceY(CSTR name,const IHistogram2D& h,int indexX1,int indexX2) {
 bool HistogramSvc::destroy( IBaseHistogram* hist ) {
   StatusCode sc = unregisterObject( dynamic_cast<IHistogram*>(hist) );
   if ( !sc.isSuccess() ) return false;
-  if ( hist ) delete hist;
+  delete hist;
   return true;
 }
 // ============================================================================
@@ -368,7 +358,7 @@ AIDA::IHistogram1D* HistogramSvc::book
   if ( m_defs1D.empty () )
   { return i_book(pPar,rel,title,Gaudi::createH1D(title, BINS(x))); }
   std::string hn = histoAddr ( pPar , rel ) ;
-  Histo1DMap::const_iterator ifound = m_defs1D.find( hn ) ;
+  auto ifound = m_defs1D.find( hn ) ;
   if ( m_defs1D.end() == ifound )
   { return i_book(pPar,rel,title,Gaudi::createH1D(title, BINS(x))); }
   if (msgLevel(MSG::DEBUG)) {
@@ -389,10 +379,8 @@ AIDA::IHistogram1D* HistogramSvc::book
 // ============================================================================
 // constructor
 // ============================================================================
-HistogramSvc::HistogramSvc(CSTR nam, ISvcLocator* svc)
+HistogramSvc::HistogramSvc(const std::string& nam, ISvcLocator* svc)
   : base_class(nam, svc)
-  , m_defs1D ()
-  , m_mods1D ()
 {
   // Properties can be declared here
   m_rootName = "/stat";
@@ -413,8 +401,7 @@ namespace
   inline size_t removeLeading
   ( HistogramSvc::Histo1DMap& m , const std::string& lead = "/stat/")
   {
-    for ( HistogramSvc::Histo1DMap::iterator it = m.begin() ;
-          m.end() != it ; ++it )
+    for ( auto it = m.begin() ; m.end() != it ; ++it )
     {
       if ( 0 == it->first.find ( lead ) )
       {
@@ -444,12 +431,11 @@ StatusCode HistogramSvc::finalize     ()
     if (msgLevel(MSG::DEBUG))
       log << MSG::DEBUG
           << " Substituted histograms #" << m_mods1D.size() << " : " << endmsg;
-    for ( std::set<std::string>::const_iterator ih = m_mods1D.begin() ;
-          m_mods1D.end() != ih ; ++ih )
+    for ( const auto&  ih : m_mods1D )
     {
       if (msgLevel(MSG::DEBUG))
-        log << MSG::DEBUG << " Path='" << (*ih) << "'" ;
-      Histo1DMap::const_iterator im = m_defs1D.find( *ih ) ;
+        log << MSG::DEBUG << " Path='" << ih << "'" ;
+      auto im = m_defs1D.find( ih ) ;
       if ( m_defs1D.end() != im ) { log << "  " << im->second ; }
     }
     m_mods1D.clear() ;

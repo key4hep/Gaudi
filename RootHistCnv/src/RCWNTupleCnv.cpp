@@ -74,8 +74,8 @@ template <class T> void analyzeItem(std::string typ,
 
   if (it->range().lower() != it->range().min() &&
       it->range().upper() != it->range().max() ) {
-    lowerRange = (long) it->range().lower();
-    upperRange = (long) it->range().upper();
+    lowerRange = it->range().lower();
+    upperRange = it->range().upper();
   } else {
     lowerRange = 0;
     upperRange = -1;
@@ -109,75 +109,73 @@ StatusCode RootHistCnv::RCWNTupleCnv::book(const std::string& desc,
   std::vector<long> item_range_lower, item_range_upper;
   std::vector<std::pair<std::string,std::string> > item_name;
 
-  const INTuple::ItemContainer& cols = nt->items();
-  for (INTuple::ItemContainer::const_iterator i = cols.begin();
-       i != cols.end(); ++i ) {
-    std::string item = "";
+  for (const auto& i : nt->items() ) {
+    std::string item;
 
-    switch( (*i)->type() )   {
+    switch( i->type() )   {
     case DataTypeInfo::INT:               // int
-      analyzeItem(rootVarType( (*i)->type() ),
-		  dynamic_cast<const NTuple::_Data<int>*>(*i),item,
+      analyzeItem(rootVarType( i->type() ),
+		  dynamic_cast<const NTuple::_Data<int>*>(i),item,
 		  block_name,var_name,lowerRange,upperRange,size);
       break;
     case DataTypeInfo::CHAR:              // char
-      analyzeItem(rootVarType( (*i)->type() ),
-		  dynamic_cast<const NTuple::_Data<char>*>(*i),
+      analyzeItem(rootVarType( i->type() ),
+		  dynamic_cast<const NTuple::_Data<char>*>(i),
 		  item, block_name,var_name,lowerRange,upperRange,size);
       break;
     case DataTypeInfo::SHORT:             // short
-      analyzeItem(rootVarType( (*i)->type() ),
-		  dynamic_cast<const NTuple::_Data<short>*>(*i),item,
+      analyzeItem(rootVarType( i->type() ),
+		  dynamic_cast<const NTuple::_Data<short>*>(i),item,
 		  block_name,var_name,lowerRange,upperRange,size);
       break;
     case DataTypeInfo::LONG:              // long
-      analyzeItem(rootVarType( (*i)->type() ),
-		  dynamic_cast<const NTuple::_Data<long>*>(*i),item,
+      analyzeItem(rootVarType( i->type() ),
+		  dynamic_cast<const NTuple::_Data<long>*>(i),item,
 		  block_name,var_name,lowerRange,upperRange,size);
       break;
     case DataTypeInfo::LONGLONG:          // long long
-      analyzeItem(rootVarType( (*i)->type() ),
-		  dynamic_cast<const NTuple::_Data<long long>*>(*i),item,
+      analyzeItem(rootVarType( i->type() ),
+		  dynamic_cast<const NTuple::_Data<long long>*>(i),item,
 		  block_name,var_name,lowerRange,upperRange,size);
       break;
     case DataTypeInfo::UCHAR:             // unsigned char
-      analyzeItem(rootVarType( (*i)->type() ),
-		  dynamic_cast<const NTuple::_Data<unsigned char>*>(*i),
+      analyzeItem(rootVarType( i->type() ),
+		  dynamic_cast<const NTuple::_Data<unsigned char>*>(i),
 		  item, block_name,var_name,lowerRange,upperRange,size);
       break;
     case DataTypeInfo::USHORT:            // unsigned short
-      analyzeItem(rootVarType( (*i)->type() ),
-		  dynamic_cast<const NTuple::_Data<unsigned short>*>(*i),
+      analyzeItem(rootVarType( i->type() ),
+		  dynamic_cast<const NTuple::_Data<unsigned short>*>(i),
 		  item, block_name,var_name,lowerRange,upperRange,size);
       break;
     case DataTypeInfo::UINT:              // unsigned int
-      analyzeItem(rootVarType( (*i)->type() ),
-		  dynamic_cast<const NTuple::_Data<unsigned int>*>(*i),
+      analyzeItem(rootVarType( i->type() ),
+		  dynamic_cast<const NTuple::_Data<unsigned int>*>(i),
 		  item, block_name,var_name,lowerRange,upperRange,size);
       break;
     case DataTypeInfo::ULONG:             // unsigned long
-      analyzeItem(rootVarType( (*i)->type() ),
-		  dynamic_cast<const NTuple::_Data<unsigned long>*>(*i),
+      analyzeItem(rootVarType( i->type() ),
+		  dynamic_cast<const NTuple::_Data<unsigned long>*>(i),
 		  item, block_name,var_name,lowerRange,upperRange,size);
       break;
     case DataTypeInfo::ULONGLONG:         // unsigned long long
-      analyzeItem(rootVarType( (*i)->type() ),
-		  dynamic_cast<const NTuple::_Data<unsigned long long>*>(*i),
+      analyzeItem(rootVarType( i->type() ),
+		  dynamic_cast<const NTuple::_Data<unsigned long long>*>(i),
 		  item, block_name,var_name,lowerRange,upperRange,size);
       break;
     case DataTypeInfo::DOUBLE:            // double
-      analyzeItem(rootVarType( (*i)->type() ),
-		  dynamic_cast<const NTuple::_Data<double>*>(*i),item,
+      analyzeItem(rootVarType( i->type() ),
+		  dynamic_cast<const NTuple::_Data<double>*>(i),item,
 		  block_name,var_name,lowerRange,upperRange,size);
       break;
     case DataTypeInfo::FLOAT:             // float
-      analyzeItem(rootVarType( (*i)->type() ),
-		  dynamic_cast<const NTuple::_Data<float>*>(*i),item,
+      analyzeItem(rootVarType( i->type() ),
+		  dynamic_cast<const NTuple::_Data<float>*>(i),item,
 		  block_name,var_name,lowerRange,upperRange,size);
       break;
     case DataTypeInfo::BOOL:               // bool
-      analyzeItem(rootVarType( (*i)->type() ),
-		  dynamic_cast<const NTuple::_Data<bool>*>(*i),item,
+      analyzeItem(rootVarType( i->type() ),
+		  dynamic_cast<const NTuple::_Data<bool>*>(i),item,
 		  block_name,var_name,lowerRange,upperRange,size);
       break;
     default:
@@ -187,7 +185,7 @@ StatusCode RootHistCnv::RCWNTupleCnv::book(const std::string& desc,
     item_name.push_back(std::pair<std::string,std::string>(block_name,item));
     cursize = size - oldsize;
 
-    log << MSG::VERBOSE << "item: " << item << " type " << (*i)->type()
+    log << MSG::VERBOSE << "item: " << item << " type " << i->type()
         << " blk: " << block_name
         << " var: " << var_name << " rng: " << lowerRange << " "
         << upperRange << " sz: " << size << " " << cursize
@@ -203,24 +201,22 @@ StatusCode RootHistCnv::RCWNTupleCnv::book(const std::string& desc,
     oldsize = size;
   }
 
-  char* buff = new char[size];
+  // Make a new buffer, and tell the ntuple where it is
+  char* buff = nt->setBuffer(new char[size]);
+
   log << MSG::VERBOSE << "Created buffer size: " << size << " at "
       << (void*)buff << endmsg;
 
   // Zero out the buffer to make ROOT happy
-  memset (buff,0,size);
-
-  // Tell the ntuple where it is
-  nt->setBuffer(buff);
+  std::fill_n(buff,size,0);
 
   char *buf_pos = buff;
 
-  std::vector<std::pair<std::string,std::string> >::const_iterator itr,end;
-  end = item_name.end();
+  auto end = item_name.cend();
 
   // Loop over items, creating a new branch for each one;
   unsigned int i_item = 0;
-  for (itr=item_name.begin(); itr!=end; ++itr, ++i_item) {
+  for (auto itr=item_name.cbegin(); itr!=end; ++itr, ++i_item) {
 
     buf_pos = buff + item_buf_pos[i_item];
 
@@ -256,7 +252,7 @@ StatusCode RootHistCnv::RCWNTupleCnv::book(const std::string& desc,
 //        log << MSG::VERBOSE << "\"" << item_fullname[i_item]
 //  	  << "\" is range limited " << item_range_lower[i_item] << "  "
 //  	  << item_range_upper[i_item] << endmsg;
-      TLeafI *index = 0;
+      TLeafI *index = nullptr;
       TObject *tobj = br->GetListOfLeaves()->FindObject( item_fullname[i_item].c_str() );
       if (tobj->IsA()->InheritsFrom("TLeafI")) {
         index = dynamic_cast<TLeafI*>(tobj);
@@ -292,48 +288,47 @@ StatusCode RootHistCnv::RCWNTupleCnv::writeData(TTree* rtree, INTuple* nt)
 //-----------------------------------------------------------------------------
 {
   // Fill the tree;
-  const INTuple::ItemContainer& cols = nt->items();
   char * tar = nt->buffer();
-  for (INTuple::ItemContainer::const_iterator i = cols.begin(); i != cols.end(); i++ )   {
-    switch( (*i)->type() )   {
+  for (const auto& i : nt->items() ) {
+    switch( i->type() )   {
     case DataTypeInfo::BOOL:              // bool
-      tar += saveItem(tar, (bool*)(*i)->buffer(),   (*i)->length());
+      tar += saveItem(tar, (bool*)i->buffer(),   i->length());
       break;
     case DataTypeInfo::CHAR:              // char
-      tar += saveItem(tar, (char*)(*i)->buffer(),   (*i)->length());
+      tar += saveItem(tar, (char*)i->buffer(),   i->length());
       break;
     case DataTypeInfo::SHORT:             // short
-      tar += saveItem(tar, (short*)(*i)->buffer(),  (*i)->length());
+      tar += saveItem(tar, (short*)i->buffer(),  i->length());
       break;
     case DataTypeInfo::INT:             // int
-      tar += saveItem(tar, (int*)(*i)->buffer(),    (*i)->length());
+      tar += saveItem(tar, (int*)i->buffer(),    i->length());
       break;
     case DataTypeInfo::LONG:             // long
-      tar += saveItem(tar, (long*)(*i)->buffer(),   (*i)->length());
+      tar += saveItem(tar, (long*)i->buffer(),   i->length());
       break;
     case DataTypeInfo::LONGLONG:         // long long
-      tar += saveItem(tar, (long long*)(*i)->buffer(),   (*i)->length());
+      tar += saveItem(tar, (long long*)i->buffer(),   i->length());
       break;
     case DataTypeInfo::UCHAR:             // unsigned char
-      tar += saveItem(tar, (unsigned char*)(*i)->buffer(),  (*i)->length());
+      tar += saveItem(tar, (unsigned char*)i->buffer(),  i->length());
       break;
     case DataTypeInfo::USHORT:            // unsigned short
-      tar += saveItem(tar, (unsigned short*)(*i)->buffer(), (*i)->length());
+      tar += saveItem(tar, (unsigned short*)i->buffer(), i->length());
       break;
     case DataTypeInfo::UINT:            // unsigned int
-      tar += saveItem(tar, (unsigned int*)(*i)->buffer(),   (*i)->length());
+      tar += saveItem(tar, (unsigned int*)i->buffer(),   i->length());
       break;
     case DataTypeInfo::ULONG:            // unsigned long
-      tar += saveItem(tar, (unsigned long*)(*i)->buffer(),  (*i)->length());
+      tar += saveItem(tar, (unsigned long*)i->buffer(),  i->length());
       break;
     case DataTypeInfo::ULONGLONG:        // unsigned long
-      tar += saveItem(tar, (unsigned long long*)(*i)->buffer(),  (*i)->length());
+      tar += saveItem(tar, (unsigned long long*)i->buffer(),  i->length());
       break;
     case DataTypeInfo::FLOAT:            // float
-      tar += saveItem(tar, (float*)(*i)->buffer(), (*i)->length());
+      tar += saveItem(tar, (float*)i->buffer(), i->length());
       break;
     case DataTypeInfo::DOUBLE:            // double
-      tar += saveItem(tar, (double*)(*i)->buffer(), (*i)->length());
+      tar += saveItem(tar, (double*)i->buffer(), i->length());
       break;
     default:
       break;
@@ -365,53 +360,50 @@ StatusCode RootHistCnv::RCWNTupleCnv::readData(TTree* rtree,
 
   ievt++;
 
-  INTuple::ItemContainer& cols = ntup->items();
-  char * src = ntup->buffer();
-
   // copy data from ntup->buffer() to ntup->items()->buffer()
 
-  for (INTuple::ItemContainer::iterator i = cols.begin(); i != cols.end(); i++ )   {
+  char *src = ntup->buffer();
+  for ( auto &i : ntup->items() ) {
 
-
-    switch( (*i)->type() )   {
+    switch( i->type() )   {
     case DataTypeInfo::BOOL:              // bool
-      src += loadItem(src, (bool*)(*i)->buffer(), (*i)->length());
+      src += loadItem(src, (bool*)i->buffer(), i->length());
       break;
     case DataTypeInfo::CHAR:              // char
-      src += loadItem(src, (char*)(*i)->buffer(), (*i)->length());
+      src += loadItem(src, (char*)i->buffer(), i->length());
       break;
     case DataTypeInfo::SHORT:             // short
-      src += loadItem(src, (short*)(*i)->buffer(), (*i)->length());
+      src += loadItem(src, (short*)i->buffer(), i->length());
       break;
     case DataTypeInfo::INT:             // short
-      src += loadItem(src, (int*)(*i)->buffer(), (*i)->length());
+      src += loadItem(src, (int*)i->buffer(), i->length());
       break;
     case DataTypeInfo::LONG:             // long
-      src += loadItem(src, (long*)(*i)->buffer(), (*i)->length());
+      src += loadItem(src, (long*)i->buffer(), i->length());
       break;
     case DataTypeInfo::LONGLONG:         // long long
-      src += loadItem(src, (long long*)(*i)->buffer(), (*i)->length());
+      src += loadItem(src, (long long*)i->buffer(), i->length());
       break;
     case DataTypeInfo::UCHAR:             // unsigned char
-      src += loadItem(src, (unsigned char*)(*i)->buffer(), (*i)->length());
+      src += loadItem(src, (unsigned char*)i->buffer(), i->length());
       break;
     case DataTypeInfo::USHORT:            // unsigned short
-      src += loadItem(src, (unsigned short*)(*i)->buffer(), (*i)->length());
+      src += loadItem(src, (unsigned short*)i->buffer(), i->length());
       break;
     case DataTypeInfo::UINT:            // unsigned short
-      src += loadItem(src, (unsigned int*)(*i)->buffer(), (*i)->length());
+      src += loadItem(src, (unsigned int*)i->buffer(), i->length());
       break;
     case DataTypeInfo::ULONG:            // unsigned long
-      src += loadItem(src, (unsigned long*)(*i)->buffer(), (*i)->length());
+      src += loadItem(src, (unsigned long*)i->buffer(), i->length());
       break;
     case DataTypeInfo::ULONGLONG:        // unsigned long long
-      src += loadItem(src, (unsigned long long*)(*i)->buffer(), (*i)->length());
+      src += loadItem(src, (unsigned long long*)i->buffer(), i->length());
       break;
     case DataTypeInfo::FLOAT:            // float
-      src += loadItem(src, (float*)(*i)->buffer(), (*i)->length());
+      src += loadItem(src, (float*)i->buffer(), i->length());
       break;
     case DataTypeInfo::DOUBLE:            // unsigned short
-      src += loadItem(src, (double*)(*i)->buffer(), (*i)->length());
+      src += loadItem(src, (double*)i->buffer(), i->length());
       break;
     default:
       break;
@@ -431,7 +423,7 @@ StatusCode RootHistCnv::RCWNTupleCnv::load(TTree* tree, INTuple*& refpObject )
 
   StatusCode status;
 
-  NTuple::Tuple *pObj = 0;
+  NTuple::Tuple *pObj = nullptr;
 
   std::string title = tree->GetTitle();
   log << MSG::VERBOSE << "loading CWNT " << title << " at: "
@@ -440,12 +432,12 @@ StatusCode RootHistCnv::RCWNTupleCnv::load(TTree* tree, INTuple*& refpObject )
   status = m_ntupleSvc->create(CLID_ColumnWiseTuple, title, pObj);
   INTuple* ntup = dynamic_cast<INTuple*>(pObj);
 
-  INTupleItem* item=0;
+  INTupleItem* item=nullptr;
 
   std::string itemName, indexName, item_type, itemTitle, blockName;
   // long numEnt, numVar;
   long size, totsize=0;
-  std::list< std::pair<TLeaf*,int> > itemList;
+  std::vector< std::pair<TLeaf*,int> > itemList;
 
   // numEnt = (int)tree->GetEntries();
   // numVar = tree->GetNbranches();
@@ -538,7 +530,7 @@ StatusCode RootHistCnv::RCWNTupleCnv::load(TTree* tree, INTuple*& refpObject )
 
       hasRange = tl->IsRange();
 
-      itemList.push_back(std::pair<TLeaf*,int>(tl,itemSize));
+      itemList.emplace_back(tl,itemSize);
 
 
       // Integer
@@ -615,16 +607,13 @@ StatusCode RootHistCnv::RCWNTupleCnv::load(TTree* tree, INTuple*& refpObject )
   log << MSG::DEBUG << "Total buffer size of NTuple: " << totsize
       << " Bytes." << endmsg;
 
-  char* buf = new char[totsize];
+  char* buf = ntup->setBuffer( new char[totsize] );
   char* bufpos = buf;
 
-  ntup->setBuffer(buf);
-
-  std::list< std::pair<TLeaf*,int> >::const_iterator iitr = itemList.begin();
   int ts = 0;
-  for (; iitr!= itemList.end(); ++iitr) {
-    TLeaf* leaf = (*iitr).first;
-    int isize   = (*iitr).second;
+  for (const auto& iitr : itemList) {
+    TLeaf* leaf = iitr.first;
+    int isize   = iitr.second;
 
     log << MSG::VERBOSE << "setting TBranch " << leaf->GetBranch()->GetName()
         << " buffer at " << (void*) bufpos << endmsg;

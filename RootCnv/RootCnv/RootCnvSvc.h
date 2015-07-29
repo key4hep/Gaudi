@@ -55,17 +55,17 @@ namespace Gaudi {
   protected:
 
     /// Reference to the I/O data manager
-    Gaudi::IIODataManager*      m_ioMgr;
+    Gaudi::IIODataManager*      m_ioMgr = nullptr;
     /// Reference to incident service
-    IIncidentSvc*               m_incidentSvc;
+    IIncidentSvc*               m_incidentSvc = nullptr;
     /// On writing: reference to active output stream
-    Gaudi::RootDataConnection*  m_current;
+    Gaudi::RootDataConnection*  m_current = nullptr;
     /// TClass pointer to reference class
     TClass*                     m_classRefs;
     /// TClass pointer to DataObject class
     TClass*                     m_classDO;
     /// Setup structure (ref-counted) and passed to data connections
-    RootConnectionSetup*        m_setup;
+    RootConnectionSetup*        m_setup = nullptr;
     /// Property: ROOT section name
     std::string                 m_currSection;
 
@@ -93,7 +93,7 @@ namespace Gaudi {
     std::set<std::string>       m_badFiles;
 
     /// Message streamer
-    MsgStream*                  m_log;
+    std::unique_ptr<MsgStream>  m_log;
 
     /// Helper: Get TClass for a given DataObject pointer
     TClass* getClass(DataObject* pObject);

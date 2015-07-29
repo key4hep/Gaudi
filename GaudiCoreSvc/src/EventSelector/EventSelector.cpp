@@ -22,10 +22,6 @@ DECLARE_COMPONENT(EventSelector)
 EventSelector::EventSelector(const std::string& name, ISvcLocator* svcloc )
   : base_class( name, svcloc)
 {
-  m_incidentSvc       = 0;
-  m_toolSvc           = 0;
-  m_streamCount       = 0;
-  m_firstEvent        = 0;
   m_evtPrintFrequency = 10;
   m_evtMax            = INT_MAX;
   declareProperty( "Input",      m_streamSpecs);
@@ -33,12 +29,6 @@ EventSelector::EventSelector(const std::string& name, ISvcLocator* svcloc )
   declareProperty( "EvtMax",     m_evtMax);
   declareProperty( "PrintFreq",  m_evtPrintFrequency);
   declareProperty( "StreamManager",  m_streamManager="DataStreamTool");
-  m_reconfigure = false;
-}
-
-// Standard destructor
-EventSelector::~EventSelector()
-{
 }
 
 StatusCode
@@ -50,7 +40,7 @@ EventSelector::resetCriteria(const std::string& /* criteria */,
 
 // Progress report
 void EventSelector::printEvtInfo(const EvtSelectorContext* iter) const {
-  if ( 0 != iter )  {
+  if ( iter )  {
     long count = iter->numEvent();
     // Print an message every m_evtPrintFrequency events
     if ( 0 == iter->context() )   {
@@ -100,7 +90,7 @@ EventSelector::firstOfNextStream(bool shutDown, EvtSelectorContext& iter) const 
 
   if ( status.isSuccess() )   {
 
-    if(s!=NULL) {
+    if (s) {
     if ( !s->isInitialized() )    {
       EventSelector* thisPtr = const_cast<EventSelector*>(this);
       status = thisPtr->m_streamtool->initializeStream(const_cast<EventSelectorDataStream*>(s));
@@ -109,7 +99,7 @@ EventSelector::firstOfNextStream(bool shutDown, EvtSelectorContext& iter) const 
     if ( status.isSuccess() ) {
       const IEvtSelector* sel = s->selector();
       if ( sel )    {
-        Context* ctxt = 0;
+        Context* ctxt = nullptr;
         status = sel->createContext(ctxt);
         if ( status.isSuccess() )   {
           status = sel->resetCriteria(s->criteria(), *ctxt);
@@ -353,7 +343,7 @@ EventSelector::createAddress(const Context&   refCtxt,
 // Release existing event iteration context
 StatusCode EventSelector::releaseContext(Context*& refCtxt) const  {
   const EvtSelectorContext *cpIt = dynamic_cast<const EvtSelectorContext*>(refCtxt);
-  EvtSelectorContext       *pIt  = const_cast<EvtSelectorContext*>(cpIt);
+  std::unique_ptr<EvtSelectorContext> pIt{ const_cast<EvtSelectorContext*>(cpIt) };
   if ( pIt && pIt->ID() >= 0 && pIt->ID() < (long)m_streamtool->size() ) {
     const EventSelectorDataStream* s = m_streamtool->getStream(pIt->ID());
     Context* it = pIt->context();
@@ -361,14 +351,10 @@ StatusCode EventSelector::releaseContext(Context*& refCtxt) const  {
     if ( it && sel )    {
       StatusCode sc = sel->releaseContext(it);
       if ( sc.isSuccess() )  {
-        refCtxt = 0;
-        delete pIt;
+        refCtxt = nullptr;
         return sc;
       }
     }
-  }
-  if ( pIt )   {
-    delete pIt;
   }
   return StatusCode::SUCCESS;
 }
@@ -451,7 +437,7 @@ StatusCode EventSelector::finalize()    {
     log << MSG::DEBUG << "finalize()" << endmsg;
   }
 
-  m_incidentSvc = 0;
+  m_incidentSvc = nullptr;
 
   if (m_streamtool) {
     if (m_toolSvc.isValid()) {
@@ -460,10 +446,10 @@ StatusCode EventSelector::finalize()    {
       // It should not be possible to get here
       m_streamtool->release();
     }
-    m_streamtool = 0;
+    m_streamtool = nullptr;
   }
 
-  m_toolSvc = 0;
+  m_toolSvc = nullptr;
 
   return Service::finalize();
 }

@@ -155,12 +155,10 @@ namespace Gaudi
       /// cast operator, useful for the implicit conversions
       operator const StatusCode&() const { return code() ; }
     private:
-      // default constructor is disabled
-      ExceptionGuard() ; ///< default constructor is disabled
-      // copy constructor is disabled
-      ExceptionGuard           ( const ExceptionGuard& ) ; ///< no copy
-      // assignment operator is disabled
-      ExceptionGuard& operator=( const ExceptionGuard& ) ; ///< no assignement
+      // delete default/copy constructor and assignment
+      ExceptionGuard() = delete; 
+      ExceptionGuard           ( const ExceptionGuard& ) = delete;
+      ExceptionGuard& operator=( const ExceptionGuard& ) = delete;
     protected:
       /// local handler of GaudiException
       void handle ( const GaudiException& e , MsgStream& s ) ;
@@ -238,21 +236,21 @@ namespace Gaudi
                      IAuditor::CustomEventTypeRef evt      ,
                      const StatusCode            &sc       ) ;
       /// constructor
-      AuditorGuard ( const std::string           &name     ,
+      AuditorGuard ( std::string                  name     ,
                      IAuditor*                    svc      ,
                      IAuditor::StandardEventType  evt      ) ;
       /// constructor
-      AuditorGuard ( const std::string           &name     ,
+      AuditorGuard ( std::string                  name     ,
                      IAuditor*                    svc      ,
                      IAuditor::CustomEventTypeRef evt      ) ;
 
       /// constructor
-      AuditorGuard ( const std::string           &name     ,
+      AuditorGuard ( std::string                  name     ,
                      IAuditor*                    svc      ,
                      IAuditor::StandardEventType  evt      ,
                      const StatusCode            &sc       ) ;
       /// constructor
-      AuditorGuard ( const std::string           &name     ,
+      AuditorGuard ( std::string                  name     ,
                      IAuditor*                    svc      ,
                      IAuditor::CustomEventTypeRef evt      ,
                      const StatusCode            &sc       ) ;
@@ -263,12 +261,10 @@ namespace Gaudi
       // get the status code
       const StatusCode &code () const { return *m_sc ; }
     private:
-      // the default constructor is disabled
-      AuditorGuard () ; ///< the default constructor is disabled
-      // the copy constructor is disabled
-      AuditorGuard           ( const AuditorGuard& right ) ; ///<  no copy
-      // assignement operator is disabled
-      AuditorGuard& operator=( const AuditorGuard& right ) ; ///<  no assignement
+      // delete the default/copy constructor and assigment
+      AuditorGuard () = delete;
+      AuditorGuard           ( const AuditorGuard& right ) = delete;
+      AuditorGuard& operator=( const AuditorGuard& right ) = delete;
     private :
       /// the guarded object
       INamedInterface*                     m_obj   ;

@@ -28,8 +28,8 @@ namespace
     inline bool operator() ( const std::string& v1 ,
                              const std::string& v2 ) const
     {
-      std::string::const_iterator i1 = v1.begin() ;
-      std::string::const_iterator i2 = v2.begin() ;
+      auto i1 = v1.begin() ;
+      auto i2 = v2.begin() ;
       for ( ; v1.end() != i1 && v2.end() != i2 ; ++i1 , ++i2 )
       { if ( toupper(*i1) != toupper(*i2) ) { return false ; } }
       return v1.size() == v2.size() ;
@@ -52,10 +52,7 @@ namespace
 // constructor from the interface
 // ====================================================================
 PropertyMgr::PropertyMgr(IInterface* iface)
-  : m_properties       ()
-  , m_remoteProperties ()
-  , m_todelete         ()
-  , m_pOuter           ( iface )
+  : m_pOuter           ( iface )
 {
   addRef(); // initial reference count set to 1
 }
@@ -69,22 +66,15 @@ PropertyMgr::PropertyMgr ( const PropertyMgr& right )
     base_class(right)
   , m_properties       ( right.m_properties       )
   , m_remoteProperties ( right.m_remoteProperties )
-  , m_todelete         ( right.m_todelete         )
   , m_pOuter           ( right.m_pOuter )
 {
   addRef(); // initial reference count set to 1
-  std::transform
-    ( m_todelete.begin() , m_todelete.end  () ,
-      m_todelete.begin() , std::mem_fun(&Property::clone));
-}
-// ====================================================================
-// destructor
-// ====================================================================
-PropertyMgr::~PropertyMgr()
-{
-  /// delete all owned properties
-  for ( Properties::iterator ip  = m_todelete.begin() ;
-        m_todelete.end() != ip ; ++ip ) { delete *ip ; }
+  m_todelete.reserve(right.m_todelete.size());
+  std::transform( right.m_todelete.begin() , right.m_todelete.end  () ,
+                  std::back_inserter(m_todelete) , 
+                  [](const std::unique_ptr<Property>& p) {
+          return std::unique_ptr<Property>( p->clone() ) ;
+  } );
 }
 // ====================================================================
 // assignment operator
@@ -93,17 +83,16 @@ PropertyMgr& PropertyMgr::operator=( const PropertyMgr& right )
 {
   if  ( &right == this ) { return *this ; }
   //
-  for ( Properties::iterator ip  = m_todelete.begin() ;
-        m_todelete.end() != ip ; ++ip ) { delete *ip ; }
-  //
   m_properties       = right.m_properties       ;
   m_remoteProperties = right.m_remoteProperties ;
-  m_todelete         = right.m_todelete         ;
   m_pOuter           = right.m_pOuter           ;
   //
-  std::transform
-    ( m_todelete.begin() , m_todelete.end  () ,
-      m_todelete.begin() , std::mem_fun(&Property::clone));
+  m_todelete.clear(); m_todelete.reserve(right.m_todelete.size());
+  std::transform( right.m_todelete.begin() , right.m_todelete.end  () ,
+                  std::back_inserter(m_todelete) , 
+                  [](const std::unique_ptr<Property>& p) {
+          return std::unique_ptr<Property>( p->clone() ) ;
+  } );
   //
   return *this ;
 }
@@ -128,10 +117,10 @@ Property* PropertyMgr::property
 ( const std::string&            name  ,
   const std::vector<Property*>& props ) const
 {
-  Properties::const_iterator it =
+  auto it =
     std::find_if ( props.begin() , props.end() , PropByName( name ) ) ;
   if ( props.end() != it ) { return *it ; }                // RETURN
-  return 0 ;                                               // RETURN
+  return nullptr ;                                         // RETURN
 }
 // ====================================================================
 // retrieve the property by name
@@ -141,18 +130,17 @@ Property* PropertyMgr::property
 {
   // local property ?
   Property* lp = property ( name , m_properties ) ;
-  if ( 0 != lp ) { return lp ; }                       // RETURN
+  if ( lp ) { return lp ; }                       // RETURN
   // look for remote property
   Nocase cmp ;
-  for ( RemoteProperties::const_iterator it = m_remoteProperties.begin() ;
-        m_remoteProperties.end() != it ; ++it )
+  for ( const auto& it : m_remoteProperties )
   {
-    if ( !cmp(it->first,name) ) { continue ; }   // CONTINUE
-    const IProperty* p = it->second.first ;
-    if ( 0 == p               ) { continue ; }   // CONITNUE
-    return property ( it->second.second , p->getProperties() ) ; // RETURN
+    if ( !cmp(it.first,name) ) { continue ; }   // CONTINUE
+    const IProperty* p = it.second.first ;
+    if ( !p               ) { continue ; }   // CONITNUE
+    return property ( it.second.second , p->getProperties() ) ; // RETURN
   }
-  return 0 ;                                           // RETURN
+  return nullptr ;                                           // RETURN
 }
 // ====================================================================
 /* set a property from another property
@@ -162,7 +150,7 @@ Property* PropertyMgr::property
 StatusCode PropertyMgr::setProperty( const Property& p )
 {
   Property* pp = property( p.name() ) ;
-  if ( 0 == pp            ) { return StatusCode::FAILURE ; } // RETURN
+  if ( !pp            ) { return StatusCode::FAILURE ; } // RETURN
   //
   try
   { if ( !pp->assign(p) ) { return StatusCode::FAILURE ; } } // RETURN

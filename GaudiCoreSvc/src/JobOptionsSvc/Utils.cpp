@@ -27,10 +27,9 @@ std::string gpu::replaceEnvironments(const std::string& input) {
   std::string result=input;// result
 
     const char* re = "\\$(([A-Za-z0-9_]+)|\\(([A-Za-z0-9_]+)\\))";
-    std::string::const_iterator start, end;
     boost::regex expression(re);
-    start = input.begin();
-    end = input.end();
+    auto start = input.begin();
+    auto end = input.end();
     boost::match_results<std::string::const_iterator> what;
     boost::match_flag_type flags = boost::match_default;
     while ( boost::regex_search(start, end, what, expression, flags ) )

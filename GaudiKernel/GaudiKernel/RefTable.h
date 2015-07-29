@@ -77,19 +77,13 @@ protected:
   }
   /// Find Reference from it's source entry
   EntryType* i_reference(const KeyType* from)  {
-    iterator i = m_table.find( from );
-    if ( i != 0 )    {
-      return &((*i).second);
-    }
-    return 0;
+    auto i = m_table.find( from );
+    return  i != 0 ?  &((*i).second) : nullptr;
   }
   /// Find Reference from it's source entry (CONST)
   const EntryType* i_reference(const KeyType* from)  const  {
-    const_iterator i = m_table.find( from );
-    if ( i != m_table.end() )    {
-      return &((*i).second);
-    }
-    return 0;
+    auto i = m_table.find( from );
+    return  i != m_table.end() ?  &((*i).second) : nullptr;
   }
 
 public:
@@ -164,7 +158,7 @@ public:
   {
   }
   /// Standard Destructor
-  virtual ~RefTable1to1()   {
+  ~RefTable1to1() override = default;
   }
 	/// Retrieve reference to class definition structure
 	virtual const CLID& clID() const  {
@@ -214,8 +208,8 @@ public:
   : RefTableBase< FROM , SmartRefVector<TO> >(clid, len)    {
   }
   /// Standard Destructor
-  virtual ~RefTable1toN()   {
-  }
+  ~RefTable1toN() override = default;
+  
 	/// Retrieve reference to class definition structure
 	virtual const CLID& clID() const  {
     return m_clid;

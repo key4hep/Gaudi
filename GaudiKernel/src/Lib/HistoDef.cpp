@@ -22,41 +22,37 @@
  *  @param low  the low  edge of the histogram
  *  @param high the high edge of the histogram
  *  @param bins number of bins
- *  @param title the historgam title
+ *  @param title the histogram title
  */
 // ============================================================================
 Gaudi::Histo1DDef::Histo1DDef
 ( const double       low   ,
   const double       high  ,
   const int          bins  ,
-  const std::string& title )
-  : m_title ( title )
+  std::string title )
+  : m_title ( std::move(title) )
   , m_low   ( low   )
   , m_high  ( high  )
   , m_bins  ( bins  )
 {}
 // ============================================================================
 /*  full constructor from edges, #bins and the title
- *  @param title the historgam title
+ *  @param title the histogram title
  *  @param low  the low  edge of the histogram
  *  @param high the high edge of the histogram
  *  @param bins number of bins
  */
 // ============================================================================
 Gaudi::Histo1DDef::Histo1DDef
-( const std::string& title ,
+( std::string title ,
   const double       low   ,
   const double       high  ,
   const int          bins  )
-  : m_title ( title )
+  : m_title ( std::move(title) )
   , m_low   ( low   )
   , m_high  ( high  )
   , m_bins  ( bins  )
 {}
-// ============================================================================
-// destructor
-// ============================================================================
-Gaudi::Histo1DDef::~Histo1DDef(){}
 // ============================================================================
 // printout of the histogram definition
 // ============================================================================
@@ -142,7 +138,7 @@ Gaudi::Histos::book
 /*  helper function to book 1D-histogram
  *  @param svc pointer to Histogram Service
  *  @param dir  directory path in Histogram Data Store
- *  @param id  historgam identifier
+ *  @param id  histogram identifier
  *  @param hist histogram desctriprion
  */
 // ============================================================================
@@ -162,7 +158,7 @@ Gaudi::Histos::book
 /*  helper function to book 1D-histogram
  *  @param svc pointer to Histogram Service
  *  @param dir  directory path in Histogram Data Store
- *  @param id  historgam identifier
+ *  @param id  histogram identifier
  *  @param hist histogram desctriprion
  */
 // ============================================================================

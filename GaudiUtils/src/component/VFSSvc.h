@@ -27,25 +27,25 @@ class IAlgTool;
 class VFSSvc: public extends1<Service, IFileAccess> {
 public:
   /// Initialize Service
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
   /// Finalize Service
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
 
   /// @see IFileAccess::open
-  virtual std::unique_ptr<std::istream> open(const std::string &url);
+  std::unique_ptr<std::istream> open(const std::string &url) override;
 
   /// @see IFileAccess::protocols
-  virtual const std::vector<std::string> &protocols() const;
+  const std::vector<std::string> &protocols() const override;
 
   /// Standard constructor
   VFSSvc(const std::string& name, ISvcLocator* svcloc);
 
-  virtual ~VFSSvc(); ///< Destructor
+  ~VFSSvc() override = default; ///< Destructor
 
 private:
 
   /// Names of the handlers to use
-  std::vector<std::string> m_urlHandlersNames;
+  std::vector<std::string> m_urlHandlersNames = { { {"FileReadTool"} } };
 
   /// Protocols registered
   std::vector<std::string> m_protocols;
@@ -60,7 +60,7 @@ private:
   SmartIF<IToolSvc> m_toolSvc;
 
   /// List of acquired tools (needed to release them).
-  std::list<IAlgTool*> m_acquiredTools;
+  std::vector<IAlgTool*> m_acquiredTools;
 
 };
 

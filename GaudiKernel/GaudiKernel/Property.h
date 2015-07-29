@@ -97,10 +97,10 @@ protected:
   /// constructor from the property name and the type
   Property
   ( const std::type_info& type      ,
-    const std::string&    name = "" ) ;
+    std::string    name = "" ) ;
   /// constructor from the property name and the type
   Property
-  ( const std::string&    name      ,
+  ( std::string    name      ,
     const std::type_info& type      ) ;
   /// copy constructor
   Property           ( const Property& right ) ;
@@ -118,9 +118,9 @@ private:
   const std::type_info*    m_typeinfo       ;
 protected:
   // call back functor for reading
-  mutable PropertyCallbackFunctor* m_readCallBack   ;
+  mutable std::unique_ptr<PropertyCallbackFunctor> m_readCallBack;
   // call back functor for update
-  PropertyCallbackFunctor* m_updateCallBack ;
+  std::unique_ptr<PropertyCallbackFunctor> m_updateCallBack;
 };
 // ============================================================================
 #include "GaudiKernel/PropertyCallbackFunctor.h"
@@ -408,7 +408,7 @@ protected:
     , m_verifier ( verifier )
   {}
   /// virtual destructor
-  virtual ~PropertyWithVerifier() {}
+  ~PropertyWithVerifier() override = default;
   // ==========================================================================
 public:
   // ==========================================================================
@@ -417,7 +417,7 @@ public:
   /// update the value of the property/check the verifier
   bool set( const TYPE& value ) ;
   /// implementation of PropertyWithValue::setValue
-  virtual bool setValue( const TYPE& value ) { return set( value ) ; }
+  bool setValue( const TYPE& value ) override { return set( value ) ; }
   /// templated assignment
   template <class OTHER,class OTHERVERIFIER>
   PropertyWithVerifier& operator=
@@ -529,9 +529,9 @@ public:
   /// copy constructor (must be!)
   SimpleProperty ( const SimpleProperty& right ) ;
   /// virtual Destructor
-  virtual ~SimpleProperty() ;
+  ~SimpleProperty() override;
   /// implementation of Property::clone
-  virtual SimpleProperty* clone() const ;
+  SimpleProperty* clone() const override;
   /// assignment form the value
   SimpleProperty& operator=( const TYPE& value ) ;
   /// assignment form the other property type

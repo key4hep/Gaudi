@@ -109,7 +109,7 @@ namespace GaudiUtils
     // ---- Constructors
 
     /// Standard constructor
-    Map(): m_map() {}
+    Map() = default ;
 
     /// Constructor from a standard map
     Map(const map_type& other): m_map(other) {}
@@ -118,10 +118,10 @@ namespace GaudiUtils
     // Map(const Map& other): m_map(other.m_map) {}
     /// Construct from a subset.
     template <typename In>
-    Map(In first, In last): m_map(first,last) {}
+    Map(In&& first, In&& last): m_map(std::forward<In>(first),std::forward<In>(last)) {}
 
     /// Virtual destructor. You can inherit from this map type.
-    virtual ~Map() {}
+    virtual ~Map() = default;
 
     // ---- std::map interface
 
@@ -162,17 +162,17 @@ namespace GaudiUtils
 
     //    -- list operations
 
-    inline std::pair<iterator,bool> insert(const value_type &val) { return m_map.insert(val); }
-    inline std::pair<iterator,bool> insert
-    ( const key_type    & key ,
-      const mapped_type & val ) { return insert ( value_type ( key , val ) ) ; }
+    template <typename ValueType>
+    inline std::pair<iterator,bool> insert(ValueType&& val) { return m_map.insert(std::forward<ValueType>(val)); }
+    inline std::pair<iterator,bool> insert(value_type&& val) { return m_map.insert(std::forward<value_type>(val)); }
     template <typename In>
-    inline void insert(In first, In last) { m_map.insert(first,last); }
-    inline iterator insert( iterator /* pos */ , const value_type &val)
-    { return m_map.insert( /* pos, */ val ).first ; }
-    inline void erase(iterator pos) { m_map.erase(pos); }
+    inline void insert(In&& first, In&& last) { m_map.insert(std::forward<In>(first),std::forward<In>(last)); }
+    template <typename ValueType>
+    inline iterator insert( iterator /* pos */ , ValueType && val)
+    { return m_map.insert( /* pos, */ std::forward<ValueType>(val) ).first ; }
+    inline iterator erase(const_iterator pos) { return m_map.erase(pos); }
     inline size_type erase(const key_type &key) { return m_map.erase(key); }
-    inline void erase(iterator first, iterator last) { m_map.erase(first,last); }
+    inline iterator erase(const_iterator first, const_iterator last) { return m_map.erase(first,last); }
     inline void clear() { m_map.clear(); }
 
     //    -- container operations
@@ -209,10 +209,9 @@ namespace GaudiUtils
     inline const result_type &operator() ( const argument_type &key ) const
     {
       // static const result_type s_null_value;
-      const_iterator it = m_map.find(key);
-      if ( it != m_map.end() ) { return it->second ; }
-      /// return the default value
-      return s_null_value;  // return the default value
+      auto  it = m_map.find(key);
+      /// return the default value if not present
+      return  it != m_map.end() ? it->second : s_null_value;
     }
     // ========================================================================
     /** Access elements of a const Map.
@@ -247,31 +246,26 @@ namespace GaudiUtils
      */
     inline const result_type & at ( const argument_type &key ) const
     {
-      const_iterator it = m_map.find ( key ) ;
-      if ( it == m_map.end() ) { this->throw_out_of_range_exception () ; }
-      return it->second ;
+      return m_map.at(key);
     }
     // ========================================================================
     /// Merge two maps.
     inline Map& merge ( const map_type& other )
     {
-      for ( typename map_type::const_iterator it = other.begin() ;
-            other.end() != it ; ++it ) { (*this)[it->first] = it->second ; }
+      m_map.insert( std::begin(other), std::end(other) );
       return *this;
     }
     /// Merge two maps.
     inline Map& merge ( const Map& other )
     {
-      for ( const_iterator it = other.begin() ;
-            other.end() != it ; ++it ) { (*this)[it->first] = it->second ; }
+      m_map.insert( std::begin(other), std::end(other) );
       return *this;
     }
     /// Merge two maps.
     template <class K1,class K2, class K3>
     inline Map& merge ( const Map<K1,K2,K3>& other )
     {
-      for ( typename Map<K1,K2,K3>::const_iterator it = other.begin() ;
-            other.end() != it ; ++it ) { (*this)[it->first] = it->second ; }
+      m_map.insert( std::begin(other), std::end(other) );
       return *this;
     }
     // update the key
@@ -296,9 +290,7 @@ namespace GaudiUtils
     {
       if ( index >= size() )
       { this->throw_out_of_range_exception () ; }
-      const_iterator it = this->begin() ;
-      std::advance ( it , index ) ;
-      return it -> first ;
+      return std::next ( this->begin() , index )->first ;
     }
     /** useful method for python decoration:
      *  @param index (INPUT) the index
@@ -309,9 +301,7 @@ namespace GaudiUtils
     {
       if ( index >= size() )
       { this->throw_out_of_range_exception () ; }
-      const_iterator it = this->begin() ;
-      std::advance ( it , index ) ;
-      return it -> second ;
+      return std::next( this->begin() , index )->second ;
     }
     // ========================================================================
   };
@@ -326,4 +316,3 @@ namespace GaudiUtils
 // The END
 // ============================================================================
 #endif // GAUDIKERNEL_MAP_H
-// ============================================================================

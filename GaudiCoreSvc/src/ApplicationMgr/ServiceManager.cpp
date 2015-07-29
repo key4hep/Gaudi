@@ -13,6 +13,7 @@
 
 #include <iostream>
 #include <cassert>
+#include <algorithm>
 
 #define ON_DEBUG if (msgLevel(MSG::DEBUG))
 #define ON_VERBOSE if (msgLevel(MSG::VERBOSE))
@@ -22,6 +23,18 @@
 
 /// needed when no service is found or could be returned
 static SmartIF<IService> no_service;
+
+/// utility for various calls...
+namespace {
+    template <typename C>
+    std::vector<IService*> copyActiveSvc(const C& lst) {
+       std::vector<IService*> v; v.reserve(lst.size());
+       for(auto& i : lst) {
+           if (i.active) v.push_back(i.service.get());
+       }
+       return v;
+    }
+}
 
 // constructor
 ServiceManager::ServiceManager(IInterface* application):
@@ -38,8 +51,8 @@ ServiceManager::ServiceManager(IInterface* application):
 // destructor
 ServiceManager::~ServiceManager() {
   //-- inform the orphan services that I am gone....
-  for (ListSvc::iterator it = m_listsvc.begin(); it != m_listsvc.end(); it++ ) {
-    it->service->setServiceManager(0);
+  for (auto& it : m_listsvc) {
+    it.service->setServiceManager(nullptr);
   }
 }
 
@@ -62,15 +75,15 @@ SmartIF<IService>& ServiceManager::createService(const Gaudi::Utils::TypeNameStr
   std::string type = typeName.type();
   if (!typeName.haveType()) { // the type is not explicit
     // see we have some specific type mapping for the name
-    MapType::iterator it = m_maptype.find(typeName.name());
+    auto it = m_maptype.find(typeName.name());
     if( it != m_maptype.end() ) {
-      type = (*it).second; // use the declared type
+      type = it->second; // use the declared type
     }
   }
 
   /// @FIXME: what does this mean?
-  std::string::size_type ip;
-  if ( (ip = type.find("__")) != std::string::npos) {
+  auto ip = type.find("__");
+  if ( ip != std::string::npos) {
     type.erase(ip,type.length());
   }
 
@@ -84,7 +97,7 @@ SmartIF<IService>& ServiceManager::createService(const Gaudi::Utils::TypeNameStr
       return no_service;
     }
     service->setServiceManager(this);
-    return m_listsvc.back().service;
+    return m_listsvc.back().service; // DANGER: returns a reference to a SmartIF in m_listsvc, and hence does no longer allow relocations of those...
   }
   fatal() << "No Service factory for " << type << " available." << endmsg;
   return no_service;
@@ -95,12 +108,12 @@ SmartIF<IService>& ServiceManager::createService(const Gaudi::Utils::TypeNameStr
 StatusCode ServiceManager::addService(IService* svc, int prio)
 //------------------------------------------------------------------------------
 {
-  ListSvc::iterator it = find(svc);
+  auto it = find(svc);
   if (it != m_listsvc.end()) {
     it->priority = prio; // if the service is already known, it is equivalent to a setPriority
     it->active = true;   // and make it active
   } else {
-    m_listsvc.push_back(ServiceItem(svc,prio,true));
+    m_listsvc.emplace_back(svc,prio,true);
   }
   return StatusCode::SUCCESS;
 }
@@ -110,15 +123,15 @@ StatusCode ServiceManager::addService(IService* svc, int prio)
 StatusCode ServiceManager::addService(const Gaudi::Utils::TypeNameString& typeName, int prio)
 //------------------------------------------------------------------------------
 {
-  ListSvc::iterator it = find(typeName.name()); // try to find the service by name
+  auto it = find(typeName.name()); // try to find the service by name
   if (it == m_listsvc.end()) { // not found
     // If the service does not exist, we create it
-    SmartIF<IService> &svc = createService(typeName);
+    SmartIF<IService>& svc = createService(typeName); // WARNING: svc is now a reference to something that lives in m_listsvc
     if (svc.isValid()) {
       it = find(svc.get()); // now it is in the list because createService added it
       it->priority = prio;
       StatusCode sc = StatusCode(StatusCode::SUCCESS, true);
-      if (targetFSMState() >= Gaudi::StateMachine::INITIALIZED) {
+      if (targetFSMState() >= Gaudi::StateMachine::INITIALIZED) { // WARNING: this can trigger a recursion!!!
         sc = svc->sysInitialize();
         if (sc.isSuccess() && targetFSMState() >= Gaudi::StateMachine::RUNNING) {
           sc = svc->sysStart();
@@ -136,7 +149,7 @@ StatusCode ServiceManager::addService(const Gaudi::Utils::TypeNameString& typeNa
         // (we care more about order of initialization than of creation)
         m_listsvc.push_back(*it);
         m_listsvc.erase(it);
-        it = --m_listsvc.end(); // last entry (the iterator was invalidated by erase)
+        it = std::prev(std::end(m_listsvc)); // last entry (the iterator was invalidated by erase)
       }
     } else {
       return StatusCode::FAILURE;
@@ -159,7 +172,7 @@ SmartIF<IService> &ServiceManager::service(const Gaudi::Utils::TypeNameString &t
   // Acquire the RAII lock to avoid simultaneous attempts from different threads to initialize a service
   std::lock_guard<std::recursive_mutex> lck(m_svcinitmutex);
 
-  ListSvc::iterator it = find(name);
+  auto it = find(name);
 
   if (it !=  m_listsvc.end()) {
     if (m_loopCheck &&
@@ -192,10 +205,12 @@ SmartIF<IService> &ServiceManager::service(const Gaudi::Utils::TypeNameString &t
 const std::list<IService*>& ServiceManager::getServices( ) const
 //------------------------------------------------------------------------------
 {
-  m_listOfPtrs.clear();
-  for (ListSvc::const_iterator it = m_listsvc.begin(); it != m_listsvc.end(); ++it) {
-    m_listOfPtrs.push_back(const_cast<IService*>(it->service.get()));
-  }
+  m_listOfPtrs.clear(); 
+  std::transform( std::begin(m_listsvc), std::end(m_listsvc),
+                  std::back_inserter(m_listOfPtrs),
+                  [](ListSvc::const_reference i) {
+                      return const_cast<IService*>(i.service.get());
+  });
   return m_listOfPtrs;
 }
 
@@ -210,7 +225,7 @@ bool ServiceManager::existsService( const std::string& name) const
 StatusCode ServiceManager::removeService(IService* svc)
 //------------------------------------------------------------------------------
 {
-  ListSvc::iterator it = find(svc);
+  auto it = find(svc);
   if (it != m_listsvc.end()) {
     m_listsvc.erase(it);
     return StatusCode(StatusCode::SUCCESS,true);
@@ -222,7 +237,7 @@ StatusCode ServiceManager::removeService(IService* svc)
 StatusCode ServiceManager::removeService(const std::string& name)
 //------------------------------------------------------------------------------
 {
-  ListSvc::iterator it = find(name);
+  auto it = find(name);
   if (it != m_listsvc.end()) {
     m_listsvc.erase(it);
     return StatusCode::SUCCESS;
@@ -235,11 +250,11 @@ StatusCode ServiceManager::declareSvcType( const std::string& svcname,
                                            const std::string& svctype )
 //------------------------------------------------------------------------------
 {
-  std::pair<MapType::iterator, bool> p = m_maptype.insert(std::make_pair(svcname, svctype));
-  if( p.second == false) {
+  auto p = m_maptype.insert(std::make_pair(svcname, svctype));
+  if( !p.second ) {
     m_maptype.erase ( p.first );
     p = m_maptype.insert(std::make_pair(svcname, svctype) );
-    if( p.second == false) return StatusCode::FAILURE;
+    if( !p.second ) return StatusCode::FAILURE;
   }
   return StatusCode::SUCCESS;
 }
@@ -248,23 +263,22 @@ StatusCode ServiceManager::declareSvcType( const std::string& svcname,
 StatusCode ServiceManager::initialize()
 //------------------------------------------------------------------------------
 {
-  m_listsvc.sort(); // ensure that the list is ordered by priority
+  // ensure that the list is ordered by priority
+  m_listsvc.sort();
   // we work on a copy to avoid to operate twice on the services created on demand
-  // (which are already in the correct state.
-  ListSvc tmpList(m_listsvc);
+  // which are already in the correct state.
 
   StatusCode sc(StatusCode::SUCCESS, true);
   // call initialize() for all services
-  for (ListSvc::iterator it = tmpList.begin(); it != tmpList.end(); ++it ) {
-    if (!it->active) continue; // only act on active services
-    const std::string& name = it->service->name();
-    switch (it->service->FSMState()) {
+  for (auto& it : copyActiveSvc(m_listsvc) ) {
+    const std::string& name = it->name();
+    switch (it->FSMState()) {
     case Gaudi::StateMachine::INITIALIZED:
       DEBMSG << "Service " << name << " already initialized" << endmsg;
       break;
     case Gaudi::StateMachine::OFFLINE:
       DEBMSG << "Initializing service " << name << endmsg;
-      sc = it->service->sysInitialize();
+      sc = it->sysInitialize();
       if( !sc.isSuccess() ) {
         error() << "Unable to initialize Service: " << name << endmsg;
         return sc;
@@ -272,7 +286,7 @@ StatusCode ServiceManager::initialize()
     default:
       error() << "Service " << name
           << " not in the correct state to be initialized ("
-          << it->service->FSMState() << ")" << endmsg;
+          << it->FSMState() << ")" << endmsg;
       return StatusCode::FAILURE;
     }
   }
@@ -283,24 +297,23 @@ StatusCode ServiceManager::initialize()
 StatusCode ServiceManager::start()
 //------------------------------------------------------------------------------
 {
-  m_listsvc.sort(); // ensure that the list is ordered by priority
+  // ensure that the list is ordered by priority
+  m_listsvc.sort();
   // we work on a copy to avoid to operate twice on the services created on demand
   // (which are already in the correct state.
-  ListSvc tmpList(m_listsvc);
-
+  // only act on active services
   StatusCode sc(StatusCode::SUCCESS, true);
   // call initialize() for all services
-  for (ListSvc::iterator it = tmpList.begin(); it != tmpList.end(); ++it ) {
-    if (!it->active) continue; // only act on active services
-    const std::string& name = it->service->name();
-    switch (it->service->FSMState()) {
+  for (auto& it : copyActiveSvc(m_listsvc)) {
+    const std::string& name = it->name();
+    switch (it->FSMState()) {
     case Gaudi::StateMachine::RUNNING:
       DEBMSG << "Service " << name
           << " already started" << endmsg;
       break;
     case Gaudi::StateMachine::INITIALIZED:
       DEBMSG << "Starting service " << name << endmsg;
-      sc = it->service->sysStart();
+      sc = it->sysStart();
       if( !sc.isSuccess() ) {
         error() << "Unable to start Service: " << name << endmsg;
         return sc;
@@ -308,7 +321,7 @@ StatusCode ServiceManager::start()
     default:
       error() << "Service " << name
           << " not in the correct state to be started ("
-          << it->service->FSMState() << ")" << endmsg;
+          << it->FSMState() << ")" << endmsg;
       return StatusCode::FAILURE;
     }
   }
@@ -320,24 +333,24 @@ StatusCode ServiceManager::start()
 StatusCode ServiceManager::stop()
 //------------------------------------------------------------------------------
 {
-  m_listsvc.sort(); // ensure that the list is ordered by priority
+  // ensure that the list is ordered by priority
+  m_listsvc.sort();
   // we work on a copy to avoid to operate twice on the services created on demand
-  // (which are already in the correct state.
-  ListSvc tmpList(m_listsvc);
+  // which are already in the correct state.
+  // only act on active services
+  auto tmpList = copyActiveSvc(m_listsvc);
 
   StatusCode sc(StatusCode::SUCCESS, true);
-  ListSvc::reverse_iterator it;
   // call stop() for all services
-  for (it = tmpList.rbegin(); it != tmpList.rend(); ++it ) {
-    if (!it->active) continue; // only act on active services
-    const std::string& name = it->service->name();
-    switch (it->service->FSMState()) {
+  for (auto it = tmpList.rbegin(); it != tmpList.rend(); ++it ) {
+    const std::string& name = (*it)->name();
+    switch ((*it)->FSMState()) {
     case Gaudi::StateMachine::INITIALIZED:
       DEBMSG << "Service " << name << " already stopped" << endmsg;
       break;
     case Gaudi::StateMachine::RUNNING:
       DEBMSG << "Stopping service " << name << endmsg;
-      sc = it->service->sysStop();
+      sc = (*it)->sysStop();
       if( !sc.isSuccess() ) {
         error() << "Unable to stop Service: " << name << endmsg;
         return sc;
@@ -345,7 +358,7 @@ StatusCode ServiceManager::stop()
     default:
       DEBMSG << "Service " << name
           << " not in the correct state to be stopped ("
-          << it->service->FSMState() << ")" << endmsg;
+          << (*it)->FSMState() << ")" << endmsg;
       return StatusCode::FAILURE;
     }
   }
@@ -356,19 +369,17 @@ StatusCode ServiceManager::stop()
 StatusCode ServiceManager::reinitialize()
 //------------------------------------------------------------------------------
 {
-  m_listsvc.sort(); // ensure that the list is ordered by priority
+  // ensure that the list is ordered by priority
+  m_listsvc.sort();
   // we work on a copy to avoid to operate twice on the services created on demand
-  // (which are already in the correct state.
-  ListSvc tmpList(m_listsvc);
-
+  // which are already in the correct state.
+  // only act on active services
   StatusCode sc(StatusCode::SUCCESS, true);
-  ListSvc::iterator it;
   // Re-Initialize all services
-  for ( it = tmpList.begin(); it != tmpList.end(); ++it ) {
-    if (!it->active) continue; // only act on active services
-    sc = it->service->sysReinitialize();
+  for (auto& it : copyActiveSvc(m_listsvc)) {
+    sc = it->sysReinitialize();
     if( !sc.isSuccess() ) {
-      error() << "Unable to re-initialize Service: " << it->service->name() << endmsg;
+      error() << "Unable to re-initialize Service: " << it->name() << endmsg;
       return StatusCode::FAILURE;
     }
   }
@@ -379,19 +390,17 @@ StatusCode ServiceManager::reinitialize()
 StatusCode ServiceManager::restart()
 //------------------------------------------------------------------------------
 {
-  m_listsvc.sort(); // ensure that the list is ordered by priority
+  // ensure that the list is ordered by priority
+  m_listsvc.sort();
   // we work on a copy to avoid to operate twice on the services created on demand
-  // (which are already in the correct state.
-  ListSvc tmpList(m_listsvc);
-
+  // which are already in the correct state.
+  // only act on active services
   StatusCode sc(StatusCode::SUCCESS, true);
-  ListSvc::iterator it;
   // Re-Start all services
-  for ( it = tmpList.begin(); it != tmpList.end(); ++it ) {
-    if (!it->active) continue; // only act on active services
-    sc = it->service->sysRestart();
+  for (auto& it : copyActiveSvc(m_listsvc)) {
+    sc = it->sysRestart();
     if( !sc.isSuccess() ) {
-      error() << "Unable to re-start Service: " << it->service->name() << endmsg;
+      error() << "Unable to re-start Service: " << it->name() << endmsg;
       return StatusCode::FAILURE;
     }
   }
@@ -430,24 +439,24 @@ StatusCode ServiceManager::finalize()
   // make sure the StatusCodeSvc gets finalized really late:
   setPriority("StatusCodeSvc",-9999).ignore();
 
-  m_listsvc.sort(); // ensure that the list is ordered by priority
+  // ensure that the list is ordered by priority
+  m_listsvc.sort();
   // dump();
 
   StatusCode sc(StatusCode::SUCCESS, true);
   {
     // we work on a copy to avoid to operate twice on the services created on demand
-    // (which are already in the correct state).
-    ListSvc tmpList(m_listsvc);
+    // which are already in the correct state.
+    // only act on active services
+    auto tmpList = copyActiveSvc(m_listsvc);
 
     // call finalize() for all services in reverse order
-    ListSvc::reverse_iterator rit;
-    for (rit = tmpList.rbegin(); rit != tmpList.rend(); ++rit ) {
-      if (!rit->active) continue; // only act on active services
-      const std::string& name = rit->service->name();
+    for (auto rit = tmpList.rbegin(); rit != tmpList.rend(); ++rit ) {
+      const std::string& name = (*rit)->name();
       // ignore the current state for the moment
-      // if( Gaudi::StateMachine::INITIALIZED == rit->service->state() ) {
+      // if( Gaudi::StateMachine::INITIALIZED == (*rit)->state() ) {
       DEBMSG << "Finalizing service " << name << endmsg;
-      if ( !(rit->service->sysFinalize()).isSuccess() ) {
+      if ( !(*rit)->sysFinalize().isSuccess() ) {
         warning() << "Finalization of service " << name << " failed" << endmsg;
         sc = StatusCode::FAILURE;
       }
@@ -459,16 +468,13 @@ StatusCode ServiceManager::finalize()
     DEBMSG << "Will call SvcPostFinalize for " << postFinList.size() << " clients"
            << endmsg;
     Incident inc("ServiceManager", IncidentType::SvcPostFinalize);
-    std::vector<IIncidentListener*>::iterator itr;
-    for (itr = postFinList.begin(); itr != postFinList.end(); ++itr) {
-      (*itr)->handle(inc);
-    }
+    for (auto& itr : postFinList) itr->handle(inc);
   }
 
   // loop over all Active Services, removing them one by one.
   // They should be deleted because the reference counting goes to 0.
   DEBMSG << "Looping over all active services..." << endmsg;
-  ListSvc::iterator it = m_listsvc.begin();
+  auto it = m_listsvc.begin();
   while (it != m_listsvc.end()) {
     DEBMSG << "---- " << it->service->name()
 	   << " (refCount = " << it->service->refCount() << ")"
@@ -493,7 +499,7 @@ StatusCode ServiceManager::finalize()
 int
 ServiceManager::getPriority(const std::string& name) const {
 //------------------------------------------------------------------------------
-  ListSvc::const_iterator it = find(name);
+  auto it = find(name);
   return (it != m_listsvc.end()) ? it->priority: 0;
 }
 
@@ -501,12 +507,10 @@ ServiceManager::getPriority(const std::string& name) const {
 StatusCode
 ServiceManager::setPriority(const std::string& name, int prio) {
 //------------------------------------------------------------------------------
-  ListSvc::iterator it = find(name);
-  if (it != m_listsvc.end()) {
-    it->priority = prio;
-    return StatusCode::SUCCESS;
-  }
-  return StatusCode::FAILURE;
+  auto it = find(name);
+  if (it == m_listsvc.end()) return StatusCode::FAILURE;
+  it->priority = prio;
+  return StatusCode::SUCCESS;
 }
 
 //------------------------------------------------------------------------------
@@ -534,8 +538,7 @@ void ServiceManager::dump() const {
       << "=====================  listing all services  ===================\n"
       << " prior   ref name                           active\n";
 
-  ListSvc::const_iterator it;
-  for (it=m_listsvc.begin(); it != m_listsvc.end(); ++it) {
+  for (auto it=m_listsvc.begin(); it != m_listsvc.end(); ++it) {
 
     log.width(6);
     log.flags(std::ios_base::right);

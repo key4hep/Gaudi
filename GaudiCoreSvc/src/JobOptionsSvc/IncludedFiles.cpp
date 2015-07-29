@@ -24,10 +24,10 @@ bool gp::IncludedFiles::AddFile(const std::string& filename,
 // ============================================================================
 bool gp::IncludedFiles::GetPosition(const std::string& filename,
         const Position** pos) const {
-    Container::const_iterator iter = container_.find(filename);
+    auto iter = container_.find(filename);
     if (iter != container_.end()) {
         *pos = &iter->second;
-        assert(pos != NULL);
+        assert(pos);
         return true;
     }
     return false;

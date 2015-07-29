@@ -5,6 +5,8 @@
 // ============================================================================
 // Include files
 // ============================================================================
+#include <memory>
+// ============================================================================
 // from CLHEP
 // ============================================================================
 #include "CLHEP/GenericFunctions/GenericFunctions.hh"
@@ -43,7 +45,7 @@ namespace Genfun
       /// copy constructor
       GSLFunctionWithError ( const GSLFunctionWithError& ) ;
       /// destructor
-      virtual ~GSLFunctionWithError () ;
+      virtual ~GSLFunctionWithError ()  = default;
       /// the main method
       virtual double operator() (       double    x ) const ;
       virtual double operator() ( const Argument& x ) const ;
@@ -64,7 +66,7 @@ namespace Genfun
       GSLFunctionWithError& operator=( const GSLFunctionWithError & ) ;
     private:
       Function        m_function ;
-      gsl_sf_result*  m_result   ;
+      std::unique_ptr<gsl_sf_result>  m_result   ;
     };
 
     class GAUDI_API GSLFunctionWithMode : public AbsFunction
@@ -82,7 +84,7 @@ namespace Genfun
       /// copy constructor
       GSLFunctionWithMode ( const GSLFunctionWithMode& ) ;
       /// destructor
-      virtual ~GSLFunctionWithMode () ;
+      virtual ~GSLFunctionWithMode () = default;
       /// the main method
       virtual double operator() (       double    x ) const ;
       virtual double operator() ( const Argument& x ) const ;
@@ -120,7 +122,7 @@ namespace Genfun
       /// copy constructor
       GSLFunctionWithModeAndError ( const GSLFunctionWithModeAndError& ) ;
       /// destructor
-      virtual ~GSLFunctionWithModeAndError () ;
+      virtual ~GSLFunctionWithModeAndError () = default;
       /// the main method
       virtual double operator() (       double    x ) const ;
       virtual double operator() ( const Argument& x ) const ;
@@ -143,8 +145,8 @@ namespace Genfun
       ( const GSLFunctionWithModeAndError & ) ;
     private:
       Function        m_function ;
-      gsl_mode_t*     m_mode     ;
-      gsl_sf_result*  m_result   ;
+      std::unique_ptr<gsl_mode_t>     m_mode     ;
+      std::unique_ptr<gsl_sf_result>  m_result   ;
     };
 
   } // end of namespace GaudiMath Implemnentation

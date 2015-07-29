@@ -103,33 +103,28 @@ namespace Gaudi {
   template <>
   void Generic2D<AIDA::IHistogram2D,TH2D>::adoptRepresentation(TObject* rep)  {
     TH2D* imp = dynamic_cast<TH2D*>(rep);
-    if ( imp )  {
-      if ( m_rep ) delete m_rep;
-      m_rep = imp;
-      m_xAxis.initialize(m_rep->GetXaxis(),true);
-      m_yAxis.initialize(m_rep->GetYaxis(),true);
-      const TArrayD* a = m_rep->GetSumw2();
-      if ( 0 == a || (a && a->GetSize()==0) ) m_rep->Sumw2();
-      setTitle(m_rep->GetTitle());
-      return;
-    }
-    throw std::runtime_error("Cannot adopt native histogram representation.");
+    if ( !imp )  throw std::runtime_error("Cannot adopt native histogram representation.");
+    m_rep.reset( imp );
+    m_xAxis.initialize(m_rep->GetXaxis(),true);
+    m_yAxis.initialize(m_rep->GetYaxis(),true);
+    const TArrayD* a = m_rep->GetSumw2();
+    if ( 0 == a || (a && a->GetSize()==0) ) m_rep->Sumw2();
+    setTitle(m_rep->GetTitle());
   }
 }
 
-Gaudi::Histogram2D::Histogram2D() {
-  m_rep = new TH2D();
+Gaudi::Histogram2D::Histogram2D() 
+    : Base( new TH2D() )
+{
   m_rep->Sumw2();
-  m_sumEntries = 0;
   m_sumwx = m_sumwy = 0;
   setTitle("");
   m_rep->SetDirectory(0);
 }
 
-Gaudi::Histogram2D::Histogram2D(TH2D* rep)  {
-  m_rep = 0;
+Gaudi::Histogram2D::Histogram2D(TH2D* rep)  
+{
   adoptRepresentation(rep);
-  m_sumEntries = 0;
   m_sumwx = m_sumwy = 0;
   m_rep->SetDirectory(0);
 }
@@ -185,12 +180,11 @@ bool Gaudi::Histogram2D::setRms(double rmsX,double rmsY) {
 
 void Gaudi::Histogram2D::copyFromAida(const IHistogram2D& h) {
   // implement here the copy
-  delete m_rep;
   const char* tit = h.title().c_str();
   if (h.xAxis().isFixedBinning() && h.yAxis().isFixedBinning()  )
-    m_rep = new TH2D(tit,tit,
+    m_rep.reset( new TH2D(tit,tit,
                      h.xAxis().bins(),h.xAxis().lowerEdge(),h.xAxis().upperEdge(),
-                     h.yAxis().bins(),h.yAxis().lowerEdge(),h.yAxis().upperEdge() );
+                     h.yAxis().bins(),h.yAxis().lowerEdge(),h.yAxis().upperEdge() ) );
   else {
     Edges eX, eY;
     for (int i =0; i < h.xAxis().bins(); ++i)
@@ -201,7 +195,7 @@ void Gaudi::Histogram2D::copyFromAida(const IHistogram2D& h) {
       eY.push_back(h.yAxis().binLowerEdge(i));
     // add also upperedges at the end
     eY.push_back(h.yAxis().upperEdge() );
-    m_rep = new TH2D(tit,tit,eX.size()-1,&eX.front(),eY.size()-1,&eY.front());
+    m_rep.reset( new TH2D(tit,tit,eX.size()-1,&eX.front(),eY.size()-1,&eY.front()) );
   }
   m_xAxis.initialize(m_rep->GetXaxis(),true);
   m_yAxis.initialize(m_rep->GetYaxis(),true);

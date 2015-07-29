@@ -19,7 +19,7 @@
 class GAUDI_API IFileAccess: virtual public IInterface {
 public:
   /// InterfaceID
-  DeclareInterfaceID(IFileAccess,2,0);
+  DeclareInterfaceID(IFileAccess,3,0);
 
   virtual ~IFileAccess(); //< Virtual destructor.
 

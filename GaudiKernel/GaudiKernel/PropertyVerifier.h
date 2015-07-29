@@ -30,7 +30,7 @@ public:
   // Data and Function Members for Collaborators.
   // Constructors - compiler generated default is ok
   // Destructor
-  virtual ~PropertyVerifier() { }
+  virtual ~PropertyVerifier() = default;
 
   // Copy Constructor - compiler generated default is ok
   // Assignment Operator - compiler generated default is ok
@@ -51,14 +51,14 @@ public:
   // Data and Function Members for Collaborators.
   // Constructors - compiler generated default is ok
   // Destructor
-  virtual ~NullVerifier() { }
+  ~NullVerifier() override = default;
 
   // Copy Constructor - compiler generated default is ok
   // Assignment Operator - compiler generated default is ok
 
   // Accessor members (const)
-  virtual bool isValid
-  ( const typename Gaudi::Utils::PropertyTypeTraits<T>::CVal /* val */ ) const
+  bool isValid
+  ( const typename Gaudi::Utils::PropertyTypeTraits<T>::CVal /* val */ ) const override
   { return true; }
 
 };
@@ -77,10 +77,10 @@ public:
       m_upperBound( T() ) { }
 
   /// Destructor
-  virtual ~BoundedVerifier() { }
+  ~BoundedVerifier() override = default;
 
   /// Check if the value is within bounds
-  bool isValid( const typename Gaudi::Utils::PropertyTypeTraits<T>::CVal value ) const
+  bool isValid( const typename Gaudi::Utils::PropertyTypeTraits<T>::CVal value ) const override
   {
     return
       (( m_hasLowerBound && ( *value < m_lowerBound ) ) ? false : true ) &&

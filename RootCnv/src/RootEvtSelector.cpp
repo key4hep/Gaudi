@@ -51,7 +51,7 @@ namespace Gaudi {
     /// Standard constructor with initialization
     RootEvtSelectorContext(const RootEvtSelector* s) : m_sel(s),m_entry(-1),m_branch(0){}
     /// Standard destructor
-    virtual ~RootEvtSelectorContext()                {                        }
+    ~RootEvtSelectorContext() override = default;
     /// Access to the file container
     const Files& files() const                       { return m_files;        }
     /// Set the file container
@@ -157,7 +157,7 @@ StatusCode RootEvtSelector::initialize()    {
 StatusCode RootEvtSelector::finalize()    {
   // Initialize base class
   if ( m_dbMgr ) m_dbMgr->release();
-  m_dbMgr = 0; // release
+  m_dbMgr = nullptr; // release
   return Service::finalize();
 }
 
@@ -178,7 +178,7 @@ StatusCode RootEvtSelector::next(Context& ctxt) const  {
   if ( pCtxt ) {
     TBranch* b = pCtxt->branch();
     if ( !b ) {
-      RootEvtSelectorContext::Files::const_iterator fileit = pCtxt->fileIterator();
+      auto fileit = pCtxt->fileIterator();
       pCtxt->setBranch(0);
       pCtxt->setEntry(-1);
       if ( fileit != pCtxt->files().end() ) {
@@ -206,7 +206,7 @@ StatusCode RootEvtSelector::next(Context& ctxt) const  {
       pCtxt->setEntry(++ent);
       return StatusCode::SUCCESS;
     }
-    RootEvtSelectorContext::Files::const_iterator fit = pCtxt->fileIterator();
+    auto fit = pCtxt->fileIterator();
     pCtxt->setFileIterator(++fit);
     pCtxt->setEntry(-1);
     pCtxt->setBranch(0);
@@ -253,7 +253,7 @@ StatusCode RootEvtSelector::previous(Context& ctxt, int jump) const  {
 StatusCode RootEvtSelector::rewind(Context& ctxt) const   {
   RootEvtSelectorContext* pCtxt = dynamic_cast<RootEvtSelectorContext*>(&ctxt);
   if ( pCtxt ) {
-    RootEvtSelectorContext::Files::const_iterator fileit = pCtxt->fileIterator();
+    auto fileit = pCtxt->fileIterator();
     if ( fileit != pCtxt->files().end() ) {
       string input = *fileit;
       m_dbMgr->disconnect(input).ignore();
@@ -274,7 +274,7 @@ RootEvtSelector::createAddress(const Context& ctxt, IOpaqueAddress*& pAddr) cons
   if ( pctxt ) {
     long ent = pctxt->entry();
     if ( ent >= 0 )  {
-      RootEvtSelectorContext::Files::const_iterator fileit = pctxt->fileIterator();
+      auto fileit = pctxt->fileIterator();
       if ( fileit != pctxt->files().end() ) {
         const string par[2] = {pctxt->fid(), m_rootName};
         const unsigned long ipar[2] = {0,(unsigned long)ent};
@@ -282,7 +282,7 @@ RootEvtSelector::createAddress(const Context& ctxt, IOpaqueAddress*& pAddr) cons
       }
     }
   }
-  pAddr = 0;
+  pAddr = nullptr;
   return StatusCode::FAILURE;
 }
 
@@ -305,7 +305,7 @@ RootEvtSelector::resetCriteria(const string& criteria, Context& context)  const
   RootEvtSelectorContext* ctxt = dynamic_cast<RootEvtSelectorContext*>(&context);
   string db, typ, item, sel, stmt, aut, addr;
   if ( ctxt )  {
-    if ( criteria.substr(0,5) == "FILE " )  {
+    if ( criteria.compare(0,5,"FILE ")==0 )  {
       // The format for the criteria is:
       //        FILE  filename1, filename2 ...
       db = criteria.substr(5);
@@ -318,7 +318,7 @@ RootEvtSelector::resetCriteria(const string& criteria, Context& context)  const
           db = std::move(attrib.value);
         }
         else if(tmp=="OPT")   {
-          if(attrib.value.substr(0, 3) != "REA")   {
+          if(attrib.value.compare(0, 3,"REA") != 0)   {
             log << MSG::ERROR << "Option:\"" << attrib.value << "\" not valid" << endmsg;
             return StatusCode::FAILURE;
           }

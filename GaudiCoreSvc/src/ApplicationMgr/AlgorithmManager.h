@@ -51,7 +51,7 @@ public:
   /// default creator
   AlgorithmManager( IInterface* iface );
   /// virtual destructor
-  virtual ~AlgorithmManager();
+  virtual ~AlgorithmManager() = default;
 
   /// implementation of IAlgManager::addAlgorithm
   virtual StatusCode addAlgorithm(IAlgorithm* alg);
@@ -101,4 +101,3 @@ private:
 
 };
 #endif  // GAUDISVC_ALGORITHMFACTORY_H
-

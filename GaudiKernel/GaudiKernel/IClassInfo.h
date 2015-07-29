@@ -12,7 +12,7 @@
 class GAUDI_API IClassInfo {
 public:
   /// Standard Destructor
-  virtual ~IClassInfo() { }
+  virtual ~IClassInfo() = default;
   /// Retrieve Pointer to class definition structure
   virtual const CLID& clID() const = 0;
 };

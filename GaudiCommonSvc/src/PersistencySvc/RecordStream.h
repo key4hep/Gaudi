@@ -16,11 +16,11 @@ public:
   /// Standard algorithm Constructor
   RecordStream(const std::string&, ISvcLocator*);
   /// Standard Destructor
-  virtual ~RecordStream() {}
-  /// Algorithm overload: finalization
-  virtual StatusCode finalize();
+  ~RecordStream() override = default;
   /// Runrecords do not get written for each event: Event processing hence dummy....
-  virtual StatusCode execute() {  return StatusCode::SUCCESS; }
+  StatusCode execute() override {  return StatusCode::SUCCESS; }
+  /// Algorithm overload: finalization
+  StatusCode finalize() override;
 };
 
 #endif // GAUDISVC_PERSISTENCYSVC_RECORDSTREAM_H

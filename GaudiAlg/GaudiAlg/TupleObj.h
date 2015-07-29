@@ -239,7 +239,7 @@ namespace Tuples
      *  @param type the type of the tuple
      */
     TupleObj
-    ( const std::string&    name                          ,
+    ( std::string           name                          ,
       NTuple::Tuple*        tuple                         ,
       const CLID&           clid = CLID_ColumnWiseTuple   ,
       const Tuples::Type    type = Tuples::NTUPLE         ) ;
@@ -1410,20 +1410,20 @@ namespace Tuples
 
       // get the length item
       Int* len  = ints( length , 0 , maxv ) ;
-      if ( 0 == len  ) { return InvalidColumn; }
+      if ( !len  ) { return InvalidColumn; }
 
       // adjust the length item
       *len = rows ;
 
       // get the array itself
       FMatrix* var  = fMatrix ( name , len  , cols ) ;
-      if ( 0 == var ) { return InvalidColumn ; }
+      if ( !var ) { return InvalidColumn ; }
 
       /// fill the matrix
       for ( size_t iCol = 0 ; iCol < cols ; ++iCol )
       {
         for ( MIndex iRow = 0 ; iRow < rows ; ++iRow )
-        { (*var)[ iRow ] [ iCol ] = (float)(data[ iRow ][ iCol ]) ; }
+        { (*var)[ iRow ] [ iCol ] = (data[ iRow ][ iCol ]) ; }
       }
 
       return StatusCode::SUCCESS ;
@@ -1485,14 +1485,14 @@ namespace Tuples
 
       // get the length item
       Int* len  = ints( length , 0 , maxv ) ;
-      if ( 0 == len  ) { return InvalidColumn; }
+      if ( !len  ) { return InvalidColumn; }
 
       // adjust the length item
       *len = last - first ;
 
       // get the array itself
       FMatrix* var  = fMatrix ( name , len , cols ) ;
-      if ( 0 == var ) { return InvalidColumn ; }
+      if ( !var ) { return InvalidColumn ; }
 
       /// fill the matrix
       size_t iRow = 0 ;
@@ -1607,7 +1607,7 @@ namespace Tuples
 
       // get the length item
       Int* len  = ints( length , 0 , maxv ) ;
-      if ( 0 == len  ) { return InvalidColumn; }
+      if ( !len  ) { return InvalidColumn; }
 
       // adjust the length item
       *len = last - first ;
@@ -1615,7 +1615,7 @@ namespace Tuples
       // get the array itself
       const size_t cols = funL - funF ;
       FMatrix* var  = fMatrix ( name , len , cols ) ;
-      if ( 0 == var ) { return InvalidColumn ; }
+      if ( !var ) { return InvalidColumn ; }
 
       /// fill the matrix
       size_t iRow = 0 ;
@@ -1623,7 +1623,7 @@ namespace Tuples
       {
         //
         for ( FUN fun = funF ; fun < funL ; ++fun )
-        { (*var)[ iRow ] [ fun - funF ] = (float)((*fun) ( *first )) ; }
+        { (*var)[ iRow ] [ fun - funF ] = (*fun) ( *first ) ; }
         //
         ++iRow;
       }
@@ -1669,12 +1669,12 @@ namespace Tuples
 
       // get the array itself
       FArray* var  = fArray ( name , length ) ;
-      if ( 0 == var ) { return InvalidColumn ; }
+      if ( !var ) { return InvalidColumn ; }
 
       /// fill the array
       size_t iCol = 0 ;
       for ( ; first != last ; ++first )
-      { (*var)[ iCol ] = (float)(*first) ; ++iCol ; }
+      { (*var)[ iCol ] = (*first) ; ++iCol ; }
 
       return StatusCode::SUCCESS ;
     }
@@ -1727,11 +1727,11 @@ namespace Tuples
 
       // get the array itself
       FArray* var  = fArray ( name , length ) ;
-      if ( 0 == var ) { return InvalidColumn ; }
+      if ( !var ) { return InvalidColumn ; }
 
       /// fill the array
       for ( size_t index = 0 ; index < length ; ++index )
-      { (*var)[ index ] = (float) data[index] ; }
+      { (*var)[ index ] = data[index] ; }
 
       return StatusCode::SUCCESS ;
     }
@@ -1831,13 +1831,13 @@ namespace Tuples
 
       // get the matrix itself
       FMatrix* var  = fMatrix ( name , rows , cols ) ;
-      if ( 0 == var ) { return InvalidColumn ; }
+      if ( !var ) { return InvalidColumn ; }
 
       /// fill the matrix
       for ( size_t iCol = 0 ; iCol < cols ; ++iCol )
       {
         for ( size_t iRow = 0 ; iRow < rows ; ++iRow )
-        { (*var)[iRow][iCol] = (float)(data[iRow][iCol]) ; }
+        { (*var)[iRow][iCol] = data[iRow][iCol]; }
       };
       return StatusCode::SUCCESS ;
     }
@@ -1984,13 +1984,13 @@ namespace Tuples
 
       // get the matrix itself
       FMatrix* var  = fMatrix ( name , (MIndex)D1 , (MIndex)D2 ) ;
-      if ( 0 == var   ) { return InvalidColumn ; }
+      if ( !var   ) { return InvalidColumn ; }
 
       /// fill the matrix
       for ( size_t iCol = 0 ; iCol < D2 ; ++iCol )
       {
         for ( size_t iRow = 0 ; iRow < D1 ; ++iRow )
-        { (*var)[iRow][iCol] = (float) mtrx(iRow,iCol) ; }
+        { (*var)[iRow][iCol] = mtrx(iRow,iCol) ; }
       };
 
       return StatusCode::SUCCESS ;
@@ -2024,8 +2024,8 @@ namespace Tuples
       if ( invalid () ) { return InvalidTuple     ; }
       if ( rowWise () ) { return InvalidOperation ; }
 
-      typename GaudiUtils::VectorMap<KEY,VALUE>::const_iterator begin = info.begin () ;
-      typename GaudiUtils::VectorMap<KEY,VALUE>::const_iterator end   = info.end   () ;
+      auto begin = info.begin () ;
+      auto end   = info.end   () ;
 
       // adjust the length
       if ( maxv < info.size() )
@@ -2036,22 +2036,22 @@ namespace Tuples
 
       // get the length item
       Int* len  = ints( length , 0 , maxv ) ;
-      if ( 0 == len  ) { return InvalidColumn; }
+      if ( !len  ) { return InvalidColumn; }
 
       // adjust the length item
       *len = end - begin ;
 
       // get the array itself
       FMatrix* var  = fMatrix ( name , len , 2 ) ;
-      if ( 0 == var ) { return InvalidColumn ; }
+      if ( !var ) { return InvalidColumn ; }
 
       /// fill the matrix
       size_t iRow = 0 ;
       for ( ; begin != end ; ++begin)
       {
         //
-        (*var)[iRow][0] = (float) begin->first   ;
-        (*var)[iRow][1] = (float) begin->second  ;
+        (*var)[iRow][0] = begin->first   ;
+        (*var)[iRow][1] = begin->second  ;
         //
         ++iRow ;
       } ;
@@ -2085,7 +2085,12 @@ namespace Tuples
     /** provide the access to underlying Gaudi N-tuple
      *  @return pointer to Gaudi N-tuple object
      */
-    NTuple::Tuple* tuple() const  { return m_tuple ; }
+    const NTuple::Tuple* tuple() const  { return m_tuple ; }
+    // =======================================================================
+    /** provide the access to underlying Gaudi N-tuple
+     *  @return pointer to Gaudi N-tuple object
+     */
+    NTuple::Tuple* tuple() { return m_tuple ; }
     // =======================================================================
     /** return the reference counter
      *  @return current reference counter
@@ -2131,9 +2136,9 @@ namespace Tuples
      *  @param type the type of the item
      *  @return true if the name is indeed added
      */
-    bool addItem ( const std::string& name ,
-                   const std::string& type )
-    { return m_items.insert ( std::make_pair ( name , type ) ).second ; }
+    bool addItem ( std::string name ,
+                   std::string type )
+    { return m_items.insert ( { std::move(name) , std::move(type) } ).second ; }
     // =======================================================================
     /** check the uniqueness of the name
      *  @param name the name of the item
@@ -2253,58 +2258,54 @@ namespace Tuples
     // =======================================================================
   private:
     // =======================================================================
-    /// the default constructor is disabled
-    TupleObj () ;
-    // =======================================================================
-    /// copy constructor is disabled
-    TupleObj            ( const TupleObj& ) ;
-    // =======================================================================
-    /// assignment is disabled
-    TupleObj& operator= ( const TupleObj& ) ;
+    /// delete the default/copy constructor and assignment
+    TupleObj () = delete;
+    TupleObj            ( const TupleObj& ) = delete;
+    TupleObj& operator= ( const TupleObj& ) = delete;
     // =======================================================================
   private:
     // =======================================================================
     /// the actual storage type for short columns
-    typedef GaudiUtils::HashMap<std::string,Bool*>   Bools;
+    typedef GaudiUtils::HashMap<std::string,std::unique_ptr<Bool>>   Bools;
     // =======================================================================
     /// the actual storage type for short columns
-    typedef GaudiUtils::HashMap<std::string,Char*>   Chars;
+    typedef GaudiUtils::HashMap<std::string,std::unique_ptr<Char>>   Chars;
     // =======================================================================
     /// the actual storage type for unsigned short columns
-    typedef GaudiUtils::HashMap<std::string,UChar*>  UChars;
+    typedef GaudiUtils::HashMap<std::string,std::unique_ptr<UChar>>  UChars;
     // =======================================================================
     /// the actual storage type for short columns
-    typedef GaudiUtils::HashMap<std::string,Short*>  Shorts;
+    typedef GaudiUtils::HashMap<std::string,std::unique_ptr<Short>>  Shorts;
     // =======================================================================
     /// the actual storage type for unsigned short columns
-    typedef GaudiUtils::HashMap<std::string,UShort*> UShorts;
+    typedef GaudiUtils::HashMap<std::string,std::unique_ptr<UShort>> UShorts;
     // =======================================================================
     /// the actual storage type for integer columns
-    typedef GaudiUtils::HashMap<std::string,Int*>    Ints;
+    typedef GaudiUtils::HashMap<std::string,std::unique_ptr<Int>>    Ints;
     // =======================================================================
     /// the actual storage type for unsigned integer columns
-    typedef GaudiUtils::HashMap<std::string,UInt*>   UInts;
+    typedef GaudiUtils::HashMap<std::string,std::unique_ptr<UInt>>   UInts;
     // =======================================================================
     /// the actual storage type for longlong columns
-    typedef GaudiUtils::HashMap<std::string,LongLong*> LongLongs;
+    typedef GaudiUtils::HashMap<std::string,std::unique_ptr<LongLong>> LongLongs;
     // =======================================================================
     /// the actual storage type for ulonglong columns
-    typedef GaudiUtils::HashMap<std::string,ULongLong*> ULongLongs;
+    typedef GaudiUtils::HashMap<std::string,std::unique_ptr<ULongLong>> ULongLongs;
     // =======================================================================
     /// the actual storage type for float columns
-    typedef GaudiUtils::HashMap<std::string,Float*>   Floats;
+    typedef GaudiUtils::HashMap<std::string,std::unique_ptr<Float>>   Floats;
     // =======================================================================
     /// the actual storage type for float columns
-    typedef GaudiUtils::HashMap<std::string,Double*>  Doubles;
+    typedef GaudiUtils::HashMap<std::string,std::unique_ptr<Double>>  Doubles;
     // =======================================================================
     /// the actual storage type for address columns
-    typedef GaudiUtils::HashMap<std::string,Address*> Addresses;
+    typedef GaudiUtils::HashMap<std::string,std::unique_ptr<Address>> Addresses;
     // =======================================================================
     /// the actual storage type for array columns
-    typedef GaudiUtils::HashMap<std::string,FArray*>  FArrays;
+    typedef GaudiUtils::HashMap<std::string,std::unique_ptr<FArray>>  FArrays;
     // =======================================================================
     /// the actual storage type for matrix columns
-    typedef GaudiUtils::HashMap<std::string,FMatrix*> FMatrices;
+    typedef GaudiUtils::HashMap<std::string,std::unique_ptr<FMatrix>> FMatrices;
     // =======================================================================
   private:
     // =======================================================================

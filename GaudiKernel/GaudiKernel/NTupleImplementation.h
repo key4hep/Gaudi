@@ -2,6 +2,8 @@
 #ifndef GAUDIKERNEL_NTUPLEIMP_H
 #define GAUDIKERNEL_NTUPLEIMP_H
 
+
+#include <memory>
 // Framework include files
 #include "GaudiKernel/NTuple.h"
 #include "GaudiKernel/Kernel.h"
@@ -9,6 +11,7 @@
 // Forward declarations
 class INTupleSvc;
 class IConversionSvc;
+
 
 namespace NTuple   {
   // Concrete N tuple class definition
@@ -22,22 +25,22 @@ namespace NTuple   {
     std::string       m_title;
     /// Possibly hanging selector
     ISelectStatement* m_pSelector;
-    /// Buffer size
-    char*             m_buffer;
+    /// Buffer 
+    std::unique_ptr<char[]> m_buffer;
     /// Reference to N-tuple service used
     INTupleSvc*       m_ntupleSvc;
     /// Reference to the conversion service used
     IConversionSvc*   m_cnvSvc;
   private:
     /// Standard Copy Constructor
-    TupleImp(const TupleImp&) ;
+    TupleImp(const TupleImp&)  = delete;
 
   public:
     /// Internally used by abstract classes
     virtual INTupleItem* i_find(const std::string& name)  const;
   public:
     /// Standard Constructor
-    TupleImp( const std::string& title);
+    TupleImp( std::string title);
     /// Standard Destructor
     virtual ~TupleImp();
     /// Access item container
@@ -62,11 +65,11 @@ namespace NTuple   {
     }
     /// Access N tuple data buffer
     char* buffer()    {
-      return m_buffer;
+      return m_buffer.get();
     }
     /// Access N tuple data buffer    (CONST)
     const char* buffer()  const  {
-      return m_buffer;
+      return m_buffer.get();
     }
     /// Access conversion service
     IConversionSvc* conversionService()   const  {
@@ -89,7 +92,8 @@ namespace NTuple   {
     /// Access selector
     virtual ISelectStatement* selector();
     /// Set N tuple data buffer
-    virtual void setBuffer(char* buff);
+    virtual char* setBuffer(std::unique_ptr<char[]>&& buff);
+    virtual char* setBuffer(char* buff);
     /// Reset all entries to their default values
     virtual void reset();
     /// Add an item row to the N tuple
@@ -116,11 +120,10 @@ namespace NTuple   {
   class ColumnWiseTuple : public TupleImp    {
   public:
     /// Standard Constructor
-    ColumnWiseTuple(const std::string& title ) : TupleImp(title)    {
+    ColumnWiseTuple(std::string title ) : TupleImp(std::move(title))    {
     }
     /// Standard Destructor
-    virtual ~ColumnWiseTuple()   {
-    }
+    ~ColumnWiseTuple() override = default;
     /// Retrieve Reference to class defininition structure
     virtual const CLID& clID() const   {
       return classID();
@@ -135,11 +138,10 @@ namespace NTuple   {
   class RowWiseTuple : public TupleImp    {
   public:
     /// Standard Constructor
-    RowWiseTuple( const std::string& title ) : TupleImp(title)    {
+    RowWiseTuple( std::string title ) : TupleImp(std::move(title))    {
     }
     /// Standard Destructor
-    virtual ~RowWiseTuple()   {
-    }
+    ~RowWiseTuple() override = default;
     /// Retrieve Reference to class defininition structure
     virtual const CLID& clID() const   {
       return classID();

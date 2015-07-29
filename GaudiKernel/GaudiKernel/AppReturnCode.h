@@ -13,25 +13,25 @@ namespace Gaudi {
   /// ApplicationMgr return code definitions.
   namespace ReturnCode {
 
-    const int Success                  = 0x00;
+    constexpr int Success                  = 0x00;
 
-    const int GenericFailure           = 0x01;
+    constexpr int GenericFailure           = 0x01;
 
     /// @defgroup loop_stop Loop termination
     /// Error codes for abnormal loop termination.
     /// @{
-    const int FailInput                = 0x02; //< Error opening file
-    const int AlgorithmFailure         = 0x03; //<
-    const int ScheduledStop            = 0x04; //< Loop terminated because of user request
-    const int IncidentFailure          = 0x05; //< Fatal error in Incident handling
-    const int UnhandledException       = 0x06; //<
-    const int CorruptedInput           = 0x10; //< Input file showed a corruption
+    constexpr int FailInput                = 0x02; //< Error opening file
+    constexpr int AlgorithmFailure         = 0x03; //<
+    constexpr int ScheduledStop            = 0x04; //< Loop terminated because of user request
+    constexpr int IncidentFailure          = 0x05; //< Fatal error in Incident handling
+    constexpr int UnhandledException       = 0x06; //<
+    constexpr int CorruptedInput           = 0x10; //< Input file showed a corruption
     /// @}
     /// @{
     /// Error codes for operation failures.
-    const int FinalizationFailure      = 0x0b;
+    constexpr int FinalizationFailure      = 0x0b;
     /// @}
-    const int SignalOffset             = 0x80; //< Offset for signal-related return codes
+    constexpr int SignalOffset             = 0x80; //< Offset for signal-related return codes
 
   }
 

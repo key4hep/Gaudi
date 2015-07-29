@@ -48,7 +48,7 @@ namespace RootHistCnv {
     RFileCnv( ISvcLocator* svc );
 
     /// Standard destructor
-    virtual ~RFileCnv();
+    ~RFileCnv() override = default;
 
   protected:
 

@@ -19,15 +19,15 @@ class  Annotation  : virtual public IAnnotation {
 
 public:
   /// Constructor
-  Annotation(){ /* nop */ }
+  Annotation() = default;
 
   /// Destructor
-  virtual ~Annotation(){ /* nop */ }
+  ~Annotation() override = default;
 
   /// Add a key/value pair with a given sticky.
   bool addItem( const std::string & key,
-		const std::string & value,
-		bool sticky = false);
+                const std::string & value,
+                bool sticky = false);
 
   /// Remove the item indicated by a given key
   bool removeItem( const std::string & key );
@@ -37,11 +37,11 @@ public:
 
   /// Set value for a given key
   void setValue( const std::string & key,
-		 const std::string& value);
+                 const std::string& value);
 
   /// Set sticky for a given key
   void setSticky( const std::string & key,
-		  bool sticky);
+                  bool sticky);
 
   /// Get the number of items in the Annotation
   int size() const;
@@ -58,12 +58,12 @@ private:
   class AnnotationItem {
   public:
     AnnotationItem( std::string k = "",
-		    std::string v = "",
-		    bool vis = true):
-      m_key( k ), m_value( v ), m_sticky( vis )
+                    std::string v = "",
+                    bool vis = true):
+      m_key( std::move(k) ), m_value( std::move(v) ), m_sticky( vis )
     {/* nop */};
 
-    ~AnnotationItem(){ /* nop */};
+    ~AnnotationItem() = default;
 
     std::string m_key;
     std::string m_value;
@@ -85,13 +85,13 @@ inline bool AIDA::Annotation::addItem( const std::string & key,
 							  bool sticky )
 {
   if ( m_identifiers.find( key ) != m_identifiers.end() ) return false;
-  m_annotationItems.push_back( AnnotationItem( key, value, sticky ) );
-  m_identifiers.insert( std::make_pair( key, m_annotationItems.size() - 1 ) );
+  m_annotationItems.emplace_back( key, value, sticky );
+  m_identifiers.insert( { key, m_annotationItems.size() - 1 } );
   return true;
 }
 
 inline bool AIDA::Annotation::removeItem( const std::string & key )  {
-  std::map< std::string, unsigned int >::const_iterator iKey = m_identifiers.find( key );
+  auto iKey = m_identifiers.find( key );
   if ( iKey == m_identifiers.end() ) return false;
 
   unsigned int indexToBeRemoved = iKey->second;
@@ -102,40 +102,40 @@ inline bool AIDA::Annotation::removeItem( const std::string & key )  {
   // why rebuilding ?
 
   m_identifiers.clear();
-  std::vector< AnnotationItem > m_annotationItemsNew;
-  if ( m_annotationItems.size() > 1 ) m_annotationItemsNew.reserve( m_annotationItems.size() - 1 );
+  std::vector< AnnotationItem > annotationItemsNew;
+  if ( m_annotationItems.size() > 1 ) annotationItemsNew.reserve( m_annotationItems.size() - 1 );
   for ( unsigned int iItem = 0; iItem < m_annotationItems.size(); ++iItem ) {
     if ( iItem == indexToBeRemoved ) continue;
-    const AnnotationItem& item = m_annotationItems[ iItem ];
-    m_annotationItemsNew.push_back( AnnotationItem( item.m_key, item.m_value, item.m_sticky ) );
-    m_identifiers.insert( std::make_pair( item.m_key, m_annotationItemsNew.size() - 1 ) );
+    const auto& item = m_annotationItems[ iItem ];
+    annotationItemsNew.emplace_back( item.m_key, item.m_value, item.m_sticky );
+    m_identifiers.insert( { item.m_key, annotationItemsNew.size() - 1 } );
   }
-  m_annotationItems = m_annotationItemsNew;
+  m_annotationItems = std::move(annotationItemsNew);
   return true;
 }
 
 inline std::string AIDA::Annotation::value( const std::string & key) const
 {
-  std::map< std::string, unsigned int >::const_iterator iKey = m_identifiers.find( key );
-  if ( iKey == m_identifiers.end() ) return emptyString;
-  return ( m_annotationItems[ iKey->second ] ).m_value;
+  auto iKey = m_identifiers.find( key );
+  return iKey != m_identifiers.end() ? m_annotationItems[ iKey->second ].m_value 
+                                     : emptyString;
 }
 
 inline void AIDA::Annotation::setValue( const std::string & key, const std::string& value)
 {
-  std::map< std::string, unsigned int >::const_iterator iKey = m_identifiers.find( key );
+  auto iKey = m_identifiers.find( key );
   if ( iKey == m_identifiers.end() )
-    // not found then add it
+    // if not found, then add it
     addItem(key,value);
   else
-    ( m_annotationItems[ iKey->second ] ).m_value = value;
+    m_annotationItems[ iKey->second ].m_value = value;
 }
 
 inline void AIDA::Annotation::setSticky( const std::string & key, bool sticky)
 {
-  std::map< std::string, unsigned int >::const_iterator iKey = m_identifiers.find( key );
+  auto iKey = m_identifiers.find( key );
   if ( iKey == m_identifiers.end() ) return;
-  ( m_annotationItems[ iKey->second ] ).m_sticky = sticky;
+  m_annotationItems[ iKey->second ].m_sticky = sticky;
 }
 
 inline int AIDA::Annotation::size() const  {
@@ -145,13 +145,13 @@ inline int AIDA::Annotation::size() const  {
 inline std::string AIDA::Annotation::key(int index) const
 {
   if ( index < 0 || index >= static_cast<int>(m_annotationItems.size()) ) return emptyString;
-  return ( m_annotationItems[ index ] ).m_key;
+  return m_annotationItems[ index ].m_key;
 }
 
 inline std::string AIDA::Annotation::value(int index) const
 {
   if ( index < 0 || index >= static_cast<int>(m_annotationItems.size()) ) return emptyString;
-  return ( m_annotationItems[ index ] ).m_value;
+  return m_annotationItems[ index ].m_value;
 }
 
 inline void AIDA::Annotation::reset()
@@ -159,13 +159,11 @@ inline void AIDA::Annotation::reset()
   // Collect the non-sticky items
   std::vector< std::string > itemsToRemove;
   itemsToRemove.reserve( size() );
-  for ( int item = 0; item < size(); ++item ) {
-    if ( ! ( m_annotationItems[ item ] ).m_sticky ) {
-      itemsToRemove.push_back( ( m_annotationItems[ item ] ).m_key );
-    }
+  for ( const auto& item : m_annotationItems ) {
+    if ( !item.m_sticky ) itemsToRemove.push_back( item.m_key );
   }
 
-  for ( unsigned int i = 0; i < itemsToRemove.size(); ++i ) removeItem( itemsToRemove[i] );
+  for ( const auto& i : itemsToRemove ) removeItem(i);
 }
 
 #endif

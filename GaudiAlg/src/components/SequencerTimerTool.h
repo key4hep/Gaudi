@@ -41,7 +41,7 @@ public:
                       const std::string& name,
                       const IInterface* parent);
 
-  virtual ~SequencerTimerTool( ); ///< Destructor
+  ~SequencerTimerTool( ) override = default; ///< Destructor
 
   /** initialize method, to compute the normalization factor **/
   virtual StatusCode initialize();
@@ -53,13 +53,12 @@ public:
   virtual int addTimer( const std::string& name );
 
   /** Increase the indentation of the name **/
-  virtual void increaseIndent() { m_indent += 2; }
+  virtual void increaseIndent() { m_indent += 1; }
 
   /** Decrease the indentation of the name **/
   virtual void decreaseIndent() 
   {
-    m_indent -= 2;
-    if ( 0 > m_indent ) m_indent = 0;
+    m_indent = std::max( m_indent-1, 0 );
   }
 
   /** start the counter, i.e. register the current time **/
@@ -85,12 +84,12 @@ public:
 
 private:
 
-  int m_shots;       ///< Number of shots for CPU normalization
+  int m_shots = 3500000 ; // 1s on 2.8GHz Xeon, gcc 3.2, -o2;   ///< Number of shots for CPU normalization
   bool m_normalised; ///< Is the time scaled to a nominal PIII ?
-  int m_indent;      ///< Amount of indentation
+  int m_indent = 0;      ///< Amount of indentation
   std::vector<TimerForSequencer> m_timerList;
-  double m_normFactor; ///< Factor to convert to standard CPU (1 GHz PIII)
-  double m_speedRatio;
+  double m_normFactor = 0.001 ; ///< Factor to convert to standard CPU (1 GHz PIII)
+  double m_speedRatio = 0;
   bool   m_globalTiming;
   std::string::size_type m_headerSize;   ///< Size of the name field
 

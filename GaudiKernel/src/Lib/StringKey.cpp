@@ -17,8 +17,8 @@
 // ============================================================================
 // constructor from the string: perform hashing
 // ============================================================================
-Gaudi::StringKey::StringKey ( const std::string& key )
-  : m_str  ( key )
+Gaudi::StringKey::StringKey ( std::string key )
+  : m_str  ( std::move(key) )
   , m_hash ( std::hash<std::string>()(m_str)  )  // NB! hashing here!!!
 {}
 // ============================================================================

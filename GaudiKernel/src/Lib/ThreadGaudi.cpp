@@ -82,19 +82,15 @@ bool isGaudiThreaded(const std::string& name) {
 
 ThreadGaudi* ThreadGaudiInstance = 0 ;
 
-ThreadGaudi::ThreadGaudi() {
-  m_threadMap = new ThreadMap();
+ThreadGaudi::ThreadGaudi() :
+  m_threadMap{  new ThreadMap() }
+{
   (*m_threadMap)[0] = "" ;
 }
 
-ThreadGaudi::~ThreadGaudi() {
-  delete m_threadMap;
-}
 
 ThreadGaudi* ThreadGaudi::instance() {
-  if ( 0 == ThreadGaudiInstance ) {
-    ThreadGaudiInstance = new ThreadGaudi();
-  }
+  if ( !ThreadGaudiInstance ) ThreadGaudiInstance = new ThreadGaudi();
   return ThreadGaudiInstance ;
 }
 
@@ -111,7 +107,7 @@ void ThreadGaudi::setThreadID(const std::string& threadID) {
 }
 
 ThreadGaudi::ThreadMap* ThreadGaudi::getThreadMap() {
-  return ThreadGaudi::instance()->m_threadMap;
+  return ThreadGaudi::instance()->m_threadMap.get();
 }   
 
 const std::string& ThreadGaudi::getThreadID() {

@@ -16,6 +16,7 @@
 #include "GaudiKernel/IConversionSvc.h"
 #include "GaudiKernel/IPersistencySvc.h"
 #include "GaudiKernel/IAddressCreator.h"
+#include "GaudiKernel/IDataProviderSvc.h"
 
 // STL include files
 #include <map>
@@ -52,7 +53,7 @@ class PersistencySvc  : public extends3<Service,
                                         IAddressCreator> {
 protected:
 
-  class ServiceEntry {
+  class ServiceEntry final {
     long             m_serviceType;
     mutable SmartIF<IService>        m_service;
     mutable SmartIF<IConversionSvc>  m_cnvService;
@@ -61,11 +62,11 @@ protected:
     ServiceEntry( long type,
         SmartIF<IService>& svc,
         SmartIF<IConversionSvc>& cnv,
-        SmartIF<IAddressCreator>& cr)  {
-      m_serviceType  = type;
-      m_addrCreator  = cr;
-      m_cnvService   = cnv;
-      m_service      = svc;
+        SmartIF<IAddressCreator>& cr) 
+    : m_serviceType  ( type ),
+      m_service      ( svc ),
+      m_cnvService   ( cnv ),
+      m_addrCreator  ( cr ) {
     }
     ServiceEntry( long type,
         IService* svc,
@@ -76,14 +77,8 @@ protected:
       m_cnvService   = cnv;
       m_service      = svc;
     }
-    ServiceEntry(const ServiceEntry& copy)  {
-      m_serviceType  = copy.m_serviceType;
-      m_addrCreator  = copy.m_addrCreator;
-      m_cnvService   = copy.m_cnvService;
-      m_service      = copy.m_service;
-    }
-    virtual ~ServiceEntry()  {
-    }
+    ServiceEntry(const ServiceEntry& )  = default;
+
     SmartIF<IService>&           service()   const   {
       return m_service;
     }
@@ -103,8 +98,6 @@ protected:
   public:
     SvcTest(long test) : m_test(test)    {
     }
-    virtual ~SvcTest()    {
-    }
     bool operator()( const ServiceEntry& testee )  {
         return m_test == testee.svcType() ? true : false;
     }
@@ -123,111 +116,111 @@ public:
   const CLID& objType() const;
 
   /// Implementation of IConverter: Create the transient representation of an object.
-  virtual StatusCode createObj(IOpaqueAddress* pAddress,DataObject*& refpObject);
+  StatusCode createObj(IOpaqueAddress* pAddress,DataObject*& refpObject) override;
 
   /// Implementation of IConverter: Resolve the references of the created transient object.
-  virtual StatusCode fillObjRefs(IOpaqueAddress* pAddress, DataObject* pObject);
+  StatusCode fillObjRefs(IOpaqueAddress* pAddress, DataObject* pObject) override;
 
   /// Implementation of IConverter: Update the transient object from the other representation.
-  virtual StatusCode updateObj(IOpaqueAddress* pAddress, DataObject* refpObject);
+  StatusCode updateObj(IOpaqueAddress* pAddress, DataObject* refpObject) override;
 
   /// Implementation of IConverter: Update the references of an updated transient object.
-  virtual StatusCode updateObjRefs(IOpaqueAddress* pAddress, DataObject* pObject);
+  StatusCode updateObjRefs(IOpaqueAddress* pAddress, DataObject* pObject) override;
 
   /// Implementation of IConverter: Convert the transient object to the requested representation.
-  virtual StatusCode createRep(DataObject* pObject, IOpaqueAddress*& refpAddress);
+  StatusCode createRep(DataObject* pObject, IOpaqueAddress*& refpAddress) override;
 
   /// Implementation of IConverter: Resolve the references of the converted object.
-  virtual StatusCode fillRepRefs(IOpaqueAddress* pAddress,DataObject* pObject);
+  StatusCode fillRepRefs(IOpaqueAddress* pAddress,DataObject* pObject) override;
 
   /// Implementation of IConverter: Update the converted representation of a transient object.
-  virtual StatusCode updateRep(IOpaqueAddress* pAddress, DataObject* pObject);
+  StatusCode updateRep(IOpaqueAddress* pAddress, DataObject* pObject) override;
 
   /// Implementation of IConverter: Update the references of an already converted object.
-  virtual StatusCode updateRepRefs(IOpaqueAddress* pAddress, DataObject* pObject);
+  StatusCode updateRepRefs(IOpaqueAddress* pAddress, DataObject* pObject) override;
 
   /// Define transient datastore.
-  virtual StatusCode setDataProvider(IDataProviderSvc* pStore);
+  StatusCode setDataProvider(IDataProviderSvc* pStore) override;
 
   /// Access reference to transient datastore
-  virtual SmartIF<IDataProviderSvc>& dataProvider()    const;
+  SmartIF<IDataProviderSvc>& dataProvider()    const override;
 
   /// Set conversion service the converter is connected to
-  virtual StatusCode setConversionSvc(IConversionSvc* svc);
+  StatusCode setConversionSvc(IConversionSvc* svc) override;
 
   /// Get conversion service the converter is connected to
-  virtual SmartIF<IConversionSvc>& conversionSvc()    const;
+  SmartIF<IConversionSvc>& conversionSvc()    const override;
 
   /// Set address creator facility
-  virtual StatusCode setAddressCreator(IAddressCreator* creator);
+  StatusCode setAddressCreator(IAddressCreator* creator) override;
 
   /// Retrieve address creator facility
-  virtual SmartIF<IAddressCreator>& addressCreator()   const;
+  SmartIF<IAddressCreator>& addressCreator()   const override;
 
   /// Add converter object to conversion service.
-  virtual StatusCode addConverter(IConverter* pConverter);
+  StatusCode addConverter(IConverter* pConverter) override;
 
   /// Add converter object to conversion service.
-  virtual StatusCode addConverter(const CLID& clid);
+  StatusCode addConverter(const CLID& clid) override;
 
   /// Retrieve converter from list
-  virtual IConverter* converter(const CLID& clid);
+  IConverter* converter(const CLID& clid) override;
 
   /// Remove converter object from conversion service (if present).
-  virtual StatusCode removeConverter(const CLID& clid);
+  StatusCode removeConverter(const CLID& clid) override;
 
   /// Connect the output file to the service with open mode.
-  virtual StatusCode connectOutput(const std::string& outputFile,
-                                   const std::string& openMode);
+  StatusCode connectOutput(const std::string& outputFile,
+                                   const std::string& openMode) override;
   /// Connect the output file to the service.
-  virtual StatusCode connectOutput(const std::string& outputFile);
+  StatusCode connectOutput(const std::string& outputFile) override;
 
   /// Commit pending output.
-  virtual StatusCode commitOutput(const std::string& output, bool do_commit);
+  StatusCode commitOutput(const std::string& output, bool do_commit) override;
 
   /// Create a Generic address using explicit arguments to identify a single object.
-  virtual StatusCode createAddress(long svc_type,
+  StatusCode createAddress(long svc_type,
                                    const CLID& clid,
                                    const std::string* pars,
                                    const unsigned long* ipars,
-                                   IOpaqueAddress*& refpAddress);
+                                   IOpaqueAddress*& refpAddress) override;
 
   /// Convert an address to string form
-  virtual StatusCode convertAddress( const IOpaqueAddress* pAddress,
-                                     std::string& refAddress);
+  StatusCode convertAddress( const IOpaqueAddress* pAddress,
+                                     std::string& refAddress) override;
 
   /// Convert an address in string form to object form
-  virtual StatusCode createAddress( long svc_type,
+  StatusCode createAddress( long svc_type,
                                     const CLID& clid,
                                     const std::string& refAddress,
-                                    IOpaqueAddress*& refpAddress);
+                                    IOpaqueAddress*& refpAddress) override;
   //@}
 
   /**@name: IPersistencySvc implementation  */
   //@{
   /// Add a new Service
-  virtual StatusCode addCnvService(IConversionSvc* service);
+  StatusCode addCnvService(IConversionSvc* service) override;
 
   /// Remove a Service
-  virtual StatusCode removeCnvService(long type);
+  StatusCode removeCnvService(long type) override;
 
   /// Set default service type
-  virtual StatusCode setDefaultCnvService(long type);
+  StatusCode setDefaultCnvService(long type) override;
 
   /// Retrieve conversion service identified by technology
-  virtual StatusCode getService(long service_type, IConversionSvc*& refpSvc);
+  StatusCode getService(long service_type, IConversionSvc*& refpSvc) override;
 
   /// Retrieve conversion service identified by technology
-  virtual StatusCode getService(const std::string& service_type, IConversionSvc*& refpSvc);
+  StatusCode getService(const std::string& service_type, IConversionSvc*& refpSvc) override;
   //@}
 
   /**@name: IService implementation */
   //@{
   /// Initialize the service.
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
 
   /// stop the service.
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
   //@}
 
   /**@name: Object implementation  */
@@ -236,7 +229,7 @@ public:
   PersistencySvc(const std::string& name, ISvcLocator* svc);
 
   /// Standard Destructor
-  virtual ~PersistencySvc();
+  ~PersistencySvc() override = default;
 protected:
 
   /// Retrieve conversion service by name
@@ -271,7 +264,7 @@ protected:
   void svcNamesHandler( Property& theProp );
 
   /// Default service type
-  long                m_cnvDefType;
+  long                m_cnvDefType = TEST_StorageType;
   /// Pointer to datma provider service
   mutable SmartIF<IDataProviderSvc>   m_dataSvc;
   /// List of convermsion workers
@@ -283,7 +276,7 @@ protected:
   */
   StringArrayProperty m_svcNames;
   /// Flag to indicate that the service is enabled
-  bool                m_enable;
+  bool                m_enable = true;
 
   /// Pointer to the IAddressCreator interface of this, for addressCreator().
   mutable SmartIF<IAddressCreator> m_addrCreator;

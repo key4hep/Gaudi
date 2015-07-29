@@ -24,8 +24,6 @@ class ToolSvc : public extends1<Service, IToolSvc> {
 
 public:
 
-  // Typedefs
-  typedef std::list<IAlgTool*>     ListTools;
 
   /// Initialize the service.
   virtual StatusCode initialize();
@@ -75,9 +73,6 @@ public:
   /// Get Tool full name by combining nameByUser and "parent" part
   std::string nameTool(const std::string& nameByUser, const IInterface* parent);
 
-  /// Get current refcount for tool
-  unsigned long refCountTool( IAlgTool* tool ) const { return tool->refCount(); }
-
   /** Standard Constructor.
    *  @param  name   String with service name
    *  @param  svc    Pointer to service locator interface
@@ -85,20 +80,20 @@ public:
   ToolSvc( const std::string& name, ISvcLocator* svc );
 
   /// Destructor.
-  virtual ~ToolSvc();
+  virtual ~ToolSvc() = default;
 
   virtual void registerObserver(IToolSvc::Observer *obs) ;
   virtual void unRegisterObserver(IToolSvc::Observer *obs) ;
 
 
 private: // methods
+  // Typedefs
+  typedef std::vector<IAlgTool*>     ListTools;
 
   // helper functions
   //
   /** The total number of refCounts on all tools in the instancesTools list */
   unsigned long totalToolRefCount() const;
-  /** The total number of refCounts on all tools in the list */
-  unsigned long totalToolRefCount( const ListTools& ) const;
   /** The minimum number of refCounts of all tools */
   unsigned long minimumToolRefCount() const;
 
@@ -111,7 +106,7 @@ private: // data
   ListTools    m_instancesTools;        // List of all instances of tools
 
   /// Pointer to HistorySvc
-  IHistorySvc* m_pHistorySvc;
+  IHistorySvc* m_pHistorySvc = nullptr;
 
   std::vector<IToolSvc::Observer*> m_observers;
 };

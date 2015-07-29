@@ -13,20 +13,16 @@ public:
   StreamLogger(const std::string& file);
   StreamLogger(std::ostream &ost);
   StreamLogger(IMessageSvc*, MSG::Level);
-  //  StreamLogger();
-  ~StreamLogger();
 
-  std::string name() const;
+  std::string name() const { return m_name; }
 
-  void WriteToStream(const std::string& str) { *p_ost << str << std::endl; }
-  void WriteToMsgSvc(const std::string& str) { *p_msgStr << m_level << str
-							 << endmsg; }
-
+  void WriteToStream(const std::string& str) { *m_ost << str << std::endl; }
+  void WriteToMsgSvc(const std::string& str) { *m_msgStr << m_level << str << endmsg; }
 
 private:
-  bool m_isMine;
-  std::ostream *p_ost;
-  MsgStream *p_msgStr;
+  std::unique_ptr<std::ostream> m_oost;
+  std::ostream*  m_ost = nullptr;
+  std::unique_ptr<MsgStream> m_msgStr;
   MSG::Level m_level;
   std::string m_name;
 };

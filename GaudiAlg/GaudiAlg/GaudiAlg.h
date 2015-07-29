@@ -7,11 +7,9 @@
 // ============================================================================
 // Gaudi
 // ============================================================================
-#include "GaudiKernel/Kernel.h"
 // ============================================================================
 // STD & STL
 // ============================================================================
-#include <string>
 // ============================================================================
 
 /** @namespace GaudiAlg GaudiAlg.h GaudiAlg/GaudiAlg.h
@@ -22,13 +20,6 @@
  */
 namespace GaudiAlg
 {
-  /** convers number into the string
-   *  (remove the actual code duplication from namespaces
-   *  GaudiAlgLocal and GaudiToolLocal
-   *  @param number value
-   *  @return string representation
-   */
-  GAUDI_API std::string fileLine( const int number ) ;
 } // end of namespace GaudiAlg
 
 #endif // GAUDIALG_GAUDIALG_H

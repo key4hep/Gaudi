@@ -55,10 +55,7 @@ MsgStream & TimerForSequencer::fillStream(MsgStream & s) const
 
 std::string TimerForSequencer::header( std::string::size_type size )
 {
-  if ( size < 21 ) size = 21;
-  const std::string blank( size - 20, ' ' );
-  const std::string s = 
-    "Algorithm" + blank + "(millisec) |    <user> |   <clock> |" +
-    "      min       max | entries | total (s) |";
-  return s;
+  return  "Algorithm" + std::string( std::max(std::string::size_type(21),size) - 20, ' ' )
+        + "(millisec) |    <user> |   <clock> |" 
+        + "      min       max | entries | total (s) |";
 }

@@ -35,15 +35,15 @@ namespace Tuples
   class _TupAdapter : public std::unary_function<ARGUMENT,RESULT>
   {
   public:
+    // default constructor is disabled 
+    _TupAdapter() = delete;
     // constructor
     _TupAdapter ( OBJECT object ) : m_object ( object ) {} ;
-  public:
+
     /// the only one essential menthod 
     inline RESULT operator() ( ARGUMENT arg ) const 
     { return m_object( arg )  ; }
-  private:
-    // default constructor is disabled 
-    _TupAdapter();
+
   private:
     OBJECT m_object ;
   };

@@ -241,7 +241,7 @@ namespace Gaudi { namespace PluginService {
                   const Properties& props){
       REG_SCOPE_LOCK
       FactoryMap &facts = factories();
-      FactoryMap::iterator entry = facts.find(id);
+      auto entry = facts.find(id);
       if (entry == facts.end())
       {
         // this factory was not known yet
@@ -270,7 +270,7 @@ namespace Gaudi { namespace PluginService {
     void* Registry::get(const std::string& id, const std::string& type) const {
       REG_SCOPE_LOCK
       const FactoryMap &facts = factories();
-      FactoryMap::const_iterator f = facts.find(id);
+      auto f = facts.find(id);
       if (f != facts.end())
       {
 #ifdef GAUDI_REFLEX_COMPONENT_ALIASES
@@ -286,7 +286,7 @@ namespace Gaudi { namespace PluginService {
             char *dlmsg = dlerror();
             if (dlmsg)
               logger().warning(dlmsg);
-            return 0;
+            return nullptr;
           }
           f = facts.find(id); // ensure that the iterator is valid
         }
@@ -297,14 +297,14 @@ namespace Gaudi { namespace PluginService {
               demangle(f->second.type) + " instead of " + demangle(type));
         }
       }
-      return 0; // factory not found
+      return nullptr; // factory not found
     }
 
     const Registry::FactoryInfo& Registry::getInfo(const std::string& id) const {
       REG_SCOPE_LOCK
       static FactoryInfo unknown("unknown");
       const FactoryMap &facts = factories();
-      FactoryMap::const_iterator f = facts.find(id);
+      auto f = facts.find(id);
       if (f != facts.end())
       {
         return f->second;
@@ -318,7 +318,7 @@ namespace Gaudi { namespace PluginService {
                           const std::string& v) {
       REG_SCOPE_LOCK
       FactoryMap &facts = factories();
-      FactoryMap::iterator f = facts.find(id);
+      auto f = facts.find(id);
       if (f != facts.end())
       {
         f->second.properties[k] = v;
@@ -330,11 +330,9 @@ namespace Gaudi { namespace PluginService {
       REG_SCOPE_LOCK
       const FactoryMap &facts = factories();
       std::set<KeyType> l;
-      for (FactoryMap::const_iterator f = facts.begin();
-           f != facts.end(); ++f)
+      for (const auto& f : facts )
       {
-        if (f->second.ptr)
-          l.insert(f->first);
+        if (f.second.ptr) l.insert(f.first);
       }
       return l;
     }

@@ -19,7 +19,7 @@ class GAUDI_API IInspectable {
 public:
 
   /// destructor
-  virtual ~IInspectable() { }
+  virtual ~IInspectable() = default;
 
 	/** return FALSE if doesn't accept Inspecetor so that diagnostic
       message can be printed. Calls the inspect member function of

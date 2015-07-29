@@ -61,7 +61,7 @@ namespace GaudiAlg
     /// Implicit constructor from a literal ID
     ID  ( const char*        id      ) ; 
     /// Destructor
-    ~ID ( ) {} ;
+    ~ID ( ) = default;
     /// Is this ID numeric
     inline bool numeric   () const { return -1 != m_nID ;    }
     /// Is this ID numeric

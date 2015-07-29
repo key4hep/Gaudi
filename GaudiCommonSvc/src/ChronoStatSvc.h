@@ -41,9 +41,9 @@ public:
 public:
   // ============================================================================
   /// Implementation of IService::initialize()
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
   /// Implementation of IService::finalize()
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
   // ============================================================================
 public:
   // ============================================================================
@@ -51,32 +51,32 @@ public:
    *  @see IChronoStatSvc
    */
   virtual       ChronoEntity* chronoStart
-  ( const IChronoStatSvc::ChronoTag& chronoTag );
+  ( const IChronoStatSvc::ChronoTag& chronoTag ) override;
   // ============================================================================
   /** Implementation of IChronoStatSvc::chronoStop
    *  @see IChronoStatSvc
    */
   virtual const ChronoEntity* chronoStop
-  ( const IChronoStatSvc::ChronoTag& chronoTag );
+  ( const IChronoStatSvc::ChronoTag& chronoTag ) override;
   // ============================================================================
   /** Implementation of IchronoStatSvc::chronoDelta
    *  @see IChronoStatSvc
    */
   virtual IChronoStatSvc::ChronoTime chronoDelta
   ( const IChronoStatSvc::ChronoTag& chronoTag,
-    IChronoStatSvc::ChronoType theType );
+    IChronoStatSvc::ChronoType theType ) override;
   // ============================================================================
   /** Implementation of IChronoStatSvc::chronoPrint
    *  @see IChronoStatSvc
    */
   virtual void    chronoPrint
-  ( const IChronoStatSvc::ChronoTag& chronoTag );
+  ( const IChronoStatSvc::ChronoTag& chronoTag ) override;
   // ============================================================================
   /** Implementation of IChronoStatSvc::chronoStatus
    *  @see IChronoStatSvc
    */
   virtual ChronoStatus  chronoStatus
-  ( const IChronoStatSvc::ChronoTag& chronoTag );
+  ( const IChronoStatSvc::ChronoTag& chronoTag ) override;
   // ============================================================================
   /** Implementation of IChronoStatSvc::stat
    *  add statistical information to the entity , tagged by its name
@@ -84,14 +84,14 @@ public:
    */
   virtual void     stat
   ( const IChronoStatSvc::StatTag    &  statTag    ,
-    const IChronoStatSvc::StatFlag   &  statFlag   ) ;
+    const IChronoStatSvc::StatFlag   &  statFlag   )  override;
   // ============================================================================
   /** prints (using message service)  info about
    *  statistical entity, tagged by its name
    *  @see IChronoStatSvc
    */
   virtual void     statPrint
-  (  const IChronoStatSvc::ChronoTag& statTag) ;
+  (  const IChronoStatSvc::ChronoTag& statTag)  override;
   // ============================================================================
   /** extract the chrono entity for the given tag (name)
    *  @see IChronoStatSvc
@@ -99,7 +99,7 @@ public:
    *  @return pointer to chrono entity
    */
   virtual const ChronoEntity* chrono
-  ( const IChronoStatSvc::ChronoTag& t ) const  ;
+  ( const IChronoStatSvc::ChronoTag& t ) const   override;
   // ============================================================================
   /** extract the stat   entity for the given tag (name)
    *  @see IChronoStatSvc
@@ -107,7 +107,7 @@ public:
    *  @return pointer to stat   entity
    */
   virtual const StatEntity*   stat
-  ( const IChronoStatSvc::StatTag&   t ) const ;
+  ( const IChronoStatSvc::StatTag&   t ) const  override;
   // ============================================================================
   /**  Default constructor.
    *   @param name service instance name
@@ -115,11 +115,11 @@ public:
    */
   ChronoStatSvc ( const std::string& name, ISvcLocator* svcloc );
   /// Destructor.
-  virtual ~ChronoStatSvc();
+  ~ChronoStatSvc() override = default;
   // ============================================================================
 
 public:
-  void handle(const Incident& incident);
+  void handle(const Incident& incident) override;
 
 
 protected:
@@ -129,12 +129,10 @@ protected:
   // ============================================================================
 private:
   // ============================================================================
-  // default constructor is disabled
-  ChronoStatSvc() ;
-  // copy constructor is disabled
-  ChronoStatSvc( const  ChronoStatSvc& ) ;
-  // assignement operator constructor is disabled
-  ChronoStatSvc& operator=( const  ChronoStatSvc& ) ;
+  // default/copy constructor and assignment are disabled
+  ChronoStatSvc() = delete;
+  ChronoStatSvc( const  ChronoStatSvc& ) = delete;
+  ChronoStatSvc& operator=( const  ChronoStatSvc& ) = delete;
   // ============================================================================
   /// dump the statistics into an ASCII file for offline processing
   void saveStats();
@@ -145,7 +143,7 @@ private:
   ChronoMap      m_chronoEntities;
   /// level of info printing
   int            m_intChronoPrintLevel ;
-  MSG::Level     m_chronoPrintLevel    ;
+  MSG::Level     m_chronoPrintLevel    = MSG::INFO ;
   /// flag for printing the final table
   bool           m_chronoTableFlag     ;
   /// flag for destination of the the final table
@@ -167,7 +165,7 @@ private:
 
   /// level of info printing
   int            m_intStatPrintLevel ;
-  MSG::Level     m_statPrintLevel    ;
+  MSG::Level     m_statPrintLevel     = MSG::INFO;
   /// flag for printing the final table
   bool           m_statTableFlag     ;
   /// flag for destination of the t he final table
@@ -186,7 +184,7 @@ private:
   // format for "efficiency" statistical printout rows
   std::string    m_format2 ; ///< format for "efficiency" statistical printout rows
   // flag to use the special "efficiency" format
-  bool           m_useEffFormat ; ///< flag to use the special "efficiency" format
+  bool           m_useEffFormat = true ; ///< flag to use the special "efficiency" format
 
   typedef std::map<ChronoTag, std::vector<IChronoSvc::ChronoTime> > TimeMap;
   TimeMap m_perEvtTime;

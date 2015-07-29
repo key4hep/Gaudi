@@ -58,25 +58,25 @@ namespace
   struct H1
   {
     //
-    void setName  ( const std::string& value ) { m_name   = value ; }
-    void setTitle ( const std::string& value ) { m_title  = value ; }
+    void setName  ( std::string value ) { m_name   = std::move(value) ; }
+    void setTitle ( std::string value ) { m_title  = std::move(value) ; }
 
-    void setEdges ( const Edges&       value ) { m_edges  = value ; }
+    void setEdges ( Edges       value ) { m_edges  = std::move(value) ; }
     void setHighEdge ( const double value ) { m_edges.setHighEdge(value ); }
     void setLowEdge ( const double value ) { m_edges.setLowEdge(value ); }
     void setNBins ( const unsigned int value ) { m_edges.setNBins(value );}
 
 
-    void setBins  ( const Bins&        value ) { m_bins   = value ; }
+    void setBins  ( Bins        value ) { m_bins   = std::move(value) ; }
     //
-    H1& operator*=( const std::string& value ) { setName  ( value ) ; return *this ; }
-    H1& operator/=( const std::string& value ) { setTitle ( value ) ; return *this ; }
+    H1& operator*=( std::string value ) { setName  ( std::move(value) ) ; return *this ; }
+    H1& operator/=( std::string value ) { setTitle ( std::move(value) ) ; return *this ; }
     H1& operator^=( const double value ) { setHighEdge(value) ; return *this ; }
     H1& operator-=( const double value ) { setLowEdge(value) ; return *this ; }
     H1& operator|=( const unsigned int value) { setNBins(value) ; return *this ; }
 
-    H1& operator&=( const Edges&       value ) { setEdges ( value ) ; return *this ; }
-    H1& operator+=( const Bins&        value ) { setBins  ( value ) ; return *this ; }
+    H1& operator&=( Edges       value ) { setEdges ( std::move(value) ) ; return *this ; }
+    H1& operator+=( Bins        value ) { setBins  ( std::move(value) ) ; return *this ; }
     //
     bool ok  () const
     {
@@ -101,17 +101,17 @@ namespace
   struct H2
   {
     //
-    void setName   ( const std::string& value ) { m_name   = value ; }
-    void setTitle  ( const std::string& value ) { m_title  = value ; }
-    void setXEdges ( const Edges&       value ) { m_xedges = value ; }
-    void setYEdges ( const Edges&       value ) { m_yedges = value ; }
-    void setBins   ( const Bins&        value ) { m_bins   = value ; }
+    void setName   ( std::string value ) { m_name   = std::move(value) ; }
+    void setTitle  ( std::string value ) { m_title  = std::move(value) ; }
+    void setXEdges ( Edges       value ) { m_xedges = std::move(value) ; }
+    void setYEdges ( Edges       value ) { m_yedges = std::move(value) ; }
+    void setBins   ( Bins        value ) { m_bins   = std::move(value) ; }
     //
-    H2& operator*=( const std::string& value ) { setName   ( value ) ; return *this ; }
-    H2& operator/=( const std::string& value ) { setTitle  ( value ) ; return *this ; }
-    H2& operator&=( const Edges&       value ) { setXEdges ( value ) ; return *this ; }
-    H2& operator|=( const Edges&       value ) { setYEdges ( value ) ; return *this ; }
-    H2& operator+=( const Bins&        value ) { setBins   ( value ) ; return *this ; }
+    H2& operator*=( std::string value ) { setName   ( std::move(value) ) ; return *this ; }
+    H2& operator/=( std::string value ) { setTitle  ( std::move(value) ) ; return *this ; }
+    H2& operator&=( Edges       value ) { setXEdges ( std::move(value) ) ; return *this ; }
+    H2& operator|=( Edges       value ) { setYEdges ( std::move(value) ) ; return *this ; }
+    H2& operator+=( Bins        value ) { setBins   ( std::move(value) ) ; return *this ; }
     //
     bool ok  () const
     {

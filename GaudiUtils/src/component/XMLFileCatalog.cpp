@@ -82,7 +82,7 @@ namespace {
         if ( m_node && m_node->getNodeType() != DOMNode::ELEMENT_NODE ) ++(*this);
       }
     }
-    operator bool()  const                { return 0 != m_node;                         }
+    operator bool()  const                { return m_node;                              }
     operator DOMNode* () const            { return m_node;                              }
     operator DOMElement* () const         { return m_node;                              }
     DOMElement* operator->() const        { return m_node;                              }
@@ -139,7 +139,7 @@ namespace {
       static const size_t len = strlen(dtd);
       return new MemBufInputSource((const XMLByte*)dtd,len,dtdID,false);
     }
-    virtual ~DTDRedirect() {}
+    virtual ~DTDRedirect() = default;
   };
 
   void ErrHandler::error(const SAXParseException& e)  {
@@ -203,17 +203,9 @@ std::string Gaudi::createGuidAsString()  {
 }
 // ----------------------------------------------------------------------------
 XMLFileCatalog::XMLFileCatalog(CSTR uri, IMessageSvc* m)
-: m_rdOnly(false),m_update(false),m_doc(0),m_parser(0),m_errHdlr(0),
+: m_rdOnly(false),m_update(false),m_doc(0),
   m_file(uri), m_msgSvc(m)
 {
-}
-// ----------------------------------------------------------------------------
-XMLFileCatalog::~XMLFileCatalog()   {
-  if (m_parser) delete m_parser;
-  m_parser = 0;
-  if (m_errHdlr) delete m_errHdlr;
-  m_errHdlr = 0;
-  m_doc = 0;
 }
 // ----------------------------------------------------------------------------
 /// Create file identifier using UUID mechanism
@@ -238,14 +230,13 @@ void XMLFileCatalog::printError(CSTR msg, bool rethrow)  const  {
 void XMLFileCatalog::init()   {
   string xmlFile = getfile(false);
   try{
-    if ( m_parser ) delete m_parser;
-    m_parser = new XercesDOMParser;
+    m_parser.reset( new XercesDOMParser );
     m_parser->setValidationScheme(XercesDOMParser::Val_Auto);
     m_parser->setDoNamespaces(false);
     DTDRedirect dtdinmem;
     m_parser->setEntityResolver(&dtdinmem);
-    if ( ! m_errHdlr ) m_errHdlr = new ErrHandler(m_msgSvc);
-    m_parser->setErrorHandler(m_errHdlr);
+    if ( ! m_errHdlr ) m_errHdlr.reset( new ErrHandler(m_msgSvc) );
+    m_parser->setErrorHandler(m_errHdlr.get());
     if ( !xmlFile.empty() )  {
       m_parser->parse(xmlFile.c_str());
     }
@@ -343,10 +334,10 @@ string XMLFileCatalog::getMetaDataItem(CSTR fid,CSTR attr) const  {
 void XMLFileCatalog::dropMetaData(CSTR fid,CSTR attr) const  {
   vector<DOMNode*> gbc;
   DOMNode* fn = getDoc(true)->getElementById(XMLStr(fid));
-  for(XMLCollection c(child(fn,MetaNode)); c; ++c)
+  for(XMLCollection c{child(fn,MetaNode)}; c; ++c)
     if ( attr[0]=='*' || !c.attr(attr).empty() ) gbc.push_back(c);
-  for(vector<DOMNode*>::iterator i=gbc.begin(); i != gbc.end(); i++)
-    fn->removeChild(*i);
+  for(const auto &i : gbc)
+    fn->removeChild(i);
 }
 // ----------------------------------------------------------------------------
 DOMNode* XMLFileCatalog::element(CSTR element_name,bool print_err) const {
@@ -356,7 +347,7 @@ DOMNode* XMLFileCatalog::element(CSTR element_name,bool print_err) const {
 }
 // ----------------------------------------------------------------------------
 void XMLFileCatalog::deleteFID(CSTR fid) const {
-  DOMNode *pn = 0, *fn = element(fid);
+  DOMNode *pn = nullptr, *fn = element(fid);
   if ( fn ) pn = fn->getParentNode();
   if ( pn ) pn->removeChild(fn);
 }
@@ -471,22 +462,21 @@ void XMLFileCatalog::commit()    {
       string xmlfile = getfile(true);
       XMLStr ii("LS");
       DOMImplementation *imp = DOMImplementationRegistry::getDOMImplementation(ii);
-      XMLFormatTarget   *tar = new LocalFileFormatTarget(xmlfile.c_str());
+      std::unique_ptr<XMLFormatTarget>   tar{ new LocalFileFormatTarget(xmlfile.c_str()) };
 #if _XERCES_VERSION <= 30000
       DOMWriter         *wr  = imp->createDOMWriter();
       wr->setFeature(XMLUni::fgDOMWRTFormatPrettyPrint, true);
-      wr->writeNode(tar, *m_doc);
+      wr->writeNode(tar.get(), *m_doc);
       wr->release();
 #else
       DOMLSOutput       *output = imp->createLSOutput();
-      output->setByteStream(tar);
+      output->setByteStream(tar.get());
       DOMLSSerializer   *wr     = imp->createLSSerializer();
       wr->getDomConfig()->setParameter(XMLStr("format-pretty-print"), true);
       wr->write(m_doc, output);
       output->release();
       wr->release();
 #endif
-      delete  tar;
     }
   }
   catch ( exception& e )  {

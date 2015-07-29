@@ -9,7 +9,7 @@ AIDA::IHistogram1D*  GaudiHistos<PBASE>::book1D
   const HistoBinEdges& edges        ) const
 {
   //
-  if  ( !produceHistos() )                   { return 0    ; } // RETURN
+  if  ( !produceHistos() )                   { return nullptr    ; } // RETURN
   //
   // exist?
   AIDA::IHistogram1D* hist = histo1D ( title ) ;
@@ -33,19 +33,19 @@ AIDA::IHistogram1D*  GaudiHistos<PBASE>::book1D
   const HistoBinEdges& edges        ) const
 {
   //
-  if  ( !produceHistos() )                   { return 0    ; } // RETURN
+  if  ( !produceHistos() )                   { return nullptr    ; } // RETURN
   //
   // Check ID
   if (ID.undefined())
   {
     this->Error("Undefined Histogram ID : Title='"+title+"'");
-    return NULL;
+    return nullptr;
   }
 
   // exist?
   AIDA::IHistogram1D* hist = histo1D ( ID ) ;
   // histogram is already booked
-  if ( NULL != hist       )                    { return hist ; } // RETURN !!
+  if ( hist       )                    { return hist ; } // RETURN !!
 
   // Histogram title
   const std::string & htitle =
@@ -68,7 +68,7 @@ AIDA::IHistogram1D*  GaudiHistos<PBASE>::book1D
   }
 
   // check OK
-  if( NULL == hist )
+  if( !hist )
   { this->Error( "IHistogram1D* points to NULL! ID='" + ID.idAsString() +
                  "' title='"+htitle+"'" ) ; return NULL; } // RETURN !!
 
@@ -99,12 +99,12 @@ GaudiHistos<PBASE>::plot1D
   const HistoBinEdges& edges  ,
   const double         weight ) const
 {
-  AIDA::IHistogram1D * h(NULL);
+  AIDA::IHistogram1D * h(nullptr);
   if ( produceHistos() )
   {
     // retrieve or book the histogram
     h = histo1D ( title ) ;
-    if ( NULL == h ) { h = book1D ( title , edges ) ; }
+    if ( !h ) { h = book1D ( title , edges ) ; }
     // fill the histogram
     h = fill ( h , value , weight , title );
   }
@@ -127,7 +127,7 @@ GaudiHistos<PBASE>::plot1D
   {
     // retrieve or book the histogram
     h = histo1D ( ID ) ;
-    if ( NULL == h ) {  h = book1D ( ID , title , edges ) ; }
+    if ( !h ) {  h = book1D ( ID , title , edges ) ; }
     // fill
     h = fill ( h , value , weight , title ) ;
   }

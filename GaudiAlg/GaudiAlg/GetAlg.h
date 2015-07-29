@@ -29,7 +29,7 @@ namespace Gaudi
       /// the only one essential method:
       virtual bool operator() ( const IAlgorithm* ) const = 0 ;
       // virtual destructor
-      virtual ~AlgSelector () ;
+      virtual ~AlgSelector () = default;
     };
     // ========================================================================
     /** @class AlgTypeSelector
@@ -44,7 +44,7 @@ namespace Gaudi
     public:
       /// the only one essential method:
       virtual bool operator() ( const IAlgorithm* a ) const
-      { return dynamic_cast<const TYPE*>( a ) != 0; }
+      { return dynamic_cast<const TYPE*>( a ); }
     } ;
     // ========================================================================
     template <class TYPE>
@@ -71,14 +71,12 @@ namespace Gaudi
     class GAUDI_API AlgNameSelector : public AlgSelector
     {
     public:
+      AlgNameSelector() = delete ;
       /// constructor form the name
-      AlgNameSelector ( const std::string& name  ) : m_name ( name ) {}
+      AlgNameSelector ( std::string name  ) : m_name ( std::move(name) ) {}
       /// the only one essential method:
-      virtual bool operator() ( const IAlgorithm* a ) const
-      { return 0 != a ? a->name() == m_name : false ; }
-    private:
-      // the default constructor is disabled
-      AlgNameSelector() ;
+      bool operator() ( const IAlgorithm* a ) const override
+      { return a && a->name() == m_name; }
     private:
       // algorithm name
       std::string m_name ; ///< algorithm name
@@ -150,4 +148,3 @@ namespace Gaudi
 // The END
 // ============================================================================
 #endif // GAUDIALG_GETALG_H
-// ============================================================================

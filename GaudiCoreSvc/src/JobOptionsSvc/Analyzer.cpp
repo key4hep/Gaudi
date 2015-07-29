@@ -91,8 +91,7 @@ static void GetPropertyValue(const gp::Node* node,
         if (units->Find(unit_name, unit_value)) {
           // We have found a unit
           double val = std::stod(node->value);
-          std::string store =
-	    std::to_string(val * unit_value);
+          std::string store = std::to_string(val * unit_value);
           value.reset(new gp::PropertyValue(store));
         }else {
           // Unit not found
@@ -146,8 +145,8 @@ static void GetPropertyValue(const gp::Node* node,
     case gp::Node::kProperty: {
       gp::PropertyName::ScopedPtr property;
       GetPropertyName(node, property);
-      gp::Property* exists = NULL;
-      if (NULL != (exists = catalog->Find(property->client(),
+      gp::Property* exists = nullptr;
+      if (nullptr != (exists = catalog->Find(property->client(),
           property->property()))) {
         value.reset(new gp::PropertyValue(exists->property_value()));
       }else {
@@ -215,11 +214,10 @@ static bool AssignNode(const gp::Node* node,
       return false;
     }
     // ------------------------------------------------------------------------
-    gp::Property* exists = NULL;
     bool reassign = false;
+    gp::Property* exists = catalog->Find(property->client(), property->property());
 // ----------------------------------------------------------------------------
-    if (NULL != (exists = catalog->Find(property->client(),
-                                                      property->property()))) {
+    if ( exists ) {
       // ----------------------------------------------------------------------
       // If property already exists:
       // ----------------------------------------------------------------------
@@ -251,7 +249,7 @@ static bool AssignNode(const gp::Node* node,
     }
 // ----------------------------------------------------------------------------
     bool result = true;
-    if ( (NULL == exists) || reassign) {
+    if ( !exists || reassign) {
       result = catalog->Add(new gp::Property(*property, *value));
     }
 
@@ -300,7 +298,7 @@ static bool ConditionNode(gp::Node* node,
   gp::PropertyName::ScopedPtr property_name;
   GetPropertyName(&node->children[0], property_name);
   // --------------------------------------------------------------------------
-  bool is_defined = (NULL != catalog->Find(property_name->client(),
+  bool is_defined = (nullptr != catalog->Find(property_name->client(),
       property_name->property()));
   // --------------------------------------------------------------------------
   if ((is_defined && (node->children[1].type == gp::Node::kIfdef))
@@ -310,7 +308,7 @@ static bool ConditionNode(gp::Node* node,
   }else if (node->children.size()>2){
     *next = &node->children[2];
   } else{
-    *next = NULL;
+    *next = nullptr;
   }
   return true;
 }
@@ -411,17 +409,14 @@ static bool Analyze(gp::Node* node,
 bool Unreference(gp::Catalog& catalog, gp::Messages* messages) {
   bool unreference_result = true;
   for(auto& client : catalog) {
-    for (gp::Catalog::CatalogSet::mapped_type::iterator current
-        = client.second.begin(); current != client.second.end();
-        ++current) {
-      if (current->IsReference()) {
-        gp::PropertyValue& value = current->property_value();
-        std::vector<std::string> names = value.Vector();
-
+    for (auto& current : client.second ) {
+      if (current.IsReference()) {
+        gp::PropertyValue& value = current.property_value();
+        const std::vector<std::string>& names = value.Vector();
         gp::Property* property = catalog.Find(names[0], names[1]);
-        if (NULL == property) {
+        if (!property) {
           messages->AddError(value.position(),
-              "Could not unreference " + current->ValueAsString());
+              "Could not unreference " + current.ValueAsString());
           unreference_result = false;
         }else{
           value = property->property_value();

@@ -28,7 +28,7 @@ class JobOptionsSvc : public extends2<Service, IProperty, IJobOptionsSvc> {
   // Constructor
   JobOptionsSvc(const std::string& name,ISvcLocator* svc);
   /// destructor
-  virtual ~JobOptionsSvc() {};
+  virtual ~JobOptionsSvc() = default;
   virtual StatusCode initialize ();
   /// Service finalization   method
   virtual StatusCode finalize   ();

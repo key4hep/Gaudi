@@ -26,7 +26,7 @@ protected:
   {}
 public:
   /** virtual destructor so that derived class destructor is called. */
-  virtual ~GaudiHandleInfo() {}
+  virtual ~GaudiHandleInfo() = default;
   //
   // Public member functions
   //
@@ -399,7 +399,7 @@ protected:
   {}
 
 public:
-  virtual ~GaudiHandleArray() {};
+  virtual ~GaudiHandleArray() = default;
 
   /**Set the array of GaudiHandles from typeAndNames given in vector of strings. */
   GaudiHandleArray& operator=( const std::vector< std::string >& myTypesAndNamesList ) {

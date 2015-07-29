@@ -26,7 +26,7 @@ public:
   DeclareInterfaceID(IAlgTool,3,0);
 
   /// Virtual destructor
-  virtual ~IAlgTool() { }
+  virtual ~IAlgTool() = default;
 
   /// The type of an AlgTool, meaning the concrete AlgTool class.
   virtual const std::string&  type() const = 0;

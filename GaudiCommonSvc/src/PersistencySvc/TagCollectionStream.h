@@ -64,29 +64,29 @@ class TagCollectionStream : public OutputStream     {
 protected:
 
   /// Property: Name of the address leaf in the transient event store
-  std::string                   m_addrLeaf;
+  std::string                   m_addrLeaf = "/Event" ;
   /// Property: Name of the address column of the tag collection
-  std::string                   m_addrColName;
+  std::string                   m_addrColName = "Address" ;
   /// Property: Name of the tag collection in the transient store
   std::string                   m_tagName;
   /// Property: Name of the collection service
-  std::string                   m_collSvcName;
+  std::string                   m_collSvcName = "NTupleSvc";
   /// Property: Flag to indicate that the objects should be written first
-  bool                          m_objectsFirst;
+  bool                          m_objectsFirst = true;
   /// NTuple column to hold the opaque address of the address leaf
-  INTupleItem*                  m_addrColumn;
+  INTupleItem*                  m_addrColumn = nullptr;
   /// Name of the top leaf (performance cache)
   std::string                   m_topLeafName;
   /// Short cut flag to indicate if the address leaf is the top leaf (performace cache)
-  bool                          m_isTopLeaf;
+  bool                          m_isTopLeaf = false;
   /// Keep reference to the tuple service
-  INTupleSvc*                   m_collectionSvc;
+  INTupleSvc*                   m_collectionSvc = nullptr;
   /// Address buffer
-  GenericAddress*               m_addr;
+  std::unique_ptr<GenericAddress> m_addr;
   /// Address item buffer
   NTuple::Item<IOpaqueAddress*> m_item;
   /// OutputStream override: Select the different objects and write them to file 
-  virtual StatusCode writeObjects();
+  StatusCode writeObjects() override;
   /// Connect address column, if not already connected
   virtual StatusCode connectAddress();
   /// Write data objects
@@ -100,11 +100,11 @@ public:
 	/// Standard algorithm Constructor
 	TagCollectionStream(const std::string& name, ISvcLocator* pSvcLocator); 
   /// Standard Destructor
-  virtual ~TagCollectionStream();
+  ~TagCollectionStream() override = default;
   /// Initialize TagCollectionStream
-	virtual StatusCode initialize();
+  StatusCode initialize() override;
   /// Terminate TagCollectionStream
-	virtual StatusCode finalize();
+  StatusCode finalize() override;
 };
 
 #endif // GAUDISVC_PERSISTENCYSVC_TAGCOLLECTIONSTREAM_H

@@ -81,7 +81,7 @@ public:
   virtual StatusCode eraseByStdHepID( int stdHepID ) = 0;
 
   /// virtual destructor
-  virtual ~IParticlePropertySvc() {}
+  virtual ~IParticlePropertySvc() = default;
 };
 
 #endif

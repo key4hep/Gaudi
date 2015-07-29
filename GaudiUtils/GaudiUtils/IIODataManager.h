@@ -56,7 +56,7 @@ namespace Gaudi  {
     /// Set physical file name
     void setPFN(const std::string& fn)    {     m_pfn = fn;          }
     /// Increase age of I/O source
-    void ageFile()                        {     ++m_age;             }
+    int ageFile()                         {     return ++m_age;      }
     /// Reset age
     void resetAge()                       {     m_age = 0;           }
     /// Access age counter

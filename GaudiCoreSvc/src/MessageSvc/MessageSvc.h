@@ -8,6 +8,7 @@
 #include <mutex>
 #include <set>
 #include <iosfwd>
+#include <memory>
 
 #include "GaudiKernel/StatusCode.h"
 #include "GaudiKernel/Service.h"
@@ -36,7 +37,7 @@ public:
   // Default constructor.
   MessageSvc( const std::string& name, ISvcLocator* svcloc );
   // Destructor.
-  virtual ~MessageSvc();
+  virtual ~MessageSvc() = default;
 
   // Implementation of IService::reinitialize()
   virtual StatusCode reinitialize();
@@ -167,8 +168,7 @@ private:
   int m_msgCount[MSG::NUM_LEVELS];
 
   std::map<std::string, std::string> m_loggedStreamsName;
-  typedef std::map<std::string, std::ostream*> LoggedStreamsMap_t;
-  LoggedStreamsMap_t m_loggedStreams;
+  std::map<std::string, std::shared_ptr<std::ostream>> m_loggedStreams;
 
   void initColors(Property& prop);
   void setupColors(Property& prop);

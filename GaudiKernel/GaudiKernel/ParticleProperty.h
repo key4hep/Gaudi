@@ -16,7 +16,7 @@
  *
  *  @author  Iain Last,G.Corti
  */
-class ParticleProperty {
+class ParticleProperty final {
 public:
   /// Constructors
   ParticleProperty() {}
@@ -44,7 +44,7 @@ public:
   {}
   
   /// Destructor.
-  ~ParticleProperty() {}
+  ~ParticleProperty() = default;
 
   /// Get the particle name.
   const std::string& particle() const { return m_name; }

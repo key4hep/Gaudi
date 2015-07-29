@@ -31,12 +31,12 @@ DECLARE_COMPONENT(EventLoopMgr)
 EventLoopMgr::EventLoopMgr(const std::string& nam, ISvcLocator* svcLoc)
 : MinimalEventLoopMgr(nam, svcLoc)
 {
-  m_histoDataMgrSvc   = 0;
-  m_histoPersSvc      = 0;
-  m_evtDataMgrSvc     = 0;
-  m_evtDataSvc        = 0;
-  m_evtSelector       = 0;
-  m_evtContext        = 0;
+  m_histoDataMgrSvc   = nullptr;
+  m_histoPersSvc      = nullptr;
+  m_evtDataMgrSvc     = nullptr;
+  m_evtDataSvc        = nullptr;
+  m_evtSelector       = nullptr;
+  m_evtContext        = nullptr;
   m_endEventFired     = true;
 
   // Declare properties
@@ -55,7 +55,7 @@ EventLoopMgr::~EventLoopMgr()   {
   if( m_evtDataMgrSvc ) m_evtDataMgrSvc->release();
   if( m_evtDataSvc ) m_evtDataSvc->release();
   if( m_evtSelector ) m_evtSelector->release();
-  if( m_evtContext ) delete m_evtContext;
+  delete m_evtContext;
 }
 
 //--------------------------------------------------------------------------------------------
@@ -107,8 +107,8 @@ StatusCode EventLoopMgr::initialize()    {
     }
   }
   else {
-    m_evtSelector = 0;
-    m_evtContext = 0;
+    m_evtSelector = nullptr;
+    m_evtContext = nullptr;
     if ( m_warnings ) {
       warning() << "Unable to locate service \"EventSelector\" " << endmsg;
       warning() << "No events will be processed from external input." << endmsg;
@@ -152,7 +152,7 @@ StatusCode EventLoopMgr::reinitialize() {
       if ( m_evtSelector.get() && m_evtContext ) {
         // Need to release context before switching to new event selector
         m_evtSelector->releaseContext(m_evtContext);
-        m_evtContext = 0;
+        m_evtContext = nullptr;
       }
       m_evtSelector = theEvtSel;
       if (theSvc->FSMState() == Gaudi::StateMachine::INITIALIZED) {
@@ -182,7 +182,7 @@ StatusCode EventLoopMgr::reinitialize() {
     else if ( m_evtSelector.isValid() ) {
       if ( m_evtContext ) {
         m_evtSelector->releaseContext(m_evtContext);
-        m_evtContext = 0;
+        m_evtContext = nullptr;
       }
       sc = m_evtSelector->createContext(m_evtContext);
       if( !sc.isSuccess() ) {
@@ -193,8 +193,8 @@ StatusCode EventLoopMgr::reinitialize() {
   }
   else if ( m_evtSelector.isValid() && m_evtContext ) {
     m_evtSelector->releaseContext(m_evtContext);
-    m_evtSelector = 0;
-    m_evtContext = 0;
+    m_evtSelector = nullptr;
+    m_evtContext = nullptr;
   }
   return StatusCode::SUCCESS;
 }
@@ -226,30 +226,27 @@ StatusCode EventLoopMgr::finalize()    {
   }
 
   // Save Histograms Now
-  if ( m_histoPersSvc != 0 )    {
+  if ( m_histoPersSvc )    {
     HistogramAgent agent;
     sc = m_histoDataMgrSvc->traverseTree( &agent );
     if( sc.isSuccess() )   {
       IDataSelector* objects = agent.selectedObjects();
       // skip /stat entry!
       if ( objects->size() > 0 )    {
-        IDataSelector::iterator i;
-        for ( i = objects->begin(); i != objects->end(); i++ )    {
-          IOpaqueAddress* pAddr = 0;
-          StatusCode iret = m_histoPersSvc->createRep(*i, pAddr);
+        for ( auto&  i : *objects ) {
+          IOpaqueAddress* pAddr = nullptr;
+          StatusCode iret = m_histoPersSvc->createRep(i, pAddr);
           if ( iret.isSuccess() )     {
-            (*i)->registry()->setAddress(pAddr);
+            i->registry()->setAddress(pAddr);
           }
           else  {
             sc = iret;
           }
         }
-        for ( i = objects->begin(); i != objects->end(); i++ )    {
-          IRegistry* reg = (*i)->registry();
-          StatusCode iret = m_histoPersSvc->fillRepRefs(reg->address(), *i);
-          if ( !iret.isSuccess() )    {
-            sc = iret;
-          }
+        for ( auto& i : *objects )    {
+          IRegistry* reg = i->registry();
+          StatusCode iret = m_histoPersSvc->fillRepRefs(reg->address(), i);
+          if ( !iret.isSuccess() ) sc = iret;
         }
       }
       if ( sc.isSuccess() )    {
@@ -267,16 +264,16 @@ StatusCode EventLoopMgr::finalize()    {
   // Release event selector context
   if ( m_evtSelector && m_evtContext )   {
     m_evtSelector->releaseContext(m_evtContext).ignore();
-    m_evtContext = 0;
+    m_evtContext = nullptr;
   }
 
   // Release all interfaces...
-  m_histoDataMgrSvc = 0;
-  m_histoPersSvc    = 0;
+  m_histoDataMgrSvc = nullptr;
+  m_histoPersSvc    = nullptr;
 
-  m_evtSelector     = 0;
-  m_evtDataSvc      = 0;
-  m_evtDataMgrSvc   = 0;
+  m_evtSelector     = nullptr;
+  m_evtDataSvc      = nullptr;
+  m_evtDataMgrSvc   = nullptr;
 
   return StatusCode::SUCCESS;
 }
@@ -321,7 +318,7 @@ StatusCode EventLoopMgr::executeRun( int maxevt )    {
 //--------------------------------------------------------------------------------------------
 StatusCode EventLoopMgr::nextEvent(int maxevt)   {
   static int        total_nevt = 0;
-  DataObject*       pObject = 0;
+  DataObject*       pObject = nullptr;
   StatusCode        sc(StatusCode::SUCCESS, true);
 
   // loop over events if the maxevt (received as input) if different from -1.
@@ -350,7 +347,7 @@ StatusCode EventLoopMgr::nextEvent(int maxevt)   {
 
     // Setup event in the event store
     if( m_evtContext ) {
-      IOpaqueAddress* addr = 0;
+      IOpaqueAddress* addr = nullptr;
       // Only if there is a EventSelector
       sc = getEventRoot(addr);
       if( !sc.isSuccess() )  {
@@ -389,7 +386,7 @@ StatusCode EventLoopMgr::nextEvent(int maxevt)   {
 
 /// Create event address using event selector
 StatusCode EventLoopMgr::getEventRoot(IOpaqueAddress*& refpAddr)  {
-  refpAddr = 0;
+  refpAddr = nullptr;
   StatusCode sc = m_evtSelector->next(*m_evtContext);
   if ( !sc.isSuccess() )  {
     return sc;

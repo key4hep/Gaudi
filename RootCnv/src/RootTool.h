@@ -1,3 +1,4 @@
+#include <algorithm>
 /*
 * Gaudi namespace declaration
 */
@@ -59,9 +60,9 @@ namespace Gaudi {
                       if ( r.container  ) r.container += ls.first->container;
                       if ( r.link       ) r.link      += ls.first->link;
                       const string& rc = c->getCont(r.container);
-                      MergeSections::const_iterator k = ms.find(rc);
+                      auto k = ms.find(rc);
                       if ( k != ms.end() )   {
-                        const ContainerSections& cs = (*k).second;
+                        const auto& cs = (*k).second;
                         r.entry = ( ls.first->entry >= 0 && ls.first->entry < (int)cs.size() )
                           ? cs[ls.first->entry].start + r.entry : -1;
                         if ( msg.isActive() ) {
@@ -82,9 +83,8 @@ namespace Gaudi {
                   }
                 }
                 /// Link manager:
-                for(vector<int>::iterator i=refs.links.begin(); i!=refs.links.end();++i) {
-                  (*i) += ls.first->link;
-                }
+                std::for_each(std::begin(refs.links),std::end(refs.links),
+                              [&](int& i) { i += ls.first->link; } );
               }
               return nb;
             }
@@ -100,7 +100,7 @@ namespace Gaudi {
       char* q = strchr(p,'=');
       if ( q ) {
         *q = 0;
-        c.push_back(make_pair(p,++q));
+        c.emplace_back(p,++q);
       }
     }
     /// Helper function to read string tables
@@ -112,7 +112,7 @@ namespace Gaudi {
       if ( b ) {
         TLeaf* l = b->GetLeaf(nam);
         if ( l ) {
-	  StatusCode sc = StatusCode::SUCCESS;
+          StatusCode sc = StatusCode::SUCCESS;
           b->SetAddress(text);
           msgSvc() << MSG::VERBOSE;
           for(Long64_t i=0, n=b->GetEntries(); i<n; ++i) {
@@ -138,22 +138,20 @@ namespace Gaudi {
         size_t id2 = dsc.find("[START=");
         size_t id3 = dsc.find("[LEN=");
         if ( id1 != string::npos && id2 != string::npos && id3 != string::npos ) {
-          string tmp;
           string cnt = dsc.substr(id1+5, id2-1-5);
-          int section_start  = ::atoi((tmp=dsc.substr(id2+7,id3-id2-8)).c_str());
-          int section_length = ::atoi((tmp=dsc.substr(id3+5,dsc.find("]",id3+5)-id3-5)).c_str());
+          int section_start  = std::stoi(dsc.substr(id2+7,id3-id2-8));
+          int section_length = std::stoi(dsc.substr(id3+5,dsc.find("]",id3+5)-id3-5));
           e.first = cnt;
           e.second = ContainerSection(section_start,section_length);
           return true;
         }
       }
-      e.first = "";
+      e.first.clear();
       e.second = ContainerSection(-1,-1);
       return false;
     }
     /// Build merge sections from the Sections table entries
     void analyzeMergeMap(StringVec& tmp) {
-      StringVec::const_iterator i;
       LinkSections&  ls = linkSections();
       MergeSections& ms = mergeSections();
       pair<string,ContainerSection> e;
@@ -164,8 +162,8 @@ namespace Gaudi {
       ms.clear();
       msg << MSG::VERBOSE;
       r.dbase = r.container = r.link = r.clid = r.svc = r.entry = 0;
-      for(i=tmp.begin(); i!=tmp.end();++i) {
-        if ( get(*i,e) ) {
+      for(const auto& i:tmp) {
+        if ( get(i,e) ) {
           msg << "Added Merge Section:" << e.first << endmsg;
           ms[e.first].push_back(e.second);
           if (      e.first == "Links" )
@@ -177,7 +175,7 @@ namespace Gaudi {
           else if ( e.first == "Params" )
             r.svc       = e.second.start;
         }
-        else if ( (*i) == "[END-OF-SECTION]" ) {
+        else if ( i == "[END-OF-SECTION]" ) {
           r.entry = cnt;
           if ( msg.isActive() ) {
             msg << "Link Section [" << r.entry << "," << ls.size()
@@ -205,9 +203,9 @@ namespace Gaudi {
           return sc;
         if ( !(sc=readBranch(refs(),"Containers",conts(),   &RootTool::addEntry)).isSuccess() )
           return sc;
-	if ( !(sc=readBranch(refs(),"Links",     links(),   &RootTool::addEntry)).isSuccess() )
+        if ( !(sc=readBranch(refs(),"Links",     links(),   &RootTool::addEntry)).isSuccess() )
           return sc;
-	if ( !(sc=readBranch(refs(),"Params",    params(),  &RootTool::addParam)).isSuccess() )
+        if ( !(sc=readBranch(refs(),"Params",    params(),  &RootTool::addParam)).isSuccess() )
           return sc;
         return sc;
       }

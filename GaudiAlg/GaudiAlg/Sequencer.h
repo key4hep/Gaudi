@@ -27,14 +27,14 @@ class GAUDI_API Sequencer: public Algorithm {
     /**
      ** Constructor(s)
      **/
-    Sequencer( const std::string& name, // The path object's name
-	           ISvcLocator* svcloc      // A pointer to a service location service
+    Sequencer( const std::string&  name,    // The path object's name
+	           ISvcLocator* svcloc   // A pointer to a service location service
               );
 
     /**
      ** Destructor
      **/
-    virtual ~Sequencer( );
+    ~Sequencer( ) override = default;
 
     /*****************************
      ** Public Function Members **
@@ -46,48 +46,53 @@ class GAUDI_API Sequencer: public Algorithm {
      ** has properties specified in the job options file, they will be set to
      ** the requested values BEFORE the initialize() method is invoked.
      **/
-    virtual StatusCode initialize( );
+    StatusCode initialize( ) override;
 
     /**
      ** Sequencer Reinitialization.
      **/
-    virtual StatusCode reinitialize( );
+    StatusCode reinitialize( ) override;
 
     /**
      ** Sequencer finalization.
      **/
-    virtual StatusCode start( );
+    StatusCode start( ) override;
 
     /**
      ** The actions to be performed by the sequencer on an event. This method
      ** is invoked once per event.
      **/
-    virtual StatusCode execute( );
+    virtual StatusCode execute( ) override;
 
     /**
      ** Sequencer finalization.
      **/
-    virtual StatusCode stop( );
+    virtual StatusCode stop( ) override;
 
     /**
      ** Sequencer finalization.
      **/
-    virtual StatusCode finalize( );
+    virtual StatusCode finalize( ) override;
 
     /**
      ** Sequencer beginRun.
      **/
-    virtual StatusCode beginRun( );
+    virtual StatusCode beginRun( ) override;
 
     /**
      ** Sequencer endRun.
      **/
-    virtual StatusCode endRun( );
+    virtual StatusCode endRun( ) override;
 
     /**
      ** Reset the Sequencer executed state for the current event.
      **/
-    void resetExecuted( );
+    void resetExecuted( ) override;
+
+
+    /**
+     ** additional interface methods
+     **/
 
     /**
      ** Was the branch filter passed for the last event?
@@ -158,7 +163,8 @@ class GAUDI_API Sequencer: public Algorithm {
      ** a failure. The branch is located within the main sequence
      ** by the first element, which is the filter algorithm.
      **/
-    std::vector<Algorithm*>* branchAlgorithms( ) const;
+    const std::vector<Algorithm*>& branchAlgorithms( ) const;
+    std::vector<Algorithm*>& branchAlgorithms( );
 
      /// Decode Member Name list
      StatusCode decodeMemberNames( );
@@ -178,7 +184,7 @@ protected:
      ** Append an algorithm to the sequencer.
      **/
     StatusCode append( Algorithm* pAlgorithm,
-                       std::vector<Algorithm*>* theAlgs );
+                       std::vector<Algorithm*>& theAlgs );
 
     /**
      ** Create a algorithm and append it to the sequencer. A call to this method
@@ -193,20 +199,20 @@ protected:
 	    const std::string& type,  // The concrete algorithm class of the algorithm
 	    const std::string& name,  // The name to be given to the algorithm
 	    Algorithm*& pAlgorithm,    // Set to point to the newly created algorithm object
-	    std::vector<Algorithm*>* theAlgs
+	    std::vector<Algorithm*>& theAlgs
         );
 
     /**
      ** Decode algorithm names, creating or appending algorithms as appropriate
      **/
     StatusCode decodeNames( StringArrayProperty& theNames,
-                            std::vector<Algorithm*>* theAlgs,
+                            std::vector<Algorithm*>& theAlgs,
                             std::vector<bool>& theLogic );
 
     /**
      ** Execute the members in the specified list
      **/
-    StatusCode execute( std::vector<Algorithm*>* theAlgs,
+    StatusCode execute( const std::vector<Algorithm*>& theAlgs,
                         std::vector<bool>& theLogic,
                         Algorithm*& lastAlgorithm, unsigned int first = 0 );
 
@@ -219,23 +225,13 @@ protected:
      ** Remove the specified algorithm from the sequencer
      **/
 
-    StatusCode remove( const std::string& algname, std::vector<Algorithm*>* theAlgs );
+    StatusCode remove( const std::string& algname, std::vector<Algorithm*>& theAlgs );
+
+     // NO COPY / ASSIGNMENT  ALLOWED
+    Sequencer( const Sequencer& a ) = delete;
+    Sequencer& operator=( const Sequencer& rhs ) = delete;
 
 private:
-
-    /******************************
-     ** Private Function Members **
-     ******************************/
-
-    /**
-     ** Private Copy constructor: NO COPY ALLOWED
-     **/
-    Sequencer( const Sequencer& a );
-
-    /**
-     ** Private assignment operator: NO ASSIGNMENT ALLOWED
-     **/
-    Sequencer& operator=( const Sequencer& rhs );
 
     /**************************
      ** Private Data Members **
@@ -244,10 +240,10 @@ private:
     StringArrayProperty m_names;             // Member names
     std::vector<bool> m_isInverted;          // Member logic inverted list
     StringArrayProperty m_branchNames;       // Branch Member names
-    std::vector<Algorithm*>* m_branchAlgs;   // Branch algorithms
+    std::vector<Algorithm*> m_branchAlgs;    // Branch algorithms
     std::vector<bool> m_isBranchInverted;    // Branch Member logic inverted list
     BooleanProperty m_stopOverride;          // Stop on filter failure Override flag
-    bool m_branchFilterPassed;               // Branch filter passed flag
+    bool m_branchFilterPassed = false;               // Branch filter passed flag
 };
 
 #endif //ALGORITHM_SEQUENCER_H

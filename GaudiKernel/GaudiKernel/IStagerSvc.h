@@ -4,7 +4,6 @@
 
 // Include Files
 #include "GaudiKernel/IInterface.h"
-#include <string>
 
 // Forward declarations
 class IIncidentListener;

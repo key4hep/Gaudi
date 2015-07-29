@@ -4,6 +4,7 @@
 #include "GaudiKernel/System.h"  /* ThreadHandle" */
 #include <string>
 #include <map>
+#include <memory>
 
 
 
@@ -26,8 +27,8 @@ public:
 
 protected:
   ThreadGaudi() ;
-  virtual ~ThreadGaudi() ;
-  ThreadMap* m_threadMap ;
+  virtual ~ThreadGaudi()  = default;
+  std::unique_ptr<ThreadMap> m_threadMap ;
 };
 
 ///helper function to extract Gaudi Thread ID from thread copy number

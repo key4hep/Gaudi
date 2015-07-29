@@ -21,10 +21,10 @@
 class GAUDI_API TimeException: public GaudiException {
 public:
   // Standard constructor
-  TimeException( const std::string& Message = "unspecified exception",
-                 const std::string& Tag = "*Gaudi::Time*",
-                 const StatusCode & Code = StatusCode::FAILURE ):
-    GaudiException(Message,Tag,Code) {}
+  TimeException( std::string Message = "unspecified exception",
+                 std::string Tag = "*Gaudi::Time*",
+                 StatusCode  Code = StatusCode::FAILURE ):
+    GaudiException(std::move(Message),std::move(Tag),std::move(Code)) {}
   /// Destructor needed to match the signature of GaudiException::~GaudiException().
   virtual ~TimeException() throw() {}
 };

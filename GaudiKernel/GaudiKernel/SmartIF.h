@@ -19,18 +19,18 @@
 template <class TYPE> class SmartIF {
 private:
   /// Pointer to the instance
-  TYPE* m_interface;
+  TYPE* m_interface = nullptr;
 public:
   // ---------- Construction and destruction ----------
   /// Default constructor.
-  inline SmartIF(): m_interface(0) {}
+  inline SmartIF() = default;
   /// Standard constructor from pointer.
   inline SmartIF(TYPE* ptr): m_interface(ptr) {
     if (m_interface) m_interface->addRef();
   }
   /// Standard constructor from any (IInterface-derived) pointer.
   template <class OTHER>
-  inline SmartIF(OTHER* ptr): m_interface(0) {
+  inline SmartIF(OTHER* ptr) {
     if (ptr) reset(ptr);
   }
   /// Copy constructor.
@@ -40,7 +40,7 @@ public:
   /// Constructor from another SmartIF, with a different type.
   /// @note it cannot replace the copy constructor.
   template <class T>
-  inline explicit SmartIF(const SmartIF<T>& rhs): m_interface(0) {
+  inline explicit SmartIF(const SmartIF<T>& rhs) {
     reset(rhs.get());
   }
   /// Standard Destructor.
@@ -48,7 +48,7 @@ public:
 
   // ---------- Boolean and comparison methods ----------
   /// Allow for check if smart pointer is valid.
-  inline bool isValid() const { return m_interface != 0; }
+  inline bool isValid() const { return m_interface != nullptr; }
 
   // ---------- Pointer access methods ----------
   /// Automatic conversion to pointer.
@@ -71,14 +71,14 @@ public:
   /// Set the internal pointer to the passed one disposing of the old one.
   /// Version for pointers of the same type of the managed ones (no call to
   /// queryInterface needed).
-  inline void reset(TYPE* ptr = 0) {
+  inline void reset(TYPE* ptr = nullptr) {
     if (ptr == m_interface) return;
     if (m_interface) m_interface->release();
     if (ptr) {
       m_interface = ptr;
       m_interface->addRef();
     } else {
-      m_interface = 0;
+      m_interface = nullptr;
     }
   }
   /// Set the internal pointer to the passed one disposing of the old one.
@@ -90,7 +90,7 @@ public:
     if (ptr) {
       ptr->queryInterface(TYPE::interfaceID(), pp_cast<void>(&m_interface)).ignore();
     } else {
-      m_interface = 0;
+      m_interface = nullptr;
     }
   }
 

@@ -23,7 +23,7 @@ public:
 
   class Context{
   public:
-    virtual ~Context() { }
+    virtual ~Context() = default;
     virtual void* identifier() const=0;
   };
 

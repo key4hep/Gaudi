@@ -71,7 +71,7 @@ public:
     catch (...) {}
   }
   /// Standard destructor
-  GAUDI_API virtual ~MsgStream();
+  GAUDI_API virtual ~MsgStream() = default;
   /// Initialize report of new message: activate if print level is sufficient.
   MsgStream& report(int lvl)   {
     lvl = (lvl >= MSG::NUM_LEVELS) ?
@@ -375,4 +375,3 @@ MsgStream& operator << (MsgStream& lhs, const std::_Setfill<T> &manip) {
 #endif
 
 #endif    // GAUDIKERNEL_MSGSTREAM_H
-

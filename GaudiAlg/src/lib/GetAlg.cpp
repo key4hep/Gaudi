@@ -18,10 +18,6 @@
  *  @date 2007-09-07
  */
 // ============================================================================
-// virtual destructor 
-// ============================================================================
-Gaudi::Utils::AlgSelector::~AlgSelector(){}
-// ============================================================================
 // simple function to get the algorithm from Context Service
 // ============================================================================
 IAlgorithm* 
@@ -29,8 +25,7 @@ Gaudi::Utils::getAlgorithm
 ( const IAlgContextSvc* svc , 
   const AlgSelector&    sel ) 
 {
-  if ( 0 == svc ) { return  0 ; } // RETURN 
-  return getAlgorithm ( svc->algorithms() , sel ) ;
+  return svc ? getAlgorithm ( svc->algorithms() , sel ) : nullptr;
 }
 // ============================================================================
 // simple function to get the algorithm from Context Service
@@ -40,16 +35,10 @@ Gaudi::Utils::getAlgorithm
 ( const std::vector<IAlgorithm*>& lst , 
   const AlgSelector&              sel ) 
 {
-  for ( std::vector<IAlgorithm*>::const_reverse_iterator it = lst.rbegin() ; 
-        lst.rend() != it ; ++it ) 
-  {
-    // use the selector:
-    if ( sel ( *it ) ) { return *it ; }  // return 
-  }
-  return 0 ;
+  auto it = std::find_if( lst.rbegin(), lst.rend(), std::cref(sel));
+  return it != lst.rend() ? *it : nullptr ;
 }
 // ============================================================================
-
 
 // ============================================================================
 // The END 

@@ -21,32 +21,24 @@ class IRegistry;
 class GAUDI_API GenericAddress: public IOpaqueAddress  {
 protected:
   /// Reference count
-  unsigned long   m_refCount;
+  unsigned long   m_refCount = 0;
   /// Storage type
-  long            m_svcType;
+  long            m_svcType = 0;
   /// Class id
-  CLID            m_clID;
+  CLID            m_clID = 0;
   /// String parameters to be accessed
   std::string     m_par[3];
   /// Integer parameters to be accessed
-  unsigned long   m_ipar[2];
+  unsigned long   m_ipar[2] = {0xFFFFFFFF,0xFFFFFFFF};
   /// Pointer to corresponding directory
-  IRegistry*      m_pRegistry;
+  IRegistry*      m_pRegistry = nullptr;
 
 public:
   /// Dummy constructor
-  GenericAddress()
-    : m_refCount(0),
-      m_svcType(0),
-      m_clID(0),
-      m_pRegistry(0)
-  {
-    m_ipar[0]=m_ipar[1]=0xFFFFFFFF;
-  }
-  /// Standard Constructor
+  GenericAddress() = default;
+  /// Standard Copy Constructor
   GenericAddress(const GenericAddress& copy)
     : IOpaqueAddress(copy),
-      m_refCount(0),
       m_svcType(copy.m_svcType),
       m_clID(copy.m_clID),
       m_pRegistry(copy.m_pRegistry)
@@ -63,10 +55,8 @@ public:
                   const std::string& p2="",
                   unsigned long ip1=0,
                   unsigned long ip2=0)
-    : m_refCount(0),
-      m_svcType(svc),
-      m_clID(clid),
-      m_pRegistry(0)
+    : m_svcType(svc),
+      m_clID(clid)
   {
     m_par[0]  = p1;
     m_par[1]  = p2;
@@ -75,23 +65,20 @@ public:
   }
 
   /// Standard Destructor
-  virtual ~GenericAddress()   {
-  }
+  ~GenericAddress() override  = default;
 
   /// Add reference to object
-  virtual unsigned long addRef   ()   {
+  unsigned long addRef () override {
     return ++m_refCount;
   }
   /// release reference to object
-  virtual unsigned long release  ()   {
+  unsigned long release() override {
     int cnt = --m_refCount;
-    if ( 0 == cnt )   {
-      delete this;
-    }
+    if ( 0 == cnt ) delete this;
     return cnt;
   }
   /// Pointer to directory
-  virtual IRegistry* registry()   const     {
+  IRegistry* registry()   const  override   {
     return m_pRegistry;
   }
   /// Set pointer to directory
@@ -124,4 +111,3 @@ public:
   }
 };
 #endif // GAUDIKERNEL_GENERICADDRESS_H
-

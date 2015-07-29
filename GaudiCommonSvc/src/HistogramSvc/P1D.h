@@ -27,12 +27,12 @@ namespace Gaudi {
     /// Standard constructor with initialization. The histogram representation will be adopted
     Profile1D(TProfile* rep);
     /// Destructor.
-    virtual ~Profile1D()      {  }
+    ~Profile1D() override = default;
     /// Fill the Profile1D with a value and the corresponding weight.
-    virtual bool fill(double x, double y, double weight = 1.);
+    bool fill(double x, double y, double weight = 1.) override;
     virtual bool setBinContents(int i, int entries,double height,double error, double spread, double centre);
     /// Retrieve reference to class defininition identifier
-    virtual const CLID& clID() const { return classID(); }
+    const CLID& clID() const override { return classID(); }
     static const CLID& classID()     { return CLID_ProfileH; }
   }; // end class IProfile1D
 } // end namespace Gaudi

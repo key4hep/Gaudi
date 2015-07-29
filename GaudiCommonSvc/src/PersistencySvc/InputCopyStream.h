@@ -27,21 +27,21 @@ public:
   InputCopyStream(const std::string& name, ISvcLocator* pSvcLocator);
 
   /// Standard Destructor
-  virtual ~InputCopyStream();
+  ~InputCopyStream() override = default;
 
   /// Initialize the instance.
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
 
   /// Finalize the instance.
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
 
   /// Collect all objects to be written to the output stream
-  virtual StatusCode collectObjects();
+  StatusCode collectObjects() override;
 
 private:
 
   /// Pointer to the (public) tool used to retrieve the objects in a file.
-  IDataStoreLeaves *m_leavesTool;
+  IDataStoreLeaves *m_leavesTool = nullptr;
 
   /// Names of TES locations to Veto
   std::vector<std::string> m_tesVetoList;
@@ -49,10 +49,7 @@ private:
 protected:
 
   /// Overridden from the base class (InputCopyStream has always input).
-  virtual bool hasInput() const
-  {
-    return true;
-  }
+  bool hasInput() const override { return true; }
 
 };
 

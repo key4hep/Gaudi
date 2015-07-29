@@ -65,7 +65,7 @@ struct GAUDI_API extends1: public BASE, virtual public extend_interfaces1<I1> {
   }
 
   /// Virtual destructor
-  virtual ~extends1() {}
+  ~extends1() override = default;
 };
 
 /// Base class used to extend a class implementing other interfaces.
@@ -130,7 +130,7 @@ struct GAUDI_API extends2: public BASE, virtual public extend_interfaces2<I1,I2>
   }
 
   /// Virtual destructor
-  virtual ~extends2() {}
+  ~extends2() override = default;
 };
 
 /// Base class used to extend a class implementing other interfaces.
@@ -195,7 +195,7 @@ struct GAUDI_API extends3: public BASE, virtual public extend_interfaces3<I1,I2,
   }
 
   /// Virtual destructor
-  virtual ~extends3() {}
+  ~extends3() override = default;
 };
 
 #endif /* GAUDIKERNEL_EXTENDS_H */

@@ -24,21 +24,12 @@ class GAUDI_API CommonMessaging: public BASE {
 public:
   typedef CommonMessaging base_class;
 
-  /// Templated constructor with 3 arguments.
-  template <typename A1, typename A2, typename A3> CommonMessaging(const A1& a1, const A2& a2, const A3& a3):
-    BASE(a1,a2,a3), m_streamWithService(false) {}
-  /// Templated constructor with 2 arguments.
-  template <typename A1, typename A2> CommonMessaging(const A1& a1, const A2& a2):
-    BASE(a1, a2), m_streamWithService(false) {}
-  /// Templated constructor with 1 argument.
-  template <typename A1> CommonMessaging(const A1& a1):
-    BASE(a1), m_streamWithService(false) {}
-  /// Default constructor.
-  CommonMessaging():
-    BASE(), m_streamWithService(false) {}
+  /// Forward to base class constructor
+  template <typename ... Args> CommonMessaging(Args&&... args) : 
+  BASE(std::forward<Args>(args)...) {}
 
   /// Virtual destructor
-  virtual ~CommonMessaging() {}
+  ~CommonMessaging() override = default;
 
   /// Needed to locate the message service
   virtual SmartIF<ISvcLocator>& serviceLocator() const = 0;
@@ -69,10 +60,10 @@ public:
 
   /// Return an uninitialized MsgStream.
   inline MsgStream& msgStream() const {
-    if (UNLIKELY((!m_msgStream.get()) || (!m_streamWithService))) {
+    if (UNLIKELY((!m_msgStream) || (!m_streamWithService))) {
       SmartIF<IMessageSvc>& ms = msgSvc();
       m_msgStream.reset(new MsgStream(ms, this->name()));
-      m_streamWithService = ms.get() != 0;
+      m_streamWithService = ( ms.get() != nullptr );
     }
     return *m_msgStream;
   }
@@ -136,12 +127,12 @@ protected:
   mutable std::unique_ptr<MsgStream> m_msgStream;
 
   /// Flag to create a new MsgStream if it was created without the message service
-  mutable bool m_streamWithService;
+  mutable bool m_streamWithService = false;
 
   /// Update the output level of the cached MsgStream.
   /// This function is meant to be called by the update handler of the OutputLevel property.
   void updateMsgStreamOutputLevel(int level) {
-    if (m_msgStream.get()) m_msgStream->setLevel(level);
+    if (m_msgStream) m_msgStream->setLevel(level);
   }
 
 };

@@ -12,7 +12,7 @@
 #include "GaudiKernel/Map.h"
 #include <string>
 #include <list>
-#include <map>
+#include <vector>
 #include <algorithm>
 #include <mutex>
 
@@ -86,7 +86,11 @@ public:
   /// implementation of ISvcManager::declareSvcType
   virtual StatusCode declareSvcType(const std::string& svcname, const std::string& svctype);
 
-  /// implementation of ISvcManager::createService
+  /// implementation of ISvcManager::createService 
+  /// NOTE: as this returns a &, we must guarantee 
+  ///       that once created, these SmartIF remain 
+  ///       pinned in their location, thus constraining
+  ///       the underlying implementation...
   virtual SmartIF<IService>& createService(const Gaudi::Utils::TypeNameString& nametype);
 
   /// Initialization (from CONFIGURED to INITIALIZED).
@@ -143,6 +147,19 @@ private:
 
 private:
   ListSvc       m_listsvc;     ///< List of service maintained by ServiceManager
+                               ///  This contains SmartIF<T> for all services -- 
+                               ///  and because there can be SmartIF<T>& 'out there' that
+                               ///  refer to these specific SmarIF<T>, we 
+                               ///  *unfortunately* must guarantee that they _never_ move 
+                               ///  after creation. Hence, we cannot use a plain std::vector
+                               ///  here, as that may cause relocation and/or swapping of 
+                               ///  SmartIF<T>'s, and then the already handed out references
+                               ///  may refer to the wrong item.... Note that we could use
+                               ///  an std::vector<std::unique_ptr<ServiceItem>> (sometimes known
+                               ///  as 'stable vector') as then the individual ServiceItems 
+                               ///  would stay pinned in their original location, but that 
+                               ///  would put ServiceItem on the heap...
+                               ///  And maybe I'm way too paranoid...
   MapType       m_maptype;     ///< Map of service name and service type
   bool          m_loopCheck;   ///< Check for service initialization loops
 
@@ -162,4 +179,3 @@ private:
 
 };
 #endif  // GAUDISVC_ServiceManager_H
-

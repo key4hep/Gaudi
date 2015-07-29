@@ -25,7 +25,7 @@ int main ( int argc, char** argv ) {
   std:: string opts = (argc>1) ? argv[1] : "jobOptions.txt";
 
   propMgr->setProperty( "JobOptionsPath", opts );
-  if( opts.substr( opts.length() - 3, 3 ) == ".py" ) {
+  if( opts.compare( opts.length() - 3, 3, ".py") == 0 ) {
     propMgr->setProperty( "JobOptionsType", "NONE" );
     propMgr->setProperty( "DLLs",           "['SIPython']" );
     propMgr->setProperty( "Runable",        "PythonScriptingSvc" );

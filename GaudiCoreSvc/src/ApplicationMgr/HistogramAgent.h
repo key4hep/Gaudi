@@ -20,11 +20,11 @@ protected:
   IDataSelector m_objects;
 public:
   /// Default creator
-  HistogramAgent() {
-  }
+  HistogramAgent() = default;
+
   /// Destructor
-  virtual ~HistogramAgent()  {
-  }
+  ~HistogramAgent()  override = default;
+
   /// Return the set of selected DataObjects
   IDataSelector* selectedObjects()    {
     return &m_objects;
@@ -32,7 +32,7 @@ public:
   /// Analyses a given directory entry 
   virtual bool analyse(IRegistry* pRegistry, int )   {
     DataObject* obj = pRegistry->object();
-    if ( 0 != obj )  {
+    if ( obj )  {
       if ( obj->clID() != CLID_StatisticsFile )    {
         m_objects.push_back(obj);
         return true;

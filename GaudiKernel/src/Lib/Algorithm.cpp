@@ -31,14 +31,13 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
     m_version(version),
     m_registerContext ( false ) ,
     m_pSvcLocator(pSvcLocator),
+    m_propertyMgr( new PropertyMgr() ),
     m_filterPassed(true),
     m_isEnabled(true),
     m_isExecuted(false),
     m_state(Gaudi::StateMachine::CONFIGURED),
     m_targetState(Gaudi::StateMachine::CONFIGURED)
 {
-  m_propertyMgr = new PropertyMgr();
-  m_subAlgms = new std::vector<Algorithm *>();
 
   // Declare common Algorithm properties with their defaults
   declareProperty( "OutputLevel",        m_outputLevel = MSG::NIL);
@@ -81,12 +80,6 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
   // update handlers.
   m_outputLevel.declareUpdateHandler(&Algorithm::initOutputLevel, this);
 
-}
-
-// Default Destructor
-Algorithm::~Algorithm() {
-  delete m_subAlgms;
-  delete m_propertyMgr;
 }
 
 // IAlgorithm implementation
@@ -134,10 +127,9 @@ StatusCode Algorithm::sysInitialize() {
     if( sc.isSuccess() ) {
 
       // Now initialize care of any sub-algorithms
-      std::vector<Algorithm *>::iterator it;
       bool fail(false);
-      for (it = m_subAlgms->begin(); it != m_subAlgms->end(); it++) {
-	if ((*it)->sysInitialize().isFailure()) fail = true;
+      for (auto& it : m_subAlgms ) {
+        if (it->sysInitialize().isFailure()) fail = true;
       }
       if( fail ) {
 	sc = StatusCode::FAILURE;
@@ -211,10 +203,9 @@ StatusCode Algorithm::sysStart() {
     if( sc.isSuccess() ) {
 
       // Now start any sub-algorithms
-      std::vector<Algorithm *>::iterator it;
       bool fail(false);
-      for (it = m_subAlgms->begin(); it != m_subAlgms->end(); it++) {
-	if ((*it)->sysStart().isFailure()) fail = true;
+      for (auto& it : m_subAlgms ) {
+	    if (it->sysStart().isFailure()) fail = true;
       }
       if( fail ) {
 	sc = StatusCode::FAILURE;
@@ -296,10 +287,9 @@ StatusCode Algorithm::sysReinitialize() {
     if( sc.isSuccess() ) {
 
       // Now initialize care of any sub-algorithms
-      std::vector<Algorithm *>::iterator it;
       bool fail(false);
-      for (it = m_subAlgms->begin(); it != m_subAlgms->end(); it++) {
-	if((*it)->sysReinitialize().isFailure()) fail = true;
+      for (auto &it : m_subAlgms) {
+	    if(it->sysReinitialize().isFailure()) fail = true;
       }
 
       if (fail) {
@@ -380,10 +370,9 @@ StatusCode Algorithm::sysRestart() {
     if( sc.isSuccess() ) {
 
       // Now initialize care of any sub-algorithms
-      std::vector<Algorithm *>::iterator it;
       bool fail(false);
-      for (it = m_subAlgms->begin(); it != m_subAlgms->end(); it++) {
-	if ((*it)->sysRestart().isFailure()) fail = true;
+      for (auto it : m_subAlgms) {
+	    if (it->sysRestart().isFailure()) fail = true;
       }
       if( fail ) {
 	sc = StatusCode::FAILURE;
@@ -454,10 +443,9 @@ StatusCode Algorithm::sysBeginRun() {
     if( sc.isSuccess() ) {
 
       // Now call beginRun for any sub-algorithms
-      std::vector<Algorithm *>::iterator it;
       bool fail(false);
-      for (it = m_subAlgms->begin(); it != m_subAlgms->end(); it++) {
-	if((*it)->sysBeginRun().isFailure()) fail = true;
+      for (auto& it : m_subAlgms) {
+	    if(it->sysBeginRun().isFailure()) fail = true;
       }
       if( fail ) {
 	sc = StatusCode::FAILURE;
@@ -530,10 +518,9 @@ StatusCode Algorithm::sysEndRun() {
     if( sc.isSuccess() ) {
 
       // Now call endRun for any sub-algorithms
-      std::vector<Algorithm *>::iterator it;
       bool fail(false);
-      for (it = m_subAlgms->begin(); it != m_subAlgms->end(); it++) {
-	if ((*it)->sysEndRun().isFailure()) fail = true;
+      for (auto& it : m_subAlgms) {
+	    if (it->sysEndRun().isFailure()) fail = true;
       }
       if( fail ) {
 	sc = StatusCode::FAILURE;
@@ -680,10 +667,7 @@ StatusCode Algorithm::sysStop() {
   // Invoke stop() method of the derived class inside a try/catch clause
   try {
     // Stop first any sub-algorithms (in reverse order)
-    std::vector<Algorithm *>::iterator it;
-    for (it = m_subAlgms->begin(); it != m_subAlgms->end(); it++) {
-      (*it)->sysStop().ignore();
-    }
+    for (auto& it : m_subAlgms) it->sysStop().ignore();
     { // limit the scope of the guard
       Gaudi::Guards::AuditorGuard guard(this,
                                         // check if we want to audit the initialize
@@ -740,12 +724,9 @@ StatusCode Algorithm::sysFinalize() {
   try {
     // Order changed (bug #3903 overview: finalize and nested algorithms)
     // Finalize first any sub-algoithms (it can be done more than once)
-    std::vector<Algorithm *>::iterator it;
     bool fail(false);
-    for (it = m_subAlgms->begin(); it != m_subAlgms->end(); it++) {
-      if (!(*it)->sysFinalize().isSuccess()) {
-        fail = true;
-      }
+    for (auto& it : m_subAlgms) {
+      if (!it->sysFinalize().isSuccess()) fail = true;
     }
 
     { // limit the scope of the guard
@@ -761,9 +742,7 @@ StatusCode Algorithm::sysFinalize() {
     if( sc.isSuccess() ) {
 
       // Release all sub-algorithms
-      for (it = m_subAlgms->begin(); it != m_subAlgms->end(); it++) {
-	(*it)->release();
-      }
+      for (auto& it : m_subAlgms ) it->release();
       // Indicate that this Algorithm has been finalized to prevent duplicate attempts
       m_state = m_targetState;
     }
@@ -867,8 +846,12 @@ void Algorithm::setFilterPassed( bool state ) {
   m_filterPassed = state;
 }
 
-std::vector<Algorithm*>* Algorithm::subAlgorithms( ) const {
-  return m_subAlgms;
+const std::vector<Algorithm*>* Algorithm::subAlgorithms( ) const {
+  return &m_subAlgms;
+}
+
+std::vector<Algorithm*>* Algorithm::subAlgorithms( ) {
+  return &m_subAlgms;
 }
 
 void Algorithm::setOutputLevel( int level ) {
@@ -1129,7 +1112,7 @@ StatusCode Algorithm::createSubAlgorithm(const std::string& type,
 
   try{
     pSubAlgorithm = dynamic_cast<Algorithm*>(tmp);
-    m_subAlgms->push_back(pSubAlgorithm);
+    m_subAlgms.push_back(pSubAlgorithm);
   } catch(...){
     sc = StatusCode::FAILURE;
   }

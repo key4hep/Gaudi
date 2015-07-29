@@ -40,10 +40,8 @@ AlgorithmHistory::AlgorithmHistory(const Algorithm& alg, const JobHistory* job)
 {
   assert( alg.subAlgorithms() != 0 );
 
-  for ( vector<Algorithm*>::const_iterator
-        ialg=alg.subAlgorithms()->begin();
-        ialg!=alg.subAlgorithms()->end(); ++ ialg ) {
-    m_subalgorithm_histories.push_back(new AlgorithmHistory(**ialg, job));
+  for ( const auto& ialg : *alg.subAlgorithms() ) {
+    m_subalgorithm_histories.push_back(new AlgorithmHistory(*ialg, job));
   }
 }
 
@@ -57,21 +55,17 @@ AlgorithmHistory::AlgorithmHistory(const std::string& algVersion,
   m_algorithm_type(algType),   // FIXME type_info???
   m_algorithm_version(algVersion),
   m_algorithm_name(algName),
-  m_algorithm(0),
+  m_algorithm(nullptr),
   m_properties(props),
   m_subalgorithm_histories(subHists),
-  m_jobHistory(0) {}
+  m_jobHistory(nullptr) {}
 
 //**********************************************************************
 
 // Destructor.
 
 AlgorithmHistory::~AlgorithmHistory() {
-  for ( HistoryList::const_iterator
-        iphist=m_subalgorithm_histories.begin();
-        iphist!=m_subalgorithm_histories.end(); ++iphist ) {
-    delete *iphist;
-  }
+  for ( auto &i : m_subalgorithm_histories ) delete i;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -95,11 +89,8 @@ AlgorithmHistory::dump(std::ostream& ost, const bool isXML, int ind) const {
     ost << "Version: " << algorithm_version() << endl;
     // Properties.
     ost << "Properties: [" << endl;;
-    for ( AlgorithmHistory::PropertyList::const_iterator
-	    ipprop=properties().begin();
-	  ipprop!=properties().end(); ++ipprop ) {
-      const Property& prop = **ipprop;
-      prop.fillStream(ost);
+    for ( const auto& iprop : properties() ) {
+      iprop->fillStream(ost);
       ost << endl;
     }
     ost << "]" << endl;
@@ -108,8 +99,7 @@ AlgorithmHistory::dump(std::ostream& ost, const bool isXML, int ind) const {
       ost << "No subalgorithms.";
     } else {
       ost << "Subalgorithms: {" << endl;
-      for ( AlgorithmHistory::HistoryList::const_iterator
-	      iphist=subalgorithm_histories().begin();
+      for ( auto iphist=subalgorithm_histories().begin();
 	    iphist!=subalgorithm_histories().end(); ++iphist ) {
 	if ( iphist==subalgorithm_histories().begin() ) {
 	  ost << "----------" << endl;
@@ -127,33 +117,21 @@ AlgorithmHistory::dump(std::ostream& ost, const bool isXML, int ind) const {
 	<< "\" version=\"" << algorithm_version()
 	<< "\">" << std::endl;
 
-    for ( AlgorithmHistory::PropertyList::const_iterator
-	    ipprop=properties().begin();
-	  ipprop!=properties().end(); ++ipprop ) {
-      const Property& prop = **ipprop;
+    for ( const auto& iprop : properties() ) {
       indent(ost,ind+2);
-      ost << "<PROPERTY name=\"" << prop.name()
-	  << "\" value=\"" << convert_string(prop.toString())
-	  << "\" documentation=\"" << convert_string(prop.documentation())
+      ost << "<PROPERTY name=\"" << iprop->name()
+	  << "\" value=\"" << convert_string(iprop->toString())
+	  << "\" documentation=\"" << convert_string(iprop->documentation())
 	  << "\">" << std::endl;
     }
 
     // Subalgs
-    if ( subalgorithm_histories().size() != 0 ) {
-      for ( AlgorithmHistory::HistoryList::const_iterator
-	      iphist=subalgorithm_histories().begin();
-	    iphist!=subalgorithm_histories().end(); ++iphist ) {
-	(*iphist)->dump(ost,isXML,ind+2);
-      }
-
+    for ( const auto& iphist : subalgorithm_histories() ) {
+	      iphist->dump(ost,isXML,ind+2);
     }
 
     indent(ost,ind);
     ost << "</COMPONENT>" << std::endl;
-
-
-
-
 
   }
 }
@@ -166,9 +144,7 @@ AlgorithmHistory::dump(std::ostream& ost, const bool isXML, int ind) const {
 // Output stream.
 
 ostream& operator<<(ostream& lhs, const AlgorithmHistory& rhs) {
-
   rhs.dump(lhs,false);
-
   return lhs;
 }
 

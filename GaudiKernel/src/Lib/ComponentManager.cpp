@@ -21,11 +21,6 @@ const InterfaceID& ComponentManager::componentBaseInterface() const {
 }
 
 //------------------------------------------------------------------------------
-// Virtual destructor
-ComponentManager::~ComponentManager() {
-}
-
-//------------------------------------------------------------------------------
 // queryInterface implementation that falls back on the owner.
 StatusCode ComponentManager::queryInterface(const InterfaceID& iid, void** pinterface)
 {

@@ -48,12 +48,11 @@ namespace
   {
     if (!axis) return false;
     const unsigned nbins = axis->GetNbins();
-    for ( Gaudi::Utils::Histos::BinLabels::const_iterator i = labels.begin();
-         i != labels.end(); ++i )
+    for ( const auto& i : labels )
     {
-      if ( 1+i->first <= 0 || 1+i->first > nbins ) return false;
+      if ( 1+i.first <= 0 || 1+i.first > nbins ) return false;
       // Argh... ROOT bins start counting at '1' instead of '0'
-      axis -> SetBinLabel( 1 + i->first, i->second.c_str() );
+      axis -> SetBinLabel( 1 + i.first, i.second.c_str() );
     }
     return true;
   }
@@ -76,10 +75,7 @@ namespace
   {
     Gaudi::Utils::Histos::BinLabels l;
     l.reserve(labels.size());
-    for ( unsigned i = 0; i<labels.size(); ++i )
-    {
-      l.push_back( Gaudi::Utils::Histos::BinLabel(i,labels[i]) );
-    }
+    for ( unsigned i = 0; i<labels.size(); ++i ) l.emplace_back( i,labels[i] );
     return Gaudi::Utils::Histos::setBinLabels(hist,l);
   }
 
@@ -131,13 +127,13 @@ namespace Gaudi
         lx.reserve(xlabels.size());
         for ( unsigned int i = 0; i < xlabels.size(); ++i )
         {
-          lx.push_back( Gaudi::Utils::Histos::BinLabel( i , xlabels[i] ) );
+          lx.emplace_back( i , xlabels[i] );
         }
         BinLabels ly;
         ly.reserve(ylabels.size());
         for ( unsigned int i = 0; i < ylabels.size(); ++i )
         {
-          ly.push_back(Gaudi::Utils::Histos::BinLabel( i , ylabels[i] ) );
+          ly.emplace_back( i , ylabels[i] );
         }
         return ( setBinLabels_( h2d->GetXaxis(), lx ) &&
                  setBinLabels_( h2d->GetYaxis(), ly ) );
@@ -164,13 +160,13 @@ namespace Gaudi
         lx.reserve(xlabels.size());
         for ( unsigned int i = 0; i < xlabels.size(); ++i )
         {
-          lx.push_back(Gaudi::Utils::Histos::BinLabel( i , xlabels[i] ) );
+          lx.emplace_back( i , xlabels[i] );
         }
         BinLabels ly;
         ly.reserve(ylabels.size());
         for ( unsigned int i = 0; i < ylabels.size(); ++i )
         {
-          ly.push_back(Gaudi::Utils::Histos::BinLabel( i , ylabels[i] ) );
+          ly.emplace_back( i , ylabels[i] );
         }
         return ( setBinLabels_( h2d->GetXaxis(), lx ) &&
                  setBinLabels_( h2d->GetYaxis(), ly ) );

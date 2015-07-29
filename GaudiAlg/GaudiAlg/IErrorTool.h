@@ -140,7 +140,7 @@ public:
 protected:
 
   // protected destructor
-  virtual ~IErrorTool() ;
+  virtual ~IErrorTool()  = default;
 
 };
 

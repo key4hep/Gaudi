@@ -10,6 +10,7 @@
 #include <vector>
 #include <utility>
 #include <algorithm>
+#include <memory>
 // ============================================================================
 // from CLHEP
 // ============================================================================
@@ -75,8 +76,8 @@ namespace Genfun
         , m_accel     ( 0    )
         , m_type      ( type )
       {
-        std::copy ( begin_x , end_x                         , m_x ) ;
-        std::copy ( begin_y , begin_y + ( end_x - begin_x ) , m_y ) ;
+        std::copy ( begin_x , end_x                         , m_x.get() ) ;
+        std::copy ( begin_y , begin_y + ( end_x - begin_x ) , m_y.get() ) ;
       }
       /** templated constructor from the sequence of (x,y(x)) pairs
        *  as sequence of pairs the class TabulatedProperty
@@ -98,12 +99,12 @@ namespace Genfun
         , m_accel     ( 0    )
         , m_type      ( type )
       {
-        double* _x = m_x ;
-        double* _y = m_y ;
-        for ( DATA it = begin ; end != it ; ++ it )
+        double* _x = m_x.get() ;
+        double* _y = m_y.get() ;
+        for ( auto it = begin ; end != it ; ++ it )
         {
-          *_x = it -> first  ; ++_x ;
-          *_y = it -> second ; ++_y ;
+          *_x++ = it -> first  ;
+          *_y++ = it -> second ;
         };
       }
       /// copy constructor
@@ -130,8 +131,8 @@ namespace Genfun
     private:
       mutable bool                   m_init   ;
       size_t                         m_dim    ;
-      double*                        m_x      ;
-      double*                        m_y      ;
+      std::unique_ptr<double[]>      m_x      ;
+      std::unique_ptr<double[]>      m_y      ;
       mutable gsl_spline*            m_spline ;
       mutable gsl_interp_accel*      m_accel  ;
       GaudiMath::Interpolation::Type m_type   ;

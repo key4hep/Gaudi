@@ -5,20 +5,7 @@
 // Include files
 #include "GaudiKernel/Map.h"
 #include "GaudiKernel/Hash.h"
-
-#if defined(_WIN32) || defined(__ECC)
-#include <hash_map>
-#elif defined(__ICC)
-// icc uses the headers from GCC...
-#include <ext/hash_map>
-#elif __GNUC__ < 4 || ( __GNUC__ == 4 && __GNUC_MINOR__ < 3 )
-#include <ext/hash_map>
-#elif __GNUC__ >= 4
-// Marco Cl.: in gcc >= 4.3 the hash_map has been replaced by unordered_map
-//#include <tr1/unordered_map>
-//            but gccxml has problems with it
-#include <ext/hash_map>
-#endif
+#include <unordered_map>
 
 namespace GaudiUtils 
 {
@@ -86,39 +73,12 @@ namespace GaudiUtils
 
   template <typename K, typename T,
             typename H = Hash<K>,
-#if defined(_WIN32)
-// Marco Cl.: (work-around) it seems that Windows implementation of hash map is extremely slow
-// we use a normal map instead.
-//            typename M = stdext::hash_map<K,T,H>
-            typename M = std::map<K,T>
-#elif defined(__ECC)
-            typename M = std::hash_map<K,T,H>
-#elif defined(__ICC)
-            // icc uses the headers from GCC...
-            typename M = __gnu_cxx::hash_map<K,T,H>
-#elif __GNUC__ < 4 || ( __GNUC__ == 4 && __GNUC_MINOR__ < 3 )
-            typename M = __gnu_cxx::hash_map<K,T,H>
-#elif __GNUC__ >= 4
-// Marco Cl.: in gcc >= 4.3 the hash_map has been replaced by unordered_map
-//          typename M = std::tr1::unordered_map<K,T,H>
-            typename M = __gnu_cxx::hash_map<K,T,H>
-//            but gccxml has problems with it
-#endif
+            typename M = std::unordered_map<K,T,H>
             >
   class HashMap: public Map<K,T,M> {
-
   public:
     typedef H hasher;
-
-    inline hasher hash_funct() const {
-// Marco Cl.: since on windows we are using a std::map, we have to provide a different implementation
-// for GaudiUtils::HashMap::hash_funct(). (std::map::hash_funct does not exist)
-#ifdef _WIN32
-      return hasher();
-#else
-      return this->m_map.hash_funct();
-#endif
-    }
+    inline hasher hash_funct() const { return this->m_map.hash_funct(); }
   };
 } // namespace GaudiUtils
 

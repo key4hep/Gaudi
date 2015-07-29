@@ -25,7 +25,7 @@ class GAUDI_API IOpaqueAddress {
 public:
 
   /// destructor
-  virtual ~IOpaqueAddress() { }
+  virtual ~IOpaqueAddress()  = default;
 
   /// Add reference to object
   virtual unsigned long        addRef     () = 0;

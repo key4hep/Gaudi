@@ -26,7 +26,7 @@ using namespace std;
 
 ServiceHistory::ServiceHistory():
   //  HistoryObj(),
-  m_pService(0),
+  m_pService(nullptr),
   m_name("none"),
   m_type("none"),
   m_version("none")
@@ -69,12 +69,6 @@ ServiceHistory::ServiceHistory(const IService& isv, const JobHistory* job):
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-ServiceHistory::~ServiceHistory() {
-
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
 const CLID& 
 ServiceHistory::classID() {
 
@@ -97,10 +91,8 @@ ServiceHistory::dump(std::ostream& ost, const bool isXML, int ind) const {
     //Properties
     ost << "Properties: [" << endl;
     
-    for ( ServiceHistory::PropertyList::const_iterator
-	    ipprop=properties().begin();
-	  ipprop!=properties().end(); ++ipprop ) {
-      const Property& prop = **ipprop;
+    for ( const auto& ipprop : properties() ) {
+      const Property& prop = *ipprop;
       prop.fillStream(ost);
       ost << endl;
     }
@@ -115,10 +107,8 @@ ServiceHistory::dump(std::ostream& ost, const bool isXML, int ind) const {
 	<< "\" version=\"" << convert_string(version())
 	<< "\">" << endl;
       
-    for ( ServiceHistory::PropertyList::const_iterator
-	    ipprop=properties().begin();
-	  ipprop!=properties().end(); ++ipprop ) {
-      const Property& prop = **ipprop;
+    for ( const auto& ipprop : properties() ) {
+      const Property& prop = *ipprop;
 
       indent(ost,ind+2);
       ost << "<PROPERTY name=\"" << prop.name() 

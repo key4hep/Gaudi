@@ -184,26 +184,25 @@ private:
   // find group/name for the counter:
   inline std::pair<std::string,std::string> _find ( const Counter* c ) const
   {
-    if ( 0 == c ) { return std::pair<std::string,std::string>() ; }
-    for ( CountMap::const_iterator i = m_counts.begin() ; m_counts.end() != i ; ++i )
-    {
-      for ( NameMap::const_iterator j = i->second.begin() ; i->second.end() != j ; ++j )
-      { if ( j->second == c ) { return std::make_pair( i->first , j->first )  ; } }
+    if ( c ) { 
+        for ( const auto& i : m_counts ) {
+          auto j = std::find_if( i.second.begin(), i.second.end(),
+                                 [&](const NameMap::value_type& k) {
+                                     return k.second == c;
+          });
+          if (j!=i.second.end()) return { i.first, j->first } ;
+        }
     }
-    return std::pair<std::string,std::string>() ;
+    return { };
   }
   // get the overall number of counters
   inline size_t num () const
   {
-    size_t result = 0 ;
-    {
-      for ( CountMap::const_iterator i = m_counts.begin(); i != m_counts.end(); ++i )
-      {
-        for ( NameMap::const_iterator j = i->second.begin() ; i->second.end() != j ; ++j )
-        { if ( 0 != j->second ) { ++result ; } ; }
-      }
-    }
-    return result ;
+    return std::accumulate( m_counts.begin(), m_counts.end(), size_t{0},
+                 [](size_t r, const CountMap::value_type& i) {
+                     return r + std::count_if(i.second.begin(),i.second.end(),
+                                              [](const NameMap::value_type& j) -> bool { return j.second; });
+                 });
   }
 public:
   /// "standard" printout a'la GaudiCommon
@@ -235,10 +234,10 @@ CounterSvc::Counter* CounterSvc::get
 ( const std::string& grp  ,
   const std::string& nam  ) const
 {
-  CountMap::const_iterator i = m_counts.find  ( grp ) ;
-  if (  m_counts.end() == i ) { return 0 ; }                    // RETURN
-  NameMap::const_iterator  j = i->second.find ( nam ) ;
-  if ( i->second.end() == j ) { return 0 ; }                    // RETURN
+  auto i = m_counts.find  ( grp ) ;
+  if (  m_counts.end() == i ) { return nullptr ; }              // RETURN
+  auto  j = i->second.find ( nam ) ;
+  if ( i->second.end() == j ) { return nullptr ; }              // RETURN
   return j->second ;                                            // RETURN
 }
 // ===========================================================================
@@ -247,10 +246,14 @@ CounterSvc::Counter* CounterSvc::get
 ICounterSvc::Counters CounterSvc::get ( const std::string& group ) const
 {
   ICounterSvc::Counters result ;
-  CountMap::const_iterator i = m_counts.find  ( group ) ;
-  if (  m_counts.end() == i ) { return result ; } // RETURN
-  for ( NameMap::const_iterator j = i->second.begin() ; i->second.end() != j ; ++j )
-  { result.push_back( CountObject ( j->second, i->first , j->first ) ) ; }
+  auto i = m_counts.find  ( group ) ;
+  if (  i != m_counts.end() ) { 
+    std::transform( i->second.begin(), i->second.end(),
+                    std::back_inserter(result),
+                    [&](const NameMap::value_type& j) { 
+        return CountObject{ j.second, i->first, j.first }; 
+    } );
+  }
   return result ;
 }
 // ===========================================================================
@@ -277,12 +280,12 @@ StatusCode CounterSvc::create
     refpCounter->addFlag ( static_cast<double>(initial_value) ) ; // icc remark #2259
   }
   // find a proper group
-  CountMap::iterator i = m_counts.find  ( grp ) ;
+  auto i = m_counts.find  ( grp ) ;
   // (create a group if needed)
   if (  m_counts.end() == i )
-  { i = m_counts.insert ( std::make_pair ( grp , NameMap() ) ).first ; }
+  { i = m_counts.insert ( { grp , NameMap() } ).first ; }
   // insert new counter with proper name into proper group:
-  i->second.insert( std::make_pair( nam , newc ) );
+  i->second.insert( { nam , newc } );
   return StatusCode::SUCCESS ;                                     // RETURN
 }
 #ifdef __ICC
@@ -309,9 +312,9 @@ StatusCode CounterSvc::remove
 ( const std::string& grp ,
   const std::string& nam )
 {
-  CountMap::iterator i = m_counts.find  ( grp ) ;
+  auto i = m_counts.find  ( grp ) ;
   if (  m_counts.end() == i ) { return COUNTER_NOT_PRESENT ; }  // RETURN
-  NameMap::iterator  j = i->second.find ( nam ) ;
+  auto  j = i->second.find ( nam ) ;
   if ( i->second.end() == j ) { return COUNTER_NOT_PRESENT ; }  // RETURN
   delete j->second ;
   i->second.erase ( j ) ;
@@ -322,10 +325,9 @@ StatusCode CounterSvc::remove
 // ===========================================================================
 StatusCode CounterSvc::remove ( const std::string& grp )
 {
-  CountMap::iterator i = m_counts.find ( grp  ) ;
+  auto i = m_counts.find ( grp  ) ;
   if (  m_counts.end() == i ) { return COUNTER_NOT_PRESENT ; }  // RETURN
-  for ( NameMap::iterator j = i->second.begin() ; i->second.end() != j ; ++j )
-  { delete j->second ; }
+  for ( auto& j : i->second ) delete j.second ;
   i->second.clear() ;
   return StatusCode::SUCCESS ;
 }
@@ -335,8 +337,7 @@ StatusCode CounterSvc::remove ( const std::string& grp )
 StatusCode CounterSvc::remove()
 {
   // remove group by group
-  for ( CountMap::iterator i = m_counts.begin() ; m_counts.end() != i ; ++i )
-  { remove ( i->first ).ignore () ; }
+  for ( auto& i : m_counts ) remove ( i.first ).ignore () ;
   m_counts.clear() ;
   return StatusCode::SUCCESS;
 }
@@ -349,7 +350,7 @@ StatusCode CounterSvc::print
   Printout& printer) const
 {
   const Counter* c = get( grp , nam ) ;
-  if ( 0 == c ) { return COUNTER_NOT_PRESENT ; }                  // RETURN
+  if ( !c ) { return COUNTER_NOT_PRESENT ; }                  // RETURN
   // create the stream and use it!
   MsgStream log ( msgSvc() , name() ) ;
   return printer ( log , c ) ;
@@ -378,7 +379,7 @@ StatusCode CounterSvc::print
 ( const std::string& grp ,
   Printout& printer      ) const
 {
-  CountMap::const_iterator i = m_counts.find ( grp ) ;
+  auto i = m_counts.find ( grp ) ;
   if ( m_counts.end() == i ) { return COUNTER_NOT_PRESENT ; }
 
   MsgStream log(msgSvc(), name());
@@ -413,15 +414,9 @@ StatusCode CounterSvc::print( Printout& printer ) const
 {
   MsgStream log ( msgSvc() , name() ) ;
   // Force printing in alphabetical order
-  typedef std::map<std::pair<std::string,std::string>, Counter*> sorted_map_t;
-  sorted_map_t sorted_map;
-  for ( CountMap::const_iterator i = m_counts.begin(); i != m_counts.end(); ++i )
-  {
-    for ( NameMap::const_iterator j = i->second.begin() ; i->second.end() != j ; ++j )
-    {
-      sorted_map[std::make_pair(i->first, j->first)] = j->second;
-    }
-  }
+  std::map<std::pair<std::string,std::string>, Counter*> sorted_map;
+  for ( const auto& i : m_counts ) for ( const auto&  j : i.second) 
+      sorted_map[ { i.first, j.first } ] = j.second;
   std::for_each(sorted_map.begin(), sorted_map.end(),
                 conditionalPrint(printer, log));
   return StatusCode::SUCCESS;
@@ -433,8 +428,8 @@ StatusCode CounterSvc::defaultPrintout
 ( MsgStream& log,
   const Counter* c ) const
 {
-  if ( 0 == c ) { return StatusCode::FAILURE ; }
-  std::pair<std::string,std::string> p = _find ( c ) ;
+  if ( !c ) { return StatusCode::FAILURE ; }
+  auto p = _find ( c ) ;
 
   log << MSG::ALWAYS
       << CountObject( const_cast<Counter*>(c) , p.first , p.second )
@@ -449,34 +444,28 @@ void CounterSvc::print () const
 {
   MsgStream log ( msgSvc() , name() ) ;
   // number of counters
-  const size_t _num = num() ;
+  const auto _num = num() ;
   if ( 0 != _num )
   {
     log << MSG::ALWAYS
         << "Number of counters : "  << _num << endmsg
         << m_header << endmsg ;
   }
-  {
-    // Force printing in alphabetical order
-    typedef std::map<std::pair<std::string,std::string>, Counter*> sorted_map_t;
-    sorted_map_t sorted_map;
-    for ( CountMap::const_iterator i = m_counts.begin(); i != m_counts.end(); ++i )
-    {
-      for ( NameMap::const_iterator j = i->second.begin() ; i->second.end() != j ; ++j )
-      {
-        Counter* c = j->second ;
-        if ( 0 == c ) { continue ; }
-        sorted_map[std::make_pair(i->first, j->first)] = c;
-      }
+  // Force printing in alphabetical order
+  std::map<std::pair<std::string,std::string>, Counter*> sorted_map;
+  for ( const auto& i : m_counts ) {
+    for ( const auto& j : i.second ) {
+      if ( j.second ) sorted_map[ {i.first, j.first} ] = j.second;
     }
-    for (sorted_map_t::const_iterator i = sorted_map.begin(); i != sorted_map.end(); ++i )
-      log << Gaudi::Utils::formatAsTableRow( i->first.second
-                                           , i->first.first
-                                           , *i->second
-                                           , m_useEffFormat
-                                           , m_format1
-                                           , m_format2 )
-          << endmsg ;
+  }
+  for ( const auto& i : sorted_map ) {
+    log << Gaudi::Utils::formatAsTableRow( i.first.second
+                                         , i.first.first
+                                         , *i.second
+                                         , m_useEffFormat
+                                         , m_format1
+                                         , m_format2 )
+        << endmsg ;
   }
 }
 // ============================================================================

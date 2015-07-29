@@ -123,7 +123,7 @@ public:
     , m_hasUpperBound ( false )
   {}
   /// Destructor
-  virtual ~BoundedVerifier() { }
+  virtual ~BoundedVerifier() = default;
   
   /// Check if the value is within bounds
   bool isValid ( const typename Traits::CVal value ) const 

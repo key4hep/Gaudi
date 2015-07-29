@@ -35,9 +35,9 @@ class GAUDI_API ContainedObject {
 
 protected:
   /// Constructors
-  ContainedObject() : m_parent(0)  { }
-  /// Copy constructor
-  ContainedObject(const ContainedObject&) : m_parent(0)  { }
+  ContainedObject() = default;
+  /// Copy constructor -- do NOT copy the parent reference...
+  ContainedObject(const ContainedObject&) : ContainedObject() { }
   /// Destructor
   virtual ~ContainedObject();
 
@@ -54,7 +54,7 @@ public:
   /// Distance in the parent container
   virtual long index() const
   {
-    return (m_parent) ? m_parent->index(this) : -1;
+    return m_parent ? m_parent->index(this) : -1;
   }
   /// Serialize the object for writing
   virtual StreamBuffer& serialize( StreamBuffer& s ) const  { return s; }
@@ -69,7 +69,7 @@ public:
 
 private:
   /// Pointer to the parent
-  ObjectContainerBase*   m_parent;
+  ObjectContainerBase*   m_parent = nullptr;
 };
 
 #endif  // GAUDIKERNEL_CONTAINEDOBJECT_H

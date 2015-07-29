@@ -7,17 +7,12 @@ class DetPersistencySvc  : virtual public PersistencySvc
 {
 public:
 
-    // Initialize the service.
-    virtual StatusCode initialize();
-
-    // Finalize the service.
-    virtual StatusCode finalize();
 
     // Standard Constructor
     DetPersistencySvc(const std::string& name, ISvcLocator* svc);
 
     // Standard Destructor
-    virtual ~DetPersistencySvc();
+    ~DetPersistencySvc() override = default;
 
 };
 

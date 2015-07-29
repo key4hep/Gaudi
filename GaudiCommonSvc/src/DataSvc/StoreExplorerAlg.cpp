@@ -37,9 +37,9 @@ class StoreExplorerAlg : public Algorithm {
   /// Flag to indicate if missing entities should be printed
   long              m_printMissing;
   /// Internal counter to trigger printouts
-  long              m_total;
+  long              m_total = 0;
   /// Internal counter to adjust printout frequency
-  long              m_frqPrint;
+  long              m_frqPrint = 0;
   /// Flag to load non existing items
   bool              m_load;
   /// Flag to test access to objects (DataObject and ContainedObject)
@@ -56,9 +56,8 @@ public:
 
   /// Standard algorithm constructor
   StoreExplorerAlg(const std::string& name, ISvcLocator* pSvcLocator)
-  :	Algorithm(name, pSvcLocator), m_dataSvc(0)
+  :	Algorithm(name, pSvcLocator), m_dataSvc(nullptr)
   {
-    m_total = m_frqPrint = 0;
     declareProperty("Load",             m_load = false);
     declareProperty("PrintEvt",         m_print = 1);
     declareProperty("PrintMissing",     m_printMissing = 0);
@@ -69,21 +68,16 @@ public:
     declareProperty("AccessForeign",    m_accessForeign = false);
   }
   /// Standard Destructor
-  virtual ~StoreExplorerAlg()     {
-  }
+  ~StoreExplorerAlg() override  = default;
 
   template <class T>
   std::string access(T* p)  {
-    if ( p )  {
-      std::stringstream s;
-      for (typename T::const_iterator i = p->begin(); i != p->end(); ++i )  {
-        int idx = p->index(*i);
-        s << idx << ":" << (*i)->clID() << ",";
-      }
-      std::string result = s.str();
-      return result.substr(0, result.length()-2);
-    }
-    return "Access FAILED.";
+    if ( !p )  return "Access FAILED.";
+    std::string result = std::accumulate(std::begin(*p),std::end(*p),std::string{},
+                                         [&](std::string s,typename T::const_reference i) {
+        return s+std::to_string(p->index(i)) + ":" + std::to_string(i->clID()) + ",";
+    });
+    return result.substr(0, result.length()-2);
   }
 
 
@@ -157,20 +151,19 @@ public:
 
   void explore(IRegistry* pObj, std::vector<bool>& flg)    {
     printObj(pObj, flg);
-    if ( 0 != pObj )    {
+    if ( pObj )    {
       SmartIF<IDataManagerSvc> mgr(eventSvc());
       if ( mgr )    {
-        typedef std::vector<IRegistry*> Leaves;
-        Leaves leaves;
+        std::vector<IRegistry*> leaves;
         StatusCode sc = mgr->objectLeaves(pObj, leaves);
-        const std::string* par0 = 0;
+        const std::string* par0 = nullptr;
         if ( pObj->address() )  {
           par0 = pObj->address()->par();
         }
         if ( sc.isSuccess() )  {
-          for ( Leaves::const_iterator i=leaves.begin(); i != leaves.end(); i++ )   {
+          for ( auto i=leaves.begin(); i != leaves.end(); i++ )   {
             const std::string& id = (*i)->identifier();
-            DataObject* p = 0;
+            DataObject* p = nullptr;
             if ( !m_accessForeign && (*i)->address() )  {
               if ( par0 )  {
                 const std::string* par1 = (*i)->address()->par();
@@ -206,33 +199,33 @@ public:
   }
 
   /// Initialize
-  virtual StatusCode initialize()   {
+  StatusCode initialize() override   {
     MsgStream log(msgSvc(), name());
-    m_rootName = "";
+    m_rootName.clear();
     StatusCode sc = service(m_dataSvcName, m_dataSvc, true);
-    if ( sc.isSuccess() )  {
-      SmartIF<IDataManagerSvc> mgr(m_dataSvc);
-      if ( mgr )  {
-        m_rootName = mgr->rootName();
-        return sc;
-      }
-      log << MSG::ERROR << "Failed to retrieve IDataManagerSvc interface." << endmsg;
-      return StatusCode::FAILURE;
+    if ( !sc.isSuccess() )  {
+        log << MSG::ERROR << "Failed to access service \""
+            << m_dataSvcName << "\"." << endmsg;
+        return StatusCode::FAILURE;
     }
-    log << MSG::ERROR << "Failed to access service \""
-        << m_dataSvcName << "\"." << endmsg;
-    return StatusCode::FAILURE;
+    SmartIF<IDataManagerSvc> mgr(m_dataSvc);
+    if ( !mgr )  {
+        log << MSG::ERROR << "Failed to retrieve IDataManagerSvc interface." << endmsg;
+        return StatusCode::FAILURE;
+    }
+    m_rootName = mgr->rootName();
+    return sc;
   }
 
   /// Finalize
-  virtual StatusCode finalize() {
+  StatusCode finalize() override {
     if ( m_dataSvc ) m_dataSvc->release();
-    m_dataSvc = 0;
+    m_dataSvc = nullptr;
     return StatusCode::SUCCESS;
   }
 
   /// Execute procedure
-  virtual StatusCode execute()    {
+  StatusCode execute() override {
     MsgStream log(msgSvc(), name());
     SmartDataPtr<DataObject>   root(m_dataSvc,m_rootName);
     if ( ((m_print > m_total++) || (m_frequency*m_total > m_frqPrint)) && root )    {
@@ -243,9 +236,7 @@ public:
       IRegistry* pReg = root->registry();
       if ( pReg )  {
         SmartIF<IService> isvc(pReg->dataSvc());
-        if ( isvc )  {
-          store_name = isvc->name();
-        }
+        if ( isvc )  store_name = isvc->name();
       }
       log << MSG::INFO << "========= " << m_rootName << "["
           << "0x" << std::hex << (unsigned long) root.ptr() << std::dec

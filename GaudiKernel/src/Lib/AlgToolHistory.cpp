@@ -71,11 +71,8 @@ AlgToolHistory::dump(std::ostream& ost, const bool isXML, int ind) const {
     //Properties
     ost << "Properties: [" << endl;
     
-    for ( AlgToolHistory::PropertyList::const_iterator
-	    ipprop=properties().begin();
-	  ipprop!=properties().end(); ++ipprop ) {
-      const Property& prop = **ipprop;
-      prop.fillStream(ost);
+    for ( const auto& iprop : properties() ) {
+      iprop->fillStream(ost);
       ost << endl;
     }
     ost << "]" << endl;
@@ -90,15 +87,12 @@ AlgToolHistory::dump(std::ostream& ost, const bool isXML, int ind) const {
 	<< "\" parent=\"" << convert_string(algtool_instance()->name())
 	<< "\">" << endl;
       
-    for ( AlgToolHistory::PropertyList::const_iterator
-	    ipprop=properties().begin();
-	  ipprop!=properties().end(); ++ipprop ) {
-      const Property& prop = **ipprop;
+    for ( const auto& iprop : properties() ) {
 
       indent(ost,ind+2);
-      ost << "<PROPERTY name=\"" << prop.name() 
-	  << "\" value=\"" << convert_string(prop.toString()) 
-	  << "\" documentation=\"" << convert_string(prop.documentation())
+      ost << "<PROPERTY name=\"" << iprop->name() 
+	  << "\" value=\"" << convert_string(iprop->toString()) 
+	  << "\" documentation=\"" << convert_string(iprop->documentation())
 	  << "\">" << endl;
     }
 

@@ -21,7 +21,7 @@ public:
   virtual const std::string& name() const = 0;
 
   /// Virtual destructor (always needed for abstract classes).
-  virtual ~INamedInterface() {}
+  virtual ~INamedInterface() = default;
 
 };
 

@@ -13,18 +13,18 @@ class StatusCodeSvc: public extends1<Service, IStatusCodeSvc> {
 
 public:
 
-  virtual StatusCode initialize();
-  virtual StatusCode reinitialize();
-  virtual StatusCode finalize();
+  StatusCode initialize() override;
+  StatusCode reinitialize() override;
+  StatusCode finalize() override;
 
-  virtual void regFnc(const std::string &func, const std::string &lib);
-  virtual void list() const;
-  virtual bool suppressCheck() const { return m_suppress.value() ; }
+  void regFnc(const std::string &func, const std::string &lib) override;
+  void list() const override;
+  bool suppressCheck() const override { return m_suppress.value() ; }
 
   StatusCodeSvc( const std::string& name, ISvcLocator* svc );
 
   // Destructor.
-  virtual ~StatusCodeSvc();
+  ~StatusCodeSvc() override = default;
 
 private:
 

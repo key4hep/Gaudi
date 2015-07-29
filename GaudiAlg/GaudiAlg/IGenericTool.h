@@ -19,6 +19,6 @@ public:
   /// Do the action
   virtual void execute() = 0;
 
-  virtual ~IGenericTool();
+  virtual ~IGenericTool() = default;
 };
 #endif // KERNEL_INORMALIZETOOL_H

@@ -131,12 +131,9 @@ namespace HepRndm  {
 
   // Retrieve seeds
   template <class TYPE> StatusCode Engine<TYPE>::setSeeds(const std::vector<long>& seed)   {
-    typedef std::vector<long> seed_t;
     m_seeds.clear();
-    for ( seed_t::const_iterator i = seed.begin(); i < seed.end(); i++ )   {
-      m_seeds.push_back(*i);
-    }
-    if ( m_seeds.size() > 0 )   {
+    std::copy(seed.begin(),seed.end(),std::back_inserter(m_seeds));
+    if ( !m_seeds.empty() )   {
       if ( m_seeds.back() != 0 )    {
         m_seeds.push_back(0);
       }

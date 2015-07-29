@@ -30,7 +30,7 @@ namespace Gaudi {
       // This class is essentially a wrapper around boost::sregex_iterator.
       class Iterator: public std::iterator<std::input_iterator_tag, Attrib> {
       public:
-        Iterator() {}
+        Iterator() = default;
         Iterator(const boost::sregex_iterator& it, bool expand_vars):
           m_it(it),
           m_expandVars(expand_vars)

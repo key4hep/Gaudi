@@ -762,8 +762,8 @@ public:  // non-virtual methods
   {
     // retrieve or book the histogram
     AIDA::IHistogram1D* h = histo1D ( title ) ;
-    if ( 0 == h )     { h = book1D  ( title , low , high , bins ); }
-    while ( first != last && 0 != h  )
+    if ( !h  )      { h = book1D  ( title , low , high , bins ); }
+    while ( first != last && h  )
     { h = fill ( h , func( *first ) , 1.0 , title  ) ; ++first ; }
     return h ;
   }
@@ -830,8 +830,8 @@ public:  // non-virtual methods
   {
     // retrieve or book the histogram
     AIDA::IHistogram1D* h = histo1D ( ID ) ;
-    if ( 0 == h )     { h = book1D  ( ID , title , low , high , bins ); }
-    while ( first != last && 0 != h )
+    if ( !h ) { h = book1D  ( ID , title , low , high , bins ); }
+    while ( first != last && h )
     { h = fill( h , func( *first ) , 1.0 , title  ) ; ++first ; }
     return h ;
   }
@@ -903,8 +903,8 @@ public:  // non-virtual methods
   {
     // retrieve or book the histogram
     AIDA::IHistogram1D* h = histo1D ( title ) ;
-    if ( 0 == h     ) { h = book1D  ( title , low , high , bins ); }
-    while( first != last && 0 != h )
+    if ( !h     ) { h = book1D  ( title , low , high , bins ); }
+    while( first != last && h )
     { h = fill ( h                 ,
                  func   ( *first ) ,
                  weight ( *first ) , title  ) ; ++first ; }
@@ -984,8 +984,8 @@ public:  // non-virtual methods
   {
     // retrieve or book the histogram
     AIDA::IHistogram1D* h = histo1D ( ID ) ;
-    if ( 0 == h     ) { h = book1D  ( ID , title , low , high , bins ); }
-    while( first != last && 0 != h )
+    if ( !h     ) { h = book1D  ( ID , title , low , high , bins ); }
+    while( first != last && h )
     { h  = fill ( h                 ,
                   func   ( *first ) ,
                   weight ( *first ) , title  ) ; ++first ; }
@@ -994,7 +994,7 @@ public:  // non-virtual methods
 
 protected:
 
-  virtual ~IHistoTool() ;
+  ~IHistoTool() override = default;
 
 };
 

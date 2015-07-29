@@ -17,7 +17,7 @@ class IRegistry;
 class GAUDI_API IDataStoreAgent {
 public:
   /// destructor
-  virtual ~IDataStoreAgent() { }
+  virtual ~IDataStoreAgent() = default;
 
   /** Analyse the data object.
   @return Boolean indicating wether the tree below should be analysed

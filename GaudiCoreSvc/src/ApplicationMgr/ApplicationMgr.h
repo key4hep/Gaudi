@@ -53,7 +53,6 @@ class ApplicationMgr : public CommonMessaging<implements4<IAppMgrUI,
                                       IStateful> > base_class;
 public:
   typedef std::list<std::pair<IService*,int> >  ListSvc;
-  typedef std::list<std::string>   ListName;
   typedef std::vector<std::string> VectorName;
 
 public:
@@ -206,10 +205,6 @@ protected:
   StringProperty      m_outStreamType;      ///< Output stream type (obsolete?)
   StringProperty      m_messageSvcType;     ///< MessageSvc type
   StringProperty      m_jobOptionsSvcType;  ///< JobOptionsSvc type
-
-
-  ListSvc             m_topSvcList;         ///< List of top level services
-  ListName            m_topSvcNameList;     ///< List of top level services names
 
   std::string         m_name;               ///< Name
   Gaudi::StateMachine::State m_state;              ///< Internal State
