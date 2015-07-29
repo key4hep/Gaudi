@@ -62,7 +62,7 @@ namespace
   struct Histo
   {
     // ========================================================================
-    Histo() : bins() , under() , over() {}
+    Histo() = default;
     // ========================================================================
     /** @struct Bin
      *  helper structure to keep the representation of bin
@@ -256,7 +256,7 @@ namespace
     // clear the histogram
     hist.bins.clear() ;
     //
-    if ( 0 == aida ) { return StatusCode::FAILURE ; } // RETURN
+    if ( !aida ) { return StatusCode::FAILURE ; } // RETURN
     //
     const AIDA::IAxis& axis  = aida -> axis () ;
     const int          nbins = axis .  bins () ;
@@ -286,7 +286,7 @@ namespace
     return StatusCode::SUCCESS ;
   }
   // ==========================================================================
-  /** find the approrpriate rebin factor
+  /** find the appropriate rebin factor
    *  (I suspect that there is some intelligent STD/STL routine for this purpose)
    *  @author Vanya BELYAEV  Ivan.BElyaev@nikhef.nl
    *  @date 2009-09-19
