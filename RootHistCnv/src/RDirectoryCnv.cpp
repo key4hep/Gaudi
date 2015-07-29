@@ -1,5 +1,4 @@
 // Include files
-#include "GaudiKernel/xtoa.h"
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/IOpaqueAddress.h"

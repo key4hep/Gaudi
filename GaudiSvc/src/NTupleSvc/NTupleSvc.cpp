@@ -22,7 +22,6 @@
 #define  GAUDISVC_NTUPLESVC_CPP
 
 // Framework include files
-#include "GaudiKernel/xtoa.h"
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/AttribStringParser.h"
 #include "GaudiKernel/DataObject.h"

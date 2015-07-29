@@ -2,7 +2,6 @@
 
 // from Gaudi
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/xtoa.h"
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/Incident.h"
 #include "GaudiKernel/MsgStream.h"

@@ -1,5 +1,4 @@
 // Include files
-#include "GaudiKernel/xtoa.h"
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/Incident.h"
 #include "GaudiKernel/MsgStream.h"

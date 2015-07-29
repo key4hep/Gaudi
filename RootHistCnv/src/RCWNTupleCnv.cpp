@@ -3,7 +3,6 @@
 #define ALLOW_ALL_TYPES
 
 // Include files
-#include "GaudiKernel/xtoa.h"
 #include "GaudiKernel/INTupleSvc.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/NTuple.h"

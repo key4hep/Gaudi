@@ -23,7 +23,6 @@
 #include "GaudiKernel/IOpaqueAddress.h"
 #include "GaudiKernel/IConversionSvc.h"
 
-#include "GaudiKernel/xtoa.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/GaudiException.h"
 
