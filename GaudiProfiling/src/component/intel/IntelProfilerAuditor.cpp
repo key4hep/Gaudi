@@ -9,9 +9,6 @@
 #include <iomanip>
 #include <sstream>
 
-// * Boost
-#include <boost/foreach.hpp>
-
 // * Gaudi libraries.
 #include "GaudiKernel/Auditor.h"
 #include "GaudiKernel/IAuditorSvc.h"
@@ -266,8 +263,7 @@ std::string
 IntelProfilerAuditor::taskTypeName(const std::string& component_name) const {
   std::string result;
   std::string delim = "";
-  BOOST_FOREACH(const stack_entity& value,
-     m_stack) {
+  for (const auto& value : m_stack) {
     result += delim+value.name;
     delim = m_alg_delim;
   }
@@ -291,17 +287,13 @@ StatusCode IntelProfilerAuditor::initialize() {
   inSvc->addListener(this, IncidentType::EndProcessing);
 
   std::string str_excluded, str_included, str_eventtypes;
-  BOOST_FOREACH(const std::string& name, m_excluded)
-  {
+  for (const auto& name : m_excluded) {
     str_excluded += " " + name;
   }
-  BOOST_FOREACH(const std::string& name, m_included)
-  {
+  for (const auto& name : m_included) {
     str_included += " " + name;
   }
-
-  BOOST_FOREACH(const std::string& name, m_algs_for_tasktypes)
-  {
+  for (const auto& name : m_algs_for_tasktypes) {
     str_eventtypes += " " + name;
   }
 

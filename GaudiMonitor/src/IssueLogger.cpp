@@ -10,8 +10,6 @@
 #include <streambuf>
 #include <algorithm>
 
-#include "boost/bind.hpp"
-
 using namespace std;
 
 DECLARE_COMPONENT(IssueLogger)
@@ -198,18 +196,18 @@ IssueLogger::connect(const std::string& ident) {
     if (attrib.value == "MsgSvc") {
       m_logger[level] = new StreamLogger(msgSvc(), m_sevMsgMap[level]);
       m_log[level] =
-	boost::bind(&StreamLogger::WriteToMsgSvc, m_logger[level],
-		    _1);
+	std::bind(&StreamLogger::WriteToMsgSvc, m_logger[level],
+		  std::placeholders::_1);
     } else if (attrib.value == "STDERR") {
       m_logger[level] = new StreamLogger(std::cerr);
       m_log[level] =
-	boost::bind(&StreamLogger::WriteToStream, m_logger[level],
-		    _1);
+	std::bind(&StreamLogger::WriteToStream, m_logger[level],
+		    std::placeholders::_1);
     } else if (attrib.value == "STDOUT") {
       m_logger[level] = new StreamLogger(std::cout);
       m_log[level] =
-	boost::bind(&StreamLogger::WriteToStream, m_logger[level],
-		    _1);
+	std::bind(&StreamLogger::WriteToStream, m_logger[level],
+		    std::placeholders::_1);
     } else { // A file
       try {
         m_logger[level] = new StreamLogger(attrib.value.c_str());
@@ -221,7 +219,7 @@ IssueLogger::connect(const std::string& ident) {
         return StatusCode::FAILURE;
       }
       m_log[level] =
-        boost::bind(&StreamLogger::WriteToStream, m_logger[level], _1);
+        std::bind(&StreamLogger::WriteToStream, m_logger[level], std::placeholders::_1);
     }
     log << MSG::DEBUG << "Writing " << m_levelTrans[level]
 	<< " issues to " << m_logger[level]->name() << endmsg;
@@ -350,8 +348,8 @@ IssueLogger::setupDefaultLogger() {
       IssueSeverity::Level j = IssueSeverity::Level (i);
 
       m_logger[j] = new StreamLogger(msgSvc(), m_sevMsgMap[j]);
-      m_log[j] = boost::bind(&StreamLogger::WriteToMsgSvc, m_logger[j],
-			     _1);
+      m_log[j] = std::bind(&StreamLogger::WriteToMsgSvc, m_logger[j],
+			   std::placeholders::_1);
 
       MsgStream log ( msgSvc(), name() );
       log << MSG::DEBUG << "Writing " << m_levelTrans[j]

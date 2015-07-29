@@ -144,7 +144,7 @@ void JobOptionsSvc::dump (const std::string& file,
 }
 
 void JobOptionsSvc::fillServiceCatalog(const gp::Catalog& catalog) {
-  for(const gp::Catalog::value_type& client: catalog) {
+  for (const auto&  client : catalog) {
     for (const auto& current : client.second ) {
       addPropertyToCatalogue ( client.first , 
                                StringProperty{ current.NameInClient(), 

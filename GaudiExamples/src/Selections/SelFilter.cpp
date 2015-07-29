@@ -14,18 +14,6 @@
 // ============================================================================
 #include "GaudiExamples/MyTrack.h"
 // ============================================================================
-// Boost
-// ============================================================================
-#ifdef __ICC
-// disable icc remark #177: declared but never referenced
-// Problem with boost::lambda
-#pragma warning(disable:177)
-#endif
-#include "boost/lambda/lambda.hpp"
-#include "boost/lambda/bind.hpp"
-// ============================================================================
-namespace bl = boost::lambda ;
-// ============================================================================
 namespace Gaudi
 {
   namespace Examples
@@ -69,13 +57,12 @@ namespace Gaudi
         sample -> insert
           ( range.begin () ,
             range.end   () ,
-            bl::bind( &Gaudi::Examples::MyTrack::px,bl::_1) > pxCut ) ;
+	    [pxCut](auto* track) { return track->px() > pxCut; });
 
         const size_t size = sample -> size() ;
 
         // remove the particles with 'small' py
-        sample -> erase
-          ( bl::bind( &Gaudi::Examples::MyTrack::py,bl::_1) < pyCut ) ;
+        sample -> erase( [pyCut](auto* track) { return track->py() < pyCut; } );
 
         info () << "Sample size is "
                 << range.size()

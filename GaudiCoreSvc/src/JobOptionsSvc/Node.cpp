@@ -6,7 +6,6 @@
 // ============================================================================
 // Boost:
 // ============================================================================
-#include <boost/foreach.hpp>
 #include <boost/format.hpp>
 // ============================================================================
 namespace gp = Gaudi::Parsers;
@@ -78,7 +77,7 @@ std::string gp::Node::ToString(int indent) const {
         result += "/>\n";
     } else {
         result += ">\n";
-        BOOST_FOREACH(Node const& node, children)
+        for(const auto& node : children)
                     {
                         result += node.ToString(indent + 2);
                     }

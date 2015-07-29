@@ -179,6 +179,8 @@ if __name__ == "__main__":
                            "the same context.")
     parser.add_option("--debug", action="store_true",
                       help="enable some debug print-out")
+    parser.add_option("--gdb", action="store_true",
+                      help="attach gdb")
     parser.add_option("--printsequence", action="store_true",
                       help="print the sequence")
     if not sys.platform.startswith("win"):
@@ -474,7 +476,7 @@ if __name__ == "__main__":
 
     if not opts.dry_run:
         # Do the real processing
-        retcode = c.run(opts.ncpus)
+        retcode = c.run(opts.gdb,opts.ncpus)
 
         # Now saving the run information pid, retcode and executable path to
         # a file is requested

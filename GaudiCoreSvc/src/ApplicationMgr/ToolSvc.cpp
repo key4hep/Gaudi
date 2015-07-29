@@ -11,11 +11,6 @@
 #include <map>
 #include <string>
 #include <cassert>
-#ifdef __ICC
-// disable icc remark #177: declared but never referenced
-// TODO: Remove. Problem with boost::lambda
-#pragma warning(disable:177)
-#endif
 
 #define ON_DEBUG if (UNLIKELY(outputLevel() <= MSG::DEBUG))
 #define ON_VERBOSE if (UNLIKELY(outputLevel() <= MSG::VERBOSE))
@@ -61,7 +56,6 @@ template <typename T> void push_front(std::deque<T>& l, T& i) {
 // Instantiation of a static factory class used by clients to create
 //  instances of this service
 DECLARE_COMPONENT(ToolSvc)
-
 
 //------------------------------------------------------------------------------
 ToolSvc::ToolSvc( const std::string& name, ISvcLocator* svc )

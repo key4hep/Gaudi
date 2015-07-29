@@ -2,6 +2,11 @@ Package : Gaudi
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-07-20 - Charles Leggett
+ - added hooks to attach gdb to program. activated with command line option
+   "--gdb"
+ - issue: GAUDI-1056 https://sft.its.cern.ch/jira/browse/GAUDI-1056
+
 ================================ Gaudi v26r3 =================================
 ! 2015-06-18 - Marco Clemencic
  - Fixed GAUDI-1045: segfault running "LD_PRELOAD=libjemalloc.so gaudirun.py"

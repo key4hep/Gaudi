@@ -53,7 +53,7 @@ gp::Property* gp::Catalog::Find(const std::string& client,
 // ============================================================================
 std::string gp::Catalog::ToString() const {
   std::string result;
-  for(const CatalogSet::value_type& client: catalog_) {
+  for (const auto& client : catalog_) {
     for (const auto& current : client.second) {
       result += current.ToString()+"\n";
     }
@@ -72,7 +72,7 @@ std::ostream& Gaudi::Parsers::Catalog::fillStream ( std::ostream& o ) const
   size_t nComponents = 0 ;
   size_t nProperties = 0 ;
 
-  for(const CatalogSet::value_type& client: catalog_)   {
+  for (const auto& client : catalog_)   {
     o << boost::format("// Properties of '%1%' %|43t|# = %2%" )
         % client.first % client.second.size() << std::endl ;
         ++nComponents ;

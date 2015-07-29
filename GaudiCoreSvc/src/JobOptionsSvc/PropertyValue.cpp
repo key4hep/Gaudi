@@ -10,7 +10,6 @@
 // Boost:
 // ============================================================================
 #include <boost/format.hpp>
-#include <boost/foreach.hpp>
 // ============================================================================
 namespace gp = Gaudi::Parsers;
 // ============================================================================
@@ -41,8 +40,7 @@ gp::PropertyValue::operator += (const PropertyValue& right) {
     }
     if (right.IsVector()){
       VectorOfStrings& vec = boost::get<VectorOfStrings>(value_);
-      BOOST_FOREACH(const std::string& item,
-          boost::get<VectorOfStrings>(right.value_)) {
+      for (const auto& item : boost::get<VectorOfStrings>(right.value_)) {
         vec.push_back(item);
       }
       return *this;
@@ -56,7 +54,7 @@ gp::PropertyValue::operator += (const PropertyValue& right) {
     }
     MapOfStrings& map  = boost::get<MapOfStrings>(value_);
     const MapOfStrings& rmap = boost::get<MapOfStrings>(right.value_);
-    BOOST_FOREACH(const MapOfStrings::value_type& item, rmap) {
+    for (const auto& item : rmap) {
       map.insert(item);
     }
     return *this;
@@ -85,7 +83,7 @@ gp::PropertyValue::operator-=(const PropertyValue& right) {
 
     if (right.IsVector()) {
       const VectorOfStrings& rvec = right.Vector();
-      BOOST_FOREACH(const std::string& item, rvec) {
+      for (const auto& item : rvec) {
         vec.erase(std::find(vec.begin(), vec.end(), item));
       }
       return *this;
@@ -102,7 +100,7 @@ gp::PropertyValue::operator-=(const PropertyValue& right) {
 
     if (right.IsVector()) {
       const VectorOfStrings& rvec = right.Vector();
-      BOOST_FOREACH(const std::string& item, rvec) {
+      for (const auto& item : rvec) {
         map.erase(item);
       }
       return *this;
@@ -134,7 +132,7 @@ std::string gp::PropertyValue::ToString() const {
       value = boost::get<std::vector<std::string> >(&value_)) {
     std::string result = "[";
     std::string delim = "";
-    BOOST_FOREACH(const std::string& in, *value) {
+    for (const auto& in : *value) {
       result += delim + in;
       delim = ", ";
     }
@@ -144,7 +142,7 @@ std::string gp::PropertyValue::ToString() const {
     std::string result = "{";
     std::string delim = "";
     typedef std::pair<std::string, std::string> pair_t;
-    BOOST_FOREACH(const pair_t& in, *value) {
+    for (const auto& in : *value) {
       result += delim + in.first + ":" + in.second;
       delim = ", ";
     }
