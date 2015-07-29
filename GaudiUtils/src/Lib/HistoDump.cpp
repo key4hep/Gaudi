@@ -99,18 +99,20 @@ namespace
     /// get Y-max
     double maxY ( const bool withErr ) const
     {
-      double _m  = std::max ( under.height , over.height  ) ;
-      for ( const auto& ib : bins )
-      { _m = std::max ( _m  , withErr ?  ib.height +  ib.error :  ib.height ) ; }
-      return _m ;
+      return std::accumulate( std::begin(bins), std::end(bins),
+                              std::max ( under.height, over.height  ),
+                              [&](double m, const Bin& b) {
+            return std::max ( m, withErr ? b.height + b.error : b.height ) ;
+      });
     }
     /// get Y-min
     double minY ( const bool withErr ) const
     {
-      double _m  = std::min ( under.height , over.height  ) ;
-      for ( const auto& ib : bins )
-      { _m = std::min ( _m  , withErr ?  ib.height - ib.error :  ib.height ) ; }
-      return _m ;
+      return std::accumulate( std::begin(bins), std::end(bins),
+                              std::min ( under.height, over.height  ),
+                              [&](double m, const Bin& b) {
+            return std::min ( m, withErr ? b.height - b.error : b.height ) ;
+      });
     }
     /// rebin the histogram
     Histo rebin ( const unsigned int bin ) const
@@ -161,9 +163,9 @@ namespace
     // clear the histogram
     hist.bins.clear() ;
     //
-    if ( 0 == root  ) { return StatusCode::FAILURE ; } // RETURN
+    if ( !root  ) { return StatusCode::FAILURE ; } // RETURN
     const TAxis* axis  = root->GetXaxis() ;
-    if ( 0 == axis  ) { return StatusCode::FAILURE ; } // RETURN
+    if ( !axis  ) { return StatusCode::FAILURE ; } // RETURN
     const int    nbins = axis->GetNbins () ;
     if ( 0 == nbins ) { return StatusCode::FAILURE ; } // RETURN
 
@@ -180,10 +182,9 @@ namespace
     for ( int ibin = 1 ; ibin <= nbins ; ++ibin )
     {
       // add to the local histo
-      Histo::Bin bin ( root -> GetBinContent   ( ibin ) ,
-                       root -> GetBinError     ( ibin ) ,
-                       axis -> GetBinLowEdge   ( ibin ) ) ;
-      hist.bins.push_back ( bin ) ;
+      hist.bins.emplace_back( root -> GetBinContent ( ibin ) ,
+                              root -> GetBinError   ( ibin ) ,
+                              axis -> GetBinLowEdge ( ibin ) ) ;
     }
     return StatusCode::SUCCESS ;
   }
@@ -216,7 +217,7 @@ namespace
     // clear the histogram
     hist.bins.clear() ;
     //
-    if ( 0 == aida ) { return StatusCode::FAILURE ; } // RETURN
+    if ( !aida ) { return StatusCode::FAILURE ; } // RETURN
     //
     const AIDA::IAxis& axis  = aida -> axis () ;
     const int          nbins = axis .  bins () ;
@@ -233,10 +234,9 @@ namespace
     for ( int ibin = 0 ; ibin < nbins ; ++ibin )
     {
       // add to the local histo
-      Histo::Bin bin ( aida -> binHeight    ( ibin ) ,
-                       aida -> binError     ( ibin ) ,
-                       axis .  binLowerEdge ( ibin ) ) ;
-      hist.bins.push_back ( bin ) ;
+      hist.bins.emplace_back ( aida -> binHeight    ( ibin ) ,
+                               aida -> binError     ( ibin ) ,
+                               axis .  binLowerEdge ( ibin ) ) ;
     }
     return StatusCode::SUCCESS ;
   }
@@ -277,12 +277,11 @@ namespace
     for ( int ibin = 0 ; ibin < nbins ; ++ibin )
     {
       // add to the local histo
-      Histo::Bin bin ( aida -> binHeight    ( ibin ) ,
-                       spread ?
-                       aida -> binRms       ( ibin ) :
-                       aida -> binError     ( ibin ) ,
-                       axis .  binLowerEdge ( ibin ) ) ;
-      hist.bins.push_back ( bin ) ;
+      hist.bins.emplace_back( aida -> binHeight    ( ibin ) ,
+                              spread ?
+                              aida -> binRms       ( ibin ) :
+                              aida -> binError     ( ibin ) ,
+                              axis .  binLowerEdge ( ibin ) ) ;
     }
     return StatusCode::SUCCESS ;
   }
@@ -335,15 +334,15 @@ namespace
    *  @author Vanya BELYAEV  Ivan.Belyaev@nikhef.nl
    *  @date 2009-09-19
    */
-  inline double _pow ( double __x , unsigned long __n )
+  inline double _pow ( double x , unsigned long n )
   {
-    double __y = __n % 2 ? __x : 1;
-    while ( __n >>= 1 )
+    double y = n % 2 ? x : 1;
+    while ( n >>= 1 )
     {
-      __x = __x * __x;
-      if ( __n % 2) { __y = __y * __x; }
+      x = x * x;
+      if ( n % 2) { y *= x; }
     }
-    return __y ;
+    return y ;
   }
   // ==========================================================================
   /** find the proper "round" value
@@ -736,7 +735,7 @@ std::ostream& Gaudi::Utils::Histos::histoDump_
   const bool                spread  )
 {
   stream << std::endl ;
-  if ( 0 == histo     ) { return stream ; }  // RETURN
+  if ( !histo     ) { return stream ; }  // RETURN
   Histo hist ;
   StatusCode sc = _getHisto ( histo , hist , spread ) ;
   if ( sc.isFailure() ) { return stream ; }  // RETURN

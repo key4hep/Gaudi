@@ -42,22 +42,20 @@ namespace
 {
   // ==========================================================================
   /// parse the histogram from xml
-  template <class TYPE>
-  struct _Xml
+  //
+  template <typename TYPE> 
+  std::unique_ptr<TYPE> _Xml( const std::string& input ) 
   {
-    typedef std::unique_ptr<TYPE>  H ;
-    //
-    H operator() ( const std::string& input ) const
-    {
-      // 1) use XML-parser
-      std::unique_ptr<TObject> obj   ( TBufferXML::ConvertFromXML ( input.c_str() ) ) ;
-      if ( 0 == obj.get()   ) { return H() ; }      // RETURN
-      H histo ( dynamic_cast<TYPE*>( obj.get() ) ) ;
-      if ( 0 != histo.get() ) { obj.release() ; }
-      return histo ;
-    }
-    //
-  } ;
+    // 1) use XML-parser
+    std::unique_ptr<TObject> obj{ TBufferXML::ConvertFromXML ( input.c_str() ) } ;
+    TYPE* histo = ( obj ? dynamic_cast<TYPE*>( obj.get() ) : nullptr );
+    // slightly tricky: in case the dynamic cast succeeds, transfer owership
+    // by invoking 'release' on obj, and 'at the same time' pass 'histo' into 
+    // the constructor of unique_ptr -- but if the cast fails, do NOT transfer
+    // ownership... the , operator is the closest I can think of
+    return std::unique_ptr<TYPE>{ histo ? ( obj.release(), histo ) : nullptr };
+  }
+  //
   // ==========================================================================
 } //                                                 end of anonymous namespace
 // ============================================================================
@@ -70,12 +68,7 @@ std::ostream& Gaudi::Utils::Histos::toXml
 ( const TH1D&   histo         ,
   std::ostream& stream        )
 {
-  //
-  const TObject* obj = &histo ;
-  //
-  TString s = TBufferXML::ConvertToXML ( const_cast<TObject*> ( obj ) ) ;
-  //
-  return stream << s ;
+  return stream << TBufferXML::ConvertToXML( &histo ) ;
 }
 // ============================================================================
 /*  stream the ROOT histogram into output stream as XML
@@ -87,12 +80,7 @@ std::ostream& Gaudi::Utils::Histos::toXml
 ( const TH2D&   histo         ,
   std::ostream& stream        )
 {
-  //
-  const TObject* obj = &histo ;
-  //
-  TString s = TBufferXML::ConvertToXML ( const_cast<TObject*> ( obj ) ) ;
-  //
-  return stream << s ;
+  return stream << TBufferXML::ConvertToXML( &histo ) ;
 }
 // ============================================================================
 /*  stream the ROOT histogram into output stream as XML
@@ -104,12 +92,7 @@ std::ostream& Gaudi::Utils::Histos::toXml
 ( const TH3D&   histo         ,
   std::ostream& stream        )
 {
-  //
-  const TObject* obj = &histo ;
-  //
-  TString s = TBufferXML::ConvertToXML ( const_cast<TObject*> ( obj ) ) ;
-  //
-  return stream << s ;
+  return stream << TBufferXML::ConvertToXML(  &histo ) ;
 }
 // ============================================================================
 /*  stream the ROOT histogram into output stream as XML
@@ -121,12 +104,7 @@ std::ostream& Gaudi::Utils::Histos::toXml
 ( const TH1F&   histo         ,
   std::ostream& stream        )
 {
-  //
-  const TObject* obj = &histo ;
-  //
-  TString s = TBufferXML::ConvertToXML ( const_cast<TObject*> ( obj ) ) ;
-  //
-  return stream << s ;
+  return stream << TBufferXML::ConvertToXML( &histo ) ;
 }
 // ============================================================================
 /*  stream the ROOT histogram into output stream as XML
@@ -138,12 +116,7 @@ std::ostream& Gaudi::Utils::Histos::toXml
 ( const TH2F&   histo         ,
   std::ostream& stream        )
 {
-  //
-  const TObject* obj = &histo ;
-  //
-  TString s = TBufferXML::ConvertToXML ( const_cast<TObject*> ( obj ) ) ;
-  //
-  return stream << s ;
+  return stream << TBufferXML::ConvertToXML(  &histo ) ;
 }
 // ============================================================================
 /*  stream the ROOT histogram into output stream as XML
@@ -155,12 +128,7 @@ std::ostream& Gaudi::Utils::Histos::toXml
 ( const TH3F&   histo         ,
   std::ostream& stream        )
 {
-  //
-  const TObject* obj = &histo ;
-  //
-  TString s = TBufferXML::ConvertToXML ( const_cast<TObject*> ( obj ) ) ;
-  //
-  return stream << s ;
+  return stream << TBufferXML::ConvertToXML(  &histo ) ;
 }
 // ============================================================================
 /*  stream the ROOT histogram into output stream as XML
@@ -172,12 +140,7 @@ std::ostream& Gaudi::Utils::Histos::toXml
 ( const TProfile& histo  ,
   std::ostream&   stream )
 {
-  //
-  const TObject* obj = &histo ;
-  //
-  TString s = TBufferXML::ConvertToXML ( const_cast<TObject*> ( obj ) ) ;
-  //
-  return stream << s ;
+  return stream << TBufferXML::ConvertToXML(  &histo ) ;
 }
 // ============================================================================
 /*  stream the ROOT histogram into output stream as XML
@@ -189,12 +152,7 @@ std::ostream& Gaudi::Utils::Histos::toXml
 ( const TProfile2D& histo  ,
   std::ostream&     stream )
 {
-  //
-  const TObject* obj = &histo ;
-  //
-  TString s = TBufferXML::ConvertToXML ( const_cast<TObject*> ( obj ) ) ;
-  //
-  return stream << s ;
+  return stream << TBufferXML::ConvertToXML (  &histo ) ;
 }
 // ============================================================================
 /* stream the ROOT histogram into the output stream as XML
@@ -206,13 +164,8 @@ std::ostream& Gaudi::Utils::Histos::toXml
 ( const AIDA::IHistogram1D& histo  ,
   std::ostream&             stream )
 {
-  //
-  AIDA::IHistogram1D* aida = const_cast<AIDA::IHistogram1D*> ( &histo ) ;
-  //
-  const TH1D* root = Gaudi::Utils::Aida2ROOT::aida2root ( aida ) ;
-  if ( 0 == root ) { return stream ; }                                // RETURN
-  //
-  return toXml  ( *root , stream ) ;
+  auto root = Gaudi::Utils::Aida2ROOT::aida2root ( &histo ) ;
+  return root ? toXml( *root , stream ) : stream;
 }
 // ============================================================================
 /* stream the ROOT histogram into the output stream as XML
@@ -224,13 +177,8 @@ std::ostream& Gaudi::Utils::Histos::toXml
 ( const AIDA::IHistogram2D& histo  ,
   std::ostream&             stream )
 {
-  //
-  AIDA::IHistogram2D* aida = const_cast<AIDA::IHistogram2D*> ( &histo ) ;
-  //
-  const TH2D* root = Gaudi::Utils::Aida2ROOT::aida2root ( aida ) ;
-  if ( 0 == root ) { return stream ; }                                // RETURN
-  //
-  return toXml  ( *root , stream ) ;
+  auto root = Gaudi::Utils::Aida2ROOT::aida2root ( &histo ) ;
+  return root ? toXml( *root , stream ) : stream;
 }
 // ============================================================================
 /* stream the ROOT histogram into the output stream as XML
@@ -242,13 +190,8 @@ std::ostream& Gaudi::Utils::Histos::toXml
 ( const AIDA::IHistogram3D& histo  ,
   std::ostream&             stream )
 {
-  //
-  AIDA::IHistogram3D* aida = const_cast<AIDA::IHistogram3D*> ( &histo ) ;
-  //
-  const TH3D* root = Gaudi::Utils::Aida2ROOT::aida2root ( aida ) ;
-  if ( 0 == root ) { return stream ; }                                // RETURN
-  //
-  return toXml  ( *root , stream ) ;
+  auto root = Gaudi::Utils::Aida2ROOT::aida2root ( &histo ) ;
+  return root ? toXml( *root , stream ) : stream;
 }
 // ============================================================================
 /* stream the ROOT histogram into the output stream as XML
@@ -260,13 +203,8 @@ std::ostream& Gaudi::Utils::Histos::toXml
 ( const AIDA::IProfile1D&   histo  ,
   std::ostream&             stream )
 {
-  //
-  AIDA::IProfile1D* aida = const_cast<AIDA::IProfile1D*> ( &histo ) ;
-  //
-  const TProfile* root = Gaudi::Utils::Aida2ROOT::aida2root ( aida ) ;
-  if ( 0 == root ) { return stream ; }                                // RETURN
-  //
-  return toXml  ( *root , stream ) ;
+  auto root = Gaudi::Utils::Aida2ROOT::aida2root ( &histo ) ;
+  return root ? toXml( *root , stream ) : stream;
 }
 // ============================================================================
 /* stream the ROOT histogram into the output stream as XML
@@ -278,13 +216,8 @@ std::ostream& Gaudi::Utils::Histos::toXml
 ( const AIDA::IProfile2D&   histo  ,
   std::ostream&             stream )
 {
-  //
-  AIDA::IProfile2D* aida = const_cast<AIDA::IProfile2D*> ( &histo ) ;
-  //
-  const TProfile2D* root = Gaudi::Utils::Aida2ROOT::aida2root ( aida ) ;
-  if ( 0 == root ) { return stream ; }                                // RETURN
-  //
-  return toXml  ( *root , stream ) ;
+  auto root = Gaudi::Utils::Aida2ROOT::aida2root ( &histo ) ;
+  return root ? toXml( *root , stream ) : stream;
 }
 // ============================================================================
 /*  parse the histogram from standard ROOT XML
@@ -299,11 +232,10 @@ StatusCode Gaudi::Utils::Histos::fromXml
   //
   result.Reset() ;                                 // RESET old histogram
   //
-  _Xml<TH1D> _xml ;
-  std::unique_ptr<TH1D> histo =  _xml ( input ) ;
-  if ( 0 == histo.get() ) { return StatusCode::FAILURE ; }        // RETURN
+  
+  auto histo = _Xml<TH1D>( input ) ;
+  if ( !histo ) { return StatusCode::FAILURE ; }        // RETURN
   //
-  result.Reset() ;
   histo->Copy ( result ) ;
   //
   return StatusCode::SUCCESS ;
@@ -321,11 +253,9 @@ StatusCode Gaudi::Utils::Histos::fromXml
   //
   result.Reset() ;                                 // RESET old histogram
   //
-  _Xml<TH2D> _xml ;
-  std::unique_ptr<TH2D> histo = _xml ( input ) ;
-  if ( 0 == histo.get() ) { return StatusCode::FAILURE ; }        // RETURN
+  auto histo = _Xml<TH2D>( input ) ;
+  if ( !histo ) { return StatusCode::FAILURE ; }        // RETURN
   //
-  result.Reset() ;
   histo->Copy ( result ) ;
   //
   return StatusCode::SUCCESS ;
@@ -343,11 +273,9 @@ StatusCode Gaudi::Utils::Histos::fromXml
   //
   result.Reset() ;                                 // RESET old histogram
   //
-  _Xml<TH3D> _xml ;
-  std::unique_ptr<TH3D> histo = _xml ( input ) ;
-  if ( 0 == histo.get() ) { return StatusCode::FAILURE ; }        // RETURN
+  auto histo = _Xml<TH3D>( input ) ;
+  if ( !histo ) { return StatusCode::FAILURE ; }        // RETURN
   //
-  result.Reset() ;
   histo->Copy ( result ) ;
   //
   return StatusCode::SUCCESS ;
@@ -365,11 +293,9 @@ StatusCode Gaudi::Utils::Histos::fromXml
   //
   result.Reset() ;                                 // RESET old histogram
   //
-  _Xml<TH1F> _xml ;
-  std::unique_ptr<TH1F> histo =  _xml ( input ) ;
-  if ( 0 == histo.get() ) { return StatusCode::FAILURE ; }        // RETURN
+  auto histo =  _Xml<TH1F>( input ) ;
+  if ( !histo ) { return StatusCode::FAILURE ; }        // RETURN
   //
-  result.Reset() ;
   histo->Copy ( result ) ;
   //
   return StatusCode::SUCCESS ;
@@ -387,11 +313,9 @@ StatusCode Gaudi::Utils::Histos::fromXml
   //
   result.Reset() ;                                 // RESET old histogram
   //
-  _Xml<TH2F> _xml ;
-  std::unique_ptr<TH2F> histo = _xml ( input ) ;
-  if ( 0 == histo.get() ) { return StatusCode::FAILURE ; }        // RETURN
+  auto histo = _Xml<TH2F>( input ) ;
+  if ( !histo ) { return StatusCode::FAILURE ; }        // RETURN
   //
-  result.Reset() ;
   histo->Copy ( result ) ;
   //
   return StatusCode::SUCCESS ;
@@ -409,11 +333,9 @@ StatusCode Gaudi::Utils::Histos::fromXml
   //
   result.Reset() ;                                 // RESET old histogram
   //
-  _Xml<TH3F> _xml ;
-  std::unique_ptr<TH3F> histo = _xml ( input ) ;
-  if ( 0 == histo.get() ) { return StatusCode::FAILURE ; }        // RETURN
+  auto histo =_Xml<TH3F>( input ) ;
+  if ( !histo ) { return StatusCode::FAILURE ; }        // RETURN
   //
-  result.Reset() ;
   histo->Copy ( result ) ;
   //
   return StatusCode::SUCCESS ;
@@ -431,11 +353,9 @@ StatusCode Gaudi::Utils::Histos::fromXml
   //
   result.Reset() ;                                 // RESET old histogram
   //
-  _Xml<TProfile> _xml ;
-  std::unique_ptr<TProfile> histo = _xml ( input ) ;
-  if ( 0 == histo.get() ) { return StatusCode::FAILURE ; }        // RETURN
+  auto histo = _Xml<TProfile>( input ) ;
+  if ( !histo ) { return StatusCode::FAILURE ; }        // RETURN
   //
-  result.Reset() ;
   histo->Copy ( result ) ;
   //
   return StatusCode::SUCCESS ;
@@ -453,11 +373,9 @@ StatusCode Gaudi::Utils::Histos::fromXml
   //
   result.Reset() ;                                 // RESET old histogram
   //
-  _Xml<TProfile2D> _xml ;
-  std::unique_ptr<TProfile2D> histo = _xml ( input ) ;
-  if ( 0 == histo.get() ) { return StatusCode::FAILURE ; }        // RETURN
+  auto histo = _Xml<TProfile2D>( input ) ;
+  if ( !histo ) { return StatusCode::FAILURE ; }        // RETURN
   //
-  result.Reset() ;
   histo->Copy ( result ) ;
   //
   return StatusCode::SUCCESS ;
@@ -474,11 +392,10 @@ StatusCode Gaudi::Utils::Histos::fromXml
 StatusCode Gaudi::Utils::Histos::fromXml
 ( TH1D*& result , const std::string& input )
 {
-  if ( 0 != result ) { return fromXml ( *result , input ) ; }
+  if ( result ) { return fromXml ( *result , input ) ; }
   //
-  _Xml<TH1D> _xml ;
-  std::unique_ptr<TH1D> histo = _xml ( input ) ;
-  if ( 0 == histo.get() ) { return StatusCode::FAILURE ; }       // RETURN
+  auto histo = _Xml<TH1D>( input ) ;
+  if ( !histo ) { return StatusCode::FAILURE ; }       // RETURN
   //
   result = histo.release() ;                                     // ASSIGN
   //
@@ -494,11 +411,10 @@ StatusCode Gaudi::Utils::Histos::fromXml
 StatusCode Gaudi::Utils::Histos::fromXml
 ( TH2D*& result , const std::string& input )
 {
-  if ( 0 != result ) { return fromXml ( *result , input ) ; }
+  if ( result ) { return fromXml ( *result , input ) ; }
   //
-  _Xml<TH2D> _xml ;
-  std::unique_ptr<TH2D> histo = _xml ( input ) ;
-  if ( 0 == histo.get() ) { return StatusCode::FAILURE ; }       // RETURN
+  auto histo = _Xml<TH2D>( input ) ;
+  if ( !histo ) { return StatusCode::FAILURE ; }       // RETURN
   //
   result = histo.release() ;                                     // ASSIGN
   //
@@ -514,11 +430,10 @@ StatusCode Gaudi::Utils::Histos::fromXml
 StatusCode Gaudi::Utils::Histos::fromXml
 ( TH3D*& result , const std::string& input )
 {
-  if ( 0 != result ) { return fromXml ( *result , input ) ; }
+  if ( result ) { return fromXml ( *result , input ) ; }
   //
-  _Xml<TH3D> _xml ;
-  std::unique_ptr<TH3D> histo = _xml ( input ) ;
-  if ( 0 == histo.get() ) { return StatusCode::FAILURE ; }       // RETURN
+  auto histo = _Xml<TH3D>( input ) ;
+  if ( !histo ) { return StatusCode::FAILURE ; }       // RETURN
   //
   result = histo.release() ;                                     // ASSIGN
   //
@@ -535,11 +450,10 @@ StatusCode Gaudi::Utils::Histos::fromXml
 StatusCode Gaudi::Utils::Histos::fromXml
 ( TProfile*& result , const std::string& input )
 {
-  if ( 0 != result ) { return fromXml ( *result , input ) ; }
+  if ( result ) { return fromXml ( *result , input ) ; }
   //
-  _Xml<TProfile> _xml ;
-  std::unique_ptr<TProfile> histo = _xml ( input ) ;
-  if ( 0 == histo.get() ) { return StatusCode::FAILURE ; }       // RETURN
+  auto histo = _Xml<TProfile>( input ) ;
+  if ( !histo ) { return StatusCode::FAILURE ; }       // RETURN
   //
   result = histo.release() ;                                     // ASSIGN
   //
@@ -555,11 +469,10 @@ StatusCode Gaudi::Utils::Histos::fromXml
 StatusCode Gaudi::Utils::Histos::fromXml
 ( TProfile2D*& result , const std::string& input )
 {
-  if ( 0 != result ) { return fromXml ( *result , input ) ; }
+  if ( result ) { return fromXml ( *result , input ) ; }
   //
-  _Xml<TProfile2D> _xml ;
-  std::unique_ptr<TProfile2D> histo = _xml ( input ) ;
-  if ( 0 == histo.get() ) { return StatusCode::FAILURE ; }       // RETURN
+  auto histo = _Xml<TProfile2D>( input ) ;
+  if ( !histo ) { return StatusCode::FAILURE ; }       // RETURN
   //
   result = histo.release() ;                                     // ASSIGN
   //
@@ -575,10 +488,8 @@ StatusCode Gaudi::Utils::Histos::fromXml
 StatusCode Gaudi::Utils::Histos::fromXml
 ( AIDA::IHistogram1D& result , const std::string& input )
 {
-  TH1D* root = Gaudi::Utils::Aida2ROOT::aida2root ( &result ) ;
-  if ( 0 == root ) { return StatusCode::FAILURE ; }   // RETURN
-  //
-  return fromXml ( *root , input ) ;                  // RETURN
+  auto root = Gaudi::Utils::Aida2ROOT::aida2root ( &result ) ;
+  return root ? fromXml ( *root , input ) : StatusCode::FAILURE ; // RETURN
 }
 // ============================================================================
 /*  parse the histogram from standard ROOT XML
@@ -590,10 +501,8 @@ StatusCode Gaudi::Utils::Histos::fromXml
 StatusCode Gaudi::Utils::Histos::fromXml
 ( AIDA::IHistogram2D& result , const std::string& input )
 {
-  TH2D* root = Gaudi::Utils::Aida2ROOT::aida2root ( &result ) ;
-  if ( 0 == root ) { return StatusCode::FAILURE ; }   // RETURN
-  //
-  return fromXml ( *root , input ) ;                  // RETURN
+  auto root = Gaudi::Utils::Aida2ROOT::aida2root ( &result ) ;
+  return root ? fromXml ( *root , input ) : StatusCode::FAILURE; // RETURN
 }
 // ============================================================================
 /*  parse the histogram from standard ROOT XML
@@ -605,10 +514,8 @@ StatusCode Gaudi::Utils::Histos::fromXml
 StatusCode Gaudi::Utils::Histos::fromXml
 ( AIDA::IHistogram3D& result , const std::string& input )
 {
-  TH3D* root = Gaudi::Utils::Aida2ROOT::aida2root ( &result ) ;
-  if ( 0 == root ) { return StatusCode::FAILURE ; }   // RETURN
-  //
-  return fromXml ( *root , input ) ;                  // RETURN
+  auto root = Gaudi::Utils::Aida2ROOT::aida2root ( &result ) ;
+  return root ? fromXml ( *root , input ) : StatusCode::FAILURE; // RETURN
 }
 // ============================================================================
 /*  parse the histogram from standard ROOT XML
@@ -620,10 +527,8 @@ StatusCode Gaudi::Utils::Histos::fromXml
 StatusCode Gaudi::Utils::Histos::fromXml
 ( AIDA::IProfile1D& result , const std::string& input )
 {
-  TProfile* root = Gaudi::Utils::Aida2ROOT::aida2root ( &result ) ;
-  if ( 0 == root ) { return StatusCode::FAILURE ; }   // RETURN
-  //
-  return fromXml ( *root , input ) ;                  // RETURN
+  auto root = Gaudi::Utils::Aida2ROOT::aida2root ( &result ) ;
+  return root ? fromXml ( *root , input ) : StatusCode::FAILURE; // RETURN
 }
 // ============================================================================
 /*  parse the histogram from standard ROOT XML
@@ -635,10 +540,8 @@ StatusCode Gaudi::Utils::Histos::fromXml
 StatusCode Gaudi::Utils::Histos::fromXml
 ( AIDA::IProfile2D& result , const std::string& input )
 {
-  TProfile2D* root = Gaudi::Utils::Aida2ROOT::aida2root ( &result ) ;
-  if ( 0 == root ) { return StatusCode::FAILURE ; }   // RETURN
-  //
-  return fromXml ( *root , input ) ;                  // RETURN
+  auto root = Gaudi::Utils::Aida2ROOT::aida2root ( &result ) ;
+  return root ? fromXml ( *root , input ) : StatusCode::FAILURE; // RETURN
 }
 // ============================================================================
 // The END
