@@ -1,4 +1,6 @@
+// standard headers
 #include <limits>
+
 // boost
 #include <boost/filesystem.hpp>
 
@@ -79,8 +81,8 @@ void SequentialOutputStream::makeFilename()
    if ( m_numericFilename ) {
       if ( m_events == 0 ) {
          try {
-            m_iFile = std::stoi( stem );
-         } catch( ... ) {
+            m_iFile = std::stoul( stem );
+         } catch( const std::invalid_argument& /* cast */ ) {
             string msg = "Filename " +  filename
                        + " is not a number, which was needed.";
             throw GaudiException( msg, "error", StatusCode::FAILURE );
