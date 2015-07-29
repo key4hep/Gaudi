@@ -7,7 +7,6 @@
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/StatusCode.h"
 #include "GaudiKernel/Message.h"
-#include "GaudiKernel/xtoa.h"
 #include "MessageSvc.h"
 
 #include <sstream>

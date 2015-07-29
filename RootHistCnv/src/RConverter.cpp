@@ -8,7 +8,6 @@
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/xtoa.h"
 #include "RConverter.h"
 #include "RootObjAddress.h"
 

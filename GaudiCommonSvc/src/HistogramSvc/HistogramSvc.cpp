@@ -21,7 +21,6 @@
 // ============================================================================
 // GaudiKernel
 // ============================================================================
-#include "GaudiKernel/xtoa.h"
 #include "GaudiKernel/Property.h"
 #include "GaudiKernel/AttribStringParser.h"
 #include "GaudiKernel/MsgStream.h"

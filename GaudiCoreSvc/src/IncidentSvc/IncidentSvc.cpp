@@ -53,7 +53,7 @@ IncidentSvc::IncidentSvc( const std::string& name, ISvcLocator* svc )
 // ============================================================================
 IncidentSvc::~IncidentSvc()
 {
-  boost::recursive_mutex::scoped_lock lock(m_listenerMapMutex);
+  std::unique_lock<std::recursive_mutex> lock(m_listenerMapMutex);
 }
 // ============================================================================
 // Inherited Service overrides:
@@ -95,7 +95,7 @@ void IncidentSvc::addListener ( IIncidentListener* lis ,
                                 long prio, bool rethrow, bool singleShot)
 {
   static const std::string all{ "ALL" };
-  boost::recursive_mutex::scoped_lock lock(m_listenerMapMutex);
+  std::unique_lock<std::recursive_mutex> lock(m_listenerMapMutex);
 
   const std::string& ltype = ( !type.empty() ? type : all );
 
@@ -119,17 +119,17 @@ void IncidentSvc::addListener ( IIncidentListener* lis ,
   llist.emplace(i, lis, prio, rethrow, singleShot);
 }
 // ============================================================================
-IncidentSvc::ListenerMap::iterator 
+IncidentSvc::ListenerMap::iterator
 IncidentSvc::removeListenerFromList(ListenerMap::iterator i,
-                                    IIncidentListener* item, 
+                                    IIncidentListener* item,
                                     bool scheduleRemoval  )
 {
-    auto match = [&](ListenerList::const_reference j ) 
+    auto match = [&](ListenerList::const_reference j )
                  { return !item || item == j.iListener;  };
 
     auto& c = *(i->second);
     if (!scheduleRemoval) {
-        ON_DEBUG std::for_each( std::begin(c), std::end(c), 
+        ON_DEBUG std::for_each( std::begin(c), std::end(c),
                                 [&](ListenerList::const_reference i) {
           if (match(i)) debug() << "Removing [" << /* type << */ "] listener '"
                                << getListenerName(i.iListener) << "'" << endmsg;
@@ -147,9 +147,9 @@ IncidentSvc::removeListenerFromList(ListenerMap::iterator i,
 void IncidentSvc::removeListener( IIncidentListener* lis  ,
                                   const std::string& type )
 {
-  boost::recursive_mutex::scoped_lock lock(m_listenerMapMutex);
+  std::unique_lock<std::recursive_mutex> lock(m_listenerMapMutex);
 
-  bool scheduleForRemoval = ( m_currentIncidentType 
+  bool scheduleForRemoval = ( m_currentIncidentType
                               && type == *m_currentIncidentType );
   if( type.empty() ) {
     auto i =  std::begin(m_listenerMap);
@@ -165,7 +165,7 @@ void IncidentSvc::removeListener( IIncidentListener* lis  ,
 namespace {
   /// Helper class to identify a singleShot Listener
   constexpr struct isSingleShot_t {
-    bool operator() (const IncidentSvc::Listener& l) const 
+    bool operator() (const IncidentSvc::Listener& l) const
     { return l.singleShot; }
   } isSingleShot {};
 }
@@ -174,9 +174,9 @@ void IncidentSvc::i_fireIncident( const Incident&    incident     ,
                                   const std::string& listenerType )
 {
 
-  boost::recursive_mutex::scoped_lock lock(m_listenerMapMutex);
+  std::unique_lock<std::recursive_mutex> lock(m_listenerMapMutex);
 
-  // Wouldn't it be better to write a small 'ReturnCode' service which 
+  // Wouldn't it be better to write a small 'ReturnCode' service which
   // looks for these 'special' incidents and does whatever needs to
   // be done instead of making a special case here? Or maybe whoever
   // triggers the incident can set the return code???
@@ -257,12 +257,12 @@ void IncidentSvc::fireIncident( const Incident& incident )
 }
 
 // ============================================================================
-void 
-IncidentSvc::getListeners(std::vector<IIncidentListener*>& l, 
+void
+IncidentSvc::getListeners(std::vector<IIncidentListener*>& l,
                           const std::string& type) const
 {
   static const std::string ALL { "ALL" };
-  boost::recursive_mutex::scoped_lock lock(m_listenerMapMutex);
+  std::unique_lock<std::recursive_mutex> lock(m_listenerMapMutex);
 
   const std::string&  ltype = ( !type.empty() ? type : ALL );
 
@@ -270,7 +270,7 @@ IncidentSvc::getListeners(std::vector<IIncidentListener*>& l,
   auto i = m_listenerMap.find( ltype );
   if (i != m_listenerMap.end()) {
       l.reserve(i->second->size());
-      std::transform( std::begin(*i->second), std::end(*i->second), 
+      std::transform( std::begin(*i->second), std::end(*i->second),
                       std::back_inserter(l),
                       [](ListenerList::const_reference j) {
                           return j.iListener;
