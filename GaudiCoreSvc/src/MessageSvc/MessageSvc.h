@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <mutex>
 #include <set>
 #include <iosfwd>
 
@@ -13,9 +14,6 @@
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/Message.h"
 #include "GaudiKernel/Property.h"
-
-#include <boost/thread/recursive_mutex.hpp>
-#include <boost/array.hpp>
 
 // Forward declarations
 class ISvcLocator;
@@ -96,7 +94,7 @@ public:
 
   // Implementation of IMessageSvc::setDefaultStream()
   virtual void setDefaultStream( std::ostream* stream ) {
-    boost::recursive_mutex::scoped_lock lock(m_reportMutex);
+    std::unique_lock<std::recursive_mutex> lock(m_reportMutex);
     m_defaultStream = stream;
   }
 
@@ -146,7 +144,7 @@ private:
   /// Private helper class to keep the count of messages of a type (MSG::LEVEL).
   struct MsgAry {
     /// Simple typedef for readability.
-    typedef boost::array<int,MSG::NUM_LEVELS> ArrayType;
+    typedef std::array<int,MSG::NUM_LEVELS> ArrayType;
     /// Internal array of counters.
     ArrayType msg;
     /// Default constructor.
@@ -184,14 +182,14 @@ private:
 	    const std::set<std::string>& declaredOutFileNames );
 
   /// Mutex to synchronize multiple threads printing.
-  mutable boost::recursive_mutex m_reportMutex;
+  mutable std::recursive_mutex m_reportMutex;
 
   /// Mutex to synchronize multiple access to m_messageMap.
-  mutable boost::recursive_mutex m_messageMapMutex;
+  mutable std::recursive_mutex m_messageMapMutex;
 
   /// Mutex to synchronize multiple access to m_thresholdMap
   /// (@see MsgStream::doOutput).
-  mutable boost::recursive_mutex m_thresholdMapMutex;
+  mutable std::recursive_mutex m_thresholdMapMutex;
 };
 
 #endif
