@@ -32,7 +32,7 @@ public:
   virtual StatusCode finalize();
 
   /// @see IFileAccess::open
-  virtual std::auto_ptr<std::istream> open(const std::string &url);
+  virtual std::unique_ptr<std::istream> open(const std::string &url);
 
   /// @see IFileAccess::protocols
   virtual const std::vector<std::string> &protocols() const;

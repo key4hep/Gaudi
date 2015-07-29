@@ -332,7 +332,7 @@ StatusCode ParticlePropertySvc::parse( const std::string& file )
   MsgStream log( msgSvc(), name() );
   char line[ 255 ];
 
-  std::auto_ptr<std::istream> infileptr;
+  std::unique_ptr<std::istream> infileptr;
   if (m_fileAccess) infileptr = m_fileAccess->open(file);
 
   if ( infileptr.get() == 0 )

@@ -24,7 +24,7 @@ public:
 private:
   static std::string s_incidentType;
   IIncidentSvc *m_incSvc;
-  std::auto_ptr<IncidentListenerTest> m_listener[6];
+  std::unique_ptr<IncidentListenerTest> m_listener[6];
 };
 
 #endif /*GAUDIEXAMPLES_INCIDENTLISTENERTESTALG_H_*/

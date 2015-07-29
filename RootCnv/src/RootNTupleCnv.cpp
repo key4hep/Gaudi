@@ -148,7 +148,7 @@ RootNTupleCnv::createObj(IOpaqueAddress* pAddr, DataObject*& refpObject)   {
     TBranch* b = con->getBranch("##Descriptors","GaudiStatisticsDescription");
     if ( b ) {
       RootNTupleDescriptor* ptr;
-      auto_ptr<RootNTupleDescriptor> dsc(ptr=new RootNTupleDescriptor());
+      std::unique_ptr<RootNTupleDescriptor> dsc(ptr=new RootNTupleDescriptor());
       b->SetAddress(&ptr);
       for(Long64_t i=0, nent = b->GetEntries(); i<nent; ++i) {
         int nb = b->GetEntry(i);

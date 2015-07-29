@@ -108,7 +108,7 @@ StatusCode StalledEventMonitor::initialize() {
 
   if (m_eventTimeout) {
     // create the watchdog thread
-    m_watchdog = std::auto_ptr<WatchdogThread>(
+    m_watchdog = std::unique_ptr<WatchdogThread>(
         new EventWatchdog(msgSvc(),
             "EventWatchdog",
             boost::posix_time::seconds(m_eventTimeout),

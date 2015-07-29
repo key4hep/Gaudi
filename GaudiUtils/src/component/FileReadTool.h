@@ -28,7 +28,7 @@ public:
   //virtual StatusCode initialize();
   //virtual StatusCode finalize();
 
-  virtual std::auto_ptr<std::istream> open(const std::string &url);
+  virtual std::unique_ptr<std::istream> open(const std::string &url);
 
   /// Protocols supported by the instance.
   virtual const std::vector<std::string> &protocols() const;

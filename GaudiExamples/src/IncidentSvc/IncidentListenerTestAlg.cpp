@@ -37,17 +37,17 @@ StatusCode IncidentListenerTestAlg::initialize() {
 
   // instantiate listeners
   m_listener[0] =
-    std::auto_ptr<IncidentListenerTest>(new IncidentListenerTest("Listener 0",serviceLocator()));
+    std::unique_ptr<IncidentListenerTest>(new IncidentListenerTest("Listener 0",serviceLocator()));
   m_listener[1] =
-    std::auto_ptr<IncidentListenerTest>(new IncidentListenerTest("Listener 1",serviceLocator(),3));
+    std::unique_ptr<IncidentListenerTest>(new IncidentListenerTest("Listener 1",serviceLocator(),3));
   m_listener[2] =
-    std::auto_ptr<IncidentListenerTest>(new IncidentListenerTest("Listener 2",serviceLocator()));
+    std::unique_ptr<IncidentListenerTest>(new IncidentListenerTest("Listener 2",serviceLocator()));
   m_listener[3] =
-    std::auto_ptr<IncidentListenerTest>(new IncidentListenerTest("Listener 3",serviceLocator()));
+    std::unique_ptr<IncidentListenerTest>(new IncidentListenerTest("Listener 3",serviceLocator()));
   m_listener[4] =
-    std::auto_ptr<IncidentListenerTest>(new IncidentListenerTest("EventBoundary",serviceLocator()));
+    std::unique_ptr<IncidentListenerTest>(new IncidentListenerTest("EventBoundary",serviceLocator()));
   m_listener[5] =
-    std::auto_ptr<IncidentListenerTest>(new IncidentListenerTest("Generic Listener",serviceLocator()));
+    std::unique_ptr<IncidentListenerTest>(new IncidentListenerTest("Generic Listener",serviceLocator()));
 
   info() << "Registering incident listeners" << endmsg;
 

@@ -61,7 +61,7 @@ private:
   bool m_stackTrace;
 
   /// Pointer to the watchdog thread that checks for the event timeout.
-  std::auto_ptr<WatchdogThread> m_watchdog;
+  std::unique_ptr<WatchdogThread> m_watchdog;
 
   /// Pointer to the incident service.
   SmartIF<IIncidentSvc> m_incidentSvc;

@@ -227,7 +227,7 @@ RootCnvSvc::connectDatabase(CSTR dataset, int mode, RootDataConnection** con)  {
     bool fire_incident = false;
     *con = 0;
     if ( !c )  {
-      auto_ptr<RootDataConnection> connection(new RootDataConnection(this,dataset,m_setup));
+      unique_ptr<RootDataConnection> connection(new RootDataConnection(this,dataset,m_setup));
       StatusCode sc = (mode != IDataConnection::READ)
         ? m_ioMgr->connectWrite(connection.get(),IDataConnection::IoType(mode),"ROOT")
         : m_ioMgr->connectRead(false,connection.get());

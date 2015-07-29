@@ -45,12 +45,12 @@ namespace
   template <class TYPE>
   struct _Xml
   {
-    typedef std::auto_ptr<TYPE>  H ;
+    typedef std::unique_ptr<TYPE>  H ;
     //
     H operator() ( const std::string& input ) const
     {
       // 1) use XML-parser
-      std::auto_ptr<TObject> obj   ( TBufferXML::ConvertFromXML ( input.c_str() ) ) ;
+      std::unique_ptr<TObject> obj   ( TBufferXML::ConvertFromXML ( input.c_str() ) ) ;
       if ( 0 == obj.get()   ) { return H() ; }      // RETURN
       H histo ( dynamic_cast<TYPE*>( obj.get() ) ) ;
       if ( 0 != histo.get() ) { obj.release() ; }
@@ -300,7 +300,7 @@ StatusCode Gaudi::Utils::Histos::fromXml
   result.Reset() ;                                 // RESET old histogram
   //
   _Xml<TH1D> _xml ;
-  std::auto_ptr<TH1D> histo =  _xml ( input ) ;
+  std::unique_ptr<TH1D> histo =  _xml ( input ) ;
   if ( 0 == histo.get() ) { return StatusCode::FAILURE ; }        // RETURN
   //
   result.Reset() ;
@@ -322,7 +322,7 @@ StatusCode Gaudi::Utils::Histos::fromXml
   result.Reset() ;                                 // RESET old histogram
   //
   _Xml<TH2D> _xml ;
-  std::auto_ptr<TH2D> histo = _xml ( input ) ;
+  std::unique_ptr<TH2D> histo = _xml ( input ) ;
   if ( 0 == histo.get() ) { return StatusCode::FAILURE ; }        // RETURN
   //
   result.Reset() ;
@@ -344,7 +344,7 @@ StatusCode Gaudi::Utils::Histos::fromXml
   result.Reset() ;                                 // RESET old histogram
   //
   _Xml<TH3D> _xml ;
-  std::auto_ptr<TH3D> histo = _xml ( input ) ;
+  std::unique_ptr<TH3D> histo = _xml ( input ) ;
   if ( 0 == histo.get() ) { return StatusCode::FAILURE ; }        // RETURN
   //
   result.Reset() ;
@@ -366,7 +366,7 @@ StatusCode Gaudi::Utils::Histos::fromXml
   result.Reset() ;                                 // RESET old histogram
   //
   _Xml<TH1F> _xml ;
-  std::auto_ptr<TH1F> histo =  _xml ( input ) ;
+  std::unique_ptr<TH1F> histo =  _xml ( input ) ;
   if ( 0 == histo.get() ) { return StatusCode::FAILURE ; }        // RETURN
   //
   result.Reset() ;
@@ -388,7 +388,7 @@ StatusCode Gaudi::Utils::Histos::fromXml
   result.Reset() ;                                 // RESET old histogram
   //
   _Xml<TH2F> _xml ;
-  std::auto_ptr<TH2F> histo = _xml ( input ) ;
+  std::unique_ptr<TH2F> histo = _xml ( input ) ;
   if ( 0 == histo.get() ) { return StatusCode::FAILURE ; }        // RETURN
   //
   result.Reset() ;
@@ -410,7 +410,7 @@ StatusCode Gaudi::Utils::Histos::fromXml
   result.Reset() ;                                 // RESET old histogram
   //
   _Xml<TH3F> _xml ;
-  std::auto_ptr<TH3F> histo = _xml ( input ) ;
+  std::unique_ptr<TH3F> histo = _xml ( input ) ;
   if ( 0 == histo.get() ) { return StatusCode::FAILURE ; }        // RETURN
   //
   result.Reset() ;
@@ -432,7 +432,7 @@ StatusCode Gaudi::Utils::Histos::fromXml
   result.Reset() ;                                 // RESET old histogram
   //
   _Xml<TProfile> _xml ;
-  std::auto_ptr<TProfile> histo = _xml ( input ) ;
+  std::unique_ptr<TProfile> histo = _xml ( input ) ;
   if ( 0 == histo.get() ) { return StatusCode::FAILURE ; }        // RETURN
   //
   result.Reset() ;
@@ -454,7 +454,7 @@ StatusCode Gaudi::Utils::Histos::fromXml
   result.Reset() ;                                 // RESET old histogram
   //
   _Xml<TProfile2D> _xml ;
-  std::auto_ptr<TProfile2D> histo = _xml ( input ) ;
+  std::unique_ptr<TProfile2D> histo = _xml ( input ) ;
   if ( 0 == histo.get() ) { return StatusCode::FAILURE ; }        // RETURN
   //
   result.Reset() ;
@@ -477,7 +477,7 @@ StatusCode Gaudi::Utils::Histos::fromXml
   if ( 0 != result ) { return fromXml ( *result , input ) ; }
   //
   _Xml<TH1D> _xml ;
-  std::auto_ptr<TH1D> histo = _xml ( input ) ;
+  std::unique_ptr<TH1D> histo = _xml ( input ) ;
   if ( 0 == histo.get() ) { return StatusCode::FAILURE ; }       // RETURN
   //
   result = histo.release() ;                                     // ASSIGN
@@ -497,7 +497,7 @@ StatusCode Gaudi::Utils::Histos::fromXml
   if ( 0 != result ) { return fromXml ( *result , input ) ; }
   //
   _Xml<TH2D> _xml ;
-  std::auto_ptr<TH2D> histo = _xml ( input ) ;
+  std::unique_ptr<TH2D> histo = _xml ( input ) ;
   if ( 0 == histo.get() ) { return StatusCode::FAILURE ; }       // RETURN
   //
   result = histo.release() ;                                     // ASSIGN
@@ -517,7 +517,7 @@ StatusCode Gaudi::Utils::Histos::fromXml
   if ( 0 != result ) { return fromXml ( *result , input ) ; }
   //
   _Xml<TH3D> _xml ;
-  std::auto_ptr<TH3D> histo = _xml ( input ) ;
+  std::unique_ptr<TH3D> histo = _xml ( input ) ;
   if ( 0 == histo.get() ) { return StatusCode::FAILURE ; }       // RETURN
   //
   result = histo.release() ;                                     // ASSIGN
@@ -538,7 +538,7 @@ StatusCode Gaudi::Utils::Histos::fromXml
   if ( 0 != result ) { return fromXml ( *result , input ) ; }
   //
   _Xml<TProfile> _xml ;
-  std::auto_ptr<TProfile> histo = _xml ( input ) ;
+  std::unique_ptr<TProfile> histo = _xml ( input ) ;
   if ( 0 == histo.get() ) { return StatusCode::FAILURE ; }       // RETURN
   //
   result = histo.release() ;                                     // ASSIGN
@@ -558,7 +558,7 @@ StatusCode Gaudi::Utils::Histos::fromXml
   if ( 0 != result ) { return fromXml ( *result , input ) ; }
   //
   _Xml<TProfile2D> _xml ;
-  std::auto_ptr<TProfile2D> histo = _xml ( input ) ;
+  std::unique_ptr<TProfile2D> histo = _xml ( input ) ;
   if ( 0 == histo.get() ) { return StatusCode::FAILURE ; }       // RETURN
   //
   result = histo.release() ;                                     // ASSIGN

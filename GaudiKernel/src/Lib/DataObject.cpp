@@ -83,9 +83,9 @@ static DataObject*       s_objPtr = 0;
 static DataObject**      s_currObj = &s_objPtr;
 
 static std::vector<DataObject**>& objectStack() {
-  static std::auto_ptr<std::vector<DataObject**> > s_current;
+  static std::unique_ptr<std::vector<DataObject**> > s_current;
   if ( 0 == s_current.get() )  {
-    s_current = std::auto_ptr<std::vector<DataObject**> >(new std::vector<DataObject**>());
+    s_current = std::unique_ptr<std::vector<DataObject**> >(new std::vector<DataObject**>());
   }
   return *(s_current.get());
 }

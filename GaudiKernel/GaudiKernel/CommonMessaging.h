@@ -133,7 +133,7 @@ protected:
   mutable SmartIF<IMessageSvc> m_msgsvc;
 
   /// The predefined message stream
-  mutable std::auto_ptr<MsgStream> m_msgStream;
+  mutable std::unique_ptr<MsgStream> m_msgStream;
 
   /// Flag to create a new MsgStream if it was created without the message service
   mutable bool m_streamWithService;

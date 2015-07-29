@@ -15,7 +15,7 @@ FileReadTool::FileReadTool( const std::string& type,
 
 FileReadTool::~FileReadTool(){}
 
-std::auto_ptr<std::istream> FileReadTool::open(const std::string &url) {
+std::unique_ptr<std::istream> FileReadTool::open(const std::string &url) {
   // remove the optional "file://" from the beginning of the url
   std::string path;
   if ( url.substr(0,7) == "file://" ) {
@@ -23,7 +23,7 @@ std::auto_ptr<std::istream> FileReadTool::open(const std::string &url) {
   } else {
     path = url;
   }
-  return std::auto_ptr<std::istream>(new std::ifstream(path.c_str()));
+  return std::unique_ptr<std::istream>(new std::ifstream(path.c_str()));
 }
 
 const std::vector<std::string> &FileReadTool::protocols() const

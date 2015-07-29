@@ -224,11 +224,11 @@ namespace
   }
   // ==========================================================================
   template <class HISTO1>
-  std::auto_ptr<HISTO1>
+  std::unique_ptr<HISTO1>
   _parse_1D ( const std::string& input , std::string& name )
   {
     //
-    typedef std::auto_ptr<HISTO1>   H1P ;
+    typedef std::unique_ptr<HISTO1>   H1P ;
     // ==========================================================================
     // 1) parse the custom format
     //
@@ -263,10 +263,10 @@ namespace
   }
   // ==========================================================================
   template <class HISTO2>
-  std::auto_ptr<HISTO2> _parse_2D ( const std::string& input , std::string& name )
+  std::unique_ptr<HISTO2> _parse_2D ( const std::string& input , std::string& name )
   {
     //
-    typedef std::auto_ptr<HISTO2>   H2P ;
+    typedef std::unique_ptr<HISTO2>   H2P ;
     // 1) parse the custom format
     //
     H2        h2 ;
@@ -342,7 +342,7 @@ StatusCode Gaudi::Parsers::parse
   // 1) check the parsing
   std::string name ;
   //
-  std::auto_ptr<TH1D> h1 = _parse_1D<TH1D> ( input , name ) ;
+  std::unique_ptr<TH1D> h1 = _parse_1D<TH1D> ( input , name ) ;
   if ( 0 != h1.get() )
   {
     result.Reset() ;
@@ -370,7 +370,7 @@ StatusCode Gaudi::Parsers::parse
   // 1) check the parsing
   std::string name ;
   //
-  std::auto_ptr<TH1F> h1 = _parse_1D<TH1F> ( input , name ) ;
+  std::unique_ptr<TH1F> h1 = _parse_1D<TH1F> ( input , name ) ;
   if ( 0 != h1.get() )
   {
     result.Reset() ;
@@ -397,7 +397,7 @@ StatusCode Gaudi::Parsers::parse
 {
   // 1) check the parsing
   std::string name ;
-  std::auto_ptr<TH2D> h2 = _parse_2D<TH2D> ( input , name ) ;
+  std::unique_ptr<TH2D> h2 = _parse_2D<TH2D> ( input , name ) ;
   if ( 0 != h2.get() )
   {
     result.Reset() ;
@@ -424,7 +424,7 @@ StatusCode Gaudi::Parsers::parse
 {
   // 1) check the parsing
   std::string name ;
-  std::auto_ptr<TH2F> h2 = _parse_2D<TH2F> ( input , name ) ;
+  std::unique_ptr<TH2F> h2 = _parse_2D<TH2F> ( input , name ) ;
   if ( 0 != h2.get() )
   {
     result.Reset() ;
@@ -453,7 +453,7 @@ StatusCode Gaudi::Parsers::parse
 
   // 1) check the parsing
   std::string name ;
-  std::auto_ptr<TH1D> h1 = _parse_1D<TH1D>  ( input , name ) ;
+  std::unique_ptr<TH1D> h1 = _parse_1D<TH1D>  ( input , name ) ;
   if ( 0 != h1.get() )
   {
     result = h1.release() ;
@@ -481,7 +481,7 @@ StatusCode Gaudi::Parsers::parse
 
   // 1) check the parsing
   std::string name ;
-  std::auto_ptr<TH2D> h2 = _parse_2D<TH2D>  ( input , name ) ;
+  std::unique_ptr<TH2D> h2 = _parse_2D<TH2D>  ( input , name ) ;
   if ( 0 != h2.get() )
   {
     result = h2.release() ;

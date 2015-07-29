@@ -28,7 +28,7 @@ RootHistCnv::RFileCnv::RFileCnv( ISvcLocator* svc )
 StatusCode RootHistCnv::RFileCnv::initialize()
 {
   // Set compression level property ...
-  std::auto_ptr<PropertyMgr> pmgr ( new PropertyMgr() );
+  std::unique_ptr<PropertyMgr> pmgr ( new PropertyMgr() );
   pmgr->declareProperty( "GlobalCompression", m_compLevel );
   ISvcLocator * svcLoc = Gaudi::svcLocator();
   SmartIF<IJobOptionsSvc> jobSvc = 
