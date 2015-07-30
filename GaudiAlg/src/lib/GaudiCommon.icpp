@@ -278,12 +278,16 @@ StatusCode GaudiCommon<PBASE>::
   if(m_counterSummarySvc && this->svcLoc()->existsService("CounterSummarySvc"))
   {
     if ( msgLevel(MSG::DEBUG) ) debug() << "adding counters to CounterSummarySvc" << endmsg;
+
+    Gaudi::Utils::RegEx::matchList statList{ m_statEntityList };
+    Gaudi::Utils::RegEx::matchList counterList{ m_counterList };
+
     for( const auto& i : this->counters() )
     {
-      if(Gaudi::Utils::RegEx::matchOr(i.first,m_statEntityList))
+      if (statList.Or(i.first) )
         m_counterSummarySvc->addCounter(this->name(),i.first,i.second,
                                         Gaudi::CounterSummary::SaveStatEntity);
-      else if(Gaudi::Utils::RegEx::matchOr(i.first,m_counterList))
+      else if (counterList.Or(i.first))
         m_counterSummarySvc->addCounter(this->name(),i.first,i.second);
     }
   }
@@ -632,40 +636,20 @@ template < class PBASE >
 long GaudiCommon<PBASE>::printErrors ( const MSG::Level level ) const
 {
   // format for printout
-  boost::format ftm ( " %s = %|.8s| %|23t| Message = '%s'" );
+  boost::format ftm ( " #%|-10s| = %|.8s| %|23t| Message = '%s'" );
 
-  { // print exceptions
-    for ( const auto&  excp : m_exceptions )
-    {
-      msgStream(level)
-        << ( ftm % "#EXCEPTIONS" % excp.second % excp.first       )
-        << endmsg;
-    }
-  }
-  { // print errors
-    for ( const auto& error : m_errors )
-    {
-      msgStream(level)
-        << ( ftm % "#ERRORS    " % error.second % error.first     )
-        << endmsg;
-    }
-  }
-  { // print warnings
-    for ( const auto& warning : m_warnings )
-    {
-      msgStream(level)
-        << ( ftm % "#WARNINGS  " % warning.second % warning.first )
-        << endmsg;
-    }
-  }
-  { // print warnings
-    for ( const auto& info : m_infos )
-    {
-      msgStream(level)
-        << ( ftm % "#INFOS     " % info.second % info.first )
-        << endmsg;
-    }
-  }
+  auto print = [&](const Counter& c, const std::string& label) {
+      for (const auto& i : c ) {
+        msgStream(level) 
+          << ( ftm % label % i.second % i.first       )
+          << endmsg;
+      }
+  };
+
+  print( m_exceptions, "EXCEPTIONS" );
+  print( m_errors,     "ERRORS"     );
+  print( m_warnings,   "WARNINGS"   );
+  print( m_infos,      "INFOS"      );
 
   // return total number of errors+warnings+exceptions
   return
