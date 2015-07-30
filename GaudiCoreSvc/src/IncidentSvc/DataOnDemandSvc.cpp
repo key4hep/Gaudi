@@ -578,7 +578,7 @@ namespace {
     /// local copy of the path to look for in the tool
     std::string path;
     /// constructor
-    ToolGetter(const std::string &_path): path(_path) {}
+    ToolGetter(std::string _path): path(std::move(_path)) {}
     /// find the node from a node mapper tool
     inline std::string operator() (IDODNodeMapper *t) const {
       return t->nodeTypeForPath(path);
@@ -612,9 +612,10 @@ namespace {
     }
   public:
     /// Constructor.
-    Finder(const std::string &_path,
+    Finder(std::string _path,
            const std::vector<IDODNodeMapper*> &_nodes,
-           const std::vector<IDODAlgMapper*> &_algs): getter(_path), nodes(_nodes), algs(_algs) {
+           const std::vector<IDODAlgMapper*> &_algs)
+    : getter(std::move(_path)), nodes(_nodes), algs(_algs) {
     }
     /// Find the node type for the requested path.
     inline std::string node() const {

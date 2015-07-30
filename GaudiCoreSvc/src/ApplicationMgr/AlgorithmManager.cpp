@@ -66,7 +66,7 @@ StatusCode AlgorithmManager::createAlgorithm( const std::string& algtype,
       return StatusCode::FAILURE;
     }
     StatusCode rc;
-    m_listalg.push_back(AlgorithmItem(algorithm, managed));
+    m_listalg.emplace_back(algorithm, managed);
     // this is needed to keep the reference count correct, since isValidInterface(algorithm)
     // implies an increment of the counter by 1
     algorithm->release();
