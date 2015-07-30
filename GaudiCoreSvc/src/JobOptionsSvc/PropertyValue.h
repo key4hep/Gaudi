@@ -12,7 +12,6 @@
 #include <stdexcept>
 // ============================================================================
 #include <boost/variant.hpp>
-#include <boost/scoped_ptr.hpp>
 // ============================================================================
 #include "Position.h"
 // ============================================================================
@@ -21,9 +20,6 @@ namespace Gaudi { namespace Parsers {
 class PropertyValue {
 // ----------------------------------------------------------------------------
  public:
-  typedef boost::scoped_ptr<PropertyValue> ScopedPtr;
-  typedef boost::scoped_ptr<const PropertyValue> ConstScopedPtr;
-
   typedef boost::variant<std::string, std::vector<std::string>,
            std::map<std::string, std::string> > Value;
   typedef std::vector<std::string> VectorOfStrings;
