@@ -1,7 +1,3 @@
-// $Id: Property.h,v 1.26 2008/10/27 16:41:34 marcocle Exp $
-// ============================================================================
-// CVS tag $Name:  $
-// ============================================================================
 #ifndef GAUDIKERNEL_PROPERTY_H
 #define GAUDIKERNEL_PROPERTY_H
 // ============================================================================
@@ -22,7 +18,6 @@
 
 // ============================================================================
 class Property   ;
-class PropertyCallbackFunctor ;
 class IProperty  ;
 class IInterface ;
 // ============================================================================
@@ -43,6 +38,8 @@ GAUDI_API std::ostream& operator<<(std::ostream& stream, const Property& prop);
 class GAUDI_API Property
 {
 public:
+  // the default constructor is disabled
+  Property() = delete;
   /// property name
   const std::string&    name      () const { return m_name             ; }
   /// property documentation
@@ -63,34 +60,39 @@ public:
   /// string -> value
   virtual StatusCode   fromString ( const std::string& value ) = 0 ;
 public:
-  /// Call-back functor at reading: the functor is owned by property!
-  const PropertyCallbackFunctor* readCallBack   () const ;
-  /// Call-back functor for update: the functor is owned by property!
-  const PropertyCallbackFunctor* updateCallBack () const ;
+  /// get a rederence to the readCallBack
+  const std::function<void(Property&)>&  readCallBack() const { return m_readCallBack; }
+  /// get a copy of the updateCallBack
+  const std::function<void(Property&)>& updateCallBack() const { return m_updateCallBack; }
+
   /// set new callback for reading
-  virtual void  declareReadHandler   ( PropertyCallbackFunctor* pf ) ;
+  virtual void  declareReadHandler   ( std::function<void(Property&)> fun ) ;
   /// set new callback for update
-  virtual void  declareUpdateHandler ( PropertyCallbackFunctor* pf ) ;
+  virtual void  declareUpdateHandler ( std::function<void(Property&)> fun ) ;
+
+
   template< class HT >
-  void declareReadHandler
-  ( void ( HT::* MF ) ( Property& ) , HT* instance ) ;
+  inline void declareReadHandler( void ( HT::* MF ) ( Property& ) , HT* instance )
+  { declareReadHandler( [=](Property& p) { (instance->*MF)(p); } ) ; }
+
   template< class HT >
-  void declareUpdateHandler
-  ( void ( HT::* MF ) ( Property& ) , HT* instance ) ;
+  inline void declareUpdateHandler( void ( HT::* MF ) ( Property& ) , HT* instance )
+  { declareUpdateHandler ( [=](Property& p) { (instance->*MF)(p); } ); }
+
   /// use the call-back function at reading
   virtual void useReadHandler   () const ;
   /// use the call-back function at update
   virtual bool useUpdateHandler ()       ;
 public:
   /// virtual destructor
-  virtual ~Property() ;
+  virtual ~Property() = default;
   /// clone: "virtual constructor"
   virtual Property*          clone     () const = 0 ;
   /// set the new value for the property name
-  void setName ( const std::string& value ) { m_name = value ; }
+  void setName ( std::string value ) { m_name = std::move(value) ; }
   /// set the documentation string
-  void setDocumentation( const std::string& documentation ) {
-    m_documentation = documentation; }
+  void setDocumentation( std::string documentation ) {
+    m_documentation = std::move(documentation); }
   /// the printout of the property value
   virtual std::ostream& fillStream ( std::ostream& ) const ;
 protected:
@@ -103,12 +105,9 @@ protected:
   ( std::string    name      ,
     const std::type_info& type      ) ;
   /// copy constructor
-  Property           ( const Property& right ) ;
+  Property           ( const Property& right ) = default;
   /// assignment operator
-  Property& operator=( const Property& right ) ;
-private:
-  // the default constructor is disabled
-  Property() ;
+  Property& operator=( const Property& right ) = default;
 private:
   // property name
   std::string              m_name           ;
@@ -118,22 +117,10 @@ private:
   const std::type_info*    m_typeinfo       ;
 protected:
   // call back functor for reading
-  mutable std::unique_ptr<PropertyCallbackFunctor> m_readCallBack;
+  mutable std::function<void(Property&)> m_readCallBack;
   // call back functor for update
-  std::unique_ptr<PropertyCallbackFunctor> m_updateCallBack;
+  std::function<void(Property&)> m_updateCallBack;
 };
-// ============================================================================
-#include "GaudiKernel/PropertyCallbackFunctor.h"
-// ============================================================================
-template< class HT >
-inline void Property::declareReadHandler
-( void ( HT::* MF ) ( Property& ) , HT* obj )
-{ declareReadHandler ( new PropertyCallbackMemberFunctor< HT >( MF , obj ) ) ; }
-// ============================================================================
-template< class HT >
-inline void Property::declareUpdateHandler
-( void ( HT::* MF ) ( Property& ) , HT* obj )
-{ declareUpdateHandler ( new PropertyCallbackMemberFunctor< HT >( MF , obj ) ) ; }
 // ============================================================================
 /** @class PropertyWithValue
  *  Helper intermediate class which
@@ -870,17 +857,17 @@ public:
 
   GaudiHandleArrayProperty& operator=( const GaudiHandleArrayBase& value );
 
-  virtual GaudiHandleArrayProperty* clone() const;
+  GaudiHandleArrayProperty* clone() const override;
 
-  virtual bool load( Property& destination ) const;
+  bool load( Property& destination ) const override;
 
-  virtual bool assign( const Property& source );
+  bool assign( const Property& source ) override;
 
-  virtual std::string toString() const;
+  std::string toString() const override;
 
-  virtual void toStream(std::ostream& out) const;
+  void toStream(std::ostream& out) const override;
 
-  virtual StatusCode fromString(const std::string& s);
+  StatusCode fromString(const std::string& s) override;
 
   const GaudiHandleArrayBase& value() const;
 
@@ -1172,9 +1159,9 @@ namespace Gaudi
       const char         (&value)[N] ,
       const std::string& doc   = ""  )
     {
-      if ( 0 == component                    ) { return StatusCode::FAILURE ; }
-      const std::string val = std::string ( value , value + N ) ;
-      return setProperty ( component , name , val , doc ) ;
+      return component ? setProperty ( component , name , 
+                                       std::string ( value , value + N ), doc )
+                       : StatusCode::FAILURE;
     }
     // ========================================================================
     /** simple function to set the property of the given object from the value
@@ -1214,10 +1201,10 @@ namespace Gaudi
       const TYPE&        value      ,
       const std::string& doc        )
     {
-      if ( 0 == component ) { return StatusCode::FAILURE ; }   // RETURN
-      if ( !hasProperty ( component , name ) ) { return StatusCode::FAILURE ; }
-      const std::string val = Gaudi::Utils::toString ( value ) ;
-      return Gaudi::Utils::setProperty ( component , name , val , doc ) ;
+      return component && hasProperty(component,name) ?
+                Gaudi::Utils::setProperty ( component , name , 
+                                            Gaudi::Utils::toString ( value ) , doc ) :
+                StatusCode::FAILURE;
     }
     // ========================================================================
     /** simple function to set the property of the given object from another
@@ -1303,8 +1290,7 @@ namespace Gaudi
       const SimpleProperty<TYPE>& value     ,
       const std::string&          doc = ""  )
     {
-      const Property* property = &value ;
-      return setProperty ( component , name , property , doc ) ;
+      return setProperty ( component , name , &value , doc ) ;
     }
     // ========================================================================
     /** simple function to set the property of the given object from the value
@@ -1334,10 +1320,10 @@ namespace Gaudi
       const TYPE&        value     ,
       const std::string& doc = ""  )
     {
-      if ( 0 == component ) { return StatusCode::FAILURE ; }
+      if ( !component ) { return StatusCode::FAILURE ; }
       SmartIF<IProperty> property ( component ) ;
-      if ( !property      ) { return StatusCode::FAILURE ; }
-      return setProperty ( property , name , value , doc ) ;
+      return property ? setProperty ( property , name , value , doc ) 
+                      : StatusCode::FAILURE;
     }
     // ========================================================================
     /** the full specialization of the
@@ -1397,8 +1383,8 @@ namespace Gaudi
       const std::string& doc  = ""   )
     {
       if ( 0 == component ) { return StatusCode::FAILURE ; }
-      const std::string val = std::string ( value , value + N ) ;
-      return setProperty ( component , name , val , doc ) ;
+      return setProperty ( component , name , 
+                           std::string{ value , value + N }, doc ) ;
     }
     // ========================================================================
     /** simple function to set the property of the given object from another
@@ -1485,8 +1471,7 @@ namespace Gaudi
       const SimpleProperty<TYPE>& value     ,
       const std::string&          doc = ""  )
     {
-      const Property* property = &value ;
-      return setProperty ( component , name , property , doc ) ;
+      return setProperty ( component , name , &value , doc ) ;
     }
     // ========================================================================
   } // end of namespace Gaudi::Utils

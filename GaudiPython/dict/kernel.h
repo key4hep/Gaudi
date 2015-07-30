@@ -9,7 +9,6 @@
 #include "GaudiKernel/ParticleProperty.h"
 #include "GaudiKernel/CArrayAsProperty.h"
 #include "GaudiKernel/Property.h"
-#include "GaudiKernel/PropertyCallbackFunctor.h"
 #include "GaudiKernel/Chrono.h"
 #include "GaudiKernel/ChronoEntity.h"
 #include "GaudiKernel/Stat.h"

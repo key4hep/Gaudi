@@ -20,7 +20,6 @@
 #include "GaudiKernel/IProperty.h"
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/Property.h"
-#include "GaudiKernel/PropertyCallbackFunctor.h"
 #include "GaudiKernel/GaudiHandle.h"
 // ============================================================================
 // Boost
@@ -65,62 +64,18 @@ Property::Property
   , m_typeinfo        ( &type )
 {}
 // ============================================================================
-// copy contructor
-// ============================================================================
-Property::Property
-( const Property& right )
-  : m_name     ( right.m_name     )
-  , m_documentation ( right.m_documentation )
-  , m_typeinfo ( right.m_typeinfo )
-  , m_readCallBack( right.m_readCallBack ? right.m_readCallBack->clone() : nullptr )
-  , m_updateCallBack( right.m_updateCallBack ? right.m_updateCallBack->clone() : nullptr )
-{
-}
-// ============================================================================
-// Assignement
-// ============================================================================
-Property& Property::operator=( const Property& right )
-{
-  if ( &right == this ) { return *this ; }
-  //
-  m_name     = right.m_name ;
-  m_documentation = right.m_documentation ;
-  m_typeinfo = right.m_typeinfo ;
-  //
-  m_readCallBack.reset( right.m_readCallBack ? right.m_readCallBack->clone() : nullptr );
-  m_updateCallBack.reset( right.m_updateCallBack ? right.m_updateCallBack->clone () : nullptr );
-  //
-  return *this ;
-}
-// ============================================================================
-// virtual destructor
-// ============================================================================
-Property::~Property()
-{
-}
-// ============================================================================
-// Call-back functor at reading: the functor is ownered by property!
-// ============================================================================
-const PropertyCallbackFunctor* Property::readCallBack   () const
-{ return m_readCallBack.get() ; }
-// ============================================================================
-// Call-back functor for update: the funtor is ownered by property!
-// ============================================================================
-const PropertyCallbackFunctor* Property::updateCallBack () const
-{ return m_updateCallBack.get() ; }
-// ============================================================================
 // set new callback for reading
 // ============================================================================
-void  Property::declareReadHandler   ( PropertyCallbackFunctor* pf )
+void  Property::declareReadHandler( std::function<void(Property&)> fun )
 {
-  m_readCallBack.reset( pf );
+  m_readCallBack = std::move(fun);
 }
 // ============================================================================
 // set new callback for update
 // ============================================================================
-void  Property::declareUpdateHandler ( PropertyCallbackFunctor* pf )
+void  Property::declareUpdateHandler ( std::function<void(Property&)> fun )
 {
-  m_updateCallBack.reset( pf );
+  m_updateCallBack = std::move(fun);
 }
 // ============================================================================
 // use the call-back function at reading
@@ -130,9 +85,9 @@ void Property::useReadHandler   () const
   if ( !m_readCallBack ) { return ; }               // RETURN
   const Property& p = *this ;
   // avoid infinite loop
-  std::unique_ptr<PropertyCallbackFunctor> theCallBack;
+  std::function<void(Property&)> theCallBack;
   theCallBack.swap(m_readCallBack);
-  (*theCallBack)( const_cast<Property&>(p) ) ;
+  theCallBack( const_cast<Property&>(p) ) ;
   m_readCallBack.swap(theCallBack);
 }
 // ============================================================================
@@ -143,10 +98,10 @@ bool Property::useUpdateHandler ()
   bool sc(true);
   if ( !m_updateCallBack ) { return sc; }  // RETURN
   // avoid infinite loop
-  std::unique_ptr<PropertyCallbackFunctor> theCallBack;
+  std::function<void(Property&)> theCallBack;
   theCallBack.swap(m_updateCallBack);
   try {
-    (*theCallBack)( *this ) ;
+    theCallBack( *this ) ;
   } catch(...) {
     sc = false;
   }
