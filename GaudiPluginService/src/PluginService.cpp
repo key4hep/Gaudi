@@ -38,28 +38,34 @@ namespace {
 #define SINGLETON_LOCK
 #endif
 
+#include <algorithm>
+
+namespace {
 // string trimming functions taken from
 // http://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
-#include <algorithm>
+
+
+constexpr struct is_not_space_t {
+    bool operator()(int i) const { return !std::isspace(i); }
+} is_not_space {};
+
 // trim from start
 static inline std::string &ltrim(std::string &s) {
         s.erase(s.begin(),
-                std::find_if(s.begin(), s.end(),
-                             std::not1(std::ptr_fun<int, int>(std::isspace))));
+                std::find_if(s.begin(), s.end(), is_not_space ) );
         return s;
 }
 
 // trim from end
 static inline std::string &rtrim(std::string &s) {
-        s.erase(std::find_if(s.rbegin(), s.rend(),
-                             std::not1(std::ptr_fun<int, int>(std::isspace)))
-                                       .base(),
+        s.erase(std::find_if(s.rbegin(), s.rend(), is_not_space).base(),
                 s.end());
         return s;
 }
 // trim from both ends
 static inline std::string &trim(std::string &s) {
         return ltrim(rtrim(s));
+}
 }
 
 namespace {
@@ -109,7 +115,7 @@ namespace {
 
 namespace Gaudi { namespace PluginService {
 
-  Exception::Exception(const std::string& msg): m_msg(msg) {}
+  Exception::Exception(std::string msg): m_msg(std::move(msg)) {}
   Exception::~Exception() throw() {}
   const char*  Exception::what() const throw() {
     return m_msg.c_str();

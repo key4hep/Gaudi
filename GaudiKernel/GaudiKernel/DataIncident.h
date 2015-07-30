@@ -23,8 +23,8 @@ public:
     *
     * @return Reference to ContextIncident object.
     */
-  ContextIncident(const std::string& src,const std::string& typ,T tag)
-    : Incident(src,typ),m_tag(std::move(tag))  {  }
+  ContextIncident(std::string src,std::string typ,T tag)
+    : Incident(std::move(src),std::move(typ)),m_tag(std::move(tag))  {  }
 
   /// Standard destructor
   ~ContextIncident() override = default;

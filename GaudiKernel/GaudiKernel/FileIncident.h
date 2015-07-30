@@ -18,15 +18,15 @@
 class GAUDI_API FileIncident : public Incident {
 public:
    /// standard constructor
-  FileIncident(const std::string& source,
-	       const std::string& type,
-	       const std::string& fileName);
-   FileIncident(const std::string& source,
-		const std::string& type,
-		const std::string& fileName,
-		const std::string& fileGuid);
+   FileIncident(std::string source,
+                std::string type,
+                std::string fileName);
+   FileIncident(std::string source,
+                std::string type,
+                std::string fileName,
+                std::string fileGuid);
    FileIncident(const FileIncident& rhs);
-   virtual ~FileIncident();
+   ~FileIncident() override = default;
 
    /// Overloaded Assignment Operator
    const FileIncident& operator=(const FileIncident& rhs);
@@ -38,27 +38,31 @@ private:
    std::string m_fileGuid;
 };
 
-inline FileIncident::FileIncident(const std::string& source,
-        const std::string& type,
-        const std::string& fileName) : Incident(source, type), m_fileName(fileName), m_fileGuid("") {}
-inline FileIncident::FileIncident(const std::string& source,
-        const std::string& type,
-        const std::string& fileName,
-        const std::string& fileGuid) : Incident(source, type), m_fileName(fileName), m_fileGuid(fileGuid) {}
+inline FileIncident::FileIncident(std::string source,
+                                  std::string type,
+                                  std::string fileName) 
+    : Incident(std::move(source), std::move(type)), 
+      m_fileName(std::move(fileName)) {}
+
+inline FileIncident::FileIncident(std::string source,
+                                  std::string type,
+                                  std::string fileName,
+                                  std::string fileGuid) 
+    : Incident(std::move(source), std::move(type)), 
+      m_fileName(std::move(fileName)), m_fileGuid(std::move(fileGuid)) {}
+
 inline FileIncident::FileIncident(const FileIncident& rhs) : Incident(rhs),
         m_fileName(rhs.m_fileName),
         m_fileGuid(rhs.m_fileGuid) {}
 
 inline const FileIncident& FileIncident::operator=(const FileIncident& rhs) {
-   if (this != &rhs) {
-      Incident::operator=(rhs);
-      m_fileName = rhs.m_fileName;
-      m_fileGuid = rhs.m_fileGuid;
-   }
-   return(rhs);
+   Incident::operator=(rhs);
+   m_fileName = rhs.m_fileName;
+   m_fileGuid = rhs.m_fileGuid;
+   return *this;
 }
 
-inline const std::string& FileIncident::fileName() const { return(m_fileName); }
-inline const std::string& FileIncident::fileGuid() const { return(m_fileGuid); }
+inline const std::string& FileIncident::fileName() const { return m_fileName; }
+inline const std::string& FileIncident::fileGuid() const { return m_fileGuid; }
 
 #endif

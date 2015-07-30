@@ -15,11 +15,11 @@ class ModuleIncident : public Incident {
 protected:
   /// @name protected structors 
   //@{
-  ModuleIncident(const std::string& source, // Source(service or alg) name)
-		 const std::string& type,   // Type (load, unload, ...)
-		 const std::string& module  // module(DLL) in question
-           ) : Incident(source, type), m_module(module) { }
-  virtual ~ModuleIncident() { }
+  ModuleIncident(std::string source, // Source(service or alg) name)
+                 std::string type,   // Type (load, unload, ...)
+		         std::string module  // module(DLL) in question
+           ) : Incident(std::move(source), std::move(type)), m_module(std::move(module)) { }
+  virtual ~ModuleIncident() = default;
   //@}
 
 public:
@@ -43,11 +43,9 @@ private:
  */
 class ModuleLoadedIncident : public ModuleIncident {
 public:
-  static std::string TYPE() { return std::string("ModuleLoaded"); }
-  ModuleLoadedIncident(const std::string& source, // Source(service or alg) name)
-		       const std::string& module  // module(DLL) in question
-           ) : ModuleIncident(source, TYPE(), module) { }
+  ModuleLoadedIncident(std::string source, // Source(service or alg) name)
+		               std::string module  // module(DLL) in question
+           ) : ModuleIncident(std::move(source), "ModuleLoaded", std::move(module)) { }
 };
 
 #endif //GAUDIKERNEL_MODULEINCIDENT_H
-
