@@ -272,7 +272,7 @@ StatusCode CounterSvc::create
 {
   // try to find existing counter:
   refpCounter = get ( grp , nam ) ;
-  if ( !refpCounter ) { return COUNTER_EXISTS ; }                // RETURN
+  if ( refpCounter ) { return COUNTER_EXISTS ; }                // RETURN
   // create the new counter
   Counter* newc = new Counter() ;
   refpCounter = newc ;
