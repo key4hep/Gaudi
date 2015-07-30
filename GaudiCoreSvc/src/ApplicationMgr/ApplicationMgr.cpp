@@ -404,9 +404,9 @@ StatusCode ApplicationMgr::configure() {
   }
 
   // set the requested environment variables
-  for ( auto var = m_environment.begin(); var != m_environment.end(); ++var ) {
-    const std::string &name  = var->first;
-    const std::string &value = var->second;
+  for ( auto& var : m_environment ) {
+    const std::string &name  = var.first;
+    const std::string &value = var.second;
     std::string old = System::getEnv(name.c_str());
     const MSG::Level lvl = (!old.empty() && (old != "UNKNOWN" ))
         ? MSG::WARNING
@@ -417,17 +417,17 @@ StatusCode ApplicationMgr::configure() {
   }
 
   //Declare Service Types
-  for(auto j=m_svcMapping.begin(); j != m_svcMapping.end(); ++j)  {
-    Gaudi::Utils::TypeNameString itm(*j);
+  for(auto& j : m_svcMapping)  {
+    Gaudi::Utils::TypeNameString itm(j);
     if ( declareMultiSvcType(itm.name(), itm.type()).isFailure() )  {
-      log << MSG::ERROR << "configure: declaring svc type:'" << *j << "' failed." << endmsg;
+      log << MSG::ERROR << "configure: declaring svc type:'" << j << "' failed." << endmsg;
       return StatusCode::FAILURE;
     }
   }
-  for(auto j=m_svcOptMapping.begin(); j != m_svcOptMapping.end(); ++j)  {
-    Gaudi::Utils::TypeNameString itm(*j);
+  for(auto& j : m_svcOptMapping)  {
+    Gaudi::Utils::TypeNameString itm(j);
     if ( declareMultiSvcType(itm.name(), itm.type()).isFailure() )  {
-      log << MSG::ERROR << "configure: declaring svc type:'" << *j << "' failed." << endmsg;
+      log << MSG::ERROR << "configure: declaring svc type:'" << j << "' failed." << endmsg;
       return StatusCode::FAILURE;
     }
   }
