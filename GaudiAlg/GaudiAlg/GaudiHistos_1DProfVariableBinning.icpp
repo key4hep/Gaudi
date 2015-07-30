@@ -12,7 +12,7 @@ AIDA::IProfile1D*  GaudiHistos<PBASE>::bookProfile1D
   // exist?
   AIDA::IProfile1D* hist = profile1D ( title ) ;
   // histogram is already booked
-  if ( NULL != hist ) { return hist ; } // RETURN !!
+  if ( hist ) { return hist ; } // RETURN !!
 
   // propose the histogram ID
   HistoID ID;
