@@ -184,7 +184,7 @@ private:
   // find group/name for the counter:
   inline std::pair<std::string,std::string> _find ( const Counter* c ) const
   {
-    if ( c ) { 
+    if ( c ) {
         for ( const auto& i : m_counts ) {
           auto j = std::find_if( i.second.begin(), i.second.end(),
                                  [&](const NameMap::value_type& k) {
@@ -247,11 +247,11 @@ ICounterSvc::Counters CounterSvc::get ( const std::string& group ) const
 {
   ICounterSvc::Counters result ;
   auto i = m_counts.find  ( group ) ;
-  if (  i != m_counts.end() ) { 
+  if (  i != m_counts.end() ) {
     std::transform( i->second.begin(), i->second.end(),
                     std::back_inserter(result),
-                    [&](const NameMap::value_type& j) { 
-        return CountObject{ j.second, i->first, j.first }; 
+                    [&](const NameMap::value_type& j) {
+        return CountObject{ j.second, i->first, j.first };
     } );
   }
   return result ;
@@ -272,7 +272,7 @@ StatusCode CounterSvc::create
 {
   // try to find existing counter:
   refpCounter = get ( grp , nam ) ;
-  if ( 0 != refpCounter ) { return COUNTER_EXISTS ; }                // RETURN
+  if ( !refpCounter ) { return COUNTER_EXISTS ; }                // RETURN
   // create the new counter
   Counter* newc = new Counter() ;
   refpCounter = newc ;
@@ -300,7 +300,7 @@ CounterSvc::CountObject CounterSvc::create
   const std::string& name  ,
   longlong initial_value   )
 {
-  Counter* p = 0;
+  Counter* p = nullptr;
   StatusCode sc = create ( group, name, initial_value, p ) ;
   if ( sc.isSuccess() && 0 != p ) { return CountObject ( p , group , name ) ; }
   throw std::runtime_error("CounterSvc::Counter('"+group+"::"+name+"') exists already!");
@@ -415,7 +415,7 @@ StatusCode CounterSvc::print( Printout& printer ) const
   MsgStream log ( msgSvc() , name() ) ;
   // Force printing in alphabetical order
   std::map<std::pair<std::string,std::string>, Counter*> sorted_map;
-  for ( const auto& i : m_counts ) for ( const auto&  j : i.second) 
+  for ( const auto& i : m_counts ) for ( const auto&  j : i.second)
       sorted_map[ { i.first, j.first } ] = j.second;
   std::for_each(sorted_map.begin(), sorted_map.end(),
                 conditionalPrint(printer, log));

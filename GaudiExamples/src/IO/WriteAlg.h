@@ -27,7 +27,7 @@ class WriteAlg : public Algorithm {
  public:
   /// Constructor: A constructor of this form must be provided.
   WriteAlg(const std::string& name, ISvcLocator* pSvcLocator)
-  : Algorithm(name, pSvcLocator), m_recordSvc(0), m_evtCount(0) { }
+  : Algorithm(name, pSvcLocator), m_recordSvc(nullptr), m_evtCount(nullptr) { }
   /// Standard Destructor
   virtual ~WriteAlg() { }
   /// Initialize

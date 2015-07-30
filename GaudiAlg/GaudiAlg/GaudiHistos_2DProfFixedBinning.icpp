@@ -158,7 +158,7 @@ AIDA::IProfile2D* GaudiHistos<PBASE>::profile2D
   const unsigned long binsY        ,
   const double        weight       ) const
 {
-  AIDA::IProfile2D * h(0);
+  AIDA::IProfile2D * h = nullptr;
   if ( produceHistos() )
   {
     // retrieve or book the histogram
@@ -189,7 +189,7 @@ AIDA::IProfile2D* GaudiHistos<PBASE>::profile2D
   const unsigned long binsY        ,
   const double        weight       ) const
 {
-  AIDA::IProfile2D * h(0);
+  AIDA::IProfile2D * h = nullptr;
   if ( produceHistos() )
   {
     // retrieve or book the histogram

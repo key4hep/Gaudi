@@ -27,7 +27,7 @@ namespace Gaudi {
   /** @struct RootRef RootRefs.h RootCnv/RootRefs.h
    *
    * Persistent reference object.
-   * 
+   *
    * @author  M.Frank
    * @version 1.0
    */
@@ -37,7 +37,7 @@ namespace Gaudi {
     /// Standard constructor
     RootRef()     {  this->reset(); }
     /// Copy constructor
-    RootRef(const RootRef& c) 
+    RootRef(const RootRef& c)
       : dbase(c.dbase),container(c.container),link(c.link),clid(c.clid),svc(c.svc),entry(c.entry)
     {
     }
@@ -66,7 +66,7 @@ namespace Gaudi {
    *
    * Persistent reference object containing all leafs and links
    * corresponding to a Gaudi DataObject.
-   * 
+   *
    * @author  M.Frank
    * @version 1.0
    */
@@ -75,7 +75,7 @@ namespace Gaudi {
     std::vector<int>       links;
     /// The references corresponding to the next layer of items in the data store
     std::vector<RootRef>   refs;
-    
+
     /// Default constructor
     RootObjectRefs() {}
     /// Copy constructor
@@ -85,7 +85,7 @@ namespace Gaudi {
     /// Assignment operator
     RootObjectRefs& operator=(const RootObjectRefs& r) {
       links = r.links;
-      refs = r.refs; 
+      refs = r.refs;
       return *this;
     }
   };
@@ -100,7 +100,7 @@ namespace Gaudi {
   struct RootNTupleDescriptor {
     /// Description string
     std::string   description;
-    /// Optional description 
+    /// Optional description
     std::string   optional;
     /// Identifier of description
     std::string   container;
@@ -113,9 +113,9 @@ namespace Gaudi {
   };
 
   typedef int ExtractStatus;
-  enum ExtractStatusEnum { 
-    EXTRACT_ERROR=0, 
-    EXTRACT_SUCCESS=1 
+  enum ExtractStatusEnum {
+    EXTRACT_ERROR=0,
+    EXTRACT_SUCCESS=1
   };
 
   struct RootEventExtractor {
@@ -159,7 +159,7 @@ namespace Gaudi {
     /// Add a given entry number to the list of events to be selected to the output file
     ExtractStatus select(int evt_num);
 
-    /// Extract all previously selected events from the input file and write it to the output 
+    /// Extract all previously selected events from the input file and write it to the output
     ExtractStatus extract();
   };
 
@@ -172,7 +172,7 @@ using namespace Gaudi;
 using namespace std;
 
 /// Default constructor
-RootEventExtractor::RootEventExtractor()     
+RootEventExtractor::RootEventExtractor()
   : m_in(0), m_evt_in(0), m_ref_in(0), m_out(0), m_evt_out(0), m_ref_out(0), m_localDB_id(0)
 {
 }
@@ -197,7 +197,7 @@ RootEventExtractor::~RootEventExtractor()    {
 
 /// Clear the list of event numbers to be extracted from the file.
 ExtractStatus RootEventExtractor::cancel() {
-  m_eventList.clear(); 
+  m_eventList.clear();
   ::printf("+++ Event list cleared.\n");
   return EXTRACT_SUCCESS;
 }
@@ -256,7 +256,7 @@ ExtractStatus RootEventExtractor::closeOutput() {
   return EXTRACT_SUCCESS;
 }
 
-/// Extract all previously selected events from the input file and write it to the output 
+/// Extract all previously selected events from the input file and write it to the output
 ExtractStatus RootEventExtractor::extract()   {
   char text[1024];
   bool new_output = false;
@@ -285,7 +285,7 @@ ExtractStatus RootEventExtractor::extract()   {
     br_in->SetAddress(text);
     br_out = m_ref_out->GetBranch("Databases");
     br_out->SetAddress(text);
-    for( int i=0; i<br_in->GetEntries(); ++i ) { 
+    for( int i=0; i<br_in->GetEntries(); ++i ) {
       br_in->GetEntry(i);
       br_out->Fill();
       if ( m_localDB_id<0 && strcmp(text,"<localDB>") == 0 ) {
@@ -297,7 +297,7 @@ ExtractStatus RootEventExtractor::extract()   {
     br_in->SetAddress(text);
     br_out = m_ref_out->GetBranch("Containers");
     br_out->SetAddress(text);
-    for( int i=0; i<br_in->GetEntries(); ++i ) { 
+    for( int i=0; i<br_in->GetEntries(); ++i ) {
       br_in->GetEntry(i);
       br_out->Fill();
     }
@@ -306,7 +306,7 @@ ExtractStatus RootEventExtractor::extract()   {
     br_in->SetAddress(text);
     br_out = m_ref_out->GetBranch("Links");
     br_out->SetAddress(text);
-    for( int i=0; i<br_in->GetEntries(); ++i ) { 
+    for( int i=0; i<br_in->GetEntries(); ++i ) {
       br_in->GetEntry(i);
       br_out->Fill();
     }
@@ -315,10 +315,10 @@ ExtractStatus RootEventExtractor::extract()   {
     br_in->SetAddress(text);
     br_out = m_ref_out->GetBranch("Params");
     br_out->SetAddress(text);
-    for( int i=0; i<br_in->GetEntries(); ++i ) { 
+    for( int i=0; i<br_in->GetEntries(); ++i ) {
       br_in->GetEntry(i);
       if ( strncmp(text,"PFN=",4) == 0 ) {  // Update PFN entry
-	::snprintf(text,sizeof(text),"PFN=%s",br_out->GetFile()->GetName());    
+	::snprintf(text,sizeof(text),"PFN=%s",br_out->GetFile()->GetName());
 	::printf("+++ PFN of the created output file is:%s\n",text);
       }
       else if ( strncmp(text,"FID=",4) == 0 ) {    // Create new FID for new file
@@ -349,8 +349,8 @@ ExtractStatus RootEventExtractor::extract()   {
       return EXTRACT_ERROR;
     }
     int         out_num_entries = br_out->GetEntries();
-    for(std::vector<int>::const_iterator i=m_eventList.begin(); i != m_eventList.end(); ++i) {
-      int   num_evt = *i;
+    for(const auto& i : m_eventList) {
+      int   num_evt = i;
       const char* br_type = "DataObject";
       void* pObject = br_class->New();
       br_in->SetAddress(&pObject);
@@ -362,8 +362,8 @@ ExtractStatus RootEventExtractor::extract()   {
       }
       if ( name.EndsWith("_R.") )   {
 	RootObjectRefs *refs=(RootObjectRefs*)pObject;
-	for(std::vector<RootRef>::iterator ir=refs->refs.begin(); ir!= refs->refs.end(); ++ir)     {
-	  RootRef& r = *ir;
+	for(auto& ir : refs->refs)     {
+	  RootRef& r = ir;
 	  if ( r.dbase == m_localDB_id ) r.entry = out_num_entries;
 	}
 	br_type = "*Index*";
@@ -372,7 +372,7 @@ ExtractStatus RootEventExtractor::extract()   {
       if ( num_wr < 0 ) {
 	::printf("+++ ERROR: Failed to write data to extraction branch:%s "
 		 "read:%d wrote:%d bytes [Length-mismatch]\n",name.Data(),num_rd,num_wr);
-	return EXTRACT_ERROR;	
+	return EXTRACT_ERROR;
       }
       ::printf("+++ Copied %8d bytes to %-10s branch %s(%d)\n",num_rd,br_type,name.Data(),out_num_entries);
       ++out_num_entries;
