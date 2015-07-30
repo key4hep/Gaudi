@@ -57,46 +57,6 @@ PropertyMgr::PropertyMgr(IInterface* iface)
   addRef(); // initial reference count set to 1
 }
 // ====================================================================
-// copy constructor
-// ====================================================================
-PropertyMgr::PropertyMgr ( const PropertyMgr& right )
-  : IInterface(right),
-    IProperty(right),
-    extend_interfaces_base(right),
-    base_class(right)
-  , m_properties       ( right.m_properties       )
-  , m_remoteProperties ( right.m_remoteProperties )
-  , m_pOuter           ( right.m_pOuter )
-{
-  addRef(); // initial reference count set to 1
-  m_todelete.reserve(right.m_todelete.size());
-  std::transform( right.m_todelete.begin() , right.m_todelete.end  () ,
-                  std::back_inserter(m_todelete) , 
-                  [](const std::unique_ptr<Property>& p) {
-          return std::unique_ptr<Property>( p->clone() ) ;
-  } );
-}
-// ====================================================================
-// assignment operator
-// ====================================================================
-PropertyMgr& PropertyMgr::operator=( const PropertyMgr& right )
-{
-  if  ( &right == this ) { return *this ; }
-  //
-  m_properties       = right.m_properties       ;
-  m_remoteProperties = right.m_remoteProperties ;
-  m_pOuter           = right.m_pOuter           ;
-  //
-  m_todelete.clear(); m_todelete.reserve(right.m_todelete.size());
-  std::transform( right.m_todelete.begin() , right.m_todelete.end  () ,
-                  std::back_inserter(m_todelete) , 
-                  [](const std::unique_ptr<Property>& p) {
-          return std::unique_ptr<Property>( p->clone() ) ;
-  } );
-  //
-  return *this ;
-}
-// ====================================================================
 // Declare a remote property
 // ====================================================================
 Property* PropertyMgr::declareRemoteProperty

@@ -35,13 +35,13 @@ class GAUDI_API PropertyMgr : public implements1<IProperty>
 {
 public:
   /// constructor from the interface
-  PropertyMgr ( IInterface* iface = 0 );
+  PropertyMgr ( IInterface* iface = nullptr );
   // copy constructor
-  PropertyMgr ( const PropertyMgr& ) ;
+  PropertyMgr ( const PropertyMgr& )  = delete;
+  // assignment operator
+  PropertyMgr& operator=( const PropertyMgr& ) = delete;
   /// virtual destructor
   ~PropertyMgr() override = default;
-  // assignment operator
-  PropertyMgr& operator=( const PropertyMgr& ) ;
 public:
   /// Declare a property (templated)
   template<class TYPE>
@@ -184,7 +184,7 @@ PropertyMgr::declareProperty
   const std::string& doc )
 {
   assertUniqueName(name);
-  m_todelete   .emplace_back( new SimplePropertyRef<TYPE> ( name , value ) );
+  m_todelete.emplace_back( new SimplePropertyRef<TYPE> ( name , value ) );
   Property* p = m_todelete.back().get();
   //
   p->setDocumentation( doc );
