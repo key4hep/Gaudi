@@ -43,7 +43,7 @@ public:
   virtual const Algorithms& algorithms  () const = 0 ;
 protected:
   /// virtual and protected desctructor
-  virtual ~IAlgContextSvc() = default;
+  ~IAlgContextSvc() override = default;
 } ;
 // ============================================================================
 namespace Gaudi

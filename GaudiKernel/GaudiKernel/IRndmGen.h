@@ -74,7 +74,7 @@ public:
   virtual StatusCode shootArray( std::vector<double>& array, long howmany, long start = 0) const = 0;
 
   /// Virtual destructor
-  virtual ~IRndmGen() {}
+  virtual ~IRndmGen() = default;
 
 };
 

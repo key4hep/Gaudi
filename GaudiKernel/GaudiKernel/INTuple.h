@@ -122,6 +122,6 @@ public:
   virtual StatusCode            readRecord() = 0;
   /// Save the NTuple
   virtual StatusCode            save() = 0;
-  virtual ~INTuple() {}
+  virtual ~INTuple() = default;
 };
 #endif

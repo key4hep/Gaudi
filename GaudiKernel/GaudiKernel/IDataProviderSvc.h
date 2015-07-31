@@ -556,7 +556,7 @@ public:
   };
 
   /// virtual destructor
-  virtual ~IDataProviderSvc() = default;
+  ~IDataProviderSvc() override = default;
 };
 
 #endif // GAUDIKERNEL_IDATAPROVIDERSVC_H

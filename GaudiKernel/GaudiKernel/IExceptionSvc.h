@@ -45,10 +45,9 @@ public:
     const StatusCode&      s ) const = 0 ; ///< Handle errors
 protected :
   // virtual and protected destructor
-  virtual ~IExceptionSvc() = default; ///< virtual and protected destructor
+  ~IExceptionSvc() override = default; ///< virtual and protected destructor
 } ;
 // ============================================================================
-
 
 // ============================================================================
 #endif // GAUDIKERNEL_IEXCEPTIONSVC_H

@@ -80,14 +80,14 @@ public:
    *  It will in turn invoke the reinitialize() method of the derived algorithm,
    * and of any sub-algorithms which it creates.
    */
-  virtual StatusCode sysStart();
+  StatusCode sysStart() override;
 
   /** Initialization method invoked by the framework. This method is responsible
    *  for any bookkeeping of initialization required by the framework itself.
    *  It will in turn invoke the initialize() method of the derived algorithm,
    * and of any sub-algorithms which it creates.
    */
-  virtual StatusCode sysInitialize();
+  StatusCode sysInitialize() override;
 
 
   /** Reinitialization method invoked by the framework. This method is responsible
@@ -95,13 +95,13 @@ public:
    *  It will in turn invoke the reinitialize() method of the derived algorithm,
    * and of any sub-algorithms which it creates.
    */
-  virtual StatusCode sysReinitialize();
+  StatusCode sysReinitialize() override;
 
   /** Restart method invoked by the framework.
       It will in turn invoke the restart() method of the derived algorithm,
       and of any sub-algorithms which it creates.
   */
-  virtual StatusCode sysRestart();
+  StatusCode sysRestart() override;
 
   /** The actions to be performed by the algorithm on an event. This method is
    * invoked once per event for top level algorithms by the application
@@ -110,32 +110,32 @@ public:
    *  For sub-algorithms either the sysExecute() method or execute() method
    *  must be EXPLICITLY invoked by  the parent algorithm.
    */
-  virtual StatusCode sysExecute();
+  StatusCode sysExecute() override;
 
   /** System stop. This method invokes the stop() method of a concrete
       algorithm and the stop() methods of all of that algorithm's sub algorithms.
   */
-  virtual StatusCode sysStop();
+  StatusCode sysStop() override;
 
   /** System finalization. This method invokes the finalize() method of a
    *  concrete algorithm and the finalize() methods of all of that algorithm's
    *  sub algorithms.
    */
-  virtual StatusCode sysFinalize();
+  StatusCode sysFinalize() override;
 
   /** beginRun method invoked by the framework. This method is responsible
       for any beginRun actions required by the framework itself.
       It will in turn invoke the beginRun() method of the derived algorithm,
       and of any sub-algorithms which it creates.
   */
-  virtual StatusCode sysBeginRun( );
+  StatusCode sysBeginRun( ) override;
 
   /** endRun method invoked by the framework. This method is responsible
       for any endRun actions required by the framework itself.
       It will in turn invoke the endRun() method of the derived algorithm,
       and of any sub-algorithms which it creates.
   */
-  virtual StatusCode sysEndRun( );
+  StatusCode sysEndRun( ) override;
 
   /** The identifying name of the algorithm object. This is the name of a
    *  particular instantiation of an algorithm object as opposed to the name
@@ -171,33 +171,33 @@ public:
   Gaudi::StateMachine::State targetFSMState() const override { return m_targetState; }
 
   /// Has this algorithm been executed since the last reset?
-  virtual bool isExecuted( ) const;
+  bool isExecuted( ) const override;
 
   /// Set the executed flag to the specified state
-  virtual void setExecuted( bool state );
+  void setExecuted( bool state ) override;
 
   /** Reset the executed state of the Algorithm for the duration
    *  of the current event.
    */
-  virtual void resetExecuted( );
+  void resetExecuted( ) override;
 
   /** Algorithm begin run. This method is called at the beginning
    *  of the event loop.
    */
-  virtual StatusCode beginRun();
+  StatusCode beginRun() override;
 
   /// Algorithm end run. This method is called at the end of the event loop
-  virtual StatusCode endRun();
+  StatusCode endRun() override;
 
 
   /// Is this algorithm enabled or disabled?
-  virtual bool isEnabled( ) const;
+  bool isEnabled( ) const override;
 
   /// Did this algorithm pass or fail its filter criterion for the last event?
-  virtual bool filterPassed( ) const;
+  bool filterPassed( ) const override;
 
   /// Set the filter passed flag to the specified state
-  virtual void setFilterPassed( bool state );
+  void setFilterPassed( bool state ) override;
 
   /// Get the number of failures of the algorithm.
   inline int errorCount() const { return m_errorCount; }
@@ -518,10 +518,10 @@ public:
 protected:
 
   /// Has the Algorithm already been initialized?
-  bool isInitialized( ) const { return Gaudi::StateMachine::INITIALIZED == m_state; }
+  bool isInitialized( ) const override { return Gaudi::StateMachine::INITIALIZED == m_state; }
 
   /// Has the Algorithm already been finalized?
-  bool isFinalized( ) const { return Gaudi::StateMachine::CONFIGURED == m_state; }
+  bool isFinalized( ) const  override{ return Gaudi::StateMachine::CONFIGURED == m_state; }
 
   /// retrieve the Algorithm output level
   int  outputLevel() const { return (int)m_outputLevel ; }
@@ -601,8 +601,8 @@ class AlgFactory {
 public:
 #ifndef __REFLEX__
   template <typename S, typename... Args>
-  static typename S::ReturnType create(Args... args) {
-    return new T(args...);
+  static typename S::ReturnType create(Args&&... args) {
+    return new T(std::forward<Args>(args)...);
   }
 #endif
 };

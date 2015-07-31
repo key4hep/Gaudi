@@ -8,30 +8,25 @@
  */
 
 #include "GaudiKernel/IFileAccess.h"
-IFileAccess::~IFileAccess() {}
+IFileAccess::~IFileAccess() = default;
 
 #include "GaudiKernel/HistogramBase.h"
 namespace Gaudi {
-  HistogramBase::~HistogramBase(){}
+  HistogramBase::~HistogramBase() = default;
 }
 
-#include "GaudiKernel/IComponentManager.h"
-IComponentManager::~IComponentManager(){}
-
 #include "GaudiKernel/HistoryObj.h"
-HistoryObj::~HistoryObj(){}
+HistoryObj::~HistoryObj() = default;
 
 #include "GaudiKernel/IVersHistoryObj.h"
-IVersHistoryObj::~IVersHistoryObj(){}
+IVersHistoryObj::~IVersHistoryObj() = default;
 
 #include "GaudiKernel/IIoComponent.h"
-IIoComponent::~IIoComponent(){}
+IIoComponent::~IIoComponent() = default;
 
 #include "GaudiKernel/IIoComponentMgr.h"
-IIoComponentMgr::~IIoComponentMgr(){}
+IIoComponentMgr::~IIoComponentMgr() = default;
 
 #include "GaudiKernel/IFileMgr.h"
-IFileMgr::~IFileMgr(){}
+IFileMgr::~IFileMgr() = default;
 
-#include "GaudiKernel/FileIncident.h"
-FileIncident::~FileIncident(){}

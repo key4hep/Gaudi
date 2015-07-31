@@ -71,7 +71,7 @@ public:
           Gaudi::CounterSummary::SaveSimpleCounter)=0;
 
   /// virtual destructor
-  virtual ~ICounterSummarySvc() = default;
+  ~ICounterSummarySvc() override = default;
 };
 
 #endif

@@ -91,7 +91,7 @@ public:
                                   bool do_commit) = 0;
 
   /// Virtual destructor
-  virtual ~IConversionSvc() = default;
+  ~IConversionSvc() override = default;
 
   /// Status code definitions
   enum Status  {

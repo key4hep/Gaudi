@@ -40,7 +40,7 @@ public:
   DeclareInterfaceID(IUpdateableIF,1,0);
 
   /// Default destructor
-  virtual ~IUpdateableIF() {}
+  ~IUpdateableIF() override = default;
 };
 
 #endif // GAUDIKERNEL_IUPDATEABLE_H

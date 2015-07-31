@@ -19,7 +19,7 @@ public:
   /// InterfaceID
   DeclareInterfaceID(IStateful,1,0);
 
-  virtual ~IStateful() = default; //< Virtual destructor.
+  ~IStateful() override = default; //< Virtual destructor.
 
   /** Configuration (from OFFLINE to CONFIGURED).
   */
