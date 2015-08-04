@@ -371,7 +371,7 @@ namespace NTuple
         result = dynamic_cast< _Item<TYPE>* > (i_find(name));
       }
       catch (...)   {
-        result = 0;
+        result = nullptr;
       }
       return (0==result) ? StatusCode::FAILURE : StatusCode::SUCCESS;
     }
@@ -383,7 +383,7 @@ namespace NTuple
         result = (_Item<TYPE*>*)p;
       }
       catch (...)   {
-        result = 0;
+        result = nullptr;
       }
       return (0==result) ? StatusCode::FAILURE : StatusCode::SUCCESS;
     }
@@ -394,7 +394,7 @@ namespace NTuple
         result = dynamic_cast< _Item<IOpaqueAddress*>* > (i_find(name));
       }
       catch (...)   {
-        result = 0;
+        result = nullptr;
       }
       return (0==result) ? StatusCode::FAILURE : StatusCode::SUCCESS;
     }
@@ -407,7 +407,7 @@ namespace NTuple
         }
       }
       catch (...)   {
-        result = 0;
+        result = nullptr;
       }
       return (0==result) ? StatusCode::FAILURE : StatusCode::SUCCESS;
     }
@@ -420,7 +420,7 @@ namespace NTuple
         }
       }
       catch (...)   {
-        result = 0;
+        result = nullptr;
       }
       return (0==result) ? StatusCode::FAILURE : StatusCode::SUCCESS;
     }
@@ -1086,15 +1086,14 @@ namespace NTuple
     /// Logical file name
     std::string   m_logName;
     /// Access type
-    long          m_type;
+    long          m_type = 0;
     /// Flag to indicate wether the file was opened already
-    bool          m_isOpen;
+    bool          m_isOpen = false;
   public:
-    File() : m_type(0), m_isOpen(false)   {
-    }
+    File() = default;
     /// Standard constructor
     File(long type, std::string name, std::string logName)
-    : m_name(std::move(name)), m_logName(std::move(logName)), m_type(type), m_isOpen(false)  {
+    : m_name(std::move(name)), m_logName(std::move(logName)), m_type(type) {
     }
     /// Standard destructor
     ~File()  override = default ;
@@ -1104,7 +1103,7 @@ namespace NTuple
       return CLID_NTupleFile;
     }
     /// class ID of the object
-    virtual const CLID& clID()    const   {
+    const CLID& clID()    const   override {
       return classID();
     }
     /// Set access type
@@ -1120,16 +1119,16 @@ namespace NTuple
       return m_name;
     }
     /// Set access type
-    void setName(const std::string& nam)    {
-      m_name = nam;
+    void setName(std::string nam)    {
+      m_name = std::move(nam);
     }
     //// Return logical file name
     const std::string& logicalName()    const   {
       return m_logName;
     }
     //// Return logical file name
-    void setLogicalName( const std::string& l)  {
-      m_logName = l;
+    void setLogicalName( std::string l)  {
+      m_logName = std::move(l);
     }
     /// Set "open" flag
       void setOpen(bool flag)   {
