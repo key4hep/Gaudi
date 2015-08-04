@@ -12,7 +12,6 @@
 #include "GaudiKernel/PropertyMgr.h"
 #include "GaudiKernel/EventSelectorDataStream.h"
 #include "GaudiKernel/DataStreamTool.h"
-#include "GaudiKernel/ToolFactory.h"
 #include "GaudiKernel/Service.h"
 
 #include <sstream>

@@ -2,7 +2,6 @@
 
 #include <fstream>
 
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IJobOptionsSvc.h"
 

@@ -20,8 +20,6 @@ namespace Gaudi {
   }
 }
 
-// From Gaudi
-#include "GaudiKernel/ToolFactory.h"
 // local
 #include "DODBasicMapper.h"
 

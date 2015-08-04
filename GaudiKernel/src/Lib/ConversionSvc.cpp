@@ -1,7 +1,6 @@
 #define  GAUDIKERNEL_CONVERSIONSVC_CPP
 
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/CnvFactory.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/System.h"
 #include "GaudiKernel/IConverter.h"

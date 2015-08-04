@@ -1,7 +1,6 @@
 #include "FileReadTool.h"
 #include <fstream>
 
-#include "GaudiKernel/ToolFactory.h"
 DECLARE_COMPONENT( FileReadTool )
 
 FileReadTool::FileReadTool( const std::string& type,

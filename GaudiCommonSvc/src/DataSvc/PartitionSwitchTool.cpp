@@ -2,7 +2,6 @@
 #include "GaudiKernel/AlgTool.h"
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/ToolFactory.h"
 #include "GaudiKernel/IPartitionControl.h"
 
 /** @class PartitionSwitchTool

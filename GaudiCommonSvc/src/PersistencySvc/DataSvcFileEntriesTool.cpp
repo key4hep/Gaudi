@@ -239,5 +239,4 @@ void DataSvcFileEntriesTool::i_collectLeaves(IRegistry* reg) {
 }
 
 
-#include "GaudiKernel/ToolFactory.h"
 DECLARE_COMPONENT(DataSvcFileEntriesTool)

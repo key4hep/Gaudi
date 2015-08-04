@@ -2,7 +2,6 @@
 // ============================================================================
 // Include files
 // from Gaudi
-#include "GaudiKernel/ToolFactory.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/IChronoStatSvc.h"
 #include "GaudiKernel/Stat.h"

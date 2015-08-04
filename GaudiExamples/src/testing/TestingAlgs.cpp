@@ -352,7 +352,6 @@ namespace GaudiTesting {
 
 }
 
-#include "GaudiKernel/AlgFactory.h"
 
 namespace GaudiTesting {
   DECLARE_COMPONENT(DestructorCheckAlg)

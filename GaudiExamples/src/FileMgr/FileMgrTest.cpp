@@ -2,7 +2,6 @@
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IFileMgr.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "TFile.h"
 #include "TSSLSocket.h"
 
