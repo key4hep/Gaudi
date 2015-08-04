@@ -128,12 +128,10 @@ namespace Gaudi { namespace PluginService {
 
     std::string demangle(const std::string& id) {
       int   status;
-      char* realname;
-      realname = abi::__cxa_demangle(id.c_str(), 0, 0, &status);
-      if (realname == 0) return id;
-      std::string result(realname);
-      free(realname);
-      return result;
+      auto realname = std::unique_ptr<char,decltype(free)*>( abi::__cxa_demangle(id.c_str(), 0, 0, &status),
+                                                             free );
+      if (!realname) return id;
+      return std::string{realname.get()};
     }
     std::string demangle(const std::type_info& id) {
       return demangle(id.name());
@@ -251,9 +249,8 @@ namespace Gaudi { namespace PluginService {
       if (entry == facts.end())
       {
         // this factory was not known yet
-        entry = facts.insert(std::make_pair(id,
-                                            FactoryInfo("unknown", factory,
-                                                        type, rtype, className, props))).first;
+        entry = facts.insert( { id, FactoryInfo("unknown", factory,
+                                                type, rtype, className, props) } ).first;
       } else {
         // do not replace an existing factory with a new one
         if (!entry->second.ptr) {
