@@ -148,7 +148,7 @@ public:
 
   /// Construct a new object using the destination pointer.
   PtrSetter(dest_type *&dest):m_storage(&dest) {
-    *m_storage = NULL;
+    *m_storage = nullptr;
   }
 
   /// Empty virtual destructor.
@@ -158,7 +158,7 @@ public:
     *m_storage = dynamic_cast<dest_type *>(obj);
   }
   /// tells if the internal pointer is NULL.
-  virtual bool isNull() { return *m_storage == NULL; }
+  virtual bool isNull() { return *m_storage == nullptr; }
 
 private:
   /// pointer to the pointer to fill provided by the user.
@@ -287,8 +287,6 @@ protected:
   virtual void       i_invalidate(void *instance) = 0;
 
   friend class PythonHelper;
-
-private:
 
 };
 #endif // GAUDIKERNEL_IUPDATEMANAGERSVC_H
