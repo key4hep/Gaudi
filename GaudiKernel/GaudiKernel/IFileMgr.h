@@ -84,27 +84,16 @@ namespace Io {
   };
 
   static std::string IoFlagName(IoFlags f) {
-    static std::map<IoFlag, std::string> s_names;
-    if (s_names.empty()) {
-      s_names[READ] = "READ";
-      s_names[WRITE] = "WRITE";
-      s_names[RDWR] = "RDWR";
-      s_names[CREATE] = "CREATE";
-      s_names[EXCL] = "EXCL";
-      s_names[TRUNC] = "TRUNC";
-      s_names[APPEND] = "APPEND";
-      s_names[INVALID] = "INVALID";
-    }
-
-    if ( f.isRead() ) {
-      return s_names[READ];
-    }
+    static std::map<IoFlag, std::string> s_names = { { 
+        { READ,   "READ"  }, { WRITE,  "WRITE"}, { RDWR,   "RDWR" },
+        { CREATE, "CREATE"}, { EXCL,   "EXCL" }, { TRUNC,  "TRUNC"},
+        { APPEND, "APPEND"}, { INVALID,"INVALID"} } };
+    if ( f.isRead() ) return s_names[READ];
 
     std::string ff;
     for (int i=0; i<32; ++i) {
-      if ( ( (1<<i) & f) != 0) {
-	ff += s_names[ (IoFlag)(1<<i) ] + "|";
-      }
+      auto b = ( 1 << i );
+      if ( b & f ) ff += s_names[ (IoFlag)(b) ] + "|";
     }
     ff.erase(ff.length()-1);
     return ff;
@@ -112,17 +101,10 @@ namespace Io {
 
 
   inline IoFlags IoFlagFromName(const std::string& f) {
-    static std::map<std::string, IoFlag> s_n;
-    if (s_n.empty()) {
-      s_n["READ"] = Io::READ;
-      s_n["WRITE"] = Io::WRITE;
-      s_n["RDWR"] = Io::RDWR;
-      s_n["CREATE"] = Io::CREATE;
-      s_n["EXCL"] = Io::EXCL;
-      s_n["TRUNC"] = Io::TRUNC;
-      s_n["APPEND"] = Io::APPEND;
-      s_n["INVALID"] = Io::INVALID;
-    }
+    static std::map<std::string, IoFlag> s_n = { {
+       { "READ",   Io::READ },   { "WRITE",   Io::WRITE }, { "RDWR",  Io::RDWR },
+       { "CREATE", Io::CREATE }, { "EXCL",    Io::EXCL  }, { "TRUNC", Io::TRUNC},
+       { "APPEND", Io::APPEND }, { "INVALID", Io::INVALID } } };
 
     IoFlags fl(Io::INVALID);
     size_t j(0),k(0);
@@ -130,12 +112,12 @@ namespace Io {
     while ( (k=f.find("|",j)) != std::string::npos) {
       fs = f.substr(j,k-j);
       if (s_n.find(fs) == s_n.end()) {
-	return Io::INVALID;
+        return Io::INVALID;
       }
       if (fl.isInvalid()) {
-	fl = s_n[fs];
+        fl = s_n[fs];
       } else {
-	fl = fl | s_n[fs];
+        fl = fl | s_n[fs];
       }
       j = k+1;
     }
@@ -148,7 +130,6 @@ namespace Io {
     } else {
       fl = fl | s_n[fs];
     }
-
     return fl;
 
   }
@@ -230,13 +211,12 @@ namespace Io {
 
     friend std::ostream& operator<< (std::ostream& os, const FileAttr& fa) {
       os << "name: \"" << fa.name() << "\"  tech: " << fa.tech()
-	 << "  desc: " << fa.desc()
-	 << "  flags: " << IoFlagName(fa.flags())
-	 << "  i_flags: " << IoFlagName(fa.iflags())
-	 << "  Fd: " << fa.fd() << "  ptr: " << fa.fptr()
-	 << (fa.isOpen() ? "  [o]" : "  [c]" )
-	 << (fa.isShared() ? " [s]" : " [u]" );
-
+         << "  desc: " << fa.desc()
+         << "  flags: " << IoFlagName(fa.flags())
+         << "  i_flags: " << IoFlagName(fa.iflags())
+         << "  Fd: " << fa.fd() << "  ptr: " << fa.fptr()
+         << (fa.isOpen() ? "  [o]" : "  [c]" )
+         << (fa.isShared() ? " [s]" : " [u]" );
       return os;
     }
 
@@ -248,9 +228,9 @@ namespace Io {
 
     bool operator< (const FileAttr& rhs) const {
       if ( m_name != rhs.name() ) {
-	return ( m_name < rhs.name() );
+        return ( m_name < rhs.name() );
       } else {
-	return ( m_flags < rhs.iflags() );
+        return ( m_flags < rhs.iflags() );
       }
     }
 
