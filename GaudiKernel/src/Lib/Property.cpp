@@ -7,11 +7,9 @@
 // STD & STL
 // ============================================================================
 #include <iostream>
-#include <stdexcept>
 #include <vector>
 #include <string>
 #include <utility>
-#include <map>
 #include <algorithm>
 #include <functional>
 // ============================================================================
@@ -27,7 +25,7 @@
 #include "boost/algorithm/string/compare.hpp"
 // ============================================================================
 /** @file
- *  The implementation file for the class Property ans related classes
+ *  The implementation file for the class Property and related classes
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
  *  @date 2006-02-27
  */
@@ -83,11 +81,10 @@ void  Property::declareUpdateHandler ( std::function<void(Property&)> fun )
 void Property::useReadHandler   () const
 {
   if ( !m_readCallBack ) { return ; }               // RETURN
-  const Property& p = *this ;
   // avoid infinite loop
   std::function<void(Property&)> theCallBack;
   theCallBack.swap(m_readCallBack);
-  theCallBack( const_cast<Property&>(p) ) ;
+  theCallBack( const_cast<Property&>(*this) ) ;
   m_readCallBack.swap(theCallBack);
 }
 // ============================================================================
@@ -137,10 +134,8 @@ bool Gaudi::Utils::hasProperty
 ( const IInterface*  p    ,
   const std::string& name )
 {
-  // trivial check
-  if ( !p ) { return false ; }                                // RETURN
-  // gelegate to another method
-  return getProperty ( p , name ) ;
+  // delegate to another method after trivial check
+  return p && getProperty ( p , name ) ;
 }
 // ============================================================================
 /*  simple function which check the existence of the property with
@@ -165,19 +160,18 @@ bool Gaudi::Utils::hasProperty
 ( const IProperty*   p    ,
   const std::string& name )
 {
-  if ( !p ) { return false ; }
   // delegate the actual work to another method ;
-  return getProperty ( p , name ) ;
+  return p && getProperty ( p , name ) ;
 }
 // ============================================================================
 //
 // GaudiHandleProperty implementation
 //
 GaudiHandleProperty::GaudiHandleProperty
-( const std::string& name, GaudiHandleBase& ref )
-  : Property( name, typeid( GaudiHandleBase ) ), m_pValue( &ref )
+( std::string name_, GaudiHandleBase& ref )
+  : Property( std::move(name_), typeid( GaudiHandleBase ) ), m_pValue( &ref )
 {
-  m_pValue->setPropertyName( name );
+  m_pValue->setPropertyName( name() );
 }
 
 bool GaudiHandleProperty::setValue( const GaudiHandleBase& value ) {
@@ -204,10 +198,10 @@ StatusCode GaudiHandleProperty::fromString( const std::string& s) {
 //
 // GaudiHandlePropertyArray implementation
 //
-GaudiHandleArrayProperty::GaudiHandleArrayProperty( const std::string& name, GaudiHandleArrayBase& ref )
-  : Property( name, typeid( GaudiHandleArrayBase ) ), m_pValue( &ref )
+GaudiHandleArrayProperty::GaudiHandleArrayProperty( std::string name_, GaudiHandleArrayBase& ref )
+  : Property( std::move(name_), typeid( GaudiHandleArrayBase ) ), m_pValue( &ref )
 {
-  m_pValue->setPropertyName( name );
+  m_pValue->setPropertyName( name() );
 }
 
 bool GaudiHandleArrayProperty::setValue( const GaudiHandleArrayBase& value ) {
@@ -290,7 +284,7 @@ Property* Gaudi::Utils::getProperty
   // get all properties
   const auto& props = p->getProperties() ;
   // comparison criteria:
-  auto ifound = std::find_if ( props.begin() , props.end() , is_iByName{ name } ) ;
+  auto ifound = std::find_if ( props.begin(), props.end(), is_iByName{ name } );
   return ifound != props.end() ? *ifound : nullptr;
 }
 // ============================================================================
@@ -320,7 +314,7 @@ Property* Gaudi::Utils::getProperty
   // remove const-qualifier
   IInterface* _i = const_cast<IInterface*>( p ) ;
   if ( !_i        ) { return nullptr ; }                                // RETURN
-  SmartIF<IProperty> property ( _i ) ;
+  SmartIF<IProperty> property( _i ) ;
   return property ? getProperty ( property , name ) : nullptr;
 }
 // ============================================================================
@@ -470,9 +464,9 @@ StatusCode Gaudi::Utils::setProperty
   const Property*    property  ,
   const std::string& doc       )
 {
-  if ( !component || !property || !hasProperty ( component , name )  ) { return StatusCode::FAILURE ; }
+  if ( !component || !property ) return StatusCode::FAILURE ;
   Property* p = getProperty ( component , name ) ;
-  if ( !p || !p->assign ( *property )                                ) { return StatusCode::FAILURE ; }
+  if ( !p || !p->assign ( *property ) ) return StatusCode::FAILURE ;
   if ( !doc.empty()  ) { p->setDocumentation( doc ) ; }
   return StatusCode::SUCCESS ;
 }
@@ -527,8 +521,8 @@ StatusCode Gaudi::Utils::setProperty
 {
   if ( !component ) { return StatusCode::FAILURE ; }
   SmartIF<IProperty> property ( component ) ;
-  if ( !property  ) { return StatusCode::FAILURE ; }
-  return setProperty ( property , name , value , doc ) ;
+  return property ? setProperty ( property , name , value , doc ) 
+                  : StatusCode::FAILURE ; 
 }
 // ============================================================================
 /*  the full specialization of the
