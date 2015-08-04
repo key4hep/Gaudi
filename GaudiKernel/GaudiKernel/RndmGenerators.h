@@ -60,7 +60,7 @@ namespace Rndm   {
     /// Identifier for factory
     static const InterfaceID& typeID()     { return IID_IRndmExponential; }
     /// Clone parameters
-    IRndmGen::Param* clone() const override { return new Exponential(m_mean); }
+    Exponential* clone() const override { return new Exponential(m_mean); }
   };
 
   /** Parameters for the Chi2 distributed random number generation
