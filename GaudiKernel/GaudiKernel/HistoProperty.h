@@ -25,7 +25,7 @@ inline bool
 BoundedVerifier<Gaudi::Histo1DDef>::isValid
 ( const Gaudi::Histo1DDef* value ) const 
 { 
-  return 0 != value && value->ok()
+  return value && value->ok()
     && ( ( m_hasLowerBound && ( *value       < m_lowerBound ) ) ? false : true ) 
     && ( ( m_hasUpperBound && ( m_upperBound < *value       ) ) ? false : true ) ;
 }
@@ -39,7 +39,7 @@ inline bool
 NullVerifier<Gaudi::Histo1DDef>::isValid
 ( const Gaudi::Histo1DDef* value ) const 
 { 
-  return 0 != value && value->ok() ;
+  return value && value->ok() ;
 }
 // ============================================================================
 /// the actual type of "histogram property"

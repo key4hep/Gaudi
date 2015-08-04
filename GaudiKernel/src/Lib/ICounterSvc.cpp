@@ -39,12 +39,12 @@ StatusCode ICounterSvc::Printout::operator()
 // ============================================================================
 ICounterSvc::Printout::Printout(ICounterSvc* svc)
   : m_svc(svc)
-{ if ( 0 != m_svc ) { m_svc->addRef() ; }   }
+{ if ( m_svc ) m_svc->addRef() ; }
 // ============================================================================
 // destructor
 // ============================================================================
 ICounterSvc::Printout::~Printout()
-{ if ( 0 != m_svc ) { m_svc->release() ; m_svc = 0 ; } }
+{ if ( m_svc ) m_svc->release(); }
 
 // ============================================================================
 // The END

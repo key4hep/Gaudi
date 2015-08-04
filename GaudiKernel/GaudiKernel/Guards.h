@@ -217,21 +217,21 @@ namespace Gaudi
     {
     public:
       /// constructor
-      AuditorGuard ( INamedInterface*                      obj      ,
+      AuditorGuard ( INamedInterface*             obj      ,
                      IAuditor*                    svc      ,
                      IAuditor::StandardEventType  evt      ) ;
       /// constructor
-      AuditorGuard ( INamedInterface*                      obj      ,
+      AuditorGuard ( INamedInterface*             obj      ,
                      IAuditor*                    svc      ,
                      IAuditor::CustomEventTypeRef evt      ) ;
 
       /// constructor
-      AuditorGuard ( INamedInterface*                      obj      ,
+      AuditorGuard ( INamedInterface*             obj      ,
                      IAuditor*                    svc      ,
                      IAuditor::StandardEventType  evt      ,
                      const StatusCode            &sc       ) ;
       /// constructor
-      AuditorGuard ( INamedInterface*                      obj      ,
+      AuditorGuard ( INamedInterface*             obj      ,
                      IAuditor*                    svc      ,
                      IAuditor::CustomEventTypeRef evt      ,
                      const StatusCode            &sc       ) ;
@@ -267,11 +267,11 @@ namespace Gaudi
       AuditorGuard& operator=( const AuditorGuard& right ) = delete;
     private :
       /// the guarded object
-      INamedInterface*                     m_obj   ;
+      INamedInterface*                     m_obj  = nullptr ;
       /// the guarded object name (if there is no INamedInterface)
       std::string                 m_objName;
       /// auditor service
-      IAuditor*                   m_svc   ;
+      IAuditor*                   m_svc   = nullptr;
       /// Event type (standard events)
       IAuditor::StandardEventType m_evt   ;
       /// Event type (custom events)
@@ -279,14 +279,14 @@ namespace Gaudi
       /// Pointer to a status code instance, to be passed to the "after" function if needed
       /// The instance must have a scope larger than the one of the guard.
       /// No check is performed.
-      const StatusCode           *m_sc    ;
+      const StatusCode           *m_sc    = nullptr;
       /// Flag to remember which event type was used.
-      bool                        m_customEvtType;
+      bool                        m_customEvtType = false;
 
       inline void i_before() {
-        if ( 0 != m_svc ) { // if the service is not available, we cannot do anything
+        if ( m_svc ) { // if the service is not available, we cannot do anything
           m_svc->addRef(); // increase the reference counting
-          if (0 != m_obj) {
+          if (m_obj) {
             if (m_customEvtType) {
               m_svc->before(m_cevt,m_obj);
             } else {
@@ -303,16 +303,16 @@ namespace Gaudi
       }
 
       inline void i_after() {
-        if ( 0 != m_svc ) { // if the service is not available, we cannot do anything
-          if (0 != m_obj) {
+        if ( m_svc ) { // if the service is not available, we cannot do anything
+          if ( m_obj) {
             if (m_customEvtType) {
-              if (0 != m_sc) {
+              if ( m_sc) {
                 m_svc->after(m_cevt,m_obj,*m_sc);
               } else {
                 m_svc->after(m_cevt,m_obj);
               }
             } else {
-              if (0 != m_sc) {
+              if (m_sc) {
                 m_svc->after(m_evt,m_obj,*m_sc);
               } else {
                 m_svc->after(m_evt,m_obj);
@@ -320,13 +320,13 @@ namespace Gaudi
             }
           } else { // use object name
             if (m_customEvtType) {
-              if (0 != m_sc) {
+              if (m_sc) {
                 m_svc->after(m_cevt,m_objName,*m_sc);
               } else {
                 m_svc->after(m_cevt,m_objName);
               }
             } else {
-              if (0 != m_sc) {
+              if (m_sc) {
                 m_svc->after(m_evt,m_objName,*m_sc);
               } else {
                 m_svc->after(m_evt,m_objName);
@@ -334,7 +334,7 @@ namespace Gaudi
             }
           }
           m_svc->release(); // we do not need the service anymore
-          m_svc = 0 ;
+          m_svc = nullptr ;
         }
       }
     } ;

@@ -66,6 +66,16 @@ namespace
         } );
     }
   };
+
+  template <typename Stream, typename Container, typename Separator, typename Transform>
+  Stream& ostream_joiner(Stream& os, const Container& c, Separator sep, Transform trans )
+  {
+        auto first = std::begin(c); auto last = std::end(c);
+        if (first!=last) { os << trans(*first); ++first; }
+        for (;first!=last;++first) os << sep << trans(*first);
+        return os;
+  }
+
 }
 
 
@@ -251,7 +261,7 @@ StatusCode GaudiSequencer::decodeNames( )  {
     if ( !myIAlg.isValid() ) {
       // ensure some magic properties are set while we create the subalgorithm so 
       // that it effectively inherites 'our' settings -- if they have non-default
-      // values...
+      // values... and are not set explicitly already.
       populate_JobOptionsSvc_t populate_guard{ theName, jos,
            std::forward_as_tuple( "Context",          context() ),
            std::forward_as_tuple( "RootInTES",        rootInTES() ),
@@ -316,23 +326,17 @@ StatusCode GaudiSequencer::decodeNames( )  {
   MsgStream& msg = info();
   if ( m_modeOR ) msg << "OR ";
   msg << "Member list: ";
-  for (auto itE = m_entries.begin(); m_entries.end() != itE; itE++ ) {
-    Algorithm* myAlg = itE->algorithm();
-    std::string myAlgType = System::typeinfoName( typeid( *myAlg) ) ;
-    if ( myAlg->name() == myAlgType ) {
-      msg << myAlg->name();
-    } else {
-      msg << myAlgType << "/" << myAlg->name();
-    }
-    if ( itE+1 != m_entries.end() ) msg << ", ";
-  }
+  ostream_joiner( msg, m_entries, ", ", [](const AlgorithmEntry& e) {
+    Algorithm* alg = e.algorithm();
+    std::string typ = System::typeinfoName( typeid( *alg) ) ;
+    return ( alg->name() == typ ) ? alg->name() : ( typ + "/" + alg->name() );
+  } );
   if ( !isDefault(context())  ) msg << ", with context '" << context() << "'";
   if ( !isDefault(rootInTES()) ) msg << ", with rootInTES '" << rootInTES() << "'";
   if ( !isDefault(globalTimeOffset()) ) msg << ", with globalTimeOffset " << globalTimeOffset();
   msg << endmsg;
 
   return final;
-
 }
 
 //=========================================================================
@@ -357,9 +361,9 @@ void GaudiSequencer::membershipHandler ( Property& /* p */ )
   m_timer = m_timerTool->addTimer( name() );
   m_timerTool->increaseIndent();
 
-  for ( auto itE = m_entries.begin() ; m_entries.end() != itE; ++itE )
+  for ( auto& entry : m_entries )
   {
-    itE->setTimer( m_timerTool->addTimer( itE->algorithm()->name() ) );
+    entry.setTimer( m_timerTool->addTimer( entry.algorithm()->name() ) );
   }
 
   m_timerTool->decreaseIndent();

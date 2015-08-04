@@ -134,8 +134,7 @@ inline void AIDA::Annotation::setValue( const std::string & key, const std::stri
 inline void AIDA::Annotation::setSticky( const std::string & key, bool sticky)
 {
   auto iKey = m_identifiers.find( key );
-  if ( iKey == m_identifiers.end() ) return;
-  m_annotationItems[ iKey->second ].m_sticky = sticky;
+  if ( iKey != m_identifiers.end() ) m_annotationItems[ iKey->second ].m_sticky = sticky;
 }
 
 inline int AIDA::Annotation::size() const  {
@@ -162,7 +161,6 @@ inline void AIDA::Annotation::reset()
   for ( const auto& item : m_annotationItems ) {
     if ( !item.m_sticky ) itemsToRemove.push_back( item.m_key );
   }
-
   for ( const auto& i : itemsToRemove ) removeItem(i);
 }
 

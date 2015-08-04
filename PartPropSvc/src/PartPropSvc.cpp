@@ -103,7 +103,7 @@ PartPropSvc::initialize() {
 StatusCode
 PartPropSvc::finalize() {
 
-  m_pdt.reset(nullptr);
+  m_pdt.reset();
 
   if (m_upid_local && m_upid ) {
     m_upid_local = false;
@@ -138,8 +138,8 @@ PartPropSvc::parseTableType(const std::string& typ)
                          { return typ == p.first; } );
   if ( i == std::end(table) ) {
     m_log << MSG::ERROR << "Unknown Particle Data file type: \""
-	<< typ << "\"" << endmsg;
-     throw  std::runtime_error("error parsing particle table type");
+	      << typ << "\"" << endmsg;
+    throw  std::runtime_error("error parsing particle table type");
   }
   return i->second;
 }

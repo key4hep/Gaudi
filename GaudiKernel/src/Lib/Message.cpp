@@ -354,7 +354,6 @@ void Message::invalidFormat() const
 // Purpose: Sets the minimum width of a stream field.
 // ---------------------------------------------------------------------------
 //
-
 namespace {
     // Check that a container only contains digits.
     constexpr struct all_digit_t {
@@ -394,7 +393,7 @@ void Message::sizeField( const std::string& text ) const
     // Truncate the text if it is too long.
     if ( m_width < static_cast<int>( text.length() ) ) {
       newText = text.substr( 0, m_width );
-      for ( int i = 0, j = newText.length()-1; i < 3 && j >= 0; i++, j-- )
+      for ( int i = 0, j = newText.length()-1; i < 3 && j >= 0; ++i, --j )
         newText[ j ] = '.';
     }
 

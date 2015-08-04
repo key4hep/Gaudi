@@ -6,7 +6,6 @@
 #include <cctype>
 #include <fstream>
 #include "boost/algorithm/string/split.hpp"
-#include "boost/algorithm/string/trim.hpp"
 #include "boost/utility/string_ref.hpp"
 // ============================================================================
 // GaudiKernel
