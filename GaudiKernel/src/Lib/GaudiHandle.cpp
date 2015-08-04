@@ -6,8 +6,8 @@
 // GaudiHandleBase implementation
 //
 
-void GaudiHandleBase::setTypeAndName( const std::string& myTypeAndName ) {
-  m_typeAndName = myTypeAndName;
+void GaudiHandleBase::setTypeAndName( std::string myTypeAndName ) {
+  m_typeAndName = std::move(myTypeAndName);
 }
 
 std::string GaudiHandleBase::type() const {
@@ -22,7 +22,7 @@ std::string GaudiHandleBase::type() const {
 }
 
 std::string GaudiHandleBase::name() const {
-  std::string::size_type slash = m_typeAndName.find('/');
+  auto slash = m_typeAndName.find('/');
   if ( slash == std::string::npos ) {
     // only type is given, or string is empty.
     // return default name (=type or empty, in this case full string)
@@ -41,11 +41,11 @@ void GaudiHandleBase::setName( const std::string& myName ) {
   m_typeAndName = type() + '/' + myName;
 }
 
-const std::string GaudiHandleBase::pythonPropertyClassName() const {
+std::string GaudiHandleBase::pythonPropertyClassName() const {
   return componentType() + "Handle";
 }
 
-const std::string GaudiHandleBase::messageName() const {
+std::string GaudiHandleBase::messageName() const {
   std::string propName = propertyName();
   if ( propName.empty() ) {
     propName = pythonPropertyClassName() + "('" + m_typeAndName + "')";
@@ -53,7 +53,7 @@ const std::string GaudiHandleBase::messageName() const {
   return parentName() + "." + propName;
 }
 
-const std::string GaudiHandleBase::pythonRepr() const {
+std::string GaudiHandleBase::pythonRepr() const {
   return pythonPropertyClassName() + "('" + m_typeAndName + "')";
 }
 
@@ -87,23 +87,20 @@ const std::vector< std::string > GaudiHandleArrayBase::names() const {
   return getBaseInfos( &GaudiHandleBase::name );
 }
 
-const std::string GaudiHandleArrayBase::pythonPropertyClassName() const {
+std::string GaudiHandleArrayBase::pythonPropertyClassName() const {
   return componentType() + "HandleArray";
 }
 
-const std::string GaudiHandleArrayBase::pythonRepr() const {
+std::string GaudiHandleArrayBase::pythonRepr() const {
   std::string repr = pythonPropertyClassName() + "([";
-  const auto& theList = typesAndNames();
-  auto itEnd = theList.end();
-  auto itLast = std::prev(itEnd);
-  for (auto it = theList.begin() ; it != itEnd; ++it ) {
-    repr += "'" + *it + "'";
-    if ( it != itLast ) repr += ",";
-  }
+  auto theList = typesAndNames();
+  auto first = theList.begin();
+  auto last = theList.end();
+  if ( first != last ) { repr += "'" + *first + "'"; ++first; }
+  for (;first!=last;++first) repr += ",'" + *first + "'";
   repr += "])";
   return repr;
 }
-
 
 //
 // Public functions
@@ -116,4 +113,3 @@ std::ostream& operator<<( std::ostream& os, const GaudiHandleInfo& handle ) {
   os << msg;
   return os;
 }
-
