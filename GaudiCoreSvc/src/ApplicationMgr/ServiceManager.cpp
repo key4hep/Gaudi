@@ -250,7 +250,7 @@ StatusCode ServiceManager::declareSvcType( const std::string& svcname,
                                            const std::string& svctype )
 //------------------------------------------------------------------------------
 {
-  auto p = m_maptype.insert(std::make_pair(svcname, svctype));
+  auto p = m_maptype.insert( { svcname, svctype } );
   if( !p.second ) {
     m_maptype.erase ( p.first );
     p = m_maptype.insert(std::make_pair(svcname, svctype) );

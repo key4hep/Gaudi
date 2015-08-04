@@ -116,7 +116,7 @@ EventCollectionSelector::connectDataSource(const std::string& db, const std::str
   SmartIF<IDataSourceMgr> svc(m_tupleSvc);
   if ( svc.isValid( ) && db.length() > 0 )   {
     std::string ident = name() + ' ';
-    ident += "DATAFILE='" + m_database.substr(5,m_database.length()) + "' ";
+    ident += "DATAFILE='" + m_database.substr(5) + "' ";
     if ( !m_dbSvc.empty() )
       ident += "SVC='" + m_dbSvc + "' ";
     else
@@ -138,7 +138,7 @@ EventCollectionSelector::connectTuple(const std::string& nam, const std::string&
   if ( status.isSuccess() )    {
     item = new NTuple::Item<IOpaqueAddress*>();
     status = tup->item(itName, *item);
-    if ( status.isSuccess() )   return status;
+    if ( status.isSuccess() ) return status;
     MsgStream log(msgSvc(), name());
     log << MSG::ERROR << "Item " << itName << " is not part of the collection:" << top << endmsg;
     delete item;
@@ -172,7 +172,7 @@ EventCollectionSelector::connectStatement(const std::string& typ, const std::str
 /// Read next record of the N-tuple
 StatusCode EventCollectionSelector::getNextRecord(NTuple::Tuple* tuple)   const {
   StatusCode status = StatusCode::FAILURE;
-  if ( 0 != tuple )   {
+  if ( tuple )   {
     do {
       status = m_tupleSvc->readRecord(tuple);
       if ( status.isSuccess() )   {
@@ -241,8 +241,8 @@ StatusCode EventCollectionSelector::connectCollection(MyContextType* ctxt) const
 // Finalize service
 StatusCode EventCollectionSelector::finalize()    {
   // release services
-  m_pAddrCreator = 0;
-  m_tupleSvc = 0;
+  m_pAddrCreator = nullptr;
+  m_tupleSvc = nullptr;
   return Service::finalize();
 }
 
@@ -250,7 +250,7 @@ StatusCode EventCollectionSelector::finalize()    {
 StatusCode
 EventCollectionSelector::createContext(Context*& refpCtxt) const
 {
-  refpCtxt = 0;
+  refpCtxt = nullptr;
   std::unique_ptr<MyContextType> ctxt(new MyContextType());
   StatusCode status = connectCollection(ctxt.get());
   if( !status.isSuccess() )  {
@@ -323,7 +323,7 @@ EventCollectionSelector::createAddress(const Context& refCtxt, IOpaqueAddress*& 
   if ( ctxt )   {
     IOpaqueAddress* pA = *(ctxt->item);
     if ( pA )  {
-      IOpaqueAddress* pAddress = 0;
+      IOpaqueAddress* pAddress = nullptr;
       StatusCode status = m_pAddrCreator->createAddress(pA->svcType(),
                                                         pA->clID(),
                                                         pA->par(),

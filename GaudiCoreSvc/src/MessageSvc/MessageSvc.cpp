@@ -16,6 +16,10 @@
 
 namespace {
 
+  // erase_if functions for containers which do NOT invalidate iterators
+  // after the erase point, eg.std::{unordered_}{,multi}map, std::{forward_,}list. 
+  // To be explicit: this does NOT work with std::vector.
+
   template < typename Container, typename Iterator, typename Predicate >
   void erase_if( Container& c, Iterator first, Iterator last, Predicate pred) {
     while ( first!=last ) {
@@ -480,33 +484,24 @@ void MessageSvc::reportMessage( const Message& msg, int outputLevel )    {
     // get the new value.
     const int nmsg = ++(m_sourceMap[msg.getSource()].msg[key]);
 
-    if (m_suppress.value()) {
-
-      if ( m_msgLimit[key] != 0 ) {
-        if (nmsg == m_msgLimit[key]) {
-          std::string txt = levelNames[key] + " message limit ("
-              + std::to_string( m_msgLimit[key].value() )
-              + ") reached for " + msg.getSource() + ". Suppressing further output.";
-          cmsg = new Message(msg.getSource(), MSG::WARNING, txt);
-          cmsg->setFormat(msg.getFormat());
-        } else if (nmsg > m_msgLimit[key]) {
-          return;
-        }
+    if (m_suppress.value() && m_msgLimit[key] != 0 ) {
+      if (nmsg > m_msgLimit[key]) return;
+      if (nmsg == m_msgLimit[key]) {
+        std::string txt = levelNames[key] + " message limit ("
+            + std::to_string( m_msgLimit[key].value() )
+            + ") reached for " + msg.getSource() + ". Suppressing further output.";
+        cmsg = new Message(msg.getSource(), MSG::WARNING, txt);
+        cmsg->setFormat(msg.getFormat());
       }
     }
-
   }
 
-  auto first = m_streamMap.lower_bound( key );
-  if ( first != m_streamMap.end() ) {
-    auto last = m_streamMap.upper_bound( key );
-    while( first != last ) {
-      std::ostream& stream = *( (*first).second.second );
-      stream << *cmsg << std::endl;
-      first++;
-    }
-  }
-  else if ( key >= outputLevel )   {
+  auto range = m_streamMap.equal_range( key );
+  if ( range.first != m_streamMap.end() ) {
+    std::for_each( range.first,range.second, [&](StreamMap::const_reference sm) {
+      *sm.second.second << *cmsg << std::endl;
+    });
+  } else if ( key >= outputLevel )   {
     msg.setFormat(m_defaultFormat);
     msg.setTimeFormat(m_defaultTimeFormat);
     if (!m_color) {
@@ -569,19 +564,17 @@ void MessageSvc::reportMessage (const StatusCode& key,
 {
   std::unique_lock<std::recursive_mutex> lock(m_messageMapMutex);
 
-  auto first = m_messageMap.lower_bound( key );
-  if ( first != m_messageMap.end() ) {
-    auto last = m_messageMap.upper_bound( key );
-    while( first != last ) {
-      Message msg = (*first).second;
+  auto range = m_messageMap.equal_range( key );
+  if ( range.first != m_messageMap.end() ) {
+    std::for_each( range.first, range.second, 
+                   [&](MessageMap::const_reference sm) {
+      Message msg = sm.second;
       msg.setSource( source );
       Message stat_code1( source, msg.getType(), "Status Code " + std::to_string(key.getCode()) );
       reportMessage( stat_code1 );
       reportMessage( msg );
-      first++;
-    }
-  }
-  else {
+    } );
+  } else {
     Message mesg = m_defaultMessage;
     mesg.setSource( source );
     Message stat_code2( source,  mesg.getType(), "Status Code " + std::to_string( key.getCode() ) );
@@ -736,14 +729,6 @@ void MessageSvc::setOutputLevel(const std::string& source, int level)    {
 // ---------------------------------------------------------------------------
   std::unique_lock<std::recursive_mutex> lock(m_thresholdMapMutex);
 
-  /*
-  auto p = m_thresholdMap.insert(ThresholdMap::value_type( source, level) );
-  if( p.second == false ) {
-    // Already esisting an output level for that source. Erase and enter it again
-    m_thresholdMap.erase ( p.first );
-    m_thresholdMap.insert(ThresholdMap::value_type( source, level) );
-  }
-  */
   m_thresholdMap[source] = level;
 }
 
