@@ -481,13 +481,13 @@ namespace Gaudi
       public:
         // ======================================================================
         /// set new header
-        void setHeader ( const std::string& v ) { m_header = v ; }
+        void setHeader ( std::string v ) { m_header = std::move(v) ; }
         // ======================================================================
         /// set new footer
-        void setFooter ( const std::string& v ) { m_footer = v ; }
+        void setFooter ( std::string v ) { m_footer = std::move(v) ; }
         // ======================================================================
         /// set new format
-        void setFormat ( const std::string& v ) { m_format = v ; }
+        void setFormat ( std::string v ) { m_format = std::move(v) ; }
         // ======================================================================
       public :
         // ======================================================================

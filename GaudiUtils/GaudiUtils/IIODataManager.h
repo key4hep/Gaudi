@@ -31,9 +31,9 @@ namespace Gaudi  {
     /// Physical file name of the connection
     std::string              m_pfn;
     /// Age counter
-    int                      m_age;
+    int                      m_age = 0;
     /// Owner pointer
-    const IInterface*        m_owner;
+    const IInterface*        m_owner = nullptr;
   public:
     /// I/O Connection types
     enum IoType   { READ=1<<1,UPDATE=1<<2,CREATE=1<<3,RECREATE=(1<<4)+(1<<3) };
@@ -41,20 +41,20 @@ namespace Gaudi  {
     enum IoStatus { BAD_DATA_CONNECTION=4 };
   public:
     /// Standard constructor
-    IDataConnection(const IInterface* own, const std::string& nam)
-    : m_name(nam), m_age(0), m_owner(own) {}
+    IDataConnection(const IInterface* own, std::string nam)
+    : m_name(std::move(nam)), m_owner(own) {}
     /// Standard destructor
-    virtual ~IDataConnection() {}
+    virtual ~IDataConnection() = default;
     /// Connection name
     const std::string& name() const       {     return m_name;       }
     /// Set file ID
-    void setFID(const std::string& fid)   {     m_fid = fid;         }
+    void setFID(std::string fid)          {     m_fid = std::move(fid); }
     /// Access file id
     const std::string& fid() const        {     return m_fid;        }
     /// Access physical file name
     const std::string& pfn() const        {     return m_pfn;        }
     /// Set physical file name
-    void setPFN(const std::string& fn)    {     m_pfn = fn;          }
+    void setPFN(std::string fn)           {     m_pfn = std::move(fn); }
     /// Increase age of I/O source
     int ageFile()                         {     return ++m_age;      }
     /// Reset age
