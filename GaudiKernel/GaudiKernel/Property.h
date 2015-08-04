@@ -37,9 +37,10 @@ GAUDI_API std::ostream& operator<<(std::ostream& stream, const Property& prop);
  */
 class GAUDI_API Property
 {
-public:
+private:
   // the default constructor is disabled
-  Property() = delete;
+  Property();
+public:
   /// property name
   const std::string&    name      () const { return m_name             ; }
   /// property documentation
@@ -416,8 +417,8 @@ public:
 private:
   // ==========================================================================
   /// the default & copy constructors are deleted
-  PropertyWithVerifier() = delete;
-  PropertyWithVerifier( const  PropertyWithVerifier& right ) = delete;
+  PropertyWithVerifier(); 
+  PropertyWithVerifier( const  PropertyWithVerifier& right );
   // ==========================================================================
 private:
   // ==========================================================================
@@ -637,8 +638,9 @@ public:
   /// assignment form the other property type
   template <class OTHER>
   SimplePropertyRef& operator=( const PropertyWithValue<OTHER>& right ) ;
+private:
   // the default constructor is disabled
-  SimplePropertyRef() = delete;
+  SimplePropertyRef() ;
 };
 // ============================================================================
 /// Constructor from the name, the value and the verifier
