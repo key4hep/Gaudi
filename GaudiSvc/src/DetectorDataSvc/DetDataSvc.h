@@ -50,7 +50,7 @@ public:
   DetDataSvc(const std::string& name, ISvcLocator* svc);
 
   /// Standard Destructor
-  virtual ~DetDataSvc();
+  virtual ~DetDataSvc() = default;
 
 private:
   /// Deal with Detector Description initialization
@@ -75,7 +75,7 @@ public:
   // Implementation of the IIncidentListener interface
 
   /// Inform that a new incident has occured
-  virtual void handle( const Incident& );
+  void handle( const Incident& ) override;
 
 private:
 
@@ -98,7 +98,7 @@ private:
   Gaudi::Time        m_eventTime;
 
   /// Address Creator to be used
-  SmartIF<IAddressCreator> m_addrCreator;
+  SmartIF<IAddressCreator> m_addrCreator = nullptr;
 
 };
 

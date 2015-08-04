@@ -61,7 +61,7 @@ StatusCode DetDataSvc::setupDetectorDescription() {
 
   if( m_usePersistency ) {
 
-    IOpaqueAddress* rootAddr;
+    IOpaqueAddress* rootAddr = nullptr;
     if( m_detDbLocation.empty() || "empty" == m_detDbLocation ) {
 
       // if the name of DBlocation is not given - construct it!
@@ -191,11 +191,6 @@ DetDataSvc::DetDataSvc(const std::string& name,ISvcLocator* svc) :
   declareProperty("PersistencySvc",  m_persistencySvcName = "DetectorPersistencySvc" );
   m_rootName = "/dd";
   m_rootCLID = CLID_Catalog;
-  m_addrCreator = 0;
-}
-
-/// Standard Destructor
-DetDataSvc::~DetDataSvc()  {
 }
 
 /// Set the new event time
@@ -221,7 +216,6 @@ void DetDataSvc::handle ( const Incident& inc ) {
     debug() << "Incident source: " << inc.source() << endmsg;
     debug() << "Incident type: " << inc.type() << endmsg;
   }
-  return;
 }
 
 /// Update object
@@ -238,7 +232,7 @@ StatusCode DetDataSvc::updateObject( DataObject* toUpdate ) {
 
   // Retrieve IValidity interface of object to update
   IValidity* condition = dynamic_cast<IValidity*>( toUpdate );
-  if ( 0 == condition ) {
+  if ( !condition ) {
     warning()
 	<< "Cannot update DataObject: DataObject does not implement IValidity"
 	<< endmsg;
@@ -275,7 +269,7 @@ StatusCode DetDataSvc::updateObject( DataObject* toUpdate ) {
 
   // Now cross-check that the new condition is valid
   condition = dynamic_cast<IValidity*>(toUpdate);
-  if ( 0 == condition ) {
+  if ( !condition ) {
     error() << "Updated DataObject does not implement IValidity" << endmsg;
     return StatusCode::FAILURE;
   }
