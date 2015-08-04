@@ -364,8 +364,8 @@ class ToolFactory {
 public:
 #ifndef __REFLEX__
   template <typename S, typename... Args>
-  static typename S::ReturnType create(Args... args) {
-    return new T(args...);
+  static typename S::ReturnType create(Args&&... args) {
+    return new T(std::forward<Args>(args)...);
   }
 #endif
 };

@@ -171,8 +171,8 @@ class CnvFactory {
 public:
 #ifndef __REFLEX__
   template <typename S, typename... Args>
-  static typename S::ReturnType create(Args... a1) {
-    return new T(a1...);
+  static typename S::ReturnType create(Args&&... a1) {
+    return new T(std::forward<Args>(a1)...);
   }
 #endif
 };
