@@ -168,8 +168,6 @@ private:
   RemoteProperties       m_remoteProperties;  // Remote properties
   /// Properties to be deleted
   std::vector<std::unique_ptr<Property>> m_todelete ;  // properties to be deleted
-  ///  Flag to decide to delete or not a propertyRef
-  std::vector<bool>      m_isOwned         ;  // flag to delete
   /// Interface hub reference (ApplicationMgr)
   IInterface*            m_pOuter  ;  // Interface hub reference
 };
