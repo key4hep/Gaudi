@@ -177,14 +177,14 @@ namespace Io {
 
   typedef int Fd;
 
-  class FileAttr {
+  class FileAttr final {
   public:
 
-    FileAttr():m_fd(-1),m_name(""),m_desc(""),m_tech(UNKNOWN),m_flags(INVALID),
-	       m_iflags(INVALID),m_fptr(0),m_isOpen(false), m_shared(false){};
-    FileAttr(Fd f, const std::string& n, const std::string& d, IoTech t,
+    FileAttr() = default;
+    FileAttr(Fd f, std::string n, std::string d, IoTech t,
 	     IoFlags fa, void* p, bool o, bool s=false):
-      m_fd(f),m_name(n),m_desc(d),m_tech(t),m_flags(fa),m_iflags(fa),m_fptr(p),
+      m_fd(f),m_name(std::move(n)),m_desc(std::move(d)),
+      m_tech(t),m_flags(fa),m_iflags(fa),m_fptr(p),
       m_isOpen(o),m_shared(s){};
 
     Fd          fd() const       { return m_fd; }
@@ -236,15 +236,15 @@ namespace Io {
 
   private:
 
-    Fd          m_fd;
+    Fd          m_fd = -1;
     std::string m_name;
     std::string m_desc;
-    IoTech      m_tech;
-    IoFlags     m_flags;
-    IoFlags     m_iflags;
-    void*       m_fptr;
-    bool        m_isOpen;
-    bool        m_shared;
+    IoTech      m_tech = UNKNOWN;
+    IoFlags     m_flags = INVALID;
+    IoFlags     m_iflags = INVALID;
+    void*       m_fptr = nullptr;
+    bool        m_isOpen = false;
+    bool        m_shared = false;
 
   };
 
