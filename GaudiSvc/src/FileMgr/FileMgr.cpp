@@ -7,7 +7,6 @@
 
 #include "RootFileHandler.h"
 #include "POSIXFileHandler.h"
-#include "boost/function.hpp"
 
 #define ON_DEBUG if (UNLIKELY(outputLevel() <= MSG::DEBUG))
 #define ON_VERBOSE if (UNLIKELY(outputLevel() <= MSG::VERBOSE))
@@ -478,14 +477,14 @@ FileMgr::open( const IoTech& tech, const std::string& caller,
 
     try {
       r = fh.b_open_fcn(fname,flags,desc,fd,ptr);
-    } catch (const boost::bad_function_call& err) {
+    } catch (const std::bad_function_call& err) {
       m_log << MSG::ERROR << "when calling open handler for " << tech
 	    << " on file "
 	    << fname << " caught " << err.what() << endmsg;
       return -4;
     } catch (...) {
       m_log << MSG::ERROR << "when calling open handler for " << tech
-	    << " on fle "
+	    << " on file "
 	    << fname << " caught an unknown exception." << endmsg;
     return -4;
     }
@@ -626,7 +625,7 @@ FileMgr::close( Fd fd, const std::string& caller ) {
 
     try {
       r = fh.b_close_fcn(fd);
-    } catch (const boost::bad_function_call& err) {
+    } catch (const std::bad_function_call& err) {
       m_log << MSG::ERROR << "when calling close handler for " << tech
 	    << " on file descriptor "
 	    << fd << " caught " << err.what() << endmsg;
@@ -750,7 +749,7 @@ FileMgr::close(void* vp, const std::string& caller) {
 
     try {
       r = fh.b_closeP_fcn(vp);
-    } catch (const boost::bad_function_call& err) {
+    } catch (const std::bad_function_call& err) {
       m_log << MSG::ERROR << "when calling close handler for " << tech
 	    << " on file " << fa->name()
 	    << " caught " << err.what() << endmsg;
@@ -849,7 +848,7 @@ FileMgr::reopen(Fd fd, const IoFlags& flags, const std::string& caller) {
 
   try {
     r = fh.b_reopen_fcn(fd,flags);
-  } catch (const boost::bad_function_call& err) {
+  } catch (const std::bad_function_call& err) {
     m_log << MSG::ERROR << "when calling reopen handler for " << tech
 	  << " on file descriptor " << fd << " with flags "
 	  << flags
@@ -929,7 +928,7 @@ FileMgr::reopen(void* vp, const IoFlags& flags, const std::string& caller) {
 
   try {
     r = fh.b_reopenP_fcn(vp,flags);
-  } catch (const boost::bad_function_call& err) {
+  } catch (const std::bad_function_call& err) {
     m_log << MSG::ERROR << "when calling reopen handler for " << tech
 	  << " on file " << fa->name() << " with flags "
 	  << flags
