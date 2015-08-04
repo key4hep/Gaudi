@@ -3,9 +3,11 @@
 // ============================================================================
 // STD&STL
 // ============================================================================
-#include <cstdlib>
-#include <cstring>
+#include <cctype>
 #include <fstream>
+#include "boost/algorithm/string/split.hpp"
+#include "boost/algorithm/string/trim.hpp"
+#include "boost/utility/string_ref.hpp"
 // ============================================================================
 // GaudiKernel
 // ============================================================================
@@ -314,7 +316,7 @@ StatusCode ParticlePropertySvc::parse( const std::string& file )
   StatusCode sc = StatusCode::FAILURE;
 
   MsgStream log( msgSvc(), name() );
-  char line[ 255 ];
+  std::array<char,255> line;
 
   std::unique_ptr<std::istream> infile;
   if (m_fileAccess) infile = m_fileAccess->open(file);
@@ -330,55 +332,43 @@ StatusCode ParticlePropertySvc::parse( const std::string& file )
   log << MSG::INFO
       << "Opened particle properties file : " << file << endmsg;
 
+  std::vector<std::string> tokens; tokens.reserve(9);
   while( *infile )
   {
     // parse each line of the file (comment lines begin with # in the cdf
     // file,
-    infile->getline( line, 255 );
+    infile->getline( line.begin(), line.size() );
 
     if ( line[0] == '#' ) continue;
 
     /// @todo: This PPS should be removed from Gaudi, if not, the parser must be improved
-#ifdef WIN32
-// Disable warning
-//   C4996: 'strtok': This function or variable may be unsafe.
-#pragma warning(disable:4996)
-#endif
-    std::string par, gid, jid, chg, mas, lif, evt, pyt, mwi ;
-    char* token = strtok( line, " " );
-    if ( token ) { par = token; token = strtok( nullptr, " " );} else continue;
-    if ( token ) { gid = token; token = strtok( nullptr, " " );} else continue;
-    if ( token ) { jid = token; token = strtok( nullptr, " " );} else continue;
-    if ( token ) { chg = token; token = strtok( nullptr, " " );} else continue;
-    if ( token ) { mas = token; token = strtok( nullptr, " " );} else continue;
-    if ( token ) { lif = token; token = strtok( nullptr, " " );} else continue;
-    if ( token ) { evt = token; token = strtok( nullptr, " " );} else continue;
-    if ( token ) { pyt = token; token = strtok( nullptr, " " );} else continue;
-    if ( token ) { mwi = token; token = strtok( nullptr, " " );} else continue;
-    if ( token != nullptr ) continue;
+    tokens.clear();
+    auto buffer = boost::string_ref(line.begin());// getline puts a \0 at the end of what it read... (this is one annoying extra loop...)
+    auto delim = [](char c) { return isspace(c);};
+    buffer.remove_prefix( std::distance(std::begin(buffer),
+                                        std::find_if_not(std::begin(buffer), std::end(buffer), delim)));
+    boost::algorithm::split( tokens, buffer, delim , boost::token_compress_on );
+    if (tokens.size()!=9) continue;
 
-    // In SICb cdf file mass and lifetime units are GeV and sec, specify it so
-    // that they are converted to Gaudi units (MeV and ns)
-    double mass = std::stod( mas ) * Gaudi::Units::GeV;
-    double tlife = std::stod( lif ) * Gaudi::Units::s;
-    long   ljid = std::stoi( jid );
-    long   lgid = std::stoi( gid );
-    long   lpyt = std::stoi( pyt ) ;
-    double mW = std::stod( mwi ) * Gaudi::Units::GeV ;
-
+    auto gid = std::stoi( tokens[1] );
+    auto jid = std::stoi( tokens[2] );
     // Change the particles that do not correspond to a pdg number
-    if ( ljid == 0 ) {
-      ljid = 10000000*lgid;
-    }
+    if ( jid == 0 ) jid = 10000000*gid;
 
     // add a particle property
-    sc = push_back( par, lgid, ljid,
-                    std::stod( chg ), mass, tlife, evt, lpyt, mW ) ;
+    sc = push_back( tokens[0], gid, jid,
+                    std::stod( tokens[3] ), 
+                    std::stod( tokens[4] ) * Gaudi::Units::GeV,
+                    std::stod( tokens[5] ) * Gaudi::Units::s,
+                    tokens[6], 
+                    std::stoi( tokens[7] ), 
+                    std::stod( tokens[8] ) * Gaudi::Units::GeV ) ;
+
     if ( sc.isFailure() )
     {
       log << MSG::ERROR
           << "Error from ParticlePropertySvc::push_back for particle='"
-          << par << "'" << endmsg ;
+          << tokens[0] << "'" << endmsg ;
     }
 
   }
