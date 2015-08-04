@@ -117,13 +117,11 @@ public:
     ~Printout () ;
     /// Callback for printout with Counter pointers
     StatusCode operator()( MsgStream& log , const Counter* cnt )  const ;
-  private:
-    // no defauld constructor
-    Printout () ; ///< no defauld constructor
-    // no copy
-    Printout ( const Printout& ) ; //< no coy constructor
-    // no assignement
-    Printout& operator=( const Printout& ) ; ///< no assigment is allowed
+
+    // no default,copy constructor, assignment
+    Printout () = delete; ///< no default constructor
+    Printout ( const Printout& ) = delete; //< no copy constructor
+    Printout& operator=( const Printout& ) = delete; ///< no assigment is allowed
   private:
     /// Reference to counter service
     ICounterSvc* m_svc;
