@@ -81,7 +81,7 @@ namespace Gaudi
      *  @author Vanya BELYAEV ibelyaev@phys.syr.edu
      *  @date   2007-03-07
      */
-    class GAUDI_API AlgContext
+    class GAUDI_API AlgContext final
     {
     public:
       /** constructor from the service and the algorithm
@@ -128,5 +128,3 @@ namespace Gaudi
 // ============================================================================
 #endif // GAUDIKERNEL_IALGCONTEXTSVC_H
 // ============================================================================
-
-
