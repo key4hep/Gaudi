@@ -25,7 +25,7 @@ protected:
   ObjectContainerBase() = default;
 
   /// Destructor
-  virtual ~ObjectContainerBase() = default;
+  ~ObjectContainerBase() override = default;
 
 public:
 
@@ -51,7 +51,6 @@ public:
       If the object was fount it's index is returned.                */
   virtual long remove(ContainedObject* value) = 0;
 
-private:
 };
 
 #endif    // GAUDI_OBJECTCONTAINERBASE_H
