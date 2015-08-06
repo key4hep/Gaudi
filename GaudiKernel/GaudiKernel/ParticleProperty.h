@@ -19,28 +19,27 @@
 class ParticleProperty final {
 public:
   /// Constructors
-  ParticleProperty() {}
+  ParticleProperty() = default;
   
   ParticleProperty
-  ( const std::string& particle   , 
+  ( std::string        particle   , 
     int                geantId    , 
     int                jetsetId   , 
     double             charge     , 
     double             mass       , 
     double             tlife      , 
-    const std::string& evtgenName ,
+    std::string        evtgenName ,
     int                pythiaId   , 
     double             maxWidth   ) 
-    : m_name         ( particle   )
+    : m_name         ( std::move(particle)   )
     , m_idgeant      ( geantId    )
     , m_idjetset     ( jetsetId   )
     , m_charge       ( charge     )
     , m_mass         ( mass       )
     , m_tlife        ( tlife      )
-    , m_evtgenName   ( evtgenName )
+    , m_evtgenName   ( std::move(evtgenName) )
     , m_pythiaId     ( pythiaId   )
     , m_maxWidth     ( maxWidth   ) 
-    , m_anti         ( 0          ) 
   {}
   
   /// Destructor.
@@ -155,7 +154,7 @@ private:
   double m_maxWidth ;
   
   /// the antiparticle 
-  const ParticleProperty* m_anti ;
+  const ParticleProperty* m_anti = nullptr;
 };
 
 #endif
