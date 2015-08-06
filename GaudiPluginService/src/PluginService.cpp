@@ -45,20 +45,20 @@ namespace {
 // http://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
 
 
-constexpr struct is_not_space_t {
-    bool operator()(int i) const { return !std::isspace(i); }
-} is_not_space {};
+constexpr struct is_space_t {
+    bool operator()(int i) const { return std::isspace(i); }
+} is_space {};
 
 // trim from start
 static inline std::string &ltrim(std::string &s) {
         s.erase(s.begin(),
-                std::find_if(s.begin(), s.end(), is_not_space ) );
+                std::find_if_not(s.begin(), s.end(), is_space ) );
         return s;
 }
 
 // trim from end
 static inline std::string &rtrim(std::string &s) {
-        s.erase(std::find_if(s.rbegin(), s.rend(), is_not_space).base(),
+        s.erase(std::find_if_not(s.rbegin(), s.rend(), is_space).base(),
                 s.end());
         return s;
 }
@@ -78,10 +78,9 @@ namespace {
     if (dest.empty()) {
       dest = value;
     } else if (dest != value) {
-      std::ostringstream o;
-      o << "new factory loaded for '" << id << "' with different "
-        << desc << ": " << dest << " != " << value;
-      Gaudi::PluginService::Details::logger().warning(o.str());
+      Gaudi::PluginService::Details::logger().warning(
+       "new factory loaded for '" + id + "' with different "
+        + desc + ": " + dest + " != " + value );
     }
   }
 
@@ -205,10 +204,9 @@ namespace Gaudi { namespace PluginService {
                   // look for the separator
                   std::string::size_type pos = line.find(':');
                   if (pos == std::string::npos) {
-                    std::ostringstream o;
-                    o << "failed to parse line " << fullPath
-                      << ':' << lineCount;
-                    logger().warning(o.str());
+                    logger().warning( "failed to parse line " 
+                                      + fullPath +  ':' 
+                                      + std::to_string(lineCount) );
                     continue;
                   }
                   const std::string lib(line, 0, pos);
@@ -226,9 +224,8 @@ namespace Gaudi { namespace PluginService {
                   ++factoriesCount;
                 }
                 if (logger().level() <= Logger::Debug) {
-                  std::ostringstream o;
-                  o << "  found " << factoriesCount << " factories";
-                  logger().debug(o.str());
+                  logger().debug(  "  found " + std::to_string( factoriesCount ) 
+                                 + " factories" );
                 }
               }
             }
