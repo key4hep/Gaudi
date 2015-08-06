@@ -36,7 +36,7 @@ protected:
 public:
   /// Dummy constructor
   GenericAddress() = default;
-  /// Standard Copy Constructor
+  /// Standard Copy Constructor (note: m_refCount is NOT copied)
   GenericAddress(const GenericAddress& copy)
     : IOpaqueAddress(copy),
       m_svcType(copy.m_svcType),
@@ -51,15 +51,15 @@ public:
   /// Standard Constructor
   GenericAddress( long svc,
                   const CLID& clid,
-                  const std::string& p1="",
-                  const std::string& p2="",
+                  std::string p1="",
+                  std::string p2="",
                   unsigned long ip1=0,
                   unsigned long ip2=0)
     : m_svcType(svc),
       m_clID(clid)
   {
-    m_par[0]  = p1;
-    m_par[1]  = p2;
+    m_par[0]  = std::move(p1);
+    m_par[1]  = std::move(p2);
     m_ipar[0] = ip1;
     m_ipar[1] = ip2;
   }
@@ -82,7 +82,7 @@ public:
     return m_pRegistry;
   }
   /// Set pointer to directory
-  virtual void setRegistry(IRegistry* pRegistry)   {
+  void setRegistry(IRegistry* pRegistry)   override {
     m_pRegistry = pRegistry;
   }
   /// Access : Retrieve class ID of the link
@@ -102,11 +102,11 @@ public:
     m_svcType = typ;
   }
   /// Retrieve string parameters
-  virtual const std::string* par() const   {
+  const std::string* par() const override {
     return m_par;
   }
   /// Retrieve integer parameters
-  virtual const unsigned long* ipar()  const  {
+  const unsigned long* ipar()  const  override {
     return m_ipar;
   }
 };
