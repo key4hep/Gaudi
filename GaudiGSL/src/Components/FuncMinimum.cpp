@@ -15,8 +15,6 @@
 #include "gsl/gsl_blas.h"
 #include "gsl/gsl_errno.h"
 
-#include <sstream>
-
 // local
 #include "FuncMinimum.h"
 
@@ -255,9 +253,9 @@ StatusCode FuncMinimum::minimum (const IFuncMinimum::GenFunc&   func  ,
 
   if (sc.isFailure())
     {
-      std::ostringstream buffer;
-      buffer << "MINIMUM IS NOT FOUND. StatusCode =  '" << sc.getCode() << '\'';
-      return Error (buffer.str(), sc);
+      return Error ( "MINIMUM IS NOT FOUND. StatusCode =  '"  
+                   + std::to_string( sc.getCode() ) +  '\'',
+                     sc );
     }
   else
     {
