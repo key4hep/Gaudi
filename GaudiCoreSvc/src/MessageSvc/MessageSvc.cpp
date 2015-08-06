@@ -57,7 +57,6 @@ static const std::string levelNames[MSG::NUM_LEVELS] = {
 MessageSvc::MessageSvc( const std::string& name, ISvcLocator* svcloc )
   : base_class( name, svcloc ) {
   m_defaultStream = &std::cout;
-  m_outputLevel   = MSG::NIL;
   declareProperty( "Format",      m_defaultFormat = Message::getDefaultFormat() );
   declareProperty( "timeFormat",  m_defaultTimeFormat = Message::getDefaultTimeFormat() );
   declareProperty( "showStats",   m_stats = false );
@@ -110,11 +109,7 @@ MessageSvc::MessageSvc( const std::string& name, ISvcLocator* svcloc )
     m_thresholdProp[ic].declareUpdateHandler(&MessageSvc::setupThreshold, this);
   }
 
-
-  for (int i=0; i<MSG::NUM_LEVELS; ++i) {
-      m_msgCount[i] = 0;
-  }
-
+  std::fill( std::begin(m_msgCount),std::end(m_msgCount), 0 );
 }
 
 //#############################################################################
@@ -179,9 +174,9 @@ void MessageSvc::initColors(Property& /*prop*/) {
         auto &lC = m_logColors[p.first];
         if (lC.value().empty()) {
             lC.set(p.second);
-    } else {
+        } else {
             MessageSvc::setupColors( lC );
-    }
+        }
     }
 
   } else {
@@ -466,7 +461,7 @@ void MessageSvc::reportMessage( const Message& msg, int outputLevel )    {
 
   int key = msg.getType();
 
-  m_msgCount[key] ++;
+  ++m_msgCount[key];
 
   const Message *cmsg = &msg;
 
@@ -490,7 +485,7 @@ void MessageSvc::reportMessage( const Message& msg, int outputLevel )    {
         std::string txt = levelNames[key] + " message limit ("
             + std::to_string( m_msgLimit[key].value() )
             + ") reached for " + msg.getSource() + ". Suppressing further output.";
-        cmsg = new Message(msg.getSource(), MSG::WARNING, txt);
+        cmsg = new Message(msg.getSource(), MSG::WARNING, std::move(txt));
         cmsg->setFormat(msg.getFormat());
       }
     }
@@ -535,8 +530,7 @@ void MessageSvc::reportMessage( const Message& msg )    {
 void MessageSvc::reportMessage (const char* source,
                                 int type,
                                 const char* message) {
-  Message msg( source, type, message);
-  reportMessage( msg );
+  reportMessage( Message{ source, type, message } );
 }
 
 //#############################################################################
@@ -548,8 +542,7 @@ void MessageSvc::reportMessage (const char* source,
 void MessageSvc::reportMessage (const std::string& source,
                                 int type,
                                 const std::string& message) {
-  Message msg( source, type, message);
-  reportMessage( msg );
+  reportMessage( Message{source, type, message} );
 }
 
 //#############################################################################
@@ -564,22 +557,19 @@ void MessageSvc::reportMessage (const StatusCode& key,
 {
   std::unique_lock<std::recursive_mutex> lock(m_messageMapMutex);
 
+  auto report = [&](Message mesg) {
+    mesg.setSource( source );
+    Message stat_code( source,  mesg.getType(), "Status Code " + std::to_string( key.getCode() ) );
+    reportMessage( std::move(stat_code) );
+    reportMessage( std::move(mesg) );
+  };
+
   auto range = m_messageMap.equal_range( key );
   if ( range.first != m_messageMap.end() ) {
     std::for_each( range.first, range.second, 
-                   [&](MessageMap::const_reference sm) {
-      Message msg = sm.second;
-      msg.setSource( source );
-      Message stat_code1( source, msg.getType(), "Status Code " + std::to_string(key.getCode()) );
-      reportMessage( stat_code1 );
-      reportMessage( msg );
-    } );
+                   [&](MessageMap::const_reference sm) { report(sm.second); } );
   } else {
-    Message mesg = m_defaultMessage;
-    mesg.setSource( source );
-    Message stat_code2( source,  mesg.getType(), "Status Code " + std::to_string( key.getCode() ) );
-    reportMessage( stat_code2 );
-    reportMessage( mesg );
+    report(m_defaultMessage);
   }
 }
 

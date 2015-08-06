@@ -275,7 +275,6 @@ IncidentSvc::getListeners(std::vector<IIncidentListener*>& l,
                       [](ListenerList::const_reference j) {
                           return j.iListener;
       });
-
   }
 }
 

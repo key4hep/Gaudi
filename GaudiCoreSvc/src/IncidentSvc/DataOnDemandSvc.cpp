@@ -24,6 +24,7 @@
 #include "GaudiKernel/ToStream.h"
 #include "GaudiKernel/Chrono.h"
 #include "GaudiKernel/LockedChrono.h"
+#include "GaudiKernel/Property.h"
 // ============================================================================
 // Local
 // ============================================================================
@@ -32,7 +33,7 @@
 // Boost
 // ============================================================================
 #include "boost/format.hpp"
-#include "GaudiKernel/Property.h"
+#include "boost/algorithm/string/predicate.hpp"
 // ============================================================================
 // Constructors and Destructor
 // ============================================================================
@@ -140,9 +141,8 @@ namespace
   ( const std::string& value  ,
     const std::string& prefix )
   {
-    return
-      !prefix.empty() && 0 == value.find(prefix) ?
-      std::string( value , prefix.size() ) : value ;
+    return boost::algorithm::starts_with(value,prefix) ?
+      value.substr( prefix.size() ) : value ;
   }
   // ==========================================================================
   /** add a prefix (if needed) to all keys of the map
@@ -157,15 +157,15 @@ namespace
     // empty  prefix
     if ( prefix.empty() ) { return 0 ; }                    // RETURN
     /// loop over all entries to find the  proper keys
-    auto it = std::find_if( _map.begin(), _map.end(), 
+    auto it = std::find_if_not( _map.begin(), _map.end(), 
                             [&](typename MAP::const_reference i) {
-                                return i.first.find(prefix)!=0;
+                                return boost::algorithm::starts_with(i.first,prefix);
     } );
     if ( it == _map.end() ) return 0 ;
     std::string key   = prefix + it->first ;
-    std::string value = it->second ;
+    std::string value = std::move(it->second); // steal the value we're about to erase..
     _map.erase ( it ) ;
-    _map[ key ] = value  ;
+    _map[ key ] = std::move(value); // and move it into its new location
     return 1 + add_prefix ( _map , prefix ) ;    // RETURN, recursion
     //
   }
@@ -608,7 +608,7 @@ namespace {
         auto  result = getter(i);
         if (isGood(result)) return result;
       }
-      return {""};
+      return R{""};
     }
   public:
     /// Constructor.
