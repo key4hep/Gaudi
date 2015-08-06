@@ -29,7 +29,7 @@ namespace Gaudi  {
   class IODataManager : public extends1<Service, IIODataManager> {
   protected:
     typedef const std::string& CSTR;
-    struct Entry  {
+    struct Entry final {
       std::string      type;
       IoType           ioType;
       IDataConnection* connection;
@@ -76,7 +76,7 @@ namespace Gaudi  {
     IODataManager(CSTR nam, ISvcLocator* loc);
 
     /// Standard destructor
-    virtual ~IODataManager()  {}
+    virtual ~IODataManager() = default;
 
     /// IService implementation: initialize the service
     virtual StatusCode initialize();

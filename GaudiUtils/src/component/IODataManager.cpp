@@ -50,7 +50,7 @@ IODataManager::IODataManager(CSTR nam, ISvcLocator* svcloc)
   declareProperty("AgeLimit",         m_ageLimit = 2);
   declareProperty("DisablePFNWarning", m_disablePFNWarning = false,
                   "if set to True, we will not report when a file "
-                  "is opened by it's physical name");
+                  "is opened by its physical name");
 }
 
 /// IService implementation: Db event selector override
@@ -75,13 +75,12 @@ StatusCode IODataManager::initialize()  {
     log << MSG::ERROR << "Error initializing IncidentSvc Service!" << endmsg;
     return status;
   }
-
   return status;
 }
 
 /// IService implementation: finalize the service
 StatusCode IODataManager::finalize()  {
-  m_catalog = 0; // release
+  m_catalog = nullptr; // release
   return Service::finalize();
 }
 
@@ -152,7 +151,7 @@ StatusCode IODataManager::disconnect(Connection* con)    {
 
     auto j = m_fidMap.find(dataset);
     if ( j != m_fidMap.end() )  {
-      std::string fid = (*j).second;
+      std::string fid = j->second;
       std::string gfal_name = "gfal:guid:" + fid;
       auto i=m_connectionMap.find(fid);
       m_fidMap.erase(j);
@@ -161,7 +160,7 @@ StatusCode IODataManager::disconnect(Connection* con)    {
       if ( (j=m_fidMap.find(gfal_name)) != m_fidMap.end() )
         m_fidMap.erase(j);
       if ( i != m_connectionMap.end() ) {
-        if ( (*i).second )  {
+        if ( i->second )  {
           IDataConnection* c = (*i).second->connection;
           std::string pfn = c->pfn();
           if ( (j=m_fidMap.find(pfn)) != m_fidMap.end() )
@@ -172,7 +171,7 @@ StatusCode IODataManager::disconnect(Connection* con)    {
             log << MSG::INFO << "Disconnect from dataset " << dsn
                 << " [" << fid << "]" << endmsg;
           }
-          delete (*i).second;
+          delete i->second;
           m_connectionMap.erase(i);
         }
       }
@@ -381,7 +380,7 @@ IODataManager::connectDataIO(int typ, IoType rw, CSTR dataset, CSTR technology,b
                 << " -- processing continues" << endmsg;
           }
         }
-        m_connectionMap.insert(std::make_pair(fid,e));
+        m_connectionMap.insert( { fid, e } ); // note: only if we disconnect does e get deleted??
         return S_OK;
       }
       // Here we open the file!

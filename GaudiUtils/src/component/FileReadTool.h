@@ -25,16 +25,10 @@ public:
 
   ~FileReadTool() override = default;
 
-
   std::unique_ptr<std::istream> open(const std::string &url) override;
 
   /// Protocols supported by the instance.
   const std::vector<std::string> &protocols() const override;
-
-private:
-
-  /// Vector of supported protocols.
-  std::vector<std::string> m_protocols = {{{"file"}}};
 
 };
 
