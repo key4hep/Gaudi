@@ -60,10 +60,8 @@ constexpr struct select1st_t {
 //*************************************************************************//
 
 THistSvc::THistSvc( const std::string& name, ISvcLocator* svc )
-  : base_class(name, svc), m_log(msgSvc(), name ), signaledStop(false),
-    m_delayConnect(false),m_okToConnect(false),
-    p_incSvc(0), p_fileMgr(0) {
-
+  : base_class(name, svc), m_log(msgSvc(), name )
+{    
   declareProperty ("AutoSave", m_autoSave=0 );
   declareProperty ("AutoFlush", m_autoFlush=0 );
   declareProperty ("PrintAll", m_print=false);
@@ -72,14 +70,6 @@ THistSvc::THistSvc( const std::string& name, ISvcLocator* svc )
   declareProperty ("CompressionLevel", m_compressionLevel=1 )->declareUpdateHandler( &THistSvc::setupCompressionLevel, this );
   declareProperty ("Output", m_outputfile )->declareUpdateHandler( &THistSvc::setupOutputFile, this );
   declareProperty ("Input", m_inputfile )->declareUpdateHandler ( &THistSvc::setupInputFile,  this );
-
-
-}
-
-//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
-
-THistSvc::~THistSvc() {
-
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
@@ -132,7 +122,7 @@ THistSvc::initialize() {
   }
 
   // Protect against multiple instances of TROOT
-  if ( 0 == gROOT )   {
+  if ( !gROOT )   {
     static TROOT root("root","ROOT I/O");
     //    gDebug = 99;
   } else {
@@ -158,13 +148,14 @@ THistSvc::initialize() {
 
   // Register open/close callback actions
 
-  auto boa = [&](const Io::FileAttr* f, const std::string& s) { return this->rootOpenAction(f,s); } ;
+  using namespace std::placeholders;
+  auto boa = std::bind( &THistSvc::rootOpenAction, this, _1, _2 );
   if (p_fileMgr->regAction(boa, Io::OPEN, Io::ROOT).isFailure()) {
     m_log << MSG::ERROR
 	  << "unable to register ROOT file open action with FileMgr"
 	  << endmsg;
   }
-  auto bea = [&](const Io::FileAttr* f, const std::string& s) { return this->rootOpenErrAction(f,s); } ;
+  auto bea = std::bind( &THistSvc::rootOpenErrAction, this, _1,_2);
   if (p_fileMgr->regAction(bea, Io::OPEN_ERR, Io::ROOT).isFailure()) {
     m_log << MSG::ERROR
 	  << "unable to register ROOT file open Error action with FileMgr"
@@ -174,9 +165,9 @@ THistSvc::initialize() {
 
   m_okToConnect = true;
 
-  if (m_delayConnect == true) {
-    if (m_inputfile.value().size() > 0) { setupInputFile(m_inputfile); }
-    if (m_outputfile.value().size() > 0) { setupOutputFile(m_outputfile); }
+  if (m_delayConnect) {
+    if (!m_inputfile.value().empty()) { setupInputFile(m_inputfile); }
+    if (!m_outputfile.value().empty()) { setupOutputFile(m_outputfile); }
 
     m_delayConnect = false;
 
@@ -185,7 +176,7 @@ THistSvc::initialize() {
   m_alreadyConnectedInFiles.clear();
 
 
-  IIoComponentMgr* iomgr(0);
+  IIoComponentMgr* iomgr = nullptr;
 
   if (service("IoComponentMgr", iomgr, true).isFailure()) {
     m_log << MSG::ERROR << "unable to get the IoComponentMgr" << endmsg;
@@ -199,16 +190,11 @@ THistSvc::initialize() {
       st = StatusCode::FAILURE;
     } else {
       bool all_good = true;
-      typedef std::map<std::string, std::pair<TFile*,Mode> > Registry_t;
       // register input/output files...
-      for ( Registry_t::const_iterator
-              ireg = m_files.begin(),
-              iend = m_files.end();
-            ireg != iend;
-            ++ireg ) {
-        const std::string fname = ireg->second.first->GetName();
+      for ( const auto& reg : m_files ) { 
+        const std::string& fname = reg.second.first->GetName();
         const IIoComponentMgr::IoMode::Type iomode =
-          ( ireg->second.second==THistSvc::READ
+          ( reg.second.second==THistSvc::READ
 	    ? IIoComponentMgr::IoMode::READ
 	    : IIoComponentMgr::IoMode::WRITE );
         if ( !iomgr->io_register (this, iomode, fname).isSuccess () ) {
@@ -261,10 +247,9 @@ THistSvc::finalize() {
 
 #ifndef NDEBUG
   if (m_log.level() <= MSG::DEBUG) {
-  uidMap::const_iterator uitr;
-  for (uitr=m_uids.begin(); uitr != m_uids.end(); ++uitr) {
+  for (const auto& uid : m_uids ) {
 
-    TObject* to = uitr->second.obj;
+    TObject* to = uid.second.obj;
 
     string dirname("none");
       if (to && to->IsA()->InheritsFrom("TTree")) {
@@ -273,9 +258,9 @@ THistSvc::finalize() {
         dirname = tr->GetDirectory()->GetPath();
       }
       } else if (to && to->IsA()->InheritsFrom("TGraph")) {
-      if (!uitr->second.temp) {
-        dirname = uitr->second.file->GetPath();
-        string id2(uitr->second.id);
+      if (!uid.second.temp) {
+        dirname = uid.second.file->GetPath();
+        string id2(uid.second.id);
         id2.erase(0,id2.find("/",1));
         id2.erase(id2.rfind("/"), id2.length());
         if (id2.find("/") == 0) {
@@ -288,19 +273,19 @@ THistSvc::finalize() {
       } else if (to && to->IsA()->InheritsFrom("TH1")) {
       TH1* th = dynamic_cast<TH1*>(to);
       if (th == 0) {
-        m_log << MSG::ERROR << "Couldn't dcast: " << uitr->first << endmsg;
+        m_log << MSG::ERROR << "Couldn't dcast: " << uid.first << endmsg;
       } else {
         if (th->GetDirectory() != 0) {
           dirname = th->GetDirectory()->GetPath();
         }
       }
       } else if (! to ) {
-	m_log << MSG::WARNING << uitr->first << " has NULL TObject ptr"
+	m_log << MSG::WARNING << uid.first << " has NULL TObject ptr"
 	      << endmsg;
     }
 
-      m_log << MSG::DEBUG << "uid: \"" << uitr->first << "\"  temp: "
-            << uitr->second.temp << "  dir: " << dirname
+      m_log << MSG::DEBUG << "uid: \"" << uid.first << "\"  temp: "
+            << uid.second.temp << "  dir: " << dirname
             << endmsg;
   }
   }
@@ -1314,8 +1299,6 @@ THistSvc::setupOutputFile( Property& /*m_outputfile*/ )
   } else {
 
   StatusCode sc = StatusCode::SUCCESS;
-
-  typedef std::vector<std::string> Strings_t;
   for ( const auto & itr : m_outputfile.value() ) {
     if ( m_alreadyConnectedOutFiles.end() ==
          m_alreadyConnectedOutFiles.find( itr ) ) {
@@ -1374,16 +1357,12 @@ THistSvc::updateFiles() {
 
       if (oldFile != newFile) {
         std::string newFileName = newFile->GetName();
-        std::string oldFileName(""), streamName, rem;
+        std::string oldFileName, streamName, rem;
         TFile* dummy = nullptr;
         findStream(uitr->second.id, streamName, rem, dummy);
 
-        map<string, pair<TFile*,Mode> >::iterator itr;
-        for (itr=m_files.begin(); itr!= m_files.end(); ++itr) {
-          if (itr->second.first == oldFile) {
-            itr->second.first = newFile;
-
-          }
+        for (auto& itr : m_files ) {
+          if (itr.second.first == oldFile) itr.second.first = newFile;
         }
 
         uitr2 = uitr;
@@ -1409,18 +1388,19 @@ THistSvc::updateFiles() {
 #endif
 
 
-        if (oldFileName != "") {
-          streamMap::iterator sitr = m_fileStreams.find(oldFileName);
-          while ( sitr != m_fileStreams.end() ) {
+        if (!oldFileName.empty()) {
+          auto i = m_fileStreams.lower_bound(oldFileName);
+          while (i != std::end(m_fileStreams) && i->first == oldFileName) {
 
 #ifndef NDEBUG
             if (m_log.level() <= MSG::DEBUG)
-              m_log << MSG::DEBUG << "changing filename \"" << oldFileName
+              m_log << MSG::DEBUG << "changing filename \"" << i->first
                     << "\" to \"" << newFileName << "\" for stream \""
-                    << sitr->second << "\"" << endmsg;
+                    << i->second << "\"" << endmsg;
 #endif
-            m_fileStreams.erase(sitr);
-	        m_fileStreams.insert( { newFileName,streamName } );
+            std::string nm = std::move(i->second);
+            i = m_fileStreams.erase(i);
+	        m_fileStreams.emplace( newFileName, std::move(nm) ); 
           }
 
 
@@ -1430,10 +1410,8 @@ THistSvc::updateFiles() {
         }
 
       }
-
     }
   }
-
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
@@ -1443,15 +1421,15 @@ THistSvc::write() {
 
   updateFiles();
 
-  map<string, pair<TFile*,Mode> >::const_iterator itr;
-  for (itr=m_files.begin(); itr!= m_files.end(); ++itr) {
-    if (itr->second.second == WRITE || itr->second.second == UPDATE
-        ||itr->second.second==SHARE) {
-      itr->second.first->Write("",TObject::kOverwrite);
-    } else if (itr->second.second == APPEND) {
-      itr->second.first->Write("");
-    }
-  }
+  std::for_each( m_files.begin(), m_files.end(), [](std::pair<const std::string,std::pair<TFile*,Mode>>& i) {
+      auto mode = i.second.second;
+      auto file = i.second.first;
+      if ( mode == WRITE || mode == UPDATE || mode == SHARE ) {
+          file->Write("",TObject::kOverwrite);
+      } else if ( mode == APPEND ) {
+          file->Write("");
+      } 
+  } );
 
   if (m_log.level() <= MSG::DEBUG) {
     m_log << MSG::DEBUG << "THistSvc::write()::List of Files connected in ROOT "
@@ -1872,12 +1850,12 @@ THistSvc::handle( const Incident& /* inc */ ) {
   updateFiles();
 
   map<string, pair<TFile*,Mode> >::const_iterator itr;
-  for (itr=m_files.begin(); itr!= m_files.end(); ++itr) {
-    TFile* tf = itr->second.first;
+  for (const auto& f : m_files) {
+    TFile* tf = f.second.first;
 
 #ifndef NDEBUG
     if (m_log.level() <= MSG::DEBUG)
-      m_log << MSG::DEBUG << "stream: " << itr->first << "  name: "
+      m_log << MSG::DEBUG << "stream: " << f.first << "  name: "
             << tf->GetName() << "  size: " << tf->GetSize()
             << endmsg;
 #endif
@@ -1888,7 +1866,7 @@ THistSvc::handle( const Incident& /* inc */ ) {
       signaledStop = true;
 
       m_log << MSG::FATAL << "file \"" << tf->GetName()
-            << "\" associated with stream \"" << itr->first
+            << "\" associated with stream \"" << f.first
             << "\" has exceeded the max file size of "
             << m_maxFileSize.value() << "MB. Terminating Job."
             << endmsg;
@@ -1902,7 +1880,7 @@ THistSvc::handle( const Incident& /* inc */ ) {
       }
     } else if (tf->GetSize() > mfs_warn) {
       m_log << MSG::WARNING << "file \"" << tf->GetName()
-            << "\" associated with stream \"" << itr->first
+            << "\" associated with stream \"" << f.first
             << "\" is at 95% of its maximum allowable file size of "
             << m_maxFileSize.value() << "MB"
             << endmsg;

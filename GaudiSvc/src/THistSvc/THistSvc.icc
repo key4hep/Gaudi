@@ -28,7 +28,7 @@ StatusCode THistSvc::regHist_i(T* hist, const std::string& id) {
   }
 
 
-  TFile *f(0);
+  TFile *f = nullptr;
   std::string stream,rem;
   if (!findStream(idr, stream, rem, f)) {
     m_log << MSG::ERROR << "Could not register id: \"" << idr << "\""
@@ -37,7 +37,7 @@ StatusCode THistSvc::regHist_i(T* hist, const std::string& id) {
   }
 
   std::string uid = "/" + stream + "/" + rem;
-  uidMap::const_iterator itr = m_uids.find(uid);
+  auto itr = m_uids.find(uid);
   if (itr != m_uids.end()) {
     m_log << MSG::ERROR << "already registered an object with identifier \""
 	  << idr << "\"" << endmsg;
@@ -46,7 +46,7 @@ StatusCode THistSvc::regHist_i(T* hist, const std::string& id) {
 
 
   bool temp = false;
-  if (f == 0) {
+  if ( !f ) {
     temp = true;
     if (m_log.level() <= MSG::DEBUG)
       m_log << MSG::DEBUG << "Historgram with id \"" << idr << "\" is temporary"
@@ -54,7 +54,7 @@ StatusCode THistSvc::regHist_i(T* hist, const std::string& id) {
   }
 
 
-  TObject *to;
+  TObject *to = nullptr;
   THistID hid;
 
   // check to see if this hist is to be read in;
@@ -86,7 +86,7 @@ StatusCode THistSvc::regHist_i(T* hist, const std::string& id) {
       return StatusCode::FAILURE;
     }
 
-    objMap::const_iterator oitr = m_tobjs.find(to);
+    auto oitr = m_tobjs.find(to);
     if (oitr != m_tobjs.end()) {
       m_log << MSG::ERROR << "already registered id: \"" << idr
 	    << "\" with identifier \"" << oitr->second.id << "\"" << endmsg;
@@ -96,11 +96,11 @@ StatusCode THistSvc::regHist_i(T* hist, const std::string& id) {
     hid = THistID(uid,temp,to,f,m_files.find(stream)->second.second);
     TDirectory* dir = changeDir(hid);
 
-    if ( dynamic_cast<TTree*>(hist) != 0 ) {
+    if ( dynamic_cast<TTree*>(hist) ) {
       dynamic_cast<TTree*>(hist)->SetDirectory(dir);
-    } else if ( dynamic_cast<TH1*>(hist) != 0 ) {
+    } else if ( dynamic_cast<TH1*>(hist) ) {
       dynamic_cast<TH1*>(hist)->SetDirectory(dir);
-    } else if ( dynamic_cast<TGraph*>(hist) != 0 ) {
+    } else if ( dynamic_cast<TGraph*>(hist) ) {
       dir->Append(hist);
     } else {
       m_log << MSG::ERROR << "id: \"" << idr
@@ -112,7 +112,7 @@ StatusCode THistSvc::regHist_i(T* hist, const std::string& id) {
   }
 
   std::string fname;
-  if (f == 0) {
+  if ( !f ) {
     fname = "none";
   } else {
     fname = f->GetName();
@@ -127,7 +127,7 @@ StatusCode THistSvc::regHist_i(T* hist, const std::string& id) {
 	  << "  file: " << fname
 	  << endmsg;
 
-  m_ids.insert(std::pair<std::string,THistID>(rem, hid));
+  m_ids.emplace(rem, hid);
   m_uids[uid] = hid;
   m_tobjs[to] = hid;
 
@@ -148,20 +148,20 @@ THistSvc::getHist_i(const std::string& id, T*& hist, bool quiet) const {
   removeDoubleSlash( idr );
 
   if (idr.find("/") == 0) {
-    std::map<std::string, THistID>::const_iterator itr = m_uids.find(id);
+    auto itr = m_uids.find(id);
     if (itr == m_uids.end()) {
       if (!quiet) {
 	m_log << MSG::ERROR << "Could not locate Hist with id \"" << idr << "\""
 	      << endmsg;
       }
-      hist = 0;
+      hist = nullptr;
       return StatusCode::FAILURE;
     }
 
     THistID hid = itr->second;
     if (!quiet) {
       hist = dynamic_cast<T*>(hid.obj);
-      if (hist == 0) {
+      if ( !hist ) {
 	m_log << MSG::ERROR << "dcast failed, Hist id: \"" << idr << "\"" 
 	      << endmsg;
 	return StatusCode::FAILURE;
@@ -185,14 +185,13 @@ THistSvc::getHist_i(const std::string& id, T*& hist, bool quiet) const {
     // not necessarily unique
   } else {
 
-    std::pair< std::multimap<std::string,THistID>::const_iterator,
-      std::multimap<std::string,THistID>::const_iterator > mitr = m_ids.equal_range(idr);
+      auto mitr = m_ids.equal_range(idr);
 
 
     if (mitr.first == mitr.second) {
       m_log << MSG::ERROR << "Could not locate Hist with id \"" << idr << "\""
 	    << endmsg;
-      hist = 0;
+      hist = nullptr;
       return StatusCode::FAILURE;
     } else {
 
@@ -222,13 +221,13 @@ THistSvc::getHist_i(const std::string& id, T*& hist, bool quiet) const {
 	  m_log << MSG::ERROR << "Multiple matches with id \"" << idr << "\"."
 		<< " Further specifications required."
 		<< endmsg;
-	  hist = 0;
+	  hist = nullptr;
 	  return StatusCode::FAILURE;
 	} else {
 	  // return a SUCCESS if just INQUIRING
 	  m_log << MSG::INFO << "Found multiple matches with id \"" << idr 
 	      << "\"" << endmsg;
-	  hist = 0;
+	  hist = nullptr;
 	  return StatusCode::SUCCESS;
 	}
       }
@@ -254,7 +253,7 @@ THistSvc::readHist_i(const std::string& id, T*& hist) const {
     return StatusCode::FAILURE;
   }
 
-  if (file == 0) {
+  if ( !file ) {
     m_log << MSG::ERROR << "no associated file found" << endmsg;
     return StatusCode::FAILURE;
   }
@@ -273,10 +272,10 @@ THistSvc::readHist_i(const std::string& id, T*& hist) const {
     gDirectory->cd(dir.c_str());
   }
 
-  TObject *to;
+  TObject *to=nullptr;
   gDirectory->GetObject(fdir.c_str(), to);
 
-  if (to == 0) {
+  if ( !to ) {
     m_log << MSG::ERROR << "Could not get obj \"" << fdir << "\" in "
 	  << gDirectory->GetPath() << endmsg;
     return StatusCode::FAILURE;
@@ -285,7 +284,7 @@ THistSvc::readHist_i(const std::string& id, T*& hist) const {
 
 
   hist = dynamic_cast<T*>(to);
-  if (hist == 0) {
+  if ( !hist ) {
     m_log << MSG::ERROR << "Could not convert \"" << idr << "\" to a "
 	  << System::typeinfoName(typeid(*hist)) << " as is a "
 	  << to->IsA()->GetName()
