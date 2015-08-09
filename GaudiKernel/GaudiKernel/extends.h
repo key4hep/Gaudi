@@ -17,18 +17,12 @@ struct GAUDI_API extends1: public BASE, virtual public extend_interfaces1<I1> {
   typedef typename extend_interfaces_base::ext_iids interfaces;
 #endif
 
-  /// Templated constructor with 3 arguments.
-  template <typename A1, typename A2, typename A3> extends1(A1 a1, A2 a2, A3 a3): BASE(a1,a2,a3){}
-  /// Templated constructor with 2 arguments.
-  template <typename A1, typename A2> extends1(A1 a1, A2 a2): BASE(a1, a2){}
-  /// Templated constructor with 1 argument.
-  template <typename A1> extends1(A1 a1): BASE(a1){}
-  /// Default constructor.
-  extends1(): BASE(){}
+  /// Templated constructor with variadic arguments.
+  template <typename... Args> extends1(Args&&... args) : BASE(std::forward<Args>(args)...) {}
 
   /// Implementation of IInterface::i_cast.
   virtual void *i_cast(const InterfaceID &tid) const {
-    void *ptr = 0;
+    void *ptr = nullptr;
 #ifndef __GCCXML__
     interfaceMatch<base_class> matcher(this,tid,ptr);
     mpl::for_each<interfaces>(matcher);
@@ -82,18 +76,12 @@ struct GAUDI_API extends2: public BASE, virtual public extend_interfaces2<I1,I2>
   typedef typename extend_interfaces_base::ext_iids interfaces;
 #endif
 
-  /// Templated constructor with 3 arguments.
-  template <typename A1, typename A2, typename A3> extends2(A1 a1, A2 a2, A3 a3): BASE(a1,a2,a3){}
-  /// Templated constructor with 2 arguments.
-  template <typename A1, typename A2> extends2(A1 a1, A2 a2): BASE(a1, a2){}
-  /// Templated constructor with 1 argument.
-  template <typename A1> extends2(A1 a1): BASE(a1){}
-  /// Default constructor.
-  extends2(): BASE(){}
+  /// Templated constructor with variadic arguments.
+  template <typename... Args> extends2(Args&&... args) : BASE( std::forward<Args>(args)... ) {}
 
   /// Implementation of IInterface::i_cast.
   virtual void *i_cast(const InterfaceID &tid) const {
-    void *ptr = 0;
+    void *ptr = nullptr;
 #ifndef __GCCXML__
     interfaceMatch<base_class> matcher(this,tid,ptr);
     mpl::for_each<interfaces>(matcher);
@@ -147,18 +135,12 @@ struct GAUDI_API extends3: public BASE, virtual public extend_interfaces3<I1,I2,
   typedef typename extend_interfaces_base::ext_iids interfaces;
 #endif
 
-  /// Templated constructor with 3 arguments.
-  template <typename A1, typename A2, typename A3> extends3(A1 a1, A2 a2, A3 a3): BASE(a1,a2,a3){}
-  /// Templated constructor with 2 arguments.
-  template <typename A1, typename A2> extends3(A1 a1, A2 a2): BASE(a1, a2){}
-  /// Templated constructor with 1 argument.
-  template <typename A1> extends3(A1 a1): BASE(a1){}
-  /// Default constructor.
-  extends3(): BASE(){}
+  /// Templated constructor with variadic arguments.
+  template <typename... Args> extends3(Args&&... args) : BASE( std::forward<Args>(args)... ) {}
 
   /// Implementation of IInterface::i_cast.
   virtual void *i_cast(const InterfaceID &tid) const {
-    void *ptr = 0;
+    void *ptr = nullptr;
 #ifndef __GCCXML__
     interfaceMatch<base_class> matcher(this,tid,ptr);
     mpl::for_each<interfaces>(matcher);
