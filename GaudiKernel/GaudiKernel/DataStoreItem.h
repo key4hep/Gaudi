@@ -23,8 +23,8 @@ protected:
   int         m_depth;
 public:
   /// Standard Constructor
-  DataStoreItem (const std::string& path, int depth = 1)
-  : m_path(path), m_depth(depth)  {
+  DataStoreItem (std::string path, int depth = 1)
+  : m_path(std::move(path)), m_depth(depth)  {
     analyse();
   }
   /// Copy constructor
@@ -33,8 +33,8 @@ public:
     analyse();
   }
   /// Standard Destructor
-  virtual ~DataStoreItem() {
-  }
+  virtual ~DataStoreItem() = default;
+
   /// Equality operator
   bool operator==(const DataStoreItem& cmp)  const   {
     return m_path == cmp.path() && m_depth == cmp.depth();
