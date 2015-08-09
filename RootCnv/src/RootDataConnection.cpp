@@ -40,26 +40,30 @@ using namespace Gaudi;
 using namespace std;
 typedef const string& CSTR;
 
-static string s_empty;
-static string s_local = "<localDB>";
+static const string s_empty;
+static const string s_local = "<localDB>";
 
 #ifdef __POOL_COMPATIBILITY
 #include "PoolTool.h"
 #endif
 #include "RootTool.h"
 
+namespace {
+    std::array<char,256> init_table() {
+        std::array<char,256> table;
+        std::iota(std::begin(table),std::end(table),0);
+        return table;
+    }
+}
+
+
 static bool match_wild(const char *str, const char *pat)    {
   //
   // Credits: Code from Alessandro Felice Cantatore.
   //
-  static char table[256];
-  static bool first = true;
+  static const std::array<char,256> table = init_table();
   const char *s, *p;
   bool star = false;
-  if ( first ) {
-    for (int i = 0; i < 256; ++i) table[i] = char(i);
-    first = false;
-  }
 loopStart:
   for (s = str, p = pat; *s; ++s, ++p) {
     switch (*p) {
@@ -73,7 +77,7 @@ loopStart:
       if (!*pat) return true;
       goto loopStart;
     default:
-      if ( *(table+*s) != *(table+*p) )
+      if ( table[*s] != table[*p] )
         goto starCheck;
       break;
     } /* endswitch */
@@ -103,7 +107,7 @@ RootConnectionSetup::~RootConnectionSetup() {
 long RootConnectionSetup::setCompression(const std::string& compression) {
 #if ROOT_VERSION_CODE >= ROOT_VERSION(5,33,0)
   int res = 0, level = ROOT::CompressionSettings(ROOT::kLZMA,6);
-  size_t idx = compression.find(':');
+  auto idx = compression.find(':');
   if ( idx != string::npos ) {
     string alg = compression.substr(0,idx);
     ROOT::ECompressionAlgorithm alg_code = ROOT::kUseGlobalSetting;
@@ -305,9 +309,9 @@ StatusCode RootDataConnection::connectWrite(IoType typ)  {
     m_file = TFile::Open(m_pfn.c_str(),"CREATE","Root event data",compress);
     m_refs = new TTree("Refs","Root reference data");
     msgSvc() << "Opened file " << m_pfn << " in mode CREATE. [" << m_fid << "]" << endmsg;
-    m_params.push_back(make_pair("PFN",m_pfn));
+    m_params.emplace_back("PFN",m_pfn);
     if ( m_fid != m_pfn ) {
-      m_params.push_back(make_pair("FID",m_fid));
+      m_params.emplace_back("FID",m_fid);
     }
     makeTool();
     break;
@@ -316,9 +320,9 @@ StatusCode RootDataConnection::connectWrite(IoType typ)  {
     m_file = TFile::Open(m_pfn.c_str(),"RECREATE","Root event data",compress);
     msgSvc() << "Opened file " << m_pfn << " in mode RECREATE. [" << m_fid << "]" << endmsg;
     m_refs = new TTree("Refs","Root reference data");
-    m_params.push_back(make_pair("PFN",m_pfn));
+    m_params.emplace_back("PFN",m_pfn);
     if ( m_fid != m_pfn ) {
-      m_params.push_back(make_pair("FID",m_fid));
+      m_params.emplace_back("FID",m_fid);
     }
     makeTool();
     break;
