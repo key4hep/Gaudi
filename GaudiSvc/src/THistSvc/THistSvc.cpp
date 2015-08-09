@@ -1489,7 +1489,7 @@ THistSvc::connect(const std::string& ident) {
       } else if (TAG == "CL") {
         cl = std::stoi(attrib.value);
       } else {
-        props.push_back( Prop(attrib.tag, attrib.value));
+        props.emplace_back( attrib.tag, attrib.value);
       }
 
     }
@@ -1540,9 +1540,9 @@ THistSvc::connect(const std::string& ident) {
   if (m_fileStreams.find(filename) != m_fileStreams.end()) {
     auto fitr = m_fileStreams.equal_range(filename);
 
-    std::string oldstream = (fitr.first)->second;
+    const std::string& oldstream = fitr.first->second;
 
-    std::pair<TFile*,Mode> f_info = m_files[oldstream];
+    const auto& f_info = m_files[oldstream];
 
     if (newMode != f_info.second) {
       m_log << MSG::ERROR << "in JobOption \"" << ident
@@ -1586,8 +1586,7 @@ THistSvc::connect(const std::string& ident) {
     f = (TFile*) vf;
 
     // FIX ME!
-    pi->fireIncident(FileIncident(name(), "BeginHistFile",
-                                   filename));
+    pi->fireIncident(FileIncident(name(), "BeginHistFile", filename));
 
 
   } else if (newMode == THistSvc::WRITE) {
@@ -1624,10 +1623,8 @@ THistSvc::connect(const std::string& ident) {
     //in write() when finalize(), this help to solve some confliction. e.g. with storegate
 
     static int ishared = 0;
-    stringstream out;
     string realfilename=filename;
-    out << ishared++;
-    filename = string("tmp_THistSvc_")+out.str()+string(".root");
+    filename = "tmp_THistSvc_"+ std::to_string(ishared++)+".root";
 
     if (m_log.level() <= MSG::DEBUG)
       m_log << MSG::DEBUG << "Creating temp file \"" << filename

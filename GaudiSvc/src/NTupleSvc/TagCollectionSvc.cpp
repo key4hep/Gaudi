@@ -83,7 +83,7 @@ StatusCode TagCollectionSvc::connect(const std::string& ident, std::string& logn
       for (auto attrib: Parser(ident.substr(loc + 1))) {
         switch( ::toupper(attrib.tag[0]) )   {
         case 'A':
-          props.push_back( Prop("Server", attrib.value));
+          props.emplace_back( "Server", attrib.value);
           break;
         case 'F': /* FILE='<file name>' */
         case 'D': /* DATAFILE='<file name>' */
@@ -112,7 +112,7 @@ StatusCode TagCollectionSvc::connect(const std::string& ident, std::string& logn
           case 'H':
             switch(::toupper(attrib.value[0]))  {
               case 'Y':
-               props.push_back( Prop("ShareFiles", attrib.value));
+               props.emplace_back( "ShareFiles", attrib.value);
                break ;
             }
             break;
@@ -124,17 +124,17 @@ StatusCode TagCollectionSvc::connect(const std::string& ident, std::string& logn
             svc = "HbookCnv::ConvSvc";
             break;
           case 'P':
-            props.push_back( Prop("DbType", attrib.value));
+            props.emplace_back( "DbType", attrib.value);
             svc = "PoolDbCnvSvc";
             break;
           default:
-            props.push_back( Prop("DbType", attrib.value));
+            props.emplace_back( "DbType", attrib.value);
             svc = "DbCnvSvc";
             break;
           }
           break;
         default:
-          props.push_back( Prop(attrib.tag, attrib.value));
+          props.emplace_back( attrib.tag, attrib.value);
           break;
         }
       }
