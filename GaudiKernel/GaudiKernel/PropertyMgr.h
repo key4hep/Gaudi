@@ -143,6 +143,7 @@ protected:
   Property* property       ( const std::string& name  ) const ;
 
 private:
+
   /// get the property by name form the proposed list
   Property* property
   ( const std::string&             name  ,
@@ -152,15 +153,11 @@ private:
   /// list of properties (see GAUDI-1023).
   void assertUniqueName(const std::string& name) const;
 
-private:
-
   // Some typedef to simply typing
   typedef std::vector<Property*>   Properties       ;
   typedef std::pair<std::string,
                     std::pair<IProperty*, std::string> > RemProperty;
   typedef std::vector<RemProperty> RemoteProperties ;
-
-private:
 
   /// Collection of all declared properties
   Properties             m_properties      ;  // local  properties
