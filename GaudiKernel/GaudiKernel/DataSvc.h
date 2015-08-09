@@ -45,31 +45,31 @@ public:
 
 protected:
   /// Integer Property corresponding to CLID of root entry
-  CLID                            m_rootCLID;
+  CLID                            m_rootCLID = 110; /*CLID_Event*/
   /// Name of root event
-  std::string                     m_rootName;
+  std::string                     m_rootName = "/Event" ;
   /// Pointer to data loader service
-  IConversionSvc*                 m_dataLoader;
+  IConversionSvc*                 m_dataLoader = nullptr;
   /// Pointer to incident service
-  IIncidentSvc*                   m_incidentSvc;
+  IIncidentSvc*                   m_incidentSvc = nullptr;
   /// Items to be pre-loaded
   LoadItems                       m_preLoads;
   /// Allow forced creation of default leaves on registerObject
-  bool                            m_forceLeaves;
+  bool                            m_forceLeaves = false;
   /// Flag to enable interrupts on data access requests
-  bool                            m_enableAccessHdlr;
+  bool                            m_enableAccessHdlr = false;
   /// Flag to enable interrupts on data creation requests
-  bool                            m_enableFaultHdlr;
+  bool                            m_enableFaultHdlr = false;
   /// Pointer to root entry
-  DataSvcHelpers::RegistryEntry*  m_root;
+  DataSvcHelpers::RegistryEntry*  m_root = nullptr;
   /// Map with object paths to be inhibited from loading
-  DataSvcHelpers::InhibitMap*     m_inhibitMap;
+  DataSvcHelpers::InhibitMap*     m_inhibitMap = nullptr;
   /// Property for the inhibited leaves
   std::vector<std::string>        m_inhibitPathes;
   /// Name of the data access incident
-  std::string                     m_accessName;
+  std::string                     m_accessName = "DataAccess";
   /// Name of the data fault incident
-  std::string                     m_faultName;
+  std::string                     m_faultName = "DataFault";
 public:
 
   /// IDataManagerSvc: Accessor for root event CLID
@@ -423,4 +423,3 @@ private:
   DataObject* i_handleDataFault(IRegistry* pReg, boost::string_ref path = boost::string_ref{});
 };
 #endif // GAUDIKERNEL_DATASVC_H
-

@@ -1269,17 +1269,8 @@ IConversionSvc* DataSvc::getDataLoader(IRegistry* /* pReg */)   {
 
 /// Standard Constructor
 DataSvc::DataSvc(const std::string& name,ISvcLocator* svc)
-: base_class(name,svc), m_rootCLID( /*CLID_Event*/ 110),
-  m_rootName( "/Event"), m_root(nullptr)
+: base_class(name,svc)
 {
-  m_dataLoader = nullptr;
-  m_inhibitMap = 0;
-  m_incidentSvc = nullptr;
-  m_forceLeaves = false;
-  m_enableFaultHdlr = false;
-  m_enableAccessHdlr = false;
-  m_faultName  = "DataFault";
-  m_accessName = "DataAccess";
   declareProperty("RootCLID",            m_rootCLID);
   declareProperty("RootName",            m_rootName);
   declareProperty("ForceLeaves",         m_forceLeaves);
