@@ -36,7 +36,7 @@ GaudiAlg::ID::ID ( const GaudiAlg::ID::NumericID id )
 GaudiAlg::ID::ID ( const GaudiAlg::ID::LiteralID& id ) 
   : m_nID ( -1 ) 
   , m_aID ( id ) 
-  , m_hash ( boost::hash_value ( id ) ) 
+  , m_hash ( boost::hash_value ( m_aID ) ) 
 {}
 // ============================================================================
 // Implicit constructor from a literal ID
@@ -44,8 +44,8 @@ GaudiAlg::ID::ID ( const GaudiAlg::ID::LiteralID& id )
 GaudiAlg::ID::ID ( const char* id  ) 
   : m_nID  ( -1 ) 
   , m_aID  ( id ) 
-  , m_hash ( 0 ) 
-{ m_hash = boost::hash_value ( m_aID ) ; }
+  , m_hash ( boost::hash_value ( m_aID ) ) 
+{}
 // ============================================================================
 GaudiAlg::ID::LiteralID GaudiAlg::ID::idAsString() const
 {

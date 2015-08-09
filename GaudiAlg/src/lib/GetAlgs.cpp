@@ -165,14 +165,13 @@ Gaudi::Utils::getSequencer ( const IAlgContextSvc* svc )
 {
   if ( !svc            ) { return nullptr ; }  // RETURN
   //
-  const auto& algs = svc->algorithms() ;
   AlgTypeSelector<GaudiSequencer> sel1 ;
   AlgTypeSelector<Sequencer>      sel2 ;
-  for ( auto it = algs.rbegin() ; algs.rend() != it ; ++it )
-  {
-    if ( sel1( *it ) || sel2( *it ) ) { return *it ; }
-  }
-  return nullptr ;                                    // RETURN ;
+ 
+  const auto& algs = svc->algorithms();
+  auto a = std::find_if( algs.rbegin(), algs.rend(), 
+                         [&](IAlgorithm* alg) { return sel1(alg) || sel2(alg); } );
+  return a!=algs.rend() ?  *a  : nullptr;
 }
 // ========================================================================
 

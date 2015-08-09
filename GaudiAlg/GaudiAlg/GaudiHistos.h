@@ -431,14 +431,14 @@ public:
     const double        high         ,
     const unsigned long bins  = 100  ) const
   {
-    AIDA::IHistogram1D* h(0);
+    AIDA::IHistogram1D* h = nullptr;
     if ( produceHistos() )
     {
       // retrieve or book the histogram
       h = histo1D ( title ) ;
-      if ( 0 == h )     { h = book1D  ( title , low , high , bins ); }
+      if ( !h )     { h = book1D  ( title , low , high , bins ); }
       // fill histogram
-      while( first != last && 0 != h  )
+      while( first != last && h  )
       { h = fill ( h , func( *first ) , 1.0 , title  ) ; ++first ; }
     }
     return h ;
@@ -515,9 +515,9 @@ public:
     {
       // retrieve or book the histogram
       h = histo1D ( ID ) ;
-      if ( 0 == h )     { h = book1D  ( ID , title , low , high , bins ); }
+      if ( !h )     { h = book1D  ( ID , title , low , high , bins ); }
       // fill histogram
-      while( first != last && 0 != h )
+      while( first != last && h )
       { h = fill( h , func( *first ) , 1.0 , title  ) ; ++first ; }
     }
     return h;
@@ -602,14 +602,14 @@ public:
     const unsigned long bins         ,
     const WEIGHT&       weight       ) const
   {
-    AIDA::IHistogram1D* h(0);
+    AIDA::IHistogram1D* h = nullptr;
     if ( produceHistos() )
     {
       // retrieve or book the histogram
       h = histo1D ( title ) ;
-      if ( 0 == h ) { h = book1D  ( title , low , high , bins ); }
+      if ( !h ) { h = book1D  ( title , low , high , bins ); }
       // fill histogram
-      while ( first != last && 0 != h )
+      while ( first != last && h )
       { h = fill ( h                 ,
                    func   ( *first ) ,
                    weight ( *first ) , title  ) ; ++first ; }
@@ -695,14 +695,14 @@ public:
     const unsigned long bins         ,
     const WEIGHT&       weight       ) const
   {
-    AIDA::IHistogram1D* h(0);
+    AIDA::IHistogram1D* h = nullptr;
     if ( produceHistos() )
     {
       // retrieve or book the histogram
       h = histo1D ( ID ) ;
-      if ( 0 == h ) { h = book1D  ( ID , title , low , high , bins ); }
+      if ( !h ) { h = book1D  ( ID , title , low , high , bins ); }
       // fill histogram
-      while( first != last && 0 != h )
+      while( first != last && h )
       { h  = fill ( h                 ,
                     func   ( *first ) ,
                     weight ( *first ) , title  ) ; ++first ; }

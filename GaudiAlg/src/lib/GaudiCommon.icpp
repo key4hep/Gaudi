@@ -32,6 +32,7 @@
 #include "GaudiKernel/StatEntity.h"
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/AlgTool.h"
+#include "GaudiKernel/reverse.h"
 // ============================================================================
 // GaudiAlg
 // ============================================================================
@@ -671,17 +672,13 @@ long GaudiCommon<PBASE>::printProps ( const MSG::Level level ) const
 
   // print ALL properties
   MsgStream& msg = msgStream ( level );
-  typedef std::vector<Property*> Properties;
-  const Properties& properties = this->getProperties() ;
+  const auto& properties = this->getProperties() ;
   msg << "List of ALL properties of "
       << System::typeinfoName( typeid( *this ) ) << "/" << this->name()
       << "  #properties = " << properties.size() << endmsg ;
-  for ( auto property = properties.crbegin() ;
-        properties.crend() != property ; ++property )
+  for ( const auto& property : reverse(properties) )
   {
-    msg << "Property ['Name': Value] = "
-        << ( **property)
-        << endmsg ;
+    msg << "Property ['Name': Value] = " <<  *property << endmsg ;
   }
   return properties.size() ;
 }
