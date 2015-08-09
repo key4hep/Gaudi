@@ -73,7 +73,7 @@ AlgorithmHistory::~AlgorithmHistory() {
 const CLID&
 AlgorithmHistory::classID() {
 
-  static CLID CLID_AlgorithmHistory = 56809101;  //from `clid AlgorithmHistory`
+  static const CLID CLID_AlgorithmHistory = 56809101;  //from `clid AlgorithmHistory`
   return CLID_AlgorithmHistory;
 
 }

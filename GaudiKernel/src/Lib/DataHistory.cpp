@@ -24,9 +24,9 @@ using std::endl;
 
 // Default constructor.
 
-DataHistory::DataHistory(const CLID& id, const std::string& key,
+DataHistory::DataHistory(const CLID& id, std::string key,
 			 AlgorithmHistory* alg):
-  m_dataClassID(id), m_dataKey(key), m_algHist(alg), m_dummy("none")
+  m_dataClassID(id), m_dataKey(std::move(key)), m_algHist(alg)
 {
 
 
@@ -36,7 +36,7 @@ DataHistory::DataHistory(const CLID& id, const std::string& key,
 
 const CLID&
 DataHistory::classID() {
-  static CLID CLID_DataHistory = 83814411;   // from `clid DataHistory`
+  static const CLID CLID_DataHistory = 83814411;   // from `clid DataHistory`
   
   return CLID_DataHistory;
 }
@@ -56,7 +56,6 @@ DataHistory::dump(std::ostream& ost, const bool /*isXML*/, int /*ind*/) const {
 ostream& operator<<(ostream& lhs, const DataHistory& rhs) {
 
   rhs.dump(lhs,false);
-
   return lhs;
 
 }

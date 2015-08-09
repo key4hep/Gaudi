@@ -51,7 +51,7 @@ AlgToolHistory::AlgToolHistory(const std::string& algVersion,
 
 const CLID& AlgToolHistory::classID() {
 
-  static CLID CLID_AlgToolHistory = 171959758;   // from `clid AlgToolHistory`
+  static const CLID CLID_AlgToolHistory = 171959758;   // from `clid AlgToolHistory`
   return CLID_AlgToolHistory;
 
 }

@@ -78,16 +78,15 @@ JobHistory::~JobHistory() {
 const CLID& 
 JobHistory::classID() {
 
-  static CLID CLID_JobHistory = 247994533;
+  static const CLID CLID_JobHistory = 247994533;
   return CLID_JobHistory;
 
 }
 
 void
 JobHistory::addProperty(const std::string& client, const Property* prop) {
-//  if (m_props.find(prop) == m_props.end()) {
-    m_ppl.push_back( std::pair<std::string, const Property*>(client,prop) );
-//  }
+//  if (m_props.find(prop) == m_props.end()) 
+    m_ppl.emplace_back( client,prop );
 }
 
 

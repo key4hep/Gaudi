@@ -53,7 +53,7 @@ HistoryObj::indent(std::ostream& ost, int i) const {
 const CLID& 
 HistoryObj::classID() { 
 
-  static CLID CLID_HistoryObj = 86452397;
+  static const CLID CLID_HistoryObj = 86452397;
   return CLID_HistoryObj; 
 
 }

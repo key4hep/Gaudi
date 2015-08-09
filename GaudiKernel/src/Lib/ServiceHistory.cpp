@@ -72,7 +72,7 @@ ServiceHistory::ServiceHistory(const IService& isv, const JobHistory* job):
 const CLID& 
 ServiceHistory::classID() {
 
-  static CLID CLID_ServiceHistory = 187225489;   // from `clid ServiceHistory`
+  static const CLID CLID_ServiceHistory = 187225489;   // from `clid ServiceHistory`
   return CLID_ServiceHistory;
 
 }
