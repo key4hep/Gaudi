@@ -31,14 +31,6 @@ DECLARE_COMPONENT(EventLoopMgr)
 EventLoopMgr::EventLoopMgr(const std::string& nam, ISvcLocator* svcLoc)
 : MinimalEventLoopMgr(nam, svcLoc)
 {
-  m_histoDataMgrSvc   = nullptr;
-  m_histoPersSvc      = nullptr;
-  m_evtDataMgrSvc     = nullptr;
-  m_evtDataSvc        = nullptr;
-  m_evtSelector       = nullptr;
-  m_evtContext        = nullptr;
-  m_endEventFired     = true;
-
   // Declare properties
   declareProperty("HistogramPersistency", m_histPersName = "");
   declareProperty("EvtSel", m_evtsel );

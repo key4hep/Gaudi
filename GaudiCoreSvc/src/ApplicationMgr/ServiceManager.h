@@ -36,7 +36,7 @@ class Property;
 class ServiceManager : public extends2<ComponentManager, ISvcManager, ISvcLocator>{
 public:
 
-  struct ServiceItem {
+  struct ServiceItem final {
     ServiceItem(IService *s, long p = 0, bool act = false):
       service(s), priority(p), active(act) {}
     SmartIF<IService> service;
@@ -161,7 +161,7 @@ private:
                                ///  would put ServiceItem on the heap...
                                ///  And maybe I'm way too paranoid...
   MapType       m_maptype;     ///< Map of service name and service type
-  bool          m_loopCheck;   ///< Check for service initialization loops
+  bool          m_loopCheck = true;   ///< Check for service initialization loops
 
   /// Pointer to the application IService interface.
   SmartIF<IService> m_appSvc;

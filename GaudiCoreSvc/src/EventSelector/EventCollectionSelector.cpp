@@ -38,7 +38,7 @@ public:
   /// Standard constructor
   EventCollectionContext(const EventCollectionSelector* pSelector);
   /// Standard destructor
-  virtual ~EventCollectionContext();
+  ~EventCollectionContext() override;
   const std::string& currentInput() const {
     return m_currentInput;
   }
@@ -156,11 +156,11 @@ EventCollectionSelector::connectTuple(const std::string& nam, const std::string&
 StatusCode
 EventCollectionSelector::connectStatement(const std::string& typ, const std::string& crit, INTuple* tuple)  const {
   std::string seltyp = typ;
-  if ( seltyp.length() > 0 || crit.length() > 0 )   {
-    if ( crit.length() > 0 && seltyp.length() == 0 ) seltyp = "NTuple::Selector";
+  if ( !seltyp.empty() || !crit.empty() )   {
+    if ( !crit.empty() && seltyp.length() == 0 ) seltyp = "NTuple::Selector";
     SmartIF<ISelectStatement> stmt(ObjFactory::create(seltyp, serviceLocator()));
     if ( stmt.isValid( ) )    {
-      if ( crit.length() > 0 ) stmt->setCriteria(crit);
+      if ( !crit.empty() ) stmt->setCriteria(crit);
       tuple->attachSelector(stmt).ignore();
       return StatusCode::SUCCESS;
     }

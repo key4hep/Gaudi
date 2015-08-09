@@ -26,38 +26,38 @@ public:
 
 
   /// Initialize the service.
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
 
   /// Finalize the service.
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
 
   // Start transition for tools
-  virtual StatusCode start();
+  StatusCode start() override;
 
   // Stop transition for tools
-  virtual StatusCode stop();
+  StatusCode stop() override;
 
   /// Retrieve tool, create it by default as common tool if it does not already exist
-  virtual StatusCode retrieve(const std::string& type, const InterfaceID& iid,
-                              IAlgTool*& tool, const IInterface* parent,
-                              bool createIf);
+  StatusCode retrieve(const std::string& type, const InterfaceID& iid,
+                      IAlgTool*& tool, const IInterface* parent,
+                      bool createIf) override;
 
   /// Retrieve tool, create it by default as common tool if it does not already exist
-  virtual StatusCode retrieve(const std::string& tooltype, const std::string& toolname,
-                              const InterfaceID& iid, IAlgTool*& tool,
-                              const IInterface* parent, bool createIf);
+  StatusCode retrieve(const std::string& tooltype, const std::string& toolname,
+                      const InterfaceID& iid, IAlgTool*& tool,
+                      const IInterface* parent, bool createIf) override;
 
   /// Get names of all tool instances of a given type
-  virtual std::vector<std::string> getInstances( const std::string& toolType );
+  std::vector<std::string> getInstances( const std::string& toolType ) override;
 
   /// Get names of all tool instances
-  virtual std::vector<std::string> getInstances() const;
+  std::vector<std::string> getInstances() const override;
 
   /// Get pointers to all tool instances
-  virtual std::vector<IAlgTool*> getTools() const;
+  std::vector<IAlgTool*> getTools() const override;
 
   /// Release tool
-  virtual StatusCode releaseTool( IAlgTool* tool );
+  StatusCode releaseTool( IAlgTool* tool ) override;
 
   /// Create Tool standard way with automatically assigned name
   StatusCode create(const std::string& type, const IInterface* parent,
@@ -80,10 +80,10 @@ public:
   ToolSvc( const std::string& name, ISvcLocator* svc );
 
   /// Destructor.
-  virtual ~ToolSvc() = default;
+  ~ToolSvc() override = default;
 
-  virtual void registerObserver(IToolSvc::Observer *obs) ;
-  virtual void unRegisterObserver(IToolSvc::Observer *obs) ;
+  void registerObserver(IToolSvc::Observer *obs) override;
+  void unRegisterObserver(IToolSvc::Observer *obs) override;
 
 
 private: // methods

@@ -30,20 +30,16 @@ public:
   // default creator
   DLLClassManager( IInterface* iface );
   // virtual destructor
-  virtual ~DLLClassManager();
+  ~DLLClassManager() override = default;
 
   // implementation of IClassManager::loadModule
-  virtual StatusCode loadModule( const std::string& module, bool fireIncident=true );
+  StatusCode loadModule( const std::string& module, bool fireIncident=true ) override;
 
   /// implementation of IInterface::queryInterface
-  virtual StatusCode queryInterface(const InterfaceID& iid, void** pinterface);
+  StatusCode queryInterface(const InterfaceID& iid, void** pinterface) override;
 
 private:
   SmartIF<ISvcLocator>  m_svclocator;  // Service locator reference
-  //SmartIF<IAlgManager>  m_algmanager;  // Algorithm manager reference
-  //SmartIF<ISvcManager>  m_svcmanager;  // Service manager reference
-  //SmartIF<ICnvManager>  m_cnvmanager;  // Converter manager reference
-  //SmartIF<IObjManager>  m_objmanager;  // Manager reference for factories not being algs, cnvs or svcs
   SmartIF<IMessageSvc>  m_msgsvc;      // Message Service reference
   SmartIF<IInterface>   m_pOuter;      // Interface hub reference (ApplicationMgr)
 };

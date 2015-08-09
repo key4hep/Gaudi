@@ -195,8 +195,9 @@ protected:
 
 
   // data members
+  mutable SmartIF<ISvcLocator> m_svcLocator; ///< Reference to its own service locator (must be instantiated prior to any service!)
   DLLClassManager*    m_classManager;       ///< Reference to the class manager
-  mutable SmartIF<ISvcLocator> m_svcLocator; ///< Reference to its own service locator
+  PropertyMgr*        m_propertyMgr;        ///< Reference to Property Manager
 
   IntegerProperty     m_SIGo;               ///< For SI's "Go" command via callback
   IntegerProperty     m_SIExit;             ///< For SI's "Exit" command via callback
@@ -206,19 +207,18 @@ protected:
   StringProperty      m_messageSvcType;     ///< MessageSvc type
   StringProperty      m_jobOptionsSvcType;  ///< JobOptionsSvc type
 
-  std::string         m_name;               ///< Name
-  Gaudi::StateMachine::State m_state;              ///< Internal State
-  Gaudi::StateMachine::State m_targetState;              ///< Internal State
+  std::string         m_name = "ApplicationMgr";               ///< Name
+  Gaudi::StateMachine::State m_state = Gaudi::StateMachine::OFFLINE;              ///< Internal State
+  Gaudi::StateMachine::State m_targetState = Gaudi::StateMachine::OFFLINE;              ///< Internal State
 
   VectorName          m_defServices;        ///< Vector default services names
   VectorName          m_svcMapping;         ///< Default mapping of services
   VectorName          m_svcOptMapping;      ///< Default mapping of services
 
-  PropertyMgr*        m_propertyMgr;        ///< Reference to Property Manager
-  SmartIF<IMessageSvc>      m_messageSvc;         ///< Reference to the message service
+  SmartIF<IMessageSvc>      m_messageSvc = nullptr;         ///< Reference to the message service
   SmartIF<IRunable>         m_runable;            ///< Reference to the runable object
   SmartIF<IEventProcessor>  m_processingMgr;      ///< Reference to processing manager object
-  SmartIF<IJobOptionsSvc>   m_jobOptionsSvc;      ///< Reference to JobOption service
+  SmartIF<IJobOptionsSvc>   m_jobOptionsSvc = nullptr;      ///< Reference to JobOption service
 
   //
   // The public ApplicationMgr properties

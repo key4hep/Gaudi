@@ -45,7 +45,6 @@ StatusCode JobOptionsSvc::setProperty( const Property &p )
 // ============================================================================
 StatusCode JobOptionsSvc::getProperty( Property *p ) const
 {
-
   return m_pmgr.getProperty( p );
 }
 // ============================================================================
@@ -57,18 +56,12 @@ StatusCode JobOptionsSvc::initialize()
   // Read the job options if needed
   if ( this->m_source_type == "NONE" ) {
     sc =  StatusCode::SUCCESS;
-  }
-  else {
+  } else {
     sc = this->readOptions( m_source_path , m_dir_search_path);
   }
   return sc;
 }
 
-StatusCode JobOptionsSvc::finalize()
-{
-  // finalize the base class
-  return Service::finalize();
-}
 // ============================================================================
 StatusCode JobOptionsSvc::addPropertyToCatalogue
 ( const std::string& client,

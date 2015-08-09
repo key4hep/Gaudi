@@ -9,7 +9,7 @@
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/IAlgorithm.h"
 #include <string>
-#include <list>
+#include <vector>
 #include <map>
 
 // Forward declarations
@@ -31,7 +31,7 @@ class IMessageSvc;
 class AlgorithmManager : public extends1<ComponentManager, IAlgManager>{
 public:
 
-  struct AlgorithmItem {
+  struct AlgorithmItem final {
     AlgorithmItem(IAlgorithm *s, bool managed = false):
       algorithm(s), managed(managed) {}
     SmartIF<IAlgorithm> algorithm;
@@ -45,54 +45,53 @@ public:
   };
 
   /// typedefs and classes
-  typedef std::list<AlgorithmItem> ListAlg;
   typedef std::map<std::string, std::string> AlgTypeAliasesMap;
 
   /// default creator
   AlgorithmManager( IInterface* iface );
   /// virtual destructor
-  virtual ~AlgorithmManager() = default;
+  ~AlgorithmManager() override = default;
 
   /// implementation of IAlgManager::addAlgorithm
-  virtual StatusCode addAlgorithm(IAlgorithm* alg);
+  StatusCode addAlgorithm(IAlgorithm* alg) override;
   /// implementation of IAlgManager::removeAlgorithm
-  virtual StatusCode removeAlgorithm(IAlgorithm* alg);
+  StatusCode removeAlgorithm(IAlgorithm* alg) override;
   /// implementation of IAlgManager::createAlgorithm
-  virtual StatusCode createAlgorithm(const std::string& algtype, const std::string& algname,
-                                     IAlgorithm*& algorithm, bool managed = false);
+  StatusCode createAlgorithm(const std::string& algtype, const std::string& algname,
+                                     IAlgorithm*& algorithm, bool managed = false) override;
 
   /// implementation of IAlgManager::existsAlgorithm
-  virtual bool existsAlgorithm(const std::string& name) const;
+  bool existsAlgorithm(const std::string& name) const override;
   /// implementation of IAlgManager::getAlgorithms
-  virtual const std::vector<IAlgorithm*>& getAlgorithms() const;
+  const std::vector<IAlgorithm*>& getAlgorithms() const override;
 
   /// Initialization (from CONFIGURED to INITIALIZED).
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
   /// Start (from INITIALIZED to RUNNING).
-  virtual StatusCode start();
+  StatusCode start() override;
   /// Stop (from RUNNING to INITIALIZED).
-  virtual StatusCode stop();
+  StatusCode stop() override;
   /// Finalize (from INITIALIZED to CONFIGURED).
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
 
   /// Initialization (from INITIALIZED or RUNNING to INITIALIZED, via CONFIGURED).
-  virtual StatusCode reinitialize();
+  StatusCode reinitialize() override;
   /// Initialization (from RUNNING to RUNNING, via INITIALIZED).
-  virtual StatusCode restart();
+  StatusCode restart() override;
 
   /// Return the name of the manager (implementation of INamedInterface)
-  const std::string &name() const {
-    static std::string _name = "AlgorithmManager";
+  const std::string &name() const override {
+    static const std::string _name = "AlgorithmManager";
     return _name;
   }
 
-  virtual SmartIF<IAlgorithm> &algorithm(const Gaudi::Utils::TypeNameString &typeName, const bool createIf = true);
+  SmartIF<IAlgorithm> &algorithm(const Gaudi::Utils::TypeNameString &typeName, const bool createIf = true) override;
 
   AlgTypeAliasesMap& typeAliases() { return m_algTypeAliases; }
   const AlgTypeAliasesMap& typeAliases() const { return m_algTypeAliases; }
 
 private:
-  ListAlg      m_listalg;     ///< List of algorithms maintained by AlgorithmManager
+  std::vector<AlgorithmItem> m_algs;     ///< algorithms maintained by AlgorithmManager
 
   /// List of pointers to the know services used to implement getAlgorithms()
   mutable std::vector<IAlgorithm*> m_listOfPtrs;

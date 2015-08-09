@@ -51,13 +51,11 @@ DECLARE_OBJECT_FACTORY(ApplicationMgr)
 //=======================================================================
 // Constructor
 //=======================================================================
-ApplicationMgr::ApplicationMgr(IInterface*): base_class() {
+ApplicationMgr::ApplicationMgr(IInterface*): 
+    base_class() 
+{
   // IInterface initialization
   addRef(); // Initial count set to 1
-
-  // Initialize two basic services: messagesvc & joboptions
-  m_messageSvc        = nullptr;
-  m_jobOptionsSvc     = nullptr;
 
   // Instantiate component managers
   m_managers[IService::interfaceID().id()] = new ServiceManager(this);
@@ -70,10 +68,6 @@ ApplicationMgr::ApplicationMgr(IInterface*): base_class() {
   // SvcLocator/Factory HAS to be already instantiated
   m_classManager = new DLLClassManager(this);
   m_propertyMgr  = new PropertyMgr(this);
-
-  m_name  = "ApplicationMgr";
-  m_state = Gaudi::StateMachine::OFFLINE;
-  m_targetState = Gaudi::StateMachine::OFFLINE;
 
   m_propertyMgr->declareProperty("Go",            m_SIGo = 0 );
   m_propertyMgr->declareProperty("Exit",          m_SIExit = 0 );
@@ -149,14 +143,16 @@ ApplicationMgr::ApplicationMgr(IInterface*): base_class() {
   m_outStreamNameList.declareUpdateHandler(&ApplicationMgr::evtLoopPropertyHandler, this);
   m_outStreamType.declareUpdateHandler(&ApplicationMgr::evtLoopPropertyHandler, this);
   m_pluginDebugLevel.declareUpdateHandler(&ApplicationMgr::pluginDebugPropertyHandler, this);
-  m_svcMapping.push_back("EvtDataSvc/EventDataSvc");
-  m_svcMapping.push_back("DetDataSvc/DetectorDataSvc");
-  m_svcMapping.push_back("HistogramSvc/HistogramDataSvc");
-  m_svcMapping.push_back("HbookCnv::PersSvc/HbookHistSvc");
-  m_svcMapping.push_back("RootHistCnv::PersSvc/RootHistSvc");
-  m_svcMapping.push_back("EvtPersistencySvc/EventPersistencySvc");
-  m_svcMapping.push_back("DetPersistencySvc/DetectorPersistencySvc");
-  m_svcMapping.push_back("HistogramPersistencySvc/HistogramPersistencySvc");
+
+  m_svcMapping.insert( std::end(m_svcMapping), 
+                     { "EvtDataSvc/EventDataSvc", 
+                       "DetDataSvc/DetectorDataSvc",
+                       "HistogramSvc/HistogramDataSvc",
+                       "HbookCnv::PersSvc/HbookHistSvc",
+                       "RootHistCnv::PersSvc/RootHistSvc",
+                       "EvtPersistencySvc/EventPersistencySvc",
+                       "DetPersistencySvc/DetectorPersistencySvc",
+                       "HistogramPersistencySvc/HistogramPersistencySvc" } );
 }
 
 //============================================================================

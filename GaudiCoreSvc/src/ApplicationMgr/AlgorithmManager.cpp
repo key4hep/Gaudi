@@ -23,15 +23,15 @@ AlgorithmManager::AlgorithmManager(IInterface* application):
 
 // addAlgorithm
 StatusCode AlgorithmManager::addAlgorithm(IAlgorithm* alg) {
-  m_listalg.push_back(alg);
+  m_algs.push_back(alg);
   return StatusCode::SUCCESS;
 }
 
 // removeAlgorithm
 StatusCode AlgorithmManager::removeAlgorithm(IAlgorithm* alg) {
-  auto it = std::find(m_listalg.begin(), m_listalg.end(), alg);
-  if (it != m_listalg.end()) {
-    m_listalg.erase(it);
+  auto it = std::find(m_algs.begin(), m_algs.end(), alg);
+  if (it != m_algs.end()) {
+    m_algs.erase(it);
     return StatusCode::SUCCESS;
   }
   return StatusCode::FAILURE;
@@ -66,7 +66,7 @@ StatusCode AlgorithmManager::createAlgorithm( const std::string& algtype,
       return StatusCode::FAILURE;
     }
     StatusCode rc;
-    m_listalg.emplace_back(algorithm, managed);
+    m_algs.emplace_back(algorithm, managed);
     // this is needed to keep the reference count correct, since isValidInterface(algorithm)
     // implies an increment of the counter by 1
     algorithm->release();
@@ -99,8 +99,8 @@ StatusCode AlgorithmManager::createAlgorithm( const std::string& algtype,
 }
 
 SmartIF<IAlgorithm>& AlgorithmManager::algorithm(const Gaudi::Utils::TypeNameString &typeName, const bool createIf) {
-  auto it = std::find(m_listalg.begin(), m_listalg.end(), typeName.name());
-  if (it != m_listalg.end()) { // found
+  auto it = std::find(m_algs.begin(), m_algs.end(), typeName.name());
+  if (it != m_algs.end()) { // found
     return it->algorithm;
   }
   if (createIf) {
@@ -114,17 +114,17 @@ SmartIF<IAlgorithm>& AlgorithmManager::algorithm(const Gaudi::Utils::TypeNameStr
 
 // existsAlgorithm
 bool AlgorithmManager::existsAlgorithm(const std::string& name) const {
-  return  m_listalg.end() != std::find(m_listalg.begin(), m_listalg.end(), name);
+  return  m_algs.end() != std::find(m_algs.begin(), m_algs.end(), name);
 }
 
   // Return the list of Algorithms
 const std::vector<IAlgorithm*>& AlgorithmManager::getAlgorithms() const
 {
   m_listOfPtrs.clear();
-  m_listOfPtrs.reserve(m_listalg.size());
-  std::transform( std::begin(m_listalg), std::end(m_listalg),
+  m_listOfPtrs.reserve(m_algs.size());
+  std::transform( std::begin(m_algs), std::end(m_algs),
                   std::back_inserter(m_listOfPtrs),
-                  [](ListAlg::const_reference alg) {
+                  [](const AlgorithmItem& alg) {
                       return const_cast<IAlgorithm*>(alg.algorithm.get());
                   } );
   return m_listOfPtrs;
@@ -132,7 +132,7 @@ const std::vector<IAlgorithm*>& AlgorithmManager::getAlgorithms() const
 
 StatusCode AlgorithmManager::initialize() {
   StatusCode rc;
-  for (auto& it : m_listalg ) {
+  for (auto& it : m_algs ) {
     if (!it.managed) continue;
     rc = it.algorithm->sysInitialize();
     if ( rc.isFailure() ) return rc;
@@ -142,7 +142,7 @@ StatusCode AlgorithmManager::initialize() {
 
 StatusCode AlgorithmManager::start() {
   StatusCode rc;
-  for (auto& it : m_listalg ) {
+  for (auto& it : m_algs ) {
     if (!it.managed) continue;
     rc = it.algorithm->sysStart();
     if ( rc.isFailure() ) return rc;
@@ -152,7 +152,7 @@ StatusCode AlgorithmManager::start() {
 
 StatusCode AlgorithmManager::stop() {
   StatusCode rc;
-  for (auto& it : m_listalg) {
+  for (auto& it : m_algs) {
     if (!it.managed) continue;
     rc = it.algorithm->sysStop();
     if ( rc.isFailure() ) return rc;
@@ -162,12 +162,12 @@ StatusCode AlgorithmManager::stop() {
 
 StatusCode AlgorithmManager::finalize() {
   StatusCode rc;
-  auto it = m_listalg.begin();
-  while (it != m_listalg.end()){ // finalize and remove from the list the managed algorithms
+  auto it = m_algs.begin();
+  while (it != m_algs.end()){ // finalize and remove from the list the managed algorithms
     if (it->managed) {
       rc = it->algorithm->sysFinalize();
       if( rc.isFailure() ) return rc;
-      it = m_listalg.erase(it);
+      it = m_algs.erase(it);
     } else {
       ++it;
     }
@@ -177,7 +177,7 @@ StatusCode AlgorithmManager::finalize() {
 
 StatusCode AlgorithmManager::reinitialize() {
   StatusCode rc;
-  for (auto& it : m_listalg ) {
+  for (auto& it : m_algs ) {
     if (!it.managed) continue;
     rc = it.algorithm->sysReinitialize();
     if( rc.isFailure() ){
@@ -190,7 +190,7 @@ StatusCode AlgorithmManager::reinitialize() {
 
 StatusCode AlgorithmManager::restart() {
   StatusCode rc;
-  for (auto& it : m_listalg ) {
+  for (auto& it : m_algs ) {
     if (!it.managed) continue;
     rc = it.algorithm->sysRestart();
     if( rc.isFailure() ){

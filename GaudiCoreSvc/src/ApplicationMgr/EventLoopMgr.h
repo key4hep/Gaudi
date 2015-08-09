@@ -41,28 +41,28 @@ public:
 
 protected:
   /// Reference to the Event Data Service's IDataManagerSvc interface
-  SmartIF<IDataManagerSvc>  m_evtDataMgrSvc;
+  SmartIF<IDataManagerSvc>  m_evtDataMgrSvc = nullptr;
   /// Reference to the Event Data Service's IDataProviderSvc interface
-  SmartIF<IDataProviderSvc> m_evtDataSvc;
+  SmartIF<IDataProviderSvc> m_evtDataSvc = nullptr;
   /// Reference to the Event Selector
-  SmartIF<IEvtSelector>     m_evtSelector;
+  SmartIF<IEvtSelector>     m_evtSelector = nullptr;
   /// Event Iterator
-  IEvtSelector::Context*      m_evtContext;
+  IEvtSelector::Context*      m_evtContext = nullptr;
   /// Event selector
   std::string       m_evtsel;
   /// Reference to the Histogram Data Service
-  SmartIF<IDataManagerSvc>  m_histoDataMgrSvc;
+  SmartIF<IDataManagerSvc>  m_histoDataMgrSvc = nullptr;
   /// Reference to the Histogram Persistency Service
-  SmartIF<IConversionSvc>   m_histoPersSvc;
+  SmartIF<IConversionSvc>   m_histoPersSvc = nullptr;
   /// Name of the Hist Pers type
   std::string       m_histPersName;
   /// Property interface of ApplicationMgr
-  SmartIF<IProperty>        m_appMgrProperty;
+  SmartIF<IProperty>        m_appMgrProperty = nullptr;
   /// Flag to avoid to fire the EnvEvent incident twice in a row
   /// (and also not before the first event)
-  bool              m_endEventFired;
+  bool              m_endEventFired = true;
   /// Flag to disable warning messages when using external input
-  bool              m_warnings;
+  bool              m_warnings = true;
 
 public:
   /// Standard Constructor

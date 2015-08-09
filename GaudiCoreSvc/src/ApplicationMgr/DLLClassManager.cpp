@@ -27,10 +27,6 @@ DLLClassManager::DLLClassManager( IInterface* iface ) {
   addRef(); // Initial count set to 1
 }
 
-// virtual destructor
-DLLClassManager::~DLLClassManager() {
-}
-
 // implementation of IClassManager::loadModule
 StatusCode DLLClassManager::loadModule( const std::string& module,
 					bool fireIncident ) {
@@ -43,7 +39,7 @@ StatusCode DLLClassManager::loadModule( const std::string& module,
   std::string mod = module=="" ? System::moduleNameFull() : module;
   if( module == "NONE" ) return StatusCode::SUCCESS;
 
-  void* libHandle = 0;
+  void* libHandle = nullptr;
   StatusCode status = StatusCode::FAILURE;
   try
   {
