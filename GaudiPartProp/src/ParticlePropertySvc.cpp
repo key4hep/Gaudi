@@ -209,7 +209,7 @@ StatusCode ParticlePropertySvc::push_back ( ParticleProperty* pp )
     const std::string& particle = pp->particle() ;
     // is this already in the map?
     auto ifind = m_namemap.find( particle ) ;
-    if ( m_namemap.end() != ifind && 0 != m_namemap[ particle ] )
+    if ( ifind != m_namemap.end() && m_namemap[ particle ] )
     {
       diff ( ifind->second , pp ) ;
       m_replaced.insert( m_namemap[ particle ]->particle() ) ;
@@ -225,7 +225,7 @@ StatusCode ParticlePropertySvc::push_back ( ParticleProperty* pp )
     const int ID = pp->jetsetID() ;
     // is this already in the map?
     auto ifind = m_stdhepidmap.find( ID ) ;
-    if ( m_stdhepidmap.end() != ifind && 0 != m_stdhepidmap[ ID ])
+    if ( m_stdhepidmap.end() != ifind && m_stdhepidmap[ ID ])
     {
       diff ( ifind->second , pp ) ;
       m_replaced.insert( m_stdhepidmap[ ID ]->particle() ) ;
@@ -243,7 +243,7 @@ StatusCode ParticlePropertySvc::push_back ( ParticleProperty* pp )
     const int ID = pp->pythiaID() ;
     // is this already in the map?
     auto ifind = m_pythiaidmap.find( ID ) ;
-    if ( m_pythiaidmap.end() != ifind && 0 != m_pythiaidmap[ ID ])
+    if ( m_pythiaidmap.end() != ifind && m_pythiaidmap[ ID ])
     {
       diff ( ifind->second , pp ) ;
       m_replaced.insert( m_pythiaidmap[ ID ]->particle() ) ;
@@ -331,19 +331,17 @@ StatusCode ParticlePropertySvc::parse( const std::string& file )
   log << MSG::INFO
       << "Opened particle properties file : " << file << endmsg;
 
+  auto delim = [](char c) { return isspace(c);};
   std::vector<std::string> tokens; tokens.reserve(9);
   while( *infile )
   {
     // parse each line of the file (comment lines begin with # in the cdf
     // file,
     infile->getline( line.begin(), line.size() );
-
     if ( line[0] == '#' ) continue;
 
-    /// @todo: This PPS should be removed from Gaudi, if not, the parser must be improved
     tokens.clear();
     auto buffer = boost::string_ref(line.begin());// getline puts a \0 at the end of what it read... (this is one annoying extra loop...)
-    auto delim = [](char c) { return isspace(c);};
     buffer.remove_prefix( std::distance(std::begin(buffer),
                                         std::find_if_not(std::begin(buffer), std::end(buffer), delim)));
     boost::algorithm::split( tokens, buffer, delim , boost::token_compress_on );
