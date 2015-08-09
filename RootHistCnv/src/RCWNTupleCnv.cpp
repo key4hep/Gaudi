@@ -38,38 +38,36 @@ template <class T> void analyzeItem(std::string typ,
 //-----------------------------------------------------------------------------
 {
 
-  std::string full_name = it->name();
-  RootHistCnv::parseName(full_name,block_name,var_name);
+  RootHistCnv::parseName(it->name(),block_name,var_name);
 
   //long item_size = (sizeof(T) < 4) ? 4 : sizeof(T);
   long item_size =  sizeof(T);
   long dimension = it->length();
   long ndim = it->ndim()-1;
-  std::ostringstream text;
-  text << var_name;
+  desc += var_name;
   if ( it->hasIndex() || it->length() > 1 )   {
-    text << '[';
+    desc += '[';
   }
   if ( it->hasIndex() )
   {
     std::string ind_blk, ind_var;
-    std::string ind = it->index();
-    RootHistCnv::parseName(ind,ind_blk,ind_var);
+    RootHistCnv::parseName(it->index(),ind_blk,ind_var);
     if (ind_blk != block_name) {
       std::cerr << "ERROR: Index for CWNT variable " << ind_var
                 << " is in a different block: " << ind_blk << std::endl;
     }
-    text << ind_var;
+    desc += ind_var;
   }
   else if ( it->dim(ndim) > 1 )   {
-    text << it->dim(ndim);
+    desc += std::to_string(it->dim(ndim));
   }
 
   for ( int i = ndim-1; i>=0; i-- ){
-    text << "][" << it->dim(i);
+    desc += "][";
+    desc += std::to_string(it->dim(i));
   }
   if ( it->hasIndex() || it->length() > 1 )   {
-    text << ']';
+    desc += ']';
   }
 
   if (it->range().lower() != it->range().min() &&
@@ -80,9 +78,7 @@ template <class T> void analyzeItem(std::string typ,
     lowerRange = 0;
     upperRange = -1;
   }
-  text << typ;
-
-  desc += text.str();
+  desc += typ;
   size += item_size * dimension;
 }
 
@@ -182,7 +178,7 @@ StatusCode RootHistCnv::RCWNTupleCnv::book(const std::string& desc,
       break;
     }
 
-    item_name.push_back(std::pair<std::string,std::string>(block_name,item));
+    item_name.emplace_back(block_name,item);
     cursize = size - oldsize;
 
     log << MSG::VERBOSE << "item: " << item << " type " << i->type()

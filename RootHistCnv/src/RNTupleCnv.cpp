@@ -248,7 +248,7 @@ std::string RootHistCnv::RNTupleCnv::rootVarType(int type) {
 }
 
 //-----------------------------------------------------------------------------
-bool RootHistCnv::parseName(std::string full, std::string &blk, std::string &var) {
+bool RootHistCnv::parseName(const std::string& full, std::string &blk, std::string &var) {
   //-----------------------------------------------------------------------------
   int sp;
   if ( (sp=full.find("/")) != -1 ) {
