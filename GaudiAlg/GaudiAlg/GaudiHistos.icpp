@@ -18,6 +18,7 @@
 #include <string>
 #include <vector>
 #include <set>
+#include <cmath>
 // ============================================================================
 // GaudiKernel
 // ============================================================================
@@ -31,7 +32,6 @@
 // GaudiAlg
 // ============================================================================
 #include "GaudiAlg/GaudiHistos.h"
-#include "GaudiAlg/CheckForNaN.h"
 #include "GaudiAlg/Print.h"
 #include "GaudiAlg/Fill.h"
 #include "GaudiAlg/HbookName.h"

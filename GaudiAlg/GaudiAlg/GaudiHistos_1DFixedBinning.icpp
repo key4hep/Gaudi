@@ -111,9 +111,9 @@ AIDA::IHistogram1D* GaudiHistos<PBASE>::fill
   //
   if ( !checkForNaN() )
   { Gaudi::Utils::Histos::fill ( histo , value , weight ) ; }
-  else if  ( lfin ( value ) && lfin ( weight ) )
+  else if  ( std::isfinite ( value ) && std::isfinite ( weight ) )
   { Gaudi::Utils::Histos::fill ( histo , value , weight ) ; }
-  else if  ( lnan ( value ) || lnan ( weight ) )
+  else if  ( std::isnan ( value ) || std::isnan ( weight ) )
   {
     this -> Warning
       ("fill():: 'NaN'      value is skipped from the histogram '"
