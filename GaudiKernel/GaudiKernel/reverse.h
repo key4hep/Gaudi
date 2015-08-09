@@ -1,4 +1,3 @@
-#include <iterator>
 //
 // provide a generic 'reverse' function for use in range-based for loops.
 //
@@ -21,12 +20,14 @@
 //  implies that it does meet the requirements for aggregate initializaton,
 //  which allows for {} initialization of its member.
 //
-#if  __GNUC__ < 5
-// std::rbegin and std::rend require gcc 5.0 or later, and clang 3.5 or later
+#if defined __GNUC__ &&  __GNUC__ < 5
+// std::rbegin and std::rend require gcc 5.0 or later (and clang 3.5 or later)
 template <typename C>
 auto rbegin(C& c) { return c.rbegin(); }
 template <typename C>
 auto rend(C& c) { return c.rend(); }
+#else
+#include <iterator>
 #endif
 
 template <typename Iterable>
