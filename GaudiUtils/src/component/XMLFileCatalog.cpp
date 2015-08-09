@@ -283,21 +283,21 @@ void XMLFileCatalog::getFID(Strings& fids) const {
 void XMLFileCatalog::getPFN(CSTR fid, Files& files)  const {
   files.clear();
   for(XMLCollection c(child(child(element(fid,false),PFNCOLL),PFNNODE), false); c; ++c)
-    files.push_back(make_pair(c.attr(Attr_name),c.attr(Attr_ftype)));
+    files.emplace_back(c.attr(Attr_name),c.attr(Attr_ftype));
 }
 // ----------------------------------------------------------------------------
 void XMLFileCatalog::getLFN(CSTR fid, Files& files) const  {
   files.clear();
   for(XMLCollection c(child(child(element(fid,false),LFNCOLL),LFNNODE), false); c; ++c)
-    files.push_back(make_pair(c.attr(Attr_name),fid));
+    files.emplace_back(c.attr(Attr_name),fid);
 }
 // ----------------------------------------------------------------------------
 void XMLFileCatalog::getMetaData(CSTR fid, Attributes& attr)  const  {
   attr.clear();
   for(XMLCollection c(child(element(fid),MetaNode), false); c; ++c)
-    attr.push_back(make_pair(c.attr(Attr_metaName),c.attr(Attr_metaValue)));
+    attr.emplace_back(c.attr(Attr_metaName),c.attr(Attr_metaValue));
   if ( attr.size() > 0 )
-    attr.push_back(make_pair("guid",fid));
+    attr.emplace_back("guid",fid);
 }
 // ----------------------------------------------------------------------------
 DOMNode* XMLFileCatalog::child(DOMNode* par,CSTR tag,CSTR attr,CSTR val) const {
