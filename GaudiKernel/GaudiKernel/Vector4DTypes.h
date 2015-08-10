@@ -4,9 +4,6 @@
  *
  *  4 vector typedefs
  *
- *  CVS Log :-
- *  $Id: Vector4DTypes.h,v 1.2 2007/01/25 18:30:27 hmd Exp $
- *
  *  @author Juan PALACIOS
  *  @date   2005-11-21
  */

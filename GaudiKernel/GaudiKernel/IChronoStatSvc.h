@@ -1,6 +1,3 @@
-// $Id: IChronoStatSvc.h,v 1.10 2007/08/06 08:39:39 marcocle Exp $
-// ============================================================================
-// CVS tag $Name:  $, version $Revision: 1.10 $#i
 // ============================================================================
 #ifndef     GAUDIKERNEL_ICHRONOSTATSVC_H
 #define     GAUDIKERNEL_ICHRONOSTATSVC_H

@@ -1,17 +1,3 @@
-// $Id: AlgContext.cpp,v 1.1 2007/05/24 13:48:50 hmd Exp $
-// ============================================================================
-// CVS tag $Name:  $, version $Revision: 1.1 $
-// ============================================================================
-// $Log: AlgContext.cpp,v $
-// Revision 1.1  2007/05/24 13:48:50  hmd
-// ( Vanya Belyaev) patch #1171. The enhancement of existing Algorithm Context Service
-//    is the primary goal of the proposed patch. The existing
-//    AlgContextSvc is not safe with respect to e.g. Data-On-Demand
-//    service or to operations with subalgorithms. The patched service
-//    essentially implements the queue of executing algorithms, thus the
-//    problems are eliminiated. In addition the enriched interface
-//    provides the access to the whole queue of executing algorithms.
-//
 // ============================================================================
 // Include files
 // ============================================================================

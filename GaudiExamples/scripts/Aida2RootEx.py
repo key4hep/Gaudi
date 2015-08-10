@@ -1,9 +1,5 @@
 #!/usr/bin/env python2.4
 # =============================================================================
-# $Id: Aida2RootEx.py,v 1.3 2007/08/07 13:00:28 marcocle Exp $
-# =============================================================================
-# CVS tag $Name:  $ ,version $Revision: 1.3 $
-# =============================================================================
 ## @file
 #  Simple algorithm to illustrate the usage of aida2root converter
 #  @see Gaudi::Aida2ROOT

@@ -1,6 +1,3 @@
-// $Id: ICounterSvc.h,v 1.4 2007/08/06 08:39:40 marcocle Exp $
-// ============================================================================
-// CVS tag $Name:  $, version $Revision: 1.4 $
 // ============================================================================
 #ifndef GAUDIKERNEL_ICOUNTERSVC_H
 #define GAUDIKERNEL_ICOUNTERSVC_H

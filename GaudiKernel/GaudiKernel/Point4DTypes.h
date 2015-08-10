@@ -4,9 +4,6 @@
  *
  *  4D point typedefs
  *
- *  CVS Log :-
- *  $Id: Point4DTypes.h,v 1.2 2007/01/24 14:55:00 hmd Exp $
- *
  *  @author Juan PALACIOS
  *  @date   2005-11-21
  */

@@ -1,6 +1,3 @@
-// $Id: IAlgContextSvc.h,v 1.2 2007/05/24 13:48:50 hmd Exp $
-// ============================================================================
-// CVS tag $Name:  $, version $Revision: 1.2 $
 // ============================================================================
 #ifndef GAUDIKERNEL_IALGCONTEXTSVC_H
 #define GAUDIKERNEL_IALGCONTEXTSVC_H
