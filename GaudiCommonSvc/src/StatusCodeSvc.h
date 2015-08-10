@@ -28,7 +28,7 @@ public:
 
 private:
 
-  struct StatCodeDat {
+  struct StatCodeDat final {
     std::string fnc;
     std::string lib;
     int count;
