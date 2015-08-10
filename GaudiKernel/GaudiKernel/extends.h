@@ -21,7 +21,7 @@ struct GAUDI_API extends1: public BASE, virtual public extend_interfaces1<I1> {
   template <typename... Args> extends1(Args&&... args) : BASE(std::forward<Args>(args)...) {}
 
   /// Implementation of IInterface::i_cast.
-  virtual void *i_cast(const InterfaceID &tid) const {
+  void *i_cast(const InterfaceID &tid) const override {
     void *ptr = nullptr;
 #ifndef __GCCXML__
     interfaceMatch<base_class> matcher(this,tid,ptr);
@@ -34,7 +34,7 @@ struct GAUDI_API extends1: public BASE, virtual public extend_interfaces1<I1> {
   }
 
   /// Implementation of IInterface::queryInterface.
-  virtual StatusCode queryInterface(const InterfaceID &ti, void** pp){
+  StatusCode queryInterface(const InterfaceID &ti, void** pp) override {
     if (!pp) return StatusCode::FAILURE;
     *pp = 0;
 #ifndef __GCCXML__
@@ -49,7 +49,7 @@ struct GAUDI_API extends1: public BASE, virtual public extend_interfaces1<I1> {
   }
 
   /// Implementation of IInterface::getInterfaceNames.
-  virtual std::vector<std::string> getInterfaceNames() const {
+  std::vector<std::string> getInterfaceNames() const override {
     std::vector<std::string> v = BASE::getInterfaceNames(); // start from the base
 #ifndef __GCCXML__
     AppendInterfaceName appender(v);
@@ -80,7 +80,7 @@ struct GAUDI_API extends2: public BASE, virtual public extend_interfaces2<I1,I2>
   template <typename... Args> extends2(Args&&... args) : BASE( std::forward<Args>(args)... ) {}
 
   /// Implementation of IInterface::i_cast.
-  virtual void *i_cast(const InterfaceID &tid) const {
+  void *i_cast(const InterfaceID &tid) const override {
     void *ptr = nullptr;
 #ifndef __GCCXML__
     interfaceMatch<base_class> matcher(this,tid,ptr);
@@ -93,7 +93,7 @@ struct GAUDI_API extends2: public BASE, virtual public extend_interfaces2<I1,I2>
   }
 
   /// Implementation of IInterface::queryInterface.
-  virtual StatusCode queryInterface(const InterfaceID &ti, void** pp){
+  StatusCode queryInterface(const InterfaceID &ti, void** pp) override {
     if (!pp) return StatusCode::FAILURE;
     *pp = 0;
 #ifndef __GCCXML__
@@ -108,7 +108,7 @@ struct GAUDI_API extends2: public BASE, virtual public extend_interfaces2<I1,I2>
   }
 
   /// Implementation of IInterface::getInterfaceNames.
-  virtual std::vector<std::string> getInterfaceNames() const {
+  std::vector<std::string> getInterfaceNames() const override {
     std::vector<std::string> v = BASE::getInterfaceNames(); // start from the base
 #ifndef __GCCXML__
     AppendInterfaceName appender(v);
@@ -139,7 +139,7 @@ struct GAUDI_API extends3: public BASE, virtual public extend_interfaces3<I1,I2,
   template <typename... Args> extends3(Args&&... args) : BASE( std::forward<Args>(args)... ) {}
 
   /// Implementation of IInterface::i_cast.
-  virtual void *i_cast(const InterfaceID &tid) const {
+  void *i_cast(const InterfaceID &tid) const override {
     void *ptr = nullptr;
 #ifndef __GCCXML__
     interfaceMatch<base_class> matcher(this,tid,ptr);
@@ -152,7 +152,7 @@ struct GAUDI_API extends3: public BASE, virtual public extend_interfaces3<I1,I2,
   }
 
   /// Implementation of IInterface::queryInterface.
-  virtual StatusCode queryInterface(const InterfaceID &ti, void** pp){
+  StatusCode queryInterface(const InterfaceID &ti, void** pp) override {
     if (!pp) return StatusCode::FAILURE;
     *pp = 0;
 #ifndef __GCCXML__
@@ -167,7 +167,7 @@ struct GAUDI_API extends3: public BASE, virtual public extend_interfaces3<I1,I2,
   }
 
   /// Implementation of IInterface::getInterfaceNames.
-  virtual std::vector<std::string> getInterfaceNames() const {
+  std::vector<std::string> getInterfaceNames() const override {
     std::vector<std::string> v = BASE::getInterfaceNames(); // start from the base
 #ifndef __GCCXML__
     AppendInterfaceName appender(v);

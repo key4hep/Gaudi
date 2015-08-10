@@ -86,7 +86,7 @@ public:
     m_pRegistry = pRegistry;
   }
   /// Access : Retrieve class ID of the link
-  const CLID& clID()  const   {
+  const CLID& clID()  const override {
     return m_clID;
   }
   /// Access : Set class ID of the link
@@ -94,7 +94,7 @@ public:
     m_clID = clid;
   }
   /// Access : retrieve the storage type of the class id
-  long svcType()  const    {
+  long svcType()  const override{
     return m_svcType;
   }
   /// Access : set the storage type of the class id
