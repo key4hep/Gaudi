@@ -171,7 +171,7 @@ namespace DataSvcHelpers {
       return i_find(path);
     }
     /// Set/Update Opaque address
-    void setAddress(IOpaqueAddress* pAddress);
+    void setAddress(IOpaqueAddress* pAddress) override;
     /// Set/Update object address
     void setObject(DataObject* obj);
 

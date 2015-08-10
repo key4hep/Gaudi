@@ -1070,7 +1070,7 @@ namespace NTuple
       return CLID_NTupleDirectory;
     }
     /// class ID of the object
-    virtual const CLID& clID()    const   {
+    const CLID& clID()    const   override {
       return classID();
     }
   };

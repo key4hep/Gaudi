@@ -234,13 +234,13 @@ StatusCodeSvc::parseFilter(const string& str, string& fnc, string& lib) {
 
     if (key == "FCN" || key == "FNC") {
       fnc = val;
-      lib = "";
+      lib.clear();
     } else if (key == "LIB") {
-      fnc = "";
+      fnc.clear();
       lib = val;
     } else {
-      fnc = "";
-      lib = "";
+      fnc.clear();
+      lib.clear();
 
       MsgStream log( msgSvc(), name() );
       log << MSG::WARNING << "ignoring unknown token in Filter: " << str

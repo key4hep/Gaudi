@@ -124,7 +124,7 @@ namespace NTuple   {
     /// Standard Destructor
     ~ColumnWiseTuple() override = default;
     /// Retrieve Reference to class defininition structure
-    virtual const CLID& clID() const   {
+    const CLID& clID() const override {
       return classID();
     }
     /// Static access to class defininition structure
@@ -142,7 +142,7 @@ namespace NTuple   {
     /// Standard Destructor
     ~RowWiseTuple() override = default;
     /// Retrieve Reference to class defininition structure
-    virtual const CLID& clID() const   {
+    const CLID& clID() const override {
       return classID();
     }
     /// Static access to class defininition structure
