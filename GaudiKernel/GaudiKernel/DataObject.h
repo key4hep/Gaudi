@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/DataObject.h,v 1.10 2008/11/12 23:39:47 marcocle Exp $
 #ifndef GAUDIKERNEL_DATAOBJECT_H
 #define GAUDIKERNEL_DATAOBJECT_H
 

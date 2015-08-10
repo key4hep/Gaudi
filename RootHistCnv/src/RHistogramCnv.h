@@ -1,4 +1,3 @@
-// $Id: RHistogramCnv.h,v 1.4 2007/01/08 17:16:02 mato Exp $
 #ifndef ROOTHISTCNV_RHISTOGRAMCNV_H
 #define ROOTHISTCNV_RHISTOGRAMCNV_H 1
 

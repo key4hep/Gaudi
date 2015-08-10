@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/NTupleImplementation.h,v 1.7 2006/12/10 20:29:17 leggett Exp $
 #ifndef GAUDIKERNEL_NTUPLEIMP_H
 #define GAUDIKERNEL_NTUPLEIMP_H
 

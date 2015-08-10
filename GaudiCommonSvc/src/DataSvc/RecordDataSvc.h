@@ -1,4 +1,3 @@
-// $Id: RecordDataSvc.h,v 1.1 2008/12/10 18:37:36 marcocle Exp $
 #ifndef DATASVC_RECORDDATASVC_H
 #define DATASVC_RECORDDATASVC_H
 

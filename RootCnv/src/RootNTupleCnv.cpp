@@ -1,4 +1,3 @@
-// $Id: RootNTupleCnv.cpp,v 1.13 2010-09-27 15:43:53 frankb Exp $
 //------------------------------------------------------------------------------
 //
 // Implementation of class :  RootNTupleCnv

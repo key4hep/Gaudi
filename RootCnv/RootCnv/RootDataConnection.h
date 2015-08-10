@@ -1,4 +1,3 @@
-// $Id: RootDataConnection.h,v 1.9 2010-09-17 09:00:12 frankb Exp $
 #ifndef GAUDIROOT_ROOTDATACONNECTION_H
 #define GAUDIROOT_ROOTDATACONNECTION_H
 

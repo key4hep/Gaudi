@@ -1,5 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/src/Lib/LinkManager.cpp,v 1.3 2004/01/23 11:22:04 mato Exp $
-
 // Experiment specific include files
 #include "GaudiKernel/LinkManager.h"
 #include "GaudiKernel/DataObject.h"

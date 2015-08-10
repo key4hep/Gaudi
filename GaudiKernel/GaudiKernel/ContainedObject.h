@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/ContainedObject.h,v 1.7 2004/01/19 16:56:44 mato Exp $
 #ifndef GAUDIKERNEL_CONTAINEDOBJECT_H
 #define GAUDIKERNEL_CONTAINEDOBJECT_H
 

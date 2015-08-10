@@ -1,4 +1,3 @@
-// $Id: HashMap.h,v 1.7 2008/11/01 14:30:21 marcocle Exp $
 #ifndef GAUDIKERNEL_HASHMAP_H
 #define GAUDIKERNEL_HASHMAP_H 1
 

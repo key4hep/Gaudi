@@ -1,4 +1,3 @@
-// $Id: ISvcManager.h,v 1.7 2008/11/10 15:29:09 marcocle Exp $
 #ifndef GAUDIKERNEL_ISVCMANAGER_H
 #define GAUDIKERNEL_ISVCMANAGER_H
 

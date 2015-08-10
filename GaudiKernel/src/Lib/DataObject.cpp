@@ -1,5 +1,3 @@
-// $Id: DataObject.cpp,v 1.11 2008/11/13 15:30:27 marcocle Exp $
-
 // Experiment specific include files
 #include "GaudiKernel/StreamBuffer.h"
 #include "GaudiKernel/LinkManager.h"

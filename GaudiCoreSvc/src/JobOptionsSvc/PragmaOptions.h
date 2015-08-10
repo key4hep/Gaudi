@@ -1,5 +1,3 @@
-// $Id:$
-//$Id:$
 // ===========================================================================
 #ifndef JOBOPTIONSVC_PRAGMAOPTIONS_H_
 #define JOBOPTIONSVC_PRAGMAOPTIONS_H_

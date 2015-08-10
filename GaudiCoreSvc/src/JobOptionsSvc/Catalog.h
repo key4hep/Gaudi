@@ -1,4 +1,3 @@
-// $Id:$
 #ifndef JOBOPTIONSVC_CATALOG_H_
 #define JOBOPTIONSVC_CATALOG_H_
 // ============================================================================

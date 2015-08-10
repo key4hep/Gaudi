@@ -1,4 +1,3 @@
-// $Id: IUpdateManagerSvc.h,v 1.5 2007/10/31 19:02:17 marcocle Exp $
 #ifndef GAUDIKERNEL_IUPDATEMANAGERSVC_H
 #define GAUDIKERNEL_IUPDATEMANAGERSVC_H 1
 

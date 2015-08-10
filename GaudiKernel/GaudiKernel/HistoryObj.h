@@ -1,5 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/HistoryObj.h,v 1.1 2004/07/14 18:13:56 leggett Exp $
-
 #ifndef GAUDIKERNEL_HISTORYOBJ_H
 #define GAUDIKERNEL_HISTORYOBJ_H
 

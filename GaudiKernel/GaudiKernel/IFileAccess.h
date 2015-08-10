@@ -1,4 +1,3 @@
-// $Id: IFileAccess.h,v 1.2 2008/06/12 15:20:27 marcocle Exp $
 #ifndef GaudiKernel_IFileAccess_H
 #define GaudiKernel_IFileAccess_H
 

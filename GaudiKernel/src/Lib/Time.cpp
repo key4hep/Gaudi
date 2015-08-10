@@ -1,4 +1,3 @@
-// $Id: Time.cpp,v 1.1 2006/01/26 09:24:03 hmd Exp $
 // Include files
 #include "GaudiKernel/Time.h"
 

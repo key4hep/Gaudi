@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/DataStoreItem.h,v 1.2 2000/12/13 12:57:12 mato Exp $
 #ifndef GAUDIKERNEL_DATASTOREITEM_H
 #define GAUDIKERNEL_DATASTOREITEM_H
 

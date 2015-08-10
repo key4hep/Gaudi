@@ -1,4 +1,3 @@
-// $Id: EqSolverIAlg.h,v 1.1 2003/11/27 11:05:27 mato Exp $
 #ifndef ALGTOOLS_EQSOLVERIALG_H 
 #define ALGTOOLS_EQSOLVERIALG_H 1
 

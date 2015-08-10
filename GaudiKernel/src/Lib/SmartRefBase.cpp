@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/src/Lib/SmartRefBase.cpp,v 1.8 2005/05/10 12:24:16 hmd Exp $
 //	====================================================================
 //	SmartRefBase.cpp
 //	--------------------------------------------------------------------
@@ -9,7 +8,6 @@
 //
 //	====================================================================
 #define KERNEL_SMARTREFBASE_CPP 1
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/src/Lib/SmartRefBase.cpp,v 1.8 2005/05/10 12:24:16 hmd Exp $
 
 // Framework include files
 #include "GaudiKernel/IDataProviderSvc.h"

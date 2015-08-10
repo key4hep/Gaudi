@@ -1,4 +1,3 @@
-// $Id: DataStreamTool.h,v 1.3 2007/01/15 16:48:21 hmd Exp $
 #ifndef GAUDIKERNEL_DATASTREAMTOOL_H
 #define GAUDIKERNEL_DATASTREAMTOOL_H 1
 

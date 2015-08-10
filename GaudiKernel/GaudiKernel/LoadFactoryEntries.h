@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/LoadFactoryEntries.h,v 1.4 2006/11/30 14:43:13 mato Exp $
 #ifndef GAUDIKERNEL_LOADFACTORYENTRIES_H
 #define GAUDIKERNEL_LOADFACTORYENTRIES_H 1
 //====================================================================

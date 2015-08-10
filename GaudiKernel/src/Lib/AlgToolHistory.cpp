@@ -1,7 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
 //
-// $Id: AlgToolHistory.cpp,v 1.1 2006/11/09 10:24:05 mato Exp $
-//
 // GaudiHistory/AlgToolHistory.cpp
 //
 // Contains history information for an AlgTool

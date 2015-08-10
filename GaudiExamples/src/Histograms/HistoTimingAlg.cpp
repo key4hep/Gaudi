@@ -1,4 +1,3 @@
-// $Id: HistoTimingAlg.cpp,v 1.5 2008/10/09 09:59:14 marcocle Exp $
 // Include files
 
 #include "boost/assign/list_of.hpp"

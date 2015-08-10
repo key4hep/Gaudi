@@ -1,4 +1,3 @@
-// $Id: ProcStats.h,v 1.2 2004/06/08 13:40:07 mato Exp $
 #ifndef GAUDIAUD_PROCSTATS_H
 #define GAUDIAUD_PROCSTATS_H
 

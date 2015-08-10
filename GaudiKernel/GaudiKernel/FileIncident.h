@@ -5,7 +5,6 @@
  *  @brief This file contains the class definition for the FileIncident class.
  *  @author Peter van Gemmeren <gemmeren@anl.gov>
  *  @author Charles Leggett
- *  $Id: $
  **/
 
 #include "GaudiKernel/Incident.h"

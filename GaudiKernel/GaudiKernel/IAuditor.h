@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/IAuditor.h,v 1.11 2008/10/27 19:22:20 marcocle Exp $
 #ifndef GAUDI_IAUDITOR_H
 #define GAUDI_IAUDITOR_H
 

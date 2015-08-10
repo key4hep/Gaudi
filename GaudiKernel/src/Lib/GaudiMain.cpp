@@ -1,4 +1,3 @@
-// $Id: GaudiMain.cpp,v 1.4 2006/09/13 15:25:15 hmd Exp $
 //------------------------------------------------------------------------------
 //
 //  Description: Main Program for Gaudi applications

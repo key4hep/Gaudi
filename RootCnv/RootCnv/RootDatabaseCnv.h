@@ -1,4 +1,3 @@
-// $Id: RootDatabaseCnv.h,v 1.2 2010-08-24 14:03:03 frankb Exp $
 //====================================================================
 //  Statistics file converter class definition
 //

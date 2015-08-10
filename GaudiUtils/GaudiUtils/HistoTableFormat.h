@@ -1,5 +1,3 @@
-// $Id: HistoTableFormat.h,v 1.3 2007/11/16 15:29:02 hmd Exp $
-// ============================================================================
 #ifndef GAUDIUTILS_HISTOTABLEFORMAT_H
 #define GAUDIUTILS_HISTOTABLEFORMAT_H 1
 // ============================================================================

@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/ObjectContainerBase.h,v 1.5 2008/10/09 16:46:49 marcocle Exp $
 #ifndef GAUDI_OBJECTCONTAINERBASE_H
 #define GAUDI_OBJECTCONTAINERBASE_H 1
 

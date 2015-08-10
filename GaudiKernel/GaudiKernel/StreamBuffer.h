@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/StreamBuffer.h,v 1.9 2008/10/27 16:41:33 marcocle Exp $
 #ifndef GAUDIKERNEL_STREAMBUFFER_H
 #define GAUDIKERNEL_STREAMBUFFER_H 1
 

@@ -1,4 +1,3 @@
-// $Id: DetDataSvc.h,v 1.14 2008/10/27 19:22:21 marcocle Exp $
 #ifndef DETECTORDATASVC_DETDATASVC_H
 #define DETECTORDATASVC_DETDATASVC_H
 

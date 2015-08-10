@@ -1,4 +1,3 @@
-// $Id: GslErrorCount.cpp,v 1.2 2006/01/10 20:00:05 hmd Exp $
 // Include files
 // from Gaudi
 #include "GaudiKernel/MsgStream.h"

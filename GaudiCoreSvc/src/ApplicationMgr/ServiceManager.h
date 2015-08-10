@@ -1,4 +1,3 @@
-// $Id: ServiceManager.h,v 1.9 2008/11/10 15:29:09 marcocle Exp $
 #ifndef GAUDISVC_ServiceManager_H
 #define GAUDISVC_ServiceManager_H
 

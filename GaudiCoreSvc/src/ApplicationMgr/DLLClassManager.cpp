@@ -1,5 +1,3 @@
-// $Id: DLLClassManager.cpp,v 1.17 2007/12/12 16:03:19 marcocle Exp $
-
 // Include files
 #include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/IService.h"

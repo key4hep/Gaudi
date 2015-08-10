@@ -1,11 +1,9 @@
-// $Id: RootAddress.h,v 1.8 2010-09-17 09:40:02 frankb Exp $
 //====================================================================
 //	RootAddress.h
 //--------------------------------------------------------------------
 //
 //	Author     : M.Frank
 //====================================================================
-// $Header: /afs/cern.ch/project/cvs/reps/lhcb/Online/RootCnv/src/RootAddress.h,v 1.8 2010-09-17 09:40:02 frankb Exp $
 #ifndef GAUDIROOTCNV_ROOTADDRESS_H
 #define GAUDIROOTCNV_ROOTADDRESS_H
 

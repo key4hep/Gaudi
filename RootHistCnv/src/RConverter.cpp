@@ -1,4 +1,3 @@
-// $Id: RConverter.cpp,v 1.13 2007/01/08 17:16:02 mato Exp $
 #define ROOTHISTCNV_RCONVERTER_CPP
 
 // Include files

@@ -1,4 +1,3 @@
-// $Id: RootDatabaseCnv.cpp,v 1.6 2010-09-27 15:43:53 frankb Exp $
 //------------------------------------------------------------------------------
 //
 // Implementation of class :  RootDatabaseCnv

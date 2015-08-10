@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/IDataStoreAgent.h,v 1.4 2006/11/30 15:22:07 dquarrie Exp $
 #ifndef GAUDIKERNEL_IDATASTOREAGENT_H
 #define GAUDIKERNEL_IDATASTOREAGENT_H
 

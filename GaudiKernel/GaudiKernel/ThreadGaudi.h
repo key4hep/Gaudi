@@ -11,7 +11,6 @@
 /** @class ThreadGaudi ThreadGaudi.h GaudiKernel/ThreadGaudi.h
  *  @brief singleton mapping the pthread ID to the Gaudi thread ID
  *  @author Werner Wiedenmann
- *  $Id: ThreadGaudi.h,v 1.3 2003/06/25 15:45:10 mato Exp $
  */
 class GAUDI_API ThreadGaudi {
 public:

@@ -1,5 +1,3 @@
-// $Id: IndefiniteIntegral.h,v 1.1 2003/11/19 17:09:39 mato Exp $
-// ============================================================================
 #ifndef GAUDIMATH_INDEFINITEINTEGRAL_H
 #define GAUDIMATH_INDEFINITEINTEGRAL_H 1
 // ============================================================================

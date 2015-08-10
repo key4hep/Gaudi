@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/src/Lib/Message.cpp,v 1.9 2008/02/20 19:16:23 hmd Exp $
 #include <string>
 #include <iostream>
 #include <iomanip>

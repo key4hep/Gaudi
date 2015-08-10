@@ -1,4 +1,3 @@
-// $Id: HistogramAgent.h,v 1.3 2003/04/15 07:51:15 mato Exp $
 #ifndef GAUDIKERNEL_HISTOGRAMAGENT_H
 #define GAUDIKERNEL_HISTOGRAMAGENT_H
 

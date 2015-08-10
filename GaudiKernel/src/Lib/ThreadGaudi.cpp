@@ -1,6 +1,4 @@
 // -*-C++-*-
-// $Id: ThreadGaudi.cpp,v 1.4 2006/04/20 16:42:58 hmd Exp $
-// $Name:  $
 
 #include "GaudiKernel/ThreadGaudi.h"
 

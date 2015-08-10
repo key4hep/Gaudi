@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/Message.h,v 1.5 2008/02/20 19:16:23 hmd Exp $
 #ifndef GAUDIKERNEL_MESSAGE_H
 #define GAUDIKERNEL_MESSAGE_H
 

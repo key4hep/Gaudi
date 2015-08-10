@@ -1,4 +1,3 @@
-// $Header:$
 #ifndef GAUDIKERNEL_IUPDATEABLE_H
 #define GAUDIKERNEL_IUPDATEABLE_H
 

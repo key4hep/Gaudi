@@ -1,4 +1,3 @@
-// $Id: Maps.h,v 1.7 2006/12/10 19:11:56 leggett Exp $
 #ifndef GAUDIALG_MAPS_H
 #define GAUDIALG_MAPS_H 1
 // ============================================================================

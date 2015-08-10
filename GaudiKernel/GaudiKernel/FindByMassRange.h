@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/FindByMassRange.h,v 1.2 2000/12/13 12:57:13 mato Exp $
 #ifndef GAUDIKERNEL_FINDBYMASSRANGE_H
 #define GAUDIKERNEL_FINDBYMASSRANGE_H
 

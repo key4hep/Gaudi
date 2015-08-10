@@ -1,4 +1,3 @@
-// $Id: EventNodeKiller.h,v 1.1 2005-07-15 16:41:41 cattanem Exp $
 #ifndef EVENTNODEKILLER_H 
 #define EVENTNODEKILLER_H 1
 

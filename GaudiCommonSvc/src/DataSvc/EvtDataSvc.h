@@ -1,4 +1,3 @@
-// $Id: EvtDataSvc.h,v 1.4 2006/11/30 14:57:03 mato Exp $
 #ifndef DATASVC_EVTDATASVC_H
 #define DATASVC_EVTDATASVC_H
 

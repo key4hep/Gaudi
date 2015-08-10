@@ -1,4 +1,3 @@
-// $Id: FileReadTool.h,v 1.2 2008/06/12 15:23:03 marcocle Exp $
 #ifndef _FILEREADTOOL_H
 #define _FILEREADTOOL_H
 

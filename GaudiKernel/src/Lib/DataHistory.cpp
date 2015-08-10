@@ -1,7 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
 //
-// $Id: DataHistory.cpp,v 1.1 2006/11/09 10:24:05 mato Exp $
-//
 // GaudiHistory/DataHistory.cpp
 //
 // Contains history information for a Data Object

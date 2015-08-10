@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/IDataManagerSvc.h,v 1.6 2001/11/20 11:15:52 mato Exp $
 #ifndef GAUDIKERNEL_IDATAMANAGERSVC_H
 #define GAUDIKERNEL_IDATAMANAGERSVC_H
 

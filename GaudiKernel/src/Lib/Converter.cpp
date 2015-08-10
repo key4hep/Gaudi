@@ -1,5 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/src/Lib/Converter.cpp,v 1.17 2007/12/12 16:02:32 marcocle Exp $
-
 // Include Files
 #include "GaudiKernel/Converter.h"
 #include "GaudiKernel/INamedInterface.h"

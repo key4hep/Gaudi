@@ -1,4 +1,3 @@
-// $Id: SmartIF.h,v 1.10 2008/10/27 19:22:20 marcocle Exp $
 #ifndef GAUDI_SMARTIF_H
 #define GAUDI_SMARTIF_H 1
 

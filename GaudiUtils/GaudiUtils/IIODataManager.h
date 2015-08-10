@@ -1,6 +1,5 @@
 #ifndef GAUDIUTILS_IIODATAMANAGER_H
 #define GAUDIUTILS_IIODATAMANAGER_H
-// $Id:
 
 // Framework include files
 #include "GaudiKernel/IInterface.h"

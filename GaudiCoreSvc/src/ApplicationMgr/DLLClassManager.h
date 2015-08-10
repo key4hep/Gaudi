@@ -1,5 +1,3 @@
-// $Id: DLLClassManager.h,v 1.7 2006/12/11 10:37:02 leggett Exp $	//
-
 #ifndef GAUDI_DLLCLASSMANAGER_H
 #define GAUDI_DLLCLASSMANAGER_H 1
 

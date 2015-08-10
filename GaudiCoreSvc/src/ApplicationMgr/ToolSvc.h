@@ -1,4 +1,3 @@
-// $Id: ToolSvc.h,v 1.12 2008/06/02 14:21:35 marcocle Exp $
 #ifndef GAUDISVC_TOOLSVC_H
 #define GAUDISVC_TOOLSVC_H
 

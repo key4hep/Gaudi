@@ -1,4 +1,3 @@
-// $Id: AppMgrRunable.h,v 1.4 2008/06/02 14:21:35 marcocle Exp $
 #ifndef GAUDISVC_APPMGRRUNABLE_H
 #define GAUDISVC_APPMGRRUNABLE_H 1
 

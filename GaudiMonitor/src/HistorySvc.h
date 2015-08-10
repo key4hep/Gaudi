@@ -1,5 +1,3 @@
-// $Id: HistorySvc.h,v 1.8 2008/06/04 12:35:15 marcocle Exp $
-
 #ifndef GAUDISVC_FASTHISTORYSVC_H
 #define GAUDISVC_FASTHISTORYSVC_H
 

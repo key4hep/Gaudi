@@ -1,4 +1,3 @@
-// $Id: GaudiHistoAlgorithm.h,v 1.1 2005/10/03 14:15:30 hmd Exp $
 #ifndef HISTOGRAMS_GAUDIHISTOALGORITHM_H 
 #define HISTOGRAMS_GAUDIHISTOALGORITHM_H 1
 

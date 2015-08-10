@@ -1,7 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
 //
-// $Id: JobHistory.cpp,v 1.1 2006/11/09 10:24:05 mato Exp $
-//
 // GaudiHistory/JobHistory.cpp
 //
 // Contains history information for a job. Imports all environment vars

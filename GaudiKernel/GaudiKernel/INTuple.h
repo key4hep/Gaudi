@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/INTuple.h,v 1.7 2008/10/27 19:22:20 marcocle Exp $
 #ifndef GAUDIKERNEL_INTUPLE_H
 #define GAUDIKERNEL_INTUPLE_H
 

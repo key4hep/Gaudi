@@ -1,5 +1,3 @@
-// $Id: NumericalDefiniteIntegral.h,v 1.3 2008/10/27 19:22:20 marcocle Exp $
-// ============================================================================
 #ifndef GAUDIMATH_NUMERICALDEFINITEINTEGRAL_H
 #define GAUDIMATH_NUMERICALDEFINITEINTEGRAL_H 1
 // ============================================================================

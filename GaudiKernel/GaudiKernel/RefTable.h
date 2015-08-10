@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/RefTable.h,v 1.6 2006/02/06 13:22:20 hmd Exp $
 #ifndef GAUDIKERNEL_REFTABLE_H
 #define GAUDIKERNEL_REFTABLE_H 1
 

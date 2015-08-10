@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/ConversionSvc.h,v 1.15 2007/06/01 17:24:21 marcocle Exp $
 #ifndef GAUDIKERNEL_CONVERSIONSVC_H
 #define GAUDIKERNEL_CONVERSIONSVC_H 1
 

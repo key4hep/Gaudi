@@ -1,7 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
 //
-// $Id: ServiceHistory.cpp,v 1.2 2008/06/04 12:35:15 marcocle Exp $
-//
 // GaudiHistory/ServiceHistory.cpp
 //
 // Contains history information for a Service

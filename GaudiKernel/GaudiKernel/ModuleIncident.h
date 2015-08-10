@@ -9,7 +9,6 @@
  * @class ModuleIncident
  * @brief base class for Module-related incident
  * @author P. Calafiura
- * $Id: ModuleIncident.h,v 1.1 2006/12/10 20:29:17 leggett Exp $
  */
 class ModuleIncident : public Incident {
 protected:
@@ -39,7 +38,6 @@ private:
  * @class ModuleLoadedIncident
  * @brief fired when a module (DLL) is loaded
  * @author P. Calafiura
- * $Id: ModuleIncident.h,v 1.1 2006/12/10 20:29:17 leggett Exp $
  */
 class ModuleLoadedIncident : public ModuleIncident {
 public:

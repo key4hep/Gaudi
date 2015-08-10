@@ -1,4 +1,3 @@
-// $Id:$
 // Copyright 2011 alexander.mazurov@gmail.com
 // ============================================================================
 // Include files

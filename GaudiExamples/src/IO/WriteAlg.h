@@ -1,4 +1,3 @@
-//$Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiExamples/src/POOLIO/WriteAlg.h,v 1.1 2004/05/24 14:05:04 mato Exp $  //
 #ifndef GAUDIEXAMPLE_WRITEALG_H
 #define GAUDIEXAMPLE_WRITEALG_H
 

@@ -1,4 +1,3 @@
-// $Id: RootCnvSvc.h,v 1.7 2010-09-14 06:01:12 frankb Exp $
 //====================================================================
 //	RootCnvSvc definition
 //--------------------------------------------------------------------
@@ -7,7 +6,6 @@
 //====================================================================
 #ifndef GAUDIROOTCNV_GAUDIROOTCNVSVC_H
 #define GAUDIROOTCNV_GAUDIROOTCNVSVC_H
-// $Header: /afs/cern.ch/project/cvs/reps/lhcb/Online/RootCnv/src/RootCnvSvc.h,v 1.7 2010-09-14 06:01:12 frankb Exp $
 
 // Framework include files
 #include "GaudiKernel/ConversionSvc.h"

@@ -1,4 +1,3 @@
-// $Id: HelloWorld.h,v 1.5 2005/01/17 17:27:25 mato Exp $
 #ifndef GAUDIEXAMPLE_HELLOWORLD_H
 #define GAUDIEXAMPLE_HELLOWORLD_H 1
 

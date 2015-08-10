@@ -1,4 +1,3 @@
-// $Id $
 // Include files
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/IRegistry.h"

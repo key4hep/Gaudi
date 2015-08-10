@@ -1,5 +1,3 @@
-// $Id: ServiceHistory.h,v 1.2 2008/06/04 12:35:15 marcocle Exp $
-
 #ifndef GAUDIKERNEL_SERVICEHISTORY_H
 #define GAUDIKERNEL_SERVICEHISTORY_H
 

@@ -1,4 +1,3 @@
-// $Id: Class_dict.cpp,v 1.8 2006/02/06 13:15:15 hmd Exp $
 #include <iostream>
 #include <string>
 

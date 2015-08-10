@@ -1,10 +1,7 @@
-// $Id:$ 
 // ============================================================================
 /*  @file gaudiHistoID.cpp
  *
  *  Implementation file for class GaudiAlg::ID
- *
- *  $Id: GaudiHistoID.cpp,v 1.1 2006/03/09 14:50:22 hmd Exp $
  *
  *  @author Chris Jones   Christopher.Rob.Jones@cern.ch
  *  @date   03/02/2006

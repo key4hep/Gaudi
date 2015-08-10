@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiExamples/src/GaudiMT/MTMessageSvc.h,v 1.4 2007/01/18 14:53:54 hmd Exp $
 #ifndef GAUDI_MTMESSAGESVC_H
 #define GAUDI_MTMESSAGESVC_H
 

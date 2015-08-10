@@ -1,4 +1,3 @@
-// $Id: NTupleItems.h,v 1.7 2008/10/27 19:22:20 marcocle Exp $
 #ifndef GAUDI_NTUPLESVC_NTUPLEITEMS_H
 #define GAUDI_NTUPLESVC_NTUPLEITEMS_H 1
 

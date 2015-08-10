@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/IIncidentSvc.h,v 1.5 2007/05/24 17:04:41 marcocle Exp $
 #ifndef INTERFACES_IINCIDENTSVC_H
 #define INTERFACES_IINCIDENTSVC_H
 

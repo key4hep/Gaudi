@@ -1,4 +1,3 @@
-// $Id: TimerForSequencer.h,v 1.5 2004/11/25 13:26:26 mato Exp $
 #ifndef TIMERFORSEQUENCER_H
 
 #include "GaudiKernel/MsgStream.h"

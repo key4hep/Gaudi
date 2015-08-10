@@ -1,4 +1,3 @@
-// $Id: TESSerializer.h,v 1.1 2008/10/17 08:56:05 mato Exp $
 #ifndef GAUDIMP_TESSERIALIZER_H
 #define GAUDIMP_TESSERIALIZER_H
 

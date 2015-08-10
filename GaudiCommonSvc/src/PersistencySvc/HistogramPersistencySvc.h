@@ -1,4 +1,3 @@
-// $Id: HistogramPersistencySvc.h,v 1.5 2008/10/09 13:40:18 marcocle Exp $
 //	===========================================================================
 //
 //	HistogramPersistencySvc.h

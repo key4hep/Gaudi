@@ -1,4 +1,3 @@
-// $Id: IStateful.h,v 1.1 2008/06/02 14:20:38 marcocle Exp $
 #ifndef GAUDIKERNEL_ISTATEFUL_H
 #define GAUDIKERNEL_ISTATEFUL_H
 

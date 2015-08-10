@@ -1,4 +1,3 @@
-//$Id:$
 // ===========================================================================
 #ifndef JOBOPTIONSVC_UNITS_H_
 #define JOBOPTIONSVC_UNITS_H_ 1

@@ -1,5 +1,3 @@
-//$Id: GaudiMain.cpp,v 1.9 2006/11/17 16:04:46 mato Exp $	//
-
 // Include files
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/Bootstrap.h"

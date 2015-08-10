@@ -1,4 +1,3 @@
-// $Id: GaudiHistoAlg.h,v 1.11 2008/01/17 15:06:06 marcocle Exp $
 #ifndef GAUDIALG_GAUDIHISTOALG_H
 #define GAUDIALG_GAUDIHISTOALG_H 1
 // ============================================================================

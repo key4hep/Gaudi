@@ -1,4 +1,3 @@
-// $Id: PersSvc.h,v 1.5 2006/11/30 15:04:07 mato Exp $
 #ifndef ROOTHISTCNV_PERSSVC_H
 #define ROOTHISTCNV_PERSSVC_H 1
 

@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/IProperty.h,v 1.6 2006/06/06 16:16:23 hmd Exp $
 #ifndef GAUDIKERNEL_IPROPERTY_H
 #define GAUDIKERNEL_IPROPERTY_H
 

@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/SmartDataObjectPtr.h,v 1.7 2007/11/21 09:29:31 marcocle Exp $
 #ifndef GAUDIKERNEL_SMARTDATAOBJECTPTR_H
 #define GAUDIKERNEL_SMARTDATAOBJECTPTR_H 1
 

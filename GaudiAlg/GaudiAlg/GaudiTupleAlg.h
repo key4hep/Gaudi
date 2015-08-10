@@ -1,4 +1,3 @@
-// $Id: GaudiTupleAlg.h,v 1.10 2005/09/23 16:14:20 hmd Exp $
 #ifndef GAUDIALG_GAUDITUPLEALG_H
 #define GAUDIALG_GAUDITUPLEALG_H 1
 // ============================================================================

@@ -1,4 +1,3 @@
-// $Id: KeyedTraits.h,v 1.3 2006/12/10 20:29:17 leggett Exp $
 #ifndef GAUDIKERNEL_KEYEDTRAITS_H
 #define GAUDIKERNEL_KEYEDTRAITS_H
 

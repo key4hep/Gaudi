@@ -1,4 +1,3 @@
-// $Id: Time.h,v 1.3 2006/01/25 16:02:48 hmd Exp $
 #ifndef GAUDIKERNEL_TIME_H
 #define GAUDIKERNEL_TIME_H 1
 

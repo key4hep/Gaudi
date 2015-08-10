@@ -1,4 +1,3 @@
-// $Id: GaudiTuplesConstructors.cpp,v 1.1 2005/09/23 16:14:20 hmd Exp $
 
 // ============================================================================
 /* @file GaudiTuplesConstructors.cpp

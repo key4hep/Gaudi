@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/src/Lib/DataTypeInfo.cpp,v 1.5 2008/10/27 19:22:21 marcocle Exp $
 //	====================================================================
 //
 //	DataTypeInfo.cpp

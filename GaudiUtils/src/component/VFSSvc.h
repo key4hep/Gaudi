@@ -1,4 +1,3 @@
-// $Id: VFSSvc.h,v 1.2 2008/06/12 15:23:03 marcocle Exp $
 #ifndef GaudiSvc_VFSSvc_H
 #define GaudiSvc_VFSSvc_H 1
 

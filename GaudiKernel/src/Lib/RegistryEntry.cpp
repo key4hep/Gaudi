@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/src/Lib/RegistryEntry.cpp,v 1.12 2006/07/07 13:15:30 hmd Exp $
 //====================================================================
 //	RegistryEntry.cpp
 //--------------------------------------------------------------------

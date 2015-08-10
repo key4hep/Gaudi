@@ -1,4 +1,3 @@
-// $Id: H1D.cpp,v 1.14 2007/07/16 13:36:17 hmd Exp $
 #ifdef __ICC
 // disable icc remark #2259: non-pointer conversion from "X" to "Y" may lose significant bits
 //   TODO: To be removed, since it comes from ROOT TMathBase.h

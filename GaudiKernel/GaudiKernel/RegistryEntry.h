@@ -1,4 +1,3 @@
-// $Id: RegistryEntry.h,v 1.8 2005/07/18 16:34:05 hmd Exp $
 #ifndef GAUDIKERNEL_REGISTRYENTRY_H
 #define GAUDIKERNEL_REGISTRYENTRY_H
 

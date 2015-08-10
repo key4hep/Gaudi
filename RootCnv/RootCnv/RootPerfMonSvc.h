@@ -1,4 +1,3 @@
-// $Id: RootPerfMonSvc.h,v 1.7 2010-09-14 06:01:12 frankb Exp $
 //====================================================================
 //	RootPerfMonSvc definition
 //--------------------------------------------------------------------
@@ -7,7 +6,6 @@
 //====================================================================
 #ifndef GAUDIROOTCNV_GAUDIROOTPERFMONSVC_H
 #define GAUDIROOTCNV_GAUDIROOTPERFMONSVC_H
-// $Header: /afs/cern.ch/project/cvs/reps/lhcb/Online/RootCnv/src/RootPerfMonSvc.h,v 1.7 2010-09-14 06:01:12 frankb Exp $
 
 #include <memory>
 // Framework include files

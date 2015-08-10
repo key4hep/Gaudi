@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/IOpaqueAddress.h,v 1.6 2006/11/30 15:22:07 dquarrie Exp $
 #ifndef GAUDIKERNEL_IOPAQUEADDRESS_H
 #define GAUDIKERNEL_IOPAQUEADDRESS_H
 

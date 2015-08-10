@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/IService.h,v 1.8 2008/06/02 14:20:38 marcocle Exp $
 #ifndef GAUDIKERNEL_ISERVICE_H
 #define GAUDIKERNEL_ISERVICE_H
 

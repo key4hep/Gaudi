@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/IClassManager.h,v 1.6 2006/12/11 13:40:13 leggett Exp $
 #ifndef GAUDIKERNEL_ICLASSMANAGER_H
 #define GAUDIKERNEL_ICLASSMANAGER_H
 

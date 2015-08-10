@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/src/Lib/NTupleItems.cpp,v 1.6 2006/05/02 13:03:04 hmd Exp $
 //====================================================================
 //  NTuple name space implementation
 //--------------------------------------------------------------------

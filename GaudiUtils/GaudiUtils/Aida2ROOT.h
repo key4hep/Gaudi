@@ -1,4 +1,3 @@
-// $Id: Aida2ROOT.h,v 1.3 2007/08/06 14:49:36 hmd Exp $
 // ============================================================================
 #ifndef GAUDIALG_AIDA2ROOT_H
 #define GAUDIALG_AIDA2ROOT_H 1

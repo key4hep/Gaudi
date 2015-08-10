@@ -1,4 +1,3 @@
-//$Id: IDetDataSvc.h,v 1.4 2008/10/27 19:22:20 marcocle Exp $
 #ifndef GAUDIKERNEL_IDETDATASVC_H
 #define GAUDIKERNEL_IDETDATASVC_H 1
 

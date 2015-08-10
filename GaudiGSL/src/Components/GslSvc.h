@@ -1,5 +1,3 @@
-// $Id: GslSvc.h,v 1.2 2006/11/30 10:40:53 mato Exp $
-// ============================================================================
 #ifndef GAUDIGSL_GSLSVC_H
 #define GAUDIGSL_GSLSVC_H 1
 // Include files

@@ -1,4 +1,3 @@
-// $Id:$
 #ifndef JOBOPTIONSVC_INCLUDED_FILES_H_
 #define JOBOPTIONSVC_INCLUDED_FILES_H_
 // ============================================================================

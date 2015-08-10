@@ -1,7 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
 //
-// $Id: AlgorithmHistory.cpp,v 1.1 2006/11/09 10:24:05 mato Exp $
-//
 // GaudiHistory/AlgorithmHistory.cpp
 //
 // Contains history information for an Algorithm

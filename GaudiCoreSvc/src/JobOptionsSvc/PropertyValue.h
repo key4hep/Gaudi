@@ -1,4 +1,3 @@
-// $Id:$
 #ifndef JOBOPTIONSVC_PROPERTY_VALUE_H_
 #define JOBOPTIONSVC_PROPERTY_VALUE_H_
 // ============================================================================

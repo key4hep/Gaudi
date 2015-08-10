@@ -1,4 +1,3 @@
-// $Id: AlgContextSvc.h,v 1.4 2007/05/24 13:49:47 hmd Exp $
 // ============================================================================
 #ifndef GAUDISVC_ALGCONTEXTSVC_H
 #define GAUDISVC_ALGCONTEXTSVC_H 1

@@ -1,4 +1,3 @@
-// $Id: EventLoopMgr.h,v 1.9 2008/10/09 13:40:18 marcocle Exp $
 #ifndef GAUDISVC_EVENTLOOPMGR_H
 #define GAUDISVC_EVENTLOOPMGR_H 1
 

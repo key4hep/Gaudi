@@ -3,8 +3,6 @@
   * @author Paolo Calafiura <pcalafiura@lbl.gov> - ATLAS Collaboration
   */
 
-// $Id: fileparser_test.cpp,v 1.2 2007/10/09 10:28:48 marcocle Exp $
-
 //<<<<<< INCLUDES                                                       >>>>>>
 
 #include <iostream>

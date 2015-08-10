@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/MinimalEventLoopMgr.h,v 1.4 2008/07/15 12:48:18 marcocle Exp $
 #ifndef GAUDIKERNEL_MINIMALEVENTLOOPMGR_H
 #define GAUDIKERNEL_MINIMALEVENTLOOPMGR_H 1
 

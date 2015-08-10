@@ -3,7 +3,6 @@
 /** @file DirSearchPath.h
  * @brief search for files in a list of directories
  * @author Paolo Calafiura <pcalafiura@lbl.gov> - ATLAS Collaboration
- * $Id: DirSearchPath.h,v 1.2 2007/10/16 15:37:25 marcocle Exp $
  */
 #include <vector>
 #include <functional>  /* binary_function */
@@ -14,7 +13,6 @@
 /** @class DirSearchPath
  * @brief search for files in a list of directories
  * @author Paolo Calafiura <pcalafiura@lbl.gov> - ATLAS Collaboration
- * $Id: DirSearchPath.h,v 1.2 2007/10/16 15:37:25 marcocle Exp $
  */
 class GAUDI_API DirSearchPath {
 public:

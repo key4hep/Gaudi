@@ -1,4 +1,3 @@
-// $Id: HistoAlgorithm.h,v 1.6 2005/01/12 17:49:48 mato Exp $
 #ifndef HISTOGRAMS_HISTOALGORITHM_H
 #define HISTOGRAMS_HISTOALGORITHM_H 1
 

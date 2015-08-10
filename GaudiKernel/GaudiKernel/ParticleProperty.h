@@ -1,4 +1,3 @@
-// $Id: ParticleProperty.h,v 1.6 2004/08/05 09:58:08 mato Exp $
 #ifndef GAUDIKERNEL_PARTICLEPROPERTY_H
 #define GAUDIKERNEL_PARTICLEPROPERTY_H 1
 // ============================================================================

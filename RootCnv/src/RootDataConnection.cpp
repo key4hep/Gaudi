@@ -1,11 +1,9 @@
-// $Id: RootDataConnection.cpp,v 1.16 2010-09-27 15:43:53 frankb Exp $
 //====================================================================
 //        RootDataConnection.cpp
 //--------------------------------------------------------------------
 //
 //        Author     : M.Frank
 //====================================================================
-// $Header: /afs/cern.ch/project/cvs/reps/lhcb/Online/RootCnv/src/RootDataConnection.cpp,v 1.16 2010-09-27 15:43:53 frankb Exp $
 
 // Framework include files
 #include "RootCnv/RootDataConnection.h"

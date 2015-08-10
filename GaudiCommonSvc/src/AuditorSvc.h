@@ -1,4 +1,3 @@
-// $Id: $
 #ifndef AuditorSvc_AuditorSvc_H
 #define AuditorSvc_AuditorSvc_H
 

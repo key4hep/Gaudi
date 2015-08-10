@@ -1,4 +1,3 @@
-// $Id: HistogramSvc.h,v 1.16 2008/10/09 09:59:14 marcocle Exp $
 // ============================================================================
 #ifndef GAUDISVC_HISTOGRAMSVC_H
 #define GAUDISVC_HISTOGRAMSVC_H 1

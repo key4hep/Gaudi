@@ -1,5 +1,3 @@
-// $Id: FuncMinimum.h,v 1.3 2006/11/30 10:40:53 mato Exp $
-// ============================================================================
 #ifndef ALGTOOLS_FUNCMINIMUM_H
 #define ALGTOOLS_FUNCMINIMUM_H 1
 // Include files

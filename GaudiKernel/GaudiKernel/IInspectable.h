@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/IInspectable.h,v 1.3 2006/11/30 15:22:07 dquarrie Exp $
 #ifndef GAUDIKERNEL_IINSPECTABLE_H
 #define GAUDIKERNEL_IINSPECTABLE_H
 

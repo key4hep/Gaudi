@@ -1,4 +1,3 @@
-// $Id: GaudiCommonConstructors.cpp,v 1.1 2005/09/23 16:14:20 hmd Exp $
 
 // ============================================================================
 /* @file GaudiCommonConstructors.cpp

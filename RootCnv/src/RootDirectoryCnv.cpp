@@ -1,4 +1,3 @@
-// $Id: RootDirectoryCnv.cpp,v 1.8 2010-09-27 15:43:53 frankb Exp $
 //------------------------------------------------------------------------------
 //
 // Implementation of class :  RootDirectoryCnv

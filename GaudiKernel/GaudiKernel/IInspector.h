@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/IInspector.h,v 1.4 2006/11/30 15:22:07 dquarrie Exp $
 #ifndef GAUDIKERNEL_IINSPECTOR_H
 #define GAUDIKERNEL_IINSPECTOR_H
 

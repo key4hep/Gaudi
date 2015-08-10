@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/src/Lib/NTupleImplementation.cpp,v 1.7 2006/12/10 20:29:18 leggett Exp $
 //====================================================================
 //  NTuple class implementation
 //--------------------------------------------------------------------

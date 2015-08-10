@@ -1,4 +1,3 @@
-// $Id: FuncMinimumPAlg.h,v 1.1 2003/11/27 11:05:27 mato Exp $
 #ifndef ALGTOOLS_FUNCMINIMUMPALG_H 
 #define ALGTOOLS_FUNCMINIMUMPALG_H 1
 

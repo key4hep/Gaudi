@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/IStagerSvc.h,v 1.1 2005/07/05 10:55:09 hmd Exp $
 #ifndef INTERFACES_ISTAGERSVC_H
 #define INTERFACES_ISTAGERSVC_H
 

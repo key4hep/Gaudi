@@ -1,4 +1,3 @@
-// $Id: RndmGenerators.cpp,v 1.7 2006/09/13 15:25:15 hmd Exp $
 #define GAUDI_RNDMGENSVC_RNDMGENGENERATORS_CPP
 
 // Framework include files

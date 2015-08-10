@@ -1,4 +1,3 @@
-// $Id: TemplatedAlg.h,v 1.1 2008/10/09 21:00:37 marcocle Exp $
 #ifndef GAUDIEXAMPLE_TEMPLATEALG_H
 #define GAUDIEXAMPLE_TEMPLATEALG_H 1
 
