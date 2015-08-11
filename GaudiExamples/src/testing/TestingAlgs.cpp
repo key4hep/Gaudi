@@ -22,10 +22,10 @@ namespace GaudiTesting {
   public:
     DestructorCheckAlg(const std::string& name, ISvcLocator *pSvcLocator):
       GaudiAlgorithm(name, pSvcLocator) {}
-    virtual ~DestructorCheckAlg(){
+    ~DestructorCheckAlg() override {
       std::cout << "Destructor of " << name()<< std::endl;
     }
-    StatusCode execute(){
+    StatusCode execute() override {
       info() << "Executing " << name() << endmsg;
       return StatusCode::SUCCESS;
     }
@@ -38,7 +38,7 @@ namespace GaudiTesting {
       declareProperty("SleepTime", m_sleep = 10,
                       "Seconds to sleep during the execute");
     }
-    StatusCode execute(){
+    StatusCode execute() override {
       info() << "Executing event " << ++m_counter << endmsg;
       info() << "Sleeping for " << m_sleep << " seconds" << endmsg;
       Gaudi::Sleep(m_sleep);
@@ -62,7 +62,7 @@ namespace GaudiTesting {
       declareProperty("Signal", m_signal = SIGINT,
           "Signal to raise");
     }
-    virtual ~SignallingAlg(){}
+    ~SignallingAlg() override = default;
     StatusCode execute(){
       if (m_eventCount <= 0) {
         info() << "Raising signal now" << endmsg;
@@ -89,8 +89,8 @@ namespace GaudiTesting {
       declareProperty("Mode", m_mode = "failure",
           "Type of interruption ['exception', 'stopRun', 'failure']");
     }
-    virtual ~StopLoopAlg(){}
-    StatusCode execute(){
+    ~StopLoopAlg() override = default;
+    StatusCode execute() override{
       if (m_eventCount <= 0) {
         info() << "Stopping loop with " << m_mode << endmsg;
         if (m_mode == "exception") {
@@ -127,8 +127,8 @@ namespace GaudiTesting {
       declareProperty("Incident", m_incident = "",
           "Type of incident to fire.");
     }
-    virtual ~CustomIncidentAlg(){}
-    StatusCode initialize() {
+    ~CustomIncidentAlg() override = default;
+    StatusCode initialize() override {
       StatusCode sc = GaudiAlgorithm::initialize();
       if (sc.isFailure()) return sc;
 
@@ -142,7 +142,7 @@ namespace GaudiTesting {
 
       return StatusCode::SUCCESS;
     }
-    StatusCode execute(){
+    StatusCode execute() override {
       if (m_eventCount == 0) {
         info() << "Firing incident " << m_incident << endmsg;
         m_incidentSvc->fireIncident(Incident(name(), m_incident));
@@ -154,7 +154,7 @@ namespace GaudiTesting {
       --m_eventCount;
       return StatusCode::SUCCESS;
     }
-    StatusCode finalize() {
+    StatusCode finalize() override {
       m_incidentSvc.reset();
       return GaudiAlgorithm::finalize();
     }
@@ -180,7 +180,7 @@ namespace GaudiTesting {
                       "Name of the data service to use");
     }
 
-    StatusCode initialize() {
+    StatusCode initialize() override {
       StatusCode sc = GaudiAlgorithm::initialize();
       if (sc.isFailure()) return sc;
 
@@ -190,7 +190,7 @@ namespace GaudiTesting {
       return StatusCode::SUCCESS;
     }
 
-    StatusCode execute() {
+    StatusCode execute() override {
       StatusCode sc = StatusCode::SUCCESS;
       info() << "Adding " << m_paths.size() << " objects to " << m_dataSvc << endmsg;
       for (auto& p: m_paths) {
@@ -204,7 +204,7 @@ namespace GaudiTesting {
       return sc;
     }
 
-    StatusCode finalize() {
+    StatusCode finalize() override {
       m_dataProvider.reset();
       return GaudiAlgorithm::finalize();
     }
@@ -230,7 +230,7 @@ namespace GaudiTesting {
                       "if True, missing objects will not beconsidered an error");
     }
 
-    StatusCode initialize() {
+    StatusCode initialize() override {
       StatusCode sc = GaudiAlgorithm::initialize();
       if (sc.isFailure()) return sc;
 
@@ -240,7 +240,7 @@ namespace GaudiTesting {
       return StatusCode::SUCCESS;
     }
 
-    StatusCode execute() {
+    StatusCode execute() override {
       info() << "Getting " << m_paths.size() << " objects from " << m_dataSvc << endmsg;
       bool missing = false;
       for (auto& p: m_paths) {
@@ -258,7 +258,7 @@ namespace GaudiTesting {
           : StatusCode::SUCCESS;
     }
 
-    StatusCode finalize() {
+    StatusCode finalize() override {
       m_dataProvider.reset();
       return GaudiAlgorithm::finalize();
     }
@@ -275,11 +275,11 @@ namespace GaudiTesting {
       GaudiAlgorithm(name, pSvcLocator), m_counter(0)
     {
     }
-    StatusCode initialize() {
+    StatusCode initialize() override {
       m_counter = 0;
       return GaudiAlgorithm::initialize();
     }
-    StatusCode execute() {
+    StatusCode execute() override {
       setFilterPassed((++m_counter) % 2);
       return StatusCode::SUCCESS;
     }
@@ -293,7 +293,7 @@ namespace GaudiTesting {
       OddEventsFilter(name, pSvcLocator)
     {
     }
-    StatusCode execute() {
+    StatusCode execute() override {
       setFilterPassed(((++m_counter) % 2) == 0);
       return StatusCode::SUCCESS;
     }
@@ -307,7 +307,7 @@ namespace GaudiTesting {
     ListTools(const std::string& name, ISvcLocator *pSvcLocator):
       GaudiAlgorithm(name, pSvcLocator){}
 
-    StatusCode execute() {
+    StatusCode execute() override {
       StatusCode sc = StatusCode::SUCCESS;
       info() << "All tool instances:" << endmsg;
       for (auto& tool: toolSvc()->getTools()) {
@@ -328,16 +328,16 @@ namespace GaudiTesting {
       declareProperty("Frequency", m_frequency=1,
                       "How often to print the memory usage (number of events)");
     }
-    StatusCode initialize() {
+    StatusCode initialize() override {
       m_counter = 0;
       return GaudiAlgorithm::initialize();
     }
-    StatusCode execute() {
+    StatusCode execute() override {
       if ((m_frequency <= 1) || ((m_counter) % m_frequency == 0))
         print();
       return StatusCode::SUCCESS;
     }
-    StatusCode finalize() {
+    StatusCode finalize() override {
       print();
       return GaudiAlgorithm::finalize();
     }
