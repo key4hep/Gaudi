@@ -43,43 +43,43 @@ public:
   ~SequencerTimerTool( ) override = default; ///< Destructor
 
   /** initialize method, to compute the normalization factor **/
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
 
   /** finalize method, to print the time summary table **/
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
 
   /** add a timer entry with the specified name **/
-  virtual int addTimer( const std::string& name );
+  int addTimer( const std::string& name ) override;
 
   /** Increase the indentation of the name **/
-  virtual void increaseIndent() { m_indent += 1; }
+  void increaseIndent() override { m_indent += 1; }
 
   /** Decrease the indentation of the name **/
-  virtual void decreaseIndent() 
+  void decreaseIndent() override
   {
     m_indent = std::max( m_indent-1, 0 );
   }
 
   /** start the counter, i.e. register the current time **/
-  void start( int index ) { m_timerList[index].start(); }
+  void start( int index ) override { m_timerList[index].start(); }
 
   /** stop the counter, return the elapsed time **/
-  double stop( int index ) { return m_timerList[index].stop(); }
+  double stop( int index ) override { return m_timerList[index].stop(); }
 
   /** returns the last time **/
-  double lastTime( int index ) { return m_timerList[index].lastTime(); }
+  double lastTime( int index ) override { return m_timerList[index].lastTime(); }
 
   /** returns the name of the counter **/
-  const std::string& name( int index ) { return m_timerList[index].name(); }
+  const std::string& name( int index ) override { return m_timerList[index].name(); }
 
   /** returns the index of the counter with that name, or -1 **/
-  int indexByName( const std::string& name );
+  int indexByName( const std::string& name ) override;
 
   /** returns the flag telling that global timing is wanted **/
-  virtual bool globalTiming() { return m_globalTiming; };
+  bool globalTiming() override { return m_globalTiming; };
 
   /** prepares and saves the timing histograms **/
-  virtual void saveHistograms();
+  void saveHistograms() override;
 
 private:
 
