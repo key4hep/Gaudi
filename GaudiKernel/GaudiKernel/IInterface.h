@@ -27,7 +27,7 @@ namespace mpl = boost::mpl;
 #else
 // GCCXML work-around
 #define DeclareInterfaceID(name, major, minor) \
-  static const InterfaceID &interfaceID(){ static InterfaceID xx(0UL,0UL,0UL); return xx; }
+  static const InterfaceID &interfaceID(){ static const InterfaceID xx(0UL,0UL,0UL); return xx; }
 #endif
 
 #ifndef __GCCXML__
@@ -38,7 +38,7 @@ namespace mpl = boost::mpl;
 #else
 // GCCXML work-around
 #define DeclareInterfaceIDMultiBase(name, major, minor) \
-  static const InterfaceID &interfaceID(){ static InterfaceID xx(0UL,0UL,0UL); return xx; }
+  static const InterfaceID &interfaceID(){ static const InterfaceID xx(0UL,0UL,0UL); return xx; }
 #endif
 
 /**
@@ -52,7 +52,7 @@ namespace mpl = boost::mpl;
  * @author Pere Mato
  * @author Sebastien Ponce
  */
-class GAUDI_API InterfaceID {
+class GAUDI_API InterfaceID final {
 public:
 #if defined(GAUDI_V20_COMPAT) && !defined(G21_NEW_INTERFACES)
   /// constructor from a pack long
@@ -117,7 +117,7 @@ namespace Gaudi {
   /// are inheriting from other interfaces.
   /// @author Marco Clemencic
   template <typename INTERFACE, unsigned long majVers, unsigned long minVers>
-  class InterfaceId {
+  class InterfaceId final {
   public:
     /// Interface type
     typedef INTERFACE iface_type;
@@ -142,7 +142,7 @@ namespace Gaudi {
 
     static const InterfaceID& interfaceID()
     {
-      static InterfaceID s_iid(name().c_str(),majVers,minVers);
+      static const InterfaceID s_iid(name().c_str(),majVers,minVers);
       return s_iid;
     }
 
@@ -172,7 +172,7 @@ public:
     return iid::interfaceID();
 #else
     // GCCXML work-around
-    static InterfaceID xx(0UL,0UL,0UL);
+    static const InterfaceID xx(0UL,0UL,0UL);
     return xx;
 #endif
   }
@@ -180,7 +180,7 @@ public:
   /// main cast function
   virtual void *i_cast(const InterfaceID &) const
 #if defined(GAUDI_V20_COMPAT) && !defined(G21_NEW_INTERFACES)
-  {return 0;}
+  {return nullptr;}
 #else
   = 0;
 #endif
@@ -188,7 +188,7 @@ public:
   /// Returns a vector of strings containing the names of all the implemented interfaces.
   virtual std::vector<std::string> getInterfaceNames() const
 #if defined(GAUDI_V20_COMPAT) && !defined(G21_NEW_INTERFACES)
-  {return std::vector<std::string>();}
+  {return {};}
 #else
   = 0;
 #endif
