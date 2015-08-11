@@ -31,25 +31,25 @@ public:
   // Overloaded DataSvc methods
 
   /// Initialize the service
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
 
   /// Initialize the service
-  virtual StatusCode reinitialize();
+  StatusCode reinitialize() override;
 
   /// Finalize the service
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
 
   /// Remove all data objects in the data store.
-  virtual StatusCode clearStore();
+  StatusCode clearStore() override;
 
   /// Update object
-  virtual StatusCode updateObject( DataObject* toUpdate );
+  StatusCode updateObject( DataObject* toUpdate ) override;
 
   /// Standard Constructor
   DetDataSvc(const std::string& name, ISvcLocator* svc);
 
   /// Standard Destructor
-  virtual ~DetDataSvc() = default;
+  ~DetDataSvc() override = default;
 
 private:
   /// Deal with Detector Description initialization
@@ -61,13 +61,13 @@ public:
 
   /// Check if the event time has been set.
   /// Kept for backward compatibility, returns always true.
-  virtual bool validEventTime() const ;
+  bool validEventTime() const override;
 
   /// Get the event time
-  virtual const Gaudi::Time& eventTime() const ;
+  const Gaudi::Time& eventTime() const override;
 
   /// Set the new event time
-  virtual void setEventTime( const Gaudi::Time& time );
+  void setEventTime( const Gaudi::Time& time ) override;
 
 public:
 
@@ -94,7 +94,7 @@ private:
   bool             m_usePersistency;
 
   /// Current event time
-  Gaudi::Time        m_eventTime;
+  Gaudi::Time        m_eventTime = 0;
 
   /// Address Creator to be used
   SmartIF<IAddressCreator> m_addrCreator = nullptr;
