@@ -24,11 +24,11 @@ const gp::Position& gp::Property::ValuePosition() const {
     return property_value_.position();
 }
 // ============================================================================
-std::string gp::Property::ClientName() const {
+const std::string& gp::Property::ClientName() const {
     return property_name_.client();
 }
 // ============================================================================
-std::string gp::Property::NameInClient() const {
+const std::string& gp::Property::NameInClient() const {
     return property_name_.property();
 }
 // ============================================================================

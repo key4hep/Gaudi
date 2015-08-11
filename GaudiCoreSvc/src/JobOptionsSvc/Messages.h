@@ -17,7 +17,7 @@
 #include "Position.h"
 // ============================================================================
 namespace Gaudi { namespace Parsers {
-class Messages {
+class Messages final {
  public:
    Messages(MsgStream& stream): stream_(stream) {}
    //Messages(const MsgStream& stream):stream_(stream){}

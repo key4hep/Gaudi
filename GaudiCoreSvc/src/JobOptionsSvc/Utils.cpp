@@ -3,12 +3,8 @@
 // ===========================================================================
 #include "Utils.h"
 // ===========================================================================
-// STD & STL
-// ===========================================================================
-// ===========================================================================
 // Boost
 // ===========================================================================
-#include <boost/tokenizer.hpp>
 #include <boost/regex.hpp>
 #include <boost/algorithm/string.hpp>
 // ===========================================================================
@@ -16,34 +12,26 @@
 // ===========================================================================
 #include "GaudiKernel/System.h"
 // ===========================================================================
-// Local
-// ===========================================================================
-// ===========================================================================
 
 namespace gpu=Gaudi::Parsers::Utils;
 
 std::string gpu::replaceEnvironments(const std::string& input) {
-  std::string result=input;// result
+    static const boost::regex expression("\\$(([A-Za-z0-9_]+)|\\(([A-Za-z0-9_]+)\\))");
 
-    const char* re = "\\$(([A-Za-z0-9_]+)|\\(([A-Za-z0-9_]+)\\))";
-    boost::regex expression(re);
+    std::string result=input;
     auto start = input.begin();
     auto end = input.end();
     boost::match_results<std::string::const_iterator> what;
     boost::match_flag_type flags = boost::match_default;
     while ( boost::regex_search(start, end, what, expression, flags ) )
     {
-      std::string var,env;
-      std::string matched(what[0].first,what[0].second);
-      std::string v1(what[2].first,what[2].second);
-      std::string v2(what[3].first,what[3].second);
-
-      if ( v1.length()>0){ var = v1; }
-      else { var = v2; }
-
-      System::getEnv(var, env);
-      if(var != "UNKNOWN") {
-        boost::algorithm::replace_first(result,matched, env);
+      std::string var{what[2].first,what[2].second};
+      if (var.empty()) var = std::string{what[3].first,what[3].second};
+      std::string env;
+      if ( System::getEnv( var, env ) ) {
+        boost::algorithm::replace_first(result,
+                                        std::string{ what[0].first, what[0].second },
+                                        env);
       }
       start = what[0].second;
       // update flags:
@@ -52,7 +40,4 @@ std::string gpu::replaceEnvironments(const std::string& input) {
     }
     return result;
 }
-
-
 // ===========================================================================
-

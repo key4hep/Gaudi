@@ -13,22 +13,16 @@ bool gp::IncludedFiles::IsIncluded(const std::string& filename) const {
 }
 // ============================================================================
 bool gp::IncludedFiles::AddFile(const std::string& filename,
-        const Position& from){
-    if (!IsIncluded(filename)) {
-        container_.insert(Container::value_type(filename, from));
-        return true;
-    }
-    return false;
+                                const Position& from){
+    return container_.emplace(filename, from).second;
 }
 // ============================================================================
 bool gp::IncludedFiles::GetPosition(const std::string& filename,
         const Position** pos) const {
     auto iter = container_.find(filename);
-    if (iter != container_.end()) {
-        *pos = &iter->second;
-        assert(pos);
-        return true;
-    }
-    return false;
+    if (iter == container_.end()) return false;
+    *pos = &iter->second;
+    assert(pos);
+    return true;
 }
 // ============================================================================

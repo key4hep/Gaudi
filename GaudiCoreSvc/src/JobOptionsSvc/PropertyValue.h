@@ -16,7 +16,7 @@
 // ============================================================================
 namespace Gaudi { namespace Parsers {
 // ============================================================================
-class PropertyValue {
+class PropertyValue final {
 // ----------------------------------------------------------------------------
  public:
   typedef boost::variant<std::string, std::vector<std::string>,

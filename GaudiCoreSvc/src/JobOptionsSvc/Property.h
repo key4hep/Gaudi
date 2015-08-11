@@ -13,7 +13,7 @@
 // ============================================================================
 namespace Gaudi { namespace Parsers {
 // ============================================================================
-class Property {
+class Property final {
 // ----------------------------------------------------------------------------
  public:
 // ----------------------------------------------------------------------------
@@ -33,9 +33,8 @@ class Property {
     std::string short_name_;
  };
 // ----------------------------------------------------------------------------
-  Property(const PropertyName& property_name,
-      const PropertyValue& property_value):
-    property_name_(property_name), property_value_(property_value) {}
+  Property(PropertyName property_name, PropertyValue property_value):
+    property_name_(std::move(property_name)), property_value_(std::move(property_value)) {}
 // ----------------------------------------------------------------------------
    const PropertyName& property_name()  const {
       return property_name_;
@@ -59,8 +58,8 @@ class Property {
   const Position& ValuePosition() const;
   bool HasValuePosition() const { return ValuePosition().Exists();}
 // ----------------------------------------------------------------------------
-  std::string ClientName() const;
-  std::string NameInClient() const;
+  const std::string& ClientName() const;
+  const std::string& NameInClient() const;
   std::string FullName() const;
   std::string ValueAsString() const;
   std::string ToString() const;

@@ -28,15 +28,12 @@ static bool IncludeNode(gp::Node* node,
         gp::IncludedFiles* included, gp::Messages* messages) {
     gp::Node include_root;
     bool status = gp::Parse(node->position, node->value, search_path, included,
-            messages, &include_root);
-    if (status) {
-        node->value = include_root.value;  // Save absolute file path
-        for(const auto& child : include_root.children) {
-          node->children.push_back(child);
-        }
-    } else {
-        return false;
-    }
+                            messages, &include_root);
+    if (!status) return false;
+    node->value = include_root.value;  // Save absolute file path
+    node->children.reserve( node->children.size() + include_root.children.size());
+    std::copy( std::begin(include_root.children), std::end(include_root.children),
+               std::back_inserter(node->children) );
     return true;
 }
 // ============================================================================
@@ -46,14 +43,11 @@ static bool UnitsNode(gp::Node* node,
     gp::Node units_root;
     bool status = gp::ParseUnits(node->position, node->value, search_path,
             included, messages, &units_root);
-    if (status) {
-        node->value = units_root.value;  // Save absolute file path
-        for(const auto& child : units_root.children) {
-          node->children.push_back(child);
-        }
-    } else {
-        return false;
-    }
+    if (!status) return false;
+    node->value = units_root.value;  // Save absolute file path
+    node->children.reserve( node->children.size() + units_root.children.size());
+    std::copy( std::begin(units_root.children), std::end(units_root.children),
+               std::back_inserter(node->children) );
     return true;
 }
 // ============================================================================
@@ -62,9 +56,9 @@ static std::unique_ptr<gp::PropertyName> GetPropertyName(const gp::Node* node) {
     return std::unique_ptr<gp::PropertyName>(new gp::PropertyName(node->children[0].value,
         node->position));
   }else {
-    std::string delim="";
-    std::string client="";
-    for(unsigned int i=0; i < (node->children.size() - 1); i++) {
+    std::string delim;
+    std::string client;
+    for(unsigned int i=0; i < (node->children.size() - 1); ++i) {
       client += delim+node->children[i].value;
       delim = '.';
     }
@@ -92,8 +86,7 @@ static std::unique_ptr<gp::PropertyValue>  GetPropertyValue(const gp::Node* node
         if (units->Find(unit_name, unit_value)) {
           // We have found a unit
           double val = std::stod(node->value);
-          std::string store = std::to_string(val * unit_value);
-          value.reset(new gp::PropertyValue(store));
+          value.reset(new gp::PropertyValue(std::to_string(val * unit_value)));
         }else {
           // Unit not found
           throw
@@ -107,6 +100,7 @@ static std::unique_ptr<gp::PropertyValue>  GetPropertyValue(const gp::Node* node
     }
     // ------------------------------------------------------------------------
     case gp::Node::kString: {
+      //TODO,C++14: use std::quoted
       value.reset(new gp::PropertyValue('"'+node->value+'"'));
       break;
     }
@@ -117,12 +111,12 @@ static std::unique_ptr<gp::PropertyValue>  GetPropertyValue(const gp::Node* node
     }
     // ------------------------------------------------------------------------
     case gp::Node::kVector: {
-      std::vector<std::string> result;
-      for(const auto& child : node->children) {
-        auto vvalue = GetPropertyValue(&child, catalog, units);
-        result.push_back(vvalue->ToString());
-      }
-      value.reset(new gp::PropertyValue(result));
+      std::vector<std::string> result; result.reserve(node->children.size());
+      std::transform( std::begin(node->children), std::end( node->children),
+                      std::back_inserter(result), [&](const auto& child) {
+                          return GetPropertyValue(&child, catalog, units)->ToString();
+      });
+      value.reset(new gp::PropertyValue( std::move(result) ));
       break;
     }
     // ------------------------------------------------------------------------
@@ -131,22 +125,18 @@ static std::unique_ptr<gp::PropertyValue>  GetPropertyValue(const gp::Node* node
       for(const auto& child : node->children) {
         auto kvalue = GetPropertyValue(&child.children[0], catalog, units);
         auto vvalue = GetPropertyValue(&child.children[1], catalog, units);
-        result.insert(
-            std::pair<std::string, std::string>(
-                kvalue->ToString(),
-                vvalue->ToString()));
+        result.emplace( kvalue->ToString(), vvalue->ToString() );
       }
-      value.reset(new gp::PropertyValue(result));
+      value.reset(new gp::PropertyValue( std::move(result) ));
       break;
     }
     // ------------------------------------------------------------------------
     case gp::Node::kProperty: {
       auto property = GetPropertyName(node);
-      gp::Property* exists = nullptr;
-      if (nullptr != (exists = catalog->Find(property->client(),
-          property->property()))) {
+      gp::Property* exists = catalog->Find(property->client(), property->property());
+      if ( exists ) {
         value.reset(new gp::PropertyValue(exists->property_value()));
-      }else {
+      } else {
         throw
         gp::PositionalPropertyValueException::CouldNotFindProperty(
             node->position,property->ToString());
@@ -160,7 +150,7 @@ static std::unique_ptr<gp::PropertyValue>  GetPropertyValue(const gp::Node* node
       reference.push_back(property->client());
       reference.push_back(property->property());
 
-      value.reset(new gp::PropertyValue(reference,property->position(),
+      value.reset(new gp::PropertyValue(std::move(reference),property->position(),
           true));
       break;
     }
@@ -390,7 +380,7 @@ static bool Analyze(gp::Node* node,
     }
     if (result) result = local_result;
 
-    if (!skip_childs && (next_root!=NULL)) {
+    if (!skip_childs && next_root) {
       for(auto& child : next_root->children) {
         local_result =
             Analyze(&child, search_path, included, messages, catalog, units,

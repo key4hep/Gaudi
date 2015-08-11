@@ -22,12 +22,12 @@
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
  *  @date   2006-05-13
  */
-class SvcCatalog
+class SvcCatalog final
 {
 public:
   typedef std::vector<const Property*> PropertiesT;
   SvcCatalog() = default;
-  virtual ~SvcCatalog();
+  ~SvcCatalog();
 
   StatusCode addProperty( const std::string& client,
                           const Property* property );

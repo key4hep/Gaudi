@@ -14,13 +14,13 @@
 // ============================================================================
 namespace Gaudi { namespace Parsers {
 // ============================================================================
-class Units {
+class Units final {
  public:
   typedef std::map<std::string, std::pair<double, Position> > Container;
   typedef Container::mapped_type ValueWithPosition;
 
-  bool Add(const std::string& name, double value);
-  bool Add(const std::string& name, double value, const Position& pos);
+  bool Add(std::string name, double value);
+  bool Add(std::string name, double value, const Position& pos);
 
   bool Find(const std::string& name, ValueWithPosition& result) const;
   bool Find(const std::string& name, double& result) const;

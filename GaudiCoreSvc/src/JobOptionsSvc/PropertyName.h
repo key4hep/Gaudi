@@ -12,24 +12,24 @@ namespace Gaudi { namespace Parsers {
 // ============================================================================
 class Position;
 // ============================================================================
-class PropertyName {
+class PropertyName final {
  public:
 // ----------------------------------------------------------------------------
-  explicit PropertyName(const std::string& property): client_(""),
-      property_(property) {}
-  PropertyName(const std::string& property, const Position& pos):
-       client_(""), property_(property), position_(pos) {}
-  PropertyName(const std::string& client, const std::string& property):
-       client_(client), property_(property){}
-  PropertyName(const std::string& client, const std::string& property,
+  explicit PropertyName(std::string property): 
+      property_( std::move(property) ) {}
+  PropertyName(std::string property, const Position& pos):
+       property_(std::move(property)), position_(pos) {}
+  PropertyName(std::string client, std::string property):
+       client_(std::move(client)), property_(std::move(property)){}
+  PropertyName(std::string client, std::string property,
            const Position& pos):
-               client_(client), property_(property), position_(pos) {}
+               client_(std::move(client)), property_(std::move(property)), position_(pos) {}
   const std::string& client() const { return client_;}
   const std::string& property() const { return property_;}
   const Position& position() const { return position_;}
   std::string FullName() const;
   std::string ToString() const;
-  bool HasClient() const { return client_.length() > 0;}
+  bool HasClient() const { return !client_.empty();}
   bool HasPosition() const { return position_.Exists();}
  private:
   std::string client_;
