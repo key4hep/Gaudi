@@ -691,7 +691,7 @@ void MessageSvc::eraseMessage( const StatusCode& key, const Message& msg )
   std::unique_lock<std::recursive_mutex> lock(m_messageMapMutex);
 
   erase_if( m_messageMap, m_messageMap.equal_range(key),
-            [&](const auto& j) { return j.second==msg; } ) ;
+            [&](MessageMap::const_reference j) { return j.second==msg; } ) ;
 }
 
 // ---------------------------------------------------------------------------

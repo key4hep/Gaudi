@@ -57,12 +57,12 @@ namespace Gaudi
         sample -> insert
           ( range.begin () ,
             range.end   () ,
-	    [pxCut](auto* track) { return track->px() > pxCut; });
+	    [pxCut](const Gaudi::Examples::MyTrack* track) { return track->px() > pxCut; });
 
         const size_t size = sample -> size() ;
 
         // remove the particles with 'small' py
-        sample -> erase( [pyCut](auto* track) { return track->py() < pyCut; } );
+        sample -> erase( [pyCut](const Gaudi::Examples::MyTrack* track) { return track->py() < pyCut; } );
 
         info () << "Sample size is "
                 << range.size()

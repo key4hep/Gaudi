@@ -113,7 +113,7 @@ static std::unique_ptr<gp::PropertyValue>  GetPropertyValue(const gp::Node* node
     case gp::Node::kVector: {
       std::vector<std::string> result; result.reserve(node->children.size());
       std::transform( std::begin(node->children), std::end( node->children),
-                      std::back_inserter(result), [&](const auto& child) {
+                      std::back_inserter(result), [&](const gp::Node& child) {
                           return GetPropertyValue(&child, catalog, units)->ToString();
       });
       value.reset(new gp::PropertyValue( std::move(result) ));

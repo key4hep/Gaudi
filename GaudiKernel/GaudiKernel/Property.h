@@ -105,9 +105,9 @@ protected:
   ( std::string    name      ,
     const std::type_info& type      ) ;
   /// copy constructor
-  Property           ( const Property& right ) = default;
+  Property           ( const Property& ) = default;
   /// assignment operator
-  Property& operator=( const Property& right ) = default;
+  Property& operator=( const Property& ) = default;
 private:
   // property name
   std::string              m_name           ;
