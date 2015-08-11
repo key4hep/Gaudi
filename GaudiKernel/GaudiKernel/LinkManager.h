@@ -28,16 +28,16 @@ public:
     * Note: No copy constructor; bitwise copy (done by the compiler)
     *       is just fine.
     */
-  class Link  {
+  class Link  final {
     /// DataObject is a friend
     friend class LinkManager;
   protected:
     /// String containing path of symbolic link
     std::string m_path;
     /// Pointer to object behind the link
-    DataObject* m_pObject;
+    DataObject* m_pObject = nullptr;
     /// Link ID
-    long        m_id;
+    long        m_id = INVALID;
   public:
     /// Standard constructor
     Link(long id, std::string path, const DataObject* pObject=nullptr)
@@ -45,8 +45,7 @@ public:
       setObject(pObject);
     }
     /// Standard constructor
-    Link() : m_pObject(nullptr), m_id(INVALID) {
-    }
+    Link() = default;
     /// Equality operator: check pathes only
     Link& operator=(const Link& link)  {
       setObject(link.m_pObject);
@@ -55,11 +54,11 @@ public:
       return *this;
     }
     /// Default destructor
-    virtual ~Link() = default;
+    ~Link() = default;
     /// Update the link content
-    void set(long id, const std::string& path, const DataObject* pObject)   {
+    void set(long id, std::string path, const DataObject* pObject)   {
       setObject(pObject);
-      m_path = path;
+      m_path = std::move(path);
       m_id   = id;
     }
     /// Equality operator: check paths only
@@ -83,18 +82,21 @@ public:
       return m_id;
     }
     /// Access to the object's address
-    virtual IOpaqueAddress* address();
+    IOpaqueAddress* address();
   };
 
 private:
+  ///@ TODO: replace by std::vector<std::unique_ptr<Link>> once 
+  ///        ROOT does 'automatic' schema conversion from T* to
+  ///        std::unique_ptr<T>...
   /// The vector containing all links which are non-tree like
-  mutable std::vector<std::unique_ptr<Link>> m_linkVector;
+  mutable std::vector<Link*> m_linkVector;
 
 public:
   /// Standard Constructor
   LinkManager() = default;
   /// Standard Destructor
-  virtual ~LinkManager() = default;
+  virtual ~LinkManager();
   /// Static instantiation
   static LinkManager* newInstance();
   /// Assign new instantiator
