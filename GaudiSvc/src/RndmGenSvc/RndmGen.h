@@ -43,7 +43,7 @@ protected:
   /// Generation parameters
   std::unique_ptr<IRndmGen::Param>  m_params;
   /// Hosting service: Access must always be possible
-  IRndmEngine*      m_engine;
+  IRndmEngine*      m_engine = nullptr;
 
   /// Standard Constructor
   RndmGen(IInterface* engine);
@@ -69,8 +69,6 @@ public:
   const IRndmGen::Param* parameters() const override {
     return m_params.get();
   }
-  /// Single shot returning single random number according to specified distribution
-  double shoot() const override;
   /** Multiple shots returning vector with random number according to specified distribution.
       @param  array    Array containing random numbers
       @param  howmany  fill 'howmany' random numbers into array

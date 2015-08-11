@@ -20,7 +20,7 @@
 #include "RndmGen.h"
 
 /// Standard Constructor
-RndmGen::RndmGen(IInterface* engine) : m_engine(nullptr)   {
+RndmGen::RndmGen(IInterface* engine) {
   if ( engine )  {
     engine->queryInterface(IRndmEngine::interfaceID(), pp_cast<void>(&m_engine)).ignore();
   }
@@ -34,16 +34,11 @@ RndmGen::~RndmGen()   {
 /// Initialize the generator
 StatusCode RndmGen::initialize(const IRndmGen::Param& par)   {
   m_params.reset(par.clone());
-  return (!m_engine) ? StatusCode::FAILURE : StatusCode::SUCCESS;
+  return m_engine ? StatusCode::SUCCESS : StatusCode::FAILURE;
 }
 
 StatusCode RndmGen::finalize() {
   return StatusCode::SUCCESS;
-}
-
-/// Single shot returning single random number according to specified distribution
-double RndmGen::shoot()  const  {
-  return DBL_MAX;
 }
 
 /// Multiple shots returning vector with random number according to specified distribution.
@@ -53,4 +48,3 @@ StatusCode RndmGen::shootArray( std::vector<double>& array, long howmany, long s
   std::generate_n( std::next( std::begin(array), start ), howmany, [&](){ return this->shoot(); } );
   return StatusCode::SUCCESS;
 }
-
