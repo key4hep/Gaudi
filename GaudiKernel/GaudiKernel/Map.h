@@ -161,7 +161,8 @@ namespace GaudiUtils
     { return m_map.equal_range(key); }
 
     //    -- list operations
-
+    template< class... Args >
+    std::pair<iterator,bool> emplace( Args&&... args ) { return m_map.emplace(std::forward<Args>(args)...); }
     template <typename ValueType>
     inline std::pair<iterator,bool> insert(ValueType&& val) { return m_map.insert(std::forward<ValueType>(val)); }
     inline std::pair<iterator,bool> insert(value_type&& val) { return m_map.insert(std::forward<value_type>(val)); }
