@@ -138,10 +138,10 @@ StatusCode DetDataSvc::finalize()
   clearStore().ignore();
 
   // Releases the address creator
-  m_addrCreator = 0;
+  m_addrCreator = nullptr;
 
   // Releases the DataLoader
-  setDataLoader(0).ignore();
+  setDataLoader(nullptr).ignore();
 
   // Finalize the base class
   return DataSvc::finalize();
@@ -183,7 +183,7 @@ StatusCode DetDataSvc::clearStore()   {
 
 /// Standard Constructor
 DetDataSvc::DetDataSvc(const std::string& name,ISvcLocator* svc) :
-  base_class(name,svc), m_eventTime(0)  {
+  base_class(name,svc) {
   declareProperty("DetStorageType",  m_detStorageType = XML_StorageType );
   declareProperty("DetDbLocation",   m_detDbLocation  = "empty" );
   declareProperty("DetDbRootName",   m_detDbRootName  = "dd" );

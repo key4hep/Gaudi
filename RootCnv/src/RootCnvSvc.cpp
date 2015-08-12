@@ -530,7 +530,7 @@ StatusCode RootCnvSvc::i__fillObjRefs(IOpaqueAddress* pA, DataObject* pObj) {
         SmartIF<IService> isvc(pR->dataSvc());
         SmartIF<IDataManagerSvc> dataMgr(pR->dataSvc());
         LinkManager* mgr = pObj->linkMgr();
-        for(const auto& i : refs.links ) mgr->addLink(con->getLink(i),0);
+        for(const auto& i : refs.links ) mgr->addLink(con->getLink(i),nullptr);
         for(size_t j=0, n=refs.refs.size(); j<n; ++j)  {
           const RootRef& r = refs.refs[j];
           npar[0] = con->getDb(r.dbase);
