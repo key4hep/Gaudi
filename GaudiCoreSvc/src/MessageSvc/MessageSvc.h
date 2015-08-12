@@ -145,7 +145,7 @@ private:
   /// Private helper class to keep the count of messages of a type (MSG::LEVEL).
   struct MsgAry final {
     /// Internal array of counters.
-    std::array<int,MSG::NUM_LEVELS> msg = {}; // empty value-initialization will trigger zero-initialize of all elements (i.e. 0)
+    std::array<int,MSG::NUM_LEVELS> msg = {{0}}; // empty value-initialization will trigger zero-initialize of all elements (i.e. 0)
     /// Default constructor.
     MsgAry() = default;
   };
