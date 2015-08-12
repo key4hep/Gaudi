@@ -61,27 +61,27 @@ class GAUDI_API Sequencer: public Algorithm {
      ** The actions to be performed by the sequencer on an event. This method
      ** is invoked once per event.
      **/
-    virtual StatusCode execute( ) override;
+    StatusCode execute( ) override;
 
     /**
      ** Sequencer finalization.
      **/
-    virtual StatusCode stop( ) override;
+    StatusCode stop( ) override;
 
     /**
      ** Sequencer finalization.
      **/
-    virtual StatusCode finalize( ) override;
+    StatusCode finalize( ) override;
 
     /**
      ** Sequencer beginRun.
      **/
-    virtual StatusCode beginRun( ) override;
+    StatusCode beginRun( ) override;
 
     /**
      ** Sequencer endRun.
      **/
-    virtual StatusCode endRun( ) override;
+    StatusCode endRun( ) override;
 
     /**
      ** Reset the Sequencer executed state for the current event.
