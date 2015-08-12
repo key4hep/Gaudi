@@ -32,7 +32,7 @@ EventLoopMgr::EventLoopMgr(const std::string& nam, ISvcLocator* svcLoc)
 : MinimalEventLoopMgr(nam, svcLoc)
 {
   // Declare properties
-  declareProperty("HistogramPersistency", m_histPersName = "");
+  declareProperty("HistogramPersistency", m_histPersName );
   declareProperty("EvtSel", m_evtsel );
   declareProperty("Warnings",m_warnings=true,
 		  "Set this property to false to suppress warning messages");
@@ -299,10 +299,8 @@ StatusCode EventLoopMgr::executeEvent(void* par)    {
 // IEventProcessing::executeRun
 //--------------------------------------------------------------------------------------------
 StatusCode EventLoopMgr::executeRun( int maxevt )    {
-  StatusCode  sc;
   // initialize the base class
-  sc = MinimalEventLoopMgr::executeRun(maxevt);
-  return sc;
+  return MinimalEventLoopMgr::executeRun(maxevt);
 }
 
 //--------------------------------------------------------------------------------------------
