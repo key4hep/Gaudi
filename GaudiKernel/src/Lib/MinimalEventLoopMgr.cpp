@@ -23,9 +23,9 @@ namespace {
                                                         m_source(source){
       addRef(); // Initial count set to 1
     }
-    virtual ~AbortEventListener() = default;
+    ~AbortEventListener() override = default;
     /// Inform that a new incident has occurred
-    virtual void handle(const Incident& i) {
+    void handle(const Incident& i) override {
       if (i.type() == IncidentType::AbortEvent) {
         m_flag = true;
         m_source = i.source();
@@ -57,16 +57,6 @@ MinimalEventLoopMgr::MinimalEventLoopMgr(const std::string& nam, ISvcLocator* sv
   declareProperty("OutStreamType",  m_outStreamType = "OutputStream");
   m_topAlgNames.declareUpdateHandler   ( &MinimalEventLoopMgr::topAlgHandler, this );
   m_outStreamNames.declareUpdateHandler( &MinimalEventLoopMgr::outStreamHandler, this );
-  m_state = OFFLINE;
-  m_scheduledStop = false;
-  m_abortEvent = false;
-}
-
-//--------------------------------------------------------------------------------------------
-// Standard Destructor
-//--------------------------------------------------------------------------------------------
-MinimalEventLoopMgr::~MinimalEventLoopMgr()   {
-  m_state = OFFLINE;
 }
 
 //--------------------------------------------------------------------------------------------
@@ -74,9 +64,7 @@ MinimalEventLoopMgr::~MinimalEventLoopMgr()   {
 //--------------------------------------------------------------------------------------------
 StatusCode MinimalEventLoopMgr::initialize()    {
 
-  if ( !m_appMgrUI.isValid() ) {
-    return StatusCode::FAILURE;
-  }
+  if ( !m_appMgrUI.isValid() ) return StatusCode::FAILURE;
 
   StatusCode sc = Service::initialize();
   if ( !sc.isSuccess() )   {
@@ -482,6 +470,7 @@ StatusCode MinimalEventLoopMgr::decodeTopAlgs()    {
     if ( algMan.isValid())   {
       // Reset the existing Top Algorithm List
       m_topAlgList.clear( );
+      m_topAlgList.reserve( m_topAlgNames.value().size() );
       for (const auto& it : m_topAlgNames.value( )) {
         Gaudi::Utils::TypeNameString item{it};
         // Got the type and name. Now creating the algorithm, avoiding duplicate creation.
