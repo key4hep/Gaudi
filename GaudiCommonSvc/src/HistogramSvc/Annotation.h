@@ -55,11 +55,8 @@ public:
 
 private:
   /// Internal private annotation item class
-  class AnnotationItem {
-  public:
-    AnnotationItem( std::string k = "",
-                    std::string v = "",
-                    bool vis = true):
+  struct AnnotationItem final {
+    AnnotationItem( std::string k = "", std::string v = "", bool vis = true):
       m_key( std::move(k) ), m_value( std::move(v) ), m_sticky( vis )
     {/* nop */};
 
