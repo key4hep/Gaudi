@@ -59,7 +59,6 @@
   <class name    = "Stat"                   />
   <class pattern = "Chrono*"                 />
 
-  <class pattern = "Property*Functor"        />
   <class pattern = "SimpleProperty<*>"       />
   <class pattern = "SimplePropertyRef<*>"    />
   <class pattern = "PropertyWithVerifier<*>" />
