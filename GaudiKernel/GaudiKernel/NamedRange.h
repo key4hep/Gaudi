@@ -117,8 +117,7 @@ namespace Gaudi
    *  @code
    *
    *    const CONTAINER& cnt = ... ;
-   *
-   *    NamedRange_<CONTAINER> r = range ( cnt , "some name") ;
+   *    auto r = range ( cnt , "some name") ;
    *
    *  @endcode
    *

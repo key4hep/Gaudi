@@ -33,35 +33,29 @@ void  SmartRefBase::set(DataObject* pObj, long hint_id, long link_id) {
 const ContainedObject* SmartRefBase::accessData(const ContainedObject*)   const   {
   if ( m_hintID != StreamBuffer::INVALID && m_linkID != StreamBuffer::INVALID )   {
     const _Container* cnt = dynamic_cast<const _Container*>(accessData(m_data));
-    if ( 0 != cnt )  {
-      return cnt->containedObject(m_linkID);
-    }
+    if ( cnt )  return cnt->containedObject(m_linkID);
   }
-  return 0;
+  return nullptr;
 }
 
 /// Load on demand: DataObject type references
 const DataObject* SmartRefBase::accessData(const DataObject*)   const   {
-  DataObject* target = 0;
-  DataObject* source  =0;
-  if ( 0 == m_data && 0 != m_contd )  {
-    m_data = m_contd->parent();
-  }
+  DataObject* target = nullptr;
+  DataObject* source  =nullptr;
+  if ( !m_data && m_contd )  m_data = m_contd->parent();
   source  = const_cast<DataObject*>(m_data);            
-  if ( m_hintID != StreamBuffer::INVALID && source != 0 )   {
+  if ( m_hintID != StreamBuffer::INVALID && source ) {
     LinkManager* mgr = source->linkMgr();
-    if ( 0 != mgr )   {
+    if ( mgr )   {
       LinkManager::Link* link = mgr->link(m_hintID);
-      if ( 0 != link )  {
+      if ( link )  {
         target = link->object();
-        if ( 0 == target )    {
+        if ( !target )    {
           IRegistry* reg = source->registry();
-          if ( 0 != reg )   {
+          if ( reg )   {
             IDataProviderSvc* datasvc = reg->dataSvc();
-            if ( 0 != datasvc )   {
-              if ( datasvc->retrieveObject(link->path(), target).isSuccess() )   {
-                link->setObject(target);
-              }
+            if ( datasvc && datasvc->retrieveObject(link->path(), target).isSuccess() )   {
+              link->setObject(target);
             }
           }
         }
@@ -73,17 +67,15 @@ const DataObject* SmartRefBase::accessData(const DataObject*)   const   {
 
 // Extended equality check
 bool SmartRefBase::isEqualEx(const DataObject* pObj, const SmartRefBase& c)  const    {
-  if ( c.m_hintID != StreamBuffer::INVALID && 0 != pObj )   {
+  if ( c.m_hintID != StreamBuffer::INVALID && pObj )   {
     DataObject* source  = const_cast<DataObject*>(c.m_data);
-    if ( 0 != source )   {
+    if ( source )   {
       LinkManager* mgr = source->linkMgr();
-      if ( 0 != mgr )   {
+      if ( mgr )   {
         LinkManager::Link* link = mgr->link(c.m_hintID);
-        if ( 0 != link )  {
+        if ( link )  {
           IRegistry* pReg = pObj->registry();
-          if ( pReg != 0 )   {
-            return link->path() == pReg->identifier();
-          }
+          return pReg && link->path() == pReg->identifier();
         }
       }
     }
@@ -93,24 +85,19 @@ bool SmartRefBase::isEqualEx(const DataObject* pObj, const SmartRefBase& c)  con
 
 // Extended equality check
 bool SmartRefBase::isEqualEx(const ContainedObject* pObj, const SmartRefBase& c)  const   {
-  if ( isEqualEx(pObj->parent(), c) )   {
-    return pObj->index() == c.m_linkID;
-  }
-  return false;
+  return isEqualEx(pObj->parent(), c) && pObj->index() == c.m_linkID;
 }
 
 const std::string &SmartRefBase::path () const {
-  static std::string s_empty_string = std::string();
-  DataObject *source = 0;
-  if ( 0 == m_data && 0 != m_contd )  {
-    m_data = m_contd->parent();
-  }
+  static std::string s_empty_string{};
+  DataObject *source = nullptr;
+  if ( !m_data &&  m_contd )  m_data = m_contd->parent();
   source = const_cast<DataObject*>(m_data);   
-  if ( m_hintID != StreamBuffer::INVALID && source != 0 ) {
+  if ( m_hintID != StreamBuffer::INVALID && source ) {
     LinkManager* mgr = source->linkMgr();
-    if ( 0 != mgr ) {
+    if ( mgr ) {
       LinkManager::Link* link = mgr->link(m_hintID);
-      if ( 0 != link )
+      if ( link )
         return link->path();
     }
   }

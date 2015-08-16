@@ -30,8 +30,7 @@ public:
     */
   class Link  final {
     /// DataObject is a friend
-    friend class LinkManager;
-  protected:
+    // friend class LinkManager;
     /// String containing path of symbolic link
     std::string m_path;
     /// Pointer to object behind the link
@@ -40,23 +39,13 @@ public:
     long        m_id = INVALID;
   public:
     /// Standard constructor
-    Link(long id, std::string path, const DataObject* pObject=nullptr)
-    : m_path(std::move(path)), m_id(id) {
-      setObject(pObject);
+    Link(long id, std::string path, DataObject* pObject=nullptr)
+    : m_path(std::move(path)), m_pObject(pObject), m_id(id) {
     }
     /// Standard constructor
     Link() = default;
-    /// Equality operator: check pathes only
-    Link& operator=(const Link& link)  {
-      setObject(link.m_pObject);
-      m_path = link.m_path;
-      m_id   = link.m_id;
-      return *this;
-    }
-    /// Default destructor
-    ~Link() = default;
     /// Update the link content
-    void set(long id, std::string path, const DataObject* pObject)   {
+    void set(long id, std::string path, DataObject* pObject)   {
       setObject(pObject);
       m_path = std::move(path);
       m_id   = id;
@@ -70,7 +59,10 @@ public:
       m_pObject = const_cast<DataObject*>(pObject);
     }
     /// Const access to data object
-    DataObject* object()  const  {
+    const DataObject* object()  const  {
+      return m_pObject;
+    }
+    DataObject* object()  {
       return m_pObject;
     }
     /// Access to path of object
@@ -88,7 +80,11 @@ public:
 private:
   ///@ TODO: replace by std::vector<std::unique_ptr<Link>> once 
   ///        ROOT does 'automatic' schema conversion from T* to
-  ///        std::unique_ptr<T>...
+  ///        std::unique_ptr<T>... 
+  ///        Or, even better, just std::vector<Link>, given that 
+  ///        Link is barely larger than a pointer (40 vs. 8 bytes)
+  ///        -- but that requires more invasive schema evolution.
+  ///   
   /// The vector containing all links which are non-tree like
   mutable std::vector<Link*> m_linkVector;
 

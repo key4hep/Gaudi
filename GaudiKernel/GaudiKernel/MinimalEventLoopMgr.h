@@ -25,9 +25,7 @@
 class GAUDI_API MinimalEventLoopMgr: public extends1<Service, IEventProcessor>
 {
 public:
-  typedef std::list<SmartIF<IAlgorithm> >  ListAlg;
-  typedef std::list<std::string>   ListName;
-  typedef std::vector<std::string> VectorName;
+  typedef std::vector<SmartIF<IAlgorithm> >  ListAlg;
 
 protected:
   // enums
@@ -47,14 +45,14 @@ protected:
   /// List of output stream names
   StringArrayProperty m_outStreamNames;
   /// State of the object
-  State               m_state;
+  State               m_state = OFFLINE;
   /// Scheduled stop of event processing
-  bool                m_scheduledStop;
+  bool                m_scheduledStop = false;
   /// Instance of the incident listener waiting for AbortEvent.
   SmartIF<IIncidentListener>  m_abortEventListener;
   /// Flag signalling that the event being processedhas to be aborted
   /// (skip all following top algs).
-  bool                m_abortEvent;
+  bool                m_abortEvent = false;
   /// Source of the AbortEvent incident.
   std::string         m_abortEventSource;
 
@@ -62,7 +60,7 @@ public:
   /// Standard Constructor
   MinimalEventLoopMgr(const std::string& nam, ISvcLocator* svcLoc);
   /// Standard Destructor
-  virtual ~MinimalEventLoopMgr();
+  ~MinimalEventLoopMgr() override = default;
 
 #if defined(GAUDI_V20_COMPAT) && !defined(G21_NO_DEPRECATED)
 protected:
