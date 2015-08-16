@@ -59,43 +59,40 @@ StatusCode AlgorithmManager::createAlgorithm( const std::string& algtype,
     }
   }
   algorithm = Algorithm::Factory::create(actualalgtype, algname, serviceLocator().get());
-  if ( algorithm ) {
-    // Check the compatibility of the version of the interface obtained
-    if( !isValidInterface(algorithm) ) {
-      fatal() << "Incompatible interface IAlgorithm version for " << actualalgtype << endmsg;
-      return StatusCode::FAILURE;
-    }
-    StatusCode rc;
-    m_algs.emplace_back(algorithm, managed);
-    // this is needed to keep the reference count correct, since isValidInterface(algorithm)
-    // implies an increment of the counter by 1
-    algorithm->release();
-    if ( managed ) {
-      // Bring the created algorithm to the same state of the ApplicationMgr
-      if (FSMState() >= Gaudi::StateMachine::INITIALIZED) {
-        rc = algorithm->sysInitialize();
-        if (rc.isSuccess() && FSMState() >= Gaudi::StateMachine::RUNNING) {
-          rc = algorithm->sysStart();
-        }
-      }
-      if ( !rc.isSuccess() )  {
-        this->error() << "Failed to initialize algorithm: [" << algname << "]" << endmsg;
-      }
-    }
-    return rc;
-  }
-  this->error() << "Algorithm of type " << actualalgtype
-                << " is unknown (No factory available)." << endmsg;
+  if ( !algorithm )  {
+      this->error() << "Algorithm of type " << actualalgtype
+                    << " is unknown (No factory available)." << endmsg;
 #ifndef _WIN32
-  errno = 0xAFFEDEAD; // code used by Gaudi for library load errors: forces getLastErrorString do use dlerror (on Linux)
+      errno = 0xAFFEDEAD; // code used by Gaudi for library load errors: forces getLastErrorString do use dlerror (on Linux)
 #endif
-  std::string err = System::getLastErrorString();
-  if (! err.empty()) {
-    this->error() << err << endmsg;
+      std::string err = System::getLastErrorString();
+      if (! err.empty()) this->error() << err << endmsg;
+      this->error() << "More information may be available by setting the global jobOpt \"PluginDebugLevel\" to 1" << endmsg;
+      return StatusCode::FAILURE;
   }
-  this->error() << "More information may be available by setting the global jobOpt \"PluginDebugLevel\" to 1" << endmsg;
-
-  return StatusCode::FAILURE;
+  // Check the compatibility of the version of the interface obtained
+  if( !isValidInterface(algorithm) ) {
+    fatal() << "Incompatible interface IAlgorithm version for " << actualalgtype << endmsg;
+    return StatusCode::FAILURE;
+  }
+  m_algs.emplace_back(algorithm, managed);
+  // this is needed to keep the reference count correct, since isValidInterface(algorithm)
+  // implies an increment of the counter by 1
+  algorithm->release();
+  StatusCode rc;
+  if ( managed ) {
+    // Bring the created algorithm to the same state of the ApplicationMgr
+    if (FSMState() >= Gaudi::StateMachine::INITIALIZED) {
+      rc = algorithm->sysInitialize();
+      if (rc.isSuccess() && FSMState() >= Gaudi::StateMachine::RUNNING) {
+        rc = algorithm->sysStart();
+      }
+    }
+    if ( !rc.isSuccess() )  {
+      this->error() << "Failed to initialize algorithm: [" << algname << "]" << endmsg;
+    }
+  }
+  return rc;
 }
 
 SmartIF<IAlgorithm>& AlgorithmManager::algorithm(const Gaudi::Utils::TypeNameString &typeName, const bool createIf) {

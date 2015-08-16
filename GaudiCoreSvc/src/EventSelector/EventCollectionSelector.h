@@ -55,8 +55,8 @@ public:
     MyContextType(MyContextType* ctxt=nullptr)  {
       addressBuffer = new GenericAddress();
       addressBuffer->addRef();
-      tuple = (ctxt) ? ctxt->tuple : 0;
-      item  = (ctxt) ? ctxt->item : 0;
+      tuple = (ctxt) ? ctxt->tuple : nullptr;
+      item  = (ctxt) ? ctxt->item : nullptr;
     }
     MyContextType(const MyContextType& ctxt)
       : IEvtSelector::Context(ctxt)

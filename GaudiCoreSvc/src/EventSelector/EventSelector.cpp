@@ -10,7 +10,6 @@
 #include "GaudiKernel/IAddressCreator.h"
 #include "GaudiKernel/PropertyMgr.h"
 #include "GaudiKernel/EventSelectorDataStream.h"
-#include "GaudiKernel/AppReturnCode.h"
 
 #include "EventSelector.h"
 #include "EventIterator.h"
@@ -22,13 +21,11 @@ DECLARE_COMPONENT(EventSelector)
 EventSelector::EventSelector(const std::string& name, ISvcLocator* svcloc )
   : base_class( name, svcloc)
 {
-  m_evtPrintFrequency = 10;
-  m_evtMax            = INT_MAX;
   declareProperty( "Input",      m_streamSpecs);
   declareProperty( "FirstEvent", m_firstEvent);
   declareProperty( "EvtMax",     m_evtMax);
   declareProperty( "PrintFreq",  m_evtPrintFrequency);
-  declareProperty( "StreamManager",  m_streamManager="DataStreamTool");
+  declareProperty( "StreamManager",  m_streamManager);
 }
 
 StatusCode
@@ -144,7 +141,7 @@ EventSelector::lastOfPreviousStream(bool shutDown, EvtSelectorContext& iter) con
   }
 
   IDataStreamTool::size_type iter_id = iter.ID()-1;
-  const EventSelectorDataStream* s ;
+  const EventSelectorDataStream* s = nullptr;
   status = m_streamtool->getPreviousStream( s , iter_id );
 
   if ( status.isSuccess() )   {
@@ -156,7 +153,7 @@ EventSelector::lastOfPreviousStream(bool shutDown, EvtSelectorContext& iter) con
     if ( status.isSuccess() )   {
       const IEvtSelector* sel = s->selector();
       if ( sel )  {
-        Context* ctxt = 0;
+        Context* ctxt = nullptr;
         status = sel->createContext(ctxt);
         if ( status.isSuccess() )   {
           status = sel->resetCriteria(s->criteria(), *ctxt);
@@ -179,7 +176,7 @@ EventSelector::lastOfPreviousStream(bool shutDown, EvtSelectorContext& iter) con
 StatusCode EventSelector::createContext(Context*& refpCtxt) const
 {
   // Max event is zero. Return begin = end
-  refpCtxt = 0;
+  refpCtxt = nullptr;
   if ( m_firstEvent < 0 ) {
     MsgStream log(msgSvc(), name());
     log << MSG::ERROR  << "First Event = " << m_firstEvent << " not valid" << endmsg;
@@ -198,7 +195,7 @@ StatusCode EventSelector::createContext(Context*& refpCtxt) const
       log << MSG::ERROR << " createContext() failed to start with event number "
           << m_firstEvent << endmsg;
       releaseContext(refpCtxt);
-      refpCtxt = 0;
+      refpCtxt = nullptr;
       return StatusCode::FAILURE;
     }
   }
@@ -322,17 +319,15 @@ EventSelector::createAddress(const Context&   refCtxt,
 {
   const EvtSelectorContext *cpIt  = dynamic_cast<const EvtSelectorContext*>(&refCtxt);
   EvtSelectorContext *pIt  = const_cast<EvtSelectorContext*>(cpIt);
-  refpAddr = 0;
+  refpAddr = nullptr;
   if ( pIt )    {
     const EventSelectorDataStream* s = m_streamtool->getStream(pIt->ID());
     Context* it = pIt->context();
     IEvtSelector* sel = s->selector();
     if ( it && sel )    {
-      IOpaqueAddress* pAddr = 0;
+      IOpaqueAddress* pAddr = nullptr;
       StatusCode sc = sel->createAddress(*it, pAddr);
-      if ( sc.isSuccess() )  {
-        refpAddr = pAddr;
-      }
+      if ( sc.isSuccess() )  refpAddr = pAddr;
       pIt->set(it, pAddr);
       return sc;
     }
