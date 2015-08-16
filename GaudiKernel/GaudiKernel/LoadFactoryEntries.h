@@ -29,14 +29,14 @@
 
 #define LOAD_FACTORY_ENTRIES(x) \
 extern "C" FACTORYTABLE_API void* x##_getFactoryEntries() {  \
-  return 0; \
+  return nullptr; \
 }
 
 #else
 
 #define LOAD_FACTORY_ENTRIES(x) \
 extern "C" GAUDI_EXPORT void* x##_getFactoryEntries() {  \
-return 0; \
+return nullptr; \
 }
 
 #endif // GAUDI_V20_COMPAT
