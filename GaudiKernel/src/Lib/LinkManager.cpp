@@ -60,17 +60,16 @@ long LinkManager::addLink(const std::string& path, const DataObject* pObject)   
   for ( auto& lnk : m_linkVector ) {
     const DataObject* pO = lnk->object();
     if ( pO && pO == pObject )  return n;
-    bool same_path = lnk->path() == path;
-    if ( same_path ) {
+    if ( lnk->path() == path ) {
       if ( pObject && pObject != pO )  {
-        lnk->setObject(pObject);
+        lnk->setObject(const_cast<DataObject*>(pObject));
       }
       return n;
     }
     ++n;
   }
   // Link is completely unknown
-  m_linkVector.emplace_back( new Link(m_linkVector.size(), path, pObject) );
+  m_linkVector.emplace_back( new Link(m_linkVector.size(), path, const_cast<DataObject*>(pObject)) );
   return m_linkVector.back()->ID();
 }
 
