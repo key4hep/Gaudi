@@ -109,7 +109,7 @@ StatusCode StalledEventMonitor::initialize() {
                                         m_maxTimeoutCount));
 
     // register to the incident service
-    std::string serviceName = "IncidentSvc";
+    static const std::string serviceName = "IncidentSvc";
     m_incidentSvc = serviceLocator()->service(serviceName);
     if ( ! m_incidentSvc ) {
       error() << "Cannot retrieve " << serviceName << endmsg;

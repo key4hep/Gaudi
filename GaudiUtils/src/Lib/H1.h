@@ -16,21 +16,21 @@ namespace
    *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
    *  @date 2009-10-21
    */
-  struct Edges
+  struct Edges final
   {
     //
-    void setHighEdge ( const double               value ) { high  = value ; }
-    void setLowEdge  ( const double               value ) { low   = value ; }
-    void setNBins    ( const unsigned int         value ) { nbins = value ; }
-    void setEdges    ( const std::vector<double>& value ) { edges = value ; }
+    void setHighEdge ( double               value ) { high  = value ; }
+    void setLowEdge  ( double               value ) { low   = value ; }
+    void setNBins    ( unsigned int         value ) { nbins = value ; }
+    void setEdges    ( std::vector<double>  value ) { edges = std::move(value) ; }
     //
-    Edges& operator -= ( const double value )
+    Edges& operator -= ( double value )
     { setLowEdge  ( value ) ; return *this ; }
-    Edges& operator += ( const double value )
+    Edges& operator += ( double value )
     { setHighEdge ( value ) ; return *this ; }
-    Edges& operator *= ( const std::vector<double>& value )
-    { setEdges    ( value ) ; return *this ; }
-    Edges& operator /= ( const unsigned int value  )
+    Edges& operator *= ( std::vector<double> value )
+    { setEdges    ( std::move(value) ) ; return *this ; }
+    Edges& operator /= ( unsigned int value  )
     { setNBins    ( value ) ; return *this ; }
     //
     bool ok () const
@@ -55,7 +55,7 @@ namespace
    *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
    *  @date 2009-10-21
    */
-  struct H1
+  struct H1 final
   {
     //
     void setName  ( std::string value ) { m_name   = std::move(value) ; }
@@ -98,7 +98,7 @@ namespace
    *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
    *  @date 2009-10-21
    */
-  struct H2
+  struct H2 final
   {
     //
     void setName   ( std::string value ) { m_name   = std::move(value) ; }
