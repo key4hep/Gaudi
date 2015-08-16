@@ -88,9 +88,7 @@ StatusCode IODataManager::finalize()  {
 StatusCode IODataManager::error(CSTR msg, bool rethrow)  {
   MsgStream log(msgSvc(),name());
   log << MSG::ERROR << "Error: " << msg << endmsg;
-  if ( rethrow )  {
-    System::breakExecution();
-  }
+  if ( rethrow )  System::breakExecution();
   return S_ERROR;
 }
 
@@ -159,21 +157,18 @@ StatusCode IODataManager::disconnect(Connection* con)    {
         m_fidMap.erase(j);
       if ( (j=m_fidMap.find(gfal_name)) != m_fidMap.end() )
         m_fidMap.erase(j);
-      if ( i != m_connectionMap.end() ) {
-        if ( i->second )  {
-          IDataConnection* c = (*i).second->connection;
-          std::string pfn = c->pfn();
-          if ( (j=m_fidMap.find(pfn)) != m_fidMap.end() )
-            m_fidMap.erase(j);
-          if ( c->isConnected() )  {
-            MsgStream log(msgSvc(),name());
-            c->disconnect();
-            log << MSG::INFO << "Disconnect from dataset " << dsn
-                << " [" << fid << "]" << endmsg;
-          }
-          delete i->second;
-          m_connectionMap.erase(i);
+      if ( i != m_connectionMap.end() && i->second ) {
+        IDataConnection* c = i->second->connection;
+        if ( (j=m_fidMap.find(c->pfn())) != m_fidMap.end() )
+          m_fidMap.erase(j);
+        if ( c->isConnected() )  {
+          MsgStream log(msgSvc(),name());
+          c->disconnect();
+          log << MSG::INFO << "Disconnect from dataset " << dsn
+              << " [" << fid << "]" << endmsg;
         }
+        delete i->second;
+        m_connectionMap.erase(i);
       }
     }
     return sc;
@@ -215,7 +210,7 @@ StatusCode IODataManager::reconnect(Entry* e)  {
                             c->disconnect();
                             log << MSG::INFO << "Disconnect from dataset " << c->pfn()
                                 << " [" << c->fid() << "]" << endmsg;
-                       });
+                       } );
       }
     }
   }
@@ -226,8 +221,8 @@ StatusCode IODataManager::reconnect(Entry* e)  {
 IIODataManager::Connection* IODataManager::connection(CSTR dataset) const  {
   auto j = m_fidMap.find(dataset);
   if ( j == m_fidMap.end() )  return nullptr;
-  auto i=m_connectionMap.find((*j).second);
-  return (i != m_connectionMap.end()) ? (*i).second->connection : nullptr;
+  auto i=m_connectionMap.find(j->second);
+  return (i != m_connectionMap.end()) ? i->second->connection : nullptr;
 }
 
 StatusCode IODataManager::establishConnection(Connection* con)  {
@@ -239,12 +234,12 @@ StatusCode IODataManager::establishConnection(Connection* con)  {
   }
   auto i=m_connectionMap.find(con->name());
   if ( i != m_connectionMap.end() )  {
-    Connection* c = (*i).second->connection;
+    Connection* c = i->second->connection;
     if ( c != con )  {
       m_incSvc->fireIncident(Incident(con->name(),IncidentType::FailInputFile));
       return error("Severe logic bug: Twice identical connection object for DSN:"+con->name(),true);
     }
-    if ( reconnect((*i).second).isSuccess() ) return S_OK;
+    if ( reconnect(i->second).isSuccess() ) return S_OK;
   }
   return S_ERROR;
 }
@@ -273,12 +268,12 @@ IODataManager::connectDataIO(int typ, IoType rw, CSTR dataset, CSTR technology,b
       if ( fi == m_connectionMap.end() )  {
         IFileCatalog::Files files;
         m_catalog->getPFN(dsn,files);
-        if ( files.size() == 0 ) {
+        if ( files.empty() ) {
           if ( !m_useGFAL )   {
             if ( m_quarantine ) s_badFiles.insert(dsn);
             m_incSvc->fireIncident(Incident(dsn,IncidentType::FailInputFile));
             error("connectDataIO> failed to resolve FID:"+dsn,false).ignore();
-	    return IDataConnection::BAD_DATA_CONNECTION;
+            return IDataConnection::BAD_DATA_CONNECTION;
           }
           else if ( dsn.length() == 36 && dsn[8]=='-' && dsn[13]=='-' )  {
             std::string gfal_name = "gfal:guid:" + dsn;
@@ -353,7 +348,7 @@ IODataManager::connectDataIO(int typ, IoType rw, CSTR dataset, CSTR technology,b
       }
     }
     else {
-      fid = (*j).second;
+      fid = j->second;
     }
     if ( typ == PFN )  {
       // Open PFN

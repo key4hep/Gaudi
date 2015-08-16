@@ -178,18 +178,17 @@ void IncidentSvc::i_fireIncident( const Incident&    incident     ,
 
   // Wouldn't it be better to write a small 'ReturnCode' service which
   // looks for these 'special' incidents and does whatever needs to
-  // be done instead of making a special case here? Or maybe whoever
-  // triggers the incident can set the return code???
+  // be done instead of making a special case here? 
 
   // Special case: FailInputFile incident must set the application return code
-  if (incident.type() == IncidentType::FailInputFile
-      || incident.type() == IncidentType::CorruptedInputFile) {
+  if ( incident.type() == IncidentType::FailInputFile || 
+       incident.type() == IncidentType::CorruptedInputFile ) {
     SmartIF<IProperty> appmgr(serviceLocator());
-    if (incident.type() == IncidentType::FailInputFile)
-      // Set the return code to Gaudi::ReturnCode::FailInput (2)
-      Gaudi::setAppReturnCode(appmgr, Gaudi::ReturnCode::FailInput).ignore();
-    else
-      Gaudi::setAppReturnCode(appmgr, Gaudi::ReturnCode::CorruptedInput).ignore();
+    Gaudi::setAppReturnCode(appmgr, 
+                            incident.type() == IncidentType::FailInputFile ?
+                                  Gaudi::ReturnCode::FailInput :
+                                  Gaudi::ReturnCode::CorruptedInput
+                           ).ignore();
   }
 
   auto ilisteners = m_listenerMap.find( listenerType );

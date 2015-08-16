@@ -47,7 +47,6 @@ class IncidentSvc : public extends1<Service, IIncidentSvc>
 
   // Typedefs
   typedef std::vector<Listener> ListenerList;
-  // typedef std::map<std::string, ListenerList*> ListenerMap;
   typedef GaudiUtils::HashMap<Gaudi::StringKey, std::unique_ptr<ListenerList>> ListenerMap;
 
 public:

@@ -27,8 +27,8 @@ class EventCollectionContext : public IEvtSelector::Context {
 public:
   typedef std::list<std::string> ListName;
 private:
-  GenericAddress*                m_pAddressBuffer;
-  const EventCollectionSelector* m_pSelector;
+  GenericAddress*                m_pAddressBuffer = nullptr;
+  const EventCollectionSelector* m_pSelector = nullptr;
   ListName                      m_files;
   std::string                   m_criteria;
   ListName::const_iterator      m_fileIterator;

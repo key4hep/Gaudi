@@ -30,14 +30,14 @@ public:
    *  @see IEqSolver.h
    *  @return StatusCode
    */
-  virtual StatusCode solver( const Equations& funcs ,
-                             Arg&             arg   ) const;
+  StatusCode solver( const Equations& funcs ,
+                     Arg&             arg   ) const override;
 
   /// Overriding initialize
-  virtual StatusCode initialize ();
-  virtual StatusCode finalize   ();
+  StatusCode initialize () override;
+  StatusCode finalize   () override;
 
-  virtual ~EqSolver( ); ///< Destructor
+  ~EqSolver( ) override; ///< Destructor
 
   class  EqSolverMisc
   {
@@ -56,11 +56,11 @@ public:
     inline const Jacobi&    jacobi    () const { return m_jac     ; }
   private:
     // default constructor is disabled
-    EqSolverMisc () ;
+    EqSolverMisc () = delete;
     // copy constructor is disabled
-    EqSolverMisc           ( const EqSolverMisc& );
+    EqSolverMisc           ( const EqSolverMisc& ) = delete;
     // assignment operator is disabled
-    EqSolverMisc& operator=( const EqSolverMisc& );
+    EqSolverMisc& operator=( const EqSolverMisc& ) = delete;
   private:
     Arg              m_argum ;
     const Equations* m_eqs   ;

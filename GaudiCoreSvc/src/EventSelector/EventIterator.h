@@ -35,15 +35,7 @@ class EvtSelectorContext  : public IEvtSelector::Context {
   friend class EventCollectionSelector;
 private:
   /// Copy constructor
-  EvtSelectorContext ( const EvtSelectorContext& copy)
-  : IEvtSelector::Context(copy),
-    m_count(copy.m_count),
-    m_strCount(copy.m_strCount),
-    m_pSelector(copy.m_pSelector), 
-    m_context(copy.m_context),
-    m_pAddress(copy.m_pAddress)
-  {
-  }
+  EvtSelectorContext ( const EvtSelectorContext& copy) = default;
 protected:
   /// Stream identifier
   IDataStreamTool::size_type m_streamID = -1;
@@ -98,15 +90,7 @@ public:
   ~EvtSelectorContext() override = default;
 
   /// Copy constructor
-  virtual EvtSelectorContext& operator=(const EvtSelectorContext& copy) {
-    m_streamID  = copy.m_streamID;
-    m_count     = copy.m_count;
-    m_strCount  = copy.m_strCount;
-    m_pSelector = copy.m_pSelector;
-    m_context   = copy.m_context;
-    m_pAddress  = copy.m_pAddress;
-    return *this;
-  }
+  virtual EvtSelectorContext& operator=(const EvtSelectorContext& copy) = default;
   /// Stream identifier
   virtual IDataStreamTool::size_type ID()   const {
     return m_streamID;

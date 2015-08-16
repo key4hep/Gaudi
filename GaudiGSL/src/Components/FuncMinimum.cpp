@@ -46,13 +46,6 @@ FuncMinimum::FuncMinimumMisc::FuncMinimumMisc
 }
 // ============================================================================
 
-// ============================================================================
-FuncMinimum::FuncMinimumMisc::~FuncMinimumMisc()
-{
-  m_grad.clear();
-}
-// ============================================================================
-
 //=============================================================================
 // Standard constructor, initializes variables
 //=============================================================================
@@ -60,12 +53,6 @@ FuncMinimum::FuncMinimum( const std::string& type,
                           const std::string& name,
                           const IInterface* parent )
   : base_class      ( type, name , parent )
-  , m_algType       ( "conjugate_fr"      )
-  , m_max_iter      ( 200                 )
-  , m_norm_gradient ( 1.0e-10             )
-  , m_step_size     ( 0.01                )
-  , m_tol           ( 1e-10               )
-  , m_type          ( 0                   )
 {
   /// declare type of the algorithm for multidimensional minimization
   declareProperty ( "Algorithm", m_algType       );
@@ -91,10 +78,8 @@ namespace
     const FuncMinimum::GenFunc& eq  = *(local->equation());
     Argument&                   arg = local->argument()   ;
 
-    {for (unsigned int i = 0; i < v->size; ++i)
-      {
-        arg[i] = gsl_vector_get (v, i);
-      }
+    for (unsigned int i = 0; i < v->size; ++i) {
+       arg[i] = gsl_vector_get (v, i);
     }
 
     return eq(arg);
@@ -109,19 +94,17 @@ namespace
     const FuncMinimum::Gradient& grad  = local->gradient();
     Argument&                    arg   = local->argument()  ;
 
-    {for ( unsigned int i = 0; i < v->size; ++i)
-      {
-        arg[i] = gsl_vector_get (v, i);
-      }
-    }
+    for ( unsigned int i = 0; i < v->size; ++i) {
+       arg[i] = gsl_vector_get (v, i);
+     }
+    
 
-    {for( unsigned int i = 0 ; i < df->size ; ++i )
-
-      {
-        Genfun::GENFUNCTION f = *(grad[i]);
-        gsl_vector_set ( df, i, f(arg) );
-      }
-    }
+    for( unsigned int i = 0 ; i < df->size ; ++i ) 
+     {
+       Genfun::GENFUNCTION f = *(grad[i]);
+       gsl_vector_set ( df, i, f(arg) );
+     }
+    
 
   }
 
@@ -328,8 +311,7 @@ StatusCode  FuncMinimum::initialize()
     }
   else
     {
-      return Error(" Unknown algorithm type '"
-                   + std::string(m_algType) + "'");
+      return Error(" Unknown algorithm type '" + m_algType + "'");
     }
 
   return StatusCode::SUCCESS;
@@ -347,10 +329,6 @@ StatusCode FuncMinimum::finalize   ()
     }
   return StatusCode::SUCCESS;
 }
-//=============================================================================
-FuncMinimum::~FuncMinimum( ) ///< Destructor
-
-{}
 //=============================================================================
 
 // Declaration of the Tool Factory

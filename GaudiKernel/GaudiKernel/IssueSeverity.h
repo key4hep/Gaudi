@@ -39,7 +39,7 @@ class IIssueLogger;
 #endif
 #endif
 
-class GAUDI_API IssueSeverity {
+class GAUDI_API IssueSeverity final {
 
 public:
 
@@ -59,24 +59,22 @@ public:
     NUM_LEVELS
   };
 
-  IssueSeverity();
-  IssueSeverity( const IssueSeverity::Level &level, int line,
-		 const std::string& file,
-		 const std::string& msg="");
-  IssueSeverity( const IssueSeverity::Level &level, const std::string& msg="");
+  IssueSeverity() = default;
+  IssueSeverity( IssueSeverity::Level level, int line,
+                 std::string file,
+                 std::string msg="");
+  IssueSeverity( IssueSeverity::Level level, std::string msg="");
 
-  IssueSeverity( const IssueSeverity& es );
-  IssueSeverity( IssueSeverity* es );
-
-  IssueSeverity& operator=(const IssueSeverity& rhs);
+  IssueSeverity( IssueSeverity&& es );
+  IssueSeverity& operator=(IssueSeverity&& rhs);
 
   ~IssueSeverity();
 
   void setLevel(const IssueSeverity::Level& l) {
     m_level = l;
   }
-  void setMsg(const std::string& m) {
-    m_msg = m;
+  void setMsg(std::string m) {
+    m_msg = std::move(m);
   }
 
   IssueSeverity::Level getLevel() const { return m_level; }
@@ -85,72 +83,51 @@ public:
 
   void report();
 
-  operator StatusCode() const;
-
   friend inline std::ostream& operator<< ( std::ostream&,
-					   const IssueSeverity& ) ;
+                                           const IssueSeverity& ) ;
 
 private:
 
-  int m_line;
   std::string m_file;
+  std::string m_msg;
+
+  int m_line = 0;
+  IssueSeverity::Level m_level = IssueSeverity::NIL;
+  bool m_reported = true;
 
   static bool m_init;
   static IIssueLogger* m_ers;
 
-  IssueSeverity::Level m_level;
-  std::string m_msg;
-  bool m_reported;
-
-  static void init();
 
 };
 
-inline IssueSeverity::IssueSeverity(): m_line(0), m_file(""),
-				       m_level(IssueSeverity::NIL),
- 				       m_msg(""), m_reported(true) {}
 
-inline IssueSeverity::IssueSeverity(const IssueSeverity::Level &level, int line,
-				    const std::string& file,
-				    const std::string& msg):
-  m_line(line), m_file(file), m_level(level), m_msg(msg), m_reported(false) {
-
-  init();
+inline IssueSeverity::IssueSeverity(IssueSeverity::Level level, int line,
+                                    std::string file,
+                                    std::string msg):
+  m_file(std::move(file)),m_msg(std::move(msg)), m_line(line),  m_level(level), m_reported(false) {
   report();
-
 }
 
-inline IssueSeverity::IssueSeverity(const IssueSeverity::Level &level,
-				    const std::string& msg):
-  m_line(0), m_file("??"), m_level(level), m_msg(msg), m_reported(false) {
+inline IssueSeverity::IssueSeverity(IssueSeverity::Level level, std::string msg):
+    IssueSeverity(std::move(level),0,"??",std::move(msg)) { }
 
-  init();
-  report();
-
-}
-
-inline IssueSeverity::IssueSeverity( const IssueSeverity& rhs ) {
+inline IssueSeverity::IssueSeverity( IssueSeverity&& rhs ) {
+  m_file = std::move(rhs.m_file);
+  m_msg   = std::move(rhs.m_msg);
   m_line = rhs.m_line;
-  m_file = rhs.m_file;
   m_level = rhs.m_level;
-  m_msg   = rhs.m_msg;
-  m_reported = true;
+  m_reported = rhs.m_reported;
+  rhs.m_reported = true;
 }
 
-inline IssueSeverity::IssueSeverity( IssueSeverity* rhs ) {
-  m_line = rhs->m_line;
-  m_file = rhs->m_file;
-  m_level = rhs->m_level;
-  m_msg   = rhs->m_msg;
-  m_reported = true;
-}
-
-inline IssueSeverity& IssueSeverity::operator=(const IssueSeverity& rhs) {
-  m_line = rhs.m_line;
+inline IssueSeverity& IssueSeverity::operator=(IssueSeverity&& rhs) {
   m_file = rhs.m_file;
-  m_level = rhs.m_level;
   m_msg   = rhs.m_level;
-  m_reported = true;
+  m_line = rhs.m_line;
+  m_level = rhs.m_level;
+  m_reported = rhs.m_reported;
+  rhs.m_reported = true;
   return *this;
 }
 

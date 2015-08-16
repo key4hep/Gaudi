@@ -135,7 +135,7 @@ public:
            ISvcLocator*       svc  );
 
   /// destructor, virtual and protected
-  virtual ~GslSvc() ;
+  ~GslSvc() override = default;
 
 private:
 
@@ -149,7 +149,7 @@ private:
 private:
 
   /// error policy
-  std::string    m_errorPolicy ;
+  std::string    m_errorPolicy = "GSL" ;
 
   /// external handlers
   typedef std::vector<std::string>       Names               ;

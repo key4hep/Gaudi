@@ -7,7 +7,6 @@
 
 /** @class IndefiniteIntegral IndefiniteIntegral.h GaudiMath/IndefiniteIntegral.h
  *
- *
  *  @author Ivan BELYAEV
  *  @date   2003-08-31
  */
@@ -17,10 +16,6 @@ public:
   IndefiniteIntegral( );
 
   virtual ~IndefiniteIntegral( ); ///< Destructor
-
-protected:
-
-private:
 
 };
 #endif // GAUDIMATH_INDEFINITEINTEGRAL_H

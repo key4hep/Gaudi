@@ -35,7 +35,7 @@ namespace Gaudi {
     typedef Axis self;
 
     static int toRootIndex(int index, int nbins) {
-      if (index==AIDA::IAxis::OVERFLOW_BIN) return nbins+1;
+      if (index==AIDA::IAxis::OVERFLOW_BIN)  return nbins+1;
       if (index==AIDA::IAxis::UNDERFLOW_BIN) return 0;
       return index+1;
     }

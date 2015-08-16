@@ -11,6 +11,7 @@
 #include <map>
 #include <string>
 #include <cassert>
+#include "boost/circular_buffer.hpp"
 
 #define ON_DEBUG if (UNLIKELY(outputLevel() <= MSG::DEBUG))
 #define ON_VERBOSE if (UNLIKELY(outputLevel() <= MSG::VERBOSE))
@@ -35,21 +36,15 @@ unsigned long totalRefCount( const C& toolList )
 template <typename C> void remove(C& c, typename C::const_reference i)  {
     c.erase( std::remove(std::begin(c),std::end(c),i), std::end(c) );
 }
-
 template <typename T> void remove(std::list<T>& l, const T& i) {
     l.remove(i);
 }
 
-template <typename C> void push_front(C& c, typename C::reference i)  {
-    c.push_back(i);
-    std::rotate(std::begin(c),std::prev(std::end(c)),std::end(c));
+template <typename C, typename T> void push_front(C& c, T&& i)  {
+    c.insert( std::begin(c), std::forward<T>(i) );
 }
-
-template <typename T> void push_front(std::list<T>& l, T& i) { 
-    l.push_front(i);
-}
-template <typename T> void push_front(std::deque<T>& l, T& i) { 
-    l.push_front(i);
+template <typename T> void push_front(std::list<T>& l, T&& i) { 
+    l.push_front(std::forward<T>(i));
 }
 }
 
@@ -112,7 +107,6 @@ StatusCode ToolSvc::finalize()
         - explicitly release all tools, one release() on all tools per loop.
         -> tools are deleted in the order of increasing number of refCounts.
   */
-  std::list<IAlgTool*> finalizedTools; // list of tools that have been finalized
   info()  << "Removing all tools created by ToolSvc" << endmsg;
 
   // Print out list of tools
@@ -140,6 +134,7 @@ StatusCode ToolSvc::finalize()
         + total number of refcounts
         + minimum number of refcounts
   */
+  boost::circular_buffer<IAlgTool*> finalizedTools(m_instancesTools.size()); // list of tools that have been finalized
   bool fail(false);
   size_t toolCount = m_instancesTools.size();
   unsigned long startRefCount = 0;
@@ -202,17 +197,17 @@ StatusCode ToolSvc::finalize()
   // Therefore, the check on non-finalised tools should happen *after* the deletion
   // of the finalized tools.
   ON_DEBUG debug() << "Deleting " << finalizedTools.size() << " finalized tools" << endmsg;
-  unsigned long maxLoop = totalRefCount( finalizedTools ) + 1;
+  auto maxLoop = totalRefCount( finalizedTools ) + 1;
   while ( --maxLoop > 0 && !finalizedTools.empty() ) {
     IAlgTool* pTool = finalizedTools.front();
     finalizedTools.pop_front();
-    unsigned long count = refCountTool( pTool );
+    auto count = refCountTool( pTool );
     if ( count == 1 ) {
       ON_DEBUG debug() << "  Performing deletion of " << pTool->name() << endmsg;
     } else {
       ON_VERBOSE verbose() << "  Delaying   deletion of " << pTool->name()
           << " (refCount " << count << ")" << endmsg;
-      // Put it back at the end of the list if refCount still not zero
+      // Move to the end when refCount still not zero
       finalizedTools.push_back(pTool);
     }
     // do a forced release
@@ -241,11 +236,9 @@ StatusCode ToolSvc::finalize()
   if ( m_pHistorySvc ) m_pHistorySvc->release();
 
   // Finalize this specific service
-  if (! Service::finalize().isSuccess() || fail) {
-    return StatusCode::FAILURE;
-  } else {
-    return StatusCode::SUCCESS;
-  }
+  return  ( Service::finalize().isSuccess() && !fail ) 
+          ? StatusCode::SUCCESS
+          : StatusCode::FAILURE;
 
 }
 
@@ -377,13 +370,9 @@ std::vector<std::string> ToolSvc::getInstances( const std::string& toolType )
 {
 
   std::vector<std::string> tools;
-
   for(const auto& tool: m_instancesTools) {
-    if (tool->type() == toolType) {
-      tools.push_back( tool->name() );
-    }
+    if (tool->type() == toolType) tools.push_back( tool->name() );
   }
-
   return tools;
 
 }
@@ -401,8 +390,7 @@ std::vector<std::string> ToolSvc::getInstances() const
 std::vector<IAlgTool*> ToolSvc::getTools() const
 //------------------------------------------------------------------------------
 {
-  return std::vector<IAlgTool*>{std::begin(m_instancesTools),
-                                std::end(m_instancesTools)};
+  return m_instancesTools;
 }
 //------------------------------------------------------------------------------
 StatusCode ToolSvc::releaseTool( IAlgTool* tool )
@@ -434,7 +422,6 @@ StatusCode ToolSvc::releaseTool( IAlgTool* tool )
     }
     tool->release();
   }
-
   return sc;
 }
 
@@ -466,10 +453,10 @@ public:
   // one is just fine...
   ToolCreateGuard(ToolCreateGuard&&) = default;
   /// Set the internal pointer (delete any previous one). Get ownership of the tool.
-  void set(IAlgTool* tool) {
+  void create( const std::string& tooltype, const std::string& fullname, const IInterface* parent ) {
     // remove previous content
     if (m_tool) remove(m_tools,m_tool.get());
-    m_tool.reset(tool);
+    m_tool.reset(AlgTool::Factory::create(tooltype, tooltype, fullname, parent))   ;
     // set new content
     if (m_tool) m_tools.push_back(m_tool.get());
   }
@@ -518,14 +505,14 @@ StatusCode ToolSvc::create(const std::string& tooltype,
   auto toolguard = make_toolCreateGuard(m_instancesTools);
 
   // Check if the tool already exist : this should never happen
-  const std::string fullname = nameTool(toolname, parent);
+  std::string fullname = nameTool(toolname, parent);
   if( UNLIKELY(existsTool(fullname)) ) {
     error() << "Tool " << fullname << " already exists" << endmsg;
     return StatusCode::FAILURE;
   }
   // instantiate the tool using the factory
   try {
-    toolguard.set( AlgTool::Factory::create(tooltype, tooltype, fullname, parent) );
+    toolguard.create( tooltype, fullname, parent );
     if ( UNLIKELY(! toolguard.get()) ){
        error() << "Cannot create tool " << tooltype << " (No factory found)" << endmsg;
        return StatusCode::FAILURE;
@@ -617,7 +604,7 @@ StatusCode ToolSvc::create(const std::string& tooltype,
 
 
   // The tool has been successfully created and initialized,
-  // so we the guard can be released
+  // so we inform the guard that it can release it
   tool = toolguard.release();
 
   ///////////////

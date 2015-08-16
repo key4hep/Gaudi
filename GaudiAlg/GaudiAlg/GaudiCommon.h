@@ -95,9 +95,9 @@ protected: // few actual data types
   /// a pointer to the CounterSummarySvc
   ICounterSummarySvc* m_counterSummarySvc = nullptr;
   ///list of counters to declare. Set by property CounterList. This can be a regular expression.
-  std::vector<std::string> m_counterList;
+  std::vector<std::string> m_counterList = std::vector<std::string>(1,".*");
   //list of stat entities to write. Set by property StatEntityList. This can be a regular expression.
-  std::vector<std::string> m_statEntityList;
+  std::vector<std::string> m_statEntityList = std::vector<std::string>(0);
 public:
   // ==========================================================================
   /** @brief Templated access to the data in Gaudi Transient Store
@@ -772,7 +772,7 @@ private:
   // ==========================================================================
 private:
   /// The message level
-  MSG::Level  m_msgLevel    ;
+  MSG::Level  m_msgLevel    = MSG::NIL;
 private:
   /// The predefined message stream
   mutable std::unique_ptr<MsgStream> m_msgStream    ;
@@ -796,13 +796,13 @@ private:
   mutable IUpdateManagerSvc* m_updMgrSvc = nullptr;
   // ==========================================================================
   /// insert  the actual C++ type of the algorithm in the messages?
-  bool        m_typePrint     ;
+  bool        m_typePrint = true    ;
   /// print properties at initialization?
-  bool        m_propsPrint    ;
+  bool        m_propsPrint = false   ;
   /// print counters at finalization ?
-  bool        m_statPrint     ;
+  bool        m_statPrint = true    ;
   /// print warning and error counters at finalization ?
-  bool        m_errorsPrint   ;
+  bool        m_errorsPrint = true  ;
   // ==========================================================================
   /// The context string
   std::string m_context;

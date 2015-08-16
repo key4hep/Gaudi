@@ -32,7 +32,7 @@ EventLoopMgr::EventLoopMgr(const std::string& nam, ISvcLocator* svcLoc)
 : MinimalEventLoopMgr(nam, svcLoc)
 {
   // Declare properties
-  declareProperty("HistogramPersistency", m_histPersName = "");
+  declareProperty("HistogramPersistency", m_histPersName );
   declareProperty("EvtSel", m_evtsel );
   declareProperty("Warnings",m_warnings=true,
 		  "Set this property to false to suppress warning messages");
@@ -97,8 +97,7 @@ StatusCode EventLoopMgr::initialize()    {
       fatal() << "EventSelector not found." << endmsg;
       return sc;
     }
-  }
-  else {
+  } else {
     m_evtSelector = nullptr;
     m_evtContext = nullptr;
     if ( m_warnings ) {
@@ -154,8 +153,7 @@ StatusCode EventLoopMgr::reinitialize() {
                   << theSvc->name( ) << endmsg;
           return sc;
         }
-      }
-      else {
+      } else {
         sc = theSvc->sysInitialize();
         if( !sc.isSuccess() ) {
           error() << "Failure Initializing EventSelector "
@@ -296,16 +294,6 @@ StatusCode EventLoopMgr::executeEvent(void* par)    {
 }
 
 //--------------------------------------------------------------------------------------------
-// IEventProcessing::executeRun
-//--------------------------------------------------------------------------------------------
-StatusCode EventLoopMgr::executeRun( int maxevt )    {
-  StatusCode  sc;
-  // initialize the base class
-  sc = MinimalEventLoopMgr::executeRun(maxevt);
-  return sc;
-}
-
-//--------------------------------------------------------------------------------------------
 // implementation of IAppMgrUI::nextEvent
 //--------------------------------------------------------------------------------------------
 StatusCode EventLoopMgr::nextEvent(int maxevt)   {
@@ -315,7 +303,7 @@ StatusCode EventLoopMgr::nextEvent(int maxevt)   {
 
   // loop over events if the maxevt (received as input) if different from -1.
   // if evtmax is -1 it means infinite loop
-  for( int nevt = 0; (maxevt == -1 ? true : nevt < maxevt);  nevt++, total_nevt++) {
+  for( int nevt = 0; maxevt == -1 || nevt < maxevt;  ++nevt, ++total_nevt) {
 
     // Check if there is a scheduled stop issued by some algorithm/service
     if ( m_scheduledStop ) {
@@ -357,15 +345,14 @@ StatusCode EventLoopMgr::nextEvent(int maxevt)   {
         warning() << "Unable to retrieve Event root object" << endmsg;
         break;
       }
-    }
-    else {
+    } else {
       sc = m_evtDataMgrSvc->setRoot ("/Event", new DataObject());
       if( !sc.isSuccess() )  {
         warning() << "Error declaring event root DataObject" << endmsg;
       }
     }
     // Execute event for all required algorithms
-    sc = executeEvent(NULL);
+    sc = executeEvent(nullptr);
     m_endEventFired = false;
     if( !sc.isSuccess() ){
       error() << "Terminating event processing loop due to errors" << endmsg;
@@ -380,9 +367,7 @@ StatusCode EventLoopMgr::nextEvent(int maxevt)   {
 StatusCode EventLoopMgr::getEventRoot(IOpaqueAddress*& refpAddr)  {
   refpAddr = nullptr;
   StatusCode sc = m_evtSelector->next(*m_evtContext);
-  if ( !sc.isSuccess() )  {
-    return sc;
-  }
+  if ( !sc.isSuccess() )  return sc;
   // Create root address and assign address to data service
   sc = m_evtSelector->createAddress(*m_evtContext,refpAddr);
   if( !sc.isSuccess() )  {

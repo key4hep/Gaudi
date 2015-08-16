@@ -58,7 +58,7 @@ public:
   {
     declareProperty ( "OptimizedForDOD" , m_goodForDOD ) ;
   } 
-  /// virtual destructor
+  /// destructor
   ~TimingAuditor() override = default;
 
   // delete default/copy constructor and assignment
