@@ -63,16 +63,6 @@ void
 GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface * parent )
 {
   // initialise data members
-  m_msgLevel    = MSG::NIL;
-  m_typePrint   = true;
-  m_propsPrint  = false;
-  m_statPrint   = true;
-  m_errorsPrint = true;
-  //data members for the CounterSummarySvc
-  m_counterList=std::vector<std::string>(1,".*");
-  m_statEntityList=std::vector<std::string>(0);
-
-  // printout of counters:
 
   // the header row for counters printout
   m_header  = " |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |" ;

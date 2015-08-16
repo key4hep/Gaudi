@@ -57,7 +57,7 @@ namespace GaudiToolLocal
   /** @class Counter
    *  simple local counter
    */
-  class Counter
+  class Counter final
   {
   public:
     // ========================================================================
@@ -179,11 +179,11 @@ StatusCode    GaudiTool::finalize   ()
     debug() << " ==> Finalize the base class GaudiTool " << endmsg;
 
   // clear "explicit services"
-    m_evtSvc    = nullptr ;
-    m_detSvc    = nullptr ;
-    m_chronoSvc = nullptr ;
-    m_incSvc    = nullptr ;
-    m_histoSvc  = nullptr ;
+  m_evtSvc    = nullptr ;
+  m_detSvc    = nullptr ;
+  m_chronoSvc = nullptr ;
+  m_incSvc    = nullptr ;
+  m_histoSvc  = nullptr ;
 
   // finalize the base class
   const StatusCode sc = GaudiCommon<AlgTool>::finalize() ;
