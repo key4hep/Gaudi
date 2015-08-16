@@ -4,24 +4,22 @@
 #include "MultiFileCatalog.h"
 #include <stdexcept>
 #include <algorithm>
+#include <functional>
 
 namespace Gaudi { std::string createGuidAsString(); }
 
 using namespace Gaudi;
 using namespace std;
 
+namespace {
+    template <typename C, typename F> 
+    F for_each_element( C& c, F&& f ) {
+        return std::for_each( std::begin(c), std::end(c), std::forward<F>(f) );
+    }
+}
+
 DECLARE_COMPONENT(MultiFileCatalog)
 
-namespace {
-  template <class V,class F>
-  bool _findX0Bool(V& array, F pmf, bool invert) {
-    for(const auto& i : array) {
-      bool res = invert ? !(i->*pmf)() : (i->*pmf)();
-      if ( !res ) return false;
-    }
-    return true;
-  }
-}
 // ----------------------------------------------------------------------------
 MultiFileCatalog::MultiFileCatalog(const std::string& nam, ISvcLocator* svc)
   : base_class(nam, svc)
@@ -52,7 +50,7 @@ StatusCode MultiFileCatalog::initialize()  {
 // ----------------------------------------------------------------------------
 StatusCode MultiFileCatalog::finalize()  {
   commit();
-  _exec(&IFileCatalog::release);
+  for_each_element(m_catalogs, std::mem_fn(&IFileCatalog::release));
   m_catalogs.clear();
   m_started = false;
   return Service::finalize();
@@ -122,10 +120,10 @@ void MultiFileCatalog::addCatalog(CSTR con)  {
   if ( !con.empty() )  {
     if ( 0 == findCatalog(con,false) )  {
       static const string xml_typ = "Gaudi::XMLFileCatalog";
-      string::size_type id0 = con.find("_");
+      auto id0 = con.find("_");
       string typ = con.substr(0,id0);
       string url = con.substr(id0+1);
-      IInterface* cat = 0;
+      IInterface* cat = nullptr;
       if ( strncasecmp("xml",typ.c_str(),3) == 0 )    {
         cat = IFileCatalog::Factory::create(xml_typ,url,msgSvc().get());
       }
@@ -167,7 +165,7 @@ void MultiFileCatalog::addCatalog(IFileCatalog* cat)  {
 // ----------------------------------------------------------------------------
 void MultiFileCatalog::removeCatalog(CSTR con)  {
   if ( con.empty() || con == "*" )  {
-    _exec(&IFileCatalog::release);
+    for_each_element(m_catalogs, std::mem_fn(&IFileCatalog::release));
     m_catalogs.clear();
     return;
   }
@@ -235,10 +233,19 @@ void MultiFileCatalog::registerLFN(CSTR fid, CSTR lfn) const  {
 }
 // ----------------------------------------------------------------------------
 bool MultiFileCatalog::readOnly() const
-{  return _findX0Bool(m_catalogs,&IFileCatalog::readOnly,false);              }
+{  return std::all_of( std::begin(m_catalogs), std::end(m_catalogs), std::mem_fn(&IFileCatalog::readOnly) ); }
 // ----------------------------------------------------------------------------
 bool MultiFileCatalog::dirty() const
-{  return _findX0Bool(m_catalogs,&IFileCatalog::dirty,true);                  }
+{  return std::any_of( std::begin(m_catalogs), std::end(m_catalogs), std::mem_fn(&IFileCatalog::dirty) ); }
+// ----------------------------------------------------------------------------
+void MultiFileCatalog::init() 
+{ for_each_element(m_catalogs,std::mem_fn(&IFileCatalog::init)); m_started=true;                           }
+// ----------------------------------------------------------------------------
+void MultiFileCatalog::commit() 
+{ for_each_element(m_catalogs,std::mem_fn(&IFileCatalog::commit)); }
+// ----------------------------------------------------------------------------
+void MultiFileCatalog::rollback() 
+{ for_each_element(m_catalogs, std::mem_fn(&IFileCatalog::rollback)); }
 // ----------------------------------------------------------------------------
 void MultiFileCatalog::propHandler(Property& /* p */)
 {

@@ -28,11 +28,6 @@ namespace Gaudi {
     typedef std::vector<IFileCatalog*> Catalogs;
     typedef std::vector<std::string>   CatalogNames;
 
-    template <class T> void _exec(T pmf)  const  {
-        std::for_each( std::begin(m_catalogs), std::end(m_catalogs),
-                       [&](Catalogs::const_reference i ) { (i->*pmf)();
-        } );
-    }
     template <class A1,class F> std::string _find(A1& arg1,F pmf)  const {
       std::string result;
       for(Catalogs::const_iterator i=m_catalogs.begin(); i != m_catalogs.end(); ++i) {
@@ -41,18 +36,20 @@ namespace Gaudi {
       }
       return result;
     }
-    template <class A1,class F> void _collect(A1 arg1,F pmf)  const {
+    template <class A1,class F> void _collect(A1& arg1,F f)  const {
       A1 tmp;
-      for(Catalogs::const_iterator i=m_catalogs.begin();i!=m_catalogs.end();++i,tmp.clear()) {
-        ((*i)->*pmf)(tmp);
+      for(const auto & i : m_catalogs ) {
+        f(i,tmp); // tmp = f(i) 
         arg1.insert(arg1.end(),tmp.begin(),tmp.end());
+        tmp.clear();
       }
     }
-    template <class A1,class A2,class F> void _collect(A1 arg1,A2& arg2,F pmf)  const {
-      A2 tmp;
-      for(Catalogs::const_iterator i=m_catalogs.begin();i!=m_catalogs.end();++i,tmp.clear()) {
-        ((*i)->*pmf)(arg1,tmp);
-        arg2.insert(arg2.end(),tmp.begin(),tmp.end());
+    template <class A2,class A1,class F> void _collect(const A2& arg2,A1& arg1,F f)  const {
+      A1 tmp;
+      for(const auto& i : m_catalogs ) {
+        f(i,arg2,tmp); // tmp = f(i,arg2)
+        arg1.insert(arg1.end(),tmp.begin(),tmp.end());
+        tmp.clear();
       }
     }
   public:
@@ -73,12 +70,11 @@ namespace Gaudi {
     /// Access to connect string
     CSTR connectInfo() const override;
     /// Parse the DOM tree of the XML catalog
-    void init() override
-    {  _exec(&IFileCatalog::init); m_started=true;                           }
+    void init() override;
     /// Save DOM catalog to file
-    void commit() override                  { _exec(&IFileCatalog::commit);   }
+    void commit() override;
     /// Save DOM catalog to file
-    void rollback() override                 { _exec(&IFileCatalog::rollback); }
+    void rollback() override;
     /// Check if the catalog is read-only
     bool readOnly() const override;
     /// Check if the catalog should be updated
@@ -100,14 +96,14 @@ namespace Gaudi {
     {  return 0 != getCatalog(fid,false,false,false);                          }
     /// Dump all physical file names of the catalog and their attributes associate to the FileID
     void getPFN(CSTR fid, Files& files) const override
-    {  _collect(fid,files,&IFileCatalog::getPFN);                             }
+    {  _collect(fid,files,std::mem_fn(&IFileCatalog::getPFN));                             }
     /// Dump all logical file names of the catalog associate to the FileID
     void getLFN(CSTR fid, Files& files) const override
-    {  _collect(fid,files,&IFileCatalog::getLFN);                             }
+    {  _collect(fid,files,std::mem_fn(&IFileCatalog::getLFN));                             }
 
     /// Dump all file Identifiers
     void getFID(Strings& fids)  const override
-    {  _collect(fids,&IFileCatalog::getFID);                                  }
+    {  _collect(fids,std::mem_fn(&IFileCatalog::getFID));                                  }
     /// Delete FileID from the catalog
     void deleteFID(CSTR fid)  const override
     {  writeCatalog(fid)->deleteFID(fid);                                     }
@@ -120,7 +116,7 @@ namespace Gaudi {
     {  writeCatalog()->registerFID(fid);                                      }
     /// Dump all MetaData of the catalog for a given file ID
     void getMetaData(CSTR fid, Attributes& attr) const override
-    {  _collect(fid,attr,&IFileCatalog::getMetaData);                         }
+    {  _collect(fid,attr,std::mem_fn(&IFileCatalog::getMetaData));                         }
     /// Access metadata item
     std::string getMetaDataItem(CSTR fid, CSTR name) const override;
     /// Insert/update metadata item

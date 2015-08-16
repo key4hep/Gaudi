@@ -498,7 +498,7 @@ namespace Gaudi {
 } // namespace Gaudi
 
 // Initialization of static data member
-Gaudi::Utils::SignalMonitorSvc* Gaudi::Utils::SignalMonitorSvc::s_instance = 0;
+Gaudi::Utils::SignalMonitorSvc* Gaudi::Utils::SignalMonitorSvc::s_instance = nullptr;
 
 // ========================================================================
 // Instantiation of a static factory class used by clients to create instances of this service
