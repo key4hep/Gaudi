@@ -97,7 +97,7 @@ namespace Gaudi
   public:
     // ========================================================================
     /// default constructor
-    Range_() : m_base( iterator() , iterator() ) {}
+    Range_()  = default;
     /** Constructor
      *  @param ibegin  iterator to begin of the sequence
      *  @param iend    iterator to end   of the sequence
