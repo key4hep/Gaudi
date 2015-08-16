@@ -36,6 +36,18 @@ public:
   inline SmartIF(const SmartIF& rhs): m_interface(rhs.get()) {
     if (m_interface) m_interface->addRef();
   }
+  /// Move constructor
+  inline SmartIF(SmartIF&& rhs) : m_interface( rhs.m_interface ){
+     rhs.m_interface = nullptr;
+  }
+  /// Move assignement
+  inline SmartIF& operator=(SmartIF&& rhs) {
+    if (m_interface) m_interface->release();
+    m_interface = rhs.m_interface;
+    rhs.m_interface = nullptr;
+    return *this;
+  }
+
   /// Constructor from another SmartIF, with a different type.
   /// @note it cannot replace the copy constructor.
   template <class T>
@@ -48,6 +60,9 @@ public:
   // ---------- Boolean and comparison methods ----------
   /// Allow for check if smart pointer is valid.
   inline bool isValid() const { return m_interface != nullptr; }
+
+  inline explicit operator bool() const { return isValid(); }
+  inline bool operator!() const { return !isValid(); }
 
   // ---------- Pointer access methods ----------
   /// Automatic conversion to pointer.
@@ -73,12 +88,8 @@ public:
   inline void reset(TYPE* ptr = nullptr) {
     if (ptr == m_interface) return;
     if (m_interface) m_interface->release();
-    if (ptr) {
-      m_interface = ptr;
-      m_interface->addRef();
-    } else {
-      m_interface = nullptr;
-    }
+    m_interface = ptr;
+    if (m_interface) m_interface->addRef();
   }
   /// Set the internal pointer to the passed one disposing of the old one.
   /// Version for pointers of types inheriting from IInterface.
