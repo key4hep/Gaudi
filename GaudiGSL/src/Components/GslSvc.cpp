@@ -38,21 +38,12 @@ DECLARE_COMPONENT(GslSvc)
 GslSvc::GslSvc( const std::string& name ,
                 ISvcLocator*       svc  )
   : base_class ( name , svc )
-  , m_errorPolicy       ( "GSL" )
-  , m_handlersTypeNames ()
-  , m_handlers          ()
-  , m_ignore            ()
 {
   declareProperty( "ErrorPolicy" , m_errorPolicy       ) ;
   declareProperty( "Handlers"    , m_handlersTypeNames ) ;
   declareProperty( "IgnoreCodes" , m_ignore            ) ;
 }
 // ============================================================================
-
-// ============================================================================
-/// destructor
-// ============================================================================
-GslSvc::~GslSvc() {}
 // ============================================================================
 
 // ============================================================================
@@ -96,9 +87,9 @@ StatusCode GslSvc::initialize()
     }
   /// Prints the type of used handler
   /// get the handler
-  GslErrorHandler handler = gsl_set_error_handler( 0 );
+  GslErrorHandler handler = gsl_set_error_handler( nullptr );
   gsl_set_error_handler( handler );
-  if( 0 != handler )
+  if( handler )
     { log << MSG::VERBOSE
           << " GSL Error Handler is '"
           << System::typeinfoName( typeid(*handler) ) << "'"
@@ -113,28 +104,23 @@ StatusCode GslSvc::initialize()
         log << MSG::ERROR << " Could not locate Tool Service! " << endmsg;
         return StatusCode::FAILURE;
       }
-      for( Names::const_iterator it = m_handlersTypeNames.begin() ;
-           m_handlersTypeNames.end() != it ; ++it )
+      for( const auto& it : m_handlersTypeNames )
         {
-          std::string::const_iterator ipos =
-            std::find( it->begin() , it->end() , '/');
-          const std::string::size_type pos = ipos - it->begin() ;
-          IGslErrorHandler* eh = 0 ;
-          if( it->end() != ipos )
-            { sc = toolsvc->retrieveTool
-                ( std::string( *it , 0 , pos )       ,
-                  std::string( *it , pos + 1, it->length() ), eh , this ) ; }
-          else
-            { sc = toolsvc->retrieveTool
-                ( *it , std::string( *it , pos + 1, it->length() ) ,
-                  eh , this ) ; }
+          auto pos = it.find('/');
+          IGslErrorHandler* eh = nullptr ;
+          if( pos != std::string::npos ) { 
+              sc = toolsvc->retrieveTool
+                ( it.substr( 0 , pos ), it.substr( pos + 1 ), eh , this ) ; 
+          } else { 
+              sc = toolsvc->retrieveTool( it , it , eh , this ) ; 
+          }
           if( sc.isFailure() )
             { log << MSG::ERROR
-                  << " Could not retrieve tool '" << *it << "'"<< endmsg ;
+                  << " Could not retrieve tool '" << it << "'"<< endmsg ;
             return sc ; }
-          if( 0 == eh )
+          if( !eh )
             { log << MSG::ERROR
-                  << " Could not retrieve tool '" << *it << "'"<< endmsg ;
+                  << " Could not retrieve tool '" << it << "'"<< endmsg ;
             return StatusCode::FAILURE  ; }
           m_handlers.push_back( eh );
         }
@@ -157,7 +143,7 @@ StatusCode GslSvc::finalize()
   log << MSG::DEBUG << "==> Finalize" << endmsg;
 
   // deactivate the static accessor to the service
-  GaudiGSL::setGslSvc( 0 );
+  GaudiGSL::setGslSvc( nullptr );
 
   // finalize the base class
   return Service::finalize() ;
@@ -171,7 +157,7 @@ StatusCode GslSvc::finalize()
 // ============================================================================
 IGslSvc::GslErrorHandler GslSvc::handler ()    const
 {
-  GslErrorHandler hh = gsl_set_error_handler( 0 );
+  GslErrorHandler hh = gsl_set_error_handler( nullptr );
   gsl_set_error_handler( hh );
   return hh ;
 }
@@ -190,8 +176,8 @@ IGslSvc::GslErrorHandler GslSvc::setHandler
   {
     MsgStream log( msgSvc(), name() );
     log << MSG::DEBUG << " New GSL handler is set '" ;
-    if( 0 == handler ) { log << "NULL"                                  ; }
-    else               { log << System::typeinfoName( typeid(handler) ) ; }
+    if( !handler ) { log << "NULL"                                  ; }
+    else           { log << System::typeinfoName( typeid(handler) ) ; }
     log << "'" << endmsg ;
   }
   return handler ;
@@ -228,8 +214,8 @@ StatusCode GslSvc::handle
                                    m_ignore.end   () ,
                                    error.code        ) ) { return sc ; }
   // invoke all handlers
-  for( auto handler = m_handlers.cbegin() ;
-       sc.isSuccess() && m_handlers.cend() != handler ; ++handler )
+  for( auto handler = m_handlers.begin() ;
+       sc.isSuccess() && m_handlers.end() != handler ; ++handler )
     { sc = (*handler)->handle( error  ); }
   //
   return sc ;
@@ -239,6 +225,3 @@ StatusCode GslSvc::handle
 // ============================================================================
 // The END
 // ============================================================================
-
-
-

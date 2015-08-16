@@ -32,8 +32,7 @@ public:
    *  @see GslError
    *  @return status code
    */
-  virtual StatusCode handle
-  ( const GslError& error ) const ;
+  StatusCode handle( const GslError& error ) const override;
 
   /** Standard constructor
    *  @param type   tool type (?)
@@ -46,7 +45,7 @@ public:
     const IInterface*  parent );
 
   /// destructor (protected and virtual)
-  virtual ~GslErrorException( );
+  ~GslErrorException( ) override = default;
 
 private:
 

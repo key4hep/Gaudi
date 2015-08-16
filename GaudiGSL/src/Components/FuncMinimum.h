@@ -30,24 +30,24 @@ public:
    *  @see IFuncMinimum.h
    *  @return StatusCode
    */
-  virtual StatusCode minimum( const GenFunc& func  ,
-                              Arg&           arg   ) const;
+  StatusCode minimum( const GenFunc& func  ,
+                      Arg&           arg   ) const override;
 
   /** Find minimum of the function "GenFunc"
    *  @see IFuncMinimum.h
    *  @return StatusCode
    */
-  virtual StatusCode minimum( const GenFunc& func  ,
-                              Arg&           arg   ,
-                              Covariance&    covar ) const;
+  StatusCode minimum( const GenFunc& func  ,
+                      Arg&           arg   ,
+                      Covariance&    covar ) const override;
 
   /// Overriding initialize
-  virtual StatusCode initialize ();
-  virtual StatusCode finalize   ();
+  StatusCode initialize () override;
+  StatusCode finalize   () override;
 
-  virtual ~FuncMinimum( ); ///< Destructor
+  ~FuncMinimum( ) override = default; ///< Destructor
 
-  class FuncMinimumMisc
+  class FuncMinimumMisc final
   {
   public:
     /** standard constructor
@@ -55,8 +55,6 @@ public:
      */
     FuncMinimumMisc (const GenFunc& func ,
                      Arg&           arg  );
-    // destructor
-    ~FuncMinimumMisc () ;
 
   public:
     inline const Arg&       argument () const { return m_argum ;}
@@ -65,11 +63,11 @@ public:
     inline const Gradient&  gradient () const { return m_grad  ;}
   private:
     // default constructor is disabled
-    FuncMinimumMisc () ;
+    FuncMinimumMisc () = delete;
     // copy constructor is disabled
-    FuncMinimumMisc           ( const FuncMinimumMisc& );
+    FuncMinimumMisc           ( const FuncMinimumMisc& ) = delete;
     // assignment operator is disabled
-    FuncMinimumMisc& operator=( const FuncMinimumMisc& );
+    FuncMinimumMisc& operator=( const FuncMinimumMisc& ) = delete;
   private:
     Arg              m_argum ;
     const GenFunc*   m_eq    ;
@@ -90,20 +88,20 @@ public:
 private:
 
   /// default constructor is private
-  FuncMinimum();
+  FuncMinimum() = delete;
   /// copy constructor is private
-  FuncMinimum           ( const FuncMinimum& );
+  FuncMinimum           ( const FuncMinimum& ) = delete;
   /// assignment operator is
-  FuncMinimum& operator=( const FuncMinimum& );
+  FuncMinimum& operator=( const FuncMinimum& ) = delete;
 
 private:
 
-  std::string m_algType         ;
-  double      m_max_iter        ;
-  double      m_norm_gradient   ;
-  double      m_step_size       ;
-  double      m_tol             ;
-  const gsl_multimin_fdfminimizer_type* m_type ;
+  std::string m_algType         = "conjugate_fr";
+  double      m_max_iter        = 200;
+  double      m_norm_gradient   = 1.0e-10;
+  double      m_step_size       = 0.01;
+  double      m_tol             = 1e-10;
+  const gsl_multimin_fdfminimizer_type* m_type = nullptr;
 };
 
 // ============================================================================

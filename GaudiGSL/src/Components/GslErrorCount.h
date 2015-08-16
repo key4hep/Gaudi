@@ -29,15 +29,14 @@ public:
    *  @see GslError
    *  @return status code
    */
-  virtual StatusCode handle
-  ( const GslError& error ) const ;
+  StatusCode handle( const GslError& error ) const override ;
 
   /** standard finalization of Tool
    *  @see  AlgTool
    *  @see IAlgTool
    *  @return status code
    */
-  virtual StatusCode finalize   () ;
+  StatusCode finalize   () override ;
 
   /** Standard constructor
    *  @param type   tool type (?)
@@ -50,7 +49,7 @@ public:
     const IInterface*  parent );
 
   /// destructor (protected and virtual)
-  virtual ~GslErrorCount( );
+  ~GslErrorCount( ) override = default;
 
 private:
 
