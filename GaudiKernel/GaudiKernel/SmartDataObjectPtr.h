@@ -31,7 +31,7 @@ class DataObject;
 */
 class GAUDI_API SmartDataObjectPtr {
 public:
-  typedef DataObject* (* AccessFunction) (SmartDataObjectPtr* ptr);
+  using AccessFunction = DataObject*(*)(SmartDataObjectPtr* ptr);
   /// Helper class to configure smart pointer functionality
   class ObjectLoader    {
   public:
@@ -51,28 +51,21 @@ public:
       @param  pDir         Pointer to data directory
       @param  path         path to object relative to data directory
   */
-  SmartDataObjectPtr(AccessFunction access, IDataProviderSvc* pService, IRegistry* pDir, const std::string& path)
+  SmartDataObjectPtr(AccessFunction access, IDataProviderSvc* pService, IRegistry* pDir, std::string path)
     : m_dataProvider(pService),
       m_pRegistry(pDir),
-      m_status(StatusCode::SUCCESS,true),
-      m_path(path),
+      m_path(std::move(path)),
       m_accessFunc(access)
   {
   }
   /** Copy constructor: Construct an copy of a SmartDataStorePtr instance.
       @param  copy          Copy of Smart Pointer to object.
   */
-  SmartDataObjectPtr(const SmartDataObjectPtr& copy)
-    : m_dataProvider(copy.m_dataProvider),
-      m_pRegistry(copy.m_pRegistry),
-      m_status(copy.m_status),
-      m_path(copy.m_path),
-      m_accessFunc(copy.m_accessFunc)
-  {
-  }
+  SmartDataObjectPtr(const SmartDataObjectPtr& copy) = default;
+
   /// Standard Destructor
-  virtual ~SmartDataObjectPtr()  {
-  }
+  virtual ~SmartDataObjectPtr()  = default;
+
   /// Assignment operator
   virtual SmartDataObjectPtr& operator=(const SmartDataObjectPtr& copy);
 
@@ -102,7 +95,7 @@ public:
   }
 
   /// Access to potential errors during data accesses
-  StatusCode getLastError()   const   {
+  const StatusCode&  getLastError()   const   {
     return m_status;
   }
 
@@ -190,11 +183,11 @@ protected:
 
 protected:
   /// Pointer to contained object
-  mutable IDataProviderSvc* m_dataProvider;
+  mutable IDataProviderSvc* m_dataProvider = nullptr;
   /// Pointer to the data registry containing the object
-  mutable IRegistry*        m_pRegistry;
+  mutable IRegistry*        m_pRegistry = nullptr;
   /// Keep track of the last error
-  mutable StatusCode        m_status;
+  mutable StatusCode        m_status = { StatusCode::SUCCESS, true } ;
   /// Path to object
   std::string               m_path;
   /// Data access function
