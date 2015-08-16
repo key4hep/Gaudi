@@ -32,17 +32,26 @@ public:
   };
 
   /// Constructor.
-  StatusCode():
-    d_code(SUCCESS), m_checked(false), m_severity() {}
-  StatusCode( unsigned long code, const IssueSeverity& sev ):
-    d_code(code),m_checked(false), m_severity() {
-    try { // ensure that we do not throw even if we cannot copy the severity
-      m_severity = std::make_shared<IssueSeverity>(sev);
+  StatusCode() = default;
+
+  StatusCode( unsigned long code, IssueSeverity&& sev ):
+    d_code(code) {
+    try { // ensure that we do not throw even if we cannot move the severity
+      m_severity = std::make_shared<const IssueSeverity>(std::move(sev));
     }
     catch (...) {}
   }
+
+  StatusCode( IssueSeverity&& is) : 
+        StatusCode( is.getLevel() == IssueSeverity::RECOVERABLE ? 
+                        StatusCode::RECOVERABLE : 
+                        ( is.getLevel() < IssueSeverity::ERROR ? 
+                            StatusCode::SUCCESS : 
+                            StatusCode::FAILURE )
+                   , std::move(is) )  { }
+
   StatusCode( unsigned long code, bool checked = false ):
-    d_code(code),m_checked(checked), m_severity() {}
+    d_code(code),m_checked(checked)  {}
 
   StatusCode( const StatusCode& rhs ):
     d_code(rhs.d_code), m_checked(rhs.m_checked),
@@ -166,9 +175,9 @@ public:
 
 protected:
   /// The status code.
-  unsigned long   d_code;      ///< The status code
-  mutable bool    m_checked;   ///< If the Status code has been checked
-  typedef std::shared_ptr<IssueSeverity> SeverityPtr;
+  unsigned long   d_code = SUCCESS;      ///< The status code
+  mutable bool    m_checked = false;   ///< If the Status code has been checked
+  typedef std::shared_ptr<const IssueSeverity> SeverityPtr;
   SeverityPtr     m_severity;  ///< Pointer to a IssueSeverity
 
   static bool     s_checking;  ///< Global flag to control if StatusCode need to be checked
