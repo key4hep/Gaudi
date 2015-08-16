@@ -88,8 +88,7 @@ StatusCode DetDataSvc::setupDetectorDescription() {
                                                     iargs,
                                                     rootAddr);
       if( sc.isSuccess() ) {
-        std::string dbrName = "/" + m_detDbRootName;
-        sc = i_setRoot( dbrName, rootAddr );
+        sc = i_setRoot( "/" + m_detDbRootName, rootAddr );
         if( sc.isFailure() ) {
           error() << "Unable to set detector data store root" << endmsg;
           return sc;
@@ -166,8 +165,7 @@ StatusCode DetDataSvc::clearStore()   {
                                                   rootAddr);
     // Set detector data store root
     if( sc.isSuccess() ) {
-      std::string dbrName = "/" + m_detDbRootName;
-      sc = i_setRoot( dbrName, rootAddr );
+      sc = i_setRoot( "/" + m_detDbRootName, rootAddr );
       if( sc.isFailure() ) {
         error() << "Unable to set detector data store root" << endmsg;
       }
@@ -225,7 +223,7 @@ StatusCode DetDataSvc::updateObject( DataObject* toUpdate ) {
   DEBMSG << "Method updateObject starting" << endmsg;
 
   // Check that object to update exists
-  if ( 0 == toUpdate ) {
+  if ( !toUpdate ) {
     error() << "There is no DataObject to update" << endmsg;
     return INVALID_OBJECT;
   }
@@ -251,10 +249,9 @@ StatusCode DetDataSvc::updateObject( DataObject* toUpdate ) {
   if ( condition->isValid( eventTime() ) ) {
     DEBMSG << "DataObject is valid: no need to update" << endmsg;
     return StatusCode::SUCCESS;
-  } else {
-    DEBMSG << "DataObject is invalid: update it" << endmsg;
-  }
+  } 
 
+  DEBMSG << "DataObject is invalid: update it" << endmsg;
   // TODO: before loading updated object, update HERE its parent in data store
 
   // Now delegate update to the conversion service by calling the base class

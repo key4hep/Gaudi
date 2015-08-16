@@ -79,19 +79,19 @@ public:
 private:
 
   /// Detector Data Persistency Storage type
-  int              m_detStorageType;
+  int              m_detStorageType = XML_StorageType;
 
   /// Location of detector Db (filename,URL)
-  std::string      m_detDbLocation;
+  std::string      m_detDbLocation = "empty";
 
   /// Name of the root node of the detector
-  std::string      m_detDbRootName;
+  std::string      m_detDbRootName = "dd";
 
   /// Name of the persistency service.
-  std::string      m_persistencySvcName;
+  std::string      m_persistencySvcName = "DetectorPersistencySvc";
 
   /// Flag to control if the persistency is required
-  bool             m_usePersistency;
+  bool             m_usePersistency = false;
 
   /// Current event time
   Gaudi::Time        m_eventTime = 0;
