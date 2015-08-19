@@ -7,6 +7,11 @@
 
 #include <string>
 #include <vector>
+#ifdef __linux
+#include <unistd.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#endif
 
 struct procInfo
 {
@@ -43,7 +48,6 @@ public:
 
 private:
   ProcStats();
-  ~ProcStats();
 
   struct cleanup
   {
@@ -53,7 +57,34 @@ private:
 
   friend struct cleanup;
 
-  int fd;
+  class unique_fd {
+      int m_fd;
+      unique_fd(const unique_fd&) = delete;
+      unique_fd& operator=(const unique_fd&) = delete;
+  public:
+      unique_fd(int fd=-1) : m_fd(fd) {}
+      unique_fd(unique_fd&& other) { m_fd = other.m_fd; other.m_fd = -1; }
+      ~unique_fd() { if (m_fd != -1) ::close(m_fd); }
+
+      explicit operator bool() const { return m_fd != -1; }
+      template <typename... Args>
+      unique_fd& open(Args&& ... args) { m_fd = ::open(std::forward<Args>(args)...); return *this; }
+#define unique_fd_forward(fun) template <typename...Args> auto fun(Args&&... args) const \
+                               -> decltype(::fun(m_fd,std::forward<Args>(args)...)) \
+                               { return ::fun(m_fd,std::forward<Args>(args)...); }
+      unique_fd_forward(lseek)
+      unique_fd_forward(read)
+      unique_fd_forward(write)
+      unique_fd_forward(fcntl)
+      unique_fd_forward(fsync)
+      unique_fd_forward(fchown)
+      unique_fd_forward(stat)
+#undef unique_fd_forward
+      int close() { auto r = ::close(m_fd); m_fd = -1; return r; }
+  };
+
+
+  unique_fd fd;
   double pg_size;
   procInfo curr;
   std::string fname;

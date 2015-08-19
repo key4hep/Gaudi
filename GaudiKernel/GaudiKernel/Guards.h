@@ -54,9 +54,9 @@ namespace Gaudi
    *
    *    // execute IAlgorithm::initialize within "try{}catch(..)" clause:
    *    Gaudi::Guards::ExceptionGuard guard
-   *        ( this                                  , ///< OBJECT
-   *          std::mem_fun(&IAlgorithm::initialize) , ///< FUNCTOR
-   *          log                                   , ///< STREAM
+   *        ( this                                 , ///< OBJECT
+   *          std::mem_fn(&IAlgorithm::initialize) , ///< FUNCTOR
+   *          log                                  , ///< STREAM
    *          m_exceptionSvc ) ; ///< (optional) Exception Service
    *
    *    return guard ;  /// return the result of functor evaluation
@@ -86,9 +86,9 @@ namespace Gaudi
      *  // create the guard object and execute this->initialize()
      *  // within the  standard "try"-clause:
      *  Gaudi::Guards::Guard guard
-     *          ( this                                ,   ///< OBJECT
-     *            std::mem_fun(&IAuditor::initialize) ,   ///< FUNCTOR
-     *            log                                 ) ; ///< stream
+     *          ( this                               ,   ///< OBJECT
+     *            std::mem_fn(&IAuditor::initialize) ,   ///< FUNCTOR
+     *            log                                ) ; ///< stream
      *
      *  // extract the status code"
      *  StatusCode sc = guard.code() ;
@@ -117,32 +117,31 @@ namespace Gaudi
         FUNCTION       fun     ,
         MsgStream&     log     ,
         IExceptionSvc* svc = 0 )
-        : m_sc  ( StatusCode::FAILURE )
       {
         try
         {
           // execute the functor:
           m_sc = fun ( obj ) ;  ///< execute the functor
           // in the case of error try use Exception Service
-          if ( 0 != svc && m_sc.isFailure() ) { m_sc = svc->handleErr ( *obj , m_sc ) ; }
+          if ( svc && m_sc.isFailure() ) { m_sc = svc->handleErr ( *obj , m_sc ) ; }
         }
         catch ( const GaudiException& e )
         {
           // Use the local handler and then (if possible) the Exception Service
           handle ( e  , log ) ;
-          if ( 0 != svc ) { m_sc = svc -> handle ( *obj , e ) ; }
+          if ( svc ) { m_sc = svc -> handle ( *obj , e ) ; }
         }
         catch ( const std::exception& e )
         {
           // Use the local handler and then (if possible) the Exception Service
           handle ( e  , log ) ;
-          if ( 0 != svc ) { m_sc = svc -> handle ( *obj , e ) ; }
+          if ( svc ) { m_sc = svc -> handle ( *obj , e ) ; }
         }
         catch ( ...  )
         {
           // Use the local handler and then (if possible) the Exception Service
           handle (      log ) ;
-          if ( 0 != svc ) { m_sc = svc -> handle ( *obj     ) ; }
+          if ( svc ) { m_sc = svc -> handle ( *obj     ) ; }
         }
       }
       /// destructor
@@ -166,7 +165,7 @@ namespace Gaudi
       void handle (                           MsgStream& s ) ;
     private:
       // status code: result of the function evaluation
-      StatusCode m_sc    ; ///< status code : result of function evaluation
+      StatusCode m_sc = StatusCode::FAILURE   ; ///< status code : result of function evaluation
     } ;
     // ========================================================================
     /** @class AuditorGuard Guards.h GaudiKernel/Guards.h

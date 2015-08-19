@@ -41,10 +41,7 @@ HistoryObj::convert_string(const std::string& input_string){
 
 void 
 HistoryObj::indent(std::ostream& ost, int i) const {
-  while (i > 0) {
-    ost << " ";
-    --i;
-  }
+  while (i > 0) { ost << " "; --i; }
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -62,8 +59,6 @@ HistoryObj::classID() {
 // Output stream.
 
 std::ostream& operator<<(std::ostream& lhs, const HistoryObj& rhs) {
-
   rhs.dump(lhs,false);
-
   return lhs;
 }

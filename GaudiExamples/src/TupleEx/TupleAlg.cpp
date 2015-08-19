@@ -27,6 +27,15 @@
 namespace CLHEP { }
 using namespace CLHEP;
 
+// CLHEP is just #()$)*#)*@#)$@ Not even the git master (as of Aug 2015) has HepVector::begin and HepVector::end defined!!!
+// fortunately, ADL comes to the rescue... 
+namespace CLHEP {
+    class HepVector;
+    double* begin(CLHEP::HepVector& v) { return &v[0]; }
+    const double* begin(const CLHEP::HepVector& v) { return &v[0]; }
+}
+
+
 // ============================================================================
 /** @class TupleAlg
  *

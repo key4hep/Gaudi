@@ -41,7 +41,7 @@ public:
    *  Returns a pointer to the standard message service.
    */
   inline SmartIF<IMessageSvc>& msgSvc() const {
-    if (!m_msgsvc.get()) {
+    if (!m_msgsvc) {
       // Get default implementation of the message service.
       m_msgsvc = this->serviceLocator();
     }
@@ -61,9 +61,9 @@ public:
   /// Return an uninitialized MsgStream.
   inline MsgStream& msgStream() const {
     if (UNLIKELY((!m_msgStream) || (!m_streamWithService))) {
-      SmartIF<IMessageSvc>& ms = msgSvc();
+      auto& ms = msgSvc();
       m_msgStream.reset(new MsgStream(ms, this->name()));
-      m_streamWithService = ( ms.get() != nullptr );
+      m_streamWithService = ms.isValid();
     }
     return *m_msgStream;
   }

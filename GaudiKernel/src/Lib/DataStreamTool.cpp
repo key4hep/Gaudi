@@ -5,7 +5,6 @@
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/Incident.h"
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/IIncidentSvc.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/ISvcManager.h"
 #include "GaudiKernel/IAddressCreator.h"
@@ -31,18 +30,7 @@ DataStreamTool::DataStreamTool( const std::string& type,
   : base_class ( type, name , parent )
 {
   //declareInterface<IDataStreamTool>(this);
-
-  m_incidentSvc       = 0;
-  m_streamCount       = 0;
-  m_streamID          = 0;
-
 }
-//=============================================================================
-// Destructor
-//=============================================================================
-DataStreamTool::~DataStreamTool() {
-}
-
 //=============================================================================
 StatusCode DataStreamTool::initialize() {
 

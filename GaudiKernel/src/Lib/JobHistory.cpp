@@ -70,8 +70,7 @@ JobHistory::JobHistory(const std::string& rel, const std::string& os,
 
 // Destructor.
 
-JobHistory::~JobHistory() {
-}
+JobHistory::~JobHistory() = default;
 
 const CLID& 
 JobHistory::classID() {
@@ -102,7 +101,7 @@ JobHistory::dump(std::ostream& ost, const bool isXML, int /*ind*/) const {
     ost << "Job start time: " << start_time() << endl << endl;
     ost << "Properties: [" << endl;;
     for ( const auto& ipprop : propertyPairs() ) {
-      std::string client = ipprop.first;
+      const std::string& client = ipprop.first;
       const Property* prop = ipprop.second;
       ost << client << ":  ";
       prop->fillStream(ost);
@@ -116,8 +115,6 @@ JobHistory::dump(std::ostream& ost, const bool isXML, int /*ind*/) const {
 
 }
 
-
-
 //**********************************************************************
 // Free functions.
 //**********************************************************************
@@ -125,9 +122,7 @@ JobHistory::dump(std::ostream& ost, const bool isXML, int /*ind*/) const {
 // Output stream.
 
 ostream& operator<<(ostream& lhs, const JobHistory& rhs) {
-
   rhs.dump(lhs,false);
-
   return lhs;
 }
 

@@ -27,16 +27,14 @@ struct GAUDI_API extends1: public BASE, virtual public extend_interfaces1<I1> {
     interfaceMatch<base_class> matcher(this,tid,ptr);
     mpl::for_each<interfaces>(matcher);
 #endif
-    if (!ptr) {
-      ptr = BASE::i_cast(tid);
-    }
+    if (!ptr) ptr = BASE::i_cast(tid);
     return ptr;
   }
 
   /// Implementation of IInterface::queryInterface.
   StatusCode queryInterface(const InterfaceID &ti, void** pp) override {
     if (!pp) return StatusCode::FAILURE;
-    *pp = 0;
+    *pp = nullptr;
 #ifndef __GCCXML__
     interfaceMatch<base_class> matcher(this,ti,*pp);
     mpl::for_each<interfaces>(matcher);
@@ -86,16 +84,14 @@ struct GAUDI_API extends2: public BASE, virtual public extend_interfaces2<I1,I2>
     interfaceMatch<base_class> matcher(this,tid,ptr);
     mpl::for_each<interfaces>(matcher);
 #endif
-    if (!ptr) {
-      ptr = BASE::i_cast(tid);
-    }
+    if (!ptr) ptr = BASE::i_cast(tid);
     return ptr;
   }
 
   /// Implementation of IInterface::queryInterface.
   StatusCode queryInterface(const InterfaceID &ti, void** pp) override {
     if (!pp) return StatusCode::FAILURE;
-    *pp = 0;
+    *pp = nullptr;
 #ifndef __GCCXML__
     interfaceMatch<base_class> matcher(this,ti,*pp);
     mpl::for_each<interfaces>(matcher);
@@ -145,16 +141,14 @@ struct GAUDI_API extends3: public BASE, virtual public extend_interfaces3<I1,I2,
     interfaceMatch<base_class> matcher(this,tid,ptr);
     mpl::for_each<interfaces>(matcher);
 #endif
-    if (!ptr) {
-      ptr = BASE::i_cast(tid);
-    }
+    if (!ptr) ptr = BASE::i_cast(tid);
     return ptr;
   }
 
   /// Implementation of IInterface::queryInterface.
   StatusCode queryInterface(const InterfaceID &ti, void** pp) override {
     if (!pp) return StatusCode::FAILURE;
-    *pp = 0;
+    *pp = nullptr;
 #ifndef __GCCXML__
     interfaceMatch<base_class> matcher(this,ti,*pp);
     mpl::for_each<interfaces>(matcher);

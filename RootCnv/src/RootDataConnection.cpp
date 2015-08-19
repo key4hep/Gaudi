@@ -166,7 +166,7 @@ void RootConnectionSetup::setIncidentSvc(IIncidentSvc* s) {
 
 /// Standard constructor
 RootDataConnection::RootDataConnection(const IInterface* owner, CSTR fname, RootConnectionSetup* setup)
-  : IDataConnection(owner,fname), m_setup(setup), m_statistics(0), m_tool(0)
+  : IDataConnection(owner,fname), m_setup(setup)
 { //               01234567890123456789012345678901234567890
   // Check if FID: A82A3BD8-7ECB-DC11-8DC0-000423D950B0
   if ( fname.length() == 36 && fname[8]=='-'&&fname[13]=='-'&&fname[18]=='-'&&fname[23]=='-' ) {
@@ -174,15 +174,13 @@ RootDataConnection::RootDataConnection(const IInterface* owner, CSTR fname, Root
   }
   m_setup->addRef();
   m_age  = 0;
-  m_file = nullptr;
-  m_refs = nullptr;
+  m_file.reset();
   addClient(owner);
 }
 
 /// Standard destructor
 RootDataConnection::~RootDataConnection()   {
   m_setup->release();
-  releasePtr(m_tool);
 }
 
 /// Add new client to this data source
@@ -214,7 +212,7 @@ void RootDataConnection::saveStatistics(CSTR statisticsFile) {
     m_statistics->Print();
     if ( !statisticsFile.empty() )
       m_statistics->SaveAs(statisticsFile.c_str());
-    deletePtr(m_statistics);
+    m_statistics.reset();
   }
 }
 
@@ -223,7 +221,7 @@ void RootDataConnection::enableStatistics(CSTR section) {
   if ( m_statistics ) {
     TTree* t=getSection(section,false);
     if ( t ) {
-      m_statistics = new TTreePerfStats((section+"_ioperf").c_str(),t);
+      m_statistics.reset( new TTreePerfStats((section+"_ioperf").c_str(),t) );
       return;
     }
     msgSvc() << MSG::WARNING << "Failed to enable perfstats for tree:" << section << endmsg;
@@ -234,67 +232,65 @@ void RootDataConnection::enableStatistics(CSTR section) {
 
 /// Create file access tool to encapsulate POOL compatibiliy
 RootDataConnection::Tool* RootDataConnection::makeTool()   {
-  releasePtr(m_tool);
   if ( !m_refs ) m_refs = (TTree*)m_file->Get("Refs");
   if ( m_refs )
-    m_tool = new RootTool(this);
+    m_tool.reset( new RootTool(this) );
 #ifdef __POOL_COMPATIBILITY
   else if ( m_file->Get("##Links") != 0 )
-    m_tool = new PoolTool(this);
+    m_tool.reset(new PoolTool(this));
 #endif
-  return m_tool;
+  else
+    m_tool.reset();
+  return m_tool.get();
 }
 
 /// Connect the file in READ mode
 StatusCode RootDataConnection::connectRead()  {
-  m_file = TFile::Open(m_pfn.c_str());
-  if ( m_file && !m_file->IsZombie() )   {
-    StatusCode sc = StatusCode::FAILURE;
-    msgSvc() << MSG::DEBUG << "Opened file " << m_pfn << " in mode READ. [" << m_fid << "]" << endmsg << MSG::DEBUG;
-    if ( msgSvc().isActive() ) m_file->ls();
-    msgSvc() << MSG::VERBOSE;
-    if ( msgSvc().isActive() ) m_file->Print();
-    if ( makeTool() )   {
-      sc = m_tool->readRefs();
-      sc.ignore();
+  m_file.reset( TFile::Open(m_pfn.c_str()) );
+  if ( !m_file || m_file->IsZombie() ) { 
+      m_file.reset(); 
+      return StatusCode::FAILURE; 
+  }
+  StatusCode sc = StatusCode::FAILURE;
+  msgSvc() << MSG::DEBUG << "Opened file " << m_pfn << " in mode READ. [" << m_fid << "]" << endmsg << MSG::DEBUG;
+  if ( msgSvc().isActive() ) m_file->ls();
+  msgSvc() << MSG::VERBOSE;
+  if ( msgSvc().isActive() ) m_file->Print();
+  if ( makeTool() )   {
+    sc = m_tool->readRefs();
+    sc.ignore();
 #if ROOT_VERSION_CODE >= ROOT_VERSION(5,33,0)
-      if ( sc.getCode() == ROOT_READ_ERROR ) {
-        IIncidentSvc* inc = m_setup->incidentSvc();
-        if ( inc ) {
-          inc->fireIncident(Incident(pfn(),IncidentType::CorruptedInputFile));
-        }
+    if ( sc.getCode() == ROOT_READ_ERROR ) {
+      IIncidentSvc* inc = m_setup->incidentSvc();
+      if ( inc ) {
+        inc->fireIncident(Incident(pfn(),IncidentType::CorruptedInputFile));
       }
+    }
 #endif
-    }
-    if ( sc.isSuccess() ) {
-      bool need_fid = m_fid == m_pfn;
-      string fid = m_fid;
-      m_mergeFIDs.clear();
-      for(size_t i=0, n=m_params.size(); i<n; ++i) {
-        if ( m_params[i].first == "FID" )  {
-          m_mergeFIDs.push_back(m_params[i].second);
-          if ( m_params[i].second != m_fid )    {
-            msgSvc() << MSG::DEBUG << "Check FID param:" << m_params[i].second << endmsg;
-            //if ( m_fid == m_pfn ) {
-            m_fid = m_params[i].second;
-            //}
-          }
-        }
+  }
+  if ( !sc.isSuccess() ) return sc;
+  bool need_fid = m_fid == m_pfn;
+  string fid = m_fid;
+  m_mergeFIDs.clear();
+  for(size_t i=0, n=m_params.size(); i<n; ++i) {
+    if ( m_params[i].first == "FID" )  {
+      m_mergeFIDs.push_back(m_params[i].second);
+      if ( m_params[i].second != m_fid )    {
+        msgSvc() << MSG::DEBUG << "Check FID param:" << m_params[i].second << endmsg;
+        //if ( m_fid == m_pfn ) {
+        m_fid = m_params[i].second;
+        //}
       }
-      if ( !need_fid && fid != m_fid ) {
-        msgSvc() << MSG::ERROR << "FID mismatch:" << fid << "(Catalog) != " << m_fid << "(file)" << endmsg
-          << "for PFN:" << m_pfn << endmsg;
-        return StatusCode::FAILURE;
-      }
-      msgSvc() << MSG::DEBUG << "Using FID " << m_fid << " from params table...." << endmsg
-        << "for PFN:" << m_pfn << endmsg;
-      return sc;
     }
   }
-  else if ( m_file ) {
-    deletePtr(m_file);
+  if ( !need_fid && fid != m_fid ) {
+    msgSvc() << MSG::ERROR << "FID mismatch:" << fid << "(Catalog) != " << m_fid << "(file)" << endmsg
+      << "for PFN:" << m_pfn << endmsg;
+    return StatusCode::FAILURE;
   }
-  return StatusCode::FAILURE;
+  msgSvc() << MSG::DEBUG << "Using FID " << m_fid << " from params table...." << endmsg
+    << "for PFN:" << m_pfn << endmsg;
+  return sc;
 }
 
 /// Open data stream in write mode
@@ -304,7 +300,7 @@ StatusCode RootDataConnection::connectWrite(IoType typ)  {
   switch(typ)  {
   case CREATE:
     resetAge();
-    m_file = TFile::Open(m_pfn.c_str(),"CREATE","Root event data",compress);
+    m_file.reset(TFile::Open(m_pfn.c_str(),"CREATE","Root event data",compress));
     m_refs = new TTree("Refs","Root reference data");
     msgSvc() << "Opened file " << m_pfn << " in mode CREATE. [" << m_fid << "]" << endmsg;
     m_params.emplace_back("PFN",m_pfn);
@@ -315,7 +311,7 @@ StatusCode RootDataConnection::connectWrite(IoType typ)  {
     break;
   case RECREATE:
     resetAge();
-    m_file = TFile::Open(m_pfn.c_str(),"RECREATE","Root event data",compress);
+    m_file.reset(TFile::Open(m_pfn.c_str(),"RECREATE","Root event data",compress));
     msgSvc() << "Opened file " << m_pfn << " in mode RECREATE. [" << m_fid << "]" << endmsg;
     m_refs = new TTree("Refs","Root reference data");
     m_params.emplace_back("PFN",m_pfn);
@@ -326,7 +322,7 @@ StatusCode RootDataConnection::connectWrite(IoType typ)  {
     break;
   case UPDATE:
     resetAge();
-    m_file = TFile::Open(m_pfn.c_str(),"UPDATE","Root event data",compress);
+    m_file.reset(TFile::Open(m_pfn.c_str(),"UPDATE","Root event data",compress));
     msgSvc() << "Opened file " << m_pfn << " in mode UPDATE. [" << m_fid << "]" << endmsg;
     if ( m_file && !m_file->IsZombie() )  {
       if ( makeTool() )   {
@@ -342,7 +338,7 @@ StatusCode RootDataConnection::connectWrite(IoType typ)  {
         }
         return sc;
       }
-      TDirectory::TContext ctxt(m_file);
+      TDirectory::TContext ctxt(m_file.get());
       m_refs = new TTree("Refs","Root reference data");
       makeTool();
       return StatusCode::SUCCESS;
@@ -350,7 +346,7 @@ StatusCode RootDataConnection::connectWrite(IoType typ)  {
     break;
   default:
     m_refs = nullptr;
-    m_file = nullptr;
+    m_file.reset();
     return StatusCode::FAILURE;
   }
   return m_file ? StatusCode::SUCCESS : StatusCode::FAILURE ;
@@ -362,7 +358,7 @@ StatusCode RootDataConnection::disconnect()    {
     if ( !m_file->IsZombie() )   {
       if ( m_file->IsWritable() ) {
         msgSvc() << MSG::DEBUG;
-        TDirectory::TContext ctxt(m_file);
+        TDirectory::TContext ctxt(m_file.get());
         if ( m_refs ) {
           if ( !m_tool->saveRefs().isSuccess() ) badWriteError("Saving References");
           if ( m_refs->Write() < 0 ) badWriteError("Write Reference branch");
@@ -382,8 +378,8 @@ StatusCode RootDataConnection::disconnect()    {
       m_file->Close();
     }
     msgSvc() << MSG::DEBUG << "Disconnected file " << m_pfn << " " << m_file->GetName() << endmsg;
-    deletePtr(m_file);
-    releasePtr(m_tool);
+    m_file.reset();
+    m_tool.reset();
   }
   return StatusCode::SUCCESS;
 }
@@ -394,7 +390,7 @@ TTree* RootDataConnection::getSection(CSTR section, bool create) {
   if ( !t ) {
     t = (TTree*)m_file->Get(section.c_str());
     if ( !t && create ) {
-      TDirectory::TContext ctxt(m_file);
+      TDirectory::TContext ctxt(m_file.get());
       t = new TTree(section.c_str(),"Root data for Gaudi");
     }
     if ( t ) {

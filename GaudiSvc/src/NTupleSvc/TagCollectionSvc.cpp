@@ -48,34 +48,19 @@ TagCollectionSvc::TagCollectionSvc(const std::string& name, ISvcLocator* svc)
 {
 }
 
-/// Standard Destructor
-TagCollectionSvc::~TagCollectionSvc()   {
-}
-
-/// Initialize the service.
-StatusCode TagCollectionSvc::initialize()     {
-  StatusCode status = NTupleSvc::initialize();
-  return status;
-}
-
-/// Finalize the service.
-StatusCode TagCollectionSvc::finalize()     {
-  StatusCode status = NTupleSvc::finalize();
-  return status;
-}
 
 /// Add file to list I/O list
 StatusCode TagCollectionSvc::connect(const std::string& ident, std::string& logname)    {
   MsgStream log ( msgSvc(), name() );
-  DataObject* pO = 0;
+  DataObject* pO = nullptr;
   StatusCode status = findObject(m_rootName, pO);
   if ( status.isSuccess() )   {
     status = INVALID_ROOT;
-    if ( 0 != pO->registry() )   {
+    if ( pO->registry() )   {
       char typ=0;
       std::vector<Prop> props;
       long loc = ident.find(" ");
-      std::string filename, auth, svc = "DbCnvSvc";
+      std::string filename,  svc = "DbCnvSvc";
       logname = ident.substr(0,loc);
       using Parser = Gaudi::Utils::AttribStringParser;
       // we assume that there is always a " "
@@ -139,12 +124,12 @@ StatusCode TagCollectionSvc::connect(const std::string& ident, std::string& logn
         }
       }
       if ( 0 != typ )    {
-        IConversionSvc* pSvc = 0;
+        IConversionSvc* pSvc = nullptr;
         status = createService(name()+'.'+logname, svc, props, pSvc);
-        if ( status.isSuccess() )   {
+        if ( status.isSuccess() ) {
           status = attachTuple(filename,logname,typ,pSvc->repSvcType());
           if ( status.isSuccess() )    {
-            m_connections.insert(Connections::value_type(m_rootName+'/'+logname,Connection(pSvc)));
+            m_connections.emplace(m_rootName+'/'+logname,Connection(pSvc));
             return StatusCode::SUCCESS;
           }
         }
@@ -174,22 +159,20 @@ StatusCode TagCollectionSvc::createService( const std::string& nam,
         SmartIF<IProperty> iprop(isvc);
         status = NO_INTERFACE;
         if ( iprop.isValid( ) )    {
-          for ( std::vector<Prop>::const_iterator j = props.begin(); j != props.end(); j++)   {
-            iprop->setProperty(StringProperty((*j).first, (*j).second)).ignore();
+          for ( const auto& p : props ) { 
+            iprop->setProperty(p.first, p.second).ignore();
           }
           // NTupleSvc has to directly create a ConversionSvc to manage it directly.
           status = isvc->sysInitialize();
-          if ( status.isSuccess() )   {
+          if ( status.isSuccess() ) {
             status = pSvc->setDataProvider(this);
-            if ( status.isSuccess() )   {
-              return status;
-            }
+            if ( status.isSuccess() ) return status;
           }
         }
         pSvc->release();
       }
     }
   }
-  pSvc = 0;
+  pSvc = nullptr;
   return status;
 }

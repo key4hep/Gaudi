@@ -73,11 +73,11 @@ StatusCode Converter::initialize()    {
 /// Finalize the converter
 StatusCode Converter::finalize() {
   // release services
-  m_messageSvc = 0;
-  m_dataManager = 0;
-  m_dataProvider = 0;
-  m_conversionSvc = 0;
-  m_addressCreator = 0;
+  m_messageSvc = nullptr;
+  m_dataManager = nullptr;
+  m_dataProvider = nullptr;
+  m_conversionSvc = nullptr;
+  m_addressCreator = nullptr;
   return StatusCode::SUCCESS;
 }
 
@@ -147,10 +147,6 @@ Converter::Converter(long storage_type, const CLID& class_type, ISvcLocator* svc
   m_classType(class_type),
   m_svcLocator(svc)
 {
-}
-
-/// Standard Destructor
-Converter::~Converter() {
 }
 
 StatusCode

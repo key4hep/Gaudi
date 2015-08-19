@@ -83,7 +83,7 @@ inline bool AIDA::Annotation::addItem( const std::string & key,
 {
   if ( m_identifiers.find( key ) != m_identifiers.end() ) return false;
   m_annotationItems.emplace_back( key, value, sticky );
-  m_identifiers.insert( { key, m_annotationItems.size() - 1 } );
+  m_identifiers.emplace( key, m_annotationItems.size() - 1 );
   return true;
 }
 
@@ -105,7 +105,7 @@ inline bool AIDA::Annotation::removeItem( const std::string & key )  {
     if ( iItem == indexToBeRemoved ) continue;
     const auto& item = m_annotationItems[ iItem ];
     annotationItemsNew.emplace_back( item.m_key, item.m_value, item.m_sticky );
-    m_identifiers.insert( { item.m_key, annotationItemsNew.size() - 1 } );
+    m_identifiers.emplace( item.m_key, annotationItemsNew.size() - 1 );
   }
   m_annotationItems = std::move(annotationItemsNew);
   return true;

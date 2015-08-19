@@ -275,7 +275,7 @@ StatusCode PersistencySvc::addCnvService(IConversionSvc* servc)    {
     status = servc->queryInterface(IService::interfaceID(), pp_cast<void>(&isvc));
     if ( status.isSuccess() )    {
       if ( cnv_svc )   removeCnvService (type).ignore();
-      auto p = m_cnvServices.insert( { type, ServiceEntry(type, isvc, servc, icr) } );
+      auto p = m_cnvServices.emplace( type, ServiceEntry(type, isvc, servc, icr) );
       if( !p.second )    {
         info() << "Cannot add Conversion service of type " << isvc->name() << endmsg;
         isvc->release();

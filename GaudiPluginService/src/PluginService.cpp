@@ -211,14 +211,14 @@ namespace Gaudi { namespace PluginService {
                   }
                   const std::string lib(line, 0, pos);
                   const std::string fact(line, pos+1);
-                  m_factories.insert(std::make_pair(fact, FactoryInfo(lib)));
+                  m_factories.emplace(fact, FactoryInfo(lib));
 #ifdef GAUDI_REFLEX_COMPONENT_ALIASES
                   // add an alias for the factory using the Reflex convention
                   std::string old_name = old_style_name(fact);
                   if (fact != old_name) {
                     FactoryInfo old_info(lib);
                     old_info.properties["ReflexName"] = "true";
-                    m_factories.insert(std::make_pair(old_name, old_info));
+                    m_factories.emplace(old_name, old_info);
                   }
 #endif
                   ++factoriesCount;
@@ -246,8 +246,8 @@ namespace Gaudi { namespace PluginService {
       if (entry == facts.end())
       {
         // this factory was not known yet
-        entry = facts.insert( { id, FactoryInfo("unknown", factory,
-                                                type, rtype, className, props) } ).first;
+        entry = facts.emplace( id, FactoryInfo("unknown", factory,
+                                                type, rtype, className, props) ).first;
       } else {
         // do not replace an existing factory with a new one
         if (!entry->second.ptr) {

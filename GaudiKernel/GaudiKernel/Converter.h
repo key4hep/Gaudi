@@ -29,59 +29,59 @@ public:
 #endif
 
   /// Initialize the converter
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
 
   /// Initialize the converter
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
 
   /// Set Data provider service
-  virtual StatusCode setDataProvider(IDataProviderSvc* svc);
+  StatusCode setDataProvider(IDataProviderSvc* svc) override;
 
   /// Get Data provider service
-  virtual SmartIF<IDataProviderSvc>& dataProvider()    const;
+  SmartIF<IDataProviderSvc>& dataProvider() const override;
 
   /// Set conversion service the converter is connected to
-  virtual StatusCode setConversionSvc(IConversionSvc* svc);
+  StatusCode setConversionSvc(IConversionSvc* svc) override;
 
   /// Get conversion service the converter is connected to
-  virtual SmartIF<IConversionSvc>& conversionSvc()    const;
+  SmartIF<IConversionSvc>& conversionSvc() const override;
 
   /// Set address creator facility
-  virtual StatusCode setAddressCreator(IAddressCreator* creator);
+  StatusCode setAddressCreator(IAddressCreator* creator) override;
 
   /// Retrieve address creator facility
-  virtual SmartIF<IAddressCreator>& addressCreator()   const;
+  SmartIF<IAddressCreator>& addressCreator() const override;
 
   /// Retrieve the class type of objects the converter produces.
-  virtual const CLID& objType() const;
+  const CLID& objType() const override;
 
   /// Retrieve the class type of the data store the converter uses.
   // MSF: Masked to generate compiler error due to interface change
   virtual long i_repSvcType() const;
 
   /// Create the transient representation of an object.
-  virtual StatusCode createObj(IOpaqueAddress* pAddress,DataObject*& refpObject);
+  StatusCode createObj(IOpaqueAddress* pAddress,DataObject*& refpObject) override;
 
   /// Resolve the references of the created transient object.
-  virtual StatusCode fillObjRefs(IOpaqueAddress* pAddress, DataObject* pObject);
+  StatusCode fillObjRefs(IOpaqueAddress* pAddress, DataObject* pObject) override;
 
   /// Update the transient object from the other representation.
-  virtual StatusCode updateObj(IOpaqueAddress* pAddress, DataObject* refpObject);
+  StatusCode updateObj(IOpaqueAddress* pAddress, DataObject* refpObject) override;
 
   /// Update the references of an updated transient object.
-  virtual StatusCode updateObjRefs(IOpaqueAddress* pAddress, DataObject* pObject);
+  StatusCode updateObjRefs(IOpaqueAddress* pAddress, DataObject* pObject) override;
 
   /// Convert the transient object to the requested representation.
-  virtual StatusCode createRep(DataObject* pObject, IOpaqueAddress*& refpAddress);
+  StatusCode createRep(DataObject* pObject, IOpaqueAddress*& refpAddress) override;
 
   /// Resolve the references of the converted object.
-  virtual StatusCode fillRepRefs(IOpaqueAddress* pAddress,DataObject* pObject);
+  StatusCode fillRepRefs(IOpaqueAddress* pAddress,DataObject* pObject) override;
 
   /// Update the converted representation of a transient object.
-  virtual StatusCode updateRep(IOpaqueAddress* pAddress, DataObject* pObject);
+  StatusCode updateRep(IOpaqueAddress* pAddress, DataObject* pObject) override;
 
   /// Update the references of an already converted object.
-  virtual StatusCode updateRepRefs(IOpaqueAddress* pAddress, DataObject* pObject);
+  StatusCode updateRepRefs(IOpaqueAddress* pAddress, DataObject* pObject) override;
 
   /// Standard Constructor
   Converter(long storage_type, const CLID& class_type, ISvcLocator* svc = 0);
@@ -104,14 +104,14 @@ public:
 protected:
 
   /// Standard Destructor
-  virtual ~Converter();
+  ~Converter() override = default;
 
   /// Retrieve pointer to service locator
-  SmartIF<ISvcLocator>& serviceLocator()   const;
+  SmartIF<ISvcLocator>& serviceLocator() const;
   /// Retrieve pointer to message service
-  SmartIF<IMessageSvc>& msgSvc()   const;
+  SmartIF<IMessageSvc>& msgSvc() const;
   // Obsoleted name, kept due to the backwards compatibility
-  SmartIF<IMessageSvc>& messageService()   const;
+  SmartIF<IMessageSvc>& messageService() const;
   /// Get Data Manager service
   SmartIF<IDataManagerSvc>& dataManager() const;
 
@@ -147,10 +147,9 @@ private:
 
 
 // Identified class for converters' factories
-class GAUDI_API ConverterID {
+class GAUDI_API ConverterID final{
 public:
   ConverterID( long stype, CLID clid ) : m_stype(stype), m_clid(clid) {}
-  ~ConverterID() {}
   inline bool operator ==(const ConverterID& id) const {
     return m_stype == id.m_stype && m_clid == id.m_clid;
   }
@@ -167,7 +166,7 @@ inline std::ostream& operator << ( std::ostream& s, const ConverterID& id) {
 
 #ifndef GAUDI_NEW_PLUGIN_SERVICE
 template <class T>
-class CnvFactory {
+class CnvFactory final {
 public:
 #ifndef __REFLEX__
   template <typename S, typename... Args>

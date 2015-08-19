@@ -9,6 +9,7 @@
 #include "GaudiKernel/Service.h"
 #include "GaudiKernel/IEvtSelector.h"
 #include "GaudiKernel/IDataStreamTool.h"
+#include "GaudiKernel/IIncidentSvc.h"
 #include "GaudiKernel/AlgTool.h"
 
 class IIncidentSvc;
@@ -28,7 +29,7 @@ class IIncidentSvc;
 class GAUDI_API DataStreamTool: public extends1<AlgTool, IDataStreamTool> {
 public:
 
-  typedef std::vector<EventSelectorDataStream*>            Streams;
+  typedef std::vector<EventSelectorDataStream*>  Streams;
   typedef std::vector<StringProperty>            Properties;
 
   /// Standard constructor
@@ -36,76 +37,75 @@ public:
                   const std::string& name,
                   const IInterface* parent);
 
-  virtual ~DataStreamTool( ); ///< Destructor
+  ~DataStreamTool( ) override = default; ///< Destructor
 
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
 
-  virtual StatusCode addStream(const std::string &);
-
-  virtual StatusCode addStreams(const StreamSpecs &);
-
-  virtual StatusCode eraseStream( const std::string& );
-
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
 
   /// Initialize newly opened stream
-  virtual StatusCode initializeStream( EventSelectorDataStream* );
+  StatusCode initializeStream( EventSelectorDataStream* ) override;
 
   /// Finalize no longer needed stream
-  virtual StatusCode finalizeStream( EventSelectorDataStream* );
+  StatusCode finalizeStream( EventSelectorDataStream* ) override;
 
-  virtual StatusCode getNextStream( const EventSelectorDataStream* &, size_type & );
+  StatusCode getNextStream( const EventSelectorDataStream* &, size_type & ) override;
 
-  virtual StatusCode getPreviousStream( const EventSelectorDataStream* &, size_type & );
+  StatusCode getPreviousStream( const EventSelectorDataStream* &, size_type & ) override;
+
+  StatusCode addStream(const std::string &) override;
+
+  StatusCode addStreams(const StreamSpecs &) override;
+
+  StatusCode eraseStream( const std::string& ) override;
+  /// Retrieve stream by name
+  EventSelectorDataStream* getStream( const std::string& ) override;
+
+  EventSelectorDataStream* getStream( size_type ) override;
+
+  EventSelectorDataStream* lastStream() override;
+
+  size_type size() override { return m_streams.size(); };
+
+  StatusCode clear() override;
 
   virtual Streams& getStreams() { return m_streams; };
-
-  virtual EventSelectorDataStream* lastStream();
 
   virtual Streams::iterator beginOfStreams() {return m_streams.begin(); };
 
   virtual Streams::iterator endOfStreams() {return m_streams.end(); };
 
-  /// Retrieve stream by name
-  virtual EventSelectorDataStream* getStream( const std::string& );
-
-  virtual EventSelectorDataStream* getStream( size_type );
-
-  virtual size_type size() { return m_streams.size(); };
-
-  virtual StatusCode clear();
-
 protected:
 
-  virtual StatusCode createSelector( const std::string& , const std::string& ,
-                                     IEvtSelector*& );
+  StatusCode createSelector( const std::string& , const std::string& ,
+                             IEvtSelector*& ) override;
 
-  virtual StatusCode createStream(const std::string&, const std::string&,
-                                  EventSelectorDataStream*& );
+  StatusCode createStream(const std::string&, const std::string&,
+                                  EventSelectorDataStream*& ) override;
 
   /// Connect single stream by reference
   StatusCode connectStream( EventSelectorDataStream *);
   /// Connect single stream by name
   StatusCode connectStream( const std::string & );
 
-  size_type m_streamID;
+  size_type m_streamID = 0;
 
-  size_type m_streamCount;
+  size_type m_streamCount = 0;
 
   Streams m_streams;
 
   StreamSpecs m_streamSpecs;
 
   /// Reference to the incident service
-  SmartIF<IIncidentSvc>     m_incidentSvc;
+  SmartIF<IIncidentSvc>     m_incidentSvc = nullptr;
 
   Streams::iterator getStreamIterator ( const std::string& );
 
 private:
   /// Fake copy constructor (never implemented).
-  DataStreamTool(const DataStreamTool&);
+  DataStreamTool(const DataStreamTool&) = delete;
   /// Fake assignment operator (never implemented).
-  DataStreamTool& operator= (const DataStreamTool&);
+  DataStreamTool& operator= (const DataStreamTool&) = delete;
 
 };
 #endif // GAUDIKERNEL_DATASTREAMTOOL_H
