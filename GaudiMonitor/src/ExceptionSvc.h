@@ -36,8 +36,6 @@ public:
 public:
   /// initialize the service
   virtual StatusCode initialize   () ;
-  /// finalize the service
-  virtual StatusCode finalize     () ;
 public:
   /** standard constructor
    *  @param name service instance name
@@ -47,7 +45,7 @@ public:
   ( const std::string& name ,
     ISvcLocator*       svc  ) ;
   /// Destructor.
-  virtual ~ExceptionSvc();
+  virtual ~ExceptionSvc() = default;
 private:
   // default constructor is disabled
   ExceptionSvc () ; ///< no default constructor
@@ -62,7 +60,7 @@ private:
   enum Policy { ALL, NONE };
   enum ReturnState { SUCCESS, FAILURE, RECOVERABLE, RETHROW, DEFAULT };
 
-  Policy m_mode_exc, m_mode_err;
+  Policy m_mode_exc = ALL, m_mode_err = NONE;
   StringProperty m_mode_exc_s, m_mode_err_s;
   std::map<std::string,ReturnState> m_retCodesExc, m_retCodesErr;
 

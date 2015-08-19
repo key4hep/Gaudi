@@ -33,10 +33,9 @@ inline void toupper(std::string &s)
 ///////////////////////////////////////////////////////////////////////////
 //
 
-ExceptionSvc::ExceptionSvc( const std::string& name, ISvcLocator* svc )
-  : base_class( name, svc )
-  , m_mode_exc ( ALL ), m_mode_err( NONE )
-  , m_log(msgSvc(), name )
+ExceptionSvc::ExceptionSvc( const std::string& nam, ISvcLocator* svc )
+  : base_class( nam, svc )
+  , m_log(msgSvc(), name() )
 {
   // for exceptions
   declareProperty( "Catch"      , m_mode_exc_s="ALL" ) ;
@@ -44,13 +43,6 @@ ExceptionSvc::ExceptionSvc( const std::string& name, ISvcLocator* svc )
   // for return codes
   declareProperty( "Errors"     , m_mode_err_s="NONE" ) ;
 }
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-ExceptionSvc::~ExceptionSvc() {
-
-}
-
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -63,13 +55,8 @@ ExceptionSvc::initialize() {
 
   string key = m_mode_exc_s.value();
 
-  string::size_type loc = key.find(" ");
-  std::string mode;
-  if (loc == std::string::npos) {
-    mode = key;
-  } else {
-    mode = key.substr(0,loc);
-  }
+  auto loc = key.find(" ");
+  std::string mode = key.substr(0,loc);
 
   toupper(mode);
 
@@ -85,7 +72,7 @@ ExceptionSvc::initialize() {
   }
 
   if (loc == string::npos) {
-    key = "";
+    key.clear();
   } else {
     key = key.substr(loc+1);
   }
@@ -98,7 +85,6 @@ ExceptionSvc::initialize() {
        tok_iter != tok_end; ++tok_iter)
   {
     TAG = (*tok_iter)[1];
-
     VAL = (*tok_iter)[2];
     toupper(VAL);
 
@@ -131,11 +117,7 @@ ExceptionSvc::initialize() {
   key = m_mode_err_s.value();
 
   loc = key.find(" ");
-  if (loc == std::string::npos) {
-    mode = key;
-  } else {
-    mode = key.substr(0,loc);
-  }
+  mode = key.substr(0,loc);
 
   toupper(mode);
 
@@ -151,7 +133,7 @@ ExceptionSvc::initialize() {
   }
 
   if (loc == string::npos) {
-    key = "";
+    key.clear();
   } else {
     key = key.substr(loc+1);
   }
@@ -160,7 +142,6 @@ ExceptionSvc::initialize() {
        tok_iter != tok_end; ++tok_iter)
   {
     TAG = (*tok_iter)[1];
-
     VAL = (*tok_iter)[2];
     toupper(VAL);
 
@@ -183,15 +164,6 @@ ExceptionSvc::initialize() {
 	<< " -> action: " << VAL << endmsg;
 
   }
-
-  return status;
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-StatusCode
-ExceptionSvc::finalize() {
-  StatusCode status = Service::finalize();
 
   return status;
 }
