@@ -21,11 +21,6 @@ namespace {
       p = nullptr;
     }
   }
-  /// Delete ponter and set variable to NULL
-  template<class T> inline void deletePtr(T*& p)  {
-    delete p;
-    p = nullptr;
-  }
 
   /** @struct  DataObjectPush RootUtils.h src/RootUtils.h
    *
