@@ -28,6 +28,7 @@
  *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
  */
 // ============================================================================
+
 namespace {
 
     template <typename T> struct tuple_type_ ;
@@ -80,7 +81,7 @@ namespace {
     typename C::mapped_type::pointer create_(Tuples::TupleObj* parent, C& container, const std::string& name, AddItem addItem  ) {
         using element_t = typename C::mapped_type::element_type;
         using map_t = struct tuple_type_<element_t> ;
-        auto item = container.insert({ name , std::unique_ptr<element_t>{new element_t()} }) ;
+        auto item = container.emplace( name , std::unique_ptr<element_t>{new element_t()} ) ;
         if (!item.second)
         { parent->Error ( std::string{map_t::typ} + " ('" + name + "'): item is not inserted"   ) ; }
         StatusCode sc = addItem( name , *(item.first->second) );
@@ -90,13 +91,12 @@ namespace {
         { parent->Error ( std::string{map_t::typ} + " ('" + name + "'): item is not unique"     ) ; }
         return item.first->second.get() ;
     }
-
 }
 namespace Tuples
 {
   namespace Local
   {
-    class Counter
+    class Counter final
     {
     public:
       // constructor
@@ -110,21 +110,21 @@ namespace Tuples
       // make the decrement
       long decrement ( const std::string& object ) { return --m_map[object]; }
       // current count
-      long counts    ( const std::string& object ) { return   m_map[object]; }
+      long counts    ( const std::string& object ) const { return   m_map.at(object); }
       // make a report
       void report() const
       {
         for ( auto& entry : m_map )
         {
-          if( 0 == entry.second ) { continue ; }
-          std::cout << "Tuples::TupleObj WARNING "          << m_message
+          if( entry.second != 0 ) std::cout 
+                    << "Tuples::TupleObj WARNING "          << m_message
                     << "'" << entry.first << "' Counts = " << entry.second
                     << std::endl ;
         }
       };
 
     private:
-      std::map<std::string,long> m_map     ;
+      std::map<std::string,long> m_map;
       std::string m_message ;
     };
 
@@ -133,7 +133,8 @@ namespace Tuples
      *  @author Vanya BELYAEV Ivan.Belyaev@Ivan.Belyaev@itep.ru
      *  @date   2004-01-19
      */
-    static Counter s_InstanceCounter ( " Create/Destroy      (mis)balance " ) ;
+    static Counter s_InstanceCounter{ " Create/Destroy      (mis)balance " };
+
   }
 }
 // ============================================================================
@@ -149,8 +150,6 @@ Tuples::TupleObj::TupleObj
   , m_tuple    ( tuple )
   , m_clid     ( clid )
   , m_type     ( type )
-// for error handling
-  , m_refCount ( 0 )
 {
   // make counts
   Tuples::Local::s_InstanceCounter.increment ( m_name ) ;
@@ -171,11 +170,9 @@ Tuples::TupleObj::~TupleObj()
 void Tuples::TupleObj::release ()
 {
   // decrease the reference counter
-  if( 0 < refCount() ) { --m_refCount; }
-  // check references
-  if( 0 != refCount() ) { return; }
-  // delete the object
-  delete this  ;
+  if( refCount() > 0 ) { --m_refCount; }
+  // check references -- delete if needed
+  if( 0 == refCount() ) delete this;
 }
 // ============================================================================
 // write a record to NTuple
@@ -188,19 +185,14 @@ StatusCode Tuples::TupleObj::write ()
 // ============================================================================
 namespace
 {
-  /// useful typedef
-  typedef std::vector<std::string> Tokens;
   /** Very simple tokenizer for TupleObj
    *  @author Vanya Belyaev Ivan.Belyaev@itep.ru
    *  @date   2002-07-14
    */
-  size_t tokenize( const std::string& value            ,
-                   Tokens&            tokens           ,
-                   const std::string& separators = " " )
+  std::vector<std::string> tokenize( const std::string& value            ,
+                                     const std::string& separators = " " )
   {
-    // reset the existing tokens
-    tokens.clear();
-    if( value       .empty () ) { return tokens.size () ; }
+    std::vector<std::string> tokens;
     auto it1 = value.begin() ;
     auto it2 = value.begin() ;
     while( value.end() != it1 && value.end() != it2 )
@@ -209,16 +201,13 @@ namespace
                                 value.end         () ,
                                 separators.begin  () ,
                                 separators.end    () ) ;
-      if( it2 != it1 )
-      {
-        std::string aux( value , it1 - value.begin() , it2 - it1 ) ;
-        tokens.push_back( aux ) ;
+      if( it2 != it1 ) {
+        tokens.emplace_back( value , it1 - value.begin() , it2 - it1 ) ;
         it1  = it2 ;
       }
       else { ++it1 ; }
-
     }
-    return tokens.size();
+    return tokens;
   }
 }
 // ============================================================================
@@ -227,9 +216,7 @@ StatusCode Tuples::TupleObj::fill( const char*  format ... )
   // check the underlying tuple
   if ( invalid()      ) { return InvalidTuple ; }
   // decode format string into tokens
-  Tokens tokens ;
-  tokenize( format , tokens , " ,;" );
-  if ( tokens.empty() ) { return StatusCode::SUCCESS ; }
+  auto tokens = tokenize( format , " ,;" );
   /// decode arguments
   va_list valist ;
   va_start( valist , format ) ;
@@ -238,7 +225,7 @@ StatusCode Tuples::TupleObj::fill( const char*  format ... )
   for( auto token = tokens.cbegin() ;
        tokens.cend() != token && status.isSuccess() ; ++token )
   {
-    const double val = va_arg( valist , double );
+    double val = va_arg( valist , double );
     status = column( *token , val );
     if( status.isFailure() )
     { Error ( "fill(): Can not add column '" + *token + "' " ) ; }
@@ -256,15 +243,11 @@ StatusCode Tuples::TupleObj::column
 ( const std::string&    name    ,
   IOpaqueAddress*       address )
 {
-  if (  invalid    () ) { return InvalidTuple     ; }
   if ( !evtColType () ) { return InvalidOperation ; }
   if ( !address )
   { return Error ( "column('" + name +
                    "') IOpaqueAddress* is NULL!" , InvalidObject ) ; }
-  Address* item = addresses( name );
-  if ( !item      ) { return InvalidItem      ; }
-  *item = address ;
-  return StatusCode::SUCCESS ;
+  return column_<IOpaqueAddress*,&Tuples::TupleObj::addresses>(name, address);
 }
 
 // ============================================================================
@@ -278,77 +261,49 @@ StatusCode Tuples::TupleObj::column
 
 // ============================================================================
 StatusCode Tuples::TupleObj::column ( const std::string& name   ,
-                                      const float        value  )
+                                      float        value  )
 {
-  if ( invalid() ) { return InvalidTuple  ; }
-  Float* item = floats ( name ) ;
-  if ( !item )     { return InvalidColumn ; }
-  *item = value ;
-  return StatusCode::SUCCESS ;
+  return column_<float,&Tuples::TupleObj::floats>(name,value);
 }
 // ============================================================================
 StatusCode Tuples::TupleObj::column ( const std::string& name   ,
-                                      const double       value  )
+                                      double       value  )
 {
-  if ( invalid() ) { return InvalidTuple  ; }
-  Double * item = doubles ( name ) ;
-  if ( !item )     { return InvalidColumn ; }
-  *item = value ;
-  return StatusCode::SUCCESS ;
+  return column_<double,&Tuples::TupleObj::doubles>(name,value);
 }
 // ============================================================================
 StatusCode Tuples::TupleObj::column ( const std::string&  name  ,
-                                      const char          value )
+                                      char          value )
 {
-  if ( invalid() ) { return InvalidTuple  ; }
-  Char* item = chars( name ) ;
-  if ( !item )     { return InvalidColumn ; }
-  *item = value ;
-  return StatusCode::SUCCESS ;
+  return column_<char,&Tuples::TupleObj::chars>(name,value);
 }
 // ============================================================================
 StatusCode Tuples::TupleObj::column ( const std::string& name  ,
-                                      const char         value ,
-                                      const char         minv  ,
-                                      const char         maxv  )
+                                      char         value ,
+                                      char         minv  ,
+                                      char         maxv  )
 {
-  if ( invalid() ) { return InvalidTuple  ; }
-  Char* item = chars ( name , minv , maxv ) ;
-  if ( !item )     { return InvalidColumn ; }
-  *item = value ;
-  return StatusCode::SUCCESS ;
+  return column_<char,&Tuples::TupleObj::chars>(name,value,minv,maxv);
 }
 // ============================================================================
 StatusCode Tuples::TupleObj::column ( const std::string&   name  ,
-                                      const unsigned char value )
+                                      unsigned char value )
 {
-  if ( invalid() ) { return InvalidTuple  ; }
-  UChar* item = uchars( name ) ;
-  if ( !item )     { return InvalidColumn ; }
-  *item = value ;
-  return StatusCode::SUCCESS ;
+  return column_<unsigned char,&Tuples::TupleObj::uchars>(name,value);
 }
 // ============================================================================
 StatusCode Tuples::TupleObj::column ( const std::string&   name ,
-                                      const unsigned char value ,
-                                      const unsigned char minv  ,
-                                      const unsigned char maxv  )
+                                      unsigned char value ,
+                                      unsigned char minv  ,
+                                      unsigned char maxv  )
 {
-  if ( invalid() ) { return InvalidTuple  ; }
-  UChar* item = uchars ( name , minv , maxv ) ;
-  if ( !item )     { return InvalidColumn ; }
-  *item = value ;
-  return StatusCode::SUCCESS ;
+  return column_<unsigned char,&Tuples::TupleObj::uchars>(name,value,minv,maxv);
 }
 // ============================================================================
 StatusCode Tuples::TupleObj::column ( const std::string&   name  ,
-                                      const short          value )
+                                      short          value )
 {
-  if ( invalid() ) { return InvalidTuple  ; }
-  Short* item = shorts( name ) ;
-  if ( !item )     { return InvalidColumn ; }
-  *item = value ;
-  return StatusCode::SUCCESS ;
+  return column_<short,&Tuples::TupleObj::shorts>(name,value);
 }
 // ============================================================================
 StatusCode Tuples::TupleObj::column ( const std::string&  name  ,
@@ -356,77 +311,49 @@ StatusCode Tuples::TupleObj::column ( const std::string&  name  ,
                                       const short         minv  ,
                                       const short         maxv  )
 {
-  if ( invalid() ) { return InvalidTuple  ; }
-  Short* item = shorts ( name , minv , maxv ) ;
-  if ( !item )     { return InvalidColumn ; }
-  *item = value ;
-  return StatusCode::SUCCESS ;
+  return column_<short,&Tuples::TupleObj::shorts>(name,value,minv,maxv);
 }
 // ============================================================================
 StatusCode Tuples::TupleObj::column ( const std::string&   name  ,
                                       const unsigned short value )
 {
-  if ( invalid() ) { return InvalidTuple  ; }
-  UShort* item = ushorts( name ) ;
-  if ( !item )     { return InvalidColumn ; }
-  *item = value ;
-  return StatusCode::SUCCESS ;
+  return column_<unsigned short,&Tuples::TupleObj::ushorts>( name, value );
 }
 // ============================================================================
 StatusCode Tuples::TupleObj::column ( const std::string&   name  ,
-                                      const unsigned short value ,
-                                      const unsigned short minv  ,
-                                      const unsigned short maxv  )
-{
-  if ( invalid() ) { return InvalidTuple  ; }
-  UShort* item = ushorts ( name , minv , maxv ) ;
-  if ( !item )     { return InvalidColumn ; }
-  *item = value ;
-  return StatusCode::SUCCESS ;
+                                      unsigned short value ,
+                                      unsigned short minv  ,
+                                      unsigned short maxv  )
+{ 
+  return column_<unsigned short,&Tuples::TupleObj::ushorts>( name, value, minv, maxv );
 }
 // ============================================================================
 StatusCode Tuples::TupleObj::column ( const std::string&   name  ,
-                                      const int            value )
+                                      int                  value )
 {
-  if ( invalid() ) { return InvalidTuple  ; }
-  Int* item = ints( name ) ;
-  if ( !item ) { return InvalidColumn ; }
-  *item = value ;
-  return StatusCode::SUCCESS ;
+  return column_<int,&Tuples::TupleObj::ints>( name, value );
 }
 // ============================================================================
 StatusCode Tuples::TupleObj::column ( const std::string&   name  ,
-                                      const int            value ,
-                                      const int            minv  ,
-                                      const int            maxv  )
+                                      int            value ,
+                                      int            minv  ,
+                                      int            maxv  )
 {
-  if ( invalid() ) { return InvalidTuple  ; }
-  Int* item = ints ( name , minv , maxv ) ;
-  if ( !item )     { return InvalidColumn ; }
-  *item = value ;
-  return StatusCode::SUCCESS ;
+  return column_<int,&Tuples::TupleObj::ints>(name,value,minv,maxv);
 }
 // ============================================================================
 StatusCode Tuples::TupleObj::column ( const std::string&   name  ,
-                                      const unsigned int   value )
+                                      unsigned int   value )
 {
-  if ( invalid() ) { return InvalidTuple  ; }
-  UInt* item = uints( name ) ;
-  if ( !item )     { return InvalidColumn ; }
-  *item = value ;
-  return StatusCode::SUCCESS ;
+  return column_<unsigned int,&Tuples::TupleObj::uints>(name,value);
 }
 // ============================================================================
 StatusCode Tuples::TupleObj::column ( const std::string&   name  ,
-                                      const unsigned int   value ,
-                                      const unsigned int   minv  ,
-                                      const unsigned int   maxv  )
+                                      unsigned int   value ,
+                                      unsigned int   minv  ,
+                                      unsigned int   maxv  )
 {
-  if ( invalid() ) { return InvalidTuple  ; }
-  UInt* item = uints ( name , minv , maxv ) ;
-  if ( !item )     { return InvalidColumn ; }
-  *item = value ;
-  return StatusCode::SUCCESS ;
+  return column_<unsigned int, &Tuples::TupleObj::uints>(name,value,minv,maxv);
 }
 // ============================================================================
 StatusCode Tuples::TupleObj::column ( const std::string&   name  ,
@@ -474,55 +401,35 @@ StatusCode Tuples::TupleObj::column ( const std::string&   name  ,
 StatusCode Tuples::TupleObj::column ( const std::string&   name  ,
                                       const long long      value )
 {
-  if ( invalid() ) { return InvalidTuple  ; }
-  LongLong* item = longlongs( name ) ;
-  if ( !item )     { return InvalidColumn ; }
-  *item = value ;
-  return StatusCode::SUCCESS ;
+  return column_<long long,&Tuples::TupleObj::longlongs>(name,value);
 }
 // ============================================================================
 StatusCode Tuples::TupleObj::column ( const std::string&   name  ,
-                                      const long long      value ,
-                                      const long long      minv  ,
-                                      const long long      maxv  )
+                                      long long      value ,
+                                      long long      minv  ,
+                                      long long      maxv  )
 {
-  if ( invalid() ) { return InvalidTuple  ; }
-  LongLong* item = longlongs ( name , minv , maxv ) ;
-  if ( !item )     { return InvalidColumn ; }
-  *item = value ;
-  return StatusCode::SUCCESS ;
-}
-// ============================================================================
-StatusCode Tuples::TupleObj::column ( const std::string&       name  ,
-                                      const unsigned long long value )
-{
-  if ( invalid() ) { return InvalidTuple  ; }
-  ULongLong* item = ulonglongs( name ) ;
-  if ( !item )     { return InvalidColumn ; }
-  *item = value ;
-  return StatusCode::SUCCESS ;
-}
-// ============================================================================
-StatusCode Tuples::TupleObj::column ( const std::string&       name  ,
-                                      const unsigned long long value ,
-                                      const unsigned long long minv  ,
-                                      const unsigned long long maxv  )
-{
-  if ( invalid() ) { return InvalidTuple  ; }
-  ULongLong* item = ulonglongs ( name , minv , maxv ) ;
-  if ( !item )     { return InvalidColumn ; }
-  *item = value ;
-  return StatusCode::SUCCESS ;
+  return column_<long long,&Tuples::TupleObj::longlongs>(name,value,minv,maxv);
 }
 // ============================================================================
 StatusCode Tuples::TupleObj::column ( const std::string& name  ,
-                                      const bool         value )
+                                      unsigned long long value )
 {
-  if ( invalid() ) { return InvalidTuple  ; }
-  Bool* item = bools( name ) ;
-  if ( !item )     { return InvalidColumn ; }
-  *item = value ;
-  return StatusCode::SUCCESS ;
+  return column_<unsigned long long,&Tuples::TupleObj::ulonglongs>(name,value);
+}
+// ============================================================================
+StatusCode Tuples::TupleObj::column ( const std::string& name  ,
+                                      unsigned long long value ,
+                                      unsigned long long minv  ,
+                                      unsigned long long maxv  )
+{
+  return column_<unsigned long long,&Tuples::TupleObj::ulonglongs>(name,value,minv,maxv);
+}
+// ============================================================================
+StatusCode Tuples::TupleObj::column ( const std::string& name  ,
+                                      bool               value )
+{
+  return column_<bool,&Tuples::TupleObj::bools>(name,value);
 }
 // ============================================================================
 Tuples::TupleObj::Float* Tuples::TupleObj::floats
@@ -566,37 +473,33 @@ Tuples::TupleObj::Char*   Tuples::TupleObj::chars
 }
 // ============================================================================
 Tuples::TupleObj::Char* Tuples::TupleObj::chars
-( const std::string& name ,
-  const char         minv ,
-  const char         maxv )
+( const std::string& name , char         minv , char         maxv )
 {
   auto found = m_chars.find( name ) ;
-  if( m_chars.end() != found ) { return found->second.get() ; }
-  return create_(this, m_chars, name,
-                 [&](const std::string& n, Char& i) 
-                 { return this->tuple()->addItem(n,i,minv,maxv); });
+  return ( found != m_chars.end() ) ? found->second.get() 
+                                    : create_(this, m_chars, name,
+                                              [&](const std::string& n, Char& i) 
+                                              { return this->tuple()->addItem(n,i,minv,maxv); });
 }
 // ============================================================================
 Tuples::TupleObj::UChar* Tuples::TupleObj::uchars
 ( const std::string& name )
 {
   auto found = m_uchars.find( name ) ;
-  if( m_uchars.end() != found ) { return found->second.get() ; }
-  return create_(this, m_uchars, name,
-                 [&](const std::string& n, UChar& i) 
-                 { return this->tuple()->addItem(n,i); });
+  return ( found != m_uchars.end() ) ? found->second.get()
+                                     : create_(this, m_uchars, name,
+                                               [&](const std::string& n, UChar& i) 
+                                               { return this->tuple()->addItem(n,i); });
 }
 // ============================================================================
 Tuples::TupleObj::UChar* Tuples::TupleObj::uchars
-( const std::string&  name ,
-  const unsigned char minv ,
-  const unsigned char maxv )
+( const std::string&  name , unsigned char minv , unsigned char maxv )
 {
   auto found = m_uchars.find( name ) ;
-  if( m_uchars.end() != found ) { return found->second.get() ; }
-  return create_(this, m_uchars, name,
-                 [&](const std::string& n, UChar& i) 
-                 { return this->tuple()->addItem(n,i,minv,maxv); });
+  return ( found != m_uchars.end() ) ?  found->second.get()
+                                     :  create_(this, m_uchars, name,
+                                           [&](const std::string& n, UChar& i) 
+                                           { return this->tuple()->addItem(n,i,minv,maxv); });
 }
 // ============================================================================
 Tuples::TupleObj::Short*   Tuples::TupleObj::shorts

@@ -176,6 +176,9 @@ namespace NTuple
     const TYP& data(long i)  const  { return this->m_buffer[i];        }
     /// Access to data by reference (CONST)
     TYP&       data(long i)         { return this->m_buffer[i];        }
+
+    TYP* begin() { return this->m_buffer; }
+    TYP* end()   { return this->m_buffer+this->length(); }
   };
   // ==========================================================================
   /** Abstract class describing a matrix column in a N tuple.
@@ -329,6 +332,11 @@ namespace NTuple
     /// Array operator
     template <class T>
     const TYP& operator[] (const T i) const  { return this->m_ptr->data(i);  }
+
+    TYP* begin() { return this->m_ptr->begin(); }
+    TYP* end() { return this->m_ptr->end(); }
+
+
     ~Array() override = default;
   };
   // =========================================================================

@@ -3,6 +3,8 @@
 // =============================================================================
 // Include files
 // =============================================================================
+#include <memory>
+// =============================================================================
 // GaudiKernel
 // =============================================================================
 #include "GaudiKernel/System.h"
@@ -33,20 +35,15 @@ namespace Tuples
    *  @date   2007-04-08
    */
   template <class VALUE>
-  class ItemStore
+  class ItemStore final
   {
     friend class TupleObj ;
   private:
-    typedef GaudiUtils::HashMap<std::string,NTuple::Item<VALUE>*>  Store;
+    typedef GaudiUtils::HashMap<std::string,std::unique_ptr<NTuple::Item<VALUE>>>  Store;
   public:
     /// constructor : create empty map
     ItemStore()  = default;
-    /// destructor : delete all known entries
-    ~ItemStore()
-    {
-      for ( auto & i : m_map ) { delete i.second ; }
-    }
-  protected:
+  private:
     /// the only one method:
     inline NTuple::Item<VALUE>* getItem
     ( const std::string& key , Tuples::TupleObj* tuple )
@@ -54,7 +51,7 @@ namespace Tuples
       // find the item by name
       auto ifound = m_map.find( key ) ;
       // existing item?
-      if ( m_map.end() != ifound ) { return ifound->second ; }        // RETURN
+      if ( m_map.end() != ifound ) { return ifound->second.get() ; }        // RETURN
       // check the tuple for booking:
       if ( !tuple ) { return nullptr ; }
       // check the existence of the name
@@ -73,13 +70,22 @@ namespace Tuples
         return nullptr ;                                                   // RETURN
       }
       // create new item:
-      NTuple::Item<VALUE>* item = new NTuple::Item<VALUE>() ;
+      // add the newly created item into the store:
+      auto stored = m_map.emplace( key , std::unique_ptr<NTuple::Item<VALUE>>{  new NTuple::Item<VALUE>() });
+      if ( !stored.second )
+      {
+        tuple -> Warning ( "ItemStore::getItem('" + key
+                           + "') item already exists, new one not inserted!" ).ignore() ;
+        return nullptr;
+      }
+      auto& item = stored.first->second;
       // add it into N-tuple
       StatusCode sc = tup->addItem( key , *item ) ;                 // ATTENTION!
       if ( sc.isFailure() )
       {
         tuple -> Error   ( "ItemStore::getItem('" + key
                            + "') cannot addItem" , sc ).ignore() ;
+        m_map.erase(stored.first);
         return nullptr ;                                                  // RETURN
       }
       // check the name again
@@ -87,15 +93,11 @@ namespace Tuples
       {
         tuple -> Warning ( "ItemStore::getItem('" + key
                            + "') the item not unique " ).ignore() ;
-      }
-      // add the newly created item into the store:
-      if ( !m_map.insert ( std::make_pair ( key , item ) ).second )
-      {
-        tuple -> Warning ( "ItemStore::getItem('" + key
-                           + "') item is not inserted!" ).ignore() ;
+        m_map.erase(stored.first);
+        return nullptr;
       }
       //
-      return item ;                                                  // RETURN
+      return item.get() ;                              // RETURN
     }
   private:
     // delete copy constructor and assignment
@@ -126,7 +128,7 @@ inline StatusCode Tuples::TupleObj::put
 
   // static block: The type description & the flag
   static bool               s_fail = false ;                // STATIC
-  static TClass*            s_type = 0     ;                // STATIC
+  static TClass*            s_type = nullptr;               // STATIC
   // check the status
   if      (  s_fail  ) { return InvalidItem ; }                           // RETURN
   else if ( !s_type  )
@@ -143,7 +145,7 @@ inline StatusCode Tuples::TupleObj::put
   static Tuples::ItemStore<TYPE*> s_map ;
   // get the variable by name:
   NTuple::Item<TYPE*>* item = s_map.getItem ( name , this ) ;
-  if ( 0 == item )
+  if ( !item )
   { return Error ( " put('" + name + "'): invalid item detected", InvalidItem ) ; }
   // assign the item!
   (*item) = const_cast<TYPE*> ( obj ) ;                    // THATS ALL!!

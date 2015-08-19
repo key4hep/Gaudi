@@ -291,8 +291,7 @@ void TimingAuditor::before(CustomEventTypeRef evt, const std::string& name)
     // add a new timer if not yet available
     timer = m_timer->addTimer( nick ) ;
     m_mapUser[nick] = timer;
-  }
-  else {
+  } else {
     timer = found->second;
   }
 
