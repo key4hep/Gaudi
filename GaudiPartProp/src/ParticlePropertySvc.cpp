@@ -315,7 +315,6 @@ StatusCode ParticlePropertySvc::parse( const std::string& file )
   StatusCode sc = StatusCode::FAILURE;
 
   MsgStream log( msgSvc(), name() );
-  std::array<char,255> line;
 
   std::unique_ptr<std::istream> infile;
   if (m_fileAccess) infile = m_fileAccess->open(file);
@@ -333,18 +332,17 @@ StatusCode ParticlePropertySvc::parse( const std::string& file )
 
   auto delim = [](char c) { return isspace(c);};
   std::vector<std::string> tokens; tokens.reserve(9);
-  while( *infile )
+
+  std::string line;
+  while( std::getline( *infile, line ) )
   {
     // parse each line of the file (comment lines begin with # in the cdf
     // file,
-    infile->getline( line.begin(), line.size() );
-    if ( line[0] == '#' ) continue;
+    if ( line.front() == '#' ) continue;
 
     tokens.clear();
-    auto buffer = boost::string_ref(line.begin());// getline puts a \0 at the end of what it read... (this is one annoying extra loop...)
-    buffer.remove_prefix( std::distance(std::begin(buffer),
-                                        std::find_if_not(std::begin(buffer), std::end(buffer), delim)));
-    boost::algorithm::split( tokens, buffer, delim , boost::token_compress_on );
+    line.erase( std::begin(line), std::find_if_not(std::begin(line), std::end(line), delim) );
+    boost::algorithm::split( tokens, line, delim , boost::token_compress_on );
     if (tokens.size()!=9) continue;
 
     auto gid = std::stoi( tokens[1] );
