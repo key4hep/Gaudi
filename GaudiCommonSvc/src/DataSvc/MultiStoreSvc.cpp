@@ -104,16 +104,16 @@ protected:
 
 
   // member templates to help writing the function calls
-  template <typename... Args>
-  STATUS call_(STATUS (IDataProviderSvc::*pmf)( Args... args ), Args... args)
+  template <typename... Args, typename... UArgs>
+  STATUS call_(STATUS (IDataProviderSvc::*pmf)( Args... args ), UArgs&&... args)
   {
-    return m_current.dataProvider ? (m_current.dataProvider->*pmf)(args...)
+    return m_current.dataProvider ? (m_current.dataProvider->*pmf)(std::forward<UArgs>(args)...)
                                   : IDataProviderSvc::INVALID_ROOT;
   }
-  template <typename... Args>
-  STATUS call_(STATUS (IDataManagerSvc::*pmf)( Args... args ), Args... args)
+  template <typename... Args, typename... UArgs>
+  STATUS call_(STATUS (IDataManagerSvc::*pmf)( Args... args ), UArgs&&... args)
   {
-    return m_current.dataManager ? (m_current.dataManager->*pmf)(args...)
+    return m_current.dataManager ? (m_current.dataManager->*pmf)(std::forward<UArgs>(args)...)
                                   : IDataProviderSvc::INVALID_ROOT;
   }
 
