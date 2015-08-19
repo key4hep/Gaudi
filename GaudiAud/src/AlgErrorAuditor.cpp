@@ -117,6 +117,6 @@ AlgErrorAuditor::incrMap(const std::string& alg, int level) {
   if ( i != m_algMap[level].end()) {
     i->second++;
   } else {
-    m_algMap[level].insert( { alg,1 } );
+    m_algMap[level].emplace( alg,1 );
   }
 }
