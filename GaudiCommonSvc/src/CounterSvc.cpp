@@ -283,9 +283,9 @@ StatusCode CounterSvc::create
   auto i = m_counts.find  ( grp ) ;
   // (create a group if needed)
   if (  m_counts.end() == i )
-  { i = m_counts.insert ( { grp , NameMap() } ).first ; }
+  { i = m_counts.emplace ( grp , NameMap() ).first ; }
   // insert new counter with proper name into proper group:
-  i->second.insert( { nam , newc } );
+  i->second.emplace( nam , newc );
   return StatusCode::SUCCESS ;                                     // RETURN
 }
 #ifdef __ICC

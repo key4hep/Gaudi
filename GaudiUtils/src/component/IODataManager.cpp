@@ -375,7 +375,7 @@ IODataManager::connectDataIO(int typ, IoType rw, CSTR dataset, CSTR technology,b
                 << " -- processing continues" << endmsg;
           }
         }
-        m_connectionMap.insert( { fid, e } ); // note: only if we disconnect does e get deleted??
+        m_connectionMap.emplace( fid, e ); // note: only if we disconnect does e get deleted??
         return S_OK;
       }
       // Here we open the file!

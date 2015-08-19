@@ -584,7 +584,7 @@ void MessageSvc::insertStream (int key,
                                const std::string& name,
                                std::ostream *stream)
 {
-  m_streamMap.insert( { key, NamedStream(name,stream) } );
+  m_streamMap.emplace( key, NamedStream(name,stream) );
 }
 
 //#############################################################################
@@ -650,7 +650,7 @@ void MessageSvc::eraseStream( std::ostream* stream )    {
 void MessageSvc::insertMessage( const StatusCode& key, const Message& msg )
 {
   std::unique_lock<std::recursive_mutex> lock(m_messageMapMutex);
-  m_messageMap.insert( { key, msg } );
+  m_messageMap.emplace( key, msg );
 }
 
 //#############################################################################

@@ -539,7 +539,7 @@ FileMgr::open( const IoTech& tech, const std::string& caller,
     }
   }
 
-  m_files.insert( { fname,fa } );
+  m_files.emplace( fname,fa );
 
   // execute all our open callbacks
   if (execAction( fa, caller, Io::OPEN ).isFailure()) {

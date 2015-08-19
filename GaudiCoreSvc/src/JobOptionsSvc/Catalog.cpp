@@ -31,7 +31,7 @@ bool gp::Catalog::Add(Property* property) {
   if (it == catalog_.end()) {
     CatalogSet::mapped_type properties;
     properties.insert(property);
-    catalog_.insert( { property->ClientName(), properties } );
+    catalog_.emplace( property->ClientName(), properties );
     return true;
   }
   it->second.erase(*property);

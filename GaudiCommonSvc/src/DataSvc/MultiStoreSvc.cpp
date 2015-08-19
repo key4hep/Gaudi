@@ -454,7 +454,7 @@ public:
           p.dataProvider = dataProv;
           p.dataManager->addRef();
           p.dataProvider->addRef();
-          m_partitions.insert( { nam, p } );
+          m_partitions.emplace( nam, p );
           return STATUS::SUCCESS;
         }
         else  {

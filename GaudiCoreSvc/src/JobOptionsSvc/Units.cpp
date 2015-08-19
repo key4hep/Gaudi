@@ -10,11 +10,10 @@ bool gp::Units::Add(std::string name, double value) {
 }
 // ============================================================================
 bool gp::Units::Add(std::string name, double value, const Position& pos) {
-  return units_.insert( { std::move(name), ValueWithPosition(value, pos) } ).second;
+  return units_.emplace( std::move(name), ValueWithPosition(value, pos) ).second;
 }
 // ============================================================================
 bool gp::Units::Find(const std::string& name, double& result) const {
-
   ValueWithPosition r;
   if ( !Find(name,r) ) return false;
   result = r.first;
