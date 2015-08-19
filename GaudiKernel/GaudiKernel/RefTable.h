@@ -77,12 +77,12 @@ protected:
   /// Find Reference from it's source entry
   EntryType* i_reference(const KeyType* from)  {
     auto i = m_table.find( from );
-    return  i != 0 ?  &((*i).second) : nullptr;
+    return  i != 0 ?  &(i->second) : nullptr;
   }
   /// Find Reference from it's source entry (CONST)
   const EntryType* i_reference(const KeyType* from)  const  {
     auto i = m_table.find( from );
-    return  i != m_table.end() ?  &((*i).second) : nullptr;
+    return  i != m_table.end() ?  &(i->second) : nullptr;
   }
 
 public:
@@ -90,9 +90,7 @@ public:
   RefTableBase(const CLID& clid, int len) : m_clid(clid), m_table(len)   {
   }
   /// Destructor
-  virtual ~RefTableBase()  {
-    clear();
-  }
+  virtual ~RefTableBase()  = default;
   /// Clear Reference map
   virtual void clear()    {
     m_table.clear();
@@ -158,9 +156,9 @@ public:
   }
   /// Standard Destructor
   ~RefTable1to1() override = default;
-  }
-	/// Retrieve reference to class definition structure
-	virtual const CLID& clID() const  {
+  
+  /// Retrieve reference to class definition structure
+  virtual const CLID& clID() const  {
     return m_clid;
   }
   /// Insert new Entry into Reference container
@@ -182,20 +180,20 @@ public:
   }
 
   /// Find Reference from it's source entry (CONST)
-  const TO* reference(const FROM* from)  const {
-    const EntryType* e = i_reference(from);
-    return (0 == e) ? 0 : (*e);
+  const TO* reference(const FROM* from) const {
+    auto e = i_reference(from);
+    return e ? *e : nullptr;
   }
 
   /// Check if two entries are associated to each other
-  bool isReferenced(const FROM* from, const TO* to )   {
-    const EntryType* e = i_reference(from);
-    return (e == 0) ? false : ((*e) == to);
+  bool isReferenced(const FROM* from, const TO* to ) const {
+    auto e = i_reference(from);
+    return e && ( *e == to );
   }
   /// Check if two entries are Referenced to each other
   bool isReferenced(const FROM* from, const EntryType& to )   {
     const EntryType* e = i_reference(from);
-    return (assoc!=0) ? ((*e)!=to) ? (e->target()==to.target()) : false : false;
+    return assoc && (*e!=to) && (e->target()==to.target());
   }
 };
 
@@ -209,8 +207,8 @@ public:
   /// Standard Destructor
   ~RefTable1toN() override = default;
   
-	/// Retrieve reference to class definition structure
-	virtual const CLID& clID() const  {
+  /// Retrieve reference to class definition structure
+  virtual const CLID& clID() const  {
     return m_clid;
   }
   /// Insert new Entry into Reference container
@@ -251,18 +249,18 @@ public:
   EntryType& reference(const FROM* from)  {
     static EntryType empty;
     EntryType* e = i_reference(from);
-    return (0 == e) ? empty : *e;
+    return e ? *e : empty; 
   }
   /// Find Reference from it's source entry (CONST)
   const EntryType& reference(const FROM* from)  const {
-    static EntryType empty;
+    static const EntryType empty;
     EntryType* e = i_reference(from);
-    return (0 == e) ? empty : (*e);
+    return e ? *e : empty; 
   }
   /// Check if two entries are Referenced to each other
   bool isReferenced(const FROM* from, const EntryType& to )   {
-    const EntryType* e = i_reference(from);
-    return (0 == e) ? false : (*e == to);
+    auto e = i_reference(from);
+    return e && ( *e == to );
   }
   /// Check if two entries are Referenced to each other
   bool isReferenced(const FROM* from, const TO* to )   {
@@ -271,11 +269,7 @@ public:
   /// Check if two entries are Referenced to each other
   bool isReferenced(const FROM* from, const SmartRef<TO>& to )   {
     const EntryType* e = i_reference(from);
-    if ( 0 != assoc )   {
-      SmartRefVector<TO>::const_iterator i = std::find(e->begin(), e->end(), to);
-      return (i == e->end()) ? false : true;
-    }
-    return false;
+    return assoc && std::find(e->begin(), e->end(), to) != e->end();
   }
 };
 

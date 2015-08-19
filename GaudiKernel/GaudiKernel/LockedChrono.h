@@ -57,7 +57,6 @@ namespace Gaudi
       LockedChrono  ( ChronoEntity& c , bool& lock ) 
         : m_timer  ( c     ) 
         , m_locker ( lock  )
-        , m_locked ( false )
       {
         if  ( !lock ) 
         {
@@ -86,7 +85,7 @@ namespace Gaudi
       /// the actual locker 
       bool&         m_locker ;                             // the actual locker 
       /// locked ? 
-      bool          m_locked ;                             //          locked ? 
+      bool          m_locked = false;                      //          locked ? 
       // ======================================================================
     } ;
     // ========================================================================

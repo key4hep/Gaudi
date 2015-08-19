@@ -77,13 +77,11 @@ StatusCode MinimalEventLoopMgr::initialize()    {
     error() << "Error retrieving AppMgr interface IProperty." << endmsg;
     return StatusCode::FAILURE;
   }
-  else {
-    if ( m_topAlgNames.value().size() == 0 )    {
-      setProperty(prpMgr->getProperty("TopAlg")).ignore();
-    }
-    if ( m_outStreamNames.value().size() == 0 )   {
-      setProperty(prpMgr->getProperty("OutStream")).ignore();
-    }
+  if ( m_topAlgNames.value().empty() )    {
+    setProperty(prpMgr->getProperty("TopAlg")).ignore();
+  }
+  if ( m_outStreamNames.value().empty() )   {
+    setProperty(prpMgr->getProperty("OutStream")).ignore();
   }
 
   // Get the references to the services that are needed by the ApplicationMgr itself

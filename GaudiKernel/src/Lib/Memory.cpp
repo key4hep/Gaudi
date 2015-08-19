@@ -57,7 +57,7 @@ long System::basePriority(InfoType fetch, long pid)   {
 
 /// Basic Process Information: Process ID
 long System::procID()   {
-  static long s_pid = ::getpid();
+  static const long s_pid = ::getpid();
   return s_pid;
 }
 
