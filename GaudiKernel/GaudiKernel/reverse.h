@@ -1,3 +1,5 @@
+#ifndef GAUDIKERNEL_REVERSE_H
+#define GAUDIKERNEL_REVERSE_H
 //
 // provide a generic 'reverse' function for use in range-based for loops.
 //
@@ -20,23 +22,42 @@
 //  implies that it does meet the requirements for aggregate initializaton,
 //  which allows for {} initialization of its member.
 //
-#if defined __GNUC__ &&  __GNUC__ < 5
-// std::rbegin and std::rend require gcc 5.0 or later (and clang 3.5 or later)
-template <typename C>
-auto rbegin(C& c) { return c.rbegin(); }
-template <typename C>
-auto rend(C& c) { return c.rend(); }
-#else
-#include <iterator>
-#endif
 
 template <typename Iterable>
 struct reverse_wrapper { Iterable iterable; };
 
 template <typename T>
-auto begin(reverse_wrapper<T>& w) { using namespace std; return rbegin(w.iterable); }
-template <typename T>
-auto end(reverse_wrapper<T>& w)   { using namespace std; return rend(w.iterable); }
+reverse_wrapper<T> reverse(T&& iterable) { return { std::forward<T>(iterable) }; }
+
+
+#if defined __GNUC__ &&  __GNUC__ < 5
+
+// std::rbegin and std::rend require gcc 5.0 or later (and clang 3.5 or later)
+// so we define a seperate namespace for our own implementation, still
+// allowing ADL to prefer user-defined versions
+
+namespace GaudiKernel_reverse_details {
+template <typename C>
+auto rbegin(C& c) -> decltype(c.rbegin()) { return c.rbegin(); }
+template <typename C>
+auto rend(C& c)  -> decltype(c.rend()) { return c.rend(); }
+}
 
 template <typename T>
-reverse_wrapper<T> reverse(T&& iterable) { return { std::forward<T>(iterable) }; }
+auto begin(reverse_wrapper<T>& w) { using GaudiKernel_reverse_details::rbegin; return rbegin(w.iterable); }
+template <typename T>
+auto end(reverse_wrapper<T>& w)   { using GaudiKernel_reverse_details::rend; return rend(w.iterable); }
+
+
+#else
+
+#include <iterator>
+template <typename T>
+auto begin(reverse_wrapper<T>& w) { using std::rbegin; return rbegin(w.iterable); }
+template <typename T>
+auto end(reverse_wrapper<T>& w)   { using std::rend; return rend(w.iterable); }
+
+#endif
+
+
+#endif
