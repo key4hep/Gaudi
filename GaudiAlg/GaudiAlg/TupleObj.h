@@ -55,6 +55,14 @@ class IOpaqueAddress   ;
  */
 namespace Tuples
 {
+    namespace implementation_detail {
+      template <typename T> struct to_ {
+          template <typename Arg>
+          T operator()(Arg&& i) const
+          { return T(std::forward<Arg>(i)); }
+      };
+      constexpr struct to_<float> to_float {};
+    }
   // ==========================================================================
   /** @enum Type
    *  the list of available types for ntuples
@@ -884,9 +892,8 @@ namespace Tuples
                         const std::string& length        ,
                         size_t             maxv          )
     {
-      auto to_float = [](decltype(*first)& i) -> float { return i; };
-      return farray( name, to_float, 
-                     std::forward<ITERATOR>(first), std::forward<ITERATOR>(last), 
+      return farray( name, implementation_detail::to_float,
+                     std::forward<ITERATOR>(first), std::forward<ITERATOR>(last),
                      length, maxv );
     }
     // =======================================================================
@@ -1003,7 +1010,7 @@ namespace Tuples
      */
     template <class FUNCTION, class ITERATOR>
     StatusCode farray ( const std::string& name          ,
-                        FUNCTION&&         function      ,
+                        FUNCTION&          function      ,
                         ITERATOR           first         ,
                         ITERATOR           last          ,
                         const std::string& length        ,
@@ -1013,11 +1020,10 @@ namespace Tuples
       if ( rowWise () ) { return InvalidOperation ; }
 
       // adjust the length
-      if( first + maxv < last )
-      {
+      if( std::distance(first,last) > static_cast<std::ptrdiff_t>(maxv) ) {
         Warning("farray('"
                 + name  + "'): array is overflow, skip extra entries") ;
-        last = first + maxv ;
+        last = std::next(first,maxv);
       }
 
       // get the length item
@@ -1032,7 +1038,7 @@ namespace Tuples
       if( !var ) { return InvalidColumn ; }
 
       // fill the array
-      std::transform( first, last, std::begin(*var), std::forward<FUNCTION>(function) );
+      std::transform( first, last, std::begin(*var), std::cref(function) );
 
       return StatusCode::SUCCESS ;
     }
@@ -1069,26 +1075,26 @@ namespace Tuples
      *  @return status code
      */
     template <class FUNC1, class FUNC2, class DATA>
-    StatusCode farray ( const std::string& name1         ,
-                        const FUNC1&       func1         ,
-                        const std::string& name2         ,
-                        const FUNC2&       func2         ,
-                        DATA               first         ,
-                        DATA               last          ,
-                        const std::string& length        ,
-                        const size_t       maxv          )
+    StatusCode farray ( const std::string&   name1         ,
+                        const FUNC1&         func1         ,
+                        const std::string&   name2         ,
+                        const FUNC2&         func2         ,
+                        DATA                 first         ,
+                        DATA                 last          ,
+                        const std::string&   length        ,
+                        size_t               maxv          )
     {
       if ( invalid () ) { return InvalidTuple     ; }
       if ( rowWise () ) { return InvalidOperation ; }
 
       // adjust the lenfth
-      if( first + maxv < last )
+      if( (size_t)std::distance(first,last) > maxv )
       {
         Warning("farray('"
                 + name1 + ","
                 + name2 + "'): array is overflow, skip extra entries").ignore() ;
         Warning("farray('"+name1+"'): array is overflow, skip extra items").ignore() ;
-        last = first + maxv ;
+        last = std::next(first, maxv) ;
       }
 
       // get the length item
@@ -1164,19 +1170,19 @@ namespace Tuples
                         DATA               first         ,
                         DATA               last          ,
                         const std::string& length        ,
-                        const size_t       maxv          )
+                        size_t             maxv          )
     {
       if ( invalid () ) { return InvalidTuple     ; }
       if ( rowWise () ) { return InvalidOperation ; }
 
       // adjust the length
-      if( first + maxv < last )
+      if( (size_t)std::distance(first,last) > maxv )
       {
         Warning("farray('"
                 + name1 + ","
                 + name2 + ","
                 + name3 + "'): array is overflow, skip extra entries").ignore() ;
-        last = first + maxv ;
+        last = std::next(first,  maxv) ;
       }
 
       // get the length item
@@ -1261,20 +1267,20 @@ namespace Tuples
                         DATA               first         ,
                         DATA               last          ,
                         const std::string& length        ,
-                        const size_t       maxv          )
+                        size_t             maxv          )
     {
       if ( invalid () ) { return InvalidTuple     ; }
       if ( rowWise () ) { return InvalidOperation ; }
 
       // adjust the length
-      if( first + maxv < last )
+      if( std::distance(first,last) > static_cast<std::ptrdiff_t>(maxv) )
       {
         Warning("farray('"
                 + name1 + ","
                 + name2 + ","
                 + name3 + ","
                 + name4 + "'): array is overflow, skip extra entries").ignore() ;
-        last = first + maxv ;
+        last = std::next(first, maxv);
       }
 
       // get the length item
@@ -1372,7 +1378,7 @@ namespace Tuples
                          size_t             rows    ,
                          const MIndex&      cols    ,
                          const std::string& length  ,
-                         const size_t       maxv    )
+                         size_t             maxv    )
     {
       if ( invalid () ) { return InvalidTuple     ; }
       if ( rowWise () ) { return InvalidOperation ; }
@@ -1447,7 +1453,7 @@ namespace Tuples
                          DATA               last   ,
                          const MIndex&      cols   ,
                          const std::string& length ,
-                         const size_t       maxv   )
+                         size_t             maxv   )
     {
       if ( invalid () ) { return InvalidTuple     ; }
       if ( rowWise () ) { return InvalidOperation ; }
@@ -1569,16 +1575,16 @@ namespace Tuples
                          DATA               first  ,
                          DATA               last   ,
                          const std::string& length ,
-                         const size_t       maxv   )
+                         size_t             maxv   )
     {
       if ( invalid () ) { return InvalidTuple     ; }
       if ( rowWise () ) { return InvalidOperation ; }
 
       // adjust the length
-      if ( first + maxv < last )
+      if ( std::distance(first,last) > static_cast<std::ptrdiff_t>(maxv) )
       {
         Warning("fmatrix('"+name+"'): matrix is overflow, skip extra items").ignore() ;
-        last = first + maxv ;
+        last = std::next(first, maxv) ;
       }
 
       // get the length item
@@ -1737,7 +1743,10 @@ namespace Tuples
     template <class ARRAY>
     StatusCode array ( const std::string& name  ,
                        const ARRAY&       data  )
-    { return array ( name , data.begin() , data.end() ) ; }
+    {
+        using std::begin; using std::end;
+        return array ( name , begin(data) , end(data) ) ;
+    }
     // =======================================================================
   public:
     // =======================================================================
@@ -1966,10 +1975,10 @@ namespace Tuples
       const size_t                            maxv = 100 )
     {
       using Info = std::pair<KEY,VALUE>;
-      static const std::array< std::function<float(const Info&)>, 2> 
+      static const std::array< std::function<float(const Info&)>, 2>
                     fns = { [](const Info& i) { return i.first;  } ,
                             [](const Info& i) { return i.second; } };
-      return fmatrix( name, 
+      return fmatrix( name,
                       std::begin(fns), std::end(fns),
                       std::begin(info), std::end(info),
                       length,maxv );
@@ -2100,56 +2109,56 @@ namespace Tuples
     // =======================================================================
     /// get the column
     UChar*  uchars    ( const std::string&  name ,
-                        const unsigned char minv ,
-                        const unsigned char maxv ) ;
+                        unsigned char       minv ,
+                        unsigned char       maxv ) ;
     // =======================================================================
     /// get the column
     Short*   shorts     ( const std::string& name ) ;
     // =======================================================================
     /// get the column
     Short*   shorts     ( const std::string& name ,
-                          const short        minv ,
-                          const short        maxv ) ;
+                          short              minv ,
+                          short              maxv ) ;
     // =======================================================================
     /// get the column
     UShort*   ushorts   ( const std::string& name ) ;
     // =======================================================================
     /// get the column
     UShort*   ushorts   ( const std::string& name ,
-                          const unsigned short minv ,
-                          const unsigned short maxv ) ;
+                          unsigned short     minv ,
+                          unsigned short     maxv ) ;
     // =======================================================================
     /// get the column
     Int*     ints       ( const std::string& name ) ;
     // =======================================================================
     /// get the column
     Int*     ints       ( const std::string& name ,
-                          const int          minv ,
-                          const int          maxv ) ;
+                          int                minv ,
+                          int                maxv ) ;
     // =======================================================================
     /// get the column
     UInt*     uints     ( const std::string& name ) ;
     // =======================================================================
     /// get the column
     UInt*     uints     ( const std::string& name ,
-                          const unsigned int minv ,
-                          const unsigned int maxv ) ;
+                          unsigned int       minv ,
+                          unsigned int       maxv ) ;
     // =======================================================================
     /// get the column
     LongLong* longlongs ( const std::string& name );
     // =======================================================================
     /// get the column
     LongLong* longlongs ( const std::string& name ,
-                          const long long    minv ,
-                          const long long    maxv ) ;
+                          long long          minv ,
+                          long long          maxv ) ;
     // =======================================================================
     /// get the column
     ULongLong* ulonglongs ( const std::string& name ) ;
     // =======================================================================
     /// get the column
-    ULongLong* ulonglongs ( const std::string&       name ,
-                            const unsigned long long minv ,
-                            const unsigned long long maxv ) ;
+    ULongLong* ulonglongs ( const std::string& name ,
+                            unsigned long long minv ,
+                            unsigned long long maxv ) ;
     // =======================================================================
     /// get the column
     FArray*  fArray     ( const std::string& name ,
@@ -2224,7 +2233,7 @@ namespace Tuples
     typedef GaudiUtils::HashMap<std::string,std::unique_ptr<FMatrix>> FMatrices;
     // =======================================================================
   private:
-    template <typename T, NTuple::Item<T>* (TupleObj::*fun)(const std::string&), typename UT> 
+    template <typename T, NTuple::Item<T>* (TupleObj::*fun)(const std::string&), typename UT>
     StatusCode column_(const std::string& name, UT&& value) {
         if ( invalid() ) { return InvalidTuple  ; }
         auto item = (this->*fun)( name );
@@ -2232,7 +2241,7 @@ namespace Tuples
         *item = std::forward<UT>(value);
         return StatusCode::SUCCESS ;
     }
-    template <typename T, NTuple::Item<T>* (TupleObj::*fun)(const std::string&,T,T), typename UT> 
+    template <typename T, NTuple::Item<T>* (TupleObj::*fun)(const std::string&,T,T), typename UT>
     StatusCode column_(const std::string& name, UT&& value, UT&& minv, UT&& maxv) {
         if ( invalid() ) { return InvalidTuple  ; }
         auto item = (this->*fun)( name, std::forward<UT>(minv),std::forward<UT>(maxv) );
