@@ -84,7 +84,7 @@ public:
   virtual void handle(const Incident& inc);
 
   // Destructor.
-  virtual ~HistorySvc();
+  virtual ~HistorySvc() = default;
 
 private:
 
@@ -119,7 +119,7 @@ private:
 
 //   std::set<DataHistory*, DataHistory::DataHistoryOrder> m_datMap;
 
-  JobHistory *m_jobHistory;
+  std::unique_ptr<JobHistory> m_jobHistory;
 
   std::string m_outputFile;
 
