@@ -47,8 +47,8 @@ typedef StatusCode        STATUS;
 
 namespace {
   struct Partition final {
-    IDataProviderSvc* dataProvider;
-    IDataManagerSvc*  dataManager;
+    IDataProviderSvc* dataProvider = nullptr;
+    IDataManagerSvc*  dataManager = nullptr;
     std::string       name;
   };
 }
@@ -443,9 +443,12 @@ public:
     SmartIF<IDataManagerSvc> dataMgr(isvc);
     SmartIF<IDataProviderSvc> dataProv(isvc);
     if ( !dataMgr.isValid() || !dataProv.isValid() )  return NO_INTERFACE;
-    Partition p { dataProv, dataMgr, nam };
-    p.dataManager->addRef();
+    Partition p;
+    p.dataProvider = dataProv;
     p.dataProvider->addRef();
+    p.dataManager = dataMgr;
+    p.dataManager->addRef();
+    p.name = nam;
     m_partitions.emplace( nam, p );
     return STATUS::SUCCESS;
   }
@@ -606,7 +609,7 @@ public:
     setDataLoader(nullptr).ignore();
     clearStore().ignore();
     clearPartitions().ignore();
-    m_current = Partition();
+    m_current = { };
     detachServices();
     return Service::finalize();
   }
