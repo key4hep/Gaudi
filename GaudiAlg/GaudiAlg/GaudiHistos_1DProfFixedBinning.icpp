@@ -15,7 +15,7 @@ AIDA::IProfile1D*  GaudiHistos<PBASE>::bookProfile1D
   if  ( !produceHistos() )                   { return nullptr    ; } // RETURN
   //
   // exist?
-  AIDA::IProfile1D* hist = profile1D ( title ) ;
+  auto hist = profile1D ( title ) ;
   // histogram is already booked
   if( hist      )                       { return hist ; } // RETURN !!
 
@@ -51,7 +51,7 @@ AIDA::IProfile1D*  GaudiHistos<PBASE>::bookProfile1D
   }
 
   // exist?
-  AIDA::IProfile1D* hist = profile1D ( ID ) ;
+  auto hist = profile1D ( ID ) ;
   // histogram is already booked
   if( hist       )                  { return hist ; } // RETURN !!
 

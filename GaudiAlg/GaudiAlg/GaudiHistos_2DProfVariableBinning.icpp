@@ -11,9 +11,9 @@ AIDA::IProfile2D*  GaudiHistos<PBASE>::bookProfile2D
   if  ( !produceHistos() )                   { return 0    ; } // RETURN
   //
   // exist?
-  AIDA::IProfile2D* hist = profile2D ( title ) ;
+  auto hist = profile2D ( title ) ;
   // histogram is already booked
-  if( NULL != hist      )                     { return hist ; } // RETURN !!
+  if( hist      )                     { return hist ; } // RETURN !!
 
   // propose the histogram ID
   HistoID ID;
@@ -39,12 +39,12 @@ AIDA::IProfile2D*  GaudiHistos<PBASE>::bookProfile2D
   if (ID.undefined())
   {
     this->Error("Undefined Histogram ID : Title='"+title+"'");
-    return NULL;
+    return nullptr;
   }
   // exist?
-  AIDA::IProfile2D* hist = profile2D ( ID ) ;
+  auto hist = profile2D ( ID ) ;
   // histogram is already booked
-  if( NULL != hist )                         { return hist ; } // RETURN !!
+  if( hist )                         { return hist ; } // RETURN !!
 
   // Histogram title
   const std::string & htitle =
@@ -70,9 +70,9 @@ AIDA::IProfile2D*  GaudiHistos<PBASE>::bookProfile2D
   }
 
   // test OK
-  if( NULL == hist )
+  if( !hist )
   { this->Error( "IProfile2D* points to NULL! ID='" + ID.idAsString() +
-                 "' title='"+htitle+"'" ) ; return NULL; } // RETURN !!
+                 "' title='"+htitle+"'" ) ; return nullptr; } // RETURN !!
 
   // add histogram into histogram storages
   m_profile2DMapID    [ ID    ] = hist ;
@@ -103,12 +103,12 @@ AIDA::IProfile2D* GaudiHistos<PBASE>::profile2D
   const HistoBinEdges& edgesY       ,
   const double        weight       ) const
 {
-  AIDA::IProfile2D * h(NULL);
+  AIDA::IProfile2D * h(nullptr);
   if ( produceHistos() )
   {
     // retrieve or book the histogram
     h = profile2D ( title ) ;
-    if ( NULL == h ) { h = bookProfile2D ( title, edgesX, edgesY ) ; }
+    if ( !h ) { h = bookProfile2D ( title, edgesX, edgesY ) ; }
     // fill the histogram
     h = fill ( h , valueX , valueY , valueZ , weight , title ) ;
   }
@@ -128,12 +128,12 @@ AIDA::IProfile2D* GaudiHistos<PBASE>::profile2D
   const HistoBinEdges& edgesY       ,
   const double        weight       ) const
 {
-  AIDA::IProfile2D * h(NULL);
+  AIDA::IProfile2D * h(nullptr);
   if ( produceHistos() )
   {
     // retrieve or book the histogram
     h = profile2D ( ID ) ;
-    if ( NULL == h ) { h = bookProfile2D ( ID , title , edgesX , edgesY ) ; }
+    if ( !h ) { h = bookProfile2D ( ID , title , edgesX , edgesY ) ; }
 
     // fill the histogram
     h = fill ( h , valueX , valueY , valueZ , weight , title ) ;

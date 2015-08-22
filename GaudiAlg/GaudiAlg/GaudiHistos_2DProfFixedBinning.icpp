@@ -15,7 +15,7 @@ AIDA::IProfile2D*  GaudiHistos<PBASE>::bookProfile2D
   if  ( !produceHistos() )                   { return 0    ; } // RETURN
   //
   // exist?
-  AIDA::IProfile2D* hist = profile2D ( title ) ;
+  auto hist = profile2D ( title ) ;
   // histogram is already booked
   if( 0 != hist      )                          { return hist ; } // RETURN !!
 
@@ -47,10 +47,10 @@ AIDA::IProfile2D*  GaudiHistos<PBASE>::bookProfile2D
   if (ID.undefined())
   {
     this->Error("Undefined Histogram ID : Title='"+title+"'");
-    return NULL;
+    return nullptr;
   }
   // exist?
-  AIDA::IProfile2D* hist = profile2D ( ID ) ;
+  auto hist = profile2D ( ID ) ;
   // histogram is already booked
   if( 0 != hist )                               { return hist ; } // RETURN !!
 

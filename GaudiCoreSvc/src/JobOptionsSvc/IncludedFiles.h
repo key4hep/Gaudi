@@ -16,7 +16,7 @@ class IncludedFiles {
  public:
   typedef std::map<std::string, Position> Container;
  public:
-  bool AddFile(const std::string& filename, const Position& from);
+  bool AddFile(std::string filename, Position from);
   bool IsIncluded(const std::string& filename) const;
   bool GetPosition(const std::string& filename, const Position** pos) const;
  private:

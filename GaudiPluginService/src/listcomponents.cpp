@@ -96,34 +96,27 @@ int main(int argc, char* argv[]) {
   // handle output option
   std::unique_ptr<std::ostream> output_file;
   if (output_opt != "-") {
-    output_file = std::unique_ptr<std::ostream>(new std::ofstream(output_opt.c_str()));
+    output_file.reset( new std::ofstream(output_opt.c_str()) );
   }
   std::ostream &output = (output_file ? *output_file : std::cout);
 
   // loop over the list of libraries passed on the command line
   for (char* lib: libs) {
-
     if (dlopen(lib, RTLD_LAZY | RTLD_LOCAL)) {
-
       std::set<key_type> factories = reg.loadedFactories();
-      std::set<key_type>::const_iterator f;
-      for (f = factories.begin(); f != factories.end(); ++f) {
-        if (loaded.find(*f) == loaded.end())
-        {
+      for (auto f = factories.begin(); f != factories.end(); ++f) {
+        if (loaded.find(*f) == loaded.end()) {
           output << lib << ":" << *f << std::endl;
           loaded[*f] = lib;
-        }
-        else
+        } else
           std::cerr << "WARNING: factory '" << *f
                     << "' already found in " << loaded[*f]
                     << std::endl;
       }
-
     } else {
       std::cerr << "ERROR: failed to load " << lib << std::endl;
       return EXIT_FAILURE;
     }
   }
-
   return EXIT_SUCCESS;
 }

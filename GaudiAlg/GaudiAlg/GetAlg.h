@@ -3,7 +3,9 @@
 // ============================================================================
 // Include files
 // ============================================================================
-// GaudiKernnel
+#include <type_traits>
+// ============================================================================
+// GaudiKernel
 // ============================================================================
 #include "GaudiKernel/IAlgorithm.h"
 // ============================================================================
@@ -42,23 +44,11 @@ namespace Gaudi
     public:
       /// the only one essential method:
       virtual bool operator() ( const IAlgorithm* a ) const
-      { return dynamic_cast<const TYPE*>( a ); }
+      {   using TYPE_ = typename std::decay<TYPE>::type;
+          using CTYPE = typename std::add_const<TYPE_>::type;
+          using cptr  = typename std::add_pointer<CTYPE>::type;
+          return dynamic_cast<cptr>( a ); }
     } ;
-    // ========================================================================
-    template <class TYPE>
-    class AlgTypeSelector<TYPE*>       : public AlgTypeSelector<TYPE>   {} ;
-    // ========================================================================
-    template <class TYPE>
-    class AlgTypeSelector<const TYPE*> : public AlgTypeSelector<TYPE>   {} ;
-    // ========================================================================
-    template <class TYPE>
-    class AlgTypeSelector<TYPE&>       : public AlgTypeSelector<TYPE>   {} ;
-    // ========================================================================
-    template <class TYPE>
-    class AlgTypeSelector<const TYPE&> : public AlgTypeSelector<TYPE>   {} ;
-    // ========================================================================
-    template <class TYPE>
-    class AlgTypeSelector<const TYPE>  : public AlgTypeSelector<TYPE>   {} ;
     // ========================================================================
     /** @class AlgNameSelector
      *  The trivial selector of algorithm by type

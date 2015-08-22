@@ -68,10 +68,6 @@ SmartIF<IService>& ServiceManager::createService(const Gaudi::Utils::TypeNameStr
     return no_service;
   }
 
-  /// @FIXME: check how this hack works
-  StatusCode rc = StatusCode::FAILURE;
-  rc.setChecked(); //hack to avoid going into infinite recursion on ~StatusCode
-
   const std::string &name = typeName.name();
   std::string type = typeName.type();
   if (!typeName.haveType()) { // the type is not explicit
@@ -86,7 +82,7 @@ SmartIF<IService>& ServiceManager::createService(const Gaudi::Utils::TypeNameStr
   auto ip = type.find("__");
   if ( ip != std::string::npos) type.erase(ip,type.length());
 
-  IService* service = Service::Factory::create(type, name, static_cast<ISvcLocator*>(this)); // serviceLocator().get());
+  IService* service = Service::Factory::create(type, name, this);
 
   if ( service ) {
     m_listsvc.push_back(service);

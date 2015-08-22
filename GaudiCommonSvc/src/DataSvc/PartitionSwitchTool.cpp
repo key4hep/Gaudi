@@ -11,8 +11,8 @@
  */
 class PartitionSwitchTool: public extends1<AlgTool, IPartitionControl> {
 
-  typedef const std::string& CSTR;
-  typedef StatusCode         STATUS;
+  using CSTR = const std::string&;
+  using STATUS = StatusCode;
 
 private:
 

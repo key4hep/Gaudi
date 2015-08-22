@@ -12,6 +12,9 @@
 #include <string>
 #include <cassert>
 #include "boost/circular_buffer.hpp"
+#include "boost/algorithm/string/predicate.hpp"
+#include "boost/algorithm/string/erase.hpp"
+namespace ba = boost::algorithm;
 
 #define ON_DEBUG if (UNLIKELY(outputLevel() <= MSG::DEBUG))
 #define ON_VERBOSE if (UNLIKELY(outputLevel() <= MSG::VERBOSE))
@@ -31,21 +34,11 @@ unsigned long totalRefCount( const C& toolList )
   });
 }
 
-/// small helper function to get a uniform removal interface
-//  regardless of the choice between std::vector and std::list...
+/// small helper functions 
 template <typename C> void remove(C& c, typename C::const_reference i)  {
     c.erase( std::remove(std::begin(c),std::end(c),i), std::end(c) );
 }
-template <typename T> void remove(std::list<T>& l, const T& i) {
-    l.remove(i);
-}
 
-template <typename C, typename T> void push_front(C& c, T&& i)  {
-    c.insert( std::begin(c), std::forward<T>(i) );
-}
-template <typename T> void push_front(std::list<T>& l, T&& i) { 
-    l.push_front(std::forward<T>(i));
-}
 }
 
 // Instantiation of a static factory class used by clients to create
@@ -172,11 +165,11 @@ StatusCode ToolSvc::finalize()
         // postpone deletion
         finalizedTools.push_back(pTool);
       } else {
-        // Place back in list to try again later
+        // Place back at the front of the list to try again later
         // ToolSvc::releaseTool( IAlgTool* ) remains active for this tool
         ON_DEBUG debug() << "  Delaying   finalization of " << toolName
                          << " (refCount " << count << ")" << endmsg;
-        push_front(m_instancesTools,pTool);
+        m_instancesTools.insert( std::begin(m_instancesTools), pTool );
       }
     } // end of inner loop
     toolCount = m_instancesTools.size();
@@ -236,9 +229,9 @@ StatusCode ToolSvc::finalize()
   if ( m_pHistorySvc ) m_pHistorySvc->release();
 
   // Finalize this specific service
-  return  ( Service::finalize().isSuccess() && !fail ) 
-          ? StatusCode::SUCCESS
-          : StatusCode::FAILURE;
+  return  ( Service::finalize().isSuccess() && !fail ) ?
+            StatusCode::SUCCESS :
+            StatusCode::FAILURE ;
 
 }
 
@@ -249,7 +242,7 @@ StatusCode ToolSvc::finalize()
 // ===================================================================================
 namespace
 {
-  const std::string s_PUBLIC = ":PUBLIC" ;
+  static const std::string s_PUBLIC = ":PUBLIC" ;
 }
 
 //------------------------------------------------------------------------------
@@ -260,32 +253,25 @@ StatusCode ToolSvc::retrieve ( const std::string& tooltype ,
                                bool               createIf )
 //------------------------------------------------------------------------------
 {
+  // check for tools, which by name are required to be public:
+  if ( ba::ends_with( tooltype, s_PUBLIC ) ) {
+    // parent for PUBLIC tool is 'this', i.e. ToolSvc
+    return retrieve ( ba::erase_tail_copy(tooltype, s_PUBLIC.size()),
+                      iid , tool , this , createIf ) ;
+  }
 
   // protect against empty type
   if ( tooltype.empty() ) {
     error() << "retrieve(): No Tool Type/Name given" << endmsg;
     return StatusCode::FAILURE;
   }
-
-  {
-    // check for tools, which by name is required to be public:
-    const std::string::size_type pos = tooltype.find ( s_PUBLIC ) ;
-    if ( std::string::npos != pos )
-    {
-      // set parent for PUBLIC tool
-      parent = this ;
-      return retrieve ( std::string( tooltype , 0 , pos ) ,
-                        iid , tool , parent , createIf ) ;
-    }
-  }
-
-  const std::string::size_type pos = tooltype.find('/');
-  if( std::string::npos == pos ) {
+  auto pos = tooltype.find('/');
+  if ( std::string::npos == pos ) {
     return retrieve ( tooltype , tooltype , iid , tool , parent , createIf );
   }
-  const std::string newtype ( tooltype ,       0 , pos               ) ;
-  const std::string newname ( tooltype , pos + 1 , std::string::npos ) ;
-  return retrieve ( newtype , newname , iid , tool , parent , createIf ) ;
+  return retrieve ( tooltype.substr( 0 , pos ),
+                    tooltype.substr( pos + 1 ),
+                    iid , tool , parent , createIf ) ;
 }
 
 // ===================================================================================
@@ -304,16 +290,12 @@ StatusCode ToolSvc::retrieve ( const std::string& tooltype ,
   if( toolname.empty() || (std::string::npos != tooltype.find('/')) )
   { return retrieve ( tooltype , iid , tool , parent , createIf ) ; }
 
+  // check for tools, which by name are required to be public:
+  if ( ba::ends_with( toolname, s_PUBLIC ) )
   {
-    // check for tools, which by name is required to be public:
-    const std::string::size_type pos = toolname.find ( s_PUBLIC ) ;
-    if ( std::string::npos != pos )
-    {
-      // set parent for PUBLIC tool
-      parent = this ;
-      return retrieve ( tooltype , std::string( toolname , 0 , pos ) ,
-                        iid , tool , parent , createIf ) ;
-    }
+    // parent for PUBLIC tool is this, i.e. ToolSvc
+    return retrieve ( tooltype , ba::erase_tail_copy(toolname, s_PUBLIC.size() ), 
+                      iid , tool , this , createIf ) ;
   }
 
   IAlgTool* itool = nullptr;
@@ -342,10 +324,8 @@ StatusCode ToolSvc::retrieve ( const std::string& tooltype ,
                 << " not found and creation not requested" << endmsg;
       return sc;
     }
-    else {
-      sc = create( tooltype, toolname, parent, itool );
-      if ( sc.isFailure() ) { return sc; }
-    }
+    sc = create( tooltype, toolname, parent, itool );
+    if ( sc.isFailure() ) { return sc; }
   }
 
   // Get the right interface of it
@@ -383,7 +363,7 @@ std::vector<std::string> ToolSvc::getInstances() const
   std::vector<std::string> tools{m_instancesTools.size()};
   std::transform(std::begin(m_instancesTools), std::end(m_instancesTools),
                  std::begin(tools),
-                 [](IAlgTool* tool) {return tool->name();});
+                 [](IAlgTool* tool) { return tool->name(); });
   return tools;
 }
 //------------------------------------------------------------------------------
@@ -446,8 +426,7 @@ class ToolCreateGuard {
   std::unique_ptr<IAlgTool> m_tool;
 
 public:
-  ToolCreateGuard(T& tools): m_tools(tools)
-  {}
+  ToolCreateGuard(T& tools): m_tools(tools) {}
   // we don't get a move constructor by default because we
   // have a non-trivial destructor... However, the default 
   // one is just fine...

@@ -12,9 +12,9 @@ bool gp::IncludedFiles::IsIncluded(const std::string& filename) const {
     return container_.find(filename) != container_.end();
 }
 // ============================================================================
-bool gp::IncludedFiles::AddFile(const std::string& filename,
-                                const Position& from){
-    return container_.emplace(filename, from).second;
+bool gp::IncludedFiles::AddFile(std::string filename,
+                                Position from){
+    return container_.emplace( std::move(filename), std::move(from)).second;
 }
 // ============================================================================
 bool gp::IncludedFiles::GetPosition(const std::string& filename,

@@ -6,6 +6,7 @@
 // ============================================================================
 // STD&STL
 // ============================================================================
+#include <cstddef>
 #include <set>
 #include <string>
 #include <limits>
@@ -1010,7 +1011,7 @@ namespace Tuples
      */
     template <class FUNCTION, class ITERATOR>
     StatusCode farray ( const std::string& name          ,
-                        FUNCTION&          function      ,
+                        const FUNCTION&    function      ,
                         ITERATOR           first         ,
                         ITERATOR           last          ,
                         const std::string& length        ,
@@ -1088,7 +1089,7 @@ namespace Tuples
       if ( rowWise () ) { return InvalidOperation ; }
 
       // adjust the lenfth
-      if( (size_t)std::distance(first,last) > maxv )
+      if( std::distance(first,last) > static_cast<std::ptrdiff_t>(maxv) )
       {
         Warning("farray('"
                 + name1 + ","

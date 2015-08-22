@@ -52,11 +52,32 @@ namespace AIDA
 // ============================================================================
 namespace {
    constexpr struct ordered_t {
-       template <typename C> 
+       template <typename C>
        std::map<typename C::key_type, typename C::mapped_type> operator()(const C& c) const {
                return { std::begin(c), std::end(c) };
        }
    } ordered {};
+
+   template <typename Map>
+   typename Map::mapped_type lookup_(const Map& map, const typename Map::key_type& ID) {
+        auto found = map.find( ID ) ;
+        return found != std::end(map) ? found->second : nullptr;
+   }
+
+   // ============================================================================
+   // Searches 'title' for all instancies of 'A' and replaces them with 'B'
+   // ============================================================================
+   inline void stringSearchReplace ( std::string       & title ,
+                                     const std::string & A     ,
+                                     const std::string & B     )
+   {
+     for ( auto slash = title.find_first_of ( A ) ;
+           slash != std::string::npos ;
+           slash = title.find_first_of( A ) )
+     {
+       title = title.substr(0,slash) + B + title.substr(slash+A.size());
+     }
+   }
 }
 // =============================================================================
 // Constructor initialisation and job options
@@ -78,7 +99,7 @@ void GaudiHistos<PBASE>::initGaudiHistosConstructor()
   this->declareProperty
     ( "HistoCountersPrint"         ,
       m_histoCountersPrint = true ,
-      "Switch on/off the printout of histogram counters at finalization" ) ;  
+      "Switch on/off the printout of histogram counters at finalization" ) ;
   // check for NaN/Finite
   this->declareProperty
     ( "HistoCheckForNaN"      ,
@@ -126,10 +147,8 @@ void GaudiHistos<PBASE>::initGaudiHistosConstructor()
   this->declareProperty
     ( "UseSequencialNumericAutoIDs", m_useNumericAutoIDs = false,
       "Flag to allow users to switch back to the old style of creating numerical automatic IDs" );
-  m_idReplaceInfo.clear();
-  m_idReplaceInfo["/"] = "=SLASH=";
   this->declareProperty
-    ( "AutoStringIDPurgeMap", m_idReplaceInfo,
+    ( "AutoStringIDPurgeMap", m_idReplaceInfo = { { "/", "=SLASH=" } } ,
       "Map of strings to search and replace when using the title as the basis of automatically generated literal IDs" );
 }
 // ============================================================================
@@ -382,8 +401,7 @@ void GaudiHistos<PBASE>::monitorHisto
 template <class PBASE>
 AIDA::IHistogram1D* GaudiHistos<PBASE>::histo1D ( const HistoID& ID )  const
 {
-  auto found = histo1DMapID().find( ID ) ;
-  return histo1DMapID().end() != found ? found->second : nullptr;
+  return lookup_( histo1DMapID(), ID );
 }
 // ============================================================================
 // access the EXISTING 2D histogram by ID
@@ -391,8 +409,7 @@ AIDA::IHistogram1D* GaudiHistos<PBASE>::histo1D ( const HistoID& ID )  const
 template <class PBASE>
 AIDA::IHistogram2D* GaudiHistos<PBASE>::histo2D ( const HistoID& ID )  const
 {
-  auto found = histo2DMapID().find( ID ) ;
-  return histo2DMapID().end() != found ? found->second : nullptr;
+  return lookup_( histo2DMapID(), ID );
 }
 // ============================================================================
 // access the EXISTING 3D histogram by ID
@@ -400,8 +417,7 @@ AIDA::IHistogram2D* GaudiHistos<PBASE>::histo2D ( const HistoID& ID )  const
 template <class PBASE>
 AIDA::IHistogram3D* GaudiHistos<PBASE>::histo3D ( const HistoID& ID )  const
 {
-  auto found = histo3DMapID().find( ID ) ;
-  return  ( histo3DMapID().end() != found ? found->second : nullptr);
+  return lookup_( histo3DMapID(), ID );
 }
 // ============================================================================
 // access the EXISTING 1D profile histogram by ID
@@ -409,8 +425,7 @@ AIDA::IHistogram3D* GaudiHistos<PBASE>::histo3D ( const HistoID& ID )  const
 template <class PBASE>
 AIDA::IProfile1D* GaudiHistos<PBASE>::profile1D ( const HistoID& ID )  const
 {
-  auto found = profile1DMapID().find( ID ) ;
-  return  profile1DMapID().end() != found ? found->second : nullptr;
+  return lookup_( profile1DMapID(), ID );
 }
 // ============================================================================
 // access the EXISTING 2D profile histogram by ID
@@ -418,8 +433,7 @@ AIDA::IProfile1D* GaudiHistos<PBASE>::profile1D ( const HistoID& ID )  const
 template <class PBASE>
 AIDA::IProfile2D* GaudiHistos<PBASE>::profile2D ( const HistoID& ID )  const
 {
-  auto found = profile2DMapID().find( ID ) ;
-  return profile2DMapID().end() != found ? found->second : nullptr;
+  return lookup_( profile2DMapID(), ID );
 }
 // ============================================================================
 // Returns the total number of histograms (of all types) currently booked
@@ -466,31 +480,14 @@ void GaudiHistos<PBASE>::newHistoID
 // Create an ID string from a title string
 // ============================================================================
 template <class PBASE>
-std::string GaudiHistos<PBASE>::convertTitleToID( const std::string & title ) const
+std::string GaudiHistos<PBASE>::convertTitleToID( std::string title ) const
 {
   // clean up the ID string for all unwanted characters
-  std::string tmp_id = title;
   for ( const auto& i : m_idReplaceInfo )
   {
-    stringSearchReplace( tmp_id, i.first, i.second );
+    stringSearchReplace( title, i.first, i.second );
   }
-  return tmp_id;
-}
-// ============================================================================
-// Searches 'title' for all instancies of 'A' and replaces them with 'B'
-// ============================================================================
-template <class PBASE>
-void GaudiHistos<PBASE>::stringSearchReplace
-( std::string       & title ,
-  const std::string & A     ,
-  const std::string & B     ) const
-{
-  auto slash = title.find_first_of ( A ) ;
-  while ( std::string::npos != slash )
-  {
-    title = title.substr(0,slash) + B + title.substr(slash+A.size());
-    slash = title.find_first_of( A );
-  }
+  return title;
 }
 // ============================================================================
 // the handler for "HistoPrint" property

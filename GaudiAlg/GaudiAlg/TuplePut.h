@@ -144,7 +144,7 @@ inline StatusCode Tuples::TupleObj::put
   // the local storage of items
   static Tuples::ItemStore<TYPE*> s_map ;
   // get the variable by name:
-  NTuple::Item<TYPE*>* item = s_map.getItem ( name , this ) ;
+  auto item = s_map.getItem ( name , this ) ;
   if ( !item )
   { return Error ( " put('" + name + "'): invalid item detected", InvalidItem ) ; }
   // assign the item!

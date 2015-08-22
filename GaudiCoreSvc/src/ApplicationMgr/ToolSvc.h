@@ -23,7 +23,6 @@ class ToolSvc : public extends1<Service, IToolSvc> {
 
 public:
 
-
   /// Initialize the service.
   StatusCode initialize() override;
 
@@ -60,11 +59,11 @@ public:
 
   /// Create Tool standard way with automatically assigned name
   StatusCode create(const std::string& type, const IInterface* parent,
-                            IAlgTool*& tool);
+                    IAlgTool*& tool);
 
   /// Create Tool standard way with specified name
   StatusCode create(const std::string& type, const std::string& name,
-                            const IInterface* parent, IAlgTool*& tool);
+                    const IInterface* parent, IAlgTool*& tool);
 
   /// Check if the tool instance exists
   bool existsTool( const std::string& toolname) const;
@@ -86,9 +85,6 @@ public:
 
 
 private: // methods
-  // Typedefs
-  typedef std::vector<IAlgTool*>     ListTools;
-
   // helper functions
   //
   /** The total number of refCounts on all tools in the instancesTools list */
@@ -102,7 +98,7 @@ private: // methods
 private: // data
 
   /// Common Tools
-  ListTools    m_instancesTools;        // List of all instances of tools
+  std::vector<IAlgTool*> m_instancesTools;        // List of all instances of tools
 
   /// Pointer to HistorySvc
   IHistorySvc* m_pHistorySvc = nullptr;

@@ -14,9 +14,9 @@
 class IssueLogger: public extends1<Service, IIssueLogger> {
 public:
 
-  virtual StatusCode initialize();
-  virtual StatusCode reinitialize();
-  virtual StatusCode finalize();
+  StatusCode initialize() override;
+  StatusCode reinitialize() override;
+  StatusCode finalize() override;
 
   IssueLogger(const std::string& name, ISvcLocator *svc );
 
@@ -27,7 +27,7 @@ public:
 
 protected:
 
-  virtual ~IssueLogger();
+  ~IssueLogger() override = default;
 
 private:
 
@@ -37,20 +37,21 @@ private:
 
   IssueSeverity::Level m_reportLevel, m_traceLevel;
 
-  StreamLogger *m_logger[IssueSeverity::NUM_LEVELS];
-  std::function<void (const std::string&)> m_log[IssueSeverity::NUM_LEVELS];
-
-  std::map<MSG::Level, IssueSeverity::Level> m_msgSevMap;
-  std::map<IssueSeverity::Level, MSG::Level> m_sevMsgMap;
-  std::map<IssueSeverity::Level, std::string> m_levelTrans;
-  std::map<std::string, IssueSeverity::Level> m_levelSTrans;
-
+  class logger_t {
+      std::unique_ptr<StreamLogger> m_logger ;
+      void (StreamLogger::*m_fun)(const std::string&) = nullptr;
+  public:
+      logger_t() = default;
+      logger_t( StreamLogger* logger, void (StreamLogger::*fun)(const std::string&)  ) 
+          : m_logger{ logger }, m_fun{ fun } {} 
+      void operator()(const std::string& s) const { (m_logger.get()->*m_fun)(s); }
+      const std::string& name() const { return m_logger->name(); }
+      explicit operator bool () const { return bool(m_logger); }
+      void reset() { m_logger.reset(); }
+  };
+  std::array<logger_t,IssueSeverity::NUM_LEVELS> m_log;
 
   StatusCode connect( const std::string& );
-  void getTraceBack(std::string& stack);
-
-  MSG::Level sevToMsg(IssueSeverity::Level &lev);
-  IssueSeverity::Level msgToSev(MSG::Level &lev);
 
   void setupDefaultLogger();
   void setupLevels(Property& prop);

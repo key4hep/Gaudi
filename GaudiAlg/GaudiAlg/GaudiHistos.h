@@ -3048,15 +3048,10 @@ private:
   void newHistoID( const std::string & title,
                    HistoID& ID ) const;
   // ==========================================================================
-  /// Searches 'title' for all instancies of 'A' and replaces them with 'B'
-  void stringSearchReplace( std::string & title,
-                            const std::string & A,
-                            const std::string & B ) const;
-  // ==========================================================================
 protected:
   // ==========================================================================
   /// Create an ID string from a title string
-  std::string convertTitleToID( const std::string & title ) const;
+  std::string convertTitleToID( std::string title ) const;
   // ==========================================================================
 private:
   // ==========================================================================

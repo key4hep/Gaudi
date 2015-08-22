@@ -75,7 +75,6 @@ HistorySvc::HistorySvc( const std::string& name, ISvcLocator* svc )
     m_isInitialized(false),
     m_dump(false),
     p_algCtxSvc(nullptr),
-    m_jobHistory(nullptr),
     m_outputFile(""),
     m_incidentSvc(nullptr),
     m_log(msgSvc(), name ),
@@ -93,18 +92,10 @@ HistorySvc::HistorySvc( const std::string& name, ISvcLocator* svc )
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-HistorySvc::~HistorySvc() {
-  delete m_jobHistory;
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
 StatusCode HistorySvc::reinitialize() {
 
   clearState();
-
   m_state = Gaudi::StateMachine::OFFLINE;
-
   return initialize();
 
 }
@@ -200,8 +191,8 @@ StatusCode HistorySvc::initialize() {
 
 StatusCode HistorySvc::captureState() {
 
-  if (m_jobHistory == 0) {
-    m_jobHistory = new JobHistory;
+  if (!m_jobHistory ) {
+    m_jobHistory.reset( new JobHistory );
     IJobOptionsSvc *jo;
     if (service("JobOptionsSvc",jo).isFailure()) {
        m_log << MSG::ERROR
@@ -541,7 +532,7 @@ HistorySvc::dumpProperties(std::ofstream& ofs) const {
 JobHistory*
 HistorySvc::getJobHistory() const {
 
-  return m_jobHistory;
+  return m_jobHistory.get();
 
 }
 
@@ -811,8 +802,7 @@ HistorySvc::registerAlgTool(const IAlgTool& ialg) {
   (const_cast<AlgTool*>(alg))->addRef();
 
   const JobHistory *job = getJobHistory();
-  AlgToolHistory *algHist = new AlgToolHistory(*alg, job);
-  m_algtoolmap[alg] = algHist;
+  m_algtoolmap[alg] = new AlgToolHistory(*alg, job);
 
   if (m_log.level() <= MSG::DEBUG) {
     m_log << MSG::DEBUG << "Registering algtool: ";
