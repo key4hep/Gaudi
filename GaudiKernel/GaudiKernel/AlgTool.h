@@ -42,56 +42,56 @@ public:
 #endif
 
   /// Query for a given interface
-  virtual StatusCode queryInterface(const InterfaceID& riid, void** ppvUnknown);
+  StatusCode queryInterface(const InterfaceID& riid, void** ppvUnknown) override;
 
   /// Retrieve full identifying name of the concrete tool object.
-  virtual const std::string& name() const;
+  const std::string& name() const override;
 
   /// Retrieve type (concrete class) of the sub-algtool.
-  virtual const std::string& type() const;
+  const std::string& type() const override;
 
   /// Retrieve parent of the sub-algtool.
-  virtual const IInterface*  parent() const;
+  const IInterface*  parent() const override;
 
   // State machine implementation
-  virtual StatusCode configure() { return StatusCode::SUCCESS; }
-  virtual StatusCode initialize();
-  virtual StatusCode start();
-  virtual StatusCode stop();
-  virtual StatusCode finalize();
-  virtual StatusCode terminate() { return StatusCode::SUCCESS; }
-  virtual StatusCode reinitialize();
-  virtual StatusCode restart();
-  virtual Gaudi::StateMachine::State FSMState() const { return m_state; }
-  virtual Gaudi::StateMachine::State targetFSMState() const { return m_targetState; }
+  StatusCode configure() override { return StatusCode::SUCCESS; }
+  StatusCode initialize() override;
+  StatusCode start() override;
+  StatusCode stop() override;
+  StatusCode finalize() override;
+  StatusCode terminate() override { return StatusCode::SUCCESS; }
+  StatusCode reinitialize() override;
+  StatusCode restart() override;
+  Gaudi::StateMachine::State FSMState() const override { return m_state; }
+  Gaudi::StateMachine::State targetFSMState() const override { return m_targetState; }
 
   /// Initialize AlgTool
-  virtual StatusCode sysInitialize();
+  StatusCode sysInitialize() override;
 
   /// Start AlgTool
-  virtual StatusCode sysStart();
+  StatusCode sysStart() override;
 
   /// Stop AlgTool
-  virtual StatusCode sysStop();
+  StatusCode sysStop() override;
 
   /// Finalize AlgTool
-  virtual StatusCode sysFinalize();
+  StatusCode sysFinalize() override;
 
   /// Initialize AlgTool
-  virtual StatusCode sysReinitialize();
+  StatusCode sysReinitialize() override;
 
   /// Start AlgTool
-  virtual StatusCode sysRestart();
+  StatusCode sysRestart() override;
 
   /// Default implementations for IProperty interface.
-  virtual StatusCode setProperty( const Property&    p );
-  virtual StatusCode setProperty( const std::string& s );
-  virtual StatusCode setProperty( const std::string& n, const std::string& v);
-  virtual StatusCode getProperty(Property* p) const;
-  virtual const Property& getProperty( const std::string& name) const;
-  virtual StatusCode getProperty( const std::string& n, std::string& v ) const;
-  virtual const std::vector<Property*>& getProperties( ) const;
-  virtual bool hasProperty(const std::string& name) const;
+  StatusCode setProperty( const Property&    p ) override;
+  StatusCode setProperty( const std::string& s ) override;
+  StatusCode setProperty( const std::string& n, const std::string& v) override;
+  StatusCode getProperty(Property* p) const override;
+  const Property& getProperty( const std::string& name) const override;
+  StatusCode getProperty( const std::string& n, std::string& v ) const override;
+  const std::vector<Property*>& getProperties( ) const override;
+  bool hasProperty(const std::string& name) const override;
 
   inline PropertyMgr * getPropertyMgr() { return m_propertyMgr.get(); }
 
@@ -316,7 +316,7 @@ protected:
 protected:
 
   // Standard destructor.
-  virtual ~AlgTool();
+  ~AlgTool() override;
 
 private:
   typedef std::list<std::pair<InterfaceID,void*> >  InterfaceList;

@@ -57,44 +57,44 @@ public:
 
   /// The following methods are meant to be implemented by the child class...
 
-  virtual void before(StandardEventType, INamedInterface*);
-  virtual void before(StandardEventType, const std::string&);
+  void before(StandardEventType, INamedInterface*) override;
+  void before(StandardEventType, const std::string&) override;
 
-  virtual void before(CustomEventTypeRef, INamedInterface*);
-  virtual void before(CustomEventTypeRef, const std::string&);
+  void before(CustomEventTypeRef, INamedInterface*) override;
+  void before(CustomEventTypeRef, const std::string&) override;
 
-  virtual void after(StandardEventType, INamedInterface*, const StatusCode&);
-  virtual void after(StandardEventType, const std::string&, const StatusCode&);
+  void after(StandardEventType, INamedInterface*, const StatusCode&) override;
+  void after(StandardEventType, const std::string&, const StatusCode&) override;
 
-  virtual void after(CustomEventTypeRef, INamedInterface*, const StatusCode&);
-  virtual void after(CustomEventTypeRef, const std::string&, const StatusCode&);
+  void after(CustomEventTypeRef, INamedInterface*, const StatusCode&) override;
+  void after(CustomEventTypeRef, const std::string&, const StatusCode&) override;
 
   // Obsolete methods
 
-  virtual void beforeInitialize(INamedInterface* ) ;
-  virtual void afterInitialize(INamedInterface* ) ;
+  void beforeInitialize(INamedInterface* )  override;
+  void afterInitialize(INamedInterface* )  override;
 
-  virtual void beforeReinitialize(INamedInterface* ) ;
-  virtual void afterReinitialize(INamedInterface* ) ;
+  void beforeReinitialize(INamedInterface* )  override;
+  void afterReinitialize(INamedInterface* )  override;
 
-  virtual void beforeExecute(INamedInterface* );
-  virtual void afterExecute(INamedInterface*, const StatusCode& );
+  void beforeExecute(INamedInterface* ) override;
+  void afterExecute(INamedInterface*, const StatusCode& ) override;
 
-  virtual void beforeFinalize(INamedInterface* ) ;
-  virtual void afterFinalize(INamedInterface* ) ;
+  void beforeFinalize(INamedInterface* )  override;
+  void afterFinalize(INamedInterface* )  override;
 
-  virtual void beforeBeginRun(INamedInterface* );
-  virtual void afterBeginRun(INamedInterface* );
+  void beforeBeginRun(INamedInterface* ) override;
+  void afterBeginRun(INamedInterface* ) override;
 
-  virtual void beforeEndRun(INamedInterface* );
-  virtual void afterEndRun(INamedInterface* );
+  void beforeEndRun(INamedInterface* ) override;
+  void afterEndRun(INamedInterface* ) override;
 
   virtual StatusCode initialize();
   virtual StatusCode finalize();
 
-  virtual const std::string&  name() const ;
+  const std::string&  name() const  override;
 
-  virtual bool isEnabled() const ;
+  bool isEnabled() const  override;
 
   /** The standard message service. Returns a pointer to the standard message
       service. May not be invoked before sysInitialize() has been invoked.
@@ -129,28 +129,28 @@ public:
   }
 
   /// Set a value of a property of an auditor.
-  virtual StatusCode setProperty(const Property& p);
+  StatusCode setProperty(const Property& p) override;
 
   /// Implementation of IProperty::setProperty
-  virtual StatusCode setProperty( const std::string& s );
+  StatusCode setProperty( const std::string& s ) override;
 
   /// Implementation of IProperty::setProperty
-  virtual StatusCode setProperty( const std::string& n, const std::string& v);
+  StatusCode setProperty( const std::string& n, const std::string& v) override;
 
   /// Get the value of a property.
-  virtual StatusCode getProperty(Property* p) const;
+  StatusCode getProperty(Property* p) const override;
 
   /// Get the property by name.
-  virtual const Property& getProperty( const std::string& name) const;
+  const Property& getProperty( const std::string& name) const override;
 
   /// Implementation of IProperty::getProperty
-  virtual StatusCode getProperty( const std::string& n, std::string& v ) const;
+  StatusCode getProperty( const std::string& n, std::string& v ) const override;
 
   /// Get all properties.
   const std::vector<Property*>& getProperties( ) const;
 
   /// Implementation of IProperty::hasProperty
-  virtual bool hasProperty(const std::string& name) const;
+  bool hasProperty(const std::string& name) const override;
 
   /** set the property form the value
    *
