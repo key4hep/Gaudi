@@ -325,7 +325,7 @@ IHistogram1D* HistogramSvc::sliceX
 //------------------------------------------------------------------------------
 IHistogram1D*
 HistogramSvc::sliceY(CSTR name,const IHistogram2D& h,int indexX1,int indexX2) {
-  std::pair<DataObject*,IHistogram1D*> o(0,0);
+  std::pair<DataObject*,IHistogram1D*> o(nullptr,nullptr);
   try {
     int firstbin = Gaudi::Axis::toRootIndex( indexX1, h.xAxis().bins() );
     int lastbin  = Gaudi::Axis::toRootIndex( indexX2, h.xAxis().bins() );

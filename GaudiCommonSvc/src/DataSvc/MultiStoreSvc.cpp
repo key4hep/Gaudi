@@ -47,8 +47,8 @@ typedef StatusCode        STATUS;
 
 namespace {
   struct Partition final {
-    IDataProviderSvc* dataProvider = nullptr;
-    IDataManagerSvc*  dataManager = nullptr;
+    IDataProviderSvc* dataProvider;
+    IDataManagerSvc*  dataManager;
     std::string       name;
   };
 }
@@ -102,7 +102,6 @@ protected:
   /// Default partition
   std::string              m_defaultPartition;
 
-
   // member templates to help writing the function calls
   template <typename... Args, typename... UArgs>
   STATUS call_(STATUS (IDataProviderSvc::*pmf)( Args... args ), UArgs&&... args)
@@ -120,14 +119,12 @@ protected:
 public:
   /// IDataManagerSvc: Accessor for root event CLID
   CLID rootCLID() const override {
-    return (CLID)m_rootCLID;
+    return m_rootCLID;
   }
   /// Name for root Event
   const std::string& rootName() const {
     return m_rootName;
   }
-
-
 
   /// IDataManagerSvc: Register object address with the data store.
   STATUS registerAddress(CSTR& path, ADDRESS* pAddr) override {
@@ -439,51 +436,32 @@ public:
   }
   /// Create a partition object. The name identifies the partition uniquely
   STATUS create(CSTR& nam, CSTR& typ, IInterface*& pPartition) override {
-    STATUS sc = get(nam, pPartition);
-    if ( !sc.isSuccess() )  {
-      Gaudi::Utils::TypeNameString item(typ);
-      /// @FIXME: In the old implementation the services were "unmanaged" (non-active)
-      SmartIF<IService>& isvc = serviceLocator()->service(typ);
-      if (isvc.isValid())  {
-        SmartIF<IDataManagerSvc> dataMgr(isvc);
-        SmartIF<IDataProviderSvc> dataProv(isvc);
-        if ( dataMgr.isValid() && dataProv.isValid() )  {
-          Partition p;
-          p.name         = nam;
-          p.dataManager  = dataMgr;
-          p.dataProvider = dataProv;
-          p.dataManager->addRef();
-          p.dataProvider->addRef();
-          m_partitions.emplace( nam, p );
-          return STATUS::SUCCESS;
-        }
-        else  {
-          // Error
-          return NO_INTERFACE;
-        }
-      }
-      else {
-        // Error
-        return NO_INTERFACE;
-      }
-    }
-    return PARTITION_EXISTS;
+    if ( get(nam, pPartition).isSuccess() )  return PARTITION_EXISTS;
+    /// @FIXME: In the old implementation the services were "unmanaged" (non-active)
+    SmartIF<IService>& isvc = serviceLocator()->service(typ);
+    if (!isvc.isValid())  return NO_INTERFACE;
+    SmartIF<IDataManagerSvc> dataMgr(isvc);
+    SmartIF<IDataProviderSvc> dataProv(isvc);
+    if ( !dataMgr.isValid() || !dataProv.isValid() )  return NO_INTERFACE;
+    Partition p { dataProv, dataMgr, nam };
+    p.dataManager->addRef();
+    p.dataProvider->addRef();
+    m_partitions.emplace( nam, p );
+    return STATUS::SUCCESS;
   }
 
   /// Drop a partition object. The name identifies the partition uniquely
   STATUS drop(CSTR& nam) override {
     auto i = m_partitions.find(nam);
-    if ( i != m_partitions.end() )  {
-      if ( i->second.dataManager == m_current.dataManager )  {
-        m_current = Partition();
-      }
-      i->second.dataManager->clearStore().ignore();
-      i->second.dataProvider->release();
-      i->second.dataManager->release();
-      m_partitions.erase(i);
-      return STATUS::SUCCESS;
+    if ( i == m_partitions.end() )  return PARTITION_NOT_PRESENT;
+    if ( i->second.dataManager == m_current.dataManager )  {
+      m_current = Partition();
     }
-    return PARTITION_NOT_PRESENT;
+    i->second.dataManager->clearStore().ignore();
+    i->second.dataProvider->release();
+    i->second.dataManager->release();
+    m_partitions.erase(i);
+    return STATUS::SUCCESS;
   }
 
   /// Drop a partition object. The name identifies the partition uniquely
@@ -491,8 +469,8 @@ public:
     SmartIF<IDataProviderSvc> provider(pPartition);
     if ( !provider.isValid() )  return NO_INTERFACE;
     auto i = std::find_if( std::begin(m_partitions), std::end(m_partitions),
-                           [&](Partitions::const_reference p) { 
-        return p.second.dataProvider == provider; 
+                           [&](Partitions::const_reference p) {
+        return p.second.dataProvider == provider;
     } );
     if (i==std::end(m_partitions)) return PARTITION_NOT_PRESENT;
     i->second.dataManager->clearStore().ignore();
@@ -519,8 +497,8 @@ public:
     m_current = Partition();
     if ( !provider )  return NO_INTERFACE;
     auto i = std::find_if(std::begin(m_partitions), std::end(m_partitions),
-                          [&](Partitions::const_reference p) { 
-            return p.second.dataProvider == provider; 
+                          [&](Partitions::const_reference p) {
+            return p.second.dataProvider == provider;
     } );
     if (i == std::end(m_partitions)) return PARTITION_NOT_PRESENT;
     m_current = i->second;
@@ -573,7 +551,6 @@ public:
     if (!sc.isSuccess()) {
       log << MSG::ERROR << "Failed to set data loader "
           << "\"" << m_loader << "\"" << endmsg;
-      return sc;
     }
     return sc;
   }
@@ -679,8 +656,7 @@ public:
         case object_type:
           if ( m_root.root.object )  {
             if ( m_root.root.object->clID() == CLID_DataObject )  {
-              DataObject* pObj = new DataObject();
-              sc = i.second.dataManager->setRoot(m_root.path, pObj);
+              sc = i.second.dataManager->setRoot(m_root.path, new DataObject());
             }
           }
           break;
@@ -722,9 +698,7 @@ public:
       }
       STATUS sc = create(nam, typ);
       if ( !sc.isSuccess() )  return sc;
-      else if ( !m_defaultPartition.length() )  {
-        m_defaultPartition = nam;
-      }
+      if ( m_defaultPartition.empty() )  m_defaultPartition = nam;
     }
     return STATUS::SUCCESS;
   }
