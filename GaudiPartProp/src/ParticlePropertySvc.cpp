@@ -6,7 +6,9 @@
 #include <cctype>
 #include <fstream>
 #include "boost/algorithm/string/split.hpp"
-#include "boost/utility/string_ref.hpp"
+#include "boost/algorithm/string/trim.hpp"
+#include "boost/algorithm/string/classification.hpp"
+namespace ba = boost::algorithm;
 // ============================================================================
 // GaudiKernel
 // ============================================================================
@@ -209,10 +211,10 @@ StatusCode ParticlePropertySvc::push_back ( ParticleProperty* pp )
     const std::string& particle = pp->particle() ;
     // is this already in the map?
     auto ifind = m_namemap.find( particle ) ;
-    if ( ifind != m_namemap.end() && m_namemap[ particle ] )
+    if ( ifind != m_namemap.end() && ifind->second )
     {
       diff ( ifind->second , pp ) ;
-      m_replaced.insert( m_namemap[ particle ]->particle() ) ;
+      m_replaced.insert( ifind->second->particle() ) ;
     }
     // put it into the map
     m_namemap[ particle ] = pp ;
@@ -225,10 +227,10 @@ StatusCode ParticlePropertySvc::push_back ( ParticleProperty* pp )
     const int ID = pp->jetsetID() ;
     // is this already in the map?
     auto ifind = m_stdhepidmap.find( ID ) ;
-    if ( m_stdhepidmap.end() != ifind && m_stdhepidmap[ ID ])
+    if ( m_stdhepidmap.end() != ifind && ifind->second )
     {
       diff ( ifind->second , pp ) ;
-      m_replaced.insert( m_stdhepidmap[ ID ]->particle() ) ;
+      m_replaced.insert( ifind->second->particle() ) ;
     }
     // put it into the map
     m_stdhepidmap[ ID ] = pp ;
@@ -243,10 +245,10 @@ StatusCode ParticlePropertySvc::push_back ( ParticleProperty* pp )
     const int ID = pp->pythiaID() ;
     // is this already in the map?
     auto ifind = m_pythiaidmap.find( ID ) ;
-    if ( m_pythiaidmap.end() != ifind && m_pythiaidmap[ ID ])
+    if ( m_pythiaidmap.end() != ifind && ifind->second )
     {
       diff ( ifind->second , pp ) ;
-      m_replaced.insert( m_pythiaidmap[ ID ]->particle() ) ;
+      m_replaced.insert( ifind->second ->particle() ) ;
     }
     // put it into the map
     m_pythiaidmap[ ID ] = pp ;
@@ -312,13 +314,9 @@ StatusCode ParticlePropertySvc::parse()
 // ============================================================================
 StatusCode ParticlePropertySvc::parse( const std::string& file )
 {
-  StatusCode sc = StatusCode::FAILURE;
-
   MsgStream log( msgSvc(), name() );
 
-  std::unique_ptr<std::istream> infile;
-  if (m_fileAccess) infile = m_fileAccess->open(file);
-
+  auto infile = ( m_fileAccess ? m_fileAccess->open(file) : nullptr );
   if ( !infile )
   {
     log << MSG::ERROR << "Unable to open properties file : " << file
@@ -326,13 +324,11 @@ StatusCode ParticlePropertySvc::parse( const std::string& file )
     return StatusCode::FAILURE ;
   }
 
-  sc = StatusCode::SUCCESS;
+  StatusCode sc = StatusCode::SUCCESS;
   log << MSG::INFO
       << "Opened particle properties file : " << file << endmsg;
 
-  auto delim = [](char c) { return isspace(c);};
   std::vector<std::string> tokens; tokens.reserve(9);
-
   std::string line;
   while( std::getline( *infile, line ) )
   {
@@ -341,8 +337,8 @@ StatusCode ParticlePropertySvc::parse( const std::string& file )
     if ( line.front() == '#' ) continue;
 
     tokens.clear();
-    line.erase( std::begin(line), std::find_if_not(std::begin(line), std::end(line), delim) );
-    boost::algorithm::split( tokens, line, delim , boost::token_compress_on );
+    ba::trim_left_if( line, ba::is_space() );
+    ba::split( tokens, line, ba::is_space() , boost::token_compress_on );
     if (tokens.size()!=9) continue;
 
     auto gid = std::stoi( tokens[1] );
@@ -365,9 +361,7 @@ StatusCode ParticlePropertySvc::parse( const std::string& file )
           << "Error from ParticlePropertySvc::push_back for particle='"
           << tokens[0] << "'" << endmsg ;
     }
-
   }
-
   return StatusCode::SUCCESS ;
 }
 // ============================================================================
