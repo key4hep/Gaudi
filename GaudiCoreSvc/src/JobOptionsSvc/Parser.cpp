@@ -48,11 +48,10 @@ bool ParseStream(std::ifstream& stream,
     
     int last_line, last_column;
     
-
     GetLastLineAndColumn(stream, last_line, last_column);
 
     std::string input((std::istreambuf_iterator<char>(stream)),
-             std::istreambuf_iterator<char>());
+                       std::istreambuf_iterator<char>());
 
     BaseIterator in_begin(input.begin());
     // convert input iterator to forward iterator, usable by spirit parser
@@ -85,8 +84,8 @@ bool ParseStream(std::ifstream& stream,
 // ============================================================================
 template<typename Grammar>
 bool ParseFile(const gp::Position& from, const std::string& filename,
-        const std::string& search_path,
-        gp::IncludedFiles* included, gp::Messages* messages,gp::Node* root) {
+               const std::string& search_path,
+               gp::IncludedFiles* included, gp::Messages* messages,gp::Node* root) {
   std::string search_path_with_current_dir =
       gpu::replaceEnvironments(search_path);
   if (!from.filename().empty()) { // Add current file directory to search_path
@@ -134,7 +133,7 @@ bool gp::Parse(const Position& from,
         const std::string& filename,
         const std::string& search_path, IncludedFiles* included,
         Messages* messages, Node* root) {
-    typedef FileGrammar<Iterator,SkipperGrammar<Iterator> > Grammar;
+    using Grammar = FileGrammar<Iterator,SkipperGrammar<Iterator>>;
     return ParseFile<Grammar>(from, filename, search_path, included,
             messages, root);
 }
@@ -144,7 +143,7 @@ bool gp::ParseUnits(const Position& from,
         const std::string& filename,
         const std::string& search_path, IncludedFiles* included,
         Messages* messages, Node* root) {
-    typedef UnitsGrammar<Iterator,SkipperGrammar<Iterator> > Grammar;
+    using Grammar = UnitsGrammar<Iterator,SkipperGrammar<Iterator>>;
     return ParseFile<Grammar>(from, filename, search_path, included,
             messages, root);
 }

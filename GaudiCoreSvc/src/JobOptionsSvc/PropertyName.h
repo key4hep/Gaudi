@@ -22,8 +22,9 @@ class PropertyName final {
   PropertyName(std::string client, std::string property):
        client_(std::move(client)), property_(std::move(property)){}
   PropertyName(std::string client, std::string property,
-           const Position& pos):
-               client_(std::move(client)), property_(std::move(property)), position_(pos) {}
+               Position pos):
+       client_(std::move(client)), property_(std::move(property)) , 
+       position_(std::move(pos)) {}
   const std::string& client() const { return client_;}
   const std::string& property() const { return property_;}
   const Position& position() const { return position_;}

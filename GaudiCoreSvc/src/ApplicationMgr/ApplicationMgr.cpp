@@ -172,7 +172,7 @@ StatusCode ApplicationMgr::queryInterface
 ( const InterfaceID& iid  ,
   void**             ppvi )
 {
-  if ( 0 == ppvi ) { return StatusCode::FAILURE ; }
+  if ( !ppvi ) { return StatusCode::FAILURE ; }
 
   // try to find own/direct interfaces:
   StatusCode sc = base_class::queryInterface(iid,ppvi);
@@ -199,7 +199,7 @@ StatusCode ApplicationMgr::queryInterface
     // MsgStream).
     return StatusCode::SUCCESS;
   }
-  *ppvi = 0;
+  *ppvi = nullptr;
   return StatusCode::FAILURE;
 }
 
@@ -236,7 +236,7 @@ StatusCode ApplicationMgr::i_startup() {
     return sc;
   }
 
-  if ( m_jobOptionsPath != "") {         // The command line takes precedence
+  if ( !m_jobOptionsPath.empty() ) {         // The command line takes precedence
     sc = jobOptsIProp->setProperty( StringProperty("PATH", m_jobOptionsPath) );
     if( !sc.isSuccess() )   {
       fatal() << "Error setting PATH option in JobOptionsSvc" << endmsg;

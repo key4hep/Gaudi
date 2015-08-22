@@ -35,8 +35,8 @@ class PragmaOptions final {
    { m_is_print_tree = is_print_tree; }
 
   const std::string& dumpFile() const { return m_dump_file;}
-  void setDumpFile(const std::string& dump_file) {
-    m_dump_file = dump_file;
+  void setDumpFile(std::string dump_file) {
+    m_dump_file = std::move(dump_file);
   }
 
   bool IsPrintOptions() { return is_print_options() && is_print();}
