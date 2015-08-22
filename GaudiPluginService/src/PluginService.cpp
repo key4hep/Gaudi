@@ -39,34 +39,8 @@ namespace {
 #endif
 
 #include <algorithm>
+#include "boost/algorithm/string/trim.hpp"
 
-namespace {
-// string trimming functions taken from
-// http://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
-
-
-constexpr struct is_space_t {
-    bool operator()(int i) const { return std::isspace(i); }
-} is_space {};
-
-// trim from start
-static inline std::string &ltrim(std::string &s) {
-        s.erase(s.begin(),
-                std::find_if_not(s.begin(), s.end(), is_space ) );
-        return s;
-}
-
-// trim from end
-static inline std::string &rtrim(std::string &s) {
-        s.erase(std::find_if_not(s.rbegin(), s.rend(), is_space).base(),
-                s.end());
-        return s;
-}
-// trim from both ends
-static inline std::string &trim(std::string &s) {
-        return ltrim(rtrim(s));
-}
-}
 
 namespace {
   /// Helper function used to set values in FactoryInfo data members only
@@ -198,7 +172,7 @@ namespace Gaudi { namespace PluginService {
                 while (!factories.eof()) {
                   ++lineCount;
                   std::getline(factories, line);
-                  trim(line);
+                  boost::algorithm::trim(line);
                   // skip empty lines and lines starting with '#'
                   if (line.empty() || line[0] == '#') continue;
                   // look for the separator
@@ -250,9 +224,7 @@ namespace Gaudi { namespace PluginService {
                                                 type, rtype, className, props) ).first;
       } else {
         // do not replace an existing factory with a new one
-        if (!entry->second.ptr) {
-          entry->second.ptr = factory;
-        }
+        if (!entry->second.ptr) entry->second.ptr = factory;
         factoryInfoSetHelper(entry->second.type, type, "type", id);
         factoryInfoSetHelper(entry->second.rtype, rtype, "return type", id);
         factoryInfoSetHelper(entry->second.className, className, "class", id);
@@ -284,32 +256,24 @@ namespace Gaudi { namespace PluginService {
             logger().warning("cannot load " + f->second.library +
                              " for factory " + id);
             char *dlmsg = dlerror();
-            if (dlmsg)
-              logger().warning(dlmsg);
+            if (dlmsg) logger().warning(dlmsg);
             return nullptr;
           }
           f = facts.find(id); // ensure that the iterator is valid
         }
-        if (f->second.type == type) {
-          return f->second.ptr;
-        } else {
-          logger().warning("found factory " + id + ", but of wrong type: " +
-              demangle(f->second.type) + " instead of " + demangle(type));
-        }
+        if (f->second.type == type)  return f->second.ptr;
+        logger().warning("found factory " + id + ", but of wrong type: " +
+            demangle(f->second.type) + " instead of " + demangle(type));
       }
       return nullptr; // factory not found
     }
 
     const Registry::FactoryInfo& Registry::getInfo(const std::string& id) const {
       REG_SCOPE_LOCK
-      static FactoryInfo unknown("unknown");
+      static const FactoryInfo unknown("unknown");
       const FactoryMap &facts = factories();
       auto f = facts.find(id);
-      if (f != facts.end())
-      {
-        return f->second;
-      }
-      return unknown; // factory not found
+      return (f != facts.end()) ? f->second : unknown;
     }
 
     Registry&
@@ -319,10 +283,7 @@ namespace Gaudi { namespace PluginService {
       REG_SCOPE_LOCK
       FactoryMap &facts = factories();
       auto f = facts.find(id);
-      if (f != facts.end())
-      {
-        f->second.properties[k] = v;
-      }
+      if (f != facts.end()) f->second.properties[k] = v;
       return *this;
     }
 
@@ -348,12 +309,8 @@ namespace Gaudi { namespace PluginService {
     }
 
     static std::unique_ptr<Logger> s_logger(new Logger);
-    Logger& logger() {
-      return *s_logger;
-    }
-    void setLogger(Logger* logger) {
-      s_logger.reset(logger);
-    }
+    Logger& logger() { return *s_logger; }
+    void setLogger(Logger* logger) { s_logger.reset(logger); }
 
   } // namespace Details
 
@@ -370,8 +327,8 @@ namespace Gaudi { namespace PluginService {
   int Debug() {
     using namespace Details;
     switch (logger().level()) {
-    case Logger::Debug: return 2; break;
-    case Logger::Info: return 1; break;
+    case Logger::Debug: return 2;
+    case Logger::Info: return 1;
     default: return 0;
     }
   }
