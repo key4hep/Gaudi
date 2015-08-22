@@ -10,7 +10,7 @@ AIDA::IProfile1D*  GaudiHistos<PBASE>::bookProfile1D
   if  ( !produceHistos() )                   { return nullptr    ; } // RETURN
   //
   // exist?
-  AIDA::IProfile1D* hist = profile1D ( title ) ;
+  auto hist = profile1D ( title ) ;
   // histogram is already booked
   if ( hist ) { return hist ; } // RETURN !!
 
@@ -41,7 +41,7 @@ AIDA::IProfile1D*  GaudiHistos<PBASE>::bookProfile1D
   }
 
   // exist?
-  AIDA::IProfile1D* hist = profile1D ( ID ) ;
+  auto hist = profile1D ( ID ) ;
   // histogram is already booked
   if ( hist ) { return hist ; } // RETURN !!
 
@@ -69,7 +69,7 @@ AIDA::IProfile1D*  GaudiHistos<PBASE>::bookProfile1D
   // test ok
   if( !hist )
   { this->Error( "IProfile1D* points to NULL! ID='" + ID.idAsString() +
-                 "' title='"+htitle+"'" ) ; return NULL; } // RETURN !!
+                 "' title='"+htitle+"'" ) ; return nullptr; } // RETURN !!
 
   // add histogram into histogram storages
   m_profile1DMapID    [ ID    ] = hist ;
@@ -121,7 +121,7 @@ AIDA::IProfile1D* GaudiHistos<PBASE>::profile1D
   const HistoBinEdges& edges        ,
   const double         weight       ) const
 {
-  AIDA::IProfile1D * h(NULL);
+  AIDA::IProfile1D * h(nullptr);
   if ( produceHistos() )
   {
     // retrieve or book the histogram
