@@ -221,17 +221,6 @@ GaudiCommon<PBASE>::updMgrSvc() const
   return m_updMgrSvc ;
 }
 // ============================================================================
-// predefined configurable message stream for the effective printouts
-// ============================================================================
-template <class PBASE>
-inline MsgStream&
-GaudiCommon<PBASE>::msgStream ( const MSG::Level level ) const
-{
-  if ( !m_msgStream )
-  { m_msgStream = new MsgStream ( PBASE::msgSvc() , this->name() ) ; }
-  return *m_msgStream << level ;
-}
-// ============================================================================
 // Assertion - throw exception, if condition is not fulfilled
 // ============================================================================
 template <class PBASE>

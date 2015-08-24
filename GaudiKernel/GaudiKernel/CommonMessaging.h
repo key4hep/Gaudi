@@ -15,36 +15,56 @@
 #include "GaudiKernel/GaudiException.h"
 
 #include <memory>
+#include <utility>
 
 /** Templated class to add the standard messaging functionalities
  *
  */
-template <class BASE>
-class GAUDI_API CommonMessaging: public BASE {
-public:
-  typedef CommonMessaging base_class;
 
-  /// Templated constructor with 3 arguments.
-  template <typename A1, typename A2, typename A3> CommonMessaging(const A1& a1, const A2& a2, const A3& a3):
-    BASE(a1,a2,a3), m_streamWithService(false) {}
-  /// Templated constructor with 2 arguments.
-  template <typename A1, typename A2> CommonMessaging(const A1& a1, const A2& a2):
-    BASE(a1, a2), m_streamWithService(false) {}
-  /// Templated constructor with 1 argument.
-  template <typename A1> CommonMessaging(const A1& a1):
-    BASE(a1), m_streamWithService(false) {}
-  /// Default constructor.
-  CommonMessaging():
-    BASE(), m_streamWithService(false) {}
+template <typename> struct void_t { typedef void type; };
+
+#define generate_has_( method, args ) \
+    template <typename T, typename SFINAE = void>  \
+    struct has_ ## method : std::false_type {}; \
+    template <typename T>  \
+    struct has_ ## method<T,typename void_t<decltype(std::declval<const T&>().method args )>::type >: std::true_type {};
+
+#define generate_add_(method, ret, args ) \
+    template <typename Base, bool> struct add_ ## method ## _; \
+    template <typename Base> \
+    struct add_ ## method ## _<Base,false> : public Base  { \
+        using Base::Base; \
+    }; \
+    template <typename Base> \
+    struct add_ ## method ## _<Base,true> : public Base  { \
+        using Base::Base; \
+        virtual ~add_## method ## _() = default; \
+        virtual ret method  args  const = 0; \
+    }; 
+
+namespace implementation_detail {
+    generate_has_( name, ()  )
+    generate_add_( name, const std::string&, () )
+    generate_has_( serviceLocator, () )
+    generate_add_( serviceLocator, SmartIF<ISvcLocator>&, () )
+}
+
+template <typename Base> using add_name = implementation_detail::add_name_<Base, ! implementation_detail::has_name<Base>::value >;
+template <typename Base> using add_serviceLocator = implementation_detail::add_serviceLocator_<Base, ! implementation_detail::has_serviceLocator<Base>::value >;
+
+#undef has_
+#undef add_
+
+template <typename BASE>
+class GAUDI_API CommonMessaging: public add_serviceLocator<add_name<BASE>> {
+public:
+  using base_class = CommonMessaging;
+
+  /// Forward constructor to base class constructor
+  using add_serviceLocator<add_name<BASE>>::add_serviceLocator;
 
   /// Virtual destructor
-  virtual ~CommonMessaging() {}
-
-  /// Needed to locate the message service
-  virtual SmartIF<ISvcLocator>& serviceLocator() const = 0;
-
-  /// This is needed to avoid ambiguous calls to name()
-  virtual const std::string&  name() const = 0;
+  ~CommonMessaging() override = default;
 
   /** The standard message service.
    *  Returns a pointer to the standard message service.
