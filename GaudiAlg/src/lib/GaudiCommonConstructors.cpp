@@ -68,10 +68,10 @@ GaudiCommon<Algorithm>::GaudiCommon( const std::string & name,
 template <>
 GaudiCommon<AlgTool>::GaudiCommon( const std::string& type   ,
                                    const std::string& name   ,
-                                   const IInterface*  parent )
-  : base_class ( type , name , parent )
+                                   const IInterface*  parnt )
+  : base_class ( type , name , parnt )
 {
-  initGaudiCommonConstructor(parent);
+  initGaudiCommonConstructor(parent());
 }
 //=============================================================================
 

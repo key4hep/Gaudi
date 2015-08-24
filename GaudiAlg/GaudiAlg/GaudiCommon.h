@@ -59,7 +59,6 @@ namespace Gaudi { namespace Utils { template <class TYPE> struct GetData ; } }
 template < class PBASE >
 class GAUDI_API GaudiCommon: public CommonMessaging<PBASE>
 {
-  using base_class = CommonMessaging<PBASE>;
 protected: // definitions
   /** Simple definition to be used with the new useRootInTES argument get<TYPE>
    *  and put methods. If used with cause the RootInTES option to be IGNORED.
