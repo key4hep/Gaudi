@@ -80,6 +80,7 @@
 #include "GaudiUtils/HistoStats.h"
 #include "GaudiUtils/HistoDump.h"
 #include "GaudiUtils/HistoStrings.h"
+#include "GaudiUtils/QuasiRandom.h"
 
 #include <iostream>
 #include <istream>

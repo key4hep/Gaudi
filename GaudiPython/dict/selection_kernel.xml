@@ -98,6 +98,11 @@
   <class    name= "Gaudi::Utils::Histos::Table"  />
   <class    name= "Gaudi::Utils::HistoStats"  />
 
+  <function name= "Gaudi::Utils::QuasiRandom::mix" />
+  <function name= "Gaudi::Utils::QuasiRandom::mix32" />
+  <function name= "Gaudi::Utils::QuasiRandom::mix64" />
+  <function name= "Gaudi::Utils::QuasiRandom::mixString" />
+
   <class    name= "Gaudi::RangeBase_"  />
 
   <exclusion>
