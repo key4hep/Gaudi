@@ -191,15 +191,15 @@ public:
   /// Return a pointer to the service identified by name (or "type/name")
   SmartIF<IService> service(const std::string& name, const bool createIf = true, const bool quiet = false) const;
 
-  /// declare interface
-  void declInterface( const InterfaceID&, void*);
-
-  template <class I> class declareInterface {
-  public:
-    template <class T> declareInterface(T* tool) {
-      tool->declInterface( I::interfaceID(), (I*)tool);
-    }
+private:
+  template <typename I>
+  void declInterface( I* i ) { m_interfaceList.emplace_back( I::interfaceID(), i ); }
+protected:
+  template <class I> struct declareInterface {
+    template <class T> declareInterface(T* tool) { tool->template declInterface<I>( tool ); }
   };
+  template <typename I> friend struct declareInterface;
+public:
   // ==========================================================================
   /** Declare the named property
    *
@@ -320,14 +320,14 @@ protected:
 
 private:
   typedef std::list<std::pair<InterfaceID,void*> >  InterfaceList;
-  IntegerProperty      m_outputLevel;      ///< AlgTool output level
+  IntegerProperty      m_outputLevel = MSG::NIL;      ///< AlgTool output level
   std::string          m_type;             ///< AlgTool type (concrete class name)
   const std::string    m_name;             ///< AlgTool full name
-  const IInterface*    m_parent;           ///< AlgTool parent
-  mutable ISvcLocator* m_svcLocator;       ///< Pointer to Service Locator service
-  mutable IMessageSvc* m_messageSvc;       ///< Message service
-  mutable IToolSvc*    m_ptoolSvc;         ///< Tool service
-  mutable IMonitorSvc* m_pMonitorSvc;      ///< Online Monitoring Service
+  const IInterface*    m_parent = nullptr;           ///< AlgTool parent
+  mutable ISvcLocator* m_svcLocator = nullptr;       ///< Pointer to Service Locator service
+  mutable IMessageSvc* m_messageSvc = nullptr;       ///< Message service
+  mutable IToolSvc*    m_ptoolSvc = nullptr;         ///< Tool service
+  mutable IMonitorSvc* m_pMonitorSvc = nullptr;      ///< Online Monitoring Service
   std::string          m_monitorSvcName;   ///< Name to use for Monitor Service
   std::unique_ptr<PropertyMgr>  m_propertyMgr;      ///< Property Manager
   InterfaceList        m_interfaceList;    ///< Interface list
@@ -343,18 +343,18 @@ private:
                        const InterfaceID& iid,
                        void** ppS) const;
 
-  mutable IAuditorSvc*      m_pAuditorSvc; ///< Auditor Service
+  mutable IAuditorSvc*      m_pAuditorSvc = nullptr; ///< Auditor Service
 
-  BooleanProperty m_auditInit;
-  bool         m_auditorInitialize;///< flag for auditors in "initialize()"
-  bool         m_auditorStart;     ///< flag for auditors in "start()"
-  bool         m_auditorStop;      ///< flag for auditors in "stop()"
-  bool         m_auditorFinalize;  ///< flag for auditors in "finalize()"
-  bool         m_auditorReinitialize;///< flag for auditors in "reinitialize()"
-  bool         m_auditorRestart;     ///< flag for auditors in "restart()"
+  BooleanProperty m_auditInit = false;
+  bool         m_auditorInitialize = false;///< flag for auditors in "initialize()"
+  bool         m_auditorStart = false;     ///< flag for auditors in "start()"
+  bool         m_auditorStop = false;      ///< flag for auditors in "stop()"
+  bool         m_auditorFinalize = false;  ///< flag for auditors in "finalize()"
+  bool         m_auditorReinitialize = false;///< flag for auditors in "reinitialize()"
+  bool         m_auditorRestart = false;     ///< flag for auditors in "restart()"
 
-  Gaudi::StateMachine::State m_state;            ///< state of the Tool
-  Gaudi::StateMachine::State m_targetState;      ///< state of the Tool
+  Gaudi::StateMachine::State m_state = Gaudi::StateMachine::CONFIGURED ;            ///< state of the Tool
+  Gaudi::StateMachine::State m_targetState = Gaudi::StateMachine::CONFIGURED ;      ///< state of the Tool
 };
 
 
