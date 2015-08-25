@@ -554,7 +554,7 @@ private:
   mutable SmartIF<IToolSvc>         m_ptoolSvc;    ///< ToolSvc Service
   mutable SmartIF<IMonitorSvc>      m_pMonitorSvc; ///< Online Monitoring Service
   mutable SmartIF<IAlgContextSvc>   m_contextSvc ; ///< Algorithm Context Service
-  bool  m_registerContext ; ///< flag to register for Algorithm Context Service
+  bool  m_registerContext = false ; ///< flag to register for Algorithm Context Service
   std::string               m_monitorSvcName; ///< Name to use for Monitor Service
   SmartIF<ISvcLocator>  m_pSvcLocator;      ///< Pointer to service locator service
   std::unique_ptr<PropertyMgr> m_propertyMgr;      ///< For management of properties
@@ -571,11 +571,11 @@ private:
   bool         m_auditorEndRun;    ///< flag for auditors in "endRun()"
   bool         m_auditorStart;///< flag for auditors in "initialize()"
   bool         m_auditorStop;///< flag for auditors in "Reinitialize()"
-  bool         m_filterPassed;     ///< Filter passed flag
-  bool         m_isEnabled;        ///< Algorithm is enabled flag
-  bool         m_isExecuted;       ///< Algorithm is executed flag
-  Gaudi::StateMachine::State m_state;            ///< Algorithm has been initialized flag
-  Gaudi::StateMachine::State m_targetState;      ///< Algorithm has been initialized flag
+  bool         m_filterPassed = true;     ///< Filter passed flag
+  bool         m_isEnabled = true;        ///< Algorithm is enabled flag
+  bool         m_isExecuted = false;      ///< Algorithm is executed flag
+  Gaudi::StateMachine::State m_state = Gaudi::StateMachine::CONFIGURED;            ///< Algorithm has been initialized flag
+  Gaudi::StateMachine::State m_targetState = Gaudi::StateMachine::CONFIGURED;      ///< Algorithm has been initialized flag
   bool         m_isFinalized;      ///< Algorithm has been finalized flag
 
   /// implementation of service method
