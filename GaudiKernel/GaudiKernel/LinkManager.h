@@ -78,6 +78,17 @@ public:
   };
 
 private:
+  ///@ TODO: provide interface to let MergeEvntAlg do its thing
+  //         without the need for friendship. It needs to 'shunt' 
+  //         all contained links to a new prefix...
+  //         The steps to get there are 
+  //           1) provide friend access for backwards compatibility
+  //           2) add new interface here
+  //           3) once released, update MergeEventAlg to use the new
+  //              interface
+  //           4) revoke friendship.
+  //         Now we're at stage 1...
+  friend class MergeEventAlg;
   ///@ TODO: replace by std::vector<std::unique_ptr<Link>> once 
   ///        ROOT does 'automatic' schema conversion from T* to
   ///        std::unique_ptr<T>... 
@@ -98,9 +109,8 @@ public:
   /// Assign new instantiator
   static void setInstantiator( LinkManager* (*newInstance)() );
   /// Retrieve number of link present
-  long size()   const   {
-    return m_linkVector.size();
-  }
+  long size()   const   { return m_linkVector.size(); }
+  bool empty()   const   { return m_linkVector.empty(); }
   /// Retrieve symbolic link identified by ID
   Link* link(long id);
   /// Retrieve symbolic link identified by object
