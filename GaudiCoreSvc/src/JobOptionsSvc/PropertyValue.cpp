@@ -140,7 +140,6 @@ std::string gp::PropertyValue::ToString() const {
       value = boost::get<std::map<std::string, std::string> >(&value_)) {
     std::string result = "{";
     std::string delim = "";
-    typedef std::pair<std::string, std::string> pair_t;
     for (const auto& in : *value) {
       result += delim + in.first + ":" + in.second;
       delim = ", ";

@@ -14,7 +14,7 @@ public:
   StreamLogger(std::ostream &ost);
   StreamLogger(IMessageSvc*, MSG::Level);
 
-  std::string name() const { return m_name; }
+  const std::string& name() const { return m_name; }
 
   void WriteToStream(const std::string& str) { *m_ost << str << std::endl; }
   void WriteToMsgSvc(const std::string& str) { *m_msgStr << m_level << str << endmsg; }
