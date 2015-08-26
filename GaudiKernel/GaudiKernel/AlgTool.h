@@ -191,14 +191,9 @@ public:
   /// Return a pointer to the service identified by name (or "type/name")
   SmartIF<IService> service(const std::string& name, const bool createIf = true, const bool quiet = false) const;
 
-private:
-  template <typename I>
-  void declInterface( I* i ) { m_interfaceList.emplace_back( I::interfaceID(), i ); }
 protected:
-  template <class I> struct declareInterface {
-    template <class T> declareInterface(T* tool) { tool->template declInterface<I>( tool ); }
-  };
-  template <typename I> friend struct declareInterface;
+  template <typename I>
+  void declareInterface( I* i ) { m_interfaceList.emplace_back( I::interfaceID(), i ); }
 public:
   // ==========================================================================
   /** Declare the named property
