@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IMessageSvc.h"
@@ -24,19 +25,20 @@
 #include "GaudiKernel/ThreadGaudi.h"
 #include "GaudiKernel/Guards.h"
 
+namespace {
+    template <StatusCode (Algorithm::*f)(), typename C > bool for_algorithms(C& c) {
+       return std::accumulate( std::begin(c), std::end(c), true,
+                               [](bool b, Algorithm* a) { return (a->*f)().isSuccess() && b; } );
+    }
+}
+
 // Constructor
 Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
                       const std::string& version)
   : m_name(name),
     m_version(version),
-    m_registerContext ( false ) ,
     m_pSvcLocator(pSvcLocator),
-    m_propertyMgr( new PropertyMgr() ),
-    m_filterPassed(true),
-    m_isEnabled(true),
-    m_isExecuted(false),
-    m_state(Gaudi::StateMachine::CONFIGURED),
-    m_targetState(Gaudi::StateMachine::CONFIGURED)
+    m_propertyMgr( new PropertyMgr() )
 {
 
   // Declare common Algorithm properties with their defaults
@@ -79,7 +81,6 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
 
   // update handlers.
   m_outputLevel.declareUpdateHandler(&Algorithm::initOutputLevel, this);
-
 }
 
 // IAlgorithm implementation
@@ -203,11 +204,7 @@ StatusCode Algorithm::sysStart() {
     if( sc.isSuccess() ) {
 
       // Now start any sub-algorithms
-      bool fail(false);
-      for (auto& it : m_subAlgms ) {
-	    if (it->sysStart().isFailure()) fail = true;
-      }
-      if( fail ) {
+      if( !for_algorithms<&Algorithm::sysStart>( m_subAlgms ) ) {
 	sc = StatusCode::FAILURE;
 	MsgStream log ( msgSvc() , name() );
 	log << MSG::ERROR << " Error starting one or several sub-algorithms"
@@ -287,12 +284,7 @@ StatusCode Algorithm::sysReinitialize() {
     if( sc.isSuccess() ) {
 
       // Now initialize care of any sub-algorithms
-      bool fail(false);
-      for (auto &it : m_subAlgms) {
-	    if(it->sysReinitialize().isFailure()) fail = true;
-      }
-
-      if (fail) {
+      if ( !for_algorithms<&Algorithm::sysReinitialize>( m_subAlgms ) ) {
 	sc = StatusCode::FAILURE;
 	MsgStream log ( msgSvc() , name() );
 	log << MSG::ERROR
@@ -370,11 +362,7 @@ StatusCode Algorithm::sysRestart() {
     if( sc.isSuccess() ) {
 
       // Now initialize care of any sub-algorithms
-      bool fail(false);
-      for (auto it : m_subAlgms) {
-	    if (it->sysRestart().isFailure()) fail = true;
-      }
-      if( fail ) {
+      if( !for_algorithms<&Algorithm::sysRestart>( m_subAlgms ) ) {
 	sc = StatusCode::FAILURE;
 	MsgStream log ( msgSvc() , name() );
 	log << MSG::ERROR
@@ -443,11 +431,7 @@ StatusCode Algorithm::sysBeginRun() {
     if( sc.isSuccess() ) {
 
       // Now call beginRun for any sub-algorithms
-      bool fail(false);
-      for (auto& it : m_subAlgms) {
-	    if(it->sysBeginRun().isFailure()) fail = true;
-      }
-      if( fail ) {
+      if( !for_algorithms<&Algorithm::sysBeginRun>( m_subAlgms ) ) {
 	sc = StatusCode::FAILURE;
 	MsgStream log ( msgSvc() , name() );
 	log << MSG::ERROR << " Error executing BeginRun for one or several sub-algorithms"
@@ -502,7 +486,7 @@ StatusCode Algorithm::sysEndRun() {
 
   // lock the context service
   Gaudi::Utils::AlgContext cnt
-    ( this , registerContext() ? contextSvc().get() : 0 ) ;
+    ( this , registerContext() ? contextSvc().get() : nullptr ) ;
 
   // Invoke endRun() method of the derived class inside a try/catch clause
   StatusCode sc(StatusCode::FAILURE);
@@ -518,15 +502,11 @@ StatusCode Algorithm::sysEndRun() {
     if( sc.isSuccess() ) {
 
       // Now call endRun for any sub-algorithms
-      bool fail(false);
-      for (auto& it : m_subAlgms) {
-	    if (it->sysEndRun().isFailure()) fail = true;
-      }
-      if( fail ) {
-	sc = StatusCode::FAILURE;
-	MsgStream log ( msgSvc() , name() );
-	log << MSG::ERROR << " Error calling endRun for one or several sub-algorithms"
-	    << endmsg;
+      if( !for_algorithms<&Algorithm::sysEndRun>( m_subAlgms ) ) {
+        sc = StatusCode::FAILURE;
+        MsgStream log ( msgSvc() , name() );
+        log << MSG::ERROR << " Error calling endRun for one or several sub-algorithms"
+            << endmsg;
       }
     }
   }
@@ -666,8 +646,8 @@ StatusCode Algorithm::sysStop() {
   StatusCode sc(StatusCode::FAILURE);
   // Invoke stop() method of the derived class inside a try/catch clause
   try {
-    // Stop first any sub-algorithms (in reverse order)
-    for (auto& it : m_subAlgms) it->sysStop().ignore();
+    // Stop first any sub-algorithms (in reverse order -- not?)
+    for_algorithms<&Algorithm::sysStop>( m_subAlgms );
     { // limit the scope of the guard
       Gaudi::Guards::AuditorGuard guard(this,
                                         // check if we want to audit the initialize
@@ -723,12 +703,8 @@ StatusCode Algorithm::sysFinalize() {
   // Invoke finalize() method of the derived class inside a try/catch clause
   try {
     // Order changed (bug #3903 overview: finalize and nested algorithms)
-    // Finalize first any sub-algoithms (it can be done more than once)
-    bool fail(false);
-    for (auto& it : m_subAlgms) {
-      if (!it->sysFinalize().isSuccess()) fail = true;
-    }
-
+    // Finalize first any sub-algorithms (it can be done more than once)
+    bool ok = for_algorithms<&Algorithm::sysFinalize>( m_subAlgms );
     { // limit the scope of the guard
       Gaudi::Guards::AuditorGuard guard(this,
                                         // check if we want to audit the initialize
@@ -737,7 +713,7 @@ StatusCode Algorithm::sysFinalize() {
       // Invoke the finalize() method of the derived class
       sc = finalize();
     }
-    if (fail) sc = StatusCode::FAILURE;
+    if (!ok) sc = StatusCode::FAILURE;
 
     if( sc.isSuccess() ) {
 
@@ -855,9 +831,9 @@ std::vector<Algorithm*>* Algorithm::subAlgorithms( ) {
 }
 
 void Algorithm::setOutputLevel( int level ) {
-  if ( msgSvc() != 0 )
+  if ( msgSvc() )
   {
-    if ( MSG::NIL != level )
+    if ( level != MSG::NIL )
     { msgSvc()->setOutputLevel( name(), level ) ; }
     m_outputLevel = msgSvc()->outputLevel( name() );
   }
@@ -874,6 +850,18 @@ SmartIF<INTERFACE>& Algorithm::METHOD() const { \
   return MEMBER; \
 }
 
+serviceAccessor(auditorSvc, IAuditorSvc, "AuditorSvc", m_pAuditorSvc)
+serviceAccessor(chronoSvc, IChronoStatSvc, "ChronoStatSvc", m_CSS)
+serviceAccessor(detSvc, IDataProviderSvc, "DetectorDataSvc", m_DDS)
+serviceAccessor(detCnvSvc, IConversionSvc, "DetectorPersistencySvc", m_DCS)
+serviceAccessor(eventSvc, IDataProviderSvc, "EventDataSvc", m_EDS)
+serviceAccessor(eventCnvSvc, IConversionSvc, "EventPersistencySvc", m_ECS)
+serviceAccessor(histoSvc, IHistogramSvc, "HistogramDataSvc", m_HDS)
+serviceAccessor(exceptionSvc, IExceptionSvc, "ExceptionSvc", m_EXS)
+serviceAccessor(ntupleSvc, INTupleSvc, "NTupleSvc", m_NTS)
+serviceAccessor(randSvc, IRndmGenSvc, "RndmGenSvc", m_RGS)
+serviceAccessor(toolSvc, IToolSvc, "ToolSvc", m_ptoolSvc)
+serviceAccessor(contextSvc, IAlgContextSvc,"AlgContextSvc", m_contextSvc)
 //serviceAccessor(msgSvc, IMessageSvc, "MessageSvc", m_MS)
 // Message service needs a special treatment to avoid infinite recursion
 SmartIF<IMessageSvc>& Algorithm::msgSvc() const {
@@ -886,21 +874,6 @@ SmartIF<IMessageSvc>& Algorithm::msgSvc() const {
   }
   return m_MS;
 }
-
-serviceAccessor(auditorSvc, IAuditorSvc, "AuditorSvc", m_pAuditorSvc)
-serviceAccessor(chronoSvc, IChronoStatSvc, "ChronoStatSvc", m_CSS)
-serviceAccessor(detSvc, IDataProviderSvc, "DetectorDataSvc", m_DDS)
-serviceAccessor(detCnvSvc, IConversionSvc, "DetectorPersistencySvc", m_DCS)
-serviceAccessor(eventSvc, IDataProviderSvc, "EventDataSvc", m_EDS)
-serviceAccessor(eventCnvSvc, IConversionSvc, "EventPersistencySvc", m_ECS)
-serviceAccessor(histoSvc, IHistogramSvc, "HistogramDataSvc", m_HDS)
-serviceAccessor(exceptionSvc, IExceptionSvc, "ExceptionSvc", m_EXS)
-serviceAccessor(ntupleSvc, INTupleSvc, "NTupleSvc", m_NTS)
-//serviceAccessor(atupleSvc, IAIDATupleSvc, "AIDATupleSvc", m_ATS)
-serviceAccessor(randSvc, IRndmGenSvc, "RndmGenSvc", m_RGS)
-serviceAccessor(toolSvc, IToolSvc, "ToolSvc", m_ptoolSvc)
-serviceAccessor(contextSvc, IAlgContextSvc,"AlgContextSvc", m_contextSvc)
-
 
 // Obsoleted name, kept due to the backwards compatibility
 SmartIF<IChronoStatSvc>& Algorithm::chronoStatService() const {
@@ -935,149 +908,13 @@ SmartIF<INTupleSvc>& Algorithm::ntupleService() const {
   return ntupleSvc();
 }
 
-#if 0
-IAuditorSvc* Algorithm::auditorSvc() const {
-  if ( 0 == m_pAuditorSvc ) {
-    StatusCode sc = service( "AuditorSvc", m_pAuditorSvc, true );
-    if( sc.isFailure() ) {
-      throw GaudiException("Service [AuditorSvc] not found", name(), sc);
-    }
-  }
-  return m_pAuditorSvc;
-}
-
-IChronoStatSvc* Algorithm::chronoSvc() const {
-  if ( 0 == m_CSS ) {
-    StatusCode sc = service( "ChronoStatSvc", m_CSS, true );
-    if( sc.isFailure() ) {
-      throw GaudiException("Service [ChronoStatSvc] not found", name(), sc);
-    }
-  }
-  return m_CSS;
-}
-
-IDataProviderSvc* Algorithm::detSvc() const {
-  if ( 0 == m_DDS ) {
-    StatusCode sc = service( "DetectorDataSvc", m_DDS, true );
-    if( sc.isFailure() ) {
-      throw GaudiException("Service [DetectorDataSvc] not found", name(), sc);
-    }
-  }
-  return m_DDS;
-}
-
-IConversionSvc* Algorithm::detCnvSvc() const {
-  if ( 0 == m_DCS ) {
-    StatusCode sc = service( "DetectorPersistencySvc", m_DCS, true );
-    if( sc.isFailure() ) {
-      throw GaudiException("Service [DetectorPersistencySvc] not found",
-                           name(), sc);
-    }
-  }
-  return m_DCS;
-}
-
-IDataProviderSvc* Algorithm::eventSvc() const {
-  if ( 0 == m_EDS ) {
-    StatusCode sc = service( "EventDataSvc", m_EDS, true );
-    if( sc.isFailure() ) {
-      throw GaudiException("Service [EventDataSvc] not found", name(), sc);
-    }
-  }
-  return m_EDS;
-}
-
-IConversionSvc* Algorithm::eventCnvSvc() const {
-  if ( 0 == m_ECS ) {
-    StatusCode sc = service( "EventPersistencySvc", m_ECS, true );
-    if( sc.isFailure() ) {
-      throw GaudiException("Service [EventPersistencySvc] not found",
-                           name(), sc);
-    }
-  }
-  return m_ECS;
-}
-
-IHistogramSvc* Algorithm::histoSvc() const {
-  if ( 0 == m_HDS ) {
-    StatusCode sc = service( "HistogramDataSvc", m_HDS, true );
-    if( sc.isFailure() ) {
-      throw GaudiException("Service [HistogramDataSvc] not found", name(), sc);
-    }
-  }
-  return m_HDS;
-}
-
-IExceptionSvc* Algorithm::exceptionSvc() const {
-  if ( 0 == m_EXS ) {
-    StatusCode sc = service( "ExceptionSvc", m_EXS, true );
-    if( sc.isFailure() ) {
-      throw GaudiException("Service [ExceptionSvc] not found", name(), sc);
-    }
-  }
-  return m_EXS;
-}
-
-IMessageSvc* Algorithm::msgSvc() const {
-  if ( 0 == m_MS ) {
-    //can not use service() method (infinite recursion!)
-    StatusCode sc = serviceLocator()->service( "MessageSvc", m_MS, true );
-    if( sc.isFailure() ) {
-      throw GaudiException("Service [MessageSvc] not found", name(), sc);
-    }
-  }
-  return m_MS;
-}
-
-INTupleSvc* Algorithm::ntupleSvc() const {
-  if ( 0 == m_NTS ) {
-    StatusCode sc = service( "NTupleSvc", m_NTS, true );
-    if( sc.isFailure() ) {
-      throw GaudiException("Service [NTupleSvc] not found", name(), sc);
-    }
-  }
-  return m_NTS;
-}
-
-// AIDATupleSvc:
-// IAIDATupleSvc* Algorithm::atupleSvc() const {
-//   if ( 0 == m_ATS ) {
-//     StatusCode sc = service( "AIDATupleSvc", m_ATS, true );
-//     if( sc.isFailure() ) {
-//       throw GaudiException("Service [AIDATupleSvc] not found", name(), sc);
-//     }
-//   }
-//   return m_ATS;
-// }
-
-IRndmGenSvc* Algorithm::randSvc() const {
-  if ( 0 == m_RGS ) {
-    StatusCode sc = service( "RndmGenSvc", m_RGS, true );
-    if( sc.isFailure() ) {
-      throw GaudiException("Service [RndmGenSvc] not found", name(), sc);
-    }
-  }
-  return m_RGS;
-}
-
-IToolSvc* Algorithm::toolSvc() const {
-  if ( 0 == m_ptoolSvc ) {
-    StatusCode sc = service( "ToolSvc", m_ptoolSvc, true );
-    if( sc.isFailure() ) {
-      throw GaudiException("Service [ToolSvc] not found", name(), sc);
-    }
-  }
-  return m_ptoolSvc;
-}
-#endif
-
 SmartIF<ISvcLocator>& Algorithm::serviceLocator() const {
   return *const_cast<SmartIF<ISvcLocator>*>(&m_pSvcLocator);
 }
 
 // Use the job options service to set declared properties
 StatusCode Algorithm::setProperties() {
-  if( m_pSvcLocator != 0 )    {
+  if( m_pSvcLocator )    {
     SmartIF<IJobOptionsSvc> jos(m_pSvcLocator->service("JobOptionsSvc"));
     if( jos.isValid() ) {
       // set first generic Properties
@@ -1099,7 +936,7 @@ StatusCode Algorithm::setProperties() {
 StatusCode Algorithm::createSubAlgorithm(const std::string& type,
                                          const std::string& name,
                                          Algorithm*& pSubAlgorithm) {
-  if( m_pSvcLocator == 0 ) return StatusCode::FAILURE;
+  if( !m_pSvcLocator ) return StatusCode::FAILURE;
 
   SmartIF<IAlgManager> am(m_pSvcLocator);
   if ( !am.isValid() ) return StatusCode::FAILURE;
