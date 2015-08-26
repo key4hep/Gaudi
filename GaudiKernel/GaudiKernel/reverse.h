@@ -32,22 +32,11 @@ reverse_wrapper<T> reverse(T&& iterable) { return { std::forward<T>(iterable) };
 
 #if defined __GNUC__ &&  __GNUC__ < 5
 
-// std::rbegin and std::rend require gcc 5.0 or later (and clang 3.5 or later)
-// so we define a seperate namespace for our own implementation, still
-// allowing ADL to prefer user-defined versions
-
-namespace GaudiKernel_reverse_details {
-template <typename C>
-auto rbegin(C& c) -> decltype(c.rbegin()) { return c.rbegin(); }
-template <typename C>
-auto rend(C& c)  -> decltype(c.rend()) { return c.rend(); }
-}
-
+// std::rbegin and std::rend require gcc 5.0 or later (or clang 3.5 or later)
 template <typename T>
-auto begin(reverse_wrapper<T>& w) { using GaudiKernel_reverse_details::rbegin; return rbegin(w.iterable); }
+auto begin(reverse_wrapper<T>& w) -> decltype(w.iterable.rbegin()) { return w.iterable.rbegin(); }
 template <typename T>
-auto end(reverse_wrapper<T>& w)   { using GaudiKernel_reverse_details::rend; return rend(w.iterable); }
-
+auto end(reverse_wrapper<T>& w) -> decltype(w.iterable.rend())  { return w.iterable.rend(); } 
 
 #else
 

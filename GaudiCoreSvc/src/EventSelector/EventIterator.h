@@ -35,7 +35,7 @@ class EvtSelectorContext  : public IEvtSelector::Context {
   friend class EventCollectionSelector;
 private:
   /// Copy constructor
-  EvtSelectorContext ( const EvtSelectorContext& copy) = default;
+  EvtSelectorContext ( const EvtSelectorContext& ) = default;
 protected:
   /// Stream identifier
   IDataStreamTool::size_type m_streamID = -1;

@@ -47,7 +47,7 @@ public:
   const std::string& name() const override;
 
   // State machine implementation
-  StatusCode configure() { return StatusCode::SUCCESS; }
+  StatusCode configure() override { return StatusCode::SUCCESS; }
   StatusCode initialize() override;
   StatusCode start() override;
   StatusCode stop() override;
@@ -130,7 +130,7 @@ public:
   /** Standard Constructor                       */
   Service( std::string name, ISvcLocator* svcloc);
   /** Retrieve pointer to service locator        */
-  SmartIF<ISvcLocator>& serviceLocator() const;
+  SmartIF<ISvcLocator>& serviceLocator() const override;
 
   /** Method for setting declared properties to the values
       specified for the job.
@@ -259,7 +259,7 @@ private:
   /** Property Manager                           */
   std::unique_ptr<PropertyMgr>  m_propertyMgr;
 
-  void setServiceManager(ISvcManager* ism);
+  void setServiceManager(ISvcManager* ism) override;
 
   /** Auditor Service                            */
   mutable SmartIF<IAuditorSvc>  m_pAuditorSvc;
