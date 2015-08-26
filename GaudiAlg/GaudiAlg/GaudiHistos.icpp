@@ -18,6 +18,8 @@
 #include <set>
 #include <cmath>
 // ============================================================================
+#include "boost/algorithm/string/replace.hpp"
+// ============================================================================
 // GaudiKernel
 // ============================================================================
 #include "GaudiKernel/MsgStream.h"
@@ -123,7 +125,7 @@ void GaudiHistos<PBASE>::initGaudiHistosConstructor()
   // histogram directory
   this->declareProperty
     ( "HistoDir"             ,
-      m_histoDir      = this->name() ,
+      m_histoDir      = boost::algorithm::replace_all_copy( this->name(), ":", "_" ) ,
       "Histogram Directory" ) ;
   // control output level of histograms
   this->declareProperty ( "FullDetail"            , m_fullDetail    = false ) ;

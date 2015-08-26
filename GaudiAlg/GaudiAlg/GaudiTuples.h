@@ -12,6 +12,8 @@
 // ============================================================================
 // Include files
 // ============================================================================
+#include "boost/algorithm/string/replace.hpp"
+// ============================================================================
 // GaudiKernel
 // ============================================================================
 #include "GaudiKernel/ClassID.h"
@@ -331,14 +333,14 @@ private:
     m_splitNTupleDir = false ;    // for HBOOK it is better to use 'true'
     m_nTupleLUN      = "FILE1" ;  // logical unit for ntuples
     m_nTupleTopDir   = "" ;       // top level ntuple directory
-    m_nTupleDir      = this->name() ;   // ntuple directory
+    m_nTupleDir      = boost::algorithm::replace_all_copy( this->name(), ":","_" );    // ntuple directory
     m_nTupleOffSet   = 0  ;       // offset for ntuples
     //
     m_produceEvtCols = false ;    // Switch ON/OFF ntupel production
     m_splitEvtColDir = false ;    // for HBOOK it is better to use 'true'
     m_evtColLUN      = "EVTCOL" ; // logical unit for ntuples
     m_evtColTopDir   = ""    ;    // top level ntuple directory
-    m_evtColDir      = this->name() ;   // ntuple directory
+    m_evtColDir      = boost::algorithm::replace_all_copy( this->name(), ":", "_");   // ntuple directory
     m_evtColOffSet   = 0   ;      // offset for ntuples
     //
     m_tuplesPrint    = true  ;    // print tuples at end of job
