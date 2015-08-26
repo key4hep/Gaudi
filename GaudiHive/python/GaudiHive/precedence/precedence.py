@@ -70,7 +70,7 @@ class RndBiased10BooleanValue(object):
     """
 
     # 276 values, biased as 90% to 10%
-    builtinPattern = [False, False, True, False, False, False, False, False, False, False, False, False, False, False, False, True, False, False, True, False, False, False, False, False, False, False, False, False, True, False, False, False, False, False, False, False, False, False, False, False, True, False, False, False, False, False, False, False, False, True, False, False, False, False, False, False, False, False, True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, True, False, True, False, True, False, False, False, False, False, False, False, False, True, False, True, False, False, True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, True, False, False, False, False, False, False, False, False, False, True, False, False, False, False, True, True, False, False, False, False, False, False, False, False, False, False, True, True, False, True, False, False, False, False, False, False, False, False, False, False, True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, True, False, False, False, False, False, False, False, False, False, False, False, True, False, False, False, False, False, False, False, False, False, False, False, True, False, False, False, True, False, False, False, False, False, False, False, False, True, False, False, False, False, False, False, False, False, False, False, False, True, False]
+    builtinPattern = [True, False, False, True, False, False, False, False, False, False, False, False, False, False, False, False, True, False, False, True, False, False, False, False, False, False, False, False, False, True, False, False, False, False, False, False, False, False, False, False, False, True, False, False, False, False, False, False, False, False, True, False, False, False, False, False, False, False, False, True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, True, False, True, False, True, False, False, False, False, False, False, False, False, True, False, True, False, False, True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, True, False, False, False, False, False, False, False, False, False, True, False, False, False, False, True, True, False, False, False, False, False, False, False, False, False, False, True, True, False, True, False, False, False, False, False, False, False, False, False, False, True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, True, False, False, False, False, False, False, False, False, False, False, False, True, False, False, False, False, False, False, False, False, False, False, False, True, False, False, False, True, False, False, False, False, False, False, False, False, True, False, False, False, False, False, False, False, False, False, False, False, True, False, True]
     pattern = []
 
     def __init__(self, useBuiltinPattern=True):
@@ -78,8 +78,8 @@ class RndBiased10BooleanValue(object):
         if useBuiltinPattern:
             self.pattern = self.builtinPattern
         else:
-            # 276 values, biased as 90% to 10%
-            self.pattern = [False for i in range(248)] + [True for i in range(28)]
+            # 278 values, biased approximately as 90% to 10% (276 precedence graph algorithms, plus two algorithms added manually - DstWriter and Framework)
+            self.pattern = [False for i in range(249)] + [True for i in range(29)]
             random.shuffle(self.pattern)
 
         self.generator = self._create_generator(self.pattern)
@@ -109,7 +109,7 @@ class CruncherSequence(object):
 
     unique_data_objects = []
 
-    def __init__(self, timeValue, IOboolValue, cfgPath=None, dfgPath=None, showStat=False, algoDebug = False):
+    def __init__(self, timeValue, IOboolValue, sleepFraction, cfgPath=None, dfgPath=None, showStat=False, algoDebug = False):
         """
         Keyword arguments:
         timeValue -- timeValue object to set algorithm execution time
@@ -121,6 +121,7 @@ class CruncherSequence(object):
 
         self.timeValue = timeValue
         self.IOboolValue = IOboolValue
+        self.sleepFraction = sleepFraction
 
         if not cfgPath: cfgPath = "cf_dependencies.graphml"
         if not dfgPath: dfgPath = "data_dependencies.graphml"
@@ -138,7 +139,8 @@ class CruncherSequence(object):
                                 OutputLevel = DEBUG if self.algoDebug else INFO,
                                 shortCalib = True,
                                 varRuntime = varRuntime,
-                                avgRuntime = avgRuntime)
+                                avgRuntime = avgRuntime,
+                                SleepFraction = self.sleepFraction if self.IOboolValue.get() else 0.)
 
         # Generate data flow part
         self._attach_io_data_objects("DstWriter", dstwriter)
@@ -219,7 +221,7 @@ class CruncherSequence(object):
                                     shortCalib = True,
                                     varRuntime = varRuntime,
                                     avgRuntime = avgRuntime,
-                                    SleepFraction = 0.5)
+                                    SleepFraction = self.sleepFraction if self.IOboolValue.get() else 0.)
             framework.Outputs.output_0.Path = '/Event/DAQ/RawEvent'
             framework.Outputs.output_2.Path = '/Event/DAQ/ODIN'
             seq.Members += [framework]
@@ -267,7 +269,7 @@ class CruncherSequence(object):
                                 shortCalib = True,
                                 varRuntime = varRuntime,
                                 avgRuntime = avgRuntime,
-                                SleepFraction = 0.5 if self.IOboolValue.get() else 0.)
+                                SleepFraction = self.sleepFraction if self.IOboolValue.get() else 0.)
 
                 self._attach_io_data_objects(algo_name, algo_daughter)
 
