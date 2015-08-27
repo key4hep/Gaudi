@@ -44,16 +44,16 @@ struct GAUDI_LOCAL AppendInterfaceName {
 #define _refcounting_implementation_ \
 public: \
   /** Reference Interface instance               */ \
-  virtual unsigned long addRef() { return ++m_refCount; } \
+  unsigned long addRef() override { return ++m_refCount; } \
   /** Release Interface instance                 */ \
-  virtual unsigned long release() { \
+  unsigned long release() override { \
     /* Avoid to decrement 0 */ \
     const unsigned long count = (m_refCount) ? --m_refCount : m_refCount; \
     if(count == 0) delete this; \
     return count; \
   } \
   /** Current reference count                    */ \
-  virtual unsigned long refCount() const { return m_refCount; } \
+  unsigned long refCount() const override { return m_refCount; } \
 protected: \
   /** Reference counter                          */ \
   unsigned long m_refCount; \
