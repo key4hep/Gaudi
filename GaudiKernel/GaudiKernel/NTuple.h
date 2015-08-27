@@ -379,7 +379,7 @@ namespace NTuple
       catch (...)   {
         result = nullptr;
       }
-      return (0==result) ? StatusCode::FAILURE : StatusCode::SUCCESS;
+      return result ? StatusCode::SUCCESS : StatusCode::FAILURE;
     }
     /// Locate a _Column of data to the N tuple type unsafe for objects
     template <class TYPE> StatusCode i_item(const std::string& name,
@@ -391,7 +391,7 @@ namespace NTuple
       catch (...)   {
         result = nullptr;
       }
-      return (0==result) ? StatusCode::FAILURE : StatusCode::SUCCESS;
+      return result ? StatusCode::SUCCESS : StatusCode::FAILURE;
     }
     /// Locate a _Column of data to the N tuple type safe
     StatusCode i_item(const std::string& name,
@@ -402,7 +402,7 @@ namespace NTuple
       catch (...)   {
         result = nullptr;
       }
-      return (0==result) ? StatusCode::FAILURE : StatusCode::SUCCESS;
+      return result ? StatusCode::SUCCESS : StatusCode::FAILURE;
     }
     /// Locate a _Array of data to the N tuple type safe
     template <class TYPE> StatusCode i_item(const std::string& name,
@@ -415,7 +415,7 @@ namespace NTuple
       catch (...)   {
         result = nullptr;
       }
-      return (0==result) ? StatusCode::FAILURE : StatusCode::SUCCESS;
+      return result ? StatusCode::SUCCESS : StatusCode::FAILURE;
     }
     /// Locate a _Matrix of data to the N tuple type safe
     template <class TYPE> StatusCode i_item(const std::string& name,
@@ -428,7 +428,7 @@ namespace NTuple
       catch (...)   {
         result = nullptr;
       }
-      return (0==result) ? StatusCode::FAILURE : StatusCode::SUCCESS;
+      return result ? StatusCode::SUCCESS : StatusCode::FAILURE;
     }
     /// Add a _Item of data to the N tuple
     template <class TYPE>
