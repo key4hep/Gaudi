@@ -210,7 +210,7 @@ namespace Gaudi
      *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
      *  @date 2007-03-07
      */
-    class GAUDI_API AuditorGuard
+    class GAUDI_API AuditorGuard final
     {
     public:
       /// constructor
