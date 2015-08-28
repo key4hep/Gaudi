@@ -7,39 +7,18 @@
 #include "GaudiKernel/StatusCode.h"
 #include <ostream>
 
-#ifndef __GCCXML__
-// Meta Programming Library (MPL) headers
-#include <boost/mpl/set.hpp>
-#include <boost/mpl/insert.hpp>
-#include <boost/mpl/fold.hpp>
-#include <boost/mpl/for_each.hpp>
-namespace mpl = boost::mpl;
-#endif
-
 #include <typeinfo>
 
-#ifndef __GCCXML__
 /// Macro to declare the interface ID when using the new mechanism of extending and implementing interfaces.
-#define DeclareInterfaceID(name, major, minor) \
+#define DeclareInterfaceID(iface, major, minor) \
   static const InterfaceID &interfaceID(){ return iid::interfaceID(); } \
-  typedef Gaudi::InterfaceId< name , major , minor > iid; \
-  typedef iid::iids::type ext_iids
-#else
-// GCCXML work-around
-#define DeclareInterfaceID(name, major, minor) \
-  static const InterfaceID &interfaceID(){ static const InterfaceID xx(0UL,0UL,0UL); return xx; }
-#endif
+  using iid = Gaudi::InterfaceId< iface , major , minor > ; \
+  using ext_iids = iid::iids
 
-#ifndef __GCCXML__
 /// Macro to declare the interface ID when using the new mechanism of extending and implementing interfaces.
 #define DeclareInterfaceIDMultiBase(name, major, minor) \
   static const InterfaceID &interfaceID(){ return iid::interfaceID(); } \
-  typedef Gaudi::InterfaceId< name , major , minor > iid
-#else
-// GCCXML work-around
-#define DeclareInterfaceIDMultiBase(name, major, minor) \
-  static const InterfaceID &interfaceID(){ static const InterfaceID xx(0UL,0UL,0UL); return xx; }
-#endif
+  using iid = Gaudi::InterfaceId< name , major , minor >
 
 /**
  * @class InterfaceID Kernel.h GaudiKernel/Kernel.h
@@ -113,6 +92,64 @@ private:
 };
 
 namespace Gaudi {
+  template <typename... I> struct typelist { };
+
+  //@TODO/@FIXME: make sure the entries in typelist are unique, and not repeated...
+
+  // typelist concatenation
+  template <typename... I> struct typelist_cat;
+
+  // identity
+  template <typename... I1>
+  struct typelist_cat<typelist<I1...>>{ using type = typelist<I1...>; };
+
+  // binary op
+  template <typename... I1, typename... I2> 
+  struct typelist_cat<typelist<I1...>,typelist<I2...>>{ using type = typelist<I1...,I2...>; };
+
+  // induction of binary op
+  template <typename... I1, typename... I2, typename... Others> 
+  struct typelist_cat<typelist<I1...>,typelist<I2...>, Others...> { 
+      using type = typename typelist_cat< typelist<I1...,I2...>, Others... >::type;
+  };
+
+  // append is a special case of concatenation...
+  template <typename... I> struct typelist_append;
+  template <typename I1, typename... I2> 
+  struct typelist_append<I1,typelist<I2...>> : typelist_cat< typelist<I2...>, typelist<I1> > { };
+
+  // helpers for implementation of interface cast
+  template <typename I> static void* void_cast(const I* i) 
+  { return const_cast<I*>(i); }
+
+  template <typename ... Is > struct iid_cast_t;
+
+  template <typename I> struct iid_cast_t<I> {
+      template <typename P>
+      void* operator()(const InterfaceID& tid, P* ptr) const {
+        return tid.versionMatch(I::interfaceID()) ? Gaudi::void_cast<I>(ptr)
+                                                  : nullptr;
+      }
+  };
+
+  template <typename I, typename... Is> struct iid_cast_t<I,Is...> {
+      template <typename P>
+      void* operator()(const InterfaceID& tid, P* ptr) const {
+        return tid.versionMatch(I::interfaceID()) ? Gaudi::void_cast<I>(ptr)
+                                                  : iid_cast_t<Is...>{}(tid,ptr);
+      }
+  };
+
+  template <typename... Is, typename P > void* iid_cast(const InterfaceID& tid, P* ptr )
+  {
+      return iid_cast_t<Is...>{}(tid,ptr);
+  }
+
+  template <typename... Is>
+  std::vector<std::string> getInterfaceNames( Gaudi::typelist<Is...> ) {
+      return { Is::name()... }; // TODO: fix possible duplication 
+  }
+
   /// Class to handle automatically the versioning of the interfaces when they
   /// are inheriting from other interfaces.
   /// @author Marco Clemencic
@@ -120,12 +157,10 @@ namespace Gaudi {
   class InterfaceId final {
   public:
     /// Interface type
-    typedef INTERFACE iface_type;
+    using iface_type = INTERFACE;
 
-#ifndef __GCCXML__
     /// List of interfaces
-    typedef mpl::insert<typename iface_type::ext_iids, InterfaceId> iids;
-#endif
+    using iids = typename Gaudi::typelist_append<InterfaceId,typename iface_type::ext_iids>::type ;
 
     static inline std::string name() { return System::typeinfoName(typeid(INTERFACE)); }
 
@@ -133,11 +168,7 @@ namespace Gaudi {
     static inline unsigned long minorVersion(){return minVers;}
 
     static inline const std::type_info &TypeInfo() {
-#ifndef __GCCXML__
       return typeid(typename iids::type);
-#else
-      return typeid(INTERFACE); // avoid compilation errors
-#endif
     }
 
     static const InterfaceID& interfaceID()
@@ -158,23 +189,15 @@ namespace Gaudi {
 */
 class GAUDI_API IInterface {
 public:
-#ifndef __GCCXML__
   /// Interface ID
-  typedef Gaudi::InterfaceId<IInterface,0,0> iid;
+  using iid = Gaudi::InterfaceId<IInterface,0,0>;
 
   /// Extra interfaces
-  typedef mpl::set1<iid> ext_iids;
-#endif
+  using ext_iids = Gaudi::typelist<>;
 
   /// Return an instance of InterfaceID identifying the interface.
   static inline const InterfaceID &interfaceID(){
-#ifndef __GCCXML__
     return iid::interfaceID();
-#else
-    // GCCXML work-around
-    static const InterfaceID xx(0UL,0UL,0UL);
-    return xx;
-#endif
   }
 
   /// main cast function
