@@ -4,6 +4,7 @@
 #include "Python.h"   //included for the python API
 // ============================================================================
 #include <sstream>    //included for stringbuf
+#include <memory>
 // ============================================================================
 #include "GaudiPython/GaudiPython.h"
 // ============================================================================
@@ -15,13 +16,13 @@ namespace GaudiPython
   class GAUDI_API CallbackStreamBuf: public std::stringbuf
   {
     private:
-      PyObject* m_self;
-      char* m_callbackBuff;
+      PyObject* m_self = nullptr;
+      std::unique_ptr<char[]> m_callbackBuff;
 
     public:
       CallbackStreamBuf(PyObject* self);
       ~CallbackStreamBuf();
-      virtual int sync() ;
+      int sync() override;
   }; //CallbackStreamBuf
 
 } //namespace GaudiPython

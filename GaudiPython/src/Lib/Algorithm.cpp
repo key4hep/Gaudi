@@ -30,12 +30,12 @@ StatusCode GaudiPython::call_python_method
 {
   StatusCode sc = StatusCode::FAILURE;
   // check arguments
-  if ( 0 == self || 0 == method ) { return StatusCode::FAILURE ; }
+  if ( !self || !method ) { return StatusCode::FAILURE ; }
 
   // call Python
   PyObject* r = PyObject_CallMethod(self, chr(method), chr(""));
 
-  if ( 0 == r ) { PyErr_Print() ;              return sc ; } // RETURN
+  if ( !r ) { PyErr_Print() ;              return sc ; } // RETURN
 
   if ( PyInt_Check ( r ) )
   { sc = PyInt_AS_LONG( r ) ; Py_DECREF( r ) ; return sc ; } // RETURN
@@ -44,7 +44,7 @@ StatusCode GaudiPython::call_python_method
   //  ' int getCode() '
   PyObject* c = PyObject_CallMethod(r, chr("getCode"), chr(""));
 
-  if      ( 0 == c           ) {      PyErr_Print()      ; }
+  if      ( !c           ) {      PyErr_Print()      ; }
   else if ( PyLong_Check( c )) { sc = PyLong_AsLong( c ); }
   else
   {
