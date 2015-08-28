@@ -7,6 +7,7 @@
 #include "GaudiKernel/GaudiException.h"
 
 #include <string>
+#include <algorithm>
 #include <vector>
 #include <stdexcept>
 #include <iostream>
