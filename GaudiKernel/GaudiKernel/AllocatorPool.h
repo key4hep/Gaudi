@@ -48,6 +48,7 @@
 #ifndef GAUDIKERNEL_AllocatorPool_h
 #define GAUDIKERNEL_AllocatorPool_h 1
 
+#include <memory>
 #include "GaudiKernel/Kernel.h"
 
 namespace GaudiUtils
@@ -59,7 +60,7 @@ namespace GaudiUtils
    *
    *  @date 2006-02-14
    */
-  class GAUDI_API AllocatorPool
+  class GAUDI_API AllocatorPool final
   {
   public:
 
@@ -85,19 +86,18 @@ namespace GaudiUtils
 
   private:
 
-    struct PoolLink
+    struct PoolLink final
     {
-      PoolLink* next;
+      PoolLink* next = nullptr;
     };
-    class PoolChunk
+    class PoolChunk final
     {
     public:
       explicit PoolChunk(unsigned int sz)
-        : size(sz), mem(new char[size]), next(0) {;}
-      ~PoolChunk() { delete [] mem; }
+        : size(sz), mem{new char[size]}  {}
       const unsigned int size;
-      char* mem;
-      PoolChunk* next;
+      std::unique_ptr<char[]> mem;
+      PoolChunk* next = nullptr;
     };
 
     /// Make pool larger
@@ -107,9 +107,9 @@ namespace GaudiUtils
 
     const unsigned int esize;
     const unsigned int csize;
-    PoolChunk* chunks;
-    PoolLink* head;
-    int nchunks;
+    PoolChunk* chunks = nullptr;
+    PoolLink* head = nullptr;
+    int nchunks = 0;
   };
 
 } // end of namespace GaudiUtils
