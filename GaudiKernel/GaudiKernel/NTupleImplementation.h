@@ -19,55 +19,55 @@ namespace NTuple   {
     /// Container with N tuple _Columns
     ItemContainer     m_items;
     /// Flag wether N tuple is booked
-    bool              m_isBooked;
+    bool              m_isBooked = false;
     /// N tuple title
     std::string       m_title;
     /// Possibly hanging selector
-    ISelectStatement* m_pSelector;
+    ISelectStatement* m_pSelector = nullptr;
     /// Buffer 
     std::unique_ptr<char[]> m_buffer;
     /// Reference to N-tuple service used
-    INTupleSvc*       m_ntupleSvc;
+    INTupleSvc*       m_ntupleSvc = nullptr;
     /// Reference to the conversion service used
-    IConversionSvc*   m_cnvSvc;
+    IConversionSvc*   m_cnvSvc = nullptr;
   private:
     /// Standard Copy Constructor
     TupleImp(const TupleImp&)  = delete;
 
   public:
     /// Internally used by abstract classes
-    virtual INTupleItem* i_find(const std::string& name)  const;
+    INTupleItem* i_find(const std::string& name)  const override;
   public:
     /// Standard Constructor
     TupleImp( std::string title);
     /// Standard Destructor
-    virtual ~TupleImp();
+    ~TupleImp() override;
     /// Access item container
-    ItemContainer& items()    {
+    ItemContainer& items()    override {
       return m_items;
     }
     /// Access item container   (CONST)
-    const ItemContainer& items()    const   {
+    const ItemContainer& items() const override {
       return m_items;
     }
     /// Object title
-    virtual const std::string&  title()         const   {
+    const std::string&  title() const override {
       return m_title;
     }
     /// Find an item row of the Ntuple (CONST)
-    virtual const INTupleItem* find(const std::string& name) const    {
+    const INTupleItem* find(const std::string& name) const override {
       return i_find(name);
     }
     /// Find an item row of the Ntuple
-    virtual INTupleItem* find(const std::string& name)    {
+    INTupleItem* find(const std::string& name) override {
       return i_find(name);
     }
     /// Access N tuple data buffer
-    char* buffer()    {
+    char* buffer()  override  {
       return m_buffer.get();
     }
     /// Access N tuple data buffer    (CONST)
-    const char* buffer()  const  {
+    const char* buffer()  const  override {
       return m_buffer.get();
     }
     /// Access conversion service
@@ -87,30 +87,30 @@ namespace NTuple   {
       m_ntupleSvc = svc;
     }
     /// Attach selector
-    virtual StatusCode attachSelector(ISelectStatement* sel);
+    StatusCode attachSelector(ISelectStatement* sel) override;
     /// Access selector
-    virtual ISelectStatement* selector();
+    ISelectStatement* selector() override;
     /// Set N tuple data buffer
     virtual char* setBuffer(std::unique_ptr<char[]>&& buff);
-    virtual char* setBuffer(char* buff);
+    char* setBuffer(char* buff) override;
     /// Reset all entries to their default values
-    virtual void reset();
+    void reset() override;
     /// Add an item row to the N tuple
-    virtual StatusCode add(INTupleItem* item);
+    StatusCode add(INTupleItem* item) override;
     /// Remove an item row (identified by pointer) from the N tuple
-    virtual StatusCode remove(INTupleItem* item);
+    StatusCode remove(INTupleItem* item) override;
     /// Remove an item row (identified by name) from the N tuple
-    virtual StatusCode remove(const std::string& name);
+    StatusCode remove(const std::string& name) override;
       /// Write record of the NTuple (Shortcut of writeRecord)
-    virtual StatusCode write();
+    StatusCode write() override;
     /// Write record of the NTuple
-    virtual StatusCode writeRecord();
+    StatusCode writeRecord() override;
     /// Read record of the NTuple (Shortcut of readRecord)
-    virtual StatusCode read();
+    StatusCode read() override;
     /// Read record of the NTuple
-    virtual StatusCode readRecord();
+    StatusCode readRecord() override;
     /// Save the NTuple
-    virtual StatusCode save();
+    StatusCode save() override;
 
   };  // end class definition: Tuple
 
