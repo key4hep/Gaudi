@@ -1,15 +1,13 @@
-#include "Python.h"   //included for the python API
+#include "Python.h"   //included the python API
 // ============================================================================
 #include "GaudiKernel/Bootstrap.h"
 // ============================================================================
-#include <sstream>    //included for stringbuf
+#include <algorithm>
 // ============================================================================
 #include "GaudiPython/GaudiPython.h"
 // ============================================================================
-#include "GaudiPython/CallbackStreamBuf.h" //include header file
+#include "GaudiPython/CallbackStreamBuf.h"
 // ============================================================================
-
-#define min(a,b) (((a)<(b))?(a):(b))
 
 using namespace std;
 
@@ -19,10 +17,10 @@ using namespace std;
 int GaudiPython::call_python_method
 ( PyObject* self, const char* method, char* buf )
 {
-  if ( 0 == self || 0 == method ) { return 1 ; }
+  if ( !self || !method ) { return 1 ; }
   PyObject* r = PyObject_CallMethod(self, const_cast<char*>(method),
                                           const_cast<char*>("s"), buf);
-  if ( 0 == r ) {
+  if ( !r ) {
     string err("Unsuccessful call to bound Python method");
     err += method;
     PyErr_SetString( PyExc_TypeError , err.c_str() ) ;
@@ -36,11 +34,11 @@ int GaudiPython::call_python_method
 // ============================================================================
 /// CallbackStreamBuf constructor
 // ============================================================================
-GaudiPython::CallbackStreamBuf::CallbackStreamBuf
-(PyObject* self): stringbuf(), m_self(self)
+GaudiPython::CallbackStreamBuf::CallbackStreamBuf(PyObject* self): 
+    m_self(self),
+    m_callbackBuff{ new char[512] } //used for passing the flushed chars in the python callback
 {
-  Py_INCREF(this->m_self);
-  this->m_callbackBuff = new char[512]; //used for passing the flushed chars in the python callback
+  Py_INCREF(m_self);
 }
 
 // ============================================================================
@@ -48,8 +46,7 @@ GaudiPython::CallbackStreamBuf::CallbackStreamBuf
 // ============================================================================
 GaudiPython::CallbackStreamBuf::~CallbackStreamBuf()
 {
-  Py_DECREF( this->m_self );
-  delete this->m_callbackBuff;
+  Py_DECREF( m_self );
 }
 
 // ============================================================================
@@ -59,14 +56,14 @@ int GaudiPython::CallbackStreamBuf::sync ()
 {
   int length;
   char *x;
-  for ( length = 0, x = this->pbase(); x < this->epptr(); x++ , length++ ) ;
+  for ( length = 0, x = pbase(); x < epptr(); x++ , length++ ) ;
   //getting in a null terminated buffer the characters
-  memcpy( this->m_callbackBuff, this->pbase(), min(length, 512) );
-  this->m_callbackBuff[ min(length, 512) ] = '\0';
+  memcpy( m_callbackBuff.get(), pbase(), std::min(length, 512) );
+  m_callbackBuff[ std::min(length, 512) ] = '\0';
   //calling the python method
-  GaudiPython::call_python_method(this->m_self, "_sync", this->m_callbackBuff);
+  GaudiPython::call_python_method(m_self, "_sync", m_callbackBuff.get());
   //reseting in/out buffer pointers
-  setp( this->pbase() , this->pbase() );
-  setg( this->eback(), this->eback(), this->eback() );
+  setp( pbase() , pbase() );
+  setg( eback(), eback(), eback() );
   return 0;
 }

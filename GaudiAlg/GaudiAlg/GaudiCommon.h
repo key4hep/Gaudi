@@ -89,7 +89,18 @@ protected: // few actual data types
   /// storage for active tools
   typedef std::vector<IAlgTool*>             AlgTools     ;
   /// storage for active services
-  typedef GaudiUtils::HashMap<std::string, SmartIF<IService> > Services;
+  typedef std::vector<SmartIF<IService>>     Services;
+
+  static const constexpr struct svc_eq_t {
+        bool operator()(const std::string& n, const SmartIF<IService>& s) const { return n == s->name(); };
+        bool operator()(const SmartIF<IService>& s, const std::string& n) const { return s->name() == n; };
+        bool operator()(const SmartIF<IService>& s, const SmartIF<IService>& n) const { return s->name() == n->name(); };
+  } svc_eq { };
+  static const constexpr struct svc_lt_t {
+        bool operator()(const std::string& n, const SmartIF<IService>& s) const { return n < s->name(); };
+        bool operator()(const SmartIF<IService>& s, const std::string& n) const { return s->name() < n; };
+        bool operator()(const SmartIF<IService>& s, const SmartIF<IService>& n) const { return s->name() < n->name(); };
+  } svc_lt { };
   // ==========================================================================
   //protected members such that they can be used in the derived classes
   /// a pointer to the CounterSummarySvc
@@ -766,7 +777,7 @@ private:
   /// Add the given tool to the list of acquired tools
   void addToToolList    ( IAlgTool * tool ) const;
   /// Add the given service to the list of acquired services
-  void addToServiceList ( const SmartIF<IService>& svc ) const;
+  void addToServiceList ( SmartIF<IService> svc ) const;
   /// Constructor initializations
   void initGaudiCommonConstructor( const IInterface * parent = 0 );
   // ==========================================================================

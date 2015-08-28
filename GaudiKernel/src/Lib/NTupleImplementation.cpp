@@ -24,11 +24,7 @@
 namespace NTuple   {
   /// Standard Constructor
   TupleImp::TupleImp ( std::string title )
-  : m_isBooked(false),
-    m_title(std::move(title)),
-    m_pSelector(0),
-    m_ntupleSvc(0),
-    m_cnvSvc(0)
+  : m_title(std::move(title))
   {
   }
 
@@ -57,19 +53,17 @@ namespace NTuple   {
 
   /// Locate a column of data to the N tuple (not type safe)
   INTupleItem* TupleImp::i_find ( const std::string& name )  const   {
-    for (auto& i : m_items ) {
-      if ( name == i->name() )   {
-        return const_cast<INTupleItem*>(i);
-      }
-    }
-    return nullptr;
+    auto i = std::find_if( std::begin(m_items), std::end(m_items), 
+                           [&](ItemContainer::const_reference j) 
+                           { return j->name() == name; } );
+    return i!=std::end(m_items) ? const_cast<INTupleItem*>(*i) : nullptr;
   }
 
   /// Add an item row to the N tuple
   StatusCode TupleImp::add(INTupleItem* item)   {
-    if ( 0 != item )    {
+    if ( item )    {
       INTupleItem* i = i_find(item->name());
-      if ( 0 == i )   {
+      if ( !i )   {
         m_items.push_back( item );
         return StatusCode::SUCCESS;
       }
@@ -80,19 +74,16 @@ namespace NTuple   {
   /// Remove a column from the N-tuple
   StatusCode TupleImp::remove ( const std::string& name )    {
     INTupleItem* i = i_find(name);
-    return (i == 0) ?  StatusCode(StatusCode::FAILURE) : remove(i);
+    return i ?  remove(i) : StatusCode::FAILURE;
   }
 
   /// Remove a column from the N-tuple
   StatusCode TupleImp::remove ( INTupleItem* item )    {
-    for (auto i = m_items.begin(); i != m_items.end(); i++) {
-      if ( (*i) == item )   {
-        m_items.erase(i);
-        item->release();
-        return StatusCode::SUCCESS;
-      }
-    }
-    return StatusCode::FAILURE;
+    auto i = std::find( std::begin(m_items), std::end(m_items), item );
+    if ( i == std::end( m_items) ) return StatusCode::FAILURE;
+    m_items.erase(i);
+    item->release();
+    return StatusCode::SUCCESS;
   }
   /// Set N tuple data buffer
   char* TupleImp::setBuffer(std::unique_ptr<char[]>&& buff)  {

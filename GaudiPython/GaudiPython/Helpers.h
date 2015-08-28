@@ -66,8 +66,7 @@ struct Helper {
                                   const std::string& path  )
   {
     DataObject* o;
-    if ( dpsvc->retrieveObject(path,o).isSuccess() ) return o;
-    else return 0;
+    return dpsvc->retrieveObject(path,o).isSuccess() ? o : nullptr;
   }
   // ==========================================================================
   /** simple wrapper for IDataProviderSvc::findObject
@@ -103,8 +102,8 @@ struct Helper {
   // ==========================================================================
   static IAlgTool* tool(IToolSvc* toolsvc, const std::string& type, const std::string& name, IInterface* p, bool cif ) {
     IAlgTool* o;
-    if ( toolsvc->retrieve(type, name, IAlgTool::interfaceID(), o, p, cif).isSuccess() ) return o;
-    else return 0;
+    return toolsvc->retrieve(type, name, IAlgTool::interfaceID(), o, p, cif).isSuccess() ?
+                    o : nullptr ;
   }
   static long loadDynamicLib(const std::string& name) {
     void* h;
@@ -112,18 +111,15 @@ struct Helper {
   }
   static IHistogram1D* histo1D( IHistogramSvc* hsvc, const std::string& path ) {
     IHistogram1D* h;
-    if ( hsvc->findObject(path, h ).isSuccess() ) return h;
-    else                                          return 0;
+    return ( hsvc->findObject(path, h ).isSuccess() ) ?  h : nullptr;
   }
   static IHistogram2D* histo2D( IHistogramSvc* hsvc, const std::string& path ) {
     IHistogram2D* h;
-    if ( hsvc->findObject(path, h ).isSuccess() ) return h;
-    else                                          return 0;
+    return ( hsvc->findObject(path, h ).isSuccess() ) ? h : nullptr;
   }
   static IHistogram3D* histo3D( IHistogramSvc* hsvc, const std::string& path ) {
     IHistogram3D* h;
-    if ( hsvc->findObject(path, h ).isSuccess() ) return h;
-    else                                          return 0;
+    return ( hsvc->findObject(path, h ).isSuccess() ) ? h : nullptr;
   }
   static IProfile1D*
   profile1D
@@ -131,8 +127,7 @@ struct Helper {
     const std::string& path )
   {
     IProfile1D* h = 0 ;
-    if ( 0 != hsvc && hsvc->findObject ( path , h ).isSuccess() ) { return h ; }
-    return 0 ;
+    return ( hsvc && hsvc->findObject ( path , h ).isSuccess() ) ? h : nullptr;
   }
   static IProfile2D*
   profile2D
@@ -140,8 +135,7 @@ struct Helper {
     const std::string& path )
   {
     IProfile2D* h = 0 ;
-    if ( 0 != hsvc && hsvc->findObject ( path , h ).isSuccess() ) { return h ; }
-    return 0 ;
+    return ( hsvc && hsvc->findObject ( path , h ).isSuccess() ) ? h : nullptr;
   }
 
 // Array support
@@ -169,11 +163,11 @@ private:
 #if PY_VERSION_HEX < 0x02050000
     const
 #endif
-    char* buf = 0;
+    char* buf = nullptr;
     Py_ssize_t size = (*(self->ob_type->tp_as_buffer->bf_getcharbuffer))( self, 0, &buf );
     if ( idx < 0 || idx >= size/int(sizeof(T)) ) {
        PyErr_SetString( PyExc_IndexError, "buffer index out of range" );
-       return 0;
+       return nullptr;
     }
     return toPython((T*)buf + idx);
   }
@@ -203,7 +197,7 @@ public:
 
   template <class T>
   static T* toAddress( std::vector<T>& v ) {
-    return &(*v.begin());
+    return v.data();
   }
   template <class T>
   static T* toAddress( void * a) {
