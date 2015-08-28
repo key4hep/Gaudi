@@ -8,7 +8,7 @@
 
 class IMessageSvc;
 
-class StreamLogger {
+class StreamLogger final {
 public:
   StreamLogger(const std::string& file);
   StreamLogger(std::ostream &ost);
@@ -26,6 +26,5 @@ private:
   MSG::Level m_level;
   std::string m_name;
 };
-
 
 #endif
