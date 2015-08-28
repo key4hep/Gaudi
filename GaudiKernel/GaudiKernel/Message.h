@@ -11,7 +11,7 @@
 
     @author Iain Last
 */
-class GAUDI_API Message {
+class GAUDI_API Message final {
 public:
   /// Default constructor
   Message() = default;
@@ -70,7 +70,7 @@ public:
   /// Insert the message into a stream.
   friend bool operator == ( const Message& a, const Message& b );
 
-protected:
+private:
   /// Called when an invalid format string is encountered.
   void invalidFormat() const;
 
