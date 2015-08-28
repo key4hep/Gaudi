@@ -92,80 +92,80 @@ private:
 };
 
 namespace Gaudi {
-  template <typename... I> struct typelist { };
+  template <typename... I> struct interface_list { };
 
-  //@TODO/@FIXME: make sure the entries in typelist are unique, and not repeated...
+  //@TODO/@FIXME: make sure the entries in interface_list are unique, and not repeated...
 
-  // typelist concatenation
-  template <typename... I> struct typelist_cat;
+  // interface_list concatenation
+  template <typename... I> struct interface_list_cat;
 
   // identity
   template <typename... I1>
-  struct typelist_cat<typelist<I1...>>{ using type = typelist<I1...>; };
+  struct interface_list_cat<interface_list<I1...>>{ using type = interface_list<I1...>; };
 
   // binary op
-  template <typename... I1, typename... I2> 
-  struct typelist_cat<typelist<I1...>,typelist<I2...>>{ using type = typelist<I1...,I2...>; };
+  template <typename... I1, typename... I2>
+  struct interface_list_cat<interface_list<I1...>,interface_list<I2...>>{ using type = interface_list<I1...,I2...>; };
 
   // induction of binary op
-  template <typename... I1, typename... I2, typename... Others> 
-  struct typelist_cat<typelist<I1...>,typelist<I2...>, Others...> { 
-      using type = typename typelist_cat< typelist<I1...,I2...>, Others... >::type;
+  template <typename... I1, typename... I2, typename... Others>
+  struct interface_list_cat<interface_list<I1...>,interface_list<I2...>, Others...> {
+      using type = typename interface_list_cat< interface_list<I1...,I2...>, Others... >::type;
   };
 
   // append is a special case of concatenation...
-  template <typename... I> struct typelist_append;
-  template <typename I1, typename... I2> 
-  struct typelist_append<I1,typelist<I2...>> : typelist_cat< typelist<I2...>, typelist<I1> > { };
+  template <typename... I> struct interface_list_append;
+  template <typename I1, typename... I2>
+  struct interface_list_append<interface_list<I2...>,I1> : interface_list_cat< interface_list<I2...>, interface_list<I1> > { };
 
   // helpers for implementation of interface cast
-  template <typename I> static void* void_cast(const I* i) 
-  { return const_cast<I*>(i); }
+  namespace iid_cast_details {
+      template <typename I> static void* void_cast(const I* i)
+      { return const_cast<I*>(i); }
 
-  template <typename ... Is > struct iid_cast_t;
+      template <typename ... Is > struct iid_cast_t;
 
-  template <typename I> struct iid_cast_t<I> {
-      template <typename P>
-      void* operator()(const InterfaceID& tid, P* ptr) const {
-        return tid.versionMatch(I::interfaceID()) ? Gaudi::void_cast<I>(ptr)
-                                                  : nullptr;
-      }
-  };
+      template <typename I> struct iid_cast_t<I> {
+          template <typename P>
+          void* operator()(const InterfaceID& tid, P* ptr) const {
+            return tid.versionMatch(I::interfaceID()) ? void_cast<I>(ptr)
+                                                      : nullptr;
+          }
+      };
 
-  template <typename I, typename... Is> struct iid_cast_t<I,Is...> {
-      template <typename P>
-      void* operator()(const InterfaceID& tid, P* ptr) const {
-        return tid.versionMatch(I::interfaceID()) ? Gaudi::void_cast<I>(ptr)
-                                                  : iid_cast_t<Is...>{}(tid,ptr);
-      }
-  };
+      template <typename I, typename... Is> struct iid_cast_t<I,Is...> {
+          template <typename P>
+          void* operator()(const InterfaceID& tid, P* ptr) const {
+            return tid.versionMatch(I::interfaceID()) ? void_cast<I>(ptr)
+                                                      : iid_cast_t<Is...>{}(tid,ptr);
+          }
+      };
+  }
 
   template <typename... Is, typename P > void* iid_cast(const InterfaceID& tid, P* ptr )
   {
-      return iid_cast_t<Is...>{}(tid,ptr);
+      static const iid_cast_details::iid_cast_t<Is...> iid_cast_;
+      return iid_cast_(tid,ptr);
   }
 
   template <typename... Is>
-  std::vector<std::string> getInterfaceNames( Gaudi::typelist<Is...> ) {
-      return { Is::name()... }; // TODO: fix possible duplication 
+  std::vector<std::string> getInterfaceNames( Gaudi::interface_list<Is...> ) {
+      return { Is::name()... }; // TODO: fix possible duplication
   }
 
   /// Class to handle automatically the versioning of the interfaces when they
   /// are inheriting from other interfaces.
   /// @author Marco Clemencic
   template <typename INTERFACE, unsigned long majVers, unsigned long minVers>
-  class InterfaceId final {
-  public:
+  struct InterfaceId final {
     /// Interface type
     using iface_type = INTERFACE;
-
     /// List of interfaces
-    using iids = typename Gaudi::typelist_append<InterfaceId,typename iface_type::ext_iids>::type ;
+    using iids = typename Gaudi::interface_list_append<typename iface_type::ext_iids,InterfaceId>::type ;
 
     static inline std::string name() { return System::typeinfoName(typeid(INTERFACE)); }
-
-    static inline unsigned long majorVersion(){return majVers;}
-    static inline unsigned long minorVersion(){return minVers;}
+    static inline unsigned long majorVersion() {return majVers;}
+    static inline unsigned long minorVersion() {return minVers;}
 
     static inline const std::type_info &TypeInfo() {
       return typeid(typename iids::type);
@@ -193,7 +193,7 @@ public:
   using iid = Gaudi::InterfaceId<IInterface,0,0>;
 
   /// Extra interfaces
-  using ext_iids = Gaudi::typelist<>;
+  using ext_iids = Gaudi::interface_list<>;
 
   /// Return an instance of InterfaceID identifying the interface.
   static inline const InterfaceID &interfaceID(){
@@ -250,20 +250,6 @@ public:
   /// Virtual destructor
   virtual ~IInterface() = default;
 };
-
-namespace Gaudi {
-  /// Cast a IInterface pointer to an IInterface specialization (TARGET).
-  template <typename TARGET>
-  TARGET* Cast(IInterface *i){
-    return reinterpret_cast<TARGET*>(i->i_cast(TARGET::interfaceID()));
-  }
-  /// Cast a IInterface pointer to an IInterface specialization (TARGET).
-  /// const version
-  template <typename TARGET>
-  const TARGET* Cast(const IInterface *i){
-    return reinterpret_cast<const TARGET*>(i->i_cast(TARGET::interfaceID()));
-  }
-}
 
 /** Templated function that throws an exception if the version if the interface
     implemented by the object behind the interface is incompatible. This is the
