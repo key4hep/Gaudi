@@ -3,6 +3,8 @@
 // ============================================================================
 // Include files
 // ============================================================================
+#include <algorithm>
+// ============================================================================
 // GaudiAlg
 // ============================================================================
 #include "GaudiAlg/GetData.h"
@@ -128,25 +130,19 @@ inline TOOL* GaudiCommon<PBASE>::tool( const std::string& type           ,
                                        const IInterface*  parent         ,
                                        bool               create         ) const
 {
-  TOOL* Tool = nullptr ;
   // for empty names delegate to another method
-  if ( name.empty() )
-  {
-    Tool = tool<TOOL>( type , parent , create ) ;
-  }
-  else
-  {
-    Assert( this->toolSvc(), "tool():: IToolSvc* points to NULL!" ) ;
-    // get the tool from Tool Service
-    const StatusCode sc =
-      this->toolSvc()->retrieveTool ( type , name , Tool , parent , create ) ;
-    if ( sc.isFailure() )
-    { Exception("tool():: Could not retrieve Tool '" + type + "'/'" + name + "'", sc ) ; }
-    if ( !Tool )
-    { Exception("tool():: Could not retrieve Tool '" + type + "'/'" + name + "'"     ) ; }
-    // add the tool into list of known tools to be properly released
-    addToToolList( Tool );
-  }
+  if ( name.empty() ) return tool<TOOL>( type , parent , create ) ;
+  Assert( this->toolSvc(), "tool():: IToolSvc* points to NULL!" ) ;
+  // get the tool from Tool Service
+  TOOL* Tool = nullptr ;
+  const StatusCode sc =
+    this->toolSvc()->retrieveTool ( type , name , Tool , parent , create ) ;
+  if ( sc.isFailure() )
+  { Exception("tool():: Could not retrieve Tool '" + type + "'/'" + name + "'", sc ) ; }
+  if ( !Tool )
+  { Exception("tool():: Could not retrieve Tool '" + type + "'/'" + name + "'"     ) ; }
+  // add the tool into list of known tools to be properly released
+  addToToolList( Tool );
   // return *VALID* located tool
   return Tool ;
 }
@@ -180,15 +176,15 @@ inline TOOL* GaudiCommon<PBASE>::tool( const std::string& type   ,
 template < class PBASE   >
 template < class SERVICE >
 inline SmartIF<SERVICE> GaudiCommon<PBASE>::svc( const std::string& name   ,
-                                                  const bool         create ) const
+                                                 const bool         create ) const
 {
   Assert ( this->svcLoc(), "ISvcLocator* points to NULL!" );
   SmartIF<SERVICE> s;
   // check if we already have this service
-  auto it = m_services.find(name);
-  if (it != m_services.end()) {
+  auto it = std::lower_bound( std::begin(m_services), std::end(m_services), name, svc_lt );
+  if ( it != std::end(m_services) && svc_eq(*it,name) ) {
     // Try to get the requested interface
-    s = it->second;
+    s = *it;
     // check the results
     if ( !s.isValid() ) {
       Exception ("svc():: Could not retrieve Svc '" + name + "'", StatusCode::FAILURE);
