@@ -109,10 +109,6 @@ public:
    */
   virtual StatusCode sysRestart() = 0;
 
-  /** Current number of reference counts.
-      Avoids having to call addRef() + release() to get current refCount.
-  */
-  virtual unsigned long refCount() const = 0;
 };
 
 #endif  // GAUDIKERNEL_IALGTOOL_H
