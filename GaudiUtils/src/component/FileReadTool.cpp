@@ -19,7 +19,7 @@ std::unique_ptr<std::istream> FileReadTool::open(const std::string &url) {
   } else {
     path = url;
   }
-  return std::unique_ptr<std::istream>(new std::ifstream(path.c_str()));
+  return std::unique_ptr<std::istream>(new std::ifstream{path});
 }
 
 const std::vector<std::string> &FileReadTool::protocols() const

@@ -33,7 +33,7 @@ void GetLastLineAndColumn(std::ifstream& ifs, int& line, int& column) {
     std::string str;
     while(!ifs.eof()) {
         getline(ifs, str);
-        n++;
+        ++n;
     }
     line = n;
     column = str.length()+1;
@@ -105,7 +105,7 @@ bool ParseFile(const gp::Position& from, const std::string& filename,
   const gp::Position* included_from;
   if (!included->GetPosition(absolute_path, &included_from)){
     included->AddFile(absolute_path, from);
-    std::ifstream file(absolute_path.c_str());
+    std::ifstream file{absolute_path};
     if (!file.is_open()) {
       messages->AddError(from, "Couldn't open a file "+filename);
       return false;

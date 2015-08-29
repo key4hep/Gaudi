@@ -165,7 +165,7 @@ namespace Gaudi { namespace PluginService {
                 }
                 // read the file
                 logger().debug(std::string("  reading ") + name);
-                std::ifstream factories(fullPath.c_str());
+                std::ifstream factories{fullPath};
                 std::string line;
                 int factoriesCount = 0;
                 int lineCount = 0;
@@ -176,7 +176,7 @@ namespace Gaudi { namespace PluginService {
                   // skip empty lines and lines starting with '#'
                   if (line.empty() || line[0] == '#') continue;
                   // look for the separator
-                  std::string::size_type pos = line.find(':');
+                  auto pos = line.find(':');
                   if (pos == std::string::npos) {
                     logger().warning( "failed to parse line " 
                                       + fullPath +  ':' 

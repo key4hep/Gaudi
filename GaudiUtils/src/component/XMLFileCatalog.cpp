@@ -511,7 +511,7 @@ string XMLFileCatalog::getfile(bool create)   {
     if ( create && !exist )  {
       MsgStream log(m_msgSvc,"XMLCatalog");
       log << MSG::INFO << "File '" << path << "' does not exist. New file created." << endmsg;
-      ofstream out(path.c_str());
+      ofstream out{path};
       if( !m_rdOnly && out.is_open() ) {
         out << (CSTR)EmptyCatalog << endl;
       }

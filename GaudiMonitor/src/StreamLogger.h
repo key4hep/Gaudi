@@ -20,11 +20,11 @@ public:
   void WriteToMsgSvc(const std::string& str) { *m_msgStr << m_level << str << endmsg; }
 
 private:
+  std::string m_name;
   std::unique_ptr<std::ostream> m_oost;
   std::ostream*  m_ost = nullptr;
   std::unique_ptr<MsgStream> m_msgStr;
   MSG::Level m_level;
-  std::string m_name;
 };
 
 #endif
