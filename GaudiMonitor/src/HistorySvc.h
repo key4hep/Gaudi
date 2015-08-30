@@ -99,20 +99,16 @@ private:
 
   void clearState();
 
-  bool m_isInitialized;
-  bool m_dump;
-  bool m_activate;
+  bool m_isInitialized = false;
+  bool m_dump = false;
+  bool m_activate = true;
 
-  IAlgContextSvc *p_algCtxSvc;
+  IAlgContextSvc *p_algCtxSvc = nullptr;
 
-  std::set<const Algorithm*> m_algs;
   std::map<const Algorithm*, AlgorithmHistory*> m_algmap;
 
   std::set<const IAlgTool*> m_ialgtools;
-  std::set<const AlgTool*> m_algtools;
   std::map<const AlgTool*, AlgToolHistory*> m_algtoolmap;
-
-  std::set<const IService*> m_svcs;
   std::map<const IService*, ServiceHistory*> m_svcmap;
 
   std::multimap<DHH, DataHistory*> m_datMap;
@@ -136,11 +132,11 @@ private:
 
   IAlgorithm* getCurrentIAlg() const;
 
-  IIncidentSvc *m_incidentSvc;
+  IIncidentSvc *m_incidentSvc = nullptr;
   SmartIF<IToolSvc> m_toolSvc;
 
   mutable MsgStream m_log;
-  bool m_outputFileTypeXML;
+  bool m_outputFileTypeXML = false;
 
 };
 

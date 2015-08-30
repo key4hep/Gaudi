@@ -201,11 +201,11 @@ IssueLogger::setupLevels(Property& prop) {
   if (!sap) {
     MsgStream log ( msgSvc(), name() );
     log << MSG::ERROR << "Could not convert " << prop.name()
-	<< "to a StringProperty (which it should be!)" << endmsg;
+	    << "to a StringProperty (which it should be!)" << endmsg;
     return;
   }
 
-  std::string val = sap->value();
+  const std::string& val = sap->value();
   auto set = [&](IssueSeverity::Level& key, IssueSeverity::Level def) {
     if (s_levelSTrans.find(val) == s_levelSTrans.end()) {
       key = def;
