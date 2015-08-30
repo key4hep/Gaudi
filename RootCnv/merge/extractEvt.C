@@ -17,6 +17,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <memory>
 
 /*
  *   Gaudi namespace declaration
@@ -76,11 +77,11 @@ namespace Gaudi {
     std::vector<RootRef>   refs;
 
     /// Default constructor
-    RootObjectRefs() {}
+    RootObjectRefs() = default;
     /// Copy constructor
     RootObjectRefs(const RootObjectRefs& r) : links(r.links), refs(r.refs) {}
     /// Default destructor
-    ~RootObjectRefs() {}
+    ~RootObjectRefs() = default;
     /// Assignment operator
     RootObjectRefs& operator=(const RootObjectRefs& r) {
       links = r.links;
@@ -106,9 +107,9 @@ namespace Gaudi {
     /// Class ID of the described object
     unsigned long clid;
     /// Standard constructor
-    RootNTupleDescriptor() {}
+    RootNTupleDescriptor() = default;
     /// Standard destructor
-    virtual ~RootNTupleDescriptor() {}
+    virtual ~RootNTupleDescriptor() = default;
   };
 
   typedef int ExtractStatus;
@@ -119,20 +120,20 @@ namespace Gaudi {
 
   struct RootEventExtractor {
   protected:
-    TFile* m_in;
-    TTree* m_evt_in;
-    TTree* m_ref_in;
+    std::unique_ptr<TFile> m_in;
+    TTree* m_evt_in = nullptr;
+    TTree* m_ref_in = nullptr;
 
-    TFile* m_out;
-    TTree* m_evt_out;
-    TTree* m_ref_out;
+    TFile* m_out = nullptr;
+    TTree* m_evt_out = nullptr;
+    TTree* m_ref_out = nullptr;
 
-    int m_localDB_id;
+    int m_localDB_id = 0;
     std::vector<int> m_eventList;
 
   public:
     /// Default constructor
-    RootEventExtractor();
+    RootEventExtractor() = default;
 
     /// Initializing constructor directly opening the input file and the output file
     RootEventExtractor(const char* input, const char* output, const char* output_option);
@@ -170,15 +171,8 @@ namespace Gaudi {
 using namespace Gaudi;
 using namespace std;
 
-/// Default constructor
-RootEventExtractor::RootEventExtractor()
-  : m_in(0), m_evt_in(0), m_ref_in(0), m_out(0), m_evt_out(0), m_ref_out(0), m_localDB_id(0)
-{
-}
-
 /// Initializing constructor directly opening the input file and the output file
 RootEventExtractor::RootEventExtractor(const char* input, const char* output, const char* output_option)
-  : m_in(0), m_evt_in(0), m_ref_in(0), m_out(0), m_evt_out(0), m_ref_out(0), m_localDB_id(0)
 {
   if ( EXTRACT_SUCCESS != openInput(input) ) {
     throw std::runtime_error("Failed to open input file:"+std::string(input));
@@ -210,7 +204,7 @@ ExtractStatus RootEventExtractor::select(int evt_num) {
 /// Close input file
 ExtractStatus RootEventExtractor::openInput(const char* name) {
   if ( m_in ) closeInput();
-  m_in = TFile::Open(name);
+  m_in.reset( TFile::Open(name) );
   if ( m_in && !m_in->IsZombie() ) {
     m_evt_in  = (TTree*)m_in->Get("Event");
     m_ref_in  = (TTree*)m_in->Get("Refs");
@@ -223,7 +217,7 @@ ExtractStatus RootEventExtractor::openInput(const char* name) {
 ExtractStatus RootEventExtractor::openOutput(const char* name, const char* option) {
   if ( m_out ) closeOutput();
   m_out = TFile::Open(name,option);
-  m_evt_out = m_ref_out = 0;
+  m_evt_out = m_ref_out = nullptr;
   return EXTRACT_SUCCESS;
 }
 
@@ -232,11 +226,10 @@ ExtractStatus RootEventExtractor::closeInput() {
   if ( m_in )   {
     ::printf("+++ Closing input  file:%s\n",m_in->GetName());
     m_in->Close();
-    delete m_in;
   }
-  m_in = 0;
-  m_evt_in = 0;
-  m_ref_in = 0;
+  m_in.reset();
+  m_evt_in = nullptr;
+  m_ref_in = nullptr;
   return EXTRACT_SUCCESS;
 }
 
@@ -249,9 +242,9 @@ ExtractStatus RootEventExtractor::closeOutput() {
     m_out->Close();
     delete m_out;
   }
-  m_out     = 0;
-  m_evt_out = 0;
-  m_ref_out = 0;
+  m_out     = nullptr;
+  m_evt_out = nullptr;
+  m_ref_out = nullptr;
   return EXTRACT_SUCCESS;
 }
 
@@ -268,11 +261,11 @@ ExtractStatus RootEventExtractor::extract()   {
   }
   else {
     m_evt_out = (TTree*)m_out->Get("Event");
-    if ( 0 == m_evt_out )  {
+    if ( !m_evt_out )  {
       m_evt_out  = m_evt_in->CloneTree(0);
     }
     m_ref_out = (TTree*)m_out->Get("Refs");
-    if ( 0 == m_ref_out )  {
+    if ( !m_ref_out )  {
       m_ref_out = m_ref_in->CloneTree(0);
       new_output = true;
     }
@@ -343,7 +336,7 @@ ExtractStatus RootEventExtractor::extract()   {
     TString     name = br_in->GetName();
     TClass*     br_class = gROOT->GetClass(br_in->GetClassName(),kTRUE);
     br_out =    m_evt_out->GetBranch(name);
-    if ( 0 == br_out ) {
+    if ( !br_out ) {
       ::printf("+++ ERROR: Input and output event trees are incompatible. Selection not possible.\n");
       return EXTRACT_ERROR;
     }
