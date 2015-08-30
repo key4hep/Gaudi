@@ -42,11 +42,10 @@ DataObject* GaudiPython::Helper::findobject
 ( IDataProviderSvc*  dpsvc ,
   const std::string& path  )
 {
-  DataObject* o = 0 ;
-  if ( 0 == dpsvc     ) { return 0 ; }                              // RETURN
+  DataObject* o = nullptr ;
+  if ( !dpsvc     ) { return nullptr ; }                        // RETURN
   StatusCode sc = dpsvc -> findObject ( path , o ) ;  // NB!
-  if ( sc.isFailure() ) { return 0 ; }                              // RETURN
-  return o ;                                                        // RETURN
+  return  sc.isSuccess() ? o :  nullptr ;                        // RETURN
 }
 // ===========================================================================
 /// Anonymous namespace to hide local class
@@ -64,11 +63,10 @@ namespace
     // =========================================================================
     /// constructor from the interface  and flag
     Disabler ( IInterface* svc     ,
-               const bool  disable )
+               bool  disable )
       : m_svc     ( svc     )
       , m_old     (  s_NAME , true      )
       , m_enable  ( !disable            )
-      , m_code    ( StatusCode::SUCCESS )
     {
       if      ( !m_svc   ) { m_code = StatusCode::FAILURE ; }
       else if ( m_enable ) { /* no action here!! */    ; }  // No action!
@@ -76,7 +74,7 @@ namespace
       {
         const Property* property =
           Gaudi::Utils::getProperty ( m_svc.get() , s_NAME ) ;
-        if ( 0 == property || !m_old.assign ( *property ) )
+        if ( !property || !m_old.assign ( *property ) )
         { m_code = StatusCode::FAILURE ; }
         else if ( m_old.value() != m_enable )
         {
@@ -91,31 +89,23 @@ namespace
     {
       if      ( m_enable ) { /* no action here! */ } // no action here
       else if ( code().isSuccess() && m_old.value() != m_enable ) {
-        // This line results in an ambiguous overload resolution on g++ 3.4
-        //   m_code = Gaudi::Utils::setProperty ( m_svc.get() , s_NAME , m_old );
-        // The problem is that m_old could be any of:
-        //  - const TYPE &
-        //  - const Property &
-        //  - const SimpleProperty<TYPE, BoundedVerifier<TYPE> >&
-        // So we force the the template argument to help the compiler
-        m_code = Gaudi::Utils::setProperty<bool>(m_svc.get(), s_NAME, m_old);
+        m_code = Gaudi::Utils::setProperty(m_svc.get(), s_NAME, m_old);
       }
       m_code.ignore() ;
     }
     // ========================================================================
     StatusCode code () const
     {
-      if ( m_enable ) { return StatusCode::SUCCESS ; }
-      return m_code ;
+      return m_enable ? StatusCode::SUCCESS : m_code ;
     }
     // ========================================================================
   private:
     // ========================================================================
     /// the property interface
     SmartIF<IProperty> m_svc      ; // the property interface
-    BooleanProperty    m_old      ;
+    BooleanProperty    m_old = { s_NAME, true } ;
     bool               m_enable   ;
-    StatusCode         m_code     ; // status code
+    StatusCode         m_code = StatusCode::SUCCESS ; // status code
     // ========================================================================
   } ;
   // ==========================================================================
@@ -136,20 +126,18 @@ DataObject* GaudiPython::Helper::getobject
   const bool         retrieve ,
   const bool         disable  )
 {
-  if ( 0 == dpsvc ) { return 0 ; }  // RETURN 0
+  if ( !dpsvc ) { return nullptr ; }  // RETURN 0
   // create the sentry:
   Disabler sentry ( dpsvc , disable ) ;
   //
-  DataObject * result = 0 ;
+  DataObject * result = nullptr ;
   //
   StatusCode sc =
     retrieve ?
     dpsvc -> retrieveObject ( path , result ) :
     dpsvc -> findObject     ( path , result ) ;
   //
-  if ( sc.isFailure() ) { return 0 ; }                               // RETURN
-  //
-  return result ;                                                    // RETURN
+  return sc.isSuccess() ? result : nullptr ;
 }
 // ============================================================================
 // The END
