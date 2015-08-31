@@ -30,47 +30,45 @@ class GAUDI_API InterfaceID final {
 public:
 #if defined(GAUDI_V20_COMPAT) && !defined(G21_NEW_INTERFACES)
   /// constructor from a pack long
-  InterfaceID( unsigned long lid ) : m_id( lid & 0xFFFF ),
-                                     m_major_ver( (lid & 0xFF000000)>>24 ),
-                                     m_minor_ver( (lid & 0xFF0000)>> 16 ) { }
+  constexpr InterfaceID( unsigned long lid ) : m_id( lid & 0xFFFF ),
+                                               m_major_ver( (lid & 0xFF000000)>>24 ),
+                                               m_minor_ver( (lid & 0xFF0000)>> 16 ) { }
 #endif
   /// constructor from components
-  InterfaceID( unsigned long id, unsigned long major, unsigned long minor = 0)
+  constexpr InterfaceID( unsigned long id, unsigned long major, unsigned long minor = 0)
     : m_id( id ), m_major_ver( major ), m_minor_ver( minor ) { }
-  /// constructor from components
+  /// constructor from components @TODO: implement hash32 so it can be constexpr...
   InterfaceID( const char* name, unsigned long major, unsigned long minor = 0)
     : m_id( hash32(name) ), m_major_ver( major ), m_minor_ver( minor ) { }
-  /// destructor
-  ~InterfaceID() = default;
 #if defined(GAUDI_V20_COMPAT) && !defined(G21_NEW_INTERFACES)
   /// conversion to unsigned long
-  operator unsigned long() const {
+  constexpr operator unsigned long() const {
     return (m_major_ver << 24) + (m_minor_ver << 16) + m_id;
   }
 #endif
   /// get the interface identifier
-  unsigned long id() const { return m_id; }
+  constexpr unsigned long id() const { return m_id; }
   /// get the major version of the interface
-  unsigned long majorVersion() const { return m_major_ver; }
+  constexpr unsigned long majorVersion() const { return m_major_ver; }
   /// get the minor version of the interface
-  unsigned long minorVersion() const { return m_minor_ver; }
+  constexpr unsigned long minorVersion() const { return m_minor_ver; }
   /** check compatibility. The major version is check and the minor one
    *  should be bigger or equal
    */
-  bool versionMatch( const InterfaceID& iid ) const {
+  constexpr bool versionMatch( const InterfaceID& iid ) const {
     return ( id() == iid.id() &&
              majorVersion() == iid.majorVersion() &&
              minorVersion() >= iid.minorVersion() );
   }
   /// check full compatibility.
-  bool fullMatch( const InterfaceID& iid ) const {
+  constexpr bool fullMatch( const InterfaceID& iid ) const {
     return ( id() == iid.id() &&
              majorVersion() == iid.majorVersion() &&
              minorVersion() == iid.minorVersion() );
   }
   /// compare operator
-  bool operator == (const InterfaceID& iid ) const { return fullMatch(iid); }
-  /// one-at-time hash function
+  constexpr bool operator == (const InterfaceID& iid ) const { return fullMatch(iid); }
+  /// one-at-time hash function @TODO: rewrite to make it constexpr (in C++11 -- C++14 would be much easier!)
   static unsigned int hash32(const char* key) {
     unsigned int hash = 0;
     for (const char* k = key; *k; ++k) {
@@ -115,34 +113,36 @@ namespace Gaudi {
 
   // helpers for implementation of interface cast
   namespace iid_cast_details {
-      template <typename I> static void* void_cast(const I* i)
+      template <typename I> 
+      inline void* void_cast(const I* i)
       { return const_cast<I*>(i); }
 
       template <typename ... Is > struct iid_cast_t;
 
       template <> struct iid_cast_t<> {
           template <typename P>
-          void* operator()(const InterfaceID&, P*) const { return nullptr ; }
+          inline void* operator()(const InterfaceID&, P*) const { return nullptr ; }
       };
 
       template <typename I, typename... Is> struct iid_cast_t<I,Is...> {
           template <typename P>
-          void* operator()(const InterfaceID& tid, P* ptr) const {
+          inline void* operator()(const InterfaceID& tid, P* ptr) const {
             return tid.versionMatch(I::interfaceID()) ? void_cast<typename I::interface_type>(ptr)
                                                       : iid_cast_t<Is...>{}(tid,ptr);
           }
       };
   }
 
-  template <typename...Is,typename P> void* iid_cast(const InterfaceID& tid, Gaudi::interface_list<Is...>, P* ptr )
+  template <typename...Is,typename P> 
+  inline void* iid_cast(const InterfaceID& tid, Gaudi::interface_list<Is...>, P* ptr )
   {
-      static const iid_cast_details::iid_cast_t<Is...> iid_cast_;
+      constexpr auto iid_cast_ = iid_cast_details::iid_cast_t<Is...>{};
       return iid_cast_(tid,ptr);
   }
 
   template <typename... Is>
   std::vector<std::string> getInterfaceNames( Gaudi::interface_list<Is...> ) {
-      return { Is::name()... }; // TODO: fix possible duplication
+      return { Is::name()... }; // TODO: fix possible duplication -- will be fixed if entries in interface_list are unique
   }
 
   /// Class to handle automatically the versioning of the interfaces when they
