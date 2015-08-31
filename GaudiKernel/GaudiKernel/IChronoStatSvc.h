@@ -36,7 +36,7 @@ class GAUDI_API IChronoStatSvc: virtual public extend_interfaces3<IService,
 {
 public:
   /// InterfaceID
-  DeclareInterfaceIDMultiBase(IChronoStatSvc,6,0);
+  DeclareInterfaceID(IChronoStatSvc,6,0);
 protected:
   // protected and virtual destructor
   virtual ~IChronoStatSvc() = default; ///< virtual desctructor

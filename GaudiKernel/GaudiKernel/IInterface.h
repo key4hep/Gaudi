@@ -15,11 +15,6 @@
   using iid = Gaudi::InterfaceId< iface , major , minor > ; \
   using ext_iids = iid::iids
 
-/// Macro to declare the interface ID when using the new mechanism of extending and implementing interfaces.
-#define DeclareInterfaceIDMultiBase(name, major, minor) \
-  static const InterfaceID &interfaceID(){ return iid::interfaceID(); } \
-  using iid = Gaudi::InterfaceId< name , major , minor >
-
 /**
  * @class InterfaceID Kernel.h GaudiKernel/Kernel.h
  *
