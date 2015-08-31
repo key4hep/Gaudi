@@ -20,7 +20,7 @@ public:
   /// InterfaceID
   DeclareInterfaceID(IFileAccess,3,0);
 
-  ~IFileAccess() override; //< Virtual destructor.
+  ~IFileAccess() override = default; //< Virtual destructor.
 
   /// Find the URL and returns a unique_ptr to an input stream interface of an
   /// object that can be used to read from the file the URL is pointing to.

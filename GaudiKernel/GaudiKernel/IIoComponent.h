@@ -26,7 +26,7 @@ class GAUDI_API IIoComponent : virtual public INamedInterface
 
   /** Destructor: 
    */
-  virtual ~IIoComponent();
+  virtual ~IIoComponent() = default;
 
   /////////////////////////////////////////////////////////////////// 
   // Const methods: 

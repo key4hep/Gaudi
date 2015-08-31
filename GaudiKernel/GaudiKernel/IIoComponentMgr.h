@@ -44,7 +44,7 @@ class GAUDI_API IIoComponentMgr : virtual public INamedInterface
 
   /** Destructor: 
    */
-  virtual ~IIoComponentMgr();
+  virtual ~IIoComponentMgr() = default;
 
   /** @brief: allow a @c IIoComponent to register itself with this
    *          manager so appropriate actions can be taken when e.g.
