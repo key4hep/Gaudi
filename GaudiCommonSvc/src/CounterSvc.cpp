@@ -384,8 +384,7 @@ StatusCode CounterSvc::print
 
   MsgStream log(msgSvc(), name());
   // Force printing in alphabetical order
-  typedef std::map<std::string, Counter*> sorted_map_t;
-  sorted_map_t sorted_map(i->second.begin(), i->second.end());
+  std::map<std::string, Counter*> sorted_map(i->second.begin(), i->second.end());
   std::for_each(sorted_map.begin(), sorted_map.end(),
                 conditionalPrint(printer, log));
   return StatusCode::SUCCESS;   // RETURN
@@ -415,7 +414,7 @@ StatusCode CounterSvc::print( Printout& printer ) const
   MsgStream log ( msgSvc() , name() ) ;
   // Force printing in alphabetical order
   std::map<std::pair<std::string,std::string>, Counter*> sorted_map;
-  for ( const auto& i : m_counts ) for ( const auto&  j : i.second)
+  for ( const auto& i : m_counts ) for ( const auto&  j : i.second )
       sorted_map[ { i.first, j.first } ] = j.second;
   std::for_each(sorted_map.begin(), sorted_map.end(),
                 conditionalPrint(printer, log));

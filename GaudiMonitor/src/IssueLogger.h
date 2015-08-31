@@ -13,31 +13,25 @@
 
 class IssueLogger: public extends1<Service, IIssueLogger> {
 public:
+  IssueLogger(const std::string& name, ISvcLocator *svc );
+  ~IssueLogger() override = default;
 
   StatusCode initialize() override;
   StatusCode reinitialize() override;
   StatusCode finalize() override;
 
-  IssueLogger(const std::string& name, ISvcLocator *svc );
-
   void report(IssueSeverity::Level level, const std::string& msg,
-	      const std::string& origin);
+              const std::string& origin);
   void report(const IssueSeverity& err);
-
-
-protected:
-
-  ~IssueLogger() override = default;
 
 private:
 
   StringArrayProperty m_outputfile;
   StringProperty m_reportLevelS, m_traceLevelS;
   BooleanProperty m_showTime;
-
   IssueSeverity::Level m_reportLevel, m_traceLevel;
 
-  class logger_t {
+  class logger_t final {
       std::unique_ptr<StreamLogger> m_logger ;
       void (StreamLogger::*m_fun)(const std::string&) = nullptr;
   public:
@@ -52,7 +46,6 @@ private:
   std::array<logger_t,IssueSeverity::NUM_LEVELS> m_log;
 
   StatusCode connect( const std::string& );
-
   void setupDefaultLogger();
   void setupLevels(Property& prop);
   void setupStreams(Property& prop);

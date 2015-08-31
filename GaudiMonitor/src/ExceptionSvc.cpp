@@ -60,10 +60,8 @@ ExceptionSvc::initialize() {
 
   toupper(mode);
 
-  if (mode == "NONE") {
-    m_mode_exc = NONE;
-  } else if (mode == "ALL") {
-    m_mode_exc = ALL;
+  if (mode == "NONE") {       m_mode_exc = NONE;
+  } else if (mode == "ALL") { m_mode_exc = ALL;
   } else {
     m_log << MSG::ERROR << "Unknown mode for Exception handling: \"" << mode
 	<< "\". Default must be one of \"ALL\" or \"NONE\"" << endmsg;
@@ -88,16 +86,11 @@ ExceptionSvc::initialize() {
     VAL = (*tok_iter)[2];
     toupper(VAL);
 
-    if (VAL == "SUCCESS") {
-      m_retCodesExc[TAG] = SUCCESS;
-    } else if ( VAL == "FAILURE" ) {
-      m_retCodesExc[TAG] = FAILURE;
-    } else if ( VAL == "REVOVERABLE" ) {
-      m_retCodesExc[TAG] = RECOVERABLE;
-    } else if ( VAL == "RETHROW" ) {
-      m_retCodesExc[TAG] = RETHROW;
-    } else if ( VAL == "DEFAULT" ) {
-      m_retCodesExc[TAG] = DEFAULT;
+    if (VAL == "SUCCESS") {              m_retCodesExc[TAG] = SUCCESS;
+    } else if ( VAL == "FAILURE" ) {     m_retCodesExc[TAG] = FAILURE;
+    } else if ( VAL == "REVOVERABLE" ) { m_retCodesExc[TAG] = RECOVERABLE;
+    } else if ( VAL == "RETHROW" ) {     m_retCodesExc[TAG] = RETHROW;
+    } else if ( VAL == "DEFAULT" ) {     m_retCodesExc[TAG] = DEFAULT;
     } else {
       m_log << MSG::ERROR << "In JobOpts: unknown return code \"" << VAL
             << "\" for Algorithm " << TAG << std::endl
@@ -108,12 +101,11 @@ ExceptionSvc::initialize() {
     }
 
     m_log << MSG::DEBUG << "Will catch exceptions thrown by: " << TAG
-	<< " -> action: " << VAL << endmsg;
+	      << " -> action: " << VAL << endmsg;
 
   }
 
   // now process errors
-
   key = m_mode_err_s.value();
 
   loc = key.find(" ");
@@ -121,10 +113,8 @@ ExceptionSvc::initialize() {
 
   toupper(mode);
 
-  if (mode == "NONE") {
-    m_mode_err = NONE;
-  } else if (mode == "ALL") {
-    m_mode_err = ALL;
+  if (mode == "NONE") {       m_mode_err = NONE;
+  } else if (mode == "ALL") { m_mode_err = ALL;
   } else {
     m_log << MSG::ERROR << "Unknown mode for Error handling: \"" << mode
           << "\". Default must be one of \"ALL\" or \"NONE\"" << endmsg;
@@ -145,12 +135,9 @@ ExceptionSvc::initialize() {
     VAL = (*tok_iter)[2];
     toupper(VAL);
 
-    if (VAL == "SUCCESS") {
-      m_retCodesErr[TAG] = SUCCESS;
-    } else if ( VAL == "FAILURE" ) {
-      m_retCodesErr[TAG] = FAILURE;
-    } else if ( VAL == "RECOVERABLE" ) {
-      m_retCodesErr[TAG] = RECOVERABLE;
+    if (VAL == "SUCCESS") {              m_retCodesErr[TAG] = SUCCESS;
+    } else if ( VAL == "FAILURE" ) {     m_retCodesErr[TAG] = FAILURE;
+    } else if ( VAL == "RECOVERABLE" ) { m_retCodesErr[TAG] = RECOVERABLE;
     } else {
       m_log << MSG::ERROR << "In JobOpts: unknown return code \"" << VAL
             << "\" for Algorithm " << TAG << std::endl
@@ -161,10 +148,8 @@ ExceptionSvc::initialize() {
     }
 
     m_log << MSG::DEBUG << "Will process Errors returned by: " << TAG
-	<< " -> action: " << VAL << endmsg;
-
+	      << " -> action: " << VAL << endmsg;
   }
-
   return status;
 }
 
@@ -177,37 +162,24 @@ StatusCode ExceptionSvc::handleErr
   m_log << MSG::DEBUG << "Handling Error from " << alg.name() << endmsg;
 
   // is this Alg special?
-  if (m_retCodesErr.find(alg.name()) != m_retCodesErr.end()) {
-    ReturnState iret = m_retCodesErr.find(alg.name())->second;
-
-    switch ( iret ) {
-    case SUCCESS:
-      return StatusCode::SUCCESS;
-    case FAILURE:
-      return StatusCode::FAILURE;
-    case RECOVERABLE:
-      return StatusCode::RECOVERABLE;
-    case RETHROW:
+  auto i = m_retCodesErr.find(alg.name());
+  if ( i != m_retCodesErr.end()) {
+    switch ( i->second ) {
+    case SUCCESS:     return StatusCode::SUCCESS;
+    case FAILURE:     return StatusCode::FAILURE;
+    case RECOVERABLE: return StatusCode::RECOVERABLE;
       // should never get here
-      break;
-    case DEFAULT:
-      // should never get here
-      break;
+    case RETHROW: break;
+    case DEFAULT: break;
     }
 
   } else {
 
-    if (m_mode_err == ALL) {
-      // turn it into a FAILURE
-      return StatusCode::FAILURE;
-
-    } else {
-      assert (m_mode_err == NONE );
-      // don't touch the return code
-      return st;
-    }
+    if (m_mode_err == ALL) return StatusCode::FAILURE; // turn it into FAILURE
+    assert (m_mode_err == NONE );
+    // don't touch the return code
+    return st;
   }
-
   return StatusCode::FAILURE;
 }
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -217,33 +189,20 @@ StatusCode ExceptionSvc::process
 {
 
   // is this Alg special?
-  if (m_retCodesExc.find(alg.name()) != m_retCodesExc.end()) {
-    ReturnState iret = m_retCodesExc.find(alg.name())->second;
+  auto i = m_retCodesExc.find(alg.name());
+  if ( i != m_retCodesExc.end()) {
 
-    switch ( iret ) {
-    case DEFAULT:
-      // there is no default
-      return StatusCode::FAILURE;
-    case SUCCESS:
-      return StatusCode::SUCCESS;
-    case FAILURE:
-      return StatusCode::FAILURE;
-    case RECOVERABLE:
-      return StatusCode::RECOVERABLE;
-    case RETHROW:
-      throw;
+    switch ( i->second ) {
+    case DEFAULT:     return StatusCode::FAILURE; // there is no default
+    case SUCCESS:     return StatusCode::SUCCESS;
+    case FAILURE:     return StatusCode::FAILURE;
+    case RECOVERABLE: return StatusCode::RECOVERABLE;
+    case RETHROW:     throw;
     }
+  } 
 
-  } else {
-
-    if (m_mode_exc == ALL) {
-      throw;
-    } else {
-      assert (m_mode_exc == NONE);
-      return StatusCode::FAILURE;
-    }
-  }
-
+  if (m_mode_exc == ALL) { throw; }
+  assert (m_mode_exc == NONE);
   return StatusCode::FAILURE;
 }
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -253,7 +212,6 @@ StatusCode ExceptionSvc::handle
 {
   m_log << MSG::DEBUG << "Handling unknown exception for " << alg.name()
         << endmsg;
-
   return process(alg);
 }
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -264,9 +222,7 @@ StatusCode ExceptionSvc::handle
 {
   m_log << MSG::DEBUG << "Handling std:except: \"" << exc.what() << "\" for "
         << alg.name() << endmsg;
-
   return process(alg) ;
-
 }
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -276,9 +232,7 @@ StatusCode ExceptionSvc::handle
 {
   m_log << MSG::DEBUG << "Handling GaudiException: \"" << exc << "\" for "
         << alg.name() << endmsg;
-
   return process(alg);
-
 }
 
 // ============================================================================

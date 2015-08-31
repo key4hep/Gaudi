@@ -92,6 +92,7 @@ namespace GaudiUtils
     typedef K                      argument_type;
     typedef T                      result_type;
     typedef std::pair<const K,T>   value_type;
+    typedef const value_type&      const_reference;
 
     typedef typename map_type::size_type size_type;
 

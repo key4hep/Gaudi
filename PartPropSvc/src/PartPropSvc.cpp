@@ -61,7 +61,7 @@ PartPropSvc::initialize() {
     }
 
     // is the file readable?
-    std::ifstream pdfile( rfile.c_str() );
+    std::ifstream pdfile{ rfile };
     if (!pdfile) {
       m_log << MSG::ERROR << "Could not open PDT file: \"" << rfile
 	    << "\"" << endmsg;
@@ -167,7 +167,7 @@ PartPropSvc::createTable() {
     m_log << MSG::DEBUG << "Reading PDT file \"" << f << "\""
  	  << endmsg;
 
-    std::ifstream pdfile( f.c_str() );
+    std::ifstream pdfile{ f };
     // build a table from the file
     if ( ! pF(pdfile,tb) ) {
       m_log << MSG::ERROR << "Error reading PDT file: \"" << f

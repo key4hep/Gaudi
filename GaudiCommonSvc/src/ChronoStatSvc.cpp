@@ -152,7 +152,7 @@ StatusCode ChronoStatSvc::initialize()
 
   // only add an EndEvent listener if per-event output requested
   if (!m_perEventFile.empty()) {
-    m_ofd.open(m_perEventFile.c_str());
+    m_ofd.open(m_perEventFile);
     if (!m_ofd.is_open()) {
       log << MSG::ERROR << "unable to open per-event output file \""
 	  << m_perEventFile << "\"" << endmsg;
@@ -477,8 +477,8 @@ const StatEntity*   ChronoStatSvc::stat
 // ============================================================================
 void ChronoStatSvc::saveStats()
 {
-  std::ofstream out( m_statsOutFileName.value().c_str(),
-		     std::ios_base::out | std::ios_base::trunc );
+  std::ofstream out( m_statsOutFileName.value(),
+		             std::ios_base::out | std::ios_base::trunc );
   if ( !out.good() ) {
     MsgStream msg( msgSvc() , name() );
     msg << MSG::INFO

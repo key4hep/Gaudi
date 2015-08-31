@@ -59,7 +59,7 @@ int main ( int argc, char** argv )
   }
 
   CLibSymbolInfo libsymbols;
-  ofstream out(outfile.c_str());
+  ofstream out(outfile);
   if(out.fail()) {
     cerr << "windef: Error opening file " << outfile << endl;
     return 1;
@@ -74,6 +74,3 @@ int main ( int argc, char** argv )
 
   return 0;
 }
-
-
-

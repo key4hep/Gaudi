@@ -784,11 +784,7 @@ void MessageSvc::tee( const std::string& sourceName,
     }
   }
 
-  auto out = std::make_shared<std::ofstream>( outFileName.c_str(), openMode );
-  if ( out->good() ) {
-    m_loggedStreams[sourceName] = std::move(out);
-  } else { 
-    out->close();
-  }
+  auto out = std::make_shared<std::ofstream>( outFileName, openMode );
+  if ( out->good() ) m_loggedStreams[sourceName] = std::move(out);
 
 }

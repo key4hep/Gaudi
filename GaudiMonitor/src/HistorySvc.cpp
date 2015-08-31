@@ -27,6 +27,9 @@
 
 #include "GaudiKernel/IAlgContextSvc.h"
 
+#include "boost/algorithm/string/predicate.hpp"
+namespace ba = boost::algorithm;
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -68,18 +71,9 @@ struct DHH {
   }
 };
 
-void fenv_dummy(char**) {}
-
 HistorySvc::HistorySvc( const std::string& name, ISvcLocator* svc )
   : base_class( name, svc ),
-    m_isInitialized(false),
-    m_dump(false),
-    p_algCtxSvc(nullptr),
-    m_outputFile(""),
-    m_incidentSvc(nullptr),
-    m_log(msgSvc(), name ),
-    m_outputFileTypeXML(false)
-
+    m_log(msgSvc(), name )
 {
     declareProperty("Dump",m_dump);
     declareProperty("Activate", m_activate=true);
@@ -103,27 +97,25 @@ StatusCode HistorySvc::reinitialize() {
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 namespace {
+  constexpr struct clear_t {
   template <typename T1, typename T2>
-  void clear(std::pair<const T1* const, T2*>& p) {
+  void operator()(std::pair<const T1* const, T2*>& p) {
     const_cast<T1*>(p.first)->release();
     delete p.second;
   }
+  } clear_{};
   template<typename M>
   void clear(M& m) {
-    std::for_each(std::begin(m), std::end(m),
-                  [](typename M::value_type& alg){ clear(alg); });
+    std::for_each(std::begin(m), std::end(m), clear_ );
     m.clear();
   }
 }
 void HistorySvc::clearState() {
-  m_algs.clear();
   clear(m_algmap);
 
   m_ialgtools.clear();
-  m_algtools.clear();
   clear(m_algtoolmap);
 
-  m_svcs.clear();
   clear(m_svcmap);
 }
 
@@ -176,16 +168,14 @@ StatusCode HistorySvc::initialize() {
   m_incidentSvc->addListener(this,IncidentType::BeginEvent,
 			     std::numeric_limits<long>::min(),rethrow,oneShot);
 
-  if (m_outputFile.find(".XML") != string::npos || m_outputFile.find(".xml") != string::npos) {
-    ON_DEBUG
-      m_log << MSG::DEBUG << "output format is XML" << endmsg;
-    m_outputFileTypeXML = true;
+  m_outputFileTypeXML =  ba::iends_with( m_outputFile, ".xml");
+  ON_DEBUG if (m_outputFileTypeXML ) {
+    m_log << MSG::DEBUG << "output format is XML" << endmsg;
   }
 
   m_isInitialized = true;
 
   return StatusCode::SUCCESS;
-
 }
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -258,7 +248,7 @@ StatusCode HistorySvc::captureState() {
     registerAlgTool(*algtool).ignore();
   }
 
-  m_log << MSG::INFO << "Registered " << m_algtools.size() << " AlgTools"
+  m_log << MSG::INFO << "Registered " << m_algtoolmap.size() << " AlgTools"
 	<< endmsg;
 
   /// Get all the Services
@@ -286,18 +276,14 @@ StatusCode HistorySvc::stop() {
     listProperties().ignore();
   }
 
-  if (m_outputFile != "") {
-    std::ofstream ofs;
-    ofs.open(m_outputFile.c_str());
+  if (!m_outputFile.empty()) {
+    std::ofstream ofs(m_outputFile);
     if (!ofs) {
       m_log << MSG::ERROR << "Unable to open output file \"m_outputFile\""
 	    << endmsg;
     } else {
-
       //      dumpProperties(ofs);
       dumpState(ofs);
-
-      ofs.close();
     }
   }
 
@@ -313,7 +299,6 @@ StatusCode HistorySvc::finalize() {
 
   ON_VERBOSE
     m_log << MSG::VERBOSE << "HistorySvc::finalize()" << endmsg;
-
 
   clearState();
 
@@ -343,10 +328,7 @@ HistorySvc::registerAlg(const Algorithm &alg) {
 
   (const_cast<Algorithm*>(&alg))->addRef();
 
-  m_algs.insert(&alg);
-
-  AlgorithmHistory *algHist = new AlgorithmHistory(alg, job);
-  m_algmap[&alg] = algHist;
+  m_algmap[&alg] = new AlgorithmHistory(alg, job);
 
   ON_DEBUG {
     m_log << MSG::DEBUG << "Registering algorithm: ";
@@ -403,19 +385,13 @@ HistorySvc::dumpProperties(const Algorithm &alg, std::ofstream& ofs) const {
 AlgorithmHistory*
 HistorySvc::getAlgHistory(const Algorithm &alg) const {
 
-  const Algorithm *palg = &alg;
-  set<const Algorithm*>::const_iterator itr = m_algs.find(palg);
-  if ( itr == m_algs.end() ) {
+  auto itr = m_algmap.find( &alg );
+  if ( itr == m_algmap.end() ) {
     m_log << MSG::WARNING << "Algorithm " << alg.name() << " not registered"
           << endmsg;
     return nullptr;
   }
-
-  map<const Algorithm*, AlgorithmHistory*>::const_iterator itr2;
-  itr2 = m_algmap.find( *itr );
-
-  return ( itr2->second );
-
+  return itr->second;
 }
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -687,10 +663,7 @@ HistorySvc::registerSvc(const IService &svc) {
       m_log << svc.name() << endmsg;
     }
 
-    m_svcs.insert(psvc);
-
-    ServiceHistory *svcHist = new ServiceHistory(&svc, job);
-    m_svcmap[psvc] = svcHist;
+    m_svcmap[psvc] = new ServiceHistory(&svc, job);
 
     (const_cast<IService*>(psvc))->addRef();
 
@@ -780,7 +753,6 @@ HistorySvc::registerAlgTool(const IAlgTool& ialg) {
 	return StatusCode::FAILURE;
       }
     }
-
     m_ialgtools.insert(&ialg);
     return StatusCode::SUCCESS;
   }
@@ -792,14 +764,11 @@ HistorySvc::registerAlgTool(const IAlgTool& ialg) {
     return StatusCode::FAILURE;
   }
 
-  if (m_algtools.find(alg) != m_algtools.end()) {
+  if (m_algtoolmap.find(alg) != m_algtoolmap.end()) {
     m_log << MSG::WARNING << "AlgTool " << ialg.name()
 	  << " already registered in HistorySvc" << endmsg;
     return StatusCode::SUCCESS;
   }
-
-  m_algtools.insert(alg);
-  (const_cast<AlgTool*>(alg))->addRef();
 
   const JobHistory *job = getJobHistory();
   m_algtoolmap[alg] = new AlgToolHistory(*alg, job);
@@ -861,17 +830,13 @@ AlgToolHistory*
 HistorySvc::getAlgToolHistory(const IAlgTool& alg) const {
 
   const AlgTool *palg = dynamic_cast<const AlgTool*>(&alg);
-  set<const AlgTool*>::const_iterator itr = m_algtools.find(palg);
-  if ( itr == m_algtools.end() ) {
+  auto itr = m_algtoolmap.find(palg);
+  if ( itr == m_algtoolmap.end() ) {
     m_log << MSG::WARNING << "AlgTool " << alg.name() << " not registered"
           << endmsg;
     return nullptr;
   }
-
-  map<const AlgTool*, AlgToolHistory*>::const_iterator itr2;
-  itr2 = m_algtoolmap.find( *itr );
-
-  return ( itr2->second );
+  return itr->second;
 
 }
 

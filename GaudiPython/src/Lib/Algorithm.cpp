@@ -33,7 +33,7 @@ StatusCode GaudiPython::call_python_method
   if ( !self || !method ) { return StatusCode::FAILURE ; }
 
   // call Python
-  PyObject* r = PyObject_CallMethod(self, chr(method), chr(""));
+  PyObject* r = PyObject_CallMethod(self, chr(method), nullptr );
 
   if ( !r ) { PyErr_Print() ;              return sc ; } // RETURN
 
@@ -42,7 +42,7 @@ StatusCode GaudiPython::call_python_method
 
   // look for the method getCode with the signature:
   //  ' int getCode() '
-  PyObject* c = PyObject_CallMethod(r, chr("getCode"), chr(""));
+  PyObject* c = PyObject_CallMethod(r, chr("getCode"), nullptr);
 
   if      ( !c           ) {      PyErr_Print()      ; }
   else if ( PyLong_Check( c )) { sc = PyLong_AsLong( c ); }
