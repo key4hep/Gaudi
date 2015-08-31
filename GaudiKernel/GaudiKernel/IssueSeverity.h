@@ -65,8 +65,8 @@ public:
                  std::string msg="");
   IssueSeverity( IssueSeverity::Level level, std::string msg="");
 
-  IssueSeverity( IssueSeverity&& es );
-  IssueSeverity& operator=(IssueSeverity&& rhs);
+  IssueSeverity( IssueSeverity&& ) noexcept;
+  IssueSeverity& operator=(IssueSeverity&& ) noexcept;
 
   ~IssueSeverity();
 
@@ -112,7 +112,7 @@ inline IssueSeverity::IssueSeverity(IssueSeverity::Level level, int line,
 inline IssueSeverity::IssueSeverity(IssueSeverity::Level level, std::string msg):
     IssueSeverity(std::move(level),0,"??",std::move(msg)) { }
 
-inline IssueSeverity::IssueSeverity( IssueSeverity&& rhs ) {
+inline IssueSeverity::IssueSeverity( IssueSeverity&& rhs ) noexcept {
   m_file = std::move(rhs.m_file);
   m_msg   = std::move(rhs.m_msg);
   m_line = rhs.m_line;
@@ -121,7 +121,7 @@ inline IssueSeverity::IssueSeverity( IssueSeverity&& rhs ) {
   rhs.m_reported = true;
 }
 
-inline IssueSeverity& IssueSeverity::operator=(IssueSeverity&& rhs) {
+inline IssueSeverity& IssueSeverity::operator=(IssueSeverity&& rhs) noexcept {
   m_file = rhs.m_file;
   m_msg   = rhs.m_level;
   m_line = rhs.m_line;
