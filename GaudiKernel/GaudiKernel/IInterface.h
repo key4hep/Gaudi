@@ -190,7 +190,7 @@ public:
   using iid = Gaudi::InterfaceId<IInterface,0,0>;
 
   /// Extra interfaces
-  using ext_iids = Gaudi::interface_list<>;
+  using ext_iids = Gaudi::interface_list<iid>;
 
   /// Return an instance of InterfaceID identifying the interface.
   static inline const InterfaceID &interfaceID(){
