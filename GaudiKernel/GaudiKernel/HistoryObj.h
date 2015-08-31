@@ -22,7 +22,7 @@ class IVersHistoryObj;
 class GAUDI_API HistoryObj: public DataObject {
 public:
   HistoryObj() = default;
-  virtual ~HistoryObj();
+  virtual ~HistoryObj() = default;
 
   virtual const CLID& clID() const { return classID(); }
   static const CLID& classID();
