@@ -60,7 +60,7 @@ public:
 
 #ifndef __GCCXML__
   /// Move constructor.
-  StatusCode( StatusCode&& rhs ):
+  StatusCode( StatusCode&& rhs ) noexcept:
     d_code(rhs.d_code), m_checked(rhs.m_checked),
     m_severity( std::move(rhs.m_severity) )
   { rhs.m_checked = true; }
@@ -177,8 +177,7 @@ protected:
   /// The status code.
   unsigned long   d_code = SUCCESS;      ///< The status code
   mutable bool    m_checked = false;   ///< If the Status code has been checked
-  typedef std::shared_ptr<const IssueSeverity> SeverityPtr;
-  SeverityPtr     m_severity;  ///< Pointer to a IssueSeverity
+  std::shared_ptr<const IssueSeverity> m_severity;  ///< Pointer to a IssueSeverity
 
   static bool     s_checking;  ///< Global flag to control if StatusCode need to be checked
 
@@ -188,12 +187,11 @@ private:
 
 inline std::ostream& operator<< ( std::ostream& s , const StatusCode& sc )
 {
-  if ( sc.isSuccess() ) { return s << "SUCCESS" ; }
-  else if ( sc.isRecoverable() ) { return s << "RECOVERABLE" ; }
+  if ( sc.isSuccess() )     { return s << "SUCCESS" ; }
+  if ( sc.isRecoverable() ) { return s << "RECOVERABLE" ; }
   s << "FAILURE" ;
-  if ( StatusCode::FAILURE != sc.getCode() )
-    { s << "(" << sc.getCode() << ")" ;}
-  return s ;
+  return ( StatusCode::FAILURE != sc.getCode() ) ? s << "(" << sc.getCode() << ")"
+                                                 : s ;
 }
 
 #endif  // GAUDIKERNEL_STATUSCODES_H
