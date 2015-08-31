@@ -9,17 +9,19 @@ struct GAUDI_API implements: virtual public extend_interfaces<Interfaces...> {
   /// Typedef to this class.
   using base_class = implements<Interfaces...>;
   /// Typedef to the base of this class.
-  using extend_interfaces_base =  extend_interfaces<Interfaces...>;
+  using extend_interfaces_base = extend_interfaces<Interfaces...>;
 
 public: 
   /**Implementation of IInterface::i_cast. */ 
   void *i_cast(const InterfaceID &tid) const override { 
-    return Gaudi::iid_cast<Interfaces...>(tid,this);
-  } 
-  /** Implementation of IInterface::queryInterface. */ \
+    using iids = typename extend_interfaces_base::ext_iids;
+    return Gaudi::iid_cast(tid,iids{},this);
+  }
+  /** Implementation of IInterface::queryInterface. */
   StatusCode queryInterface(const InterfaceID &ti, void** pp) override {
     if (!pp) return StatusCode::FAILURE;
-    *pp = Gaudi::iid_cast<Interfaces...>(ti,this);
+    using iids = typename extend_interfaces_base::ext_iids;
+    *pp = Gaudi::iid_cast(ti,iids{},this);
     if (!*pp)  return StatusCode::FAILURE; /* cast failed */ 
     this->addRef();
     return StatusCode::SUCCESS;

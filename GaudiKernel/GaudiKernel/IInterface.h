@@ -103,7 +103,7 @@ namespace Gaudi {
   template <typename... I1>
   struct interface_list_cat<interface_list<I1...>>{ using type = interface_list<I1...>; };
 
-  // binary op
+  // binary op @TODO/@FIXME: remove overlaps
   template <typename... I1, typename... I2>
   struct interface_list_cat<interface_list<I1...>,interface_list<I2...>>{ using type = interface_list<I1...,I2...>; };
 
@@ -125,24 +125,21 @@ namespace Gaudi {
 
       template <typename ... Is > struct iid_cast_t;
 
-      template <typename I> struct iid_cast_t<I> {
+      template <> struct iid_cast_t<> {
           template <typename P>
-          void* operator()(const InterfaceID& tid, P* ptr) const {
-            return tid.versionMatch(I::interfaceID()) ? void_cast<I>(ptr)
-                                                      : nullptr;
-          }
+          void* operator()(const InterfaceID&, P*) const { return nullptr ; }
       };
 
       template <typename I, typename... Is> struct iid_cast_t<I,Is...> {
           template <typename P>
           void* operator()(const InterfaceID& tid, P* ptr) const {
-            return tid.versionMatch(I::interfaceID()) ? void_cast<I>(ptr)
+            return tid.versionMatch(I::interfaceID()) ? void_cast<typename I::interface_type>(ptr)
                                                       : iid_cast_t<Is...>{}(tid,ptr);
           }
       };
   }
 
-  template <typename... Is, typename P > void* iid_cast(const InterfaceID& tid, P* ptr )
+  template <typename...Is,typename P> void* iid_cast(const InterfaceID& tid, Gaudi::interface_list<Is...>, P* ptr )
   {
       static const iid_cast_details::iid_cast_t<Is...> iid_cast_;
       return iid_cast_(tid,ptr);
@@ -158,10 +155,10 @@ namespace Gaudi {
   /// @author Marco Clemencic
   template <typename INTERFACE, unsigned long majVers, unsigned long minVers>
   struct InterfaceId final {
-    /// Interface type
-    using iface_type = INTERFACE;
+    /// interface type
+    using interface_type = INTERFACE;
     /// List of interfaces
-    using iids = typename Gaudi::interface_list_append<typename iface_type::ext_iids,InterfaceId>::type ;
+    using iids = typename Gaudi::interface_list_append<typename interface_type::ext_iids,InterfaceId>::type ;
 
     static inline std::string name() { return System::typeinfoName(typeid(INTERFACE)); }
     static inline unsigned long majorVersion() {return majVers;}
@@ -171,7 +168,7 @@ namespace Gaudi {
       return typeid(typename iids::type);
     }
 
-    static const InterfaceID& interfaceID()
+    static inline const InterfaceID& interfaceID()
     {
       static const InterfaceID s_iid(name().c_str(),majVers,minVers);
       return s_iid;

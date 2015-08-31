@@ -20,14 +20,16 @@ public:
 
   /// Implementation of IInterface::i_cast.
   void *i_cast(const InterfaceID &tid) const override {
-    void *ptr = Gaudi::iid_cast<Interfaces...>(tid, this);
+    using iids = typename extend_interfaces_base::ext_iids;
+    void *ptr = Gaudi::iid_cast(tid, iids{}, this);
     return ptr ? ptr : BASE::i_cast(tid);
   }
 
   /// Implementation of IInterface::queryInterface.
   StatusCode queryInterface(const InterfaceID &ti, void** pp) override {
     if (!pp) return StatusCode::FAILURE;
-    *pp = Gaudi::iid_cast<Interfaces...>(ti,this);
+    using iids = typename extend_interfaces_base::ext_iids;
+    *pp = Gaudi::iid_cast(ti,iids{},this);
     // if cast failed, try the base class
     if (!*pp) return BASE::queryInterface(ti,pp);
     this->addRef();
