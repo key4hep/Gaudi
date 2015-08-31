@@ -181,8 +181,8 @@ inline SmartIF<SERVICE> GaudiCommon<PBASE>::svc( const std::string& name   ,
   Assert ( this->svcLoc(), "ISvcLocator* points to NULL!" );
   SmartIF<SERVICE> s;
   // check if we already have this service
-  auto it = std::lower_bound( std::begin(m_services), std::end(m_services), name, svc_lt );
-  if ( it != std::end(m_services) && svc_eq(*it,name) ) {
+  auto it = std::lower_bound( std::begin(m_services), std::end(m_services), name, GaudiCommon_details::svc_lt );
+  if ( it != std::end(m_services) && GaudiCommon_details::svc_eq(*it,name) ) {
     // Try to get the requested interface
     s = *it;
     // check the results

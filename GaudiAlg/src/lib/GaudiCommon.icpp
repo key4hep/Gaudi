@@ -404,8 +404,8 @@ StatusCode GaudiCommon<PBASE>::releaseSvc ( const IInterface* Svc  ) const
   if( !Svc ) return Error ( "releaseSvc(IInterface):: IInterface* points to NULL!" ) ;
   SmartIF<IService> svc{const_cast<IInterface*>(Svc)};
   if (!svc.isValid()) return Warning( "releaseSvc(IInterface):: IInterface* is not a service" );
-  auto it = std::lower_bound( std::begin(m_services), std::end(m_services), svc, svc_lt );
-  if (it == m_services.end() || !svc_eq(*it,svc)) {
+  auto it = std::lower_bound( std::begin(m_services), std::end(m_services), svc, GaudiCommon_details::svc_lt );
+  if (it == m_services.end() || !GaudiCommon_details::svc_eq(*it,svc)) {
     return Warning( "releaseSvc(IInterface):: IInterface* is not active" );
   }
   if ( this->msgLevel(MSG::DEBUG) ) {
@@ -441,8 +441,8 @@ template < class PBASE >
 void GaudiCommon<PBASE>::addToServiceList( SmartIF<IService> svc ) const
 {
   if (svc.isValid()) {
-    auto i = std::lower_bound( std::begin(m_services), std::end(m_services), svc, svc_lt );
-    if ( i == std::end(m_services) || !svc_eq(*i,svc) ) {
+    auto i = std::lower_bound( std::begin(m_services), std::end(m_services), svc, GaudiCommon_details::svc_lt );
+    if ( i == std::end(m_services) || !GaudiCommon_details::svc_eq(*i,svc) ) {
             m_services.insert( i, std::move(svc) );
     }  else {
            this->warning() << "Service " << svc->name() << " already present -- skipping" << endmsg;

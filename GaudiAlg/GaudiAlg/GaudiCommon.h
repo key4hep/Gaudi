@@ -32,6 +32,20 @@
 class Algorithm ; // GaudiKernel
 class AlgTool   ; // GaudiKernel
 namespace Gaudi { namespace Utils { template <class TYPE> struct GetData ; } }
+
+namespace GaudiCommon_details {
+  constexpr const struct svc_eq_t {
+        bool operator()(const std::string& n, const SmartIF<IService>& s) const { return n == s->name(); };
+        bool operator()(const SmartIF<IService>& s, const std::string& n) const { return s->name() == n; };
+        bool operator()(const SmartIF<IService>& s, const SmartIF<IService>& n) const { return s->name() == n->name(); };
+  } svc_eq { };
+  constexpr const struct svc_lt_t {
+        bool operator()(const std::string& n, const SmartIF<IService>& s) const { return n < s->name(); };
+        bool operator()(const SmartIF<IService>& s, const std::string& n) const { return s->name() < n; };
+        bool operator()(const SmartIF<IService>& s, const SmartIF<IService>& n) const { return s->name() < n->name(); };
+  } svc_lt { };
+
+}
 // ============================================================================
 /*  @file GaudiCommon.h
  *
@@ -91,16 +105,6 @@ protected: // few actual data types
   /// storage for active services
   typedef std::vector<SmartIF<IService>>     Services;
 
-  static const constexpr struct svc_eq_t {
-        bool operator()(const std::string& n, const SmartIF<IService>& s) const { return n == s->name(); };
-        bool operator()(const SmartIF<IService>& s, const std::string& n) const { return s->name() == n; };
-        bool operator()(const SmartIF<IService>& s, const SmartIF<IService>& n) const { return s->name() == n->name(); };
-  } svc_eq { };
-  static const constexpr struct svc_lt_t {
-        bool operator()(const std::string& n, const SmartIF<IService>& s) const { return n < s->name(); };
-        bool operator()(const SmartIF<IService>& s, const std::string& n) const { return s->name() < n; };
-        bool operator()(const SmartIF<IService>& s, const SmartIF<IService>& n) const { return s->name() < n->name(); };
-  } svc_lt { };
   // ==========================================================================
   //protected members such that they can be used in the derived classes
   /// a pointer to the CounterSummarySvc
