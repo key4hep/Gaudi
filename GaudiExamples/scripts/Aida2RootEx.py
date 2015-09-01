@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.4
+#!/usr/bin/env python2.7
 # =============================================================================
 ## @file
 #  Simple algorithm to illustrate the usage of aida2root converter
