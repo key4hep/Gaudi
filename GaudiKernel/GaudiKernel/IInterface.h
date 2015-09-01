@@ -85,43 +85,111 @@ private:
 };
 
 namespace Gaudi {
+
   template <typename... I> struct interface_list { };
 
-  //@TODO/@FIXME: make sure the entries in interface_list are unique, and not repeated...
+  namespace meta {
+      // identity T -> type = T
+      template <typename T> struct id_
+      { using type = T; };
+
+      namespace detail
+      {
+          template <typename... Is>
+          struct inherit_from : Is... {};
+
+          template <typename List, typename I>
+          struct append_ {};
+
+          // interpose an id_<I> as id_<I> is a complete type, even if I is not... and we need complete
+          // types to inherit from
+          template <typename... Is, typename I>
+          struct append_<interface_list<Is...>, I>
+          : id_<typename std::conditional<std::is_base_of< id_<I>, inherit_from<id_<Is>...> >::value,
+                                          interface_list<Is...>,
+                                          interface_list<Is...,I> >::type> {};
+
+          template <typename, typename>
+          struct for_each {};
+
+          template <typename State>
+          struct for_each<interface_list<>, State>
+          : id_<State> { };
+
+          template <typename... Is, typename I, typename List>
+          struct for_each<interface_list<I,Is...>, List >
+          :      for_each<interface_list<Is...  >, typename append_<List, I>::type> { };
+      }
+
+      template <typename... Is>
+      using unique_interface_list = detail::for_each<interface_list<Is...>, interface_list<>>;
+  }
 
   // interface_list concatenation
   template <typename... I> struct interface_list_cat;
 
   // identity
-  template <typename... I1>
-  struct interface_list_cat<interface_list<I1...>>{ using type = interface_list<I1...>; };
+  template <typename... I>
+  struct interface_list_cat<interface_list<I...>>
+  : meta::unique_interface_list< I... > { };
 
-  // binary op @TODO/@FIXME: remove overlaps
+  // binary op
   template <typename... I1, typename... I2>
-  struct interface_list_cat<interface_list<I1...>,interface_list<I2...>>{ using type = interface_list<I1...,I2...>; };
+  struct interface_list_cat<interface_list<I1...>,interface_list<I2...>>
+  : meta::unique_interface_list<I1...,I2...> { };
 
   // induction of binary op
   template <typename... I1, typename... I2, typename... Others>
-  struct interface_list_cat<interface_list<I1...>,interface_list<I2...>, Others...> {
-      using type = typename interface_list_cat< interface_list<I1...,I2...>, Others... >::type;
-  };
+  struct interface_list_cat<interface_list<I1...>,interface_list<I2...>, Others...>
+  : interface_list_cat< interface_list<I1...,I2...>, Others... > { };
 
   // append is a special case of concatenation...
   template <typename... I> struct interface_list_append;
-  template <typename I1, typename... I2>
-  struct interface_list_append<interface_list<I2...>,I1> : interface_list_cat< interface_list<I2...>, interface_list<I1> > { };
+
+  template <typename... Is, typename I>
+  struct interface_list_append<interface_list<Is...>,I>
+  : interface_list_cat< interface_list<Is...>, interface_list<I> > { };
+
+
+  /// test cases
+  namespace test {
+        struct A {};
+        struct B {};
+        struct C {};
+        struct D {};
+
+        struct test1 { using type = interface_list<A>; };
+        struct test2 { using type = interface_list<B>; };
+        struct test3 { using type = interface_list<A,B>; };
+        struct test4 { using type = interface_list<C,A>; };
+
+        static_assert( std::is_same< interface_list<>, interface_list<> >::value, "empty" );
+        static_assert( std::is_same< test1::type , interface_list<A> >::value, "one" );
+        static_assert( std::is_same< test2::type , interface_list<B> >::value, "one" );
+        static_assert( std::is_same< test3::type , interface_list<A,B> >::value, "one" );
+        static_assert( std::is_same< typename interface_list_append< interface_list<A>, B >::type , interface_list<A,B> >::value, "append1" );
+        static_assert( std::is_same< typename interface_list_append< interface_list<A,B>, C >::type , interface_list<A,B,C> >::value, "append2" );
+        static_assert( std::is_same< typename interface_list_cat< interface_list<A>, interface_list<B> >::type , interface_list<A,B> >::value, "append2" );
+        static_assert( std::is_same< typename interface_list_cat< interface_list<A,B>, interface_list<C> >::type , interface_list<A,B,C> >::value, "append2" );
+        static_assert( std::is_same< typename interface_list_cat< interface_list<A,B>, interface_list<C,D> >::type , interface_list<A,B,C,D> >::value, "append2" );
+        static_assert( std::is_same< typename interface_list_cat< interface_list<A,B>, interface_list<C,A> >::type , interface_list<A,B,C> >::value, "append2" );
+        static_assert( std::is_same< typename interface_list_cat< interface_list<A,B>, interface_list<A,C> >::type , interface_list<A,B,C> >::value, "append2" );
+        static_assert( std::is_same< typename interface_list_cat< typename test3::type, typename test4::type  >::type , interface_list<A,B,C> >::value, "append3" );
+
+  }
+
 
   // helpers for implementation of interface cast
   namespace iid_cast_details {
-      template <typename I> 
-      inline void* void_cast(const I* i)
+      template <typename I>
+      constexpr void* void_cast(const I* i)
       { return const_cast<I*>(i); }
 
-      template <typename ... Is > struct iid_cast_t;
+      template <typename ... Is> struct iid_cast_t;
 
       template <> struct iid_cast_t<> {
           template <typename P>
-          inline void* operator()(const InterfaceID&, P*) const { return nullptr ; }
+          constexpr void* operator()(const InterfaceID&, P*) const { return nullptr ; }
       };
 
       template <typename I, typename... Is> struct iid_cast_t<I,Is...> {
@@ -133,7 +201,7 @@ namespace Gaudi {
       };
   }
 
-  template <typename...Is,typename P> 
+  template <typename...Is,typename P>
   inline void* iid_cast(const InterfaceID& tid, Gaudi::interface_list<Is...>, P* ptr )
   {
       constexpr auto iid_cast_ = iid_cast_details::iid_cast_t<Is...>{};
@@ -156,8 +224,8 @@ namespace Gaudi {
     using iids = typename Gaudi::interface_list_append<typename interface_type::ext_iids,InterfaceId>::type ;
 
     static inline std::string name() { return System::typeinfoName(typeid(INTERFACE)); }
-    static inline unsigned long majorVersion() {return majVers;}
-    static inline unsigned long minorVersion() {return minVers;}
+    static constexpr unsigned long majorVersion() { return majVers; }
+    static constexpr unsigned long minorVersion() { return minVers; }
 
     static inline const std::type_info &TypeInfo() {
       return typeid(typename iids::type);
