@@ -75,8 +75,7 @@ private:
   // ApplicationManager
   INamedInterface*     m_appMgr  = nullptr; ///< ApplicationManager
   //
-  typedef GaudiUtils::VectorMap<const INamedInterface*,int>  Map ;
-  Map                  m_map     ;
+  GaudiUtils::VectorMap<const INamedInterface*,int>  m_map     ;
   // indentation level
   int                  m_indent  = 0 ; ///< indentation level
   // "in event"
@@ -84,8 +83,7 @@ private:
   // "optimized for Data-On-Demand Service"
   bool                 m_goodForDOD = false ; ///< "optimized for DOD"
   //
-  typedef GaudiUtils::HashMap<std::string,int> MapUser ;
-  MapUser              m_mapUser ; ///< map used to record user timing events
+  GaudiUtils::HashMap<std::string,int> m_mapUser ; ///< map used to record user timing events
 
   // Whether the timing has been saved already
   bool                 m_histoSaved = false ;
@@ -294,7 +292,6 @@ void TimingAuditor::before(CustomEventTypeRef evt, const std::string& name)
   } else {
     timer = found->second;
   }
-
   m_timer->start( timer );
 }
 // ============================================================================
@@ -320,14 +317,11 @@ void TimingAuditor::after(CustomEventTypeRef evt, const std::string& name, const
 // ============================================================================
 void TimingAuditor::handle ( const Incident& i )
 {
-  if      ( IncidentType::BeginEvent == i.type () )
-  {
+  if      ( IncidentType::BeginEvent == i.type () ) {
     m_timer -> start ( m_map[ m_appMgr ] ) ;
     ++m_indent ;
     m_inEvent = true ;
-  }
-  else if ( IncidentType::EndEvent   == i.type () )
-  {
+  } else if ( IncidentType::EndEvent   == i.type () ) {
     m_timer -> stop  ( m_map[ m_appMgr ] ) ;
     --m_indent ;
     m_inEvent = false ;
