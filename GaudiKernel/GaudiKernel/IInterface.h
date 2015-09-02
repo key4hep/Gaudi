@@ -5,14 +5,15 @@
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/System.h"
 #include "GaudiKernel/StatusCode.h"
+#include <type_traits>
+#include <typeinfo>
 #include <ostream>
 
-#include <typeinfo>
 
 /// Macro to declare the interface ID when using the new mechanism of extending and implementing interfaces.
-#define DeclareInterfaceID(iface, major, minor) \
-  static const InterfaceID &interfaceID(){ return iid::interfaceID(); } \
-  using iid = Gaudi::InterfaceId< iface , major , minor > ; \
+#define DeclareInterfaceID(iface, major, minor)                          \
+  static const InterfaceID &interfaceID() { return iid::interfaceID(); } \
+  using iid = Gaudi::InterfaceId< iface , major , minor > ;              \
   using ext_iids = iid::iids
 
 /**
@@ -68,7 +69,7 @@ public:
   }
   /// compare operator
   constexpr bool operator == (const InterfaceID& iid ) const { return fullMatch(iid); }
-  /// one-at-time hash function @TODO: rewrite to make it constexpr (in C++11 -- C++14 would be much easier!)
+  /// one-at-time hash function
   static unsigned int hash32(const char* key) {
     unsigned int hash = 0;
     for (const char* k = key; *k; ++k) {
@@ -89,7 +90,7 @@ namespace Gaudi {
   template <typename... I> struct interface_list { };
 
   namespace meta {
-      // identity T -> type = T
+      // identity T -> type = T; note that id_<T> is a complete type, even if T is not
       template <typename T> struct id_
       { using type = T; };
 
@@ -99,12 +100,12 @@ namespace Gaudi {
           struct inherit_from : Is... {};
 
           template <typename List, typename I>
-          struct append_ {};
+          struct append{};
 
           // interpose an id_<I> as id_<I> is a complete type, even if I is not... and we need complete
           // types to inherit from
           template <typename... Is, typename I>
-          struct append_<interface_list<Is...>, I>
+          struct append<interface_list<Is...>, I>
           : id_<typename std::conditional<std::is_base_of< id_<I>, inherit_from<id_<Is>...> >::value,
                                           interface_list<Is...>,
                                           interface_list<Is...,I> >::type> {};
@@ -113,12 +114,12 @@ namespace Gaudi {
           struct for_each {};
 
           template <typename State>
-          struct for_each<interface_list<>, State>
+          struct for_each<interface_list<>, State >
           : id_<State> { };
 
           template <typename... Is, typename I, typename List>
-          struct for_each<interface_list<I,Is...>, List >
-          :      for_each<interface_list<Is...  >, typename append_<List, I>::type> { };
+          struct for_each<interface_list<I,Is...>, List>
+          :      for_each<interface_list<Is...  >, typename append<List, I>::type> { };
       }
 
       template <typename... Is>
@@ -150,7 +151,6 @@ namespace Gaudi {
   struct interface_list_append<interface_list<Is...>,I>
   : interface_list_cat< interface_list<Is...>, interface_list<I> > { };
 
-
   /// test cases
   namespace test {
         struct A {};
@@ -158,23 +158,13 @@ namespace Gaudi {
         struct C {};
         struct D {};
 
-        struct test1 { using type = interface_list<A>; };
-        struct test2 { using type = interface_list<B>; };
-        struct test3 { using type = interface_list<A,B>; };
-        struct test4 { using type = interface_list<C,A>; };
-
-        static_assert( std::is_same< interface_list<>, interface_list<> >::value, "empty" );
-        static_assert( std::is_same< test1::type , interface_list<A> >::value, "one" );
-        static_assert( std::is_same< test2::type , interface_list<B> >::value, "one" );
-        static_assert( std::is_same< test3::type , interface_list<A,B> >::value, "one" );
-        static_assert( std::is_same< typename interface_list_append< interface_list<A>, B >::type , interface_list<A,B> >::value, "append1" );
-        static_assert( std::is_same< typename interface_list_append< interface_list<A,B>, C >::type , interface_list<A,B,C> >::value, "append2" );
-        static_assert( std::is_same< typename interface_list_cat< interface_list<A>, interface_list<B> >::type , interface_list<A,B> >::value, "append2" );
-        static_assert( std::is_same< typename interface_list_cat< interface_list<A,B>, interface_list<C> >::type , interface_list<A,B,C> >::value, "append2" );
-        static_assert( std::is_same< typename interface_list_cat< interface_list<A,B>, interface_list<C,D> >::type , interface_list<A,B,C,D> >::value, "append2" );
-        static_assert( std::is_same< typename interface_list_cat< interface_list<A,B>, interface_list<C,A> >::type , interface_list<A,B,C> >::value, "append2" );
-        static_assert( std::is_same< typename interface_list_cat< interface_list<A,B>, interface_list<A,C> >::type , interface_list<A,B,C> >::value, "append2" );
-        static_assert( std::is_same< typename interface_list_cat< typename test3::type, typename test4::type  >::type , interface_list<A,B,C> >::value, "append3" );
+        static_assert( std::is_same< typename interface_list_cat< interface_list<A,B,A,C,D,A>>::type , interface_list<A,B,C,D> >::value, "compress" );
+        static_assert( std::is_same< typename interface_list_cat< interface_list<A>,   interface_list<B> >::type , interface_list<A,B> >::value, "cat-1-1" );
+        static_assert( std::is_same< typename interface_list_cat< interface_list<A,B>, interface_list<C> >::type , interface_list<A,B,C> >::value, "cat-2-1" );
+        static_assert( std::is_same< typename interface_list_cat< interface_list<A,B>, interface_list<C,D> >::type , interface_list<A,B,C,D> >::value, "cat-2-2" );
+        static_assert( std::is_same< typename interface_list_cat< interface_list<A,B>, interface_list<C,A> >::type , interface_list<A,B,C> >::value, "cat-2-2,same" );
+        static_assert( std::is_same< typename interface_list_cat< interface_list<A,B>, interface_list<A,C> >::type , interface_list<A,B,C> >::value, "cat-2-2,same-2" );
+        static_assert( std::is_same< typename interface_list_cat< interface_list<A,B,A,C,D,A>, interface_list<C,B,A,C> >::type , interface_list<A,B,C,D> >::value, "cat-5-4,same-3-2" );
 
   }
 
@@ -195,10 +185,18 @@ namespace Gaudi {
       template <typename I, typename... Is> struct iid_cast_t<I,Is...> {
           template <typename P>
           inline void* operator()(const InterfaceID& tid, P* ptr) const {
+            // can we inject a (very!) strict compile-time match prior to falling back to runtime?
+            // basically, if tid and one of the Is are the same class, then we're done...
+            // there is now a 'fullMatch' which can be done at compile time....
             return tid.versionMatch(I::interfaceID()) ? void_cast<typename I::interface_type>(ptr)
                                                       : iid_cast_t<Is...>{}(tid,ptr);
           }
       };
+  }
+
+  template <typename... Is>
+  std::vector<std::string> getInterfaceNames( Gaudi::interface_list<Is...> ) {
+      return { Is::name()... }; // TODO: fix possible duplication -- will be fixed if entries in interface_list are unique
   }
 
   template <typename...Is,typename P>
@@ -208,10 +206,6 @@ namespace Gaudi {
       return iid_cast_(tid,ptr);
   }
 
-  template <typename... Is>
-  std::vector<std::string> getInterfaceNames( Gaudi::interface_list<Is...> ) {
-      return { Is::name()... }; // TODO: fix possible duplication -- will be fixed if entries in interface_list are unique
-  }
 
   /// Class to handle automatically the versioning of the interfaces when they
   /// are inheriting from other interfaces.
@@ -236,8 +230,36 @@ namespace Gaudi {
       static const InterfaceID s_iid(name().c_str(),majVers,minVers);
       return s_iid;
     }
-
   };
+
+  constexpr struct fullMatch_t { 
+    template <typename IFACE1, typename IFACE2, unsigned long major1, unsigned long major2, unsigned long minor1, unsigned long minor2>
+    constexpr bool operator()(InterfaceId<IFACE1,major1,minor1>, InterfaceId<IFACE2,major2,minor2>) { return false; }
+    template <typename IFACE, unsigned long major, unsigned long minor>
+    constexpr bool operator()(InterfaceId<IFACE,major,minor>, InterfaceId<IFACE,major,minor>) { return true; }
+  } fullMatch{};
+
+  constexpr struct majorMatch_t { 
+    template <typename IFACE1, typename IFACE2, unsigned long major1, unsigned long major2, unsigned long minor1, unsigned long minor2>
+    constexpr bool operator()(InterfaceId<IFACE1,major1,minor1>, InterfaceId<IFACE2,major2,minor2>) { return false; }
+    template <typename IFACE, unsigned long major, unsigned long minor1, unsigned long minor2>
+    constexpr bool operator()(InterfaceId<IFACE,major,minor1>, InterfaceId<IFACE,major,minor2>) { return true; }
+  } majorMatch{};
+
+  namespace test {
+      struct IDummy1 { using ext_iids = Gaudi::interface_list<>; };
+      struct IDummy2 { using ext_iids = Gaudi::interface_list<>; };
+
+      static_assert(  fullMatch( InterfaceId<IDummy1,1,0>{}, InterfaceId<IDummy1,1,0>{}) , "match" );
+      static_assert( !fullMatch( InterfaceId<IDummy1,1,0>{}, InterfaceId<IDummy2,1,0>{}) , "no match -- different IFace" );
+      static_assert( !fullMatch( InterfaceId<IDummy1,1,0>{}, InterfaceId<IDummy1,2,0>{}) , "no match -- different major version" );
+      static_assert( !fullMatch( InterfaceId<IDummy1,1,1>{}, InterfaceId<IDummy1,1,0>{}) , "no match -- different minor version" );
+
+      static_assert(  majorMatch( InterfaceId<IDummy1,1,0>{}, InterfaceId<IDummy1,1,0>{}) , "major match -- identical " );
+      static_assert( !majorMatch( InterfaceId<IDummy1,2,0>{}, InterfaceId<IDummy2,2,0>{}) , "major match -- different IFace " );
+      static_assert( !majorMatch( InterfaceId<IDummy1,2,0>{}, InterfaceId<IDummy1,1,0>{}) , "major match -- different major version" );
+      static_assert(  majorMatch( InterfaceId<IDummy1,1,1>{}, InterfaceId<IDummy1,1,0>{}) , "major match -- different minor version" );
+  }
 }
 
 /** @class IInterface IInterface.h GaudiKernel/IInterface.h
