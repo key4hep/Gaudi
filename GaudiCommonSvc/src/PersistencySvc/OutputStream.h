@@ -129,23 +129,25 @@ protected:
 
 public:
   /// Initialize OutputStream
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
   /// Terminate OutputStream
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
   /// Working entry point
-  virtual StatusCode execute();
+  StatusCode execute() override;
   // Connect to proper conversion service
   virtual StatusCode connectConversionSvc();
   /// Store agent's classback
   virtual bool collect(IRegistry* dir, int level);
   /// Collect all objects to be written to the output stream
   virtual StatusCode collectObjects();
+  /// Clear list of selected objects
+  void clearSelection();
+
+private:
   /// Clear item list
   void clearItems(Items& itms);
   /// Add item to output streamer list
   void addItem(Items& itms, const std::string& descriptor);
-  /// Clear list of selected objects
-  void clearSelection();
   /// Return the list of selected objects
   IDataSelector* selectedObjects() { return &m_objects; }
 };

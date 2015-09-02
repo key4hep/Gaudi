@@ -25,10 +25,10 @@ class PropertyValue final {
   typedef std::map<std::string, std::string> MapOfStrings;
 
 // ----------------------------------------------------------------------------
-  explicit PropertyValue(const Value& value,
-      bool is_reference=false): value_(value), is_reference_(is_reference) {}
-  PropertyValue(const Value& value, const Position& position,
-      bool is_reference=false): value_(value), position_(position),
+  explicit PropertyValue(Value value,
+      bool is_reference=false): value_(std::move(value)), is_reference_(is_reference) {}
+  PropertyValue(Value value, const Position& position,
+      bool is_reference=false): value_(std::move(value)), position_(position),
       is_reference_(is_reference) {}
 // ----------------------------------------------------------------------------
   const Position& position() const { return position_;}
