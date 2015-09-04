@@ -38,7 +38,7 @@ public:
   /// constructor from components
   constexpr InterfaceID( unsigned long id, unsigned long major, unsigned long minor = 0)
     : m_id( id ), m_major_ver( major ), m_minor_ver( minor ) { }
-  /// constructor from components @TODO: implement hash32 so it can be constexpr...
+  /// constructor from components
   InterfaceID( const char* name, unsigned long major, unsigned long minor = 0)
     : m_id( hash32(name) ), m_major_ver( major ), m_minor_ver( minor ) { }
 #if defined(GAUDI_V20_COMPAT) && !defined(G21_NEW_INTERFACES)
@@ -97,33 +97,33 @@ namespace Gaudi {
       namespace detail
       {
           template <typename... Is>
-          struct inherit_from : Is... {};
+          struct inherit_from : Is... { };
 
           template <typename List, typename I>
-          struct append{};
+          struct append1{ };
 
           // interpose an id_<I> as id_<I> is a complete type, even if I is not... and we need complete
           // types to inherit from
           template <typename... Is, typename I>
-          struct append<interface_list<Is...>, I>
+          struct append1<interface_list<Is...>, I>
           : id_<typename std::conditional<std::is_base_of< id_<I>, inherit_from<id_<Is>...> >::value,
                                           interface_list<Is...>,
-                                          interface_list<Is...,I> >::type> {};
+                                          interface_list<Is...,I> >::type> { };
 
           template <typename, typename>
-          struct for_each {};
+          struct appendN { };
 
           template <typename State>
-          struct for_each<interface_list<>, State >
+          struct appendN<interface_list<>, State >
           : id_<State> { };
 
           template <typename... Is, typename I, typename List>
-          struct for_each<interface_list<I,Is...>, List>
-          :      for_each<interface_list<Is...  >, typename append<List, I>::type> { };
+          struct appendN<interface_list<I,Is...>, List>
+          :      appendN<interface_list<Is...  >, typename append1<List, I>::type> { };
       }
 
       template <typename... Is>
-      using unique_interface_list = detail::for_each<interface_list<Is...>, interface_list<>>;
+      using unique_interface_list = detail::appendN<interface_list<Is...>, interface_list<>>;
   }
 
   // interface_list concatenation
@@ -151,24 +151,6 @@ namespace Gaudi {
   struct interface_list_append<interface_list<Is...>,I>
   : interface_list_cat< interface_list<Is...>, interface_list<I> > { };
 
-  /// test cases
-  namespace test {
-        struct A {};
-        struct B {};
-        struct C {};
-        struct D {};
-
-        static_assert( std::is_same< typename interface_list_cat< interface_list<A,B,A,C,D,A>>::type , interface_list<A,B,C,D> >::value, "compress" );
-        static_assert( std::is_same< typename interface_list_cat< interface_list<A>,   interface_list<B> >::type , interface_list<A,B> >::value, "cat-1-1" );
-        static_assert( std::is_same< typename interface_list_cat< interface_list<A,B>, interface_list<C> >::type , interface_list<A,B,C> >::value, "cat-2-1" );
-        static_assert( std::is_same< typename interface_list_cat< interface_list<A,B>, interface_list<C,D> >::type , interface_list<A,B,C,D> >::value, "cat-2-2" );
-        static_assert( std::is_same< typename interface_list_cat< interface_list<A,B>, interface_list<C,A> >::type , interface_list<A,B,C> >::value, "cat-2-2,same" );
-        static_assert( std::is_same< typename interface_list_cat< interface_list<A,B>, interface_list<A,C> >::type , interface_list<A,B,C> >::value, "cat-2-2,same-2" );
-        static_assert( std::is_same< typename interface_list_cat< interface_list<A,B,A,C,D,A>, interface_list<C,B,A,C> >::type , interface_list<A,B,C,D> >::value, "cat-5-4,same-3-2" );
-
-  }
-
-
   // helpers for implementation of interface cast
   namespace iid_cast_details {
       template <typename I>
@@ -185,9 +167,6 @@ namespace Gaudi {
       template <typename I, typename... Is> struct iid_cast_t<I,Is...> {
           template <typename P>
           inline void* operator()(const InterfaceID& tid, P* ptr) const {
-            // can we inject a (very!) strict compile-time match prior to falling back to runtime?
-            // basically, if tid and one of the Is are the same class, then we're done...
-            // there is now a 'fullMatch' which can be done at compile time....
             return tid.versionMatch(I::interfaceID()) ? void_cast<typename I::interface_type>(ptr)
                                                       : iid_cast_t<Is...>{}(tid,ptr);
           }
@@ -196,16 +175,14 @@ namespace Gaudi {
 
   template <typename... Is>
   std::vector<std::string> getInterfaceNames( Gaudi::interface_list<Is...> ) {
-      return { Is::name()... }; // TODO: fix possible duplication -- will be fixed if entries in interface_list are unique
+      return { Is::name()... };
   }
 
   template <typename...Is,typename P>
-  inline void* iid_cast(const InterfaceID& tid, Gaudi::interface_list<Is...>, P* ptr )
-  {
+  inline void* iid_cast(const InterfaceID& tid, Gaudi::interface_list<Is...>, P* ptr ) {
       constexpr auto iid_cast_ = iid_cast_details::iid_cast_t<Is...>{};
       return iid_cast_(tid,ptr);
   }
-
 
   /// Class to handle automatically the versioning of the interfaces when they
   /// are inheriting from other interfaces.
@@ -225,8 +202,7 @@ namespace Gaudi {
       return typeid(typename iids::type);
     }
 
-    static inline const InterfaceID& interfaceID()
-    {
+    static inline const InterfaceID& interfaceID() {
       static const InterfaceID s_iid(name().c_str(),majVers,minVers);
       return s_iid;
     }
@@ -246,20 +222,6 @@ namespace Gaudi {
     constexpr bool operator()(InterfaceId<IFACE,major,minor1>, InterfaceId<IFACE,major,minor2>) { return true; }
   } majorMatch{};
 
-  namespace test {
-      struct IDummy1 { using ext_iids = Gaudi::interface_list<>; };
-      struct IDummy2 { using ext_iids = Gaudi::interface_list<>; };
-
-      static_assert(  fullMatch( InterfaceId<IDummy1,1,0>{}, InterfaceId<IDummy1,1,0>{}) , "match" );
-      static_assert( !fullMatch( InterfaceId<IDummy1,1,0>{}, InterfaceId<IDummy2,1,0>{}) , "no match -- different IFace" );
-      static_assert( !fullMatch( InterfaceId<IDummy1,1,0>{}, InterfaceId<IDummy1,2,0>{}) , "no match -- different major version" );
-      static_assert( !fullMatch( InterfaceId<IDummy1,1,1>{}, InterfaceId<IDummy1,1,0>{}) , "no match -- different minor version" );
-
-      static_assert(  majorMatch( InterfaceId<IDummy1,1,0>{}, InterfaceId<IDummy1,1,0>{}) , "major match -- identical " );
-      static_assert( !majorMatch( InterfaceId<IDummy1,2,0>{}, InterfaceId<IDummy2,2,0>{}) , "major match -- different IFace " );
-      static_assert( !majorMatch( InterfaceId<IDummy1,2,0>{}, InterfaceId<IDummy1,1,0>{}) , "major match -- different major version" );
-      static_assert(  majorMatch( InterfaceId<IDummy1,1,1>{}, InterfaceId<IDummy1,1,0>{}) , "major match -- different minor version" );
-  }
 }
 
 /** @class IInterface IInterface.h GaudiKernel/IInterface.h
@@ -345,8 +307,8 @@ public:
 */
 template <class I>
 bool isValidInterface( I* i) {
-  void* ii;
-  StatusCode sc =  i->queryInterface( I::interfaceID(), &ii);
+  void* ii = nullptr;;
+  StatusCode sc = i->queryInterface( I::interfaceID(), &ii );
   return sc.isSuccess();
 }
 
