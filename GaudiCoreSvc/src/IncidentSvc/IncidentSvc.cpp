@@ -8,6 +8,7 @@
 // ============================================================================
 // Include Files
 // ============================================================================
+#include <functional>
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/SmartIF.h"
@@ -271,9 +272,7 @@ IncidentSvc::getListeners(std::vector<IIncidentListener*>& l,
       l.reserve(i->second->size());
       std::transform( std::begin(*i->second), std::end(*i->second),
                       std::back_inserter(l),
-                      [](ListenerList::const_reference j) {
-                          return j.iListener;
-      });
+                      std::mem_fn(&Listener::iListener) );
   }
 }
 

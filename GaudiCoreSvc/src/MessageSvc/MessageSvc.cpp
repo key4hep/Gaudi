@@ -20,11 +20,13 @@ namespace {
   // after the erase point, eg.std::{unordered_}{,multi}map, std::{forward_,}list. 
   // To be explicit: this does NOT work with std::vector.
 
+  // TODO: replace with std::experimental::erase_if (Libraries Fundamental TS v2)
+
   template < typename Container, typename Iterator, typename Predicate >
   void erase_if( Container& c, Iterator first, Iterator last, Predicate pred) {
     while ( first!=last ) {
       if ( pred(*first) ) first = c.erase(first);
-      else ++first;
+      else                ++first;
     }
   }
 
@@ -221,7 +223,7 @@ void MessageSvc::setupColors(Property& prop) {
 
   if ( m_logColors[ic].value().size() == 1 ) {
 
-    if (*itr == "") {
+    if (itr->empty()) {
       code = "";
     } else if (itr->compare(0,1,"[") == 0) {
       code = "\033" + *itr;
@@ -346,18 +348,15 @@ StatusCode MessageSvc::finalize() {
           os.width(28);
           os.setf(ios_base::left,ios_base::adjustfield);
           os << itr->first;
-
           os << "|";
 
           os.width(8);
           os.setf(ios_base::right,ios_base::adjustfield);
           os << levelNames[ic];
-
           os << " |";
 
           os.width(9);
           os << itr->second.msg[ic];
-
           os << endl;
 
           found = true;
@@ -365,10 +364,7 @@ StatusCode MessageSvc::finalize() {
       }
     }
     os << "=====================================================" << endl;
-
-    if (found || m_stats) {
-      cout << os.str();
-    }
+    if (found || m_stats) cout << os.str();
   }
 
 #ifndef NDEBUG
@@ -397,9 +393,7 @@ StatusCode MessageSvc::finalize() {
     os.width(1);
     os << "|   Level |    Count" << endl;
 
-    for (unsigned int i=0; i<ml+3; ++i) {
-      os << "-";
-    }
+    for (unsigned int i=0; i<ml+3; ++i) os << "-";
     os << "+---------+-----------" << endl;
 
 
@@ -428,14 +422,10 @@ StatusCode MessageSvc::finalize() {
 	}
       }
     }
-    for (unsigned int i=0; i<ml+25; ++i) {
-      os << "=";
-    }
+    for (unsigned int i=0; i<ml+25; ++i) os << "=";
     os << endl;
 
-    if (found) {
-      cout << os.str();
-    }
+    if (found) cout << os.str();
   }
 #endif
 
