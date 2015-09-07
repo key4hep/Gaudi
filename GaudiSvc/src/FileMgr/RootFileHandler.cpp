@@ -14,9 +14,8 @@ namespace ba = boost::algorithm;
 
 RootFileHandler::RootFileHandler( IMessageSvc* msg, const std::string& p,
 				  const std::string& c):
-  m_log(msg,"RootFileHandler"), m_userProxy(p), m_certDir(c), 
-  m_ssl_setup(false) {
-
+  m_log(msg,"RootFileHandler"), m_userProxy(p), m_certDir(c)
+{
   // Protect against multiple instances of TROOT
   if ( !gROOT )   {
     static TROOT root("root","ROOT I/O");
@@ -24,7 +23,6 @@ RootFileHandler::RootFileHandler( IMessageSvc* msg, const std::string& p,
   m_level = msg->outputLevel("RootFileHandler");
 
 }
-
   
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -39,7 +37,7 @@ RootFileHandler::openRootFile(const std::string& n, const Io::IoFlags& f,
 	  << f << "," << desc << ")" 
 	  << endmsg;
   
-  ptr = 0;
+  ptr = nullptr;
   fd = -1;
 
   std::string opt;
@@ -95,7 +93,7 @@ RootFileHandler::openRootFile(const std::string& n, const Io::IoFlags& f,
       return 1;
     }
 
-    if (tf != 0 && tf->IsZombie()) {
+    if (tf && tf->IsZombie()) {
       m_log << MSG::ERROR << "Problems opening input file  \"" << n
 	    << "\": file does not exist or in not accessible" << endmsg;
       tf.reset();
@@ -133,12 +131,9 @@ RootFileHandler::openRootFile(const std::string& n, const Io::IoFlags& f,
   ptr = tf.release();
 
   if (m_log.level() <= MSG::DEBUG) 
-    m_log << MSG::DEBUG << "opened TFile " << (void*) ptr << " Fd: " << fd
-	  << endmsg;
+    m_log << MSG::DEBUG << "opened TFile " <<  ptr << " Fd: " << fd << endmsg;
   
-
   return 0;
-
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
@@ -150,13 +145,13 @@ RootFileHandler::closeRootFile(void* ptr) {
     m_log << MSG::DEBUG << "closeRootFile(ptr:" << ptr << ")"
 	  << endmsg;
 
-  if (ptr == 0) {
+  if ( !ptr ) {
     m_log << MSG::ERROR << "Unable to close file: ptr == 0"
 	  << endmsg;
     return -1;
   }
 
-  TFile* tf = (TFile*) ptr;
+  TFile* tf = static_cast<TFile*>(ptr);
 
   try {
     tf->Close();
@@ -182,7 +177,6 @@ Io::reopen_t
 RootFileHandler::reopenRootFile(void*, const Io::IoFlags&) {
 
   m_log << MSG::ERROR << "reopen not implemented" << endmsg;
-
   return -1;
 
 }
