@@ -1,5 +1,7 @@
 #include "HistorySvc.h"
 
+#include <functional>
+
 #include "GaudiKernel/HistoryObj.h"
 #include "GaudiKernel/IVersHistoryObj.h"
 
@@ -52,7 +54,7 @@ namespace {
   inline void map_to_set(const MAP& m, SET& s) {
     std::transform(std::begin(m), std::end(m),
                    std::inserter(s, s.begin()),
-                   [](typename MAP::const_reference p){ return p.second; });
+                   std::mem_fn(&MAP::value_type::second));
   }
 }
 

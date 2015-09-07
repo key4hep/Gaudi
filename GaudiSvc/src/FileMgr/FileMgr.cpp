@@ -214,7 +214,7 @@ FileMgr::finalize() {
   }
 
 
-  if (m_files.size() > 0) {
+  if (!m_files.empty()) {
     m_log << MSG::WARNING
 	  << "At finalize, the following files remained open:"
 	  << endl;
@@ -1102,8 +1102,7 @@ FileMgr::getFiles(const IoTech& tech, vector<const Io::FileAttr*>& files,
 
   files.clear();
   transform_copy_if( std::begin(m_files), std::end(m_files), std::back_inserter(files),
-                     select2nd,
-                     matches_tech );
+                     select2nd, matches_tech );
   if (!op) {
     std::copy_if( std::begin(m_oldFiles), std::end(m_oldFiles), std::back_inserter(files),
                   matches_tech );
@@ -1201,8 +1200,7 @@ FileMgr::getFd(const IoTech& tech, const IoFlags& flags, vector<Fd>& fd) const {
 
   fd.clear();
   transform_if( m_descriptors.begin(), m_descriptors.end(),
-                std::back_inserter(fd),
-                select1st,
+                std::back_inserter(fd), select1st,
                 [&](const std::pair<Fd,FileAttr*>& d) { 
                       return (d.second->tech() == tech || tech == UNKNOWN) &&
                              ( d.second->flags() == flags ); 
@@ -1226,7 +1224,8 @@ FileMgr::fname(const Io::Fd& fd) const {
 const std::string&
 FileMgr::fname(void* vp) const {
 
-  auto itr = std::find_if( m_files.begin(), m_files.end(), [&](fileMap::const_reference f) {
+  auto itr = std::find_if( m_files.begin(), m_files.end(), 
+                          [&](fileMap::const_reference f) {
     return  f.second->fptr() == vp;
   });
   return itr!=m_files.end() ? itr->second->name() : s_empty;
@@ -1242,7 +1241,6 @@ FileMgr::fd(const std::string& fname) const {
       return f.second->fd() != -1;
   } );
   return itr!=fitr.second ? itr->second->fd() : -1 ;
-
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -1325,7 +1323,6 @@ StatusCode
 FileMgr::getHandler(const std::string& fname, Io::FileHdlr& hdlr) const {
 
   auto fitr = m_files.equal_range(fname);
-
   if (fitr.first == fitr.second) {
     m_log << MSG::ERROR
 	  << "no file \"" << fname << "\" registered. Cannot determine tech"
@@ -1369,17 +1366,7 @@ FileMgr::listHandlers() const {
 StatusCode
 FileMgr::regAction(bfcn_action_t bf, const Io::Action& a, const std::string& d) {
 
-  ON_DEBUG
-    m_log << MSG::DEBUG << "registering " << a << " action "
-	  << System::typeinfoName(bf.target_type()) << endmsg;
-
-  if (d.empty()) {
-    m_actions[Io::UNKNOWN][a].emplace_back(bf,System::typeinfoName(bf.target_type()));
-  } else {
-    m_actions[Io::UNKNOWN][a].emplace_back(bf,d);
-  }
-
-  return StatusCode::SUCCESS;
+  return regAction(bf,a,Io::UNKNOWN,d);
 
 }
 
@@ -1394,12 +1381,8 @@ FileMgr::regAction(bfcn_action_t bf, const Io::Action& a, const Io::IoTech& t,
 	  << System::typeinfoName(bf.target_type())
 	  << " for tech " << t << endmsg;
 
-  if (d.empty()) {
-    m_actions[t][a].emplace_back(bf, System::typeinfoName(bf.target_type()));
-  } else {
-    m_actions[t][a].emplace_back(bf,d);
-  }
-
+  m_actions[t][a].emplace_back(bf, (!d.empty()) ? d 
+                                                : System::typeinfoName(bf.target_type()));
   return StatusCode::SUCCESS;
 
 }
@@ -1415,7 +1398,7 @@ FileMgr::listActions() const {
     Io::IoTech t = iit.first;
     const actionMap& m = iit.second;
 
-    if (m.size() != 0) {
+    if (!m.empty()) {
       m_log << " --- Tech: ";
       if (t == Io::UNKNOWN) {
         m_log << "ALL ---" << endl;
@@ -1423,11 +1406,9 @@ FileMgr::listActions() const {
         m_log << t << " ---" << endl;
       }
       for (const auto& iia : m ) {
-        if (iia.second.size() != 0) {
-            for (const auto& it2 : iia.second ) {
-                m_log << "   " << iia.first << "  "
-		              << it2.second << endl;
-	        }
+        for (const auto& it2 : iia.second ) {
+            m_log << "   " << iia.first << "  "
+		          << it2.second << endl;
 	    }
       }
     }
@@ -1447,15 +1428,13 @@ FileMgr::execAction( Io::FileAttr* fa, const std::string& caller,
 
   auto itr = m_actions.find(Io::UNKNOWN);
 
-  if (itr != m_actions.end() && itr->second.size() != 0) {
-    const actionMap &m = itr->second;
-    s1 = execActs(fa, caller, a, m);
+  if (itr != m_actions.end() && !itr->second.empty() ) {
+    s1 = execActs(fa, caller, a, itr->second);
   }
 
   itr = m_actions.find(tech);
-  if (itr != m_actions.end() && itr->second.size() != 0) {
-    const actionMap &m = itr->second;
-    s2 = execActs(fa, caller, a, m);
+  if (itr != m_actions.end() && !itr->second.empty() ) {
+    s2 = execActs(fa, caller, a, itr->second);
   }
 
   return (s1.isFailure() || s2.isFailure()) ? StatusCode::FAILURE 
@@ -1470,7 +1449,7 @@ FileMgr::execActs(Io::FileAttr* fa, const std::string& caller,
 
   auto mitr = m.find(a);
 
-  if (mitr == m.end() || mitr->second.size() == 0) {
+  if (mitr == m.end() || mitr->second.empty()) {
     return StatusCode::SUCCESS;
   }
 
@@ -1563,7 +1542,7 @@ FileMgr::suppressAction(const std::string& f, const Io::Action& a) {
 void
 FileMgr::listSuppression() const {
 
-  if (m_supMap.size() == 0)  return;
+  if (m_supMap.empty())  return;
 
   m_log << MSG::INFO << "listing suppressed file actions" << endl;
 

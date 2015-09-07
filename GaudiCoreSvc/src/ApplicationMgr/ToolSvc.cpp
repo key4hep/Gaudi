@@ -11,6 +11,7 @@
 #include <map>
 #include <string>
 #include <cassert>
+#include <functional>
 #include "boost/circular_buffer.hpp"
 #include "boost/algorithm/string/predicate.hpp"
 #include "boost/algorithm/string/erase.hpp"
@@ -362,8 +363,7 @@ std::vector<std::string> ToolSvc::getInstances() const
 {
   std::vector<std::string> tools{m_instancesTools.size()};
   std::transform(std::begin(m_instancesTools), std::end(m_instancesTools),
-                 std::begin(tools),
-                 [](IAlgTool* tool) { return tool->name(); });
+                 std::begin(tools), std::mem_fn(&IAlgTool::name) );
   return tools;
 }
 //------------------------------------------------------------------------------

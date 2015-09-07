@@ -247,7 +247,6 @@ public:
   virtual void registerObserver(Observer *obs) = 0;
   virtual void unRegisterObserver(Observer *obs) = 0;
 
-
 };
 
 

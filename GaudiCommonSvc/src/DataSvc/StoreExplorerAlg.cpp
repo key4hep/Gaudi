@@ -47,7 +47,7 @@ class StoreExplorerAlg : public Algorithm {
   /// Flag to indicate if foreign files should be opened
   bool              m_accessForeign;
   /// Reference to data provider service
-  IDataProviderSvc* m_dataSvc;
+  IDataProviderSvc* m_dataSvc = nullptr;
   /// Name of the data provider service
   std::string       m_dataSvcName;
   /// Name of the root leaf (obtained at initialize)
@@ -56,7 +56,7 @@ public:
 
   /// Standard algorithm constructor
   StoreExplorerAlg(const std::string& name, ISvcLocator* pSvcLocator)
-  :	Algorithm(name, pSvcLocator), m_dataSvc(nullptr)
+  :	Algorithm(name, pSvcLocator)
   {
     declareProperty("Load",             m_load = false);
     declareProperty("PrintEvt",         m_print = 1);
@@ -93,8 +93,8 @@ public:
     log << "+--> " << pReg->name();
     if ( pReg->address() )  {
       log << " [Address: CLID="
-	  << std::showbase << std::hex << pReg->address()->clID();
-      log << " Type=" << (void*)pReg->address()->svcType() << "]";
+	      << std::showbase << std::hex << pReg->address()->clID()
+          << " Type=" << (void*)pReg->address()->svcType() << "]";
     }
     else  {
       log << " [No Address]";
@@ -103,9 +103,7 @@ public:
     if ( p )   {
       try  {
         std::string typ = System::typeinfoName(typeid(*p));
-        if ( m_testAccess )  {
-          p->clID();
-        }
+        if ( m_testAccess )  p->clID();
         log << "  " << typ.substr(0,32);
       }
       catch (...)  {
@@ -157,9 +155,7 @@ public:
         std::vector<IRegistry*> leaves;
         StatusCode sc = mgr->objectLeaves(pObj, leaves);
         const std::string* par0 = nullptr;
-        if ( pObj->address() )  {
-          par0 = pObj->address()->par();
-        }
+        if ( pObj->address() )  par0 = pObj->address()->par();
         if ( sc.isSuccess() )  {
           for ( auto i=leaves.begin(); i != leaves.end(); i++ )   {
             const std::string& id = (*i)->identifier();
@@ -167,17 +163,12 @@ public:
             if ( !m_accessForeign && (*i)->address() )  {
               if ( par0 )  {
                 const std::string* par1 = (*i)->address()->par();
-                if ( par1 )  {
-                  if ( par0[0] != par1[0] )  {
-                    continue;
-                  }
-                }
+                if ( par1 &&  par0[0] != par1[0] )  continue;
               }
             }
             if ( m_load )  {
               sc = eventSvc()->retrieveObject(id, p);
-            }
-            else {
+            } else {
               sc = eventSvc()->findObject(id, p);
             }
             if ( sc.isSuccess() )  {
@@ -186,8 +177,7 @@ public:
                 explore(*i, flg);
                 flg.pop_back();
               }
-            }
-            else {
+            } else {
               flg.push_back(i+1 == leaves.end());
               printObj(*i, flg);
               flg.pop_back();
@@ -229,9 +219,7 @@ public:
     MsgStream log(msgSvc(), name());
     SmartDataPtr<DataObject>   root(m_dataSvc,m_rootName);
     if ( ((m_print > m_total++) || (m_frequency*m_total > m_frqPrint)) && root )    {
-      if ( m_frequency*m_total > m_frqPrint )  {
-        m_frqPrint++;
-      }
+      if ( m_frequency*m_total > m_frqPrint )  m_frqPrint++;
       std::string store_name = "Unknown";
       IRegistry* pReg = root->registry();
       if ( pReg )  {
@@ -245,8 +233,7 @@ public:
       flg.push_back(true);
       explore(root->registry(), flg);
       return StatusCode::SUCCESS;
-    }
-    else if ( root )   {
+    } else if ( root )   {
       return StatusCode::SUCCESS;
     }
     log << MSG::ERROR << "Cannot retrieve \"/Event\"!" << endmsg;

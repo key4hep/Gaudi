@@ -300,23 +300,22 @@ THistSvc::finalize() {
     m_log << MSG::INFO << "Listing contents of ROOT files: " << endmsg;
   }
   vector<TFile*> deleted_files;
-  map<string, pair<TFile*,Mode> >::const_iterator itr;
-  for (itr = m_files.begin(); itr != m_files.end(); ++itr) {
+  for (auto& itr : m_files ) {
 
-    if (find(deleted_files.begin(), deleted_files.end(), itr->second.first) ==
+    if (find(deleted_files.begin(), deleted_files.end(), itr.second.first) ==
         deleted_files.end()) {
-      deleted_files.push_back(itr->second.first);
+      deleted_files.push_back(itr.second.first);
 
 #ifndef NDEBUG
       if (m_log.level() <= MSG::DEBUG)
-        m_log << MSG::DEBUG << "finalizing stream/file " << itr->first << ":"
-              << itr->second.first->GetName()
+        m_log << MSG::DEBUG << "finalizing stream/file " << itr.first << ":"
+              << itr.second.first->GetName()
               << endmsg;
 #endif
     } else {
 #ifndef NDEBUG
       if (m_log.level() <= MSG::DEBUG)
-        m_log << MSG::DEBUG << "already finalized stream " << itr->first << endmsg;
+        m_log << MSG::DEBUG << "already finalized stream " << itr.first << endmsg;
 #endif
       continue;
     }
@@ -325,15 +324,15 @@ THistSvc::finalize() {
     if (m_print && m_log.level() <= MSG::INFO) {
 
       m_log << MSG::INFO;
-      m_log << "==> File: " << itr->second.first->GetName()
-            << "  stream: " << itr->first << endmsg;
+      m_log << "==> File: " << itr.second.first->GetName()
+            << "  stream: " << itr.first << endmsg;
 
-      itr->second.first->Print("base");
+      itr.second.first->Print("base");
     }
 
-    string tmpfn=itr->second.first->GetName();
+    string tmpfn=itr.second.first->GetName();
 
-    p_fileMgr->close(itr->second.first, name());
+    p_fileMgr->close(itr.second.first, name());
 
     IIncidentSvc *pi = nullptr;
     if (service("IncidentSvc",pi).isFailure()) {
@@ -341,23 +340,23 @@ THistSvc::finalize() {
       return StatusCode::FAILURE;
     }
 
-    if (itr->second.second==SHARE) {
+    if (itr.second.second==SHARE) {
 
       //Merge File
       void* vf = nullptr;
-      int r = p_fileMgr->open(Io::ROOT,name(), m_sharedFiles[itr->first],
+      int r = p_fileMgr->open(Io::ROOT,name(), m_sharedFiles[itr.first],
 			      Io::WRITE|Io::APPEND,vf,"HIST");
 
       if (r) {
 	m_log << MSG::ERROR << "unable to open Final Output File: \""
-	      << m_sharedFiles[itr->first] << "\" for merging"
+	      << m_sharedFiles[itr.first] << "\" for merging"
 	      << endmsg;
         return StatusCode::FAILURE;
       }
 
       TFile *outputfile = (TFile*) vf;
       pi->fireIncident(FileIncident(name(), IncidentType::WroteToOutputFile,
-                                     m_sharedFiles[itr->first]));
+                                     m_sharedFiles[itr.first]));
 
       if (m_log.level() <= MSG::DEBUG)
         m_log << MSG::DEBUG << "THistSvc::write()::Merging Rootfile "<<endmsg;
@@ -387,7 +386,7 @@ THistSvc::finalize() {
 
       std::remove(tmpfn.c_str());
     }
-    delete itr->second.first;
+    delete itr.second.first;
   }
 
   m_sharedFiles.clear();
@@ -620,7 +619,7 @@ THistSvc::getTTrees(const std::string& dir, TList & tl, bool rcs) const {
   std::string stream,rem,r2;
   parseString(dir,stream,rem);
 
-  map< string,pair<TFile*,Mode> >::const_iterator itr = m_files.find(stream);
+  auto itr = m_files.find(stream);
   if (itr != m_files.end()) {
     r2 = itr->second.first->GetName();
     r2 += ":/";
@@ -633,12 +632,10 @@ THistSvc::getTTrees(const std::string& dir, TList & tl, bool rcs) const {
 
     if (gDirectory->cd(r2.c_str())) {
       return getTTrees(gDirectory,tl,rcs);
-    } else {
-      if (m_log.level() <= MSG::DEBUG)
-        m_log << MSG::DEBUG << "getTTrees: no such TDirectory \""
-              << r2 << "\"" << endmsg;
     }
-
+    if (m_log.level() <= MSG::DEBUG)
+      m_log << MSG::DEBUG << "getTTrees: no such TDirectory \""
+            << r2 << "\"" << endmsg;
   } else {
     if (m_log.level() <= MSG::DEBUG)
       m_log << MSG::DEBUG << "getTTrees: stream \"" << stream << "\" not found"
@@ -652,10 +649,7 @@ THistSvc::getTTrees(const std::string& dir, TList & tl, bool rcs) const {
   } else {
     sc = getTTrees(gDirectory,tl,rcs);
   }
-
   return sc;
-
-
 }
 
 
@@ -763,11 +757,10 @@ THistSvc::getTHists(const std::string& dir, TList & tl, bool rcs, bool reg) {
       sc = getTHists(gDirectory,tl,rcs,reg);
       m_curstream.clear();
       return sc;
-    } else {
-      if (m_log.level() <= MSG::DEBUG)
-        m_log << MSG::DEBUG << "getTHists: no such TDirectory \""
-              << r2 << "\"" << endmsg;
-    }
+    } 
+    if (m_log.level() <= MSG::DEBUG)
+      m_log << MSG::DEBUG << "getTHists: no such TDirectory \""
+            << r2 << "\"" << endmsg;
 
   } else {
     if (m_log.level() <= MSG::DEBUG)
@@ -907,12 +900,10 @@ THistSvc::getTTrees(const std::string& dir, TList & tl, bool rcs, bool reg) {
   if (!gDirectory->cd(dir.c_str())) {
     m_log << MSG::ERROR << "getTTrees: No such TDirectory/stream \"" << dir
           << "\"" << endmsg;
-    sc = StatusCode::FAILURE;
-  } else {
-    sc = getTTrees(gDirectory,tl,rcs,reg);
-  }
+    return StatusCode::FAILURE;
+  } 
 
-  return sc;
+  return getTTrees(gDirectory,tl,rcs,reg);
 
 }
 
@@ -1021,8 +1012,7 @@ StatusCode
 THistSvc::regTree(const std::string& id, TTree* hist) {
   StatusCode sc = regHist_i(hist, id);
   if (hist && sc.isSuccess()) {
-    if (m_autoSave != 0)
-      hist->SetAutoSave(m_autoSave);
+    if (m_autoSave != 0) hist->SetAutoSave(m_autoSave);
     hist->SetAutoFlush(m_autoFlush);
   }
   return sc;
@@ -1085,8 +1075,7 @@ THistSvc::getHists() const {
   std::vector<std::string> names;
   names.reserve(m_uids.size());
   transform_if( std::begin(m_uids), std::end(m_uids),
-                std::back_inserter(names),
-                select1st,
+                std::back_inserter(names), select1st,
                 [](uidMap::const_reference i) { 
                     return i.second.obj->IsA()->InheritsFrom("TH11"); }
   );
@@ -1131,8 +1120,7 @@ THistSvc::getGraphs() const {
   std::vector<std::string> names;
   names.reserve(m_uids.size());
   transform_if( std::begin(m_uids), std::end(m_uids),
-                std::back_inserter(names),
-                select1st,
+                std::back_inserter(names), select1st,
                 [](uidMap::const_reference i) { 
                     return i.second.obj->IsA()->InheritsFrom("TTree"); }
   );
@@ -1215,15 +1203,12 @@ THistSvc::findStream(const string& id, string& stream, string& rem,
 
 void
 THistSvc::parseString(const string& id, string& root, string& rem) const {
-  string::size_type pos = id.find("/");
+  auto pos = id.find("/");
 
   if (pos == string::npos) {
     root.clear();
     rem = id;
-    return;
-  }
-
-  if (pos == 0) {
+  } else if (pos == 0) {
     parseString(id.substr(1),root,rem);
   } else {
     root = id.substr(0,pos);
@@ -1263,27 +1248,25 @@ THistSvc::setupInputFile( Property& /*m_inputfile*/ )
     m_log <<MSG::DEBUG << "Now connecting of Input Files"
 	  << endmsg;
 
-  StatusCode sc = StatusCode::SUCCESS;
+    StatusCode sc = StatusCode::SUCCESS;
 
-  for ( const auto& itr : m_inputfile.value() ) {
-    if ( m_alreadyConnectedInFiles.end() ==
-         m_alreadyConnectedInFiles.find( itr ) ) {
+    for ( const auto& itr : m_inputfile.value() ) {
+      if ( m_alreadyConnectedInFiles.end() != 
+           m_alreadyConnectedInFiles.find( itr ) ) continue;
       if ( connect(itr).isFailure() ) {
         sc = StatusCode::FAILURE;
       } else {
         m_alreadyConnectedInFiles.insert( itr );
       }
+      
     }
-  }
 
-  if ( !sc.isSuccess() ) {
-    throw GaudiException( "Problem connecting inputfile !!", name(),
-                          StatusCode::FAILURE );
-  }
+    if ( !sc.isSuccess() ) {
+      throw GaudiException( "Problem connecting inputfile !!", name(),
+                            StatusCode::FAILURE );
+    }
 
   }
-
-  return;
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
@@ -1298,23 +1281,21 @@ THistSvc::setupOutputFile( Property& /*m_outputfile*/ )
     m_delayConnect = true;
   } else {
 
-  StatusCode sc = StatusCode::SUCCESS;
-  for ( const auto & itr : m_outputfile.value() ) {
-    if ( m_alreadyConnectedOutFiles.end() ==
-         m_alreadyConnectedOutFiles.find( itr ) ) {
+    StatusCode sc = StatusCode::SUCCESS;
+    for ( const auto & itr : m_outputfile.value() ) {
+      if ( m_alreadyConnectedOutFiles.end() !=
+           m_alreadyConnectedOutFiles.find( itr ) ) continue;
       if ( connect(itr).isFailure() ) {
         sc = StatusCode::FAILURE;
       } else {
         m_alreadyConnectedOutFiles.insert( itr );
       }
     }
-  }
 
-  if ( !sc.isSuccess() ) {
-    throw GaudiException( "Problem connecting outputfile !!", name(),
-                          StatusCode::FAILURE );
-  }
-  return;
+    if ( !sc.isSuccess() ) {
+      throw GaudiException( "Problem connecting outputfile !!", name(),
+                            StatusCode::FAILURE );
+    }
   }
 }
 
@@ -1332,8 +1313,7 @@ THistSvc::updateFiles() {
     m_log << MSG::DEBUG << "updateFiles()" << endmsg;
 
 
-  uidMap::iterator uitr, uitr2;
-  for (uitr=m_uids.begin(); uitr != m_uids.end(); ++uitr) {
+  for (auto uitr=m_uids.begin(); uitr != m_uids.end(); ++uitr) {
 #ifndef NDEBUG
     if (m_log.level() <= MSG::VERBOSE)
       m_log << MSG::VERBOSE << " update: " << uitr->first << " "
@@ -1365,8 +1345,7 @@ THistSvc::updateFiles() {
           if (itr.second.first == oldFile) itr.second.first = newFile;
         }
 
-        uitr2 = uitr;
-        for (; uitr2 != m_uids.end(); ++uitr2) {
+        for (auto uitr2 = uitr; uitr2 != m_uids.end(); ++uitr2) {
           if (uitr2->second.file == oldFile) {
             uitr2->second.file = newFile;
           }
@@ -1428,7 +1407,7 @@ THistSvc::write() {
           file->Write("",TObject::kOverwrite);
       } else if ( mode == APPEND ) {
           file->Write("");
-      } 
+      }
   } );
 
   if (m_log.level() <= MSG::DEBUG) {

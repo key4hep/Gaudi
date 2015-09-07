@@ -94,7 +94,10 @@ void RecordDataSvc::handle(const Incident& incident) {
   if ( incident.type() == "FILE_OPEN_READ" ) {
     typedef ContextIncident<IOpaqueAddress*> Ctxt;
     auto inc = dynamic_cast<const Ctxt*>(&incident);
-    if ( inc ) {
+    if ( !inc )  {
+        MsgStream log(msgSvc(),name());
+        log << MSG::ALWAYS << "Received invalid incident of type:" << incident.type() << endmsg;
+    } else {
       registerRecord(inc->source(),inc->tag());
       if ( !m_incidentName.empty() ) {
         auto  incidents = m_incidents;
@@ -102,12 +105,8 @@ void RecordDataSvc::handle(const Incident& incident) {
         for( const auto& i : incidents) 
             m_incidentSvc->fireIncident(Incident{i,m_incidentName});
       }
-      return;
     }
-    MsgStream log(msgSvc(),name());
-    log << MSG::ALWAYS << "Received invalid incident of type:" << incident.type() << endmsg;
-  }
-  else if ( incident.type() == m_saveIncidentName ) {
+  } else if ( incident.type() == m_saveIncidentName ) {
     MsgStream log(msgSvc(),name());
     log << MSG::ALWAYS << "Saving records not implemented." << endmsg;
   }

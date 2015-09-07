@@ -4,6 +4,7 @@
 // Include files
 #include "GaudiKernel/INamedInterface.h"
 #include <string>
+#include <array>
 
 /** @class IAuditor IAuditor.h GaudiKernel/IAuditor.h
 
@@ -103,18 +104,11 @@ public:
 
 /// Simple mapping function from IAuditor::StandardEventType to string.
 inline const char* toStr(IAuditor::StandardEventType e) {
-  switch (e) {
-    case IAuditor::Initialize   : return "Initialize";
-    case IAuditor::ReInitialize : return "ReInitialize";
-    case IAuditor::Execute      : return "Execute";
-    case IAuditor::BeginRun     : return "BeginRun";
-    case IAuditor::EndRun       : return "EndRun";
-    case IAuditor::Finalize     : return "Finalize";
-    case IAuditor::Start        : return "Start";
-    case IAuditor::Stop         : return "Stop";
-    case IAuditor::ReStart      : return "ReStart";
-  }
-  return NULL; // cannot be reached, but make the compiler happy
+  static const std::array<const char*,IAuditor::StandardEventType::ReStart+1> s_tbl =
+      {{ "Initialize", "ReInitialize", "Execute",
+         "BeginRun", "EndRun", "Finalize",
+         "Start", "Stop", "ReStart" }};
+  return e <= IAuditor::StandardEventType::ReStart ? s_tbl[e] : nullptr;
 }
 
 inline std::ostream & operator << (std::ostream & s, IAuditor::StandardEventType e) {

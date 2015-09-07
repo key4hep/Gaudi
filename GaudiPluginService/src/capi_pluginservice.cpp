@@ -36,8 +36,7 @@ cgaudi_pluginsvc_get_factory_at(cgaudi_pluginsvc_t self, int n)
   std::vector<Registry::KeyType> keys;
   keys.reserve(reg->factories().size());
   std::transform(reg->factories().begin(),reg->factories().end(),
-                 std::back_inserter(keys),
-                 select1st );
+                 std::back_inserter(keys), select1st );
   return { self, keys[n].c_str() };
 }
 
