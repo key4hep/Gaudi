@@ -210,16 +210,16 @@ namespace Gaudi {
 
   constexpr struct fullMatch_t { 
     template <typename IFACE1, typename IFACE2, unsigned long major1, unsigned long major2, unsigned long minor1, unsigned long minor2>
-    constexpr bool operator()(InterfaceId<IFACE1,major1,minor1>, InterfaceId<IFACE2,major2,minor2>) { return false; }
+    constexpr bool operator()(InterfaceId<IFACE1,major1,minor1>, InterfaceId<IFACE2,major2,minor2>) const { return false; }
     template <typename IFACE, unsigned long major, unsigned long minor>
-    constexpr bool operator()(InterfaceId<IFACE,major,minor>, InterfaceId<IFACE,major,minor>) { return true; }
+    constexpr bool operator()(InterfaceId<IFACE,major,minor>, InterfaceId<IFACE,major,minor>) const { return true; }
   } fullMatch{};
 
   constexpr struct majorMatch_t { 
     template <typename IFACE1, typename IFACE2, unsigned long major1, unsigned long major2, unsigned long minor1, unsigned long minor2>
-    constexpr bool operator()(InterfaceId<IFACE1,major1,minor1>, InterfaceId<IFACE2,major2,minor2>) { return false; }
+    constexpr bool operator()(InterfaceId<IFACE1,major1,minor1>, InterfaceId<IFACE2,major2,minor2>) const { return false; }
     template <typename IFACE, unsigned long major, unsigned long minor1, unsigned long minor2>
-    constexpr bool operator()(InterfaceId<IFACE,major,minor1>, InterfaceId<IFACE,major,minor2>) { return true; }
+    constexpr bool operator()(InterfaceId<IFACE,major,minor1>, InterfaceId<IFACE,major,minor2>)  const { return true; }
   } majorMatch{};
 
 }
