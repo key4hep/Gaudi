@@ -30,7 +30,7 @@ public:
 
   SmartIF<IDataManagerSvc> m_mgr;
 
-  struct LeafInfo {
+  struct LeafInfo final {
     int  count;
     int  id;
     CLID clid;
@@ -151,38 +151,32 @@ public:
           c = m_corr.find(nam);
         }
         for(const auto& l : m_curr) {
-          const LeafInfo& li = l.second;
-          auto k = c->second.find(li.id);
-          if ( k==c->second.end() ) c->second[li.id] = 0;
-          ++(c->second[li.id]);
+          const auto& id = l.second.id;
+          auto k = c->second.find(id);
+          if ( k==c->second.end() ) k = c->second.emplace( id, 0 ).first;
+          ++(k->second);
         }
 
         c=m_links.find(nam);
-        if ( c == m_links.end() )  {
-          m_links[nam] = { };
-          c = m_links.find(nam);
-        }
-        if ( m_curr.find(nam) != m_curr.end() ) {
-          SmartDataPtr<DataObject> obj(eventSvc(),nam);
-          if ( obj ) {
-            LinkManager* m = obj->linkMgr();
-            for(long l=0; l<m->size(); ++l) {
-              auto* lnk=m->link(l);
-              auto il=m_curr.find(lnk->path());
-              // cout << "Link:" << lnk->path() << " " << (char*)(il != m_curr.end() ? "Found" : "Not there") << endl;
-              if ( il != m_curr.end() ) {
-                if ( lnk->object() ) {
-                  const LeafInfo& li = (*il).second;
-                  auto k = c->second.find(li.id);
-                  if ( k==c->second.end() ) c->second[li.id] = 0;
-                  ++c->second[li.id];
-                }
-              }
-            }
-          }
+        if ( c == m_links.end() ) c = m_links.emplace( nam, std::map<int,int>{} ).first;
+        if ( m_curr.find(nam) == m_curr.end() ) continue;
+        
+        SmartDataPtr<DataObject> obj(eventSvc(),nam);
+        if ( !obj ) continue;
+        
+        LinkManager* m = obj->linkMgr();
+        for(long l=0; l<m->size(); ++l) {
+          auto* lnk=m->link(l);
+          auto il=m_curr.find(lnk->path());
+          // cout << "Link:" << lnk->path() << " " << (char*)(il != m_curr.end() ? "Found" : "Not there") << endl;
+          if ( il == m_curr.end() ) continue;
+          if ( ! lnk->object() ) continue;
+          const auto& id = il->second.id;
+          auto k = c->second.find(id);
+          if ( k==c->second.end() ) k = c->second.emplace( id, 0 ).first; 
+          ++(k->second);
         }
       }
-      return StatusCode::SUCCESS;
     }
     return StatusCode::SUCCESS;
   }
