@@ -42,7 +42,6 @@ protected:
     long             first;
     const std::type_info& second;
     Tag(long f, const std::type_info& s) : first(f), second(s) {    }
-    Tag(const Tag&) = default;
   };
 
 private:

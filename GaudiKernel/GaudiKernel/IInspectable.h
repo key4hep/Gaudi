@@ -24,11 +24,11 @@ public:
       message can be printed. Calls the inspect member function of
       the Inspector on all the members it wants to inspect.
   */
-	virtual bool acceptInspector(IInspector* pI) = 0;
+  virtual bool acceptInspector(IInspector* pI) = 0;
 	/** return FALSE if doesn't accept Inspecetor so that diagnostic
       message can be printed. Calls the inspect member function of
       the Inspector on all the members it wants to inspect.
   */
-	virtual bool acceptInspector(IInspector* pI) const = 0;
+  virtual bool acceptInspector(IInspector* pI) const = 0;
 };
 #endif  // GAUDIKERNEL_IINSPECTABLE_H

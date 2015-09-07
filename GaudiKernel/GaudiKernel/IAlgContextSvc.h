@@ -109,11 +109,11 @@ namespace Gaudi
       ~AlgContext() ;
     private:
       // default constructor is disabled
-      AlgContext()                                     ; ///< no default constructor!
+      AlgContext() = delete;
       // copy constructor is disabled
-      AlgContext           ( const AlgContext& right ) ; ///< no copy!
+      AlgContext ( const AlgContext& right ) = delete;
       // assignement operator is disabled
-      AlgContext& operator=( const AlgContext& right ) ; ///< no assignement!
+      AlgContext& operator=( const AlgContext& right ) = delete;
     private:
       IAlgContextSvc* m_svc ;
       IAlgorithm*     m_alg ;

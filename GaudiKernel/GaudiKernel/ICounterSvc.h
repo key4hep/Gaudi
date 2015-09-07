@@ -105,7 +105,7 @@ public:
    *  @author  Markus Frank
    *  @version 1.0
    */
-  class Printout
+  class Printout final
   {
   public:
     /// Standard initializing constructor
@@ -254,7 +254,7 @@ public:
   } ;
 protected:
   /// protected virtual destructor
-  virtual ~ICounterSvc() ; ///< protected virtual destructor
+  virtual ~ICounterSvc()= default ; ///< protected virtual destructor
 };
 // ============================================================================
 /// output operator for the counter object

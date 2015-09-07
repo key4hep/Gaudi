@@ -23,8 +23,6 @@ public:
   /// to be run to produce the entry at the path.
   virtual Gaudi::Utils::TypeNameString algorithmForPath(const std::string &path) = 0;
 
-protected:
-private:
 };
 
 #endif // GAUDIKERNEL_IDODALGMAPPER_H

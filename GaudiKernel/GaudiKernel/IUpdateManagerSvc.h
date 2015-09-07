@@ -50,33 +50,32 @@ public:
  * @author Marco Clemencic
  */
 template <class CallerClass>
-class ObjectMemberFunction: public BaseObjectMemberFunction {
+class ObjectMemberFunction final : public BaseObjectMemberFunction {
 public:
   /// MemberFunctionType is the type for a pointer to a member function of class CallerClass.
   typedef	StatusCode (CallerClass::*MemberFunctionType)();
 
   /// Virtual destructor.
-  virtual ~ObjectMemberFunction() {};
+  ~ObjectMemberFunction() override = default;
 
   /// Calls the member function of the object and returns the StatusCode.
-  /// If the pointer to the member function is NULL, do nothing and return success.
-  virtual StatusCode operator() () const {
-    return (m_memberFunction != NULL)?
-      (m_instance->*m_memberFunction)() :
-      StatusCode::SUCCESS;
+  /// If the pointer to the member function is nullptr, do nothing and return success.
+  StatusCode operator() () const override {
+    return m_memberFunction? (m_instance->*m_memberFunction)()
+                           : StatusCode::SUCCESS;
   }
 
   /// Clone method to be able to copy an ObjectMemberFunction from the BaseObjectMemberFunction
   /// interface.
-  virtual BaseObjectMemberFunction *makeCopy() const {
+  BaseObjectMemberFunction *makeCopy() const override {
     return new ObjectMemberFunction<CallerClass>(m_instance,m_memberFunction);
   }
 
   /// Returns the type_info of the CallerClass
-  virtual const std::type_info &type() const { return typeid(CallerClass); }
+  const std::type_info &type() const override { return typeid(CallerClass); }
 
   /// Comparison between two BaseObjectMemberFunction instances.
-  virtual bool match(BaseObjectMemberFunction *bmf) const {
+  bool match(BaseObjectMemberFunction *bmf) const override {
     if ( bmf == (BaseObjectMemberFunction *)this ) return true;
     if (type() == bmf->type()) {
       ObjectMemberFunction * mf = dynamic_cast<ObjectMemberFunction *>(bmf);
@@ -87,17 +86,17 @@ public:
   }
 
   /// Cast the object to DataObject.
-  virtual DataObject* castToDataObject() const {
+  DataObject* castToDataObject() const override {
     return dynamic_cast<DataObject*>(m_instance);
   }
 
   /// Cast the object to ValidDataObject.
-  virtual ValidDataObject* castToValidDataObject() const {
+  ValidDataObject* castToValidDataObject() const override {
     return dynamic_cast<ValidDataObject*>(m_instance);
   }
 
   /// Cast the object to void with dynamic_cast.
-  virtual void* castToVoid() const {
+  void* castToVoid() const override {
     return dynamic_cast<void*>(m_instance);
   }
 
@@ -126,43 +125,13 @@ protected:
 class BasePtrSetter {
 public:
   /// Empty virtual destructor.
-  virtual ~BasePtrSetter() {}
+  virtual ~BasePtrSetter() = default;
   /// sets the internal pointer to the provided data object (with a dynamic_cast).
   virtual void set(DataObject *) = 0;
-  /// tells if the internal pointer is NULL.
+  /// tells if the internal pointer is nullptr.
   virtual bool isNull() = 0;
 };
 
-/** @class PtrSetter
- *
- * Templated specialization of BasePtrSetter.
- *
- *  @author Marco CLEMENCIC
- *  @date   2005-12-14
- */
-template<class ActualType>
-class PtrSetter: public BasePtrSetter {
-public:
-  typedef ActualType dest_type;
-
-  /// Construct a new object using the destination pointer.
-  PtrSetter(dest_type *&dest):m_storage(&dest) {
-    *m_storage = nullptr;
-  }
-
-  /// Empty virtual destructor.
-  virtual ~PtrSetter() {}
-  /// sets the internal pointer to the provided data object (with a dynamic_cast).
-  virtual void set(DataObject *obj) {
-    *m_storage = dynamic_cast<dest_type *>(obj);
-  }
-  /// tells if the internal pointer is NULL.
-  virtual bool isNull() { return *m_storage == nullptr; }
-
-private:
-  /// pointer to the pointer to fill provided by the user.
-  dest_type **m_storage;
-};
 
 /** @class IUpdateManagerSvc IUpdateManagerSvc.h GaudiKernel/IUpdateManagerSvc.h
  *
@@ -172,6 +141,27 @@ private:
  *  @date   2005-03-30
  */
 class GAUDI_API IUpdateManagerSvc: virtual public IInterface {
+private:
+  /** @class PtrSetter
+   *
+   * Templated specialization of BasePtrSetter.
+   */
+  template<class ActualType>
+  class PtrSetter final : public BasePtrSetter {
+  public:
+    using dest_type = ActualType;
+    PtrSetter(dest_type *&dest):m_storage(&dest) {
+      *m_storage = nullptr;
+    }
+    void set(DataObject *obj) override {
+      *m_storage = dynamic_cast<dest_type *>(obj);
+    }
+    bool isNull() override { return *m_storage == nullptr; }
+
+  private:
+    /// pointer to the pointer to fill provided by the user.
+    dest_type **m_storage;
+  };
 public:
   /// InterfaceID
   DeclareInterfaceID(IUpdateManagerSvc,2,0);
@@ -190,7 +180,7 @@ public:
   /// \return StatusCode::SUCCESS if the registration went right.
   template <class CallerClass>
   inline void registerCondition(CallerClass *instance, const std::string &condition = "",
-                                typename ObjectMemberFunction<CallerClass>::MemberFunctionType mf = NULL){
+                                typename ObjectMemberFunction<CallerClass>::MemberFunctionType mf = nullptr){
     i_registerCondition(condition, new ObjectMemberFunction<CallerClass>(instance,mf));
   }
 
@@ -205,7 +195,7 @@ public:
   /// See above. Needed to avoid conflicts with the next one.
   template <class CallerClass>
   inline void registerCondition(CallerClass *instance, const char *condition,
-                                typename ObjectMemberFunction<CallerClass>::MemberFunctionType mf = NULL){
+                                typename ObjectMemberFunction<CallerClass>::MemberFunctionType mf = nullptr){
     i_registerCondition(std::string(condition), new ObjectMemberFunction<CallerClass>(instance,mf));
   }
 
@@ -214,7 +204,7 @@ public:
   /// object that depends on a ValidDataObject. The dependency network is kept consistent by the UpdateManagerSvc.
   template <class CallerClass, class ObjectClass>
   inline void registerCondition(CallerClass *instance, ObjectClass *obj,
-                                typename ObjectMemberFunction<CallerClass>::MemberFunctionType mf = NULL){
+                                typename ObjectMemberFunction<CallerClass>::MemberFunctionType mf = nullptr){
   	i_registerCondition(dynamic_cast<void*>(obj), new ObjectMemberFunction<CallerClass>(instance,mf));
   }
 
@@ -279,13 +269,12 @@ protected:
 
   //virtual StatusCode i_registerCondition(const std::string &condition, BaseObjectMemberFunction *mf) = 0;
   virtual void       i_registerCondition(const std::string &condition, BaseObjectMemberFunction *mf,
-                                         BasePtrSetter *ptr_dest = NULL) = 0;
+                                         BasePtrSetter *ptr_dest = nullptr) = 0;
   virtual void       i_registerCondition(void *obj, BaseObjectMemberFunction *mf) = 0;
   virtual StatusCode i_update(void *instance) = 0;
   virtual void       i_unregister(void *instance) = 0;
   virtual void       i_invalidate(void *instance) = 0;
 
   friend class PythonHelper;
-
 };
 #endif // GAUDIKERNEL_IUPDATEMANAGERSVC_H

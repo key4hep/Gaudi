@@ -65,6 +65,8 @@ public:
                  std::string msg="");
   IssueSeverity( IssueSeverity::Level level, std::string msg="");
 
+  IssueSeverity( const IssueSeverity& ) = delete;
+  IssueSeverity& operator=( const IssueSeverity& ) = delete;
   IssueSeverity( IssueSeverity&& ) noexcept;
   IssueSeverity& operator=(IssueSeverity&& ) noexcept;
 
