@@ -3,7 +3,7 @@ Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
 ! 2015-09-09 - Gerhard Raven & Benedikt Hegner
- - e++11 modernization changes, eg.
+ - C++11 modernization changes, eg.
       o replace boost::lexical_cast with std::to_string, std::stod, std::stoi
       o replace trivial (empty) destructors with '= default' declaration
       o replace 'if (s.substr(a,b) = "ccc")' with 'if (s.compare(a,c,"ccc")==0)'
@@ -13,13 +13,14 @@ Commit Id: $Format:%H$
       o pass sink arguments by value and std::move them in place
       o replace trivial constructor and destructor with = default
       o simplify constructors
-      o use std::stoi instead of atoi
       o use cstdio, cstdarg instead of stdio.h, stdarg.h
       o use vnsprintf instead of vsprintf
       o add va_end after va_start
       o remove some workarounds for 'really old' compilers
+      o the dynamic_cast problems described in GaudiKernel/doc/dynamic_cast.pb
+        observed with gcc 3.2 under linux are no longer an issue for gcc 4.9...
       o use std::unordered_map as underlying implementation of HashMap
-      o replace empty constructor with = default
+      o replace trivial constructors/destructors with = default
       o use perfect forwarding to underlying map for various insert methods
          (this allows 'move only' types to be inserted)
       o prefer std::next over copy + std::advance
@@ -45,10 +46,8 @@ Commit Id: $Format:%H$
       o qualify implementations with 'override' instead of 'virtual'
       o pass sink arguments by value and std::move them in place
       o don't check for nullptr before calling delete (delete implementation already does that)
-      o prefer std;:unique_ptr over raw pointer and explicit delete
       o prefer std::next over a copy, followed by std::advance
       o use covariant return types on 'clone' implementation
-      o use std::unordered::map::{at,insert} in the implementation of Map
       o use std::chrono and sleep_for instead of boost's implementation
       o replace boost::bind with std::bind and lambdas
       o replace the use of a dedicated PropertyCallBackFunctor and
@@ -63,8 +62,6 @@ Commit Id: $Format:%H$
           (long live value semantics!)
       o PropertyMgr: Mark copy constructor and assignment as = delete (see JIRA-1071)
       o remove obsolete CommandProperty
-      o the dynamic_cast problems described in GaudiKernel/doc/dynamic_cast.pb
-        observed with gcc 3.2 under linux are no longer an issue for gcc 4.9...
       o do not qualify by-value returned objects as const
       o avoid 'if' statements in loops
       o remove obsoleted Tokenizer (use AttribStringParser instead)
