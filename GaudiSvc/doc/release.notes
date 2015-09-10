@@ -11,10 +11,10 @@ Commit Id: $Format:%H$
        o prefer static_cast over C-style cast
        o prefer range-based loop
        o replace trivial destructor with = default
-       p remove virtual function implementations which invoke the implementation of the direct ancestor
-       p prefer nullptr over 0
-       p avoid comparing pointers to 0
-       p prever emplace(key,value) over insert({key,value})
+       o remove virtual function implementations which invoke the implementation of the direct ancestor
+       o prefer nullptr over 0
+       o avoid comparing pointers to 0
+       o prever emplace(key,value) over insert({key,value})
        o Modernize RndmGenSvc
          - re-engineer slightly so that BaseEngine is entirely responsible
            for the memory management of the HepRandomEngine -- and it can
