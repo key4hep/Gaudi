@@ -61,13 +61,13 @@ public:
   /** Copy constructor: Construct an copy of a SmartDataStorePtr instance.
       @param  copy          Copy of Smart Pointer to object.
   */
-  SmartDataObjectPtr(const SmartDataObjectPtr& copy) = default;
+  SmartDataObjectPtr(const SmartDataObjectPtr&) = default;
 
   /// Standard Destructor
   virtual ~SmartDataObjectPtr()  = default;
 
   /// Assignment operator
-  virtual SmartDataObjectPtr& operator=(const SmartDataObjectPtr& copy);
+  virtual SmartDataObjectPtr& operator=(const SmartDataObjectPtr&);
 
   /// Automatic conversion to data directory
   operator IRegistry*()    {

@@ -5,6 +5,12 @@
 ! Commit Id   : $Format:%H$
 !-----------------------------------------------------------------------------
 
+! 2015-09-09 - Gerhard Raven and Benedik Hegner
+ - C++11 modernization changes
+     o pass sink arguments by value and std::move them
+     o prefer std::unique_ptr over std::auto_ptr
+     o prefer STL algorithms over raw loops
+
 ========================== GaudiPluginService v2r2 ===========================
 ! 2014-07-04 - Marco Clemencic
  - Improved Doxygen documentation.
