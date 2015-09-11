@@ -3,7 +3,7 @@
 
 // Include files
 #include "GaudiKernel/INamedInterface.h"
-#include "GaudiKernel/StateMachine.h"
+#include "GaudiKernel/IStateful.h"
 #include <string>
 
 /** @class IAlgorithm IAlgorithm.h GaudiKernel/IAlgorithm.h
@@ -16,7 +16,7 @@
     @author D.Quarrie
     @author Marco Clemencic
 */
-class GAUDI_API IAlgorithm : virtual public INamedInterface {
+class GAUDI_API IAlgorithm : virtual public extend_interfaces2<INamedInterface, IStateful> {
 public:
   /// InterfaceID
   DeclareInterfaceID(IAlgorithm,4,0);
@@ -36,43 +36,6 @@ public:
   virtual bool isFinalized() const = 0;
   /// check if the algorithm is already executed for the current event
   virtual bool isExecuted() const = 0;
-
-  // --- Methods from IStateful ---
-  /** Configuration (from OFFLINE to CONFIGURED).
-  */
-  virtual StatusCode configure() = 0;
-
-  /** Initialization (from CONFIGURED to INITIALIZED).
-   */
-  virtual StatusCode initialize() = 0;
-
-  /** Start (from INITIALIZED to RUNNING).
-  */
-  virtual StatusCode start() = 0;
-
-  /** Stop (from RUNNING to INITIALIZED).
-  */
-  virtual StatusCode stop() = 0;
-
-  /** Finalize (from INITIALIZED to CONFIGURED).
-  */
-  virtual StatusCode finalize() = 0;
-
-  /** Initialization (from CONFIGURED to OFFLINE).
-  */
-  virtual StatusCode terminate() = 0;
-
-  /** Initialization (from INITIALIZED or RUNNING to INITIALIZED, via CONFIGURED).
-  */
-  virtual StatusCode reinitialize() = 0;
-
-  /** Initialization (from RUNNING to RUNNING, via INITIALIZED).
-  */
-  virtual StatusCode restart() = 0;
-
-  /** Get the current state.
-   */
-  virtual Gaudi::StateMachine::State FSMState() const = 0;
 
   /** Initialization method invoked by the framework. This method is responsible
       for any bookkeeping of initialization required by the framework itself.
