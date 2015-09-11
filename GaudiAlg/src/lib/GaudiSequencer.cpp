@@ -258,7 +258,7 @@ StatusCode GaudiSequencer::decodeNames( )  {
     //== Check wether the specified algorithm already exists. If not, create it
     StatusCode result = StatusCode::SUCCESS;
     SmartIF<IAlgorithm> myIAlg = appMgr->algorithm(typeName, false); // do not create it now
-    if ( !myIAlg.isValid() ) {
+    if ( !myIAlg ) {
       // ensure some magic properties are set while we create the subalgorithm so 
       // that it effectively inherites 'our' settings -- if they have non-default
       // values... and are not set explicitly already.
@@ -282,7 +282,7 @@ StatusCode GaudiSequencer::decodeNames( )  {
     // propagate the sub-algorithm into own state.
     if ( result.isSuccess () &&
          Gaudi::StateMachine::INITIALIZED <= FSMState() &&
-         myIAlg.isValid   () &&
+         myIAlg &&
          Gaudi::StateMachine::INITIALIZED  > myIAlg->FSMState() )
     {
       StatusCode sc = myIAlg->sysInitialize() ;
@@ -292,7 +292,7 @@ StatusCode GaudiSequencer::decodeNames( )  {
     // propagate the sub-algorithm into own state.
     if ( result.isSuccess () &&
          Gaudi::StateMachine::RUNNING <= FSMState() &&
-         myIAlg.isValid   () &&
+         myIAlg &&
          Gaudi::StateMachine::RUNNING  > myIAlg->FSMState() )
     {
       StatusCode sc = myIAlg->sysStart () ;

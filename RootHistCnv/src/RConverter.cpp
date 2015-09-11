@@ -230,7 +230,7 @@ TDirectory* RootHistCnv::RConverter::changeDirectory(DataObject* pObject)
     IRegistry* pReg = pObject->registry();
     if ( pReg )    {
       SmartIF<IDataManagerSvc> dataMgr(dataProvider());
-      if ( dataMgr.isValid() )    {
+      if ( dataMgr )    {
         IRegistry* pParentReg = nullptr;
         StatusCode status = dataMgr->objectParent(pReg, pParentReg);
         if ( status.isSuccess() )  {

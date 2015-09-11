@@ -80,8 +80,8 @@ StatusCode EventSelectorDataStream::initialize()   {
   std::string cnt    = "/Event";
   std::string db     = "<Unknown>";
 
-  SmartIF<IDataManagerSvc> eds(m_pSvcLocator->service("EventDataSvc"));
-  if( !eds.isValid() ) {
+  auto eds = m_pSvcLocator->service<IDataManagerSvc>("EventDataSvc");
+  if( !eds ) {
     std::cout << "ERROR: Unable to localize interface IDataManagerSvc from service EventDataSvc"
               << std::endl;
     return StatusCode::FAILURE;
@@ -177,13 +177,13 @@ StatusCode EventSelectorDataStream::initialize()   {
     m_selectorType = svc;
   }
   StatusCode status = StatusCode::SUCCESS;
-  if ( svc.length() == 0 && dbtyp.length() != 0 )    {
-    SmartIF<IPersistencySvc> ipers(m_pSvcLocator->service("EventPersistencySvc"));
-    if ( ipers.isValid() )   {
-      IConversionSvc* icnvSvc = 0;
+  if ( svc.empty() && !dbtyp.empty() )    {
+    auto ipers = m_pSvcLocator->service<IPersistencySvc>("EventPersistencySvc");
+    if ( ipers )   {
+      IConversionSvc* icnvSvc = nullptr;
       status = ipers->getService(dbtyp, icnvSvc);
       if ( status.isSuccess() )   {
-        IService* isvc = 0;
+        IService* isvc = nullptr;
         status = icnvSvc->queryInterface(IService::interfaceID(), pp_cast<void>(&isvc));
         if ( status.isSuccess() )   {
           svc = isvc->name();

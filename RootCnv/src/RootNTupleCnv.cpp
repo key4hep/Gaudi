@@ -167,7 +167,7 @@ RootNTupleCnv::createObj(IOpaqueAddress* pAddr, DataObject*& refpObject)   {
     }
     if ( !par_val.empty() )      {
       SmartIF<INTupleSvc> ntupleSvc(dataProvider());
-      if ( ntupleSvc.isValid() )  {
+      if ( ntupleSvc )  {
         char c;
         CLID clid;
         int siz, typ;

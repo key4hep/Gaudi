@@ -20,7 +20,7 @@ PropertyProxy::PropertyProxy(const std::string& name, ISvcLocator* ploc)
   // Declare remote properties at this moment
   SmartIF<IAlgManager> algMgr (serviceLocator());
   SmartIF<IProperty> rAlgP(algMgr->algorithm("PropertyAlg"));
-  if( rAlgP.isValid() ) {
+  if( rAlgP ) {
     m_remAlg = rAlgP; // remember it for later
     declareRemoteProperty("RInt", rAlgP, "Int");
     declareRemoteProperty("String", rAlgP );

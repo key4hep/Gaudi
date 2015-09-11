@@ -150,15 +150,15 @@ StatusCode TagCollectionSvc::createService( const std::string& nam,
 
   // TagCollectionSvc has to directly create a ConversionSvc to manage it directly.
   StatusCode status = NO_INTERFACE;
-  if ( mgr.isValid() )    {
+  if ( mgr )    {
 
     SmartIF<IService> &isvc = mgr->createService(TypeNameString(nam, typ));
-    if (isvc.isValid())   {
+    if (isvc)   {
       status = isvc->queryInterface(IConversionSvc::interfaceID(), (void**)&pSvc);
       if ( status.isSuccess() )     {
         SmartIF<IProperty> iprop(isvc);
         status = NO_INTERFACE;
-        if ( iprop.isValid( ) )    {
+        if ( iprop )    {
           for ( const auto& p : props ) { 
             iprop->setProperty(p.first, p.second).ignore();
           }

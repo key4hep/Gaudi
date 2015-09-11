@@ -453,8 +453,7 @@ public:
         NTuplePtr out(m_dataSvc, m_outName);
         if ( 0 == out )  {
           status = book(nt);
-        }
-        else  {
+        } else  {
           status = checkInput(out, nt);
         }
         if ( !status.isSuccess() )  {
@@ -462,18 +461,16 @@ public:
         }
         else if ( m_selectorName != "" )   {
           SmartIF<ISelectStatement> stmt(ObjFactory::create(m_selectorName, serviceLocator()));
-          if ( stmt.isValid( ) )    {
-            if ( m_criteria.length() > 0 ) stmt->setCriteria(m_criteria);
+          if ( stmt )    {
+            if ( !m_criteria.empty() ) stmt->setCriteria(m_criteria);
             nt->attachSelector(stmt);
-          }
-          else  {
+          } else  {
             MsgStream log(msgSvc(), name());
             log << MSG::ERROR << "Failed to attach tuple selector to " << m_inputs[i] << endmsg;
             return StatusCode::FAILURE;
           }
         }
-      }
-      else  {
+      } else  {
         MsgStream log(msgSvc(), name());
         log << MSG::ERROR << "Failed to access tuple: " << m_inputs[i] << endmsg;
         return StatusCode::FAILURE;
@@ -485,10 +482,10 @@ public:
   /// Merge all N-tuple entries
   StatusCode mergeInputTuples()  {
     MsgStream log(msgSvc(), name());
-    for (size_t inp=0; inp < m_inputs.size(); ++inp)  {
-      StatusCode sc = mergeEntries(m_inputs[inp]);
-      if ( !sc.isSuccess() )  {
-        log << MSG::ERROR << "Failed to merge tuple:" << m_inputs[inp] << endmsg;
+    for( const auto& input : m_inputs ) { 
+      StatusCode sc = mergeEntries(input);
+      if ( !sc.isSuccess() ) {
+        log << MSG::ERROR << "Failed to merge tuple:" << input << endmsg;
         return sc;
       }
     }

@@ -74,19 +74,19 @@ StatusCode OutputStream::initialize() {
   m_events = 0;
   // Get access to the DataManagerSvc
   m_pDataManager = serviceLocator()->service(m_storeName);
-  if( !m_pDataManager.isValid() )   {
+  if( !m_pDataManager )   {
     log << MSG::FATAL << "Unable to locate IDataManagerSvc interface" << endmsg;
     return StatusCode::FAILURE;
   }
   // Get access to the IncidentService
   m_incidentSvc = serviceLocator()->service("IncidentSvc");
-  if( !m_incidentSvc.isValid() )  {
+  if( !m_incidentSvc )  {
     log << MSG::WARNING << "Error retrieving IncidentSvc." << endmsg;
     return StatusCode::FAILURE;
   }
   // Get access to the assigned data service
   m_pDataProvider = serviceLocator()->service(m_storeName);
-  if( !m_pDataProvider.isValid() )   {
+  if( !m_pDataProvider )   {
     log << MSG::FATAL << "Unable to locate IDataProviderSvc interface of " << m_storeName << endmsg;
     return StatusCode::FAILURE;
   }
@@ -479,8 +479,8 @@ StatusCode OutputStream::connectConversionSvc()   {
   // this value.
   if ( !dbType.empty() || !svc.empty() )   {
     std::string typ = !dbType.empty() ? dbType : svc;
-    SmartIF<IPersistencySvc> ipers(serviceLocator()->service(m_persName));
-    if( !ipers.isValid() )   {
+    auto ipers = serviceLocator()->service<IPersistencySvc>(m_persName);
+    if( !ipers )   {
       log << MSG::FATAL << "Unable to locate IPersistencySvc interface of " << m_persName << endmsg;
       return StatusCode::FAILURE;
     }
@@ -554,12 +554,12 @@ Algorithm* OutputStream::decodeAlgorithm( const std::string& theName )
   Algorithm * theAlgorithm = nullptr;
 
   SmartIF<IAlgManager> theAlgMgr(serviceLocator());
-  if ( theAlgMgr.isValid() )
+  if ( theAlgMgr )
   {
     // Check whether the supplied name corresponds to an existing
     // Algorithm object.
     SmartIF<IAlgorithm> &theIAlg = theAlgMgr->algorithm(theName);
-    if ( theIAlg.isValid() )
+    if ( theIAlg )
     {
       try
       {

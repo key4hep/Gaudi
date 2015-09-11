@@ -15,10 +15,10 @@ IncidentListenerTest::IncidentListenerTest( const std::string& name,
                                             long shots )
   :m_name(name),m_shots(shots)
 {
-  if (!(m_msgSvc = svcloc).isValid()) // default message service
-    throw GaudiException("Cannot find MessageSvc",m_name,StatusCode::FAILURE);
-  if (!(m_incSvc = svcloc->service("IncidentSvc")).isValid())
-    throw GaudiException("Cannot find IncidentSvc",m_name,StatusCode::FAILURE);
+  m_msgSvc = svcloc; // default message service
+  if (!m_msgSvc) throw GaudiException("Cannot find MessageSvc",m_name,StatusCode::FAILURE);
+  m_incSvc = svcloc->service("IncidentSvc");
+  if (!m_incSvc) throw GaudiException("Cannot find IncidentSvc",m_name,StatusCode::FAILURE);
 }
 
 IncidentListenerTest::~IncidentListenerTest(){

@@ -104,6 +104,13 @@ public:
     }
   }
 
+
+  /// return a new SmartIF instance to another interface 
+  template <typename IFace>
+  SmartIF<IFace> as() const {
+      return SmartIF<IFace>{ *this };
+  }
+
   // ---------- Special hacks ----------
   /// Assignment operator from IInterface pointer.
   /// It allows things like

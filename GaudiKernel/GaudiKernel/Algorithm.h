@@ -428,7 +428,7 @@ public:
   inline SmartIF<IMonitorSvc>& monitorSvc() const
   {
     // If not already located try to locate it without forcing a creation
-    if ( !m_pMonitorSvc.isValid() ){
+    if ( !m_pMonitorSvc ){
       m_pMonitorSvc = service(m_monitorSvcName, false, true); // do not create and be quiet
     }
     return m_pMonitorSvc;

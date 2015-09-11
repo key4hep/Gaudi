@@ -439,10 +439,10 @@ public:
     if ( get(nam, pPartition).isSuccess() )  return PARTITION_EXISTS;
     /// @FIXME: In the old implementation the services were "unmanaged" (non-active)
     SmartIF<IService>& isvc = serviceLocator()->service(typ);
-    if (!isvc.isValid())  return NO_INTERFACE;
-    SmartIF<IDataManagerSvc> dataMgr(isvc);
-    SmartIF<IDataProviderSvc> dataProv(isvc);
-    if ( !dataMgr.isValid() || !dataProv.isValid() )  return NO_INTERFACE;
+    if (!isvc)  return NO_INTERFACE;
+    auto dataMgr = isvc.as<IDataManagerSvc>();
+    auto dataProv = isvc.as<IDataProviderSvc>();
+    if ( !dataMgr || !dataProv )  return NO_INTERFACE;
     Partition p;
     p.dataProvider = dataProv;
     p.dataProvider->addRef();
@@ -470,7 +470,7 @@ public:
   /// Drop a partition object. The name identifies the partition uniquely
   STATUS drop(IInterface* pPartition) override {
     SmartIF<IDataProviderSvc> provider(pPartition);
-    if ( !provider.isValid() )  return NO_INTERFACE;
+    if ( !provider )  return NO_INTERFACE;
     auto i = std::find_if( std::begin(m_partitions), std::end(m_partitions),
                            [&](Partitions::const_reference p) {
         return p.second.dataProvider == provider;

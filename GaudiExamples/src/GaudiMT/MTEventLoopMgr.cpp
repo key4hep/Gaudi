@@ -23,17 +23,8 @@ DECLARE_COMPONENT(MTEventLoopMgr);
 MTEventLoopMgr::MTEventLoopMgr(const std::string& nam, ISvcLocator* svcLoc)
 : MinimalEventLoopMgr(nam, svcLoc)
 {
-  m_histoDataMgrSvc   = 0;
-  m_histoPersSvc      = 0;
-  m_incidentSvc       = 0;
-  m_evtDataMgrSvc     = 0;
-  m_evtDataSvc        = 0;
-  m_evtSelector       = 0;
-  m_evtCtxt           = 0;
-  m_total_nevt        = 0;
-
   // Declare properties
-  declareProperty("HistogramPersistency", m_histPersName = "");
+  declareProperty("HistogramPersistency", m_histPersName );
   declareProperty( "EvtSel", m_evtsel );
 }
 
@@ -87,7 +78,7 @@ StatusCode MTEventLoopMgr::initialize()    {
 
   // Obtain the IProperty of the ApplicationMgr
   SmartIF<IProperty> prpMgr(serviceLocator());
-  if ( ! prpMgr.isValid() )   {
+  if ( ! prpMgr )   {
     log << MSG::FATAL << "IProperty interface not found in ApplicationMgr." << endmsg;
     return StatusCode::FAILURE;
   }
@@ -98,7 +89,7 @@ StatusCode MTEventLoopMgr::initialize()    {
   // We do not expect a Event Selector necessarily being declared
   setProperty(m_appMgrProperty->getProperty("EvtSel"));
 
-  if( m_evtsel != "NONE" || m_evtsel.length() == 0) {
+  if( m_evtsel != "NONE" || m_evtsel.empty() ) {
     sc = service( "EventSelector", m_evtSelector, true );
     if( sc.isSuccess() )     {
       // Setup Event Selector
@@ -114,8 +105,8 @@ StatusCode MTEventLoopMgr::initialize()    {
     }
   }
   else {
-    m_evtSelector = 0;
-    m_evtCtxt = 0;
+    m_evtSelector = nullptr;
+    m_evtCtxt = nullptr;
     log << MSG::WARNING << "Unable to locate service \"EventSelector\" " << endmsg;
     log << MSG::WARNING << "No events will be processed from external input." << endmsg;
   }
@@ -150,7 +141,7 @@ StatusCode MTEventLoopMgr::reinitialize() {
 
   // Check to see whether a new Event Selector has been specified
   setProperty(m_appMgrProperty->getProperty("EvtSel"));
-  if( m_evtsel != "NONE" || m_evtsel.length() == 0) {
+  if( m_evtsel != "NONE" || m_evtsel.empty()) {
     IEvtSelector* theEvtSel;
     IService*     theSvc;
     sc = service( "EventSelector", theEvtSel );
@@ -184,8 +175,8 @@ StatusCode MTEventLoopMgr::reinitialize() {
     }
   }
   else {
-    m_evtSelector = 0;
-    m_evtCtxt = 0;
+    m_evtSelector = nullptr;
+    m_evtCtxt = nullptr;
   }
   return StatusCode::SUCCESS;
 }
@@ -202,7 +193,7 @@ StatusCode MTEventLoopMgr::finalize()    {
   MinimalEventLoopMgr::finalize();
 
   // Save Histograms Now
-  if ( 0 != m_histoPersSvc )    {
+  if ( m_histoPersSvc )    {
     HistogramAgent agent;
     sc = m_histoDataMgrSvc->traverseTree( &agent );
     if( sc.isSuccess() )   {
@@ -211,7 +202,7 @@ StatusCode MTEventLoopMgr::finalize()    {
       if ( objects->size() > 0 )    {
         IDataSelector::iterator i;
         for ( i = objects->begin(); i != objects->end(); i++ )    {
-          IOpaqueAddress* pAddr = 0;
+          IOpaqueAddress* pAddr = nullptr;
           StatusCode iret = m_histoPersSvc->createRep(*i, pAddr);
           if ( iret.isSuccess() )     {
             (*i)->registry()->setAddress(pAddr);
@@ -239,9 +230,9 @@ StatusCode MTEventLoopMgr::finalize()    {
       log << MSG::ERROR << "Error while traversing Histogram data store" << endmsg;
     }
   }
-  if ( 0 != m_evtCtxt && 0 != m_evtSelector )  {
+  if ( m_evtCtxt && m_evtSelector )  {
     m_evtSelector->releaseContext(m_evtCtxt);
-    m_evtCtxt = 0;
+    m_evtCtxt = nullptr;
   }
   // Release all interfaces...
   m_histoDataMgrSvc = releaseInterface(m_histoDataMgrSvc);
@@ -258,7 +249,7 @@ StatusCode MTEventLoopMgr::finalize()    {
 // implementation of IAppMgrUI::nextEvent
 //--------------------------------------------------------------------------------------------
 StatusCode MTEventLoopMgr::nextEvent(int maxevt)   {
-  DataObject*       pObject = 0;
+  DataObject*       pObject = nullptr;
   StatusCode        sc;
 
   // loop over events if the maxevt (received as input) if different from -1.
@@ -275,7 +266,7 @@ StatusCode MTEventLoopMgr::nextEvent(int maxevt)   {
 
     // Setup event in the event store
     if( m_evtCtxt ) {
-      IOpaqueAddress* addr = 0;
+      IOpaqueAddress* addr = nullptr;
       // Only if there is a EventSelector
       sc = getEventRoot(addr);
       if( !sc.isSuccess() )  {
@@ -326,7 +317,7 @@ StatusCode MTEventLoopMgr::nextEvent(int maxevt)   {
 
 /// Create event address using event selector
 StatusCode MTEventLoopMgr::getEventRoot(IOpaqueAddress*& refpAddr)  {
-  refpAddr = 0;
+  refpAddr = nullptr;
   StatusCode sc = m_evtSelector->next(*m_evtCtxt);
   if ( !sc.isSuccess() )  {
     return sc;

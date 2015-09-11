@@ -64,7 +64,7 @@ MinimalEventLoopMgr::MinimalEventLoopMgr(const std::string& nam, ISvcLocator* sv
 //--------------------------------------------------------------------------------------------
 StatusCode MinimalEventLoopMgr::initialize()    {
 
-  if ( !m_appMgrUI.isValid() ) return StatusCode::FAILURE;
+  if ( !m_appMgrUI ) return StatusCode::FAILURE;
 
   StatusCode sc = Service::initialize();
   if ( !sc.isSuccess() )   {
@@ -73,7 +73,7 @@ StatusCode MinimalEventLoopMgr::initialize()    {
   }
 
   SmartIF<IProperty> prpMgr(serviceLocator());
-  if ( ! prpMgr.isValid() )   {
+  if ( !prpMgr )   {
     error() << "Error retrieving AppMgr interface IProperty." << endmsg;
     return StatusCode::FAILURE;
   }
@@ -86,7 +86,7 @@ StatusCode MinimalEventLoopMgr::initialize()    {
 
   // Get the references to the services that are needed by the ApplicationMgr itself
   m_incidentSvc = serviceLocator()->service("IncidentSvc");
-  if( !m_incidentSvc.isValid() )  {
+  if( !m_incidentSvc )  {
     fatal() << "Error retrieving IncidentSvc." << endmsg;
     return StatusCode::FAILURE;
   }
@@ -465,7 +465,7 @@ StatusCode MinimalEventLoopMgr::decodeTopAlgs()    {
   StatusCode sc = StatusCode::SUCCESS;
   if ( CONFIGURED == m_state || INITIALIZED == m_state ) {
     SmartIF<IAlgManager> algMan(serviceLocator());
-    if ( algMan.isValid())   {
+    if ( algMan )   {
       // Reset the existing Top Algorithm List
       m_topAlgList.clear( );
       m_topAlgList.reserve( m_topAlgNames.value().size() );
@@ -475,7 +475,7 @@ StatusCode MinimalEventLoopMgr::decodeTopAlgs()    {
         std::string item_name = item.name() + getGaudiThreadIDfromName(name());
         const bool CREATE = false;
         SmartIF<IAlgorithm> alg = algMan->algorithm(item_name, CREATE);
-        if (alg.isValid()) {
+        if (alg) {
           DEBMSG << "Top Algorithm " << item_name << " already exists" << endmsg;
         }
         else {
@@ -515,7 +515,7 @@ StatusCode MinimalEventLoopMgr::decodeOutStreams( )    {
   StatusCode sc = StatusCode::SUCCESS;
   if ( CONFIGURED == m_state || INITIALIZED == m_state ) {
     SmartIF<IAlgManager> algMan(serviceLocator());
-    if ( algMan.isValid() )   {
+    if ( algMan )   {
       // Reset the existing Top Algorithm List
       m_outStreamList.clear();
       for (const auto& it : m_outStreamNames.value( ) ) {
@@ -523,7 +523,7 @@ StatusCode MinimalEventLoopMgr::decodeOutStreams( )    {
         DEBMSG << "Creating " << m_outStreamType <<  it << endmsg;
         const bool CREATE = false;
         SmartIF<IAlgorithm> os = algMan->algorithm( item, CREATE );
-        if (os.isValid()) {
+        if (os) {
           DEBMSG << "Output Stream " << item.name() << " already exists" << endmsg;
         } else {
           DEBMSG << "Creating Output Stream " << it << endmsg;

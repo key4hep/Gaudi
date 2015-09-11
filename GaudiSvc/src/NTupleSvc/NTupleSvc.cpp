@@ -185,16 +185,14 @@ StatusCode NTupleSvc::updateDirectories()   {
 // Finalize single service
 void NTupleSvc::releaseConnection(Connection& c)  {
   SmartIF<IService> isvc( c.service );
-  if ( isvc.isValid( ) )   {
-    isvc->finalize().ignore();
-  }
+  if ( isvc )   isvc->finalize().ignore();
   c.service->release();
-  c.service = 0;
+  c.service = nullptr;
 }
 
 // Close all open connections
 StatusCode NTupleSvc::disconnect(const std::string& nam)      {
-  Connections::iterator i = m_connections.find(nam);
+  auto i = m_connections.find(nam);
   if ( i != m_connections.end() )    {
     releaseConnection((*i).second);
     m_connections.erase(i);
@@ -205,10 +203,8 @@ StatusCode NTupleSvc::disconnect(const std::string& nam)      {
 
 // Close all open connections
 StatusCode NTupleSvc::disconnectAll()      {
-  for(Connections::iterator i = m_connections.begin(); i != m_connections.end(); ++i) {
-    releaseConnection((*i).second);
-  }
-  m_connections.erase(m_connections.begin(), m_connections.end());
+  for(auto &i : m_connections ) releaseConnection(i.second);
+  m_connections.clear();
   return StatusCode::SUCCESS;
 }
 
@@ -228,7 +224,7 @@ StatusCode NTupleSvc::connect(const std::string& ident)    {
 
 StatusCode NTupleSvc::connect(const std::string& ident, std::string& logname)    {
   MsgStream log ( msgSvc(), name() );
-  DataObject* pO = 0;
+  DataObject* pO = nullptr;
   StatusCode status = findObject(m_rootName, pO);
   if ( status.isSuccess() )   {
     char typ=0;

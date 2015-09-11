@@ -31,7 +31,7 @@ Rndm::Numbers::~Numbers()    {
 // Initialize the generator
 StatusCode Rndm::Numbers::initialize(const SmartIF<IRndmGenSvc>& svc,
                                      const IRndmGen::Param& par)  {
-  if ( svc.isValid() && !m_generator )   {
+  if ( svc && !m_generator )   {
     /// @FIXME: this is a hack, but I do not have the time to review the
     ///         correct constantness of all the methods
     return const_cast<IRndmGenSvc*>(svc.get())->generator( par, m_generator );

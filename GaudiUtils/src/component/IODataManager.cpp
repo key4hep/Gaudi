@@ -64,14 +64,14 @@ StatusCode IODataManager::initialize()  {
   }
   // Retrieve conversion service handling event iteration
   m_catalog = serviceLocator()->service(m_catalogSvcName);
-  if( !m_catalog.isValid() ) {
+  if( !m_catalog ) {
     log << MSG::ERROR
         << "Unable to localize interface IFileCatalog from service:"
         << m_catalogSvcName << endmsg;
     return StatusCode::FAILURE;
   }
   m_incSvc = serviceLocator()->service("IncidentSvc");
-  if( !m_incSvc.isValid() ) {
+  if( !m_incSvc ) {
     log << MSG::ERROR << "Error initializing IncidentSvc Service!" << endmsg;
     return status;
   }

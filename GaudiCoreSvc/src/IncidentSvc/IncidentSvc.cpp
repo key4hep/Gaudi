@@ -34,7 +34,7 @@ namespace
   inline const std::string& getListenerName ( IIncidentListener* lis )
   {
     SmartIF<INamedInterface> iNamed(lis);
-    return iNamed.isValid() ? iNamed->name() : s_unknown ;
+    return iNamed ? iNamed->name() : s_unknown ;
   }
   // ==========================================================================
 }

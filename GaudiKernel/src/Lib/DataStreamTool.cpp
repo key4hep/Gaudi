@@ -44,7 +44,7 @@ StatusCode DataStreamTool::initialize() {
 
   // Get the references to the services that are needed by the ApplicationMgr itself
   m_incidentSvc = serviceLocator()->service("IncidentSvc");
-  if( !m_incidentSvc.isValid() )  {
+  if( !m_incidentSvc )  {
     logger << MSG::FATAL << "Error retrieving IncidentSvc." << endmsg;
     return StatusCode::FAILURE;
   }
@@ -117,7 +117,7 @@ StatusCode DataStreamTool::initializeStream(EventSelectorDataStream* s)   {
       SmartIF<IService>  isvc(sel);
       s->setSelector(sel);
       sel->release();  // No need of this interface anymore, it is passed to the stream
-      if ( prop.isValid( ) && isvc.isValid( ) )   {
+      if ( prop && isvc )   {
         for( const auto& i : s->properties() ) prop->setProperty(i).ignore();
         int output_level = this->outputLevel();
         prop->setProperty(IntegerProperty("OutputLevel",output_level)).ignore();
@@ -151,7 +151,7 @@ StatusCode DataStreamTool::finalizeStream(EventSelectorDataStream* s)   {
     IEvtSelector* sel = const_cast<IEvtSelector*>(s->selector());
     if ( sel )    {
       SmartIF<IService> isvc(sel);
-      if ( isvc.isValid() )   {
+      if ( isvc )   {
         isvc->finalize().ignore();
         s->finalize().ignore();
         // Fire EndStream "Incident"

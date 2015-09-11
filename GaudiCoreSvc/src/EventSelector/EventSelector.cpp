@@ -365,7 +365,7 @@ StatusCode EventSelector::initialize()    {
   }
   // Get the references to the services that are needed by the ApplicationMgr itself
   m_incidentSvc = serviceLocator()->service("IncidentSvc");
-  if( !m_incidentSvc.isValid() )  {
+  if( !m_incidentSvc )  {
     logger << MSG::FATAL << "Error retrieving IncidentSvc." << endmsg;
     return StatusCode::FAILURE;
   }
@@ -377,7 +377,7 @@ StatusCode EventSelector::initialize()    {
   }
 
   m_toolSvc = serviceLocator()->service("ToolSvc");
-  if ( !m_toolSvc.isValid() ) {
+  if ( !m_toolSvc ) {
     logger << MSG::ERROR << " Could not locate the Tool Service! " << endmsg;
     return StatusCode::FAILURE;
   }
@@ -435,7 +435,7 @@ StatusCode EventSelector::finalize()    {
   m_incidentSvc = nullptr;
 
   if (m_streamtool) {
-    if (m_toolSvc.isValid()) {
+    if (m_toolSvc) {
       m_toolSvc->releaseTool(m_streamtool).ignore();
     } else {
       // It should not be possible to get here

@@ -106,14 +106,10 @@ StatusCode ReplayOutputStream::initialize() {
   if ( msgLevel(MSG::DEBUG) ) debug() << "==> Initialize" << endmsg;
 
   m_algMgr = service("ApplicationMgr");
-  if (UNLIKELY(!m_algMgr.isValid())) {
-    return Error("cannot retrieve IAlgManager");
-  }
+  if (UNLIKELY(!m_algMgr)) return Error("cannot retrieve IAlgManager");
 
   m_evtMgr = evtSvc();
-  if (UNLIKELY(!m_algMgr.isValid())) {
-    return Error("cannot retrieve IDataManagerSvc ");
-  }
+  if (UNLIKELY(!m_evtMgr)) return Error("cannot retrieve IDataManagerSvc ");
 
   std::for_each(m_outputStreamNames.begin(), m_outputStreamNames.end(),
                 OutStreamAdder(this));
@@ -192,7 +188,8 @@ void ReplayOutputStream::i_addOutputStream(const Gaudi::Utils::TypeNameString &o
   // OutputStreamsCollector
   const std::string algId = "/" + outStream.name();
   if (m_outputStreams.find(algId) == m_outputStreams.end()) {
-    if (!(m_outputStreams[algId] = m_algMgr->algorithm(outStream)).isValid()){
+    m_outputStreams[algId] = m_algMgr->algorithm(outStream);
+    if (!m_outputStreams[algId]) {
       throw GaudiException(name(), "Could not get algorithm " + outStream.name(),
                            StatusCode::FAILURE);
     }

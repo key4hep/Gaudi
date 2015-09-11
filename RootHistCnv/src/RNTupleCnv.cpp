@@ -51,7 +51,7 @@ StatusCode RootHistCnv::RNTupleCnv::initialize()   {
   StatusCode status = Converter::initialize();
   if ( status.isSuccess() ) {
     m_ntupleSvc = serviceLocator()->service("NTupleSvc");
-    if (!m_ntupleSvc.isValid()) status = StatusCode::FAILURE;
+    if (!m_ntupleSvc) status = StatusCode::FAILURE;
   }
   return status;
 }
@@ -146,7 +146,7 @@ StatusCode RootHistCnv::RNTupleCnv::createRep(DataObject* pObject,
       pAddr = pReg->address();
       if ( !pAddr )   {
         SmartIF<IDataManagerSvc> dataMgr(dataProvider());
-        if ( dataMgr.isValid() )    {
+        if ( dataMgr )    {
           IRegistry* pParentReg = nullptr;
           StatusCode status = dataMgr->objectParent(pReg, pParentReg);
           if ( status.isSuccess() )  {

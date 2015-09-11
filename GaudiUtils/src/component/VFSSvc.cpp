@@ -24,7 +24,7 @@ StatusCode VFSSvc::initialize() {
   MsgStream log(msgSvc(), name());
 
   m_toolSvc = serviceLocator()->service("ToolSvc");
-  if (!m_toolSvc.isValid()){
+  if (!m_toolSvc){
     log << MSG::ERROR << "Cannot locate ToolSvc" << endmsg;
     return StatusCode::FAILURE;
   }

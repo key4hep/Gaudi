@@ -80,8 +80,8 @@ THistSvc::initialize() {
 
   // Super ugly hack to make sure we have the OutputLevel set first, so we
   // can see DEBUG printouts in update handlers.
-  IJobOptionsSvc* jos = nullptr;
-  if( serviceLocator()->service( "JobOptionsSvc", jos, true ).isSuccess() ) {
+  auto jos = serviceLocator()->service<IJobOptionsSvc>( "JobOptionsSvc", true );
+  if( jos ) { 
     const auto props = jos->getProperties( name() );
 
     if ( props ) {

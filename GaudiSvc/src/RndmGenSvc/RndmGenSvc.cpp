@@ -46,9 +46,8 @@ RndmGenSvc::~RndmGenSvc()   {
 /// Service override: initialization
 StatusCode RndmGenSvc::initialize()   {
   StatusCode status = Service::initialize();
+
   MsgStream log(msgSvc(), name());
-  std::string machName = name()+".Engine";
-  SmartIF<IRndmEngine> engine;
   SmartIF<ISvcManager> mgr(serviceLocator());
 
   if ( status.isSuccess() )   {
@@ -56,15 +55,16 @@ StatusCode RndmGenSvc::initialize()   {
     if ( status.isSuccess() )   {  // Check if the Engine service exists:
       // FIXME: (MCl) why RndmGenSvc cannot create the engine service in a standard way?
       const bool CREATE = false;
-      engine = serviceLocator()->service(machName, CREATE);
-      if ( !engine.isValid() && mgr.isValid() )   {
+      std::string machName = name()+".Engine";
+      auto engine = serviceLocator()->service<IRndmEngine>(machName, CREATE);
+      if ( !engine && mgr )   {
         using Gaudi::Utils::TypeNameString;
         engine = mgr->createService(TypeNameString(machName, m_engineName));
       }
-      if ( engine.isValid() )   {
-        SmartIF<ISerialize> serial(engine);
-        SmartIF<IService>   service(engine);
-        if ( serial.isValid( ) && service.isValid( ) )  {
+      if ( engine )   {
+        auto serial = engine.as<ISerialize>();
+        auto service = engine.as<IService>();
+        if ( serial && service )  {
           status = service->sysInitialize();
           if ( status.isSuccess() )   {
             m_engine = engine;
@@ -72,7 +72,6 @@ StatusCode RndmGenSvc::initialize()   {
             m_engine->addRef();
             m_serialize->addRef();
             log << MSG::INFO << "Using Random engine:" << m_engineName << endmsg;
-            return status;
           }
         }
       }

@@ -29,9 +29,7 @@ DLLClassManager::DLLClassManager( IInterface* iface ) {
 StatusCode DLLClassManager::loadModule( const std::string& module,
 					bool fireIncident ) {
   // Access the message service if not yet done already
-  if (!m_msgsvc.isValid()) {
-    m_msgsvc = m_svclocator;
-  }
+  if (!m_msgsvc) m_msgsvc = m_svclocator;
   MsgStream log(m_msgsvc, "DllClassManager");
 
   std::string mod = module=="" ? System::moduleNameFull() : module;
@@ -63,8 +61,8 @@ StatusCode DLLClassManager::loadModule( const std::string& module,
   if (fireIncident && module != "") {
     //now fire ModuleLoadedIncident
     const bool CREATEIF(true);
-    SmartIF<IIncidentSvc> pIncidentSvc(m_svclocator->service("IncidentSvc", CREATEIF));
-    if( !pIncidentSvc.isValid() )  {
+    auto pIncidentSvc = m_svclocator->service<IIncidentSvc>("IncidentSvc", CREATEIF);
+    if( !pIncidentSvc )  {
       log << MSG::FATAL << "Can not locate IncidentSvc" << endmsg;
       throw GaudiException("Error retrieving IncidentSvc",
 			   "DLLClassManager::DLLClassManager", StatusCode::FAILURE);

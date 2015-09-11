@@ -61,7 +61,7 @@ void* work (void* counter)
 
   std::string value ;
   SmartIF<IProperty> propMgr ( m_pesaAppMgr );
-  if( !propMgr.isValid() ) {
+  if( !propMgr ) {
     COUTTHREAD(" Fatal error while retrieving Gaudi PropertyMgr ")
   } else {
     StatusCode sc = propMgr->getProperty( "EventLoop", value );
@@ -86,7 +86,7 @@ void* work (void* counter)
   StatusCode sc ;
   IEventProcessor* m_processingMgr = 0 ;
   SmartIF<ISvcLocator> svcLoc( m_pesaAppMgr );
-  if (svcLoc.isValid()) {
+  if (svcLoc) {
     sc = svcLoc->service( nameEventLoopMgr , m_processingMgr);
     if( !sc.isSuccess() )  {
       COUTTHREAD("FATAL Error retrieving Processing manager:")
@@ -99,7 +99,7 @@ void* work (void* counter)
     if ( 0 != m_processingMgr ) {
       SmartIF<IEventProcessor> processor(m_processingMgr);
 
-      if ( processor.isValid() )    {
+      if ( processor )    {
 	COUTTHREAD(" ---> Executing WorkerThread---> " << id_thread)
 	sc = processor->executeEvent(NULL);
 	if( sc.isFailure() ) {

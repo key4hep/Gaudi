@@ -117,14 +117,14 @@ public:
   */
   template <class T>
   StatusCode service( const std::string& name, T*& svc, bool createIf = false ) const {
-    SmartIF<T> ptr(serviceLocator()->service(name, createIf));
-    if (ptr.isValid()) {
+    auto ptr = serviceLocator()->service<T>(name, createIf);
+    if (ptr) {
       svc = ptr.get();
       svc->addRef();
       return StatusCode::SUCCESS;
     }
     // else
-    svc = 0;
+    svc = nullptr;
     return StatusCode::FAILURE;
   }
 

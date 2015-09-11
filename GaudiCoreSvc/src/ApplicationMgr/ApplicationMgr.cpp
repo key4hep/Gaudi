@@ -213,20 +213,20 @@ StatusCode ApplicationMgr::i_startup() {
   m_classManager->loadModule("").ignore();
 
   // Create the Message service
-  SmartIF<IService> msgsvc = svcManager()->createService(Gaudi::Utils::TypeNameString("MessageSvc", m_messageSvcType));
-  if( !msgsvc.isValid() )  {
+  auto msgsvc = svcManager()->createService(Gaudi::Utils::TypeNameString("MessageSvc", m_messageSvcType));
+  if( !msgsvc )  {
     fatal() << "Error creating MessageSvc of type " << m_messageSvcType << endmsg;
     return sc;
   }
   // Create the Job Options service
-  SmartIF<IService> jobsvc = svcManager()->createService(Gaudi::Utils::TypeNameString("JobOptionsSvc", m_jobOptionsSvcType));
-  if( !jobsvc.isValid() )   {
+  auto jobsvc = svcManager()->createService(Gaudi::Utils::TypeNameString("JobOptionsSvc", m_jobOptionsSvcType));
+  if( !jobsvc )   {
     fatal() << "Error creating JobOptionsSvc" << endmsg;
     return sc;
   }
 
   SmartIF<IProperty> jobOptsIProp(jobsvc);
-  if ( !jobOptsIProp.isValid() )   {
+  if ( !jobOptsIProp )   {
     fatal() << "Error locating JobOptionsSvc" << endmsg;
     return sc;
   }
@@ -284,12 +284,12 @@ StatusCode ApplicationMgr::i_startup() {
 
   // Get the useful interface from Message and JobOptions services
   m_messageSvc = m_svcLocator->service("MessageSvc");
-  if( !m_messageSvc.isValid() )  {
+  if( !m_messageSvc )  {
     fatal() << "Error retrieving MessageSvc." << endmsg;
     return sc;
   }
   m_jobOptionsSvc = m_svcLocator->service("JobOptionsSvc");
-  if( !m_jobOptionsSvc.isValid() )  {
+  if( !m_jobOptionsSvc )  {
     fatal() << "Error retrieving JobOptionsSvc." << endmsg;
     return sc;
   }
@@ -470,14 +470,14 @@ StatusCode ApplicationMgr::configure() {
 
   if (m_noOfEvtThreads == 0) {
     m_runable = m_svcLocator->service(m_runableType);
-    if( !m_runable.isValid() )  {
+    if( !m_runable )  {
       log << MSG::FATAL
           << "Error retrieving Runable:" << m_runableType
           << "\n Check option ApplicationMgr." << s_runable << endmsg;
       return sc;
     }
     m_processingMgr = m_svcLocator->service(evtloop_item);
-    if( !m_processingMgr.isValid() )  {
+    if( !m_processingMgr )  {
       log << MSG::FATAL
           << "Error retrieving Processing manager:" << m_eventLoopMgr
           << "\n Check option ApplicationMgr." << s_eventloop
@@ -617,7 +617,7 @@ StatusCode ApplicationMgr::nextEvent(int maxevt)    {
         << endmsg;
     return StatusCode::FAILURE;
   }
-  if (!m_processingMgr.isValid())   {
+  if (!m_processingMgr)   {
     MsgStream log( m_messageSvc, name() );
     log << MSG::FATAL << "No event processing manager specified. Check option:"
         << s_eventloop << endmsg;
@@ -742,20 +742,20 @@ StatusCode ApplicationMgr::terminate() {
 
   { // Force a disable the auditing of finalize for MessageSvc
     SmartIF<IProperty> prop(m_messageSvc);
-    if (prop.isValid()) {
+    if (prop) {
       prop->setProperty(BooleanProperty("AuditFinalize", false)).ignore();
     }
   }
   { // Force a disable the auditing of finalize for JobOptionsSvc
     SmartIF<IProperty> prop(m_jobOptionsSvc);
-    if (prop.isValid()) {
+    if (prop) {
       prop->setProperty(BooleanProperty("AuditFinalize", false)).ignore();
     }
   }
 
   // finalize MessageSvc
   SmartIF<IService> svc(m_messageSvc);
-  if ( !svc.isValid() ) {
+  if ( !svc ) {
     log << MSG::ERROR << "Could not get the IService interface of the MessageSvc" << endmsg;
   } else {
     svc->sysFinalize().ignore();
@@ -763,7 +763,7 @@ StatusCode ApplicationMgr::terminate() {
 
   // finalize JobOptionsSvc
   svc = m_jobOptionsSvc;
-  if ( !svc.isValid() ) {
+  if ( !svc ) {
     log << MSG::ERROR << "Could not get the IService interface of the JobOptionsSvc" << endmsg;
   } else {
     svc->sysFinalize().ignore();
@@ -876,7 +876,7 @@ StatusCode ApplicationMgr::run() {
 StatusCode ApplicationMgr::executeEvent(void* par)    {
   MsgStream log( m_messageSvc, name() );
   if( m_state == Gaudi::StateMachine::RUNNING ) {
-    if ( m_processingMgr.isValid() )    {
+    if ( m_processingMgr )    {
       return m_processingMgr->executeEvent(par);
     }
   }
@@ -891,7 +891,7 @@ StatusCode ApplicationMgr::executeEvent(void* par)    {
 StatusCode ApplicationMgr::executeRun(int evtmax)    {
   MsgStream log( m_messageSvc, name() );
   if( m_state == Gaudi::StateMachine::RUNNING ) {
-    if ( m_processingMgr.isValid() )    {
+    if ( m_processingMgr )    {
       return m_processingMgr->executeRun(evtmax);
     }
     log << MSG::WARNING << "No EventLoop Manager specified " << endmsg;
@@ -908,7 +908,7 @@ StatusCode ApplicationMgr::executeRun(int evtmax)    {
 StatusCode ApplicationMgr::stopRun()    {
   MsgStream log( m_messageSvc, name() );
   if( m_state == Gaudi::StateMachine::RUNNING ) {
-    if ( m_processingMgr.isValid() )    {
+    if ( m_processingMgr )    {
       return m_processingMgr->stopRun();
     }
     log << MSG::WARNING << "No EventLoop Manager specified " << endmsg;
@@ -1000,11 +1000,9 @@ void ApplicationMgr::SIExitHandler( Property& ) {
 // Handle properties of the event loop manager (Top alg/Output stream list)
 //============================================================================
 void ApplicationMgr::evtLoopPropertyHandler( Property& p ) {
-  if ( m_processingMgr.isValid() )    {
-    SmartIF<IProperty> props(m_processingMgr);
-    if ( props.isValid() )    {
-      props->setProperty( p ).ignore();
-    }
+  if ( m_processingMgr )    {
+    auto props = m_processingMgr.as<IProperty>();
+    if ( props ) props->setProperty( p ).ignore();
   }
 }
 

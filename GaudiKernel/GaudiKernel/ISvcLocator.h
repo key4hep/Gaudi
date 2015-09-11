@@ -51,12 +51,9 @@ public:
   virtual StatusCode getService( const Gaudi::Utils::TypeNameString& typeName,
                                  const InterfaceID& iid,
                                  IInterface*& pinterface ) {
-    SmartIF<IService> svc = service(typeName, false);
-    if (svc.isValid()) {
-      // Service found. So now get the right interface
-      return svc->queryInterface(iid, (void**)&pinterface);
-    }
-    return StatusCode::FAILURE;
+    auto svc = service(typeName, false);
+    return  svc ? svc->queryInterface(iid, (void**)&pinterface)
+                : StatusCode::FAILURE;
   }
 
   /** Get a reference to a service and create it if it does not exists

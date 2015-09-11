@@ -122,7 +122,7 @@ StatusCode ServiceManager::addService(const Gaudi::Utils::TypeNameString& typeNa
   if (it == m_listsvc.end()) { // not found
     // If the service does not exist, we create it
     SmartIF<IService>& svc = createService(typeName); // WARNING: svc is now a reference to something that lives in m_listsvc
-    if (svc.isValid()) {
+    if (svc) {
       it = find(svc.get()); // now it is in the list because createService added it
       it->priority = prio;
       StatusCode sc = StatusCode(StatusCode::SUCCESS, true);
@@ -421,8 +421,8 @@ StatusCode ServiceManager::finalize()
   // get list of PostFinalize clients
   std::vector<IIncidentListener*> postFinList;
   {
-    SmartIF<IIncidentSvc> p_inc(service("IncidentSvc",false));
-    if (p_inc.isValid()) {
+    auto p_inc = service<IIncidentSvc>("IncidentSvc",false);
+    if (p_inc) {
       p_inc->getListeners(postFinList,IncidentType::SvcPostFinalize);
     }
   }

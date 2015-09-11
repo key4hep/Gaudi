@@ -33,12 +33,12 @@ StatusCode Auditor::sysInitialize() {
   if ( isEnabled( ) && ! m_isInitialized ) {
 
     // Setup the default service ... this should be upgraded so as to be configurable.
-    if( m_pSvcLocator == 0 )
+    if( !m_pSvcLocator )
       return StatusCode::FAILURE;
 
     // Set up message service
     m_MS = serviceLocator(); // get default message service
-    if( !m_MS.isValid() )  return StatusCode::FAILURE;
+    if( !m_MS )  return StatusCode::FAILURE;
 
     // Set the Auditor's properties
     sc = setProperties();

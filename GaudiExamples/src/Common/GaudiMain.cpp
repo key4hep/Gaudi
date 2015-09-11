@@ -10,10 +10,10 @@
 int main ( int argc, char** argv ) {
   // Create an instance of an application manager
   IInterface* iface = Gaudi::createApplicationMgr();
-  SmartIF<IProperty>     propMgr ( iface );
   SmartIF<IAppMgrUI>     appMgr  ( iface );
+  auto propMgr = appMgr.as<IProperty>();
 
-  if( !appMgr.isValid() || !propMgr.isValid() ) {
+  if( !appMgr || !propMgr ) {
     std::cout << "Fatal error while creating the ApplicationMgr " << std::endl;
     return 1;
   }

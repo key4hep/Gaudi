@@ -142,10 +142,10 @@ public:
   template <class T>
   StatusCode service( const std::string& name, const T*& psvc, bool createIf = true ) const {
     ISvcLocator& svcLoc = *serviceLocator();
-    SmartIF<T> ptr(
-      ServiceLocatorHelper(svcLoc, *this).service(name, !createIf, // quiet
-                                                  createIf));
-    if (ptr.isValid()) {
+    auto ptr =
+      ServiceLocatorHelper(svcLoc, *this).service<T>(name, !createIf, // quiet
+                                                     createIf);
+    if (ptr) {
       psvc = ptr.get();
       const_cast<T*>(psvc)->addRef();
       return StatusCode::SUCCESS;
@@ -158,16 +158,14 @@ public:
   template <class T>
   StatusCode service( const std::string& name, T*& psvc, bool createIf = true ) const {
     ISvcLocator& svcLoc = *serviceLocator();
-    SmartIF<T> ptr(
-      ServiceLocatorHelper(svcLoc, *this).service(name, !createIf, // quiet
-                                                  createIf));
-    if (ptr.isValid()) {
-      psvc = ptr.get();
+    auto  ptr =
+      ServiceLocatorHelper(svcLoc, *this).service<T>(name, !createIf, // quiet
+                                                     createIf);
+    psvc = ( ptr ? ptr.get() : nullptr );
+    if (psvc) {
       psvc->addRef();
       return StatusCode::SUCCESS;
     }
-    // else
-    psvc = nullptr;
     return StatusCode::FAILURE;
   }
 

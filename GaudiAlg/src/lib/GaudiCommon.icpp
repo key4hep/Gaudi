@@ -157,7 +157,8 @@ GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface * parent )
 
   // Get the job option service
   SmartIF<IJobOptionsSvc> jos(PBASE::service("JobOptionsSvc"));
-  if (!jos.isValid()) Exception("Cannot get JobOptionsSvc");
+  // auto jos = PBASE::service<IJobOptionsSvc>("JobOptionsSvc");
+  if (!jos) Exception("Cannot get JobOptionsSvc");
 
   // Get the "Context" option if in the file...
   const auto myList = jos->getProperties( this->name() );
@@ -403,7 +404,7 @@ StatusCode GaudiCommon<PBASE>::releaseSvc ( const IInterface* Svc  ) const
 {
   if( !Svc ) return Error ( "releaseSvc(IInterface):: IInterface* points to NULL!" ) ;
   SmartIF<IService> svc{const_cast<IInterface*>(Svc)};
-  if (!svc.isValid()) return Warning( "releaseSvc(IInterface):: IInterface* is not a service" );
+  if (!svc) return Warning( "releaseSvc(IInterface):: IInterface* is not a service" );
   auto it = std::lower_bound( std::begin(m_services), std::end(m_services), svc, svc_lt );
   if (it == m_services.end() || !svc_eq(*it,svc)) {
     return Warning( "releaseSvc(IInterface):: IInterface* is not active" );
@@ -440,7 +441,7 @@ void GaudiCommon<PBASE>::addToToolList( IAlgTool * tool ) const
 template < class PBASE >
 void GaudiCommon<PBASE>::addToServiceList( SmartIF<IService> svc ) const
 {
-  if (svc.isValid()) {
+  if (svc) {
     auto i = std::lower_bound( std::begin(m_services), std::end(m_services), svc, svc_lt );
     if ( i == std::end(m_services) || !svc_eq(*i,svc) ) {
             m_services.insert( i, std::move(svc) );
