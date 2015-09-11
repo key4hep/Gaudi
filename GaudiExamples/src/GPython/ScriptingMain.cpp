@@ -1,5 +1,3 @@
-//$Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiExamples/src/GPython/ScriptingMain.cpp,v 1.4 2001/06/29 16:30:21 mato Exp $	//
-
 // Include files
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/Bootstrap.h"
@@ -25,7 +23,7 @@ int main ( int argc, char** argv ) {
   std:: string opts = (argc>1) ? argv[1] : "jobOptions.txt";
 
   propMgr->setProperty( "JobOptionsPath", opts );
-  if( opts.substr( opts.length() - 3, 3 ) == ".py" ) {
+  if( opts.compare( opts.length() - 3, 3, ".py") == 0 ) {
     propMgr->setProperty( "JobOptionsType", "NONE" );
     propMgr->setProperty( "DLLs",           "['SIPython']" );
     propMgr->setProperty( "Runable",        "PythonScriptingSvc" );

@@ -1,4 +1,3 @@
-// $Id:$
 // Copyright 2011 alexander.mazurov@gmail.com
 #ifndef JOBOPTIONSVC_FILE_PARSER_H_
 #define JOBOPTIONSVC_FILE_PARSER_H_

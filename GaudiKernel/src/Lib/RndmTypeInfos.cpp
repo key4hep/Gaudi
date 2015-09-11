@@ -1,4 +1,3 @@
-// $Id: RndmTypeInfos.cpp,v 1.1 2003/02/18 09:10:49 mato Exp $
 // Include files
 #include <typeinfo>
 

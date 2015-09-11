@@ -28,7 +28,7 @@ public:
   typedef std::string id_type;
 
   /// destructor
-  virtual ~IRegistry() { }
+  virtual ~IRegistry() = default;
 
   /// Add reference to object
   virtual       unsigned long   addRef    ()         = 0;

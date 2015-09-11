@@ -7,7 +7,7 @@
 
 /** @class IPublishSvc IPublishSvc.h GaudiKernel/IPublishSvc.h
 
-    Definition of the IPublishSvc interface, which publishes Gaudi variables
+    Definition of the IPublishSvc interface, which publishes variables
     to outside monitoring processes.
 
     @author Beat Jost
@@ -48,7 +48,7 @@ public:
   virtual void updateAll() = 0;
 
   /// Virtual destructor.
-  virtual ~IPublishSvc() {}
+  virtual ~IPublishSvc() = default;
 };
 
 #endif // GAUDIKERNEL_IPUBLISH_H

@@ -39,21 +39,19 @@ public:
   ( const std::string& name ,
     ISvcLocator*       pSvc ) ;
   /// virtual destructor
-  virtual ~AlgContextAuditor    () ;
+  virtual ~AlgContextAuditor    () = default;
   /// standard initialization, @see IAuditor
   virtual StatusCode initialize () ;
   /// standard finalization, @see IAuditor
   virtual StatusCode finalize   () ;
 private:
-  /// the default constructor is disabled
-  AlgContextAuditor () ;
-  /// copy constructor is disabled
-  AlgContextAuditor ( const AlgContextAuditor& ) ;
-  /// assignment operator is disabled
-  AlgContextAuditor& operator=( const AlgContextAuditor& ) ;
+  /// delete the default/copy constructor and assignment
+  AlgContextAuditor () = delete;
+  AlgContextAuditor ( const AlgContextAuditor& ) = delete;
+  AlgContextAuditor& operator=( const AlgContextAuditor& ) = delete;
 private:
   /// the pointer to Algorithm Context Service
-  IAlgContextSvc* m_svc ;
+  IAlgContextSvc* m_svc = nullptr;
 } ;
 
 // ============================================================================

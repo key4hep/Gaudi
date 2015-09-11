@@ -1,4 +1,3 @@
-// $Id: EventLoopMgr.h,v 1.9 2008/10/09 13:40:18 marcocle Exp $
 #ifndef GAUDISVC_EVENTLOOPMGR_H
 #define GAUDISVC_EVENTLOOPMGR_H 1
 
@@ -41,50 +40,48 @@ public:
 
 protected:
   /// Reference to the Event Data Service's IDataManagerSvc interface
-  SmartIF<IDataManagerSvc>  m_evtDataMgrSvc;
+  SmartIF<IDataManagerSvc>  m_evtDataMgrSvc = nullptr;
   /// Reference to the Event Data Service's IDataProviderSvc interface
-  SmartIF<IDataProviderSvc> m_evtDataSvc;
+  SmartIF<IDataProviderSvc> m_evtDataSvc = nullptr;
   /// Reference to the Event Selector
-  SmartIF<IEvtSelector>     m_evtSelector;
+  SmartIF<IEvtSelector>     m_evtSelector = nullptr;
   /// Event Iterator
-  IEvtSelector::Context*      m_evtContext;
+  IEvtSelector::Context*      m_evtContext = nullptr;
   /// Event selector
   std::string       m_evtsel;
   /// Reference to the Histogram Data Service
-  SmartIF<IDataManagerSvc>  m_histoDataMgrSvc;
+  SmartIF<IDataManagerSvc>  m_histoDataMgrSvc = nullptr;
   /// Reference to the Histogram Persistency Service
-  SmartIF<IConversionSvc>   m_histoPersSvc;
+  SmartIF<IConversionSvc>   m_histoPersSvc = nullptr;
   /// Name of the Hist Pers type
   std::string       m_histPersName;
   /// Property interface of ApplicationMgr
-  SmartIF<IProperty>        m_appMgrProperty;
+  SmartIF<IProperty>        m_appMgrProperty = nullptr;
   /// Flag to avoid to fire the EnvEvent incident twice in a row
   /// (and also not before the first event)
-  bool              m_endEventFired;
+  bool              m_endEventFired = true;
   /// Flag to disable warning messages when using external input
-  bool              m_warnings;
+  bool              m_warnings = true;
 
 public:
   /// Standard Constructor
   EventLoopMgr(const std::string& nam, ISvcLocator* svcLoc);
   /// Standard Destructor
-  virtual ~EventLoopMgr();
+  ~EventLoopMgr() override;
   /// Create event address using event selector
   StatusCode getEventRoot(IOpaqueAddress*& refpAddr);
 
   /// implementation of IService::initialize
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
   /// implementation of IService::reinitialize
-  virtual StatusCode reinitialize();
+  StatusCode reinitialize() override;
   /// implementation of IService::stop
-  virtual StatusCode stop();
+  StatusCode stop() override;
   /// implementation of IService::finalize
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
   /// implementation of IService::nextEvent
-  virtual StatusCode nextEvent(int maxevt);
+  StatusCode nextEvent(int maxevt) override;
   /// implementation of IEventProcessor::executeEvent(void* par)
-  virtual StatusCode executeEvent(void* par);
-  /// implementation of IEventProcessor::executeRun()
-  virtual StatusCode executeRun(int maxevt);
+  StatusCode executeEvent(void* par) override;
 };
 #endif // GAUDISVC_EVENTLOOPMGR_H

@@ -1,6 +1,3 @@
-// $Id: AllocatorPool.cpp,v 1.3 2007/05/24 14:39:11 hmd Exp $ 
-// ============================================================================
-// CVS tag $Name:  $, version $Revision: 1.3 $
 // ============================================================================
 /** @file
  *  Implementation file for the class GaudiUtils::AllocatorPool.h
@@ -52,8 +49,7 @@
 GaudiUtils::AllocatorPool::AllocatorPool
 ( unsigned int sz )
   : esize(sz<sizeof(PoolLink) ? sizeof(PoolLink) : sz),
-    csize(sz<1024/2-16 ? 1024-16 : sz*10-16),
-    chunks(0), head(0), nchunks(0)
+    csize(sz<1024/2-16 ? 1024-16 : sz*10-16)
 {}
 
 // ************************************************************
@@ -99,15 +95,15 @@ void GaudiUtils::AllocatorPool::Reset()
   // Free all chunks
   //
   PoolChunk* n = chunks;
-  PoolChunk* p = 0;
+  PoolChunk* p = nullptr;
   while (n)
   {
     p = n;
     n = n->next;
     delete p;
   }
-  head = 0;
-  chunks = 0;
+  head = nullptr;
+  chunks = nullptr;
   nchunks = 0;
 }
 
@@ -123,17 +119,17 @@ void GaudiUtils::AllocatorPool::Grow()
   PoolChunk* n = new PoolChunk(csize);
   n->next = chunks;
   chunks = n;
-  nchunks++;
+  ++nchunks;
   
   const int nelem = csize/esize;
-  char* start = n->mem;
+  char* start = n->mem.get();
   char* last = &start[(nelem-1)*esize];
   for (char* p=start; p<last; p+=esize)
   {
     reinterpret_cast<PoolLink*>(p)->next
       = reinterpret_cast<PoolLink*>(p+esize);
   }
-  reinterpret_cast<PoolLink*>(last)->next = 0;
+  reinterpret_cast<PoolLink*>(last)->next = nullptr;
   head = reinterpret_cast<PoolLink*>(start);
 }
 

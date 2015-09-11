@@ -1,4 +1,3 @@
-// $Id: H1D.cpp,v 1.14 2007/07/16 13:36:17 hmd Exp $
 #ifdef __ICC
 // disable icc remark #2259: non-pointer conversion from "X" to "Y" may lose significant bits
 //   TODO: To be removed, since it comes from ROOT TMathBase.h
@@ -16,28 +15,30 @@
 #include "GaudiKernel/ObjectFactory.h"
 
 std::pair<DataObject*,AIDA::IHistogram1D*> Gaudi::createH1D(const std::string& title,int nBins,double xlow, double xup)  {
-  Histogram1D* p = new Histogram1D(new TH1D(title.c_str(),title.c_str(),nBins,xlow,xup));
-  return std::pair<DataObject*,AIDA::IHistogram1D*>(p,p);
+  auto p = new Histogram1D(new TH1D(title.c_str(),title.c_str(),nBins,xlow,xup));
+  return { p, p };
 }
 
 std::pair<DataObject*,AIDA::IHistogram1D*> Gaudi::createH1D(const std::string& title, const Edges& e)  {
-  Histogram1D* p = new Histogram1D(new TH1D(title.c_str(),title.c_str(),e.size()-1,&e.front()));
-  return std::pair<DataObject*,AIDA::IHistogram1D*>(p,p);
+  auto p = new Histogram1D(new TH1D(title.c_str(),title.c_str(),e.size()-1,&e.front()));
+  return { p, p };
 }
 
 std::pair<DataObject*,AIDA::IHistogram1D*> Gaudi::createH1D(const AIDA::IHistogram1D& hist)  {
   TH1D *h = getRepresentation<AIDA::IHistogram1D,TH1D>(hist);
-  Histogram1D *n = h ? new Histogram1D(new TH1D(*h)) : 0;
-  return std::pair<DataObject*,AIDA::IHistogram1D*>(n,n);
+  auto n = ( h ? new Histogram1D(new TH1D(*h)) : nullptr );
+  return { n, n };
 }
 namespace Gaudi {
+
   template<> void *Generic1D<AIDA::IHistogram1D,TH1D>::cast(const std::string & className) const  {
     if (className == "AIDA::IHistogram1D")
       return const_cast<AIDA::IHistogram1D*>((AIDA::IHistogram1D*)this);
     if (className == "AIDA::IHistogram")
       return const_cast<AIDA::IHistogram*>((AIDA::IHistogram*)this);
-    return 0;
+    return nullptr;
   }
+
 
   template<> int Generic1D<AIDA::IHistogram1D,TH1D>::binEntries (int index) const  {
     if (binHeight(index)<=0) return 0;
@@ -48,22 +49,19 @@ namespace Gaudi {
   template <>
   void Generic1D<AIDA::IHistogram1D,TH1D>::adoptRepresentation(TObject* rep)  {
     TH1D* imp = dynamic_cast<TH1D*>(rep);
-    if ( imp )  {
-      if ( m_rep ) delete m_rep;
-      m_rep = imp;
-      return;
-    }
-    throw std::runtime_error("Cannot adopt native histogram representation.");
+    if ( !imp )  throw std::runtime_error("Cannot adopt native histogram representation.");
+    m_rep.reset(imp);
   }
 }
 
-Gaudi::Histogram1D::Histogram1D()  {
-  m_rep = new TH1D();
+Gaudi::Histogram1D::Histogram1D()  
+    : Base( new TH1D() )
+{
   init("",false);
 }
 
 Gaudi::Histogram1D::Histogram1D(TH1D* rep)  {
-  m_rep = rep;
+  m_rep.reset( rep );
   init(m_rep->GetTitle());
   initSums();
 }
@@ -86,7 +84,7 @@ void Gaudi::Histogram1D::initSums()  {
   m_sumEntries = 0;
   for(int i=1, n=m_rep->GetNbinsX(); i<=n; ++i)    {
     m_sumwx += m_rep->GetBinContent(i)*m_rep->GetBinCenter(i);
-    m_sumEntries += (int)m_rep->GetBinContent(i);
+    m_sumEntries += m_rep->GetBinContent(i);
   }
 }
 
@@ -164,9 +162,8 @@ bool Gaudi::Histogram1D::fill ( double x,double weight )  {
 void Gaudi::Histogram1D::copyFromAida(const AIDA::IHistogram1D & h) {
  // implement here the copy
   std::string tit = h.title()+"Copy";
-  delete m_rep;
   if (h.axis().isFixedBinning() )  {
-    m_rep = new TH1D(tit.c_str(),tit.c_str(),h.axis().bins(),h.axis().lowerEdge(),h.axis().upperEdge());
+    m_rep.reset( new TH1D(tit.c_str(),tit.c_str(),h.axis().bins(),h.axis().lowerEdge(),h.axis().upperEdge()) );
   }
   else {
     Edges e;
@@ -175,7 +172,7 @@ void Gaudi::Histogram1D::copyFromAida(const AIDA::IHistogram1D & h) {
     }
     // add also upperedges at the end
     e.push_back(h.axis().upperEdge() );
-    m_rep = new TH1D(tit.c_str(),tit.c_str(),e.size()-1,&e.front());
+    m_rep.reset( new TH1D(tit.c_str(),tit.c_str(),e.size()-1,&e.front()) );
   }
   m_axis.initialize(m_rep->GetXaxis(),false);
   m_rep->Sumw2();
@@ -231,16 +228,15 @@ StreamBuffer& Gaudi::Histogram1D::serialize(StreamBuffer& s) {
   int    isFixedBinning, bins;
   s >> isFixedBinning >> bins;
 
-  if ( m_rep ) delete m_rep;
   if ( isFixedBinning ) {
     s >> lowerEdge >> upperEdge;
-    m_rep = new TH1D(title.c_str(),title.c_str(),bins,lowerEdge,upperEdge);
+    m_rep.reset( new TH1D(title.c_str(),title.c_str(),bins,lowerEdge,upperEdge) );
   } else {
     Edges edges;
     edges.resize(bins);
     for ( int i = 0; i <= bins; ++i )
       s >> *(double*)&edges[i];
-    m_rep = new TH1D(title.c_str(),title.c_str(),edges.size()-1,&edges.front());
+    m_rep.reset( new TH1D(title.c_str(),title.c_str(),edges.size()-1,&edges.front()) );
   }
   m_axis.initialize(m_rep->GetXaxis(),true);
   m_rep->Sumw2();

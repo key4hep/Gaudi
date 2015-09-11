@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/IClassManager.h,v 1.6 2006/12/11 13:40:13 leggett Exp $
 #ifndef GAUDIKERNEL_ICLASSMANAGER_H
 #define GAUDIKERNEL_ICLASSMANAGER_H
 
@@ -22,7 +21,7 @@ public:
 
   /// Declare a sharable library to be used for creating instances of a given algorithm type.
   virtual StatusCode loadModule( const std::string& module,
-				 bool fireIncident=true ) = 0;  // Sharable library name
+                                 bool fireIncident=true ) = 0;  // Sharable library name
 };
 
 #endif  // GAUDIKERNEL_ICLASSMANAGER_H

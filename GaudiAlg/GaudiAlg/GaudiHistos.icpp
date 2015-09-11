@@ -1,5 +1,3 @@
-// $Id: GaudiHistos.icpp,v 1.17 2008/10/10 12:39:04 marcocle Exp $
-// ============================================================================
 #ifndef GAUDIALG_GAUDIHISTOS_ICPP
 #define GAUDIALG_GAUDIHISTOS_ICPP 1
 // ============================================================================
@@ -18,6 +16,9 @@
 #include <string>
 #include <vector>
 #include <set>
+#include <cmath>
+// ============================================================================
+#include "boost/algorithm/string/replace.hpp"
 // ============================================================================
 // GaudiKernel
 // ============================================================================
@@ -31,7 +32,6 @@
 // GaudiAlg
 // ============================================================================
 #include "GaudiAlg/GaudiHistos.h"
-#include "GaudiAlg/CheckForNaN.h"
 #include "GaudiAlg/Print.h"
 #include "GaudiAlg/Fill.h"
 #include "GaudiAlg/HbookName.h"
@@ -48,6 +48,38 @@ namespace AIDA
   class IProfile       ;
   class IProfile1D     ;
   class IProfile2D     ;
+}
+// ============================================================================
+// utility to allow iteration in order
+// ============================================================================
+namespace {
+   constexpr struct ordered_t {
+       template <typename C>
+       std::map<typename C::key_type, typename C::mapped_type> operator()(const C& c) const {
+               return { std::begin(c), std::end(c) };
+       }
+   } ordered {};
+
+   template <typename Map>
+   typename Map::mapped_type lookup_(const Map& map, const typename Map::key_type& ID) {
+        auto found = map.find( ID ) ;
+        return found != std::end(map) ? found->second : nullptr;
+   }
+
+   // ============================================================================
+   // Searches 'title' for all instancies of 'A' and replaces them with 'B'
+   // ============================================================================
+   inline void stringSearchReplace ( std::string       & title ,
+                                     const std::string & A     ,
+                                     const std::string & B     )
+   {
+     for ( auto slash = title.find_first_of ( A ) ;
+           slash != std::string::npos ;
+           slash = title.find_first_of( A ) )
+     {
+       title = title.substr(0,slash) + B + title.substr(slash+A.size());
+     }
+   }
 }
 // =============================================================================
 // Constructor initialisation and job options
@@ -69,7 +101,7 @@ void GaudiHistos<PBASE>::initGaudiHistosConstructor()
   this->declareProperty
     ( "HistoCountersPrint"         ,
       m_histoCountersPrint = true ,
-      "Switch on/off the printout of histogram counters at finalization" ) ;  
+      "Switch on/off the printout of histogram counters at finalization" ) ;
   // check for NaN/Finite
   this->declareProperty
     ( "HistoCheckForNaN"      ,
@@ -93,7 +125,7 @@ void GaudiHistos<PBASE>::initGaudiHistosConstructor()
   // histogram directory
   this->declareProperty
     ( "HistoDir"             ,
-      m_histoDir      = this->name() ,
+      m_histoDir      = boost::algorithm::replace_all_copy( this->name(), ":", "_" ) ,
       "Histogram Directory" ) ;
   // control output level of histograms
   this->declareProperty ( "FullDetail"            , m_fullDetail    = false ) ;
@@ -117,10 +149,8 @@ void GaudiHistos<PBASE>::initGaudiHistosConstructor()
   this->declareProperty
     ( "UseSequencialNumericAutoIDs", m_useNumericAutoIDs = false,
       "Flag to allow users to switch back to the old style of creating numerical automatic IDs" );
-  m_idReplaceInfo.clear();
-  m_idReplaceInfo["/"] = "=SLASH=";
   this->declareProperty
-    ( "AutoStringIDPurgeMap", m_idReplaceInfo,
+    ( "AutoStringIDPurgeMap", m_idReplaceInfo = { { "/", "=SLASH=" } } ,
       "Map of strings to search and replace when using the title as the basis of automatically generated literal IDs" );
 }
 // ============================================================================
@@ -147,7 +177,7 @@ initialize
   }
 
   // check the validity of histogram service
-  if ( this->histoSvc() == NULL )
+  if ( !this->histoSvc() )
   { return this->Error("initialize():: IHistogramSvc* is invalid"); }
 
   // Warn if the user has decided to use numerical automatic IDs
@@ -255,20 +285,15 @@ int GaudiHistos<PBASE>::printHistos ( const MSG::Level level ) const
       msg << std::endl << Gaudi::Utils::Histos::format
         ( "ID" , table.header() , m_histo1DTableFormatShort ) ;
     }
-    // temporary map to keep ordered IDs
-    typedef std::map<HistoID,const AIDA::IHistogram1D*> OrderedMapType;
-    OrderedMapType OrderedMap ( histo1DMapID().begin() , histo1DMapID().end() );
-    //
-    for ( OrderedMapType::const_iterator entry = OrderedMap.begin() ;
-          OrderedMap.end() != entry ; ++entry )
+    for ( const auto& entry : ordered( histo1DMapID() ))
     {
-      const AIDA::IHistogram1D* aida = entry->second ;
-      if ( NULL == aida )
+      const auto* aida = entry.second ;
+      if ( !aida )
       { this->error() << "IHistogram1D points to NULL" << endmsg ; continue ; }
       // format and print the row
       msg << std::endl << table.toString
         ( aida                      ,
-          HistoID ( entry->first )  ,
+          HistoID ( entry.first )  ,
           m_histo1DTableFormatShort ) ;
     }
     msg << endmsg ;
@@ -279,18 +304,13 @@ int GaudiHistos<PBASE>::printHistos ( const MSG::Level level ) const
     msg << "List of booked 2D histograms in directory         "
         << "\"" << histoPath() << "\" :-" ;
 
-    // temporary map to keep ordered IDs
-    typedef std::map<HistoID,const AIDA::IHistogram2D*> OrderedMapType;
-    OrderedMapType OrderedMap ( histo2DMapID().begin() , histo2DMapID().end() ) ;
-    //
-    for ( OrderedMapType::const_iterator entry = OrderedMap.begin() ;
-          OrderedMap.end() != entry ; ++entry )
+    for ( const auto& entry : ordered( histo2DMapID() ) )
     {
-      const AIDA::IHistogram2D* aida = entry->second ;
-      if ( NULL == aida )
+      const auto* aida = entry.second ;
+      if ( !aida )
       { this->error() << "IHistogram2D points to NULL" << endmsg ; continue ; }
       msg << std::endl
-          << GaudiAlg::Print2D::toString ( aida , entry->first );
+          << GaudiAlg::Print2D::toString ( aida , entry.first );
     }
     msg << endmsg ;
   }
@@ -299,17 +319,12 @@ int GaudiHistos<PBASE>::printHistos ( const MSG::Level level ) const
   {
     msg << "List of booked 3D histograms in directory         "
         << "\"" << histoPath() << "\" :-" ;
-    // temporary map to keep ordered IDs
-    typedef std::map<HistoID,const AIDA::IHistogram3D*> OrderedMapType;
-    OrderedMapType OrderedMap ( histo3DMapID().begin() , histo3DMapID().end() ) ;
-    //
-    for ( OrderedMapType::const_iterator entry = OrderedMap.begin() ;
-          OrderedMap.end() != entry ; ++entry )
+    for ( const auto& entry : ordered( histo3DMapID() ) )
     {
-      const AIDA::IHistogram3D* aida = entry->second ;
-      if ( NULL == aida )
+      const auto* aida = entry.second ;
+      if ( !aida )
       { this->error() << "IHistogram3D points to NULL" << endmsg ; continue ; }
-      msg << std::endl << GaudiAlg::Print3D::toString ( aida , entry->first );
+      msg << std::endl << GaudiAlg::Print3D::toString ( aida , entry.first );
     }
     msg << endmsg ;
   }
@@ -318,17 +333,12 @@ int GaudiHistos<PBASE>::printHistos ( const MSG::Level level ) const
   {
     msg << "List of booked 1D profile histograms in directory "
         << "\"" << histoPath() << "\" :-" ;
-    // temporary map to keep ordered IDs
-    typedef std::map<HistoID,const AIDA::IProfile1D*> OrderedMapType;
-    OrderedMapType OrderedMap ( profile1DMapID().begin() , profile1DMapID().end() ) ;
-    //
-    for ( OrderedMapType::const_iterator entry = OrderedMap.begin() ;
-          OrderedMap.end() != entry ; ++entry )
+    for ( const auto& entry : ordered(  profile1DMapID() ) )
     {
-      const AIDA::IProfile1D*   aida = entry->second ;
-      if ( NULL == aida )
+      const auto*   aida = entry.second ;
+      if ( !aida )
       { this->error() << "IProfile1D points to NULL" << endmsg ; continue ; }
-      msg << std::endl << GaudiAlg::Print1DProf::toString  ( aida , entry->first );
+      msg << std::endl << GaudiAlg::Print1DProf::toString  ( aida , entry.first );
     }
     msg << endmsg ;
   }
@@ -337,17 +347,12 @@ int GaudiHistos<PBASE>::printHistos ( const MSG::Level level ) const
   {
     msg << "List of booked 2D profile histograms in directory "
         << "\"" << histoPath() << "\" :-" ;
-    // temporary map to keep ordered IDs
-    typedef std::map<HistoID,const AIDA::IProfile2D*> OrderedMapType;
-    OrderedMapType OrderedMap ( profile2DMapID().begin() , profile2DMapID().end() ) ;
-    //
-    for ( OrderedMapType::const_iterator entry = OrderedMap.begin() ;
-          OrderedMap.end() != entry ; ++entry )
+    for ( const auto& entry : ordered(profile2DMapID() ) )
     {
-      const AIDA::IProfile2D*   aida = entry->second ;
-      if ( NULL == aida )
+      const auto*   aida = entry.second ;
+      if ( !aida )
       { this->error() << "IProfile2D points to NULL" << endmsg ; continue ; }
-      msg << std::endl << GaudiAlg::Print2DProf::toString ( aida , entry->first );
+      msg << std::endl << GaudiAlg::Print2DProf::toString ( aida , entry.first );
     }
     msg << endmsg ;
   }
@@ -398,13 +403,7 @@ void GaudiHistos<PBASE>::monitorHisto
 template <class PBASE>
 AIDA::IHistogram1D* GaudiHistos<PBASE>::histo1D ( const HistoID& ID )  const
 {
-  AIDA::IHistogram1D * h(NULL);
-  //
-  Histo1DMapID::const_iterator found = histo1DMapID().find( ID ) ;
-  //
-  h = ( histo1DMapID().end() == found ? NULL : found->second );
-  //
-  return h ;
+  return lookup_( histo1DMapID(), ID );
 }
 // ============================================================================
 // access the EXISTING 2D histogram by ID
@@ -412,13 +411,7 @@ AIDA::IHistogram1D* GaudiHistos<PBASE>::histo1D ( const HistoID& ID )  const
 template <class PBASE>
 AIDA::IHistogram2D* GaudiHistos<PBASE>::histo2D ( const HistoID& ID )  const
 {
-  AIDA::IHistogram2D * h(NULL);
-  //
-  Histo2DMapID::const_iterator found = histo2DMapID().find( ID ) ;
-  //
-  h = ( histo2DMapID().end() == found ? NULL : found->second );
-  //
-  return h;
+  return lookup_( histo2DMapID(), ID );
 }
 // ============================================================================
 // access the EXISTING 3D histogram by ID
@@ -426,12 +419,7 @@ AIDA::IHistogram2D* GaudiHistos<PBASE>::histo2D ( const HistoID& ID )  const
 template <class PBASE>
 AIDA::IHistogram3D* GaudiHistos<PBASE>::histo3D ( const HistoID& ID )  const
 {
-  AIDA::IHistogram3D * h(NULL);
-  //
-  Histo3DMapID::const_iterator found = histo3DMapID().find( ID ) ;
-  h = ( histo3DMapID().end() == found ? NULL : found->second );
-  //
-  return h;
+  return lookup_( histo3DMapID(), ID );
 }
 // ============================================================================
 // access the EXISTING 1D profile histogram by ID
@@ -439,13 +427,7 @@ AIDA::IHistogram3D* GaudiHistos<PBASE>::histo3D ( const HistoID& ID )  const
 template <class PBASE>
 AIDA::IProfile1D* GaudiHistos<PBASE>::profile1D ( const HistoID& ID )  const
 {
-  AIDA::IProfile1D * h(NULL);
-  //
-  Profile1DMapID::const_iterator found = profile1DMapID().find( ID ) ;
-  //
-  h = ( profile1DMapID().end() == found ? NULL : found->second );
-  //
-  return h;
+  return lookup_( profile1DMapID(), ID );
 }
 // ============================================================================
 // access the EXISTING 2D profile histogram by ID
@@ -453,13 +435,7 @@ AIDA::IProfile1D* GaudiHistos<PBASE>::profile1D ( const HistoID& ID )  const
 template <class PBASE>
 AIDA::IProfile2D* GaudiHistos<PBASE>::profile2D ( const HistoID& ID )  const
 {
-  AIDA::IProfile2D * h(NULL);
-  //
-  Profile2DMapID::const_iterator found = profile2DMapID().find( ID ) ;
-  //
-  h = ( profile2DMapID().end() == found ? NULL : found->second );
-  //
-  return h;
+  return lookup_( profile2DMapID(), ID );
 }
 // ============================================================================
 // Returns the total number of histograms (of all types) currently booked
@@ -506,32 +482,14 @@ void GaudiHistos<PBASE>::newHistoID
 // Create an ID string from a title string
 // ============================================================================
 template <class PBASE>
-std::string GaudiHistos<PBASE>::convertTitleToID( const std::string & title ) const
+std::string GaudiHistos<PBASE>::convertTitleToID( std::string title ) const
 {
   // clean up the ID string for all unwanted characters
-  std::string tmp_id = title;
-  for ( std::map<std::string,std::string>::const_iterator i =
-          m_idReplaceInfo.begin() ; i != m_idReplaceInfo.end(); ++i )
+  for ( const auto& i : m_idReplaceInfo )
   {
-    stringSearchReplace( tmp_id, i->first, i->second );
+    stringSearchReplace( title, i.first, i.second );
   }
-  return tmp_id;
-}
-// ============================================================================
-// Searches 'title' for all instancies of 'A' and replaces them with 'B'
-// ============================================================================
-template <class PBASE>
-void GaudiHistos<PBASE>::stringSearchReplace
-( std::string       & title ,
-  const std::string & A     ,
-  const std::string & B     ) const
-{
-  std::string::size_type slash = title.find_first_of ( A ) ;
-  while ( std::string::npos != slash )
-  {
-    title = title.substr(0,slash) + B + title.substr(slash+A.size());
-    slash = title.find_first_of( A );
-  }
+  return title;
 }
 // ============================================================================
 // the handler for "HistoPrint" property
@@ -549,8 +507,8 @@ void GaudiHistos<PBASE>::printHistoHandler( Property& )
 template < class PBASE >
 std::string GaudiHistos<PBASE>::histoPath () const
 {
-  const std::string path = histoTopDir() + histoDir();
-  return ( splitHistoDir() ? dirHbookName(path) : path );
+  std::string path = histoTopDir() + histoDir();
+  return splitHistoDir() ? dirHbookName(path) : path;
 }
 // ============================================================================
 // 1D

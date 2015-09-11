@@ -58,34 +58,34 @@ public:
   /// Standard Service constructor
   RndmGenSvc(const std::string& name, ISvcLocator* svc);
   /// Standard Service destructor
-  virtual ~RndmGenSvc();
+  ~RndmGenSvc() override;
 public:
   /// Service override: initialization
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
   /// Service override: finalization
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
   /** IRndmGenSvc interface implementation  */
   /// Input serialization from stream buffer. Restores the status of the generator engine.
-  virtual StreamBuffer& serialize(StreamBuffer& str);
+  StreamBuffer& serialize(StreamBuffer& str) override;
   /// Output serialization to stream buffer. Saves the status of the generator engine.
-  virtual StreamBuffer& serialize(StreamBuffer& str) const;
+  StreamBuffer& serialize(StreamBuffer& str) const override;
   /// Retrieve engine
-  virtual IRndmEngine* engine();
+  IRndmEngine* engine() override;
   /// Retrieve a valid generator from the service.
-  virtual StatusCode generator(const IRndmGen::Param& par, IRndmGen*& refpGen);
+  StatusCode generator(const IRndmGen::Param& par, IRndmGen*& refpGen) override;
   /// Single shot returning single random number
-  virtual double rndm() const;
+  double rndm() const override;
   /** Multiple shots returning vector with flat random numbers.
       @param  array    Array containing random numbers
       @param  howmany  fill 'howmany' random numbers into array
       @param  start    ... starting at position start
       @return StatusCode indicating failure or success.
   */
-  virtual StatusCode rndmArray( std::vector<double>& array, long howmany, long start = 0) const;
+  StatusCode rndmArray( std::vector<double>& array, long howmany, long start = 0) const override;
   /// Allow to set new seeds
-  virtual StatusCode setSeeds(const std::vector<long>& seeds);
+  StatusCode setSeeds(const std::vector<long>& seeds) override;
   /// Allow to get seeds
-  virtual StatusCode seeds(std::vector<long>& seeds)  const;
+  StatusCode seeds(std::vector<long>& seeds)  const override;
 };
 
 #endif // GAUDI_RANDOMGENSVC_RNDMGENSVC_H

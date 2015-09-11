@@ -1,5 +1,3 @@
-// $Id: ErrorTool.h,v 1.3 2006/11/30 10:16:12 mato Exp $
-// ============================================================================
 #ifndef GAUDIALG_ERRORTOOL_H
 #define GAUDIALG_ERRORTOOL_H 1
 // ============================================================================
@@ -37,8 +35,8 @@ public:
               const std::string& name,
               const IInterface* parent);
 
-  /// virtual and protected destrcutor
-  virtual ~ErrorTool( );
+  /// virtual and protected destructor
+  ~ErrorTool( ) override = default;
 
 public:
 
@@ -63,10 +61,10 @@ public:
    *  @param mx     maximal number of printouts
    *  @return       status code
    */
-  virtual StatusCode Error
+  StatusCode Error
   ( const std::string& msg ,
     const StatusCode   st  = StatusCode::FAILURE ,
-    const size_t       mx  = 10                  ) const
+    const size_t       mx  = 10                  ) const override
   { return GaudiTool::Error ( msg , st, mx ) ; }
 
   /** Print the warning  message, return status code
@@ -79,10 +77,10 @@ public:
    *  @param mx     maximal number of printouts
    *  @return       status code
    */
-  virtual StatusCode Warning
+  StatusCode Warning
   ( const std::string& msg ,
     const StatusCode   st  = StatusCode::FAILURE ,
-    const size_t       mx  = 10                  ) const
+    const size_t       mx  = 10                  ) const override
   { return GaudiTool::Warning( msg , st , mx ) ; }
 
   /** Print the message and return status code
@@ -94,10 +92,10 @@ public:
    *  @param lev    print level
    *  @return       status code
    */
-  virtual StatusCode Print
+  StatusCode Print
   ( const std::string& msg ,
     const StatusCode   st  = StatusCode::SUCCESS ,
-    const MSG::Level   lev = MSG::INFO           ) const
+    const MSG::Level   lev = MSG::INFO           ) const override
   { return GaudiTool::Print( msg , st , lev ) ; }
 
   /** Assertion - throw exception, if condition is not fulfilled
@@ -109,10 +107,10 @@ public:
    *  @param sc           status code to be returned (artificial)
    *  @return             status code
    */
-  virtual void Assert
+  void Assert
   ( const bool         ok                            ,
     const std::string& message = ""                  ,
-    const StatusCode   sc      = StatusCode::FAILURE ) const
+    const StatusCode   sc      = StatusCode::FAILURE ) const override
   { GaudiTool::Assert ( ok , message , sc ) ; }
 
   /** Create and (re)-throw the exception
@@ -123,10 +121,10 @@ public:
    *  @param sc     status code
    *  @return       status code (fictive)
    */
-  virtual void Exception
+  void Exception
   ( const std::string    & msg                        ,
     const GaudiException & exc                        ,
-    const StatusCode       sc  = StatusCode::FAILURE  ) const
+    const StatusCode       sc  = StatusCode::FAILURE  ) const override
   { Exception ( msg , exc , sc ) ; }
 
   /** Create and (re)-throw the exception
@@ -137,10 +135,10 @@ public:
    *  @param sc     status code
    *  @return       status code (fictive)
    */
-  virtual void Exception
+  void Exception
   ( const std::string    & msg                        ,
     const std::exception & exc                        ,
-    const StatusCode       sc  = StatusCode::FAILURE  ) const
+    const StatusCode       sc  = StatusCode::FAILURE  ) const override
   { Exception ( msg , exc , sc ) ; }
 
   /** Create and throw the exception
@@ -150,9 +148,9 @@ public:
    *  @param sc     status code
    *  @return       status code (fictive)
    */
-  virtual void Exception
+  void Exception
   ( const std::string& msg = "no message"        ,
-    const StatusCode   sc  = StatusCode::FAILURE ) const
+    const StatusCode   sc  = StatusCode::FAILURE ) const override
   { Exception ( msg , sc ) ; }
 
 };

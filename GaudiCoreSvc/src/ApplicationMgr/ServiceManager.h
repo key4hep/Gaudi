@@ -1,4 +1,3 @@
-// $Id: ServiceManager.h,v 1.9 2008/11/10 15:29:09 marcocle Exp $
 #ifndef GAUDISVC_ServiceManager_H
 #define GAUDISVC_ServiceManager_H
 
@@ -12,9 +11,9 @@
 #include "GaudiKernel/Map.h"
 #include <string>
 #include <list>
-#include <map>
+#include <vector>
 #include <algorithm>
-#include "boost/thread.hpp"
+#include <mutex>
 
 // Forward declarations
 class IService;
@@ -36,7 +35,7 @@ class Property;
 class ServiceManager : public extends2<ComponentManager, ISvcManager, ISvcLocator>{
 public:
 
-  struct ServiceItem {
+  struct ServiceItem final {
     ServiceItem(IService *s, long p = 0, bool act = false):
       service(s), priority(p), active(act) {}
     SmartIF<IService> service;
@@ -66,7 +65,7 @@ public:
   }
 
   /// virtual destructor
-  virtual ~ServiceManager();
+  ~ServiceManager() override;
 
   /// Return the list of Services
   virtual const std::list<IService*>& getServices() const;
@@ -75,42 +74,46 @@ public:
   virtual bool existsService(const std::string& name) const;
 
   /// implementation of ISvcManager::addService
-  virtual StatusCode addService(IService* svc, int prio = DEFAULT_SVC_PRIORITY);
+  StatusCode addService(IService* svc, int prio = DEFAULT_SVC_PRIORITY) override;
   /// implementation of ISvcManager::addService
-  virtual StatusCode addService(const Gaudi::Utils::TypeNameString& typeName, int prio = DEFAULT_SVC_PRIORITY);
+  StatusCode addService(const Gaudi::Utils::TypeNameString& typeName, int prio = DEFAULT_SVC_PRIORITY) override;
   /// implementation of ISvcManager::removeService
-  virtual StatusCode removeService(IService* svc);
+  StatusCode removeService(IService* svc) override;
   /// implementation of ISvcManager::removeService
-  virtual StatusCode removeService(const std::string& name);
+  StatusCode removeService(const std::string& name) override;
 
   /// implementation of ISvcManager::declareSvcType
-  virtual StatusCode declareSvcType(const std::string& svcname, const std::string& svctype);
+  StatusCode declareSvcType(const std::string& svcname, const std::string& svctype) override;
 
-  /// implementation of ISvcManager::createService
-  virtual SmartIF<IService>& createService(const Gaudi::Utils::TypeNameString& nametype);
+  /// implementation of ISvcManager::createService 
+  /// NOTE: as this returns a &, we must guarantee 
+  ///       that once created, these SmartIF remain 
+  ///       pinned in their location, thus constraining
+  ///       the underlying implementation...
+  SmartIF<IService>& createService(const Gaudi::Utils::TypeNameString& nametype) override;
 
   /// Initialization (from CONFIGURED to INITIALIZED).
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
   /// Start (from INITIALIZED to RUNNING).
-  virtual StatusCode start();
+  StatusCode start() override;
   /// Stop (from RUNNING to INITIALIZED).
-  virtual StatusCode stop();
+  StatusCode stop() override;
   /// Finalize (from INITIALIZED to CONFIGURED).
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
 
   /// Initialization (from INITIALIZED or RUNNING to INITIALIZED, via CONFIGURED).
-  virtual StatusCode reinitialize();
+  StatusCode reinitialize() override;
   /// Initialization (from RUNNING to RUNNING, via INITIALIZED).
-  virtual StatusCode restart();
+  StatusCode restart() override;
 
   /// manage priorities of services
-  virtual int getPriority(const std::string& name) const;
-  virtual StatusCode setPriority(const std::string& name, int pri);
+  int getPriority(const std::string& name) const override;
+  StatusCode setPriority(const std::string& name, int pri) override;
 
   /// Get the value of the initialization loop check flag.
-  virtual bool loopCheckEnabled() const;
+  bool loopCheckEnabled() const override;
   /// Set the value of the initialization loop check flag.
-  virtual void setLoopCheckEnabled(bool en);
+  void setLoopCheckEnabled(bool en) override;
 
   /// Return the name of the manager (implementation of INamedInterface)
   const std::string &name() const {
@@ -119,7 +122,7 @@ public:
   }
 
   /// Returns a smart pointer to a service.
-  virtual SmartIF<IService> &service(const Gaudi::Utils::TypeNameString &typeName, const bool createIf = true);
+  SmartIF<IService> &service(const Gaudi::Utils::TypeNameString &typeName, const bool createIf = true) override;
 
 #if !defined(GAUDI_V22_API) || defined(G22_NEW_SVCLOCATOR)
   using ISvcManager::createService;
@@ -143,8 +146,21 @@ private:
 
 private:
   ListSvc       m_listsvc;     ///< List of service maintained by ServiceManager
+                               ///  This contains SmartIF<T> for all services -- 
+                               ///  and because there can be SmartIF<T>& 'out there' that
+                               ///  refer to these specific SmarIF<T>, we 
+                               ///  *unfortunately* must guarantee that they _never_ move 
+                               ///  after creation. Hence, we cannot use a plain std::vector
+                               ///  here, as that may cause relocation and/or swapping of 
+                               ///  SmartIF<T>'s, and then the already handed out references
+                               ///  may refer to the wrong item.... Note that we could use
+                               ///  an std::vector<std::unique_ptr<ServiceItem>> (sometimes known
+                               ///  as 'stable vector') as then the individual ServiceItems 
+                               ///  would stay pinned in their original location, but that 
+                               ///  would put ServiceItem on the heap...
+                               ///  And maybe I'm way too paranoid...
   MapType       m_maptype;     ///< Map of service name and service type
-  bool          m_loopCheck;   ///< Check for service initialization loops
+  bool          m_loopCheck = true;   ///< Check for service initialization loops
 
   /// Pointer to the application IService interface.
   SmartIF<IService> m_appSvc;
@@ -155,11 +171,10 @@ private:
   GaudiUtils::Map<InterfaceID, SmartIF<IInterface> > m_defaultImplementations;
 
   /// Mutex to synchronize shared service initialization between threads
-  boost::recursive_mutex  m_svcinitmutex;
+  std::recursive_mutex  m_svcinitmutex;
 
 private:
   void dump() const;
 
 };
 #endif  // GAUDISVC_ServiceManager_H
-

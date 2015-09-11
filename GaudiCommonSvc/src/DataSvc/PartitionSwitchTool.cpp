@@ -2,7 +2,6 @@
 #include "GaudiKernel/AlgTool.h"
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/ToolFactory.h"
 #include "GaudiKernel/IPartitionControl.h"
 
 /** @class PartitionSwitchTool
@@ -12,8 +11,8 @@
  */
 class PartitionSwitchTool: public extends1<AlgTool, IPartitionControl> {
 
-  typedef const std::string& CSTR;
-  typedef StatusCode         STATUS;
+  using CSTR = const std::string&;
+  using STATUS = StatusCode;
 
 private:
 
@@ -25,18 +24,16 @@ private:
 public:
 
   /// Standard constructor
-  PartitionSwitchTool(CSTR typ, CSTR nam, const IInterface* parent)
-  : base_class(typ, nam , parent)
+  PartitionSwitchTool(const std::string& typ, const std::string& nam, const IInterface* parent)
+  : base_class( typ, nam , parent)
   {
     declareProperty("Actor", m_actorName = "EventDataService");
   }
   /// Standard destructor
-  virtual ~PartitionSwitchTool()   {
-    m_actor = 0;
-  }
+  ~PartitionSwitchTool()   override = default; 
 
   /// Initialize
-  virtual STATUS initialize()  {
+  STATUS initialize()  override {
     /// Access partitioned multi-service
     STATUS sc = AlgTool::initialize();
     MsgStream log(msgSvc(), name());
@@ -44,8 +41,8 @@ public:
       log << MSG::ERROR << "Cannot initialize base class!" << endmsg;
       return sc;
     }
-    m_actor = 0;
-    IPartitionControl* tmpPtr = 0;
+    m_actor = nullptr;
+    IPartitionControl* tmpPtr = nullptr;
     sc = service(m_actorName, tmpPtr);
     m_actor = tmpPtr;
     if ( !sc.isSuccess() )  {
@@ -56,8 +53,8 @@ public:
     return sc;
   }
   /// Finalize
-  virtual STATUS finalize()   {
-    m_actor = 0;
+  STATUS finalize()   override {
+    m_actor = nullptr;
     return AlgTool::finalize();
   }
 
@@ -68,42 +65,42 @@ public:
 #define CHECK(x,y) if ( !x.isSuccess() ) _check(x, y); return x;
 
   /// Create a partition object. The name identifies the partition uniquely
-  virtual STATUS create(CSTR nam, CSTR typ)  {
+  STATUS create(CSTR nam, CSTR typ)  override {
     STATUS sc = m_actor ? m_actor->create(nam,typ) : NO_INTERFACE;
     CHECK(sc, "Cannot create partition: "+nam+" of type "+typ);
   }
   /// Create a partition object. The name identifies the partition uniquely
-  virtual STATUS create(CSTR nam, CSTR typ, IInterface*& pPartition)  {
+  STATUS create(CSTR nam, CSTR typ, IInterface*& pPartition)  override {
     STATUS sc = m_actor ? m_actor->create(nam,typ,pPartition) : NO_INTERFACE;
     CHECK(sc, "Cannot create partition: "+nam+" of type "+typ);
   }
   /// Drop a partition object. The name identifies the partition uniquely
-  virtual STATUS drop(CSTR nam)  {
+  STATUS drop(CSTR nam)  override {
     STATUS sc = m_actor ? m_actor->drop(nam) : NO_INTERFACE;
     CHECK(sc, "Cannot drop partition: "+nam);
   }
   /// Drop a partition object. The name identifies the partition uniquely
-  virtual STATUS drop(IInterface* pPartition)  {
+  STATUS drop(IInterface* pPartition)  override {
     STATUS sc = m_actor ? m_actor->drop(pPartition) : NO_INTERFACE;
     CHECK(sc, "Cannot drop partition by Interface.");
   }
   /// Activate a partition object. The name identifies the partition uniquely.
-  virtual STATUS activate(CSTR nam)  {
+  STATUS activate(CSTR nam)  override {
     STATUS sc = m_actor ? m_actor->activate(nam) : NO_INTERFACE;
     CHECK(sc, "Cannot activate partition: "+nam);
   }
   /// Activate a partition object.
-  virtual STATUS activate(IInterface* pPartition)  {
+  STATUS activate(IInterface* pPartition)  override {
     STATUS sc = m_actor ? m_actor->activate(pPartition) : NO_INTERFACE;
     CHECK(sc, "Cannot activate partition by Interface.");
   }
   /// Access a partition object. The name identifies the partition uniquely.
-  virtual STATUS get(CSTR nam, IInterface*& pPartition) const  {
+  STATUS get(CSTR nam, IInterface*& pPartition) const  override {
     STATUS sc = m_actor ? m_actor->get(nam, pPartition) : NO_INTERFACE;
     CHECK(sc, "Cannot get partition "+nam);
   }
   /// Access the active partition object.
-  virtual STATUS activePartition(std::string& nam, IInterface*& pPartition) const  {
+  STATUS activePartition(std::string& nam, IInterface*& pPartition) const  override {
     STATUS sc = m_actor ? m_actor->activePartition(nam, pPartition) : NO_INTERFACE;
     CHECK(sc, "Cannot determine active partition.");
   }

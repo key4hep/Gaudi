@@ -19,25 +19,23 @@
 class ExceptionSvc: public extends1<Service, IExceptionSvc> {
 public:
   /// Handle caught GaudiExceptions
-  virtual StatusCode handle
+  StatusCode handle
   ( const INamedInterface& o ,
-    const GaudiException&  e ) const     ; ///< Handle caught exceptions
+    const GaudiException&  e ) const override; ///< Handle caught exceptions
   /// Handle caught std::exceptions
-  virtual StatusCode handle
+  StatusCode handle
   ( const INamedInterface& o ,
-    const std::exception & e ) const     ; ///< Handle caught exceptions
+    const std::exception & e ) const override; ///< Handle caught exceptions
   /// Handle caught (unknown)exceptions
-  virtual StatusCode handle
-  ( const INamedInterface& o ) const     ; ///< Handle caught exceptions
+  StatusCode handle
+  ( const INamedInterface& o ) const override; ///< Handle caught exceptions
   /// Handle errors
-  virtual StatusCode handleErr
+  StatusCode handleErr
   ( const INamedInterface& o ,
-    const StatusCode&      s ) const     ; ///< Handle errors
+    const StatusCode&      s ) const override; ///< Handle errors
 public:
   /// initialize the service
-  virtual StatusCode initialize   () ;
-  /// finalize the service
-  virtual StatusCode finalize     () ;
+  StatusCode initialize   () override;
 public:
   /** standard constructor
    *  @param name service instance name
@@ -47,14 +45,14 @@ public:
   ( const std::string& name ,
     ISvcLocator*       svc  ) ;
   /// Destructor.
-  virtual ~ExceptionSvc();
+  ~ExceptionSvc() override = default;
 private:
   // default constructor is disabled
-  ExceptionSvc () ; ///< no default constructor
+  ExceptionSvc () = delete; ///< no default constructor
   // copy constructor is disabled
-  ExceptionSvc ( const ExceptionSvc& ) ; ///< no copy constructor
+  ExceptionSvc ( const ExceptionSvc& ) = delete;
   // assignment operator is disabled
-  ExceptionSvc& operator=( const ExceptionSvc& ) ; ///< no assignement
+  ExceptionSvc& operator=( const ExceptionSvc& ) = delete;
   // process exceptions
   virtual StatusCode process  ( const INamedInterface& o ) const ;
 private:
@@ -62,7 +60,7 @@ private:
   enum Policy { ALL, NONE };
   enum ReturnState { SUCCESS, FAILURE, RECOVERABLE, RETHROW, DEFAULT };
 
-  Policy m_mode_exc, m_mode_err;
+  Policy m_mode_exc = ALL, m_mode_err = NONE;
   StringProperty m_mode_exc_s, m_mode_err_s;
   std::map<std::string,ReturnState> m_retCodesExc, m_retCodesErr;
 

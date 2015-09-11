@@ -31,7 +31,7 @@ namespace Gaudi {
     virtual std::ostream& write(std::ostream& s) const = 0;
     /// Write (binary) histogram to file
     virtual int           write(const char* file_name) const = 0;
-    virtual ~HistogramBase();
+    virtual ~HistogramBase() = default;
   }; // class
 
 } // namespace Gaudi

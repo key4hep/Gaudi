@@ -4,8 +4,10 @@
 #include "Python.h"   //included for the python API
 // ============================================================================
 #include <sstream>    //included for stringbuf
+#include <array>
 // ============================================================================
 #include "GaudiPython/GaudiPython.h"
+#include "GaudiKernel/Kernel.h"
 // ============================================================================
 
 namespace GaudiPython
@@ -15,15 +17,20 @@ namespace GaudiPython
   class GAUDI_API CallbackStreamBuf: public std::stringbuf
   {
     private:
-      PyObject* m_self;
-      char* m_callbackBuff;
+      class PyObject_t {
+          PyObject *m_obj;
+      public:
+          PyObject_t( PyObject *obj = nullptr) : m_obj( obj ) { if (m_obj) Py_INCREF(m_obj); }
+          ~PyObject_t() { if (m_obj) Py_DECREF(m_obj); }
+          PyObject *get() { return m_obj; }
+      };
+      PyObject_t m_self;
+      std::array<char,512> m_callbackBuff;//used for passing the flushed chars in the python callback
 
     public:
       CallbackStreamBuf(PyObject* self);
-      ~CallbackStreamBuf();
-      virtual int sync() ;
-  }; //CallbackStreamBuf
-
-} //namespace GaudiPython
+      int sync() override;
+  };
+}
 
 #endif

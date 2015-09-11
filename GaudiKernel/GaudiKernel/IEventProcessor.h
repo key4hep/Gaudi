@@ -1,4 +1,3 @@
-// $Id: IEventProcessor.h,v 1.6 2005/01/11 17:11:06 mato Exp $
 #ifndef GAUDIKERNEL_IEVENTPROCESSOR_H
 #define GAUDIKERNEL_IEVENTPROCESSOR_H 1
 

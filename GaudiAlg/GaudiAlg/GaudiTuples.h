@@ -1,5 +1,3 @@
-// $Id: GaudiTuples.h,v 1.7 2008/10/27 19:22:20 marcocle Exp $
-// ============================================================================
 #ifndef GAUDIALG_GAUDITUPLES_H
 #define GAUDIALG_GAUDITUPLES_H 1
 // ============================================================================
@@ -13,6 +11,8 @@
  */
 // ============================================================================
 // Include files
+// ============================================================================
+#include "boost/algorithm/string/replace.hpp"
 // ============================================================================
 // GaudiKernel
 // ============================================================================
@@ -82,8 +82,8 @@ public:
    *  @param clid    N-Tuple class identifier (row or column wise)
    *  @return ntuple The ntuple object
    */
-  Tuple  nTuple ( const std::string& title                        ,
-                  const CLID&        clid  = CLID_ColumnWiseTuple ) const ;
+  Tuple  nTuple ( const std::string&   title,
+                  const CLID&   clid  = CLID_ColumnWiseTuple ) const ;
 
   /** Access an N-Tuple object (book on-demand) with forced identifier
    *
@@ -278,7 +278,7 @@ protected:
   virtual Tuples::TupleObj*
   createNTuple ( const std::string& name  ,
                  NTuple::Tuple*     tuple ,
-                 const CLID&        clid  ) const ;
+                 const CLID&        clid  ) const;
   /** create TupleObj for event tag collection
    *  @attention The method should never used directly by users
    *  @param name  name/title
@@ -289,26 +289,26 @@ protected:
   virtual Tuples::TupleObj*
   createEvtCol ( const std::string& name  ,
                  NTuple::Tuple*     tuple ,
-                 const CLID&        clid  ) const ;
+                 const CLID&        clid  ) const;
   // ==========================================================================
 public:
   // ==========================================================================
   /// Algorithm constructor
-  GaudiTuples ( const std::string & name,
+  GaudiTuples ( const std::string&   name,
                 ISvcLocator * pSvcLocator );
   /// Tool constructor
   GaudiTuples ( const std::string& type   ,
                 const std::string& name   ,
                 const IInterface*  parent );
   /// Destructor
-  virtual ~GaudiTuples();
+  ~GaudiTuples() override = default;
   // ==========================================================================
 protected:
   // ==========================================================================
   /** standard initialization method
    *  @return status code
    */
-  virtual StatusCode initialize()
+  StatusCode initialize() override
 #ifdef __ICC
     { return i_gtInitialize(); }
   StatusCode i_gtInitialize()
@@ -317,7 +317,7 @@ protected:
   /** standard finalization method
    *  @return status code
    */
-  virtual StatusCode finalize()
+  StatusCode finalize() override
 #ifdef __ICC
     { return i_gtFinalize(); }
   StatusCode i_gtFinalize()
@@ -333,14 +333,14 @@ private:
     m_splitNTupleDir = false ;    // for HBOOK it is better to use 'true'
     m_nTupleLUN      = "FILE1" ;  // logical unit for ntuples
     m_nTupleTopDir   = "" ;       // top level ntuple directory
-    m_nTupleDir      = this->name() ;   // ntuple directory
+    m_nTupleDir      = boost::algorithm::replace_all_copy( this->name(), ":","_" );    // ntuple directory
     m_nTupleOffSet   = 0  ;       // offset for ntuples
     //
     m_produceEvtCols = false ;    // Switch ON/OFF ntupel production
     m_splitEvtColDir = false ;    // for HBOOK it is better to use 'true'
     m_evtColLUN      = "EVTCOL" ; // logical unit for ntuples
     m_evtColTopDir   = ""    ;    // top level ntuple directory
-    m_evtColDir      = this->name() ;   // ntuple directory
+    m_evtColDir      = boost::algorithm::replace_all_copy( this->name(), ":", "_");   // ntuple directory
     m_evtColOffSet   = 0   ;      // offset for ntuples
     //
     m_tuplesPrint    = true  ;    // print tuples at end of job

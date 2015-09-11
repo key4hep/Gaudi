@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/IDataStoreAgent.h,v 1.4 2006/11/30 15:22:07 dquarrie Exp $
 #ifndef GAUDIKERNEL_IDATASTOREAGENT_H
 #define GAUDIKERNEL_IDATASTOREAGENT_H
 
@@ -17,7 +16,7 @@ class IRegistry;
 class GAUDI_API IDataStoreAgent {
 public:
   /// destructor
-  virtual ~IDataStoreAgent() { }
+  virtual ~IDataStoreAgent() = default;
 
   /** Analyse the data object.
   @return Boolean indicating wether the tree below should be analysed

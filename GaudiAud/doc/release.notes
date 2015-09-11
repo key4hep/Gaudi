@@ -2,6 +2,19 @@ Package: GaudiAud
 Package manager : David Quarrie, Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-09-09 - Gerhard Raven
+ - C++11 modernization changes, eg.
+       - for key,value containers, prefer .emplace(key,value) over .insert({ key, value})
+       - replace trivial destructors with = default
+       - prefer .empty() over .size() == 0
+       - simplify constructors
+       - implement a unique_fd class for RAII of file descriptors,
+          ie. make sure that every 'open' call has a matching 'close'
+       - prefer not to compare pointers to 0, NULL
+       - prefer nullptr to 0, NULL
+       - prefer STL algorithms over raw loops
+       - use auto to streamline code
+
 =============================== GaudiAud v10r2 ===============================
 ! 2013-08-28 - Marco Clemencic
  - Fixed GAUDI-985: update references to ATLAS TWiki pages.

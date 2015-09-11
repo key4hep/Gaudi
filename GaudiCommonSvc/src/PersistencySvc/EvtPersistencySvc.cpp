@@ -21,31 +21,15 @@
 
 // Implementation specific definitions
 #include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/IDataProviderSvc.h"
 #include "EvtPersistencySvc.h"
 
 // Instantiation of a static factory class used by clients to create
 // instances of this service
 DECLARE_COMPONENT(EvtPersistencySvc)
 
-/// Finalize the service.
-StatusCode EvtPersistencySvc::finalize()     {
-  StatusCode status = PersistencySvc::finalize();
-  return status;
-}
-
-/// Initialize the service.
-StatusCode EvtPersistencySvc::initialize()     {
-  StatusCode status = PersistencySvc::initialize();
-  return status;
-}
 
 /// Standard Constructor
 EvtPersistencySvc::EvtPersistencySvc(const std::string& name, ISvcLocator* svc)
  :  PersistencySvc(name, svc)
 {
-}
-
-/// Standard Destructor
-EvtPersistencySvc::~EvtPersistencySvc()   {
 }

@@ -22,10 +22,7 @@ class GAUDI_API ChronoEntity
 {
 public:
   /// default constructor
-  ChronoEntity();
-  /// destructor
-  ~ChronoEntity(){}
-  ///
+  ChronoEntity() = default;
 public:
   // ==========================================================================
   // The basic Chrono Operations
@@ -167,7 +164,7 @@ protected:
 private:
   // ==========================================================================
   /// current status of this chrono object;
-  IChronoSvc::ChronoStatus m_status ;
+  IChronoSvc::ChronoStatus m_status = IChronoSvc::UNKNOWN;
   /// delta process times
   System::ProcessTime      m_delta;
   /// start stamp for current measurement of process times
@@ -354,13 +351,3 @@ ChronoEntity::outputElapsedTime
 // ============================================================================
 #endif  //  GAUDIKERNEL_CHRONOENTITY_H
 // ============================================================================
-
-
-
-
-
-
-
-
-
-

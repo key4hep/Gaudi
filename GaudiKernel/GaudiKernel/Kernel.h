@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/Kernel.h,v 1.15 2006/05/02 13:03:03 hmd Exp $
 #ifndef GAUDIKERNEL_KERNEL_H
 #define GAUDIKERNEL_KERNEL_H
 

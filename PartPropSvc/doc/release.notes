@@ -2,6 +2,10 @@ Package : ParticleProp
 Package manager : Charles Leggett
 Commit Id: $Format:%H$
 
+! 2015-09-09 - Gerhard Raven 
+ - C++11 modernization changes
+   
+
 ============================== PartPropSvc v6r3 ==============================
 ! 2015-05-21 - Marco Clemencic
  - Fixed compilation with CMT.

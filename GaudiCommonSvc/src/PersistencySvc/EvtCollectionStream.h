@@ -24,34 +24,32 @@
     Version: 1.0
 */
 class EvtCollectionStream : public Algorithm     {
-  typedef std::vector<std::string>    ItemNames;
-  typedef std::vector<DataStoreItem*> Items;
 protected:
   /// Reference to Tuple service for event collection (may or may not be NTuple service)
   SmartIF<INTupleSvc> m_pTupleSvc;
   /// Name of the service managing the data store
   std::string   m_storeName;
   /// Vector of item names
-  ItemNames     m_itemNames;
+  std::vector<std::string> m_itemNames;
   /// Vector of items to be saved to this stream
-  Items         m_itemList;
+  std::vector<std::unique_ptr<DataStoreItem>> m_itemList;
 public:
   /// Standard algorithm Constructor
   EvtCollectionStream(const std::string& name, ISvcLocator* pSvcLocator);
 protected:
   /// Standard Destructor
-  virtual ~EvtCollectionStream();
+  ~EvtCollectionStream() override = default;
   /// Clear item list
   void clearItems();
   /// Add item to output streamer list
   void addItem(const std::string& descriptor);
 public:
   /// Initialize EvtCollectionStream
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
   /// Terminate EvtCollectionStream
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
   /// Working entry point
-  virtual StatusCode execute();
+  StatusCode execute() override;
 };
 
 #endif // GAUDISVC_PERSISTENCYSVC_EVTCOLLECTIONSTREAM_H

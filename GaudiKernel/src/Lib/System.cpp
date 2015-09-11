@@ -1,4 +1,3 @@
-// $Id: System.cpp,v 1.45 2008/10/27 21:30:32 marcocle Exp $
 //====================================================================
 //	System.cpp
 //--------------------------------------------------------------------
@@ -19,6 +18,7 @@
 #include <iostream>
 #include <sstream>
 #include <typeinfo>
+#include <memory>
 
 #include "GaudiKernel/System.h"
 #include "instrset.h"
@@ -140,7 +140,7 @@ unsigned long System::loadDynamicLib(const std::string& name, ImageHandle* handl
       // (i.e. without 'lib' and '.so')
       if (dllName.find('/') == std::string::npos) {
 #if defined(__linux) || defined(__APPLE__)
-        if (dllName.substr(0, 3) != "lib")
+        if (dllName.compare(0, 3, "lib") != 0)
           dllName = "lib" + dllName;
 #endif
         if (dllName.find(SHLIB_SUFFIX) == std::string::npos)
@@ -408,11 +408,9 @@ const std::string System::typeinfoName( const char* class_name) {
     }
     else  {
       int   status;
-      char* realname;
-      realname = abi::__cxa_demangle(class_name, 0, 0, &status);
-      if (realname == 0) return class_name;
-      result = realname;
-      free(realname);
+      auto realname = std::unique_ptr<char,decltype(free)*>( abi::__cxa_demangle(class_name, 0, 0, &status), std::free );
+      if (!realname) return class_name;
+      result = std::string{realname.get()};
       /// substitute ', ' with ','
       std::string::size_type pos = result.find(", ");
       while( std::string::npos != pos ) {
@@ -424,20 +422,23 @@ const std::string System::typeinfoName( const char* class_name) {
   return result;
 }
 
+namespace { 
+    std::string init_hostName()  {
+        std::array<char,512> buffer;
+        std::fill_n(buffer.begin(),buffer.size(),0);
+#ifdef _WIN32
+        unsigned long len = buffer.size();
+        ::GetComputerName(buffer.data(), &len);
+#else
+        ::gethostname(buffer.data(), buffer.size());
+#endif
+        return { buffer.data() };
+      }
+}
+
 /// Host name
 const std::string& System::hostName() {
-  static std::string host = "";
-  if ( host == "" ) {
-    char buffer[512];
-    memset(buffer,0,sizeof(buffer));
-#ifdef _WIN32
-    unsigned long len = sizeof(buffer);
-    ::GetComputerName(buffer, &len);
-#else
-    ::gethostname(buffer, sizeof(buffer));
-#endif
-    host = buffer;
-  }
+  static const std::string host = init_hostName();
   return host;
 }
 
@@ -671,11 +672,7 @@ int System::backTrace(void** addresses __attribute__ ((unused)),
 #ifdef __linux
 
   int count = backtrace( addresses, depth );
-  if ( count > 0 ) {
-    return count;
-  } else {
-    return 0;
-  }
+  return count > 0 ? count : 0;
 
 #else // windows and osx parts not implemented
   return 0;
@@ -685,33 +682,29 @@ int System::backTrace(void** addresses __attribute__ ((unused)),
 
 bool System::backTrace(std::string& btrace, const int depth, const int offset)
 {
-  // Always hide the first two levels of the stack trace (that's us)
-  const int totalOffset = offset + 2;
-  const int totalDepth = depth + totalOffset;
+  try {
+      // Always hide the first two levels of the stack trace (that's us)
+      const int totalOffset = offset + 2;
+      const int totalDepth = depth + totalOffset;
 
-  std::string fnc, lib;
+      std::string fnc, lib;
 
-  void** addresses = (void**) malloc(totalDepth*sizeof(void *));
-  if ( addresses != 0 ){
-    int count = System::backTrace(addresses,totalDepth);
-    for (int i = totalOffset; i < count; ++i) {
-      void *addr = 0;
+      std::vector<void*> addresses( totalDepth, nullptr );
+      int count = System::backTrace(addresses.data(),totalDepth);
+      for (int i = totalOffset; i < count; ++i) {
+        void *addr = nullptr;
 
-      if (System::getStackLevel(addresses[i],addr,fnc,lib)) {
-        std::ostringstream ost;
-        ost << "#" << std::setw(3) << std::setiosflags( std::ios::left ) << i-totalOffset+1;
-        ost << std::hex << addr << std::dec << " " << fnc << "  [" << lib << "]" << std::endl;
-        btrace += ost.str();
+        if (System::getStackLevel(addresses[i],addr,fnc,lib)) {
+          std::ostringstream ost;
+          ost << "#" << std::setw(3) << std::setiosflags( std::ios::left ) << i-totalOffset+1;
+          ost << std::hex << addr << std::dec << " " << fnc << "  [" << lib << "]" << std::endl;
+          btrace += ost.str();
+        }
       }
-    }
-    free(addresses);
+      return true;
+  } catch ( const std::bad_alloc& e ) {
+      return false;
   }
-  else {
-    free(addresses);
-    return false;
-  }
-
-  return true;
 }
 
 bool System::getStackLevel(void* addresses  __attribute__ ((unused)),
@@ -727,20 +720,18 @@ bool System::getStackLevel(void* addresses  __attribute__ ((unused)),
   if ( dladdr( addresses, &info ) && info.dli_fname
       && info.dli_fname[0] != '\0' ) {
     const char* symbol = info.dli_sname
-    && info.dli_sname[0] != '\0' ? info.dli_sname : 0;
+    && info.dli_sname[0] != '\0' ? info.dli_sname : nullptr;
 
     lib = info.dli_fname;
     addr = info.dli_saddr;
-    const char* dmg(0);
 
-    if (symbol != 0) {
-      int stat;
-      dmg = abi::__cxa_demangle(symbol,0,0,&stat);
-      fnc = (stat == 0) ? dmg : symbol;
+    if (symbol) {
+      int stat = -1;
+      auto dmg = std::unique_ptr<char,decltype(free)*>( abi::__cxa_demangle(symbol,0,0,&stat), std::free );
+      fnc = (stat == 0) ? dmg.get() : symbol;
     } else {
       fnc = "local";
     }
-    free((void*)dmg);
     return true ;
   } else {
     return false ;

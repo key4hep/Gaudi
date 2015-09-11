@@ -1,4 +1,3 @@
-// $Id: RFileCnv.h,v 1.7 2006/11/30 20:51:35 mato Exp $
 #ifndef ROOTHISTCNV_RFILECNV_H
 #define ROOTHISTCNV_RFILECNV_H 1
 
@@ -48,7 +47,7 @@ namespace RootHistCnv {
     RFileCnv( ISvcLocator* svc );
 
     /// Standard destructor
-    virtual ~RFileCnv();
+    ~RFileCnv() override = default;
 
   protected:
 

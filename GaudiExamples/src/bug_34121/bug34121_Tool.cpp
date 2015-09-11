@@ -1,6 +1,4 @@
-// $Id: bug34121_Tool.cpp,v 1.1 2008/03/03 21:04:28 marcocle Exp $
 // Framework include files
-#include "GaudiKernel/ToolFactory.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/GaudiException.h"
 

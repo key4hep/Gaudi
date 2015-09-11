@@ -28,18 +28,13 @@ public:
   /// unhides some NTupleSvc methods
   using NTupleSvc::connect;
 
-  /// DataSvc overrides: Initialize the service.
-  virtual StatusCode initialize();
-  /// DataSvc overrides: stop the service.
-  virtual StatusCode finalize();
-
   /// Standard Constructor
   TagCollectionSvc(const std::string& name, ISvcLocator* svc);
   /// Standard Destructor
-  virtual ~TagCollectionSvc();
+  ~TagCollectionSvc() override = default;
   /// Add file to list I/O list
 protected:
-  virtual StatusCode connect(const std::string& ident, std::string& logname);
+  StatusCode connect(const std::string& ident, std::string& logname) override;
   /** Create conversion service.
       @param nam     Name of the service to be created
       @param svc     Service type if sepecified in the options

@@ -1,4 +1,3 @@
-// $Id: StopperAlg.h,v 1.1 2005/01/17 18:17:03 mato Exp $
 #ifndef GAUDIEXAMPLE_STOPPERALG_H
 #define GAUDIEXAMPLE_STOPPERALG_H 1
 

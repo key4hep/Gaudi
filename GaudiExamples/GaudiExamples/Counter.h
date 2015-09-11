@@ -1,4 +1,3 @@
-// $Header: /local/reps/Gaudi/GaudiExamples/src/Lib/Counter.h,v 1.4 2007/09/28 11:48:17 marcocle Exp $
 #ifndef GAUDIEXAMPLES_COUNTER_H
 #define GAUDIEXAMPLES_COUNTER_H 1
 

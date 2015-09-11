@@ -1,5 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/HistoryObj.h,v 1.1 2004/07/14 18:13:56 leggett Exp $
-
 #ifndef GAUDIKERNEL_HISTORYOBJ_H
 #define GAUDIKERNEL_HISTORYOBJ_H
 
@@ -23,15 +21,15 @@ class IVersHistoryObj;
 
 class GAUDI_API HistoryObj: public DataObject {
 public:
-  HistoryObj();
-  virtual ~HistoryObj();
+  HistoryObj() = default;
+  virtual ~HistoryObj() = default;
 
   virtual const CLID& clID() const { return classID(); }
   static const CLID& classID();
   static std::string convert_string(const std::string&);
 
   virtual void dump(std::ostream&, const bool isXML=false,
-		    int indent=0) const = 0;
+ 		    int indent=0) const = 0;
 
  protected:
   virtual void indent(std::ostream&, int) const;

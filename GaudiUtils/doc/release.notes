@@ -2,6 +2,31 @@ Package: GaudiUtils
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-09-09 - Gerhard Raven and Benedikt Hegner
+ - C++11 modernization changes
+    o fstream accepts std::string, so no need to call c_str()
+    o prefer emplace( key, value ) over insert( { key, value } )
+    o flag internal struct as 'final'
+    o const-qualifying value arguments is not useful
+    o pass sink arguments by value and std::move them
+    o prefer .empty over .size() == 0
+    o qualify implementations as override instead of virtual
+    o replace _findX0Bool with std::all_of and std::none_of
+    o prefer nullptr over 0
+    o replace _exec with for_each_element with std::mem_fn
+    o fix GAUDI-1075
+    o remove CVS keywords
+    o make invariant m_protocols a static const instead of a member
+    o pass sink arguments by value, and std::move them 
+    o Avoid converting strings -> boost::regex inside of a loop
+    o remove deprecated headers
+    o streamline implementation of aida2root
+    o do not have variable names that start with __
+    o streamline Gaudi::Utils::Histos::{to,from}Xml
+    o VFSSvc: replace std::list by std::vector, reverse logic
+         so that we push_back/pop_back instead of push_front/pop_front
+    o optimize string handling
+
 ============================== GaudiUtils v5r3 ===============================
 ! 2014-10-10 - Marco Clemencic
  - Added optional 'se' attribute the the XML file catalog DTD.

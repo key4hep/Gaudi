@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiPython/src/Test/RandomNumberAlg.h,v 1.3 2008/10/27 19:22:21 marcocle Exp $	//
 #ifndef GAUDIEXAMPLES_RANDOMNUMBERALG_H
 #define GAUDIEXAMPLES_RANDOMNUMBERALG_H
 

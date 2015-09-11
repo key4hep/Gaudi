@@ -4,13 +4,13 @@
 #include "GaudiKernel/System.h"  /* ThreadHandle" */
 #include <string>
 #include <map>
+#include <memory>
 
 
 
 /** @class ThreadGaudi ThreadGaudi.h GaudiKernel/ThreadGaudi.h
  *  @brief singleton mapping the pthread ID to the Gaudi thread ID
  *  @author Werner Wiedenmann
- *  $Id: ThreadGaudi.h,v 1.3 2003/06/25 15:45:10 mato Exp $
  */
 class GAUDI_API ThreadGaudi {
 public:
@@ -26,8 +26,8 @@ public:
 
 protected:
   ThreadGaudi() ;
-  virtual ~ThreadGaudi() ;
-  ThreadMap* m_threadMap ;
+  virtual ~ThreadGaudi()  = default;
+  std::unique_ptr<ThreadMap> m_threadMap ;
 };
 
 ///helper function to extract Gaudi Thread ID from thread copy number

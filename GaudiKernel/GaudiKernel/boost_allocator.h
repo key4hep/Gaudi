@@ -1,4 +1,3 @@
-// $Id: boost_allocator.h,v 1.1 2006/05/02 16:49:02 hmd Exp $
 #ifndef GAUDIKERNEL_BOOST_ALLOCATOR_H
 #define GAUDIKERNEL_BOOST_ALLOCATOR_H 1
 

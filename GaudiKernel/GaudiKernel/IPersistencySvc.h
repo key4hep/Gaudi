@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/IPersistencySvc.h,v 1.3 2003/08/05 13:49:16 mato Exp $
 #ifndef KERNEL_IPERSISTENCYSVC_H
 #define KERNEL_IPERSISTENCYSVC_H
 

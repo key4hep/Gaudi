@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/IDataSourceMgr.h,v 1.4 2004/07/06 10:17:39 mato Exp $
 #ifndef GAUDIKERNEL_IDATASOURCEMGR_H
 #define GAUDIKERNEL_IDATASOURCEMGR_H
 

@@ -30,7 +30,7 @@ namespace Gaudi {
     /// Create a catalog file, initialization of XercesC.
     XMLFileCatalog(CSTR url, IMessageSvc* m);
     /// Destructor,
-    virtual ~XMLFileCatalog();
+    virtual ~XMLFileCatalog() = default;
 
     /** Catalog interface                                               */
     /// Create file identifier using UUID mechanism
@@ -92,8 +92,8 @@ namespace Gaudi {
     bool                      m_rdOnly;
     mutable bool              m_update;
     xercesc::DOMDocument     *m_doc;
-    xercesc::XercesDOMParser *m_parser;
-    xercesc::ErrorHandler    *m_errHdlr;
+    std::unique_ptr<xercesc::XercesDOMParser> m_parser;
+    std::unique_ptr<xercesc::ErrorHandler>    m_errHdlr;
     std::string               m_file;
     IMessageSvc*              m_msgSvc;
   };

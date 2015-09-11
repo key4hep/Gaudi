@@ -1,5 +1,3 @@
-// $Id: NTuple.h,v 1.23 2008/10/27 19:22:20 marcocle Exp $
-// ============================================================================
 #ifndef GAUDIKERNEL_NTUPLE_H
 #define GAUDIKERNEL_NTUPLE_H
 // ============================================================================
@@ -9,6 +7,7 @@
 #include <limits>
 #include <cfloat>
 #include <stdexcept>
+#include <algorithm>
 // ============================================================================
 // Framework include files
 // ============================================================================
@@ -53,7 +52,7 @@ namespace NTuple
     /*const*/ TYP    m_upper;
   public:
     /// Standard constructor
-    Range(const TYP low, const TYP upper) : m_lower(low), m_upper(upper)   {
+    Range(TYP low, TYP upper) : m_lower(std::move(low)), m_upper(std::move(upper))   {
     }
     /// Copy constructor
     Range(const Range<TYP>& copy) : m_lower(copy.m_lower),
@@ -66,7 +65,7 @@ namespace NTuple
       return *this;
     }
     /// Destructor
-    virtual ~Range()       {                               }
+    virtual ~Range()  = default;
     /// Lower boundary of range
     TYP lower()    const   { return m_lower;               }
     /// Upper boundary of range
@@ -87,7 +86,7 @@ namespace NTuple
     /// Copy constructor
     Range(const Range<bool>& /* copy */ )  {}
     /// Destructor
-    virtual ~Range()        {                               }
+    virtual ~Range() = default;
     /// Lower boundary of range
     bool lower()    const   { return false;                 }
     /// Upper boundary of range
@@ -112,7 +111,7 @@ namespace NTuple
   template <class TYP> class GAUDI_API _Data : virtual public INTupleItem  {
   protected:
     /// Pointer to data buffer
-    TYP* m_buffer;
+    TYP* m_buffer = nullptr;
   public:
     /// Set type definition to make life more easy easy
     typedef Range<TYP>  ItemRange;
@@ -127,7 +126,7 @@ namespace NTuple
   template <class TYP> class GAUDI_API _Item : virtual public _Data<TYP>  {
   public:
     /// Destructor.
-    virtual ~_Item() {}
+    ~_Item() override = default;
     /// Create instance
     static _Item* create(INTuple* tup,
                          const std::string& name,
@@ -166,9 +165,7 @@ namespace NTuple
       long len = this->length();
       if ( len == copy.length() )    {
         const T* source = (const T*)copy.buffer();
-        for ( int i = 0; i < len; i++ )  {
-          *(this->m_buffer + i) = *(source + i);
-        }
+        std::copy_n(source,len,this->m_buffer);
         return *this;
       }
       throw std::out_of_range
@@ -176,9 +173,12 @@ namespace NTuple
       return *this;
     }
     /// Access to data by reference (CONST)
-    const TYP& data(long i)  const  { return *(this->m_buffer + i);        }
+    const TYP& data(long i)  const  { return this->m_buffer[i];        }
     /// Access to data by reference (CONST)
-    TYP&       data(long i)         { return *(this->m_buffer + i);        }
+    TYP&       data(long i)         { return this->m_buffer[i];        }
+
+    TYP* begin() { return this->m_buffer; }
+    TYP* end()   { return this->m_buffer+this->length(); }
   };
   // ==========================================================================
   /** Abstract class describing a matrix column in a N tuple.
@@ -204,9 +204,7 @@ namespace NTuple
       long len = this->length();
       if ( len == copy.length() )    {
         const T* source = (const T*)copy.buffer();
-        for ( int i = 0; i < len; i++ )  {
-          *(this->m_buffer + i) = *(source + i);
-        }
+        std::copy_n(source,len,this->m_buffer);
         return *this;
       }
       throw std::out_of_range
@@ -214,9 +212,9 @@ namespace NTuple
       return *this;
     }
     /// Access to data by reference
-    TYP*       column(long i)       { return (this->m_buffer + i*m_rows);  }
+    TYP*       column(long i)       { return this->m_buffer + i*m_rows;  }
     /// Access to data by reference (CONST)
-    const TYP* column(long i) const { return (this->m_buffer + i*m_rows);  }
+    const TYP* column(long i) const { return this->m_buffer + i*m_rows;  }
   };
   // ==========================================================================
   /** Class acting as a smart pointer holding a N tuple entry.
@@ -229,12 +227,12 @@ namespace NTuple
     }
   protected:
     /// Pointer to instance
-    mutable TYP*  m_ptr;
+    mutable TYP*  m_ptr = nullptr;
   public:
     /// Standard Constructor
-    _Accessor() : m_ptr(0)           {                                }
+    _Accessor()  = default;
     /// Standard Destructor
-    virtual ~_Accessor()             {                                }
+    virtual ~_Accessor() = default;
     /// Check if column is present
     bool          operator !() const { return m_ptr != 0;             }
     /// Check if column is present
@@ -253,7 +251,7 @@ namespace NTuple
     typedef Item<TYP> _My;
   public:
     /// Standard Constructor
-    Item()                          {    }
+    Item()  = default;
     /// Automatic type conversion
     operator const TYP () const     { return this->m_ptr->get();       }
     /// Dereference operator for pointers
@@ -300,7 +298,7 @@ namespace NTuple
     typedef Item<bool> _My;
   public:
     /// Standard Constructor
-    Item()                          {    }
+    Item()        = default;
     /// Automatic type conversion
     operator bool () const     { return this->m_ptr->get();             }
     /// Assignment operator
@@ -321,7 +319,7 @@ namespace NTuple
   template <class TYP> class Array  : virtual public _Accessor < _Array<TYP> > {
   public:
     /// Standard Constructor
-    Array()                                  {    }
+    Array()   = default;
     /// Assignment operator
     template <class T>
     Array& operator=(const Array<T>& copy)  {
@@ -334,7 +332,12 @@ namespace NTuple
     /// Array operator
     template <class T>
     const TYP& operator[] (const T i) const  { return this->m_ptr->data(i);  }
-    virtual ~Array() {}
+
+    TYP* begin() { return this->m_ptr->begin(); }
+    TYP* end() { return this->m_ptr->end(); }
+
+
+    ~Array() override = default;
   };
   // =========================================================================
   /** Class acting as a smart pointer holding a N tuple _Item.
@@ -342,7 +345,7 @@ namespace NTuple
   template <class TYP> class Matrix : virtual public _Accessor< _Matrix<TYP> > {
   public:
     /// Standard Constructor
-    Matrix()                                  {    }
+    Matrix() = default;
     /// Assignment operator
     template <class T>
     Matrix& operator=(const Matrix<T>& copy) {
@@ -355,7 +358,7 @@ namespace NTuple
     /// Array operator
     template <class T>
     const TYP* operator[] (const T i)  const  { return this->m_ptr->column(i); }
-    virtual ~Matrix() {}
+    ~Matrix() override = default;
   };
   // =========================================================================
   /** Abstract base class which allows the user to interact with the
@@ -374,9 +377,9 @@ namespace NTuple
         result = dynamic_cast< _Item<TYPE>* > (i_find(name));
       }
       catch (...)   {
-        result = 0;
+        result = nullptr;
       }
-      return (0==result) ? StatusCode::FAILURE : StatusCode::SUCCESS;
+      return result ? StatusCode::SUCCESS : StatusCode::FAILURE;
     }
     /// Locate a _Column of data to the N tuple type unsafe for objects
     template <class TYPE> StatusCode i_item(const std::string& name,
@@ -386,9 +389,9 @@ namespace NTuple
         result = (_Item<TYPE*>*)p;
       }
       catch (...)   {
-        result = 0;
+        result = nullptr;
       }
-      return (0==result) ? StatusCode::FAILURE : StatusCode::SUCCESS;
+      return result ? StatusCode::SUCCESS : StatusCode::FAILURE;
     }
     /// Locate a _Column of data to the N tuple type safe
     StatusCode i_item(const std::string& name,
@@ -397,9 +400,9 @@ namespace NTuple
         result = dynamic_cast< _Item<IOpaqueAddress*>* > (i_find(name));
       }
       catch (...)   {
-        result = 0;
+        result = nullptr;
       }
-      return (0==result) ? StatusCode::FAILURE : StatusCode::SUCCESS;
+      return result ? StatusCode::SUCCESS : StatusCode::FAILURE;
     }
     /// Locate a _Array of data to the N tuple type safe
     template <class TYPE> StatusCode i_item(const std::string& name,
@@ -410,9 +413,9 @@ namespace NTuple
         }
       }
       catch (...)   {
-        result = 0;
+        result = nullptr;
       }
-      return (0==result) ? StatusCode::FAILURE : StatusCode::SUCCESS;
+      return result ? StatusCode::SUCCESS : StatusCode::FAILURE;
     }
     /// Locate a _Matrix of data to the N tuple type safe
     template <class TYPE> StatusCode i_item(const std::string& name,
@@ -423,9 +426,9 @@ namespace NTuple
         }
       }
       catch (...)   {
-        result = 0;
+        result = nullptr;
       }
-      return (0==result) ? StatusCode::FAILURE : StatusCode::SUCCESS;
+      return result ? StatusCode::SUCCESS : StatusCode::FAILURE;
     }
     /// Add a _Item of data to the N tuple
     template <class TYPE>
@@ -494,8 +497,8 @@ namespace NTuple
 
   public:
     /// Standard destructor
-    virtual ~Tuple()   {
-    }
+    ~Tuple()  override = default;
+
     /// Locate a scalar Item of data to the N tuple type safe
     template <class TYPE> StatusCode item(const std::string& name,
                                           Item<TYPE>& result)
@@ -1068,14 +1071,14 @@ namespace NTuple
     Directory()   {
     }
     /// Standard destructor
-    virtual ~Directory()   {
-    }
+    ~Directory()  override = default;
+
     /// class ID of the object
     static const CLID& classID()    {
       return CLID_NTupleDirectory;
     }
     /// class ID of the object
-    virtual const CLID& clID()    const   {
+    const CLID& clID()    const   override {
       return classID();
     }
   };
@@ -1089,25 +1092,24 @@ namespace NTuple
     /// Logical file name
     std::string   m_logName;
     /// Access type
-    long          m_type;
+    long          m_type = 0;
     /// Flag to indicate wether the file was opened already
-    bool          m_isOpen;
+    bool          m_isOpen = false;
   public:
-    File() : m_type(0), m_isOpen(false)   {
-    }
+    File() = default;
     /// Standard constructor
-    File(long type, const std::string name, const std::string& logName)
-    : m_name(name), m_logName(logName), m_type(type), m_isOpen(false)  {
+    File(long type, std::string name, std::string logName)
+    : m_name(std::move(name)), m_logName(std::move(logName)), m_type(type) {
     }
     /// Standard destructor
-    virtual ~File()   {
-    }
+    ~File()  override = default ;
+
     /// class ID of the object
     static const CLID& classID()    {
       return CLID_NTupleFile;
     }
     /// class ID of the object
-    virtual const CLID& clID()    const   {
+    const CLID& clID()    const   override {
       return classID();
     }
     /// Set access type
@@ -1123,16 +1125,16 @@ namespace NTuple
       return m_name;
     }
     /// Set access type
-    void setName(const std::string& nam)    {
-      m_name = nam;
+    void setName(std::string nam)    {
+      m_name = std::move(nam);
     }
     //// Return logical file name
     const std::string& logicalName()    const   {
       return m_logName;
     }
     //// Return logical file name
-    void setLogicalName( const std::string& l)  {
-      m_logName = l;
+    void setLogicalName( std::string l)  {
+      m_logName = std::move(l);
     }
     /// Set "open" flag
       void setOpen(bool flag)   {
@@ -1149,19 +1151,17 @@ namespace NTuple
   template <>
   class Array <IOpaqueAddress*>
   {
-  private:
-    Array(){}
+    Array() = delete;
   public:
-    virtual ~Array() {}
+    virtual ~Array() = default;
     virtual void dummy() = 0;
   };
   template <>
   class Matrix<IOpaqueAddress*>
   {
-  private:
-    Matrix(){}
+    Matrix() = delete;
   public:
-    virtual ~Matrix() {}
+    virtual ~Matrix()  = default;
     virtual void dummy() = 0;
   };
   // =========================================================================

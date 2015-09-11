@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/IAppMgrUI.h,v 1.6 2008/06/02 14:20:38 marcocle Exp $
 #ifndef GAUDIKERNEL_IAPPMGRUI_H
 #define GAUDIKERNEL_IAPPMGRUI_H 1
 

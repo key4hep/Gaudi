@@ -1,4 +1,3 @@
-// $Id: TupleDetail.h,v 1.2 2004/10/18 08:18:00 mato Exp $
 #ifndef GAUDIALG_TUPLEDETAIL_H
 #define GAUDIALG_TUPLEDETAIL_H 1
 // ============================================================================
@@ -99,19 +98,19 @@ namespace Tuples
       {}
     public:
 
-      virtual StatusCode Error
+      StatusCode Error
       ( const std::string& msg ,
-        const StatusCode   sc  = StatusCode::FAILURE ) const
+        const StatusCode   sc  = StatusCode::FAILURE ) const override
       { m_handler1 ( name() + " " + msg , sc  ) ; return sc ; }
 
-      virtual StatusCode Warning
+      StatusCode Warning
       ( const std::string& msg ,
-        const StatusCode   sc  = StatusCode::FAILURE ) const
+        const StatusCode   sc  = StatusCode::FAILURE ) const override
       { m_handler2 ( name() + " " + msg , sc  ) ; return sc ; }
 
     protected:
       /// empty protected  destructor
-      virtual ~TupleObjImp(){}
+      ~TupleObjImp() override = default;
     private:
       HANDLER1 m_handler1 ;
       HANDLER2 m_handler2 ;
@@ -189,7 +188,7 @@ namespace Tuples
       // default constructor is private
       ErrorHandler();
     private:
-      const OBJECT* m_obj ;
+      const OBJECT* m_obj = nullptr;
       FUNCTION      m_fun ;
     };
 

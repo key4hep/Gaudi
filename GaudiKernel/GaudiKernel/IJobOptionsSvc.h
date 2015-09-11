@@ -1,4 +1,3 @@
-// $Id: IJobOptionsSvc.h,v 1.6 2006/07/31 08:25:29 mato Exp $
 #ifndef KERNEL_IJOBOPTIONSSVC_H
 #define KERNEL_IJOBOPTIONSSVC_H
 

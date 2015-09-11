@@ -19,18 +19,15 @@ StatusCode RootHistCnv::RRWNTupleCnv::book(const std::string& desc,
 //------------------------------------------------------------------------------
 {
   MsgStream log(msgSvc(), "RRWNTupleCnv");
-  const INTuple::ItemContainer& itms = nt->items();
   // Book the tree
   rtree = new TTree(desc.c_str(),nt->title().c_str());
   // Add the branches
-  for (size_t length = itms.size(), i = 0; i < length; i++ )    {
-    const char* itm = itms[i]->name().c_str();
-    std::string tag = itm;
-    tag += rootVarType( itms[i]->type() );
+  for (const auto& i : nt->items() ) {
+    std::string tag = i->name() + rootVarType( i->type() );
     // add the branch
     log << MSG::INFO << "ID " << desc << ": added branch: "
-        << itm << " / " << tag << endmsg;
-    rtree->Branch(itm,const_cast<void*>(itms[i]->buffer()),tag.c_str());
+        << i->name() << " / " << tag << endmsg;
+    rtree->Branch(i->name().c_str(),const_cast<void*>(i->buffer()),tag.c_str());
   }
   log << MSG::INFO << "Booked TTree with ID:" << desc
       << " \"" << nt->title() << "\"" << endmsg;
@@ -41,7 +38,7 @@ StatusCode RootHistCnv::RRWNTupleCnv::book(const std::string& desc,
 StatusCode RootHistCnv::RRWNTupleCnv::writeData(TTree* rtree, INTuple* nt)
 //------------------------------------------------------------------------------
 {
-  if ( 0 != rtree )   {
+  if ( rtree ) {
     // Fill the tree;
     rtree->Fill();
     // Reset the NTuple
@@ -50,7 +47,7 @@ StatusCode RootHistCnv::RRWNTupleCnv::writeData(TTree* rtree, INTuple* nt)
   }
   MsgStream log(msgSvc(), "RRWNTupleCnv");
   log << MSG::ERROR << "Attempt to write invalid N-tuple.";
-  if ( nt != 0 ) log << nt->title();
+  if ( nt ) log << nt->title();
   log << endmsg;
   return StatusCode::FAILURE;
 }

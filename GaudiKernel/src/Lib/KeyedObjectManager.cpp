@@ -1,4 +1,3 @@
-// $Id $
 // Include files
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/GaudiException.h"
@@ -14,8 +13,7 @@ namespace Containers    {
     map_type               m;
     std::vector<void*>     v;
     bool insert(void* obj, long key)    {
-      std::pair<map_type::iterator,bool> p =
-        m.insert(map_type::value_type(key,obj));
+      auto p = m.insert(map_type::value_type(key,obj));
       return p.second;
     }
   };
@@ -24,8 +22,7 @@ namespace Containers    {
     map_type                m;
     std::vector<void*>      v;
     bool insert(void* obj, long key)    {
-      std::pair<map_type::iterator,bool> p =
-        m.insert(map_type::value_type(key,obj));
+      auto p = m.insert(map_type::value_type(key,obj));
       return p.second;
     }
   };
@@ -215,12 +212,12 @@ void* Containers::KeyedObjectManager<T>::erase(long  key,
   typedef typename T::map_type MTYP;
   typedef find<MTYP> FND;
   if ( 1 == m_direct )   {
-    typename T::map_type& m = m_setup.s->m;
-    typename T::map_type::iterator i = (0==obj) ? m_setup.s->m.find(key)
-      : std::find_if(m.begin(),m.end(),FND(obj));
+    auto& m = m_setup.s->m;
+    auto i = (0==obj) ? m_setup.s->m.find(key)
+                      : std::find_if(m.begin(),m.end(),FND(obj));
     if ( i != m_setup.s->m.end() )   {
       void* o = (*i).second;
-      seq_type::iterator j = std::find(m_seq->begin(),m_seq->end(),o);
+      auto j = std::find(m_seq->begin(),m_seq->end(),o);
       if ( j != m_seq->end() )   {
         m_seq->erase(j);
         m_setup.s->m.erase(i);
@@ -236,14 +233,10 @@ void* Containers::KeyedObjectManager<T>::erase(long  key,
 template <class T>
 void* Containers::KeyedObjectManager<T>::object(long key)  const
 {
-  if ( 0 == m_direct )   {
-    onDirty();
-  }
-  typename T::map_type::const_iterator i = m_setup.s->m.find(key);
-  if ( i != m_setup.s->m.end() )  {
-    return (*i).second;
-  }
-  return 0;
+  if ( 0 == m_direct )   onDirty();
+  auto i = m_setup.s->m.find(key);
+  if ( i != m_setup.s->m.end() )  return (*i).second;
+  return nullptr;
 }
 
 template <class T>
@@ -300,9 +293,9 @@ long Containers::KeyedObjectManager<T>::erase(seq_type::iterator beg,
     clear();
   }
   else  {
-    for ( seq_type::iterator j=beg; j != end; ++j)  {
-      typename T::map_type& m = m_setup.s->m;
-      typename T::map_type::iterator i = std::find_if(m.begin(),m.end(),FND(*j));
+    for ( auto j=beg; j != end; ++j)  {
+      auto& m = m_setup.s->m;
+      auto  i = std::find_if(m.begin(),m.end(),FND(*j));
       if ( i != m_setup.s->m.end() ) {
         m_setup.s->m.erase(i);
         continue;
@@ -411,7 +404,7 @@ long KeyedObjectManager< __A >::insert(ObjectContainerBase* b,
   if ( k+1 > long(m_setup.s->m_idx.size()) )   {
     m_setup.s->m_idx.resize(k+1, -1);
   }
-  std::vector<long>::iterator idx = m_setup.s->m_idx.begin()+k;
+  auto idx = m_setup.s->m_idx.begin()+k;
   if ( *idx == -1 )  {
     *idx = m_setup.s->v.size();
     m_setup.s->v.push_back(o);
@@ -446,7 +439,7 @@ KeyedObjectManager< __A >::insertDirect(ObjectContainerBase* b,
   if ( k+1 > long(m_setup.s->m_idx.size()) )   {
     m_setup.s->m_idx.resize(k+1, -1);
   }
-  std::vector<long>::iterator idx = m_setup.s->m_idx.begin()+k;
+  auto idx = m_setup.s->m_idx.begin()+k;
   if ( *idx == -1 )  {
     *idx = m_setup.s->v.size();
     m_setup.s->v.push_back(o);
@@ -480,8 +473,8 @@ void* KeyedObjectManager< __A >::erase(long key,
   if ( 0 != obj )   {
     id_type& idx = m_setup.s->m_idx;
     for ( id_iter i=idx.begin(); i != idx.end(); i++ )    {
-      seq_type::iterator j = m_setup.s->v.begin()+(*i);
-      seq_type::iterator k = std::find(m_seq->begin(),m_seq->end(),*j);
+      auto j = m_setup.s->v.begin()+(*i);
+      auto k = std::find(m_seq->begin(),m_seq->end(),*j);
       if ( *j == obj )   {
         void* o = *j;
         m_seq->erase(k);
@@ -497,12 +490,12 @@ void* KeyedObjectManager< __A >::erase(long key,
   else if ( key >= 0 && key < long(m_setup.s->m_idx.size()) )   {
     id_iter idx = m_setup.s->m_idx.begin()+key;
     if ( *idx != -1 )   {
-      seq_type::iterator i = m_setup.s->v.begin()+(*idx);
+      auto i = m_setup.s->v.begin()+(*idx);
       if ( i == m_setup.s->v.end() )   {
         containerIsInconsistent();
       }
       void* o = *i;
-      seq_type::iterator j=std::find(m_seq->begin(),m_seq->end(),o);
+      auto j=std::find(m_seq->begin(),m_seq->end(),o);
       if ( j == m_seq->end() )   {
         containerIsInconsistent();
       }
@@ -538,8 +531,8 @@ long KeyedObjectManager< __A >::erase(seq_type::iterator beg,
     long cnt = 0, nobj = end-beg;
     id_type& idx = m_setup.s->m_idx;
     for ( id_iter i=idx.begin(); i != idx.end(); i++ )    {
-      seq_type::iterator j = m_setup.s->v.begin()+(*i);
-      seq_type::iterator k = std::find(beg,end,*j);
+      auto j = m_setup.s->v.begin()+(*i);
+      auto k = std::find(beg,end,*j);
       if ( k != end )   {
         m_setup.s->v.erase(j);
         std::for_each(m_setup.s->m_idx.begin(),

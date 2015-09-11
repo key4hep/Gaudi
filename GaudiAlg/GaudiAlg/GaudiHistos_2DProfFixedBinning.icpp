@@ -15,7 +15,7 @@ AIDA::IProfile2D*  GaudiHistos<PBASE>::bookProfile2D
   if  ( !produceHistos() )                   { return 0    ; } // RETURN
   //
   // exist?
-  AIDA::IProfile2D* hist = profile2D ( title ) ;
+  auto hist = profile2D ( title ) ;
   // histogram is already booked
   if( 0 != hist      )                          { return hist ; } // RETURN !!
 
@@ -47,10 +47,10 @@ AIDA::IProfile2D*  GaudiHistos<PBASE>::bookProfile2D
   if (ID.undefined())
   {
     this->Error("Undefined Histogram ID : Title='"+title+"'");
-    return NULL;
+    return nullptr;
   }
   // exist?
-  AIDA::IProfile2D* hist = profile2D ( ID ) ;
+  auto hist = profile2D ( ID ) ;
   // histogram is already booked
   if( 0 != hist )                               { return hist ; } // RETURN !!
 
@@ -122,11 +122,11 @@ AIDA::IProfile2D* GaudiHistos<PBASE>::fill
   //
   if ( !checkForNaN() )
   { Gaudi::Utils::Histos::fill ( histo , valueX , valueY , valueZ , weight ); }
-  else if  ( lfin ( valueX ) && lfin ( valueY ) &&
-             lfin ( valueZ ) && lfin ( weight ) )
+  else if  ( std::isfinite ( valueX ) && std::isfinite ( valueY ) &&
+             std::isfinite ( valueZ ) && std::isfinite ( weight ) )
   { Gaudi::Utils::Histos::fill ( histo , valueX , valueY , valueZ , weight ); }
-  else if  ( lnan ( valueX ) || lnan ( valueY ) ||
-             lnan ( valueZ ) || lnan ( weight ) )
+  else if  ( std::isnan ( valueX ) || std::isnan ( valueY ) ||
+             std::isnan ( valueZ ) || std::isnan ( weight ) )
   {
     this -> Warning
       ("fill():: 'NaN'      value is skipped from the histogram '"
@@ -158,7 +158,7 @@ AIDA::IProfile2D* GaudiHistos<PBASE>::profile2D
   const unsigned long binsY        ,
   const double        weight       ) const
 {
-  AIDA::IProfile2D * h(0);
+  AIDA::IProfile2D * h = nullptr;
   if ( produceHistos() )
   {
     // retrieve or book the histogram
@@ -189,7 +189,7 @@ AIDA::IProfile2D* GaudiHistos<PBASE>::profile2D
   const unsigned long binsY        ,
   const double        weight       ) const
 {
-  AIDA::IProfile2D * h(0);
+  AIDA::IProfile2D * h = nullptr;
   if ( produceHistos() )
   {
     // retrieve or book the histogram

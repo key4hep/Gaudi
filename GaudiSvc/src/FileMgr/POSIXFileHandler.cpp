@@ -34,7 +34,7 @@ POSIXFileHandler::openPOSIXFile(const std::string& n, const Io::IoFlags& f,
 	  << f << "," << desc << ")" 
 	  << endmsg;
   
-  ptr = 0;
+  ptr = nullptr;
   fd = -1;
 
   int mm = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
@@ -53,7 +53,7 @@ POSIXFileHandler::openPOSIXFile(const std::string& n, const Io::IoFlags& f,
   if (f.isRead()) {
     m = "r";
   } else if ( f.isWrite() ) {
-    if ( (f & Io::APPEND) != 0) {
+    if ( (f & Io::APPEND) ) {
       m = "a";
     } else {
       m = "w";
@@ -71,11 +71,10 @@ POSIXFileHandler::openPOSIXFile(const std::string& n, const Io::IoFlags& f,
   if (m_log.level() <= MSG::DEBUG) 
     m_log << MSG::DEBUG << "calling fdopen with mode " << m << endmsg;
 
-  FILE* fp = fdopen(fd, m.c_str());
+  ptr = fdopen(fd, m.c_str());
   ierr = errno;
-  ptr = (void*) fp;
 
-  if (ptr == 0) {
+  if (!ptr) {
     m_log << MSG::ERROR << "Error calling fdopen on \"" << n << "\": "
 	  << strerror(ierr)
 	  << endmsg;
@@ -125,7 +124,6 @@ Io::reopen_t
 POSIXFileHandler::reopenPOSIXFile(Io::Fd /*fd*/, const Io::IoFlags&) {
 
   m_log << MSG::ERROR << "reopen not implemented" << endmsg;
-
   return -1;
 
 }

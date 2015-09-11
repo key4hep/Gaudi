@@ -5,19 +5,10 @@
  ** Constructor(s)
  **/
 EventCounter::EventCounter(const std::string& name, ISvcLocator* pSvcLocator) :
-  Algorithm(name, pSvcLocator),
-  m_skip ( 0 ),
-  m_total( 0 )
+  Algorithm( name, pSvcLocator)
 {
     declareProperty( "Frequency", m_frequency=1 );
     m_frequency.verifier().setBounds( 0, 1000 );
-}
-
-/**
- ** Destructor
- **/
-EventCounter::~EventCounter( )
-{
 }
 
 StatusCode
@@ -35,7 +26,7 @@ EventCounter::execute()
      m_total++;
      int freq = m_frequency;
      if ( freq > 0 ) {
-         m_skip++;
+         ++m_skip;
          if ( m_skip >= freq ) {
              log << MSG::INFO << name( ) << ":EventCounter::execute - seen events: " << m_total << endmsg;
              m_skip = 0;

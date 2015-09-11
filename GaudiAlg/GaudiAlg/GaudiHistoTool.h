@@ -1,5 +1,3 @@
-// $Id: GaudiHistoTool.h,v 1.8 2008/01/17 15:06:06 marcocle Exp $
-// ============================================================================
 #ifndef GAUDIALG_GAUDIHISTOTOOL_H
 #define GAUDIALG_GAUDIHISTOTOOL_H 1
 // ============================================================================
@@ -58,30 +56,28 @@ protected:
                    const IInterface*  parent );
 
   /// destructor, virtual and protected
-  virtual ~GaudiHistoTool();
+  ~GaudiHistoTool() override;
 
   /** standard initialization method
    *  @see  Algorithm
    *  @see IAlgorithm
    *  @return status code
    */
-  virtual StatusCode initialize ();
+  StatusCode initialize () override;
 
   /** standard finalization method
    *  @see  Algorithm
    *  @see IAlgorithm
    *  @return status code
    */
-  virtual StatusCode finalize   ();
+  StatusCode finalize   () override;
 
 private:
 
-  // default constructor  is disabled
-  GaudiHistoTool();
-  // copy constructor     is disabled
-  GaudiHistoTool           ( const GaudiHistoTool& ) ;
-  // assignment operator is disabled
-  GaudiHistoTool& operator=( const GaudiHistoTool& ) ;
+  // delete default/copy constructor and assignment
+  GaudiHistoTool() = delete;
+  GaudiHistoTool           ( const GaudiHistoTool& ) = delete;
+  GaudiHistoTool& operator=( const GaudiHistoTool& ) = delete;
 
 };
 

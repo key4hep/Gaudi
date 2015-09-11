@@ -58,26 +58,24 @@ namespace Gaudi {
   template <>
   void Generic1D<AIDA::IProfile1D,TProfile>::adoptRepresentation(TObject* rep)  {
     TProfile* imp = dynamic_cast<TProfile*>(rep);
-    if ( imp )  {
-    if ( m_rep ) delete m_rep;
-      m_rep = imp;
-      m_axis.initialize(m_rep->GetXaxis(),true);
-      const TArrayD* a = m_rep->GetSumw2();
-      if ( 0 == a || (a && a->GetSize()==0) ) m_rep->Sumw2();
-      setTitle(m_rep->GetTitle());
-      return;
-    }
-    throw std::runtime_error("Cannot adopt native histogram representation.");
+    if ( !imp )  throw std::runtime_error("Cannot adopt native histogram representation.");
+    m_rep.reset( imp );
+    m_axis.initialize(m_rep->GetXaxis(),true);
+    const TArrayD* a = m_rep->GetSumw2();
+    if ( !a || (a && a->GetSize()==0) ) m_rep->Sumw2();
+    setTitle(m_rep->GetTitle());
   }
 }
 
-Gaudi::Profile1D::Profile1D() {
-  m_rep = new TProfile();
+Gaudi::Profile1D::Profile1D() 
+ : Base( new TProfile() )
+{
   init("",false);
 }
 
-Gaudi::Profile1D::Profile1D(TProfile* rep)  {
-  m_rep = rep;
+Gaudi::Profile1D::Profile1D(TProfile* rep)  
+  : Base( rep)
+{
   init(m_rep->GetTitle());
 }
 

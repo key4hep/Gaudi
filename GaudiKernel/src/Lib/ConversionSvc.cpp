@@ -1,7 +1,6 @@
 #define  GAUDIKERNEL_CONVERSIONSVC_CPP
 
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/CnvFactory.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/System.h"
 #include "GaudiKernel/IConverter.h"
@@ -144,16 +143,16 @@ StatusCode ConversionSvc::updateRepRefs(IOpaqueAddress* pAddress, DataObject* pO
 /// Retrieve converter from list
 IConverter* ConversionSvc::converter(const CLID& clid)     {
   IConverter* cnv = 0;
-  Workers::iterator i = std::find_if(m_workers->begin(),m_workers->end(),CnvTest(clid));
-  if ( i != m_workers->end() )      {
-    cnv = (*i).converter();
+  auto i = std::find_if(m_workers.begin(),m_workers.end(),CnvTest(clid));
+  if ( i != m_workers.end() )      {
+    cnv = i->converter();
   }
   if ( 0 == cnv )     {
     StatusCode status = addConverter(clid);
     if ( status.isSuccess() )   {
-      i = std::find_if(m_workers->begin(),m_workers->end(),CnvTest(clid));
-      if ( i != m_workers->end() )      {
-        cnv = (*i).converter();
+      i = std::find_if(m_workers.begin(),m_workers.end(),CnvTest(clid));
+      if ( i != m_workers.end() )      {
+        cnv = i->converter();
       }
     }
   }
@@ -166,10 +165,8 @@ StatusCode ConversionSvc::setDataProvider(IDataProviderSvc* pDataSvc)    {
   if ( m_dataSvc ) m_dataSvc->release();
   m_dataSvc = pDataSvc;
   m_dataSvc->addRef();
-  Workers::iterator stop  = m_workers->end();
-  Workers::iterator start = m_workers->begin();
-  for(Workers::iterator i=start; i != stop; i++ )    {
-    IConverter* cnv = (*i).converter();
+  for(auto& i : m_workers ) { 
+    IConverter* cnv = i.converter();
     if ( 0 != cnv )   {
       if (cnv->setDataProvider(m_dataSvc).isFailure()) {
         MsgStream log(msgSvc(), name());
@@ -188,11 +185,9 @@ SmartIF<IDataProviderSvc>& ConversionSvc::dataProvider()  const   {
 /// Set address creator facility
 StatusCode ConversionSvc::setAddressCreator(IAddressCreator* creator)   {
   m_addressCreator = creator;
-  Workers::iterator stop  = m_workers->end();
-  Workers::iterator start = m_workers->begin();
-  for(Workers::iterator i=start; i != stop; i++ )    {
-    IConverter* cnv = (*i).converter();
-    if ( 0 != cnv )   {
+  for(auto& i : m_workers ) { 
+    auto* cnv = i.converter();
+    if ( cnv )   {
       if (cnv->setAddressCreator(m_addressCreator).isFailure()) {
 	MsgStream log(msgSvc(), name());
 	log << MSG::ERROR << "setting Address Creator"  << endmsg;
@@ -246,10 +241,10 @@ StatusCode ConversionSvc::addConverter(const CLID& clid)  {
 
 /// Add converter object to conversion service.
 StatusCode ConversionSvc::addConverter(IConverter* pConverter)    {
-  if ( 0 != pConverter )    {
+  if ( pConverter )    {
     const CLID& clid = pConverter->objType();
     removeConverter(clid).ignore();
-    m_workers->push_back(WorkerEntry(clid, pConverter));
+    m_workers.emplace_back(clid, pConverter);
     pConverter->addRef();
     return StatusCode::SUCCESS;
   }
@@ -258,21 +253,16 @@ StatusCode ConversionSvc::addConverter(IConverter* pConverter)    {
 
 /// Remove converter object from conversion service (if present).
 StatusCode ConversionSvc::removeConverter(const CLID& clid)  {
-  CnvTest test(clid);
-  Workers::iterator stop  = m_workers->end();
-  Workers::iterator start = m_workers->begin();
-  for(Workers::iterator i=start; i != stop; i++ )    {
-    if ( test( *i ) )   {
-      (*i).converter()->finalize().ignore();
-      (*i).converter()->release();
-    }
-  }
-  Workers::iterator j = std::remove_if(start, stop, test);
-  if ( j != stop )  {
-    m_workers->erase(j, stop);
-    return StatusCode::SUCCESS;
-  }
-  return NO_CONVERTER;
+
+  auto i = std::partition( std::begin(m_workers), std::end(m_workers), 
+                           std::not1( CnvTest{clid} ) );
+  if ( i == std::end(m_workers) ) return NO_CONVERTER;
+  std::for_each( i, std::end(m_workers), []( WorkerEntry& w ) {
+        w.converter()->finalize().ignore();
+        w.converter()->release();
+  });
+  m_workers.erase( i, std::end(m_workers) );
+  return StatusCode::SUCCESS;
 }
 
 /// Initialize the service.
@@ -285,17 +275,17 @@ StatusCode ConversionSvc::initialize()     {
 StatusCode ConversionSvc::finalize()      {
   // Release all workers.
   MsgStream log(msgSvc(), name());
-  for ( Workers::iterator i = m_workers->begin(); i != m_workers->end(); i++ )    {
-    if ( (*i).converter()->finalize().isFailure() ) {
+  for ( auto& i : m_workers ) {
+    if ( i.converter()->finalize().isFailure() ) {
       log << MSG::ERROR << "finalizing worker" << endmsg;
     }
-    (*i).converter()->release();
+    i.converter()->release();
   }
-  m_workers->erase(m_workers->begin(), m_workers->end() );
+  m_workers.clear();
   // release interfaces
-  m_addressCreator = 0;
-  m_dataSvc = 0;
-  m_cnvSvc = 0;
+  m_addressCreator = nullptr;
+  m_dataSvc = nullptr;
+  m_cnvSvc = nullptr;
   return Service::finalize();
 }
 
@@ -340,7 +330,7 @@ StatusCode ConversionSvc::initializeConverter(long /* typ */,
 StatusCode ConversionSvc::activateConverter(long /* typ */,
                                             const CLID& /* clid */,
                                             IConverter* pConverter)    {
-  if ( 0 != pConverter )    {
+  if ( pConverter )    {
     return StatusCode::SUCCESS;
   }
   return NO_CONVERTER;
@@ -396,7 +386,7 @@ StatusCode ConversionSvc::createAddress( long /* svc_type */,
                                         const std::string& /* refAddress */,
                                         IOpaqueAddress*& refpAddress)
 {
-  refpAddress = 0;
+  refpAddress = nullptr;
   return StatusCode::FAILURE;
 }
 
@@ -406,17 +396,12 @@ ConversionSvc::ConversionSvc(const std::string& name, ISvcLocator* svc, long typ
    m_cnvSvc(static_cast<IConversionSvc*>(this))
 {
   m_type            = type;
-  m_dataSvc         = 0;
-  m_workers = new Workers();
+  m_dataSvc         = nullptr;
   setAddressCreator(this).ignore();
 }
 
 /// Standard Destructor
 ConversionSvc::~ConversionSvc()   {
   // Release all workers.
-  for ( Workers::iterator i = m_workers->begin(); i != m_workers->end(); i++ )    {
-    (*i).converter()->release();
-  }
-  m_workers->erase(m_workers->begin(), m_workers->end() );
-  delete m_workers;
+  for ( auto & i : m_workers ) i.converter()->release();
 }

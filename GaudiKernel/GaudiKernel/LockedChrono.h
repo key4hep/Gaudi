@@ -1,5 +1,3 @@
-// $Id: $
-// ===========================================================================
 #ifndef GAUDI_LOCKEDCHRONO_H
 #define GAUDI_LOCKEDCHRONO_H 1
 // ===========================================================================
@@ -59,7 +57,6 @@ namespace Gaudi
       LockedChrono  ( ChronoEntity& c , bool& lock ) 
         : m_timer  ( c     ) 
         , m_locker ( lock  )
-        , m_locked ( false )
       {
         if  ( !lock ) 
         {
@@ -78,10 +75,8 @@ namespace Gaudi
         }  
       }
       // ======================================================================
-    private:
-      // ======================================================================
       /// no default constructor
-      LockedChrono () ; // no default constructor
+      LockedChrono () = delete;
       // ======================================================================
     private:
       // ======================================================================
@@ -90,7 +85,7 @@ namespace Gaudi
       /// the actual locker 
       bool&         m_locker ;                             // the actual locker 
       /// locked ? 
-      bool          m_locked ;                             //          locked ? 
+      bool          m_locked = false;                      //          locked ? 
       // ======================================================================
     } ;
     // ========================================================================

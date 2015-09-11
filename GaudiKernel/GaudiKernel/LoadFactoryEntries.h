@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/LoadFactoryEntries.h,v 1.4 2006/11/30 14:43:13 mato Exp $
 #ifndef GAUDIKERNEL_LOADFACTORYENTRIES_H
 #define GAUDIKERNEL_LOADFACTORYENTRIES_H 1
 //====================================================================
@@ -30,14 +29,14 @@
 
 #define LOAD_FACTORY_ENTRIES(x) \
 extern "C" FACTORYTABLE_API void* x##_getFactoryEntries() {  \
-  return 0; \
+  return nullptr; \
 }
 
 #else
 
 #define LOAD_FACTORY_ENTRIES(x) \
 extern "C" GAUDI_EXPORT void* x##_getFactoryEntries() {  \
-return 0; \
+return nullptr; \
 }
 
 #endif // GAUDI_V20_COMPAT

@@ -71,7 +71,7 @@ public:
    *  Returns a pointer to the standard message service.
    */
   inline SmartIF<IMessageSvc>& msgSvc() const {
-    if (!m_msgsvc.get()) {
+    if (!m_msgsvc) {
       // Get default implementation of the message service.
       m_msgsvc = this->serviceLocator();
     }
@@ -90,10 +90,10 @@ public:
 
   /// Return an uninitialized MsgStream.
   inline MsgStream& msgStream() const {
-    if (UNLIKELY((!m_msgStream.get()) || (!m_streamWithService))) {
-      SmartIF<IMessageSvc>& ms = msgSvc();
+    if (UNLIKELY((!m_msgStream) || (!m_streamWithService))) {
+      auto& ms = msgSvc();
       m_msgStream.reset(new MsgStream(ms, this->name()));
-      m_streamWithService = ms.get() != 0;
+      m_streamWithService = ms.isValid();
     }
     return *m_msgStream;
   }
@@ -154,7 +154,7 @@ protected:
   mutable SmartIF<IMessageSvc> m_msgsvc;
 
   /// The predefined message stream
-  mutable std::auto_ptr<MsgStream> m_msgStream;
+  mutable std::unique_ptr<MsgStream> m_msgStream;
 
   /// Flag to create a new MsgStream if it was created without the message service
   mutable bool m_streamWithService = false;
@@ -162,7 +162,7 @@ protected:
   /// Update the output level of the cached MsgStream.
   /// This function is meant to be called by the update handler of the OutputLevel property.
   void updateMsgStreamOutputLevel(int level) {
-    if (m_msgStream.get()) m_msgStream->setLevel(level);
+    if (m_msgStream) m_msgStream->setLevel(level);
   }
 
 };

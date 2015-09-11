@@ -1,4 +1,3 @@
-//$Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiExamples/src/POOLIO/WriteAlg.h,v 1.1 2004/05/24 14:05:04 mato Exp $  //
 #ifndef GAUDIEXAMPLE_WRITEALG_H
 #define GAUDIEXAMPLE_WRITEALG_H
 
@@ -27,7 +26,7 @@ class WriteAlg : public Algorithm {
  public:
   /// Constructor: A constructor of this form must be provided.
   WriteAlg(const std::string& name, ISvcLocator* pSvcLocator)
-  : Algorithm(name, pSvcLocator), m_recordSvc(0), m_evtCount(0) { }
+  : Algorithm(name, pSvcLocator), m_recordSvc(nullptr), m_evtCount(nullptr) { }
   /// Standard Destructor
   virtual ~WriteAlg() { }
   /// Initialize

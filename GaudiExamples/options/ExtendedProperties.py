@@ -1,5 +1,3 @@
-# $Id: ExtendedProperties.py,v 1.4 2008/01/14 19:45:51 marcocle Exp $
-#
 # Translation of ExtendedProperties.opts into python job options.
 # @author Marco Clemencic
 from Gaudi.Configuration import *

@@ -1,4 +1,3 @@
-// $Id: NTupleSvc.h,v 1.9 2006/11/30 14:57:04 mato Exp $
 #ifndef GAUDI_NTUPLESVC_H
 #define GAUDI_NTUPLESVC_H 1
 

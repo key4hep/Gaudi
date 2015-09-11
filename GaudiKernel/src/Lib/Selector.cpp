@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/src/Lib/Selector.cpp,v 1.2 2000/12/13 12:57:23 mato Exp $
 //====================================================================
 //  NTuple name space: Selector class implementation
 //--------------------------------------------------------------------

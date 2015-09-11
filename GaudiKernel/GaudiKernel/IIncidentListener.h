@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/IIncidentListener.h,v 1.4 2004/07/19 06:47:55 mato Exp $
 #ifndef GAUDIKERNEL_IINCIDENTLISTENER_H
 #define GAUDIKERNEL_IINCIDENTLISTENER_H
 

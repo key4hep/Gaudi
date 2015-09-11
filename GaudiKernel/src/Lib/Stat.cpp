@@ -1,4 +1,3 @@
-// $Id: Stat.cpp,v 1.6 2007/08/06 08:39:38 marcocle Exp $
 // ============================================================================
 // Include files
 // ============================================================================
@@ -49,12 +48,12 @@ Stat::Stat ( IStatSvc*          svc  ,
   , m_stat    ( svc  ) 
   , m_counter ( 0    )
 {
-  if ( 0 != m_stat ) 
+  if ( m_stat ) 
   {
     m_stat -> addRef() ;
     // get from the service 
     const StatEntity* tmp = m_stat->stat ( tag ) ;
-    if ( 0 == tmp ) 
+    if ( !tmp ) 
     {
       // create if needed  
       m_stat->stat ( tag , 0 ) ; 
@@ -137,8 +136,8 @@ Stat::Stat( const Stat& right )
   , m_stat    ( right.m_stat    ) 
   , m_counter ( right.m_counter )
 {
-  if ( 0 != m_stat    ) { m_stat    -> addRef () ; }
-  if ( 0 != m_counter ) { m_counter -> addRef () ; }  
+  if ( m_stat    ) { m_stat    -> addRef () ; }
+  if ( m_counter ) { m_counter -> addRef () ; }  
 }
 // ============================================================================
 // Assignement operator 
@@ -151,14 +150,14 @@ Stat& Stat::operator=( const Stat& right)
   m_group  = right.m_group  ;
   {
     IStatSvc* stat= right.m_stat ;
-    if ( 0 !=   stat ) {   stat -> addRef()  ; }
-    if ( 0 != m_stat ) { m_stat -> release() ; m_stat = 0 ; }
+    if (   stat ) {   stat -> addRef()  ; }
+    if ( m_stat ) { m_stat -> release() ; }
     m_stat = stat ;
   }
   {
     ICounterSvc* counter= right.m_counter ;
-    if ( 0 !=    counter ) {   counter -> addRef()  ; }
-    if ( 0 !=  m_counter ) { m_counter -> release() ; m_counter = 0 ; }
+    if (   counter ) {   counter -> addRef()  ; }
+    if ( m_counter ) { m_counter -> release() ; }
     m_counter = counter ;
   }
   return *this ;
@@ -168,9 +167,8 @@ Stat& Stat::operator=( const Stat& right)
 // ============================================================================
 Stat::~Stat()
 {
-  m_entity = 0 ;
-  if ( 0 != m_stat    ) { m_stat    -> release() ; m_stat    = 0 ; }
-  if ( 0 != m_counter ) { m_counter -> release() ; m_counter = 0 ; } 
+  if ( m_stat    ) { m_stat    -> release() ; }
+  if ( m_counter ) { m_counter -> release() ; } 
 }
 // ============================================================================
 // representation as string

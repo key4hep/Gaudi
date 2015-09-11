@@ -1,11 +1,8 @@
-// $Id: EqSolver.cpp,v 1.4 2006/01/10 20:00:05 hmd Exp $
-// ============================================================================
 // Include files
 
 #include <stdlib.h>
 #include <stdio.h>
 // from Gaudi
-#include "GaudiKernel/ToolFactory.h"
 #include "GaudiKernel/MsgStream.h"
 //from GSL
 #include "gsl/gsl_vector.h"

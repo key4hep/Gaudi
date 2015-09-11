@@ -1,4 +1,3 @@
-// $Id: TestToolAlgFailure.h,v 1.1 2008/10/22 14:49:16 marcocle Exp $
 #ifndef TESTTOOLALGFAILURE_H
 #define TESTTOOLALGFAILURE_H 1
 

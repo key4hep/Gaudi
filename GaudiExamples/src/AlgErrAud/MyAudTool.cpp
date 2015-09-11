@@ -1,6 +1,4 @@
-// $Id: MyAudTool.cpp,v 1.1 2007/01/22 16:06:14 hmd Exp $
 // Framework include files
-#include "GaudiKernel/ToolFactory.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/GaudiException.h"
 

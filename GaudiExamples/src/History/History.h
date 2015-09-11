@@ -7,7 +7,6 @@
 /** @class ColorMgs
  * @brief  an algorithm to test the color setting options of MsgService
  * @author Paolo Calafiura <pcalafiura@lbl.gov> - ATLAS Collaboration
- *$Id: History.h,v 1.1 2006/09/14 12:34:15 hmd Exp $
  */
 
 class IHistorySvc;

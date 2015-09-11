@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/ISelectStatement.h,v 1.3 2003/01/27 13:48:41 mato Exp $
 #ifndef GAUDIKERNEL_ISELECTSTATEMENT_H
 #define GAUDIKERNEL_ISELECTSTATEMENT_H
 

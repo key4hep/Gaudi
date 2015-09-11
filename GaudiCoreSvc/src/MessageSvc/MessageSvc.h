@@ -5,17 +5,16 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <mutex>
 #include <set>
 #include <iosfwd>
+#include <memory>
 
 #include "GaudiKernel/StatusCode.h"
 #include "GaudiKernel/Service.h"
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/Message.h"
 #include "GaudiKernel/Property.h"
-
-#include <boost/thread/recursive_mutex.hpp>
-#include <boost/array.hpp>
 
 // Forward declarations
 class ISvcLocator;
@@ -38,92 +37,92 @@ public:
   // Default constructor.
   MessageSvc( const std::string& name, ISvcLocator* svcloc );
   // Destructor.
-  virtual ~MessageSvc();
+  ~MessageSvc() override = default;
 
   // Implementation of IService::reinitialize()
-  virtual StatusCode reinitialize();
+  StatusCode reinitialize() override;
   // Implementation of IService::initialize()
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
   // Implementation of IService::finalize()
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
 
   // Implementation of IMessageSvc::reportMessage()
-  virtual void reportMessage( const Message& message );
+  void reportMessage( const Message& message ) override;
 
   // Implementation of IMessageSvc::reportMessage()
-  virtual void reportMessage( const Message& msg, int outputLevel );
+  void reportMessage( const Message& msg, int outputLevel ) override;
 
   // Implementation of IMessageSvc::reportMessage()
-  virtual void reportMessage( const StatusCode& code, const std::string& source = "");
+  void reportMessage( const StatusCode& code, const std::string& source = "") override;
 
   // Implementation of IMessageSvc::reportMessage()
-  virtual void reportMessage( const char* source, int type, const char* message);
+  void reportMessage( const char* source, int type, const char* message) override;
 
   // Implementation of IMessageSvc::reportMessage()
-  virtual void reportMessage( const std::string& source, int type, const std::string& message);
+  void reportMessage( const std::string& source, int type, const std::string& message) override;
 
   // Implementation of IMessageSvc::insertMessage()
-  virtual void insertMessage( const StatusCode& code, const Message& message );
+  void insertMessage( const StatusCode& code, const Message& message ) override;
 
   // Implementation of IMessageSvc::eraseMessage()
-  virtual void eraseMessage();
+  void eraseMessage() override;
 
   // Implementation of IMessageSvc::eraseMessage()
-  virtual void eraseMessage( const StatusCode& code ) ;
+  void eraseMessage( const StatusCode& code )  override;
 
   // Implementation of IMessageSvc::eraseMessage()
-  virtual void eraseMessage( const StatusCode& code, const Message& message );
+  void eraseMessage( const StatusCode& code, const Message& message ) override;
 
   // Implementation of IMessageSvc::insertStream()
-  virtual void insertStream( int message_type, const std::string& name, std::ostream* stream );
+  void insertStream( int message_type, const std::string& name, std::ostream* stream ) override;
 
   // Implementation of IMessageSvc::eraseStream()
-  virtual void eraseStream();
+  void eraseStream() override;
 
   // Implementation of IMessageSvc::eraseStream()
-  virtual void eraseStream( int message_type );
+  void eraseStream( int message_type ) override;
 
   // Implementation of IMessageSvc::eraseStream()
-  virtual void eraseStream( int message_type, std::ostream* stream );
+  void eraseStream( int message_type, std::ostream* stream ) override;
 
   // Implementation of IMessageSvc::eraseStream()
-  virtual void eraseStream( std::ostream* stream );
+  void eraseStream( std::ostream* stream ) override;
 
   // Implementation of IMessageSvc::desaultStream()
-  virtual std::ostream* defaultStream() const {
+  std::ostream* defaultStream() const {
     return m_defaultStream;
   }
 
   // Implementation of IMessageSvc::setDefaultStream()
-  virtual void setDefaultStream( std::ostream* stream ) {
-    boost::recursive_mutex::scoped_lock lock(m_reportMutex);
+  void setDefaultStream( std::ostream* stream )  override{
+    std::unique_lock<std::recursive_mutex> lock(m_reportMutex);
     m_defaultStream = stream;
   }
 
   // Implementation of IMessageSvc::ouputLevel()
-  virtual int outputLevel()   const;
+  int outputLevel()   const override;
 
   // Implementation of IMessageSvc::ouputLevel()
-  virtual int outputLevel(const std::string& source)   const;
+  int outputLevel(const std::string& source)   const override;
 
   // Implementation of IMessageSvc::setOuputLevel()
-  virtual void setOutputLevel(int new_level);
+  void setOutputLevel(int new_level) override;
 
   // Implementation of IMessageSvc::setOuputLevel()
-  virtual void setOutputLevel(const std::string& source, int new_level);
+  void setOutputLevel(const std::string& source, int new_level) override;
 
   // Implementation of IMessageSvc::useColor()
-  virtual bool useColor() const { return m_color; }
+  bool useColor() const  override { return m_color; }
 
   // Implementation of IMessageSvc::getLogColor()
-  virtual std::string getLogColor(int logLevel) const;
+  std::string getLogColor(int logLevel) const override;
 
   // Implementation of IMessageSvc::messageCount()
-  virtual int messageCount( MSG::Level logLevel ) const;
+  int messageCount( MSG::Level logLevel ) const override;
 
   // Implementation of IInactiveMessageCounter::incrInactiveCount()
-  virtual void incrInactiveCount( MSG::Level level,
-				  const std::string& src );
+  void incrInactiveCount( MSG::Level level,
+				  const std::string& src ) override;
 
 
 private:
@@ -144,19 +143,11 @@ private:
   std::string m_logColorCodes[MSG::NUM_LEVELS];
 
   /// Private helper class to keep the count of messages of a type (MSG::LEVEL).
-  struct MsgAry {
-    /// Simple typedef for readability.
-    typedef boost::array<int,MSG::NUM_LEVELS> ArrayType;
+  struct MsgAry final {
     /// Internal array of counters.
-    ArrayType msg;
+    std::array<int,MSG::NUM_LEVELS> msg = {{0}}; // empty value-initialization will trigger zero-initialize of all elements (i.e. 0)
     /// Default constructor.
-    MsgAry() {
-      // This is a special hack to have a fast initialization of the array
-      // because we cannot use initializer lists in the constructor (should be
-      // possible in C++0X).
-      static const ArrayType zero = {{0}};
-      msg = zero;
-    }
+    MsgAry() = default;
   };
 
   std::map<std::string,MsgAry> m_sourceMap, m_inactiveMap;
@@ -166,11 +157,10 @@ private:
   typedef std::map<std::string, MSG::Color> ColorMap;
   ColorMap m_colMap;
 
-  int m_msgCount[MSG::NUM_LEVELS];
+  std::array<int,MSG::NUM_LEVELS> m_msgCount;
 
   std::map<std::string, std::string> m_loggedStreamsName;
-  typedef std::map<std::string, std::ostream*> LoggedStreamsMap_t;
-  LoggedStreamsMap_t m_loggedStreams;
+  std::map<std::string, std::shared_ptr<std::ostream>> m_loggedStreams;
 
   void initColors(Property& prop);
   void setupColors(Property& prop);
@@ -181,17 +171,17 @@ private:
   void setupLogStreams();
 
   void tee( const std::string& sourceName, const std::string& logFileName,
-	    const std::set<std::string>& declaredOutFileNames );
+            const std::set<std::string>& declaredOutFileNames );
 
   /// Mutex to synchronize multiple threads printing.
-  mutable boost::recursive_mutex m_reportMutex;
+  mutable std::recursive_mutex m_reportMutex;
 
   /// Mutex to synchronize multiple access to m_messageMap.
-  mutable boost::recursive_mutex m_messageMapMutex;
+  mutable std::recursive_mutex m_messageMapMutex;
 
   /// Mutex to synchronize multiple access to m_thresholdMap
   /// (@see MsgStream::doOutput).
-  mutable boost::recursive_mutex m_thresholdMapMutex;
+  mutable std::recursive_mutex m_thresholdMapMutex;
 };
 
 #endif

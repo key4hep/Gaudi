@@ -15,7 +15,7 @@
 class MemStatAuditor:public  MemoryAuditor {
 public:
   MemStatAuditor(const std::string& name, ISvcLocator* pSvcLocator);
-  virtual ~MemStatAuditor();
+  ~MemStatAuditor() override = default;
 
   virtual StatusCode initialize();
 private:
@@ -28,7 +28,7 @@ private:
   SmartIF<IChronoStatSvc> m_stat;
 
   /// vsize of the previous call to printinfo
-  double m_vSize ;
+  double m_vSize = -1;
 };
 
 #endif  //  GAUDIAUDITOR_MemStatAuditor_H

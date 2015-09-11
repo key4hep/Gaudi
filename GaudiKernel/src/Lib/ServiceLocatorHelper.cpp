@@ -44,7 +44,7 @@ ServiceLocatorHelper::createService(const std::string& name,
   if (!theSvc.isValid()) return StatusCode::FAILURE;
   StatusCode sc = theSvc->queryInterface(iid, ppSvc);
   if (!sc.isSuccess()) {
-    *ppSvc = 0;
+    *ppSvc = nullptr;
     log() << MSG::ERROR
       << "ServiceLocatorHelper::createService: wrong interface id "
       << iid << " for service " << name << endmsg;

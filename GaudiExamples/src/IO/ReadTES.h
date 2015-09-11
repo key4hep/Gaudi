@@ -1,4 +1,3 @@
-// $Id: ReadTES.h,v 1.1 2008/11/04 22:49:24 marcocle Exp $
 #ifndef POOLIO_READTES_H 
 #define POOLIO_READTES_H 1
 

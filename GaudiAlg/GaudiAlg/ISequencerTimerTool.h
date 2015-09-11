@@ -56,7 +56,7 @@ public:
   virtual void saveHistograms() = 0;
 
   /** Destructor */
-  virtual ~ISequencerTimerTool();
+  ~ISequencerTimerTool() override = default;
 
 };
 

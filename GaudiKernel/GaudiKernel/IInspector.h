@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/IInspector.h,v 1.4 2006/11/30 15:22:07 dquarrie Exp $
 #ifndef GAUDIKERNEL_IINSPECTOR_H
 #define GAUDIKERNEL_IINSPECTOR_H
 
@@ -27,9 +26,9 @@ protected:
   class IValue  {
   protected:
     void* m_P;
-    IValue()                      {                            }
+    IValue() = default;
   public:
-    virtual ~IValue()             { }
+    virtual ~IValue() = default;
     virtual void release()        {      delete this;          }
     void* ptr()                   {      return m_P;           }
     const void* ptr()  const      {      return m_P;           }
@@ -39,12 +38,10 @@ protected:
 
   /**
   */
-  class Tag  {
-  public:
+  struct Tag  {
     long             first;
     const std::type_info& second;
     Tag(long f, const std::type_info& s) : first(f), second(s) {    }
-    Tag(const Tag& t) : first(t.first), second(t.second)  {    }
   };
 
 private:
@@ -54,9 +51,9 @@ private:
     T m_O;
   public:
     _V(const T& v) : m_O(v)       {      m_P = &m_O;           }
-    virtual ~_V()                 {                            }
-    virtual long size()  const    {      return sizeof(T);     }
-    void construct(void* b) const {      ::new(b) T();         }
+    virtual ~_V() = default;
+    virtual long size()  const  {      return sizeof(T);     }
+    virtual void construct(void* b) const { ::new(b) T();     }
   };
 
   /**

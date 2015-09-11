@@ -16,16 +16,9 @@ namespace GaudiRoot {
 namespace {
   /// Release an interface pointer
   template<class T> inline void releasePtr(T*& p)  {
-    if ( 0 != p )    {
+    if ( p )    {
       p->release();
-      p = 0;
-    }
-  }
-  /// Delete ponter and set variable to NULL
-  template<class T> inline void deletePtr(T*& p)  {
-    if ( 0 != p )    {
-      delete p;
-      p = 0;
+      p = nullptr;
     }
   }
 

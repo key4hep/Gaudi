@@ -1,4 +1,3 @@
-// $Id: HistogramSvc.h,v 1.16 2008/10/09 09:59:14 marcocle Exp $
 // ============================================================================
 #ifndef GAUDISVC_HISTOGRAMSVC_H
 #define GAUDISVC_HISTOGRAMSVC_H 1
@@ -69,25 +68,25 @@ protected:
     HistogramSvc* m_svc;
     Helper(HistogramSvc* p) : m_svc(p) {}
     template <class A1, class A3> StatusCode retrieve(A1 a1, A3*& a3)  {
-      DataObject* pObject  = 0;
+      DataObject* pObject  = nullptr;
       StatusCode sc = m_svc->DataSvc::retrieveObject(a1,pObject);
       a3 = dynamic_cast<A3*>(pObject);
       return sc;
     }
     template <class A1, class A2, class A3> StatusCode retrieve(A1 a1, A2 a2, A3*& a3)  {
-      DataObject* pObject  = 0;
+      DataObject* pObject  = nullptr;
       StatusCode sc = m_svc->DataSvc::retrieveObject(a1,a2,pObject);
       a3 = dynamic_cast<A3*>(pObject);
       return sc;
     }
     template <class A1, class A3> StatusCode find(A1 a1, A3*& a3)  {
-      DataObject* pObject  = 0;
+      DataObject* pObject  = nullptr;
       StatusCode sc = m_svc->DataSvc::findObject(a1,pObject);
       a3 = dynamic_cast<A3*>(pObject);
       return sc;
     }
     template <class A1, class A2, class A3> StatusCode find(A1 a1, A2 a2, A3*& a3)  {
-      DataObject* pObject  = 0;
+      DataObject* pObject  = nullptr;
       StatusCode sc = m_svc->DataSvc::findObject(a1,a2,pObject);
       a3 = dynamic_cast<A3*>(pObject);
       return sc;
@@ -100,7 +99,7 @@ protected:
         (h1->*pmf)(h2,scale);
         return res;
       }
-      return 0;
+      return nullptr;
     }
     template <class R, class S, class T1, class T2>
     static R* act(R* res,const S& b, Bool_t (T1::*pmf)(const T2*,Double_t), Double_t scale)  {
@@ -110,7 +109,7 @@ protected:
         (h1->*pmf)(h2,scale);
         return res;
       }
-      return 0;
+      return nullptr;
     }
     template <class R, class S, class T1, class T2>
     static R* act(R* res,const S& b, void (T1::*pmf)(const T2*))  {
@@ -120,7 +119,7 @@ protected:
         (h1->*pmf)(h2);
         return res;
       }
-      return 0;
+      return nullptr;
     }
     template <class R, class S, class T1, class T2>
     static R* act(R* res,const S& b, Bool_t (T1::*pmf)(const T2*))  {
@@ -130,7 +129,7 @@ protected:
         (h1->*pmf)(h2);
         return res;
       }
-      return 0;
+      return nullptr;
     }
   };
 
@@ -143,10 +142,10 @@ public:
    *  @param name service name
    *  @param pointer to service locator interface
    */
-  HistogramSvc(CSTR name, ISvcLocator* svc );
+  HistogramSvc(const std::string& name, ISvcLocator* svc );
 
   /// Destructor
-  virtual ~HistogramSvc();
+  ~HistogramSvc() override;
 
   /** Split full path into its components
    *  @param full Full path of the object
@@ -159,7 +158,6 @@ public:
    *  @param ident   [IN]   Input specification
    */
   StatusCode connectInput(CSTR ident);
-  std::string _STR(int i);
 
   template <class T> inline
   T* i_book(DataObject* pPar,CSTR rel,CSTR title,const std::pair<DataObject*,T*>& o)  {
@@ -171,7 +169,7 @@ public:
   }
   template <class T> static DataObject* __cast(T* p)  {
     DataObject* q = dynamic_cast<DataObject*>(p);
-    if ( 0 == q && 0 != p )  {
+    if ( !q && p )  {
       throw std::runtime_error("HistogramSvc: Unexpected object type.");
     }
     return q;
@@ -213,9 +211,9 @@ public:
   virtual H1D* book(CSTR par,  CSTR rel, CSTR title, DBINS(x))
   {  return book(createPath(par), rel, title, BINS(x));                          }
   virtual H1D* book(CSTR par,  int hID, CSTR title, DBINS(x))
-  {  return book(par, _STR(hID), title, BINS(x));                                }
+  {  return book(par, std::to_string(hID), title, BINS(x));                                }
   virtual H1D* book(DataObject* pPar, int hID, CSTR title, DBINS(x))
-  {  return book(pPar, _STR(hID), title, BINS(x));                               }
+  {  return book(pPar, std::to_string(hID), title, BINS(x));                               }
   virtual H1D* book(DataObject* pPar, CSTR rel, CSTR title, DBINS(x)) ;
   virtual H1D* book(STRPAIR loc,CSTR title, DBINS(x))
   { return book(loc.first, loc.second, title, BINS(x));                          }
@@ -244,9 +242,9 @@ public:
   virtual P1D* bookProf(CSTR par, CSTR rel, CSTR title, DBINS(x),CSTR opt)
   { return bookProf(createPath(par), rel, title, BINS(x),opt);                     }
   virtual P1D* bookProf(CSTR par, int hID, CSTR title, DBINS(x),CSTR opt )
-  { return bookProf(par, _STR(hID), title, BINS(x),opt);                           }
+  { return bookProf(par, std::to_string(hID), title, BINS(x),opt);                           }
   virtual P1D* bookProf(DataObject* pPar, int hID, CSTR title, DBINS(x),CSTR opt )
-  { return bookProf(pPar, _STR(hID), title, BINS(x),opt);                          }
+  { return bookProf(pPar, std::to_string(hID), title, BINS(x),opt);                          }
   virtual P1D* bookProf(STRPAIR loc,CSTR title, DBINS(x),CSTR opt)
   { return bookProf(loc.first, loc.second, title, BINS(x),opt);                    }
   virtual P1D* bookProf(CSTR full, CSTR title, DBINS(x),CSTR opt)
@@ -257,9 +255,9 @@ public:
   virtual P1D* bookProf(CSTR par, CSTR rel, CSTR title, DBINS(x), double upper, double lower,CSTR opt)
   { return bookProf(createPath(par), rel, title, BINS(x), upper, lower , opt);                     }
   virtual P1D* bookProf(CSTR par, int hID, CSTR title, DBINS(x), double upper, double lower, CSTR opt)
-  { return bookProf(par, _STR(hID), title, BINS(x), upper, lower, opt );                           }
+  { return bookProf(par, std::to_string(hID), title, BINS(x), upper, lower, opt );                           }
   virtual P1D* bookProf(DataObject* pPar, int hID, CSTR title, DBINS(x), double upper, double lower, CSTR opt)
-  { return bookProf(pPar, _STR(hID), title, BINS(x), upper, lower, opt);                          }
+  { return bookProf(pPar, std::to_string(hID), title, BINS(x), upper, lower, opt);                          }
   virtual P1D* bookProf(STRPAIR loc,CSTR title, DBINS(x), double upper, double lower, CSTR opt)
   { return bookProf(loc.first, loc.second, title, BINS(x), upper, lower,opt);                    }
   virtual P1D* bookProf(CSTR full, CSTR title, DBINS(x), double upper, double lower, CSTR opt )
@@ -284,9 +282,9 @@ public:
       @param e           Bin edges for variable binned histogram.
   */
   virtual H1D* book(CSTR par, int hID, CSTR title, Edges e)
-  {  return book(par, _STR(hID), title, e);                                 }
+  {  return book(par, std::to_string(hID), title, e);                                 }
   virtual H1D* book(DataObject* pPar, int hID, CSTR title, Edges e)
-  {  return book(pPar, _STR(hID), title, e);                                }
+  {  return book(pPar, std::to_string(hID), title, e);                                }
   virtual H1D* book(CSTR par, CSTR rel, CSTR title, Edges e )
   {  return book(createPath(par), rel, title, e);                           }
   virtual H1D* book(STRPAIR loc,CSTR title, Edges e )
@@ -318,9 +316,9 @@ public:
   virtual P1D* bookProf(CSTR par, CSTR rel, CSTR title, Edges e )
   { return bookProf(createPath(par), rel, title, e);                          }
   virtual P1D* bookProf(CSTR par, int hID, CSTR title, Edges e )
-  { return bookProf(par, _STR(hID), title, e);                                }
+  { return bookProf(par, std::to_string(hID), title, e);                                }
   virtual P1D* bookProf(DataObject* pPar, int hID, CSTR title, Edges e )
-  { return bookProf(pPar, _STR(hID), title, e);                               }
+  { return bookProf(pPar, std::to_string(hID), title, e);                               }
   virtual P1D* bookProf(STRPAIR loc,CSTR title, Edges e)
   { return bookProf(loc.first, loc.second, title, e);                         }
   virtual P1D* bookProf(DataObject* pPar, CSTR rel, CSTR title, Edges e )
@@ -331,9 +329,9 @@ public:
   virtual P1D* bookProf(CSTR par, CSTR rel, CSTR title, Edges e, double upper, double lower)
   { return bookProf(createPath(par), rel, title, e, upper, lower);            }
   virtual P1D* bookProf(CSTR par, int hID, CSTR title, Edges e, double upper, double lower)
-  { return bookProf(par, _STR(hID), title, e, upper, lower);                  }
+  { return bookProf(par, std::to_string(hID), title, e, upper, lower);                  }
   virtual P1D* bookProf(DataObject* pPar, int hID, CSTR title, Edges e, double upper, double lower)
-  { return bookProf(pPar, _STR(hID), title, e, upper, lower);                 }
+  { return bookProf(pPar, std::to_string(hID), title, e, upper, lower);                 }
   virtual P1D* bookProf(STRPAIR loc,CSTR title, Edges e, double upper, double lower)
   { return bookProf(loc.first, loc.second, title, e, upper, lower);           }
   virtual P1D* bookProf(DataObject* pPar, CSTR rel, CSTR title, Edges e, double upper, double lower)
@@ -363,11 +361,11 @@ public:
   virtual H2D* book(CSTR par, CSTR rel, CSTR title, DBINS(x), DBINS(y))
   { return book(createPath(par), rel, title, BINS(x),BINS(y));            }
   virtual H2D* book(CSTR par, int hID, CSTR title, DBINS(x), DBINS(y))
-  { return book(par,_STR(hID), title, BINS(x),BINS(y));                   }
+  { return book(par,std::to_string(hID), title, BINS(x),BINS(y));                   }
   virtual H2D* book(STRPAIR loc,CSTR title, DBINS(x), DBINS(y))
   { return book(loc.first, loc.second, title, BINS(x), BINS(y));          }
   virtual H2D* book(DataObject* pPar, int hID, CSTR title, DBINS(x), DBINS(y))
-  { return book(pPar,_STR(hID), title, BINS(x),BINS(y));                  }
+  { return book(pPar,std::to_string(hID), title, BINS(x),BINS(y));                  }
   virtual H2D* book(DataObject* pPar, CSTR rel, CSTR title, DBINS(x), DBINS(y))
   { return i_book(pPar,rel,title,Gaudi::createH2D(title, BINS(x),BINS(y)));}
   // ==========================================================================
@@ -397,9 +395,9 @@ public:
   virtual P2D* bookProf(STRPAIR loc,CSTR title, DBINS(x), DBINS(y), double upper, double lower)
   { return bookProf(loc.first, loc.second, title, BINS(x), BINS(y), upper, lower);          }
   virtual P2D* bookProf(CSTR par, int hID, CSTR title, DBINS(x), DBINS(y), double upper, double lower)
-  { return bookProf(par, _STR(hID), title, BINS(x),BINS(y), upper, lower);                  }
+  { return bookProf(par, std::to_string(hID), title, BINS(x),BINS(y), upper, lower);                  }
   virtual P2D* bookProf(DataObject* pPar, int hID, CSTR title, DBINS(x), DBINS(y), double upper, double lower)
-  { return bookProf(pPar,_STR(hID), title, BINS(x),BINS(y), upper, lower);                  }
+  { return bookProf(pPar,std::to_string(hID), title, BINS(x),BINS(y), upper, lower);                  }
   virtual P2D* bookProf(DataObject* pPar, CSTR rel, CSTR title, DBINS(x), DBINS(y), double upper, double lower)
   { return i_book(pPar,rel,title,Gaudi::createProf2D(title, BINS(x),BINS(y), upper, lower));  }
 
@@ -410,9 +408,9 @@ public:
   virtual P2D* bookProf(STRPAIR loc,CSTR title, DBINS(x), DBINS(y))
   { return bookProf(loc.first, loc.second, title, BINS(x), BINS(y));          }
   virtual P2D* bookProf(CSTR par, int hID, CSTR title, DBINS(x), DBINS(y))
-  { return bookProf(par, _STR(hID), title, BINS(x),BINS(y));                  }
+  { return bookProf(par, std::to_string(hID), title, BINS(x),BINS(y));                  }
   virtual P2D* bookProf(DataObject* pPar, int hID, CSTR title, DBINS(x), DBINS(y))
-  { return bookProf(pPar,_STR(hID), title, BINS(x),BINS(y));                  }
+  { return bookProf(pPar,std::to_string(hID), title, BINS(x),BINS(y));                  }
   virtual P2D* bookProf(DataObject* pPar, CSTR rel, CSTR title, DBINS(x), DBINS(y))
   { return i_book(pPar,rel,title,Gaudi::createProf2D(title, BINS(x),BINS(y),0,0));}
   // ==========================================================================
@@ -437,11 +435,11 @@ public:
   virtual H2D* book(CSTR par, CSTR rel, CSTR title, Edges x, Edges y )
   { return book(createPath(par), rel, title, x, y);                     }
   virtual H2D* book(CSTR par, int hID, CSTR title, Edges x, Edges y )
-  { return book(par, _STR(hID), title, x, y);                           }
+  { return book(par, std::to_string(hID), title, x, y);                           }
   virtual H2D* book(STRPAIR loc,CSTR title, Edges x, Edges y )
   { return book(loc.first, loc.second, title, x, y);                    }
   virtual H2D* book(DataObject* pPar, int hID, CSTR title, Edges x, Edges y )
-  { return book(pPar, _STR(hID), title, x, y);                          }
+  { return book(pPar, std::to_string(hID), title, x, y);                          }
   virtual H2D* book(DataObject* pPar, CSTR rel, CSTR title, Edges x, Edges y )
   { return i_book(pPar, rel, title, Gaudi::createH2D(title, x,y));      }
   // ==========================================================================
@@ -466,9 +464,9 @@ public:
   virtual P2D* bookProf(CSTR par, CSTR rel, CSTR title, Edges x, Edges y )
   { return bookProf(createPath(par), rel, title, x, y);                  }
   virtual P2D* bookProf(CSTR par, int hID, CSTR title, Edges x, Edges y )
-  { return bookProf(par, _STR(hID), title, x, y);                        }
+  { return bookProf(par, std::to_string(hID), title, x, y);                        }
   virtual P2D* bookProf(DataObject* pPar, int hID, CSTR title, Edges x, Edges y )
-  { return bookProf(pPar, _STR(hID), title, x, y);                       }
+  { return bookProf(pPar, std::to_string(hID), title, x, y);                       }
   virtual P2D* bookProf(STRPAIR loc,CSTR title, Edges x, Edges y )
   { return bookProf(loc.first, loc.second, title, x, y);                 }
   virtual P2D* bookProf(DataObject* pPar, CSTR rel, CSTR title, Edges x, Edges y )
@@ -479,9 +477,9 @@ public:
   virtual P2D* bookProf(CSTR par, CSTR rel, CSTR title, Edges x, Edges y, double upper, double lower )
   { return bookProf(createPath(par), rel, title, x, y, upper, lower);                  }
   virtual P2D* bookProf(CSTR par, int hID, CSTR title, Edges x, Edges y, double upper, double lower )
-  { return bookProf(par, _STR(hID), title, x, y, upper, lower);                        }
+  { return bookProf(par, std::to_string(hID), title, x, y, upper, lower);                        }
   virtual P2D* bookProf(DataObject* pPar, int hID, CSTR title, Edges x, Edges y, double upper, double lower )
-  { return bookProf(pPar, _STR(hID), title, x, y, upper, lower);                       }
+  { return bookProf(pPar, std::to_string(hID), title, x, y, upper, lower);                       }
   virtual P2D* bookProf(STRPAIR loc,CSTR title, Edges x, Edges y, double upper, double lower )
   { return bookProf(loc.first, loc.second, title, x, y, upper, lower);                 }
   virtual P2D* bookProf(DataObject* pPar, CSTR rel, CSTR title, Edges x, Edges y, double upper, double lower )
@@ -511,9 +509,9 @@ public:
   virtual H3D* book(CSTR par, CSTR rel, CSTR title, DBINS(x), DBINS(y), DBINS(z))
   { return book(createPath(par),rel,title,BINS(x),BINS(y),BINS(z));          }
   virtual H3D* book(CSTR par, int hID, CSTR title, DBINS(x), DBINS(y), DBINS(z))
-  { return book(par,_STR(hID),title,BINS(x),BINS(y),BINS(z));                }
+  { return book(par,std::to_string(hID),title,BINS(x),BINS(y),BINS(z));                }
   virtual H3D* book(DataObject* pPar, int hID, CSTR title, DBINS(x), DBINS(y), DBINS(z))
-  { return book(pPar,_STR(hID), title, BINS(x),BINS(y),BINS(z));             }
+  { return book(pPar,std::to_string(hID), title, BINS(x),BINS(y),BINS(z));             }
   virtual H3D* book(STRPAIR loc,CSTR title, DBINS(x), DBINS(y), DBINS(z))
   { return book(loc.first, loc.second, title, BINS(x),BINS(y),BINS(z));      }
   virtual H3D* book(DataObject* pPar, CSTR rel, CSTR title, DBINS(x), DBINS(y), DBINS(z))
@@ -542,9 +540,9 @@ public:
   virtual H3D* book(CSTR par, CSTR rel, CSTR title, Edges x, Edges y, Edges z)
   { return book(createPath(par), rel, title, x, y, z);                      }
   virtual H3D* book(CSTR par, int hID, CSTR title, Edges x, Edges y, Edges z)
-  { return book(par,_STR(hID), title, x, y, z);                             }
+  { return book(par,std::to_string(hID), title, x, y, z);                             }
   virtual H3D* book(DataObject* pPar, int hID, CSTR title, Edges x, Edges y, Edges z)
-  { return book(pPar,_STR(hID), title, x, y, z);                            }
+  { return book(pPar,std::to_string(hID), title, x, y, z);                            }
   virtual H3D* book(STRPAIR loc,CSTR title, Edges x, Edges y, Edges z)
   { return book(loc.first, loc.second, title, x,y,z);                       }
   virtual H3D* book(DataObject* pPar, CSTR rel, CSTR title, Edges x, Edges y, Edges z)
@@ -559,11 +557,11 @@ public:
   virtual StatusCode registerObject(CSTR parent, CSTR rel, Base* obj )
   { return registerObject(createPath(parent), rel, obj);                       }
   virtual StatusCode registerObject(CSTR parent, int item, Base* obj )
-  { return registerObject(parent, _STR(item), obj);                            }
+  { return registerObject(parent, std::to_string(item), obj);                            }
   virtual StatusCode registerObject(Base* pPar, CSTR rel, Base* obj )
   { return registerObject(__cast(pPar), rel, obj);                             }
   virtual StatusCode registerObject(DataObject* pPar, int item, Base* obj )
-  { return registerObject(pPar, _STR(item), obj);                              }
+  { return registerObject(pPar, std::to_string(item), obj);                              }
   virtual StatusCode registerObject(Base* pPar, int item, Base* obj )
   { return registerObject(__cast(pPar), item, obj);                            }
   virtual StatusCode registerObject(CSTR full, Base* obj );

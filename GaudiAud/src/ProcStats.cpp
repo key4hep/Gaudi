@@ -10,11 +10,8 @@
 #include "ProcStats.h"
 
 #ifdef __linux
-#include <unistd.h>
 #include <iostream>
 #include <sstream>
-#include <fcntl.h>
-#include <sys/types.h>
 #include <sys/signal.h>
 #include <sys/syscall.h>
 #include <sys/procfs.h>
@@ -239,8 +236,7 @@ ProcStats::cleanup::~cleanup() {
 
 ProcStats* ProcStats::instance() {
   static cleanup c;
-  if(inst==0)
-    inst = new ProcStats;
+  if(!inst) inst = new ProcStats;
   return inst;
 }
 
@@ -250,25 +246,19 @@ ProcStats::ProcStats():valid(false)
 {
 #ifdef __linux
   pg_size = sysconf(_SC_PAGESIZE); // getpagesize();
-  std::ostringstream ost;
 
-  ost << "/proc/" << getpid() << "/stat";
-  fname = ost.str();
-  if((fd=open(fname.c_str(),O_RDONLY))<0)
+  fname = "/proc/" + std::to_string(getpid()) + "/stat"; 
+
+  fd.open( fname.c_str(), O_RDONLY );
+  if(!fd) 
   {
-    cerr << "Failed to open " << ost.str() << endl;
+    cerr << "Failed to open " << fname << endl;
     return;
   }
 #endif
   valid=true;
 }
 
-ProcStats::~ProcStats()
-{
-#ifdef __linux
-  close(fd);
-#endif
-}
 
 bool ProcStats::fetch(procInfo& f)
 {
@@ -279,9 +269,9 @@ bool ProcStats::fetch(procInfo& f)
   linux_proc pinfo;
   int cnt;
 
-  lseek(fd,0,SEEK_SET);
+  fd.lseek(0,SEEK_SET);
 
-  if((cnt=read(fd,buf,sizeof(buf)))<0)
+  if((cnt=fd.read(buf,sizeof(buf)))<0)
   {
     cout << "LINUX Read of Proc file failed:" << endl;
     return false;
