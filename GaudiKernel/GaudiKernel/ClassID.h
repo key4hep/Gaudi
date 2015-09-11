@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/ClassID.h,v 1.16 2006/11/13 15:10:42 hmd Exp $
 #ifndef GAUDIKERNEL_CLASSID_H
 #define GAUDIKERNEL_CLASSID_H
 

@@ -24,7 +24,7 @@ namespace Gaudi {
     /// Standard initializing Constructor with TH2D representation to be adopted
     Histogram2D(TH2D* rep);
     /// Destructor.
-    virtual ~Histogram2D() {}
+    virtual ~Histogram2D() = default;
     /// Fill the Histogram2D with a value and the
     bool  fill(double x,double y,double weight = 1.);
     /// Fast filling method for a given bin. It can be also the over/underflow bin
@@ -42,8 +42,8 @@ namespace Gaudi {
     static const CLID& classID()     { return CLID_H2D; }
   protected:
     // cache sumwx and sumwy  when setting contents since I don't have bin mean
-    double m_sumwx;
-    double m_sumwy;
+    double m_sumwx = 0;
+    double m_sumwy = 0;
   };
 }
 #endif // HISTOGRAMSVC_H2D_H

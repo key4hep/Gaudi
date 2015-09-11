@@ -11,12 +11,12 @@ AIDA::IHistogram3D*  GaudiHistos<PBASE>::book3D
   const HistoBinEdges&        edgesZ       ) const
 {
   //
-  if  ( !produceHistos() )                   { return 0    ; } // RETURN
+  if  ( !produceHistos() )                   { return nullptr; } // RETURN
   //
   // exist?
-  AIDA::IHistogram3D * hist = histo3D ( title ) ;
+  auto hist = histo3D ( title ) ;
   // histogram is already booked
-  if( NULL != hist      )                   { return hist ; } // RETURN !!
+  if( hist )                                 { return hist ; } // RETURN !!
 
   // propose the histogram ID
   HistoID ID;
@@ -37,19 +37,19 @@ AIDA::IHistogram3D*  GaudiHistos<PBASE>::book3D
   const HistoBinEdges&        edgesZ       ) const
 {
   //
-  if  ( !produceHistos() )                   { return 0    ; } // RETURN
+  if  ( !produceHistos() )                   { return nullptr; } // RETURN
   //
   // Check ID
   if (ID.undefined())
   {
     this->Error("Undefined Histogram ID : Title='"+title+"'");
-    return NULL;
+    return nullptr;
   }
 
   // exist?
-  AIDA::IHistogram3D * hist = histo3D ( ID ) ;
+  auto hist = histo3D ( ID ) ;
   // histogram is already booked
-  if ( NULL != hist       )                 { return hist ; } // RETURN !!
+  if (         hist       )                 { return hist ; } // RETURN !!
 
   // Histogram title
   const std::string & htitle =
@@ -76,9 +76,9 @@ AIDA::IHistogram3D*  GaudiHistos<PBASE>::book3D
   }
 
   // check OK
-  if( NULL == hist )
+  if( !hist )
   { this->Error( "IHistogram3D* points to NULL! ID='" + ID.idAsString() +
-                 "' title='"+htitle+"'" ) ; return NULL; } // RETURN !!
+                 "' title='"+htitle+"'" ) ; return nullptr; } // RETURN !!
 
   // add histogram into histogram storages
   m_histo3DMapID    [ ID    ] = hist ;
@@ -111,12 +111,12 @@ GaudiHistos<PBASE>::plot3D
   const HistoBinEdges&        edgesZ ,
   const double        weight ) const
 {
-  AIDA::IHistogram3D * h(NULL);
+  AIDA::IHistogram3D * h(nullptr);
   if ( produceHistos() )
   {
     // retrieve or book the histogram
     h = histo3D ( title ) ;
-    if ( NULL == h ) { h = book3D ( title , edgesX , edgesY , edgesZ ) ; }
+    if ( !h ) { h = book3D ( title , edgesX , edgesY , edgesZ ) ; }
     // fill the histogram
     h = fill ( h , valueX , valueY , valueZ , weight , title );
   }
@@ -138,12 +138,12 @@ GaudiHistos<PBASE>::plot3D
   const HistoBinEdges&        edgesZ ,
   const double        weight ) const
 {
-  AIDA::IHistogram3D * h(NULL);
+  AIDA::IHistogram3D * h(nullptr);
   if ( produceHistos() )
   {
     // retrieve or book the histogram
     h = histo3D ( ID ) ;
-    if ( NULL == h ) {  h = book3D ( ID , title , edgesX , edgesY , edgesZ ) ; }
+    if ( !h ) {  h = book3D ( ID , title , edgesX , edgesY , edgesZ ) ; }
     // fill
     h = fill ( h , valueX , valueY , valueZ , weight , title ) ;
   }

@@ -1,7 +1,5 @@
-// $Id: GslErrorCount.cpp,v 1.2 2006/01/10 20:00:05 hmd Exp $
 // Include files
 // from Gaudi
-#include "GaudiKernel/ToolFactory.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/IChronoStatSvc.h"
 #include "GaudiKernel/Stat.h"
@@ -32,14 +30,7 @@ GslErrorCount::GslErrorCount
   const std::string& name   ,
   const IInterface*  parent )
   : base_class ( type, name , parent )
-  , m_counters ()
 {}
-// ============================================================================
-
-// ============================================================================
-/// destructor (protected and virtual)
-// ============================================================================
-GslErrorCount::~GslErrorCount(){}
 // ============================================================================
 
 // ============================================================================
@@ -56,15 +47,14 @@ StatusCode GslErrorCount::finalize   ()
   const std::string stars( 78 , '*' );
   log << MSG::INFO  << stars << endmsg ;
   log << MSG::ERROR <<  m_counters.size() << " GSL errors handled" << endmsg ;
-  for( Counters::const_iterator error = m_counters.begin() ;
-       error != m_counters.end() ; ++error )
+  for( const auto& error : m_counters )
     {
       log << MSG::ERROR
-          << " #times "   << error->second
-          << " GSL code " << error->first.code
-          << " Message '" << error->first.reason << "'"
-          << " File '"    << error->first.file   << "'"
-          << " Line "     << error->first.line   << endmsg ;
+          << " #times "   << error.second
+          << " GSL code " << error.first.code
+          << " Message '" << error.first.reason << "'"
+          << " File '"    << error.first.file   << "'"
+          << " Line "     << error.first.line   << endmsg ;
     }
   log << MSG::INFO << stars << endmsg ;
   // clear the counters
@@ -85,9 +75,7 @@ StatusCode GslErrorCount::finalize   ()
 StatusCode GslErrorCount::handle
 ( const GslError& error  ) const
 {
-  // increase the counter
-  m_counters[ error ] += 1 ;
-  //
+  ++m_counters[ error ];
   return StatusCode::SUCCESS ;
 }
 // ============================================================================

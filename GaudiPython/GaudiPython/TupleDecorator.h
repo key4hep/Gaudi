@@ -1,5 +1,3 @@
-// $Id: TupleDecorator.h,v 1.9 2007/08/07 14:05:33 marcocle Exp $
-// ============================================================================
 #ifndef GAUDIPYTHON_TUPLEDECORATOR_H
 #define GAUDIPYTHON_TUPLEDECORATOR_H 1
 // ============================================================================

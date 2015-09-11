@@ -2,6 +2,15 @@ Package: RootHistCnv
 Package manager : David Quarrie
 Commit Id: $Format:%H$
 
+! 2015-09-09 - Gerhard Raven and Benedikt Hegner
+ - C++11 modernization changes
+       o avoid copy if const& will suffice
+       o prefer std::to_string over ostringstream
+       o prefer emplace_back over push_back
+       o use C++11 instead of boost for lexical_cast 
+       o use unique_ptr instead of auto_ptr
+
+
 ============================= RootHistCnv v12r1 ==============================
 ! 2014-03-18 - Ben Couturier
  - Fixed bug #104127: remove hwaf configuration.

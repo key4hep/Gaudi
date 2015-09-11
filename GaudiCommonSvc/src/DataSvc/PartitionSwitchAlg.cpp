@@ -14,17 +14,18 @@
 
 /**@class PartitionSwitchAlg
   *
-  * Small algorith, which switches the partition of a configurable
+  * Small algorithm which switches the partition of a configurable
   * multi-service. The algorithm can be part of a sequence, which
   * allows for e.g. buffer tampering.
   *
   * @author:  M.Frank
   * @version: 1.0
   */
+
 class PartitionSwitchAlg : public extends1<Algorithm, IPartitionControl> {
 
-  typedef StatusCode         STATUS;
-  typedef const std::string& CSTR;
+  using STATUS = StatusCode;
+  using CSTR = const std::string&;
 
 private:
 
@@ -33,23 +34,22 @@ private:
   /// Job option to set the tool manipulating the multi-service name
   std::string        m_toolType;
   /// reference to Partition Controller
-  IPartitionControl* m_actor;
+  IPartitionControl* m_actor = nullptr;
 
 public:
 
   /// Standard algorithm constructor
-  PartitionSwitchAlg(CSTR name, ISvcLocator* pSvcLocator)
-  : base_class(name, pSvcLocator), m_actor(0)
+  PartitionSwitchAlg(const std::string& name, ISvcLocator* pSvcLocator)
+  : base_class(name, pSvcLocator)
   {
     declareProperty("Partition",  m_partName);
     declareProperty("Tool",       m_toolType="PartitionSwitchTool");
   }
   /// Standard Destructor
-  virtual ~PartitionSwitchAlg()     {
-  }
+  ~PartitionSwitchAlg() override = default;
 
   /// Initialize
-  virtual STATUS initialize()   {
+  STATUS initialize() override  {
     MsgStream log(msgSvc(), name());
     SmartIF<IAlgTool> tool(m_actor);
     STATUS sc = toolSvc()->retrieveTool(m_toolType,m_actor,this);
@@ -61,7 +61,7 @@ public:
     /// Release old tool
     if ( tool ) toolSvc()->releaseTool(tool);
     /// Now check if the partition is present. If not: try to create it
-    IInterface* partititon = 0;
+    IInterface* partititon = nullptr;
     sc = m_actor->get(m_partName, partititon);
     if ( !sc.isSuccess() )  {
       log << MSG::ERROR << "Cannot access partition \""
@@ -71,15 +71,15 @@ public:
   }
 
   /// Finalize
-  virtual STATUS finalize() {
+  STATUS finalize()  override {
     SmartIF<IAlgTool> tool(m_actor);
     if ( tool ) toolSvc()->releaseTool(tool);
-    m_actor = 0;
+    m_actor = nullptr;
     return STATUS::SUCCESS;
   }
 
   /// Execute procedure
-  virtual STATUS execute()    {
+  STATUS execute()  override {
     if ( m_actor )  {
       STATUS sc = m_actor->activate(m_partName);
       if ( !sc.isSuccess() )  {
@@ -94,52 +94,60 @@ public:
         << "." << m_toolType << "\" cannot be accessed!" << endmsg;
     return STATUS::FAILURE;
   }
-
-  void _check(STATUS sc, CSTR msg)  const {
+private:
+  StatusCode log_(StatusCode sc, const std::string& msg)  const {
     MsgStream log(msgSvc(), name());
     log << MSG::ERROR << msg << " Status=" << sc.getCode() << endmsg;
+    return sc;
   }
-#define CHECK(x,y) if ( !x.isSuccess() ) _check(x, y); return x;
-
+  template < typename...FArgs, typename...Args>
+  StatusCode fwd_( StatusCode (IPartitionControl::*fun)(FArgs...),Args&&... args) {
+       return m_actor ? (m_actor->*fun)(std::forward<Args>(args)...) : NO_INTERFACE;
+  }
+  template < typename...FArgs, typename...Args>
+  StatusCode fwd_( StatusCode (IPartitionControl::*fun)(FArgs...) const,Args&&... args) const {
+       return m_actor ? (m_actor->*fun)(std::forward<Args>(args)...) : NO_INTERFACE;
+  }
+public:
   /// Create a partition object. The name identifies the partition uniquely
-  virtual STATUS create(CSTR nam, CSTR typ)  {
-    STATUS sc = m_actor ? m_actor->create(nam,typ) : NO_INTERFACE;
-    CHECK(sc, "Cannot create partition: "+nam+" of type "+typ);
+  STATUS create(CSTR nam, CSTR typ)  override {
+    auto sc = fwd_<CSTR,CSTR>(&IPartitionControl::create,nam,typ);
+    return sc.isSuccess() ? sc : log_(sc, "Cannot create partition: "+nam+" of type "+typ);
   }
   /// Create a partition object. The name identifies the partition uniquely
-  virtual STATUS create(CSTR nam, CSTR typ, IInterface*& pPartition)  {
-    STATUS sc = m_actor ? m_actor->create(nam,typ,pPartition) : NO_INTERFACE;
-    CHECK(sc, "Cannot create partition: "+nam+" of type "+typ);
+  STATUS create(CSTR nam, CSTR typ, IInterface*& pPartition)  override {
+    auto sc = fwd_<CSTR,CSTR,IInterface*&>(&IPartitionControl::create,nam,typ,pPartition);
+    return sc.isSuccess() ? sc : log_(sc, "Cannot create partition: "+nam+" of type "+typ);
   }
   /// Drop a partition object. The name identifies the partition uniquely
-  virtual STATUS drop(CSTR nam)  {
-    STATUS sc = m_actor ? m_actor->drop(nam) : NO_INTERFACE;
-    CHECK(sc, "Cannot drop partition: "+nam);
+  STATUS drop(CSTR nam)  override {
+    auto sc = fwd_<CSTR>(&IPartitionControl::drop,nam);
+    return  sc.isSuccess() ? sc : log_(sc, "Cannot drop partition: "+nam);
   }
   /// Drop a partition object. The name identifies the partition uniquely
-  virtual STATUS drop(IInterface* pPartition)  {
-    STATUS sc = m_actor ? m_actor->drop(pPartition) : NO_INTERFACE;
-    CHECK(sc, "Cannot drop partition by Interface.");
+  STATUS drop(IInterface* pPartition)  override {
+    auto sc = fwd_<IInterface*>(&IPartitionControl::drop,pPartition);
+    return sc.isSuccess() ? sc : log_(sc, "Cannot drop partition by Interface.");
   }
   /// Activate a partition object. The name identifies the partition uniquely.
-  virtual STATUS activate(CSTR nam)  {
-    STATUS sc = m_actor ? m_actor->activate(nam) : NO_INTERFACE;
-    CHECK(sc, "Cannot activate partition: "+nam);
+  STATUS activate(CSTR nam)  override {
+    auto sc = fwd_<CSTR>(&IPartitionControl::activate,nam);
+    return sc.isSuccess() ? sc : log_(sc, "Cannot activate partition: "+nam);
   }
   /// Activate a partition object.
-  virtual STATUS activate(IInterface* pPartition)  {
-    STATUS sc = m_actor ? m_actor->activate(pPartition) : NO_INTERFACE;
-    CHECK(sc, "Cannot activate partition by Interface.");
+  STATUS activate(IInterface* pPartition)  override {
+    auto sc = fwd_<IInterface*>(&IPartitionControl::activate, pPartition);
+    return sc.isSuccess() ? sc : log_(sc, "Cannot activate partition by Interface.");
   }
   /// Access a partition object. The name identifies the partition uniquely.
-  virtual STATUS get(CSTR nam, IInterface*& pPartition) const  {
-    STATUS sc = m_actor ? m_actor->get(nam, pPartition) : NO_INTERFACE;
-    CHECK(sc, "Cannot get partition "+nam);
+  STATUS get(CSTR nam, IInterface*& pPartition) const override {
+    auto sc = fwd_<CSTR,IInterface*&>(&IPartitionControl::get, nam, pPartition);
+    return sc.isSuccess() ? sc : log_(sc, "Cannot get partition "+nam);
   }
   /// Access the active partition object.
-  virtual STATUS activePartition(std::string& nam, IInterface*& pPartition) const  {
-    STATUS sc = m_actor ? m_actor->activePartition(nam, pPartition) : NO_INTERFACE;
-    CHECK(sc, "Cannot determine active partition.");
+  STATUS activePartition(std::string& nam, IInterface*& pPartition) const override {
+    auto sc = fwd_<std::string&,IInterface*&>(&IPartitionControl::activePartition,nam,pPartition);
+    return sc.isSuccess() ? sc : log_(sc, "Cannot determine active partition.");
   }
 };
 

@@ -23,9 +23,9 @@ namespace {
                                                         m_source(source){
       addRef(); // Initial count set to 1
     }
-    virtual ~AbortEventListener() {}
+    ~AbortEventListener() override = default;
     /// Inform that a new incident has occurred
-    virtual void handle(const Incident& i) {
+    void handle(const Incident& i) override {
       if (i.type() == IncidentType::AbortEvent) {
         m_flag = true;
         m_source = i.source();
@@ -57,16 +57,6 @@ MinimalEventLoopMgr::MinimalEventLoopMgr(const std::string& nam, ISvcLocator* sv
   declareProperty("OutStreamType",  m_outStreamType = "OutputStream");
   m_topAlgNames.declareUpdateHandler   ( &MinimalEventLoopMgr::topAlgHandler, this );
   m_outStreamNames.declareUpdateHandler( &MinimalEventLoopMgr::outStreamHandler, this );
-  m_state = OFFLINE;
-  m_scheduledStop = false;
-  m_abortEvent = false;
-}
-
-//--------------------------------------------------------------------------------------------
-// Standard Destructor
-//--------------------------------------------------------------------------------------------
-MinimalEventLoopMgr::~MinimalEventLoopMgr()   {
-  m_state = OFFLINE;
 }
 
 //--------------------------------------------------------------------------------------------
@@ -74,9 +64,7 @@ MinimalEventLoopMgr::~MinimalEventLoopMgr()   {
 //--------------------------------------------------------------------------------------------
 StatusCode MinimalEventLoopMgr::initialize()    {
 
-  if ( !m_appMgrUI.isValid() ) {
-    return StatusCode::FAILURE;
-  }
+  if ( !m_appMgrUI.isValid() ) return StatusCode::FAILURE;
 
   StatusCode sc = Service::initialize();
   if ( !sc.isSuccess() )   {
@@ -89,13 +77,11 @@ StatusCode MinimalEventLoopMgr::initialize()    {
     error() << "Error retrieving AppMgr interface IProperty." << endmsg;
     return StatusCode::FAILURE;
   }
-  else {
-    if ( m_topAlgNames.value().size() == 0 )    {
-      setProperty(prpMgr->getProperty("TopAlg")).ignore();
-    }
-    if ( m_outStreamNames.value().size() == 0 )   {
-      setProperty(prpMgr->getProperty("OutStream")).ignore();
-    }
+  if ( m_topAlgNames.value().empty() )    {
+    setProperty(prpMgr->getProperty("TopAlg")).ignore();
+  }
+  if ( m_outStreamNames.value().empty() )   {
+    setProperty(prpMgr->getProperty("OutStream")).ignore();
   }
 
   // Get the references to the services that are needed by the ApplicationMgr itself
@@ -134,20 +120,19 @@ StatusCode MinimalEventLoopMgr::initialize()    {
     return sc;
   }
 
-  ListAlg::iterator ita;
   // Initialize all the new TopAlgs. In fact Algorithms are protected against getting
   // initialized twice.
-  for (ita = m_topAlgList.begin(); ita != m_topAlgList.end(); ita++ ) {
-    sc = (*ita)->sysInitialize();
+  for (auto&  ita : m_topAlgList ) {
+    sc = ita->sysInitialize();
     if( !sc.isSuccess() ) {
-      error() << "Unable to initialize Algorithm: " << (*ita)->name() << endmsg;
+      error() << "Unable to initialize Algorithm: " << ita->name() << endmsg;
       return sc;
     }
   }
-  for (ita = m_outStreamList.begin(); ita != m_outStreamList.end(); ita++ ) {
-    sc = (*ita)->sysInitialize();
+  for (auto& ita : m_outStreamList ) {
+    sc = ita->sysInitialize();
     if( !sc.isSuccess() ) {
-      error() << "Unable to initialize Output Stream: " << (*ita)->name() << endmsg;
+      error() << "Unable to initialize Output Stream: " << ita->name() << endmsg;
       return sc;
     }
   }
@@ -162,20 +147,19 @@ StatusCode MinimalEventLoopMgr::start()    {
   StatusCode sc = Service::start();
   if ( ! sc.isSuccess() ) return sc;
 
-  ListAlg::iterator ita;
   // Start all the new TopAlgs. In fact Algorithms are protected against getting
   // started twice.
-  for (ita = m_topAlgList.begin(); ita != m_topAlgList.end(); ita++ ) {
-    sc = (*ita)->sysStart();
+  for (auto& ita : m_topAlgList) {
+    sc = ita->sysStart();
     if( !sc.isSuccess() ) {
-      error() << "Unable to start Algorithm: " << (*ita)->name() << endmsg;
+      error() << "Unable to start Algorithm: " << ita->name() << endmsg;
       return sc;
     }
   }
-  for (ita = m_outStreamList.begin(); ita != m_outStreamList.end(); ita++ ) {
-    sc = (*ita)->sysStart();
+  for (auto& ita : m_outStreamList ) {
+    sc = ita->sysStart();
     if( !sc.isSuccess() ) {
-      error() << "Unable to start Output Stream: " << (*ita)->name() << endmsg;
+      error() << "Unable to start Output Stream: " << ita->name() << endmsg;
       return sc;
     }
   }
@@ -188,20 +172,19 @@ StatusCode MinimalEventLoopMgr::stop()    {
 
   StatusCode sc = StatusCode::SUCCESS;
 
-  ListAlg::iterator ita;
   // Stop all the TopAlgs. In fact Algorithms are protected against getting
   // stopped twice.
-  for (ita = m_topAlgList.begin(); ita != m_topAlgList.end(); ita++ ) {
-    sc = (*ita)->sysStop();
+  for (auto & ita : m_topAlgList ) {
+    sc = ita->sysStop();
     if( !sc.isSuccess() ) {
-      error() << "Unable to stop Algorithm: " << (*ita)->name() << endmsg;
+      error() << "Unable to stop Algorithm: " << ita->name() << endmsg;
       return sc;
     }
   }
-  for (ita = m_outStreamList.begin(); ita != m_outStreamList.end(); ita++ ) {
-    sc = (*ita)->sysStop();
+  for (auto &ita : m_outStreamList ) {
+    sc = ita->sysStop();
     if( !sc.isSuccess() ) {
-      error() << "Unable to stop Output Stream: " << (*ita)->name() << endmsg;
+      error() << "Unable to stop Output Stream: " << ita->name() << endmsg;
       return sc;
     }
   }
@@ -214,20 +197,19 @@ StatusCode MinimalEventLoopMgr::stop()    {
 //--------------------------------------------------------------------------------------------
 StatusCode MinimalEventLoopMgr::reinitialize() {
   StatusCode sc = StatusCode::SUCCESS;
-  ListAlg::iterator ita;
 
   // Reinitialize all the TopAlgs.
-  for (ita = m_topAlgList.begin(); ita != m_topAlgList.end(); ita++ ) {
-    sc = (*ita)->sysReinitialize();
+  for (auto& ita : m_topAlgList) {
+    sc = ita->sysReinitialize();
     if( !sc.isSuccess() ) {
-      error() << "Unable to reinitialize Algorithm: " << (*ita)->name() << endmsg;
+      error() << "Unable to reinitialize Algorithm: " << ita->name() << endmsg;
       return sc;
     }
   }
-  for (ita = m_outStreamList.begin(); ita != m_outStreamList.end(); ita++ ) {
-    sc = (*ita)->sysReinitialize();
+  for (auto &ita : m_outStreamList ) {
+    sc = ita->sysReinitialize();
     if( !sc.isSuccess() ) {
-      error() << "Unable to reinitialize Output Stream: " << (*ita)->name() << endmsg;
+      error() << "Unable to reinitialize Output Stream: " << ita->name() << endmsg;
       return sc;
     }
   }
@@ -239,20 +221,19 @@ StatusCode MinimalEventLoopMgr::reinitialize() {
 //--------------------------------------------------------------------------------------------
 StatusCode MinimalEventLoopMgr::restart() {
   StatusCode sc = StatusCode::SUCCESS;
-  ListAlg::iterator ita;
 
   // Restart all the TopAlgs.
-  for (ita = m_topAlgList.begin(); ita != m_topAlgList.end(); ita++ ) {
-    sc = (*ita)->sysRestart();
+  for (auto& ita : m_topAlgList ) {
+    sc = ita->sysRestart();
     if( !sc.isSuccess() ) {
-      error() << "Unable to restart Algorithm: " << (*ita)->name() << endmsg;
+      error() << "Unable to restart Algorithm: " << ita->name() << endmsg;
       return sc;
     }
   }
-  for (ita = m_outStreamList.begin(); ita != m_outStreamList.end(); ita++ ) {
-    sc = (*ita)->sysRestart();
+  for (auto& ita : m_outStreamList ) {
+    sc = ita->sysRestart();
     if( !sc.isSuccess() ) {
-      error() << "Unable to restart Output Stream: " << (*ita)->name() << endmsg;
+      error() << "Unable to restart Output Stream: " << ita->name() << endmsg;
       return sc;
     }
   }
@@ -267,44 +248,43 @@ StatusCode MinimalEventLoopMgr::finalize() {
   StatusCode sc = StatusCode::SUCCESS;
   StatusCode scRet = StatusCode::SUCCESS;
   // Call the finalize() method of all top algorithms
-  ListAlg::iterator ita;
-  for ( ita = m_topAlgList.begin(); ita != m_topAlgList.end(); ita++ ) {
-    sc = (*ita)->sysFinalize();
+  for (auto&  ita : m_topAlgList ) {
+    sc = ita->sysFinalize();
     if( !sc.isSuccess() ) {
       scRet = StatusCode::FAILURE;
-      warning() << "Finalization of algorithm " << (*ita)->name() << " failed" << endmsg;
+      warning() << "Finalization of algorithm " << ita->name() << " failed" << endmsg;
     }
   }
   // Call the finalize() method of all Output streams
-  for ( ita = m_outStreamList.begin(); ita != m_outStreamList.end(); ita++ ) {
-    sc = (*ita)->sysFinalize();
+  for (auto &ita : m_outStreamList) {
+    sc = ita->sysFinalize();
     if( !sc.isSuccess() ) {
       scRet = StatusCode::FAILURE;
-      warning() << "Finalization of algorithm " << (*ita)->name() << " failed" << endmsg;
+      warning() << "Finalization of algorithm " << ita->name() << " failed" << endmsg;
     }
   }
   // release all top algorithms
   SmartIF<IAlgManager> algMan(serviceLocator());
-  for ( ita = m_topAlgList.begin(); ita != m_topAlgList.end(); ita++ ) {
-    if (algMan->removeAlgorithm(*ita).isFailure()) {
+  for (auto &ita : m_topAlgList ) {
+    if (algMan->removeAlgorithm(ita).isFailure()) {
       scRet = StatusCode::FAILURE;
-      warning() << "Problems removing Algorithm " << (*ita)->name() << endmsg;
+      warning() << "Problems removing Algorithm " << ita->name() << endmsg;
     }
   }
   m_topAlgList.clear();
 
   // release all output streams
-  for ( ita = m_outStreamList.begin(); ita != m_outStreamList.end(); ita++ ) {
-    (*ita)->release();
+  for (auto& ita : m_outStreamList) {
+    ita->release();
   }
   m_outStreamList.clear();
   if ( sc.isSuccess() ) m_state = FINALIZED;
 
   m_incidentSvc->removeListener(m_abortEventListener, IncidentType::AbortEvent);
-  m_abortEventListener = 0; // release
+  m_abortEventListener = nullptr; // release
 
-  m_incidentSvc = 0; // release
-  m_appMgrUI = 0; // release
+  m_incidentSvc = nullptr; // release
+  m_appMgrUI = nullptr; // release
 
   sc = Service::finalize();
 
@@ -330,39 +310,31 @@ StatusCode MinimalEventLoopMgr::nextEvent(int /* maxevt */)   {
 //--------------------------------------------------------------------------------------------
 StatusCode MinimalEventLoopMgr::executeRun( int maxevt ) {
   StatusCode  sc;
-  ListAlg::iterator ita;
   bool eventfailed = false;
 
   // Call the beginRun() method of all top algorithms
-  for (ita = m_topAlgList.begin(); ita != m_topAlgList.end(); ita++ ) {
-    sc = (*ita)->sysBeginRun();
+  for (auto& ita : m_topAlgList ) {
+    sc = ita->sysBeginRun();
     if (!sc.isSuccess()) {
-      warning() << "beginRun() of algorithm " << (*ita)->name() << " failed" << endmsg;
+      warning() << "beginRun() of algorithm " << ita->name() << " failed" << endmsg;
       eventfailed = true;
     }
   }
 
   // Call now the nextEvent(...)
   sc = nextEvent(maxevt);
-  if (!sc.isSuccess()) {
-    eventfailed = true;
-  }
+  if (!sc.isSuccess()) eventfailed = true;
 
   // Call the endRun() method of all top algorithms
-  for (ita = m_topAlgList.begin(); ita != m_topAlgList.end(); ita++ ) {
-    sc = (*ita)->sysEndRun();
+  for (auto& ita : m_topAlgList) {
+    sc = ita->sysEndRun();
     if (!sc.isSuccess()) {
-      warning() << "endRun() of algorithm " << (*ita)->name() << " failed" << endmsg;
+      warning() << "endRun() of algorithm " << ita->name() << " failed" << endmsg;
       eventfailed = true;
     }
   }
 
-  if (eventfailed) {
-    return StatusCode::FAILURE;
-  }
-  else {
-    return StatusCode::SUCCESS;
-  }
+  return eventfailed ? StatusCode::FAILURE : StatusCode::SUCCESS;
 }
 
 namespace {
@@ -405,7 +377,7 @@ StatusCode MinimalEventLoopMgr::executeEvent(void* /* par */)    {
   // Get the IProperty interface of the ApplicationMgr to pass it to RetCodeGuard
   const SmartIF<IProperty> appmgr(serviceLocator());
   // Call the execute() method of all top algorithms
-  for (ListAlg::iterator ita = m_topAlgList.begin(); ita != m_topAlgList.end(); ita++ ) {
+  for (auto&  ita : m_topAlgList ) {
     StatusCode sc(StatusCode::FAILURE);
     try {
       if (UNLIKELY(m_abortEvent)) {
@@ -416,23 +388,23 @@ StatusCode MinimalEventLoopMgr::executeEvent(void* /* par */)    {
         break;
       }
       RetCodeGuard rcg(appmgr, Gaudi::ReturnCode::UnhandledException);
-      sc = (*ita)->sysExecute();
+      sc = ita->sysExecute();
       rcg.ignore(); // disarm the guard
     } catch ( const GaudiException& Exception ) {
       fatal() << ".executeEvent(): Exception with tag=" << Exception.tag()
-              << " thrown by " << (*ita)->name() << endmsg;
+              << " thrown by " << ita->name() << endmsg;
       error() << Exception << endmsg;
     } catch ( const std::exception& Exception ) {
       fatal() << ".executeEvent(): Standard std::exception thrown by "
-              << (*ita)->name() << endmsg;
+              << ita->name() << endmsg;
       error() << Exception.what()  << endmsg;
     } catch(...) {
       fatal() << ".executeEvent(): UNKNOWN Exception thrown by "
-              << (*ita)->name() << endmsg;
+              << ita->name() << endmsg;
     }
 
     if (UNLIKELY(!sc.isSuccess()))  {
-      warning() << "Execution of algorithm " << (*ita)->name() << " failed" << endmsg;
+      warning() << "Execution of algorithm " << ita->name() << " failed" << endmsg;
       eventfailed = true;
     }
   }
@@ -444,12 +416,12 @@ StatusCode MinimalEventLoopMgr::executeEvent(void* /* par */)    {
   }
 
   // Call the execute() method of all output streams
-  for (ListAlg::iterator ito = m_outStreamList.begin(); ito != m_outStreamList.end(); ito++ ) {
-    (*ito)->resetExecuted();
-      StatusCode sc;
-      sc = (*ito)->sysExecute();
+  for (auto&  ito : m_outStreamList) {
+    ito->resetExecuted();
+    StatusCode sc;
+    sc = ito->sysExecute();
     if (UNLIKELY(!sc.isSuccess()))  {
-      warning() << "Execution of output stream " << (*ito)->name() << " failed" << endmsg;
+      warning() << "Execution of output stream " << ito->name() << " failed" << endmsg;
       eventfailed = true;
     }
   }
@@ -496,9 +468,9 @@ StatusCode MinimalEventLoopMgr::decodeTopAlgs()    {
     if ( algMan.isValid())   {
       // Reset the existing Top Algorithm List
       m_topAlgList.clear( );
-      const std::vector<std::string>& algNames = m_topAlgNames.value( );
-      for (VectorName::const_iterator it = algNames.begin(); it != algNames.end(); it++) {
-        Gaudi::Utils::TypeNameString item(*it);
+      m_topAlgList.reserve( m_topAlgNames.value().size() );
+      for (const auto& it : m_topAlgNames.value( )) {
+        Gaudi::Utils::TypeNameString item{it};
         // Got the type and name. Now creating the algorithm, avoiding duplicate creation.
         std::string item_name = item.name() + getGaudiThreadIDfromName(name());
         const bool CREATE = false;
@@ -508,7 +480,7 @@ StatusCode MinimalEventLoopMgr::decodeTopAlgs()    {
         }
         else {
           DEBMSG << "Creating Top Algorithm " << item.type() << " with name " << item_name << endmsg;
-          IAlgorithm *ialg = 0;
+          IAlgorithm *ialg = nullptr;
           StatusCode sc1 = algMan->createAlgorithm(item.type(), item_name, ialg);
           if( !sc1.isSuccess() ) {
             error() << "Unable to create Top Algorithm " << item.type() << " with name " << item_name << endmsg;
@@ -546,21 +518,19 @@ StatusCode MinimalEventLoopMgr::decodeOutStreams( )    {
     if ( algMan.isValid() )   {
       // Reset the existing Top Algorithm List
       m_outStreamList.clear();
-      const std::vector<std::string>& algNames = m_outStreamNames.value( );
-      for (VectorName::const_iterator it = algNames.begin(); it != algNames.end(); it++) {
-        Gaudi::Utils::TypeNameString item(*it, m_outStreamType);
-        DEBMSG << "Creating " << m_outStreamType <<  (*it) << endmsg;
+      for (const auto& it : m_outStreamNames.value( ) ) {
+        Gaudi::Utils::TypeNameString item(it, m_outStreamType);
+        DEBMSG << "Creating " << m_outStreamType <<  it << endmsg;
         const bool CREATE = false;
         SmartIF<IAlgorithm> os = algMan->algorithm( item, CREATE );
         if (os.isValid()) {
           DEBMSG << "Output Stream " << item.name() << " already exists" << endmsg;
-        }
-        else {
-          DEBMSG << "Creating Output Stream " << (*it) << endmsg;
+        } else {
+          DEBMSG << "Creating Output Stream " << it << endmsg;
           IAlgorithm* ios = 0;
           StatusCode sc1 = algMan->createAlgorithm( item.type(), item.name(), ios );
           if( !sc1.isSuccess() ) {
-            error() << "Unable to create Output Stream " << (*it) << endmsg;
+            error() << "Unable to create Output Stream " << it << endmsg;
             return sc1;
           }
           os = ios; // manage reference counting

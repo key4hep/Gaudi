@@ -17,10 +17,6 @@
 #include "GaudiKernel/HashMap.h"
 #include "GaudiKernel/ChronoEntity.h"
 // ============================================================================
-// Boost
-// ============================================================================
-#include "boost/thread/recursive_mutex.hpp"
-// ============================================================================
 /**
  * @class IncidentSvc
  * @brief Default implementation of the IIncidentSvc interface.
@@ -31,12 +27,13 @@
  *  - Calls to IIncidentListener::handle() are serialized, i.e. at any time
  *    there is at most one incident handler being executed across all threads.
  */
+
+struct isSingleShot_t;
+
 class IncidentSvc : public extends1<Service, IIncidentSvc>
 {
-  // ==========================================================================
-public:
-  // ==========================================================================
-  struct Listener
+    public:
+  struct Listener final
   {
     IIncidentListener* iListener;
     long priority;
@@ -45,43 +42,42 @@ public:
 
     Listener(IIncidentListener* il, long pri, bool thr=false, bool single=false):
       iListener(il), priority(pri), rethrow(thr), singleShot(single){}
-
   };
+    private:
 
   // Typedefs
-  typedef std::list<Listener> ListenerList;
-  // typedef std::map<std::string, ListenerList*> ListenerMap;
-  typedef GaudiUtils::HashMap<Gaudi::StringKey, ListenerList*> ListenerMap;
+  typedef std::vector<Listener> ListenerList;
+  typedef GaudiUtils::HashMap<Gaudi::StringKey, std::unique_ptr<ListenerList>> ListenerMap;
 
+public:
   // Inherited Service overrides:
   //
-  virtual StatusCode initialize();
-  virtual StatusCode finalize();
+  StatusCode initialize() override;
+  StatusCode finalize() override;
 
   // IIncidentSvc interfaces overwrite
   //
-  virtual void addListener
-  ( IIncidentListener* lis       ,
-    const std::string& type = "" ,
-    long priority   = 0          ,
-    bool rethrow    = false      ,
-    bool singleShot = false      ) ;
+  void addListener( IIncidentListener* lis       ,
+                    const std::string& type = "" ,
+                    long priority   = 0          ,
+                    bool rethrow    = false      ,
+                    bool singleShot = false      ) override;
 
-  virtual void removeListener
-  ( IIncidentListener* lis       ,
-    const std::string& type = "" ) ;
-  virtual void fireIncident
-  ( const Incident&    incident  ) ;
-
-  virtual void getListeners (std::vector<IIncidentListener*>& lis,
-			     const std::string& type = "") const ;
+  void removeListener( IIncidentListener* l, const std::string& type = "" ) override;
+  void fireIncident( const Incident& incident) override;
+  //TODO: return by value instead...
+  void getListeners (std::vector<IIncidentListener*>& lis,
+                     const std::string& type = "") const override;
 
   // Standard Constructor.
   IncidentSvc( const std::string& name, ISvcLocator* svc );
   // Destructor.
-  virtual ~IncidentSvc();
+  ~IncidentSvc() override;
 
 private:
+  ListenerMap::iterator removeListenerFromList(ListenerMap::iterator, 
+                                               IIncidentListener* item, 
+                                               bool scheduleRemoval);
   // ==========================================================================
   /// Internal function to allow incidents listening to all events
   void i_fireIncident(const Incident& incident, const std::string& type);
@@ -91,14 +87,14 @@ private:
 
   /// Incident being fired. It is used to know if we can safely remove a listener or
   /// we have to schedule its removal for later.
-  const std::string *m_currentIncidentType;
+  const std::string *m_currentIncidentType = nullptr;
 
   /// Mutex to synchronize access to m_listenerMap
-  mutable boost::recursive_mutex m_listenerMapMutex;
+  mutable std::recursive_mutex m_listenerMapMutex;
 
   /// timer & it's lock
   mutable ChronoEntity m_timer     ;
-  mutable bool         m_timerLock ;
+  mutable bool         m_timerLock = false ;
   // ==========================================================================
 
 };
@@ -107,5 +103,3 @@ private:
 // ============================================================================
 #endif
 // ============================================================================
-
-

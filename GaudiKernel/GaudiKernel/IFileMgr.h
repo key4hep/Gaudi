@@ -36,9 +36,9 @@ namespace Io {
     INVALID = 1<<31
   };
 
-  class IoFlags {
+  class IoFlags final {
   public:
-    IoFlags():_f(INVALID){};
+    IoFlags() = default;
     IoFlags(int i):_f(i){};
 
     int f() const { return _f; }
@@ -58,7 +58,7 @@ namespace Io {
 
     bool match (const IoFlags& fa, bool strict=true) const {
       if ( strict ) {
-	return ( _f == fa );
+        return ( _f == fa );
       }
       // only look at first 2 bits
       return (  (_f&3) == (fa&3) );
@@ -70,41 +70,29 @@ namespace Io {
       const int SHIFT = 8 * sizeof( int ) - 1;
       const unsigned MASK = 1 << SHIFT;
 
-      for ( int i = 1; i <= SHIFT + 1; i++ ) {
-	s += ( f & MASK ? '1' : '0' );
-	f <<= 1;
-	if ( i % 8 == 0 )
-	    s += ' ';
+      for ( int i = 1; i <= SHIFT + 1; ++i ) {
+        s += ( f & MASK ? '1' : '0' );
+        f <<= 1;
+        if ( i % 8 == 0 ) s += ' ';
       }
       return s;
     }
 
   private:
-    int _f;
+    int _f = INVALID;
   };
 
   static std::string IoFlagName(IoFlags f) {
-    static std::map<IoFlag, std::string> s_names;
-    if (s_names.empty()) {
-      s_names[READ] = "READ";
-      s_names[WRITE] = "WRITE";
-      s_names[RDWR] = "RDWR";
-      s_names[CREATE] = "CREATE";
-      s_names[EXCL] = "EXCL";
-      s_names[TRUNC] = "TRUNC";
-      s_names[APPEND] = "APPEND";
-      s_names[INVALID] = "INVALID";
-    }
-
-    if ( f.isRead() ) {
-      return s_names[READ];
-    }
+    static const std::map<IoFlag, std::string> s_names = { { 
+        { READ,   "READ"  }, { WRITE,  "WRITE"}, { RDWR,   "RDWR" },
+        { CREATE, "CREATE"}, { EXCL,   "EXCL" }, { TRUNC,  "TRUNC"},
+        { APPEND, "APPEND"}, { INVALID,"INVALID"} } };
+    if ( f.isRead() ) return s_names.at(READ);
 
     std::string ff;
     for (int i=0; i<32; ++i) {
-      if ( ( (1<<i) & f) != 0) {
-	ff += s_names[ (IoFlag)(1<<i) ] + "|";
-      }
+      auto b = ( 1 << i );
+      if ( b & f ) ff += s_names.at((IoFlag)(b)) + "|";
     }
     ff.erase(ff.length()-1);
     return ff;
@@ -112,17 +100,10 @@ namespace Io {
 
 
   inline IoFlags IoFlagFromName(const std::string& f) {
-    static std::map<std::string, IoFlag> s_n;
-    if (s_n.empty()) {
-      s_n["READ"] = Io::READ;
-      s_n["WRITE"] = Io::WRITE;
-      s_n["RDWR"] = Io::RDWR;
-      s_n["CREATE"] = Io::CREATE;
-      s_n["EXCL"] = Io::EXCL;
-      s_n["TRUNC"] = Io::TRUNC;
-      s_n["APPEND"] = Io::APPEND;
-      s_n["INVALID"] = Io::INVALID;
-    }
+    static const std::map<std::string, IoFlag> s_n = { {
+       { "READ",   Io::READ },   { "WRITE",   Io::WRITE }, { "RDWR",  Io::RDWR },
+       { "CREATE", Io::CREATE }, { "EXCL",    Io::EXCL  }, { "TRUNC", Io::TRUNC},
+       { "APPEND", Io::APPEND }, { "INVALID", Io::INVALID } } };
 
     IoFlags fl(Io::INVALID);
     size_t j(0),k(0);
@@ -130,25 +111,24 @@ namespace Io {
     while ( (k=f.find("|",j)) != std::string::npos) {
       fs = f.substr(j,k-j);
       if (s_n.find(fs) == s_n.end()) {
-	return Io::INVALID;
+        return Io::INVALID;
       }
       if (fl.isInvalid()) {
-	fl = s_n[fs];
+        fl = s_n.at(fs);
       } else {
-	fl = fl | s_n[fs];
+        fl = fl | s_n.at(fs);
       }
       j = k+1;
     }
-    fs = f.substr(j,f.length()-j);
+    fs = f.substr(j);
     if (s_n.find(fs) == s_n.end()) {
       return Io::INVALID;
     }
     if (fl.isInvalid()) {
-      fl = s_n[fs];
+      fl = s_n.at(fs);
     } else {
-      fl = fl | s_n[fs];
+      fl = fl | s_n.at(fs);
     }
-
     return fl;
 
   }
@@ -177,15 +157,10 @@ namespace Io {
   };
 
   inline std::ostream & operator << (std::ostream & s, const IoTech &t) {
-    switch (t) {
-    case UNKNOWN : return s << "UNKNOWN";
-    case POSIX   : return s << "POSIX";
-    case ROOT    : return s << "ROOT";
-    case BS      : return s << "BS";
-    case HDF5    : return s << "HDF5";
-    case SQLITE  : return s << "SQLITE";
-    }
-    return s;
+    static const std::array<const char*, SQLITE+1> tbl = { 
+                 "UNKNOWN", "POSIX", "ROOT",
+                 "BS", "HDF5", "SQLITE" };
+    return t < tbl.size() ? s << tbl[t] : s;
   }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -196,14 +171,14 @@ namespace Io {
 
   typedef int Fd;
 
-  class FileAttr {
+  class FileAttr final {
   public:
 
-    FileAttr():m_fd(-1),m_name(""),m_desc(""),m_tech(UNKNOWN),m_flags(INVALID),
-	       m_iflags(INVALID),m_fptr(0),m_isOpen(false), m_shared(false){};
-    FileAttr(Fd f, const std::string& n, const std::string& d, IoTech t,
-	     IoFlags fa, void* p, bool o, bool s=false):
-      m_fd(f),m_name(n),m_desc(d),m_tech(t),m_flags(fa),m_iflags(fa),m_fptr(p),
+    FileAttr() = default;
+    FileAttr(Fd f, std::string n, std::string d, IoTech t,
+             IoFlags fa, void* p, bool o, bool s=false):
+      m_fd(f),m_name(std::move(n)),m_desc(std::move(d)),
+      m_tech(t),m_flags(fa),m_iflags(fa),m_fptr(p),
       m_isOpen(o),m_shared(s){};
 
     Fd          fd() const       { return m_fd; }
@@ -230,41 +205,40 @@ namespace Io {
 
     friend std::ostream& operator<< (std::ostream& os, const FileAttr& fa) {
       os << "name: \"" << fa.name() << "\"  tech: " << fa.tech()
-	 << "  desc: " << fa.desc()
-	 << "  flags: " << IoFlagName(fa.flags())
-	 << "  i_flags: " << IoFlagName(fa.iflags())
-	 << "  Fd: " << fa.fd() << "  ptr: " << fa.fptr()
-	 << (fa.isOpen() ? "  [o]" : "  [c]" )
-	 << (fa.isShared() ? " [s]" : " [u]" );
-
+         << "  desc: " << fa.desc()
+         << "  flags: " << IoFlagName(fa.flags())
+         << "  i_flags: " << IoFlagName(fa.iflags())
+         << "  Fd: " << fa.fd() << "  ptr: " << fa.fptr()
+         << (fa.isOpen() ? "  [o]" : "  [c]" )
+         << (fa.isShared() ? " [s]" : " [u]" );
       return os;
     }
 
     bool operator== (const FileAttr& fa) const {
       return ( m_fd==fa.fd() && m_name==fa.name() && m_desc==fa.desc() &&
-	       m_tech==fa.tech() && m_flags==fa.flags() && m_fptr==fa.fptr() &&
-	       m_isOpen==fa.isOpen() && m_shared==fa.isShared() );
+               m_tech==fa.tech() && m_flags==fa.flags() && m_fptr==fa.fptr() &&
+               m_isOpen==fa.isOpen() && m_shared==fa.isShared() );
     }
 
     bool operator< (const FileAttr& rhs) const {
       if ( m_name != rhs.name() ) {
-	return ( m_name < rhs.name() );
+        return ( m_name < rhs.name() );
       } else {
-	return ( m_flags < rhs.iflags() );
+        return ( m_flags < rhs.iflags() );
       }
     }
 
   private:
 
-    Fd          m_fd;
+    Fd          m_fd = -1;
     std::string m_name;
     std::string m_desc;
-    IoTech      m_tech;
-    IoFlags     m_flags;
-    IoFlags     m_iflags;
-    void*       m_fptr;
-    bool        m_isOpen;
-    bool        m_shared;
+    IoTech      m_tech = UNKNOWN;
+    IoFlags     m_flags = INVALID;
+    IoFlags     m_iflags = INVALID;
+    void*       m_fptr = nullptr;
+    bool        m_isOpen = false;
+    bool        m_shared = false;
 
   };
 
@@ -286,8 +260,8 @@ namespace Io {
   typedef std::function<Io::reopen_t(void*,Io::IoFlags)> bfcn_reopenP_t;
 
   // file handler functions: open, close, reopen
-  struct FileHdlr {
-    IoTech tech;
+  struct FileHdlr final {
+    IoTech tech = UNKNOWN;
 
     bfcn_open_t    b_open_fcn;
     bfcn_close_t   b_close_fcn;
@@ -295,15 +269,15 @@ namespace Io {
     bfcn_reopen_t  b_reopen_fcn;
     bfcn_reopenP_t b_reopenP_fcn;
 
-    FileHdlr(): tech(UNKNOWN){};
+    FileHdlr() = default;
     FileHdlr( IoTech t, bfcn_open_t o, bfcn_close_t c, bfcn_reopen_t r)
       : tech(t), b_open_fcn(o), b_close_fcn(c), b_reopen_fcn(r){};
     FileHdlr( IoTech t, bfcn_open_t o, bfcn_closeP_t c, bfcn_reopenP_t r)
       : tech(t), b_open_fcn(o), b_closeP_fcn(c), b_reopenP_fcn(r){};
     FileHdlr( IoTech t, bfcn_open_t o, bfcn_close_t c1, bfcn_closeP_t c2,
-	      bfcn_reopen_t r1,bfcn_reopenP_t r2)
+              bfcn_reopen_t r1,bfcn_reopenP_t r2)
       : tech(t), b_open_fcn(o), b_close_fcn(c1), b_closeP_fcn(c2),
-	b_reopen_fcn(r1), b_reopenP_fcn(r2){};
+        b_reopen_fcn(r1), b_reopenP_fcn(r2){};
 
   };
 
@@ -324,16 +298,11 @@ namespace Io {
   };
 
   inline std::ostream & operator << (std::ostream & s, const Action &t) {
-    switch (t) {
-    case OPEN       :  return s << "OPEN";
-    case CLOSE      :  return s << "CLOSE";
-    case REOPEN     :  return s << "REOPEN";
-    case OPEN_ERR   :  return s << "OPEN_ERR";
-    case CLOSE_ERR  :  return s << "CLOSE_ERR";
-    case REOPEN_ERR :  return s << "REOPEN_ERR";
-    case INVALID_ACTION :  return s << "INVALID_ACTION";
-    }
-    return s;
+    static const std::array<const char*, INVALID_ACTION+1> tbl = { 
+            "OPEN", "CLOSE", "REOPEN",
+            "OPEN_ERR","CLOSE_ERR", "REOPEN_ERR",
+            "INVALID_ACTION" };
+    return t < tbl.size() ? s<< tbl[t] : s;
   }
 
   #define FILEMGR_CALLBACK_ARGS const Io::FileAttr*, const std::string&
@@ -348,7 +317,7 @@ class GAUDI_API IFileMgr: virtual public IService {
 
  public:
 
-  virtual ~IFileMgr();
+  virtual ~IFileMgr() = default;
 
   DeclareInterfaceID(IFileMgr,1,0);
 
@@ -368,7 +337,7 @@ class GAUDI_API IFileMgr: virtual public IService {
 
   // get file attributes from file name
   virtual int getFileAttr(const std::string&,
-			  std::vector<const Io::FileAttr*>&) const = 0;
+                          std::vector<const Io::FileAttr*>&) const = 0;
   // get file attributes from file descriptor
   virtual StatusCode getFileAttr(const Io::Fd, const Io::FileAttr*&) const = 0;
   // get file attributes from file ptr
@@ -380,27 +349,27 @@ class GAUDI_API IFileMgr: virtual public IService {
   // get all files known to mgr. return numbers found.
   // will replace contents of FILES
   virtual int getFiles(std::vector<std::string> & FILES,
-		       bool onlyOpen=true) const = 0;
+                       bool onlyOpen=true) const = 0;
   virtual int getFiles(std::vector<const Io::FileAttr*> & FILES,
-		       bool onlyOpen=true) const = 0;
+                       bool onlyOpen=true) const = 0;
 
   // get all files of specific IoTech. returns number found.
   // will replace contents of FILES
   virtual int getFiles(const Io::IoTech&, std::vector<std::string>& FILES,
-		       bool onlyOpen=true) const = 0;
+                       bool onlyOpen=true) const = 0;
   virtual int getFiles(const Io::IoTech&,
-		       std::vector<const Io::FileAttr*>& FILES,
-		       bool onlyOpen=true) const = 0;
+                       std::vector<const Io::FileAttr*>& FILES,
+                       bool onlyOpen=true) const = 0;
 
   // get all file of specific IoTech and access mode.
   // will replace contents of FILES
   // If IoTech == UNKNOWN, get all. returns number found
   virtual int getFiles(const Io::IoTech&, const Io::IoFlags& ,
-		       std::vector<std::string> &FILES,
-		       bool onlyOpen=true) const =0;
+                       std::vector<std::string> &FILES,
+                       bool onlyOpen=true) const =0;
   virtual int getFiles(const Io::IoTech&, const Io::IoFlags& ,
-		       std::vector<const Io::FileAttr*> &FILES,
-		       bool onlyOpen=true) const =0;
+                       std::vector<const Io::FileAttr*> &FILES,
+                       bool onlyOpen=true) const =0;
 
 
   // get all descriptors known to mgr. returns number found
@@ -410,7 +379,7 @@ class GAUDI_API IFileMgr: virtual public IService {
   // get all descriptors of specific IoTech and access mode.
   // If IoTech == INVALID, get all. returns number found
   virtual int getFd(const Io::IoTech&, const Io::IoFlags& ,
-		    std::vector<Io::Fd> &) const = 0;
+                    std::vector<Io::Fd> &) const = 0;
 
   // get file name given Fd or ptr. Returns empty string if fails
   virtual const std::string& fname(const Io::Fd&) const = 0;
@@ -431,25 +400,24 @@ class GAUDI_API IFileMgr: virtual public IService {
   // Open file, get Fd and ptr
   virtual Io::open_t open(const Io::IoTech&, const std::string& caller,
                           const std::string& fname,
-			  const Io::IoFlags&, Io::Fd&, void*&,
-			  const std::string& desc,
-			  const bool shared=false
-			  ) = 0;
+                          const Io::IoFlags&, Io::Fd&, void*&,
+                          const std::string& desc,
+                          const bool shared=false
+                         ) = 0;
 
   // Open file, get Fd
   virtual Io::open_t open(const Io::IoTech&, const std::string& caller,
-			  const std::string& fname,
-			  const Io::IoFlags&, Io::Fd&, const std::string& desc,
-			  const bool shared=false
-			  ) = 0;
+                          const std::string& fname,
+                          const Io::IoFlags&, Io::Fd&, const std::string& desc,
+                          const bool shared=false
+                         ) = 0;
 
   // Open file, get ptr
   virtual Io::open_t open(const Io::IoTech&, const std::string& caller,
-			  const std::string& fname,
-			  const Io::IoFlags&, void*&, const std::string& desc,
-			  const bool shared=false
-			  ) = 0;
-
+                          const std::string& fname,
+                          const Io::IoFlags&, void*&, const std::string& desc,
+                          const bool shared=false
+                         ) = 0;
 
   // Close file by Fd or ptr
   virtual Io::close_t  close(const Io::Fd, const std::string& caller) = 0;
@@ -457,22 +425,19 @@ class GAUDI_API IFileMgr: virtual public IService {
 
   // Reopen file by Fd or ptr
   virtual Io::reopen_t reopen(const Io::Fd, const Io::IoFlags&,
-			      const std::string& ) = 0;
+                              const std::string& ) = 0;
   virtual Io::reopen_t reopen(void*, const Io::IoFlags&,
-			      const std::string& ) = 0;
-
+                              const std::string& ) = 0;
 
   // Callback actions
   virtual StatusCode regAction(Io::bfcn_action_t, const Io::Action&,
-			       const std::string& d="") = 0;
+                               const std::string& d="") = 0;
   virtual StatusCode regAction(Io::bfcn_action_t, const Io::Action&,
-			       const Io::IoTech&, const std::string& d="") = 0;
+                               const Io::IoTech&, const std::string& d="") = 0;
 
   // Suppress callback action(s) for specific file.
   virtual void suppressAction(const std::string&) = 0;
   virtual void suppressAction(const std::string&, const Io::Action&) = 0;
 
-
 };
-
 #endif

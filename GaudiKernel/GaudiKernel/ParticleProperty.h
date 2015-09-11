@@ -1,4 +1,3 @@
-// $Id: ParticleProperty.h,v 1.6 2004/08/05 09:58:08 mato Exp $
 #ifndef GAUDIKERNEL_PARTICLEPROPERTY_H
 #define GAUDIKERNEL_PARTICLEPROPERTY_H 1
 // ============================================================================
@@ -16,35 +15,34 @@
  *
  *  @author  Iain Last,G.Corti
  */
-class ParticleProperty {
+class ParticleProperty final {
 public:
   /// Constructors
-  ParticleProperty() {}
+  ParticleProperty() = default;
   
   ParticleProperty
-  ( const std::string& particle   , 
+  ( std::string        particle   , 
     int                geantId    , 
     int                jetsetId   , 
     double             charge     , 
     double             mass       , 
     double             tlife      , 
-    const std::string& evtgenName ,
+    std::string        evtgenName ,
     int                pythiaId   , 
     double             maxWidth   ) 
-    : m_name         ( particle   )
+    : m_name         ( std::move(particle)   )
     , m_idgeant      ( geantId    )
     , m_idjetset     ( jetsetId   )
     , m_charge       ( charge     )
     , m_mass         ( mass       )
     , m_tlife        ( tlife      )
-    , m_evtgenName   ( evtgenName )
+    , m_evtgenName   ( std::move(evtgenName) )
     , m_pythiaId     ( pythiaId   )
     , m_maxWidth     ( maxWidth   ) 
-    , m_anti         ( 0          ) 
   {}
   
   /// Destructor.
-  ~ParticleProperty() {}
+  ~ParticleProperty() = default;
 
   /// Get the particle name.
   const std::string& particle() const { return m_name; }
@@ -155,7 +153,7 @@ private:
   double m_maxWidth ;
   
   /// the antiparticle 
-  const ParticleProperty* m_anti ;
+  const ParticleProperty* m_anti = nullptr;
 };
 
 #endif

@@ -21,21 +21,17 @@ AlgorithmManager::AlgorithmManager(IInterface* application):
   addRef(); // Initial count set to 1
 }
 
-// destructor
-AlgorithmManager::~AlgorithmManager() {
-}
-
 // addAlgorithm
 StatusCode AlgorithmManager::addAlgorithm(IAlgorithm* alg) {
-  m_listalg.push_back(alg);
+  m_algs.push_back(alg);
   return StatusCode::SUCCESS;
 }
 
 // removeAlgorithm
 StatusCode AlgorithmManager::removeAlgorithm(IAlgorithm* alg) {
-  ListAlg::iterator it = std::find(m_listalg.begin(), m_listalg.end(), alg);
-  if (it != m_listalg.end()) {
-    m_listalg.erase(it);
+  auto it = std::find(m_algs.begin(), m_algs.end(), alg);
+  if (it != m_algs.end()) {
+    m_algs.erase(it);
     return StatusCode::SUCCESS;
   }
   return StatusCode::FAILURE;
@@ -54,57 +50,54 @@ StatusCode AlgorithmManager::createAlgorithm( const std::string& algtype,
   }
   std::string actualalgtype(algtype);
   // a '\' in front of the type name prevents alias replacement
-  if ((actualalgtype.size() > 8) && (actualalgtype.substr(0, 8) == "unalias:")) {
+  if ((actualalgtype.size() > 8) && (actualalgtype.compare(0, 8,"unalias:") == 0)) {
     actualalgtype = actualalgtype.substr(8);
   } else {
-    AlgTypeAliasesMap::iterator typeAlias = m_algTypeAliases.find(algtype);
+    auto typeAlias = m_algTypeAliases.find(algtype);
     if (typeAlias != m_algTypeAliases.end()) {
       actualalgtype = typeAlias->second;
     }
   }
   algorithm = Algorithm::Factory::create(actualalgtype, algname, serviceLocator().get());
-  if ( algorithm ) {
-    // Check the compatibility of the version of the interface obtained
-    if( !isValidInterface(algorithm) ) {
-      fatal() << "Incompatible interface IAlgorithm version for " << actualalgtype << endmsg;
-      return StatusCode::FAILURE;
-    }
-    StatusCode rc;
-    m_listalg.push_back(AlgorithmItem(algorithm, managed));
-    // this is needed to keep the reference count correct, since isValidInterface(algorithm)
-    // implies an increment of the counter by 1
-    algorithm->release();
-    if ( managed ) {
-      // Bring the created algorithm to the same state of the ApplicationMgr
-      if (FSMState() >= Gaudi::StateMachine::INITIALIZED) {
-        rc = algorithm->sysInitialize();
-        if (rc.isSuccess() && FSMState() >= Gaudi::StateMachine::RUNNING) {
-          rc = algorithm->sysStart();
-        }
-      }
-      if ( !rc.isSuccess() )  {
-        this->error() << "Failed to initialize algorithm: [" << algname << "]" << endmsg;
-      }
-    }
-    return rc;
-  }
-  this->error() << "Algorithm of type " << actualalgtype
-                << " is unknown (No factory available)." << endmsg;
+  if ( !algorithm )  {
+      this->error() << "Algorithm of type " << actualalgtype
+                    << " is unknown (No factory available)." << endmsg;
 #ifndef _WIN32
-  errno = 0xAFFEDEAD; // code used by Gaudi for library load errors: forces getLastErrorString do use dlerror (on Linux)
+      errno = 0xAFFEDEAD; // code used by Gaudi for library load errors: forces getLastErrorString do use dlerror (on Linux)
 #endif
-  std::string err = System::getLastErrorString();
-  if (! err.empty()) {
-    this->error() << err << endmsg;
+      std::string err = System::getLastErrorString();
+      if (! err.empty()) this->error() << err << endmsg;
+      this->error() << "More information may be available by setting the global jobOpt \"PluginDebugLevel\" to 1" << endmsg;
+      return StatusCode::FAILURE;
   }
-  this->error() << "More information may be available by setting the global jobOpt \"PluginDebugLevel\" to 1" << endmsg;
-
-  return StatusCode::FAILURE;
+  // Check the compatibility of the version of the interface obtained
+  if( !isValidInterface(algorithm) ) {
+    fatal() << "Incompatible interface IAlgorithm version for " << actualalgtype << endmsg;
+    return StatusCode::FAILURE;
+  }
+  m_algs.emplace_back(algorithm, managed);
+  // this is needed to keep the reference count correct, since isValidInterface(algorithm)
+  // implies an increment of the counter by 1
+  algorithm->release();
+  StatusCode rc;
+  if ( managed ) {
+    // Bring the created algorithm to the same state of the ApplicationMgr
+    if (FSMState() >= Gaudi::StateMachine::INITIALIZED) {
+      rc = algorithm->sysInitialize();
+      if (rc.isSuccess() && FSMState() >= Gaudi::StateMachine::RUNNING) {
+        rc = algorithm->sysStart();
+      }
+    }
+    if ( !rc.isSuccess() )  {
+      this->error() << "Failed to initialize algorithm: [" << algname << "]" << endmsg;
+    }
+  }
+  return rc;
 }
 
 SmartIF<IAlgorithm>& AlgorithmManager::algorithm(const Gaudi::Utils::TypeNameString &typeName, const bool createIf) {
-  ListAlg::iterator it = std::find(m_listalg.begin(), m_listalg.end(), typeName.name());
-  if (it != m_listalg.end()) { // found
+  auto it = std::find(m_algs.begin(), m_algs.end(), typeName.name());
+  if (it != m_algs.end()) { // found
     return it->algorithm;
   }
   if (createIf) {
@@ -118,18 +111,17 @@ SmartIF<IAlgorithm>& AlgorithmManager::algorithm(const Gaudi::Utils::TypeNameStr
 
 // existsAlgorithm
 bool AlgorithmManager::existsAlgorithm(const std::string& name) const {
-  ListAlg::const_iterator it = std::find(m_listalg.begin(), m_listalg.end(), name);
-  return it != m_listalg.end();
+  return  m_algs.end() != std::find(m_algs.begin(), m_algs.end(), name);
 }
 
   // Return the list of Algorithms
 const std::vector<IAlgorithm*>& AlgorithmManager::getAlgorithms() const
 {
   m_listOfPtrs.clear();
-  m_listOfPtrs.reserve(m_listalg.size());
-  std::transform( std::begin(m_listalg), std::end(m_listalg),
+  m_listOfPtrs.reserve(m_algs.size());
+  std::transform( std::begin(m_algs), std::end(m_algs),
                   std::back_inserter(m_listOfPtrs),
-                  [](ListAlg::const_reference alg) {
+                  [](const AlgorithmItem& alg) {
                       return const_cast<IAlgorithm*>(alg.algorithm.get());
                   } );
   return m_listOfPtrs;
@@ -137,10 +129,9 @@ const std::vector<IAlgorithm*>& AlgorithmManager::getAlgorithms() const
 
 StatusCode AlgorithmManager::initialize() {
   StatusCode rc;
-  ListAlg::iterator it;
-  for (it = m_listalg.begin(); it != m_listalg.end(); ++it) {
-    if (!it->managed) continue;
-    rc = it->algorithm->sysInitialize();
+  for (auto& it : m_algs ) {
+    if (!it.managed) continue;
+    rc = it.algorithm->sysInitialize();
     if ( rc.isFailure() ) return rc;
   }
   return rc;
@@ -148,10 +139,9 @@ StatusCode AlgorithmManager::initialize() {
 
 StatusCode AlgorithmManager::start() {
   StatusCode rc;
-  ListAlg::iterator it;
-  for (it = m_listalg.begin(); it != m_listalg.end(); ++it) {
-    if (!it->managed) continue;
-    rc = it->algorithm->sysStart();
+  for (auto& it : m_algs ) {
+    if (!it.managed) continue;
+    rc = it.algorithm->sysStart();
     if ( rc.isFailure() ) return rc;
   }
   return rc;
@@ -159,10 +149,9 @@ StatusCode AlgorithmManager::start() {
 
 StatusCode AlgorithmManager::stop() {
   StatusCode rc;
-  ListAlg::iterator it;
-  for (it = m_listalg.begin(); it != m_listalg.end(); ++it) {
-    if (!it->managed) continue;
-    rc = it->algorithm->sysStop();
+  for (auto& it : m_algs) {
+    if (!it.managed) continue;
+    rc = it.algorithm->sysStop();
     if ( rc.isFailure() ) return rc;
   }
   return rc;
@@ -170,12 +159,12 @@ StatusCode AlgorithmManager::stop() {
 
 StatusCode AlgorithmManager::finalize() {
   StatusCode rc;
-  ListAlg::iterator it = m_listalg.begin();
-  while (it != m_listalg.end()){ // finalize and remove from the list the managed algorithms
+  auto it = m_algs.begin();
+  while (it != m_algs.end()){ // finalize and remove from the list the managed algorithms
     if (it->managed) {
       rc = it->algorithm->sysFinalize();
       if( rc.isFailure() ) return rc;
-      it = m_listalg.erase(it);
+      it = m_algs.erase(it);
     } else {
       ++it;
     }
@@ -185,12 +174,11 @@ StatusCode AlgorithmManager::finalize() {
 
 StatusCode AlgorithmManager::reinitialize() {
   StatusCode rc;
-  ListAlg::iterator it;
-  for (it = m_listalg.begin(); it != m_listalg.end(); ++it) {
-    if (!it->managed) continue;
-    rc = it->algorithm->sysReinitialize();
+  for (auto& it : m_algs ) {
+    if (!it.managed) continue;
+    rc = it.algorithm->sysReinitialize();
     if( rc.isFailure() ){
-      this->error() << "Unable to re-initialize algorithm: " << it->algorithm->name() << endmsg;
+      this->error() << "Unable to re-initialize algorithm: " << it.algorithm->name() << endmsg;
       return rc;
     }
   }
@@ -199,12 +187,11 @@ StatusCode AlgorithmManager::reinitialize() {
 
 StatusCode AlgorithmManager::restart() {
   StatusCode rc;
-  ListAlg::iterator it;
-  for (it = m_listalg.begin(); it != m_listalg.end(); ++it) {
-    if (!it->managed) continue;
-    rc = it->algorithm->sysRestart();
+  for (auto& it : m_algs ) {
+    if (!it.managed) continue;
+    rc = it.algorithm->sysRestart();
     if( rc.isFailure() ){
-      this->error() << "Unable to re-initialize algorithm: " << it->algorithm->name() << endmsg;
+      this->error() << "Unable to re-initialize algorithm: " << it.algorithm->name() << endmsg;
       return rc;
     }
   }

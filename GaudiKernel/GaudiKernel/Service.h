@@ -41,45 +41,45 @@ public:
 
   /// Release Interface instance.
   /// Specialized implementation because the default one is not enough.
-  virtual unsigned long release();
+  unsigned long release() override;
 
   /** Retrieve name of the service               */
-  virtual const std::string& name() const;
+  const std::string& name() const override;
 
   // State machine implementation
-  virtual StatusCode configure() { return StatusCode::SUCCESS; }
-  virtual StatusCode initialize();
-  virtual StatusCode start();
-  virtual StatusCode stop();
-  virtual StatusCode finalize();
-  virtual StatusCode terminate() { return StatusCode::SUCCESS; }
-  virtual Gaudi::StateMachine::State FSMState() const { return m_state; }
-  virtual Gaudi::StateMachine::State targetFSMState() const { return m_targetState; }
-  virtual StatusCode reinitialize();
-  virtual StatusCode restart();
+  StatusCode configure() override { return StatusCode::SUCCESS; }
+  StatusCode initialize() override;
+  StatusCode start() override;
+  StatusCode stop() override;
+  StatusCode finalize() override;
+  StatusCode terminate() override { return StatusCode::SUCCESS; }
+  Gaudi::StateMachine::State FSMState() const override { return m_state; }
+  Gaudi::StateMachine::State targetFSMState() const override { return m_targetState; }
+  StatusCode reinitialize() override;
+  StatusCode restart() override;
 
   /** Initialize Service                          */
-  virtual StatusCode sysInitialize();
+  StatusCode sysInitialize() override;
   /** Initialize Service                          */
-  virtual StatusCode sysStart();
+  StatusCode sysStart() override;
   /** Initialize Service                          */
-  virtual StatusCode sysStop();
+  StatusCode sysStop() override;
   /** Finalize Service                           */
-  virtual StatusCode sysFinalize();
+  StatusCode sysFinalize() override;
   /// Re-initialize the Service
-  virtual StatusCode sysReinitialize();
+  StatusCode sysReinitialize() override;
   /// Re-initialize the Service
-  virtual StatusCode sysRestart();
+  StatusCode sysRestart() override;
 
   // Default implementations for ISetProperty
-  virtual StatusCode setProperty(const Property& p);
-  virtual StatusCode setProperty( const std::string& s );
-  virtual StatusCode setProperty( const std::string& n, const std::string& v);
-  virtual StatusCode getProperty(Property* p) const;
-  virtual const Property& getProperty( const std::string& name) const;
-  virtual StatusCode getProperty( const std::string& n, std::string& v ) const;
-  virtual const std::vector<Property*>& getProperties( ) const;
-  virtual bool hasProperty(const std::string& name) const;
+  StatusCode setProperty(const Property& p) override;
+  StatusCode setProperty( const std::string& s ) override;
+  StatusCode setProperty( const std::string& n, const std::string& v) override;
+  StatusCode getProperty(Property* p) const override;
+  const Property& getProperty( const std::string& name) const override;
+  StatusCode getProperty( const std::string& n, std::string& v ) const override;
+  const std::vector<Property*>& getProperties( ) const override;
+  bool hasProperty(const std::string& name) const override;
 
   /** set the property form the value
    *
@@ -125,12 +125,12 @@ public:
   StatusCode setProperty
   ( const std::string& name  ,
     const TYPE&        value )
-  { return Gaudi::Utils::setProperty ( m_propertyMgr , name , value ) ; }
+  { return Gaudi::Utils::setProperty ( m_propertyMgr.get() , name , value ) ; }
 
   /** Standard Constructor                       */
-  Service( const std::string& name, ISvcLocator* svcloc);
+  Service( std::string name, ISvcLocator* svcloc);
   /** Retrieve pointer to service locator        */
-  SmartIF<ISvcLocator>& serviceLocator() const;
+  SmartIF<ISvcLocator>& serviceLocator() const override;
 
   /** Method for setting declared properties to the values
       specified for the job.
@@ -151,7 +151,7 @@ public:
       return StatusCode::SUCCESS;
     }
     // else
-    psvc = 0;
+    psvc = nullptr;
     return StatusCode::FAILURE;
   }
 
@@ -167,7 +167,7 @@ public:
       return StatusCode::SUCCESS;
     }
     // else
-    psvc = 0;
+    psvc = nullptr;
     return StatusCode::FAILURE;
   }
 
@@ -239,13 +239,13 @@ public:
 
 protected:
   /** Standard Destructor                        */
-  virtual ~Service();
+  ~Service() override = default;
   /** Service output level                       */
-  IntegerProperty m_outputLevel;
+  IntegerProperty m_outputLevel = MSG::NIL;
   /** Service state                              */
-  Gaudi::StateMachine::State    m_state;
+  Gaudi::StateMachine::State    m_state = Gaudi::StateMachine::OFFLINE;
   /** Service state                              */
-  Gaudi::StateMachine::State    m_targetState;
+  Gaudi::StateMachine::State    m_targetState = Gaudi::StateMachine::OFFLINE;
 
   /// get the @c Service's output level
   int  outputLevel() const { return m_outputLevel.value(); }
@@ -257,9 +257,9 @@ private:
   mutable SmartIF<ISvcLocator> m_svcLocator;
   SmartIF<ISvcManager>  m_svcManager;
   /** Property Manager                           */
-  PropertyMgr*  m_propertyMgr;
+  std::unique_ptr<PropertyMgr>  m_propertyMgr;
 
-  void setServiceManager(ISvcManager* ism);
+  void setServiceManager(ISvcManager* ism) override;
 
   /** Auditor Service                            */
   mutable SmartIF<IAuditorSvc>  m_pAuditorSvc;
@@ -281,8 +281,8 @@ class SvcFactory {
 public:
 #ifndef __REFLEX__
   template <typename S, typename... Args>
-  static typename S::ReturnType create(Args... args) {
-    return new T(args...);
+  static typename S::ReturnType create(Args&&... args) {
+    return new T(std::forward<Args>(args)...);
   }
 #endif
 };

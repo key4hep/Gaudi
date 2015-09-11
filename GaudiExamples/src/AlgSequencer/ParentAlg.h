@@ -1,4 +1,3 @@
-// $Id: ParentAlg.h,v 1.2 2002/09/27 16:37:52 mato Exp $
 #ifndef GAUDIEXAMPLE_PARENTALG_H
 #define GAUDIEXAMPLE_PARENTALG_H 1
 

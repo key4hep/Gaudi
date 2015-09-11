@@ -1,6 +1,3 @@
-// $Id: IExceptionSvc.h,v 1.3 2007/05/24 14:39:11 hmd Exp $
-// ============================================================================
-// CVS tag $Name:  $, version $Revision: 1.3 $
 // ============================================================================
 #ifndef GAUDIKERNEL_IEXCEPTIONSVC_H
 #define GAUDIKERNEL_IEXCEPTIONSVC_H
@@ -45,10 +42,9 @@ public:
     const StatusCode&      s ) const = 0 ; ///< Handle errors
 protected :
   // virtual and protected destructor
-  virtual ~IExceptionSvc() ; ///< virtual and protected destructor
+  ~IExceptionSvc() override = default; ///< virtual and protected destructor
 } ;
 // ============================================================================
-
 
 // ============================================================================
 #endif // GAUDIKERNEL_IEXCEPTIONSVC_H

@@ -15,7 +15,6 @@ SysProcStat::SysProcStat() {
 	update();
 }
 
-SysProcStat::~SysProcStat() { }
 
 /*
  * Update system performance values from /proc/self/stat virtaul file.
@@ -41,11 +40,10 @@ int SysProcStat::update() {
 			&nswap, &cnswap, &exit_signal, &processor);
 	fclose(file);
 
-	if (par != 39)
-		return -1;
+	if (par != 39) return -1;
 
     struct timeval tv;
-    gettimeofday(&tv, NULL);
+    gettimeofday(&tv, nullptr);
     time = tv.tv_sec * 1000 + tv.tv_usec / 1000;
 
 	return pid;

@@ -1,4 +1,3 @@
-// $Id: IAlgorithm.h,v 1.12 2008/10/17 13:06:04 marcocle Exp $
 #ifndef GAUDIKERNEL_IALGORITHM_H
 #define GAUDIKERNEL_IALGORITHM_H
 

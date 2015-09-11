@@ -24,38 +24,65 @@ namespace Gaudi
      */
     namespace RegEx
     {
+      class matchList {
+          std::vector<boost::regex> m_regs;
+      public:
+          template <typename C> matchList(const C& c) {
+            m_regs.reserve(c.size());
+            std::transform( std::begin(c), std::end(c),
+                            std::back_inserter(m_regs),
+                    [](typename C::const_reference i) { return boost::regex{i}; } );
+          }
+
+          bool Or(const std::string& test) const {
+             return std::any_of( std::begin(m_regs), std::end(m_regs),
+                                 [&](const boost::regex& r) { 
+                     return  boost::regex_match(test, r);
+             });
+          }
+          bool And(const std::string& test) const {
+             return std::all_of( std::begin(m_regs), std::end(m_regs),
+                                 [&](const boost::regex& r) { 
+                     return  boost::regex_match(test, r);
+             });
+          }
+
+      };
+
       /** return true if the string is in any of the regex's
        *  @param  std::string test [IN]:  string to match
        *  @param  container<std::string> regexps  [IN]:  container of regex strings
        *         can be any container with a const_iterator, begin and end
+       *
+       *  If you need to do this more than once, please first create a matchList
+       *  object, and then invoke its Or method.
        */
       template <typename T> bool matchOr(const std::string & test, const T & regexps)
       {
         //compares the string in test, to the regexps in a container
-        for (typename T::const_iterator i = regexps.begin();
-             i != regexps.end(); ++i)
-        {
-          const boost::regex pattern(*i);
-          if (boost::regex_match(test, pattern)) return true;
-        }
-        return false;
+        //
+        return std::any_of( std::begin(regexps), std::end(regexps),
+                            [&](typename T::const_reference i) {
+                return  boost::regex_match(test, boost::regex{i});
+        });
       }
 
       /** return true if the string is in all of the regex's
        *  @param  std::string test [IN]:  string to match
        *  @param  container<std::string> regexps  [IN]:  container of regex strings
        *        can be any container with a const_iterator, begin and end
+       *
+       *  If you need to do this more than once, please first create a matchList
+       *  object, and then invoke its And method.
        */
       template <typename T> bool matchAnd(const std::string & test, const T & regexps)
       {
         //compares the string in test, to the regexps in a container
-        for (typename T::const_iterator i = regexps.begin();
-             i != regexps.end(); ++i)
-        {
-          const boost::regex pattern(*i);
-          if (!boost::regex_match(test, pattern)) return false;
-        }
-        return true;
+        //
+        return std::all_of( std::begin(regexps), std::end(regexps),
+                            [&](typename T::const_reference i) {
+                return  boost::regex_match(test, boost::regex{i});
+        });
       }
     }
   }

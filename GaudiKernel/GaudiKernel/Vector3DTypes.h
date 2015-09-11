@@ -4,9 +4,6 @@
  *
  *  3D vector typedefs
  *
- *  CVS Log :-
- *  $Id: Vector3DTypes.h,v 1.1 2006/12/08 15:00:03 hmd Exp $
- *
  *  @author Juan PALACIOS
  *  @date   2005-11-21
  */

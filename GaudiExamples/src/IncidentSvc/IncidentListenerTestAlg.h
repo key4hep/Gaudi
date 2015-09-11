@@ -13,7 +13,7 @@ class IncidentListenerTestAlg: public GaudiAlgorithm
 public:
 	IncidentListenerTestAlg(const std::string& name ,
                           ISvcLocator*       pSvcLocator );
-	virtual ~IncidentListenerTestAlg();
+	~IncidentListenerTestAlg() override = default;
 
 	StatusCode initialize();
 	StatusCode execute();
@@ -23,8 +23,8 @@ public:
 
 private:
   static std::string s_incidentType;
-  IIncidentSvc *m_incSvc;
-  std::auto_ptr<IncidentListenerTest> m_listener[6];
+  IIncidentSvc *m_incSvc = nullptr;
+  std::array<std::unique_ptr<IncidentListenerTest>,6> m_listener;
 };
 
 #endif /*GAUDIEXAMPLES_INCIDENTLISTENERTESTALG_H_*/

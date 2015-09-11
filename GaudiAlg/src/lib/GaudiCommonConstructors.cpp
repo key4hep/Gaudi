@@ -1,4 +1,3 @@
-// $Id: GaudiCommonConstructors.cpp,v 1.1 2005/09/23 16:14:20 hmd Exp $
 
 // ============================================================================
 /* @file GaudiCommonConstructors.cpp
@@ -26,7 +25,7 @@
 // should NEVER be used...
 //=============================================================================
 template <>
-GaudiCommon<AlgTool>::GaudiCommon( const std::string & /* name */,
+GaudiCommon<AlgTool>::GaudiCommon( const std::string&  /* name */,
                                    ISvcLocator * /* pSvcLocator */ )
   : AlgTool ( "ERROR", "ERROR", 0 )
 {
@@ -54,7 +53,7 @@ GaudiCommon<Algorithm>::GaudiCommon( const std::string& /* type */  ,
 // Standard algorithm constructor, initializes variables
 //=============================================================================
 template <>
-GaudiCommon<Algorithm>::GaudiCommon( const std::string & name,
+GaudiCommon<Algorithm>::GaudiCommon( const std::string& name,
                                      ISvcLocator * pSvcLocator )
   : Algorithm ( name, pSvcLocator )
 {
@@ -78,6 +77,3 @@ GaudiCommon<AlgTool>::GaudiCommon( const std::string& type   ,
 // ============================================================================
 // The END
 // ============================================================================
-
-
-

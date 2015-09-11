@@ -1,5 +1,3 @@
-// $Id: IndefiniteIntegral.h,v 1.1 2003/11/19 17:09:39 mato Exp $
-// ============================================================================
 #ifndef GAUDIMATH_INDEFINITEINTEGRAL_H
 #define GAUDIMATH_INDEFINITEINTEGRAL_H 1
 // ============================================================================
@@ -8,7 +6,6 @@
 #include "GaudiKernel/Kernel.h"
 
 /** @class IndefiniteIntegral IndefiniteIntegral.h GaudiMath/IndefiniteIntegral.h
- *
  *
  *  @author Ivan BELYAEV
  *  @date   2003-08-31
@@ -19,10 +16,6 @@ public:
   IndefiniteIntegral( );
 
   virtual ~IndefiniteIntegral( ); ///< Destructor
-
-protected:
-
-private:
 
 };
 #endif // GAUDIMATH_INDEFINITEINTEGRAL_H

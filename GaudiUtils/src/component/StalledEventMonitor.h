@@ -32,23 +32,23 @@ public:
   StalledEventMonitor(const std::string& name, ISvcLocator* svcLoc);
 
   /// Destructor
-  virtual ~StalledEventMonitor();
+  ~StalledEventMonitor() override = default;
 
   /// Initialization of the service.
   /// Prepare the watchdog thread and configures it.
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
 
   /// Start the watchdog thread (before entering the event loop).
-  virtual StatusCode start();
+  StatusCode start() override;
 
   /// Notify the watchdog thread for a new event.
-  virtual void handle(const Incident&  /* incident */);
+  void handle(const Incident&  /* incident */) override;
 
   /// Stop the watchdog thread (after the event loop).
-  virtual StatusCode stop();
+  StatusCode stop() override;
 
   /// Finalization of the service.
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
 
 private:
   /// Number of seconds allowed to process a single event.
@@ -61,7 +61,7 @@ private:
   bool m_stackTrace;
 
   /// Pointer to the watchdog thread that checks for the event timeout.
-  std::auto_ptr<WatchdogThread> m_watchdog;
+  std::unique_ptr<WatchdogThread> m_watchdog;
 
   /// Pointer to the incident service.
   SmartIF<IIncidentSvc> m_incidentSvc;

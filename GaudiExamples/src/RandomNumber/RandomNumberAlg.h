@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiExamples/src/RandomNumber/RandomNumberAlg.h,v 1.3 2007/09/28 11:48:17 marcocle Exp $	//
 #ifndef GAUDIEXAMPLES_RANDOMNUMBERALG_H
 #define GAUDIEXAMPLES_RANDOMNUMBERALG_H
 

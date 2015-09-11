@@ -1,6 +1,3 @@
-// $Id: GslErrorHandlers.h,v 1.2 2007/05/24 14:39:10 hmd Exp $
-// ============================================================================
-// CVS tag $Name:  $
 // ============================================================================
 #ifndef GAUDIGSL_GSLERRORHANDLERS_H
 #define GAUDIGSL_GSLERRORHANDLERS_H 1

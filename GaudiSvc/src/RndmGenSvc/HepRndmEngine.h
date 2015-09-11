@@ -33,28 +33,18 @@ namespace HepRndm  {
     /// Standard Constructor
     Engine(const std::string& name, ISvcLocator* loc);
     /// Standard Destructor
-    virtual ~Engine();
+    ~Engine() override = default;
     /// Initialize the Engine
-    virtual StatusCode initialize();
+    StatusCode initialize() override;
     /// Finalize the Engine
-    virtual StatusCode finalize();
-    /// Create/Initialize new HepEngine....
-    virtual StatusCode initializeEngine();
-    /// Single shot
-    //// This was declared "virtual double rndm()" which causes
-    //// compiler warnings since the signature if different than
-    //// that for RndmEngine::rndm(). I've assumed that the difference
-    //// is an error. If it is in fact a deliberate addition of a
-    //// new function, remove the "const" below and uncomment the
-    //// subsequent lines.
-    virtual double rndm() const;
-////    /// Single shot returning single random number
-////    /// Repeating this here avoids compiler warnings. See ARM Page 210.
-////     virtual double rndm() const { return BaseEngine::rndm( ); }
+    StatusCode finalize() override;
     /// Set seeds
     StatusCode setSeeds(const std::vector<long>& seed);
     /// Retrieve seeds
     StatusCode seeds(std::vector<long>& seed)   const;
+  private:
+    /// Create new HepEngine....
+    std::unique_ptr<CLHEP::HepRandomEngine> createEngine() override;
   };
 }
 

@@ -1,6 +1,3 @@
-// $Id: IAlgContextSvc.h,v 1.2 2007/05/24 13:48:50 hmd Exp $
-// ============================================================================
-// CVS tag $Name:  $, version $Revision: 1.2 $
 // ============================================================================
 #ifndef GAUDIKERNEL_IALGCONTEXTSVC_H
 #define GAUDIKERNEL_IALGCONTEXTSVC_H
@@ -43,7 +40,7 @@ public:
   virtual const Algorithms& algorithms  () const = 0 ;
 protected:
   /// virtual and protected desctructor
-  virtual ~IAlgContextSvc() ;
+  ~IAlgContextSvc() override = default;
 } ;
 // ============================================================================
 namespace Gaudi
@@ -81,7 +78,7 @@ namespace Gaudi
      *  @author Vanya BELYAEV ibelyaev@phys.syr.edu
      *  @date   2007-03-07
      */
-    class GAUDI_API AlgContext
+    class GAUDI_API AlgContext final
     {
     public:
       /** constructor from the service and the algorithm
@@ -112,11 +109,11 @@ namespace Gaudi
       ~AlgContext() ;
     private:
       // default constructor is disabled
-      AlgContext()                                     ; ///< no default constructor!
+      AlgContext() = delete;
       // copy constructor is disabled
-      AlgContext           ( const AlgContext& right ) ; ///< no copy!
+      AlgContext ( const AlgContext& right ) = delete;
       // assignement operator is disabled
-      AlgContext& operator=( const AlgContext& right ) ; ///< no assignement!
+      AlgContext& operator=( const AlgContext& right ) = delete;
     private:
       IAlgContextSvc* m_svc ;
       IAlgorithm*     m_alg ;
@@ -128,5 +125,3 @@ namespace Gaudi
 // ============================================================================
 #endif // GAUDIKERNEL_IALGCONTEXTSVC_H
 // ============================================================================
-
-

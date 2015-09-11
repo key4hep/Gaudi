@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/IIncidentSvc.h,v 1.5 2007/05/24 17:04:41 marcocle Exp $
 #ifndef INTERFACES_IINCIDENTSVC_H
 #define INTERFACES_IINCIDENTSVC_H
 
@@ -32,8 +31,8 @@ public:
   virtual void addListener(IIncidentListener* lis,
                            const std::string& type = "",
                            long priority = 0,
-			                     bool rethrow = false,
-			                     bool singleShot = false ) = 0;
+			               bool rethrow = false,
+			               bool singleShot = false ) = 0;
   /** Remove listener
       @param lis Listener address
       @param type Incident type
@@ -41,8 +40,9 @@ public:
   virtual void removeListener(IIncidentListener* lis,
                               const std::string& type = "" ) = 0;
 
+  //@TODO: return vector by value instead...
   virtual void getListeners(std::vector<IIncidentListener*>& lis,
-			    const std::string& type = "") const = 0;
+			                const std::string& type = "") const = 0;
 
   /** Fire an Incident
       @param Incident being fired

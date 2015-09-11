@@ -1,6 +1,3 @@
-// $Id: VectorMap.h,v 1.11 2007/05/24 14:39:11 hmd Exp $
-// ============================================================================
-// CVS tag $Name:  $, version $Revision: 1.11 $
 // ============================================================================
 #ifndef GAUDIKERNEL_VECTORMAP_H
 #define GAUDIKERNEL_VECTORMAP_H 1

@@ -2,7 +2,6 @@
 #include <iostream>
 #include <string>
 #include <fstream>
-#include <sstream>
 
 
 int main ( int argc, char** argv ) {
@@ -22,18 +21,19 @@ int main ( int argc, char** argv ) {
 
   std::cout << "Running now: " << argv[1] << std::endl;
   std::ifstream file(argv[1]);
-  std::stringstream str;
-  if( file ) {
-    char ch;
-    while( file.get(ch) ) str.put(ch);
-    PyRun_SimpleString( const_cast<char*>(str.str().c_str()) );
+  if ( file ) {
+    std::string buffer;
+    file.seekg(0, std::ios::end);
+    buffer.reserve(file.tellg());
+    file.seekg(0, std::ios::beg);
+    buffer.assign((std::istreambuf_iterator<char>{file}),
+                   std::istreambuf_iterator<char>{});
     file.close();
-  }
-  else {
+    PyRun_SimpleString( buffer.c_str() );
+  } else {
     std::cout << "ERROR: could not open file " << argv[1] << std::endl;
   }
   std::cout << "Exiting now " << std::endl;
 
   return 0 ;
 }
-

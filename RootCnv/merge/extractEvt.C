@@ -1,4 +1,3 @@
-// $Id:
 //====================================================================
 //
 //  Author     : M.Frank  CERN/LHCb
@@ -18,6 +17,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <memory>
 
 /*
  *   Gaudi namespace declaration
@@ -27,7 +27,7 @@ namespace Gaudi {
   /** @struct RootRef RootRefs.h RootCnv/RootRefs.h
    *
    * Persistent reference object.
-   * 
+   *
    * @author  M.Frank
    * @version 1.0
    */
@@ -37,7 +37,7 @@ namespace Gaudi {
     /// Standard constructor
     RootRef()     {  this->reset(); }
     /// Copy constructor
-    RootRef(const RootRef& c) 
+    RootRef(const RootRef& c)
       : dbase(c.dbase),container(c.container),link(c.link),clid(c.clid),svc(c.svc),entry(c.entry)
     {
     }
@@ -66,7 +66,7 @@ namespace Gaudi {
    *
    * Persistent reference object containing all leafs and links
    * corresponding to a Gaudi DataObject.
-   * 
+   *
    * @author  M.Frank
    * @version 1.0
    */
@@ -75,17 +75,17 @@ namespace Gaudi {
     std::vector<int>       links;
     /// The references corresponding to the next layer of items in the data store
     std::vector<RootRef>   refs;
-    
+
     /// Default constructor
-    RootObjectRefs() {}
+    RootObjectRefs() = default;
     /// Copy constructor
     RootObjectRefs(const RootObjectRefs& r) : links(r.links), refs(r.refs) {}
     /// Default destructor
-    ~RootObjectRefs() {}
+    ~RootObjectRefs() = default;
     /// Assignment operator
     RootObjectRefs& operator=(const RootObjectRefs& r) {
       links = r.links;
-      refs = r.refs; 
+      refs = r.refs;
       return *this;
     }
   };
@@ -100,40 +100,40 @@ namespace Gaudi {
   struct RootNTupleDescriptor {
     /// Description string
     std::string   description;
-    /// Optional description 
+    /// Optional description
     std::string   optional;
     /// Identifier of description
     std::string   container;
     /// Class ID of the described object
     unsigned long clid;
     /// Standard constructor
-    RootNTupleDescriptor() {}
+    RootNTupleDescriptor() = default;
     /// Standard destructor
-    virtual ~RootNTupleDescriptor() {}
+    virtual ~RootNTupleDescriptor() = default;
   };
 
   typedef int ExtractStatus;
-  enum ExtractStatusEnum { 
-    EXTRACT_ERROR=0, 
-    EXTRACT_SUCCESS=1 
+  enum ExtractStatusEnum {
+    EXTRACT_ERROR=0,
+    EXTRACT_SUCCESS=1
   };
 
   struct RootEventExtractor {
   protected:
-    TFile* m_in;
-    TTree* m_evt_in;
-    TTree* m_ref_in;
+    std::unique_ptr<TFile> m_in;
+    TTree* m_evt_in = nullptr;
+    TTree* m_ref_in = nullptr;
 
-    TFile* m_out;
-    TTree* m_evt_out;
-    TTree* m_ref_out;
+    TFile* m_out = nullptr;
+    TTree* m_evt_out = nullptr;
+    TTree* m_ref_out = nullptr;
 
-    int m_localDB_id;
+    int m_localDB_id = 0;
     std::vector<int> m_eventList;
 
   public:
     /// Default constructor
-    RootEventExtractor();
+    RootEventExtractor() = default;
 
     /// Initializing constructor directly opening the input file and the output file
     RootEventExtractor(const char* input, const char* output, const char* output_option);
@@ -159,7 +159,7 @@ namespace Gaudi {
     /// Add a given entry number to the list of events to be selected to the output file
     ExtractStatus select(int evt_num);
 
-    /// Extract all previously selected events from the input file and write it to the output 
+    /// Extract all previously selected events from the input file and write it to the output
     ExtractStatus extract();
   };
 
@@ -171,15 +171,8 @@ namespace Gaudi {
 using namespace Gaudi;
 using namespace std;
 
-/// Default constructor
-RootEventExtractor::RootEventExtractor()     
-  : m_in(0), m_evt_in(0), m_ref_in(0), m_out(0), m_evt_out(0), m_ref_out(0), m_localDB_id(0)
-{
-}
-
 /// Initializing constructor directly opening the input file and the output file
 RootEventExtractor::RootEventExtractor(const char* input, const char* output, const char* output_option)
-  : m_in(0), m_evt_in(0), m_ref_in(0), m_out(0), m_evt_out(0), m_ref_out(0), m_localDB_id(0)
 {
   if ( EXTRACT_SUCCESS != openInput(input) ) {
     throw std::runtime_error("Failed to open input file:"+std::string(input));
@@ -197,7 +190,7 @@ RootEventExtractor::~RootEventExtractor()    {
 
 /// Clear the list of event numbers to be extracted from the file.
 ExtractStatus RootEventExtractor::cancel() {
-  m_eventList.clear(); 
+  m_eventList.clear();
   ::printf("+++ Event list cleared.\n");
   return EXTRACT_SUCCESS;
 }
@@ -211,7 +204,7 @@ ExtractStatus RootEventExtractor::select(int evt_num) {
 /// Close input file
 ExtractStatus RootEventExtractor::openInput(const char* name) {
   if ( m_in ) closeInput();
-  m_in = TFile::Open(name);
+  m_in.reset( TFile::Open(name) );
   if ( m_in && !m_in->IsZombie() ) {
     m_evt_in  = (TTree*)m_in->Get("Event");
     m_ref_in  = (TTree*)m_in->Get("Refs");
@@ -224,7 +217,7 @@ ExtractStatus RootEventExtractor::openInput(const char* name) {
 ExtractStatus RootEventExtractor::openOutput(const char* name, const char* option) {
   if ( m_out ) closeOutput();
   m_out = TFile::Open(name,option);
-  m_evt_out = m_ref_out = 0;
+  m_evt_out = m_ref_out = nullptr;
   return EXTRACT_SUCCESS;
 }
 
@@ -233,11 +226,10 @@ ExtractStatus RootEventExtractor::closeInput() {
   if ( m_in )   {
     ::printf("+++ Closing input  file:%s\n",m_in->GetName());
     m_in->Close();
-    delete m_in;
   }
-  m_in = 0;
-  m_evt_in = 0;
-  m_ref_in = 0;
+  m_in.reset();
+  m_evt_in = nullptr;
+  m_ref_in = nullptr;
   return EXTRACT_SUCCESS;
 }
 
@@ -250,13 +242,13 @@ ExtractStatus RootEventExtractor::closeOutput() {
     m_out->Close();
     delete m_out;
   }
-  m_out     = 0;
-  m_evt_out = 0;
-  m_ref_out = 0;
+  m_out     = nullptr;
+  m_evt_out = nullptr;
+  m_ref_out = nullptr;
   return EXTRACT_SUCCESS;
 }
 
-/// Extract all previously selected events from the input file and write it to the output 
+/// Extract all previously selected events from the input file and write it to the output
 ExtractStatus RootEventExtractor::extract()   {
   char text[1024];
   bool new_output = false;
@@ -269,11 +261,11 @@ ExtractStatus RootEventExtractor::extract()   {
   }
   else {
     m_evt_out = (TTree*)m_out->Get("Event");
-    if ( 0 == m_evt_out )  {
+    if ( !m_evt_out )  {
       m_evt_out  = m_evt_in->CloneTree(0);
     }
     m_ref_out = (TTree*)m_out->Get("Refs");
-    if ( 0 == m_ref_out )  {
+    if ( !m_ref_out )  {
       m_ref_out = m_ref_in->CloneTree(0);
       new_output = true;
     }
@@ -285,7 +277,7 @@ ExtractStatus RootEventExtractor::extract()   {
     br_in->SetAddress(text);
     br_out = m_ref_out->GetBranch("Databases");
     br_out->SetAddress(text);
-    for( int i=0; i<br_in->GetEntries(); ++i ) { 
+    for( int i=0; i<br_in->GetEntries(); ++i ) {
       br_in->GetEntry(i);
       br_out->Fill();
       if ( m_localDB_id<0 && strcmp(text,"<localDB>") == 0 ) {
@@ -297,7 +289,7 @@ ExtractStatus RootEventExtractor::extract()   {
     br_in->SetAddress(text);
     br_out = m_ref_out->GetBranch("Containers");
     br_out->SetAddress(text);
-    for( int i=0; i<br_in->GetEntries(); ++i ) { 
+    for( int i=0; i<br_in->GetEntries(); ++i ) {
       br_in->GetEntry(i);
       br_out->Fill();
     }
@@ -306,7 +298,7 @@ ExtractStatus RootEventExtractor::extract()   {
     br_in->SetAddress(text);
     br_out = m_ref_out->GetBranch("Links");
     br_out->SetAddress(text);
-    for( int i=0; i<br_in->GetEntries(); ++i ) { 
+    for( int i=0; i<br_in->GetEntries(); ++i ) {
       br_in->GetEntry(i);
       br_out->Fill();
     }
@@ -315,10 +307,10 @@ ExtractStatus RootEventExtractor::extract()   {
     br_in->SetAddress(text);
     br_out = m_ref_out->GetBranch("Params");
     br_out->SetAddress(text);
-    for( int i=0; i<br_in->GetEntries(); ++i ) { 
+    for( int i=0; i<br_in->GetEntries(); ++i ) {
       br_in->GetEntry(i);
       if ( strncmp(text,"PFN=",4) == 0 ) {  // Update PFN entry
-	::snprintf(text,sizeof(text),"PFN=%s",br_out->GetFile()->GetName());    
+	::snprintf(text,sizeof(text),"PFN=%s",br_out->GetFile()->GetName());
 	::printf("+++ PFN of the created output file is:%s\n",text);
       }
       else if ( strncmp(text,"FID=",4) == 0 ) {    // Create new FID for new file
@@ -344,13 +336,13 @@ ExtractStatus RootEventExtractor::extract()   {
     TString     name = br_in->GetName();
     TClass*     br_class = gROOT->GetClass(br_in->GetClassName(),kTRUE);
     br_out =    m_evt_out->GetBranch(name);
-    if ( 0 == br_out ) {
+    if ( !br_out ) {
       ::printf("+++ ERROR: Input and output event trees are incompatible. Selection not possible.\n");
       return EXTRACT_ERROR;
     }
     int         out_num_entries = br_out->GetEntries();
-    for(std::vector<int>::const_iterator i=m_eventList.begin(); i != m_eventList.end(); ++i) {
-      int   num_evt = *i;
+    for(const auto& i : m_eventList) {
+      int   num_evt = i;
       const char* br_type = "DataObject";
       void* pObject = br_class->New();
       br_in->SetAddress(&pObject);
@@ -362,8 +354,8 @@ ExtractStatus RootEventExtractor::extract()   {
       }
       if ( name.EndsWith("_R.") )   {
 	RootObjectRefs *refs=(RootObjectRefs*)pObject;
-	for(std::vector<RootRef>::iterator ir=refs->refs.begin(); ir!= refs->refs.end(); ++ir)     {
-	  RootRef& r = *ir;
+	for(auto& ir : refs->refs)     {
+	  RootRef& r = ir;
 	  if ( r.dbase == m_localDB_id ) r.entry = out_num_entries;
 	}
 	br_type = "*Index*";
@@ -372,7 +364,7 @@ ExtractStatus RootEventExtractor::extract()   {
       if ( num_wr < 0 ) {
 	::printf("+++ ERROR: Failed to write data to extraction branch:%s "
 		 "read:%d wrote:%d bytes [Length-mismatch]\n",name.Data(),num_rd,num_wr);
-	return EXTRACT_ERROR;	
+	return EXTRACT_ERROR;
       }
       ::printf("+++ Copied %8d bytes to %-10s branch %s(%d)\n",num_rd,br_type,name.Data(),out_num_entries);
       ++out_num_entries;

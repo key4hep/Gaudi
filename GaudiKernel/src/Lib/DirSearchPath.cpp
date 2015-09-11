@@ -35,7 +35,7 @@ DirSearchPath::DirSearchPath(const std::string& stringifiedPath, const char* sep
 
   //add names to dir container, filtering dir names to remove invalid ones
   //notice how we iterate over all tokens even if there is an illegal one
-  Tokenizer::iterator it = tok.begin();
+  auto it = tok.begin();
   while(it != tok.end()) {
     try {
       path p(*(it++));
@@ -74,8 +74,8 @@ bool DirSearchPath::find(const string& fileName, string& fullFileName) const {
 //accessors
 bool DirSearchPath::find(const path& file, path& fileFound) const {
   bool rc(false);
-  for (std::list<path>::const_iterator iDir=m_dirs.begin(); iDir!=m_dirs.end(); ++iDir) {
-    path full(*iDir / file);
+  for (const auto& iDir : m_dirs ) {
+    path full{iDir / file};
     if (exists(full)) {
       fileFound = full;
       rc = true;
@@ -89,11 +89,9 @@ bool DirSearchPath::find(const path& file, path& fileFound) const {
 std::list<DirSearchPath::path>
 DirSearchPath::find_all(const path& file) const {
   std::list<path> found;
-  for (std::list<path>::const_iterator iDir=m_dirs.begin(); iDir!=m_dirs.end(); ++iDir) {
-    path full(*iDir / file);
-    if (exists(full)) {
-      found.push_back(full);
-    }
+  for (const auto& iDir : m_dirs ) {
+    path full{iDir / file};
+    if (exists(full)) found.push_back(full);
   }
   return found;
 }

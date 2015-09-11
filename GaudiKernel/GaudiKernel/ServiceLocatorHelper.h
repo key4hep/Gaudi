@@ -13,7 +13,6 @@ class MsgStream;
 /** @class ServiceLocatorHelper
  *  @brief an helper to share the implementation of service() among the
  *         various kernel base classes
- * $Id:
  */
 class GAUDI_API ServiceLocatorHelper {
 public:

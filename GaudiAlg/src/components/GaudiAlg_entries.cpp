@@ -7,5 +7,4 @@
 DECLARE_COMPONENT( EventCounter   )
 DECLARE_COMPONENT( Prescaler      )
 DECLARE_COMPONENT( Sequencer      )
-DECLARE_COMPONENT( GaudiAlgorithm )
 DECLARE_COMPONENT( GaudiSequencer )

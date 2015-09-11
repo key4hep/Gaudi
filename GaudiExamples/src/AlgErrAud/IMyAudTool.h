@@ -1,4 +1,3 @@
-// $Id: IMyAudTool.h,v 1.1 2007/01/22 16:06:11 hmd Exp $
 #ifndef GAUDIEXAMPLE_IMYAUDTOOL_H
 #define GAUDIEXAMPLE_IMYAUDTOOL_H 1
 

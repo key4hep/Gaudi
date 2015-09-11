@@ -1,4 +1,3 @@
-//$Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiPython/src/Test/WriteAlg.h,v 1.1 2001/10/15 13:11:26 mato Exp $	//
 #ifndef GAUDIEXAMPLE_WRITEALG_H
 #define GAUDIEXAMPLE_WRITEALG_H
 

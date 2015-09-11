@@ -1,4 +1,3 @@
-// $Id: GaudiMain.cpp,v 1.4 2006/09/13 15:25:15 hmd Exp $
 //------------------------------------------------------------------------------
 //
 //  Description: Main Program for Gaudi applications
@@ -27,7 +26,7 @@ extern "C" GAUDI_API int GaudiMain(int argc,char **argv) {
 
   propMgr->setProperty( "JobOptionsPath", opts ).ignore();
 
-  if( opts.substr( opts.length() - 3, 3 ) == ".py" ) {
+  if( opts.compare( opts.length() - 3, 3, ".py" ) == 0 ) {
     propMgr->setProperty( "EvtSel",         "NONE" ).ignore();
     propMgr->setProperty( "JobOptionsType", "NONE" ).ignore();
     propMgr->setProperty( "DLLs",           "['GaudiPython']" ).ignore();

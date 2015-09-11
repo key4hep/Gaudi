@@ -14,10 +14,6 @@ AlgErrorAuditor::AlgErrorAuditor(const std::string& name, ISvcLocator* pSvcLocat
 		   "Throw GaudiException upon illegal Algorithm return code");
 }
 
-AlgErrorAuditor::~AlgErrorAuditor(){
-}
-
-
 void
 AlgErrorAuditor:: beforeExecute(INamedInterface* ){
   m_error = msgSvc()->messageCount(MSG::ERROR);
@@ -87,15 +83,14 @@ StatusCode
 AlgErrorAuditor::finalize() {
 
 
-  std::map<std::string,int>::const_iterator itr;
   if (m_algMap[0].size() != 0) {
     MsgStream log(msgSvc(), name());
     log << MSG::INFO << "Found " << m_algMap[0].size()
 	<< " instances where an Algorithm::execute() produced an ERROR "
 	<< "but returned a SUCCESS:" << std::endl;
 
-    for (itr = m_algMap[0].begin(); itr != m_algMap[0].end(); ++itr) {
-      log << itr->first << ": " << itr->second << std::endl;
+    for (const auto&  i : m_algMap[0] ) {
+      log << i.first << ": " << i.second << std::endl;
     }
 
     log << endmsg;
@@ -107,25 +102,21 @@ AlgErrorAuditor::finalize() {
 	<< " instances where an Algorithm::execute() produced a FATAL "
 	<< "but returned a SUCCESS:" << std::endl;
 
-    for (itr = m_algMap[1].begin(); itr != m_algMap[1].end(); ++itr) {
-      log << itr->first << ": " << itr->second << std::endl;
+    for (const auto& i : m_algMap[1]) {
+      log << i.first << ": " << i.second << std::endl;
     }
 
     log << endmsg;
   }
-
-
   return StatusCode::SUCCESS;
-
 }
 
 void
 AlgErrorAuditor::incrMap(const std::string& alg, int level) {
-  std::map<std::string, int>::iterator itr;
-  if ( (itr=m_algMap[level].find(alg)) != m_algMap[level].end()) {
-    itr->second++;
+  auto i=m_algMap[level].find(alg);
+  if ( i != m_algMap[level].end()) {
+    i->second++;
   } else {
-    m_algMap[level].insert( std::pair<std::string,int>(alg,1) );
+    m_algMap[level].emplace( alg,1 );
   }
 }
-

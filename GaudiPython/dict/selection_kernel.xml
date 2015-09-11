@@ -39,7 +39,6 @@
   <class pattern = "SimplePropertyRef<*>"/>
   <class pattern = "BoundedVerifier<*>"/>
   <class pattern = "PropertyVerifier<*>"/>
-  <class name    = "PropertyCallbackFunctor"/>
 
   <class pattern = "GaudiAlg::*"              />
   <class name    = "GaudiAlgorithm"           />
@@ -60,7 +59,6 @@
   <class name    = "Stat"                   />
   <class pattern = "Chrono*"                 />
 
-  <class pattern = "Property*Functor"        />
   <class pattern = "SimpleProperty<*>"       />
   <class pattern = "SimplePropertyRef<*>"    />
   <class pattern = "PropertyWithVerifier<*>" />

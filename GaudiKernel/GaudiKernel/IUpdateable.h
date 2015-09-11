@@ -1,4 +1,3 @@
-// $Header:$
 #ifndef GAUDIKERNEL_IUPDATEABLE_H
 #define GAUDIKERNEL_IUPDATEABLE_H
 
@@ -17,7 +16,7 @@ class GAUDI_API IUpdateable {
 public:
 
   /// Default destructor
-  virtual ~IUpdateable() { }
+  virtual ~IUpdateable() = default;
 
   /** Output serialization to stream buffer. Saves the status of the object.
     * @param   flag    Flag to trigger implementation specific action.
@@ -40,7 +39,7 @@ public:
   DeclareInterfaceID(IUpdateableIF,1,0);
 
   /// Default destructor
-  virtual ~IUpdateableIF() {}
+  ~IUpdateableIF() override = default;
 };
 
 #endif // GAUDIKERNEL_IUPDATEABLE_H

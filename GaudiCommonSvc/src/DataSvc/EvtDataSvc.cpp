@@ -44,7 +44,7 @@ StatusCode EvtDataSvc::reinitialize()    {
 }
 /// Service finalization
 StatusCode EvtDataSvc::finalize()    {
-  m_cnvSvc = 0; // release
+  m_cnvSvc = nullptr; // release
   DataSvc::finalize().ignore();
   return StatusCode::SUCCESS ;
 }
@@ -52,8 +52,4 @@ StatusCode EvtDataSvc::finalize()    {
 /// Standard Constructor
 EvtDataSvc::EvtDataSvc(const std::string& name,ISvcLocator* svc):
   DataSvc(name,svc) {
-}
-
-/// Standard Destructor
-EvtDataSvc::~EvtDataSvc() {
 }

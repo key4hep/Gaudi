@@ -71,7 +71,7 @@ namespace RootHistCnv {
 				TYP minimum, TYP maximum,
 				INTuple* tuple);
 
-  bool parseName(std::string full, std::string &blk, std::string &var);
+  bool parseName(const std::string& full, std::string &blk, std::string &var);
 
 }    // namespace RootHistCnv
 

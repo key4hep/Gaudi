@@ -31,7 +31,7 @@ public:
   virtual void setValidityTill(const Gaudi::Time&) = 0;
 
   /// destructor
-  virtual ~IValidity(){}
+  virtual ~IValidity() = default; 
 
 };
 

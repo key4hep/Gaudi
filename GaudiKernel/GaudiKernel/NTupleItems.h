@@ -1,4 +1,3 @@
-// $Id: NTupleItems.h,v 1.7 2008/10/27 19:22:20 marcocle Exp $
 #ifndef GAUDI_NTUPLESVC_NTUPLEITEMS_H
 #define GAUDI_NTUPLESVC_NTUPLEITEMS_H 1
 
@@ -37,9 +36,8 @@ namespace NTuple    {
   /** Concrete class discribing basic data items in an N tuple.
   */
   template <class TYP> class _DataImp : virtual public _Data<TYP>  {
-  private:
     /// Inhibit Copy Constructor
-    _DataImp(const _DataImp&)    {}
+    _DataImp(const _DataImp&)  = delete;
   protected:
     typedef const std::string& CSTR;
     typedef const std::type_info& CTYPE;
@@ -52,7 +50,7 @@ namespace NTuple    {
     /// Check that values are within a certain range while filling
     std::string           m_index;
     /// Pointer to index item
-    mutable INTupleItem*  m_indexItem;
+    mutable INTupleItem*  m_indexItem = nullptr;
     /// _Column type
     DataTypeInfo::Type    m_type;
     /// Buffer with default value
@@ -65,32 +63,28 @@ namespace NTuple    {
     /// Set type definition to make life more easy easy
     typedef Range<TYP>  ItemRange;
     /// Standard Constructor
-    _DataImp(INTuple* tup,const std::string& name,const std::type_info& info,const std::string& index,long len,TYP low,TYP high,TYP def)
-    : m_length(len), m_tuple(tup), m_name(name), m_index(index),
-      m_def(def), m_range(low, high), m_info(info)
+    _DataImp(INTuple* tup,std::string name,const std::type_info& info,std::string index,long len,TYP low,TYP high,TYP def)
+    : m_length(len), m_tuple(tup), m_name(std::move(name)), m_index(std::move(index)),
+      m_def(std::move(def)), m_range(std::move(low), std::move(high)), m_info(info)
     {
-      m_indexItem = 0;
       m_type = typeid(TYP) == typeid(void*) ? DataTypeInfo::POINTER : DataTypeInfo::ID(info);
       this->m_buffer = new TYP[m_length];
       reset();
     }
     /// Standard destructor
-    virtual ~_DataImp()                      {
-      if ( 0 != this->m_buffer ) delete [] this->m_buffer;
+    ~_DataImp() override             {
+      delete [] this->m_buffer;
     }
     /// Get proper type name
-    virtual std::string typeName()   const   {
+    std::string typeName()   const override  {
       return System::typeinfoName( this->typeID() );
     }
     /// Reset to default
-    virtual void reset()                      {
-      TYP* buff = this->m_buffer;
-      for ( size_t i = 0; i < static_cast<size_t>(m_length); i++ )    {
-        *buff++ = m_def;
-      }
+    void reset()  override                    {
+      std::fill_n(this->m_buffer, m_length, m_def );
     }
     /// Number of items filled
-    virtual long filled()  const              {
+    long filled()  const override             {
       int len = 1;
       int nd = ndim();
       if ( m_length > 1 )   {
@@ -108,51 +102,47 @@ namespace NTuple    {
       return len;
     }
     /// Pointer to index column (if present, 0 else)
-    virtual INTupleItem* indexItem()                  {
-      if ( 0 == m_indexItem )   {
-        m_indexItem = m_tuple->find(m_index);
-      }
+    INTupleItem* indexItem() override         {
+      if ( !m_indexItem ) m_indexItem = m_tuple->find(m_index);
       return m_indexItem;
     }
     /// Pointer to index column (if present, 0 else) (CONST)
-    virtual const INTupleItem* indexItem() const      {
-      if ( 0 == m_indexItem )   {
-        m_indexItem = m_tuple->find(m_index);
-      }
+    const INTupleItem* indexItem() const override {
+      if ( !m_indexItem )   m_indexItem = m_tuple->find(m_index);
       return m_indexItem;
     }
     /// Compiler type ID
-    virtual const std::type_info& typeID() const             { return m_info;}
+    const std::type_info& typeID() const override { return m_info;}
     /// Size of entire object
-    virtual long size() const { return m_length*sizeof(TYP); }
+    long size() const override { return m_length*sizeof(TYP); }
     /// Destruct object
-    virtual void release() { delete this; }
+    void release() override { delete this; }
     /// Is the tuple have an index column?
-    virtual bool hasIndex() const { return m_index.length()>0; }
+    bool hasIndex() const override { return m_index.length()>0; }
     /// Access the index _Column
-    virtual const std::string& index() const { return m_index; }
+    const std::string& index() const override { return m_index; }
     /// Access _Column name
-    virtual const std::string&  name() const { return m_name; }
+    const std::string&  name() const override { return m_name; }
     /// TYP information of the item
-    virtual long type() const { return m_type; }
+    long type() const override { return m_type; }
     /// Set the properties of the _Column
-    virtual void setType (long t) { m_type=DataTypeInfo::Type(t); }
+    void setType (long t) override { m_type=DataTypeInfo::Type(t); }
     /// Set default value
-    virtual void setDefault(const TYP val) { m_def = val; }
+    void setDefault(const TYP val) override { m_def = val; }
     /// Access the range if specified
-    virtual const ItemRange& range() const { return m_range; }
+    const ItemRange& range() const override { return m_range; }
     /// Access the buffer length
-    virtual long length() const { return m_length; }
+    long length() const override { return m_length; }
     /// Access data buffer (CONST)
-    virtual const void* buffer() const { return this->m_buffer; }
+    const void* buffer() const override { return this->m_buffer; }
     /// Access data buffer
     virtual void* buffer() { return this->m_buffer; }
     /// Dimension
-    virtual long ndim() const { return 0; }
+    long ndim() const override { return 0; }
     /// Access individual dimensions
-    virtual long dim(long i) const { return (i==0) ? 1 : 0; }
+    long dim(long i) const override { return (i==0) ? 1 : 0; }
     /// Access to hosting ntuple
-    virtual INTuple* tuple() { return m_tuple; }
+    INTuple* tuple() override { return m_tuple; }
   };
 
   /** Concrete class discribing a column in a N tuple.
@@ -167,15 +157,15 @@ namespace NTuple    {
     _ItemImp(INTuple* tup, const std::string& name, const std::type_info& info, TYP min, TYP max, TYP def)
     : _DataImp<TYP>(tup, name, info, "", 1, min, max, def) {                       }
     /// Standard Destructor
-    virtual ~_ItemImp()                      {                                     }
+    ~_ItemImp() override = default;
     /// Compiler type ID
     //virtual const std::type_info& typeID() const             { return typeid(NTuple::_Item<TYP>);  }
     /// Set default value
-    virtual void setDefault(const TYP val)   { this->m_def = val;                  }
+    void setDefault(const TYP val) override   { this->m_def = val;                  }
     /// Access the range if specified
-    virtual const ItemRange& range() const   { return this->m_range;               }
+    const ItemRange& range() const override   { return this->m_range;               }
     /// Size of entire object
-    virtual long size()   const              { return this->m_length*sizeof(TYP);  }
+    long size()   const override              { return this->m_length*sizeof(TYP);  }
   };
 
   /** Concrete class discribing a column-array in a N tuple.
@@ -189,19 +179,19 @@ namespace NTuple    {
     _ArrayImp(INTuple* tup,const std::string& name,const std::type_info& typ,const std::string& index,long len,TYP min,TYP max,TYP def)
     : _DataImp<TYP>(tup, name, typ, index, len, min, max, def)    {                }
     /// Standard Destructor
-    virtual ~_ArrayImp()                     {                                     }
+    ~_ArrayImp() override = default;
     /// Compiler type ID
     //virtual const std::type_info& typeID() const             { return typeid(NTuple::_Array<TYP>); }
     /// Set default value
-    virtual void setDefault(const TYP val)   { this->m_def = val;                  }
+    void setDefault(const TYP val) override { this->m_def = val;                  }
     /// Access the range if specified
-    virtual const ItemRange& range() const   { return this->m_range;               }
+    const ItemRange& range() const override { return this->m_range;               }
     /// Size of entire object
-    virtual long size()   const              { return this->m_length*sizeof(TYP);  }
+    long size()   const override { return this->m_length*sizeof(TYP);  }
     /// Dimension
-    virtual long ndim()   const              { return 1;                     }
+    long ndim()   const override { return 1;                     }
     /// Access individual dimensions
-    virtual long dim(long i) const {
+    long dim(long i) const override {
       return (i!=0 || this->hasIndex()) ? 0 : this->m_length;
     }
   };
@@ -220,19 +210,19 @@ namespace NTuple    {
       this->m_rows = nrow;
     }
     /// Standard Destructor
-    virtual ~_MatrixImp()                    {                                     }
+    ~_MatrixImp() override = default;
     /// Compiler type ID
     //virtual const std::type_info& typeID() const             { return typeid(NTuple::_Matrix<TYP>);}
     /// Set default value
-    virtual void setDefault(const TYP val)   { this->m_def = val;                  }
+    void setDefault(const TYP val) override { this->m_def = val;                  }
     /// Access the range if specified
-    virtual const ItemRange& range() const   { return this->m_range;               }
+    const ItemRange& range() const override { return this->m_range;               }
     /// Size of entire object
-    virtual long size()   const              { return this->m_length*sizeof(TYP);  }
+    long size()   const override { return this->m_length*sizeof(TYP);  }
     /// Dimension
-    virtual long ndim() const                { return 2;                           }
+    long ndim() const override { return 2;                           }
     /// Access individual dimensions
-    virtual long dim(long i) const           {
+    long dim(long i) const override {
       return (this->hasIndex()) ?
         ((i==0) ?
          this->m_rows : this->m_length/this->m_rows) : ((i==1) ? this->m_length/this->m_rows : this->m_rows);

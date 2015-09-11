@@ -1,5 +1,3 @@
-// $Id: NumericalDefiniteIntegral.h,v 1.3 2008/10/27 19:22:20 marcocle Exp $
-// ============================================================================
 #ifndef GAUDIMATH_NUMERICALDEFINITEINTEGRAL_H
 #define GAUDIMATH_NUMERICALDEFINITEINTEGRAL_H 1
 // ============================================================================
@@ -21,6 +19,7 @@
 // ============================================================================
 #include "CLHEP/GenericFunctions/AbsFunction.hh"
 // ============================================================================
+#include "gsl/gsl_integration.h"
 
 namespace Genfun
 {
@@ -72,7 +71,7 @@ namespace Genfun
     class GAUDI_API NumericalDefiniteIntegral : public AbsFunction
     {
     public:
-      struct _Workspace ;
+      struct _Workspace { gsl_integration_workspace* ws ; };
       struct _Function  ;
     public:
 
@@ -296,7 +295,7 @@ namespace Genfun
       NumericalDefiniteIntegral ( const NumericalDefiniteIntegral& ) ;
 
       /// destructor
-      virtual ~NumericalDefiniteIntegral() ;
+      virtual ~NumericalDefiniteIntegral() = default;
 
     public:
 
@@ -363,7 +362,7 @@ namespace Genfun
       _Workspace*                allocate                () const ;
       // the integration workspace
       _Workspace*                ws                      () const
-      { return m_ws ; };
+      { return m_ws.get() ; };
 
       // throw the exception
       StatusCode Exception
@@ -377,9 +376,16 @@ namespace Genfun
       // assignement is disabled
       NumericalDefiniteIntegral& operator=( const NumericalDefiniteIntegral& );
 
+    public:
+      struct gsl_ws_deleter {
+          void operator()(_Workspace *p) const {
+            if (p) gsl_integration_workspace_free ( p->ws ) ;
+            delete p;
+          }
+      };
     private:
 
-      const AbsFunction*                  m_function ;
+      std::unique_ptr<const AbsFunction>  m_function ;
       size_t                              m_DIM      ;
       size_t                              m_index    ;
 
@@ -393,7 +399,7 @@ namespace Genfun
       GaudiMath::Integration::KronrodRule m_rule     ;
 
       Points                              m_points   ;
-      double*                             m_pdata    ;
+      std::unique_ptr<double[]>           m_pdata    ;
 
       double                              m_epsabs   ;
       double                              m_epsrel   ;
@@ -402,7 +408,7 @@ namespace Genfun
       mutable double                      m_error    ;
 
       size_t                              m_size     ;
-      mutable _Workspace*                 m_ws       ;
+      mutable std::unique_ptr<_Workspace,gsl_ws_deleter> m_ws;
 
       mutable  Argument                   m_argument ;
       mutable  Argument                   m_argF     ;

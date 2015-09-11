@@ -1,4 +1,3 @@
-// $Id: GaudiPython.h,v 1.7 2005/11/08 16:31:03 mato Exp $
 // ============================================================================
 #ifndef GAUDIPYTHON_GAUDIPYTHON_H 
 #define GAUDIPYTHON_GAUDIPYTHON_H 1

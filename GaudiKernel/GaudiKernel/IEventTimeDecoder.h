@@ -1,4 +1,3 @@
-// $Id: IEventTimeDecoder.h,v 1.1 2008/07/17 13:29:55 marcocle Exp $
 #ifndef GAUDIKERNEL_IEVENTTIMEDECODER_H
 #define GAUDIKERNEL_IEVENTTIMEDECODER_H 1
 

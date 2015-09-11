@@ -38,7 +38,7 @@ protected:
   /// String MsgStream associated to buffer
   std::ostringstream m_stream;
   /// Flag set to true if formatting engine is active
-  bool            m_active;
+  bool            m_active = false;
   /// Debug level of the message service
   MSG::Level      m_level;
   /// Current debug level
@@ -47,7 +47,7 @@ protected:
   bool m_useColors;
   /// Pointer to service counting messages prepared but not printed because of
   /// wrong level.
-  IInactiveMessageCounter*    m_inactCounter;
+  IInactiveMessageCounter*    m_inactCounter = nullptr;
   /// Flag to state if the inactive messages has to be counted.
   static bool m_countInactive;
 
@@ -55,7 +55,7 @@ public:
   /// Standard constructor: Connect to message service for output
   GAUDI_API MsgStream(IMessageSvc* svc, int buffer_length=128);
   /// Standard constructor: Connect to message service for output
-  GAUDI_API MsgStream(IMessageSvc* svc, const std::string& source, int buffer_length=128);
+  GAUDI_API MsgStream(IMessageSvc* svc, std::string source, int buffer_length=128);
   /// Copy constructor
   MsgStream(const MsgStream& msg)
     : m_service(msg.m_service),
@@ -71,7 +71,7 @@ public:
     catch (...) {}
   }
   /// Standard destructor
-  GAUDI_API virtual ~MsgStream();
+  GAUDI_API virtual ~MsgStream() = default;
   /// Initialize report of new message: activate if print level is sufficient.
   MsgStream& report(int lvl)   {
     lvl = (lvl >= MSG::NUM_LEVELS) ?
@@ -375,4 +375,3 @@ MsgStream& operator << (MsgStream& lhs, const std::_Setfill<T> &manip) {
 #endif
 
 #endif    // GAUDIKERNEL_MSGSTREAM_H
-

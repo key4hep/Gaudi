@@ -1,6 +1,3 @@
-// $Id: Algorithm.h,v 1.20 2008/10/28 10:40:19 marcocle Exp $
-// ============================================================================
-// ============================================================================
 #ifndef GAUDIPYTHON_ALGORITHM_H
 #define GAUDIPYTHON_ALGORITHM_H
 // ============================================================================
@@ -78,36 +75,36 @@ namespace GaudiPython
       , m_self ( self )
     {
       // the printout of actual type for embedded algorithm has no sense
-      this -> setProperty ( "TypePrint" , "false" ) ;
-      this -> setProperty ( "StatPrint" , "true"  ) ;
+      this->setProperty ( "TypePrint" , "false" ) ;
+      this->setProperty ( "StatPrint" , "true"  ) ;
       // The owner of the Algorithm is Python (as creator) therefore
       // it should not be deleted by Gaudi (added an extra addRef()).
-      this -> addRef() ;
-      this -> addRef() ;
+      this->addRef() ;
+      this->addRef() ;
     }
     // ========================================================================
   protected:
     // ========================================================================
     /// virtual destructor
-    virtual ~PyAlg() {}                                   // virtual destructor
+    ~PyAlg() override = default;                           // virtual destructor
     /// get the object
     PyObject* _obj() const { return m_self ; }            //     get the object
     // ========================================================================
   public:
     // ========================================================================
-    virtual StatusCode initialize  ()
+    StatusCode initialize  () override
     { return GaudiPython::call_python_method ( m_self , "initialize" ) ; }
-    virtual StatusCode start  ()
+    StatusCode start  () override
     { return GaudiPython::call_python_method ( m_self , "start"      ) ; }
-    virtual StatusCode beginRun  ()
+    StatusCode beginRun  () override
     { return GaudiPython::call_python_method ( m_self , "beginRun"   ) ; }
-    virtual StatusCode endRun  ()
+    StatusCode endRun  () override
     { return GaudiPython::call_python_method ( m_self , "endRun"     ) ; }
-    virtual StatusCode execute     ()
+    StatusCode execute     () override
     { return GaudiPython::call_python_method ( m_self , "execute"    ) ; }
-    virtual StatusCode stop  ()
+    StatusCode stop  () override
     { return GaudiPython::call_python_method ( m_self , "stop"       ) ; }
-    virtual StatusCode finalize    ()
+    StatusCode finalize    () override
     { return GaudiPython::call_python_method ( m_self , "finalize"   ) ; }
     // ========================================================================
     virtual IAlgorithm* ialgorithm () { return this ; }
@@ -120,11 +117,11 @@ namespace GaudiPython
   private:
     // ========================================================================
     /// the default constructor is disabled
-    PyAlg() ;                            // the default constructor is disabled
+    PyAlg() = delete;
     /// the copy constructor is disabled
-    PyAlg ( const PyAlg& );              //    the copy constructor is disabled
+    PyAlg ( const PyAlg& ) = delete; 
     /// the assignment operator is disabled
-    PyAlg& operator=( const PyAlg& ) ;   // the assignment operator is disabled
+    PyAlg& operator=( const PyAlg& )  = delete;
     // ========================================================================
   private:
     // ========================================================================

@@ -1,5 +1,4 @@
 // Include files
-#include "GaudiKernel/xtoa.h"
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/IOpaqueAddress.h"
@@ -46,7 +45,7 @@ StatusCode RootHistCnv::RDirectoryCnv::createRep(DataObject* pObject,
 //  return createAddress(pObject, pObject->registry()->name(), refpAddress);
     return createAddress(pObject, gDirectory, 0, refpAddress);
   }
-  refpAddress = 0;
+  refpAddress = nullptr;
   return StatusCode::FAILURE;
 }
 
@@ -73,14 +72,14 @@ RootHistCnv::RDirectoryCnv::fillObjRefs(IOpaqueAddress* pAddr,DataObject* pObj) 
   std::string full  = pReg->identifier();
   const std::string& fname = pAddr->par()[0];
 
-  TFile *tf;
+  TFile *tf = nullptr;
   findTFile(full,tf).ignore();
 
   // cd to TFile:
   setDirectory(full);
   TIter nextkey(gDirectory->GetListOfKeys());
   while (TKey *key = (TKey*)nextkey()) {
-    IOpaqueAddress* pA = 0;
+    IOpaqueAddress* pA = nullptr;
     TObject *obj = key->ReadObj();
     std::string title = obj->GetTitle();
     std::string sid = obj->GetName();
@@ -155,7 +154,7 @@ RootHistCnv::RDirectoryCnv::fillObjRefs(IOpaqueAddress* pAddr,DataObject* pObj) 
       	  << obj->GetName() << " in ROOT file " << fname << endmsg;
       return StatusCode::FAILURE;
     }
-    if ( 0 != pA )    {
+    if ( pA )    {
       StatusCode sc = dataManager()->registerAddress(pReg, title, pA);
       if ( !sc.isSuccess() )  {
         log << MSG::ERROR << "Failed to register address for " << full  << endmsg;

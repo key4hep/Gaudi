@@ -1,4 +1,3 @@
-// $Id: Guards.cpp,v 1.4 2008/11/11 14:43:37 marcocle Exp $
 // ============================================================================
 // Include files
 // ============================================================================
@@ -66,12 +65,8 @@ Gaudi::Guards::AuditorGuard::AuditorGuard ( INamedInterface*             obj    
                               IAuditor*                    svc      ,
                               IAuditor::StandardEventType  evt      ):
                  m_obj(obj),
-                 m_objName(),
                  m_svc(svc),
-                 m_evt(evt),
-                 m_cevt(),
-                 m_sc(0),
-                 m_customEvtType(false)
+                 m_evt(evt)
 {
   i_before();
 }
@@ -79,11 +74,9 @@ Gaudi::Guards::AuditorGuard::AuditorGuard ( INamedInterface*          obj      ,
                               IAuditor*                       svc      ,
                               IAuditor::CustomEventTypeRef    evt      ):
                  m_obj(obj),
-                 m_objName(),
                  m_svc(svc),
                  m_evt(IAuditor::Initialize), // Windows needs an explicit value
                  m_cevt(evt),
-                 m_sc(0),
                  m_customEvtType(true)
 {
   i_before();
@@ -93,10 +86,8 @@ Gaudi::Guards::AuditorGuard::AuditorGuard ( INamedInterface*             obj    
     IAuditor::StandardEventType  evt      ,
     const StatusCode             &sc       ):
       m_obj(obj),
-      m_objName(),
       m_svc(svc),
       m_evt(evt),
-      m_cevt(),
       m_sc(&sc),
       m_customEvtType(false)
 {
@@ -107,7 +98,6 @@ Gaudi::Guards::AuditorGuard::AuditorGuard ( INamedInterface*                   o
     IAuditor::CustomEventTypeRef       evt      ,
     const StatusCode                  &sc       ):
       m_obj(obj),
-      m_objName(),
       m_svc(svc),
       m_evt(IAuditor::Initialize), // Windows needs an explicit value
       m_cevt(evt),
@@ -116,52 +106,44 @@ Gaudi::Guards::AuditorGuard::AuditorGuard ( INamedInterface*                   o
 {
   i_before();
 }
-Gaudi::Guards::AuditorGuard::AuditorGuard ( const std::string           &name      ,
+Gaudi::Guards::AuditorGuard::AuditorGuard ( std::string           name      ,
     IAuditor*                    svc      ,
     IAuditor::StandardEventType  evt      ):
-      m_obj(0),
-      m_objName(name),
+      m_objName(std::move(name)),
       m_svc(svc),
       m_evt(evt),
-      m_cevt(),
-      m_sc(0),
       m_customEvtType(false)
 {
   i_before();
 }
-Gaudi::Guards::AuditorGuard::AuditorGuard ( const std::string           &name      ,
+Gaudi::Guards::AuditorGuard::AuditorGuard ( std::string           name      ,
     IAuditor*                          svc      ,
     IAuditor::CustomEventTypeRef       evt      ):
-      m_obj(0),
-      m_objName(name),
+      m_objName(std::move(name)),
       m_svc(svc),
       m_evt(IAuditor::Initialize), // Windows needs an explicit value
       m_cevt(evt),
-      m_sc(0),
       m_customEvtType(true)
 {
   i_before();
 }
-Gaudi::Guards::AuditorGuard::AuditorGuard ( const std::string           &name      ,
+Gaudi::Guards::AuditorGuard::AuditorGuard ( std::string           name      ,
     IAuditor*                    svc      ,
     IAuditor::StandardEventType  evt      ,
     const StatusCode            &sc       ):
-      m_obj(0),
-      m_objName(name),
+      m_objName(std::move(name)),
       m_svc(svc),
       m_evt(evt),
-      m_cevt(),
       m_sc(&sc),
       m_customEvtType(false)
 {
   i_before();
 }
-Gaudi::Guards::AuditorGuard::AuditorGuard ( const std::string           &name      ,
+Gaudi::Guards::AuditorGuard::AuditorGuard ( std::string           name      ,
     IAuditor*                          svc      ,
     IAuditor::CustomEventTypeRef       evt      ,
     const StatusCode                  &sc       ):
-      m_obj(0),
-      m_objName(name),
+      m_objName(std::move(name)),
       m_svc(svc),
       m_evt(IAuditor::Initialize), // Windows needs an explicit value
       m_cevt(evt),
@@ -171,7 +153,7 @@ Gaudi::Guards::AuditorGuard::AuditorGuard ( const std::string           &name   
   i_before();
 }
 // ============================================================================
-// dectructor
+// destructor
 // ============================================================================
 Gaudi::Guards::AuditorGuard::~AuditorGuard()
 {

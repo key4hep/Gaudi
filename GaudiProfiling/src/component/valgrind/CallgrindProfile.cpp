@@ -1,9 +1,6 @@
 // Include files 
 #include <iostream>
 
- // from Gaudi
-#include "GaudiKernel/AlgFactory.h" 
-
 // local
 #include "local_callgrind.h"
 #include "CallgrindProfile.h"

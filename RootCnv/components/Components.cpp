@@ -3,7 +3,6 @@
 #include "RootCnv/RootPerfMonSvc.h"
 
 #ifndef DECLARE_COMPONENT
-#include "GaudiKernel/SvcFactory.h"
 #define DECLARE_COMPONENT(x) DECLARE_SERVICE_FACTORY(x)
 #endif
 

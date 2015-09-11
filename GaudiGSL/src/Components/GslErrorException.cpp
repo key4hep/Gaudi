@@ -1,14 +1,10 @@
-// $Id: GslErrorException.cpp,v 1.2 2006/01/10 20:00:05 hmd Exp $
-// ============================================================================
 // ============================================================================
 // Include files
 // from Gaudi
-#include "GaudiKernel/ToolFactory.h"
-#include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/GaudiException.h"
 // STD & STL
 #include <algorithm>
-#include <sstream>
+#include <string>
 // local
 #include "GslErrorException.h"
 
@@ -34,16 +30,11 @@ GslErrorException::GslErrorException
   const std::string& name   ,
   const IInterface*  parent )
   : base_class ( type, name , parent )
-  , m_ignore ()
 {
   declareProperty ( "IgnoreCodes" , m_ignore );
 }
 // ============================================================================
 
-// ============================================================================
-/// destructor (protetced and virtual)
-// ============================================================================
-GslErrorException::~GslErrorException(){}
 // ============================================================================
 
 // ============================================================================
@@ -57,17 +48,16 @@ GslErrorException::~GslErrorException(){}
 StatusCode GslErrorException::handle
 ( const GslError& error  ) const
 {
-  StatusCode sc = StatusCode::SUCCESS ;
-  // code to be ignored?
-  if( m_ignore.end() != std::find( m_ignore.begin () ,
+  // throw if code is not in the list of codes to be ignored
+  if( m_ignore.end() == std::find( m_ignore.begin () ,
                                    m_ignore.end   () ,
-                                   error.code        ) ) { return sc ; }
-  //
-  std::ostringstream message;
-  message << " GSL ErrorCode="
-          << error.code << ": '" << error.reason << "' in the file '"
-          << error.file << "' at the line " << error.line;
-  throw GaudiException( message.str() , "*GLS Error*" , StatusCode::FAILURE );
+                                   error.code        ) ) { 
+    throw GaudiException( " GSL ErrorCode=" + std::to_string( error.code ) +
+                          ": '" + error.reason + 
+                          "' in the file '" + error.file +
+                          "' at line " + std::to_string(error.line)
+                        , "*GLS Error*" , StatusCode::FAILURE );
+  }
   ///
   return StatusCode::SUCCESS ;
 }

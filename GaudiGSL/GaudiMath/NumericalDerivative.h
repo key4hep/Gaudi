@@ -1,5 +1,3 @@
-// $Id: NumericalDerivative.h,v 1.2 2008/10/27 19:22:20 marcocle Exp $
-// ============================================================================
 #ifndef GAUDIMATH_NUMERICALDERIVATIVE_H
 #define GAUDIMATH_NUMERICALDERIVATIVE_H 1
 // ============================================================================
@@ -92,7 +90,7 @@ namespace Genfun
       ( const NumericalDerivative&   right    ) ;
 
       /// virtual destructor
-      virtual ~NumericalDerivative () ;
+      virtual ~NumericalDerivative () = default;
 
       /// dimensionality of the problem
       virtual unsigned int dimensionality() const { return m_DIM ; }
@@ -139,7 +137,7 @@ namespace Genfun
       NumericalDerivative& operator=( const NumericalDerivative& ) ;
 
     private:
-      const AbsFunction* m_function  ;
+      std::unique_ptr<const AbsFunction> m_function  ;
       size_t             m_index     ;
       size_t             m_DIM       ;
       Type               m_type      ;
