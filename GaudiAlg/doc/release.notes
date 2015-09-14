@@ -2,6 +2,9 @@ Package: GaudiAlg
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-09-14 - Marco Clemencic
+ - GAUDI-1081: Fixed compilation with -O0 fails after modernization
+
 ! 2015-09-09 - Gerhard Raven
  - C++11 modernization changes, eg.
        o prefer nullptr over NULL, 0
@@ -36,7 +39,7 @@ Commit Id: $Format:%H$
        o make stringSearchReplace a standalone function instead of a member
        o forward histo1D, histo2D, histo3D, profile1D, profile2D to a single
          common implementation
-       o replace Gaudi::HashMap of services with ordered std::vector in case 
+       o replace Gaudi::HashMap of services with ordered std::vector in case
          lookups are (much) more frequent than inserts
        o remove unused code
 
