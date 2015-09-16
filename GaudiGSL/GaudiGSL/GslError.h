@@ -1,5 +1,3 @@
-// $Id: GslError.h,v 1.2 2003/11/19 16:55:57 mato Exp $
-// ============================================================================
 #ifndef GAUDIGSL_GSLERROR_H
 #define GAUDIGSL_GSLERROR_H 1
 // Include files
@@ -26,11 +24,11 @@ public:
   /// error code (GSL)
   int         code   ;
   /// constructor
-  GslError( const std::string&  r = "" ,
-            const std::string&  f = "" ,
-            const int           l = 0  ,
-            const int           c = 0  )
-    : reason ( r ) , file   ( f ) , line   ( l ) , code   ( c ) {};
+  GslError( std::string  r = "" ,
+            std::string  f = "" ,
+            const int    l = 0  ,
+            const int    c = 0  )
+    : reason ( std::move(r) ) , file   ( std::move(f) ) , line   ( l ) , code   ( c ) {};
   /// comparison (ordering) criteria
   bool operator<( const GslError& right ) const
   {

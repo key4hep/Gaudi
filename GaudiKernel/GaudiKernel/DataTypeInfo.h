@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/DataTypeInfo.h,v 1.6 2008/10/27 19:22:20 marcocle Exp $
 #ifndef GAUDIKERNEL_DATATYPES_H
 #define GAUDIKERNEL_DATATYPES_H
 

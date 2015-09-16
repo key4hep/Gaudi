@@ -39,12 +39,10 @@ StatusCode ParentAlg::execute() {
   StatusCode sc;
   log << MSG::INFO << "executing...." << endmsg;
 
-  std::vector<Algorithm*>::const_iterator it  = subAlgorithms()->begin();
-  std::vector<Algorithm*>::const_iterator end = subAlgorithms()->end();
-  for ( ; it != end; it++) {
-    sc = (*it)->execute();
+  for (auto alg : (*subAlgorithms()) ) {
+    sc = alg->execute();
     if( sc.isFailure() ) {
-      log << "Error executing Sub-Algorithm" << (*it)->name() << endmsg;
+      log << "Error executing Sub-Algorithm" << alg->name() << endmsg;
     }
   }
   return StatusCode::SUCCESS;

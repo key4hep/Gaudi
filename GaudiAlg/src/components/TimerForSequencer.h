@@ -1,4 +1,3 @@
-// $Id: TimerForSequencer.h,v 1.5 2004/11/25 13:26:26 mato Exp $
 #ifndef TIMERFORSEQUENCER_H
 
 #include "GaudiKernel/MsgStream.h"
@@ -17,24 +16,15 @@ class TimerForSequencer
 public:
 
   /** Constructor. Specify the name, for later printing. */
-  TimerForSequencer( const std::string& name,
-                     const unsigned int size,
-                     const double factor )
-    : m_name     ( name ),
+  TimerForSequencer( std::string name,
+                     unsigned int size,
+                     double factor )
+    : m_name     ( std::move(name) ),
       m_size     ( size ),
-      m_factor   ( factor ),
-      m_startClock ( 0LL  ),
-      m_startCpu   ( 0LL  ),
-      m_num      ( 0LL  ),
-      m_lastTime ( 0.   ),
-      m_lastCpu  ( 0.   ),
-      m_min      ( 0.   ),
-      m_max      ( 0.   ),
-      m_sum      ( 0.   ),
-      m_sumCpu   ( 0.   )
+      m_factor   ( factor )
   { }
 
-  ~TimerForSequencer() {}
+  ~TimerForSequencer() = default;
 
   /** Start a time measurement */
   inline void start ()
@@ -64,7 +54,7 @@ public:
   inline double cpuTotal() const { return m_sumCpu; }
 
   /** Returns the number run count*/
-  inline double count() const { return (double)m_num; }
+  inline double count() const { return m_num; }
 
   /** Write measured time into the message stream. */
   MsgStream & fillStream(MsgStream & s) const;
@@ -77,16 +67,16 @@ private:
   std::string m_name;
   unsigned int m_size;
   double m_factor;
-  long long m_startClock;
-  long long m_startCpu;
+  long long m_startClock = 0LL ;
+  long long m_startCpu =  0LL ;
 
-  long long m_num;
-  double m_lastTime;
-  double m_lastCpu;
-  double m_min;
-  double m_max;
-  double m_sum;
-  double m_sumCpu;
+  long long m_num =  0LL;
+  double m_lastTime = 0.;
+  double m_lastCpu = 0.;
+  double m_min = 0.;
+  double m_max = 0.;
+  double m_sum = 0.;
+  double m_sumCpu = 0.;
 };
 
 inline MsgStream& operator<<(MsgStream& ms, const TimerForSequencer& count)

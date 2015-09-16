@@ -61,7 +61,7 @@ StatusCode DetDataSvc::setupDetectorDescription() {
 
   if( m_usePersistency ) {
 
-    IOpaqueAddress* rootAddr;
+    IOpaqueAddress* rootAddr = nullptr;
     if( m_detDbLocation.empty() || "empty" == m_detDbLocation ) {
 
       // if the name of DBlocation is not given - construct it!
@@ -88,8 +88,7 @@ StatusCode DetDataSvc::setupDetectorDescription() {
                                                     iargs,
                                                     rootAddr);
       if( sc.isSuccess() ) {
-        std::string dbrName = "/" + m_detDbRootName;
-        sc = i_setRoot( dbrName, rootAddr );
+        sc = i_setRoot( "/" + m_detDbRootName, rootAddr );
         if( sc.isFailure() ) {
           error() << "Unable to set detector data store root" << endmsg;
           return sc;
@@ -138,10 +137,10 @@ StatusCode DetDataSvc::finalize()
   clearStore().ignore();
 
   // Releases the address creator
-  m_addrCreator = 0;
+  m_addrCreator = nullptr;
 
   // Releases the DataLoader
-  setDataLoader(0).ignore();
+  setDataLoader(nullptr).ignore();
 
   // Finalize the base class
   return DataSvc::finalize();
@@ -166,8 +165,7 @@ StatusCode DetDataSvc::clearStore()   {
                                                   rootAddr);
     // Set detector data store root
     if( sc.isSuccess() ) {
-      std::string dbrName = "/" + m_detDbRootName;
-      sc = i_setRoot( dbrName, rootAddr );
+      sc = i_setRoot( "/" + m_detDbRootName, rootAddr );
       if( sc.isFailure() ) {
         error() << "Unable to set detector data store root" << endmsg;
       }
@@ -183,7 +181,7 @@ StatusCode DetDataSvc::clearStore()   {
 
 /// Standard Constructor
 DetDataSvc::DetDataSvc(const std::string& name,ISvcLocator* svc) :
-  base_class(name,svc), m_eventTime(0)  {
+  base_class(name,svc) {
   declareProperty("DetStorageType",  m_detStorageType = XML_StorageType );
   declareProperty("DetDbLocation",   m_detDbLocation  = "empty" );
   declareProperty("DetDbRootName",   m_detDbRootName  = "dd" );
@@ -191,11 +189,6 @@ DetDataSvc::DetDataSvc(const std::string& name,ISvcLocator* svc) :
   declareProperty("PersistencySvc",  m_persistencySvcName = "DetectorPersistencySvc" );
   m_rootName = "/dd";
   m_rootCLID = CLID_Catalog;
-  m_addrCreator = 0;
-}
-
-/// Standard Destructor
-DetDataSvc::~DetDataSvc()  {
 }
 
 /// Set the new event time
@@ -221,7 +214,6 @@ void DetDataSvc::handle ( const Incident& inc ) {
     debug() << "Incident source: " << inc.source() << endmsg;
     debug() << "Incident type: " << inc.type() << endmsg;
   }
-  return;
 }
 
 /// Update object
@@ -231,14 +223,14 @@ StatusCode DetDataSvc::updateObject( DataObject* toUpdate ) {
   DEBMSG << "Method updateObject starting" << endmsg;
 
   // Check that object to update exists
-  if ( 0 == toUpdate ) {
+  if ( !toUpdate ) {
     error() << "There is no DataObject to update" << endmsg;
     return INVALID_OBJECT;
   }
 
   // Retrieve IValidity interface of object to update
   IValidity* condition = dynamic_cast<IValidity*>( toUpdate );
-  if ( 0 == condition ) {
+  if ( !condition ) {
     warning()
 	<< "Cannot update DataObject: DataObject does not implement IValidity"
 	<< endmsg;
@@ -257,10 +249,9 @@ StatusCode DetDataSvc::updateObject( DataObject* toUpdate ) {
   if ( condition->isValid( eventTime() ) ) {
     DEBMSG << "DataObject is valid: no need to update" << endmsg;
     return StatusCode::SUCCESS;
-  } else {
-    DEBMSG << "DataObject is invalid: update it" << endmsg;
-  }
+  } 
 
+  DEBMSG << "DataObject is invalid: update it" << endmsg;
   // TODO: before loading updated object, update HERE its parent in data store
 
   // Now delegate update to the conversion service by calling the base class
@@ -275,7 +266,7 @@ StatusCode DetDataSvc::updateObject( DataObject* toUpdate ) {
 
   // Now cross-check that the new condition is valid
   condition = dynamic_cast<IValidity*>(toUpdate);
-  if ( 0 == condition ) {
+  if ( !condition ) {
     error() << "Updated DataObject does not implement IValidity" << endmsg;
     return StatusCode::FAILURE;
   }

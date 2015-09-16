@@ -1,4 +1,3 @@
-// $Id: RootEvtSelector.h,v 1.3 2010-08-24 23:30:32 frankb Exp $
 //====================================================================
 //	RootTreeEvtSelector.h
 //--------------------------------------------------------------------
@@ -13,7 +12,6 @@
 //  Created    : 4/01/99
 //
 //====================================================================
-// $Header: /afs/cern.ch/project/cvs/reps/lhcb/Online/RootCnv/src/RootEvtSelector.h,v 1.3 2010-08-24 23:30:32 frankb Exp $
 
 #ifndef GAUDIROOTCNV_ROOTEVTSELECTOR_H
 #define GAUDIROOTCNV_ROOTEVTSELECTOR_H 1

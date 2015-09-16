@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/IInspectable.h,v 1.3 2006/11/30 15:22:07 dquarrie Exp $
 #ifndef GAUDIKERNEL_IINSPECTABLE_H
 #define GAUDIKERNEL_IINSPECTABLE_H
 
@@ -19,17 +18,17 @@ class GAUDI_API IInspectable {
 public:
 
   /// destructor
-  virtual ~IInspectable() { }
+  virtual ~IInspectable() = default;
 
 	/** return FALSE if doesn't accept Inspecetor so that diagnostic
       message can be printed. Calls the inspect member function of
       the Inspector on all the members it wants to inspect.
   */
-	virtual bool acceptInspector(IInspector* pI) = 0;
+  virtual bool acceptInspector(IInspector* pI) = 0;
 	/** return FALSE if doesn't accept Inspecetor so that diagnostic
       message can be printed. Calls the inspect member function of
       the Inspector on all the members it wants to inspect.
   */
-	virtual bool acceptInspector(IInspector* pI) const = 0;
+  virtual bool acceptInspector(IInspector* pI) const = 0;
 };
 #endif  // GAUDIKERNEL_IINSPECTABLE_H

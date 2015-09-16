@@ -76,7 +76,7 @@ void* work (void* counter)
     if( sc.isFailure() ) {
       COUTTHREAD(" Fatal error while retrieving Property EvtMax ")
     } else {
-      m_evtMax = std::atoi(value.c_str()) ;
+      m_evtMax = std::stoi(value) ;
     }
   }
 
@@ -157,7 +157,7 @@ int main (int argc, char** argv)
   propMgr->setProperty( "NoOfThreads", s_nt);
   propMgr->setProperty( "EvtSel",         "NONE" );
   propMgr->setProperty( "MessageSvcType", "MTMessageSvc" );
-  if( opts.substr( opts.length() - 3, 3 ) == ".py" ) {
+  if( opts.compare( opts.length() - 3, 3, ".py" ) == 0 ) {
     std::cout << "Running with Python not supported" << std::endl;
     return 1;
   }
@@ -176,7 +176,7 @@ int main (int argc, char** argv)
     std::cout << "Cannot get get number of worker threads" << std::endl;
     return 1;
   } else {
-    nt = std::atoi(v_nt.c_str()) ;
+    nt = std::stoi(v_nt) ;
     if ( nt <= 0 || nt > MAX_THREADS ) {
       std::cout << "Invalid number of worker threads =>> " << v_nt << std::endl;
       return 1;

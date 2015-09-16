@@ -47,7 +47,7 @@ public:
   virtual StatusCode generator(const IRndmGen::Param& par, IRndmGen*& refpGen) = 0;
 
   /// virtual destructor
-  virtual ~IRndmGenSvc() {}
+  virtual ~IRndmGenSvc() = default;
 };
 
 #endif // GAUDIKERNEL_IRNDMGENSVC_H

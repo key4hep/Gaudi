@@ -1,5 +1,3 @@
-// $Id: GaudiTool.h,v 1.13 2008/10/10 13:38:28 marcocle Exp $
-// ============================================================================
 #ifndef GAUDIALG_GAUDITOOL_H
 #define GAUDIALG_GAUDITOOL_H 1
 // ============================================================================
@@ -105,13 +103,13 @@ public:
    *  @see IAlgTool
    *  @return status code
    */
-  virtual StatusCode    initialize ();
+  StatusCode    initialize () override;
   /** standard finalization method
    *  @see  AlgTool
    *  @see IAlgTool
    *  @return status code
    */
-  virtual StatusCode    finalize   ();
+  StatusCode    finalize   () override;
   // ==========================================================================
 public: // accessors
   // ==========================================================================
@@ -685,37 +683,35 @@ protected:
               const IInterface*  parent );
 
   /// destructor, virtual and protected
-  virtual ~GaudiTool();
+  ~GaudiTool() override;
   // ==========================================================================
 private:
   // ==========================================================================
-  /// no public default constructor
-  GaudiTool();
-  /// no public copy constructor
-  GaudiTool             ( const GaudiTool& );
-  /// no public assignment operator
-  GaudiTool& operator = ( const GaudiTool& );
+  /// no default/copy constructor, no assignment
+  GaudiTool() = delete; 
+  GaudiTool             ( const GaudiTool& ) = delete;
+  GaudiTool& operator = ( const GaudiTool& ) = delete;
   // ==========================================================================
 private:
   // ==========================================================================
   /// pointer to the N-Tuple service
-  mutable INTupleSvc*    m_ntupleSvc          ;
+  mutable INTupleSvc*    m_ntupleSvc = nullptr;
   /// pointer to the event tag collection service
-  mutable INTupleSvc*    m_evtColSvc          ;
+  mutable INTupleSvc*    m_evtColSvc = nullptr;
   /// pointer to Event Data Service
-  mutable IDataProviderSvc* m_evtSvc          ;
+  mutable IDataProviderSvc* m_evtSvc = nullptr;
   /// pointer to Detector Data Service
-  mutable IDataProviderSvc* m_detSvc          ;
+  mutable IDataProviderSvc* m_detSvc = nullptr;
   /// pointer to Chrono & Stat Service
-  mutable IChronoStatSvc*   m_chronoSvc       ;
+  mutable IChronoStatSvc*   m_chronoSvc = nullptr;
   /// pointer to Incident Service
-  mutable IIncidentSvc*     m_incSvc          ;
+  mutable IIncidentSvc*     m_incSvc = nullptr;
   /// pointer for histogram service
-  mutable IHistogramSvc *  m_histoSvc         ;
+  mutable IHistogramSvc *  m_histoSvc = nullptr;
   // Pointer to the Algorithm Context Service
-  mutable IAlgContextSvc* m_contextSvc     ; ///< Algorithm Context Service
+  mutable IAlgContextSvc* m_contextSvc = nullptr; ///< Algorithm Context Service
   // The name of the Algorithm Context Service
-  std::string             m_contextSvcName ; ///< Algorithm Context Service
+  std::string             m_contextSvcName = "AlgContextSvc"; ///< Algorithm Context Service
   // ==========================================================================
 private:
   // ==========================================================================
@@ -735,5 +731,3 @@ private:
 // ============================================================================
 #endif  // GAUDIALG_GAUDITOOL_H
 // ============================================================================
-
-

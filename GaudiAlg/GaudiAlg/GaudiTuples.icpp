@@ -1,6 +1,3 @@
-// $Id: GaudiTuples.icpp,v 1.10 2008/05/15 08:50:32 marcocle Exp $
-// ============================================================================
-// CVS tag $Name:  $, version $Revision: 1.10 $
 // ============================================================================
 // Include files
 // ============================================================================
@@ -32,11 +29,25 @@
 #ifdef _WIN32
 #pragma warning ( disable:4661 ) // incomplete explicit templates
 #endif
-// ============================================================================
-// Destructor
 //=============================================================================
-template <class PBASE>
-GaudiTuples<PBASE>::~GaudiTuples() {}
+// small helper to simplify the code...
+
+namespace {
+    constexpr struct releaseAndClear_t {
+        template <typename C> void operator()(C& c) const { 
+            for (auto& i : c ) if (i.second) i.second->release();
+            c.clear();
+        }
+    } releaseAndClear {};
+
+   constexpr struct ordered_t {
+       template <typename C> 
+       std::map<typename C::key_type, typename C::mapped_type> operator()(const C& c) const {
+               return { std::begin(c), std::end(c) };
+       }
+   } ordered {};
+}
+
 //=============================================================================
 // Initialize ntupling
 //=============================================================================
@@ -108,30 +119,18 @@ StatusCode GaudiTuples<PBASE>::
   if ( produceNTuples () && tuplesPrint  () ) { printTuples  () ; }
   if ( produceEvtCols () && evtColsPrint () ) { printEvtCols () ; }
 
-  { // release ntuples and clear the container
-    for( TupleMapTitle::iterator itup = m_nTupleMapTitle.begin() ;
-         m_nTupleMapTitle.end() != itup ; ++itup )
-    { if( 0 != itup->second ) { itup->second->release() ; } }
-    m_nTupleMapTitle.clear() ;
-  }
-  { // release ntuples and clear the container
-    for( TupleMapID::iterator itup = m_nTupleMapID.begin() ;
-         m_nTupleMapID.end() != itup ; ++itup )
-    { if( 0 != itup->second ) { itup->second->release() ; } }
-    m_nTupleMapID.clear();
-  }
-  { // release ntuples and clear the container
-    for( TupleMapTitle::iterator itup = m_evtColMapTitle.begin() ;
-         m_evtColMapTitle.end() != itup ; ++itup )
-    { if( 0 != itup->second ) { itup->second->release() ; } }
-    m_evtColMapTitle.clear();
-  }
-  { // release ntuples and clear the container
-    for( TupleMapID::iterator itup = m_evtColMapID.begin() ;
-         m_evtColMapID.end() != itup ; ++itup )
-    { if( 0 != itup->second ) { itup->second->release() ; } }
-    m_evtColMapID.clear() ;
-  }
+  // release ntuples and clear the container
+  releaseAndClear(m_nTupleMapTitle);
+  
+  // release ntuples and clear the container
+  releaseAndClear(m_nTupleMapID);
+  
+  // release ntuples and clear the container
+  releaseAndClear(m_evtColMapTitle);
+  
+  // release ntuples and clear the container
+  releaseAndClear(m_evtColMapID);
+  
   // finalize base class
   return PBASE::finalize();
 }
@@ -145,8 +144,8 @@ Tuples::Tuple GaudiTuples<PBASE>::nTuple
   const CLID&        clid  ) const
 {
   // look up in the table
-  Tuples::TupleObj* tuple = m_nTupleMapTitle[ title ]  ;
-  if ( 0 != tuple ) { return Tuple( tuple ) ; }                  // RETURN
+  auto* tuple = m_nTupleMapTitle[ title ]  ;
+  if ( tuple ) { return Tuple( tuple ) ; }                  // RETURN
   // Create the tuple ID
   TupleID ID;
   if ( this->useNumericAutoIDs() || title.empty() )
@@ -185,7 +184,7 @@ Tuples::Tuple GaudiTuples<PBASE>::evtCol
 {
   // look up in the table
   Tuples::TupleObj* tuple = m_evtColMapTitle[ title ]  ;
-  if ( 0 != tuple ) { return Tuple( tuple ) ; }                   // RETURN
+  if ( tuple ) { return Tuple( tuple ) ; }                   // RETURN
   // Create the tuple ID
   TupleID ID;
   if ( this->useNumericAutoIDs() || title.empty() )
@@ -229,7 +228,7 @@ Tuples::Tuple GaudiTuples<PBASE>::nTuple
   
   // look up in the table
   Tuples::TupleObj * tuple = m_nTupleMapID[ ID ] ;
-  if( 0 != tuple ) { return Tuple( tuple ) ; }                   // RETURN
+  if( tuple ) { return Tuple( tuple ) ; }                   // RETURN
   
   // convert ID to the string
   const std::string tID = ID.idAsString() ;
@@ -241,7 +240,7 @@ Tuples::Tuple GaudiTuples<PBASE>::nTuple
   if( produceNTuples() )
   {
     // book NTupel
-    NTuple::Tuple * tup = 0;
+    NTuple::Tuple * tup = nullptr;
     if ( ID.numeric() )
     {
       tup = this->ntupleSvc() -> book ( nTuplePath() , ID.numericID() , clid , title );
@@ -253,9 +252,9 @@ Tuples::Tuple GaudiTuples<PBASE>::nTuple
     else { this->Error( "Undefined NTuple ID" ); }
 
     // assertion
-    this->Assert( 0 != tup , "Could not book the N-Tuple='" + title + "'" ) ;
+    this->Assert( tup , "Could not book the N-Tuple='" + title + "'" ) ;
     // some printout
-    if( 0 != tup -> registry() && this->msgLevel(MSG::DEBUG) )
+    if( tup -> registry() && this->msgLevel(MSG::DEBUG) )
     { this->debug() << "Booked NTuple '" << title << "' ID=" << tID
                     << "' Path='"  << nTuplePath() << "' TS='"
                     << tup -> registry() -> identifier() << "'" << endmsg; }
@@ -289,7 +288,7 @@ Tuples::Tuple GaudiTuples<PBASE>::evtCol
 
   // look up in the table
   Tuples::TupleObj* tuple = m_evtColMapID[ID] ;
-  if ( 0 != tuple ) { return Tuple( tuple ) ; }                   // RETURN
+  if ( tuple ) { return Tuple( tuple ) ; }                   // RETURN
   
   // convert ID to the string
   const std::string tID = ID.idAsString() ;
@@ -301,7 +300,7 @@ Tuples::Tuple GaudiTuples<PBASE>::evtCol
   if( produceEvtCols() )
   {
     // book NTuple
-    NTuple::Tuple* tup = 0;
+    NTuple::Tuple* tup = nullptr;
     if (  ID.numeric() )
     {
       tup = this->evtColSvc()->book ( evtColPath() , ID.numericID() , clid , title ) ;
@@ -313,9 +312,9 @@ Tuples::Tuple GaudiTuples<PBASE>::evtCol
     else { this->Error( "Undefined NTuple ID" ); }
 
     // assertion
-    this->Assert( 0 != tup , "Could not book the EvtCol='" + title + "'" ) ;
+    this->Assert( tup , "Could not book the EvtCol='" + title + "'" ) ;
     // some printout
-    if( 0 != tup -> registry() && this->msgLevel(MSG::DEBUG) )
+    if( tup -> registry() && this->msgLevel(MSG::DEBUG) )
     { this->debug() << "Booked EvtCol '" << title << "' ID=" << tID
                     << "' Path='" << evtColPath() << "' TS='"
                     << tup -> registry() -> identifier() << "'" << endmsg ; }
@@ -375,18 +374,13 @@ long GaudiTuples<PBASE>::printTuples  () const
   { this->always() << "List of booked N-Tuples in directory "
                    << "\"" << nTuplePath() << "\"" << endmsg ; }
   
-  // helper container to sort it:
-  typedef std::map<TupleID,const Tuples::TupleObj*> OrderedMapType;
-  OrderedMapType OrderedMap ( nTupleMapID().begin() , nTupleMapID().end() ) ;
-  //
-  for ( OrderedMapType::const_iterator entry = OrderedMap.begin() ;
-        OrderedMap.end() != entry ; ++entry )
+  for ( const auto& entry : ordered(nTupleMapID()) )
   {
-    if ( 0 == entry->second ) { continue ; }
-    const NTuple::Tuple* tuple = entry->second->tuple() ;
-    if ( 0 == tuple )
+    if ( !entry.second ) { continue ; }
+    const NTuple::Tuple* tuple = entry.second->tuple() ;
+    if ( !tuple )
     { this->error() << " NTuple::Tuple* points to NULL" << endmsg ; continue ; }
-    this->always() << GaudiAlg::PrintTuple::print ( tuple , entry->first ) << endmsg ;
+    this->always() << GaudiAlg::PrintTuple::print ( tuple , entry.first ) << endmsg ;
   }
   //
   return this->nTupleMapID().size() ;
@@ -402,21 +396,15 @@ long GaudiTuples<PBASE>::printEvtCols () const
   else
   { this->always() << "List of booked Event Tag Collections in directory "
                    << "\"" << evtColPath() << "\"" << endmsg ; }
-  
-  // helper container to sort it:
-  typedef std::map<TupleID,const Tuples::TupleObj*> OrderedMapType;
-  OrderedMapType OrderedMap ( evtColMapID().begin() , evtColMapID().end() ) ;
-  //
-  for ( OrderedMapType::const_iterator entry = OrderedMap.begin() ;
-        OrderedMap.end() != entry ; ++entry )
+  for ( const auto& entry : ordered( evtColMapID() ) )
   {
-    if ( 0 == entry->second ) { continue ; }
-    const NTuple::Tuple* tuple = entry->second->tuple() ;
-    if ( 0 == tuple )
+    if ( !entry.second ) { continue ; }
+    const auto tuple = entry.second->tuple() ;
+    if ( !tuple )
     { this->error() << " NTuple::Tuple* points to NULL" << endmsg ; continue ; }
-    this->always() << GaudiAlg::PrintTuple::print ( tuple , entry->first )
+    this->always() << GaudiAlg::PrintTuple::print ( tuple , entry.first )
                    << " Items:"
-                   << Gaudi::Utils::toString ( entry->second->items() ) << endmsg ;
+                   << Gaudi::Utils::toString ( entry.second->items() ) << endmsg ;
   }
   //
   return this->evtColMapID().size() ;

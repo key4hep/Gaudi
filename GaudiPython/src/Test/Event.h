@@ -1,4 +1,3 @@
-// $Id: Event.h,v 1.5 2006/11/30 14:51:54 mato Exp $
 #ifndef GAUDIEXAMPLES_EVENT_H
 #define GAUDIEXAMPLES_EVENT_H 1
 

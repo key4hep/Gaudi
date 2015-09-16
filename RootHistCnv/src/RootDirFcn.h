@@ -1,5 +1,3 @@
-// $Id: RootDirFcn.h,v 1.2 2001/11/22 09:14:49 mato Exp $
-
 #ifndef ROOTHISTCNV_ROOTDIRFCN_HPP
 #define ROOTHISTCNV_ROOTDIRFCN_HPP
 

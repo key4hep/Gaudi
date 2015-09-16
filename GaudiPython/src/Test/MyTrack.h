@@ -1,4 +1,3 @@
-// $Id: MyTrack.h,v 1.4 2006/01/26 18:11:06 mato Exp $
 #ifndef GAUDIEXAMPLES_MYTRACK_H
 #define GAUDIEXAMPLES_MYTRACK_H
 

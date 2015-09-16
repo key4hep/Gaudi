@@ -1,4 +1,3 @@
-// $Id: FuncMinimumGenAlg.h,v 1.1 2003/11/27 11:05:27 mato Exp $
 #ifndef ALGTOOLS_FUNCMINIMUMGENALG_H 
 #define ALGTOOLS_FUNCMINIMUMGENALG_H 1
 

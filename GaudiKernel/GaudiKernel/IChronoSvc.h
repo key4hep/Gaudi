@@ -1,5 +1,3 @@
-// $Id: IChronoSvc.h,v 1.3 2008/05/13 12:36:54 marcocle Exp $
-// ============================================================================
 #ifndef GAUDIKERNEL_ICHRONOSVC_H
 #define GAUDIKERNEL_ICHRONOSVC_H 1
 // ============================================================================
@@ -101,7 +99,7 @@ public:
 protected:
   // ==========================================================================
   // protected and virtual destructor
-  virtual ~IChronoSvc(); ///< protected and virtual destructor
+  ~IChronoSvc() override = default; ///< protected and virtual destructor
   // ==========================================================================
 };
 // ============================================================================

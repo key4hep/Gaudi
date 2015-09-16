@@ -1,5 +1,3 @@
-// $Id: TupleTool.h,v 1.3 2006/11/30 10:16:13 mato Exp $
-// ============================================================================
 #ifndef GAUDIALG_TUPLETOOL_H 
 #define GAUDIALG_TUPLETOOL_H 1
 // ============================================================================
@@ -38,7 +36,7 @@ public:
              const IInterface* parent);
 
   /// destructor: virtual and protected 
-  virtual ~TupleTool() ;
+  ~TupleTool() override = default;
 
 public: 
 
@@ -61,34 +59,32 @@ public:
    *  @param clid  class identifier 
    *  @return ntuple object 
    */
-  virtual Tuple  nTuple 
+  Tuple  nTuple 
   ( const std::string& title                        , 
-    const CLID&        clid  = CLID_ColumnWiseTuple ) const 
+    const CLID&        clid  = CLID_ColumnWiseTuple ) const override 
   { return GaudiTupleTool::nTuple (      title , clid ) ; }
   
   
-  virtual Tuple  nTuple 
+  Tuple  nTuple 
   ( const TupleID&     ID                           , 
     const std::string& title = ""                   , 
-    const CLID&        clid  = CLID_ColumnWiseTuple ) const 
+    const CLID&        clid  = CLID_ColumnWiseTuple ) const override
   { return GaudiTupleTool::nTuple ( ID , title , clid ) ; }
   
-  virtual Tuple  evtCol 
+  Tuple  evtCol 
   ( const std::string& title                        , 
-    const CLID&        clid  = CLID_RowWiseTuple    ) const 
+    const CLID&        clid  = CLID_RowWiseTuple    ) const override
   { return GaudiTupleTool::evtCol (      title , clid ) ; }
   
-  virtual Tuple  evtCol 
+  Tuple  evtCol 
   ( const TupleID&     ID                           , 
     const std::string& title = ""                   , 
-    const CLID&        clid  = CLID_RowWiseTuple    ) const 
+    const CLID&        clid  = CLID_RowWiseTuple    ) const override
   { return GaudiTupleTool::evtCol ( ID , title , clid ) ; }
 
-private:
-
-  TupleTool() ;
-  TupleTool           ( const TupleTool& ) ;
-  TupleTool& operator=( const TupleTool& ) ;
+  TupleTool() = delete;
+  TupleTool           ( const TupleTool& ) = delete;
+  TupleTool& operator=( const TupleTool& ) = delete;
 
 };
 #endif // GAUDIALG_TUPLETOOL_H

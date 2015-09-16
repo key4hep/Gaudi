@@ -1,6 +1,3 @@
-// $Id: ToStream.h,v 1.8 2008/10/30 23:38:46 marcocle Exp $
-// ============================================================================
-// CVS tag $Name:  $, version $Revision: 1.8 $
 // ============================================================================
 #ifndef GAUDIPROPERTYPARSERS_PARSERVALUETOSTREAM_H
 #define GAUDIPROPERTYPARSERS_PARSERVALUETOSTREAM_H 1

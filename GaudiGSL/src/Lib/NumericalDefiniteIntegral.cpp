@@ -1,4 +1,3 @@
-// $Id: NumericalDefiniteIntegral.cpp,v 1.4 2007/11/20 13:00:17 marcocle Exp $
 // ============================================================================
 // Include
 // ============================================================================
@@ -44,8 +43,6 @@ namespace Genfun
   namespace GaudiMathImplementation
   {
 
-    struct NumericalDefiniteIntegral::_Workspace
-    { gsl_integration_workspace* ws ; };
     struct NumericalDefiniteIntegral::_Function
     { gsl_function*              fn ; };
 
@@ -128,13 +125,11 @@ namespace Genfun
       , m_category  ( GaudiMath::Integration::Finite )
       , m_rule      ( rule       )
       , m_points    (            )
-      , m_pdata     ( 0          )
       , m_epsabs    ( epsabs     )
       , m_epsrel    ( epsrel     )
       , m_result    ( GSL_NEGINF )
       , m_error     ( GSL_POSINF )
       , m_size      ( size       )
-      , m_ws        ()
       , m_argument  ()
       , m_argF      ()
     {
@@ -182,7 +177,6 @@ namespace Genfun
       , m_category  ( GaudiMath::Integration:: Singular )
       , m_rule      ( GaudiMath::Integration::    Fixed )
       , m_points    ( points  )
-      , m_pdata     ( 0       )
       , m_epsabs    ( epsabs  )
       , m_epsrel    ( epsrel  )
       //
@@ -190,7 +184,6 @@ namespace Genfun
       , m_error     ( GSL_POSINF                          )
       //
       , m_size      ( size                                )
-      , m_ws        ( 0                                   )
       , m_argument  ()
       , m_argF      ()
     {
@@ -219,8 +212,8 @@ namespace Genfun
         std::upper_bound ( m_points.begin () , m_points.end () , l2 ) ;
       m_points.erase     ( upper             , m_points.end ()      ) ;
 
-      m_pdata = new double[ m_points.size() ] ;
-      std::copy( m_points.begin() , m_points.end() , m_pdata );
+      m_pdata.reset( new double[ m_points.size() ]  );
+      std::copy( m_points.begin() , m_points.end() , m_pdata.get() );
     }
 
     /** Standard constructor
@@ -268,7 +261,6 @@ namespace Genfun
       , m_category  ( GaudiMath::Integration:: Infinite )
       , m_rule      ( GaudiMath::Integration::    Fixed )
       , m_points    (         )
-      , m_pdata     ( 0       )
       , m_epsabs    ( epsabs  )
       , m_epsrel    ( epsrel  )
       //
@@ -276,7 +268,6 @@ namespace Genfun
       , m_error     ( GSL_POSINF                          )
       //
       , m_size      ( size                                )
-      , m_ws        ( 0                                   )
       , m_argument  ()
       , m_argF      ()
     {
@@ -337,7 +328,6 @@ namespace Genfun
       , m_category  ( GaudiMath::Integration:: Infinite )
       , m_rule      ( GaudiMath::Integration::    Fixed )
       , m_points    (         )
-      , m_pdata     ( 0       )
       , m_epsabs    ( epsabs  )
       , m_epsrel    ( epsrel  )
       //
@@ -345,7 +335,6 @@ namespace Genfun
       , m_error     ( GSL_POSINF                          )
       //
       , m_size      ( size                                )
-      , m_ws        ( 0                                   )
       , m_argument  ()
       , m_argF      ()
     {
@@ -400,7 +389,6 @@ namespace Genfun
       , m_category  ( GaudiMath::Integration:: Infinite )
       , m_rule      ( GaudiMath::Integration::    Fixed )
       , m_points    (         )
-      , m_pdata     ( 0       )
       , m_epsabs    ( epsabs  )
       , m_epsrel    ( epsrel  )
       //
@@ -408,7 +396,6 @@ namespace Genfun
       , m_error     ( GSL_POSINF                          )
       //
       , m_size      ( size                                )
-      , m_ws        ( 0                                   )
       , m_argument  ()
       , m_argF      ()
     {
@@ -438,27 +425,19 @@ namespace Genfun
       , m_category  ( right.m_category )
       , m_rule      ( right.m_rule     )
       , m_points    ( right.m_points   )
-      , m_pdata     ( 0                )
       , m_epsabs    ( right.m_epsabs   )
       , m_epsrel    ( right.m_epsrel   )
       , m_result    ( GSL_NEGINF       )
       , m_error     ( GSL_POSINF       )
       , m_size      ( right.m_size     )
-      , m_ws        ( 0                )
       , m_argument  ( right.m_argument )
       , m_argF      ( right.m_argF     )
     {
-      if( 0 != right.m_pdata )
+      if( right.m_pdata )
         {
-          m_pdata = new double[m_points.size()] ;
-          std::copy( m_points.begin() , m_points.end() , m_pdata );
+          m_pdata.reset( new double[m_points.size()] );
+          std::copy( m_points.begin() , m_points.end() , m_pdata.get() );
         }
-    }
-
-    NumericalDefiniteIntegral::~NumericalDefiniteIntegral()
-    {
-      if( 0 != m_function ) { delete   m_function ; m_function = 0 ; }
-      if( 0 != m_pdata    ) { delete[] m_pdata    ; m_pdata    = 0 ; }
     }
 
     // ========================================================================
@@ -573,13 +552,12 @@ namespace Genfun
     NumericalDefiniteIntegral::_Workspace*
     NumericalDefiniteIntegral::allocate() const
     {
-      if ( 0 != m_ws ) { return m_ws; }
-      gsl_integration_workspace* aux =
-        gsl_integration_workspace_alloc( size () );
-      if ( 0 == aux ) { Exception ( "allocate()::invalid workspace" ) ; };
-      m_ws = new _Workspace() ;
-      m_ws->ws = aux ;
-      return m_ws ;
+      if ( !m_ws ) {
+        m_ws.reset(  new _Workspace() );
+        m_ws->ws = gsl_integration_workspace_alloc( size () );
+        if ( !m_ws->ws ) { Exception ( "allocate()::invalid workspace" ) ; };
+      }
+      return m_ws.get() ;
     }
     // ========================================================================
 
@@ -592,7 +570,7 @@ namespace Genfun
       if ( 0 == F    ) { Exception("::QAGI: invalid function"); }
 
       // allocate workspace
-      if ( 0 == ws() ) { allocate() ; }
+      allocate() ;
 
       int ierror = 0 ;
 
@@ -635,14 +613,14 @@ namespace Genfun
       if( 0 == F ) { Exception("QAGP::invalid function") ; }
 
       // no known singular points ?
-      if( points().empty() || 0 == m_pdata ) { return QAGS( F ) ; }
+      if( points().empty() || !m_pdata ) { return QAGS( F ) ; }
 
       const size_t npts = points().size();
 
       // use GSL
       int ierror =
         gsl_integration_qagp ( F->fn                ,
-                               m_pdata   , npts     ,
+                               m_pdata.get() , npts ,
                                m_epsabs  , m_epsrel ,
                                size ()   , ws()->ws ,
                                &m_result , &m_error ) ;
@@ -694,7 +672,7 @@ namespace Genfun
       if( 0 == F ) { Exception("QAG::invalid function") ; }
 
       // allocate workspace
-      if( 0 == ws () ) { allocate () ; }
+      allocate () ;
 
       // integration limits
       const double low  = std::min ( m_a , m_b ) ;
@@ -732,7 +710,7 @@ namespace Genfun
         }
 
       // allocate workspace
-      if( 0 == ws () ) { allocate () ; }
+      allocate () ;
 
       // integration limits
       const double low  = std::min ( m_a , m_b ) ;

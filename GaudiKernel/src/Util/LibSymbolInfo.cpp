@@ -158,9 +158,9 @@ BOOL CLibSymbolInfo::IsRegularLibSymbol( PSTR pszSymbolName )
 //=============================================================================
 BOOL CLibSymbolInfo::IsFiltedSymbol( string& symbolName )
 {
-  if ( symbolName.substr(0,2) == "__" ) 
+  if ( symbolName.compare(0,2,"__") == 0 ) 
     return FALSE;
-  if ( symbolName.substr(0,3) == "??_" && symbolName[3] != '0') // Keep 'operator/='  [??_0]
+  if ( symbolName.compare(0,3,"??_") == 0  && symbolName[3] != '0') // Keep 'operator/='  [??_0]
     return FALSE;
   if( symbolName[0] == '_') {
     symbolName.erase(0, 1);  // C functions ...

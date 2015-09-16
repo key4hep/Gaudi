@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiPython/src/Test/HelloWorld.h,v 1.1.1.1 2001/09/13 09:20:28 mato Exp $
 #ifndef GAUDIEXAMPLE_HELLOWORLD_H
 #define GAUDIEXAMPLE_HELLOWORLD_H 1
 

@@ -1,4 +1,3 @@
-// $Id: DataCreator.h,v 1.1 2004/10/25 17:53:48 mato Exp $
 #ifndef GAUDIEXAMPLE_DATACREATOR_H
 #define GAUDIEXAMPLE_DATACREATOR_H 1
 

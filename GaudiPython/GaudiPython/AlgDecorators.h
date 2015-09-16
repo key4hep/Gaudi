@@ -1,4 +1,3 @@
-// $Id: AlgDecorators.h,v 1.2 2005/11/08 16:31:03 mato Exp $
 // ============================================================================
 #ifndef GAUDIPYTHON_ALGDECORATORS_H
 #define GAUDIPYTHON_ALGDECORATORS_H 1

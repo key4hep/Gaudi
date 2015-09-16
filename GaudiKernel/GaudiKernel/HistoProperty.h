@@ -1,5 +1,3 @@
-// $Id: HistoProperty.h,v 1.1 2007/09/26 16:13:41 marcocle Exp $
-// ============================================================================
 #ifndef GAUDIKERNEL_HISTOPROPERTY_H 
 #define GAUDIKERNEL_HISTOPROPERTY_H 1
 // ============================================================================
@@ -25,7 +23,7 @@ inline bool
 BoundedVerifier<Gaudi::Histo1DDef>::isValid
 ( const Gaudi::Histo1DDef* value ) const 
 { 
-  return 0 != value && value->ok()
+  return value && value->ok()
     && ( ( m_hasLowerBound && ( *value       < m_lowerBound ) ) ? false : true ) 
     && ( ( m_hasUpperBound && ( m_upperBound < *value       ) ) ? false : true ) ;
 }
@@ -39,7 +37,7 @@ inline bool
 NullVerifier<Gaudi::Histo1DDef>::isValid
 ( const Gaudi::Histo1DDef* value ) const 
 { 
-  return 0 != value && value->ok() ;
+  return value && value->ok() ;
 }
 // ============================================================================
 /// the actual type of "histogram property"

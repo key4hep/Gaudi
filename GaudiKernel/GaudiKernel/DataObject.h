@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/DataObject.h,v 1.10 2008/11/12 23:39:47 marcocle Exp $
 #ifndef GAUDIKERNEL_DATAOBJECT_H
 #define GAUDIKERNEL_DATAOBJECT_H
 
@@ -31,13 +30,13 @@ static const CLID CLID_DataObject = 1;
 class GAUDI_API DataObject {
 private:
   /// Reference count
-  unsigned long       m_refCount;
+  unsigned long       m_refCount = 0;
   /// Version number
-  unsigned char       m_version;
+  unsigned char       m_version = 0;
   /// Pointer to the Registry Object
-  IRegistry*          m_pRegistry;
+  IRegistry*          m_pRegistry = nullptr;
   /// Store of symbolic links
-  LinkManager*        m_pLinkMgr;
+  std::unique_ptr<LinkManager> m_pLinkMgr;
 
 public:
   /// Standard Constructor
@@ -71,7 +70,7 @@ public:
   }
   /// Retrieve Link manager
   LinkManager* linkMgr()    const   {
-    return m_pLinkMgr;
+    return m_pLinkMgr.get();
   }
   /// Retrieve version number of this object representation
   unsigned char version()    const  {

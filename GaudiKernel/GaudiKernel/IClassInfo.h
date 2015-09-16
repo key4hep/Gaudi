@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/IClassInfo.h,v 1.3 2006/11/30 15:22:07 dquarrie Exp $
 #ifndef GAUDIKERNEL_ICLASSINFO_H
 #define GAUDIKERNEL_ICLASSINFO_H
 
@@ -12,7 +11,7 @@
 class GAUDI_API IClassInfo {
 public:
   /// Standard Destructor
-  virtual ~IClassInfo() { }
+  virtual ~IClassInfo() = default;
   /// Retrieve Pointer to class definition structure
   virtual const CLID& clID() const = 0;
 };

@@ -1,7 +1,6 @@
 // Include files
 
 // From Gaudi
-#include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/IAlgManager.h"
 #include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/IDataStoreAgent.h"

@@ -104,12 +104,14 @@ namespace Gaudi { namespace PluginService {
       typedef std::map<KeyType, std::string> Properties;
 
       struct FactoryInfo {
-        FactoryInfo(const std::string& lib, void* p=0,
-                    const std::string& t="",
-                    const std::string& rt="",
-                    const std::string& cn="",
-                    const Properties& props=Properties()):
-        library(lib), ptr(p), type(t), rtype(rt), className(cn), properties(props) {}
+        FactoryInfo(std::string lib, void* p=0,
+                    std::string t="",
+                    std::string rt="",
+                    std::string cn="",
+                    Properties props = Properties()):
+        library(std::move(lib)), ptr(p), 
+        type(std::move(t)), rtype(std::move(rt)), 
+        className(std::move(cn)), properties(std::move(props)) {}
 
         std::string library;
         void* ptr;
@@ -118,8 +120,8 @@ namespace Gaudi { namespace PluginService {
         std::string className;
         Properties properties;
 
-        FactoryInfo& addProperty(const KeyType& k, const std::string& v) {
-          properties[k] = v;
+        FactoryInfo& addProperty(const KeyType& k, std::string v) {
+          properties[k] = std::move(v);
           return *this;
         }
       };

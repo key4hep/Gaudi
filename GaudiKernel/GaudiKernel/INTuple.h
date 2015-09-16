@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/INTuple.h,v 1.7 2008/10/27 19:22:20 marcocle Exp $
 #ifndef GAUDIKERNEL_INTUPLE_H
 #define GAUDIKERNEL_INTUPLE_H
 
@@ -30,7 +29,7 @@ protected:
   virtual void                setType (long typ)            = 0;
 public:
   /// destructor
-  virtual ~INTupleItem() { }
+  virtual ~INTupleItem() = default;
 
   /// Destruct object
   virtual void                release()                     = 0;
@@ -89,7 +88,7 @@ public:
   /// Access item container   (CONST)
   virtual const ItemContainer&  items()    const   = 0;
   /// Attach data buffer
-  virtual void                  setBuffer(char* buff) = 0;
+  virtual char*                  setBuffer(char* buff) = 0;
   /// Access data buffer (CONST)
   virtual const char*           buffer()  const = 0;
   /// Access data buffer
@@ -122,6 +121,6 @@ public:
   virtual StatusCode            readRecord() = 0;
   /// Save the NTuple
   virtual StatusCode            save() = 0;
-  virtual ~INTuple() {}
+  virtual ~INTuple() = default;
 };
 #endif

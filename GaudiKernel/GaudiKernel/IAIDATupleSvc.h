@@ -1,4 +1,3 @@
-// $Id: IAIDATupleSvc.h,v 1.2 2005/12/06 18:55:19 hmd Exp $
 #ifndef GAUDIKERNEL_IAIDATUPLESVC_H
 #define GAUDIKERNEL_IAIDATUPLESVC_H 1
 
@@ -76,7 +75,6 @@ public:
                                      const std::string& objPath,
                                      AIDA::ITuple*& tObj ) = 0;
 
-
   // ==============================
   // Find a tuple in the data store
   // ==============================
@@ -99,21 +97,18 @@ public:
   virtual void setCriteria(  AIDA::ITuple*& tObj,
                              const std::string& criteria ) = 0;
 
-
   // ==============
   // Helper methods
   // ==============
 
-	//Create all directories in a given full path
-	virtual DataObject* createPath( const std::string& newPath )= 0;
+  //Create all directories in a given full path
+  virtual DataObject* createPath( const std::string& newPath )= 0;
 
   //Create a sub-directory in a directory.
-	virtual DataObject* createDirectory(const std::string& parentDir,
-										                  const std::string& subDir)	= 0;
+  virtual DataObject* createDirectory(const std::string& parentDir,
+                                      const std::string& subDir) = 0;
 
   virtual StatusCode myTest() = 0;
-
-  //virtual std::string storeName(AIDA::ITuple*& tObj) = 0;
 };
 
 #endif //GAUDIKERNEL_IAIDATUPLESVC_H

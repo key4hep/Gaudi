@@ -1,11 +1,11 @@
-// $Id: GetAlg.h,v 1.2 2007/11/20 13:01:06 marcocle Exp $
-// ============================================================================
 #ifndef GAUDIALG_GETALG_H
 #define GAUDIALG_GETALG_H 1
 // ============================================================================
 // Include files
 // ============================================================================
-// GaudiKernnel
+#include <type_traits>
+// ============================================================================
+// GaudiKernel
 // ============================================================================
 #include "GaudiKernel/IAlgorithm.h"
 // ============================================================================
@@ -29,7 +29,7 @@ namespace Gaudi
       /// the only one essential method:
       virtual bool operator() ( const IAlgorithm* ) const = 0 ;
       // virtual destructor
-      virtual ~AlgSelector () ;
+      virtual ~AlgSelector () = default;
     };
     // ========================================================================
     /** @class AlgTypeSelector
@@ -44,23 +44,11 @@ namespace Gaudi
     public:
       /// the only one essential method:
       virtual bool operator() ( const IAlgorithm* a ) const
-      { return dynamic_cast<const TYPE*>( a ) != 0; }
+      {   using TYPE_ = typename std::decay<TYPE>::type;
+          using CTYPE = typename std::add_const<TYPE_>::type;
+          using cptr  = typename std::add_pointer<CTYPE>::type;
+          return dynamic_cast<cptr>( a ); }
     } ;
-    // ========================================================================
-    template <class TYPE>
-    class AlgTypeSelector<TYPE*>       : public AlgTypeSelector<TYPE>   {} ;
-    // ========================================================================
-    template <class TYPE>
-    class AlgTypeSelector<const TYPE*> : public AlgTypeSelector<TYPE>   {} ;
-    // ========================================================================
-    template <class TYPE>
-    class AlgTypeSelector<TYPE&>       : public AlgTypeSelector<TYPE>   {} ;
-    // ========================================================================
-    template <class TYPE>
-    class AlgTypeSelector<const TYPE&> : public AlgTypeSelector<TYPE>   {} ;
-    // ========================================================================
-    template <class TYPE>
-    class AlgTypeSelector<const TYPE>  : public AlgTypeSelector<TYPE>   {} ;
     // ========================================================================
     /** @class AlgNameSelector
      *  The trivial selector of algorithm by type
@@ -71,14 +59,12 @@ namespace Gaudi
     class GAUDI_API AlgNameSelector : public AlgSelector
     {
     public:
+      AlgNameSelector() = delete ;
       /// constructor form the name
-      AlgNameSelector ( const std::string& name  ) : m_name ( name ) {}
+      AlgNameSelector ( std::string name  ) : m_name ( std::move(name) ) {}
       /// the only one essential method:
-      virtual bool operator() ( const IAlgorithm* a ) const
-      { return 0 != a ? a->name() == m_name : false ; }
-    private:
-      // the default constructor is disabled
-      AlgNameSelector() ;
+      bool operator() ( const IAlgorithm* a ) const override
+      { return a && a->name() == m_name; }
     private:
       // algorithm name
       std::string m_name ; ///< algorithm name
@@ -150,4 +136,3 @@ namespace Gaudi
 // The END
 // ============================================================================
 #endif // GAUDIALG_GETALG_H
-// ============================================================================

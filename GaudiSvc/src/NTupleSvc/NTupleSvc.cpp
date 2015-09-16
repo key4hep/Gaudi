@@ -22,7 +22,6 @@
 #define  GAUDISVC_NTUPLESVC_CPP
 
 // Framework include files
-#include "GaudiKernel/xtoa.h"
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/AttribStringParser.h"
 #include "GaudiKernel/DataObject.h"
@@ -271,12 +270,12 @@ StatusCode NTupleSvc::connect(const std::string& ident, std::string& logname)   
         db_typ = std::move(attrib.value);
         break;
       default:
-        props.push_back( Prop(attrib.tag, attrib.value));
+        props.emplace_back( attrib.tag, attrib.value);
         break;
       }
     }
     if ( 0 != typ )    {
-      IConversionSvc* pSvc = 0;
+      IConversionSvc* pSvc = nullptr;
       status = createService(name()+'.'+logname, db_typ, props, pSvc);
       if ( status.isSuccess() )   {
         status = attachTuple(filename, logname, typ, pSvc->repSvcType());

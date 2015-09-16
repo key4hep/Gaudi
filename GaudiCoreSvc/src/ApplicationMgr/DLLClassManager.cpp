@@ -1,5 +1,3 @@
-// $Id: DLLClassManager.cpp,v 1.17 2007/12/12 16:03:19 marcocle Exp $
-
 // Include files
 #include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/IService.h"
@@ -27,10 +25,6 @@ DLLClassManager::DLLClassManager( IInterface* iface ) {
   addRef(); // Initial count set to 1
 }
 
-// virtual destructor
-DLLClassManager::~DLLClassManager() {
-}
-
 // implementation of IClassManager::loadModule
 StatusCode DLLClassManager::loadModule( const std::string& module,
 					bool fireIncident ) {
@@ -43,7 +37,7 @@ StatusCode DLLClassManager::loadModule( const std::string& module,
   std::string mod = module=="" ? System::moduleNameFull() : module;
   if( module == "NONE" ) return StatusCode::SUCCESS;
 
-  void* libHandle = 0;
+  void* libHandle = nullptr;
   StatusCode status = StatusCode::FAILURE;
   try
   {

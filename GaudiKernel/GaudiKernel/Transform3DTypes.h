@@ -4,9 +4,6 @@
  *
  *  3D transformation typedefs
  *
- *  CVS Log :-
- *  $Id: Transform3DTypes.h,v 1.1 2006/12/08 15:00:02 hmd Exp $
- *
  *  @author Juan PALACIOS
  *  @date   2005-11-21
  */

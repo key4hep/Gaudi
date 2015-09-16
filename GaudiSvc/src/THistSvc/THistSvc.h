@@ -88,7 +88,7 @@ public:
 
 protected:
 
-  virtual ~THistSvc();
+  ~THistSvc() override = default;
 
 private:
 
@@ -205,13 +205,13 @@ private:
 
   std::map<std::string, std::string > m_sharedFiles; // stream->filename of shared files
 
-  bool signaledStop;
-  bool m_delayConnect, m_okToConnect;
+  bool signaledStop = false;
+  bool m_delayConnect = false, m_okToConnect = false;
 
   mutable std::string m_curstream;
 
-  IIncidentSvc* p_incSvc;
-  IFileMgr* p_fileMgr;
+  IIncidentSvc* p_incSvc = nullptr;
+  IFileMgr* p_fileMgr = nullptr;
 
   StatusCode rootOpenAction( FILEMGR_CALLBACK_ARGS );
   StatusCode rootOpenErrAction( FILEMGR_CALLBACK_ARGS );

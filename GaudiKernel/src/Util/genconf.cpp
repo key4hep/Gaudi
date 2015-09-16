@@ -324,7 +324,7 @@ int main ( int argc, char** argv )
     if( vm.count("input-cfg") ) {
       string cfgFileName = vm["input-cfg"].as<string>();
       cfgFileName = fs::system_complete( fs::path( cfgFileName ) ).string();
-      std::ifstream ifs( cfgFileName.c_str() );
+      std::ifstream ifs( cfgFileName );
       po::store( parse_config_file( ifs, config_file_options ), vm );
     }
 
@@ -460,7 +460,7 @@ int main ( int argc, char** argv )
 
   if ( EXIT_SUCCESS == sc && ! vm.count("no-init")) {
     // create an empty __init__.py file in the output dir
-    fstream initPy( ( out / fs::path( "__init__.py" ) ).string().c_str(),
+    fstream initPy( ( out / fs::path( "__init__.py" ) ).string(),
         std::ios_base::out|std::ios_base::trunc );
     initPy << "## Hook for " << pkgName << " genConf module\n" << flush;
   }
@@ -650,10 +650,8 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
     const std::string dbName = ( fs::path(m_outputDirName) /
                   fs::path(*iLib+".confdb") ).string();
 
-    std::fstream py( pyName.c_str(),
-              std::ios_base::out|std::ios_base::trunc );
-    std::fstream db( dbName.c_str(),
-              std::ios_base::out|std::ios_base::trunc );
+    std::fstream py( pyName, std::ios_base::out|std::ios_base::trunc );
+    std::fstream db( dbName, std::ios_base::out|std::ios_base::trunc );
 
     genHeader ( py, db );
     if (!userModule.empty())

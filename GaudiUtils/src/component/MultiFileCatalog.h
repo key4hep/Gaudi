@@ -28,130 +28,129 @@ namespace Gaudi {
     typedef std::vector<IFileCatalog*> Catalogs;
     typedef std::vector<std::string>   CatalogNames;
 
-    template <class T> void _exec(T pmf)  const  {
-      for(Catalogs::const_iterator i=m_catalogs.begin(); i != m_catalogs.end(); ++i)
-        ((*i)->*pmf)();
-    }
     template <class A1,class F> std::string _find(A1& arg1,F pmf)  const {
       std::string result;
-      for(Catalogs::const_iterator i=m_catalogs.begin(); i != m_catalogs.end(); ++i)
-        if ( !(result= ((*i)->*pmf)(arg1)).empty() ) break;
+      for(Catalogs::const_iterator i=m_catalogs.begin(); i != m_catalogs.end(); ++i) {
+        result= ((*i)->*pmf)(arg1);
+        if ( !result.empty() ) break;
+      }
       return result;
     }
-    template <class A1,class F> void _collect(A1 arg1,F pmf)  const {
+    template <class A1,class F> void _collect(A1& arg1,F f)  const {
       A1 tmp;
-      for(Catalogs::const_iterator i=m_catalogs.begin();i!=m_catalogs.end();++i,tmp.clear()) {
-        ((*i)->*pmf)(tmp);
+      for(const auto & i : m_catalogs ) {
+        f(i,tmp); // tmp = f(i) 
         arg1.insert(arg1.end(),tmp.begin(),tmp.end());
+        tmp.clear();
       }
     }
-    template <class A1,class A2,class F> void _collect(A1 arg1,A2& arg2,F pmf)  const {
-      A2 tmp;
-      for(Catalogs::const_iterator i=m_catalogs.begin();i!=m_catalogs.end();++i,tmp.clear()) {
-        ((*i)->*pmf)(arg1,tmp);
-        arg2.insert(arg2.end(),tmp.begin(),tmp.end());
+    template <class A2,class A1,class F> void _collect(const A2& arg2,A1& arg1,F f)  const {
+      A1 tmp;
+      for(const auto& i : m_catalogs ) {
+        f(i,arg2,tmp); // tmp = f(i,arg2)
+        arg1.insert(arg1.end(),tmp.begin(),tmp.end());
+        tmp.clear();
       }
     }
   public:
     /// Create a catalog file, initialization of XercesC.
     MultiFileCatalog(const std::string& nam, ISvcLocator* svc);
     /// Destructor,
-    virtual ~MultiFileCatalog();
+    ~MultiFileCatalog() override = default;
 
     /** IService implementation                                               */
     /// Finalize service object
-    virtual StatusCode initialize();
+    StatusCode initialize() override;
     /// Finalize service object
-    virtual StatusCode finalize();
+    StatusCode finalize() override;
 
     /** Catalog interface                                                     */
     /// Create file identifier using UUID mechanism
-    virtual std::string createFID() const;
+    std::string createFID() const override;
     /// Access to connect string
-    virtual CSTR connectInfo() const;
+    CSTR connectInfo() const override;
     /// Parse the DOM tree of the XML catalog
-    virtual void init()
-    {  _exec(&IFileCatalog::init); m_started=true;                           }
+    void init() override;
     /// Save DOM catalog to file
-    virtual void commit()                   { _exec(&IFileCatalog::commit);   }
+    void commit() override;
     /// Save DOM catalog to file
-    virtual void rollback()                 { _exec(&IFileCatalog::rollback); }
+    void rollback() override;
     /// Check if the catalog is read-only
-    virtual bool readOnly() const;
+    bool readOnly() const override;
     /// Check if the catalog should be updated
-    virtual bool dirty() const;
+    bool dirty() const override;
     /// Return the status of physical file name
-    virtual bool existsPFN(CSTR pfn)  const
+    bool existsPFN(CSTR pfn)  const override
     { return !lookupPFN(pfn).empty();                                         }
     /// Lookup file identifier by physical file name
-    virtual std::string lookupPFN(CSTR pfn) const
+    std::string lookupPFN(CSTR pfn) const override
     {  return _find(pfn,&IFileCatalog::lookupPFN);                            }
     /// Return the status of a logical file name
-    virtual bool existsLFN(CSTR lfn)  const
+    bool existsLFN(CSTR lfn)  const override
     { return !lookupLFN(lfn).empty();                                         }
     /// Lookup file identifier by logical file name
-    virtual std::string lookupLFN(CSTR lfn) const
+    std::string lookupLFN(CSTR lfn) const override
     {  return _find(lfn,&IFileCatalog::lookupLFN);                            }
     /// Return the status of a FileID
-    virtual bool existsFID(CSTR fid)  const
+    bool existsFID(CSTR fid)  const override
     {  return 0 != getCatalog(fid,false,false,false);                          }
     /// Dump all physical file names of the catalog and their attributes associate to the FileID
-    virtual void getPFN(CSTR fid, Files& files) const
-    {  _collect(fid,files,&IFileCatalog::getPFN);                             }
+    void getPFN(CSTR fid, Files& files) const override
+    {  _collect(fid,files,std::mem_fn(&IFileCatalog::getPFN));                             }
     /// Dump all logical file names of the catalog associate to the FileID
-    virtual void getLFN(CSTR fid, Files& files) const
-    {  _collect(fid,files,&IFileCatalog::getLFN);                             }
+    void getLFN(CSTR fid, Files& files) const override
+    {  _collect(fid,files,std::mem_fn(&IFileCatalog::getLFN));                             }
 
     /// Dump all file Identifiers
-    virtual void getFID(Strings& fids)  const
-    {  _collect(fids,&IFileCatalog::getFID);                                  }
+    void getFID(Strings& fids)  const override
+    {  _collect(fids,std::mem_fn(&IFileCatalog::getFID));                                  }
     /// Delete FileID from the catalog
-    virtual void deleteFID(CSTR fid)  const
+    void deleteFID(CSTR fid)  const override
     {  writeCatalog(fid)->deleteFID(fid);                                     }
     /// Create a FileID and DOM Node of the PFN with all the attributes
-    virtual void registerPFN(CSTR fid, CSTR pfn, CSTR ftype) const;
+    void registerPFN(CSTR fid, CSTR pfn, CSTR ftype) const override;
     /// Create a FileID and DOM Node of the LFN with all the attributes
-    virtual void registerLFN(CSTR fid, CSTR lfn) const;
+    void registerLFN(CSTR fid, CSTR lfn) const override;
     /// Create a FileID and DOM Node
-    virtual void registerFID(CSTR fid) const
+    void registerFID(CSTR fid) const override
     {  writeCatalog()->registerFID(fid);                                      }
     /// Dump all MetaData of the catalog for a given file ID
-    virtual void getMetaData(CSTR fid, Attributes& attr) const
-    {  _collect(fid,attr,&IFileCatalog::getMetaData);                         }
+    void getMetaData(CSTR fid, Attributes& attr) const override
+    {  _collect(fid,attr,std::mem_fn(&IFileCatalog::getMetaData));                         }
     /// Access metadata item
-    virtual std::string getMetaDataItem(CSTR fid, CSTR name) const;
+    std::string getMetaDataItem(CSTR fid, CSTR name) const override;
     /// Insert/update metadata item
-    virtual void setMetaData(CSTR fid, CSTR attr, CSTR val) const
+    void setMetaData(CSTR fid, CSTR attr, CSTR val) const override
     {  writeCatalog(fid)->setMetaData(fid,attr,val);                          }
     /// Drop all metadata of one FID
-    virtual void dropMetaData(CSTR fid) const
+    void dropMetaData(CSTR fid) const override
     {  writeCatalog(fid)->dropMetaData(fid);                                  }
     /// Drop specified metadata item
-    virtual void dropMetaData(CSTR fid, CSTR attr) const
+    void dropMetaData(CSTR fid, CSTR attr) const override
     {  writeCatalog(fid)->dropMetaData(fid,attr);                             }
 
     /** Catalog management                                                    */
     /// Find catalog by connect string
-    virtual IFileCatalog* findCatalog(CSTR connect, bool must_be_writable) const;
+    IFileCatalog* findCatalog(CSTR connect, bool must_be_writable) const override;
     /// Add new catalog identified by name to the existing ones
-    virtual void addCatalog(CSTR connect);
+    void addCatalog(CSTR connect) override;
     /// Add new catalog identified by reference to the existing ones
-    virtual void addCatalog(IFileCatalog* cat);
+    void addCatalog(IFileCatalog* cat) override;
     /// Remove catalog identified by name from the existing ones
-    virtual void removeCatalog(CSTR connect);
+    void removeCatalog(CSTR connect) override;
     /// Remove catalog identified by reference from the existing ones
-    virtual void removeCatalog(const IFileCatalog* cat);
+    void removeCatalog(const IFileCatalog* cat) override;
     /// Access catalog container
-    virtual Catalogs& catalogs()                    { return m_catalogs;      }
+    Catalogs& catalogs() override                  { return m_catalogs;      }
     /// Access catalog container (CONST)
-    virtual const Catalogs& catalogs()  const       { return m_catalogs;      }
+    const Catalogs& catalogs() const override      { return m_catalogs;      }
     /// Access to the (first) writable file catalog
-    virtual IFileCatalog* writeCatalog(CSTR fid="") const
+    IFileCatalog* writeCatalog(CSTR fid="") const override
     {  return getCatalog(fid,true,true,false);                                }
     /// Define the writable catalog identified by reference
-    virtual void setWriteCatalog(IFileCatalog* cat);
+    void setWriteCatalog(IFileCatalog* cat) override;
     /// Define the writable catalog identified by name
-    virtual void setWriteCatalog(CSTR connect);
+    void setWriteCatalog(CSTR connect) override;
 
   private:
     /// Find catalog containing a given file identifier
@@ -169,9 +168,9 @@ namespace Gaudi {
     /// Container with references to known catalogs
     Catalogs        m_catalogs;
     /// Property : Container with catalog names
-    CatalogNames    m_catalogNames;
+    CatalogNames    m_catalogNames = { { { "xmlcatalog_file:test_catalog.xml" } } };
     /// Flag to indicate if catalog is started
-    bool            m_started;
+    bool            m_started = false;
     /// BACKUP:: Container with catalog names
     CatalogNames    m_oldNames;
   };

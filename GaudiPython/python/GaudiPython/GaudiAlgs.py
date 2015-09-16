@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 # =============================================================================
-# $Id: GaudiAlgs.py,v 1.2 2008/07/15 16:05:53 marcocle Exp $
-# =============================================================================
 ## @file
 #
 # Helper module, which effectively 'imports' few useful C++ algorithmic

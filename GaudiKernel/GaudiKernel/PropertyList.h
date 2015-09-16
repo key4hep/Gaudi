@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/PropertyList.h,v 1.2 2000/12/13 12:57:20 mato Exp $
 #ifndef GAUDIKERNEL_PROPERTYLIST_H
 #define GAUDIKERNEL_PROPERTYLIST_H
 

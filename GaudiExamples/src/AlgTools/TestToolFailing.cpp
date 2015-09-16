@@ -25,7 +25,6 @@ public:
 
 };
 
-#include "GaudiKernel/ToolFactory.h"
 // Declaration of the Tool Factory
 DECLARE_COMPONENT(TestToolFailing)
 

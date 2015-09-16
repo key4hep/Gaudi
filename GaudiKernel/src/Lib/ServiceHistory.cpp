@@ -1,7 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
 //
-// $Id: ServiceHistory.cpp,v 1.2 2008/06/04 12:35:15 marcocle Exp $
-//
 // GaudiHistory/ServiceHistory.cpp
 //
 // Contains history information for a Service
@@ -26,7 +24,7 @@ using namespace std;
 
 ServiceHistory::ServiceHistory():
   //  HistoryObj(),
-  m_pService(0),
+  m_pService(nullptr),
   m_name("none"),
   m_type("none"),
   m_version("none")
@@ -69,16 +67,10 @@ ServiceHistory::ServiceHistory(const IService& isv, const JobHistory* job):
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-ServiceHistory::~ServiceHistory() {
-
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
 const CLID& 
 ServiceHistory::classID() {
 
-  static CLID CLID_ServiceHistory = 187225489;   // from `clid ServiceHistory`
+  static const CLID CLID_ServiceHistory = 187225489;   // from `clid ServiceHistory`
   return CLID_ServiceHistory;
 
 }
@@ -97,10 +89,8 @@ ServiceHistory::dump(std::ostream& ost, const bool isXML, int ind) const {
     //Properties
     ost << "Properties: [" << endl;
     
-    for ( ServiceHistory::PropertyList::const_iterator
-	    ipprop=properties().begin();
-	  ipprop!=properties().end(); ++ipprop ) {
-      const Property& prop = **ipprop;
+    for ( const auto& ipprop : properties() ) {
+      const Property& prop = *ipprop;
       prop.fillStream(ost);
       ost << endl;
     }
@@ -115,10 +105,8 @@ ServiceHistory::dump(std::ostream& ost, const bool isXML, int ind) const {
 	<< "\" version=\"" << convert_string(version())
 	<< "\">" << endl;
       
-    for ( ServiceHistory::PropertyList::const_iterator
-	    ipprop=properties().begin();
-	  ipprop!=properties().end(); ++ipprop ) {
-      const Property& prop = **ipprop;
+    for ( const auto& ipprop : properties() ) {
+      const Property& prop = *ipprop;
 
       indent(ost,ind+2);
       ost << "<PROPERTY name=\"" << prop.name() 

@@ -42,7 +42,7 @@ public:
   // Output: XYZVector - Magnetic field vector.
   // Return: StatusCode SUCCESS if calculation was performed.
   virtual StatusCode fieldVector( const ROOT::Math::XYZPoint& xyz,
-				  ROOT::Math::XYZVector& fvec ) const = 0;
+                                  ROOT::Math::XYZVector& fvec ) const = 0;
 
 };
 

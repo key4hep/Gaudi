@@ -36,13 +36,6 @@
 */
 class EvtPersistencySvc  : virtual public PersistencySvc	{
 public:
-  /**@name PersistencySvc overrides    */
-  //@{
-  /// Initialize the service.
-  virtual StatusCode initialize();
-  /// Finalize the service.
-  virtual StatusCode finalize();
-  //@}
 
   /**@name: Object implementation  */
   //@{
@@ -50,6 +43,6 @@ public:
   EvtPersistencySvc(const std::string& name, ISvcLocator* svc);
 
   /// Standard Destructor
-  virtual ~EvtPersistencySvc();
+  ~EvtPersistencySvc() override = default;
 };
 #endif // PERSISTENCYSVC_EVTPERSISTENCYSVC_H

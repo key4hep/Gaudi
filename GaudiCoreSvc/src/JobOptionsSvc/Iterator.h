@@ -1,4 +1,3 @@
-// $Id:$
 #ifndef JOBOPTIONSVC_ITERATOR_H_
 #define JOBOPTIONSVC_ITERATOR_H_
 // ============================================================================

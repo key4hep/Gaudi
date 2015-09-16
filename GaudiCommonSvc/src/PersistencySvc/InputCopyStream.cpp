@@ -14,17 +14,12 @@ DECLARE_COMPONENT(InputCopyStream)
 
 // Standard Constructor
 InputCopyStream::InputCopyStream(const std::string& name, ISvcLocator* pSvcLocator)
-    : OutputStream  ( name, pSvcLocator),
-      m_leavesTool  ( NULL             ),
-      m_tesVetoList (                  )
+    : OutputStream  ( name, pSvcLocator)
 {
   m_doPreLoad      = false;
   m_doPreLoadOpt   = false;
   declareProperty( "TESVetoList", m_tesVetoList );
 }
-
-// Standard Destructor
-InputCopyStream::~InputCopyStream() { }
 
 // Initialize the instance.
 StatusCode InputCopyStream::initialize()
@@ -34,7 +29,6 @@ StatusCode InputCopyStream::initialize()
 
   sc = toolSvc()->retrieveTool("DataSvcFileEntriesTool", "InputCopyStreamTool",
                                m_leavesTool);
-
   return sc;
 }
 
@@ -42,7 +36,7 @@ StatusCode InputCopyStream::initialize()
 StatusCode InputCopyStream::finalize()
 {
   toolSvc()->releaseTool(m_leavesTool).ignore();
-  m_leavesTool = NULL;
+  m_leavesTool = nullptr;
   return OutputStream::finalize();
 }
 
@@ -61,21 +55,16 @@ StatusCode InputCopyStream::collectObjects()
       // Veto out locations
       IDataStoreLeaves::LeavesList filteredLeaves;
       filteredLeaves.reserve( leaves.size() );
-      for ( IDataStoreLeaves::LeavesList::const_iterator iL = leaves.begin();
-            iL != leaves.end(); ++iL )
-      {
-        if ( *iL && (*iL)->registry() )
-        {
-          if ( std::find( m_tesVetoList.begin(),
-                          m_tesVetoList.end(),
-                          (*iL)->registry()->identifier() ) == m_tesVetoList.end() )
-          {
-            filteredLeaves.push_back( (*iL) );
-          }
-        }
-      }
+      std::copy_if( leaves.begin(), leaves.end(),
+                    std::back_inserter(filteredLeaves),
+                    [&](IDataStoreLeaves::LeavesList::const_reference i) {
+                       return i && i->registry() &&
+                              std::find( m_tesVetoList.begin(),
+                                         m_tesVetoList.end(),
+                                         i->registry()->identifier() ) == m_tesVetoList.end();
 
-      // saved the veto'ed list
+      });
+      // save the veto'ed list
       m_objects.assign( filteredLeaves.begin(), filteredLeaves.end() );
 
     }

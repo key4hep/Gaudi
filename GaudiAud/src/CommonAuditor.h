@@ -9,7 +9,7 @@ public:
       @param svcloc  A pointer to a service location service */
   CommonAuditor(const std::string& name, ISvcLocator *svcloc);
   /// Destructor
-  virtual ~CommonAuditor();
+  virtual ~CommonAuditor() = default;
 
   /// \name "before" Auditor hooks
   /// The default behavior is to fall back on the version accepting 2 strings,
@@ -45,7 +45,7 @@ protected:
     const std::vector<std::string> &v = m_types.value();
     // we need to return true is the list is empty or when the list does't
     // start by "none" and the list contain the event we got.
-    return (v.size() == 0) || (
+    return v.empty() || (
              (v[0] != "none") &&
              (find(v.begin(), v.end(), evt) != v.end())
            );

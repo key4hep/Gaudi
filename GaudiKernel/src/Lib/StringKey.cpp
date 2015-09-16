@@ -1,4 +1,3 @@
-// $Id: $
 // ============================================================================
 // Include files
 // ============================================================================
@@ -7,11 +6,6 @@
 #include "GaudiKernel/Parsers.h"
 #include "GaudiKernel/ToStream.h"
 #include "GaudiKernel/StringKey.h"
-// ============================================================================
-// Boost
-// ============================================================================
-#include "boost/functional/hash.hpp"
-#include "boost/bind.hpp"
 // ============================================================================
 /** @file
  *  Implementation file for class Gaudi::StringKey
@@ -22,16 +16,16 @@
 // ============================================================================
 // constructor from the string: perform hashing
 // ============================================================================
-Gaudi::StringKey::StringKey ( const std::string& key )
-  : m_str  ( key )
-  , m_hash ( boost::hash_value( m_str ) )  // NB! hashing here!!!
+Gaudi::StringKey::StringKey ( std::string key )
+  : m_str  ( std::move(key) )
+  , m_hash ( std::hash<std::string>()(m_str)  )  // NB! hashing here!!!
 {}
 // ============================================================================
 // constructor from the string: perform hashing
 // ============================================================================
 Gaudi::StringKey::StringKey ( const char* key )
   : m_str  ( key )
-  , m_hash ( boost::hash_value( m_str ) )  // NB! hashing here!!!
+  , m_hash ( std::hash<std::string>()(m_str) )  // NB! hashing here!!!
 {}
 // ============================================================================
 // the representation of the object

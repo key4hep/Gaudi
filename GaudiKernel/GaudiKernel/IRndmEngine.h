@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/IRndmEngine.h,v 1.2 2001/01/19 14:22:55 mato Exp $
 #ifndef GAUDIKERNEL_IRNDMENGINE_H
 #define GAUDIKERNEL_IRNDMENGINE_H
 

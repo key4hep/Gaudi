@@ -35,28 +35,20 @@ class EvtSelectorContext  : public IEvtSelector::Context {
   friend class EventCollectionSelector;
 private:
   /// Copy constructor
-  EvtSelectorContext ( const EvtSelectorContext& copy)
-  : IEvtSelector::Context(copy),
-    m_count(copy.m_count),
-    m_strCount(copy.m_strCount),
-    m_pSelector(copy.m_pSelector), 
-    m_context(copy.m_context),
-    m_pAddress(copy.m_pAddress)
-  {
-  }
+  EvtSelectorContext ( const EvtSelectorContext& ) = default;
 protected:
   /// Stream identifier
-  IDataStreamTool::size_type m_streamID;
+  IDataStreamTool::size_type m_streamID = -1;
   /// Event counter
-  long                       m_count;
+  long                       m_count = -1;
   /// Event counter within stream
-  long                       m_strCount;
+  long                       m_strCount = -1;
   /// Pointer to event selector
-  const IEvtSelector*     m_pSelector;
+  const IEvtSelector*     m_pSelector = nullptr;
   /// Pointer to "real" iterator
-  IEvtSelector::Context*  m_context;
+  IEvtSelector::Context*  m_context = nullptr;
   /// Pointer to opaque address
-  IOpaqueAddress*         m_pAddress;
+  IOpaqueAddress*         m_pAddress = nullptr;
   /// Set the address of the iterator
   void set(const IEvtSelector* sel, IDataStreamTool::size_type id, IEvtSelector::Context* it, IOpaqueAddress* pA)    {
     m_pSelector = sel;
@@ -93,29 +85,14 @@ protected:
 public:
   /// Standard constructor
   EvtSelectorContext( const IEvtSelector* selector )
-  : m_streamID(-1),
-    m_count(-1),
-    m_strCount(-1),
-    m_pSelector(selector),
-    m_context(0),
-    m_pAddress(0)
-  {
-  }
+  : m_pSelector(selector) { }
   /// Standard Destructor
-  virtual ~EvtSelectorContext() { 
-  }
+  ~EvtSelectorContext() override = default;
+
   /// Copy constructor
-  virtual EvtSelectorContext& operator=(const EvtSelectorContext& copy)   {
-    m_streamID  = copy.m_streamID;
-    m_count     = copy.m_count;
-    m_strCount  = copy.m_strCount;
-    m_pSelector = copy.m_pSelector;
-    m_context   = copy.m_context;
-    m_pAddress  = copy.m_pAddress;
-    return *this;
-  }
+  virtual EvtSelectorContext& operator=(const EvtSelectorContext&) = default;
   /// Stream identifier
-  virtual IDataStreamTool::size_type ID()   const   {
+  virtual IDataStreamTool::size_type ID()   const {
     return m_streamID;
   }
   /// Access counter
@@ -126,7 +103,7 @@ public:
   long numStreamEvent()  const    {
     return m_strCount;
   }
-  void* identifier() const  {
+  void* identifier() const override {
     return (void*)m_pSelector;
   }
 };

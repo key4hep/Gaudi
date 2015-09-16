@@ -16,8 +16,8 @@ namespace Gaudi {
         m_type = (m_haveType) ? tn.substr( 0, slash_pos ) : deftyp;
       }
     public:
-      TypeNameString(const char tn[]): m_haveType(false) { init(tn, tn); }
-      TypeNameString(const std::string& tn): m_haveType(false) { init(tn, tn); }
+      TypeNameString(const char tn[]) : TypeNameString( std::string{tn} ) { } 
+      TypeNameString(const std::string& tn) { init(tn, tn); }
       TypeNameString(const std::string& tn, const std::string& deftyp) { init(tn, deftyp); m_haveType = true; }
       const std::string& type() const { return m_type; }
       const std::string& name() const { return m_name; }

@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/Message.h,v 1.5 2008/02/20 19:16:23 hmd Exp $
 #ifndef GAUDIKERNEL_MESSAGE_H
 #define GAUDIKERNEL_MESSAGE_H
 
@@ -12,25 +11,25 @@
 
     @author Iain Last
 */
-class GAUDI_API Message {
+class GAUDI_API Message final {
 public:
   /// Default constructor
-  Message();
+  Message() = default;
 
   /// Constructor.
   Message ( const char* src, int type, const char* msg );
 
   /// Constructor.
-  Message ( const std::string& src, int type, const std::string& msg );
+  Message ( std::string src, int type, std::string msg );
 
   /// Default destructor.
-  ~Message() {}
+  ~Message() = default;
 
   /// Get the message string.
   const std::string& getMessage() const;
 
   /// Set the message string.
-  void setMessage( const std::string& msg );
+  void setMessage( std::string msg );
 
   /// Get the message type.
   int getType() const;
@@ -42,7 +41,7 @@ public:
   const std::string& getSource() const;
 
   /// Set the message source.
-  void setSource( const std::string& src );
+  void setSource( std::string src );
 
   /// Get the format string.
   const std::string& getFormat() const;
@@ -51,7 +50,7 @@ public:
   static const std::string getDefaultFormat();
 
   /// Set the format string.
-  void setFormat( const std::string& msg ) const;
+  void setFormat( std::string msg ) const;
 
   /// Get the time format string.
   const std::string& getTimeFormat() const;
@@ -60,7 +59,7 @@ public:
   static const std::string getDefaultTimeFormat() ;
 
   /// Set the time format string.
-  void setTimeFormat( const std::string& timeFormat ) const;
+  void setTimeFormat( std::string timeFormat ) const;
 
   /// Needed to build maps
   bool operator < ( const Message& test );
@@ -71,7 +70,7 @@ public:
   /// Insert the message into a stream.
   friend bool operator == ( const Message& a, const Message& b );
 
-protected:
+private:
   /// Called when an invalid format string is encountered.
   void invalidFormat() const;
 
@@ -91,70 +90,73 @@ protected:
   std::string m_message;
 
   /// The source.
-  std::string m_source;
+  std::string m_source = "UNKNOWN";
 
   /// The format string.
-  mutable std::string m_format;
+  mutable std::string m_format = DEFAULT_FORMAT;
 
   /// Time format string.
-  mutable std::string m_time_format;
+  mutable std::string m_time_format = DEFAULT_TIME_FORMAT;
 
   /// The type.
-  int m_type;
+  int m_type = 0;
 
   /// Formatted message.
   mutable std::string m_formatted_msg;
 
   /// The current fill character.
-  mutable char m_fill;
+  mutable char m_fill = ' ';
 
   /// The current field width.
-  mutable int m_width;
+  mutable int m_width = 0;
 
   /// Justification.
-  mutable bool m_left;
+  mutable bool m_left = true;
+
+  /// Formatting string characters.
 
   /// The character used to prefix formatting commands.
-  static const char FORMAT_PREFIX;
+  static const char FORMAT_PREFIX = '%';
 
   /// The character used to indicate start of left text justification.
-  static const char JUSTIFY_LEFT;
+  static const char JUSTIFY_LEFT = 'L';
 
   /// The character used to indicate start of right text justification.
-  static const char JUSTIFY_RIGHT;
+  static const char JUSTIFY_RIGHT = 'R';
 
   /// The character used to indicate that the message should be printed.
-  static const char MESSAGE;
+  static const char MESSAGE = 'M';
 
   /// The character used to indicate that the message type should be printed.
-  static const char TYPE;
+  static const char TYPE = 'T';
 
   /// The character used to indicate that the message timestamp should be printed.
-  static const char TIME;
+  static const char TIME = 't';
 
   /// The character used to indicate that the message
   /// timestamp should be printed in UTC time.
-  static const char UTIME;
+  static const char UTIME = 'u';
 
   /// The character used to indicate that the message source should be printed.
-  static const char SOURCE;
+  static const char SOURCE = 'S';
 
   /** The character used to indicate that the previous character is to be used
    * for padding out fields if the text is not long enough.
    */
-  static const char FILL;
+  static const char FILL = 'F';
 
   /** The character used to indicate that the previous decimal characters
    * should be taken as the field width.
    */
-  static const char WIDTH;
+  static const char WIDTH = 'W';
 
   /// The default message format.
-  static const char* DEFAULT_FORMAT;
+  //static const char* Message::DEFAULT_FORMAT = "% F%67W%L#############################################################################\n-----------------------------------------------------------------------------\nMessage follows...\nSource  : %S\nType    : %T\nMessage : %M\nEnd of message.\n-----------------------------------------------------------------------------\n";
+  static constexpr const char* DEFAULT_FORMAT = "% F%18W%S%7W%R%T %0W%M";
 
   /// The default time format.
-  static const char* DEFAULT_TIME_FORMAT;
-
+  // Time format accepts anything that strftime does plus %f for milliseconds
+  static constexpr const char* DEFAULT_TIME_FORMAT = "%Y-%m-%d %H:%M:%S,%f";
 };
 
 /// Insert the message into a stream.

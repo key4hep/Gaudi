@@ -1,4 +1,3 @@
-// $Id: GSLFunAdapters.cpp,v 1.2 2005/11/25 10:27:03 mato Exp $
 // ============================================================================
 // Include files
 // ============================================================================
@@ -47,20 +46,18 @@ namespace Genfun
       m_result -> err = func.m_result -> err ;
     }
     
-    GSLFunctionWithError::~GSLFunctionWithError() 
-    { if ( 0 != m_result ) { delete m_result  ; } }
     
     double GSLFunctionWithError::operator() 
       (       double    x ) const 
     {
-      (*m_function)( x , m_result ) ;
+      (*m_function)( x , m_result.get() ) ;
       return m_result -> val ;
     }
     
     double GSLFunctionWithError::operator() 
       ( const Genfun::Argument& x ) const
     {
-      (*m_function)( x[0] , m_result ) ;
+      (*m_function)( x[0] , m_result.get() ) ;
       return m_result -> val ;
     }
     
@@ -106,9 +103,6 @@ namespace Genfun
     {
       *m_mode = *(func.m_mode) ;
     }
-    
-    GSLFunctionWithMode::~GSLFunctionWithMode() 
-    { if ( 0 != m_mode ) { delete m_mode  ; } }
     
     double GSLFunctionWithMode::operator() 
       (       double    x ) const 
@@ -164,23 +158,18 @@ namespace Genfun
       m_result -> err =   func.m_result -> err ;
     }
     
-    GSLFunctionWithModeAndError::~GSLFunctionWithModeAndError() 
-    { 
-      if ( 0 != m_mode   ) { delete m_mode    ; } 
-      if ( 0 != m_result ) { delete m_result  ; } 
-    }
     
     double GSLFunctionWithModeAndError::operator() 
       (       double    x ) const 
     { 
-      (*m_function)( x , *m_mode , m_result ) ; 
+      (*m_function)( x , *m_mode , m_result.get() ) ; 
       return m_result -> val ;
     }
     
     double GSLFunctionWithModeAndError::operator() 
       ( const Genfun::Argument& x ) const
     { 
-      (*m_function)( x[0] , *m_mode , m_result ) ; 
+      (*m_function)( x[0] , *m_mode , m_result.get() ) ; 
       return m_result -> val ;
     }
     

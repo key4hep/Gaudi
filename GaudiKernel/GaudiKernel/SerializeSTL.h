@@ -1,4 +1,3 @@
-// $Id: SerializeSTL.h,v 1.1 2007/11/08 15:45:06 marcocle Exp $
 /** @file GaudiKernel/SerializeSTL.h
  *
  * Provide serialization function (output only) for some common STL classes

@@ -1,4 +1,3 @@
-// $Id: TupleDecorator.cpp,v 1.7 2007/08/07 14:05:33 marcocle Exp $
 #ifdef __ICC
 // disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
 //   Coming from ROOT GenVector
@@ -15,6 +14,14 @@
 // Handle CLHEP 2.0.x move to CLHEP namespace
 namespace CLHEP { }
 using namespace CLHEP;
+// CLHEP is just #()$)*#)*@#)$@ Not even the git master (as of Aug 2015) has HepVector::begin and HepVector::end defined!!!
+// fortunately, ADL comes to the rescue... 
+namespace CLHEP {
+    class HepVector;
+    double* begin(CLHEP::HepVector& v) { return &v[0]; }
+    const double* begin(const CLHEP::HepVector& v) { return &v[0]; }
+}
+
 // ============================================================================/
 // GaudiAlg
 // ============================================================================

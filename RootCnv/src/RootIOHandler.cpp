@@ -1,4 +1,3 @@
-// $Id: RootIOHandler.cpp,v 1.3 2010-09-27 15:43:53 frankb Exp $
 //====================================================================
 //
 //  Package    : RootCnv
@@ -26,10 +25,10 @@
 using namespace std;
 
 namespace GaudiRoot {
-  static const DataObject* last_link_object = 0;
+  static const DataObject* last_link_object = nullptr;
   static int               last_link_hint = -1;
   void resetLastLink() {
-    last_link_object = 0;
+    last_link_object = nullptr;
     last_link_hint   = -1;
   }
   void pushCurrentDataObject(DataObject** pobjAddr) {
@@ -59,9 +58,9 @@ namespace GaudiRoot {
     /// Initializing constructor
     IOHandler(TClass* c) : m_root(c) {  }
     /// Standard destructor
-    virtual ~IOHandler() {  }
+    ~IOHandler() override = default;
     /// ROOT I/O callback
-    virtual void operator()(TBuffer &b, void *obj)  {
+    void operator()(TBuffer &b, void *obj)  override {
       try {
         if ( b.IsReading() )
           get(b,obj);
@@ -124,7 +123,7 @@ namespace GaudiRoot {
             break;
           }
         }
-        pDO = 0;
+        pDO = nullptr;
         cout << "IOHandler<SmartRefBase>::onWrite> "
           << "Found invalid smart reference with object "
           << "having no parent."
@@ -189,8 +188,7 @@ namespace GaudiRoot {
     string cl_name = System::typeinfoName(typeid(T));
     TClass* c = gROOT->GetClass(cl_name.c_str());
     if ( c ) {
-      TClassStreamer* s = new IOHandler<T>(c);
-      c->AdoptStreamer(s);
+      c->AdoptStreamer(new IOHandler<T>(c));
       log << MSG::DEBUG << "Installed IOHandler for class " << cl_name << endmsg;
       return true;
     }

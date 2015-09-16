@@ -28,7 +28,7 @@ public:
 					  const std::string& ) = 0;
 
   /// virtual destructor
-  virtual ~IPartPropSvc() {}
+  virtual ~IPartPropSvc() = default;
 };
 
 #endif

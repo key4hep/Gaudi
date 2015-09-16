@@ -1,7 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
 //
-// $Id: JobHistory.cpp,v 1.1 2006/11/09 10:24:05 mato Exp $
-//
 // GaudiHistory/JobHistory.cpp
 //
 // Contains history information for a job. Imports all environment vars
@@ -72,22 +70,20 @@ JobHistory::JobHistory(const std::string& rel, const std::string& os,
 
 // Destructor.
 
-JobHistory::~JobHistory() {
-}
+JobHistory::~JobHistory() = default;
 
 const CLID& 
 JobHistory::classID() {
 
-  static CLID CLID_JobHistory = 247994533;
+  static const CLID CLID_JobHistory = 247994533;
   return CLID_JobHistory;
 
 }
 
 void
 JobHistory::addProperty(const std::string& client, const Property* prop) {
-//  if (m_props.find(prop) == m_props.end()) {
-    m_ppl.push_back( std::pair<std::string, const Property*>(client,prop) );
-//  }
+//  if (m_props.find(prop) == m_props.end()) 
+    m_ppl.emplace_back( client,prop );
 }
 
 
@@ -104,28 +100,20 @@ JobHistory::dump(std::ostream& ost, const bool isXML, int /*ind*/) const {
     ost << "CMTCONFIG: " << cmtconfig() << endl;
     ost << "Job start time: " << start_time() << endl << endl;
     ost << "Properties: [" << endl;;
-    for ( JobHistory::PropertyPairList::const_iterator
-	    ipprop=propertyPairs().begin();
-	  ipprop!=propertyPairs().end(); ++ipprop ) {
-      std::string client = ipprop->first;
-      const Property* prop = ipprop->second;
+    for ( const auto& ipprop : propertyPairs() ) {
+      const std::string& client = ipprop.first;
+      const Property* prop = ipprop.second;
       ost << client << ":  ";
       prop->fillStream(ost);
       ost << endl;
     }
     ost << "]" << endl;
-    vector<string> env = environment();
-    for (vector<string>::const_iterator itr=env.begin();  itr != env.end(); 
-	 ++itr) {
-      ost << *itr << endl;
-    }
+    for (const auto& itr : environment() ) ost << itr << endl;
   } else {
 
   }
 
 }
-
-
 
 //**********************************************************************
 // Free functions.
@@ -134,9 +122,7 @@ JobHistory::dump(std::ostream& ost, const bool isXML, int /*ind*/) const {
 // Output stream.
 
 ostream& operator<<(ostream& lhs, const JobHistory& rhs) {
-
   rhs.dump(lhs,false);
-
   return lhs;
 }
 

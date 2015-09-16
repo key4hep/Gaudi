@@ -1,4 +1,3 @@
-// $Id: ProcessDescriptor.h,v 1.3 2006/12/10 20:29:18 leggett Exp $
 #ifndef GAUDIKERNEL_PROCESS_H
 #define GAUDIKERNEL_PROCESS_H
 

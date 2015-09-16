@@ -15,18 +15,16 @@ namespace Gaudi {
       class ReadAlg : public Algorithm {
       public:
         ReadAlg(const std::string& name, ISvcLocator* pSvcLoc);
-        virtual ~ReadAlg();
+        ~ReadAlg() override = default;
         /// Initialize
-        virtual StatusCode initialize();
-        /// Finalize
-        virtual StatusCode finalize();
+        StatusCode initialize() override;
         /// Event callback
-        virtual StatusCode execute();
+        StatusCode execute() override;
       private:
         std::string m_addressfile;
         /// Address details for the data to be added to the main event.
         std::vector<RootAddressArgs> m_addresses;
-        size_t m_count;
+        size_t m_count = 0;
       };
     }
   }

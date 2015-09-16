@@ -1,4 +1,3 @@
-// $Id: RootConverter.h,v 1.5 2010-08-24 14:03:03 frankb Exp $
 //====================================================================
 //	RootConverter class definition
 //

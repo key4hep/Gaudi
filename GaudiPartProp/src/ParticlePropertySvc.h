@@ -77,16 +77,15 @@ public:
   typedef std::map< std::string, mapped_type > MapName     ;
   typedef std::map< int,         mapped_type > MapStdHepID ;
   typedef std::map< int,         mapped_type > MapPythiaID ;
-  typedef IParticlePropertySvc::VectPP VectPP;
-  typedef IParticlePropertySvc::const_iterator const_iterator;
-  typedef IParticlePropertySvc::iterator iterator;
-  typedef std::set<ParticleProperty*>    Set ;
+  using IParticlePropertySvc::VectPP;
+  using IParticlePropertySvc::const_iterator;
+  using IParticlePropertySvc::iterator;
   // Inherited Service overrides:
 
   /// Initialise the service.
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
   /// Finalise the service.
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
   /** Create a new particle property.
    *  @attention ParticlePropertySvc *IS* the owner if this property!
    *  @paramparticle String name of the particle.
@@ -99,7 +98,7 @@ public:
    *  @param pythiaId Pythia ID of the particle.
    *  @return StatusCode - SUCCESS if the particle property was added.
    */
-  virtual StatusCode push_back
+  StatusCode push_back
   ( const std::string& particle ,
     int                geantId  ,
     int                jetsetId ,
@@ -108,48 +107,47 @@ public:
     double             tlife    ,
     const std::string& evtName  ,
     int                pythiaId ,
-    double             maxWidth ) ;
+    double             maxWidth ) override ;
   /** Add a new particle property.
    *  @attention ParticlePropertySvc is not the owner of this property!
    *  @param pp, a particle property class.
    *  @return StatusCode - SUCCESS if the particle property was added.
    */
-  virtual StatusCode push_back( ParticleProperty* pp );
+  StatusCode push_back( ParticleProperty* pp ) override;
   /// Get a const reference to the beginning of the container.
-  virtual const_iterator begin() const { return m_vectpp.begin() ; }
+  const_iterator begin() const override { return m_vectpp.begin() ; }
   /// Get a const reference to the end of the container.
-  virtual const_iterator end  () const { return m_vectpp.end() ; }
+  const_iterator end  () const override { return m_vectpp.end() ; }
   /// Get the container size.
-  virtual int size() const { return m_vectpp.size() ; };
+  int size() const override { return m_vectpp.size() ; };
   /// Retrieve a property by geant3 id.
-  virtual ParticleProperty* find( int geantId )
+  ParticleProperty* find( int geantId ) override
   { return m_idmap[ geantId ] ; }
   /// Retrieve a property by particle name.
-  virtual ParticleProperty* find( const std::string& name )
+  ParticleProperty* find( const std::string& name ) override
   { return m_namemap[ name ] ; }
   /// Retrieve a property by StdHep id
-  virtual ParticleProperty* findByStdHepID( int stdHepId )
+  ParticleProperty* findByStdHepID( int stdHepId ) override
   { return m_stdhepidmap[ stdHepId ] ; }
   /// Retrieve a property by Pythia id
-  virtual ParticleProperty* findByPythiaID( int pythiaID )
+  ParticleProperty* findByPythiaID( int pythiaID ) override
   { return m_pythiaidmap[ pythiaID ]; }
   /// Erase a property by geant3 id.
-  virtual StatusCode erase( int geantId )
+  StatusCode erase( int geantId ) override
   { return erase ( find ( geantId ) ) ; }
   /// Erase a property by particle name.
-  virtual StatusCode erase( const std::string& name )
+  StatusCode erase( const std::string& name ) override
   { return erase ( find ( name ) ) ; }
   /// Erase a property by StdHep id ???
-  virtual StatusCode eraseByStdHepID( int stdHepId )
+  StatusCode eraseByStdHepID( int stdHepId ) override
   { return erase( findByStdHepID ( stdHepId ) ) ; }
   /** Standard Constructor.
    *  @param  name   String with service name
    *  @param  svc    Pointer to service locator interface
    */
-  ParticlePropertySvc
-  ( const std::string& name , ISvcLocator* svc );
+  ParticlePropertySvc ( const std::string& name , ISvcLocator* svc );
   /// Destructor.
-  virtual ~ParticlePropertySvc();
+  ~ParticlePropertySvc() override = default;
 protected:
   /** helper (protected) function to
    *  find an antiparticle for the given particle ID (StdHepID)
@@ -182,7 +180,7 @@ private:
   typedef std::vector<std::string> Files ;
   typedef std::vector<std::string> Particles ;
 
-  std::string m_filename; ///< Filename of the particle properties file
+  std::string m_filename = "ParticleTable.txt"  ; ///< Filename of the particle properties file
   Files m_other ; ///< additional file names
   // properties to be redefined explicitly
   Particles m_particles ;
@@ -194,10 +192,10 @@ private:
   MapPythiaID m_pythiaidmap;     ///< Map for Pythia Ids
 
   // local storage of ALL properties
-  Set                           m_owned    ;
+  std::set<std::unique_ptr<ParticleProperty>>   m_owned    ;
   std::set<std::string>         m_replaced ;
 
-  IFileAccess *m_fileAccess;
+  IFileAccess *m_fileAccess = nullptr;
 };
 } // namespace Gaudi
 // =============================================================================

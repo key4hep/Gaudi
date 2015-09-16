@@ -4,6 +4,12 @@
 ! Purpose     : Gaudi Particle Property Service
 ! Commit Id   : $Format:%H$
 !-----------------------------------------------------------------------------
+! 2015-09-09 - Gerhard Raven
+ - C++11 modernization changes
+   o optimize string handling
+   o prefer std::unique_ptr over raw pointer with explicit delete
+   o avoid repeated lookups
+   o prefer boost::algorithm::trim_left_if over in-situ implementation
 
 ============================= GaudiPartProp v2r1 =============================
 ! 2014-03-18 - Ben Couturier

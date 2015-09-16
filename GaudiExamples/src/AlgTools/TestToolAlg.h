@@ -1,4 +1,3 @@
-// $Id: TestToolAlg.h,v 1.1 2004/03/09 09:25:33 mato Exp $
 #ifndef TESTTOOLALG_H 
 #define TESTTOOLALG_H 1
 

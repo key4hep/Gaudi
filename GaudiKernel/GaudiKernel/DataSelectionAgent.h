@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/DataSelectionAgent.h,v 1.3 2001/11/12 08:42:58 mato Exp $
 #ifndef GAUDIKERNEL_DATASELECTIONAGENT_H
 #define GAUDIKERNEL_DATASELECTIONAGENT_H
 

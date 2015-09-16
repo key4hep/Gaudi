@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/ObjectVector.h,v 1.11 2008/10/09 16:46:49 marcocle Exp $
 #ifndef GAUDIKERNEL_OBJECTVECTOR_H
 #define GAUDIKERNEL_OBJECTVECTOR_H
 

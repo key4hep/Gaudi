@@ -1,4 +1,3 @@
-// $Id: IAlgTool.h,v 1.7 2008/06/02 14:20:38 marcocle Exp $
 #ifndef GAUDIKERNEL_IALGTOOL_H
 #define GAUDIKERNEL_IALGTOOL_H
 
@@ -26,7 +25,7 @@ public:
   DeclareInterfaceID(IAlgTool,3,0);
 
   /// Virtual destructor
-  virtual ~IAlgTool() { }
+  ~IAlgTool() override = default;
 
   /// The type of an AlgTool, meaning the concrete AlgTool class.
   virtual const std::string&  type() const = 0;
@@ -110,10 +109,6 @@ public:
    */
   virtual StatusCode sysRestart() = 0;
 
-  /** Current number of reference counts.
-      Avoids having to call addRef() + release() to get current refCount.
-  */
-  virtual unsigned long refCount() const = 0;
 };
 
 #endif  // GAUDIKERNEL_IALGTOOL_H

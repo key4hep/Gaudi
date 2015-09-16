@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/IParticlePropertySvc.h,v 1.4 2004/03/04 13:30:35 mato Exp $
 #ifndef GAUDIKERNEL_IPARTICLEPROPERTYSVC_H
 #define GAUDIKERNEL_IPARTICLEPROPERTYSVC_H
 
@@ -81,7 +80,7 @@ public:
   virtual StatusCode eraseByStdHepID( int stdHepID ) = 0;
 
   /// virtual destructor
-  virtual ~IParticlePropertySvc() {}
+  virtual ~IParticlePropertySvc() = default;
 };
 
 #endif

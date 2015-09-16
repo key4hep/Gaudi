@@ -29,7 +29,7 @@ bool StatusCode::checkingEnabled() {
 }
 
 const IssueSeverity& StatusCode::severity() const {
-  static IssueSeverity dummy;
+  static const IssueSeverity dummy;
   if (m_severity) return *m_severity;
   else            return dummy;
 }
@@ -50,7 +50,7 @@ void StatusCode::check() {
     /// @FIXME : (MCl) use backTrace(std::string&, const int, const int) instead
     if (System::backTrace(addresses, depth)) {
 
-      for(size_t idx: {2, 3})
+      for(size_t idx: {2, 3}) {
         if (System::getStackLevel(addresses[idx], addr, fnc, lib) &&
             fnc != "StatusCode::~StatusCode()") {
 
@@ -63,7 +63,7 @@ void StatusCode::check() {
           }
           break;
         }
-
+      }
     }
   }
 }
