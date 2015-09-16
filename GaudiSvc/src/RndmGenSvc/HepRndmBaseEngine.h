@@ -6,7 +6,7 @@
 //	Author     : M.Frank
 //  History    :
 // +---------+----------------------------------------------+---------
-// |    Date |                 Comment                      | Who     
+// |    Date |                 Comment                      | Who
 // +---------+----------------------------------------------+---------
 // | 29/10/99| Initial version                              | MF
 // +---------+----------------------------------------------+---------
@@ -39,7 +39,7 @@ namespace HepRndm  {
     double rndm() const override { return m_hepEngine->flat(); }
 
     StatusCode finalize() override {
-      if (m_hepEngine) HepRandom::setTheEngine(nullptr);
+      if (m_hepEngine) CLHEP::HepRandom::setTheEngine(nullptr);
       m_hepEngine.reset();
       return RndmEngine::finalize();
     }

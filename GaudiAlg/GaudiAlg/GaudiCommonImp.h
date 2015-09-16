@@ -275,6 +275,12 @@ inline void GaudiCommon<PBASE>::Assert( const bool        ok  ,
            std::string             ( " in file '"  ) +                  \
            std::string             (   __FILE__    ) + "']" , code ) )
 
+
+// definition of helper class instances (see GAUDI-1081)
+template <class PBASE>
+constexpr const typename GaudiCommon<PBASE>::svc_eq_t GaudiCommon<PBASE>::svc_eq;
+template <class PBASE>
+constexpr const typename GaudiCommon<PBASE>::svc_lt_t GaudiCommon<PBASE>::svc_lt;
 // ============================================================================
 // The END
 // ============================================================================

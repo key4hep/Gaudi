@@ -2,6 +2,9 @@ Package: GaudiSvc
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-09-14 - Marco Clemencic
+ - GAUDI-1082: Fixed compilation with CLHEP 2 after "modernization changes".
+
 ! 2015-09-09 - Gerhard Raven and Benedikt Hegner
  - C++11 modernization changes
        o prefer !.emtpy() over .size()!=0
