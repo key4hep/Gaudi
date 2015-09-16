@@ -63,6 +63,8 @@ endif()
 
 if(OpenCL_FOUND)
   list(APPEND GaudiExamples_srcs src/OpenCL/*.cpp)
+  set(extra_includes INCLUDE_DIRS ${OpenCL_INCLUDE_DIRS})
+  set(extra_libs ${OpenCL_LIBRARIES})
 endif()
 
 gaudi_add_library(GaudiExamplesLib src/Lib/*.cpp
@@ -70,7 +72,10 @@ gaudi_add_library(GaudiExamplesLib src/Lib/*.cpp
                   INCLUDE_DIRS HepPDT ROOT
                   PUBLIC_HEADERS GaudiExamples)
 
-gaudi_add_module(GaudiExamples ${GaudiExamples_srcs} INCLUDE_DIRS ${OpenCL_INCLUDE_DIRS} LINK_LIBRARIES GaudiExamplesLib ${OpenCL_LIBRARIES})
+
+gaudi_add_module(GaudiExamples ${GaudiExamples_srcs}
+                 ${extra_includes}
+                 LINK_LIBRARIES GaudiExamplesLib ${extra_libs})
 
 # we compile SCSAlg.cpp in a special way
 # FIXME: this is to be compatible with CMT
