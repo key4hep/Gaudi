@@ -10,6 +10,14 @@ find_package(GSL)
 find_package(PythonLibs)
 find_package(RELAX)
 
+if(NOT CMAKE_VERSION VERSION_LESS 3.1)
+  # FindOpenCL.cmake has been introduced in CMake 3.1.0
+  find_package(OpenCL)
+  if(NOT OpenCL_FOUND)
+    message(WARNING "OpenCL not found, not building OpenCLAlg example.")
+  endif()
+endif()
+
 #---Libraries---------------------------------------------------------------
 set(GaudiExamples_srcs
     src/AbortEvent/*.cpp
@@ -53,12 +61,16 @@ if(TARGET RootCnvLib)
   list(APPEND GaudiExamples_srcs src/MultiInput/*.cpp)
 endif()
 
+if(OpenCL_FOUND)
+  list(APPEND GaudiExamples_srcs src/OpenCL/*.cpp)
+endif()
+
 gaudi_add_library(GaudiExamplesLib src/Lib/*.cpp
                   LINK_LIBRARIES GaudiGSLLib GaudiUtilsLib HepPDT ROOT
                   INCLUDE_DIRS HepPDT ROOT
                   PUBLIC_HEADERS GaudiExamples)
 
-gaudi_add_module(GaudiExamples ${GaudiExamples_srcs} LINK_LIBRARIES GaudiExamplesLib)
+gaudi_add_module(GaudiExamples ${GaudiExamples_srcs} INCLUDE_DIRS ${OpenCL_INCLUDE_DIRS} LINK_LIBRARIES GaudiExamplesLib ${OpenCL_LIBRARIES})
 
 # we compile SCSAlg.cpp in a special way
 # FIXME: this is to be compatible with CMT
