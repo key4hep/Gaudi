@@ -26,6 +26,7 @@
 #include "GaudiKernel/ICounterSummarySvc.h"
 #include "GaudiKernel/IUpdateManagerSvc.h"
 #include "GaudiKernel/HashMap.h"
+#include "GaudiKernel/CommonMessaging.h"
 // ============================================================================
 // forward declarations
 // ============================================================================
@@ -68,7 +69,7 @@ namespace GaudiCommon_details {
  */
 // ============================================================================
 template < class PBASE >
-class GAUDI_API GaudiCommon: public PBASE
+class GAUDI_API GaudiCommon: public CommonMessaging<PBASE>
 {
 protected: // definitions
   /** Simple definition to be used with the new useRootInTES argument get<TYPE>
@@ -484,37 +485,7 @@ public:
   void Exception
   ( const std::string& msg = "no message"        ,
     const StatusCode   sc  = StatusCode(StatusCode::FAILURE, true) ) const ;
-public: // predefined streams
-  /** Predefined configurable message stream for the efficient printouts
-   *
-   *  @code
-   *
-   *  if ( a < 0 ) { msgStream( MSG::ERROR ) << "a = " << endmsg ; }
-   *
-   *  @endcode
-   *
-   *  @return Reference to the predefined stream
-   */
-  inline MsgStream& msgStream ( const MSG::Level level ) const ;
-  /// shortcut for the method msgStream ( MSG::ALWAYS )
-  inline MsgStream&  always () const { return msgStream ( MSG::ALWAYS ) ; }
-  /// shortcut for the method msgStream ( MSG::FATAL   )
-  inline MsgStream&   fatal () const { return msgStream ( MSG::FATAL ) ; }
-  /// shortcut for the method msgStream ( MSG::ERROR   )
-  inline MsgStream&     err () const { return msgStream ( MSG::ERROR ) ; }
-  /// shortcut for the method msgStream ( MSG::ERROR   )
-  inline MsgStream&   error () const { return msgStream ( MSG::ERROR ) ; }
-  /// shortcut for the method msgStream ( MSG::WARNING )
-  inline MsgStream& warning () const { return msgStream ( MSG::WARNING ) ; }
-  /// shortcut for the method msgStream ( MSG::INFO    )
-  inline MsgStream&    info () const { return msgStream ( MSG::INFO ) ; }
-  /// shortcut for the method msgStream ( MSG::DEBUG   )
-  inline MsgStream&   debug () const { return msgStream ( MSG::DEBUG ) ; }
-  /// shortcut for the method msgStream ( MSG::VERBOSE )
-  inline MsgStream& verbose () const { return msgStream ( MSG::VERBOSE ) ; }
-  /// shortcut for the method msgStream ( MSG::INFO    )
-  inline MsgStream&     msg () const { return msgStream ( MSG::INFO ) ; }
-public:
+public: 
   // ==========================================================================
   /// accessor to all counters
   inline const Statistics& counters() const { return m_counters ; }
@@ -539,21 +510,6 @@ public:
   inline StatEntity& counter( const std::string& tag ) const { return m_counters[tag] ; }
   // ==========================================================================
 public:
-  /** @brief The current message service output level
-   *  @return The current message level
-   */
-  inline MSG::Level msgLevel() const { return m_msgLevel ; }
-  /** @brief Test the output level
-   *  @param level The message level to test against
-   *  @return boolean Indicating if messages at given level will be printed
-   *  @retval true Messages at level "level" will be printed
-   *  @retval true Messages at level "level" will NOT be printed
-   */
-  inline bool msgLevel( const MSG::Level level ) const { return msgLevel() <= level ; }
-  /** @brief Reset (delete) the current message stream object.
-   *  Useful for example to force a new object following a
-   *  change in the message level settings
-   */
   void resetMsgStream() const;
   /// Insert the actual C++ type of the algorithm/tool in the messages ?
   inline bool typePrint     () const { return m_typePrint    ; }
