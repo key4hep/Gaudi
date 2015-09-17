@@ -27,7 +27,7 @@
 template <>
 GaudiCommon<AlgTool>::GaudiCommon( const std::string&  /* name */,
                                    ISvcLocator * /* pSvcLocator */ )
-  : AlgTool ( "ERROR", "ERROR", 0 )
+  : base_class ( "ERROR", "ERROR", 0 )
 {
   throw GaudiException( "Invalid GaudiCommon<AlgTool> constructor", 
                         "GaudiCommon", StatusCode::FAILURE );
@@ -42,7 +42,7 @@ template <>
 GaudiCommon<Algorithm>::GaudiCommon( const std::string& /* type */  ,
                                      const std::string& /* name */  ,
                                      const IInterface*  /* parent */ )
-  : Algorithm ( "ERROR", 0 )
+  : base_class ( "ERROR", 0 )
 {
   throw GaudiException( "Invalid GaudiCommon<Algorithm> constructor", 
                         "GaudiCommon", StatusCode::FAILURE );
@@ -55,7 +55,7 @@ GaudiCommon<Algorithm>::GaudiCommon( const std::string& /* type */  ,
 template <>
 GaudiCommon<Algorithm>::GaudiCommon( const std::string& name,
                                      ISvcLocator * pSvcLocator )
-  : Algorithm ( name, pSvcLocator )
+  : base_class ( name, pSvcLocator )
 {
   initGaudiCommonConstructor();
 }
@@ -67,10 +67,10 @@ GaudiCommon<Algorithm>::GaudiCommon( const std::string& name,
 template <>
 GaudiCommon<AlgTool>::GaudiCommon( const std::string& type   ,
                                    const std::string& name   ,
-                                   const IInterface*  parent )
-  : AlgTool ( type , name , parent )
+                                   const IInterface*  parnt )
+  : base_class ( type , name , parnt )
 {
-  initGaudiCommonConstructor(parent);
+  initGaudiCommonConstructor(parent());
 }
 //=============================================================================
 
