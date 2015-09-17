@@ -295,6 +295,20 @@ public:
   virtual ~IInterface() = default;
 };
 
+namespace Gaudi {
+  /// Cast a IInterface pointer to an IInterface specialization (TARGET).
+  template <typename TARGET>
+  TARGET* Cast(IInterface *i){
+    return reinterpret_cast<TARGET*>(i->i_cast(TARGET::interfaceID()));
+  }
+  /// Cast a IInterface pointer to an IInterface specialization (TARGET).
+  /// const version
+  template <typename TARGET>
+  const TARGET* Cast(const IInterface *i){
+    return reinterpret_cast<const TARGET*>(i->i_cast(TARGET::interfaceID()));
+  }
+}
+
 /** Templated function that throws an exception if the version if the interface
     implemented by the object behind the interface is incompatible. This is the
     case if the major version differs or that the minor version of the client is
