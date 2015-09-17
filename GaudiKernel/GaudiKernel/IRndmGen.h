@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/IRndmGen.h,v 1.5 2008/10/27 19:22:20 marcocle Exp $
 #ifndef GAUDIKERNEL_IRNDMGEN_H
 #define GAUDIKERNEL_IRNDMGEN_H
 
@@ -46,7 +45,7 @@ public:
     /// Standard constructor
     Param( const InterfaceID& type = IID_IRndmFlat ) : m_type(type) {}
     /// Standard Destructor
-    virtual ~Param() {}
+    virtual ~Param() = default;
     /// Parameter's type
     virtual const InterfaceID& type() const { return m_type; }
     /// Clone parameters
@@ -55,7 +54,7 @@ public:
 
   /// Initialize the generator
   virtual StatusCode initialize(const IRndmGen::Param& par) = 0;
-  /// Initialize the generator
+  /// Finalize the generator
   virtual StatusCode finalize() = 0;
   /// Random number generator type
   virtual const InterfaceID& type() const = 0;
@@ -74,7 +73,7 @@ public:
   virtual StatusCode shootArray( std::vector<double>& array, long howmany, long start = 0) const = 0;
 
   /// Virtual destructor
-  virtual ~IRndmGen() {}
+  virtual ~IRndmGen() = default;
 
 };
 

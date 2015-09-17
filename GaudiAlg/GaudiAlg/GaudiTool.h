@@ -1,5 +1,3 @@
-// $Id: GaudiTool.h,v 1.13 2008/10/10 13:38:28 marcocle Exp $
-// ============================================================================
 #ifndef GAUDIALG_GAUDITOOL_H
 #define GAUDIALG_GAUDITOOL_H 1
 // ============================================================================
@@ -105,13 +103,13 @@ public:
    *  @see IAlgTool
    *  @return status code
    */
-  virtual StatusCode    initialize ();
+  StatusCode    initialize () override;
   /** standard finalization method
    *  @see  AlgTool
    *  @see IAlgTool
    *  @return status code
    */
-  virtual StatusCode    finalize   ();
+  StatusCode    finalize   () override;
   // ==========================================================================
 public: // accessors
   // ==========================================================================
@@ -271,7 +269,7 @@ public:
    *  Quick and safe access to the data in Gaudi transient store.
    *  The method located the data at given address and perform the
    *  debug printout about located data.
-   * 
+   *
    *  Skips the check on the data as performed by 'get'. No exception
    *  is thrown if the data is missing.
    *
@@ -296,7 +294,7 @@ public:
    *  @param useRootInTES Flag to turn on(TRUE) off(FALSE) the use of
    *                      the RootInTES location property
    *
-   *  @return pointer to the data object. 
+   *  @return pointer to the data object.
    *  @retval NULL If data does not exist.
    */
   template < class TYPE  >
@@ -345,7 +343,7 @@ public:
    *
    *  Quick and safe access to the data in Gaudi transient store.
    *  The method located the data at given address and perform the
-   *  debug printout about located data. 
+   *  debug printout about located data.
    *
    *  Skips the check on the data as performed by 'get'. No exception
    *  is thrown if the data is missing.
@@ -370,7 +368,7 @@ public:
    *  @param useRootInTES Flag to turn on(TRUE) off(FALSE) the use of
    *                      the RootInTES location property
    *
-   *  @return pointer to the data object. 
+   *  @return pointer to the data object.
    *  @retval NULL If data does not exist.
    */
   template < class TYPE  >
@@ -413,7 +411,7 @@ public:
    *
    *  The method located the detector at the given address and perform the
    *  debug printout about located detector.
-   * 
+   *
    *  Skips the check on the data as performed by 'get'. No exception
    *  is thrown if the data is missing.
    *
@@ -466,7 +464,7 @@ public:
    *
    *  The method located the detector at the given address and perform the
    *  debug printout about located detector.
-   * 
+   *
    *  Skips the check on the data as performed by 'get'. No exception
    *  is thrown if the data is missing.
    *
@@ -682,35 +680,33 @@ protected:
               const IInterface*  parent );
 
   /// destructor, virtual and protected
-  virtual ~GaudiTool();
+  ~GaudiTool() override;
   // ==========================================================================
 private:
   // ==========================================================================
-  /// no public default constructor
-  GaudiTool();
-  /// no public copy constructor
-  GaudiTool             ( const GaudiTool& );
-  /// no public assignment operator
-  GaudiTool& operator = ( const GaudiTool& );
+  /// no default/copy constructor, no assignment
+  GaudiTool() = delete;
+  GaudiTool             ( const GaudiTool& ) = delete;
+  GaudiTool& operator = ( const GaudiTool& ) = delete;
   // ==========================================================================
 private:
   // ==========================================================================
   /// pointer to the N-Tuple service
-  mutable INTupleSvc*    m_ntupleSvc          ;
+  mutable INTupleSvc*    m_ntupleSvc = nullptr;
   /// pointer to the event tag collection service
-  mutable INTupleSvc*    m_evtColSvc          ;
+  mutable INTupleSvc*    m_evtColSvc = nullptr;
   /// pointer to Detector Data Service
-  mutable IDataProviderSvc* m_detSvc          ;
+  mutable IDataProviderSvc* m_detSvc = nullptr;
   /// pointer to Chrono & Stat Service
-  mutable IChronoStatSvc*   m_chronoSvc       ;
+  mutable IChronoStatSvc*   m_chronoSvc = nullptr;
   /// pointer to Incident Service
-  mutable IIncidentSvc*     m_incSvc          ;
+  mutable IIncidentSvc*     m_incSvc = nullptr;
   /// pointer for histogram service
-  mutable IHistogramSvc *  m_histoSvc         ;
+  mutable IHistogramSvc *  m_histoSvc = nullptr;
   // Pointer to the Algorithm Context Service
-  mutable IAlgContextSvc* m_contextSvc     ; ///< Algorithm Context Service
+  mutable IAlgContextSvc* m_contextSvc = nullptr; ///< Algorithm Context Service
   // The name of the Algorithm Context Service
-  std::string             m_contextSvcName ; ///< Algorithm Context Service
+  std::string             m_contextSvcName = "AlgContextSvc"; ///< Algorithm Context Service
   // ==========================================================================
 private:
   // ==========================================================================
@@ -730,5 +726,3 @@ private:
 // ============================================================================
 #endif  // GAUDIALG_GAUDITOOL_H
 // ============================================================================
-
-

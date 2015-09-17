@@ -78,10 +78,9 @@ PR_find( const bf::path& file, const string& search_list,
   // iterate through search list
   vector<string> spv;
   split(spv, search_list, boost::is_any_of( path_separator), boost::token_compress_on);
-  for (vector<string>::const_iterator itr = spv.begin();
-       itr != spv.end(); ++itr ) {
+  for (const auto& itr : spv ) {
 
-    bf::path fp = *itr / file;
+    bf::path fp = itr / file;
 
     try {
       if ( ( file_type == PR_regular_file && is_regular_file( fp ) ) ||
@@ -95,11 +94,11 @@ PR_find( const bf::path& file, const string& search_list,
 
     // if recursive searching requested, drill down
     if (search_type == PathResolver::RecursiveSearch &&
-        is_directory( bf::path(*itr) ) ) {
+        is_directory( bf::path(itr) ) ) {
 
       bf::recursive_directory_iterator end_itr;
       try {
-        for ( bf::recursive_directory_iterator ritr( *itr );
+        for ( bf::recursive_directory_iterator ritr( itr );
               ritr != end_itr; ++ritr) {
 
           // skip if not a directory
@@ -202,11 +201,10 @@ PathResolver::check_search_path (const std::string& search_path)
 
   vector<string> spv;
   boost::split( spv, path_list, boost::is_any_of( path_separator ), boost::token_compress_on);
-  vector<string>::iterator itr=spv.begin();
 
   try {
-    for (; itr!= spv.end(); ++itr) {
-      bf::path pp(*itr);
+    for (const auto& itr : spv ) {
+      bf::path pp(itr);
       if (!is_directory(pp)) {
         return (UnknownDirectory);
       }

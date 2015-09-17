@@ -1,4 +1,3 @@
-// $Id: RootDataConnection.h,v 1.9 2010-09-17 09:00:12 frankb Exp $
 #ifndef GAUDIROOT_ROOTDATACONNECTION_H
 #define GAUDIROOT_ROOTDATACONNECTION_H
 
@@ -49,9 +48,9 @@ namespace Gaudi  {
     /// Object refrfence count
     int refCount;
     /// Reference to message service
-    MsgStream*    m_msgSvc;
+    std::unique_ptr<MsgStream>    m_msgSvc;
     /// Reference to incident service
-    IIncidentSvc* m_incidentSvc;
+    IIncidentSvc* m_incidentSvc = nullptr;
 
   public:
     /// Vector of strings with branches to be cached for input files
@@ -157,11 +156,11 @@ namespace Gaudi  {
     /// Reference to the setup structure
     RootConnectionSetup* m_setup;
     /// I/O read statistics from TTree
-    TTreePerfStats*      m_statistics;
+    std::unique_ptr<TTreePerfStats> m_statistics;
     /// Reference to ROOT file
-    TFile*               m_file;
+    std::unique_ptr<TFile> m_file;
     /// Pointer to the reference tree
-    TTree               *m_refs;
+    TTree               *m_refs = nullptr;
     /// Tree sections in TFile
     Sections             m_sections;
     /// Map containing external database file names (fids)
@@ -224,9 +223,7 @@ namespace Gaudi  {
       MergeSections&     mergeSections()      const { return c->m_mergeSects; }
 
       /// Default destructor
-      virtual ~Tool() {}
-      /// Use releasePtr() helper to delete object
-      virtual void release() { delete this; }
+      virtual ~Tool() = default;
       /// Access data branch by name: Get existing branch in read only mode
       virtual TBranch* getBranch(const std::string&  section, const std::string& n) = 0;
       /// Internal overload to facilitate the access to POOL files
@@ -238,7 +235,8 @@ namespace Gaudi  {
       virtual StatusCode saveRefs() = 0;
       /// Load references object
       virtual int loadRefs(const std::string& section, const std::string& cnt, unsigned long entry, RootObjectRefs& refs) = 0;
-    } *m_tool;
+    };
+    std::unique_ptr<Tool> m_tool;
     friend class Tool;
 
     /// Create file access tool to encapsulate POOL compatibiliy
@@ -249,20 +247,20 @@ namespace Gaudi  {
     /// Standard constructor
     RootDataConnection(const IInterface* own, const std::string& nam, RootConnectionSetup* setup);
     /// Standard destructor
-    virtual ~RootDataConnection();
+    ~RootDataConnection() override;
 
     /// Direct access to TFile structure
-    TFile* file() const                         {  return m_file;                              }
+    TFile* file() const                         { return m_file.get();                   }
     /// Check if connected to data source
-    virtual bool isConnected() const            {  return m_file != 0;                         }
+    virtual bool isConnected() const            { return bool(m_file);                   }
     /// Is the file writable?
-    bool isWritable() const                     {  return m_file != 0 && m_file->IsWritable(); }
+    bool isWritable() const                     { return m_file && m_file->IsWritable(); }
     /// Access tool
-    Tool* tool() const                          {  return m_tool;                              }
+    Tool* tool() const                          { return m_tool.get();                   }
     /// Access merged data section inventory
-    const MergeSections& mergeSections() const  {  return m_mergeSects;                        }
+    const MergeSections& mergeSections() const  { return m_mergeSects;                   }
     /// Access merged FIDs
-    const StringVec& mergeFIDs() const          {  return m_mergeFIDs;                         }
+    const StringVec& mergeFIDs() const          { return m_mergeFIDs;                    }
 
 
     /// Add new client to this data source

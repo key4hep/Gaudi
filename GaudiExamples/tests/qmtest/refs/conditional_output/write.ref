@@ -254,6 +254,9 @@ ServiceManager      DEBUG Starting service HistogramPersistencySvc
 ServiceManager      DEBUG Starting service HistogramDataSvc
 ServiceManager      DEBUG Starting service EventLoopMgr
 AlgContextSvc       DEBUG Service base class initialized successfully
+AlgContextSvc     VERBOSE ServiceLocatorHelper::service: found service IncidentSvc
+IncidentSvc         DEBUG Adding [BeginEvent] listener 'AlgContextSvc' with priority 0
+IncidentSvc         DEBUG Adding [EndEvent] listener 'AlgContextSvc' with priority 0
 DataCreator       VERBOSE ServiceLocatorHelper::service: found service AlgContextSvc
 OddEvents         VERBOSE ServiceLocatorHelper::service: found service AlgContextSvc
 EvenEvents        VERBOSE ServiceLocatorHelper::service: found service AlgContextSvc

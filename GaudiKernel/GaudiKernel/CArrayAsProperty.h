@@ -1,5 +1,3 @@
-// $Id: $
-// ============================================================================
 #ifndef GAUDIKERNEL_CARRAYASPROPERTY_H 
 #define GAUDIKERNEL_CARRAYASPROPERTY_H 1
 // ============================================================================
@@ -123,7 +121,7 @@ public:
     , m_hasUpperBound ( false )
   {}
   /// Destructor
-  virtual ~BoundedVerifier() { }
+  virtual ~BoundedVerifier() = default;
   
   /// Check if the value is within bounds
   bool isValid ( const typename Traits::CVal value ) const 

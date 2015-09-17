@@ -1,4 +1,3 @@
-// $Id: RDirectoryCnv.h,v 1.7 2006/11/13 15:19:36 hmd Exp $
 #ifndef ROOTHIST_RDIRECTORYCNV_H
 #define ROOTHIST_RDIRECTORYCNV_H 1
 

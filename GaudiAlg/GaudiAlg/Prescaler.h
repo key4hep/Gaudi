@@ -10,26 +10,22 @@ public:
     /**
      ** Constructor(s)
      **/
-    Prescaler( const std::string& name, ISvcLocator* pSvcLocator );
+    Prescaler( std::string name, ISvcLocator* pSvcLocator );
 
     /**
      ** Destructor
      **/
-    virtual ~Prescaler( );
+    ~Prescaler( ) override = default;
 
     /*****************************
      ** Public Function Members **
      *****************************/
 
-    StatusCode initialize();
-    StatusCode execute();
-    StatusCode finalize();
+    StatusCode initialize() override;
+    StatusCode execute() override;
+    StatusCode finalize() override;
 
 private:
-
-    /**************************
-     ** Private Data Members **
-     **************************/
 
     /**
      ** Percentage of events that should be passed
@@ -39,10 +35,10 @@ private:
     /**
      ** Number of events passed
      **/
-    int m_pass;
+    int m_pass = 0;
 
     /**
      ** Number of events seen
      **/
-    int m_seen;
+    int m_seen = 0;
 };

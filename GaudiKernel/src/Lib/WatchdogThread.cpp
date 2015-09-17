@@ -22,19 +22,19 @@ WatchdogThread::~WatchdogThread() {
 }
 
 void WatchdogThread::start() {
-  if (!m_thread.get()) { // can be started only if the thread is not yet started
+  if (!m_thread) { // can be started only if the thread is not yet started
     m_running = true;
     // call user-defined function
     onStart();
     // Initialize the first "last ping"
     ping();
     // Start a new thread telling it to call the member function i_run()
-    m_thread = std::auto_ptr<boost::thread>(new boost::thread(std::mem_fun(&WatchdogThread::i_run), this));
+    m_thread.reset(new boost::thread(std::mem_fun(&WatchdogThread::i_run), this));
   }
 }
 
 void WatchdogThread::stop() {
-  if (m_thread.get()) {
+  if (m_thread) {
     m_running = false; // mark the thread as stopped (interrupt doesn't work if the thread is not sleeping)
     Gaudi::NanoSleep(1000000); // Wait a bit (1ms) to be sure that the interrupt happens during the sleep
     m_thread->interrupt(); // tell the thread to stop (if it is waiting)

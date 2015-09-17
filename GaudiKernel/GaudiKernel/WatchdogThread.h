@@ -84,7 +84,7 @@ private:
   boost::system_time m_lastPing;
 
   /// Pointer to the running thread;
-  std::auto_ptr<boost::thread> m_thread;
+  std::unique_ptr<boost::thread> m_thread;
 
   /// Flag to mark the thread as running/stopped (avoid possible race conditions).
   bool m_running;

@@ -52,58 +52,58 @@ public:
 #endif
 
   /// Query for a given interface
-  virtual StatusCode queryInterface(const InterfaceID& riid, void** ppvUnknown);
+  StatusCode queryInterface(const InterfaceID& riid, void** ppvUnknown) override;
 
   /// Retrieve full identifying name of the concrete tool object.
-  virtual const std::string& name() const;
+  const std::string& name() const override;
 
   /// Retrieve type (concrete class) of the sub-algtool.
-  virtual const std::string& type() const;
+  const std::string& type() const override;
 
   /// Retrieve parent of the sub-algtool.
-  virtual const IInterface*  parent() const;
+  const IInterface*  parent() const override;
 
   // State machine implementation
-  virtual StatusCode configure() { return StatusCode::SUCCESS; }
-  virtual StatusCode initialize();
-  virtual StatusCode start();
-  virtual StatusCode stop();
-  virtual StatusCode finalize();
-  virtual StatusCode terminate() { return StatusCode::SUCCESS; }
-  virtual StatusCode reinitialize();
-  virtual StatusCode restart();
-  virtual Gaudi::StateMachine::State FSMState() const { return m_state; }
-  virtual Gaudi::StateMachine::State targetFSMState() const { return m_targetState; }
+  StatusCode configure() override { return StatusCode::SUCCESS; }
+  StatusCode initialize() override;
+  StatusCode start() override;
+  StatusCode stop() override;
+  StatusCode finalize() override;
+  StatusCode terminate() override { return StatusCode::SUCCESS; }
+  StatusCode reinitialize() override;
+  StatusCode restart() override;
+  Gaudi::StateMachine::State FSMState() const override { return m_state; }
+  Gaudi::StateMachine::State targetFSMState() const override { return m_targetState; }
 
   /// Initialize AlgTool
-  virtual StatusCode sysInitialize();
+  StatusCode sysInitialize() override;
 
   /// Start AlgTool
-  virtual StatusCode sysStart();
+  StatusCode sysStart() override;
 
   /// Stop AlgTool
-  virtual StatusCode sysStop();
+  StatusCode sysStop() override;
 
   /// Finalize AlgTool
-  virtual StatusCode sysFinalize();
+  StatusCode sysFinalize() override;
 
   /// Initialize AlgTool
-  virtual StatusCode sysReinitialize();
+  StatusCode sysReinitialize() override;
 
   /// Start AlgTool
-  virtual StatusCode sysRestart();
+  StatusCode sysRestart() override;
 
   /// Default implementations for IProperty interface.
-  virtual StatusCode setProperty( const Property&    p );
-  virtual StatusCode setProperty( const std::string& s );
-  virtual StatusCode setProperty( const std::string& n, const std::string& v);
-  virtual StatusCode getProperty(Property* p) const;
-  virtual const Property& getProperty( const std::string& name) const;
-  virtual StatusCode getProperty( const std::string& n, std::string& v ) const;
-  virtual const std::vector<Property*>& getProperties( ) const;
-  virtual bool hasProperty(const std::string& name) const;
+  StatusCode setProperty( const Property&    p ) override;
+  StatusCode setProperty( const std::string& s ) override;
+  StatusCode setProperty( const std::string& n, const std::string& v) override;
+  StatusCode getProperty(Property* p) const override;
+  const Property& getProperty( const std::string& name) const override;
+  StatusCode getProperty( const std::string& n, std::string& v ) const override;
+  const std::vector<Property*>& getProperties( ) const override;
+  bool hasProperty(const std::string& name) const override;
 
-  inline PropertyMgr * getPropertyMgr() { return m_propertyMgr; }
+  inline PropertyMgr * getPropertyMgr() { return m_propertyMgr.get(); }
 
 public:
 
@@ -151,7 +151,7 @@ public:
   StatusCode setProperty
   ( const std::string& name  ,
     const TYPE&        value )
-  { return Gaudi::Utils::setProperty ( m_propertyMgr , name , value ) ; }
+  { return Gaudi::Utils::setProperty ( m_propertyMgr.get() , name , value ) ; }
 
 
   /** Standard Constructor.
@@ -206,15 +206,10 @@ public:
   /// Return a pointer to the service identified by name (or "type/name")
   SmartIF<IService> service(const std::string& name, const bool createIf = true, const bool quiet = false) const;
 
-  /// declare interface
-  void declInterface( const InterfaceID&, void*);
-
-  template <class I> class declareInterface {
-  public:
-    template <class T> declareInterface(T* tool) {
-      tool->declInterface( I::interfaceID(), (I*)tool);
-    }
-  };
+protected:
+  template <typename I>
+  void declareInterface( I* i ) { m_interfaceList.emplace_back( I::interfaceID(), i ); }
+public:
   // ==========================================================================
   /** Declare the named property
    *
@@ -571,21 +566,21 @@ protected:
 protected:
 
   // Standard destructor.
-  virtual ~AlgTool();
+  ~AlgTool() override;
 
 private:
   typedef std::list<std::pair<InterfaceID,void*> >  InterfaceList;
-  IntegerProperty      m_outputLevel;      ///< AlgTool output level
+  IntegerProperty      m_outputLevel = MSG::NIL;      ///< AlgTool output level
   std::string          m_type;             ///< AlgTool type (concrete class name)
   const std::string    m_name;             ///< AlgTool full name
-  const IInterface*    m_parent;           ///< AlgTool parent
-  mutable ISvcLocator* m_svcLocator;       ///< Pointer to Service Locator service
-  mutable IMessageSvc* m_messageSvc;       ///< Message service
-  mutable IDataProviderSvc* m_evtSvc; 	   ///< Event data service
-  mutable IToolSvc*    m_ptoolSvc;         ///< Tool service
-  mutable IMonitorSvc* m_pMonitorSvc;      ///< Online Monitoring Service
+  const IInterface*    m_parent = nullptr;           ///< AlgTool parent
+  mutable ISvcLocator* m_svcLocator = nullptr;       ///< Pointer to Service Locator service
+  mutable IMessageSvc* m_messageSvc = nullptr;       ///< Message service
+  mutable IDataProviderSvc* m_evtSvc = nullptr;      ///< Event data service
+  mutable IToolSvc*    m_ptoolSvc = nullptr;         ///< Tool service
+  mutable IMonitorSvc* m_pMonitorSvc = nullptr;      ///< Online Monitoring Service
   std::string          m_monitorSvcName;   ///< Name to use for Monitor Service
-  PropertyMgr*         m_propertyMgr;      ///< Property Manager
+  std::unique_ptr<PropertyMgr>  m_propertyMgr;      ///< Property Manager
   InterfaceList        m_interfaceList;    ///< Interface list
   std::string          m_threadID;         ///< Thread Id for Alg Tool
 
@@ -595,7 +590,7 @@ private:
   //tools used by tool
   mutable std::vector<IAlgTool *> m_tools;
   mutable std::vector<BaseToolHandle *> m_toolHandles;
-  mutable bool m_toolHandlesInit;  /// flag indicating whether ToolHandle tools have been added to m_tools
+  mutable bool m_toolHandlesInit = false;  /// flag indicating whether ToolHandle tools have been added to m_tools
 
   /** implementation of service method */
   StatusCode service_i(const std::string& algName,
@@ -607,18 +602,18 @@ private:
                        const InterfaceID& iid,
                        void** ppS) const;
 
-  mutable IAuditorSvc*      m_pAuditorSvc; ///< Auditor Service
+  mutable IAuditorSvc*      m_pAuditorSvc = nullptr; ///< Auditor Service
 
-  BooleanProperty m_auditInit;
-  bool         m_auditorInitialize;///< flag for auditors in "initialize()"
-  bool         m_auditorStart;     ///< flag for auditors in "start()"
-  bool         m_auditorStop;      ///< flag for auditors in "stop()"
-  bool         m_auditorFinalize;  ///< flag for auditors in "finalize()"
-  bool         m_auditorReinitialize;///< flag for auditors in "reinitialize()"
-  bool         m_auditorRestart;     ///< flag for auditors in "restart()"
+  BooleanProperty m_auditInit = false;
+  bool         m_auditorInitialize = false;///< flag for auditors in "initialize()"
+  bool         m_auditorStart = false;     ///< flag for auditors in "start()"
+  bool         m_auditorStop = false;      ///< flag for auditors in "stop()"
+  bool         m_auditorFinalize = false;  ///< flag for auditors in "finalize()"
+  bool         m_auditorReinitialize = false;///< flag for auditors in "reinitialize()"
+  bool         m_auditorRestart = false;     ///< flag for auditors in "restart()"
 
-  Gaudi::StateMachine::State m_state;            ///< state of the Tool
-  Gaudi::StateMachine::State m_targetState;      ///< state of the Tool
+  Gaudi::StateMachine::State m_state = Gaudi::StateMachine::CONFIGURED ;            ///< state of the Tool
+  Gaudi::StateMachine::State m_targetState = Gaudi::StateMachine::CONFIGURED ;      ///< state of the Tool
 };
 
 
@@ -628,8 +623,8 @@ class ToolFactory {
 public:
 #ifndef __REFLEX__
   template <typename S, typename... Args>
-  static typename S::ReturnType create(Args... args) {
-    return new T(args...);
+  static typename S::ReturnType create(Args&&... args) {
+    return new T(std::forward<Args>(args)...);
   }
 #endif
 };

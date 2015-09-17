@@ -39,6 +39,8 @@ using namespace GaudiUtils;
 #include <chrono>
 #include "GaudiKernel/Sleep.h"
 
+#include <algorithm>
+
 namespace GaudiKernelTest {
   class SerialTaskQueueTest: public CppUnit::TestFixture {
 

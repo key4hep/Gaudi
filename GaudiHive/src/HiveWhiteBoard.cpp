@@ -81,7 +81,7 @@ THREAD_LOCAL_PTR Partition* s_current(0);
  *
  * @author Markus Frank
  * @author Sebastien Ponce
- * @author Pere Mato 
+ * @author Pere Mato
  * @version 1.0
 */
 class HiveWhiteBoard: public extends3<Service,
@@ -91,7 +91,7 @@ class HiveWhiteBoard: public extends3<Service,
 {
 protected:
   typedef std::vector<Partition> Partitions;
-  
+
   /// Integer Property corresponding to CLID of root entry
   CLID                m_rootCLID;
   /// Name of root event
@@ -106,18 +106,18 @@ protected:
   Partitions          m_partitions;
   /// Datastore slots
   int              m_slots;
-  /// Allow forced creation of default leaves on registerObject. 
+  /// Allow forced creation of default leaves on registerObject.
   bool                m_forceLeaves;
-  /// Flag to enable interrupts on data creation requests. 
+  /// Flag to enable interrupts on data creation requests.
   bool m_enableFaultHdlr;
-  
+
 public:
   /// IDataManagerSvc: Accessor for root event CLID
   virtual CLID rootCLID() const {
     return (CLID)m_rootCLID;
   }
   /// Name for root Event
-  std::string rootName() const {
+  const std::string& rootName() const override {
     return m_rootName;
   }
 
@@ -180,7 +180,7 @@ return IDataProviderSvc::INVALID_ROOT;
     for(auto& p: m_partitions) p.dataManager->clearStore().ignore();
     return StatusCode::SUCCESS;
   }
-  
+
   /// Analyze by traversing all data objects below the sub tree
   virtual StatusCode traverseSubTree(const std::string& path, IDataStoreAgent* pAgent)  {
     _CALL(dataManager, traverseSubTree, (path, pAgent));
@@ -195,13 +195,13 @@ return IDataProviderSvc::INVALID_ROOT;
   }
   /** Initialize data store for new event by giving new event path and root
       object. Takes care to clear the store before reinitializing it  */
-  virtual StatusCode setRoot( const std::string& path, DataObject* pObj)  {
+  StatusCode setRoot(std::string path, DataObject* pObj) override {
     _CALL(dataManager, setRoot, (path, pObj));
   }
 
   /** Initialize data store for new event by giving new event path and address
       of root object. Takes care to clear the store before reinitializing it */
-  virtual StatusCode setRoot (const std::string& path, IOpaqueAddress* pAddr)  {
+  StatusCode setRoot (std::string path, IOpaqueAddress* pAddr) override {
     _CALL(dataManager, setRoot, (path, pAddr));
   }
 
@@ -209,7 +209,7 @@ return IDataProviderSvc::INVALID_ROOT;
    * The optional data provider is not considered. On the other hand, the data
    * provider is specified to be the whiteboard.
    */
-  virtual StatusCode setDataLoader(IConversionSvc* pDataLoader, IDataProviderSvc* dpsvc=nullptr)  {
+  StatusCode setDataLoader(IConversionSvc* pDataLoader, IDataProviderSvc* dpsvc=nullptr) override {
     if ( 0 != pDataLoader  ) pDataLoader->addRef();
     if ( 0 != m_dataLoader ) m_dataLoader->release();
     if ( 0 != pDataLoader  )    {
@@ -418,7 +418,7 @@ return IDataProviderSvc::INVALID_ROOT;
       s_current = &m_partitions[partition];
       return StatusCode::SUCCESS;
   }
-  
+
   /// Set the number of event slots (copies of DataSvc objects).
   virtual StatusCode setNumberOfStores(size_t slots) {
     if((int)slots != m_slots and
@@ -434,7 +434,7 @@ return IDataProviderSvc::INVALID_ROOT;
   virtual size_t getNumberOfStores() {
     return m_slots;
   }
-  
+
   /// Get the list of new DataObjects in the current store.
   virtual StatusCode getNewDataObjects(std::vector<std::string>& products) {
     wbMutex::scoped_lock lock; lock.acquire(s_current->storeMutex);
@@ -447,8 +447,8 @@ return IDataProviderSvc::INVALID_ROOT;
   virtual bool newDataObjectsPresent() {
     wbMutex::scoped_lock lock; lock.acquire(s_current->storeMutex);
     return s_current->newDataObjects.size()!=0;
-  }  
-  
+  }
+
   /// Allocate a store partition for a given event number
   virtual size_t allocateStore( int evtnumber ) {
     //size_t free = std::string::npos;
@@ -466,15 +466,15 @@ return IDataProviderSvc::INVALID_ROOT;
     }
     return std::string::npos;
   }
-  
+
   /// Free a store partition
   virtual StatusCode freeStore( size_t partition ) {
     m_partitions[partition].eventNumber = -1;
     //info() << "Freed slot..." << partition << endmsg;
     return StatusCode::SUCCESS;
   }
-  
-  
+
+
   /// Get the partition number corresponding to a given event
   virtual size_t getPartitionNumber(int eventnumber)  const {
     size_t index;
@@ -505,7 +505,7 @@ return IDataProviderSvc::INVALID_ROOT;
     }
     return sc;
   }
-  
+
   StatusCode detachServices()  {
     if ( m_addrCreator )  m_addrCreator->release();
     if ( m_dataLoader )  m_dataLoader->release();
@@ -517,7 +517,7 @@ return IDataProviderSvc::INVALID_ROOT;
   //
   //---IService implemenation---------------------------------------------------------
   //
-  
+
   /// Service initialisation
   virtual StatusCode initialize()  {
     StatusCode sc = Service::initialize();
@@ -530,7 +530,7 @@ return IDataProviderSvc::INVALID_ROOT;
       error() << "Invalid number of slots (" << m_slots << ")" << endmsg;
       return StatusCode::FAILURE;
     }
-    
+
     for( int i = 0; i< m_slots; i++) {
       std::ostringstream oss;
       oss << name() << "_" << i;
@@ -540,7 +540,7 @@ return IDataProviderSvc::INVALID_ROOT;
       svc->setProperty("RootName", m_rootName);
       svc->setProperty("ForceLeaves", std::to_string(m_forceLeaves));
       svc->setProperty("EnableFaultHandler", std::to_string(m_enableFaultHdlr));
-       
+
       sc = svc->initialize();
       if (!sc.isSuccess()) {
         error() << "Failed to instantiate DataSvc as store partition" << endmsg;
@@ -597,7 +597,7 @@ return IDataProviderSvc::INVALID_ROOT;
     setDataLoader(0).ignore();
     resetPreLoad().ignore();
     clearStore().ignore();
-    
+
     for(Partitions::iterator i = m_partitions.begin(); i != m_partitions.end(); ++i) {
       (*i).dataManager->release();
       (*i).dataProvider->release();

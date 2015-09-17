@@ -2,6 +2,29 @@ Package GaudiExamples
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-07-24 - Daniel Campora
+ - Added an algorithm to demonstrate that we can build/run code using OpenCL.
+   The algorithm in src/OpenCL/OpenCLAlg.cpp is mainly a proof of concept to
+   ensure that we can configure and build a package such that an algorithm can
+   invoke OpenCL code.
+
+     * options/OpenCL/basic.py: options to run the example
+     * src/OpenCL/OpenCLAlg.cpp: algorithm implementation
+
+   Note: it requires CMake >= 3.1.0 and OpenCL installed.
+
+! 2015-09-09 - Gerhard Raven
+ - C++11 modernization changes, eg.
+     o remove CVS IDs
+     o specify python2.7 instead of python2.4
+     o prefer range-based for loops
+     o prefer std::string::compare over std::substr(...) == "..."
+     o C++11 ofstream accepts string, so no need for .c_str()
+     o prefer std::stoi over std::atoi
+     o prefer std::unique_ptr over std::auto_ptr
+     o prefer std::bind over boost::bind
+     o qualify implementations as override instead of virtual
+
 ! 2015-07-22 - Marco Clemencic
  - Changed the test GaudiExamples.CloneWithPrivateTools to QMTest to allow
    debugging.

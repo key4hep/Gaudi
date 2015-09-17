@@ -4,9 +4,6 @@
  *
  *  General vectors
  *
- *  CVS Log :-
- *  $Id: GenericVectorTypes.h,v 1.1 2006/12/08 15:00:00 hmd Exp $
- *
  *  @author Juan PALACIOS
  *  @date   2005-11-21
  */

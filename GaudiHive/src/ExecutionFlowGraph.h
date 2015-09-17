@@ -264,7 +264,9 @@ typedef std::unordered_map<std::string,const DataObjectDescriptorCollection*> Al
 typedef std::unordered_map<std::string,const DataObjectDescriptorCollection*> AlgoOutputsMap;
 
 class ExecutionFlowManager;
-class IExecutionFlowGraph {};
+struct IExecutionFlowGraph {
+  virtual ~IExecutionFlowGraph() = default;
+};
 
 class ExecutionFlowGraph : public CommonMessaging<IExecutionFlowGraph> {
   friend ExecutionFlowManager;
@@ -274,7 +276,7 @@ public:
      m_headNode(0), m_nodeCounter(0), m_svcLocator(svc), m_name(name), m_initTime(std::chrono::high_resolution_clock::now()),
      m_eventSlots(nullptr) {};
     /// Destructor
-    ~ExecutionFlowGraph() {
+    ~ExecutionFlowGraph() override {
       if (m_headNode != 0) delete m_headNode;
     };
     /// Initialize graph

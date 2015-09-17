@@ -31,24 +31,24 @@ public:
       const IInterface* parent);
 
   /// Destructor
-  virtual ~DataSvcFileEntriesTool();
+  ~DataSvcFileEntriesTool() override = default;
 
   /// Initialize the tool.
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
 
   /// Finalize the tool.
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
 
   /// Return the list of collected objects.
   /// If the scan was not yet done since the last BeginEvent incident, it is done
   /// when calling this function.
   /// The result of the scan is cached.
-  virtual const LeavesList & leaves() const;
+  const LeavesList & leaves() const override;
 
   /// Call-back function for the BeginEvent incident.
   /// Clears the internal cache, cache the file ID of the \b Root node and, if
   /// the property \b ScanOnBeginEvent is set to true, scans the data service.
-  virtual void handle(const Incident& incident);
+  void handle(const Incident& incident) override;
 
 private:
 
@@ -116,8 +116,6 @@ DataSvcFileEntriesTool::DataSvcFileEntriesTool(const std::string& type,
   declareProperty("IgnoreOriginChange", m_ignoreOriginChange = false,
       "Disable the detection of the change in the origin of object between the BeginEvent and the scan");
 }
-
-DataSvcFileEntriesTool::~DataSvcFileEntriesTool() {}
 
 StatusCode DataSvcFileEntriesTool::initialize(){
   StatusCode sc = AlgTool::initialize();
@@ -189,7 +187,7 @@ const IDataStoreLeaves::LeavesList & DataSvcFileEntriesTool::leaves() const {
 }
 
 IRegistry* DataSvcFileEntriesTool::i_getRootNode() {
-  DataObject * obj = 0;
+  DataObject * obj = nullptr;
   StatusCode sc = m_dataSvc->retrieveObject(m_rootNode, obj);
   if (sc.isFailure()) {
     throw GaudiException("Cannot get " + m_rootNode + " from " + m_dataSvcName, name(), StatusCode::FAILURE);
@@ -224,15 +222,15 @@ void DataSvcFileEntriesTool::i_collectLeaves(IRegistry* reg) {
     std::vector<IRegistry*> lfs; // leaves of the current object
     StatusCode sc = m_dataMgrSvc->objectLeaves(reg, lfs);
     if (sc.isSuccess()) {
-      for(std::vector<IRegistry*>::iterator i = lfs.begin(); i != lfs.end(); ++i)  {
+      for(const auto& i : lfs) {
         // Continue if the leaf has the same database as the parent
-        if ( (*i)->address() && (*i)->address()->par()[0] == base )  {
-          DataObject* obj = 0;
-          sc = m_dataSvc->retrieveObject(reg, (*i)->name(), obj);
+        if ( i->address() && i->address()->par()[0] == base )  {
+          DataObject* obj = nullptr;
+          sc = m_dataSvc->retrieveObject(reg, i->name(), obj);
           if (sc.isSuccess())  {
-            i_collectLeaves(*i);
+            i_collectLeaves(i);
           } else {
-            throw GaudiException("Cannot get " + (*i)->identifier() + " from " + m_dataSvcName, name(), StatusCode::FAILURE);
+            throw GaudiException("Cannot get " + i->identifier() + " from " + m_dataSvcName, name(), StatusCode::FAILURE);
           }
         }
       }
@@ -241,5 +239,4 @@ void DataSvcFileEntriesTool::i_collectLeaves(IRegistry* reg) {
 }
 
 
-#include "GaudiKernel/ToolFactory.h"
 DECLARE_COMPONENT(DataSvcFileEntriesTool)

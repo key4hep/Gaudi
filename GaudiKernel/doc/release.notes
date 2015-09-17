@@ -1,6 +1,86 @@
-Package : GaudiKernel
+:ackage : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
+
+! 2015-09-09 - Gerhard Raven & Benedikt Hegner
+ - C++11 modernization changes, eg.
+      o replace boost::lexical_cast with std::to_string, std::stod, std::stoi
+      o replace trivial (empty) destructors with '= default' declaration
+      o replace 'if (s.substr(a,b) = "ccc")' with 'if (s.compare(a,c,"ccc")==0)'
+        which avoids creating a temporary string that is immediately thrown away again
+      o used std::stoi(s) instead of ::atoi(s.c_str()), ditto for std::stod
+      o replace s.substr(a,s.length()-a) and s.substr(a,s.length()) with s.substr(a)
+      o pass sink arguments by value and std::move them in place
+      o replace trivial constructor and destructor with = default
+      o simplify constructors
+      o use cstdio, cstdarg instead of stdio.h, stdarg.h
+      o use vnsprintf instead of vsprintf
+      o add va_end after va_start
+      o remove some workarounds for 'really old' compilers
+      o the dynamic_cast problems described in GaudiKernel/doc/dynamic_cast.pb
+        observed with gcc 3.2 under linux are no longer an issue for gcc 4.9...
+      o use std::unordered_map as underlying implementation of HashMap
+      o replace trivial constructors/destructors with = default
+      o use perfect forwarding to underlying map for various insert methods
+         (this allows 'move only' types to be inserted)
+      o prefer std::next over copy + std::advance
+      o prefer std::unique_ptr over raw pointer and explicit delete
+      o declare implementations 'override' instead of 'virtual'
+      o make sure const methods only return const access to members,
+        add non-const reference only in non-const methods
+      o prefer to contain vectors by value instead of (owned) pointer
+        to avoid an extra indirection
+      o make initialization of const objects constexpr
+      o declare class which is contained by value in std::vector as 'final'
+        and remove virtual destructor (inheriting from this is not used,
+        and would have lead to slicing)
+      o pass sink arguments by value and std::move them
+      o prefer std::vector of std::list
+      o refer STL algorithms over raw loops
+      o prefer emplace_back over push_back
+      o replace 0 by nullptr when appropriate
+      o prefer std::copy_n over memcpy (compiler will use memcpy anyway)
+      o prefer auto and range-based for loops
+      o avoid comparing pointers to 0
+      o prefer std::vector::clear over std::vector::erase( begin, end)
+      o qualify implementations with 'override' instead of 'virtual'
+      o pass sink arguments by value and std::move them in place
+      o don't check for nullptr before calling delete (delete implementation already does that)
+      o prefer std::next over a copy, followed by std::advance
+      o use covariant return types on 'clone' implementation
+      o use std::chrono and sleep_for instead of boost's implementation
+      o replace boost::bind with std::bind and lambdas
+      o replace the use of a dedicated PropertyCallBackFunctor and
+        its derived classes by by std::function<void(Property&>.
+        - the normal use-case, i.e. declareProperty with a pointer to some
+          class, and a pointer to its member function, has been re-implemented
+          by forwarding a lambda with the right signature.
+        - the value semantics of this solution (compared to the pointer
+          to base semanitics) make assigning, copying, initializing
+          and deleting Properties a lot simpler -- so much that the dedicated
+          assignment, copy, destructors can now all be replaced by '= default'.
+          (long live value semantics!)
+      o PropertyMgr: Mark copy constructor and assignment as = delete (see JIRA-1071)
+      o remove obsolete CommandProperty
+      o do not qualify by-value returned objects as const
+      o avoid 'if' statements in loops
+      o remove obsoleted Tokenizer (use AttribStringParser instead)
+      o directly construct static so it can be const, avoiding a run-time 'if' statement in addition.
+      o pass sink arguments by value and std::move them in place
+      o add 'reverse' wrapper for use in range-base for loops
+      o prefer constexpr functor objects
+      o improve const-correctness of LinkManager
+       - make internal call Link const-correct
+       - remove assignment op and destructor from Link, as now the
+          implicitly generated ones are just fine
+       - make explicit the two places where LinkManager needs to const_cast
+          (to be done: move this up to the caller so that LinkManager will
+           be const-correct)
+      o prefer std::vector over std::list
+      o consolidate unit determination in ChronoEntity
+      o remove refCount declaration from IAlgTool -- it is already in IInterface
+      o make IssueSeverity move-only and change StatusCode accordingly (for source-level backwards compatibility)
+      o qualify StatusCode move operations as noexcept
 
 ! 2015-07-21 - Marco Clemencic
  - Fixed some unchecked StatusCode.

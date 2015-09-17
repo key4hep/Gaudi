@@ -1,4 +1,3 @@
-// $Id: SequencerTimerTool.h,v 1.7 2005/07/29 16:49:43 hmd Exp $
 #ifndef SEQUENCERTIMERTOOL_H
 #define SEQUENCERTIMERTOOL_H 1
 
@@ -41,56 +40,55 @@ public:
                       const std::string& name,
                       const IInterface* parent);
 
-  virtual ~SequencerTimerTool( ); ///< Destructor
+  ~SequencerTimerTool( ) override = default; ///< Destructor
 
   /** initialize method, to compute the normalization factor **/
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
 
   /** finalize method, to print the time summary table **/
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
 
   /** add a timer entry with the specified name **/
-  virtual int addTimer( const std::string& name );
+  int addTimer( const std::string& name ) override;
 
   /** Increase the indentation of the name **/
-  virtual void increaseIndent() { m_indent += 2; }
+  void increaseIndent() override { m_indent += 1; }
 
   /** Decrease the indentation of the name **/
-  virtual void decreaseIndent() 
+  void decreaseIndent() override
   {
-    m_indent -= 2;
-    if ( 0 > m_indent ) m_indent = 0;
+    m_indent = std::max( m_indent-1, 0 );
   }
 
   /** start the counter, i.e. register the current time **/
-  void start( int index ) { m_timerList[index].start(); }
+  void start( int index ) override { m_timerList[index].start(); }
 
   /** stop the counter, return the elapsed time **/
-  double stop( int index ) { return m_timerList[index].stop(); }
+  double stop( int index ) override { return m_timerList[index].stop(); }
 
   /** returns the last time **/
-  double lastTime( int index ) { return m_timerList[index].lastTime(); }
+  double lastTime( int index ) override { return m_timerList[index].lastTime(); }
 
   /** returns the name of the counter **/
-  const std::string& name( int index ) { return m_timerList[index].name(); }
+  const std::string& name( int index ) override { return m_timerList[index].name(); }
 
   /** returns the index of the counter with that name, or -1 **/
-  int indexByName( const std::string& name );
+  int indexByName( const std::string& name ) override;
 
   /** returns the flag telling that global timing is wanted **/
-  virtual bool globalTiming() { return m_globalTiming; };
+  bool globalTiming() override { return m_globalTiming; };
 
   /** prepares and saves the timing histograms **/
-  virtual void saveHistograms();
+  void saveHistograms() override;
 
 private:
 
-  int m_shots;       ///< Number of shots for CPU normalization
+  int m_shots = 3500000 ; // 1s on 2.8GHz Xeon, gcc 3.2, -o2;   ///< Number of shots for CPU normalization
   bool m_normalised; ///< Is the time scaled to a nominal PIII ?
-  int m_indent;      ///< Amount of indentation
+  int m_indent = 0;      ///< Amount of indentation
   std::vector<TimerForSequencer> m_timerList;
-  double m_normFactor; ///< Factor to convert to standard CPU (1 GHz PIII)
-  double m_speedRatio;
+  double m_normFactor = 0.001 ; ///< Factor to convert to standard CPU (1 GHz PIII)
+  double m_speedRatio = 0;
   bool   m_globalTiming;
   std::string::size_type m_headerSize;   ///< Size of the name field
 

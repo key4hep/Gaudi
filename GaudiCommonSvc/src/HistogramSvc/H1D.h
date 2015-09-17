@@ -20,14 +20,14 @@ namespace Gaudi {
     void initSums();
   protected:
     /// cache sumwx  when setting contents since I don't have bin mean
-    double m_sumwx;
+    double m_sumwx = 0;
   public:
     /// Standard constructor
     Histogram1D();
     /// Standard constructor with initialization. The histogram representation will be adopted
     Histogram1D(TH1D* rep);
     /// Destructor.
-    virtual ~Histogram1D() {}
+    ~Histogram1D() override =default;
     /// Adopt ROOT histogram representation
     virtual void adoptRepresentation(TObject*rep);
     /// set bin content (entries and centre are not used )

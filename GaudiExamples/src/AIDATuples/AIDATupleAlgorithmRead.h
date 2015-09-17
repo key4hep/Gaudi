@@ -1,4 +1,3 @@
-// $Id: AIDATupleAlgorithmRead.h,v 1.2 2005/12/13 13:29:24 hmd Exp $
 #ifndef AIDATUPLES_AIDATupleAlgorithmRead_H
 #define AIDATUPLES_AIDATupleAlgorithmRead_H 1
 

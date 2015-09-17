@@ -1,4 +1,3 @@
-// $Id: EventNodeKiller.h,v 1.1 2005-07-15 16:41:41 cattanem Exp $
 #ifndef EVENTNODEKILLER_H 
 #define EVENTNODEKILLER_H 1
 
@@ -20,11 +19,9 @@ public:
   /// Standard constructor
   EventNodeKiller( const std::string& name, ISvcLocator* pSvcLocator );
 
-  virtual ~EventNodeKiller( ); ///< Destructor
+  ~EventNodeKiller( ) override = default; ///< Destructor
 
-  virtual StatusCode execute   ();    ///< Algorithm execution
-
-protected:
+  StatusCode execute() override;    ///< Algorithm execution
 
 private:
   std::vector<std::string> m_nodes; ///< String property "Nodes"

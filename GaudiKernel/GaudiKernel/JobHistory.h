@@ -1,4 +1,3 @@
-// $Id: JobHistory.h,v 1.1 2006/11/09 10:24:05 mato Exp $
 
 #ifndef GAUDIKERNEL_JOBHISTORY_H
 #define GAUDIKERNEL_JOBHISTORY_H

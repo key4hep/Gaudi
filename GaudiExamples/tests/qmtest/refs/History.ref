@@ -57,6 +57,9 @@ ServiceManager      DEBUG Initializing service HistorySvc[m
 HistorySvc          DEBUG Service base class initialized successfully[m
 HistorySvc          DEBUG Initializing HistorySvc[m
 AlgContextSvc       DEBUG Service base class initialized successfully[m
+AlgContextSvc     VERBOSE ServiceLocatorHelper::service: found service IncidentSvc[m
+IncidentSvc         DEBUG Adding [BeginEvent] listener 'AlgContextSvc' with priority 0[m
+IncidentSvc         DEBUG Adding [EndEvent] listener 'AlgContextSvc' with priority 0[m
 HistorySvc        VERBOSE ServiceLocatorHelper::service: found service AlgContextSvc[m
 HistorySvc        VERBOSE ServiceLocatorHelper::service: found service IncidentSvc[m
 ToolSvc             DEBUG Service base class initialized successfully[m

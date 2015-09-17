@@ -1,4 +1,3 @@
-// $Id: MyGaudiTool.h,v 1.3 2008/10/10 15:18:56 marcocle Exp $
 #ifndef GAUDIEXANMPLES_MYGAUDITOOL_H
 #define GAUDIEXANMPLES_MYGAUDITOOL_H 1
 

@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/ISvcLocator.h,v 1.15 2006/12/14 12:55:44 hmd Exp $
 #ifndef GAUDIKERNEL_ISVCLOCATOR_H
 #define GAUDIKERNEL_ISVCLOCATOR_H 1
 

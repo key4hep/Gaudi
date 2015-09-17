@@ -3,8 +3,10 @@
 
 // Required for inheritance
 #include "GaudiKernel/IDataSelector.h"
+#include "GaudiKernel/IIncidentSvc.h"
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/Property.h"
+#include "OutputStreamAgent.h"
 
 // STL include files
 #include <memory>
@@ -50,7 +52,7 @@ protected:
   /// Output type: NEW(NEW,CREATE,WRITE,RECREATE), UPDATE)
   std::string              m_outputType;
   /// Keep reference of agent
-  OutputStreamAgent*       m_agent;
+  std::unique_ptr<OutputStreamAgent> m_agent;
   /// Keep reference to the data provider service
   SmartIF<IDataProviderSvc>        m_pDataProvider;
   /// Keep reference to the data manager service
@@ -83,17 +85,17 @@ protected:
   /// Vector of names of Algorithms that this stream is vetoed by
   StringArrayProperty      m_vetoNames;
   /// Vector of Algorithms that this stream accepts
-  std::vector<Algorithm*>* m_acceptAlgs;
+  std::vector<Algorithm*>  m_acceptAlgs;
   /// Vector of Algorithms that this stream requires
-  std::vector<Algorithm*>* m_requireAlgs;
+  std::vector<Algorithm*>  m_requireAlgs;
   /// Vector of Algorithms that this stream is vetoed by
-  std::vector<Algorithm*>* m_vetoAlgs;
+  std::vector<Algorithm*>  m_vetoAlgs;
 
 public:
   /// Standard algorithm Constructor
   OutputStream(const std::string& name, ISvcLocator* pSvcLocator);
   /// Standard Destructor
-  virtual ~OutputStream();
+  virtual ~OutputStream() = default;
 protected:
   /// Decode list of Algorithms that this stream accepts
   StatusCode decodeAcceptAlgs();
@@ -111,7 +113,7 @@ protected:
   Algorithm* decodeAlgorithm( const std::string& theName );
   /// Decode specified list of Algorithms
   StatusCode decodeAlgorithms( StringArrayProperty& theNames,
-                               std::vector<Algorithm*>* theAlgs );
+                               std::vector<Algorithm*>& theAlgs );
   /// Test whether this event should be output
   bool isEventAccepted() const;
   /// Find single item identified by its path (exact match)
@@ -127,23 +129,25 @@ protected:
 
 public:
   /// Initialize OutputStream
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
   /// Terminate OutputStream
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
   /// Working entry point
-  virtual StatusCode execute();
+  StatusCode execute() override;
   // Connect to proper conversion service
   virtual StatusCode connectConversionSvc();
   /// Store agent's classback
   virtual bool collect(IRegistry* dir, int level);
   /// Collect all objects to be written to the output stream
   virtual StatusCode collectObjects();
+  /// Clear list of selected objects
+  void clearSelection();
+
+private:
   /// Clear item list
   void clearItems(Items& itms);
   /// Add item to output streamer list
   void addItem(Items& itms, const std::string& descriptor);
-  /// Clear list of selected objects
-  void clearSelection();
   /// Return the list of selected objects
   IDataSelector* selectedObjects() { return &m_objects; }
 };

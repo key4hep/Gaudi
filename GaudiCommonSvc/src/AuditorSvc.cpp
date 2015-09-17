@@ -21,7 +21,7 @@ DECLARE_COMPONENT(AuditorSvc)
 //- private helpers ---
 IAuditor* AuditorSvc::newAuditor_( MsgStream& log, const std::string& name ) {
   // locate the auditor factory, instantiate a new auditor, initialize it
-  IAuditor* aud = 0;
+  IAuditor* aud = nullptr;
   StatusCode sc;
   Gaudi::Utils::TypeNameString item(name) ;
   aud = Auditor::Factory::create( item.type(), item.name(), serviceLocator().get() );
@@ -32,7 +32,7 @@ IAuditor* AuditorSvc::newAuditor_( MsgStream& log, const std::string& name ) {
       if ( sc.isFailure() ) {
         log << MSG::WARNING << "Failed to initialize Auditor " << name << endmsg;
         aud->release();
-        aud = 0;
+        aud = nullptr;
       }
     }
   }
@@ -45,17 +45,12 @@ IAuditor* AuditorSvc::newAuditor_( MsgStream& log, const std::string& name ) {
 
 IAuditor* AuditorSvc::findAuditor_( const std::string& name ) {
   // find an auditor by name, return 0 on error
-  IAuditor* aud = 0;
   const std::string item_name = Gaudi::Utils::TypeNameString(name).name();
-  for ( ListAudits::iterator it = m_pAudList.begin() ; it != m_pAudList.end(); ++it ) {
-    if ( (*it)->name() == item_name ) {
-      (*it)->addRef();
-      aud = *it;
-      break;
-    }
-  }
-
-  return aud;
+  auto it = std::find_if( std::begin(m_pAudList), std::end(m_pAudList),
+                          [&](const IAuditor* i) { return i->name() == item_name; });
+  if (it == std::end(m_pAudList)) return nullptr;
+  (*it)->addRef();
+  return *it;
 }
 
 StatusCode AuditorSvc::syncAuditors_() {
@@ -71,18 +66,18 @@ StatusCode AuditorSvc::syncAuditors_() {
 //   }
 
   // create all declared Auditors that do not yet exist
-  for ( VectorName::iterator it = m_audNameList.begin(); it != m_audNameList.end(); it++ ) {
+  for ( auto& it : m_audNameList ) {
 
     // this is clumsy, but the PropertyMgr won't tell us when my property changes right
     // under my nose, so I'll have to figure this out the hard way
-    if ( !findAuditor_( *it ) ) { // if auditor does not yet exist
-      IAuditor* aud = newAuditor_( log, *it );
+    if ( !findAuditor_( it ) ) { // if auditor does not yet exist
+      IAuditor* aud = newAuditor_( log, it );
 
-      if ( aud != 0 ) {
+      if ( aud ) {
         m_pAudList.push_back( aud );
       }
       else {
-        log << MSG::ERROR << "Error constructing Auditor " << *it << endmsg;
+        log << MSG::ERROR << "Error constructing Auditor " << it << endmsg;
         sc = StatusCode::FAILURE;
       }
     }
@@ -97,11 +92,6 @@ AuditorSvc::AuditorSvc( const std::string& name, ISvcLocator* svc )
 : base_class(name, svc) {
   declareProperty("Auditors", m_audNameList );
   declareProperty("Enable", m_isEnabled = true);
-  m_pAudList.clear();
-}
-
-// Destructor.
-AuditorSvc::~AuditorSvc() {
 }
 
 // Inherited Service overrides:
@@ -121,11 +111,9 @@ StatusCode AuditorSvc::initialize() {
   // Finalise the service.
 StatusCode AuditorSvc::finalize() {
 
-  for (ListAudits::iterator it = m_pAudList.begin() ; it != m_pAudList.end(); it++) {
-    if((*it)->isEnabled()) {
-       (*it)->sysFinalize().ignore();
-    }
-    (*it)->release();
+  for (auto& it : m_pAudList ) {
+    if(it->isEnabled()) it->sysFinalize().ignore();
+    it->release();
   }
   m_pAudList.clear();
 
@@ -136,74 +124,58 @@ StatusCode AuditorSvc::finalize() {
 // --------- "Before" methods ---------
 void AuditorSvc::before(StandardEventType evt, INamedInterface* obj) {
   if (!isEnabled()) return;
-  for (ListAudits::iterator it = m_pAudList.begin() ; it != m_pAudList.end(); it++) {
-    if((*it)->isEnabled()) {
-      (*it)->before(evt,obj);
-    }
+  for (auto& it : m_pAudList ) {
+    if(it->isEnabled()) it->before(evt,obj);
   }
 }
 
 void AuditorSvc::before(StandardEventType evt, const std::string &name) {
   if (!isEnabled()) return;
-  for (ListAudits::iterator it = m_pAudList.begin() ; it != m_pAudList.end(); it++) {
-    if((*it)->isEnabled()) {
-      (*it)->before(evt,name);
-    }
+  for (auto& it : m_pAudList ) {
+    if(it->isEnabled()) it->before(evt,name);
   }
 }
 
 void AuditorSvc::before(CustomEventTypeRef evt, INamedInterface* obj) {
   if (!isEnabled()) return;
-  for (ListAudits::iterator it = m_pAudList.begin() ; it != m_pAudList.end(); it++) {
-    if((*it)->isEnabled()) {
-      (*it)->before(evt,obj);
-    }
+  for (auto& it : m_pAudList) {
+    if(it->isEnabled()) it->before(evt,obj);
   }
 }
 
 void AuditorSvc::before(CustomEventTypeRef evt, const std::string &name) {
   if (!isEnabled()) return;
-  for (ListAudits::iterator it = m_pAudList.begin() ; it != m_pAudList.end(); it++) {
-    if((*it)->isEnabled()) {
-      (*it)->before(evt,name);
-    }
+  for (auto& it : m_pAudList ) {
+    if(it->isEnabled()) it->before(evt,name);
   }
 }
 
 // --------- "After" methods ---------
 void AuditorSvc::after(StandardEventType evt, INamedInterface* obj, const StatusCode& sc) {
   if (!isEnabled()) return;
-  for (ListAudits::iterator it = m_pAudList.begin() ; it != m_pAudList.end(); it++) {
-    if((*it)->isEnabled()) {
-      (*it)->after(evt,obj,sc);
-    }
+  for (auto& it : m_pAudList ) {
+    if(it->isEnabled()) it->after(evt,obj,sc);
   }
 }
 
 void AuditorSvc::after(StandardEventType evt, const std::string &name, const StatusCode& sc) {
   if (!isEnabled()) return;
-  for (ListAudits::iterator it = m_pAudList.begin() ; it != m_pAudList.end(); it++) {
-    if((*it)->isEnabled()) {
-      (*it)->after(evt,name,sc);
-    }
+  for (auto& it : m_pAudList ) {
+    if(it->isEnabled()) it->after(evt,name,sc);
   }
 }
 
 void AuditorSvc::after(CustomEventTypeRef evt, INamedInterface* obj, const StatusCode& sc) {
   if (!isEnabled()) return;
-  for (ListAudits::iterator it = m_pAudList.begin() ; it != m_pAudList.end(); it++) {
-    if((*it)->isEnabled()) {
-      (*it)->after(evt,obj,sc);
-    }
+  for (auto& it : m_pAudList ) {
+    if(it->isEnabled()) it->after(evt,obj,sc);
   }
 }
 
 void AuditorSvc::after(CustomEventTypeRef evt, const std::string &name, const StatusCode& sc) {
   if (!isEnabled()) return;
-  for (ListAudits::iterator it = m_pAudList.begin() ; it != m_pAudList.end(); it++) {
-    if((*it)->isEnabled()) {
-      (*it)->after(evt,name,sc);
-    }
+  for (auto& it : m_pAudList) {
+    if(it->isEnabled()) it->after(evt,name,sc);
   }
 }
 
@@ -254,7 +226,7 @@ IAuditor* AuditorSvc::getAuditor( const std::string& name ) {
     // as we didn't manage to sync auditors, the safest bet is to assume the
     // worse...
     // So don't let clients play with an AuditorSvc in an inconsistent state
-    return 0;
+    return nullptr;
   }
 
   // search available auditors, returns 0 on error

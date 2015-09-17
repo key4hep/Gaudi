@@ -1,4 +1,3 @@
-// $Id: HistogramPersistencySvc.h,v 1.5 2008/10/09 13:40:18 marcocle Exp $
 //	===========================================================================
 //
 //	HistogramPersistencySvc.h
@@ -51,13 +50,13 @@ public:
   /**@name PersistencySvc overrides    */
   //@{
   /// Initialize the service.
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
   /// Reinitialize the service.
-  virtual StatusCode reinitialize();
+  StatusCode reinitialize() override;
   /// Finalize the service.
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
   /// Implementation of IConverter: Convert the transient object to the requested representation.
-  virtual StatusCode createRep(DataObject* pObject, IOpaqueAddress*& refpAddress);
+  StatusCode createRep(DataObject* pObject, IOpaqueAddress*& refpAddress) override;
   //@}
 
   /**@name: Object implementation  */
@@ -66,7 +65,7 @@ public:
   HistogramPersistencySvc(const std::string& name, ISvcLocator* svc);
 
   /// Standard Destructor
-  virtual ~HistogramPersistencySvc();
+  ~HistogramPersistencySvc() override = default;
   //@}
 public:
   // ==========================================================================

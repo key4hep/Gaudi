@@ -98,10 +98,10 @@ protected:
 public:
 
   /// IDataManagerSvc: Accessor for root event CLID
-  virtual CLID rootCLID() const;
+  CLID rootCLID() const override;
 
   /// IDataManagerSvc: Accessor for root event name
-  virtual std::string rootName() const;
+  const std::string& rootName() const override;
 
   /// IDataManagerSvc: Register object address with the data store.
   virtual StatusCode registerAddress( const std::string& fullPath,
@@ -174,25 +174,25 @@ public:
 
   /** Initialize data store for new event by giving new event path and root
       object. Takes care to clear the store before reinitializing it  */
-  virtual StatusCode setRoot( const std::string& root_name,
-                              DataObject* pRootObj);
+  StatusCode setRoot( std::string root_name,
+                      DataObject* pRootObj) override;
 
   /** Initialize data store for new event by giving new event path and root
       object. Does not clear the store before reinitializing it. This could
       lead to errors and should be handle with care. Use setRoot if unsure */
-  virtual StatusCode i_setRoot( const std::string& root_name,
+  virtual StatusCode i_setRoot( std::string root_name,
                                 DataObject* pRootObj);
 
   /** Initialize data store for new event by giving new event path and address
       of root object. Takes care to clear the store before reinitializing it */
-  virtual StatusCode setRoot (const std::string& root_path,
-                              IOpaqueAddress* pRootAddr);
+  StatusCode setRoot (std::string root_path,
+                      IOpaqueAddress* pRootAddr) override;
 
   /** Initialize data store for new event by giving new event path and address
    *  of root object. Does not clear the store before reinitializing it. This
    *  could lead to errors and should be handle with care. Use setRoot if unsure
    */
-  virtual StatusCode i_setRoot (const std::string& root_path,
+  virtual StatusCode i_setRoot (std::string root_path,
                                 IOpaqueAddress* pRootAddr);
 
   /** IDataManagerSvc: IDataManagerSvc: Pass a default data loader to the
@@ -200,7 +200,7 @@ public:
    */
   virtual StatusCode setDataLoader( IConversionSvc* svc,
                                     IDataProviderSvc* dpsvc = 0 );
-  
+
   /// Add an item to the preload list
   virtual StatusCode addPreLoadItem( const DataStoreItem& item );
 
@@ -445,7 +445,7 @@ protected:
 
   /// Mutex to protect access to the store
   tsDataSvcMutex m_accessMutex;
-  
+
 };
 #endif // GAUDIKERNEL_TSDATASVC_H
 

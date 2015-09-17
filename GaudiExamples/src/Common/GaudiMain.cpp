@@ -1,5 +1,3 @@
-//$Id: GaudiMain.cpp,v 1.9 2006/11/17 16:04:46 mato Exp $	//
-
 // Include files
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/Bootstrap.h"
@@ -25,7 +23,7 @@ int main ( int argc, char** argv ) {
 
   propMgr->setProperty( "JobOptionsPath", opts );
 
-  if( opts.substr( opts.length() - 3, 3 ) == ".py" ) {
+  if( opts.compare( opts.length() - 3, 3, ".py" ) == 0 ) {
     propMgr->setProperty( "EvtSel",         "NONE" );
     propMgr->setProperty( "JobOptionsType", "NONE" );
     propMgr->setProperty( "DLLs",           "['GaudiPython']" );

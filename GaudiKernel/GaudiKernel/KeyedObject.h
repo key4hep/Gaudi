@@ -44,9 +44,9 @@ protected:
   /// Object Key; It's initial value is not determined.
   key_type m_key;
   /// Reference counter
-  long     m_refCount;
+  long     m_refCount = 0;
   /// Boolean to indicate wether a key was already assigned.
-  bool     m_hasKey;
+  bool     m_hasKey = false;
   /// Add reference to object (Increase reference counter).
   unsigned long addRef();
   /// Release reference. If the reference count is ZERO, delete the object.
@@ -58,22 +58,22 @@ protected:
   void setKey(const key_type& key);
 public:
   /// Standard Constructor. The object key is preset to the invalid value.
-  KeyedObject(): m_key(), m_refCount(0), m_hasKey(false) {                     }
+  KeyedObject() = default;
   /** Standard Constructor accepting the object's key.
       The key must be valid and cannot be changed later.
   */
   KeyedObject(const key_type& kval):m_key(kval),m_refCount(0),m_hasKey(true) { }
   /// Standard destructor.
-  virtual ~KeyedObject();
+  ~KeyedObject() override;
   /// Retrieve Key of the object.
   const key_type& key() const           {                     return m_key;    }
   /// Check if the object has a key assigned or not.
   bool hasKey()   const                 {                     return m_hasKey; }  /// Distance in the parent container
-  virtual long index() const            {    return traits::identifier(m_key); }
+  long index() const override           {    return traits::identifier(m_key); }
   /// Serialize the object for writing
-  virtual StreamBuffer& serialize( StreamBuffer& s ) const;
+  StreamBuffer& serialize( StreamBuffer& s ) const override;
   /// Serialize the object for reading
-  virtual StreamBuffer& serialize( StreamBuffer& s );
+  StreamBuffer& serialize( StreamBuffer& s ) override;
 private:
   /// NOBODY may copy these objects
   KeyedObject(const KeyedObject& copy) : ContainedObject(copy), m_refCount(0), m_hasKey(true) {               }
@@ -92,7 +92,7 @@ KeyedObject<KEY>::~KeyedObject()
 {
   ObjectContainerBase* p = const_cast<ObjectContainerBase*>(parent());
   if ( p )  {
-    setParent(0);
+    setParent(nullptr);
     p->remove(this);
   }
 }
@@ -107,9 +107,7 @@ unsigned long KeyedObject<KEY>::addRef() {
 template<class KEY> inline
 unsigned long KeyedObject<KEY>::release() {
   long cnt = --m_refCount;
-  if ( cnt <= 0 )  {
-    delete this;
-  }
+  if ( cnt <= 0 )  delete this;
   return cnt;
 }
 

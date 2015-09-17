@@ -1,5 +1,3 @@
-// $Id: IStatSvc.h,v 1.1 2007/08/06 08:39:40 marcocle Exp $
-// ============================================================================
 #ifndef GAUDIKERNEL_ISTATSVC_H
 #define GAUDIKERNEL_ISTATSVC_H 1
 // ============================================================================
@@ -52,7 +50,7 @@ public:
   virtual const StatEntity*   stat   ( const StatTag&   t ) const = 0 ;
 protected:
   // virtual and protected destructor
-  virtual ~IStatSvc( ); ///< Destructor
+  virtual ~IStatSvc( ) = default; ///< Destructor
 };
 // ============================================================================
 // The END

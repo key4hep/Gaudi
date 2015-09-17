@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/src/Lib/SmartDataObjectPtr.cpp,v 1.5 2003/06/25 15:59:40 mato Exp $
 //	====================================================================
 //	SmartDataObjectPtr.cpp
 //	--------------------------------------------------------------------

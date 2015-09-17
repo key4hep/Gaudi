@@ -12,10 +12,6 @@
 #include "AIDA/IHistogram2D.h"
 #include "AIDA/IHistogram3D.h"
 // ============================================================================
-// Boost
-// ============================================================================
-#include "boost/bind.hpp"
-// ============================================================================
 // ROOT
 // ============================================================================
 #include "TH1D.h"
@@ -228,11 +224,11 @@ namespace
   }
   // ==========================================================================
   template <class HISTO1>
-  std::auto_ptr<HISTO1>
+  std::unique_ptr<HISTO1>
   _parse_1D ( const std::string& input , std::string& name )
   {
     //
-    typedef std::auto_ptr<HISTO1>   H1P ;
+    typedef std::unique_ptr<HISTO1>   H1P ;
     // ==========================================================================
     // 1) parse the custom format
     //
@@ -267,10 +263,10 @@ namespace
   }
   // ==========================================================================
   template <class HISTO2>
-  std::auto_ptr<HISTO2> _parse_2D ( const std::string& input , std::string& name )
+  std::unique_ptr<HISTO2> _parse_2D ( const std::string& input , std::string& name )
   {
     //
-    typedef std::auto_ptr<HISTO2>   H2P ;
+    typedef std::unique_ptr<HISTO2>   H2P ;
     // 1) parse the custom format
     //
     H2        h2 ;
@@ -346,8 +342,8 @@ StatusCode Gaudi::Parsers::parse
   // 1) check the parsing
   std::string name ;
   //
-  std::auto_ptr<TH1D> h1 = _parse_1D<TH1D> ( input , name ) ;
-  if ( 0 != h1.get() )
+  auto h1 = _parse_1D<TH1D> ( input , name ) ;
+  if ( h1 )
   {
     result.Reset() ;
     h1->Copy ( result )  ;                            // ASSIGN
@@ -356,10 +352,9 @@ StatusCode Gaudi::Parsers::parse
   }
   //
   // XML-like text?
-  if ( std::string::npos != input.find('<') )
-  { return Gaudi::Utils::Histos::fromXml ( result , input ) ; }
-  //
-  return StatusCode::FAILURE ;
+  return ( std::string::npos != input.find('<') )
+         ? Gaudi::Utils::Histos::fromXml ( result , input )
+         : StatusCode::FAILURE ;
 }
 // ============================================================================
 /*  parse ROOT histogram from text representation
@@ -374,8 +369,8 @@ StatusCode Gaudi::Parsers::parse
   // 1) check the parsing
   std::string name ;
   //
-  std::auto_ptr<TH1F> h1 = _parse_1D<TH1F> ( input , name ) ;
-  if ( 0 != h1.get() )
+  auto h1 = _parse_1D<TH1F> ( input , name ) ;
+  if ( h1 )
   {
     result.Reset() ;
     h1->Copy ( result )  ;                            // ASSIGN
@@ -384,10 +379,9 @@ StatusCode Gaudi::Parsers::parse
   }
   //
   // XML-like text?
-  if ( std::string::npos != input.find('<') )
-  { return Gaudi::Utils::Histos::fromXml ( result , input ) ; }
-  //
-  return StatusCode::FAILURE ;
+  return  ( std::string::npos != input.find('<') )
+          ? Gaudi::Utils::Histos::fromXml ( result , input )
+          :  StatusCode::FAILURE ;
 }
 // ============================================================================
 /*  parse ROOT histogram from text representation
@@ -401,8 +395,8 @@ StatusCode Gaudi::Parsers::parse
 {
   // 1) check the parsing
   std::string name ;
-  std::auto_ptr<TH2D> h2 = _parse_2D<TH2D> ( input , name ) ;
-  if ( 0 != h2.get() )
+  auto h2 = _parse_2D<TH2D> ( input , name ) ;
+  if ( h2 )
   {
     result.Reset() ;
     h2->Copy ( result )  ;                            // ASSIGN
@@ -411,10 +405,9 @@ StatusCode Gaudi::Parsers::parse
   }
   //
   // XML-like text?
-  if ( std::string::npos != input.find('<') )
-  { return Gaudi::Utils::Histos::fromXml ( result , input ) ; }
-  //
-  return StatusCode::FAILURE ;
+  return ( std::string::npos != input.find('<') )
+         ? Gaudi::Utils::Histos::fromXml ( result , input )
+         : StatusCode::FAILURE ;
 }
 // ============================================================================
 /*  parse ROOT histogram from text representation
@@ -428,8 +421,8 @@ StatusCode Gaudi::Parsers::parse
 {
   // 1) check the parsing
   std::string name ;
-  std::auto_ptr<TH2F> h2 = _parse_2D<TH2F> ( input , name ) ;
-  if ( 0 != h2.get() )
+  auto h2 = _parse_2D<TH2F> ( input , name ) ;
+  if ( h2 )
   {
     result.Reset() ;
     h2->Copy ( result )  ;                            // ASSIGN
@@ -453,12 +446,12 @@ StatusCode Gaudi::Parsers::parse
 StatusCode Gaudi::Parsers::parse
 ( TH1D*& result , const std::string& input )
 {
-  if ( 0 != result ) { return parse ( *result , input ) ; } // RETURN
+  if ( result ) { return parse ( *result , input ) ; } // RETURN
 
   // 1) check the parsing
   std::string name ;
-  std::auto_ptr<TH1D> h1 = _parse_1D<TH1D>  ( input , name ) ;
-  if ( 0 != h1.get() )
+  auto h1 = _parse_1D<TH1D>  ( input , name ) ;
+  if ( h1 )
   {
     result = h1.release() ;
     result->SetName ( name.c_str() ) ;
@@ -466,10 +459,9 @@ StatusCode Gaudi::Parsers::parse
   }
   //
   // XML-like text?
-  if ( std::string::npos != input.find('<') )
-  { return Gaudi::Utils::Histos::fromXml ( result , input ) ; }
-  //
-  return StatusCode::FAILURE ;
+  return  ( std::string::npos != input.find('<') )
+          ? Gaudi::Utils::Histos::fromXml ( result , input )
+          : StatusCode::FAILURE ;
 }
 // ============================================================================
 /*  parse ROOT histogram from text representation
@@ -481,12 +473,12 @@ StatusCode Gaudi::Parsers::parse
 StatusCode Gaudi::Parsers::parse
 ( TH2D*& result , const std::string& input )
 {
-  if ( 0 != result ) { return parse ( *result , input ) ; } // RETURN
+  if ( result ) { return parse ( *result , input ) ; } // RETURN
 
   // 1) check the parsing
   std::string name ;
-  std::auto_ptr<TH2D> h2 = _parse_2D<TH2D>  ( input , name ) ;
-  if ( 0 != h2.get() )
+  auto h2 = _parse_2D<TH2D>  ( input , name ) ;
+  if ( h2 )
   {
     result = h2.release() ;
     result->SetName ( name.c_str() ) ;
@@ -494,10 +486,9 @@ StatusCode Gaudi::Parsers::parse
   }
   //
   // XML-like text?
-  if ( std::string::npos != input.find('<') )
-  { return Gaudi::Utils::Histos::fromXml ( result , input ) ; }
-  //
-  return StatusCode::FAILURE ;
+  return ( std::string::npos != input.find('<') ) 
+         ? Gaudi::Utils::Histos::fromXml ( result , input )
+         : StatusCode::FAILURE ;
 }
 // ============================================================================
 /*  parse AIDA histogram from text representation
@@ -510,10 +501,9 @@ StatusCode Gaudi::Parsers::parse
 ( AIDA::IHistogram1D& result , const std::string& input )
 {
   // 1) convert to ROOT
-  TH1D* root = Gaudi::Utils::Aida2ROOT::aida2root ( &result ) ;
-  if ( 0 == root ) { return StatusCode::FAILURE ; }
+  auto root = Gaudi::Utils::Aida2ROOT::aida2root ( &result ) ;
   // 2) read ROOT histogram
-  return parse ( *root , input ) ;
+  return root ? parse ( *root , input ) : StatusCode::FAILURE ; 
 }
 // ============================================================================
 /*  parse AIDA histogram from text representation
@@ -526,10 +516,9 @@ StatusCode Gaudi::Parsers::parse
 ( AIDA::IHistogram2D& result , const std::string& input )
 {
   // 1) convert to ROOT
-  TH2D* root = Gaudi::Utils::Aida2ROOT::aida2root ( &result ) ;
-  if ( 0 == root ) { return StatusCode::FAILURE ; }
+  auto root = Gaudi::Utils::Aida2ROOT::aida2root ( &result ) ;
   // 2) read ROOT histogram
-  return parse ( *root , input ) ;
+  return root ? parse ( *root , input ) : StatusCode::FAILURE ; 
 }
 // ============================================================================
 // The END

@@ -2,18 +2,15 @@
 
 // from Gaudi
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/xtoa.h"
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/Incident.h"
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/IIncidentSvc.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/ISvcManager.h"
 #include "GaudiKernel/IAddressCreator.h"
 #include "GaudiKernel/PropertyMgr.h"
 #include "GaudiKernel/EventSelectorDataStream.h"
 #include "GaudiKernel/DataStreamTool.h"
-#include "GaudiKernel/ToolFactory.h"
 #include "GaudiKernel/Service.h"
 
 #include <sstream>
@@ -33,18 +30,7 @@ DataStreamTool::DataStreamTool( const std::string& type,
   : base_class ( type, name , parent )
 {
   //declareInterface<IDataStreamTool>(this);
-
-  m_incidentSvc       = 0;
-  m_streamCount       = 0;
-  m_streamID          = 0;
-
 }
-//=============================================================================
-// Destructor
-//=============================================================================
-DataStreamTool::~DataStreamTool() {
-}
-
 //=============================================================================
 StatusCode DataStreamTool::initialize() {
 
@@ -105,14 +91,12 @@ StatusCode DataStreamTool::addStream(const std::string & input) {
 StatusCode DataStreamTool::addStreams(const StreamSpecs & inputs) {
 
   StatusCode status = StatusCode::SUCCESS;
-
-  for ( StreamSpecs::const_iterator itr = inputs.begin(); itr != inputs.end() && status.isSuccess(); ++itr )    {
-
-    status = addStream(*itr);
-
+  for ( auto& i : inputs ) { 
+      status = addStream(i);
+      if  (!status.isSuccess()) break;
   }
-
   return status;
+
 
 }
 
@@ -134,10 +118,7 @@ StatusCode DataStreamTool::initializeStream(EventSelectorDataStream* s)   {
       s->setSelector(sel);
       sel->release();  // No need of this interface anymore, it is passed to the stream
       if ( prop.isValid( ) && isvc.isValid( ) )   {
-        const Properties& p = s->properties();
-        for(Properties::const_iterator i=p.begin(); i!=p.end(); i++)   {
-          prop->setProperty((*i)).ignore();
-        }
+        for( const auto& i : s->properties() ) prop->setProperty(i).ignore();
         int output_level = this->outputLevel();
         prop->setProperty(IntegerProperty("OutputLevel",output_level)).ignore();
         // FIXME: (MCl) Why do we have to initialize the selector here?
@@ -189,9 +170,9 @@ StatusCode DataStreamTool::finalizeStream(EventSelectorDataStream* s)   {
 
 StatusCode DataStreamTool::eraseStream ( const std::string& info )   {
 
-  Streams::iterator i = getStreamIterator(info);
+  auto i = getStreamIterator(info);
 
-  if ( m_streams.end() != i )   {
+  if ( i !=  m_streams.end() )   {
     (*i)->release();
     m_streams.erase(i);
     return StatusCode::SUCCESS;
@@ -209,16 +190,13 @@ StatusCode DataStreamTool::createStream(const std::string& nam, const std::strin
 
 
 EventSelectorDataStream * DataStreamTool::getStream( const std::string& info ) {
-  Streams::iterator i = getStreamIterator(info);
-  if ( m_streams.end() == i ) return NULL;
-  return *i;
+  auto i = getStreamIterator(info);
+  return   i != m_streams.end() ? *i : nullptr;
 }
 
 DataStreamTool::Streams::iterator DataStreamTool::getStreamIterator ( const std::string& info ) {
-  for ( Streams::iterator i = m_streams.begin(); i != m_streams.end(); i++ )    {
-    if ( (*i)->definition() == info )    {
-      return i;
-    }
+  for ( auto i = m_streams.begin(); i != m_streams.end(); i++ )    {
+    if ( (*i)->definition() == info )    return i;
   }
   return m_streams.end();
 }
@@ -227,7 +205,7 @@ EventSelectorDataStream * DataStreamTool::getStream( size_type pos ) {
   if ( (pos >= 0) && ((size_t)pos < m_streams.size()) ) // pos has to point inside the vector
     return m_streams[pos];
   else
-    return 0;
+    return nullptr;
 }
 
 EventSelectorDataStream * DataStreamTool::lastStream()
@@ -249,19 +227,19 @@ StatusCode DataStreamTool::clear()
   MsgStream log(msgSvc(), name());
 
   // disconnect the streams
-  for ( StreamSpecs::const_iterator il = m_streamSpecs.begin(); il != m_streamSpecs.end(); il++ ) {
-    EventSelectorDataStream* s = getStream(*il);
-    if ( NULL != s )   {
+  for ( auto& il : m_streamSpecs ) {
+    EventSelectorDataStream* s = getStream(il);
+    if ( s )   {
       if ( s->isInitialized() )    {
         iret = finalizeStream(s);
         if ( !iret.isSuccess() )  {
-          log << MSG::ERROR << "Error finalizing Stream" << *il << endmsg;
+          log << MSG::ERROR << "Error finalizing Stream" << il << endmsg;
           status = iret;
         }
       }
-      iret = eraseStream( *il );
+      iret = eraseStream( il );
       if ( !iret.isSuccess() )    {
-        log << MSG::ERROR << "Error diconnecting Stream" << *il << endmsg;
+        log << MSG::ERROR << "Error diconnecting Stream" << il << endmsg;
         status = iret;
       }
     }
@@ -276,7 +254,7 @@ StatusCode DataStreamTool::clear()
 StatusCode DataStreamTool::connectStream( EventSelectorDataStream *s)
 {
 
-  if ( 0 != s )   {
+  if ( s )   {
     s->addRef();
     m_streams.push_back(s);
     return StatusCode::SUCCESS;
@@ -317,7 +295,7 @@ StatusCode DataStreamTool::getNextStream( const EventSelectorDataStream * & esds
 {
 
   EventSelectorDataStream * nextStream = getStream(dsid);
-  if ( NULL == nextStream ) return StatusCode::FAILURE; //<-end of streams reached
+  if ( !nextStream ) return StatusCode::FAILURE; //<-end of streams reached
 
   esds = nextStream;
   ++m_streamID;

@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/ISerialize.h,v 1.3 2001/01/19 14:22:55 mato Exp $
 #ifndef GAUDIKERNEL_ISERIALIZE_H
 #define GAUDIKERNEL_ISERIALIZE_H
 

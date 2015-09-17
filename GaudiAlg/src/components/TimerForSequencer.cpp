@@ -1,4 +1,3 @@
-
 // local
 #include "TimerForSequencer.h"
 
@@ -63,10 +62,8 @@ MsgStream & TimerForSequencer::fillStream(MsgStream & s) const
 
 std::string TimerForSequencer::header( std::string::size_type size )
 {
-  if ( size < 21 ) size = 21;
-  std::string blank( size - 20, ' ' );
-  std::string s = "Algorithm" + blank + "(millisec) |    <user> |   <clock> |";
-  s += "      min       max    sigma | entries | total (s) |";
-  return s;
+  return  "Algorithm" + std::string( std::max(std::string::size_type(21),size) - 20, ' ' )
+        + "(millisec) |    <user> |   <clock> |"
+        + "      min       max    sigma | entries | total (s) |";
 }
 

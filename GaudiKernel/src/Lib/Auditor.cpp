@@ -12,21 +12,17 @@
 Auditor::Auditor( const std::string& name, ISvcLocator *pSvcLocator )
 : m_name(name),
   m_pSvcLocator(pSvcLocator),
+  m_PropertyMgr{ new PropertyMgr() },
   m_isEnabled(true),
   m_isInitialized(false),
   m_isFinalized(false)
 {
-  m_PropertyMgr = new PropertyMgr();
 
   // Declare common Auditor properties with their defaults
   declareProperty( "OutputLevel", m_outputLevel = MSG::NIL);
   declareProperty( "Enable", m_isEnabled = true);
 }
 
-// Default Destructor
-Auditor::~Auditor() {
-  delete m_PropertyMgr;
-}
 
 // IAuditor implementation
 StatusCode Auditor::sysInitialize() {

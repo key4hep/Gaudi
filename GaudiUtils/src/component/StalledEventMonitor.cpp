@@ -28,19 +28,18 @@ namespace {
                   bool autostart = false):
         WatchdogThread(timeout, autostart),
         log(msgSvc, name),
-        m_counter(0),
         m_maxCount(maxCount),
         m_stackTrace(stackTrace){}
-    virtual ~EventWatchdog() {}
+    ~EventWatchdog() override = default;
   private:
     /// message stream used to report problems
     MsgStream log;
     /// internal counter of the occurrences of consecutive timeouts
-    long m_counter;
+    long m_counter = 0;
     /// how many timeouts before aborting (0 means never abort)
-    long m_maxCount;
+    long m_maxCount = 0;
     /// whether to dump a stack trace when the timeout is reached
-    bool m_stackTrace;
+    bool m_stackTrace = false;
     /// main watchdog function
     void action() {
       if (!m_counter) {
@@ -95,11 +94,6 @@ StalledEventMonitor::StalledEventMonitor(const std::string& name, ISvcLocator* s
                   "Whether to print the stack-trace on timeout.");
 }
 
-// Destructor
-StalledEventMonitor::~StalledEventMonitor(){
-
-}
-
 // Initialization of the service.
 StatusCode StalledEventMonitor::initialize() {
   StatusCode sc = base_class::initialize();
@@ -108,15 +102,14 @@ StatusCode StalledEventMonitor::initialize() {
 
   if (m_eventTimeout) {
     // create the watchdog thread
-    m_watchdog = std::auto_ptr<WatchdogThread>(
-        new EventWatchdog(msgSvc(),
-            "EventWatchdog",
-            boost::posix_time::seconds(m_eventTimeout),
-            m_stackTrace,
-            m_maxTimeoutCount));
+    m_watchdog.reset( new EventWatchdog(msgSvc(),
+                                        "EventWatchdog",
+                                        boost::posix_time::seconds(m_eventTimeout),
+                                        m_stackTrace,
+                                        m_maxTimeoutCount));
 
     // register to the incident service
-    std::string serviceName = "IncidentSvc";
+    static const std::string serviceName = "IncidentSvc";
     m_incidentSvc = serviceLocator()->service(serviceName);
     if ( ! m_incidentSvc ) {
       error() << "Cannot retrieve " << serviceName << endmsg;
@@ -134,18 +127,18 @@ StatusCode StalledEventMonitor::initialize() {
 
 // Start the monitoring.
 StatusCode StalledEventMonitor::start() {
-  if (m_watchdog.get()) m_watchdog->start();
+  if (m_watchdog) m_watchdog->start();
   return StatusCode::SUCCESS;
 }
 
 // Notify the watchdog that a new event has been started
 void StalledEventMonitor::handle(const Incident& /* incident */) {
-  if (m_watchdog.get()) m_watchdog->ping();
+  if (m_watchdog) m_watchdog->ping();
 }
 
 // Start the monitoring.
 StatusCode StalledEventMonitor::stop() {
-  if (m_watchdog.get()) m_watchdog->stop();
+  if (m_watchdog) m_watchdog->stop();
   return StatusCode::SUCCESS;
 }
 

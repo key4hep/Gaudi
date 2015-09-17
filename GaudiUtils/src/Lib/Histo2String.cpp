@@ -74,8 +74,8 @@ namespace
     std::vector<std::pair<double,double> > bins ;
     for ( unsigned int iBin = 0 ; iBin <= nBins + 1 ; ++iBin )
     {
-      bins.push_back ( std::make_pair( histo.GetBinContent( iBin ) ,
-                                       histo.GetBinError  ( iBin ) ) ) ;
+      bins.emplace_back( histo.GetBinContent( iBin ) ,
+                         histo.GetBinError  ( iBin ) ) ;
     }
     stream << "'bins'  : "  ;
     Gaudi::Utils::toStream ( bins , stream ) ;
@@ -229,13 +229,8 @@ std::ostream& Gaudi::Utils::toStream
   std::ostream&             stream ,
   const bool                asXML  )
 {
-  //
-  AIDA::IHistogram1D* aida = const_cast<AIDA::IHistogram1D*> ( &histo ) ;
-  //
-  const TH1D* root = Gaudi::Utils::Aida2ROOT::aida2root ( aida ) ;
-  if ( 0 == root ) { return stream ; }                                // RETURN
-  //
-  return toStream  ( *root , stream , asXML ) ;
+  auto root = Gaudi::Utils::Aida2ROOT::aida2root ( &histo ) ;
+  return root ? toStream  ( *root , stream , asXML ) : stream ;
 }
 // ============================================================================
 /*  stream the AIDA histogram into output stream
@@ -250,12 +245,8 @@ std::ostream& Gaudi::Utils::toStream
   const bool                asXML  )
 {
   //
-  AIDA::IHistogram2D* aida = const_cast<AIDA::IHistogram2D*> ( &histo ) ;
-  //
-  const TH2D* root = Gaudi::Utils::Aida2ROOT::aida2root ( aida ) ;
-  if ( 0 == root ) { return stream ; }                                // RETURN
-  //
-  return toStream  ( *root , stream , asXML ) ;
+  auto root = Gaudi::Utils::Aida2ROOT::aida2root ( &histo ) ;
+  return root ? toStream  ( *root , stream , asXML ) : stream;
 }
 // ============================================================================
 /*  convert the histogram into the string
@@ -370,8 +361,7 @@ std::string Gaudi::Utils::toString
 // =============================================================================
 std::string Gaudi::Utils::toString ( const AIDA::IHistogram1D* histo )
 {
-  if ( 0 == histo ) { return std::string ("{}") ; }
-  return toString ( *histo ) ;
+  return histo ? toString ( *histo ) : "{}";
 }
 // ============================================================================
 /*  convert the histogram into the string
@@ -384,8 +374,7 @@ std::string Gaudi::Utils::toString ( const AIDA::IHistogram1D* histo )
 // =============================================================================
 std::string Gaudi::Utils::toString ( AIDA::IHistogram1D* histo )
 {
-  if ( 0 == histo ) { return std::string ("{}") ; }
-  return toString ( *histo ) ;
+  return histo ? toString ( *histo ) : "{}";
 }
 // ============================================================================
 /*  convert the histogram into the string
@@ -398,8 +387,7 @@ std::string Gaudi::Utils::toString ( AIDA::IHistogram1D* histo )
 // =============================================================================
 std::string Gaudi::Utils::toString ( const TH1D* histo )
 {
-  if ( 0 == histo ) { return std::string ("{}") ; }
-  return toString ( *histo ) ;
+  return histo ? toString ( *histo ) : "{}";
 }
 // ============================================================================
 /*  convert the histogram into the string
@@ -412,8 +400,7 @@ std::string Gaudi::Utils::toString ( const TH1D* histo )
 // =============================================================================
 std::string Gaudi::Utils::toString ( const TH2D* histo )
 {
-  if ( 0 == histo ) { return std::string ("{}") ; }
-  return toString ( *histo ) ;
+  return histo ? toString ( *histo ) : "{}";
 }
 // ============================================================================
 /*  convert the histogram into the string
@@ -426,8 +413,7 @@ std::string Gaudi::Utils::toString ( const TH2D* histo )
 // =============================================================================
 std::string Gaudi::Utils::toString ( TH1D* histo )
 {
-  if ( 0 == histo ) { return std::string ("{}") ; }
-  return toString ( *histo ) ;
+  return histo ? toString ( *histo ) : "{}";
 }
 // ============================================================================
 /*  convert the histogram into the string
@@ -440,8 +426,7 @@ std::string Gaudi::Utils::toString ( TH1D* histo )
 // =============================================================================
 std::string Gaudi::Utils::toString ( TH2D* histo )
 {
-  if ( 0 == histo ) { return std::string ("{}") ; }
-  return toString ( *histo ) ;
+  return histo ? toString ( *histo ) : "{}";
 }
 // ============================================================================
 // The END

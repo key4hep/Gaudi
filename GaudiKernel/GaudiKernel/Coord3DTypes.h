@@ -4,9 +4,6 @@
  *
  *  3D coordinate typedefs
  *
- *  CVS Log :-
- *  $Id: Coord3DTypes.h,v 1.1 2006/12/08 14:59:58 hmd Exp $
- *
  *  @author Juan PALACIOS
  *  @date   2005-11-21
  */

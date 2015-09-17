@@ -392,13 +392,11 @@ StatusCode Service::setProperties() {
 
 //--- Local methods
 // Standard Constructor
-Service::Service(const std::string& name, ISvcLocator* svcloc) {
-  m_name       = name;
-  m_svcLocator = svcloc;
-  m_state      = Gaudi::StateMachine::OFFLINE;
-  m_targetState = Gaudi::StateMachine::OFFLINE;
-  m_propertyMgr = new PropertyMgr();
-  m_outputLevel = MSG::NIL;
+Service::Service(std::string name, ISvcLocator* svcloc) :
+  m_name( std::move(name) ),
+  m_svcLocator(  svcloc ),
+  m_propertyMgr(  new PropertyMgr() )
+{
   // Declare common Service properties with their defaults
   if ( (name != "MessageSvc") && msgSvc().isValid() )  {
     // In genconf a service is instantiated without the ApplicationMgr
@@ -438,10 +436,6 @@ void Service::initOutputLevel(Property& /*prop*/) {
   updateMsgStreamOutputLevel(m_outputLevel);
 }
 
-// Standard Destructor
-Service::~Service() {
-  delete m_propertyMgr;
-}
 
 SmartIF<IAuditorSvc>& Service::auditorSvc() const {
   if ( !m_pAuditorSvc.isValid() ) {

@@ -1,4 +1,3 @@
-// $Id: Fill.cpp,v 1.1 2007/10/02 14:53:48 marcocle Exp $
 // ============================================================================
 // Include files 
 // ============================================================================
@@ -38,7 +37,7 @@ void Gaudi::Utils::Histos::fill
   const double        value  ,
   const double        weight ) 
 {
-  if ( 0 != histo ) { histo->fill ( value , weight ) ; }
+  if ( histo ) { histo->fill ( value , weight ) ; }
 }
 // ============================================================================
 /* simple function to fill AIDA::IHistogram2D objects 
@@ -57,7 +56,7 @@ void Gaudi::Utils::Histos::fill
   const double        valueY ,
   const double        weight ) 
 {
-  if ( 0 != histo ) { histo -> fill ( valueX , valueY , weight ) ; }
+  if ( histo ) { histo -> fill ( valueX , valueY , weight ) ; }
 }
 // ============================================================================
 /*  simple function to fill AIDA::IHistogram3D objects 
@@ -78,7 +77,7 @@ void Gaudi::Utils::Histos::fill
   const double        valueZ ,
   const double        weight ) 
 {
-  if ( 0 != histo ) { histo -> fill ( valueX , valueY , valueZ , weight ) ; }
+  if ( histo ) { histo -> fill ( valueX , valueY , valueZ , weight ) ; }
 }
 // ============================================================================
 /*  simple function to fill AIDA::IProfile1D objects 
@@ -97,7 +96,7 @@ void Gaudi::Utils::Histos::fill
   const double        valueY ,
   const double        weight ) 
 {
-  if ( 0 != histo ) { histo -> fill ( valueX , valueY , weight ) ; }
+  if ( histo ) { histo -> fill ( valueX , valueY , weight ) ; }
 }
 // ============================================================================
 /*  simple function to fill AIDA::IProfile2D objects 
@@ -118,7 +117,7 @@ void Gaudi::Utils::Histos::fill
   const double        valueZ ,
   const double        weight ) 
 {
-  if ( 0 != histo ) { histo -> fill ( valueX , valueY , valueZ , weight ) ; }
+  if ( histo ) { histo -> fill ( valueX , valueY , valueZ , weight ) ; }
 }
 // ============================================================================
 namespace 
@@ -129,7 +128,7 @@ namespace
     const std::string&          title ) 
   {
     return 
-      ( 0 != histo && title.empty() ) ? histo->title() : title ;
+      ( histo && title.empty() ) ? histo->title() : title ;
   }
 }
 // ======================================================================

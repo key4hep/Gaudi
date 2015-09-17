@@ -1,10 +1,10 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/src/Lib/Message.cpp,v 1.9 2008/02/20 19:16:23 hmd Exp $
 #include <string>
 #include <iostream>
 #include <iomanip>
 #include <cstdlib>
 #include <cstdio>
 #include <cctype>
+#include <algorithm>
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/Message.h"
 #include "GaudiKernel/Timing.h"
@@ -12,25 +12,6 @@
 #include "GaudiKernel/ContextSpecificPtr.h"
 
 using namespace MSG;
-
-// Formatting string characters.
-const char Message::FORMAT_PREFIX = '%';
-const char Message::JUSTIFY_LEFT = 'L';
-const char Message::JUSTIFY_RIGHT = 'R';
-const char Message::MESSAGE = 'M';
-const char Message::TYPE = 'T';
-const char Message::TIME = 't';
-const char Message::UTIME = 'u';
-const char Message::SOURCE = 'S';
-const char Message::FILL = 'F';
-const char Message::SLOT = 's';
-const char Message::EVTNUM = 'e';
-const char Message::THREAD = 'X';
-const char Message::WIDTH = 'W';
-//const char* Message::DEFAULT_FORMAT = "% F%67W%L#############################################################################\n-----------------------------------------------------------------------------\nMessage follows...\nSource  : %S\nType    : %T\nMessage : %M\nEnd of message.\n-----------------------------------------------------------------------------\n";
-const char* Message::DEFAULT_FORMAT = "% F%18W%S%7W%R%T %0W%M";
-// Time format accepts anything that strftime does plus %f for milliseconds
-const char* Message::DEFAULT_TIME_FORMAT = "%Y-%m-%d %H:%M:%S,%f";
 
 namespace {
   // get the current time from the system and format it according to the format
@@ -46,10 +27,7 @@ namespace {
 // Purpose:
 // ---------------------------------------------------------------------------
 //
-Message::Message() :
-  m_message( "" ), m_source( "UNKNOWN" ), m_format( DEFAULT_FORMAT ),
-  m_time_format(DEFAULT_TIME_FORMAT), m_type( NIL ),
-  m_fill( ' ' ), m_width( 0 ), m_left( true )
+Message::Message()
 {
   m_ecSlot = Gaudi::Hive::currentContextId();
   m_ecEvt = Gaudi::Hive::currentContextEvt();
@@ -63,9 +41,7 @@ Message::Message() :
 // ---------------------------------------------------------------------------
 //
 Message::Message ( const char* src, int type, const char* msg ) :
-  m_message( msg ), m_source( src ), m_format( DEFAULT_FORMAT ),
-  m_time_format(DEFAULT_TIME_FORMAT), m_type( type ),
-  m_fill( ' ' ), m_width( 0 ), m_left( true )
+  m_message( msg ), m_source( src ), m_type( type )
 {
   m_ecSlot = Gaudi::Hive::currentContextId();
   m_ecEvt = Gaudi::Hive::currentContextEvt();
@@ -78,10 +54,8 @@ Message::Message ( const char* src, int type, const char* msg ) :
 // Purpose:
 // ---------------------------------------------------------------------------
 //
-Message::Message ( const std::string& src, int type, const std::string& msg ) :
-  m_message( msg ), m_source( src ), m_format( DEFAULT_FORMAT ),
-  m_time_format(DEFAULT_TIME_FORMAT), m_type( type ),
-  m_fill( ' ' ), m_width( 0 ), m_left( true )
+Message::Message ( std::string src, int type, std::string msg ) :
+  m_message( std::move(msg) ), m_source( std::move(src) ), m_type( type )
 {
   m_ecSlot = Gaudi::Hive::currentContextId();
   m_ecEvt = Gaudi::Hive::currentContextEvt();
@@ -105,9 +79,9 @@ const std::string& Message::getMessage() const
 // Purpose: Set the message string.
 // ---------------------------------------------------------------------------
 //
-void Message::setMessage( const std::string& msg )
+void Message::setMessage( std::string msg )
 {
-  m_message = msg;
+  m_message = std::move(msg);
 }
 
 //#############################################################################
@@ -149,9 +123,9 @@ const std::string& Message::getSource() const
 // Purpose: Set the message source.
 // ---------------------------------------------------------------------------
 //
-void Message::setSource( const std::string& src )
+void Message::setSource( std::string src )
 {
-  m_source = src;
+  m_source = std::move(src);
 }
 
 //#############################################################################
@@ -223,12 +197,13 @@ const std::string Message::getDefaultFormat()
 //          use isFormatted() to check for valid format.
 // ---------------------------------------------------------------------------
 //
-void Message::setFormat( const std::string& format ) const
+void Message::setFormat( std::string format ) const
 {
-  if ( format.empty() )
-    m_format = DEFAULT_FORMAT;
-  else
-    m_format = format;
+    if (LIKELY(!format.empty())) {
+        m_format = std::move(format);
+    } else {
+        m_format = DEFAULT_FORMAT;
+    }
 }
 
 //#############################################################################
@@ -261,12 +236,10 @@ const std::string Message::getDefaultTimeFormat()
 //          use isFormatted() to check for valid format.
 // ---------------------------------------------------------------------------
 //
-void Message::setTimeFormat( const std::string& timeFormat ) const
+void Message::setTimeFormat( std::string timeFormat ) const
 {
-  if ( timeFormat.empty() )
-    m_time_format = DEFAULT_TIME_FORMAT;
-  else
-    m_time_format = timeFormat;
+  m_time_format = ( timeFormat.empty() ? DEFAULT_TIME_FORMAT
+                                       : std::move(timeFormat) );
 }
 
 //#############################################################################
@@ -277,8 +250,8 @@ void Message::setTimeFormat( const std::string& timeFormat ) const
 //
 void Message::makeFormattedMsg( const std::string& format ) const
 {
-  m_formatted_msg = "";
-  std::string::const_iterator i = format.begin();
+  m_formatted_msg.clear();
+  auto i = format.begin();
   while( i != format.end() ) {
 
     // Output format string until format statement found.
@@ -290,7 +263,7 @@ void Message::makeFormattedMsg( const std::string& format ) const
     i++;
 
     // Find type of formatting.
-    std::string this_format = "";
+    std::string this_format;
     while( i != format.end() && *i != FORMAT_PREFIX &&
            *i != MESSAGE && *i != TYPE && *i != SOURCE &&
            *i != FILL && *i != WIDTH && *i != TIME && *i != UTIME &&
@@ -313,7 +286,7 @@ void Message::makeFormattedMsg( const std::string& format ) const
 //#############################################################################
 // ---------------------------------------------------------------------------
 // Routine: decodeFormat
-// Purpose: This the work horse that check for a valid format string.
+// Purpose: This the work horse that checks for a valid format string.
 // ---------------------------------------------------------------------------
 //
 void Message::decodeFormat( const std::string& format ) const
@@ -335,15 +308,13 @@ void Message::decodeFormat( const std::string& format ) const
 
     case TIME:
       {
-        const std::string& timeStr = formattedTime ( m_time_format ) ;
-        sizeField( timeStr );
+        sizeField( formattedTime ( m_time_format ) );
       }
       break;
 
     case UTIME:
       {
-        const std::string& timeStr = formattedTime ( m_time_format, true ) ;
-        sizeField( timeStr );
+        sizeField( formattedTime ( m_time_format, true ) );
       }
       break;
 
@@ -356,7 +327,7 @@ void Message::decodeFormat( const std::string& format ) const
 	sizeField( thrStr );
       }
       break;
-  
+
     case SLOT:
       {
         if (m_ecEvt >= 0) {
@@ -441,29 +412,25 @@ void Message::invalidFormat() const
 // Purpose: Sets the minimum width of a stream field.
 // ---------------------------------------------------------------------------
 //
+namespace {
+    // Check that a container only contains digits.
+    constexpr struct all_digit_t {
+        template <typename C>
+        bool operator()(const C& c) const {
+            return std::all_of( std::begin(c), std::end(c),
+                                [](typename C::const_reference i) {
+                                     return isdigit(i);
+            } );
+        }
+    } all_digits {};
+}
+
 
 void Message::setWidth( const std::string& formatArg ) const
 {
-  // Check that the parameters are only digits.
-  bool only_digits = true;
-  for( std::string::const_iterator i = formatArg.begin();
-       i != formatArg.end(); i++ ) {
-
-    if ( ! isdigit( *i ) ) {
-      only_digits = false;
-      invalidFormat();
-      break;
-    }
-  }
-
-  // Convert string to int.
-  if ( only_digits ) {
-#ifdef __GNUG__
-    m_width = atoi( formatArg.c_str() );
-#else
-    m_width = atoi( formatArg.data() );
-#endif
-  }
+  // Convert string to int, if string contains digits only...
+  if ( all_digits(formatArg) ) m_width = std::stoi(formatArg);
+  else invalidFormat();
 }
 
 //#############################################################################
@@ -484,7 +451,7 @@ void Message::sizeField( const std::string& text ) const
     // Truncate the text if it is too long.
     if ( m_width < static_cast<int>( text.length() ) ) {
       newText = text.substr( 0, m_width );
-      for ( int i = 0, j = newText.length()-1; i < 3 && j >= 0; i++, j-- )
+      for ( int i = 0, j = newText.length()-1; i < 3 && j >= 0; ++i, --j )
         newText[ j ] = '.';
     }
 

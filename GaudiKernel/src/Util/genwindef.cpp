@@ -1,5 +1,3 @@
-//$Id: genconf.cpp,v 1.35 2008/10/15 21:51:24 marcocle Exp $	//
-
 #ifdef _WIN32
   // Disable a warning in Boost program_options headers:
   // inconsistent linkage in program_options/variables_map.hpp
@@ -61,7 +59,7 @@ int main ( int argc, char** argv )
   }
 
   CLibSymbolInfo libsymbols;
-  ofstream out(outfile.c_str());
+  ofstream out(outfile);
   if(out.fail()) {
     cerr << "windef: Error opening file " << outfile << endl;
     return 1;
@@ -76,6 +74,3 @@ int main ( int argc, char** argv )
 
   return 0;
 }
-
-
-

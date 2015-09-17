@@ -1,4 +1,3 @@
-// $Id: RegistryEntry.h,v 1.8 2005/07/18 16:34:05 hmd Exp $
 #ifndef GAUDIKERNEL_REGISTRYENTRY_H
 #define GAUDIKERNEL_REGISTRYENTRY_H
 
@@ -46,21 +45,21 @@ namespace DataSvcHelpers {
     typedef Store::const_iterator Iterator;
   private:
     /// Reference counter
-    unsigned long     m_refCount;
+    unsigned long     m_refCount = 0;
     /// Is the link soft or hard?
-    bool              m_isSoft;
+    bool              m_isSoft = false;
     /// String containing full path of the object (volatile)
     std::string       m_fullpath;
     /// Path name
     std::string       m_path;
     /// Pointer to parent
-    RegistryEntry*    m_pParent;
+    RegistryEntry*    m_pParent = nullptr;
     /// Pointer to opaque address (load info)
-    IOpaqueAddress*   m_pAddress;
+    IOpaqueAddress*   m_pAddress = nullptr;
     /// Pointer to object
-    DataObject*       m_pObject;
+    DataObject*       m_pObject = nullptr;
     /// Pointer to hosting transient store
-    IDataProviderSvc* m_pDataProviderSvc;
+    IDataProviderSvc* m_pDataProviderSvc = nullptr;
     /// Store of leaves
     Store             m_store;
 
@@ -110,33 +109,33 @@ namespace DataSvcHelpers {
     void makeSoft (IOpaqueAddress* pAddress);
   public:
     /// Standard Constructor
-    RegistryEntry(std::string path, RegistryEntry* parent = 0);
+    RegistryEntry(std::string path, RegistryEntry* parent = nullptr);
     /// Standard Destructor
-    virtual ~RegistryEntry();
+    ~RegistryEntry() override;
     /// IInterface implementation: Reference the object
-    virtual unsigned long release();
+    unsigned long release() override;
     /// IInterface implementation: Dereference the object
-    virtual unsigned long addRef()    {
+    unsigned long addRef() override   {
       return ++m_refCount;
     }
     /// Retrieve name of the entry
-    const std::string& name()  const  {
+    const std::string& name()  const  override {
       return m_path;
     }
     /// Full identifier (or key)
-    virtual const std::string& identifier()   const  {
+    const std::string& identifier()   const  override {
       return m_fullpath;
     }
     /// Retrieve pointer to Transient Store
-    virtual IDataProviderSvc* dataSvc()  const {
+    IDataProviderSvc* dataSvc()  const override {
       return m_pDataProviderSvc;
     }
     /// Retrive object behind the link
-    virtual DataObject*     object()  const {
+    DataObject*     object()  const override {
       return m_pObject;
     }
     /// Retrieve opaque storage address
-    virtual IOpaqueAddress* address()   const  {
+    IOpaqueAddress* address()   const  override {
       return m_pAddress;
     }
     /// Pointer to parent directory entry
@@ -152,11 +151,11 @@ namespace DataSvcHelpers {
       return m_store;
     }
     /// Return the size of the container(=number of objects)
-    virtual int             size()  const   {
+    virtual int             size()  const {
       return m_store.size();
     }
     /// Simple check if the Container is empty
-    virtual bool            isEmpty()  const    {
+    virtual bool            isEmpty()  const   {
       return m_store.size() == 0;
     }
     /// Return starting point for container iteration
@@ -176,7 +175,7 @@ namespace DataSvcHelpers {
       return i_find(path);
     }
     /// Set/Update Opaque address
-    void setAddress(IOpaqueAddress* pAddress);
+    void setAddress(IOpaqueAddress* pAddress) override;
     /// Set/Update object address
     void setObject(DataObject* obj);
 

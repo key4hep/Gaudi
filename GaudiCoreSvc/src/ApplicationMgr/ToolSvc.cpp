@@ -11,35 +11,45 @@
 #include <map>
 #include <string>
 #include <cassert>
-#ifdef __ICC
-// disable icc remark #177: declared but never referenced
-// TODO: Remove. Problem with boost::lambda
-#pragma warning(disable:177)
-#endif
-#include "boost/lambda/bind.hpp"
+#include <functional>
+#include "boost/circular_buffer.hpp"
+#include "boost/algorithm/string/predicate.hpp"
+#include "boost/algorithm/string/erase.hpp"
+namespace ba = boost::algorithm;
 
 #define ON_DEBUG if (UNLIKELY(outputLevel() <= MSG::DEBUG))
 #define ON_VERBOSE if (UNLIKELY(outputLevel() <= MSG::VERBOSE))
+
+namespace {
+/// Get current refcount for tool
+unsigned long refCountTool( const IAlgTool* tool ) { return tool->refCount(); }
+
+//------------------------------------------------------------------------------
+template <typename C>
+unsigned long totalRefCount( const C& toolList )
+//------------------------------------------------------------------------------
+{
+  return std::accumulate( std::begin(toolList), std::end(toolList), 0ul,
+                          [&](unsigned long count, const IAlgTool*  tool ) {
+                              return count + refCountTool( tool );
+  });
+}
+
+/// small helper functions
+template <typename C> void remove(C& c, typename C::const_reference i)  {
+    c.erase( std::remove(std::begin(c),std::end(c),i), std::end(c) );
+}
+
+}
 
 // Instantiation of a static factory class used by clients to create
 //  instances of this service
 DECLARE_COMPONENT(ToolSvc)
 
-namespace bl = boost::lambda;
-
 //------------------------------------------------------------------------------
 ToolSvc::ToolSvc( const std::string& name, ISvcLocator* svc )
   //------------------------------------------------------------------------------
-  : base_class(name, svc),
-    m_pHistorySvc(0)
- { }
-
-//------------------------------------------------------------------------------
-ToolSvc::~ToolSvc()
-  //------------------------------------------------------------------------------
-{
-
-}
+  : base_class( name, svc) { }
 
 //------------------------------------------------------------------------------
 StatusCode ToolSvc::initialize()
@@ -91,16 +101,14 @@ StatusCode ToolSvc::finalize()
         - explicitly release all tools, one release() on all tools per loop.
         -> tools are deleted in the order of increasing number of refCounts.
   */
-  ListTools finalizedTools; // list of tools that have been finalized
   info()  << "Removing all tools created by ToolSvc" << endmsg;
 
   // Print out list of tools
   ON_DEBUG {
     MsgStream &log = debug();
     log << "  Tool List : ";
-    for ( ListTools::const_iterator iTool = m_instancesTools.begin();
-        iTool != m_instancesTools.end(); ++iTool ) {
-      log << (*iTool)->name() << ":" << refCountTool( *iTool ) << " ";
+    for ( const auto& iTool : m_instancesTools ) {
+      log << iTool->name() << ":" << refCountTool( iTool ) << " ";
     }
     log << endmsg;
   }
@@ -120,6 +128,7 @@ StatusCode ToolSvc::finalize()
         + total number of refcounts
         + minimum number of refcounts
   */
+  boost::circular_buffer<IAlgTool*> finalizedTools(m_instancesTools.size()); // list of tools that have been finalized
   bool fail(false);
   size_t toolCount = m_instancesTools.size();
   unsigned long startRefCount = 0;
@@ -138,13 +147,13 @@ StatusCode ToolSvc::finalize()
     startMinRefCount = endMinRefCount;
     startRefCount = endRefCount;
     unsigned long maxLoop = toolCount + 1;
-    while ( --maxLoop > 0 &&  m_instancesTools.size() > 0 ) {
+    while ( --maxLoop > 0 &&  !m_instancesTools.empty() ) {
       IAlgTool* pTool = m_instancesTools.back();
       // removing tool from list makes ToolSvc::releaseTool( IAlgTool* ) a noop
       m_instancesTools.pop_back();
       unsigned long count = refCountTool( pTool );
       // cache tool name
-      std::string toolName = pTool->name();
+      const std::string& toolName = pTool->name();
       if ( count <= startMinRefCount ) {
         ON_DEBUG debug() << "  Performing finalization of " << toolName
                          << " (refCount " << count << ")" << endmsg;
@@ -157,11 +166,11 @@ StatusCode ToolSvc::finalize()
         // postpone deletion
         finalizedTools.push_back(pTool);
       } else {
-        // Place back in list to try again later
+        // Place back at the front of the list to try again later
         // ToolSvc::releaseTool( IAlgTool* ) remains active for this tool
         ON_DEBUG debug() << "  Delaying   finalization of " << toolName
                          << " (refCount " << count << ")" << endmsg;
-        m_instancesTools.push_front(pTool);
+        m_instancesTools.insert( std::begin(m_instancesTools), pTool );
       }
     } // end of inner loop
     toolCount = m_instancesTools.size();
@@ -182,17 +191,17 @@ StatusCode ToolSvc::finalize()
   // Therefore, the check on non-finalised tools should happen *after* the deletion
   // of the finalized tools.
   ON_DEBUG debug() << "Deleting " << finalizedTools.size() << " finalized tools" << endmsg;
-  unsigned long maxLoop = totalToolRefCount( finalizedTools ) + 1;
-  while ( --maxLoop > 0 && finalizedTools.size() > 0 ) {
+  auto maxLoop = totalRefCount( finalizedTools ) + 1;
+  while ( --maxLoop > 0 && !finalizedTools.empty() ) {
     IAlgTool* pTool = finalizedTools.front();
     finalizedTools.pop_front();
-    unsigned long count = refCountTool( pTool );
+    auto count = refCountTool( pTool );
     if ( count == 1 ) {
       ON_DEBUG debug() << "  Performing deletion of " << pTool->name() << endmsg;
     } else {
       ON_VERBOSE verbose() << "  Delaying   deletion of " << pTool->name()
           << " (refCount " << count << ")" << endmsg;
-      // Put it back at the end of the list if refCount still not zero
+      // Move to the end when refCount still not zero
       finalizedTools.push_back(pTool);
     }
     // do a forced release
@@ -202,35 +211,28 @@ StatusCode ToolSvc::finalize()
   // Error if by now not all tools are properly finalised
   if ( !m_instancesTools.empty() ) {
     error() << "Unable to finalize and delete the following tools : ";
-    for ( ListTools::const_iterator iTool = m_instancesTools.begin();
-          iTool != m_instancesTools.end(); ++iTool ) {
-      error() << (*iTool)->name() << ": " << refCountTool( *iTool ) << " ";
+    for ( const auto& iTool : m_instancesTools ) {
+      error() << iTool->name() << ": " << refCountTool( iTool ) << " ";
     }
     error() << endmsg;
   }
 
   // by now, all tools should be deleted and removed.
-  if ( finalizedTools.size() > 0 ) {
+  if ( !finalizedTools.empty() ) {
     error() << "Failed to delete the following " <<  finalizedTools.size()
             << " finalized tools. Bug in ToolSvc::finalize()?: ";
-    for ( ListTools::const_iterator iTool = finalizedTools.begin();
-          iTool != finalizedTools.end(); ++iTool ) {
-      error() << (*iTool)->name() << ": " << refCountTool( *iTool ) << " ";
+    for ( const auto& iTool : finalizedTools ) {
+      error() << iTool->name() << ": " << refCountTool( iTool ) << " ";
     }
     error() << endmsg;
   }
 
-  if ( 0 != m_pHistorySvc ) {
-    m_pHistorySvc->release();
-  }
+  if ( m_pHistorySvc ) m_pHistorySvc->release();
 
   // Finalize this specific service
-  if (! Service::finalize().isSuccess() || fail) {
-    return StatusCode::FAILURE;
-  } else {
-    return StatusCode::SUCCESS;
-  }
-
+  return  ( Service::finalize().isSuccess() && !fail ) ?
+            StatusCode::SUCCESS :
+            StatusCode::FAILURE ;
 
 }
 
@@ -241,7 +243,7 @@ StatusCode ToolSvc::finalize()
 // ===================================================================================
 namespace
 {
-  const std::string s_PUBLIC = ":PUBLIC" ;
+  static const std::string s_PUBLIC = ":PUBLIC" ;
 }
 
 //------------------------------------------------------------------------------
@@ -252,32 +254,25 @@ StatusCode ToolSvc::retrieve ( const std::string& tooltype ,
                                bool               createIf )
 //------------------------------------------------------------------------------
 {
+  // check for tools, which by name are required to be public:
+  if ( ba::ends_with( tooltype, s_PUBLIC ) ) {
+    // parent for PUBLIC tool is 'this', i.e. ToolSvc
+    return retrieve ( ba::erase_tail_copy(tooltype, s_PUBLIC.size()),
+                      iid , tool , this , createIf ) ;
+  }
 
   // protect against empty type
   if ( tooltype.empty() ) {
     error() << "retrieve(): No Tool Type/Name given" << endmsg;
     return StatusCode::FAILURE;
   }
-
-  {
-    // check for tools, which by name is required to be public:
-    const std::string::size_type pos = tooltype.find ( s_PUBLIC ) ;
-    if ( std::string::npos != pos )
-    {
-      // set parent for PUBLIC tool
-      parent = this ;
-      return retrieve ( std::string( tooltype , 0 , pos ) ,
-                        iid , tool , parent , createIf ) ;
-    }
-  }
-
-  const std::string::size_type pos = tooltype.find('/');
-  if( std::string::npos == pos ) {
+  auto pos = tooltype.find('/');
+  if ( std::string::npos == pos ) {
     return retrieve ( tooltype , tooltype , iid , tool , parent , createIf );
   }
-  const std::string newtype ( tooltype ,       0 , pos               ) ;
-  const std::string newname ( tooltype , pos + 1 , std::string::npos ) ;
-  return retrieve ( newtype , newname , iid , tool , parent , createIf ) ;
+  return retrieve ( tooltype.substr( 0 , pos ),
+                    tooltype.substr( pos + 1 ),
+                    iid , tool , parent , createIf ) ;
 }
 
 // ===================================================================================
@@ -296,40 +291,35 @@ StatusCode ToolSvc::retrieve ( const std::string& tooltype ,
   if( toolname.empty() || (std::string::npos != tooltype.find('/')) )
   { return retrieve ( tooltype , iid , tool , parent , createIf ) ; }
 
+  // check for tools, which by name are required to be public:
+  if ( ba::ends_with( toolname, s_PUBLIC ) )
   {
-    // check for tools, which by name is required to be public:
-    const std::string::size_type pos = toolname.find ( s_PUBLIC ) ;
-    if ( std::string::npos != pos )
-    {
-      // set parent for PUBLIC tool
-      parent = this ;
-      return retrieve ( tooltype , std::string( toolname , 0 , pos ) ,
-                        iid , tool , parent , createIf ) ;
-    }
+    // parent for PUBLIC tool is this, i.e. ToolSvc
+    return retrieve ( tooltype , ba::erase_tail_copy(toolname, s_PUBLIC.size() ),
+                      iid , tool , this , createIf ) ;
   }
 
-  IAlgTool* itool = 0;
+  IAlgTool* itool = nullptr;
   StatusCode sc(StatusCode::FAILURE);
 
-  tool = 0;
+  tool = nullptr;
 
   // If parent is not specified it means it is the ToolSvc itself
-  if( 0 == parent ) {
-    parent = this;
-  }
+  if( !parent ) parent = this;
   const std::string fullname = nameTool( toolname, parent );
 
   // Find tool in list of those already existing, and tell its
   // interface that it has been used one more time
-  for( IAlgTool* iAlgTool : m_instancesTools) {
-    if( iAlgTool->name() == fullname && iAlgTool->parent() == parent ) {
+  auto it = std::find_if( std::begin(m_instancesTools), std::end(m_instancesTools),
+                          [&](const IAlgTool* i) {
+                             return i->name() == fullname && i->parent() == parent;
+                          });
+  if (it!=std::end(m_instancesTools)) {
       ON_DEBUG debug() << "Retrieved tool " << toolname << " with parent " << parent << endmsg;
-      itool = iAlgTool;
-      break;
-    }
+      itool = *it;
   }
 
-  if ( 0 == itool ) {
+  if ( !itool ) {
     // Instances of this tool do not exist, create an instance if desired
     // otherwise return failure
     if( UNLIKELY(!createIf) ) {
@@ -337,10 +327,8 @@ StatusCode ToolSvc::retrieve ( const std::string& tooltype ,
                 << " not found and creation not requested" << endmsg;
       return sc;
     }
-    else {
-      sc = create( tooltype, toolname, parent, itool );
-      if ( sc.isFailure() ) { return sc; }
-    }
+    sc = create( tooltype, toolname, parent, itool );
+    if ( sc.isFailure() ) { return sc; }
   }
 
   // Get the right interface of it
@@ -355,14 +343,9 @@ StatusCode ToolSvc::retrieve ( const std::string& tooltype ,
   ///////////////
   /// invoke retrieve callbacks...
   ///////////////
-  if (!m_observers.empty()) {
-     std::for_each( m_observers.begin(),
-                    m_observers.end(),
-                    bl::bind(&IToolSvc::Observer::onRetrieve,
-                             bl::_1,
-                             itool));
-  }
-
+  std::for_each( std::begin(m_observers),
+                 std::end(m_observers),
+                 [&]( IToolSvc::Observer* obs ) { obs->onRetrieve(itool); } );
   return sc;
 }
 //------------------------------------------------------------------------------
@@ -371,13 +354,9 @@ std::vector<std::string> ToolSvc::getInstances( const std::string& toolType )
 {
 
   std::vector<std::string> tools;
-
-  for(auto tool: m_instancesTools) {
-    if (tool->type() == toolType) {
-      tools.push_back( tool->name() );
-    }
+  for(const auto& tool: m_instancesTools) {
+    if (tool->type() == toolType) tools.push_back( tool->name() );
   }
-
   return tools;
 
 }
@@ -387,16 +366,14 @@ std::vector<std::string> ToolSvc::getInstances() const
 {
   std::vector<std::string> tools{m_instancesTools.size()};
   std::transform(std::begin(m_instancesTools), std::end(m_instancesTools),
-                 std::begin(tools),
-                 [](IAlgTool* tool) {return tool->name();});
+                 std::begin(tools), std::mem_fn(&IAlgTool::name) );
   return tools;
 }
 //------------------------------------------------------------------------------
 std::vector<IAlgTool*> ToolSvc::getTools() const
 //------------------------------------------------------------------------------
 {
-  return std::vector<IAlgTool*>{std::begin(m_instancesTools),
-                                std::end(m_instancesTools)};
+  return m_instancesTools;
 }
 //------------------------------------------------------------------------------
 StatusCode ToolSvc::releaseTool( IAlgTool* tool )
@@ -405,8 +382,8 @@ StatusCode ToolSvc::releaseTool( IAlgTool* tool )
   StatusCode sc(StatusCode::SUCCESS);
   // test if tool is in known list (protect trying to access a previously deleted tool)
   if ( m_instancesTools.rend() != std::find( m_instancesTools.rbegin(),
-                                              m_instancesTools.rend(),
-                                              tool ) ) {
+                                             m_instancesTools.rend(),
+                                             tool ) ) {
     unsigned long count = refCountTool(tool);
     if ( count == 1 ) {
       MsgStream log( msgSvc(), name() );
@@ -424,11 +401,10 @@ StatusCode ToolSvc::releaseTool( IAlgTool* tool )
       }
       sc = finalizeTool(tool);
       // remove from known tools...
-      m_instancesTools.remove(tool);
+      remove(m_instancesTools,tool);
     }
     tool->release();
   }
-
   return sc;
 }
 
@@ -445,56 +421,54 @@ StatusCode ToolSvc::create(const std::string& tooltype,
 namespace {
 /// Small class to allow a safe roll-back if the tool is not
 /// correctly initialized or there are problems.
+template <typename T>
 class ToolCreateGuard {
+  /// list of tools
+  T& m_tools;
+  /// pointer to be set
+  std::unique_ptr<IAlgTool> m_tool;
+
 public:
-  ToolCreateGuard(ToolSvc::ListTools &listTools):
-    m_list(listTools),
-    m_tool(0)
-  {}
+  ToolCreateGuard(T& tools): m_tools(tools) {}
+  // we don't get a move constructor by default because we
+  // have a non-trivial destructor... However, the default
+  // one is just fine...
+  ToolCreateGuard(ToolCreateGuard&&) = default;
   /// Set the internal pointer (delete any previous one). Get ownership of the tool.
-  void set(IAlgTool* tool) {
-    if (m_tool) { // remove previous content
-      m_list.remove(m_tool);
-      delete m_tool;
-    }
-    if (tool) { // set new content
-      m_tool = tool;
-      m_list.push_back(m_tool);
-    }
-  }
-  ToolCreateGuard& operator=(IAlgTool* tool) {
-    set(tool);
-    return *this;
+  void create( const std::string& tooltype, const std::string& fullname, const IInterface* parent ) {
+    // remove previous content
+    if (m_tool) remove(m_tools,m_tool.get());
+    m_tool.reset(AlgTool::Factory::create(tooltype, tooltype, fullname, parent))   ;
+    // set new content
+    if (m_tool) m_tools.push_back(m_tool.get());
   }
   /// Get the internal pointer
   IAlgTool* get() {
-    return m_tool;
+    return m_tool.get();
   }
   IAlgTool* operator->() const {
-    assert(m_tool != 0);
-    return m_tool;
+    assert(m_tool);
+    return m_tool.get();
   }
   /// Return the internal pointer and give ownership.
   IAlgTool* release() {
-    IAlgTool* tool = m_tool;
-    m_tool = 0;
-    return tool;
+    return m_tool.release();
   }
-  /// Delete the owned tool and remove it from the list.
+  /// remove it from the list.
   ~ToolCreateGuard(){
-    set(0);
+    if (m_tool) remove(m_tools,m_tool.get());
   }
-private:
-  /// list of tools
-  ToolSvc::ListTools& m_list;
-  /// pointer to be set
-  IAlgTool* m_tool;
 };
+
+template <typename C>
+ToolCreateGuard<C> make_toolCreateGuard(C& c) {
+    return ToolCreateGuard<C>{ c };
+}
 }
 
 //------------------------------------------------------------------------------
 /**
- * Now able to handle clones. The test of tool existence is performed according to 
+ * Now able to handle clones. The test of tool existence is performed according to
  * three criteria: name, type and parent.
  * If a tool is private, i.e. the parent is not the tool Svc, and it exist but
  * the parent is not the specified one, a clone is handed over.
@@ -514,15 +488,15 @@ StatusCode ToolSvc::create(const std::string& tooltype,
   }
 
   // If parent has not been specified, assume it is the ToolSvc
-  if ( 0 == parent ) parent = this;
+  if ( !parent ) parent = this;
 
-  tool = 0;
+  tool = nullptr;
   // Automatically deletes the tool if not explicitly kept (i.e. on success).
   // The tool is removed from the list of known tools too.
-  ToolCreateGuard toolguard(m_instancesTools);
+  auto toolguard = make_toolCreateGuard(m_instancesTools);
 
   // Check if the tool already exist : this could happen with clones
-  const std::string fullname = nameTool(toolname, parent);
+  std::string fullname = nameTool(toolname, parent);
   if( UNLIKELY(existsTool(fullname)) ) {
     // Now check if the parent is the same. This allows for clones
     for (IAlgTool* iAlgTool: m_instancesTools){
@@ -540,7 +514,7 @@ StatusCode ToolSvc::create(const std::string& tooltype,
   }
   // instantiate the tool using the factory
   try {
-    toolguard = AlgTool::Factory::create(tooltype, tooltype, fullname, parent);
+    toolguard.create( tooltype, fullname, parent );
     if ( UNLIKELY(! toolguard.get()) ){
        error() << "Cannot create tool " << tooltype << " (No factory found)" << endmsg;
        return StatusCode::FAILURE;
@@ -576,7 +550,7 @@ StatusCode ToolSvc::create(const std::string& tooltype,
   // to downcast IAlgTool to AlgTool in order to set the properties via the JobOptions
   // service
   AlgTool* mytool = dynamic_cast<AlgTool*> (toolguard.get());
-  if ( mytool != 0 ) {
+  if ( mytool ) {
     StatusCode sc = mytool->setProperties();
     if ( UNLIKELY(sc.isFailure()) ) {
       error() << "Error setting properties for tool '"
@@ -632,26 +606,20 @@ StatusCode ToolSvc::create(const std::string& tooltype,
 
 
   // The tool has been successfully created and initialized,
-  // so we the guard can be released
+  // so we inform the guard that it can release it
   tool = toolguard.release();
 
   ///////////////
   /// invoke create callbacks...
   ///////////////
-  if (!m_observers.empty()) {
-      std::for_each( m_observers.begin(),
-                     m_observers.end(),
-                     bl::bind(&IToolSvc::Observer::onCreate,
-                              bl::_1,
-                              tool));
-  }
+  std::for_each( m_observers.begin(),
+                 m_observers.end(),
+                 [&](IToolSvc::Observer* obs) { obs->onCreate(tool); } );
   // TODO: replace by generic callback
   // Register the tool with the HistorySvc
-  if (m_pHistorySvc != 0 ||
-      service("HistorySvc",m_pHistorySvc,false).isSuccess() ) {
+  if (m_pHistorySvc || service("HistorySvc",m_pHistorySvc,false).isSuccess() ) {
     m_pHistorySvc->registerAlgTool(*tool).ignore();
   }
-
   return StatusCode::SUCCESS;
 
 }
@@ -663,12 +631,12 @@ std::string ToolSvc::nameTool( const std::string& toolname,
 {
 
   std::string fullname = "";
-  if ( parent == 0 ) { return this->name() + "." + toolname; }    // RETURN
+  if ( !parent ) { return this->name() + "." + toolname; }    // RETURN
 
 
   IInterface* cparent = const_cast<IInterface*>( parent ) ;
   // check that parent has a name!
-  INamedInterface* _p = 0 ;
+  INamedInterface* _p = nullptr ;
   StatusCode sc = cparent->queryInterface( INamedInterface::interfaceID() , pp_cast<void>(&_p) ) ;
   if ( sc.isSuccess() )
   {
@@ -689,9 +657,8 @@ std::string ToolSvc::nameTool( const std::string& toolname,
 bool ToolSvc::existsTool( const std::string& fullname) const
   //------------------------------------------------------------------------------
 {
-  for ( ListTools::const_iterator it = m_instancesTools.begin();
-        it != m_instancesTools.end(); ++it ) {
-    if ( (*it)->name() == fullname ) { return true; }
+  for ( const auto& it : m_instancesTools ) {
+    if ( it->name() == fullname ) { return true; }
   }
   return false;
 }
@@ -738,30 +705,18 @@ StatusCode ToolSvc::finalizeTool( IAlgTool* itool ) const
 }
 
 //------------------------------------------------------------------------------
-unsigned long ToolSvc::totalToolRefCount( const ToolSvc::ListTools& toolList ) const
-//------------------------------------------------------------------------------
-{
-  unsigned long count = 0;
-  for ( ListTools::const_iterator iTool = toolList.begin();
-        iTool != toolList.end(); ++iTool ) {
-    count += refCountTool( *iTool );
-  }
-  return count;
-}
-
-//------------------------------------------------------------------------------
 unsigned long ToolSvc::totalToolRefCount() const
 //------------------------------------------------------------------------------
 {
-  return totalToolRefCount( m_instancesTools );
+  return totalRefCount( m_instancesTools );
 }
 //------------------------------------------------------------------------------
 unsigned long ToolSvc::minimumToolRefCount() const
 //------------------------------------------------------------------------------
 {
   unsigned long count = 0;
-  if ( m_instancesTools.size() > 0 ) {
-    ListTools::const_iterator iTool = m_instancesTools.begin();
+  if ( !m_instancesTools.empty() ) {
+    auto iTool = m_instancesTools.begin();
     // start with first
     count = refCountTool( *iTool );
     // then compare the others
@@ -773,14 +728,13 @@ unsigned long ToolSvc::minimumToolRefCount() const
 }
 
 void ToolSvc::registerObserver(IToolSvc::Observer* obs) {
-  if ( 0 == obs )
+  if ( !obs )
     throw GaudiException( "Received NULL pointer", this->name() + "::registerObserver", StatusCode::FAILURE );
   m_observers.push_back(obs);
 }
 
 void ToolSvc::unRegisterObserver(IToolSvc::Observer* obs) {
-  std::vector<IToolSvc::Observer*>::iterator i =
-    find(m_observers.begin(),m_observers.end(),obs);
+  auto i = std::find(m_observers.begin(),m_observers.end(),obs);
   if (i!=m_observers.end()) m_observers.erase(i);
 }
 
@@ -793,13 +747,12 @@ ToolSvc::start()
   ON_DEBUG debug() << "START transition for AlgTools" << endmsg;
 
   bool fail(false);
-  for ( ListTools::const_iterator iTool = m_instancesTools.begin();
-        iTool != m_instancesTools.end(); ++iTool ) {
-    ON_VERBOSE verbose() << (*iTool)->name() << "::start()" << endmsg;
+  for ( auto& iTool : m_instancesTools ) {
+    ON_VERBOSE verbose() << iTool->name() << "::start()" << endmsg;
 
-    if (UNLIKELY(!(*iTool)->sysStart().isSuccess())) {
+    if (UNLIKELY(!iTool->sysStart().isSuccess())) {
       fail = true;
-      error() << (*iTool)->name() << " failed to start()" << endmsg;
+      error() << iTool->name() << " failed to start()" << endmsg;
     }
 
   }
@@ -822,13 +775,12 @@ ToolSvc::stop()
   ON_DEBUG debug() << "STOP transition for AlgTools" << endmsg;
 
   bool fail(false);
-  for ( ListTools::const_iterator iTool = m_instancesTools.begin();
-        iTool != m_instancesTools.end(); ++iTool ) {
-    ON_VERBOSE verbose() << (*iTool)->name() << "::stop()" << endmsg;
+  for ( auto& iTool : m_instancesTools ) {
+    ON_VERBOSE verbose() << iTool->name() << "::stop()" << endmsg;
 
-    if (UNLIKELY(!(*iTool)->sysStop().isSuccess())) {
+    if (UNLIKELY(!iTool->sysStop().isSuccess())) {
       fail = true;
-      error() << (*iTool)->name() << " failed to stop()" << endmsg;
+      error() << iTool->name() << " failed to stop()" << endmsg;
     }
 
   }

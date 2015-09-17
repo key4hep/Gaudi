@@ -29,24 +29,18 @@
 namespace
 {
   /// the unit used by ChronoEntity is microsecond
-  const double microsecond  =    1                 ; // unit here is microsecond
-  const double millisecond  = 1000  * microsecond ;
-  const double second       = 1000  * millisecond ;
-  const double minute       =   60  *      second ;
-  const double hour         =   60  *      minute ;
-  const double day          =   24  *        hour ;
-  const double week         =    7  *         day ;
-  const double month        =   30  *         day ;
-  const double year         =  365  *         day ;
-  const double nanosecond   = 0.001 * microsecond ;
+  constexpr double microsecond  =    1                 ; // unit here is microsecond
+  constexpr double millisecond  = 1000  * microsecond ;
+  constexpr double second       = 1000  * millisecond ;
+  constexpr double minute       =   60  *      second ;
+  constexpr double hour         =   60  *      minute ;
+  constexpr double day          =   24  *        hour ;
+  constexpr double week         =    7  *         day ;
+  constexpr double month        =   30  *         day ;
+  constexpr double year         =  365  *         day ;
+
+  constexpr double nanosecond   = 0.001 * microsecond ;
 }
-// ============================================================================
-// Constructor
-// ============================================================================
-ChronoEntity::ChronoEntity()
-  // current status of this chrono object;
-  : m_status( IChronoSvc::UNKNOWN )  // current status
-{}
 // ============================================================================
 // start the chrono
 // ============================================================================
@@ -90,8 +84,7 @@ IChronoSvc::ChronoStatus  ChronoEntity::stop()
 // ============================================================================
 std::string ChronoEntity::outputUserTime      () const
 {
-  std::string res ("Time User   : ") ;
-  return res += format
+  return "Time User   : " + format
     ( uTotalTime     () ,
       uMinimalTime   () ,
       uMeanTime      () ,
@@ -104,8 +97,7 @@ std::string ChronoEntity::outputUserTime      () const
 // ============================================================================
 std::string ChronoEntity::outputSystemTime      () const
 {
-  std::string res ("Time System : ") ;
-  return res += format
+  return "Time System : " + format
     ( kTotalTime     () ,
       kMinimalTime   () ,
       kMeanTime      () ,
@@ -117,8 +109,7 @@ std::string ChronoEntity::outputSystemTime      () const
 // print time
 std::string ChronoEntity::outputElapsedTime      () const
 {
-  std::string res ("TimeElapsed: ") ;
-  return res += format
+  return "TimeElapsed: "  + format
     ( eTotalTime     () ,
       eMinimalTime   () ,
       eMeanTime      () ,
@@ -141,57 +132,36 @@ std::string ChronoEntity::format
   /// @todo: cache the format
   boost::format fmt("Tot=%2$5.3g%1$s %4$43s #=%3$3lu");
 
-  long double  unit = 1.0 ;
+  static const auto tbl = { std::make_tuple( 500, microsecond, " [us]" ),
+                            std::make_tuple( 500, millisecond, " [ms]" ),
+                            std::make_tuple( 500,      second, "  [s]" ),
+                            std::make_tuple( 500,      minute, "[min]" ),
+                            std::make_tuple( 500,        hour, "  [h]" ),
+                            std::make_tuple(  10,         day, "[day]" ),
+                            std::make_tuple(   5,        week, "  [w]" ),
+                            std::make_tuple(  20,       month, "[mon]" ),
+                            std::make_tuple(  -1,        year, "  [y]" )};
 
-  if     ( total / microsecond  <  500 )
-  { unit = microsecond ; fmt % " [us]" ; }
-  else if( total / millisecond  <  500 )
-  { unit = millisecond ; fmt % " [ms]" ; }
-  else if( total /      second  <  500 )
-  { unit =      second ; fmt % "  [s]" ; }
-  else if( total /      minute  <  500 )
-  { unit =      minute ; fmt % "[min]" ; }
-  else if( total /        hour  <  500 )
-  { unit =        hour ; fmt % "  [h]" ; }
-  else if( total /         day  <   10 )
-  { unit =         day ; fmt % "[day]" ; }
-  else if( total /        week  <    5 )
-  { unit =        week ; fmt % "  [w]" ; }
-  else if( total /       month  <   20 )
-  { unit =       month ; fmt % "[mon]" ; }
-  else
-  { unit =        year ; fmt % "  [y]" ; }
+  auto i = std::find_if( std::begin(tbl), std::prev(std::end(tbl)), 
+                         [&]( const std::tuple<int,double,const char*>& i) {
+       return total < std::get<0>(i)*std::get<1>(i);
+  });
+  long double unit = std::get<1>(*i) ; 
+  fmt % std::get<2>(*i) % (double) (total / unit) % number;
 
-  fmt % (double) (total / unit) % number;
-
-  if( 1 < number )
+  if( number > 1 )
   {
     /// @todo: cache the format
     boost::format fmt1("Ave/Min/Max=%2$5.3g(+-%3$5.3g)/%4$5.3g/%5$5.3g%1$s");
-    if     ( mean / microsecond  <  500 )
-    { unit = microsecond ; fmt1 % " [us]" ; }
-    else if( mean / millisecond  <  500 )
-    { unit = millisecond ; fmt1 % " [ms]" ; }
-    else if( mean /      second  <  500 )
-    { unit =      second ; fmt1 % "  [s]" ; }
-    else if( mean /      minute  <  500 )
-    { unit =      minute ; fmt1 % "[min]" ; }
-    else if( mean /        hour  <  500 )
-    { unit =        hour ; fmt1 % "  [h]" ; }
-    else if( mean /         day  <   10 )
-    { unit =         day ; fmt1 % "[day]" ; }
-    else if( mean /        week  <    5 )
-    { unit =        week ; fmt1 % "  [w]" ; }
-    else if( mean /       month  <   20 )
-    { unit =       month ; fmt1 % "[mon]" ; }
-    else
-    { unit =        year ; fmt1 % "  [y]" ; }
-
-    fmt1 % (double) ( mean / unit ) % (double) ( rms  / unit )
+    auto i = std::find_if( std::begin(tbl), std::prev(std::end(tbl)), 
+                           [&]( const std::tuple<int,double,const char*>& i) {
+         return total < std::get<0>(i)*std::get<1>(i);
+    });
+    unit = std::get<1>(*i); 
+    fmt1 % std::get<2>(*i) % (double) ( mean / unit ) % (double) ( rms  / unit )
          % (double) ( minimal  / unit ) % (double) ( maximal  / unit );
     fmt % fmt1.str();
-  }
-  else {
+  } else {
     fmt % "";
   }
 

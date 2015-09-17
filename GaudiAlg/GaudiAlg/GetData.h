@@ -1,5 +1,3 @@
-// $Id: GetData.h,v 1.1 2008/10/10 08:06:33 marcocle Exp $
-// ============================================================================
 #ifndef GAUDIUTILS_GETDATA_H
 #define GAUDIUTILS_GETDATA_H 1
 // ============================================================================
@@ -62,11 +60,11 @@ namespace Gaudi
     inline
     typename _GetType<TYPE>::return_type getFromTS(IDataProviderSvc*  service  ,
                                                    const std::string& location ) {
-      DataObject *obj = NULL;
-      // Return the casted pointer if the retrieve was successful or NULL otherwise.
+      DataObject *obj = nullptr;
+      // Return the casted pointer if the retrieve was successful or nullptr otherwise.
       return service->retrieveObject(location, obj).isSuccess() ?
              dynamic_cast<typename _GetType<TYPE>::return_type>(obj) :
-             NULL;
+             nullptr;
     }
     // ========================================================================
     /** @struct GetData GaudiUtils/GetData.h
@@ -151,12 +149,12 @@ namespace Gaudi
         /// try to be efficient:
         /// 1. load object only once:
         DataObject* object = this -> getData ( service , location ) ;
-        if ( 0 != object )
+        if ( object )
         {
           /// 2. try to get the selection
           typedef typename TYPE::Selection Selection_;
           const Selection_* sel = dynamic_cast<Selection_*> ( object ) ;
-          if ( 0 != sel )
+          if ( sel )
           {
             if ( common.msgLevel ( MSG::DEBUG ) )
             { common.debug() << "The object of type '"
@@ -168,7 +166,7 @@ namespace Gaudi
           /// 3. try to get the container
           typedef typename TYPE::Container  Container_ ;
           const Container_* cnt = dynamic_cast<Container_*> ( object ) ;
-          if ( 0 != cnt )
+          if ( cnt )
           {
             if ( common.msgLevel ( MSG::DEBUG ) )
             { common.debug() << "The object of type '"
@@ -208,7 +206,7 @@ namespace Gaudi
         /// Try to be efficient
         SmartDataObjectPtr getter
           ( SmartDataObjectPtr::ObjectLoader::access() ,
-            service , 0 , location ) ;
+            service , nullptr , location ) ;
         return getter.accessData () ;
       }
       // ======================================================================
@@ -219,8 +217,8 @@ namespace Gaudi
       ( ITERATOR first ,
         ITERATOR last  ) const
       {
-        typename return_type::const_iterator* _begin = reinterpret_cast<typename return_type::const_iterator*>(&first);
-        typename return_type::const_iterator* _end   = reinterpret_cast<typename return_type::const_iterator*>(&last);
+        auto _begin = reinterpret_cast<typename return_type::const_iterator*>(&first);
+        auto _end   = reinterpret_cast<typename return_type::const_iterator*>(&last);
         return return_type(*_begin, *_end);
       }
       // ======================================================================
@@ -260,20 +258,20 @@ namespace Gaudi
       // create the range from the container
       return_type make_range ( const typename TYPE::Container* cnt ) const
       {
-        if ( 0 == cnt ) { return return_type() ; }
+        if ( !cnt ) { return return_type() ; }
         static const std::string s_empty = "" ;
         const IRegistry* reg = cnt->registry() ;
         return return_type
-          ( m_range.make_range  ( cnt ) , 0 != reg ? reg->identifier() : s_empty ) ;
+          ( m_range.make_range  ( cnt ) , reg ? reg->identifier() : s_empty ) ;
       }
       // create the range from the selection
       return_type make_range ( const typename TYPE::Selection* cnt ) const
       {
-        if ( 0 == cnt ) { return return_type() ; }
+        if ( !cnt ) { return return_type() ; }
         static const std::string s_empty = "" ;
         const IRegistry* reg = cnt->registry() ;
         return return_type
-          ( m_range.make_range  ( cnt ) , 0 != reg ? reg->identifier() : s_empty ) ;
+          ( m_range.make_range  ( cnt ) , reg ? reg->identifier() : s_empty ) ;
       }
       // ======================================================================
       /** get the data form transient store
@@ -350,10 +348,10 @@ namespace Gaudi
         const std::string&       location  ) const
       {
         DataObject* object = this->getData( service , location ) ;
-        if ( 0 == object ) { return false ; }
+        if ( !object ) { return false ; }
         return
-          0 != dynamic_cast<typename TYPE::Selection*> ( object ) ||
-          0 != dynamic_cast<typename TYPE::Container*> ( object ) ;
+          dynamic_cast<typename TYPE::Selection*> ( object ) ||
+          dynamic_cast<typename TYPE::Container*> ( object ) ;
       }
       // ======================================================================
     protected:
@@ -369,7 +367,7 @@ namespace Gaudi
         /// Try to be efficient
         SmartDataObjectPtr getter
           ( SmartDataObjectPtr::ObjectLoader::access() ,
-            service , 0 , location ) ;
+            service , nullptr , location ) ;
         return getter.accessData () ;
       }
       // ======================================================================
@@ -439,8 +437,7 @@ namespace Gaudi
                            << System::typeinfoName(typeid(*o))
                            << "' has been created from TS at address '"
                            << location2 << "'" << endmsg ; }
-          return_type _o = o ;
-          return _o ;
+          return o ;
         }
         return_type ret = obj ;
         /// check the data
@@ -489,13 +486,12 @@ namespace Gaudi
         const std::string&       location2 ) const
       {
         DataObject* obj = m_getter.getData ( service , location ) ;
-        if ( 0 == obj )
+        if ( !obj )
         {
-          TYPE2* o = new TYPE2() ;
-          common.put ( service , o , location2 ) ;
+          common.put ( service , new TYPE2() , location2 ) ;
           if ( common.msgLevel ( MSG::DEBUG ) )
           { common.debug() << "The object of type '"
-                           << System::typeinfoName(typeid(*o))
+                           << System::typeinfoName(typeid(TYPE2))
                            << "' has been created from TS at address '"
                            << location2 << "'" << endmsg ; }
         }

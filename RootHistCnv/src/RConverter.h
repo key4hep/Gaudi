@@ -59,7 +59,7 @@ namespace RootHistCnv {
     RConverter( const CLID& clid, ISvcLocator* svc )
     : Converter(storageType(), clid, svc)  {    }
     /// Standard destructor
-    virtual ~RConverter() {     }
+    ~RConverter() override = default;
     /// Create the transient representation of an object.
     virtual StatusCode readObject( IOpaqueAddress* pAddr,
                                    DataObject*& refpObj);

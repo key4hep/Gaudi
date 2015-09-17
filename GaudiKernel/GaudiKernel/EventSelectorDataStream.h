@@ -65,7 +65,7 @@ protected:
   /// Reference to service locator
   ISvcLocator*            m_pSvcLocator;
   /// Properties vector
-  Properties*             m_properties;
+  Properties              m_properties;
   /// Initialization state
   bool                    m_initialized;
   /// Standard Destructor
@@ -85,7 +85,7 @@ public:
   const StringProperty* property(const std::string& nam)  const;
   /// Access properties
   const Properties& properties()    {
-    return *m_properties;
+    return m_properties;
   }
   /// Retrieve stream name
   const std::string& name()   const   {

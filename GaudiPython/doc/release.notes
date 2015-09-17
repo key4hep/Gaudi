@@ -2,6 +2,18 @@ Package: GaudiPython
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-09-09 - Gerhard Raven
+ - C++11 modernization changes
+    o use RAII for python refcount management
+    o keep fixed size buffer 'by value' instead of by std::unique_ptr
+    o improve copying of file into buffer
+    o prefer range-based loops
+    o generalize histogram collection
+    o std::fstream now accepts std::string, so no need to call c_str()
+    o prefer std::unique_ptr over raw pointer and explicit delete
+    o qualify implementations with override instead of virtual
+    o prefer not to compare pointers to 0
+
 ============================= GaudiPython v13r5 ==============================
 ! 2015-04-13 - Marco Clemencic
  - Refactored printing of alg sequences and moved it after the initialize,

@@ -36,13 +36,13 @@ class GAUDI_API PropertyMgr : public implements1<IProperty>
 {
 public:
   /// constructor from the interface
-  PropertyMgr ( IInterface* iface = 0 );
+  PropertyMgr ( IInterface* iface = nullptr );
   // copy constructor
-  PropertyMgr ( const PropertyMgr& ) ;
-  /// virtual destructor
-  virtual ~PropertyMgr();
+  PropertyMgr ( const PropertyMgr& )  = delete;
   // assignment operator
-  PropertyMgr& operator=( const PropertyMgr& ) ;
+  PropertyMgr& operator=( const PropertyMgr& ) = delete;
+  /// virtual destructor
+  ~PropertyMgr() override = default;
 public:
   /// Declare a property (templated)
   template<class TYPE>
@@ -108,45 +108,45 @@ public:
   /** set the property form another property
    *  @see IProperty
    */
-  StatusCode setProperty(const Property& p);
+  StatusCode setProperty(const Property& p) override;
   // ==========================================================================
   /** set the property from the property formatted string
    *  @see IProperty
    */
-  StatusCode setProperty( const std::string& s );
+  StatusCode setProperty( const std::string& s ) override;
   // ==========================================================================
   /** set the property from name and the value
    *  @see IProperty
    */
-  StatusCode setProperty( const std::string& n, const std::string& v);
+  StatusCode setProperty( const std::string& n, const std::string& v) override;
   // ==========================================================================
   /** get the property
    *  @see IProperty
    */
-  StatusCode getProperty(Property* p) const;
+  StatusCode getProperty(Property* p) const override;
   // ==========================================================================
   /** get the property by name
    *  @see IProperty
    */
-  const Property& getProperty( const std::string& name) const;
+  const Property& getProperty( const std::string& name) const override;
   // ==========================================================================
   /** convert the property to the string
    *  @see IProperty
    */
-  StatusCode getProperty( const std::string& n, std::string& v ) const;
+  StatusCode getProperty( const std::string& n, std::string& v ) const override;
   // ==========================================================================
   /** get all properties
    *  @see IProperty
    */
-  const std::vector<Property*>& getProperties( ) const;
+  const std::vector<Property*>& getProperties( ) const override;
   // ==========================================================================
   /** Return true if we have a property with the given name.
    *  @see IProperty
    */
-  bool hasProperty(const std::string& name) const;
+  bool hasProperty(const std::string& name) const override;
   // ==========================================================================
   // IInterface implementation
-  StatusCode queryInterface(const InterfaceID& iid, void** pinterface);
+  StatusCode queryInterface(const InterfaceID& iid, void** pinterface) override;
   // ==========================================================================
 protected:
 
@@ -154,6 +154,7 @@ protected:
   Property* property       ( const std::string& name  ) const ;
 
 private:
+
   /// get the property by name form the proposed list
   Property* property
   ( const std::string&             name  ,
@@ -163,24 +164,18 @@ private:
   /// list of properties (see GAUDI-1023).
   void assertUniqueName(const std::string& name) const;
 
-private:
-
   // Some typedef to simply typing
   typedef std::vector<Property*>   Properties       ;
   typedef std::pair<std::string,
                     std::pair<IProperty*, std::string> > RemProperty;
   typedef std::vector<RemProperty> RemoteProperties ;
 
-private:
-
   /// Collection of all declared properties
   Properties             m_properties      ;  // local  properties
   /// Collection of all declared remote properties
   RemoteProperties       m_remoteProperties;  // Remote properties
   /// Properties to be deleted
-  Properties             m_todelete        ;  // properties to be deleted
-  ///  Flag to decide to delete or not a propertyRef
-  std::vector<bool>      m_isOwned         ;  // flag to delete
+  std::vector<std::unique_ptr<Property>> m_todelete ;  // properties to be deleted
   /// Interface hub reference (ApplicationMgr)
   IInterface*            m_pOuter  ;  // Interface hub reference
 };
@@ -195,11 +190,11 @@ PropertyMgr::declareProperty
   const std::string& doc )
 {
   assertUniqueName(name);
-  Property* p = new SimplePropertyRef<TYPE> ( name , value ) ;
+  m_todelete.emplace_back( new SimplePropertyRef<TYPE> ( name , value ) );
+  Property* p = m_todelete.back().get();
   //
   p->setDocumentation( doc );
   m_properties .push_back( p ) ;
-  m_todelete   .push_back( p ) ;
   //
   return p ;
 }
@@ -252,11 +247,11 @@ PropertyMgr::declareProperty
   const std::string& doc )
 {
   assertUniqueName(name);
-  Property* p = new GaudiHandleProperty( name, ref );
+  m_todelete   . emplace_back ( new GaudiHandleProperty( name, ref ) );
+  Property* p = m_todelete.back().get();
   //
   p -> setDocumentation    ( doc ) ;
   m_properties . push_back ( p   ) ;
-  m_todelete   . push_back ( p   ) ;
   //
   return p ;
 }
@@ -269,11 +264,11 @@ PropertyMgr::declareProperty
   const std::string& doc )
 {
   assertUniqueName(name);
-  Property* p = new GaudiHandleProperty( name, ref );
+  m_todelete   . emplace_back (new GaudiHandleProperty( name, ref ));
+  Property* p = m_todelete.back().get();
   //
   p -> setDocumentation    ( doc ) ;
   m_properties . push_back ( p   ) ;
-  m_todelete   . push_back ( p   ) ;
   //
   return p ;
 }
@@ -286,11 +281,11 @@ PropertyMgr::declareProperty
   const std::string& doc )
 {
   assertUniqueName(name);
-  Property* p = new GaudiHandleArrayProperty( name, ref );
+  m_todelete   . emplace_back ( new GaudiHandleArrayProperty( name, ref ) );
+  Property* p = m_todelete.back().get();
   //
   p -> setDocumentation    ( doc ) ;
   m_properties . push_back ( p   ) ;
-  m_todelete   . push_back ( p   ) ;
   //
   return p ;
 }
@@ -303,11 +298,11 @@ PropertyMgr::declareProperty
   const std::string& doc )
 {
   assertUniqueName(name);
-  Property* p = new GaudiHandleArrayProperty( name, ref );
+  m_todelete   . emplace_back ( new GaudiHandleArrayProperty( name, ref ) );
+  Property* p = m_todelete.back().get();
   //
   p -> setDocumentation    ( doc ) ;
   m_properties . push_back ( p   ) ;
-  m_todelete   . push_back ( p   ) ;
   //
   return p ;
 }
@@ -319,11 +314,12 @@ PropertyMgr::declareProperty
   DataObjectDescriptor& ref,
   const std::string& doc )
 {
-  Property* p = new DataObjectDescriptorProperty( name, ref );
+  assertUniqueName(name);
+  m_todelete.emplace_back( new DataObjectDescriptorProperty( name, ref ) );
+  Property* p = m_todelete.back().get();
   //
   p -> setDocumentation    ( doc ) ;
   m_properties . push_back ( p   ) ;
-  m_todelete   . push_back ( p   ) ;
   //
   return p ;
 }
@@ -334,11 +330,12 @@ PropertyMgr::declareProperty
   DataObjectDescriptorCollection& ref,
   const std::string& doc )
 {
-  Property* p = new DataObjectDescriptorCollectionProperty( name, ref );
+  assertUniqueName(name);
+  m_todelete.emplace_back( new DataObjectDescriptorCollectionProperty( name, ref ) );
+  Property* p = m_todelete.back().get();
   //
   p -> setDocumentation    ( doc ) ;
   m_properties . push_back ( p   ) ;
-  m_todelete   . push_back ( p   ) ;
   //
   return p ;
 }

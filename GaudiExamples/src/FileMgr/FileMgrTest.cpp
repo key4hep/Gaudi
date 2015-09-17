@@ -2,15 +2,12 @@
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IFileMgr.h"
-#include "GaudiKernel/AlgFactory.h"
 #include "TFile.h"
 #include "TSSLSocket.h"
 
 #include <fstream>
 #include <stdio.h>
 #include <ext/stdio_filebuf.h>  // __gnu_cxx::stdio_filebuf
-
-#include "boost/bind.hpp"
 
 // Static Factory declaration
 
@@ -51,7 +48,7 @@ StatusCode FileMgrTest::initialize() {
 
 
   Io::bfcn_action_t boa = 
-    boost::bind(&FileMgrTest::PosixOpenAction, this, _1,_2);
+    std::bind(&FileMgrTest::PosixOpenAction, this, std::placeholders::_1,std::placeholders::_2);
   if (p_fileMgr->regAction(boa, Io::OPEN, Io::POSIX, 
 			   "FileMgrTest::POSIXOpenAction").isFailure()) {
     log << MSG::ERROR
@@ -68,7 +65,7 @@ StatusCode FileMgrTest::initialize() {
 
 
   Io::bfcn_action_t bob = 
-    boost::bind(&FileMgrTest::allCloseAction, this, _1,_2);
+    std::bind(&FileMgrTest::allCloseAction, this, std::placeholders::_1,std::placeholders::_2);
   if (p_fileMgr->regAction(bob, Io::CLOSE
 			   ).isFailure()) {
 			   // "FileMgrTest::allCloseAction").isFailure()) {
@@ -105,7 +102,7 @@ StatusCode FileMgrTest::initialize() {
 
 
   // make sure we have something in m_f3 to append to;
-  std::ofstream ofs(m_f3.c_str());
+  std::ofstream ofs{m_f3};
   ofs << "initial line" << std::endl;
   ofs.close();
 

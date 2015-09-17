@@ -4,6 +4,7 @@
 // STL includes
 #include <vector>
 #include <string>
+#include <memory>
 // Gaudi
 #include "GaudiKernel/Kernel.h"
 
@@ -27,39 +28,26 @@ public:
     * Note: No copy constructor; bitwise copy (done by the compiler)
     *       is just fine.
     */
-  class Link  {
+  class Link  final {
     /// DataObject is a friend
-    friend class LinkManager;
-  protected:
+    // friend class LinkManager;
     /// String containing path of symbolic link
     std::string m_path;
     /// Pointer to object behind the link
-    DataObject* m_pObject;
+    DataObject* m_pObject = nullptr;
     /// Link ID
-    long        m_id;
+    long        m_id = INVALID;
   public:
     /// Standard constructor
-    Link(long id, const std::string& path, const DataObject* pObject=0)
-    : m_path(path), m_id(id) {
-      setObject(pObject);
+    Link(long id, std::string path, DataObject* pObject=nullptr)
+    : m_path(std::move(path)), m_pObject(pObject), m_id(id) {
     }
     /// Standard constructor
-    Link() : m_path(""), m_pObject(0), m_id(INVALID) {
-    }
-    /// Equality operator: check pathes only
-    Link& operator=(const Link& link)  {
-      setObject(link.m_pObject);
-      m_path = link.m_path;
-      m_id   = link.m_id;
-      return *this;
-    }
-    /// Default destructor
-    virtual ~Link() {
-    }
+    Link() = default;
     /// Update the link content
-    void set(long id, const std::string& path, const DataObject* pObject)   {
+    void set(long id, std::string path, DataObject* pObject)   {
       setObject(pObject);
-      m_path = path;
+      m_path = std::move(path);
       m_id   = id;
     }
     /// Equality operator: check paths only
@@ -71,7 +59,10 @@ public:
       m_pObject = const_cast<DataObject*>(pObject);
     }
     /// Const access to data object
-    DataObject* object()  const  {
+    const DataObject* object()  const  {
+      return m_pObject;
+    }
+    DataObject* object()  {
       return m_pObject;
     }
     /// Access to path of object
@@ -83,20 +74,34 @@ public:
       return m_id;
     }
     /// Access to the object's address
-    virtual IOpaqueAddress* address();
+    IOpaqueAddress* address();
   };
-  typedef std::vector<Link*>           LinkVector;
-  /// Data type: iterator over leaf links
-  typedef LinkVector::iterator         LinkIterator;
-  /// Data type: iterator over leaf links (CONST)
-  typedef LinkVector::const_iterator   ConstLinkIterator;
 
+private:
+  ///@ TODO: provide interface to let MergeEvntAlg do its thing
+  //         without the need for friendship. It needs to 'shunt' 
+  //         all contained links to a new prefix...
+  //         The steps to get there are 
+  //           1) provide friend access for backwards compatibility
+  //           2) add new interface here
+  //           3) once released, update MergeEventAlg to use the new
+  //              interface
+  //           4) revoke friendship.
+  //         Now we're at stage 1...
+  friend class MergeEventAlg;
+  ///@ TODO: replace by std::vector<std::unique_ptr<Link>> once 
+  ///        ROOT does 'automatic' schema conversion from T* to
+  ///        std::unique_ptr<T>... 
+  ///        Or, even better, just std::vector<Link>, given that 
+  ///        Link is barely larger than a pointer (40 vs. 8 bytes)
+  ///        -- but that requires more invasive schema evolution.
+  ///   
   /// The vector containing all links which are non-tree like
-  mutable LinkVector m_linkVector;
+  mutable std::vector<Link*> m_linkVector;
 
 public:
   /// Standard Constructor
-  LinkManager();
+  LinkManager() = default;
   /// Standard Destructor
   virtual ~LinkManager();
   /// Static instantiation
@@ -104,9 +109,8 @@ public:
   /// Assign new instantiator
   static void setInstantiator( LinkManager* (*newInstance)() );
   /// Retrieve number of link present
-  long size()   const   {
-    return m_linkVector.size();
-  }
+  long size()   const   { return m_linkVector.size(); }
+  bool empty()   const   { return m_linkVector.empty(); }
   /// Retrieve symbolic link identified by ID
   Link* link(long id);
   /// Retrieve symbolic link identified by object

@@ -35,7 +35,7 @@ private:
   int m_level;
 
   std::string m_userProxy, m_certDir;  
-  bool m_ssl_setup;
+  bool m_ssl_setup = false;
 
 };
 

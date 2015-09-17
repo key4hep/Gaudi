@@ -12,15 +12,15 @@ public:
     /**
      ** Destructor
      **/
-    virtual ~EventCounter( );
+    ~EventCounter( ) override = default;
 
     /*****************************
      ** Public Function Members **
      *****************************/
 
-    StatusCode initialize();
-    StatusCode execute();
-    StatusCode finalize();
+    StatusCode initialize() override;
+    StatusCode execute() override;
+    StatusCode finalize() override;
 
 private:
 
@@ -39,10 +39,10 @@ private:
      ** The number of events skipped since the last time
      ** the count was reported.
      **/
-    int m_skip;
+    int m_skip = 0;
 
     /**
      ** The total events seen.
      **/
-    int m_total;
+    int m_total = 0;
 };

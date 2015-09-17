@@ -6,7 +6,7 @@
 //	Author     : M.Frank
 //  History    :
 // +---------+----------------------------------------------+---------
-// |    Date |                 Comment                      | Who     
+// |    Date |                 Comment                      | Who
 // +---------+----------------------------------------------+---------
 // | 29/10/99| Initial version                              | MF
 // +---------+----------------------------------------------+---------
@@ -17,6 +17,7 @@
 
 // Framework include files
 #include "RndmEngine.h"
+#include "CLHEP/Random/Random.h"
 
 // Forward declarations
 namespace CLHEP {
@@ -27,16 +28,25 @@ namespace HepRndm  {
 
   class BaseEngine : public RndmEngine {
   protected:
-    CLHEP::HepRandomEngine*  m_hepEngine;
+    std::unique_ptr<CLHEP::HepRandomEngine>  m_hepEngine;
   public:
     BaseEngine(const std::string& name, ISvcLocator* loc)
-    : RndmEngine( name, loc ), m_hepEngine(0)  {
+    : RndmEngine( name, loc ) { }
+    ~BaseEngine() override = default;
+    CLHEP::HepRandomEngine*  hepEngine() { return m_hepEngine.get(); }
+    const CLHEP::HepRandomEngine*  hepEngine() const { return m_hepEngine.get(); }
+    // Retrieve single random number
+    double rndm() const override { return m_hepEngine->flat(); }
+
+    StatusCode finalize() override {
+      if (m_hepEngine) CLHEP::HepRandom::setTheEngine(nullptr);
+      m_hepEngine.reset();
+      return RndmEngine::finalize();
     }
-    virtual ~BaseEngine() {
-    }
-    CLHEP::HepRandomEngine*  hepEngine()   {
-      return m_hepEngine;
-    }
+
+  protected:
+    void initEngine() { m_hepEngine = createEngine(); }
+    virtual std::unique_ptr<CLHEP::HepRandomEngine> createEngine() = 0;
   };
 }
 #endif // HEPRNDM_HEPRNDMBASEENGINE_H

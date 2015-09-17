@@ -162,10 +162,10 @@ StatusCode TsDataSvc::traverseTree(IDataStoreAgent* pAgent)   {
  * Initialize data store for new event by giving new event path and root
  * object. Takes care to clear the store before reinitializing it
  */
-StatusCode TsDataSvc::setRoot(const std::string& root_path,
+StatusCode TsDataSvc::setRoot(std::string root_path,
                             DataObject* pRootObj)    {
   clearStore().ignore();
-  return i_setRoot (root_path, pRootObj);
+  return i_setRoot (std::move(root_path), pRootObj);
 }
 
 /**
@@ -173,7 +173,7 @@ StatusCode TsDataSvc::setRoot(const std::string& root_path,
  * object. Does not clear the store before reinitializing it. This could
  * lead to errors and should be handle with care. Use setRoot if unsure
  */
-StatusCode TsDataSvc::i_setRoot(const std::string& root_path,
+StatusCode TsDataSvc::i_setRoot(std::string root_path,
                               DataObject* pRootObj)    {
   if ( 0 != pRootObj )  {
     m_root = new RegEntry(root_path);
@@ -188,10 +188,10 @@ StatusCode TsDataSvc::i_setRoot(const std::string& root_path,
  * Initialize data store for new event by giving new event path and address
  * of root object. Takes care to clear the store before reinitializing it
  */
-StatusCode TsDataSvc::setRoot(const std::string& root_path,
+StatusCode TsDataSvc::setRoot(std::string root_path,
                             IOpaqueAddress* pRootAddr)    {
   clearStore().ignore();
-  return i_setRoot (root_path, pRootAddr);
+  return i_setRoot (std::move(root_path), pRootAddr);
 }
 
 /**
@@ -199,10 +199,10 @@ StatusCode TsDataSvc::setRoot(const std::string& root_path,
  * of root object. Does not clear the store before reinitializing it. This
  * could lead to errors and should be handle with care. Use setRoot if unsure
  */
-StatusCode TsDataSvc::i_setRoot(const std::string& root_path,
+StatusCode TsDataSvc::i_setRoot(std::string root_path,
                               IOpaqueAddress* pRootAddr)    {
   if ( 0 != pRootAddr )  {
-    m_root = new RegEntry(root_path);
+    m_root = new RegEntry(std::move(root_path));
     m_root->makeHard(pRootAddr);
     m_root->setDataSvc(this);
     // Not done with GaudiHive. preLoad().ignore();
@@ -1377,7 +1377,7 @@ CLID TsDataSvc::rootCLID() const {
 }
 
 /// Name for root Event
-std::string TsDataSvc::rootName() const {
+const std::string& TsDataSvc::rootName() const {
   return( m_rootName );
 }
 

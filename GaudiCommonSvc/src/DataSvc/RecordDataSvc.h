@@ -1,4 +1,3 @@
-// $Id: RecordDataSvc.h,v 1.1 2008/12/10 18:37:36 marcocle Exp $
 #ifndef DATASVC_RECORDDATASVC_H
 #define DATASVC_RECORDDATASVC_H
 
@@ -24,21 +23,18 @@ class IConversionSvc;
  *   @version 1.0
  */
 class RecordDataSvc  : public extends1<DataSvc, IIncidentListener> {
- protected:
-  typedef std::vector<std::string> StringV;
  public:
-  virtual StatusCode initialize();
-  virtual StatusCode reinitialize();
-  virtual StatusCode finalize();
+  StatusCode initialize() override;
+  StatusCode finalize() override;
 
   /// IIncidentListener override: Inform that a new incident has occured
-  virtual void handle(const Incident& incident);
+  void handle(const Incident& incident) override;
 
   /// Standard Constructor
   RecordDataSvc(const std::string& name, ISvcLocator* svc);
 
   /// Standard Destructor
-  virtual ~RecordDataSvc();
+  ~RecordDataSvc() override = default;
 
  protected:
   /// Load new record into the data store if necessary
@@ -57,8 +53,8 @@ class RecordDataSvc  : public extends1<DataSvc, IIncidentListener> {
   /// Property: name of the persistency service
   std::string     m_persSvcName;
   /// Pending new file incidents
-  StringV         m_incidents;
+  std::vector<std::string> m_incidents;
   /// Reference to the main data conversion service
-  IConversionSvc* m_cnvSvc;
+  IConversionSvc* m_cnvSvc = nullptr;
 };
 #endif // DATASVC_RECORDDATASVC_H

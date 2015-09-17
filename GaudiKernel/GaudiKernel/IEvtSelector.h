@@ -1,4 +1,3 @@
-//$Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/IEvtSelector.h,v 1.5 2006/11/30 15:22:07 dquarrie Exp $
 #ifndef GAUDIKERNEL_IEVTSELECTOR_H
 #define GAUDIKERNEL_IEVTSELECTOR_H 1
 
@@ -23,7 +22,7 @@ public:
 
   class Context{
   public:
-    virtual ~Context() { }
+    virtual ~Context() = default;
     virtual void* identifier() const=0;
   };
 

@@ -1,4 +1,3 @@
-// $Id: TimerForSequencer.h,v 1.5 2004/11/25 13:26:26 mato Exp $
 #ifndef TIMERFORSEQUENCER_H
 
 #include "GaudiKernel/MsgStream.h"
@@ -23,29 +22,18 @@ class TimerForSequencer
 
 public:
   /** Constructor. Specify the name, for later printing. */
-
   TimerForSequencer( std::string name,
-                     const unsigned int size,
+                     unsigned int size,
                      double factor )
-    : m_name        ( name   ),
-      m_size        ( size   ),
-      m_factor      ( factor ),
-      m_startClock  ( 0ULL   ),
-      m_startCpu    ( 0ULL   ),
-      m_num         ( 0ULL   ),
-      m_lastTime    ( 0ULL   ),
-      m_lastCpu     ( 0ULL   ),
-      m_min         ( 0ULL   ),
-      m_max         ( 0ULL   ),
-      m_sum         ( 0ULL   ),
-      m_sum2        ( 0ULL   ),
-      m_sumCpu      ( 0ULL   )
+    : m_name     ( std::move(name) ),
+      m_size     ( size ),
+      m_factor   ( factor )
   { }
 
-  ~TimerForSequencer() {}
+  ~TimerForSequencer() = default;
 
   /** Start a time measurement */
-  void start ()
+  inline void start ()
   {
     m_startClock = System::currentTime( System::microSec );
     m_startCpu   = System::cpuTime    ( System::microSec );
@@ -84,17 +72,17 @@ private:
   std::string m_name;
   unsigned int m_size;
   double m_factor;
-  uint64_t m_startClock;
-  uint64_t m_startCpu;
+  uint64_t m_startClock = 0ULL;
+  uint64_t m_startCpu = 0ULL;
 
-  uint64_t m_num;
-  uint64_t m_lastTime;
-  uint64_t m_lastCpu;
-  uint64_t m_min;
-  uint64_t m_max;
-  uint64_t m_sum;
-  uint64_t m_sum2;
-  uint64_t m_sumCpu;
+  uint64_t m_num = 0ULL;
+  uint64_t m_lastTime = 0ULL;
+  uint64_t m_lastCpu = 0ULL;
+  uint64_t m_min = 0ULL;
+  uint64_t m_max = 0ULL;
+  uint64_t m_sum = 0ULL;
+  uint64_t m_sum2 = 0ULL;
+  uint64_t m_sumCpu = 0ULL;
 
 };
 

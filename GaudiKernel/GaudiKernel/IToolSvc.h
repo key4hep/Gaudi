@@ -243,14 +243,13 @@ public:
    */
   class Observer {
   public:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
     virtual void onCreate(const IAlgTool*) {}
     virtual void onRetrieve(const IAlgTool*) {}
   };
 
   virtual void registerObserver(Observer *obs) = 0;
   virtual void unRegisterObserver(Observer *obs) = 0;
-
 
 };
 

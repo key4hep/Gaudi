@@ -1,4 +1,3 @@
-// $Id: Time.icpp,v 1.1 2006/01/25 16:02:48 hmd Exp $
 #ifndef GAUDIKERNEL_TIME_ICPP
 #define GAUDIKERNEL_TIME_ICPP 1
 

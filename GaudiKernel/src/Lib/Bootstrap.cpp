@@ -39,21 +39,21 @@ namespace Gaudi
 */
   class BootSvcLocator : public implements1<ISvcLocator> {
   public:
-    BootSvcLocator();
-    virtual ~BootSvcLocator();
+    BootSvcLocator() = default;
+    ~BootSvcLocator() override = default;
 #if !defined(GAUDI_V22_API)|| defined(G22_NEW_SVCLOCATOR)
-    virtual StatusCode getService( const Gaudi::Utils::TypeNameString& typeName,
-                                   const InterfaceID& iid,
-                                   IInterface*& pinterface );
-    virtual StatusCode getService( const Gaudi::Utils::TypeNameString& typeName,
-                                   IService*& svc,
-                                   const bool createIf = true);
+    StatusCode getService( const Gaudi::Utils::TypeNameString& typeName,
+                           const InterfaceID& iid,
+                           IInterface*& pinterface ) override;
+    StatusCode getService( const Gaudi::Utils::TypeNameString& typeName,
+                           IService*& svc,
+                           const bool createIf = true) override;
 #endif
-    virtual const std::list<IService*>& getServices( ) const;
-    virtual bool existsService( const std::string& name ) const;
+    const std::list<IService*>& getServices( ) const override;
+    bool existsService( const std::string& name ) const override;
 
     /// Returns a smart pointer to a service.
-    virtual SmartIF<IService> &service(const Gaudi::Utils::TypeNameString &typeName, const bool createIf = true);
+    SmartIF<IService> &service(const Gaudi::Utils::TypeNameString &typeName, const bool createIf = true) override;
 
   };
 }
@@ -81,20 +81,13 @@ IAppMgrUI* Gaudi::createApplicationMgrEx(const std::string& dllname,
                                          const std::string& factname)
 //------------------------------------------------------------------------------
 {
-  StatusCode     status;
-  IInterface*    iif;
-  IAppMgrUI*     iappmgr;
-
   // Create an instance of the application Manager
-  iif = Gaudi::createInstance( "ApplicationMgr", factname, dllname );
-  if( iif == 0 ) {
-    return 0;
-  }
+  IInterface* iif = Gaudi::createInstance( "ApplicationMgr", factname, dllname );
+  if( !iif ) return nullptr;
   // Locate few interfaces of the Application Manager
-  status = iif->queryInterface( IAppMgrUI::interfaceID(), pp_cast<void>(&iappmgr) );
-  if( status.isFailure() ) {
-    return 0;
-  }
+  IAppMgrUI* iappmgr = nullptr;
+  StatusCode status = iif->queryInterface( IAppMgrUI::interfaceID(), pp_cast<void>(&iappmgr) );
+  if( status.isFailure() ) return nullptr;
   iif->release();
   return iappmgr;
 }
@@ -160,37 +153,33 @@ IAppMgrUI* Gaudi::setInstance(IAppMgrUI* newInstance)
 
 //------------------------------------------------------------------------------
 IInterface* Gaudi::createInstance( const std::string& name,
-                                                const std::string& factname,
-                                                const std::string& dllname)
+                                   const std::string& factname,
+                                   const std::string& dllname)
 //------------------------------------------------------------------------------
 {
 
-  IInterface* ii = ObjFactory::create(factname, (IInterface*)0);
+  IInterface* ii = ObjFactory::create(factname, nullptr);
   if ( ii ) return ii;
-  IService* is = Service::Factory::create(factname, name, (ISvcLocator*)0);
+  IService* is = Service::Factory::create(factname, name, nullptr);
   if ( is ) return is;
-  IAlgorithm* ia = Algorithm::Factory::create(factname, name, (ISvcLocator*)0);
+  IAlgorithm* ia = Algorithm::Factory::create(factname, name, nullptr);
   if ( ia ) return ia;
 
-  StatusCode status;
-  void* libHandle = 0;
-  status = System::loadDynamicLib( dllname, &libHandle);
+  void* libHandle = nullptr;
+  StatusCode status = System::loadDynamicLib( dllname, &libHandle);
   if ( status.isSuccess() )   {
-    ii = ObjFactory::create(factname, (IInterface*)0);
+    ii = ObjFactory::create(factname, nullptr);
     if ( ii ) return ii;
-    is = Service::Factory::create(factname, name, (ISvcLocator*)0);
+    is = Service::Factory::create(factname, name, nullptr);
     if ( is ) return is;
-    ia = Algorithm::Factory::create(factname, name, (ISvcLocator*)0);
+    ia = Algorithm::Factory::create(factname, name, nullptr);
     if ( ia ) return ia;
-
-    return 0;
-  }
-  else {
+  } else {
     // DLL library not loaded. Try in the local module
     std::cout << System::getLastErrorString() << std::endl;
     std::cout << "Gaudi::Bootstrap: Not found DLL " << dllname << std::endl;
-    return 0;
   }
+  return nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -214,11 +203,6 @@ static SmartIF<IService>    s_bootService;
 static SmartIF<IInterface>  s_bootInterface;
 
 using Gaudi::BootSvcLocator;
-
-BootSvcLocator::BootSvcLocator() {
-}
-BootSvcLocator::~BootSvcLocator() {
-}
 
 #if !defined(GAUDI_V22_API) || defined(G22_NEW_SVCLOCATOR)
 StatusCode Gaudi::BootSvcLocator::getService( const Gaudi::Utils::TypeNameString& typeName,
@@ -247,27 +231,18 @@ StatusCode Gaudi::BootSvcLocator::getService( const Gaudi::Utils::TypeNameString
 
 const std::list<IService*>& Gaudi::BootSvcLocator::getServices( ) const {
   StatusCode sc = StatusCode::FAILURE;
-  if ( s_appmgrInstance.isValid() ) {
-    return s_svclocInstance->getServices( );
-  } else {
-    return s_bootServices;
-  }
+  return  s_appmgrInstance.isValid() ? s_svclocInstance->getServices( )
+                                     : s_bootServices;
 }
 bool Gaudi::BootSvcLocator::existsService( const std::string& name ) const {
-  bool result = false;
-  if ( s_appmgrInstance.isValid() ) {
-    result = s_svclocInstance->existsService(name);
-  }
-  return result;
+  return  s_appmgrInstance.isValid() ? s_svclocInstance->existsService(name) 
+                                     : false;
 }
 
 
 SmartIF<IService>& Gaudi::BootSvcLocator::service(const Gaudi::Utils::TypeNameString &typeName, const bool createIf) {
-  if ( s_appmgrInstance.isValid() ) {
-    return s_svclocInstance->service(typeName, createIf);
-  } else {
-    return s_bootService;
-  }
+  return s_appmgrInstance.isValid() ? s_svclocInstance->service(typeName, createIf)
+                                    : s_bootService;
 }
 
 
@@ -282,48 +257,31 @@ extern "C" {
   }
   IInterface* PyHelper(getService)(IInterface* app, char* name) {
     auto svcloc = SmartIF<ISvcLocator>(app);
-    if (svcloc) {
-      return SmartIF<IInterface>(svcloc->service(name)).get();
-    }
-    return nullptr;
+    return svcloc ? SmartIF<IInterface>(svcloc->service(name)).get()
+                  : nullptr;
   }
   bool PyHelper(setProperty)(IInterface* p, char* name, char* value) {
     auto prop =  SmartIF<IProperty>(p);
-    if (prop) {
-      return prop->setProperty(name, value).isSuccess();
-    }
-    return false;
+    return prop && prop->setProperty(name, value).isSuccess();
   }
   const char* PyHelper(getProperty)(IInterface* p, char* name) {
     auto prop = SmartIF<IProperty>(p);
-    if (prop) {
-      return prop->getProperty(name).toString().c_str();
-    }
-    return nullptr;
+    return prop ? prop->getProperty(name).toString().c_str() : nullptr;
   }
   bool PyHelper(configureApp)(IInterface* app) {
     auto ui = SmartIF<IAppMgrUI>(app);
-    if (ui) {
-      return ui->configure().isSuccess();
-    }
-    return false;
+    return ui &&  ui->configure().isSuccess();
   }
   bool PyHelper(addPropertyToCatalogue)(IInterface* p, char* comp, char* name, char* value) {
     auto jos = SmartIF<IJobOptionsSvc>(p);
-    if (jos) {
-      return jos->addPropertyToCatalogue(comp, StringProperty(name, value)).isSuccess();
-    }
-    return false;
+    return jos &&  jos->addPropertyToCatalogue(comp, StringProperty(name, value)).isSuccess();
   }
   int PyHelper(ROOT_VERSION_CODE)() {
     return ROOT_VERSION_CODE;
   }
 
-#define PyFSMHelper(s) bool py_bootstrap_fsm_ ## s (IInterface* i) { \
-    auto fsm = SmartIF<IStateful>(i); \
-    if (fsm) { return fsm-> s ().isSuccess(); } \
-    return false; \
-    }
+#define PyFSMHelper(s) bool py_bootstrap_fsm_ ## s (IInterface* i) \
+    { auto fsm = SmartIF<IStateful>(i); return fsm && fsm->s().isSuccess(); } 
 
   PyFSMHelper(configure)
   PyFSMHelper(initialize)
@@ -334,8 +292,7 @@ extern "C" {
 
   bool py_bootstrap_app_run(IInterface* i, int maxevt) {
     auto ep = SmartIF<IEventProcessor>(i);
-    if (ep) { return ep->executeRun(maxevt).isSuccess(); }
-    return false;
+    return  ep && ep->executeRun(maxevt).isSuccess(); 
   }
 }
 #ifdef GAUDI_HASCLASSVISIBILITY

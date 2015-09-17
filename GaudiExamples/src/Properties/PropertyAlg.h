@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiExamples/src/Properties/PropertyAlg.h,v 1.6 2008/10/30 22:40:56 marcocle Exp $
 #ifndef GAUDIEXAMPLE_PROPERTYALG_H
 #define GAUDIEXAMPLE_PROPERTYALG_H
 

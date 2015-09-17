@@ -1,4 +1,3 @@
-// $Id:$
 #ifndef JOBOPTIONSVC_PROPERTY_VALUE_H_
 #define JOBOPTIONSVC_PROPERTY_VALUE_H_
 // ============================================================================
@@ -12,28 +11,24 @@
 #include <stdexcept>
 // ============================================================================
 #include <boost/variant.hpp>
-#include <boost/scoped_ptr.hpp>
 // ============================================================================
 #include "Position.h"
 // ============================================================================
 namespace Gaudi { namespace Parsers {
 // ============================================================================
-class PropertyValue {
+class PropertyValue final {
 // ----------------------------------------------------------------------------
  public:
-  typedef boost::scoped_ptr<PropertyValue> ScopedPtr;
-  typedef boost::scoped_ptr<const PropertyValue> ConstScopedPtr;
-
   typedef boost::variant<std::string, std::vector<std::string>,
            std::map<std::string, std::string> > Value;
   typedef std::vector<std::string> VectorOfStrings;
   typedef std::map<std::string, std::string> MapOfStrings;
 
 // ----------------------------------------------------------------------------
-  explicit PropertyValue(const Value& value,
-      bool is_reference=false): value_(value), is_reference_(is_reference) {}
-  PropertyValue(const Value& value, const Position& position,
-      bool is_reference=false): value_(value), position_(position),
+  explicit PropertyValue(Value value,
+      bool is_reference=false): value_(std::move(value)), is_reference_(is_reference) {}
+  PropertyValue(Value value, const Position& position,
+      bool is_reference=false): value_(std::move(value)), position_(position),
       is_reference_(is_reference) {}
 // ----------------------------------------------------------------------------
   const Position& position() const { return position_;}

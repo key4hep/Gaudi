@@ -16,7 +16,7 @@ struct GAUDI_API extend_interfaces1: virtual public I1 {
   typedef typename I1::iid::iids::type ext_iids;
 #endif
   /// Virtual destructor
-  virtual ~extend_interfaces1() {}
+  ~extend_interfaces1() override = default;
 };
 
 /// Base class to be used to extend an interface.
@@ -33,7 +33,7 @@ struct GAUDI_API extend_interfaces2: virtual public I1, virtual public I2 {
   >::type ext_iids;
 #endif
   /// Virtual destructor
-  virtual ~extend_interfaces2() {}
+  ~extend_interfaces2() override = default;
 };
 
 /// Base class to be used to extend an interface.
@@ -56,7 +56,7 @@ struct GAUDI_API extend_interfaces3: virtual public I1,
   >::type ext_iids;
 #endif
   /// Virtual destructor
-  virtual ~extend_interfaces3() {}
+  ~extend_interfaces3() override = default;
 };
 
 /// Base class to be used to extend an interface.
@@ -84,7 +84,7 @@ struct GAUDI_API extend_interfaces4: virtual public I1,
   >::type ext_iids;
 #endif
   /// Virtual destructor
-  virtual ~extend_interfaces4() {}
+  ~extend_interfaces4() override = default;
 };
 
 

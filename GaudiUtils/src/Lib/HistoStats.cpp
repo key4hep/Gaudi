@@ -1,4 +1,3 @@
-// $Id: HistoStats.cpp,v 1.5 2008/06/04 08:18:22 marcocle Exp $
 #ifdef __ICC
 // disable icc remark #1572: floating-point equality and inequality comparisons are unreliable
 //   The comparisons are meant

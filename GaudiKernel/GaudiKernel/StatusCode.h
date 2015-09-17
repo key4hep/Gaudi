@@ -6,11 +6,7 @@
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/IssueSeverity.h"
 
-#if defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L
 #include <memory>
-#else
-#include "boost/shared_ptr.hpp"
-#endif
 
 /**
  * @class StatusCode StatusCode.h GaudiKernel/StatusCode.h
@@ -27,7 +23,7 @@ class IStatusCodeSvc;
 
 class IgnoreError {};
 
-class StatusCode {
+class StatusCode final {
 public:
   enum {
     FAILURE = 0,
@@ -36,21 +32,26 @@ public:
   };
 
   /// Constructor.
-  StatusCode():
-    d_code(SUCCESS), m_checked(false), m_severity() {}
-  StatusCode( unsigned long code, const IssueSeverity& sev ):
-    d_code(code),m_checked(false), m_severity() {
-    try { // ensure that we do not throw even if we cannot copy the severity
-#if (defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L) && ! defined(__GCCXML__)
-      m_severity = std::make_shared<IssueSeverity>(sev);
-#else
-      m_severity = SeverityPtr(new IssueSeverity(sev));
-#endif
+  StatusCode() = default;
+
+  StatusCode( unsigned long code, IssueSeverity&& sev ):
+    d_code(code) {
+    try { // ensure that we do not throw even if we cannot move the severity
+      m_severity = std::make_shared<const IssueSeverity>(std::move(sev));
     }
     catch (...) {}
   }
+
+  StatusCode( IssueSeverity&& is) : 
+        StatusCode( is.getLevel() == IssueSeverity::RECOVERABLE ? 
+                        StatusCode::RECOVERABLE : 
+                        ( is.getLevel() < IssueSeverity::ERROR ? 
+                            StatusCode::SUCCESS : 
+                            StatusCode::FAILURE )
+                   , std::move(is) )  { }
+
   StatusCode( unsigned long code, bool checked = false ):
-    d_code(code),m_checked(checked), m_severity() {}
+    d_code(code),m_checked(checked)  {}
 
   StatusCode( const StatusCode& rhs ):
     d_code(rhs.d_code), m_checked(rhs.m_checked),
@@ -59,7 +60,7 @@ public:
 
 #ifndef __GCCXML__
   /// Move constructor.
-  StatusCode( StatusCode&& rhs ):
+  StatusCode( StatusCode&& rhs ) noexcept:
     d_code(rhs.d_code), m_checked(rhs.m_checked),
     m_severity( std::move(rhs.m_severity) )
   { rhs.m_checked = true; }
@@ -174,18 +175,9 @@ public:
 
 protected:
   /// The status code.
-  unsigned long   d_code;      ///< The status code
-  mutable bool    m_checked;   ///< If the Status code has been checked
-#if defined(__GCCXML__)
-  // This is because GCCXML needs to see something that is not too in conflict with
-  // boost or std
-  typedef IssueSeverity* SeverityPtr;
-#elif defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L
-  typedef std::shared_ptr<IssueSeverity> SeverityPtr;
-#else
-  typedef boost::shared_ptr<IssueSeverity> SeverityPtr;
-#endif
-  SeverityPtr     m_severity;  ///< Pointer to a IssueSeverity
+  unsigned long   d_code = SUCCESS;      ///< The status code
+  mutable bool    m_checked = false;   ///< If the Status code has been checked
+  std::shared_ptr<const IssueSeverity> m_severity;  ///< Pointer to a IssueSeverity
 
   static bool     s_checking;  ///< Global flag to control if StatusCode need to be checked
 
@@ -195,12 +187,11 @@ private:
 
 inline std::ostream& operator<< ( std::ostream& s , const StatusCode& sc )
 {
-  if ( sc.isSuccess() ) { return s << "SUCCESS" ; }
-  else if ( sc.isRecoverable() ) { return s << "RECOVERABLE" ; }
+  if ( sc.isSuccess() )     { return s << "SUCCESS" ; }
+  if ( sc.isRecoverable() ) { return s << "RECOVERABLE" ; }
   s << "FAILURE" ;
-  if ( StatusCode::FAILURE != sc.getCode() )
-    { s << "(" << sc.getCode() << ")" ;}
-  return s ;
+  return ( StatusCode::FAILURE != sc.getCode() ) ? s << "(" << sc.getCode() << ")"
+                                                 : s ;
 }
 
 #endif  // GAUDIKERNEL_STATUSCODES_H

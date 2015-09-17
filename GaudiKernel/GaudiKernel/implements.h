@@ -63,36 +63,36 @@ struct GAUDI_LOCAL AppendInterfaceName {
 #define _refcounting_implementation_ \
 public: \
   /** Reference Interface instance               */ \
-  virtual unsigned long addRef() { return ++m_refCount; } \
+  unsigned long addRef() override { return ++m_refCount; } \
   /** Release Interface instance                 */ \
-  virtual unsigned long release() { \
+  unsigned long release() override { \
     /* Avoid to decrement 0 */ \
     const unsigned long count = (m_refCount) ? --m_refCount : load_counter(&m_refCount); \
-    if(count == 0) delete this; \
+    if (count == 0) delete this; \
     return count; \
   } \
   /** Current reference count                    */ \
-  virtual unsigned long refCount() const { return load_counter(&m_refCount); } \
+  unsigned long refCount() const override { return load_counter(&m_refCount); } \
 protected: \
   /** Reference counter                          */ \
-  /*unsigned long m_refCount;*/ \
-  refCountType m_refCount; \
+  /*unsigned long m_refCount = 0;*/ \
+  refCountType m_refCount{0}; \
 private:
 
 #ifndef __GCCXML__
 #define _helper_common_implementation_(N) \
   public: \
   /**Implementation of IInterface::i_cast. */ \
-  virtual void *i_cast(const InterfaceID &tid) const { \
-    void *ptr = 0; \
+  void *i_cast(const InterfaceID &tid) const override { \
+    void *ptr = nullptr; \
     interfaceMatch<implements##N> matcher(this,tid,ptr); \
     mpl::for_each<interfaces>(matcher); \
     return ptr; \
   } \
   /** Implementation of IInterface::queryInterface. */ \
-  virtual StatusCode queryInterface(const InterfaceID &ti, void** pp){ \
+  StatusCode queryInterface(const InterfaceID &ti, void** pp) override { \
     if (!pp) return StatusCode::FAILURE; \
-    *pp = 0; \
+    *pp = nullptr; \
     interfaceMatch<implements##N> matcher(this,ti,*pp); \
     mpl::for_each<interfaces>(matcher); \
     if (!*pp) { /* cast failed */ \
@@ -102,47 +102,47 @@ private:
     return StatusCode::SUCCESS; \
   } \
   /** Implementation of IInterface::getInterfaceNames. */ \
-  virtual std::vector<std::string> getInterfaceNames() const { \
+  std::vector<std::string> getInterfaceNames() const override { \
     std::vector<std::string> v; /* temporary storage */ \
     AppendInterfaceName appender(v); \
     mpl::for_each<interfaces>(appender); \
     return v; \
   } \
   /** Default constructor */ \
-  implements##N():m_refCount(0) {} \
+  implements##N() : m_refCount{0} {} \
   /** Copy constructor */ \
-  implements##N(const implements##N &/*other*/):m_refCount(0) {} \
+  implements##N(const implements##N &/*other*/) : m_refCount{0} {} \
   /** Assignment operator (do not touch the reference count).*/ \
   implements##N& operator=(const implements##N &/*other*/) { return *this; } \
   /** Virtual destructor */ \
-  virtual ~implements##N() {} \
+  ~implements##N() override = default; \
   _refcounting_implementation_
 #else
 #define _helper_common_implementation_(N) \
   public: \
   /**Implementation of IInterface::i_cast. */ \
-  virtual void *i_cast(const InterfaceID &tid) const { \
-    return 0; \
+  void *i_cast(const InterfaceID &tid) const override { \
+    return nullptr; \
   } \
   /** Implementation of IInterface::queryInterface. */ \
-  virtual StatusCode queryInterface(const InterfaceID &ti, void** pp){ \
+  StatusCode queryInterface(const InterfaceID &ti, void** pp) override { \
     if (!pp) return StatusCode::FAILURE; \
-    *pp = 0; \
+    *pp = nullptr; \
     return StatusCode::SUCCESS; \
   } \
   /** Implementation of IInterface::getInterfaceNames. */ \
-  virtual std::vector<std::string> getInterfaceNames() const { \
+  std::vector<std::string> getInterfaceNames() const override { \
     std::vector<std::string> v; /* temporary storage */ \
     return v; \
   } \
   /** Default constructor */ \
-  implements##N():m_refCount(0) {} \
+  implements##N() = default; \
   /** Copy constructor */ \
-  implements##N(const implements##N &/*other*/):m_refCount(0) {} \
+  implements##N(const implements##N &/*other*/) : m_refCount{0} {} \
   /** Assignment operator (do not touch the reference count).*/ \
   implements##N& operator=(const implements##N &/*other*/) { return *this; } \
   /** Virtual destructor */ \
-  virtual ~implements##N() {} \
+  ~implements##N() override = default; \
   _refcounting_implementation_
 #endif
 

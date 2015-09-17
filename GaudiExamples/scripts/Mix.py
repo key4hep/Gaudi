@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 # =============================================================================
-# $Id:$ 
-# =============================================================================
 # @file Mix.py
 # Simple example to illustrate the problem for task #13911
 # @author Vanya BELYAEV Ivan.Belyaev@itep.ru

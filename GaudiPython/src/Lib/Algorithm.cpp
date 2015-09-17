@@ -1,4 +1,3 @@
-// $Id: Algorithm.cpp,v 1.8 2008/10/28 10:40:19 marcocle Exp $
 // ============================================================================
 // Include files
 // ============================================================================
@@ -31,21 +30,21 @@ StatusCode GaudiPython::call_python_method
 {
   StatusCode sc = StatusCode::FAILURE;
   // check arguments
-  if ( 0 == self || 0 == method ) { return StatusCode::FAILURE ; }
+  if ( !self || !method ) { return StatusCode::FAILURE ; }
 
   // call Python
-  PyObject* r = PyObject_CallMethod(self, chr(method), chr(""));
+  PyObject* r = PyObject_CallMethod(self, chr(method), nullptr );
 
-  if ( 0 == r ) { PyErr_Print() ;              return sc ; } // RETURN
+  if ( !r ) { PyErr_Print() ;              return sc ; } // RETURN
 
   if ( PyInt_Check ( r ) )
   { sc = PyInt_AS_LONG( r ) ; Py_DECREF( r ) ; return sc ; } // RETURN
 
   // look for the method getCode with the signature:
   //  ' int getCode() '
-  PyObject* c = PyObject_CallMethod(r, chr("getCode"), chr(""));
+  PyObject* c = PyObject_CallMethod(r, chr("getCode"), nullptr);
 
-  if      ( 0 == c           ) {      PyErr_Print()      ; }
+  if      ( !c           ) {      PyErr_Print()      ; }
   else if ( PyLong_Check( c )) { sc = PyLong_AsLong( c ); }
   else
   {

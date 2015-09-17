@@ -2,6 +2,31 @@ Package: GaudiSvc
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-09-14 - Marco Clemencic
+ - GAUDI-1082: Fixed compilation with CLHEP 2 after "modernization changes".
+
+! 2015-09-09 - Gerhard Raven and Benedikt Hegner
+ - C++11 modernization changes
+       o prefer !.emtpy() over .size()!=0
+       o prefer to forward functions over duplicating the implementation
+       o prefer nullptr over 0
+       o avoid comparing pointers to 0
+       o prefer static_cast over C-style cast
+       o prefer range-based loop
+       o replace trivial destructor with = default
+       o remove virtual function implementations which invoke the implementation of the direct ancestor
+       o prefer nullptr over 0
+       o avoid comparing pointers to 0
+       o prever emplace(key,value) over insert({key,value})
+       o Modernize RndmGenSvc
+         - re-engineer slightly so that BaseEngine is entirely responsible
+           for the memory management of the HepRandomEngine -- and it can
+           now use an std::unique_ptr to do so.
+         - rndm does not depend on the templated implementations, thus
+           move it into BaseEngine to reduce code size.
+       o qualify implementations with override instead of virtual
+       o replace boost::bind with std::bind and lambdas
+
 ! 2015-02-27 - Marco Clemencic
  - Updated test reference file.
 

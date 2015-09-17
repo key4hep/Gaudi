@@ -5,6 +5,12 @@
 ! Commit Id   : $Format:%H$
 !-----------------------------------------------------------------------------
 
+! 2015-09-09 - Gerhard Raven and Benedik Hegner
+ - C++11 modernization changes
+     o pass sink arguments by value and std::move them
+     o prefer std::unique_ptr over std::auto_ptr
+     o prefer STL algorithms over raw loops
+
 ========================== GaudiPluginService v2r2 ===========================
 ! 2014-07-04 - Marco Clemencic
  - Improved Doxygen documentation.
@@ -20,7 +26,7 @@
 
 ! 2014-05-07 - Sebastien Binet
  - leverage C++11 variadic templates for the factories.
- - internally, also use l-value references and std::forward
+ - internally, also use r-value references and std::forward
  - hide the C++11 constructs from Reflex as GCC-XML parser predates C++11
 
 ========================== GaudiPluginService v1r2 ===========================

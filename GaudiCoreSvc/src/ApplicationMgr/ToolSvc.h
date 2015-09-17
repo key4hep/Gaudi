@@ -1,4 +1,3 @@
-// $Id: ToolSvc.h,v 1.12 2008/06/02 14:21:35 marcocle Exp $
 #ifndef GAUDISVC_TOOLSVC_H
 #define GAUDISVC_TOOLSVC_H
 
@@ -25,55 +24,52 @@ class ToolSvc : public extends1<Service, IToolSvc> {
 public:
 
   /// Initialize the service.
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
 
   /// Finalize the service.
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
 
   // Start transition for tools
-  virtual StatusCode start();
+  StatusCode start() override;
 
   // Stop transition for tools
-  virtual StatusCode stop();
+  StatusCode stop() override;
 
   /// Retrieve tool, create it by default as common tool if it does not already exist
-  virtual StatusCode retrieve(const std::string& type, const InterfaceID& iid,
-                              IAlgTool*& tool, const IInterface* parent,
-                              bool createIf);
+  StatusCode retrieve(const std::string& type, const InterfaceID& iid,
+                      IAlgTool*& tool, const IInterface* parent,
+                      bool createIf) override;
 
   /// Retrieve tool, create it by default as common tool if it does not already exist
-  virtual StatusCode retrieve(const std::string& tooltype, const std::string& toolname,
-                              const InterfaceID& iid, IAlgTool*& tool,
-                              const IInterface* parent, bool createIf);
+  StatusCode retrieve(const std::string& tooltype, const std::string& toolname,
+                      const InterfaceID& iid, IAlgTool*& tool,
+                      const IInterface* parent, bool createIf) override;
 
   /// Get names of all tool instances of a given type
-  virtual std::vector<std::string> getInstances( const std::string& toolType );
+  std::vector<std::string> getInstances( const std::string& toolType ) override;
 
   /// Get names of all tool instances
-  virtual std::vector<std::string> getInstances() const;
+  std::vector<std::string> getInstances() const override;
 
   /// Get pointers to all tool instances
-  virtual std::vector<IAlgTool*> getTools() const;
+  std::vector<IAlgTool*> getTools() const override;
 
   /// Release tool
-  virtual StatusCode releaseTool( IAlgTool* tool );
+  StatusCode releaseTool( IAlgTool* tool ) override;
 
   /// Create Tool standard way with automatically assigned name
   StatusCode create(const std::string& type, const IInterface* parent,
-                            IAlgTool*& tool);
+                    IAlgTool*& tool);
 
   /// Create Tool standard way with specified name
   StatusCode create(const std::string& type, const std::string& name,
-                            const IInterface* parent, IAlgTool*& tool);
+                    const IInterface* parent, IAlgTool*& tool);
 
   /// Check if the tool instance exists
   bool existsTool( const std::string& toolname) const;
 
   /// Get Tool full name by combining nameByUser and "parent" part
   std::string nameTool(const std::string& nameByUser, const IInterface* parent);
-
-  /// Get current refcount for tool
-  unsigned long refCountTool( IAlgTool* tool ) const { return tool->refCount(); }
 
   /** Standard Constructor.
    *  @param  name   String with service name
@@ -82,20 +78,17 @@ public:
   ToolSvc( const std::string& name, ISvcLocator* svc );
 
   /// Destructor.
-  virtual ~ToolSvc();
+  ~ToolSvc() override = default;
 
-  virtual void registerObserver(IToolSvc::Observer *obs) ;
-  virtual void unRegisterObserver(IToolSvc::Observer *obs) ;
+  void registerObserver(IToolSvc::Observer *obs) override;
+  void unRegisterObserver(IToolSvc::Observer *obs) override;
 
 
 private: // methods
-
   // helper functions
   //
   /** The total number of refCounts on all tools in the instancesTools list */
   unsigned long totalToolRefCount() const;
-  /** The total number of refCounts on all tools in the list */
-  unsigned long totalToolRefCount( const ListTools& ) const;
   /** The minimum number of refCounts of all tools */
   unsigned long minimumToolRefCount() const;
 
@@ -105,10 +98,10 @@ private: // methods
 private: // data
 
   /// Common Tools
-  ListTools    m_instancesTools;        // List of all instances of tools
+  std::vector<IAlgTool*> m_instancesTools;        // List of all instances of tools
 
   /// Pointer to HistorySvc
-  IHistorySvc* m_pHistorySvc;
+  IHistorySvc* m_pHistorySvc = nullptr;
 
   std::vector<IToolSvc::Observer*> m_observers;
 };

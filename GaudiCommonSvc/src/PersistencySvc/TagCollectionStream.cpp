@@ -16,21 +16,15 @@ static const char SEPARATOR = IDataProviderSvc::SEPARATOR;
 
 // Standard Constructor
 TagCollectionStream::TagCollectionStream(const std::string& nam, ISvcLocator* pSvc)
-  : OutputStream(nam, pSvc), m_addrColumn(0),
-    m_isTopLeaf(false), m_collectionSvc(0)
+  : OutputStream(nam, pSvc), m_addr{  new GenericAddress() }
 {
   declareProperty("AddressLeaf",      m_addrLeaf     = "/Event" );
   declareProperty("AddressColumn",    m_addrColName  = "Address");
   declareProperty("TagCollectionSvc", m_collSvcName  = "NTupleSvc");
   declareProperty("ObjectsFirst",     m_objectsFirst = true);
   declareProperty("Collection",       m_tagName );
-  m_addr = new GenericAddress();
 }
 
-// Standard Destructor
-TagCollectionStream::~TagCollectionStream()   {
-  delete m_addr;
-}
 
 // Connect address column, if not already connected
 StatusCode TagCollectionStream::connectAddress()  {
@@ -81,7 +75,7 @@ StatusCode TagCollectionStream::initialize() {
     log_node = m_tagName.substr(idx,m_tagName.find(SEPARATOR,idx+1));
     log_file = log_node + " " + m_output + " SHARED='YES'";
   }
-  m_addrColumn = 0;                           // reset pointer to item column
+  m_addrColumn = nullptr;                           // reset pointer to item column
   sc = OutputStream::initialize();            // Now initialize the base class
   if ( sc.isSuccess() )  {
     SmartIF<IDataSourceMgr> src_mgr(m_collectionSvc);
@@ -93,17 +87,13 @@ StatusCode TagCollectionStream::initialize() {
         logical_name += log_node;
         m_topLeafName = m_addrLeaf.substr(0,m_addrLeaf.find(SEPARATOR,m_addrLeaf[0]=='/' ? 1 : 0));
         m_isTopLeaf   = m_topLeafName == m_addrLeaf;
-        if ( src_mgr->isConnected(logical_name) )  {
-          return sc;
-        }
+        if ( src_mgr->isConnected(logical_name) )  return sc;
         sc = src_mgr->connect(log_file);
-        if ( sc.isSuccess() )  {
-          return sc;
-        }
+        if ( sc.isSuccess() )  return sc;
       }
     }
   }
-	MsgStream log(msgSvc(), name());
+  MsgStream log(msgSvc(), name());
   log << MSG::ERROR << "Failed to initialize TagCollection Stream." << endmsg;
   return StatusCode::FAILURE;
 }
@@ -113,8 +103,8 @@ StatusCode TagCollectionStream::finalize() {
   MsgStream log(msgSvc(), name());
   StatusCode status = OutputStream::finalize();
   if ( m_collectionSvc ) m_collectionSvc->release();
-  m_collectionSvc = 0;
-  m_addrColumn = 0;
+  m_collectionSvc = nullptr;
+  m_addrColumn = nullptr;
   return status;
 }
 
@@ -150,7 +140,7 @@ StatusCode TagCollectionStream::writeRecord() {
 
 // Work entry point
 StatusCode TagCollectionStream::writeObjects() {
-  StatusCode status = m_addrColumn == 0 ? connectAddress() : StatusCode::SUCCESS;
+  StatusCode status =  !m_addrColumn ? connectAddress() : StatusCode::SUCCESS;
   if ( status.isSuccess() )  {
     status = m_objectsFirst ? writeData() : StatusCode::SUCCESS;
     if ( status.isSuccess() )  {
@@ -158,7 +148,7 @@ StatusCode TagCollectionStream::writeObjects() {
         SmartDataPtr<DataObject> top(eventSvc(), m_topLeafName);
         if ( top != 0 )  {
           IOpaqueAddress* pA = top->registry()->address();
-          if ( pA != 0 )  {
+          if ( pA )  {
             std::string*    par = (std::string*)m_addr->par();
             unsigned long* ipar = (unsigned long*)m_addr->ipar();
             m_addr->setClID(pA->clID());
@@ -167,10 +157,8 @@ StatusCode TagCollectionStream::writeObjects() {
             par[1]  = pA->par()[1];
             ipar[0] = pA->ipar()[0];
             ipar[1] = pA->ipar()[1];
-            *(IOpaqueAddress**)(m_addrColumn->buffer()) = m_addr;
-            if ( m_isTopLeaf )  {
-              return writeRecord();
-            }
+            *(IOpaqueAddress**)(m_addrColumn->buffer()) = m_addr.get();
+            if ( m_isTopLeaf )  return writeRecord();
             // Handle redirection mode. Normal tag collection mode
             // is the same like leaving this out....
             SmartDataPtr<DataObject> leaf(eventSvc(), m_addrLeaf);
