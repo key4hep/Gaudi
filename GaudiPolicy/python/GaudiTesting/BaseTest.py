@@ -145,12 +145,10 @@ class BaseTest(object):
             if thread.is_alive():
                 logging.debug('time out in test %s (pid %d)', self.name, self.proc.pid)
                 # get the stack trace of the stuck process
-                cmd = ['gdb', '-p', str(self.proc.pid), '-n', '-q']
+                cmd = ['gdb', '--pid', str(self.proc.pid), '--batch',
+                       '--eval-command=thread apply all backtrace']
                 gdb = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
-                self.stack_trace = gdb.communicate('set pagination off\n'
-                                                   'set confirm off\n'
-                                                   'thread apply all backtrace\n'
-                                                   'quit\n')[0]
+                self.stack_trace = gdb.communicate()[0]
 
                 self.proc.terminate()
                 thread.join(60)
