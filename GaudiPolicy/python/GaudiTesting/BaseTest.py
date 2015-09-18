@@ -134,14 +134,16 @@ class BaseTest(object):
                               params, workdir)
                 self.proc = Popen(params, stdout=PIPE, stderr=PIPE,
                                   env=self.environment)
+                logging.debug('(pid: %d)', self.proc.pid)
                 self.out, self.err = self.proc.communicate()
 
             thread = threading.Thread(target=target)
             thread.start()
-            #catching timeout
+            # catching timeout
             thread.join(self.timeout)
 
             if thread.is_alive():
+                logging.debug('time out in test %s (pid %d)', self.name, self.proc.pid)
                 # get the stack trace of the stuck process
                 cmd = ['gdb', '-p', str(self.proc.pid), '-n', '-q']
                 gdb = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
@@ -150,9 +152,10 @@ class BaseTest(object):
                                                    'thread apply all backtrace\n'
                                                    'quit\n')[0]
 
-                self.proc.send_signal(signal.SIGKILL)
-                logging.debug('time out in test %s', self.name)
-                thread.join()
+                self.proc.terminate()
+                thread.join(60)
+                if thread.is_alive():
+                    self.proc.kill()
                 self.causes.append('timeout')
             else:
                 logging.debug('completed test %s', self.name)
