@@ -39,10 +39,6 @@ public:
 #endif
   friend class ServiceManager;
 
-  /// Release Interface instance.
-  /// Specialized implementation because the default one is not enough.
-  unsigned long release() override;
-
   /** Retrieve name of the service               */
   const std::string& name() const override;
 
@@ -239,7 +235,7 @@ public:
 
 protected:
   /** Standard Destructor                        */
-  ~Service() override = default;
+  ~Service() override;
   /** Service output level                       */
   IntegerProperty m_outputLevel = MSG::NIL;
   /** Service state                              */
