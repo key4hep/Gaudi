@@ -164,12 +164,12 @@ public:
 
   /** The type of the algorithm object.
    */
-  virtual const std::string& type() const { return m_type;}
-  virtual void setType(const std::string& type) { m_type = type;} //BH, TODO: move to proper place
+  const std::string& type() const override { return m_type;}
+  void setType(const std::string& type) override { m_type = type;} //BH, TODO: move to proper place
 
   const std::string& version() const override;
 
-  virtual unsigned int index();
+  unsigned int index() override;
 
   /// Dummy implementation of IStateful::configure() method
   StatusCode configure() override { return StatusCode::SUCCESS ; }
@@ -686,13 +686,13 @@ public:
   }
 
   /// Return the handles declared in the algorithm
-  __attribute__ ((deprecated)) virtual const std::vector<
-      MinimalDataObjectHandle*> handles();
+  __attribute__ ((deprecated)) const std::vector<
+      MinimalDataObjectHandle*> handles() override;
 
-  const DataObjectDescriptorCollection & inputDataObjects() const {
+  const DataObjectDescriptorCollection & inputDataObjects() const override {
     return m_inputDataObjects;
   }
-  const DataObjectDescriptorCollection & outputDataObjects() const {
+  const DataObjectDescriptorCollection & outputDataObjects() const override {
     return m_outputDataObjects;
   }
 
@@ -811,12 +811,12 @@ private:
 public:
 
   /// Specifies the clonability of the algorithm
-  virtual bool isClonable () const { return m_isClonable; }
+  bool isClonable () const override { return m_isClonable; }
 
   /// Return the cardinality
-  virtual unsigned int cardinality () const { return m_cardinality; }
+  unsigned int cardinality () const override { return m_cardinality; }
 
-  virtual const std::vector<std::string>& neededResources () const { return m_neededResources; }
+  const std::vector<std::string>& neededResources () const override { return m_neededResources; }
 
 protected:
 

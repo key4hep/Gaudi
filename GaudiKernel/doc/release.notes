@@ -2,6 +2,9 @@
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-09-18 - Marco Clemencic
+ - Added a few missing "override".
+
 ! 2015-09-09 - Gerhard Raven & Benedikt Hegner
  - C++11 modernization changes, eg.
       o replace boost::lexical_cast with std::to_string, std::stod, std::stoi

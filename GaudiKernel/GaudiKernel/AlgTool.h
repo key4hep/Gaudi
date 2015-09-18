@@ -377,7 +377,7 @@ public:
 	 *  @return DataObjectDescriptorCollection of inputs
 	 */
 
-	const DataObjectDescriptorCollection & inputDataObjects() const {
+	const DataObjectDescriptorCollection & inputDataObjects() const override {
 		return m_inputDataObjects;
 	}
 
@@ -385,7 +385,7 @@ public:
 	/** get outputs
 	 *  @return DataObjectDescriptorCollection of outputs
 	 */
-	const DataObjectDescriptorCollection & outputDataObjects() const {
+	const DataObjectDescriptorCollection & outputDataObjects() const override {
 		return m_outputDataObjects;
 	}
 
