@@ -17,18 +17,8 @@ using std::string;
 #define ON_DEBUG if (UNLIKELY(outputLevel() <= MSG::DEBUG))
 #define ON_VERBOSE if (UNLIKELY(outputLevel() <= MSG::VERBOSE))
 
-//--- IInterface::release
-// Specialized implementation because the default one is not enough.
-unsigned long Service::release()   {
-  // Avoid to decrement 0
-  const unsigned long count = (m_refCount) ? --m_refCount : m_refCount;
-  if( count == 0) {
-    if (m_svcManager!=0) {
-      m_svcManager->removeService(this).ignore();
-    }
-    delete this;
-  }
-  return count;
+Service::~Service() {
+    if (m_svcManager) m_svcManager->removeService(this).ignore();
 }
 
 // IService::sysInitialize
