@@ -190,7 +190,7 @@ inline SmartIF<SERVICE> GaudiCommon<PBASE>::svc( const std::string& name   ,
       Exception ("svc():: Could not retrieve Svc '" + name + "'", StatusCode::FAILURE);
     }
   } else {
-    auto baseSvc = this->svcLoc()->template service<IService>(name, create);
+    auto baseSvc = this->svcLoc()->service(name, create);
     // Try to get the requested interface
     s = baseSvc;
     // check the results
