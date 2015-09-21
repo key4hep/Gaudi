@@ -42,7 +42,7 @@
 // ============================================================================
 Stat::Stat ( IStatSvc*          svc  ,
              const std::string& tag  )
-  , m_tag     ( tag  )
+  : m_tag     ( tag  )
   , m_group   (      )
   , m_stat    ( svc  )
 {
@@ -105,7 +105,7 @@ Stat::Stat ( IStatSvc*          svc  ,
 Stat::Stat ( ICounterSvc*       svc   ,
              const std::string& group ,
              const std::string& name  )
-  , m_tag     ( name  )
+  : m_tag     ( name  )
   , m_group   ( group )
   , m_counter ( svc   )
 {

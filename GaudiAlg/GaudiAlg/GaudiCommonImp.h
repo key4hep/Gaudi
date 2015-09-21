@@ -215,17 +215,6 @@ GaudiCommon<PBASE>::updMgrSvc() const
   return m_updMgrSvc ;
 }
 // ============================================================================
-// predefined configurable message stream for the effective printouts
-// ============================================================================
-template <class PBASE>
-inline MsgStream&
-GaudiCommon<PBASE>::msgStream ( const MSG::Level level ) const
-{
-  if ( !m_msgStream )
-  { m_msgStream.reset(new MsgStream ( PBASE::msgSvc() , this->name() )) ; }
-  return *m_msgStream << level ;
-}
-// ============================================================================
 // Assertion - throw exception, if condition is not fulfilled
 // ============================================================================
 template <class PBASE>
@@ -275,6 +264,12 @@ inline void GaudiCommon<PBASE>::Assert( const bool        ok  ,
            std::string             ( " in file '"  ) +                  \
            std::string             (   __FILE__    ) + "']" , code ) )
 
+
+// definition of helper class instances (see GAUDI-1081)
+template <class PBASE>
+constexpr const typename GaudiCommon<PBASE>::svc_eq_t GaudiCommon<PBASE>::svc_eq;
+template <class PBASE>
+constexpr const typename GaudiCommon<PBASE>::svc_lt_t GaudiCommon<PBASE>::svc_lt;
 // ============================================================================
 // The END
 // ============================================================================

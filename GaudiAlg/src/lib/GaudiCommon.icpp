@@ -204,11 +204,11 @@ StatusCode GaudiCommon<PBASE>::
 
 
   // some debug printout
-  if ( msgLevel(MSG::DEBUG) )
+  if ( this->msgLevel(MSG::DEBUG) )
   {
-    debug() << "Initialize base class GaudiCommon<" << System::typeinfoName(typeid(PBASE)) << ">" << endmsg;
+    this->debug() << "Initialize base class GaudiCommon<" << System::typeinfoName(typeid(PBASE)) << ">" << endmsg;
     if ( !context().empty() )
-      debug() << "Created with context = '" << context() << "'" << endmsg;
+      this->debug() << "Created with context = '" << context() << "'" << endmsg;
   }
 
   // some temporary checks to see if people are using RootOnTES and warn if so
@@ -231,16 +231,16 @@ StatusCode GaudiCommon<PBASE>::
 
   //Set up the CounterSummarySvc May need to be changed
   m_counterSummarySvc = this->svcLoc()->service("CounterSummarySvc",false);
-  if (msgLevel(MSG::DEBUG))
+  if (this->msgLevel(MSG::DEBUG))
   {
     if (!m_counterSummarySvc)
-	debug() <<  "could not locate CounterSummarySvc, no counter summary will be made" << endmsg;
-    else debug() <<  "found CounterSummarySvc OK" << endmsg;
+	this->debug() <<  "could not locate CounterSummarySvc, no counter summary will be made" << endmsg;
+    else this->debug() <<  "found CounterSummarySvc OK" << endmsg;
   }
 
   // properties will be printed if asked for or in "MSG::DEBUG" mode
   if      ( propsPrint()         ) { printProps(MSG::ALWAYS); }
-  else if ( msgLevel(MSG::DEBUG) ) { printProps(MSG::DEBUG);  }
+  else if ( this->msgLevel(MSG::DEBUG) ) { printProps(MSG::DEBUG);  }
 
   return sc;
 }
@@ -261,7 +261,7 @@ StatusCode GaudiCommon<PBASE>::
   StatusCode sc = StatusCode::SUCCESS;
 
   // print the general information about statistical counters
-  if ( msgLevel(MSG::DEBUG) || (statPrint() && !counters().empty()) )
+  if ( this->msgLevel(MSG::DEBUG) || (statPrint() && !counters().empty()) )
   {
     // print general statistical counters
     printStat ( statPrint() ? MSG::ALWAYS : MSG::DEBUG ) ;
@@ -269,7 +269,7 @@ StatusCode GaudiCommon<PBASE>::
   //add all counters to the CounterSummarySvc
   if(m_counterSummarySvc && this->svcLoc()->existsService("CounterSummarySvc"))
   {
-    if ( msgLevel(MSG::DEBUG) ) debug() << "adding counters to CounterSummarySvc" << endmsg;
+    if ( this->msgLevel(MSG::DEBUG) ) this->debug() << "adding counters to CounterSummarySvc" << endmsg;
 
     Gaudi::Utils::RegEx::matchList statList{ m_statEntityList };
     Gaudi::Utils::RegEx::matchList counterList{ m_counterList };
@@ -284,26 +284,26 @@ StatusCode GaudiCommon<PBASE>::
     }
   }
   // release all located tools and services
-  if ( msgLevel(MSG::DEBUG) )
+  if ( this->msgLevel(MSG::DEBUG) )
   {
-    debug() << "Tools to release :";
+    this->debug() << "Tools to release :";
     for ( const auto& i : m_tools )
     {
-      debug() << " " << i->name();
+      this->debug() << " " << i->name();
     }
-    debug() << endmsg;
+    this->debug() << endmsg;
   }
   while ( !m_tools.empty() ) { sc = releaseTool( m_tools.back() ) && sc; }
 
   // release all located services
-  if ( msgLevel(MSG::DEBUG) )
+  if ( this->msgLevel(MSG::DEBUG) )
   {
-    debug() << "Services to release :";
+    this->debug() << "Services to release :";
     for ( const auto& i : m_services )
     {
-      debug() << " " << i->name();
+      this->debug() << " " << i->name();
     }
-    debug() << endmsg;
+    this->debug() << endmsg;
   }
   while ( !m_services.empty() ) { sc = releaseSvc( m_services.front() ) && sc; }
 
@@ -313,7 +313,7 @@ StatusCode GaudiCommon<PBASE>::
   // format printout
   if ( !m_errors.empty() || !m_warnings.empty() || !m_exceptions.empty() )
   {
-    always() << "Exceptions/Errors/Warnings/Infos Statistics : "
+    this->always() << "Exceptions/Errors/Warnings/Infos Statistics : "
              << m_exceptions .size () << "/"
              << m_errors     .size () << "/"
              << m_warnings   .size () << "/"
@@ -375,12 +375,12 @@ StatusCode GaudiCommon<PBASE>::releaseTool ( const IAlgTool* algTool ) const
   IAlgTool* t = *it ;
   // cache name
   const std::string name = t->name();
-  if ( msgLevel(MSG::DEBUG) )
-  { debug() << "Releasing tool '" << name << "'" << endmsg; }
+  if ( this->msgLevel(MSG::DEBUG) )
+  { this->debug() << "Releasing tool '" << name << "'" << endmsg; }
   // remove the tool from the lists
   m_tools.erase( --it.base() ) ;
   // release tool
-  if ( msgLevel(MSG::DEBUG) ) {
+  if ( this->msgLevel(MSG::DEBUG) ) {
     this->debug() << "The tool '" << t->name() << "' of type '"
                   << System::typeinfoName(typeid(*t))
                   << "' is released" << endmsg;
@@ -523,10 +523,10 @@ StatusCode GaudiCommon<PBASE>::Print( const std::string& msg ,
                                       const MSG::Level   lvl ) const
 {
   // perform printout ?
-  if ( !msgLevel( lvl ) ) { return st ; }   // RETURN
+  if ( !this->msgLevel( lvl ) ) { return st ; }   // RETURN
 
   // use the predefined stream
-  MsgStream& str = msgStream( lvl ) ;
+  MsgStream& str = this->msgStream( lvl ) ;
   if ( typePrint() ) { str << System::typeinfoName(typeid(*this)) << ":: " ; }
   // print the message
   str  << msg ;
@@ -595,7 +595,7 @@ long GaudiCommon<PBASE>::printStat( const MSG::Level level ) const
 {
   // print statistics
   if ( counters().empty() ) { return 0 ; }
-  MsgStream& msg = msgStream ( level ) ;
+  MsgStream& msg = this->msgStream ( level ) ;
   //
   msg << "Number of counters : "  << counters().size() ;
   //
@@ -628,7 +628,7 @@ long GaudiCommon<PBASE>::printErrors ( const MSG::Level level ) const
 
   auto print = [&](const Counter& c, const std::string& label) {
       for (const auto& i : c ) {
-        msgStream(level) 
+        this->msgStream(level) 
           << ( ftm % label % i.second % i.first       )
           << endmsg;
       }
@@ -658,7 +658,7 @@ long GaudiCommon<PBASE>::printProps ( const MSG::Level level ) const
 {
 
   // print ALL properties
-  MsgStream& msg = msgStream ( level );
+  MsgStream& msg = this->msgStream ( level );
   const auto& properties = this->getProperties() ;
   msg << "List of ALL properties of "
       << System::typeinfoName( typeid( *this ) ) << "/" << this->name()
@@ -693,9 +693,9 @@ void GaudiCommon<PBASE>::msgLevelHandler ( Property & theProp )
   }
 
   // printout message
-  if ( msgLevel(MSG::DEBUG) )
+  if ( this->msgLevel(MSG::DEBUG) )
   {
-    debug() << "Property update for "
+    this->debug() << "Property update for "
             << theProp.name() << " : new value = " << this->outputLevel() << endmsg;
   }
 }
@@ -729,7 +729,7 @@ DataObject* GaudiCommon<PBASE>::put ( IDataProviderSvc*  svc     ,
   { Exception ( "put():: could not register '"            +
                 System::typeinfoName( typeid( *object ) ) +
                 "' at address '" + fullLocation + "'"  , status ) ; }
-  if ( msgLevel( MSG::DEBUG ) )
+  if ( this->msgLevel( MSG::DEBUG ) )
   { Print( "The object of type '"                    +
            System::typeinfoName( typeid( *object ) ) +
            "' is registered in TS at address '"
