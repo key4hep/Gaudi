@@ -49,9 +49,9 @@ class IMessageSvc;
 class RndmGenSvc : public extends3<Service, IRndmGenSvc, IRndmEngine, ISerialize> {
 private:
   /// Random number engine
-  mutable IRndmEngine* m_engine;
+  mutable SmartIF<IRndmEngine> m_engine;
   /// Serialization interface of random number engine
-  mutable ISerialize*  m_serialize;
+  mutable SmartIF<ISerialize>  m_serialize;
   /// Engine name
   std::string          m_engineName;
 public:

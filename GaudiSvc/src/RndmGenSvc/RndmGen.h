@@ -11,6 +11,7 @@
 #include <memory>
 // Framework include files
 #include "GaudiKernel/IRndmGen.h"
+#include "GaudiKernel/SmartIF.h"
 
 // Forward declarations
 class IRndmEngine;
@@ -43,12 +44,12 @@ protected:
   /// Generation parameters
   std::unique_ptr<IRndmGen::Param>  m_params;
   /// Hosting service: Access must always be possible
-  IRndmEngine*      m_engine = nullptr;
+  SmartIF<IRndmEngine>  m_engine;
 
   /// Standard Constructor
   RndmGen(IInterface* engine);
   /// Standard Destructor
-  ~RndmGen() override;
+  ~RndmGen() override = default;
 
 public:
 

@@ -124,7 +124,7 @@ StatusCode RootEvtSelector::initialize()    {
   if( !ipers )   {
     return error("Unable to locate IPersistencySvc interface of "+m_persName);
   }
-  IConversionSvc *cnvSvc = 0;
+  IConversionSvc *cnvSvc = nullptr;
   Gaudi::Utils::TypeNameString itm(m_cnvSvcName);
   status = ipers->getService(itm.name(),cnvSvc);
   if( !status.isSuccess() )   {

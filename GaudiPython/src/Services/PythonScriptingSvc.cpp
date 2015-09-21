@@ -45,7 +45,7 @@ StatusCode PythonScriptingSvc::initialize()
   // use the ApplicationMgr JobOptionsPath property as long as
   // the JobOptionsType property is set to "NONE".
   if( m_startupScript.empty() ) {
-    SmartIF<IProperty> prpMgr(serviceLocator());
+    auto prpMgr = serviceLocator()->as<IProperty>();
     if ( prpMgr )   {
       StringProperty tmp;
       tmp.assign(prpMgr->getProperty("JobOptionsType"));

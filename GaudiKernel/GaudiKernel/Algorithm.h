@@ -209,6 +209,14 @@ public:
     return service_i(name, createIf, T::interfaceID(), (void**)&psvc);
   }
 
+  template <class T>
+  SmartIF<T> service
+  ( const std::string& name, bool createIf = true ) const {
+    T* ptr = nullptr;
+    service_i(name, createIf, T::interfaceID(), (void**)&ptr).ignore();
+    return SmartIF<T>{ ptr };
+  }
+
   /// Access a service by name and type, creating it if it doesn't already exist.
   template <class T>
   StatusCode service( const std::string& svcType, const std::string& svcName,
@@ -557,7 +565,7 @@ private:
   bool  m_registerContext = false ; ///< flag to register for Algorithm Context Service
   std::string               m_monitorSvcName; ///< Name to use for Monitor Service
   SmartIF<ISvcLocator>  m_pSvcLocator;      ///< Pointer to service locator service
-  std::unique_ptr<PropertyMgr> m_propertyMgr;      ///< For management of properties
+  SmartIF<PropertyMgr> m_propertyMgr;      ///< For management of properties
   IntegerProperty m_outputLevel;   ///< Algorithm output level
   int          m_errorMax;         ///< Algorithm Max number of errors
   int          m_errorCount;       ///< Algorithm error counter

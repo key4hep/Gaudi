@@ -3,6 +3,8 @@
 
 // Framework include files
 #include "GaudiKernel/ClassID.h"
+#include "GaudiKernel/IIncidentSvc.h"
+#include "GaudiKernel/SmartIF.h"
 #include "GaudiUtils/IIODataManager.h"
 #include <string>
 #include <vector>
@@ -10,13 +12,13 @@
 #include <set>
 
 #include "TFile.h"
+#include "TTreePerfStats.h"
 #include "RootCnv/RootRefs.h"
 
 // Forward declarations
 class TTree;
 class TClass;
 class TBranch;
-class TTreePerfStats;
 
 class MsgStream;
 class IRegistry;
@@ -44,13 +46,13 @@ namespace Gaudi  {
     typedef std::vector<std::string> StringVec;
   protected:
     /// Standard destructor
-    virtual ~RootConnectionSetup();
-    /// Object refrfence count
-    int refCount;
+    virtual ~RootConnectionSetup() =default;
+    /// Object reference count
+    int refCount = 1;
     /// Reference to message service
     std::unique_ptr<MsgStream>    m_msgSvc;
     /// Reference to incident service
-    IIncidentSvc* m_incidentSvc = nullptr;
+    SmartIF<IIncidentSvc> m_incidentSvc = nullptr;
 
   public:
     /// Vector of strings with branches to be cached for input files
@@ -65,7 +67,7 @@ namespace Gaudi  {
     int           learnEntries;
 
     /// Standard constructor
-    RootConnectionSetup();
+    RootConnectionSetup() = default;
     /// Increase reference count
     void addRef();
     /// Decrease reference count
@@ -84,7 +86,7 @@ namespace Gaudi  {
     /// Set incident service reference
     void setIncidentSvc(IIncidentSvc* m);
     /// Retrieve incident service
-    IIncidentSvc* incidentSvc() const {  return m_incidentSvc; }
+    IIncidentSvc* incidentSvc() const {  return m_incidentSvc.get(); }
   };
 
   /** @class RootDataConnection RootDataConnection.h GaudiRootCnv/RootDataConnection.h
@@ -154,7 +156,7 @@ namespace Gaudi  {
 
   protected:
     /// Reference to the setup structure
-    RootConnectionSetup* m_setup;
+    SmartIF<RootConnectionSetup> m_setup;
     /// I/O read statistics from TTree
     std::unique_ptr<TTreePerfStats> m_statistics;
     /// Reference to ROOT file
@@ -247,7 +249,7 @@ namespace Gaudi  {
     /// Standard constructor
     RootDataConnection(const IInterface* own, const std::string& nam, RootConnectionSetup* setup);
     /// Standard destructor
-    ~RootDataConnection() override;
+    ~RootDataConnection() override = default;
 
     /// Direct access to TFile structure
     TFile* file() const                         { return m_file.get();                   }

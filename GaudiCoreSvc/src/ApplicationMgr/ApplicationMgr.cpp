@@ -159,10 +159,10 @@ ApplicationMgr::ApplicationMgr(IInterface*):
 // destructor
 //============================================================================
 ApplicationMgr::~ApplicationMgr() {
-  if( m_classManager ) m_classManager->release();
-  if( m_propertyMgr ) m_propertyMgr->release();
-  if( m_messageSvc ) m_messageSvc->release();
-  if( m_jobOptionsSvc ) m_jobOptionsSvc->release();
+  m_classManager.reset();
+  m_propertyMgr.reset();
+  m_messageSvc.reset();
+  m_jobOptionsSvc.reset();
 }
 
 //============================================================================
@@ -192,9 +192,7 @@ StatusCode ApplicationMgr::queryInterface
   else if ( IMessageSvc     ::interfaceID() . versionMatch ( iid ) )
   {
     *ppvi = reinterpret_cast<void*>(m_messageSvc.get());
-    if (m_messageSvc) {
-      m_messageSvc->addRef();
-    }
+    if (m_messageSvc) m_messageSvc->addRef();
     // Note that 0 can be a valid IMessageSvc pointer value (when used for
     // MsgStream).
     return StatusCode::SUCCESS;
@@ -225,7 +223,7 @@ StatusCode ApplicationMgr::i_startup() {
     return sc;
   }
 
-  SmartIF<IProperty> jobOptsIProp(jobsvc);
+  auto jobOptsIProp = jobsvc.as<IProperty>();
   if ( !jobOptsIProp )   {
     fatal() << "Error locating JobOptionsSvc" << endmsg;
     return sc;
@@ -263,13 +261,13 @@ StatusCode ApplicationMgr::i_startup() {
       return sc;
     }
   }
-  jobOptsIProp->release();
+  jobOptsIProp.reset();
 
   // Sets my default the Output Level of the Message service to be
   // the same as this
-  SmartIF<IProperty> msgSvcIProp(msgsvc);
+  auto msgSvcIProp = msgsvc.as<IProperty>();
   msgSvcIProp->setProperty( IntegerProperty("OutputLevel", m_outputLevel)).ignore();
-  msgSvcIProp->release();
+  msgSvcIProp.reset();
 
   sc = jobsvc->sysInitialize();
   if( !sc.isSuccess() )   {
@@ -337,7 +335,7 @@ StatusCode ApplicationMgr::configure() {
 
   // Check current outputLevel to eventually inform the MessageSvc
   if( m_outputLevel != MSG::NIL && !m_appName.empty() ) {
-    assert(m_messageSvc != 0);
+    assert(m_messageSvc);
     m_messageSvc->setOutputLevel( name(), m_outputLevel );
     // Print a welcome message
     log << MSG::ALWAYS
@@ -376,15 +374,13 @@ StatusCode ApplicationMgr::configure() {
   // print all own properties if the options "PropertiesPrint" is set to true
   if ( m_propertiesPrint )
   {
-    typedef std::vector<Property*> Properties;
-    const Properties& properties = m_propertyMgr->getProperties() ;
+    const auto& properties = m_propertyMgr->getProperties() ;
     log << MSG::ALWAYS
         << "List of ALL properties of "
         << System::typeinfoName ( typeid( *this ) ) << "/" << this->name()
         << "  #properties = " << properties.size() << endmsg ;
-    for ( auto property = properties.begin() ;
-          properties.end() != property ; ++property )
-    { log << "Property ['Name': Value] = " << ( **property) << endmsg ; }
+    for ( const auto& property : properties )
+    { log << "Property ['Name': Value] = " <<  *property << endmsg ; }
   }
 
   // Check if StatusCode need to be checked
@@ -741,20 +737,20 @@ StatusCode ApplicationMgr::terminate() {
   }
 
   { // Force a disable the auditing of finalize for MessageSvc
-    SmartIF<IProperty> prop(m_messageSvc);
+    auto prop = m_messageSvc.as<IProperty>();
     if (prop) {
       prop->setProperty(BooleanProperty("AuditFinalize", false)).ignore();
     }
   }
   { // Force a disable the auditing of finalize for JobOptionsSvc
-    SmartIF<IProperty> prop(m_jobOptionsSvc);
+    auto prop = m_jobOptionsSvc.as<IProperty>();
     if (prop) {
       prop->setProperty(BooleanProperty("AuditFinalize", false)).ignore();
     }
   }
 
   // finalize MessageSvc
-  SmartIF<IService> svc(m_messageSvc);
+  auto svc = m_messageSvc.as<IService>();
   if ( !svc ) {
     log << MSG::ERROR << "Could not get the IService interface of the MessageSvc" << endmsg;
   } else {
@@ -762,7 +758,7 @@ StatusCode ApplicationMgr::terminate() {
   }
 
   // finalize JobOptionsSvc
-  svc = m_jobOptionsSvc;
+  svc = m_jobOptionsSvc.as<IService>();
   if ( !svc ) {
     log << MSG::ERROR << "Could not get the IService interface of the JobOptionsSvc" << endmsg;
   } else {

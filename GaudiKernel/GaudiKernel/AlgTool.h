@@ -257,11 +257,8 @@ public:
   inline IMonitorSvc* monitorSvc() const
   {
     // If not already located try to locate it without forcing a creation
-    if ( !m_pMonitorSvc ){
-      service_i( m_monitorSvcName, false,
-                 IMonitorSvc::interfaceID(), pp_cast<void>(&m_pMonitorSvc) ).ignore();
-    }
-    return m_pMonitorSvc;
+    if ( !m_pMonitorSvc ) m_pMonitorSvc = service(m_monitorSvcName, false);
+    return m_pMonitorSvc.get();
   }
 
   /** Declare monitoring information
@@ -321,10 +318,10 @@ private:
   const IInterface*    m_parent = nullptr;           ///< AlgTool parent
   mutable ISvcLocator* m_svcLocator = nullptr;       ///< Pointer to Service Locator service
   mutable IMessageSvc* m_messageSvc = nullptr;       ///< Message service
-  mutable IToolSvc*    m_ptoolSvc = nullptr;         ///< Tool service
-  mutable IMonitorSvc* m_pMonitorSvc = nullptr;      ///< Online Monitoring Service
+  mutable SmartIF<IToolSvc> m_ptoolSvc;         ///< Tool service
+  mutable SmartIF<IMonitorSvc> m_pMonitorSvc;      ///< Online Monitoring Service
   std::string          m_monitorSvcName;   ///< Name to use for Monitor Service
-  std::unique_ptr<PropertyMgr>  m_propertyMgr;      ///< Property Manager
+  SmartIF<PropertyMgr> m_propertyMgr;      ///< Property Manager
   InterfaceList        m_interfaceList;    ///< Interface list
   std::string          m_threadID;         ///< Thread Id for Alg Tool
 
@@ -338,7 +335,7 @@ private:
                        const InterfaceID& iid,
                        void** ppS) const;
 
-  mutable IAuditorSvc*      m_pAuditorSvc = nullptr; ///< Auditor Service
+  mutable SmartIF<IAuditorSvc> m_pAuditorSvc; ///< Auditor Service
 
   BooleanProperty m_auditInit = false;
   bool         m_auditorInitialize = false;///< flag for auditors in "initialize()"

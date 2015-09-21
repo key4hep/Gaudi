@@ -52,9 +52,7 @@ ServiceManager::ServiceManager(IInterface* application):
 // destructor
 ServiceManager::~ServiceManager() {
   //-- inform the orphan services that I am gone....
-  for (auto& svc : m_listsvc) {
-    svc.service->setServiceManager(nullptr);
-  }
+  for (auto& svc : m_listsvc) svc.service->setServiceManager(nullptr);
 }
 
 //------------------------------------------------------------------------------
@@ -200,7 +198,7 @@ SmartIF<IService> &ServiceManager::service(const Gaudi::Utils::TypeNameString &t
 const std::list<IService*>& ServiceManager::getServices( ) const
 //------------------------------------------------------------------------------
 {
-  m_listOfPtrs.clear(); 
+  m_listOfPtrs.clear();
   std::transform( std::begin(m_listsvc), std::end(m_listsvc),
                   std::back_inserter(m_listOfPtrs),
                   [](ListSvc::const_reference i) {
@@ -443,7 +441,7 @@ StatusCode ServiceManager::finalize()
     for (const auto& svc : reverse(activeSvc(m_listsvc)) ) {
       const std::string& name = svc->name();
       // ignore the current state for the moment
-      // if( Gaudi::StateMachine::INITIALIZED == svc->state() ) {
+      // if( Gaudi::StateMachine::INITIALIZED == svc->state() )
       DEBMSG << "Finalizing service " << name << endmsg;
       if ( !svc->sysFinalize().isSuccess() ) {
         warning() << "Finalization of service " << name << " failed" << endmsg;
@@ -479,7 +477,6 @@ StatusCode ServiceManager::finalize()
       ++it;
     }
   }
-
   return sc;
 }
 

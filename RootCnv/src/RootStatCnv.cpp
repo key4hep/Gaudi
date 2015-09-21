@@ -30,8 +30,8 @@ RootStatCnv::RootStatCnv (long typ,const CLID& clid, ISvcLocator* svc, RootCnvSv
 StatusCode RootStatCnv::initialize() {
   StatusCode sc = RootConverter::initialize();
   if ( sc.isSuccess() ) {
-    sc = dataProvider()->queryInterface(IDataManagerSvc::interfaceID(),(void**)&m_dataMgr);
-    if ( !sc.isSuccess() ) {
+    m_dataMgr = dataProvider();
+    if ( !m_dataMgr ) {
       return makeError("Failed to access IDataManagerSvc interface.");
     }
   }
@@ -42,10 +42,7 @@ StatusCode RootStatCnv::initialize() {
 // Finalize converter object
 StatusCode RootStatCnv::finalize() {
   m_log.reset();
-  if ( m_dataMgr ) {
-    m_dataMgr->release();
-    m_dataMgr = nullptr;
-  }
+  m_dataMgr.reset();
   return RootConverter::finalize();
 }
 

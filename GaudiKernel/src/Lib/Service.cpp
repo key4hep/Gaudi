@@ -399,7 +399,6 @@ Service::Service(std::string name, ISvcLocator* svcloc) :
   declareProperty("AuditServices", m_auditInit = true);
 
   bool audit(false);
-  // SmartIF<IProperty> appMgr(serviceLocator()->service("ApplicationMgr"));
   auto appMgr = serviceLocator()->service<IProperty>("ApplicationMgr");
   if (appMgr) {
     const Property& prop = appMgr->getProperty("AuditServices");

@@ -41,11 +41,6 @@ EventLoopMgr::EventLoopMgr(const std::string& nam, ISvcLocator* svcLoc)
 // Standard Destructor
 //--------------------------------------------------------------------------------------------
 EventLoopMgr::~EventLoopMgr()   {
-  if( m_histoDataMgrSvc ) m_histoDataMgrSvc->release();
-  if( m_histoPersSvc ) m_histoPersSvc->release();
-  if( m_evtDataMgrSvc ) m_evtDataMgrSvc->release();
-  if( m_evtDataSvc ) m_evtDataSvc->release();
-  if( m_evtSelector ) m_evtSelector->release();
   delete m_evtContext;
 }
 

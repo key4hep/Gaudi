@@ -553,7 +553,7 @@ Algorithm* OutputStream::decodeAlgorithm( const std::string& theName )
 {
   Algorithm * theAlgorithm = nullptr;
 
-  SmartIF<IAlgManager> theAlgMgr(serviceLocator());
+  auto theAlgMgr = serviceLocator()->as<IAlgManager>();
   if ( theAlgMgr )
   {
     // Check whether the supplied name corresponds to an existing

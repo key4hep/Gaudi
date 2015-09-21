@@ -40,7 +40,7 @@ StatusCode
 ServiceLocatorHelper::createService(const std::string& name,
 				    const InterfaceID& iid,
 				    void** ppSvc) const {
-  SmartIF<IService> theSvc = service(name, false, true);
+  auto theSvc = service(name, false, true);
   if (!theSvc) return StatusCode::FAILURE;
   StatusCode sc = theSvc->queryInterface(iid, ppSvc);
   if (!sc.isSuccess()) {

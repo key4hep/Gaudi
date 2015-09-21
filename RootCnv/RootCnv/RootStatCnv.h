@@ -30,7 +30,7 @@ namespace Gaudi {
   class GAUDI_API RootStatCnv: public RootConverter   {
   protected:
     /// Reference to data manager service to manipulate the TES
-    IDataManagerSvc* m_dataMgr = nullptr;
+    SmartIF<IDataManagerSvc> m_dataMgr;
     /// Reference to logger object
     std::unique_ptr<MsgStream>       m_log;
 

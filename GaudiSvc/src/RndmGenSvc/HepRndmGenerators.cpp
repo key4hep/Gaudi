@@ -358,7 +358,7 @@ namespace HepRndm  {
             m_generator.reset( new RandGeneral( &specs->pdf()[0],
                                            specs->pdf().size(),
                                            specs->interpolation()) );
-            BaseEngine* engine = dynamic_cast<BaseEngine*>(m_engine);
+            BaseEngine* engine = dynamic_cast<BaseEngine*>(m_engine.get());
             if ( engine )    {
               m_hepEngine = engine->hepEngine();
               if ( m_hepEngine )   {

@@ -229,7 +229,7 @@ TDirectory* RootHistCnv::RConverter::changeDirectory(DataObject* pObject)
   if ( pObject )    {
     IRegistry* pReg = pObject->registry();
     if ( pReg )    {
-      SmartIF<IDataManagerSvc> dataMgr(dataProvider());
+      auto dataMgr = dataProvider().as<IDataManagerSvc>();
       if ( dataMgr )    {
         IRegistry* pParentReg = nullptr;
         StatusCode status = dataMgr->objectParent(pReg, pParentReg);
@@ -355,8 +355,8 @@ std::string RootHistCnv::RConverter::convertId(const std::string& id ) const
   if ( id.size() > 0 && isdigit(id[0]) ) {
     try {
       BooleanProperty tmp;
-      tmp.assign(SmartIF<IProperty>(conversionSvc())->getProperty( "ForceAlphaIds"));
-      forced = (bool)tmp;
+      tmp.assign(conversionSvc().as<IProperty>()->getProperty( "ForceAlphaIds"));
+      forced = tmp.value();
     }
     catch ( ... ) { }
   }

@@ -42,13 +42,8 @@ StatusCode RandomNumberAlg::initialize() {
   // but shows the usage of the raw interfaces
   //
   // Get random number generator:
-  SmartIF<IRndmGen> gen;
-  {
-    IRndmGen* tmpPtr = 0;
-    status = randSvc()->generator( Rndm::Gauss(0.5,0.2), tmpPtr );
-    gen = tmpPtr;
-  }
-  if ( status.isSuccess() )   {
+  auto gen = randSvc()->generator( Rndm::Gauss(0.5,0.2) );
+  if ( gen )   {
     std::vector<double> numbers;
     gen->shootArray(numbers, 5000).ignore();
     IHistogram1D* his = histoSvc()->book( "1", "Gauss", 40, 0., 3.);

@@ -48,9 +48,11 @@ public:
   virtual StatusCode generator(const IRndmGen::Param& par, IRndmGen*& refpGen) = 0;
 
   SmartIF<IRndmGen> generator(const IRndmGen::Param& par) {
-    IRndmGen *gen;
-    StatusCode sc = generator(par, gen);
-    return SmartIF<IRndmGen>{ sc.isSuccess() ? gen : nullptr };
+    IRndmGen *gen = nullptr;;
+    generator(par, gen).ignore();
+    auto r = SmartIF<IRndmGen>{ gen };
+    if (gen) { gen->release(); }
+    return r;
   }
 
   /// virtual destructor

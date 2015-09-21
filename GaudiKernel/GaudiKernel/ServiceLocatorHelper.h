@@ -66,7 +66,7 @@ public:
 
   template <typename T>
   SmartIF<T> service(const std::string& name, const bool quiet=false, const bool createIf=true) const {
-        return SmartIF<T>{ service(name,quiet,createIf) };
+        return service(name,quiet,createIf).as<T>();
   }
 
 private:

@@ -30,8 +30,8 @@ namespace Gaudi {
 
     template <class A1,class F> std::string _find(A1& arg1,F pmf)  const {
       std::string result;
-      for(Catalogs::const_iterator i=m_catalogs.begin(); i != m_catalogs.end(); ++i) {
-        result= ((*i)->*pmf)(arg1);
+      for(const auto& i : m_catalogs ) {
+        result= (i->*pmf)(arg1);
         if ( !result.empty() ) break;
       }
       return result;

@@ -123,9 +123,13 @@ public:
       svc->addRef();
       return StatusCode::SUCCESS;
     }
-    // else
     svc = nullptr;
     return StatusCode::FAILURE;
+  }
+
+  template <class T = IService>
+  SmartIF<T> service( const std::string& name, bool createIf = false ) const {
+    return serviceLocator()->service<T>(name, createIf);
   }
 
   /// Set a value of a property of an auditor.
@@ -245,7 +249,7 @@ public:
 
   mutable SmartIF<IMessageSvc> m_MS;            ///< Message service
   mutable SmartIF<ISvcLocator> m_pSvcLocator;   ///< Pointer to service locator service
-  std::unique_ptr<PropertyMgr> m_PropertyMgr;   ///< For management of properties
+  SmartIF<PropertyMgr> m_PropertyMgr;   ///< For management of properties
   int          m_outputLevel;   ///< Auditor output level
   bool         m_isEnabled;     ///< Auditor is enabled flag
   bool         m_isInitialized; ///< Auditor has been initialized flag

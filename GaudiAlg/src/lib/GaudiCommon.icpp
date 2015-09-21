@@ -230,10 +230,10 @@ StatusCode GaudiCommon<PBASE>::
        m_rootInTES.substr(m_rootInTES.size()-1) != "/" ) m_rootInTES += "/";
 
   //Set up the CounterSummarySvc May need to be changed
-  this->svcLoc()->service("CounterSummarySvc",m_counterSummarySvc,false).ignore() ;
+  m_counterSummarySvc = this->svcLoc()->service("CounterSummarySvc",false);
   if (msgLevel(MSG::DEBUG))
   {
-    if (m_counterSummarySvc==NULL )
+    if (!m_counterSummarySvc)
 	debug() <<  "could not locate CounterSummarySvc, no counter summary will be made" << endmsg;
     else debug() <<  "found CounterSummarySvc OK" << endmsg;
   }
@@ -293,7 +293,7 @@ StatusCode GaudiCommon<PBASE>::
     }
     debug() << endmsg;
   }
-  while ( !m_tools.empty() ) { sc = sc && releaseTool( m_tools.back() ) ; }
+  while ( !m_tools.empty() ) { sc = releaseTool( m_tools.back() ) && sc; }
 
   // release all located services
   if ( msgLevel(MSG::DEBUG) )
@@ -308,11 +308,7 @@ StatusCode GaudiCommon<PBASE>::
   while ( !m_services.empty() ) { sc = releaseSvc( m_services.front() ) && sc; }
 
   //release the CounterSummarySvc manually
-  if(m_counterSummarySvc)
-  {
-    m_counterSummarySvc->release();
-    m_counterSummarySvc=NULL;
-  }
+  m_counterSummarySvc.reset();
 
   // format printout
   if ( !m_errors.empty() || !m_warnings.empty() || !m_exceptions.empty() )

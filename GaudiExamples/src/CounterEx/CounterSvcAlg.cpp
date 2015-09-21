@@ -6,6 +6,7 @@
 #include "GaudiKernel/ICounterSvc.h"
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/MsgStream.h"
+#include "GaudiKernel/Stat.h"
 
 // ============================================================================
 namespace GaudiExamples
@@ -25,11 +26,11 @@ namespace GaudiExamples
   public:
     /// Constructor: A constructor of this form must be provided.
     CounterSvcAlg(const std::string& name, ISvcLocator* pSvcLocator)
-      :	Algorithm(name, pSvcLocator), m_cntSvc(0) {
+      :	Algorithm(name, pSvcLocator)  {
       declareProperty("CounterBaseName", m_counterBaseName = "CounterTest");
     }
     /// Standard Destructor
-    virtual ~CounterSvcAlg() {}
+    virtual ~CounterSvcAlg() = default;
     /// Initialize
     virtual StatusCode initialize()
     {
@@ -99,9 +100,9 @@ namespace GaudiExamples
       return StatusCode::SUCCESS;
     }
   private:
-    ICounterSvc::Counter* m_evtCount;
-    ICounterSvc::Counter* m_total;
-    ICounterSvc*  m_cntSvc;
+    ICounterSvc::Counter* m_evtCount = nullptr;
+    ICounterSvc::Counter* m_total = nullptr;
+    ICounterSvc*  m_cntSvc = nullptr;
 
     std::string m_counterBaseName;
   };

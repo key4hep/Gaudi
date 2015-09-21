@@ -140,7 +140,7 @@ public:
   template <class T>
   StatusCode retrieveTool ( const std::string& type            ,
                             T*&                tool            ,
-                            const IInterface*  parent   = 0    ,
+                            const IInterface*  parent   = nullptr,
                             bool               createIf = true )
   {
     return retrieve( type,
@@ -197,7 +197,7 @@ public:
   StatusCode retrieveTool ( const std::string& type            ,
                             const std::string& name            ,
                             T*&                tool            ,
-                            const IInterface*  parent   = 0    ,
+                            const IInterface*  parent   = nullptr ,
                             bool               createIf = true )
   {
     return retrieve ( type,

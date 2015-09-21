@@ -120,16 +120,16 @@ ServiceManager      DEBUG Finalizing service IncidentSvc
 IncidentSvc         DEBUG Incident  timing: Mean(+-rms)/Min/Max:0.0034995(+-0.0590487)/0/1[ms] Total:0.006999[s]
 ServiceManager      DEBUG Finalizing service AppMgrRunable
 ServiceManager      DEBUG Service reference count check:
-ServiceManager      DEBUG ---- MessageSvc (refCount = 14)
-ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 2)
-ServiceManager      DEBUG ---- RndmGenSvc.Engine (refCount = 3)
+ServiceManager      DEBUG ---- MessageSvc (refCount = 15)
+ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 3)
+ServiceManager      DEBUG ---- RndmGenSvc.Engine (refCount = 2)
 ServiceManager      DEBUG ---- AppMgrRunable (refCount = 3)
 ServiceManager      DEBUG ---- IncidentSvc (refCount = 2)
 ServiceManager      DEBUG ---- RndmGenSvc (refCount = 2)
-ServiceManager      DEBUG ---- RootHistSvc (refCount = 6)
+ServiceManager      DEBUG ---- RootHistSvc (refCount = 3)
 ServiceManager      DEBUG ---- HistogramPersistencySvc (refCount = 2)
-ServiceManager      DEBUG ---- HistogramDataSvc (refCount = 4)
-ServiceManager      DEBUG ---- NTupleSvc (refCount = 3)
+ServiceManager      DEBUG ---- HistogramDataSvc (refCount = 3)
+ServiceManager      DEBUG ---- NTupleSvc (refCount = 2)
 ServiceManager      DEBUG ---- EventPersistencySvc (refCount = 2)
 ServiceManager      DEBUG ---- EventDataSvc (refCount = 3)
 ServiceManager      DEBUG ---- EventLoopMgr (refCount = 3)

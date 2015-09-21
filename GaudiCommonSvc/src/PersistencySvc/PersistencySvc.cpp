@@ -157,9 +157,7 @@ SmartIF<IAddressCreator>& PersistencySvc::addressCreator(long type)     {
     IConversionSvc* s = service(type);
     if ( s )   {
       it = m_cnvServices.find( typ );
-      if ( it != m_cnvServices.end() ) {
-        return it->second.addrCreator();
-      }
+      if ( it != m_cnvServices.end() ) return it->second.addrCreator();
     }
     static SmartIF<IAddressCreator> no_creator;
     return no_creator;
@@ -228,12 +226,12 @@ SmartIF<IConversionSvc>& PersistencySvc::service(const std::string& nam)     {
         return i.second.service()->name() == tn.name();
   } );
   if (it!=m_cnvServices.end()) return it->second.conversionSvc();
-  IConversionSvc* svc = nullptr;
-  StatusCode status = Service::service(nam, svc, true);
-  if ( status.isSuccess() && addCnvService(svc).isSuccess() ) {
-      svc->release();       // Do not double-reference count
+
+  auto svc = Service::service<IConversionSvc>(nam, true);
+  if ( svc && addCnvService(svc.get()).isSuccess() ) {
       return service(nam); // now it is in the list
   }
+
   info() << "Cannot access Conversion service:" << nam << endmsg;
   static SmartIF<IConversionSvc> no_svc;
   return no_svc;
@@ -246,7 +244,7 @@ SmartIF<IConversionSvc>& PersistencySvc::service(long type)     {
   if( it != m_cnvServices.end() ) return it->second.conversionSvc();
   // if not, check if the service is in the list and may be requested
   for ( const auto& i : m_svcNames.value() ) {
-    SmartIF<IConversionSvc>& svc = service(i);
+    auto& svc = service(i);
     if ( svc &&  svc->repSvcType() == type )  return svc;
   }
   static SmartIF<IConversionSvc> no_svc;
@@ -257,34 +255,28 @@ SmartIF<IConversionSvc>& PersistencySvc::service(long type)     {
 StatusCode PersistencySvc::addCnvService(IConversionSvc* servc)    {
   if ( !servc )   return BAD_STORAGE_TYPE;
   long type = servc->repSvcType();
-  long def_typ = (m_cnvDefault) ? m_cnvDefault->repSvcType() : 0;
+  long def_typ = ( m_cnvDefault ? m_cnvDefault->repSvcType() : 0 );
   auto it = m_cnvServices.find( type );
-  IConversionSvc* cnv_svc = nullptr;
-  if ( it != m_cnvServices.end() ) cnv_svc = it->second.conversionSvc();
+  auto cnv_svc = ( it != m_cnvServices.end() ? it->second.conversionSvc() : nullptr );
   if ( type == def_typ ) m_cnvDefault = servc;
   if ( cnv_svc == servc )   return StatusCode::SUCCESS;
 
-  IAddressCreator* icr = nullptr;
-  StatusCode status  = servc->queryInterface(IAddressCreator::interfaceID(), pp_cast<void>(&icr));
-  if ( status.isSuccess() )   {
-    IService* isvc = nullptr;
-    status = servc->queryInterface(IService::interfaceID(), pp_cast<void>(&isvc));
-    if ( status.isSuccess() )    {
-      if ( cnv_svc )   removeCnvService (type).ignore();
-      auto p = m_cnvServices.emplace( type, ServiceEntry(type, isvc, servc, icr) );
+  auto iservc = make_SmartIF( servc );
+  auto icr = iservc.as<IAddressCreator>();
+  if ( icr ) {
+    auto isvc = iservc.as<IService>();
+    if ( isvc ) {
+      if ( cnv_svc ) removeCnvService (type).ignore();
+      auto p = m_cnvServices.emplace( type, ServiceEntry(type, isvc, iservc, icr) );
       if( !p.second )    {
         info() << "Cannot add Conversion service of type " << isvc->name() << endmsg;
-        isvc->release();
-        icr->release();
         return StatusCode::FAILURE;
       }
       info() << "Added successfully Conversion service:" << isvc->name() << endmsg;
-      servc->addRef();
-      servc->setAddressCreator(this).ignore();
-      servc->setDataProvider(m_dataSvc).ignore();
+      iservc->setAddressCreator(this).ignore();
+      iservc->setDataProvider(m_dataSvc).ignore();
       return StatusCode::SUCCESS;
     }
-    icr->release();
   }
   info() << "Cannot add Conversion service of type " << type << endmsg;
   return StatusCode::FAILURE;

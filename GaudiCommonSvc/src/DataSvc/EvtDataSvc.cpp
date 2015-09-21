@@ -32,7 +32,7 @@ StatusCode EvtDataSvc::initialize()    {
   StatusCode      status  = DataSvc::initialize();
 
   // Attach data loader facility
-  m_cnvSvc = serviceLocator()->service<IConversionSvc>("EventPersistencySvc");
+  m_cnvSvc = serviceLocator()->service("EventPersistencySvc");
   status = setDataLoader( m_cnvSvc );
   return status;
 }

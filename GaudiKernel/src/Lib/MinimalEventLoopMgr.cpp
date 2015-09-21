@@ -72,7 +72,7 @@ StatusCode MinimalEventLoopMgr::initialize()    {
     return StatusCode::FAILURE;
   }
 
-  SmartIF<IProperty> prpMgr(serviceLocator());
+  auto prpMgr = serviceLocator()->as<IProperty>();
   if ( !prpMgr )   {
     error() << "Error retrieving AppMgr interface IProperty." << endmsg;
     return StatusCode::FAILURE;
@@ -264,7 +264,7 @@ StatusCode MinimalEventLoopMgr::finalize() {
     }
   }
   // release all top algorithms
-  SmartIF<IAlgManager> algMan(serviceLocator());
+  auto algMan = serviceLocator()->as<IAlgManager>();
   for (auto &ita : m_topAlgList ) {
     if (algMan->removeAlgorithm(ita).isFailure()) {
       scRet = StatusCode::FAILURE;
@@ -365,7 +365,7 @@ StatusCode MinimalEventLoopMgr::executeEvent(void* /* par */)    {
 
   // Call the resetExecuted() method of ALL "known" algorithms
   // (before we were reseting only the topalgs)
-  SmartIF<IAlgManager> algMan(serviceLocator());
+  auto algMan = serviceLocator()->as<IAlgManager>();
   if (LIKELY(algMan.isValid())) {
     const auto& allAlgs = algMan->getAlgorithms();
     std::for_each( std::begin(allAlgs), std::end(allAlgs),
@@ -375,7 +375,7 @@ StatusCode MinimalEventLoopMgr::executeEvent(void* /* par */)    {
   }
 
   // Get the IProperty interface of the ApplicationMgr to pass it to RetCodeGuard
-  const SmartIF<IProperty> appmgr(serviceLocator());
+  const auto appmgr = serviceLocator()->as<IProperty>();
   // Call the execute() method of all top algorithms
   for (auto&  ita : m_topAlgList ) {
     StatusCode sc(StatusCode::FAILURE);
@@ -438,7 +438,7 @@ StatusCode MinimalEventLoopMgr::executeEvent(void* /* par */)    {
 //--------------------------------------------------------------------------------------------
 StatusCode MinimalEventLoopMgr::stopRun() {
   // Set the application return code
-  SmartIF<IProperty> appmgr(serviceLocator());
+  auto appmgr = serviceLocator()->as<IProperty>();
   if(Gaudi::setAppReturnCode(appmgr, Gaudi::ReturnCode::ScheduledStop).isFailure()) {
     error() << "Could not set return code of the application ("
             << Gaudi::ReturnCode::ScheduledStop << ")" << endmsg;
@@ -464,7 +464,7 @@ void MinimalEventLoopMgr::topAlgHandler( Property& /* theProp */ )  {
 StatusCode MinimalEventLoopMgr::decodeTopAlgs()    {
   StatusCode sc = StatusCode::SUCCESS;
   if ( CONFIGURED == m_state || INITIALIZED == m_state ) {
-    SmartIF<IAlgManager> algMan(serviceLocator());
+    auto algMan = serviceLocator()->as<IAlgManager>();
     if ( algMan )   {
       // Reset the existing Top Algorithm List
       m_topAlgList.clear( );
@@ -514,7 +514,7 @@ void MinimalEventLoopMgr::outStreamHandler( Property& /* theProp */ )         {
 StatusCode MinimalEventLoopMgr::decodeOutStreams( )    {
   StatusCode sc = StatusCode::SUCCESS;
   if ( CONFIGURED == m_state || INITIALIZED == m_state ) {
-    SmartIF<IAlgManager> algMan(serviceLocator());
+    auto algMan = serviceLocator()->as<IAlgManager>();
     if ( algMan )   {
       // Reset the existing Top Algorithm List
       m_outStreamList.clear();

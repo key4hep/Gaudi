@@ -98,12 +98,12 @@ IToolSvc* AlgTool::toolSvc() const
 //------------------------------------------------------------------------------
 {
   if ( !m_ptoolSvc ) {
-    StatusCode sc = service( "ToolSvc", m_ptoolSvc, true );
-    if( sc.isFailure() ) {
-      throw GaudiException("Service [ToolSvc] not found", name(), sc);
+    m_ptoolSvc = service( "ToolSvc", true );
+    if( !m_ptoolSvc ) {
+      throw GaudiException("Service [ToolSvc] not found", name(), StatusCode::FAILURE);
     }
   }
-  return m_ptoolSvc;
+  return m_ptoolSvc.get();
 }
 
 //------------------------------------------------------------------------------
@@ -450,8 +450,6 @@ StatusCode AlgTool::restart()
 AlgTool::~AlgTool()
 //------------------------------------------------------------------------------
 {
-  if( m_ptoolSvc ) m_ptoolSvc->release();
-  if( m_pAuditorSvc ) m_pAuditorSvc->release();
   if( m_pMonitorSvc ) { m_pMonitorSvc->undeclareAll(this); m_pMonitorSvc->release(); }
 }
 
@@ -485,12 +483,12 @@ SmartIF<IService> AlgTool::service(const std::string& name, const bool createIf,
 IAuditorSvc* AlgTool::auditorSvc() const {
 //---------------------------------------------------------------------------
   if ( !m_pAuditorSvc ) {
-    StatusCode sc = service( "AuditorSvc", m_pAuditorSvc, true );
-    if( sc.isFailure() ) {
-      throw GaudiException("Service [AuditorSvc] not found", name(), sc);
+    m_pAuditorSvc = service( "AuditorSvc", true );
+    if( !m_pAuditorSvc ) {
+      throw GaudiException("Service [AuditorSvc] not found", name(), StatusCode::FAILURE);
     }
   }
-  return m_pAuditorSvc;
+  return m_pAuditorSvc.get();
 }
 
 

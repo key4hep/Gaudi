@@ -18,7 +18,7 @@ PropertyProxy::PropertyProxy(const std::string& name, ISvcLocator* ploc)
 //------------------------------------------------------------------------------
   MsgStream log(msgSvc(), name);
   // Declare remote properties at this moment
-  SmartIF<IAlgManager> algMgr (serviceLocator());
+  auto algMgr = serviceLocator()->as<IAlgManager>();
   SmartIF<IProperty> rAlgP(algMgr->algorithm("PropertyAlg"));
   if( rAlgP ) {
     m_remAlg = rAlgP; // remember it for later

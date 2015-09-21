@@ -184,8 +184,8 @@ void IncidentSvc::i_fireIncident( const Incident&    incident     ,
   // Special case: FailInputFile incident must set the application return code
   if ( incident.type() == IncidentType::FailInputFile || 
        incident.type() == IncidentType::CorruptedInputFile ) {
-    SmartIF<IProperty> appmgr(serviceLocator());
-    Gaudi::setAppReturnCode(appmgr, 
+    auto appmgr = serviceLocator()->as<IProperty>();
+    Gaudi::setAppReturnCode(appmgr,
                             incident.type() == IncidentType::FailInputFile ?
                                   Gaudi::ReturnCode::FailInput :
                                   Gaudi::ReturnCode::CorruptedInput

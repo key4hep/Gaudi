@@ -13,7 +13,7 @@ using namespace std;
 
 namespace {
     template <typename C, typename F> 
-    F for_each_element( C& c, F&& f ) {
+    F for_each( C& c, F&& f ) {
         return std::for_each( std::begin(c), std::end(c), std::forward<F>(f) );
     }
 }
@@ -50,7 +50,7 @@ StatusCode MultiFileCatalog::initialize()  {
 // ----------------------------------------------------------------------------
 StatusCode MultiFileCatalog::finalize()  {
   commit();
-  for_each_element(m_catalogs, std::mem_fn(&IFileCatalog::release));
+  for_each(m_catalogs, std::mem_fn(&IFileCatalog::release));
   m_catalogs.clear();
   m_started = false;
   return Service::finalize();
@@ -165,7 +165,7 @@ void MultiFileCatalog::addCatalog(IFileCatalog* cat)  {
 // ----------------------------------------------------------------------------
 void MultiFileCatalog::removeCatalog(CSTR con)  {
   if ( con.empty() || con == "*" )  {
-    for_each_element(m_catalogs, std::mem_fn(&IFileCatalog::release));
+    for_each(m_catalogs, std::mem_fn(&IFileCatalog::release));
     m_catalogs.clear();
     return;
   }
@@ -239,13 +239,13 @@ bool MultiFileCatalog::dirty() const
 {  return std::any_of( std::begin(m_catalogs), std::end(m_catalogs), std::mem_fn(&IFileCatalog::dirty) ); }
 // ----------------------------------------------------------------------------
 void MultiFileCatalog::init() 
-{ for_each_element(m_catalogs,std::mem_fn(&IFileCatalog::init)); m_started=true;                           }
+{ for_each(m_catalogs,std::mem_fn(&IFileCatalog::init)); m_started=true;                           }
 // ----------------------------------------------------------------------------
 void MultiFileCatalog::commit() 
-{ for_each_element(m_catalogs,std::mem_fn(&IFileCatalog::commit)); }
+{ for_each(m_catalogs,std::mem_fn(&IFileCatalog::commit)); }
 // ----------------------------------------------------------------------------
 void MultiFileCatalog::rollback() 
-{ for_each_element(m_catalogs, std::mem_fn(&IFileCatalog::rollback)); }
+{ for_each(m_catalogs, std::mem_fn(&IFileCatalog::rollback)); }
 // ----------------------------------------------------------------------------
 void MultiFileCatalog::propHandler(Property& /* p */)
 {

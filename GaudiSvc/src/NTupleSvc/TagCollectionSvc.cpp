@@ -146,7 +146,7 @@ StatusCode TagCollectionSvc::createService( const std::string& nam,
                                             const std::vector<Prop>& props,
                                             IConversionSvc*& pSvc)    {
   using Gaudi::Utils::TypeNameString;
-  SmartIF<ISvcManager> mgr(serviceLocator());
+  auto mgr = serviceLocator()->as<ISvcManager>();
 
   // TagCollectionSvc has to directly create a ConversionSvc to manage it directly.
   StatusCode status = NO_INTERFACE;
@@ -156,8 +156,8 @@ StatusCode TagCollectionSvc::createService( const std::string& nam,
     if (isvc)   {
       status = isvc->queryInterface(IConversionSvc::interfaceID(), (void**)&pSvc);
       if ( status.isSuccess() )     {
-        SmartIF<IProperty> iprop(isvc);
         status = NO_INTERFACE;
+        auto iprop = isvc.as<IProperty>();
         if ( iprop )    {
           for ( const auto& p : props ) { 
             iprop->setProperty(p.first, p.second).ignore();

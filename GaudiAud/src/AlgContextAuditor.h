@@ -50,7 +50,7 @@ private:
   AlgContextAuditor& operator=( const AlgContextAuditor& ) = delete;
 private:
   /// the pointer to Algorithm Context Service
-  IAlgContextSvc* m_svc = nullptr;
+  SmartIF<IAlgContextSvc> m_svc;
 } ;
 
 // ============================================================================

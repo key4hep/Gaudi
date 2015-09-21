@@ -51,17 +51,8 @@ StatusCode AlgContextAuditor::initialize()
   // initialize the base class
   StatusCode sc = Auditor::initialize() ;
   if ( sc.isFailure() ) { return sc ; }                           // RETURN
-  if ( m_svc ) { m_svc -> release() ; m_svc = nullptr ; }
-  sc = Auditor::service ( "AlgContextSvc" , m_svc , true ) ;
-  if ( sc.isFailure() )
-  {
-    MsgStream log ( msgSvc() , name() ) ;
-    log << MSG::ERROR << "Unable to locate 'AlgContextSvc'" << sc << endmsg ;
-    m_svc = nullptr ;
-    return sc ;  // RETURN
-  }
-  if ( !m_svc     )
-  {
+  m_svc = service(  "AlgContextSvc" , true ) ;
+  if ( !m_svc ) {
     MsgStream log ( msgSvc() , name() ) ;
     log << MSG::ERROR << "Invalid pointer to IAlgContextSvc" << endmsg ;
     return StatusCode::FAILURE ;           // RETURN
@@ -73,7 +64,7 @@ StatusCode AlgContextAuditor::initialize()
 // ============================================================================
 StatusCode AlgContextAuditor::finalize ()
 {
-  if ( m_svc ) { m_svc-> release() ; m_svc = nullptr ; }
+  m_svc.reset();
   // finalize the base class
   return Auditor::finalize () ;
 }

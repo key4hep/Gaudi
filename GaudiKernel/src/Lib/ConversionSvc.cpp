@@ -162,16 +162,12 @@ IConverter* ConversionSvc::converter(const CLID& clid)     {
 /// Define transient data store
 StatusCode ConversionSvc::setDataProvider(IDataProviderSvc* pDataSvc)    {
   if ( !pDataSvc ) return StatusCode::SUCCESS; //Atlas does not use DataSvc
-  if ( m_dataSvc ) m_dataSvc->release();
   m_dataSvc = pDataSvc;
-  m_dataSvc->addRef();
   for(auto& i : m_workers ) { 
     IConverter* cnv = i.converter();
-    if ( 0 != cnv )   {
-      if (cnv->setDataProvider(m_dataSvc).isFailure()) {
-        MsgStream log(msgSvc(), name());
-        log << MSG::ERROR << "setting Data Provider" << endmsg;
-      }
+    if ( cnv && cnv->setDataProvider(m_dataSvc).isFailure()) {
+      MsgStream log(msgSvc(), name());
+      log << MSG::ERROR << "setting Data Provider" << endmsg;
     }
   }
   return StatusCode::SUCCESS;
@@ -217,7 +213,7 @@ StatusCode ConversionSvc::addConverter(const CLID& clid)  {
   // First look for the more specific converter
   long typ = repSvcType();
   IConverter* pConverter = createConverter(typ, clid, 0);
-  if ( 0 != pConverter )    {
+  if ( pConverter )    {
     StatusCode status = configureConverter( typ, clid, pConverter );
     if ( status.isSuccess() )   {
       status = initializeConverter( typ, clid, pConverter );
@@ -294,9 +290,8 @@ StatusCode ConversionSvc::finalize()      {
 IConverter* ConversionSvc::createConverter(long typ,
                                            const CLID& clid,
                                            const ICnvFactory* /*fac*/)   {
-  IConverter* pConverter;
-  pConverter = Converter::Factory::create(ConverterID(typ,clid), serviceLocator().get());
-  if ( 0 == pConverter )  {
+  IConverter* pConverter =  Converter::Factory::create(ConverterID(typ,clid), serviceLocator().get());
+  if ( !pConverter )  {
     typ = (typ<0xFF) ? typ : typ&0xFFFFFF00;
     pConverter = Converter::Factory::create(ConverterID(typ,clid), serviceLocator().get());
   }
@@ -307,33 +302,27 @@ IConverter* ConversionSvc::createConverter(long typ,
 StatusCode ConversionSvc::configureConverter(long /* typ */,
                                               const CLID& /* clid */,
                                               IConverter* pConverter)    {
-  if ( 0 != pConverter )    {
-    pConverter->setConversionSvc(this).ignore();
-    pConverter->setAddressCreator(m_addressCreator).ignore();
-    pConverter->setDataProvider(m_dataSvc).ignore();
-    return StatusCode::SUCCESS;
-  }
-  return NO_CONVERTER;
+  if ( !pConverter ) return NO_CONVERTER;
+  pConverter->setConversionSvc(this).ignore();
+  pConverter->setAddressCreator(m_addressCreator).ignore();
+  pConverter->setDataProvider(m_dataSvc).ignore();
+  return StatusCode::SUCCESS;
 }
 
 /// Initialize new converter
 StatusCode ConversionSvc::initializeConverter(long /* typ */,
                                               const CLID& /* clid */,
                                               IConverter* pConverter)    {
-  if ( pConverter )    {
-    return pConverter->initialize();
-  }
-  return NO_CONVERTER;
+  return pConverter ? pConverter->initialize()
+                    : NO_CONVERTER;
 }
 
 /// Activate the freshly created converter
 StatusCode ConversionSvc::activateConverter(long /* typ */,
                                             const CLID& /* clid */,
                                             IConverter* pConverter)    {
-  if ( pConverter )    {
-    return StatusCode::SUCCESS;
-  }
-  return NO_CONVERTER;
+  return pConverter ? StatusCode::SUCCESS
+                    : NO_CONVERTER;
 }
 
 /// Retrieve the class type of objects the converter produces.
@@ -368,7 +357,7 @@ StatusCode ConversionSvc::createAddress(long                 /* svc_type */,
                                         const std::string*   /* par      */,
                                         const unsigned long* /* ip       */,
                                         IOpaqueAddress*& refpAddress)    {
-  refpAddress = 0;
+  refpAddress = nullptr;
   return StatusCode::FAILURE;
 }
 
@@ -376,7 +365,7 @@ StatusCode ConversionSvc::createAddress(long                 /* svc_type */,
 StatusCode ConversionSvc::convertAddress( const IOpaqueAddress* /* pAddress */,
                                           std::string& refAddress)
 {
-  refAddress = "";
+  refAddress.clear();
   return StatusCode::FAILURE;
 }
 

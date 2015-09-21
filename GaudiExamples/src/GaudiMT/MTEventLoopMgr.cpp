@@ -77,7 +77,7 @@ StatusCode MTEventLoopMgr::initialize()    {
   }
 
   // Obtain the IProperty of the ApplicationMgr
-  SmartIF<IProperty> prpMgr(serviceLocator());
+  auto prpMgr = serviceLocator()->as<IProperty>();
   if ( ! prpMgr )   {
     log << MSG::FATAL << "IProperty interface not found in ApplicationMgr." << endmsg;
     return StatusCode::FAILURE;

@@ -125,7 +125,7 @@ namespace {
   */
 class CollectionCloneAlg : public Algorithm {
   /// Reference to data provider service
-  INTupleSvc*               m_dataSvc;
+  SmartIF<INTupleSvc>       m_dataSvc;
   /// Name of the data provider service
   std::string               m_tupleSvc;
   /// Output specification
@@ -144,7 +144,7 @@ public:
 
   /// Standard algorithm constructor
   CollectionCloneAlg(const std::string& name, ISvcLocator* pSvcLocator)
-  :	Algorithm(name, pSvcLocator),  m_dataSvc(0)
+  :	Algorithm(name, pSvcLocator)
   {
     declareProperty("EvtTupleSvc", m_tupleSvc="EvtTupleSvc");
     declareProperty("Input",       m_inputs);
@@ -161,45 +161,43 @@ public:
     m_outName = "";
     m_criteria = "";
     m_selectorName = "";
-    StatusCode sc = service(m_tupleSvc, m_dataSvc, true);
-    if ( sc.isSuccess() )  {
-      std::string fun;
-      using Parser = Gaudi::Utils::AttribStringParser;
-      for (auto attrib: Parser(m_output)) {
-        switch( ::toupper(attrib.tag[0]) ) {
-        case 'D':
-          m_outName = std::move(attrib.value);
-          break;
-        case 'S':
-          m_criteria = std::move(attrib.value);
-          break;
-        case 'F':
-          fun = std::move(attrib.value);
-          break ;
-        default:
-          break;
-        }
-      }
-      if ( m_outName.empty() )  {
-        log << MSG::ERROR << "Failed to analyze output specs:" << m_output << endmsg;
+    m_dataSvc = service(m_tupleSvc, true);
+    if ( !m_dataSvc ) {
+        log << MSG::ERROR << "Failed to access service \""
+            << m_tupleSvc << "\"." << endmsg;
         return StatusCode::FAILURE;
-      }
-      if ( fun.length() > 0 || m_criteria.length() > 0 )   {
-        if ( m_criteria.length() > 0 && fun.length() == 0 ) fun = "NTuple::Selector";
-        m_selectorName = fun;
-        return StatusCode::SUCCESS;
-      }
-      return sc;
     }
-    log << MSG::ERROR << "Failed to access service \""
-        << m_tupleSvc << "\"." << endmsg;
-    return sc;
+    std::string fun;
+    using Parser = Gaudi::Utils::AttribStringParser;
+    for (auto attrib: Parser(m_output)) {
+      switch( ::toupper(attrib.tag[0]) ) {
+      case 'D':
+        m_outName = std::move(attrib.value);
+        break;
+      case 'S':
+        m_criteria = std::move(attrib.value);
+        break;
+      case 'F':
+        fun = std::move(attrib.value);
+        break ;
+      default:
+        break;
+      }
+    }
+    if ( m_outName.empty() )  {
+      log << MSG::ERROR << "Failed to analyze output specs:" << m_output << endmsg;
+      return StatusCode::FAILURE;
+    }
+    if ( !fun.empty() || !m_criteria.empty() )   {
+      if ( !m_criteria.empty()  && fun.empty() ) fun = "NTuple::Selector";
+      m_selectorName = fun;
+    }
+    return StatusCode::SUCCESS;
   }
 
   /// Finalize
   virtual StatusCode finalize() {
-    if ( m_dataSvc ) m_dataSvc->release();
-    m_dataSvc = 0;
+    m_dataSvc.reset();
     return StatusCode::SUCCESS;
   }
 
@@ -337,12 +335,12 @@ public:
   /// Merge the entries of a single input tuple into the output
   StatusCode mergeEntries(const std::string& input)  {
     MsgStream log(msgSvc(), name());
-    NTuplePtr out(m_dataSvc, m_outName);
+    NTuplePtr out(m_dataSvc.get(), m_outName);
     if ( 0 != out )  {
       const INTuple::ItemContainer& clone_items  = out->items();
       std::vector<GenericAddress> addrVector(clone_items.size());
       StatusCode status = StatusCode::SUCCESS;
-      NTuplePtr nt(m_dataSvc, input);
+      NTuplePtr nt(m_dataSvc.get(), input);
       size_t k = 0, nentry = 0;
       if ( 0 != nt ) {
         const INTuple::ItemContainer& source_items = nt->items();
@@ -448,9 +446,9 @@ public:
   StatusCode connect()   {
     StatusCode status = StatusCode::SUCCESS;
     for (size_t i=0; i < m_inputs.size(); ++i)  {
-      NTuplePtr nt(m_dataSvc, m_inputs[i]);
+      NTuplePtr nt(m_dataSvc.get(), m_inputs[i]);
       if ( !(0 == nt) )    {
-        NTuplePtr out(m_dataSvc, m_outName);
+        NTuplePtr out(m_dataSvc.get(), m_outName);
         if ( 0 == out )  {
           status = book(nt);
         } else  {

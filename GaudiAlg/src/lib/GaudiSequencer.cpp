@@ -246,10 +246,10 @@ StatusCode GaudiSequencer::decodeNames( )  {
   m_entries.clear();
 
   //== Get the "Context" option if in the file...
-  IJobOptionsSvc* jos = svc<IJobOptionsSvc>( "JobOptionsSvc" );
+  auto jos = service<IJobOptionsSvc>( "JobOptionsSvc" );
 
   //= Get the Application manager, to see if algorithm exist
-  IAlgManager* appMgr = svc<IAlgManager>("ApplicationMgr");
+  auto appMgr = service<IAlgManager>("ApplicationMgr");
   for (const auto& item : m_names.value() ) {
     const Gaudi::Utils::TypeNameString typeName(item);
     const std::string &theName = typeName.name();
@@ -319,8 +319,6 @@ StatusCode GaudiSequencer::decodeNames( )  {
     }
 
   }
-  release(appMgr).ignore();
-  release(jos).ignore();
 
   //== Print the list of algorithms
   MsgStream& msg = info();

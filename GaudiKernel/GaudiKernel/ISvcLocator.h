@@ -98,8 +98,12 @@ public:
   /// Returns a smart pointer to the requested interface of a service.
   template <typename T>
   inline SmartIF<T> service(const Gaudi::Utils::TypeNameString &typeName, const bool createIf = true) {
-    return SmartIF<T>(service(typeName, createIf));
+    return SmartIF<T>{ service(typeName, createIf) };
   }
+
+  // try to access a different interface of  the _current_ serviceLocator...
+  template <typename IFace>
+  SmartIF<IFace> as() { return SmartIF<IFace>{ this }; }
 
 };
 

@@ -104,29 +104,26 @@ StatusCode NTupleSvc::reinitialize() {
 
 // Check if a datasource is connected
 bool NTupleSvc::isConnected(const std::string& identifier) const    {
-  Connections::const_iterator i = m_connections.find(identifier);
-  return !(i==m_connections.end());
+  auto i = m_connections.find(identifier);
+  return i!=m_connections.end();
 }
 
 /// DataSvc override: Retrieve data loader
 IConversionSvc* NTupleSvc::getDataLoader(IRegistry* pRegistry)    {
-  if ( 0 != pRegistry )    {
-    std::string full = pRegistry->identifier();
-    size_t len = m_rootName.length();
-    size_t idx = full.find(SEPARATOR,len+1);
-    std::string path = (idx==std::string::npos) ? full : full.substr(0, idx);
-    Connections::iterator i = m_connections.find(path);
-    if ( i != m_connections.end() )   {
-      return (*i).second.service;
-    }
-  }
-  return 0;
+  if ( !pRegistry ) return nullptr;
+  std::string full = pRegistry->identifier();
+  auto len = m_rootName.length();
+  auto idx = full.find(SEPARATOR,len+1);
+  std::string path = (idx==std::string::npos) ? full : full.substr(0, idx);
+  auto i = m_connections.find(path);
+  return ( i != m_connections.end() ) ? i->second.service
+                                      : nullptr;
 }
 
 StatusCode NTupleSvc::updateDirectories()   {
   typedef std::vector<IRegistry*> Leaves;
   long need_update = 0;
-  DataObject* pO = 0;
+  DataObject* pO = nullptr;
   StatusCode iret = findObject(m_rootName, pO);
   MsgStream log ( msgSvc(), name() );
   //  log << MSG::DEBUG << "in finalize()" << endmsg;
@@ -135,40 +132,35 @@ StatusCode NTupleSvc::updateDirectories()   {
     iret = objectLeaves(pO, leaves);
     if ( iret.isSuccess() )    {
       // Only traverse the tree below the files
-      for ( Leaves::iterator d = leaves.begin(); d != leaves.end(); d++ )    {
-        if ( (*d)->object() )   {
-          IOpaqueAddress* pA = (*d)->address();
-          if ( pA )   {
-            unsigned long typ = pA->ipar()[1];
-            if ( typ == 'R' || typ == 'N' || typ == 'U' )   {
-              // ...starting from the file entries: first save the directories/ntuples
-              IConversionSvc* svc = getDataLoader(*d);
-              if ( 0 != svc )   {
-                StatusCode status;
-                DataSelectionAgent agent;
-                IDataSelector*     sel = agent.selectedObjects();
-                traverseSubTree ( (*d)->object(), &agent ).ignore();
-                for(int i = sel->size()-1; i >= 0; i-- )    {
-                  DataObject* o = (*sel)[i];
-                  IRegistry*  r = o->registry();
-                  status = svc->updateRep(r->address(), o);
-                  if ( !status.isSuccess() )    {
-                    iret = status;
-                  }
-                }
-                for(int j = sel->size()-1; j >= 0; j-- )    {
-                  DataObject* o = (*sel)[j];
-                  IRegistry*  r = o->registry();
-                  status = svc->updateRepRefs(r->address(), o);
-                  if ( !status.isSuccess() )    {
-                    iret = status;
-                  }
-                }
-                if ( iret.isSuccess() ) need_update += sel->size();
-              }
-            }
+      for ( auto d = leaves.begin(); d != leaves.end(); d++ )    {
+        if ( !(*d)->object() ) continue;
+        IOpaqueAddress* pA = (*d)->address();
+        if ( !pA ) continue;
+        unsigned long typ = pA->ipar()[1];
+        if ( typ != 'R' && typ != 'N' && typ != 'U' )  continue;
+        // ...starting from the file entries: first save the directories/ntuples
+        IConversionSvc* svc = getDataLoader(*d);
+        if ( !svc )  continue;
+
+        StatusCode status;
+        DataSelectionAgent agent;
+        IDataSelector*     sel = agent.selectedObjects();
+        traverseSubTree ( (*d)->object(), &agent ).ignore();
+        for(int i = sel->size()-1; i >= 0; i-- )    {
+          DataObject* o = (*sel)[i];
+          IRegistry*  r = o->registry();
+          status = svc->updateRep(r->address(), o);
+          if ( !status.isSuccess() )    {
+            iret = status;
           }
         }
+        for(int j = sel->size()-1; j >= 0; j-- )    {
+          DataObject* o = (*sel)[j];
+          IRegistry*  r = o->registry();
+          status = svc->updateRepRefs(r->address(), o);
+          if ( !status.isSuccess() ) iret = status;
+        }
+        if ( iret.isSuccess() ) need_update += sel->size();
       }
     }
   }
@@ -185,7 +177,7 @@ StatusCode NTupleSvc::updateDirectories()   {
 // Finalize single service
 void NTupleSvc::releaseConnection(Connection& c)  {
   SmartIF<IService> isvc( c.service );
-  if ( isvc )   isvc->finalize().ignore();
+  if ( isvc ) isvc->finalize().ignore();
   c.service->release();
   c.service = nullptr;
 }
@@ -294,16 +286,15 @@ StatusCode NTupleSvc::createService(const std::string&       /* nam */,
   MsgStream log ( msgSvc(), name() );
   /// CGL: set the storage type
   // Get the value of the Stat persistancy mechanism from the AppMgr
-  IProperty*   appPropMgr = 0;
-  StatusCode sts = serviceLocator()->queryInterface(IProperty::interfaceID(), pp_cast<void>(&appPropMgr) );
-  if( !sts.isSuccess() ) {
+  auto appPropMgr = serviceLocator()->as<IProperty>();
+  if( !appPropMgr ) {
    // Report an error and return the FAILURE status code
    log << MSG::ERROR << "Could not get PropMgr" << endmsg;
-   return sts;
+   return StatusCode::FAILURE;
   }
 
   StringProperty sp("HistogramPersistency","");
-  sts = appPropMgr->getProperty( &sp );
+  StatusCode sts = appPropMgr->getProperty( &sp );
   if ( !sts.isSuccess() ) {
    log << MSG::ERROR << "Could not get NTuple Persistency format"
        << " from ApplicationMgr properties" << endmsg;
@@ -318,12 +309,9 @@ StatusCode NTupleSvc::createService(const std::string&       /* nam */,
     storage_typ = ROOT_StorageType;
   }
   else {
-    appPropMgr->release();
     log << MSG::ERROR << "Unknown NTuple Persistency format: " << sp.value() << endmsg;
     return StatusCode::FAILURE;
   }
-  // Clean up
-  appPropMgr->release();
 
   if ( typ.length() > 0 && typ != sp.value() )    {
     log << MSG::WARNING << "NTuple persistency type is "
@@ -359,7 +347,7 @@ StatusCode NTupleSvc::createService(const std::string&       /* nam */,
 
 /// Create requested N tuple (Hide constructor)
 StatusCode NTupleSvc::create(const CLID& typ, const std::string& title, NTuple::Tuple*& refpTuple)     {
-  NTuple::TupleImp* pTuple = 0;
+  NTuple::TupleImp* pTuple = nullptr;
   StatusCode status = StatusCode::FAILURE;
   if ( typ == CLID_ColumnWiseTuple )    {
     pTuple = new NTuple::ColumnWiseTuple( title );
@@ -370,7 +358,7 @@ StatusCode NTupleSvc::create(const CLID& typ, const std::string& title, NTuple::
   else    {
     /// Eventually allow loading through factory?
   }
-  if ( 0 != pTuple )      {
+  if ( pTuple )      {
     pTuple->setTupleService(this);
     status = StatusCode::SUCCESS;
   }

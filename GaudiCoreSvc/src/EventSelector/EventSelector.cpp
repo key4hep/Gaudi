@@ -381,6 +381,12 @@ StatusCode EventSelector::initialize()    {
     logger << MSG::ERROR << " Could not locate the Tool Service! " << endmsg;
     return StatusCode::FAILURE;
   }
+  // make sure we finalize _prior_ to ToolSvc... we are about to get a
+  // a pointer to a tool which gets finalized and released by the ToolSvc
+  // during ToolSvc::finalize, and we don't want dangling pointers...
+  SmartIF<ISvcManager> mgr(serviceLocator());
+  auto prio = mgr->getPriority("ToolSvc");
+  mgr->setPriority(name(),prio+1).ignore();
 
   status = m_toolSvc->retrieveTool(m_streamManager.c_str(), m_streamtool, this);
 
@@ -443,8 +449,7 @@ StatusCode EventSelector::finalize()    {
     }
     m_streamtool = nullptr;
   }
-
-  m_toolSvc = nullptr;
+  m_toolSvc.reset();
 
   return Service::finalize();
 }

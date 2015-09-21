@@ -105,7 +105,7 @@ public:
   }
 
 
-  /// return a new SmartIF instance to another interface 
+  /// return a new SmartIF instance to another interface
   template <typename IFace>
   SmartIF<IFace> as() const {
       return SmartIF<IFace>{ *this };
@@ -136,28 +136,11 @@ public:
   }
 };
 
-#if defined(_MSC_VER) && (_MSC_VER < 1500)
-/// Ugly hack to allow a check like
-/// <code>
-///  0 == smartIf;
-/// </code>
-/// To work on Windows (VisualC 7.1).
-/// Actually, VC7 will user operator==(TYPE*,TYPE*) when the left operand is a pointer,
-/// but it does not understands that 0 should be interpreted as (TYPE*)0.
-template <class TYPE>
-inline bool operator == (long lhs, const SmartIF<TYPE> &rhs) {
-  return rhs == reinterpret_cast<TYPE*>(lhs);
-}
-/// Ugly hack to allow a check like
-/// <code>
-///  0 != smartIf;
-/// </code>
-/// To work on Windows (VisualC 7.1).
-/// Actually, VC7 will user operator!=(TYPE*,TYPE*) when the left operand is a pointer,
-/// but it does not understands that 0 should be interpreted as (TYPE*)0.
-template <class TYPE>
-inline bool operator != (long lhs, const SmartIF<TYPE> &rhs) {
-  return rhs != reinterpret_cast<TYPE*>(lhs);
-}
-#endif
+// helper function to turn a pointer to an interface into
+// the corresponding SmartIF -- this avoids having to type
+// the typename twice, and thus insures consistency
+template <typename IFace>
+SmartIF<IFace> make_SmartIF( IFace* iface)
+{ return SmartIF<IFace>{ iface }; }
+
 #endif // GAUDI_SMARTIF_H

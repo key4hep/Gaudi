@@ -25,7 +25,7 @@ class NTupleSvc : public extends2<DataSvc, INTupleSvc, IDataSourceMgr>
 {
 private:
 protected:
-  struct Connection  {
+  struct Connection final {
     IConversionSvc* service;
     Connection(IConversionSvc* s) : service(s) {}
     Connection(const Connection& c) : service(c.service) {}

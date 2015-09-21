@@ -25,52 +25,37 @@
 
 // Output friend
 MsgStream& operator<<(MsgStream& s, const EventSelectorDataStream& obj)    {
-  s << "Stream:"   << obj.name() << " Def:" << obj.definition();
-  return s;
+  return s << "Stream:"   << obj.name() << " Def:" << obj.definition();
 }
 
 // Output friend
 std::ostream& operator<<(std::ostream& s, const EventSelectorDataStream& obj)    {
-  s << "Stream:"   << obj.name() << " Def:" << obj.definition();
-  return s;
+  return s << "Stream:"   << obj.name() << " Def:" << obj.definition();
 }
 
 // Standard Constructor
-EventSelectorDataStream::EventSelectorDataStream(const std::string& nam, const std::string& def, ISvcLocator* svcloc)
-: m_name{ nam },
-  m_definition{ def },
-  m_pSelector(0),
-  m_pSvcLocator(svcloc),
-  m_initialized{  false }
+EventSelectorDataStream::EventSelectorDataStream(std::string nam, std::string def, ISvcLocator* svcloc)
+: m_name{ std::move(nam) }, m_definition{ std::move(def) }, m_pSvcLocator(svcloc)
 {
-}
-
-// Standard Constructor
-EventSelectorDataStream::~EventSelectorDataStream()   {
-  setSelector(0);
 }
 
 // Set selector
 void EventSelectorDataStream::setSelector(IEvtSelector* pSelector)   {
-  if ( pSelector   )  pSelector->addRef();
-  if ( m_pSelector )  m_pSelector->release();
   m_pSelector = pSelector;
 }
 
 // Allow access to individual properties by name
 StringProperty* EventSelectorDataStream::property(const std::string& nam)    {
-  for ( auto& i : m_properties ) {
-    if ( i.name() == nam ) return &i;
-  }
-  return nullptr;
+  auto i = std::find_if( std::begin(m_properties), std::end(m_properties),
+                         [&](const StringProperty& j ) { return j.name() == nam ; } );
+  return i!=std::end(m_properties) ? &(*i) : nullptr;
 }
 
 // Allow access to individual properties by name
 const StringProperty* EventSelectorDataStream::property(const std::string& nam)   const  {
-  for ( auto& i : m_properties ) { 
-    if ( i.name() == nam ) return &i;
-  }
-  return nullptr;
+  auto i = std::find_if( std::begin(m_properties), std::end(m_properties),
+                         [&](const StringProperty& j ) { return j.name() == nam ; } );
+  return i!=std::end(m_properties) ? &(*i) : nullptr;
 }
 
 // Parse input criteria

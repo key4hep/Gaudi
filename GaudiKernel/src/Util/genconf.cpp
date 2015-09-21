@@ -904,8 +904,8 @@ int createAppMgr()
 //-----------------------------------------------------------------------------
 {
   IInterface* iface = Gaudi::createApplicationMgr();
-  SmartIF<IProperty> propMgr ( iface );
   SmartIF<IAppMgrUI> appUI  ( iface );
+  auto propMgr = appUI.as<IProperty>();
 
   if ( !propMgr || !appUI ) return EXIT_FAILURE;
   propMgr->setProperty( "JobOptionsType", "NONE" );  // No job options
@@ -916,5 +916,4 @@ int createAppMgr()
   msgSvc->setProperty("setWarning", "['DefaultName', 'PropertyMgr']");
   msgSvc->setProperty("Format", "%T %0W%M");
   return EXIT_SUCCESS;
-  
 }

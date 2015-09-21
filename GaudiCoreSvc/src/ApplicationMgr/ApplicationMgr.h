@@ -196,8 +196,8 @@ protected:
 
   // data members
   mutable SmartIF<ISvcLocator> m_svcLocator; ///< Reference to its own service locator (must be instantiated prior to any service!)
-  DLLClassManager*    m_classManager;       ///< Reference to the class manager
-  PropertyMgr*        m_propertyMgr;        ///< Reference to Property Manager
+  SmartIF<DLLClassManager>    m_classManager;       ///< Reference to the class manager
+  SmartIF<PropertyMgr> m_propertyMgr;        ///< Reference to Property Manager
 
   IntegerProperty     m_SIGo;               ///< For SI's "Go" command via callback
   IntegerProperty     m_SIExit;             ///< For SI's "Exit" command via callback
@@ -215,10 +215,10 @@ protected:
   VectorName          m_svcMapping;         ///< Default mapping of services
   VectorName          m_svcOptMapping;      ///< Default mapping of services
 
-  SmartIF<IMessageSvc>      m_messageSvc = nullptr;         ///< Reference to the message service
+  SmartIF<IMessageSvc>      m_messageSvc;         ///< Reference to the message service
   SmartIF<IRunable>         m_runable;            ///< Reference to the runable object
   SmartIF<IEventProcessor>  m_processingMgr;      ///< Reference to processing manager object
-  SmartIF<IJobOptionsSvc>   m_jobOptionsSvc = nullptr;      ///< Reference to JobOption service
+  SmartIF<IJobOptionsSvc>   m_jobOptionsSvc;      ///< Reference to JobOption service
 
   //
   // The public ApplicationMgr properties

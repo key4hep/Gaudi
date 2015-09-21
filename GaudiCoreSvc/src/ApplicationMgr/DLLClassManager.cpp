@@ -58,7 +58,7 @@ StatusCode DLLClassManager::loadModule( const std::string& module,
   }
   //FIXME this is a hack to avoid a very early call to moduleLoad from
   //FIXME AppMgr::i_startup
-  if (fireIncident && module != "") {
+  if (fireIncident && !module.empty()) {
     //now fire ModuleLoadedIncident
     const bool CREATEIF(true);
     auto pIncidentSvc = m_svclocator->service<IIncidentSvc>("IncidentSvc", CREATEIF);

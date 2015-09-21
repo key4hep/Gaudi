@@ -166,7 +166,7 @@ RootNTupleCnv::createObj(IOpaqueAddress* pAddr, DataObject*& refpObject)   {
       return makeError("Failed to access N-Tuple tree:"+cntName);
     }
     if ( !par_val.empty() )      {
-      SmartIF<INTupleSvc> ntupleSvc(dataProvider());
+      auto ntupleSvc = dataProvider().as<INTupleSvc>();
       if ( ntupleSvc )  {
         char c;
         CLID clid;

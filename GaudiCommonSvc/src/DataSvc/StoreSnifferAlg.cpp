@@ -42,33 +42,32 @@ public:
   Correlations m_corr, m_links;
 
   /// Standard algorithm constructor
-  StoreSnifferAlg(const string& name, ISvcLocator* pSvc) : Algorithm(name, pSvc)  
+  StoreSnifferAlg(const string& name, ISvcLocator* pSvc) : Algorithm(name, pSvc)
   { }
   /// Standard Destructor
   ~StoreSnifferAlg() override = default;
 
   size_t explore(IRegistry* pObj)    {
     if ( pObj )    {
-      SmartIF<IDataManagerSvc> mgr(eventSvc());
+      auto mgr = eventSvc().as<IDataManagerSvc>();
       if ( mgr )    {
         vector<IRegistry*> leaves;
         StatusCode sc = m_mgr->objectLeaves(pObj, leaves);
         if ( sc.isSuccess() )  {
           for (auto& pReg : leaves ) {
-            const string& id = pReg->identifier();
             /// We are only interested in leaves with an object
-            if ( pReg->address() && pReg->object() )  {
-              auto j=m_info.find(id);
-              if ( j == m_info.end() )   {
-                m_info[id] = LeafInfo();
-                j = m_info.find(id);
-                (*j).second.count = 0;
-                (*j).second.id    = m_info.size();
-                (*j).second.clid  = pReg->object()->clID();
-              }
-              m_curr[id].id    = m_info[id].id;
-              m_curr[id].count = explore(pReg);
+            if ( !pReg->address() || !pReg->object() ) continue;
+            const string& id = pReg->identifier();
+            auto j=m_info.find(id);
+            if ( j == m_info.end() )   {
+              m_info[id] = LeafInfo();
+              j = m_info.find(id);
+              j->second.count = 0;
+              j->second.id    = m_info.size();
+              j->second.clid  = pReg->object()->clID();
             }
+            m_curr[id].id    = m_info[id].id;
+            m_curr[id].count = explore(pReg);
           }
           return leaves.size();
         }
@@ -160,10 +159,10 @@ public:
         c=m_links.find(nam);
         if ( c == m_links.end() ) c = m_links.emplace( nam, std::map<int,int>{} ).first;
         if ( m_curr.find(nam) == m_curr.end() ) continue;
-        
+
         SmartDataPtr<DataObject> obj(eventSvc(),nam);
         if ( !obj ) continue;
-        
+
         LinkManager* m = obj->linkMgr();
         for(long l=0; l<m->size(); ++l) {
           auto* lnk=m->link(l);
@@ -173,7 +172,7 @@ public:
           if ( ! lnk->object() ) continue;
           const auto& id = il->second.id;
           auto k = c->second.find(id);
-          if ( k==c->second.end() ) k = c->second.emplace( id, 0 ).first; 
+          if ( k==c->second.end() ) k = c->second.emplace( id, 0 ).first;
           ++(k->second);
         }
       }
