@@ -19,7 +19,7 @@ class GAUDI_API IService: virtual public extend_interfaces2<INamedInterface,ISta
   friend class ServiceManager;
 public:
   /// InterfaceID
-  DeclareInterfaceID(IService,3,0);
+  DeclareInterfaceID(IService,4,0);
 
   /// Initialize Service
   virtual StatusCode sysInitialize() = 0;

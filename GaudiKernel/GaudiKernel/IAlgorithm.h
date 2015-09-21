@@ -19,7 +19,7 @@
 class GAUDI_API IAlgorithm : virtual public extend_interfaces2<INamedInterface, IStateful> {
 public:
   /// InterfaceID
-  DeclareInterfaceID(IAlgorithm,4,0);
+  DeclareInterfaceID(IAlgorithm,5,0);
 
   /** The version of the algorithm
    */

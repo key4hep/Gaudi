@@ -22,7 +22,7 @@ class IAlgorithm;
 class GAUDI_API IAlgTool: virtual public extend_interfaces2<INamedInterface,IStateful> {
 public:
   /// InterfaceID
-  DeclareInterfaceID(IAlgTool,3,0);
+  DeclareInterfaceID(IAlgTool,4,0);
 
   /// Virtual destructor
   ~IAlgTool() override = default;
