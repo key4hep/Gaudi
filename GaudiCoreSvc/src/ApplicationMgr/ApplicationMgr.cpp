@@ -155,15 +155,6 @@ ApplicationMgr::ApplicationMgr(IInterface*):
                        "HistogramPersistencySvc/HistogramPersistencySvc" } );
 }
 
-//============================================================================
-// destructor
-//============================================================================
-ApplicationMgr::~ApplicationMgr() {
-  m_classManager.reset();
-  m_propertyMgr.reset();
-  m_messageSvc.reset();
-  m_jobOptionsSvc.reset();
-}
 
 //============================================================================
 // IInterface implementation: queryInterface::addRef()
