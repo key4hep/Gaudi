@@ -139,10 +139,9 @@ void MultiFileCatalog::addCatalog(CSTR con)  {
         }
       }
       if ( cat )  {
-        IFileCatalog* fileCat = nullptr;
-        if ( cat->queryInterface(IFileCatalog::interfaceID(),pp_cast<void>(&fileCat)).isSuccess() ) {
-          addCatalog(fileCat);
-          cat->release();
+        auto fileCat = SmartIF<IFileCatalog>( cat ) ;
+        if ( fileCat ) {
+          addCatalog(fileCat.get()); //addCatalog will take care of the refCount of fileCat...
           return;
         }
       }

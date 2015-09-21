@@ -122,13 +122,16 @@ StatusCode DataStreamTool::initializeStream(EventSelectorDataStream* s)   {
 
 // Create (sub-) Event selector service
 StatusCode DataStreamTool::createSelector(const std::string& nam, const std::string& typ, IEvtSelector*& sel) {
-  IService* isvc = Service::Factory::create(typ, nam, serviceLocator());
+  auto isvc = make_SmartIF( Service::Factory::create(typ, nam, serviceLocator()) );
   if ( isvc ) {
-    StatusCode status = isvc->queryInterface(IEvtSelector::interfaceID(), (void**)&sel);
-    if ( status.isSuccess() ) return status;
-    sel = nullptr;
-    isvc->release();
+    auto isel = isvc.as<IEvtSelector>();
+    if ( isel ) {
+      sel = isel.get();
+      sel->addRef(); // make sure that sel is not left dangling once isel and isvc go out of scope...
+      return StatusCode::SUCCESS;
+    }
   }
+  sel = nullptr;
   MsgStream log(msgSvc(), name());
   log << MSG::ERROR << "Failed to create IEvtSelector " << typ << "/" << nam << endmsg;
   return StatusCode::FAILURE;
@@ -137,7 +140,7 @@ StatusCode DataStreamTool::createSelector(const std::string& nam, const std::str
 
 StatusCode DataStreamTool::finalizeStream(EventSelectorDataStream* s)   {
   if ( s )    {
-    IEvtSelector* sel = const_cast<IEvtSelector*>(s->selector());
+    IEvtSelector* sel = s->selector();
     if ( sel )    {
       SmartIF<IService> isvc(sel);
       if ( isvc )   {

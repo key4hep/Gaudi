@@ -327,7 +327,7 @@ StatusCode ToolSvc::retrieve ( const std::string& tooltype ,
   }
 
   // Get the right interface of it
-  sc = itool->queryInterface( iid, (void**)&tool);
+  sc = itool->queryInterface( iid, pp_cast<void>(&tool) );
   if( UNLIKELY(sc.isFailure()) ) {
     error() << "Tool " << toolname
         << " either does not implement the correct interface, or its version is incompatible"

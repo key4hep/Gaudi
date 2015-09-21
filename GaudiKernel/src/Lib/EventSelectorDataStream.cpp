@@ -168,12 +168,8 @@ StatusCode EventSelectorDataStream::initialize()   {
       IConversionSvc* icnvSvc = nullptr;
       status = ipers->getService(dbtyp, icnvSvc);
       if ( status.isSuccess() )   {
-        IService* isvc = nullptr;
-        status = icnvSvc->queryInterface(IService::interfaceID(), pp_cast<void>(&isvc));
-        if ( status.isSuccess() )   {
-          svc = isvc->name();
-          isvc->release();
-        }
+        auto isvc = SmartIF<INamedInterface>{ icnvSvc } ;
+        if ( isvc ) svc = isvc->name();
       }
     }
   }

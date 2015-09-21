@@ -82,14 +82,9 @@ IAppMgrUI* Gaudi::createApplicationMgrEx(const std::string& dllname,
 //------------------------------------------------------------------------------
 {
   // Create an instance of the application Manager
-  IInterface* iif = Gaudi::createInstance( "ApplicationMgr", factname, dllname );
-  if( !iif ) return nullptr;
+  auto iif = make_SmartIF( Gaudi::createInstance( "ApplicationMgr", factname, dllname ) );
   // Locate few interfaces of the Application Manager
-  IAppMgrUI* iappmgr = nullptr;
-  StatusCode status = iif->queryInterface( IAppMgrUI::interfaceID(), pp_cast<void>(&iappmgr) );
-  if( status.isFailure() ) return nullptr;
-  iif->release();
-  return iappmgr;
+  return iif ? iif.as<IAppMgrUI>().get() : nullptr;
 }
 
 //------------------------------------------------------------------------------

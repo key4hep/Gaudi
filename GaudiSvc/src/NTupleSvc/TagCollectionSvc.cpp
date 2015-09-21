@@ -145,34 +145,34 @@ StatusCode TagCollectionSvc::createService( const std::string& nam,
                                             const std::string& typ,
                                             const std::vector<Prop>& props,
                                             IConversionSvc*& pSvc)    {
+  pSvc = nullptr;
   using Gaudi::Utils::TypeNameString;
   auto mgr = serviceLocator()->as<ISvcManager>();
 
   // TagCollectionSvc has to directly create a ConversionSvc to manage it directly.
   StatusCode status = NO_INTERFACE;
-  if ( mgr )    {
-
-    SmartIF<IService> &isvc = mgr->createService(TypeNameString(nam, typ));
-    if (isvc)   {
-      status = isvc->queryInterface(IConversionSvc::interfaceID(), (void**)&pSvc);
-      if ( status.isSuccess() )     {
-        status = NO_INTERFACE;
+  if ( mgr ) {
+    SmartIF<IService> isvc = mgr->createService(TypeNameString(nam, typ));
+    if (isvc) {
+      auto icsvc = isvc.as<IConversionSvc>();
+      if ( icsvc ) {
         auto iprop = isvc.as<IProperty>();
-        if ( iprop )    {
+        if ( iprop ) {
           for ( const auto& p : props ) { 
             iprop->setProperty(p.first, p.second).ignore();
           }
           // NTupleSvc has to directly create a ConversionSvc to manage it directly.
           status = isvc->sysInitialize();
           if ( status.isSuccess() ) {
-            status = pSvc->setDataProvider(this);
-            if ( status.isSuccess() ) return status;
+            status = icsvc->setDataProvider(this);
+            if ( status.isSuccess() ) {
+                pSvc = icsvc.get();
+                pSvc->addRef();
+            }
           }
         }
-        pSvc->release();
       }
     }
   }
-  pSvc = nullptr;
   return status;
 }
