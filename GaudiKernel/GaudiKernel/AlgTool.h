@@ -257,7 +257,7 @@ public:
   inline IMonitorSvc* monitorSvc() const
   {
     // If not already located try to locate it without forcing a creation
-    if ( !m_pMonitorSvc ) m_pMonitorSvc = service(m_monitorSvcName, false);
+    if ( !m_pMonitorSvc ) m_pMonitorSvc = service(m_monitorSvcName, false, true);
     return m_pMonitorSvc.get();
   }
 
