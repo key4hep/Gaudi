@@ -3,7 +3,7 @@
 
 // Include files
 #include "GaudiKernel/StatusCode.h"
-#include "GaudiKernel/IInterface.h"
+#include "GaudiKernel/INamedInterface.h"
 #include "GaudiKernel/StateMachine.h"
 
 #include <string>
@@ -17,7 +17,7 @@
     @date   30/10/98
 */
 
-class GAUDI_API IAppMgrUI: virtual public IInterface {
+class GAUDI_API IAppMgrUI: virtual public INamedInterface {
 public:
   /// InterfaceID
   DeclareInterfaceID(IAppMgrUI,3,0);
@@ -33,9 +33,6 @@ public:
   virtual StatusCode finalize() = 0;
   /// Process the next maxevt events
   virtual StatusCode nextEvent(int maxevt) = 0;
-
-  /// The identifying name of the AppMgrUI object.
-  virtual const std::string& name() const = 0;
 
   /// Start (from INITIALIZED to RUNNING).
   virtual StatusCode start() = 0;
