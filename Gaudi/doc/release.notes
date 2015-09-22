@@ -2,6 +2,9 @@ Package : Gaudi
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-07-20 - Marco Clemencic
+ - Fixed misuse of Python ctypes, which was the actual cause of GAUDI-1045.
+
 ! 2015-07-20 - Charles Leggett
  - added hooks to attach gdb to program. activated with command line option
    "--gdb"

@@ -16,13 +16,16 @@ class RandomNumberAlg : public Algorithm     {
  protected:
   /// Allocate wrapper for random number generator
   Rndm::Numbers  m_numbers;
+  /// Initial seed to fill deterministic random numbers
+  uint32_t m_initial;
   /// Pointer to N-tuple
   NTuple::Tuple*       m_ntuple;
   /// N-tuple items 
-  NTuple::Item<int>    m_int;
-  NTuple::Item<float>  m_gauss;
-  NTuple::Item<float>  m_exponential;
-  NTuple::Item<float>  m_poisson;
+  NTuple::Item<int>      m_int;
+  NTuple::Item<uint32_t> m_deter;
+  NTuple::Item<float>    m_gauss;
+  NTuple::Item<float>    m_exponential;
+  NTuple::Item<float>    m_poisson;
 
 public:
   /// Constructor: A constructor of this form must be provided.

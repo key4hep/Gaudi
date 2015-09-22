@@ -2,6 +2,9 @@ package GaudiPolicy
 package manager: Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-09-03 - Charles Leggett
+ - fix for race condition w/ merge_files.py
+
 ============================= GaudiPolicy v15r5 ==============================
 ! 2015-05-14 - Marco Clemencic
  - Select 'dbg' in test reference files if the platform contains 'do0'.

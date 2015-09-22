@@ -77,9 +77,9 @@ class BootstrapHelper(object):
                      ('ROOT_VERSION_CODE', c_int, []),
                      ]
 
-        for name, restype, args in functions:
+        for name, restype, argtypes in functions:
             f = getattr(gkl, 'py_bootstrap_%s' % name)
-            f.restype, f.args = restype, args
+            f.restype, f.argtypes = restype, argtypes
             # create a delegate method if not already present
             # (we do not want to use hasattr because it calls "properties")
             if name not in self.__class__.__dict__:
@@ -88,12 +88,12 @@ class BootstrapHelper(object):
         for name in ('configure', 'initialize', 'start',
                      'stop', 'finalize', 'terminate'):
             f = getattr(gkl, 'py_bootstrap_fsm_%s' % name)
-            f.restype, f.args = c_bool, [IInterface_p]
+            f.restype, f.argtypes = c_bool, [IInterface_p]
         gkl.py_bootstrap_app_run.restype = c_bool
-        gkl.py_bootstrap_app_run.args = [IInterface_p, c_int]
+        gkl.py_bootstrap_app_run.argtypes = [IInterface_p, c_int]
 
         gkl.py_helper_printAlgsSequences.restype = None
-        gkl.py_helper_printAlgsSequences.args = [IInterface_p]
+        gkl.py_helper_printAlgsSequences.argtypes = [IInterface_p]
 
     def createApplicationMgr(self):
         ptr = self.lib.py_bootstrap_createApplicationMgr()
