@@ -47,9 +47,9 @@ typedef StatusCode        STATUS;
 
 namespace {
   struct Partition final {
-    IDataProviderSvc* dataProvider = nullptr;
-    IDataManagerSvc*  dataManager = nullptr;
-    std::string       name;
+    SmartIF<IDataProviderSvc> dataProvider;
+    SmartIF<IDataManagerSvc>  dataManager;
+    std::string               name;
   };
 }
 
@@ -79,9 +79,9 @@ protected:
   /// Data loader name
   std::string         m_loader;
   /// Pointer to data loader service
-  IConversionSvc*     m_dataLoader = nullptr;
+  SmartIF<IConversionSvc>  m_dataLoader;
   /// Reference to address creator
-  IAddressCreator*    m_addrCreator = nullptr;
+  SmartIF<IAddressCreator> m_addrCreator;
   /// Root type (address or object)
   enum { no_type = 0, address_type = 1, object_type = 2};
   struct tagROOT {
@@ -251,12 +251,10 @@ public:
   }
   /// IDataManagerSvc: Pass a default data loader to the service.
   STATUS setDataLoader(IConversionSvc* pDataLoader) override {
-    if ( pDataLoader  ) pDataLoader->addRef();
-    if ( m_dataLoader ) m_dataLoader->release();
-    if ( pDataLoader  ) pDataLoader->setDataProvider(this);
     m_dataLoader = pDataLoader;
+    if ( m_dataLoader  ) m_dataLoader->setDataProvider(this);
     for(auto& i : m_partitions) {
-      i.second.dataManager->setDataLoader(m_dataLoader).ignore();
+      i.second.dataManager->setDataLoader(m_dataLoader.get()).ignore();
     }
     return SUCCESS;
   }
@@ -443,13 +441,7 @@ public:
     auto dataMgr = isvc.as<IDataManagerSvc>();
     auto dataProv = isvc.as<IDataProviderSvc>();
     if ( !dataMgr || !dataProv ) return NO_INTERFACE;
-    Partition p;
-    p.dataProvider = dataProv;
-    p.dataProvider->addRef();
-    p.dataManager = dataMgr;
-    p.dataManager->addRef();
-    p.name = nam;
-    m_partitions.emplace( nam, p );
+    m_partitions.emplace( nam, Partition{ dataProv, dataMgr, nam }  );
     return STATUS::SUCCESS;
   }
 
@@ -461,8 +453,6 @@ public:
       m_current = Partition();
     }
     i->second.dataManager->clearStore().ignore();
-    i->second.dataProvider->release();
-    i->second.dataManager->release();
     m_partitions.erase(i);
     return STATUS::SUCCESS;
   }
@@ -477,8 +467,6 @@ public:
     } );
     if (i==std::end(m_partitions)) return PARTITION_NOT_PRESENT;
     i->second.dataManager->clearStore().ignore();
-    i->second.dataProvider->release();
-    i->second.dataManager->release();
     m_partitions.erase(i);
     return STATUS::SUCCESS;
   }
@@ -534,23 +522,21 @@ public:
   STATUS attachServices()  {
     MsgStream log(msgSvc(), name());
     // Attach address creator facility
-    STATUS sc = service(m_loader, m_addrCreator, true);
-    if (!sc.isSuccess()) {
+    m_addrCreator = service(m_loader, true);
+    if (!m_addrCreator) { 
       log << MSG::ERROR
           << "Failed to retrieve data loader "
           << "\"" << m_loader << "\"" << endmsg;
-      return sc;
+      return StatusCode::FAILURE;
     }
-    IConversionSvc* dataLoader = nullptr;
     // Attach data loader facility
-    sc = service(m_loader, dataLoader, true);
-    if (!sc.isSuccess()) {
+    auto dataLoader = service<IConversionSvc>(m_loader, true);
+    if (!dataLoader) { 
       log << MSG::ERROR << "Failed to retrieve data loader "
           << "\"" << m_loader << "\"" << endmsg;
-      return sc;
+      return StatusCode::FAILURE;
     }
-    sc = setDataLoader(dataLoader);
-    dataLoader->release();
+    auto sc = setDataLoader(dataLoader.get());
     if (!sc.isSuccess()) {
       log << MSG::ERROR << "Failed to set data loader "
           << "\"" << m_loader << "\"" << endmsg;
@@ -559,10 +545,8 @@ public:
   }
 
   STATUS detachServices()  {
-    if ( m_addrCreator )  m_addrCreator->release();
-    if ( m_dataLoader )  m_dataLoader->release();
-    m_addrCreator = nullptr;
-    m_dataLoader = nullptr;
+    m_addrCreator.reset();
+    m_dataLoader.reset();
     return STATUS::SUCCESS;
   }
 
@@ -609,7 +593,7 @@ public:
     setDataLoader(nullptr).ignore();
     clearStore().ignore();
     clearPartitions().ignore();
-    m_current = { };
+    m_current = Partition();
     detachServices();
     return Service::finalize();
   }
@@ -674,11 +658,7 @@ public:
 
   /// Clear all partitions
   STATUS clearPartitions()  {
-    for(auto &i : m_partitions) {
-      i.second.dataManager->clearStore().ignore();
-      i.second.dataProvider->release();
-      i.second.dataManager->release();
-    }
+    for(auto &i : m_partitions) i.second.dataManager->clearStore().ignore();
     m_partitions.clear();
     return STATUS::SUCCESS;
   }

@@ -35,12 +35,12 @@ namespace GaudiExamples
     virtual StatusCode initialize()
     {
       MsgStream log(msgSvc(), name());
-      StatusCode sc = service("CounterSvc", m_cntSvc, true);
-      if ( !sc.isSuccess() )    {
+      m_cntSvc = service("CounterSvc", true);
+      if ( !m_cntSvc ) {
         log << MSG::ERROR << "Could not connect to CounterSvc." << endmsg;
-        return sc;
+        return StatusCode::FAILURE;;
       }
-      sc = m_cntSvc->create(m_counterBaseName, "EventCount", 1000, m_evtCount);
+      auto sc = m_cntSvc->create(m_counterBaseName, "EventCount", 1000, m_evtCount);
       if ( !sc.isSuccess() )    {
         log << MSG::ERROR << "Could not create counter CounterTest::EventCount." << endmsg;
         return sc;
@@ -52,7 +52,7 @@ namespace GaudiExamples
       catch( std::exception& e)  {
         log << MSG::ALWAYS << "Exception: " << e.what() << endmsg;
       }
-      ICounterSvc::Printout p(m_cntSvc);
+      ICounterSvc::Printout p(m_cntSvc.get());
       m_cntSvc->print(m_counterBaseName, "EventCount", p).ignore();
       m_cntSvc->print(m_counterBaseName, p).ignore();
       //
@@ -66,7 +66,7 @@ namespace GaudiExamples
     virtual StatusCode finalize()
     {
       MsgStream log(msgSvc(), name());
-      ICounterSvc::Printout p(m_cntSvc);
+      ICounterSvc::Printout p(m_cntSvc.get());
       log << MSG::INFO << "Single counter:CounterTest::EventCount" << endmsg;
       m_cntSvc->print(m_counterBaseName, "EventCount", p).ignore();
       log << MSG::INFO << "Counter group: CounterTest" << endmsg;
@@ -74,8 +74,7 @@ namespace GaudiExamples
       m_cntSvc->remove(m_counterBaseName, "EventCount").ignore();
       log << MSG::INFO << "After removal CounterTest::EventCount:" << endmsg;
       m_cntSvc->print(p).ignore();
-      if ( m_cntSvc ) m_cntSvc->release();
-      m_cntSvc = 0;
+      m_cntSvc.reset();
       return StatusCode::SUCCESS;
     }
     /// Event callback
@@ -102,7 +101,7 @@ namespace GaudiExamples
   private:
     ICounterSvc::Counter* m_evtCount = nullptr;
     ICounterSvc::Counter* m_total = nullptr;
-    ICounterSvc*  m_cntSvc = nullptr;
+    SmartIF<ICounterSvc>  m_cntSvc = nullptr;
 
     std::string m_counterBaseName;
   };

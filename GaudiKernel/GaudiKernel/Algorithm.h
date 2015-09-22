@@ -209,14 +209,6 @@ public:
     return service_i(name, createIf, T::interfaceID(), (void**)&psvc);
   }
 
-  template <class T>
-  SmartIF<T> service
-  ( const std::string& name, bool createIf = true ) const {
-    T* ptr = nullptr;
-    service_i(name, createIf, T::interfaceID(), (void**)&ptr).ignore();
-    return SmartIF<T>{ ptr };
-  }
-
   /// Access a service by name and type, creating it if it doesn't already exist.
   template <class T>
   StatusCode service( const std::string& svcType, const std::string& svcName,
@@ -226,6 +218,11 @@ public:
 
   /// Return a pointer to the service identified by name (or "type/name")
   SmartIF<IService> service(const std::string& name, const bool createIf = true, const bool quiet = false) const;
+
+  template <class T>
+  SmartIF<T> service( const std::string& name, bool createIf = true, bool quiet = false ) const {
+    return service(name,createIf,quiet).as<T>();
+  }
 
   /// Set the output level for current algorithm
   void setOutputLevel( int level );

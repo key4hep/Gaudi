@@ -272,19 +272,14 @@ StatusCode MinimalEventLoopMgr::finalize() {
     }
   }
   m_topAlgList.clear();
-
-  // release all output streams
-  for (auto& ita : m_outStreamList) {
-    ita->release();
-  }
   m_outStreamList.clear();
   if ( sc.isSuccess() ) m_state = FINALIZED;
 
   m_incidentSvc->removeListener(m_abortEventListener, IncidentType::AbortEvent);
-  m_abortEventListener = nullptr; // release
+  m_abortEventListener.reset();
 
-  m_incidentSvc = nullptr; // release
-  m_appMgrUI = nullptr; // release
+  m_incidentSvc.reset();
+  m_appMgrUI.reset();
 
   sc = Service::finalize();
 

@@ -450,7 +450,7 @@ StatusCode AlgTool::restart()
 AlgTool::~AlgTool()
 //------------------------------------------------------------------------------
 {
-  if( m_pMonitorSvc ) { m_pMonitorSvc->undeclareAll(this); m_pMonitorSvc->release(); }
+  if( m_pMonitorSvc ) { m_pMonitorSvc->undeclareAll(this); }
 }
 
 //------------------------------------------------------------------------------

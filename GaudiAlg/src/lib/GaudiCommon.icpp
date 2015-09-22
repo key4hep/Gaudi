@@ -156,8 +156,7 @@ GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface * parent )
   }
 
   // Get the job option service
-  SmartIF<IJobOptionsSvc> jos(PBASE::service("JobOptionsSvc"));
-  // auto jos = PBASE::service<IJobOptionsSvc>("JobOptionsSvc");
+  auto jos = this->template service<IJobOptionsSvc>("JobOptionsSvc");
   if (!jos) Exception("Cannot get JobOptionsSvc");
 
   // Get the "Context" option if in the file...
@@ -170,11 +169,11 @@ GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface * parent )
       const StringProperty* sp = dynamic_cast<const StringProperty*>(iter);
       if ( sp )
       {
-        if ( iter->name().compare("Context") == 0 ) {
+        if ( iter->name() == "Context" ) {
           m_context = sp->value();
-        } else if (  iter->name().compare("RootInTES") == 0 ) {
+        } else if (  iter->name() == "RootInTES" ) {
           m_rootInTES = sp->value();
-        } else if ( iter->name().compare("GlobalTimeOffset") == 0 ) {
+        } else if ( iter->name() == "GlobalTimeOffset" ) {
           m_globalTimeOffset = std::stod( sp->value() );
         }
       }

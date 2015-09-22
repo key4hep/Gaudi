@@ -13,6 +13,8 @@ const int MAX_THREADS(1023); //to check command line parameter
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/ThreadGaudi.h"
 
+#include "boost/algorithm/string/predicate.hpp"
+
 #include <cassert>
 #include <iostream>
 
@@ -129,8 +131,7 @@ int main (int argc, char** argv)
 
 
   // Create an instance of an application manager
-  IInterface* iface = Gaudi::createApplicationMgr();
-  SmartIF<IAppMgrUI>     appMgr  ( iface );
+  auto appMgr  = SmartIF<IAppMgrUI>( Gaudi::createApplicationMgr() );
   auto propMgr = appMgr.as<IProperty>();
   auto dllMgr  = appMgr.as<IClassManager>();
 
@@ -157,7 +158,7 @@ int main (int argc, char** argv)
   propMgr->setProperty( "NoOfThreads", s_nt);
   propMgr->setProperty( "EvtSel",         "NONE" );
   propMgr->setProperty( "MessageSvcType", "MTMessageSvc" );
-  if( opts.compare( opts.length() - 3, 3, ".py" ) == 0 ) {
+  if( boost::algorithm::ends_with( opts, ".py" ) ) {
     std::cout << "Running with Python not supported" << std::endl;
     return 1;
   }
@@ -167,6 +168,7 @@ int main (int argc, char** argv)
     std::cerr << "Can not load MTMessageSvc module (GaudiMTExample)" << std::endl;
     return 1;
   }
+  dllMgr.reset();
 
   StatusCode sc ;
   std::string v_nt ;
@@ -184,6 +186,7 @@ int main (int argc, char** argv)
       std::cout << "---> Use " << nt << " worker threads <---" << std::endl;
     }
   }
+  propMgr.reset();
 
   // Configure the application manager
   sc = appMgr->configure();
@@ -243,6 +246,7 @@ int main (int argc, char** argv)
   pthread_mutex_destroy(&coutmutex);
 
   // All done - exit
-  iface->release();
+  appMgr.reset();
+
   return 0;
 }

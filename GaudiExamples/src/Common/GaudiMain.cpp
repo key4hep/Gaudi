@@ -3,14 +3,13 @@
 #include "GaudiKernel/Bootstrap.h"
 #include "GaudiKernel/IAppMgrUI.h"
 #include "GaudiKernel/IProperty.h"
-
+#include "boost/algorithm/string/predicate.hpp"
 #include <iostream>
 
 //--- Example main program
 int main ( int argc, char** argv ) {
   // Create an instance of an application manager
-  IInterface* iface = Gaudi::createApplicationMgr();
-  SmartIF<IAppMgrUI>     appMgr  ( iface );
+  auto appMgr  = SmartIF<IAppMgrUI>( Gaudi::createApplicationMgr() );
   auto propMgr = appMgr.as<IProperty>();
 
   if( !appMgr || !propMgr ) {
@@ -19,11 +18,11 @@ int main ( int argc, char** argv ) {
   }
 
   // Get the input configuration file from arguments
-  std:: string opts = (argc>1) ? argv[1] : "jobOptions.txt";
+  std:: string opts = ( argc>1 ? argv[1] : "jobOptions.txt" );
 
   propMgr->setProperty( "JobOptionsPath", opts );
 
-  if( opts.compare( opts.length() - 3, 3, ".py" ) == 0 ) {
+  if( boost::algorithm::ends_with( opts, ".py" ) ) {
     propMgr->setProperty( "EvtSel",         "NONE" );
     propMgr->setProperty( "JobOptionsType", "NONE" );
     propMgr->setProperty( "DLLs",           "['GaudiPython']" );
@@ -34,6 +33,7 @@ int main ( int argc, char** argv ) {
   appMgr->run().ignore();
 
   // All done - exit
-  iface->release().ignore();
+  propMgr.reset();
+  appMgr.reset();
   return 0;
 }

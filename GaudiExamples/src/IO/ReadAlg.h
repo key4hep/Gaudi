@@ -17,9 +17,9 @@ class IIncidentSvc;
 
 class ReadAlg : public Algorithm, virtual public IIncidentListener {
   /// Reference to run records data service
-  IDataProviderSvc* m_recordSvc;
+  SmartIF<IDataProviderSvc> m_recordSvc;
   /// Reference to incident service
-  IIncidentSvc*     m_incidentSvc;
+  SmartIF<IIncidentSvc>     m_incidentSvc;
   /// Property: incident name of records service
   std::string       m_incidentName;
 

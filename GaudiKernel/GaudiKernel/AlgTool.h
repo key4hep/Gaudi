@@ -191,6 +191,10 @@ public:
   /// Return a pointer to the service identified by name (or "type/name")
   SmartIF<IService> service(const std::string& name, const bool createIf = true, const bool quiet = false) const;
 
+  template <typename T>
+  SmartIF<T> service(const std::string& name, const bool createIf = true, const bool quiet = false) const
+  { return SmartIF<T>( service(name,createIf,quiet) ); }
+
 protected:
   template <typename I>
   void declareInterface( I* i ) { m_interfaceList.emplace_back( I::interfaceID(), i ); }

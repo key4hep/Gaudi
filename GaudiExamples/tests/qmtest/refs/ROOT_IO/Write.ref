@@ -1320,7 +1320,7 @@ ServiceManager      DEBUG Finalizing service FileRecordDataSvc
 IncidentSvc         DEBUG Removing [SAVE_FILE_RECORD] listener 'FileRecordDataSvc'
 IncidentSvc         DEBUG Removing [FILE_OPEN_READ] listener 'FileRecordDataSvc'
 ServiceManager      DEBUG Service reference count check:
-ServiceManager      DEBUG ---- MessageSvc (refCount = 18)
+ServiceManager      DEBUG ---- MessageSvc (refCount = 21)
 ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 3)
 ServiceManager      DEBUG ---- RndmGenSvc.Engine (refCount = 2)
 ServiceManager      DEBUG ---- FileRecordDataSvc (refCount = 3)
