@@ -27,6 +27,15 @@ def sanitize_for_xml(data):
         return ''.join('[NON-XML-CHAR-0x%2X]' % ord(c) for c in match.group())
     return bad_chars.sub(quote, data)
 
+def dumpProcs(name):
+    '''helper to debug GAUDI-1084, dump the list of processes'''
+    from getpass import getuser
+    if 'WORKSPACE' in os.environ:
+        p = Popen(['ps', '-fH', '-U', getuser()], stdout=PIPE)
+        with open(os.path.join(os.environ['WORKSPACE'], name), 'w') as f:
+            f.write(p.communicate()[0])
+
+
 #-------------------------------------------------------------------------#
 class BaseTest(object):
 
@@ -139,10 +148,12 @@ class BaseTest(object):
 
             thread = threading.Thread(target=target)
             thread.start()
+            dumpProcs('%d.00.start.procs' % self.proc.pid)
             # catching timeout
             thread.join(self.timeout)
 
             if thread.is_alive():
+                dumpProcs('%d.10.timeout.procs' % self.proc.pid)
                 logging.debug('time out in test %s (pid %d)', self.name, self.proc.pid)
                 # get the stack trace of the stuck process
                 cmd = ['gdb', '--pid', str(self.proc.pid), '--batch',
@@ -151,9 +162,14 @@ class BaseTest(object):
                 self.stack_trace = gdb.communicate()[0]
 
                 self.proc.terminate()
+                time.sleep(5)
+                dumpProcs('%d.20.after_kill.procs' % self.proc.pid)
                 thread.join(60)
+                dumpProcs('%d.30.after_wait.procs' % self.proc.pid)
                 if thread.is_alive():
                     self.proc.kill()
+                    time.sleep(5)
+                    dumpProcs('%d.40.after_kill2.procs' % self.proc.pid)
                 self.causes.append('timeout')
             else:
                 logging.debug('completed test %s', self.name)
