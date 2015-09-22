@@ -144,11 +144,11 @@ class BaseTest(object):
                 self.proc = Popen(params, stdout=PIPE, stderr=PIPE,
                                   env=self.environment)
                 logging.debug('(pid: %d)', self.proc.pid)
+                dumpProcs('%d.00.start.procs' % self.proc.pid)
                 self.out, self.err = self.proc.communicate()
 
             thread = threading.Thread(target=target)
             thread.start()
-            dumpProcs('%d.00.start.procs' % self.proc.pid)
             # catching timeout
             thread.join(self.timeout)
 
