@@ -15,27 +15,57 @@
 #include "GaudiKernel/GaudiException.h"
 
 #include <memory>
+#include <utility>
 
 /** Templated class to add the standard messaging functionalities
  *
  */
-template <class BASE>
-class GAUDI_API CommonMessaging: public BASE {
-public:
-  typedef CommonMessaging base_class;
 
-  /// Forward to base class constructor
-  template <typename ... Args> CommonMessaging(Args&&... args) : 
-  BASE(std::forward<Args>(args)...) {}
+#define generate_has_( method, args )                     \
+    template <typename T, typename SFINAE = void>         \
+    struct has_ ## method : std::false_type {};           \
+    template <typename T>                                 \
+    struct has_ ## method<T, is_valid_t<decltype(std::declval<const T&>().method args)>> : std::true_type {};
+
+#define generate_add_(method, ret, args )                 \
+    template <typename Base, bool> struct add_ ## method; \
+    template <typename Base>                              \
+    struct add_ ## method <Base,false> : public Base {    \
+        using Base::Base;                                 \
+    };                                                    \
+    template <typename Base>                              \
+    struct add_ ## method <Base, true> : public Base {    \
+        using Base::Base;                                 \
+        virtual ~add_ ## method () = default;             \
+        virtual ret method args const = 0;                \
+    }; 
+
+namespace implementation_detail {
+    template <typename> struct void_t { typedef void type; };
+    template <typename T> using is_valid_t = typename void_t<T>::type;
+
+    generate_has_( name, ()  )
+    generate_add_( name, const std::string&, () )
+    generate_has_( serviceLocator, () )
+    generate_add_( serviceLocator, SmartIF<ISvcLocator>&, () )
+}
+#undef generate_has_
+#undef generate_add_
+
+template <typename Base> using add_name = implementation_detail::add_name< Base, ! implementation_detail::has_name<Base>::value >;
+template <typename Base> using add_serviceLocator = implementation_detail::add_serviceLocator< Base, ! implementation_detail::has_serviceLocator<Base>::value >;
+
+
+template <typename BASE>
+class GAUDI_API CommonMessaging: public add_serviceLocator<add_name<BASE>> {
+public:
+  using base_class = CommonMessaging;
+
+  /// Forward constructor to base class constructor
+  using add_serviceLocator<add_name<BASE>>::add_serviceLocator;
 
   /// Virtual destructor
   ~CommonMessaging() override = default;
-
-  /// Needed to locate the message service
-  virtual SmartIF<ISvcLocator>& serviceLocator() const = 0;
-
-  /// This is needed to avoid ambiguous calls to name()
-  virtual const std::string&  name() const = 0;
 
   /** The standard message service.
    *  Returns a pointer to the standard message service.

@@ -41,9 +41,10 @@ private:
  */
 class ModuleLoadedIncident : public ModuleIncident {
 public:
+  static std::string TYPE() { return "ModuleLoaded"; }
   ModuleLoadedIncident(std::string source, // Source(service or alg) name)
 		               std::string module  // module(DLL) in question
-           ) : ModuleIncident(std::move(source), "ModuleLoaded", std::move(module)) { }
+           ) : ModuleIncident(std::move(source), TYPE(), std::move(module)) { }
 };
 
 #endif //GAUDIKERNEL_MODULEINCIDENT_H
