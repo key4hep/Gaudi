@@ -606,14 +606,11 @@ std::string ToolSvc::nameTool( const std::string& toolname,
 
   if ( !parent ) { return this->name() + "." + toolname; }    // RETURN
 
-  IInterface* cparent = const_cast<IInterface*>( parent ) ;
   // check that parent has a name!
-  INamedInterface* _p = nullptr ;
-  StatusCode sc = cparent->queryInterface( INamedInterface::interfaceID() , pp_cast<void>(&_p) ) ;
-  if ( sc.isSuccess() )
+  auto named_parent = SmartIF<INamedInterface>( const_cast<IInterface*>(parent) );
+  if ( named_parent )
   {
-    auto fullname = _p->name() + "." + toolname ;
-    _p->release() ;
+    auto fullname = named_parent->name() + "." + toolname ;
     return fullname ;                                          // RETURN
   }
 

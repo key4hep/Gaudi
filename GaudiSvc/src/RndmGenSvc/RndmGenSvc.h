@@ -58,7 +58,7 @@ public:
   /// Standard Service constructor
   RndmGenSvc(const std::string& name, ISvcLocator* svc);
   /// Standard Service destructor
-  ~RndmGenSvc() override;
+  ~RndmGenSvc() override = default;
 public:
   /// Service override: initialization
   StatusCode initialize() override;

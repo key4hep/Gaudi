@@ -39,10 +39,6 @@ RndmGenSvc::RndmGenSvc(const std::string& nam, ISvcLocator* svc)
   declareProperty("Engine", m_engineName = "HepRndm::Engine<CLHEP::RanluxEngine>");
 }
 
-/// Standard Service destructor
-RndmGenSvc::~RndmGenSvc()   {
-}
-
 /// Service override: initialization
 StatusCode RndmGenSvc::initialize()   {
   StatusCode status = Service::initialize();
@@ -113,20 +109,14 @@ IRndmEngine* RndmGenSvc::engine()     {
 
 /// Retrieve a valid generator from the service.
 StatusCode RndmGenSvc::generator(const IRndmGen::Param& par, IRndmGen*& refpGen)   {
-  StatusCode status = StatusCode::FAILURE;
-  IInterface* iface = ObjFactory::create(par.type(),m_engine.get());
-  if ( iface ) {
-    // query requested interface (adds ref count)
-    status = iface->queryInterface(IRndmGen::interfaceID(), (void**)& refpGen);
-    if ( status.isSuccess() )   {
-      status = refpGen->initialize(par);
-    } else  {
-      iface->release();
+  auto pGen = SmartIF<IRndmGen>( ObjFactory::create(par.type(),m_engine.get()) );
+  if (!pGen) {
       refpGen = nullptr;
-    }
+      return StatusCode::FAILURE;
   }
-  // Error!
-  return status;
+  refpGen = pGen.get();
+  refpGen->addRef(); // insure the caller gets something with a refCount of (at least) one back...
+  return refpGen->initialize(par);
 }
 
 // Single shot returning single random number

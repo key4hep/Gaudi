@@ -327,10 +327,13 @@ StatusCode NTupleSvc::createService(const std::string&       /* nam */,
   auto pService = SmartIF<IService>( iface );
   if ( !pService ) return StatusCode::FAILURE;
 
-  auto status = iface->queryInterface(IConversionSvc::interfaceID(), pp_cast<void>(&pSvc));
-  if ( !status.isSuccess() ) return status;
+  auto cnvSvc = pService.as<IConversionSvc>();
+  if (!cnvSvc) return StatusCode::FAILURE;
 
-  status = pService->sysInitialize();
+  pSvc = cnvSvc.get();
+  pSvc->addRef(); // make sure the caller gets a pSvc which points at something
+                  // with a refCount of (at least) one...
+  auto status = pService->sysInitialize();
   if ( !status.isSuccess() ) return status;
   return pSvc->setDataProvider(this);
 }
