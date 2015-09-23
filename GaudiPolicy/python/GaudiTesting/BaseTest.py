@@ -146,6 +146,7 @@ class BaseTest(object):
                 logging.debug('(pid: %d)', self.proc.pid)
                 dumpProcs('%d.00.start.procs' % self.proc.pid)
                 self.out, self.err = self.proc.communicate()
+                dumpProcs('%d.XX.after_execution.procs' % self.proc.pid)
 
             thread = threading.Thread(target=target)
             thread.start()
