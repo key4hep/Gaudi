@@ -35,6 +35,24 @@ def dumpProcs(name):
         with open(os.path.join(os.environ['WORKSPACE'], name), 'w') as f:
             f.write(p.communicate()[0])
 
+def kill_tree(ppid, sig):
+    '''
+    Send a signal to a process and all its child processes (starting from the
+    leaves).
+    '''
+    log = logging.getLogger('kill_tree')
+    ps_cmd = ['ps', '--no-headers', '-o', 'pid', '--ppid', str(ppid)]
+    get_children = Popen(ps_cmd, stdout=PIPE, stderr=PIPE)
+    children = map(int, get_children.communicate()[0].split())
+    for child in children:
+        kill_tree(child, sig)
+    try:
+        log.debug('killing process %d', ppid)
+        os.kill(ppid, sig)
+    except OSError, err:
+        if err.errno != 3: # No such process
+            raise
+        log.debug('no such process %d', ppid)
 
 #-------------------------------------------------------------------------#
 class BaseTest(object):
@@ -144,9 +162,7 @@ class BaseTest(object):
                 self.proc = Popen(params, stdout=PIPE, stderr=PIPE,
                                   env=self.environment)
                 logging.debug('(pid: %d)', self.proc.pid)
-                dumpProcs('%d.00.start.procs' % self.proc.pid)
                 self.out, self.err = self.proc.communicate()
-                dumpProcs('%d.XX.after_execution.procs' % self.proc.pid)
 
             thread = threading.Thread(target=target)
             thread.start()
@@ -154,7 +170,6 @@ class BaseTest(object):
             thread.join(self.timeout)
 
             if thread.is_alive():
-                dumpProcs('%d.10.timeout.procs' % self.proc.pid)
                 logging.debug('time out in test %s (pid %d)', self.name, self.proc.pid)
                 # get the stack trace of the stuck process
                 cmd = ['gdb', '--pid', str(self.proc.pid), '--batch',
@@ -162,15 +177,10 @@ class BaseTest(object):
                 gdb = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
                 self.stack_trace = gdb.communicate()[0]
 
-                self.proc.terminate()
-                time.sleep(5)
-                dumpProcs('%d.20.after_kill.procs' % self.proc.pid)
+                kill_tree(self.proc.pid, signal.SIGTERM)
                 thread.join(60)
-                dumpProcs('%d.30.after_wait.procs' % self.proc.pid)
                 if thread.is_alive():
-                    self.proc.kill()
-                    time.sleep(5)
-                    dumpProcs('%d.40.after_kill2.procs' % self.proc.pid)
+                    kill_tree(self.proc.pid, signal.SIGKILL)
                 self.causes.append('timeout')
             else:
                 logging.debug('completed test %s', self.name)
