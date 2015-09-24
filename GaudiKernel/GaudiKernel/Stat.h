@@ -153,9 +153,9 @@ public:
          const std::string& group ,
          const std::string& name  ) ;
   /// copy constructor
-  Stat           ( const Stat& right ) = default;
+  Stat           ( const Stat& ) = default;
   /// Assignement operator
-  Stat& operator=( const Stat& right) = default;
+  Stat& operator=( const Stat& ) = default;
   /// destructor
   ~Stat() = default;
   // ==========================================================================

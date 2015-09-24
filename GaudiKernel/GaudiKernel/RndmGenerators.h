@@ -375,7 +375,7 @@ namespace Rndm   {
     /// Standard constructor
     Numbers() = default;
     /// Copy constructor
-    Numbers(const Numbers& copy ) = default;
+    Numbers(const Numbers& ) = default;
     /// Initializing constructor
     Numbers(const SmartIF<IRndmGenSvc>& svc, const IRndmGen::Param& par);
     /// Standard destructor

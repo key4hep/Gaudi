@@ -126,10 +126,10 @@ namespace Tuples
      *  @param tuple pointer to "real" tuple object
      */
 
-    Tuple ( TupleObj* tuple ) ;
+    Tuple ( TupleObj* ) ;
 
     /// copy constructor
-    Tuple ( const Tuple&    tuple ) = default;
+    Tuple ( const Tuple&  ) = default;
 
     /// destructor
     virtual ~Tuple() = default;
@@ -138,7 +138,7 @@ namespace Tuples
      *  Tuples could be assigned in a safe way
      *  @param tuple tuple to be assigned
      */
-    Tuple&    operator=( const Tuple&    tuple )  = default;
+    Tuple&    operator=( const Tuple& )  = default;
 
     /** get the pointer to the underlying object
      *  @return pointer to underlying TupleObj
