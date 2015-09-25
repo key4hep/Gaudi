@@ -3,7 +3,7 @@
 
 #include "GaudiKernel/DataSvc.h"
 #include "GaudiKernel/IIncidentListener.h"
-class IConversionSvc;
+#include "GaudiKernel/IConversionSvc.h"
 
 
 /** @class RecordDataSvc RecordDataSvc.h
@@ -55,6 +55,6 @@ class RecordDataSvc  : public extends1<DataSvc, IIncidentListener> {
   /// Pending new file incidents
   std::vector<std::string> m_incidents;
   /// Reference to the main data conversion service
-  IConversionSvc* m_cnvSvc = nullptr;
+  SmartIF<IConversionSvc> m_cnvSvc;
 };
 #endif // DATASVC_RECORDDATASVC_H

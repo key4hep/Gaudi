@@ -45,12 +45,12 @@ StatusCode WriteAlg::put(IDataProviderSvc* s, const std::string& path, DataObjec
 //--------------------------------------------------------------------
 StatusCode WriteAlg::initialize() {
   MsgStream log(msgSvc(), name());
-  StatusCode sc = service("FileRecordDataSvc",m_recordSvc,true);
-  if( sc.isFailure() ) {
+  m_recordSvc = service("FileRecordDataSvc",true);
+  if( !m_recordSvc ) { 
     log << MSG::ERROR << "Unable to retrieve run records service" << endmsg;
-    return sc;
+    return StatusCode::FAILURE;
   }
-  return put(m_recordSvc,"/FileRecords/EvtCount",m_evtCount=new Counter());
+  return put(m_recordSvc.get(),"/FileRecords/EvtCount",m_evtCount=new Counter());
 }
 
 //--------------------------------------------------------------------
@@ -60,10 +60,9 @@ StatusCode WriteAlg::finalize() {
   MsgStream log(msgSvc(), name());
   Counter* pObj = new Counter();
   pObj->set(123456);
-  put(m_recordSvc,"/FileRecords/SumCount",pObj);
-  if ( m_recordSvc ) m_recordSvc->release();
-  m_recordSvc = 0;
-  m_evtCount = 0;
+  put(m_recordSvc.get(),"/FileRecords/SumCount",pObj);
+  m_recordSvc.reset();
+  m_evtCount = nullptr;
   return StatusCode::SUCCESS;
 }
 

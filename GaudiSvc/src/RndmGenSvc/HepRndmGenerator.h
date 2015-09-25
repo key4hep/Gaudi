@@ -47,7 +47,7 @@ namespace HepRndm  {
       try   {
         m_specs = dynamic_cast<TYPE*>(m_params.get());
         if ( m_specs )  {
-          BaseEngine* engine = dynamic_cast<BaseEngine*>(m_engine);
+          BaseEngine* engine = dynamic_cast<BaseEngine*>(m_engine.get());
           if ( engine )    {
             m_hepEngine = engine->hepEngine();
             if ( m_hepEngine )   {

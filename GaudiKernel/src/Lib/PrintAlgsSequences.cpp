@@ -30,7 +30,7 @@ namespace {
     auto prop = SmartIF<IProperty>(app);
     auto algmgr = SmartIF<IAlgManager>(app);
     auto msgsvc = SmartIF<IMessageSvc>(app);
-    if ( ! (prop && algmgr) ) return;
+    if ( ! prop || ! algmgr ) return;
     StringArrayProperty topalg("TopAlg", {});
     if (prop->getProperty(&topalg).isSuccess()) {
       MsgStream log(msgsvc, "ApplicationMgr");

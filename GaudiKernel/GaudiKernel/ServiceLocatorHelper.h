@@ -44,9 +44,8 @@ public:
 			bool createIf,
 			const InterfaceID& iid,
 			void** ppSvc) const {
-    return (createIf ?
-	    createService(name, iid, ppSvc) :
-	    locateService(name, iid, ppSvc, true));
+    return createIf ? createService(name, iid, ppSvc)
+                    : locateService(name, iid, ppSvc, true);
   }
 
   StatusCode locateService(const std::string& name,
@@ -64,6 +63,11 @@ public:
 			   void** ppSvc) const;
 
   SmartIF<IService> service(const std::string& name, const bool quiet=false, const bool createIf=true) const;
+
+  template <typename T>
+  SmartIF<T> service(const std::string& name, const bool quiet=false, const bool createIf=true) const {
+        return service(name,quiet,createIf).as<T>();
+  }
 
 private:
   std::string threadName() const;

@@ -42,7 +42,7 @@ namespace RootHistCnv {
     RNTupleCnv( ISvcLocator* svc, const CLID& clid );
 
     /// Standard destructor
-    virtual ~RNTupleCnv();
+    virtual ~RNTupleCnv() = default;
 
     /// Create the transient representation of an object.
     virtual StatusCode load(TTree* tree, INTuple*& refpObj ) = 0;

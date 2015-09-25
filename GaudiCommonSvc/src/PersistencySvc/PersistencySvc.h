@@ -60,14 +60,14 @@ protected:
     mutable SmartIF<IAddressCreator> m_addrCreator;
   public:
     ServiceEntry( long type,
-        SmartIF<IService>& svc,
-        SmartIF<IConversionSvc>& cnv,
-        SmartIF<IAddressCreator>& cr) 
+        SmartIF<IService> svc,
+        SmartIF<IConversionSvc> cnv,
+        SmartIF<IAddressCreator> cr)
     : m_serviceType  ( type ),
-      m_service      ( svc ),
-      m_cnvService   ( cnv ),
-      m_addrCreator  ( cr ) {
-    }
+      m_service      ( std::move(svc) ),
+      m_cnvService   ( std::move(cnv) ),
+      m_addrCreator  ( std::move(cr) )
+    { }
     ServiceEntry( long type,
         IService* svc,
         IConversionSvc* cnv,

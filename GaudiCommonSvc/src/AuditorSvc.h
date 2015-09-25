@@ -92,15 +92,15 @@ public:
 
 private:
   // management helper
-  IAuditor* newAuditor_( MsgStream&, const std::string& );
-  IAuditor* findAuditor_( const std::string& );
+  SmartIF<IAuditor> newAuditor_( MsgStream&, const std::string& );
+  SmartIF<IAuditor> findAuditor_( const std::string& );
   StatusCode syncAuditors_();
 
   // List of auditor names
   std::vector<std::string> m_audNameList;
 
   // Manager list of Auditors
-  std::vector<IAuditor*>     m_pAudList;
+  std::vector<SmartIF<IAuditor>>     m_pAudList;
 
   // To disable alltogether the auditors
   bool m_isEnabled = true;

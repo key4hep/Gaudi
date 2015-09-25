@@ -156,8 +156,8 @@ GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface * parent )
   }
 
   // Get the job option service
-  SmartIF<IJobOptionsSvc> jos(PBASE::service("JobOptionsSvc"));
-  if (!jos.isValid()) Exception("Cannot get JobOptionsSvc");
+  auto jos = this->template service<IJobOptionsSvc>("JobOptionsSvc");
+  if (!jos) Exception("Cannot get JobOptionsSvc");
 
   // Get the "Context" option if in the file...
   const auto myList = jos->getProperties( this->name() );
@@ -169,11 +169,11 @@ GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface * parent )
       const StringProperty* sp = dynamic_cast<const StringProperty*>(iter);
       if ( sp )
       {
-        if ( iter->name().compare("Context") == 0 ) {
+        if ( iter->name() == "Context" ) {
           m_context = sp->value();
-        } else if (  iter->name().compare("RootInTES") == 0 ) {
+        } else if (  iter->name() == "RootInTES" ) {
           m_rootInTES = sp->value();
-        } else if ( iter->name().compare("GlobalTimeOffset") == 0 ) {
+        } else if ( iter->name() == "GlobalTimeOffset" ) {
           m_globalTimeOffset = std::stod( sp->value() );
         }
       }
@@ -229,10 +229,10 @@ StatusCode GaudiCommon<PBASE>::
        m_rootInTES.substr(m_rootInTES.size()-1) != "/" ) m_rootInTES += "/";
 
   //Set up the CounterSummarySvc May need to be changed
-  this->svcLoc()->service("CounterSummarySvc",m_counterSummarySvc,false).ignore() ;
+  m_counterSummarySvc = this->svcLoc()->service("CounterSummarySvc",false);
   if (this->msgLevel(MSG::DEBUG))
   {
-    if (m_counterSummarySvc==NULL )
+    if (!m_counterSummarySvc)
 	this->debug() <<  "could not locate CounterSummarySvc, no counter summary will be made" << endmsg;
     else this->debug() <<  "found CounterSummarySvc OK" << endmsg;
   }
@@ -292,7 +292,7 @@ StatusCode GaudiCommon<PBASE>::
     }
     this->debug() << endmsg;
   }
-  while ( !m_tools.empty() ) { sc = sc && releaseTool( m_tools.back() ) ; }
+  while ( !m_tools.empty() ) { sc = releaseTool( m_tools.back() ) && sc; }
 
   // release all located services
   if ( this->msgLevel(MSG::DEBUG) )
@@ -307,11 +307,7 @@ StatusCode GaudiCommon<PBASE>::
   while ( !m_services.empty() ) { sc = releaseSvc( m_services.front() ) && sc; }
 
   //release the CounterSummarySvc manually
-  if(m_counterSummarySvc)
-  {
-    m_counterSummarySvc->release();
-    m_counterSummarySvc=NULL;
-  }
+  m_counterSummarySvc.reset();
 
   // format printout
   if ( !m_errors.empty() || !m_warnings.empty() || !m_exceptions.empty() )
@@ -403,7 +399,7 @@ StatusCode GaudiCommon<PBASE>::releaseSvc ( const IInterface* Svc  ) const
 {
   if( !Svc ) return Error ( "releaseSvc(IInterface):: IInterface* points to NULL!" ) ;
   SmartIF<IService> svc{const_cast<IInterface*>(Svc)};
-  if (!svc.isValid()) return Warning( "releaseSvc(IInterface):: IInterface* is not a service" );
+  if (!svc) return Warning( "releaseSvc(IInterface):: IInterface* is not a service" );
   auto it = std::lower_bound( std::begin(m_services), std::end(m_services), svc, svc_lt );
   if (it == m_services.end() || !svc_eq(*it,svc)) {
     return Warning( "releaseSvc(IInterface):: IInterface* is not active" );
@@ -440,7 +436,7 @@ void GaudiCommon<PBASE>::addToToolList( IAlgTool * tool ) const
 template < class PBASE >
 void GaudiCommon<PBASE>::addToServiceList( SmartIF<IService> svc ) const
 {
-  if (svc.isValid()) {
+  if (svc) {
     auto i = std::lower_bound( std::begin(m_services), std::end(m_services), svc, svc_lt );
     if ( i == std::end(m_services) || !svc_eq(*i,svc) ) {
             m_services.insert( i, std::move(svc) );

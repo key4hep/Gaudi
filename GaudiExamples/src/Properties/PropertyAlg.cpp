@@ -208,9 +208,9 @@ StatusCode PropertyAlg::initialize() {
 
   log << MSG::INFO << "==========Checking Accesing Properties by string=========" << endmsg;
 
-  SmartIF<IProperty> appmgr(serviceLocator());
+  auto appmgr = serviceLocator()->as<IProperty>();
   //StatusCode sc = serviceLocator()->service("ApplicationMgr", appmgr);
-  if( !appmgr.isValid() ) {
+  if( !appmgr ) {
     log << MSG::ERROR << "Unable to locate the ApplicationMgr" << endmsg;
   }
   else {

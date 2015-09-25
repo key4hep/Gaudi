@@ -13,8 +13,6 @@
 #include "GaudiKernel/DataStreamTool.h"
 #include "GaudiKernel/Service.h"
 
-#include <sstream>
-
 //-----------------------------------------------------------------------------
 // Implementation file for class : DataStreamTool
 //
@@ -44,7 +42,7 @@ StatusCode DataStreamTool::initialize() {
 
   // Get the references to the services that are needed by the ApplicationMgr itself
   m_incidentSvc = serviceLocator()->service("IncidentSvc");
-  if( !m_incidentSvc.isValid() )  {
+  if( !m_incidentSvc )  {
     logger << MSG::FATAL << "Error retrieving IncidentSvc." << endmsg;
     return StatusCode::FAILURE;
   }
@@ -55,26 +53,23 @@ StatusCode DataStreamTool::initialize() {
 
 StatusCode DataStreamTool::addStream(const std::string & input) {
 
-  if ( NULL != getStream(input) )   {
+  if ( getStream(input) )   {
     MsgStream log(msgSvc(), name());
     log << MSG::WARNING << "Input stream " << input << "already in use" << endmsg;
   }
 
   m_streamSpecs.push_back(input);
 
-  std::ostringstream strname;
-  strname << name() << '_' << ++m_streamCount;
+  auto strname = name() + '_' + std::to_string( ++m_streamCount );
+  EventSelectorDataStream* s = nullptr;
 
-  EventSelectorDataStream* s = 0;
+  StatusCode status = createStream(strname, input , s );
 
-  StatusCode status = createStream(strname.str(), input , s );
-
-  if( status.isSuccess() && 0 != s ) {
+  if( status.isSuccess() && s ) {
     s->addRef();
     m_streams.push_back(s);
     status = StatusCode::SUCCESS;
-  }
-  else {
+  } else {
     MsgStream log(msgSvc(), name());
     if (s) {
       s->release();
@@ -83,32 +78,28 @@ StatusCode DataStreamTool::addStream(const std::string & input) {
     log << MSG::ERROR << "Error connecting/creating Stream: " << input << endmsg;
     status = StatusCode::FAILURE;
   }
-
   return status;
-
 }
 
 StatusCode DataStreamTool::addStreams(const StreamSpecs & inputs) {
 
   StatusCode status = StatusCode::SUCCESS;
-  for ( auto& i : inputs ) { 
+  for ( auto& i : inputs ) {
       status = addStream(i);
       if  (!status.isSuccess()) break;
   }
   return status;
 
-
 }
 
 StatusCode DataStreamTool::finalize() {
   clear().ignore();
-  m_incidentSvc = 0; // release
-
+  m_incidentSvc.reset();
   return AlgTool::finalize();
 }
 
 StatusCode DataStreamTool::initializeStream(EventSelectorDataStream* s)   {
-  IEvtSelector* sel = 0;
+  IEvtSelector* sel = nullptr;
   StatusCode status = s->initialize();
   if ( status.isSuccess() )   {
     status = createSelector(s->name(), s->selectorType(), sel);
@@ -116,8 +107,8 @@ StatusCode DataStreamTool::initializeStream(EventSelectorDataStream* s)   {
       SmartIF<IProperty> prop(sel); //Att: IProperty, IService used to point to EventSelector
       SmartIF<IService>  isvc(sel);
       s->setSelector(sel);
-      sel->release();  // No need of this interface anymore, it is passed to the stream
-      if ( prop.isValid( ) && isvc.isValid( ) )   {
+      sel->release();  // No need for this interface anymore, it is passed to the stream
+      if ( prop && isvc )   {
         for( const auto& i : s->properties() ) prop->setProperty(i).ignore();
         int output_level = this->outputLevel();
         prop->setProperty(IntegerProperty("OutputLevel",output_level)).ignore();
@@ -131,15 +122,16 @@ StatusCode DataStreamTool::initializeStream(EventSelectorDataStream* s)   {
 
 // Create (sub-) Event selector service
 StatusCode DataStreamTool::createSelector(const std::string& nam, const std::string& typ, IEvtSelector*& sel) {
-  IService* isvc = Service::Factory::create(typ, nam, serviceLocator());
+  auto isvc = make_SmartIF( Service::Factory::create(typ, nam, serviceLocator()) );
   if ( isvc ) {
-    StatusCode status = isvc->queryInterface(IEvtSelector::interfaceID(), (void**)&sel);
-    if ( status.isSuccess() ) {
-      return status;
+    auto isel = isvc.as<IEvtSelector>();
+    if ( isel ) {
+      sel = isel.get();
+      sel->addRef(); // make sure that sel is not left dangling once isel and isvc go out of scope...
+      return StatusCode::SUCCESS;
     }
-    sel = 0;
-    isvc->release();
   }
+  sel = nullptr;
   MsgStream log(msgSvc(), name());
   log << MSG::ERROR << "Failed to create IEvtSelector " << typ << "/" << nam << endmsg;
   return StatusCode::FAILURE;
@@ -148,10 +140,10 @@ StatusCode DataStreamTool::createSelector(const std::string& nam, const std::str
 
 StatusCode DataStreamTool::finalizeStream(EventSelectorDataStream* s)   {
   if ( s )    {
-    IEvtSelector* sel = const_cast<IEvtSelector*>(s->selector());
+    IEvtSelector* sel = s->selector();
     if ( sel )    {
       SmartIF<IService> isvc(sel);
-      if ( isvc.isValid() )   {
+      if ( isvc )   {
         isvc->finalize().ignore();
         s->finalize().ignore();
         // Fire EndStream "Incident"
@@ -171,20 +163,17 @@ StatusCode DataStreamTool::finalizeStream(EventSelectorDataStream* s)   {
 StatusCode DataStreamTool::eraseStream ( const std::string& info )   {
 
   auto i = getStreamIterator(info);
-
   if ( i !=  m_streams.end() )   {
     (*i)->release();
     m_streams.erase(i);
     return StatusCode::SUCCESS;
   }
-
   return StatusCode::FAILURE;
 }
 
 StatusCode DataStreamTool::createStream(const std::string& nam, const std::string& info,
                                         EventSelectorDataStream*& stream)  {
   stream = new EventSelectorDataStream(nam, info, serviceLocator());
-
   return StatusCode::SUCCESS;
 }
 
@@ -195,25 +184,21 @@ EventSelectorDataStream * DataStreamTool::getStream( const std::string& info ) {
 }
 
 DataStreamTool::Streams::iterator DataStreamTool::getStreamIterator ( const std::string& info ) {
-  for ( auto i = m_streams.begin(); i != m_streams.end(); i++ )    {
-    if ( (*i)->definition() == info )    return i;
-  }
-  return m_streams.end();
+  return std::find_if( std::begin(m_streams), std::end(m_streams),
+                       [&](const EventSelectorDataStream* i) {
+                           return i->definition()==info;
+  });
 }
 
 EventSelectorDataStream * DataStreamTool::getStream( size_type pos ) {
-  if ( (pos >= 0) && ((size_t)pos < m_streams.size()) ) // pos has to point inside the vector
-    return m_streams[pos];
-  else
-    return nullptr;
+  // pos has to point inside the vector
+  return  ( (pos >= 0) && ((size_t)pos < m_streams.size()) ) ? m_streams[pos]
+                                                             : nullptr;
 }
 
 EventSelectorDataStream * DataStreamTool::lastStream()
 {
-  if (m_streams.size() > 1 )
-    return *(--m_streams.end());
-  else return *m_streams.begin();
-
+  return m_streams.back();
 }
 
 
@@ -254,34 +239,25 @@ StatusCode DataStreamTool::clear()
 StatusCode DataStreamTool::connectStream( EventSelectorDataStream *s)
 {
 
-  if ( s )   {
-    s->addRef();
-    m_streams.push_back(s);
-    return StatusCode::SUCCESS;
-  }
-
-  return StatusCode::FAILURE;
+  if ( !s ) return StatusCode::FAILURE;
+  s->addRef();
+  m_streams.push_back(s);
+  return StatusCode::SUCCESS;
 
 }
 
 StatusCode DataStreamTool::connectStream( const std::string & info )
 {
-
-  if ( NULL != getStream(info) )   {
+  if ( getStream(info) )   {
     MsgStream log(msgSvc(), name());
     log << MSG::WARNING << "Input stream " << info << "already in use" << endmsg;
   }
-  std::ostringstream nam;
-  nam << name() << '_' << ++m_streamCount;
-  EventSelectorDataStream* s = 0;
-  StatusCode status = createStream(nam.str(), info, s);
-  if ( status.isSuccess() )   {
-    return connectStream(s);
-  }
+  auto nam  = name() +  '_' + std::to_string( ++m_streamCount);
+  EventSelectorDataStream* s = nullptr;
+  StatusCode status = createStream(nam, info, s);
+  if ( status.isSuccess() ) return connectStream(s);
   s->release();
   return status;
-
-
 }
 
 /*
@@ -308,7 +284,7 @@ StatusCode DataStreamTool::getPreviousStream( const EventSelectorDataStream * & 
 {
 
   EventSelectorDataStream * previousStream = getStream(dsid);
-  if (  NULL == previousStream ) return StatusCode::FAILURE; //<-begin of streams reached
+  if (  !previousStream ) return StatusCode::FAILURE; //<-begin of streams reached
 
   esds = previousStream;
   --m_streamID;
@@ -316,6 +292,3 @@ StatusCode DataStreamTool::getPreviousStream( const EventSelectorDataStream * & 
   return StatusCode::SUCCESS;
 
 }
-
-
-

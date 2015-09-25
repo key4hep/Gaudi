@@ -107,18 +107,16 @@ FileMgr::initialize() {
 
   // Super ugly hack to make sure we have the OutputLevel set first, so we
   // can see DEBUG printouts in update handlers.
-  IJobOptionsSvc* jos = nullptr;
-  if( serviceLocator()->service( "JobOptionsSvc", jos, true ).isSuccess() ) {
-    const std::vector<const Property*> *props = jos->getProperties( name() );
-
-    if (props) {
-      for ( auto& cur : *props ) {
-        if ( cur->name() == "OutputLevel" ) {
-            setProperty( *cur ).ignore();
-            m_log.setLevel( m_outputLevel.value() );
-            break;
-        }
-      }
+  auto jos = serviceLocator()->service<IJobOptionsSvc>( "JobOptionsSvc", true );
+  const auto *props = ( jos ? jos->getProperties( name() ) : nullptr );
+  if (props) {
+    auto prop = std::find_if( std::begin(*props), std::end(*props),
+                              [&](const Property* p) { 
+                                  return p->name() == "OutputLevel";
+    });
+    if (prop!=std::end(*props)) {
+      setProperty( **prop ).ignore();
+      m_log.setLevel( m_outputLevel.value() );
     }
   }
 

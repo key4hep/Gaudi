@@ -219,6 +219,11 @@ public:
   /// Return a pointer to the service identified by name (or "type/name")
   SmartIF<IService> service(const std::string& name, const bool createIf = true, const bool quiet = false) const;
 
+  template <class T>
+  SmartIF<T> service( const std::string& name, bool createIf = true, bool quiet = false ) const {
+    return service(name,createIf,quiet).as<T>();
+  }
+
   /// Set the output level for current algorithm
   void setOutputLevel( int level );
 
@@ -428,7 +433,7 @@ public:
   inline SmartIF<IMonitorSvc>& monitorSvc() const
   {
     // If not already located try to locate it without forcing a creation
-    if ( !m_pMonitorSvc.isValid() ){
+    if ( !m_pMonitorSvc ){
       m_pMonitorSvc = service(m_monitorSvcName, false, true); // do not create and be quiet
     }
     return m_pMonitorSvc;
@@ -557,7 +562,7 @@ private:
   bool  m_registerContext = false ; ///< flag to register for Algorithm Context Service
   std::string               m_monitorSvcName; ///< Name to use for Monitor Service
   SmartIF<ISvcLocator>  m_pSvcLocator;      ///< Pointer to service locator service
-  std::unique_ptr<PropertyMgr> m_propertyMgr;      ///< For management of properties
+  SmartIF<PropertyMgr> m_propertyMgr;      ///< For management of properties
   IntegerProperty m_outputLevel;   ///< Algorithm output level
   int          m_errorMax;         ///< Algorithm Max number of errors
   int          m_errorCount;       ///< Algorithm error counter

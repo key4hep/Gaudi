@@ -14,13 +14,6 @@ namespace GaudiRoot {
 }
 
 namespace {
-  /// Release an interface pointer
-  template<class T> inline void releasePtr(T*& p)  {
-    if ( p )    {
-      p->release();
-      p = nullptr;
-    }
-  }
 
   /** @struct  DataObjectPush RootUtils.h src/RootUtils.h
    *

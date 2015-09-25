@@ -58,7 +58,8 @@ StatusCode RootPerfMonSvc::initialize()  {
   if ( !status.isSuccess() )
     return error("Failed to initialize Service base class.");
   m_log.reset( new MsgStream(msgSvc(),name()) );
-  if( !(status=service("IncidentSvc", m_incidentSvc)).isSuccess() )
+  m_incidentSvc = service("IncidentSvc");
+  if( !m_incidentSvc )
     return error("Unable to localize interface from service:IncidentSvc");
 
   m_incidentSvc->addListener(this, IncidentType::BeginEvent, 1, false, false);
@@ -148,7 +149,7 @@ StatusCode RootPerfMonSvc::finalize()    {
   record(FSR);
   log() << MSG::INFO;
   m_log.reset();
-  releasePtr(m_incidentSvc);
+  m_incidentSvc.reset();
 
   m_perfFile->Write();
   m_perfFile->Close();
