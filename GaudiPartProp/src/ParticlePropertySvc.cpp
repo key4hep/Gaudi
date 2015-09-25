@@ -83,12 +83,11 @@ StatusCode ParticlePropertySvc::initialize()
     return sc ;
   }
 
-
-  sc = service("VFSSvc",m_fileAccess);
-  if ( sc.isFailure() )
+  m_fileAccess = service("VFSSvc");
+  if ( !m_fileAccess )
   {
     log << MSG::ERROR << " Cannot retrieve the VFS service " << endmsg ;
-    return sc ;
+    return StatusCode::FAILURE ;
   }
 
   sc = parse();
@@ -156,10 +155,7 @@ StatusCode ParticlePropertySvc::finalize()
         << endmsg ;
   }
 
-  if (m_fileAccess) {
-    m_fileAccess->release();
-    m_fileAccess = nullptr;
-  }
+  m_fileAccess.reset();
 
   /// finalize the base class
   return Service::finalize () ;

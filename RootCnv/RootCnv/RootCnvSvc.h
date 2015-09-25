@@ -53,9 +53,9 @@ namespace Gaudi {
   protected:
 
     /// Reference to the I/O data manager
-    Gaudi::IIODataManager*      m_ioMgr = nullptr;
+    SmartIF<Gaudi::IIODataManager>      m_ioMgr;
     /// Reference to incident service
-    IIncidentSvc*               m_incidentSvc = nullptr;
+    SmartIF<IIncidentSvc>               m_incidentSvc;
     /// On writing: reference to active output stream
     Gaudi::RootDataConnection*  m_current = nullptr;
     /// TClass pointer to reference class

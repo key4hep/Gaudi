@@ -12,6 +12,7 @@
 #include "GaudiKernel/ICounterSvc.h"
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/MsgStream.h"
+#include "GaudiKernel/Stat.h"
 
 /** @class CounterTestAlg CounterTestAlg.h
 

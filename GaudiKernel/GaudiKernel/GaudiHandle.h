@@ -94,7 +94,7 @@ protected:
                         PublicToolHandle,PrivateToolHandle,ServiceHandle
    @param myParentName: Name of the parent that has this handle as a member. Used in printout.
   */
-  GaudiHandleBase( const std::string& myTypeAndName, std::string myComponentType,
+  GaudiHandleBase( std::string myTypeAndName, std::string myComponentType,
 		           std::string myParentName )
     : GaudiHandleInfo(std::move(myComponentType),std::move(myParentName))
   {

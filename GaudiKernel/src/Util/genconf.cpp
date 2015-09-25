@@ -904,20 +904,16 @@ int createAppMgr()
 //-----------------------------------------------------------------------------
 {
   IInterface* iface = Gaudi::createApplicationMgr();
-  SmartIF<IProperty> propMgr ( iface );
   SmartIF<IAppMgrUI> appUI  ( iface );
+  auto propMgr = appUI.as<IProperty>();
 
-  if ( propMgr.isValid() && appUI.isValid() ) {
-    propMgr->setProperty( "JobOptionsType", "NONE" );  // No job options
-    propMgr->setProperty( "AppName", "");              // No initial printout message
-    propMgr->setProperty( "OutputLevel", "7");         // No other printout messages
-    appUI->configure();
-    SmartIF<IProperty> msgSvc{SmartIF<IMessageSvc>{iface}};
-    msgSvc->setProperty("setWarning", "['DefaultName', 'PropertyMgr']");
-    msgSvc->setProperty("Format", "%T %0W%M");
-    return EXIT_SUCCESS;
-  }
-  else {
-    return EXIT_FAILURE;
-  }
+  if ( !propMgr || !appUI ) return EXIT_FAILURE;
+  propMgr->setProperty( "JobOptionsType", "NONE" );  // No job options
+  propMgr->setProperty( "AppName", "");              // No initial printout message
+  propMgr->setProperty( "OutputLevel", "7");         // No other printout messages
+  appUI->configure();
+  SmartIF<IProperty> msgSvc{SmartIF<IMessageSvc>{iface}};
+  msgSvc->setProperty("setWarning", "['DefaultName', 'PropertyMgr']");
+  msgSvc->setProperty("Format", "%T %0W%M");
+  return EXIT_SUCCESS;
 }

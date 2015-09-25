@@ -72,9 +72,9 @@ private:
   // Private helper functions
   //
   SmartIF<ISvcLocator>& serviceLocator() const { // not really const, because it may change m_pSvcLocator
-    if ( !m_pSvcLocator.isValid() ) {
+    if ( !m_pSvcLocator ) {
       m_pSvcLocator = Gaudi::svcLocator();
-      if ( !m_pSvcLocator.isValid() ) {
+      if ( !m_pSvcLocator ) {
         throw GaudiException("SvcLocator not found", "Core component not found", StatusCode::FAILURE);
       }
     }
@@ -82,9 +82,9 @@ private:
   }
 
   SmartIF<IMessageSvc>& messageSvc() const { // not really const, because it may change m_pMessageSvc
-    if ( !m_pMessageSvc.isValid() ) {
+    if ( !m_pMessageSvc ) {
       m_pMessageSvc = serviceLocator(); // default message service
-      if( !m_pMessageSvc.isValid() ) {
+      if( !m_pMessageSvc ) {
         throw GaudiException("Service [MessageSvc] not found",
                              this->parentName(), StatusCode::FAILURE);
       }

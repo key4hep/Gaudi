@@ -93,8 +93,8 @@ StatusCode HistogramPersistencySvc::reinitialize()
 {
   MsgStream log(msgSvc(), name());
   // Obtain the IProperty of the ApplicationMgr
-  SmartIF<IProperty> prpMgr(serviceLocator());
-  if ( !prpMgr.isValid() )   {
+  auto prpMgr = serviceLocator()->as<IProperty>();
+  if ( !prpMgr )   {
     log << MSG::FATAL << "IProperty interface not found in ApplicationMgr." << endmsg;
     return StatusCode::FAILURE;
   }
@@ -105,8 +105,8 @@ StatusCode HistogramPersistencySvc::reinitialize()
   // To keep backward compatibility, we set the property of conversion service
   // into JobOptions catalogue
   if( !m_outputFile.empty() ) {
-    SmartIF<IJobOptionsSvc> joptsvc(serviceLocator()->service("JobOptionsSvc"));
-    if( joptsvc.isValid() ) {
+    auto joptsvc = serviceLocator()->service<IJobOptionsSvc> ("JobOptionsSvc");
+    if( joptsvc ) {
       StringProperty p("OutputFile", m_outputFile);
       if ( m_histPersName == "ROOT" ) {
         joptsvc->addPropertyToCatalogue("RootHistSvc", p).ignore();

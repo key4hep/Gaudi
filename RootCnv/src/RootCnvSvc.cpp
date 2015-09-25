@@ -102,12 +102,14 @@ StatusCode RootCnvSvc::initialize()  {
       return error("Unable to interprete ROOT compression encoding:"+m_compression);
     }
   }
-  if( !(status=service("IODataManager", m_ioMgr)).isSuccess() )
+  m_ioMgr = service("IODataManager");
+  if( !m_ioMgr)
     return error("Unable to localize interface from service:IODataManager");
-  if( !(status=service("IncidentSvc", m_incidentSvc)).isSuccess() )
+  m_incidentSvc = service("IncidentSvc");
+  if( !m_incidentSvc )
     return error("Unable to localize interface from service:IncidentSvc");
   m_setup->setMessageSvc(new MsgStream(msgSvc(),name()));
-  m_setup->setIncidentSvc(m_incidentSvc);
+  m_setup->setIncidentSvc(m_incidentSvc.get());
   GaudiRoot::patchStreamers(log());
   cname = System::typeinfoName(typeid(DataObject));
   m_classDO = TClass::GetClass(cname.c_str());
@@ -143,11 +145,11 @@ StatusCode RootCnvSvc::finalize()    {
         }
       }
     }
-    releasePtr(m_ioMgr);
+    m_ioMgr.reset();
   }
   m_log.reset();
-  releasePtr(m_incidentSvc);
-  m_setup->setIncidentSvc(0);
+  m_incidentSvc.reset();
+  m_setup->setIncidentSvc(nullptr);
   return ConversionSvc::finalize();
 }
 
@@ -445,7 +447,7 @@ StatusCode RootCnvSvc::i__fillRepRefs(IOpaqueAddress* /* pA */, DataObject* pObj
     Leaves leaves;
     RootObjectRefs refs;
     IRegistry* pR = pObj->registry();
-    SmartIF<IDataManagerSvc> dataMgr(pR->dataSvc());
+    auto dataMgr = SmartIF<IDataManagerSvc>{ pR->dataSvc() };
     if ( dataMgr ) {
       StatusCode status = dataMgr->objectLeaves(pObj, leaves);
       if ( status.isSuccess() )  {
@@ -527,8 +529,7 @@ StatusCode RootCnvSvc::i__fillObjRefs(IOpaqueAddress* pA, DataObject* pObj) {
         unsigned long nipar[2];
         IOpaqueAddress* nPA;
         IRegistry* pR = pObj->registry();
-        SmartIF<IService> isvc(pR->dataSvc());
-        SmartIF<IDataManagerSvc> dataMgr(pR->dataSvc());
+        auto dataMgr = SmartIF<IDataManagerSvc>{ pR->dataSvc() };
         LinkManager* mgr = pObj->linkMgr();
         for(const auto& i : refs.links ) mgr->addLink(con->getLink(i),nullptr);
         for(size_t j=0, n=refs.refs.size(); j<n; ++j)  {
@@ -541,7 +542,8 @@ StatusCode RootCnvSvc::i__fillObjRefs(IOpaqueAddress* pA, DataObject* pObj) {
           StatusCode sc = addressCreator()->createAddress(r.svc,r.clid,npar,nipar,nPA);
           if ( sc.isSuccess() ) {
             if( log().level() <= MSG::VERBOSE )
-              log() << MSG::VERBOSE << isvc->name() << " -> Register:" << pA->registry()->identifier()
+              log() << MSG::VERBOSE << dataMgr.as<IService>()->name() 
+                    << " -> Register:" << pA->registry()->identifier()
                     << "#" << npar[2] << "[" << r.entry << "]" << endmsg;
             sc = dataMgr->registerAddress(pA->registry(),npar[2],nPA);
             if ( sc.isSuccess() ) {

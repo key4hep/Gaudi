@@ -97,12 +97,12 @@ StatusCode EventCollectionSelector::initialize()    {
     return status;
   }
   m_pAddrCreator = serviceLocator()->service("EventPersistencySvc");
-  if(!m_pAddrCreator.isValid()) {
+  if(!m_pAddrCreator) {
     log << MSG::ERROR << "Unable to locate IAddressCreator interface of " << "EventPersistencySvc" << endmsg;
     return status;
   }
   m_tupleSvc = serviceLocator()->service(m_tupleSvcName);
-  if( !m_tupleSvc.isValid() )   {
+  if( !m_tupleSvc )   {
     log << MSG::ERROR << "Unable to locate INTupleSvc interface of " << m_tupleSvcName << endmsg;
     return status;
   }
@@ -114,7 +114,7 @@ StatusCode
 EventCollectionSelector::connectDataSource(const std::string& db, const std::string& /* typ */ )  const {
   StatusCode status = StatusCode::FAILURE;
   SmartIF<IDataSourceMgr> svc(m_tupleSvc);
-  if ( svc.isValid( ) && db.length() > 0 )   {
+  if ( svc && !db.empty()  )   {
     std::string ident = name() + ' ';
     ident += "DATAFILE='" + m_database.substr(5) + "' ";
     if ( !m_dbSvc.empty() )
@@ -159,7 +159,7 @@ EventCollectionSelector::connectStatement(const std::string& typ, const std::str
   if ( !seltyp.empty() || !crit.empty() )   {
     if ( !crit.empty() && seltyp.length() == 0 ) seltyp = "NTuple::Selector";
     SmartIF<ISelectStatement> stmt(ObjFactory::create(seltyp, serviceLocator()));
-    if ( stmt.isValid( ) )    {
+    if ( stmt )    {
       if ( !crit.empty() ) stmt->setCriteria(crit);
       tuple->attachSelector(stmt).ignore();
       return StatusCode::SUCCESS;

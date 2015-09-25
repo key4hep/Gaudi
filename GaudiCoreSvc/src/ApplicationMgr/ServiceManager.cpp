@@ -52,9 +52,7 @@ ServiceManager::ServiceManager(IInterface* application):
 // destructor
 ServiceManager::~ServiceManager() {
   //-- inform the orphan services that I am gone....
-  for (auto& svc : m_listsvc) {
-    svc.service->setServiceManager(nullptr);
-  }
+  for (auto& svc : m_listsvc) svc.service->setServiceManager(nullptr);
 }
 
 //------------------------------------------------------------------------------
@@ -122,7 +120,7 @@ StatusCode ServiceManager::addService(const Gaudi::Utils::TypeNameString& typeNa
   if (it == m_listsvc.end()) { // not found
     // If the service does not exist, we create it
     SmartIF<IService>& svc = createService(typeName); // WARNING: svc is now a reference to something that lives in m_listsvc
-    if (svc.isValid()) {
+    if (svc) {
       it = find(svc.get()); // now it is in the list because createService added it
       it->priority = prio;
       StatusCode sc = StatusCode(StatusCode::SUCCESS, true);
@@ -200,7 +198,7 @@ SmartIF<IService> &ServiceManager::service(const Gaudi::Utils::TypeNameString &t
 const std::list<IService*>& ServiceManager::getServices( ) const
 //------------------------------------------------------------------------------
 {
-  m_listOfPtrs.clear(); 
+  m_listOfPtrs.clear();
   std::transform( std::begin(m_listsvc), std::end(m_listsvc),
                   std::back_inserter(m_listOfPtrs),
                   [](ListSvc::const_reference i) {
@@ -421,8 +419,8 @@ StatusCode ServiceManager::finalize()
   // get list of PostFinalize clients
   std::vector<IIncidentListener*> postFinList;
   {
-    SmartIF<IIncidentSvc> p_inc(service("IncidentSvc",false));
-    if (p_inc.isValid()) {
+    auto p_inc = service<IIncidentSvc>("IncidentSvc",false);
+    if (p_inc) {
       p_inc->getListeners(postFinList,IncidentType::SvcPostFinalize);
     }
   }
@@ -443,7 +441,7 @@ StatusCode ServiceManager::finalize()
     for (const auto& svc : reverse(activeSvc(m_listsvc)) ) {
       const std::string& name = svc->name();
       // ignore the current state for the moment
-      // if( Gaudi::StateMachine::INITIALIZED == svc->state() ) {
+      // if( Gaudi::StateMachine::INITIALIZED == svc->state() )
       DEBMSG << "Finalizing service " << name << endmsg;
       if ( !svc->sysFinalize().isSuccess() ) {
         warning() << "Finalization of service " << name << " failed" << endmsg;
@@ -479,7 +477,6 @@ StatusCode ServiceManager::finalize()
       ++it;
     }
   }
-
   return sc;
 }
 

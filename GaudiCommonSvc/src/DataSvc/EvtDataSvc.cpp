@@ -30,10 +30,9 @@ DECLARE_COMPONENT(EvtDataSvc)
 StatusCode EvtDataSvc::initialize()    {
   // Nothing to do: just call base class initialisation
   StatusCode      status  = DataSvc::initialize();
-  ISvcLocator*    svc_loc = serviceLocator();
 
   // Attach data loader facility
-  m_cnvSvc = svc_loc->service("EventPersistencySvc");
+  m_cnvSvc = serviceLocator()->service("EventPersistencySvc");
   status = setDataLoader( m_cnvSvc );
   return status;
 }

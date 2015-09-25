@@ -231,7 +231,7 @@ StatusCode HistogramSvc::connectInput(CSTR ident) {
       std::string entryname = m_rootName;
       entryname += '/';
       entryname += logname;
-      GenericAddress* pA = 0;
+      GenericAddress* pA = nullptr;
       switch(::toupper(typ[0])) {
       case 'H':
         pA=new GenericAddress(HBOOK_StorageType,CLID_StatisticsFile,
@@ -242,7 +242,7 @@ StatusCode HistogramSvc::connectInput(CSTR ident) {
                               filename,entryname,0,'O');
         break;
       }
-      if (0 != pA)    {
+      if (pA)    {
         status = registerAddress(pO, logname, pA);
         if (status.isSuccess())    {
           log << MSG::INFO << "Added stream file:" << filename
@@ -270,15 +270,12 @@ StatusCode HistogramSvc::initialize()   {
       log << MSG::ERROR << "Unable to set hstogram data store root." << endmsg;
       return status;
     }
-    IConversionSvc* svc = nullptr;
-    status = service("HistogramPersistencySvc",svc,true);
-    if ( status.isSuccess() )   {
-      setDataLoader( svc ).ignore();
-      svc->release();
-    }
-    else  {
+    auto svc = service<IConversionSvc>("HistogramPersistencySvc",true);
+    if ( svc ) {
+      setDataLoader( svc.get() ).ignore();
+    } else  {
       log << MSG::ERROR << "Could not find HistogramPersistencySvc." << endmsg;
-      return status;
+      return StatusCode::FAILURE;
     }
     // Connect all input streams (if any)
     for (auto & j : m_input) {

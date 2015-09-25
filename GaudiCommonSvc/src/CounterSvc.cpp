@@ -13,6 +13,7 @@
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/Service.h"
 #include "GaudiKernel/HashMap.h"
+#include "GaudiKernel/Stat.h"
 // ============================================================================
 /** @class CounterSvc
  *  Simple implementation of the abstract interface ICounterSvc

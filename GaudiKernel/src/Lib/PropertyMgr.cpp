@@ -23,12 +23,12 @@ namespace
 {
   // ==========================================================================
   /// case insensitive comparison of strings
-  constexpr struct NoCaseCmp_t 
+  constexpr struct NoCaseCmp_t
   {
     inline bool operator() ( const std::string& v1 ,
                              const std::string& v2 ) const
     {
-      return v1.size() == v2.size() && 
+      return v1.size() == v2.size() &&
              std::equal(std::begin(v1),std::end(v1),std::begin(v2),
                         [](char c1, char c2) {
                             return toupper(c1) == toupper(c2);
@@ -192,8 +192,8 @@ StatusCode PropertyMgr::queryInterface(const InterfaceID& iid, void** pinterface
   StatusCode sc= base_class::queryInterface(iid, pinterface);
   if (sc.isSuccess()) return sc;
   // fall back on the owner
-  return m_pOuter? m_pOuter->queryInterface(iid, pinterface)
-                 : sc; // FAILURE
+  return m_pOuter ? m_pOuter->queryInterface(iid, pinterface)
+                  : sc; // FAILURE
 }
 // =====================================================================
 // Implementation of IProperty::hasProperty
@@ -206,16 +206,9 @@ bool PropertyMgr::hasProperty(const std::string& name) const {
 }
 void PropertyMgr::assertUniqueName(const std::string& name) const {
   if (UNLIKELY(hasProperty(name))) {
-    // TODO: queryInterface should be const
-    // Note: using SmartIF causes a segfault in genconf (wrong ref. count)
-    INamedInterface* owner = nullptr;
-    std::string ownerName{"PropertyMgr"};
-    if (m_pOuter &&
-        const_cast<IInterface*>(m_pOuter)->queryInterface(INamedInterface::interfaceID(), (void**)&owner).isSuccess()) {
-      ownerName = owner->name();
-    }
+    auto owner = SmartIF<INamedInterface>( m_pOuter );
     auto msgSvc = Gaudi::svcLocator()->service<IMessageSvc>("MessageSvc");
-    MsgStream log(msgSvc, ownerName);
+    MsgStream log(msgSvc, owner ? owner->name() : "PropertyMgr"  );
     log << MSG::WARNING
         << "duplicated property name '" << name
         << "', see https://its.cern.ch/jira/browse/GAUDI-1023"<< endmsg;

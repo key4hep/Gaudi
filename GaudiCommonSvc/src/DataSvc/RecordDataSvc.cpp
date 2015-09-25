@@ -45,16 +45,16 @@ StatusCode RecordDataSvc::initialize()    {
     return sc;
   }
   // Attach data loader facility
-  sc = service(m_persSvcName, m_cnvSvc, true);
-  if ( !sc.isSuccess() ) {
+  m_cnvSvc = service(m_persSvcName, true);
+  if ( !m_cnvSvc) {
     log << MSG::ERROR << "Failed to access RecordPersistencySvc." << endmsg;
-    return sc;
+    return StatusCode::FAILURE;
   }
-  SmartIF<IProperty> prp(m_cnvSvc);
+  auto prp = m_cnvSvc.as<IProperty>();
   if ( prp ) {
     //prp->setProperty();
   }
-  sc = setDataLoader( m_cnvSvc );
+  sc = setDataLoader( m_cnvSvc.get() );
   if ( !sc.isSuccess() ) {
     log << MSG::ERROR << "Failed to attach dataloader RecordPersistencySvc." << endmsg;
     return sc;
@@ -83,8 +83,7 @@ StatusCode RecordDataSvc::initialize()    {
 /// Service finalization
 StatusCode RecordDataSvc::finalize()    {
   if( m_incidentSvc ) m_incidentSvc->removeListener(this);
-  if( m_cnvSvc ) m_cnvSvc->release();
-  m_cnvSvc = nullptr;
+  m_cnvSvc.reset();
   DataSvc::finalize().ignore();
   return StatusCode::SUCCESS ;
 }

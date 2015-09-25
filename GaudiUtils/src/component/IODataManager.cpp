@@ -64,14 +64,14 @@ StatusCode IODataManager::initialize()  {
   }
   // Retrieve conversion service handling event iteration
   m_catalog = serviceLocator()->service(m_catalogSvcName);
-  if( !m_catalog.isValid() ) {
+  if( !m_catalog ) {
     log << MSG::ERROR
         << "Unable to localize interface IFileCatalog from service:"
         << m_catalogSvcName << endmsg;
     return StatusCode::FAILURE;
   }
   m_incSvc = serviceLocator()->service("IncidentSvc");
-  if( !m_incSvc.isValid() ) {
+  if( !m_incSvc ) {
     log << MSG::ERROR << "Error initializing IncidentSvc Service!" << endmsg;
     return status;
   }
@@ -289,7 +289,7 @@ IODataManager::connectDataIO(int typ, IoType rw, CSTR dataset, CSTR technology,b
         }
         // keep track of the current return code before we start iterating over
         // replicas
-        SmartIF<IProperty> appmgr(serviceLocator());
+        auto appmgr = serviceLocator()->as<IProperty>();
         int origReturnCode = Gaudi::getAppReturnCode(appmgr);
 	for(auto i=files.cbegin(); i!=files.cend(); ++i)  {
 	  std::string pfn = i->first;

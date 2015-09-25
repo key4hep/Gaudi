@@ -67,13 +67,13 @@ public:
   TimingAuditor& operator=( const TimingAuditor& ) = delete ;
 private:
   // tool service
-  IToolSvc*            m_toolSvc = nullptr; ///< tool service
+  SmartIF<IToolSvc>  m_toolSvc = nullptr; ///< tool service
   // incident service
-  IIncidentSvc*        m_incSvc  = nullptr; ///< incident service
+  SmartIF<IIncidentSvc> m_incSvc  = nullptr; ///< incident service
   // the timer tool
   ISequencerTimerTool* m_timer   = nullptr; ///< the timer tool
   // ApplicationManager
-  INamedInterface*     m_appMgr  = nullptr; ///< ApplicationManager
+  SmartIF<INamedInterface> m_appMgr  = nullptr; ///< ApplicationManager
   //
   GaudiUtils::VectorMap<const INamedInterface*,int>  m_map     ;
   // indentation level
@@ -105,11 +105,11 @@ StatusCode TimingAuditor::initialize ()
   // get tool service
   if ( ! m_toolSvc )
   {
-    sc = Auditor::service ( "ToolSvc" , m_toolSvc ) ;
-    if ( sc.isFailure() )
+    m_toolSvc = Auditor::service ( "ToolSvc" );
+    if ( !m_toolSvc )
     {
-      log << "Could not retrieve 'ToolSvc' " << sc << endmsg ;
-      return sc ;                                        // RETURN
+      log << "Could not retrieve 'ToolSvc' " << endmsg ;
+      return StatusCode::FAILURE ;                                        // RETURN
     }
     if ( !m_timer )
     {
@@ -126,12 +126,12 @@ StatusCode TimingAuditor::initialize ()
   // get incident service
   if ( !m_incSvc )
   {
-    sc = Auditor::service ( "IncidentSvc" , m_incSvc ) ;
-    if ( sc.isFailure() )
+    m_incSvc = Auditor::service ( "IncidentSvc" );
+    if ( !m_incSvc )
     {
       log << MSG::ERROR
-          << "Could not retrieve 'IncidentSvc'" << sc << endmsg ;
-      return sc ;
+          << "Could not retrieve 'IncidentSvc'" << endmsg ;
+      return StatusCode::FAILURE ;
     }
     m_incSvc -> addListener ( this , IncidentType::BeginEvent ) ;
     m_incSvc -> addListener ( this , IncidentType::EndEvent   ) ;
@@ -139,17 +139,16 @@ StatusCode TimingAuditor::initialize ()
   // get the application manager
   if ( !m_appMgr )
   {
-    sc = Auditor::service ( "ApplicationMgr" , m_appMgr ) ;
-    if ( sc.isFailure() )
+    m_appMgr = Auditor::service ( "ApplicationMgr" );
+    if ( !m_appMgr )
     {
       log << MSG::ERROR
-          << "Could not retrieve 'ApplicationMgr'" << sc << endmsg ;
+          << "Could not retrieve 'ApplicationMgr'" << endmsg ;
       return sc ;
     }
-    if ( m_map.end() == m_map.find( m_appMgr ) )
+    if ( m_map.end() == m_map.find( m_appMgr.get() ) )
     {
-      int timer = m_timer->addTimer( "EVENT LOOP" ) ;
-      m_map.insert ( m_appMgr , timer ) ;
+      m_map.insert ( m_appMgr.get() , m_timer->addTimer( "EVENT LOOP" )  ) ;
     }
   }
   //
@@ -162,8 +161,7 @@ StatusCode TimingAuditor::finalize   ()
   {
     m_incSvc -> removeListener ( this , IncidentType::BeginEvent ) ;
     m_incSvc -> removeListener ( this , IncidentType::EndEvent   ) ;
-    m_incSvc -> release () ;
-    m_incSvc = nullptr ;
+    m_incSvc.reset();
   }
   if ( m_toolSvc )
   {
@@ -172,10 +170,9 @@ StatusCode TimingAuditor::finalize   ()
     // the reference counting
     //     if ( 0 != m_timer )
     //     { m_toolSvc -> releaseTool ( m_timer ) . ignore() ; m_timer = 0 ; }
-    m_toolSvc -> release () ;
-    m_toolSvc = nullptr ;
+    m_toolSvc.reset();
   }
-  if ( m_appMgr ) { m_appMgr -> release () ;  m_appMgr = nullptr ; }
+  m_appMgr.reset();
   // clear the map
   m_map.clear() ;
   // finalize the base class
@@ -318,11 +315,11 @@ void TimingAuditor::after(CustomEventTypeRef evt, const std::string& name, const
 void TimingAuditor::handle ( const Incident& i )
 {
   if      ( IncidentType::BeginEvent == i.type () ) {
-    m_timer -> start ( m_map[ m_appMgr ] ) ;
+    m_timer -> start ( m_map[ m_appMgr.get() ] ) ;
     ++m_indent ;
     m_inEvent = true ;
   } else if ( IncidentType::EndEvent   == i.type () ) {
-    m_timer -> stop  ( m_map[ m_appMgr ] ) ;
+    m_timer -> stop  ( m_map[ m_appMgr.get() ] ) ;
     --m_indent ;
     m_inEvent = false ;
   }

@@ -39,19 +39,13 @@ RootHistCnv::RNTupleCnv::RNTupleCnv( ISvcLocator* svc, const CLID& clid )
 
 
 //-----------------------------------------------------------------------------
-/// Standard destructor
-RootHistCnv::RNTupleCnv::~RNTupleCnv()             {
-}
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
 /// Initialize the converter
 StatusCode RootHistCnv::RNTupleCnv::initialize()   {
   //-----------------------------------------------------------------------------
   StatusCode status = Converter::initialize();
   if ( status.isSuccess() ) {
     m_ntupleSvc = serviceLocator()->service("NTupleSvc");
-    if (!m_ntupleSvc.isValid()) status = StatusCode::FAILURE;
+    if (!m_ntupleSvc) status = StatusCode::FAILURE;
   }
   return status;
 }
@@ -61,8 +55,7 @@ StatusCode RootHistCnv::RNTupleCnv::initialize()   {
 /// Finalize the converter
 StatusCode RootHistCnv::RNTupleCnv::finalize()     {
   //-----------------------------------------------------------------------------
-  /// @FIXME: the release at this point may brake (?)
-  m_ntupleSvc = nullptr; // release
+  m_ntupleSvc.reset();
   return Converter::finalize();
 }
 
@@ -145,8 +138,8 @@ StatusCode RootHistCnv::RNTupleCnv::createRep(DataObject* pObject,
     if ( pReg )    {
       pAddr = pReg->address();
       if ( !pAddr )   {
-        SmartIF<IDataManagerSvc> dataMgr(dataProvider());
-        if ( dataMgr.isValid() )    {
+        auto dataMgr = dataProvider().as<IDataManagerSvc>();
+        if ( dataMgr )    {
           IRegistry* pParentReg = nullptr;
           StatusCode status = dataMgr->objectParent(pReg, pParentReg);
           if ( status.isSuccess() )  {

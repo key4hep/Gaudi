@@ -169,14 +169,14 @@ IoComponentMgr::io_contains (IIoComponent* iocomponent,
 StatusCode
 IoComponentMgr::io_register (IIoComponent* iocomponent)
 {
-  if ( 0 == iocomponent ) {
+  if ( !iocomponent ) {
     m_log << MSG::ERROR
 	  << "io_register (component) received a NULL pointer !" << endmsg;
     return StatusCode::FAILURE;
   }
   const std::string& ioname = iocomponent->name();
   DEBMSG << "--> io_register(" << ioname << ")" << endmsg;
-  IoRegistry_t::iterator itr = m_ioregistry.find (ioname);
+  auto itr = m_ioregistry.find (ioname);
   if ( itr == m_ioregistry.end() ) {
     DEBMSG << "    registering IoComponent \"" << ioname << "\"" << endmsg;
     iocomponent->addRef(); // ownership...
@@ -314,18 +314,15 @@ IoComponentMgr::io_reinitialize ()
   }
 
   bool allgood = true;
-  for ( IoStack_t::iterator io = m_iostack.begin(), ioEnd = m_iostack.end();
-	io != ioEnd;
-	++io ) {
-    m_log << MSG::DEBUG << " [" << (*io)->name() << "]->io_reinit()..."
-	  << endmsg;
-    if ( !(*io)->io_reinit().isSuccess() ) {
+  for ( auto& io : m_iostack ) {
+    m_log << MSG::DEBUG << " [" << io->name() << "]->io_reinit()..." << endmsg;
+    if ( !io->io_reinit().isSuccess() ) {
       allgood = false;
-      m_log << MSG::ERROR << "problem in [" << (*io)->name()
+      m_log << MSG::ERROR << "problem in [" << io->name()
 	    << "]->io_reinit() !" << endmsg;
     }
     // we are done with this guy... release it
-    (*io)->release();
+    io->release();
   }
 
   // we are done.
@@ -488,14 +485,9 @@ IoComponentMgr::findComp(IIoComponent* c, const std::string& f, iodITR& itr)
     itr = pit.first;
     return false;
   }
-
-  for (itr = pit.first; itr != pit.second; ++itr) {
-    if (itr->second.m_oldfname == f) {
-      return true;
-    }
-  }
-
-  return false;
+  return std::any_of( pit.first, pit.second,
+                      [&](IoDict_t::const_reference i)
+                      { return i.second.m_oldfname == f; } );
 
 }
 
@@ -505,12 +497,7 @@ bool
 IoComponentMgr::findComp(IIoComponent* c, std::pair<iodITR,iodITR>& pit) const {
 
   pit = m_cdict.equal_range(c);
-
-  if (pit.first == pit.second) {
-    return false;
-  } else {
-    return true;
-  }
+  return pit.first != pit.second;
 
 }
 
@@ -523,12 +510,8 @@ IoComponentMgr::findComp(const std::string& c,
   pit.first = m_cdict.end();
   pit.second = m_cdict.end();
 
-  IoRegistry_t::const_iterator itr = m_ioregistry.find(c);
-  if (itr == m_ioregistry.end()) {
-    return false;
-  }
-
-  return findComp(itr->second, pit);
+  auto itr = m_ioregistry.find(c);
+  return ( itr != m_ioregistry.end() ) && findComp(itr->second, pit);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -539,9 +522,8 @@ IoComponentMgr::list() const {
   ostringstream ost;
 
   ost << "Listing all IoComponents (" << m_cdict.size() << "): " << endl;
-  for (iodITR it = m_cdict.begin(); it != m_cdict.end(); ++it) {
-    ost << "  " << it->first->name() << "  " << it->second
-	<< endl;
+  for (const auto&  i : m_cdict ) {
+    ost << "  " << i.first->name() << "  " << i.second << endl;
   }
 
   return ost.str();

@@ -96,7 +96,7 @@ namespace GaudiTesting {
         if (m_mode == "exception") {
           Exception("Stopping loop");
         } else if (m_mode == "stopRun") {
-          SmartIF<IEventProcessor> ep(serviceLocator());
+          auto ep = serviceLocator()->as<IEventProcessor>();
           if (ep) ep->stopRun();
           else {
             error() << "Cannot get IEventProcessor" << endmsg;

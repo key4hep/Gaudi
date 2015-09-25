@@ -124,6 +124,12 @@ public:
   /// Returns a smart pointer to a service.
   SmartIF<IService> &service(const Gaudi::Utils::TypeNameString &typeName, const bool createIf = true) override;
 
+  /// Returns a smart pointer to the requested interface of a service.
+  template <typename T>
+  inline SmartIF<T> service(const Gaudi::Utils::TypeNameString &typeName, const bool createIf = true) {
+    return SmartIF<T>{service(typeName, createIf)};
+  }
+
 #if !defined(GAUDI_V22_API) || defined(G22_NEW_SVCLOCATOR)
   using ISvcManager::createService;
   using ISvcManager::addService;

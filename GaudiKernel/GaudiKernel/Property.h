@@ -1309,7 +1309,7 @@ namespace Gaudi
       const std::string& doc = ""  )
     {
       if ( !component ) { return StatusCode::FAILURE ; }
-      SmartIF<IProperty> property ( component ) ;
+      auto property = SmartIF<IProperty>{  component } ;
       return property ? setProperty ( property , name , value , doc ) 
                       : StatusCode::FAILURE;
     }

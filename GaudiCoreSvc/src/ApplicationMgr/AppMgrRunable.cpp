@@ -24,7 +24,7 @@ StatusCode AppMgrRunable::initialize()   {
     sc = serviceLocator()->queryInterface(IAppMgrUI::interfaceID(), pp_cast<void>(&m_appMgrUI));
     // get property from application manager
     if ( m_evtMax == (int)0xFEEDBABE )   {
-      SmartIF<IProperty> props(serviceLocator());
+      auto props = serviceLocator()->as<IProperty>();
       setProperty(props->getProperty("EvtMax")).ignore();
     }
   }
