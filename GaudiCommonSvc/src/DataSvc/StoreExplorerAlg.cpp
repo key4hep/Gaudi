@@ -47,7 +47,7 @@ class StoreExplorerAlg : public Algorithm {
   /// Flag to indicate if foreign files should be opened
   bool              m_accessForeign;
   /// Reference to data provider service
-  IDataProviderSvc* m_dataSvc = nullptr;
+  SmartIF<IDataProviderSvc> m_dataSvc;
   /// Name of the data provider service
   std::string       m_dataSvcName;
   /// Name of the root leaf (obtained at initialize)
@@ -150,7 +150,7 @@ public:
   void explore(IRegistry* pObj, std::vector<bool>& flg)    {
     printObj(pObj, flg);
     if ( pObj )    {
-      SmartIF<IDataManagerSvc> mgr(eventSvc());
+      auto mgr = eventSvc().as<IDataManagerSvc>();
       if ( mgr )    {
         std::vector<IRegistry*> leaves;
         StatusCode sc = mgr->objectLeaves(pObj, leaves);
@@ -192,45 +192,43 @@ public:
   StatusCode initialize() override   {
     MsgStream log(msgSvc(), name());
     m_rootName.clear();
-    StatusCode sc = service(m_dataSvcName, m_dataSvc, true);
-    if ( !sc.isSuccess() )  {
+    m_dataSvc = service(m_dataSvcName,true);
+    if ( !m_dataSvc )  {
         log << MSG::ERROR << "Failed to access service \""
             << m_dataSvcName << "\"." << endmsg;
         return StatusCode::FAILURE;
     }
-    SmartIF<IDataManagerSvc> mgr(m_dataSvc);
+    auto mgr = m_dataSvc.as<IDataManagerSvc>();
     if ( !mgr )  {
         log << MSG::ERROR << "Failed to retrieve IDataManagerSvc interface." << endmsg;
         return StatusCode::FAILURE;
     }
     m_rootName = mgr->rootName();
-    return sc;
+    return StatusCode::SUCCESS;
   }
 
   /// Finalize
   StatusCode finalize() override {
-    if ( m_dataSvc ) m_dataSvc->release();
-    m_dataSvc = nullptr;
+    m_dataSvc.reset();
     return StatusCode::SUCCESS;
   }
 
   /// Execute procedure
   StatusCode execute() override {
     MsgStream log(msgSvc(), name());
-    SmartDataPtr<DataObject>   root(m_dataSvc,m_rootName);
+    SmartDataPtr<DataObject>   root(m_dataSvc.get(),m_rootName);
     if ( ((m_print > m_total++) || (m_frequency*m_total > m_frqPrint)) && root )    {
       if ( m_frequency*m_total > m_frqPrint )  m_frqPrint++;
       std::string store_name = "Unknown";
       IRegistry* pReg = root->registry();
       if ( pReg )  {
-        SmartIF<IService> isvc(pReg->dataSvc());
+        auto isvc = SmartIF<IService>{pReg->dataSvc()};
         if ( isvc )  store_name = isvc->name();
       }
       log << MSG::INFO << "========= " << m_rootName << "["
           << "0x" << std::hex << (unsigned long) root.ptr() << std::dec
           << "@" << store_name << "]:" << endmsg;
-      std::vector<bool> flg;
-      flg.push_back(true);
+      std::vector<bool> flg(1,true);
       explore(root->registry(), flg);
       return StatusCode::SUCCESS;
     } else if ( root )   {

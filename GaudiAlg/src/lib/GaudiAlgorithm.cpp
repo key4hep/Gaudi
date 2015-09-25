@@ -82,7 +82,7 @@ StatusCode GaudiAlgorithm::execute()
 // ============================================================================
 SmartIF<INTupleSvc>& GaudiAlgorithm::evtColSvc() const
 {
-  if ( !m_evtColSvc.isValid() )
+  if ( !m_evtColSvc )
   { m_evtColSvc = svc< INTupleSvc > ( "EvtTupleSvc" , true ) ; }
   //
   return m_evtColSvc ;

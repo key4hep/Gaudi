@@ -19,38 +19,31 @@ DECLARE_COMPONENT(AuditorSvc)
 //------------------------------------------------------------------
 
 //- private helpers ---
-IAuditor* AuditorSvc::newAuditor_( MsgStream& log, const std::string& name ) {
+SmartIF<IAuditor> AuditorSvc::newAuditor_( MsgStream& log, const std::string& name ) {
   // locate the auditor factory, instantiate a new auditor, initialize it
-  IAuditor* aud = nullptr;
   StatusCode sc;
   Gaudi::Utils::TypeNameString item(name) ;
-  aud = Auditor::Factory::create( item.type(), item.name(), serviceLocator().get() );
+  SmartIF<IAuditor> aud{  Auditor::Factory::create( item.type(), item.name(), serviceLocator().get() ) };
   if ( aud ) {
-    aud->addRef();
     if ( m_targetState >= Gaudi::StateMachine::INITIALIZED ) {
       sc = aud->sysInitialize();
       if ( sc.isFailure() ) {
         log << MSG::WARNING << "Failed to initialize Auditor " << name << endmsg;
-        aud->release();
-        aud = nullptr;
+        aud.reset();
       }
     }
-  }
-  else {
+  } else {
     log << MSG::WARNING << "Unable to retrieve factory for Auditor " << name << endmsg;
   }
-
   return aud;
 }
 
-IAuditor* AuditorSvc::findAuditor_( const std::string& name ) {
+SmartIF<IAuditor> AuditorSvc::findAuditor_( const std::string& name ) {
   // find an auditor by name, return 0 on error
   const std::string item_name = Gaudi::Utils::TypeNameString(name).name();
   auto it = std::find_if( std::begin(m_pAudList), std::end(m_pAudList),
                           [&](const IAuditor* i) { return i->name() == item_name; });
-  if (it == std::end(m_pAudList)) return nullptr;
-  (*it)->addRef();
-  return *it;
+  return SmartIF<IAuditor>{ it != std::end(m_pAudList) ? *it : nullptr };
 }
 
 StatusCode AuditorSvc::syncAuditors_() {
@@ -71,12 +64,10 @@ StatusCode AuditorSvc::syncAuditors_() {
     // this is clumsy, but the PropertyMgr won't tell us when my property changes right
     // under my nose, so I'll have to figure this out the hard way
     if ( !findAuditor_( it ) ) { // if auditor does not yet exist
-      IAuditor* aud = newAuditor_( log, it );
-
+      auto aud = newAuditor_( log, it );
       if ( aud ) {
-        m_pAudList.push_back( aud );
-      }
-      else {
+        m_pAudList.push_back( std::move(aud) );
+      } else {
         log << MSG::ERROR << "Error constructing Auditor " << it << endmsg;
         sc = StatusCode::FAILURE;
       }
@@ -113,7 +104,6 @@ StatusCode AuditorSvc::finalize() {
 
   for (auto& it : m_pAudList ) {
     if(it->isEnabled()) it->sysFinalize().ignore();
-    it->release();
   }
   m_pAudList.clear();
 

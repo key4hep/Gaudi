@@ -157,9 +157,7 @@ SmartIF<IAddressCreator>& PersistencySvc::addressCreator(long type)     {
     IConversionSvc* s = service(type);
     if ( s )   {
       it = m_cnvServices.find( typ );
-      if ( it != m_cnvServices.end() ) {
-        return it->second.addrCreator();
-      }
+      if ( it != m_cnvServices.end() ) return it->second.addrCreator();
     }
     static SmartIF<IAddressCreator> no_creator;
     return no_creator;
@@ -223,19 +221,17 @@ IConverter* PersistencySvc::converter(const CLID& /*clid*/) {
 /// Retrieve conversion service by name
 SmartIF<IConversionSvc>& PersistencySvc::service(const std::string& nam)     {
   Gaudi::Utils::TypeNameString tn(nam);
-  IConversionSvc* svc = nullptr;
   auto it = std::find_if( m_cnvServices.begin(), m_cnvServices.end(),
-                          [&](Services::const_reference i) { 
-        return i.second.service()->name() == tn.name(); 
+                          [&](Services::const_reference i) {
+        return i.second.service()->name() == tn.name();
   } );
   if (it!=m_cnvServices.end()) return it->second.conversionSvc();
-  StatusCode status = Service::service(nam, svc, true);
-  if ( status.isSuccess() )   {
-    if ( addCnvService(svc).isSuccess() )   {
-      svc->release();       // Do not double-reference count
+
+  auto svc = Service::service<IConversionSvc>(nam, true);
+  if ( svc && addCnvService(svc.get()).isSuccess() ) {
       return service(nam); // now it is in the list
-    }
   }
+
   info() << "Cannot access Conversion service:" << nam << endmsg;
   static SmartIF<IConversionSvc> no_svc;
   return no_svc;
@@ -243,14 +239,12 @@ SmartIF<IConversionSvc>& PersistencySvc::service(const std::string& nam)     {
 
 /// Retrieve conversion service from list
 SmartIF<IConversionSvc>& PersistencySvc::service(long type)     {
-  typedef std::vector<std::string> SvcNames;
   // Check wether this is already an active service
   auto it = m_cnvServices.find( type );
   if( it != m_cnvServices.end() ) return it->second.conversionSvc();
   // if not, check if the service is in the list and may be requested
-  const SvcNames& theNames = m_svcNames.value();
-  for ( const auto& i : theNames ) {
-    SmartIF<IConversionSvc>& svc = service(i);
+  for ( const auto& i : m_svcNames.value() ) {
+    auto& svc = service(i);
     if ( svc &&  svc->repSvcType() == type )  return svc;
   }
   static SmartIF<IConversionSvc> no_svc;
@@ -261,34 +255,28 @@ SmartIF<IConversionSvc>& PersistencySvc::service(long type)     {
 StatusCode PersistencySvc::addCnvService(IConversionSvc* servc)    {
   if ( !servc )   return BAD_STORAGE_TYPE;
   long type = servc->repSvcType();
-  long def_typ = (m_cnvDefault) ? m_cnvDefault->repSvcType() : 0;
+  long def_typ = ( m_cnvDefault ? m_cnvDefault->repSvcType() : 0 );
   auto it = m_cnvServices.find( type );
-  IConversionSvc* cnv_svc = nullptr;
-  if ( it != m_cnvServices.end() ) cnv_svc = (*it).second.conversionSvc();
+  auto cnv_svc = ( it != m_cnvServices.end() ? it->second.conversionSvc() : nullptr );
   if ( type == def_typ ) m_cnvDefault = servc;
   if ( cnv_svc == servc )   return StatusCode::SUCCESS;
-  
-  IAddressCreator* icr = nullptr;
-  StatusCode status  = servc->queryInterface(IAddressCreator::interfaceID(), pp_cast<void>(&icr));
-  if ( status.isSuccess() )   {
-    IService* isvc = nullptr;
-    status = servc->queryInterface(IService::interfaceID(), pp_cast<void>(&isvc));
-    if ( status.isSuccess() )    {
-      if ( cnv_svc )   removeCnvService (type).ignore();
-      auto p = m_cnvServices.emplace( type, ServiceEntry(type, isvc, servc, icr) );
+
+  auto iservc = make_SmartIF( servc );
+  auto icr = iservc.as<IAddressCreator>();
+  if ( icr ) {
+    auto isvc = iservc.as<IService>();
+    if ( isvc ) {
+      if ( cnv_svc ) removeCnvService (type).ignore();
+      auto p = m_cnvServices.emplace( type, ServiceEntry(type, isvc, iservc, icr) );
       if( !p.second )    {
         info() << "Cannot add Conversion service of type " << isvc->name() << endmsg;
-        isvc->release();
-        icr->release();
         return StatusCode::FAILURE;
       }
       info() << "Added successfully Conversion service:" << isvc->name() << endmsg;
-      servc->addRef();
-      servc->setAddressCreator(this).ignore();
-      servc->setDataProvider(m_dataSvc).ignore();
+      iservc->setAddressCreator(this).ignore();
+      iservc->setDataProvider(m_dataSvc).ignore();
       return StatusCode::SUCCESS;
     }
-    icr->release();
   }
   info() << "Cannot add Conversion service of type " << type << endmsg;
   return StatusCode::FAILURE;
@@ -337,13 +325,10 @@ StatusCode PersistencySvc::createAddress(long svc_type,
                                          const std::string* pars,
                                          const unsigned long* ipars,
                                          IOpaqueAddress*& refpAddress)    {
-  IAddressCreator* svc = addressCreator(svc_type);
-  StatusCode   status  = BAD_STORAGE_TYPE;        // Preset error
   refpAddress = nullptr;
-  if ( svc )   {
-    status = svc->createAddress(svc_type, clid, pars, ipars, refpAddress);
-  }
-  return status;
+  IAddressCreator* svc = addressCreator(svc_type);
+  return svc ? svc->createAddress(svc_type, clid, pars, ipars, refpAddress)
+             : BAD_STORAGE_TYPE;
 }
 
 /// Convert an address to string form
@@ -388,11 +373,8 @@ StatusCode PersistencySvc::createAddress( long /* svc_type */,
   std::string address_trailer;
   decodeAddrHdr(refAddress, new_svc_type, new_clid, address_trailer);
   IAddressCreator* svc = addressCreator(new_svc_type);
-  StatusCode   status  = BAD_STORAGE_TYPE;        // Preset error
-  if ( svc )   {
-    status = svc->createAddress( new_svc_type, new_clid, address_trailer, refpAddress);
-  }
-  return status;
+  return svc ? svc->createAddress( new_svc_type, new_clid, address_trailer, refpAddress)
+             : BAD_STORAGE_TYPE;
 }
 
 /// Retrieve string from storage type and clid
@@ -530,9 +512,8 @@ StatusCode PersistencySvc::getService(const std::string& service_type, IConversi
       }
     }
   }
-  const std::vector<std::string>& names = m_svcNames;
   // if not, check if the service is in the list and may be requested
-  for(const auto& i : names ) {
+  for(const auto& i : m_svcNames.value() ) {
     Gaudi::Utils::TypeNameString itm(i);
     if ( itm.name() == service_type || itm.type() == service_type )  {
       IConversionSvc* svc = service(i);

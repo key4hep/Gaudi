@@ -34,7 +34,7 @@ namespace
   inline const std::string& getListenerName ( IIncidentListener* lis )
   {
     SmartIF<INamedInterface> iNamed(lis);
-    return iNamed.isValid() ? iNamed->name() : s_unknown ;
+    return iNamed ? iNamed->name() : s_unknown ;
   }
   // ==========================================================================
 }
@@ -184,7 +184,7 @@ void IncidentSvc::i_fireIncident( const Incident&    incident     ,
   // Special case: FailInputFile incident must set the application return code
   if ( incident.type() == IncidentType::FailInputFile ||
        incident.type() == IncidentType::CorruptedInputFile ) {
-    SmartIF<IProperty> appmgr(serviceLocator());
+    auto appmgr = serviceLocator()->as<IProperty>();
     Gaudi::setAppReturnCode(appmgr,
                             incident.type() == IncidentType::FailInputFile ?
                                   Gaudi::ReturnCode::FailInput :

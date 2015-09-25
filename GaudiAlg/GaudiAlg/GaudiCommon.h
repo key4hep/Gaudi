@@ -105,7 +105,7 @@ protected: // few actual data types
   // ==========================================================================
   //protected members such that they can be used in the derived classes
   /// a pointer to the CounterSummarySvc
-  ICounterSummarySvc* m_counterSummarySvc = nullptr;
+  SmartIF<ICounterSummarySvc> m_counterSummarySvc ;
   ///list of counters to declare. Set by property CounterList. This can be a regular expression.
   std::vector<std::string> m_counterList = std::vector<std::string>(1,".*");
   //list of stat entities to write. Set by property StatEntityList. This can be a regular expression.
@@ -557,7 +557,7 @@ public:
    *  @endcode
    */
   template <class CallerClass>
-  inline void registerCondition(const std::string &condition, StatusCode (CallerClass::*mf)() = NULL) {
+  inline void registerCondition(const std::string &condition, StatusCode (CallerClass::*mf)() = nullptr) {
     updMgrSvc()->registerCondition(dynamic_cast<CallerClass*>(this),condition,mf);
   }
   /** register the current instance to the UpdateManagerSvc as a consumer for a condition.
@@ -692,7 +692,7 @@ public:
    */
   StatusCode release ( const IInterface* interface ) const ;
   /// Un-hide IInterface::release (ICC warning #1125)
-  inline unsigned long release() override { return PBASE::release(); }
+  using PBASE::release;
   // ==========================================================================
 public:
   // ==========================================================================

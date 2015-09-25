@@ -35,15 +35,13 @@ namespace NTuple   {
 
   /// Attach selector
   StatusCode TupleImp::attachSelector(ISelectStatement* sel)  {
-    if ( sel         ) sel->addRef();
-    if ( m_pSelector ) m_pSelector->release();
     m_pSelector = sel;
     return StatusCode::SUCCESS;
   }
 
   /// Access selector
   ISelectStatement* TupleImp::selector()   {
-    return m_pSelector;
+    return m_pSelector.get();
   }
 
   /// Reset N tuple to default values

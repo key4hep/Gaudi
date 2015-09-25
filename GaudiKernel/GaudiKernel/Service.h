@@ -138,10 +138,10 @@ public:
   template <class T>
   StatusCode service( const std::string& name, const T*& psvc, bool createIf = true ) const {
     ISvcLocator& svcLoc = *serviceLocator();
-    SmartIF<T> ptr(
-      ServiceLocatorHelper(svcLoc, *this).service(name, !createIf, // quiet
-                                                  createIf));
-    if (ptr.isValid()) {
+    auto ptr =
+      ServiceLocatorHelper(svcLoc, *this).service<T>(name, !createIf, // quiet
+                                                     createIf);
+    if (ptr) {
       psvc = ptr.get();
       const_cast<T*>(psvc)->addRef();
       return StatusCode::SUCCESS;
@@ -153,18 +153,20 @@ public:
 
   template <class T>
   StatusCode service( const std::string& name, T*& psvc, bool createIf = true ) const {
-    ISvcLocator& svcLoc = *serviceLocator();
-    SmartIF<T> ptr(
-      ServiceLocatorHelper(svcLoc, *this).service(name, !createIf, // quiet
-                                                  createIf));
-    if (ptr.isValid()) {
-      psvc = ptr.get();
+    auto  ptr = service<T>(name,createIf);
+    psvc = ( ptr ? ptr.get() : nullptr );
+    if (psvc) {
       psvc->addRef();
       return StatusCode::SUCCESS;
     }
-    // else
-    psvc = nullptr;
     return StatusCode::FAILURE;
+  }
+
+  template <typename IFace = IService>
+  SmartIF<IFace> service(const std::string& name, bool createIf = true) const {
+    return ServiceLocatorHelper(*serviceLocator(), *this).
+                               service<IFace>(name, !createIf, // quiet
+                                              createIf);
   }
 
   /** Access a service by name and type, creating it if it doesn't already exist.
@@ -253,7 +255,7 @@ private:
   mutable SmartIF<ISvcLocator> m_svcLocator;
   SmartIF<ISvcManager>  m_svcManager;
   /** Property Manager                           */
-  std::unique_ptr<PropertyMgr>  m_propertyMgr;
+  SmartIF<PropertyMgr>  m_propertyMgr;
 
   void setServiceManager(ISvcManager* ism) override;
 

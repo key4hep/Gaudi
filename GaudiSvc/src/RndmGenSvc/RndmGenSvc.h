@@ -49,16 +49,16 @@ class IMessageSvc;
 class RndmGenSvc : public extends3<Service, IRndmGenSvc, IRndmEngine, ISerialize> {
 private:
   /// Random number engine
-  mutable IRndmEngine* m_engine;
+  mutable SmartIF<IRndmEngine> m_engine;
   /// Serialization interface of random number engine
-  mutable ISerialize*  m_serialize;
+  mutable SmartIF<ISerialize>  m_serialize;
   /// Engine name
   std::string          m_engineName;
 public:
   /// Standard Service constructor
   RndmGenSvc(const std::string& name, ISvcLocator* svc);
   /// Standard Service destructor
-  ~RndmGenSvc() override;
+  ~RndmGenSvc() override = default;
 public:
   /// Service override: initialization
   StatusCode initialize() override;

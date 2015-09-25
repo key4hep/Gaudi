@@ -42,7 +42,7 @@ namespace Gaudi {
   protected:
 
     /// Reference to incident service
-    IIncidentSvc*               m_incidentSvc = nullptr;
+    SmartIF<IIncidentSvc>               m_incidentSvc ;
     /// Property: Enable TTree IOperfStats if not empty; otherwise perf stat file name
     std::string                 m_ioPerfStats;
     /// Message streamer

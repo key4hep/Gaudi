@@ -186,15 +186,15 @@ inline SmartIF<SERVICE> GaudiCommon<PBASE>::svc( const std::string& name   ,
     // Try to get the requested interface
     s = *it;
     // check the results
-    if ( !s.isValid() ) {
+    if ( !s ) {
       Exception ("svc():: Could not retrieve Svc '" + name + "'", StatusCode::FAILURE);
     }
   } else {
-    SmartIF<IService>& baseSvc = this->svcLoc()->service(name, create);
+    auto baseSvc = this->svcLoc()->service(name, create);
     // Try to get the requested interface
     s = baseSvc;
     // check the results
-    if ( !baseSvc.isValid() || !s.isValid() ) {
+    if ( !baseSvc || !s ) {
       Exception ("svc():: Could not retrieve Svc '" + name + "'", StatusCode::FAILURE);
     }
     // add the tool into list of known tools, to be properly released

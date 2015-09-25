@@ -27,6 +27,7 @@
  */
 // ============================================================================
 
+#include "GaudiKernel/SmartIF.h"
 #include "GaudiAlg/TupleObj.h"
 
 namespace Tuples
@@ -125,19 +126,19 @@ namespace Tuples
      *  @param tuple pointer to "real" tuple object
      */
 
-    Tuple ( TupleObj* tuple ) ;
+    Tuple ( TupleObj* ) ;
 
     /// copy constructor
-    Tuple ( const Tuple&    tuple ) ;
+    Tuple ( const Tuple&  ) = default;
 
     /// destructor
-    virtual ~Tuple() ;
+    virtual ~Tuple() = default;
 
     /** assignment  operator
      *  Tuples could be assigned in a safe way
      *  @param tuple tuple to be assigned
      */
-    Tuple&    operator=( const Tuple&    tuple ) ;
+    Tuple&    operator=( const Tuple& )  = default;
 
     /** get the pointer to the underlying object
      *  @return pointer to underlying TupleObj
@@ -150,12 +151,12 @@ namespace Tuples
   protected:
 
     /// Return the underlying tuple object
-    TupleObj*  tuple() const { return m_tuple ; }
+    TupleObj*  tuple() const { return m_tuple.get() ; }
 
   private:
 
     /// The tuple object
-    TupleObj* m_tuple = nullptr;
+    SmartIF<TupleObj> m_tuple;
 
   };
 

@@ -79,9 +79,9 @@ StatusCode TagCollectionStream::initialize() {
   sc = OutputStream::initialize();            // Now initialize the base class
   if ( sc.isSuccess() )  {
     SmartIF<IDataSourceMgr> src_mgr(m_collectionSvc);
-    if ( src_mgr.isValid() )  {
+    if ( src_mgr )  {
       SmartIF<IDataManagerSvc> data_mgr(m_collectionSvc);
-      if ( data_mgr.isValid() )  {
+      if ( data_mgr )  {
         logical_name = data_mgr->rootName();
         logical_name += SEPARATOR;
         logical_name += log_node;
