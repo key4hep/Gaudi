@@ -200,11 +200,7 @@ StatusCode DataSvc::i_setRoot(std::string root_path,
 
 /// IDataManagerSvc: Pass a default data loader to the service.
 StatusCode DataSvc::setDataLoader(IConversionSvc* pDataLoader)    {
-  if ( pDataLoader  ) pDataLoader->addRef();
-  if ( m_dataLoader ) m_dataLoader->release();
-  if ( pDataLoader  )    {
-    pDataLoader->setDataProvider(this).ignore();
-  }
+  if ( pDataLoader  )  pDataLoader->setDataProvider(this).ignore();
   m_dataLoader = pDataLoader;
   return SUCCESS;
 }
@@ -1166,8 +1162,8 @@ StatusCode DataSvc::initialize()    {
   // Nothing to do: just call base class initialisation
   StatusCode sc = Service::initialize();
   if ( UNLIKELY(!sc.isSuccess()) )  return sc;
-  sc = service("IncidentSvc", m_incidentSvc, true);
-  if ( UNLIKELY(!sc.isSuccess()) )  {
+  m_incidentSvc = service("IncidentSvc", true);
+  if ( UNLIKELY(!m_incidentSvc) )  {
     error() << "Failed to access incident service." << endmsg;
   }
   return sc;
@@ -1179,10 +1175,7 @@ StatusCode DataSvc::reinitialize()    {
   setDataLoader(nullptr).ignore();
   resetPreLoad().ignore();
   clearStore().ignore();
-  if ( m_incidentSvc )  {
-    m_incidentSvc->release();
-    m_incidentSvc = nullptr;
-  }
+  m_incidentSvc.reset();
   // re-initialize the base class
   StatusCode sc = Service::reinitialize();
   if ( UNLIKELY(!sc.isSuccess()) ) {
@@ -1190,10 +1183,10 @@ StatusCode DataSvc::reinitialize()    {
     return sc;
   }
   // the initialize part is copied here
-  sc = service("IncidentSvc", m_incidentSvc, true);
-  if ( UNLIKELY(!sc.isSuccess()) )  {
+  m_incidentSvc = service("IncidentSvc", true);
+  if ( UNLIKELY(!m_incidentSvc) )  {
     error() << "Failed to access incident service." << endmsg;
-    return sc;
+    return StatusCode::FAILURE;
   }
   // return
   return StatusCode::SUCCESS;
@@ -1205,10 +1198,7 @@ StatusCode DataSvc::finalize()    {
   setDataLoader(nullptr).ignore();
   resetPreLoad().ignore();
   clearStore().ignore();
-  if ( m_incidentSvc )  {
-    m_incidentSvc->release();
-    m_incidentSvc = nullptr;
-  }
+  m_incidentSvc.reset();
   return Service::finalize();
 }
 
@@ -1231,7 +1221,7 @@ DataObject* DataSvc::createDefaultObject()   const    {
  *  be retrieved
  */
 IConversionSvc* DataSvc::getDataLoader(IRegistry* /* pReg */)   {
-  return m_dataLoader;
+  return m_dataLoader.get();
 }
 
 /// Standard Constructor

@@ -24,13 +24,12 @@ StatusCode VFSSvc::initialize() {
   MsgStream log(msgSvc(), name());
 
   m_toolSvc = serviceLocator()->service("ToolSvc");
-  if (!m_toolSvc.isValid()){
+  if (!m_toolSvc){
     log << MSG::ERROR << "Cannot locate ToolSvc" << endmsg;
     return StatusCode::FAILURE;
   }
 
   IAlgTool *tool;
-  IFileAccess *hndlr;
   for(const auto& i : m_urlHandlersNames) {
     // retrieve the tool and the pointer to the interface
     sc = m_toolSvc->retrieve(i,IAlgTool::interfaceID(),tool,0,true);
@@ -39,16 +38,15 @@ StatusCode VFSSvc::initialize() {
       return sc;
     }
     m_acquiredTools.push_back(tool); // this is one tool that we will have to release
-    sc = tool->queryInterface(IFileAccess::interfaceID(),pp_cast<void>(&hndlr));
-    if (sc.isFailure()){
+    auto hndlr = SmartIF<IFileAccess>(tool);
+    if (!hndlr){
       log << MSG::ERROR << i << " does not implement IFileAccess" << endmsg;
-      return sc;
+      return StatusCode::FAILURE;
     }
     // We do not need to increase the reference count for the IFileAccess interface
     // because we hold the tool by its IAlgTool interface.
-    hndlr->release();
     // loop over the list of supported protocols and add them to the map (for quick access)
-    for ( const auto& prot : hndlr->protocols() ) m_urlHandlers[prot] = hndlr;
+    for ( const auto& prot : hndlr->protocols() ) m_urlHandlers[prot] = hndlr.get();
   }
 
   // Now let's check if we can handle the fallback protocol
@@ -73,8 +71,7 @@ StatusCode VFSSvc::finalize() {
       m_toolSvc->releaseTool(m_acquiredTools.back()).ignore();
       m_acquiredTools.pop_back();
     }
-    m_toolSvc->release(); // release the tool service
-    m_toolSvc = nullptr;
+    m_toolSvc.reset() ; // release the tool service
   }
   return Service::finalize();
 }

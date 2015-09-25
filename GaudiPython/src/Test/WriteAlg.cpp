@@ -42,7 +42,7 @@ StatusCode WriteAlg::execute() {
   event->setRun(runnum);
   event->setTime(Gaudi::Time());
 
-  SmartIF<IDataManagerSvc> evtmgr(eventSvc());
+  auto evtmgr = eventSvc().as<IDataManagerSvc>();
   sc = evtmgr->setRoot("/Event", event);
   if( sc.isFailure() ) {
     log << MSG::ERROR << "Unable to register /Event object" << endmsg;

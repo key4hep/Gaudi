@@ -99,8 +99,8 @@ StatusCode GslSvc::initialize()
   if( !m_handlersTypeNames.empty() )
     {
       /// Get Tool Service
-      SmartIF<IToolSvc> toolsvc(serviceLocator()->service("ToolSvc"));
-      if (!toolsvc.isValid()) {
+      auto  toolsvc = serviceLocator()->service<IToolSvc>("ToolSvc");
+      if (!toolsvc) {
         log << MSG::ERROR << " Could not locate Tool Service! " << endmsg;
         return StatusCode::FAILURE;
       }

@@ -23,7 +23,6 @@
 #include "TLeaf.h"
 #include "TClass.h"
 #include "TBranch.h"
-#include "TTreePerfStats.h"
 #if ROOT_VERSION_CODE >= ROOT_VERSION(5,33,0)
 #include "Compression.h"
 static int s_compressionLevel = ROOT::CompressionSettings(ROOT::kLZMA,6);
@@ -89,18 +88,6 @@ starCheck:
   goto loopStart;
 }
 
-/// Standard constructor
-RootConnectionSetup::RootConnectionSetup() 
-: refCount(1)
-{
-}
-
-/// Standard destructor
-RootConnectionSetup::~RootConnectionSetup() {
-  if ( m_incidentSvc ) m_incidentSvc->release();
-  m_incidentSvc = nullptr;
-}
-
 /// Set the global compression level
 long RootConnectionSetup::setCompression(const std::string& compression) {
 #if ROOT_VERSION_CODE >= ROOT_VERSION(5,33,0)
@@ -158,10 +145,7 @@ void RootConnectionSetup::setMessageSvc(MsgStream* m) {
 
 /// Set incident service reference
 void RootConnectionSetup::setIncidentSvc(IIncidentSvc* s) {
-  IIncidentSvc* tmp = m_incidentSvc;
-  m_incidentSvc = s;
-  if ( m_incidentSvc ) m_incidentSvc->addRef();
-  if ( tmp ) tmp->release();
+  m_incidentSvc.reset(s);
 }
 
 /// Standard constructor
@@ -172,15 +156,9 @@ RootDataConnection::RootDataConnection(const IInterface* owner, CSTR fname, Root
   if ( fname.length() == 36 && fname[8]=='-'&&fname[13]=='-'&&fname[18]=='-'&&fname[23]=='-' ) {
     m_name = "FID:"+fname;
   }
-  m_setup->addRef();
   m_age  = 0;
   m_file.reset();
   addClient(owner);
-}
-
-/// Standard destructor
-RootDataConnection::~RootDataConnection()   {
-  m_setup->release();
 }
 
 /// Add new client to this data source

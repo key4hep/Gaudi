@@ -6,6 +6,7 @@
 // Framework include files
 #include "GaudiKernel/NTuple.h"
 #include "GaudiKernel/Kernel.h"
+#include "GaudiKernel/SmartIF.h"
 
 // Forward declarations
 class INTupleSvc;
@@ -23,7 +24,7 @@ namespace NTuple   {
     /// N tuple title
     std::string       m_title;
     /// Possibly hanging selector
-    ISelectStatement* m_pSelector = nullptr;
+    SmartIF<ISelectStatement> m_pSelector;
     /// Buffer 
     std::unique_ptr<char[]> m_buffer;
     /// Reference to N-tuple service used

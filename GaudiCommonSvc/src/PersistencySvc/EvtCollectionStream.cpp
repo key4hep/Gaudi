@@ -36,7 +36,7 @@ StatusCode EvtCollectionStream::initialize() {
   setProperties();
   // Get access to the DataManagerSvc
   m_pTupleSvc = serviceLocator()->service(m_storeName);
-  if( !m_pTupleSvc.isValid() ) {
+  if( !m_pTupleSvc ) {
     log << MSG::FATAL << "Unable to locate IDataManagerSvc interface" << endmsg;
     return StatusCode::FAILURE;
   }

@@ -84,7 +84,7 @@ RootHistCnv::RDirectoryCnv::fillObjRefs(IOpaqueAddress* pAddr,DataObject* pObj) 
     std::string title = obj->GetTitle();
     std::string sid = obj->GetName();
     std::string f2 = full + "/" + sid;
-    int idh = ::strtol(sid.c_str(),NULL,10);
+    int idh = std::stol( sid );
     // introduced by Grigori Rybkine
     std::string clname = key->GetClassName();
     std::string clnm = clname.substr(0,3);

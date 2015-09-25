@@ -195,7 +195,7 @@ private:
   std::set<std::unique_ptr<ParticleProperty>>   m_owned    ;
   std::set<std::string>         m_replaced ;
 
-  IFileAccess *m_fileAccess = nullptr;
+  SmartIF<IFileAccess> m_fileAccess;
 };
 } // namespace Gaudi
 // =============================================================================

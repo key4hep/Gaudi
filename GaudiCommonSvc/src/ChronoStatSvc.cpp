@@ -158,8 +158,8 @@ StatusCode ChronoStatSvc::initialize()
 	  << m_perEventFile << "\"" << endmsg;
       return StatusCode::FAILURE;
     } else {
-      SmartIF<IIncidentSvc> ii(serviceLocator()->service("IncidentSvc"));
-      if (! ii) {
+      auto ii = serviceLocator()->service<IIncidentSvc>("IncidentSvc");
+      if ( !ii) {
         log << MSG::ERROR << "Unable to find IncidentSvc" << endmsg;
         return StatusCode::FAILURE;
       }

@@ -6,6 +6,8 @@
 #include "GaudiKernel/DataStoreItem.h"
 #include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/IDataProviderSvc.h"
+#include "GaudiKernel/IIncidentSvc.h"
+#include "GaudiKernel/SmartIF.h"
 
 #include <boost/utility/string_ref.hpp>
 
@@ -49,9 +51,9 @@ protected:
   /// Name of root event
   std::string                     m_rootName = "/Event" ;
   /// Pointer to data loader service
-  IConversionSvc*                 m_dataLoader = nullptr;
+  SmartIF<IConversionSvc>         m_dataLoader = nullptr;
   /// Pointer to incident service
-  IIncidentSvc*                   m_incidentSvc = nullptr;
+  SmartIF<IIncidentSvc>           m_incidentSvc = nullptr;
   /// Items to be pre-loaded
   LoadItems                       m_preLoads;
   /// Allow forced creation of default leaves on registerObject

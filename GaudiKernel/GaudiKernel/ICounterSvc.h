@@ -13,13 +13,13 @@
 // ============================================================================
 #include "GaudiKernel/IInterface.h"
 #include "GaudiKernel/StatEntity.h"
-#include "GaudiKernel/Stat.h"
+#include "GaudiKernel/SmartIF.h"
 // ============================================================================
 // Forward declarations
 // ============================================================================
 class MsgStream   ;
 class StatEntity  ;
-class ICounterSvc ;
+class Stat;
 // ============================================================================
 /** @class ICounterSvc ICounterSvc.h GaudiKernel/ICounterSvc.h
  *
@@ -110,8 +110,6 @@ public:
   public:
     /// Standard initializing constructor
     Printout  ( ICounterSvc* svc ) ;
-    /// destructor
-    ~Printout () ;
     /// Callback for printout with Counter pointers
     StatusCode operator()( MsgStream& log , const Counter* cnt )  const ;
 
@@ -121,7 +119,7 @@ public:
     Printout& operator=( const Printout& ) = delete; ///< no assigment is allowed
   private:
     /// Reference to counter service
-    ICounterSvc* m_svc;
+    SmartIF<ICounterSvc> m_svc;
   } ;
   /** Access an existing counter object.
    *

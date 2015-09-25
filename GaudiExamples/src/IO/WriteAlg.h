@@ -15,10 +15,10 @@
 class WriteAlg : public Algorithm {
  protected:
   /// Reference to run records data service
-  IDataProviderSvc* m_recordSvc;
+  SmartIF<IDataProviderSvc> m_recordSvc;
 
   /// Reference to event counter
-  Gaudi::Examples::Counter* m_evtCount;
+  Gaudi::Examples::Counter* m_evtCount = nullptr;
 
   /// Register data leaf
   StatusCode put(IDataProviderSvc* s, const std::string& path, DataObject* pObj);
@@ -26,15 +26,13 @@ class WriteAlg : public Algorithm {
  public:
   /// Constructor: A constructor of this form must be provided.
   WriteAlg(const std::string& name, ISvcLocator* pSvcLocator)
-  : Algorithm(name, pSvcLocator), m_recordSvc(nullptr), m_evtCount(nullptr) { }
-  /// Standard Destructor
-  virtual ~WriteAlg() { }
+  : Algorithm(name, pSvcLocator) { }
   /// Initialize
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
   /// Finalize
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
   /// Event callback
-  virtual StatusCode execute();
+  StatusCode execute() override;
 };
 
 #endif // GAUDIEXAMPLE_WRITEALG_H

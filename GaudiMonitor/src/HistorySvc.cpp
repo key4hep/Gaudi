@@ -202,8 +202,8 @@ StatusCode HistorySvc::captureState() {
       }
 
       if (!foundAppMgr) {
-	IProperty *ap;
-	if (service("ApplicationMgr", ap).isFailure()) {
+	auto ap = service<IProperty>("ApplicationMgr");
+	if (!ap) {
 	  m_log << MSG::ERROR << "could not get the ApplicationMgr" << endmsg;
 	} else {
 	  for (auto prop: ap->getProperties()) {
@@ -217,30 +217,28 @@ StatusCode HistorySvc::captureState() {
 
   /// Get all the Algorithms
 
-  StatusCode sc;
-  IAlgManager* algMgr = nullptr;
-  sc = Gaudi::svcLocator()->queryInterface( IAlgManager::interfaceID(),
-                                            pp_cast<void>(&algMgr) );
-  if (sc.isFailure()) {
+  auto algMgr = Gaudi::svcLocator()->as<IAlgManager>();
+  if ( !algMgr ) {
     m_log << MSG::ERROR << "Could not get AlgManager" << endmsg;
     return StatusCode::FAILURE;
-  } else {
-    size_t count = 0;
-    for (auto ialg: algMgr->getAlgorithms()) {
-      Algorithm* alg = dynamic_cast<Algorithm*>(ialg);
-      if ( !alg ) {
-	m_log << MSG::WARNING << "Algorithm " << ialg->name()
-	      << " does not inherit from Algorithm. Not registering it."
-	      << endmsg;
-      } else {
-        ++count;
-	registerAlg( *alg ).ignore();
-      }
-    }
-
-    m_log << MSG::INFO << "Registered " << count << " Algorithms" << endmsg;
-
   }
+
+  size_t count = 0;
+  for (auto ialg: algMgr->getAlgorithms()) {
+    Algorithm* alg = dynamic_cast<Algorithm*>(ialg);
+    if ( !alg ) {
+      m_log << MSG::WARNING << "Algorithm " << ialg->name()
+            << " does not inherit from Algorithm. Not registering it."
+            << endmsg;
+    } else {
+      ++count;
+      registerAlg( *alg ).ignore();
+    }
+  }
+
+  m_log << MSG::INFO << "Registered " << count << " Algorithms" << endmsg;
+
+
 
   /// Get all the AlgTools
 
@@ -355,12 +353,7 @@ HistorySvc::listProperties(const Algorithm &alg) const {
     return StatusCode::FAILURE;
   }
 
-  ostringstream ost;
-  ost << *hist;
-
-  std::string str = ost.str();
-
-  m_log << MSG::INFO << alg.name() << " --> " << endl << str << endmsg;
+  m_log << MSG::INFO << alg.name() << " --> " << endl << *hist << endmsg;
 
   return StatusCode(StatusCode::SUCCESS,true);
 
@@ -452,11 +445,7 @@ HistorySvc::listProperties() const {
   m_log << "Dumping properties for Job";
   m_log.resetColor();
 
-  ostringstream ost;
-  ost << *m_jobHistory;
-  std::string str = ost.str();
-
-  m_log << std::endl << str << endmsg;
+  m_log << std::endl << *m_jobHistory << endmsg;
 
   return StatusCode(StatusCode::SUCCESS,true);
 
@@ -466,43 +455,19 @@ HistorySvc::listProperties() const {
 void
 HistorySvc::dumpProperties(std::ofstream& ofs) const {
 
-
   ofs << "GLOBAL" << std::endl;
-  const JobHistory::PropertyPairList props = m_jobHistory->propertyPairs();
-  JobHistory::PropertyPairList::const_iterator itrj;
-  for (itrj=props.begin(); itrj != props.end(); ++itrj) {
-    std::string client = itrj->first;
-    const Property* prp = itrj->second;
-    ofs << client << "  " << dumpProp(prp) << std::endl;
+  for (const auto & prop : m_jobHistory->propertyPairs() ) {
+    ofs << prop.first << "  " << dumpProp(prop.second) << std::endl;
   }
 
   ofs << std::endl << "SERVICES" << std::endl;
-  std::map<const IService*, ServiceHistory*>::const_iterator itr_s;
-  for (itr_s=m_svcmap.begin(); itr_s != m_svcmap.end(); ++itr_s) {
-    const IService* svc = itr_s->first;
-
-    dumpProperties( *svc, ofs );
-
-  }
+  for (const auto &s : m_svcmap ) dumpProperties( *s.first, ofs );
 
   ofs << std::endl << "ALGORITHMS" << std::endl;
-  std::map<const Algorithm*, AlgorithmHistory*>::const_iterator itr;
-  for (itr=m_algmap.begin(); itr != m_algmap.end(); ++itr) {
-    const Algorithm* alg = itr->first;
-
-    dumpProperties( *alg, ofs );
-
-  }
+  for (const auto & alg : m_algmap ) dumpProperties( *alg.first, ofs );
 
   ofs << std::endl << "ALGTOOLS" << std::endl;
-  std::map<const AlgTool*, AlgToolHistory*>::const_iterator itr_a;
-  for (itr_a=m_algtoolmap.begin(); itr_a != m_algtoolmap.end(); ++itr_a) {
-    const AlgTool* alg = itr_a->first;
-
-    dumpProperties( *alg, ofs );
-
-  }
-
+  for (const auto&  tool : m_algtoolmap ) dumpProperties( *tool.first, ofs );
 
 }
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -517,14 +482,10 @@ HistorySvc::getJobHistory() const {
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 IAlgorithm*
 HistorySvc::getCurrentIAlg() const {
-  if ( !p_algCtxSvc ) {
-    m_log << MSG::WARNING << "trying to create DataHistoryObj before "
-	  << "HistorySvc has been initialized" << endmsg;
-    return nullptr;
-
-  } else {
-    return p_algCtxSvc->currentAlg();
-  }
+  if ( p_algCtxSvc ) return p_algCtxSvc->currentAlg();
+  m_log << MSG::WARNING << "trying to create DataHistoryObj before "
+    << "HistorySvc has been initialized" << endmsg;
+  return nullptr;
 }
 
 
@@ -560,11 +521,7 @@ HistorySvc::createDataHistoryObj(const CLID& id, const std::string& key,
       algHist = nullptr;
     }
   }
-
-  DataHistory *hist = new DataHistory(id, key, algHist);
-
-  return hist;
-
+  return new DataHistory(id, key, algHist);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -611,13 +568,9 @@ HistorySvc::getDataHistory(const CLID& id, const std::string& key,
 
   DHH dhh(id,key);
 
-  pair<DHMCitr,DHMCitr> mitr = m_datMap.equal_range(dhh);
-
-  if(mitr.first == mitr.second) {
-    return nullptr;
-  }
-
-  return mitr.first->second;
+  auto mitr = m_datMap.equal_range(dhh);
+  return (mitr.first != mitr.second) ? mitr.first->second
+                                     : nullptr ;
 
 }
 
@@ -632,13 +585,11 @@ HistorySvc::getDataHistory(const CLID& id, const std::string& key,
 
   int n(0);
 
-  pair<DHMCitr,DHMCitr> mitr = m_datMap.equal_range(dhh);
-
-  for (DHMCitr itr=mitr.first; itr != mitr.second; ++itr) {
+  auto mitr = m_datMap.equal_range(dhh);
+  for (auto itr=mitr.first; itr != mitr.second; ++itr) {
     dhlist.push_back(itr->second);
-    n++;
+    ++n;
   }
-
   return n;
 
 }
@@ -655,8 +606,7 @@ HistorySvc::registerSvc(const IService &svc) {
 
   JobHistory *job = getJobHistory();
   const IService* psvc = &svc;
-  map<const IService*, ServiceHistory*>::const_iterator itr =
-    m_svcmap.find(psvc);
+  auto itr = m_svcmap.find(psvc);
   if (itr == m_svcmap.end()) {
 
     if (m_log.level() <= MSG::DEBUG) {
@@ -682,16 +632,12 @@ ServiceHistory*
 HistorySvc::getServiceHistory(const IService &svc) const {
 
   const IService *psvc = &svc;
-  map<const IService*, ServiceHistory*>::const_iterator itr =
-    m_svcmap.find(psvc);
-  if ( itr == m_svcmap.end() ) {
-    m_log << MSG::WARNING << "Service " << svc.name() << " not registered"
-          << endmsg;
-    return nullptr;
-  }
-
-  return ( itr->second );
-
+  auto itr = m_svcmap.find(psvc);
+  if ( itr != m_svcmap.end() ) return itr->second;
+  
+  m_log << MSG::WARNING << "Service " << svc.name() << " not registered"
+        << endmsg;
+  return nullptr;
 }
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -709,18 +655,9 @@ HistorySvc::listProperties(const IService &svc) const {
 
   ServiceHistory *hist = getServiceHistory( svc );
 
-  if ( !hist ) {
-    return StatusCode::FAILURE;
-  }
+  if ( !hist ) return StatusCode::FAILURE;
 
-  ostringstream ost;
-  ost << *hist;
-
-  std::string str = ost.str();
-
-  m_log << MSG::INFO << svc.name() << " --> " << endl << str << endmsg;
-
-
+  m_log << MSG::INFO << svc.name() << " --> " << endl << *hist << endmsg;
 
   return StatusCode(StatusCode::SUCCESS,true);
 
@@ -733,9 +670,7 @@ HistorySvc::dumpProperties(const IService &svc, std::ofstream &ofs) const {
 
   ServiceHistory *hist = getServiceHistory( svc );
 
-  if ( !hist ) {
-    return;
-  }
+  if ( !hist ) return;
 
   for (auto &prop: hist->properties()) {
     ofs << svc.name() << "  " << dumpProp(prop) << std::endl;
@@ -795,16 +730,10 @@ HistorySvc::listProperties(const IAlgTool& alg) const {
 
   AlgToolHistory *hist = getAlgToolHistory( alg );
 
-  if ( !hist ) {
-    return StatusCode::FAILURE;
-  }
+  if ( !hist ) return StatusCode::FAILURE;
 
-  ostringstream ost;
-  ost << *hist;
 
-  std::string str = ost.str();
-
-  m_log << MSG::INFO << alg.name() << " --> " << endl << str << endmsg;
+  m_log << MSG::INFO << alg.name() << " --> " << endl << *hist << endmsg;
 
   return StatusCode::SUCCESS;
 
@@ -816,9 +745,7 @@ HistorySvc::dumpProperties(const IAlgTool& alg, std::ofstream &ofs) const {
 
   AlgToolHistory *hist = getAlgToolHistory( alg );
 
-  if ( !hist ) {
-    return;
-  }
+  if ( !hist ) return;
 
   for (auto& prop: hist->properties()) {
     ofs << alg.name() << "  " << dumpProp(prop) << std::endl;

@@ -365,7 +365,7 @@ StatusCode EventSelector::initialize()    {
   }
   // Get the references to the services that are needed by the ApplicationMgr itself
   m_incidentSvc = serviceLocator()->service("IncidentSvc");
-  if( !m_incidentSvc.isValid() )  {
+  if( !m_incidentSvc )  {
     logger << MSG::FATAL << "Error retrieving IncidentSvc." << endmsg;
     return StatusCode::FAILURE;
   }
@@ -377,10 +377,16 @@ StatusCode EventSelector::initialize()    {
   }
 
   m_toolSvc = serviceLocator()->service("ToolSvc");
-  if ( !m_toolSvc.isValid() ) {
+  if ( !m_toolSvc ) {
     logger << MSG::ERROR << " Could not locate the Tool Service! " << endmsg;
     return StatusCode::FAILURE;
   }
+  // make sure we finalize _prior_ to ToolSvc... we are about to get a
+  // a pointer to a tool which gets finalized and released by the ToolSvc
+  // during ToolSvc::finalize, and we don't want dangling pointers...
+  SmartIF<ISvcManager> mgr(serviceLocator());
+  auto prio = mgr->getPriority("ToolSvc");
+  mgr->setPriority(name(),prio+1).ignore();
 
   status = m_toolSvc->retrieveTool(m_streamManager.c_str(), m_streamtool, this);
 
@@ -435,7 +441,7 @@ StatusCode EventSelector::finalize()    {
   m_incidentSvc = nullptr;
 
   if (m_streamtool) {
-    if (m_toolSvc.isValid()) {
+    if (m_toolSvc) {
       m_toolSvc->releaseTool(m_streamtool).ignore();
     } else {
       // It should not be possible to get here
@@ -443,8 +449,7 @@ StatusCode EventSelector::finalize()    {
     }
     m_streamtool = nullptr;
   }
-
-  m_toolSvc = nullptr;
+  m_toolSvc.reset();
 
   return Service::finalize();
 }

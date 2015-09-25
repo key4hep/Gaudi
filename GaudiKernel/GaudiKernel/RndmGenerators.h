@@ -370,12 +370,12 @@ namespace Rndm   {
   class GAUDI_API Numbers   {
   protected:
     /// Pointer to random number generator
-    IRndmGen*           m_generator = nullptr;
+    SmartIF<IRndmGen>     m_generator;
   public:
     /// Standard constructor
     Numbers() = default;
     /// Copy constructor
-    Numbers(const Numbers& copy );
+    Numbers(const Numbers& ) = default;
     /// Initializing constructor
     Numbers(const SmartIF<IRndmGenSvc>& svc, const IRndmGen::Param& par);
     /// Standard destructor

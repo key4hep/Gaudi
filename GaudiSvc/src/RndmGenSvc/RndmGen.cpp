@@ -20,16 +20,9 @@
 #include "RndmGen.h"
 
 /// Standard Constructor
-RndmGen::RndmGen(IInterface* engine) {
-  if ( engine )  {
-    engine->queryInterface(IRndmEngine::interfaceID(), pp_cast<void>(&m_engine)).ignore();
-  }
-}
-
-/// Standard Destructor
-RndmGen::~RndmGen()   {
-  if ( m_engine ) m_engine->release();
-}
+RndmGen::RndmGen(IInterface* engine) 
+  :  m_engine{ engine }
+{ }
 
 /// Initialize the generator
 StatusCode RndmGen::initialize(const IRndmGen::Param& par)   {
