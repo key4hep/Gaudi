@@ -38,9 +38,8 @@ void StatusCode::check() {
 
   if (!m_checked && !GaudiException::s_proc && !std::uncaught_exception() ) {
 
-    SmartIF<IMessageSvc> msg(Gaudi::svcLocator());
-
-    SmartIF<IStatusCodeSvc> scs(Gaudi::svcLocator()->service("StatusCodeSvc"));
+    auto msg = Gaudi::svcLocator()->as<IMessageSvc>();
+    auto scs = Gaudi::svcLocator()->service<IStatusCodeSvc>("StatusCodeSvc");
 
     const size_t depth = 21;
     void* addresses[depth];

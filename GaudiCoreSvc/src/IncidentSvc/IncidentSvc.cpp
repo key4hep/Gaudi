@@ -34,7 +34,7 @@ namespace
   inline const std::string& getListenerName ( IIncidentListener* lis )
   {
     SmartIF<INamedInterface> iNamed(lis);
-    return iNamed.isValid() ? iNamed->name() : s_unknown ;
+    return iNamed ? iNamed->name() : s_unknown ;
   }
   // ==========================================================================
 }
@@ -131,9 +131,9 @@ IncidentSvc::removeListenerFromList(ListenerMap::iterator i,
     auto& c = *(i->second);
     if (!scheduleRemoval) {
         ON_DEBUG std::for_each( std::begin(c), std::end(c),
-                                [&](ListenerList::const_reference i) {
-          if (match(i)) debug() << "Removing [" << /* type << */ "] listener '"
-                               << getListenerName(i.iListener) << "'" << endmsg;
+                                [&](ListenerList::const_reference j) {
+          if (match(j)) debug() << "Removing [" << i->first << "] listener '"
+                               << getListenerName(j.iListener) << "'" << endmsg;
         });
         c.erase( std::remove_if( std::begin(c), std::end(c), match ),
                  std::end(c) );
@@ -179,13 +179,13 @@ void IncidentSvc::i_fireIncident( const Incident&    incident     ,
 
   // Wouldn't it be better to write a small 'ReturnCode' service which
   // looks for these 'special' incidents and does whatever needs to
-  // be done instead of making a special case here? 
+  // be done instead of making a special case here?
 
   // Special case: FailInputFile incident must set the application return code
-  if ( incident.type() == IncidentType::FailInputFile || 
+  if ( incident.type() == IncidentType::FailInputFile ||
        incident.type() == IncidentType::CorruptedInputFile ) {
-    SmartIF<IProperty> appmgr(serviceLocator());
-    Gaudi::setAppReturnCode(appmgr, 
+    auto appmgr = serviceLocator()->as<IProperty>();
+    Gaudi::setAppReturnCode(appmgr,
                             incident.type() == IncidentType::FailInputFile ?
                                   Gaudi::ReturnCode::FailInput :
                                   Gaudi::ReturnCode::CorruptedInput

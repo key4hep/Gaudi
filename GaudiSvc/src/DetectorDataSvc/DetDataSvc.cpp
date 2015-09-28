@@ -30,8 +30,8 @@ StatusCode DetDataSvc::initialize()   {
   if( UNLIKELY(sc.isFailure()) ) return sc;
 
   // Set Data Loader
-  SmartIF<IConversionSvc> cnv_svc(serviceLocator()->service(m_persistencySvcName));
-  if( UNLIKELY(!cnv_svc.isValid()) ) {
+  auto  cnv_svc = serviceLocator()->service<IConversionSvc>(m_persistencySvcName);
+  if( UNLIKELY(!cnv_svc) ) {
     error() << "Unable to retrieve " << m_persistencySvcName << endmsg;
     return StatusCode::FAILURE;
   }
@@ -44,7 +44,7 @@ StatusCode DetDataSvc::initialize()   {
 
   // Get address creator from the DetectorPersistencySvc
   m_addrCreator = cnv_svc;
-  if ( UNLIKELY(!m_addrCreator.isValid()) ) {
+  if ( UNLIKELY(!m_addrCreator) ) {
     error() << "Unable to get AddressCreator." << endmsg;
     return StatusCode::FAILURE;
   }

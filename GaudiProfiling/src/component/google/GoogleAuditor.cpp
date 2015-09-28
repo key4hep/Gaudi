@@ -54,8 +54,8 @@ namespace Google
       m_log << MSG::INFO << "Initialised" << endmsg;
 
       // add a listener for begin event
-      SmartIF<IIncidentSvc> inSvc(serviceLocator()->service("IncidentSvc"));
-      if ( ! inSvc.isValid() ) return StatusCode::FAILURE;
+      auto inSvc = serviceLocator()->service<IIncidentSvc>("IncidentSvc");
+      if ( !inSvc ) return StatusCode::FAILURE;
       inSvc->addListener( this, IncidentType::BeginEvent );
 
       // sort various lists for speed when searching

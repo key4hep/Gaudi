@@ -39,8 +39,8 @@
  'RootCnvSvc': {'OutputLevel': 3}}
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r3)
-                                          running on pclhcb117 on Fri Feb 27 12:11:44 2015
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r5)
+                                          running on pclhcb117 on Mon Sep 28 17:24:31 2015
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 ServiceManager      DEBUG Initializing service FileRecordDataSvc
@@ -269,62 +269,64 @@ DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
-OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x10d8900, 0x2bed670, 0x9a081f0, 0x967f360]
+OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x2af9e20, 0x4036e20, 0x4bdb640, 0x4314c10]
+FileCatalog         DEBUG No writable file catalog found which contains FID:58D3B004-F565-E511-AC36-082E5F2B1B1D
+IODataManager        INFO Referring to dataset ConditionalOutput.dst by its file ID:58D3B004-F565-E511-AC36-082E5F2B1B1D
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
-OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x9681610, 0x9a07460, 0x9a07530, 0x9aeeb60]
+OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x40c2dc0, 0x425cc90, 0x40d1540, 0x49587c0]
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
-OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x10d8900, 0x2bed670, 0x9a081f0, 0x967f360]
+OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x2af9e20, 0x4036e20, 0x4bdb640, 0x4314c10]
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
-OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x9681610, 0x9a07460, 0x9a07530, 0x9aeeb60]
+OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x40c2dc0, 0x425cc90, 0x40d1540, 0x49587c0]
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
-OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x10d8900, 0x2bed670, 0x9a081f0, 0x967f360]
+OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x2af9e20, 0x4036e20, 0x4bdb640, 0x4314c10]
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
-OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x9681610, 0x9a07460, 0x9a07530, 0x9aeeb60]
+OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x40c2dc0, 0x425cc90, 0x40d1540, 0x49587c0]
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
-OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x10d8900, 0x2bed670, 0x9a081f0, 0x967f360]
+OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x2af9e20, 0x4036e20, 0x4bdb640, 0x4314c10]
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
-OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x9681610, 0x9a07460, 0x9a07530, 0x9aeeb60]
+OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x40c2dc0, 0x425cc90, 0x40d1540, 0x49587c0]
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
-OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x10d8900, 0x2bed670, 0x9a081f0, 0x967f360]
+OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x2af9e20, 0x4036e20, 0x4bdb640, 0x4314c10]
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
-OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x9681610, 0x9a07460, 0x9a07530, 0x9aeeb60]
-EventLoopMgr         INFO ---> Loop Finished -  WSS 273.723 | total time (skipping 1st evt) 1042931 ns
+OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x40c2dc0, 0x425cc90, 0x40d1540, 0x49587c0]
+EventLoopMgr         INFO ---> Loop Finished -  WSS 180.934 | total time (skipping 1st evt) 1001650 ns
 DataCreator         DEBUG Property update for OutputLevel : new value = 1
 OddEvents           DEBUG Property update for OutputLevel : new value = 1
 EvenEvents          DEBUG Property update for OutputLevel : new value = 1
@@ -357,12 +359,15 @@ OutputStream         INFO Events output: 10
 IncidentSvc         DEBUG Removing [AbortEvent] listener '<unknown>'
 EventLoopMgr         INFO Histograms converted successfully according to request.
 ServiceManager      DEBUG Finalizing service AlgContextSvc
+IncidentSvc         DEBUG Removing [BeginEvent] listener 'AlgContextSvc'
+IncidentSvc         DEBUG Removing [EndEvent] listener 'AlgContextSvc'
 ServiceManager      DEBUG Finalizing service HistogramDataSvc
 ServiceManager      DEBUG Finalizing service HistogramPersistencySvc
 ServiceManager      DEBUG Finalizing service RootCnvSvc
-RootCnvSvc           INFO Disconnected data IO:D08C338A-DCBD-E411-B615-082E5F2B1B1D [ConditionalOutput.dst]
+RootCnvSvc           INFO Disconnected data IO:58D3B004-F565-E511-AC36-082E5F2B1B1D [ConditionalOutput.dst]
 ServiceManager      DEBUG Finalizing service IODataManager
 ServiceManager      DEBUG Finalizing service FileCatalog
+XMLCatalog           INFO File 'ConditionalOutput.xml' does not exist. New file created.
 ServiceManager      DEBUG Finalizing service TimelineSvc
 ServiceManager      DEBUG Finalizing service EventDataSvc
 ServiceManager      DEBUG Finalizing service EventPersistencySvc
@@ -374,18 +379,18 @@ ServiceManager      DEBUG Finalizing service FileRecordDataSvc
 IncidentSvc         DEBUG Removing [SAVE_FILE_RECORD] listener 'FileRecordDataSvc'
 IncidentSvc         DEBUG Removing [FILE_OPEN_READ] listener 'FileRecordDataSvc'
 ServiceManager      DEBUG Looping over all active services...
-ServiceManager      DEBUG ---- MessageSvc (refCount = 17)
-ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 2)
+ServiceManager      DEBUG ---- MessageSvc (refCount = 19)
+ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 3)
 ServiceManager      DEBUG ---- FileRecordDataSvc (refCount = 3)
 ServiceManager      DEBUG ---- AppMgrRunable (refCount = 3)
 ServiceManager      DEBUG ---- IncidentSvc (refCount = 3)
 ServiceManager      DEBUG ---- FileRecordPersistencySvc (refCount = 2)
 ServiceManager      DEBUG ---- EventPersistencySvc (refCount = 2)
-ServiceManager      DEBUG ---- EventDataSvc (refCount = 4)
-ServiceManager      DEBUG ---- TimelineSvc (refCount = 2)
+ServiceManager      DEBUG ---- EventDataSvc (refCount = 3)
+ServiceManager      DEBUG ---- TimelineSvc (refCount = 3)
 ServiceManager      DEBUG ---- FileCatalog (refCount = 2)
 ServiceManager      DEBUG ---- IODataManager (refCount = 2)
-ServiceManager      DEBUG ---- RootCnvSvc (refCount = 5)
+ServiceManager      DEBUG ---- RootCnvSvc (refCount = 2)
 ServiceManager      DEBUG ---- HistogramPersistencySvc (refCount = 2)
 ServiceManager      DEBUG ---- HistogramDataSvc (refCount = 3)
 ServiceManager      DEBUG ---- AlgContextSvc (refCount = 2)

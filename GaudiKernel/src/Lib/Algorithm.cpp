@@ -62,8 +62,8 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
   declareProperty( "AuditAlgorithms", m_auditInit );
 
   bool audit(false);
-  SmartIF<IProperty> appMgr(serviceLocator()->service("ApplicationMgr"));
-  if (appMgr.isValid()) {
+  auto appMgr = serviceLocator()->service<IProperty>("ApplicationMgr");
+  if (appMgr) {
     const Property& prop = appMgr->getProperty("AuditAlgorithms");
     Property &pr = const_cast<Property&>(prop);
     if (m_name != "IncidentSvc") {
@@ -972,9 +972,9 @@ void Algorithm::setOutputLevel( int level ) {
 
 #define serviceAccessor(METHOD,INTERFACE,NAME,MEMBER) \
 SmartIF<INTERFACE>& Algorithm::METHOD() const { \
-  if ( !MEMBER.isValid() ) { \
+  if ( !MEMBER ) { \
     MEMBER = service(NAME); \
-    if( !MEMBER.isValid() ) { \
+    if( !MEMBER ) { \
       throw GaudiException("Service [" NAME  "] not found", name(), StatusCode::FAILURE); \
     } \
   } \
@@ -999,10 +999,10 @@ serviceAccessor(timelineSvc, ITimelineSvc,"TimelineSvc", m_timelineSvc)
 //serviceAccessor(msgSvc, IMessageSvc, "MessageSvc", m_MS)
 // Message service needs a special treatment to avoid infinite recursion
 SmartIF<IMessageSvc>& Algorithm::msgSvc() const {
-  if ( !m_MS.isValid() ) {
+  if ( !m_MS ) {
     //can not use service() method (infinite recursion!)
     m_MS = serviceLocator(); // default message service
-    if( !m_MS.isValid() ) {
+    if( !m_MS ) {
       throw GaudiException("Service [MessageSvc] not found", name(), StatusCode::FAILURE);
     }
   }
@@ -1049,8 +1049,8 @@ SmartIF<ISvcLocator>& Algorithm::serviceLocator() const {
 // Use the job options service to set declared properties
 StatusCode Algorithm::setProperties() {
   if( m_pSvcLocator )    {
-    SmartIF<IJobOptionsSvc> jos(m_pSvcLocator->service("JobOptionsSvc"));
-    if( jos.isValid() ) {
+    auto jos = m_pSvcLocator->service<IJobOptionsSvc>("JobOptionsSvc");
+    if( jos ) {
       // set first generic Properties
       StatusCode sc = jos->setMyProperties( getGaudiThreadGenericName(name()), this );
       if( sc.isFailure() ) return StatusCode::FAILURE;
@@ -1073,7 +1073,7 @@ StatusCode Algorithm::createSubAlgorithm(const std::string& type,
   if( !m_pSvcLocator ) return StatusCode::FAILURE;
 
   SmartIF<IAlgManager> am(m_pSvcLocator);
-  if ( !am.isValid() ) return StatusCode::FAILURE;
+  if ( !am ) return StatusCode::FAILURE;
 
   // Maybe modify the AppMgr interface to return Algorithm* ??
   IAlgorithm *tmp;

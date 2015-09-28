@@ -206,6 +206,10 @@ public:
   /// Return a pointer to the service identified by name (or "type/name")
   SmartIF<IService> service(const std::string& name, const bool createIf = true, const bool quiet = false) const;
 
+  template <typename T>
+  SmartIF<T> service(const std::string& name, const bool createIf = true, const bool quiet = false) const
+  { return SmartIF<T>( service(name,createIf,quiet) ); }
+
 protected:
   template <typename I>
   void declareInterface( I* i ) { m_interfaceList.emplace_back( I::interfaceID(), i ); }
@@ -512,11 +516,8 @@ public:
   inline IMonitorSvc* monitorSvc() const
   {
     // If not already located try to locate it without forcing a creation
-    if ( !m_pMonitorSvc ){
-      service_i( m_monitorSvcName, false,
-                 IMonitorSvc::interfaceID(), pp_cast<void>(&m_pMonitorSvc) ).ignore();
-    }
-    return m_pMonitorSvc;
+    if ( !m_pMonitorSvc ) m_pMonitorSvc = service(m_monitorSvcName, false, true);
+    return m_pMonitorSvc.get();
   }
 
   /** Declare monitoring information
@@ -576,11 +577,11 @@ private:
   const IInterface*    m_parent = nullptr;           ///< AlgTool parent
   mutable ISvcLocator* m_svcLocator = nullptr;       ///< Pointer to Service Locator service
   mutable IMessageSvc* m_messageSvc = nullptr;       ///< Message service
-  mutable IDataProviderSvc* m_evtSvc = nullptr;      ///< Event data service
-  mutable IToolSvc*    m_ptoolSvc = nullptr;         ///< Tool service
-  mutable IMonitorSvc* m_pMonitorSvc = nullptr;      ///< Online Monitoring Service
+  mutable SmartIF<IDataProviderSvc> m_evtSvc;      ///< Event data service
+  mutable SmartIF<IToolSvc> m_ptoolSvc;         ///< Tool service
+  mutable SmartIF<IMonitorSvc> m_pMonitorSvc;      ///< Online Monitoring Service
   std::string          m_monitorSvcName;   ///< Name to use for Monitor Service
-  std::unique_ptr<PropertyMgr>  m_propertyMgr;      ///< Property Manager
+  SmartIF<PropertyMgr> m_propertyMgr;      ///< Property Manager
   InterfaceList        m_interfaceList;    ///< Interface list
   std::string          m_threadID;         ///< Thread Id for Alg Tool
 
@@ -602,7 +603,7 @@ private:
                        const InterfaceID& iid,
                        void** ppS) const;
 
-  mutable IAuditorSvc*      m_pAuditorSvc = nullptr; ///< Auditor Service
+  mutable SmartIF<IAuditorSvc> m_pAuditorSvc; ///< Auditor Service
 
   BooleanProperty m_auditInit = false;
   bool         m_auditorInitialize = false;///< flag for auditors in "initialize()"

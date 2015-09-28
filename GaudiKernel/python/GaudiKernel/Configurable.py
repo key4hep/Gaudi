@@ -384,7 +384,7 @@ class Configurable( object ):
     def __getattr__( self, attr ):  # until ToolProperties exist ...
 
         if attr in self.__tools : return self.__tools[attr]
-        
+
         if attr in self._properties:
             if isinstance(self._properties[attr].__get__( self ), DataObjectDescriptor):
                 return self._properties[attr].__get__( self )
@@ -584,7 +584,7 @@ class Configurable( object ):
                 props[ name ] = ( proxy.__get__( self ), proxy.__doc__)
             except AttributeError:
                 props[ name ] = ( Configurable.propertyNoValue, proxy.__doc__)
-        return props        
+        return props
 
     def getValuedProperties( self ):
         props = {}

@@ -9,6 +9,7 @@
 // ============================================================================
 // GaudiKernel
 // ============================================================================
+#include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/INamedInterface.h"
 #include "GaudiKernel/IExceptionSvc.h"
 #include "GaudiKernel/IAuditor.h"
@@ -268,7 +269,7 @@ namespace Gaudi
       /// the guarded object name (if there is no INamedInterface)
       std::string                 m_objName;
       /// auditor service
-      IAuditor*                   m_svc   = nullptr;
+      SmartIF<IAuditor>                   m_svc   = nullptr;
       /// Event type (standard events)
       IAuditor::StandardEventType m_evt   ;
       /// Event type (custom events)
@@ -282,7 +283,6 @@ namespace Gaudi
 
       inline void i_before() {
         if ( m_svc ) { // if the service is not available, we cannot do anything
-          m_svc->addRef(); // increase the reference counting
           if (m_obj) {
             if (m_customEvtType) {
               m_svc->before(m_cevt,m_obj);
@@ -330,8 +330,7 @@ namespace Gaudi
               }
             }
           }
-          m_svc->release(); // we do not need the service anymore
-          m_svc = nullptr ;
+          m_svc.reset();
         }
       }
     } ;

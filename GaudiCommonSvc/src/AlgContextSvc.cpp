@@ -40,22 +40,21 @@ StatusCode AlgContextSvc::initialize ()
   // Initialize the base class
   StatusCode sc = Service::initialize () ;
   if ( sc.isFailure () ) { return sc ; }
-
+  // Incident Service
+  if ( m_inc     )
+  {
+    m_inc -> removeListener ( this ) ;
+    m_inc.reset();
+  }
   // perform more checks?
   if ( m_check )
   {
-    sc = Service::service ( "IncidentSvc" , m_inc , true ) ;
-    if ( sc.isFailure() )
-    {
-      MsgStream log ( msgSvc() , name() )  ;
-      log << MSG::ERROR << "Could not locate 'IncidentSvc'" << sc << endmsg ;
-      return sc ;                                               // RETURN
-    }
+    m_inc = Service::service ( "IncidentSvc" , true ) ;
     if ( !m_inc )
     {
-      MsgStream log ( msgSvc() , name() ) ;
-      log << MSG::ERROR << "Invalid pointer to IIncindentSvc" << endmsg ;
-      return StatusCode::FAILURE ;                               // RETURN
+      MsgStream log ( msgSvc() , name() )  ;
+      log << MSG::ERROR << "Could not locate 'IncidentSvc'" << endmsg ;
+      return StatusCode::FAILURE ;                                               // RETURN
     }
     m_inc -> addListener ( this , IncidentType::BeginEvent ) ;
     m_inc -> addListener ( this , IncidentType::EndEvent   ) ;
@@ -85,8 +84,7 @@ StatusCode AlgContextSvc::finalize   ()
   if ( m_inc )
   {
     m_inc -> removeListener ( this ) ;
-    m_inc -> release() ;
-    m_inc = nullptr ;
+    m_inc.reset();
   }
   // finalize the base class
   return Service::finalize () ;

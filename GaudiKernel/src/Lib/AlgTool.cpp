@@ -100,26 +100,25 @@ IMessageSvc* AlgTool::msgSvc()  const
 // ============================================================================
 IDataProviderSvc* AlgTool::evtSvc    () const
 {
-  if ( 0 == m_evtSvc )
-  {
-	StatusCode sc = service("EventDataSvc", m_evtSvc, true);
-	if (sc.isFailure()) {
-		throw GaudiException("Service [EventDataSvc] not found", name(), sc);
-	}
+  if ( !m_evtSvc ) {
+    m_evtSvc = service("EventDataSvc", true);
+    if ( !m_evtSvc ) {
+      throw GaudiException("Service [EventDataSvc] not found", name(), StatusCode::FAILURE);
+    }
   }
-  return m_evtSvc ;
+  return m_evtSvc.get();
 }
 //------------------------------------------------------------------------------
 IToolSvc* AlgTool::toolSvc() const
 //------------------------------------------------------------------------------
 {
   if ( !m_ptoolSvc ) {
-    StatusCode sc = service( "ToolSvc", m_ptoolSvc, true );
-    if( sc.isFailure() ) {
-      throw GaudiException("Service [ToolSvc] not found", name(), sc);
+    m_ptoolSvc = service( "ToolSvc", true );
+    if( !m_ptoolSvc ) {
+      throw GaudiException("Service [ToolSvc] not found", name(), StatusCode::FAILURE);
     }
   }
-  return m_ptoolSvc;
+  return m_ptoolSvc.get();
 }
 
 //------------------------------------------------------------------------------
@@ -179,8 +178,8 @@ StatusCode AlgTool::setProperties()
 //------------------------------------------------------------------------------
 {
   if( !m_svcLocator ) return StatusCode::FAILURE;
-  SmartIF<IJobOptionsSvc> jos(m_svcLocator->service("JobOptionsSvc"));
-  if( !jos.isValid() )  return StatusCode::FAILURE;
+  auto jos = m_svcLocator->service<IJobOptionsSvc>("JobOptionsSvc");
+  if( !jos )  return StatusCode::FAILURE;
 
   // set first generic Properties
   StatusCode sc = jos->setMyProperties( getGaudiThreadGenericName(name()), this );
@@ -239,8 +238,8 @@ AlgTool::AlgTool( const std::string& type,
   }
   else if ( AlgTool*   _too = dynamic_cast<AlgTool*>  ( _p ) )
   {
-    m_svcLocator  = _too -> m_svcLocator;
-    m_messageSvc  = _too -> m_messageSvc;
+    m_svcLocator  = _too -> serviceLocator ();
+    m_messageSvc  = _too -> msgSvc         ();
     m_threadID    = getGaudiThreadIDfromName ( _too ->m_threadID ) ;
   }
   else if ( Auditor*   _aud = dynamic_cast<Auditor*>  ( _p ) )
@@ -259,8 +258,8 @@ AlgTool::AlgTool( const std::string& type,
 
 
   { // audit tools
-    SmartIF<IProperty> appMgr(m_svcLocator->service("ApplicationMgr"));
-    if ( !appMgr.isValid() ) {
+    auto appMgr = m_svcLocator->service<IProperty>("ApplicationMgr");
+    if ( !appMgr ) {
       throw GaudiException("Could not locate ApplicationMgr","AlgTool",0);
     }
     const Property* p = Gaudi::Utils::getProperty( appMgr , "AuditTools");
@@ -495,10 +494,7 @@ StatusCode AlgTool::restart()
 AlgTool::~AlgTool()
 //------------------------------------------------------------------------------
 {
-  if( m_ptoolSvc ) m_ptoolSvc->release();
-  if( m_evtSvc ) m_evtSvc->release();
-  if( m_pAuditorSvc ) m_pAuditorSvc->release();
-  if( m_pMonitorSvc ) { m_pMonitorSvc->undeclareAll(this); m_pMonitorSvc->release(); }
+  if( m_pMonitorSvc ) { m_pMonitorSvc->undeclareAll(this); }
 }
 
 
@@ -568,12 +564,12 @@ SmartIF<IService> AlgTool::service(const std::string& name, const bool createIf,
 IAuditorSvc* AlgTool::auditorSvc() const {
 //---------------------------------------------------------------------------
   if ( !m_pAuditorSvc ) {
-    StatusCode sc = service( "AuditorSvc", m_pAuditorSvc, true );
-    if( sc.isFailure() ) {
-      throw GaudiException("Service [AuditorSvc] not found", name(), sc);
+    m_pAuditorSvc = service( "AuditorSvc", true );
+    if( !m_pAuditorSvc ) {
+      throw GaudiException("Service [AuditorSvc] not found", name(), StatusCode::FAILURE);
     }
   }
-  return m_pAuditorSvc;
+  return m_pAuditorSvc.get();
 }
 
 

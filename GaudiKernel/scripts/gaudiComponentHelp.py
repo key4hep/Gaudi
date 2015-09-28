@@ -14,11 +14,15 @@ if __name__ == "__main__":
     parser.set_defaults(root = os.path.join("..","python"))
     opts, args = parser.parse_args()
 
-    cfgDb = Configuration.cfgDb 
+    if len(args)!=0 :
+        parser.print_help()
+        sys.exit(1)
+
+    cfgDb = Configuration.cfgDb
     if opts.list:
-        print "Available components:\n%s" %(21*"=") 
+        print "Available components:\n%s" %(21*"=")
         for item in sorted(cfgDb):
-            print "  %s (from %s)" %(item, cfgDb[item]["lib"]) 
+            print "  %s (from %s)" %(item, cfgDb[item]["lib"])
         sys.exit()
     elif opts.name:
         name = opts.name
@@ -32,8 +36,8 @@ if __name__ == "__main__":
         try:
           properties = getattr(Configurables,name)().getPropertiesWithDescription()
         except AttributeError:
-          print "  Not a configurable component. No properties to show." 
-          sys.exit()  
+          print "  Not a configurable component. No properties to show."
+          sys.exit()
         for label, (value, desc) in sorted(properties.iteritems()):
             print ("  %s\t : %s\t (%s) " %(label, value, str(desc).replace("None", " no description ") )).expandtabs(30)
         sys.exit()

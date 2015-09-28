@@ -3,11 +3,12 @@
 
 // Include files
 #include "GaudiKernel/INamedInterface.h"
-#include "GaudiKernel/StateMachine.h"
+#include "GaudiKernel/IStateful.h"
 #include <string>
 
 // Forward declarations
 class IAlgorithm;
+class DataObjectDescriptorCollection;
 
 /** @class IAlgTool IAlgTool.h GaudiKernel/IAlgTool.h
 
@@ -19,14 +20,10 @@ class IAlgorithm;
     @author Pere Mato
     @date 15/11/01 version 2 introduced
 */
-
-
-class DataObjectDescriptorCollection;
-
-class GAUDI_API IAlgTool: virtual public INamedInterface {
+class GAUDI_API IAlgTool: virtual public extend_interfaces2<INamedInterface,IStateful> {
 public:
   /// InterfaceID
-  DeclareInterfaceID(IAlgTool,3,0);
+  DeclareInterfaceID(IAlgTool,4,0);
 
   /// Virtual destructor
   ~IAlgTool() override = default;
@@ -38,44 +35,6 @@ public:
       or a Service. A common AlgTool has the ToolSvc as parent.
   */
   virtual const IInterface*   parent() const = 0;
-
-  // --- Methods from IStateful ---
-  /** Configuration (from OFFLINE to CONFIGURED).
-  */
-  virtual StatusCode configure() = 0;
-
-  /** Initialization (from CONFIGURED to INITIALIZED).
-   */
-  virtual StatusCode initialize() = 0;
-
-  /** Start (from INITIALIZED to RUNNING).
-  */
-  virtual StatusCode start() = 0;
-
-  /** Stop (from RUNNING to INITIALIZED).
-  */
-  virtual StatusCode stop() = 0;
-
-  /** Finalize (from INITIALIZED to CONFIGURED).
-  */
-  virtual StatusCode finalize() = 0;
-
-  /** Initialization (from CONFIGURED to OFFLINE).
-  */
-  virtual StatusCode terminate() = 0;
-
-
-  /** Initialization (from INITIALIZED or RUNNING to INITIALIZED, via CONFIGURED).
-  */
-  virtual StatusCode reinitialize() = 0;
-
-  /** Initialization (from RUNNING to RUNNING, via INITIALIZED).
-  */
-  virtual StatusCode restart() = 0;
-
-  /** Get the current state.
-   */
-  virtual Gaudi::StateMachine::State FSMState() const = 0;
 
   virtual const DataObjectDescriptorCollection & inputDataObjects() const = 0;
   virtual const DataObjectDescriptorCollection & outputDataObjects() const = 0;

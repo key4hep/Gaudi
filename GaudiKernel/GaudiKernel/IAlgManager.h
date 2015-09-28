@@ -50,7 +50,7 @@ public:
                                  ) const {
     SmartIF<IAlgorithm> &si = const_cast<IAlgManager*>(this)->algorithm(name, false);
     alg = si.get();
-    return si.isValid() ? StatusCode::SUCCESS : StatusCode::FAILURE;
+    return si ? StatusCode::SUCCESS : StatusCode::FAILURE;
   }
 #endif
   /// Check the existence of an algorithm with a given name in the list of known algorithms

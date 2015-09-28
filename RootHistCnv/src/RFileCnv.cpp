@@ -30,11 +30,10 @@ StatusCode RootHistCnv::RFileCnv::initialize()
   std::unique_ptr<PropertyMgr> pmgr ( new PropertyMgr() );
   pmgr->declareProperty( "GlobalCompression", m_compLevel );
   ISvcLocator * svcLoc = Gaudi::svcLocator();
-  SmartIF<IJobOptionsSvc> jobSvc = 
-    svcLoc->service<IJobOptionsSvc>("JobOptionsSvc");
-  const StatusCode sc = ( jobSvc.isValid() && 
+  auto jobSvc = svcLoc->service<IJobOptionsSvc>("JobOptionsSvc");
+  const StatusCode sc = ( jobSvc &&
                           jobSvc->setMyProperties("RFileCnv",pmgr.get()) );
-  
+
   // initialise base class
   return ( sc && RDirectoryCnv::initialize() );
 }
@@ -109,7 +108,7 @@ StatusCode RootHistCnv::RFileCnv::createObj( IOpaqueAddress* pAddress,
   } else if ( mode[0] == 'N' ) {
 
     log << MSG::INFO << "opening Root file \"" << fname << "\" for writing";
-    if ( !m_compLevel.empty() ) 
+    if ( !m_compLevel.empty() )
     { log << ", CompressionLevel='" << m_compLevel << "'"; }
     log << endmsg;
 
@@ -119,10 +118,10 @@ StatusCode RootHistCnv::RFileCnv::createObj( IOpaqueAddress* pAddress,
           << endmsg;
       return StatusCode::FAILURE;
     }
-    if ( !m_compLevel.empty() ) 
+    if ( !m_compLevel.empty() )
     {
       const RootCompressionSettings settings(m_compLevel);
-      rfile->SetCompressionSettings(settings.level()); 
+      rfile->SetCompressionSettings(settings.level());
     }
 
     regTFile(ooname,rfile).ignore();

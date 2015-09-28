@@ -61,7 +61,7 @@ private:
   // the stack of current algorithms
   boost::thread_specific_ptr<IAlgContextSvc::Algorithms> m_algorithms; ///< the stack of current algorithms
   // pointer to Incident Service
-  IIncidentSvc*              m_inc      = nullptr  ; ///< pointer to Incident Service
+  SmartIF<IIncidentSvc>     m_inc      = nullptr  ; ///< pointer to Incident Service
   // flag to perform more checking
   bool                       m_check    = true   ;
 } ;

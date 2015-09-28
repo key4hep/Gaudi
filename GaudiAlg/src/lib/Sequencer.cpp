@@ -51,7 +51,7 @@ Sequencer::initialize()
   }
 
   // Loop over all sub-algorithms
-  for (auto& alg : *subAlgorithms() ) { 
+  for (auto& alg : *subAlgorithms() ) {
     result = alg->sysInitialize( );
     if( result.isFailure() ) {
       log << MSG::ERROR << "Unable to initialize Algorithm " << alg->name() << endmsg;
@@ -60,7 +60,7 @@ Sequencer::initialize()
   }
 
   // Loop over all branches
-  for (auto& alg : branchAlgorithms() ) { 
+  for (auto& alg : branchAlgorithms() ) {
     result = alg->sysInitialize( );
     if( result.isFailure() ) {
       log << MSG::ERROR << "Unable to initialize Algorithm " << alg->name() << endmsg;
@@ -79,12 +79,12 @@ Sequencer::reinitialize()
 
     // Loop over all members calling their reinitialize functions
     // if they are not disabled.
-    for (auto& alg : *subAlgorithms() ) { 
+    for (auto& alg : *subAlgorithms() ) {
       if ( alg->isEnabled( ) ) alg->reinitialize( ).ignore();
     }
     // Loop over all branch members calling their reinitialize functions
     // if they are not disabled.
-    for (auto& alg : branchAlgorithms() ) { 
+    for (auto& alg : branchAlgorithms() ) {
       if ( alg->isEnabled( ) ) {
         alg->reinitialize( ).ignore();
       }
@@ -167,7 +167,7 @@ Sequencer::start()
 
 
   // Loop over all sub-algorithms
-  for (auto& alg : *subAlgorithms() ) { 
+  for (auto& alg : *subAlgorithms() ) {
     result = alg->sysStart( );
     if( result.isFailure() ) {
       log << MSG::ERROR << "Unable to start Algorithm " << alg->name() << endmsg;
@@ -176,7 +176,7 @@ Sequencer::start()
   }
 
   // Loop over all branches
-  for (auto& alg : branchAlgorithms() ) { 
+  for (auto& alg : branchAlgorithms() ) {
     result = alg->sysStart( );
     if( result.isFailure() ) {
       log << MSG::ERROR << "Unable to start Algorithm " << alg->name() << endmsg;
@@ -193,7 +193,7 @@ Sequencer::stop()
   // Loop over all branch members calling their finalize functions
   // if they are not disabled.
 
-  for (auto& alg : *subAlgorithms() ) { 
+  for (auto& alg : *subAlgorithms() ) {
     if (alg->sysStop( ).isFailure()) {
       MsgStream log( msgSvc( ), name( ) );
       log << MSG::ERROR << "Unable to stop Algorithm "
@@ -201,7 +201,7 @@ Sequencer::stop()
     }
   }
 
-  for (auto& alg : branchAlgorithms() ) { 
+  for (auto& alg : branchAlgorithms() ) {
     if (alg->sysStop( ).isFailure()) {
       MsgStream log( msgSvc( ), name( ) );
       log << MSG::ERROR << "Unable to stop Algorithm "
@@ -224,7 +224,7 @@ Sequencer::beginRun()
     // if they are not disabled. Note that the Algoriithm::sysInitialize
     // function protects this from affecting Algorithms that have already
     // been initialized.
-    for (auto& alg : *subAlgorithms() ) { 
+    for (auto& alg : *subAlgorithms() ) {
       result = alg->sysInitialize( );
       if( result.isFailure() ) {
         log << MSG::ERROR << "Unable to initialize Algorithm " << alg->name() << endmsg;
@@ -239,7 +239,7 @@ Sequencer::beginRun()
 
     // Loop over all members calling their beginRun functions
     // if they are not disabled.
-    for (auto& alg : *subAlgorithms() ) { 
+    for (auto& alg : *subAlgorithms() ) {
       if ( ! alg->isEnabled( ) ) {
         alg->beginRun( ).ignore();
       }
@@ -249,7 +249,7 @@ Sequencer::beginRun()
     // if they are not disabled. Note that the Algoriithm::sysInitialize
     // function protects this from affecting Algorithms that have already
     // been initialized.
-    for (auto& alg : branchAlgorithms() ) { 
+    for (auto& alg : branchAlgorithms() ) {
       result = alg->sysInitialize( );
       if( result.isFailure() ) {
         log << MSG::ERROR << "Unable to initialize Algorithm " << alg->name() << endmsg;
@@ -264,7 +264,7 @@ Sequencer::beginRun()
 
     // Loop over all branch members calling their beginRun functions
     // if they are not disabled.
-    for (auto& alg : branchAlgorithms()) { 
+    for (auto& alg : branchAlgorithms()) {
       if ( ! alg->isEnabled( ) ) {
         alg->beginRun( ).ignore();
       }
@@ -444,22 +444,22 @@ Sequencer::createAndAppend( const std::string& type,
 	                        Algorithm*& pAlgorithm,
 	                        std::vector<Algorithm*>& theAlgs )
 {
-  StatusCode result = StatusCode::FAILURE;
   MsgStream log( msgSvc( ), name( ) );
-  SmartIF<IAlgManager> theAlgMgr(serviceLocator()->service("ApplicationMgr"));
-  if ( theAlgMgr.isValid() ) {
-    IAlgorithm* tmp;
-    result = theAlgMgr->createAlgorithm( type, algName, tmp );
-    if ( result.isSuccess( ) ) {
-      try{
-        pAlgorithm = dynamic_cast<Algorithm*>(tmp);
-        theAlgs.push_back( pAlgorithm );
-      } catch(...){
-        log << MSG::ERROR << "Unable to create Algorithm " << algName << endmsg;
-        result = StatusCode::FAILURE;
-      }
+  auto theAlgMgr = serviceLocator()->service<IAlgManager>("ApplicationMgr");
+  if ( !theAlgMgr )  return StatusCode::FAILURE;
+
+  IAlgorithm* tmp;
+  StatusCode result = theAlgMgr->createAlgorithm( type, algName, tmp );
+  if ( result.isSuccess( ) ) {
+    try{
+      pAlgorithm = dynamic_cast<Algorithm*>(tmp);
+      theAlgs.push_back( pAlgorithm );
+    } catch(...){
+      log << MSG::ERROR << "Unable to create Algorithm " << algName << endmsg;
+      result = StatusCode::FAILURE;
     }
   }
+
   return result;
 }
 
@@ -470,8 +470,8 @@ Sequencer::decodeNames( StringArrayProperty& theNames,
 {
   StatusCode result;
   MsgStream log( msgSvc( ), name( ) );
-  SmartIF<IAlgManager> theAlgMgr(serviceLocator()->service("ApplicationMgr"));
-  if ( theAlgMgr.isValid() ) {
+  auto theAlgMgr = serviceLocator()->service<IAlgManager>("ApplicationMgr");
+  if ( theAlgMgr ) {
     // Clear the existing list of algorithms
     theAlgs.clear( );
 
@@ -515,7 +515,7 @@ Sequencer::decodeNames( StringArrayProperty& theNames,
       SmartIF<IAlgorithm>& theIAlg = theAlgMgr->algorithm(theName, false);
       Algorithm*  theAlgorithm = nullptr;
       StatusCode status = StatusCode::SUCCESS;
-      if ( theIAlg.isValid() ) {
+      if ( theIAlg ) {
         try{
           theAlgorithm = dynamic_cast<Algorithm*>(theIAlg.get());
         } catch(...){

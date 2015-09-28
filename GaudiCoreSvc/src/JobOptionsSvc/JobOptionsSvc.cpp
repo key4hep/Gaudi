@@ -27,6 +27,7 @@ namespace gp = Gaudi::Parsers;
 JobOptionsSvc::JobOptionsSvc(const std::string& name,ISvcLocator* svc):
   base_class(name,svc)
 {
+  m_pmgr.addRef(); // make sure the refCount doesn't go to zero too soon...
   std::string tmp ;
   tmp = System::getEnv ( "JOBOPTSEARCHPATH" ) ;
   if ( !tmp.empty() && ("UNKNOWN" != tmp) ) { m_dir_search_path = tmp ; }

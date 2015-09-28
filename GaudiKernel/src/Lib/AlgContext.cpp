@@ -26,9 +26,7 @@ Gaudi::Utils::AlgContext::AlgContext
   : m_svc ( svc )
   , m_alg ( alg )
 {
-  if ( m_alg ) { m_alg -> addRef() ; }
-  if ( m_svc ) { m_svc -> addRef() ; }
-  if ( m_svc && m_alg ) { m_svc->setCurrentAlg ( m_alg ).ignore() ; }
+  if ( m_svc && m_alg ) { m_svc->setCurrentAlg ( m_alg.get() ).ignore() ; }
 }
 // ============================================================================
 /*  constructor from service and algorithm
@@ -45,9 +43,7 @@ Gaudi::Utils::AlgContext::AlgContext
   : m_svc ( svc )
   , m_alg ( alg )
 {
-  if ( m_alg ) { m_alg -> addRef() ; }
-  if ( m_svc ) { m_svc -> addRef() ; }
-  if ( m_svc && m_alg ) { m_svc->setCurrentAlg ( m_alg ).ignore() ; }
+  if ( m_svc && m_alg ) { m_svc->setCurrentAlg ( m_alg.get() ).ignore() ; }
 }
 // ============================================================================
 /*  destructor
@@ -59,9 +55,7 @@ Gaudi::Utils::AlgContext::AlgContext
 Gaudi::Utils::AlgContext::~AlgContext()
 {
   if ( m_svc &&  m_alg )
-  { m_svc->unSetCurrentAlg ( m_alg ).ignore() ; }
-  if ( m_svc ) { m_svc -> release () ; }
-  if ( m_alg ) { m_alg -> release () ; }
+  { m_svc->unSetCurrentAlg ( m_alg.get() ).ignore() ; }
 }
 // ============================================================================
 

@@ -4,6 +4,10 @@
 # Description: basic and mandatory components for a Gaudi application
 # Commit Id: $Format:%H$
 ################################################################################
+
+! 2015-09-17 - Marco Clemencic
+ - GAUDI-1088: restored IncidentSvc debug output for removed listeners
+
 ! 2015-09-09 - Gerhard Raven
  - C++11 modernization changes, eg.
       o prefer std::vector of std::list

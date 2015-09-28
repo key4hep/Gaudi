@@ -251,10 +251,10 @@ StatusCode GaudiSequencer::decodeNames( )  {
   m_entries.clear();
 
   //== Get the "Context" option if in the file...
-  IJobOptionsSvc* jos = svc<IJobOptionsSvc>( "JobOptionsSvc" );
+  auto jos = service<IJobOptionsSvc>( "JobOptionsSvc" );
 
   //= Get the Application manager, to see if algorithm exist
-  IAlgManager* appMgr = svc<IAlgManager>("ApplicationMgr");
+  auto appMgr = service<IAlgManager>("ApplicationMgr");
   for (const auto& item : m_names.value() ) {
     const Gaudi::Utils::TypeNameString typeName(item);
     const std::string &theName = typeName.name();
@@ -263,7 +263,7 @@ StatusCode GaudiSequencer::decodeNames( )  {
     //== Check wether the specified algorithm already exists. If not, create it
     StatusCode result = StatusCode::SUCCESS;
     SmartIF<IAlgorithm> myIAlg = appMgr->algorithm(typeName, false); // do not create it now
-    if ( !myIAlg.isValid() ) {
+    if ( !myIAlg ) {
       // ensure some magic properties are set while we create the subalgorithm so
       // that it effectively inherites 'our' settings -- if they have non-default
       // values... and are not set explicitly already.
@@ -287,7 +287,7 @@ StatusCode GaudiSequencer::decodeNames( )  {
     // propagate the sub-algorithm into own state.
     if ( result.isSuccess () &&
          Gaudi::StateMachine::INITIALIZED <= FSMState() &&
-         myIAlg.isValid   () &&
+         myIAlg &&
          Gaudi::StateMachine::INITIALIZED  > myIAlg->FSMState() )
     {
       StatusCode sc = myIAlg->sysInitialize() ;
@@ -297,7 +297,7 @@ StatusCode GaudiSequencer::decodeNames( )  {
     // propagate the sub-algorithm into own state.
     if ( result.isSuccess () &&
          Gaudi::StateMachine::RUNNING <= FSMState() &&
-         myIAlg.isValid   () &&
+         myIAlg &&
          Gaudi::StateMachine::RUNNING  > myIAlg->FSMState() )
     {
       StatusCode sc = myIAlg->sysStart () ;
@@ -324,8 +324,6 @@ StatusCode GaudiSequencer::decodeNames( )  {
     }
 
   }
-  release(appMgr).ignore();
-  release(jos).ignore();
 
   //== Print the list of algorithms
   MsgStream& msg = info();

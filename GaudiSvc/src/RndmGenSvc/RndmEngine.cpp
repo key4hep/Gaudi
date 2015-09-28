@@ -44,7 +44,7 @@ StatusCode RndmEngine::initialize()   {
     status = setProperties();
     if ( status.isSuccess() )   {
       m_pIncidentSvc = serviceLocator()->service("IncidentSvc");
-      if (!m_pIncidentSvc.isValid()) {
+      if (!m_pIncidentSvc) {
         status = StatusCode::FAILURE;
       }
     }

@@ -58,7 +58,7 @@ const std::string& System::moduleName()   {
 #ifdef _WIN32
       char moduleName[256] = {"Unknown.module"};
       moduleName[0] = 0;
-      if ( _psApi.isValid() )   {
+      if ( _psApi ) {
         _psApi.GetModuleBaseNameA( processHandle(), (HINSTANCE)moduleHandle(), moduleName, sizeof(moduleName) );
       }
       std::string mod = moduleName;
@@ -81,7 +81,7 @@ const std::string& System::moduleNameFull()   {
       char name[PATH_MAX] = {"Unknown.module"};
       name[0] = 0;
 #ifdef _WIN32
-      if ( _psApi.isValid() )   {
+      if ( _psApi )   {
         _psApi.GetModuleFileNameExA( processHandle(), (HINSTANCE)moduleHandle(), name,sizeof(name) );
         module = name;
       }
@@ -143,7 +143,7 @@ System::ImageHandle System::moduleHandle()    {
 #ifdef _WIN32
       static HINSTANCE handle = 0;
       DWORD   cbNeeded;
-      if ( 0 == handle && _psApi.isValid() )    {
+      if ( 0 == handle && _psApi )    {
         if ( _psApi.EnumProcessModules( processHandle(), &handle, sizeof(ModuleHandle), &cbNeeded) )   {
         }
       }
@@ -173,7 +173,7 @@ System::ImageHandle System::exeHandle()    {
   if ( processHandle() )    {
     static HINSTANCE handle = 0;
     DWORD   cbNeeded;
-    if ( 0 == handle && _psApi.isValid() )    {
+    if ( 0 == handle && _psApi )    {
       if ( _psApi.EnumProcessModules( processHandle(), &handle, sizeof(ModuleHandle), &cbNeeded) )   {
       }
     }
@@ -210,7 +210,7 @@ const std::string& System::exeName()    {
     char name[PATH_MAX] = {"Unknown.module"};
     name[0] = 0;
 #ifdef _WIN32
-    if ( _psApi.isValid() && processHandle() )   {
+    if ( _psApi && processHandle() )   {
       _psApi.GetModuleFileNameExA( processHandle(), (HINSTANCE)exeHandle(), name,sizeof(name) );
       module = name;
     }
@@ -234,7 +234,7 @@ const std::vector<std::string> System::linkedModules()    {
     char   name[255];  // Maximum file name length on NT 4.0
     DWORD  cbNeeded;
     HINSTANCE handle[1024];
-    if ( _psApi.isValid() )    {
+    if ( _psApi )    {
       if ( _psApi.EnumProcessModules(processHandle(),handle,sizeof(handle),&cbNeeded) )   {
         for (size_t i = 0; i < cbNeeded/sizeof(HANDLE); i++ )    {
           if ( 0 < _psApi.GetModuleFileNameExA( processHandle(), handle[i], name, sizeof(name)) )   {

@@ -548,9 +548,9 @@ ServiceManager      DEBUG Finalizing service IncidentSvc
 IncidentSvc         DEBUG Incident  timing: Mean(+-rms)/Min/Max:0(+-0)/0/0[ms] Total:0[s]
 ServiceManager      DEBUG Finalizing service HistogramDataSvc
 ServiceManager      DEBUG Finalizing service HistogramPersistencySvc
-ServiceManager      DEBUG Looping over all active services...
-ServiceManager      DEBUG ---- MessageSvc (refCount = 16)
-ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 2)
+ServiceManager      DEBUG Service reference count check:
+ServiceManager      DEBUG ---- MessageSvc (refCount = 17)
+ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 3)
 ServiceManager      DEBUG ---- HistogramPersistencySvc (refCount = 2)
 ServiceManager      DEBUG ---- HistogramDataSvc (refCount = 3)
 ServiceManager      DEBUG ---- IncidentSvc (refCount = 2)

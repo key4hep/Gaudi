@@ -11,10 +11,8 @@
 // GaudiKernel
 // ============================================================================
 #include "GaudiKernel/IInterface.h"
-// ============================================================================
-// Forward declarations
-// ============================================================================
-class IAlgorithm ;
+#include "GaudiKernel/SmartIF.h"
+#include "GaudiKernel/IAlgorithm.h"
 // ============================================================================
 /** @class IAlgContextSvc
  *  An abstract interface for Algorithm Context Service
@@ -115,8 +113,8 @@ namespace Gaudi
       // assignement operator is disabled
       AlgContext& operator=( const AlgContext& right ) = delete;
     private:
-      IAlgContextSvc* m_svc ;
-      IAlgorithm*     m_alg ;
+      SmartIF<IAlgContextSvc> m_svc ;
+      SmartIF<IAlgorithm>     m_alg ;
     };
   }  // end of namespace Gaudi::Utils
 } // end of namespace Gaudi

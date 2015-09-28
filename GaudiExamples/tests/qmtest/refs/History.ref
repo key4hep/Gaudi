@@ -21,8 +21,8 @@ JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/wor
 ApplicationMgr      DEBUG Getting my own properties[m
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r3)
-                                          running on pclhcb117 on Fri Feb 27 12:14:38 2015
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r5)
+                                          running on pclhcb117 on Mon Sep 28 17:26:48 2015
 ====================================================================================================================================[m
 ApplicationMgr       INFO Application Manager Configured successfully[m
 ServiceManager      DEBUG Initializing service StatusCodeSvc[m
@@ -98,7 +98,7 @@ HistorySvc          DEBUG [mRegistering Service: [96;1mToolSvc[m
 HistorySvc          DEBUG [mRegistering Service: [96;1mEventLoopMgr[m
 HistorySvc          DEBUG [mRegistering Service: [96;1mHistorySvc[m
 HistorySvc           INFO [mRegistered 14 Services[m
-EventLoopMgr         INFO ---> Loop Finished -  WSS 26.418 | total time (skipping 1st evt) 19416 ns[m
+EventLoopMgr         INFO ---> Loop Finished -  WSS 29.1719 | total time (skipping 1st evt) 12648 ns[m
 ServiceManager      DEBUG Stopping service HistorySvc[m
 HistorySvc        VERBOSE MessageSvc is Service[m
 HistorySvc        VERBOSE JobOptionsSvc is Service[m
@@ -136,6 +136,8 @@ ToolSvc              INFO Removing all tools created by ToolSvc[m
 ToolSvc             DEBUG   Tool List : [m
 ToolSvc             DEBUG Deleting 0 finalized tools[m
 ServiceManager      DEBUG Finalizing service AlgContextSvc[m
+IncidentSvc         DEBUG Removing [BeginEvent] listener 'AlgContextSvc'[m
+IncidentSvc         DEBUG Removing [EndEvent] listener 'AlgContextSvc'[m
 ServiceManager      DEBUG Finalizing service TimelineSvc[m
 ServiceManager      DEBUG Finalizing service EventDataSvc[m
 ServiceManager      DEBUG Finalizing service EventPersistencySvc[m
@@ -151,8 +153,8 @@ ServiceManager      DEBUG Finalizing service StatusCodeSvc[m
 StatusCodeSvc       DEBUG all StatusCode instances where checked[m
 ServiceManager      DEBUG Looping over all active services...[m
 ServiceManager      DEBUG ---- StatusCodeSvc (refCount = 3)[m
-ServiceManager      DEBUG ---- MessageSvc (refCount = 16)[m
-ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 4)[m
+ServiceManager      DEBUG ---- MessageSvc (refCount = 17)[m
+ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 5)[m
 ServiceManager      DEBUG ---- HistorySvc (refCount = 4)[m
 ServiceManager      DEBUG ---- HistogramPersistencySvc (refCount = 3)[m
 ServiceManager      DEBUG ---- HistogramDataSvc (refCount = 4)[m

@@ -187,15 +187,15 @@ inline SmartIF<SERVICE> GaudiCommon<PBASE>::svc( const std::string& name   ,
     // Try to get the requested interface
     s = *it;
     // check the results
-    if ( !s.isValid() ) {
+    if ( !s ) {
       Exception ("svc():: Could not retrieve Svc '" + name + "'", StatusCode::FAILURE);
     }
   } else {
-    SmartIF<IService>& baseSvc = this->svcLoc()->service(name, create);
+    auto baseSvc = this->svcLoc()->service(name, create);
     // Try to get the requested interface
     s = baseSvc;
     // check the results
-    if ( !baseSvc.isValid() || !s.isValid() ) {
+    if ( !baseSvc || !s ) {
       Exception ("svc():: Could not retrieve Svc '" + name + "'", StatusCode::FAILURE);
     }
     // add the tool into list of known tools, to be properly released
@@ -214,17 +214,6 @@ GaudiCommon<PBASE>::updMgrSvc() const
   if ( !m_updMgrSvc )
   { m_updMgrSvc = svc<IUpdateManagerSvc>("UpdateManagerSvc",true); }
   return m_updMgrSvc ;
-}
-// ============================================================================
-// predefined configurable message stream for the effective printouts
-// ============================================================================
-template <class PBASE>
-inline MsgStream&
-GaudiCommon<PBASE>::msgStream ( const MSG::Level level ) const
-{
-  if ( !m_msgStream )
-  { m_msgStream.reset(new MsgStream ( PBASE::msgSvc() , this->name() )) ; }
-  return *m_msgStream << level ;
 }
 // ============================================================================
 // Assertion - throw exception, if condition is not fulfilled

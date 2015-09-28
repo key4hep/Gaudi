@@ -430,7 +430,7 @@ namespace Gaudi {
             
           }
           if (m_stopRequested) {
-            SmartIF<IEventProcessor> ep(serviceLocator());
+            auto ep = serviceLocator()->as<IEventProcessor>();
             if (ep) {
               warning() << "Scheduling a stop" << endmsg;
               ep->stopRun().ignore();

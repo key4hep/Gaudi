@@ -21,9 +21,6 @@ namespace ba = boost::algorithm;
 #define ON_VERBOSE if (UNLIKELY(outputLevel() <= MSG::VERBOSE))
 
 namespace {
-/// Get current refcount for tool
-unsigned long refCountTool( const IAlgTool* tool ) { return tool->refCount(); }
-
 //------------------------------------------------------------------------------
 template <typename C>
 unsigned long totalRefCount( const C& toolList )
@@ -31,7 +28,7 @@ unsigned long totalRefCount( const C& toolList )
 {
   return std::accumulate( std::begin(toolList), std::end(toolList), 0ul,
                           [&](unsigned long count, const IAlgTool*  tool ) {
-                              return count + refCountTool( tool );
+                              return count + tool->refCount();
   });
 }
 
@@ -108,7 +105,7 @@ StatusCode ToolSvc::finalize()
     MsgStream &log = debug();
     log << "  Tool List : ";
     for ( const auto& iTool : m_instancesTools ) {
-      log << iTool->name() << ":" << refCountTool( iTool ) << " ";
+      log << iTool->name() << ":" << iTool->refCount( ) << " ";
     }
     log << endmsg;
   }
@@ -151,7 +148,7 @@ StatusCode ToolSvc::finalize()
       IAlgTool* pTool = m_instancesTools.back();
       // removing tool from list makes ToolSvc::releaseTool( IAlgTool* ) a noop
       m_instancesTools.pop_back();
-      unsigned long count = refCountTool( pTool );
+      unsigned long count = pTool->refCount( );
       // cache tool name
       const std::string& toolName = pTool->name();
       if ( count <= startMinRefCount ) {
@@ -195,7 +192,7 @@ StatusCode ToolSvc::finalize()
   while ( --maxLoop > 0 && !finalizedTools.empty() ) {
     IAlgTool* pTool = finalizedTools.front();
     finalizedTools.pop_front();
-    auto count = refCountTool( pTool );
+    auto count = pTool->refCount( );
     if ( count == 1 ) {
       ON_DEBUG debug() << "  Performing deletion of " << pTool->name() << endmsg;
     } else {
@@ -212,7 +209,7 @@ StatusCode ToolSvc::finalize()
   if ( !m_instancesTools.empty() ) {
     error() << "Unable to finalize and delete the following tools : ";
     for ( const auto& iTool : m_instancesTools ) {
-      error() << iTool->name() << ": " << refCountTool( iTool ) << " ";
+      error() << iTool->name() << ": " << iTool->refCount( ) << " ";
     }
     error() << endmsg;
   }
@@ -222,7 +219,7 @@ StatusCode ToolSvc::finalize()
     error() << "Failed to delete the following " <<  finalizedTools.size()
             << " finalized tools. Bug in ToolSvc::finalize()?: ";
     for ( const auto& iTool : finalizedTools ) {
-      error() << iTool->name() << ": " << refCountTool( iTool ) << " ";
+      error() << iTool->name() << ": " << iTool->refCount( ) << " ";
     }
     error() << endmsg;
   }
@@ -332,7 +329,7 @@ StatusCode ToolSvc::retrieve ( const std::string& tooltype ,
   }
 
   // Get the right interface of it
-  sc = itool->queryInterface( iid, (void**)&tool);
+  sc = itool->queryInterface( iid, pp_cast<void>(&tool) );
   if( UNLIKELY(sc.isFailure()) ) {
     error() << "Tool " << toolname
         << " either does not implement the correct interface, or its version is incompatible"
@@ -384,7 +381,7 @@ StatusCode ToolSvc::releaseTool( IAlgTool* tool )
   if ( m_instancesTools.rend() != std::find( m_instancesTools.rbegin(),
                                              m_instancesTools.rend(),
                                              tool ) ) {
-    unsigned long count = refCountTool(tool);
+    unsigned long count = tool->refCount();
     if ( count == 1 ) {
       MsgStream log( msgSvc(), name() );
       // finalize the tool
@@ -630,18 +627,13 @@ std::string ToolSvc::nameTool( const std::string& toolname,
   //------------------------------------------------------------------------------
 {
 
-  std::string fullname = "";
   if ( !parent ) { return this->name() + "." + toolname; }    // RETURN
 
-
-  IInterface* cparent = const_cast<IInterface*>( parent ) ;
   // check that parent has a name!
-  INamedInterface* _p = nullptr ;
-  StatusCode sc = cparent->queryInterface( INamedInterface::interfaceID() , pp_cast<void>(&_p) ) ;
-  if ( sc.isSuccess() )
+  auto named_parent = SmartIF<INamedInterface>( const_cast<IInterface*>(parent) );
+  if ( named_parent )
   {
-    fullname = _p->name() + "." + toolname ;
-    _p->release() ;
+    auto fullname = named_parent->name() + "." + toolname ;
     return fullname ;                                          // RETURN
   }
 
@@ -657,10 +649,9 @@ std::string ToolSvc::nameTool( const std::string& toolname,
 bool ToolSvc::existsTool( const std::string& fullname) const
   //------------------------------------------------------------------------------
 {
-  for ( const auto& it : m_instancesTools ) {
-    if ( it->name() == fullname ) { return true; }
-  }
-  return false;
+  auto i = std::find_if( std::begin(m_instancesTools), std::end(m_instancesTools),
+                         [&](const IAlgTool* tool) { return tool->name() == fullname; } );
+  return i != std::end(m_instancesTools);
 }
 
 //------------------------------------------------------------------------------
@@ -714,17 +705,11 @@ unsigned long ToolSvc::totalToolRefCount() const
 unsigned long ToolSvc::minimumToolRefCount() const
 //------------------------------------------------------------------------------
 {
-  unsigned long count = 0;
-  if ( !m_instancesTools.empty() ) {
-    auto iTool = m_instancesTools.begin();
-    // start with first
-    count = refCountTool( *iTool );
-    // then compare the others
-    for( ++iTool; iTool != m_instancesTools.end(); ++iTool ) {
-      count = std::min( count, refCountTool( *iTool ) );
-    }
-  }
-  return count;
+  auto i = std::min_element( std::begin(m_instancesTools), std::end(m_instancesTools),
+                             [](const IAlgTool* lhs, const IAlgTool* rhs) { 
+              return lhs->refCount() < rhs->refCount();
+  } );
+  return i!=std::end(m_instancesTools) ? (*i)->refCount() : 0;
 }
 
 void ToolSvc::registerObserver(IToolSvc::Observer* obs) {

@@ -1,6 +1,5 @@
 #define  GAUDISVC_EVENTLOOPMGR_CPP
 
-#include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/Incident.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/DataObject.h"
@@ -44,11 +43,6 @@ EventLoopMgr::EventLoopMgr(const std::string& nam, ISvcLocator* svcLoc)
 // Standard Destructor
 //--------------------------------------------------------------------------------------------
 EventLoopMgr::~EventLoopMgr()   {
-  if( m_histoDataMgrSvc ) m_histoDataMgrSvc->release();
-  if( m_histoPersSvc ) m_histoPersSvc->release();
-  if( m_evtDataMgrSvc ) m_evtDataMgrSvc->release();
-  if( m_evtDataSvc ) m_evtDataSvc->release();
-  if( m_evtSelector ) m_evtSelector->release();
   delete m_evtContext;
 }
 
@@ -65,19 +59,19 @@ StatusCode EventLoopMgr::initialize()    {
 
   // Setup access to event data services
   m_evtDataMgrSvc = serviceLocator()->service("EventDataSvc");
-  if( !m_evtDataMgrSvc.isValid() )  {
+  if( !m_evtDataMgrSvc )  {
     fatal() << "Error retrieving EventDataSvc interface IDataManagerSvc." << endmsg;
     return StatusCode::FAILURE;
   }
   m_evtDataSvc = serviceLocator()->service("EventDataSvc");
-  if( !m_evtDataSvc.isValid() )  {
+  if( !m_evtDataSvc )  {
     fatal() << "Error retrieving EventDataSvc interface IDataProviderSvc." << endmsg;
     return StatusCode::FAILURE;
   }
 
   // Obtain the IProperty of the ApplicationMgr
   m_appMgrProperty = serviceLocator();
-  if ( ! m_appMgrProperty.isValid() )   {
+  if ( ! m_appMgrProperty )   {
     fatal() << "IProperty interface not found in ApplicationMgr." << endmsg;
     return StatusCode::FAILURE;
   }
@@ -87,7 +81,7 @@ StatusCode EventLoopMgr::initialize()    {
 
   if( m_evtsel != "NONE" || m_evtsel.length() == 0) {
     m_evtSelector = serviceLocator()->service("EventSelector");
-    if( m_evtSelector.isValid() ) {
+    if( m_evtSelector ) {
       // Setup Event Selector
       sc=m_evtSelector->createContext(m_evtContext);
       if( !sc.isSuccess() )   {
@@ -110,13 +104,13 @@ StatusCode EventLoopMgr::initialize()    {
 
   // Setup access to histogramming services
   m_histoDataMgrSvc = serviceLocator()->service("HistogramDataSvc");
-  if( !m_histoDataMgrSvc.isValid() )  {
+  if( !m_histoDataMgrSvc )  {
     fatal() << "Error retrieving HistogramDataSvc." << endmsg;
     return sc;
   }
   // Setup histogram persistency
   m_histoPersSvc = serviceLocator()->service("HistogramPersistencySvc");
-  if( !m_histoPersSvc.isValid() ) {
+  if( !m_histoPersSvc ) {
     warning() << "Histograms cannot not be saved - though required." << endmsg;
     return sc;
   }
@@ -138,9 +132,9 @@ StatusCode EventLoopMgr::reinitialize() {
   // Check to see whether a new Event Selector has been specified
   setProperty(m_appMgrProperty->getProperty("EvtSel"));
   if( m_evtsel != "NONE" || m_evtsel.length() == 0) {
-    SmartIF<IService> theSvc(serviceLocator()->service("EventSelector"));
-    SmartIF<IEvtSelector> theEvtSel(theSvc);
-    if( theEvtSel.isValid() && ( theEvtSel.get() != m_evtSelector.get() ) ) {
+    auto theSvc = serviceLocator()->service<IService>("EventSelector");
+    auto theEvtSel = theSvc.as<IEvtSelector>();
+    if( theEvtSel && ( theEvtSel.get() != m_evtSelector.get() ) ) {
       // Setup Event Selector
       if ( m_evtSelector.get() && m_evtContext ) {
         // Need to release context before switching to new event selector
@@ -171,7 +165,7 @@ StatusCode EventLoopMgr::reinitialize() {
       info() << "EventSelector service changed to "
              << theSvc->name( ) << endmsg;
     }
-    else if ( m_evtSelector.isValid() ) {
+    else if ( m_evtSelector ) {
       if ( m_evtContext ) {
         m_evtSelector->releaseContext(m_evtContext);
         m_evtContext = nullptr;
@@ -183,7 +177,7 @@ StatusCode EventLoopMgr::reinitialize() {
       }
     }
   }
-  else if ( m_evtSelector.isValid() && m_evtContext ) {
+  else if ( m_evtSelector && m_evtContext ) {
     m_evtSelector->releaseContext(m_evtContext);
     m_evtSelector = nullptr;
     m_evtContext = nullptr;

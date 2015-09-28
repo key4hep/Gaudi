@@ -19,7 +19,7 @@ JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/wor
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr (GaudiCoreSvc v3r5)
-                                          running on pclhcb117 on Fri Jul 17 18:18:10 2015
+                                          running on pclhcb117 on Mon Sep 28 17:24:30 2015
 ====================================================================================================================================[m
 [96;1mApplicationMgr       INFO Application Manager Configured successfully[m
 [92;1mServiceManager      DEBUG Initializing service StatusCodeSvc[m
@@ -83,7 +83,7 @@ ApplicationMgr    SUCCESS
 [96;1mColorMsgAlg          INFO setting....[93;1mthis should be in yellow[91;1m and red[m
 [96;1mColorMsgAlg          INFO multicolor: [94;102;1mthis is blue on green[95;107;1m and purple on white[m
 [96;1mColorMsgAlg          INFO [92;1mThis is green. [93;104;1mThis is in yellow on blue. [m[96;1mThis is back to normal[m
-[96;1mEventLoopMgr         INFO ---> Loop Finished -  WSS 26.6211 | total time (skipping 1st evt) 96217 ns[m
+[96;1mEventLoopMgr         INFO ---> Loop Finished -  WSS 28.6055 | total time (skipping 1st evt) 95056 ns[m
 [92;1mServiceManager      DEBUG Stopping service EventLoopMgr[m
 [92;1mServiceManager      DEBUG Stopping service HistogramDataSvc[m
 [92;1mServiceManager      DEBUG Stopping service HistogramPersistencySvc[m
@@ -109,8 +109,8 @@ ApplicationMgr    SUCCESS
 [92;1mStatusCodeSvc       DEBUG all StatusCode instances where checked[m
 [92;1mServiceManager      DEBUG Looping over all active services...[m
 [92;1mServiceManager      DEBUG ---- StatusCodeSvc (refCount = 2)[m
-[92;1mServiceManager      DEBUG ---- MessageSvc (refCount = 12)[m
-[92;1mServiceManager      DEBUG ---- JobOptionsSvc (refCount = 2)[m
+[92;1mServiceManager      DEBUG ---- MessageSvc (refCount = 13)[m
+[92;1mServiceManager      DEBUG ---- JobOptionsSvc (refCount = 3)[m
 [92;1mServiceManager      DEBUG ---- AppMgrRunable (refCount = 3)[m
 [92;1mServiceManager      DEBUG ---- IncidentSvc (refCount = 2)[m
 [92;1mServiceManager      DEBUG ---- EventPersistencySvc (refCount = 2)[m
