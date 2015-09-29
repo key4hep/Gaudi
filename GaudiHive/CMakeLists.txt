@@ -21,46 +21,56 @@ gaudi_add_module(GaudiHive
                         INCLUDE_DIRS Boost ROOT AIDA TBB)
 
 gaudi_add_test(WhiteBoard
-               FRAMEWORK options/testWhiteBoard.py)
+               FRAMEWORK options/testWhiteBoard.py
+               TIMEOUT 120)
 
 gaudi_add_test(CPUCruncher
-               FRAMEWORK options/CPUCruncher.py)
+               FRAMEWORK options/CPUCruncher.py
+               TIMEOUT 120)
 
 gaudi_add_test(WriteWhiteBoard
-               FRAMEWORK options/WriteWhiteBoard.py )
+               FRAMEWORK options/WriteWhiteBoard.py
+               TIMEOUT 120)
 
 gaudi_add_test(ReadWhiteBoard
                FRAMEWORK options/ReadWhiteBoard.py
-               DEPENDS WriteWhiteBoard)
+               DEPENDS WriteWhiteBoard
+               TIMEOUT 120)
 
 gaudi_add_test(ReadAndWriteWhiteBoard
                FRAMEWORK options/ReadAndWriteWhiteBoard.py
-               DEPENDS WriteWhiteBoard)
+               DEPENDS WriteWhiteBoard
+               TIMEOUT 120)
 
 # Test the Scheduler
 
 gaudi_add_test(ForwardScheduler
                FRAMEWORK options/ForwardSchedulerSimpleTest.py
-               DEPENDS WhiteBoard)
+               DEPENDS WhiteBoard
+               TIMEOUT 120)
 
 gaudi_add_test(ForwardSchedulerStall
                FRAMEWORK options/ForwardSchedulerStall.py
                DEPENDS ForwardScheduler,
-               PASSREGEX "Stall detected")
+               PASSREGEX "Stall detected"
+               TIMEOUT 120)
 
 gaudi_add_test(SequentialSchedulerSimpleTest
-               FRAMEWORK options/SequentialSchedulerSimpleTest.py)
+               FRAMEWORK options/SequentialSchedulerSimpleTest.py
+               TIMEOUT 120)
 
 gaudi_add_test(GraphSchedulerSimpleTest
-               FRAMEWORK options/GraphSchedulerSimpleTest.py)
+               FRAMEWORK options/GraphSchedulerSimpleTest.py
+               TIMEOUT 120)
 
 # Test the AtomicSequencer
 gaudi_add_test(AtomicSequencer
                FRAMEWORK options/AtomicAlgSequencerTest.py
-               DEPENDS WhiteBoard)
+               DEPENDS WhiteBoard
+               TIMEOUT 120)
 
 # BugFixes
-
 gaudi_add_test(BugCFHEP114
                FRAMEWORK options/BugCFHEP114.py
-               DEPENDS WhiteBoard)
+               DEPENDS WhiteBoard
+               TIMEOUT 120)
