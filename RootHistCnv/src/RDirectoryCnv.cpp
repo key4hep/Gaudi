@@ -84,7 +84,11 @@ RootHistCnv::RDirectoryCnv::fillObjRefs(IOpaqueAddress* pAddr,DataObject* pObj) 
     std::string title = obj->GetTitle();
     std::string sid = obj->GetName();
     std::string f2 = full + "/" + sid;
-    int idh = std::stol( sid.substr(sid.find_first_of("0123456789")) );
+    auto pos = sid.find_first_of("0123456789+-");
+    if ( pos==std::string::npos ) {
+        log << MSG::WARNING << "can not convert \""<< sid <<"\" to a numeric ID " << endmsg;
+    }
+    int idh = ( pos != std::string::npos  ? std::stol( sid.substr(pos) ) : 0 );
     // introduced by Grigori Rybkine
     std::string clname = key->GetClassName();
     std::string clnm = clname.substr(0,3);
