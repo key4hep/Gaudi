@@ -301,6 +301,7 @@ if(GAUDI_ATLAS)
   add_definitions(-DHAVE_GAUDI_PLUGINSVC)
 
   add_definitions(-DATLAS_GAUDI_V21)
+  add_definitions(-DATLAS)
   include(AthenaBuildFlags OPTIONAL)
 else()
   # FIXME: these macros are LHCb specific, but we do not have yet a way to set
