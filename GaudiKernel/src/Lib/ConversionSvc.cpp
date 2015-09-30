@@ -163,7 +163,7 @@ IConverter* ConversionSvc::converter(const CLID& clid)     {
 StatusCode ConversionSvc::setDataProvider(IDataProviderSvc* pDataSvc)    {
   if ( !pDataSvc ) return StatusCode::SUCCESS; //Atlas does not use DataSvc
   m_dataSvc = pDataSvc;
-  for(auto& i : m_workers ) { 
+  for(auto& i : m_workers ) {
     IConverter* cnv = i.converter();
     if ( cnv && cnv->setDataProvider(m_dataSvc).isFailure()) {
       MsgStream log(msgSvc(), name());
@@ -181,7 +181,7 @@ SmartIF<IDataProviderSvc>& ConversionSvc::dataProvider()  const   {
 /// Set address creator facility
 StatusCode ConversionSvc::setAddressCreator(IAddressCreator* creator)   {
   m_addressCreator = creator;
-  for(auto& i : m_workers ) { 
+  for(auto& i : m_workers ) {
     auto* cnv = i.converter();
     if ( cnv )   {
       if (cnv->setAddressCreator(m_addressCreator).isFailure()) {
@@ -250,7 +250,7 @@ StatusCode ConversionSvc::addConverter(IConverter* pConverter)    {
 /// Remove converter object from conversion service (if present).
 StatusCode ConversionSvc::removeConverter(const CLID& clid)  {
 
-  auto i = std::partition( std::begin(m_workers), std::end(m_workers), 
+  auto i = std::partition( std::begin(m_workers), std::end(m_workers),
                            std::not1( CnvTest{clid} ) );
   if ( i == std::end(m_workers) ) return NO_CONVERTER;
   std::for_each( i, std::end(m_workers), []( WorkerEntry& w ) {
@@ -321,7 +321,7 @@ StatusCode ConversionSvc::initializeConverter(long /* typ */,
 StatusCode ConversionSvc::activateConverter(long /* typ */,
                                             const CLID& /* clid */,
                                             IConverter* pConverter)    {
-  return pConverter ? StatusCode::SUCCESS
+  return pConverter ? StatusCode{StatusCode::SUCCESS}
                     : NO_CONVERTER;
 }
 
