@@ -12,7 +12,8 @@ DECLARE_COMPONENT(MyGaudiAlgorithm)
 // Constructor
 //------------------------------------------------------------------------------
 MyGaudiAlgorithm::MyGaudiAlgorithm(const std::string& name, ISvcLocator* ploc)
-  : GaudiAlgorithm(name, ploc) {
+  : GaudiAlgorithm(name, ploc),
+    m_myGenericToolHandle("MyTool/GenericToolHandle") {
   //------------------------------------------------------------------------------
   declareProperty("ToolWithName", m_privateToolType = "MyTool",
                   "Type of the tool to use (internal name is ToolWithName)");
@@ -52,10 +53,14 @@ StatusCode MyGaudiAlgorithm::initialize() {
   m_privateToolWithName = tool<IMyTool>(m_privateToolType, "ToolWithName", this);
   m_privateOtherInterface = tool<IMyOtherTool>("MyGaudiTool", this);
   // force initialization of tool handles
-  if ( m_myPrivToolHandle.retrieve().isFailure() ||
-       m_myPubToolHandle.retrieve().isFailure() ) {
+  if ( ! (m_myPrivToolHandle.retrieve() &&
+          m_myPubToolHandle.retrieve() &&
+          m_myGenericToolHandle.retrieve()) ) {
     return StatusCode::FAILURE;
   }
+
+  //IAlgTool *check_cfhep_177 = nullptr;
+  //m_myGenericToolHandle.retrieve(check_cfhep_177);
 
   info() << m_tracks.dataProductName() << endmsg;
   info() << m_hits.dataProductName() << endmsg;

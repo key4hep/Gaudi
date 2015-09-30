@@ -1,5 +1,6 @@
-# --> Including file '/home/marco/Devel/LHCb/workspace/Gaudi/GaudiExamples/options/AlgTools.py'
-# <-- End of file '/home/marco/Devel/LHCb/workspace/Gaudi/GaudiExamples/options/AlgTools.py'
+# setting LC_ALL to "C"
+# --> Including file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/AlgTools.py'
+# <-- End of file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/AlgTools.py'
 # applying configuration of GaudiExamplesCommonConf
 # /***** User GaudiExamplesCommonConf/GaudiExamplesCommonConf ****************************************
 # |-OutputLevel = 3
@@ -8,7 +9,7 @@
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr (GaudiCoreSvc v3r5)
-                                          running on pcphlbc16 on Tue Jul 21 08:34:03 2015
+                                          running on pclhcb117 on Wed Sep 30 12:12:51 2015
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
@@ -65,6 +66,11 @@ ToolSvc.TestPub...   INFO Int    = 100
 ToolSvc.TestPub...   INFO Double = 100
 ToolSvc.TestPub...   INFO String = Is a public tool
 ToolSvc.TestPub...   INFO Bool   = 1
+ToolSvc.Generic...   INFO intialize() has been called
+ToolSvc.Generic...   INFO Int    = 100
+ToolSvc.Generic...   INFO Double = 100
+ToolSvc.Generic...   INFO String = hundred
+ToolSvc.Generic...   INFO Bool   = 1
 MyGaudiAlg           INFO /Event/Rec/Tracks
 MyGaudiAlg           INFO /Event/Rec/Hits
 MyGaudiAlg           INFO /Rec/RAW
@@ -317,7 +323,7 @@ MyGaudiAlg.MyGa...   INFO doItAgain() has been called
 MyGaudiAlg           INFO tools created via ToolHandle<T>....
 MyGaudiAlg.Priv...   INFO doIt() has been called
 ToolSvc.TestPub...   INFO doIt() has been called
-EventLoopMgr         INFO ---> Loop Finished -  WSS 45.1133 | total time (skipping 1st evt) 972751 ns
+EventLoopMgr         INFO ---> Loop Finished -  WSS 42.8555 | total time (skipping 1st evt) 1299806 ns
 ApplicationMgr       INFO Application Manager Stopped successfully
 MyAlg                INFO finalizing....
 MyGaudiAlg           INFO finalizing....
@@ -345,6 +351,7 @@ ToolSvc.ToolA       DEBUG Releasing tool 'ToolSvc.ToolB'
 ToolSvc.ToolA       DEBUG De-Registering tool ToolSvc.ToolB
 ToolSvc.ToolA       DEBUG The tool 'ToolSvc.ToolB' of type 'TestTool' is released
 ToolSvc.ToolA       DEBUG Services to release :
+ToolSvc.Generic...   INFO finalize() has been called
 ToolSvc.TestPub...   INFO finalize() has been called
 MyGaudiAlg.Priv...   INFO finalize() has been called
 MyGaudiAlg.Tool...   INFO destructor has been called
@@ -355,6 +362,7 @@ MyAlg.MyGaudiTool    INFO destructor has been called
 MyAlg.MyTool         INFO destructor has been called
 ToolSvc.MyGaudi...   INFO destructor has been called
 ToolSvc.MyTool       INFO destructor has been called
+ToolSvc.Generic...   INFO destructor has been called
 ToolSvc.TestPub...   INFO destructor has been called
 MyGaudiAlg.Priv...   INFO destructor has been called
 ApplicationMgr       INFO Application Manager Finalized successfully

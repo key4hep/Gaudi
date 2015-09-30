@@ -7,7 +7,6 @@
 #include "GaudiKernel/IToolSvc.h"
 #include "GaudiKernel/INamedInterface.h"
 #include "GaudiKernel/IAlgTool.h"
-//#include "GaudiKernel/SmartIF.h"
 
 #include <string>
 #include <vector>
@@ -15,7 +14,6 @@
 
 // forward declarations
 class IInterface;
-//class IAlgTool;
 class IToolSvc;
 
 class Algorithm;
@@ -97,7 +95,6 @@ class ToolHandle : public BaseToolHandle, public GaudiHandle<T> {
   friend class AlgTool;
   friend class Service;
 
-#ifdef ATLAS
 public:
   /** Constructor for a tool with default tool type and name.
       Can be called only if the type T is a concrete tool type (not an interface),
@@ -110,19 +107,7 @@ public:
       m_pToolSvc( "ToolSvc", GaudiHandleBase::parentName() )
   {  }
 
-#else
-public:
-  ToolHandle()
-    : GaudiHandle<T>("", "", ""),
-      m_pToolSvc("ToolSvc", ""){ }
-#endif
-
-#ifdef ATLAS
-  //provide transitional path for ATLAS to migrate away from instantiating ToolHandles directly
  public:
-#else
- private:
-#endif
   //
   // Constructors etc.
   //
@@ -131,22 +116,22 @@ public:
       The arguments are passed on to ToolSvc, and have the same meaning:
       @code
       StatusCode ToolSvc::retrieveTool ( const std::string& type            ,
-      T*&                tool            ,
-      const IInterface*  parent   = 0    ,
-      bool               createIf = true )
+                                         T*&                tool            ,
+                                         const IInterface*  parent   = 0    ,
+                                         bool               createIf = true )
       @endcode
       @param owner: class owning the ToolHandle
       @param toolType: "MyToolType/MyToolName"
-      "MyToolType" is short for "MyToolType/MyToolType"
-      'MyToolType' is the name of the class of the concrete tool
-      'MyToolName' is to distinguish several tool instances of the same class
+                       "MyToolType" is short for "MyToolType/MyToolType"
+                       'MyToolType' is the name of the class of the concrete tool
+                       'MyToolName' is to distinguish several tool instances of the same class
       @param parent: the parent Algorithm,Tool or Service of which this tool is a member.
-      If non-zero, the the tool is a private tool of the parent, otherwise it is
-      a public (shared) tool.
+                     If non-zero, the the tool is a private tool of the parent, otherwise it is
+                     a public (shared) tool.
       @param createIf: if true, create tool if not yet existing.
   */
 
-#if defined(ATLAS) && defined(TOOLHANDLE_DEPR_WARN)
+#if defined(TOOLHANDLE_DEPR_WARN)
   //warn about using deprecated explicit ToolHandle construction
 #pragma message("Untracked ToolHandle: Migrate explicit DataHandle constructor to declareTool Algorithm Property")
 
@@ -160,14 +145,6 @@ public:
 		      ToolHandleInfo::toolParentName(parent) ),
       m_pToolSvc( "ToolSvc", GaudiHandleBase::parentName() )
   {  }
-
-  //ATLAS still requires the copy constructor and operator= for the transition
-#ifndef ATLAS
-private:
-
-  ToolHandle(const ToolHandle& );
-  ToolHandle& operator=(const ToolHandle& );
-#endif
 
 public:
 
@@ -197,10 +174,6 @@ public:
   StatusCode release() const { // not really const, because it updates m_pObject
     return GaudiHandle<T>::release();
   }
-
-
-  //  virtual StatusCode retrieve( T*& algTool ) const;
-
 
   /** Do the real retrieval of the AlgTool. */
   virtual StatusCode retrieve( T*& algTool ) const {
@@ -247,7 +220,6 @@ class ToolHandle<IAlgTool> : public BaseToolHandle, public GaudiHandle<IAlgTool>
   friend class AlgTool;
   friend class Service;
 
-#ifdef ATLAS
 public:
   /** Constructor for a tool with default tool type and name.
       Can be called only if the type T is a concrete tool type (not an interface),
@@ -260,20 +232,7 @@ public:
       m_pToolSvc( "ToolSvc", GaudiHandleBase::parentName() )
   {  }
 
-#else
-
-public:
-  ToolHandle()
-    : GaudiHandle<IAlgTool>("", "", ""),
-      m_pToolSvc("ToolSvc", ""){ }
-#endif
-
-#ifdef ATLAS
-  //provide transitional path for ATLAS to migrate away from instantiating ToolHandles directly
  public:
-#else
- private:
-#endif
   //
   // Constructors etc.
   //
@@ -282,22 +241,22 @@ public:
       The arguments are passed on to ToolSvc, and have the same meaning:
       @code
       StatusCode ToolSvc::retrieveTool ( const std::string& type            ,
-      IAlgTool*&         tool            ,
-      const IInterface*  parent   = 0    ,
-      bool               createIf = true )
+                                         IAlgTool*&         tool            ,
+                                         const IInterface*  parent   = 0    ,
+                                         bool               createIf = true )
       @endcode
       @param owner: class owning the ToolHandle
       @param toolType: "MyToolType/MyToolName"
-      "MyToolType" is short for "MyToolType/MyToolType"
-      'MyToolType' is the name of the class of the concrete tool
-      'MyToolName' is to distinguish several tool instances of the same class
+                       "MyToolType" is short for "MyToolType/MyToolType"
+                       'MyToolType' is the name of the class of the concrete tool
+                       'MyToolName' is to distinguish several tool instances of the same class
       @param parent: the parent Algorithm,Tool or Service of which this tool is a member.
-      If non-zero, the the tool is a private tool of the parent, otherwise it is
-      a public (shared) tool.
+                     If non-zero, the the tool is a private tool of the parent, otherwise it is
+                     a public (shared) tool.
       @param createIf: if true, create tool if not yet existing.
   */
 
-#if defined(ATLAS) && defined(TOOLHANDLE_DEPR_WARN)
+#if defined(TOOLHANDLE_DEPR_WARN)
   //warn about using deprecated explicit ToolHandle construction
 #pragma message("Untracked ToolHandle: Migrate explicit DataHandle constructor to declareTool Algorithm Property")
 
@@ -311,14 +270,6 @@ public:
 			     ToolHandleInfo::toolParentName(parent) ),
       m_pToolSvc( "ToolSvc", GaudiHandleBase::parentName() )
   {  }
-
-  //ATLAS still requires the copy constructor and operator= for the transition
-#ifndef ATLAS
-private:
-
-  ToolHandle(const ToolHandle& );
-  ToolHandle& operator=(const ToolHandle& );
-#endif
 
 public:
 
@@ -355,14 +306,6 @@ public:
     return m_pToolSvc->retrieve( GaudiHandleBase::typeAndName(), IAlgTool::interfaceID(),
 				 (IAlgTool*&)(algTool),
 				 ToolHandleInfo::parent(), ToolHandleInfo::createIf() );
-
-    //This explicit casting is required in order to properly re-interpret the <T> Tool
-
-    // IAlgTool * tool;
-    // StatusCode sc = retrieve(tool);
-    // algTool = tool;
-
-    // return sc;
   }
 
   /** Do the real release of the AlgTool. */
