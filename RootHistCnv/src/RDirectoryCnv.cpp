@@ -6,6 +6,8 @@
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/NTuple.h"
 
+#include "boost/optional.hpp"
+
 #include "RDirectoryCnv.h"
 
 // Root files
@@ -19,6 +21,16 @@
 #include "TH1.h"
 #include "TH2.h"
 #include "TH3.h"
+
+namespace {
+    constexpr struct maybe_stol_t {
+        boost::optional<int> operator()(const std::string& s) const {
+            auto pos = s.find_first_of("0123456789+-");
+            if ( pos == std::string::npos ) return boost::none;
+            return std::stol( s.substr(pos) );
+        }
+    } maybe_stol {};
+}
 
 DECLARE_NAMESPACE_CONVERTER_FACTORY(RootHistCnv,RDirectoryCnv)
 
@@ -84,11 +96,9 @@ RootHistCnv::RDirectoryCnv::fillObjRefs(IOpaqueAddress* pAddr,DataObject* pObj) 
     std::string title = obj->GetTitle();
     std::string sid = obj->GetName();
     std::string f2 = full + "/" + sid;
-    auto pos = sid.find_first_of("0123456789+-");
-    if ( pos==std::string::npos ) {
-        log << MSG::WARNING << "can not convert \""<< sid <<"\" to a numeric ID " << endmsg;
-    }
-    int idh = ( pos != std::string::npos  ? std::stol( sid.substr(pos) ) : 0 );
+    auto hid = maybe_stol(sid);
+    if (!hid) log << MSG::WARNING << "can not convert \""<< sid <<"\" to a numeric ID " << endmsg;
+    int idh = hid.get_value_or(0);
     // introduced by Grigori Rybkine
     std::string clname = key->GetClassName();
     std::string clnm = clname.substr(0,3);
