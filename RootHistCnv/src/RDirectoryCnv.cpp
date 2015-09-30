@@ -96,9 +96,7 @@ RootHistCnv::RDirectoryCnv::fillObjRefs(IOpaqueAddress* pAddr,DataObject* pObj) 
     std::string title = obj->GetTitle();
     std::string sid = obj->GetName();
     std::string f2 = full + "/" + sid;
-    auto hid = maybe_stol(sid);
-    if (!hid) log << MSG::WARNING << "can not convert \""<< sid <<"\" to a numeric ID " << endmsg;
-    int idh = hid.get_value_or(0);
+    int idh = maybe_stol(sid).get_value_or(0);
     // introduced by Grigori Rybkine
     std::string clname = key->GetClassName();
     std::string clnm = clname.substr(0,3);
