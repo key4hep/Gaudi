@@ -1653,6 +1653,8 @@ function(gaudi_generate_configurables library)
     add_custom_target(${package}ConfAll ALL)
   endif()
   add_dependencies(${package}ConfAll ${library}Conf)
+  # ensure that the componentslist file is found at build time (GAUDI-1055)
+  gaudi_build_env(PREPEND LD_LIBRARY_PATH ${outdir})
   # Add dependencies on GaudiSvc and the genconf executable if they have to be built in the current project
   # Notify the project level target
   gaudi_merge_files_append(ConfDB ${library}Conf ${outdir}/${library}.confdb)
@@ -2590,6 +2592,8 @@ function(gaudi_generate_componentslist library)
                      ${listcomponents_cmd} --output ${componentsfile} ${libname}
                      DEPENDS ${library} listcomponents)
   add_custom_target(${library}ComponentsList ALL DEPENDS ${componentsfile})
+  # ensure that the componentslist file is found at build time (GAUDI-1055)
+  gaudi_build_env(PREPEND LD_LIBRARY_PATH ${CMAKE_CURRENT_BINARY_DIR})
   # Notify the project level target
   gaudi_merge_files_append(ComponentsList ${library}ComponentsList
                            ${CMAKE_CURRENT_BINARY_DIR}/${componentsfile})
