@@ -2,6 +2,13 @@ package GaudiPolicy
 package manager: Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-09-24 - Marco Clemencic
+ - GAUDI-1084: replaced calls to Popen terminate and kill with a function that
+   recurse and send a signal to all the children.
+
+! 2015-09-18 - Marco Clemencic
+ - GAUDI-1084: modified test timeout handling to avoid infinite waits
+
 ============================= GaudiPolicy v15r5 ==============================
 ! 2015-05-14 - Marco Clemencic
  - Select 'dbg' in test reference files if the platform contains 'do0'.
