@@ -15,7 +15,7 @@
 class GAUDI_API IAuditorSvc: virtual public extend_interfaces2<IService, IAuditor> {
 public:
   /// InterfaceID
-  DeclareInterfaceIDMultiBase(IAuditorSvc,3,0);
+  DeclareInterfaceID(IAuditorSvc,3,0);
 
   /// management functionality: retrieve an Auditor
   virtual IAuditor* getAuditor( const std::string& name ) = 0;
