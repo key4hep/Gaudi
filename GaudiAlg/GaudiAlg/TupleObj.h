@@ -886,15 +886,15 @@ namespace Tuples
      *  @param length name of "length" item
      *  @param maxv   maximal length of array
      */
-    template <class ITERATOR>
+    template <typename ITERATOR1,typename ITERATOR2>
     StatusCode farray ( const std::string& name          ,
-                        ITERATOR&&         first         ,
-                        ITERATOR&&         last          ,
+                        ITERATOR1&&        first         ,
+                        ITERATOR2&&        last          ,
                         const std::string& length        ,
                         size_t             maxv          )
     {
       return farray( name, implementation_detail::to_float,
-                     std::forward<ITERATOR>(first), std::forward<ITERATOR>(last),
+                     std::forward<ITERATOR1>(first), std::forward<ITERATOR2>(last),
                      length, maxv );
     }
     // =======================================================================
@@ -1311,10 +1311,10 @@ namespace Tuples
       size_t index = 0 ;
       for( ; first != last ; ++first )
       {
-        ( *var1 ) [ index ] = static_cast<float> ( func1 ( *first ) );
-        ( *var2 ) [ index ] = static_cast<float> ( func2 ( *first ) );
-        ( *var3 ) [ index ] = static_cast<float> ( func3 ( *first ) );
-        ( *var4 ) [ index ] = static_cast<float> ( func4 ( *first ) );
+        ( *var1 ) [ index ] = func1 ( *first );
+        ( *var2 ) [ index ] = func2 ( *first );
+        ( *var3 ) [ index ] = func3 ( *first );
+        ( *var4 ) [ index ] = func4 ( *first );
         ++index ;
       }
 
