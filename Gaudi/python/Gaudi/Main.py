@@ -162,7 +162,7 @@ class gaudimain(object) :
         datetime = datetime.replace(' ', '_')
         outfile = open( 'gaudirun-%s.log'%(datetime), 'w' )
         # two handlers, one for a log file, one for terminal
-        streamhandler = logging.StreamHandler(strm=outfile)
+        streamhandler = logging.StreamHandler(stream=outfile)
         console       = logging.StreamHandler()
         # create formatter : the params in parentheses are variable names available via logging
         formatter = logging.Formatter( "%(asctime)s - %(name)s - %(levelname)s - %(message)s" )
@@ -254,11 +254,11 @@ class gaudimain(object) :
         self.log.info('attaching debugger to PID ' + str(os.getpid()))
         pid =  os.spawnvp(os.P_NOWAIT,
                           debugger, [debugger, '-q', 'python', str(os.getpid())])
-        
+
         # give debugger some time to attach to the python process
         import time
         time.sleep( 1 )
-        
+
         # verify the process' existence (will raise OSError if failed)
         os.waitpid( pid, os.WNOHANG )
         os.kill( pid, 0 )

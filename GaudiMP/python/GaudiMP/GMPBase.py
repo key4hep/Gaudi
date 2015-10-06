@@ -1,5 +1,4 @@
 from Gaudi.Configuration import *
-from Configurables import EvtCounter
 from GaudiPython import AppMgr, gbl, setOwnership, PyAlgorithm, SUCCESS,FAILURE, InterfaceCast
 from ROOT import TBufferFile, TBuffer
 import multiprocessing
