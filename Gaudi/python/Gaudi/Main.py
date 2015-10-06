@@ -427,23 +427,19 @@ class gaudimain(object) :
         import GaudiMP.GMPBase as gpp
         c = Configurable.allConfigurables
         self.log.info('-'*80)
-        self.log.info('%s: Parallel Mode : %i '%(__name__, ncpus))
-        from commands import getstatusoutput as gso
-        metadataCommands = [ 'uname -a',
-                             'echo $CMTCONFIG',
-                             'echo $GAUDIAPPNAME',
-                             'echo $GAUDIAPPVERSION']
-        for comm in metadataCommands :
-            s, o = gso( comm )
-            if s :
-                o = "Undetermined"
-            string = '%s: %30s : %s '%(__name__, comm, o)
-            self.log.info( string )
+        self.log.info('%s: Parallel Mode : %i ', __name__, ncpus)
+        for name, value in [('platrofm', ' '.join(os.uname())),
+                            ('config', os.environ.get('BINARY_TAG') or
+                                       os.environ.get('CMTCONFIG')),
+                            ('app. name', os.environ.get('GAUDIAPPNAME')),
+                            ('app. version', os.environ.get('GAUDIAPPVERSION')),
+                            ]:
+            self.log.info('%s: %30s : %s ', __name__, name, value or 'Undefined')
         try :
             events = str(c['ApplicationMgr'].EvtMax)
         except :
             events = "Undetermined"
-        self.log.info('%s: Events Specified : %s '%(__name__,events))
+        self.log.info('%s: Events Specified : %s ', __name__, events)
         self.log.info('-'*80)
         # Parall = gpp.Coordinator(ncpus, shared, c, self.log)
         Parall = gpp.Coord( ncpus, c, self.log )
