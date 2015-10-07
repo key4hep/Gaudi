@@ -160,7 +160,7 @@ class SimplePropertyRef< Gaudi::DataHandle > : public DataHandleProperty {
 public:
   SimplePropertyRef(const std::string& name, Gaudi::DataHandle& value) :
     ::DataHandleProperty(name, value)
-  { std::cerr << "---->>> " << name << std::endl; }
+  {}
 
   /// virtual Destructor
   virtual ~SimplePropertyRef() {}
