@@ -1,4 +1,3 @@
-// $Id: DetDataSvc.h,v 1.14 2008/10/27 19:22:21 marcocle Exp $
 #ifndef DETECTORDATASVC_DETDATASVC_H
 #define DETECTORDATASVC_DETDATASVC_H
 
@@ -32,25 +31,25 @@ public:
   // Overloaded DataSvc methods
 
   /// Initialize the service
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
 
   /// Initialize the service
-  virtual StatusCode reinitialize();
+  StatusCode reinitialize() override;
 
   /// Finalize the service
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
 
   /// Remove all data objects in the data store.
-  virtual StatusCode clearStore();
+  StatusCode clearStore() override;
 
   /// Update object
-  virtual StatusCode updateObject( DataObject* toUpdate );
+  StatusCode updateObject( DataObject* toUpdate ) override;
 
   /// Standard Constructor
   DetDataSvc(const std::string& name, ISvcLocator* svc);
 
   /// Standard Destructor
-  virtual ~DetDataSvc();
+  ~DetDataSvc() override = default;
 
 private:
   /// Deal with Detector Description initialization
@@ -62,43 +61,43 @@ public:
 
   /// Check if the event time has been set.
   /// Kept for backward compatibility, returns always true.
-  virtual bool validEventTime() const ;
+  bool validEventTime() const override;
 
   /// Get the event time
-  virtual const Gaudi::Time& eventTime() const ;
+  const Gaudi::Time& eventTime() const override;
 
   /// Set the new event time
-  virtual void setEventTime( const Gaudi::Time& time );
+  void setEventTime( const Gaudi::Time& time ) override;
 
 public:
 
   // Implementation of the IIncidentListener interface
 
   /// Inform that a new incident has occured
-  virtual void handle( const Incident& );
+  void handle( const Incident& ) override;
 
 private:
 
   /// Detector Data Persistency Storage type
-  int              m_detStorageType;
+  int              m_detStorageType = XML_StorageType;
 
   /// Location of detector Db (filename,URL)
-  std::string      m_detDbLocation;
+  std::string      m_detDbLocation = "empty";
 
   /// Name of the root node of the detector
-  std::string      m_detDbRootName;
+  std::string      m_detDbRootName = "dd";
 
   /// Name of the persistency service.
-  std::string      m_persistencySvcName;
+  std::string      m_persistencySvcName = "DetectorPersistencySvc";
 
   /// Flag to control if the persistency is required
-  bool             m_usePersistency;
+  bool             m_usePersistency = false;
 
   /// Current event time
-  Gaudi::Time        m_eventTime;
+  Gaudi::Time        m_eventTime = 0;
 
   /// Address Creator to be used
-  SmartIF<IAddressCreator> m_addrCreator;
+  SmartIF<IAddressCreator> m_addrCreator = nullptr;
 
 };
 

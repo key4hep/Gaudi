@@ -29,16 +29,9 @@ AlgContextSvc::AlgContextSvc
 ( const std::string& name ,
   ISvcLocator*       svc  )
   : base_class ( name , svc  )
-  , m_algorithms (  0   )
-  , m_inc        (  0   )
-  , m_check      ( true )
 {
   declareProperty ( "Check" , m_check , "Flag to perform more checks" );
 }
-// ============================================================================
-// Standard Destructor
-// ============================================================================
-AlgContextSvc::~AlgContextSvc() {}
 // ============================================================================
 // standard initialization of the service
 // ============================================================================
@@ -48,27 +41,20 @@ StatusCode AlgContextSvc::initialize ()
   StatusCode sc = Service::initialize () ;
   if ( sc.isFailure () ) { return sc ; }
   // Incident Service
-  if ( 0 != m_inc     )
+  if ( m_inc     )
   {
     m_inc -> removeListener ( this ) ;
-    m_inc -> release() ;
-    m_inc = 0 ;
+    m_inc.reset();
   }
   // perform more checks?
   if ( m_check )
   {
-    sc = Service::service ( "IncidentSvc" , m_inc , true ) ;
-    if ( sc.isFailure() )
+    m_inc = Service::service ( "IncidentSvc" , true ) ;
+    if ( !m_inc )
     {
       MsgStream log ( msgSvc() , name() )  ;
-      log << MSG::ERROR << "Could not locate 'IncidentSvc'" << sc << endmsg ;
-      return sc ;                                               // RETURN
-    }
-    if ( 0 == m_inc )
-    {
-      MsgStream log ( msgSvc() , name() ) ;
-      log << MSG::ERROR << "Invalid pointer to IIncindentSvc" << endmsg ;
-      return StatusCode::FAILURE ;                               // RETURN
+      log << MSG::ERROR << "Could not locate 'IncidentSvc'" << endmsg ;
+      return StatusCode::FAILURE ;                                               // RETURN
     }
     m_inc -> addListener ( this , IncidentType::BeginEvent ) ;
     m_inc -> addListener ( this , IncidentType::EndEvent   ) ;
@@ -95,11 +81,10 @@ StatusCode AlgContextSvc::finalize   ()
         << m_algorithms.size() << endmsg ;
   }
   // Incident Service
-  if ( 0 != m_inc     )
+  if ( m_inc     )
   {
     m_inc -> removeListener ( this ) ;
-    m_inc -> release() ;
-    m_inc = 0 ;
+    m_inc.reset();
   }
   // finalize the base class
   return Service::finalize () ;
@@ -109,7 +94,7 @@ StatusCode AlgContextSvc::finalize   ()
 // ============================================================================
 StatusCode AlgContextSvc::setCurrentAlg  ( IAlgorithm* a )
 {
-  if ( 0 == a )
+  if ( !a )
   {
     MsgStream log ( msgSvc() , name() ) ;
     log << MSG::WARNING << "IAlgorithm* points to NULL" << endmsg ;
@@ -125,7 +110,7 @@ StatusCode AlgContextSvc::setCurrentAlg  ( IAlgorithm* a )
 // ============================================================================
 StatusCode AlgContextSvc::unSetCurrentAlg ( IAlgorithm* a )
 {
-  if ( 0 == a )
+  if ( !a )
   {
     MsgStream log ( msgSvc() , name() ) ;
     log << MSG::WARNING << "IAlgorithm* points to NULL" << endmsg ;
@@ -148,7 +133,7 @@ StatusCode AlgContextSvc::unSetCurrentAlg ( IAlgorithm* a )
 /// accessor to current algorithm: @see IAlgContextSvc
 // ============================================================================
 IAlgorithm* AlgContextSvc::currentAlg  () const
-{ return m_algorithms.empty() ? 0 : m_algorithms.back() ; }
+{ return m_algorithms.empty() ? nullptr : m_algorithms.back() ; }
 // ============================================================================
 // handle incident @see IIncidentListener
 // ============================================================================
@@ -163,8 +148,6 @@ void AlgContextSvc::handle ( const Incident& )
   }
 }
 // ============================================================================
-
-
 
 
 // ============================================================================

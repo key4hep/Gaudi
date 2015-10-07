@@ -39,7 +39,6 @@
   <class pattern = "SimplePropertyRef<*>"/>
   <class pattern = "BoundedVerifier<*>"/>
   <class pattern = "PropertyVerifier<*>"/>
-  <class name    = "PropertyCallbackFunctor"/>
 
   <class pattern = "GaudiAlg::*"              />
   <class name    = "GaudiAlgorithm"           />
@@ -60,7 +59,6 @@
   <class name    = "Stat"                   />
   <class pattern = "Chrono*"                 />
 
-  <class pattern = "Property*Functor"        />
   <class pattern = "SimpleProperty<*>"       />
   <class pattern = "SimplePropertyRef<*>"    />
   <class pattern = "PropertyWithVerifier<*>" />
@@ -97,6 +95,11 @@
   <function name= "Gaudi::Utils::Histos::format" />
   <class    name= "Gaudi::Utils::Histos::Table"  />
   <class    name= "Gaudi::Utils::HistoStats"  />
+
+  <function name= "Gaudi::Utils::QuasiRandom::mix" />
+  <function name= "Gaudi::Utils::QuasiRandom::mix32" />
+  <function name= "Gaudi::Utils::QuasiRandom::mix64" />
+  <function name= "Gaudi::Utils::QuasiRandom::mixString" />
 
   <class    name= "Gaudi::RangeBase_"  />
 

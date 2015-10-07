@@ -42,12 +42,7 @@ AlgContextAuditor::AlgContextAuditor
 ( const std::string& name ,
   ISvcLocator*       pSvc )
   : Auditor( name , pSvc )
-  , m_svc   ( 0    )
 {}
-// ============================================================================
-// destructor
-// ============================================================================
-AlgContextAuditor::~AlgContextAuditor() {}
 // ============================================================================
 // standard initialization, see @IAuditor
 // ============================================================================
@@ -56,17 +51,8 @@ StatusCode AlgContextAuditor::initialize()
   // initialize the base class
   StatusCode sc = Auditor::initialize() ;
   if ( sc.isFailure() ) { return sc ; }                           // RETURN
-  if ( 0 != m_svc ) { m_svc -> release() ; m_svc = 0 ; }
-  sc = Auditor::service ( "AlgContextSvc" , m_svc , true ) ;
-  if ( sc.isFailure() )
-  {
-    MsgStream log ( msgSvc() , name() ) ;
-    log << MSG::ERROR << "Unable to locate 'AlgContextSvc'" << sc << endmsg ;
-    m_svc = 0 ;
-    return sc ;  // RETURN
-  }
-  if ( 0 == m_svc     )
-  {
+  m_svc = service(  "AlgContextSvc" , true ) ;
+  if ( !m_svc ) {
     MsgStream log ( msgSvc() , name() ) ;
     log << MSG::ERROR << "Invalid pointer to IAlgContextSvc" << endmsg ;
     return StatusCode::FAILURE ;           // RETURN
@@ -78,51 +64,51 @@ StatusCode AlgContextAuditor::initialize()
 // ============================================================================
 StatusCode AlgContextAuditor::finalize ()
 {
-  if ( 0 != m_svc ) { m_svc-> release() ; m_svc = 0 ; }
+  m_svc.reset();
   // finalize the base class
   return Auditor::finalize () ;
 }
 // ============================================================================
 void AlgContextAuditor::beforeInitialize ( INamedInterface*  a ) {
-  if ( 0 != m_svc ) {
+  if ( m_svc ) {
     IAlgorithm* alg = toAlg(a);
-    if (alg != 0) m_svc -> setCurrentAlg ( alg ).ignore() ;
+    if (alg) m_svc -> setCurrentAlg ( alg ).ignore() ;
   }
 }
 // ============================================================================
 void AlgContextAuditor::afterInitialize  ( INamedInterface*  a ) {
-  if ( 0 != m_svc ) {
+  if ( m_svc ) {
     IAlgorithm* alg = toAlg(a);
-    if (alg != 0) m_svc -> unSetCurrentAlg ( alg ).ignore() ;
+    if (alg) m_svc -> unSetCurrentAlg ( alg ).ignore() ;
   }
 }
 // ============================================================================
 void AlgContextAuditor::beforeFinalize   ( INamedInterface*  a ) {
-  if ( 0 != m_svc ) {
+  if ( m_svc ) {
     IAlgorithm* alg = toAlg(a);
-    if (alg != 0) m_svc -> setCurrentAlg ( alg ).ignore() ;
+    if (alg) m_svc -> setCurrentAlg ( alg ).ignore() ;
   }
 }
 // ============================================================================
 void AlgContextAuditor::afterFinalize    ( INamedInterface*  a ) {
-  if ( 0 != m_svc ) {
+  if ( m_svc ) {
     IAlgorithm* alg = toAlg(a);
-    if (alg != 0) m_svc -> unSetCurrentAlg ( alg ).ignore() ;
+    if (alg) m_svc -> unSetCurrentAlg ( alg ).ignore() ;
   }
 }
 // ============================================================================
 void AlgContextAuditor::beforeExecute    ( INamedInterface*  a ) {
-  if ( 0 != m_svc ) {
+  if ( m_svc ) {
     IAlgorithm* alg = toAlg(a);
-    if (alg != 0) m_svc -> setCurrentAlg ( alg ).ignore() ;
+    if (alg) m_svc -> setCurrentAlg ( alg ).ignore() ;
   }
 }
 // ============================================================================
 void AlgContextAuditor::afterExecute     ( INamedInterface*  a       ,
                                            const StatusCode& /* s */ ) {
-  if ( 0 != m_svc ) {
+  if ( m_svc ) {
     IAlgorithm* alg = toAlg(a);
-    if (alg != 0) m_svc -> unSetCurrentAlg ( alg ).ignore() ;
+    if (alg) m_svc -> unSetCurrentAlg ( alg ).ignore() ;
   }
 }
 // ============================================================================

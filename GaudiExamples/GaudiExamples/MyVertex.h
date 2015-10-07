@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiExamples/src/Lib/MyVertex.h,v 1.4 2007/09/28 11:48:17 marcocle Exp $
 #ifndef GAUDIPOOLDB_TEST_MYVERTEX_H
 #define GAUDIPOOLDB_TEST_MYVERTEX_H
 

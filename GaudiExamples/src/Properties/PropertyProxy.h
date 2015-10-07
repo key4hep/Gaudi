@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiExamples/src/Properties/PropertyProxy.h,v 1.1 2001/06/26 17:05:47 mato Exp $
 #ifndef GAUDIEXAMPLE_PropertyProxy_H
 #define GAUDIEXAMPLE_PropertyProxy_H
 

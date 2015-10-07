@@ -24,11 +24,11 @@ ServiceLocatorHelper::locateService(const std::string& name,
 				    const InterfaceID& iid,
 				    void** ppSvc,
 				    bool quiet) const {
-  SmartIF<IService> theSvc = service(name, quiet, false);
-  if (!theSvc.isValid()) return StatusCode::FAILURE;
+  auto theSvc = service(name, quiet, false);
+  if (!theSvc) return StatusCode::FAILURE;
   StatusCode sc = theSvc->queryInterface(iid, ppSvc);
   if (!sc.isSuccess()) {
-    *ppSvc = 0;
+    *ppSvc = nullptr;
     if (!quiet) log() << MSG::ERROR
       << "ServiceLocatorHelper::locateService: wrong interface id "
       << iid << " for service " << name << endmsg;
@@ -40,11 +40,11 @@ StatusCode
 ServiceLocatorHelper::createService(const std::string& name,
 				    const InterfaceID& iid,
 				    void** ppSvc) const {
-  SmartIF<IService> theSvc = service(name, false, true);
-  if (!theSvc.isValid()) return StatusCode::FAILURE;
+  auto theSvc = service(name, false, true);
+  if (!theSvc) return StatusCode::FAILURE;
   StatusCode sc = theSvc->queryInterface(iid, ppSvc);
   if (!sc.isSuccess()) {
-    *ppSvc = 0;
+    *ppSvc = nullptr;
     log() << MSG::ERROR
       << "ServiceLocatorHelper::createService: wrong interface id "
       << iid << " for service " << name << endmsg;
@@ -67,11 +67,9 @@ SmartIF<IService> ServiceLocatorHelper::service(const std::string &name, const b
     theSvc = serviceLocator()->service(name + threadName(), createIf);
   }
   // if not, try to find the common, single-threaded version of the service
-  if (!theSvc.isValid()){
-    theSvc = serviceLocator()->service(name, createIf);
-  }
+  if (!theSvc) theSvc = serviceLocator()->service(name, createIf);
 
-  if (theSvc.isValid()) {
+  if (theSvc) {
     if (!quiet) {
       if (UNLIKELY(log().level() <= MSG::VERBOSE))
         log() << MSG::VERBOSE

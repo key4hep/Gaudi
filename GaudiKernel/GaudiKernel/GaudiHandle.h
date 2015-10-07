@@ -7,6 +7,7 @@
 #include "GaudiKernel/GaudiException.h"
 
 #include <string>
+#include <algorithm>
 #include <vector>
 #include <stdexcept>
 #include <iostream>
@@ -21,12 +22,12 @@ protected:
                         PublicToolHandle,PrivateToolHandle,ServiceHandle
    @param myParentName: Name of the parent that has this handle as a member. Used in printout.
   */
-  GaudiHandleInfo( const std::string& myComponentType, const std::string& myParentName )
-    : m_componentType(myComponentType), m_parentName(myParentName)
+  GaudiHandleInfo( std::string myComponentType, std::string myParentName )
+    : m_componentType(std::move(myComponentType)), m_parentName(std::move(myParentName))
   {}
 public:
   /** virtual destructor so that derived class destructor is called. */
-  virtual ~GaudiHandleInfo() {}
+  virtual ~GaudiHandleInfo() = default;
   //
   // Public member functions
   //
@@ -40,8 +41,8 @@ public:
   }
 
   /** set name as used in declareProperty(name,gaudiHandle). Used in printout. */
-  void setPropertyName( const std::string& propName ) {
-    m_propertyName = propName;
+  void setPropertyName( std::string propName ) {
+    m_propertyName = std::move(propName);
   }
 
   /** The name of the parent */
@@ -52,13 +53,13 @@ public:
   /** The python class name for the property in the genconf-generated configurables.
       The python class is defined in GaudiPython/python/GaudiHandles.py.
       To be implemented in derived class. */
-  virtual const std::string pythonPropertyClassName() const = 0;
+  virtual std::string pythonPropertyClassName() const = 0;
 
   /** Python representation of handle, i.e. python class name and argument.
       Can be used in the genconf-generated configurables.
       The corresponding python classes are defined in GaudiPython/GaudiHandles.py.
       To be implemented in derived class. */
-  virtual const std::string pythonRepr() const = 0;
+  virtual std::string pythonRepr() const = 0;
 
 private:
   //
@@ -93,11 +94,11 @@ protected:
                         PublicToolHandle,PrivateToolHandle,ServiceHandle
    @param myParentName: Name of the parent that has this handle as a member. Used in printout.
   */
-  GaudiHandleBase( const std::string& myTypeAndName, const std::string& myComponentType,
-		   const std::string& myParentName )
-    : GaudiHandleInfo(myComponentType,myParentName)
+  GaudiHandleBase( std::string myTypeAndName, std::string myComponentType,
+		           std::string myParentName )
+    : GaudiHandleInfo(std::move(myComponentType),std::move(myParentName))
   {
-    setTypeAndName(myTypeAndName);
+    setTypeAndName(std::move(myTypeAndName));
   }
 public:
   //
@@ -120,7 +121,7 @@ public:
   }
 
   /** The component "type/name" string */
-  void setTypeAndName( const std::string& myTypeAndName );
+  void setTypeAndName( std::string myTypeAndName );
 
   /** Set the instance name (part after the '/') without changing the class type */
   void setName( const std::string& myName );
@@ -128,15 +129,15 @@ public:
   /** Name of the componentType with "Handle" appended. Used as the python class name
       for the property in the genconf-generated configurables.
       The python class is defined in GaudiPython/python/GaudiHandles.py. */
-  const std::string pythonPropertyClassName() const;
+  std::string pythonPropertyClassName() const;
 
   /** name used for printing messages */
-  const std::string messageName() const;
+  std::string messageName() const;
 
   /** Python representation of handle, i.e. python class name and argument.
       Can be used in the genconf-generated configurables.
       The corresponding python classes are defined in GaudiPython/GaudiHandles.py */
-  virtual const std::string pythonRepr() const;
+  virtual std::string pythonRepr() const;
 
 private:
   //
@@ -160,9 +161,9 @@ class GAUDI_API GaudiHandle: public GaudiHandleBase {
   // Constructors etc.
   //
 protected:
-  GaudiHandle( const std::string& myTypeAndName, const std::string& myComponentType,
-	       const std::string& myParentName )
-    : GaudiHandleBase(myTypeAndName, myComponentType, myParentName), m_pObject(0)
+  GaudiHandle( std::string myTypeAndName, std::string myComponentType,
+	           std::string myParentName )
+    : GaudiHandleBase(std::move(myTypeAndName), std::move(myComponentType), std::move(myParentName))
   {}
 
 public:
@@ -188,7 +189,7 @@ public:
   StatusCode retrieve() const { // not really const, because it updates m_pObject
     if ( m_pObject && release().isFailure() ) return StatusCode::FAILURE;
     if ( retrieve( m_pObject ).isFailure() ) {
-      m_pObject = 0;
+      m_pObject = nullptr;
       return StatusCode::FAILURE;
     }
     return StatusCode::SUCCESS;
@@ -198,7 +199,7 @@ public:
   StatusCode release() const { // not really const, because it updates m_pObject
     if ( m_pObject ) {
       StatusCode sc = release( m_pObject );
-      m_pObject = 0;
+      m_pObject = nullptr;
       return sc;
     }
     return StatusCode::SUCCESS;
@@ -290,7 +291,7 @@ private:
   //
   // Data members
   //
-  mutable T* m_pObject;
+  mutable T* m_pObject = nullptr;
 };
 
 
@@ -302,8 +303,8 @@ private:
 
 class GAUDI_API GaudiHandleArrayBase: public GaudiHandleInfo {
 protected:
-  GaudiHandleArrayBase( const std::string& myComponentType, const std::string& myParentName )
-    : GaudiHandleInfo(myComponentType,myParentName)
+  GaudiHandleArrayBase( std::string myComponentType, std::string myParentName )
+    : GaudiHandleInfo(std::move(myComponentType),std::move(myParentName))
   {}
 public:
   typedef std::vector< GaudiHandleBase* > BaseHandleArray;
@@ -330,12 +331,12 @@ public:
   /** Name of the componentType with "HandleArray" appended. Used as the python class name
       for the property in the genconf-generated configurables.
       The python class is defined in GaudiPython/python/GaudiHandles.py. */
-  virtual const std::string pythonPropertyClassName() const;
+  std::string pythonPropertyClassName() const override;
 
   /** Python representation of array of handles, i.e. list of python handles.
       Can be used in the genconf-generated configurables.
       The corresponding python classes are defined in GaudiPython/GaudiHandles.py */
-  virtual const std::string pythonRepr() const;
+  std::string pythonRepr() const override;
 
   /** Add a handle to the array with "type/name" given in &lt;myHandleTypeAndName&gt;.
       Return whether addition was successful or not.
@@ -384,8 +385,8 @@ protected:
                                  for the list of tools
  */
   GaudiHandleArray( const std::vector< std::string >& myTypesAndNamesList,
-		    const std::string& myComponentType, const std::string& myParentName  )
-    : GaudiHandleArrayBase(myComponentType,myParentName)
+		            std::string myComponentType, std::string myParentName  )
+    : GaudiHandleArrayBase(std::move(myComponentType),std::move(myParentName))
   {
     setTypesAndNames( myTypesAndNamesList );
   }
@@ -399,7 +400,7 @@ protected:
   {}
 
 public:
-  virtual ~GaudiHandleArray() {};
+  virtual ~GaudiHandleArray() = default;
 
   /**Set the array of GaudiHandles from typeAndNames given in vector of strings. */
   GaudiHandleArray& operator=( const std::vector< std::string >& myTypesAndNamesList ) {
@@ -407,14 +408,14 @@ public:
     return *this;
   }
 
-  virtual GaudiHandleArrayBase::BaseHandleArray getBaseArray() {
+  GaudiHandleArrayBase::BaseHandleArray getBaseArray() override {
     GaudiHandleArrayBase::BaseHandleArray baseArray;
     iterator it = begin(), itEnd = end();
     for (  ; it != itEnd; ++it ) baseArray.push_back( &*it );
     return baseArray;
   }
 
-  virtual GaudiHandleArrayBase::ConstBaseHandleArray getBaseArray() const {
+  GaudiHandleArrayBase::ConstBaseHandleArray getBaseArray() const override {
     GaudiHandleArrayBase::ConstBaseHandleArray baseArray;
     const_iterator it = begin(), itEnd = end();
     for (  ; it != itEnd; ++it ) baseArray.push_back( &*it );
@@ -452,11 +453,11 @@ public:
     return m_handleArray.size();
   }
 
-  virtual void clear() {
+  void clear() override {
     m_handleArray.clear();
   }
 
-  virtual bool empty() const {
+  bool empty() const override {
     return m_handleArray.empty();
   }
 
@@ -470,22 +471,18 @@ public:
 
   /** Get pointer (!) to ToolHandle by instance name. Returns zero pointer if not found */
   T* operator[]( const std::string& name ) {
-    iterator it = begin(), itEnd = end();
-    for ( ; it != itEnd; ++it ) {
-      if ( it->name() == name ) return &*it;
-    }
-    // not found
-    return 0;
+    auto it = std::find_if(begin(),end(),[&](const_reference r) {
+            return r.name() == name;
+            } );
+    return it != end() ? &*it : nullptr;
   }
 
   /** Get const pointer (!) to ToolHandle by instance name. Returns zero pointer if not found */
   const T* operator[]( const std::string& name ) const {
-    const_iterator it = begin(), itEnd = end();
-    for ( ; it != itEnd; ++it ) {
-      if ( it->name() == name ) return &*it;
-    }
-    // not found
-    return 0;
+    auto it = std::find_if(begin(),end(),[&](const_reference r) {
+            return r.name() == name;
+            } );
+    return it != end() ? &*it : nullptr;
   }
 
 /** Add a handle with given type and name. Can be overridden in derived class.
@@ -498,12 +495,9 @@ public:
 
   /** Retrieve all tools */
   StatusCode retrieve() {
-    iterator it = begin(), itEnd = end();
-    for ( ; it != itEnd; ++it ) {
-      if ( it->retrieve().isFailure() ) {
-	// stop at first failure
-	return StatusCode::FAILURE;
-      }
+    for (auto& i : *this) { 
+	  // stop at first failure
+      if ( i.retrieve().isFailure() ) return StatusCode::FAILURE;
     }
     return StatusCode::SUCCESS;
   }
@@ -511,12 +505,9 @@ public:
   /** Release all tools */
   StatusCode release() {
     StatusCode sc = StatusCode::SUCCESS;
-    iterator it = begin(), itEnd = end();
-    for ( ; it != itEnd; ++it ) {
-      if ( it->release().isFailure() ) {
-	// continue trying to release other tools
-	sc = StatusCode::FAILURE;
-      }
+    for (auto& i : *this ) { 
+	  // continue trying to release other tools even if we fail...
+      if ( i.release().isFailure() ) sc = StatusCode::FAILURE;
     }
     return sc;
   }

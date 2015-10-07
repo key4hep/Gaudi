@@ -1,4 +1,3 @@
-// $Id: GaudiMain.cpp,v 1.4 2006/09/13 15:25:15 hmd Exp $
 //------------------------------------------------------------------------------
 //
 //  Description: Main Program for Gaudi applications
@@ -14,10 +13,10 @@
 
 extern "C" GAUDI_API int GaudiMain(int argc,char **argv) {
   IInterface* iface = Gaudi::createApplicationMgr();
-  SmartIF<IProperty>     propMgr ( iface );
   SmartIF<IAppMgrUI>     appMgr  ( iface );
+  auto propMgr         = appMgr.as<IProperty>();
 
-  if( !appMgr.isValid() || !propMgr.isValid() ) {
+  if( !appMgr || !propMgr ) {
     std::cout << "Fatal error while creating the ApplicationMgr " << std::endl;
     return 1;
   }
@@ -27,7 +26,7 @@ extern "C" GAUDI_API int GaudiMain(int argc,char **argv) {
 
   propMgr->setProperty( "JobOptionsPath", opts ).ignore();
 
-  if( opts.substr( opts.length() - 3, 3 ) == ".py" ) {
+  if( opts.compare( opts.length() - 3, 3, ".py" ) == 0 ) {
     propMgr->setProperty( "EvtSel",         "NONE" ).ignore();
     propMgr->setProperty( "JobOptionsType", "NONE" ).ignore();
     propMgr->setProperty( "DLLs",           "['GaudiPython']" ).ignore();
@@ -39,7 +38,8 @@ extern "C" GAUDI_API int GaudiMain(int argc,char **argv) {
   IntegerProperty returnCode("ReturnCode", 0);
   propMgr->getProperty(&returnCode).ignore();
   // Release Application Manager
-  iface->release();
+  propMgr.reset();
+  appMgr.reset();
   // All done - exit
   if (sc.isFailure() && returnCode.value() == 0) {
     // propagate a valid error code in case of failure

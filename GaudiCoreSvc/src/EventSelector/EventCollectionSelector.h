@@ -52,11 +52,11 @@ public:
       tuple = t;
       item = i;
     }
-    MyContextType(MyContextType* ctxt=0)  {
+    MyContextType(MyContextType* ctxt=nullptr)  {
       addressBuffer = new GenericAddress();
       addressBuffer->addRef();
-      tuple = (ctxt) ? ctxt->tuple : 0;
-      item  = (ctxt) ? ctxt->item : 0;
+      tuple = (ctxt) ? ctxt->tuple : nullptr;
+      item  = (ctxt) ? ctxt->item : nullptr;
     }
     MyContextType(const MyContextType& ctxt)
       : IEvtSelector::Context(ctxt)
@@ -66,10 +66,10 @@ public:
       tuple = ctxt.tuple;
       item  = ctxt.item;
     }
-    virtual ~MyContextType()    {
+    ~MyContextType() override {
       addressBuffer->release();
     }
-    virtual void* identifier() const {
+    void* identifier() const override {
       return (void*)addressBuffer;
     }
     void setAddress(IOpaqueAddress* pAddr);
@@ -99,30 +99,30 @@ protected:
 public:
 
   /// Service override: Initialize service
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
   /// Service override: Finalize Service
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
 
   /// Create a new event loop context
   /** @param refpCtxt   [IN/OUT]  Reference to pointer to store the context
     *
     * @return StatusCode indicating success or failure
     */
-  virtual StatusCode createContext(Context*& refpCtxt) const;
+  StatusCode createContext(Context*& refpCtxt) const override;
 
   /// Get next iteration item from the event loop context
   /** @param refCtxt   [IN/OUT]  Reference to the context
     *
     * @return StatusCode indicating success or failure
     */
-  virtual StatusCode next(Context& refCtxt) const;
+  StatusCode next(Context& refCtxt) const override;
 
   /// Get next iteration item from the event loop context, but skip jump elements
   /** @param refCtxt   [IN/OUT]  Reference to the context
     *
     * @return StatusCode indicating success or failure
     */
-  virtual StatusCode next(Context& refCtxt,int jump) const;
+  StatusCode next(Context& refCtxt,int jump) const override;
 
   /// Get previous iteration item from the event loop context
   /** @param refCtxt   [IN/OUT]  Reference to the context
@@ -130,7 +130,7 @@ public:
     *
     * @return StatusCode indicating success or failure
     */
-  virtual StatusCode previous(Context& refCtxt) const;
+  StatusCode previous(Context& refCtxt) const override;
 
   /// Get previous iteration item from the event loop context, but skip jump elements
   /** @param refCtxt   [IN/OUT]  Reference to the context
@@ -138,14 +138,14 @@ public:
     *
     * @return StatusCode indicating success or failure
     */
-  virtual StatusCode previous(Context& refCtxt,int jump) const;
+  StatusCode previous(Context& refCtxt,int jump) const override;
 
   /// Rewind the dataset
   /** @param refCtxt   [IN/OUT]  Reference to the context
     *
     * @return StatusCode indicating success or failure
     */
-  virtual StatusCode rewind(Context& refCtxt) const;
+  StatusCode rewind(Context& refCtxt) const override;
 
   /// Create new Opaque address corresponding to the current record
   /** @param refCtxt   [IN/OUT]  Reference to the context
@@ -153,14 +153,14 @@ public:
     *
     * @return StatusCode indicating success or failure
     */
-  virtual StatusCode createAddress(const Context& refCtxt, IOpaqueAddress*& refpAddr) const;
+  StatusCode createAddress(const Context& refCtxt, IOpaqueAddress*& refpAddr) const override;
 
   /// Release existing event iteration context
   /** @param refCtxt   [IN/OUT]  Reference to the context
     *
     * @return StatusCode indicating success or failure
     */
-  virtual StatusCode releaseContext(Context*& refCtxt) const;
+  StatusCode releaseContext(Context*& refCtxt) const override;
 
   /** Will set a new criteria for the selection of the next list of events and will change
     * the state of the context in a way to point to the new list.
@@ -170,7 +170,7 @@ public:
     *
     * @return StatusCode indicating success or failure
     */
-  virtual StatusCode resetCriteria(const std::string& cr,Context& c)const;
+  StatusCode resetCriteria(const std::string& cr,Context& c) const override;
 
   /** Access last item in the iteration
     * @param refCtxt [IN/OUT] Reference to the Context object.
@@ -196,7 +196,7 @@ public:
   /// Standard Constructor
   EventCollectionSelector( const std::string& name, ISvcLocator* svcloc );
   /// Standard Destructor
-  virtual ~EventCollectionSelector();
+  ~EventCollectionSelector() override = default;
 };
 
 #endif  // GAUDISVC_EventCollectionSelector_EventCollectionSelector_H

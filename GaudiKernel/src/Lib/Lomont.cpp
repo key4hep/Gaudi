@@ -1,4 +1,3 @@
-// $Id: Lomont.cpp,v 1.2 2009/05/23 17:08:16 ibelyaev Exp $
 // ============================================================================
 // Include files
 // ============================================================================
@@ -16,18 +15,17 @@
 // ============================================================================
 // Boost 
 // ============================================================================
-#include "boost/static_assert.hpp"
 #include "boost/integer_traits.hpp"
 // ============================================================================
 namespace 
 {
   // prerequisites for "correct" Float 
-  BOOST_STATIC_ASSERT( std::numeric_limits<float>          ::is_specialized &&
-                       boost::integer_traits<int>          ::is_specialized && 
-                       boost::integer_traits<unsigned int> ::is_specialized &&
-                       sizeof(float)==sizeof(int)                           && 
-                       sizeof(float)==sizeof(unsigned int)                  &&
-                       32 == boost::integer_traits<unsigned int>::digits    ) ;
+  static_assert( std::numeric_limits<float>          ::is_specialized &&
+                 boost::integer_traits<int>          ::is_specialized && 
+                 boost::integer_traits<unsigned int> ::is_specialized &&
+                 sizeof(float)==sizeof(int)                           && 
+                 sizeof(float)==sizeof(unsigned int)                  &&
+                 32 == boost::integer_traits<unsigned int>::digits    , "FAILED ASSUMPTIONS") ;
   // ==========================================================================
   // define proepr double 
   // ==========================================================================
@@ -60,14 +58,14 @@ namespace
   typedef _Longs::ULong ULong ;
   // ==========================================================================
   /// the final check
-  BOOST_STATIC_ASSERT( std::numeric_limits<double>  ::is_specialized &&
-                       std::numeric_limits<Long>    ::is_specialized && 
-                       std::numeric_limits<ULong>   ::is_specialized &&
-                       boost::integer_traits<ULong> ::is_specialized &&
-                       boost::integer_traits<Long>  ::is_specialized &&
-                       sizeof(double)==sizeof(Long)                  && 
-                       sizeof(double)==sizeof(ULong)                 &&
-                       64 == std::numeric_limits<ULong>::digits      ) ;
+  static_assert( std::numeric_limits<double>  ::is_specialized &&
+                 std::numeric_limits<Long>    ::is_specialized && 
+                 std::numeric_limits<ULong>   ::is_specialized &&
+                 boost::integer_traits<ULong> ::is_specialized &&
+                 boost::integer_traits<Long>  ::is_specialized &&
+                 sizeof(double)==sizeof(Long)                  && 
+                 sizeof(double)==sizeof(ULong)                 &&
+                 64 == std::numeric_limits<ULong>::digits      , "FAILED ASSUMPTIONS") ;
   // ==========================================================================
 
   // ==========================================================================
@@ -81,11 +79,11 @@ namespace
   public :
     // ========================================================================
     // prerequisites:
-    BOOST_STATIC_ASSERT( std::numeric_limits<float>          ::is_specialized &&
-                         boost::integer_traits<int>          ::is_specialized && 
-                         boost::integer_traits<unsigned int> ::is_specialized &&
-                         sizeof(float)==sizeof(int)                           && 
-                         32 == boost::integer_traits<unsigned int>::digits    ) ;
+    static_assert( std::numeric_limits<float>          ::is_specialized &&
+                   boost::integer_traits<int>          ::is_specialized && 
+                   boost::integer_traits<unsigned int> ::is_specialized &&
+                   sizeof(float)==sizeof(int)                           && 
+                   32 == boost::integer_traits<unsigned int>::digits    , "FAILED ASSUMPTIONS") ;
     // ========================================================================
   public:
     // ========================================================================
@@ -119,14 +117,14 @@ namespace
   {
     // ========================================================================
     /// the final check
-    BOOST_STATIC_ASSERT( std::numeric_limits<double>  ::is_specialized &&
-                         std::numeric_limits<Long>    ::is_specialized && 
-                         std::numeric_limits<ULong>   ::is_specialized &&
-                         boost::integer_traits<ULong> ::is_specialized &&
-                         boost::integer_traits<Long>  ::is_specialized &&
-                         sizeof(double)==sizeof(Long)                  && 
-                         sizeof(double)==sizeof(ULong)                 &&
-                         64 == std::numeric_limits<ULong>::digits      ) ;
+    static_assert( std::numeric_limits<double>  ::is_specialized &&
+                   std::numeric_limits<Long>    ::is_specialized && 
+                   std::numeric_limits<ULong>   ::is_specialized &&
+                   boost::integer_traits<ULong> ::is_specialized &&
+                   boost::integer_traits<Long>  ::is_specialized &&
+                   sizeof(double)==sizeof(Long)                  && 
+                   sizeof(double)==sizeof(ULong)                 &&
+                   64 == std::numeric_limits<ULong>::digits      , "FAILED ASSUMPTIONS") ;
     // ========================================================================
   public:
     // ========================================================================
@@ -198,12 +196,12 @@ bool Gaudi::Math::lomont_compare_float
 {
   // ==========================================================================
   // prerequisites:
-  BOOST_STATIC_ASSERT( std::numeric_limits<float>          ::is_specialized &&
-                       boost::integer_traits<int>          ::is_specialized && 
-                       boost::integer_traits<unsigned int> ::is_specialized &&
-                       sizeof(float)==sizeof(int)                           && 
-                       sizeof(float)==sizeof(unsigned int)                  &&
-                       32 == boost::integer_traits<unsigned int>::digits    ) ;
+  static_assert( std::numeric_limits<float>          ::is_specialized &&
+                 boost::integer_traits<int>          ::is_specialized && 
+                 boost::integer_traits<unsigned int> ::is_specialized &&
+                 sizeof(float)==sizeof(int)                           && 
+                 sizeof(float)==sizeof(unsigned int)                  &&
+                 32 == boost::integer_traits<unsigned int>::digits    , "FAILED ASSUMPTIONS") ;
   // ==========================================================================
   
   Cast_F caster ;
@@ -247,9 +245,9 @@ bool Gaudi::Math::lomont_compare_float
 float Gaudi::Math::next_float ( const float af , const short ulps ) 
 {
   /// the final check
-  BOOST_STATIC_ASSERT( std::numeric_limits<float> ::is_specialized &&
-                       std::numeric_limits<int>   ::is_specialized && 
-                       sizeof(float)==sizeof(int) ) ;
+  static_assert( std::numeric_limits<float> ::is_specialized &&
+                 std::numeric_limits<int>   ::is_specialized && 
+                 sizeof(float)==sizeof(int) , "FAILED ASSUMPTIONS") ;
   // ==========================================================================
   Cast_F caster ;
   
@@ -294,14 +292,14 @@ bool Gaudi::Math::lomont_compare_double
 {
   // ==========================================================================
   /// the final check
-  BOOST_STATIC_ASSERT( std::numeric_limits<double>  ::is_specialized &&
-                       std::numeric_limits<Long>    ::is_specialized && 
-                       std::numeric_limits<ULong>   ::is_specialized &&
-                       boost::integer_traits<ULong> ::is_specialized &&
-                       boost::integer_traits<Long>  ::is_specialized &&
-                       sizeof(double)==sizeof(Long)                  && 
-                       sizeof(double)==sizeof(ULong)                 &&
-                       64 == std::numeric_limits<ULong>::digits      ) ;
+  static_assert( std::numeric_limits<double>  ::is_specialized &&
+                 std::numeric_limits<Long>    ::is_specialized && 
+                 std::numeric_limits<ULong>   ::is_specialized &&
+                 boost::integer_traits<ULong> ::is_specialized &&
+                 boost::integer_traits<Long>  ::is_specialized &&
+                 sizeof(double)==sizeof(Long)                  && 
+                 sizeof(double)==sizeof(ULong)                 &&
+                 64 == std::numeric_limits<ULong>::digits      , "FAILED ASSUMPTIONS") ;
   // ==========================================================================
   Cast_D caster ;
   
@@ -345,9 +343,9 @@ double Gaudi::Math::next_double ( const double ad , const short ulps )
 {
   // ==========================================================================
   /// the final check
-  BOOST_STATIC_ASSERT( std::numeric_limits<double> ::is_specialized &&
-                       std::numeric_limits<Long>   ::is_specialized && 
-                       sizeof(double)==sizeof(Long) ) ;
+  static_assert( std::numeric_limits<double> ::is_specialized &&
+                 std::numeric_limits<Long>   ::is_specialized && 
+                 sizeof(double)==sizeof(Long) , "FAILED ASSUMPTIONS") ;
   // ==========================================================================
   Cast_D caster ;
   

@@ -1,8 +1,4 @@
 // ============================================================================
-// Boost:
-// ============================================================================
-#include <boost/foreach.hpp>
-// ============================================================================
 // Local:
 // ============================================================================
 #include "JobOptionsSvc.h"
@@ -28,13 +24,9 @@ DECLARE_COMPONENT(JobOptionsSvc)
 namespace gp = Gaudi::Parsers;
 // ============================================================================
 JobOptionsSvc::JobOptionsSvc(const std::string& name,ISvcLocator* svc):
-base_class(name,svc),
-m_pmgr()
-, m_source_path()
-, m_source_type()
-, m_dir_search_path()
-, m_dump()
+  base_class(name,svc)
 {
+  m_pmgr.addRef(); // make sure the refCount doesn't go to zero too soon...
   std::string tmp ;
   tmp = System::getEnv ( "JOBOPTSEARCHPATH" ) ;
   if ( !tmp.empty() && ("UNKNOWN" != tmp) ) { m_dir_search_path = tmp ; }
@@ -54,7 +46,6 @@ StatusCode JobOptionsSvc::setProperty( const Property &p )
 // ============================================================================
 StatusCode JobOptionsSvc::getProperty( Property *p ) const
 {
-
   return m_pmgr.getProperty( p );
 }
 // ============================================================================
@@ -66,26 +57,20 @@ StatusCode JobOptionsSvc::initialize()
   // Read the job options if needed
   if ( this->m_source_type == "NONE" ) {
     sc =  StatusCode::SUCCESS;
-  }
-  else {
+  } else {
     sc = this->readOptions( m_source_path , m_dir_search_path);
   }
   return sc;
 }
 
-StatusCode JobOptionsSvc::finalize()
-{
-  // finalize the base class
-  return Service::finalize();
-}
 // ============================================================================
 StatusCode JobOptionsSvc::addPropertyToCatalogue
 ( const std::string& client,
   const Property& property )
 {
-  Property* p = new StringProperty ( property.name(), "" ) ;
-  if ( !property.load( *p ) ) { delete p ; return StatusCode::FAILURE ; }
-  return m_svc_catalog.addProperty( client , p );
+  std::unique_ptr<Property> p { new StringProperty ( property.name(), "" ) } ;
+  if ( !property.load( *p ) ) { return StatusCode::FAILURE ; }
+  return m_svc_catalog.addProperty( client , p.release() );
 }
 // ============================================================================
 StatusCode
@@ -108,19 +93,18 @@ StatusCode JobOptionsSvc::setMyProperties( const std::string& client,
   const SvcCatalog::PropertiesT* props =
     m_svc_catalog.getProperties(client);
 
-  if ( NULL == props ){ return StatusCode::SUCCESS; }
+  if ( !props ){ return StatusCode::SUCCESS; }
 
   bool fail = false;
-  for ( std::vector<const Property*>::const_iterator cur = props->begin();
-    cur != props->end(); cur++)
+  for ( const auto& cur : *props )
   {
-    StatusCode sc = myInt->setProperty (**cur ) ;
+    StatusCode sc = myInt->setProperty ( *cur ) ;
     if ( sc.isFailure() )
     {
       MsgStream my_log( this->msgSvc(), this->name() );
       my_log
         << MSG::ERROR
-        << "Unable to set the property '" << (*cur)->name() << "'"
+        << "Unable to set the property '" << cur->name() << "'"
         <<                        " of '" << client         << "'. "
         << "Check option and algorithm names, type and bounds."
         << endmsg;
@@ -154,12 +138,11 @@ void JobOptionsSvc::dump (const std::string& file,
 }
 
 void JobOptionsSvc::fillServiceCatalog(const gp::Catalog& catalog) {
-  BOOST_FOREACH(const gp::Catalog::value_type& client, catalog) {
-    for (gp::Catalog::CatalogSet::mapped_type::const_iterator current
-          = client.second.begin(); current != client.second.end();
-                                                                  ++current) {
-      StringProperty tmp (current->NameInClient(), current->ValueAsString()) ;
-      addPropertyToCatalogue ( client.first , tmp ) ;
+  for (const auto&  client : catalog) {
+    for (const auto& current : client.second ) {
+      addPropertyToCatalogue ( client.first , 
+                               StringProperty{ current.NameInClient(), 
+                                               current.ValueAsString() } );
     }
   }
 }
@@ -208,4 +191,3 @@ StatusCode JobOptionsSvc::readOptions ( const std::string& file,
     // ----------------------------------------------------------------------------
     return sc;
 }
-

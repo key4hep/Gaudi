@@ -73,21 +73,21 @@ public:
   Algorithm( const std::string& name, ISvcLocator *svcloc,
              const std::string& version=PACKAGE_VERSION );
   /// Destructor
-  virtual ~Algorithm();
+  ~Algorithm() override = default;
 
   /** Reinitialization method invoked by the framework. This method is responsible
    *  for any reinitialization required by the framework itself.
    *  It will in turn invoke the reinitialize() method of the derived algorithm,
    * and of any sub-algorithms which it creates.
    */
-  virtual StatusCode sysStart();
+  StatusCode sysStart() override;
 
   /** Initialization method invoked by the framework. This method is responsible
    *  for any bookkeeping of initialization required by the framework itself.
    *  It will in turn invoke the initialize() method of the derived algorithm,
    * and of any sub-algorithms which it creates.
    */
-  virtual StatusCode sysInitialize();
+  StatusCode sysInitialize() override;
 
 
   /** Reinitialization method invoked by the framework. This method is responsible
@@ -95,13 +95,13 @@ public:
    *  It will in turn invoke the reinitialize() method of the derived algorithm,
    * and of any sub-algorithms which it creates.
    */
-  virtual StatusCode sysReinitialize();
+  StatusCode sysReinitialize() override;
 
   /** Restart method invoked by the framework.
       It will in turn invoke the restart() method of the derived algorithm,
       and of any sub-algorithms which it creates.
   */
-  virtual StatusCode sysRestart();
+  StatusCode sysRestart() override;
 
   /** The actions to be performed by the algorithm on an event. This method is
    * invoked once per event for top level algorithms by the application
@@ -110,32 +110,32 @@ public:
    *  For sub-algorithms either the sysExecute() method or execute() method
    *  must be EXPLICITLY invoked by  the parent algorithm.
    */
-  virtual StatusCode sysExecute();
+  StatusCode sysExecute() override;
 
   /** System stop. This method invokes the stop() method of a concrete
       algorithm and the stop() methods of all of that algorithm's sub algorithms.
   */
-  virtual StatusCode sysStop();
+  StatusCode sysStop() override;
 
   /** System finalization. This method invokes the finalize() method of a
    *  concrete algorithm and the finalize() methods of all of that algorithm's
    *  sub algorithms.
    */
-  virtual StatusCode sysFinalize();
+  StatusCode sysFinalize() override;
 
   /** beginRun method invoked by the framework. This method is responsible
       for any beginRun actions required by the framework itself.
       It will in turn invoke the beginRun() method of the derived algorithm,
       and of any sub-algorithms which it creates.
   */
-  virtual StatusCode sysBeginRun( );
+  StatusCode sysBeginRun( ) override;
 
   /** endRun method invoked by the framework. This method is responsible
       for any endRun actions required by the framework itself.
       It will in turn invoke the endRun() method of the derived algorithm,
       and of any sub-algorithms which it creates.
   */
-  virtual StatusCode sysEndRun( );
+  StatusCode sysEndRun( ) override;
 
   /** The identifying name of the algorithm object. This is the name of a
    *  particular instantiation of an algorithm object as opposed to the name
@@ -144,62 +144,60 @@ public:
    *  whereas "ApproxTrackFit" and "BestTrackFit" may be two instantiations
    *  of the class configured to find tracks with different fit criteria.
    */
-  virtual const std::string& name() const;
+  const std::string& name() const override;
 
-  virtual const std::string& version() const;
+  const std::string& version() const override;
 
   /// Dummy implementation of IStateful::configure() method
-  virtual StatusCode configure () { return StatusCode::SUCCESS ; }
+  StatusCode configure() override { return StatusCode::SUCCESS ; }
   /// Dummy implementation of IStateful::terminate() method
-  virtual StatusCode terminate () { return StatusCode::SUCCESS ; }
+  StatusCode terminate() override { return StatusCode::SUCCESS ; }
 
   /// the default (empty) implementation of IStateful::initialize() method
-  virtual StatusCode initialize () { return StatusCode::SUCCESS ; }
+  StatusCode initialize() override { return StatusCode::SUCCESS ; }
   /// the default (empty) implementation of IStateful::start() method
-  virtual StatusCode start () { return StatusCode::SUCCESS ; }
+  StatusCode start() override { return StatusCode::SUCCESS ; }
   /// the default (empty) implementation of IStateful::stop() method
-  virtual StatusCode stop () { return StatusCode::SUCCESS ; }
+  StatusCode stop() override { return StatusCode::SUCCESS ; }
   /// the default (empty) implementation of IStateful::finalize() method
-  virtual StatusCode finalize   () { return StatusCode::SUCCESS ; }
-
+  StatusCode finalize() override { return StatusCode::SUCCESS ; }
   /// the default (empty) implementation of IStateful::reinitialize() method
-  virtual StatusCode reinitialize ();
+  StatusCode reinitialize() override;
   /// the default (empty) implementation of IStateful::restart() method
-  virtual StatusCode restart ();
+  StatusCode restart() override;
+  /// returns the current state of the algorithm
+  Gaudi::StateMachine::State FSMState() const override { return m_state; }
+  /// returns the state the algorithm will be in after the ongoing transition
+  Gaudi::StateMachine::State targetFSMState() const override { return m_targetState; }
 
   /// Has this algorithm been executed since the last reset?
-  virtual bool isExecuted( ) const;
+  bool isExecuted( ) const override;
 
   /// Set the executed flag to the specified state
-  virtual void setExecuted( bool state );
+  void setExecuted( bool state ) override;
 
   /** Reset the executed state of the Algorithm for the duration
    *  of the current event.
    */
-  virtual void resetExecuted( );
+  void resetExecuted( ) override;
 
   /** Algorithm begin run. This method is called at the beginning
    *  of the event loop.
    */
-  virtual StatusCode beginRun();
+  StatusCode beginRun() override;
 
   /// Algorithm end run. This method is called at the end of the event loop
-  virtual StatusCode endRun();
+  StatusCode endRun() override;
 
-  /// returns the current state of the algorithm
-  virtual Gaudi::StateMachine::State FSMState() const { return m_state; }
-
-  /// returns the state the algorithm will be in after the ongoing transition
-  virtual Gaudi::StateMachine::State targetFSMState() const { return m_targetState; }
 
   /// Is this algorithm enabled or disabled?
-  virtual bool isEnabled( ) const;
+  bool isEnabled( ) const override;
 
   /// Did this algorithm pass or fail its filter criterion for the last event?
-  virtual bool filterPassed( ) const;
+  bool filterPassed( ) const override;
 
   /// Set the filter passed flag to the specified state
-  virtual void setFilterPassed( bool state );
+  void setFilterPassed( bool state ) override;
 
   /// Get the number of failures of the algorithm.
   inline int errorCount() const { return m_errorCount; }
@@ -220,6 +218,11 @@ public:
 
   /// Return a pointer to the service identified by name (or "type/name")
   SmartIF<IService> service(const std::string& name, const bool createIf = true, const bool quiet = false) const;
+
+  template <class T>
+  SmartIF<T> service( const std::string& name, bool createIf = true, bool quiet = false ) const {
+    return service(name,createIf,quiet).as<T>();
+  }
 
   /// Set the output level for current algorithm
   void setOutputLevel( int level );
@@ -340,24 +343,27 @@ public:
                                  const std::string& name, Algorithm*& pSubAlg );
 
   /// List of sub-algorithms. Returns a pointer to a vector of (sub) Algorithms
-  std::vector<Algorithm*>* subAlgorithms() const;
+  const std::vector<Algorithm*>* subAlgorithms() const;
+
+  /// List of sub-algorithms. Returns a pointer to a vector of (sub) Algorithms
+  std::vector<Algorithm*>* subAlgorithms() ;
 
   /// Implementation of IProperty::setProperty
-  virtual StatusCode setProperty( const Property& p );
+  StatusCode setProperty( const Property& p ) override;
   /// Implementation of IProperty::setProperty
-  virtual StatusCode setProperty( const std::string& s );
+  StatusCode setProperty( const std::string& s ) override;
   /// Implementation of IProperty::setProperty
-  virtual StatusCode setProperty( const std::string& n, const std::string& v);
+  StatusCode setProperty( const std::string& n, const std::string& v) override;
   /// Implementation of IProperty::getProperty
-  virtual StatusCode getProperty(Property* p) const;
+  StatusCode getProperty(Property* p) const override;
   /// Implementation of IProperty::getProperty
-  virtual const Property& getProperty( const std::string& name) const;
+  const Property& getProperty( const std::string& name) const override;
   /// Implementation of IProperty::getProperty
-  virtual StatusCode getProperty( const std::string& n, std::string& v ) const;
+  StatusCode getProperty( const std::string& n, std::string& v ) const override;
   /// Implementation of IProperty::getProperties
-  virtual const std::vector<Property*>& getProperties( ) const;
+  const std::vector<Property*>& getProperties( ) const override;
   /// Implementation of IProperty::hasProperty
-  virtual bool hasProperty(const std::string& name) const;
+  bool hasProperty(const std::string& name) const override;
 
   /** Set the algorithm's properties.
    *  This method requests the job options service
@@ -427,7 +433,7 @@ public:
   inline SmartIF<IMonitorSvc>& monitorSvc() const
   {
     // If not already located try to locate it without forcing a creation
-    if ( !m_pMonitorSvc.isValid() ){
+    if ( !m_pMonitorSvc ){
       m_pMonitorSvc = service(m_monitorSvcName, false, true); // do not create and be quiet
     }
     return m_pMonitorSvc;
@@ -512,15 +518,15 @@ public:
   StatusCode setProperty
   ( const std::string& name  ,
     const TYPE&        value )
-  { return Gaudi::Utils::setProperty ( m_propertyMgr , name , value ) ; }
+  { return Gaudi::Utils::setProperty ( m_propertyMgr.get() , name , value ) ; }
   // ==========================================================================
 protected:
 
   /// Has the Algorithm already been initialized?
-  bool isInitialized( ) const { return Gaudi::StateMachine::INITIALIZED == m_state; }
+  bool isInitialized( ) const override { return Gaudi::StateMachine::INITIALIZED == m_state; }
 
   /// Has the Algorithm already been finalized?
-  bool isFinalized( ) const { return Gaudi::StateMachine::CONFIGURED == m_state; }
+  bool isFinalized( ) const  override{ return Gaudi::StateMachine::CONFIGURED == m_state; }
 
   /// retrieve the Algorithm output level
   int  outputLevel() const { return (int)m_outputLevel ; }
@@ -536,7 +542,7 @@ private:
 
   std::string m_name;            ///< Algorithm's name for identification
   std::string m_version;         ///< Algorithm's version
-  std::vector<Algorithm *>* m_subAlgms; ///< Sub algorithms
+  std::vector<Algorithm *> m_subAlgms; ///< Sub algorithms
 
   mutable SmartIF<IMessageSvc>      m_MS;       ///< Message service
   mutable SmartIF<IDataProviderSvc> m_EDS;      ///< Event data service
@@ -553,10 +559,10 @@ private:
   mutable SmartIF<IToolSvc>         m_ptoolSvc;    ///< ToolSvc Service
   mutable SmartIF<IMonitorSvc>      m_pMonitorSvc; ///< Online Monitoring Service
   mutable SmartIF<IAlgContextSvc>   m_contextSvc ; ///< Algorithm Context Service
-  bool  m_registerContext ; ///< flag to register for Algorithm Context Service
+  bool  m_registerContext = false ; ///< flag to register for Algorithm Context Service
   std::string               m_monitorSvcName; ///< Name to use for Monitor Service
   SmartIF<ISvcLocator>  m_pSvcLocator;      ///< Pointer to service locator service
-  PropertyMgr* m_propertyMgr;      ///< For management of properties
+  SmartIF<PropertyMgr> m_propertyMgr;      ///< For management of properties
   IntegerProperty m_outputLevel;   ///< Algorithm output level
   int          m_errorMax;         ///< Algorithm Max number of errors
   int          m_errorCount;       ///< Algorithm error counter
@@ -570,11 +576,11 @@ private:
   bool         m_auditorEndRun;    ///< flag for auditors in "endRun()"
   bool         m_auditorStart;///< flag for auditors in "initialize()"
   bool         m_auditorStop;///< flag for auditors in "Reinitialize()"
-  bool         m_filterPassed;     ///< Filter passed flag
-  bool         m_isEnabled;        ///< Algorithm is enabled flag
-  bool         m_isExecuted;       ///< Algorithm is executed flag
-  Gaudi::StateMachine::State m_state;            ///< Algorithm has been initialized flag
-  Gaudi::StateMachine::State m_targetState;      ///< Algorithm has been initialized flag
+  bool         m_filterPassed = true;     ///< Filter passed flag
+  bool         m_isEnabled = true;        ///< Algorithm is enabled flag
+  bool         m_isExecuted = false;      ///< Algorithm is executed flag
+  Gaudi::StateMachine::State m_state = Gaudi::StateMachine::CONFIGURED;            ///< Algorithm has been initialized flag
+  Gaudi::StateMachine::State m_targetState = Gaudi::StateMachine::CONFIGURED;      ///< Algorithm has been initialized flag
   bool         m_isFinalized;      ///< Algorithm has been finalized flag
 
   /// implementation of service method
@@ -600,8 +606,8 @@ class AlgFactory {
 public:
 #ifndef __REFLEX__
   template <typename S, typename... Args>
-  static typename S::ReturnType create(Args... args) {
-    return new T(args...);
+  static typename S::ReturnType create(Args&&... args) {
+    return new T(std::forward<Args>(args)...);
   }
 #endif
 };

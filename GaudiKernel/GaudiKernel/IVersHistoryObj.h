@@ -1,5 +1,3 @@
-// $Header:  $
-
 #ifndef GAUDIKERNEL_IVERSHISTORYOBJ_H
 #define GAUDIKERNEL_IVERSHISTORYOBJ_H
 
@@ -22,7 +20,7 @@ class GAUDI_API IVersHistoryObj {
   typedef std::vector<Property*> PropertyList;
 
  public:
-  virtual ~IVersHistoryObj();
+  virtual ~IVersHistoryObj() = default;
 
   virtual const std::string& name() const = 0;
   virtual const std::string& type() const = 0;

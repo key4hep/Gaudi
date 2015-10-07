@@ -22,7 +22,6 @@
 #define  GAUDISVC_NTUPLESVC_CPP
 
 // Framework include files
-#include "GaudiKernel/xtoa.h"
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/AttribStringParser.h"
 #include "GaudiKernel/DataObject.h"
@@ -105,29 +104,26 @@ StatusCode NTupleSvc::reinitialize() {
 
 // Check if a datasource is connected
 bool NTupleSvc::isConnected(const std::string& identifier) const    {
-  Connections::const_iterator i = m_connections.find(identifier);
-  return !(i==m_connections.end());
+  auto i = m_connections.find(identifier);
+  return i!=m_connections.end();
 }
 
 /// DataSvc override: Retrieve data loader
 IConversionSvc* NTupleSvc::getDataLoader(IRegistry* pRegistry)    {
-  if ( 0 != pRegistry )    {
-    std::string full = pRegistry->identifier();
-    size_t len = m_rootName.length();
-    size_t idx = full.find(SEPARATOR,len+1);
-    std::string path = (idx==std::string::npos) ? full : full.substr(0, idx);
-    Connections::iterator i = m_connections.find(path);
-    if ( i != m_connections.end() )   {
-      return (*i).second.service;
-    }
-  }
-  return 0;
+  if ( !pRegistry ) return nullptr;
+  std::string full = pRegistry->identifier();
+  auto len = m_rootName.length();
+  auto idx = full.find(SEPARATOR,len+1);
+  std::string path = (idx==std::string::npos) ? full : full.substr(0, idx);
+  auto i = m_connections.find(path);
+  return ( i != m_connections.end() ) ? i->second.service
+                                      : nullptr;
 }
 
 StatusCode NTupleSvc::updateDirectories()   {
   typedef std::vector<IRegistry*> Leaves;
   long need_update = 0;
-  DataObject* pO = 0;
+  DataObject* pO = nullptr;
   StatusCode iret = findObject(m_rootName, pO);
   MsgStream log ( msgSvc(), name() );
   //  log << MSG::DEBUG << "in finalize()" << endmsg;
@@ -136,40 +132,35 @@ StatusCode NTupleSvc::updateDirectories()   {
     iret = objectLeaves(pO, leaves);
     if ( iret.isSuccess() )    {
       // Only traverse the tree below the files
-      for ( Leaves::iterator d = leaves.begin(); d != leaves.end(); d++ )    {
-        if ( (*d)->object() )   {
-          IOpaqueAddress* pA = (*d)->address();
-          if ( pA )   {
-            unsigned long typ = pA->ipar()[1];
-            if ( typ == 'R' || typ == 'N' || typ == 'U' )   {
-              // ...starting from the file entries: first save the directories/ntuples
-              IConversionSvc* svc = getDataLoader(*d);
-              if ( 0 != svc )   {
-                StatusCode status;
-                DataSelectionAgent agent;
-                IDataSelector*     sel = agent.selectedObjects();
-                traverseSubTree ( (*d)->object(), &agent ).ignore();
-                for(int i = sel->size()-1; i >= 0; i-- )    {
-                  DataObject* o = (*sel)[i];
-                  IRegistry*  r = o->registry();
-                  status = svc->updateRep(r->address(), o);
-                  if ( !status.isSuccess() )    {
-                    iret = status;
-                  }
-                }
-                for(int j = sel->size()-1; j >= 0; j-- )    {
-                  DataObject* o = (*sel)[j];
-                  IRegistry*  r = o->registry();
-                  status = svc->updateRepRefs(r->address(), o);
-                  if ( !status.isSuccess() )    {
-                    iret = status;
-                  }
-                }
-                if ( iret.isSuccess() ) need_update += sel->size();
-              }
-            }
+      for ( auto d = leaves.begin(); d != leaves.end(); d++ )    {
+        if ( !(*d)->object() ) continue;
+        IOpaqueAddress* pA = (*d)->address();
+        if ( !pA ) continue;
+        unsigned long typ = pA->ipar()[1];
+        if ( typ != 'R' && typ != 'N' && typ != 'U' )  continue;
+        // ...starting from the file entries: first save the directories/ntuples
+        IConversionSvc* svc = getDataLoader(*d);
+        if ( !svc )  continue;
+
+        StatusCode status;
+        DataSelectionAgent agent;
+        IDataSelector*     sel = agent.selectedObjects();
+        traverseSubTree ( (*d)->object(), &agent ).ignore();
+        for(int i = sel->size()-1; i >= 0; i-- )    {
+          DataObject* o = (*sel)[i];
+          IRegistry*  r = o->registry();
+          status = svc->updateRep(r->address(), o);
+          if ( !status.isSuccess() )    {
+            iret = status;
           }
         }
+        for(int j = sel->size()-1; j >= 0; j-- )    {
+          DataObject* o = (*sel)[j];
+          IRegistry*  r = o->registry();
+          status = svc->updateRepRefs(r->address(), o);
+          if ( !status.isSuccess() ) iret = status;
+        }
+        if ( iret.isSuccess() ) need_update += sel->size();
       }
     }
   }
@@ -186,18 +177,16 @@ StatusCode NTupleSvc::updateDirectories()   {
 // Finalize single service
 void NTupleSvc::releaseConnection(Connection& c)  {
   SmartIF<IService> isvc( c.service );
-  if ( isvc.isValid( ) )   {
-    isvc->finalize().ignore();
-  }
+  if ( isvc ) isvc->finalize().ignore();
   c.service->release();
-  c.service = 0;
+  c.service = nullptr;
 }
 
 // Close all open connections
 StatusCode NTupleSvc::disconnect(const std::string& nam)      {
-  Connections::iterator i = m_connections.find(nam);
+  auto i = m_connections.find(nam);
   if ( i != m_connections.end() )    {
-    releaseConnection((*i).second);
+    releaseConnection(i->second);
     m_connections.erase(i);
     return StatusCode::SUCCESS;
   }
@@ -206,10 +195,8 @@ StatusCode NTupleSvc::disconnect(const std::string& nam)      {
 
 // Close all open connections
 StatusCode NTupleSvc::disconnectAll()      {
-  for(Connections::iterator i = m_connections.begin(); i != m_connections.end(); ++i) {
-    releaseConnection((*i).second);
-  }
-  m_connections.erase(m_connections.begin(), m_connections.end());
+  for(auto &i : m_connections ) releaseConnection(i.second);
+  m_connections.clear();
   return StatusCode::SUCCESS;
 }
 
@@ -229,7 +216,7 @@ StatusCode NTupleSvc::connect(const std::string& ident)    {
 
 StatusCode NTupleSvc::connect(const std::string& ident, std::string& logname)    {
   MsgStream log ( msgSvc(), name() );
-  DataObject* pO = 0;
+  DataObject* pO = nullptr;
   StatusCode status = findObject(m_rootName, pO);
   if ( status.isSuccess() )   {
     char typ=0;
@@ -271,12 +258,12 @@ StatusCode NTupleSvc::connect(const std::string& ident, std::string& logname)   
         db_typ = std::move(attrib.value);
         break;
       default:
-        props.push_back( Prop(attrib.tag, attrib.value));
+        props.emplace_back( attrib.tag, attrib.value);
         break;
       }
     }
     if ( 0 != typ )    {
-      IConversionSvc* pSvc = 0;
+      IConversionSvc* pSvc = nullptr;
       status = createService(name()+'.'+logname, db_typ, props, pSvc);
       if ( status.isSuccess() )   {
         status = attachTuple(filename, logname, typ, pSvc->repSvcType());
@@ -299,16 +286,15 @@ StatusCode NTupleSvc::createService(const std::string&       /* nam */,
   MsgStream log ( msgSvc(), name() );
   /// CGL: set the storage type
   // Get the value of the Stat persistancy mechanism from the AppMgr
-  IProperty*   appPropMgr = 0;
-  StatusCode sts = serviceLocator()->queryInterface(IProperty::interfaceID(), pp_cast<void>(&appPropMgr) );
-  if( !sts.isSuccess() ) {
+  auto appPropMgr = serviceLocator()->as<IProperty>();
+  if( !appPropMgr ) {
    // Report an error and return the FAILURE status code
    log << MSG::ERROR << "Could not get PropMgr" << endmsg;
-   return sts;
+   return StatusCode::FAILURE;
   }
 
   StringProperty sp("HistogramPersistency","");
-  sts = appPropMgr->getProperty( &sp );
+  StatusCode sts = appPropMgr->getProperty( &sp );
   if ( !sts.isSuccess() ) {
    log << MSG::ERROR << "Could not get NTuple Persistency format"
        << " from ApplicationMgr properties" << endmsg;
@@ -323,14 +309,11 @@ StatusCode NTupleSvc::createService(const std::string&       /* nam */,
     storage_typ = ROOT_StorageType;
   }
   else {
-    appPropMgr->release();
     log << MSG::ERROR << "Unknown NTuple Persistency format: " << sp.value() << endmsg;
     return StatusCode::FAILURE;
   }
-  // Clean up
-  appPropMgr->release();
 
-  if ( typ.length() > 0 && typ != sp.value() )    {
+  if ( !typ.empty() && typ != sp.value() )    {
     log << MSG::WARNING << "NTuple persistency type is "
         << sp.value() << "." << endmsg
         << "Type given by job option "
@@ -340,31 +323,24 @@ StatusCode NTupleSvc::createService(const std::string&       /* nam */,
   //      log << MSG::DEBUG << "storage type: " << m_storageType << endmsg;
 
   // FIXME: (MCl) why NTupleSvc has to directly create a ConversionSvc?
-  IService* pService = 0;
   IInterface* iface = new ConversionSvc(name()+"Conversions", serviceLocator(), storage_typ);
-  StatusCode status = iface->queryInterface(IService::interfaceID(), pp_cast<void>(&pService));
-  if ( status.isSuccess() )   {
-    status = iface->queryInterface(IConversionSvc::interfaceID(), pp_cast<void>(&pSvc));
-    if ( !status.isSuccess() )   {
-      pService->release();
-      return status;
-    }
-  }
-  status = pService->sysInitialize();
-  if ( !status.isSuccess() )    {
-    return status;
-  }
-  pService->release();
-  status = pSvc->setDataProvider(this);
-  if ( !status.isSuccess() )    {
-    return status;
-  }
-  return status;
+  auto pService = SmartIF<IService>( iface );
+  if ( !pService ) return StatusCode::FAILURE;
+
+  auto cnvSvc = pService.as<IConversionSvc>();
+  if (!cnvSvc) return StatusCode::FAILURE;
+
+  pSvc = cnvSvc.get();
+  pSvc->addRef(); // make sure the caller gets a pSvc which points at something
+                  // with a refCount of (at least) one...
+  auto status = pService->sysInitialize();
+  if ( !status.isSuccess() ) return status;
+  return pSvc->setDataProvider(this);
 }
 
 /// Create requested N tuple (Hide constructor)
 StatusCode NTupleSvc::create(const CLID& typ, const std::string& title, NTuple::Tuple*& refpTuple)     {
-  NTuple::TupleImp* pTuple = 0;
+  NTuple::TupleImp* pTuple = nullptr;
   StatusCode status = StatusCode::FAILURE;
   if ( typ == CLID_ColumnWiseTuple )    {
     pTuple = new NTuple::ColumnWiseTuple( title );
@@ -375,7 +351,7 @@ StatusCode NTupleSvc::create(const CLID& typ, const std::string& title, NTuple::
   else    {
     /// Eventually allow loading through factory?
   }
-  if ( 0 != pTuple )      {
+  if ( pTuple )      {
     pTuple->setTupleService(this);
     status = StatusCode::SUCCESS;
   }
@@ -385,7 +361,7 @@ StatusCode NTupleSvc::create(const CLID& typ, const std::string& title, NTuple::
 
 /// Book Ntuple and register it with the data store.
 NTuple::Tuple* NTupleSvc::book (const std::string& fullPath, const CLID& type, const std::string& title)  {
-  DataObject* pObj = 0;
+  DataObject* pObj = nullptr;
   std::string path = fullPath;
   MsgStream log(msgSvc(), name());
   if ( path[0] != SEPARATOR )   {
@@ -394,27 +370,29 @@ NTuple::Tuple* NTupleSvc::book (const std::string& fullPath, const CLID& type, c
     path += fullPath;
   }
   StatusCode status = retrieveObject(path, pObj);
-  if ( !status.isSuccess() )    {
-    int sep = path.rfind(SEPARATOR);
-    if ( sep > 0 )    {
-      std::string p_path (path, 0, sep);
-      std::string o_path (path, sep, path.length());
-      DataObject* dir = createDirectory(p_path);
-      if ( 0 != dir )   {
-        NTuple::Tuple* tup = book( dir, o_path, type, title);
-        if ( 0 == tup )   {
-          log << MSG::ERROR << "Cannot book N-tuple " << path << " (Unknown reason)" << endmsg;
-        }
-        return tup;
-      }
-      log << MSG::ERROR << "Cannot book N-tuple " << path << " (Invalid parent directory)" << endmsg;
-      return 0;
-    }
-    log << MSG::ERROR << "Cannot book N-tuple " << path << " (Invalid path)" << endmsg;
-    return 0;
+  if ( status.isSuccess() ) {
+    log << MSG::ERROR << "Cannot book N-tuple " << path << " (Exists already)" << endmsg;
+    return nullptr;
   }
-  log << MSG::ERROR << "Cannot book N-tuple " << path << " (Exists already)" << endmsg;
-  return 0;
+  auto sep = path.rfind(SEPARATOR);
+  if ( sep == std::string::npos ) {
+    log << MSG::ERROR << "Cannot book N-tuple " << path << " (Invalid path)" << endmsg;
+    return nullptr;
+  }
+
+  std::string p_path (path, 0, sep);
+  std::string o_path (path, sep, path.length());
+  DataObject* dir = createDirectory(p_path);
+  if ( !dir ) {
+    log << MSG::ERROR << "Cannot book N-tuple " << path << " (Invalid parent directory)" << endmsg;
+    return nullptr;
+  }
+
+  NTuple::Tuple* tup = book( dir, o_path, type, title);
+  if ( !tup ) {
+    log << MSG::ERROR << "Cannot book N-tuple " << path << " (Unknown reason)" << endmsg;
+  }
+  return tup;
 }
 
 /// Book Ntuple and register it with the data store.
@@ -432,22 +410,20 @@ NTuple::Tuple* NTupleSvc::book (const std::string& dirPath, long id, const CLID&
 
 /// Book Ntuple and register it with the data store.
 NTuple::Tuple* NTupleSvc::book (DataObject* pParent, const std::string& relPath, const CLID& type, const std::string& title)  {
-  NTuple::Tuple* pObj = 0;
+  NTuple::Tuple* pObj = nullptr;
   // Check if object is already present
   StatusCode status = findObject(pParent, relPath, *pp_cast<DataObject>(&pObj));
   // No ? Then create it!
-  if ( !status.isSuccess() )    {
+  if ( !status.isSuccess() ) {
     status = create( type, title, pObj);
-    if ( status.isSuccess() )   {
+    if ( status.isSuccess() ) {
       // Finally register the created N tuple with the store
       status = registerObject(pParent, relPath, pObj);
-      if ( status.isSuccess() )    {
-        return pObj;
-      }
+      if ( status.isSuccess() ) return pObj;
       pObj->release();
     }
   }
-  return 0;
+  return nullptr;
 }
 
 /// Book Ntuple and register it with the data store.
@@ -461,16 +437,16 @@ NTuple::Tuple* NTupleSvc::book (DataObject* pParent,
 /// Create Ntuple directory and register it with the data store.
 NTuple::Directory* NTupleSvc::createDirectory (DataObject* pParent,
                                                const std::string& relPath)   {
-  if ( 0 != pParent )   {
+  if ( pParent )   {
     IRegistry* pDir = pParent->registry();
-    if ( 0 != pDir )    {
+    if ( pDir )    {
       std::string full = pDir->identifier();
-      full += (relPath[0]=='/') ? "" : "/";
+      if (relPath[0]!='/') full += "/";
       full += relPath;
       return createDirectory(full);
     }
   }
-  return 0;
+  return nullptr;
 }
 
 /// Create Ntuple directory and register it with the data store.
@@ -486,7 +462,7 @@ NTuple::Directory* NTupleSvc::createDirectory (const std::string& dirPath, long 
 /// Create Ntuple directory and register it with the data store.
 NTuple::Directory* NTupleSvc::createDirectory (const std::string& dirPath, const std::string& relPath )    {
   std::string full = dirPath;
-  full += (relPath[0]=='/') ? "" : "/";
+  if (relPath[0]!='/') full += "/";
   full += relPath;
   return createDirectory(full);
 }
@@ -516,72 +492,61 @@ StatusCode NTupleSvc::attachTuple(const std::string& filename, const std::string
 
 /// Create Ntuple directory and register it with the data store.
 NTuple::Directory* NTupleSvc::createDirectory (const std::string& fullPath)   {
-  NTuple::Directory* p = 0;
+  NTuple::Directory* p = nullptr;
   StatusCode status = findObject(fullPath, *pp_cast<DataObject>(&p));
   if ( !status.isSuccess() )   {
-    int sep2 = fullPath.rfind(SEPARATOR);
-    if ( sep2 > 0 )   {
+    auto sep2 = fullPath.rfind(SEPARATOR);
+    if ( sep2 != std::string::npos ) {
       std::string relPath = fullPath.substr(0, sep2);
       p = createDirectory(relPath);
-      if ( 0 != p )    {
+      if ( p ) {
         p = new NTuple::Directory();
         // Finally register the created N tuple with the store
         status = registerObject(fullPath, p);
         if ( status.isSuccess() )    {
           // ...starting from the file entries
           IConversionSvc* svc = getDataLoader(p->registry());
-          if ( 0 != svc )   {
-            IOpaqueAddress* pAddr = 0;
+          if ( svc )   {
+            IOpaqueAddress* pAddr = nullptr;
             status = svc->createRep (p, pAddr);
             if ( status.isSuccess() )   {
               p->registry()->setAddress(pAddr);
               status = svc->fillRepRefs (pAddr, p);
-              if ( status.isSuccess() )   {
-                return p;
-              }
+              if ( status.isSuccess() ) return p;
             }
           }
           unregisterObject(p);
         }
         p->release();
-        p = 0;
+        p = nullptr;
       }
     }
   }
-  try {
-    p = dynamic_cast<NTuple::Directory*>(p);
-    return p;
-  }
-  catch (...) {
-  }
-  return 0;
+  return dynamic_cast<NTuple::Directory*>(p);
 }
 
 /// Access N tuple on disk
 NTuple::Tuple* NTupleSvc::access(const std::string&, const std::string&)  {
   MsgStream log ( msgSvc(), name() );
-  return 0;
+  return nullptr;
 }
 
 /// Save N tuple to disk. Must be called in order to close the ntuple file properly
 StatusCode NTupleSvc::save(const std::string& fullPath)  {
   MsgStream log ( msgSvc(), name() );
-  NTuple::Tuple* pObj = 0;
+  NTuple::Tuple* pObj = nullptr;
   StatusCode status = findObject(fullPath, *pp_cast<DataObject>(&pObj));  // Check if object is  present
-  if ( status.isSuccess() )   {
-    return save ( pObj );
-  }
-  return INVALID_OBJ_PATH;
+  return  status.isSuccess() ? save ( pObj ) : INVALID_OBJ_PATH;
 }
 
 /// Save N tuple to disk. Must be called in order to close the ntuple file properly
 StatusCode NTupleSvc::save(NTuple::Tuple* n_tuple)  {
   NTuple::TupleImp* tuple = (NTuple::TupleImp*)n_tuple;
-  if ( 0 != tuple )   {
+  if ( tuple )   {
     try   {
       IConversionSvc* pSvc = tuple->conversionService();
       IRegistry*      pReg = tuple->registry();
-      if ( 0 != pSvc && 0 != pReg )    {
+      if ( pSvc && pReg )    {
         IOpaqueAddress* pAddr = pReg->address();
         StatusCode status = pSvc->updateRep(pAddr, n_tuple);
         if ( status.isSuccess() )   {
@@ -599,25 +564,22 @@ StatusCode NTupleSvc::save(NTuple::Tuple* n_tuple)  {
 
 /// Save N tuple to disk. Must be called in order to close the ntuple file properly
 StatusCode NTupleSvc::save(DataObject* pParent, const std::string& relPath)  {
-  NTuple::Tuple* pObj = 0;
+  NTuple::Tuple* pObj = nullptr;
   StatusCode status = findObject(pParent, relPath, *pp_cast<DataObject>(&pObj));  // Check if object is  present
-  if ( status.isSuccess() )   {
-    return save ( pObj );
-  }
-  return INVALID_OBJ_PATH;
+  return  status.isSuccess() ? save ( pObj ) : INVALID_OBJ_PATH;
 }
 
 /// Write single record to N tuple.
 StatusCode NTupleSvc::writeRecord( NTuple::Tuple* n_tuple )   {
   NTuple::TupleImp* tuple = (NTuple::TupleImp*)n_tuple;
-  if ( 0 != tuple )   {
+  if ( tuple )   {
     try   {
       IConversionSvc* pSvc = tuple->conversionService();
-      if ( 0 == pSvc )    {
+      if ( !pSvc )    {
         pSvc = getDataLoader(n_tuple->registry());
         tuple->setConversionService(pSvc);
       }
-      if ( 0 != pSvc )    {
+      if ( pSvc )    {
         IRegistry* pReg = n_tuple->registry();
         IOpaqueAddress* pAddr = pReg->address();
         StatusCode status = pSvc->createRep(n_tuple, pAddr);
@@ -637,36 +599,30 @@ StatusCode NTupleSvc::writeRecord( NTuple::Tuple* n_tuple )   {
 
 /// Write single record to N tuple.
 StatusCode NTupleSvc::writeRecord(const std::string& fullPath )   {
-  NTuple::Tuple* pObj = 0;
+  NTuple::Tuple* pObj = nullptr;
   StatusCode status = findObject(fullPath, *pp_cast<DataObject>(&pObj));  // Check if object is  present
-  if ( status.isSuccess() )   {
-    return writeRecord ( pObj );
-  }
-  return INVALID_OBJ_PATH;
+  return status.isSuccess() ? writeRecord ( pObj ) : INVALID_OBJ_PATH;
 }
 
 /// Write single record to N tuple.
 StatusCode NTupleSvc::writeRecord( DataObject* pParent, const std::string& relPath)   {
-  NTuple::Tuple* pObj = 0;
+  NTuple::Tuple* pObj = nullptr;
   StatusCode status = findObject(pParent, relPath, *pp_cast<DataObject>(&pObj));  // Check if object is  present
-  if ( status.isSuccess() )   {
-    return writeRecord ( pObj );
-  }
-  return INVALID_OBJ_PATH;
+  return status.isSuccess() ? writeRecord ( pObj ) : INVALID_OBJ_PATH;
 }
 
 /// Read single record from N tuple.
 StatusCode NTupleSvc::readRecord( NTuple::Tuple* n_tuple )  {
   StatusCode status = INVALID_OBJECT;
   NTuple::TupleImp* tuple = (NTuple::TupleImp*)n_tuple;
-  if ( 0 != tuple )   {
+  if ( tuple )   {
     try   {
       IConversionSvc* pSvc = tuple->conversionService();
-      if ( 0 == pSvc )    {
+      if ( !pSvc )    {
         pSvc = getDataLoader(n_tuple->registry());
         tuple->setConversionService(pSvc);
       }
-      if ( 0 != pSvc )    {
+      if ( pSvc )    {
         IRegistry*      pReg  = n_tuple->registry();
         IOpaqueAddress* pAddr = pReg->address();
         status = pSvc->updateObj(pAddr, n_tuple);
@@ -686,20 +642,14 @@ StatusCode NTupleSvc::readRecord( NTuple::Tuple* n_tuple )  {
 
 /// Read single record from N tuple.
 StatusCode NTupleSvc::readRecord(const std::string& fullPath)  {
-  NTuple::Tuple* pObj = 0;
+  NTuple::Tuple* pObj = nullptr;
   StatusCode status = findObject(fullPath, *pp_cast<DataObject>(&pObj));  // Check if object is  present
-  if ( status.isSuccess() )   {
-    return readRecord ( pObj );
-  }
-  return INVALID_OBJ_PATH;
+  return status.isSuccess() ? readRecord ( pObj ) : INVALID_OBJ_PATH;
 }
 
 /// Read single record from N tuple.
 StatusCode NTupleSvc::readRecord(DataObject* pParent, const std::string& relPath)  {
-  NTuple::Tuple* pObj = 0;
+  NTuple::Tuple* pObj = nullptr;
   StatusCode status = findObject(pParent, relPath, *pp_cast<DataObject>(&pObj));  // Check if object is  present
-  if ( status.isSuccess() )   {
-    return readRecord ( pObj );
-  }
-  return INVALID_OBJ_PATH;
+  return status.isSuccess() ? readRecord ( pObj ) : INVALID_OBJ_PATH;
 }

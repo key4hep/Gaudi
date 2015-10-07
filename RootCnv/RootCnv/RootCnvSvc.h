@@ -1,4 +1,3 @@
-// $Id: RootCnvSvc.h,v 1.7 2010-09-14 06:01:12 frankb Exp $
 //====================================================================
 //	RootCnvSvc definition
 //--------------------------------------------------------------------
@@ -7,7 +6,6 @@
 //====================================================================
 #ifndef GAUDIROOTCNV_GAUDIROOTCNVSVC_H
 #define GAUDIROOTCNV_GAUDIROOTCNVSVC_H
-// $Header: /afs/cern.ch/project/cvs/reps/lhcb/Online/RootCnv/src/RootCnvSvc.h,v 1.7 2010-09-14 06:01:12 frankb Exp $
 
 // Framework include files
 #include "GaudiKernel/ConversionSvc.h"
@@ -55,17 +53,17 @@ namespace Gaudi {
   protected:
 
     /// Reference to the I/O data manager
-    Gaudi::IIODataManager*      m_ioMgr;
+    SmartIF<Gaudi::IIODataManager>      m_ioMgr;
     /// Reference to incident service
-    IIncidentSvc*               m_incidentSvc;
+    SmartIF<IIncidentSvc>               m_incidentSvc;
     /// On writing: reference to active output stream
-    Gaudi::RootDataConnection*  m_current;
+    Gaudi::RootDataConnection*  m_current = nullptr;
     /// TClass pointer to reference class
     TClass*                     m_classRefs;
     /// TClass pointer to DataObject class
     TClass*                     m_classDO;
     /// Setup structure (ref-counted) and passed to data connections
-    RootConnectionSetup*        m_setup;
+    RootConnectionSetup*        m_setup = nullptr;
     /// Property: ROOT section name
     std::string                 m_currSection;
 
@@ -93,7 +91,7 @@ namespace Gaudi {
     std::set<std::string>       m_badFiles;
 
     /// Message streamer
-    MsgStream*                  m_log;
+    std::unique_ptr<MsgStream>  m_log;
 
     /// Helper: Get TClass for a given DataObject pointer
     TClass* getClass(DataObject* pObject);

@@ -1,5 +1,3 @@
-// $Id: GslErrorCount.h,v 1.2 2006/11/30 10:40:53 mato Exp $
-// ============================================================================
 #ifndef GAUDIGSL_GSLERRORCOUNT_H
 #define GAUDIGSL_GSLERRORCOUNT_H 1
 // Include files
@@ -31,15 +29,14 @@ public:
    *  @see GslError
    *  @return status code
    */
-  virtual StatusCode handle
-  ( const GslError& error ) const ;
+  StatusCode handle( const GslError& error ) const override ;
 
   /** standard finalization of Tool
    *  @see  AlgTool
    *  @see IAlgTool
    *  @return status code
    */
-  virtual StatusCode finalize   () ;
+  StatusCode finalize   () override ;
 
   /** Standard constructor
    *  @param type   tool type (?)
@@ -52,7 +49,7 @@ public:
     const IInterface*  parent );
 
   /// destructor (protected and virtual)
-  virtual ~GslErrorCount( );
+  ~GslErrorCount( ) override = default;
 
 private:
 

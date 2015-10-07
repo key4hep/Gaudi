@@ -1,6 +1,3 @@
-// $Id:$
-// ============================================================================
-// CVS tag $Name:  $
 // ============================================================================
 // Include files
 // ===========================================================================
@@ -17,50 +14,47 @@
 // ===========================================================================
 #include "SvcCatalog.h"
 // ===========================================================================
-SvcCatalog::SvcCatalog()
-{ m_catalog = new ObjectsT(); }
+namespace {
+    constexpr struct select1st_t {
+        template <typename S, typename T> const S& operator()(const std::pair<S,T>& p) const
+        { return p.first; } 
+        template <typename S, typename T> S& operator()(std::pair<S,T>& p) const
+        { return p.first; } 
+    } select1st {};
+}
 // ===========================================================================
 SvcCatalog::~SvcCatalog()
 {
-  for (ObjectsT::const_iterator cur=m_catalog->begin();
-       cur!=m_catalog->end();cur++)
+  for (const auto&  cur : m_catalog)
   {
-    for(PropertiesT::const_iterator prop=cur->second.begin();
-        prop!=cur->second.end(); prop++)
-    { if(NULL != *prop){ delete *prop; } }
+    for (auto & prop : cur.second) delete prop;
   }
-  delete m_catalog;
 }
 // ============================================================================
 StatusCode SvcCatalog::addProperty
 (const std::string& client,
  const Property* property )
 {
-  PropertiesT*  props = findProperties(client);
-  if ( props != 0 ){
+  auto props = findProperties(client);
+  if ( props ){
     removeProperty(client,property->name()).ignore();
     props->push_back(property);
   }else{
-    PropertiesT toInsert;
-    toInsert.push_back(property);
-    m_catalog->insert(std::pair<std::string,PropertiesT>(client,toInsert));
+    m_catalog.emplace( client, PropertiesT{ { property } } );
   }
   return StatusCode::SUCCESS;
 }
 // ============================================================================
 StatusCode
-SvcCatalog::removeProperty
-( const std::string& client,
-  const std::string& name)
+SvcCatalog::removeProperty ( const std::string& client,
+                             const std::string& name)
 {
-  PropertiesT*  props = findProperties(client);
-  if (props)
-  {
-    PropertiesT::iterator toRemove;
-    if(findProperty(props,name,toRemove))
-    {
-      delete *toRemove;
-      props->erase(toRemove);
+  auto  props = findProperties(client);
+  if (props) {
+    auto res = findProperty(*props,name);
+    if(res.first) {
+      delete *res.second;
+      props->erase(res.second);
     }
   }
   return StatusCode::SUCCESS;
@@ -72,46 +66,49 @@ SvcCatalog::getProperties
 // ============================================================================
 std::vector<std::string> SvcCatalog::getClients() const
 {
-  std::vector<std::string> result;
-  for (ObjectsT::const_iterator cur = m_catalog->begin();
-       cur != m_catalog->end(); cur++) { result.push_back(cur->first); }
+  std::vector<std::string> result; result.reserve(m_catalog.size());
+  std::transform( std::begin(m_catalog), std::end(m_catalog),
+                  std::back_inserter(result), select1st );
   return result;
 }
 // ============================================================================
-SvcCatalog::PropertiesT*
+const SvcCatalog::PropertiesT*
 SvcCatalog::findProperties( const std::string& client) const
 {
-  ObjectsT::iterator result;
-  if((result = m_catalog->find(client)) == m_catalog->end()){ return 0; }
-  return &result->second;
+  auto result = m_catalog.find(client);
+  return ( result != m_catalog.end() ) ? &result->second
+                                       : nullptr;
 }
 // ============================================================================
-bool SvcCatalog::findProperty
-( SvcCatalog::PropertiesT* props ,
-  const std::string&                name  ,
-  SvcCatalog::PropertiesT::iterator& result)
+SvcCatalog::PropertiesT*
+SvcCatalog::findProperties( const std::string& client)
 {
-  for(result = props->begin();result!=props->end();result++){
-    if(boost::to_lower_copy((*result)->name()) == boost::to_lower_copy(name))
-    { return true; }
-  }
-  return false;
+  auto result = m_catalog.find(client);
+  return ( result != m_catalog.end() ) ? &result->second
+                                       : nullptr;
+}
+// ============================================================================
+std::pair<bool,SvcCatalog::PropertiesT::iterator>
+SvcCatalog::findProperty
+( SvcCatalog::PropertiesT& props ,
+  const std::string&       name  )
+{
+  auto p = std::find_if( std::begin(props), std::end(props),
+                         [&](const Property* prop) { 
+                             return boost::iequals( name, prop->name());
+  });
+  return { p != std::end(props), p };
 }
 // ============================================================================
 std::ostream& SvcCatalog::fillStream( std::ostream& o ) const
 {
   // loop over the clients:
-  for ( ObjectsT::const_iterator iclient = m_catalog->begin();
-        m_catalog->end() != iclient ; ++iclient )
+  for ( const auto& iclient : m_catalog )
   {
-    const PropertiesT& props  = iclient->second ;
-    o << "Client '" << iclient->first << "'" << std::endl ;
-    for ( PropertiesT::const_iterator ip = props.begin() ;
-          props.end() != ip ; ++ip )
+    o << "Client '" << iclient.first << "'" << std::endl ;
+    for ( const auto& p : iclient.second ) 
     {
-      const Property* p = *ip ;
-      if ( 0 == p ) { continue ; }                             // CONTINUE
-      o << "\t" << (*p) << std::endl ;
+      if ( p ) o << "\t" << (*p) << std::endl ;
     }
   }
   //

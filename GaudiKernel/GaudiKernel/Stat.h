@@ -1,5 +1,3 @@
-// $Id: Stat.h,v 1.6 2008/04/04 18:32:39 marcocle Exp $
-// ============================================================================
 #ifndef      __GAUDI_CHRONOSTATSVC_STAT_H__
 #define      __GAUDI_CHRONOSTATSVC_STAT_H__
 // ============================================================================
@@ -11,12 +9,10 @@
 // ============================================================================
 // GaudiKernel
 // ============================================================================
+#include "GaudiKernel/ICounterSvc.h"
 #include "GaudiKernel/StatEntity.h"
-// ============================================================================
-// forward declarations
-// ============================================================================
-class IStatSvc    ;
-class ICounterSvc ;
+#include "GaudiKernel/SmartIF.h"
+#include "GaudiKernel/IStatSvc.h"
 // ============================================================================
 /** @class Stat  Stat.h GaudiKernel/Stat.h
  *
@@ -72,7 +68,6 @@ public:
     : m_entity  ( entity )
     , m_tag     ( name   )
     , m_group   ( group  )
-    , m_stat    ( 0      )
     , m_counter ( 0      )
   {}
   /**  constructor from StatEntity, name and group :
@@ -95,7 +90,6 @@ public:
     : m_entity  ( &entity )
     , m_tag     ( name    )
     , m_group   ( group   )
-    , m_stat    ( 0       )
     , m_counter ( 0       )
   {}
   /**  constructor from IStatSvc, tag and value
@@ -159,11 +153,11 @@ public:
          const std::string& group ,
          const std::string& name  ) ;
   /// copy constructor
-  Stat           ( const Stat& right ) ;
+  Stat           ( const Stat& ) = default;
   /// Assignement operator
-  Stat& operator=( const Stat& right) ;
+  Stat& operator=( const Stat& ) = default;
   /// destructor
-  ~Stat() ;
+  ~Stat() = default;
   // ==========================================================================
   /// get the entity
   const StatEntity*  entity    () const { return  m_entity     ; }
@@ -192,7 +186,7 @@ public:
    */
   Stat& operator+= ( const double f )
   {
-    if ( 0 != m_entity ) { (*m_entity) += f ; }
+    if ( m_entity ) { (*m_entity) += f ; }
     return *this ;
   }
   /** Pre-increment operator for the counter
@@ -210,7 +204,7 @@ public:
    */
   Stat& operator++ ()
   {
-    if ( 0 != m_entity ) { ++(*m_entity) ; }
+    if ( m_entity ) { ++(*m_entity) ; }
     return *this ;
   }
   /** Post-increment operator for the counter
@@ -227,7 +221,7 @@ public:
    */
   Stat& operator++ (int)
   {
-    if ( 0 != m_entity ) { (*m_entity)++ ; }
+    if ( m_entity ) { (*m_entity)++ ; }
     return *this ;
   }
   /** General decrement operator for the counter
@@ -237,25 +231,25 @@ public:
    */
   Stat& operator-= ( const double   f )
   {
-    if ( 0 != m_entity ) { (*m_entity) -= f ; }
+    if ( m_entity ) { (*m_entity) -= f ; }
     return *this ;
   }
   /// Pre-decrement operator for the flag
   Stat& operator-- ()
   {
-    if ( 0 != m_entity ) { --(*m_entity)   ; }
+    if ( m_entity ) { --(*m_entity)   ; }
     return *this ;
   }
   /// Post-decrement operator for the flag
   Stat& operator-- (int)
   {
-    if ( 0 != m_entity ) {   (*m_entity)-- ; }
+    if ( m_entity ) {   (*m_entity)-- ; }
     return *this ;
   }
   /// increment with StatEntity object
   Stat& operator+=( const StatEntity& right )
   {
-    if ( 0 != m_entity ) { (*m_entity) += right ; }
+    if ( m_entity ) { (*m_entity) += right ; }
     return *this ;
   }
   /// increment with  other stat objects
@@ -287,15 +281,15 @@ public:
   // ==========================================================================
 private:
   // underlying counter
-  StatEntity*  m_entity  ;   ///< underlying counter
+  StatEntity*  m_entity = nullptr ;   ///< underlying counter
   // unique stat tag(name)
   std::string  m_tag     ;   ///< unique stat tag(name)
   // group (for ICounterSvc)
   std::string  m_group   ;
   // Stat  service
-  IStatSvc*    m_stat    ;   ///< Stat  service
+  SmartIF<IStatSvc>    m_stat    ;   ///< Stat  service
   // Counter Svc
-  ICounterSvc* m_counter ;   ///< Counter Service
+  SmartIF<ICounterSvc> m_counter ;   ///< Counter Service
 };
 // ============================================================================
 /// external operator for addition of Stat and a number

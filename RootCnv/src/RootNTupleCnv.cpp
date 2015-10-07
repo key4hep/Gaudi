@@ -1,4 +1,3 @@
-// $Id: RootNTupleCnv.cpp,v 1.13 2010-09-27 15:43:53 frankb Exp $
 //------------------------------------------------------------------------------
 //
 // Implementation of class :  RootNTupleCnv
@@ -123,12 +122,13 @@ template <class T> static inline void putRange(ostream& os, NTuple::_Data<T>* it
   os << x.lower() << ';' << x.upper() << ';';
 }
 
-static inline string _tr(const string& s) {
-  string local = s;
-  char* p = (char*)local.c_str();
-  if ( strncmp(p,"<local>",7)==0 ) p += 7;
-  for(;*p;++p)
-    if ( !isalnum(*p) ) *p = '_';
+static inline string _tr(string s) {
+  string local = std::move(s);
+  auto p = std::begin(local);
+  if ( local.compare(0,7,"<local>")==0 ) p+=7;
+  std::replace_if(p,std::end(local),
+                  [](const char& c) { return !isalnum(c); },
+                  '_');
   return local;
 }
 
@@ -148,7 +148,7 @@ RootNTupleCnv::createObj(IOpaqueAddress* pAddr, DataObject*& refpObject)   {
     TBranch* b = con->getBranch("##Descriptors","GaudiStatisticsDescription");
     if ( b ) {
       RootNTupleDescriptor* ptr;
-      auto_ptr<RootNTupleDescriptor> dsc(ptr=new RootNTupleDescriptor());
+      std::unique_ptr<RootNTupleDescriptor> dsc(ptr=new RootNTupleDescriptor());
       b->SetAddress(&ptr);
       for(Long64_t i=0, nent = b->GetEntries(); i<nent; ++i) {
         int nb = b->GetEntry(i);
@@ -166,8 +166,8 @@ RootNTupleCnv::createObj(IOpaqueAddress* pAddr, DataObject*& refpObject)   {
       return makeError("Failed to access N-Tuple tree:"+cntName);
     }
     if ( !par_val.empty() )      {
-      SmartIF<INTupleSvc> ntupleSvc(dataProvider());
-      if ( ntupleSvc.isValid() )  {
+      auto ntupleSvc = dataProvider().as<INTupleSvc>();
+      if ( ntupleSvc )  {
         char c;
         CLID clid;
         int siz, typ;

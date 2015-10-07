@@ -1,4 +1,3 @@
-//$Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiExamples/src/POOLIO/ReadAlg.h,v 1.2 2008/11/04 22:49:24 marcocle Exp $       //
 #ifndef GAUDIEXAMPLES_READALG_H
 #define GAUDIEXAMPLES_READALG_H
 
@@ -18,9 +17,9 @@ class IIncidentSvc;
 
 class ReadAlg : public Algorithm, virtual public IIncidentListener {
   /// Reference to run records data service
-  IDataProviderSvc* m_recordSvc;
+  SmartIF<IDataProviderSvc> m_recordSvc;
   /// Reference to incident service
-  IIncidentSvc*     m_incidentSvc;
+  SmartIF<IIncidentSvc>     m_incidentSvc;
   /// Property: incident name of records service
   std::string       m_incidentName;
 

@@ -23,28 +23,26 @@ namespace
 {
   // ==========================================================================
   /// case insensitive comparison of strings
-  struct Nocase : public std::binary_function<std::string,std::string,bool>
+  constexpr struct NoCaseCmp_t
   {
     inline bool operator() ( const std::string& v1 ,
                              const std::string& v2 ) const
     {
-      std::string::const_iterator i1 = v1.begin() ;
-      std::string::const_iterator i2 = v2.begin() ;
-      for ( ; v1.end() != i1 && v2.end() != i2 ; ++i1 , ++i2 )
-      { if ( toupper(*i1) != toupper(*i2) ) { return false ; } }
-      return v1.size() == v2.size() ;
+      return v1.size() == v2.size() &&
+             std::equal(std::begin(v1),std::end(v1),std::begin(v2),
+                        [](char c1, char c2) {
+                            return toupper(c1) == toupper(c2);
+                        } );
     }
-  };
+  } noCaseCmp {} ;
   // ==========================================================================
   /// get the property by name
-  struct PropByName : public std::unary_function<const Property*,bool>
+  struct PropByName
   {
-    PropByName ( const std::string& name ) : m_name ( name ) {} ;
-    inline bool operator() ( const Property* p ) const
-    { return ( 0 == p ) ? false : m_cmp ( p->name() , m_name ) ; }
-  private:
     std::string m_name ;
-    Nocase      m_cmp  ;
+
+    inline bool operator() ( const Property* p ) const
+    { return  p && noCaseCmp( p->name() , m_name ) ; }
   } ;
   // ==========================================================================
 }
@@ -52,60 +50,9 @@ namespace
 // constructor from the interface
 // ====================================================================
 PropertyMgr::PropertyMgr(IInterface* iface)
-  : m_properties       ()
-  , m_remoteProperties ()
-  , m_todelete         ()
-  , m_pOuter           ( iface )
+  : m_pOuter           ( iface )
 {
   addRef(); // initial reference count set to 1
-}
-// ====================================================================
-// copy constructor
-// ====================================================================
-PropertyMgr::PropertyMgr ( const PropertyMgr& right )
-  : IInterface(right),
-    IProperty(right),
-    extend_interfaces_base(right),
-    base_class(right)
-  , m_properties       ( right.m_properties       )
-  , m_remoteProperties ( right.m_remoteProperties )
-  , m_todelete         ( right.m_todelete         )
-  , m_pOuter           ( right.m_pOuter )
-{
-  addRef(); // initial reference count set to 1
-  std::transform
-    ( m_todelete.begin() , m_todelete.end  () ,
-      m_todelete.begin() , std::mem_fun(&Property::clone));
-}
-// ====================================================================
-// destructor
-// ====================================================================
-PropertyMgr::~PropertyMgr()
-{
-  /// delete all owned properties
-  for ( Properties::iterator ip  = m_todelete.begin() ;
-        m_todelete.end() != ip ; ++ip ) { delete *ip ; }
-}
-// ====================================================================
-// assignment operator
-// ====================================================================
-PropertyMgr& PropertyMgr::operator=( const PropertyMgr& right )
-{
-  if  ( &right == this ) { return *this ; }
-  //
-  for ( Properties::iterator ip  = m_todelete.begin() ;
-        m_todelete.end() != ip ; ++ip ) { delete *ip ; }
-  //
-  m_properties       = right.m_properties       ;
-  m_remoteProperties = right.m_remoteProperties ;
-  m_todelete         = right.m_todelete         ;
-  m_pOuter           = right.m_pOuter           ;
-  //
-  std::transform
-    ( m_todelete.begin() , m_todelete.end  () ,
-      m_todelete.begin() , std::mem_fun(&Property::clone));
-  //
-  return *this ;
 }
 // ====================================================================
 // Declare a remote property
@@ -115,10 +62,10 @@ Property* PropertyMgr::declareRemoteProperty
   IProperty*         rsvc  ,
   const std::string& rname )
 {
-  if ( 0 == rsvc ) { return 0 ; }
+  if ( !rsvc ) { return nullptr ; }
   const std::string& nam = rname.empty() ? name : rname ;
   Property* p = property ( nam , rsvc->getProperties() )  ;
-  m_remoteProperties.push_back ( RemProperty ( name , std::make_pair ( rsvc , nam ) ) ) ;
+  m_remoteProperties.emplace_back ( name , std::make_pair( rsvc , nam ) ) ;
   return p ;
 }
 // ====================================================================
@@ -128,10 +75,8 @@ Property* PropertyMgr::property
 ( const std::string&            name  ,
   const std::vector<Property*>& props ) const
 {
-  Properties::const_iterator it =
-    std::find_if ( props.begin() , props.end() , PropByName( name ) ) ;
-  if ( props.end() != it ) { return *it ; }                // RETURN
-  return 0 ;                                               // RETURN
+  auto it = std::find_if( props.begin(), props.end(), PropByName{ name } ) ;
+  return ( it != props.end() ) ? *it : nullptr;            // RETURN
 }
 // ====================================================================
 // retrieve the property by name
@@ -141,18 +86,16 @@ Property* PropertyMgr::property
 {
   // local property ?
   Property* lp = property ( name , m_properties ) ;
-  if ( 0 != lp ) { return lp ; }                       // RETURN
+  if ( lp ) { return lp ; }                           // RETURN
   // look for remote property
-  Nocase cmp ;
-  for ( RemoteProperties::const_iterator it = m_remoteProperties.begin() ;
-        m_remoteProperties.end() != it ; ++it )
+  for ( const auto& it : m_remoteProperties )
   {
-    if ( !cmp(it->first,name) ) { continue ; }   // CONTINUE
-    const IProperty* p = it->second.first ;
-    if ( 0 == p               ) { continue ; }   // CONITNUE
-    return property ( it->second.second , p->getProperties() ) ; // RETURN
+    if ( !noCaseCmp(it.first,name) ) { continue ; }   // CONTINUE
+    const IProperty* p = it.second.first ;
+    if ( !p ) { continue ; }                          // CONTINUE
+    return property ( it.second.second , p->getProperties() ) ; // RETURN
   }
-  return 0 ;                                           // RETURN
+  return nullptr ;                                    // RETURN
 }
 // ====================================================================
 /* set a property from another property
@@ -162,13 +105,11 @@ Property* PropertyMgr::property
 StatusCode PropertyMgr::setProperty( const Property& p )
 {
   Property* pp = property( p.name() ) ;
-  if ( 0 == pp            ) { return StatusCode::FAILURE ; } // RETURN
-  //
   try
-  { if ( !pp->assign(p) ) { return StatusCode::FAILURE ; } } // RETURN
-  catch(...)              { return StatusCode::FAILURE ;   } // RETURN
+  { if ( pp && pp->assign(p) ) { return StatusCode::SUCCESS ; } } // RETURN
+  catch(...) {  }
   //
-  return StatusCode::SUCCESS;      // Property value set
+  return StatusCode::FAILURE;
 }
 // ====================================================================
 /* set a property from the stream
@@ -193,9 +134,7 @@ StatusCode
 PropertyMgr::setProperty( const std::string& n, const std::string& v )
 {
   Property* p = property( n ) ;
-  if ( 0 == p ) { return StatusCode::FAILURE ; }  // RETURN
-  bool result =  p->fromString( v ) != 0 ;
-  return result ? StatusCode::SUCCESS : StatusCode::FAILURE ;
+  return ( p && p->fromString(v) ) ? StatusCode::SUCCESS : StatusCode::FAILURE ;
 }
 // =====================================================================
 /* Retrieve the value of a property
@@ -207,11 +146,10 @@ StatusCode PropertyMgr::getProperty(Property* p) const
   try
   {
     const Property* pp = property( p->name() ) ;
-    if ( 0 == pp         ) { return StatusCode::FAILURE ; }   // RETURN
-    if ( !pp->load( *p ) ) { return StatusCode::FAILURE ; }   // RETURN
+    if ( pp && pp->load(*p) ) return StatusCode::SUCCESS;      // RETURN
   }
-  catch ( ... )            { return StatusCode::FAILURE;  }   // RETURN
-  return StatusCode::SUCCESS ;                                // RETURN
+  catch ( ... ) {  }
+  return StatusCode::FAILURE ;                                // RETURN
 }
 // =====================================================================
 /* Get the property by name
@@ -221,9 +159,8 @@ StatusCode PropertyMgr::getProperty(Property* p) const
 const Property& PropertyMgr::getProperty( const std::string& name) const
 {
   const Property* p = property( name ) ;
-  if ( 0 != p ) { return *p ; }                        // RETURN
-  //
-  throw std::out_of_range( "Property "+name+" not found." );    // Not found
+  if ( !p ) throw std::out_of_range( "Property "+name+" not found." );    // Not found
+  return *p ;                        // RETURN
 }
 // =====================================================================
 /* Get the property by name
@@ -236,7 +173,7 @@ StatusCode PropertyMgr::getProperty
 {
   // get the property
   const Property* p = property( n ) ;
-  if ( 0 == p ) { return StatusCode::FAILURE ; }
+  if ( !p ) { return StatusCode::FAILURE ; }
   // convert the value into the string
   v = p->toString() ;
   //
@@ -255,30 +192,23 @@ StatusCode PropertyMgr::queryInterface(const InterfaceID& iid, void** pinterface
   StatusCode sc= base_class::queryInterface(iid, pinterface);
   if (sc.isSuccess()) return sc;
   // fall back on the owner
-  return (0 != m_pOuter)? m_pOuter->queryInterface(iid, pinterface)
-                        : sc; // FAILURE
+  return m_pOuter ? m_pOuter->queryInterface(iid, pinterface)
+                  : sc; // FAILURE
 }
 // =====================================================================
 // Implementation of IProperty::hasProperty
 // =====================================================================
 bool PropertyMgr::hasProperty(const std::string& name) const {
   return any_of(begin(m_properties), end(m_properties),
-      [&name](Property* prop) {
-    return Nocase()(prop->name(), name);
+      [&name](const Property* prop) {
+    return noCaseCmp(prop->name(), name);
   });
 }
 void PropertyMgr::assertUniqueName(const std::string& name) const {
   if (UNLIKELY(hasProperty(name))) {
-    // TODO: queryInterface should be const
-    // Note: using SmartIF causes a segfault in genconf (wrong ref. count)
-    INamedInterface* owner = nullptr;
-    std::string ownerName{"PropertyMgr"};
-    if (m_pOuter &&
-        const_cast<IInterface*>(m_pOuter)->queryInterface(INamedInterface::interfaceID(), (void**)&owner).isSuccess()) {
-      ownerName = owner->name();
-    }
+    auto owner = SmartIF<INamedInterface>( m_pOuter );
     auto msgSvc = Gaudi::svcLocator()->service<IMessageSvc>("MessageSvc");
-    MsgStream log(msgSvc, ownerName);
+    MsgStream log(msgSvc, owner ? owner->name() : "PropertyMgr"  );
     log << MSG::WARNING
         << "duplicated property name '" << name
         << "', see https://its.cern.ch/jira/browse/GAUDI-1023"<< endmsg;

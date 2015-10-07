@@ -1,4 +1,3 @@
-// $Id:$
 // ============================================================================
 // Include files
 // ============================================================================
@@ -19,7 +18,7 @@ namespace
   {
     for ( unsigned int i =  0 ; i < N ; ++ i )
     {
-      MAP::const_iterator found = m.find ( keys[i] ) ;
+      auto found = m.find ( keys[i] ) ;
       if ( m.end() != found ) { return found ; }
     }
     return m.end() ;

@@ -1,4 +1,3 @@
-// $Id: MyAudAlgorithm.h,v 1.1 2007/01/22 16:06:14 hmd Exp $
 #ifndef GAUDIEXAMPLE_MYAUDALGORITHM_H
 #define GAUDIEXAMPLE_MYAUDALGORITHM_H 1
 

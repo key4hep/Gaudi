@@ -53,7 +53,7 @@ private:
     OutStreamTrigger(ReplayOutputStream *ptr): m_ptr(ptr) {}
     inline void operator() (const std::string &name) const {
       SmartIF<IAlgorithm> &alg = m_ptr->m_outputStreams[name];
-      if (alg.isValid()) {
+      if (alg) {
         if (!alg->isExecuted()) {
           alg->sysExecute();
         } else {

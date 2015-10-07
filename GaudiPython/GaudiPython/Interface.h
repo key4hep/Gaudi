@@ -1,4 +1,3 @@
-// $Id: Interface.h,v 1.8 2005/11/08 16:31:03 mato Exp $
 // ============================================================================
 #ifndef GAUDIPYTHON_INTERFACE_H 
 #define GAUDIPYTHON_INTERFACE_H 1

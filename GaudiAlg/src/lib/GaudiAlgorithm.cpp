@@ -1,5 +1,3 @@
-// $Id: GaudiAlgorithm.cpp,v 1.12 2008/11/04 22:49:25 marcocle Exp $
-// ============================================================================
 #define  GAUDIALG_GAUDIALGORITHM_CPP 1
 // ============================================================================
 // include files
@@ -36,12 +34,7 @@ template class GaudiCommon<Algorithm>;
 GaudiAlgorithm::GaudiAlgorithm ( const std::string&  name        ,
                                  ISvcLocator*        pSvcLocator )
   : GaudiCommon<Algorithm> ( name , pSvcLocator )
-  //
-  , m_evtColSvc  ()  // pointer to Event Tag Collection Service
 {
-  m_vetoObjs.clear();
-  m_requireObjs.clear();
-  
   setProperty ( "RegisterForContextService" , true ).ignore() ;
   
   declareProperty( "VetoObjects", m_vetoObjs,
@@ -49,10 +42,6 @@ GaudiAlgorithm::GaudiAlgorithm ( const std::string&  name        ,
   declareProperty( "RequireObjects", m_requireObjs,
                    "Execute only if one or more of these TES objects exists" );
 }
-// ============================================================================
-// Destructor
-// ============================================================================
-GaudiAlgorithm::~GaudiAlgorithm() { }
 // ============================================================================
 // standard initialization method
 // ============================================================================
@@ -93,7 +82,7 @@ StatusCode GaudiAlgorithm::execute()
 // ============================================================================
 SmartIF<INTupleSvc>& GaudiAlgorithm::evtColSvc() const
 {
-  if ( !m_evtColSvc.isValid() )
+  if ( !m_evtColSvc )
   { m_evtColSvc = svc< INTupleSvc > ( "EvtTupleSvc" , true ) ; }
   //
   return m_evtColSvc ;
@@ -108,44 +97,31 @@ SmartIF<INTupleSvc>& GaudiAlgorithm::evtColSvc() const
 // ============================================================================
 StatusCode GaudiAlgorithm::sysExecute ()
 {
-  IAlgContextSvc* ctx = 0 ;
+  IAlgContextSvc* ctx = nullptr ;
   if ( registerContext() ) { ctx = contextSvc() ; }
   // Lock the context
   Gaudi::Utils::AlgContext cnt ( ctx , this ) ;  ///< guard/sentry
 
   // Do not execute if one or more of the m_vetoObjs exist in TES
-  for( std::vector<std::string>::iterator it  = m_vetoObjs.begin();
-                                          it != m_vetoObjs.end(); it++ ) {
-    if( exist<DataObject>(*it) ) {
+  auto it = std::find_if( std::begin(m_vetoObjs), std::end(m_vetoObjs),
+                          [&](const std::string& loc) { return this->exist<DataObject>(loc); } );
+  if ( it != std::end(m_vetoObjs) ) {
       debug() << *it << " found, skipping event " << endmsg;
       return StatusCode::SUCCESS;
-    }
   }
 
   // Execute if m_requireObjs is empty
-  bool doIt = m_requireObjs.empty() ? true : false;
+  // or if one or more of the m_requireObjs exist in TES
+  bool doIt = m_requireObjs.empty() || 
+              std::any_of( std::begin(m_requireObjs), std::end(m_requireObjs),
+                           [&](const std::string& loc) { return this->exist<DataObject>(loc); } );
 
-  // Execute also if one or more of the m_requireObjs exist in TES
-  for( std::vector<std::string>::iterator it  = m_requireObjs.begin();
-                                          it != m_requireObjs.end(); it++ ) {
-    if( exist<DataObject>(*it) ) {
-      doIt = true;
-      break;
-    }
-  }
-
-  if( doIt )
-    // execute the generic method:
-    return Algorithm::sysExecute() ;
-  else
-    return StatusCode::SUCCESS;
+  // execute the generic method:
+  if( doIt ) return Algorithm::sysExecute() ;
+  return StatusCode::SUCCESS;
 }
 // ============================================================================
-
-
-
 
 // ============================================================================
 // The END
 // ============================================================================
-

@@ -9,17 +9,16 @@
  * @class ModuleIncident
  * @brief base class for Module-related incident
  * @author P. Calafiura
- * $Id: ModuleIncident.h,v 1.1 2006/12/10 20:29:17 leggett Exp $
  */
 class ModuleIncident : public Incident {
 protected:
   /// @name protected structors 
   //@{
-  ModuleIncident(const std::string& source, // Source(service or alg) name)
-		 const std::string& type,   // Type (load, unload, ...)
-		 const std::string& module  // module(DLL) in question
-           ) : Incident(source, type), m_module(module) { }
-  virtual ~ModuleIncident() { }
+  ModuleIncident(std::string source, // Source(service or alg) name)
+                 std::string type,   // Type (load, unload, ...)
+		         std::string module  // module(DLL) in question
+           ) : Incident(std::move(source), std::move(type)), m_module(std::move(module)) { }
+  virtual ~ModuleIncident() = default;
   //@}
 
 public:
@@ -39,15 +38,13 @@ private:
  * @class ModuleLoadedIncident
  * @brief fired when a module (DLL) is loaded
  * @author P. Calafiura
- * $Id: ModuleIncident.h,v 1.1 2006/12/10 20:29:17 leggett Exp $
  */
 class ModuleLoadedIncident : public ModuleIncident {
 public:
-  static std::string TYPE() { return std::string("ModuleLoaded"); }
-  ModuleLoadedIncident(const std::string& source, // Source(service or alg) name)
-		       const std::string& module  // module(DLL) in question
-           ) : ModuleIncident(source, TYPE(), module) { }
+  static std::string TYPE() { return "ModuleLoaded"; }
+  ModuleLoadedIncident(std::string source, // Source(service or alg) name)
+		               std::string module  // module(DLL) in question
+           ) : ModuleIncident(std::move(source), TYPE(), std::move(module)) { }
 };
 
 #endif //GAUDIKERNEL_MODULEINCIDENT_H
-

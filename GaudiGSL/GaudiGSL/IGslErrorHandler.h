@@ -1,5 +1,3 @@
-// $Id: IGslErrorHandler.h,v 1.2 2003/11/19 16:55:57 mato Exp $
-// ============================================================================
 #ifndef GAUDIGSL_IGSLERRORHANDLER_H
 #define GAUDIGSL_IGSLERRORHANDLER_H 1
 // Include files

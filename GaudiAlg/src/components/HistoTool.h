@@ -1,5 +1,3 @@
-// $Id: HistoTool.h,v 1.4 2006/11/30 10:16:12 mato Exp $
-// ============================================================================
 #ifndef GAUDIALG_HISTOTOOL_H
 #define GAUDIALG_HISTOTOOL_H 1
 // ============================================================================
@@ -46,20 +44,20 @@ public:
               const IInterface* parent);
 
   // protected virtual destructor
-  virtual ~HistoTool( );
+  ~HistoTool( ) override = default;
 
 public:
 
   // ================================= 1D Histograms ========================================
 
   // fill the histogram (book on demand)
-  virtual AIDA::IHistogram1D*  plot1D
+  AIDA::IHistogram1D*  plot1D
   ( const double        value        ,
     const std::string&  title        ,
     const double        low          ,
     const double        high         ,
     const unsigned long bins   = 100 ,
-    const double        weight = 1.0 ) const
+    const double        weight = 1.0 ) const override
 
   {
     return GaudiHistoTool::plot1D
@@ -67,14 +65,14 @@ public:
   };
 
   // fill the histogram with forced ID assignement (book on demand)
-  virtual AIDA::IHistogram1D*  plot1D
+  AIDA::IHistogram1D*  plot1D
   ( const double        value        ,
     const HistoID&      ID           ,
     const std::string&  title        ,
     const double        low          ,
     const double        high         ,
     const unsigned long bins   = 100 ,
-    const double        weight = 1.0 ) const
+    const double        weight = 1.0 ) const override
   {
     return GaudiHistoTool::plot1D
       ( value , ID , title , low , high , bins , weight ) ;
@@ -83,7 +81,7 @@ public:
   // ================================= 2D Histograms ========================================
 
   // fill the histogram (book on demand)
-  virtual AIDA::IHistogram2D*  plot2D
+  AIDA::IHistogram2D*  plot2D
   ( const double        valueX       ,
     const double        valueY       ,
     const std::string&  title        ,
@@ -93,14 +91,14 @@ public:
     const double        highY        ,
     const unsigned long binsX  = 50  ,
     const unsigned long binsY  = 50  ,
-    const double        weight = 1.0 ) const
+    const double        weight = 1.0 ) const override
   {
     return GaudiHistoTool::plot2D
       ( valueX, valueY, title, lowX, highX, lowY, highY, binsX, binsY, weight ) ;
   };
 
   // fill the histogram (book on demand)
-  virtual AIDA::IHistogram2D*  plot2D
+  AIDA::IHistogram2D*  plot2D
   ( const double        valueX       ,
     const double        valueY       ,
     const HistoID&      ID           ,
@@ -111,7 +109,7 @@ public:
     const double        highY        ,
     const unsigned long binsX  = 50  ,
     const unsigned long binsY  = 50  ,
-    const double        weight = 1.0 ) const
+    const double        weight = 1.0 ) const override
   {
     return GaudiHistoTool::plot2D
       ( valueX, valueY, ID, title, lowX, highX, lowY, highY, binsX, binsY, weight ) ;
@@ -120,7 +118,7 @@ public:
   // ================================= 3D Histograms ========================================
 
   // fill the histogram (book on demand)
-  virtual AIDA::IHistogram3D*  plot3D
+  AIDA::IHistogram3D*  plot3D
   ( const double        valueX       ,
     const double        valueY       ,
     const double        valueZ       ,
@@ -134,7 +132,7 @@ public:
     const unsigned long binsX  = 10  ,
     const unsigned long binsY  = 10  ,
     const unsigned long binsZ  = 10  ,
-    const double        weight = 1.0 ) const
+    const double        weight = 1.0 ) const override
   {
     return GaudiHistoTool::plot3D
       ( valueX, valueY, valueZ, title,
@@ -142,7 +140,7 @@ public:
   };
 
   // fill the histogram (book on demand)
-  virtual AIDA::IHistogram3D*  plot3D
+  AIDA::IHistogram3D*  plot3D
   ( const double        valueX       ,
     const double        valueY       ,
     const double        valueZ       ,
@@ -157,7 +155,7 @@ public:
     const unsigned long binsX  = 10  ,
     const unsigned long binsY  = 10  ,
     const unsigned long binsZ  = 10  ,
-    const double        weight = 1.0 ) const
+    const double        weight = 1.0 ) const override
   {
     return GaudiHistoTool::plot3D
       ( valueX, valueY, valueZ, ID, title,
@@ -167,30 +165,30 @@ public:
 public:
 
   // book the 1D histogram
-  virtual AIDA::IHistogram1D*  book1D
+  AIDA::IHistogram1D*  book1D
   ( const std::string&  title        ,
     const double        low    =   0 ,
     const double        high   = 100 ,
-    const unsigned long bins   = 100 ) const
+    const unsigned long bins   = 100 ) const override
   {
     return GaudiHistoTool::book1D ( title , low , high , bins ) ;
   };
 
   // book the 2D histogram
-  virtual AIDA::IHistogram2D*  book2D
+  AIDA::IHistogram2D*  book2D
   ( const std::string&  title         ,
     const double        lowX    =   0 ,
     const double        highX   = 100 ,
     const unsigned long binsX   =  50 ,
     const double        lowY    =   0 ,
     const double        highY   = 100 ,
-    const unsigned long binsY   =  50 ) const
+    const unsigned long binsY   =  50 ) const override
   {
     return GaudiHistoTool::book2D ( title, lowX, highX, binsX, lowY, highY, binsY ) ;
   }
 
   // book the 3D histogram
-  virtual AIDA::IHistogram3D*  book3D
+  AIDA::IHistogram3D*  book3D
   ( const std::string&  title         ,
     const double        lowX    =   0 ,
     const double        highX   = 100 ,
@@ -200,7 +198,7 @@ public:
     const unsigned long binsY   =  10 ,
     const double        lowZ    =   0 ,
     const double        highZ   = 100 ,
-    const unsigned long binsZ   =  10 ) const
+    const unsigned long binsZ   =  10 ) const override
   {
     return GaudiHistoTool::book3D ( title,
                                     lowX, highX, binsX,
@@ -209,18 +207,18 @@ public:
   }
 
   // book the 1D histogram with forced ID
-  virtual AIDA::IHistogram1D*  book1D
+  AIDA::IHistogram1D*  book1D
   ( const HistoID&      ID           ,
     const std::string&  title  = ""  ,
     const double        low    =   0 ,
     const double        high   = 100 ,
-    const unsigned long bins   = 100 ) const
+    const unsigned long bins   = 100 ) const override
   {
     return GaudiHistoTool::book1D ( ID , title , low , high , bins ) ;
   };
 
   // book the 2D histogram with forced ID
-  virtual AIDA::IHistogram2D*  book2D
+  AIDA::IHistogram2D*  book2D
   ( const HistoID&      ID            ,
     const std::string&  title         ,
     const double        lowX    =   0 ,
@@ -228,13 +226,13 @@ public:
     const unsigned long binsX   =  50 ,
     const double        lowY    =   0 ,
     const double        highY   = 100 ,
-    const unsigned long binsY   =  50 ) const
+    const unsigned long binsY   =  50 ) const override
   {
     return GaudiHistoTool::book2D ( ID, title, lowX, highX, binsX, lowY, highY, binsY ) ;
   }
 
   // book the 3D histogram with forced ID
-  virtual AIDA::IHistogram3D*  book3D
+  AIDA::IHistogram3D*  book3D
   ( const HistoID&      ID            ,
     const std::string&  title         ,
     const double        lowX    =   0 ,
@@ -245,7 +243,7 @@ public:
     const unsigned long binsY   =  10 ,
     const double        lowZ    =   0 ,
     const double        highZ   = 100 ,
-    const unsigned long binsZ   =  10 ) const
+    const unsigned long binsZ   =  10 ) const override
   {
     return GaudiHistoTool::book3D ( ID, title,
                                     lowX, highX, binsX,
@@ -254,75 +252,74 @@ public:
   }
 
   // fill the histo with the value and weight
-  virtual AIDA::IHistogram1D* fill
+  AIDA::IHistogram1D* fill
   ( AIDA::IHistogram1D* histo  ,
     const double        value  ,
     const double        weight ,
-    const std::string&  title  = "") const
+    const std::string&  title  = "") const override
   {
     return GaudiHistoTool::fill ( histo , value , weight , title ) ;
   };
 
   // fill the 2D histo with the value and weight
-  virtual AIDA::IHistogram2D* fill
+  AIDA::IHistogram2D* fill
   ( AIDA::IHistogram2D* histo  ,
     const double        valueX ,
     const double        valueY ,
     const double        weight ,
-    const std::string&  title  = "" ) const
+    const std::string&  title  = "" ) const override
   {
     return GaudiHistoTool::fill ( histo , valueX , valueY , weight , title ) ;
   };
 
   // fill the 3D histo with the value and weight
-  virtual AIDA::IHistogram3D* fill
+  AIDA::IHistogram3D* fill
   ( AIDA::IHistogram3D* histo  ,
     const double        valueX ,
     const double        valueY ,
     const double        valueZ ,
     const double        weight ,
-    const std::string&  title  = "" ) const
+    const std::string&  title  = "" ) const override
   {
     return GaudiHistoTool::fill ( histo , valueX , valueY , valueZ, weight , title ) ;
   };
 
   // access the EXISTING 1D histogram by title
-  virtual AIDA::IHistogram1D*  histo1D ( const std::string& title  )  const
+  AIDA::IHistogram1D*  histo1D ( const std::string& title  )  const override
   { return GaudiHistoTool::histo1D ( title ) ; }
 
   // access the EXISTING 1D histogram by ID
-  virtual AIDA::IHistogram1D*  histo1D ( const HistoID&     ID     )  const
+  AIDA::IHistogram1D*  histo1D ( const HistoID&     ID     )  const override
   { return GaudiHistoTool::histo1D ( ID ) ; }
 
   // access the EXISTING 2D histogram by title
-  virtual AIDA::IHistogram2D*  histo2D ( const std::string& title  )  const
+  AIDA::IHistogram2D*  histo2D ( const std::string& title  )  const override
   { return GaudiHistoTool::histo2D ( title ) ; }
 
   // access the EXISTING 2D histogram by ID
-  virtual AIDA::IHistogram2D*  histo2D ( const HistoID&     ID     )  const
+  AIDA::IHistogram2D*  histo2D ( const HistoID&     ID     )  const override
   { return GaudiHistoTool::histo2D ( ID ) ; }
 
   // access the EXISTING 3D histogram by title
-  virtual AIDA::IHistogram3D*  histo3D ( const std::string& title  )  const
+  AIDA::IHistogram3D*  histo3D ( const std::string& title  )  const override
   { return GaudiHistoTool::histo3D ( title ) ; }
 
   // access the EXISTING 3D histogram by ID
-  virtual AIDA::IHistogram3D*  histo3D ( const HistoID&     ID     )  const
+  AIDA::IHistogram3D*  histo3D ( const HistoID&     ID     )  const override
   { return GaudiHistoTool::histo3D ( ID ) ; }
 
   // check the existence AND validity of the histogram with given title
-  virtual bool histoExists ( const std::string& title  )  const
+  bool histoExists ( const std::string& title  )  const override
   { return GaudiHistoTool::histoExists ( title ) ; }
 
   // check the existence AND validity of the histogram with given title
-  virtual bool histoExists ( const HistoID&     ID     )  const
+  bool histoExists ( const HistoID&     ID     )  const override
   { return GaudiHistoTool::histoExists ( ID ) ; }
 
-private:
 
-  HistoTool() ;
-  HistoTool           ( const HistoTool& ) ;
-  HistoTool& operator=( const HistoTool& ) ;
+  HistoTool()  = delete;
+  HistoTool           ( const HistoTool& )  = delete;
+  HistoTool& operator=( const HistoTool& )  = delete;
 
 };
 

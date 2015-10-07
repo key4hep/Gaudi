@@ -1,4 +1,3 @@
-// $Id: MyTrack.h,v 1.5 2008/10/10 08:06:32 marcocle Exp $
 // ============================================================================
 #ifndef GAUDIPOOLDB_TEST_MYTRACK_H
 #define GAUDIPOOLDB_TEST_MYTRACK_H

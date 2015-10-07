@@ -53,64 +53,63 @@ class ApplicationMgr : public CommonMessaging<implements4<IAppMgrUI,
                                       IStateful> > base_class;
 public:
   typedef std::list<std::pair<IService*,int> >  ListSvc;
-  typedef std::list<std::string>   ListName;
   typedef std::vector<std::string> VectorName;
 
 public:
 
   // default creator
-  ApplicationMgr(IInterface* = 0);
+  ApplicationMgr(IInterface* = nullptr);
   // virtual destructor
-  virtual ~ApplicationMgr();
+  ~ApplicationMgr() override = default;
 
   // implementation of IInterface::queryInterface
-  virtual StatusCode queryInterface(const InterfaceID& iid, void** pinterface);
+  StatusCode queryInterface(const InterfaceID& iid, void** pinterface) override;
 
   // implementation of IAppMgrUI::run
-  virtual StatusCode run();
+  StatusCode run() override;
   // implementation of IAppMgrUI::configure
-  virtual StatusCode configure();
+  StatusCode configure() override;
   // implementation of IAppMgrUI::terminate
-  virtual StatusCode terminate();
+  StatusCode terminate() override;
   // implementation of IAppMgrUI::initialize
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
   // implementation of IAppMgrUI::start
-  virtual StatusCode start();
+  StatusCode start() override;
   // implementation of IAppMgrUI::stop
-  virtual StatusCode stop();
+  StatusCode stop() override;
   // implementation of IAppMgrUI::finalize
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
   // implementation of IAppMgrUI::nextEvent
-  virtual StatusCode nextEvent(int maxevt);
+  StatusCode nextEvent(int maxevt) override;
   // implementation of IAppMgrUI::name
-  virtual const std::string&  name() const;
+  const std::string&  name() const override;
   /// implementation of IEventProcessor::executeEvent(void*)
-  virtual StatusCode executeEvent(void* par);
+  StatusCode executeEvent(void* par) override;
   /// implementation of IEventProcessor::executeRun(int)
-  virtual StatusCode executeRun(int evtmax);
+  StatusCode executeRun(int evtmax) override;
   /// implementation of IEventProcessor::stopRun()
-  virtual StatusCode stopRun();
+  StatusCode stopRun() override;
 
   // implementation of IStateful::state
-  virtual Gaudi::StateMachine::State FSMState() const;
+  Gaudi::StateMachine::State FSMState() const override;
   // implementation of IStateful::targetState
-  virtual Gaudi::StateMachine::State targetFSMState() const;
+  Gaudi::StateMachine::State targetFSMState() const override;
   // implementation of IStateful::reinitialize
-  virtual StatusCode reinitialize();
+  StatusCode reinitialize() override;
   // implementation of IStateful::reinitialize
-  virtual StatusCode restart();
+  StatusCode restart() override;
   // implementation of IService::sysItinitilaize
-  virtual StatusCode sysInitialize() { return StatusCode::SUCCESS; }
+  StatusCode sysInitialize() override { return StatusCode::SUCCESS; }
   // implementation of IService::sysStart
-  virtual StatusCode sysStart() { return StatusCode::SUCCESS; }
+  StatusCode sysStart() override { return StatusCode::SUCCESS; }
   // implementation of IService::sysStop
-  virtual StatusCode sysStop() { return StatusCode::SUCCESS; }
+  StatusCode sysStop() override { return StatusCode::SUCCESS; }
   // implementation of IService::sysFinalize
-  virtual StatusCode sysFinalize() { return StatusCode::SUCCESS; }
+  StatusCode sysFinalize() override { return StatusCode::SUCCESS; }
   // implementation of IService::sysReinitialize
-  virtual StatusCode sysReinitialize() { return StatusCode::SUCCESS; }
+  StatusCode sysReinitialize() override { return StatusCode::SUCCESS; }
   // implementation of IService::sysRestart
-  virtual StatusCode sysRestart() { return StatusCode::SUCCESS; }
+  StatusCode sysRestart() override { return StatusCode::SUCCESS; }
 
   // SI Go Handler
   void       SIGoHandler             ( Property& theProp );
@@ -154,7 +153,7 @@ public:
   }
 
   /// Needed to locate the message service
-  virtual SmartIF<ISvcLocator>& serviceLocator() const {
+  SmartIF<ISvcLocator>& serviceLocator() const override {
     return m_svcLocator;
   }
 
@@ -196,8 +195,9 @@ protected:
 
 
   // data members
-  DLLClassManager*    m_classManager;       ///< Reference to the class manager
-  mutable SmartIF<ISvcLocator> m_svcLocator; ///< Reference to its own service locator
+  mutable SmartIF<ISvcLocator> m_svcLocator; ///< Reference to its own service locator (must be instantiated prior to any service!)
+  SmartIF<DLLClassManager>    m_classManager;       ///< Reference to the class manager
+  SmartIF<PropertyMgr> m_propertyMgr;        ///< Reference to Property Manager
 
   IntegerProperty     m_SIGo;               ///< For SI's "Go" command via callback
   IntegerProperty     m_SIExit;             ///< For SI's "Exit" command via callback
@@ -207,19 +207,14 @@ protected:
   StringProperty      m_messageSvcType;     ///< MessageSvc type
   StringProperty      m_jobOptionsSvcType;  ///< JobOptionsSvc type
 
-
-  ListSvc             m_topSvcList;         ///< List of top level services
-  ListName            m_topSvcNameList;     ///< List of top level services names
-
-  std::string         m_name;               ///< Name
-  Gaudi::StateMachine::State m_state;              ///< Internal State
-  Gaudi::StateMachine::State m_targetState;              ///< Internal State
+  std::string         m_name = "ApplicationMgr";               ///< Name
+  Gaudi::StateMachine::State m_state = Gaudi::StateMachine::OFFLINE;              ///< Internal State
+  Gaudi::StateMachine::State m_targetState = Gaudi::StateMachine::OFFLINE;              ///< Internal State
 
   VectorName          m_defServices;        ///< Vector default services names
   VectorName          m_svcMapping;         ///< Default mapping of services
   VectorName          m_svcOptMapping;      ///< Default mapping of services
 
-  PropertyMgr*        m_propertyMgr;        ///< Reference to Property Manager
   SmartIF<IMessageSvc>      m_messageSvc;         ///< Reference to the message service
   SmartIF<IRunable>         m_runable;            ///< Reference to the runable object
   SmartIF<IEventProcessor>  m_processingMgr;      ///< Reference to processing manager object

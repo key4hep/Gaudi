@@ -1,4 +1,3 @@
-// $Id: THistWrite.h,v 1.1 2006/09/21 13:22:00 hmd Exp $
 #ifndef THIST_THISTWRITE_H
 #define THIST_THISTWRITE_H 1
 

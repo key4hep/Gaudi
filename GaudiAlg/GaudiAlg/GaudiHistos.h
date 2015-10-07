@@ -1,5 +1,3 @@
-// $Id: GaudiHistos.h,v 1.11 2008/10/27 19:22:20 marcocle Exp $
-// ============================================================================
 #ifndef GAUDIALG_GAUDIHISTOS_H
 #define GAUDIALG_GAUDIHISTOS_H 1
 // ============================================================================
@@ -431,14 +429,14 @@ public:
     const double        high         ,
     const unsigned long bins  = 100  ) const
   {
-    AIDA::IHistogram1D* h(0);
+    AIDA::IHistogram1D* h = nullptr;
     if ( produceHistos() )
     {
       // retrieve or book the histogram
       h = histo1D ( title ) ;
-      if ( 0 == h )     { h = book1D  ( title , low , high , bins ); }
+      if ( !h )     { h = book1D  ( title , low , high , bins ); }
       // fill histogram
-      while( first != last && 0 != h  )
+      while( first != last && h  )
       { h = fill ( h , func( *first ) , 1.0 , title  ) ; ++first ; }
     }
     return h ;
@@ -515,9 +513,9 @@ public:
     {
       // retrieve or book the histogram
       h = histo1D ( ID ) ;
-      if ( 0 == h )     { h = book1D  ( ID , title , low , high , bins ); }
+      if ( !h )     { h = book1D  ( ID , title , low , high , bins ); }
       // fill histogram
-      while( first != last && 0 != h )
+      while( first != last && h )
       { h = fill( h , func( *first ) , 1.0 , title  ) ; ++first ; }
     }
     return h;
@@ -602,14 +600,14 @@ public:
     const unsigned long bins         ,
     const WEIGHT&       weight       ) const
   {
-    AIDA::IHistogram1D* h(0);
+    AIDA::IHistogram1D* h = nullptr;
     if ( produceHistos() )
     {
       // retrieve or book the histogram
       h = histo1D ( title ) ;
-      if ( 0 == h ) { h = book1D  ( title , low , high , bins ); }
+      if ( !h ) { h = book1D  ( title , low , high , bins ); }
       // fill histogram
-      while ( first != last && 0 != h )
+      while ( first != last && h )
       { h = fill ( h                 ,
                    func   ( *first ) ,
                    weight ( *first ) , title  ) ; ++first ; }
@@ -695,14 +693,14 @@ public:
     const unsigned long bins         ,
     const WEIGHT&       weight       ) const
   {
-    AIDA::IHistogram1D* h(0);
+    AIDA::IHistogram1D* h = nullptr;
     if ( produceHistos() )
     {
       // retrieve or book the histogram
       h = histo1D ( ID ) ;
-      if ( 0 == h ) { h = book1D  ( ID , title , low , high , bins ); }
+      if ( !h ) { h = book1D  ( ID , title , low , high , bins ); }
       // fill histogram
-      while( first != last && 0 != h )
+      while( first != last && h )
       { h  = fill ( h                 ,
                     func   ( *first ) ,
                     weight ( *first ) , title  ) ; ++first ; }
@@ -2570,8 +2568,8 @@ public:
    */
   inline AIDA::IHistogram1D* histo1D ( const std::string& title  )  const
   {
-    Histo1DMapTitle::const_iterator found = histo1DMapTitle().find( title ) ;
-    return ( histo1DMapTitle().end() == found ? 0 : found->second );
+    auto found = histo1DMapTitle().find( title ) ;
+    return found != histo1DMapTitle().end() ? found->second : nullptr;
   }
   // ==========================================================================
   /** access the EXISTING 1D histogram by title
@@ -2591,8 +2589,8 @@ public:
    */
   inline AIDA::IHistogram2D* histo2D ( const std::string& title  )  const
   {
-    Histo2DMapTitle::const_iterator found = histo2DMapTitle().find( title ) ;
-    return ( histo2DMapTitle().end() == found ? 0 : found->second );
+    auto found = histo2DMapTitle().find( title ) ;
+    return histo2DMapTitle().end() != found ? found->second : nullptr;
   }
   // ==========================================================================
   /** access the EXISTING 3D histogram by title
@@ -2600,8 +2598,8 @@ public:
    */
   inline AIDA::IHistogram3D* histo3D ( const std::string& title  )  const
   {
-    Histo3DMapTitle::const_iterator found = histo3DMapTitle().find( title ) ;
-    return ( histo3DMapTitle().end() == found ? 0 : found->second );
+    auto found = histo3DMapTitle().find( title ) ;
+    return histo3DMapTitle().end() != found ? found->second : nullptr;
   }
   // ==========================================================================
   /** access the EXISTING 1D profile histogram by title
@@ -2609,8 +2607,8 @@ public:
    */
   inline AIDA::IProfile1D* profile1D ( const std::string& title  )  const
   {
-    Profile1DMapTitle::const_iterator found = profile1DMapTitle().find( title ) ;
-    return ( profile1DMapTitle().end() == found ? 0 : found->second );
+    auto found = profile1DMapTitle().find( title ) ;
+    return profile1DMapTitle().end() != found ? found->second : nullptr;
   }
   // ==========================================================================
   /** access the EXISTING 2D profile histogram by title
@@ -2618,8 +2616,8 @@ public:
    */
   inline AIDA::IProfile2D* profile2D ( const std::string& title  )  const
   {
-    Profile2DMapTitle::const_iterator found = profile2DMapTitle().find( title ) ;
-    return ( profile2DMapTitle().end() == found ? 0 : found->second );
+    auto found = profile2DMapTitle().find( title ) ;
+    return profile2DMapTitle().end() != found ? found->second : nullptr;
   }
   // ==========================================================================
 public:
@@ -2724,16 +2722,14 @@ public: // trivial & non-trivial accessors
    *
    *  @code
    *
-   *  const Histo1DMapTitle& histos = histo1DMapTitle() ;
    *  // iterate over the map!
-   *  for ( Histo1DMapTitle::const_iterator entry = histos.begin() ;
-   *        histos.end() != entry ; ++entry  )
+   *  for ( const auto& entry :histo1DMapTitle()  )
    *     {
    *        // histogram title
-   *        const std::string&   title = entry->first ;
+   *        const std::string&   title = entry.first ;
    *        // histogram itself
-   *        AIDA::IHistogram1D* hist  = entry->second ;
-   *        if( 0 == hist )  { continue ; }                // ATTENTION!
+   *        AIDA::IHistogram1D* hist  = entry.second ;
+   *        if( !hist )  { continue ; }                // ATTENTION!
    *
    *        std::cout << " Histogram title " << title << std::endl ;
    *
@@ -2751,15 +2747,13 @@ public: // trivial & non-trivial accessors
    *
    *  @code
    *
-   *  const Histo1DMap& histos = histo1DMap () ;
    *  // iterate over the map!
-   *  for ( Histo1DMap::const_iterator entry = histos.begin() ;
-   *        histos.end() != entry ; ++entry  )
+   *  for ( const auto& entry : histo1DMapID() )
    *     {
    *        // histogram ID
-   *        const HistoID        ID = entry->first ;
+   *        const HistoID        ID = entry.first ;
    *        // histogram itself
-   *        AIDA::IHistogram1D* h  = entry->second ;
+   *        AIDA::IHistogram1D* h  = entry.second ;
    *        if ( 0 == h ) { continue ;}
    *
    *        std::cout << " Histogram ID    " << ID
@@ -2779,15 +2773,13 @@ public: // trivial & non-trivial accessors
    *
    *  @code
    *
-   *  const Histo2DMapTitle& histos = histo2DMapTitle() ;
    *  // iterate over the map!
-   *  for ( Histo2DMapTitle::const_iterator entry = histos.begin() ;
-   *        histos.end() != entry ; ++entry  )
+   *  for ( const auto& entry : histo2DMapTitle() )
    *     {
    *        // histogram title
-   *        const std::string&   title = entry->first ;
+   *        const std::string&   title = entry.first ;
    *        // histogram itself
-   *        AIDA::IHistogram2D* hist  = entry->second ;
+   *        AIDA::IHistogram2D* hist  = entry.second ;
    *        if( 0 == hist )  { continue ; }                // ATTENTION!
    *
    *        std::cout << " Histogram title " << title << std::endl ;
@@ -2806,16 +2798,13 @@ public: // trivial & non-trivial accessors
    *
    *  @code
    *
-   *  const Histo2DMapID& histos = histo2DMapID () ;
-   *
    *  // iterate over the map!
-   *  for ( Histo2DMapID::const_iterator entry = histos.begin() ;
-   *        histos.end() != entry ; ++entry  )
+   *  for ( const auto& entry : histo2DMapID() )
    *     {
    *        // histogram ID
-   *        const HistoID        ID = entry->first ;
+   *        const HistoID        ID = entry.first ;
    *        // histogram itself
-   *        AIDA::IHistogram2D* h  = entry->second ;
+   *        AIDA::IHistogram2D* h  = entry.second ;
    *        if ( 0 == h ) { continue ;}
    *
    *        std::cout << " Histogram ID    " << ID
@@ -2834,15 +2823,13 @@ public: // trivial & non-trivial accessors
    *
    *  @code
    *
-   *  const Histo3DMapTitle& histos = histo3DMapTitle() ;
    *  // iterate over the map!
-   *  for ( Histo3DMapTitle::const_iterator entry = histos.begin() ;
-   *        histos.end() != entry ; ++entry  )
+   *  for ( const auto& entry : histo3DMapTitle() )
    *     {
    *        // histogram title
-   *        const std::string&   title = entry->first ;
+   *        const std::string&   title = entry.first ;
    *        // histogram itself
-   *        AIDA::IHistogram3D* hist  = entry->second ;
+   *        AIDA::IHistogram3D* hist  = entry.second ;
    *        if( 0 == hist )  { continue ; }                // ATTENTION!
    *
    *        std::cout << " Histogram title " << title << std::endl ;
@@ -2861,16 +2848,13 @@ public: // trivial & non-trivial accessors
    *
    *  @code
    *
-   *  const Histo3DMapID& histos = histo3DMapID() ;
-   *
    *  // iterate over the map!
-   *  for ( Histo3DMapID::const_iterator entry = histos.begin() ;
-   *        histos.end() != entry ; ++entry  )
+   *  for ( const auto&  entry :  histo3DMapID() )
    *     {
    *        // histogram ID
-   *        const HistoID        ID = entry->first ;
+   *        const HistoID        ID = entry.first ;
    *        // histogram itself
-   *        AIDA::IHistogram3D* h  = entry->second ;
+   *        AIDA::IHistogram3D* h  = entry.second ;
    *        if ( 0 == h ) { continue ;}
    *
    *        std::cout << " Histogram ID    " << ID
@@ -2916,16 +2900,13 @@ public: // trivial & non-trivial accessors
    *
    *  @code
    *
-   *  const Profile1DMapID& histos = profile1DMapID() ;
-   *
    *  // iterate over the map!
-   *  for ( Profile1DMapID::const_iterator entry = histos.begin() ;
-   *        histos.end() != entry ; ++entry  )
+   *  for ( const auto& entry : profile1DMapID() )
    *     {
    *        // histogram ID
-   *        const HistoID        ID = entry->first ;
+   *        const HistoID        ID = entry.first ;
    *        // histogram itself
-   *        AIDA::IProfile1D* h  = entry->second ;
+   *        AIDA::IProfile1D* h  = entry.second ;
    *        if ( 0 == h ) { continue ;}
    *
    *        std::cout << " Histogram ID    " << ID
@@ -2944,15 +2925,13 @@ public: // trivial & non-trivial accessors
    *
    *  @code
    *
-   *  const Profile2DMapTitle& histos = profile2DMapTitle() ;
    *  // iterate over the map!
-   *  for ( Profile2DMapTitle::const_iterator entry = histos.begin() ;
-   *        histos.end() != entry ; ++entry  )
+   *  for ( const auto& entry : profile2DMapTitle() )
    *     {
    *        // histogram title
-   *        const std::string&   title = entry->first ;
+   *        const std::string&   title = entry.first ;
    *        // histogram itself
-   *        AIDA::IProfile2D* hist  = entry->second ;
+   *        AIDA::IProfile2D* hist  = entry.second ;
    *        if( 0 == hist )  { continue ; }                // ATTENTION!
    *
    *        std::cout << " Histogram title " << title << std::endl ;
@@ -2971,16 +2950,13 @@ public: // trivial & non-trivial accessors
    *
    *  @code
    *
-   *  const Profile2DMapID& histos = profile2DMapID() ;
-   *
    *  // iterate over the map!
-   *  for ( Profile2DMapID::const_iterator entry = histos.begin() ;
-   *        histos.end() != entry ; ++entry  )
+   *  for ( const auto& entry : profile2DMapID() )
    *     {
    *        // histogram ID
-   *        const HistoID        ID = entry->first ;
+   *        const HistoID        ID = entry.first ;
    *        // histogram itself
-   *        AIDA::IProfile2D* h  = entry->second ;
+   *        AIDA::IProfile2D* h  = entry.second ;
    *        if ( 0 == h ) { continue ;}
    *
    *        std::cout << " Histogram ID    " << ID
@@ -3025,14 +3001,14 @@ public:
                 const IInterface*  parent );
   // ==========================================================================
   /// Destructor
-  virtual ~GaudiHistos() {}
+  ~GaudiHistos() override = default;
   // ==========================================================================
 protected:
   // ==========================================================================
   /** standard initialization method
    *  @return status code
    */
-  virtual StatusCode initialize()
+  StatusCode initialize() override
 #ifdef __ICC
     { return i_ghInitialize(); }
   StatusCode i_ghInitialize()
@@ -3042,7 +3018,7 @@ protected:
   /** standard finalization method
    *  @return status code
    */
-  virtual StatusCode finalize()
+  StatusCode finalize() override
 #ifdef __ICC
     { return i_ghFinalize(); }
   StatusCode i_ghFinalize()
@@ -3072,15 +3048,10 @@ private:
   void newHistoID( const std::string & title,
                    HistoID& ID ) const;
   // ==========================================================================
-  /// Searches 'title' for all instancies of 'A' and replaces them with 'B'
-  void stringSearchReplace( std::string & title,
-                            const std::string & A,
-                            const std::string & B ) const;
-  // ==========================================================================
 protected:
   // ==========================================================================
   /// Create an ID string from a title string
-  std::string convertTitleToID( const std::string & title ) const;
+  std::string convertTitleToID( std::string title ) const;
   // ==========================================================================
 private:
   // ==========================================================================

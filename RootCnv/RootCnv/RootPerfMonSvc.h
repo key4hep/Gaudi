@@ -1,4 +1,3 @@
-// $Id: RootPerfMonSvc.h,v 1.7 2010-09-14 06:01:12 frankb Exp $
 //====================================================================
 //	RootPerfMonSvc definition
 //--------------------------------------------------------------------
@@ -7,8 +6,8 @@
 //====================================================================
 #ifndef GAUDIROOTCNV_GAUDIROOTPERFMONSVC_H
 #define GAUDIROOTCNV_GAUDIROOTPERFMONSVC_H
-// $Header: /afs/cern.ch/project/cvs/reps/lhcb/Online/RootCnv/src/RootPerfMonSvc.h,v 1.7 2010-09-14 06:01:12 frankb Exp $
 
+#include <memory>
 // Framework include files
 #include "GaudiKernel/IIncidentListener.h"
 #include "GaudiKernel/Service.h"
@@ -43,11 +42,11 @@ namespace Gaudi {
   protected:
 
     /// Reference to incident service
-    IIncidentSvc*               m_incidentSvc;
+    SmartIF<IIncidentSvc>               m_incidentSvc ;
     /// Property: Enable TTree IOperfStats if not empty; otherwise perf stat file name
     std::string                 m_ioPerfStats;
     /// Message streamer
-    MsgStream*                  m_log;
+    std::unique_ptr<MsgStream>  m_log;
     // Passed parameters
     std::string                 m_setStreams;
     std::string                 m_basketSize;
@@ -56,7 +55,7 @@ namespace Gaudi {
     // Reference to a tree with statistics
     TTree*                      m_perfTree;
     // Reference to a file where statistics are persisted
-    TFile*                      m_perfFile;
+    std::unique_ptr<TFile>      m_perfFile;
     // Reference to all connected output files
     std::set<std::string>       m_outputs;
     // The newest observed values
@@ -78,7 +77,7 @@ namespace Gaudi {
     RootPerfMonSvc(const std::string& name, ISvcLocator* svc);
 
     /// Standard destructor
-    virtual ~RootPerfMonSvc();
+    ~RootPerfMonSvc() override = default;
 
     /** Standard way to print errors. after the printout an exception is thrown.
      * @param      msg      [IN]     Message string to be printed.
@@ -88,16 +87,16 @@ namespace Gaudi {
     StatusCode error(const std::string& msg);
 
     /// Service overload: initialize the service
-    virtual StatusCode initialize();
+    StatusCode initialize() override;
 
     /// Service overload: Finalize the service
-    virtual StatusCode finalize();
+    StatusCode finalize() override;
 
     /// IIncidentListener override: Inform that a new incident has occurred
-    virtual void handle(const Incident& incident);
+    void handle(const Incident& incident) override;
 
     // Service overload: Stop the service
-    virtual StatusCode stop();
+    StatusCode stop() override;
   };
 }
 

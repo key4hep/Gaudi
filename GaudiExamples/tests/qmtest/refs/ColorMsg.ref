@@ -106,8 +106,8 @@ ApplicationMgr    SUCCESS
 [92;1mServiceManager      DEBUG Finalizing service StatusCodeSvc[m
 [92;1mServiceManager      DEBUG Service reference count check:[m
 [92;1mServiceManager      DEBUG ---- StatusCodeSvc (refCount = 2)[m
-[92;1mServiceManager      DEBUG ---- MessageSvc (refCount = 11)[m
-[92;1mServiceManager      DEBUG ---- JobOptionsSvc (refCount = 2)[m
+[92;1mServiceManager      DEBUG ---- MessageSvc (refCount = 12)[m
+[92;1mServiceManager      DEBUG ---- JobOptionsSvc (refCount = 3)[m
 [92;1mServiceManager      DEBUG ---- AppMgrRunable (refCount = 3)[m
 [92;1mServiceManager      DEBUG ---- IncidentSvc (refCount = 2)[m
 [92;1mServiceManager      DEBUG ---- EventPersistencySvc (refCount = 2)[m

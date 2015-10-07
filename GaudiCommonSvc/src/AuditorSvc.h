@@ -1,4 +1,3 @@
-// $Id: $
 #ifndef AuditorSvc_AuditorSvc_H
 #define AuditorSvc_AuditorSvc_H
 
@@ -20,71 +19,68 @@ class AuditorSvc : public extends1<Service, IAuditorSvc> {
 
 public:
 
-// Typedefs
-  typedef std::list<IAuditor*>     ListAudits;
-  typedef std::vector<std::string> VectorName;
 
 // Inherited Service overrides:
 //
   // Initialize the service.
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
 
   // Finalize the service.
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
 
 // IAuditorSvc interfaces overwrite
 //
   /// The following methods are meant to be implemented by the child class...
 
-  virtual void before(StandardEventType, INamedInterface*);
-  virtual void before(StandardEventType, const std::string&);
+  void before(StandardEventType, INamedInterface*) override;
+  void before(StandardEventType, const std::string&) override;
 
-  virtual void before(CustomEventTypeRef, INamedInterface*);
-  virtual void before(CustomEventTypeRef, const std::string&);
+  void before(CustomEventTypeRef, INamedInterface*) override;
+  void before(CustomEventTypeRef, const std::string&) override;
 
-  virtual void after(StandardEventType, INamedInterface*, const StatusCode&);
-  virtual void after(StandardEventType, const std::string&, const StatusCode&);
+  void after(StandardEventType, INamedInterface*, const StatusCode&) override;
+  void after(StandardEventType, const std::string&, const StatusCode&) override;
 
-  virtual void after(CustomEventTypeRef, INamedInterface*, const StatusCode&);
-  virtual void after(CustomEventTypeRef, const std::string&, const StatusCode&);
+  void after(CustomEventTypeRef, INamedInterface*, const StatusCode&) override;
+  void after(CustomEventTypeRef, const std::string&, const StatusCode&) override;
 
   // inform Auditors that the initialize() is about to be called
-  virtual void beforeInitialize(INamedInterface* ini);
+  void beforeInitialize(INamedInterface* ini) override;
   // inform Auditors that the initialize() has been called
-  virtual void afterInitialize(INamedInterface* ini);
+  void afterInitialize(INamedInterface* ini) override;
 
   // inform Auditors that the reinitialize() is about to be called
-  virtual void beforeReinitialize(INamedInterface* ini);
+  void beforeReinitialize(INamedInterface* ini) override;
   // inform Auditors that the reinitialize() has been called
-  virtual void afterReinitialize(INamedInterface* ini);
+  void afterReinitialize(INamedInterface* ini) override;
 
   // inform Auditors that the execute() is about to be called
-  virtual void beforeExecute(INamedInterface* ini);
+  void beforeExecute(INamedInterface* ini) override;
   // inform Auditors that the execute() has been called
-  virtual void afterExecute(INamedInterface* ini, const StatusCode& );
+  void afterExecute(INamedInterface* ini, const StatusCode& ) override;
 
   // inform Auditors that the beginRun() is about to be called
-  virtual void beforeBeginRun(INamedInterface* ini);
+  void beforeBeginRun(INamedInterface* ini) override;
   // inform Auditors that the beginRun() has been called
-  virtual void afterBeginRun(INamedInterface* ini);
+  void afterBeginRun(INamedInterface* ini) override;
 
   // inform Auditors that the endRun() is about to be called
-  virtual void beforeEndRun(INamedInterface* ini);
+  void beforeEndRun(INamedInterface* ini) override;
   // inform Auditors that the endRun() has been called
-  virtual void afterEndRun(INamedInterface* ini);
+  void afterEndRun(INamedInterface* ini) override;
 
   // inform Auditors that the finalize() is about to be called
-  virtual void beforeFinalize(INamedInterface* ini);
+  void beforeFinalize(INamedInterface* ini) override;
   // inform Auditors that the finalize() has been called
-  virtual void afterFinalize(INamedInterface* ini);
+  void afterFinalize(INamedInterface* ini) override;
 
-  virtual bool isEnabled() const ;
+  bool isEnabled() const  override;
 
-  virtual StatusCode sysInitialize();
-  virtual StatusCode sysFinalize();
+  StatusCode sysInitialize() override;
+  StatusCode sysFinalize() override;
 
   // management functionality: retrieve an Auditor
-  virtual IAuditor* getAuditor( const std::string& name );
+  IAuditor* getAuditor( const std::string& name ) override;
 
   // Standard Constructor.
   //   Input:  name   String with service name
@@ -92,22 +88,22 @@ public:
   AuditorSvc( const std::string& name, ISvcLocator* svc );
 
   // Destructor.
-  virtual ~AuditorSvc();
+  ~AuditorSvc() override = default;
 
 private:
   // management helper
-  IAuditor* newAuditor_( MsgStream&, const std::string& );
-  IAuditor* findAuditor_( const std::string& );
+  SmartIF<IAuditor> newAuditor_( MsgStream&, const std::string& );
+  SmartIF<IAuditor> findAuditor_( const std::string& );
   StatusCode syncAuditors_();
 
   // List of auditor names
-  VectorName   m_audNameList;
+  std::vector<std::string> m_audNameList;
 
   // Manager list of Auditors
-  ListAudits   m_pAudList;
+  std::vector<SmartIF<IAuditor>>     m_pAudList;
 
   // To disable alltogether the auditors
-  bool m_isEnabled;
+  bool m_isEnabled = true;
 };
 
 #endif

@@ -1,4 +1,3 @@
-// $Id:$
 #ifndef JOBOPTIONSVC_CATALOG_H_
 #define JOBOPTIONSVC_CATALOG_H_
 // ============================================================================
@@ -26,7 +25,7 @@
 // ============================================================================
 namespace Gaudi { namespace Parsers {
 // ============================================================================
-class Catalog {
+class Catalog final {
  public:
   typedef boost::ptr_set<Property, Property::LessThen> PropertySet;
   typedef std::map<std::string,  PropertySet>  CatalogSet;
@@ -42,8 +41,8 @@ class Catalog {
 
   std::vector<std::string> ClientNames() const;
   bool Add(Property* property);
-  template<typename Value> bool Add(const std::string& client,
-          const std::string& property, const Value& value);
+  template<typename Value> bool Add(std::string client,
+          std::string property, const Value& value);
   Property* Find(const std::string& client, const std::string& name);
   std::string ToString() const;
   /// print the content of the catalogue to std::ostream
@@ -61,9 +60,9 @@ class Catalog {
 }  /* Gaudi */ }  /* Parsers */
 
 template<typename Value> inline bool Gaudi::Parsers::Catalog::Add(
-        const std::string& client, const std::string& property,
+        std::string client, std::string property,
         const Value& value) {
-  return Add(new Property(PropertyName(client, property), PropertyValue(value)));
+  return Add(new Property(PropertyName(std::move(client), std::move(property)), PropertyValue(value)));
 }
 
 // ============================================================================

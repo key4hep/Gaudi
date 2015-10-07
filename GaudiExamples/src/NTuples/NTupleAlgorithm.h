@@ -1,4 +1,3 @@
-// $Id: NTupleAlgorithm.h,v 1.3 2007/09/28 11:48:17 marcocle Exp $
 #ifndef HISTOGRAMS_NTupleAlgorithm_H
 #define HISTOGRAMS_NTupleAlgorithm_H 1
 

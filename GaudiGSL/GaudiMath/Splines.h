@@ -1,5 +1,3 @@
-// $Id: Splines.h,v 1.2 2005/11/25 10:27:03 mato Exp $
-// ============================================================================
 #ifndef GAUDIMATH_SPLINES_H
 #define GAUDIMATH_SPLINES_H 1
 // ============================================================================
@@ -10,6 +8,7 @@
 #include <vector>
 #include <utility>
 #include <algorithm>
+#include <memory>
 // ============================================================================
 // from CLHEP
 // ============================================================================
@@ -67,16 +66,13 @@ namespace Genfun
         DATAX                                begin_x ,
         DATAX                                end_x   ,
         DATAY                                begin_y )
-        : m_init      ( false           )
-        , m_dim       ( end_x - begin_x )
+        : m_dim       ( end_x - begin_x )
         , m_x         ( new double[ end_x - begin_x ] )
         , m_y         ( new double[ end_x - begin_x ] )
-        , m_spline    ( 0    )
-        , m_accel     ( 0    )
         , m_type      ( type )
       {
-        std::copy ( begin_x , end_x                         , m_x ) ;
-        std::copy ( begin_y , begin_y + ( end_x - begin_x ) , m_y ) ;
+        std::copy ( begin_x , end_x                         , m_x.get() ) ;
+        std::copy ( begin_y , begin_y + ( end_x - begin_x ) , m_y.get() ) ;
       }
       /** templated constructor from the sequence of (x,y(x)) pairs
        *  as sequence of pairs the class TabulatedProperty
@@ -90,20 +86,17 @@ namespace Genfun
       ( const GaudiMath::Interpolation::Type type  ,
         DATA                                 begin ,
         DATA                                 end   )
-        : m_init      ( false        )
-        , m_dim       ( end - begin  )
+        : m_dim       ( end - begin  )
         , m_x         ( new double[ end - begin ] )
         , m_y         ( new double[ end - begin ] )
-        , m_spline    ( 0    )
-        , m_accel     ( 0    )
         , m_type      ( type )
       {
-        double* _x = m_x ;
-        double* _y = m_y ;
-        for ( DATA it = begin ; end != it ; ++ it )
+        double* _x = m_x.get() ;
+        double* _y = m_y.get() ;
+        for ( auto it = begin ; end != it ; ++ it )
         {
-          *_x = it -> first  ; ++_x ;
-          *_y = it -> second ; ++_y ;
+          *_x++ = it -> first  ;
+          *_y++ = it -> second ;
         };
       }
       /// copy constructor
@@ -124,16 +117,16 @@ namespace Genfun
       void initialize () const ;
     private:
       // default constructor is disabled
-      SplineBase() ;
+      SplineBase() = delete;
       // assigenement operator  is disabled
-      SplineBase& operator=( const SplineBase& ) ;
+      SplineBase& operator=( const SplineBase& ) = delete;
     private:
-      mutable bool                   m_init   ;
+      mutable bool                   m_init   = false;
       size_t                         m_dim    ;
-      double*                        m_x      ;
-      double*                        m_y      ;
-      mutable gsl_spline*            m_spline ;
-      mutable gsl_interp_accel*      m_accel  ;
+      std::unique_ptr<double[]>      m_x      ;
+      std::unique_ptr<double[]>      m_y      ;
+      mutable gsl_spline*            m_spline = nullptr;
+      mutable gsl_interp_accel*      m_accel  = nullptr;
       GaudiMath::Interpolation::Type m_type   ;
     };
 
@@ -267,10 +260,10 @@ namespace Genfun
       /// cast operator to the spline function
       operator const SplineBase&       () const { return spline() ; }
     private:
-      /// default construtor   is desabled ;
-      GSLSpline() ;
-      /// assignement operator is desabled ;
-      GSLSpline& operator=( const GSLSpline& ) ;
+      /// default construtor   is disabled ;
+      GSLSpline() = delete;
+      /// assignement operator is disabled ;
+      GSLSpline& operator=( const GSLSpline& ) = delete;
     private:
       // the actual spline function
       SplineBase m_spline ;
@@ -389,17 +382,17 @@ namespace Genfun
       /// copy constructor
       GSLSplineDeriv ( const GSLSplineDeriv& ) ;
       /// destructor
-      virtual ~GSLSplineDeriv() ;
+      ~GSLSplineDeriv() override;
     public:
       /// main method: evaluate the function
-      virtual double operator() ( double a          ) const ;
+      double operator() ( double a          ) const override;
       /// main method: evaluate the function
-      virtual double operator() ( const Argument& x ) const ;
-      virtual unsigned int dimensionality () const { return 1   ; }
+      double operator() ( const Argument& x ) const override;
+      unsigned int dimensionality () const override { return 1   ; }
       /// Does this function have an analytic derivative?
-      virtual bool  hasAnalyticDerivative() const { return true ; }
+      bool  hasAnalyticDerivative() const override { return true ; }
       /// Derivatives
-      virtual Genfun::Derivative partial( unsigned int i  ) const ;
+      Genfun::Derivative partial( unsigned int i  ) const override ;
     public:
       /// acess to the spline function
       inline   const SplineBase& spline() const { return m_spline ; }
@@ -528,27 +521,27 @@ namespace Genfun
       /// copy constructor
       GSLSplineDeriv2 ( const GSLSplineDeriv2& ) ;
       /// destructor
-      virtual ~GSLSplineDeriv2() ;
+      ~GSLSplineDeriv2() override;
     public:
       /// main method: evaluate the function
-      virtual double operator() ( double a          ) const ;
+      double operator() ( double a          ) const override;
       /// main method: evaluate the function
-      virtual double operator() ( const Argument& x ) const ;
-      virtual unsigned int dimensionality () const { return 1   ; }
+      double operator() ( const Argument& x ) const override;
+      unsigned int dimensionality () const override { return 1   ; }
       /// Does this function have an analytic derivative?
-      virtual bool  hasAnalyticDerivative() const { return true ; }
+      bool  hasAnalyticDerivative() const override { return true ; }
       /// Derivatives
-      virtual Genfun::Derivative partial( unsigned int i  ) const ;
+      Genfun::Derivative partial( unsigned int i  ) const override;
     public:
       /// acess to the spline function
       inline   const SplineBase& spline() const { return m_spline ; }
       /// cast operator to the spline function
       operator const SplineBase&       () const { return spline() ; }
     private:
-      /// default construtor   is desabled ;
-      GSLSplineDeriv2() ;
-      /// assignement operator is desabled ;
-      GSLSplineDeriv2& operator=( const GSLSplineDeriv2& ) ;
+      /// default construtor   is disabled ;
+      GSLSplineDeriv2() = delete;
+      /// assignement operator is disabled ;
+      GSLSplineDeriv2& operator=( const GSLSplineDeriv2& ) = delete;
     private:
       // the actual spline function
       SplineBase m_spline ;
@@ -665,11 +658,10 @@ namespace Genfun
       template <class DATA>
       GSLSplineInteg
       ( const GaudiMath::Interpolation::Type type  ,
-        DATA                                 begin ,
-        DATA                                 end   ,
+        DATA&&                               begin ,
+        DATA&&                               end   ,
         const double                         low   )
-        : AbsFunction (      )
-        , m_spline    ( type , begin , end )
+        : m_spline    ( type , std::forward<DATA>(begin) , std::forward<DATA>(end) )
         , m_low       ( low  )
       {}
       /// constructor from base
@@ -678,27 +670,27 @@ namespace Genfun
       /// copy constructor
       GSLSplineInteg ( const GSLSplineInteg&      ) ;
       /// destructor
-      virtual ~GSLSplineInteg () ;
+      ~GSLSplineInteg () override;
     public:
       /// main method: evaluate the function
-      virtual double operator() ( double a          ) const ;
+      double operator() ( double a          ) const override;
       /// main method: evaluate the function
-      virtual double operator() ( const Argument& x ) const ;
-      virtual unsigned int dimensionality () const { return 1   ; }
+      double operator() ( const Argument& x ) const override;
+      unsigned int dimensionality () const override { return 1   ; }
       /// Does this function have an analytic derivative?
-      virtual bool  hasAnalyticDerivative() const { return true ; }
+      bool  hasAnalyticDerivative() const override { return true ; }
       /// Derivatives
-      virtual Genfun::Derivative partial( unsigned int i  ) const ;
+      Genfun::Derivative partial( unsigned int i  ) const override;
     public:
       /// acess to the spline function
       inline   const SplineBase& spline() const { return m_spline ; }
       /// cast operator to the spline function
       operator const SplineBase&       () const { return spline() ; }
     private:
-      /// default construtor   is desabled ;
-      GSLSplineInteg () ;
-      /// assignement operator is desabled ;
-      GSLSplineInteg& operator=( const GSLSplineInteg& ) ;
+      /// default construtor   is disabled ;
+      GSLSplineInteg () = delete;
+      /// assignement operator is disabled ;
+      GSLSplineInteg& operator=( const GSLSplineInteg& ) = delete;
     private:
       // the actual spline function
       SplineBase m_spline ;
@@ -707,7 +699,6 @@ namespace Genfun
 
   }
 }
-
 
 #endif // GAUDIMATH_SPLINES_H
 // ============================================================================

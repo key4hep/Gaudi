@@ -1,5 +1,4 @@
 // Include files
-#include "GaudiKernel/xtoa.h"
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/Incident.h"
 #include "GaudiKernel/MsgStream.h"
@@ -11,7 +10,6 @@
 #include "GaudiKernel/IAddressCreator.h"
 #include "GaudiKernel/PropertyMgr.h"
 #include "GaudiKernel/EventSelectorDataStream.h"
-#include "GaudiKernel/AppReturnCode.h"
 
 #include "EventSelector.h"
 #include "EventIterator.h"
@@ -23,23 +21,11 @@ DECLARE_COMPONENT(EventSelector)
 EventSelector::EventSelector(const std::string& name, ISvcLocator* svcloc )
   : base_class( name, svcloc)
 {
-  m_incidentSvc       = 0;
-  m_toolSvc           = 0;
-  m_streamCount       = 0;
-  m_firstEvent        = 0;
-  m_evtPrintFrequency = 10;
-  m_evtMax            = INT_MAX;
   declareProperty( "Input",      m_streamSpecs);
   declareProperty( "FirstEvent", m_firstEvent);
   declareProperty( "EvtMax",     m_evtMax);
   declareProperty( "PrintFreq",  m_evtPrintFrequency);
-  declareProperty( "StreamManager",  m_streamManager="DataStreamTool");
-  m_reconfigure = false;
-}
-
-// Standard destructor
-EventSelector::~EventSelector()
-{
+  declareProperty( "StreamManager",  m_streamManager);
 }
 
 StatusCode
@@ -51,7 +37,7 @@ EventSelector::resetCriteria(const std::string& /* criteria */,
 
 // Progress report
 void EventSelector::printEvtInfo(const EvtSelectorContext* iter) const {
-  if ( 0 != iter )  {
+  if ( iter )  {
     long count = iter->numEvent();
     // Print an message every m_evtPrintFrequency events
     if ( 0 == iter->context() )   {
@@ -101,7 +87,7 @@ EventSelector::firstOfNextStream(bool shutDown, EvtSelectorContext& iter) const 
 
   if ( status.isSuccess() )   {
 
-    if(s!=NULL) {
+    if (s) {
     if ( !s->isInitialized() )    {
       EventSelector* thisPtr = const_cast<EventSelector*>(this);
       status = thisPtr->m_streamtool->initializeStream(const_cast<EventSelectorDataStream*>(s));
@@ -110,7 +96,7 @@ EventSelector::firstOfNextStream(bool shutDown, EvtSelectorContext& iter) const 
     if ( status.isSuccess() ) {
       const IEvtSelector* sel = s->selector();
       if ( sel )    {
-        Context* ctxt = 0;
+        Context* ctxt = nullptr;
         status = sel->createContext(ctxt);
         if ( status.isSuccess() )   {
           status = sel->resetCriteria(s->criteria(), *ctxt);
@@ -155,7 +141,7 @@ EventSelector::lastOfPreviousStream(bool shutDown, EvtSelectorContext& iter) con
   }
 
   IDataStreamTool::size_type iter_id = iter.ID()-1;
-  const EventSelectorDataStream* s ;
+  const EventSelectorDataStream* s = nullptr;
   status = m_streamtool->getPreviousStream( s , iter_id );
 
   if ( status.isSuccess() )   {
@@ -167,7 +153,7 @@ EventSelector::lastOfPreviousStream(bool shutDown, EvtSelectorContext& iter) con
     if ( status.isSuccess() )   {
       const IEvtSelector* sel = s->selector();
       if ( sel )  {
-        Context* ctxt = 0;
+        Context* ctxt = nullptr;
         status = sel->createContext(ctxt);
         if ( status.isSuccess() )   {
           status = sel->resetCriteria(s->criteria(), *ctxt);
@@ -190,7 +176,7 @@ EventSelector::lastOfPreviousStream(bool shutDown, EvtSelectorContext& iter) con
 StatusCode EventSelector::createContext(Context*& refpCtxt) const
 {
   // Max event is zero. Return begin = end
-  refpCtxt = 0;
+  refpCtxt = nullptr;
   if ( m_firstEvent < 0 ) {
     MsgStream log(msgSvc(), name());
     log << MSG::ERROR  << "First Event = " << m_firstEvent << " not valid" << endmsg;
@@ -209,7 +195,7 @@ StatusCode EventSelector::createContext(Context*& refpCtxt) const
       log << MSG::ERROR << " createContext() failed to start with event number "
           << m_firstEvent << endmsg;
       releaseContext(refpCtxt);
-      refpCtxt = 0;
+      refpCtxt = nullptr;
       return StatusCode::FAILURE;
     }
   }
@@ -333,17 +319,15 @@ EventSelector::createAddress(const Context&   refCtxt,
 {
   const EvtSelectorContext *cpIt  = dynamic_cast<const EvtSelectorContext*>(&refCtxt);
   EvtSelectorContext *pIt  = const_cast<EvtSelectorContext*>(cpIt);
-  refpAddr = 0;
+  refpAddr = nullptr;
   if ( pIt )    {
     const EventSelectorDataStream* s = m_streamtool->getStream(pIt->ID());
     Context* it = pIt->context();
     IEvtSelector* sel = s->selector();
     if ( it && sel )    {
-      IOpaqueAddress* pAddr = 0;
+      IOpaqueAddress* pAddr = nullptr;
       StatusCode sc = sel->createAddress(*it, pAddr);
-      if ( sc.isSuccess() )  {
-        refpAddr = pAddr;
-      }
+      if ( sc.isSuccess() )  refpAddr = pAddr;
       pIt->set(it, pAddr);
       return sc;
     }
@@ -354,7 +338,7 @@ EventSelector::createAddress(const Context&   refCtxt,
 // Release existing event iteration context
 StatusCode EventSelector::releaseContext(Context*& refCtxt) const  {
   const EvtSelectorContext *cpIt = dynamic_cast<const EvtSelectorContext*>(refCtxt);
-  EvtSelectorContext       *pIt  = const_cast<EvtSelectorContext*>(cpIt);
+  std::unique_ptr<EvtSelectorContext> pIt{ const_cast<EvtSelectorContext*>(cpIt) };
   if ( pIt && pIt->ID() >= 0 && pIt->ID() < (long)m_streamtool->size() ) {
     const EventSelectorDataStream* s = m_streamtool->getStream(pIt->ID());
     Context* it = pIt->context();
@@ -362,14 +346,10 @@ StatusCode EventSelector::releaseContext(Context*& refCtxt) const  {
     if ( it && sel )    {
       StatusCode sc = sel->releaseContext(it);
       if ( sc.isSuccess() )  {
-        refCtxt = 0;
-        delete pIt;
+        refCtxt = nullptr;
         return sc;
       }
     }
-  }
-  if ( pIt )   {
-    delete pIt;
   }
   return StatusCode::SUCCESS;
 }
@@ -385,7 +365,7 @@ StatusCode EventSelector::initialize()    {
   }
   // Get the references to the services that are needed by the ApplicationMgr itself
   m_incidentSvc = serviceLocator()->service("IncidentSvc");
-  if( !m_incidentSvc.isValid() )  {
+  if( !m_incidentSvc )  {
     logger << MSG::FATAL << "Error retrieving IncidentSvc." << endmsg;
     return StatusCode::FAILURE;
   }
@@ -397,10 +377,16 @@ StatusCode EventSelector::initialize()    {
   }
 
   m_toolSvc = serviceLocator()->service("ToolSvc");
-  if ( !m_toolSvc.isValid() ) {
+  if ( !m_toolSvc ) {
     logger << MSG::ERROR << " Could not locate the Tool Service! " << endmsg;
     return StatusCode::FAILURE;
   }
+  // make sure we finalize _prior_ to ToolSvc... we are about to get a
+  // a pointer to a tool which gets finalized and released by the ToolSvc
+  // during ToolSvc::finalize, and we don't want dangling pointers...
+  SmartIF<ISvcManager> mgr(serviceLocator());
+  auto prio = mgr->getPriority("ToolSvc");
+  mgr->setPriority(name(),prio+1).ignore();
 
   status = m_toolSvc->retrieveTool(m_streamManager.c_str(), m_streamtool, this);
 
@@ -452,19 +438,18 @@ StatusCode EventSelector::finalize()    {
     log << MSG::DEBUG << "finalize()" << endmsg;
   }
 
-  m_incidentSvc = 0;
+  m_incidentSvc = nullptr;
 
   if (m_streamtool) {
-    if (m_toolSvc.isValid()) {
+    if (m_toolSvc) {
       m_toolSvc->releaseTool(m_streamtool).ignore();
     } else {
       // It should not be possible to get here
       m_streamtool->release();
     }
-    m_streamtool = 0;
+    m_streamtool = nullptr;
   }
-
-  m_toolSvc = 0;
+  m_toolSvc.reset();
 
   return Service::finalize();
 }

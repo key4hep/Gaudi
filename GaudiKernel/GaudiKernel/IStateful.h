@@ -1,4 +1,3 @@
-// $Id: IStateful.h,v 1.1 2008/06/02 14:20:38 marcocle Exp $
 #ifndef GAUDIKERNEL_ISTATEFUL_H
 #define GAUDIKERNEL_ISTATEFUL_H
 
@@ -19,7 +18,7 @@ public:
   /// InterfaceID
   DeclareInterfaceID(IStateful,1,0);
 
-  virtual ~IStateful(){} //< Virtual destructor.
+  ~IStateful() override = default; //< Virtual destructor.
 
   /** Configuration (from OFFLINE to CONFIGURED).
   */

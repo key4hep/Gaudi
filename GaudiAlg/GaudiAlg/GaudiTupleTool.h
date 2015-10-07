@@ -1,5 +1,3 @@
-// $Id: GaudiTupleTool.h,v 1.7 2005/09/23 16:14:20 hmd Exp $
-// ============================================================================
 #ifndef GAUDIALG_GAUDITUPLETOOL_H
 #define GAUDIALG_GAUDITUPLETOOL_H 1
 // ============================================================================
@@ -57,30 +55,11 @@ protected:
                   const IInterface*  parent );
 
   /// destructor
-  virtual ~GaudiTupleTool() ;
+  ~GaudiTupleTool() override = default;
 
-  /** standard initialization method
-   *  @see  Algorithm
-   *  @see IAlgorithm
-   *  @return status code
-   */
-  virtual StatusCode initialize ();
-
-  /** standard finalization method
-   *  @see  Algorithm
-   *  @see IAlgorithm
-   *  @return status code
-   */
-  virtual StatusCode finalize   ();
-
-private:
-
-  /// default constructor  is disabled
-  GaudiTupleTool() ;
-  /// copy constructor     is disabled
-  GaudiTupleTool           ( const GaudiTupleTool& ) ;
-  /// assignment operator is disabled
-  GaudiTupleTool& operator=( const GaudiTupleTool& ) ;
+  GaudiTupleTool() = delete;
+  GaudiTupleTool           ( const GaudiTupleTool& ) = delete;
+  GaudiTupleTool& operator=( const GaudiTupleTool& ) = delete;
 
 };
 

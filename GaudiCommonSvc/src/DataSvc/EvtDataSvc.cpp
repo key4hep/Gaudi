@@ -30,10 +30,9 @@ DECLARE_COMPONENT(EvtDataSvc)
 StatusCode EvtDataSvc::initialize()    {
   // Nothing to do: just call base class initialisation
   StatusCode      status  = DataSvc::initialize();
-  ISvcLocator*    svc_loc = serviceLocator();
 
   // Attach data loader facility
-  m_cnvSvc = svc_loc->service("EventPersistencySvc");
+  m_cnvSvc = serviceLocator()->service("EventPersistencySvc");
   status = setDataLoader( m_cnvSvc );
   return status;
 }
@@ -44,7 +43,7 @@ StatusCode EvtDataSvc::reinitialize()    {
 }
 /// Service finalization
 StatusCode EvtDataSvc::finalize()    {
-  m_cnvSvc = 0; // release
+  m_cnvSvc = nullptr; // release
   DataSvc::finalize().ignore();
   return StatusCode::SUCCESS ;
 }
@@ -52,8 +51,4 @@ StatusCode EvtDataSvc::finalize()    {
 /// Standard Constructor
 EvtDataSvc::EvtDataSvc(const std::string& name,ISvcLocator* svc):
   DataSvc(name,svc) {
-}
-
-/// Standard Destructor
-EvtDataSvc::~EvtDataSvc() {
 }

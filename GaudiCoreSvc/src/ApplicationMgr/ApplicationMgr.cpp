@@ -51,13 +51,11 @@ DECLARE_OBJECT_FACTORY(ApplicationMgr)
 //=======================================================================
 // Constructor
 //=======================================================================
-ApplicationMgr::ApplicationMgr(IInterface*): base_class() {
+ApplicationMgr::ApplicationMgr(IInterface*): 
+    base_class() 
+{
   // IInterface initialization
   addRef(); // Initial count set to 1
-
-  // Initialize two basic services: messagesvc & joboptions
-  m_messageSvc        = 0;
-  m_jobOptionsSvc     = 0;
 
   // Instantiate component managers
   m_managers[IService::interfaceID().id()] = new ServiceManager(this);
@@ -70,10 +68,6 @@ ApplicationMgr::ApplicationMgr(IInterface*): base_class() {
   // SvcLocator/Factory HAS to be already instantiated
   m_classManager = new DLLClassManager(this);
   m_propertyMgr  = new PropertyMgr(this);
-
-  m_name  = "ApplicationMgr";
-  m_state = Gaudi::StateMachine::OFFLINE;
-  m_targetState = Gaudi::StateMachine::OFFLINE;
 
   m_propertyMgr->declareProperty("Go",            m_SIGo = 0 );
   m_propertyMgr->declareProperty("Exit",          m_SIExit = 0 );
@@ -149,25 +143,18 @@ ApplicationMgr::ApplicationMgr(IInterface*): base_class() {
   m_outStreamNameList.declareUpdateHandler(&ApplicationMgr::evtLoopPropertyHandler, this);
   m_outStreamType.declareUpdateHandler(&ApplicationMgr::evtLoopPropertyHandler, this);
   m_pluginDebugLevel.declareUpdateHandler(&ApplicationMgr::pluginDebugPropertyHandler, this);
-  m_svcMapping.push_back("EvtDataSvc/EventDataSvc");
-  m_svcMapping.push_back("DetDataSvc/DetectorDataSvc");
-  m_svcMapping.push_back("HistogramSvc/HistogramDataSvc");
-  m_svcMapping.push_back("HbookCnv::PersSvc/HbookHistSvc");
-  m_svcMapping.push_back("RootHistCnv::PersSvc/RootHistSvc");
-  m_svcMapping.push_back("EvtPersistencySvc/EventPersistencySvc");
-  m_svcMapping.push_back("DetPersistencySvc/DetectorPersistencySvc");
-  m_svcMapping.push_back("HistogramPersistencySvc/HistogramPersistencySvc");
+
+  m_svcMapping.insert( std::end(m_svcMapping), 
+                     { "EvtDataSvc/EventDataSvc", 
+                       "DetDataSvc/DetectorDataSvc",
+                       "HistogramSvc/HistogramDataSvc",
+                       "HbookCnv::PersSvc/HbookHistSvc",
+                       "RootHistCnv::PersSvc/RootHistSvc",
+                       "EvtPersistencySvc/EventPersistencySvc",
+                       "DetPersistencySvc/DetectorPersistencySvc",
+                       "HistogramPersistencySvc/HistogramPersistencySvc" } );
 }
 
-//============================================================================
-// destructor
-//============================================================================
-ApplicationMgr::~ApplicationMgr() {
-  if( m_classManager ) m_classManager->release();
-  if( m_propertyMgr ) m_propertyMgr->release();
-  if( m_messageSvc ) m_messageSvc->release();
-  if( m_jobOptionsSvc ) m_jobOptionsSvc->release();
-}
 
 //============================================================================
 // IInterface implementation: queryInterface::addRef()
@@ -176,7 +163,7 @@ StatusCode ApplicationMgr::queryInterface
 ( const InterfaceID& iid  ,
   void**             ppvi )
 {
-  if ( 0 == ppvi ) { return StatusCode::FAILURE ; }
+  if ( !ppvi ) { return StatusCode::FAILURE ; }
 
   // try to find own/direct interfaces:
   StatusCode sc = base_class::queryInterface(iid,ppvi);
@@ -196,14 +183,12 @@ StatusCode ApplicationMgr::queryInterface
   else if ( IMessageSvc     ::interfaceID() . versionMatch ( iid ) )
   {
     *ppvi = reinterpret_cast<void*>(m_messageSvc.get());
-    if (m_messageSvc) {
-      m_messageSvc->addRef();
-    }
+    if (m_messageSvc) m_messageSvc->addRef();
     // Note that 0 can be a valid IMessageSvc pointer value (when used for
     // MsgStream).
     return StatusCode::SUCCESS;
   }
-  *ppvi = 0;
+  *ppvi = nullptr;
   return StatusCode::FAILURE;
 }
 
@@ -217,20 +202,20 @@ StatusCode ApplicationMgr::i_startup() {
   m_classManager->loadModule("").ignore();
 
   // Create the Message service
-  SmartIF<IService> msgsvc = svcManager()->createService(Gaudi::Utils::TypeNameString("MessageSvc", m_messageSvcType));
-  if( !msgsvc.isValid() )  {
+  auto msgsvc = svcManager()->createService(Gaudi::Utils::TypeNameString("MessageSvc", m_messageSvcType));
+  if( !msgsvc )  {
     fatal() << "Error creating MessageSvc of type " << m_messageSvcType << endmsg;
     return sc;
   }
   // Create the Job Options service
-  SmartIF<IService> jobsvc = svcManager()->createService(Gaudi::Utils::TypeNameString("JobOptionsSvc", m_jobOptionsSvcType));
-  if( !jobsvc.isValid() )   {
+  auto jobsvc = svcManager()->createService(Gaudi::Utils::TypeNameString("JobOptionsSvc", m_jobOptionsSvcType));
+  if( !jobsvc )   {
     fatal() << "Error creating JobOptionsSvc" << endmsg;
     return sc;
   }
 
-  SmartIF<IProperty> jobOptsIProp(jobsvc);
-  if ( !jobOptsIProp.isValid() )   {
+  auto jobOptsIProp = jobsvc.as<IProperty>();
+  if ( !jobOptsIProp )   {
     fatal() << "Error locating JobOptionsSvc" << endmsg;
     return sc;
   }
@@ -240,7 +225,7 @@ StatusCode ApplicationMgr::i_startup() {
     return sc;
   }
 
-  if ( m_jobOptionsPath != "") {         // The command line takes precedence
+  if ( !m_jobOptionsPath.empty() ) {         // The command line takes precedence
     sc = jobOptsIProp->setProperty( StringProperty("PATH", m_jobOptionsPath) );
     if( !sc.isSuccess() )   {
       fatal() << "Error setting PATH option in JobOptionsSvc" << endmsg;
@@ -267,13 +252,13 @@ StatusCode ApplicationMgr::i_startup() {
       return sc;
     }
   }
-  jobOptsIProp->release();
+  jobOptsIProp.reset();
 
   // Sets my default the Output Level of the Message service to be
   // the same as this
-  SmartIF<IProperty> msgSvcIProp(msgsvc);
+  auto msgSvcIProp = msgsvc.as<IProperty>();
   msgSvcIProp->setProperty( IntegerProperty("OutputLevel", m_outputLevel)).ignore();
-  msgSvcIProp->release();
+  msgSvcIProp.reset();
 
   sc = jobsvc->sysInitialize();
   if( !sc.isSuccess() )   {
@@ -288,12 +273,12 @@ StatusCode ApplicationMgr::i_startup() {
 
   // Get the useful interface from Message and JobOptions services
   m_messageSvc = m_svcLocator->service("MessageSvc");
-  if( !m_messageSvc.isValid() )  {
+  if( !m_messageSvc )  {
     fatal() << "Error retrieving MessageSvc." << endmsg;
     return sc;
   }
   m_jobOptionsSvc = m_svcLocator->service("JobOptionsSvc");
-  if( !m_jobOptionsSvc.isValid() )  {
+  if( !m_jobOptionsSvc )  {
     fatal() << "Error retrieving JobOptionsSvc." << endmsg;
     return sc;
   }
@@ -341,7 +326,7 @@ StatusCode ApplicationMgr::configure() {
 
   // Check current outputLevel to eventually inform the MessageSvc
   if( m_outputLevel != MSG::NIL && !m_appName.empty() ) {
-    assert(m_messageSvc != 0);
+    assert(m_messageSvc);
     m_messageSvc->setOutputLevel( name(), m_outputLevel );
     // Print a welcome message
     log << MSG::ALWAYS
@@ -380,15 +365,13 @@ StatusCode ApplicationMgr::configure() {
   // print all own properties if the options "PropertiesPrint" is set to true
   if ( m_propertiesPrint )
   {
-    typedef std::vector<Property*> Properties;
-    const Properties& properties = m_propertyMgr->getProperties() ;
+    const auto& properties = m_propertyMgr->getProperties() ;
     log << MSG::ALWAYS
         << "List of ALL properties of "
         << System::typeinfoName ( typeid( *this ) ) << "/" << this->name()
         << "  #properties = " << properties.size() << endmsg ;
-    for ( Properties::const_iterator property = properties.begin() ;
-          properties.end() != property ; ++property )
-    { log << "Property ['Name': Value] = " << ( **property) << endmsg ; }
+    for ( const auto& property : properties )
+    { log << "Property ['Name': Value] = " <<  *property << endmsg ; }
   }
 
   // Check if StatusCode need to be checked
@@ -404,10 +387,9 @@ StatusCode ApplicationMgr::configure() {
   }
 
   // set the requested environment variables
-  std::map<std::string,std::string>::iterator var;
-  for ( var = m_environment.begin(); var != m_environment.end(); ++var ) {
-    const std::string &name  = var->first;
-    const std::string &value = var->second;
+  for ( auto& var : m_environment ) {
+    const std::string &name  = var.first;
+    const std::string &value = var.second;
     std::string old = System::getEnv(name.c_str());
     const MSG::Level lvl = (!old.empty() && (old != "UNKNOWN" ))
         ? MSG::WARNING
@@ -418,18 +400,17 @@ StatusCode ApplicationMgr::configure() {
   }
 
   //Declare Service Types
-  VectorName::const_iterator j;
-  for(j=m_svcMapping.begin(); j != m_svcMapping.end(); ++j)  {
-    Gaudi::Utils::TypeNameString itm(*j);
+  for(auto& j : m_svcMapping)  {
+    Gaudi::Utils::TypeNameString itm(j);
     if ( declareMultiSvcType(itm.name(), itm.type()).isFailure() )  {
-      log << MSG::ERROR << "configure: declaring svc type:'" << *j << "' failed." << endmsg;
+      log << MSG::ERROR << "configure: declaring svc type:'" << j << "' failed." << endmsg;
       return StatusCode::FAILURE;
     }
   }
-  for(j=m_svcOptMapping.begin(); j != m_svcOptMapping.end(); ++j)  {
-    Gaudi::Utils::TypeNameString itm(*j);
+  for(auto& j : m_svcOptMapping)  {
+    Gaudi::Utils::TypeNameString itm(j);
     if ( declareMultiSvcType(itm.name(), itm.type()).isFailure() )  {
-      log << MSG::ERROR << "configure: declaring svc type:'" << *j << "' failed." << endmsg;
+      log << MSG::ERROR << "configure: declaring svc type:'" << j << "' failed." << endmsg;
       return StatusCode::FAILURE;
     }
   }
@@ -476,14 +457,14 @@ StatusCode ApplicationMgr::configure() {
 
   if (m_noOfEvtThreads == 0) {
     m_runable = m_svcLocator->service(m_runableType);
-    if( !m_runable.isValid() )  {
+    if( !m_runable )  {
       log << MSG::FATAL
           << "Error retrieving Runable:" << m_runableType
           << "\n Check option ApplicationMgr." << s_runable << endmsg;
       return sc;
     }
     m_processingMgr = m_svcLocator->service(evtloop_item);
-    if( !m_processingMgr.isValid() )  {
+    if( !m_processingMgr )  {
       log << MSG::FATAL
           << "Error retrieving Processing manager:" << m_eventLoopMgr
           << "\n Check option ApplicationMgr." << s_eventloop
@@ -623,7 +604,7 @@ StatusCode ApplicationMgr::nextEvent(int maxevt)    {
         << endmsg;
     return StatusCode::FAILURE;
   }
-  if (!m_processingMgr.isValid())   {
+  if (!m_processingMgr)   {
     MsgStream log( m_messageSvc, name() );
     log << MSG::FATAL << "No event processing manager specified. Check option:"
         << s_eventloop << endmsg;
@@ -747,29 +728,29 @@ StatusCode ApplicationMgr::terminate() {
   }
 
   { // Force a disable the auditing of finalize for MessageSvc
-    SmartIF<IProperty> prop(m_messageSvc);
-    if (prop.isValid()) {
+    auto prop = m_messageSvc.as<IProperty>();
+    if (prop) {
       prop->setProperty(BooleanProperty("AuditFinalize", false)).ignore();
     }
   }
   { // Force a disable the auditing of finalize for JobOptionsSvc
-    SmartIF<IProperty> prop(m_jobOptionsSvc);
-    if (prop.isValid()) {
+    auto prop = m_jobOptionsSvc.as<IProperty>();
+    if (prop) {
       prop->setProperty(BooleanProperty("AuditFinalize", false)).ignore();
     }
   }
 
   // finalize MessageSvc
-  SmartIF<IService> svc(m_messageSvc);
-  if ( !svc.isValid() ) {
+  auto svc = m_messageSvc.as<IService>();
+  if ( !svc ) {
     log << MSG::ERROR << "Could not get the IService interface of the MessageSvc" << endmsg;
   } else {
     svc->sysFinalize().ignore();
   }
 
   // finalize JobOptionsSvc
-  svc = m_jobOptionsSvc;
-  if ( !svc.isValid() ) {
+  svc = m_jobOptionsSvc.as<IService>();
+  if ( !svc ) {
     log << MSG::ERROR << "Could not get the IService interface of the JobOptionsSvc" << endmsg;
   } else {
     svc->sysFinalize().ignore();
@@ -882,7 +863,7 @@ StatusCode ApplicationMgr::run() {
 StatusCode ApplicationMgr::executeEvent(void* par)    {
   MsgStream log( m_messageSvc, name() );
   if( m_state == Gaudi::StateMachine::RUNNING ) {
-    if ( m_processingMgr.isValid() )    {
+    if ( m_processingMgr )    {
       return m_processingMgr->executeEvent(par);
     }
   }
@@ -897,7 +878,7 @@ StatusCode ApplicationMgr::executeEvent(void* par)    {
 StatusCode ApplicationMgr::executeRun(int evtmax)    {
   MsgStream log( m_messageSvc, name() );
   if( m_state == Gaudi::StateMachine::RUNNING ) {
-    if ( m_processingMgr.isValid() )    {
+    if ( m_processingMgr )    {
       return m_processingMgr->executeRun(evtmax);
     }
     log << MSG::WARNING << "No EventLoop Manager specified " << endmsg;
@@ -914,7 +895,7 @@ StatusCode ApplicationMgr::executeRun(int evtmax)    {
 StatusCode ApplicationMgr::stopRun()    {
   MsgStream log( m_messageSvc, name() );
   if( m_state == Gaudi::StateMachine::RUNNING ) {
-    if ( m_processingMgr.isValid() )    {
+    if ( m_processingMgr )    {
       return m_processingMgr->stopRun();
     }
     log << MSG::WARNING << "No EventLoop Manager specified " << endmsg;
@@ -1006,11 +987,9 @@ void ApplicationMgr::SIExitHandler( Property& ) {
 // Handle properties of the event loop manager (Top alg/Output stream list)
 //============================================================================
 void ApplicationMgr::evtLoopPropertyHandler( Property& p ) {
-  if ( m_processingMgr.isValid() )    {
-    SmartIF<IProperty> props(m_processingMgr);
-    if ( props.isValid() )    {
-      props->setProperty( p ).ignore();
-    }
+  if ( m_processingMgr )    {
+    auto props = m_processingMgr.as<IProperty>();
+    if ( props ) props->setProperty( p ).ignore();
   }
 }
 
@@ -1029,9 +1008,9 @@ void ApplicationMgr::createSvcNameListHandler( Property& /* theProp */ ) {
 //============================================================================
 StatusCode ApplicationMgr::decodeCreateSvcNameList() {
   StatusCode result = StatusCode::SUCCESS;
-  const std::vector<std::string>& theNames = m_createSvcNameList.value( );
-  VectorName::const_iterator it(theNames.begin());
-  VectorName::const_iterator et(theNames.end());
+  const auto& theNames = m_createSvcNameList.value( );
+  auto it = theNames.begin();
+  auto et = theNames.end();
   while(result.isSuccess() && it != et) {
     Gaudi::Utils::TypeNameString item(*it++);
     if( (result = svcManager()->addService(item, ServiceManager::DEFAULT_SVC_PRIORITY) ).isFailure()) {
@@ -1066,13 +1045,13 @@ void ApplicationMgr::extSvcNameListHandler( Property& /* theProp */ ) {
 StatusCode ApplicationMgr::decodeExtSvcNameList( ) {
   StatusCode result = StatusCode::SUCCESS;
 
-  std::vector<std::string> theNames = m_extSvcNameList.value( );
+  const auto& theNames = m_extSvcNameList.value( );
 
-  VectorName::const_iterator it(theNames.begin());
-  VectorName::const_iterator et(theNames.end());
+  auto it = theNames.begin();
+  auto et = theNames.end();
   while(result.isSuccess() && it != et) {
     Gaudi::Utils::TypeNameString item(*it++);
-    if (m_extSvcCreates == true) {
+    if (m_extSvcCreates) {
       if ( (result = svcManager()->addService(item, ServiceManager::DEFAULT_SVC_PRIORITY)).isFailure()) {
         MsgStream log( m_messageSvc, m_name );
         log << MSG::ERROR << "decodeExtSvcNameList: Cannot create service "
@@ -1107,12 +1086,10 @@ void ApplicationMgr::multiThreadSvcNameListHandler( Property& /* theProp */ ) {
 //============================================================================
 StatusCode ApplicationMgr::decodeMultiThreadSvcNameList( ) {
   StatusCode result = StatusCode::SUCCESS;
-  const std::vector<std::string>& theNames = m_multiThreadSvcNameList.value( );
+  const auto& theNames = m_multiThreadSvcNameList.value( );
   for(int iCopy=0; iCopy<m_noOfEvtThreads; ++iCopy) {
-    for (VectorName::const_iterator it = theNames.begin();
-         it != theNames.end();
-         ++it) {
-      Gaudi::Utils::TypeNameString item(*it);
+    for (const auto& it : theNames ) {
+      Gaudi::Utils::TypeNameString item(it);
       result = addMultiSvc(item, ServiceManager::DEFAULT_SVC_PRIORITY);
       //FIXME SHOULD CLONE?
       if( result.isFailure() ) {
@@ -1225,20 +1202,18 @@ StatusCode ApplicationMgr::decodeDllNameList() {
   // -------------------------------------------------------------------------
   std::vector<std::string> newList;
   std::map<std::string,unsigned int> dllInList, duplicateList;
-  {for ( std::vector<std::string>::const_iterator it = m_dllNameList.value().begin();
-        it != m_dllNameList.value().end(); ++it ) {
-    if ( 0 == dllInList[*it] ) {
-      newList.push_back(*it);        // first instance of this module
-    } else { ++duplicateList[*it]; } // module listed multiple times
-    ++dllInList[*it];                // increment count for this module
+  {for ( const auto it : m_dllNameList.value()) {
+    if ( 0 == dllInList[it] ) {
+      newList.push_back(it);        // first instance of this module
+    } else { ++duplicateList[it]; } // module listed multiple times
+    ++dllInList[it];                // increment count for this module
   }}
   //m_dllNameList = newList; // update primary list to new, filtered list (do not use the
                              // property itself otherwise we get called again infinitely)
   // List modules that were in there twice..
   ON_DEBUG if ( !duplicateList.empty() ) {
     log << MSG::DEBUG << "Removed duplicate entries for modules : ";
-    for ( std::map<std::string,unsigned int>::const_iterator it = duplicateList.begin();
-          it != duplicateList.end(); ++it ) {
+    for ( auto it = duplicateList.begin(); it != duplicateList.end(); ++it ) {
       log << it->first << "(" << 1+it->second << ")";
       if ( it != --duplicateList.end() ) log << ", ";
     }
@@ -1252,18 +1227,16 @@ StatusCode ApplicationMgr::decodeDllNameList() {
   ON_DEBUG log << MSG::DEBUG << "Loading declared DLL's" << endmsg;
 
   std::vector<std::string> successNames, failNames;
-  std::vector<std::string>::const_iterator it;
-
-  for (it = theNames.begin(); it != theNames.end(); it++) {
-    if (std::find (m_okDlls.rbegin(), m_okDlls.rend(), *it) == m_okDlls.rend()){
+  for (const auto& it : theNames) {
+    if (std::find (m_okDlls.rbegin(), m_okDlls.rend(), it) == m_okDlls.rend()){
       // found a new module name
-      StatusCode status = m_classManager->loadModule( (*it) );
+      StatusCode status = m_classManager->loadModule( it );
       if( status.isFailure() ) {
-        failNames.push_back(*it);
+        failNames.push_back(it);
         result = StatusCode::FAILURE;
       }
       else {
-        successNames.push_back(*it);
+        successNames.push_back(it);
       }
     }
   }
@@ -1271,7 +1244,7 @@ StatusCode ApplicationMgr::decodeDllNameList() {
   // report back to the user and store the names of the succesfully loaded dlls
   if ( !successNames.empty() ) {
     log << MSG::INFO << "Successfully loaded modules : ";
-    for (it = successNames.begin(); it != successNames.end(); it++) {
+    for (auto it = successNames.begin(); it != successNames.end(); it++) {
       log<< (*it);
       if( (it+1) != successNames.end())  log << ", ";
       // save name
@@ -1282,7 +1255,7 @@ StatusCode ApplicationMgr::decodeDllNameList() {
 
   if ( result == StatusCode::FAILURE ) {
     log << MSG::WARNING << "Failed to load modules: ";
-    for (it = failNames.begin(); it != failNames.end(); it++) {
+    for (auto it = failNames.begin(); it != failNames.end(); it++) {
       log<< (*it);
       if( (it+1) != failNames.end())  log << ", ";
     }

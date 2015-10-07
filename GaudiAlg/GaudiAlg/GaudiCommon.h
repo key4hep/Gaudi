@@ -1,5 +1,3 @@
-// $Id: GaudiCommon.h,v 1.18 2008/10/27 19:22:20 marcocle Exp $
-// ============================================================================
 #ifndef GAUDIALG_GAUDICOMMON_H
 #define GAUDIALG_GAUDICOMMON_H 1
 // ============================================================================
@@ -29,12 +27,27 @@
 #include "GaudiKernel/ICounterSummarySvc.h"
 #include "GaudiKernel/IUpdateManagerSvc.h"
 #include "GaudiKernel/HashMap.h"
+#include "GaudiKernel/CommonMessaging.h"
 // ============================================================================
 // forward declarations
 // ============================================================================
 class Algorithm ; // GaudiKernel
 class AlgTool   ; // GaudiKernel
 namespace Gaudi { namespace Utils { template <class TYPE> struct GetData ; } }
+
+namespace GaudiCommon_details {
+  constexpr const struct svc_eq_t {
+        bool operator()(const std::string& n, const SmartIF<IService>& s) const { return n == s->name(); };
+        bool operator()(const SmartIF<IService>& s, const std::string& n) const { return s->name() == n; };
+        bool operator()(const SmartIF<IService>& s, const SmartIF<IService>& n) const { return s->name() == n->name(); };
+  } svc_eq { };
+  constexpr const struct svc_lt_t {
+        bool operator()(const std::string& n, const SmartIF<IService>& s) const { return n < s->name(); };
+        bool operator()(const SmartIF<IService>& s, const std::string& n) const { return s->name() < n; };
+        bool operator()(const SmartIF<IService>& s, const SmartIF<IService>& n) const { return s->name() < n->name(); };
+  } svc_lt { };
+
+}
 // ============================================================================
 /*  @file GaudiCommon.h
  *
@@ -57,7 +70,7 @@ namespace Gaudi { namespace Utils { template <class TYPE> struct GetData ; } }
  */
 // ============================================================================
 template < class PBASE >
-class GAUDI_API GaudiCommon: public PBASE
+class GAUDI_API GaudiCommon: public CommonMessaging<PBASE>
 {
 protected: // definitions
   /** Simple definition to be used with the new useRootInTES argument get<TYPE>
@@ -92,15 +105,16 @@ protected: // few actual data types
   /// storage for active tools
   typedef std::vector<IAlgTool*>             AlgTools     ;
   /// storage for active services
-  typedef GaudiUtils::HashMap<std::string, SmartIF<IService> > Services;
+  typedef std::vector<SmartIF<IService>>     Services;
+
   // ==========================================================================
   //protected members such that they can be used in the derived classes
   /// a pointer to the CounterSummarySvc
-  ICounterSummarySvc* m_counterSummarySvc;
+  SmartIF<ICounterSummarySvc> m_counterSummarySvc ;
   ///list of counters to declare. Set by property CounterList. This can be a regular expression.
-  std::vector<std::string> m_counterList;
+  std::vector<std::string> m_counterList = std::vector<std::string>(1,".*");
   //list of stat entities to write. Set by property StatEntityList. This can be a regular expression.
-  std::vector<std::string> m_statEntityList;
+  std::vector<std::string> m_statEntityList = std::vector<std::string>(0);
 public:
   // ==========================================================================
   /** @brief Templated access to the data in Gaudi Transient Store
@@ -472,37 +486,7 @@ public:
   void Exception
   ( const std::string& msg = "no message"        ,
     const StatusCode   sc  = StatusCode(StatusCode::FAILURE, true) ) const ;
-public: // predefined streams
-  /** Predefined configurable message stream for the efficient printouts
-   *
-   *  @code
-   *
-   *  if ( a < 0 ) { msgStream( MSG::ERROR ) << "a = " << endmsg ; }
-   *
-   *  @endcode
-   *
-   *  @return Reference to the predefined stream
-   */
-  inline MsgStream& msgStream ( const MSG::Level level ) const ;
-  /// shortcut for the method msgStream ( MSG::ALWAYS )
-  inline MsgStream&  always () const { return msgStream ( MSG::ALWAYS ) ; }
-  /// shortcut for the method msgStream ( MSG::FATAL   )
-  inline MsgStream&   fatal () const { return msgStream ( MSG::FATAL ) ; }
-  /// shortcut for the method msgStream ( MSG::ERROR   )
-  inline MsgStream&     err () const { return msgStream ( MSG::ERROR ) ; }
-  /// shortcut for the method msgStream ( MSG::ERROR   )
-  inline MsgStream&   error () const { return msgStream ( MSG::ERROR ) ; }
-  /// shortcut for the method msgStream ( MSG::WARNING )
-  inline MsgStream& warning () const { return msgStream ( MSG::WARNING ) ; }
-  /// shortcut for the method msgStream ( MSG::INFO    )
-  inline MsgStream&    info () const { return msgStream ( MSG::INFO ) ; }
-  /// shortcut for the method msgStream ( MSG::DEBUG   )
-  inline MsgStream&   debug () const { return msgStream ( MSG::DEBUG ) ; }
-  /// shortcut for the method msgStream ( MSG::VERBOSE )
-  inline MsgStream& verbose () const { return msgStream ( MSG::VERBOSE ) ; }
-  /// shortcut for the method msgStream ( MSG::INFO    )
-  inline MsgStream&     msg () const { return msgStream ( MSG::INFO ) ; }
-public:
+public: 
   // ==========================================================================
   /// accessor to all counters
   inline const Statistics& counters() const { return m_counters ; }
@@ -527,21 +511,6 @@ public:
   inline StatEntity& counter( const std::string& tag ) const { return m_counters[tag] ; }
   // ==========================================================================
 public:
-  /** @brief The current message service output level
-   *  @return The current message level
-   */
-  inline MSG::Level msgLevel() const { return m_msgLevel ; }
-  /** @brief Test the output level
-   *  @param level The message level to test against
-   *  @return boolean Indicating if messages at given level will be printed
-   *  @retval true Messages at level "level" will be printed
-   *  @retval true Messages at level "level" will NOT be printed
-   */
-  inline bool msgLevel( const MSG::Level level ) const { return msgLevel() <= level ; }
-  /** @brief Reset (delete) the current message stream object.
-   *  Useful for example to force a new object following a
-   *  change in the message level settings
-   */
   void resetMsgStream() const;
   /// Insert the actual C++ type of the algorithm/tool in the messages ?
   inline bool typePrint     () const { return m_typePrint    ; }
@@ -593,7 +562,7 @@ public:
    *  @endcode
    */
   template <class CallerClass>
-  inline void registerCondition(const std::string &condition, StatusCode (CallerClass::*mf)() = NULL) {
+  inline void registerCondition(const std::string &condition, StatusCode (CallerClass::*mf)() = nullptr) {
     updMgrSvc()->registerCondition(dynamic_cast<CallerClass*>(this),condition,mf);
   }
   /** register the current instance to the UpdateManagerSvc as a consumer for a condition.
@@ -669,7 +638,7 @@ public:
   inline StatusCode runUpdate() { return updMgrSvc()->update(this); }
 public:
   /// Algorithm constructor
-  GaudiCommon ( const std::string & name,
+  GaudiCommon ( const std::string&   name,
                 ISvcLocator * pSvcLocator );
   /// Tool constructor
   GaudiCommon ( const std::string& type   ,
@@ -679,7 +648,7 @@ public:
   /** standard initialization method
    *  @return status code
    */
-  virtual StatusCode initialize()
+  StatusCode initialize() override
 #ifdef __ICC
    { return i_gcInitialize(); }
   StatusCode i_gcInitialize()
@@ -688,7 +657,7 @@ public:
   /** standard finalization method
    *  @return status code
    */
-  virtual StatusCode finalize()
+  StatusCode finalize() override
 #ifdef __ICC
    { return i_gcFinalize(); }
   StatusCode i_gcFinalize()
@@ -696,14 +665,11 @@ public:
   ;
 protected:
   /// Destructor
-  virtual ~GaudiCommon() {resetMsgStream();}
+  ~GaudiCommon() override = default;
 private :
-  // default constructor is disabled
-  GaudiCommon() ;
-  // copy    constructor is disabled
-  GaudiCommon           ( const GaudiCommon& ) ;
-  // assignment operator is disabled
-  GaudiCommon& operator=( const GaudiCommon& ) ;
+  GaudiCommon() = delete;
+  GaudiCommon           ( const GaudiCommon& ) = delete;
+  GaudiCommon& operator=( const GaudiCommon& ) = delete;
 protected:
   /// manual forced (and 'safe') release of the tool
   StatusCode releaseTool ( const IAlgTool*   tool ) const ;
@@ -731,7 +697,7 @@ public:
    */
   StatusCode release ( const IInterface* interface ) const ;
   /// Un-hide IInterface::release (ICC warning #1125)
-  virtual inline unsigned long release() { return PBASE::release(); }
+  using PBASE::release;
   // ==========================================================================
 public:
   // ==========================================================================
@@ -772,16 +738,16 @@ private:
   /// Add the given tool to the list of acquired tools
   void addToToolList    ( IAlgTool * tool ) const;
   /// Add the given service to the list of acquired services
-  void addToServiceList ( const SmartIF<IService>& svc ) const;
+  void addToServiceList ( SmartIF<IService> svc ) const;
   /// Constructor initializations
   void initGaudiCommonConstructor( const IInterface * parent = 0 );
   // ==========================================================================
 private:
   /// The message level
-  MSG::Level  m_msgLevel    ;
+  MSG::Level  m_msgLevel    = MSG::NIL;
 private:
   /// The predefined message stream
-  mutable MsgStream* m_msgStream   ;
+  mutable std::unique_ptr<MsgStream> m_msgStream    ;
   /// List of active  tools
   mutable AlgTools   m_tools       ;
   /// List of active  services
@@ -799,16 +765,16 @@ private:
   mutable Statistics m_counters    ;
   // ==========================================================================
   /// Pointer to the Update Manager Service instance
-  mutable IUpdateManagerSvc* m_updMgrSvc;
+  mutable IUpdateManagerSvc* m_updMgrSvc = nullptr;
   // ==========================================================================
   /// insert  the actual C++ type of the algorithm in the messages?
-  bool        m_typePrint     ;
+  bool        m_typePrint = true    ;
   /// print properties at initialization?
-  bool        m_propsPrint    ;
+  bool        m_propsPrint = false   ;
   /// print counters at finalization ?
-  bool        m_statPrint     ;
+  bool        m_statPrint = true    ;
   /// print warning and error counters at finalization ?
-  bool        m_errorsPrint   ;
+  bool        m_errorsPrint = true  ;
   // ==========================================================================
   /// The context string
   std::string m_context;
@@ -819,7 +785,7 @@ private:
   /// Please update your code to use RootInTES instead. This option will be removed at some point.
   std::string m_rootOnTES;
   /// The globalTimeOffset value
-  double m_globalTimeOffset;
+  double m_globalTimeOffset = 0;
   // ==========================================================================
   // the header row
   std::string    m_header  ; ///< the header row

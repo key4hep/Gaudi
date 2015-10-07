@@ -27,6 +27,7 @@
  */
 // ============================================================================
 
+#include "GaudiKernel/SmartIF.h"
 #include "GaudiAlg/TupleObj.h"
 
 namespace Tuples
@@ -114,48 +115,48 @@ namespace Tuples
    */
   class GAUDI_API Tuple
   {
-  public:
 
+    /// default constructor is deleted -- except that ROOT wants one for dictionary
+    /// code generation. So we make it private, and do not implement it...
+    // Tuple() = delete;
+    Tuple();
+
+  public :
     /** standard constructor
      *  @param tuple pointer to "real" tuple object
      */
 
-    Tuple ( TupleObj* tuple ) ;
+    Tuple ( TupleObj* ) ;
 
     /// copy constructor
-    Tuple ( const Tuple&    tuple ) ;
+    Tuple ( const Tuple&  ) = default;
 
     /// destructor
-    virtual ~Tuple() ;
+    virtual ~Tuple() = default;
 
     /** assignment  operator
      *  Tuples could be assigned in a safe way
      *  @param tuple tuple to be assigned
      */
-    Tuple&    operator=( const Tuple&    tuple ) ;
+    Tuple&    operator=( const Tuple& )  = default;
 
     /** get the pointer to the underlying object
      *  @return pointer to underlying TupleObj
      */
-    TupleObj* operator->  ()  const  { return      tuple () ; }
+    TupleObj* operator->  ()  const  { return tuple () ; }
 
     /// check the validity of the tuple object
-    bool      valid       ()  const  { return 0 != tuple () ; }
+    bool      valid       ()  const  { return tuple () ; }
 
   protected:
 
     /// Return the underlying tuple object
-    TupleObj*  tuple() const { return m_tuple ; }
-
-  private:
-
-    /// default constructor is private
-    Tuple();
+    TupleObj*  tuple() const { return m_tuple.get() ; }
 
   private:
 
     /// The tuple object
-    TupleObj* m_tuple ;
+    SmartIF<TupleObj> m_tuple;
 
   };
 
@@ -275,16 +276,15 @@ namespace Tuples
   class TupleColumn
   {
   public:
-    TupleColumn ( const std::string&  name   ,
-                  const ITEM&         value  )
-      : m_name ( name ) , m_value  (  value  ) {}
-  public:
+    TupleColumn() = delete;
+    TupleColumn ( std::string  name   ,
+                  ITEM         value  )
+      : m_name ( std::move(name) ) , m_value  (  std::move(value)  ) {}
+
     /// Return the column name
     const std::string& name  () const { return m_name  ; }
     /// Return the column value
     const ITEM&        value () const { return m_value ; }
-  private:
-    TupleColumn();
   private:
     std::string m_name   ; ///< The column name
     ITEM       m_value  ; ///< The column value
@@ -295,39 +295,39 @@ namespace Tuples
    */
   template<class ITEM>
   inline TupleColumn<ITEM>
-  make_column ( const std::string& name , const ITEM& item )
-  { return TupleColumn<ITEM> ( name , item ) ; }
+  make_column ( std::string name , const ITEM& item )
+  { return TupleColumn<ITEM> ( std::move(name) , item ) ; }
 
   /** helper function to create 'on-the-fly' the
    *  helper object Tuples::TupleColumn
    */
   template<class ITEM>
   inline TupleColumn<const ITEM*>
-  make_column ( const std::string& name , const ITEM* item )
-  { return TupleColumn<const ITEM*>( name , item ) ; }
+  make_column ( std::string name , const ITEM* item )
+  { return TupleColumn<const ITEM*>( std::move(name) , item ) ; }
 
   /** helper function to create 'on-the-fly' the
    *  helper object Tuples::TupleColumn
    */
   template<class ITEM>
   inline TupleColumn<ITEM*>
-  make_column ( const std::string& name ,       ITEM* item )
-  { return TupleColumn<ITEM*>      ( name , item ) ; }
+  make_column ( std::string name ,       ITEM* item )
+  { return TupleColumn<ITEM*>      ( std::move(name) , item ) ; }
 
   template<class ITEM>
   inline TupleColumn<ITEM>
-  Column      ( const std::string& name , const ITEM& item )
-  { return make_column             ( name , item ) ; }
+  Column      ( std::string name , const ITEM& item )
+  { return make_column             ( std::move(name) , item ) ; }
 
   template<class ITEM>
   inline TupleColumn<const ITEM*>
-  Column      ( const std::string& name , const ITEM* item )
-  { return make_column             ( name , item ) ; }
+  Column      ( std::string name , const ITEM* item )
+  { return make_column             ( std::move(name) , item ) ; }
 
   template<class ITEM>
   inline TupleColumn<ITEM*>
-  Column      ( const std::string& name ,       ITEM* item )
-  { return make_column             ( name , item ) ; }
+  Column      ( std::string name ,       ITEM* item )
+  { return make_column             ( std::move(name) , item ) ; }
 
 } // end of the namespace Tuples
 

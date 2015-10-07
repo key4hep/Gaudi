@@ -7,7 +7,6 @@
 // ============================================================================
 #include "GaudiKernel/Auditor.h"
 #include "GaudiKernel/IAlgorithm.h"
-#include "GaudiKernel/SmartIF.h"
 // ============================================================================
 // Forward declarations
 // ============================================================================
@@ -24,36 +23,34 @@ class AlgContextAuditor
 {
 public:
   // IAuditor implementation
-  virtual void beforeInitialize ( INamedInterface*  a ) ;
-  virtual void afterInitialize  ( INamedInterface*  a ) ;
+  void beforeInitialize ( INamedInterface*  a ) override;
+  void afterInitialize  ( INamedInterface*  a ) override;
   //
-  virtual void beforeExecute    ( INamedInterface*  a ) ;
-  virtual void afterExecute     ( INamedInterface*  a ,
-                                  const StatusCode& s ) ;
+  void beforeExecute    ( INamedInterface*  a ) override;
+  void afterExecute     ( INamedInterface*  a ,
+                                  const StatusCode& s ) override;
   //
-  virtual void beforeFinalize   ( INamedInterface*  a ) ;
-  virtual void afterFinalize    ( INamedInterface*  a ) ;
+  void beforeFinalize   ( INamedInterface*  a ) override;
+  void afterFinalize    ( INamedInterface*  a ) override;
+
 public:
-  /// standard constructor @see Auditor
+  /// standard constructor/destructor @see Auditor
   AlgContextAuditor
   ( const std::string& name ,
     ISvcLocator*       pSvc ) ;
-  /// virtual destructor
-  virtual ~AlgContextAuditor    () ;
+  ~AlgContextAuditor    () override = default;
   /// standard initialization, @see IAuditor
-  virtual StatusCode initialize () ;
+  StatusCode initialize () override;
   /// standard finalization, @see IAuditor
-  virtual StatusCode finalize   () ;
+  StatusCode finalize   () override;
 private:
-  /// the default constructor is disabled
-  AlgContextAuditor () ;
-  /// copy constructor is disabled
-  AlgContextAuditor ( const AlgContextAuditor& ) ;
-  /// assignment operator is disabled
-  AlgContextAuditor& operator=( const AlgContextAuditor& ) ;
+  /// delete the default/copy constructor and assignment
+  AlgContextAuditor () = delete;
+  AlgContextAuditor ( const AlgContextAuditor& ) = delete;
+  AlgContextAuditor& operator=( const AlgContextAuditor& ) = delete;
 private:
   /// the pointer to Algorithm Context Service
-  IAlgContextSvc* m_svc ;
+  SmartIF<IAlgContextSvc> m_svc;
 } ;
 
 // ============================================================================

@@ -25,19 +25,13 @@ protected:
     {}
 
 public:
-  virtual ~ToolHandleInfo() {};
+  virtual ~ToolHandleInfo() = default;
 
-  bool isPublic() const {
-     return !m_parent;
-  }
+  bool isPublic() const { return !m_parent; }
 
-  bool createIf() const {
-     return m_createIf;
-  }
+  bool createIf() const { return m_createIf; }
 
-  const IInterface* parent() const {
-     return m_parent;
-  }
+  const IInterface* parent() const { return m_parent; }
 
   //
   // Some helper functions
@@ -47,18 +41,9 @@ public:
   }
 
   const std::string toolParentName( const IInterface* parent ) const {
-    if (parent) {
-      //SmartIF<INamedInterface> pNamed(const_cast<IInterface*>(parent));
-      //if (pNamed.isValid()) {
-      const INamedInterface* pNamed = dynamic_cast<const INamedInterface*>(parent);
-      if (pNamed) {
-        return pNamed->name();
-      } else {
-        return "";
-      }
-    } else {
-      return "ToolSvc";
-    }
+    if (!parent) return "ToolSvc";
+    const INamedInterface* pNamed = dynamic_cast<const INamedInterface*>(parent);
+    return pNamed ? pNamed->name() : "" ;
   }
 
 private:

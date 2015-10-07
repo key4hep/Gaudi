@@ -32,103 +32,100 @@ class POSIXFileHandler;
 class FileMgr: public extends2<Service, IFileMgr, IIncidentListener> {
 public:
   FileMgr(const std::string& name, ISvcLocator* svc);
-  virtual ~FileMgr();
+  ~FileMgr() override;
 
-public:
-  virtual StatusCode initialize();
-  virtual StatusCode finalize();
+  StatusCode initialize() override;
+  StatusCode finalize() override;
 
-public:
-  virtual void handle(const Incident&);
+  void handle(const Incident&) override;
 
-public:
-  virtual StatusCode regHandler(FileHdlr);
-  virtual StatusCode hasHandler(const IoTech&) const;
+  StatusCode regHandler(FileHdlr) override;
+  StatusCode hasHandler(const IoTech&) const override;
 
-  virtual StatusCode deregHandler(const IoTech&);
+  StatusCode deregHandler(const IoTech&) override;
 
-  virtual StatusCode getHandler(const IoTech&, FileHdlr&) const;
-  virtual StatusCode getHandler(const std::string&, FileHdlr&) const;
+  StatusCode getHandler(const IoTech&, FileHdlr&) const override;
+  StatusCode getHandler(const std::string&, FileHdlr&) const override;
 
-  virtual int getFileAttr(const std::string&, std::vector<const FileAttr*>&) const;
-  virtual StatusCode getFileAttr(const Fd, const FileAttr*&) const;
-  virtual StatusCode getFileAttr(void*, const FileAttr*&) const;
+  int getFileAttr(const std::string&, std::vector<const FileAttr*>&) const override;
+  StatusCode getFileAttr(const Fd, const FileAttr*&) const override;
+  StatusCode getFileAttr(void*, const FileAttr*&) const override;
 
-  virtual void listHandlers() const;
-  virtual void listFiles() const;
-  virtual void listActions() const;
-  virtual void listSuppression() const;
+  void listHandlers() const override;
+  void listFiles() const override;
+  virtual void listActions() const ; // does not override...
+  virtual void listSuppression() const ; // does not override...
 
-  virtual int getFiles(std::vector<std::string>&, bool onlyOpen=true) const;
-  virtual int getFiles(std::vector<const Io::FileAttr*>&, 
-		       bool onlyOpen=true) const;
-  virtual int getFiles(const Io::IoTech&, std::vector<std::string>&,
-		       bool onlyOpen=true) const;
-  virtual int getFiles(const Io::IoTech&, std::vector<const Io::FileAttr*>&,
-		       bool onlyOpen=true) const;
-  virtual int getFiles(const Io::IoTech&, const Io::IoFlags&, 
-		       std::vector<std::string>&, bool onlyOpen=true) const;
-  virtual int getFiles(const Io::IoTech&, const Io::IoFlags&, 
+  int getFiles(std::vector<std::string>&, bool onlyOpen=true) const override;
+  int getFiles(std::vector<const Io::FileAttr*>&, 
+		       bool onlyOpen=true) const override;
+  int getFiles(const Io::IoTech&, std::vector<std::string>&,
+		       bool onlyOpen=true) const override;
+  int getFiles(const Io::IoTech&, std::vector<const Io::FileAttr*>&,
+		       bool onlyOpen=true) const override;
+  int getFiles(const Io::IoTech&, const Io::IoFlags&, 
+		       std::vector<std::string>&, bool onlyOpen=true) const override;
+  int getFiles(const Io::IoTech&, const Io::IoFlags&, 
 		       std::vector<const Io::FileAttr*>&, 
-		       bool onlyOpen=true) const;
+		       bool onlyOpen=true) const override;
 
-  virtual int getFd(std::vector<Fd>&) const;
-  virtual int getFd(const Io::IoTech&, std::vector<Io::Fd>&) const;
-  virtual int getFd(const Io::IoTech&, const Io::IoFlags&, 
-		    std::vector<Io::Fd> &) const;
+  int getFd(std::vector<Fd>&) const override;
+  int getFd(const Io::IoTech&, std::vector<Io::Fd>&) const override;
+  int getFd(const Io::IoTech&, const Io::IoFlags&, 
+		    std::vector<Io::Fd> &) const override;
   
   // get file name given Fd or ptr
-  virtual const std::string& fname(const Io::Fd&) const;
-  virtual const std::string& fname(void*) const;
+  const std::string& fname(const Io::Fd&) const override;
+  const std::string& fname(void*) const override;
   
   // get Fd or ptr given file name
-  virtual Io::Fd fd(const std::string&) const;
-  virtual Io::Fd fd(void*) const;
+  Io::Fd fd(const std::string&) const override;
+  Io::Fd fd(void*) const override;
 
-  virtual void* fptr(const std::string&) const;
-  virtual void* fptr(const Io::Fd&) const;
+  void* fptr(const std::string&) const override;
+  void* fptr(const Io::Fd&) const override;
 
-  virtual int getLastError(std::string&) const;
+  int getLastError(std::string&) const override;
   
 
   // Open file, get Fd and ptr
-  virtual Io::open_t open(const Io::IoTech&, const std::string& caller,
+  Io::open_t open(const Io::IoTech&, const std::string& caller,
 			  const std::string& fname,
 			  const Io::IoFlags&, Io::Fd& fd, void*& ptr,
 			  const std::string& desc="", 
-			  const bool shared=false);
+			  const bool shared=false) override;
 
   // Open file, get Fd
-  virtual Io::open_t open(const Io::IoTech&, const std::string& caller, 
+  Io::open_t open(const Io::IoTech&, const std::string& caller, 
 			  const std::string& fname,
 			  const Io::IoFlags&, Io::Fd&, 
 			  const std::string& desc="",
-			  const bool shared=false);
+			  const bool shared=false) override;
 
   // Open file, get ptr
-  virtual Io::open_t open(const Io::IoTech&, const std::string& caller,
+  Io::open_t open(const Io::IoTech&, const std::string& caller,
 			  const std::string& fname,
 			  const Io::IoFlags&, void*&,
 			  const std::string& desc="",
-			  const bool shared=false);
+			  const bool shared=false) override;
 
 
-  virtual Io::close_t  close(const Fd, const std::string& caller);
-  virtual Io::close_t  close(void*, const std::string& caller);
+  Io::close_t  close(const Fd, const std::string& caller) override;
+  Io::close_t  close(void*, const std::string& caller) override;
 
-  virtual Io::reopen_t reopen(const Fd, const IoFlags&, 
-			      const std::string& caller);
-  virtual Io::reopen_t reopen(void*, const IoFlags&, 
-			      const std::string& caller);
+  Io::reopen_t reopen(const Fd, const IoFlags&, 
+			      const std::string& caller) override;
+  Io::reopen_t reopen(void*, const IoFlags&, 
+			      const std::string& caller) override;
   
   
-  virtual StatusCode regAction(Io::bfcn_action_t, const Io::Action&, 
-			       const std::string& desc="");
-  virtual StatusCode regAction(Io::bfcn_action_t, const Io::Action&, 
-			       const Io::IoTech&, const std::string& desc="");
+  StatusCode regAction(Io::bfcn_action_t, const Io::Action&, 
+			       const std::string& desc="") override;
+  StatusCode regAction(Io::bfcn_action_t, const Io::Action&, 
+			       const Io::IoTech&, const std::string& desc="") override;
   
-  virtual void suppressAction(const std::string&);
-  virtual void suppressAction(const std::string&, const Io::Action&);
+  void suppressAction(const std::string&) override;
+  void suppressAction(const std::string&, const Io::Action&) override;
   
 private:
   
@@ -139,7 +136,7 @@ private:
   virtual Io::open_t   open(const IoTech&, const std::string& caller,
 			    const std::string& fname, const std::string& desc, 
 			    const IoFlags&, Fd&, void*&,
-			    const bool shared);
+			    const bool shared) ; // does not override...
 
   typedef std::pair<Io::bfcn_action_t,std::string> bfcn_desc_t;
   typedef std::map<Io::Action, std::list<bfcn_desc_t> > actionMap;
@@ -157,11 +154,9 @@ private:
   fileMap m_files;
   std::map<IoTech, FileHdlr> m_handlers;
   std::map<Fd, FileAttr*> m_descriptors;
-  std::map<void*, FileAttr*> m_fptr;
-  std::vector<FileAttr*> m_attr;
+  std::vector<std::unique_ptr<FileAttr>> m_attr;
 
-  typedef std::list<FileAttr*> fileList;
-  fileList m_oldFiles;
+  std::vector<FileAttr*> m_oldFiles;
   
   std::map< IoTech, actionMap > m_actions;
 
@@ -171,8 +166,8 @@ private:
   std::string m_lastErrS;
   int m_lastErr;
 
-  RootFileHandler* m_rfh;
-  POSIXFileHandler* m_pfh;
+  std::unique_ptr<RootFileHandler> m_rfh;
+  std::unique_ptr<POSIXFileHandler> m_pfh;
   mutable MsgStream m_log;
 
 };

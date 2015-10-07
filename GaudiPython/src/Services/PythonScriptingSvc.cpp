@@ -44,9 +44,9 @@ StatusCode PythonScriptingSvc::initialize()
   // Setup startup script. If none is explicitly specified, then
   // use the ApplicationMgr JobOptionsPath property as long as
   // the JobOptionsType property is set to "NONE".
-  if( m_startupScript == "" ) {
-    SmartIF<IProperty> prpMgr(serviceLocator());
-    if ( prpMgr.isValid() )   {
+  if( m_startupScript.empty() ) {
+    auto prpMgr = serviceLocator()->as<IProperty>();
+    if ( prpMgr )   {
       StringProperty tmp;
       tmp.assign(prpMgr->getProperty("JobOptionsType"));
       if ( tmp.value( ) == "NONE" ) {
@@ -99,9 +99,7 @@ StatusCode PythonScriptingSvc::finalize()
 {
   // Finalize this specific service
   StatusCode sc = Service::finalize();
-  if ( sc.isFailure() ) {
-      return sc;
-  }
+  if ( sc.isFailure() ) return sc;
 
   // Shutdown the Python interpreter
   Py_Finalize();
@@ -113,20 +111,22 @@ StatusCode PythonScriptingSvc::run()
 //----------------------------------------------------------------------------------
 {
   MsgStream log( msgSvc(), name() );
-  if ( m_startupScript != "" ) {
-    std::ifstream file(m_startupScript.c_str());
+  if ( !m_startupScript.empty() ) {
+    std::ifstream file{m_startupScript};
     std::stringstream stream;
     if( file ) {
-      char ch;
-      while( file.get(ch) ) stream.put(ch);
-      PyRun_SimpleString( const_cast<char*>(stream.str().c_str()) );
+      std::string buffer;
+      file.seekg(0, std::ios::end);
+      buffer.reserve(file.tellg());
+      file.seekg(0, std::ios::beg);
+      buffer.assign((std::istreambuf_iterator<char>{file}),
+                     std::istreambuf_iterator<char>{});
       file.close();
-    }
-    else {
+      PyRun_SimpleString( buffer.c_str() );
+    } else {
       log << MSG::WARNING << "Python startup file " << m_startupScript << " not found" << endmsg;
     }
   }
   PyRun_InteractiveLoop(stdin, "\0");
   return StatusCode::SUCCESS;
 }
-

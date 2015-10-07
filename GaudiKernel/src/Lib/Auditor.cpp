@@ -12,21 +12,17 @@
 Auditor::Auditor( const std::string& name, ISvcLocator *pSvcLocator )
 : m_name(name),
   m_pSvcLocator(pSvcLocator),
+  m_PropertyMgr{ new PropertyMgr() },
   m_isEnabled(true),
   m_isInitialized(false),
   m_isFinalized(false)
 {
-  m_PropertyMgr = new PropertyMgr();
 
   // Declare common Auditor properties with their defaults
   declareProperty( "OutputLevel", m_outputLevel = MSG::NIL);
   declareProperty( "Enable", m_isEnabled = true);
 }
 
-// Default Destructor
-Auditor::~Auditor() {
-  delete m_PropertyMgr;
-}
 
 // IAuditor implementation
 StatusCode Auditor::sysInitialize() {
@@ -37,12 +33,12 @@ StatusCode Auditor::sysInitialize() {
   if ( isEnabled( ) && ! m_isInitialized ) {
 
     // Setup the default service ... this should be upgraded so as to be configurable.
-    if( m_pSvcLocator == 0 )
+    if( !m_pSvcLocator )
       return StatusCode::FAILURE;
 
     // Set up message service
     m_MS = serviceLocator(); // get default message service
-    if( !m_MS.isValid() )  return StatusCode::FAILURE;
+    if( !m_MS )  return StatusCode::FAILURE;
 
     // Set the Auditor's properties
     sc = setProperties();
@@ -209,7 +205,7 @@ StatusCode Auditor::sysFinalize() {
 }
 
 StatusCode Auditor::finalize() {
-  m_MS = 0; // release message service
+  m_MS.reset();// release message service
   return StatusCode::SUCCESS;
 }
 
@@ -226,9 +222,7 @@ SmartIF<IMessageSvc>& Auditor::msgSvc() const {
 }
 
 void Auditor::setOutputLevel( int level ) {
-  if( m_MS != 0) {
-    m_MS->setOutputLevel( name(), level );
-  }
+  if( m_MS ) m_MS->setOutputLevel( name(), level );
 }
 
 SmartIF<ISvcLocator>& Auditor::serviceLocator() const {
@@ -237,12 +231,10 @@ SmartIF<ISvcLocator>& Auditor::serviceLocator() const {
 
 // Use the job options service to set declared properties
 StatusCode Auditor::setProperties() {
-  if( m_pSvcLocator != 0 )    {
-    IJobOptionsSvc* jos;
-    StatusCode sc = service("JobOptionsSvc", jos);
-    if( sc.isSuccess() )    {
+  if( m_pSvcLocator ) {
+    auto jos = service<IJobOptionsSvc>("JobOptionsSvc");
+    if( jos ) {
       jos->setMyProperties( name(), this ).ignore();
-      jos->release();
       return StatusCode::SUCCESS;
     }
   }

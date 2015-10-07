@@ -18,14 +18,14 @@ class GAUDI_API Incident {
 public:
 
   /// Default Constructor
-  Incident ( const std::string& source, ///< Incident source (service or algorithm name)
-             const std::string& type    ///< Incident type
+  Incident ( std::string source, ///< Incident source (service or algorithm name)
+             std::string type    ///< Incident type
              )
-    : m_source ( source ),
-      m_type   ( type   ) { }
+    : m_source ( std::move(source) ),
+      m_type   ( std::move(type)   ) { }
 
   /// Destructor
-  virtual ~Incident() { }
+  virtual ~Incident() = default;
 
   /** Access to the incident type
    *

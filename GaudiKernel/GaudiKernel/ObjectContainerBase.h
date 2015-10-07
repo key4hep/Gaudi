@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/ObjectContainerBase.h,v 1.5 2008/10/09 16:46:49 marcocle Exp $
 #ifndef GAUDI_OBJECTCONTAINERBASE_H
 #define GAUDI_OBJECTCONTAINERBASE_H 1
 
@@ -22,10 +21,10 @@ class GAUDI_API ObjectContainerBase : public DataObject  {
 protected:
 
   /// Constructor
-  ObjectContainerBase() { }
+  ObjectContainerBase() = default;
 
   /// Destructor
-  virtual ~ObjectContainerBase() { }
+  ~ObjectContainerBase() override = default;
 
 public:
 
@@ -51,7 +50,6 @@ public:
       If the object was fount it's index is returned.                */
   virtual long remove(ContainedObject* value) = 0;
 
-private:
 };
 
 #endif    // GAUDI_OBJECTCONTAINERBASE_H

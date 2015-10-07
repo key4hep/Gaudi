@@ -1,4 +1,3 @@
-// $Id: RootPerfMonSvc.cpp,v 1.12 2010-09-27 15:43:53 frankb Exp $
 //====================================================================
 //  RootPerfMonSvc implementation
 //--------------------------------------------------------------------
@@ -32,17 +31,13 @@ typedef const string& CSTR;
 
 // Standard constructor
 RootPerfMonSvc::RootPerfMonSvc(CSTR nam, ISvcLocator* svc)
-  : Service( nam, svc), m_incidentSvc(0)
+  : Service( nam, svc)
 {
   declareProperty("IOPerfStats", m_ioPerfStats);
   declareProperty("Streams",     m_setStreams);
   declareProperty("BasketSize",  m_basketSize);
   declareProperty("BufferSize",  m_bufferSize);
   declareProperty("SplitLevel",  m_splitLevel);
-}
-
-// Standard destructor
-RootPerfMonSvc::~RootPerfMonSvc() {
 }
 
 // Small routine to issue exceptions
@@ -62,8 +57,9 @@ StatusCode RootPerfMonSvc::initialize()  {
   StatusCode status = Service::initialize();
   if ( !status.isSuccess() )
     return error("Failed to initialize Service base class.");
-  m_log = new MsgStream(msgSvc(),name());
-  if( !(status=service("IncidentSvc", m_incidentSvc)).isSuccess() )
+  m_log.reset( new MsgStream(msgSvc(),name()) );
+  m_incidentSvc = service("IncidentSvc");
+  if( !m_incidentSvc )
     return error("Unable to localize interface from service:IncidentSvc");
 
   m_incidentSvc->addListener(this, IncidentType::BeginEvent, 1, false, false);
@@ -74,8 +70,8 @@ StatusCode RootPerfMonSvc::initialize()  {
     return error("Performance monitoring file IOPerfStats was not defined.");
 
   TDirectory::TContext ctxt(0);
-  if (!(m_perfFile = new TFile(m_ioPerfStats.c_str(),"RECREATE")))
-    return error("Could not create ROOT file.");
+  m_perfFile.reset( new TFile(m_ioPerfStats.c_str(),"RECREATE") );
+  if (!m_perfFile ) return error("Could not create ROOT file.");
 
   if (!(m_perfTree = new TTree("T", "performance measurement")))
     return error("Could not create tree.");
@@ -135,15 +131,15 @@ StatusCode RootPerfMonSvc::stop() {
   char text[64];
   record(FSR);
   TMap *map = new TMap();
-  for(set<string>::const_iterator i=m_outputs.begin(); i!=m_outputs.end();++i) {
-    const char* fn = (*i).c_str();
+  for(const auto &i : m_outputs) {
+    const char* fn = i.c_str();
     Long_t id, siz, flags, tim;
     if ( 0 == gSystem->GetPathInfo(fn,&id,&siz,&flags,&tim) ) {
       ::sprintf(text,"%ld",siz);
       map->Add(new TObjString(fn), new TObjString(text));
     }
   }
-  TDirectory::TContext ctxt(m_perfFile);
+  TDirectory::TContext ctxt(m_perfFile.get());
   map->Write("Outputs", TObject::kSingleKey);
   return S_OK;
 }
@@ -152,12 +148,12 @@ StatusCode RootPerfMonSvc::stop() {
 StatusCode RootPerfMonSvc::finalize()    {
   record(FSR);
   log() << MSG::INFO;
-  deletePtr(m_log);
-  releasePtr(m_incidentSvc);
+  m_log.reset();
+  m_incidentSvc.reset();
 
   m_perfFile->Write();
   m_perfFile->Close();
-  deletePtr(m_perfFile);
+  m_perfFile.reset();
 
   return Service::finalize();
 }

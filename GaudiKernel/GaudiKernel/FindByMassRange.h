@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/FindByMassRange.h,v 1.2 2000/12/13 12:57:13 mato Exp $
 #ifndef GAUDIKERNEL_FINDBYMASSRANGE_H
 #define GAUDIKERNEL_FINDBYMASSRANGE_H
 
@@ -39,13 +38,7 @@ public:
       given mass range and returns true if it does.
   */
   bool operator() ( const ParticleProperty* pp ) const                        {
-    bool in_range = false;
-    if ( pp ) {
-      if ( pp->mass() >= m_low && pp->mass() <= m_high ) {
-	      in_range = true;
-      }
-    }
-    return in_range;
+    return pp && pp->mass() >= m_low && pp->mass() <= m_high;
   }
 
 private:

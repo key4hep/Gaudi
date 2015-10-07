@@ -17,18 +17,8 @@ using std::string;
 #define ON_DEBUG if (UNLIKELY(outputLevel() <= MSG::DEBUG))
 #define ON_VERBOSE if (UNLIKELY(outputLevel() <= MSG::VERBOSE))
 
-//--- IInterface::release
-// Specialized implementation because the default one is not enough.
-unsigned long Service::release()   {
-  // Avoid to decrement 0
-  const unsigned long count = (m_refCount) ? --m_refCount : m_refCount;
-  if( count == 0) {
-    if (m_svcManager!=0) {
-      m_svcManager->removeService(this).ignore();
-    }
-    delete this;
-  }
-  return count;
+Service::~Service() {
+    if (m_svcManager) m_svcManager->removeService(this).ignore();
 }
 
 // IService::sysInitialize
@@ -41,7 +31,7 @@ StatusCode Service::sysInitialize() {
                                       // check if we want to audit the initialize
                                       (m_auditorInitialize) ? auditorSvc().get() : 0,
                                       IAuditor::Initialize);
-    if ((name() != "MessageSvc") && msgSvc().isValid()) // pre-set the outputLevel from the MessageSvc value
+    if ((name() != "MessageSvc") && msgSvc()) // pre-set the outputLevel from the MessageSvc value
       m_outputLevel = msgSvc()->outputLevel(name());
     sc = initialize(); // This should change the state to Gaudi::StateMachine::CONFIGURED
     if (sc.isSuccess())
@@ -372,8 +362,8 @@ bool Service::hasProperty(const std::string& name) const {
 // Use the job options service to set declared properties
 StatusCode Service::setProperties() {
   const bool CREATEIF(true);
-  SmartIF<IJobOptionsSvc> jos(serviceLocator()->service("JobOptionsSvc", CREATEIF));
-  if( !jos.isValid() ) {
+  auto jos = serviceLocator()->service<IJobOptionsSvc>("JobOptionsSvc", CREATEIF);
+  if( !jos ) {
     throw GaudiException("Service [JobOptionsSvc] not found", name(), StatusCode::FAILURE);
   }
   // set first generic Properties
@@ -392,15 +382,13 @@ StatusCode Service::setProperties() {
 
 //--- Local methods
 // Standard Constructor
-Service::Service(const std::string& name, ISvcLocator* svcloc) {
-  m_name       = name;
-  m_svcLocator = svcloc;
-  m_state      = Gaudi::StateMachine::OFFLINE;
-  m_targetState = Gaudi::StateMachine::OFFLINE;
-  m_propertyMgr = new PropertyMgr();
-  m_outputLevel = MSG::NIL;
+Service::Service(std::string name, ISvcLocator* svcloc) :
+  m_name( std::move(name) ),
+  m_svcLocator(  svcloc ),
+  m_propertyMgr(  new PropertyMgr() )
+{
   // Declare common Service properties with their defaults
-  if ( (name != "MessageSvc") && msgSvc().isValid() )  {
+  if ( (name != "MessageSvc") && msgSvc() )  {
     // In genconf a service is instantiated without the ApplicationMgr
     m_outputLevel = msgSvc()->outputLevel();
   }
@@ -411,8 +399,8 @@ Service::Service(const std::string& name, ISvcLocator* svcloc) {
   declareProperty("AuditServices", m_auditInit = true);
 
   bool audit(false);
-  SmartIF<IProperty> appMgr(serviceLocator()->service("ApplicationMgr"));
-  if (appMgr.isValid()) {
+  auto appMgr = serviceLocator()->service<IProperty>("ApplicationMgr");
+  if (appMgr) {
     const Property& prop = appMgr->getProperty("AuditServices");
     if (m_name != "IncidentSvc") {
       setProperty(prop).ignore();
@@ -432,21 +420,17 @@ Service::Service(const std::string& name, ISvcLocator* svcloc) {
 
 // Callback to set output level
 void Service::initOutputLevel(Property& /*prop*/) {
-  if ( (name() != "MessageSvc") && msgSvc().isValid() ) {
+  if ( (name() != "MessageSvc") && msgSvc() ) {
     msgSvc()->setOutputLevel( name(), m_outputLevel );
   }
   updateMsgStreamOutputLevel(m_outputLevel);
 }
 
-// Standard Destructor
-Service::~Service() {
-  delete m_propertyMgr;
-}
 
 SmartIF<IAuditorSvc>& Service::auditorSvc() const {
-  if ( !m_pAuditorSvc.isValid() ) {
+  if ( !m_pAuditorSvc ) {
     m_pAuditorSvc = serviceLocator()->service("AuditorSvc");
-    if( !m_pAuditorSvc.isValid() ) {
+    if( !m_pAuditorSvc ) {
       throw GaudiException("Service [AuditorSvc] not found", name(), StatusCode::FAILURE);
     }
   }

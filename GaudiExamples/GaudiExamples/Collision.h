@@ -1,5 +1,3 @@
-// $Header: /local/reps/Gaudi/GaudiExamples/src/Lib/Collision.h,v 1.2
-// 2006/11/27 09:53:06 hmd Exp $
 #ifndef GAUDIEXAMPLES_COLLISION_H
 #define GAUDIEXAMPLES_COLLISION_H 1
 

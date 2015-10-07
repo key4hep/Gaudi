@@ -348,7 +348,7 @@ void GaudiMP::TESSerializer::addItem(Items& itms, const std::string& descriptor)
     level = 9999999;
   }
   else   {
-    level = atoi(slevel.c_str());
+    level = std::stoi(slevel);
   }
 
   // Are we verifying?

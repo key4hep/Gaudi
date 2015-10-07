@@ -1,5 +1,3 @@
-// $Id: GslErrorPrint.h,v 1.2 2006/11/30 10:40:53 mato Exp $
-// ============================================================================
 #ifndef GAUDIGSL_GSLERRORPrint_H
 #define GAUDIGSL_GSLERRORPrint_H 1
 // Include files
@@ -30,9 +28,7 @@ public:
    *  @see GslError
    *  @return status code
    */
-  virtual StatusCode handle
-  ( const GslError& error ) const ;
-
+  StatusCode handle( const GslError& error ) const override;
 
   /** Standard constructor
    *  @param type   tool type (?)
@@ -45,9 +41,7 @@ public:
     const IInterface*  parent );
 
   /// destructor (protected and virtual)
-  virtual ~GslErrorPrint( );
-
-private:
+  ~GslErrorPrint( ) override = default;
 
 };
 

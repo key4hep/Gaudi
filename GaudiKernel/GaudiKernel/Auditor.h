@@ -44,7 +44,7 @@ public:
       @param svcloc  A pointer to a service location service */
   Auditor( const std::string& name, ISvcLocator *svcloc );
   /// Destructor
-  virtual ~Auditor();
+  ~Auditor() override = default;
 
   /** Initialization method invoked by the framework. This method is responsible
       for any bookkeeping of initialization required by the framework itself.
@@ -57,44 +57,44 @@ public:
 
   /// The following methods are meant to be implemented by the child class...
 
-  virtual void before(StandardEventType, INamedInterface*);
-  virtual void before(StandardEventType, const std::string&);
+  void before(StandardEventType, INamedInterface*) override;
+  void before(StandardEventType, const std::string&) override;
 
-  virtual void before(CustomEventTypeRef, INamedInterface*);
-  virtual void before(CustomEventTypeRef, const std::string&);
+  void before(CustomEventTypeRef, INamedInterface*) override;
+  void before(CustomEventTypeRef, const std::string&) override;
 
-  virtual void after(StandardEventType, INamedInterface*, const StatusCode&);
-  virtual void after(StandardEventType, const std::string&, const StatusCode&);
+  void after(StandardEventType, INamedInterface*, const StatusCode&) override;
+  void after(StandardEventType, const std::string&, const StatusCode&) override;
 
-  virtual void after(CustomEventTypeRef, INamedInterface*, const StatusCode&);
-  virtual void after(CustomEventTypeRef, const std::string&, const StatusCode&);
+  void after(CustomEventTypeRef, INamedInterface*, const StatusCode&) override;
+  void after(CustomEventTypeRef, const std::string&, const StatusCode&) override;
 
   // Obsolete methods
 
-  virtual void beforeInitialize(INamedInterface* ) ;
-  virtual void afterInitialize(INamedInterface* ) ;
+  void beforeInitialize(INamedInterface* )  override;
+  void afterInitialize(INamedInterface* )  override;
 
-  virtual void beforeReinitialize(INamedInterface* ) ;
-  virtual void afterReinitialize(INamedInterface* ) ;
+  void beforeReinitialize(INamedInterface* )  override;
+  void afterReinitialize(INamedInterface* )  override;
 
-  virtual void beforeExecute(INamedInterface* );
-  virtual void afterExecute(INamedInterface*, const StatusCode& );
+  void beforeExecute(INamedInterface* ) override;
+  void afterExecute(INamedInterface*, const StatusCode& ) override;
 
-  virtual void beforeFinalize(INamedInterface* ) ;
-  virtual void afterFinalize(INamedInterface* ) ;
+  void beforeFinalize(INamedInterface* )  override;
+  void afterFinalize(INamedInterface* )  override;
 
-  virtual void beforeBeginRun(INamedInterface* );
-  virtual void afterBeginRun(INamedInterface* );
+  void beforeBeginRun(INamedInterface* ) override;
+  void afterBeginRun(INamedInterface* ) override;
 
-  virtual void beforeEndRun(INamedInterface* );
-  virtual void afterEndRun(INamedInterface* );
+  void beforeEndRun(INamedInterface* ) override;
+  void afterEndRun(INamedInterface* ) override;
 
   virtual StatusCode initialize();
   virtual StatusCode finalize();
 
-  virtual const std::string&  name() const ;
+  const std::string&  name() const  override;
 
-  virtual bool isEnabled() const ;
+  bool isEnabled() const  override;
 
   /** The standard message service. Returns a pointer to the standard message
       service. May not be invoked before sysInitialize() has been invoked.
@@ -117,40 +117,44 @@ public:
   */
   template <class T>
   StatusCode service( const std::string& name, T*& svc, bool createIf = false ) const {
-    SmartIF<T> ptr(serviceLocator()->service(name, createIf));
-    if (ptr.isValid()) {
+    auto ptr = serviceLocator()->service<T>(name, createIf);
+    if (ptr) {
       svc = ptr.get();
       svc->addRef();
       return StatusCode::SUCCESS;
     }
-    // else
-    svc = 0;
+    svc = nullptr;
     return StatusCode::FAILURE;
   }
 
+  template <class T = IService>
+  SmartIF<T> service( const std::string& name, bool createIf = false ) const {
+    return serviceLocator()->service<T>(name, createIf);
+  }
+
   /// Set a value of a property of an auditor.
-  virtual StatusCode setProperty(const Property& p);
+  StatusCode setProperty(const Property& p) override;
 
   /// Implementation of IProperty::setProperty
-  virtual StatusCode setProperty( const std::string& s );
+  StatusCode setProperty( const std::string& s ) override;
 
   /// Implementation of IProperty::setProperty
-  virtual StatusCode setProperty( const std::string& n, const std::string& v);
+  StatusCode setProperty( const std::string& n, const std::string& v) override;
 
   /// Get the value of a property.
-  virtual StatusCode getProperty(Property* p) const;
+  StatusCode getProperty(Property* p) const override;
 
   /// Get the property by name.
-  virtual const Property& getProperty( const std::string& name) const;
+  const Property& getProperty( const std::string& name) const override;
 
   /// Implementation of IProperty::getProperty
-  virtual StatusCode getProperty( const std::string& n, std::string& v ) const;
+  StatusCode getProperty( const std::string& n, std::string& v ) const override;
 
   /// Get all properties.
   const std::vector<Property*>& getProperties( ) const;
 
   /// Implementation of IProperty::hasProperty
-  virtual bool hasProperty(const std::string& name) const;
+  bool hasProperty(const std::string& name) const override;
 
   /** set the property form the value
    *
@@ -196,7 +200,7 @@ public:
   StatusCode setProperty
   ( const std::string& name  ,
     const TYPE&        value )
-  { return Gaudi::Utils::setProperty ( m_PropertyMgr , name , value ) ; }
+  { return Gaudi::Utils::setProperty ( m_PropertyMgr.get() , name , value ) ; }
 
   /** Set the auditor's properties. This method requests the job options service
       to set the values of any declared properties. The method is invoked from
@@ -245,7 +249,7 @@ public:
 
   mutable SmartIF<IMessageSvc> m_MS;            ///< Message service
   mutable SmartIF<ISvcLocator> m_pSvcLocator;   ///< Pointer to service locator service
-  PropertyMgr* m_PropertyMgr;   ///< For management of properties
+  SmartIF<PropertyMgr> m_PropertyMgr;   ///< For management of properties
   int          m_outputLevel;   ///< Auditor output level
   bool         m_isEnabled;     ///< Auditor is enabled flag
   bool         m_isInitialized; ///< Auditor has been initialized flag
@@ -264,8 +268,8 @@ class AudFactory {
 public:
 #ifndef __REFLEX__
   template <typename S, typename... Args>
-  static typename S::ReturnType create(Args... args) {
-    return new T(args...);
+  static typename S::ReturnType create(Args&&... args) {
+    return new T(std::forward<Args>(args)...);
   }
 #endif
 };

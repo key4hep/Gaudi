@@ -1,6 +1,3 @@
-// $Id: ICounterSvc.h,v 1.4 2007/08/06 08:39:40 marcocle Exp $
-// ============================================================================
-// CVS tag $Name:  $, version $Revision: 1.4 $
 // ============================================================================
 #ifndef GAUDIKERNEL_ICOUNTERSVC_H
 #define GAUDIKERNEL_ICOUNTERSVC_H
@@ -16,13 +13,13 @@
 // ============================================================================
 #include "GaudiKernel/IInterface.h"
 #include "GaudiKernel/StatEntity.h"
-#include "GaudiKernel/Stat.h"
+#include "GaudiKernel/SmartIF.h"
 // ============================================================================
 // Forward declarations
 // ============================================================================
 class MsgStream   ;
 class StatEntity  ;
-class ICounterSvc ;
+class Stat;
 // ============================================================================
 /** @class ICounterSvc ICounterSvc.h GaudiKernel/ICounterSvc.h
  *
@@ -108,25 +105,21 @@ public:
    *  @author  Markus Frank
    *  @version 1.0
    */
-  class Printout
+  class Printout final
   {
   public:
     /// Standard initializing constructor
     Printout  ( ICounterSvc* svc ) ;
-    /// destructor
-    ~Printout () ;
     /// Callback for printout with Counter pointers
     StatusCode operator()( MsgStream& log , const Counter* cnt )  const ;
-  private:
-    // no defauld constructor
-    Printout () ; ///< no defauld constructor
-    // no copy
-    Printout ( const Printout& ) ; //< no coy constructor
-    // no assignement
-    Printout& operator=( const Printout& ) ; ///< no assigment is allowed
+
+    // no default,copy constructor, assignment
+    Printout () = delete; ///< no default constructor
+    Printout ( const Printout& ) = delete; //< no copy constructor
+    Printout& operator=( const Printout& ) = delete; ///< no assigment is allowed
   private:
     /// Reference to counter service
-    ICounterSvc* m_svc;
+    SmartIF<ICounterSvc> m_svc;
   } ;
   /** Access an existing counter object.
    *
@@ -259,7 +252,7 @@ public:
   } ;
 protected:
   /// protected virtual destructor
-  virtual ~ICounterSvc() ; ///< protected virtual destructor
+  virtual ~ICounterSvc()= default ; ///< protected virtual destructor
 };
 // ============================================================================
 /// output operator for the counter object

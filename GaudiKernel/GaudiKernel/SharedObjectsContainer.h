@@ -1,5 +1,3 @@
-// $Id: SharedObjectsContainer.h,v 1.2 2008/10/10 10:26:14 marcocle Exp $
-// ============================================================================
 #ifndef GAUDIKERNEL_SHAREDOBJECTSCONTAINER_H
 #define GAUDIKERNEL_SHAREDOBJECTSCONTAINER_H 1
 // ============================================================================

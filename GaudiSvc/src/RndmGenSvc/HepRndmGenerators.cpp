@@ -21,6 +21,7 @@
 #include <iostream>
 #include <cfloat>
 #include <cmath>
+#include <memory>
 
 // The order of the following two include files is significant due to template specialisation
 #include "RndmGen.h"
@@ -338,30 +339,29 @@ namespace HepRndm  {
   template <>
   class Generator<Rndm::DefinedPdf> : public RndmGen   {
   protected:
-    RandGeneral*     m_generator;
-    HepRandomEngine* m_hepEngine;
+    std::unique_ptr<RandGeneral>     m_generator;
+    HepRandomEngine* m_hepEngine = nullptr;
   public:
     /// Standard Constructor
     Generator(IInterface* engine)
-    : RndmGen (engine), m_generator(0), m_hepEngine(0)    {
+    : RndmGen (engine) {
     }
     /// Standard Destructor
-    virtual ~Generator() {
-    }
+    virtual ~Generator() = default;
     /// Initialize the generator
     virtual StatusCode initialize(const IRndmGen::Param& par)   {
       StatusCode status = RndmGen::initialize(par);
       if ( status.isSuccess() )   {
         try   {
-          Rndm::DefinedPdf* specs = dynamic_cast<Rndm::DefinedPdf*>(m_params);
-          if ( 0 != specs )  {
-            m_generator = new RandGeneral( &specs->pdf()[0],
+          Rndm::DefinedPdf* specs = dynamic_cast<Rndm::DefinedPdf*>(m_params.get());
+          if ( specs )  {
+            m_generator.reset( new RandGeneral( &specs->pdf()[0],
                                            specs->pdf().size(),
-                                           specs->interpolation());
-            BaseEngine* engine = dynamic_cast<BaseEngine*>(m_engine);
-            if ( 0 != engine )    {
+                                           specs->interpolation()) );
+            BaseEngine* engine = dynamic_cast<BaseEngine*>(m_engine.get());
+            if ( engine )    {
               m_hepEngine = engine->hepEngine();
-              if ( 0 != m_hepEngine )   {
+              if ( m_hepEngine )   {
                 return StatusCode::SUCCESS;
               }
             }
@@ -374,8 +374,7 @@ namespace HepRndm  {
     }
     /// Finalize the generator
     virtual StatusCode finalize()   {
-      if ( m_generator ) delete m_generator;
-      m_generator = 0;
+      m_generator.reset();
       return RndmGen::finalize();
     }
     /// Single shot

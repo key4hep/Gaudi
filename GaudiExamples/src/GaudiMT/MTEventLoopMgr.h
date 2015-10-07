@@ -1,4 +1,3 @@
-// $Id: MTEventLoopMgr.h,v 1.4 2007/09/17 18:38:18 hmd Exp $
 #ifndef GAUDISVC_MTEVENTLOOPMGR_H
 #define GAUDISVC_MTEVENTLOOPMGR_H 1
 
@@ -37,25 +36,25 @@ class MTEventLoopMgr : public MinimalEventLoopMgr   {
 public:
 protected:
   /// Reference to the indicent service
-  IIncidentSvc*     m_incidentSvc;
+  IIncidentSvc*     m_incidentSvc = nullptr;
   /// Reference to the Event Data Service's IDataManagerSvc interface
-  IDataManagerSvc*  m_evtDataMgrSvc;
+  IDataManagerSvc*  m_evtDataMgrSvc = nullptr;
   /// Reference to the Event Data Service's IDataProviderSvc interface
-  IDataProviderSvc* m_evtDataSvc;
+  IDataProviderSvc* m_evtDataSvc = nullptr;
   /// Reference to the Event Selector
-  IEvtSelector*     m_evtSelector;
+  IEvtSelector*     m_evtSelector = nullptr;
   /// Event Iterator
-  IEvtSelector::Context* m_evtCtxt;
+  IEvtSelector::Context* m_evtCtxt = nullptr;
   /// Event selector
   std::string       m_evtsel;
   /// Reference to the Histogram Data Service
-  IDataManagerSvc*  m_histoDataMgrSvc;
+  IDataManagerSvc*  m_histoDataMgrSvc = nullptr;
   /// Reference to the Histogram Persistency Service
-  IConversionSvc*   m_histoPersSvc;
+  IConversionSvc*   m_histoPersSvc = nullptr;
   /// Name of the Hist Pers type
   std::string       m_histPersName;
   /// Property interface of ApplicationMgr
-  IProperty*        m_appMgrProperty;
+  IProperty*        m_appMgrProperty = nullptr;
 
 
 public:
@@ -80,6 +79,6 @@ public:
   //  virtual StatusCode executeRun(int maxevt);
 
 private:
-  int m_total_nevt ;
+  int m_total_nevt  = 0;
 };
 #endif // GAUDISVC_MTEVENTLOOPMGR_H

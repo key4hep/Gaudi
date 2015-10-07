@@ -1,6 +1,7 @@
 #ifndef GAUDISVC_PERSISTENCYSVC_SEQUENTIALOUTPUTSTREAM_H
 #define GAUDISVC_PERSISTENCYSVC_SEQUENTIALOUTPUTSTREAM_H
 
+#include <string>
 // Required for inheritance
 #include "OutputStream.h"
 
@@ -15,16 +16,16 @@ class SequentialOutputStream : public OutputStream     {
  protected:
    
    /// OutputStream override: Select the different objects and write them to file 
-   virtual StatusCode writeObjects();
+   StatusCode writeObjects() override;
 
  public:
 
    /// Standard algorithm Constructor
    SequentialOutputStream(const std::string& nam, ISvcLocator* svc);
    /// Standard Destructor
-   virtual ~SequentialOutputStream() {}
+   ~SequentialOutputStream() override = default;
 
-   virtual StatusCode execute();
+   StatusCode execute() override;
 
  private:
 
@@ -34,8 +35,8 @@ class SequentialOutputStream : public OutputStream     {
    bool m_numericFilename;
 
    // Data members
-   unsigned int m_events;
-   unsigned int m_iFile;
+   unsigned int m_events = 0;
+   unsigned int m_iFile = 1;
 
    // Helper Methods
    void makeFilename();

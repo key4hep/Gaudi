@@ -4,6 +4,44 @@
 # Description: standard and commonly used components
 # Commit Id: $Format:%H$
 ################################################################################
+! 2015-09-09 - Gerhard Raven
+ - C++11 modernization changes, eg.
+        o restructure 'if' to reduce indentation
+        o simplify constructors
+        o don't search for entries in maps more then really needed
+        o C++11 fstream accepts std::string, so no need to call c_str()
+        o qualify implementations with 'override' instead of 'virtual'
+        o prefer .empty() over .length() == 0
+        o replace macros by variadic template
+        o prefer emplace( key, value ) over insert( { key, value } )
+        o mark internal classes as final
+        o use initializer_list to make code less verbose/repetitive
+        o prefer nullptr to 0
+        o prefer to not compare pointers to 0
+        o prefer std::array to std::vector if size is known at compile time
+        o pass sink arguments by value and std::move them 
+        o qualifty not implemented constructors/assignment as = delete
+        o prefer std::string::clear over = ""
+        o simplify constructors
+        o prefer to delete default/copy constructors over making them private and not implementing them
+        o prefer STL algortihms over raw loops
+        o use auto and range-based for loops
+        o do not put code in destructors that will be executed implicitly anyway
+        o prefer initializer lists over building 'complete' temporaries
+        o prefer c.clear() over c.erase(c.begin(),c.end())
+        o prefer emplace_back over push_back
+        o prefer std::unique_ptr over bare pointer and explicit delete
+        o do not invoke the default constructors of member variables in constructors
+        o prefer to keep vectors as direct members, instead of (owned) pointers to vectors
+          (and avoid to new/delete them, and the additional indirection)
+        o prefer std::to_string over use of ostringstream
+        o remove derived functions which do the exact same as the default implemtation
+        o prefer std::string::clear over assigment of ""
+        o replace 'if (s.substr(a,b) = "ccc")' with 'if (s.compare(a,c,"ccc")==0)'
+            which avoids creating a temporary string that is immediately thrown away again
+        o used std::stoi(s) instead of ::atoi(s.c_str()), ditto for std::stod
+        o replace s.substr(a,s.length()-a) and s.substr(a,s.length()) with s.substr(a)
+        o replace boost::lexical_cast with std::to_string, std::stod, std::stoi
 
 ============================ GaudiCommonSvc v3r5 =============================
 ! 2015-05-21 - Marco Clemencic

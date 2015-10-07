@@ -57,7 +57,7 @@ StatusCode PersistencySvc::makeCall(int typ,
                                     IOpaqueAddress*& pAddress,
                                     DataObject*& pObject)      {
   if ( m_enable )    {
-    IConversionSvc* svc    = 0;
+    IConversionSvc* svc    = nullptr;
     switch(typ)   {
     case CREATE_REP:
     case FILL_REP_REFS:
@@ -66,23 +66,16 @@ StatusCode PersistencySvc::makeCall(int typ,
       svc = m_cnvDefault;
       break;
     default:
-      if ( 0 != pAddress )    {
-        long svc_type = pAddress->svcType();
-        svc = service(svc_type);
-        if ( 0 == svc )   {
-          return BAD_STORAGE_TYPE;
-        }
-      }
-      else  {
-        return INVALID_ADDRESS;
-      }
+      if ( !pAddress ) return INVALID_ADDRESS;
+      svc = service(pAddress->svcType());
+      if ( !svc )   return BAD_STORAGE_TYPE;
       break;
     }
 
     StatusCode status(StatusCode::FAILURE,true);
     switch( typ )     {
     case CREATE_OBJ:
-      pObject = 0;
+      pObject = nullptr;
       status = svc->createObj(pAddress, pObject);
       break;
     case FILL_OBJ_REFS:
@@ -159,26 +152,24 @@ StatusCode PersistencySvc::updateRepRefs(IOpaqueAddress* pAddr, DataObject* pObj
 /// Retrieve address creator service from list
 SmartIF<IAddressCreator>& PersistencySvc::addressCreator(long type)     {
   long typ = type;
-  Services::iterator it = m_cnvServices.find( typ );
+  auto it = m_cnvServices.find( typ );
   if( it == m_cnvServices.end() ) {
     IConversionSvc* s = service(type);
     if ( s )   {
       it = m_cnvServices.find( typ );
-      if ( it != m_cnvServices.end() ) {
-        return (*it).second.addrCreator();
-      }
+      if ( it != m_cnvServices.end() ) return it->second.addrCreator();
     }
     static SmartIF<IAddressCreator> no_creator;
     return no_creator;
   }
-  return (*it).second.addrCreator();
+  return it->second.addrCreator();
 }
 
 /// Define transient data store
 StatusCode PersistencySvc::setDataProvider(IDataProviderSvc* pDataSvc)    {
   m_dataSvc = pDataSvc;
-  for ( Services::iterator i = m_cnvServices.begin(); i != m_cnvServices.end(); i++ )   {
-    (*i).second.conversionSvc()->setDataProvider(m_dataSvc).ignore();
+  for (auto& i : m_cnvServices) {
+    i.second.conversionSvc()->setDataProvider(m_dataSvc).ignore();
   }
   return StatusCode(StatusCode::SUCCESS,true);
 }
@@ -206,51 +197,41 @@ StatusCode PersistencySvc::addConverter(const CLID& /* clid */)  {
 
 /// Add converter object to conversion service.
 StatusCode PersistencySvc::addConverter(IConverter* pConverter)    {
-  if ( 0 != pConverter )    {
-    long typ  = pConverter->repSvcType();
-    IConversionSvc* svc = service(typ);
-    if ( 0 != svc )   {
-      return svc->addConverter(pConverter);
-    }
-    return BAD_STORAGE_TYPE;
-  }
-  return NO_CONVERTER;
+  if ( !pConverter ) return NO_CONVERTER;
+  IConversionSvc* svc = service(pConverter->repSvcType());
+  return  svc ? svc->addConverter(pConverter) : BAD_STORAGE_TYPE;
 }
 
 /// Remove converter object from conversion service (if present).
 StatusCode PersistencySvc::removeConverter(const CLID& clid)  {
   // Remove converter type from all services
   StatusCode status = NO_CONVERTER, iret = StatusCode::SUCCESS;
-  for ( Services::iterator i = m_cnvServices.begin(); i != m_cnvServices.end(); i++ )    {
-    iret = (*i).second.conversionSvc()->removeConverter(clid);
-    if ( iret.isSuccess() )    {
-      status = iret;
-    }
+  for ( auto& i : m_cnvServices ) {
+    iret = i.second.conversionSvc()->removeConverter(clid);
+    if ( iret.isSuccess() ) status = iret;
   }
   return status;
 }
 
 /// Retrieve converter from list
 IConverter* PersistencySvc::converter(const CLID& /*clid*/) {
-  return 0;
+  return nullptr;
 }
 
 /// Retrieve conversion service by name
 SmartIF<IConversionSvc>& PersistencySvc::service(const std::string& nam)     {
   Gaudi::Utils::TypeNameString tn(nam);
-  IConversionSvc* svc = 0;
-  for ( Services::iterator it = m_cnvServices.begin(); it != m_cnvServices.end(); it++ )    {
-    if ( (*it).second.service()->name() == tn.name() )   {
-      return (*it).second.conversionSvc();
-    }
-  }
-  StatusCode status = Service::service(nam, svc, true);
-  if ( status.isSuccess() )   {
-    if ( addCnvService(svc).isSuccess() )   {
-      svc->release();       // Do not double-reference count
+  auto it = std::find_if( m_cnvServices.begin(), m_cnvServices.end(),
+                          [&](Services::const_reference i) {
+        return i.second.service()->name() == tn.name();
+  } );
+  if (it!=m_cnvServices.end()) return it->second.conversionSvc();
+
+  auto svc = Service::service<IConversionSvc>(nam, true);
+  if ( svc && addCnvService(svc.get()).isSuccess() ) {
       return service(nam); // now it is in the list
-    }
   }
+
   info() << "Cannot access Conversion service:" << nam << endmsg;
   static SmartIF<IConversionSvc> no_svc;
   return no_svc;
@@ -258,22 +239,13 @@ SmartIF<IConversionSvc>& PersistencySvc::service(const std::string& nam)     {
 
 /// Retrieve conversion service from list
 SmartIF<IConversionSvc>& PersistencySvc::service(long type)     {
-  typedef std::vector<std::string> SvcNames;
   // Check wether this is already an active service
-  Services::iterator it = m_cnvServices.find( type );
-  if( it != m_cnvServices.end() ) {
-    return (*it).second.conversionSvc();
-  }
+  auto it = m_cnvServices.find( type );
+  if( it != m_cnvServices.end() ) return it->second.conversionSvc();
   // if not, check if the service is in the list and may be requested
-  const SvcNames& theNames = m_svcNames.value();
-  for ( SvcNames::const_iterator i = theNames.begin(); i != theNames.end(); i++ )   {
-    SmartIF<IConversionSvc>& svc = service(*i);
-    if ( svc != 0 )  {
-      long typ = svc->repSvcType();
-      if ( typ == type )    {
-        return svc;
-      }
-    }
+  for ( const auto& i : m_svcNames.value() ) {
+    auto& svc = service(i);
+    if ( svc &&  svc->repSvcType() == type )  return svc;
   }
   static SmartIF<IConversionSvc> no_svc;
   return no_svc;
@@ -281,69 +253,48 @@ SmartIF<IConversionSvc>& PersistencySvc::service(long type)     {
 
 /// Add data service
 StatusCode PersistencySvc::addCnvService(IConversionSvc* servc)    {
-  if ( 0 != servc )   {
-    long type = servc->repSvcType();
-    long def_typ = (m_cnvDefault) ? m_cnvDefault->repSvcType() : 0;
-    Services::iterator it = m_cnvServices.find( type );
-    IConversionSvc* cnv_svc = 0;
-    if ( it != m_cnvServices.end() )    {
-      cnv_svc = (*it).second.conversionSvc();
-    }
-    if ( type == def_typ )     {
-      m_cnvDefault = servc;
-    }
-    if ( cnv_svc != servc )   {
-      IAddressCreator* icr = 0;
-      StatusCode status  = servc->queryInterface(IAddressCreator::interfaceID(), pp_cast<void>(&icr));
-      if ( status.isSuccess() )   {
-        IService* isvc = 0;
-        status = servc->queryInterface(IService::interfaceID(), pp_cast<void>(&isvc));
-        if ( status.isSuccess() )    {
-          if ( 0 != cnv_svc )   {
-            removeCnvService (type).ignore();
-          }
-          std::pair<Services::iterator, bool> p =
-            m_cnvServices.insert( Services::value_type( type, ServiceEntry(type, isvc, servc, icr)));
-          if( p.second )    {
-            info() << "Added successfully Conversion service:" << isvc->name() << endmsg;
-            servc->addRef();
-            servc->setAddressCreator(this).ignore();
-            servc->setDataProvider(m_dataSvc).ignore();
-            return StatusCode::SUCCESS;
-          }
-          info() << "Cannot add Conversion service of type " << isvc->name() << endmsg;
-          isvc->release();
-          icr->release();
-          return StatusCode::FAILURE;
-        }
-        icr->release();
+  if ( !servc )   return BAD_STORAGE_TYPE;
+  long type = servc->repSvcType();
+  long def_typ = ( m_cnvDefault ? m_cnvDefault->repSvcType() : 0 );
+  auto it = m_cnvServices.find( type );
+  auto cnv_svc = ( it != m_cnvServices.end() ? it->second.conversionSvc() : nullptr );
+  if ( type == def_typ ) m_cnvDefault = servc;
+  if ( cnv_svc == servc )   return StatusCode::SUCCESS;
+
+  auto iservc = make_SmartIF( servc );
+  auto icr = iservc.as<IAddressCreator>();
+  if ( icr ) {
+    auto isvc = iservc.as<IService>();
+    if ( isvc ) {
+      if ( cnv_svc ) removeCnvService (type).ignore();
+      auto p = m_cnvServices.emplace( type, ServiceEntry(type, isvc, iservc, icr) );
+      if( !p.second )    {
+        info() << "Cannot add Conversion service of type " << isvc->name() << endmsg;
+        return StatusCode::FAILURE;
       }
-      info() << "Cannot add Conversion service of type " << type << endmsg;
-      return StatusCode::FAILURE;
-    }
-    else    {
+      info() << "Added successfully Conversion service:" << isvc->name() << endmsg;
+      iservc->setAddressCreator(this).ignore();
+      iservc->setDataProvider(m_dataSvc).ignore();
       return StatusCode::SUCCESS;
     }
   }
-  return BAD_STORAGE_TYPE;
+  info() << "Cannot add Conversion service of type " << type << endmsg;
+  return StatusCode::FAILURE;
 }
 
 /// Remove conversion service
 StatusCode PersistencySvc::removeCnvService(long svctype)    {
-  Services::iterator it = m_cnvServices.find( svctype );
-  if( it != m_cnvServices.end() ) {
-    (*it).second.service()->release();
-    (*it).second.addrCreator()->release();
-    m_cnvServices.erase(it);
-    return StatusCode::SUCCESS;
-  }
-  return BAD_STORAGE_TYPE;
+  auto it = m_cnvServices.find( svctype );
+  if( it == m_cnvServices.end() ) return BAD_STORAGE_TYPE;
+  it->second.service()->release();
+  it->second.addrCreator()->release();
+  m_cnvServices.erase(it);
+  return StatusCode::SUCCESS;
 }
 
 /// Retrieve the class type of the data store the converter uses.
 long PersistencySvc::repSvcType() const {
-  long typ = (m_cnvDefault) ? m_cnvDefault->repSvcType() : 0;
-  return typ;
+  return m_cnvDefault ? m_cnvDefault->repSvcType() : 0;
 }
 
 /// Set default conversion service
@@ -374,13 +325,10 @@ StatusCode PersistencySvc::createAddress(long svc_type,
                                          const std::string* pars,
                                          const unsigned long* ipars,
                                          IOpaqueAddress*& refpAddress)    {
+  refpAddress = nullptr;
   IAddressCreator* svc = addressCreator(svc_type);
-  StatusCode   status  = BAD_STORAGE_TYPE;        // Preset error
-  refpAddress = 0;
-  if ( 0 != svc )   {
-    status = svc->createAddress(svc_type, clid, pars, ipars, refpAddress);
-  }
-  return status;
+  return svc ? svc->createAddress(svc_type, clid, pars, ipars, refpAddress)
+             : BAD_STORAGE_TYPE;
 }
 
 /// Convert an address to string form
@@ -392,15 +340,15 @@ StatusCode PersistencySvc::convertAddress( const IOpaqueAddress* pAddress,
   // type to encode the rest
   long svc_type = 0;
   CLID clid = 0;
-  if ( 0 != pAddress ) {
+  if ( pAddress ) {
     svc_type = pAddress->svcType();
     clid     = pAddress->clID();
   }
   IAddressCreator* svc = addressCreator(svc_type);
   StatusCode   status  = BAD_STORAGE_TYPE;        // Preset error
-  refAddress = "";
+  refAddress.clear();
 
-  if ( 0 != svc )   {
+  if ( svc )   {
     // Found service, set header
     encodeAddrHdr(svc_type, clid, refAddress);
     std::string address;
@@ -425,11 +373,8 @@ StatusCode PersistencySvc::createAddress( long /* svc_type */,
   std::string address_trailer;
   decodeAddrHdr(refAddress, new_svc_type, new_clid, address_trailer);
   IAddressCreator* svc = addressCreator(new_svc_type);
-  StatusCode   status  = BAD_STORAGE_TYPE;        // Preset error
-  if ( 0 != svc )   {
-    status = svc->createAddress( new_svc_type, new_clid, address_trailer, refpAddress);
-  }
-  return status;
+  return svc ? svc->createAddress( new_svc_type, new_clid, address_trailer, refpAddress)
+             : BAD_STORAGE_TYPE;
 }
 
 /// Retrieve string from storage type and clid
@@ -455,7 +400,7 @@ void PersistencySvc::decodeAddrHdr( const std::string& address,
   // <address_header service_type="xxx" clid="yyy" />
   service_type = 0;
   clid = 0;
-  address_trailer = "";
+  address_trailer.clear();
 
   // Check for address_header tag
   size_t pos = address.find("<address_header");
@@ -466,15 +411,14 @@ void PersistencySvc::decodeAddrHdr( const std::string& address,
       pos += 14;
       size_t end = address.find('"', pos);
       if (std::string::npos != end) {
-        std::istringstream str(address.substr(pos, end-pos));
-        str >> service_type;
+        service_type = std::stol(address.substr(pos, end-pos));
         // Get clid
         pos = address.find("clid=\"");
         if (std::string::npos != pos) {
           pos += 6;
           end = address.find('\"', pos);
           if (std::string::npos != end) {
-            str.clear(); // reuse the istringstream (the error flags must be explicitly cleared)
+            std::istringstream str;
             str.str(address.substr(pos, end-pos));
             str >> clid;
             // Get trailer_address
@@ -507,7 +451,7 @@ SmartIF<IAddressCreator>& PersistencySvc::addressCreator()   const   {
 /// Retrieve conversion service identified by technology
 StatusCode PersistencySvc::getService(long service_type, IConversionSvc*& refpSvc)     {
   refpSvc = service(service_type);
-  return (0==refpSvc) ? StatusCode::FAILURE : StatusCode::SUCCESS;
+  return refpSvc ? StatusCode::SUCCESS : StatusCode::FAILURE;
 }
 
 /// Retrieve conversion service identified by technology
@@ -553,27 +497,26 @@ StatusCode PersistencySvc::getService(const std::string& service_type, IConversi
   else if ( ::strncasecmp(imp,"POOL", 4) == 0 )
     return getService(POOL_StorageType, refpSvc);
 
-  for(Services::const_iterator i=m_cnvServices.begin(); i != m_cnvServices.end();++i)  {
-    SmartIF<IService> svc((*i).second.conversionSvc());
+  for(const auto& i : m_cnvServices) {
+    SmartIF<IService> svc(i.second.conversionSvc());
     if ( svc )  {
       // Check wether this is already an active service: first check by service name
       if ( svc->name() == service_type )  {
-        refpSvc = (*i).second.conversionSvc();
+        refpSvc = i.second.conversionSvc();
         return StatusCode::SUCCESS;
       }
       // Check wether this is already an active service: now check by service type
       if ( System::typeinfoName(typeid(*(svc.get()))) == service_type )  {
-        refpSvc = (*i).second.conversionSvc();
+        refpSvc = i.second.conversionSvc();
         return StatusCode::SUCCESS;
       }
     }
   }
-  const std::vector<std::string>& names = m_svcNames;
   // if not, check if the service is in the list and may be requested
-  for(std::vector<std::string>::const_iterator i=names.begin(); i != names.end(); i++) {
-    Gaudi::Utils::TypeNameString itm(*i);
+  for(const auto& i : m_svcNames.value() ) {
+    Gaudi::Utils::TypeNameString itm(i);
     if ( itm.name() == service_type || itm.type() == service_type )  {
-      IConversionSvc* svc = service(*i);
+      IConversionSvc* svc = service(i);
       if ( svc )  {
         refpSvc = svc;
         return StatusCode::SUCCESS;
@@ -604,7 +547,7 @@ StatusCode PersistencySvc::finalize()      {
   // Release all workers
   m_cnvServices.clear();
   // Release references to this to avoid loops
-  m_addrCreator = 0;
+  m_addrCreator = nullptr;
   return StatusCode::SUCCESS;
 }
 
@@ -615,21 +558,14 @@ void PersistencySvc::svcNamesHandler( Property& p )     {
 /// Set enabled flag
 bool PersistencySvc::enable(bool value)
 {
-  bool old = m_enable;
-  m_enable = value;
-  return old;
+  std::swap(value,m_enable);
+  return value;
 }
 
 /// Standard Constructor
 PersistencySvc::PersistencySvc(const std::string& name, ISvcLocator* svc)
-:  base_class(name, svc),
-   m_cnvDefType(TEST_StorageType),
-   m_enable(true)
+:  base_class(name, svc)
 {
   declareProperty("CnvServices", m_svcNames);
   m_svcNames.declareUpdateHandler( &PersistencySvc::svcNamesHandler, this );
-}
-
-/// Standard Destructor
-PersistencySvc::~PersistencySvc()   {
 }

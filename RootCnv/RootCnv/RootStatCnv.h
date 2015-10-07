@@ -1,4 +1,3 @@
-// $Id: RootStatCnv.h,v 1.3 2010-09-02 11:59:57 frankb Exp $
 //------------------------------------------------------------------------------
 // Definition of class :  RootStatCnv
 //
@@ -31,9 +30,9 @@ namespace Gaudi {
   class GAUDI_API RootStatCnv: public RootConverter   {
   protected:
     /// Reference to data manager service to manipulate the TES
-    IDataManagerSvc* m_dataMgr;
+    SmartIF<IDataManagerSvc> m_dataMgr;
     /// Reference to logger object
-    MsgStream*       m_log;
+    std::unique_ptr<MsgStream>       m_log;
 
     /// Helper to use mesage logger 
     MsgStream& log() const { return *m_log; }
@@ -41,10 +40,10 @@ namespace Gaudi {
   protected:
 
     /// Initialize converter object
-    virtual StatusCode initialize();
+    StatusCode initialize() override;
 
     /// Finalize converter object
-    virtual StatusCode finalize();
+    StatusCode finalize() override;
 
     /** Retrieve the name of the container a given object is placed into
      * @param      pReg     [IN]    Pointer to registry entry.
@@ -103,7 +102,7 @@ namespace Gaudi {
     RootStatCnv(long typ, const CLID& clid, ISvcLocator* svc, RootCnvSvc* mgr);
 
     /// Standard Destructor
-    virtual ~RootStatCnv()   {  }
+    ~RootStatCnv() override = default;
   };
 }
 #endif // ROOT_RootStatCnv_H

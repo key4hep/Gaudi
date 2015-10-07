@@ -29,13 +29,13 @@ class OutputStream;
  */
 class OutputStreamAgent : virtual public IDataStoreAgent  {
   /// Reference to data writer
-  OutputStream*  m_OutputStream;
+  OutputStream*  m_OutputStream = nullptr;
 public:
   /// Standard Constructor
   OutputStreamAgent(OutputStream* OutputStream);
   /// Standard Destructor
-  virtual ~OutputStreamAgent();
+  ~OutputStreamAgent() override = default;
   /// Analysis callback
-  virtual bool analyse(IRegistry* dir, int level);
+  bool analyse(IRegistry* dir, int level) override;
 };
 #endif // PERSISTENCYSVC_OUTPUTSTREAMAGENT_H

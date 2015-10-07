@@ -1,4 +1,3 @@
-// $Id: MyAlgorithm.h,v 1.4 2008/10/10 15:18:56 marcocle Exp $
 #ifndef GAUDIEXAMPLE_MYALGORITHM_H
 #define GAUDIEXAMPLE_MYALGORITHM_H 1
 

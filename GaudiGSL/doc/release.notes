@@ -4,6 +4,32 @@
 ! Commit Id   : $Format:%H$
 ! =============================================================================
 
+! 2015-09-09 - Gerhard Raven
+ - C++11 modernization changes, eg.
+       o pass sink arguments by value and std::move them in place
+       o simplify constructors
+       o qualify implementations as override instead of virtual
+       o use perfect forwarding when possible
+       o flag disabled constructors as = delete
+       o replace trivial destructors with = default
+       o flag internal classes as 'final'
+       o prefer range-based for loops
+       o prefer std::to_string over stringstream
+       o prefer not to compare pointers to 0
+       o prefer nullptr over 0
+       o remove CVS keywords
+       o prefer std::unique_ptr over raw pointers and explicit delete
+       o use std_unique_ptr with dedicated deleter which frees GSL workspace
+       o replace (now) trivial destructors with = default
+       o prefer STL algoritms over raw loops,
+       o prefer std::copy_n over std::memcpy (compiler will make the proper
+         substition anyway, and copy_n has a more secure interface)
+       o use auto to make code more terse and generic
+ - fix GAUDI-1064
+
+! 2015-09-09 - Gerhard Raven
+ - C++11 modernization changes, eg.
+
 =============================== GaudiGSL v8r4 ================================
 ! 2014-11-18 - Marco Clemencic
  - Cleaned up link statement in the CMake configuration.

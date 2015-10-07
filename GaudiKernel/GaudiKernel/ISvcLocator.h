@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/ISvcLocator.h,v 1.15 2006/12/14 12:55:44 hmd Exp $
 #ifndef GAUDIKERNEL_ISVCLOCATOR_H
 #define GAUDIKERNEL_ISVCLOCATOR_H 1
 
@@ -52,12 +51,9 @@ public:
   virtual StatusCode getService( const Gaudi::Utils::TypeNameString& typeName,
                                  const InterfaceID& iid,
                                  IInterface*& pinterface ) {
-    SmartIF<IService> svc = service(typeName, false);
-    if (svc.isValid()) {
-      // Service found. So now get the right interface
-      return svc->queryInterface(iid, (void**)&pinterface);
-    }
-    return StatusCode::FAILURE;
+    auto svc = service(typeName, false);
+    return  svc ? svc->queryInterface(iid, (void**)&pinterface)
+                : StatusCode::FAILURE;
   }
 
   /** Get a reference to a service and create it if it does not exists
@@ -102,8 +98,12 @@ public:
   /// Returns a smart pointer to the requested interface of a service.
   template <typename T>
   inline SmartIF<T> service(const Gaudi::Utils::TypeNameString &typeName, const bool createIf = true) {
-    return SmartIF<T>(service(typeName, createIf));
+    return SmartIF<T>{ service(typeName, createIf) };
   }
+
+  // try to access a different interface of  the _current_ serviceLocator...
+  template <typename IFace>
+  SmartIF<IFace> as() { return SmartIF<IFace>{ this }; }
 
 };
 

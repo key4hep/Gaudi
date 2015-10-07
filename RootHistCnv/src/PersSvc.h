@@ -1,4 +1,3 @@
-// $Id: PersSvc.h,v 1.5 2006/11/30 15:04:07 mato Exp $
 #ifndef ROOTHISTCNV_PERSSVC_H
 #define ROOTHISTCNV_PERSSVC_H 1
 
@@ -32,12 +31,12 @@ namespace RootHistCnv {
     PersSvc( const std::string& name, ISvcLocator* svc );
 
     /// Standard destructor
-    virtual ~PersSvc();
+    ~PersSvc() override = default;
 
   private:
     std::string m_defFileName;  ///< Default file name
-    TFile *m_hfile;             ///< Pointer to the ROOT file
-    bool m_prtWar;              ///< Already printed a Warning
+    std::unique_ptr<TFile> m_hfile; ///< Pointer to the ROOT file
+    bool m_prtWar = false;      ///< Already printed a Warning
     bool m_alphaIds;            ///< Force alphabetic histograms/ntuple IDs
     bool m_outputEnabled;       ///< Flag to enable/disable the output to file
   };
