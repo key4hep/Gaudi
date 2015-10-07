@@ -152,6 +152,7 @@ GaudiTool::GaudiTool ( const std::string& this_type   ,
   , m_contextSvc  ( 0 ) // pointer to Algorithm Context Service
   , m_contextSvcName ( "AlgContextSvc" ) // Algorithm Context Service name
   //
+  , m_isPublic    ( false )
   , m_local       ( this_type + "/" + this_name )
 {
   declareProperty
@@ -180,6 +181,9 @@ StatusCode    GaudiTool::initialize ()
   // increment the counter
   GaudiToolLocal::s_FinalizeCounter.increment( m_local ) ;
 
+  // are we a public tool ?
+  m_isPublic = isPublic();
+
   // return
   return sc;
 }
@@ -190,14 +194,14 @@ StatusCode    GaudiTool::finalize   ()
 {
   if ( msgLevel(MSG::DEBUG) )
     debug() << " ==> Finalize the base class GaudiTool " << endmsg;
-
+  
   // clear "explicit services"
-    m_evtSvc    = 0 ;
-    m_detSvc    = 0 ;
-    m_chronoSvc = 0 ;
-    m_incSvc    = 0 ;
-    m_histoSvc  = 0 ;
-
+  m_evtSvc    = 0 ;
+  m_detSvc    = 0 ;
+  m_chronoSvc = 0 ;
+  m_incSvc    = 0 ;
+  m_histoSvc  = 0 ;
+  
   // finalize the base class
   const StatusCode sc = GaudiCommon<AlgTool>::finalize() ;
   if ( sc.isFailure() ) { return sc; }
@@ -209,11 +213,29 @@ StatusCode    GaudiTool::finalize   ()
   return sc;
 }
 // ============================================================================
+// Determines if this tool is public or not (i.e. owned by the ToolSvc).
+// ============================================================================
+bool GaudiTool::isPublic() const
+{
+  const IAlgTool * tool = this;
+  // Recurse down the ownership tree, to see with we ever end up at the ToolSvc
+  bool ownedByToolSvc = false;
+  unsigned int sanityCheck(0);
+  while ( tool && ++sanityCheck < 99999 )
+  {
+    ownedByToolSvc = ( NULL != dynamic_cast<const IToolSvc*>(tool->parent()) );
+    if ( ownedByToolSvc ) { break; }
+    // if parent is also a tool, try again
+    tool = dynamic_cast<const IAlgTool*>(tool->parent());
+  }
+  return ownedByToolSvc;
+}
+// ============================================================================
 // accessor to detector service
 // ============================================================================
-IDataProviderSvc* GaudiTool::detSvc    () const
+IDataProviderSvc* GaudiTool::detSvc () const
 {
-  if ( 0 == m_detSvc )
+  if ( NULL == m_detSvc )
   {
     m_detSvc =
       svc<IDataProviderSvc>( GaudiToolServices::s_DetectorDataSvc , true ) ;
@@ -225,7 +247,7 @@ IDataProviderSvc* GaudiTool::detSvc    () const
 // ============================================================================
 INTupleSvc* GaudiTool::ntupleSvc () const
 {
-  if ( 0 == m_ntupleSvc )
+  if ( NULL == m_ntupleSvc )
   {
     m_ntupleSvc = svc<INTupleSvc>( "NTupleSvc" , true ) ;
   }
@@ -236,7 +258,7 @@ INTupleSvc* GaudiTool::ntupleSvc () const
 // ============================================================================
 INTupleSvc* GaudiTool::evtColSvc () const
 {
-  if ( 0 == m_evtColSvc )
+  if ( NULL == m_evtColSvc )
   {
     m_evtColSvc = svc< INTupleSvc > ( "EvtTupleSvc" , true ) ;
   }
@@ -245,9 +267,9 @@ INTupleSvc* GaudiTool::evtColSvc () const
 // ============================================================================
 // accessor to event service  service
 // ============================================================================
-IDataProviderSvc* GaudiTool::evtSvc    () const
+IDataProviderSvc* GaudiTool::evtSvc () const
 {
-  if ( 0 == m_evtSvc )
+  if ( NULL == m_evtSvc )
   {
     m_evtSvc =
       svc<IDataProviderSvc>( GaudiToolServices::s_EventDataSvc , true ) ;
@@ -257,9 +279,9 @@ IDataProviderSvc* GaudiTool::evtSvc    () const
 // ============================================================================
 // accessor to Incident Service
 // ============================================================================
-IIncidentSvc*      GaudiTool::incSvc   () const
+IIncidentSvc*      GaudiTool::incSvc () const
 {
-  if ( 0 == m_incSvc )
+  if ( NULL == m_incSvc )
   {
     m_incSvc =
       svc<IIncidentSvc> ( GaudiToolServices::s_IncidentSvc , true ) ;
@@ -271,7 +293,7 @@ IIncidentSvc*      GaudiTool::incSvc   () const
 // ============================================================================
 IChronoStatSvc*      GaudiTool::chronoSvc () const
 {
-  if ( 0 == m_chronoSvc )
+  if ( NULL == m_chronoSvc )
   {
     m_chronoSvc =
       svc<IChronoStatSvc> ( GaudiToolServices::s_ChronoStatSvc , true ) ;
@@ -281,9 +303,9 @@ IChronoStatSvc*      GaudiTool::chronoSvc () const
 // ============================================================================
 // accessor to histogram Service
 // ============================================================================
-IHistogramSvc*       GaudiTool::histoSvc  () const
+IHistogramSvc*       GaudiTool::histoSvc () const
 {
-  if ( 0 == m_histoSvc )
+  if ( NULL == m_histoSvc )
   {
     m_histoSvc = svc<IHistogramSvc> ( GaudiToolServices::s_HistoSvc, true ) ;
   }
@@ -292,9 +314,9 @@ IHistogramSvc*       GaudiTool::histoSvc  () const
 // ============================================================================
 // accessor to Algorithm Context Service
 // ============================================================================
-IAlgContextSvc* GaudiTool::contextSvc  () const
+IAlgContextSvc* GaudiTool::contextSvc () const
 {
-  if ( 0 == m_contextSvc )
+  if ( NULL == m_contextSvc )
   {
     m_contextSvc = svc<IAlgContextSvc> ( m_contextSvcName , true ) ;
   }

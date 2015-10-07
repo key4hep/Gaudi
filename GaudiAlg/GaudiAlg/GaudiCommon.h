@@ -20,6 +20,7 @@
 #include "GaudiKernel/IAlgTool.h"
 #include "GaudiKernel/IAlgContextSvc.h"
 #include "GaudiKernel/IDataProviderSvc.h"
+#include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/SmartDataPtr.h"
 #include "GaudiKernel/System.h"
 #include "GaudiKernel/GaudiException.h"
@@ -236,9 +237,9 @@ public:
    *  @retval StatusCode::FAILURE Failed to store data in the TES.
    */
   DataObject* put ( IDataProviderSvc*  svc ,
-             DataObject*        object   ,
-             const std::string& location  ,
-             const bool useRootInTES = true ) const ;
+                    DataObject*        object   ,
+                    const std::string& location  ,
+                    const bool useRootInTES = true ) const ;
   /** Useful method for the easy location of tools.
    *
    *  @code
@@ -352,7 +353,7 @@ public:
     const size_t       mx  = 10                  ) const ;
   /** Print the warning message and return with the given StatusCode.
    *
-   *  Also performs statistical analysis of the error messages and
+   *  Also performs statistical analysis of the warning messages and
    *  suppression after the defined number of error instances.
    *
    *  @code
@@ -379,7 +380,7 @@ public:
     const size_t       mx  = 10                  ) const ;
   /** Print the info message and return with the given StatusCode.
    *
-   *  Also performs statistical analysis of the error messages and
+   *  Also performs statistical analysis of the info messages and
    *  suppression after the defined number of instances.
    *
    *  @see MsgStream

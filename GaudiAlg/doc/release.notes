@@ -2,6 +2,24 @@ Package: GaudiAlg
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-08-25 - Chris Jones
+ - Using a feature developed in the LHCb software update the Error, Warning 
+   and Info method for tools that inherit from GaudiTool to, when created as 
+   public tools (defined by ultimately being owned by the ToolSvc) to append
+   the current active algorithm name to the end of each method. 
+
+   So for instance if a private tool would print
+
+     TestToolAlg.ToolC    INFO TestTool:: test info
+
+   a public instance instead prints
+
+     ToolSvc.ToolB        INFO TestTool:: test info [TestToolAlg]
+
+   This feature has proved very useful in applications where a very large
+   number of algorithms all use the same public tools, as it allows problems
+   associated with what the caller is doing to be much more easy isolated.
+
 =============================== GaudiAlg v15r3 ===============================
 ! 2015-07-09 - Gerhard Raven
  - Fixed GAUDI-996: GaudiSequencer calls resetExecuted of subAlgorithms

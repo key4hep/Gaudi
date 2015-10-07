@@ -551,16 +551,20 @@ StatusCode GaudiCommon<PBASE>::Print( const std::string& msg ,
   // use the predefined stream
   MsgStream& str = msgStream( lvl ) ;
   if ( typePrint() ) { str << System::typeinfoName(typeid(*this)) << ":: " ; }
+
   // print the message
   str  << msg ;
+
   // test status code
   if      ( st.isSuccess() ) { }
   else if ( StatusCode::FAILURE != st.getCode() )
   { str << " StatusCode=" << st.getCode() ; }
   else
   { str << " StatusCode=FAILURE" ; }
+
   // perform print operation
   str << endmsg ;
+
   // return
   return  st;
 }
