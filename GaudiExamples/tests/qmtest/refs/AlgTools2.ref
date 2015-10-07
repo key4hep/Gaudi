@@ -1,8 +1,8 @@
-JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi.v23r2/GaudiExamples/options/Services.opts)
+JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/Services.opts
 JobOptionsSvc        INFO # (12,1): AuditorSvc.Auditors = ["ChronoAuditor"]
-JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi.v23r2/GaudiExamples/options/Common.opts)
+JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/Common.opts
 JobOptionsSvc        INFO # (9,1): ApplicationMgr.StatusCodeCheck = 1
-JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi.v23r2/GaudiExamples/options/AlgTools2.opts)
+JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/AlgTools2.opts
 JobOptionsSvc        INFO # (10,1): ApplicationMgr.TopAlg = ["MyGaudiAlgorithm/MyAlg"]
 JobOptionsSvc        INFO # (13,1): MessageSvc.OutputLevel = 3
 JobOptionsSvc        INFO # (18,1): ApplicationMgr.EvtMax = 10
@@ -23,11 +23,11 @@ JobOptionsSvc        INFO # (44,1): ToolSvc.ToolA.Tools = ["TestTool/ToolB"]
 JobOptionsSvc        INFO # (45,1): ToolSvc.ToolB.Tools = ["TestTool/ToolA"]
 JobOptionsSvc        INFO # (46,1): ToolSvc.ToolA.OutputLevel = 2
 JobOptionsSvc        INFO # (47,1): ToolSvc.ToolB.OutputLevel = 2
-JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/work/m/marcocle/workspace/Gaudi.v23r2/GaudiExamples/options/AlgTools2.opts
+JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/AlgTools2.opts
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v1r1)
-                                          running on lxplus445.cern.ch on Thu Jun 28 15:28:32 2012
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r5)
+                                          running on pclhcb117 on Wed Oct  7 14:32:31 2015
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
@@ -91,6 +91,35 @@ ToolSvc.MyGaudi...   INFO String = hundred
 ToolSvc.MyGaudi...   INFO Bool   = 1
 MyAlg               DEBUG The tool of type 'MyGaudiTool' has been added with the name 'ToolSvc.MyGaudiTool'
 MyAlg.MyGaudiTool   DEBUG Property update for OutputLevel : new value = 2
+MyAlg.MyGaudiTool   DEBUG Initialize base class GaudiCommon<AlgTool>
+MyAlg.MyGaudiTool   DEBUG could not locate CounterSummarySvc, no counter summary will be made
+MyAlg.MyGaudiTool   DEBUG List of ALL properties of MyGaudiTool/MyAlg.MyGaudiTool  #properties = 26
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'Bool':True
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'String':hundred
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'Double':100.00000
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'Int':100
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'ContextService':AlgContextSvc
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'CounterList':[ '.*' ]
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':True
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'GlobalTimeOffset':0.0000000
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'RootOnTES':
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'RootInTES':
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'Context':
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'TypePrint':True
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'StatPrint':True
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'PropertiesPrint':False
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'ErrorsPrint':True
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'AuditFinalize':False
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'AuditStop':False
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'AuditStart':False
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'AuditInitialize':False
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'AuditTools':False
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'OutputLevel':2
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
 MyAlg.MyGaudiTool    INFO intialize() has been called
 MyAlg.MyGaudiTool    INFO Int    = 100
 MyAlg.MyGaudiTool    INFO Double = 100
@@ -187,6 +216,7 @@ ToolSvc.MyTool       INFO doIt() has been called
 MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyTool        DEBUG doIt() [DEBUG] has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by [MyAlg]
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.MyGaudiTool   DEBUG doIt() [DEBUG] has been called
 MyAlg.ToolWithName   INFO doIt() has been called
@@ -200,6 +230,7 @@ ToolSvc.MyTool       INFO doIt() has been called
 MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyTool        DEBUG doIt() [DEBUG] has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by [MyAlg]
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.MyGaudiTool   DEBUG doIt() [DEBUG] has been called
 MyAlg.ToolWithName   INFO doIt() has been called
@@ -213,6 +244,7 @@ ToolSvc.MyTool       INFO doIt() has been called
 MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyTool        DEBUG doIt() [DEBUG] has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by [MyAlg]
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.MyGaudiTool   DEBUG doIt() [DEBUG] has been called
 MyAlg.ToolWithName   INFO doIt() has been called
@@ -226,6 +258,7 @@ ToolSvc.MyTool       INFO doIt() has been called
 MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyTool        DEBUG doIt() [DEBUG] has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by [MyAlg]
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.MyGaudiTool   DEBUG doIt() [DEBUG] has been called
 MyAlg.ToolWithName   INFO doIt() has been called
@@ -239,6 +272,7 @@ ToolSvc.MyTool       INFO doIt() has been called
 MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyTool        DEBUG doIt() [DEBUG] has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by [MyAlg]
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.MyGaudiTool   DEBUG doIt() [DEBUG] has been called
 MyAlg.ToolWithName   INFO doIt() has been called
@@ -252,6 +286,7 @@ ToolSvc.MyTool       INFO doIt() has been called
 MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyTool        DEBUG doIt() [DEBUG] has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by [MyAlg]
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.MyGaudiTool   DEBUG doIt() [DEBUG] has been called
 MyAlg.ToolWithName   INFO doIt() has been called
@@ -265,6 +300,7 @@ ToolSvc.MyTool       INFO doIt() has been called
 MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyTool        DEBUG doIt() [DEBUG] has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by [MyAlg]
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.MyGaudiTool   DEBUG doIt() [DEBUG] has been called
 MyAlg.ToolWithName   INFO doIt() has been called
@@ -278,6 +314,7 @@ ToolSvc.MyTool       INFO doIt() has been called
 MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyTool        DEBUG doIt() [DEBUG] has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by [MyAlg]
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.MyGaudiTool   DEBUG doIt() [DEBUG] has been called
 MyAlg.ToolWithName   INFO doIt() has been called
@@ -291,6 +328,7 @@ ToolSvc.MyTool       INFO doIt() has been called
 MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyTool        DEBUG doIt() [DEBUG] has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by [MyAlg]
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.MyGaudiTool   DEBUG doIt() [DEBUG] has been called
 MyAlg.ToolWithName   INFO doIt() has been called
@@ -304,6 +342,7 @@ ToolSvc.MyTool       INFO doIt() has been called
 MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyTool        DEBUG doIt() [DEBUG] has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: The INFO message is suppressed : 'public tool called by [MyAlg]'
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.MyGaudiTool   DEBUG doIt() [DEBUG] has been called
 MyAlg.ToolWithName   INFO doIt() has been called
@@ -333,6 +372,10 @@ EventLoopMgr         INFO Histograms converted successfully according to request
 ToolSvc              INFO Removing all tools created by ToolSvc
 MyAlg.ToolWithName   INFO finalize() has been called
 MyAlg.MyGaudiTool    INFO finalize() has been called
+MyAlg.MyGaudiTool   DEBUG  ==> Finalize the base class GaudiTool
+MyAlg.MyGaudiTool   DEBUG Tools to release :
+MyAlg.MyGaudiTool   DEBUG Services to release : AlgContextSvc
+MyAlg.MyGaudiTool   DEBUG Releasing service 'AlgContextSvc'
 ToolSvc.MyGaudi...   INFO finalize() has been called
 MyAlg.MyTool         INFO finalize() has been called
 ToolSvc.MyTool       INFO finalize() has been called

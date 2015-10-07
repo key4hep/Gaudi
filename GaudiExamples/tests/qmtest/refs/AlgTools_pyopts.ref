@@ -1,13 +1,15 @@
-# --> Including file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi.v23r2/GaudiExamples/options/AlgTools.py'
-# <-- End of file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi.v23r2/GaudiExamples/options/AlgTools.py'
+# setting LC_ALL to "C"
+# --> Including file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/AlgTools.py'
+# <-- End of file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/AlgTools.py'
 # applying configuration of GaudiExamplesCommonConf
 # /***** User GaudiExamplesCommonConf/GaudiExamplesCommonConf ****************************************
 # |-OutputLevel = 3
+# |-DummyEvents = -1
 # \----- (End of User GaudiExamplesCommonConf/GaudiExamplesCommonConf) -------------------------------
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v1r1)
-                                          running on lxplus445.cern.ch on Thu Jun 28 15:28:33 2012
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r5)
+                                          running on pclhcb117 on Wed Oct  7 14:39:28 2015
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
@@ -136,6 +138,7 @@ MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
 MyAlg.MyTool         INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doItAgain() has been called
@@ -143,6 +146,7 @@ MyGaudiAlg           INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
 MyGaudiAlg.MyTool    INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by [MyGaudiAlg]
 MyGaudiAlg.MyGa...   INFO doIt() has been called
 MyGaudiAlg.Tool...   INFO doIt() has been called
 MyGaudiAlg.MyGa...   INFO doItAgain() has been called
@@ -152,6 +156,7 @@ MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
 MyAlg.MyTool         INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doItAgain() has been called
@@ -159,6 +164,7 @@ MyGaudiAlg           INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
 MyGaudiAlg.MyTool    INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by [MyGaudiAlg]
 MyGaudiAlg.MyGa...   INFO doIt() has been called
 MyGaudiAlg.Tool...   INFO doIt() has been called
 MyGaudiAlg.MyGa...   INFO doItAgain() has been called
@@ -168,6 +174,7 @@ MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
 MyAlg.MyTool         INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doItAgain() has been called
@@ -175,6 +182,7 @@ MyGaudiAlg           INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
 MyGaudiAlg.MyTool    INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by [MyGaudiAlg]
 MyGaudiAlg.MyGa...   INFO doIt() has been called
 MyGaudiAlg.Tool...   INFO doIt() has been called
 MyGaudiAlg.MyGa...   INFO doItAgain() has been called
@@ -184,6 +192,7 @@ MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
 MyAlg.MyTool         INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doItAgain() has been called
@@ -191,6 +200,7 @@ MyGaudiAlg           INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
 MyGaudiAlg.MyTool    INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by [MyGaudiAlg]
 MyGaudiAlg.MyGa...   INFO doIt() has been called
 MyGaudiAlg.Tool...   INFO doIt() has been called
 MyGaudiAlg.MyGa...   INFO doItAgain() has been called
@@ -200,6 +210,7 @@ MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
 MyAlg.MyTool         INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doItAgain() has been called
@@ -207,6 +218,7 @@ MyGaudiAlg           INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
 MyGaudiAlg.MyTool    INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by [MyGaudiAlg]
 MyGaudiAlg.MyGa...   INFO doIt() has been called
 MyGaudiAlg.Tool...   INFO doIt() has been called
 MyGaudiAlg.MyGa...   INFO doItAgain() has been called
@@ -216,6 +228,7 @@ MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
 MyAlg.MyTool         INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doItAgain() has been called
@@ -223,6 +236,7 @@ MyGaudiAlg           INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
 MyGaudiAlg.MyTool    INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by [MyGaudiAlg]
 MyGaudiAlg.MyGa...   INFO doIt() has been called
 MyGaudiAlg.Tool...   INFO doIt() has been called
 MyGaudiAlg.MyGa...   INFO doItAgain() has been called
@@ -232,6 +246,7 @@ MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
 MyAlg.MyTool         INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doItAgain() has been called
@@ -239,6 +254,7 @@ MyGaudiAlg           INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
 MyGaudiAlg.MyTool    INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by [MyGaudiAlg]
 MyGaudiAlg.MyGa...   INFO doIt() has been called
 MyGaudiAlg.Tool...   INFO doIt() has been called
 MyGaudiAlg.MyGa...   INFO doItAgain() has been called
@@ -248,6 +264,7 @@ MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
 MyAlg.MyTool         INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doItAgain() has been called
@@ -255,6 +272,7 @@ MyGaudiAlg           INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
 MyGaudiAlg.MyTool    INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by [MyGaudiAlg]
 MyGaudiAlg.MyGa...   INFO doIt() has been called
 MyGaudiAlg.Tool...   INFO doIt() has been called
 MyGaudiAlg.MyGa...   INFO doItAgain() has been called
@@ -264,6 +282,7 @@ MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
 MyAlg.MyTool         INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doItAgain() has been called
@@ -271,6 +290,7 @@ MyGaudiAlg           INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
 MyGaudiAlg.MyTool    INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by [MyGaudiAlg]
 MyGaudiAlg.MyGa...   INFO doIt() has been called
 MyGaudiAlg.Tool...   INFO doIt() has been called
 MyGaudiAlg.MyGa...   INFO doItAgain() has been called
@@ -280,6 +300,7 @@ MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
 MyAlg.MyTool         INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: The INFO message is suppressed : 'public tool called by'
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doItAgain() has been called
@@ -287,6 +308,7 @@ MyGaudiAlg           INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
 MyGaudiAlg.MyTool    INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: The INFO message is suppressed : 'public tool called by [MyGaudiAlg]'
 MyGaudiAlg.MyGa...   INFO doIt() has been called
 MyGaudiAlg.Tool...   INFO doIt() has been called
 MyGaudiAlg.MyGa...   INFO doItAgain() has been called
