@@ -234,17 +234,15 @@ class Script(object):
         proc = Popen(cmd, env=self.env)
         while proc.poll() is None:
             try:
-                rc = proc.wait()
+                proc.wait()
             except KeyboardInterrupt:
                 self.log.fatal('KeyboardInterrupt, '
                                'waiting for subprocess %d to end', proc.pid)
-                pass
+        rc = proc.returncode
         # There is a mismatch between Popen return code and sys.exit argument in
         # case of signal.
         # E.g. Popen returns -6 that is translated to 250 instead of 134
-        if rc < 0:
-            rc = 128 - rc
-        return rc
+        return rc if rc >= 0 else 128 - rc
 
     def main(self):
         '''
