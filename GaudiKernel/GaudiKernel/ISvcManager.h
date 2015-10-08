@@ -101,7 +101,7 @@ public:
     * @return   SmartIF& to the created service.
     *
     * NOTE: as this returns a &, the underlying implementation
-    *       must guarantee that once created, these SmartIF remain 
+    *       must guarantee that once created, these SmartIF remain
     *       pinned in their location, thus constraining
     *       the underlying implementation (i.e. one cannot use
     *       something like std::vector<SmartIF<IService>>).
