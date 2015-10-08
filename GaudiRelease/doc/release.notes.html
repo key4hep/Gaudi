@@ -54,6 +54,78 @@ Package: GaudiRelease<br>
 Package Coordinator: Marco Clemencic, Charles Leggett, Benedikt Hegner<br>
 Purpose: Gaudi common set of packages<br><br>
 </pre>
+<h2><a name="v26r4">Gaudi v26r4</a> (2015-10-09)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=79">LCG_79</a></h3>
+<h3>        Bug
+</h3>
+<ul>
+<li>[GAUDI-1076] -         DataObject defines copy constructor (?) but not assignment operator
+</li>
+<li>[GAUDI-1079] -         race condition in merge_files.py
+</li>
+<li>[GAUDI-1081] -         Compilation with -O0 fails after commit 7bbd190f
+</li>
+<li>[GAUDI-1082] -         GaudiSvc compilation fails with CLHEP 2 after merge request 7
+</li>
+<li>[GAUDI-1084] -         tests hanging forever (after timeout?)
+</li>
+<li>[GAUDI-1101] -         xenv should not stop on SIGSTOP
+</li>
+<li>[GAUDI-1103] -         minor (rare) problem with the fix to GAUDI-1101
+</li>
+</ul>
+
+<h3>        Improvement
+</h3>
+<ul>
+<li>[GAUDI-1056] -         attach gdb to gaudi process with command line option
+</li>
+<li>[GAUDI-1089] -         Functions added to GaudiUtils that allow generation of random numbers from integer and string input
+</li>
+<li>[GAUDI-1092] -         make IStateful baseclass of IAlgTool, IAlgorithm and IService
+</li>
+<li>[GAUDI-1093] -         replace use of (deprecated) Python module &quot;commands&quot;
+</li>
+<li>[GAUDI-1094] -         Provide (and use) C++11 smart pointer &#39;look and feel&#39; for SmartIF
+</li>
+<li>[GAUDI-1102] -         add DataObjID class to GaudiKernel
+</li>
+</ul>
+
+<h3>        New Feature
+</h3>
+<ul>
+<li>[GAUDI-1078] -         Update to GaudiAlg to include the caller algorithm name in messages from public tools
+</li>
+<li>[GAUDI-1091] -         extract gaudiComponentHelp from hive
+</li>
+</ul>
+
+<h3>        Task
+</h3>
+<ul>
+<li>[GAUDI-1055] -         Allow use of Python configurables and components at build time.
+</li>
+<li>[GAUDI-1057] -         C++11 modernization changes
+</li>
+<li>[GAUDI-1060] -         xenv command should not handle STOP signals, but just forward them to the subprocess
+</li>
+<li>[GAUDI-1062] -         add OpenCL algorithm example
+</li>
+<li>[GAUDI-1085] -         Switch IAppMgrUI inheritance from Interface to INamedInterface and remove the pure virtual name()
+</li>
+<li>[GAUDI-1086] -         Generalize CommonMessaging, and use it to implement the messaging functionality in GaudiAlg/GaudiCommon
+</li>
+<li>[GAUDI-1088] -         restore IncidentSvc debug printout for listeners removal
+</li>
+</ul>
+
+<h3>        User Documentation
+</h3>
+<ul>
+<li>[GAUDI-964] -         Update the CMake README.rst
+</li>
+</ul>
 <!-- ====================================================================== -->
 <h2><a name="v26r3">Gaudi v26r3</a> (2015-07-14)</h2>
 <h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=79">LCG_79</a></h3>

@@ -2,14 +2,69 @@ Package: RootHistCnv
 Package manager : David Quarrie
 Commit Id: $Format:%H$
 
-! 2015-09-09 - Gerhard Raven and Benedikt Hegner
- - C++11 modernization changes
-       o avoid copy if const& will suffice
-       o prefer std::to_string over ostringstream
-       o prefer emplace_back over push_back
-       o use C++11 instead of boost for lexical_cast 
-       o use unique_ptr instead of auto_ptr
+============================= RootHistCnv v12r2 ==============================
 
+! 2015-09-30 - commit 70dd6a7
+
+ - Merge branch 'GAUDI-1099' into 'master'
+
+   GAUDI-1099: revert to old behaviour on bad input
+
+   See merge request !32
+
+
+! 2015-09-28 - commit c36ecec
+
+ - Merge branch 'GAUDI-1099' into 'master'
+
+   fix GAUDI-1099
+
+   std::stol is more aggressive than ::strtol when given bad input. This results
+   in Boole failing in the LHCb nightly builds. See GAUDI-1099.
+
+   See merge request !31
+
+
+! 2015-09-25 - commit 35dd00c
+
+ - Merge branch 'dev-smartif-use' into 'master'
+
+   Provide (and use) C++11 smart pointer 'look and feel' for SmartIF
+
+   The aim of this branch is to confine, for everything that inherits from
+   IInterface, the calls to addRef(), release() and queryInterface() to the
+   SmartIF implementation. Exceptions are a few places where interfaces
+   (currently) return bare pointers (instead of SmartIF...) and where one thus
+   has to addRef() explicitly to avoid returning a dangling pointer. This can be
+   avoided by changing the relevant interface to return a SmartIF instead of a
+   bare pointer.
+
+   In addition, make SmartIF 'look and feel' like a smart pointer.
+
+   - use explict bool conversion instead of .isValid()
+   - add SmartIF::as<IFace>(), to return a SmartIF<IFace> to an alternate
+      interface -- which (together with move) encourages the use of auto
+   - add ISvcLocator::as<IFace>(), to return a SmartIF<IFace> to the current
+   ISvcLocator.
+   - add ServiceManager::service<IFace>() which return SmartIF<IFace> which
+   encourages
+      the use of auto
+
+   And add a few other C++11 modernizations (eg. prefer STL over raw loop)
+
+   Fixes GAUDI-1094
+
+   See merge request !24
+
+
+! 2015-09-11 - commit c062cbe
+
+ - C++11 modernization changes
+
+   Some trivial - and some not so trivial! - changes which take advantage of
+   C++11...
+
+   See merge request !7
 
 ============================= RootHistCnv v12r1 ==============================
 ! 2014-03-18 - Ben Couturier

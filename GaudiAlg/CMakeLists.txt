@@ -1,4 +1,4 @@
-gaudi_subdir(GaudiAlg v15r3)
+gaudi_subdir(GaudiAlg v16r0)
 
 gaudi_depends_on_subdirs(GaudiUtils GaudiKernel)
 
