@@ -42,7 +42,13 @@ public:
   /// Standard Constructor
   DataObject();
   /// Copy Constructor
-  DataObject(const DataObject&);
+  DataObject(const DataObject& rhs);
+  /// Assignment Operator
+  DataObject& operator=(const DataObject& rhs);
+  /// Move Constructor
+  DataObject(DataObject&& rhs);
+  /// Move Assignment Operator
+  DataObject& operator=(DataObject&& rhs);
   /// Standard Destructor
   virtual ~DataObject();
   /// Add reference to object
