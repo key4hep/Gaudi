@@ -4,6 +4,7 @@
 # Description: standard and commonly used components
 # Commit Id: $Format:%H$
 ################################################################################
+
 ! 2015-09-09 - Gerhard Raven
  - C++11 modernization changes, eg.
         o restructure 'if' to reduce indentation

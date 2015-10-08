@@ -4,6 +4,7 @@
 ! Purpose     : Gaudi Particle Property Service
 ! Commit Id   : $Format:%H$
 !-----------------------------------------------------------------------------
+
 ! 2015-09-09 - Gerhard Raven
  - C++11 modernization changes
    o optimize string handling
