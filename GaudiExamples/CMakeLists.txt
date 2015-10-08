@@ -51,11 +51,14 @@ set(GaudiExamples_srcs
     src/SvcInitLoop/*.cpp
     src/StringKeys/*.cpp
     src/StatusCodeSvc/SCSAlg.cpp
-    src/StatusCodeSvc/special/SCSAlg_no_inline.cpp
     src/FileMgr/*.cpp
     src/testing/*.cpp
     src/IntelProfiler/*.cpp
     src/PluginService/*.cpp)
+
+if (NOT LCG_COMP STREQUAL "clang")
+    list(APPEND GaudiExamples_srcs  src/StatusCodeSvc/special/SCSAlg_no_inline.cpp)
+endif()
 
 if(TARGET RootCnvLib)
   list(APPEND GaudiExamples_srcs src/MultiInput/*.cpp)
@@ -77,23 +80,24 @@ gaudi_add_module(GaudiExamples ${GaudiExamples_srcs}
                  ${extra_includes}
                  LINK_LIBRARIES GaudiExamplesLib ${extra_libs})
 
-# we compile SCSAlg.cpp in a special way
-# FIXME: this is to be compatible with CMT
-set_property(SOURCE src/StatusCodeSvc/SCSAlg.cpp
-             PROPERTY COMPILE_DEFINITIONS special_fncUnchecked2)
+if (NOT LCG_COMP STREQUAL "clang")
+  # we compile SCSAlg.cpp in a special way
+  # FIXME: this is to be compatible with CMT
+  set_property(SOURCE src/StatusCodeSvc/SCSAlg.cpp
+               PROPERTY COMPILE_DEFINITIONS special_fncUnchecked2)
 
-find_file(StatusCodeHeader NAMES GaudiKernel/StatusCode.h
-          PATHS ${CMAKE_SOURCE_DIR}/GaudiKernel
-          HINTS ${Gaudi_DIR}/include)
-if(NOT StatusCodeHeader)
-  message(FATAL_ERROR "Cannot file StatusCode.h for the StatusCodeSvc test")
+  find_file(StatusCodeHeader NAMES GaudiKernel/StatusCode.h
+            PATHS ${CMAKE_SOURCE_DIR}/GaudiKernel
+            HINTS ${Gaudi_DIR}/include)
+  if(NOT StatusCodeHeader)
+    message(FATAL_ERROR "Cannot file StatusCode.h for the StatusCodeSvc test")
+  endif()
+
+  message(STATUS "creating hacked version of ${StatusCodeHeader}")
+  file(READ ${StatusCodeHeader} StatusCodeHeaderData)
+  string(REPLACE "~StatusCode" "~StatusCode(); void _dummy" StatusCodeHeaderData "${StatusCodeHeaderData}")
+  file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/HackedStatusCode.h" "${StatusCodeHeaderData}")
 endif()
-
-message(STATUS "creating hacked version of ${StatusCodeHeader}")
-file(READ ${StatusCodeHeader} StatusCodeHeaderData)
-string(REPLACE "~StatusCode" "~StatusCode(); void _dummy" StatusCodeHeaderData "${StatusCodeHeaderData}")
-file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/HackedStatusCode.h" "${StatusCodeHeaderData}")
-
 
 gaudi_add_python_module(PyExample src/PythonModule/*.cpp
                         LINK_LIBRARIES ${Boost_PYTHON_LIBRARY}

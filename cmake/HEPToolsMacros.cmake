@@ -328,6 +328,7 @@ macro(lcg_common_compilers_definitions)
     _lcg_compiler(clang33 clang 3.3)
     _lcg_compiler(clang34 clang 3.4)
     _lcg_compiler(clang35 clang 3.5)
+    _lcg_compiler(clang37 clang 3.7)
   endif()
 endmacro()
 
