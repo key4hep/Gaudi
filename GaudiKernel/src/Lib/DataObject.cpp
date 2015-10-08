@@ -11,14 +11,36 @@ static std::string _sDataObjectCppNotRegistered("NotRegistered");
 
 /// Standard Constructor
 DataObject::DataObject()
-  : m_pLinkMgr{  LinkManager::newInstance() }
+  : m_pLinkMgr{LinkManager::newInstance()}
 {
 }
 
-/// Standard Constructor
-DataObject::DataObject(const DataObject&)
- : m_pLinkMgr{  LinkManager::newInstance() }
+/// Copy Constructor
+DataObject::DataObject(const DataObject& rhs)
+ : m_version{rhs.m_version},
+   m_pLinkMgr{LinkManager::newInstance()}
 {
+}
+
+/// Assignment Operator
+DataObject& DataObject::operator=(const DataObject& rhs) {
+  m_version = rhs.m_version;
+  m_pLinkMgr.reset(LinkManager::newInstance());
+  return *this;
+}
+
+/// Move Constructor
+DataObject::DataObject(DataObject&& rhs)
+ : m_version{std::move(rhs.m_version)},
+   m_pLinkMgr{std::move(rhs.m_pLinkMgr)}
+{
+}
+
+/// Assignment Operator
+DataObject& DataObject::operator=(DataObject&& rhs) {
+  m_version = std::move(rhs.m_version);
+  m_pLinkMgr = std::move(rhs.m_pLinkMgr);
+  return *this;
 }
 
 /// Standard Destructor
