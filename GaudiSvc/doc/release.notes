@@ -2,30 +2,54 @@ Package: GaudiSvc
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
-! 2015-09-14 - Marco Clemencic
- - GAUDI-1082: Fixed compilation with CLHEP 2 after "modernization changes".
+=============================== GaudiSvc v21r7 ===============================
 
-! 2015-09-09 - Gerhard Raven and Benedikt Hegner
+! 2015-09-25 - commit 35dd00c
+
+ - Merge branch 'dev-smartif-use' into 'master'
+
+   Provide (and use) C++11 smart pointer 'look and feel' for SmartIF
+
+   The aim of this branch is to confine, for everything that inherits from
+   IInterface, the calls to addRef(), release() and queryInterface() to the
+   SmartIF implementation. Exceptions are a few places where interfaces
+   (currently) return bare pointers (instead of SmartIF...) and where one thus
+   has to addRef() explicitly to avoid returning a dangling pointer. This can be
+   avoided by changing the relevant interface to return a SmartIF instead of a
+   bare pointer.
+
+   In addition, make SmartIF 'look and feel' like a smart pointer.
+
+   - use explict bool conversion instead of .isValid()
+   - add SmartIF::as<IFace>(), to return a SmartIF<IFace> to an alternate
+      interface -- which (together with move) encourages the use of auto
+   - add ISvcLocator::as<IFace>(), to return a SmartIF<IFace> to the current
+   ISvcLocator.
+   - add ServiceManager::service<IFace>() which return SmartIF<IFace> which
+   encourages
+      the use of auto
+
+   And add a few other C++11 modernizations (eg. prefer STL over raw loop)
+
+   Fixes GAUDI-1094
+
+   See merge request !24
+
+
+! 2015-09-14 - commit f7feb7c
+
+ - GAUDI-1082: Fixed compilation with CLHEP 2 after merge request !7
+
+
+
+! 2015-09-11 - commit c062cbe
+
  - C++11 modernization changes
-       o prefer !.emtpy() over .size()!=0
-       o prefer to forward functions over duplicating the implementation
-       o prefer nullptr over 0
-       o avoid comparing pointers to 0
-       o prefer static_cast over C-style cast
-       o prefer range-based loop
-       o replace trivial destructor with = default
-       o remove virtual function implementations which invoke the implementation of the direct ancestor
-       o prefer nullptr over 0
-       o avoid comparing pointers to 0
-       o prever emplace(key,value) over insert({key,value})
-       o Modernize RndmGenSvc
-         - re-engineer slightly so that BaseEngine is entirely responsible
-           for the memory management of the HepRandomEngine -- and it can
-           now use an std::unique_ptr to do so.
-         - rndm does not depend on the templated implementations, thus
-           move it into BaseEngine to reduce code size.
-       o qualify implementations with override instead of virtual
-       o replace boost::bind with std::bind and lambdas
+
+   Some trivial - and some not so trivial! - changes which take advantage of
+   C++11...
+
+   See merge request !7
 
 =============================== GaudiSvc v21r6 ===============================
 ! 2015-05-21 - Marco Clemencic
