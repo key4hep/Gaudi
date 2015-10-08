@@ -17,12 +17,12 @@ namespace Athena {
 /** @class IClassIDSvc
  * @brief  interface to the CLID database
  * @author Paolo Calafiura <pcalafiura@lbl.gov> - ATLAS Collaboration
- *$Id: IClassIDSvc.h,v 1.7 2009-01-15 19:05:54 binet Exp $	
+ *$Id: IClassIDSvc.h,v 1.7 2009-01-15 19:05:54 binet Exp $
  */
 
 class IClassIDSvc : virtual public IService {
 public:
-  /// get next available CLID 
+  /// get next available CLID
   /// @throws std::runtime_error if no CLID can be allocated
   virtual CLID nextAvailableID() const = 0;
   /// check if id is used
@@ -40,21 +40,21 @@ public:
   /// get type name associated with clID (if any)
   virtual StatusCode getPackageInfoForID(const CLID& id, Athena::PackageInfo& info) const = 0;
   /// associate type name, package info and type-info name with clID
-  virtual 
-  StatusCode setTypePackageForID(const CLID&, 
+  virtual
+  StatusCode setTypePackageForID(const CLID&,
 				 const std::string& typeName,
 				 const Athena::PackageInfo&,
 				 const std::string& typeInfoName = "") = 0;
   /// Gaudi boilerplate
   static const InterfaceID& interfaceID();
-  
+
   /// destructor
   virtual ~IClassIDSvc();
 };
 
 //<<<<<< INLINE MEMBER FUNCTIONS                                        >>>>>>
 inline
-const InterfaceID& 
+const InterfaceID&
 IClassIDSvc::interfaceID() {
   static const InterfaceID _IID("IClassIDSvc", 1, 0);
   return _IID;
