@@ -155,8 +155,8 @@ namespace Gaudi {
     toStream(const DataObjIDColl& v, std::ostream& o) {
       o << "[";
       for (auto &i : v) {
-	//    	o << "(" << i.clid() << ",'" << i.key() << "'),";
-	o << toStream(i,o) << ",";
+	toStream(i,o);
+	o << ",";
       }
       o << "]";
       return o;
