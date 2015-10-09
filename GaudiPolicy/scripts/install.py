@@ -214,14 +214,15 @@ def update(src,dest,old_dest = None, syml = False, logdir = realpath(".")):
     realdest = normpath(join(logdir, dest))
     dest_path = split(realdest)[0]
     realsrc = normpath(join(dest_path,src))
-    # To avoid race conditions, use EAFP
+    # To avoid race conditions on makedirs(), use EAFP (see GAUDI-1105)
     if (not exists(realdest)) or (getmtime(realsrc) > getmtime(realdest)):
-        print "Create dir '{0}'".format(dest_path)
         try:
+            makedirs(dest_path) # <- manual race condition
             makedirs(dest_path)
+            print "Created dir '{0}'".format(dest_path)
         except OSError as e:
-            # OSerror no. 17 is "file exists" - harmless for the directory
-            if e.errno != 17:
+            # OSerror no. 17 is "file exists" - harmless as long as the directory is there
+            if not(e.errno == 17 and isdir(dest_path)):
                 raise
         # the destination file is missing or older than the source
         if syml and sys.platform != "win32" :
