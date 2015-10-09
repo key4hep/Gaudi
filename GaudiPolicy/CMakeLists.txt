@@ -37,7 +37,7 @@ gaudi_add_test(GaudiTesting.nose
                COMMAND nosetests --with-doctest
                  ${CMAKE_CURRENT_SOURCE_DIR}/python/GaudiTesting)
 
-gaudi_add_test(GAUDI-1055
+gaudi_add_test(GAUDI-1105
                COMMAND ./test_install.py
                WORKING_DIRECTORY
                ${CMAKE_CURRENT_SOURCE_DIR}/tests/GAUDI-1105)
