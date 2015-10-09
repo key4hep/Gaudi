@@ -217,7 +217,6 @@ def update(src,dest,old_dest = None, syml = False, logdir = realpath(".")):
     # To avoid race conditions on makedirs(), use EAFP (see GAUDI-1105)
     if (not exists(realdest)) or (getmtime(realsrc) > getmtime(realdest)):
         try:
-            makedirs(dest_path) # <- manual race condition
             makedirs(dest_path)
             print "Created dir '{0}'".format(dest_path)
         except OSError as e:
