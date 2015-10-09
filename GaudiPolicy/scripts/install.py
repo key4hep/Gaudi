@@ -214,15 +214,15 @@ def update(src,dest,old_dest = None, syml = False, logdir = realpath(".")):
     realdest = normpath(join(logdir, dest))
     dest_path = split(realdest)[0]
     realsrc = normpath(join(dest_path,src))
-    # The modification time is compared only with the precision of the second
-    # to avoid a bug in Python 2.5 + Win32 (Fixed in Python 2.5.1).
-    # See:
-    #   http://bugs.python.org/issue1671965
-    #   http://bugs.python.org/issue1565150
-    if (not exists(realdest)) or (int(getmtime(realsrc)) > int(getmtime(realdest))):
-        if not isdir(dest_path):
-            print "Create dir '%s'"%(dest_path)
+    # To avoid race conditions on makedirs(), use EAFP (see GAUDI-1105)
+    if (not exists(realdest)) or (getmtime(realsrc) > getmtime(realdest)):
+        try:
             makedirs(dest_path)
+            print "Created dir '{0}'".format(dest_path)
+        except OSError as e:
+            # OSerror no. 17 is "file exists" - harmless as long as the directory is there
+            if not(e.errno == 17 and isdir(dest_path)):
+                raise
         # the destination file is missing or older than the source
         if syml and sys.platform != "win32" :
             if exists(realdest):
@@ -240,11 +240,7 @@ def update(src,dest,old_dest = None, syml = False, logdir = realpath(".")):
                 shutil.copy2(realsrc, realdest) # do the copy (cp -p src dest)
             else:
                 shutil.copy(realsrc, realdest) # do the copy (cp src dest)
-            
-    #if old_dest != dest: # the file was installed somewhere else
-    #    # remove the old destination
-    #    if old_dest is not None:
-    #        remove(old_dest,logdir)
+
 
 def install(sources, destination, logfile, exclusions = [],
             destname = None, syml = False, logdir = realpath(".")):
