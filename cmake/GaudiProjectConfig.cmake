@@ -2075,6 +2075,7 @@ function(gaudi_add_dictionary dictionary header selection)
       -D_Instantiations=${dictionary}_Instantiations)
 
   # override the genreflex call to wrap it in the right environment
+  gaudi_env(PREPEND PATH ${lcg_system_compiler_path})
   set(ROOT_genreflex_CMD ${env_cmd} --xml ${env_xml} ${ROOT_genreflex_CMD})
 
   # we need to forward the SPLIT_CLASSDEF option to reflex_dictionary()

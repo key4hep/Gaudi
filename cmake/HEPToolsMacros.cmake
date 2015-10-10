@@ -306,6 +306,22 @@ macro(lcg_set_compiler flavor)
 endmacro()
 
 ################################################################################
+# Add a specific compiler to the path 
+macro(lcg_set_lcg_system_compiler_path flavor)
+  set(version ${ARGV1})
+  if(${flavor} MATCHES "^gcc|GNU$")
+    set(lcg_system_compiler_path ${LCG_external}/gcc/${version}/${LCG_HOST_ARCH}-${LCG_HOST_OS}${LCG_HOST_OSVERS}/bin)   
+  elseif(${flavor} STREQUAL "icc")
+    # Note: icc must be in the path already because of the licensing
+    set(lcg_system_compiler_path)
+  elseif(${flavor} STREQUAL "clang")
+    set(lcg_system_compiler_path ${LCG_external}/llvm/${version}/${LCG_HOST_ARCH}-${LCG_HOST_OS}${LCG_HOST_OSVERS}/bin)   
+  else()
+    message(FATAL_ERROR "Uknown compiler flavor ${flavor}.")
+  endif()
+endmacro()
+
+################################################################################
 # Define variables and location of the compiler.
 macro(_lcg_compiler id flavor version)
   #message(STATUS "LCG_compiler(${ARGV})")
