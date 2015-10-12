@@ -148,18 +148,6 @@ def tag_bar(pkg, version=None):
     separator = ('=' * letf_chars) + title + ('=' * right_chars)
     return separator
 
-def newmain():
-    logging.basicConfig(level=logging.DEBUG)
-    latest_tag = findLatestTag()
-    for path in [d for d in os.listdir(os.curdir)
-                 if os.path.exists(os.path.join(d, 'doc', 'release.notes'))]:
-        updateReleaseNotes(path,
-                           (tag_bar(path, new_versions[path]) + '\n\n'
-                            if path in new_versions
-                            else '') +
-                           releaseNotes(path, latest_tag, 'master'))
-
-
 def main():
     logging.basicConfig(level=logging.DEBUG)
 
