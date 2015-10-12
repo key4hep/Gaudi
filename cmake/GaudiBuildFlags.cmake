@@ -1,6 +1,6 @@
 
 if (LCG_COMP STREQUAL "clang" AND LCG_COMPVERS VERSION_EQUAL "37")
-  set(GAUDI_CXX_STANDARD_DEFAULT "c++11")
+  set(GAUDI_CXX_STANDARD_DEFAULT "c++14")
 elseif(LCG_COMP STREQUAL "gcc")
   # Special defaults
   if (LCG_COMPVERS VERSION_LESS "47")
@@ -113,7 +113,7 @@ if(NOT GAUDI_FLAGS_SET)
           FORCE)
     endif()
 
-    if (LCG_COMPVERS VERSION_GREATER "47")
+    if (LCG_COMP STREQUAL "gcc" AND LCG_COMPVERS VERSION_GREATER "47")
       # Use -Og with Debug builds in gcc >= 4.8
       set(CMAKE_CXX_FLAGS_DEBUG "-Og -g"
           CACHE STRING "Flags used by the compiler during Debug builds."
@@ -231,6 +231,10 @@ else()
   else()
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ansi")
   endif()
+endif()
+
+if(LCG_COMP STREQUAL clang AND LCG_COMPVERS MATCHES "37")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Qunused-arguments -Wno-unused-local-typedefs --gcc-toolchain=${lcg_system_compiler_path}")
 endif()
 
 if(NOT GAUDI_V21)
