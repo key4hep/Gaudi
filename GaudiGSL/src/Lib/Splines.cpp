@@ -37,8 +37,8 @@ namespace Genfun
       , m_dim       ( x.size() )
       , m_x         ( new double[ x.size() ] )
       , m_y         ( new double[ y.size() ] )
-      , m_spline    ( 0 )
-      , m_accel     ( 0 )
+      , m_spline    ( nullptr )
+      , m_accel     ( nullptr )
       , m_type      ( type )
     {
 #ifdef WIN32
@@ -70,8 +70,6 @@ namespace Genfun
       , m_dim       ( data.size() )
       , m_x         ( new double[ data.size() ] )
       , m_y         ( new double[ data.size() ] )
-      , m_spline    ( 0    )
-      , m_accel     ( 0    )
       , m_type      ( type )
     {
       double*  _x = m_x.get() ;
@@ -92,8 +90,6 @@ namespace Genfun
       , m_dim       ( right.m_dim )
       , m_x         ( new double[ right.m_dim ] )
       , m_y         ( new double[ right.m_dim ] )
-      , m_spline    ( 0            )
-      , m_accel     ( 0            )
       , m_type      ( right.m_type )
     {
       std::copy_n(right.m_x.get(),m_dim,m_x.get());
@@ -106,8 +102,8 @@ namespace Genfun
     // ========================================================================
     SplineBase::~SplineBase()
     {
-      if ( 0 != m_spline ) { gsl_spline_free       ( m_spline ) ; }
-      if ( 0 != m_accel  ) { gsl_interp_accel_free ( m_accel  ) ; }
+      if ( m_spline ) { gsl_spline_free       ( m_spline ) ; }
+      if ( m_accel  ) { gsl_interp_accel_free ( m_accel  ) ; }
     }
     // ========================================================================
 
@@ -116,7 +112,7 @@ namespace Genfun
     {
       if ( m_init ) { return ; }                                 // RETURN
 
-      const gsl_interp_type* T = 0 ;
+      const gsl_interp_type* T = nullptr ;
 
       switch ( m_type )
       {
@@ -267,7 +263,7 @@ namespace Genfun
     // ========================================================================
     /// destructor
     // ========================================================================
-    GSLSpline::~GSLSpline(){}
+    GSLSpline::~GSLSpline() = default;
     // ========================================================================
 
     // ========================================================================

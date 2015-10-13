@@ -36,7 +36,7 @@ void GslErrorHandlers::handleTheError
   // het the GSL service
   const IGslSvc* svc = GaudiGSL::gslSvc() ;
   // handle the error if service is valid
-  if( 0 != svc ) { svc->handle( GslError( reason , file , line , code ) ) ; }
+  if( nullptr != svc ) { svc->handle( GslError( reason , file , line , code ) ) ; }
 }
 
 void GslErrorHandlers::throwException
