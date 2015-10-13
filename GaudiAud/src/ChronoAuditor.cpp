@@ -15,8 +15,6 @@ ChronoAuditor::ChronoAuditor(const std::string& name, ISvcLocator* pSvcLocator)
 : CommonAuditor(name, pSvcLocator) {
 }
 
-ChronoAuditor::~ChronoAuditor() {}
-
 StatusCode ChronoAuditor::initialize() {
   StatusCode sc = CommonAuditor::initialize();
   if (UNLIKELY(sc.isFailure())) return sc;
