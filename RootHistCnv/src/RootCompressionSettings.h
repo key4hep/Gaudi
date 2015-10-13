@@ -16,30 +16,16 @@ namespace RootHistCnv {
    *  @date   2013-10-24
    */
 
-  class RootCompressionSettings 
-  {
-  
-  public:
-  
-    /// Standard constructor
-    RootCompressionSettings( const std::string & settings );
-
-    /// Destructor
-    ~RootCompressionSettings( ) { }
-
-  public:
-
-    /// Get the level
-    int level() const { return m_level; }
-
-  private:
-
-    /// The compression settings string
-    std::string m_compSettings;
-
+  class RootCompressionSettings {
     /// The cached ROOT compression level int
     int m_level;
 
+  public:
+    /// Standard constructor
+    RootCompressionSettings( const std::string & settings );
+
+    /// Get the level
+    int level() const { return m_level; }
   };
 
 }
