@@ -65,7 +65,7 @@ public:
 };
 class Component2: public Base2 {
 public:
-  Component2(const std::string& _s, int _i): i(_i), s(_s) {}
+  Component2(std::string  _s, int _i): i(_i), s(std::move(_s)) {}
   int i;
   std::string s;
 };
@@ -104,32 +104,32 @@ DECLARE_FACTORY_WITH_ID(Test::ComponentA, "A", Base::Factory)
 
 BOOST_AUTO_TEST_CASE( basic )
 {
-  BOOST_CHECK(Base::Factory::create("Component0") != 0);
+  BOOST_CHECK(Base::Factory::create("Component0") != nullptr);
 }
 
 BOOST_AUTO_TEST_CASE( basic_with_args )
 {
   Base2* instance = Base2::Factory::create("Component2", "hello", 2);
-  BOOST_CHECK(instance != 0);
+  BOOST_CHECK(instance != nullptr);
 
   Component2* c2 = dynamic_cast<Component2*>(instance);
-  BOOST_REQUIRE(c2 != 0);
+  BOOST_REQUIRE(c2 != nullptr);
   BOOST_CHECK(c2->i == 2);
   BOOST_CHECK(c2->s == "hello");
 }
 
 BOOST_AUTO_TEST_CASE( namespaces )
 {
-  BOOST_CHECK(Base::Factory::create("Test::ComponentA") != 0);
-  BOOST_CHECK(Base::Factory::create("Test::ComponentB") != 0);
-  BOOST_CHECK(Base::Factory::create("Test::ComponentC") != 0);
+  BOOST_CHECK(Base::Factory::create("Test::ComponentA") != nullptr);
+  BOOST_CHECK(Base::Factory::create("Test::ComponentB") != nullptr);
+  BOOST_CHECK(Base::Factory::create("Test::ComponentC") != nullptr);
 }
 
 BOOST_AUTO_TEST_CASE( ids )
 {
-  BOOST_CHECK(Base2::Factory::create("Id2", "id", -2) != 0);
-  BOOST_CHECK(Base::Factory::create("A") != 0);
-  BOOST_CHECK(Base::Factory::create("B") != 0);
+  BOOST_CHECK(Base2::Factory::create("Id2", "id", -2) != nullptr);
+  BOOST_CHECK(Base::Factory::create("A") != nullptr);
+  BOOST_CHECK(Base::Factory::create("B") != nullptr);
 }
 
 BOOST_AUTO_TEST_CASE( properties )

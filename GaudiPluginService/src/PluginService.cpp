@@ -101,7 +101,7 @@ namespace Gaudi { namespace PluginService {
 
     std::string demangle(const std::string& id) {
       int   status;
-      auto realname = std::unique_ptr<char,decltype(free)*>( abi::__cxa_demangle(id.c_str(), 0, 0, &status),
+      auto realname = std::unique_ptr<char,decltype(free)*>( abi::__cxa_demangle(id.c_str(), nullptr, nullptr, &status),
                                                              free );
       if (!realname) return id;
       return std::string{realname.get()};
