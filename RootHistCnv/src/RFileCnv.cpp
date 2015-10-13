@@ -74,7 +74,7 @@ StatusCode RootHistCnv::RFileCnv::createObj( IOpaqueAddress* pAddress,
           << endmsg;
 
       rfile = TFile::Open(fname.c_str(),"READ");
-      if ( rfile != 0 && rfile->IsOpen() ) {
+      if ( rfile && rfile->IsOpen() ) {
         regTFile(ooname,rfile).ignore();
 
         ipar[0] = (unsigned long)rfile;
@@ -170,7 +170,7 @@ StatusCode RootHistCnv::RFileCnv::updateRep( IOpaqueAddress* pAddress,
       return StatusCode::FAILURE;
     }
 
-    rfile->Write(0,TObject::kOverwrite);
+    rfile->Write(nullptr,TObject::kOverwrite);
     if ( log.level() <= MSG::INFO ) {
       log << MSG::INFO << "dumping contents of " << ooname << endmsg;
       rfile->Print();
