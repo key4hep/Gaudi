@@ -110,10 +110,10 @@ public:
   /**@name IPersistencySvc Interface implementation */
   //@{
   /// Return default service type
-  long repSvcType() const;
+  long repSvcType() const override;
 
   /// Retrieve the class type of objects the converter produces. (DUMMY)
-  const CLID& objType() const;
+  const CLID& objType() const override;
 
   /// Implementation of IConverter: Create the transient representation of an object.
   StatusCode createObj(IOpaqueAddress* pAddress,DataObject*& refpObject) override;

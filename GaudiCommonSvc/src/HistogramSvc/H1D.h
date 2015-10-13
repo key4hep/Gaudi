@@ -29,21 +29,21 @@ namespace Gaudi {
     /// Destructor.
     ~Histogram1D() override =default;
     /// Adopt ROOT histogram representation
-    virtual void adoptRepresentation(TObject*rep);
+    void adoptRepresentation(TObject*rep) override;
     /// set bin content (entries and centre are not used )
     virtual bool setBinContents(int i,int entries ,double height,double error,double centre);
     /// need to overwrite reset to reset the sums
-    virtual bool reset();
+    bool reset() override;
     /// set histogram statistics
     virtual bool setStatistics(int allEntries,double eqBinEntries,double mean,double rms);
     /// Fill the Profile1D with a value and the corresponding weight.
-    virtual bool fill(double x,double weight);
+    bool fill(double x,double weight) override;
     /// Update histogram RMS
     bool setRms(double rms);
     /// Create new histogram from any AIDA based histogram
     void copyFromAida(const AIDA::IHistogram1D & h);
     /// Retrieve reference to class defininition identifier
-    virtual const CLID& clID() const { return classID(); }
+    const CLID& clID() const override { return classID(); }
     static const CLID& classID()     { return CLID_H1D; }
     /** Serialization mechanism, Serialize the object for reading.
       * @param s the StreamBuffer containing the data to be read
