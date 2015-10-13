@@ -10,7 +10,7 @@
 #include <boost/thread/thread.hpp>
 
 WatchdogThread::WatchdogThread(boost::posix_time::time_duration timeout, bool autostart):
-  m_timeout(timeout), m_running(false)
+  m_timeout(std::move(timeout)), m_running(false)
 {
   // Start the thread immediately if requested.
   if (autostart) start();

@@ -337,8 +337,8 @@ namespace {
   /// (e.g. exception).
   class RetCodeGuard {
   public:
-    inline RetCodeGuard(const SmartIF<IProperty> &appmgr, int retcode):
-      m_appmgr(appmgr), m_retcode(retcode) {}
+    inline RetCodeGuard(SmartIF<IProperty> appmgr, int retcode):
+      m_appmgr(std::move(appmgr)), m_retcode(retcode) {}
     inline void ignore() {
       m_retcode = Gaudi::ReturnCode::Success;
     }
@@ -522,7 +522,7 @@ StatusCode MinimalEventLoopMgr::decodeOutStreams( )    {
           DEBMSG << "Output Stream " << item.name() << " already exists" << endmsg;
         } else {
           DEBMSG << "Creating Output Stream " << it << endmsg;
-          IAlgorithm* ios = 0;
+          IAlgorithm* ios = nullptr;
           StatusCode sc1 = algMan->createAlgorithm( item.type(), item.name(), ios );
           if( !sc1.isSuccess() ) {
             error() << "Unable to create Output Stream " << it << endmsg;
