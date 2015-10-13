@@ -72,9 +72,9 @@ void Gaudi::Histogram1D::init(const std::string& title, bool initialize_axis)  {
     m_axis.initialize(m_rep->GetXaxis(),false);
   }
   const TArrayD* a = m_rep->GetSumw2();
-  if ( 0 == a || (a && a->GetSize()==0) ) m_rep->Sumw2();
+  if ( !a || (a && a->GetSize()==0) ) m_rep->Sumw2();
   setTitle(title);
-  m_rep->SetDirectory(0);
+  m_rep->SetDirectory(nullptr);
   m_sumEntries = 0;
   m_sumwx = 0;
 }

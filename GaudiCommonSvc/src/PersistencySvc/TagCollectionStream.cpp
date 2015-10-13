@@ -32,7 +32,7 @@ StatusCode TagCollectionStream::connectAddress()  {
   NTuplePtr nt(m_collectionSvc, m_tagName);
   if ( nt )    {
     m_addrColumn = nt->find(m_addrColName);
-    if ( 0 == m_addrColumn )  {
+    if ( !m_addrColumn )  {
       StatusCode sc = nt->addItem (m_addrColName,m_item);
       if ( sc.isSuccess() )  {
         m_addrColumn = m_item.operator->();
