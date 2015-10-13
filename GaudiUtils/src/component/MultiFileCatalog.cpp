@@ -50,7 +50,7 @@ StatusCode MultiFileCatalog::initialize()  {
 // ----------------------------------------------------------------------------
 StatusCode MultiFileCatalog::finalize()  {
   commit();
-  for_each(m_catalogs, std::mem_fn(&IFileCatalog::release));
+  for_each(m_catalogs, [](IFileCatalog* i) { i->release(); } );
   m_catalogs.clear();
   m_started = false;
   return Service::finalize();
@@ -164,7 +164,7 @@ void MultiFileCatalog::addCatalog(IFileCatalog* cat)  {
 // ----------------------------------------------------------------------------
 void MultiFileCatalog::removeCatalog(CSTR con)  {
   if ( con.empty() || con == "*" )  {
-    for_each(m_catalogs, std::mem_fn(&IFileCatalog::release));
+    for_each(m_catalogs, [](IFileCatalog* i) { i->release(); } );
     m_catalogs.clear();
     return;
   }
@@ -232,19 +232,23 @@ void MultiFileCatalog::registerLFN(CSTR fid, CSTR lfn) const  {
 }
 // ----------------------------------------------------------------------------
 bool MultiFileCatalog::readOnly() const
-{  return std::all_of( std::begin(m_catalogs), std::end(m_catalogs), std::mem_fn(&IFileCatalog::readOnly) ); }
+{  return std::all_of( std::begin(m_catalogs), std::end(m_catalogs), 
+                       [](const IFileCatalog* i) { return i->readOnly(); } );
+}
 // ----------------------------------------------------------------------------
 bool MultiFileCatalog::dirty() const
-{  return std::any_of( std::begin(m_catalogs), std::end(m_catalogs), std::mem_fn(&IFileCatalog::dirty) ); }
+{  return std::any_of( std::begin(m_catalogs), std::end(m_catalogs), 
+                       [](const IFileCatalog* i) { return i->dirty();} ) ; 
+}
 // ----------------------------------------------------------------------------
 void MultiFileCatalog::init() 
-{ for_each(m_catalogs,std::mem_fn(&IFileCatalog::init)); m_started=true;                           }
+{ for_each(m_catalogs,[](IFileCatalog* i) { i->init(); }); m_started=true; }
 // ----------------------------------------------------------------------------
 void MultiFileCatalog::commit() 
-{ for_each(m_catalogs,std::mem_fn(&IFileCatalog::commit)); }
+{ for_each(m_catalogs,[](IFileCatalog* i) { i->commit(); } ); }
 // ----------------------------------------------------------------------------
 void MultiFileCatalog::rollback() 
-{ for_each(m_catalogs, std::mem_fn(&IFileCatalog::rollback)); }
+{ for_each(m_catalogs, [](IFileCatalog* i) { i->rollback(); } ); }
 // ----------------------------------------------------------------------------
 void MultiFileCatalog::propHandler(Property& /* p */)
 {
