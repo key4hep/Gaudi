@@ -23,7 +23,7 @@
 template <>
 GaudiTuples<GaudiHistoTool>::GaudiTuples( const std::string&  /* name */,
                                           ISvcLocator * /* pSvcLocator */ )
-  : GaudiHistoTool ( "ERROR" , "ERROR" , 0 )
+  : GaudiHistoTool ( "ERROR" , "ERROR" , nullptr )
 {
   throw GaudiException( "Invalid GaudiTuples<GaudiTool> constructor",
                         "GaudiTuples", StatusCode::FAILURE );
@@ -38,7 +38,7 @@ template <>
 GaudiTuples<GaudiHistoAlg>::GaudiTuples( const std::string& /* type */  ,
                                          const std::string& /* name */  ,
                                          const IInterface*  /* parent */ )
-  : GaudiHistoAlg ( "ERROR" , 0 )
+  : GaudiHistoAlg ( "ERROR" , nullptr )
 {
   throw GaudiException( "Invalid GaudiTuples<GaudiAlgorithm> constructor",
                         "GaudiTuples", StatusCode::FAILURE );
