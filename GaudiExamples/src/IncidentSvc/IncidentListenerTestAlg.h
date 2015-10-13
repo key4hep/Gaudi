@@ -23,7 +23,7 @@ public:
 
 private:
   static std::string s_incidentType;
-  IIncidentSvc *m_incSvc = nullptr;
+  SmartIF<IIncidentSvc> m_incSvc;
   std::array<std::unique_ptr<IncidentListenerTest>,6> m_listener;
 };
 

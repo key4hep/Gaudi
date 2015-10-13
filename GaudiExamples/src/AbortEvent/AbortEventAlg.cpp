@@ -41,7 +41,7 @@ StatusCode AbortEventAlg::initialize() {
 
   debug() << "==> Initialize" << endmsg;
 
-  m_incidentSvc = svc<IIncidentSvc>("IncidentSvc",true);
+  m_incidentSvc = service("IncidentSvc",true);
 
   m_counter = 0;
 

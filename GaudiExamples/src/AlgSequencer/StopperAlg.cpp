@@ -32,13 +32,12 @@ StatusCode StopperAlg::execute() {
 
   if ( ++count >= m_stopcount ) {
     log << MSG::INFO << "scheduling a event processing stop...." << endmsg;
-    IEventProcessor* evt = svc<IEventProcessor>("ApplicationMgr");
+    auto evt = service<IEventProcessor>("ApplicationMgr");
     if (evt->stopRun().isFailure()) {
       log << MSG::ERROR << "unable to issue a stopRun to the EventProcessor"
 	  << endmsg;
       return StatusCode::FAILURE;
     }
-    evt->release();
   }
 
   return StatusCode::SUCCESS;

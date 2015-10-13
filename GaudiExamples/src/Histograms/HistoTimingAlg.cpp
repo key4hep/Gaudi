@@ -44,7 +44,7 @@ StatusCode HistoTimingAlg::initialize()
   if ( sc.isFailure() ) return sc;
 
   // random number generator
-  IRndmGenSvc * randSvc = svc<IRndmGenSvc>( "RndmGenSvc", true );
+  auto randSvc = service<IRndmGenSvc>( "RndmGenSvc", true );
   if ( !randSvc || !m_rand.initialize( randSvc, Rndm::Flat(0.,1.) ) )
   {
     return Error( "Unable to create Random generator" );

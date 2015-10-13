@@ -28,7 +28,7 @@ protected:
 
 private:
   /// Pointer to the incident service.
-  IIncidentSvc *m_incidentSvc;
+  SmartIF<IIncidentSvc> m_incidentSvc;
   /// Event at which to abort.
   long m_count;
   /// Counter of events.
