@@ -4,7 +4,7 @@
 #include "GaudiKernel/ISvcLocator.h"
 #include <functional>
 
-IClassIDSvc* DataObjID::p_clidSvc(0);
+IClassIDSvc* DataObjID::p_clidSvc(nullptr);
 std::once_flag DataObjID::m_ip;
 
 void
@@ -30,7 +30,7 @@ DataObjID::setClid() {
   
   std::call_once( m_ip, &DataObjID::getClidSvc );
 
-  if (p_clidSvc == 0 || p_clidSvc->getIDOfTypeName(m_className, m_clid).isFailure()) {
+  if (p_clidSvc == nullptr || p_clidSvc->getIDOfTypeName(m_className, m_clid).isFailure()) {
     m_clid = 0;
     m_className = "UNKNOWN_CLASS:" + m_className;
   }
@@ -43,7 +43,7 @@ DataObjID::setClassName() {
   
   std::call_once( m_ip, &DataObjID::getClidSvc );
 
-  if (p_clidSvc == 0 || p_clidSvc->getTypeNameOfID(m_clid, m_className).isFailure()) {
+  if (p_clidSvc == nullptr || p_clidSvc->getTypeNameOfID(m_clid, m_className).isFailure()) {
     m_className = "UNKNOW_CLID:" + std::to_string(m_clid);
   }
 

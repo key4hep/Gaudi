@@ -3,7 +3,7 @@
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/IRegistry.h"
 
-static LinkManager* (*s_newInstance)() = 0;
+static LinkManager* (*s_newInstance)() = nullptr;
 
 /// destructor
 LinkManager::~LinkManager() {

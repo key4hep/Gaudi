@@ -78,7 +78,7 @@ bool isGaudiThreaded(const std::string& name) {
 //   ThreadGaudi
 //   -----------
 
-ThreadGaudi* ThreadGaudiInstance = 0 ;
+ThreadGaudi* ThreadGaudiInstance = nullptr ;
 
 ThreadGaudi::ThreadGaudi() :
   m_threadMap{  new ThreadMap() }
