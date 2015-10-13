@@ -122,10 +122,6 @@ StatusCode MessageSvc::initialize() {
   StatusCode sc;
   sc = Service::initialize();
   if( sc.isFailure() ) return sc;
-  // Release pointer to myself done in Service base class
-  //if( m_msgsvc.isValid() ) {
-  //  m_msgsvc = 0;
-  //}
   // Set my own properties
   sc = setProperties();
   if (sc.isFailure()) return sc;
