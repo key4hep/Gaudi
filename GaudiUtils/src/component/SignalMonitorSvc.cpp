@@ -457,7 +457,7 @@ namespace Gaudi {
         debug() << "Decoding signal declaration '" << sig << "'" << endmsg;
         if ( sig.empty() || sig == "+" ) {
           debug() << "Empty signal, ignored" << endmsg;
-          return std::make_pair<int, bool>(-1, false); // silently ignore empty strings
+          return {-1, false}; // silently ignore empty strings
         }
         const SigMap& sigmap(SigMap::instance());
         std::string signal = sig;
@@ -488,7 +488,7 @@ namespace Gaudi {
           }
           verbose() << ")" << endmsg;
         }
-        return std::make_pair(signum, propagate);
+        return {signum, propagate};
       }
     };
 
