@@ -71,7 +71,7 @@ namespace Genfun
       , m_func    ( right.m_func )
     {}
 
-    Adapter2DoubleFunction::~Adapter2DoubleFunction(){}
+    Adapter2DoubleFunction::~Adapter2DoubleFunction() = default;
 
     double Adapter2DoubleFunction::operator()
       (       double    x ) const
@@ -112,7 +112,7 @@ namespace Genfun
       , m_func      ( right.m_func )
     {}
 
-    Adapter3DoubleFunction::~Adapter3DoubleFunction(){}
+    Adapter3DoubleFunction::~Adapter3DoubleFunction() = default;
 
     double Adapter3DoubleFunction::operator()
       (       double    x ) const
