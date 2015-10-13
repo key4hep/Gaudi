@@ -43,7 +43,7 @@ namespace {
   static map<string, TClass*> s_classesNames;
   static map<CLID, TClass*>   s_classesClids;
 }
-#define MBYTE 1024*1024
+#define MBYTE (1024*1024)
 #define kBYTE 1024
 // Standard constructor
 RootCnvSvc::RootCnvSvc(CSTR nam, ISvcLocator* svc)

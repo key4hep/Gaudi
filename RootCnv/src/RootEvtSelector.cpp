@@ -59,7 +59,7 @@ namespace Gaudi {
       m_fiter = m_files.begin();
     }
     /// Context identifier
-    virtual void* identifier() const                 { return (void*)m_sel;   }
+    void* identifier() const override                { return const_cast<RootEvtSelector*>(m_sel);   }
     /// Access to the file iterator
     Files::const_iterator fileIterator() const       { return m_fiter;        }
     /// Set file iterator
