@@ -360,7 +360,7 @@ std::vector<std::string> ToolSvc::getInstances() const
 {
   std::vector<std::string> tools{m_instancesTools.size()};
   std::transform(std::begin(m_instancesTools), std::end(m_instancesTools),
-                 std::begin(tools), std::mem_fn(&IAlgTool::name) );
+                 std::begin(tools), [](const IAlgTool* t) { return t->name(); } );
   return tools;
 }
 //------------------------------------------------------------------------------
