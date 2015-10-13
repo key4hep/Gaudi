@@ -105,14 +105,11 @@ bool Gaudi::Histo1DDef::operator!=( const Gaudi::Histo1DDef& right ) const
 // the streamer operator for class Gaudi::Histo1DDef
 // ============================================================================
 namespace Gaudi
-{ 
+{
   std::ostream& operator<<( std::ostream& o , const Gaudi::Histo1DDef& histo )
   { return histo.fillStream ( o ) ; }
 }
 // ============================================================================
-
-
-
 
 
 // ============================================================================
@@ -128,10 +125,9 @@ Gaudi::Histos::book
   const std::string&       path ,
   const Gaudi::Histo1DDef& hist )
 {
-  if ( 0 == svc ) { return 0 ; }
-  return svc -> book
-    ( path ,
-      hist.title() , hist.bins() , hist.lowEdge() , hist.lowEdge() ) ;
+  return svc ? svc -> book( path , hist.title() , hist.bins() ,
+                                   hist.lowEdge() , hist.lowEdge() )
+             : nullptr;
 }
 // ============================================================================
 /*  helper function to book 1D-histogram
@@ -148,10 +144,9 @@ Gaudi::Histos::book
   const std::string&       id   ,
   const Gaudi::Histo1DDef& hist )
 {
-  if ( 0 == svc ) { return 0 ; }
-  return svc -> book
-    ( dir , id  ,
-      hist.title() , hist.bins() , hist.lowEdge() , hist.lowEdge() ) ;
+  return svc ? svc -> book ( dir , id  , hist.title() , hist.bins() ,
+                             hist.lowEdge() , hist.lowEdge() )
+             : nullptr;
 }
 // ============================================================================
 /*  helper function to book 1D-histogram
@@ -168,14 +163,11 @@ Gaudi::Histos::book
   const int                id   ,
   const Gaudi::Histo1DDef& hist )
 {
-  if ( 0 == svc ) { return 0 ; }
-  return svc -> book
-    ( dir , id  ,
-      hist.title() , hist.bins() , hist.lowEdge() , hist.lowEdge() ) ;
+  return svc ? svc -> book ( dir , id  , hist.title() , hist.bins() ,
+                             hist.lowEdge() , hist.lowEdge() )
+             : nullptr;
 }
 // ============================================================================
-
-
 
 
 // ============================================================================
