@@ -710,7 +710,7 @@ namespace {
   class IOBuffer : public StreamBuffer {
   public:
     UCharDbArray d;
-    IOBuffer() : StreamBuffer() {  }
+    IOBuffer() = default;
     virtual ~IOBuffer() { m_pointer=0; m_length=0; m_buffer=0;}
     void start() {m_pointer=0; m_buffer=(char*)d.m_buffer; m_length=d.m_size;}
   };
@@ -834,7 +834,7 @@ StatusCode RootNTupleCnv::i__updateObjPool(RootAddress* rpA, INTuple* tupl, TTre
           case DataTypeInfo::UNKNOWN:                                        break;
           default:                                                           break;
           }
-          if ( 0 != sc )  {
+          if ( sc )  {
             log() << MSG::DEBUG;
             switch (sc)
             {

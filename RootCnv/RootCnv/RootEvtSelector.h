@@ -46,7 +46,7 @@ namespace Gaudi {
     RootEvtSelector(const std::string& name, ISvcLocator* svcloc);
 
     /// Standard destructor
-    virtual ~RootEvtSelector() {}
+    virtual ~RootEvtSelector() = default;
 
     /// IService implementation: Db event selector override
     virtual StatusCode initialize();

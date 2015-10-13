@@ -225,13 +225,13 @@ RootCnvSvc::connectDatabase(CSTR dataset, int mode, RootDataConnection** con)  {
   try {
     IDataConnection* c = m_ioMgr->connection(dataset);
     bool fire_incident = false;
-    *con = 0;
+    *con = nullptr;
     if ( !c )  {
       std::unique_ptr<RootDataConnection> connection(new RootDataConnection(this,dataset,m_setup));
       StatusCode sc = (mode != IDataConnection::READ)
         ? m_ioMgr->connectWrite(connection.get(),IDataConnection::IoType(mode),"ROOT")
         : m_ioMgr->connectRead(false,connection.get());
-      c = sc.isSuccess() ? m_ioMgr->connection(dataset) : 0;
+      c = sc.isSuccess() ? m_ioMgr->connection(dataset) : nullptr;
       if ( c )   {
         bool writable = 0 != (mode&(IDataConnection::UPDATE|IDataConnection::RECREATE));
         fire_incident = m_incidentEnabled && (0 != (mode&(IDataConnection::UPDATE|IDataConnection::READ)));
@@ -420,24 +420,22 @@ StatusCode RootCnvSvc::createNullRef(const std::string& path) {
 
 // Mark an object for write given an object reference
 StatusCode RootCnvSvc::i__createRep(DataObject* pObj, IOpaqueAddress*& refpAddr)  {
-  refpAddr = 0;
-  if ( pObj ) {
-    CLID       clid = pObj->clID();
-    IRegistry* pR   = pObj->registry();
-    string     p[2] = {m_current->fid(), pR->identifier()};
-    TClass*    cl   = (clid == CLID_DataObject) ? m_classDO : getClass(pObj);
-    size_t     len  = p[1].find('/',1);
-    string     sect = p[1].substr(1,len==string::npos ? string::npos : len-1);
-    pair<int,unsigned long> ret =
-      m_current->saveObj(sect,p[1],cl,pObj,m_bufferSize,m_splitLevel,true);
-    if ( ret.first > 1 || (clid == CLID_DataObject && ret.first==1) ) {
-      unsigned long ip[2] = {0,ret.second};
-      if ( m_currSection.empty() ) m_currSection = p[1];
-      return createAddress(repSvcType(),clid,p,ip,refpAddr);
-    }
-    return error("Failed to write object data for:"+p[1]);
+  refpAddr = nullptr;
+  if ( !pObj ) return error("createRep> Current Database is invalid!");
+  CLID       clid = pObj->clID();
+  IRegistry* pR   = pObj->registry();
+  string     p[2] = {m_current->fid(), pR->identifier()};
+  TClass*    cl   = (clid == CLID_DataObject) ? m_classDO : getClass(pObj);
+  size_t     len  = p[1].find('/',1);
+  string     sect = p[1].substr(1,len==string::npos ? string::npos : len-1);
+  pair<int,unsigned long> ret =
+    m_current->saveObj(sect,p[1],cl,pObj,m_bufferSize,m_splitLevel,true);
+  if ( ret.first > 1 || (clid == CLID_DataObject && ret.first==1) ) {
+    unsigned long ip[2] = {0,ret.second};
+    if ( m_currSection.empty() ) m_currSection = p[1];
+    return createAddress(repSvcType(),clid,p,ip,refpAddr);
   }
-  return error("createRep> Current Database is invalid!");
+  return error("Failed to write object data for:"+p[1]);
 }
 
 // Save object references to data file
@@ -485,85 +483,81 @@ StatusCode RootCnvSvc::i__fillRepRefs(IOpaqueAddress* /* pA */, DataObject* pObj
 // Read existing object. Open transaction in read mode if not active
 StatusCode RootCnvSvc::i__createObj(IOpaqueAddress* pA, DataObject*& refpObj)  {
   refpObj = nullptr;
-  if ( pA ) {
-    RootDataConnection* con = nullptr;
-    const string*  par  = pA->par();
-    unsigned long* ipar = const_cast<unsigned long*>(pA->ipar());
-    StatusCode sc = connectDatabase(par[0],IDataConnection::READ,&con);
-    if ( sc.isSuccess() ) {
-      ipar[0] = (unsigned long)con;
-      DataObject* pObj = 0;
-      size_t len = par[1].find('/',1);
-      string section = par[1].substr(1,len==string::npos ? string::npos : len-1);
+  if ( !pA ) return S_FAIL;
+  RootDataConnection* con = nullptr;
+  const string*  par  = pA->par();
+  unsigned long* ipar = const_cast<unsigned long*>(pA->ipar());
+  StatusCode sc = connectDatabase(par[0],IDataConnection::READ,&con);
+  if ( sc.isSuccess() ) {
+    ipar[0] = (unsigned long)con;
+    DataObject* pObj = 0;
+    size_t len = par[1].find('/',1);
+    string section = par[1].substr(1,len==string::npos ? string::npos : len-1);
 
-      int nb = con->loadObj(section,par[1],ipar[1],pObj);
-      if ( nb > 1 || (nb == 1 && pObj->clID() == CLID_DataObject) ) {
-        refpObj = pObj;
-        return S_OK;
-      }
-      delete pObj;
+    int nb = con->loadObj(section,par[1],ipar[1],pObj);
+    if ( nb > 1 || (nb == 1 && pObj->clID() == CLID_DataObject) ) {
+      refpObj = pObj;
+      return S_OK;
     }
-    string tag = par[0]+":"+par[1];
-    if ( m_badFiles.find(tag) == m_badFiles.end() ) {
-      m_badFiles.insert(tag);
-      return error("createObj> Cannot access the object:"+tag);
-    }
-    return S_FAIL;
+    delete pObj;
+  }
+  string tag = par[0]+":"+par[1];
+  if ( m_badFiles.find(tag) == m_badFiles.end() ) {
+    m_badFiles.insert(tag);
+    return error("createObj> Cannot access the object:"+tag);
   }
   return S_FAIL;
+
 }
 
 // Resolve the references of the created transient object.
 StatusCode RootCnvSvc::i__fillObjRefs(IOpaqueAddress* pA, DataObject* pObj) {
-  if ( pA && pObj )  {
-    const unsigned long* ipar = pA->ipar();
-    RootDataConnection* con = (RootDataConnection*)ipar[0];
-    if ( con ) {
-      RootObjectRefs refs;
-      const string* par = pA->par();
-      size_t len = par[1].find('/',1);
-      string section = par[1].substr(1,len==string::npos ? string::npos : len-1);
-      int nb = con->loadRefs(section,par[1],ipar[1],refs);
-      if ( nb >= 1 ) {
-        string npar[3];
-        unsigned long nipar[2];
+  if ( !pA || !pObj )
+    return error("read> Cannot read object -- no valid object address present ");
+
+  const unsigned long* ipar = pA->ipar();
+  RootDataConnection* con = (RootDataConnection*)ipar[0];
+  if ( con ) {
+    RootObjectRefs refs;
+    const string* par = pA->par();
+    size_t len = par[1].find('/',1);
+    string section = par[1].substr(1,len==string::npos ? string::npos : len-1);
+    int nb = con->loadRefs(section,par[1],ipar[1],refs);
+    if ( nb >= 1 ) {
+      string npar[3];
+      unsigned long nipar[2];
+      IRegistry* pR = pObj->registry();
+      auto dataMgr = SmartIF<IDataManagerSvc>{ pR->dataSvc() };
+      LinkManager* mgr = pObj->linkMgr();
+      for(const auto& i : refs.links ) mgr->addLink(con->getLink(i),nullptr);
+      for(size_t j=0, n=refs.refs.size(); j<n; ++j)  {
+        const RootRef& r = refs.refs[j];
+        npar[0] = con->getDb(r.dbase);
+        npar[1] = con->getCont(r.container);
+        npar[2] = con->getLink(r.link);
+        nipar[0] = 0;
+        nipar[1] = r.entry;
         IOpaqueAddress* nPA;
-        IRegistry* pR = pObj->registry();
-        auto dataMgr = SmartIF<IDataManagerSvc>{ pR->dataSvc() };
-        LinkManager* mgr = pObj->linkMgr();
-        for(const auto& i : refs.links ) mgr->addLink(con->getLink(i),nullptr);
-        for(size_t j=0, n=refs.refs.size(); j<n; ++j)  {
-          const RootRef& r = refs.refs[j];
-          npar[0] = con->getDb(r.dbase);
-          npar[1] = con->getCont(r.container);
-          npar[2] = con->getLink(r.link);
-          nipar[0] = 0;
-          nipar[1] = r.entry;
-          StatusCode sc = addressCreator()->createAddress(r.svc,r.clid,npar,nipar,nPA);
-          if ( sc.isSuccess() ) {
-            if( log().level() <= MSG::VERBOSE )
-              log() << MSG::VERBOSE << dataMgr.as<IService>()->name() 
-                    << " -> Register:" << pA->registry()->identifier()
-                    << "#" << npar[2] << "[" << r.entry << "]" << endmsg;
-            sc = dataMgr->registerAddress(pA->registry(),npar[2],nPA);
-            if ( sc.isSuccess() ) {
-              continue;
-            }
-          }
-          log() << MSG::ERROR << con->fid() << ": Failed to create address!!!!" << endmsg;
-          return S_FAIL;
+        StatusCode sc = addressCreator()->createAddress(r.svc,r.clid,npar,nipar,nPA);
+        if ( sc.isSuccess() ) {
+          if( log().level() <= MSG::VERBOSE )
+            log() << MSG::VERBOSE << dataMgr.as<IService>()->name()
+                  << " -> Register:" << pA->registry()->identifier()
+                  << "#" << npar[2] << "[" << r.entry << "]" << endmsg;
+          sc = dataMgr->registerAddress(pA->registry(),npar[2],nPA);
+          if ( sc.isSuccess() ) continue;
         }
-        return pObj->update();
+        log() << MSG::ERROR << con->fid() << ": Failed to create address!!!!" << endmsg;
+        return S_FAIL;
       }
-      else if ( nb < 0 )   {
-        string tag = par[0]+":"+par[1];
-        if ( m_badFiles.find(tag) == m_badFiles.end() ) {
-          m_badFiles.insert(tag);
-          return error("createObj> Cannot access the object:"+tag+" [Corrupted file]");
-        }
+      return pObj->update();
+    } else if ( nb < 0 )   {
+      string tag = par[0]+":"+par[1];
+      if ( m_badFiles.find(tag) == m_badFiles.end() ) {
+        m_badFiles.insert(tag);
+        return error("createObj> Cannot access the object:"+tag+" [Corrupted file]");
       }
     }
-    return S_FAIL;
   }
-  return error("read> Cannot read object -- no valid object address present ");
+  return S_FAIL;
 }
