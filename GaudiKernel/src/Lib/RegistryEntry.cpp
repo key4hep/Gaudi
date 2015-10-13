@@ -40,11 +40,6 @@
 //#define CAST_REGENTRY(x,y) (x)(y)
 constexpr char SEPARATOR { '/' };
 
-namespace {
-  inline std::string operator+(std::string s, boost::string_ref p) {
-    return s.append(p.data(),p.size());
-  }
-}
 /// Standard Constructor
 DataSvcHelpers::RegistryEntry::RegistryEntry(std::string path, RegistryEntry* parent) :
   m_path(std::move(path)),
