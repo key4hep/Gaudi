@@ -4,6 +4,33 @@ Commit Id: $Format:%H$
 
 ============================= GaudiPolicy v15r6 ==============================
 
+! 2015-10-09 - commit 1fa113a
+
+ - fixed a typo
+
+
+
+! 2015-10-09 - commit 64a6bc4
+
+ - Fix GAUDI-1105: Race condition when creating installation directories
+
+   I wrote a test case, but it's a bugger to reproduce as the race condition has
+   to happen between lines 223 and 225. However, tweaking the original and
+   patched `install.py` scripts to manually create the race (by doing
+   `makedirs()` twice) I can show the patch works fine.
+
+   See merge request !46
+
+
+! 2015-10-08 - commit cda934f
+
+ - Merge branch 'master' into 'master'
+
+   updated versions and release notes for Gaudi v26r4
+
+   See merge request !45
+
+
 ! 2015-09-25 - commit 73ba6dc
 
  - Merge branch 'GAUDI-1084' into 'master'
