@@ -149,13 +149,13 @@ THistSvc::initialize() {
   // Register open/close callback actions
 
   using namespace std::placeholders;
-  auto boa = std::bind( &THistSvc::rootOpenAction, this, _1, _2 );
+  auto boa = [this](const Io::FileAttr* fa, const std::string& caller) { return this->rootOpenAction(fa,caller); };
   if (p_fileMgr->regAction(boa, Io::OPEN, Io::ROOT).isFailure()) {
     m_log << MSG::ERROR
 	  << "unable to register ROOT file open action with FileMgr"
 	  << endmsg;
   }
-  auto bea = std::bind( &THistSvc::rootOpenErrAction, this, _1,_2);
+  auto bea = [this](const Io::FileAttr* fa, const std::string& caller) { return this->rootOpenErrAction(fa,caller); };
   if (p_fileMgr->regAction(bea, Io::OPEN_ERR, Io::ROOT).isFailure()) {
     m_log << MSG::ERROR
 	  << "unable to register ROOT file open Error action with FileMgr"
