@@ -58,7 +58,7 @@ StatusCode createItem ( TTree* tree, INTuple* tuple, istream& is,const string& n
   string idxName;
   long len, ndim, dim[4], hasIdx, idxLow, idxLen;
   long dim1 = 1, dim2 = 1;
-  INTupleItem* it = 0;
+  INTupleItem* it = nullptr;
   char c;
   is >> len    >> c
     >> ndim   >> c
@@ -136,7 +136,7 @@ static inline string _tr(string s) {
 StatusCode
 RootNTupleCnv::createObj(IOpaqueAddress* pAddr, DataObject*& refpObject)   {
   StatusCode status = S_FAIL;
-  RootDataConnection* con = 0;
+  RootDataConnection* con = nullptr;
   IRegistry* pRegistry = pAddr->registry();
   RootAddress* rpA = dynamic_cast<RootAddress*>(pAddr);
   string  path    = fileName(pRegistry);
@@ -162,7 +162,7 @@ RootNTupleCnv::createObj(IOpaqueAddress* pAddr, DataObject*& refpObject)   {
     }
     par[2] = _tr(cntName);
     TTree* tree = con->getSection(par[2]);
-    if ( 0 == tree ) {
+    if ( nullptr == tree ) {
       return makeError("Failed to access N-Tuple tree:"+cntName);
     }
     if ( !par_val.empty() )      {
@@ -172,7 +172,7 @@ RootNTupleCnv::createObj(IOpaqueAddress* pAddr, DataObject*& refpObject)   {
         CLID clid;
         int siz, typ;
         string title;
-        NTuple::Tuple* nt = 0;
+        NTuple::Tuple* nt = nullptr;
         istringstream is(par_val);
         getline(is, title, ';') >> clid >> c >> siz >> c;
         status = ntupleSvc->create(clid, title, nt);
@@ -227,10 +227,10 @@ RootNTupleCnv::createObj(IOpaqueAddress* pAddr, DataObject*& refpObject)   {
             break;
             */
           case DataTypeInfo::OBJECT_ADDR:
-            status = createItem(tree, nt, is, title, false, (IOpaqueAddress*)0);
+            status = createItem(tree, nt, is, title, false, (IOpaqueAddress*)nullptr);
             break;
           case DataTypeInfo::POINTER:
-            status = createItem(tree, nt, is, title, true, (void*)0);
+            status = createItem(tree, nt, is, title, true, (void*)nullptr);
             break;
           case DataTypeInfo::UNKNOWN:
           default:
@@ -254,7 +254,7 @@ RootNTupleCnv::createObj(IOpaqueAddress* pAddr, DataObject*& refpObject)   {
           refpObject  = nt;
         }
         else {
-          refpObject = 0;
+          refpObject = nullptr;
           if ( nt ) nt->release();
         }
       }
@@ -267,7 +267,7 @@ RootNTupleCnv::createObj(IOpaqueAddress* pAddr, DataObject*& refpObject)   {
 StatusCode RootNTupleCnv::updateObj(IOpaqueAddress* pAddr, DataObject* pObj)  {
   INTuple* tupl = dynamic_cast<INTuple*>(pObj);
   RootAddress* rpA = dynamic_cast<RootAddress*>(pAddr);
-  if ( 0 != tupl && 0 != rpA )  {
+  if ( nullptr != tupl && nullptr != rpA )  {
     RootDataConnection* con = (RootDataConnection*)rpA->ipar()[0];
     if ( con )   {
       TTree* tree = rpA->section;
@@ -296,7 +296,7 @@ StatusCode RootNTupleCnv::i__updateObjRoot(RootAddress* rpA, INTuple* tupl, TTre
   unsigned long* ipar = const_cast<unsigned long*>(rpA->ipar());
   ++ipar[1];
   if ( Long64_t(ipar[1]) <= tree->GetEntries() ) {
-    GenericAddress* pA = 0;
+    GenericAddress* pA = nullptr;
     Cont& it = tupl->items();
     size_t k, n = it.size();
     vector<RootRef*> paddr(n);
@@ -320,7 +320,7 @@ StatusCode RootNTupleCnv::i__updateObjRoot(RootAddress* rpA, INTuple* tupl, TTre
       string criteria = (sel && (sel->type() & ISelectStatement::STRING))
         ? sel->criteria() : string("");
       if ( !(criteria.length() == 0 || criteria == "*") )  {
-        if ( rpA->select == 0 ) {
+        if ( rpA->select == nullptr ) {
           log() << MSG::DEBUG << "Selection criteria: " << criteria << "  "  << ipar[1] << endmsg;
           rpA->select = new TTreeFormula(tree->GetName(),criteria.c_str(), tree);
         }
@@ -338,8 +338,8 @@ StatusCode RootNTupleCnv::i__updateObjRoot(RootAddress* rpA, INTuple* tupl, TTre
     if ( ipar[1] < last ) {
       unsigned long entry = ipar[1];
       if ( tree->GetEntry(entry) > 1 )   {
-        RootRef *r = 0;
-        string  *spar = 0;
+        RootRef *r = nullptr;
+        string  *spar = nullptr;
         for(k = 0; k < n; ++k)      {
           Cont::value_type j = it[k];
           switch( j->type() )
@@ -399,13 +399,13 @@ StatusCode RootNTupleCnv::i__updateObjRoot(RootAddress* rpA, INTuple* tupl, TTre
 /// Convert the transient object to the requested representation.
 StatusCode RootNTupleCnv::createRep(DataObject* pObj, IOpaqueAddress*& pAddr)  {
   IRegistry* pRegistry = pObj->registry();
-  if ( 0 != pRegistry )  {
+  if ( nullptr != pRegistry )  {
     pAddr = pRegistry->address();
-    if ( 0 != pAddr ) {
+    if ( nullptr != pAddr ) {
       return S_OK;
     }
 
-    RootDataConnection* con = 0;
+    RootDataConnection* con = nullptr;
     string path    = fileName(pRegistry);
     string cntName = containerName(pRegistry);
     string secName = cntName.c_str();
@@ -415,14 +415,14 @@ StatusCode RootNTupleCnv::createRep(DataObject* pObj, IOpaqueAddress*& pAddr)  {
       return makeError("Failed to access Tuple file:"+path);
     }
     TTree* tree = con->getSection(_tr(secName),true);
-    if ( 0 != nt )  {
+    if ( nullptr != nt )  {
       const INTuple::ItemContainer& items = nt->items();
       ostringstream os;
       size_t item_no;
       string desc;
       os << nt->title()<<';'<<pObj->clID()<<';'<<items.size()<< ';';
       map<string,TBranch*> branches;
-      TBranch* b = 0;
+      TBranch* b = nullptr;
       for(item_no = 0; item_no < items.size(); ++item_no ) {
         INTupleItem* it = items[item_no];
         if ( it->hasIndex() )   {
@@ -515,7 +515,7 @@ StatusCode RootNTupleCnv::createRep(DataObject* pObj, IOpaqueAddress*& pAddr)  {
           os << it->dim(k) << ';';
         }
         desc = n;
-        TClass* cl = 0;
+        TClass* cl = nullptr;
         switch(it->type())
         {
         case DataTypeInfo::STRING:
@@ -642,7 +642,7 @@ StatusCode RootNTupleCnv::createRep(DataObject* pObj, IOpaqueAddress*& pAddr)  {
           }
           else  {
             pAddr->release();
-            pAddr = 0;
+            pAddr = nullptr;
           }
         }
       }
@@ -670,7 +670,7 @@ StatusCode RootNTupleCnv::fillRepRefs(IOpaqueAddress* pAddr, DataObject* pObj)  
         vector<RootRef*> paddr(n);
         vector<RootRef>  addr(n);
         for(k = 0; k < n; ++k)      {
-          IOpaqueAddress* pA = 0;
+          IOpaqueAddress* pA = nullptr;
           Cont::value_type j = it[k];
           switch( j->type() )
           {
@@ -711,7 +711,7 @@ namespace {
   public:
     UCharDbArray d;
     IOBuffer() = default;
-    virtual ~IOBuffer() { m_pointer=0; m_length=0; m_buffer=0;}
+    virtual ~IOBuffer() { m_pointer=0; m_length=0; m_buffer=nullptr;}
     void start() {m_pointer=0; m_buffer=(char*)d.m_buffer; m_length=d.m_size;}
   };
 }
@@ -756,7 +756,7 @@ StatusCode RootNTupleCnv::i__updateObjPool(RootAddress* rpA, INTuple* tupl, TTre
         tree->SetBranchAddress(j->name().c_str(),&paddr[k]);
         break;
       default:
-        if ( 0 == tree->GetBranch(j->name().c_str()) ) blob_items[k] = 1;
+        if ( nullptr == tree->GetBranch(j->name().c_str()) ) blob_items[k] = 1;
         break;
       }
     }
@@ -766,7 +766,7 @@ StatusCode RootNTupleCnv::i__updateObjPool(RootAddress* rpA, INTuple* tupl, TTre
       string criteria = (sel && (sel->type() & ISelectStatement::STRING))
         ? sel->criteria() : string("");
       if ( !(criteria.length() == 0 || criteria == "*") )  {
-        if ( rpA->select == 0 ) {
+        if ( rpA->select == nullptr ) {
           log() << MSG::DEBUG << "Selection criteria: " << criteria << "  "  << ipar[1] << endmsg;
           rpA->select = new TTreeFormula(tree->GetName(),criteria.c_str(), tree);
         }

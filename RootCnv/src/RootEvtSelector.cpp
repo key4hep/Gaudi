@@ -48,7 +48,7 @@ namespace Gaudi {
     std::string                   m_fid;
   public:
     /// Standard constructor with initialization
-    RootEvtSelectorContext(const RootEvtSelector* s) : m_sel(s),m_entry(-1),m_branch(0){}
+    RootEvtSelectorContext(const RootEvtSelector* s) : m_sel(s),m_entry(-1),m_branch(nullptr){}
     /// Standard destructor
     ~RootEvtSelectorContext() override = default;
     /// Access to the file container
@@ -178,10 +178,10 @@ StatusCode RootEvtSelector::next(Context& ctxt) const  {
     TBranch* b = pCtxt->branch();
     if ( !b ) {
       auto fileit = pCtxt->fileIterator();
-      pCtxt->setBranch(0);
+      pCtxt->setBranch(nullptr);
       pCtxt->setEntry(-1);
       if ( fileit != pCtxt->files().end() ) {
-        RootDataConnection* con=0;
+        RootDataConnection* con=nullptr;
         string     in = *fileit;
         StatusCode sc = m_dbMgr->connectDatabase(in,IDataConnection::READ,&con);
         if ( sc.isSuccess() ) {
@@ -208,7 +208,7 @@ StatusCode RootEvtSelector::next(Context& ctxt) const  {
     auto fit = pCtxt->fileIterator();
     pCtxt->setFileIterator(++fit);
     pCtxt->setEntry(-1);
-    pCtxt->setBranch(0);
+    pCtxt->setBranch(nullptr);
     pCtxt->setFID("");
     return next(ctxt);
   }
@@ -259,7 +259,7 @@ StatusCode RootEvtSelector::rewind(Context& ctxt) const   {
     }
     pCtxt->setFID("");
     pCtxt->setEntry(-1);
-    pCtxt->setBranch(0);
+    pCtxt->setBranch(nullptr);
     pCtxt->setFileIterator(pCtxt->files().begin());
     return StatusCode::SUCCESS;
   }

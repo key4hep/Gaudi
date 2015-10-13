@@ -40,21 +40,17 @@ namespace Gaudi  {
     *  @version 1.0
     *  @date    20/12/2009
     */
-  class GAUDI_API RootConnectionSetup {
-  public:
-    /// Type definition for string maps
-    typedef std::vector<std::string> StringVec;
-  protected:
-    /// Standard destructor
-    virtual ~RootConnectionSetup() =default;
-    /// Object reference count
-    int refCount = 1;
+  class GAUDI_API RootConnectionSetup final {
+  private:
     /// Reference to message service
     std::unique_ptr<MsgStream>    m_msgSvc;
     /// Reference to incident service
     SmartIF<IIncidentSvc> m_incidentSvc = nullptr;
 
   public:
+    /// Type definition for string maps
+    typedef std::vector<std::string> StringVec;
+
     /// Vector of strings with branches to be cached for input files
     StringVec     cacheBranches;
     /// Vector of strings with branches to NOT be cached for input files
@@ -68,10 +64,6 @@ namespace Gaudi  {
 
     /// Standard constructor
     RootConnectionSetup() = default;
-    /// Increase reference count
-    void addRef();
-    /// Decrease reference count
-    void release();
 
     /// Set the global compression level
     static long setCompression(const std::string& compression);
@@ -156,7 +148,7 @@ namespace Gaudi  {
 
   protected:
     /// Reference to the setup structure
-    SmartIF<RootConnectionSetup> m_setup;
+    std::shared_ptr<RootConnectionSetup> m_setup;
     /// I/O read statistics from TTree
     std::unique_ptr<TTreePerfStats> m_statistics;
     /// Reference to ROOT file
@@ -247,7 +239,7 @@ namespace Gaudi  {
   public:
 
     /// Standard constructor
-    RootDataConnection(const IInterface* own, const std::string& nam, RootConnectionSetup* setup);
+    RootDataConnection(const IInterface* own, const std::string& nam, std::shared_ptr<RootConnectionSetup> setup);
     /// Standard destructor
     ~RootDataConnection() override = default;
 

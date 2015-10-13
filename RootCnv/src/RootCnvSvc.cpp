@@ -47,10 +47,10 @@ namespace {
 #define kBYTE 1024
 // Standard constructor
 RootCnvSvc::RootCnvSvc(CSTR nam, ISvcLocator* svc)
-: ConversionSvc( nam, svc, ROOT_StorageType)
+: ConversionSvc( nam, svc, ROOT_StorageType),
+  m_setup{ new RootConnectionSetup() }
 {
-  m_classRefs = m_classDO = 0;
-  m_setup = new RootConnectionSetup();
+  m_classRefs = m_classDO = nullptr;
   m_setup->cacheBranches.push_back("*");
   declareProperty("IOPerfStats",      m_ioPerfStats);
   declareProperty("ShareFiles",       m_shareFiles          = "NO");
@@ -74,7 +74,6 @@ RootCnvSvc::RootCnvSvc(CSTR nam, ISvcLocator* svc)
 
 // Standard destructor
 RootCnvSvc::~RootCnvSvc() {
-  if (m_setup) m_setup->release();
 }
 
 // Small routine to issue exceptions
@@ -126,7 +125,7 @@ StatusCode RootCnvSvc::initialize()  {
 StatusCode RootCnvSvc::finalize()    {
   log() << MSG::INFO;
   if ( m_ioMgr )  {
-    IIODataManager::Connections cons = m_ioMgr->connections(0);
+    IIODataManager::Connections cons = m_ioMgr->connections(nullptr);
     for(auto &i : cons ) {
       auto pc = dynamic_cast<RootDataConnection*>(i);
       if ( pc ) {
@@ -174,7 +173,7 @@ void RootCnvSvc::loadConverter(DataObject* pObject) {
     if( log().level() <= MSG::DEBUG )
       log() << MSG::DEBUG << "Trying to 'Autoload' dictionary for class " << cname << endmsg;
     TClass* cl = s_classesNames[cname];
-    if ( 0 == cl ) {
+    if ( nullptr == cl ) {
       cl = TClass::GetClass(cname.c_str());
       if ( cl ) {
         s_classesNames[cname] = cl;
@@ -401,17 +400,17 @@ StatusCode RootCnvSvc::createAddress(long  typ,
 StatusCode RootCnvSvc::createNullRep(const std::string& path) {
   size_t len = path.find('/',1);
   string section = path.substr(1,len==string::npos ? string::npos : len-1);
-  m_current->saveObj(section,path,0,0,m_bufferSize,m_splitLevel);
+  m_current->saveObj(section,path,nullptr,nullptr,m_bufferSize,m_splitLevel);
   return S_OK;
 }
 
 // Insert null marker for not existent transient object
 StatusCode RootCnvSvc::createNullRef(const std::string& path) {
-  RootObjectRefs* refs = 0;
+  RootObjectRefs* refs = nullptr;
   size_t len = path.find('/',1);
   string section = path.substr(1,len==string::npos ? string::npos : len-1);
   pair<int,unsigned long> ret =
-    m_current->save(section,path+"#R",0,refs,m_bufferSize,m_splitLevel);
+    m_current->save(section,path+"#R",nullptr,refs,m_bufferSize,m_splitLevel);
   if( log().level() <= MSG::VERBOSE )
     log() << MSG::VERBOSE << "Writing object:" << path << " "
           << ret.first << " " << hex << ret.second << dec << " [NULL]" << endmsg;
@@ -490,7 +489,7 @@ StatusCode RootCnvSvc::i__createObj(IOpaqueAddress* pA, DataObject*& refpObj)  {
   StatusCode sc = connectDatabase(par[0],IDataConnection::READ,&con);
   if ( sc.isSuccess() ) {
     ipar[0] = (unsigned long)con;
-    DataObject* pObj = 0;
+    DataObject* pObj = nullptr;
     size_t len = par[1].find('/',1);
     string section = par[1].substr(1,len==string::npos ? string::npos : len-1);
 
@@ -530,14 +529,13 @@ StatusCode RootCnvSvc::i__fillObjRefs(IOpaqueAddress* pA, DataObject* pObj) {
       auto dataMgr = SmartIF<IDataManagerSvc>{ pR->dataSvc() };
       LinkManager* mgr = pObj->linkMgr();
       for(const auto& i : refs.links ) mgr->addLink(con->getLink(i),nullptr);
-      for(size_t j=0, n=refs.refs.size(); j<n; ++j)  {
-        const RootRef& r = refs.refs[j];
+      for(auto & r : refs.refs)  {
         npar[0] = con->getDb(r.dbase);
         npar[1] = con->getCont(r.container);
         npar[2] = con->getLink(r.link);
         nipar[0] = 0;
         nipar[1] = r.entry;
-        IOpaqueAddress* nPA;
+        IOpaqueAddress* nPA = nullptr;
         StatusCode sc = addressCreator()->createAddress(r.svc,r.clid,npar,nipar,nPA);
         if ( sc.isSuccess() ) {
           if( log().level() <= MSG::VERBOSE )
