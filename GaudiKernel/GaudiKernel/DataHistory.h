@@ -64,7 +64,7 @@ public:
 
   AlgorithmHistory* algorithmHistory() const { return m_algHist; }
 
-  void dump(std::ostream &, const bool isXML=false, int indent=0) const;
+  void dump(std::ostream &, const bool isXML=false, int indent=0) const override;
 
 private:
 
