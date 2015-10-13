@@ -168,7 +168,7 @@ namespace Gaudi {
     /// Container with references to known catalogs
     Catalogs        m_catalogs;
     /// Property : Container with catalog names
-    CatalogNames    m_catalogNames = { { { "xmlcatalog_file:test_catalog.xml" } } };
+    CatalogNames    m_catalogNames = { { "xmlcatalog_file:test_catalog.xml" } };
     /// Flag to indicate if catalog is started
     bool            m_started = false;
     /// BACKUP:: Container with catalog names

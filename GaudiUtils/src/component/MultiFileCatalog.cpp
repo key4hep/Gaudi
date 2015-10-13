@@ -118,7 +118,7 @@ void MultiFileCatalog::printError(CSTR msg, bool rethrow)  const  {
 // ----------------------------------------------------------------------------
 void MultiFileCatalog::addCatalog(CSTR con)  {
   if ( !con.empty() )  {
-    if ( 0 == findCatalog(con,false) )  {
+    if ( !findCatalog(con,false) )  {
       static const string xml_typ = "Gaudi::XMLFileCatalog";
       auto id0 = con.find("_");
       string typ = con.substr(0,id0);
@@ -126,8 +126,7 @@ void MultiFileCatalog::addCatalog(CSTR con)  {
       IInterface* cat = nullptr;
       if ( strncasecmp("xml",typ.c_str(),3) == 0 )    {
         cat = IFileCatalog::Factory::create(xml_typ,url,msgSvc().get());
-      }
-      else {
+      } else {
         using Gaudi::PluginService::Details::Registry;
         Registry& registry = Registry::instance();
         if (registry.getInfo(typ).type ==

@@ -44,7 +44,7 @@ public:
 private:
 
   /// Names of the handlers to use
-  std::vector<std::string> m_urlHandlersNames = { { {"FileReadTool"} } };
+  std::vector<std::string> m_urlHandlersNames = { { "FileReadTool" } };
 
   /// Protocols registered
   std::vector<std::string> m_protocols;

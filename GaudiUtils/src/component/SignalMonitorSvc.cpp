@@ -33,7 +33,7 @@ namespace Gaudi {
 
       /// Declare a signal to be monitored.
       /// It installs a signal handler for the requested signal.
-      void monitorSignal(int signum, bool propagate) {
+      void monitorSignal(int signum, bool propagate) override {
         if (!m_monitored[signum]) {
           handler_t sa;
           handler_t oldact;
@@ -54,12 +54,12 @@ namespace Gaudi {
 
       /// Remove the specific signal handler for the requested signal, restoring
       /// the previous signal handler.
-      void ignoreSignal(int signum) {
+      void ignoreSignal(int signum) override {
         if (m_monitored[signum]) {
 #ifdef _WIN32
           (void) signal(signum, m_oldActions[signum]);
 #else
-          sigaction(signum, &m_oldActions[signum], 0);
+          sigaction(signum, &m_oldActions[signum], nullptr);
 #endif
           m_oldActions[signum] = m_defaultAction;
           m_monitored[signum] = ignored;
@@ -67,17 +67,17 @@ namespace Gaudi {
       }
 
       /// Check if the given signal has been received.
-      bool gotSignal(int signum) const {
+      bool gotSignal(int signum) const override {
         return m_caught[signum] != 0;
       }
 
       /// Set the flag for the given signal, as if the signal was received.
-      void setSignal(int signum) {
+      void setSignal(int signum) override {
         m_caught[signum] = 1;
       }
 
       /// Clear the flag for the given signal, so that a new occurrence can be identified.
-      void clearSignal(int signum) {
+      void clearSignal(int signum) override {
         m_caught[signum] = 0;
       }
 
@@ -100,11 +100,9 @@ namespace Gaudi {
       }
 
       /// Stop monitoring signals and clear the instance pointer.
-      virtual ~SignalMonitorSvc() {
-        for (int i = 0; i < NSIG; ++i) {
-          ignoreSignal(i);
-        }
-        setInstance(0);
+      ~SignalMonitorSvc() override {
+        for (int i = 0; i < NSIG; ++i) ignoreSignal(i);
+        setInstance(nullptr);
       }
 
     private:
@@ -181,7 +179,7 @@ namespace {
   // hack because windows doesn't provide sys_siglist
   const char *sig_desc(int signum) {
     if (signum >= NSIG || signum < 0)
-      return 0;
+      return nullptr;
 #ifdef _WIN32
     switch (signum) {
     case SIGINT:   return "Interrupt";
@@ -350,7 +348,7 @@ namespace Gaudi {
             "If the signal is followed by a '+' the signal is propagated the previously "
             "registered handler (if any).");
       }
-      StatusCode initialize() {
+      StatusCode initialize() override {
         StatusCode sc = Service::initialize();
         if (sc.isFailure()) {
           return sc;
@@ -396,7 +394,7 @@ namespace Gaudi {
         m_incidentSvc->addListener(this, IncidentType::BeginEvent);
         return StatusCode::SUCCESS;
       }
-      StatusCode finalize() {
+      StatusCode finalize() override {
         m_incidentSvc->removeListener(this, IncidentType::BeginEvent);
         m_incidentSvc.reset();
         // disable the monitoring of the signals
@@ -409,7 +407,7 @@ namespace Gaudi {
         return Service::finalize();
       }
 
-      virtual void handle(const Incident&) {
+      void handle(const Incident&) override {
         if (!m_stopRequested) {
           const SigMap& sigmap(SigMap::instance());
           for (const auto& s : m_signals ) {

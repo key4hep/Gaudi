@@ -32,7 +32,7 @@ StatusCode VFSSvc::initialize() {
   IAlgTool *tool;
   for(const auto& i : m_urlHandlersNames) {
     // retrieve the tool and the pointer to the interface
-    sc = m_toolSvc->retrieve(i,IAlgTool::interfaceID(),tool,0,true);
+    sc = m_toolSvc->retrieve(i,IAlgTool::interfaceID(),tool,nullptr,true);
     if (sc.isFailure()){
       log << MSG::ERROR << "Cannot get tool " << i << endmsg;
       return sc;
