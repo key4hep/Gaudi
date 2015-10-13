@@ -15,9 +15,9 @@ public:
                           ISvcLocator*       pSvcLocator );
 	~IncidentListenerTestAlg() override = default;
 
-	StatusCode initialize();
-	StatusCode execute();
-	StatusCode finalize();
+	StatusCode initialize() override;
+	StatusCode execute() override;
+	StatusCode finalize() override;
 
 	static std::string &incident();
 
