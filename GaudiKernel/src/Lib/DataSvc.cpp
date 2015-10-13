@@ -288,7 +288,7 @@ StatusCode DataSvc::registerAddress(IRegistry* parentObj,
     RegEntry* p_entry = par_entry->findLeaf(p_path);
     // Create default object leafs if the
     // intermediate nodes are not present
-    if ( 0 == p_entry && m_forceLeaves )    {
+    if ( !p_entry && m_forceLeaves )    {
       DataObject *pLeaf = createDefaultObject();
       StatusCode sc = registerObject(par_entry->identifier(),
                                      p_path,
@@ -417,13 +417,13 @@ StatusCode DataSvc::registerObject(DataObject* parentObj,
       RegEntry* par_entry = node_entry->findLeaf(p_path);
       // Create default object leafs if the
       // intermediate nodes are not present
-      if ( 0 == par_entry && m_forceLeaves )    {
+      if ( !par_entry && m_forceLeaves )    {
         DataObject *pLeaf = createDefaultObject();
         StatusCode sc = registerObject(parentObj, p_path, pLeaf);
         if ( ! sc.isSuccess() )   delete pLeaf;
         par_entry = node_entry->findLeaf(p_path);
       }
-      else if ( 0 != par_entry && par_entry->object() == 0 )  {
+      else if ( par_entry && !par_entry->object() )  {
         status = i_retrieveEntry( node_entry, p_path, par_entry);
         if ( !status.isSuccess() && !par_entry->address() && m_forceLeaves )  {
           DataObject *pLeaf = createDefaultObject();
@@ -452,9 +452,7 @@ StatusCode DataSvc::registerObject(DataObject* parentObj,
             error() << "registerObject: trying to register null DataObject" << endmsg;
             return StatusCode::FAILURE;
           }
-          else  {
-            pObject->setRegistry(leaf);
-          }
+          pObject->setRegistry(leaf);
           leaf->setAddress(nullptr);
           leaf->setObject(pObject);
           status = StatusCode::SUCCESS;
@@ -558,15 +556,14 @@ DataObject* DataSvc::i_handleDataFault(IRegistry* pReg, boost::string_ref path)
       m_incidentSvc->fireIncident(incident);
       return pReg->object();
     }
-    else if ( pReg )  {
+    if ( pReg )  {
       std::string p = pReg->identifier();
       if (path.front() != SEPARATOR ) p += SEPARATOR;
       p.append(path.data(),path.size());
       DataIncident incident(name(), m_faultName, p);
       m_incidentSvc->fireIncident(incident);
       pLeaf = m_root->findLeaf(p);
-    }
-    else  {
+    } else  {
       std::string p = m_root->identifier();
       if (path.front() != SEPARATOR ) p += SEPARATOR;
       p.append(path.data(),path.size());
@@ -596,12 +593,10 @@ StatusCode DataSvc::loadObject(IConversionSvc* pLoader, IRegistry* pRegistry) {
   StatusCode status = INVALID_OBJ_ADDR;
   DataObject* pObject = nullptr;
   if ( !pLoader )   {         // Precondition: Data loader must be present
-    if (handleDataFault(pRegistry)) return  SUCCESS;
-    else                            return  NO_DATA_LOADER;
+    return  handleDataFault(pRegistry) ? SUCCESS : NO_DATA_LOADER;
   }
   if ( !pRegistry )    {      // Precondition: Directory must be valid
-    if (handleDataFault(pRegistry)) return  SUCCESS;
-    else                            return  INVALID_OBJ_ADDR;
+    return handleDataFault(pRegistry) ? SUCCESS : INVALID_OBJ_ADDR;
   }
 
   VERMSG << "Requested object " << pRegistry->identifier() << endmsg;
@@ -979,21 +974,18 @@ StatusCode DataSvc::linkObject(IRegistry* from,
         if ( !to_entry )   {
           return INVALID_OBJECT;
         }
-        else  {
-          std::string::size_type sep = objPath.rfind(SEPARATOR);
-          if ( sep > 0 && sep != std::string::npos )    {   // in case the objPath is a sub-directory itself
-            DataObject* pO = nullptr;
-            StatusCode sc = retrieveObject(from, objPath.substr(0,sep), pO);
-            if ( sc.isSuccess() )    {
-              sc = linkObject(pO->registry(), objPath.substr(sep), to);
-            }
-            return sc;
+        std::string::size_type sep = objPath.rfind(SEPARATOR);
+        if ( sep > 0 && sep != std::string::npos )    {   // in case the objPath is a sub-directory itself
+          DataObject* pO = nullptr;
+          StatusCode sc = retrieveObject(from, objPath.substr(0,sep), pO);
+          if ( sc.isSuccess() )    {
+            sc = linkObject(pO->registry(), objPath.substr(sep), to);
           }
-          // Now register the soft link
-          StatusCode status = from_entry->add( objPath, to, true);
-          return status.isSuccess() ?
-            IDataProviderSvc_NO_ERROR : DOUBL_OBJ_PATH;
+          return sc;
         }
+        // Now register the soft link
+        StatusCode status = from_entry->add( objPath, to, true);
+        return status.isSuccess() ? IDataProviderSvc_NO_ERROR : DOUBL_OBJ_PATH;
       }
     }
     catch (...) {
