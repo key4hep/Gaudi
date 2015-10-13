@@ -40,7 +40,7 @@ StatusCode SvcCatalog::addProperty
     removeProperty(client,property->name()).ignore();
     props->push_back(property);
   }else{
-    m_catalog.emplace( client, PropertiesT{ { property } } );
+    m_catalog.emplace( client, PropertiesT{ property } );
   }
   return StatusCode::SUCCESS;
 }

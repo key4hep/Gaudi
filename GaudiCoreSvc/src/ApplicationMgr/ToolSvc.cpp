@@ -423,11 +423,11 @@ class ToolCreateGuard {
   std::unique_ptr<IAlgTool> m_tool;
 
 public:
-  ToolCreateGuard(T& tools): m_tools(tools) {}
+  explicit ToolCreateGuard(T& tools): m_tools(tools) {}
   // we don't get a move constructor by default because we
   // have a non-trivial destructor... However, the default 
   // one is just fine...
-  ToolCreateGuard(ToolCreateGuard&&) = default;
+  ToolCreateGuard(ToolCreateGuard&&) noexcept = default;
   /// Set the internal pointer (delete any previous one). Get ownership of the tool.
   void create( const std::string& tooltype, const std::string& fullname, const IInterface* parent ) {
     // remove previous content
@@ -722,10 +722,8 @@ ToolSvc::start()
   if (UNLIKELY(fail)) {
     error() << "One or more AlgTools failed to start()" << endmsg;
     return StatusCode::FAILURE;
-  } else {
-    return StatusCode::SUCCESS;
   }
-
+  return StatusCode::SUCCESS;
 }
 
 //------------------------------------------------------------------------------
@@ -750,8 +748,6 @@ ToolSvc::stop()
   if (UNLIKELY(fail)) {
     error() << "One or more AlgTools failed to stop()" << endmsg;
     return StatusCode::FAILURE;
-  } else {
-    return StatusCode::SUCCESS;
   }
-
+  return StatusCode::SUCCESS;
 }

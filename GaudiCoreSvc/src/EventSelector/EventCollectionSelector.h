@@ -177,7 +177,7 @@ public:
     *
     * @return StatusCode indicating success or failure
     */
-  virtual StatusCode last(Context& refCtxt) const;
+  StatusCode last(Context& refCtxt) const override;
 
   /// Connect collection to selector
   virtual StatusCode connectCollection(MyContextType* ctxt) const;
