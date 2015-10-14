@@ -187,8 +187,7 @@ namespace Gaudi
     ( const std::map<KTYPE,VTYPE,CMP,ALLOCATOR>& obj, std::ostream& s )
     {
       s << "{ ";
-      for ( typename std::map<KTYPE,VTYPE,CMP,ALLOCATOR>::const_iterator cur =
-              obj.begin() ; obj.end() != cur ; ++cur )
+      for ( auto cur = obj.begin() ; obj.end() != cur ; ++cur )
       {
         if ( obj.begin() != cur ) { s << " , " ; }
         toStream ( cur -> first  , s ) ;
@@ -211,8 +210,7 @@ namespace Gaudi
     ( const GaudiUtils::VectorMap<KTYPE,VTYPE,CMP,ALLOCATOR>& obj, std::ostream& s )
     {
       s << "{ ";
-      for ( typename GaudiUtils::VectorMap<KTYPE,VTYPE,CMP,ALLOCATOR>::const_iterator cur = obj.begin() ;
-            obj.end() != cur ; ++cur )
+      for ( auto cur = obj.begin() ; obj.end() != cur ; ++cur )
       {
         if ( obj.begin() != cur ) { s << " , " ; }
         toStream ( cur -> first  , s ) ;
@@ -235,8 +233,7 @@ namespace Gaudi
     ( const GaudiUtils::Map<KTYPE,VTYPE,MAP>& obj, std::ostream& s)
     {
       s << "{ ";
-      for ( typename GaudiUtils::Map<KTYPE,VTYPE,MAP>::const_iterator cur = obj.begin() ;
-            obj.end() != cur ; ++cur )
+      for ( auto cur = obj.begin() ; obj.end() != cur ; ++cur )
       {
         if ( obj.begin() != cur ) { s << " , " ; }
         toStream ( cur -> first  , s ) ;
@@ -259,8 +256,7 @@ namespace Gaudi
     ( const GaudiUtils::HashMap<KTYPE,VTYPE,HASH,MAP>& obj, std::ostream& s)
     {
       s << "{ ";
-      for ( typename GaudiUtils::HashMap<KTYPE,VTYPE,HASH,MAP>::const_iterator cur = obj.begin() ;
-            obj.end() != cur ; ++cur )
+      for ( auto cur = obj.begin() ; obj.end() != cur ; ++cur )
       {
         if ( obj.begin() != cur ) { s << " , " ; }
         toStream ( cur -> first  , s ) ;
@@ -343,7 +339,7 @@ namespace Gaudi
       const std::string& delim )                       //             delimiter
     {
       s << open ;
-      for ( ITERATOR curr = first ; curr != last ; ++curr )
+      for ( auto curr = first ; curr != last ; ++curr )
       {
         if ( first != curr ) { s << delim ; }
         toStream ( *curr , s ) ;
