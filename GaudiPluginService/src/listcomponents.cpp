@@ -97,8 +97,7 @@ int main(int argc, char* argv[]) {
   // loop over the list of libraries passed on the command line
   for (char* lib: libs) {
     if (dlopen(lib, RTLD_LAZY | RTLD_LOCAL)) {
-      std::set<key_type> factories = reg.loadedFactories();
-      for (const auto & factory : factories) {
+      for (const auto & factory : reg.loadedFactories()) {
         auto f = loaded.find(factory);
         if ( f == loaded.end()) {
           output << lib << ":" << factory << std::endl;
