@@ -1,7 +1,7 @@
 #ifndef GAUDIROOTCNV_ROOTDATABASEMERGER_H
 #define GAUDIROOTCNV_ROOTDATABASEMERGER_H
 
-// C++ includes 
+// C++ includes
 #include <string>
 #include <vector>
 #include <map>
@@ -18,9 +18,9 @@ class TBranch;
 namespace Gaudi {
 
   typedef int MergeStatus;
-  enum MergeStatusEnum { 
-    MERGE_ERROR=0, 
-    MERGE_SUCCESS=1 
+  enum MergeStatusEnum {
+    MERGE_ERROR=0,
+    MERGE_SUCCESS=1
   };
 
   struct ContainerSection {
@@ -225,13 +225,11 @@ MergeStatus RootDatabaseMerger::saveSections()     {
       TBranch* b = t->GetBranch("Sections");
       if ( b ) {
 	b->SetAddress(text);
-	for(DatabaseSections::const_iterator i=m_sections.begin(); i!= m_sections.end();++i) {
-	  int cnt = 0;
-	  string cont = (*i).first;
-	  const ContainerSections& cntSects = (*i).second;
-	  for(ContainerSections::const_iterator j=cntSects.begin(); j != cntSects.end();++j, ++cnt) {
+	for(const auto&  i : m_sections) {
+	  string cont = i.first;
+	  for(const auto& j : i.second ) {
 	    ::sprintf(text,"[CNT=%s][START=%d][LEN=%d]",
-		      cont.c_str(),(*j).start,(*j).length); 
+		      cont.c_str(),j.start,j.length);
 	    nb = t->Fill();
 	    ++total;
 	    if ( nb > 0 )
@@ -263,16 +261,15 @@ MergeStatus RootDatabaseMerger::saveSections()     {
 
 /// Dump collected database sections
 void RootDatabaseMerger::dumpSections() {
-  for(DatabaseSections::const_iterator i=m_sections.begin(); i!= m_sections.end();++i) {
+  for(const auto& i : m_sections) {
     int cnt = 0;
-    string prefix = (*i).first;
-    const ContainerSections& cntSects = (*i).second;
-    for(ContainerSections::const_iterator j=cntSects.begin(); j != cntSects.end();++j, ++cnt) {
+    string prefix = i.first;
+    for(const auto&  j : i.second ) {
       char text[1024];
-      ::sprintf(text,"['%s'][%d]",prefix.c_str(),cnt); 
+      ::sprintf(text,"['%s'][%d]",prefix.c_str(),cnt++);
       if ( s_dbg ) {
-	::printf("+++ section %-55s Start:%8d ... %8d [%d entries]\n",
-		 text,(*j).start,(*j).start+(*j).length,(*j).length);
+	  ::printf("+++ section %-55s Start:%8d ... %8d [%d entries]\n",
+		 text,j.start,j.start+j.length,j.length);
       }
     }
   }
@@ -419,7 +416,7 @@ MergeStatus RootDatabaseMerger::copyTree(TFile* source, const string& name) {
 MergeStatus RootDatabaseMerger::copyRefs(TFile* source, const string& name) {
   TTree* src_tree = (TTree*)source->Get(name.c_str());
   if ( src_tree ) {
-    TTree *out_tree = (TTree*)m_output->Get(name.c_str());    
+    TTree *out_tree = (TTree*)m_output->Get(name.c_str());
     if ( out_tree ) {
       addSections(src_tree,out_tree);
       copyBranch(src_tree,out_tree,"Links");
