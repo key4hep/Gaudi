@@ -1932,9 +1932,8 @@ THistSvc::io_reinit ()
 
   typedef std::map<std::string, std::pair<TFile*,Mode> > FileReg_t;
 
-  for (FileReg_t::iterator ifile = m_files.begin(), iend=m_files.end();
-       ifile != iend; ++ifile) {
-    TFile *f = ifile->second.first;
+  for (auto & ifile : m_files ) {
+    TFile *f = ifile.second.first;
     std::string fname = f->GetName();
     if (m_log.level() <= MSG::DEBUG)
       m_log << MSG::DEBUG << "file [" << fname << "] mode: ["
@@ -1944,7 +1943,7 @@ THistSvc::io_reinit ()
           << " cnt:" << f->GetFileCounter()
           << endmsg;
 
-    if ( ifile->second.second == READ ) {
+    if ( ifile.second.second == READ ) {
       if (m_log.level() <= MSG::DEBUG)
 	m_log << MSG::DEBUG
             << "  TFile opened in READ mode: not reassigning names" << endmsg;
@@ -1975,17 +1974,15 @@ THistSvc::io_reinit ()
     newfile->SetOption(opts);
 
 
-    if (ifile->second.second != THistSvc::READ) {
+    if (ifile.second.second != THistSvc::READ) {
       copyFileLayout (newfile, f);
-      ifile->second.first = newfile;
+      ifile.second.first = newfile;
     }
 
     // loop over all uids and migrate them to the new file
     // XXX FIXME: this double loop sucks...
-    for ( uidMap::iterator uid = m_uids.begin(), uid_end = m_uids.end();
-          uid != uid_end;
-          ++uid ) {
-      THistID& hid = uid->second;
+    for ( auto& uid : m_uids ) {
+      THistID& hid = uid.second;
       if ( hid.file != f ) continue;
       TDirectory *olddir = this->changeDir (hid);
       hid.file = newfile;
