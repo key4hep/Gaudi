@@ -95,9 +95,9 @@ namespace GaudiKernelTest {
       CPPUNIT_ASSERT_EQUAL( (t1-t0).elapsedTime<System::Sec>(), 1LL );
     }
 
-    void setUp() {}
+    void setUp() override {}
 
-    void tearDown() {}
+    void tearDown() override {}
 
   };
 
@@ -125,20 +125,20 @@ namespace GaudiKernelTest {
     /// Destructor.
     virtual ~ProgressListener() {}
 
-    void startTest( CppUnit::Test *test )
+    void startTest( CppUnit::Test *test ) override
     {
       std::cout << test->getName();
       std::cout.flush();
       m_lastTestFailed = false;
     }
 
-    void addFailure( const CppUnit::TestFailure &failure )
+    void addFailure( const CppUnit::TestFailure &failure ) override
     {
       std::cout << " : " << (failure.isError() ? "error" : "assertion");
       m_lastTestFailed  = true;
     }
 
-    void endTest( CppUnit::Test * /*test*/ )
+    void endTest( CppUnit::Test * /*test*/ ) override
     {
       if ( !m_lastTestFailed )
         std::cout  <<  " : OK";
