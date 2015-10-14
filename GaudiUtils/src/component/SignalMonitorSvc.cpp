@@ -372,9 +372,8 @@ namespace Gaudi {
                        "the return code will not be changed" << endmsg;
         }
         // Decode the signal names
-        for (std::vector<std::string>::const_iterator signame = m_usedSignals.begin();
-            signame != m_usedSignals.end(); ++signame) {
-          auto sigid = i_decodeSignal(*signame);
+        for (const auto&  signame : m_usedSignals ) {
+          auto sigid = i_decodeSignal(signame);
           if (sigid.first >= 0) {
             m_signals[sigid.first] = sigid.second;
           }
