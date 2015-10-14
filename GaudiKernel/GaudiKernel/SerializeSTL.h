@@ -31,7 +31,7 @@ namespace GaudiUtils {
   {
     s << "[";
     //int cnt = 0;
-    for(typename std::vector<T,ALLOC>::const_iterator i=v.begin(); i!=v.end(); ++i) {
+    for(auto i=v.begin(); i!=v.end(); ++i) {
       if ( i != v.begin()) s << ", ";
       s << (*i);
       //if ((++cnt)%NUMBERS_PER_LINE == 0) s << std::endl;
@@ -46,7 +46,7 @@ namespace GaudiUtils {
   {
     s << "[";
     //int cnt = 0;
-    for(typename std::list<T,ALLOC>::const_iterator i=l.begin(); i!=l.end(); ++i) {
+    for(auto i=l.begin(); i!=l.end(); ++i) {
       if ( i != l.begin()) s << ", ";
       s << (*i);
       //if ((++cnt)%NUMBERS_PER_LINE == 0) s << std::endl;
@@ -68,8 +68,7 @@ namespace GaudiUtils {
                                      const std::map<T1,T2,COMP,ALLOC>& m )
   {
     s << "{";
-    for ( typename std::map<T1,T2,COMP,ALLOC>::const_iterator i = m.begin();
-    i != m.end(); ++i ) {
+    for ( auto i = m.begin(); i != m.end(); ++i ) {
       if ( i != m.begin() ) s << ", ";
       s << i->first << ": " << i->second;
     }
