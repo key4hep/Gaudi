@@ -32,12 +32,16 @@ namespace GaudiUtils {
     }
   };
 
-  template <typename Stream, typename Container, typename Separator, typename OutputElement = Identity>
-  Stream& ostream_joiner(Stream& os, const Container& c, Separator sep, OutputElement output = OutputElement{}) {
-    auto first = std::begin(c); auto last = std::end(c);
+  template <typename Stream, typename Iterator, typename Separator, typename OutputElement = Identity>
+  Stream& ostream_joiner(Stream& os, Iterator first, Iterator last, Separator sep, OutputElement output = OutputElement{}) {
     if (first!=last) { output(os,*first); ++first; }
     for (;first!=last;++first) { output(os << sep,*first); }
     return os;
+  }
+
+  template <typename Stream, typename Container, typename Separator, typename OutputElement = Identity>
+  Stream& ostream_joiner(Stream& os, const Container& c, Separator sep, OutputElement output = OutputElement{}) {
+    return ostream_joiner( os, std::begin(c), std::end(c), sep, output );
   }
 
   }
