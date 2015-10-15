@@ -74,11 +74,8 @@ namespace Gaudi
     inline std::ostream& toStream
     ( const std::string& obj , std::ostream& s )
     {
-      if ( std::string::npos == obj.find('\'') )
-      { s << "\'" << obj << "\'" ; }
-      else
-      { s << "\"" << obj << "\"" ; }
-      return s ;
+      auto c = ( std::string::npos == obj.find('\'') ? '\'' : '\"' );
+      return s << c << obj << c;
     }
     /** the printout of boolean values "a'la Python"
      *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
@@ -129,11 +126,9 @@ namespace Gaudi
     inline std::ostream& toStream
     ( const std::pair<KTYPE,VTYPE>& obj, std::ostream& s)
     {
-      s << "( "  ;
-      toStream ( obj.first  , s ) ;
-      s << " , " ;
-      toStream ( obj.second , s ) ;
-      return s << " )" ;
+      return toStream( obj.second,
+                       toStream( obj.first, s << "( " ) << " , "  )
+              << " )" ;
     }
     // ========================================================================
     /** the partial template specialization of <c>std::vector<TYPE,ALLOCATOR></c>
@@ -190,9 +185,7 @@ namespace Gaudi
       for ( auto cur = obj.begin() ; obj.end() != cur ; ++cur )
       {
         if ( obj.begin() != cur ) { s << " , " ; }
-        toStream ( cur -> first  , s ) ;
-        s << " : " ;
-        toStream ( cur -> second , s ) ;
+        toStream( cur->second, toStream( cur->first, s ) << " : " );
       }
       return s << " }";
     }
@@ -213,9 +206,7 @@ namespace Gaudi
       for ( auto cur = obj.begin() ; obj.end() != cur ; ++cur )
       {
         if ( obj.begin() != cur ) { s << " , " ; }
-        toStream ( cur -> first  , s ) ;
-        s << " : " ;
-        toStream ( cur -> second , s ) ;
+        toStream( cur->second, toStream( cur->first, s ) << " : " ) ;
       }
       return s << " }";
     }
@@ -339,20 +330,18 @@ namespace Gaudi
       const std::string& delim )                       //             delimiter
     {
       s << open ;
-      for ( auto curr = first ; curr != last ; ++curr )
-      {
-        if ( first != curr ) { s << delim ; }
-        toStream ( *curr , s ) ;
+      if (first!=last) { toStream(*first,s); ++first; }
+      while ( first != last ) {
+        toStream ( *first , s << delim) ;
+        ++first;
       }
-      s << close ;
-      //
-      return s ;
+      return s << close;
     }
     // ========================================================================
      // helper function to print a tuple of any size
     template<class Tuple, std::size_t N>
     struct TuplePrinter {
-        static std::ostream& toStream(const Tuple& t, std::ostream& s) 
+        static std::ostream& toStream(const Tuple& t, std::ostream& s)
         {
             TuplePrinter<Tuple, N-1>::toStream(t, s);
             s << " , ";
@@ -360,15 +349,15 @@ namespace Gaudi
             return s;
         }
     };
-     
+
     template<class Tuple>
     struct TuplePrinter<Tuple, 1>{
-        static std::ostream& toStream(const Tuple& t, std::ostream& s) 
+        static std::ostream& toStream(const Tuple& t, std::ostream& s)
         {
             Gaudi::Utils::toStream(std::get<0>(t), s);
             return s;
         }
-    };  
+    };
 
     /** the helper function to print the tuple
      *  @param tulpe (INPUT)  tuple
@@ -411,4 +400,3 @@ namespace Gaudi
 // ============================================================================
 #endif
 // ============================================================================
-

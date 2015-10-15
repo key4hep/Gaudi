@@ -23,43 +23,44 @@
 #include "GaudiKernel/SerializeSTLFwd.h"
 
 namespace GaudiUtils {
-  //static const int NUMBERS_PER_LINE = 6;
+  namespace detail {
+
+  struct Identity {
+    template <typename T>
+    std::ostream& operator()(std::ostream& os, T&& t) const {
+      return os << std::forward<T>(t);
+    }
+  };
+
+  template <typename Stream, typename Container, typename Separator, typename OutputElement = Identity>
+  Stream& ostream_joiner(Stream& os, const Container& c, Separator sep, OutputElement output = OutputElement{}) {
+    auto first = std::begin(c); auto last = std::end(c);
+    if (first!=last) { output(os,*first); ++first; }
+    for (;first!=last;++first) { output(os << sep,*first); }
+    return os;
+  }
+
+  }
 
   /// Serialize an std::vector in a python like format. E.g. "[1, 2, 3]".
   template <class T, class ALLOC>
   inline std::ostream& operator<< ( std::ostream& s, const std::vector<T,ALLOC>& v )
   {
-    s << "[";
-    //int cnt = 0;
-    for(auto i=v.begin(); i!=v.end(); ++i) {
-      if ( i != v.begin()) s << ", ";
-      s << (*i);
-      //if ((++cnt)%NUMBERS_PER_LINE == 0) s << std::endl;
-    }
-    s << "]";
-    return s;
+    return detail::ostream_joiner( s << '[', v, ", " ) << ']';
   }
 
   /// Serialize an std::list in a python like format. E.g. "[1, 2, 3]".
   template <class T, class ALLOC>
   inline std::ostream& operator<< ( std::ostream& s, const std::list<T,ALLOC>& l )
   {
-    s << "[";
-    //int cnt = 0;
-    for(auto i=l.begin(); i!=l.end(); ++i) {
-      if ( i != l.begin()) s << ", ";
-      s << (*i);
-      //if ((++cnt)%NUMBERS_PER_LINE == 0) s << std::endl;
-    }
-    s << "]";
-    return s;
+    return detail::ostream_joiner( s << '[', l, ", " ) << ']';
   }
 
   /// Serialize an std::list in a python like format. E.g. "(1, 2)".
   template <class T1, class T2>
   inline std::ostream& operator<< ( std::ostream& s, const std::pair<T1,T2>& p )
   {
-    return s << "(" << p.first << ", " << p.second << ")";
+    return s << '(' << p.first << ", " << p.second << ')';
   }
 
   /// Serialize an std::map in a python like format. E.g. "{a: 1, b: 2}".
@@ -67,13 +68,11 @@ namespace GaudiUtils {
   inline std::ostream& operator << ( std::ostream& s,
                                      const std::map<T1,T2,COMP,ALLOC>& m )
   {
-    s << "{";
-    for ( auto i = m.begin(); i != m.end(); ++i ) {
-      if ( i != m.begin() ) s << ", ";
-      s << i->first << ": " << i->second;
-    }
-    s << "}";
-    return s;
+    return detail::ostream_joiner( s << "{", m,  ", ",
+                                   [](std::ostream& os, const std::pair<const T1,T2>& p)
+                                   -> std::ostream&
+                                   { return os << p.first << ": " << p.second; } )
+           << "}";
   }
 
   /// Serialize a GaudiUtils::Map in a python like format. E.g. "{a: 1, b: 2}".
