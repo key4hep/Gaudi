@@ -4,7 +4,7 @@
  * (vectors, lists, pairs, maps) plus GaudiUtils::Map and GaudiUtils::HashMap.
  *
  * To use the serializer provided by this file, one should add
- * "using namespace GaudiUtils" (possibly inside the function calling "<<").
+ * "using namespace GaudiUtils" (possibly inside the function (scope) calling "<<").
  *
  * @author Marco Clemencic
  * (adapted from the code found in LHCbKernel, original author unknown)
@@ -25,21 +25,19 @@
 namespace GaudiUtils {
   namespace detail {
 
-  struct Identity {
+  struct IdentityOutputter {
     template <typename T>
-    std::ostream& operator()(std::ostream& os, T&& t) const {
-      return os << std::forward<T>(t);
-    }
+    std::ostream& operator()(std::ostream& os, T&& t) const { return os << std::forward<T>(t); }
   };
 
-  template <typename Stream, typename Iterator, typename Separator, typename OutputElement = Identity>
+  template <typename Stream, typename Iterator, typename Separator, typename OutputElement = IdentityOutputter>
   Stream& ostream_joiner(Stream& os, Iterator first, Iterator last, Separator sep, OutputElement output = OutputElement{}) {
     if (first!=last) { output(os,*first); ++first; }
     for (;first!=last;++first) { output(os << sep,*first); }
     return os;
   }
 
-  template <typename Stream, typename Container, typename Separator, typename OutputElement = Identity>
+  template <typename Stream, typename Container, typename Separator, typename OutputElement = IdentityOutputter>
   Stream& ostream_joiner(Stream& os, const Container& c, Separator sep, OutputElement output = OutputElement{}) {
     return ostream_joiner( os, std::begin(c), std::end(c), sep, output );
   }
@@ -85,7 +83,7 @@ namespace GaudiUtils {
                                      const GaudiUtils::Map<K,T,M>& m )
   {
     // Serialize the internal map.
-    return s << (M)m;
+    return s << static_cast<const M&>(m);
   }
 
   /// Serialize a GaudiUtils::HashMap in a python like format. E.g. "{a: 1, b: 2}".
