@@ -72,14 +72,13 @@ public:
 protected:
   SmartRefBase        m_base;
   /// Pointer to target data object
-  mutable const TYPE* m_target;
+  mutable const TYPE* m_target = nullptr;
 protected:
 public:
   /// Standard Constructor
   SmartRef()  {
     m_base.m_hintID = INVALID; 
     m_base.m_linkID = INVALID;
-    m_target = 0;
     _setEnvironment(0, 0);
   }
   /// Standard Constructor with initialisation
@@ -104,14 +103,14 @@ public:
     _setEnvironment(copy.m_base.m_data, copy.m_base.m_contd);
   }
   /// Constructor
-  SmartRef(long hint, long link, TYPE* obj = 0)   {
+  SmartRef(long hint, long link, TYPE* obj = nullptr)   {
     m_base.m_hintID = hint;
     m_base.m_linkID = link;
     m_target = obj;
     _setEnvironment(0, 0);
   }
   /// Constructor for references to contained objects passing environment
-  SmartRef(const ContainedObject* pObj, long hint, long link, TYPE* obj = 0)   {
+  SmartRef(const ContainedObject* pObj, long hint, long link, TYPE* obj = nullptr)   {
     m_base.m_hintID = hint;
     m_base.m_linkID = link;
     m_target = obj;
@@ -119,14 +118,14 @@ public:
     _setEnvironment(src, pObj);
   }
   /// Constructor for references to contained objects passing environment
-  SmartRef(const DataObject* pObj, long hint, long link, TYPE* obj = 0)   {
+  SmartRef(const DataObject* pObj, long hint, long link, TYPE* obj = nullptr)   {
     m_base.m_hintID = hint;
     m_base.m_linkID = link;
     m_target = obj;
     _setEnvironment(pObj, 0);
   }
   /// Constructor for references to DataObjects passing environment
-  SmartRef(const DataObject* pObj, long hint, TYPE* obj = 0)   {
+  SmartRef(const DataObject* pObj, long hint, TYPE* obj = nullptr)   {
     m_base.m_hintID = hint;
     m_base.m_linkID = INVALID;
     m_target = obj;
@@ -137,11 +136,11 @@ public:
   //}
   /// Check if link should be followed: link must be valid and object not yet loaded
   bool shouldFollowLink(const DataObject* /* typ */) const   {
-    return (0 == m_target && m_base.m_hintID != INVALID );
+    return (!m_target && m_base.m_hintID != INVALID );
   }
   /// Check if link should be followed: link must be valid and object not yet loaded
   bool shouldFollowLink(const ContainedObject* /* typ */) const   {
-    return (0 == m_target && m_base.m_hintID != INVALID && m_base.m_linkID != INVALID );
+    return (!m_target && m_base.m_hintID != INVALID && m_base.m_linkID != INVALID );
   }
   /// Access hint id:
   long hintID()   const   {
@@ -174,18 +173,10 @@ public:
   inline const std::string &path() const { return m_base.path(); }
   /// Equality operator
   bool operator==(const SmartRef<TYPE>& c)   const   {
-    if ( 0 != m_target && 0 != c.m_target )   {
-      return m_target == c.m_target;
-    }
-    else if ( 0 == m_target && 0 == c.m_target )    {
-      return m_base.isEqual(m_target,c.m_base);
-    }
-    else if ( 0 != m_target && 0 == c.m_target )  {
-      return m_base.isEqualEx(m_target, c.m_base);
-    }
-    else if ( 0 == m_target && 0 != c.m_target )  {
-      return c.m_base.isEqualEx(c.m_target, m_base);
-    }
+    if (  m_target &&  c.m_target ) return m_target == c.m_target;
+    if ( !m_target && !c.m_target ) return m_base.isEqual(m_target,c.m_base);
+    if (  m_target && !c.m_target ) return m_base.isEqualEx(m_target, c.m_base);
+    if ( !m_target &&  c.m_target ) return c.m_base.isEqualEx(c.m_target, m_base);
     return false;
   }
   /// NON-Equality operator
@@ -208,21 +199,21 @@ public:
   }
   /// operator(): assigns parent object for serialisation
   SmartRef<TYPE>& operator() (ContainedObject* pObj)    {
-    const DataObject* src = (0==pObj) ? 0 : pObj->parent();
+    const DataObject* src = ( pObj  ? pObj->parent() : nullptr );
     return _setEnvironment(src, pObj);
   }
   /// operator() const: assigns parent object for serialisation
   const SmartRef<TYPE>& operator() (const ContainedObject* pObj)  const  {
-    const DataObject* src = (0==pObj) ? 0 : pObj->parent();
+    const DataObject* src = ( pObj ? pObj->parent() : nullptr );
     return _setEnvironment(src, pObj);
   }
   /// operator(): assigns parent object for serialisation
   SmartRef<TYPE>& operator() (DataObject* pObj)    {
-    return _setEnvironment(pObj,0);
+    return _setEnvironment(pObj,nullptr);
   }
   /// operator() const: assigns parent object for serialisation
   const SmartRef<TYPE>& operator() (const DataObject* pObj)  const  {
-    return _setEnvironment(pObj,0);
+    return _setEnvironment(pObj,nullptr);
   }
   /// Assignment
   SmartRef<TYPE>& operator=(const SmartRef<TYPE>& c)  {
@@ -277,7 +268,7 @@ public:
 /// Access to the object
 template <class TYPE> inline 
 TYPE* SmartRef<TYPE>::target()  {
-  if ( 0 == m_target )    {
+  if ( !m_target )    {
     m_target = dynamic_cast<const TYPE*>(m_base.accessData(m_target));
   }
   return const_cast<TYPE*>(m_target);
@@ -286,7 +277,7 @@ TYPE* SmartRef<TYPE>::target()  {
 /// Access to the object  (CONST)
 template <class TYPE> inline 
 const TYPE* SmartRef<TYPE>::target()  const  {
-  if ( 0 == m_target )    {
+  if ( !m_target )    {
     m_target = dynamic_cast<const TYPE*>(m_base.accessData(m_target));
   }
   return m_target;
@@ -309,31 +300,25 @@ StreamBuffer& SmartRef<TYPE>::readRef (StreamBuffer& s)   {
 /// Friend helper to check for object existence (will load object)
 template <class TYPE> inline
 bool operator == (const SmartRef<TYPE>& ref, int)   {
-  const TYPE* obj = ref;
-  return obj == 0;
+  return ref.target() == nullptr;
 }
 
 /// Friend helper to check for object existence (will load object)
 template <class TYPE> inline 
 bool operator == (int, const SmartRef<TYPE>& ref)   {
-  const TYPE* obj = ref;
-  return obj == 0;
+  return ref.target() == nullptr;
 }
 
 /// Friend helper to check for object existence (will load object)
 template <class TYPE> inline
 bool operator != (const SmartRef<TYPE>& ref, int)   {
-  const TYPE* obj = ref;
-  return obj != 0;
+  return ref.target() != nullptr;
 }
 
 /// Friend helper to check for object existence (will load object)
 template <class TYPE> inline 
 bool operator != (int, const SmartRef<TYPE>& ref)   {
-  const TYPE* obj = ref;
-  return obj != 0;
+  return ref.target() != nullptr;
 }
 
 #endif // KERNEL_SMARTREF_H
-
-
