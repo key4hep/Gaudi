@@ -346,13 +346,11 @@ StatusCode ToolSvc::retrieve ( const std::string& tooltype ,
 std::vector<std::string> ToolSvc::getInstances( const std::string& toolType )
 //------------------------------------------------------------------------------
 {
-
   std::vector<std::string> tools;
   for(const auto& tool: m_instancesTools) {
     if (tool->type() == toolType) tools.push_back( tool->name() );
   }
   return tools;
-
 }
 //------------------------------------------------------------------------------
 std::vector<std::string> ToolSvc::getInstances() const

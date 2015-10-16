@@ -51,8 +51,7 @@ DECLARE_OBJECT_FACTORY(ApplicationMgr)
 //=======================================================================
 // Constructor
 //=======================================================================
-ApplicationMgr::ApplicationMgr(IInterface*): 
-    base_class() 
+ApplicationMgr::ApplicationMgr(IInterface*)
 {
   // IInterface initialization
   addRef(); // Initial count set to 1
