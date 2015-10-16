@@ -79,7 +79,7 @@ protected:
   /// Short cut flag to indicate if the address leaf is the top leaf (performace cache)
   bool                          m_isTopLeaf = false;
   /// Keep reference to the tuple service
-  INTupleSvc*                   m_collectionSvc = nullptr;
+  SmartIF<INTupleSvc>           m_collectionSvc;
   /// Address buffer
   std::unique_ptr<GenericAddress> m_addr;
   /// Address item buffer
