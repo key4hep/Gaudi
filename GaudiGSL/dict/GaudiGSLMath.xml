@@ -4,7 +4,6 @@
   <class pattern="Genfun::GaudiMath*" />
   <class pattern="IGsl*"              />
   <class pattern="Gsl*"               />
-  <class pattern="Gsl*"               />
   </selection>
 
   <exclusion>
