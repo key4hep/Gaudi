@@ -382,11 +382,12 @@ StatusCode EventLoopMgr::nextEvent(int maxevt)   {
   }
   time_point end_time = Clock::now();
 
-  info() << "---> Loop Finished - "
-           << " WSS " << System::mappedMemory(System::MemoryUnit::kByte)*oneOver1024
-           << " | total time (skipping 1st evt) "
-           << std::chrono::duration_cast < std::chrono::nanoseconds > (end_time - start_time).count()
-           << " ns" << endmsg;
+  if (UNLIKELY(outputLevel() <= MSG::DEBUG))
+    debug() << "---> Loop Finished - "
+            << " WSS " << System::mappedMemory(System::MemoryUnit::kByte)*oneOver1024
+            << " | total time (skipping 1st evt) "
+            << std::chrono::duration_cast < std::chrono::nanoseconds > (end_time - start_time).count()
+            << " ns" << endmsg;
 
   return StatusCode::SUCCESS;
 }
