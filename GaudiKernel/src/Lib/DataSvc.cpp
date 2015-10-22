@@ -593,10 +593,10 @@ StatusCode DataSvc::loadObject(IConversionSvc* pLoader, IRegistry* pRegistry) {
   StatusCode status = INVALID_OBJ_ADDR;
   DataObject* pObject = nullptr;
   if ( !pLoader )   {         // Precondition: Data loader must be present
-    return  handleDataFault(pRegistry) ? SUCCESS : NO_DATA_LOADER;
+    return  handleDataFault(pRegistry) ? StatusCode{SUCCESS} : NO_DATA_LOADER;
   }
   if ( !pRegistry )    {      // Precondition: Directory must be valid
-    return handleDataFault(pRegistry) ? SUCCESS : INVALID_OBJ_ADDR;
+    return handleDataFault(pRegistry) ? StatusCode{SUCCESS} : INVALID_OBJ_ADDR;
   }
 
   VERMSG << "Requested object " << pRegistry->identifier() << endmsg;
