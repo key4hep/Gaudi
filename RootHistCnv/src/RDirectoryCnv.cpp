@@ -55,7 +55,7 @@ StatusCode RootHistCnv::RDirectoryCnv::createRep(DataObject* pObject,
     setDirectory(loc);
     setDiskDirectory(loc);
 //  return createAddress(pObject, pObject->registry()->name(), refpAddress);
-    return createAddress(pObject, gDirectory, 0, refpAddress);
+    return createAddress(pObject, gDirectory, nullptr, refpAddress);
   }
   refpAddress = nullptr;
   return StatusCode::FAILURE;

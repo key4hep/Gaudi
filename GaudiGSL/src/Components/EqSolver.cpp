@@ -76,7 +76,7 @@ EqSolver::EqSolver( const std::string& type,
   , m_algType       ( "fdfsolver_hybridsj" )
   , m_max_iter      ( 1000                 )
   , m_norm_residual ( 1.0e-7               )
-  , m_type          ( 0                    )
+  , m_type          ( nullptr                    )
 
 {
   /// declare type of the algorithm for root finding

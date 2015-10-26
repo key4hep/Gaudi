@@ -200,7 +200,7 @@ DataObject* HistogramSvc::createDirectory(CSTR parentDir,CSTR subDir) {
 }
 //------------------------------------------------------------------------------
 HistogramSvc::~HistogramSvc()   {
-  setDataLoader( 0 ).ignore();
+  setDataLoader( nullptr ).ignore();
   clearStore().ignore();
 }
 //------------------------------------------------------------------------------
@@ -302,7 +302,7 @@ StatusCode HistogramSvc::reinitialize()   {
 //------------------------------------------------------------------------------
 IHistogram1D* HistogramSvc::sliceX
 (CSTR name,const IHistogram2D& h,int idxY1,int idxY2) {
-  std::pair<DataObject*,IHistogram1D*> o(0,0);
+  std::pair<DataObject*,IHistogram1D*> o(nullptr,nullptr);
   try {
     int firstbin = Gaudi::Axis::toRootIndex(idxY1,h.yAxis().bins());
     int lastbin  = Gaudi::Axis::toRootIndex(idxY2,h.yAxis().bins());

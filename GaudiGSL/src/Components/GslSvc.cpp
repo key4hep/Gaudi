@@ -70,7 +70,7 @@ StatusCode GslSvc::initialize()
   else if ( "Off"       == m_errorPolicy )
     { gsl_set_error_handler_off()                                ; }
   else if ( "Abort"     == m_errorPolicy )
-    { gsl_set_error_handler ( 0 )                                ; }
+    { gsl_set_error_handler ( nullptr )                                ; }
   else if ( "Ignore"    == m_errorPolicy )
     { gsl_set_error_handler ( GslErrorHandlers::ignoreTheError ) ; }
   else if ( "Exception" == m_errorPolicy )

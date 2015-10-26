@@ -346,13 +346,11 @@ StatusCode ToolSvc::retrieve ( const std::string& tooltype ,
 std::vector<std::string> ToolSvc::getInstances( const std::string& toolType )
 //------------------------------------------------------------------------------
 {
-
   std::vector<std::string> tools;
   for(const auto& tool: m_instancesTools) {
     if (tool->type() == toolType) tools.push_back( tool->name() );
   }
   return tools;
-
 }
 //------------------------------------------------------------------------------
 std::vector<std::string> ToolSvc::getInstances() const
@@ -360,7 +358,7 @@ std::vector<std::string> ToolSvc::getInstances() const
 {
   std::vector<std::string> tools{m_instancesTools.size()};
   std::transform(std::begin(m_instancesTools), std::end(m_instancesTools),
-                 std::begin(tools), std::mem_fn(&IAlgTool::name) );
+                 std::begin(tools), [](const IAlgTool* t) { return t->name(); } );
   return tools;
 }
 //------------------------------------------------------------------------------
@@ -423,11 +421,11 @@ class ToolCreateGuard {
   std::unique_ptr<IAlgTool> m_tool;
 
 public:
-  ToolCreateGuard(T& tools): m_tools(tools) {}
+  explicit ToolCreateGuard(T& tools): m_tools(tools) {}
   // we don't get a move constructor by default because we
   // have a non-trivial destructor... However, the default 
   // one is just fine...
-  ToolCreateGuard(ToolCreateGuard&&) = default;
+  ToolCreateGuard(ToolCreateGuard&&) noexcept = default;
   /// Set the internal pointer (delete any previous one). Get ownership of the tool.
   void create( const std::string& tooltype, const std::string& fullname, const IInterface* parent ) {
     // remove previous content
@@ -722,10 +720,8 @@ ToolSvc::start()
   if (UNLIKELY(fail)) {
     error() << "One or more AlgTools failed to start()" << endmsg;
     return StatusCode::FAILURE;
-  } else {
-    return StatusCode::SUCCESS;
   }
-
+  return StatusCode::SUCCESS;
 }
 
 //------------------------------------------------------------------------------
@@ -750,8 +746,6 @@ ToolSvc::stop()
   if (UNLIKELY(fail)) {
     error() << "One or more AlgTools failed to stop()" << endmsg;
     return StatusCode::FAILURE;
-  } else {
-    return StatusCode::SUCCESS;
   }
-
+  return StatusCode::SUCCESS;
 }

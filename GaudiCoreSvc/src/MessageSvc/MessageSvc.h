@@ -89,7 +89,7 @@ public:
   void eraseStream( std::ostream* stream ) override;
 
   // Implementation of IMessageSvc::desaultStream()
-  std::ostream* defaultStream() const {
+  std::ostream* defaultStream() const override {
     return m_defaultStream;
   }
 

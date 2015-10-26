@@ -25,7 +25,7 @@ RootHistCnv::DirectoryCnv::createRep(DataObject* pObj, IOpaqueAddress*& refpAddr
       gDirectory->mkdir(d_nam);
     }
     gDirectory->cd(d_nam);
-    return createAddress(pObj, gDirectory, 0, refpAddr);
+    return createAddress(pObj, gDirectory, nullptr, refpAddr);
   }
   refpAddr = nullptr;
   return StatusCode::FAILURE;

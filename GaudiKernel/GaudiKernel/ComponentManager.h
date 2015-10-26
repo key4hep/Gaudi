@@ -26,7 +26,7 @@ public:
   /// Specialized queryInterface implementation.
   /// If an interface is not fount in the implemented ones, we fall back on the
   /// owner.
-  StatusCode queryInterface(const InterfaceID& iid, void** pinterface);
+  StatusCode queryInterface(const InterfaceID& iid, void** pinterface) override;
 
   SmartIF<ISvcLocator>& serviceLocator() const override {
     if (!m_svcLocator) m_svcLocator = m_application;

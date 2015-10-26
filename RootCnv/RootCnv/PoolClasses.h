@@ -27,8 +27,8 @@ namespace pool  {
     std::pair<int, int> m_oid;           //! POOL OID data member: transient (a streamer is used to read it)
     int m_type;                          //! transient (a streamer is used to read it)
   public:
-    Token() {}
-    virtual ~Token() {}
+    Token() = default;
+    virtual ~Token() = default;
     bool operator==(const Token& t) const { return m_oid.first==t.m_oid.first && m_oid.second==t.m_oid.second;}
   };
 }
@@ -41,15 +41,15 @@ namespace pool  {
 struct UCharDbArray {
   public:
   /// Size of buffer
-  int    m_size;
+  int    m_size = 0;
   /// Buffer with object content
-  unsigned char *m_buffer;//[m_size]
+  unsigned char *m_buffer = nullptr;//[m_size]
   /// Default constructor
-  UCharDbArray() : m_size(0), m_buffer(0)  {}
+  UCharDbArray() = default;
   /// Standard destructor
   virtual ~UCharDbArray() {
     if ( m_buffer ) delete [] m_buffer;
-    m_buffer = 0;
+    m_buffer = nullptr;
   }
 };
 
@@ -65,18 +65,16 @@ class PoolDbTokenWrap {
   /// Aggregated token object
   pool::Token token;
   /// Standard constructor
-  PoolDbTokenWrap() {}
+  PoolDbTokenWrap() = default;
   /// Copy constructor
   PoolDbTokenWrap(const PoolDbTokenWrap& wrp)  {    token = wrp.token;  }
   /// Standard destructor
-  virtual ~PoolDbTokenWrap() {}
+  virtual ~PoolDbTokenWrap() = default;
   /// Equality operator
   bool operator==(const PoolDbTokenWrap& c) const {    return token == c.token;  }
   /// Assignment operator
   PoolDbTokenWrap& operator=(const PoolDbTokenWrap& wrp)  {
-    if ( this != &wrp )  {
-      token = wrp.token;
-    }
+    if ( this != &wrp )  token = wrp.token;
     return *this;
   }
 };
@@ -98,11 +96,10 @@ protected:
 
 public:
   /// Standard constructor
-  PoolDbLinkManager() {}
+  PoolDbLinkManager() = default;
   /// Standard destructor
   virtual ~PoolDbLinkManager() {
-    for(std::vector<pool::Token*>::iterator i=m_refs.begin(); i!=m_refs.end();++i)
-      delete (*i);
+    for(auto& i : m_refs ) delete i;
   }
   /// Access to token array
   std::vector<pool::Token*>& references()  {    return m_refs;   }

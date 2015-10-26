@@ -88,27 +88,27 @@ public:
    *  @param err   error
    *  @return status code
    */
-  virtual StatusCode handle ( const GslError& error ) const ;
+  StatusCode handle ( const GslError& error ) const override;
 
   /** retrieve the  current GSL error handler
    *  @see IGslSvc
    *  @return current GSL error handler
    */
-  virtual GslErrorHandler  handler ()    const ;
+  GslErrorHandler  handler ()    const override;
 
   /** set new GSL error handler
    *  @see IGslSvc
    *  @param  handler   new GSL error handler
    *  @return GSL error handler
    */
-  virtual GslErrorHandler  setHandler ( GslErrorHandler handler ) const ;
+  GslErrorHandler  setHandler ( GslErrorHandler handler ) const override;
 
   /** transform GSL error code to Gaudi status code
    *  @see IGslSvc
    *  @param  error GLS error code
    *  @return status code
    */
-  virtual StatusCode    status        ( const int error         ) const ;
+  StatusCode    status        ( const int error         ) const override;
 
   /** standard service initialization
    *  @see  Service
@@ -116,7 +116,7 @@ public:
    *  @see IService
    *  @return status code
    */
-  virtual StatusCode    initialize () ;
+  StatusCode    initialize () override;
 
   /** standard service finalization
    *  @see  Service
@@ -124,7 +124,7 @@ public:
    *  @see IService
    *  @return status code
    */
-  virtual StatusCode    finalize   () ;
+  StatusCode    finalize   () override;
 
   /** Standard constructor
    *  @see Service

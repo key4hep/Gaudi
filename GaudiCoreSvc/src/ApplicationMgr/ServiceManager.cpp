@@ -44,9 +44,8 @@ ServiceManager::ServiceManager(IInterface* application):
   m_appSvc(application)
 {
   // Set the service locator to myself
-  m_svcLocator = static_cast<ISvcLocator*>(this);
-
-  addRef(); // Initial count set to 1
+  m_svcLocator = this;
+  addRef(); // increase ref count, so we live forever...
 }
 
 // destructor
@@ -81,19 +80,19 @@ SmartIF<IService>& ServiceManager::createService(const Gaudi::Utils::TypeNameStr
   if ( ip != std::string::npos) type.erase(ip,type.length());
 
   IService* service = Service::Factory::create(type, name, this);
-
-  if ( service ) {
-    m_listsvc.push_back(service);
-    // Check the compatibility of the version of the interface obtained
-    if( !isValidInterface(service) ) {
-      fatal() << "Incompatible interface IService version for " << type << endmsg;
-      return no_service;
-    }
-    service->setServiceManager(this);
-    return m_listsvc.back().service; // DANGER: returns a reference to a SmartIF in m_listsvc, and hence does no longer allow relocations of those...
+  if ( !service ) {
+    fatal() << "No Service factory for " << type << " available." << endmsg;
+    return no_service;
   }
-  fatal() << "No Service factory for " << type << " available." << endmsg;
-  return no_service;
+  // Check the compatibility of the version of the interface obtained
+  if( !isValidInterface(service) ) {
+    fatal() << "Incompatible interface IService version for " << type << endmsg;
+    return no_service;
+  }
+
+  m_listsvc.push_back(service);
+  service->setServiceManager(this);
+  return m_listsvc.back().service; // DANGER: returns a reference to a SmartIF in m_listsvc, and hence does no longer allow relocations of those...
 }
 
 //------------------------------------------------------------------------------
@@ -120,33 +119,30 @@ StatusCode ServiceManager::addService(const Gaudi::Utils::TypeNameString& typeNa
   if (it == m_listsvc.end()) { // not found
     // If the service does not exist, we create it
     SmartIF<IService>& svc = createService(typeName); // WARNING: svc is now a reference to something that lives in m_listsvc
-    if (svc) {
-      it = find(svc.get()); // now it is in the list because createService added it
-      it->priority = prio;
-      StatusCode sc = StatusCode(StatusCode::SUCCESS, true);
-      if (targetFSMState() >= Gaudi::StateMachine::INITIALIZED) { // WARNING: this can trigger a recursion!!!
-        sc = svc->sysInitialize();
-        if (sc.isSuccess() && targetFSMState() >= Gaudi::StateMachine::RUNNING) {
-          sc = svc->sysStart();
-        }
+    if (!svc) return StatusCode::FAILURE;
+    it = find(svc.get()); // now it is in the list because createService added it
+    it->priority = prio;
+    StatusCode sc = StatusCode(StatusCode::SUCCESS, true);
+    if (targetFSMState() >= Gaudi::StateMachine::INITIALIZED) { // WARNING: this can trigger a recursion!!!
+      sc = svc->sysInitialize();
+      if (sc.isSuccess() && targetFSMState() >= Gaudi::StateMachine::RUNNING) {
+        sc = svc->sysStart();
       }
-      if(sc.isFailure()) { // if initialization failed, remove it from the list
-        error() << "Unable to initialize service \"" << typeName.name() << "\""
-                << endmsg;
-        m_listsvc.erase(it);
-        // Note: removing it from the list + the SmartIF going out of scope should trigger the delete
-        // delete svc.get();
-        return sc;
-      } else { // initialization successful, we can work with the service
-        // Move the just initialized service to the back of the list
-        // (we care more about order of initialization than of creation)
-        m_listsvc.push_back(*it);
-        m_listsvc.erase(it);
-        it = std::prev(std::end(m_listsvc)); // last entry (the iterator was invalidated by erase)
-      }
-    } else {
-      return StatusCode::FAILURE;
     }
+    if(sc.isFailure()) { // if initialization failed, remove it from the list
+      error() << "Unable to initialize service \"" << typeName.name() << "\""
+              << endmsg;
+      m_listsvc.erase(it);
+      // Note: removing it from the list + the SmartIF going out of scope should trigger the delete
+      // delete svc.get();
+      return sc;
+    }
+    // initialization successful, we can work with the service
+    // Move the just initialized service to the back of the list
+    // (we care more about order of initialization than of creation)
+    m_listsvc.push_back(*it);
+    m_listsvc.erase(it);
+    it = std::prev(std::end(m_listsvc)); // last entry (the iterator was invalidated by erase)
   } else {
     // if the service is already known, it is equivalent to a setPriority
     it->priority = prio;
@@ -177,20 +173,21 @@ SmartIF<IService> &ServiceManager::service(const Gaudi::Utils::TypeNameString &t
       return no_service;
     }
     return it->service;
-  } else {
-    // Service not found. The user may be interested in one of the interfaces
-    // of the application manager itself
-    if( name == "ApplicationMgr" ||
-        name == "APPMGR" ||
-        name == "" ) {
-      return m_appSvc;
-    } else if ( createIf ){
-      //last resort: we try to create the service
-      if (addService(typeName).isSuccess()){
-        return find(name)->service;
-      }
-    }
   }
+
+  // Service not found. The user may be interested in one of the interfaces
+  // of the application manager itself
+  if( name == "ApplicationMgr" ||
+      name == "APPMGR" ||
+      name == "" ) {
+    return m_appSvc;
+  }
+
+  //last resort: we try to create the service
+  if ( createIf && addService(typeName).isSuccess()){
+    return find(name)->service;
+  }
+
   return no_service;
 }
 
@@ -219,11 +216,9 @@ StatusCode ServiceManager::removeService(IService* svc)
 //------------------------------------------------------------------------------
 {
   auto it = find(svc);
-  if (it != m_listsvc.end()) {
-    m_listsvc.erase(it);
-    return StatusCode(StatusCode::SUCCESS,true);
-  }
-  return StatusCode(StatusCode::FAILURE,true);
+  if (it == m_listsvc.end()) return StatusCode(StatusCode::FAILURE,true);
+  m_listsvc.erase(it);
+  return StatusCode(StatusCode::SUCCESS,true);
 }
 
 //------------------------------------------------------------------------------
@@ -231,11 +226,9 @@ StatusCode ServiceManager::removeService(const std::string& name)
 //------------------------------------------------------------------------------
 {
   auto it = find(name);
-  if (it != m_listsvc.end()) {
-    m_listsvc.erase(it);
-    return StatusCode::SUCCESS;
-  }
-  return StatusCode::FAILURE;
+  if (it == m_listsvc.end()) return StatusCode::FAILURE;
+  m_listsvc.erase(it);
+  return StatusCode::SUCCESS;
 }
 
 //------------------------------------------------------------------------------
@@ -418,11 +411,10 @@ StatusCode ServiceManager::finalize()
 
   // get list of PostFinalize clients
   std::vector<IIncidentListener*> postFinList;
-  {
-    auto p_inc = service<IIncidentSvc>("IncidentSvc",false);
-    if (p_inc) {
-      p_inc->getListeners(postFinList,IncidentType::SvcPostFinalize);
-    }
+  auto p_inc = service<IIncidentSvc>("IncidentSvc",false);
+  if (p_inc) {
+    p_inc->getListeners(postFinList,IncidentType::SvcPostFinalize);
+    p_inc.reset();
   }
 
   // make sure the StatusCodeSvc gets finalized really late:

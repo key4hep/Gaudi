@@ -19,7 +19,7 @@ namespace Gaudi {
    *
    * Description:
    * Definition of the ROOT data converter.
-   * The generic data converter provides the infrastructure 
+   * The generic data converter provides the infrastructure
    * of all data converters. All actions are delegated to
    * the corresponding conversion service.
    *
@@ -46,12 +46,12 @@ namespace Gaudi {
      */
     RootConverter(long typ, const CLID& clid, ISvcLocator* svc, RootCnvSvc* mgr)
       : Converter(typ, clid, svc), m_dbMgr(mgr) {}
-      
+
       /// Standard Destructor
-      virtual ~RootConverter() {}
+      ~RootConverter() override = default;
 
       /// Retrieve the class type of the data store the converter uses.
-      virtual long repSvcType() const  {    return i_repSvcType();  }
+      long repSvcType() const override {    return i_repSvcType();  }
 
       /** Converter overrides: Create transient object from persistent data
        *
@@ -60,7 +60,7 @@ namespace Gaudi {
        *
        * @return Status code indicating success or failure.
        */
-      virtual StatusCode createObj(IOpaqueAddress* pAddr, DataObject*& refpObj) 
+      StatusCode createObj(IOpaqueAddress* pAddr, DataObject*& refpObj) override
       {	return m_dbMgr->i__createObj(pAddr, refpObj);      }
 
       /** Resolve the references of the created transient object.
@@ -70,10 +70,10 @@ namespace Gaudi {
        *
        * @return Status code indicating success or failure.
        */
-      virtual StatusCode fillObjRefs(IOpaqueAddress* pAddr, DataObject* pObj) 
+      StatusCode fillObjRefs(IOpaqueAddress* pAddr, DataObject* pObj) override
       {	return m_dbMgr->i__fillObjRefs(pAddr, pObj);       }
 
-      /** Converter overrides: Convert the transient object to the 
+      /** Converter overrides: Convert the transient object to the
        * requested representation.
        *
        * @param    pObj     [IN]   Pointer to data object
@@ -81,7 +81,7 @@ namespace Gaudi {
        *
        * @return Status code indicating success or failure.
        */
-      virtual StatusCode createRep(DataObject* pObj, IOpaqueAddress*& refpAddr) 
+      StatusCode createRep(DataObject* pObj, IOpaqueAddress*& refpAddr) override
       {	return m_dbMgr->i__createRep(pObj, refpAddr);      }
 
       /** Resolve the references of the created transient object.
@@ -91,7 +91,7 @@ namespace Gaudi {
        *
        * @return Status code indicating success or failure.
        */
-      virtual StatusCode fillRepRefs(IOpaqueAddress* pAddr, DataObject* pObj) 
+      StatusCode fillRepRefs(IOpaqueAddress* pAddr, DataObject* pObj) override
       {	return m_dbMgr->i__fillRepRefs(pAddr, pObj);       }
   };
 }

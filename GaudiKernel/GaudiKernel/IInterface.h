@@ -69,7 +69,7 @@ public:
   }
   /// compare operator
   constexpr bool operator == (const InterfaceID& iid ) const { return fullMatch(iid); }
-  /// one-at-time hash function
+  /// Jenkins one-at-time hash function -- see https://en.wikipedia.org/wiki/Jenkins_hash_function
   static unsigned int hash32(const char* key) {
     unsigned int hash = 0;
     for (const char* k = key; *k; ++k) {

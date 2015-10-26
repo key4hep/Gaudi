@@ -60,7 +60,7 @@ public:
   ServiceManager(IInterface* application);
 
   /// Function needed by CommonMessaging
-  inline SmartIF<ISvcLocator>& serviceLocator() const {
+  inline SmartIF<ISvcLocator>& serviceLocator() const override {
     return m_svcLocator;
   }
 
@@ -68,10 +68,10 @@ public:
   ~ServiceManager() override;
 
   /// Return the list of Services
-  virtual const std::list<IService*>& getServices() const;
+  const std::list<IService*>& getServices() const override;
 
   /// implementation of ISvcLocation::existsService
-  virtual bool existsService(const std::string& name) const;
+  bool existsService(const std::string& name) const override;
 
   /// implementation of ISvcManager::addService
   StatusCode addService(IService* svc, int prio = DEFAULT_SVC_PRIORITY) override;
@@ -116,7 +116,7 @@ public:
   void setLoopCheckEnabled(bool en) override;
 
   /// Return the name of the manager (implementation of INamedInterface)
-  const std::string &name() const {
+  const std::string &name() const override {
     static std::string _name = "ServiceManager";
     return _name;
   }

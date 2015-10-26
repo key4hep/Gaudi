@@ -116,8 +116,9 @@ PartPropSvc::finalize() {
   MsgStream m_log( msgSvc(), name() );
   StatusCode status = Service::finalize();
 
-  if ( status.isSuccess() )
+  if ( status.isSuccess() ) {
     m_log << MSG::DEBUG << "Service finalised successfully" << endmsg;
+  }
 
   return status;
 }

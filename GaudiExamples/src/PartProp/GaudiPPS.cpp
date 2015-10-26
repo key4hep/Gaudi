@@ -38,7 +38,7 @@ StatusCode GaudiPPS::initialize() {
 
   if ( msgLevel(MSG::DEBUG) ) debug() << "==> Initialize" << endmsg;
 
-  svc<IParticlePropertySvc>("Gaudi::ParticlePropertySvc",true);
+  auto pps = service<IParticlePropertySvc>("Gaudi::ParticlePropertySvc",true);
 
   return StatusCode::SUCCESS;
 }

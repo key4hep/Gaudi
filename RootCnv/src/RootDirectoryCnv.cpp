@@ -79,14 +79,14 @@ RootDirectoryCnv::updateObjRefs(IOpaqueAddress* pAddr,
       string ident   = pReg->identifier();
       string fname   = fileName(pReg);
       string cntName = containerName(pReg);
-      RootDataConnection* con = 0;
+      RootDataConnection* con = nullptr;
       Leaves leaves;
       status = m_dbMgr->connectDatabase(fname, IDataConnection::READ, &con);
       if ( status.isSuccess() )  {
         TBranch* b = con->getBranch("##Descriptors","GaudiStatisticsDescription");
         if ( b ) {
           for(Long64_t n=b->GetEntries(), i=0; i<n; ++i)  {
-            RootNTupleDescriptor* ref=0;
+            RootNTupleDescriptor* ref=nullptr;
             b->SetAddress(&ref);
             int nb = b->GetEntry(i);
             if ( nb > 1 ) {
@@ -155,9 +155,7 @@ RootDirectoryCnv::updateObjRefs(IOpaqueAddress* pAddr,
       }
     }
   }
-  for(REFS::iterator k = refs.begin(); k != refs.end(); ++k)  {
-    if ( *k ) delete (*k);
-  }
+  for(auto & ref : refs)  delete ref;
   return status;
 }
 

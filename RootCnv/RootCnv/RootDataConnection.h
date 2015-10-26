@@ -40,21 +40,17 @@ namespace Gaudi  {
     *  @version 1.0
     *  @date    20/12/2009
     */
-  class GAUDI_API RootConnectionSetup {
-  public:
-    /// Type definition for string maps
-    typedef std::vector<std::string> StringVec;
-  protected:
-    /// Standard destructor
-    virtual ~RootConnectionSetup() =default;
-    /// Object reference count
-    int refCount = 1;
+  class GAUDI_API RootConnectionSetup final {
+  private:
     /// Reference to message service
     std::unique_ptr<MsgStream>    m_msgSvc;
     /// Reference to incident service
     SmartIF<IIncidentSvc> m_incidentSvc = nullptr;
 
   public:
+    /// Type definition for string maps
+    typedef std::vector<std::string> StringVec;
+
     /// Vector of strings with branches to be cached for input files
     StringVec     cacheBranches;
     /// Vector of strings with branches to NOT be cached for input files
@@ -68,10 +64,6 @@ namespace Gaudi  {
 
     /// Standard constructor
     RootConnectionSetup() = default;
-    /// Increase reference count
-    void addRef();
-    /// Decrease reference count
-    void release();
 
     /// Set the global compression level
     static long setCompression(const std::string& compression);
@@ -156,7 +148,7 @@ namespace Gaudi  {
 
   protected:
     /// Reference to the setup structure
-    SmartIF<RootConnectionSetup> m_setup;
+    std::shared_ptr<RootConnectionSetup> m_setup;
     /// I/O read statistics from TTree
     std::unique_ptr<TTreePerfStats> m_statistics;
     /// Reference to ROOT file
@@ -247,14 +239,14 @@ namespace Gaudi  {
   public:
 
     /// Standard constructor
-    RootDataConnection(const IInterface* own, const std::string& nam, RootConnectionSetup* setup);
+    RootDataConnection(const IInterface* own, const std::string& nam, std::shared_ptr<RootConnectionSetup> setup);
     /// Standard destructor
     ~RootDataConnection() override = default;
 
     /// Direct access to TFile structure
     TFile* file() const                         { return m_file.get();                   }
     /// Check if connected to data source
-    virtual bool isConnected() const            { return bool(m_file);                   }
+    bool isConnected() const override           { return bool(m_file);                   }
     /// Is the file writable?
     bool isWritable() const                     { return m_file && m_file->IsWritable(); }
     /// Access tool
@@ -296,17 +288,17 @@ namespace Gaudi  {
 
 
     /// Open data stream in read mode
-    virtual StatusCode connectRead();
+    StatusCode connectRead() override;
     /// Open data stream in write mode
-    virtual StatusCode connectWrite(IoType typ);
+    StatusCode connectWrite(IoType typ) override;
     /// Release data stream and release implementation dependent resources
-    virtual StatusCode disconnect();
+    StatusCode disconnect() override;
     /// Read root byte buffer from input stream
-    virtual StatusCode read(void* const, size_t)   { return StatusCode::FAILURE; }
+    StatusCode read(void* const, size_t) override  { return StatusCode::FAILURE; }
     /// Write root byte buffer to output stream
-    virtual StatusCode write(const void*, int)     { return StatusCode::FAILURE; }
+    StatusCode write(const void*, int) override { return StatusCode::FAILURE; }
     /// Seek on the file described by ioDesc. Arguments as in ::seek()
-    virtual long long int seek(long long int, int) { return -1; }
+    long long int seek(long long int, int) override { return -1; }
 
     /// Access TTree section from section name. The section is created if required.
     TTree* getSection(const std::string& sect, bool create=false);

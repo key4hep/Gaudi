@@ -39,9 +39,9 @@ namespace HepRndm  {
     /// Finalize the Engine
     StatusCode finalize() override;
     /// Set seeds
-    StatusCode setSeeds(const std::vector<long>& seed);
+    StatusCode setSeeds(const std::vector<long>& seed) override;
     /// Retrieve seeds
-    StatusCode seeds(std::vector<long>& seed)   const;
+    StatusCode seeds(std::vector<long>& seed)   const override;
   private:
     /// Create new HepEngine....
     std::unique_ptr<CLHEP::HepRandomEngine> createEngine() override;

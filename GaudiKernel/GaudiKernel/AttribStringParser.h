@@ -52,7 +52,7 @@ namespace Gaudi {
         Iterator operator++() {
           auto old = *this;
           ++m_it;
-          return std::move(old);
+          return old;
         }
         reference operator*() {
           i_setAttrib();

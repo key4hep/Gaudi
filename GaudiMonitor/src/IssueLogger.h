@@ -21,8 +21,8 @@ public:
   StatusCode finalize() override;
 
   void report(IssueSeverity::Level level, const std::string& msg,
-              const std::string& origin);
-  void report(const IssueSeverity& err);
+              const std::string& origin) override;
+  void report(const IssueSeverity& err) override;
 
 private:
 

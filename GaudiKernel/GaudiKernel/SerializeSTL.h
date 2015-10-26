@@ -4,7 +4,7 @@
  * (vectors, lists, pairs, maps) plus GaudiUtils::Map and GaudiUtils::HashMap.
  *
  * To use the serializer provided by this file, one should add
- * "using namespace GaudiUtils" (possibly inside the function calling "<<").
+ * "using namespace GaudiUtils" (possibly inside the function (scope) calling "<<").
  *
  * @author Marco Clemencic
  * (adapted from the code found in LHCbKernel, original author unknown)
@@ -23,43 +23,46 @@
 #include "GaudiKernel/SerializeSTLFwd.h"
 
 namespace GaudiUtils {
-  //static const int NUMBERS_PER_LINE = 6;
+  namespace detail {
+
+  struct IdentityOutputter {
+    template <typename T>
+    std::ostream& operator()(std::ostream& os, T&& t) const { return os << std::forward<T>(t); }
+  };
+
+  template <typename Stream, typename Iterator, typename Separator, typename OutputElement = IdentityOutputter>
+  Stream& ostream_joiner(Stream& os, Iterator first, Iterator last, Separator sep, OutputElement output = OutputElement{}) {
+    if (first!=last) { output(os,*first); ++first; }
+    for (;first!=last;++first) { output(os << sep,*first); }
+    return os;
+  }
+
+  template <typename Stream, typename Container, typename Separator, typename OutputElement = IdentityOutputter>
+  Stream& ostream_joiner(Stream& os, const Container& c, Separator sep, OutputElement output = OutputElement{}) {
+    return ostream_joiner( os, std::begin(c), std::end(c), sep, output );
+  }
+
+  }
 
   /// Serialize an std::vector in a python like format. E.g. "[1, 2, 3]".
   template <class T, class ALLOC>
   inline std::ostream& operator<< ( std::ostream& s, const std::vector<T,ALLOC>& v )
   {
-    s << "[";
-    //int cnt = 0;
-    for(typename std::vector<T,ALLOC>::const_iterator i=v.begin(); i!=v.end(); ++i) {
-      if ( i != v.begin()) s << ", ";
-      s << (*i);
-      //if ((++cnt)%NUMBERS_PER_LINE == 0) s << std::endl;
-    }
-    s << "]";
-    return s;
+    return detail::ostream_joiner( s << '[', v, ", " ) << ']';
   }
 
   /// Serialize an std::list in a python like format. E.g. "[1, 2, 3]".
   template <class T, class ALLOC>
   inline std::ostream& operator<< ( std::ostream& s, const std::list<T,ALLOC>& l )
   {
-    s << "[";
-    //int cnt = 0;
-    for(typename std::list<T,ALLOC>::const_iterator i=l.begin(); i!=l.end(); ++i) {
-      if ( i != l.begin()) s << ", ";
-      s << (*i);
-      //if ((++cnt)%NUMBERS_PER_LINE == 0) s << std::endl;
-    }
-    s << "]";
-    return s;
+    return detail::ostream_joiner( s << '[', l, ", " ) << ']';
   }
 
   /// Serialize an std::list in a python like format. E.g. "(1, 2)".
   template <class T1, class T2>
   inline std::ostream& operator<< ( std::ostream& s, const std::pair<T1,T2>& p )
   {
-    return s << "(" << p.first << ", " << p.second << ")";
+    return s << '(' << p.first << ", " << p.second << ')';
   }
 
   /// Serialize an std::map in a python like format. E.g. "{a: 1, b: 2}".
@@ -67,14 +70,11 @@ namespace GaudiUtils {
   inline std::ostream& operator << ( std::ostream& s,
                                      const std::map<T1,T2,COMP,ALLOC>& m )
   {
-    s << "{";
-    for ( typename std::map<T1,T2,COMP,ALLOC>::const_iterator i = m.begin();
-    i != m.end(); ++i ) {
-      if ( i != m.begin() ) s << ", ";
-      s << i->first << ": " << i->second;
-    }
-    s << "}";
-    return s;
+    return detail::ostream_joiner( s << "{", m,  ", ",
+                                   [](std::ostream& os, const std::pair<const T1,T2>& p)
+                                   -> std::ostream&
+                                   { return os << p.first << ": " << p.second; } )
+           << "}";
   }
 
   /// Serialize a GaudiUtils::Map in a python like format. E.g. "{a: 1, b: 2}".
@@ -83,7 +83,7 @@ namespace GaudiUtils {
                                      const GaudiUtils::Map<K,T,M>& m )
   {
     // Serialize the internal map.
-    return s << (M)m;
+    return s << static_cast<const M&>(m);
   }
 
   /// Serialize a GaudiUtils::HashMap in a python like format. E.g. "{a: 1, b: 2}".

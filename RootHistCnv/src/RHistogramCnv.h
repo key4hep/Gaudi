@@ -86,7 +86,7 @@ namespace RootHistCnv {
     static const CLID& classID();
     /// Standard constructor
     RHistogramCnv(ISvcLocator* svc) : RConverter(classID(), svc) {}
-    virtual ~RHistogramCnv() {}
+    virtual ~RHistogramCnv() = default;
   };
 }       // namespace RootHistCnv
 #endif  // ROOTHISTCNV_RHISTOGRAMCNV_H

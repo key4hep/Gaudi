@@ -47,7 +47,7 @@ static PsApiFunctions _psApi;
   #include <dlfcn.h>
 #endif
 
-static System::ImageHandle      ModuleHandle = 0;
+static System::ImageHandle      ModuleHandle = nullptr;
 static std::vector<std::string> s_linkedModules;
 
 /// Retrieve base name of module
@@ -138,7 +138,7 @@ void System::setModuleHandle(System::ImageHandle handle)    {
 }
 
 System::ImageHandle System::moduleHandle()    {
-  if ( 0 == ModuleHandle )    {
+  if ( !ModuleHandle )    {
     if ( processHandle() )    {
 #ifdef _WIN32
       static HINSTANCE handle = 0;
@@ -183,13 +183,13 @@ System::ImageHandle System::exeHandle()    {
 #elif defined(__linux) || defined(__APPLE__)
   // This does NOT work!
   static Dl_info infoBuf, *info = &infoBuf;
-  if ( 0 == info ) {
-    void* handle = ::dlopen(0, RTLD_LAZY);
+  if ( !info ) {
+    void* handle = ::dlopen(nullptr, RTLD_LAZY);
     //printf("Exe handle:%X\n", handle);
-    if ( 0 != handle ) {
+    if ( handle ) {
       void* func = ::dlsym(handle, "main");
       //printf("Exe:Func handle:%X\n", func);
-      if ( 0 != func ) {
+      if ( func ) {
       	if ( 0 != ::dladdr(func, &infoBuf) ) {
 	        //std::cout << "All OK" << std::endl;
       	  info = &infoBuf;

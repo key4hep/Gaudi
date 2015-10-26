@@ -364,38 +364,39 @@ void XMLFileCatalog::registerFID(CSTR fid) const {
 }
 // ----------------------------------------------------------------------------
 std::pair<DOMElement*,DOMElement*> XMLFileCatalog::i_registerFID(CSTR fid) const {
-  if ( !readOnly() )  {
-    /// It creates a new node File with name = fid in the XML file catalog
-    DOMElement *file = (DOMElement*)element(fid,false), *phyelem = 0, *logelem = 0;
-    DOMDocument* doc = getDoc(true);
-    if ( !file )  {
-      DOMNode* fde = doc->getElementsByTagName(XMLStr("*"))->item(0);
-      file = m_doc->createElement(XMLStr("File"));
-      file->setAttribute(Attr_ID, XMLStr(fid));
-      file->setIdAttribute(Attr_ID, true);
-      fde->appendChild(file);
-      m_update = true;
-    }
-    for(XMLCollection c1(file); c1; ++c1 )  {
-      char* nam = XMLString::transcode(c1->getNodeName());
-      if ( nam == PFNCOLL ) phyelem = c1;
-      if ( nam == LFNCOLL ) logelem = c1;
-      XMLString::release(&nam);
-    }
-    if ( !phyelem )  {
-      phyelem = doc->createElement(PFNCOLL);
-      file->appendChild(phyelem);
-      m_update = true;
-    }
-    if ( !logelem )  {
-      logelem = doc->createElement(LFNCOLL);
-      file->appendChild(logelem);
-      m_update = true;
-    }
-    return std::make_pair(logelem,phyelem);
+  if ( readOnly() )   {
+    printError("Cannot update readonly catalog!");
+    return { nullptr, nullptr};
   }
-  printError("Cannot update readonly catalog!");
-  return std::pair<DOMElement*, DOMElement*>(0,0);
+
+  /// It creates a new node File with name = fid in the XML file catalog
+  DOMElement *file = (DOMElement*)element(fid,false), *phyelem = 0, *logelem = 0;
+  DOMDocument* doc = getDoc(true);
+  if ( !file )  {
+    DOMNode* fde = doc->getElementsByTagName(XMLStr("*"))->item(0);
+    file = m_doc->createElement(XMLStr("File"));
+    file->setAttribute(Attr_ID, XMLStr(fid));
+    file->setIdAttribute(Attr_ID, true);
+    fde->appendChild(file);
+    m_update = true;
+  }
+  for(XMLCollection c1(file); c1; ++c1 )  {
+    char* nam = XMLString::transcode(c1->getNodeName());
+    if ( nam == PFNCOLL ) phyelem = c1;
+    if ( nam == LFNCOLL ) logelem = c1;
+    XMLString::release(&nam);
+  }
+  if ( !phyelem )  {
+    phyelem = doc->createElement(PFNCOLL);
+    file->appendChild(phyelem);
+    m_update = true;
+  }
+  if ( !logelem )  {
+    logelem = doc->createElement(LFNCOLL);
+    file->appendChild(logelem);
+    m_update = true;
+  }
+  return {logelem,phyelem};
 }
 // ----------------------------------------------------------------------------
 void XMLFileCatalog::registerPFN(CSTR fid, CSTR pfn, CSTR ftype) const {

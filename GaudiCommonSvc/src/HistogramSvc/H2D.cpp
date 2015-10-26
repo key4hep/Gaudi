@@ -17,17 +17,17 @@
 #include "GaudiKernel/ObjectFactory.h"
 
 std::pair<DataObject*,IHistogram2D*> Gaudi::createH2D(const std::string & title,int binsX,double iminX,double imaxX,int binsY,double iminY,double imaxY) {
-  Histogram2D* p = new Histogram2D(new TH2D(title.c_str(),title.c_str(),binsX, iminX, imaxX, binsY, iminY, imaxY));
+  auto p = new Histogram2D(new TH2D(title.c_str(),title.c_str(),binsX, iminX, imaxX, binsY, iminY, imaxY));
   return { p, p };
 }
 
 std::pair<DataObject*,IHistogram2D*> Gaudi::createH2D(const std::string & title, const Edges& eX, const Edges& eY) {
-  Histogram2D* p = new Histogram2D(new TH2D(title.c_str(),title.c_str(),eX.size()-1,&eX.front(),eY.size()-1,&eY.front()));
+  auto p = new Histogram2D(new TH2D(title.c_str(),title.c_str(),eX.size()-1,&eX.front(),eY.size()-1,&eY.front()));
   return { p, p };
 }
 
 std::pair<DataObject*,IHistogram2D*> Gaudi::createH2D(TH2D* rep) {
-  Histogram2D* p = new Histogram2D(rep);
+  auto p = new Histogram2D(rep);
   return { p, p };
 }
 
@@ -42,7 +42,7 @@ Gaudi::slice1DX(const std::string& nam,const IHistogram2D& hist,int first, int l
   TH2 *r = getRepresentation<IHistogram2D,TH2>(hist);
   TH1D *t = r ? r->ProjectionX("_px",first,last,"e") : nullptr;
   if ( t ) t->SetName(nam.c_str());
-  Histogram1D* p = t ? new Histogram1D(t) : nullptr;
+  Histogram1D* p = ( t ? new Histogram1D(t) : nullptr );
   return { p, p };
 }
 
@@ -51,7 +51,7 @@ Gaudi::slice1DY(const std::string& nam,const IHistogram2D& hist,int first, int l
   TH2  *r = getRepresentation<IHistogram2D,TH2>(hist);
   TH1D *t = r ? r->ProjectionY("_py",first,last,"e") : nullptr;
   if ( t ) t->SetName(nam.c_str());
-  Histogram1D* p = t ? new Histogram1D(t) : nullptr;
+  Histogram1D* p = ( t ? new Histogram1D(t) : nullptr );
   return { p, p };
 }
 
@@ -60,7 +60,7 @@ Gaudi::project1DY(const std::string& nam,const IHistogram2D& hist,int first,int 
   TH2 *r = getRepresentation<IHistogram2D,TH2>(hist);
   TH1D *t = r ? r->ProjectionY("_px",first,last,"e") : nullptr;
   if ( t ) t->SetName(nam.c_str());
-  Histogram1D* p = t ? new Histogram1D(t) : nullptr;
+  Histogram1D* p = ( t ? new Histogram1D(t) : nullptr );
   return { p, p };
 }
 
@@ -69,7 +69,7 @@ Gaudi::profile1DX(const std::string& nam,const IHistogram2D& hist,int first,int 
   TH2 *r = Gaudi::getRepresentation<IHistogram2D,TH2>(hist);
   TProfile *t = r ? r->ProfileX("_pfx",first,last,"e") : nullptr;
   if ( t ) t->SetName(nam.c_str());
-  Profile1D* p = t ? new Profile1D(t) : nullptr;
+  Profile1D* p = ( t ? new Profile1D(t) : nullptr );
   return { p, p };
 }
 
@@ -78,7 +78,7 @@ Gaudi::profile1DY(const std::string& nam, const IHistogram2D& hist,int first, in
   TH2 *r = getRepresentation<IHistogram2D,TH2>(hist);
   TProfile *t = r ? r->ProfileY("_pfx",first,last,"e") : nullptr;
   if ( t ) t->SetName(nam.c_str());
-  Profile1D* p = t ? new Profile1D(t) : nullptr;
+  Profile1D* p = ( t ? new Profile1D(t) : nullptr );
   return { p, p };
 }
 
@@ -119,14 +119,14 @@ Gaudi::Histogram2D::Histogram2D()
   m_rep->Sumw2();
   m_sumwx = m_sumwy = 0;
   setTitle("");
-  m_rep->SetDirectory(0);
+  m_rep->SetDirectory(nullptr);
 }
 
 Gaudi::Histogram2D::Histogram2D(TH2D* rep)  
 {
   adoptRepresentation(rep);
   m_sumwx = m_sumwy = 0;
-  m_rep->SetDirectory(0);
+  m_rep->SetDirectory(nullptr);
 }
 
 bool Gaudi::Histogram2D::setBinContents( int i,int j,int entries,double height,double error,double centreX,double centreY) {
