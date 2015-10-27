@@ -78,6 +78,13 @@ int test_main(int /*argc*/, char** /*argv*/)             // note the name!
         BOOST_CHECK( parse(result, "1.5E2") );
         BOOST_CHECK( result == 150);
     }
+
+    {
+        // test bug GAUDI-1121
+        float result;
+        BOOST_CHECK( parse(result, "-10000000000.0") );
+        BOOST_CHECK( result == -1.E10 );
+    }
 //==============================================================================
 // VectorGramar
 //==============================================================================
@@ -232,7 +239,7 @@ int test_main(int /*argc*/, char** /*argv*/)             // note the name!
 
   {
     std::vector<std::tuple<int, std::string, bool>> result;
-    BOOST_REQUIRE(Gaudi::Parsers::parse(result, 
+    BOOST_REQUIRE(Gaudi::Parsers::parse(result,
         "[(2, 'hello', True), (3, 'world', False)]"));
     BOOST_REQUIRE(result.size() == 2);
     BOOST_CHECK(std::get<0>(result[0]) == 2);
@@ -243,7 +250,7 @@ int test_main(int /*argc*/, char** /*argv*/)             // note the name!
     BOOST_CHECK(!std::get<2>(result[1]));
   }
 
-  
+
   {
     std::tuple<int, std::string> result;
     BOOST_CHECK(!Gaudi::Parsers::parse(result, "(2, 'hello', 1.0)"));
@@ -256,7 +263,7 @@ int test_main(int /*argc*/, char** /*argv*/)             // note the name!
     std::array<int, 2> result;
     BOOST_REQUIRE(Gaudi::Parsers::parse(result, "(1, 2)"));
     BOOST_CHECK(result[0] == 1);
-    BOOST_CHECK(result[1] == 2); 
+    BOOST_CHECK(result[1] == 2);
  }
 //==============================================================================
     return 0;
