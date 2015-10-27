@@ -15,7 +15,7 @@
 
 #include <fstream>
 
-#include <boost/regex.hpp>
+#include <boost/tokenizer.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
 
 
@@ -45,12 +45,27 @@ PartPropSvc::initialize() {
 
   std::string key = m_pdtFiles.value();
 
-  static const boost::regex exp{"[[:space:]]*([^[:space:]]+)[[:space:]]*=[[:space:]]*([^[:space:]]+)"};
-  static const auto tok_end = boost::sregex_iterator();
-  for (auto tok_iter = boost::sregex_iterator(begin(key), end(key), exp);
-       tok_iter != tok_end; ++tok_iter)
-  {
-    const std::string fname = (*tok_iter)[1];
+  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+  boost::char_separator<char> sep(", ");
+  boost::char_separator<char> sep_eq("=");
+
+  tokenizer tokens(key, sep);
+  for (auto it = tokens.begin(); it != tokens.end(); ++it) {
+
+    tokenizer tok2(*it, sep_eq);
+    int nToks(distance(tok2.begin(), tok2.end()));    
+
+    auto it2 = tok2.begin();
+    const std::string fname = *it2;
+    std::string fmt;
+    if (nToks == 1) {
+      m_log << MSG::INFO << "No table format type specified for \"" << fname
+	    << "\". Assuming PDG" << endmsg;
+      fmt = "PDG";
+    } else {
+      ++it2;
+      fmt = *it2;
+    }
 
     // see if input file exists in $DATAPATH
     std::string rfile = System::PathResolver::find_file(fname,"DATAPATH");
@@ -68,28 +83,20 @@ PartPropSvc::initialize() {
       return StatusCode::FAILURE;
     }
 
-    std::string val = (*tok_iter)[1];
-    std::string VAL = boost::algorithm::to_upper_copy(val);
-
-    // default: no type specified, assume PDG
-    if (val == fname) {
-      m_log << MSG::INFO << "No table format type specified for \"" << fname
-	    << "\". Assuming PDG" << endmsg;
-      VAL = "PDG";
-    }
+    std::string FMT = boost::algorithm::to_upper_copy(fmt);
 
     inputFunPtr pF = nullptr;
     try {
-      pF = parseTableType(VAL);
+      pF = parseTableType(FMT);
     } catch (...) {
       m_log << MSG::ERROR
 	    << "Could not determine Particle Property table type: \""
-	    << val << "\" for file \"" << fname << "\"" << endmsg;
+	    << FMT << "\" for file \"" << fname << "\"" << endmsg;
       return StatusCode::FAILURE;
     }
 
     m_log << MSG::DEBUG << "Adding PDT file \"" << rfile << "\" type "
-	  << VAL << endmsg;
+	  << FMT << endmsg;
 
     m_inputs.emplace_back( rfile, pF );
 
