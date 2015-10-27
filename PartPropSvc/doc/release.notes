@@ -2,7 +2,6 @@ Package : ParticleProp
 Package manager : Charles Leggett
 Commit Id: $Format:%H$
 
-============================== PartPropSvc v6r5 ==============================
 ! 2015-10-26 - Charles Leggett
  - GAUDI-1119: fix input file parser
 
