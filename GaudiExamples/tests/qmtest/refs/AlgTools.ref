@@ -26,8 +26,8 @@ JobOptionsSvc        INFO # (46,1): ToolSvc.ToolB.OutputLevel = 2
 JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/AlgTools.opts
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r5)
-                                          running on pclhcb117 on Wed Oct  7 14:39:25 2015
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r6)
+                                          running on pclhcb117 on Wed Oct 28 12:36:12 2015
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
@@ -63,7 +63,7 @@ ToolSvc.ToolA       DEBUG Property update for OutputLevel : new value = 2
 ToolSvc.ToolA       DEBUG Initialize
 ToolSvc.ToolA       DEBUG Initialize base class GaudiCommon<AlgTool>
 ToolSvc.ToolA       DEBUG could not locate CounterSummarySvc, no counter summary will be made
-ToolSvc.ToolA       DEBUG List of ALL properties of TestTool/ToolSvc.ToolA  #properties = 23
+ToolSvc.ToolA       DEBUG List of ALL properties of TestTool/ToolSvc.ToolA  #properties = 22
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'Tools':[ 'TestTool/ToolB' ]
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'ContextService':AlgContextSvc
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
@@ -73,7 +73,6 @@ ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'GlobalTimeOffset':0.0000000
-ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'RootOnTES':
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'RootInTES':
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'Context':
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'TypePrint':True
@@ -93,7 +92,7 @@ ToolSvc.ToolB       DEBUG Property update for OutputLevel : new value = 2
 ToolSvc.ToolB       DEBUG Initialize
 ToolSvc.ToolB       DEBUG Initialize base class GaudiCommon<AlgTool>
 ToolSvc.ToolB       DEBUG could not locate CounterSummarySvc, no counter summary will be made
-ToolSvc.ToolB       DEBUG List of ALL properties of TestTool/ToolSvc.ToolB  #properties = 23
+ToolSvc.ToolB       DEBUG List of ALL properties of TestTool/ToolSvc.ToolB  #properties = 22
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'Tools':[ 'TestTool/ToolA' ]
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'ContextService':AlgContextSvc
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
@@ -103,7 +102,6 @@ ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'GlobalTimeOffset':0.0000000
-ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'RootOnTES':
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'RootInTES':
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'Context':
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'TypePrint':True
