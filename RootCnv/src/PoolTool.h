@@ -1,4 +1,5 @@
 #include "RootCnv/PoolClasses.h"
+#include <algorithm>
 /*
 *  Gaudi namespace declaration
 */

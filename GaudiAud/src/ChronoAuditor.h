@@ -15,16 +15,16 @@ class ChronoAuditor : virtual public CommonAuditor {
 public:
   ChronoAuditor(const std::string& name, ISvcLocator* pSvcLocator);
 
-  virtual ~ChronoAuditor();
+  ~ChronoAuditor() override = default;
 
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
 
 private:
   /// Default (catch-all) "before" Auditor hook
-  virtual void i_before(CustomEventTypeRef evt, const std::string& caller);
+  void i_before(CustomEventTypeRef evt, const std::string& caller) override;
 
   /// Default (catch-all) "after" Auditor hook
-  virtual void i_after(CustomEventTypeRef evt, const std::string& caller, const StatusCode& sc);
+  void i_after(CustomEventTypeRef evt, const std::string& caller, const StatusCode& sc) override;
 
   /// Compute the id string to be used for the chrono entity.
   inline std::string i_id(CustomEventTypeRef evt, const std::string& caller) {

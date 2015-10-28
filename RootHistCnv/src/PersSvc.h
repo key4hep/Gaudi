@@ -19,13 +19,13 @@ namespace RootHistCnv {
   class PersSvc : public ConversionSvc {
   public:
     /// Initialise the service
-    virtual StatusCode initialize();
+    StatusCode initialize() override;
 
     /// Finalise the service
-    virtual StatusCode finalize();
+    StatusCode finalize() override;
 
     /// Convert a collection of transient data objects into another representation
-    virtual StatusCode createRep(DataObject* pObject, IOpaqueAddress*& refpAddress);
+    StatusCode createRep(DataObject* pObject, IOpaqueAddress*& refpAddress) override;
 
     /// Standard constructor
     PersSvc( const std::string& name, ISvcLocator* svc );

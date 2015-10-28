@@ -28,7 +28,7 @@ public:
     double   frange[512][2];
     template <class TYPE>
     void getBounds(long i, TYPE& min, TYPE& max, TYPE& null)  const  {
-      if ( hasRange )   {
+      if ( hasRange[i] )   {
         min = (type[i]=='R') ? TYPE(frange[i][0]) : TYPE(irange[i][0]);
         max = (type[i]=='R') ? TYPE(frange[i][1]) : TYPE(irange[i][1]);
       }

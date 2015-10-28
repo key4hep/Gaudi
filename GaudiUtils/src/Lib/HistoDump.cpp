@@ -307,26 +307,26 @@ namespace
    */
   std::pair<double,int> decompose ( double v )
   {
-    if      ( 0 == v ) { return std::make_pair ( 0.0 , 0 ) ;  }       // RETURN
-    else if ( 1 == v ) { return std::make_pair ( 1.0 , 0 ) ;  }       // RETURN
+    if      ( 0 == v ) { return { 0.0 , 0 } ;  }       // RETURN
+    else if ( 1 == v ) { return { 1.0 , 0 } ;  }       // RETURN
     else if ( 0 >  v )
     {
-      std::pair<double,int> r = decompose ( -v ) ;
-      return std::pair<double,int>( -r.first , r.second ) ;          // RETURN
+      auto r = decompose ( -v ) ;
+      return { -r.first , r.second } ;          // RETURN
     }
     else if ( 0.1 > v  )
     {
       int i       = 0 ;
       while ( 0.1 > v   ) { ++i ; v *= 10 ; }       // STUPID
-      return std::make_pair ( v , -i ) ;
+      return { v , -i } ;
     }
     else if ( 1  < v  )
     {
       int i       = 0 ;
       while ( 1  <= v  ) { ++i ; v /= 10 ; }       // STUPID
-      return std::make_pair ( v , i ) ;
+      return { v , i } ;
     }
-    return std::make_pair ( v , 1 ) ;
+    return { v , 1 } ;
   }
   // ==========================================================================
   /** "efficient" pow-function
@@ -343,24 +343,14 @@ namespace
     }
     return y ;
   }
+  // forward declaration to break cyclic dependency between rValMin and rValMax
+  inline double rValMin ( double v );
   // ==========================================================================
   /** find the proper "round" value
    *  @author Vanya BELYAEV  Ivan.BElyaev@nikhef.nl
    *  @date 2009-09-19
    */
-  inline double rValMax ( const double v ) ;
-  // ==========================================================================
-  /** find the proper "round" value
-   *  @author Vanya BELYAEV  Ivan.BElyaev@nikhef.nl
-   *  @date 2009-09-19
-   */
-  inline double rValMin ( const double v ) ;
-  // ==========================================================================
-  /** find the proper "round" value
-   *  @author Vanya BELYAEV  Ivan.BElyaev@nikhef.nl
-   *  @date 2009-09-19
-   */
-  inline double rValMax ( const double v )
+  inline double rValMax ( double v )
   {
     if      ( 0 == v  ) { return 0                   ; }             // RETURN
     else if ( 0 >  v  ) { return -1 * rValMin ( -v ) ; }             // RETURN
@@ -376,7 +366,7 @@ namespace
    *  @author Vanya BELYAEV  Ivan.BElyaev@nikhef.nl
    *  @date 2009-09-19
    */
-  inline double rValMin ( const double v )
+  inline double rValMin ( double v )
   {
     if      ( 0 == v  ) { return 0                   ; }             // RETURN
     else if ( 0 >  v  ) { return -1 * rValMax ( -v ) ; }             // RETURN
@@ -391,7 +381,7 @@ namespace
    *  @author Vanya BELYAEV  Ivan.BElyaev@nikhef.nl
    *  @date 2009-09-19
    */
-  inline std::string yLabel  ( const double value )
+  inline std::string yLabel  ( double value )
   {
     boost::format fmt ( "%10.3g" ) ;
     fmt % value ;

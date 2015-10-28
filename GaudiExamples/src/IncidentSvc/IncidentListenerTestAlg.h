@@ -15,15 +15,15 @@ public:
                           ISvcLocator*       pSvcLocator );
 	~IncidentListenerTestAlg() override = default;
 
-	StatusCode initialize();
-	StatusCode execute();
-	StatusCode finalize();
+	StatusCode initialize() override;
+	StatusCode execute() override;
+	StatusCode finalize() override;
 
 	static std::string &incident();
 
 private:
   static std::string s_incidentType;
-  IIncidentSvc *m_incSvc = nullptr;
+  SmartIF<IIncidentSvc> m_incSvc;
   std::array<std::unique_ptr<IncidentListenerTest>,6> m_listener;
 };
 

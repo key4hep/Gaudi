@@ -420,7 +420,7 @@ System::ProcessDescriptor::ProcessHandle::~ProcessHandle()   {
 #ifdef _WIN32
     ::CloseHandle(m_handle);
 #else
-      m_handle = 0;
+      m_handle = nullptr;
 #endif
   }
 }
@@ -691,7 +691,7 @@ long System::ProcessDescriptor::query(long pid,
     tms tmsb;
     static longlong prc_start = 0;
     //    static longlong offset = 100*longlong(time(0)) - longlong(times(0));
-    static longlong offset = 100*longlong(time(0)) - longlong(times(&tmsb));
+    static longlong offset = 100*longlong(time(nullptr)) - longlong(times(&tmsb));
     if ( processID(pid) == s_myPid && prc_start == 0 ) {
       linux_proc prc;
       readProcStat( processID(pid), prc);

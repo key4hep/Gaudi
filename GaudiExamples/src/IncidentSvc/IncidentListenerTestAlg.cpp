@@ -28,7 +28,7 @@ StatusCode IncidentListenerTestAlg::initialize() {
   if (sc.isFailure()) return sc;
 
   // get a the incident service
-  m_incSvc = svc<IIncidentSvc>("IncidentSvc",true);
+  m_incSvc = service("IncidentSvc",true);
 
   // instantiate listeners
   m_listener[0].reset(new IncidentListenerTest("Listener 0",serviceLocator()));

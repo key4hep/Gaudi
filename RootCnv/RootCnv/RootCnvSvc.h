@@ -63,7 +63,7 @@ namespace Gaudi {
     /// TClass pointer to DataObject class
     TClass*                     m_classDO;
     /// Setup structure (ref-counted) and passed to data connections
-    RootConnectionSetup*        m_setup = nullptr;
+    std::shared_ptr<RootConnectionSetup> m_setup;
     /// Property: ROOT section name
     std::string                 m_currSection;
 

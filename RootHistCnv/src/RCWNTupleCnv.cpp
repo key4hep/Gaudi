@@ -224,7 +224,7 @@ StatusCode RootHistCnv::RCWNTupleCnv::book(const std::string& desc,
 //  	<< endmsg;
 
 #if ROOT_VERSION_CODE >= ROOT_VERSION(5,15,0)
-    TBranch *br = new TBranch(rtree,
+    auto br = new TBranch(rtree,
 #else
     TBranch *br = new TBranch(
 #endif
@@ -253,7 +253,7 @@ StatusCode RootHistCnv::RCWNTupleCnv::book(const std::string& desc,
       if (tobj->IsA()->InheritsFrom("TLeafI")) {
         index = dynamic_cast<TLeafI*>(tobj);
 
-        if (index != 0) {
+        if (index) {
           index->SetMaximum( item_range_upper[i_item] );
           // FIXME -- add for next version of ROOT
           // index->SetMinimum( item_range_lower[i_item] );
@@ -461,7 +461,7 @@ StatusCode RootHistCnv::RCWNTupleCnv::load(TTree* tree, INTuple*& refpObject )
       bool hasRange=false;
       int indexRange = 0;
       int itemSize;
-      item = 0;
+      item = nullptr;
 
       //      TLeaf* tl = (TLeaf*)tobj;
       TLeaf* tl = dynamic_cast<TLeaf*> (tobj);
@@ -487,7 +487,7 @@ StatusCode RootHistCnv::RCWNTupleCnv::load(TTree* tree, INTuple*& refpObject )
 	    << endmsg;
       }
 
-      if (indexLeaf != 0) {
+      if (indexLeaf) {
         //index Arrays and Matrices
 
         indexName = indexLeaf->GetName();

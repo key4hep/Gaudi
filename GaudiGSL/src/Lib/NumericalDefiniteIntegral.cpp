@@ -113,8 +113,7 @@ namespace Genfun
       const double                              epsabs   ,
       const double                              epsrel   ,
       const size_t                              size     )
-      : AbsFunction ()
-      , m_function  ( function.clone          ()    )
+      : m_function  ( function.clone          ()    )
       , m_DIM       ( 0                             )
       , m_index     ( index                         )
       , m_a         ( a      )
@@ -124,14 +123,11 @@ namespace Genfun
       , m_type      ( type   )
       , m_category  ( GaudiMath::Integration::Finite )
       , m_rule      ( rule       )
-      , m_points    (            )
       , m_epsabs    ( epsabs     )
       , m_epsrel    ( epsrel     )
       , m_result    ( GSL_NEGINF )
       , m_error     ( GSL_POSINF )
       , m_size      ( size       )
-      , m_argument  ()
-      , m_argF      ()
     {
       if ( GaudiMath::Integration::Fixed == m_rule )
         { m_rule = GaudiMath::Integration::Default ; }
@@ -165,8 +161,7 @@ namespace Genfun
       const double                             epsabs   ,
       const double                             epsrel   ,
       const size_t                             size     )
-      : AbsFunction ()
-      , m_function  ( function.clone()             )
+      : m_function  ( function.clone()             )
       , m_DIM       ( 0                            )
       , m_index     ( index                        )
       , m_a         ( a                            )
@@ -184,8 +179,6 @@ namespace Genfun
       , m_error     ( GSL_POSINF                          )
       //
       , m_size      ( size                                )
-      , m_argument  ()
-      , m_argF      ()
     {
       if ( function.dimensionality() < 2          )
         { Exception("::constructor: invalid dimensionality ") ; }
@@ -200,17 +193,15 @@ namespace Genfun
       const double l2 = std::max ( a , b ) ;
       m_points.push_back ( l1 ) ;
       m_points.push_back ( l2 ) ;
+      // TODO: replace by remove_if (<l1,>l2), unique, erase and sort...
       std::sort ( m_points.begin() , m_points.end() ) ;
-      m_points.erase( std::unique( m_points.begin () ,
-                                   m_points.end   () ) ,
+      m_points.erase( std::unique( m_points.begin () , m_points.end   () ) ,
                       m_points.end() );
 
-      Points::iterator lower =
-        std::lower_bound ( m_points.begin () , m_points.end () , l1 ) ;
-      m_points.erase     ( m_points.begin () , lower                ) ;
-      Points::iterator upper =
-        std::upper_bound ( m_points.begin () , m_points.end () , l2 ) ;
-      m_points.erase     ( upper             , m_points.end ()      ) ;
+      auto lower = std::lower_bound ( m_points.begin () , m_points.end () , l1 ) ;
+      m_points.erase( m_points.begin () , lower                ) ;
+      auto upper = std::upper_bound ( m_points.begin () , m_points.end () , l2 ) ;
+      m_points.erase( upper             , m_points.end ()      ) ;
 
       m_pdata.reset( new double[ m_points.size() ]  );
       std::copy( m_points.begin() , m_points.end() , m_pdata.get() );
@@ -249,8 +240,7 @@ namespace Genfun
       const double                            epsabs    ,
       const double                            epsrel    ,
       const size_t                            size      )
-      : AbsFunction()
-      , m_function  ( function.clone()             )
+      : m_function  ( function.clone()             )
       , m_DIM       ( 0                            )
       , m_index     ( index                        )
       , m_a         ( a                            )
@@ -260,7 +250,6 @@ namespace Genfun
       , m_type      ( GaudiMath::Integration::    Other )
       , m_category  ( GaudiMath::Integration:: Infinite )
       , m_rule      ( GaudiMath::Integration::    Fixed )
-      , m_points    (         )
       , m_epsabs    ( epsabs  )
       , m_epsrel    ( epsrel  )
       //
@@ -268,8 +257,6 @@ namespace Genfun
       , m_error     ( GSL_POSINF                          )
       //
       , m_size      ( size                                )
-      , m_argument  ()
-      , m_argF      ()
     {
       if ( function.dimensionality() < 2          )
         { Exception("::constructor: invalid dimensionality ") ; }
@@ -316,8 +303,7 @@ namespace Genfun
       const double                            epsabs    ,
       const double                            epsrel    ,
       const size_t                            size      )
-      : AbsFunction()
-      , m_function  ( function.clone()             )
+      : m_function  ( function.clone()             )
       , m_DIM       ( 0                            )
       , m_index     ( index                        )
       , m_a         ( GSL_NEGINF                   )
@@ -327,7 +313,6 @@ namespace Genfun
       , m_type      ( GaudiMath::Integration::    Other )
       , m_category  ( GaudiMath::Integration:: Infinite )
       , m_rule      ( GaudiMath::Integration::    Fixed )
-      , m_points    (         )
       , m_epsabs    ( epsabs  )
       , m_epsrel    ( epsrel  )
       //
@@ -335,8 +320,6 @@ namespace Genfun
       , m_error     ( GSL_POSINF                          )
       //
       , m_size      ( size                                )
-      , m_argument  ()
-      , m_argF      ()
     {
       if ( function.dimensionality() < 2          )
         { Exception("::constructor: invalid dimensionality ") ; }
@@ -388,7 +371,6 @@ namespace Genfun
       , m_type      ( GaudiMath::Integration::    Other )
       , m_category  ( GaudiMath::Integration:: Infinite )
       , m_rule      ( GaudiMath::Integration::    Fixed )
-      , m_points    (         )
       , m_epsabs    ( epsabs  )
       , m_epsrel    ( epsrel  )
       //
@@ -396,8 +378,6 @@ namespace Genfun
       , m_error     ( GSL_POSINF                          )
       //
       , m_size      ( size                                )
-      , m_argument  ()
-      , m_argF      ()
     {
       if ( function.dimensionality() < 2          )
         { Exception("::constructor: invalid dimensionality ") ; }
@@ -567,7 +547,7 @@ namespace Genfun
     double NumericalDefiniteIntegral::QAGI ( _Function* F ) const
     {
       // check the argument
-      if ( 0 == F    ) { Exception("::QAGI: invalid function"); }
+      if ( !F    ) { Exception("::QAGI: invalid function"); }
 
       // allocate workspace
       allocate() ;
@@ -610,7 +590,7 @@ namespace Genfun
     // ========================================================================
     double NumericalDefiniteIntegral::QAGP( _Function* F ) const
     {
-      if( 0 == F ) { Exception("QAGP::invalid function") ; }
+      if( !F ) { Exception("QAGP::invalid function") ; }
 
       // no known singular points ?
       if( points().empty() || !m_pdata ) { return QAGS( F ) ; }
@@ -640,7 +620,7 @@ namespace Genfun
     // ========================================================================
     double NumericalDefiniteIntegral::QNG ( _Function* F ) const
     {
-      if( 0 == F ) { Exception("QNG::invalid function") ; }
+      if( !F ) { Exception("QNG::invalid function") ; }
 
       // integration limits
       const double low  = std::min ( m_a , m_b ) ;
@@ -669,7 +649,7 @@ namespace Genfun
     // ========================================================================
     double NumericalDefiniteIntegral::QAG ( _Function* F ) const
     {
-      if( 0 == F ) { Exception("QAG::invalid function") ; }
+      if( !F ) { Exception("QAG::invalid function") ; }
 
       // allocate workspace
       allocate () ;
@@ -700,7 +680,7 @@ namespace Genfun
     // ========================================================================
     double NumericalDefiniteIntegral::QAGS ( _Function* F ) const
     {
-      if( 0 == F ) { Exception("QAG::invalid function") ; }
+      if( !F ) { Exception("QAG::invalid function") ; }
 
       if ( m_a == m_b )
         {

@@ -31,19 +31,19 @@ namespace Gaudi {
     {
       m_classType = "IProfile2D";
       m_rep->SetErrorOption("s");
-      m_rep->SetDirectory(0);
+      m_rep->SetDirectory(nullptr);
     }
     /// Default Constructor with representation object
     Profile2D(TProfile2D* rep);
     /// Destructor.
-    virtual ~Profile2D() = default;
+    ~Profile2D() override = default;
     /// Fill bin content
-    bool fill(double x,double y,double z,double weight)  {
+    bool fill(double x,double y,double z,double weight) override  {
       m_rep->Fill(x,y,z,weight);
       return true;
     }
     /// Retrieve reference to class defininition identifier
-    virtual const CLID& clID() const { return classID(); }
+    const CLID& clID() const override { return classID(); }
     static const CLID& classID()     { return CLID_ProfileH2; }
   };
 }
@@ -79,25 +79,25 @@ namespace Gaudi {
 
 std::pair<DataObject*,AIDA::IProfile2D*> Gaudi::createProf2D(const std::string& title, const Edges& eX, const Edges& eY, double /* zlow */ , double /* zup */) {
   // Not implemented in ROOT! Can only use TProfile2D with no z-limits
-  Profile2D* p = new Profile2D(new TProfile2D(title.c_str(),title.c_str(),eX.size()-1,&eX.front(), eY.size()-1,&eY.front()/*,zlow,zup */));
-  return std::pair<DataObject*,AIDA::IProfile2D*>(p,p);
+  auto p = new Profile2D(new TProfile2D(title.c_str(),title.c_str(),eX.size()-1,&eX.front(), eY.size()-1,&eY.front()/*,zlow,zup */));
+  return {p,p};
 }
 
 std::pair<DataObject*,AIDA::IProfile2D*>
 Gaudi::createProf2D(const std::string& title,int binsX,double xlow,double xup,int binsY,double ylow,double yup,double zlow,double zup) {
-  Profile2D* p = new Profile2D(new TProfile2D(title.c_str(),title.c_str(),binsX,xlow,xup,binsY,ylow,yup,zlow,zup));
-  return std::pair<DataObject*,AIDA::IProfile2D*>(p,p);
+  auto p = new Profile2D(new TProfile2D(title.c_str(),title.c_str(),binsX,xlow,xup,binsY,ylow,yup,zlow,zup));
+  return {p,p};
 }
 
 std::pair<DataObject*,AIDA::IProfile2D*> Gaudi::createProf2D(const AIDA::IProfile2D& hist)  {
-  TProfile2D *h = getRepresentation<AIDA::IProfile2D,TProfile2D>(hist);
-  Profile2D *n = h ? new Profile2D(new TProfile2D(*h)) : 0;
-  return std::pair<DataObject*,AIDA::IProfile2D*>(n,n);
+  auto h = getRepresentation<AIDA::IProfile2D,TProfile2D>(hist);
+  auto n = ( h ? new Profile2D(new TProfile2D(*h)) : nullptr );
+  return {n,n};
 }
 
 Gaudi::Profile2D::Profile2D(TProfile2D* rep)    {
   m_classType = "IProfile2D";
-  rep->SetDirectory(0);
+  rep->SetDirectory(nullptr);
   adoptRepresentation(rep);
   m_sumEntries = 0;
 }

@@ -43,8 +43,8 @@ bool MsgStream::countInactive() {
 MsgStream::MsgStream(IMessageSvc* svc, int)
 : m_service(svc)
 {
-  setLevel((0==svc) ? MSG::INFO : svc->outputLevel());
-  m_useColors = (0==svc) ? false : svc->useColor();
+  setLevel( svc ?  svc->outputLevel() : MSG::INFO );
+  m_useColors = ( svc ? svc->useColor() : false );
 #ifndef NDEBUG
   m_inactCounter = svc ? Gaudi::Cast<IInactiveMessageCounter>(svc) : 0;
 #endif
@@ -67,10 +67,9 @@ MsgStream& MsgStream::doOutput()       {
     // in the middle of a catch block.
     if ( isActive() )   {
       Message msg(m_source,m_currLevel,m_stream.str());
-      if ( m_service != 0 )   {
+      if ( m_service )   {
         m_service->reportMessage (msg, m_currLevel);
-      }
-      else     {
+      } else {
         std::cout << msg << std::endl;
       }
     }

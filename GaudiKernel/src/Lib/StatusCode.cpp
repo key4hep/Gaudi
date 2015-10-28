@@ -30,8 +30,7 @@ bool StatusCode::checkingEnabled() {
 
 const IssueSeverity& StatusCode::severity() const {
   static const IssueSeverity dummy;
-  if (m_severity) return *m_severity;
-  else            return dummy;
+  return  m_severity ? *m_severity : dummy;
 }
 
 void StatusCode::check() {
@@ -45,7 +44,7 @@ void StatusCode::check() {
     void* addresses[depth];
 
     std::string lib, fnc;
-    void* addr = 0;
+    void* addr = nullptr;
     /// @FIXME : (MCl) use backTrace(std::string&, const int, const int) instead
     if (System::backTrace(addresses, depth)) {
 

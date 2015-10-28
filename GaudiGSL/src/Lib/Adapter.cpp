@@ -71,7 +71,7 @@ namespace Genfun
       , m_func    ( right.m_func )
     {}
 
-    Adapter2DoubleFunction::~Adapter2DoubleFunction(){}
+    Adapter2DoubleFunction::~Adapter2DoubleFunction() = default;
 
     double Adapter2DoubleFunction::operator()
       (       double    x ) const
@@ -112,7 +112,7 @@ namespace Genfun
       , m_func      ( right.m_func )
     {}
 
-    Adapter3DoubleFunction::~Adapter3DoubleFunction(){}
+    Adapter3DoubleFunction::~Adapter3DoubleFunction() = default;
 
     double Adapter3DoubleFunction::operator()
       (       double    x ) const
@@ -157,9 +157,8 @@ namespace Genfun
       , m_case      ( SimpleFunction::TrivialArg )
       , m_DIM       ( 1    )
       , m_func1     ( func )
-      , m_func2     ( 0    )
-      , m_func3     ( 0    )
-      , m_arg3      (      )
+      , m_func2     ( nullptr    )
+      , m_func3     ( nullptr    )
     {}
     // ========================================================================
 
@@ -175,11 +174,10 @@ namespace Genfun
       : AbsFunction ()
       , m_case      ( SimpleFunction::ArrayArg  )
       , m_DIM       ( dim  )
-      , m_func1     ( 0    )
+      , m_func1     ( nullptr    )
       , m_func2     ( func )
       , m_arg2      ( new double[dim] )
-      , m_func3     ( 0    )
-      , m_arg3      (      )
+      , m_func3     ( nullptr    )
     {
     }
     // ========================================================================
@@ -196,8 +194,8 @@ namespace Genfun
       : AbsFunction ()
       , m_case      ( SimpleFunction::VectorArg  )
       , m_DIM       ( dim  )
-      , m_func1     ( 0    )
-      , m_func2     ( 0    )
+      , m_func1     ( nullptr    )
+      , m_func2     ( nullptr    )
       , m_func3     ( func )
       , m_arg3      ( dim  , 0 )
     {}

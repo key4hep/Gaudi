@@ -25,16 +25,16 @@ namespace RootHistCnv {
   public:
 
     /// Initialise
-    virtual StatusCode initialize();
+    StatusCode initialize() override;
 
   public:
 
     /// Create the transient representation of an object.
-    virtual StatusCode createObj( IOpaqueAddress* pAddress, DataObject*& refpObject );
+    StatusCode createObj( IOpaqueAddress* pAddress, DataObject*& refpObject ) override;
     /// Convert the transient object to the requested representation.
-    virtual StatusCode createRep( DataObject* pObject, IOpaqueAddress*& refpAddress );
+    StatusCode createRep( DataObject* pObject, IOpaqueAddress*& refpAddress ) override;
     /// Convert the transient object to the requested representation.
-    virtual StatusCode updateRep( IOpaqueAddress* pAddress, DataObject* pObject );
+    StatusCode updateRep( IOpaqueAddress* pAddress, DataObject* pObject ) override;
 
   public:
 

@@ -11,10 +11,9 @@ class GAUDI_API extends: public BASE, virtual public extend_interfaces<Interface
 
 public:
   /// Typedef to this class.
-  typedef extends base_class;
+  using base_class = extends;
   /// Typedef to the base of this class.
-  typedef extend_interfaces<Interfaces...> extend_interfaces_base;
-
+  using extend_interfaces_base = extend_interfaces<Interfaces...>;
   /// forward constructor(s)
   using BASE::BASE;
 
@@ -38,12 +37,13 @@ public:
 
   /// Implementation of IInterface::getInterfaceNames.
   std::vector<std::string> getInterfaceNames() const override {
-    // TODO: fix possible duplication 
     using iids = typename extend_interfaces_base::ext_iids;
     auto vb = BASE::getInterfaceNames();
     auto vi = Gaudi::getInterfaceNames( iids{} );
-    // start from base
-    vb.insert( vb.end(), vi.begin(), vi.end() );
+    // start with base, and move the rest...
+    vb.insert( vb.end(),
+               std::make_move_iterator(vi.begin()),
+               std::make_move_iterator(vi.end()) );
     return vb;
   }
 

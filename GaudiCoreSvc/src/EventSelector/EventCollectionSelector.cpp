@@ -48,7 +48,7 @@ public:
   ListName& files() {
     return m_files;
   }
-  virtual void* identifier() const {
+  void* identifier() const override {
     return (void*)m_pSelector;
   }
   void setCriteria(const std::string& crit) {
