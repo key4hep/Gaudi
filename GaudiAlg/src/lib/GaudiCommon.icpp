@@ -100,8 +100,6 @@ GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface * parent )
   this->declareProperty ( "Context"         , m_context     ) ;
   // root in TES
   this->declareProperty ( "RootInTES"       , m_rootInTES   ) ;
-  // root on TES ( temporary )
-  this->declareProperty ( "RootOnTES"       , m_rootOnTES   ) ;
   // global time offset
   this->declareProperty ( "GlobalTimeOffset", m_globalTimeOffset ) ;
 
@@ -210,20 +208,6 @@ StatusCode GaudiCommon<PBASE>::
       this->debug() << "Created with context = '" << context() << "'" << endmsg;
   }
 
-  // some temporary checks to see if people are using RootOnTES and warn if so
-  // TO BE REMOVED ASAP ...
-  if ( m_rootInTES.empty() && !m_rootOnTES.empty() )
-  {
-    m_rootInTES = m_rootOnTES;
-    Warning( "RootOnTES option is OBSOLETE -> Use RootInTES instead. RootInTES has been updated to "
-             + m_rootInTES, StatusCode::SUCCESS ).ignore();
-  }
-  else if ( !m_rootInTES.empty() && !m_rootOnTES.empty() )
-  {
-    Warning( "Options RootOnTES AND RootInTES are defined ! Use RootInTES. RootOnTES is ignored",
-             StatusCode::SUCCESS ).ignore();
-  }
-
   // Check rootInTES ends with a /
   if ( !m_rootInTES.empty() &&
        m_rootInTES.substr(m_rootInTES.size()-1) != "/" ) m_rootInTES += "/";
@@ -298,10 +282,7 @@ StatusCode GaudiCommon<PBASE>::
   if ( this->msgLevel(MSG::DEBUG) )
   {
     this->debug() << "Services to release :";
-    for ( const auto& i : m_services )
-    {
-      this->debug() << " " << i->name();
-    }
+    for ( const auto& i : m_services ) this->debug() << " " << i->name();
     this->debug() << endmsg;
   }
   while ( !m_services.empty() ) { sc = releaseSvc( m_services.front() ) && sc; }
@@ -377,7 +358,7 @@ StatusCode GaudiCommon<PBASE>::releaseTool ( const IAlgTool* algTool ) const
   if ( this->msgLevel(MSG::DEBUG) )
   { this->debug() << "Releasing tool '" << name << "'" << endmsg; }
   // remove the tool from the lists
-  m_tools.erase( --it.base() ) ;
+  m_tools.erase( std::next(it).base() ) ;
   // release tool
   if ( this->msgLevel(MSG::DEBUG) ) {
     this->debug() << "The tool '" << t->name() << "' of type '"
@@ -439,9 +420,9 @@ void GaudiCommon<PBASE>::addToServiceList( SmartIF<IService> svc ) const
   if (svc) {
     auto i = std::lower_bound( std::begin(m_services), std::end(m_services), svc, GaudiCommon_details::svc_lt );
     if ( i == std::end(m_services) || !GaudiCommon_details::svc_eq(*i,svc) ) {
-            m_services.insert( i, std::move(svc) );
+      m_services.insert( i, std::move(svc) );
     }  else {
-           this->warning() << "Service " << svc->name() << " already present -- skipping" << endmsg;
+      this->warning() << "Service " << svc->name() << " already present -- skipping" << endmsg;
     }
   }
 }

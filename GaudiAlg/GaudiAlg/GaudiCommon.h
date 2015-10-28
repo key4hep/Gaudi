@@ -696,6 +696,7 @@ public:
    *  @retval           StatusCode::FAILURE Error releasing too or service
    */
   StatusCode release ( const IInterface* interface ) const ;
+
   /// Un-hide IInterface::release (ICC warning #1125)
   using PBASE::release;
   // ==========================================================================
@@ -780,10 +781,6 @@ private:
   std::string m_context;
   /// The rootInTES string
   std::string m_rootInTES;
-  /// The rootOnTES string.
-  /// Note, this job option is OBSOLETE, but retained temporarily to allow easy migration.
-  /// Please update your code to use RootInTES instead. This option will be removed at some point.
-  std::string m_rootOnTES;
   /// The globalTimeOffset value
   double m_globalTimeOffset = 0;
   // ==========================================================================
