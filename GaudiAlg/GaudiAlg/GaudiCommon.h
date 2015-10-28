@@ -724,8 +724,6 @@ public:
    *  Used as the directory root in the TES for which all data access refers to (both saving and retrieving).
    */
   inline const std::string & rootInTES() const { return m_rootInTES; }
-  /// Returns the "globalTimeOffset" double.
-  inline double globalTimeOffset() const { return m_globalTimeOffset; }
   // ==========================================================================
 public:
   // ==========================================================================
@@ -781,8 +779,6 @@ private:
   std::string m_context;
   /// The rootInTES string
   std::string m_rootInTES;
-  /// The globalTimeOffset value
-  double m_globalTimeOffset = 0;
   // ==========================================================================
   // the header row
   std::string    m_header  ; ///< the header row
