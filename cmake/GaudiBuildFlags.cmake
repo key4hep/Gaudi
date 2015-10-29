@@ -1,4 +1,6 @@
-
+# define a minimun default version
+set(GAUDI_CXX_STANDARD_DEFAULT "c++11")
+# overriddend depending on the compiler
 if (LCG_COMP STREQUAL "clang" AND LCG_COMPVERS VERSION_EQUAL "37")
   set(GAUDI_CXX_STANDARD_DEFAULT "c++14")
 elseif(LCG_COMP STREQUAL "gcc")
