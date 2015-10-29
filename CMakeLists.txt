@@ -13,6 +13,12 @@ find_package(GaudiProject)
 
 option(GAUDI_ATLAS "Enable ATLAS-specific settings" OFF)
 
+# Base Gaudi on the AtlasExternals project when building for ATLAS:
+if( GAUDI_ATLAS )
+   find_package( AtlasExternals )
+   gaudi_ctest_setup() # Needed for correct CTest usage in this setup
+endif()
+
 # Declare project name and version
 gaudi_project(Gaudi v26r4)
 
