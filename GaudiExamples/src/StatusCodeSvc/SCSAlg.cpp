@@ -41,20 +41,20 @@ StatusCode SCSAlg::test() {
   return StatusCode::SUCCESS;
 }
 
-void SCSAlg::fncChecked() {
+void __attribute__ ((noinline)) SCSAlg::fncChecked() {
 
   test().isSuccess();
 
 }
 
-void SCSAlg::fncUnchecked() {
+void __attribute__ ((noinline)) SCSAlg::fncUnchecked() {
 
   test();
 
 }
 
 #ifndef special_fncUnchecked2
-void SCSAlg::fncUnchecked2() {
+void __attribute__ ((noinline)) SCSAlg::fncUnchecked2() {
 
   test();
 
