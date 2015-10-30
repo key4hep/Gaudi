@@ -17,7 +17,8 @@ class DataObjectDescriptor(object):
     UPDATE = 2
 
     def __init__(self, *args):
-        object.__init__(self)
+        for s in self.__slots__:
+            setattr(self, s, None)
 
         #if we have one arg: initialize from string
         if len(args) is 1:
@@ -51,30 +52,28 @@ class DataObjectDescriptor(object):
         self.AccessType = int(a[3])
 
     def __str__(self):
-        s =  self.Tag + FIELD_SEP + self.Path 
-        
-        for a in self.AlternativePaths:
-            s += ADDR_SEP + a
-            
-        s += FIELD_SEP
-        
-        s += str(int(self.Optional)) + FIELD_SEP + str(self.AccessType)
-        
-        return s
-               
+        if not self.Tag:
+            return ''
+        return FIELD_SEP.join([self.Tag,
+                               ADDR_SEP.join([self.Path] +
+                                             self.AlternativePaths),
+                               '1' if self.Optional else '0',
+                               str(self.AccessType)])
+
     def __repr__(self):
         return "%s(%r)" % (self.__class__.__name__, str(self))
 
     def __eq__(self, other):
-        return self.__dict__ == other.__dict__
+        return (self.__class__ == other.__class__ and
+                all(getattr(self, s) == getattr(other, s)
+                    for s in self.__slots__))
 
     def toStringProperty(self):
-        return self.__str__()
+        return str(self)
 
 class DataObjectDescriptorCollection(object):
 
     def __init__(self, dataItems):
-        object.__init__(self)
 
         #dataItems is a string of format
         # "itemITEM_SEPitemITEM_SEP"
@@ -83,8 +82,6 @@ class DataObjectDescriptorCollection(object):
 
         if dataItems == "":
             return
-
-        #import pdb; pdb.set_trace()
 
         items = dataItems.split(ITEM_SEP)
 
@@ -105,14 +102,16 @@ class DataObjectDescriptorCollection(object):
             raise AttributeError(name)
 
     def __str__(self):
-        return ITEM_SEP.join(map(str, self.__dict__.values()))
+        return ITEM_SEP.join(str(self.__dict__[key])
+                             for key in sorted(self.__dict__))
 
     def __repr__(self):
         return "%s(%r)" % (self.__class__.__name__, str(self))
 
     def __eq__(self, other):
+        # it's not very nice, but it's practical
         return self.__dict__ == other.__dict__
 
     def toStringProperty(self):
-        return self.__str__()
+        return str(self)
 
