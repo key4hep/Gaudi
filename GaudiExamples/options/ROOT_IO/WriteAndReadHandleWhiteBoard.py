@@ -42,12 +42,12 @@ writer = WriteHandleAlg("Writer",
                         OutputLevel=DEBUG,
                         UseHandle=True,
                         IsClonable=True)
-writer.Outputs.Output.Path = "/Event/"+product_name
+writer.DataOutputs.Output.Path = "/Event/"+product_name
 
 reader = ReadHandleAlg("Reader",
                        OutputLevel=DEBUG,
                        IsClonable=True)
-reader.Inputs.Input.Path = product_name
+reader.DataInputs.Input.Path = product_name
 
 
 evtslots = 15

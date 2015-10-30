@@ -44,7 +44,7 @@ writer = WriteHandleAlg ("Writer",
                          Cardinality=4,
                          OutputLevel=WARNING)
 
-writer.Outputs.Output.Path ="/Event/"+product_name
+writer.DataOutputs.Output.Path ="/Event/"+product_name
 
 
 evtslots = 20

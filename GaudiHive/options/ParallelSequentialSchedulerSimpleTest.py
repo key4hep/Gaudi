@@ -21,22 +21,22 @@ whiteboard   = HiveWhiteBoard("EventDataSvc",
 algResPool = AlgResourcePool(OutputLevel=DEBUG)
                                 
 a1 = CPUCruncher("A1", 
-                 Outputs = ['/Event/a1'],
+                 DataOutputs = ['/Event/a1'],
                  shortCalib=True,
                  varRuntime=.1, 
                  avgRuntime=.5 )
 a2 = CPUCruncher("A2", 
                  shortCalib=True,
-                 Inputs = ['/Event/a1'],
-                 Outputs = ['/Event/a2'])
+                 DataInputs = ['/Event/a1'],
+                 DataOutputs = ['/Event/a2'])
 a3 = CPUCruncher("A3", 
                  shortCalib=True,
-                 Inputs = ['/Event/a1'],
-                 Outputs = ['/Event/a3'])
+                 DataInputs = ['/Event/a1'],
+                 DataOutputs = ['/Event/a3'])
 a4 = CPUCruncher("A4", 
                  shortCalib=True,
-                 Inputs = ['/Event/a2','/Event/a3'],
-                 Outputs = ['/Event/a4'])
+                 DataInputs = ['/Event/a2','/Event/a3'],
+                 DataOutputs = ['/Event/a4'])
 
 for algo in [a1,a2,a3,a4]:
   algo.OutputLevel=INFO

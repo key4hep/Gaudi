@@ -100,8 +100,8 @@ def load_brunel_scenario(filename):
         outputs = [item for item in deps[2]]
         new_algo = CPUCruncher(alg,
                                avgRuntime=float(timing[alg]),
-                               Inputs=inputs,
-                               Outputs=outputs,
+                               DataInputs=inputs,
+                               DataOutputs=outputs,
                                OutputLevel = 6
                               )
         for item in deps[1]: 
@@ -113,8 +113,8 @@ def load_brunel_scenario(filename):
   #look for the objects that haven't been provided within the job. Assume this needs to come via input
   new_algo = CPUCruncher("input",
                          avgRuntime=1,
-                         Inputs=[],
-                         Outputs=[item for item in all_inputs.difference(all_outputs)],
+                         DataInputs=[],
+                         DataOutputs=[item for item in all_inputs.difference(all_outputs)],
                          OutputLevel = 6
                          )
   all_algos.append(new_algo)

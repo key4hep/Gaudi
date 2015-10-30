@@ -38,10 +38,10 @@ GaudiPersistency()
 writer = WriteHandleAlg("Writer",
                         UseHandle=True,
                         OutputLevel=DEBUG)
-writer.Outputs.Output.Path = "/Event/MyCollision"
+writer.DataOutputs.Output.Path = "/Event/MyCollision"
 
 reader = ReadHandleAlg("Reader", OutputLevel=DEBUG)
-reader.Inputs.Input.Path = "MyCollision"
+reader.DataInputs.Input.Path = "MyCollision"
 
 # Application setup
 app = ApplicationMgr()

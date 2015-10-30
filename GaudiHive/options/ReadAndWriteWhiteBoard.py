@@ -37,7 +37,7 @@ reader = ReadHandleAlg ("Reader",
                          IsClonable=True,
                          OutputLevel=INFO,
                          NeededResources=["ROOTIO"])
-reader.Inputs.Input.Path=product_name
+reader.DataInputs.Input.Path=product_name
 
 
 evtslots = 6

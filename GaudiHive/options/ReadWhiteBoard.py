@@ -30,7 +30,7 @@ loader = HiveReadAlgorithm("Loader",
 reader = ReadHandleAlg ("Reader",
                          Cardinality=4,
                          OutputLevel=INFO)
-reader.Inputs.Input.Path=product_name
+reader.DataInputs.Input.Path=product_name
 
 evtslots = 5
 algoparallel = 10

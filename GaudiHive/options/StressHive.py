@@ -17,8 +17,8 @@ auto_crunchers=[]
 for i in xrange(number_of_algos):
   auto_cruncher = CPUCruncher("cruncher_%s"%i,
                               avgRuntime=random.uniform(mean_time+.1,mean_time+.5),
-                              Inputs=[],
-                              Outputs=["coll_%s"%i])
+                              DataInputs=[],
+                              DataOutputs=["coll_%s"%i])
   auto_crunchers.append(auto_cruncher)
 
 # ============================================================================

@@ -27,12 +27,12 @@ scheduler = ForwardSchedulerSvc(MaxEventsInFlight = evtslots,
                                 AlgosDependencies = [[],[]])
 
 a1 = CPUCruncher("A1", 
-                 Outputs = ['/Event/a1'],
+                 DataOutputs = ['/Event/a1'],
                  varRuntime=.1, 
                  avgRuntime=.5 )
 a2 = CPUCruncher("A2", 
-                 Inputs = [],
-                 Outputs = ['/Event/a2'])
+                 DataInputs = [],
+                 DataOutputs = ['/Event/a2'])
 
 for algo in [a1,a2]:
   algo.Cardinality = cardinality

@@ -53,8 +53,8 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
   declareProperty( "ErrorCounter",       m_errorCount = 0);
 
   //declare input and output properties
-  declareProperty( "Inputs", m_inputDataObjects);
-  declareProperty( "Outputs", m_outputDataObjects);
+  declareProperty( "DataInputs", m_inputDataObjects);
+  declareProperty( "DataOutputs", m_outputDataObjects);
 
   // Auditor monitoring properties
 

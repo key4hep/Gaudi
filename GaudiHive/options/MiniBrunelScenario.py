@@ -151,8 +151,8 @@ def load_scenario():
     new_algo = CPUCruncher("%s@%s" %(algo["name"],algo["type"]),
                            avgRuntime=theAvgRuntime,
                            varRuntime=theAvgRuntime*0.01,
-                           Inputs = algo["inputs"],
-                           Outputs = algo["outputs"],
+                           DataInputs = algo["inputs"],
+                           DataOutputs = algo["outputs"],
                            OutputLevel=INFO
                            )
     cpu_cruncher_algos.append(new_algo)

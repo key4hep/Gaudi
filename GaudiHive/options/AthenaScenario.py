@@ -45,8 +45,8 @@ def load_athena_scenario(filename):
     cleaned_outputs = [output for output in algo["outputs"] if (output not in all_outputs)]
     new_algo = CPUCruncher(algo["name"],
                            avgRuntime=float(algo["runtimes"][0]/1000000.),
-                           Inputs = cleaned_inputs,
-                           Outputs = cleaned_outputs
+                           DataInputs = cleaned_inputs,
+                           DataOutputs = cleaned_outputs
                            )
     cpu_cruncher_algos.append(new_algo)
     all_outputs.update(algo["outputs"])
@@ -56,8 +56,8 @@ def load_athena_scenario(filename):
   #look for the objects that haven't been provided within the job. Assume this needs to come via input
   new_algo = CPUCruncher("input",
                          avgRuntime=1,
-                         Inputs=[],
-                         Outputs=[item for item in all_inputs.difference(all_outputs)]
+                         DataInputs=[],
+                         DataOutputs=[item for item in all_inputs.difference(all_outputs)]
                          )
   cpu_cruncher_algos.append(new_algo)
   cpu_cruncher_algos_inputs.append([])

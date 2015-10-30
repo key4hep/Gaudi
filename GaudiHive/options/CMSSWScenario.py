@@ -39,8 +39,8 @@ def load_CMSSW_scenario(filename):
     outputs = [algo["@label"].replace("/","_"),]
     new_algo = CPUCruncher(algo["@label"],
                            avgRuntime=float(algo["eventTimes"][0]),
-                           Inputs = inputs,
-                           Outputs = outputs
+                           DataInputs = inputs,
+                           DataOutputs = outputs
                           )
 
     cpu_cruncher_algos.append(new_algo)
@@ -51,8 +51,8 @@ def load_CMSSW_scenario(filename):
   #look for the objects that haven't been provided within the job. Assume this needs to come via input
   new_algo = CPUCruncher("input",
                          avgRuntime=1,
-                         Inputs=[],
-                         Outputs=[item for item in all_inputs.difference(all_outputs)]
+                         DataInputs=[],
+                         DataOutputs=[item for item in all_inputs.difference(all_outputs)]
                          )
   cpu_cruncher_algos.append(new_algo)
   cpu_cruncher_algos_inputs.append([])
