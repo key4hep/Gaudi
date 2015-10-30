@@ -1,5 +1,6 @@
-__version__ = "$Revision: 0.1 $"
-__doc__ = """The python module holding python bindings to DataObjectDescriptor"""
+"""
+The Python module holding Python bindings to DataObjectDescriptor.
+"""
 
 FIELD_SEP = '|'
 ITEM_SEP = '#'
@@ -20,36 +21,28 @@ class DataObjectDescriptor(object):
         for s in self.__slots__:
             setattr(self, s, None)
 
-        #if we have one arg: initialize from string
-        if len(args) is 1:
-            self.fromString(args[0])
-        else:
-            #else the data is given
-            self.fromArray(args)
+        # possible values of args:
+        # - (,)
+        # - ('',)
+        # - ('tag|path|0|0',)
+        # - ('tag', 'path', False, READ)
+        if args:
+            # if we have one arg: initialize from string
+            if len(args) == 1:
+                if args[0]:
+                    args = args[0].split(FIELD_SEP)
+                else:
+                    return # we are getting an empty string
 
-    def fromString(self, s):
-        if s == "":
-            return
+            self.Tag, paths, opt, acc_type = args
 
-        fields = s.split(FIELD_SEP)
-        self.fromArray(fields)
+            paths = paths.split(ADDR_SEP)
+            self.Path = paths[0]
+            self.AlternativePaths = paths[1:]
 
-    def fromArray(self, a):
-        if len(a) != 4:
-            return
+            self.Optional = bool(int(opt))
 
-        self.Tag = a[0]
-
-        if not ADDR_SEP in a[1]: #only one address provided
-            self.Path = a[1]
-            self.AlternativePaths = []
-        else: #we have alternative addresses
-            addr = a[1].split(ADDR_SEP)
-            self.Path = addr[0]
-            self.AlternativePaths = addr[1:]
-
-        self.Optional = int(a[2]) == 1
-        self.AccessType = int(a[3])
+            self.AccessType = int(acc_type)
 
     def __str__(self):
         if not self.Tag:
@@ -80,22 +73,17 @@ class DataObjectDescriptorCollection(object):
         # each item is a string of
         # "tagFIELD_SEPaddressFIELD_SEPoptionalFIELD_SEPaccessType"
 
-        if dataItems == "":
-            return
-
-        items = dataItems.split(ITEM_SEP)
-
-        for item in items:
-            d = DataObjectDescriptor(item)
-            object.__setattr__(self, d.Tag, d)
-
-    def __getattr__(self, name):
-        #is only called if attribute doesn't exist
-        #don't allow creation of new DataItems
-        raise AttributeError(name)
+        if dataItems:
+            for item in dataItems.split(ITEM_SEP):
+                d = DataObjectDescriptor(item)
+                object.__setattr__(self, d.Tag, d)
 
     def __setattr__(self, name, value):
         if name in self.__dict__:
+            if isinstance(value, (basestring, tuple)):
+                value = DataObjectDescriptor(value)
+            if value.Tag != name:
+                raise ValueError('cannot assign %r to %s (wrong tag)' % (value, name))
             return object.__setattr__(self, name, value)
         else:
             #don't allow creation of new attributes
@@ -109,7 +97,6 @@ class DataObjectDescriptorCollection(object):
         return "%s(%r)" % (self.__class__.__name__, str(self))
 
     def __eq__(self, other):
-        # it's not very nice, but it's practical
         return self.__dict__ == other.__dict__
 
     def toStringProperty(self):
