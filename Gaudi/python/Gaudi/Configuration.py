@@ -3,6 +3,7 @@
 
 from GaudiKernel.Constants import *
 from GaudiKernel.Configurable import *
+from GaudiKernel.DataObjectDescriptor import *
 from GaudiKernel.ConfigurableDb import loadConfigurableDb, cfgDb
 from GaudiKernel.ConfigurableDb import getConfigurable as confDbGetConfigurable
 from CommonGaudiConfigurables import *
