@@ -122,7 +122,7 @@ public:
     return m_rootCLID;
   }
   /// Name for root Event
-  const std::string& rootName() const {
+  const std::string& rootName() const override {
     return m_rootName;
   }
 

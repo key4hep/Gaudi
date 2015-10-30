@@ -81,29 +81,29 @@ public:
   const std::string& rootName() const override;
 
   /// IDataManagerSvc: Register object address with the data store.
-  virtual StatusCode registerAddress( const std::string& fullPath,
-                                      IOpaqueAddress* pAddress);
+  StatusCode registerAddress( const std::string& fullPath,
+                              IOpaqueAddress* pAddress) override;
 
   /// IDataManagerSvc: Register object address with the data store.
-  virtual StatusCode registerAddress( DataObject* parentObj,
-                                      const std::string& objectPath,
-                                      IOpaqueAddress* pAddress);
+  StatusCode registerAddress( DataObject* parentObj,
+                              const std::string& objectPath,
+                              IOpaqueAddress* pAddress) override;
 
   /// IDataManagerSvc: Register object address with the data store.
-  virtual StatusCode registerAddress( IRegistry* parentObj,
-                                      const std::string& objectPath,
-                                      IOpaqueAddress* pAddress);
+  StatusCode registerAddress( IRegistry* parentObj,
+                              const std::string& objectPath,
+                              IOpaqueAddress* pAddress) override;
 
   /// IDataManagerSvc: Unregister object address from the data store.
-  virtual StatusCode unregisterAddress(const std::string& fullPath);
+  StatusCode unregisterAddress(const std::string& fullPath) override;
 
   /// IDataManagerSvc: Unregister object address from the data store.
-  virtual StatusCode unregisterAddress( DataObject* pParent,
-                                        const std::string& objPath);
+  StatusCode unregisterAddress( DataObject* pParent,
+                                const std::string& objPath) override;
 
   /// IDataManagerSvc: Unregister object address from the data store.
-  virtual StatusCode unregisterAddress( IRegistry* pParent,
-                                        const std::string& objPath);
+  StatusCode unregisterAddress( IRegistry* pParent,
+                                const std::string& objPath) override;
 
   /** IDataManagerSvc: Explore the object store: retrieve all leaves attached
    *  to the object
@@ -178,19 +178,19 @@ public:
   StatusCode setDataLoader( IConversionSvc* svc, IDataProviderSvc* dpsvc = nullptr ) override;
 
   /// Add an item to the preload list
-  virtual StatusCode addPreLoadItem( const DataStoreItem& item );
+  StatusCode addPreLoadItem( const DataStoreItem& item ) override;
 
   /// Add an item to the preload list
-  virtual StatusCode addPreLoadItem( const std::string& itemPath );
+  StatusCode addPreLoadItem( const std::string& itemPath ) override;
 
   /// Remove an item from the preload list
-  virtual StatusCode removePreLoadItem( const DataStoreItem& item );
+  StatusCode removePreLoadItem( const DataStoreItem& item ) override;
 
   /// Add an item to the preload list
-  virtual StatusCode removePreLoadItem( const std::string& itemPath );
+  StatusCode removePreLoadItem( const std::string& itemPath ) override;
 
   /// Clear the preload list
-  virtual StatusCode resetPreLoad();
+  StatusCode resetPreLoad() override;
 
   /** Execute one level of preloading and recursively load until the
       final level is reached.
@@ -204,7 +204,7 @@ public:
                               DataObject* pObject );
 
   /// load all preload items of the list
-  virtual StatusCode preLoad();
+  StatusCode preLoad() override;
 
   /// Register object with the data store.
   StatusCode registerObject(  const std::string& fullPath,

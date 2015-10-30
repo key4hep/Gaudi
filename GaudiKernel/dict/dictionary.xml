@@ -28,11 +28,6 @@
   </class>
   <class name="std::vector&lt;LinkManager::Link*&gt;"/>
 
-  <!-- IInterface templated helpers -->
-  <class pattern="extend_interfaces*&lt;*&gt;"/>
-  <class pattern="extends*&lt;*&gt;"/>
-  <class pattern="implements*&lt;*&gt;"/>
-
   <!-- Interfaces in GaudiKernel -->
   <class name="IAddressCreator"/>
   <!-- <class name="IAIDATupleSvc"/> -->

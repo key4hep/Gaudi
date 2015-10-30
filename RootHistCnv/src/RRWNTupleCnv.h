@@ -17,16 +17,11 @@ namespace RootHistCnv {
   class RRWNTupleCnv : public RNTupleCnv   {
   public:
     /// Inquire class type
-    static const CLID& classID()    {
-      return CLID_RowWiseTuple;
-    }
-
+    static const CLID& classID()    { return CLID_RowWiseTuple; }
     /// Standard constructor
-    RRWNTupleCnv( ISvcLocator* svc )  : RNTupleCnv(svc, classID())    {
-    }
+    RRWNTupleCnv( ISvcLocator* svc )  : RNTupleCnv(svc, classID()) { }
     /// Standard destructor
-    virtual ~RRWNTupleCnv()   {
-    }
+    virtual ~RRWNTupleCnv() = default;
   protected:
     /// Create the transient representation of an object.
     virtual StatusCode load(TTree* tree, INTuple*& refpObject);

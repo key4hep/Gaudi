@@ -27,31 +27,31 @@ public:
   /// Add a key/value pair with a given sticky.
   bool addItem( const std::string & key,
                 const std::string & value,
-                bool sticky = false);
+                bool sticky = false) override;
 
   /// Remove the item indicated by a given key
-  bool removeItem( const std::string & key );
+  bool removeItem( const std::string & key ) override;
 
   /// Retrieve the value for a given key
-  std::string value( const std::string & key) const;
+  std::string value( const std::string & key) const override;
 
   /// Set value for a given key
   void setValue( const std::string & key,
-                 const std::string& value);
+                 const std::string& value) override;
 
   /// Set sticky for a given key
   void setSticky( const std::string & key,
-                  bool sticky);
+                  bool sticky) override;
 
   /// Get the number of items in the Annotation
-  int size() const;
+  int size() const override;
 
   /// Individual access to the Annotation-items
-  std::string  key(int index) const;
-  std::string  value(int index) const;
+  std::string  key(int index) const override;
+  std::string  value(int index) const override;
 
   /// Remove all the non-sticky items
-  void reset();
+  void reset() override;
 
 private:
   /// Internal private annotation item class

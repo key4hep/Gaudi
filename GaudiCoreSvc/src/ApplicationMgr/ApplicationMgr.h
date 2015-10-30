@@ -166,7 +166,7 @@ protected:
 			 int prio);
 
   // implementation of IService::setServiceManager
-  void setServiceManager(ISvcManager*) {}
+  void setServiceManager(ISvcManager*) override {}
 
   /// Internal startup routine
   StatusCode i_startup();

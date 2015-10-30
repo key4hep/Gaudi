@@ -26,11 +26,11 @@ StatusCode ConversionSvc::makeCall(int typ,
                                    bool update,
                                    IOpaqueAddress*& pAddress,
                                    DataObject*& pObject)      {
-  if ( 0 != pAddress || ignore_add )    {
-    if ( 0 != pObject  || ignore_obj )    {
+  if ( pAddress || ignore_add )    {
+    if ( pObject  || ignore_obj )    {
       const CLID&  obj_class =
-        (0 != pObject && !ignore_obj) ? pObject->clID()
-        : (0 != pAddress && !ignore_add)
+        ( pObject && !ignore_obj) ? pObject->clID()
+        : ( pAddress && !ignore_add)
         ? pAddress->clID()
         : CLID_NULL;
       IConverter*  cnv  = converter(obj_class);
@@ -41,10 +41,10 @@ StatusCode ConversionSvc::makeCall(int typ,
       }
 
       StatusCode status(StatusCode::FAILURE,true);
-      if ( 0 != cnv )   {
+      if ( cnv )   {
         switch(typ)   {
         case CREATE_OBJ:
-          pObject = 0;
+          pObject = nullptr;
           status = cnv->createObj(pAddress, pObject);
           break;
         case FILL_OBJ_REFS:
@@ -57,7 +57,7 @@ StatusCode ConversionSvc::makeCall(int typ,
           status = cnv->updateObjRefs(pAddress, pObject);
           break;
         case CREATE_REP:
-          pAddress = 0;
+          pAddress = nullptr;
           status = cnv->createRep(pObject, pAddress);
           break;
         case FILL_REP_REFS:
@@ -81,7 +81,7 @@ StatusCode ConversionSvc::makeCall(int typ,
       status.ignore();
       MsgStream log(msgSvc(), name());
       log << MSG::INFO << "No converter for object ";
-      if ( pObject != 0 )   {
+      if ( pObject )   {
         log << System::typeinfoName(typeid(*pObject));
       }
       log << "  CLID= " << obj_class << endmsg;
@@ -142,12 +142,12 @@ StatusCode ConversionSvc::updateRepRefs(IOpaqueAddress* pAddress, DataObject* pO
 
 /// Retrieve converter from list
 IConverter* ConversionSvc::converter(const CLID& clid)     {
-  IConverter* cnv = 0;
+  IConverter* cnv = nullptr;
   auto i = std::find_if(m_workers.begin(),m_workers.end(),CnvTest(clid));
   if ( i != m_workers.end() )      {
     cnv = i->converter();
   }
-  if ( 0 == cnv )     {
+  if ( !cnv )     {
     StatusCode status = addConverter(clid);
     if ( status.isSuccess() )   {
       i = std::find_if(m_workers.begin(),m_workers.end(),CnvTest(clid));
@@ -212,7 +212,7 @@ SmartIF<IConversionSvc>& ConversionSvc::conversionSvc()    const   {
 StatusCode ConversionSvc::addConverter(const CLID& clid)  {
   // First look for the more specific converter
   long typ = repSvcType();
-  IConverter* pConverter = createConverter(typ, clid, 0);
+  IConverter* pConverter = createConverter(typ, clid, nullptr);
   if ( pConverter )    {
     StatusCode status = configureConverter( typ, clid, pConverter );
     if ( status.isSuccess() )   {

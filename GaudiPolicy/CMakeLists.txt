@@ -1,4 +1,4 @@
-gaudi_subdir(GaudiPolicy v15r5)
+gaudi_subdir(GaudiPolicy v15r6)
 
 #---Installation-----------------------------------------------------------------------------
 gaudi_install_scripts()
@@ -36,3 +36,8 @@ endif()
 gaudi_add_test(GaudiTesting.nose
                COMMAND nosetests --with-doctest
                  ${CMAKE_CURRENT_SOURCE_DIR}/python/GaudiTesting)
+
+gaudi_add_test(GAUDI-1105
+               COMMAND ./test_install.py
+               WORKING_DIRECTORY
+               ${CMAKE_CURRENT_SOURCE_DIR}/tests/GAUDI-1105)

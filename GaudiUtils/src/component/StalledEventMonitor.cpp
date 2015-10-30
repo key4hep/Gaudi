@@ -41,7 +41,7 @@ namespace {
     /// whether to dump a stack trace when the timeout is reached
     bool m_stackTrace = false;
     /// main watchdog function
-    void action() {
+    void action() override {
       if (!m_counter) {
         log << MSG::WARNING << "More than " << getTimeout().total_seconds()
             << "s since the last " << IncidentType::BeginEvent << endmsg;
@@ -64,7 +64,7 @@ namespace {
         std::raise(SIGABRT);
       }
     }
-    void onPing() {
+    void onPing() override {
       if (m_counter) {
         if (m_counter >= 3)
           log << MSG::INFO << "Starting a new event after ~"
@@ -72,7 +72,7 @@ namespace {
         m_counter = 0;
       }
     }
-    void onStop() {
+    void onStop() override {
       if (m_counter >= 3)
         log << MSG::INFO << "The last event took ~"
         << m_counter * getTimeout().total_seconds() << "s" << endmsg;

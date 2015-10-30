@@ -96,7 +96,7 @@ namespace std { class exception ; }
 // ============================================================================
 class GAUDI_API GaudiTool: public GaudiCommon<AlgTool>
 {
-public:
+ public:
   // ==========================================================================
   /** standard initialization method
    *  @see  AlgTool
@@ -111,7 +111,7 @@ public:
    */
   StatusCode    finalize   () override;
   // ==========================================================================
-public: // accessors
+ public: // accessors
   // ==========================================================================
   /** Access the standard N-Tuple
    *  @return pointer to N-Tuple service .
@@ -143,7 +143,7 @@ public: // accessors
    */
   IAlgContextSvc*     contextSvc () const ;
   // ==========================================================================
-public:
+ public:
   // ==========================================================================
   // following methods cannot go in GaudiCommon since they use methods ( evtSvc()
   // and detDvc() ) that are not members of AlgTool.
@@ -182,9 +182,9 @@ public:
    *  @retval StatusCode::FAILURE Failed to store data in the TES.
    */
   inline DataObject* put ( IDataProviderSvc*  svc     ,
-                    DataObject*        object  ,
-                    const std::string& address ,
-                    const bool useRootInTES = true ) const
+                           DataObject*        object  ,
+                           const std::string& address ,
+                           const bool useRootInTES = true ) const
   {
     return GaudiCommon<AlgTool>::put ( svc , object , address , useRootInTES ) ;
   }
@@ -218,8 +218,8 @@ public:
    *  @retval StatusCode::FAILURE Failed to store data in the TES.
    */
   inline DataObject* put ( DataObject*        object   ,
-                    const std::string& address  ,
-                    const bool useRootInTES = true ) const
+                           const std::string& address  ,
+                           const bool useRootInTES = true ) const
   {
     return GaudiCommon<AlgTool>::put ( evtSvc() , object , address , useRootInTES ) ;
   }
@@ -256,10 +256,10 @@ public:
    *  @return pointer to the data object
    */
   template < class TYPE  >
-  inline typename Gaudi::Utils::GetData<TYPE>::return_type
-  get  (  IDataProviderSvc*  svc       ,
-          const std::string& location  ,
-          const bool useRootInTES = true ) const
+    inline typename Gaudi::Utils::GetData<TYPE>::return_type
+    get  (  IDataProviderSvc*  svc       ,
+            const std::string& location  ,
+            const bool useRootInTES = true ) const
   {
     return GaudiCommon<AlgTool>::get<TYPE> ( svc , location , useRootInTES ) ;
   }
@@ -298,10 +298,10 @@ public:
    *  @retval NULL If data does not exist.
    */
   template < class TYPE  >
-  inline typename Gaudi::Utils::GetData<TYPE>::return_type
-  getIfExists ( IDataProviderSvc*  svc       ,
-                const std::string& location  ,
-                const bool useRootInTES = true ) const
+    inline typename Gaudi::Utils::GetData<TYPE>::return_type
+    getIfExists ( IDataProviderSvc*  svc       ,
+                  const std::string& location  ,
+                  const bool useRootInTES = true ) const
   {
     return GaudiCommon<AlgTool>::getIfExists<TYPE> ( svc , location , useRootInTES ) ;
   }
@@ -332,9 +332,9 @@ public:
    *  @return         Pointer to the data object
    */
   template < class TYPE  >
-  inline typename Gaudi::Utils::GetData<TYPE>::return_type
-  get  ( const std::string& location  ,
-         const bool useRootInTES = true ) const
+    inline typename Gaudi::Utils::GetData<TYPE>::return_type
+    get  ( const std::string& location  ,
+           const bool useRootInTES = true ) const
   {
     return GaudiCommon<AlgTool>::get<TYPE> ( evtSvc() , location , useRootInTES ) ;
   }
@@ -372,9 +372,9 @@ public:
    *  @retval NULL If data does not exist.
    */
   template < class TYPE  >
-  inline typename Gaudi::Utils::GetData<TYPE>::return_type
-  getIfExists ( const std::string& location  ,
-                const bool useRootInTES = true ) const
+    inline typename Gaudi::Utils::GetData<TYPE>::return_type
+    getIfExists ( const std::string& location  ,
+                  const bool useRootInTES = true ) const
   {
     return GaudiCommon<AlgTool>::getIfExists<TYPE> ( evtSvc() , location , useRootInTES ) ;
   }
@@ -398,8 +398,8 @@ public:
    *  @return          Pointer to the detector object
    */
   template < class TYPE  >
-  inline TYPE* getDet ( IDataProviderSvc*  svc        ,
-                        const std::string& location   ) const
+    inline TYPE* getDet ( IDataProviderSvc*  svc        ,
+                          const std::string& location   ) const
   {
     return GaudiCommon<AlgTool>::get<TYPE> ( svc , location , false ) ;
   }
@@ -427,9 +427,9 @@ public:
    *  @retval NULL If the detector object does not exist.
    */
   template < class TYPE  >
-  inline typename Gaudi::Utils::GetData<TYPE>::return_type
-  getDetIfExists ( IDataProviderSvc*  svc       ,
-                   const std::string& location  ) const
+    inline typename Gaudi::Utils::GetData<TYPE>::return_type
+    getDetIfExists ( IDataProviderSvc*  svc       ,
+                     const std::string& location  ) const
   {
     return GaudiCommon<AlgTool>::getIfExists<TYPE> ( svc , location , false ) ;
   }
@@ -452,7 +452,7 @@ public:
    *  @return          Pointer to the detector object
    */
   template < class TYPE  >
-  inline TYPE* getDet ( const std::string& location ) const
+    inline TYPE* getDet ( const std::string& location ) const
   {
     return GaudiCommon<AlgTool>::get<TYPE> ( detSvc() , location , false ) ;
   }
@@ -479,8 +479,8 @@ public:
    *  @retval NULL If the detector object does not exist.
    */
   template < class TYPE  >
-  inline typename Gaudi::Utils::GetData<TYPE>::return_type
-  getDetIfExists ( const std::string& location ) const
+    inline typename Gaudi::Utils::GetData<TYPE>::return_type
+    getDetIfExists ( const std::string& location ) const
   {
     return GaudiCommon<AlgTool>::getIfExists<TYPE> ( detSvc() , location , false ) ;
   }
@@ -511,9 +511,9 @@ public:
    *  @retval true     Failed to locate the data object or container
    */
   template < class TYPE  >
-  inline bool  exist    ( IDataProviderSvc*  svc      ,
-                          const std::string& location ,
-                          const bool useRootInTES = true ) const
+    inline bool  exist    ( IDataProviderSvc*  svc      ,
+                            const std::string& location ,
+                            const bool useRootInTES = true ) const
   {
     return GaudiCommon<AlgTool>::exist<TYPE> ( svc , location , useRootInTES ) ;
   }
@@ -541,8 +541,8 @@ public:
    *  @retval true     Failed to locate the data object or container
    */
   template < class TYPE  >
-  inline bool  exist    ( const std::string& location ,
-                          const bool useRootInTES = true ) const
+    inline bool  exist    ( const std::string& location ,
+                            const bool useRootInTES = true ) const
   {
     return GaudiCommon<AlgTool>::exist<TYPE> ( evtSvc() , location , useRootInTES ) ;
   }
@@ -564,8 +564,8 @@ public:
    *  @retval false    Failed to locate the data object
    */
   template < class TYPE  >
-  inline bool  existDet    ( IDataProviderSvc*  svc      ,
-                             const std::string& location ) const
+    inline bool  existDet    ( IDataProviderSvc*  svc      ,
+                               const std::string& location ) const
   {
     return GaudiCommon<AlgTool>::exist<TYPE> ( svc , location , false ) ;
   }
@@ -586,7 +586,7 @@ public:
    *  @retval false    Failed to locate the data object
    */
   template < class TYPE  >
-  inline bool  existDet    ( const std::string& location ) const
+    inline bool  existDet    ( const std::string& location ) const
   {
     return GaudiCommon<AlgTool>::exist<TYPE> ( detSvc() , location , false ) ;
   }
@@ -618,10 +618,10 @@ public:
    *  @return A valid pointer to the object
    */
   template < class TYPE , class TYPE2 >
-  inline typename Gaudi::Utils::GetData<TYPE>::return_type
-  getOrCreate ( IDataProviderSvc*  svc                 ,
-                const std::string& location            ,
-                const bool         useRootInTES = true ) const
+    inline typename Gaudi::Utils::GetData<TYPE>::return_type
+    getOrCreate ( IDataProviderSvc*  svc                 ,
+                  const std::string& location            ,
+                  const bool         useRootInTES = true ) const
   {
     return GaudiCommon<AlgTool>::getOrCreate<TYPE,TYPE2> ( svc , location , useRootInTES ) ;
   }
@@ -652,22 +652,112 @@ public:
    *  @return A valid pointer to the object
    */
   template < class TYPE , class TYPE2 >
-  inline typename Gaudi::Utils::GetData<TYPE>::return_type
-  getOrCreate ( const std::string& location            ,
-                const bool         useRootInTES = true ) const
+    inline typename Gaudi::Utils::GetData<TYPE>::return_type
+    getOrCreate ( const std::string& location            ,
+                  const bool         useRootInTES = true ) const
   {
     return GaudiCommon<AlgTool>::getOrCreate<TYPE,TYPE2> ( evtSvc() , location , useRootInTES ) ;
   }
-
   // ==========================================================================
-public:
+ public:
+  // ==========================================================================
+  /** Print the error message and return with the given StatusCode.
+   *
+   *  Also performs statistical analysis of the error messages and
+   *  suppression after the defined number of error instances.
+   *
+   *  @code
+   *
+   *   if( a < 0 ) { return Error("a is negative!") ;}
+   *   if( b < 0 ) { return Error("b is illegal!" , StatusCode(25) );
+   *   if( c < 0 )
+   *      { return Error("c is negative" , StatusCode(35) , 50 );
+   *
+   *  @endcode
+   *
+   *  @see MsgStream
+   *  @see IMessageSvc
+   *  @see StatusCode
+   *
+   *  @param msg    Error message
+   *  @param st     StatusCode to return
+   *  @param mx     Maximum number of printouts for this message
+   *  @return       StatusCode
+   */
+  inline StatusCode Error
+    ( const std::string& msg ,
+      const StatusCode   st  = StatusCode::FAILURE ,
+      const size_t       mx  = 10                  ) const
+  {
+    return GaudiCommon<AlgTool>::Error( m_isPublic ?
+                                        msg + getCurrentAlgName() : msg,
+                                        st, mx );
+  }
+  /** Print the warning message and return with the given StatusCode.
+   *
+   *  Also performs statistical analysis of the warning messages and
+   *  suppression after the defined number of error instances.
+   *
+   *  @code
+   *
+   *   if( a < 0 ) { return Warning("a is negative!") ;}
+   *   if( b < 0 ) { return Warning("b is illegal!" , StatusCode(25) );
+   *   if( c < 0 )
+   *      { return Warning("c is negative" , StatusCode(35) , 50 );
+   *
+   *  @endcode
+   *
+   *  @see MsgStream
+   *  @see IMessageSvc
+   *  @see StatusCode
+   *
+   *  @param msg    Warning message
+   *  @param st     StatusCode to return
+   *  @param mx     Maximum number of printouts for this message
+   *  @return       The given StatusCode
+   */
+  inline StatusCode Warning
+    ( const std::string& msg ,
+      const StatusCode   st  = StatusCode::FAILURE ,
+      const size_t       mx  = 10                  ) const
+  {
+    return GaudiCommon<AlgTool>::Warning( m_isPublic ?
+                                          msg + getCurrentAlgName() : msg,
+                                          st, mx );
+  }
+  /** Print the info message and return with the given StatusCode.
+   *
+   *  Also performs statistical analysis of the info messages and
+   *  suppression after the defined number of instances.
+   *
+   *  @see MsgStream
+   *  @see IMessageSvc
+   *  @see StatusCode
+   *  @see GaudiCommon::Warning
+   *
+   *  @param msg    Info message
+   *  @param st     StatusCode to return
+   *  @param mx     Maximum number of printouts for this message
+   *  @return       The given StatusCode
+   */
+  inline StatusCode Info
+    ( const std::string& msg ,
+      const StatusCode   st  = StatusCode::SUCCESS ,
+      const size_t       mx  = 10                  ) const
+  {
+    return GaudiCommon<AlgTool>::Info( m_isPublic ?
+                                       msg + getCurrentAlgName() : msg,
+                                       st, mx );
+  }
+  // ==========================================================================
+ public:
   // ==========================================================================
   /// enable/disable summary
   static bool enableSummary  ( bool ) ;               // enable/disable summary
   /// is summary enabled?
   static bool summaryEnabled (      ) ;               // is summary enabled?
   // ==========================================================================
-protected:
+ protected:
   // ==========================================================================
   /** Standard constructor
    *  @see AlgTool
@@ -682,14 +772,26 @@ protected:
   /// destructor, virtual and protected
   ~GaudiTool() override;
   // ==========================================================================
-private:
+ private:
   // ==========================================================================
   /// no default/copy constructor, no assignment
   GaudiTool() = delete;
   GaudiTool             ( const GaudiTool& ) = delete;
   GaudiTool& operator = ( const GaudiTool& ) = delete;
   // ==========================================================================
-private:
+ private:
+  // ==========================================================================
+  /// Determines if this tool is public or not (i.e. owned by the ToolSvc).
+  bool isPublic() const;
+  /// Returns the current active algorithm name via the context service
+  inline std::string getCurrentAlgName() const
+  {
+    const IAlgContextSvc * asvc    = this->contextSvc();
+    const IAlgorithm     * current = ( asvc ? asvc->currentAlg() : NULL );
+    return ( current ? " [" + current->name() + "]" : "" );
+  }
+  // ==========================================================================
+ private:
   // ==========================================================================
   /// pointer to the N-Tuple service
   mutable INTupleSvc*    m_ntupleSvc = nullptr;
@@ -708,12 +810,17 @@ private:
   // The name of the Algorithm Context Service
   std::string             m_contextSvcName = "AlgContextSvc"; ///< Algorithm Context Service
   // ==========================================================================
-private:
+ private:
+  // ==========================================================================
+  /// Flag to say if the tool is a public or private tool
+  bool m_isPublic = false;
+  // ==========================================================================
+ private:
   // ==========================================================================
   /// full tool name "type/name"
   const std::string m_local ;
   // ==========================================================================
-private:
+ private:
   // ==========================================================================
   /// enable printout of summary?
   static bool s_enableSummary ;  // enable printout of summary?

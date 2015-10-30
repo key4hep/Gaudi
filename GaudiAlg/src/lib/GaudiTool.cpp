@@ -167,6 +167,9 @@ StatusCode    GaudiTool::initialize ()
   // increment the counter
   GaudiToolLocal::s_FinalizeCounter.increment( m_local ) ;
 
+  // are we a public tool ?
+  m_isPublic = isPublic();
+
   // return
   return sc;
 }
@@ -195,9 +198,27 @@ StatusCode    GaudiTool::finalize   ()
   return sc;
 }
 // ============================================================================
+// Determines if this tool is public or not (i.e. owned by the ToolSvc).
+// ============================================================================
+bool GaudiTool::isPublic() const
+{
+  const IAlgTool * tool = this;
+  // Recurse down the ownership tree, to see with we ever end up at the ToolSvc
+  bool ownedByToolSvc = false;
+  unsigned int sanityCheck(0);
+  while ( tool && ++sanityCheck < 99999 )
+  {
+    ownedByToolSvc = ( nullptr != dynamic_cast<const IToolSvc*>(tool->parent()) );
+    if ( ownedByToolSvc ) { break; }
+    // if parent is also a tool, try again
+    tool = dynamic_cast<const IAlgTool*>(tool->parent());
+  }
+  return ownedByToolSvc;
+}
+// ============================================================================
 // accessor to detector service
 // ============================================================================
-IDataProviderSvc* GaudiTool::detSvc    () const
+IDataProviderSvc* GaudiTool::detSvc () const
 {
   if ( !m_detSvc )
   {
@@ -231,7 +252,7 @@ INTupleSvc* GaudiTool::evtColSvc () const
 // ============================================================================
 // accessor to Incident Service
 // ============================================================================
-IIncidentSvc*      GaudiTool::incSvc   () const
+IIncidentSvc*      GaudiTool::incSvc () const
 {
   if ( !m_incSvc )
   {
@@ -255,7 +276,7 @@ IChronoStatSvc*      GaudiTool::chronoSvc () const
 // ============================================================================
 // accessor to histogram Service
 // ============================================================================
-IHistogramSvc*       GaudiTool::histoSvc  () const
+IHistogramSvc*       GaudiTool::histoSvc () const
 {
   if ( !m_histoSvc )
   {
@@ -266,7 +287,7 @@ IHistogramSvc*       GaudiTool::histoSvc  () const
 // ============================================================================
 // accessor to Algorithm Context Service
 // ============================================================================
-IAlgContextSvc* GaudiTool::contextSvc  () const
+IAlgContextSvc* GaudiTool::contextSvc () const
 {
   if ( !m_contextSvc )
   {

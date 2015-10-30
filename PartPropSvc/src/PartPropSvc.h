@@ -34,10 +34,10 @@ public:
   StatusCode finalize() override;
 
   // The table
-  HepPDT::ParticleDataTable *PDT();
+  HepPDT::ParticleDataTable *PDT() override;
 
   void setUnknownParticleHandler( HepPDT::ProcessUnknownID*,
-                                  const std::string&);
+                                  const std::string&) override;
 
   // Destructor.
   ~PartPropSvc() override = default;

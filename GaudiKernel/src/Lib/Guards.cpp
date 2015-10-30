@@ -76,7 +76,7 @@ Gaudi::Guards::AuditorGuard::AuditorGuard ( INamedInterface*          obj      ,
                  m_obj(obj),
                  m_svc(svc),
                  m_evt(IAuditor::Initialize), // Windows needs an explicit value
-                 m_cevt(evt),
+                 m_cevt(std::move(evt)),
                  m_customEvtType(true)
 {
   i_before();
@@ -100,7 +100,7 @@ Gaudi::Guards::AuditorGuard::AuditorGuard ( INamedInterface*                   o
       m_obj(obj),
       m_svc(svc),
       m_evt(IAuditor::Initialize), // Windows needs an explicit value
-      m_cevt(evt),
+      m_cevt(std::move(evt)),
       m_sc(&sc),
       m_customEvtType(true)
 {
@@ -122,7 +122,7 @@ Gaudi::Guards::AuditorGuard::AuditorGuard ( std::string           name      ,
       m_objName(std::move(name)),
       m_svc(svc),
       m_evt(IAuditor::Initialize), // Windows needs an explicit value
-      m_cevt(evt),
+      m_cevt(std::move(evt)),
       m_customEvtType(true)
 {
   i_before();
@@ -146,7 +146,7 @@ Gaudi::Guards::AuditorGuard::AuditorGuard ( std::string           name      ,
       m_objName(std::move(name)),
       m_svc(svc),
       m_evt(IAuditor::Initialize), // Windows needs an explicit value
-      m_cevt(evt),
+      m_cevt(std::move(evt)),
       m_sc(&sc),
       m_customEvtType(true)
 {

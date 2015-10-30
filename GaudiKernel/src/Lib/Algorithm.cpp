@@ -126,8 +126,8 @@ StatusCode Algorithm::sysInitialize() {
   //m_errorCount = 0;
 
   // lock the context service
-//   Gaudi::Utils::AlgContext cnt
-//     ( this , registerContext() ? contextSvc().get() : 0 ) ;
+  Gaudi::Utils::AlgContext cnt
+    ( this , registerContext() ? contextSvc().get() : nullptr ) ;
 
   // Get WhiteBoard interface if implemented by EventDataSvc
   m_WB = service("EventDataSvc");
@@ -142,7 +142,7 @@ StatusCode Algorithm::sysInitialize() {
       Gaudi::Guards::AuditorGuard guard
         ( this,
           // check if we want to audit the initialize
-          (m_auditorInitialize) ? auditorSvc().get() : 0,
+          (m_auditorInitialize) ? auditorSvc().get() : nullptr,
           IAuditor::Initialize);
       // Invoke the initialize() method of the derived class
       sc = initialize();
@@ -293,7 +293,7 @@ StatusCode Algorithm::sysStart() {
 
   // lock the context service
   Gaudi::Utils::AlgContext cnt
-    ( this , registerContext() ? contextSvc().get() : 0 ) ;
+    ( this , registerContext() ? contextSvc().get() : nullptr ) ;
 
   StatusCode sc(StatusCode::FAILURE);
   // Invoke start() method of the derived class inside a try/catch clause
@@ -303,7 +303,7 @@ StatusCode Algorithm::sysStart() {
       Gaudi::Guards::AuditorGuard guard
         (this,
          // check if we want to audit the initialize
-         (m_auditorStart) ? auditorSvc().get() : 0,
+         (m_auditorStart) ? auditorSvc().get() : nullptr,
          IAuditor::Start);
       // Invoke the start() method of the derived class
       sc = start();
@@ -375,7 +375,7 @@ StatusCode Algorithm::sysReinitialize() {
 
   // lock the context service
   Gaudi::Utils::AlgContext cnt
-    ( this , registerContext() ? contextSvc().get() : 0 ) ;
+    ( this , registerContext() ? contextSvc().get() : nullptr ) ;
 
   StatusCode sc(StatusCode::SUCCESS);
   // Invoke reinitialize() method of the derived class inside a try/catch clause
@@ -383,7 +383,7 @@ StatusCode Algorithm::sysReinitialize() {
     { // limit the scope of the guard
       Gaudi::Guards::AuditorGuard guard(this,
                                         // check if we want to audit the initialize
-                                        (m_auditorReinitialize) ? auditorSvc().get() : 0,
+                                        (m_auditorReinitialize) ? auditorSvc().get() : nullptr,
                                         IAuditor::ReInitialize);
       // Invoke the reinitialize() method of the derived class
       sc = reinitialize();
@@ -453,7 +453,7 @@ StatusCode Algorithm::sysRestart() {
 
   // lock the context service
   Gaudi::Utils::AlgContext cnt
-    ( this , registerContext() ? contextSvc().get() : 0 ) ;
+    ( this , registerContext() ? contextSvc().get() : nullptr ) ;
 
   StatusCode sc(StatusCode::FAILURE);
   // Invoke reinitialize() method of the derived class inside a try/catch clause
@@ -461,7 +461,7 @@ StatusCode Algorithm::sysRestart() {
     { // limit the scope of the guard
       Gaudi::Guards::AuditorGuard guard(this,
                                         // check if we want to audit the initialize
-                                        (m_auditorRestart) ? auditorSvc().get() : 0,
+                                        (m_auditorRestart) ? auditorSvc().get() : nullptr,
                                         IAuditor::ReStart);
       // Invoke the reinitialize() method of the derived class
       sc = restart();
@@ -522,7 +522,7 @@ StatusCode Algorithm::sysBeginRun() {
 
   // lock the context service
   Gaudi::Utils::AlgContext cnt
-    ( this , registerContext() ? contextSvc().get() : 0 ) ;
+    ( this , registerContext() ? contextSvc().get() : nullptr ) ;
 
   StatusCode sc(StatusCode::FAILURE);
   // Invoke beginRun() method of the derived class inside a try/catch clause
@@ -530,7 +530,7 @@ StatusCode Algorithm::sysBeginRun() {
     { // limit the scope of the guard
       Gaudi::Guards::AuditorGuard guard(this,
                                         // check if we want to audit the initialize
-                                        (m_auditorBeginRun) ? auditorSvc().get() : 0,
+                                        (m_auditorBeginRun) ? auditorSvc().get() : nullptr,
                                         IAuditor::BeginRun);
       // Invoke the beginRun() method of the derived class
       sc = beginRun();
@@ -601,7 +601,7 @@ StatusCode Algorithm::sysEndRun() {
     { // limit the scope of the guard
       Gaudi::Guards::AuditorGuard guard(this,
                                         // check if we want to audit the initialize
-                                        (m_auditorEndRun) ? auditorSvc().get() : 0,
+                                        (m_auditorEndRun) ? auditorSvc().get() : nullptr,
                                         IAuditor::EndRun);
       // Invoke the endRun() method of the derived class
       sc = endRun();
@@ -666,14 +666,14 @@ StatusCode Algorithm::sysExecute() {
 
   // lock the context service
   Gaudi::Utils::AlgContext cnt
-    ( this , registerContext() ? contextSvc().get() : 0 ) ;
+    ( this , registerContext() ? contextSvc().get() : nullptr ) ;
 
   // HiveWhiteBoard stuff here
   if(m_WB.isValid()) m_WB->selectStore(getContext() ? getContext()->slot() : 0).ignore();
 
   Gaudi::Guards::AuditorGuard guard(this,
                                     // check if we want to audit the initialize
-                                    (m_auditorExecute) ? auditorSvc().get() : 0,
+                                    (m_auditorExecute) ? auditorSvc().get() : nullptr,
                                     IAuditor::Execute,
                                     status);
 
@@ -768,7 +768,7 @@ StatusCode Algorithm::sysStop() {
 
   // lock the context service
   Gaudi::Utils::AlgContext cnt
-    ( this , registerContext() ? contextSvc().get() : 0 ) ;
+    ( this , registerContext() ? contextSvc().get() : nullptr ) ;
 
   StatusCode sc(StatusCode::FAILURE);
   // Invoke stop() method of the derived class inside a try/catch clause
@@ -778,7 +778,7 @@ StatusCode Algorithm::sysStop() {
     { // limit the scope of the guard
       Gaudi::Guards::AuditorGuard guard(this,
                                         // check if we want to audit the initialize
-                                        (m_auditorStop) ? auditorSvc().get() : 0,
+                                        (m_auditorStop) ? auditorSvc().get() : nullptr,
                                         IAuditor::Stop);
 
       // Invoke the stop() method of the derived class
@@ -824,7 +824,7 @@ StatusCode Algorithm::sysFinalize() {
 
   // lock the context service
   Gaudi::Utils::AlgContext cnt
-    ( this , registerContext() ? contextSvc().get() : 0 ) ;
+    ( this , registerContext() ? contextSvc().get() : nullptr ) ;
 
   StatusCode sc(StatusCode::FAILURE);
   // Invoke finalize() method of the derived class inside a try/catch clause
@@ -835,7 +835,7 @@ StatusCode Algorithm::sysFinalize() {
     { // limit the scope of the guard
       Gaudi::Guards::AuditorGuard guard(this,
                                         // check if we want to audit the initialize
-                                        (m_auditorFinalize) ? auditorSvc().get() : 0,
+                                        (m_auditorFinalize) ? auditorSvc().get() : nullptr,
                                         IAuditor::Finalize);
       // Invoke the finalize() method of the derived class
       sc = finalize();

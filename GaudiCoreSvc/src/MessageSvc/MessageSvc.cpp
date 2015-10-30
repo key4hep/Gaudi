@@ -44,8 +44,6 @@ namespace {
 
 }
 
-using namespace std;
-
 // Instantiation of a static factory class used by clients to create
 // instances of this service
 DECLARE_COMPONENT(MessageSvc)
@@ -122,10 +120,6 @@ StatusCode MessageSvc::initialize() {
   StatusCode sc;
   sc = Service::initialize();
   if( sc.isFailure() ) return sc;
-  // Release pointer to myself done in Service base class
-  //if( m_msgsvc.isValid() ) {
-  //  m_msgsvc = 0;
-  //}
   // Set my own properties
   sc = setProperties();
   if (sc.isFailure()) return sc;
@@ -212,13 +206,13 @@ void MessageSvc::setupColors(Property& prop) {
                                 return prop.name() == t.first;
   } );
   if (i==std::end(tbl)) {
-    cout << "ERROR: Unknown message color parameter: " << prop.name()
-         << endl;
+    std::cout << "ERROR: Unknown message color parameter: " << prop.name()
+         << std::endl;
     return;
   }
   int ic = i->second;
 
-  string code;
+  std::string code;
   auto itr = m_logColors[ic].value().begin();
 
   if ( m_logColors[ic].value().size() == 1 ) {
@@ -249,7 +243,7 @@ void MessageSvc::setupLimits(Property& prop) {
   if (prop.name() == "alwaysLimit") {
     IntegerProperty *p = dynamic_cast<IntegerProperty*>(&prop);
     if (p && p->value() != 0) {
-      cout << "MessageSvc ERROR: cannot suppress ALWAYS messages" << endl;
+      std::cout << "MessageSvc ERROR: cannot suppress ALWAYS messages" << std::endl;
       p->setValue(0);
     }
   } else if (prop.name() == "defaultLimit") {
@@ -264,8 +258,8 @@ void MessageSvc::setupLimits(Property& prop) {
              prop.name() == "infoLimit" &&
              prop.name() == "debugLimit" &&
              prop.name() == "verboseLimit") {
-    cout << "MessageSvc ERROR: Unknown message limit parameter: "
-         << prop.name() << endl;
+    std::cout << "MessageSvc ERROR: Unknown message limit parameter: "
+         << prop.name() << std::endl;
     return;
   }
 }
@@ -287,8 +281,8 @@ void MessageSvc::setupThreshold(Property& prop) {
                                 return prop.name() == t.first;
   } );
   if (i==std::end(tbl)) {
-    cerr << "MessageSvc ERROR: Unknown message threshold parameter: "
-         << prop.name() << endl;
+    std::cerr << "MessageSvc ERROR: Unknown message threshold parameter: "
+         << prop.name() << std::endl;
     return;
   }
   int ic = i->second;
@@ -296,7 +290,7 @@ void MessageSvc::setupThreshold(Property& prop) {
   StringArrayProperty *sap = dynamic_cast<StringArrayProperty*>( &prop);
   if (!sap) {
     std::cerr << "could not dcast " << prop.name()
-              << " to a StringArrayProperty (which it should be!)" << endl;
+              << " to a StringArrayProperty (which it should be!)" << std::endl;
   } else {
     for ( auto& i : sap->value() ) setOutputLevel( i, ic );
   }
@@ -328,14 +322,14 @@ StatusCode MessageSvc::finalize() {
     std::ostringstream os;
 
     if (m_stats) {
-      os << "Summarizing all message counts" << endl;
+      os << "Summarizing all message counts" << std::endl;
     } else {
-      os << "Listing sources of suppressed message: " << endl;
+      os << "Listing sources of suppressed message: " << std::endl;
     }
 
-    os << "=====================================================" << endl;
-    os << " Message Source              |   Level |    Count" << endl;
-    os << "-----------------------------+---------+-------------" << endl;
+    os << "=====================================================" << std::endl;
+    os << " Message Source              |   Level |    Count" << std::endl;
+    os << "-----------------------------+---------+-------------" << std::endl;
 
 
     bool found(false);
@@ -346,25 +340,25 @@ StatusCode MessageSvc::finalize() {
             (m_stats && itr->second.msg[ic] > 0 && ic >= m_statLevel.value()) ) {
           os << " ";
           os.width(28);
-          os.setf(ios_base::left,ios_base::adjustfield);
+          os.setf(std::ios_base::left,std::ios_base::adjustfield);
           os << itr->first;
           os << "|";
 
           os.width(8);
-          os.setf(ios_base::right,ios_base::adjustfield);
+          os.setf(std::ios_base::right,std::ios_base::adjustfield);
           os << levelNames[ic];
           os << " |";
 
           os.width(9);
           os << itr->second.msg[ic];
-          os << endl;
+          os << std::endl;
 
           found = true;
         }
       }
     }
-    os << "=====================================================" << endl;
-    if (found || m_stats) cout << os.str();
+    os << "=====================================================" << std::endl;
+    if (found || m_stats) std::cout << os.str();
   }
 
 #ifndef NDEBUG
@@ -388,13 +382,13 @@ StatusCode MessageSvc::finalize() {
 
     os << std::endl << " ";
     os.width(ml+2);
-    os.setf(ios_base::left,ios_base::adjustfield);
+    os.setf(std::ios_base::left,std::ios_base::adjustfield);
     os << "Message Source";
     os.width(1);
-    os << "|   Level |    Count" << endl;
+    os << "|   Level |    Count" << std::endl;
 
     for (unsigned int i=0; i<ml+3; ++i) os << "-";
-    os << "+---------+-----------" << endl;
+    os << "+---------+-----------" << std::endl;
 
 
     for (auto itr=m_inactiveMap.begin(); itr!=m_inactiveMap.end(); ++itr) {
@@ -402,13 +396,13 @@ StatusCode MessageSvc::finalize() {
 	if (itr->second.msg[ic] != 0) {
 	  os << " ";
 	  os.width(ml+2);
-	  os.setf(ios_base::left,ios_base::adjustfield);
+	  os.setf(std::ios_base::left,std::ios_base::adjustfield);
 	  os << itr->first;
 
 	  os << "|";
 
 	  os.width(8);
-	  os.setf(ios_base::right,ios_base::adjustfield);
+	  os.setf(std::ios_base::right,std::ios_base::adjustfield);
 	  os << levelNames[ic];
 
 	  os << " |";
@@ -416,16 +410,16 @@ StatusCode MessageSvc::finalize() {
 	  os.width(9);
 	  os << itr->second.msg[ic];
 
-	  os << endl;
+	  os << std::endl;
 
 	  found = true;
 	}
       }
     }
     for (unsigned int i=0; i<ml+25; ++i) os << "=";
-    os << endl;
+    os << std::endl;
 
-    if (found) cout << os.str();
+    if (found) std::cout << os.str();
   }
 #endif
 

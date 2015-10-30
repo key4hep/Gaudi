@@ -4,8 +4,8 @@ Related external libraries    {#externaldocs}
 From [LCG version @heptools_version@][lcg-details]:
 
 - LCG Application Area:
-  - [@CORAL_config_version@][coral] (relational access)
-  - [@COOL_config_version@][cool] (conditions database)
+  - [CORAL @CORAL_config_version@][coral] (relational access)
+  - [COOL @COOL_config_version@][cool] (conditions database)
   - [ROOT @ROOT_config_version@][root] (persistency)
   - [@RELAX_config_version@][relax] (common dictionaries for I/O and interactivity)
 

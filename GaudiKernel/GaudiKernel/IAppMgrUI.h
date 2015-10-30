@@ -20,7 +20,7 @@
 class GAUDI_API IAppMgrUI: virtual public INamedInterface {
 public:
   /// InterfaceID
-  DeclareInterfaceID(IAppMgrUI,3,0);
+  DeclareInterfaceID(IAppMgrUI,4,0);
   /// Run the complete job (from initialize to terminate)
   virtual StatusCode run() = 0;
   /// Configure the job

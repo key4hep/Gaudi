@@ -30,7 +30,7 @@ StatusCode Service::sysInitialize() {
     m_targetState = Gaudi::StateMachine::INITIALIZED;
     Gaudi::Guards::AuditorGuard guard(this,
                                       // check if we want to audit the initialize
-                                      (m_auditorInitialize) ? auditorSvc().get() : 0,
+                                      (m_auditorInitialize) ? auditorSvc().get() : nullptr,
                                       IAuditor::Initialize);
     if ((name() != "MessageSvc") && msgSvc()) // pre-set the outputLevel from the MessageSvc value
       m_outputLevel = msgSvc()->outputLevel(name());
@@ -76,7 +76,7 @@ StatusCode Service::sysStart() {
     m_targetState = Gaudi::StateMachine::ChangeState(Gaudi::StateMachine::START,m_state);
     Gaudi::Guards::AuditorGuard guard(this,
                                       // check if we want to audit the initialize
-                                      (m_auditorStart) ? auditorSvc().get() : 0,
+                                      (m_auditorStart) ? auditorSvc().get() : nullptr,
                                       IAuditor::Start);
     sc = start();
     if (sc.isSuccess())
@@ -110,7 +110,7 @@ StatusCode Service::sysStop() {
     m_targetState = Gaudi::StateMachine::ChangeState(Gaudi::StateMachine::STOP,m_state);
     Gaudi::Guards::AuditorGuard guard(this,
                                       // check if we want to audit the initialize
-                                      (m_auditorStop) ? auditorSvc().get() : 0,
+                                      (m_auditorStop) ? auditorSvc().get() : nullptr,
                                       IAuditor::Stop);
     sc = stop();
     if (sc.isSuccess())
@@ -158,7 +158,7 @@ StatusCode Service::sysFinalize() {
     m_targetState = Gaudi::StateMachine::OFFLINE;
     Gaudi::Guards::AuditorGuard guard(this,
                                       // check if we want to audit the initialize
-                                      (m_auditorFinalize) ? auditorSvc().get() : 0,
+                                      (m_auditorFinalize) ? auditorSvc().get() : nullptr,
                                       IAuditor::Finalize);
     sc = finalize();
     if (sc.isSuccess())
@@ -180,7 +180,7 @@ StatusCode Service::sysFinalize() {
     //    Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
   }
 
-  m_pAuditorSvc = 0;
+  m_pAuditorSvc = nullptr;
   return sc;
 }
 
@@ -209,7 +209,7 @@ StatusCode Service::sysReinitialize() {
 
     Gaudi::Guards::AuditorGuard guard(this,
                                       // check if we want to audit the initialize
-                                      (m_auditorReinitialize) ? auditorSvc().get() : 0,
+                                      (m_auditorReinitialize) ? auditorSvc().get() : nullptr,
                                       IAuditor::ReInitialize);
     sc = reinitialize();
     return sc;
@@ -255,7 +255,7 @@ StatusCode Service::sysRestart() {
 
     Gaudi::Guards::AuditorGuard guard(this,
                                       // check if we want to audit the initialize
-                                      (m_auditorRestart) ? auditorSvc().get() : 0,
+                                      (m_auditorRestart) ? auditorSvc().get() : nullptr,
                                       IAuditor::ReStart);
     sc = restart();
     return sc;

@@ -22,7 +22,7 @@ Test1.RootInTES = "";
 
 ApplicationMgr.TopAlg += { "GaudiCommonTests/Test2" };
 Test2.OutputLevel     =  2;
-Test2.RootOnTES = "microDST/";
+Test2.RootInTES = "microDST/";
 
 //--------------------------------------------------------------
 // Event related parameters

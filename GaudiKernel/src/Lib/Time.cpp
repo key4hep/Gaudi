@@ -117,11 +117,11 @@ Time Time::current (void) {
   return from (&ftime);
 #else
   timeval tv;
-  if (gettimeofday (&tv, 0) != 0) {
+  if (gettimeofday (&tv, nullptr) != 0) {
     char buf[256];
     std::ostringstream tag,msg;
     tag << "errno=" << errno;
-    if( strerror_r(errno, buf, 256) == 0 ) {
+    if( strerror_r(errno, buf, 256) == nullptr ) {
       msg << buf;
     } else {
       msg << "Unknown error retrieving current time";

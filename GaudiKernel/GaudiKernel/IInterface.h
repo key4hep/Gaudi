@@ -5,41 +5,16 @@
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/System.h"
 #include "GaudiKernel/StatusCode.h"
+#include <type_traits>
+#include <typeinfo>
 #include <ostream>
 
-#ifndef __GCCXML__
-// Meta Programming Library (MPL) headers
-#include <boost/mpl/set.hpp>
-#include <boost/mpl/insert.hpp>
-#include <boost/mpl/fold.hpp>
-#include <boost/mpl/for_each.hpp>
-namespace mpl = boost::mpl;
-#endif
 
-#include <typeinfo>
-
-#ifndef __GCCXML__
 /// Macro to declare the interface ID when using the new mechanism of extending and implementing interfaces.
-#define DeclareInterfaceID(name, major, minor) \
-  static const InterfaceID &interfaceID(){ return iid::interfaceID(); } \
-  typedef Gaudi::InterfaceId< name , major , minor > iid; \
-  typedef iid::iids::type ext_iids
-#else
-// GCCXML work-around
-#define DeclareInterfaceID(name, major, minor) \
-  static const InterfaceID &interfaceID(){ static const InterfaceID xx(0UL,0UL,0UL); return xx; }
-#endif
-
-#ifndef __GCCXML__
-/// Macro to declare the interface ID when using the new mechanism of extending and implementing interfaces.
-#define DeclareInterfaceIDMultiBase(name, major, minor) \
-  static const InterfaceID &interfaceID(){ return iid::interfaceID(); } \
-  typedef Gaudi::InterfaceId< name , major , minor > iid
-#else
-// GCCXML work-around
-#define DeclareInterfaceIDMultiBase(name, major, minor) \
-  static const InterfaceID &interfaceID(){ static const InterfaceID xx(0UL,0UL,0UL); return xx; }
-#endif
+#define DeclareInterfaceID(iface, major, minor)                          \
+  static const InterfaceID &interfaceID() { return iid::interfaceID(); } \
+  using iid = Gaudi::InterfaceId< iface , major , minor > ;              \
+  using ext_iids = iid::iids
 
 /**
  * @class InterfaceID Kernel.h GaudiKernel/Kernel.h
@@ -56,47 +31,45 @@ class GAUDI_API InterfaceID final {
 public:
 #if defined(GAUDI_V20_COMPAT) && !defined(G21_NEW_INTERFACES)
   /// constructor from a pack long
-  InterfaceID( unsigned long lid ) : m_id( lid & 0xFFFF ),
-                                     m_major_ver( (lid & 0xFF000000)>>24 ),
-                                     m_minor_ver( (lid & 0xFF0000)>> 16 ) { }
+  constexpr InterfaceID( unsigned long lid ) : m_id( lid & 0xFFFF ),
+                                               m_major_ver( (lid & 0xFF000000)>>24 ),
+                                               m_minor_ver( (lid & 0xFF0000)>> 16 ) { }
 #endif
   /// constructor from components
-  InterfaceID( unsigned long id, unsigned long major, unsigned long minor = 0)
+  constexpr InterfaceID( unsigned long id, unsigned long major, unsigned long minor = 0)
     : m_id( id ), m_major_ver( major ), m_minor_ver( minor ) { }
   /// constructor from components
   InterfaceID( const char* name, unsigned long major, unsigned long minor = 0)
     : m_id( hash32(name) ), m_major_ver( major ), m_minor_ver( minor ) { }
-  /// destructor
-  ~InterfaceID() = default;
 #if defined(GAUDI_V20_COMPAT) && !defined(G21_NEW_INTERFACES)
   /// conversion to unsigned long
-  operator unsigned long() const {
+  constexpr operator unsigned long() const {
     return (m_major_ver << 24) + (m_minor_ver << 16) + m_id;
   }
 #endif
   /// get the interface identifier
-  unsigned long id() const { return m_id; }
+  constexpr unsigned long id() const { return m_id; }
   /// get the major version of the interface
-  unsigned long majorVersion() const { return m_major_ver; }
+  constexpr unsigned long majorVersion() const { return m_major_ver; }
   /// get the minor version of the interface
-  unsigned long minorVersion() const { return m_minor_ver; }
+  constexpr unsigned long minorVersion() const { return m_minor_ver; }
   /** check compatibility. The major version is check and the minor one
    *  should be bigger or equal
    */
-  bool versionMatch( const InterfaceID& iid ) const {
+  constexpr bool versionMatch( const InterfaceID& iid ) const {
     return ( id() == iid.id() &&
              majorVersion() == iid.majorVersion() &&
              minorVersion() >= iid.minorVersion() );
   }
   /// check full compatibility.
-  bool fullMatch( const InterfaceID& iid ) const {
+  constexpr bool fullMatch( const InterfaceID& iid ) const {
     return ( id() == iid.id() &&
              majorVersion() == iid.majorVersion() &&
              minorVersion() == iid.minorVersion() );
   }
   /// compare operator
-  bool operator == (const InterfaceID& iid ) const { return fullMatch(iid); }
-  /// one-at-time hash function
+  constexpr bool operator == (const InterfaceID& iid ) const { return fullMatch(iid); }
+  /// Jenkins one-at-time hash function -- see https://en.wikipedia.org/wiki/Jenkins_hash_function
   static unsigned int hash32(const char* key) {
     unsigned int hash = 0;
     for (const char* k = key; *k; ++k) {
@@ -113,40 +86,142 @@ private:
 };
 
 namespace Gaudi {
+
+  template <typename... I> struct interface_list { };
+
+  namespace meta {
+      // identity T -> type = T; note that id_<T> is a complete type, even if T is not
+      template <typename T> struct id_
+      { using type = T; };
+
+      namespace detail
+      {
+          template <typename... Is>
+          struct inherit_from : Is... { };
+
+          template <typename List, typename I>
+          struct append1{ };
+
+          // interpose an id_<I> as id_<I> is a complete type, even if I is not... and we need complete
+          // types to inherit from
+          template <typename... Is, typename I>
+          struct append1<interface_list<Is...>, I>
+          : id_<typename std::conditional<std::is_base_of< id_<I>, inherit_from<id_<Is>...> >::value,
+                                          interface_list<Is...>,
+                                          interface_list<Is...,I> >::type> { };
+
+          template <typename, typename>
+          struct appendN { };
+
+          template <typename State>
+          struct appendN<interface_list<>, State >
+          : id_<State> { };
+
+          template <typename... Is, typename I, typename List>
+          struct appendN<interface_list<I,Is...>, List>
+          :      appendN<interface_list<Is...  >, typename append1<List, I>::type> { };
+      }
+
+      template <typename... Is>
+      using unique_interface_list = detail::appendN<interface_list<Is...>, interface_list<>>;
+  }
+
+  // interface_list concatenation
+  template <typename... I> struct interface_list_cat;
+
+  // identity
+  template <typename... I>
+  struct interface_list_cat<interface_list<I...>>
+  : meta::unique_interface_list< I... > { };
+
+  // binary op
+  template <typename... I1, typename... I2>
+  struct interface_list_cat<interface_list<I1...>,interface_list<I2...>>
+  : meta::unique_interface_list<I1...,I2...> { };
+
+  // induction of binary op
+  template <typename... I1, typename... I2, typename... Others>
+  struct interface_list_cat<interface_list<I1...>,interface_list<I2...>, Others...>
+  : interface_list_cat< interface_list<I1...,I2...>, Others... > { };
+
+  // append is a special case of concatenation...
+  template <typename... I> struct interface_list_append;
+
+  template <typename... Is, typename I>
+  struct interface_list_append<interface_list<Is...>,I>
+  : interface_list_cat< interface_list<Is...>, interface_list<I> > { };
+
+  // helpers for implementation of interface cast
+  namespace iid_cast_details {
+      template <typename I>
+      constexpr void* void_cast(const I* i)
+      { return const_cast<I*>(i); }
+
+      template <typename ... Is> struct iid_cast_t;
+
+      template <> struct iid_cast_t<> {
+          template <typename P>
+          constexpr void* operator()(const InterfaceID&, P*) const { return nullptr ; }
+      };
+
+      template <typename I, typename... Is> struct iid_cast_t<I,Is...> {
+          template <typename P>
+          inline void* operator()(const InterfaceID& tid, P* ptr) const {
+            return tid.versionMatch(I::interfaceID()) ? void_cast<typename I::interface_type>(ptr)
+                                                      : iid_cast_t<Is...>{}(tid,ptr);
+          }
+      };
+  }
+
+  template <typename... Is>
+  std::vector<std::string> getInterfaceNames( Gaudi::interface_list<Is...> ) {
+      return { Is::name()... };
+  }
+
+  template <typename...Is,typename P>
+  inline void* iid_cast(const InterfaceID& tid, Gaudi::interface_list<Is...>, P* ptr ) {
+      constexpr auto iid_cast_ = iid_cast_details::iid_cast_t<Is...>{};
+      return iid_cast_(tid,ptr);
+  }
+
   /// Class to handle automatically the versioning of the interfaces when they
   /// are inheriting from other interfaces.
   /// @author Marco Clemencic
   template <typename INTERFACE, unsigned long majVers, unsigned long minVers>
-  class InterfaceId final {
-  public:
-    /// Interface type
-    typedef INTERFACE iface_type;
-
-#ifndef __GCCXML__
+  struct InterfaceId final {
+    /// interface type
+    using interface_type = INTERFACE;
     /// List of interfaces
-    typedef mpl::insert<typename iface_type::ext_iids, InterfaceId> iids;
-#endif
+    using iids = typename Gaudi::interface_list_append<typename interface_type::ext_iids,InterfaceId>::type ;
 
     static inline std::string name() { return System::typeinfoName(typeid(INTERFACE)); }
-
-    static inline unsigned long majorVersion(){return majVers;}
-    static inline unsigned long minorVersion(){return minVers;}
+    static constexpr unsigned long majorVersion() { return majVers; }
+    static constexpr unsigned long minorVersion() { return minVers; }
 
     static inline const std::type_info &TypeInfo() {
-#ifndef __GCCXML__
       return typeid(typename iids::type);
-#else
-      return typeid(INTERFACE); // avoid compilation errors
-#endif
     }
 
-    static const InterfaceID& interfaceID()
-    {
+    static inline const InterfaceID& interfaceID() {
       static const InterfaceID s_iid(name().c_str(),majVers,minVers);
       return s_iid;
     }
-
   };
+
+  constexpr struct fullMatch_t { 
+    template <typename IFACE1, typename IFACE2, unsigned long major1, unsigned long major2, unsigned long minor1, unsigned long minor2>
+    constexpr bool operator()(InterfaceId<IFACE1,major1,minor1>, InterfaceId<IFACE2,major2,minor2>) const { return false; }
+    template <typename IFACE, unsigned long major, unsigned long minor>
+    constexpr bool operator()(InterfaceId<IFACE,major,minor>, InterfaceId<IFACE,major,minor>) const { return true; }
+  } fullMatch{};
+
+  constexpr struct majorMatch_t { 
+    template <typename IFACE1, typename IFACE2, unsigned long major1, unsigned long major2, unsigned long minor1, unsigned long minor2>
+    constexpr bool operator()(InterfaceId<IFACE1,major1,minor1>, InterfaceId<IFACE2,major2,minor2>) const { return false; }
+    template <typename IFACE, unsigned long major, unsigned long minor1, unsigned long minor2>
+    constexpr bool operator()(InterfaceId<IFACE,major,minor1>, InterfaceId<IFACE,major,minor2>)  const { return true; }
+  } majorMatch{};
+
 }
 
 /** @class IInterface IInterface.h GaudiKernel/IInterface.h
@@ -158,23 +233,15 @@ namespace Gaudi {
 */
 class GAUDI_API IInterface {
 public:
-#ifndef __GCCXML__
   /// Interface ID
-  typedef Gaudi::InterfaceId<IInterface,0,0> iid;
+  using iid = Gaudi::InterfaceId<IInterface,0,0>;
 
   /// Extra interfaces
-  typedef mpl::set1<iid> ext_iids;
-#endif
+  using ext_iids = Gaudi::interface_list<iid>;
 
   /// Return an instance of InterfaceID identifying the interface.
   static inline const InterfaceID &interfaceID(){
-#ifndef __GCCXML__
     return iid::interfaceID();
-#else
-    // GCCXML work-around
-    static const InterfaceID xx(0UL,0UL,0UL);
-    return xx;
-#endif
   }
 
   /// main cast function
@@ -254,8 +321,8 @@ namespace Gaudi {
 */
 template <class I>
 bool isValidInterface( I* i) {
-  void* ii;
-  StatusCode sc =  i->queryInterface( I::interfaceID(), &ii);
+  void* ii = nullptr;;
+  StatusCode sc = i->queryInterface( I::interfaceID(), &ii );
   return sc.isSuccess();
 }
 

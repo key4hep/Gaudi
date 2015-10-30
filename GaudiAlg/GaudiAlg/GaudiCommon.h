@@ -18,6 +18,7 @@
 #include "GaudiKernel/IAlgTool.h"
 #include "GaudiKernel/IAlgContextSvc.h"
 #include "GaudiKernel/IDataProviderSvc.h"
+#include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/SmartDataPtr.h"
 #include "GaudiKernel/System.h"
 #include "GaudiKernel/GaudiException.h"
@@ -34,6 +35,20 @@
 class Algorithm ; // GaudiKernel
 class AlgTool   ; // GaudiKernel
 namespace Gaudi { namespace Utils { template <class TYPE> struct GetData ; } }
+
+namespace GaudiCommon_details {
+  constexpr const struct svc_eq_t {
+        bool operator()(const std::string& n, const SmartIF<IService>& s) const { return n == s->name(); };
+        bool operator()(const SmartIF<IService>& s, const std::string& n) const { return s->name() == n; };
+        bool operator()(const SmartIF<IService>& s, const SmartIF<IService>& n) const { return s->name() == n->name(); };
+  } svc_eq { };
+  constexpr const struct svc_lt_t {
+        bool operator()(const std::string& n, const SmartIF<IService>& s) const { return n < s->name(); };
+        bool operator()(const SmartIF<IService>& s, const std::string& n) const { return s->name() < n; };
+        bool operator()(const SmartIF<IService>& s, const SmartIF<IService>& n) const { return s->name() < n->name(); };
+  } svc_lt { };
+
+}
 // ============================================================================
 /*  @file GaudiCommon.h
  *
@@ -93,16 +108,6 @@ protected: // few actual data types
   /// storage for active services
   typedef std::vector<SmartIF<IService>>     Services;
 
-  static const constexpr struct svc_eq_t {
-        bool operator()(const std::string& n, const SmartIF<IService>& s) const { return n == s->name(); };
-        bool operator()(const SmartIF<IService>& s, const std::string& n) const { return s->name() == n; };
-        bool operator()(const SmartIF<IService>& s, const SmartIF<IService>& n) const { return s->name() == n->name(); };
-  } svc_eq { };
-  static const constexpr struct svc_lt_t {
-        bool operator()(const std::string& n, const SmartIF<IService>& s) const { return n < s->name(); };
-        bool operator()(const SmartIF<IService>& s, const std::string& n) const { return s->name() < n; };
-        bool operator()(const SmartIF<IService>& s, const SmartIF<IService>& n) const { return s->name() < n->name(); };
-  } svc_lt { };
   // ==========================================================================
   //protected members such that they can be used in the derived classes
   /// a pointer to the CounterSummarySvc
@@ -247,9 +252,9 @@ public:
    *  @retval StatusCode::FAILURE Failed to store data in the TES.
    */
   DataObject* put ( IDataProviderSvc*  svc ,
-             DataObject*        object   ,
-             const std::string& location  ,
-             const bool useRootInTES = true ) const ;
+                    DataObject*        object   ,
+                    const std::string& location  ,
+                    const bool useRootInTES = true ) const ;
   /** Useful method for the easy location of tools.
    *
    *  @code
@@ -363,7 +368,7 @@ public:
     const size_t       mx  = 10                  ) const ;
   /** Print the warning message and return with the given StatusCode.
    *
-   *  Also performs statistical analysis of the error messages and
+   *  Also performs statistical analysis of the warning messages and
    *  suppression after the defined number of error instances.
    *
    *  @code
@@ -390,7 +395,7 @@ public:
     const size_t       mx  = 10                  ) const ;
   /** Print the info message and return with the given StatusCode.
    *
-   *  Also performs statistical analysis of the error messages and
+   *  Also performs statistical analysis of the info messages and
    *  suppression after the defined number of instances.
    *
    *  @see MsgStream
@@ -692,6 +697,7 @@ public:
    *  @retval           StatusCode::FAILURE Error releasing too or service
    */
   StatusCode release ( const IInterface* interface ) const ;
+
   /// Un-hide IInterface::release (ICC warning #1125)
   using PBASE::release;
   // ==========================================================================
@@ -772,10 +778,6 @@ private:
   std::string m_context;
   /// The rootInTES string
   std::string m_rootInTES;
-  /// The rootOnTES string.
-  /// Note, this job option is OBSOLETE, but retained temporarily to allow easy migration.
-  /// Please update your code to use RootInTES instead. This option will be removed at some point.
-  std::string m_rootOnTES;
   /// The globalTimeOffset value
   double m_globalTimeOffset = 0;
   // ==========================================================================

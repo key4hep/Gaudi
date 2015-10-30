@@ -26,7 +26,6 @@ StatusCode ComponentManager::queryInterface(const InterfaceID& iid, void** pinte
 {
   // try local interfaces
   StatusCode sc = base_class::queryInterface(iid,pinterface);
-  if (sc.isSuccess()) return sc;
-  // fall back on the owner
-  return m_application->queryInterface(iid, pinterface);
+  // fall back on the owner, if local interface didn't match...
+  return sc.isSuccess() ? sc : m_application->queryInterface(iid, pinterface);
 }

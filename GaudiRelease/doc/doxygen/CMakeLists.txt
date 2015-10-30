@@ -78,4 +78,10 @@ Release notes of the packages:
     configure_file(${template}.in ${CMAKE_CURRENT_BINARY_DIR}/${template} @ONLY)
   endforeach()
 
+  # the cmake directory is not scanned
+  foreach(doc_file README.md)
+    configure_file(${CMAKE_SOURCE_DIR}/cmake/${doc_file}
+                   ${CMAKE_CURRENT_BINARY_DIR}/cmake_doc/${doc_file} COPYONLY)
+  endforeach()
+
 endif()

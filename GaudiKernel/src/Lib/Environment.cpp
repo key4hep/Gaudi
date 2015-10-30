@@ -6,7 +6,7 @@ namespace {
   std::string i_resolve(std::string& source, int recursions)  {
     if ( recursions > 0 )  {
       int lvl = 0, mx_lvl = 0;
-      for(const char* c=source.c_str(), *beg=0; *c != 0; ++c)  {
+      for(const char* c=source.c_str(), *beg=nullptr; *c != 0; ++c)  {
         switch ( *c )  {
           case '$':
             if ( *(c+1) == '{' )  {

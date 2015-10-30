@@ -8,8 +8,8 @@
 # \----- (End of User GaudiExamplesCommonConf/GaudiExamplesCommonConf) -------------------------------
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r5)
-                                          running on pclhcb117 on Wed Sep 30 12:12:51 2015
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r6)
+                                          running on pclhcb117 on Fri Oct 30 17:49:03 2015
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
@@ -81,7 +81,7 @@ ToolSvc.ToolA       DEBUG Property update for OutputLevel : new value = 2
 ToolSvc.ToolA       DEBUG Initialize
 ToolSvc.ToolA       DEBUG Initialize base class GaudiCommon<AlgTool>
 ToolSvc.ToolA       DEBUG could not locate CounterSummarySvc, no counter summary will be made
-ToolSvc.ToolA       DEBUG List of ALL properties of TestTool/ToolSvc.ToolA  #properties = 23
+ToolSvc.ToolA       DEBUG List of ALL properties of TestTool/ToolSvc.ToolA  #properties = 22
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'Tools':[ 'TestTool/ToolB' ]
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'ContextService':AlgContextSvc
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
@@ -91,7 +91,6 @@ ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'GlobalTimeOffset':0.0000000
-ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'RootOnTES':
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'RootInTES':
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'Context':
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'TypePrint':True
@@ -111,7 +110,7 @@ ToolSvc.ToolB       DEBUG Property update for OutputLevel : new value = 2
 ToolSvc.ToolB       DEBUG Initialize
 ToolSvc.ToolB       DEBUG Initialize base class GaudiCommon<AlgTool>
 ToolSvc.ToolB       DEBUG could not locate CounterSummarySvc, no counter summary will be made
-ToolSvc.ToolB       DEBUG List of ALL properties of TestTool/ToolSvc.ToolB  #properties = 23
+ToolSvc.ToolB       DEBUG List of ALL properties of TestTool/ToolSvc.ToolB  #properties = 22
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'Tools':[ 'TestTool/ToolA' ]
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'ContextService':AlgContextSvc
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
@@ -121,7 +120,6 @@ ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'GlobalTimeOffset':0.0000000
-ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'RootOnTES':
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'RootInTES':
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'Context':
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'TypePrint':True
@@ -146,6 +144,7 @@ ApplicationMgr       INFO Application Manager Started successfully
 MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by
 MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
@@ -155,6 +154,7 @@ MyGaudiAlg           INFO tools created with tool<T>...
 ToolSvc.MyTool       INFO doIt() has been called
 MyGaudiAlg.MyTool    INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by [MyGaudiAlg]
 MyGaudiAlg.MyGa...   INFO doIt() has been called
 MyGaudiAlg.Tool...   INFO doIt() has been called
 MyGaudiAlg.MyGa...   INFO doItAgain() has been called
@@ -164,6 +164,7 @@ ToolSvc.TestPub...   INFO doIt() has been called
 MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by
 MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
@@ -173,6 +174,7 @@ MyGaudiAlg           INFO tools created with tool<T>...
 ToolSvc.MyTool       INFO doIt() has been called
 MyGaudiAlg.MyTool    INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by [MyGaudiAlg]
 MyGaudiAlg.MyGa...   INFO doIt() has been called
 MyGaudiAlg.Tool...   INFO doIt() has been called
 MyGaudiAlg.MyGa...   INFO doItAgain() has been called
@@ -182,6 +184,7 @@ ToolSvc.TestPub...   INFO doIt() has been called
 MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by
 MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
@@ -191,6 +194,7 @@ MyGaudiAlg           INFO tools created with tool<T>...
 ToolSvc.MyTool       INFO doIt() has been called
 MyGaudiAlg.MyTool    INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by [MyGaudiAlg]
 MyGaudiAlg.MyGa...   INFO doIt() has been called
 MyGaudiAlg.Tool...   INFO doIt() has been called
 MyGaudiAlg.MyGa...   INFO doItAgain() has been called
@@ -200,6 +204,7 @@ ToolSvc.TestPub...   INFO doIt() has been called
 MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by
 MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
@@ -209,6 +214,7 @@ MyGaudiAlg           INFO tools created with tool<T>...
 ToolSvc.MyTool       INFO doIt() has been called
 MyGaudiAlg.MyTool    INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by [MyGaudiAlg]
 MyGaudiAlg.MyGa...   INFO doIt() has been called
 MyGaudiAlg.Tool...   INFO doIt() has been called
 MyGaudiAlg.MyGa...   INFO doItAgain() has been called
@@ -218,6 +224,7 @@ ToolSvc.TestPub...   INFO doIt() has been called
 MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by
 MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
@@ -227,6 +234,7 @@ MyGaudiAlg           INFO tools created with tool<T>...
 ToolSvc.MyTool       INFO doIt() has been called
 MyGaudiAlg.MyTool    INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by [MyGaudiAlg]
 MyGaudiAlg.MyGa...   INFO doIt() has been called
 MyGaudiAlg.Tool...   INFO doIt() has been called
 MyGaudiAlg.MyGa...   INFO doItAgain() has been called
@@ -236,6 +244,7 @@ ToolSvc.TestPub...   INFO doIt() has been called
 MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by
 MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
@@ -245,6 +254,7 @@ MyGaudiAlg           INFO tools created with tool<T>...
 ToolSvc.MyTool       INFO doIt() has been called
 MyGaudiAlg.MyTool    INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by [MyGaudiAlg]
 MyGaudiAlg.MyGa...   INFO doIt() has been called
 MyGaudiAlg.Tool...   INFO doIt() has been called
 MyGaudiAlg.MyGa...   INFO doItAgain() has been called
@@ -254,6 +264,7 @@ ToolSvc.TestPub...   INFO doIt() has been called
 MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by
 MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
@@ -263,6 +274,7 @@ MyGaudiAlg           INFO tools created with tool<T>...
 ToolSvc.MyTool       INFO doIt() has been called
 MyGaudiAlg.MyTool    INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by [MyGaudiAlg]
 MyGaudiAlg.MyGa...   INFO doIt() has been called
 MyGaudiAlg.Tool...   INFO doIt() has been called
 MyGaudiAlg.MyGa...   INFO doItAgain() has been called
@@ -272,6 +284,7 @@ ToolSvc.TestPub...   INFO doIt() has been called
 MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by
 MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
@@ -281,6 +294,7 @@ MyGaudiAlg           INFO tools created with tool<T>...
 ToolSvc.MyTool       INFO doIt() has been called
 MyGaudiAlg.MyTool    INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by [MyGaudiAlg]
 MyGaudiAlg.MyGa...   INFO doIt() has been called
 MyGaudiAlg.Tool...   INFO doIt() has been called
 MyGaudiAlg.MyGa...   INFO doItAgain() has been called
@@ -290,6 +304,7 @@ ToolSvc.TestPub...   INFO doIt() has been called
 MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by
 MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
@@ -299,6 +314,7 @@ MyGaudiAlg           INFO tools created with tool<T>...
 ToolSvc.MyTool       INFO doIt() has been called
 MyGaudiAlg.MyTool    INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by [MyGaudiAlg]
 MyGaudiAlg.MyGa...   INFO doIt() has been called
 MyGaudiAlg.Tool...   INFO doIt() has been called
 MyGaudiAlg.MyGa...   INFO doItAgain() has been called
@@ -308,6 +324,7 @@ ToolSvc.TestPub...   INFO doIt() has been called
 MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: The INFO message is suppressed : 'public tool called by'
 MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
@@ -317,13 +334,13 @@ MyGaudiAlg           INFO tools created with tool<T>...
 ToolSvc.MyTool       INFO doIt() has been called
 MyGaudiAlg.MyTool    INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
+ToolSvc.MyGaudi...   INFO MyGaudiTool:: The INFO message is suppressed : 'public tool called by [MyGaudiAlg]'
 MyGaudiAlg.MyGa...   INFO doIt() has been called
 MyGaudiAlg.Tool...   INFO doIt() has been called
 MyGaudiAlg.MyGa...   INFO doItAgain() has been called
 MyGaudiAlg           INFO tools created via ToolHandle<T>....
 MyGaudiAlg.Priv...   INFO doIt() has been called
 ToolSvc.TestPub...   INFO doIt() has been called
-EventLoopMgr         INFO ---> Loop Finished -  WSS 42.8555 | total time (skipping 1st evt) 1299806 ns
 ApplicationMgr       INFO Application Manager Stopped successfully
 MyAlg                INFO finalizing....
 MyGaudiAlg           INFO finalizing....

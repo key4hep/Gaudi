@@ -1,4 +1,4 @@
-gaudi_subdir(RootCnv v1r23p3)
+gaudi_subdir(RootCnv v2r0)
 
 gaudi_depends_on_subdirs(GaudiKernel GaudiUtils)
 

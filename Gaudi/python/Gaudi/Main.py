@@ -162,7 +162,7 @@ class gaudimain(object) :
         datetime = datetime.replace(' ', '_')
         outfile = open( 'gaudirun-%s.log'%(datetime), 'w' )
         # two handlers, one for a log file, one for terminal
-        streamhandler = logging.StreamHandler(strm=outfile)
+        streamhandler = logging.StreamHandler(stream=outfile)
         console       = logging.StreamHandler()
         # create formatter : the params in parentheses are variable names available via logging
         formatter = logging.Formatter( "%(asctime)s - %(name)s - %(levelname)s - %(message)s" )
@@ -254,11 +254,11 @@ class gaudimain(object) :
         self.log.info('attaching debugger to PID ' + str(os.getpid()))
         pid =  os.spawnvp(os.P_NOWAIT,
                           debugger, [debugger, '-q', 'python', str(os.getpid())])
-        
+
         # give debugger some time to attach to the python process
         import time
         time.sleep( 1 )
-        
+
         # verify the process' existence (will raise OSError if failed)
         os.waitpid( pid, os.WNOHANG )
         os.kill( pid, 0 )
@@ -427,23 +427,19 @@ class gaudimain(object) :
         import GaudiMP.GMPBase as gpp
         c = Configurable.allConfigurables
         self.log.info('-'*80)
-        self.log.info('%s: Parallel Mode : %i '%(__name__, ncpus))
-        from commands import getstatusoutput as gso
-        metadataCommands = [ 'uname -a',
-                             'echo $CMTCONFIG',
-                             'echo $GAUDIAPPNAME',
-                             'echo $GAUDIAPPVERSION']
-        for comm in metadataCommands :
-            s, o = gso( comm )
-            if s :
-                o = "Undetermined"
-            string = '%s: %30s : %s '%(__name__, comm, o)
-            self.log.info( string )
+        self.log.info('%s: Parallel Mode : %i ', __name__, ncpus)
+        for name, value in [('platrofm', ' '.join(os.uname())),
+                            ('config', os.environ.get('BINARY_TAG') or
+                                       os.environ.get('CMTCONFIG')),
+                            ('app. name', os.environ.get('GAUDIAPPNAME')),
+                            ('app. version', os.environ.get('GAUDIAPPVERSION')),
+                            ]:
+            self.log.info('%s: %30s : %s ', __name__, name, value or 'Undefined')
         try :
             events = str(c['ApplicationMgr'].EvtMax)
         except :
             events = "Undetermined"
-        self.log.info('%s: Events Specified : %s '%(__name__,events))
+        self.log.info('%s: Events Specified : %s ', __name__, events)
         self.log.info('-'*80)
         # Parall = gpp.Coordinator(ncpus, shared, c, self.log)
         Parall = gpp.Coord( ncpus, c, self.log )

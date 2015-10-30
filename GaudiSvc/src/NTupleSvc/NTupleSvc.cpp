@@ -80,17 +80,13 @@ StatusCode NTupleSvc::initialize()     {
       StatusCode iret(StatusCode::SUCCESS,true);
       DataObject* root = new NTuple::Directory();
       status = setRoot(m_rootName, root);
-      for ( DBaseEntries::iterator i = m_output.begin(); i != m_output.end(); ++i )    {
-        iret = connect(*i);
-        if ( !iret.isSuccess() )    {
-          status = iret;
-        }
+      for ( auto& i : m_output ) {
+        iret = connect(i);
+        if ( !iret.isSuccess() ) status = iret;
       }
-      for ( DBaseEntries::iterator j = m_input.begin(); j != m_input.end(); ++j )    {
-        iret = connect(*j);
-        if ( !iret.isSuccess() )    {
-          status = iret;
-        }
+      for ( auto& j : m_input ) {
+        iret = connect(j);
+        if ( !iret.isSuccess() ) status = iret;
       }
     }
   }

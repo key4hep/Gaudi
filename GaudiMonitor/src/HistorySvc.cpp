@@ -62,7 +62,7 @@ struct DHH {
   CLID id;
   std::string key;
 
-  DHH(const CLID& i, const std::string& k):id(i), key(k) {}
+  DHH(const CLID& i, std::string  k):id(i), key(std::move(k)) {}
 
   bool operator < ( DHH const &rhs ) const {
     if (id != rhs.id) {
@@ -904,19 +904,19 @@ HistorySvc::dumpState(const INamedInterface *in, std::ofstream& ofs) const {
   const IService*  is = nullptr;
   const Algorithm* ia = nullptr;
   const IAlgTool*  it = nullptr;
-  if ( (is=dynamic_cast<const IService*>(in)) != 0) {
+  if ( (is=dynamic_cast<const IService*>(in)) != nullptr) {
     ON_VERBOSE
       m_log << MSG::VERBOSE << in->name() << " is Service" << endmsg;
     ServiceHistory* o = getServiceHistory( *is );
     hist = dynamic_cast<HistoryObj*>( o );
     vhist = dynamic_cast<IVersHistoryObj*>( o );
-  } else if ( (ia = dynamic_cast<const Algorithm*>(in)) != 0 ) {
+  } else if ( (ia = dynamic_cast<const Algorithm*>(in)) != nullptr ) {
     ON_VERBOSE
       m_log << MSG::VERBOSE << in->name() << " is Alg" << endmsg;
     AlgorithmHistory *o = getAlgHistory( *ia );
     hist = dynamic_cast<HistoryObj*>( o );
     vhist = dynamic_cast<IVersHistoryObj*>( o );
-  } else if ( (it = dynamic_cast<const IAlgTool*>(in)) != 0 ) {
+  } else if ( (it = dynamic_cast<const IAlgTool*>(in)) != nullptr ) {
     ON_VERBOSE
       m_log << MSG::VERBOSE << in->name() << " is AlgTool" << endmsg;
     AlgToolHistory *o = getAlgToolHistory( *it );
@@ -929,7 +929,7 @@ HistorySvc::dumpState(const INamedInterface *in, std::ofstream& ofs) const {
     return;
   }
 
-  if (hist == 0 || vhist == 0) {
+  if ( !hist || !vhist ) {
     m_log << MSG::ERROR << "Could not dcast recognized object to HistoryObj or IVersHistoryObj. This should never happen."
 	  << endmsg;
     return;

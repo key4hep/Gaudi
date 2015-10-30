@@ -413,7 +413,7 @@ void OutputStream::addItem(Items& itms, const std::string& descriptor)   {
     size_t idx = obj_path.find("/",1);
     while(idx != std::string::npos)  {
       std::string sub_item = obj_path.substr(0,idx);
-      if ( 0 == findItem(sub_item) ) addItem(itms, sub_item+"#1");
+      if ( !findItem(sub_item) ) addItem(itms, sub_item+"#1");
       idx = obj_path.find("/",idx+1);
     }
   }

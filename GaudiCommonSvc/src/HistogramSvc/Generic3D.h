@@ -78,16 +78,16 @@ namespace Gaudi {
     int rIndexZ(int index) const { return m_zAxis.rIndex(index);}
 
     /// The weighted mean along the x axis of a given bin.
-    double binMeanX(int indexX,int ,int ) const
+    double binMeanX(int indexX,int ,int ) const override
     { return m_rep->GetXaxis()->GetBinCenter( rIndexX(indexX) ); }
     /// The weighted mean along the y axis of a given bin.
-    double binMeanY(int,int indexY,int  ) const
+    double binMeanY(int,int indexY,int  ) const override
     { return m_rep->GetYaxis()->GetBinCenter( rIndexY(indexY) ); }
     /// The weighted mean along the z axis of a given bin.
-    double binMeanZ(int ,int ,int indexZ) const
+    double binMeanZ(int ,int ,int indexZ) const override
     { return m_rep->GetYaxis()->GetBinCenter( rIndexY(indexZ) ); }
     /// Number of entries in the corresponding bin (ie the number of times fill was calle d for this bin).
-    int binEntries(int indexX,int indexY,int indexZ) const    {
+    int binEntries(int indexX,int indexY,int indexZ) const override {
       if (binHeight(indexX, indexY, indexZ)<=0) return 0;
       double xx =  binHeight(indexX, indexY, indexZ)/binError(indexX, indexY, indexZ);
       return int(xx*xx+0.5);
@@ -189,7 +189,7 @@ namespace Gaudi {
     }
 
     // overwrite extraentries
-    int extraEntries() const {
+    int extraEntries() const override {
       return
         binEntries(AIDA::IAxis::UNDERFLOW_BIN,AIDA::IAxis::UNDERFLOW_BIN,AIDA::IAxis::UNDERFLOW_BIN) +
         binEntries(AIDA::IAxis::UNDERFLOW_BIN,AIDA::IAxis::UNDERFLOW_BIN,AIDA::IAxis::OVERFLOW_BIN)  +

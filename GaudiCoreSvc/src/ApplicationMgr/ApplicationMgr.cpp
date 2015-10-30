@@ -50,8 +50,7 @@ DECLARE_OBJECT_FACTORY(ApplicationMgr)
 //=======================================================================
 // Constructor
 //=======================================================================
-ApplicationMgr::ApplicationMgr(IInterface*):
-    base_class()
+ApplicationMgr::ApplicationMgr(IInterface*)
 {
   // IInterface initialization
   addRef(); // Initial count set to 1
@@ -175,15 +174,15 @@ StatusCode ApplicationMgr::queryInterface
   // find indirect interfaces :
   if      ( ISvcLocator     ::interfaceID() . versionMatch ( iid ) )
   { return serviceLocator()-> queryInterface ( iid , ppvi ) ; }
-  else if ( ISvcManager     ::interfaceID() . versionMatch ( iid ) )
+  if ( ISvcManager     ::interfaceID() . versionMatch ( iid ) )
   { return svcManager()    -> queryInterface ( iid , ppvi ) ; }
-  else if ( IAlgManager     ::interfaceID() . versionMatch ( iid ) )
+  if ( IAlgManager     ::interfaceID() . versionMatch ( iid ) )
   { return algManager()    -> queryInterface ( iid , ppvi ) ; }
-  else if ( IClassManager   ::interfaceID() . versionMatch ( iid ) )
+  if ( IClassManager   ::interfaceID() . versionMatch ( iid ) )
   { return m_classManager  -> queryInterface ( iid , ppvi ) ; }
-  else if ( IProperty       ::interfaceID() . versionMatch ( iid ) )
+  if ( IProperty       ::interfaceID() . versionMatch ( iid ) )
   { return m_propertyMgr   -> queryInterface ( iid , ppvi ) ; }
-  else if ( IMessageSvc     ::interfaceID() . versionMatch ( iid ) )
+  if ( IMessageSvc     ::interfaceID() . versionMatch ( iid ) )
   {
     *ppvi = reinterpret_cast<void*>(m_messageSvc.get());
     if (m_messageSvc) m_messageSvc->addRef();
@@ -317,7 +316,7 @@ StatusCode ApplicationMgr::configure() {
     tlog << MSG::INFO << "Already Configured" << endmsg;
     return StatusCode::SUCCESS;
   }
-  else if( Gaudi::StateMachine::OFFLINE != m_state ) {
+  if( Gaudi::StateMachine::OFFLINE != m_state ) {
     tlog << MSG::FATAL
          << "configure: Invalid state \""  << m_state << "\"" << endmsg;
     return StatusCode::FAILURE;
@@ -559,7 +558,7 @@ StatusCode ApplicationMgr::initialize() {
     log << MSG::INFO << "Already Initialized!" << endmsg;
     return StatusCode::SUCCESS;
   }
-  else if( m_state != Gaudi::StateMachine::CONFIGURED ) {
+  if( m_state != Gaudi::StateMachine::CONFIGURED ) {
     log << MSG::FATAL
          << "initialize: Invalid state \""  << m_state << "\"" << endmsg;
     return StatusCode::FAILURE;
@@ -593,7 +592,7 @@ StatusCode ApplicationMgr::start() {
     log << MSG::INFO << "Already Initialized!" << endmsg;
     return StatusCode::SUCCESS;
   }
-  else if( m_state != Gaudi::StateMachine::INITIALIZED ) {
+  if( m_state != Gaudi::StateMachine::INITIALIZED ) {
     log << MSG::FATAL
          << "start: Invalid state \""  << m_state << "\"" << endmsg;
     return StatusCode::FAILURE;
@@ -646,7 +645,7 @@ StatusCode ApplicationMgr::stop() {
     log << MSG::INFO << "Already Initialized!" << endmsg;
     return StatusCode::SUCCESS;
   }
-  else if( m_state != Gaudi::StateMachine::RUNNING ) {
+  if( m_state != Gaudi::StateMachine::RUNNING ) {
     log << MSG::FATAL
          << "stop: Invalid state \""  << m_state << "\"" << endmsg;
     return StatusCode::FAILURE;
@@ -681,7 +680,7 @@ StatusCode ApplicationMgr::finalize() {
     log << MSG::INFO << "Already Finalized" << endmsg;
     return StatusCode::SUCCESS;
   }
-  else if( m_state != Gaudi::StateMachine::INITIALIZED ) {
+  if( m_state != Gaudi::StateMachine::INITIALIZED ) {
     log << MSG::FATAL << "finalize: Invalid state \"" << m_state << "\""
         << endmsg;
     return StatusCode::FAILURE;
@@ -732,7 +731,7 @@ StatusCode ApplicationMgr::terminate() {
     log << MSG::INFO << "Already Offline" << endmsg;
     return StatusCode::SUCCESS;
   }
-  else if( m_state != Gaudi::StateMachine::CONFIGURED ) {
+  if( m_state != Gaudi::StateMachine::CONFIGURED ) {
     log << MSG::FATAL << "terminate: Invalid state \"" << m_state << "\""
         << endmsg;
     return StatusCode::FAILURE;
@@ -1294,7 +1293,7 @@ void ApplicationMgr::pluginDebugPropertyHandler( Property& )
   MsgStream log (m_messageSvc, name());
   log << MSG::INFO
       << "Updating Gaudi::PluginService::SetDebug(level) to level="
-      << (int)m_pluginDebugLevel
+      << m_pluginDebugLevel
       << endmsg;
   Gaudi::PluginService::SetDebug(m_pluginDebugLevel);
 }

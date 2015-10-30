@@ -1,10 +1,10 @@
-Profiling Gaudi jobs with Jemalloc
+Profiling Gaudi jobs with Jemalloc {#profiling-jemalloc}
 ===============================================================================
 
 Integration of Jemalloc within gaudi jobs.
 Uses the Jemalloc library from http://www.canonware.com/jemalloc/
 
-It is possible to profile the memory used by Gaudi jobs, using the jemalloc library 
+It is possible to profile the memory used by Gaudi jobs, using the jemalloc library
 as documented in https://github.com/jemalloc/jemalloc/wiki
 
 To run the profiler, it is necessary to:
@@ -15,7 +15,7 @@ gaudirun.py has been updated to set the environment accordingly (a prerequisite 
 that libjemalloc.so has to be available in the library path).
 
 A Gaudi algorithm has also been developped to perform memory heap dumps at various event,
-and is configured using the StartFromEventN, StopAtEventN and DumpPeriod, as described 
+and is configured using the StartFromEventN, StopAtEventN and DumpPeriod, as described
 in the example below.
 
 Run
@@ -38,11 +38,12 @@ GaudiSequencer("PhysicsSeq").Members += [ jp ]
 ~~~~~~~~
 
 ### Run the job
+
 ~~~~~~~~{.sh}
-$> gaudirun.py --profilerName=jemalloc --run-info-file=runinfo.json myoptions.py 
+$> gaudirun.py --profilerName=jemalloc --run-info-file=runinfo.json myoptions.py
 ~~~~~~~~
 
-Please note the the --profilerName=jemalloc to enbale the profiling, and the run-info-file that produces
+Please note the the `--profilerName=jemalloc` to enbale the profiling, and the `--run-info-file` that produces
 a file containing information useful to interpret the results (process id of the Gaudi job, and the absolute path
 of the executable, necessary to run the pprof analysis tool).
 
@@ -56,11 +57,11 @@ is necessary to analyze the heap files.
 It can be used to comapre the memory in two heap files in the following way:
 
 ~~~~~~~~{.sh}
-$>  pprof -text --base=<firstheap>.heap <executable name> <comparewith>.heap
+$> pprof -text --base=<firstheap>.heap <executable name> <comparewith>.heap
 ~~~~~~~~
 
 ### To produce a postscript file
 
 ~~~~~~~~{.sh}
-$>  pprof -gv --base=<firstheap>.heap <executable name> <comparewith>.heap
+$> pprof -gv --base=<firstheap>.heap <executable name> <comparewith>.heap
 ~~~~~~~~

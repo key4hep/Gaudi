@@ -44,90 +44,90 @@ namespace Gaudi {
     /// Adopt ROOT histogram representation
     void adoptRepresentation(TObject* rep) override;
     /// Get the title of the object
-    virtual std::string title() const                    {  return m_annotation.value( "Title" );    }
+    std::string title() const override                   {  return m_annotation.value( "Title" );    }
     /// Set the title of the object
-    virtual bool setTitle(const std::string & title);
+    bool setTitle(const std::string & title) override;
     /// object name
     std::string name() const                             { return m_annotation.value("Name"); }
     /// Set the name of the object
     bool setName( const std::string& newName );
     /// Access annotation object
-    virtual AIDA::IAnnotation & annotation()             { return m_annotation;           }
+    AIDA::IAnnotation & annotation() override            { return m_annotation;           }
     /// Access annotation object (cons)
-    virtual const AIDA::IAnnotation & annotation() const { return m_annotation;           }
+    const AIDA::IAnnotation & annotation() const override { return m_annotation;           }
 
     /// Return the X axis.
-    virtual const AIDA::IAxis & xAxis() const            { return m_xAxis;                }
+    const AIDA::IAxis & xAxis() const override           { return m_xAxis;                }
     /// Return the Y axis.
-    virtual const AIDA::IAxis & yAxis() const            { return m_yAxis;                }
+    const AIDA::IAxis & yAxis() const override           { return m_yAxis;                }
     /// operator methods
     virtual int rIndexX(int index) const                 { return m_xAxis.rIndex(index);  }
     /// operator methods
     virtual int rIndexY(int index) const                 { return m_yAxis.rIndex(index);  }
 
     /// Get the number or all the entries
-    virtual int entries() const;
+    int entries() const override;
     /// Get the number or all the entries, both in range and underflow/overflow bins of the IProfile.
-    virtual int allEntries() const;
+    int allEntries() const override;
     /// Get the number of entries in the underflow and overflow bins.
-    virtual int extraEntries() const;
+    int extraEntries() const override;
     /// Get the sum of in range bin heights in the IProfile.
-    virtual double sumBinHeights() const;
+    double sumBinHeights() const override;
     /// Get the sum of all the bins heights (including underflow and overflow bin).
-    virtual double sumAllBinHeights() const;
+    double sumAllBinHeights() const override;
     /// Get the sum of the underflow and overflow bin height.
-    virtual double  sumExtraBinHeights (  ) const  { return  sumAllBinHeights()-sumBinHeights(); }
+    double  sumExtraBinHeights (  ) const override { return  sumAllBinHeights()-sumBinHeights(); }
     /// Get the minimum height of the in-range bins.
-    virtual double minBinHeight() const;
+    double minBinHeight() const override;
     /// Get the maximum height of the in-range bins.
-    virtual double maxBinHeight() const;
+    double maxBinHeight() const override;
 
     /// The weighted mean along x of a given bin.
-    virtual double binMeanX(int indexX,int indexY) const;
+    double binMeanX(int indexX,int indexY) const override;
     /// The weighted mean along y of a given bin.
-    virtual double binMeanY(int indexX,int indexY) const;
+    double binMeanY(int indexX,int indexY) const override;
     /// The number of entries (ie the number of times fill was called for this bin).
-    virtual int  binEntries ( int indexX,int indexY ) const;
+    int  binEntries ( int indexX,int indexY ) const override;
     /// Equivalent to <tt>projectionX().binEntries(indexX)</tt>.
-    virtual int binEntriesX(int indexX) const;
+    int binEntriesX(int indexX) const override;
     /// Equivalent to <tt>projectionY().binEntries(indexY)</tt>.
-    virtual int binEntriesY(int indexY) const;
+    int binEntriesY(int indexY) const override;
     /// Total height of the corresponding bin (ie the sum of the weights in this bin).
-    virtual double binHeight(int indexX,int indexY) const;
+    double binHeight(int indexX,int indexY) const override;
     /// Equivalent to <tt>projectionX().binHeight(indexX)</tt>.
-    virtual double binHeightX(int indexX) const;
+    double binHeightX(int indexX) const override;
     /// Equivalent to <tt>projectionY().binHeight(indexY)</tt>.
-    virtual double binHeightY(int indexY) const;
+    double binHeightY(int indexY) const override;
     /// The error on this bin.
-    virtual double binError(int indexX,int indexY) const;
+    double binError(int indexX,int indexY) const override;
     /// The spread (RMS) of this bin.
     virtual double binRms(int indexX,int indexY) const;
     /// Returns the mean of the profile, as calculated on filling-time projected on the X axis.
-    virtual double meanX() const;
+    double meanX() const override;
     /// Returns the mean of the profile, as calculated on filling-time projected on the Y axis.
-    virtual double meanY() const;
+    double meanY() const override;
     /// Returns the rms of the profile as calculated on filling-time projected on the X axis.
-    virtual double rmsX() const;
+    double rmsX() const override;
     /// Returns the rms of the profile as calculated on filling-time projected on the Y axis.
-    virtual double rmsY() const;
+    double rmsY() const override;
     /// Convenience method, equivalent to <tt>xAxis().coordToIndex(coord)</tt>.
-    virtual int coordToIndexX(double coordX) const;
+    int coordToIndexX(double coordX) const override;
     /// Convenience method, equivalent to <tt>yAxis().coordToIndex(coord)</tt>.
-    virtual int coordToIndexY(double coordY) const;
+    int coordToIndexY(double coordY) const override;
     /// Number of equivalent entries, i.e. <tt>SUM[ weight ] ^ 2 / SUM[ weight^2 ]</tt>
     virtual double equivalentBinEntries (  ) const;
     /// Scale the weights and the errors of all the IHistogram's bins (in-range and out-of-range ones) by a given scale factor.
     virtual bool scale( double scaleFactor );
     /// Modifies this profile by adding the contents of profile to it.
-    virtual bool add(const INTERFACE & h);
+    bool add(const INTERFACE & h) override;
     // overwrite reset
-    bool  reset (  );
+    bool  reset (  ) override;
     /// Introspection method
     void * cast(const std::string & className) const;
     /// The AIDA user-level unterface leaf class type
     const std::string& userLevelClassType() const { return m_classType; }
     /// Get the Histogram's dimension.
-    virtual int  dimension() const  { return 2; }
+    int  dimension() const  override { return 2; }
     /// Print (ASCII) the histogram into the output stream
     std::ostream& print( std::ostream& s ) const override;
     /// Write (ASCII) the histogram table into the output stream

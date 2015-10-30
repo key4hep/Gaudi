@@ -80,7 +80,7 @@ static unsigned long doLoad(const std::string& name, System::ImageHandle* handle
 #else
   const char* path = name.c_str();
 #if defined(__linux) || defined(__APPLE__)
-  void *mh = ::dlopen(name.length() == 0 ? 0 : path, RTLD_LAZY | RTLD_GLOBAL);
+  void *mh = ::dlopen(name.length() == 0 ? nullptr : path, RTLD_LAZY | RTLD_GLOBAL);
   *handle = mh;
 #elif __hpux
   shl_t mh = ::shl_load(name.length() == 0 ? 0 : path, BIND_IMMEDIATE | BIND_VERBOSE, 0);
@@ -98,7 +98,7 @@ static unsigned long doLoad(const std::string& name, System::ImageHandle* handle
   }
 #endif
 #endif
-  if ( 0 == *handle )   {
+  if ( ! *handle )   {
     return System::getLastError();
   }
   return 1;
@@ -199,7 +199,7 @@ unsigned long System::getProcedureByName(ImageHandle handle, const std::string& 
 #else
   *pFunction = FuncPtrCast<EntryPoint>(::dlsym(handle, name.c_str()));
 #endif
-  if ( 0 == *pFunction )    {
+  if ( ! *pFunction )    {
     errno = 0xAFFEDEAD;
    // std::cout << "System::getProcedureByName>" << getLastErrorString() << std::endl;
     return 0;
@@ -273,14 +273,12 @@ const std::string System::getErrorString(unsigned long error)    {
   // Free the buffer allocated by the system
   ::LocalFree( lpMessageBuffer );
 #else
-  char *cerrString(0);
+  char *cerrString(nullptr);
   // Remember: for linux dl* routines must be handled differently!
   if ( error == 0xAFFEDEAD ) {
     cerrString = (char*)::dlerror();
-    if ( 0 == cerrString ) {
-      cerrString = ::strerror(error);
-    }
-    if ( 0 == cerrString ) {
+    if ( !cerrString ) cerrString = ::strerror(error);
+    if ( !cerrString ) {
       cerrString = (char *)"Unknown error. No information found in strerror()!";
     }
     else {
@@ -408,7 +406,7 @@ const std::string System::typeinfoName( const char* class_name) {
     }
     else  {
       int   status;
-      auto realname = std::unique_ptr<char,decltype(free)*>( abi::__cxa_demangle(class_name, 0, 0, &status), std::free );
+      auto realname = std::unique_ptr<char,decltype(free)*>( abi::__cxa_demangle(class_name, nullptr, nullptr, &status), std::free );
       if (!realname) return class_name;
       result = std::string{realname.get()};
       /// substitute ', ' with ','
@@ -520,8 +518,8 @@ const std::string& System::accountName() {
     account = buffer;
 #else
     const char* acct = ::getlogin();
-    if ( 0 == acct ) acct = ::getenv("LOGNAME");
-    if ( 0 == acct ) acct = ::getenv("USER");
+    if ( !acct ) acct = ::getenv("LOGNAME");
+    if ( !acct ) acct = ::getenv("USER");
     account = (acct) ? acct : "Unknown";
 #endif
   }
@@ -618,7 +616,7 @@ char** System::argv()    {
 /// get a particular env var, return "UNKNOWN" if not defined
 std::string System::getEnv(const char* var) {
   char* env;
-  if  ( (env = getenv(var)) != 0 ) {
+  if  ( (env = getenv(var)) != nullptr ) {
     return env;
   } else {
     return "UNKNOWN";
@@ -628,7 +626,7 @@ std::string System::getEnv(const char* var) {
 /// get a particular env var, storing the value in the passed string (if set)
 bool System::getEnv(const char* var, std::string &value) {
   char* env;
-  if  ( (env = getenv(var)) != 0 ) {
+  if  ( (env = getenv(var)) != nullptr ) {
     value = env;
     return true;
   } else {
@@ -637,7 +635,7 @@ bool System::getEnv(const char* var, std::string &value) {
 }
 
 bool System::isEnvSet(const char* var) {
-  return getenv(var) != 0;
+  return getenv(var) != nullptr;
 }
 
 /// get all defined environment vars
@@ -652,7 +650,7 @@ std::vector<std::string> System::getEnv() {
   static char **environ = *_NSGetEnviron();
 #endif
   std::vector<std::string> vars;
-  for (int i=0; environ[i] != 0; ++i) {
+  for (int i=0; environ[i] != nullptr; ++i) {
     vars.push_back(environ[i]);
   }
   return vars;
@@ -727,7 +725,7 @@ bool System::getStackLevel(void* addresses  __attribute__ ((unused)),
 
     if (symbol) {
       int stat = -1;
-      auto dmg = std::unique_ptr<char,decltype(free)*>( abi::__cxa_demangle(symbol,0,0,&stat), std::free );
+      auto dmg = std::unique_ptr<char,decltype(free)*>( abi::__cxa_demangle(symbol,nullptr,nullptr,&stat), std::free );
       fnc = (stat == 0) ? dmg.get() : symbol;
     } else {
       fnc = "local";

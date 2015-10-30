@@ -2,15 +2,62 @@ package GaudiPolicy
 package manager: Marco Clemencic
 Commit Id: $Format:%H$
 
-! 2015-09-24 - Marco Clemencic
- - GAUDI-1084: replaced calls to Popen terminate and kill with a function that
-   recurse and send a signal to all the children.
+============================= GaudiPolicy v15r6 ==============================
 
-! 2015-09-18 - Marco Clemencic
- - GAUDI-1084: modified test timeout handling to avoid infinite waits
+! 2015-10-09 - commit 1fa113a
 
-! 2015-09-03 - Charles Leggett
- - fix for race condition w/ merge_files.py
+ - fixed a typo
+
+
+
+! 2015-10-09 - commit 64a6bc4
+
+ - Fix GAUDI-1105: Race condition when creating installation directories
+
+   I wrote a test case, but it's a bugger to reproduce as the race condition has
+   to happen between lines 223 and 225. However, tweaking the original and
+   patched `install.py` scripts to manually create the race (by doing
+   `makedirs()` twice) I can show the patch works fine.
+
+   See merge request !46
+
+
+! 2015-10-08 - commit cda934f
+
+ - Merge branch 'master' into 'master'
+
+   updated versions and release notes for Gaudi v26r4
+
+   See merge request !45
+
+
+! 2015-09-25 - commit 73ba6dc
+
+ - Merge branch 'GAUDI-1084' into 'master'
+
+   GAUDI-1084: modified test timeout handling to avoid infinite waits
+
+   Fixes GAUDI-1084.
+
+   See merge request !30
+
+
+! 2015-09-17 - commit 6a793d3
+
+ - Merge branch 'dev/merge_files' into 'master'
+
+   fix for race condition in merge_files.py
+
+   semi-regularly, Atlas has build failures due to race conditions from
+   merge_files.py:
+
+   https://its.cern.ch/jira/browse/ATEAM-151
+
+   https://its.cern.ch/jira/browse/GAUDI-1079
+
+   here is the fix proposed by Scott and implemented by Rolf.
+
+   See merge request !21
 
 ! 2015-02-27 - Marco Clemencic
  - Ignore EventLoopMgr "Loop Finished" report in tests.

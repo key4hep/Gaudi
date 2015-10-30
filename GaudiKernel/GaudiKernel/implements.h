@@ -2,220 +2,71 @@
 #define GAUDIKERNEL_IMPLEMENTS_H
 
 #include "GaudiKernel/IInterface.h"
-
-// No c++11 support for gccxml
-#ifndef __GCCXML__
 #include <atomic>
-typedef std::atomic_ulong refCountType;
-#else
-typedef unsigned long refCountType;
-#endif
 
-// Anonymous namespace
-namespace {
-inline unsigned long load_counter(const refCountType* counter){
-#ifndef __GCCXML__
-        return counter->load();
-#else
-        return *counter;
-#endif
-        }
-}
+/// Base class used to implement the interfaces.
+template <typename... Interfaces>
+struct GAUDI_API implements: virtual public extend_interfaces<Interfaces...> {
+  /// Typedef to this class.
+  using base_class = implements<Interfaces...>;
+  /// Typedef to the base of this class.
+  using extend_interfaces_base = extend_interfaces<Interfaces...>;
+  using iids = typename extend_interfaces_base::ext_iids;
 
-#ifndef __GCCXML__
-/// Helper class for the cast used in the MPL for_each algorithm in the
-/// implementation of queryInterface.
-/// @author Marco Clemencic
-template <typename T>
-struct GAUDI_LOCAL interfaceMatch {
-  /// InterfaceID for the requested interface.
-  const InterfaceID &target;
-  /// Pointer to be filled.
-  void *&ptr;
-  /// Value of this.
-  const T *instance;
-  interfaceMatch(const T *_instance, const InterfaceID &_tid, void * &_ptr):
-    target(_tid),
-    ptr(_ptr),
-    instance(_instance){}
-
-  template <typename IID>
-  inline void operator() (IID) {
-    if ((!ptr) && target.versionMatch(IID::interfaceID())) {
-      ptr = const_cast<void*>(reinterpret_cast<const void*>(static_cast<const typename IID::iface_type*>(instance)));
-    }
+public:
+  /**Implementation of IInterface::i_cast. */
+  void *i_cast(const InterfaceID &tid) const override {
+    return Gaudi::iid_cast(tid,iids{},this);
   }
+  /** Implementation of IInterface::queryInterface. */
+  StatusCode queryInterface(const InterfaceID &ti, void** pp) override {
+    if (!pp) return StatusCode::FAILURE;
+    *pp = Gaudi::iid_cast(ti,iids{},this);
+    if (!*pp)  return StatusCode::FAILURE; /* cast failed */
+    this->addRef();
+    return StatusCode::SUCCESS;
+  }
+  /** Implementation of IInterface::getInterfaceNames. */
+  std::vector<std::string> getInterfaceNames() const override {
+    return Gaudi::getInterfaceNames( iids{} );
+  }
+  /** Default constructor */
+  implements() = default;
+  /** Copy constructor (zero the reference count) */
+  implements(const implements& /*other*/) : m_refCount{0} {}
+  /** Assignment operator (do not touch the reference count).*/
+  implements& operator=(const implements& /*other*/) { return *this; }
+  /** Virtual destructor */
+  ~implements() override = default;
+
+public:
+  /** Reference Interface instance               */
+  unsigned long addRef() override { return ++m_refCount; }
+  /** Release Interface instance                 */
+  unsigned long release() override {
+    /* Avoid to decrement 0 */
+    auto count = ( m_refCount ? --m_refCount : m_refCount.load() );
+    if (count == 0) delete this;
+    return count;
+  }
+  /** Current reference count                    */
+  unsigned long refCount() const override { return m_refCount.load(); }
+
+protected:
+  /** Reference counter                          */
+  std::atomic_ulong m_refCount = {0};
 };
 
-/// Helper class for the cast used in the MPL for_each algorithm in the implementation of query_interface.
-/// @author Marco Clemencic
-struct GAUDI_LOCAL AppendInterfaceName {
-  /// vector to be filled.
-  std::vector<std::string> &v;
-  AppendInterfaceName(std::vector<std::string> &_v): v(_v) {}
 
-  template <typename IID>
-  inline void operator() (IID) { v.push_back(IID::name()); }
-};
-
-#endif
-
-#define _refcounting_implementation_ \
-public: \
-  /** Reference Interface instance               */ \
-  unsigned long addRef() override { return ++m_refCount; } \
-  /** Release Interface instance                 */ \
-  unsigned long release() override { \
-    /* Avoid to decrement 0 */ \
-    const unsigned long count = (m_refCount) ? --m_refCount : load_counter(&m_refCount); \
-    if (count == 0) delete this; \
-    return count; \
-  } \
-  /** Current reference count                    */ \
-  unsigned long refCount() const override { return load_counter(&m_refCount); } \
-protected: \
-  /** Reference counter                          */ \
-  /*unsigned long m_refCount = 0;*/ \
-  refCountType m_refCount{0}; \
-private:
-
-#ifndef __GCCXML__
-#define _helper_common_implementation_(N) \
-  public: \
-  /**Implementation of IInterface::i_cast. */ \
-  void *i_cast(const InterfaceID &tid) const override { \
-    void *ptr = nullptr; \
-    interfaceMatch<implements##N> matcher(this,tid,ptr); \
-    mpl::for_each<interfaces>(matcher); \
-    return ptr; \
-  } \
-  /** Implementation of IInterface::queryInterface. */ \
-  StatusCode queryInterface(const InterfaceID &ti, void** pp) override { \
-    if (!pp) return StatusCode::FAILURE; \
-    *pp = nullptr; \
-    interfaceMatch<implements##N> matcher(this,ti,*pp); \
-    mpl::for_each<interfaces>(matcher); \
-    if (!*pp) { /* cast failed */ \
-      return StatusCode::FAILURE; \
-    } \
-    this->addRef(); \
-    return StatusCode::SUCCESS; \
-  } \
-  /** Implementation of IInterface::getInterfaceNames. */ \
-  std::vector<std::string> getInterfaceNames() const override { \
-    std::vector<std::string> v; /* temporary storage */ \
-    AppendInterfaceName appender(v); \
-    mpl::for_each<interfaces>(appender); \
-    return v; \
-  } \
-  /** Default constructor */ \
-  implements##N() : m_refCount{0} {} \
-  /** Copy constructor */ \
-  implements##N(const implements##N &/*other*/) : m_refCount{0} {} \
-  /** Assignment operator (do not touch the reference count).*/ \
-  implements##N& operator=(const implements##N &/*other*/) { return *this; } \
-  /** Virtual destructor */ \
-  ~implements##N() override = default; \
-  _refcounting_implementation_
-#else
-#define _helper_common_implementation_(N) \
-  public: \
-  /**Implementation of IInterface::i_cast. */ \
-  void *i_cast(const InterfaceID &tid) const override { \
-    return nullptr; \
-  } \
-  /** Implementation of IInterface::queryInterface. */ \
-  StatusCode queryInterface(const InterfaceID &ti, void** pp) override { \
-    if (!pp) return StatusCode::FAILURE; \
-    *pp = nullptr; \
-    return StatusCode::SUCCESS; \
-  } \
-  /** Implementation of IInterface::getInterfaceNames. */ \
-  std::vector<std::string> getInterfaceNames() const override { \
-    std::vector<std::string> v; /* temporary storage */ \
-    return v; \
-  } \
-  /** Default constructor */ \
-  implements##N() = default; \
-  /** Copy constructor */ \
-  implements##N(const implements##N &/*other*/) : m_refCount{0} {} \
-  /** Assignment operator (do not touch the reference count).*/ \
-  implements##N& operator=(const implements##N &/*other*/) { return *this; } \
-  /** Virtual destructor */ \
-  ~implements##N() override = default; \
-  _refcounting_implementation_
-#endif
-
-/// Base class used to implement the interfaces.
-/// Version for one interface.
-/// @author Marco Clemencic
-template <typename I1>
-struct GAUDI_API implements1: virtual public extend_interfaces1<I1> {
-  /// Typedef to this class.
-  typedef implements1 base_class;
-  /// Typedef to the base of this class.
-  typedef extend_interfaces1<I1> extend_interfaces_base;
-#ifndef __GCCXML__
-  /// MPL set of all the implemented interfaces.
-  typedef typename extend_interfaces_base::ext_iids interfaces;
-#endif
-
-  _helper_common_implementation_(1)
-};
-
-/// Base class used to implement the interfaces.
-/// Version for two interfaces.
-/// @author Marco Clemencic
-template <typename I1, typename I2>
-struct GAUDI_API implements2: virtual public extend_interfaces2<I1,I2> {
-  /// Typedef to this class.
-  typedef implements2 base_class;
-  /// Typedef to the base of this class.
-  typedef extend_interfaces2<I1,I2> extend_interfaces_base;
-#ifndef __GCCXML__
-  /// MPL set of all the implemented interfaces.
-  typedef typename extend_interfaces_base::ext_iids interfaces;
-#endif
-
-  _helper_common_implementation_(2)
-};
-
-/// Base class used to implement the interfaces.
-/// Version for three interfaces.
-/// @author Marco Clemencic
-template <typename I1, typename I2, typename I3>
-struct GAUDI_API implements3: virtual public extend_interfaces3<I1,I2,I3> {
-  /// Typedef to this class.
-  typedef implements3 base_class;
-  /// Typedef to the base of this class.
-  typedef extend_interfaces3<I1,I2,I3> extend_interfaces_base;
-#ifndef __GCCXML__
-  /// MPL set of all the implemented interfaces.
-  typedef typename extend_interfaces_base::ext_iids interfaces;
-#endif
-
-  _helper_common_implementation_(3)
-};
-
-/// Base class used to implement the interfaces.
-/// Version for four interfaces.
-/// @author Marco Clemencic
-template <typename I1, typename I2, typename I3, typename I4>
-struct GAUDI_API implements4: virtual public extend_interfaces4<I1,I2,I3,I4> {
-  /// Typedef to this class.
-  typedef implements4 base_class;
-  /// Typedef to the base of this class.
-  typedef extend_interfaces4<I1,I2,I3,I4> extend_interfaces_base;
-#ifndef __GCCXML__
-  /// MPL set of all the implemented interfaces.
-  typedef typename extend_interfaces_base::ext_iids interfaces;
-#endif
-
-  _helper_common_implementation_(4)
-};
-
-// Undefine helper macros
-#undef _refcounting_implementation_
-#undef _helper_common_implementation_
+template <typename I1> using implements1 = implements<I1>;
+template <typename I1,
+          typename I2> using implements2 = implements<I1,I2>;
+template <typename I1,
+          typename I2,
+          typename I3> using implements3 = implements<I1,I2,I3>;
+template <typename I1,
+          typename I2,
+          typename I3,
+          typename I4> using implements4 = implements<I1,I2,I3,I4>;
 
 #endif /* GAUDIKERNEL_IMPLEMENTS_H_ */

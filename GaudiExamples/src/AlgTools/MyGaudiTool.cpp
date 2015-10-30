@@ -39,6 +39,9 @@ void  MyGaudiTool::doIt()
 {
   info()  << "doIt() has been called" << endmsg;
   debug() << "doIt() [DEBUG] has been called" << endmsg;
+  // show the feature introduced with GAUDI-1078
+  if (contextSvc() && name().substr(0, 7) == "ToolSvc")
+    Info("public tool called by");
 }
 
 //------------------------------------------------------------------------------
@@ -52,6 +55,8 @@ void MyGaudiTool::doItAgain()
 StatusCode  MyGaudiTool::initialize()
   //------------------------------------------------------------------------------
 {
+  StatusCode sc = base_class::initialize();
+
   info() << "intialize() has been called" << endmsg;
 
   // Make use of tool<>
@@ -61,14 +66,14 @@ StatusCode  MyGaudiTool::initialize()
   info() << "String = " << m_string << endmsg;
   info() << "Bool   = " << m_bool   << endmsg;
 
-  return StatusCode::SUCCESS;
+  return sc;
 }
 //------------------------------------------------------------------------------
 StatusCode  MyGaudiTool::finalize()
   //------------------------------------------------------------------------------
 {
   info() << "finalize() has been called" << endmsg;
-  return StatusCode::SUCCESS;
+  return base_class::finalize();
 }
 
 //------------------------------------------------------------------------------

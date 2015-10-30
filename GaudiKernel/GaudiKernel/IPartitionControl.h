@@ -21,8 +21,8 @@
   * Use this technique to populate e.g. different datastores
   * in order to later compare the different results.
   *
-  * SmartIF<IPartitionControl> partCtrl(eventSvc());
-  * if ( partCtrl.isValid() )  {
+  * auto partCtrl = eventSvc().as<IPartitionControl>();
+  * if ( partCtrl )  {
   *   if ( partCtrl.activate("Partition_1").isSuccess() )  {
   *      SmartDataPtr mcparts(eventSvc(), "MC/Particles");
   *      .... work with particles from buffer "Partition 1"
@@ -47,7 +47,7 @@
   *
   * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   *
-  * SmartIF<IPartitionControl> partCtrl(eventSvc());
+  * auto partCtrl = eventSvc().as<IPartitionControl>();
   * if ( partCtrl )  {
   *   IInterface* ptr = 0;
   *   if ( partCtrl->get("Partition 1", ptr).isSuccess() )  {

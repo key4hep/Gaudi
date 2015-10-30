@@ -40,7 +40,7 @@ namespace Gaudi {
     RootDirectoryCnv(long typ, const CLID& clid, ISvcLocator* svc, RootCnvSvc* mgr);
 
     /// Standard Destructor
-    virtual ~RootDirectoryCnv()   {  }
+    virtual ~RootDirectoryCnv() = default;
 
     /** Converter overrides: Create transient object from persistent data
      *

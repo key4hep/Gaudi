@@ -2,13 +2,42 @@ Package : Gaudi
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
-! 2015-07-20 - Marco Clemencic
- - Fixed misuse of Python ctypes, which was the actual cause of GAUDI-1045.
+================================ Gaudi v26r4 =================================
 
-! 2015-07-20 - Charles Leggett
- - added hooks to attach gdb to program. activated with command line option
-   "--gdb"
- - issue: GAUDI-1056 https://sft.its.cern.ch/jira/browse/GAUDI-1056
+! 2015-10-06 - commit 0b7a459
+
+ - Merge branch 'GAUDI-1093' into 'master'
+
+   avoid (deprecated) Python module `commands`
+
+   fixes GAUDI-1093
+
+   See merge request !38
+
+
+! 2015-09-16 - commit 7eb8601
+
+ - Merge branch 'GAUDI-1055' into 'master'
+
+   GAUDI-1055: Allow use of Python configurables and components at build time.
+
+   this merge request also includes a minor fix to gaudirun.py
+
+   See merge request !12
+
+
+! 2015-07-23 - commit 5f7f60e
+
+ - Merge branch 'dev/gdb_hook' into 'master'
+
+   hook for gdb
+
+   add hook and command line option ("--gdb") to start up gdb and attach it to
+   currently running process.
+
+   See GAUDI-1056
+
+   See merge request !8
 
 ================================ Gaudi v26r3 =================================
 ! 2015-06-18 - Marco Clemencic

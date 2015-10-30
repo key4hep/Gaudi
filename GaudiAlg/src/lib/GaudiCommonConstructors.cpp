@@ -27,7 +27,7 @@
 template <>
 GaudiCommon<AlgTool>::GaudiCommon( const std::string&  /* name */,
                                    ISvcLocator * /* pSvcLocator */ )
-  : base_class ( "ERROR", "ERROR", 0 )
+  : base_class ( "ERROR", "ERROR", nullptr )
 {
   throw GaudiException( "Invalid GaudiCommon<AlgTool> constructor", 
                         "GaudiCommon", StatusCode::FAILURE );
@@ -42,7 +42,7 @@ template <>
 GaudiCommon<Algorithm>::GaudiCommon( const std::string& /* type */  ,
                                      const std::string& /* name */  ,
                                      const IInterface*  /* parent */ )
-  : base_class ( "ERROR", 0 )
+  : base_class ( "ERROR", nullptr )
 {
   throw GaudiException( "Invalid GaudiCommon<Algorithm> constructor", 
                         "GaudiCommon", StatusCode::FAILURE );

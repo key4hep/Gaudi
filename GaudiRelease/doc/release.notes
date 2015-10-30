@@ -7,6 +7,13 @@ Commit Id: $Format:%H$
 
 #	modified:   GaudiRelease/cmt/requirements
 
+============================= GaudiRelease v26r4 =============================
+
+! 2015-10-08 - commit c50c176
+
+ - improvements to documentation and release tools
+
+   See merge request !43
 
 ============================= GaudiRelease v26r3 =============================
 ============================= GaudiRelease v26r2 =============================

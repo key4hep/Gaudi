@@ -5,50 +5,57 @@
 # Commit Id: $Format:%H$
 ################################################################################
 
-! 2015-09-17 - Marco Clemencic
- - GAUDI-1088: restored IncidentSvc debug output for removed listeners
+============================= GaudiCoreSvc v3r6 ==============================
 
-! 2015-09-09 - Gerhard Raven
- - C++11 modernization changes, eg.
-      o prefer std::vector of std::list
-      o SvcCatalog: keep catalog by value instead of owned pointer to avoid needless indirection
-      o replace 'if (s.substr(a,b) = "ccc")' with 'if (s.compare(a,c,"ccc")==0)'
-        which avoids creating a temporary string that is immediately thrown away again
-      o used std::stoi(s) instead of ::atoi(s.c_str()), ditto for std::stod
-      o replace boost::lexical_cast with std::to_string, std::stod, std::stoi
-      o prefer std::string::empty() over comparison with ""  or  std::string::length()==0
-      o pass sink arguments by value and std::move them
-      o C++11 fstream accepts std::string, so no need to call c_str()
-      o qualify implementations as override instead of virtual
-      o prefer nullptr over 0
-      o remove no-op static_cast
-      o improve checks for :PUBLIC at end of tool names
-      o prefer using over typedef
-      o prefer emplace( key, value ) over insert( { key, value } )
-      o prefer early return on error (reduces nesting)
-      o simplify constructors
-      o replace copy contructor and assignment implementations with = default when possible
-      o remove virtual function implementation which just invokes the direct ancestors implementation
-      o Use boost::circular_buffer for loop over finalized tools instead of std::list
-      o prefer STL algorithms over raw for loops
-      o prefer unnamed temporaries so they qualify as rvalues
-      o don't duplicate the work insert already does (and prefer emplace)
-      o prefer std::to_string over boost::format
-      o tweak code so that statics can be const.
-      o return const std::string& instead of std::string when possible
-      o prefer std::vector over std::list
-      o qualify implementations as override instead of virtual
-      o simplify constructors
-      o avoid comparing pointers to 0
-      o prefer insert over a bunch of push_backs
-      o instead of erase-followed-by-insert, just assign...
-      o qualify internal classes as final
-      o prefer boost::starts_with over std::string::find( ... ) == 0
-      o prefer std::array<int,N> over int[N]
-      o prefer std::equal_range over std::lower_bound and std::upper_bound
-      o use unique_ptr instead of auto_ptr
-      o use std::hash and C++11 range-based for-loops instead of boost counterparts
-      o replace boost::bind with std::bind
+! 2015-09-25 - commit 35dd00c
+
+ - Merge branch 'dev-smartif-use' into 'master'
+
+   Provide (and use) C++11 smart pointer 'look and feel' for SmartIF
+
+   The aim of this branch is to confine, for everything that inherits from
+   IInterface, the calls to addRef(), release() and queryInterface() to the
+   SmartIF implementation. Exceptions are a few places where interfaces
+   (currently) return bare pointers (instead of SmartIF...) and where one thus
+   has to addRef() explicitly to avoid returning a dangling pointer. This can be
+   avoided by changing the relevant interface to return a SmartIF instead of a
+   bare pointer.
+
+   In addition, make SmartIF 'look and feel' like a smart pointer.
+
+   - use explict bool conversion instead of .isValid()
+   - add SmartIF::as<IFace>(), to return a SmartIF<IFace> to an alternate
+      interface -- which (together with move) encourages the use of auto
+   - add ISvcLocator::as<IFace>(), to return a SmartIF<IFace> to the current
+   ISvcLocator.
+   - add ServiceManager::service<IFace>() which return SmartIF<IFace> which
+   encourages
+      the use of auto
+
+   And add a few other C++11 modernizations (eg. prefer STL over raw loop)
+
+   Fixes GAUDI-1094
+
+   See merge request !24
+
+
+! 2015-09-17 - commit 616d3da
+
+ - Merge branch 'master' into 'master'
+
+   GAUDI-1088: restored IncidentSvc debug output for removed listeners
+
+   See merge request !28
+
+
+! 2015-09-11 - commit c062cbe
+
+ - C++11 modernization changes
+
+   Some trivial - and some not so trivial! - changes which take advantage of
+   C++11...
+
+   See merge request !7
 
 ! 2015-02-27 - Marco Clemencic
  - Minor change in stats report at the end of loop in EventLoopMgr.

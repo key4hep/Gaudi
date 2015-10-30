@@ -1,89 +1,6 @@
-:ackage : GaudiKernel
+Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
-
-! 2015-09-18 - Marco Clemencic
- - Added a few missing "override".
-
-! 2015-09-09 - Gerhard Raven & Benedikt Hegner
- - C++11 modernization changes, eg.
-      o replace boost::lexical_cast with std::to_string, std::stod, std::stoi
-      o replace trivial (empty) destructors with '= default' declaration
-      o replace 'if (s.substr(a,b) = "ccc")' with 'if (s.compare(a,c,"ccc")==0)'
-        which avoids creating a temporary string that is immediately thrown away again
-      o used std::stoi(s) instead of ::atoi(s.c_str()), ditto for std::stod
-      o replace s.substr(a,s.length()-a) and s.substr(a,s.length()) with s.substr(a)
-      o pass sink arguments by value and std::move them in place
-      o replace trivial constructor and destructor with = default
-      o simplify constructors
-      o use cstdio, cstdarg instead of stdio.h, stdarg.h
-      o use vnsprintf instead of vsprintf
-      o add va_end after va_start
-      o remove some workarounds for 'really old' compilers
-      o the dynamic_cast problems described in GaudiKernel/doc/dynamic_cast.pb
-        observed with gcc 3.2 under linux are no longer an issue for gcc 4.9...
-      o use std::unordered_map as underlying implementation of HashMap
-      o replace trivial constructors/destructors with = default
-      o use perfect forwarding to underlying map for various insert methods
-         (this allows 'move only' types to be inserted)
-      o prefer std::next over copy + std::advance
-      o prefer std::unique_ptr over raw pointer and explicit delete
-      o declare implementations 'override' instead of 'virtual'
-      o make sure const methods only return const access to members,
-        add non-const reference only in non-const methods
-      o prefer to contain vectors by value instead of (owned) pointer
-        to avoid an extra indirection
-      o make initialization of const objects constexpr
-      o declare class which is contained by value in std::vector as 'final'
-        and remove virtual destructor (inheriting from this is not used,
-        and would have lead to slicing)
-      o pass sink arguments by value and std::move them
-      o prefer std::vector of std::list
-      o refer STL algorithms over raw loops
-      o prefer emplace_back over push_back
-      o replace 0 by nullptr when appropriate
-      o prefer std::copy_n over memcpy (compiler will use memcpy anyway)
-      o prefer auto and range-based for loops
-      o avoid comparing pointers to 0
-      o prefer std::vector::clear over std::vector::erase( begin, end)
-      o qualify implementations with 'override' instead of 'virtual'
-      o pass sink arguments by value and std::move them in place
-      o don't check for nullptr before calling delete (delete implementation already does that)
-      o prefer std::next over a copy, followed by std::advance
-      o use covariant return types on 'clone' implementation
-      o use std::chrono and sleep_for instead of boost's implementation
-      o replace boost::bind with std::bind and lambdas
-      o replace the use of a dedicated PropertyCallBackFunctor and
-        its derived classes by by std::function<void(Property&>.
-        - the normal use-case, i.e. declareProperty with a pointer to some
-          class, and a pointer to its member function, has been re-implemented
-          by forwarding a lambda with the right signature.
-        - the value semantics of this solution (compared to the pointer
-          to base semanitics) make assigning, copying, initializing
-          and deleting Properties a lot simpler -- so much that the dedicated
-          assignment, copy, destructors can now all be replaced by '= default'.
-          (long live value semantics!)
-      o PropertyMgr: Mark copy constructor and assignment as = delete (see JIRA-1071)
-      o remove obsolete CommandProperty
-      o do not qualify by-value returned objects as const
-      o avoid 'if' statements in loops
-      o remove obsoleted Tokenizer (use AttribStringParser instead)
-      o directly construct static so it can be const, avoiding a run-time 'if' statement in addition.
-      o pass sink arguments by value and std::move them in place
-      o add 'reverse' wrapper for use in range-base for loops
-      o prefer constexpr functor objects
-      o improve const-correctness of LinkManager
-       - make internal call Link const-correct
-       - remove assignment op and destructor from Link, as now the
-          implicitly generated ones are just fine
-       - make explicit the two places where LinkManager needs to const_cast
-          (to be done: move this up to the caller so that LinkManager will
-           be const-correct)
-      o prefer std::vector over std::list
-      o consolidate unit determination in ChronoEntity
-      o remove refCount declaration from IAlgTool -- it is already in IInterface
-      o make IssueSeverity move-only and change StatusCode accordingly (for source-level backwards compatibility)
-      o qualify StatusCode move operations as noexcept
 
 ! 2015-07-21 - Marco Clemencic
  - Fixed some unchecked StatusCode.
@@ -96,6 +13,234 @@ Commit Id: $Format:%H$
 ! 2015-02-27 - Marco Clemencic
  - Removed duplicated (wrong) test.
 
+============================= GaudiKernel v32r0 ==============================
+
+! 2015-10-08 - commit dfb4790
+
+ - minor fixes to some interface files
+
+   See merge request !44
+
+
+! 2015-10-08 - commit c50c176
+
+ - improvements to documentation and release tools
+
+   See merge request !43
+
+
+! 2015-10-08 - commit fa6ec2d
+
+ - fixed DataObject constructor and assignment operator
+
+   Fixes GAUDI-1076
+   * fixed copy constructor
+   * added assignment operator
+   * added move constructor and assignment
+
+   See merge request !42
+
+
+! 2015-10-08 - commit 1abdd22
+
+ - Merge branch 'dev/DataObjID' into 'master'
+
+   update DataObjID
+
+   fixed typo in DataObjIDProperty, updated release notes, added DataHandle
+   placeholder prototype class
+
+   * DataObjID: various classes used for DataObject and DataHandle
+   identification
+    * DataObjID: holds a unique key for an object in the store, with an internal
+                representation as a hash for fast lookup.
+                syntax is either Gaudi EDS path style "/path/to/object", or
+   ATLAS
+                style with (ClassID,"key") or ("ClassName","key")
+                Collections of DataObjIDs are
+   unordered_set<DataObjID,DataObjID_Hasher>
+                typedef to DataObjIDColl
+    * DataObjIDProperty: jobOpt Property handler for DataObjID and DataObjIDColl
+    * DataHandle: prototype placeholder for DataHande class
+
+   See merge request !41
+
+
+! 2015-10-06 - commit 8e30d3e
+
+ - Merge branch 'dev/DataObjID' into 'master'
+
+   added DataObjID
+
+   Fixes GAUDI-1102
+
+   this merge is needed to maintain functionality in both Hive and vanilla Gaudi
+   branches.
+
+   See merge request !36
+
+
+! 2015-10-04 - commit 328c078
+
+ - Merge branch 'dev-variadic-interface-base' into 'master'
+
+   Take advantage of variadic templates to implement interface bookkeeping and
+   interface casting
+
+   This patch updates the implementation of the interface bookkeeping and
+   casting from the current macros + boost mpl code to use variadic templates.
+
+   See merge request !22
+
+
+! 2015-09-29 - commit 10bf256
+
+ - fixed a compile time warning
+
+   warning: enumeral mismatch in conditional expression:
+   'StatusCode::<anonymous enum>' vs 'IConversionSvc::Status'
+
+! 2015-09-25 - commit c1d7111
+
+ - Merge branch 'dev-stateful' into 'master'
+
+   make IStateful baseclass of IAlgTool, IAlgorithm and IService
+
+   IAlgTool, IAlgorithm and IService all declare the following pure virtual
+   functions:
+        configure,initialize,start,stop,finalize,terminate,reinitialize
+        restart and FSMState which, presumable not by coincidence, also happens
+   to be the functions which IStateful declares.
+
+   This commit removes those declarations from IAlgTool, IAlgorithm and
+   IService, and instead makes them inherit from IStateful
+
+   Fixes GAUDI-1092
+
+   See merge request !23
+
+
+! 2015-09-25 - commit 35dd00c
+
+ - Merge branch 'dev-smartif-use' into 'master'
+
+   Provide (and use) C++11 smart pointer 'look and feel' for SmartIF
+
+   The aim of this branch is to confine, for everything that inherits from
+   IInterface, the calls to addRef(), release() and queryInterface() to the
+   SmartIF implementation. Exceptions are a few places where interfaces
+   (currently) return bare pointers (instead of SmartIF...) and where one thus
+   has to addRef() explicitly to avoid returning a dangling pointer. This can be
+   avoided by changing the relevant interface to return a SmartIF instead of a
+   bare pointer.
+
+   In addition, make SmartIF 'look and feel' like a smart pointer.
+
+   - use explict bool conversion instead of .isValid()
+   - add SmartIF::as<IFace>(), to return a SmartIF<IFace> to an alternate
+      interface -- which (together with move) encourages the use of auto
+   - add ISvcLocator::as<IFace>(), to return a SmartIF<IFace> to the current
+   ISvcLocator.
+   - add ServiceManager::service<IFace>() which return SmartIF<IFace> which
+   encourages
+      the use of auto
+
+   And add a few other C++11 modernizations (eg. prefer STL over raw loop)
+
+   Fixes GAUDI-1094
+
+   See merge request !24
+
+
+! 2015-09-24 - commit 8e8ad96
+
+ - Merge branch 'componenthelp' into 'master'
+
+   extract gaudiComponentHelp from hive
+
+   gaudiComponentHelp is a tool to print a help message for a given component.
+
+   Fixes GAUDI-1091.
+
+   See merge request !17
+
+
+! 2015-09-21 - commit a7d3a5a
+
+ - Merge branch 'AppMgrUI' into 'master'
+
+   Switch IAppMgrUI inheritance from Interface to INamedInterface and remove the
+   pure virtual name()
+
+   IAppMgrUI inherits from IInterface, and adds a pure virtual name() method
+   with the exact same signature as the one in INamedInterface.
+
+   As a result, the same effect can be obtained by inheritance from
+   INamedIterface instead of IInterface.  The advantage is that if an
+   implementation (virtually) inherits not only from IAppMgrUI but also another
+   interface which (virtually) inherits from INamedInterface, there is no
+   ambiguity in the definition of name(). With the 'old' code, one has to
+   disambiguate between multiple name() members...
+
+   See merge request !18
+
+
+! 2015-09-17 - commit d53e750
+
+ - Merge branch 'dev-common-messaging' into 'master'
+
+   Generalize CommonMessaging, and use it to implement the messaging
+   functionality ...
+
+   ...in GaudiAlg/GaudiCommon
+
+     CommonMessaging needs two methods to be available to implement its
+   functionality:
+
+           const std::string& name() const
+          SmartIF<ServiceLocator>& serviceLocator() const
+
+     As CommonMessaging is a mix-in class which uses the 'curiously recurring
+   template'
+    pattern, it can either demand that the 'Base' class it is 'mixed' into
+   already
+    provided this functionality, or it can add pure virtual methods to insure
+   any
+    derived class does so. As this depends on the template argument, one cannot
+    a-priori decide which of the two solution is appropriate.
+
+     To solve this problem in a generic way, this patch uses SFINAE to detect
+    at compile time whether Base::name() and Base::serviceLocator() -- where
+    Base is the template argument provided to CommonMessaging -- are valid
+    expressions. If they are, no further action is taken. If not, the missing
+    function(s) is (are) added as pure virtual. This is done by specialization
+    of two template classes from which CommonMessaging inherits, prior to
+    inheriting from Base.  Those specializations are either 'empty' classes,
+    or add the missing interface requirement.
+
+   See merge request !19
+
+
+! 2015-09-16 - commit 1a1f906
+
+ - Merge branch 'fix-regression-atlas' into 'master'
+
+   Restore ModuleLoadedIncident::TYPE()
+
+   Removal of ModuleLoadedIncident::TYPE() did not take into account the Atlas
+   use of it, see GAUDI-1062.
+
+   See merge request !27
+
+
+! 2015-09-11 - commit c062cbe
+
+ - C++11 modernization changes
+
+   Some trivial - and some not so trivial! - changes which take advantage of
+   C++11...
+
+   See merge request !7
 ============================= GaudiKernel v31r6 ==============================
 ! 2015-06-09 - Marco Clemencic
  - GAUDI-1042: replaced "static const" with "constexpr" in physics constants.

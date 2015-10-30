@@ -203,8 +203,7 @@ public:
   OUTPUT get ( const PREDICATE& cut    ,
                OUTPUT           output ) const
   {
-    for ( const_iterator iobj = begin() ; end() != iobj ; ++iobj )
-    { if ( cut ( *iobj ) ) { *output = *iobj ; ++output ; } }
+    std::copy_if( begin(), end(), output, std::cref(cut) );
     return output ;
   }
   /// erase the object by iterator
@@ -249,7 +248,7 @@ public:
    */
   bool erase ( const TYPE* object )
   {
-    iterator i = std::find ( begin() , end() , object ) ;
+    auto i = std::find ( begin() , end() , object ) ;
     if ( end() == i ) { return false ; }
     m_data.erase ( i ) ;
     return true ;
@@ -314,7 +313,7 @@ public: // ObjectContainerBase methods:
    */
   virtual long index( const ContainedObject* object ) const
   {
-    const_iterator _i = std::find ( begin() , end() , object ) ;
+    auto _i = std::find ( begin() , end() , object ) ;
     return end() != _i ? ( _i - begin() ) : -1 ;                  // RETURN
   }
   /** Pointer to an object of a given distance
@@ -335,9 +334,9 @@ public: // ObjectContainerBase methods:
    */
   virtual long add ( ContainedObject* object)
   {
-    if ( 0 == object ) { return -1 ; }                           // RETURN
+    if ( !object ) { return -1 ; }                           // RETURN
     TYPE* _obj = dynamic_cast<TYPE*> ( object ) ;
-    if ( 0 == _obj   ) { return -1 ; }                           // RETURN
+    if ( !_obj   ) { return -1 ; }                           // RETURN
     const size_type pos = size() ;
     push_back ( _obj ) ;
     return pos ;
@@ -348,7 +347,7 @@ public: // ObjectContainerBase methods:
    */
   virtual long remove ( ContainedObject* value )
   {
-    iterator _i = std::find ( begin() , end() , value ) ;
+    auto _i = std::find ( begin() , end() , value ) ;
     if ( end() == _i ) { return -1 ; }                          // RETURN
     const size_type pos = _i - begin() ;
     m_data.erase ( _i ) ;

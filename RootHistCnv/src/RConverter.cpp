@@ -191,7 +191,7 @@ StatusCode RootHistCnv::RConverter::createAddress(const std::string& rzdir,
 						  IOpaqueAddress*& refpAddress)
 //--------------------------------------------------------------------------
 {
-  RootObjAddress* pA = new RootObjAddress(repSvcType(),
+  auto  pA = new RootObjAddress(repSvcType(),
 					  clid,
 					  rzdir,
 					  title,
@@ -264,7 +264,7 @@ StatusCode RootHistCnv::RConverter::createRep(DataObject* pObject,
       if ( pTObj )   {
         pTObj->Write();
         delete pTObj;
-        return createAddress(pObject, pParentDir, 0, pAddr);
+        return createAddress(pObject, pParentDir, nullptr, pAddr);
       }
     }
   }
