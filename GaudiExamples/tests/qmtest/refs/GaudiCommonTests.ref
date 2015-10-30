@@ -18,8 +18,8 @@ JobOptionsSvc        INFO # (32,1): ApplicationMgr.HistogramPersistency = "NONE"
 JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/GaudiCommonTests.opts
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r3)
-                                          running on pclhcb117 on Fri Feb 27 12:13:55 2015
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r5)
+                                          running on pclhcb117 on Fri Oct 30 11:44:17 2015
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
@@ -59,8 +59,8 @@ Test1               DEBUG Property ['Name': Value] =  'AuditRestart':False
 Test1               DEBUG Property ['Name': Value] =  'AuditReinitialize':False
 Test1               DEBUG Property ['Name': Value] =  'AuditInitialize':False
 Test1               DEBUG Property ['Name': Value] =  'AuditAlgorithms':False
-Test1               DEBUG Property ['Name': Value] =  'Outputs':
-Test1               DEBUG Property ['Name': Value] =  'Inputs':
+Test1               DEBUG Property ['Name': Value] =  'DataOutputs':
+Test1               DEBUG Property ['Name': Value] =  'DataInputs':
 Test1               DEBUG Property ['Name': Value] =  'ErrorCounter':0
 Test1               DEBUG Property ['Name': Value] =  'ErrorMax':1
 Test1               DEBUG Property ['Name': Value] =  'Enable':True
@@ -102,8 +102,8 @@ Test2               DEBUG Property ['Name': Value] =  'AuditRestart':False
 Test2               DEBUG Property ['Name': Value] =  'AuditReinitialize':False
 Test2               DEBUG Property ['Name': Value] =  'AuditInitialize':False
 Test2               DEBUG Property ['Name': Value] =  'AuditAlgorithms':False
-Test2               DEBUG Property ['Name': Value] =  'Outputs':
-Test2               DEBUG Property ['Name': Value] =  'Inputs':
+Test2               DEBUG Property ['Name': Value] =  'DataOutputs':
+Test2               DEBUG Property ['Name': Value] =  'DataInputs':
 Test2               DEBUG Property ['Name': Value] =  'ErrorCounter':0
 Test2               DEBUG Property ['Name': Value] =  'ErrorMax':1
 Test2               DEBUG Property ['Name': Value] =  'Enable':True
@@ -161,7 +161,6 @@ Test2                INFO /Event/microDST
 Test2                INFO /Event
 Test2               DEBUG The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address 'microDST/Test2/Tracks1'
 Test2               DEBUG The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' could not be retrieved from TS at address 'microDST/Nowhere/To/Be/Found'
-EventLoopMgr         INFO ---> Loop Finished -  WSS 26.1602 | total time (skipping 1st evt) 407645 ns
 ApplicationMgr       INFO Application Manager Stopped successfully
 Test1               DEBUG Finalize base class GaudiAlgorithm
 Test1               DEBUG Tools to release :

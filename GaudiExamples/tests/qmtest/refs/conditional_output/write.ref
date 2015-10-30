@@ -17,30 +17,30 @@
                     'TopAlg': ['GaudiTesting::PutDataObjectAlg/DataCreator',
                                'GaudiTesting::OddEventsFilter/OddEvents',
                                'GaudiTesting::EvenEventsFilter/EvenEvents']},
- 'DataCreator': {'Inputs': DataObjectDescriptorCollection(),
-                 'Outputs': DataObjectDescriptorCollection(),
+ 'DataCreator': {'DataInputs': DataObjectDescriptorCollection(),
+                 'DataOutputs': DataObjectDescriptorCollection(),
                  'Paths': ['A', 'B', 'C', 'D']},
- 'EvenEvents': {'Inputs': DataObjectDescriptorCollection(),
-                'Outputs': DataObjectDescriptorCollection()},
+ 'EvenEvents': {'DataInputs': DataObjectDescriptorCollection(),
+                'DataOutputs': DataObjectDescriptorCollection()},
  'EventPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']},
  'FileCatalog': {'Catalogs': ['xmlcatalog_file:ConditionalOutput.xml']},
  'FileRecordPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']},
  'IncidentSvc': {'OutputLevel': 2},
  'MessageSvc': {'OutputLevel': 1},
- 'OddEvents': {'Inputs': DataObjectDescriptorCollection(),
-               'Outputs': DataObjectDescriptorCollection()},
+ 'OddEvents': {'DataInputs': DataObjectDescriptorCollection(),
+               'DataOutputs': DataObjectDescriptorCollection()},
  'OutputStream': {'AlgDependentItemList': {'EvenEvents': ['/Event/A#1',
                                                           '/Event/C#1'],
                                            'OddEvents': ['/Event/A#1',
                                                          '/Event/B#1']},
-                  'Inputs': DataObjectDescriptorCollection(),
-                  'Output': "DATAFILE='PFN:ConditionalOutput.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'",
-                  'Outputs': DataObjectDescriptorCollection()},
+                  'DataInputs': DataObjectDescriptorCollection(),
+                  'DataOutputs': DataObjectDescriptorCollection(),
+                  'Output': "DATAFILE='PFN:ConditionalOutput.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'"},
  'RootCnvSvc': {'OutputLevel': 3}}
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr (GaudiCoreSvc v3r5)
-                                          running on pclhcb117 on Mon Sep 28 17:24:31 2015
+                                          running on pclhcb117 on Fri Oct 30 11:42:28 2015
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 ServiceManager      DEBUG Initializing service FileRecordDataSvc
@@ -110,8 +110,8 @@ DataCreator         DEBUG Property ['Name': Value] =  'AuditRestart':False
 DataCreator         DEBUG Property ['Name': Value] =  'AuditReinitialize':False
 DataCreator         DEBUG Property ['Name': Value] =  'AuditInitialize':False
 DataCreator         DEBUG Property ['Name': Value] =  'AuditAlgorithms':False
-DataCreator         DEBUG Property ['Name': Value] =  'Outputs':
-DataCreator         DEBUG Property ['Name': Value] =  'Inputs':
+DataCreator         DEBUG Property ['Name': Value] =  'DataOutputs':
+DataCreator         DEBUG Property ['Name': Value] =  'DataInputs':
 DataCreator         DEBUG Property ['Name': Value] =  'ErrorCounter':0
 DataCreator         DEBUG Property ['Name': Value] =  'ErrorMax':1
 DataCreator         DEBUG Property ['Name': Value] =  'Enable':True
@@ -156,8 +156,8 @@ OddEvents           DEBUG Property ['Name': Value] =  'AuditRestart':False
 OddEvents           DEBUG Property ['Name': Value] =  'AuditReinitialize':False
 OddEvents           DEBUG Property ['Name': Value] =  'AuditInitialize':False
 OddEvents           DEBUG Property ['Name': Value] =  'AuditAlgorithms':False
-OddEvents           DEBUG Property ['Name': Value] =  'Outputs':
-OddEvents           DEBUG Property ['Name': Value] =  'Inputs':
+OddEvents           DEBUG Property ['Name': Value] =  'DataOutputs':
+OddEvents           DEBUG Property ['Name': Value] =  'DataInputs':
 OddEvents           DEBUG Property ['Name': Value] =  'ErrorCounter':0
 OddEvents           DEBUG Property ['Name': Value] =  'ErrorMax':1
 OddEvents           DEBUG Property ['Name': Value] =  'Enable':True
@@ -201,8 +201,8 @@ EvenEvents          DEBUG Property ['Name': Value] =  'AuditRestart':False
 EvenEvents          DEBUG Property ['Name': Value] =  'AuditReinitialize':False
 EvenEvents          DEBUG Property ['Name': Value] =  'AuditInitialize':False
 EvenEvents          DEBUG Property ['Name': Value] =  'AuditAlgorithms':False
-EvenEvents          DEBUG Property ['Name': Value] =  'Outputs':
-EvenEvents          DEBUG Property ['Name': Value] =  'Inputs':
+EvenEvents          DEBUG Property ['Name': Value] =  'DataOutputs':
+EvenEvents          DEBUG Property ['Name': Value] =  'DataInputs':
 EvenEvents          DEBUG Property ['Name': Value] =  'ErrorCounter':0
 EvenEvents          DEBUG Property ['Name': Value] =  'ErrorMax':1
 EvenEvents          DEBUG Property ['Name': Value] =  'Enable':True
@@ -269,64 +269,64 @@ DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
-OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x2af9e20, 0x4036e20, 0x4bdb640, 0x4314c10]
-FileCatalog         DEBUG No writable file catalog found which contains FID:58D3B004-F565-E511-AC36-082E5F2B1B1D
-IODataManager        INFO Referring to dataset ConditionalOutput.dst by its file ID:58D3B004-F565-E511-AC36-082E5F2B1B1D
+OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x4e18630, 0x4dadd40, 0x4c5e5e0, 0x43f6a90]
+FileCatalog         DEBUG No writable file catalog found which contains FID:42350DEB-F27E-E511-B6E9-082E5F2B1B1D
+IODataManager        INFO Referring to dataset ConditionalOutput.dst by its file ID:42350DEB-F27E-E511-B6E9-082E5F2B1B1D
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
-OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x40c2dc0, 0x425cc90, 0x40d1540, 0x49587c0]
+OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x478db30, 0x45574b0, 0x44911d0, 0x2eba1c0]
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
-OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x2af9e20, 0x4036e20, 0x4bdb640, 0x4314c10]
+OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x4e18630, 0x4dadd40, 0x4c5e5e0, 0x43f6a90]
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
-OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x40c2dc0, 0x425cc90, 0x40d1540, 0x49587c0]
+OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x478db30, 0x45574b0, 0x44911d0, 0x2eba1c0]
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
-OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x2af9e20, 0x4036e20, 0x4bdb640, 0x4314c10]
+OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x4e18630, 0x4dadd40, 0x4c5e5e0, 0x43f6a90]
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
-OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x40c2dc0, 0x425cc90, 0x40d1540, 0x49587c0]
+OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x478db30, 0x45574b0, 0x44911d0, 0x2eba1c0]
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
-OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x2af9e20, 0x4036e20, 0x4bdb640, 0x4314c10]
+OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x4e18630, 0x4dadd40, 0x4c5e5e0, 0x43f6a90]
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
-OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x40c2dc0, 0x425cc90, 0x40d1540, 0x49587c0]
+OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x478db30, 0x45574b0, 0x44911d0, 0x2eba1c0]
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
-OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x2af9e20, 0x4036e20, 0x4bdb640, 0x4314c10]
+OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x4e18630, 0x4dadd40, 0x4c5e5e0, 0x43f6a90]
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
-OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x40c2dc0, 0x425cc90, 0x40d1540, 0x49587c0]
-EventLoopMgr         INFO ---> Loop Finished -  WSS 180.934 | total time (skipping 1st evt) 1001650 ns
+OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x478db30, 0x45574b0, 0x44911d0, 0x2eba1c0]
+EventLoopMgr        DEBUG ---> Loop Finished -  WSS 178.898 | total time (skipping 1st evt) 1128742 ns
 DataCreator         DEBUG Property update for OutputLevel : new value = 1
 OddEvents           DEBUG Property update for OutputLevel : new value = 1
 EvenEvents          DEBUG Property update for OutputLevel : new value = 1
@@ -364,7 +364,7 @@ IncidentSvc         DEBUG Removing [EndEvent] listener 'AlgContextSvc'
 ServiceManager      DEBUG Finalizing service HistogramDataSvc
 ServiceManager      DEBUG Finalizing service HistogramPersistencySvc
 ServiceManager      DEBUG Finalizing service RootCnvSvc
-RootCnvSvc           INFO Disconnected data IO:58D3B004-F565-E511-AC36-082E5F2B1B1D [ConditionalOutput.dst]
+RootCnvSvc           INFO Disconnected data IO:42350DEB-F27E-E511-B6E9-082E5F2B1B1D [ConditionalOutput.dst]
 ServiceManager      DEBUG Finalizing service IODataManager
 ServiceManager      DEBUG Finalizing service FileCatalog
 XMLCatalog           INFO File 'ConditionalOutput.xml' does not exist. New file created.

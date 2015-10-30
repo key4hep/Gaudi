@@ -14,8 +14,8 @@
 # \----- (End of User GaudiExamplesCommonConf/GaudiExamplesCommonConf) -------------------------------
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r3)
-                                          running on pclhcb117 on Fri Feb 27 12:15:57 2015
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r5)
+                                          running on pclhcb117 on Fri Oct 30 11:47:58 2015
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
@@ -112,8 +112,8 @@ PropertyAlg          INFO Dump of the property catalogue....
 PropertyAlg          INFO  Properties of AuditorSvc: Auditors
 PropertyAlg          INFO  Properties of Dummy1: Property
 PropertyAlg          INFO  Properties of Dummy2: Property
-PropertyAlg          INFO  Properties of PropertyAlg: DoubleArray, Int64Array, Bool, UInt64Array, StringArray, Inputs, PBool, Outputs, PDoubleArray, PDouble, PInt, BoolArray, Double, PStringArray, OutputLevel, Int64, PBoolArray, IntArray, String, UInt64, IntPairArray, PIntArray, Int, DoubleArrayWithUnits, DoublePairArray, PString, DoubleArrayWithoutUnits
-PropertyAlg          INFO  Properties of PropertyProxy: Inputs, Outputs
+PropertyAlg          INFO  Properties of PropertyAlg: DoubleArray, Int64Array, DataOutputs, Bool, DataInputs, UInt64Array, StringArray, PBool, DoublePairArray, PDoubleArray, PDouble, PInt, BoolArray, Double, PStringArray, OutputLevel, Int64, PBoolArray, IntArray, String, UInt64, IntPairArray, PIntArray, Int, DoubleArrayWithUnits, PString, DoubleArrayWithoutUnits
+PropertyAlg          INFO  Properties of PropertyProxy: DataOutputs, DataInputs
 PropertyAlg          INFO =================================================
 PropertyAlg          INFO Changed property DoubleArray in catalogue
 PropertyAlg          INFO Read handler called for property:  'PDouble':10100000.
@@ -132,7 +132,7 @@ ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
 PropertyAlg          INFO executing....
 PropertyProxy        INFO executing....
-EventLoopMgr         INFO ---> Loop Finished -  WSS 269.633 | total time (skipping 1st evt) 252926 ns
+EventLoopMgr        DEBUG ---> Loop Finished -  WSS 45.0352 | total time (skipping 1st evt) 88862 ns
 ApplicationMgr       INFO Application Manager Stopped successfully
 PropertyAlg          INFO finalizing....
 PropertyProxy        INFO finalizing....

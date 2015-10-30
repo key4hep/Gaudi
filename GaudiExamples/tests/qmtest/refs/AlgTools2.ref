@@ -27,7 +27,7 @@ JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/wor
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr (GaudiCoreSvc v3r5)
-                                          running on pclhcb117 on Wed Sep 30 12:12:48 2015
+                                          running on pclhcb117 on Fri Oct 30 11:41:32 2015
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
@@ -70,8 +70,8 @@ MyAlg               DEBUG Property ['Name': Value] =  'AuditRestart':False
 MyAlg               DEBUG Property ['Name': Value] =  'AuditReinitialize':False
 MyAlg               DEBUG Property ['Name': Value] =  'AuditInitialize':False
 MyAlg               DEBUG Property ['Name': Value] =  'AuditAlgorithms':False
-MyAlg               DEBUG Property ['Name': Value] =  'Outputs':trackSelection|/Event/MyAnalysis/Tracks|0|1
-MyAlg               DEBUG Property ['Name': Value] =  'Inputs':hits|/Event/Rec/Hits|0|0#raw|/Rec/RAW&/DAQ/RAW|0|0#tracks|/Event/Rec/Tracks|0|0
+MyAlg               DEBUG Property ['Name': Value] =  'DataOutputs':trackSelection|/Event/MyAnalysis/Tracks|0|1
+MyAlg               DEBUG Property ['Name': Value] =  'DataInputs':hits|/Event/Rec/Hits|0|0#raw|/Rec/RAW&/DAQ/RAW|0|0#tracks|/Event/Rec/Tracks|0|0
 MyAlg               DEBUG Property ['Name': Value] =  'ErrorCounter':0
 MyAlg               DEBUG Property ['Name': Value] =  'ErrorMax':1
 MyAlg               DEBUG Property ['Name': Value] =  'Enable':True
@@ -362,7 +362,6 @@ MyAlg                INFO tools created via ToolHandle<T>....
 MyAlg.PrivToolH...   INFO doIt() has been called
 MyAlg.PrivToolH...  DEBUG doIt() [DEBUG] has been called
 ToolSvc.PubTool...   INFO doIt() has been called
-EventLoopMgr         INFO ---> Loop Finished -  WSS 28.9219 | total time (skipping 1st evt) 1060324 ns
 ApplicationMgr       INFO Application Manager Stopped successfully
 MyAlg                INFO finalizing....
 MyAlg               DEBUG Finalize base class GaudiAlgorithm

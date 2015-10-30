@@ -1,7 +1,7 @@
 # setting LC_ALL to "C"
 # Restarting with LD_PRELOAD='libtcmalloc.so'
-# --> Including file '/tmp/marcocle/tmpqbhCjJ.py'
-# <-- End of file '/tmp/marcocle/tmpqbhCjJ.py'
+# --> Including file '/tmp/marcocle/tmpp7Mm1p.py'
+# <-- End of file '/tmp/marcocle/tmpp7Mm1p.py'
 # applying configuration of GaudiExamplesCommonConf
 # /***** User GaudiExamplesCommonConf/GaudiExamplesCommonConf ****************************************
 # |-OutputLevel = 3
@@ -16,13 +16,13 @@
  'AuditorSvc': {'Auditors': ['Google::HeapProfiler/Google::HeapProfiler',
                              'ChronoAuditor/ChronoAuditor']},
  'Google::HeapProfiler': {'OutputLevel': 3},
- 'HelloWorld': {'Inputs': DataObjectDescriptorCollection(),
-                'Outputs': DataObjectDescriptorCollection()},
+ 'HelloWorld': {'DataInputs': DataObjectDescriptorCollection(),
+                'DataOutputs': DataObjectDescriptorCollection()},
  'MessageSvc': {'OutputLevel': 3}}
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r3)
-                                          running on pclhcb117 on Fri Feb 27 12:14:16 2015
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r5)
+                                          running on pclhcb117 on Fri Oct 30 11:44:30 2015
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
@@ -57,7 +57,6 @@ Google::HeapPro...   INFO Starting Auditor for HelloWorld:Execute
 HelloWorld           INFO executing....
 Google::HeapPro...   INFO Starting Auditor for HelloWorld:Execute
 HelloWorld           INFO executing....
-EventLoopMgr         INFO ---> Loop Finished -  WSS 267.996 | total time (skipping 1st evt) 92955058 ns
 Google::HeapPro...   INFO Starting Auditor for HelloWorld:EndRun
 HelloWorld           INFO ending new run....
 ApplicationMgr       INFO Application Manager Stopped successfully
@@ -67,14 +66,14 @@ EventLoopMgr         INFO Histograms converted successfully according to request
 *****Chrono*****     INFO ****************************************************************************************************
 *****Chrono*****     INFO  The Final CPU consumption ( Chrono ) Table (ordered)
 *****Chrono*****     INFO ****************************************************************************************************
-HelloWorld:Stop      INFO Time User   : Tot=    0 [us]                                             #=  1
 HelloWorld:Start     INFO Time User   : Tot=    0 [us]                                             #=  1
-HelloWorld:Fina...   INFO Time User   : Tot=    1 [ms]                                             #=  1
-HelloWorld:Begi...   INFO Time User   : Tot=    2 [ms]                                             #=  1
-HelloWorld:EndRun    INFO Time User   : Tot=    1 [ms]                                             #=  1
+HelloWorld:Stop      INFO Time User   : Tot=    0 [us]                                             #=  1
 HelloWorld:Init...   INFO Time User   : Tot=    2 [ms]                                             #=  1
-HelloWorld:Execute   INFO Time User   : Tot=   20 [ms] Ave/Min/Max=    2(+-  1.1)/    0/    3 [ms] #= 10
-ChronoStatSvc        INFO Time User   : Tot=   62 [ms]                                             #=  1
+HelloWorld:Begi...   INFO Time User   : Tot=    1 [ms]                                             #=  1
+HelloWorld:Fina...   INFO Time User   : Tot=    2 [ms]                                             #=  1
+HelloWorld:EndRun    INFO Time User   : Tot=    3 [ms]                                             #=  1
+HelloWorld:Execute   INFO Time User   : Tot=   12 [ms] Ave/Min/Max=  1.2(+- 0.98)/    0/    3 [ms] #= 10
+ChronoStatSvc        INFO Time User   : Tot=   27 [ms]                                             #=  1
 *****Chrono*****     INFO ****************************************************************************************************
 ChronoStatSvc.f...   INFO  Service finalized successfully
 ApplicationMgr       INFO Application Manager Finalized successfully

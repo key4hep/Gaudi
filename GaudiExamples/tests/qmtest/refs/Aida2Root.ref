@@ -24,8 +24,8 @@ JobOptionsSvc        INFO # (3,1): ApplicationMgr.TopAlg += ["Aida2Root"]
 JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/Aida2Root.opts
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r3)
-                                          running on pclhcb117 on Fri Feb 27 11:34:08 2015
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r5)
+                                          running on pclhcb117 on Fri Oct 30 11:40:46 2015
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 SimpleHistos        DEBUG Property update for OutputLevel : new value = 2
@@ -79,8 +79,8 @@ SimpleHistos        DEBUG Property ['Name': Value] =  'AuditRestart':False
 SimpleHistos        DEBUG Property ['Name': Value] =  'AuditReinitialize':False
 SimpleHistos        DEBUG Property ['Name': Value] =  'AuditInitialize':False
 SimpleHistos        DEBUG Property ['Name': Value] =  'AuditAlgorithms':False
-SimpleHistos        DEBUG Property ['Name': Value] =  'Outputs':
-SimpleHistos        DEBUG Property ['Name': Value] =  'Inputs':
+SimpleHistos        DEBUG Property ['Name': Value] =  'DataOutputs':
+SimpleHistos        DEBUG Property ['Name': Value] =  'DataInputs':
 SimpleHistos        DEBUG Property ['Name': Value] =  'ErrorCounter':0
 SimpleHistos        DEBUG Property ['Name': Value] =  'ErrorMax':1
 SimpleHistos        DEBUG Property ['Name': Value] =  'Enable':True
@@ -141,8 +141,8 @@ Histos2           SUCCESS Property ['Name': Value] =  'AuditRestart':False
 Histos2           SUCCESS Property ['Name': Value] =  'AuditReinitialize':False
 Histos2           SUCCESS Property ['Name': Value] =  'AuditInitialize':False
 Histos2           SUCCESS Property ['Name': Value] =  'AuditAlgorithms':False
-Histos2           SUCCESS Property ['Name': Value] =  'Outputs':
-Histos2           SUCCESS Property ['Name': Value] =  'Inputs':
+Histos2           SUCCESS Property ['Name': Value] =  'DataOutputs':
+Histos2           SUCCESS Property ['Name': Value] =  'DataInputs':
 Histos2           SUCCESS Property ['Name': Value] =  'ErrorCounter':0
 Histos2           SUCCESS Property ['Name': Value] =  'ErrorMax':1
 Histos2           SUCCESS Property ['Name': Value] =  'Enable':True
@@ -199,8 +199,8 @@ Aida2Root         SUCCESS Property ['Name': Value] =  'AuditRestart':False
 Aida2Root         SUCCESS Property ['Name': Value] =  'AuditReinitialize':False
 Aida2Root         SUCCESS Property ['Name': Value] =  'AuditInitialize':False
 Aida2Root         SUCCESS Property ['Name': Value] =  'AuditAlgorithms':False
-Aida2Root         SUCCESS Property ['Name': Value] =  'Outputs':
-Aida2Root         SUCCESS Property ['Name': Value] =  'Inputs':
+Aida2Root         SUCCESS Property ['Name': Value] =  'DataOutputs':
+Aida2Root         SUCCESS Property ['Name': Value] =  'DataInputs':
 Aida2Root         SUCCESS Property ['Name': Value] =  'ErrorCounter':0
 Aida2Root         SUCCESS Property ['Name': Value] =  'ErrorMax':1
 Aida2Root         SUCCESS Property ['Name': Value] =  'Enable':True
@@ -276,7 +276,6 @@ SimpleHistos         INFO GaudiHistoAlgorithm:: Filling Histograms...... Please 
 Histos2           WARNING Gaudi::Examples::HistoProps:: Cannot generate automatic literal ID from an empty title ! Using numeric ID instead for histogram ID
 HistogramDataSvc    DEBUG  Redefine the parameters for the histogram 'Histos2/2' to be ('TEST2',-100,200,100)
 ChronoStatSvc        INFO  Number of skipped events for MemStat-1
-EventLoopMgr         INFO ---> Loop Finished -  WSS 100.516 | total time (skipping 1st evt) 1256059395
 ApplicationMgr       INFO Application Manager Stopped successfully
 SimpleHistos      SUCCESS Booked 30 Histogram(s) : 1D=10 2D=5 3D=3 1DProf=9 2DProf=3
 SimpleHistos      SUCCESS List of booked 1D histograms in directory         "SimpleHistos" :-
@@ -436,11 +435,11 @@ EventLoopMgr         INFO Histograms converted successfully according to request
 *****Chrono*****     INFO ****************************************************************************************************
 *****Chrono*****     INFO  The Final CPU consumption ( Chrono ) Table (ordered)
 *****Chrono*****     INFO ****************************************************************************************************
-1DOldStyle           INFO Time User   : Tot=   15 [ms] Ave/Min/Max=  0.3(+- 17.3)/    0/1e+03 [us] #=49999
-1DAutoID             INFO Time User   : Tot=   22 [ms] Ave/Min/Max= 0.44(+-   21)/    0/1e+03 [us] #=49999
-1DForcedAlphaID      INFO Time User   : Tot=   23 [ms] Ave/Min/Max= 0.46(+- 21.4)/    0/1e+03 [us] #=49999
-1DForcedNumericID    INFO Time User   : Tot=   26 [ms] Ave/Min/Max= 0.52(+- 22.8)/    0/1e+03 [us] #=49999
-ChronoStatSvc        INFO Time User   : Tot= 1.19  [s]                                             #=  1
+1DOldStyle           INFO Time User   : Tot=   17 [ms] Ave/Min/Max=0.00034(+-0.0184)/    0/    1 [ms] #=49999
+1DForcedNumericID    INFO Time User   : Tot=   20 [ms] Ave/Min/Max=0.0004(+- 0.02)/    0/    1 [ms] #=49999
+1DForcedAlphaID      INFO Time User   : Tot=   25 [ms] Ave/Min/Max=0.0005(+-0.0223)/    0/    1 [ms] #=49999
+1DAutoID             INFO Time User   : Tot=   27 [ms] Ave/Min/Max=0.00054(+-0.0232)/    0/    1 [ms] #=49999
+ChronoStatSvc        INFO Time User   : Tot=  1.2  [s]                                             #=  1
 *****Chrono*****     INFO ****************************************************************************************************
 ChronoStatSvc.f...   INFO  Service finalized successfully
 HistogramDataSvc    DEBUG  Substituted histograms #1 :
