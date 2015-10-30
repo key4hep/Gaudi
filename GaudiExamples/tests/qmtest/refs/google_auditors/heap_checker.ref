@@ -16,8 +16,8 @@
  'AuditorSvc': {'Auditors': ['Google::HeapChecker/Google::HeapChecker',
                              'ChronoAuditor/ChronoAuditor']},
  'Google::HeapChecker': {'OutputLevel': 3},
- 'HelloWorld': {'DataInputs': DataObjectDescriptorCollection(),
-                'DataOutputs': DataObjectDescriptorCollection()},
+ 'HelloWorld': {'DataInputs': DataObjectDescriptorCollection(''),
+                'DataOutputs': DataObjectDescriptorCollection('')},
  'MessageSvc': {'OutputLevel': 3}}
 ApplicationMgr    SUCCESS
 ====================================================================================================================================

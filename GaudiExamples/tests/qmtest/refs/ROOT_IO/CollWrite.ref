@@ -14,8 +14,8 @@
                                       'Gaudi::IODataManager/IODataManager',
                                       'Gaudi::RootCnvSvc/RootCnvSvc'],
                     'TopAlg': ['GaudiSequencer/EventAlgs']},
- 'EventAlgs': {'DataInputs': DataObjectDescriptorCollection(),
-               'DataOutputs': DataObjectDescriptorCollection(),
+ 'EventAlgs': {'DataInputs': DataObjectDescriptorCollection(''),
+               'DataOutputs': DataObjectDescriptorCollection(''),
                'Members': ['EvtCollectionWrite/Writer'],
                'VetoObjects': ['FSR']},
  'EventPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']},
@@ -26,8 +26,8 @@
  'FileCatalog': {'Catalogs': ['xmlcatalog_file:ROOTIO.xml']},
  'FileRecordPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']},
  'ToolSvc.SequencerTimerTool': {'OutputLevel': 4},
- 'Writer': {'DataInputs': DataObjectDescriptorCollection(),
-            'DataOutputs': DataObjectDescriptorCollection()}}
+ 'Writer': {'DataInputs': DataObjectDescriptorCollection(''),
+            'DataOutputs': DataObjectDescriptorCollection('')}}
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr (GaudiCoreSvc v3r5)

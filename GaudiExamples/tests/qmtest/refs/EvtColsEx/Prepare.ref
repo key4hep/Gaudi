@@ -16,8 +16,8 @@
  'EventPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']},
  'FileCatalog': {'Catalogs': ['xmlcatalog_file:EvtColsEx.xml']},
  'FileRecordPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']},
- 'RootDst': {'DataInputs': DataObjectDescriptorCollection(),
-             'DataOutputs': DataObjectDescriptorCollection(),
+ 'RootDst': {'DataInputs': DataObjectDescriptorCollection(''),
+             'DataOutputs': DataObjectDescriptorCollection(''),
              'ItemList': ['/Event#1'],
              'Output': "DATAFILE='PFN:EvtColsEx.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'"}}
 ApplicationMgr    SUCCESS

@@ -20,8 +20,8 @@
  'EvtTupleSvc': {'Output': ["EVTCOLS DATAFILE='PFN:EvtColsEx.tags' OPT='RECREATE' SVC='Gaudi::RootCnvSvc'"]},
  'FileCatalog': {'Catalogs': ['xmlcatalog_file:EvtColsEx.xml']},
  'FileRecordPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']},
- 'Fill': {'DataInputs': DataObjectDescriptorCollection(),
-          'DataOutputs': DataObjectDescriptorCollection(),
+ 'Fill': {'DataInputs': DataObjectDescriptorCollection(''),
+          'DataOutputs': DataObjectDescriptorCollection(''),
           'EvtColLUN': 'EVTCOLS'}}
 ApplicationMgr    SUCCESS
 ====================================================================================================================================

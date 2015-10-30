@@ -20,8 +20,8 @@
                    'PrintFreq': 100},
  'FileCatalog': {'Catalogs': ['xmlcatalog_file:ROOTIO.xml']},
  'FileRecordPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']},
- 'ReadAlg': {'DataInputs': DataObjectDescriptorCollection(),
-             'DataOutputs': DataObjectDescriptorCollection()}}
+ 'ReadAlg': {'DataInputs': DataObjectDescriptorCollection(''),
+             'DataOutputs': DataObjectDescriptorCollection('')}}
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr (GaudiCoreSvc v3r5)

@@ -13,16 +13,16 @@
                                       'Gaudi::IODataManager/IODataManager',
                                       'Gaudi::RootCnvSvc/RootCnvSvc'],
                     'TopAlg': ['GaudiSequencer/EventAlgs']},
- 'EventAlgs': {'DataInputs': DataObjectDescriptorCollection(),
-               'DataOutputs': DataObjectDescriptorCollection(),
+ 'EventAlgs': {'DataInputs': DataObjectDescriptorCollection(''),
+               'DataOutputs': DataObjectDescriptorCollection(''),
                'Members': ['Gaudi::Examples::MultiInput::ReadAlg/Gaudi::Examples::MultiInput::ReadAlg']},
  'EventPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']},
  'EventSelector': {'Input': ["DATAFILE='PFN:MI_Base.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'"]},
  'FileCatalog': {'Catalogs': ['xmlcatalog_file:MultiInput.xml']},
  'FileRecordPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']},
  'Gaudi::Examples::MultiInput::ReadAlg': {'AddressesFile': 'addresses.txt',
-                                          'DataInputs': DataObjectDescriptorCollection(),
-                                          'DataOutputs': DataObjectDescriptorCollection(),
+                                          'DataInputs': DataObjectDescriptorCollection(''),
+                                          'DataOutputs': DataObjectDescriptorCollection(''),
                                           'OutputLevel': 2}}
 ApplicationMgr    SUCCESS
 ====================================================================================================================================

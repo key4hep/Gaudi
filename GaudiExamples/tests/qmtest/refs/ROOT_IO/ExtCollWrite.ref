@@ -14,8 +14,8 @@
                                       'Gaudi::IODataManager/IODataManager',
                                       'Gaudi::RootCnvSvc/RootCnvSvc'],
                     'TopAlg': ['GaudiSequencer/EventAlgs']},
- 'EventAlgs': {'DataInputs': DataObjectDescriptorCollection(),
-               'DataOutputs': DataObjectDescriptorCollection(),
+ 'EventAlgs': {'DataInputs': DataObjectDescriptorCollection(''),
+               'DataOutputs': DataObjectDescriptorCollection(''),
                'Members': ['Gaudi::Examples::ExtendedEvtCol/Fill'],
                'VetoObjects': ['FSR']},
  'EventPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']},
@@ -25,8 +25,8 @@
  'EvtTupleSvc': {'Output': ["EXTEVT DATAFILE='PFN:ROOT_IO.etags' OPT='RECREATE' SVC='Gaudi::RootCnvSvc'"]},
  'FileCatalog': {'Catalogs': ['xmlcatalog_file:ROOTIO.xml']},
  'FileRecordPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']},
- 'Fill': {'DataInputs': DataObjectDescriptorCollection(),
-          'DataOutputs': DataObjectDescriptorCollection(),
+ 'Fill': {'DataInputs': DataObjectDescriptorCollection(''),
+          'DataOutputs': DataObjectDescriptorCollection(''),
           'EvtColLUN': 'EXTEVT'},
  'ToolSvc.SequencerTimerTool': {'OutputLevel': 4}}
 ApplicationMgr    SUCCESS
