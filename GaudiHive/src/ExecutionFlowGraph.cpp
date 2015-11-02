@@ -205,9 +205,9 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  bool AlgorithmNode::promoteToControlReadyState(const int& slotNum,
+  bool AlgorithmNode::promoteToControlReadyState(const int& /*slotNum*/,
                                                  AlgsExecutionStates& states,
-                                                 std::vector<int>& node_decisions) const {
+                                                 std::vector<int>& /*node_decisions*/) const {
 
     auto& state = states[m_algoIndex];
     bool result = false;
@@ -224,7 +224,7 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  bool AlgorithmNode::promoteToDataReadyState(const int& slotNum, const AlgorithmNode* requestor) const {
+  bool AlgorithmNode::promoteToDataReadyState(const int& slotNum, const AlgorithmNode* /*requestor*/) const {
 
     auto& states = m_graph->getAlgoStates(slotNum);
     auto& state = states[m_algoIndex];

@@ -93,7 +93,7 @@ private:
   tbb::concurrent_bounded_queue<EventContext*> m_finishedEvents;
 
   /// The number of free slots (0 or 1)
-  int m_freeSlots;
+  unsigned int m_freeSlots;
   std::vector<EventContext*> m_evtCtx_buffer;
 
 };

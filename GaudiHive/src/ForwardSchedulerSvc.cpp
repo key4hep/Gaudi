@@ -115,7 +115,10 @@ StatusCode ForwardSchedulerSvc::initialize(){
       if (nullptr == algoPtr)
         fatal() << "Could not convert IAlgorithm into Algorithm: this will result in a crash." << endmsg;
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
       const std::vector<MinimalDataObjectHandle*>& algoHandles(algoPtr->handles());
+#pragma GCC diagnostic pop
       std::vector<std::string> algoDependencies;
       if (!algoHandles.empty()) {
         info() << "Algorithm " << algoPtr->name() << " data dependencies:" << endmsg;

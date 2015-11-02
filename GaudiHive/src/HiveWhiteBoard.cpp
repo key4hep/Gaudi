@@ -209,7 +209,8 @@ return IDataProviderSvc::INVALID_ROOT;
    * The optional data provider is not considered. On the other hand, the data
    * provider is specified to be the whiteboard.
    */
-  StatusCode setDataLoader(IConversionSvc* pDataLoader, IDataProviderSvc* dpsvc=nullptr) override {
+  StatusCode setDataLoader(IConversionSvc* pDataLoader,
+                           IDataProviderSvc* dpsvc __attribute__((unused)) = nullptr) override {
     if ( 0 != pDataLoader  ) pDataLoader->addRef();
     if ( 0 != m_dataLoader ) m_dataLoader->release();
     if ( 0 != pDataLoader  )    {

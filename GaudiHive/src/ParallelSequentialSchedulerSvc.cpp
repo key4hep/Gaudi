@@ -13,7 +13,7 @@
 #include <list>
 #include <thread>
 
-// Local 
+// Local
 #include "ParallelSequentialSchedulerSvc.h"
 #include "AlgResourcePool.h"
 #include "RetCodeGuard.h"
@@ -43,7 +43,7 @@ ParallelSequentialSchedulerSvc::~ParallelSequentialSchedulerSvc(){}
 
 StatusCode ParallelSequentialSchedulerSvc::initialize(){
 
-  // Initialise mother class (read properties, ...)  
+  // Initialise mother class (read properties, ...)
 	StatusCode sc(Service::initialize());
 	if (!sc.isSuccess())
 		warning () << "Base class could not be initialized" << endmsg;
@@ -118,7 +118,10 @@ StatusCode ParallelSequentialSchedulerSvc::initialize(){
 				fatal() << "Could not convert IAlgorithm into Algorithm: this will result in a crash." << endmsg;
 			}
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 			const std::vector<MinimalDataObjectHandle*>& algoHandles(algoPtr->handles());
+#pragma GCC diagnostic pop
 			std::vector<std::string> algoDependencies;
 			if (!algoHandles.empty()){
 
@@ -139,9 +142,9 @@ StatusCode ParallelSequentialSchedulerSvc::initialize(){
 	}
 
 	return StatusCode::SUCCESS;
-  
+
 }
-//---------------------------------------------------------------------------  
+//---------------------------------------------------------------------------
 
 StatusCode ParallelSequentialSchedulerSvc::finalize(){
 
@@ -149,11 +152,11 @@ StatusCode ParallelSequentialSchedulerSvc::finalize(){
 
 	StatusCode sc(Service::finalize());
   if (!sc.isSuccess())
-    warning () << "Base class could not be finalized" << endmsg;     
-  return sc;  
+    warning () << "Base class could not be finalized" << endmsg;
+  return sc;
 }
 
-/** Make an event available to the scheduler. Immediately the algortihms are 
+/** Make an event available to the scheduler. Immediately the algortihms are
  * executed.
  */
 StatusCode ParallelSequentialSchedulerSvc::pushNewEvent(EventContext* eventContext){
@@ -210,10 +213,10 @@ StatusCode ParallelSequentialSchedulerSvc::tryPopFinishedEvent(EventContext*& ev
   }
   return StatusCode::FAILURE;
 }
-  
-//---------------------------------------------------------------------------  
 
-/** Get free slots number. Given that the scheduler is sequential and its 
+//---------------------------------------------------------------------------
+
+/** Get free slots number. Given that the scheduler is sequential and its
  * methods non reentrant, this is always 1.
  */
 unsigned int ParallelSequentialSchedulerSvc::freeSlots(){return m_freeSlots;}

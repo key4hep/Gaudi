@@ -327,9 +327,8 @@ StatusCode CPUCruncher::execute  ()  // the execution of the algorithm
 	  if(!inputHandle->isValid())
 		continue;
 
-    DataObject* obj = nullptr;
     for (unsigned int i=1; i<m_rwRepetitions;++i){
-      obj = inputHandle->get();
+      inputHandle->get();
     }
   }
 

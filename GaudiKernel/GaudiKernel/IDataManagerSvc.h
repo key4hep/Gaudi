@@ -60,7 +60,7 @@ public:
       @return                     Status code indicating success or failure
   */
   virtual StatusCode setDataLoader( IConversionSvc* svc,
-                                    IDataProviderSvc* dpsvc = 0 ) = 0;
+                                    IDataProviderSvc* dpsvc = nullptr ) = 0;
 
   /** IDataManagerSvc: Explore the object store: retrieve the object's parent.
       The object is identified by its pointer.
