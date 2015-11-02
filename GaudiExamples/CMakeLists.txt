@@ -98,7 +98,7 @@ if (NOT LCG_COMP STREQUAL "clang")
   file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/HackedStatusCode.h" "${StatusCodeHeaderData}")
 endif()
 
-if(BOOST_python_FOUND)
+if(Boost_PYTHON_FOUND)
   gaudi_add_python_module(PyExample src/PythonModule/*.cpp
                           LINK_LIBRARIES ${Boost_PYTHON_LIBRARY}
                           INCLUDE_DIRS Boost PythonLibs)
