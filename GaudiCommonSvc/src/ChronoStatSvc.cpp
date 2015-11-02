@@ -45,7 +45,7 @@ DECLARE_COMPONENT(ChronoStatSvc)
 constexpr struct  CompareFirstOfPointerPair_t
 {
   template <typename S, typename T>
-  inline bool operator() ( const std::pair<S*,T*>& p1, 
+  inline bool operator() ( const std::pair<S*,T*>& p1,
                            const std::pair<S*,T*>& p2) const
   {
     auto e1 = p1.first;
@@ -130,6 +130,34 @@ ChronoStatSvc::ChronoStatSvc
   declareProperty
     ( "PerEventFile", m_perEventFile="",
       "File name for per-event deltas" );
+
+}
+// ============================================================================
+// Compound assignment operator.
+// ============================================================================
+void ChronoStatSvc::merge ( const ChronoStatSvc& css){
+
+	// Add the content of the maps, leave the rest unchanged
+
+	// Merge Chronomaps
+	for (auto& item : css.m_chronoEntities){
+		const IChronoStatSvc::ChronoTag& key = item.first;
+		const ChronoEntity& val = item.second;
+		if (m_chronoEntities.count(key))
+			m_chronoEntities[key]+=val;
+		else
+			m_chronoEntities.insert (std::pair<IChronoStatSvc::ChronoTag,ChronoEntity>(key,val));
+	}
+
+	// Merge StatMaps
+	for (auto& item : css.m_statEntities){
+		const IChronoStatSvc::StatTag& key = item.first;
+		const StatEntity& val = item.second;
+		if (m_statEntities.count(key))
+			m_statEntities[key]+=val;
+		else
+			m_statEntities.insert (std::pair<IChronoStatSvc::StatTag,StatEntity>(key,val));
+	}
 
 }
 // ============================================================================
@@ -252,7 +280,7 @@ StatusCode ChronoStatSvc::finalize()
       {  // prepare container for printing
     std::vector<std::pair<ChronoEntity*,const ChronoTag*>> tmpCont;
     tmpCont.reserve(m_chronoEntities.size());
-	for( auto&  it : m_chronoEntities ) 
+	for( auto&  it : m_chronoEntities )
 	  { tmpCont.emplace_back(  &it.second , &it.first ) ; }
 	// sort it
 	if( m_chronoOrderFlag ) std::sort( tmpCont.begin(), tmpCont.end(),
@@ -496,7 +524,7 @@ void ChronoStatSvc::saveStats()
   chronos.reserve(m_chronoEntities.size() );
   std::transform( std::begin(m_chronoEntities), std::end(m_chronoEntities),
                   std::back_inserter(chronos),
-                  [](ChronoMap::const_reference i) 
+                  [](ChronoMap::const_reference i)
                   { return std::make_pair( &i.second, &i.first ); } );
 
   // sort it
@@ -580,7 +608,7 @@ void ChronoStatSvc::printStats()
     SCont tmpCont;
     std::transform( std::begin(m_statEntities), std::end(m_statEntities),
                     std::back_inserter(tmpCont),
-                    [](StatMap::const_reference i) 
+                    [](StatMap::const_reference i)
                     { return std::make_pair( &i.second, &i.first); } );
     // sort it
     if ( m_statOrderFlag ) std::sort( tmpCont.begin(), tmpCont.end(),

@@ -4,6 +4,7 @@
 #include "GaudiKernel/IInterface.h"
 #include "GaudiKernel/System.h"
 #include <string>
+#include <list>
 
 // Forward declaration
 class IAlgTool;
@@ -18,6 +19,9 @@ class GAUDI_API IToolSvc: virtual public IInterface {
 public:
   /// InterfaceID
   DeclareInterfaceID(IToolSvc,2,1);
+
+  // Typedefs
+  typedef std::list<IAlgTool*>     ListTools;
 
   /** Retrieve tool with tool dependent part of the name automatically
    *  assigned. By default a tool will be created if it does not exist,

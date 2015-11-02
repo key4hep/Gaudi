@@ -59,6 +59,9 @@ Commit Id: $Format:%H$
 
    See merge request !21
 
+! 2015-02-27 - Marco Clemencic
+ - Ignore EventLoopMgr "Loop Finished" report in tests.
+
 ============================= GaudiPolicy v15r5 ==============================
 ! 2015-05-14 - Marco Clemencic
  - Select 'dbg' in test reference files if the platform contains 'do0'.
@@ -165,6 +168,11 @@ M       cmt/requirements
 ! 2014-06-19 - Marco Clemencic
  - Modified createProjVersHeader.py to handle more nicely special cases like the
    ATLAS "rel_1".
+
+! 2014-05-08 - Charles Leggett
+ - some special sauce for ATLAS
+
+#	modified:   GaudiPolicy/cmt/requirements
 
 ! 2014-06-10 - Charles Leggett
  - cmt: print warning message if client uses generate_rootmap pattern

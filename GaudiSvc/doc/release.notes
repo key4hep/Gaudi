@@ -51,6 +51,14 @@ Commit Id: $Format:%H$
 
    See merge request !7
 
+! 2015-02-27 - Marco Clemencic
+ - Updated test reference file.
+
+! 2014-04-24 - Charles Leggett
+ - updated generate_rootmap to generate_componentlist
+
+M	cmt/requirements
+
 =============================== GaudiSvc v21r6 ===============================
 ! 2015-05-21 - Marco Clemencic
  - Fixed compilation with CMT.

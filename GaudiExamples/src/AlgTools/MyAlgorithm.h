@@ -24,6 +24,7 @@ public:
   StatusCode execute();
   StatusCode finalize();
 private:
+  bool m_privateToolsOnly;
   IMyTool*   m_privateTool;
   IMyTool*   m_publicTool;
   IMyTool*   m_privateGTool;

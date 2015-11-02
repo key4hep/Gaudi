@@ -27,7 +27,7 @@ JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/wor
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr (GaudiCoreSvc v3r6)
-                                          running on pclhcb117 on Wed Oct 28 12:36:12 2015
+                                          running on pclhcb117 on Fri Oct 30 17:48:49 2015
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
@@ -37,16 +37,16 @@ ToolSvc.MyTool       INFO Int    = 201
 ToolSvc.MyTool       INFO Double = 2.011e+12
 ToolSvc.MyTool       INFO String = two hundred and one
 ToolSvc.MyTool       INFO Bool   = 1
-MyAlg.MyTool         INFO intialize() has been called
-MyAlg.MyTool         INFO Int    = 101
-MyAlg.MyTool         INFO Double = 1.011e+12
-MyAlg.MyTool         INFO String = hundred one
-MyAlg.MyTool         INFO Bool   = 0
 ToolSvc.MyGaudi...   INFO intialize() has been called
 ToolSvc.MyGaudi...   INFO Int    = 100
 ToolSvc.MyGaudi...   INFO Double = 100
 ToolSvc.MyGaudi...   INFO String = hundred
 ToolSvc.MyGaudi...   INFO Bool   = 1
+MyAlg.MyTool         INFO intialize() has been called
+MyAlg.MyTool         INFO Int    = 101
+MyAlg.MyTool         INFO Double = 1.011e+12
+MyAlg.MyTool         INFO String = hundred one
+MyAlg.MyTool         INFO Bool   = 0
 MyAlg.MyGaudiTool    INFO intialize() has been called
 MyAlg.MyGaudiTool    INFO Int    = 100
 MyAlg.MyGaudiTool    INFO Double = 100
@@ -116,8 +116,8 @@ ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditTools':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'OutputLevel':2
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
 ToolSvc.ToolB       DEBUG Loading tool ToolA of type TestTool
-ToolSvc.ToolB       DEBUG The tool of type 'TestTool' has been added with the name 'ToolSvc.ToolA'
-ToolSvc.ToolA       DEBUG The tool of type 'TestTool' has been added with the name 'ToolSvc.ToolB'
+ToolSvc.ToolB       DEBUG Registering tool ToolSvc.ToolA
+ToolSvc.ToolA       DEBUG Registering tool ToolSvc.ToolB
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
 HistogramPersis...WARNING Histograms saving not required.
@@ -125,81 +125,81 @@ ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
 MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
-MyAlg.MyTool         INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by
+MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doItAgain() has been called
 MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
-MyAlg.MyTool         INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by
+MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doItAgain() has been called
 MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
-MyAlg.MyTool         INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by
+MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doItAgain() has been called
 MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
-MyAlg.MyTool         INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by
+MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doItAgain() has been called
 MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
-MyAlg.MyTool         INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by
+MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doItAgain() has been called
 MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
-MyAlg.MyTool         INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by
+MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doItAgain() has been called
 MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
-MyAlg.MyTool         INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by
+MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doItAgain() has been called
 MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
-MyAlg.MyTool         INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by
+MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doItAgain() has been called
 MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
-MyAlg.MyTool         INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO MyGaudiTool:: public tool called by
+MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doItAgain() has been called
 MyAlg                INFO executing....
 ToolSvc.MyTool       INFO doIt() has been called
-MyAlg.MyTool         INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO doIt() has been called
 ToolSvc.MyGaudi...   INFO MyGaudiTool:: The INFO message is suppressed : 'public tool called by'
+MyAlg.MyTool         INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doIt() has been called
 MyAlg.ToolWithName   INFO doIt() has been called
 MyAlg.MyGaudiTool    INFO doItAgain() has been called
@@ -209,25 +209,27 @@ EventLoopMgr         INFO Histograms converted successfully according to request
 ToolSvc              INFO Removing all tools created by ToolSvc
 MyAlg.ToolWithName   INFO finalize() has been called
 MyAlg.MyGaudiTool    INFO finalize() has been called
-ToolSvc.MyGaudi...   INFO finalize() has been called
 MyAlg.MyTool         INFO finalize() has been called
+ToolSvc.MyGaudi...   INFO finalize() has been called
 ToolSvc.MyTool       INFO finalize() has been called
 ToolSvc.ToolB       DEBUG Finalize
 ToolSvc.ToolB       DEBUG  ==> Finalize the base class GaudiTool
 ToolSvc.ToolB       DEBUG Tools to release : ToolSvc.ToolA
 ToolSvc.ToolB       DEBUG Releasing tool 'ToolSvc.ToolA'
+ToolSvc.ToolB       DEBUG De-Registering tool ToolSvc.ToolA
 ToolSvc.ToolB       DEBUG The tool 'ToolSvc.ToolA' of type 'TestTool' is released
 ToolSvc.ToolB       DEBUG Services to release :
 ToolSvc.ToolA       DEBUG Finalize
 ToolSvc.ToolA       DEBUG  ==> Finalize the base class GaudiTool
 ToolSvc.ToolA       DEBUG Tools to release : ToolSvc.ToolB
 ToolSvc.ToolA       DEBUG Releasing tool 'ToolSvc.ToolB'
+ToolSvc.ToolA       DEBUG De-Registering tool ToolSvc.ToolB
 ToolSvc.ToolA       DEBUG The tool 'ToolSvc.ToolB' of type 'TestTool' is released
 ToolSvc.ToolA       DEBUG Services to release :
 MyAlg.ToolWithName   INFO destructor has been called
 MyAlg.MyGaudiTool    INFO destructor has been called
-ToolSvc.MyGaudi...   INFO destructor has been called
 MyAlg.MyTool         INFO destructor has been called
+ToolSvc.MyGaudi...   INFO destructor has been called
 ToolSvc.MyTool       INFO destructor has been called
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully

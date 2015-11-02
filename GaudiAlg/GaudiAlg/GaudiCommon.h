@@ -27,6 +27,7 @@
 #include "GaudiKernel/ICounterSummarySvc.h"
 #include "GaudiKernel/IUpdateManagerSvc.h"
 #include "GaudiKernel/HashMap.h"
+#include "GaudiKernel/DataObjectHandle.h"
 #include "GaudiKernel/CommonMessaging.h"
 // ============================================================================
 // forward declarations
@@ -486,7 +487,7 @@ public:
   void Exception
   ( const std::string& msg = "no message"        ,
     const StatusCode   sc  = StatusCode(StatusCode::FAILURE, true) ) const ;
-public: 
+public:
   // ==========================================================================
   /// accessor to all counters
   inline const Statistics& counters() const { return m_counters ; }
@@ -702,8 +703,6 @@ public:
   // ==========================================================================
 public:
   // ==========================================================================
-  /// get the list of aquired tools
-  const AlgTools& tools    () const { return m_tools    ; }    // get all tools
   /// get the list of aquired services
   const Services& services () const { return m_services ; } // get all services
   // ==========================================================================
@@ -736,8 +735,6 @@ public:
   // ==========================================================================
 private:
   // ==========================================================================
-  /// Add the given tool to the list of acquired tools
-  void addToToolList    ( IAlgTool * tool ) const;
   /// Add the given service to the list of acquired services
   void addToServiceList ( SmartIF<IService> svc ) const;
   /// Constructor initializations

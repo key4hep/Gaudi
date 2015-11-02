@@ -2,6 +2,17 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-07-21 - Marco Clemencic
+ - Fixed some unchecked StatusCode.
+ - Fixed some whitespaces.
+
+! 2015-07-20 - Marco Clemencic
+ - Fixed infinite recursion when collecting data dependencies from tools.
+ - Minor clean up.
+
+! 2015-02-27 - Marco Clemencic
+ - Removed duplicated (wrong) test.
+
 ============================= GaudiKernel v32r0 ==============================
 
 ! 2015-10-08 - commit dfb4790
@@ -230,7 +241,6 @@ Commit Id: $Format:%H$
    C++11...
 
    See merge request !7
-
 ============================= GaudiKernel v31r6 ==============================
 ! 2015-06-09 - Marco Clemencic
  - GAUDI-1042: replaced "static const" with "constexpr" in physics constants.
@@ -458,6 +468,28 @@ Commit Id: $Format:%H$
    Modified genconf not to fail if the return type of a factory is not known.
    Added a test to verify the it works (CMake only).
 
+! 2014-06-16 - Illya Shapoval
+ - Fix wrong handling of StatusCode in SysInitialize.
+   (fixing thus git commit #59d184b2ca275ed6ba798e7eab7c279756ae6698,
+   which broke compilation).
+
+! 2014-06-03 - Charles Leggett
+ - EventContext: turn it into a real class, remove thread info
+ - ContextSpecificPtr: add evt num to thread local info
+ - Message: print out current slot/evt/thread on demand
+            via %E,%N,%X respectively
+
+! 2014-05-08 - Charles Leggett
+ - a few fixes for gcc47
+ - backward compatibility for factories
+ - unchecked statusCode in MinimalEventLoopMgr::stop
+
+#	modified:   GaudiKernel/GaudiKernel/Algorithm.h
+#	modified:   GaudiKernel/GaudiKernel/DeclareFactoryEntries.h
+#	modified:   GaudiKernel/doc/release.notes
+#	modified:   GaudiKernel/src/Lib/ContextSpecificPtr.cpp
+#	modified:   GaudiKernel/src/Lib/MinimalEventLoopMgr.cpp
+
 ! 2014-06-10 - Charles Leggett
  - fix unchecked StatusCodes in AlgTool sysXXX methods
 M       src/Lib/AlgTool.cpp
@@ -521,6 +553,24 @@ M       src/Lib/AlgTool.cpp
 
 ! 2014-02-20 - Marco Clemencic
  - Added missing import to "GaudiKernel.Configurable".
+
+! 2013-10-29 - Marco Clemencic
+ - Added Gaudi::Hive::ContextSpecificData, a sort of "smart reference"
+   equivalent to ContextSpecificPtr, but easier to use.
+ - Added unit tests for ContextSpecificData and extended tests for
+   ContextSpecificPtr.
+
+! 2013-10-28 - Marco Clemencic
+ - Added unit test for Gaudi::Hive::ContextSpecificPtr.
+
+! 2013-10-27 - Marco Clemencic
+ - Added Gaudi::Hive::ContextSpecificPtr, a smart pointer with independent
+   values for different tasks.
+   In addition to the standard smart pointer functionalities, it features:
+     - ``accumulate`` to allow gathering of informations collected in different
+                      contexts (slots)
+     - ``for_each`` to call a function on each pointer
+     - ``deleteAll`` to delete all the created objects
 
 ============================= GaudiKernel v30r0 ==============================
 ! 2014-02-10 - Marco Clemencic
@@ -725,6 +775,7 @@ A       src/Lib/IIoComponent.cpp
 A       src/Lib/IFileMgr.cpp
 A       GaudiKernel/IFileMgr.h
 M       GaudiKernel/IIoComponentMgr.h
+>>>>>>> master
 
 ============================= GaudiKernel v28r9 ==============================
 ! 2013-08-27 - Marco Clemencic
@@ -784,6 +835,19 @@ M       GaudiKernel/IIoComponentMgr.h
 
 ! 2012-11-05 - Marco Clemencic
  - Added tests/src/parsers.cpp to the QMTest test suite.
+
+! 2012-10-22 - Marco Clemencic
+ - Fixed SerialTaskQueue_test to compile with LCG g++ 4.6.2 on SLC6.
+
+! 2012-10-21 - Marco Clemencic
+ - Added implementation of a serial task queue: Gaudi::SerialTaskQueue (based on
+   the TBB Pattern 'Local Serializer').
+   Users of SerialTaskQueue must implement the tasks to be executed as
+   specializations of the class Gaudi::SerialTaskQueue::WorkItem, overriding the
+   member function 'run()'.
+   Tasks are enqueued with the method 'add(WorkItem*)' of SerialTaskQueue.
+   The destructor ensures that all the tasks are completed before giving back
+   control.
 
 ============================= GaudiKernel v28r3 ==============================
 ! 2012-09-13 - Marco Clemencic

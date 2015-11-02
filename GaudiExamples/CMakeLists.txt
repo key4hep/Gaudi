@@ -3,7 +3,7 @@ gaudi_subdir(GaudiExamples v26r4)
 gaudi_depends_on_subdirs(GaudiKernel GaudiUtils GaudiGSL GaudiAlg RootCnv)
 
 find_package(HepPDT)
-find_package(ROOT COMPONENTS Tree RIO Hist)
+find_package(ROOT COMPONENTS Tree RIO Hist Net)
 find_package(Boost COMPONENTS python)
 find_package(CLHEP)
 find_package(GSL)
@@ -25,7 +25,6 @@ set(GaudiExamples_srcs
     src/AlgTools/*.cpp
     src/DataOnDemand/*.cpp
     src/AlgErrAud/*.cpp
-    src/GSLTools/*.cpp
     src/RandomNumber/*.cpp
     src/Histograms/*.cpp
     src/NTuples/*.cpp
@@ -99,9 +98,11 @@ if (NOT LCG_COMP STREQUAL "clang")
   file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/HackedStatusCode.h" "${StatusCodeHeaderData}")
 endif()
 
-gaudi_add_python_module(PyExample src/PythonModule/*.cpp
-                        LINK_LIBRARIES ${Boost_PYTHON_LIBRARY}
-                        INCLUDE_DIRS Boost PythonLibs)
+if(Boost_PYTHON_FOUND)
+  gaudi_add_python_module(PyExample src/PythonModule/*.cpp
+                          LINK_LIBRARIES ${Boost_PYTHON_LIBRARY}
+                          INCLUDE_DIRS Boost PythonLibs)
+endif()
 
 gaudi_install_python_modules()
 
@@ -133,3 +134,13 @@ gaudi_add_test(QMTest QMTEST
                  JOBOPTSEARCHPATH+=${CMAKE_CURRENT_SOURCE_DIR}/options
                  JOBOPTSEARCHPATH+=${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest
                  PYTHONPATH+=${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest)
+
+gaudi_add_test(WriteAndReadHandle
+               FRAMEWORK options/ROOT_IO/WriteAndReadHandle.py)
+
+gaudi_add_test(WriteAndReadHandleError
+               FRAMEWORK options/ROOT_IO/WriteAndReadHandleError.py
+               FAILS)
+
+gaudi_add_test(WriteAndReadHandleWhiteBoard
+               FRAMEWORK options/ROOT_IO/WriteAndReadHandleWhiteBoard.py)

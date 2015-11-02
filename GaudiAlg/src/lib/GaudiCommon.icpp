@@ -23,6 +23,7 @@
 #include "GaudiKernel/Property.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/MsgStream.h"
+#include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/ObjectVector.h"
 #include "GaudiKernel/SmartDataPtr.h"
 #include "GaudiKernel/SmartRef.h"
@@ -154,8 +155,8 @@ GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface * parent )
   }
 
   // Get the job option service
-  auto jos = this->template service<IJobOptionsSvc>("JobOptionsSvc");
-  if (!jos) Exception("Cannot get JobOptionsSvc");
+  SmartIF<IJobOptionsSvc> jos(PBASE::service("JobOptionsSvc"));
+  if (!jos.isValid()) Exception("Cannot get JobOptionsSvc");
 
   // Get the "Context" option if in the file...
   const auto myList = jos->getProperties( this->name() );
@@ -167,11 +168,11 @@ GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface * parent )
       const StringProperty* sp = dynamic_cast<const StringProperty*>(iter);
       if ( sp )
       {
-        if ( iter->name() == "Context" ) {
+        if ( iter->name().compare("Context") == 0 ) {
           m_context = sp->value();
-        } else if (  iter->name() == "RootInTES" ) {
+        } else if (  iter->name().compare("RootInTES") == 0 ) {
           m_rootInTES = sp->value();
-        } else if ( iter->name() == "GlobalTimeOffset" ) {
+        } else if ( iter->name().compare("GlobalTimeOffset") == 0 ) {
           m_globalTimeOffset = std::stod( sp->value() );
         }
       }
@@ -216,14 +217,51 @@ StatusCode GaudiCommon<PBASE>::
   m_counterSummarySvc = this->svcLoc()->service("CounterSummarySvc",false);
   if (this->msgLevel(MSG::DEBUG))
   {
-    if (!m_counterSummarySvc)
-	this->debug() <<  "could not locate CounterSummarySvc, no counter summary will be made" << endmsg;
+    if (m_counterSummarySvc==NULL )
+      this->debug() <<  "could not locate CounterSummarySvc, no counter summary will be made" << endmsg;
     else this->debug() <<  "found CounterSummarySvc OK" << endmsg;
   }
 
   // properties will be printed if asked for or in "MSG::DEBUG" mode
   if      ( propsPrint()         ) { printProps(MSG::ALWAYS); }
   else if ( this->msgLevel(MSG::DEBUG) ) { printProps(MSG::DEBUG);  }
+
+  //update DataHandles to point to full TES location
+
+  //get root of DataManager
+  SmartIF<IDataManagerSvc> dataMgrSvc(PBASE::evtSvc());
+  std::string rootName(dataMgrSvc->rootName());
+  if ("" != rootName && '/' != rootName[rootName.size() - 1]) {
+    rootName = rootName + "/";
+  }
+
+  auto fixLocation = [&] (const std::string & location) -> std::string {
+    std::string result = fullTESLocation(location, UseRootInTES);
+    //check whether we have an absolute path if yes return it - else prepend DataManager Root
+    result = (result[0] == '/' ? result : rootName + result);
+
+    this->debug() << "Changing " << location << " to " << result << endmsg;
+
+    return result;
+  };
+
+  for(auto tag : PBASE::inputDataObjects()){
+    if(PBASE::inputDataObjects()[tag].isValid()){
+      PBASE::inputDataObjects()[tag].setDataProductName(
+          fixLocation(PBASE::inputDataObjects()[tag].dataProductName())).ignore();
+
+      auto altAddress = PBASE::inputDataObjects()[tag].alternativeDataProductNames();
+      for(uint i = 0; i < altAddress.size(); ++i)
+        altAddress[i] = fixLocation(altAddress[i]);
+      PBASE::inputDataObjects()[tag].setAlternativeDataProductNames(altAddress).ignore();
+    }
+  }
+  for(auto tag : PBASE::outputDataObjects()){
+    if(PBASE::outputDataObjects()[tag].isValid()){
+      PBASE::outputDataObjects()[tag].setDataProductName(
+          fixLocation(PBASE::outputDataObjects()[tag].dataProductName())).ignore();
+    }
+  }
 
   return sc;
 }
@@ -270,13 +308,13 @@ StatusCode GaudiCommon<PBASE>::
   if ( this->msgLevel(MSG::DEBUG) )
   {
     this->debug() << "Tools to release :";
-    for ( const auto& i : m_tools )
+    for ( const auto& i : PBASE::tools() )
     {
       this->debug() << " " << i->name();
     }
     this->debug() << endmsg;
   }
-  while ( !m_tools.empty() ) { sc = releaseTool( m_tools.back() ) && sc; }
+  while ( !PBASE::tools().empty() ) { sc = releaseTool( PBASE::tools().back() ) && sc; }
 
   // release all located services
   if ( this->msgLevel(MSG::DEBUG) )
@@ -288,7 +326,11 @@ StatusCode GaudiCommon<PBASE>::
   while ( !m_services.empty() ) { sc = releaseSvc( m_services.front() ) && sc; }
 
   //release the CounterSummarySvc manually
-  m_counterSummarySvc.reset();
+  if(m_counterSummarySvc)
+  {
+    m_counterSummarySvc->release();
+    m_counterSummarySvc=NULL;
+  }
 
   // format printout
   if ( !m_errors.empty() || !m_warnings.empty() || !m_exceptions.empty() )
@@ -348,8 +390,8 @@ StatusCode GaudiCommon<PBASE>::releaseTool ( const IAlgTool* algTool ) const
   if( !this->toolSvc() )
   { return Error ( "releaseTool(IAlgTool):: IToolSvc* points to NULL!" ) ; }
   // find a tool in the list of active tools
-  auto it = std::find( m_tools.rbegin() , m_tools.rend() , algTool ) ;
-  if(  m_tools.rend() == it )
+  auto it = std::find( PBASE::tools().rbegin() , PBASE::tools().rend() , algTool ) ;
+  if(  PBASE::tools().rend() == it )
   { return Warning("releaseTool(IAlgTool):: IAlgTool* is not active"   ) ; }
   // get the tool
   IAlgTool* t = *it ;
@@ -358,7 +400,7 @@ StatusCode GaudiCommon<PBASE>::releaseTool ( const IAlgTool* algTool ) const
   if ( this->msgLevel(MSG::DEBUG) )
   { this->debug() << "Releasing tool '" << name << "'" << endmsg; }
   // remove the tool from the lists
-  m_tools.erase( std::next(it).base() ) ;
+  PBASE::deregisterTool(t);
   // release tool
   if ( this->msgLevel(MSG::DEBUG) ) {
     this->debug() << "The tool '" << t->name() << "' of type '"
@@ -366,7 +408,7 @@ StatusCode GaudiCommon<PBASE>::releaseTool ( const IAlgTool* algTool ) const
                   << "' is released" << endmsg;
   }
   const StatusCode sc = this->toolSvc()->releaseTool( t ) ;
-  return  sc.isSuccess() ? 
+  return  sc.isSuccess() ?
             sc :
             Warning( "releaseTool(IAlgTool):: error from IToolSvc releasing "+name , sc ) ;
 }
@@ -392,23 +434,6 @@ StatusCode GaudiCommon<PBASE>::releaseSvc ( const IInterface* Svc  ) const
   return StatusCode::SUCCESS;
 }
 // ============================================================================
-
-// ============================================================================
-// Add the given tool to the list of active tools
-// ============================================================================
-template < class PBASE >
-void GaudiCommon<PBASE>::addToToolList( IAlgTool * tool ) const
-{
-  if( tool ) {
-    if ( this->msgLevel ( MSG::DEBUG ) ) {
-      this->debug() << "The tool of type '"
-                    << System::typeinfoName(typeid(*tool))
-                    << "' has been added with the name '"
-                    << tool->name() << "'" << endmsg ;
-    }
-    m_tools.push_back( tool ) ;
-  }
-}
 // ============================================================================
 
 // ============================================================================
@@ -585,7 +610,7 @@ long GaudiCommon<PBASE>::printStat( const MSG::Level level ) const
   //
   if ( !counters().empty() ) { msg << std::endl << m_header ; }
   //
-  for ( const auto& entry : counters() ) 
+  for ( const auto& entry : counters() )
   {
     msg << std::endl
         << Gaudi::Utils::formatAsTableRow
@@ -612,7 +637,7 @@ long GaudiCommon<PBASE>::printErrors ( const MSG::Level level ) const
 
   auto print = [&](const Counter& c, const std::string& label) {
       for (const auto& i : c ) {
-        this->msgStream(level) 
+        this->msgStream(level)
           << ( ftm % label % i.second % i.first       )
           << endmsg;
       }

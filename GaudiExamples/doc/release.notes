@@ -112,6 +112,30 @@ Commit Id: $Format:%H$
 
    See merge request !7
 
+! 2015-07-22 - Marco Clemencic
+ - Changed the test GaudiExamples.CloneWithPrivateTools to QMTest to allow
+   debugging.
+
+! 2015-07-21 - Marco Clemencic
+ - Fixed some unchecked StatusCode.
+ - Fixed some tests and references.
+
+! 2015-07-20 - Marco Clemencic
+ - Minor clean up and fixes.
+
+! 2015-02-27 - Marco Clemencic
+ - Minor change to test WriteAndReadHandleError, which failed for the wrong
+   reason.
+
+! 2015-02-27 - Marco Clemencic
+ - Updated test reference files and validators.
+
+! 2015-02-27 - Marco Clemencic
+ - Added timeout (120s) for test CloneWithPrivateTools.
+
+! 2015-02-27 - Marco Clemencic
+ - Moved files from src/POOLIO to src/IO (and removed src/POOLIO).
+
 ============================ GaudiExamples v26r3 =============================
 ! 2015-06-17 - Marco Clemencic
  - GAUDI-1044: added test
@@ -213,6 +237,12 @@ Commit Id: $Format:%H$
 ! 2014-06-17 - Marco Clemencic
  - Added test to expose bug GAUDI-971 (successful failover to a replica in
    IODataManager leads to non-zero exit code).
+
+! 2014-06-03 - Charles Leggett
+ - updates for EventContext class
+
+#	modified:   src/POOLIO/ReadHandleAlg.cpp
+#	modified:   src/POOLIO/WriteHandleAlg.cpp
 
 ============================ GaudiExamples v25r2 =============================
 ! 2014-04-29 - Marco Clemencic
@@ -397,6 +427,12 @@ M       cmt/requirements
 
 ! 2012-11-05 - Marco Clemencic
  - Test that the return code is correct after a segfault.
+
+! 2012-09-11 - Marco Clemencic
+ - Updated reference file for TBBMessageSvc test.
+
+! 2012-07-02 - Marco Clemencic
+ - Added a test for the new TBBMessageSvc.
 
 ============================ GaudiExamples v23r4 =============================
 ! 2012-09-11 - Marco Clemencic

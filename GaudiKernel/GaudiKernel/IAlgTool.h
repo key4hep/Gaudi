@@ -8,6 +8,7 @@
 
 // Forward declarations
 class IAlgorithm;
+class DataObjectDescriptorCollection;
 
 /** @class IAlgTool IAlgTool.h GaudiKernel/IAlgTool.h
 
@@ -34,6 +35,9 @@ public:
       or a Service. A common AlgTool has the ToolSvc as parent.
   */
   virtual const IInterface*   parent() const = 0;
+
+  virtual const DataObjectDescriptorCollection & inputDataObjects() const = 0;
+  virtual const DataObjectDescriptorCollection & outputDataObjects() const = 0;
 
   /** Initialization of the Tool. This method is called typically
    *  by the ToolSvc. It allows to complete  the initialization that

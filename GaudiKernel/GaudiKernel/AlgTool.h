@@ -7,12 +7,22 @@
 #include "GaudiKernel/IService.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IMessageSvc.h"
+#include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/IToolSvc.h"
 #include "GaudiKernel/PropertyMgr.h"
 #include "GaudiKernel/IAuditorSvc.h"
 #include "GaudiKernel/IMonitorSvc.h"
 #include "GaudiKernel/IStateful.h"
 #include <Gaudi/PluginService.h>
+#include "GaudiKernel/ToolHandle.h"
+
+#include "GaudiKernel/MinimalDataObjectHandle.h"
+#include "GaudiKernel/DataObjectDescriptor.h"
+
+template<class T>
+class DataObjectHandle;
+
+class ToolHandleInfo;
 
 #include <vector>
 #include <list>
@@ -162,6 +172,11 @@ public:
   /// Retrieve pointer to message service.
   IMessageSvc* msgSvc() const;
 
+  /** accessor to event service  service
+   *  @return pointer to detector service
+   */
+  IDataProviderSvc*    evtSvc    () const ;
+
   /// The standard ToolSvc service, Return a pointer to the service if present
   IToolSvc* toolSvc() const;
 
@@ -245,6 +260,246 @@ public:
   {
     return m_propertyMgr-> declareRemoteProperty ( name , rsvc , rname ) ;
   }
+
+	/** Declare input data object
+	 *
+	 *  @param propertyName to identify input object in python config
+	 *  @param handle data handle
+	 *  @param address relative or absolute address in TES
+	 *  @param optional optional input
+	 *  @param accessType read, write or update
+	 */
+
+	template<class T>
+	StatusCode declareInput(const std::string& propertyName, DataObjectHandle<T> & handle,
+			const std::string& address = DataObjectDescriptor::NULL_,
+			bool optional = false, MinimalDataObjectHandle::AccessType accessType =
+					MinimalDataObjectHandle::READ) {
+
+		bool res = m_inputDataObjects.insert(propertyName, &handle);
+
+		handle.descriptor()->setTag(propertyName);
+		handle.descriptor()->setAddress(address);
+		handle.descriptor()->setAccessType(accessType);
+		handle.descriptor()->setOptional(optional);
+
+		handle.setOwner(this);
+
+		MsgStream log(msgSvc(), name());
+
+		if (LIKELY(res)) {
+			log << MSG::DEBUG << "Handle for " << propertyName << " ("
+					<< address << ")" << " successfully created and stored."
+					<< endmsg;
+		} else {
+			log << MSG::ERROR << "Handle for " << propertyName << " ("
+					<< address << ")" << " could not be created." << endmsg;
+		}
+
+		return res;
+
+	}
+
+	/** Declare input data object
+	 *
+	 *  @param propertyName to identify input object in python config
+     *  @param handle data handle
+	 *  @param addresses relative or absolute addresses in TES, first is main address
+	 *  @param optional optional input
+	 *  @param accessType read, write or update
+	 */
+
+	template<class T>
+	StatusCode declareInput(const std::string& propertyName, DataObjectHandle<T> & handle,
+			const std::vector<std::string>& addresses,
+			bool optional = false, MinimalDataObjectHandle::AccessType accessType =
+					MinimalDataObjectHandle::READ) {
+
+		bool res = m_inputDataObjects.insert(propertyName, &handle);
+
+		handle.descriptor()->setTag(propertyName);
+		handle.descriptor()->setAddresses(addresses);
+		handle.descriptor()->setAccessType(accessType);
+		handle.descriptor()->setOptional(optional);
+
+		handle.setOwner(this);
+
+		MsgStream log(msgSvc(), name());
+
+		if (LIKELY(res)) {
+			log << MSG::DEBUG << "Handle for " << propertyName << " ("
+					<< (addresses.empty() ? DataObjectDescriptor::NULL_ : addresses[0]) << ")" << " successfully created and stored."
+					<< endmsg;
+		} else {
+			log << MSG::ERROR << "Handle for " << propertyName << " ("
+					<< (addresses.empty() ? DataObjectDescriptor::NULL_ : addresses[0]) << ")" << " could not be created." << endmsg;
+		}
+
+		return res;
+
+	}
+
+	/** Declare output data object
+	 *
+	 *  @param propertyName to identify input object in python config
+	 *  @param handle data handle
+	 *  @param address relative or absolute address in TES
+	 *  @param optional optional input
+	 *  @param accessType write or update
+	 */
+	template<class T>
+	StatusCode declareOutput(const std::string& propertyName, DataObjectHandle<T> & handle,
+			const std::string& address = DataObjectDescriptor::NULL_,
+			bool optional = false,
+			MinimalDataObjectHandle::AccessType accessType = MinimalDataObjectHandle::WRITE) {
+
+		bool res = m_outputDataObjects.insert(propertyName, &handle);
+
+		handle.descriptor()->setTag(propertyName);
+		handle.descriptor()->setAddress(address);
+		handle.descriptor()->setAccessType(accessType);
+		handle.descriptor()->setOptional(optional);
+
+		handle.setOwner(this);
+
+		MsgStream log(msgSvc(), name());
+
+		if (LIKELY(res)) {
+			log << MSG::DEBUG << "Handle for " << propertyName << " ("
+					<< address << ")" << " successfully created and stored."
+					<< endmsg;
+		} else {
+			log << MSG::ERROR << "Handle for " << propertyName << " ("
+					<< address << ")" << " could not be created." << endmsg;
+		}
+
+		return res;
+
+	}
+
+	/** get inputs
+	 *  @return DataObjectDescriptorCollection of inputs
+	 */
+
+	const DataObjectDescriptorCollection & inputDataObjects() const override {
+		return m_inputDataObjects;
+	}
+
+
+	/** get outputs
+	 *  @return DataObjectDescriptorCollection of outputs
+	 */
+	const DataObjectDescriptorCollection & outputDataObjects() const override {
+		return m_outputDataObjects;
+	}
+
+	void registerTool(IAlgTool * tool) const {
+		MsgStream log(msgSvc(), name());
+
+		log << MSG::DEBUG << "Registering tool " << tool->name() << endmsg;
+		m_tools.push_back(tool);
+	}
+
+	void deregisterTool(IAlgTool * tool) const {
+		std::vector<IAlgTool *>::iterator it = std::find(m_tools.begin(),
+				m_tools.end(), tool);
+
+		MsgStream log(msgSvc(), name());
+		if (it != m_tools.end()) {
+			log << MSG::DEBUG << "De-Registering tool " << tool->name()
+					<< endmsg;
+			m_tools.erase(it);
+		} else {
+			log << MSG::DEBUG << "Could not de-register tool " << tool->name()
+					<< endmsg;
+		}
+	}
+
+	/** Declare used public tool
+	 *
+	 *  @param handle ToolHandle<T>
+	 *  @param toolTypeAndName
+	 *  @param parent, default public tool
+	 *  @param create if necessary, default true
+	 */
+	template<class T>
+	StatusCode declarePublicTool(ToolHandle<T> & handle, std::string toolTypeAndName =
+			"", bool createIf = true) {
+
+		if (toolTypeAndName == "")
+			toolTypeAndName = System::typeinfoName(typeid(T));
+
+		StatusCode sc = handle.initialize(toolTypeAndName, 0, createIf);
+
+		m_toolHandles.push_back(&handle);
+
+		MsgStream log(msgSvc(), name());
+
+		if (sc.isSuccess()) {
+			log << MSG::DEBUG << "Handle for public tool" << toolTypeAndName
+					<< " successfully created and stored." << endmsg;
+		} else {
+
+			log << MSG::ERROR << "Handle for public tool" << toolTypeAndName
+					<< " could not be created." << endmsg;
+		}
+
+		return sc;
+
+	}
+
+	/** Declare used private tool
+	 *
+	 *  @param handle ToolHandle<T>
+	 *  @param toolTypeAndName
+	 *  @param parent, default public tool
+	 *  @param create if necessary, default true
+	 */
+	template<class T>
+	StatusCode declarePrivateTool(ToolHandle<T> & handle, std::string toolTypeAndName =
+			"", bool createIf = true) {
+
+		if (toolTypeAndName == "")
+			toolTypeAndName = System::typeinfoName(typeid(T));
+
+		StatusCode sc = handle.initialize(toolTypeAndName, this, createIf);
+
+		m_toolHandles.push_back(&handle);
+
+		MsgStream log(msgSvc(), name());
+
+		if (sc.isSuccess()) {
+			log << MSG::DEBUG << "Handle for private tool" << toolTypeAndName
+					<< " successfully created and stored." << endmsg;
+		} else {
+
+			log << MSG::ERROR << "Handle for private tool" << toolTypeAndName
+					<< " could not be created." << endmsg;
+		}
+
+		return sc;
+
+	}
+
+	const std::vector<IAlgTool *> & tools() const;
+
+protected:
+
+	  DataObjectDescriptorCollection & inputDataObjects() {
+		  return m_inputDataObjects;
+	  }
+	  DataObjectDescriptorCollection & outputDataObjects() {
+		  return m_outputDataObjects;
+	  }
+
+	  std::vector<IAlgTool *> & tools();
+
+private:
+   //place IAlgTools defined via ToolHandles in m_tools
+   void initToolHandles() const;
+
+public:
+
   // ==========================================================================
   /// Access the auditor service
   IAuditorSvc* auditorSvc() const;
@@ -322,12 +577,21 @@ private:
   const IInterface*    m_parent = nullptr;           ///< AlgTool parent
   mutable ISvcLocator* m_svcLocator = nullptr;       ///< Pointer to Service Locator service
   mutable IMessageSvc* m_messageSvc = nullptr;       ///< Message service
+  mutable SmartIF<IDataProviderSvc> m_evtSvc;      ///< Event data service
   mutable SmartIF<IToolSvc> m_ptoolSvc;         ///< Tool service
   mutable SmartIF<IMonitorSvc> m_pMonitorSvc;      ///< Online Monitoring Service
   std::string          m_monitorSvcName;   ///< Name to use for Monitor Service
   SmartIF<PropertyMgr> m_propertyMgr;      ///< Property Manager
   InterfaceList        m_interfaceList;    ///< Interface list
   std::string          m_threadID;         ///< Thread Id for Alg Tool
+
+  DataObjectDescriptorCollection m_inputDataObjects; //input data objects
+  DataObjectDescriptorCollection m_outputDataObjects; //output data objects
+
+  //tools used by tool
+  mutable std::vector<IAlgTool *> m_tools;
+  mutable std::vector<BaseToolHandle *> m_toolHandles;
+  mutable bool m_toolHandlesInit = false;  /// flag indicating whether ToolHandle tools have been added to m_tools
 
   /** implementation of service method */
   StatusCode service_i(const std::string& algName,

@@ -14,7 +14,7 @@
 class GAUDI_API Message final {
 public:
   /// Default constructor
-  Message() = default;
+  Message();
 
   /// Constructor.
   Message ( const char* src, int type, const char* msg );
@@ -157,6 +157,15 @@ private:
   /// The default time format.
   // Time format accepts anything that strftime does plus %f for milliseconds
   static constexpr const char* DEFAULT_TIME_FORMAT = "%Y-%m-%d %H:%M:%S,%f";
+
+  /// For slot and event number from EventContext
+  static const char SLOT = 's';
+  static const char EVTNUM = 'e';
+  static const char THREAD = 'X';
+
+  size_t m_ecSlot;
+  long int m_ecEvt;
+  pthread_t m_ecThrd;
 };
 
 /// Insert the message into a stream.

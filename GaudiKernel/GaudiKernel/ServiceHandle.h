@@ -43,6 +43,14 @@ public:
     : GaudiHandle<T>(serviceName, "Service", theParentName)
   {}
 
+  StatusCode initialize(const std::string& serviceName, const std::string& theParentName){
+
+	  	GaudiHandleBase::setTypeAndName(serviceName);
+	  	GaudiHandleBase::setParentName(theParentName);
+
+	  return StatusCode::SUCCESS;
+  }
+
   /** Retrieve the Service. Release existing Service if needed.
       Function must be repeated here to avoid hiding the function retrieve( T*& ) */
   StatusCode retrieve() const { // not really const, because it updates m_pObject

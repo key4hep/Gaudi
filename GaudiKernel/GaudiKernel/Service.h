@@ -14,6 +14,8 @@
 #include "GaudiKernel/CommonMessaging.h"
 #include "GaudiKernel/SmartIF.h"
 #include <Gaudi/PluginService.h>
+#include "GaudiKernel/ToolHandle.h"
+
 // ============================================================================
 #include <vector>
 // ============================================================================
@@ -229,6 +231,69 @@ public:
   {
   	return m_propertyMgr -> declareRemoteProperty ( name , rsvc , rname ) ;
   }
+
+	  /** Declare used Private tool
+	 *
+	 *  @param handle ToolHandle<T>
+	 *  @param toolTypeAndName
+	 *  @param parent, default public tool
+	 *  @param create if necessary, default true
+	 */
+	template<class T>
+	StatusCode declarePrivateTool(ToolHandle<T> & handle, std::string toolTypeAndName =
+			"", bool createIf = true) {
+
+		if (toolTypeAndName == "")
+			toolTypeAndName = System::typeinfoName(typeid(T));
+
+		StatusCode sc = handle.initialize(toolTypeAndName, this, createIf);
+
+		MsgStream log(msgSvc(), name());
+
+		if (sc.isSuccess()) {
+			log << MSG::DEBUG << "Handle for private tool" << toolTypeAndName
+					<< " successfully created and stored." << endmsg;
+		} else {
+
+			log << MSG::ERROR << "Handle for private tool" << toolTypeAndName
+					<< " could not be created." << endmsg;
+		}
+
+		return sc;
+
+	}
+
+	  /** Declare used Public tool
+	 *
+	 *  @param handle ToolHandle<T>
+	 *  @param toolTypeAndName
+	 *  @param parent, default public tool
+	 *  @param create if necessary, default true
+	 */
+	template<class T>
+	StatusCode declarePublicTool(ToolHandle<T> & handle, std::string toolTypeAndName =
+			"", bool createIf = true) {
+
+		if (toolTypeAndName == "")
+			toolTypeAndName = System::typeinfoName(typeid(T));
+
+		StatusCode sc = handle.initialize(toolTypeAndName, 0, createIf);
+
+		MsgStream log(msgSvc(), name());
+
+		if (sc.isSuccess()) {
+			log << MSG::DEBUG << "Handle for public tool" << toolTypeAndName
+					<< " successfully created and stored." << endmsg;
+		} else {
+
+			log << MSG::ERROR << "Handle for public tool" << toolTypeAndName
+					<< " could not be created." << endmsg;
+		}
+
+		return sc;
+
+	}
+
   // ==========================================================================
   /** The standard auditor service.May not be invoked before sysInitialize()
    *  has been invoked.

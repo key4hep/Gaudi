@@ -18,6 +18,8 @@ elseif(LCG_COMP STREQUAL "gcc")
     set(GAUDI_CXX_STANDARD_DEFAULT "c++14")
   endif()
 endif()
+# special for GaudiHive
+set(GAUDI_CPP11_DEFAULT ON)
 
 #--- Gaudi Build Options -------------------------------------------------------
 # Build options that map to compile time features
@@ -65,6 +67,7 @@ set(GAUDI_CXX_STANDARD "${GAUDI_CXX_STANDARD_DEFAULT}"
     CACHE STRING "Version of the C++ standard to be used.")
 
 #--- Compilation Flags ---------------------------------------------------------
+add_definitions(-DGOD_NOALLOC)
 if(NOT GAUDI_FLAGS_SET)
   #message(STATUS "Setting cached build flags")
 
@@ -260,7 +263,7 @@ endif()
 if (LCG_HOST_ARCH AND LCG_ARCH)
   # this is valid only in the LCG toolchain context
   if (LCG_HOST_ARCH STREQUAL x86_64 AND LCG_ARCH STREQUAL i686)
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32")
     set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -m32")
     set(GCCXML_CXX_FLAGS "${GCCXML_CXX_FLAGS} -m32")
@@ -273,7 +276,7 @@ endif()
 if(GAUDI_HIDE_WARNINGS)
   if(LCG_COMP MATCHES clang)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated -Wno-overloaded-virtual -Wno-char-subscripts -Wno-unused-parameter")
-  elseif(LCG_COMP STREQUAL gcc AND LCG_COMPVERS MATCHES "4[3-9]|max")
+  else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated -Wno-empty-body")
     if(LCG_COMPVERS MATCHES "48|49|max")
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-local-typedefs")

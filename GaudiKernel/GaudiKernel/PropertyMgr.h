@@ -14,6 +14,7 @@
 // ============================================================================
 #include "GaudiKernel/Property.h"
 #include "GaudiKernel/IProperty.h"
+#include "GaudiKernel/DataObjectDescriptor.h"
 // ============================================================================
 
 // pre-declaration of GaudiHandles is sufficient
@@ -85,6 +86,16 @@ public:
   Property* declareProperty
   ( const std::string& name,
     ServiceHandleArray<TYPE>& ref,
+    const std::string& doc = "none" ) ;
+  /// Declare a property (specialization)
+  Property* declareProperty
+  ( const std::string& name,
+    DataObjectDescriptor& ref,
+    const std::string& doc = "none" ) ;
+  /// Declare a property (specialization)
+  Property* declareProperty
+  ( const std::string& name,
+    DataObjectDescriptorCollection& ref,
     const std::string& doc = "none" ) ;
   /// Declare a remote property
   Property* declareRemoteProperty
@@ -288,6 +299,39 @@ PropertyMgr::declareProperty
 {
   assertUniqueName(name);
   m_todelete   . emplace_back ( new GaudiHandleArrayProperty( name, ref ) );
+  Property* p = m_todelete.back().get();
+  //
+  p -> setDocumentation    ( doc ) ;
+  m_properties . push_back ( p   ) ;
+  //
+  return p ;
+}
+
+// ============================================================================
+inline Property*
+PropertyMgr::declareProperty
+( const std::string& name,
+  DataObjectDescriptor& ref,
+  const std::string& doc )
+{
+  assertUniqueName(name);
+  m_todelete.emplace_back( new DataObjectDescriptorProperty( name, ref ) );
+  Property* p = m_todelete.back().get();
+  //
+  p -> setDocumentation    ( doc ) ;
+  m_properties . push_back ( p   ) ;
+  //
+  return p ;
+}
+// ============================================================================
+inline Property*
+PropertyMgr::declareProperty
+( const std::string& name,
+  DataObjectDescriptorCollection& ref,
+  const std::string& doc )
+{
+  assertUniqueName(name);
+  m_todelete.emplace_back( new DataObjectDescriptorCollectionProperty( name, ref ) );
   Property* p = m_todelete.back().get();
   //
   p -> setDocumentation    ( doc ) ;

@@ -1,5 +1,8 @@
 <lcgdict>
   <selection>
+
+ <class pattern="DataObjectDescriptor*"/>
+
   <!-- Base classes in GaudiKernel -->
   <class name="IssueSeverity"/>
   <class name="StatusCode"/>

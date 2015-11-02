@@ -17,7 +17,7 @@
 namespace {
 
   // erase_if functions for containers which do NOT invalidate iterators
-  // after the erase point, eg.std::{unordered_}{,multi}map, std::{forward_,}list. 
+  // after the erase point, eg.std::{unordered_}{,multi}map, std::{forward_,}list.
   // To be explicit: this does NOT work with std::vector.
 
   // TODO: replace with std::experimental::erase_if (Libraries Fundamental TS v2)
@@ -32,13 +32,13 @@ namespace {
 
   template< typename Container, typename Predicate >
   void erase_if( Container& c, Predicate pred ) {
-    return erase_if(c, std::begin(c), std::end(c), 
+    return erase_if(c, std::begin(c), std::end(c),
                     std::forward<Predicate>(pred) );
   }
 
   template< typename Container, typename Iterator, typename Predicate >
   void erase_if( Container& c, std::pair<Iterator,Iterator> range, Predicate pred ) {
-    return erase_if(c, std::move(range.first), std::move(range.second), 
+    return erase_if(c, std::move(range.first), std::move(range.second),
                     std::forward<Predicate>(pred) );
   }
 
@@ -48,7 +48,7 @@ namespace {
 // instances of this service
 DECLARE_COMPONENT(MessageSvc)
 
-static const std::string levelNames[MSG::NUM_LEVELS] = { 
+static const std::string levelNames[MSG::NUM_LEVELS] = {
    "NIL", "VERBOSE", "DEBUG", "INFO",
    "WARNING", "ERROR", "FATAL", "ALWAYS"
 };
@@ -130,7 +130,7 @@ StatusCode MessageSvc::initialize() {
 
   //NOTE: m_colMap is used _before_ it is filled here,
   //      i.e. while it is still empty.
-  //      Moving this initialization 'up' by eg. just 
+  //      Moving this initialization 'up' by eg. just
   //      having a 'static const' colMap does not leave
   //      the results invariant...
   m_colMap["black"]  = MSG::BLACK;
@@ -192,7 +192,7 @@ void MessageSvc::setupColors(Property& prop) {
 
   if (! m_color) return;
 
-  static const std::array<std::pair<const char*,MSG::Level>,7> tbl { 
+  static const std::array<std::pair<const char*,MSG::Level>,7> tbl {
       { {"fatalColorCode",   MSG::FATAL   },
         {"errorColorCode",   MSG::ERROR   },
         {"warningColorCode", MSG::WARNING },
@@ -267,7 +267,7 @@ void MessageSvc::setupLimits(Property& prop) {
 
 void MessageSvc::setupThreshold(Property& prop) {
 
-  static const std::array<std::pair<const char*,MSG::Level>,7> tbl{ 
+  static const std::array<std::pair<const char*,MSG::Level>,7> tbl{
       { { "setFatal",   MSG::FATAL   },
         { "setError",   MSG::ERROR   },
         { "setWarning", MSG::WARNING },
@@ -373,7 +373,7 @@ StatusCode MessageSvc::finalize() {
     for (const auto& itr : m_inactiveMap) {
       for (unsigned int ic = 0; ic < MSG::NUM_LEVELS; ++ic) {
         if (itr.second.msg[ic] != 0 && itr.first.length() > ml) {
-          ml = itr.first.length(); 
+          ml = itr.first.length();
         }
       }
     }
@@ -439,10 +439,12 @@ std::string MessageSvc::colTrans(std::string col, int offset) {
 // Purpose: dispatches a message to the relevant streams.
 // ---------------------------------------------------------------------------
 //
-
 void MessageSvc::reportMessage( const Message& msg, int outputLevel )    {
   std::unique_lock<std::recursive_mutex> lock(m_reportMutex);
+  i_reportMessage(msg, outputLevel);
+}
 
+void MessageSvc::i_reportMessage( const Message& msg, int outputLevel )    {
   int key = msg.getType();
 
   ++m_msgCount[key];
@@ -535,22 +537,27 @@ void MessageSvc::reportMessage (const std::string& source,
 // Purpose: finds a message for a given status code and dispatches it.
 // ---------------------------------------------------------------------------
 //
-
-void MessageSvc::reportMessage (const StatusCode& key,
+void MessageSvc::reportMessage (const StatusCode& code,
                                 const std::string& source)
 {
   std::unique_lock<std::recursive_mutex> lock(m_messageMapMutex);
+  i_reportMessage(code, source);
+}
 
+void MessageSvc::i_reportMessage (const StatusCode& code,
+                                  const std::string& source)
+{
+  int level = outputLevel(source);
   auto report = [&](Message mesg) {
     mesg.setSource( source );
-    Message stat_code( source,  mesg.getType(), "Status Code " + std::to_string( key.getCode() ) );
-    reportMessage( std::move(stat_code) );
-    reportMessage( std::move(mesg) );
+    Message stat_code( source,  mesg.getType(), "Status Code " + std::to_string( code.getCode() ) );
+    i_reportMessage( std::move(stat_code), level );
+    i_reportMessage( std::move(mesg), level );
   };
 
-  auto range = m_messageMap.equal_range( key );
+  auto range = m_messageMap.equal_range( code );
   if ( range.first != m_messageMap.end() ) {
-    std::for_each( range.first, range.second, 
+    std::for_each( range.first, range.second,
                    [&](MessageMap::const_reference sm) { report(sm.second); } );
   } else {
     report(m_defaultMessage);
@@ -605,7 +612,7 @@ void MessageSvc::eraseStream( int message_type )
 void MessageSvc::eraseStream( int key, std::ostream* stream )   {
   if ( stream ) {
     erase_if( m_streamMap, m_streamMap.equal_range(key),
-              [&](StreamMap::const_reference j) 
+              [&](StreamMap::const_reference j)
               { return j.second.second == stream; } );
   }
 }
@@ -619,7 +626,7 @@ void MessageSvc::eraseStream( int key, std::ostream* stream )   {
 
 void MessageSvc::eraseStream( std::ostream* stream )    {
   if ( stream ) {
-    erase_if( m_streamMap, [&](StreamMap::const_reference j) 
+    erase_if( m_streamMap, [&](StreamMap::const_reference j)
               { return j.second.second == stream; } );
   }
 }

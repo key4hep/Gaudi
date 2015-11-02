@@ -2,6 +2,11 @@ Package: GaudiRelease
 Maintainer: Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2014-05-08 - Charles Leggett
+ - include GaudiHive in cmt/requirements
+
+#	modified:   GaudiRelease/cmt/requirements
+
 ============================= GaudiRelease v26r4 =============================
 
 ! 2015-10-08 - commit c50c176

@@ -6,6 +6,10 @@
 #include "GaudiKernel/IStateful.h"
 #include <string>
 
+class MinimalDataObjectHandle;
+class DataObjectDescriptorCollection;
+class IAlgTool;
+
 /** @class IAlgorithm IAlgorithm.h GaudiKernel/IAlgorithm.h
 
     The IAlgorithm is the interface implemented by the Algorithm base class.
@@ -24,6 +28,34 @@ public:
   /** The version of the algorithm
    */
   virtual const std::string& version() const = 0;
+
+  /** The type of the algorithm
+   */
+  virtual const std::string& type() const = 0;
+  virtual void  setType(const std::string& ) = 0;
+  
+  /** The index of the algorithm
+   */  
+  virtual unsigned int index() = 0;
+  
+  /** Specify if the algorithm is clonable
+   */ 
+  virtual bool isClonable() const = 0;
+  
+  /** Cardinality (Maximum number of clones that can exist)
+   */ 
+  virtual unsigned int cardinality() const = 0;
+
+  /** Named, non thread-safe resources used during event processing
+   */
+  virtual const std::vector<std::string>& neededResources() const = 0;
+    
+  /** The data object handles associated to the algorithm
+   */
+  __attribute__ ((deprecated)) virtual const std::vector<MinimalDataObjectHandle*> handles() = 0;
+  
+  virtual const DataObjectDescriptorCollection & inputDataObjects() const = 0;
+  virtual const DataObjectDescriptorCollection & outputDataObjects() const = 0;
 
   /** The action to be performed by the algorithm on an event. This method is
       invoked once per event for top level algorithms by the application manager.

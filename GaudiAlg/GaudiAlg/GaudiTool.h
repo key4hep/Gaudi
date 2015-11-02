@@ -125,10 +125,7 @@ class GAUDI_API GaudiTool: public GaudiCommon<AlgTool>
    *  @return pointer to detector service
    */
   IDataProviderSvc*    detSvc    () const ;
-  /** accessor to event service  service
-   *  @return pointer to detector service
-   */
-  IDataProviderSvc*    evtSvc    () const ;
+
   /** accessor to Incident Service
    *  @return pointer to the Incident Service
    */
@@ -800,8 +797,6 @@ class GAUDI_API GaudiTool: public GaudiCommon<AlgTool>
   mutable INTupleSvc*    m_ntupleSvc = nullptr;
   /// pointer to the event tag collection service
   mutable INTupleSvc*    m_evtColSvc = nullptr;
-  /// pointer to Event Data Service
-  mutable IDataProviderSvc* m_evtSvc = nullptr;
   /// pointer to Detector Data Service
   mutable IDataProviderSvc* m_detSvc = nullptr;
   /// pointer to Chrono & Stat Service

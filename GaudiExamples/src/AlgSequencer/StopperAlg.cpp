@@ -34,8 +34,7 @@ StatusCode StopperAlg::execute() {
     log << MSG::INFO << "scheduling a event processing stop...." << endmsg;
     auto evt = service<IEventProcessor>("ApplicationMgr");
     if (evt->stopRun().isFailure()) {
-      log << MSG::ERROR << "unable to issue a stopRun to the EventProcessor"
-	  << endmsg;
+      log << MSG::ERROR << "unable to schedule a stopRun" << endmsg;
       return StatusCode::FAILURE;
     }
   }

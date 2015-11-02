@@ -8,6 +8,7 @@
 #include "Units.h"
 #include "PragmaOptions.h"
 #include "Node.h"
+#include "PythonConfig.h"
 // ============================================================================
 // Gaudi:
 // ============================================================================
@@ -37,6 +38,8 @@ JobOptionsSvc::JobOptionsSvc(const std::string& name,ISvcLocator* svc):
   m_pmgr.declareProperty( "PATH"       , m_source_path   ) ;
   m_pmgr.declareProperty( "SEARCHPATH" , m_dir_search_path ) ;
   m_pmgr.declareProperty( "DUMPFILE"   , m_dump          ) ;
+  m_pmgr.declareProperty( "PYTHONACTION" , m_pythonAction  ) ;
+  m_pmgr.declareProperty( "PYTHONPARAMS" , m_pythonParams  ) ;
 }
 // ============================================================================
 StatusCode JobOptionsSvc::setProperty( const Property &p )
@@ -54,8 +57,17 @@ StatusCode JobOptionsSvc::initialize()
   // Call base class initializer
   StatusCode sc = Service::initialize();
   // Read the job options if needed
-  return ( sc && m_source_type != "NONE" ) ? readOptions( m_source_path , m_dir_search_path)
-                                           : sc;
+  if (sc) {
+    if (m_source_type == "NONE") {
+      return sc;
+    } else if (m_source_type == "PYTHON") {
+      PythonConfig conf(this);
+      return conf.evaluateConfig(m_source_path, m_pythonParams, m_pythonAction);
+    } else {
+      return readOptions( m_source_path , m_dir_search_path);
+    }
+  }
+  return sc;
 }
 
 // ============================================================================
@@ -65,7 +77,7 @@ StatusCode JobOptionsSvc::addPropertyToCatalogue
 {
   std::unique_ptr<Property> p { new StringProperty ( property.name(), "" ) } ;
   return property.load( *p ) ? m_svc_catalog.addProperty( client , p.release() )
-                             : StatusCode::FAILURE ; 
+                             : StatusCode::FAILURE ;
 }
 // ============================================================================
 StatusCode
@@ -129,8 +141,8 @@ void JobOptionsSvc::dump (const std::string& file,
 void JobOptionsSvc::fillServiceCatalog(const gp::Catalog& catalog) {
   for (const auto&  client : catalog) {
     for (const auto& current : client.second ) {
-      addPropertyToCatalogue ( client.first , 
-                               StringProperty{ current.NameInClient(), 
+      addPropertyToCatalogue ( client.first ,
+                               StringProperty{ current.NameInClient(),
                                                current.ValueAsString() } );
     }
   }

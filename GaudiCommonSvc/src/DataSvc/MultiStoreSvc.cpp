@@ -250,9 +250,9 @@ public:
     return STATUS::FAILURE;
   }
   /// IDataManagerSvc: Pass a default data loader to the service.
-  STATUS setDataLoader(IConversionSvc* pDataLoader) override {
+  STATUS setDataLoader(IConversionSvc* pDataLoader, IDataProviderSvc* dpsvc = nullptr) override {
     m_dataLoader = pDataLoader;
-    if ( m_dataLoader  ) m_dataLoader->setDataProvider(this);
+    if ( m_dataLoader ) m_dataLoader->setDataProvider(dpsvc ? dpsvc : this);
     for(auto& i : m_partitions) {
       i.second.dataManager->setDataLoader(m_dataLoader.get()).ignore();
     }
@@ -523,7 +523,7 @@ public:
     MsgStream log(msgSvc(), name());
     // Attach address creator facility
     m_addrCreator = service(m_loader, true);
-    if (!m_addrCreator) { 
+    if (!m_addrCreator) {
       log << MSG::ERROR
           << "Failed to retrieve data loader "
           << "\"" << m_loader << "\"" << endmsg;
@@ -531,7 +531,7 @@ public:
     }
     // Attach data loader facility
     auto dataLoader = service<IConversionSvc>(m_loader, true);
-    if (!dataLoader) { 
+    if (!dataLoader) {
       log << MSG::ERROR << "Failed to retrieve data loader "
           << "\"" << m_loader << "\"" << endmsg;
       return StatusCode::FAILURE;

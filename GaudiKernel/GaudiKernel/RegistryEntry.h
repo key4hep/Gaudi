@@ -11,6 +11,8 @@
 
 // Forward declarations
 class DataSvc;
+// DP add this fwd decl for thread safety
+class TsDataSvc;
 class DataObject;
 class IDataProviderSvc;
 class IOpaqueAddress;
@@ -37,6 +39,8 @@ namespace DataSvcHelpers {
     typedef std::vector<IRegistry*> Store;
   public:
     friend class ::DataSvc;
+    // DP add friend class: the thread safe version of the DataSvc
+    friend class ::TsDataSvc;
     /// Iterator definition
     typedef Store::const_iterator Iterator;
   private:

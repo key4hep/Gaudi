@@ -11,16 +11,18 @@
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/IIncidentListener.h"
 #include "GaudiKernel/Service.h"
+#include <boost/thread.hpp>
 // ============================================================================
 // Forward declarations
 // ============================================================================
-class IIncidentSvc ;
+class IIncidentSvc;
 // ============================================================================
 /** @class AlgContexSvc
  *  Simple implementation of interface IAlgContextSvc
  *  for Algorithm Context Service
  *  @author ATLAS Collaboration
  *  @author modified by Vanya BELYAEV ibelyaev@physics.sye.edu
+ *  @author incident listening  removed by Benedikt Hegner
  *  @date 2007-03-07 (modified)
  */
 class AlgContextSvc: public extends2<Service, IAlgContextSvc, IIncidentListener>
@@ -34,7 +36,7 @@ public:
   IAlgorithm*       currentAlg  () const  override ;
   /// get the stack of executed algorithms @see IAlgContextSvc
   const IAlgContextSvc::Algorithms& algorithms  () const override
-  { return m_algorithms ; }
+  { return *m_algorithms ; }
 public:
   /// handle incident @see IIncidentListener
   void handle ( const Incident& ) override;
@@ -57,7 +59,7 @@ private:
   AlgContextSvc& operator=( const AlgContextSvc& ) = delete;
 private:
   // the stack of current algorithms
-  IAlgContextSvc::Algorithms m_algorithms ; ///< the stack of current algorithms
+  boost::thread_specific_ptr<IAlgContextSvc::Algorithms> m_algorithms; ///< the stack of current algorithms
   // pointer to Incident Service
   SmartIF<IIncidentSvc>     m_inc      = nullptr  ; ///< pointer to Incident Service
   // flag to perform more checking

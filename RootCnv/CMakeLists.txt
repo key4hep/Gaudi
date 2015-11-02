@@ -2,7 +2,7 @@ gaudi_subdir(RootCnv v2r0)
 
 gaudi_depends_on_subdirs(GaudiKernel GaudiUtils)
 
-find_package(ROOT COMPONENTS RIO Tree TreePlayer MathCore)
+find_package(ROOT COMPONENTS RIO Tree TreePlayer MathCore Net Graf3d Graf Gpad)
 
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS __POOL_COMPATIBILITY)
 
