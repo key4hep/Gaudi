@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GAUDIKERNEL_DATAOBJECTDESCRIPTOR_H
+#define GAUDIKERNEL_DATAOBJECTDESCRIPTOR_H
 
 #include <GaudiKernel/MinimalDataObjectHandle.h>
 #include <GaudiKernel/GaudiException.h>
@@ -299,3 +300,5 @@ public:
 private:
   DataObjectDescriptorCollection * m_dataItems;
 };
+
+#endif
