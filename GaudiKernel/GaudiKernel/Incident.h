@@ -46,6 +46,12 @@ private:
 
 };
 
+#ifndef _inc_types_impl_
+#define _inc_type_(x) extern const std::string x
+#else
+#define _inc_type_(x) extern const std::string x; \
+  const std::string x{#x}
+#endif
 /** @namespace IncidentType
  *
  *  Namespace for pre-defined common incident types
@@ -57,39 +63,40 @@ private:
  */
 namespace IncidentType
 {
-  const std::string BeginEvent = "BeginEvent"; ///< Processing of a new event has started
-  const std::string EndEvent   = "EndEvent";   ///< Processing of the last event has finished
-  const std::string BeginRun   = "BeginRun";   ///< Processing of a new run has started
-  const std::string EndRun     = "EndRun";     ///< Processing of the last run has finished
-  const std::string EndStream  = "EndStream";  ///< Processing of the stream has finished
+  _inc_type_(BeginEvent); ///< Processing of a new event has started
+  _inc_type_(EndEvent);   ///< Processing of the last event has finished
+  _inc_type_(BeginRun);   ///< Processing of a new run has started
+  _inc_type_(EndRun);     ///< Processing of the last run has finished
+  _inc_type_(EndStream);  ///< Processing of the stream has finished
 
-  const std::string AbortEvent = "AbortEvent"; ///< Stop processing the current event and pass to te next one
+  _inc_type_(AbortEvent); ///< Stop processing the current event and pass to te next one
 
   //Added by R. Lambert 2009-09-03, for summary services
   //define a preprocessor macro to allow backward-compatibility
 #define GAUDI_FILE_INCIDENTS
 
-  const std::string BeginOutputFile = "BeginOutputFile"; ///< a new output file has been created
-  const std::string FailOutputFile = "FailOutputFile"; ///< could not create or write to this file
-  const std::string WroteToOutputFile = "WroteToOutputFile"; ///< the output file was written to in this event
-  const std::string EndOutputFile   = "EndOutputFile";   ///< an output file has been finished
+  _inc_type_(BeginOutputFile); ///< a new output file has been created
+  _inc_type_(FailOutputFile); ///< could not create or write to this file
+  _inc_type_(WroteToOutputFile); ///< the output file was written to in this event
+  _inc_type_(EndOutputFile);   ///< an output file has been finished
 
-  const std::string BeginInputFile = "BeginInputFile"; ///< a new input file has been started
-  const std::string FailInputFile = "FailInputFile"; ///< could not open or read from this file
-  const std::string EndInputFile   = "EndInputFile";   ///< an input file has been finished
+  _inc_type_(BeginInputFile); ///< a new input file has been started
+  _inc_type_(FailInputFile); ///< could not open or read from this file
+  _inc_type_(EndInputFile);   ///< an input file has been finished
 
-  const std::string CorruptedInputFile = "CorruptedInputFile"; ///< the input file has shown a corruption
+  _inc_type_(CorruptedInputFile); ///< the input file has shown a corruption
 
   /// Incident raised just before entering loop over the algorithms.
-  const std::string BeginProcessing = "BeginProcessing";
+  _inc_type_(BeginProcessing);
   /// Incident raised just after the loop over the algorithms (note: before the execution of OutputStreams).
-  const std::string EndProcessing = "EndProcessing";
+  _inc_type_(EndProcessing);
 
   /// ONLY For Services that need something after they've been finalized.
   /// Caveat Emptor: Don't use unless you're a Service or know you'll exist
   ///                after all services have been finalized!!!
-  const std::string SvcPostFinalize = "PostFinalize";
+  _inc_type_(SvcPostFinalize);
 }
+#undef _inc_type_
 
 #endif //GAUDI_INCIDENT_H
 
