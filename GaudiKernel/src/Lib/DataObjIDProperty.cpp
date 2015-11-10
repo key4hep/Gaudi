@@ -105,7 +105,7 @@ namespace Gaudi {
     	while (it != tokens.end()) {
 
 	  if (isGaudi) {
-	    v.insert( DataObjID( *it ) );
+	    v.emplace( DataObjID( *it ) );
 	    ++it;
 
 	  } else {
@@ -125,9 +125,9 @@ namespace Gaudi {
 	    ++it;
 	  
 	    if ( c != 0) {
-	      v.insert( DataObjID(c,k) );
+	      v.emplace( DataObjID(c,k) );
 	    } else {
-              v.insert( DataObjID(cn,k) );
+              v.emplace( DataObjID(cn,k) );
 	    }	    
 	  }
     	}

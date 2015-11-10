@@ -39,11 +39,11 @@ class DataObjID {
 public:
   friend DataObjID_Hasher;
 
-  DataObjID();
+  DataObjID() {};
   DataObjID(const std::string& key);
   DataObjID(const CLID& clid, const std::string& key);
   DataObjID(const std::string& className, const std::string& key);
-  DataObjID(const DataObjID& d);
+  DataObjID(const DataObjID&) = default;
 
   // only return the last part of the key
   const std::string& key() const { return m_key; }
@@ -76,11 +76,11 @@ private:
   void setClid();
   void setClassName();
 
-  CLID m_clid;
-  std::size_t m_hash;
+  CLID m_clid {0};
+  std::size_t m_hash {0};
 
-  std::string m_className;
-  std::string m_key;
+  std::string m_className {""};
+  std::string m_key {"INVALID"};
 
   static void getClidSvc();
   static IClassIDSvc* p_clidSvc;
@@ -88,11 +88,8 @@ private:
 
 };
 
-inline DataObjID::DataObjID(): 
-  m_clid(0), m_hash(0), m_className(""), m_key("INVALID") {}
-
 inline DataObjID::DataObjID(const std::string& key): 
-  m_clid(0), m_className(""), m_key(key) { 
+  m_key(key) { 
   hashGen();
 
 }
@@ -108,10 +105,6 @@ inline DataObjID::DataObjID(const std::string& className, const std::string& key
   setClid();
   hashGen();
 }
-
-
-inline DataObjID::DataObjID(const DataObjID& d): 
-  m_clid(d.m_clid), m_hash(d.m_hash), m_className(d.m_className), m_key(d.m_key) {}
 
 inline void DataObjID::updateKey(const std::string& key) {
   m_key = key;

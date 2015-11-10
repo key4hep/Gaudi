@@ -2,6 +2,9 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-11-09 - Charles Leggett
+ - DataObjID: made prettier
+
 ! 2015-10-29 - Charles Leggett
  - DataObjID: change order of parameters in constructor to ClassID/Key
 
