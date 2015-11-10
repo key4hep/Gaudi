@@ -56,9 +56,9 @@ namespace Gaudi {
 	  ++it;
 	  
 	  if ( c != 0) {
-	    v = DataObjID(k,c);
+	    v = DataObjID(c,k);
 	  } else {
-	    v = DataObjID(k,cn);
+            v = DataObjID(cn,k);
 	  }
 	} else {
 	  std::cerr << "Unable to instantiate a DataObjID from a Property " << s 
@@ -105,7 +105,7 @@ namespace Gaudi {
     	while (it != tokens.end()) {
 
 	  if (isGaudi) {
-	    v.insert( DataObjID( *it ) );
+	    v.emplace( DataObjID( *it ) );
 	    ++it;
 
 	  } else {
@@ -125,9 +125,9 @@ namespace Gaudi {
 	    ++it;
 	  
 	    if ( c != 0) {
-	      v.insert( DataObjID(k,c) );
+	      v.emplace( DataObjID(c,k) );
 	    } else {
-	      v.insert( DataObjID(k,cn) );
+              v.emplace( DataObjID(cn,k) );
 	    }	    
 	  }
     	}
