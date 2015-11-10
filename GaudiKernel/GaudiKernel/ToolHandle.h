@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 #include <stdexcept>
+#include <type_traits>
 
 // forward declarations
 class IInterface;
@@ -69,13 +70,13 @@ protected:
     : ToolHandleInfo(parent, createIf)
   {}
 
-  virtual StatusCode retrieveGeneric(IAlgTool*&) const = 0;
+  virtual StatusCode i_retrieve(IAlgTool*&) const = 0;
 
 public:
   virtual ~BaseToolHandle() {}
 
   StatusCode retrieve(IAlgTool*& tool) const {
-    return retrieveGeneric(tool);
+    return i_retrieve(tool);
   }
 };
 
@@ -92,6 +93,8 @@ public:
 template< class T >
 class ToolHandle : public BaseToolHandle, public GaudiHandle<T> {
 
+  static_assert(std::is_base_of<IAlgTool,T>::value, "T must inherit from IAlgTool");
+
   friend class Algorithm;
   friend class AlgTool;
   friend class Service;
@@ -100,7 +103,7 @@ public:
   /** Constructor for a tool with default tool type and name.
       Can be called only if the type T is a concrete tool type (not an interface),
       and you want to use the default name. */
-  ToolHandle(const IInterface* parent=0, bool createIf = true )
+  ToolHandle(const IInterface* parent = nullptr, bool createIf = true)
     : BaseToolHandle(parent,createIf),
       GaudiHandle<T>( GaudiHandle<T>::getDefaultType(),
                       ToolHandleInfo::toolComponentType(parent),
@@ -178,9 +181,7 @@ public:
 
   /** Do the real retrieval of the AlgTool. */
   StatusCode retrieve( T*& algTool ) const {
-    return m_pToolSvc->retrieve( GaudiHandleBase::typeAndName(), T::interfaceID(),
-                                 reinterpret_cast<IAlgTool*&>(algTool),
-                                 ToolHandleInfo::parent(), ToolHandleInfo::createIf() );
+    return i_retrieve(reinterpret_cast<IAlgTool*&>(algTool));
   }
 
   /** Do the real release of the AlgTool. */
@@ -189,7 +190,7 @@ public:
   }
 
 protected:
-  StatusCode retrieveGeneric(IAlgTool*& algTool) const override {
+  StatusCode i_retrieve(IAlgTool*& algTool) const override {
     return m_pToolSvc->retrieve( GaudiHandleBase::typeAndName(), IAlgTool::interfaceID(),
                                  algTool,
                                  ToolHandleInfo::parent(), ToolHandleInfo::createIf() );
