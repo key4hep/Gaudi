@@ -449,7 +449,6 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
     };
 
     typedef std::tuple<EventContext*,EventSchedulingState*> contextSchedState_tuple;
-    typedef DataSvcHelpers::RegistryEntry regEntry;
 
     MsgStream log(msgSvc(), name());
 

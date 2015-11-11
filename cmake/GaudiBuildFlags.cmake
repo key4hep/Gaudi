@@ -16,6 +16,8 @@ elseif(LCG_COMP STREQUAL "gcc")
   else()
     # C++14 is enable by default on gcc >= 5.1
     set(GAUDI_CXX_STANDARD_DEFAULT "c++14")
+    # we are not ready for the new c++11 ABI (because of llvm in ROOT)
+    add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
   endif()
 endif()
 # special for GaudiHive

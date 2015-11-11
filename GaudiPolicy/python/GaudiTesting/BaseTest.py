@@ -1096,7 +1096,9 @@ def GetPlatform(self):
        """
    arch = "None"
    # check architecture name
-   if "CMTCONFIG" in os.environ:
+   if "BINARY_TAG" in os.environ:
+       arch = os.environ["BINARY_TAG"]
+   elif "CMTCONFIG" in os.environ:
        arch = os.environ["CMTCONFIG"]
    elif "SCRAM_ARCH" in os.environ:
        arch = os.environ["SCRAM_ARCH"]
