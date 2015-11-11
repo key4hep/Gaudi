@@ -182,7 +182,9 @@ public:
 
   /** Do the real retrieval of the AlgTool. */
   StatusCode retrieve( T*& algTool ) const {
-    return i_retrieve(reinterpret_cast<IAlgTool*&>(algTool));
+    IAlgTool* iface = nullptr;
+    algTool = i_retrieve(iface) ? dynamic_cast<T*>(iface) : nullptr;
+    return algTool ? StatusCode::SUCCESS : StatusCode::FAILURE;
   }
 
   /** Do the real release of the AlgTool. */
