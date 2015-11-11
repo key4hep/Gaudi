@@ -24,7 +24,7 @@ class Service;
 /** General info and helper functions for toolhandles and arrays */
 class ToolHandleInfo {
 protected:
-  ToolHandleInfo(const IInterface* parent = 0, bool createIf = true )
+  ToolHandleInfo(const IInterface* parent = nullptr, bool createIf = true )
     : m_parent(parent), m_createIf(createIf)
   {}
 
@@ -40,14 +40,14 @@ public:
   //
   // Some helper functions
   //
-  const std::string toolComponentType( const IInterface* parent ) const {
+  static std::string toolComponentType(const IInterface* parent) {
     return parent ? "PrivateTool" : "PublicTool";
   }
 
-  const std::string toolParentName( const IInterface* parent ) const {
+  static std::string toolParentName(const IInterface* parent) {
     if (!parent) return "ToolSvc";
     const INamedInterface* pNamed = dynamic_cast<const INamedInterface*>(parent);
-    return pNamed ? pNamed->name() : "" ;
+    return pNamed ? pNamed->name() : "";
   }
 
 protected:
@@ -66,7 +66,7 @@ protected:
 class BaseToolHandle: public ToolHandleInfo {
 
 protected:
-  BaseToolHandle(const IInterface* parent = 0, bool createIf = true )
+  BaseToolHandle(const IInterface* parent = nullptr, bool createIf = true )
     : ToolHandleInfo(parent, createIf)
   {}
 
@@ -106,8 +106,8 @@ public:
   ToolHandle(const IInterface* parent = nullptr, bool createIf = true)
     : BaseToolHandle(parent,createIf),
       GaudiHandle<T>( GaudiHandle<T>::getDefaultType(),
-                      ToolHandleInfo::toolComponentType(parent),
-                      ToolHandleInfo::toolParentName(parent) ),
+                      toolComponentType(parent),
+                      toolParentName(parent) ),
       m_pToolSvc( "ToolSvc", GaudiHandleBase::parentName() )
   {  }
 
@@ -142,22 +142,23 @@ public:
   __attribute__ ((deprecated))
 
 #endif
-  ToolHandle(const std::string& toolTypeAndName, const IInterface* parent = 0, bool createIf = true )
+  ToolHandle(const std::string& toolTypeAndName,
+             const IInterface* parent = nullptr, bool createIf = true )
     : BaseToolHandle(parent,createIf),
       GaudiHandle<T>( toolTypeAndName,
-                      ToolHandleInfo::toolComponentType(parent),
-                      ToolHandleInfo::toolParentName(parent) ),
+                      toolComponentType(parent),
+                      toolParentName(parent) ),
       m_pToolSvc( "ToolSvc", GaudiHandleBase::parentName() )
   {  }
 
 public:
 
   StatusCode initialize(const std::string& toolTypeAndName,
-                        const IInterface* parent = 0, bool createIf = true){
+                        const IInterface* parent = nullptr, bool createIf = true){
 
     GaudiHandleBase::setTypeAndName(toolTypeAndName);
-    GaudiHandleBase::setComponentType(ToolHandleInfo::toolComponentType(parent));
-    GaudiHandleBase::setParentName(ToolHandleInfo::toolParentName(parent));
+    GaudiHandleBase::setComponentType(toolComponentType(parent));
+    GaudiHandleBase::setParentName(toolParentName(parent));
 
     m_parent = parent;
     m_createIf = createIf;
