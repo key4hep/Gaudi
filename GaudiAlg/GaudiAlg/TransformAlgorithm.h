@@ -24,7 +24,7 @@ public:
 
 private:
     template <std::size_t... I> 
-    StatusCode invoke_transformer(utility::index_sequence<I...>) const;
+    StatusCode invoke_transformer(utility::index_sequence<I...>);
 
     using pair_t = std::pair<void*,std::string>;
     bool awol( std::array< pair_t,N > inputs ) const;
@@ -60,10 +60,9 @@ bool TransformAlgorithm<Out(const In&...)>::awol( std::array<pair_t, N> inputs )
 template <typename Out, typename... In>
 template <std::size_t... I> 
 StatusCode 
-TransformAlgorithm<Out(const In&...)>::invoke_transformer(utility::index_sequence<I...>) const {
+TransformAlgorithm<Out(const In&...)>::invoke_transformer(utility::index_sequence<I...>) {
     auto in = std::make_tuple( getIfExists<In>(m_inputs[I])... );
-#if 0
-    if ( awol( { pair_t(std::get<I>(in),m_inputs[I])... ) ) {
+    if ( awol( { pair_t(std::get<I>(in),m_inputs[I])... } ) ) {
       //@TODO: add policy for what to do if input does not exist: 
       //        a) return StatusCode::FAILURE
       //        b) do setFilterPassed(false), and return FAILURE
@@ -73,8 +72,7 @@ TransformAlgorithm<Out(const In&...)>::invoke_transformer(utility::index_sequenc
       setFilterPassed(false);
       return StatusCode::SUCCESS;
     }
-#endif
-    auto result = (*this)( detail::as_const(*std::get<I>(in))... );
+    auto result = detail::as_const(*this)( detail::as_const(*std::get<I>(in))... );
     put( evtSvc(), new Out( std::move(result) ), m_output );
     //@TODO: add policy for setFilterPassed
     //       a) just set to true
