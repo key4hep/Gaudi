@@ -1,6 +1,7 @@
-Package : GaudiKernel
+Package : GaudiHive
 Commit Id: $Format:%H$
 
+============================== GaudiHive v0r0 ================================
 ! 2015-02-27 - Marco Clemencic
  - Changed level of some messages in TimelineSvc.
 
