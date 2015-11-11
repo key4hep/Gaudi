@@ -24,7 +24,7 @@ private:
   std::unique_ptr<std::ostream> m_oost;
   std::ostream*  m_ost = nullptr;
   std::unique_ptr<MsgStream> m_msgStr;
-  MSG::Level m_level;
+  MSG::Level m_level = MSG::NIL;
 };
 
 #endif
