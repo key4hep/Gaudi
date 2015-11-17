@@ -489,7 +489,7 @@ public:
 template <class DATATYPE, class MAPPING> inline
 KeyedContainer<DATATYPE, MAPPING>::~KeyedContainer()
 {
-  erase(begin(), end());
+  clear();
   m_cont.clear();
 }
 

@@ -114,10 +114,10 @@ Containers::KeyedObjectManager<T>::setup(void* seq, void** rndm)
 template <class T>
 void Containers::KeyedObjectManager<T>::onDirty()   const  {
   m_direct = 1;
-  for(int i = 0, stop = m_setup.s->v.size(); i < stop; i++ )   {
-    m_setup.s->insert(*(m_setup.s->v.begin()+i), i);
-  }
-  m_setup.s->v.clear();
+  auto &s = *m_setup.s;
+  long i = 0;
+  for(auto p: s.v) s.insert(p, i++);
+  s.v.clear();
 }
 
 template <class T>
