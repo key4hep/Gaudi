@@ -98,6 +98,15 @@ Containers::KeyedObjectManager<T>::KeyedObjectManager()
 }
 
 template <class T>
+Containers::KeyedObjectManager<T>::KeyedObjectManager(KeyedObjectManager&& other) {
+  memcpy((void*)&m_setup, (const void*)&other.m_setup, sizeof(m_setup));
+  m_setup.s = ::new(m_setup.buffer+sizeof(m_setup.s)) T();
+  m_keyCtxt = -1;
+  m_seq = nullptr;
+  m_direct = 0;
+}
+
+template <class T>
 Containers::KeyedObjectManager<T>::~KeyedObjectManager()
 {
   m_setup.s->~T();
