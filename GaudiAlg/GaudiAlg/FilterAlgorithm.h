@@ -2,12 +2,14 @@
 #include "GaudiAlg/GaudiAlgorithm.h"
 #include "GaudiAlg/Algorithm_details.h"
 
+
+
 template <typename T> class FilterAlgorithm;
 
 template <typename... In>
 class FilterAlgorithm<void(const In&...)> : public GaudiAlgorithm {
 public:
-    using KeyValue = std::pair<std::string, std::string>;
+  using KeyValue = std::pair<std::string, std::string>;
     constexpr static std::size_t N = sizeof...(In);
 
     FilterAlgorithm(const std::string& name, ISvcLocator* locator,
@@ -24,7 +26,7 @@ private:
 
 
 template <typename... In>
-FilterAlgorithm<bool(const In&...)>::FilterAlgorithm( const std::string& name,
+FilterAlgorithm<void(const In&...)>::FilterAlgorithm( const std::string& name,
                                         ISvcLocator* pSvcLocator,
                                         std::array< KeyValue,N> inputs )
   : GaudiAlgorithm ( name , pSvcLocator )
@@ -38,7 +40,7 @@ template <std::size_t... I>
 StatusCode
 FilterAlgorithm<void(const In&...)>::invoke(utility::index_sequence<I...>) {
     auto in = std::make_tuple( getIfExists<In>(m_inputs[I])... );
-    if ( detail::awol( { pair_t(std::get<I>(in),m_inputs[I])... } ) ) {
+    if ( detail::awol( *this, { { std::get<I>(in),m_inputs[I].value() }... } ) ) {
       //@TODO: add policy / virtual function for what to do if input does not exist:
       //        a) return StatusCode::FAILURE
       //        b) do setFilterPassed(false), and return FAILURE
@@ -50,5 +52,10 @@ FilterAlgorithm<void(const In&...)>::invoke(utility::index_sequence<I...>) {
       setFilterPassed(detail::as_const(*this)( detail::as_const(*std::get<I>(in))... ));
     }
     return StatusCode::SUCCESS;
+}
+template <typename... In>
+StatusCode
+FilterAlgorithm<void(const In&...)>::execute() {
+    return invoke(utility::make_index_sequence<N>{});
 }
 
