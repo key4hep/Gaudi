@@ -190,6 +190,7 @@ public:
     seq_type*  sptr = &m_sequential;
     m_cont.setup((void*)sptr,(void**)rptr);
     std::for_each(begin(), end(), [this](ContainedObject* obj) {obj->setParent(this);});
+    other.m_cont.setup((void*)&other.m_sequential, (void**)&other.m_random);
   }
   KeyedContainer(const KeyedContainer&) = delete;
   /// Destructor

@@ -16,6 +16,8 @@ namespace Containers    {
       auto p = m.insert(map_type::value_type(key,obj));
       return p.second;
     }
+    hashmap() = default;
+    hashmap(hashmap&&) = default;
   };
   struct map   {
     typedef std::map<long, void*>      map_type;
@@ -25,6 +27,8 @@ namespace Containers    {
       auto p = m.insert(map_type::value_type(key,obj));
       return p.second;
     }
+    map() = default;
+    map(map&&) = default;
   };
   struct array {
     typedef std::vector<long> map_type;
@@ -40,11 +44,15 @@ namespace Containers    {
         return true;
       }
     };
+    array() = default;
+    array(array&&) = default;
   };
   struct vector {
     typedef std::vector<void*>  map_type;
     /// Direct access array
     std::vector<void*>          v;
+    vector() = default;
+    vector(vector&&) = default;
   };
 
   template <class CONT>
@@ -98,12 +106,16 @@ Containers::KeyedObjectManager<T>::KeyedObjectManager()
 }
 
 template <class T>
-Containers::KeyedObjectManager<T>::KeyedObjectManager(KeyedObjectManager&& other) {
-  memcpy((void*)&m_setup, (const void*)&other.m_setup, sizeof(m_setup));
-  m_setup.s = ::new(m_setup.buffer+sizeof(m_setup.s)) T();
-  m_keyCtxt = -1;
-  m_seq = nullptr;
-  m_direct = 0;
+Containers::KeyedObjectManager<T>::KeyedObjectManager(KeyedObjectManager&& other):
+    m_seq(nullptr),
+    m_direct(other.m_direct),
+    m_keyCtxt(other.m_keyCtxt)
+{
+  m_setup.s = ::new(m_setup.buffer + sizeof(m_setup.s)) T(std::move(*other.m_setup.s));
+
+  other.m_keyCtxt = -1;
+  other.m_seq = nullptr;
+  other.m_direct = 0;
 }
 
 template <class T>
