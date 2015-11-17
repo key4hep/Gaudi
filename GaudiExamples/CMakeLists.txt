@@ -54,7 +54,9 @@ set(GaudiExamples_srcs
     src/FileMgr/*.cpp
     src/testing/*.cpp
     src/IntelProfiler/*.cpp
-    src/PluginService/*.cpp)
+    src/PluginService/*.cpp
+    src/StatelessAlgorithms/*.cpp
+)
 
 if (NOT LCG_COMP STREQUAL "clang")
     list(APPEND GaudiExamples_srcs  src/StatusCodeSvc/special/SCSAlg_no_inline.cpp)
