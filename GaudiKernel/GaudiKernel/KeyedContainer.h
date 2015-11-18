@@ -184,12 +184,12 @@ public:
     m_cont.setup((void*)sptr,(void**)rptr);
   }
   KeyedContainer(KeyedContainer&& other):
-      m_cont(std::move(other.m_cont))
+      m_cont(std::move(other.m_cont)),
+      m_sequential(std::move(other.m_sequential))
   {
-    seq_type** rptr = &m_random;
-    seq_type*  sptr = &m_sequential;
-    m_cont.setup((void*)sptr,(void**)rptr);
+    m_cont.setup((void*)&m_sequential,(void**)&m_random);
     std::for_each(begin(), end(), [this](ContainedObject* obj) {obj->setParent(this);});
+
     other.m_cont.setup((void*)&other.m_sequential, (void**)&other.m_random);
   }
   KeyedContainer(const KeyedContainer&) = delete;
