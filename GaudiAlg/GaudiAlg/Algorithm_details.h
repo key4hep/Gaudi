@@ -1,3 +1,6 @@
+#ifndef __Algorithm_details_h__
+#define __Algorithm_details_h__
+
 #include <type_traits>
 #include <utility>
 #include <initializer_list>
@@ -24,3 +27,5 @@ namespace detail {
         return result;
     }
 }
+
+#endif

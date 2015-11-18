@@ -1,3 +1,5 @@
+#ifndef __index_sequence_h__
+#define __index_sequence_h__
 #include <cstddef>
 // C++14 Compile-time integer sequences -- this can go once we use C++14 only...
 // #include <utility> // defines (in C++14) std::make_index_sequence and std::index_sequence
@@ -23,4 +25,4 @@ template<std::size_t N> struct make_index_sequence : public make_index_sequence_
 } // namespace detail
 using detail::make_index_sequence;
 } // namespace utility
-
+#endif
