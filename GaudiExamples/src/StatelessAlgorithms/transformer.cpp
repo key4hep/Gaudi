@@ -13,11 +13,10 @@ namespace Gaudi { namespace Examples {
   public:
     SelectTracks(const std::string& name, ISvcLocator* pSvc):
       TransformAlgorithm(name, pSvc, 
-                         { KeyValue("InputData",{}) },
-                           KeyValue("OutputData",{}) ) {
-      setProperty("InputData", "MyTracks");
-      setProperty("OutputData", "MyOutTracks");
+                         { KeyValue("InputData",{"MyTracks"}) },
+                           KeyValue("OutputData",{"MyOutTracks"}) ) {
     }
+
     MyTrackVector operator()(const MyTrackVector& in_tracks) const {
       MyTrackVector out_tracks;
       std::for_each(in_tracks.begin(), in_tracks.end(),
@@ -37,8 +36,7 @@ namespace Gaudi { namespace Examples {
   public:
     CountSelectedTracks(const std::string& name, ISvcLocator* pSvc):
       FilterAlgorithm(name, pSvc, 
-                      { KeyValue("InputData",{}) }) {
-      setProperty("InputData", "MyOutTracks");
+                      { KeyValue("InputData",{"MyOutTracks"}) }) {
     }
     StatusCode initialize() {
       StatusCode sc = FilterAlgorithm::initialize();
@@ -53,6 +51,7 @@ namespace Gaudi { namespace Examples {
       m_tracksCount += in_tracks.size();
       return true;
     }
+
     StatusCode finalize() {
       info() << "extracted " << m_tracksCount << " tracks in " << m_eventsCount << " events" << endmsg;
       return FilterAlgorithm::finalize();
