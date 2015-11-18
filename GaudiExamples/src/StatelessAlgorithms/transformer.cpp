@@ -2,11 +2,10 @@
 #include <atomic>
 
 #include "GaudiAlg/TransformAlgorithm.h"
+#include "GaudiAlg/FilterAlgorithm.h"
 
 // Event Model related classes
-//#include "GaudiExamples/Event.h"
 #include "GaudiExamples/MyTrack.h"
-//#include "GaudiExamples/Counter.h"
 
 namespace Gaudi { namespace Examples {
 
@@ -19,36 +18,50 @@ namespace Gaudi { namespace Examples {
       setProperty("InputData", "MyTracks");
       setProperty("OutputData", "MyOutTracks");
     }
+    MyTrackVector operator()(const MyTrackVector& in_tracks) const {
+      MyTrackVector out_tracks;
+      std::for_each(in_tracks.begin(), in_tracks.end(),
+                    [&out_tracks, this](const MyTrack* t) {
+                      if (t->px() >= 10.) {
+                        out_tracks.add(new MyTrack(*t));
+                      }
+                    });
+      return out_tracks;
+    }
+  };
+
+  DECLARE_COMPONENT(SelectTracks)
+
+
+  class CountSelectedTracks: public FilterAlgorithm<void(const MyTrackVector&)> {
+  public:
+    CountSelectedTracks(const std::string& name, ISvcLocator* pSvc):
+      FilterAlgorithm(name, pSvc, 
+                      { KeyValue("InputData",{}) }) {
+      setProperty("InputData", "MyOutTracks");
+    }
     StatusCode initialize() {
-      StatusCode sc = TransformAlgorithm::initialize();
+      StatusCode sc = FilterAlgorithm::initialize();
       if (sc) {
          m_tracksCount = 0;
          m_eventsCount = 0;
       }
       return sc;
     }
-    MyTrackVector operator()(const MyTrackVector& in_tracks) const {
-      MyTrackVector out_tracks;
+    bool operator()(const MyTrackVector& in_tracks) const {
       ++m_eventsCount;
-      std::for_each(in_tracks.begin(), in_tracks.end(),
-                    [&out_tracks, this](const MyTrack* t) {
-                      if (t->px() >= 10.) {
-                        out_tracks.add(new MyTrack(*t));
-                        ++m_tracksCount;
-                      }
-                    });
-      //info() << (*in_tracks.begin())->px() << endmsg;
-      return out_tracks;
+      m_tracksCount += in_tracks.size();
+      return true;
     }
     StatusCode finalize() {
       info() << "extracted " << m_tracksCount << " tracks in " << m_eventsCount << " events" << endmsg;
-      return TransformAlgorithm::finalize();
+      return FilterAlgorithm::finalize();
     }
   private:
     mutable std::atomic<long> m_tracksCount{0};
     mutable std::atomic<long> m_eventsCount{0};
   };
 
-  DECLARE_COMPONENT(SelectTracks)
+  DECLARE_COMPONENT(CountSelectedTracks)
 }}
 

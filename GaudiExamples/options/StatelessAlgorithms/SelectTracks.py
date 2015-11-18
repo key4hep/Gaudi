@@ -6,6 +6,7 @@ from Gaudi.Configuration import *
 from Configurables import Gaudi__RootCnvSvc as RootCnvSvc, GaudiPersistency
 from Configurables import ReadAlg, ReadTES, FileRecordDataSvc
 from Configurables import Gaudi__Examples__SelectTracks as SelectTracks
+from Configurables import Gaudi__Examples__CountSelectedTracks as CountSelectedTracks
 
 # I/O
 GaudiPersistency()
@@ -17,7 +18,7 @@ esel.Input = ["DATAFILE='PFN:ROOTIO.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ
 
 # Algorithms
 evtAlgs = GaudiSequencer("EventAlgs",
-                         Members=[SelectTracks()],
+                         Members=[SelectTracks(), CountSelectedTracks()],
                          VetoObjects=["FSR"])
 fsrAlgs = GaudiSequencer("FSRAlgs",
                          Members=[ReadTES(Locations=["FSR"])],
