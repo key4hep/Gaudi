@@ -1,8 +1,8 @@
+#ifndef FILTER_ALGORITHM_H
+#define FILTER_ALGORITHM_H
 #include "GaudiKernel/index_sequence.h"
 #include "GaudiAlg/GaudiAlgorithm.h"
 #include "GaudiAlg/Algorithm_details.h"
-
-
 
 template <typename T> class FilterAlgorithm;
 
@@ -40,7 +40,11 @@ template <std::size_t... I>
 StatusCode
 FilterAlgorithm<void(const In&...)>::invoke(utility::index_sequence<I...>) {
     auto in = std::make_tuple( getIfExists<In>(m_inputs[I])... );
-    if ( detail::awol( *this, { { std::get<I>(in),m_inputs[I].value() }... } ) ) {
+    auto absent = detail::awol( { std::get<I>(in)... } );
+    if (!absent.empty()) {
+      for (const auto& i : absent ) {
+          error() << " Mandatory input at " << m_inputs[i] << " not found" << endmsg;
+      }
       //@TODO: add policy / virtual function for what to do if input does not exist:
       //        a) return StatusCode::FAILURE
       //        b) do setFilterPassed(false), and return FAILURE
@@ -58,4 +62,4 @@ StatusCode
 FilterAlgorithm<void(const In&...)>::execute() {
     return invoke(utility::make_index_sequence<N>{});
 }
-
+#endif

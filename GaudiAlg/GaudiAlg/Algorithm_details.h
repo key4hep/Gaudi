@@ -16,13 +16,13 @@ namespace detail {
     void as_const(T&& t) = delete;
 
     // helper to check for absentees amongst a list of (named) inputs
-    bool awol(GaudiAlgorithm& parent, std::initializer_list<std::pair<void*,const std::string&>> inputs) {
-        bool result = false;
-        for ( const auto& i : inputs ) {
-            if (!i.first) {
-                result = true;
-                parent.error() << " Mandatory input at " << i.second << " not found" << endmsg;
-            }
+    template< template <typename> class Container = std::initializer_list>
+    std::vector<int> awol(Container<void*> inputs) {
+        std::vector<int> result;
+        int i=0;
+        for ( const auto& j : inputs ) {
+            if (!j) result.push_back(i);
+            ++i;
         }
         return result;
     }

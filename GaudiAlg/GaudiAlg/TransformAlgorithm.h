@@ -1,3 +1,5 @@
+#ifndef TRANSFORM_ALGORITHM_H
+#define TRANSFORM_ALGORITHM_H
 #include "GaudiKernel/index_sequence.h"
 #include "GaudiAlg/GaudiAlgorithm.h"
 #include "GaudiAlg/Algorithm_details.h"
@@ -12,7 +14,7 @@
 
 template <typename T> class TransformAlgorithm;
 
-// N -> 1 algorithms
+// general N -> 1 algorithms
 
 template <typename Out, typename... In>
 class TransformAlgorithm<Out(const In&...)> : public GaudiAlgorithm {
@@ -50,8 +52,13 @@ template <typename Out, typename... In>
 template <std::size_t... I>
 StatusCode
 TransformAlgorithm<Out(const In&...)>::invoke(utility::index_sequence<I...>) {
+    //@TODO: maybe we should use 'get' instead and just skip any checking???
     auto in = std::make_tuple( getIfExists<In>(m_inputs[I])... );
-    if ( detail::awol( *this, { { std::get<I>(in),m_inputs[I].value() }... } ) ) {
+    auto absent = detail::awol( { std::get<I>(in)... } );
+    if (!absent.empty()) {
+        for (const auto& i : absent ) {
+            error() << " Mandatory input at " << m_inputs[i] << " not found" << endmsg;
+        }
         //@TODO: add policy / virtual function for what to do if input does not exist:
         //        a) return StatusCode::FAILURE
         //        b) do setFilterPassed(false), and return FAILURE
@@ -77,5 +84,4 @@ StatusCode
 TransformAlgorithm<Out(const In&...)>::execute() {
     return invoke(utility::make_index_sequence<N>{});
 }
-
-
+#endif
