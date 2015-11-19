@@ -391,6 +391,9 @@ macro(gaudi_project project version)
   install(DIRECTORY cmake/EnvConfig DESTINATION scripts
           FILES_MATCHING PATTERN "*.py" PATTERN "*.conf")
 
+
+  install(FILES ${CMAKE_BINARY_DIR}/compile_commands.json DESTINATION ${CMAKE_INSTALL_PREFIX} OPTIONAL)
+
   #--- Global actions for the project
   #message(STATUS "CMAKE_MODULE_PATH -> ${CMAKE_MODULE_PATH}")
   include(GaudiBuildFlags)
