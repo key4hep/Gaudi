@@ -134,9 +134,6 @@ GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface * parent )
 	m_statEntityList=std::vector<std::string>(0),
 	"RegEx list, of StatEntity counters for CounterSummary.");
 
-  // add handler for message level changes
-  this->outputLevelProperty().declareUpdateHandler( &GaudiCommon<PBASE>::msgLevelHandler, this );
-
   // setup context from parent if available
   if ( parent )
   {
@@ -675,23 +672,6 @@ long GaudiCommon<PBASE>::printProps ( const MSG::Level level ) const
     msg << "Property ['Name': Value] = " <<  *property << endmsg ;
   }
   return properties.size() ;
-}
-// ============================================================================
-
-// ============================================================================
-// Handle method for changes in the Messaging levels
-// ============================================================================
-template < class PBASE >
-void GaudiCommon<PBASE>::msgLevelHandler ( Property & theProp )
-{
-  this->updateMsgStreamOutputLevel(this->outputLevel());
-
-  // printout message
-  if ( this->msgLevel(MSG::DEBUG) )
-  {
-    this->debug() << "Property update for "
-            << theProp.name() << " : new value = " << this->outputLevel() << endmsg;
-  }
 }
 // ============================================================================
 

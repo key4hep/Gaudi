@@ -521,15 +521,6 @@ public:
   /// Print error counters at finalization ?
   inline bool errorsPrint   () const { return m_errorsPrint  ; }
   // ==========================================================================
-private:
-  // ==========================================================================
-  /** @brief Handle method for changes in the Messaging levels.
-   *  Called whenever the property "OutputLevel" changes to perform
-   *  all necessary actions locally.
-   *  @param theProp Reference to the Property that has changed
-   */
-  void msgLevelHandler ( Property& theProp );
-  // ==========================================================================
 public:
   /** perform the actual printout of statistical counters
    *  @param  level The message level to print at
