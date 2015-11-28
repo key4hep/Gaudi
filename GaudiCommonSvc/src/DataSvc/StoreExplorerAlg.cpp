@@ -83,8 +83,7 @@ public:
 
   /// Print datastore leaf
   void printObj(IRegistry* pReg, std::vector<bool>& flg)    {
-    MsgStream log(msgSvc(), name());
-    log << MSG::INFO;
+    auto& log = info();
     for (size_t j = 1; j < flg.size(); j++ )     {
       if ( !flg[j-1] && flg[j] ) log << "| ";
       else if ( flg[j] ) log << "  ";
@@ -190,17 +189,16 @@ public:
 
   /// Initialize
   StatusCode initialize() override   {
-    MsgStream log(msgSvc(), name());
     m_rootName.clear();
     m_dataSvc = service(m_dataSvcName,true);
     if ( !m_dataSvc )  {
-        log << MSG::ERROR << "Failed to access service \""
+        error() << "Failed to access service \""
             << m_dataSvcName << "\"." << endmsg;
         return StatusCode::FAILURE;
     }
     auto mgr = m_dataSvc.as<IDataManagerSvc>();
     if ( !mgr )  {
-        log << MSG::ERROR << "Failed to retrieve IDataManagerSvc interface." << endmsg;
+        error() << "Failed to retrieve IDataManagerSvc interface." << endmsg;
         return StatusCode::FAILURE;
     }
     m_rootName = mgr->rootName();
@@ -215,7 +213,6 @@ public:
 
   /// Execute procedure
   StatusCode execute() override {
-    MsgStream log(msgSvc(), name());
     SmartDataPtr<DataObject>   root(m_dataSvc.get(),m_rootName);
     if ( ((m_print > m_total++) || (m_frequency*m_total > m_frqPrint)) && root )    {
       if ( m_frequency*m_total > m_frqPrint )  m_frqPrint++;
@@ -225,7 +222,7 @@ public:
         auto isvc = SmartIF<IService>{pReg->dataSvc()};
         if ( isvc )  store_name = isvc->name();
       }
-      log << MSG::INFO << "========= " << m_rootName << "["
+      info() << "========= " << m_rootName << "["
           << "0x" << std::hex << (unsigned long) root.ptr() << std::dec
           << "@" << store_name << "]:" << endmsg;
       std::vector<bool> flg(1,true);
@@ -234,7 +231,7 @@ public:
     } else if ( root )   {
       return StatusCode::SUCCESS;
     }
-    log << MSG::ERROR << "Cannot retrieve \"/Event\"!" << endmsg;
+    error() << "Cannot retrieve \"/Event\"!" << endmsg;
     return StatusCode::FAILURE;
   }
 };

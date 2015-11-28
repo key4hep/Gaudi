@@ -7,7 +7,6 @@
 //	====================================================================
 #include "GaudiKernel/IPartitionControl.h"
 #include "GaudiKernel/Algorithm.h"
-#include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/IToolSvc.h"
 #include "GaudiKernel/IAlgTool.h"
 #include "GaudiKernel/SmartIF.h"
@@ -50,11 +49,10 @@ public:
 
   /// Initialize
   STATUS initialize() override  {
-    MsgStream log(msgSvc(), name());
     SmartIF<IAlgTool> tool(m_actor);
     STATUS sc = toolSvc()->retrieveTool(m_toolType,m_actor,this);
     if ( sc.isFailure() ) {
-      log << MSG::ERROR << "Unable to load PartitionSwitchTool "
+      error() << "Unable to load PartitionSwitchTool "
           << m_toolType << endmsg;
       return sc;
     }
@@ -64,7 +62,7 @@ public:
     IInterface* partititon = nullptr;
     sc = m_actor->get(m_partName, partititon);
     if ( !sc.isSuccess() )  {
-      log << MSG::ERROR << "Cannot access partition \""
+      error() << "Cannot access partition \""
           << m_partName << "\"" << endmsg;
     }
     return sc;
@@ -83,21 +81,18 @@ public:
     if ( m_actor )  {
       STATUS sc = m_actor->activate(m_partName);
       if ( !sc.isSuccess() )  {
-        MsgStream log(msgSvc(), name());
-        log << MSG::ERROR << "Cannot activate partition \""
+        error() << "Cannot activate partition \""
             << m_partName << "\"!" << endmsg;
       }
       return sc;
     }
-    MsgStream log(msgSvc(), name());
-    log << MSG::ERROR << "The partition control tool \"" << name()
+    error() << "The partition control tool \"" << name()
         << "." << m_toolType << "\" cannot be accessed!" << endmsg;
     return STATUS::FAILURE;
   }
 private:
   StatusCode log_(StatusCode sc, const std::string& msg)  const {
-    MsgStream log(msgSvc(), name());
-    log << MSG::ERROR << msg << " Status=" << sc.getCode() << endmsg;
+    error() << msg << " Status=" << sc.getCode() << endmsg;
     return sc;
   }
   template < typename...FArgs, typename...Args>

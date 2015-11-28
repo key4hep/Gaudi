@@ -377,11 +377,10 @@ StatusCode CounterSvc::print
   auto i = m_counts.find ( grp ) ;
   if ( m_counts.end() == i ) { return COUNTER_NOT_PRESENT ; }
 
-  MsgStream log(msgSvc(), name());
   // Force printing in alphabetical order
   std::map<std::string, Counter*> sorted_map(i->second.begin(), i->second.end());
   std::for_each(sorted_map.begin(), sorted_map.end(),
-                conditionalPrint(printer, log));
+                conditionalPrint(printer, msgStream()));
   return StatusCode::SUCCESS;   // RETURN
 }
 // ===========================================================================

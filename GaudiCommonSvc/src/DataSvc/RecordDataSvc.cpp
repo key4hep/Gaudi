@@ -18,7 +18,6 @@
 #define  DATASVC_RECORDDATASVC_CPP
 
 #include "GaudiKernel/SmartIF.h"
-#include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/IProperty.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/ISvcLocator.h"
@@ -39,7 +38,6 @@ DECLARE_COMPONENT(RecordDataSvc)
 StatusCode RecordDataSvc::initialize()    {
   // Nothing to do: just call base class initialisation
   StatusCode      sc  = DataSvc::initialize();
-  MsgStream log(msgSvc(),name());
 
   if ( !sc.isSuccess() ) { // Base class failure
     return sc;
@@ -47,7 +45,7 @@ StatusCode RecordDataSvc::initialize()    {
   // Attach data loader facility
   m_cnvSvc = service(m_persSvcName, true);
   if ( !m_cnvSvc) {
-    log << MSG::ERROR << "Failed to access RecordPersistencySvc." << endmsg;
+    error() << "Failed to access RecordPersistencySvc." << endmsg;
     return StatusCode::FAILURE;
   }
   auto prp = m_cnvSvc.as<IProperty>();
@@ -56,18 +54,18 @@ StatusCode RecordDataSvc::initialize()    {
   }
   sc = setDataLoader( m_cnvSvc.get() );
   if ( !sc.isSuccess() ) {
-    log << MSG::ERROR << "Failed to attach dataloader RecordPersistencySvc." << endmsg;
+    error() << "Failed to attach dataloader RecordPersistencySvc." << endmsg;
     return sc;
   }
 
   sc = setRoot(m_rootName, new DataObject());
   if( !sc.isSuccess() )  {
-    log << MSG::WARNING << "Error declaring Record root DataObject" << endmsg;
+    warning() << "Error declaring Record root DataObject" << endmsg;
     return sc;
   }
 
   if( !m_incidentSvc )  {
-    log << MSG::FATAL << "IncidentSvc is invalid--base class failed." << endmsg;
+    fatal() << "IncidentSvc is invalid--base class failed." << endmsg;
     return sc;
   }
 
@@ -94,8 +92,7 @@ void RecordDataSvc::handle(const Incident& incident) {
     typedef ContextIncident<IOpaqueAddress*> Ctxt;
     auto inc = dynamic_cast<const Ctxt*>(&incident);
     if ( !inc )  {
-        MsgStream log(msgSvc(),name());
-        log << MSG::ALWAYS << "Received invalid incident of type:" << incident.type() << endmsg;
+        always() << "Received invalid incident of type:" << incident.type() << endmsg;
     } else {
       registerRecord(inc->source(),inc->tag());
       if ( !m_incidentName.empty() ) {
@@ -106,23 +103,21 @@ void RecordDataSvc::handle(const Incident& incident) {
       }
     }
   } else if ( incident.type() == m_saveIncidentName ) {
-    MsgStream log(msgSvc(),name());
-    log << MSG::ALWAYS << "Saving records not implemented." << endmsg;
+    always() << "Saving records not implemented." << endmsg;
   }
 }
 
 /// Load dependent records into memory
 void RecordDataSvc::loadRecords(IRegistry* pObj) {
-  MsgStream log(msgSvc(),name());
   if ( !pObj )    {
-      log << MSG::ERROR << "Failed to load records object: " << pObj->identifier() << endmsg;
+      error() << "Failed to load records object: " << pObj->identifier() << endmsg;
   } else {
     vector<IRegistry*> leaves;
     DataObject* p = nullptr;
     const string& id0 = pObj->identifier();
     StatusCode sc = retrieveObject(id0, p);
     if ( sc.isSuccess() ) {
-      log << MSG::DEBUG << "Loaded records object: " << id0 << endmsg;
+      debug() << "Loaded records object: " << id0 << endmsg;
       sc = objectLeaves(pObj, leaves);
       if ( sc.isSuccess() )  {
         for ( const auto& i : leaves) loadRecords(i);
@@ -134,12 +129,11 @@ void RecordDataSvc::loadRecords(IRegistry* pObj) {
 /// Load new run record into the data store if necessary
 void RecordDataSvc::registerRecord(const string& data, IOpaqueAddress* pAddr)   {
   if ( !data.empty() && pAddr ) {
-    MsgStream log(msgSvc(),name());
     string fid = data;
-    log << MSG::DEBUG << "Request to load record for file " << fid << endmsg;
+    debug() << "Request to load record for file " << fid << endmsg;
     StatusCode sc = registerAddress(m_root,fid,pAddr);
     if ( !sc.isSuccess() ) {
-      log << MSG::WARNING << "Failed to register record for:" << fid << endmsg;
+      warning() << "Failed to register record for:" << fid << endmsg;
       pAddr->release();
       return;
     }
@@ -149,8 +143,7 @@ void RecordDataSvc::registerRecord(const string& data, IOpaqueAddress* pAddr)   
     m_incidents.push_back(pAddr->registry()->identifier());
   }
   else if ( !data.empty() && !pAddr ) {
-    MsgStream log(msgSvc(),name());
-    log << MSG::INFO << "Failed to register record for:" << data << " [Invalid Address]" << endmsg;
+    info() << "Failed to register record for:" << data << " [Invalid Address]" << endmsg;
   }
 }
 
