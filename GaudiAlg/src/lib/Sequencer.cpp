@@ -7,7 +7,6 @@
 
 #include "GaudiKernel/IAlgManager.h"
 #include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/Chrono.h"
 #include "GaudiKernel/Stat.h"
 #include "GaudiKernel/GaudiException.h"
@@ -617,7 +616,6 @@ Sequencer::executeMember( Algorithm* theAlgorithm )
 StatusCode
 Sequencer::remove( const std::string& algname, std::vector<Algorithm*>& theAlgs )
 {
-  MsgStream log( msgSvc( ), name( ) );
   StatusCode result = StatusCode::FAILURE;
 
   // Test that the algorithm exists in the member list

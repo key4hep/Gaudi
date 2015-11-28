@@ -348,8 +348,7 @@ StatusCode CounterSvc::print
   const Counter* c = get( grp , nam ) ;
   if ( !c ) { return COUNTER_NOT_PRESENT ; }                  // RETURN
   // create the stream and use it!
-  MsgStream log ( msgSvc() , name() ) ;
-  return printer ( log , c ) ;
+  return printer ( msgStream() , c ) ;
 }
 
 namespace {
@@ -392,8 +391,7 @@ StatusCode CounterSvc::print
 ( const Counter* pCounter,
   Printout& printer ) const
 {
-  MsgStream log(msgSvc(), name() ) ;
-  return printer ( log , pCounter ) ;
+  return printer ( msgStream() , pCounter ) ;
 }
 // ===========================================================================
 // Print counter value
@@ -407,13 +405,12 @@ StatusCode CounterSvc::print
 // ===========================================================================
 StatusCode CounterSvc::print( Printout& printer ) const
 {
-  MsgStream log ( msgSvc() , name() ) ;
   // Force printing in alphabetical order
   std::map<std::pair<std::string,std::string>, Counter*> sorted_map;
   for ( const auto& i : m_counts ) for ( const auto&  j : i.second )
       sorted_map[ { i.first, j.first } ] = j.second;
   std::for_each(sorted_map.begin(), sorted_map.end(),
-                conditionalPrint(printer, log));
+                conditionalPrint(printer, msgStream()));
   return StatusCode::SUCCESS;
 }
 // ===========================================================================
@@ -437,12 +434,11 @@ StatusCode CounterSvc::defaultPrintout
 // ===========================================================================
 void CounterSvc::print () const
 {
-  MsgStream log ( msgSvc() , name() ) ;
   // number of counters
   const auto _num = num() ;
   if ( 0 != _num )
   {
-    log << MSG::ALWAYS
+    always()
         << "Number of counters : "  << _num << endmsg
         << m_header << endmsg ;
   }
@@ -454,7 +450,7 @@ void CounterSvc::print () const
     }
   }
   for ( const auto& i : sorted_map ) {
-    log << Gaudi::Utils::formatAsTableRow( i.first.second
+    always() << Gaudi::Utils::formatAsTableRow( i.first.second
                                          , i.first.first
                                          , *i.second
                                          , m_useEffFormat
