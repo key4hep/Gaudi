@@ -32,6 +32,7 @@
 #include "GaudiKernel/System.h"
 #include <Gaudi/PluginService.h>
 #include "GaudiKernel/ToolHandle.h"
+#include "GaudiKernel/CommonMessaging.h"
 
 // For concurrency
 #include "GaudiKernel/EventContext.h"
@@ -74,7 +75,7 @@ class ToolHandleInfo;
  *  @author David Quarrie
  *  @date   1998
  */
-class GAUDI_API Algorithm: public implements3<IAlgorithm, IProperty, IStateful> {
+class GAUDI_API Algorithm: public CommonMessaging<implements3<IAlgorithm, IProperty, IStateful>> {
 public:
 #ifndef __REFLEX__
   typedef Gaudi::PluginService::Factory<IAlgorithm*,
@@ -246,9 +247,6 @@ public:
   SmartIF<T> service( const std::string& name, bool createIf = true, bool quiet = false ) const {
     return service(name,createIf,quiet).as<T>();
   }
-
-  /// Set the output level for current algorithm
-  void setOutputLevel( int level );
 
   /** The standard auditor service.May not be invoked before sysInitialize()
    *  has been invoked.
@@ -836,9 +834,6 @@ protected:
 
   /// Accessor for the Message level property
   IntegerProperty & outputLevelProperty() { return m_outputLevel; }
-
-  /// Callback for output level property
-  void initOutputLevel(Property& prop);
 
   /// Event specific data for multiple event processing
   EventContext* m_event_context;

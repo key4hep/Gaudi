@@ -696,7 +696,7 @@ int MessageSvc::outputLevel( const std::string& source )   const {
 // ---------------------------------------------------------------------------
   std::unique_lock<std::recursive_mutex> lock(m_thresholdMapMutex);
   auto it = m_thresholdMap.find( source );
-  return ( it != m_thresholdMap.end() ) ?  it->second : m_outputLevel.value();
+  return it != m_thresholdMap.end() ? it->second : m_outputLevel.value();
 }
 
 // ---------------------------------------------------------------------------
@@ -710,7 +710,13 @@ void MessageSvc::setOutputLevel(const std::string& source, int level)    {
 // ---------------------------------------------------------------------------
   std::unique_lock<std::recursive_mutex> lock(m_thresholdMapMutex);
 
-  m_thresholdMap[source] = level;
+  // only write if we really have to...
+  auto i = m_thresholdMap.find( source );
+  if (i == m_thresholdMap.end()) {
+    m_thresholdMap[source] = level;
+  } else if (i->second!=level) {
+    i->second = level;
+  }
 }
 
 // ---------------------------------------------------------------------------

@@ -72,5 +72,3 @@ MyTool::~MyTool( )
   MsgStream log(msgSvc(), name());
   log << MSG::INFO << "destructor has been called" << endmsg;
 }
-
-

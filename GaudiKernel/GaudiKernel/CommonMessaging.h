@@ -87,13 +87,16 @@ public:
     return msgSvc();
   }
 #endif
-
-  /// Return an uninitialized MsgStream.
-  inline MsgStream& msgStream() const {
-    if (UNLIKELY((!m_msgStream) || (!m_streamWithService))) {
+  void create_msgStream() const {
       auto& ms = msgSvc();
       m_msgStream.reset(new MsgStream(ms, this->name()));
       m_streamWithService = ms.isValid();
+  }
+
+  /// Return an uninitialized MsgStream.
+  inline MsgStream& msgStream() const {
+    if (UNLIKELY((!m_msgStream) || UNLIKELY(!m_streamWithService))) {
+      create_msgStream();
     }
     return *m_msgStream;
   }
@@ -140,14 +143,10 @@ public:
   inline MsgStream&     msg() const { return msgStream(MSG::INFO); }
 
   /// get the output level from the embedded MsgStream
-  inline MSG::Level msgLevel() const {
-    return msgStream().level();
-  }
+  inline MSG::Level msgLevel() const { return msgStream().level(); }
 
   /// get the output level from the embedded MsgStream
-  inline bool msgLevel(MSG::Level lvl) const {
-    return UNLIKELY(msgLevel() <= lvl);
-  }
+  inline bool msgLevel(MSG::Level lvl) const { return UNLIKELY(msgLevel() <= lvl); }
 
 protected:
   /// Pointer to the message service;
@@ -162,7 +161,11 @@ protected:
   /// Update the output level of the cached MsgStream.
   /// This function is meant to be called by the update handler of the OutputLevel property.
   void updateMsgStreamOutputLevel(int level) {
-    if (m_msgStream) m_msgStream->setLevel(level);
+    // todo: cache level, init a MSG::NIL?
+    if (level != MSG::NIL) {
+      msgSvc()->setOutputLevel ( this->name (), level ) ;
+      if (m_msgStream) m_msgStream->setLevel(level);
+    }
   }
 
 };

@@ -76,9 +76,8 @@ OutputIterator transform_copy_if( InputIterator first, InputIterator last,
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 FileMgr::FileMgr(const std::string& name, ISvcLocator* svc)
-  : base_class( name, svc ), 
-    m_log(msgSvc(), name )
- {
+  : base_class( name, svc )
+{
 
    declareProperty("LogFile",m_logfile="");
    declareProperty("PrintSummary",m_printSummary=false);
@@ -116,23 +115,21 @@ FileMgr::initialize() {
     });
     if (prop!=std::end(*props)) {
       setProperty( **prop ).ignore();
-      m_log.setLevel( m_outputLevel.value() );
     }
   }
 
   StatusCode status = Service::initialize();
-  m_log.setLevel( m_outputLevel.value() );
 
   if (status.isFailure()) {
 
     ON_DEBUG
-      m_log << MSG::DEBUG << "Failed to initialize the base class (Service)"
+      debug() << "Failed to initialize the base class (Service)"
 	    << endmsg;
     return status;
   }
 
   ON_VERBOSE
-    m_log << MSG::VERBOSE << "Initializing FileMgr" << endmsg;
+    verbose() << "Initializing FileMgr" << endmsg;
 
   if (m_loadRootHandler.value()) {
 
@@ -156,7 +153,7 @@ FileMgr::initialize() {
                       });
 
     if (regHandler(hdlr).isFailure()) {
-      m_log << MSG::ERROR
+      error()
 	    << "unable to register ROOT file handler with FileMgr"
 	    << endmsg;
     }
@@ -184,7 +181,7 @@ FileMgr::initialize() {
                       });
 
     if (regHandler(hdlp).isFailure()) {
-      m_log << MSG::ERROR
+      error()
 	    << "unable to register ROOT file handler with FileMgr"
 	    << endmsg;
     }
@@ -201,7 +198,7 @@ FileMgr::initialize() {
 StatusCode
 FileMgr::finalize() {
   ON_VERBOSE
-    m_log << MSG::VERBOSE << "FileMgr::finalize()" << endmsg;
+    verbose() << "FileMgr::finalize()" << endmsg;
 
 
   if (m_printSummary || outputLevel() <= MSG::DEBUG) {
@@ -213,23 +210,22 @@ FileMgr::finalize() {
 
 
   if (!m_files.empty()) {
-    m_log << MSG::WARNING
-	  << "At finalize, the following files remained open:"
-	  << endl;
-    for (const auto& itr : m_files) m_log << *(itr.second) << endl;
-    m_log << endmsg;
+    auto& log = warning();
+    log << "At finalize, the following files remained open:" << endl;
+    for (const auto& itr : m_files) log << *(itr.second) << endl;
+    log << endmsg;
   }
 
   if (m_logfile.value() != "") {
     std::ofstream ofs;
     ofs.open(m_logfile.value().c_str());
     if (!ofs) {
-      m_log << MSG::ERROR << "Unable to open output file \"" << m_logfile.value()
+      error() << "Unable to open output file \"" << m_logfile.value()
 	    << "\" for writing"
 	    << endmsg;
     } else {
       ON_DEBUG
-      m_log << MSG::DEBUG << "Saving log to \"" << m_logfile.value() << "\""
+      debug() << "Saving log to \"" << m_logfile.value() << "\""
 	        << endmsg;
       for (const auto& itr : m_files) {
         ofs << itr.second->name() << "  " << itr.second->tech() << "  "
@@ -259,7 +255,7 @@ FileMgr::finalize() {
 
   ON_DEBUG
   if ( status.isSuccess() )
-      m_log << MSG::DEBUG << "Service finalised successfully" << endmsg;
+      debug() << "Service finalised successfully" << endmsg;
 
   return status;
 
@@ -280,28 +276,28 @@ FileMgr::regHandler(FileHdlr fh) {
   IoTech tech = fh.tech;
 
   if (m_handlers.find(tech) != m_handlers.end()) {
-    m_log << MSG::WARNING
+    warning()
 	  << "Handler for IoTech " << tech << " already registered. Ignoring."
 	  << endmsg;
     return StatusCode::SUCCESS;
   }
 
   if ( ! fh.b_open_fcn ) {
-    m_log << MSG::ERROR
+    error()
 	  << "open handler for tech " << tech << " is NULL"
 	  << endmsg;
     return StatusCode::FAILURE;
   }
 
   if ( ! fh.b_close_fcn && ! fh.b_closeP_fcn ) {
-    m_log << MSG::ERROR
+    error()
 	  << "no close handler for tech " << tech << " registered"
 	  << endmsg;
     return StatusCode::FAILURE;
   }
 
   if ( ! fh.b_reopen_fcn && ! fh.b_reopenP_fcn) {
-    m_log << MSG::ERROR
+    error()
 	  << "no reopen handler for tech " << tech << " registered"
 	  << endmsg;
     return StatusCode::FAILURE;
@@ -309,7 +305,7 @@ FileMgr::regHandler(FileHdlr fh) {
 
 
   ON_DEBUG
-    m_log << MSG::DEBUG
+    debug()
 	  << "Successfully registered handler for tech \"" << tech << "\""
 	  << endmsg;
 
@@ -327,7 +323,7 @@ FileMgr::deregHandler( const IoTech& tech ) {
 
   auto itr = m_handlers.find(tech);
   if (itr == m_handlers.end()) {
-    m_log << MSG::ERROR << "Can't de-register tech " << tech
+    error() << "Can't de-register tech " << tech
 	  << " as it hasn't been registered!"
 	  << endmsg;
     return StatusCode::FAILURE;
@@ -408,7 +404,7 @@ FileMgr::open( const IoTech& tech, const std::string& caller,
 
 
   ON_VERBOSE
-    m_log << MSG::VERBOSE << "open(" << tech << ","
+    verbose() << "open(" << tech << ","
 	  << caller
 	  << ",\"" << fname << "\",\""
 	  << desc << "\","
@@ -428,7 +424,7 @@ FileMgr::open( const IoTech& tech, const std::string& caller,
 
   auto itr = std::find_if( fitr.first, fitr.second, [&](fileMap::const_reference i) { return i.second->tech()!=tech; } );
   if (itr != fitr.second) {
-      m_log << MSG::ERROR << "when calling open on " << fname
+      error() << "when calling open on " << fname
 	    << " with tech " << tech
 	    << ", file already opened with different tech "
 	    << itr->second->tech()
@@ -453,7 +449,7 @@ FileMgr::open( const IoTech& tech, const std::string& caller,
       if ( shareable && fa->flags().match(flags,false) ) {
 
             ON_DEBUG
-            m_log << MSG::DEBUG << " found shared file: "
+            debug() << " found shared file: "
                   << *fa << endmsg;
 
             fd = fa->fd();
@@ -476,19 +472,19 @@ FileMgr::open( const IoTech& tech, const std::string& caller,
     try {
       r = fh.b_open_fcn(fname,flags,desc,fd,ptr);
     } catch (const std::bad_function_call& err) {
-      m_log << MSG::ERROR << "when calling open handler for " << tech
+      error() << "when calling open handler for " << tech
 	    << " on file "
 	    << fname << " caught " << err.what() << endmsg;
       return -4;
     } catch (...) {
-      m_log << MSG::ERROR << "when calling open handler for " << tech
+      error() << "when calling open handler for " << tech
 	    << " on file "
 	    << fname << " caught an unknown exception." << endmsg;
     return -4;
     }
 
     if (r != 0) {
-      m_log << MSG::WARNING
+      warning()
 	    << "open of file \"" << fname << "\", tech: \"" << tech
 	    << "\", flags: \"" << flags << "\" requested by "
 	    << caller
@@ -509,11 +505,11 @@ FileMgr::open( const IoTech& tech, const std::string& caller,
   FileAttr* fa = new FileAttr(fd,fname,desc,tech,flags,ptr,true,shared);
 
   ON_DEBUG
-    m_log << MSG::DEBUG << "opened file " << *fa << endmsg;
+    debug() << "opened file " << *fa << endmsg;
 
 
   if (fd == -1 && ptr == 0) {
-    m_log << MSG::WARNING << "when opening " << *fa << " both File Descriptor"
+    warning() << "when opening " << *fa << " both File Descriptor"
 	  << " and File Ptr are invalid" << endmsg;
     r = 3;
   }
@@ -523,12 +519,12 @@ FileMgr::open( const IoTech& tech, const std::string& caller,
     if (fa->flags() == Io::READ || shared) {
       // ok
     } else if (*fa == *(itr->second) ) {
-      m_log << MSG::WARNING << "open call for file \"" << fname
+      warning() << "open call for file \"" << fname
 	    << "\" returned a pre-existing file with identical"
 	    << " FileAttributes: " << *fa << endmsg;
       r = 1;
     } else {
-      m_log << MSG::WARNING << "open call for file \"" << fname
+      warning() << "open call for file \"" << fname
 	    << "\" returned a pre-existing file with different"
 	    << " FileAttributes -"
 	    << endl << "old: " << *(itr->second)
@@ -541,7 +537,7 @@ FileMgr::open( const IoTech& tech, const std::string& caller,
 
   // execute all our open callbacks
   if (execAction( fa, caller, Io::OPEN ).isFailure()) {
-    m_log << MSG::WARNING
+    warning()
 	  << "at least one open callback action failed"
 	  << endmsg;
   }
@@ -563,7 +559,7 @@ FileMgr::close( Fd fd, const std::string& caller ) {
   //         number of shared files still open.
 
   ON_VERBOSE
-    m_log << MSG::VERBOSE << "close("  << fd << ")"
+    verbose() << "close("  << fd << ")"
 	  << endmsg;
 
   close_t r = -1;
@@ -574,7 +570,7 @@ FileMgr::close( Fd fd, const std::string& caller ) {
 
 
   if (itr == std::end(m_files)) {
-    m_log << MSG::ERROR << "unknown file descriptor \"" << fd
+    error() << "unknown file descriptor \"" << fd
 	  << "\" when calling close()"
 	  << endmsg;
     return r;
@@ -590,7 +586,7 @@ FileMgr::close( Fd fd, const std::string& caller ) {
   }
 
   if (! fh.b_close_fcn) {
-    m_log << MSG::ERROR << "no close(" << tech << ",Fd) function registered"
+    error() << "no close(" << tech << ",Fd) function registered"
 	  << endmsg;
     return -1;
   }
@@ -603,14 +599,14 @@ FileMgr::close( Fd fd, const std::string& caller ) {
                         return f.second->fd()==fd; } ); 
 
   ON_VERBOSE
-    m_log << MSG::VERBOSE << "   ref count: "  << i
+    verbose() << "   ref count: "  << i
 	  << endmsg;
 
 
   if (i > 1 && fa->isShared()) {
     // file open multiple times. don't do the actual close
     ON_DEBUG
-      m_log << MSG::DEBUG << "closing file " << fa->name() << " opened "
+      debug() << "closing file " << fa->name() << " opened "
 	    << i << " times with Fd " << fd << endmsg;
     m_files.erase(itr);
 
@@ -618,19 +614,19 @@ FileMgr::close( Fd fd, const std::string& caller ) {
 
   } else if (i == 1 || (i>1 && !fa->isShared()) ) {
     ON_DEBUG
-      m_log << "closing " << *fa << endmsg;
+      debug() << "closing " << *fa << endmsg;
 
 
     try {
       r = fh.b_close_fcn(fd);
     } catch (const std::bad_function_call& err) {
-      m_log << MSG::ERROR << "when calling close handler for " << tech
+      error() << "when calling close handler for " << tech
 	    << " on file descriptor "
 	    << fd << " caught " << err.what() << endmsg;
       execAction(fa, caller, Io::CLOSE_ERR ).ignore();
       return -1;
     } catch (...) {
-      m_log << MSG::ERROR << "when calling close handler for " << tech
+      error() << "when calling close handler for " << tech
 	    << " on file descriptor "
 	    << fd << " caught an unknown exception." << endmsg;
       execAction(fa, caller, Io::CLOSE_ERR ).ignore();
@@ -638,7 +634,7 @@ FileMgr::close( Fd fd, const std::string& caller ) {
     }
 
     if (r < 0) {
-      m_log << MSG::WARNING
+      warning()
 	    << "close of file with FD \"" << fd
 	    << "\", name: \"" << fa->name()
 	    << "\", tech: \"" << tech << "\" failed"
@@ -653,7 +649,7 @@ FileMgr::close( Fd fd, const std::string& caller ) {
 
   } else if (i <= 0) {
     // this should never happen!
-    m_log << MSG::ERROR
+    error()
 	  << "ref count < 0 when closing " << fa
 	  << ". This should never happen"
 	  << endmsg;
@@ -670,7 +666,7 @@ FileMgr::close( Fd fd, const std::string& caller ) {
 
   // exec all callbacks
   if (execAction(fa, caller, Io::CLOSE).isFailure()) {
-    m_log << MSG::WARNING
+    warning()
 	  << "at least one close callback action failed"
 	  << endmsg;
   }
@@ -691,7 +687,7 @@ FileMgr::close(void* vp, const std::string& caller) {
   //         number of shared files still open.
 
   ON_VERBOSE
-    m_log << MSG::VERBOSE << "close(" << vp << ")"
+    verbose() << "close(" << vp << ")"
 	  << endmsg;
 
   close_t r = -1;
@@ -700,7 +696,7 @@ FileMgr::close(void* vp, const std::string& caller) {
                            [&](fileMap::const_reference i ) { return i.second->fptr()==vp; } );
 
   if (itr == m_files.end()) {
-    m_log << MSG::ERROR << "unknown file ptr \"" << vp
+    error() << "unknown file ptr \"" << vp
 	  << "\" when calling close()"
 	  << endmsg;
     return r;
@@ -714,7 +710,7 @@ FileMgr::close(void* vp, const std::string& caller) {
     return r;
   }
   if (! fh.b_closeP_fcn) {
-    m_log << MSG::ERROR << "no close(" << tech << ",void*) function registered"
+    error() << "no close(" << tech << ",void*) function registered"
 	  << endmsg;
     return -1;
   }
@@ -729,13 +725,13 @@ FileMgr::close(void* vp, const std::string& caller) {
                          { return f.second->fptr()==vp; } );
 
   ON_VERBOSE
-    m_log << MSG::VERBOSE << "   ref count: "  << i
+    verbose() << "   ref count: "  << i
 	  << endmsg;
 
   if (i > 1 && fa->isShared()) {
     // file open multiple times in shared access. don't do the actual close
     ON_DEBUG
-      m_log << MSG::DEBUG << "closing file " << fa->name() << " opened "
+      debug() << "closing file " << fa->name() << " opened "
 	    << i << " times with fptr " << vp << endmsg;
     m_files.erase(itr);
 
@@ -743,18 +739,18 @@ FileMgr::close(void* vp, const std::string& caller) {
 
   } else if (i == 1 || (i>1 && !fa->isShared()) ) {
     ON_DEBUG
-      m_log << MSG::DEBUG << "closing: " << *fa << endmsg;
+      debug() << "closing: " << *fa << endmsg;
 
     try {
       r = fh.b_closeP_fcn(vp);
     } catch (const std::bad_function_call& err) {
-      m_log << MSG::ERROR << "when calling close handler for " << tech
+      error() << "when calling close handler for " << tech
 	    << " on file " << fa->name()
 	    << " caught " << err.what() << endmsg;
       execAction(fa, caller, CLOSE_ERR ).ignore();
       return -1;
     } catch (...) {
-      m_log << MSG::ERROR << "when calling close handler for " << tech
+      error() << "when calling close handler for " << tech
 	    << " on file " << fa->name()
 	    << " caught an unknown exception." << endmsg;
       execAction(fa, caller, CLOSE_ERR ).ignore();
@@ -762,7 +758,7 @@ FileMgr::close(void* vp, const std::string& caller) {
     }
 
     if (r < 0) {
-      m_log << MSG::WARNING
+      warning()
 	    << "close of file with ptr \"" << vp
 	    << "\", name: \"" << fa->name()
 	    << "\", tech: \"" << tech << "\" failed"
@@ -775,7 +771,7 @@ FileMgr::close(void* vp, const std::string& caller) {
 
   } else {
     // this should never happen!
-    m_log << MSG::ERROR
+    error()
 	  << "ref count: " << i << " < 0 when closing " << fa
 	  << ". This should never happen"
 	  << endmsg;
@@ -792,7 +788,7 @@ FileMgr::close(void* vp, const std::string& caller) {
 
   // exec all callbacks
   if (execAction(fa, caller, CLOSE).isFailure()) {
-    m_log << MSG::WARNING
+    warning()
 	  << "at least one close callback action failed"
 	  << endmsg;
   }
@@ -807,7 +803,7 @@ reopen_t
 FileMgr::reopen(Fd fd, const IoFlags& flags, const std::string& caller) {
 
   ON_VERBOSE
-    m_log << MSG::VERBOSE << "reopen("  << fd << "," << flags
+    verbose() << "reopen("  << fd << "," << flags
 	  << "," << caller << ")"
 	  << endmsg;
 
@@ -818,7 +814,7 @@ FileMgr::reopen(Fd fd, const IoFlags& flags, const std::string& caller) {
                            { return f.second->fd() == fd; } );
 
   if (itr == m_files.end()) {
-    m_log << MSG::ERROR << "unregistered FD \"" << fd
+    error() << "unregistered FD \"" << fd
 	  << "\" when calling reopen()"
 	  << endmsg;
     return r;
@@ -836,7 +832,7 @@ FileMgr::reopen(Fd fd, const IoFlags& flags, const std::string& caller) {
   fa->flags( flags );
 
   if ( ! fh.b_reopen_fcn ) {
-    m_log << MSG::ERROR << "no reopen(" << tech << ",Fd) function registered"
+    error() << "no reopen(" << tech << ",Fd) function registered"
 	  << endmsg;
     return -1;
   }
@@ -847,13 +843,13 @@ FileMgr::reopen(Fd fd, const IoFlags& flags, const std::string& caller) {
   try {
     r = fh.b_reopen_fcn(fd,flags);
   } catch (const std::bad_function_call& err) {
-    m_log << MSG::ERROR << "when calling reopen handler for " << tech
+    error() << "when calling reopen handler for " << tech
 	  << " on file descriptor " << fd << " with flags "
 	  << flags
 	  << " caught " << err.what() << endmsg;
     return -1;
   } catch (...) {
-    m_log << MSG::ERROR << "when calling reopen handler for " << tech
+    error() << "when calling reopen handler for " << tech
 	  << " on file descriptor " << fd << " with flags "
 	  << flags
 	  << " caught an unknown exception." << endmsg;
@@ -861,7 +857,7 @@ FileMgr::reopen(Fd fd, const IoFlags& flags, const std::string& caller) {
   }
 
   if (r < 0) {
-    m_log << MSG::WARNING
+    warning()
 	  << "reopen of file with FD \"" << fd
 	  << "\", name: \"" << fa->name()
 	  << "\", tech: \"" << tech
@@ -879,7 +875,7 @@ FileMgr::reopen(Fd fd, const IoFlags& flags, const std::string& caller) {
 
   // exec all callbacks
   if (execAction(fa, caller, Io::REOPEN).isFailure()) {
-    m_log << MSG::WARNING
+    warning()
 	  << "at least one reopen callback action failed"
 	  << endmsg;
   }
@@ -893,7 +889,7 @@ FileMgr::reopen(Fd fd, const IoFlags& flags, const std::string& caller) {
 reopen_t
 FileMgr::reopen(void* vp, const IoFlags& flags, const std::string& caller) {
   ON_VERBOSE
-    m_log << MSG::VERBOSE << "reopen("  << vp << "," << flags
+    verbose() << "reopen("  << vp << "," << flags
 	  << "," << caller << ")"
 	  << endmsg;
 
@@ -903,7 +899,7 @@ FileMgr::reopen(void* vp, const IoFlags& flags, const std::string& caller) {
                            [&](fileMap::const_reference f) {
                                return f.second->fptr() == vp ; } );
   if (itr == m_files.end()) {
-    m_log << MSG::ERROR
+    error()
 	  << "unregistered file ptr \"" << vp
 	  << "\" when calling reopen()"
 	  << endmsg;
@@ -919,7 +915,7 @@ FileMgr::reopen(void* vp, const IoFlags& flags, const std::string& caller) {
   }
 
   if ( ! fh.b_reopenP_fcn ) {
-    m_log << MSG::ERROR << "no reopen(" << tech << ",void*) function registered"
+    error() << "no reopen(" << tech << ",void*) function registered"
 	  << endmsg;
     return -1;
   }
@@ -927,13 +923,13 @@ FileMgr::reopen(void* vp, const IoFlags& flags, const std::string& caller) {
   try {
     r = fh.b_reopenP_fcn(vp,flags);
   } catch (const std::bad_function_call& err) {
-    m_log << MSG::ERROR << "when calling reopen handler for " << tech
+    error() << "when calling reopen handler for " << tech
 	  << " on file " << fa->name() << " with flags "
 	  << flags
 	  << " caught " << err.what() << endmsg;
     return -1;
   } catch (...) {
-    m_log << MSG::ERROR << "when calling reopen handler for " << tech
+    error() << "when calling reopen handler for " << tech
 	  << " on file " << fa->name() << " with flags "
 	  << flags
 	  << " caught an unknown exception." << endmsg;
@@ -941,7 +937,7 @@ FileMgr::reopen(void* vp, const IoFlags& flags, const std::string& caller) {
   }
 
   if (r < 0) {
-    m_log << MSG::WARNING
+    warning()
 	  << "reopen of file with ptr \"" << vp
 	  << "\", name: \"" << fa->name()
 	  << "\", tech: \"" << tech
@@ -959,7 +955,7 @@ FileMgr::reopen(void* vp, const IoFlags& flags, const std::string& caller) {
 
   // exec all callbacks
   if (execAction(fa, caller, Io::REOPEN).isFailure()) {
-    m_log << MSG::WARNING
+    warning()
 	  << "at least one reopen callback action failed"
 	  << endmsg;
   }
@@ -1279,14 +1275,14 @@ FileMgr::fptr(const Io::Fd& fd) const {
 void
 FileMgr::listFiles() const {
 
-  m_log << MSG::INFO << "listing registered files ["
+  info() << "listing registered files ["
 	<< (m_files.size() + m_oldFiles.size() )
 	<< "]:" << endl;
 
-  for (auto& itr : m_files    ) m_log << itr.second << endl;
-  for (auto& it2 : m_oldFiles ) m_log << *it2 << endl;
+  for (auto& itr : m_files    ) info() << itr.second << endl;
+  for (auto& it2 : m_oldFiles ) info() << *it2 << endl;
 
-  m_log << endmsg;
+  info() << endmsg;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -1306,7 +1302,7 @@ FileMgr::getHandler(const Io::IoTech& tech, Io::FileHdlr& hdlr) const {
 
   auto itr = m_handlers.find(tech);
   if (itr == m_handlers.end()) {
-    m_log << MSG::ERROR
+    error()
 	  << "no handler for tech " << tech << " registered"
 	  << endmsg;
     return StatusCode::FAILURE;
@@ -1322,7 +1318,7 @@ FileMgr::getHandler(const std::string& fname, Io::FileHdlr& hdlr) const {
 
   auto fitr = m_files.equal_range(fname);
   if (fitr.first == fitr.second) {
-    m_log << MSG::ERROR
+    error()
 	  << "no file \"" << fname << "\" registered. Cannot determine tech"
 	  << endmsg;
     return StatusCode::FAILURE;
@@ -1334,7 +1330,7 @@ FileMgr::getHandler(const std::string& fname, Io::FileHdlr& hdlr) const {
   ++itr;
   while( itr != fitr.second ) {
     if ( itr->second->tech() != tech ) {
-      m_log << MSG::ERROR
+      error()
 	    << "multiple technologies registered for file \"" << fname
 	    << "\". Cannot determine handler" << endmsg;
       return StatusCode::FAILURE;
@@ -1351,11 +1347,11 @@ FileMgr::getHandler(const std::string& fname, Io::FileHdlr& hdlr) const {
 void
 FileMgr::listHandlers() const {
 
-  m_log << MSG::INFO
+  info()
 	<< "Listing registered handlers:" << endl;
 
-  for (const auto& itr : m_handlers ) m_log << "    " << itr.first << endl;
-  m_log << endmsg;
+  for (const auto& itr : m_handlers ) info() << "    " << itr.first << endl;
+  info() << endmsg;
 
 }
 
@@ -1375,7 +1371,7 @@ FileMgr::regAction(bfcn_action_t bf, const Io::Action& a, const Io::IoTech& t,
 		   const std::string& d) {
 
   ON_DEBUG
-    m_log << MSG::DEBUG << "registering " << a << " action "
+    debug() << "registering " << a << " action "
 	  << System::typeinfoName(bf.target_type())
 	  << " for tech " << t << endmsg;
 
@@ -1390,28 +1386,28 @@ FileMgr::regAction(bfcn_action_t bf, const Io::Action& a, const Io::IoTech& t,
 void
 FileMgr::listActions() const {
 
-  m_log << MSG::INFO << "listing registered actions" << endl;
+  info() << "listing registered actions" << endl;
 
   for (const auto& iit : m_actions) {
     Io::IoTech t = iit.first;
     const actionMap& m = iit.second;
 
     if (!m.empty()) {
-      m_log << " --- Tech: ";
+      info() << " --- Tech: ";
       if (t == Io::UNKNOWN) {
-        m_log << "ALL ---" << endl;
+        info() << "ALL ---" << endl;
       } else {
-        m_log << t << " ---" << endl;
+        info() << t << " ---" << endl;
       }
       for (const auto& iia : m ) {
         for (const auto& it2 : iia.second ) {
-            m_log << "   " << iia.first << "  "
+            info() << "   " << iia.first << "  "
 		          << it2.second << endl;
 	    }
       }
     }
   }
-  m_log << endmsg;
+  info() << endmsg;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -1452,7 +1448,7 @@ FileMgr::execActs(Io::FileAttr* fa, const std::string& caller,
   }
 
   ON_DEBUG
-    m_log << MSG::DEBUG
+    debug()
 	  << "executing " << mitr->second.size()  << " " << a
 	  << " actions on "
 	  << *fa << " from "
@@ -1466,7 +1462,7 @@ FileMgr::execActs(Io::FileAttr* fa, const std::string& caller,
   if (it2 != m_supMap.end()) {
     if (get_bit(it2->second,a) || get_bit(it2->second,Io::INVALID_ACTION)) {
       ON_DEBUG
-	m_log << MSG::DEBUG << "     --> suppressing callback action for "
+	debug() << "     --> suppressing callback action for "
 	      << a
 	      << endmsg;
       return StatusCode::SUCCESS;
@@ -1476,11 +1472,11 @@ FileMgr::execActs(Io::FileAttr* fa, const std::string& caller,
   for (const auto& itr : mitr->second ) {
 
     ON_DEBUG
-      m_log << MSG::DEBUG << "executing "
+      debug() << "executing "
 	    << itr.second << endmsg;
 
     if ( (((itr.first))(fa,caller)).isFailure() ) {
-      m_log << MSG::WARNING << "execution of "
+      warning() << "execution of "
 	    << itr.second << " on " << *fa
 	    << " failed during " << a << " action"
 	    << endmsg;
@@ -1500,7 +1496,7 @@ FileMgr::accessMatch(const Io::IoFlags& fold, const Io::IoFlags& fnew,
 		     bool /*strict*/) const {
 
     ON_VERBOSE
-      m_log << MSG::VERBOSE << "accessMatch  old: " << fold
+      verbose() << "accessMatch  old: " << fold
 	    << "  new: " << fnew
 	    << endmsg;
 
@@ -1542,19 +1538,19 @@ FileMgr::listSuppression() const {
 
   if (m_supMap.empty())  return;
 
-  m_log << MSG::INFO << "listing suppressed file actions" << endl;
+  info() << "listing suppressed file actions" << endl;
 
   for (auto it2=m_supMap.begin(); it2 != m_supMap.end(); ++it2) {
-    m_log << "  " << it2->first;
+    info() << "  " << it2->first;
     if (get_bit(it2->second, Io::INVALID_ACTION)) {
-      m_log << " ALL" << endl;
+      info() << " ALL" << endl;
     } else {
       for (int i=0; i<Io::INVALID_ACTION; ++i) {
-	if (get_bit(it2->second,i)) { m_log << " " << (Io::Action)i; }
+	if (get_bit(it2->second,i)) { info() << " " << (Io::Action)i; }
       }
-      m_log << endl;
+      info() << endl;
     }
   }
 
-  m_log << endmsg;
+  info() << endmsg;
 }

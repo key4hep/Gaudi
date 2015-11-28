@@ -512,7 +512,6 @@ public:
   inline StatEntity& counter( const std::string& tag ) const { return m_counters[tag] ; }
   // ==========================================================================
 public:
-  void resetMsgStream() const;
   /// Insert the actual C++ type of the algorithm/tool in the messages ?
   inline bool typePrint     () const { return m_typePrint    ; }
   /// Print properties at initialization ?
@@ -741,11 +740,6 @@ private:
   void initGaudiCommonConstructor( const IInterface * parent = 0 );
   // ==========================================================================
 private:
-  /// The message level
-  MSG::Level  m_msgLevel    = MSG::NIL;
-private:
-  /// The predefined message stream
-  mutable std::unique_ptr<MsgStream> m_msgStream    ;
   /// List of active  tools
   mutable AlgTools   m_tools       ;
   /// List of active  services

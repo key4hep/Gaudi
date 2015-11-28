@@ -36,17 +36,16 @@ StatusCode
 Sequencer::initialize()
 {
   StatusCode result = StatusCode::SUCCESS;
-  MsgStream log( msgSvc( ), name( ) );
 
 
   result = decodeMemberNames();
   if( result.isFailure() ) {
-    log << MSG::ERROR << "Unable to configure one or more sequencer members " << endmsg;
+    error() << "Unable to configure one or more sequencer members " << endmsg;
     return result;
   }
   result = decodeBranchMemberNames();
   if( result.isFailure() ) {
-    log << MSG::ERROR << "Unable to configure one or more branch members " << endmsg;
+    error() << "Unable to configure one or more branch members " << endmsg;
     return result;
   }
 
@@ -54,7 +53,7 @@ Sequencer::initialize()
   for (auto& alg : *subAlgorithms() ) {
     result = alg->sysInitialize( );
     if( result.isFailure() ) {
-      log << MSG::ERROR << "Unable to initialize Algorithm " << alg->name() << endmsg;
+      error() << "Unable to initialize Algorithm " << alg->name() << endmsg;
       return result;
     }
   }
@@ -63,7 +62,7 @@ Sequencer::initialize()
   for (auto& alg : branchAlgorithms() ) {
     result = alg->sysInitialize( );
     if( result.isFailure() ) {
-      log << MSG::ERROR << "Unable to initialize Algorithm " << alg->name() << endmsg;
+      error() << "Unable to initialize Algorithm " << alg->name() << endmsg;
       return result;
     }
   }
@@ -98,9 +97,7 @@ StatusCode
 Sequencer::execute()
 {
   StatusCode result = StatusCode::SUCCESS;
-  MsgStream log( msgSvc( ), name( ) );
-
-  ON_DEBUG log << MSG::DEBUG << name( ) << " Sequencer::execute( )" << endmsg;
+  ON_DEBUG debug() << name( ) << " Sequencer::execute( )" << endmsg;
 
   // Bypass the loop if this sequencer is disabled or has already been executed
   if ( isEnabled( ) && ! isExecuted( ) ) {
@@ -151,8 +148,7 @@ Sequencer::finalize()
   // function already does this for the main members.
   for (auto & alg : branchAlgorithms() ) {
     if (alg->sysFinalize( ).isFailure()) {
-      MsgStream log( msgSvc( ), name( ) );
-      log << MSG::ERROR << "Unable to finalize Algorithm "
+      error() << "Unable to finalize Algorithm "
           << alg->name() << endmsg;
     }
   }
@@ -163,14 +159,13 @@ StatusCode
 Sequencer::start()
 {
   StatusCode result = StatusCode::SUCCESS;
-  MsgStream log( msgSvc( ), name( ) );
 
 
   // Loop over all sub-algorithms
   for (auto& alg : *subAlgorithms() ) {
     result = alg->sysStart( );
     if( result.isFailure() ) {
-      log << MSG::ERROR << "Unable to start Algorithm " << alg->name() << endmsg;
+      error() << "Unable to start Algorithm " << alg->name() << endmsg;
       return result;
     }
   }
@@ -179,7 +174,7 @@ Sequencer::start()
   for (auto& alg : branchAlgorithms() ) {
     result = alg->sysStart( );
     if( result.isFailure() ) {
-      log << MSG::ERROR << "Unable to start Algorithm " << alg->name() << endmsg;
+      error() << "Unable to start Algorithm " << alg->name() << endmsg;
       return result;
     }
   }
@@ -195,17 +190,15 @@ Sequencer::stop()
 
   for (auto& alg : *subAlgorithms() ) {
     if (alg->sysStop( ).isFailure()) {
-      MsgStream log( msgSvc( ), name( ) );
-      log << MSG::ERROR << "Unable to stop Algorithm "
+      error() << "Unable to stop Algorithm "
           << alg->name() << endmsg;
     }
   }
 
   for (auto& alg : branchAlgorithms() ) {
     if (alg->sysStop( ).isFailure()) {
-      MsgStream log( msgSvc( ), name( ) );
-      log << MSG::ERROR << "Unable to stop Algorithm "
-          << alg->name() << endmsg;
+      error() << "Unable to stop Algorithm "
+              << alg->name() << endmsg;
     }
   }
   return StatusCode::SUCCESS;
@@ -215,7 +208,6 @@ StatusCode
 Sequencer::beginRun()
 {
   StatusCode result = StatusCode::SUCCESS;
-  MsgStream log( msgSvc( ), name( ) );
 
   // Bypass the loop if this sequencer is disabled
   if ( isEnabled( ) ) {
@@ -227,12 +219,12 @@ Sequencer::beginRun()
     for (auto& alg : *subAlgorithms() ) {
       result = alg->sysInitialize( );
       if( result.isFailure() ) {
-        log << MSG::ERROR << "Unable to initialize Algorithm " << alg->name() << endmsg;
+        error() << "Unable to initialize Algorithm " << alg->name() << endmsg;
         break;
       }
       result = alg->sysStart( );
       if( result.isFailure() ) {
-        log << MSG::ERROR << "Unable to start Algorithm " << alg->name() << endmsg;
+        error() << "Unable to start Algorithm " << alg->name() << endmsg;
         break;
       }
     }
@@ -252,12 +244,12 @@ Sequencer::beginRun()
     for (auto& alg : branchAlgorithms() ) {
       result = alg->sysInitialize( );
       if( result.isFailure() ) {
-        log << MSG::ERROR << "Unable to initialize Algorithm " << alg->name() << endmsg;
+        error() << "Unable to initialize Algorithm " << alg->name() << endmsg;
         break;
       }
       result = alg->sysStart( );
       if( result.isFailure() ) {
-        log << MSG::ERROR << "Unable to start Algorithm " << alg->name() << endmsg;
+        error() << "Unable to start Algorithm " << alg->name() << endmsg;
         break;
       }
     }
@@ -444,7 +436,6 @@ Sequencer::createAndAppend( const std::string& type,
 	                        Algorithm*& pAlgorithm,
 	                        std::vector<Algorithm*>& theAlgs )
 {
-  MsgStream log( msgSvc( ), name( ) );
   auto theAlgMgr = serviceLocator()->service<IAlgManager>("ApplicationMgr");
   if ( !theAlgMgr )  return StatusCode::FAILURE;
 
@@ -455,7 +446,7 @@ Sequencer::createAndAppend( const std::string& type,
       pAlgorithm = dynamic_cast<Algorithm*>(tmp);
       theAlgs.push_back( pAlgorithm );
     } catch(...){
-      log << MSG::ERROR << "Unable to create Algorithm " << algName << endmsg;
+      error() << "Unable to create Algorithm " << algName << endmsg;
       result = StatusCode::FAILURE;
     }
   }
@@ -469,7 +460,6 @@ Sequencer::decodeNames( StringArrayProperty& theNames,
                         std::vector<bool>& theLogic )
 {
   StatusCode result;
-  MsgStream log( msgSvc( ), name( ) );
   auto theAlgMgr = serviceLocator()->service<IAlgManager>("ApplicationMgr");
   if ( theAlgMgr ) {
     // Clear the existing list of algorithms
@@ -519,7 +509,7 @@ Sequencer::decodeNames( StringArrayProperty& theNames,
         try{
           theAlgorithm = dynamic_cast<Algorithm*>(theIAlg.get());
         } catch(...){
-          log << MSG::WARNING << theName << " is not an Algorithm - Failed dynamic cast" << endmsg;
+          warning() << theName << " is not an Algorithm - Failed dynamic cast" << endmsg;
           theAlgorithm = nullptr; // release
         }
       }
@@ -528,9 +518,9 @@ Sequencer::decodeNames( StringArrayProperty& theNames,
         // The specified Algorithm already exists - just append it to the membership list.
         status = append( theAlgorithm, theAlgs );
         if ( status.isSuccess( ) ) {
-          ON_DEBUG log << MSG::DEBUG << theName << " already exists - appended to member list" << endmsg;
+          ON_DEBUG debug() << theName << " already exists - appended to member list" << endmsg;
         } else {
-          log << MSG::WARNING << theName << " already exists - append failed!!!" << endmsg;
+          warning() << theName << " already exists - append failed!!!" << endmsg;
           result = StatusCode::FAILURE;
         }
       } else {
@@ -539,9 +529,9 @@ Sequencer::decodeNames( StringArrayProperty& theNames,
         // and append it to the membership list.
         status = createAndAppend( theType, theName, theAlgorithm, theAlgs );
         if ( status.isSuccess( ) ) {
-          ON_DEBUG log << MSG::DEBUG << theName << " doesn't exist - created and appended to member list" << endmsg;
+          ON_DEBUG debug() << theName << " doesn't exist - created and appended to member list" << endmsg;
         } else {
-          log << MSG::WARNING << theName << " doesn't exist - creation failed!!!" << endmsg;
+          warning() << theName << " doesn't exist - creation failed!!!" << endmsg;
           result = StatusCode::FAILURE;
         }
       }
@@ -551,21 +541,21 @@ Sequencer::decodeNames( StringArrayProperty& theNames,
   }
   // Print membership list
   if ( result.isSuccess() && theAlgs.size() != 0 ) {
-    log << MSG::INFO << "Member list: ";
+    info() << "Member list: ";
     auto ai = theAlgs.begin();
     auto li = theLogic.begin();
     for ( ; ai != theAlgs.end(); ++ai, ++li ) {
 
-      if ( ai != theAlgs.begin() ) log << ", ";
+      if ( ai != theAlgs.begin() ) info() << ", ";
 
       if ( (*ai)->name() == System::typeinfoName(typeid(**ai)) )
-        log << (*ai)->name();
+        info() << (*ai)->name();
       else
-        log << System::typeinfoName(typeid(**ai)) << "/" << (*ai)->name();
+        info() << System::typeinfoName(typeid(**ai)) << "/" << (*ai)->name();
 
-      if (*li) log << ":invert";
+      if (*li) info() << ":invert";
     }
-    log << endmsg;
+    info() << endmsg;
   }
   return result;
 }
@@ -636,7 +626,7 @@ Sequencer::remove( const std::string& algname, std::vector<Algorithm*>& theAlgs 
 
       // Algorithm with specified name exists in the algorithm list - remove it
       // THIS ISN'T IMPLEMENTED YET!!!!
-      log << MSG::INFO <<"Sequencer::remove( ) isn't implemented yet!!!!!" << endmsg;
+      info() << "Sequencer::remove( ) isn't implemented yet!!!!!" << endmsg;
       result = StatusCode::SUCCESS;
       break;
     }

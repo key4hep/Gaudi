@@ -15,6 +15,7 @@
 #include "GaudiKernel/IStateful.h"
 #include <Gaudi/PluginService.h>
 #include "GaudiKernel/ToolHandle.h"
+#include "GaudiKernel/CommonMessaging.h"
 
 #include "GaudiKernel/MinimalDataObjectHandle.h"
 #include "GaudiKernel/DataObjectDescriptor.h"
@@ -41,8 +42,8 @@ class ToolHandleInfo;
  *  @author Gloria Corti
  *  @author Pere Mato
  */
-class GAUDI_API AlgTool: public implements3<IAlgTool, IProperty, IStateful> {
-  friend class ToolSvc;
+class GAUDI_API AlgTool: public CommonMessaging<implements3<IAlgTool, IProperty, IStateful>> {
+//  friend class ToolSvc;
 public:
 #ifndef __REFLEX__
   typedef Gaudi::PluginService::Factory<IAlgTool*,
@@ -164,13 +165,10 @@ public:
            const IInterface* parent);
 
   /// Retrieve pointer to service locator.
-  ISvcLocator* serviceLocator()  const;
+  SmartIF<ISvcLocator>& serviceLocator()  const override;
 
   /// shortcut for the method service locator
   ISvcLocator* svcLoc()  const { return serviceLocator() ; }
-
-  /// Retrieve pointer to message service.
-  IMessageSvc* msgSvc() const;
 
   /** accessor to event service  service
    *  @return pointer to detector service
@@ -285,14 +283,13 @@ public:
 
 		handle.setOwner(this);
 
-		MsgStream log(msgSvc(), name());
 
 		if (LIKELY(res)) {
-			log << MSG::DEBUG << "Handle for " << propertyName << " ("
+			debug() << "Handle for " << propertyName << " ("
 					<< address << ")" << " successfully created and stored."
 					<< endmsg;
 		} else {
-			log << MSG::ERROR << "Handle for " << propertyName << " ("
+			error() << "Handle for " << propertyName << " ("
 					<< address << ")" << " could not be created." << endmsg;
 		}
 
@@ -324,14 +321,13 @@ public:
 
 		handle.setOwner(this);
 
-		MsgStream log(msgSvc(), name());
 
 		if (LIKELY(res)) {
-			log << MSG::DEBUG << "Handle for " << propertyName << " ("
+			debug() << "Handle for " << propertyName << " ("
 					<< (addresses.empty() ? DataObjectDescriptor::NULL_ : addresses[0]) << ")" << " successfully created and stored."
 					<< endmsg;
 		} else {
-			log << MSG::ERROR << "Handle for " << propertyName << " ("
+			error() << "Handle for " << propertyName << " ("
 					<< (addresses.empty() ? DataObjectDescriptor::NULL_ : addresses[0]) << ")" << " could not be created." << endmsg;
 		}
 
@@ -362,14 +358,13 @@ public:
 
 		handle.setOwner(this);
 
-		MsgStream log(msgSvc(), name());
 
 		if (LIKELY(res)) {
-			log << MSG::DEBUG << "Handle for " << propertyName << " ("
+			debug() << "Handle for " << propertyName << " ("
 					<< address << ")" << " successfully created and stored."
 					<< endmsg;
 		} else {
-			log << MSG::ERROR << "Handle for " << propertyName << " ("
+			error() << "Handle for " << propertyName << " ("
 					<< address << ")" << " could not be created." << endmsg;
 		}
 
@@ -394,23 +389,19 @@ public:
 	}
 
 	void registerTool(IAlgTool * tool) const {
-		MsgStream log(msgSvc(), name());
 
-		log << MSG::DEBUG << "Registering tool " << tool->name() << endmsg;
+		debug() << "Registering tool " << tool->name() << endmsg;
 		m_tools.push_back(tool);
 	}
 
 	void deregisterTool(IAlgTool * tool) const {
-		std::vector<IAlgTool *>::iterator it = std::find(m_tools.begin(),
-				m_tools.end(), tool);
-
-		MsgStream log(msgSvc(), name());
+		auto it = std::find(m_tools.begin(), m_tools.end(), tool);
 		if (it != m_tools.end()) {
-			log << MSG::DEBUG << "De-Registering tool " << tool->name()
+			debug() << "De-Registering tool " << tool->name()
 					<< endmsg;
 			m_tools.erase(it);
 		} else {
-			log << MSG::DEBUG << "Could not de-register tool " << tool->name()
+			debug() << "Could not de-register tool " << tool->name()
 					<< endmsg;
 		}
 	}
@@ -426,21 +417,19 @@ public:
 	StatusCode declarePublicTool(ToolHandle<T> & handle, std::string toolTypeAndName =
 			"", bool createIf = true) {
 
-		if (toolTypeAndName == "")
+		if (toolTypeAndName.empty())
 			toolTypeAndName = System::typeinfoName(typeid(T));
 
 		StatusCode sc = handle.initialize(toolTypeAndName, 0, createIf);
 
 		m_toolHandles.push_back(&handle);
 
-		MsgStream log(msgSvc(), name());
-
 		if (sc.isSuccess()) {
-			log << MSG::DEBUG << "Handle for public tool" << toolTypeAndName
+			debug() << "Handle for public tool" << toolTypeAndName
 					<< " successfully created and stored." << endmsg;
 		} else {
 
-			log << MSG::ERROR << "Handle for public tool" << toolTypeAndName
+			error() << "Handle for public tool" << toolTypeAndName
 					<< " could not be created." << endmsg;
 		}
 
@@ -459,21 +448,20 @@ public:
 	StatusCode declarePrivateTool(ToolHandle<T> & handle, std::string toolTypeAndName =
 			"", bool createIf = true) {
 
-		if (toolTypeAndName == "")
+		if (toolTypeAndName.empty())
 			toolTypeAndName = System::typeinfoName(typeid(T));
 
 		StatusCode sc = handle.initialize(toolTypeAndName, this, createIf);
 
 		m_toolHandles.push_back(&handle);
 
-		MsgStream log(msgSvc(), name());
 
 		if (sc.isSuccess()) {
-			log << MSG::DEBUG << "Handle for private tool" << toolTypeAndName
+			debug() << "Handle for private tool" << toolTypeAndName
 					<< " successfully created and stored." << endmsg;
 		} else {
 
-			log << MSG::ERROR << "Handle for private tool" << toolTypeAndName
+			error() << "Handle for private tool" << toolTypeAndName
 					<< " could not be created." << endmsg;
 		}
 
@@ -554,14 +542,10 @@ public:
 protected:
 
   /// get tool's output level
-  int           outputLevel () const { return (int)m_outputLevel ; }
+  int           outputLevel () const { return m_outputLevel.value() ; }
 
   /// Accessor for the Message level property
   IntegerProperty & outputLevelProperty() { return m_outputLevel; }
-
-  /** callback for output level property */
-  void initOutputLevel(Property& prop);
-
 
 
 protected:
@@ -575,8 +559,7 @@ private:
   std::string          m_type;             ///< AlgTool type (concrete class name)
   const std::string    m_name;             ///< AlgTool full name
   const IInterface*    m_parent = nullptr;           ///< AlgTool parent
-  mutable ISvcLocator* m_svcLocator = nullptr;       ///< Pointer to Service Locator service
-  mutable IMessageSvc* m_messageSvc = nullptr;       ///< Message service
+  mutable SmartIF<ISvcLocator> m_svcLocator ;       ///< Pointer to Service Locator service
   mutable SmartIF<IDataProviderSvc> m_evtSvc;      ///< Event data service
   mutable SmartIF<IToolSvc> m_ptoolSvc;         ///< Tool service
   mutable SmartIF<IMonitorSvc> m_pMonitorSvc;      ///< Online Monitoring Service
@@ -620,14 +603,11 @@ private:
 
 #ifndef GAUDI_NEW_PLUGIN_SERVICE
 template <class T>
-class ToolFactory {
-public:
-#ifndef __REFLEX__
+struct ToolFactory {
   template <typename S, typename... Args>
   static typename S::ReturnType create(Args&&... args) {
     return new T(std::forward<Args>(args)...);
   }
-#endif
 };
 
 // Macros to declare component factories

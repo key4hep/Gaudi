@@ -343,8 +343,6 @@ StatusCode GaudiCommon<PBASE>::
     if ( errorsPrint() ) { printErrors () ; }
   }
 
-  // delete the MsgStream
-  resetMsgStream();
 
   // clear *ALL* counters explicitly
   m_counters   .clear() ;
@@ -686,20 +684,7 @@ long GaudiCommon<PBASE>::printProps ( const MSG::Level level ) const
 template < class PBASE >
 void GaudiCommon<PBASE>::msgLevelHandler ( Property & theProp )
 {
-  // Force a new MsgStream object, to pick up the new settings
-  resetMsgStream();
-
-  // adjust internal message level
-  m_msgLevel =
-    this->outputLevel() <  (int) MSG::NIL        ?  MSG::NIL    :
-    this->outputLevel() >= (int) MSG::NUM_LEVELS ?  MSG::ALWAYS :
-    MSG::Level( this->outputLevel() ) ;
-
-  // Keep MessageSvc up to date if needed
-  if ( this->msgSvc()->outputLevel(this->name()) != this->outputLevel() )
-  {
-    this->msgSvc()->setOutputLevel( this->name(), this->outputLevel() );
-  }
+  this->updateMsgStreamOutputLevel(this->outputLevel());
 
   // printout message
   if ( this->msgLevel(MSG::DEBUG) )

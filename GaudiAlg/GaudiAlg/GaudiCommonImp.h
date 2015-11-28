@@ -226,14 +226,6 @@ inline void GaudiCommon<PBASE>::Assert( const bool         ok  ,
   if (!ok) Exception( msg , sc );
 }
 // ============================================================================
-// Delete the current message stream object
-// ============================================================================
-template <class PBASE>
-inline void GaudiCommon<PBASE>::resetMsgStream() const
-{
-  m_msgStream.reset();
-}
-// ============================================================================
 // Assertion - throw exception, if condition is not fulfilled
 // ============================================================================
 template <class PBASE>

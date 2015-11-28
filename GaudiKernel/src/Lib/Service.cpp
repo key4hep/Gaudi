@@ -186,7 +186,6 @@ StatusCode Service::sysFinalize() {
 
 //--- IService::finalize
 StatusCode Service::finalize() {
-  //MsgStream log(msgSvc(),name());
   //m_state = Gaudi::StateMachine::ChangeState(Gaudi::StateMachine::TERMINATE,m_state);
   return StatusCode::SUCCESS;
 }
@@ -198,7 +197,6 @@ StatusCode Service::sysReinitialize() {
 
   // Check that the current status is the correct one.
   if ( Gaudi::StateMachine::INITIALIZED != FSMState() ) {
-    MsgStream log ( msgSvc() , name() );
     error()
         << "sysReinitialize(): cannot reinitialize service not initialized"
         << endmsg;
@@ -215,20 +213,17 @@ StatusCode Service::sysReinitialize() {
     return sc;
   }
   catch( const GaudiException& Exception ) {
-    MsgStream log ( msgSvc() , name() + ".sysReinitialize()" );
     fatal() << " Exception with tag=" << Exception.tag()
         << " is caught " << endmsg;
     error() << Exception  << endmsg;
     //    Stat stat( chronoSvc() , Exception.tag() ) ;
   }
   catch( const std::exception& Exception ) {
-    MsgStream log ( msgSvc() , name() + ".sysReinitialize()" );
     fatal() << " Standard std::exception is caught " << endmsg;
     error() << Exception.what()  << endmsg;
     //    Stat stat( chronoSvc() , "*std::exception*" ) ;
   }
   catch( ... ) {
-    MsgStream log ( msgSvc() , name() + ".sysReinitialize()" );
     fatal() << "UNKNOWN Exception is caught " << endmsg;
     //    Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
   }
@@ -243,7 +238,6 @@ StatusCode Service::sysRestart() {
 
   // Check that the current status is the correct one.
   if ( Gaudi::StateMachine::RUNNING != FSMState() ) {
-    MsgStream log ( msgSvc() , name() );
     error()
         << "sysRestart(): cannot restart service in state " << FSMState()
         << " -- must be RUNNING "
@@ -421,10 +415,7 @@ Service::Service(std::string name, ISvcLocator* svcloc) :
 
 // Callback to set output level
 void Service::initOutputLevel(Property& /*prop*/) {
-  if ( (name() != "MessageSvc") && msgSvc() ) {
-    msgSvc()->setOutputLevel( name(), m_outputLevel );
-  }
-  updateMsgStreamOutputLevel(m_outputLevel);
+  if ( name() != "MessageSvc") updateMsgStreamOutputLevel(m_outputLevel);
 }
 
 

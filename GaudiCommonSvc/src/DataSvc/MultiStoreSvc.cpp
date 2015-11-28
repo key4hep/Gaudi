@@ -520,11 +520,10 @@ public:
   }
 
   STATUS attachServices()  {
-    MsgStream log(msgSvc(), name());
     // Attach address creator facility
     m_addrCreator = service(m_loader, true);
     if (!m_addrCreator) {
-      log << MSG::ERROR
+      error()
           << "Failed to retrieve data loader "
           << "\"" << m_loader << "\"" << endmsg;
       return StatusCode::FAILURE;
@@ -532,13 +531,13 @@ public:
     // Attach data loader facility
     auto dataLoader = service<IConversionSvc>(m_loader, true);
     if (!dataLoader) {
-      log << MSG::ERROR << "Failed to retrieve data loader "
+      error() << "Failed to retrieve data loader "
           << "\"" << m_loader << "\"" << endmsg;
       return StatusCode::FAILURE;
     }
     auto sc = setDataLoader(dataLoader.get());
     if (!sc.isSuccess()) {
-      log << MSG::ERROR << "Failed to set data loader "
+      error() << "Failed to set data loader "
           << "\"" << m_loader << "\"" << endmsg;
     }
     return sc;
@@ -557,8 +556,7 @@ public:
     if ( !sc.isSuccess() )  return sc;
     sc = makePartitions();
     if (!sc.isSuccess()) {
-      MsgStream log(msgSvc(), name());
-      log << MSG::ERROR << "Failed to connect to all store partitions." << endmsg;
+      error() << "Failed to connect to all store partitions." << endmsg;
       return sc;
     }
     return attachServices();
@@ -567,21 +565,20 @@ public:
   /// Service initialisation
   STATUS reinitialize() override {
     STATUS sc = Service::reinitialize();
-    MsgStream log(msgSvc(), name());
     if (!sc.isSuccess()) {
-      log << MSG::ERROR << "Enable to reinitialize base class"
+      error() << "Enable to reinitialize base class"
           << endmsg;
       return sc;
     }
     detachServices();
     sc = attachServices();
     if ( !sc.isSuccess() )  {
-      log << MSG::ERROR << "Failed to attach necessary services." << endmsg;
+      error() << "Failed to attach necessary services." << endmsg;
       return sc;
     }
     sc = makePartitions();
     if (!sc.isSuccess()) {
-      log << MSG::ERROR << "Failed to connect to store partitions." << endmsg;
+      error() << "Failed to connect to store partitions." << endmsg;
       return sc;
     }
     // return
