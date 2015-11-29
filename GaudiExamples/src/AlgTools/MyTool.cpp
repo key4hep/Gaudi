@@ -1,5 +1,4 @@
 // Framework include files
-#include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/GaudiException.h"
 
 // Accessing data:
@@ -37,22 +36,20 @@ const std::string&  MyTool::message() const
 void  MyTool::doIt()
 //------------------------------------------------------------------------------
 {
-  MsgStream log(msgSvc(), name());
-  log << MSG::INFO << "doIt() has been called" << endmsg;
-  log << MSG::DEBUG << "doIt() [DEBUG] has been called" << endmsg;
+  info() << "doIt() has been called" << endmsg;
+  debug() << "doIt() [DEBUG] has been called" << endmsg;
 }
 
 //------------------------------------------------------------------------------
 StatusCode  MyTool::initialize()
 //------------------------------------------------------------------------------
 {
-  MsgStream log(msgSvc(), name());
-  log << MSG::INFO << "intialize() has been called" << endmsg;
+  info() << "intialize() has been called" << endmsg;
 
-  log << MSG::INFO << "Int    = " << m_int    << endmsg;
-  log << MSG::INFO << "Double = " << m_double << endmsg;
-  log << MSG::INFO << "String = " << m_string << endmsg;
-  log << MSG::INFO << "Bool   = " << m_bool   << endmsg;
+  info() << "Int    = " << m_int    << endmsg;
+  info() << "Double = " << m_double << endmsg;
+  info() << "String = " << m_string << endmsg;
+  info() << "Bool   = " << m_bool   << endmsg;
 
   return StatusCode::SUCCESS;
 }
@@ -60,8 +57,7 @@ StatusCode  MyTool::initialize()
 StatusCode  MyTool::finalize()
 //------------------------------------------------------------------------------
 {
-  MsgStream log(msgSvc(), name());
-  log << MSG::INFO << "finalize() has been called" << endmsg;
+  info() << "finalize() has been called" << endmsg;
   return StatusCode::SUCCESS;
 }
 
@@ -69,6 +65,5 @@ StatusCode  MyTool::finalize()
 MyTool::~MyTool( )
 //------------------------------------------------------------------------------
 {
-  MsgStream log(msgSvc(), name());
-  log << MSG::INFO << "destructor has been called" << endmsg;
+  info() << "destructor has been called" << endmsg;
 }
