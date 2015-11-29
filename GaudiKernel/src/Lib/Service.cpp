@@ -14,8 +14,8 @@
 
 using std::string;
 
-#define ON_DEBUG if (UNLIKELY(outputLevel() <= MSG::DEBUG))
-#define ON_VERBOSE if (UNLIKELY(outputLevel() <= MSG::VERBOSE))
+#define ON_DEBUG if (msgLevel(MSG::DEBUG))
+#define ON_VERBOSE if (msgLevel(MSG::VERBOSE))
 
 
 Service::~Service() {
@@ -371,6 +371,7 @@ StatusCode Service::setProperties() {
       return StatusCode::FAILURE;
     }
   }
+  if (name() != "MessageSvc") updateMsgStreamOutputLevel( m_outputLevel );
   return StatusCode::SUCCESS;
 }
 
