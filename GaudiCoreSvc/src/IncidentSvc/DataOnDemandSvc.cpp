@@ -303,8 +303,8 @@ StatusCode DataOnDemandSvc::initialize()
   sc = setup();
   if ( sc.isFailure() )  { return sc; }
   //
-  if      ( m_dump )                      { dump ( MSG::INFO  ) ; }
-  else if ( MSG::DEBUG >= outputLevel() ) { dump ( MSG::DEBUG ) ; }
+  if      ( m_dump )               { dump ( MSG::INFO  ) ; }
+  else if ( msgLevel(MSG::DEBUG) ) { dump ( MSG::DEBUG ) ; }
   //
   if ( m_init ) { return update () ; }
   //
@@ -320,7 +320,7 @@ StatusCode DataOnDemandSvc::finalize()
     << "Handled \"" << m_trapType << "\" incidents: "
     << m_statAlg  << "/" << m_statNode << "/" << m_stat << "(Alg/Node/Total)."
     << endmsg ;
-  if ( m_dump || MSG::DEBUG >= outputLevel() )
+  if ( m_dump || msgLevel(MSG::DEBUG) )
   {
     info()
       << m_total.outputUserTime
@@ -340,8 +340,8 @@ StatusCode DataOnDemandSvc::finalize()
       << m_timer_all  .outputUserTime ( "Total:%2%[s]" , System::Sec ) << endmsg ;
   }
   // dump it!
-  if      ( m_dump )                      { dump ( MSG::INFO  , false ) ; }
-  else if ( MSG::DEBUG >= outputLevel() ) { dump ( MSG::DEBUG , false ) ; }
+  if      ( m_dump )               { dump ( MSG::INFO  , false ) ; }
+  else if ( msgLevel(MSG::DEBUG) ) { dump ( MSG::DEBUG , false ) ; }
   //
   if ( m_incSvc )
   {
@@ -390,7 +390,7 @@ StatusCode DataOnDemandSvc::reinitialize()
   if ( sc.isFailure() )  { return sc; }
   //
   if ( m_dump ) { dump ( MSG::INFO ) ; }
-  else if ( MSG::DEBUG >= outputLevel() ) { dump ( MSG::DEBUG  ) ; }
+  else if ( msgLevel(MSG::DEBUG) ) { dump ( MSG::DEBUG  ) ; }
   //
   return StatusCode::SUCCESS ;
 }
@@ -635,7 +635,7 @@ void DataOnDemandSvc::handle ( const Incident& incident )
   // update if needed!
   if ( m_updateRequired ) { update() ; }
 
-  if ( MSG::VERBOSE >= outputLevel() )
+  if ( msgLevel(MSG::VERBOSE) )
   {
     verbose()
       << "Incident: [" << incident.type   () << "] "
@@ -663,14 +663,14 @@ void DataOnDemandSvc::handle ( const Incident& incident )
   // ==========================================================================
   // Fall back on the tools
   if (m_toolSvc) {
-    if (MSG::VERBOSE >= outputLevel())
+    if ( msgLevel(MSG::VERBOSE))
       verbose() << "Try to find mapping with mapping tools" << endmsg;
     Finder finder(no_prefix(inc->tag(), m_prefix), m_nodeMappers, m_algMappers);
     //  - try the node mappers
     std::string node = finder.node();
     if (isGood(node)) {
       // if one is found update the internal node mapping and try again.
-      if (MSG::VERBOSE >= outputLevel())
+      if (msgLevel(MSG::VERBOSE))
         verbose() << "Found Node handler: " << node << endmsg;
       i_setNodeHandler(inc->tag(), node);
       handle(incident);
@@ -681,7 +681,7 @@ void DataOnDemandSvc::handle ( const Incident& incident )
     Gaudi::Utils::TypeNameString alg = finder.alg();
     if (isGood(alg)) {
       // we got an algorithm, update alg map and try to handle again
-      if (MSG::VERBOSE >= outputLevel())
+      if (msgLevel(MSG::VERBOSE))
         verbose() << "Found Algorithm handler: " << alg << endmsg;
       i_setAlgHandler(inc->tag(), alg).ignore();
       handle(incident);
