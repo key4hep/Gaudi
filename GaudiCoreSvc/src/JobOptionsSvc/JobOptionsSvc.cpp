@@ -151,7 +151,7 @@ StatusCode JobOptionsSvc::readOptions ( const std::string& file,
     if ( search_path.empty() && !m_dir_search_path.empty() )
     { search_path =  m_dir_search_path ; }
     //
-    if (UNLIKELY(outputLevel() <= MSG::DEBUG))
+    if (msgLevel(MSG::DEBUG))
       debug() << "Reading options from the file "
               << "'" << file << "'" << endmsg;
     gp::Messages messages(msgStream());

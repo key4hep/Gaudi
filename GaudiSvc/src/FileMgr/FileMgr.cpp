@@ -8,8 +8,8 @@
 #include "RootFileHandler.h"
 #include "POSIXFileHandler.h"
 
-#define ON_DEBUG if (UNLIKELY(outputLevel() <= MSG::DEBUG))
-#define ON_VERBOSE if (UNLIKELY(outputLevel() <= MSG::VERBOSE))
+#define ON_DEBUG if (msgLevel(MSG::DEBUG))
+#define ON_VERBOSE if (msgLevel(MSG::VERBOSE))
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 DECLARE_SERVICE_FACTORY(FileMgr)
@@ -201,7 +201,7 @@ FileMgr::finalize() {
     verbose() << "FileMgr::finalize()" << endmsg;
 
 
-  if (m_printSummary || outputLevel() <= MSG::DEBUG) {
+  if (m_printSummary || msgLevel(MSG::DEBUG)) {
     listHandlers();
     listFiles();
     listActions();

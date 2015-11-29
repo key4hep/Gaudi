@@ -58,7 +58,7 @@ public:
   /// Finalization
   StatusCode finalize() override
   {
-    if ( outputLevel() <= MSG::DEBUG || m_print ) { print () ; }
+    if ( msgLevel(MSG::DEBUG) || m_print ) { print () ; }
     remove().ignore() ;
     // finalize the base class
     return Service::finalize() ; ///< finalize the base class
