@@ -202,7 +202,7 @@ void DataSvcFileEntriesTool::i_collectLeaves(IRegistry* reg) {
   // I do not put sanity checks on the pointers because I know how I'm calling the function
   IOpaqueAddress *addr = reg->address();
   if (addr) { // we consider only objects that are in a file
-    if (outputLevel() <= MSG::VERBOSE)
+    if (msgLevel(MSG::VERBOSE))
       verbose() << "::i_collectLeaves added " << reg->identifier() << endmsg;
     m_leaves.push_back(reg->object()); // add this object
     // Origin of the current object

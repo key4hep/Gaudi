@@ -24,7 +24,7 @@
 // Define the algorithm factory for the standard output data writer
 DECLARE_COMPONENT(OutputStream)
 
-#define ON_DEBUG if (msgLevel() <= MSG::DEBUG)
+#define ON_DEBUG if (msgLevel(MSG::DEBUG))
 
 // Standard Constructor
 OutputStream::OutputStream(const std::string& name, ISvcLocator* pSvcLocator)

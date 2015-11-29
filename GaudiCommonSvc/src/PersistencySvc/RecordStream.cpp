@@ -22,7 +22,7 @@ RecordStream::RecordStream(const std::string& name, ISvcLocator* pSvcLocator)
 
 StatusCode RecordStream::finalize() {
   info() << "Set up File Summary Record" << endmsg;
-  if( !m_fireIncidents && msgLevel() <= MSG::VERBOSE )
+  if( !m_fireIncidents && msgLevel(MSG::VERBOSE) )
     verbose() << "will not fire incidents" << endmsg;
   StatusCode sc = OutputStream::execute();
   if( !sc.isSuccess() )  {
