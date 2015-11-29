@@ -66,9 +66,7 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
   if (appMgr) {
     const Property& prop = appMgr->getProperty("AuditAlgorithms");
     Property &pr = const_cast<Property&>(prop);
-    if (m_name != "IncidentSvc") {
-      setProperty( pr ).ignore();
-    }
+    if (m_name != "IncidentSvc") setProperty( pr ).ignore();
     audit = m_auditInit.value();
   }
 
@@ -593,7 +591,7 @@ StatusCode Algorithm::endRun() {
 
 StatusCode Algorithm::sysExecute() {
   if (!isEnabled()) {
-    if (UNLIKELY(m_outputLevel <= MSG::VERBOSE)) {
+    if ( msgLevel(MSG::VERBOSE) ) {
       verbose() << ".sysExecute(): is not enabled. Skip execution" << endmsg;
     }
     return StatusCode::SUCCESS;
@@ -915,19 +913,6 @@ serviceAccessor(toolSvc, IToolSvc, "ToolSvc", m_ptoolSvc)
 serviceAccessor(contextSvc, IAlgContextSvc,"AlgContextSvc", m_contextSvc)
 serviceAccessor(timelineSvc, ITimelineSvc,"TimelineSvc", m_timelineSvc)
 
-//serviceAccessor(msgSvc, IMessageSvc, "MessageSvc", m_MS)
-// Message service needs a special treatment to avoid infinite recursion
-SmartIF<IMessageSvc>& Algorithm::msgSvc() const {
-  if ( !m_MS ) {
-    //can not use service() method (infinite recursion!)
-    m_MS = serviceLocator(); // default message service
-    if( !m_MS ) {
-      throw GaudiException("Service [MessageSvc] not found", name(), StatusCode::FAILURE);
-    }
-  }
-  return m_MS;
-}
-
 // Obsoleted name, kept due to the backwards compatibility
 SmartIF<IChronoStatSvc>& Algorithm::chronoStatService() const {
   return chronoSvc();
@@ -951,10 +936,6 @@ SmartIF<IConversionSvc>& Algorithm::eventDataCnvService() const {
 // Obsoleted name, kept due to the backwards compatibility
 SmartIF<IHistogramSvc>& Algorithm::histogramDataService() const {
   return histoSvc();
-}
-// Obsoleted name, kept due to the backwards compatibility
-SmartIF<IMessageSvc>& Algorithm::messageService() const {
-  return msgSvc();
 }
 // Obsoleted name, kept due to the backwards compatibility
 SmartIF<INTupleSvc>& Algorithm::ntupleService() const {

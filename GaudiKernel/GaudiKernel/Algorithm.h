@@ -299,15 +299,6 @@ public:
   /// Obsoleted name, kept due to the backwards compatibility
   SmartIF<IHistogramSvc>& histogramDataService() const;
 
-  /** The standard message service.
-   *  Returns a pointer to the standard message service.
-   *  May not be invoked before sysInitialize() has been invoked.
-   */
-  SmartIF<IMessageSvc>&      msgSvc() const;
-
-  /// Obsoleted name, kept due to the backwards compatibility
-  SmartIF<IMessageSvc>&      messageService() const;
-
   /** The standard N tuple service.
    *  Returns a pointer to the N tuple service if present.
    */
@@ -814,12 +805,6 @@ protected:
 
   /// Has the Algorithm already been finalized?
   bool isFinalized( ) const  override{ return Gaudi::StateMachine::CONFIGURED == m_state; }
-
-  /// retrieve the Algorithm output level
-  int  outputLevel() const { return (int)m_outputLevel ; }
-
-  /// Accessor for the Message level property
-  IntegerProperty & outputLevelProperty() { return m_outputLevel; }
 
   /// Event specific data for multiple event processing
   EventContext* m_event_context;
