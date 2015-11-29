@@ -7,6 +7,7 @@
 #include "GaudiKernel/IService.h"
 #include "GaudiKernel/ISvcLocator.h"  /*used by service(..)*/
 #include "GaudiKernel/PropertyMgr.h"
+#include "GaudiKernel/CommonMessaging.h"
 #include <Gaudi/PluginService.h>
 #include <string>
 #include <vector>
@@ -31,7 +32,7 @@ class Algorithm;
     @author Marco Clemencic
     @date   2008-03
 */
-class GAUDI_API Auditor : public implements2<IAuditor, IProperty> {
+class GAUDI_API Auditor : public CommonMessaging<implements2<IAuditor, IProperty>> {
 public:
 #ifndef __REFLEX__
   typedef Gaudi::PluginService::Factory<IAuditor*,
@@ -95,17 +96,6 @@ public:
   const std::string&  name() const  override;
 
   bool isEnabled() const  override;
-
-  /** The standard message service. Returns a pointer to the standard message
-      service. May not be invoked before sysInitialize() has been invoked.
-  */
-  SmartIF<IMessageSvc>& msgSvc() const;
-
-  /// Retrieve the output level of current auditor
-  int outputLevel() const { return m_outputLevel; }
-
-  /// Set the output level for current auditor
-  void setOutputLevel( int level );
 
   /** The standard service locator. Returns a pointer to the service locator service.
       This service may be used by an auditor to request any services it requires in

@@ -21,8 +21,7 @@ StatusCode ChronoAuditor::initialize() {
 
   m_chronoSvc = serviceLocator()->service("ChronoStatSvc");
   if (UNLIKELY(!m_chronoSvc.get())) {
-    MsgStream log(msgSvc(), name());
-    log << MSG::ERROR << "Cannot get ChronoStatSvc" << endmsg;
+    error() << "Cannot get ChronoStatSvc" << endmsg;
     return StatusCode::FAILURE;
   }
   return StatusCode::SUCCESS;
