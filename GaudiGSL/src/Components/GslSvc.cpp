@@ -57,9 +57,8 @@ StatusCode GslSvc::initialize()
 {
   // initialize the base class
   StatusCode sc = Service::initialize();
-  MsgStream log( msgSvc() , name() );
   if( sc.isFailure() )
-    { log << MSG::ERROR
+    { error()
           << " Error in initialization of base class 'Service'"<< endmsg;
     return sc;
     }
@@ -78,7 +77,7 @@ StatusCode GslSvc::initialize()
   else if ( "Handle"    == m_errorPolicy )
     { gsl_set_error_handler ( GslErrorHandlers::handleTheError ) ; }
   else
-    { log << MSG::ERROR
+    { error()
           << " Unknown Error policy '" << m_errorPolicy << "'"
           << " Valid policies: "
           << "[ 'GSL' , 'Off' , 'Abort' , 'Ignore' , 'Exception' , 'Handle' ]"
@@ -101,7 +100,7 @@ StatusCode GslSvc::initialize()
       /// Get Tool Service
       auto  toolsvc = serviceLocator()->service<IToolSvc>("ToolSvc");
       if (!toolsvc) {
-        log << MSG::ERROR << " Could not locate Tool Service! " << endmsg;
+        error() << " Could not locate Tool Service! " << endmsg;
         return StatusCode::FAILURE;
       }
       for( const auto& it : m_handlersTypeNames )
@@ -115,11 +114,11 @@ StatusCode GslSvc::initialize()
               sc = toolsvc->retrieveTool( it , it , eh , this ) ; 
           }
           if( sc.isFailure() )
-            { log << MSG::ERROR
+            { error()
                   << " Could not retrieve tool '" << it << "'"<< endmsg ;
             return sc ; }
           if( !eh )
-            { log << MSG::ERROR
+            { error()
                   << " Could not retrieve tool '" << it << "'"<< endmsg ;
             return StatusCode::FAILURE  ; }
           m_handlers.push_back( eh );
@@ -139,8 +138,7 @@ StatusCode GslSvc::initialize()
 // ============================================================================
 StatusCode GslSvc::finalize()
 {
-  MsgStream log(msgSvc(), name());
-  log << MSG::DEBUG << "==> Finalize" << endmsg;
+  debug() << "==> Finalize" << endmsg;
 
   // deactivate the static accessor to the service
   GaudiGSL::setGslSvc( nullptr );
@@ -174,8 +172,7 @@ IGslSvc::GslErrorHandler GslSvc::setHandler
 {
   gsl_set_error_handler( handler );
   {
-    MsgStream log( msgSvc(), name() );
-    log << MSG::DEBUG << " New GSL handler is set '" ;
+    debug() << " New GSL handler is set '" ;
     if( !handler ) { log << "NULL"                                  ; }
     else           { log << System::typeinfoName( typeid(handler) ) ; }
     log << "'" << endmsg ;
