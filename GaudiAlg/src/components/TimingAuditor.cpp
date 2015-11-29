@@ -100,7 +100,6 @@ StatusCode TimingAuditor::initialize ()
   StatusCode sc = Auditor::initialize() ;
   if ( sc.isFailure() ) { return sc ; }                  // RETURN
 
-  MsgStream log ( msgSvc() , name() ) ;
 
   // get tool service
   if ( ! m_toolSvc )
@@ -108,7 +107,7 @@ StatusCode TimingAuditor::initialize ()
     m_toolSvc = Auditor::service ( "ToolSvc" );
     if ( !m_toolSvc )
     {
-      log << "Could not retrieve 'ToolSvc' " << endmsg ;
+      error() << "Could not retrieve 'ToolSvc' " << endmsg ;
       return StatusCode::FAILURE ;                                        // RETURN
     }
     if ( !m_timer )
@@ -117,8 +116,7 @@ StatusCode TimingAuditor::initialize ()
         ( "SequencerTimerTool/TIMER" , m_timer , this  , true ) ;
       if ( sc.isFailure() )
       {
-        log << MSG::ERROR
-            << "Could not retrieve ISequencerTimerTool" << endmsg ;
+        error() << "Could not retrieve ISequencerTimerTool" << endmsg ;
         return sc ;
       }
     }
@@ -129,8 +127,7 @@ StatusCode TimingAuditor::initialize ()
     m_incSvc = Auditor::service ( "IncidentSvc" );
     if ( !m_incSvc )
     {
-      log << MSG::ERROR
-          << "Could not retrieve 'IncidentSvc'" << endmsg ;
+      error() << "Could not retrieve 'IncidentSvc'" << endmsg ;
       return StatusCode::FAILURE ;
     }
     m_incSvc -> addListener ( this , IncidentType::BeginEvent ) ;
@@ -142,8 +139,7 @@ StatusCode TimingAuditor::initialize ()
     m_appMgr = Auditor::service ( "ApplicationMgr" );
     if ( !m_appMgr )
     {
-      log << MSG::ERROR
-          << "Could not retrieve 'ApplicationMgr'" << endmsg ;
+      error() << "Could not retrieve 'ApplicationMgr'" << endmsg ;
       return sc ;
     }
     if ( m_map.end() == m_map.find( m_appMgr.get() ) )
@@ -221,12 +217,10 @@ void TimingAuditor::i_beforeInitialize( INamedInterface* alg )
   if ( m_inEvent )
   {
     nick[0] = '*' ;
-    MsgStream log( msgSvc() , name() ) ;
-    log << MSG::DEBUG
-        << "Insert non-structural component '"
-        << alg->name() << "' of type '"
-        << System::typeinfoName(typeid(*alg)) << "' at level "
-        << m_indent << endmsg ;
+    debug() << "Insert non-structural component '"
+            << alg->name() << "' of type '"
+            << System::typeinfoName(typeid(*alg)) << "' at level "
+            << m_indent << endmsg ;
   }
   int timer = m_timer->addTimer( nick ) ;
   m_map.insert ( alg , timer ) ;
@@ -246,12 +240,10 @@ void TimingAuditor::i_beforeExecute( INamedInterface* alg )
   auto found = m_map.find( alg ) ;
   if ( m_map.end() == found )
   {
-    MsgStream log( msgSvc() , name() ) ;
-    log << MSG::DEBUG
-        << "Insert non-structural component '"
-        << alg->name() << "' of type '"
-        << System::typeinfoName(typeid(*alg)) << "' at level "
-        << m_indent << endmsg ;
+    debug() << "Insert non-structural component '"
+           << alg->name() << "' of type '"
+           << System::typeinfoName(typeid(*alg)) << "' at level "
+           << m_indent << endmsg ;
     std::string nick = alg->name() ;
     if ( 0 < m_indent  ) { nick = std::string ( m_indent , ' ') + nick ; }
     if ( !m_goodForDOD ) { nick[0]='*' ;}
@@ -303,9 +295,8 @@ void TimingAuditor::after(CustomEventTypeRef evt, const std::string& name, const
 
   // We cannot do much if the timer is not available
   if ( m_mapUser.end() == found ) {
-    MsgStream log(msgSvc(), this->name());
-    log << MSG::WARNING << "Trying to stop the measure  of the timing for '"
-                        << nick << "' but it was never started. Check the code"
+    warning() << "Trying to stop the measure  of the timing for '"
+              << nick << "' but it was never started. Check the code"
                         << endmsg;
     return;
   }
