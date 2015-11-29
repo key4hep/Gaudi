@@ -51,8 +51,7 @@ class HistogramSvc : virtual public extends1<DataSvc, IHistogramSvc>,
 private:
   typedef const std::pair<std::string,std::string>& STRPAIR;
   void not_implemented()  const {
-    MsgStream log( msgSvc(), name() );
-    log << MSG::ERROR << "Sorry, not yet implemented..." << endmsg;
+    error() << "Sorry, not yet implemented..." << endmsg;
   }
 protected:
   typedef const std::string&       CSTR;

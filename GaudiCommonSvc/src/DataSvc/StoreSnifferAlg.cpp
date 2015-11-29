@@ -12,7 +12,6 @@
 #include "GaudiKernel/SmartDataPtr.h"
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/IRegistry.h"
-#include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/SmartIF.h"
 
 using namespace std;
@@ -85,8 +84,8 @@ public:
 
   /// Finalize
   StatusCode finalize() override {
-    MsgStream log(msgSvc(), name());
-    log << MSG::ALWAYS << "== BEGIN ============= Access list content:" << m_info.size() << endmsg;
+    auto& log = always();
+    log << "== BEGIN ============= Access list content:" << m_info.size() << endmsg;
     for(const auto&  i : m_info) {
       const LeafInfo& info = i.second;
       log << "== ITEM == " << right << setw(4) << dec << info.id << " clid:"
@@ -125,7 +124,7 @@ public:
         if ( cnt > 0 ) log << endmsg;
       }
     }
-    log << MSG::ALWAYS << "== END =============== Access list content:" << m_info.size() << endmsg;
+    always() << "== END =============== Access list content:" << m_info.size() << endmsg;
     m_info.clear();
     m_mgr = nullptr;
     return StatusCode::SUCCESS;

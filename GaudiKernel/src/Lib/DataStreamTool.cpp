@@ -32,18 +32,17 @@ DataStreamTool::DataStreamTool( const std::string& type,
 //=============================================================================
 StatusCode DataStreamTool::initialize() {
 
-  MsgStream logger(msgSvc(), name());
 
   StatusCode status = AlgTool::initialize();
   if( !status.isSuccess() )  {
-    logger << MSG::FATAL << "Error. Cannot initialize base class." << endmsg;
+    fatal() << "Error. Cannot initialize base class." << endmsg;
     return status;
   }
 
   // Get the references to the services that are needed by the ApplicationMgr itself
   m_incidentSvc = serviceLocator()->service("IncidentSvc");
   if( !m_incidentSvc )  {
-    logger << MSG::FATAL << "Error retrieving IncidentSvc." << endmsg;
+    fatal() << "Error retrieving IncidentSvc." << endmsg;
     return StatusCode::FAILURE;
   }
 
@@ -54,8 +53,7 @@ StatusCode DataStreamTool::initialize() {
 StatusCode DataStreamTool::addStream(const std::string & input) {
 
   if ( getStream(input) )   {
-    MsgStream log(msgSvc(), name());
-    log << MSG::WARNING << "Input stream " << input << "already in use" << endmsg;
+    warning() << "Input stream " << input << "already in use" << endmsg;
   }
 
   m_streamSpecs.push_back(input);
@@ -70,12 +68,11 @@ StatusCode DataStreamTool::addStream(const std::string & input) {
     m_streams.push_back(s);
     status = StatusCode::SUCCESS;
   } else {
-    MsgStream log(msgSvc(), name());
     if (s) {
       s->release();
-      log << MSG::ERROR << "Error connecting/creating Stream: " << s << endmsg;
+      error() << "Error connecting/creating Stream: " << s << endmsg;
     }
-    log << MSG::ERROR << "Error connecting/creating Stream: " << input << endmsg;
+    error() << "Error connecting/creating Stream: " << input << endmsg;
     status = StatusCode::FAILURE;
   }
   return status;
@@ -132,8 +129,7 @@ StatusCode DataStreamTool::createSelector(const std::string& nam, const std::str
     }
   }
   sel = nullptr;
-  MsgStream log(msgSvc(), name());
-  log << MSG::ERROR << "Failed to create IEvtSelector " << typ << "/" << nam << endmsg;
+  error() << "Failed to create IEvtSelector " << typ << "/" << nam << endmsg;
   return StatusCode::FAILURE;
 }
 
@@ -209,8 +205,6 @@ StatusCode DataStreamTool::clear()
   StatusCode iret, status = StatusCode::SUCCESS;
   iret.ignore();
 
-  MsgStream log(msgSvc(), name());
-
   // disconnect the streams
   for ( auto& il : m_streamSpecs ) {
     EventSelectorDataStream* s = getStream(il);
@@ -218,13 +212,13 @@ StatusCode DataStreamTool::clear()
       if ( s->isInitialized() )    {
         iret = finalizeStream(s);
         if ( !iret.isSuccess() )  {
-          log << MSG::ERROR << "Error finalizing Stream" << il << endmsg;
+          error() << "Error finalizing Stream" << il << endmsg;
           status = iret;
         }
       }
       iret = eraseStream( il );
       if ( !iret.isSuccess() )    {
-        log << MSG::ERROR << "Error diconnecting Stream" << il << endmsg;
+        error() << "Error diconnecting Stream" << il << endmsg;
         status = iret;
       }
     }
@@ -249,8 +243,7 @@ StatusCode DataStreamTool::connectStream( EventSelectorDataStream *s)
 StatusCode DataStreamTool::connectStream( const std::string & info )
 {
   if ( getStream(info) )   {
-    MsgStream log(msgSvc(), name());
-    log << MSG::WARNING << "Input stream " << info << "already in use" << endmsg;
+    warning() << "Input stream " << info << "already in use" << endmsg;
   }
   auto nam  = name() +  '_' + std::to_string( ++m_streamCount);
   EventSelectorDataStream* s = nullptr;

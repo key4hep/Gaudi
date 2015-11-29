@@ -102,7 +102,7 @@ StatusCode ToolSvc::finalize()
 
   // Print out list of tools
   ON_DEBUG {
-    MsgStream &log = debug();
+    auto &log = debug();
     log << "  Tool List : ";
     for ( const auto& iTool : m_instancesTools ) {
       log << iTool->name() << ":" << iTool->refCount( ) << " ";
@@ -381,18 +381,17 @@ StatusCode ToolSvc::releaseTool( IAlgTool* tool )
                                              tool ) ) {
     unsigned long count = tool->refCount();
     if ( count == 1 ) {
-      MsgStream log( msgSvc(), name() );
       // finalize the tool
 
       if ( Gaudi::StateMachine::OFFLINE == m_targetState ) {
         // We are being called during ToolSvc::finalize()
         // message format matches the one in ToolSvc::finalize()
-        log << MSG::DEBUG << "  Performing finalization of " << tool->name()
+        debug() << "  Performing finalization of " << tool->name()
             << " (refCount " << count << ")" << endmsg;
         // message format matches the one in ToolSvc::finalize()
-        log << MSG::DEBUG << "  Performing     deletion of " << tool->name() << endmsg;
+        debug() << "  Performing     deletion of " << tool->name() << endmsg;
       } else {
-        log << MSG::DEBUG << "Performing finalization and deletion of " << tool->name() << endmsg;
+        debug() << "Performing finalization and deletion of " << tool->name() << endmsg;
       }
       sc = finalizeTool(tool);
       // remove from known tools...
@@ -635,10 +634,8 @@ std::string ToolSvc::nameTool( const std::string& toolname,
     return fullname ;                                          // RETURN
   }
 
-  MsgStream log ( msgSvc(), name() );
-  log << MSG::ERROR
-      << "Private Tools only allowed for components implementing INamedInterface"
-      << endmsg;
+  error() << "Private Tools only allowed for components implementing INamedInterface"
+          << endmsg;
   //
   return "." + toolname ;
 }

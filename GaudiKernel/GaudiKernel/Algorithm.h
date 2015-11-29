@@ -595,14 +595,12 @@ public:
 
     handle.setOwner(this);
 
-    MsgStream log(msgSvc(), name());
-
     if (LIKELY(res)) {
-      log << MSG::DEBUG << "Handle for " << propertyName << " ("
+      debug() << "Handle for " << propertyName << " ("
           << address << ")" << " successfully created and stored."
           << endmsg;
     } else {
-      log << MSG::ERROR << "Handle for " << propertyName << " ("
+      error() << "Handle for " << propertyName << " ("
           << address << ")" << " could not be created." << endmsg;
     }
 
@@ -634,14 +632,12 @@ public:
 
     handle.setOwner(this);
 
-    MsgStream log(msgSvc(), name());
-
     if (LIKELY(res)) {
-      log << MSG::DEBUG << "Handle for " << propertyName << " ("
+      debug() << "Handle for " << propertyName << " ("
           << (addresses.empty() ? DataObjectDescriptor::NULL_ : addresses[0]) << ")" << " successfully created and stored."
           << endmsg;
     } else {
-      log << MSG::ERROR << "Handle for " << propertyName << " ("
+      error() << "Handle for " << propertyName << " ("
           << (addresses.empty() ? DataObjectDescriptor::NULL_ : addresses[0]) << ")" << " could not be created." << endmsg;
     }
 
@@ -672,15 +668,12 @@ public:
 
     handle.setOwner(this);
 
-
-    MsgStream log(msgSvc(), name());
-
     if (LIKELY(res)) {
-      log << MSG::DEBUG << "Handle for " << propertyName << " ("
+      debug() << "Handle for " << propertyName << " ("
           << address << ")" << " successfully created and stored."
           << endmsg;
     } else {
-      log << MSG::ERROR << "Handle for " << propertyName << " ("
+      error() << "Handle for " << propertyName << " ("
           << address << ")" << " could not be created." << endmsg;
     }
 
@@ -701,9 +694,7 @@ public:
 
   void registerTool(IAlgTool * tool) const {
 
-    MsgStream log(msgSvc(), name());
-
-    log << MSG::DEBUG << "Registering tool " << tool->name() << endmsg;
+    debug() << "Registering tool " << tool->name() << endmsg;
 
     m_tools.push_back(tool);
   }
@@ -712,14 +703,13 @@ public:
     std::vector<IAlgTool *>::iterator it = std::find(m_tools.begin(),
         m_tools.end(), tool);
 
-    MsgStream log(msgSvc(), name());
     if (it != m_tools.end()) {
 
-      log << MSG::DEBUG << "De-Registering tool " << tool->name() << endmsg;
+      debug() << "De-Registering tool " << tool->name() << endmsg;
 
       m_tools.erase(it);
     } else {
-      log << MSG::DEBUG << "Could not de-register tool " << tool->name() << endmsg;
+      debug() << "Could not de-register tool " << tool->name() << endmsg;
     }
   }
 
@@ -742,14 +732,12 @@ public:
 
     m_toolHandles.push_back(&handle);
 
-    MsgStream log(msgSvc(), name());
-
     if (sc.isSuccess()) {
-      log << MSG::DEBUG << "Handle for private tool" << toolTypeAndName
+      debug() << "Handle for private tool" << toolTypeAndName
           << " successfully created and stored." << endmsg;
     } else {
 
-      log << MSG::ERROR << "Handle for private tool" << toolTypeAndName
+      error() << "Handle for private tool" << toolTypeAndName
           << " could not be created." << endmsg;
     }
 
@@ -768,21 +756,19 @@ public:
   StatusCode declarePublicTool(ToolHandle<T> & handle, std::string toolTypeAndName = "",
       bool createIf = true) {
 
-    if (toolTypeAndName == "")
+    if (toolTypeAndName.empty())
       toolTypeAndName = System::typeinfoName(typeid(T));
 
     StatusCode sc = handle.initialize(toolTypeAndName, 0, createIf);
 
     m_toolHandles.push_back(&handle);
 
-    MsgStream log(msgSvc(), name());
-
     if (sc.isSuccess()) {
-      log << MSG::DEBUG << "Handle for public tool" << toolTypeAndName
+      debug() << "Handle for public tool" << toolTypeAndName
           << " successfully created and stored." << endmsg;
     } else {
 
-      log << MSG::ERROR << "Handle for public tool" << toolTypeAndName
+      error() << "Handle for public tool" << toolTypeAndName
           << " could not be created." << endmsg;
     }
 

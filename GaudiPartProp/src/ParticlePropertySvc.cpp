@@ -74,26 +74,25 @@ StatusCode ParticlePropertySvc::initialize()
   StatusCode sc = Service::initialize();
   if ( sc.isFailure() ) { return sc ; }
 
-  MsgStream log( msgSvc() , name() ) ;
 
   sc = setProperties();
   if ( sc.isFailure() )
   {
-    log << MSG::ERROR << " Could not set the properties " << endmsg ;
+    error() << " Could not set the properties " << endmsg ;
     return sc ;
   }
 
   m_fileAccess = service("VFSSvc");
   if ( !m_fileAccess )
   {
-    log << MSG::ERROR << " Cannot retrieve the VFS service " << endmsg ;
+    error() << " Cannot retrieve the VFS service " << endmsg ;
     return StatusCode::FAILURE ;
   }
 
   sc = parse();
   if ( sc.isFailure() )
   {
-    log << MSG::ERROR << " Could not parse the file " << endmsg ;
+    error() << " Could not parse the file " << endmsg ;
     return sc ;
   }
   if ( !m_particles.empty() )
@@ -101,28 +100,28 @@ StatusCode ParticlePropertySvc::initialize()
     sc = addParticles () ;
     if ( sc.isFailure() )
     {
-      log << MSG::ERROR << " Could not treat particles! " << endmsg ;
+      error() << " Could not treat particles! " << endmsg ;
       return sc ;
     }
   }
-  log << MSG::DEBUG << "ParticleProperties parsed successfully" << endmsg;
+  debug() << "ParticleProperties parsed successfully" << endmsg;
 
-  log << MSG::DEBUG << "Access properties" << endmsg;
+  debug() << "Access properties" << endmsg;
   // For debugging purposes print out the size of the internal maps
   // particle name as key: all particles in database are present here
-  log << MSG::DEBUG << "NameMap size =" << m_namemap.size() << endmsg;
+  debug() << "NameMap size =" << m_namemap.size() << endmsg;
   // Geant3 ID as key: all particles in database are present here
-  log << MSG::DEBUG << "GeantID Map size =" << m_idmap.size() << endmsg;
+  debug() << "GeantID Map size =" << m_idmap.size() << endmsg;
   // StdHep ID as key: some particles have no valid StdHep ID
-  log << MSG::DEBUG << "StdHepID Map size =" << m_stdhepidmap.size()
+  debug() << "StdHepID Map size =" << m_stdhepidmap.size()
       << endmsg;
   // Pythia ID as key: some particles are not defined in Pythia
-  log << MSG::DEBUG << "PythiaID Map size =" << m_pythiaidmap.size()
+  debug() << "PythiaID Map size =" << m_pythiaidmap.size()
       << endmsg;
 
   if ( !m_replaced.empty() )
   {
-    log << MSG::INFO
+    info()
         << "Properties have been redefined for "
         << m_replaced.size() << " particles : "
         << Gaudi::Utils::toString( m_replaced )
@@ -138,21 +137,17 @@ StatusCode ParticlePropertySvc::finalize()
 {
   if ( !m_other.empty() )
   {
-    MsgStream log( msgSvc() , name() ) ;
-    log << MSG::INFO
-        << "Additional Properties have been read from files: "
-        << Gaudi::Utils::toString ( m_other )
-        << endmsg ;
+    info() << "Additional Properties have been read from files: "
+           << Gaudi::Utils::toString ( m_other )
+           << endmsg ;
   }
 
   if ( !m_replaced.empty() )
   {
-    MsgStream log( msgSvc() , name() ) ;
-    log << MSG::ALWAYS
-        << "Properties have been redefined for "
-        << m_replaced.size() << " particles : "
-        << Gaudi::Utils::toString( m_replaced )
-        << endmsg ;
+    always() << "Properties have been redefined for "
+             << m_replaced.size() << " particles : "
+             << Gaudi::Utils::toString( m_replaced )
+             << endmsg ;
   }
 
   m_fileAccess.reset();
@@ -298,8 +293,7 @@ StatusCode ParticlePropertySvc::parse()
   // expected
   if ( m_namemap.empty() )
   {
-    MsgStream log( msgSvc(), name() );
-    log << MSG::ERROR
+    error()
         << "Format of input file inconsistent with what expected"
         << " - Check you are using ParticleData.txt" << endmsg;
     return StatusCode::FAILURE;
@@ -310,19 +304,16 @@ StatusCode ParticlePropertySvc::parse()
 // ============================================================================
 StatusCode ParticlePropertySvc::parse( const std::string& file )
 {
-  MsgStream log( msgSvc(), name() );
-
   auto infile = ( m_fileAccess ? m_fileAccess->open(file) : nullptr );
   if ( !infile )
   {
-    log << MSG::ERROR << "Unable to open properties file : " << file
+    error() << "Unable to open properties file : " << file
         << endmsg;
     return StatusCode::FAILURE ;
   }
 
   StatusCode sc = StatusCode::SUCCESS;
-  log << MSG::INFO
-      << "Opened particle properties file : " << file << endmsg;
+  info() << "Opened particle properties file : " << file << endmsg;
 
   std::vector<std::string> tokens; tokens.reserve(9);
   std::string line;
@@ -353,7 +344,7 @@ StatusCode ParticlePropertySvc::parse( const std::string& file )
 
     if ( sc.isFailure() )
     {
-      log << MSG::ERROR
+      error()
           << "Error from ParticlePropertySvc::push_back for particle='"
           << tokens[0] << "'" << endmsg ;
     }
@@ -430,8 +421,6 @@ StatusCode ParticlePropertySvc::rebuild()
 // ============================================================================
 StatusCode ParticlePropertySvc::addParticles()
 {
-
-  MsgStream log ( msgSvc() , name() ) ;
   // loop over all "explicit" particles
   for ( const auto& item : m_particles )
   {
@@ -457,7 +446,7 @@ StatusCode ParticlePropertySvc::addParticles()
          >> p_pythia
          >> p_maxwid )
     {
-      log << MSG::ALWAYS
+      always()
           << " Add/Modify the particle: "
           << " name='"   << p_name   << "'"
           << " geant="   << p_geant
@@ -483,7 +472,7 @@ StatusCode ParticlePropertySvc::addParticles()
     }
     else
     {
-      log << MSG::ERROR
+      error()
           << " could not parse '" << item << "'" << endmsg ;
       return StatusCode::FAILURE ;                                 // RETURN
     }
@@ -506,7 +495,7 @@ bool ParticlePropertySvc::diff
   //
   if ( o == n ) { return false ; }
   //
-  MsgStream log ( msgSvc() , name() ) ;
+  auto& log = msgStream();
   log << l ;
   if ( !o || !n  )
   {

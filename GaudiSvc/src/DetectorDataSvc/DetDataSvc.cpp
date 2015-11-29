@@ -149,8 +149,6 @@ StatusCode DetDataSvc::finalize()
 /// Remove all data objects in the data store.
 StatusCode DetDataSvc::clearStore()   {
 
-  MsgStream log(msgSvc(), name());
-
   TsDataSvc::clearStore().ignore();
 
   if( m_usePersistency ) {
