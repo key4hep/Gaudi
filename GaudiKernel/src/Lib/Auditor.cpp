@@ -36,10 +36,6 @@ StatusCode Auditor::sysInitialize() {
     if( !m_pSvcLocator )
       return StatusCode::FAILURE;
 
-    // Set up message service
-    m_MS = serviceLocator(); // get default message service
-    if( !m_MS )  return StatusCode::FAILURE;
-
     // Set the Auditor's properties
     sc = setProperties();
     if( !sc.isSuccess() )  return StatusCode::FAILURE;
@@ -200,7 +196,6 @@ StatusCode Auditor::sysFinalize() {
 }
 
 StatusCode Auditor::finalize() {
-  m_MS.reset();// release message service
   return StatusCode::SUCCESS;
 }
 

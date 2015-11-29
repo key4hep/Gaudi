@@ -237,7 +237,6 @@ public:
 
   std::string m_name;	          ///< Auditor's name for identification
 
-  mutable SmartIF<IMessageSvc> m_MS;            ///< Message service
   mutable SmartIF<ISvcLocator> m_pSvcLocator;   ///< Pointer to service locator service
   SmartIF<PropertyMgr> m_PropertyMgr;   ///< For management of properties
   int          m_outputLevel;   ///< Auditor output level
