@@ -33,9 +33,8 @@ StatusCode ReadAlg::initialize() {
   StatusCode sc = Algorithm::initialize();
   if (sc.isFailure()) return sc;
 
-  MsgStream log(msgSvc(), name());
-  if (outputLevel() <= MSG::DEBUG)
-    log << MSG::DEBUG << "Reading " << m_addressfile << endmsg;
+  if (msgLevel(MSG::DEBUG))
+    debug() << "Reading " << m_addressfile << endmsg;
   m_addresses.clear();
   std::ifstream input{m_addressfile};
   while (input.good()) {
@@ -44,8 +43,8 @@ StatusCode ReadAlg::initialize() {
     if (input.eof()) break;
     m_addresses.push_back(addr);
   }
-  if (outputLevel() <= MSG::DEBUG)
-    log << MSG::DEBUG << "Read " << m_addresses.size() << " addresses" << endmsg;
+  if (msgLevel(MSG::DEBUG))
+    debug() << "Read " << m_addresses.size() << " addresses" << endmsg;
 
   m_count = 0;
 
