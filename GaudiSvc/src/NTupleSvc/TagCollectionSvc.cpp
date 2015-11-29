@@ -51,7 +51,6 @@ TagCollectionSvc::TagCollectionSvc(const std::string& name, ISvcLocator* svc)
 
 /// Add file to list I/O list
 StatusCode TagCollectionSvc::connect(const std::string& ident, std::string& logname)    {
-  MsgStream log ( msgSvc(), name() );
   DataObject* pO = nullptr;
   StatusCode status = findObject(m_rootName, pO);
   if ( status.isSuccess() )   {
@@ -136,7 +135,7 @@ StatusCode TagCollectionSvc::connect(const std::string& ident, std::string& logn
       }
     }
   }
-  log << MSG::ERROR << "Cannot add " << ident << " invalid filename!" << endmsg;
+  error() << "Cannot add " << ident << " invalid filename!" << endmsg;
   return StatusCode::FAILURE;
 }
 

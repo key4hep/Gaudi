@@ -73,34 +73,33 @@ namespace HepRndm  {
       m_seeds.push_back(theSeed);
       m_seeds.push_back(0);
     }
-    MsgStream log(msgSvc(), name());
     if ( status.isSuccess() )   {
       initEngine();
-      log << MSG::INFO << "Generator engine type:"
+      info() << "Generator engine type:"
       	  << System::typeinfoName(typeid(*hepEngine()))
           << endmsg;
       if ( m_useTable )   {
         if ( m_row > 214 || m_col > 1 )   {
-          log << MSG::ERROR << "Generator engine seed table has dimension [215][2], you gave:"
+          error() << "Generator engine seed table has dimension [215][2], you gave:"
               << " Row=" << m_row << " Column:" << m_col << endmsg;
           status = StatusCode::FAILURE;
         }
         else    {
-          log << MSG::INFO << "Generator engine seeds from table."
+          info() << "Generator engine seeds from table."
               << " Row=" << m_row << " Column:" << m_col << endmsg;
         }
       }
-      log << "Current Seed:" << hepEngine()->getSeed();
-      log << " Luxury:" << m_lux;
-      log << endmsg;
+      info() << "Current Seed:" << hepEngine()->getSeed();
+      info() << " Luxury:" << m_lux;
+      info() << endmsg;
       // Use the default static engine if required (e.g. for GEANT4)
       if ( m_setSingleton )   {
-          HepRandom::setTheEngine(hepEngine());
-        log << "This is the GEANT4 engine!" << endmsg;
+        HepRandom::setTheEngine(hepEngine());
+        info() << "This is the GEANT4 engine!" << endmsg;
       }
       return status;
     }
-    log << MSG::ERROR << "Cannot initialze random engine of type:"
+    error() << "Cannot initialze random engine of type:"
     	  << System::typeinfoName(typeid(TYPE))
         << endmsg;
     return status;
