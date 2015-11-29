@@ -539,17 +539,6 @@ public:
     if ( mS ) mS->declareInfo(name, format, var, size, desc, this);
   }
 
-protected:
-
-  /// get tool's output level
-  int           outputLevel () const { return m_outputLevel.value() ; }
-
-  /// Accessor for the Message level property
-  IntegerProperty & outputLevelProperty() { return m_outputLevel; }
-
-
-protected:
-
   // Standard destructor.
   ~AlgTool() override;
 
