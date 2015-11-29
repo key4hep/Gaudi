@@ -107,8 +107,7 @@ StatusCode DataStreamTool::initializeStream(EventSelectorDataStream* s)   {
       sel->release();  // No need for this interface anymore, it is passed to the stream
       if ( prop && isvc )   {
         for( const auto& i : s->properties() ) prop->setProperty(i).ignore();
-        int output_level = this->outputLevel();
-        prop->setProperty(IntegerProperty("OutputLevel",output_level)).ignore();
+        prop->setProperty(IntegerProperty("OutputLevel",msgLevel())).ignore();
         // FIXME: (MCl) Why do we have to initialize the selector here?
         return isvc->sysInitialize();
       }
