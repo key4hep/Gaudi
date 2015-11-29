@@ -73,10 +73,10 @@ StatusCode EvtCollectionWrite::initialize()   {
 
 // Event callback
 StatusCode EvtCollectionWrite::execute() {
-  MsgStream log(msgSvc(), name());
+  auto& log = msgStream();
   SmartDataPtr<DataObject> evtRoot(eventSvc(),"/Event");
   SmartDataPtr<Event> evt(eventSvc(),"/Event/Header");
-  if ( evt != 0 )    {
+  if ( evt )    {
     int evt_num = evt->event();
     SmartDataPtr<MyTrackVector> trkCont(eventSvc(), "/Event/MyTracks");
     if ( trkCont != 0 )    {
@@ -117,6 +117,6 @@ StatusCode EvtCollectionWrite::execute() {
       return StatusCode::SUCCESS;
     }
   }
-  log << MSG::ERROR << "Unable to retrieve Event Header object" << endmsg;
+  error() << "Unable to retrieve Event Header object" << endmsg;
   return StatusCode::FAILURE;
 }

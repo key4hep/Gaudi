@@ -19,8 +19,6 @@ StatusCode SCSAlg::initialize() {
 
 StatusCode SCSAlg::execute() {
 
-  MsgStream log(msgSvc(), name());
-
 
   fncChecked();
   fncUnchecked();

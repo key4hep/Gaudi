@@ -26,10 +26,7 @@ WriteHandleAlg::WriteHandleAlg ( const std::string& name , // the algorithm inst
 
 StatusCode WriteHandleAlg::execute  ()  // the execution of the algorithm 
 {
-
-  MsgStream log(msgSvc(), name());
-  
-  log << MSG::INFO << "Hello, I am executing" << endmsg;
+  info() << "Hello, I am executing" << endmsg;
 
   // Set collision to the current event number from the context; 
   // if the context doesn't exist, set it to some dummy value 
