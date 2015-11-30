@@ -77,7 +77,6 @@ MyGaudiAlg           INFO /Rec/RAW
 MyGaudiAlg           INFO /Event/MyAnalysis/Tracks
 MyGaudiAlg           INFO ....initialization done
 ToolSvc.ToolA       DEBUG Property update for OutputLevel : new value = 2
-ToolSvc.ToolA       DEBUG Property update for OutputLevel : new value = 2
 ToolSvc.ToolA       DEBUG Initialize
 ToolSvc.ToolA       DEBUG Initialize base class GaudiCommon<AlgTool>
 ToolSvc.ToolA       DEBUG could not locate CounterSummarySvc, no counter summary will be made
@@ -105,7 +104,6 @@ ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditTools':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'OutputLevel':2
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
 ToolSvc.ToolA       DEBUG Loading tool ToolB of type TestTool
-ToolSvc.ToolB       DEBUG Property update for OutputLevel : new value = 2
 ToolSvc.ToolB       DEBUG Property update for OutputLevel : new value = 2
 ToolSvc.ToolB       DEBUG Initialize
 ToolSvc.ToolB       DEBUG Initialize base class GaudiCommon<AlgTool>

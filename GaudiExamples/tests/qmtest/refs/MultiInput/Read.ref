@@ -35,8 +35,10 @@ RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
 RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
 RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
 ToolSvc.Sequenc...   INFO This machine has a speed about   3.97 times the speed of a 2.8 GHz Xeon.
+Gaudi::Examples...  DEBUG Property update for OutputLevel : new value = 2
 Gaudi::Examples...  DEBUG Reading addresses.txt
 Gaudi::Examples...  DEBUG Read 100 addresses
+Gaudi::Examples...  DEBUG Adding tools for Gaudi::Examples::MultiInput::ReadAlg
 EventPersistenc...   INFO Added successfully Conversion service:RootCnvSvc
 EventSelector        INFO Stream:EventSelector.DataStreamTool_1 Def:DATAFILE='PFN:MI_Base.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'
 HistogramPersis...WARNING Histograms saving not required.

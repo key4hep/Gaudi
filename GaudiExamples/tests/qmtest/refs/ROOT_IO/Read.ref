@@ -50,12 +50,17 @@ EventAlgs            INFO Member list: ReadAlg
 RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
 RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
 RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
+ReadAlg             DEBUG Property update for OutputLevel : new value = 1
 ReadAlg           VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
 ReadAlg           VERBOSE ServiceLocatorHelper::service: found service TimelineSvc
 ReadAlg           VERBOSE ServiceLocatorHelper::service: found service FileRecordDataSvc
 ReadAlg           VERBOSE ServiceLocatorHelper::service: found service IncidentSvc
+ReadAlg             DEBUG Adding tools for ReadAlg
 FSRAlgs              INFO Member list: ReadTES
+EventSelector       DEBUG Property update for OutputLevel : new value = 2
 EventSelector       DEBUG Service base class initialized successfully
+EventSelector.D...  DEBUG Property update for OutputLevel : new value = 2
+EventSelector.D...  DEBUG Property update for OutputLevel : new value = 2
 EventSelector.D...  DEBUG Service base class initialized successfully
 EventPersistenc...   INFO Added successfully Conversion service:RootCnvSvc
 EventSelector.D...  DEBUG Selection root:/Event CLID:110

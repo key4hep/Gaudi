@@ -23,7 +23,9 @@ SubAlg1              INFO initializing....
 SubAlg2              INFO initializing....
 TopSequence          INFO Member list: Sequencer/Sequence1, Sequencer/Sequence2
 Sequence1            INFO Member list: Prescaler/Prescaler1, HelloWorld, EventCounter/Counter1
+HelloWorld          DEBUG Property update for OutputLevel : new value = 2
 HelloWorld           INFO initializing....
+HelloWorld          DEBUG Adding tools for HelloWorld
 Counter1             INFO Counter1:EventCounter::initialize - Frequency:  'Frequency':1
 Sequence2            INFO Member list: Prescaler/Prescaler2, HelloWorld, EventCounter/Counter2
 Counter2             INFO Counter2:EventCounter::initialize - Frequency:  'Frequency':1

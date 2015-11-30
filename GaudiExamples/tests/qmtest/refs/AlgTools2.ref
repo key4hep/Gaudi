@@ -32,7 +32,6 @@ ApplicationMgr    SUCCESS
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
 MyAlg               DEBUG Property update for OutputLevel : new value = 2
-MyAlg               DEBUG Property update for OutputLevel : new value = 2
 MyAlg               DEBUG Initialize base class GaudiCommon<Algorithm>
 MyAlg               DEBUG could not locate CounterSummarySvc, no counter summary will be made
 MyAlg               DEBUG List of ALL properties of MyGaudiAlgorithm/MyAlg  #properties = 39
@@ -87,6 +86,7 @@ ToolSvc.MyTool       INFO Double = 2.011e+12
 ToolSvc.MyTool       INFO String = two hundred and one
 ToolSvc.MyTool       INFO Bool   = 1
 MyAlg               DEBUG Registering tool ToolSvc.MyTool
+MyAlg.MyTool        DEBUG Property update for OutputLevel : new value = 2
 MyAlg.MyTool         INFO intialize() has been called
 MyAlg.MyTool         INFO Int    = 101
 MyAlg.MyTool         INFO Double = 1.011e+12
@@ -134,6 +134,7 @@ MyAlg.MyGaudiTool    INFO Double = 100
 MyAlg.MyGaudiTool    INFO String = hundred
 MyAlg.MyGaudiTool    INFO Bool   = 1
 MyAlg               DEBUG Registering tool MyAlg.MyGaudiTool
+MyAlg.ToolWithName  DEBUG Property update for OutputLevel : new value = 2
 MyAlg.ToolWithName   INFO intialize() has been called
 MyAlg.ToolWithName   INFO Int    = 100
 MyAlg.ToolWithName   INFO Double = 100
@@ -141,6 +142,7 @@ MyAlg.ToolWithName   INFO String = hundred
 MyAlg.ToolWithName   INFO Bool   = 1
 MyAlg               DEBUG Registering tool MyAlg.ToolWithName
 MyAlg               DEBUG Registering tool MyAlg.MyGaudiTool
+MyAlg.PrivToolH...  DEBUG Property update for OutputLevel : new value = 2
 MyAlg.PrivToolH...   INFO intialize() has been called
 MyAlg.PrivToolH...   INFO Int    = 100
 MyAlg.PrivToolH...   INFO Double = 100
@@ -161,6 +163,11 @@ MyAlg                INFO /Event/Rec/Hits
 MyAlg                INFO /Rec/RAW
 MyAlg                INFO /Event/MyAnalysis/Tracks
 MyAlg                INFO ....initialization done
+MyAlg               DEBUG Data Handle hits (/Event/Rec/Hits) initialized
+MyAlg               DEBUG Data Handle raw (/Rec/RAW) initialized
+MyAlg               DEBUG Data Handle tracks (/Event/Rec/Tracks) initialized
+MyAlg               DEBUG Data Handle trackSelection (/Event/MyAnalysis/Tracks) initialized
+MyAlg               DEBUG Adding tools for MyAlg
 MyAlg               DEBUG Adding ToolHandle tool MyAlg.PrivToolHandle (MyTool)
 MyAlg               DEBUG Adding ToolHandle tool ToolSvc.PubToolHandle (MyTool)
 MyAlg               DEBUG Adding data dependencies for tool ToolSvc.MyTool (MyTool)
@@ -172,7 +179,6 @@ MyAlg               DEBUG Adding data dependencies for tool MyAlg.MyGaudiTool (M
 MyAlg               DEBUG parent object already visited: stopping recursion
 MyAlg               DEBUG Adding data dependencies for tool MyAlg.PrivToolHandle (MyTool)
 MyAlg               DEBUG Adding data dependencies for tool ToolSvc.PubToolHandle (MyTool)
-ToolSvc.ToolA       DEBUG Property update for OutputLevel : new value = 2
 ToolSvc.ToolA       DEBUG Property update for OutputLevel : new value = 2
 ToolSvc.ToolA       DEBUG Initialize
 ToolSvc.ToolA       DEBUG Initialize base class GaudiCommon<AlgTool>
@@ -201,7 +207,6 @@ ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditTools':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'OutputLevel':2
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
 ToolSvc.ToolA       DEBUG Loading tool ToolB of type TestTool
-ToolSvc.ToolB       DEBUG Property update for OutputLevel : new value = 2
 ToolSvc.ToolB       DEBUG Property update for OutputLevel : new value = 2
 ToolSvc.ToolB       DEBUG Initialize
 ToolSvc.ToolB       DEBUG Initialize base class GaudiCommon<AlgTool>
