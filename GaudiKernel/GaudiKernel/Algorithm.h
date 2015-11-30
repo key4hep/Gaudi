@@ -334,7 +334,7 @@ public:
    *  This service may be used by an algorithm to request
    *  any services it requires in addition to those provided by default.
    */
-  SmartIF<ISvcLocator>& serviceLocator() const;
+  SmartIF<ISvcLocator>& serviceLocator() const override;
   /// shortcut for method serviceLocator
   SmartIF<ISvcLocator>& svcLoc        () const { return serviceLocator() ; }
 
