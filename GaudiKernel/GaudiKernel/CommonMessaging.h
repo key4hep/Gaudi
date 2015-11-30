@@ -71,10 +71,7 @@ public:
    *  Returns a pointer to the standard message service.
    */
   inline SmartIF<IMessageSvc>& msgSvc() const {
-    if (!m_msgsvc) {
-      // Get default implementation of the message service.
-      m_msgsvc = this->serviceLocator();
-    }
+    if (UNLIKELY(!m_msgsvc)) create_msgSvc();
     return m_msgsvc;
   }
 
@@ -87,17 +84,10 @@ public:
     return msgSvc();
   }
 #endif
-  void create_msgStream() const {
-      auto& ms = msgSvc();
-      m_msgStream.reset(new MsgStream(ms, this->name()));
-      m_streamWithService = ms.isValid();
-  }
 
   /// Return an uninitialized MsgStream.
   inline MsgStream& msgStream() const {
-    if (UNLIKELY((!m_msgStream) || UNLIKELY(!m_streamWithService))) {
-      create_msgStream();
-    }
+    if (UNLIKELY((m_createMsgStream))) create_msgStream();
     return *m_msgStream;
   }
 
@@ -154,12 +144,23 @@ private:
   mutable std::unique_ptr<MsgStream> m_msgStream;
 
   mutable MSG::Level m_level = MSG::NIL;
+  /// Flag to trigger a new MsgStream
+  mutable bool m_createMsgStream = true;
 
   /// Pointer to the message service;
   mutable SmartIF<IMessageSvc> m_msgsvc;
 
-  /// Flag to create a new MsgStream if it was created without the message service
-  mutable bool m_streamWithService = false;
+  // out-of-line 'cold' functions -- put here so as to not blow up the inline 'hot' functions
+  void create_msgSvc() const {
+      // Get default implementation of the message service.
+      m_msgsvc = this->serviceLocator();
+  }
+  void create_msgStream() const {
+      auto& ms = msgSvc();
+      m_msgStream.reset(new MsgStream(ms, this->name()));
+      m_createMsgStream = (!ms.isValid() || !m_msgStream);
+  }
+
 
 protected:
   /// Update the output level of the cached MsgStream.
