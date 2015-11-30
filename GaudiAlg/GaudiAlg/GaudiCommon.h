@@ -28,7 +28,6 @@
 #include "GaudiKernel/IUpdateManagerSvc.h"
 #include "GaudiKernel/HashMap.h"
 #include "GaudiKernel/DataObjectHandle.h"
-#include "GaudiKernel/CommonMessaging.h"
 // ============================================================================
 // forward declarations
 // ============================================================================
@@ -71,9 +70,11 @@ namespace GaudiCommon_details {
  */
 // ============================================================================
 template < class PBASE >
-class GAUDI_API GaudiCommon: public CommonMessaging<PBASE>
+class GAUDI_API GaudiCommon: public PBASE
 {
 protected: // definitions
+  using base_class = PBASE;
+
   /** Simple definition to be used with the new useRootInTES argument get<TYPE>
    *  and put methods. If used with cause the RootInTES option to be IGNORED.
    *
