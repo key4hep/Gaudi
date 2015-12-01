@@ -12,6 +12,7 @@
 #include <limits>
 #include <array>
 #include <functional>
+#include "boost/algorithm/string/join.hpp"
 // ============================================================================
 // GaudiKernel
 // ============================================================================
@@ -1044,6 +1045,91 @@ namespace Tuples
       return StatusCode::SUCCESS ;
     }
     // =======================================================================
+    /** Put M functions from one data array  into LoKi-style N-Tuple
+     *  simultaneously (effective!)
+     *
+     *  @code
+     *
+     *  std::vector<double> data = ... ;
+     *
+     *  Tuple tuple = ntuple( "My Ntuple" );
+     *
+     *  tuple->farray( { { "sqrt", sqrt },      // the first data item name + function to be used
+     *                   { "sinus", sin } },   // the second data item name + function to be used
+     *                  data.begin () ,   // begin of data sequence
+     *                  data.end   () ,   // end of data sequence
+     *                  "length"      ,   // name of "length" tuple item
+     *                  10000         ) ; // maximal array length
+     *
+     *  @endcode
+     *
+     *
+     *  @param name1    the first tuple item name
+     *  @param func1    the first function to be applied
+     *  @param name2    the second tuple item name
+     *  @param func2    the second function to be applied
+     *  @param first    begin of data sequence
+     *  @param last     end of data sequence
+     *  @param length   name of "length" tuple name
+     *  @param maxv     maximal length of the array
+     *  @return status code
+     */
+    template <typename Iterator,
+              typename const_reference = typename std::add_const<typename std::iterator_traits<Iterator>::reference>::type,
+              typename Fun = std::function<float(const_reference)>,
+              typename Item = std::pair<std::string,Fun>>
+    StatusCode farray ( const std::vector<Item>& items,
+                        Iterator             first    ,
+                        Iterator             last     ,
+                        const std::string&   length   ,
+                        size_t               maxv     )
+    {
+      if ( invalid () ) { return InvalidTuple     ; }
+      if ( rowWise () ) { return InvalidOperation ; }
+
+      // adjust the lenfth
+      if( std::distance(first,last) > static_cast<std::ptrdiff_t>(maxv) ) {
+        std::vector<std::string> names;
+        names.reserve(items.size());
+        std::transform(items.begin(),items.end(),std::back_inserter(names),
+                       [](const Item& i) { return i.first; } );
+        Warning("farray('" + boost::algorithm::join( names, "," )
+                + "'): array overflow, skipping extra entries").ignore() ;
+        last = std::next(first, maxv) ;
+      }
+
+      // get the length item
+      Int* len  = ints ( length , 0 , maxv ) ;
+      if ( !len  ) { return InvalidColumn ; }
+
+      // adjust the length
+      *len = std::distance(first,last);
+
+      // get the arrays themselves
+      std::vector<FArray*> vars; vars.reserve(items.size());
+      std::transform( items.begin(), items.end(), std::back_inserter(vars),
+                      [&](const Item& item) { return this->fArray(item.first,len); } );
+      if ( std::any_of( vars.begin(), vars.end(), [](const FArray* f) { return !f; } ) ) {
+        return InvalidColumn ;
+      }
+
+      // fill the array
+      size_t index = 0;
+      while( first != last ) {
+        auto var = vars.begin();
+        auto item = items.begin();
+        while ( var != vars.end() ) {
+          (**var)[index] = item->second(*first);
+          ++var;
+          ++item;
+        }
+        ++index;
+        ++first;
+      }
+
+      return StatusCode::SUCCESS ;
+    }
+    // =======================================================================
     /** Put two functions from one data array  into LoKi-style N-Tuple
      *  simultaneously (effective!)
      *
@@ -1053,7 +1139,7 @@ namespace Tuples
      *
      *  Tuple tuple = ntuple( "My Ntuple" );
      *
-     *  tuple->farray( "sqr"          ,   // the first data item name
+     *  tuple->farray( "square_root"  ,   // the first data item name
      *                  sqrt          ,   // "func1" to be used
      *                 "sinus"        ,   // the second data item name
      *                  sin           ,   // "func2" to be used
@@ -1075,54 +1161,20 @@ namespace Tuples
      *  @param maxv     maximal length of the array
      *  @return status code
      */
-    template <class FUNC1, class FUNC2, class DATA>
+    template <class FUNC1, class FUNC2, class Iterator>
     StatusCode farray ( const std::string&   name1         ,
                         const FUNC1&         func1         ,
                         const std::string&   name2         ,
                         const FUNC2&         func2         ,
-                        DATA                 first         ,
-                        DATA                 last          ,
+                        Iterator&&           first         ,
+                        Iterator&&           last          ,
                         const std::string&   length        ,
                         size_t               maxv          )
     {
-      if ( invalid () ) { return InvalidTuple     ; }
-      if ( rowWise () ) { return InvalidOperation ; }
-
-      // adjust the lenfth
-      if( std::distance(first,last) > static_cast<std::ptrdiff_t>(maxv) )
-      {
-        Warning("farray('"
-                + name1 + ","
-                + name2 + "'): array is overflow, skip extra entries").ignore() ;
-        Warning("farray('"+name1+"'): array is overflow, skip extra items").ignore() ;
-        last = std::next(first, maxv) ;
-      }
-
-      // get the length item
-      Int* len  = ints ( length , 0 , maxv ) ;
-      if ( !len  ) { return InvalidColumn ; }
-
-      // adjust the length
-      *len = std::distance(first,last);
-
-      // get the array itself
-      FArray*  var1  = fArray ( name1 , len ) ;
-      if ( !var1 ) { return InvalidColumn ; }
-
-      // get the array itself
-      FArray*  var2 = fArray ( name2 , len ) ;
-      if ( !var2 ) { return InvalidColumn ; }
-
-      // fill the array
-      size_t index = 0 ;
-      for( ; first != last ; ++first )
-      {
-        ( *var1 ) [ index ] = func1 ( *first )  ;
-        ( *var2 ) [ index ] = func2 ( *first )  ;
-        ++index ;
-      }
-
-      return StatusCode::SUCCESS ;
+        return farray( { { name1, std::cref(func1) },
+                         { name2, std::cref(func2) } },
+                       std::forward<Iterator>(first), std::forward<Iterator>(last),
+                       length, maxv );
     }
     // =======================================================================
     /** Put three functions from one data array  into LoKi-style N-Tuple
@@ -1135,7 +1187,7 @@ namespace Tuples
      *
      *  Tuple tuple = ntuple( "My Ntuple" );
      *
-     *  tuple->farray( "sqr"          ,   // the first data item name
+     *  tuple->farray( "square_root"    ,   // the first data item name
      *                  sqrt          ,   // "func1" to be used
      *                 "sinus"        ,   // the second data item name
      *                  sin           ,   // "func2" to be used
@@ -1161,60 +1213,23 @@ namespace Tuples
      *  @param maxv     maximal length of the array
      *  @return status code
      */
-    template <class FUNC1, class FUNC2, class FUNC3, class DATA>
+    template <class FUNC1, class FUNC2, class FUNC3, class Iterator>
     StatusCode farray ( const std::string& name1         ,
                         const FUNC1&       func1         ,
                         const std::string& name2         ,
                         const FUNC2&       func2         ,
                         const std::string& name3         ,
                         const FUNC3&       func3         ,
-                        DATA               first         ,
-                        DATA               last          ,
+                        Iterator&&         first         ,
+                        Iterator&&         last          ,
                         const std::string& length        ,
                         size_t             maxv          )
     {
-      if ( invalid () ) { return InvalidTuple     ; }
-      if ( rowWise () ) { return InvalidOperation ; }
-
-      // adjust the length
-      if( (size_t)std::distance(first,last) > maxv )
-      {
-        Warning("farray('"
-                + name1 + ","
-                + name2 + ","
-                + name3 + "'): array is overflow, skip extra entries").ignore() ;
-        last = std::next(first,  maxv) ;
-      }
-
-      // get the length item
-      Int* len  = ints ( length , 0 , maxv ) ;
-      if( !len   ) { return InvalidColumn ; }
-
-      // adjust the length
-      *len = std::distance(first,last);
-
-      // get the array itself
-      FArray*  var1  = fArray ( name1 , len ) ;
-      if( !var1 ) { return InvalidColumn  ; }
-
-      // get the array itself
-      FArray*  var2 = fArray ( name2 , len ) ;
-      if( !var2 ) { return InvalidColumn ; }
-
-      // get the array itself
-      FArray*  var3 = fArray ( name3 , len ) ;
-      if( !var3 ) { return InvalidColumn ; }
-
-      // fill the array
-      size_t index = 0 ;
-      for( ; first != last ; ++first )
-      {
-        ( *var1 ) [ index ] = (float)func1 ( *first )  ;
-        ( *var2 ) [ index ] = (float)func2 ( *first )  ;
-        ( *var3 ) [ index ] = (float)func3 ( *first )  ;
-        ++index ;
-      }
-      return StatusCode::SUCCESS ;
+        return farray( {{name1,std::cref(func1)},
+                        {name2,std::cref(func2)},
+                        {name3,std::cref(func3)}},
+                        std::forward<Iterator>(first), std::forward<Iterator>(last),
+                        length, maxv );
     }
     // =======================================================================
     /** Put four functions from one data array  into LoKi-style N-Tuple
@@ -1226,7 +1241,7 @@ namespace Tuples
      *
      *  Tuple tuple = ntuple( "My Ntuple" );
      *
-     *  tuple->farray( "sqr"          ,   // the first data item name
+     *  tuple->farray( "square_root"    ,   // the first data item name
      *                  sqrt          ,   // "func1" to be used
      *                 "sinus"        ,   // the second data item name
      *                  sin           ,   // "func2" to be used
@@ -1256,7 +1271,7 @@ namespace Tuples
      *  @param maxv     maximal length of the array
      *  @return status code
      */
-    template <class FUNC1, class FUNC2, class FUNC3, class FUNC4, class DATA>
+    template <class FUNC1, class FUNC2, class FUNC3, class FUNC4, class Iterator>
     StatusCode farray ( const std::string& name1         ,
                         const FUNC1&       func1         ,
                         const std::string& name2         ,
@@ -1265,60 +1280,17 @@ namespace Tuples
                         const FUNC3&       func3         ,
                         const std::string& name4         ,
                         const FUNC4&       func4         ,
-                        DATA               first         ,
-                        DATA               last          ,
+                        Iterator&&         first         ,
+                        Iterator&&         last          ,
                         const std::string& length        ,
                         size_t             maxv          )
     {
-      if ( invalid () ) { return InvalidTuple     ; }
-      if ( rowWise () ) { return InvalidOperation ; }
-
-      // adjust the length
-      if( std::distance(first,last) > static_cast<std::ptrdiff_t>(maxv) )
-      {
-        Warning("farray('"
-                + name1 + ","
-                + name2 + ","
-                + name3 + ","
-                + name4 + "'): array is overflow, skip extra entries").ignore() ;
-        last = std::next(first, maxv);
-      }
-
-      // get the length item
-      Int* len  = ints ( length , 0 , maxv ) ;
-      if( !len  ) { return InvalidColumn ; }
-
-      // adjust the length
-      *len = std::distance(first,last);
-
-      // get the array itself
-      FArray*  var1  = fArray ( name1 , len ) ;
-      if( !var1 ) { return InvalidColumn ; }
-
-      // get the array itself
-      FArray*  var2 = fArray ( name2 , len ) ;
-      if( !var2 ) { return InvalidColumn ; }
-
-      // get the array itself
-      FArray*  var3 = fArray ( name3 , len ) ;
-      if( !var3 ) { return InvalidColumn ; }
-
-      // get the array itself
-      FArray*  var4 = fArray ( name4 , len ) ;
-      if( !var4 ) { return InvalidColumn ; }
-
-      // fill the array
-      size_t index = 0 ;
-      for( ; first != last ; ++first )
-      {
-        ( *var1 ) [ index ] = func1 ( *first );
-        ( *var2 ) [ index ] = func2 ( *first );
-        ( *var3 ) [ index ] = func3 ( *first );
-        ( *var4 ) [ index ] = func4 ( *first );
-        ++index ;
-      }
-
-      return StatusCode::SUCCESS ;
+        return farray( {{name1,std::cref(func1)},
+                        {name2,std::cref(func2)},
+                        {name3,std::cref(func3)},
+                        {name4,std::cref(func4)}},
+                        std::forward<Iterator>(first), std::forward<Iterator>(last),
+                        length, maxv );
     }
     // =======================================================================
   public:
