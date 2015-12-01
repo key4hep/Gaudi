@@ -29,7 +29,6 @@ ApplicationMgr    SUCCESS
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
 Test1               DEBUG Property update for OutputLevel : new value = 2
-Test1               DEBUG Property update for OutputLevel : new value = 2
 Test1               DEBUG Initialize base class GaudiCommon<Algorithm>
 Test1               DEBUG could not locate CounterSummarySvc, no counter summary will be made
 Test1               DEBUG List of ALL properties of GaudiCommonTests/Test1  #properties = 36
@@ -69,7 +68,7 @@ Test1               DEBUG Property ['Name': Value] =  'ErrorCounter':0
 Test1               DEBUG Property ['Name': Value] =  'ErrorMax':1
 Test1               DEBUG Property ['Name': Value] =  'Enable':True
 Test1               DEBUG Property ['Name': Value] =  'OutputLevel':2
-Test2               DEBUG Property update for OutputLevel : new value = 2
+Test1               DEBUG Adding tools for Test1
 Test2               DEBUG Property update for OutputLevel : new value = 2
 Test2               DEBUG Initialize base class GaudiCommon<Algorithm>
 Test2               DEBUG could not locate CounterSummarySvc, no counter summary will be made
@@ -110,13 +109,12 @@ Test2               DEBUG Property ['Name': Value] =  'ErrorCounter':0
 Test2               DEBUG Property ['Name': Value] =  'ErrorMax':1
 Test2               DEBUG Property ['Name': Value] =  'Enable':True
 Test2               DEBUG Property ['Name': Value] =  'OutputLevel':2
+Test2               DEBUG Adding tools for Test2
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
 HistogramPersis...WARNING Histograms saving not required.
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
-Test1               DEBUG Property update for OutputLevel : new value = 2
-Test2               DEBUG Property update for OutputLevel : new value = 2
 Test1                INFO Execute
 Test1               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address '/Event/Test1/Tracks1'
 Test1               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address '/Event/Test1/Tracks2'
@@ -165,8 +163,6 @@ Test2                INFO /Event/microDST
 Test2                INFO /Event
 Test2               DEBUG The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address 'microDST/Test2/Tracks1'
 Test2               DEBUG The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' could not be retrieved from TS at address 'microDST/Nowhere/To/Be/Found'
-Test1               DEBUG Property update for OutputLevel : new value = 2
-Test2               DEBUG Property update for OutputLevel : new value = 2
 ApplicationMgr       INFO Application Manager Stopped successfully
 Test1               DEBUG Finalize base class GaudiAlgorithm
 Test1               DEBUG Tools to release :
