@@ -1059,8 +1059,8 @@ namespace Tuples
      *
      *  Tuple tuple = ntuple( "My Ntuple" );
      *
-     *  tuple->farray( { { "sqrt", sqrt },      // the first data item name + function to be used
-     *                   { "sinus", sin } },   // the second data item name + function to be used
+     *  tuple->farray( { { "sqrt", sqrt },     // name of 1st column, and function to use for it
+     *                   { "sinus", sin } },   // name of the 2nd column, and corresponding function
      *                  data.begin () ,   // begin of data sequence
      *                  data.end   () ,   // end of data sequence
      *                  "length"      ,   // name of "length" tuple item
