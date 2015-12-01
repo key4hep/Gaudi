@@ -12,12 +12,13 @@
 #include <limits>
 #include <array>
 #include <functional>
-#include "boost/algorithm/string/join.hpp"
+#include <sstream>
 // ============================================================================
 // GaudiKernel
 // ============================================================================
 #include "GaudiKernel/NTuple.h"
 #include "GaudiKernel/VectorMap.h"
+#include "GaudiKernel/SerializeSTL.h"
 // ============================================================================
 // GaudiAlg
 // ============================================================================
@@ -57,13 +58,17 @@ class IOpaqueAddress   ;
  */
 namespace Tuples
 {
-    namespace implementation_detail {
+    namespace detail {
       template <typename T> struct to_ {
           template <typename Arg>
           T operator()(Arg&& i) const
           { return T(std::forward<Arg>(i)); }
       };
       constexpr struct to_<float> to_float {};
+
+      template <typename Iterator>
+      using const_ref_t = typename std::add_const<typename std::iterator_traits<Iterator>::reference>::type;
+
     }
   // ==========================================================================
   /** @enum Type
@@ -894,7 +899,7 @@ namespace Tuples
                         const std::string& length        ,
                         size_t             maxv          )
     {
-      return farray( name, implementation_detail::to_float,
+      return farray( name, detail::to_float,
                      std::forward<ITERATOR1>(first), std::forward<ITERATOR2>(last),
                      length, maxv );
     }
@@ -1045,7 +1050,7 @@ namespace Tuples
       return StatusCode::SUCCESS ;
     }
     // =======================================================================
-    /** Put M functions from one data array  into LoKi-style N-Tuple
+    /** Put arbitrary number of functions from one data array  into LoKi-style N-Tuple
      *  simultaneously (effective!)
      *
      *  @code
@@ -1064,10 +1069,7 @@ namespace Tuples
      *  @endcode
      *
      *
-     *  @param name1    the first tuple item name
-     *  @param func1    the first function to be applied
-     *  @param name2    the second tuple item name
-     *  @param func2    the second function to be applied
+     *  @param items    vector of pairs { name, callable }
      *  @param first    begin of data sequence
      *  @param last     end of data sequence
      *  @param length   name of "length" tuple name
@@ -1075,26 +1077,26 @@ namespace Tuples
      *  @return status code
      */
     template <typename Iterator,
-              typename const_reference = typename std::add_const<typename std::iterator_traits<Iterator>::reference>::type,
-              typename Fun = std::function<float(const_reference)>,
+              typename Fun  = std::function<float(detail::const_ref_t<Iterator>)>,
               typename Item = std::pair<std::string,Fun>>
-    StatusCode farray ( const std::vector<Item>& items,
-                        Iterator             first    ,
-                        Iterator             last     ,
-                        const std::string&   length   ,
-                        size_t               maxv     )
+    StatusCode farray ( const std::vector<Item>& items ,
+                        Iterator                 first ,
+                        Iterator                 last  ,
+                        const std::string&       length,
+                        size_t                   maxv  )
     {
       if ( invalid () ) { return InvalidTuple     ; }
       if ( rowWise () ) { return InvalidOperation ; }
 
       // adjust the lenfth
       if( std::distance(first,last) > static_cast<std::ptrdiff_t>(maxv) ) {
-        std::vector<std::string> names;
-        names.reserve(items.size());
-        std::transform(items.begin(),items.end(),std::back_inserter(names),
-                       [](const Item& i) { return i.first; } );
-        Warning("farray('" + boost::algorithm::join( names, "," )
-                + "'): array overflow, skipping extra entries").ignore() ;
+        using GaudiUtils::detail::ostream_joiner;
+        std::ostringstream os;
+        ostream_joiner( os, items, ",",
+                        [](std::ostream& os, const Item& i) -> std::ostream&
+                        { return os << i.first; } );
+        Warning( "farray('" + os.str()
+               + "'): array overflow, skipping extra entries").ignore() ;
         last = std::next(first, maxv) ;
       }
 
