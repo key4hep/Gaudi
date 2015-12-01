@@ -86,18 +86,17 @@ StatusCode EvtCollectionWrite::execute() {
       m_evtAddrColl = evtRoot->registry()->address();
       m_ntrkColl    = trkCont->size();
       m_eneColl     = 0.f;
+      log <<MSG::DEBUG<< " ->Track:";
+      for(size_t j=0; j<100; ++j)  { m_trkMomFixed[j] = 0; }
       int cnt = 0;
-      log << " ->Track:";
-      for(size_t j=0; j<100; ++j)  {
-        m_trkMomFixed[j] = 0.f;
-            }
-      for ( MyTrackVector::iterator i = trkCont->begin(); i != trkCont->end(); i++, cnt++ )   {
-        float p = float(sqrt( (*i)->px() * (*i)->px() +
-                              (*i)->py() * (*i)->py() +
-                              (*i)->pz() * (*i)->pz() ));
+      for ( const auto& i : *trkCont ) {
+        float p = sqrt( i->px() * i->px() +
+                        i->py() * i->py() +
+                        i->pz() * i->pz() );
         if ( cnt < 5000 ) m_trkMom[cnt] = p;
         if ( cnt <    5 ) m_trkMomFixed[cnt] = p;
         m_eneColl += p;
+        ++cnt;
       }
       m_trackItem = (0==m_ntrkColl) ? 0 : (*trkCont->begin());
       if ( evt_num < 10 || evt_num%500==0 )  {

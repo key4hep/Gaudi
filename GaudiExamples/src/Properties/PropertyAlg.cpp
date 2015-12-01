@@ -1,4 +1,5 @@
 // Include files
+#include <sstream>
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/IDataProviderSvc.h"
@@ -26,7 +27,10 @@ void PropertyAlg::readHandler(Property& p)
 //------------------------------------------------------------------------------
 void PropertyAlg::updateHandler(Property& p)
 {
-  info() << "Update handler called for property: " << p << endmsg;
+  // avoid the readHandler (which writes to the _same_ MsgStream!) from writing
+  // something in the middle of the printout of this message...
+  std::ostringstream os; os << p;
+  info() << "Update handler called for property: " << os.str() << endmsg;
 }
 
 // Constructor
@@ -95,7 +99,8 @@ PropertyAlg::PropertyAlg(const std::string& name, ISvcLocator* ploc)
   info() << "DoublePairArray  = " << u_doublepairarray << endmsg;
 
   info() << "PInt    = " << p_int << endmsg;
-  info() << "PDouble = " << p_double << endmsg;
+  std::ostringstream os; os << p_double; // avoid read handler from printing _during_ info()!
+  info() << "PDouble = " << os.str() << endmsg;
   info() << "PString = " << p_string << endmsg;
   info() << "PBool   = " << p_bool << endmsg;
   info() << "PIntArray    = " << p_intarray << endmsg;
@@ -131,7 +136,8 @@ StatusCode PropertyAlg::initialize() {
   info() << "DoublePairArray  = " << u_doublepairarray << endmsg;
 
   info() << "PInt    = " << p_int << endmsg;
-  info() << "PDouble = " << p_double << endmsg;
+  std::ostringstream os; os << p_double; // avoid read handler from printing _during_ info()!
+  info() << "PDouble = " << os.str() << endmsg;
   info() << "PString = " << p_string << endmsg;
   info() << "PBool   = " << p_bool << endmsg;
   info() << "PIntArray    = " << p_intarray << endmsg;
@@ -249,7 +255,7 @@ StatusCode PropertyAlg::initialize() {
     error() << " Unable to access the JobOptionsSvc" << endmsg;
     return StatusCode::SUCCESS;
   }
-  
+
   // Dump of the catalogue
   info() << "=================================================" << endmsg;
   info() << "Dump of the property catalogue.... " << endmsg;
@@ -257,7 +263,8 @@ StatusCode PropertyAlg::initialize() {
     using GaudiUtils::detail::ostream_joiner;
     ostream_joiner( info() << " Properties of " <<  cit << ": ",
                     *jopts->getProperties(cit), ", ",
-                    [](MsgStream& os, const Property* p) -> MsgStream& { return os << p->name(); } )
+                    [](MsgStream& os, const Property* p) -> MsgStream&
+                    { return os << p->name(); } )
     << endmsg;
   }
   info() << "=================================================" << endmsg;
