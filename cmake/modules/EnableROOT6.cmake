@@ -205,12 +205,17 @@ macro(reflex_generate_dictionary dictionary _headerfile _selectionfile)
     set(pcmname)
   endif()
 
+  set(impl_deps)
+  foreach(hf ${headerfiles})
+    set(impl_deps ${impl_deps} CXX ${hf})
+  endforeach()
   add_custom_command(
     OUTPUT ${gensrcdict} ${rootmapname} ${gensrcclassdef} ${pcmname}
     COMMAND ${ROOT_genreflex_CMD}
          ${headerfiles} -o ${gensrcdict} ${rootmapopts} --select=${selectionfile}
          ${ARG_OPTIONS} ${include_dirs} ${definitions}
-    DEPENDS ${headerfiles} ${selectionfile} ${dictionary}GenDeps)
+    DEPENDS ${headerfiles} ${selectionfile} ${dictionary}GenDeps
+    IMPLICIT_DEPENDS ${impl_deps})
 
   # Creating this target at ALL level enables the possibility to generate dictionaries (genreflex step)
   # well before the dependent libraries of the dictionary are build
