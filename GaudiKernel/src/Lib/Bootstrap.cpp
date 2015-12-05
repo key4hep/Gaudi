@@ -223,7 +223,6 @@ StatusCode Gaudi::BootSvcLocator::getService( const Gaudi::Utils::TypeNameString
 #endif
 
 const std::list<IService*>& Gaudi::BootSvcLocator::getServices( ) const {
-  StatusCode sc = StatusCode::FAILURE;
   return  s_appmgrInstance ? s_svclocInstance->getServices( )
                            : s_bootServices;
 }

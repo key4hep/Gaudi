@@ -57,6 +57,9 @@
 
    See merge request !7
 
+! 2015-02-27 - Marco Clemencic
+ - Minor change in stats report at the end of loop in EventLoopMgr.
+
 ============================= GaudiCoreSvc v3r5 ==============================
 ! 2015-06-17 - Marco Clemencic
  - GAUDI-1044: allow 'L' numeric suffix in .opts files parsed with Gaudi.exe.
@@ -203,6 +206,18 @@ M       src/ApplicationMgr/ServiceManager.cpp
    ApplicationMgr::configure() instead of EventLoopMgr::nextEvent(int), to
    avoid that error conditions (like failure to open a file) happening during
    initialization are discarded.
+
+! 2012-10-21 - Marco Clemencic
+ - Modified TBBMessageSvc to use the new Gaudi::SerialTaskQueue.
+ - Modified MessageSvc to separate the locking from the reportMessage
+   implementation so that TBBMessageSvc can use non-locked code.
+
+! 2012-07-26 - Benedikt Hegner
+ - Fixed compilation with -std=c++0x.
+
+! 2012-07-02 - Marco Clemencic
+ - Added specialization of MessageSvc (TBBMessageSvc) that uses TBB (Intel
+   Threading Building Blocks) tasks to print the messages asynchronously.
 
 ============================= GaudiCoreSvc v1r2 ==============================
 ! 2012-06-08 - Marco Clemencic

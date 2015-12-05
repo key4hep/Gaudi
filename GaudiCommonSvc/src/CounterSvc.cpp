@@ -27,17 +27,12 @@ public:
   CounterSvc ( const std::string& name   ,
                ISvcLocator*       svcLoc )
     : base_class(name, svcLoc)
-    , m_counts ()
-    , m_print  ( true )
-    //
     // the header row
     , m_header  ( "       Counter :: Group         |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |")
     // format for regular statistical printout rows
     , m_format1 ( " %|15.15s|%|-15.15s|%|32t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |"         )
     // format for "efficiency" statistical printout rows
     , m_format2 ( "*%|15.15s|%|-15.15s|%|32t||%|10d| |%|11.5g| |(%|#9.7g| +- %|-#9.7g|)%%|   -------   |   -------   |" )
-    // flag to use the special "efficiency" format
-    , m_useEffFormat ( true )
     //
   {
     declareProperty ("PrintStat" , m_print ) ;
@@ -59,9 +54,9 @@ public:
         "Use the special format for printout of efficiency counters" ) ;
   }
   /// Standard destructor
-  virtual ~CounterSvc() { remove().ignore() ; }
+  ~CounterSvc() override { remove().ignore() ; }
   /// Finalization
-  virtual StatusCode finalize()
+  StatusCode finalize() override
   {
     if ( outputLevel() <= MSG::DEBUG || m_print ) { print () ; }
     remove().ignore() ;
@@ -76,11 +71,11 @@ public:
    *
    * @return Pointer to existing counter object (NULL if non existing).
    */
-  virtual Counter* get
+  Counter* get
   ( const std::string& group ,
-    const std::string& name  ) const;
+    const std::string& name  ) const override;
   /// get all counters form the given group:
-  virtual ICounterSvc::Counters get ( const std::string& group ) const ;
+  ICounterSvc::Counters get ( const std::string& group ) const override ;
   /** Create a new counter object. If the counter object exists already
    * the existing object is returned. In this event the return code is
    * COUNTER_EXISTS. The ownership of the actual counter stays with the
@@ -93,11 +88,11 @@ public:
    *
    * @return StatusCode indicating failure or success.
    */
-  virtual StatusCode create
+  StatusCode create
   ( const std::string& group ,
     const std::string& name  ,
     longlong initial_value   ,
-    Counter*& refpCounter    ) ;
+    Counter*& refpCounter    ) override ;
   /** Create a new counter object. If the counter object exists already,
    * a std::runtime_error exception is thrown. The ownership of the
    * actual counter stays with the service.
@@ -109,10 +104,10 @@ public:
    *
    * @return Fully initialized CountObject.
    */
-  virtual CountObject create
+  CountObject create
   ( const std::string& group    ,
     const std::string& name     ,
-    longlong initial_value = 0  ) ;
+    longlong initial_value = 0  ) override ;
   /** Remove a counter object. If the counter object does not exists,
    * the return code is COUNTER_NOT_PRESENT. The counter may not
    * be used anymore after this call.
@@ -122,16 +117,16 @@ public:
    * @param  refpCounter   [OUT]    Reference to store pointer to counter.
    * @return StatusCode indicating failure or success.
    */
-  virtual StatusCode remove
+  StatusCode remove
   ( const std::string& group ,
-    const std::string& name  ) ;
+    const std::string& name  ) override ;
   /** Remove all counters of a given group. If no such counter exists
    * the return code is COUNTER_NOT_PRESENT
    * @param  group         [IN]     Hint for smart printing
    * @return StatusCode indicating failure or success.
    */
-  virtual StatusCode remove
-  ( const std::string& group ) ;
+  StatusCode remove
+  ( const std::string& group ) override ;
   /// Remove all known counter objects
   virtual StatusCode remove();
   /** Print counter value
@@ -141,10 +136,10 @@ public:
    *
    * @return StatusCode indicating failure or success.
    */
-  virtual StatusCode print
+  StatusCode print
   ( const std::string& group,
     const std::string& name,
-    Printout& printer) const;
+    Printout& printer) const override;
   /** If no such counter exists the return code is COUNTER_NOT_PRESENT
    * Note: This call is not direct access.
    * @param  group         [IN]     Hint for smart printing
@@ -152,35 +147,35 @@ public:
    *
    * @return StatusCode indicating failure or success.
    */
-  virtual StatusCode print
+  StatusCode print
   (const std::string& group,
-   Printout& printer) const;
+   Printout& printer) const override;
   /** Print counter value
    * @param pCounter       [IN]     Pointer to Counter object
    * @param printer        [IN]     Print actor
    *
    * @return StatusCode indicating failure or success.
    */
-  virtual StatusCode print
+  StatusCode print
   ( const Counter* pCounter,
-    Printout& printer) const;
+    Printout& printer) const override;
   /** Print counter value
    * @param refCounter     [IN]     Reference to CountObject object
    * @param printer        [IN]     Print actor
    *
    * @return StatusCode indicating failure or success.
    */
-  virtual StatusCode print
+  StatusCode print
   ( const CountObject& pCounter,
-    Printout& printer) const;
+    Printout& printer) const override;
   /** @param printer        [IN]     Print actor
    *  @return StatusCode indicating failure or success.
    */
-  virtual StatusCode print(Printout& printer) const;
+  StatusCode print(Printout& printer) const override;
   /// Default Printout for counters
-  virtual StatusCode defaultPrintout
+  StatusCode defaultPrintout
   ( MsgStream& log,
-    const Counter* pCounter) const ;
+    const Counter* pCounter) const override ;
 private:
   // find group/name for the counter:
   inline std::pair<std::string,std::string> _find ( const Counter* c ) const
@@ -214,7 +209,7 @@ private:
   // the actual map of counters
   CountMap m_counts ; ///< the actual map of counters
   // boolean flag to print statistics
-  bool     m_print  ; ///< boolean flag to print statistics
+  bool     m_print  = true ; ///< boolean flag to print statistics
   // the header row
   std::string    m_header  ; ///< the header row
   // format for regular statistical printout rows
@@ -222,7 +217,7 @@ private:
   // format for "efficiency" statistical printout rows
   std::string    m_format2 ; ///< format for "efficiency" statistical printout rows
   // flag to use the special "efficiency" format
-  bool           m_useEffFormat ; ///< flag to use the special "efficiency" format
+  bool           m_useEffFormat = true; ///< flag to use the special "efficiency" format
 } ;
 // ===========================================================================
 // Instantiation of a static factory class used by clients
@@ -275,7 +270,7 @@ StatusCode CounterSvc::create
   refpCounter = get ( grp , nam ) ;
   if ( refpCounter ) { return COUNTER_EXISTS ; }                // RETURN
   // create the new counter
-  Counter* newc = new Counter() ;
+  auto  newc = new Counter() ;
   refpCounter = newc ;
   if ( 0 != initial_value ) {
     refpCounter->addFlag ( static_cast<double>(initial_value) ) ; // icc remark #2259
@@ -303,7 +298,7 @@ CounterSvc::CountObject CounterSvc::create
 {
   Counter* p = nullptr;
   StatusCode sc = create ( group, name, initial_value, p ) ;
-  if ( sc.isSuccess() && 0 != p ) { return CountObject ( p , group , name ) ; }
+  if ( sc.isSuccess() && p ) { return CountObject ( p , group , name ) ; }
   throw std::runtime_error("CounterSvc::Counter('"+group+"::"+name+"') exists already!");
 }
 // ===========================================================================

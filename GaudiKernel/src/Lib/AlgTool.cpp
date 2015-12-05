@@ -3,6 +3,7 @@
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IJobOptionsSvc.h"
+#include "GaudiKernel/IDataManagerSvc.h"
 
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/Service.h"
@@ -12,6 +13,7 @@
 #include "GaudiKernel/ServiceLocatorHelper.h"
 #include "GaudiKernel/ThreadGaudi.h"
 #include "GaudiKernel/Guards.h"
+#include "GaudiKernel/ToolHandle.h"
 
 //------------------------------------------------------------------------------
 namespace {
@@ -93,6 +95,19 @@ IMessageSvc* AlgTool::msgSvc()  const
   return m_messageSvc;
 }
 
+// ============================================================================
+// accessor to event service  service
+// ============================================================================
+IDataProviderSvc* AlgTool::evtSvc    () const
+{
+  if ( !m_evtSvc ) {
+    m_evtSvc = service("EventDataSvc", true);
+    if ( !m_evtSvc ) {
+      throw GaudiException("Service [EventDataSvc] not found", name(), StatusCode::FAILURE);
+    }
+  }
+  return m_evtSvc.get();
+}
 //------------------------------------------------------------------------------
 IToolSvc* AlgTool::toolSvc() const
 //------------------------------------------------------------------------------
@@ -274,6 +289,35 @@ StatusCode AlgTool::sysInitialize() {
                                       IAuditor::Initialize);
     StatusCode sc = initialize();
     if (sc.isSuccess()) m_state = m_targetState;
+
+    // update DataHandles to point to full TES location
+    // init data handle
+    MsgStream log(msgSvc(), name());
+    for (auto tag : m_inputDataObjects) {
+      if (m_inputDataObjects[tag].isValid()) {
+        if (m_inputDataObjects[tag].initialize().isSuccess())
+          log << MSG::DEBUG << "Data Handle " << tag << " ("
+          << m_inputDataObjects[tag].dataProductName()
+          << ") initialized" << endmsg;
+        else
+          log << MSG::FATAL << "Data Handle " << tag << " ("
+          << m_inputDataObjects[tag].dataProductName()
+          << ") could NOT be initialized" << endmsg;
+      }
+    }
+    for (auto tag : m_outputDataObjects) {
+      if (m_outputDataObjects[tag].isValid()) {
+        if (m_outputDataObjects[tag].initialize().isSuccess())
+          log << MSG::DEBUG << "Data Handle " << tag << " ("
+          << m_outputDataObjects[tag].dataProductName()
+          << ") initialized" << endmsg;
+        else
+          log << MSG::FATAL << "Data Handle " << tag << " ("
+          << m_outputDataObjects[tag].dataProductName()
+          << ") could NOT be initialized" << endmsg;
+      }
+    }
+
     return sc;
   } );
 }
@@ -451,6 +495,43 @@ AlgTool::~AlgTool()
 //------------------------------------------------------------------------------
 {
   if( m_pMonitorSvc ) { m_pMonitorSvc->undeclareAll(this); }
+}
+
+
+void AlgTool::initToolHandles() const{
+
+	MsgStream log ( msgSvc() , name() ) ;
+
+	for(auto th : m_toolHandles){
+		IAlgTool * tool = nullptr;
+
+		//if(th->retrieve().isFailure())
+			//log << MSG::DEBUG << "Error in retrieving tool from ToolHandle" << endmsg;
+
+		//get generic tool interface from ToolHandle
+		if(th->retrieve(tool).isSuccess() && tool != nullptr){
+			m_tools.push_back(tool);
+			log << MSG::DEBUG << "Adding ToolHandle tool " << tool->name() << " (" << tool->type() << ")" << endmsg;
+		} else {
+			log << MSG::DEBUG << "Trying to add nullptr tool" << endmsg;
+		}
+	}
+
+	m_toolHandlesInit = true;
+}
+
+const std::vector<IAlgTool *> & AlgTool::tools() const {
+	if(UNLIKELY(!m_toolHandlesInit))
+		initToolHandles();
+
+	return m_tools;
+}
+
+std::vector<IAlgTool *> & AlgTool::tools() {
+	if(UNLIKELY(!m_toolHandlesInit))
+		initToolHandles();
+
+	return m_tools;
 }
 
 //------------------------------------------------------------------------------

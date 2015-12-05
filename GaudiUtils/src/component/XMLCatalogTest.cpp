@@ -11,11 +11,11 @@ extern "C" int testXMLFileCatalogWrite(int argc, char** argv)   {
   std::string fname = "file:test.xml";
   if ( argc>1 ) fname = argv[1];
   if ( argc>2 ) nwrite = ::atol(argv[2]);
-  XMLFileCatalog c(fname,0);
+  XMLFileCatalog c(fname,nullptr);
   c.init();
   std::vector<std::string> fids;
   c.getFID(fids);
-  time_t start = time(0);
+  time_t start = time(nullptr);
   for(size_t n=fids.size(), i=n; i<n+nwrite; ++i)  {
     std::ostringstream txt;
     if ( 0 == ((i-n)%10000) ) std::cout << i-n << std::endl;
@@ -44,13 +44,13 @@ extern "C" int testXMLFileCatalogWrite(int argc, char** argv)   {
     c.setMetaData(fid,"Name2","Value2");
     c.setMetaData(fid,"Name3","Value3");
   }
-  time_t end = time(0)-start;
+  time_t end = time(nullptr)-start;
   std::cout << "Used " << end << " seconds."
             << " corresponding to " << float(end)/float(nwrite) << " entries/second."
             << std::endl;
   if ( c.dirty() )  {
     c.commit();
-    time_t saved = time(0)-(start+end);
+    time_t saved = time(nullptr)-(start+end);
     std::cout << "Used " << saved << " seconds."
               << " corresponding to " << float(saved)/float(nwrite) << " entries/second."
               << std::endl;
@@ -67,14 +67,14 @@ extern "C" int testXMLFileCatalogRead(int argc, char** argv)  {
   std::string fname = "file:test.xml";
   if ( argc>1 ) fname = argv[1];
   bool prt = argc<2;
-  time_t start = time(0);
-  XMLFileCatalog c(fname,0);
+  time_t start = time(nullptr);
+  XMLFileCatalog c(fname,nullptr);
   c.init();
-  std::cout << "File loaded in " << time(0)-start << " seconds. " << std::endl;
-  start = time(0);
+  std::cout << "File loaded in " << time(nullptr)-start << " seconds. " << std::endl;
+  start = time(nullptr);
   c.getFID(fids);
-  std::cout << "FIDs scanned in " << time(0)-start << " seconds. " << std::endl;
-  start = time(0);
+  std::cout << "FIDs scanned in " << time(nullptr)-start << " seconds. " << std::endl;
+  start = time(nullptr);
   size_t mult = prt ? 1 : 10;
   std::cout << mult*fids.size() << std::endl;
   for(size_t i=0, tot=(mult*fids.size()); i<tot; ++i)  {
@@ -84,26 +84,26 @@ extern "C" int testXMLFileCatalogRead(int argc, char** argv)  {
     XMLFileCatalog::Files pfn, lfn;
     XMLFileCatalog::Attributes attrs;
     c.getLFN(fid, lfn);
-    for(size_t l1=0; l1<lfn.size(); ++l1)  {
-      if ( !c.existsLFN(lfn[l1].first) )  {
-        std::cout << "Error LFN existence of :" << lfn[l1].second << std::endl;
+    for(auto & elem : lfn)  {
+      if ( !c.existsLFN(elem.first) )  {
+        std::cout << "Error LFN existence of :" << elem.second << std::endl;
         return 1;
       }
-      std::string f = c.lookupLFN(lfn[l1].first);
+      std::string f = c.lookupLFN(elem.first);
       if ( f != fid )  {
-        std::cout << "Error LFN lookup of :" << lfn[l1].second << std::endl;
+        std::cout << "Error LFN lookup of :" << elem.second << std::endl;
         return 1;
       }
     }
     c.getPFN(fid, pfn);
-    for(size_t l2=0; l2<pfn.size(); ++l2)  {
-      if ( !c.existsPFN(pfn[l2].first) )  {
-        std::cout << "Error PFN existence of :" << pfn[l2].second << std::endl;
+    for(auto & elem : pfn)  {
+      if ( !c.existsPFN(elem.first) )  {
+        std::cout << "Error PFN existence of :" << elem.second << std::endl;
         return 1;
       }
-      std::string f = c.lookupPFN(pfn[l2].first);
+      std::string f = c.lookupPFN(elem.first);
       if ( f != fid )  {
-        std::cout << "Error PFN lookup of :" << pfn[l2].second << std::endl;
+        std::cout << "Error PFN lookup of :" << elem.second << std::endl;
         return 1;
       }
     }
@@ -123,7 +123,7 @@ extern "C" int testXMLFileCatalogRead(int argc, char** argv)  {
       }
     }
   }
-  time_t end = time(0)-start;
+  time_t end = time(nullptr)-start;
   std::cout << "Used " << end << " seconds (" << (long)fids.size()*mult << " entries)."
             << " Corresponding to " << float(end)/float(fids.size()*mult) << " entries/second."
             << std::endl;

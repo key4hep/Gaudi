@@ -182,7 +182,6 @@ StatusCode    GaudiTool::finalize   ()
     debug() << " ==> Finalize the base class GaudiTool " << endmsg;
 
   // clear "explicit services"
-  m_evtSvc    = nullptr ;
   m_detSvc    = nullptr ;
   m_chronoSvc = nullptr ;
   m_incSvc    = nullptr ;
@@ -209,7 +208,7 @@ bool GaudiTool::isPublic() const
   unsigned int sanityCheck(0);
   while ( tool && ++sanityCheck < 99999 )
   {
-    ownedByToolSvc = ( NULL != dynamic_cast<const IToolSvc*>(tool->parent()) );
+    ownedByToolSvc = ( nullptr != dynamic_cast<const IToolSvc*>(tool->parent()) );
     if ( ownedByToolSvc ) { break; }
     // if parent is also a tool, try again
     tool = dynamic_cast<const IAlgTool*>(tool->parent());
@@ -249,18 +248,6 @@ INTupleSvc* GaudiTool::evtColSvc () const
     m_evtColSvc = svc< INTupleSvc > ( "EvtTupleSvc" , true ) ;
   }
   return m_evtColSvc ;
-}
-// ============================================================================
-// accessor to event service  service
-// ============================================================================
-IDataProviderSvc* GaudiTool::evtSvc () const
-{
-  if ( !m_evtSvc )
-  {
-    m_evtSvc =
-      svc<IDataProviderSvc>( GaudiToolServices::s_EventDataSvc , true ) ;
-  }
-  return m_evtSvc ;
 }
 // ============================================================================
 // accessor to Incident Service

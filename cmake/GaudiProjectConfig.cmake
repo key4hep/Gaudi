@@ -301,21 +301,24 @@ macro(gaudi_project project version)
   #message(STATUS "used_gaudi_projects -> ${used_gaudi_projects}")
   #message(STATUS "inherited_data_packages_decl -> ${inherited_data_packages_decl}")
 
-  # Ensure that we have the correct order of the modules search path.
-  # (the included <project>Config.cmake files are prepending their entries to
-  # the module path).
-  foreach(_p ${used_gaudi_projects})
-    if(IS_DIRECTORY ${${_p}_DIR}/cmake)
-      set(CMAKE_MODULE_PATH ${${_p}_DIR}/cmake ${CMAKE_MODULE_PATH})
+  # Allow ATLAS to override some CMake modules during the Gaudi build:
+  if( NOT GAUDI_ATLAS )
+    # Ensure that we have the correct order of the modules search path.
+    # (the included <project>Config.cmake files are prepending their entries to
+    # the module path).
+    foreach(_p ${used_gaudi_projects})
+      if(IS_DIRECTORY ${${_p}_DIR}/cmake)
+        set(CMAKE_MODULE_PATH ${${_p}_DIR}/cmake ${CMAKE_MODULE_PATH})
+      endif()
+    endforeach()
+    if(IS_DIRECTORY ${CMAKE_SOURCE_DIR}/cmake)
+      set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
     endif()
-  endforeach()
-  if(IS_DIRECTORY ${CMAKE_SOURCE_DIR}/cmake)
-    set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
+    if(CMAKE_MODULE_PATH)
+      list(REMOVE_DUPLICATES CMAKE_MODULE_PATH)
+    endif()
+    #message(STATUS "CMAKE_MODULE_PATH -> ${CMAKE_MODULE_PATH}")
   endif()
-  if(CMAKE_MODULE_PATH)
-    list(REMOVE_DUPLICATES CMAKE_MODULE_PATH)
-  endif()
-  #message(STATUS "CMAKE_MODULE_PATH -> ${CMAKE_MODULE_PATH}")
 
   # Find the required data packages so that we can add them to the environment.
   _gaudi_handle_data_packages(${PROJECT_DATA})
@@ -387,6 +390,10 @@ macro(gaudi_project project version)
   install(PROGRAMS cmake/xenv DESTINATION scripts OPTIONAL)
   install(DIRECTORY cmake/EnvConfig DESTINATION scripts
           FILES_MATCHING PATTERN "*.py" PATTERN "*.conf")
+
+  if (CMAKE_EXPORT_COMPILE_COMMANDS)
+    install(FILES ${CMAKE_BINARY_DIR}/compile_commands.json DESTINATION .)
+  endif()
 
   #--- Global actions for the project
   #message(STATUS "CMAKE_MODULE_PATH -> ${CMAKE_MODULE_PATH}")
@@ -2075,6 +2082,7 @@ function(gaudi_add_dictionary dictionary header selection)
       -D_Instantiations=${dictionary}_Instantiations)
 
   # override the genreflex call to wrap it in the right environment
+  gaudi_env(PREPEND PATH ${lcg_system_compiler_path}/bin)
   set(ROOT_genreflex_CMD ${env_cmd} --xml ${env_xml} ${ROOT_genreflex_CMD})
 
   # we need to forward the SPLIT_CLASSDEF option to reflex_dictionary()

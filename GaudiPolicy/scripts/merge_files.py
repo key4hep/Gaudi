@@ -86,7 +86,7 @@ def mergeFiles( fragFileNames, mergedFileName, commentChar, doMerge, ignoreMissi
         newFile.writelines(newLines)
         newFile.close()
         os.rename(mergedFileName + ".new",mergedFileName)
-        
+
     finally:
         # unlock file
         fcntl.lockf( lockFile, fcntl.LOCK_UN )
@@ -183,6 +183,7 @@ if __name__ == "__main__":
     logging.basicConfig(level = logging.INFO)
 
     if "GAUDI_BUILD_LOCK" in os.environ:
+        import locker
         globalLock = locker.LockFile(os.environ["GAUDI_BUILD_LOCK"], temporary =  True)
     else:
         globalLock = None

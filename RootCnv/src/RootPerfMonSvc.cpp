@@ -69,7 +69,7 @@ StatusCode RootPerfMonSvc::initialize()  {
   if (m_ioPerfStats.empty())
     return error("Performance monitoring file IOPerfStats was not defined.");
 
-  TDirectory::TContext ctxt(0);
+  TDirectory::TContext ctxt(nullptr);
   m_perfFile.reset( new TFile(m_ioPerfStats.c_str(),"RECREATE") );
   if (!m_perfFile ) return error("Could not create ROOT file.");
 
@@ -94,7 +94,7 @@ StatusCode RootPerfMonSvc::initialize()  {
   if (m_splitLevel.empty())
 	  m_splitLevel = "undefined";
 
-  TMap *map = new TMap();
+  auto map = new TMap();
   map->Add(new TObjString("streams"), new TObjString(m_setStreams.c_str()));
   map->Add(new TObjString("basket_size"), new TObjString(m_basketSize.c_str()));
   map->Add(new TObjString("buffer_size"), new TObjString(m_bufferSize.c_str()));
@@ -130,7 +130,7 @@ void RootPerfMonSvc::handle(const Incident& incident) {
 StatusCode RootPerfMonSvc::stop() {
   char text[64];
   record(FSR);
-  TMap *map = new TMap();
+  auto map = new TMap();
   for(const auto &i : m_outputs) {
     const char* fn = i.c_str();
     Long_t id, siz, flags, tim;

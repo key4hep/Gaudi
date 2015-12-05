@@ -58,7 +58,7 @@ public:
   StatusCode removeAlgorithm(IAlgorithm* alg) override;
   /// implementation of IAlgManager::createAlgorithm
   StatusCode createAlgorithm(const std::string& algtype, const std::string& algname,
-                                     IAlgorithm*& algorithm, bool managed = false) override;
+                             IAlgorithm*& algorithm, bool managed = false, bool checkIfExists = true) override;
 
   /// implementation of IAlgManager::existsAlgorithm
   bool existsAlgorithm(const std::string& name) const override;

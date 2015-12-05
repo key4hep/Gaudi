@@ -55,7 +55,7 @@ namespace Gaudi {
       : RootStatCnv(typ, clid, svc, mgr)      {}
 
     /// Standard destructor
-    virtual ~RootNTupleCnv() {}
+    ~RootNTupleCnv() override = default;
 
     /** Converter overrides: Convert the transient object
      * to the requested representation.
@@ -66,7 +66,7 @@ namespace Gaudi {
      *
      * @return Status code indicating success or failure
      */
-    virtual StatusCode createRep(   DataObject* pObj,IOpaqueAddress*& refpAdd);
+    StatusCode createRep(   DataObject* pObj,IOpaqueAddress*& refpAdd) override;
 
     /// Resolve the references of the converted object.
     /**
@@ -75,7 +75,7 @@ namespace Gaudi {
      *
      * @return Status code indicating success or failure
      */
-    virtual StatusCode fillRepRefs( IOpaqueAddress* pAdd,DataObject* pObj);
+    StatusCode fillRepRefs( IOpaqueAddress* pAdd,DataObject* pObj) override;
 
     /** Converter overrides: Update the references of an
      * updated transient object.
@@ -85,8 +85,8 @@ namespace Gaudi {
      *
      * @return Status code indicating success or failure
      */
-    virtual StatusCode createObj(   IOpaqueAddress*   pAddress,
-				    DataObject*&      refpObject);
+    StatusCode createObj(   IOpaqueAddress*   pAddress,
+				    DataObject*&      refpObject) override;
 
     /** Converter overrides: Update the references of an
      * updated transient object.
@@ -96,8 +96,8 @@ namespace Gaudi {
      *
      * @return Status code indicating success or failure
      */
-    virtual StatusCode fillObjRefs( IOpaqueAddress*  /* pAddress */,
-				    DataObject*      /* pObject  */)
+    StatusCode fillObjRefs( IOpaqueAddress*  /* pAddress */,
+				    DataObject*      /* pObject  */) override
       {  return StatusCode::SUCCESS;                                      }
 
     /** Update the transient object: NTuples end here when reading records
@@ -107,8 +107,8 @@ namespace Gaudi {
      *
      * @return Status code indicating success or failure
      */
-    virtual StatusCode updateObj(   IOpaqueAddress*   pAddress,
-				    DataObject*       pObject);
+    StatusCode updateObj(   IOpaqueAddress*   pAddress,
+				    DataObject*       pObject) override;
 
     /** Converter overrides: Update the references of an
      * updated transient object.
@@ -118,8 +118,8 @@ namespace Gaudi {
      *
      * @return Status code indicating success or failure
      */
-    virtual StatusCode updateObjRefs( IOpaqueAddress* /* pAddress */,
-				      DataObject*     /* pObject  */ )
+    StatusCode updateObjRefs( IOpaqueAddress* /* pAddress */,
+				      DataObject*     /* pObject  */ ) override
       {  return StatusCode::SUCCESS;                                      }
 
     /** Converter overrides: Update the converted representation
@@ -130,8 +130,8 @@ namespace Gaudi {
      *
      * @return Status code indicating success or failure
      */
-    virtual StatusCode updateRep(     IOpaqueAddress* /* pAddress */,
-				      DataObject*     /* pObject  */)
+    StatusCode updateRep(     IOpaqueAddress* /* pAddress */,
+				      DataObject*     /* pObject  */) override
       {  return StatusCode::SUCCESS;                                      }
 
     /** Converter overrides: Update the converted representation of a
@@ -142,8 +142,8 @@ namespace Gaudi {
      *
      * @return Status code indicating success or failure
      */
-    virtual StatusCode updateRepRefs( IOpaqueAddress* /* pAddress */,
-				      DataObject*     /* pObject  */ )
+    StatusCode updateRepRefs( IOpaqueAddress* /* pAddress */,
+				      DataObject*     /* pObject  */ ) override
       {  return StatusCode::SUCCESS;                                      }
   };
 }

@@ -39,8 +39,33 @@ namespace {
 #endif
 
 #include <algorithm>
-#include "boost/algorithm/string/trim.hpp"
 
+namespace {
+// string trimming functions taken from
+// http://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
+
+  constexpr struct is_space_t {
+      bool operator()(int i) const { return std::isspace(i); }
+  } is_space {};
+
+  // trim from start
+  static inline std::string &ltrim(std::string &s) {
+          s.erase(s.begin(),
+                  std::find_if_not(s.begin(), s.end(), is_space ) );
+          return s;
+  }
+
+  // trim from end
+  static inline std::string &rtrim(std::string &s) {
+          s.erase(std::find_if_not(s.rbegin(), s.rend(), is_space).base(),
+                  s.end());
+          return s;
+  }
+  // trim from both ends
+  static inline std::string &trim(std::string &s) {
+          return ltrim(rtrim(s));
+  }
+}
 
 namespace {
   /// Helper function used to set values in FactoryInfo data members only
@@ -101,7 +126,7 @@ namespace Gaudi { namespace PluginService {
 
     std::string demangle(const std::string& id) {
       int   status;
-      auto realname = std::unique_ptr<char,decltype(free)*>( abi::__cxa_demangle(id.c_str(), 0, 0, &status),
+      auto realname = std::unique_ptr<char,decltype(free)*>( abi::__cxa_demangle(id.c_str(), nullptr, nullptr, &status),
                                                              free );
       if (!realname) return id;
       return std::string{realname.get()};
@@ -172,14 +197,14 @@ namespace Gaudi { namespace PluginService {
                 while (!factories.eof()) {
                   ++lineCount;
                   std::getline(factories, line);
-                  boost::algorithm::trim(line);
+                  trim(line);
                   // skip empty lines and lines starting with '#'
                   if (line.empty() || line[0] == '#') continue;
                   // look for the separator
                   auto pos = line.find(':');
                   if (pos == std::string::npos) {
-                    logger().warning( "failed to parse line " 
-                                      + fullPath +  ':' 
+                    logger().warning( "failed to parse line "
+                                      + fullPath +  ':'
                                       + std::to_string(lineCount) );
                     continue;
                   }
@@ -198,7 +223,7 @@ namespace Gaudi { namespace PluginService {
                   ++factoriesCount;
                 }
                 if (logger().level() <= Logger::Debug) {
-                  logger().debug(  "  found " + std::to_string( factoriesCount ) 
+                  logger().debug(  "  found " + std::to_string( factoriesCount )
                                  + " factories" );
                 }
               }

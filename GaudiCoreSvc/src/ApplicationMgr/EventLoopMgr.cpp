@@ -10,6 +10,8 @@
 #include "GaudiKernel/IConversionSvc.h"
 #include "GaudiKernel/AppReturnCode.h"
 
+#include <chrono>
+
 #include "HistogramAgent.h"
 #include "EventLoopMgr.h"
 
@@ -267,6 +269,10 @@ StatusCode EventLoopMgr::finalize()    {
 //--------------------------------------------------------------------------------------------
 StatusCode EventLoopMgr::executeEvent(void* par)    {
 
+  // DP Monitoring
+
+
+
   // Fire BeginEvent "Incident"
   m_incidentSvc->fireIncident(Incident(name(),IncidentType::BeginEvent));
   // An incident may schedule a stop, in which case is better to exit before the actual execution.
@@ -290,14 +296,34 @@ StatusCode EventLoopMgr::executeEvent(void* par)    {
 //--------------------------------------------------------------------------------------------
 // implementation of IAppMgrUI::nextEvent
 //--------------------------------------------------------------------------------------------
+// External libraries
+#include "GaudiKernel/Memory.h"
 StatusCode EventLoopMgr::nextEvent(int maxevt)   {
+
+  // DP Monitoring
+  // Calculate runtime
+  typedef std::chrono::high_resolution_clock Clock;
+  typedef Clock::time_point time_point;
+
+  const float oneOver1024 = 1.f/1024.f;
+
+
   static int        total_nevt = 0;
   DataObject*       pObject = nullptr;
   StatusCode        sc(StatusCode::SUCCESS, true);
 
   // loop over events if the maxevt (received as input) if different from -1.
   // if evtmax is -1 it means infinite loop
+  time_point start_time = Clock::now();
   for( int nevt = 0; maxevt == -1 || nevt < maxevt;  ++nevt, ++total_nevt) {
+
+	  if(1 == nevt) // reset after first evt
+		  start_time = Clock::now();
+
+    //always() << "Event Number = " << total_nevt
+    //         << " WSS (MB) = " << System::mappedMemory(System::MemoryUnit::kByte)*oneOver1024
+    //         << " Time (s) = " << secsFromStart(start_time) << endmsg;
+
 
     // Check if there is a scheduled stop issued by some algorithm/service
     if ( m_scheduledStop ) {
@@ -354,6 +380,15 @@ StatusCode EventLoopMgr::nextEvent(int maxevt)   {
       return sc;
     }
   }
+  time_point end_time = Clock::now();
+
+  if (UNLIKELY(outputLevel() <= MSG::DEBUG))
+    debug() << "---> Loop Finished - "
+            << " WSS " << System::mappedMemory(System::MemoryUnit::kByte)*oneOver1024
+            << " | total time (skipping 1st evt) "
+            << std::chrono::duration_cast < std::chrono::nanoseconds > (end_time - start_time).count()
+            << " ns" << endmsg;
+
   return StatusCode::SUCCESS;
 }
 

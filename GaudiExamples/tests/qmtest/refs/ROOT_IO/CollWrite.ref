@@ -1,5 +1,6 @@
-# --> Including file '/home/marco/Devel/LHCb/workspace/Gaudi/GaudiExamples/options/ROOT_IO/CollWrite.py'
-# <-- End of file '/home/marco/Devel/LHCb/workspace/Gaudi/GaudiExamples/options/ROOT_IO/CollWrite.py'
+# setting LC_ALL to "C"
+# --> Including file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/ROOT_IO/CollWrite.py'
+# <-- End of file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/ROOT_IO/CollWrite.py'
 # applying configuration of GaudiPersistency
 # /***** User GaudiPersistency/GaudiPersistency ******************************************************
 # |-<no properties>
@@ -13,7 +14,9 @@
                                       'Gaudi::IODataManager/IODataManager',
                                       'Gaudi::RootCnvSvc/RootCnvSvc'],
                     'TopAlg': ['GaudiSequencer/EventAlgs']},
- 'EventAlgs': {'Members': ['EvtCollectionWrite/Writer'],
+ 'EventAlgs': {'DataInputs': DataObjectDescriptorCollection(''),
+               'DataOutputs': DataObjectDescriptorCollection(''),
+               'Members': ['EvtCollectionWrite/Writer'],
                'VetoObjects': ['FSR']},
  'EventPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']},
  'EventSelector': {'Input': ["DATAFILE='PFN:ROOTIO.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'",
@@ -22,11 +25,13 @@
  'EvtTupleSvc': {'Output': ["EvtColl DATAFILE='PFN:ROOT_IO.tags' OPT='RECREATE' SVC='Gaudi::RootCnvSvc'"]},
  'FileCatalog': {'Catalogs': ['xmlcatalog_file:ROOTIO.xml']},
  'FileRecordPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']},
- 'ToolSvc.SequencerTimerTool': {'OutputLevel': 4}}
+ 'ToolSvc.SequencerTimerTool': {'OutputLevel': 4},
+ 'Writer': {'DataInputs': DataObjectDescriptorCollection(''),
+            'DataOutputs': DataObjectDescriptorCollection('')}}
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr $Revision: 1.77 $
-                                          running on pcphlbc16 on Sun Dec 11 18:42:37 2011
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r5)
+                                          running on pclhcb117 on Fri Oct 30 11:48:24 2015
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 EvtTupleSvc          INFO Added stream file:PFN:ROOT_IO.tags as EvtColl
@@ -34,7 +39,7 @@ EventAlgs            INFO Member list: EvtCollectionWrite/Writer
 RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
 RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
 RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
-IODataManager        INFO Referring to dataset ROOT_IO.tags by its file ID:72964C84-1F24-E111-9782-0024D7D15FF8
+IODataManager        INFO Referring to dataset ROOT_IO.tags by its file ID:2A7281BF-F37E-E511-8072-082E5F2B1B1D
 Gaudi::RootData...   INFO Recreate Database file:PFN:ROOT_IO.tags as /EvtColl
 EventPersistenc...   INFO Added successfully Conversion service:RootCnvSvc
 EventSelector        INFO Stream:EventSelector.DataStreamTool_1 Def:DATAFILE='PFN:ROOTIO.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'
@@ -88,10 +93,10 @@ Writer               INFO ================ EVENT:1000 RUN:999 ====== N(Track)=55
 EventLoopMgr         INFO No more events in event selection
 ApplicationMgr       INFO Application Manager Stopped successfully
 EventLoopMgr         INFO Histograms converted successfully according to request.
-RootCnvSvc           INFO Disconnected data IO:C2149581-1F24-E111-A073-0024D7D15FF8 [ROOTIO.dst]
-RootCnvSvc           INFO Disconnected data IO:DA49A781-1F24-E111-A073-0024D7D15FF8 [ROOTIO.mdst]
+RootCnvSvc           INFO Disconnected data IO:081E9A4A-F37E-E511-9C77-082E5F2B1B1D [ROOTIO.dst]
+RootCnvSvc           INFO Disconnected data IO:ACCFB24A-F37E-E511-9C77-082E5F2B1B1D [ROOTIO.mdst]
 ToolSvc              INFO Removing all tools created by ToolSvc
 EvtTupleSvc          INFO NTuples saved successfully
-EvtTupleSvc.Evt...   INFO Disconnected data IO:72964C84-1F24-E111-9782-0024D7D15FF8 [ROOT_IO.tags]
+EvtTupleSvc.Evt...   INFO Disconnected data IO:2A7281BF-F37E-E511-8072-082E5F2B1B1D [ROOT_IO.tags]
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully

@@ -191,7 +191,7 @@ StatusCode EventSelectorDataStream::initialize()   {
 
 // Parse input criteria
 StatusCode EventSelectorDataStream::finalize()   {
-  setSelector(0);
+  setSelector(nullptr);
   m_properties.clear();
   m_initialized = false;
   return StatusCode::SUCCESS;

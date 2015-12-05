@@ -272,7 +272,7 @@ IncidentSvc::getListeners(std::vector<IIncidentListener*>& l,
       l.reserve(i->second->size());
       std::transform( std::begin(*i->second), std::end(*i->second),
                       std::back_inserter(l),
-                      std::mem_fn(&Listener::iListener) );
+                      [](const Listener& j) { return j.iListener; });
   }
 }
 

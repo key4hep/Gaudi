@@ -26,7 +26,6 @@
 
 #include "GaudiCoreSvcVersion.h"
 
-
 using System::getEnv;
 using System::isEnvSet;
 
@@ -51,23 +50,24 @@ DECLARE_OBJECT_FACTORY(ApplicationMgr)
 //=======================================================================
 // Constructor
 //=======================================================================
-ApplicationMgr::ApplicationMgr(IInterface*): 
-    base_class() 
+ApplicationMgr::ApplicationMgr(IInterface*)
 {
   // IInterface initialization
   addRef(); // Initial count set to 1
 
   // Instantiate component managers
   m_managers[IService::interfaceID().id()] = new ServiceManager(this);
-  AlgorithmManager *algMgr = new AlgorithmManager(this);
-  m_managers[IAlgorithm::interfaceID().id()] = algMgr;
 
+  m_propertyMgr  = new PropertyMgr(this);
   m_svcLocator = svcManager();
 
   // Instantiate internal services
   // SvcLocator/Factory HAS to be already instantiated
   m_classManager = new DLLClassManager(this);
-  m_propertyMgr  = new PropertyMgr(this);
+
+  AlgorithmManager *algMgr = new AlgorithmManager(this);
+  m_managers[IAlgorithm::interfaceID().id()] = algMgr;
+  //  m_managers[IAlgorithm::interfaceID().id()] = new HiveAlgorithmManager(this);
 
   m_propertyMgr->declareProperty("Go",            m_SIGo = 0 );
   m_propertyMgr->declareProperty("Exit",          m_SIExit = 0 );
@@ -93,6 +93,8 @@ ApplicationMgr::ApplicationMgr(IInterface*):
   // Declare Job Options Service properties and set default
   m_propertyMgr->declareProperty("JobOptionsType", m_jobOptionsType = "FILE");
   m_propertyMgr->declareProperty("JobOptionsPath", m_jobOptionsPath = "");
+  m_propertyMgr->declareProperty("JobOptionsPostAction", m_jobOptionsPostAction = "");
+  m_propertyMgr->declareProperty("JobOptionsPreAction", m_jobOptionsPreAction = "");
   m_propertyMgr->declareProperty("EvtMax",         m_evtMax = -1);
   m_propertyMgr->declareProperty("EvtSel",         m_evtsel );
   m_propertyMgr->declareProperty("OutputLevel",    m_outputLevel = MSG::INFO);
@@ -144,8 +146,8 @@ ApplicationMgr::ApplicationMgr(IInterface*):
   m_outStreamType.declareUpdateHandler(&ApplicationMgr::evtLoopPropertyHandler, this);
   m_pluginDebugLevel.declareUpdateHandler(&ApplicationMgr::pluginDebugPropertyHandler, this);
 
-  m_svcMapping.insert( std::end(m_svcMapping), 
-                     { "EvtDataSvc/EventDataSvc", 
+  m_svcMapping.insert( std::end(m_svcMapping),
+                     { "EvtDataSvc/EventDataSvc",
                        "DetDataSvc/DetectorDataSvc",
                        "HistogramSvc/HistogramDataSvc",
                        "HbookCnv::PersSvc/HbookHistSvc",
@@ -172,15 +174,15 @@ StatusCode ApplicationMgr::queryInterface
   // find indirect interfaces :
   if      ( ISvcLocator     ::interfaceID() . versionMatch ( iid ) )
   { return serviceLocator()-> queryInterface ( iid , ppvi ) ; }
-  else if ( ISvcManager     ::interfaceID() . versionMatch ( iid ) )
+  if ( ISvcManager     ::interfaceID() . versionMatch ( iid ) )
   { return svcManager()    -> queryInterface ( iid , ppvi ) ; }
-  else if ( IAlgManager     ::interfaceID() . versionMatch ( iid ) )
+  if ( IAlgManager     ::interfaceID() . versionMatch ( iid ) )
   { return algManager()    -> queryInterface ( iid , ppvi ) ; }
-  else if ( IClassManager   ::interfaceID() . versionMatch ( iid ) )
+  if ( IClassManager   ::interfaceID() . versionMatch ( iid ) )
   { return m_classManager  -> queryInterface ( iid , ppvi ) ; }
-  else if ( IProperty       ::interfaceID() . versionMatch ( iid ) )
+  if ( IProperty       ::interfaceID() . versionMatch ( iid ) )
   { return m_propertyMgr   -> queryInterface ( iid , ppvi ) ; }
-  else if ( IMessageSvc     ::interfaceID() . versionMatch ( iid ) )
+  if ( IMessageSvc     ::interfaceID() . versionMatch ( iid ) )
   {
     *ppvi = reinterpret_cast<void*>(m_messageSvc.get());
     if (m_messageSvc) m_messageSvc->addRef();
@@ -196,6 +198,7 @@ StatusCode ApplicationMgr::queryInterface
 // ApplicationMgr::i_startup()
 //============================================================================
 StatusCode ApplicationMgr::i_startup() {
+
   StatusCode  sc;
 
   // declare factories in current module
@@ -223,6 +226,22 @@ StatusCode ApplicationMgr::i_startup() {
   if( !sc.isSuccess() )   {
     fatal() << "Error setting TYPE option in JobOptionsSvc" << endmsg;
     return sc;
+  }
+
+  if ( m_jobOptionsPreAction != "") {
+    sc = jobOptsIProp->setProperty( StringProperty("PYTHONPARAMS", m_jobOptionsPreAction) );
+    if( !sc.isSuccess() ) {
+      fatal() << "Error setting JobOptionsPreAction option in JobOptionsSvc" << endmsg;
+      return sc;
+    }
+  }
+
+  if ( m_jobOptionsPostAction != "") {
+    sc = jobOptsIProp->setProperty( StringProperty("PYTHONACTION", m_jobOptionsPostAction) );
+    if( !sc.isSuccess() ) {
+      fatal() << "Error setting JobOptionsPostAction option in JobOptionsSvc" << endmsg;
+      return sc;
+    }
   }
 
   if ( !m_jobOptionsPath.empty() ) {         // The command line takes precedence
@@ -290,13 +309,14 @@ StatusCode ApplicationMgr::i_startup() {
 // IAppMgrUI implementation: ApplicationMgr::configure()
 //============================================================================
 StatusCode ApplicationMgr::configure() {
+
   // Check if the state is compatible with the transition
   MsgStream tlog( m_messageSvc, name() );
   if( Gaudi::StateMachine::CONFIGURED == m_state ) {
     tlog << MSG::INFO << "Already Configured" << endmsg;
     return StatusCode::SUCCESS;
   }
-  else if( Gaudi::StateMachine::OFFLINE != m_state ) {
+  if( Gaudi::StateMachine::OFFLINE != m_state ) {
     tlog << MSG::FATAL
          << "configure: Invalid state \""  << m_state << "\"" << endmsg;
     return StatusCode::FAILURE;
@@ -538,7 +558,7 @@ StatusCode ApplicationMgr::initialize() {
     log << MSG::INFO << "Already Initialized!" << endmsg;
     return StatusCode::SUCCESS;
   }
-  else if( m_state != Gaudi::StateMachine::CONFIGURED ) {
+  if( m_state != Gaudi::StateMachine::CONFIGURED ) {
     log << MSG::FATAL
          << "initialize: Invalid state \""  << m_state << "\"" << endmsg;
     return StatusCode::FAILURE;
@@ -572,7 +592,7 @@ StatusCode ApplicationMgr::start() {
     log << MSG::INFO << "Already Initialized!" << endmsg;
     return StatusCode::SUCCESS;
   }
-  else if( m_state != Gaudi::StateMachine::INITIALIZED ) {
+  if( m_state != Gaudi::StateMachine::INITIALIZED ) {
     log << MSG::FATAL
          << "start: Invalid state \""  << m_state << "\"" << endmsg;
     return StatusCode::FAILURE;
@@ -625,7 +645,7 @@ StatusCode ApplicationMgr::stop() {
     log << MSG::INFO << "Already Initialized!" << endmsg;
     return StatusCode::SUCCESS;
   }
-  else if( m_state != Gaudi::StateMachine::RUNNING ) {
+  if( m_state != Gaudi::StateMachine::RUNNING ) {
     log << MSG::FATAL
          << "stop: Invalid state \""  << m_state << "\"" << endmsg;
     return StatusCode::FAILURE;
@@ -660,7 +680,7 @@ StatusCode ApplicationMgr::finalize() {
     log << MSG::INFO << "Already Finalized" << endmsg;
     return StatusCode::SUCCESS;
   }
-  else if( m_state != Gaudi::StateMachine::INITIALIZED ) {
+  if( m_state != Gaudi::StateMachine::INITIALIZED ) {
     log << MSG::FATAL << "finalize: Invalid state \"" << m_state << "\""
         << endmsg;
     return StatusCode::FAILURE;
@@ -711,7 +731,7 @@ StatusCode ApplicationMgr::terminate() {
     log << MSG::INFO << "Already Offline" << endmsg;
     return StatusCode::SUCCESS;
   }
-  else if( m_state != Gaudi::StateMachine::CONFIGURED ) {
+  if( m_state != Gaudi::StateMachine::CONFIGURED ) {
     log << MSG::FATAL << "terminate: Invalid state \"" << m_state << "\""
         << endmsg;
     return StatusCode::FAILURE;
@@ -1273,7 +1293,7 @@ void ApplicationMgr::pluginDebugPropertyHandler( Property& )
   MsgStream log (m_messageSvc, name());
   log << MSG::INFO
       << "Updating Gaudi::PluginService::SetDebug(level) to level="
-      << (int)m_pluginDebugLevel
+      << m_pluginDebugLevel
       << endmsg;
   Gaudi::PluginService::SetDebug(m_pluginDebugLevel);
 }

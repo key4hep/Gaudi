@@ -1,3 +1,4 @@
+# setting LC_ALL to "C"
 # --> Including file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/MultiInput/Read.py'
 # <-- End of file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/MultiInput/Read.py'
 # applying configuration of GaudiPersistency
@@ -12,24 +13,28 @@
                                       'Gaudi::IODataManager/IODataManager',
                                       'Gaudi::RootCnvSvc/RootCnvSvc'],
                     'TopAlg': ['GaudiSequencer/EventAlgs']},
- 'EventAlgs': {'Members': ['Gaudi::Examples::MultiInput::ReadAlg/Gaudi::Examples::MultiInput::ReadAlg']},
+ 'EventAlgs': {'DataInputs': DataObjectDescriptorCollection(''),
+               'DataOutputs': DataObjectDescriptorCollection(''),
+               'Members': ['Gaudi::Examples::MultiInput::ReadAlg/Gaudi::Examples::MultiInput::ReadAlg']},
  'EventPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']},
  'EventSelector': {'Input': ["DATAFILE='PFN:MI_Base.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'"]},
  'FileCatalog': {'Catalogs': ['xmlcatalog_file:MultiInput.xml']},
  'FileRecordPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']},
  'Gaudi::Examples::MultiInput::ReadAlg': {'AddressesFile': 'addresses.txt',
+                                          'DataInputs': DataObjectDescriptorCollection(''),
+                                          'DataOutputs': DataObjectDescriptorCollection(''),
                                           'OutputLevel': 2}}
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r1)
-                                          running on pclhcb117 on Tue Apr 29 17:37:16 2014
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r5)
+                                          running on pclhcb117 on Fri Oct 30 11:45:38 2015
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 EventAlgs            INFO Member list: Gaudi::Examples::MultiInput::ReadAlg
 RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
 RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
 RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
-ToolSvc.Sequenc...   INFO This machine has a speed about   4.17 times the speed of a 2.8 GHz Xeon.
+ToolSvc.Sequenc...   INFO This machine has a speed about   3.97 times the speed of a 2.8 GHz Xeon.
 Gaudi::Examples...  DEBUG Reading addresses.txt
 Gaudi::Examples...  DEBUG Read 100 addresses
 EventPersistenc...   INFO Added successfully Conversion service:RootCnvSvc
@@ -249,12 +254,12 @@ Gaudi::Examples...   INFO Base event tracks: 21
 Gaudi::Examples...   INFO Extra event tracks: 88
 ApplicationMgr       INFO Application Manager Stopped successfully
 EventLoopMgr         INFO Histograms converted successfully according to request.
-RootCnvSvc           INFO Disconnected data IO:9A531F20-B4CF-E311-8E01-082E5F2B1B1D [MI_Base.dst]
-RootCnvSvc           INFO Disconnected data IO:A8586F21-B4CF-E311-B64D-082E5F2B1B1D [MI_Ext.dst]
+RootCnvSvc           INFO Disconnected data IO:72538B5A-F37E-E511-BB9E-082E5F2B1B1D [MI_Ext.dst]
+RootCnvSvc           INFO Disconnected data IO:9C4E9A58-F37E-E511-9B0A-082E5F2B1B1D [MI_Base.dst]
 ToolSvc              INFO Removing all tools created by ToolSvc
 ToolSvc.Sequenc...   INFO --------------------------------------------------------------------------------------------------
-ToolSvc.Sequenc...   INFO This machine has a speed about   4.17 times the speed of a 2.8 GHz Xeon.
-ToolSvc.Sequenc...   INFO Algorithm          (millisec) |    <user> |   <clock> |      min       max | entries | total (s) |
+ToolSvc.Sequenc...   INFO This machine has a speed about   3.97 times the speed of a 2.8 GHz Xeon.
+ToolSvc.Sequenc...   INFO Algorithm          (millisec) |    <user> |   <clock> |      min       max    sigma | entries | total (s) |
 ToolSvc.Sequenc...   INFO --------------------------------------------------------------------------------------------------
 ToolSvc.Sequenc...   INFO --------------------------------------------------------------------------------------------------
 ApplicationMgr       INFO Application Manager Finalized successfully

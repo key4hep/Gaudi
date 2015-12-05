@@ -1,15 +1,15 @@
 // ============================================================================
 // Include files
 // ============================================================================
+// Local
+// ============================================================================
+#include "AlgContextSvc.h"
+// ============================================================================
 // GaudiKernel
 // ============================================================================
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IIncidentSvc.h"
-// ============================================================================
-// Local
-// ============================================================================
-#include "AlgContextSvc.h"
 // ============================================================================
 /** @file
  *  Implementation firl for class AlgContextSvc
@@ -59,12 +59,12 @@ StatusCode AlgContextSvc::initialize ()
     m_inc -> addListener ( this , IncidentType::BeginEvent ) ;
     m_inc -> addListener ( this , IncidentType::EndEvent   ) ;
   }
-  if ( !m_algorithms.empty() )
+  if ( m_algorithms.get() && !m_algorithms->empty() )
   {
     MsgStream log ( msgSvc() , name() ) ;
     log << MSG::WARNING
         << "Non-empty stack of algorithms #"
-        << m_algorithms.size() << endmsg ;
+        << m_algorithms->size() << endmsg ;
   }
   return StatusCode::SUCCESS ;
 }
@@ -73,15 +73,15 @@ StatusCode AlgContextSvc::initialize ()
 // ============================================================================
 StatusCode AlgContextSvc::finalize   ()
 {
-  if ( !m_algorithms.empty() )
+  if ( m_algorithms.get() && !m_algorithms->empty() )
   {
     MsgStream log ( msgSvc() , name() ) ;
     log << MSG::WARNING
         << "Non-empty stack of algorithms #"
-        << m_algorithms.size() << endmsg ;
+        << m_algorithms->size() << endmsg ;
   }
   // Incident Service
-  if ( m_inc     )
+  if ( m_inc )
   {
     m_inc -> removeListener ( this ) ;
     m_inc.reset();
@@ -98,11 +98,15 @@ StatusCode AlgContextSvc::setCurrentAlg  ( IAlgorithm* a )
   {
     MsgStream log ( msgSvc() , name() ) ;
     log << MSG::WARNING << "IAlgorithm* points to NULL" << endmsg ;
-    //
     return StatusCode::RECOVERABLE ;                              // RETURN
   }
-  m_algorithms.push_back ( a ) ;
-  //
+  // check whether thread-local algorithm list already exists
+  // if not, create it
+  if ( ! m_algorithms.get()) {
+    m_algorithms.reset( new IAlgContextSvc::Algorithms() );
+  }
+  m_algorithms->push_back ( a ) ;
+
   return StatusCode::SUCCESS ;                                    // RETURN
 }
 // ============================================================================
@@ -110,46 +114,49 @@ StatusCode AlgContextSvc::setCurrentAlg  ( IAlgorithm* a )
 // ============================================================================
 StatusCode AlgContextSvc::unSetCurrentAlg ( IAlgorithm* a )
 {
+  // check whether thread-local algorithm list already exists
+  // if not, create it
+  if ( ! m_algorithms.get()) {
+    m_algorithms.reset( new IAlgContextSvc::Algorithms() );
+  }
+
   if ( !a )
   {
     MsgStream log ( msgSvc() , name() ) ;
     log << MSG::WARNING << "IAlgorithm* points to NULL" << endmsg ;
-    //
     return StatusCode::RECOVERABLE ;                              // RETURN
   }
-  if ( m_algorithms.empty() || m_algorithms.back() != a )
-  {
-    MsgStream log ( msgSvc() , name() ) ;
+    if ( m_algorithms->empty() || m_algorithms->back() != a )
+   {
+     MsgStream log ( msgSvc() , name() ) ;
     log << MSG::ERROR << "Algorithm stack is invalid" << endmsg ;
-    //
     return StatusCode::FAILURE ;
   }
-  //
-  m_algorithms.pop_back() ;                                      // POP_BACK
-  //
+  m_algorithms->pop_back() ;                                      // POP_BACK
+
   return StatusCode::SUCCESS ;
 }
 // ============================================================================
 /// accessor to current algorithm: @see IAlgContextSvc
 // ============================================================================
 IAlgorithm* AlgContextSvc::currentAlg  () const
-{ return m_algorithms.empty() ? nullptr : m_algorithms.back() ; }
+{
+  return (m_algorithms.get() && ! m_algorithms->empty())
+    ? m_algorithms->back()
+    : nullptr;
+}
 // ============================================================================
 // handle incident @see IIncidentListener
 // ============================================================================
-void AlgContextSvc::handle ( const Incident& )
-{
-  if ( !m_algorithms.empty() )
-  {
+void AlgContextSvc::handle ( const Incident& ) {
+  if ( m_algorithms.get() && !m_algorithms->empty() ) {
     MsgStream log ( msgSvc() , name() ) ;
     log << MSG::ERROR
         << "Non-empty stack of algorithms #"
-        << m_algorithms.size() << endmsg ;
+        << m_algorithms->size() << endmsg ;
   }
 }
 // ============================================================================
-
-
 // ============================================================================
 /// The END
 // ============================================================================

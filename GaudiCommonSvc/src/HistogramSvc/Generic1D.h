@@ -43,7 +43,7 @@ namespace Gaudi {
     /// Manual cast by class name
     void* cast(const std::string& cl) const override;
     /// ROOT object implementation
-    TObject* representation() const                      { return m_rep.get();                 }
+    TObject* representation() const override             { return m_rep.get();                 }
     /// Adopt ROOT histogram representation
     void adoptRepresentation(TObject*rep) override;
     /// Get the title of the object
@@ -61,7 +61,7 @@ namespace Gaudi {
     /// Access to axis object
     Axis & axis ()                                       { return m_axis;                      }
     /// Get the x axis of the IHistogram1D.
-    const Axis & axis () const                           { return m_axis;                      }
+    const Axis & axis () const override                  { return m_axis;                      }
 
     /// Get the number or all the entries
     int entries() const override                  { return m_rep->GetEntries();           }
@@ -85,7 +85,7 @@ namespace Gaudi {
     double maxBinHeight() const override          { return m_rep->GetMaximum();                 }
 
     /// Number of equivalent entries, i.e. <tt>SUM[ weight ] ^ 2 / SUM[ weight^2 ]</tt>
-    virtual double equivalentBinEntries (  ) const ;
+    virtual double equivalentBinEntries (  ) const;
     /// Scale the weights and the errors of all the IHistogram's bins (in-range and out-of-range ones) by a given scale factor.
     virtual bool scale( double scaleFactor ) ;
     /// Reset the Histogram; as if just created.

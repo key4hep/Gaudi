@@ -2,6 +2,9 @@
 <extension class="GaudiTest.GaudiExeTest" kind="test">
   <argument name="program"><text>../../scripts/bug_34121.py</text></argument>
 <argument name="validator"><text>
+stdout = '\n'.join(l for l in stdout.splitlines()
+                   if 'EventLoopMgr      SUCCESS Event Number =' not in l and
+                      ' ---> Loop Finished' not in l)
 findReferenceBlock('''
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
@@ -17,6 +20,6 @@ Alg                  INFO executing....
 Alg.Tool             INFO Double = 4
 ApplicationMgr       INFO Application Manager Stopped successfully
 Alg                  INFO finalizing....
-''')
+''', stdout=stdout)
 </text></argument>
 </extension>

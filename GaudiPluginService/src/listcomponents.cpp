@@ -48,14 +48,8 @@ int main(int argc, char* argv[]) {
 
   // cache to keep track of the loaded factories
   std::map<key_type, std::string> loaded;
-  {
-    // initialize the local cache
-    std::set<key_type> base = reg.loadedFactories();
-    for (std::set<key_type>::const_iterator f = base.begin(); f != base.end(); ++f)
-    {
-      loaded.insert(std::make_pair(*f, std::string("<preloaded>")));
-    }
-  }
+  // initialize the local cache
+  for (const auto & elem : reg.loadedFactories()) loaded.emplace(elem, "<preloaded>");
 
   // Parse command line
   std::list<char*> libs;
@@ -103,14 +97,14 @@ int main(int argc, char* argv[]) {
   // loop over the list of libraries passed on the command line
   for (char* lib: libs) {
     if (dlopen(lib, RTLD_LAZY | RTLD_LOCAL)) {
-      std::set<key_type> factories = reg.loadedFactories();
-      for (auto f = factories.begin(); f != factories.end(); ++f) {
-        if (loaded.find(*f) == loaded.end()) {
-          output << lib << ":" << *f << std::endl;
-          loaded[*f] = lib;
+      for (const auto & factory : reg.loadedFactories()) {
+        auto f = loaded.find(factory);
+        if ( f == loaded.end()) {
+          output << lib << ":" << factory << std::endl;
+          loaded.emplace(factory,lib);
         } else
-          std::cerr << "WARNING: factory '" << *f
-                    << "' already found in " << loaded[*f]
+          std::cerr << "WARNING: factory '" << factory
+                    << "' already found in " << f->second
                     << std::endl;
       }
     } else {

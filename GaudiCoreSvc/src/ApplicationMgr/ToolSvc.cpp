@@ -32,7 +32,7 @@ unsigned long totalRefCount( const C& toolList )
   });
 }
 
-/// small helper functions 
+/// small helper functions
 template <typename C> void remove(C& c, typename C::const_reference i)  {
     c.erase( std::remove(std::begin(c),std::end(c),i), std::end(c) );
 }
@@ -292,7 +292,7 @@ StatusCode ToolSvc::retrieve ( const std::string& tooltype ,
   if ( ba::ends_with( toolname, s_PUBLIC ) )
   {
     // parent for PUBLIC tool is this, i.e. ToolSvc
-    return retrieve ( tooltype , ba::erase_tail_copy(toolname, s_PUBLIC.size() ), 
+    return retrieve ( tooltype , ba::erase_tail_copy(toolname, s_PUBLIC.size() ),
                       iid , tool , this , createIf ) ;
   }
 
@@ -308,9 +308,11 @@ StatusCode ToolSvc::retrieve ( const std::string& tooltype ,
   // Find tool in list of those already existing, and tell its
   // interface that it has been used one more time
   auto it = std::find_if( std::begin(m_instancesTools), std::end(m_instancesTools),
-                          [&](const IAlgTool* i) { return i->name() == fullname; } );
+                          [&](const IAlgTool* i) {
+                             return i->name() == fullname && i->parent() == parent;
+                          });
   if (it!=std::end(m_instancesTools)) {
-      ON_DEBUG debug() << "Retrieved tool " << toolname << endmsg;
+      ON_DEBUG debug() << "Retrieved tool " << toolname << " with parent " << parent << endmsg;
       itool = *it;
   }
 
@@ -334,6 +336,7 @@ StatusCode ToolSvc::retrieve ( const std::string& tooltype ,
         << endmsg;
     return sc;
   }
+
   ///////////////
   /// invoke retrieve callbacks...
   ///////////////
@@ -346,13 +349,11 @@ StatusCode ToolSvc::retrieve ( const std::string& tooltype ,
 std::vector<std::string> ToolSvc::getInstances( const std::string& toolType )
 //------------------------------------------------------------------------------
 {
-
   std::vector<std::string> tools;
   for(const auto& tool: m_instancesTools) {
     if (tool->type() == toolType) tools.push_back( tool->name() );
   }
   return tools;
-
 }
 //------------------------------------------------------------------------------
 std::vector<std::string> ToolSvc::getInstances() const
@@ -360,7 +361,7 @@ std::vector<std::string> ToolSvc::getInstances() const
 {
   std::vector<std::string> tools{m_instancesTools.size()};
   std::transform(std::begin(m_instancesTools), std::end(m_instancesTools),
-                 std::begin(tools), std::mem_fn(&IAlgTool::name) );
+                 std::begin(tools), [](const IAlgTool* t) { return t->name(); } );
   return tools;
 }
 //------------------------------------------------------------------------------
@@ -423,11 +424,11 @@ class ToolCreateGuard {
   std::unique_ptr<IAlgTool> m_tool;
 
 public:
-  ToolCreateGuard(T& tools): m_tools(tools) {}
+  explicit ToolCreateGuard(T& tools): m_tools(tools) {}
   // we don't get a move constructor by default because we
-  // have a non-trivial destructor... However, the default 
+  // have a non-trivial destructor... However, the default
   // one is just fine...
-  ToolCreateGuard(ToolCreateGuard&&) = default;
+  ToolCreateGuard(ToolCreateGuard&&) noexcept = default;
   /// Set the internal pointer (delete any previous one). Get ownership of the tool.
   void create( const std::string& tooltype, const std::string& fullname, const IInterface* parent ) {
     // remove previous content
@@ -459,13 +460,22 @@ ToolCreateGuard<C> make_toolCreateGuard(C& c) {
     return ToolCreateGuard<C>{ c };
 }
 }
+
 //------------------------------------------------------------------------------
+/**
+ * Now able to handle clones. The test of tool existence is performed according to
+ * three criteria: name, type and parent.
+ * If a tool is private, i.e. the parent is not the tool Svc, and it exist but
+ * the parent is not the specified one, a clone is handed over.
+ * No clones of public tools are allowed since they would be undistinguishable.
+**/
 StatusCode ToolSvc::create(const std::string& tooltype,
                            const std::string& toolname,
                            const IInterface* parent,
                            IAlgTool*& tool)
   //------------------------------------------------------------------------------
 {
+
   // protect against empty type
   if ( UNLIKELY(tooltype.empty()) ) {
     error() << "create(): No Tool Type given" << endmsg;
@@ -480,11 +490,22 @@ StatusCode ToolSvc::create(const std::string& tooltype,
   // The tool is removed from the list of known tools too.
   auto toolguard = make_toolCreateGuard(m_instancesTools);
 
-  // Check if the tool already exist : this should never happen
+  // Check if the tool already exist : this could happen with clones
   std::string fullname = nameTool(toolname, parent);
   if( UNLIKELY(existsTool(fullname)) ) {
-    error() << "Tool " << fullname << " already exists" << endmsg;
-    return StatusCode::FAILURE;
+    // Now check if the parent is the same. This allows for clones
+    for (IAlgTool* iAlgTool: m_instancesTools){
+      if ( iAlgTool->name() ==  toolname && iAlgTool->parent() == parent){
+        // The tool exist with this name, type and parent: this is bad!
+        // This excludes the possibility of cloning public tools intrinsecally
+        error() << "Tool " << fullname << " already exists with the same parent" << endmsg;
+        if (parent == this)
+          error() << "... In addition, the parent is the ToolSvc: public tools cannot be cloned!" << endmsg;
+
+        return StatusCode::FAILURE;
+      }
+    }
+    ON_DEBUG debug() << "Creating clone of " << fullname << endmsg;
   }
   // instantiate the tool using the factory
   try {
@@ -722,10 +743,8 @@ ToolSvc::start()
   if (UNLIKELY(fail)) {
     error() << "One or more AlgTools failed to start()" << endmsg;
     return StatusCode::FAILURE;
-  } else {
-    return StatusCode::SUCCESS;
   }
-
+  return StatusCode::SUCCESS;
 }
 
 //------------------------------------------------------------------------------
@@ -750,8 +769,6 @@ ToolSvc::stop()
   if (UNLIKELY(fail)) {
     error() << "One or more AlgTools failed to stop()" << endmsg;
     return StatusCode::FAILURE;
-  } else {
-    return StatusCode::SUCCESS;
   }
-
+  return StatusCode::SUCCESS;
 }

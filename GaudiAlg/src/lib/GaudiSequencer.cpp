@@ -20,8 +20,8 @@ namespace
   bool isDefault(const std::string& s) { return s.empty(); }
   constexpr bool isDefault(double x) { return x == 0; }
 
-   // utility class to populate some properties in the job options service 
-   // for a given instance name in case those options are not explicitly 
+   // utility class to populate some properties in the job options service
+   // for a given instance name in case those options are not explicitly
    // set a-priori (effectively inheriting their values from the GaudiSequencer)
   class populate_JobOptionsSvc_t {
     std::vector<std::unique_ptr<Property>> m_props;
@@ -41,7 +41,7 @@ namespace
         const auto* props = m_jos->getProperties(m_name);
         if (!props) return;
         for ( const auto& i : *props ) {
-            auto j = std::find_if( std::begin(m_props), std::end(m_props), 
+            auto j = std::find_if( std::begin(m_props), std::end(m_props),
                                    [&i](const std::unique_ptr<Property>& prop) {
                 return prop->name() == i->name();
             } );
@@ -159,6 +159,11 @@ StatusCode GaudiSequencer::execute() {
     Algorithm* myAlg = entry.algorithm();
     if ( ! myAlg->isEnabled() ) continue;
     if ( ! myAlg->isExecuted() ) {
+
+      //DF: if we have a context set by GaudiHive scheduler propagate it to the children
+      if(getContext())
+        myAlg->setContext(getContext());
+
       if ( m_measureTime ) m_timerTool->start( entry.timer() );
       result = myAlg->sysExecute();
       if ( m_measureTime ) m_timerTool->stop( entry.timer() );
@@ -259,7 +264,7 @@ StatusCode GaudiSequencer::decodeNames( )  {
     StatusCode result = StatusCode::SUCCESS;
     SmartIF<IAlgorithm> myIAlg = appMgr->algorithm(typeName, false); // do not create it now
     if ( !myIAlg ) {
-      // ensure some magic properties are set while we create the subalgorithm so 
+      // ensure some magic properties are set while we create the subalgorithm so
       // that it effectively inherites 'our' settings -- if they have non-default
       // values... and are not set explicitly already.
       populate_JobOptionsSvc_t populate_guard{ theName, jos,

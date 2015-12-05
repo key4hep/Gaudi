@@ -213,10 +213,10 @@ void* Containers::KeyedObjectManager<T>::erase(long  key,
   typedef find<MTYP> FND;
   if ( 1 == m_direct )   {
     auto& m = m_setup.s->m;
-    auto i = (0==obj) ? m_setup.s->m.find(key)
-                      : std::find_if(m.begin(),m.end(),FND(obj));
+    auto i = (obj ? std::find_if(m.begin(),m.end(),FND(obj))
+                  : m_setup.s->m.find(key) );
     if ( i != m_setup.s->m.end() )   {
-      void* o = (*i).second;
+      void* o = i->second;
       auto j = std::find(m_seq->begin(),m_seq->end(),o);
       if ( j != m_seq->end() )   {
         m_seq->erase(j);
@@ -347,7 +347,7 @@ KeyedObjectManager< __A >::object(long value) const
       return *(m_setup.s->v.begin() + ent);
     }
   }
-  return 0;
+  return nullptr;
 #else
   return *(m_setup.s->v.begin() + (*(m_setup.s->m_idx.begin()+value)));
 #endif
@@ -358,7 +358,7 @@ void KeyedObjectManager< __A >::onDirty()  const {
   m_direct = 1;
   m_setup.s->m_idx.reserve(m_setup.s->v.size()+1);
   for(int i = 0, stop = m_setup.s->v.size(); i < stop; ++i)   {
-    if ( m_setup.s->v[i] == 0 )  {
+    if ( !m_setup.s->v[i] )  {
       containerIsInconsistent();
     }
     m_setup.s->m_idx.push_back(i);
@@ -470,10 +470,10 @@ void* KeyedObjectManager< __A >::erase(long key,
     onDirty();
     return erase(key, obj);
   }
-  if ( 0 != obj )   {
+  if ( obj )   {
     id_type& idx = m_setup.s->m_idx;
-    for ( id_iter i=idx.begin(); i != idx.end(); i++ )    {
-      auto j = m_setup.s->v.begin()+(*i);
+    for (auto & elem : idx)    {
+      auto j = m_setup.s->v.begin()+(elem);
       auto k = std::find(m_seq->begin(),m_seq->end(),*j);
       if ( *j == obj )   {
         void* o = *j;
@@ -481,14 +481,14 @@ void* KeyedObjectManager< __A >::erase(long key,
         m_setup.s->v.erase(j);
         std::for_each(m_setup.s->m_idx.begin(),
                       m_setup.s->m_idx.end(),
-                      array::decrement(*i));
-        *i = -1;
+                      array::decrement(elem));
+        elem = -1;
         return o;
       }
     }
   }
   else if ( key >= 0 && key < long(m_setup.s->m_idx.size()) )   {
-    id_iter idx = m_setup.s->m_idx.begin()+key;
+    auto idx = m_setup.s->m_idx.begin()+key;
     if ( *idx != -1 )   {
       auto i = m_setup.s->v.begin()+(*idx);
       if ( i == m_setup.s->v.end() )   {
@@ -509,7 +509,7 @@ void* KeyedObjectManager< __A >::erase(long key,
     }
   }
   containerIsInconsistent();
-  return 0;
+  return nullptr;
 }
 
 // Remove object by sequential iterators
@@ -530,15 +530,15 @@ long KeyedObjectManager< __A >::erase(seq_type::iterator beg,
   else  {
     long cnt = 0, nobj = end-beg;
     id_type& idx = m_setup.s->m_idx;
-    for ( id_iter i=idx.begin(); i != idx.end(); i++ )    {
-      auto j = m_setup.s->v.begin()+(*i);
+    for (auto & elem : idx)    {
+      auto j = m_setup.s->v.begin()+(elem);
       auto k = std::find(beg,end,*j);
       if ( k != end )   {
         m_setup.s->v.erase(j);
         std::for_each(m_setup.s->m_idx.begin(),
                       m_setup.s->m_idx.end(),
-                      array::decrement(*i));
-        *i = -1;
+                      array::decrement(elem));
+        elem = -1;
         cnt++;
         if ( cnt == nobj ) break;
       }
@@ -573,7 +573,7 @@ template<>
 void* KeyedObjectManager< __V >::object(long /* value */) const
 {
   invalidContainerOperation();
-  return 0;
+  return nullptr;
 }
 
 template<>
@@ -639,7 +639,7 @@ KeyedObjectManager< __V >::erase(long /* key */,
                                              const void* /* obj */)
 {
   invalidContainerOperation();
-  return 0;
+  return nullptr;
 }
 
 // Remove object by sequential iterators

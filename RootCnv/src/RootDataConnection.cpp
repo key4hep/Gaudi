@@ -125,18 +125,6 @@ int RootConnectionSetup::compression() {
   return s_compressionLevel;
 }
 
-/// Increase reference count
-void RootConnectionSetup::addRef() {
-  ++refCount;
-}
-
-/// Decrease reference count
-void RootConnectionSetup::release() {
-  int tmp = --refCount;
-  if ( tmp <= 0 ) {
-    delete this;
-  }
-}
 
 /// Set message service reference
 void RootConnectionSetup::setMessageSvc(MsgStream* m) {
@@ -149,8 +137,8 @@ void RootConnectionSetup::setIncidentSvc(IIncidentSvc* s) {
 }
 
 /// Standard constructor
-RootDataConnection::RootDataConnection(const IInterface* owner, CSTR fname, RootConnectionSetup* setup)
-  : IDataConnection(owner,fname), m_setup(setup)
+RootDataConnection::RootDataConnection(const IInterface* owner, CSTR fname, std::shared_ptr<RootConnectionSetup> setup)
+  : IDataConnection(owner,fname), m_setup(std::move(setup))
 { //               01234567890123456789012345678901234567890
   // Check if FID: A82A3BD8-7ECB-DC11-8DC0-000423D950B0
   if ( fname.length() == 36 && fname[8]=='-'&&fname[13]=='-'&&fname[18]=='-'&&fname[23]=='-' ) {
@@ -214,7 +202,7 @@ RootDataConnection::Tool* RootDataConnection::makeTool()   {
   if ( m_refs )
     m_tool.reset( new RootTool(this) );
 #ifdef __POOL_COMPATIBILITY
-  else if ( m_file->Get("##Links") != 0 )
+  else if ( m_file->Get("##Links") != nullptr )
     m_tool.reset(new PoolTool(this));
 #endif
   else
@@ -250,13 +238,13 @@ StatusCode RootDataConnection::connectRead()  {
   bool need_fid = m_fid == m_pfn;
   string fid = m_fid;
   m_mergeFIDs.clear();
-  for(size_t i=0, n=m_params.size(); i<n; ++i) {
-    if ( m_params[i].first == "FID" )  {
-      m_mergeFIDs.push_back(m_params[i].second);
-      if ( m_params[i].second != m_fid )    {
-        msgSvc() << MSG::DEBUG << "Check FID param:" << m_params[i].second << endmsg;
+  for(auto & elem : m_params) {
+    if ( elem.first == "FID" )  {
+      m_mergeFIDs.push_back(elem.second);
+      if ( elem.second != m_fid )    {
+        msgSvc() << MSG::DEBUG << "Check FID param:" << elem.second << endmsg;
         //if ( m_fid == m_pfn ) {
-        m_fid = m_params[i].second;
+        m_fid = elem.second;
         //}
       }
     }
@@ -440,7 +428,7 @@ TBranch* RootDataConnection::getBranch(CSTR section, CSTR branch_name, TClass* c
   TTree* t = getSection(section,true);
   TBranch* b = t->GetBranch(n.c_str());
   if ( !b && cl && m_file->IsWritable() ) {
-    b = t->Branch(n.c_str(),cl->GetName(),(void*)(ptr ? &ptr : 0),buff_siz,split_lvl);
+    b = t->Branch(n.c_str(),cl->GetName(),(void*)(ptr ? &ptr : nullptr),buff_siz,split_lvl);
   }
   if ( !b ) b = t->GetBranch(branch_name.c_str());
   if ( b )   b->SetAutoDelete(kFALSE);
@@ -480,7 +468,7 @@ RootDataConnection::saveObj(CSTR section, CSTR cnt, TClass* cl, DataObject* pObj
 pair<int,unsigned long>
 RootDataConnection::save(CSTR section, CSTR cnt, TClass* cl, void* pObj, int buff_siz, int split_lvl, bool fill_missing) {
   split_lvl = 0;
-  TBranch* b = getBranch(section, cnt, cl, (void*)(pObj ? &pObj : 0),buff_siz,split_lvl);
+  TBranch* b = getBranch(section, cnt, cl, pObj ? &pObj : nullptr, buff_siz, split_lvl);
   if ( b ) {
     Long64_t evt = b->GetEntries();
     //msgSvc() << MSG::DEBUG << cnt.c_str() << " Obj:" << (void*)pObj
@@ -488,7 +476,7 @@ RootDataConnection::save(CSTR section, CSTR cnt, TClass* cl, void* pObj, int buf
     if ( fill_missing ) {
       Long64_t num, nevt = b->GetTree()->GetEntries();
       if ( nevt > evt )   {
-        b->SetAddress(0);
+        b->SetAddress(nullptr);
         num = nevt - evt;
         while( num > 0 ) { b->Fill(); --num; }
         msgSvc() << MSG::DEBUG << "Added " << long(nevt-evt)
@@ -498,12 +486,12 @@ RootDataConnection::save(CSTR section, CSTR cnt, TClass* cl, void* pObj, int buf
       }
     }
     b->SetAddress(&pObj);
-    return make_pair(b->Fill(),(unsigned long)evt);
+    return {b->Fill(),evt};
   }
-  else if ( 0 != pObj ) {
+  if ( pObj ) {
     msgSvc() << MSG::ERROR << "Failed to access branch " << m_name << "/" << cnt << endmsg;
   }
-  return make_pair(-1,~0);
+  return {-1,~0};
 }
 
 /// Load object
@@ -620,36 +608,33 @@ void RootDataConnection::makeRef(IRegistry* pR, RootRef& ref) {
 /// Create reference object from values
 void RootDataConnection::makeRef(CSTR name, long clid, int tech, CSTR dbase, CSTR cnt, int entry, RootRef& ref) {
   string db(dbase);
-  int cdb=-1, ccnt=-1, clnk=-1;
-  StringVec::iterator idb, icnt, ilnk;
-  if ( db == m_fid ) {
-    db = s_local;
-  }
+  if ( db == m_fid ) db = s_local;
   ref.entry = entry;
+
+  int cdb = -1;
   if ( !db.empty() ) {
-    for(cdb=0,idb=m_dbs.begin(); idb!=m_dbs.end();++idb,++cdb)
-      if( (*idb) == db ) break;
-    if ( idb == m_dbs.end() ) {
-      cdb = m_dbs.size();
-      m_dbs.push_back(db);
-    }
+    auto idb = std::find_if( m_dbs.begin(),m_dbs.end(),
+                             [&](const std::string& i) { return i == db; } );
+    cdb = std::distance(m_dbs.begin(),idb);
+    if ( idb == m_dbs.end() ) m_dbs.push_back(db);
   }
+
+  int ccnt = -1;
   if ( !cnt.empty() ) {
-    for(ccnt=0,icnt=m_conts.begin(); icnt!=m_conts.end();++icnt,++ccnt)
-      if( (*icnt) == cnt ) break;
-    if ( icnt == m_conts.end() ) {
-      ccnt = m_conts.size();
-      m_conts.push_back(cnt);
-    }
+    auto icnt = std::find_if( m_conts.begin(),m_conts.end(),
+                              [&](const std::string& i) { return i == cnt; } );
+    ccnt = std::distance(m_conts.begin(),icnt); 
+    if ( icnt == m_conts.end() ) m_conts.push_back(cnt);
   }
+
+  int clnk=-1;
   if ( !name.empty() ) {
-    for(clnk=0,ilnk=m_links.begin(); ilnk!=m_links.end();++ilnk,++clnk)
-      if( (*ilnk) == name ) break;
-    if ( ilnk == m_links.end() ) {
-      clnk = m_links.size();
-      m_links.push_back(name);
-    }
+    auto ilnk = std::find_if( m_links.begin(),m_links.end(),
+                              [&](const std::string& i) { return i == name; } );
+    clnk = std::distance( m_links.begin(), ilnk);
+    if ( ilnk == m_links.end() ) m_links.push_back(name);
   }
+
   ref.dbase     = cdb;
   ref.container = ccnt;
   ref.link      = clnk;

@@ -18,9 +18,9 @@ namespace RootHistCnv {
   class DirectoryCnv : public RConverter {
   public:
     /// Create the transient representation of an object.
-    virtual StatusCode createObj(IOpaqueAddress* pAddr, DataObject*& refpObj);
+    StatusCode createObj(IOpaqueAddress* pAddr, DataObject*& refpObj) override;
     /// Convert the transient object to the requested representation.
-    virtual StatusCode createRep(DataObject* pObj, IOpaqueAddress*& refpAddr);
+    StatusCode createRep(DataObject* pObj, IOpaqueAddress*& refpAddr) override;
     /// Inquire class type
     static const CLID& classID()      {  return CLID_DataObject;    }
     /// Standard constructor
@@ -28,7 +28,7 @@ namespace RootHistCnv {
     /// Standard constructor
     DirectoryCnv(const CLID& clid, ISvcLocator* svc) : RConverter(clid, svc) {}
     /// Standard destructor
-    virtual ~DirectoryCnv()   {}
+    ~DirectoryCnv() override = default;
   };
 }    // namespace RootHistCnv
 

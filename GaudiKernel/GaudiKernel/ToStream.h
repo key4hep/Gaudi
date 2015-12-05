@@ -14,21 +14,23 @@
 #include <list>
 #include <string>
 #include <sstream>
+#include <type_traits>
 // ============================================================================
 // GaudiKernel
 // ============================================================================
 #include "GaudiKernel/Map.h"
 #include "GaudiKernel/HashMap.h"
 #include "GaudiKernel/VectorMap.h"
+#include "GaudiKernel/SerializeSTL.h"
 // ============================================================================
 /** @file GaudiKernel/ToStream.h
- *  implemenattiono fvarioud functions for streaming.
- *  this functionality is essenital for usag eof varuodu types as property for
+ *  implementation of various functions for streaming.
+ *  this functionality is essential for usage of various types as property for
  *  the various Gaudi components
- *  @attention the implemenation of the specific specializations must be done
+ *  @attention the implementation of the specific specializations must be done
  *                    before the inclusion of this file
  *  @todo ToStream.h : reimplement in terms of functors, to allow
- *                     easier especializations
+ *                     easier specializations
  */
 // ============================================================================
 namespace Gaudi
@@ -74,11 +76,8 @@ namespace Gaudi
     inline std::ostream& toStream
     ( const std::string& obj , std::ostream& s )
     {
-      if ( std::string::npos == obj.find('\'') )
-      { s << "\'" << obj << "\'" ; }
-      else
-      { s << "\"" << obj << "\"" ; }
-      return s ;
+      auto c = ( std::string::npos == obj.find('\'') ? '\'' : '\"' );
+      return s << c << obj << c;
     }
     /** the printout of boolean values "a'la Python"
      *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
@@ -129,11 +128,9 @@ namespace Gaudi
     inline std::ostream& toStream
     ( const std::pair<KTYPE,VTYPE>& obj, std::ostream& s)
     {
-      s << "( "  ;
-      toStream ( obj.first  , s ) ;
-      s << " , " ;
-      toStream ( obj.second , s ) ;
-      return s << " )" ;
+      return toStream( obj.second,
+                       toStream( obj.first, s << "( " ) << " , "  )
+              << " )" ;
     }
     // ========================================================================
     /** the partial template specialization of <c>std::vector<TYPE,ALLOCATOR></c>
@@ -186,16 +183,12 @@ namespace Gaudi
     inline std::ostream& toStream
     ( const std::map<KTYPE,VTYPE,CMP,ALLOCATOR>& obj, std::ostream& s )
     {
-      s << "{ ";
-      for ( typename std::map<KTYPE,VTYPE,CMP,ALLOCATOR>::const_iterator cur =
-              obj.begin() ; obj.end() != cur ; ++cur )
-      {
-        if ( obj.begin() != cur ) { s << " , " ; }
-        toStream ( cur -> first  , s ) ;
-        s << " : " ;
-        toStream ( cur -> second , s ) ;
-      }
-      return s << " }";
+      using GaudiUtils::detail::ostream_joiner;
+      return ostream_joiner( s << "{ ", obj, " , ",
+                             [](std::ostream& os, const std::pair<const KTYPE,VTYPE>& i)
+                             -> std::ostream&
+                             { return toStream( i.second, toStream( i.first, os ) << " : " ); }
+             ) << " }";
     }
     // ========================================================================
     /** the partial template specialization of
@@ -210,16 +203,12 @@ namespace Gaudi
     inline std::ostream& toStream
     ( const GaudiUtils::VectorMap<KTYPE,VTYPE,CMP,ALLOCATOR>& obj, std::ostream& s )
     {
-      s << "{ ";
-      for ( typename GaudiUtils::VectorMap<KTYPE,VTYPE,CMP,ALLOCATOR>::const_iterator cur = obj.begin() ;
-            obj.end() != cur ; ++cur )
-      {
-        if ( obj.begin() != cur ) { s << " , " ; }
-        toStream ( cur -> first  , s ) ;
-        s << " : " ;
-        toStream ( cur -> second , s ) ;
-      }
-      return s << " }";
+      using GaudiUtils::detail::ostream_joiner;
+      return ostream_joiner( s << "{ ", obj, " , ",
+                               [](std::ostream& os, const std::pair<const KTYPE,VTYPE>& i )
+                               -> std::ostream&
+                               { return toStream( i.second, toStream( i.first, os ) << " : " ); }
+             ) << " }";
     }
     // ========================================================================
     /** the partial template specialization of
@@ -234,16 +223,12 @@ namespace Gaudi
     inline std::ostream& toStream
     ( const GaudiUtils::Map<KTYPE,VTYPE,MAP>& obj, std::ostream& s)
     {
-      s << "{ ";
-      for ( typename GaudiUtils::Map<KTYPE,VTYPE,MAP>::const_iterator cur = obj.begin() ;
-            obj.end() != cur ; ++cur )
-      {
-        if ( obj.begin() != cur ) { s << " , " ; }
-        toStream ( cur -> first  , s ) ;
-        s << " : " ;
-        toStream ( cur -> second , s ) ;
-      }
-      return s << " }";
+      using GaudiUtils::detail::ostream_joiner;
+      return ostream_joiner( s << "{ ", obj,  " , " ,
+                             [](std::ostream& s, const std::pair<const KTYPE,VTYPE>& i )
+                             -> std::ostream&
+                             { return toStream( i.second, toStream( i.first, s ) << " : " ) ; }
+             ) << " }";
     }
     // ========================================================================
     /** the partial template specialization of
@@ -258,20 +243,16 @@ namespace Gaudi
     inline std::ostream& toStream
     ( const GaudiUtils::HashMap<KTYPE,VTYPE,HASH,MAP>& obj, std::ostream& s)
     {
-      s << "{ ";
-      for ( typename GaudiUtils::HashMap<KTYPE,VTYPE,HASH,MAP>::const_iterator cur = obj.begin() ;
-            obj.end() != cur ; ++cur )
-      {
-        if ( obj.begin() != cur ) { s << " , " ; }
-        toStream ( cur -> first  , s ) ;
-        s << " : " ;
-        toStream ( cur -> second , s ) ;
-      }
-      return s << " }";
+        using GaudiUtils::detail::ostream_joiner;
+        return ostream_joiner( s << "{ ", obj,  " , ",
+                               [](std::ostream& os, const std::pair<const KTYPE,VTYPE>& p)
+                               -> std::ostream&
+                               { return toStream( p.second, toStream( p.first, os) << " : " ); }
+               ) << " }";
     }
     // ========================================================================
     /** the specialization for C-arrays, a'la python tuple
-     *  @author Vanya BELYAEV Ivan.Belyaev@nikhenf.nl
+     *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
      *  @date 2009-10-05
      */
     template <class TYPE, unsigned int N>
@@ -281,7 +262,7 @@ namespace Gaudi
     }
     // ========================================================================
     /** the specialization for C-arrays, a'la python tuple
-     *  @author Vanya BELYAEV Ivan.Belyaev@nikhenf.nl
+     *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
      *  @date 2009-10-05
      */
     template <class TYPE, unsigned int N>
@@ -291,7 +272,7 @@ namespace Gaudi
     }
     // ========================================================================
     /** the specialization for C-string, a'la python tuple
-     *  @author Vanya BELYAEV Ivan.Belyaev@nikhenf.nl
+     *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
      *  @date 2009-10-05
      */
     template <unsigned int N>
@@ -299,7 +280,7 @@ namespace Gaudi
     { return toStream ( std::string ( obj , obj+N ) , s ) ; }
     // ========================================================================
     /** the specialization for C-string, a'la python tuple
-     *  @author Vanya BELYAEV Ivan.Belyaev@nikhenf.nl
+     *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
      *  @date 2009-10-05
      */
     template <unsigned int N>
@@ -307,7 +288,7 @@ namespace Gaudi
     { return toStream ( std::string ( obj , obj+N ) , s ) ; }
     // ========================================================================
     /** the specialization for C-string, a'la python tuple
-     *  @author Vanya BELYAEV Ivan.Belyaev@nikhenf.nl
+     *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
      *  @date 2009-10-05
      */
     inline std::ostream& toStream ( const char* obj , std::ostream& s )
@@ -342,37 +323,30 @@ namespace Gaudi
       const std::string& close ,                       //               closing
       const std::string& delim )                       //             delimiter
     {
-      s << open ;
-      for ( ITERATOR curr = first ; curr != last ; ++curr )
-      {
-        if ( first != curr ) { s << delim ; }
-        toStream ( *curr , s ) ;
-      }
-      s << close ;
-      //
-      return s ;
+      using ref_t = typename std::iterator_traits<ITERATOR>::reference;
+      using GaudiUtils::detail::ostream_joiner;
+      return ostream_joiner( s << open, first, last, delim,
+                             [](std::ostream& os, ref_t i ) -> std::ostream&
+                             { return toStream( i, os ); } ) << close;
     }
     // ========================================================================
      // helper function to print a tuple of any size
     template<class Tuple, std::size_t N>
     struct TuplePrinter {
-        static std::ostream& toStream(const Tuple& t, std::ostream& s) 
+        static std::ostream& toStream(const Tuple& t, std::ostream& s)
         {
-            TuplePrinter<Tuple, N-1>::toStream(t, s);
-            s << " , ";
-            Gaudi::Utils::toStream(std::get<N-1>(t), s);
-            return s;
+            TuplePrinter<Tuple, N-1>::toStream(t, s) << " , ";
+            return Gaudi::Utils::toStream(std::get<N-1>(t), s);
         }
     };
-     
+
     template<class Tuple>
     struct TuplePrinter<Tuple, 1>{
-        static std::ostream& toStream(const Tuple& t, std::ostream& s) 
+        static std::ostream& toStream(const Tuple& t, std::ostream& s)
         {
-            Gaudi::Utils::toStream(std::get<0>(t), s);
-            return s;
+            return Gaudi::Utils::toStream(std::get<0>(t), s);
         }
-    };  
+    };
 
     /** the helper function to print the tuple
      *  @param tulpe (INPUT)  tuple
@@ -382,10 +356,7 @@ namespace Gaudi
      */
      template<typename... Args>
      inline std::ostream& toStream(const std::tuple<Args...>& tuple, std::ostream& s) {
-        s << " ( ";
-        TuplePrinter<decltype(tuple), sizeof...(Args)>::toStream(tuple, s);
-        s << " ) ";
-        return s;
+        return TuplePrinter<decltype(tuple), sizeof...(Args)>::toStream(tuple, s << " ( ")<< " ) ";
      }
 
     // ========================================================================
@@ -415,4 +386,3 @@ namespace Gaudi
 // ============================================================================
 #endif
 // ============================================================================
-

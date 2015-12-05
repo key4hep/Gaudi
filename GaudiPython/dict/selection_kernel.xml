@@ -35,11 +35,6 @@
   <function name = "Gaudi::Utils::Histos::histoDump" />
   <class name    = "Gaudi::Utils::Histos::HistoStrings" />
 
-  <class pattern = "SimpleProperty<*>"/>
-  <class pattern = "SimplePropertyRef<*>"/>
-  <class pattern = "BoundedVerifier<*>"/>
-  <class pattern = "PropertyVerifier<*>"/>
-
   <class pattern = "GaudiAlg::*"              />
   <class name    = "GaudiAlgorithm"           />
   <class name    = "GaudiHistoAlg"            />

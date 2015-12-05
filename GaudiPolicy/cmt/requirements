@@ -7,6 +7,9 @@ branches cmt doc
 use LCG_Settings *
 use Python * LCG_Interfaces -no_auto_imports
 
+# For HIVE
+apply_tag HIVE
+
 # Define test platforms
 # These special platforms are equivalent to the corresponding -opt versions, but
 # allow customization of the configuration via the special tags target-test,
@@ -1552,7 +1555,7 @@ pattern -global generate_manifest_file \
 tag ATLAS no-pyzip
 
 macro_append pp_cppflags "" \
-      ATLAS " -DATLAS_GAUDI_V21 "
+      ATLAS " -DATLAS_GAUDI_V21 -DATLAS "
 
 macro_append pp_cppflags "" \
       ATLAS&target-opt " -DNDEBUG "
@@ -1587,3 +1590,6 @@ tag lcg-nightlies
 # use $(gaudi_test_policy_use)
 
 tag target-test use-O3
+
+macro_append cppflags "" \
+      HIVE " -std=c++11 "

@@ -49,11 +49,11 @@ public:
   /** Initialization method invoked by the framework. This method is responsible
       for any bookkeeping of initialization required by the framework itself.
   */
-  StatusCode sysInitialize();
+  StatusCode sysInitialize() override;
   /** Finalization method invoked by the framework. This method is responsible
       for any bookkeeping of initialization required by the framework itself.
   */
-  StatusCode sysFinalize();
+  StatusCode sysFinalize() override;
 
   /// The following methods are meant to be implemented by the child class...
 
@@ -151,7 +151,7 @@ public:
   StatusCode getProperty( const std::string& n, std::string& v ) const override;
 
   /// Get all properties.
-  const std::vector<Property*>& getProperties( ) const;
+  const std::vector<Property*>& getProperties( ) const override;
 
   /// Implementation of IProperty::hasProperty
   bool hasProperty(const std::string& name) const override;

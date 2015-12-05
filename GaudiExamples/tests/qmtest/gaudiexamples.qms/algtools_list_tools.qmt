@@ -26,6 +26,7 @@ expected = ['ToolSvc.MyTool',
             'MyGaudiAlg.ToolWithName',
             'MyGaudiAlg.PrivToolHandle',
             'ToolSvc.TestPubToolHandle',
+            'ToolSvc.GenericToolHandle',
             'ToolSvc.ToolA',
             'ToolSvc.ToolB',
             ]

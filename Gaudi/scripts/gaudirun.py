@@ -192,7 +192,6 @@ if __name__ == "__main__":
         parser.add_option("--preload", action="append",
                           help="Allow pre-loading of special libraries (e.g. Google "
                                "profiling libraries).")
-
         # Option to use a profiler
         parser.add_option("--profilerName", type="string",
                           help="Select one profiler among: igprofPerf, igprofMem and valgrind<toolname>")

@@ -148,7 +148,7 @@ void RecordDataSvc::registerRecord(const string& data, IOpaqueAddress* pAddr)   
     }
     m_incidents.push_back(pAddr->registry()->identifier());
   }
-  else if ( !data.empty() && 0 == pAddr ) {
+  else if ( !data.empty() && !pAddr ) {
     MsgStream log(msgSvc(),name());
     log << MSG::INFO << "Failed to register record for:" << data << " [Invalid Address]" << endmsg;
   }

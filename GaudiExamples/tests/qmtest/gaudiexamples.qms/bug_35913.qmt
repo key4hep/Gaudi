@@ -14,9 +14,13 @@ h.Histo1 = ('MyHistogram',-1,1,100)
 h.Histo1 = ('MyHistogram',-5,5,500)
 </text></argument>
 <argument name="validator"><text>
+from Gaudi.Configuration import *
+
 conf_dict = eval('\n'.join(stdout.splitlines()))
 expected = {'Gaudi::Examples::HistoProps':
-                {'Histo1': ('MyHistogram', -5, 5, 500)}}
+                {'Histo1': ('MyHistogram', -5, 5, 500),
+                 'DataInputs': DataObjectDescriptorCollection(''),
+                 'DataOutputs': DataObjectDescriptorCollection('')}}
 
 if conf_dict != expected:
     causes.append("configuration result")

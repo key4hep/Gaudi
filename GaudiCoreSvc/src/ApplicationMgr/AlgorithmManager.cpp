@@ -41,12 +41,15 @@ StatusCode AlgorithmManager::removeAlgorithm(IAlgorithm* alg) {
 StatusCode AlgorithmManager::createAlgorithm( const std::string& algtype,
                                               const std::string& algname,
                                               IAlgorithm*& algorithm,
-                                              bool managed)
+                                              bool managed,
+                                              bool checkIfExists)
 {
   // Check is the algorithm is already existing
-  if( existsAlgorithm( algname ) ) {
-    // return an error because an algorithm with that name already exists
-    return StatusCode::FAILURE;
+  if (checkIfExists) {
+    if( existsAlgorithm( algname ) ) {
+      // return an error because an algorithm with that name already exists
+      return StatusCode::FAILURE;
+    }
   }
   std::string actualalgtype(algtype);
   // a '\' in front of the type name prevents alias replacement
@@ -76,6 +79,8 @@ StatusCode AlgorithmManager::createAlgorithm( const std::string& algtype,
     return StatusCode::FAILURE;
   }
   m_algs.emplace_back(algorithm, managed);
+  // let the algorithm know its type
+  algorithm->setType(algtype);
   // this is needed to keep the reference count correct, since isValidInterface(algorithm)
   // implies an increment of the counter by 1
   algorithm->release();

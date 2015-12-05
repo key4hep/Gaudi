@@ -33,22 +33,9 @@ namespace Gaudi {
     /// Standard constructor
     RootRef()     {  this->reset(); }
     /// Copy constructor
-    RootRef(const RootRef& c) 
-      : dbase(c.dbase),container(c.container),link(c.link),clid(c.clid),svc(c.svc),entry(c.entry)
-    {
-    }
+    RootRef(const RootRef& c) = default;
     /// Assignment operator
-    RootRef& operator=(const RootRef& c)  {
-      if ( this != &c )  {
-	dbase     = c.dbase;
-	container = c.container;
-	link      = c.link;
-	clid      = c.clid;
-	svc       = c.svc;
-	entry     = c.entry;
-      }
-      return *this;
-    }
+    RootRef& operator=(const RootRef& c)  = default;
     /// Reset data content
     void reset() {
       dbase     = -1;
@@ -75,17 +62,9 @@ namespace Gaudi {
     std::vector<RootRef>   refs;
     
     /// Default constructor
-    RootObjectRefs() {}
-    /// Copy constructor
-    RootObjectRefs(const RootObjectRefs& r) : links(r.links), refs(r.refs) {}
+    RootObjectRefs() = default;
     /// Default destructor
-    ~RootObjectRefs() {}
-    /// Assignment operator
-    RootObjectRefs& operator=(const RootObjectRefs& r) {
-      links = r.links;
-      refs = r.refs; 
-      return *this;
-    }
+    ~RootObjectRefs() = default;
   };
 
   /** @class RootNTupleDescriptor RootRefs.h RootCnv/RootRefs.h
@@ -105,9 +84,9 @@ namespace Gaudi {
     /// Class ID of the described object
     unsigned long clid;
     /// Standard constructor
-    RootNTupleDescriptor() {}
+    RootNTupleDescriptor() = default;
     /// Standard destructor
-    virtual ~RootNTupleDescriptor() {}
+    virtual ~RootNTupleDescriptor() = default;
   };
 }
 

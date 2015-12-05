@@ -116,7 +116,7 @@ void GaudiUtils::AllocatorPool::Grow()
   // Allocate new chunk, organize it as a linked list of
   // elements of size 'esize'
   //
-  PoolChunk* n = new PoolChunk(csize);
+  auto  n = new PoolChunk(csize);
   n->next = chunks;
   chunks = n;
   ++nchunks;

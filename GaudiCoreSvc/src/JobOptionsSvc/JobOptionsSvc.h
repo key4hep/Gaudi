@@ -61,8 +61,8 @@ class JobOptionsSvc : public extends2<Service, IProperty, IJobOptionsSvc> {
       const std::string& path = "" ) override;
 
   /// IProperty implementation (needed for initialisation)
-  StatusCode setProperty(const Property& p);
-  StatusCode getProperty(Property *p) const;
+  StatusCode setProperty(const Property& p) override;
+  StatusCode getProperty(Property *p) const override;
  private:
   void fillServiceCatalog(const Gaudi::Parsers::Catalog& catalog);
   void dump (const std::string& file,
@@ -75,6 +75,8 @@ class JobOptionsSvc : public extends2<Service, IProperty, IJobOptionsSvc> {
   std::string m_source_type;
   std::string m_dir_search_path;
   std::string m_dump;
+  std::string m_pythonAction;
+  std::string m_pythonParams;
   SvcCatalog  m_svc_catalog;
 };
 #endif /* JOBOPTIONSSVC_H_ */

@@ -89,7 +89,7 @@ public:
   void eraseStream( std::ostream* stream ) override;
 
   // Implementation of IMessageSvc::desaultStream()
-  std::ostream* defaultStream() const {
+  std::ostream* defaultStream() const override {
     return m_defaultStream;
   }
 
@@ -123,6 +123,13 @@ public:
   // Implementation of IInactiveMessageCounter::incrInactiveCount()
   void incrInactiveCount( MSG::Level level,
 				  const std::string& src ) override;
+
+protected:
+  /// Internal implementation of reportMessage(const Message&,int) without lock.
+  virtual void i_reportMessage( const Message& msg, int outputLevel );
+
+  /// Internal implementation of reportMessage(const StatusCode&,const std::string&) without lock.
+  virtual void i_reportMessage( const StatusCode& code, const std::string& source);
 
 
 private:

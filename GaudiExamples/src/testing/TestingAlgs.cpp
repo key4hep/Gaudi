@@ -63,7 +63,7 @@ namespace GaudiTesting {
           "Signal to raise");
     }
     ~SignallingAlg() override = default;
-    StatusCode execute(){
+    StatusCode execute() override {
       if (m_eventCount <= 0) {
         info() << "Raising signal now" << endmsg;
         std::raise(m_signal);

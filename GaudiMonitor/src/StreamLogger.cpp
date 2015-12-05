@@ -15,8 +15,8 @@ StreamLogger::StreamLogger(IMessageSvc *svc, MSG::Level lev):
 { }
 
 StreamLogger::StreamLogger(std::ostream& ost):
-    m_name{ ost == std::cerr ? "STDERR" : 
-            ost == std::cout ? "STDOUT" :
+    m_name{ &ost == &std::cerr ? "STDERR" :
+            &ost == &std::cout ? "STDOUT" :
             "unknown ostream" },
     m_ost{ &ost }
 { }

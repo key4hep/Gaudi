@@ -59,7 +59,7 @@ public:
     NUM_LEVELS
   };
 
-  IssueSeverity() = default;
+  IssueSeverity() {}
   IssueSeverity( IssueSeverity::Level level, int line,
                  std::string file,
                  std::string msg="");

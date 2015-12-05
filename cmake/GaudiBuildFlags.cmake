@@ -1,16 +1,27 @@
-# Special defaults
-if (LCG_COMPVERS VERSION_LESS "47")
-  set(GAUDI_CXX_STANDARD_DEFAULT "c++98")
-elseif(LCG_COMPVERS VERSION_LESS "49")
-  # C++11 is enable by default on 4.7 <= gcc < 4.9
-  set(GAUDI_CXX_STANDARD_DEFAULT "c++11")
-elseif(LCG_COMPVERS VERSION_LESS "51")
-  # C++1y (C++14 preview) is enable by default on 4.9 <= gcc < 5.1
-  set(GAUDI_CXX_STANDARD_DEFAULT "c++1y")
-else()
-  # C++14 is enable by default on gcc >= 5.1
+# define a minimun default version
+set(GAUDI_CXX_STANDARD_DEFAULT "c++11")
+# overriddend depending on the compiler
+if (LCG_COMP STREQUAL "clang" AND LCG_COMPVERS VERSION_EQUAL "37")
   set(GAUDI_CXX_STANDARD_DEFAULT "c++14")
+elseif(LCG_COMP STREQUAL "gcc")
+  # Special defaults
+  if (LCG_COMPVERS VERSION_LESS "47")
+    set(GAUDI_CXX_STANDARD_DEFAULT "c++98")
+  elseif(LCG_COMPVERS VERSION_LESS "49")
+    # C++11 is enable by default on 4.7 <= gcc < 4.9
+    set(GAUDI_CXX_STANDARD_DEFAULT "c++11")
+  elseif(LCG_COMPVERS VERSION_LESS "51")
+    # C++1y (C++14 preview) is enable by default on 4.9 <= gcc < 5.1
+    set(GAUDI_CXX_STANDARD_DEFAULT "c++1y")
+  else()
+    # C++14 is enable by default on gcc >= 5.1
+    set(GAUDI_CXX_STANDARD_DEFAULT "c++14")
+    # we are not ready for the new c++11 ABI (because of llvm in ROOT)
+    add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
+  endif()
 endif()
+# special for GaudiHive
+set(GAUDI_CPP11_DEFAULT ON)
 
 #--- Gaudi Build Options -------------------------------------------------------
 # Build options that map to compile time features
@@ -58,6 +69,7 @@ set(GAUDI_CXX_STANDARD "${GAUDI_CXX_STANDARD_DEFAULT}"
     CACHE STRING "Version of the C++ standard to be used.")
 
 #--- Compilation Flags ---------------------------------------------------------
+add_definitions(-DGOD_NOALLOC)
 if(NOT GAUDI_FLAGS_SET)
   #message(STATUS "Setting cached build flags")
 
@@ -108,7 +120,7 @@ if(NOT GAUDI_FLAGS_SET)
           FORCE)
     endif()
 
-    if (LCG_COMPVERS VERSION_GREATER "47")
+    if (LCG_COMP STREQUAL "gcc" AND LCG_COMPVERS VERSION_GREATER "47")
       # Use -Og with Debug builds in gcc >= 4.8
       set(CMAKE_CXX_FLAGS_DEBUG "-Og -g"
           CACHE STRING "Flags used by the compiler during Debug builds."
@@ -228,6 +240,10 @@ else()
   endif()
 endif()
 
+if(LCG_COMP STREQUAL clang AND LCG_COMPVERS MATCHES "37")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Qunused-arguments -Wno-unused-local-typedefs --gcc-toolchain=${lcg_system_compiler_path}")
+endif()
+
 if(NOT GAUDI_V21)
   if(GAUDI_V22)
     add_definitions(-DGAUDI_V22_API)
@@ -249,7 +265,7 @@ endif()
 if (LCG_HOST_ARCH AND LCG_ARCH)
   # this is valid only in the LCG toolchain context
   if (LCG_HOST_ARCH STREQUAL x86_64 AND LCG_ARCH STREQUAL i686)
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32")
     set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -m32")
     set(GCCXML_CXX_FLAGS "${GCCXML_CXX_FLAGS} -m32")
@@ -262,7 +278,7 @@ endif()
 if(GAUDI_HIDE_WARNINGS)
   if(LCG_COMP MATCHES clang)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated -Wno-overloaded-virtual -Wno-char-subscripts -Wno-unused-parameter")
-  elseif(LCG_COMP STREQUAL gcc AND LCG_COMPVERS MATCHES "4[3-9]|max")
+  else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated -Wno-empty-body")
     if(LCG_COMPVERS MATCHES "48|49|max")
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-local-typedefs")

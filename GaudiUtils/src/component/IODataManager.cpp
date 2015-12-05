@@ -356,7 +356,7 @@ IODataManager::connectDataIO(int typ, IoType rw, CSTR dataset, CSTR technology,b
       if ( fi == m_connectionMap.end() )  {
         connection->setFID(fid);
         connection->setPFN(dsn);
-        Entry* e = new Entry(technology, keep_open, rw, connection);
+        auto  e = new Entry(technology, keep_open, rw, connection);
         // Here we open the file!
         if ( !reconnect(e).isSuccess() )   {
           delete e;

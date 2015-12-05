@@ -32,57 +32,39 @@ SmartDataObjectPtr& SmartDataObjectPtr::operator=(const SmartDataObjectPtr& copy
 
 /// Retrieve the object from the data store. 
 StatusCode SmartDataObjectPtr::retrieve(IRegistry* pRegistry, const std::string& path, DataObject*& refpObject)    {
-  StatusCode status = StatusCode::FAILURE;
-  if ( 0 != m_dataProvider && 0 != pRegistry )    {
-    status = m_dataProvider->retrieveObject(pRegistry, path, refpObject);
-  }
-  return status;
+  return ( m_dataProvider && pRegistry ) ? m_dataProvider->retrieveObject(pRegistry, path, refpObject)
+                                         : StatusCode::FAILURE;
 }
 
 /// Retrieve the object from the data store. 
 StatusCode SmartDataObjectPtr::retrieve(const std::string& fullPath, DataObject*& refpObject)    {
-  StatusCode status = StatusCode::FAILURE;
-  if ( 0 != m_dataProvider )    {
-    status = m_dataProvider->retrieveObject(fullPath, refpObject);
-  }
-  return status;
+  return m_dataProvider ? m_dataProvider->retrieveObject(fullPath, refpObject)
+                        : StatusCode::FAILURE;
 }
 
 /// Retrieve the object from the data store. 
 StatusCode SmartDataObjectPtr::find(IRegistry* pDirectory, const std::string& path, DataObject*& refpObject)    {
-  StatusCode status = StatusCode::FAILURE;
-  if ( 0 != m_dataProvider && 0 != pDirectory )    {
-    status = m_dataProvider->findObject(pDirectory, path, refpObject);
-  }
-  return status;
+  return ( m_dataProvider && pDirectory ) ? m_dataProvider->findObject(pDirectory, path, refpObject)
+                                          : StatusCode::FAILURE;;
 }
 
 /// Retrieve the object from the data store. 
 StatusCode SmartDataObjectPtr::find(const std::string& fullPath, DataObject*& refpObject)    {
-  StatusCode status = StatusCode::FAILURE;
-  if ( 0 != m_dataProvider )    {
-    status = m_dataProvider->findObject(fullPath, refpObject);
-  }
-  return status;
+  return m_dataProvider ? m_dataProvider->findObject(fullPath, refpObject)
+                        : StatusCode::FAILURE;
 }
 
 
 /// update the object from the data store. 
 StatusCode SmartDataObjectPtr::update(IRegistry* pRegistry)    {
-  StatusCode status = StatusCode::FAILURE;
-  if ( 0 != m_dataProvider && 0 != pRegistry )    {
-    status = m_dataProvider->updateObject(pRegistry);
-  }
-  return status;
+  return ( m_dataProvider && pRegistry ) ? m_dataProvider->updateObject(pRegistry)
+                                         : StatusCode::FAILURE;
 }
 
 /// update the object from the data store. 
 StatusCode SmartDataObjectPtr::update(const std::string& fullPath)    {
-  StatusCode status = StatusCode::FAILURE;
-  if ( 0 != m_dataProvider )    {
-    status = m_dataProvider->updateObject(fullPath);
-  }
-  return status;
+  return ( m_dataProvider ) ? m_dataProvider->updateObject(fullPath)
+                            : StatusCode::FAILURE;
 }
 
 /** Object retrieval method.
@@ -91,11 +73,11 @@ StatusCode SmartDataObjectPtr::update(const std::string& fullPath)    {
   directory information present.
 */
 DataObject* SmartDataObjectPtr::retrieveObject()   {
-  DataObject* pObj = 0;
-  m_status = (0==m_pRegistry) ? retrieve(m_path,pObj) : retrieve(m_pRegistry,m_path,pObj);
+  DataObject* pObj = nullptr;
+  m_status = (!m_pRegistry ? retrieve(m_path,pObj) : retrieve(m_pRegistry,m_path,pObj) );
   if ( m_status.isSuccess() )   {
     m_pRegistry = pObj->registry();
-    m_path = "";
+    m_path.clear();
   }
   return pObj;
 }
@@ -106,11 +88,11 @@ DataObject* SmartDataObjectPtr::retrieveObject()   {
     directory information present.
 */
 DataObject* SmartDataObjectPtr::findObject()   {
-  DataObject* pObj = 0;
-  m_status = (0==m_pRegistry) ? find(m_path,pObj) : find(m_pRegistry,m_path,pObj);
+  DataObject* pObj = nullptr;
+  m_status = ( m_pRegistry ? find(m_pRegistry,m_path,pObj) : find(m_path,pObj) );
   if ( m_status.isSuccess() )   {
     m_pRegistry = pObj->registry();
-    m_path = "";
+    m_path.clear();
   }
   return pObj;
 }
@@ -123,8 +105,8 @@ DataObject* SmartDataObjectPtr::findObject()   {
 DataObject* SmartDataObjectPtr::updateObject()   {
   DataObject* pObj = accessData();    // Have to load AND update if not present.
   if ( m_status.isSuccess() )   {
-    m_status = (0 == m_pRegistry) ? update(m_path) : update(m_pRegistry);
-    if ( !m_status.isSuccess() )  pObj = 0;
+    m_status = (!m_pRegistry ? update(m_path) : update(m_pRegistry) );
+    if ( !m_status.isSuccess() )  pObj = nullptr;
   }
   return pObj;
 }
@@ -142,12 +124,7 @@ DataObject* SmartDataObjectPtr::updateObject()   {
     @return           Boolean indicating existence of both objects
 */
 bool operator&& (SmartDataObjectPtr& object_1, SmartDataObjectPtr& object_2)  {
-  if ( 0 != object_1.accessData() )    {      // Test existence of the first object
-    if ( 0 != object_2.accessData() )    {    // Test existence of the second object
-      return true;                            // Fine: Both objects exist
-    }
-  }
-  return false;                               // Tough luck: One is missing.
+  return object_1.accessData() && object_2.accessData();
 }
 
 /** Helper to test Smart data objects efficiently
@@ -167,12 +144,6 @@ bool operator&& (SmartDataObjectPtr& object_1, SmartDataObjectPtr& object_2)  {
     @return           Boolean indicating existence of both objects
 */
 bool operator|| (SmartDataObjectPtr& object_1, SmartDataObjectPtr& object_2)  {
-  if ( 0 != object_1.accessData() )    {      // Test existence of the first object
-    return true;
-  }
-  if ( 0 != object_2.accessData() )    {      // Test existence of the second object
-    return true;
-  }
-  return false;                               // Tough luck: Both are missing.
+  return  object_1.accessData() || object_2.accessData();
 }
 

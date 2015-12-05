@@ -431,8 +431,7 @@ struct MapGrammar : qi::grammar<Iterator,MapT(), Skipper>
         struct result { typedef void type; };
         //----------------------------------------------------------------------
         void operator()(ResultT& res, const VectorPairT& vec) const{
-            for(typename VectorPairT::const_iterator cur = vec.begin();
-                cur != vec.end(); cur++){
+            for(auto cur = vec.begin(); cur != vec.end(); ++cur){
                 res.insert(*cur);
             }
         }
