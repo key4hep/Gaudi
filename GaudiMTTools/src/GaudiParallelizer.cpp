@@ -3,6 +3,7 @@
 #include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/IAlgManager.h"
 #include "GaudiKernel/IJobOptionsSvc.h"
+#include "GaudiKernel/SerializeSTL.h"
 #include "GaudiAlg/ISequencerTimerTool.h"
 
 #include "GaudiParallelizer.h"
@@ -141,14 +142,13 @@ StatusCode GaudiParallelizer::decodeNames(){
   m_entries.clear();
 
   //== Get the "Context" option if in the file...
-  IJobOptionsSvc* jos = svc<IJobOptionsSvc>( "JobOptionsSvc" );
+  auto jos = service<IJobOptionsSvc>( "JobOptionsSvc" );
   bool addedContext = false;  //= Have we added the context ?
   bool addedRootInTES = false;  //= Have we added the rootInTES ?
-  bool addedGlobalTimeOffset = false;  //= Have we added the globalTimeOffset ?
 
 
   //= Get the Application manager, to see if algorithm exist
-  IAlgManager* appMgr = svc<IAlgManager>("ApplicationMgr");
+  auto appMgr = service<IAlgManager>("ApplicationMgr");
   const std::vector<std::string>& nameVector = m_names.value();
   std::vector<std::string>::const_iterator it;
   for ( it = nameVector.begin(); nameVector.end() != it; it++ ) {
@@ -161,50 +161,34 @@ StatusCode GaudiParallelizer::decodeNames(){
     SmartIF<IAlgorithm> myIAlg = appMgr->algorithm(typeName, false); // do not create it now
     if ( !myIAlg.isValid() ) {
       //== Set the Context if not in the jobOptions list
-      if ( ""  != context() ||
-           ""  != rootInTES() ||
-           0.0 != globalTimeOffset() ) {
+      if ( !context().empty() || !rootInTES().empty() ) {
         bool foundContext = false;
         bool foundRootInTES = false;
-        bool foundGlobalTimeOffset = false;
-        const std::vector<const Property*>* properties = jos->getProperties( theName );
-        if ( 0 != properties ) {
+        const auto properties = jos->getProperties( theName );
+        if ( properties ) {
           // Iterate over the list to set the options
-          for ( std::vector<const Property*>::const_iterator itProp = properties->begin();
-               itProp != properties->end();
-               itProp++ )   {
-            const StringProperty* sp = dynamic_cast<const StringProperty*>(*itProp);
-            if ( 0 != sp )    {
-              if ( "Context" == (*itProp)->name() ) {
+          for ( const auto& p : *properties ) {
+              if ( "Context" == p->name() ) {
                 foundContext = true;
               }
-              if ( "RootInTES" == (*itProp)->name() ) {
+              if ( "RootInTES" == p->name() ) {
                 foundRootInTES = true;
               }
-              if ( "GlobalTimeOffset" == (*itProp)->name() ) {
-                foundGlobalTimeOffset = true;
-              }
-            }
           }
         }
-        if ( !foundContext && "" != context() ) {
+        if ( !foundContext && !context().empty() ) {
           StringProperty contextProperty( "Context", context() );
           jos->addPropertyToCatalogue( theName, contextProperty ).ignore();
           addedContext = true;
         }
-        if ( !foundRootInTES && "" != rootInTES() ) {
+        if ( !foundRootInTES && !rootInTES().empty() ) {
           StringProperty rootInTESProperty( "RootInTES", rootInTES() );
           jos->addPropertyToCatalogue( theName, rootInTESProperty ).ignore();
           addedRootInTES = true;
         }
-        if ( !foundGlobalTimeOffset && 0.0 != globalTimeOffset() ) {
-          DoubleProperty globalTimeOffsetProperty( "GlobalTimeOffset", globalTimeOffset() );
-          jos->addPropertyToCatalogue( theName, globalTimeOffsetProperty ).ignore();
-          addedGlobalTimeOffset = true;
-        }
       }
 
-      Algorithm *myAlg = 0;
+      Algorithm *myAlg = nullptr;
       result = createSubAlgorithm( theType, theName, myAlg );
       // (MCl) this should prevent bug #35199... even if I didn't manage to
       // reproduce it with a simple test.
@@ -226,10 +210,6 @@ StatusCode GaudiParallelizer::decodeNames(){
     if ( addedRootInTES ) {
       jos->removePropertyFromCatalogue( theName, "RootInTES" ).ignore();
       addedRootInTES = false;
-    }
-    if ( addedGlobalTimeOffset ) {
-      jos->removePropertyFromCatalogue( theName, "GlobalTimeOffset" ).ignore();
-      addedGlobalTimeOffset = false;
     }
 
     // propagate the sub-algorithm into own state.
@@ -272,30 +252,23 @@ StatusCode GaudiParallelizer::decodeNames(){
     }
 
   }
-
-  release(appMgr).ignore();
-  release(jos).ignore();
-
   //== Print the list of algorithms
   MsgStream& msg = info();
   if ( m_modeOR ) msg << "OR ";
   msg << "Member list: ";
-  std::vector<AlgorithmEntry>::iterator itE;
-  for ( itE = m_entries.begin(); m_entries.end() != itE; itE++ ) {
-    Algorithm* myAlg = (*itE).algorithm();
-    std::string myAlgType = System::typeinfoName( typeid( *myAlg) ) ;
-    if ( myAlg->name() == myAlgType ) {
-      msg << myAlg->name();
-    } else {
-      msg << myAlgType << "/" << myAlg->name();
-    }
-    if ( itE+1 != m_entries.end() ) msg << ", ";
-  }
-  if ( "" != context() ) msg << ", with context '" << context() << "'";
-  if ( "" != rootInTES() ) msg << ", with rootInTES '" << rootInTES() << "'";
-  if ( 0.0 != globalTimeOffset() ) msg << ", with globalTimeOffset " << globalTimeOffset();
+  using GaudiUtils::detail::ostream_joiner;
+  ostream_joiner( msg, m_entries,  ", ", 
+                  [](MsgStream& msg,const AlgorithmEntry& entry) -> MsgStream& {
+                    Algorithm* myAlg = entry.algorithm();
+                    auto myAlgType = System::typeinfoName( typeid(*myAlg) ) ;
+                    if ( myAlg->name() != myAlgType ) {
+                      msg << myAlgType << "/" ;
+                    }
+                    return msg << myAlg->name();
+                  } );
+  if ( !context().empty() ) msg << ", with context '" << context() << "'";
+  if ( !rootInTES().empty() ) msg << ", with rootInTES '" << rootInTES() << "'";
   msg << endmsg;
-
   return final;
 
 }
