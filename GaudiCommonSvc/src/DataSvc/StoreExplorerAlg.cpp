@@ -223,7 +223,7 @@ public:
         if ( isvc )  store_name = isvc->name();
       }
       info() << "========= " << m_rootName << "["
-          << "0x" << std::hex << (unsigned long) root.ptr() << std::dec
+          << std::showbase << std::hex << (unsigned long) root.ptr() << std::dec
           << "@" << store_name << "]:" << endmsg;
       std::vector<bool> flg(1,true);
       explore(root->registry(), flg);
