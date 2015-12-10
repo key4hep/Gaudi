@@ -33,7 +33,7 @@ RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
 RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
 RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
 EvtTupleSvc          INFO Added stream file:PFN:EvtColsEx.tags as EVTCOLS
-Fill              SUCCESS List of ALL properties of Gaudi::Examples::EvtColAlg/Fill  #properties = 65
+Fill              SUCCESS List of ALL properties of Gaudi::Examples::EvtColAlg/Fill  #properties = 64
 Fill              SUCCESS Property ['Name': Value] =  'EvtColDir':Fill
 Fill              SUCCESS Property ['Name': Value] =  'EvtColTopDir':
 Fill              SUCCESS Property ['Name': Value] =  'EvtColLUN':EVTCOLS
@@ -71,7 +71,6 @@ Fill              SUCCESS Property ['Name': Value] =  'UseEfficiencyRowFormat':T
 Fill              SUCCESS Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
 Fill              SUCCESS Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
 Fill              SUCCESS Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-Fill              SUCCESS Property ['Name': Value] =  'GlobalTimeOffset':0.0000000
 Fill              SUCCESS Property ['Name': Value] =  'RootInTES':
 Fill              SUCCESS Property ['Name': Value] =  'Context':
 Fill              SUCCESS Property ['Name': Value] =  'TypePrint':False
