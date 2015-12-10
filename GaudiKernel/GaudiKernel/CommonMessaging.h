@@ -72,18 +72,6 @@ public:
     return m_msgsvc;
   }
 
-#if defined(GAUDI_V20_COMPAT) && !defined(G21_NO_DEPRECATED)
-  /** The standard message service.
-   *  Returns a pointer to the standard message service.
-   *  (Alias to msgSvc())
-   *  \deprecated Will be removed in v29r0, see https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/80
-   */
-  [[deprecated("will be removed in v29r0, use msgSvc() instead, see https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/80")]]
-  inline SmartIF<IMessageSvc>& messageService() const {
-    return msgSvc();
-  }
-#endif
-
   /// Return an uninitialized MsgStream.
   inline MsgStream& msgStream() const {
     if (UNLIKELY((m_createMsgStream))) create_msgStream();
