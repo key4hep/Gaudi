@@ -104,13 +104,10 @@ void Gaudi::pushCurrentDataObject(DataObject** pobjAddr) {
 
 void Gaudi::popCurrentDataObject() {
   static std::vector<DataObject**>& c = objectStack();
-  switch(c.size())  {
-  case 0:
+  if (!c.empty()) {
     s_currObj = c.back();
     c.pop_back();
-    break;
-  default:
+  } else {
     s_currObj = &s_objPtr;
-    break;
   }
 }
