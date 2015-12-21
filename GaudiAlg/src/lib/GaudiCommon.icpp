@@ -211,7 +211,7 @@ StatusCode GaudiCommon<PBASE>::
   m_counterSummarySvc = this->svcLoc()->service("CounterSummarySvc",false);
   if (this->msgLevel(MSG::DEBUG))
   {
-    if (m_counterSummarySvc==NULL )
+    if (!m_counterSummarySvc)
       this->debug() <<  "could not locate CounterSummarySvc, no counter summary will be made" << endmsg;
     else this->debug() <<  "found CounterSummarySvc OK" << endmsg;
   }
@@ -320,11 +320,7 @@ StatusCode GaudiCommon<PBASE>::
   while ( !m_services.empty() ) { sc = releaseSvc( m_services.front() ) && sc; }
 
   //release the CounterSummarySvc manually
-  if(m_counterSummarySvc)
-  {
-    m_counterSummarySvc->release();
-    m_counterSummarySvc=NULL;
-  }
+  m_counterSummarySvc.reset();
 
   // format printout
   if ( !m_errors.empty() || !m_warnings.empty() || !m_exceptions.empty() )
