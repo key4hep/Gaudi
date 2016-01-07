@@ -17,7 +17,14 @@
 #include <vector>
 
 // Force visibility of the classes
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wkeyword-macro"
+#endif
 #define class class GAUDI_API
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 #include "AIDA/IBaseHistogram.h"
 #include "AIDA/IHistogram1D.h"
 #include "AIDA/IHistogram2D.h"

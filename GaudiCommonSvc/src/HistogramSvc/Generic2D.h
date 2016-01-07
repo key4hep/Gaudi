@@ -12,9 +12,13 @@
 #include "TFile.h"
 
 
-/*
- *    Gaudi namespace
- */
+#ifdef __clang__
+#pragma clang diagnostic push
+// Hide warning message:
+// warning: 'XYZ' overrides a member function but is not marked 'override'
+#pragma clang diagnostic ignored "-Winconsistent-missing-override"
+#endif
+
 namespace Gaudi {
 
   /** @class Generic2D Generic2D.h GaudiPI/Generic2D.h
@@ -358,5 +362,10 @@ namespace Gaudi {
     f->Close();
     return nbytes;
   }
-} // end namespace AIDA
+}
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+
 #endif // GAUDIPI_GENERIC2D_H
