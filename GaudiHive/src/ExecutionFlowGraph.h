@@ -328,9 +328,9 @@ public:
     ///
     const std::vector<AlgorithmNode*> getDataIndependentNodes() const;
     /// Retrieve name of the service
-    const std::string& name() const {return m_name;}
+    const std::string& name() const override {return m_name;}
     /// Retrieve pointer to service locator
-    SmartIF<ISvcLocator>& serviceLocator() const {return m_svcLocator;}
+    SmartIF<ISvcLocator>& serviceLocator() const override {return m_svcLocator;}
     ///
     const std::chrono::system_clock::time_point getInitTime() const {return m_initTime;};
     ///
