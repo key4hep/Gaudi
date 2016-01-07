@@ -144,4 +144,9 @@ public:
 
 };
 
+/// Streaming of State values (required by C++11 scoped enums).
+inline std::ostream& operator<<(std::ostream& s, AlgsExecutionStates::State x) {
+  return s << static_cast<unsigned short>(x);
+}
+
 #endif // GAUDIHIVE_ALGSEXECUTIONSTATES_H
