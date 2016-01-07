@@ -61,16 +61,18 @@ Property::Property
 // ============================================================================
 // set new callback for reading
 // ============================================================================
-void  Property::declareReadHandler( std::function<void(Property&)> fun )
+Property&  Property::declareReadHandler( std::function<void(Property&)> fun )
 {
   m_readCallBack = std::move(fun);
+  return *this;
 }
 // ============================================================================
 // set new callback for update
 // ============================================================================
-void  Property::declareUpdateHandler ( std::function<void(Property&)> fun )
+Property&  Property::declareUpdateHandler ( std::function<void(Property&)> fun )
 {
   m_updateCallBack = std::move(fun);
+  return *this;
 }
 // ============================================================================
 // use the call-back function at reading
