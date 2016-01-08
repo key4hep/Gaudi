@@ -677,13 +677,10 @@ class Configurable( object ):
         if not hasattr(self, name):
             return False
         else:
-            try:
-                default = self.getDefaultProperties()[name]
-                if isinstance(default, (list, dict)):
-                    value = getattr(self, name)
-                    return value != default
-            except KeyError:
-                pass # no default found
+            default = self.getDefaultProperty(name)
+            if isinstance(default, (list, dict)):
+                value = getattr(self, name)
+                return value != default
             return True
 
     def getType( cls ):
