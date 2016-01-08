@@ -789,6 +789,7 @@ class Configurable( object ):
         if name in self.__slots__:
             # this is to avoid that the property hides the tool
             setattr(self,name,self.__tools[name])
+        return self.__tools[name]
 
     def _isInSetDefaults( self ):
         return self._inSetDefaults
