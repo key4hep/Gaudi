@@ -14,6 +14,7 @@
 
 #include <ostream>
 #include <vector>
+#include <array>
 #include <list>
 #include <map>
 #include <utility>
@@ -47,6 +48,13 @@ namespace GaudiUtils {
   /// Serialize an std::vector in a python like format. E.g. "[1, 2, 3]".
   template <class T, class ALLOC>
   inline std::ostream& operator<< ( std::ostream& s, const std::vector<T,ALLOC>& v )
+  {
+    return detail::ostream_joiner( s << '[', v, ", " ) << ']';
+  }
+
+  /// Serialize an std::array in a python like format. E.g. "[1, 2, 3]".
+  template <class T, std::size_t N>
+  inline std::ostream& operator<< ( std::ostream& s, const std::array<T,N>& v )
   {
     return detail::ostream_joiner( s << '[', v, ", " ) << ']';
   }
