@@ -232,9 +232,9 @@ namespace concurrency {
 class DataNode {
 public:
     /// Constructor
-    DataNode(ExecutionFlowGraph& /*graph*/, const std::string& path): m_data_object_path(path) {};
+    DataNode(ExecutionFlowGraph& /*graph*/, const std::string& path): m_data_object_path(path) {}
     /// Destructor
-    ~DataNode() {};
+    ~DataNode() {}
     const std::string& getPath() {return m_data_object_path;}
     /// Associate an AlgorithmNode, which is a data supplier for this one
     void addProducerNode(AlgorithmNode* node) {
@@ -273,11 +273,11 @@ public:
     /// Constructor
     ExecutionFlowGraph(const std::string& name, SmartIF<ISvcLocator> svc) :
      m_headNode(0), m_nodeCounter(0), m_svcLocator(svc), m_name(name), m_initTime(std::chrono::high_resolution_clock::now()),
-     m_eventSlots(nullptr) {};
+     m_eventSlots(nullptr) {}
     /// Destructor
     ~ExecutionFlowGraph() override {
       if (m_headNode != 0) delete m_headNode;
-    };
+    }
     /// Initialize graph
     StatusCode initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map);
     StatusCode initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map,
