@@ -283,62 +283,30 @@ StatusCode TupleAlg::execute()
   // ==========================================================================
   Tuple tuple5 = nTuple ( 5 , "Variable-size arrays/vectors" ) ;
 
-  { // fill with the constent of vector
+  { 
     const size_t num = (size_t) poisson() ;
-
-    typedef std::vector<double> Array ;
-    Array array ;
+    std::vector<double> array ;
     std::generate_n ( std::back_inserter( array ) , num , gauss ) ;
-
+    // fill with the content of vector
     tuple5 -> farray ( "arr"         ,
                        array.begin() ,
                        array.end  () ,
                        "Len1"        ,
                        100           ) ;
   }
-
-#ifndef WIN32
-  { // fill with the function of vector
+  { 
     const size_t num = (size_t) poisson() ;
-
-    typedef std::vector<double> Array ;
-    Array array ;
+    std::vector<double> array ;
     std::generate_n ( std::back_inserter( array ) , num , gauss ) ;
-
-    tuple5 -> farray ( "sinar"        ,
-                       useFun ( sin ) ,
-                       "cosar"        ,
-                       useFun ( cos ) ,
-                       "tanar"        ,
-                       useFun ( (double (*)(double))tan ) ,
-                       //
+    // fill with functions of vector
+    tuple5 -> farray ( { { "sinar"        , sin } ,
+                         { "cosar"        , cos } ,
+                         { "tanar"        , tan } },
                        array.begin () ,
                        array.end   () ,
                        "Len2"         ,
                        100            ) ;
   }
-
-#else
-  { // fill with the function of vector
-    const size_t num = (size_t) poisson() ;
-
-    typedef std::vector<double> Array ;
-    Array array ;
-    std::generate_n ( std::back_inserter( array ) , num , gauss ) ;
-
-    tuple5 -> farray ( "sinar"        ,
-                       useFun ( (double (*)(double))sin ) ,
-                       "cosar"        ,
-                       useFun ( (double (*)(double))cos ) ,
-                       "tanar"        ,
-                       useFun ( (double (*)(double))tan ) ,
-                       //
-                       array.begin () ,
-                       array.end   () ,
-                       "Len2"         ,
-                       100            ) ;
-  }
-#endif
 
   tuple5 -> write() ;
 
