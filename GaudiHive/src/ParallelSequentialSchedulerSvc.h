@@ -76,9 +76,6 @@ private:
   /// Cache the list of algs to be executed
   std::list<IAlgorithm*> m_algList;
 
-  /// The context of the event being processed
-  EventContext* m_eventContext;
-
   /// Queue of finished events
   tbb::concurrent_bounded_queue<EventContext*> m_finishedEvents;
 
@@ -99,7 +96,7 @@ private:
     int m_threadPoolSize;
 
    //TBB scheduler
-   tbb::task_scheduler_init* m_tbb_sched;
+   tbb::task_scheduler_init* m_tbb_sched = nullptr;
 
    //control flow manager
    concurrency::ExecutionFlowManager m_controlFlow;

@@ -26,8 +26,7 @@ DECLARE_SERVICE_FACTORY(ParallelSequentialSchedulerSvc)
 
 ParallelSequentialSchedulerSvc::ParallelSequentialSchedulerSvc(
 		const std::string& name, ISvcLocator* svcLoc ):
- base_class(name,svcLoc),
- m_eventContext(nullptr){
+ base_class(name,svcLoc){
 
 	// Will disappear when dependencies are properly propagated into the C++ code of the algos
 	declareProperty("AlgosDependencies", m_algosDependencies);
