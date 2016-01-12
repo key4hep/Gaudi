@@ -38,7 +38,14 @@
 // AIDA
 // ============================================================================
 /// @FIXME: AIDA interfaces visibility
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wkeyword-macro"
+#endif
 #define class class GAUDI_API
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 #include "AIDA/IBaseHistogram.h"
 #undef class
 // ============================================================================
@@ -179,7 +186,7 @@ namespace
   {
     if ( !obj ) { return s_NULL ; }
     auto reg = obj->registry() ;
-    return reg ? reg -> identifier() : obj -> name () ; 
+    return reg ? reg -> identifier() : obj -> name () ;
   }
   // ==========================================================================
   /** check the match of the full name of data object with the pattern
@@ -215,7 +222,7 @@ StatusCode HistogramPersistencySvc::createRep
 
     auto match_pObj = [&](const std::string& s) { return match( pObj , s ); };
     // Empty ConvertHistos property means convert all
-    bool select = ( m_convert.empty()  
+    bool select = ( m_convert.empty()
                     || std::any_of( m_convert.begin(), m_convert.end(), match_pObj )
                   ) && std::none_of( m_exclude.begin(), m_exclude.end(), match_pObj );
     //

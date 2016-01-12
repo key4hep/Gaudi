@@ -64,9 +64,9 @@ namespace concurrency {
     /// Promote all algorithms, ready to be executed, to DataReady state
     void touchReadyAlgorithms(IGraphVisitor& visitor) const;
     /// Retrieve name of the service
-    const std::string& name() const {return m_name;}
+    const std::string& name() const override {return m_name;}
     /// Retrieve pointer to service locator
-    SmartIF<ISvcLocator>& serviceLocator() const {return m_EFGraph->serviceLocator();}
+    SmartIF<ISvcLocator>& serviceLocator() const override {return m_EFGraph->serviceLocator();}
   private:
     std::string m_name;
     /// the control flow graph

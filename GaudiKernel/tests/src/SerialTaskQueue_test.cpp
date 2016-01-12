@@ -7,6 +7,10 @@
 
 #include "GaudiKernel/SerialTaskQueue.h"
 
+// Default serialization of STL containers.
+#include "GaudiKernel/SerializeSTL.h"
+using namespace GaudiUtils;
+
 // from SPI version of the testdriver
 #include <cppunit/extensions/TestFactoryRegistry.h>
 #include <cppunit/TextTestRunner.h>
@@ -26,10 +30,6 @@
 
 // provides macros for the tests
 #include <cppunit/extensions/HelperMacros.h>
-
-// Default serialization of STL containers.
-#include "GaudiKernel/SerializeSTL.h"
-using namespace GaudiUtils;
 
 #include <iostream>
 

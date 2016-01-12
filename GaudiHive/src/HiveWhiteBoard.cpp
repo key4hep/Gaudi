@@ -113,7 +113,7 @@ protected:
 
 public:
   /// IDataManagerSvc: Accessor for root event CLID
-  virtual CLID rootCLID() const {
+  CLID rootCLID() const override {
     return (CLID)m_rootCLID;
   }
   /// Name for root Event
@@ -128,69 +128,69 @@ return s_current->P ? s_current->P->F ARGS : IDataProviderSvc::INVALID_ROOT; }\
 return IDataProviderSvc::INVALID_ROOT;
 
   /// IDataManagerSvc: Register object address with the data store.
-  virtual StatusCode registerAddress(const std::string& path, IOpaqueAddress* pAddr)   {
+  StatusCode registerAddress(const std::string& path, IOpaqueAddress* pAddr) override   {
     _CALL(dataManager, registerAddress, (path, pAddr));
   }
   /// IDataManagerSvc: Register object address with the data store.
-  virtual StatusCode registerAddress(DataObject* parent, const std::string& path, IOpaqueAddress* pAddr)  {
+  StatusCode registerAddress(DataObject* parent, const std::string& path, IOpaqueAddress* pAddr) override  {
     _CALL(dataManager, registerAddress, (parent, path, pAddr));
   }
   /// IDataManagerSvc: Register object address with the data store.
-  virtual StatusCode registerAddress(IRegistry* parent, const std::string& path, IOpaqueAddress* pAdd)  {
+  StatusCode registerAddress(IRegistry* parent, const std::string& path, IOpaqueAddress* pAdd) override  {
     _CALL(dataManager, registerAddress, (parent, path, pAdd));
   }
   /// IDataManagerSvc: Unregister object address from the data store.
-  virtual StatusCode unregisterAddress(const std::string& path)  {
+  StatusCode unregisterAddress(const std::string& path) override  {
     _CALL(dataManager, unregisterAddress, (path));
   }
   /// IDataManagerSvc: Unregister object address from the data store.
-  virtual StatusCode unregisterAddress(DataObject* pParent, const std::string& path)  {
+  StatusCode unregisterAddress(DataObject* pParent, const std::string& path) override  {
     _CALL(dataManager, unregisterAddress, (pParent, path));
   }
   /// IDataManagerSvc: Unregister object address from the data store.
-  virtual StatusCode unregisterAddress(IRegistry* pParent, const std::string& path)  {
+  StatusCode unregisterAddress(IRegistry* pParent, const std::string& path) override  {
     _CALL(dataManager, unregisterAddress, (pParent, path));
   }
   /// Explore the object store: retrieve all leaves attached to the object
-  virtual StatusCode objectLeaves(const DataObject*  pObject, std::vector<IRegistry*>& leaves)  {
+  StatusCode objectLeaves(const DataObject*  pObject, std::vector<IRegistry*>& leaves) override  {
     _CALL(dataManager, objectLeaves, (pObject, leaves));
   }
   /// Explore the object store: retrieve all leaves attached to the object
-  virtual StatusCode objectLeaves(const IRegistry* pObject, std::vector<IRegistry*>& leaves)  {
+  StatusCode objectLeaves(const IRegistry* pObject, std::vector<IRegistry*>& leaves) override  {
     _CALL(dataManager, objectLeaves, (pObject, leaves));
   }
   /// IDataManagerSvc: Explore the object store: retrieve the object's parent
-  virtual StatusCode objectParent(const DataObject* pObject, IRegistry*& refpParent)  {
+  StatusCode objectParent(const DataObject* pObject, IRegistry*& refpParent) override  {
     _CALL(dataManager, objectParent, (pObject, refpParent));
   }
   /// IDataManagerSvc: Explore the object store: retrieve the object's parent
-  virtual StatusCode objectParent(const IRegistry* pObject, IRegistry*& refpParent)  {
+  StatusCode objectParent(const IRegistry* pObject, IRegistry*& refpParent) override  {
     _CALL(dataManager, objectParent, (pObject, refpParent));
   }
   /// Remove all data objects below the sub tree identified
-  virtual StatusCode clearSubTree(const std::string& path)  {
+  StatusCode clearSubTree(const std::string& path) override  {
     _CALL(dataManager, clearSubTree, (path));
   }
   /// Remove all data objects below the sub tree identified
-  virtual StatusCode clearSubTree(DataObject* pObject)  {
+  StatusCode clearSubTree(DataObject* pObject) override  {
     _CALL(dataManager, clearSubTree, (pObject));
   }
   /// IDataManagerSvc: Remove all data objects in the data store.
-  virtual StatusCode clearStore()  {
+  StatusCode clearStore() override  {
     for(auto& p: m_partitions) p.dataManager->clearStore().ignore();
     return StatusCode::SUCCESS;
   }
 
   /// Analyze by traversing all data objects below the sub tree
-  virtual StatusCode traverseSubTree(const std::string& path, IDataStoreAgent* pAgent)  {
+  StatusCode traverseSubTree(const std::string& path, IDataStoreAgent* pAgent) override  {
     _CALL(dataManager, traverseSubTree, (path, pAgent));
   }
   /// IDataManagerSvc: Analyze by traversing all data objects below the sub tree
-  virtual StatusCode traverseSubTree(DataObject* pObject, IDataStoreAgent* pAgent)  {
+  StatusCode traverseSubTree(DataObject* pObject, IDataStoreAgent* pAgent) override  {
     _CALL(dataManager, traverseSubTree, (pObject, pAgent));
   }
   /// IDataManagerSvc: Analyze by traversing all data objects in the data store.
-  virtual StatusCode traverseTree( IDataStoreAgent* pAgent )  {
+  StatusCode traverseTree( IDataStoreAgent* pAgent ) override  {
     _CALL(dataManager, traverseTree, (pAgent));
   }
   /** Initialize data store for new event by giving new event path and root
@@ -223,32 +223,32 @@ return IDataProviderSvc::INVALID_ROOT;
     return SUCCESS;
   }
   /// Add an item to the preload list
-  virtual StatusCode addPreLoadItem(const DataStoreItem& item)    {
+  StatusCode addPreLoadItem(const DataStoreItem& item) override    {
     for(auto& p: m_partitions) p.dataProvider->addPreLoadItem(item);
     return StatusCode::SUCCESS;
   }
   /// Add an item to the preload list
-  virtual StatusCode addPreLoadItem(const std::string& item)   {
+  StatusCode addPreLoadItem(const std::string& item) override   {
     for(auto& p: m_partitions) p.dataProvider->addPreLoadItem(item);
     return StatusCode::SUCCESS;
   }
   /// Remove an item from the preload list
-  virtual StatusCode removePreLoadItem(const DataStoreItem& item)  {
+  StatusCode removePreLoadItem(const DataStoreItem& item) override  {
     for(auto& p: m_partitions) p.dataProvider->removePreLoadItem(item);
     return StatusCode::SUCCESS;
   }
   /// Add an item to the preload list
-  virtual StatusCode removePreLoadItem(const std::string& item)  {
+  StatusCode removePreLoadItem(const std::string& item) override  {
     for(auto& p: m_partitions) p.dataProvider->removePreLoadItem(item);
     return StatusCode::SUCCESS;
   }
   /// Clear the preload list
-  virtual StatusCode resetPreLoad() {
+  StatusCode resetPreLoad() override {
     for(auto& p: m_partitions) p.dataProvider->resetPreLoad();
     return StatusCode::SUCCESS;
   }
   /// load all preload items of the list
-  virtual StatusCode preLoad()  {
+  StatusCode preLoad() override  {
     wbMutex::scoped_lock lock; lock.acquire(s_current->storeMutex);
     StatusCode sc = s_current->dataProvider->preLoad();
     DataAgent da(s_current->newDataObjects);
@@ -256,7 +256,7 @@ return IDataProviderSvc::INVALID_ROOT;
     return sc;
   }
   /// Register object with the data store.  (The most common one is the only monitored one for the time being....)
-  virtual StatusCode registerObject(const std::string& path, DataObject* pObj)  {
+  StatusCode registerObject(const std::string& path, DataObject* pObj) override  {
     wbMutex::scoped_lock lock; lock.acquire(s_current->storeMutex);
     StatusCode sc = s_current->dataProvider->registerObject(path, pObj);
     if( sc.isSuccess()) {
@@ -265,143 +265,143 @@ return IDataProviderSvc::INVALID_ROOT;
     return sc;
   }
   /// Register object with the data store.
-  virtual StatusCode registerObject(const std::string& parent, const std::string& obj, DataObject* pObj)  {
+  StatusCode registerObject(const std::string& parent, const std::string& obj, DataObject* pObj) override  {
     _CALL(dataProvider, registerObject, (parent, obj, pObj));
   }
   /// Register object with the data store.
-  virtual StatusCode registerObject(const std::string& parent, int item, DataObject* pObj)  {
+  StatusCode registerObject(const std::string& parent, int item, DataObject* pObj) override  {
     _CALL(dataProvider, registerObject, (parent, item, pObj));
   }
   /// Register object with the data store.
-  virtual StatusCode registerObject(DataObject* parent, const std::string& obj, DataObject* pObj)  {
+  StatusCode registerObject(DataObject* parent, const std::string& obj, DataObject* pObj) override  {
     _CALL(dataProvider, registerObject, (parent, obj, pObj));
   }
   /// Register object with the data store.
-  virtual StatusCode registerObject(DataObject* parent, int obj, DataObject* pObj)  {
+  StatusCode registerObject(DataObject* parent, int obj, DataObject* pObj) override  {
     _CALL(dataProvider, registerObject, (parent, obj, pObj));
   }
   /// Unregister object from the data store.
-  virtual StatusCode unregisterObject(const std::string& path)   {
+  StatusCode unregisterObject(const std::string& path) override   {
     _CALL(dataProvider, unregisterObject, (path));
   }
   /// Unregister object from the data store.
-  virtual StatusCode unregisterObject(const std::string& parent, const std::string& obj)  {
+  StatusCode unregisterObject(const std::string& parent, const std::string& obj) override  {
     _CALL(dataProvider, unregisterObject, (parent, obj));
   }
   /// Unregister object from the data store.
-  virtual StatusCode unregisterObject(const std::string& parent, int obj)  {
+  StatusCode unregisterObject(const std::string& parent, int obj) override  {
     _CALL(dataProvider, unregisterObject, (parent, obj));
   }
   /// Unregister object from the data store.
-  virtual StatusCode unregisterObject(DataObject* pObj)  {
+  StatusCode unregisterObject(DataObject* pObj) override  {
     _CALL(dataProvider, unregisterObject, (pObj));
   }
   /// Unregister object from the data store.
-  virtual StatusCode unregisterObject(DataObject* pObj, const std::string& path)  {
+  StatusCode unregisterObject(DataObject* pObj, const std::string& path) override  {
     _CALL(dataProvider, unregisterObject, (pObj, path));
   }
   /// Unregister object from the data store.
-  virtual StatusCode unregisterObject(DataObject* pObj, int item )  {
+  StatusCode unregisterObject(DataObject* pObj, int item ) override  {
     _CALL(dataProvider, unregisterObject, (pObj, item));
   }
   /// Retrieve object from data store.
-  virtual StatusCode retrieveObject(IRegistry* parent, const std::string& path, DataObject*& pObj )  {
+  StatusCode retrieveObject(IRegistry* parent, const std::string& path, DataObject*& pObj ) override  {
     _CALL(dataProvider, retrieveObject, (parent, path, pObj));
   }
   /// Retrieve object identified by its full path from the data store.
-  virtual StatusCode retrieveObject(const std::string& path, DataObject*& pObj)  {
+  StatusCode retrieveObject(const std::string& path, DataObject*& pObj) override  {
     _CALL(dataProvider, retrieveObject, (path, pObj));
   }
   /// Retrieve object from data store.
-  virtual StatusCode retrieveObject(const std::string& parent, const std::string& path, DataObject*& pObj )  {
+  StatusCode retrieveObject(const std::string& parent, const std::string& path, DataObject*& pObj ) override  {
     _CALL(dataProvider, retrieveObject, (parent, path, pObj));
   }
   /// Retrieve object from data store.
-  virtual StatusCode retrieveObject(const std::string& parent, int item, DataObject*& pObj)  {
+  StatusCode retrieveObject(const std::string& parent, int item, DataObject*& pObj) override  {
     _CALL(dataProvider, retrieveObject, (parent, item, pObj));
   }
   /// Retrieve object from data store.
-  virtual StatusCode retrieveObject(DataObject* parent, const std::string& path, DataObject*& pObj )  {
+  StatusCode retrieveObject(DataObject* parent, const std::string& path, DataObject*& pObj ) override  {
     _CALL(dataProvider, retrieveObject, (parent, path, pObj));
   }
   /// Retrieve object from data store.
-  virtual StatusCode retrieveObject(DataObject* parent, int item, DataObject*& pObj )  {
+  StatusCode retrieveObject(DataObject* parent, int item, DataObject*& pObj ) override  {
     _CALL(dataProvider, retrieveObject, (parent, item, pObj));
   }
   /// Find object identified by its full path in the data store.
-  virtual StatusCode findObject(const std::string& path, DataObject*& pObj)  {
+  StatusCode findObject(const std::string& path, DataObject*& pObj) override  {
     _CALL(dataProvider, retrieveObject, (path, pObj));
   }
   /// Find object identified by its full path in the data store.
-  virtual StatusCode findObject(IRegistry* parent, const std::string& path, DataObject*& pObj)  {
+  StatusCode findObject(IRegistry* parent, const std::string& path, DataObject*& pObj) override  {
     _CALL(dataProvider, retrieveObject, (parent, path, pObj));
   }
   /// Find object in the data store.
-  virtual StatusCode findObject(const std::string& parent, const std::string& path, DataObject*& pObj)  {
+  StatusCode findObject(const std::string& parent, const std::string& path, DataObject*& pObj) override  {
     _CALL(dataProvider, retrieveObject, (parent, path, pObj));
   }
   /// Find object in the data store.
-  virtual StatusCode findObject(const std::string& parent, int item, DataObject*& pObject ) {
+  StatusCode findObject(const std::string& parent, int item, DataObject*& pObject ) override {
     _CALL(dataProvider, findObject, (parent, item, pObject));
   }
   /// Find object in the data store.
-  virtual StatusCode findObject(DataObject* parent, const std::string& path, DataObject*& pObject)  {
+  StatusCode findObject(DataObject* parent, const std::string& path, DataObject*& pObject) override  {
     _CALL(dataProvider, findObject, (parent, path, pObject));
   }
   /// Find object in the data store.
-  virtual StatusCode findObject(DataObject* parent, int item, DataObject*& pObject)  {
+  StatusCode findObject(DataObject* parent, int item, DataObject*& pObject) override  {
     _CALL(dataProvider, findObject, (parent, item, pObject));
   }
   /// Add a link to another object.
-  virtual StatusCode linkObject(IRegistry* from, const std::string& objPath, DataObject* to)  {
+  StatusCode linkObject(IRegistry* from, const std::string& objPath, DataObject* to) override  {
     _CALL(dataProvider, linkObject, (from, objPath, to));
   }
   /// Add a link to another object.
-  virtual StatusCode linkObject(const std::string& from, const std::string& objPath, DataObject* to)   {
+  StatusCode linkObject(const std::string& from, const std::string& objPath, DataObject* to) override   {
     _CALL(dataProvider, linkObject, (from, objPath, to));
   }
   /// Add a link to another object.
-  virtual StatusCode linkObject(DataObject* from, const std::string& objPath, DataObject* to)  {
+  StatusCode linkObject(DataObject* from, const std::string& objPath, DataObject* to) override  {
     _CALL(dataProvider, linkObject, (from, objPath, to));
   }
   /// Add a link to another object.
-  virtual StatusCode linkObject(const std::string& fullPath, DataObject* to)  {
+  StatusCode linkObject(const std::string& fullPath, DataObject* to) override  {
     _CALL(dataProvider, linkObject, (fullPath, to));
   }
   /// Remove a link to another object.
-  virtual StatusCode unlinkObject(IRegistry* from, const std::string& objPath)  {
+  StatusCode unlinkObject(IRegistry* from, const std::string& objPath) override  {
     _CALL(dataProvider, unlinkObject, (from, objPath));
   }
   /// Remove a link to another object.
-  virtual StatusCode unlinkObject(const std::string& from, const std::string& objPath)  {
+  StatusCode unlinkObject(const std::string& from, const std::string& objPath) override  {
     _CALL(dataProvider, unlinkObject, (from, objPath));
   }
   /// Remove a link to another object.
-  virtual StatusCode unlinkObject(DataObject* from, const std::string& objPath)  {
+  StatusCode unlinkObject(DataObject* from, const std::string& objPath) override  {
     _CALL(dataProvider, unlinkObject, (from, objPath));
   }
   /// Remove a link to another object.
-  virtual StatusCode unlinkObject(const std::string& path) {
+  StatusCode unlinkObject(const std::string& path) override {
     _CALL(dataProvider, unlinkObject, (path));
   }
   /// Update object identified by its directory entry.
-  virtual StatusCode updateObject(IRegistry* pDirectory )  {
+  StatusCode updateObject(IRegistry* pDirectory ) override  {
     _CALL(dataProvider, updateObject, (pDirectory));
   }
   /// Update object.
-  virtual StatusCode updateObject(const std::string& path)  {
+  StatusCode updateObject(const std::string& path) override  {
     _CALL(dataProvider, updateObject, (path));
   }
   /// Update object.
-  virtual StatusCode updateObject(DataObject* pObj )  {
+  StatusCode updateObject(DataObject* pObj ) override  {
     _CALL(dataProvider, updateObject, (pObj));
   }
   /// Update object.
-  virtual StatusCode updateObject(const std::string& parent, const std::string& updatePath )  {
+  StatusCode updateObject(const std::string& parent, const std::string& updatePath ) override  {
     _CALL(dataProvider, updateObject, (parent, updatePath));
   }
   /// Update object.
-  virtual StatusCode updateObject(DataObject* parent, const std::string& updatePath)  {
+  StatusCode updateObject(DataObject* parent, const std::string& updatePath) override  {
     _CALL(dataProvider, updateObject, (parent, updatePath));
   }
 
@@ -410,18 +410,18 @@ return IDataProviderSvc::INVALID_ROOT;
   //
 
   /// Remove all data objects in one 'slot' of the data store.
-  virtual StatusCode clearStore(size_t partition)  {
+  StatusCode clearStore(size_t partition) override  {
     return m_partitions[partition].dataManager->clearStore();
   }
 
   /// Activate a partition object. The  identifies the partition uniquely.
-  virtual StatusCode selectStore(size_t partition) {
+  StatusCode selectStore(size_t partition) override {
       s_current = &m_partitions[partition];
       return StatusCode::SUCCESS;
   }
 
   /// Set the number of event slots (copies of DataSvc objects).
-  virtual StatusCode setNumberOfStores(size_t slots) {
+  StatusCode setNumberOfStores(size_t slots) override {
     if((int)slots != m_slots and
        FSMState() ==  Gaudi::StateMachine::INITIALIZED) {
       warning() << "Too late to change the number of slots!" << endmsg;
@@ -432,12 +432,12 @@ return IDataProviderSvc::INVALID_ROOT;
   }
 
   /// Get the number of event slots (copies of DataSvc objects).
-  virtual size_t getNumberOfStores() {
+  size_t getNumberOfStores() override {
     return m_slots;
   }
 
   /// Get the list of new DataObjects in the current store.
-  virtual StatusCode getNewDataObjects(std::vector<std::string>& products) {
+  StatusCode getNewDataObjects(std::vector<std::string>& products) override {
     wbMutex::scoped_lock lock; lock.acquire(s_current->storeMutex);
     products = s_current->newDataObjects;
     s_current->newDataObjects.clear();
@@ -445,13 +445,13 @@ return IDataProviderSvc::INVALID_ROOT;
   }
 
   /// Check if new DataObjects are in the current store.
-  virtual bool newDataObjectsPresent() {
+  bool newDataObjectsPresent() override {
     wbMutex::scoped_lock lock; lock.acquire(s_current->storeMutex);
     return s_current->newDataObjects.size()!=0;
   }
 
   /// Allocate a store partition for a given event number
-  virtual size_t allocateStore( int evtnumber ) {
+  size_t allocateStore( int evtnumber ) override {
     //size_t free = std::string::npos;
     size_t index = 0;
     for (auto& p : m_partitions ) {
@@ -469,7 +469,7 @@ return IDataProviderSvc::INVALID_ROOT;
   }
 
   /// Free a store partition
-  virtual StatusCode freeStore( size_t partition ) {
+  StatusCode freeStore( size_t partition ) override {
     m_partitions[partition].eventNumber = -1;
     //info() << "Freed slot..." << partition << endmsg;
     return StatusCode::SUCCESS;
@@ -477,7 +477,7 @@ return IDataProviderSvc::INVALID_ROOT;
 
 
   /// Get the partition number corresponding to a given event
-  virtual size_t getPartitionNumber(int eventnumber)  const {
+  size_t getPartitionNumber(int eventnumber)  const override {
     size_t index;
     for (auto& p : m_partitions) {
       if( p.eventNumber == eventnumber) return index;
@@ -520,7 +520,7 @@ return IDataProviderSvc::INVALID_ROOT;
   //
 
   /// Service initialisation
-  virtual StatusCode initialize()  {
+  StatusCode initialize() override  {
     StatusCode sc = Service::initialize();
     if ( !sc.isSuccess() )  {
       error() << "Unable to initialize base class" << endmsg;
@@ -554,7 +554,7 @@ return IDataProviderSvc::INVALID_ROOT;
   }
 
   /// Service initialisation
-  virtual StatusCode reinitialize()   {
+  StatusCode reinitialize() override   {
     StatusCode sc = Service::reinitialize();
     if (!sc.isSuccess()) {
       error() << "Unable to reinitialize base class" << endmsg;
@@ -570,7 +570,7 @@ return IDataProviderSvc::INVALID_ROOT;
   }
 
   /// Service initialisation
-  virtual StatusCode finalize()   {
+  StatusCode finalize() override   {
     setDataLoader(0).ignore();
     clearStore().ignore();
     return Service::finalize();

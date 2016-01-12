@@ -181,14 +181,14 @@ public:
   }
 
   /** Do the real retrieval of the AlgTool. */
-  StatusCode retrieve( T*& algTool ) const {
+  StatusCode retrieve( T*& algTool ) const override {
     IAlgTool* iface = nullptr;
     algTool = i_retrieve(iface) ? dynamic_cast<T*>(iface) : nullptr;
     return algTool ? StatusCode::SUCCESS : StatusCode::FAILURE;
   }
 
   /** Do the real release of the AlgTool. */
-  StatusCode release( T* algTool ) const {
+  StatusCode release( T* algTool ) const override {
     return m_pToolSvc->releaseTool( algTool );
   }
 
