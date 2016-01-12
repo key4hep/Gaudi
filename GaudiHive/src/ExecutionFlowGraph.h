@@ -232,7 +232,7 @@ namespace concurrency {
 class DataNode {
 public:
     /// Constructor
-    DataNode(ExecutionFlowGraph& graph, const std::string& path) : m_graph(&graph), m_data_object_path(path) {};
+    DataNode(ExecutionFlowGraph& /*graph*/, const std::string& path): m_data_object_path(path) {};
     /// Destructor
     ~DataNode() {};
     const std::string& getPath() {return m_data_object_path;}
@@ -251,7 +251,6 @@ public:
     /// Get all data object consumers
     const std::vector<AlgorithmNode*>& getConsumers() const {return m_consumers;}
 private:
-    ExecutionFlowGraph* m_graph;
     std::string m_data_object_path;
     std::vector<AlgorithmNode*> m_producers;
     std::vector<AlgorithmNode*> m_consumers;
