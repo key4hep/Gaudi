@@ -11,7 +11,7 @@
 //#include "GaudiKernel/Auditor.h"
 //#include "GaudiKernel/AlgTool.h"
 //#include "GaudiKernel/ObjectFactory.h"
-
+//
 //// Backwards compatibility dummies
 //#define DECLARE_ALGORITHM(x)  /*dummy*/
 //#define DECLARE_NAMESPACE_ALGORITHM(n,x) /*dummy*/
@@ -33,7 +33,7 @@
 //#define DECLARE_NAMESPACE_TOOL(n,x)    /*dummy*/
 //
 //#define DECLARE_FACTORY_ENTRIES(x) void x##_load()
-//
+
 #endif
 
 #endif // GAUDIKERNEL_DECLAREFACTORYENTRIES_H
