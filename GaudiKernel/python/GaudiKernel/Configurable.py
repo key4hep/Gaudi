@@ -10,6 +10,7 @@ from GaudiKernel.Constants import error_explanation, \
                                   VERBOSE, DEBUG, INFO, WARNING, ERROR, FATAL
 from GaudiKernel.PropertyProxy import PropertyProxy
 from GaudiKernel.GaudiHandles import *
+from GaudiKernel.DataObjectDescriptor import *
 
 ### data ---------------------------------------------------------------------
 __all__ = [ 'Configurable',
@@ -384,6 +385,12 @@ class Configurable( object ):
 
         if attr in self.__tools : return self.__tools[attr]
 
+        if attr in self._properties:
+            if isinstance(self._properties[attr].__get__( self ), DataObjectDescriptor):
+                return self._properties[attr].__get__( self )
+            if isinstance(self._properties[attr].__get__( self ), DataObjectDescriptorCollection):
+                return self._properties[attr].__get__( self )
+
         for c in self.__children:
             if c.getName() == attr:
                 return c
@@ -670,13 +677,10 @@ class Configurable( object ):
         if not hasattr(self, name):
             return False
         else:
-            try:
-                default = self.getDefaultProperties()[name]
-                if isinstance(default, (list, dict)):
-                    value = getattr(self, name)
-                    return value != default
-            except KeyError:
-                pass # no default found
+            default = self.getDefaultProperty(name)
+            if isinstance(default, (list, dict)):
+                value = getattr(self, name)
+                return value != default
             return True
 
     def getType( cls ):
@@ -782,6 +786,7 @@ class Configurable( object ):
         if name in self.__slots__:
             # this is to avoid that the property hides the tool
             setattr(self,name,self.__tools[name])
+        return self.__tools[name]
 
     def _isInSetDefaults( self ):
         return self._inSetDefaults

@@ -8,6 +8,7 @@
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/IIncidentSvc.h"
 #include "GaudiKernel/SmartIF.h"
+#include "GaudiKernel/IConversionSvc.h"
 
 #include <boost/utility/string_ref.hpp>
 
@@ -173,9 +174,9 @@ public:
                                 IOpaqueAddress* pRootAddr);
 
   /** IDataManagerSvc: IDataManagerSvc: Pass a default data loader to the
-   *  service.
+   *  service and optionally a data provider
    */
-  StatusCode setDataLoader( IConversionSvc* svc ) override;
+  StatusCode setDataLoader( IConversionSvc* svc, IDataProviderSvc* dpsvc = nullptr ) override;
 
   /// Add an item to the preload list
   StatusCode addPreLoadItem( const DataStoreItem& item ) override;

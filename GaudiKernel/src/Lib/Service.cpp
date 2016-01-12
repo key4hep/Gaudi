@@ -17,6 +17,7 @@ using std::string;
 #define ON_DEBUG if (UNLIKELY(outputLevel() <= MSG::DEBUG))
 #define ON_VERBOSE if (UNLIKELY(outputLevel() <= MSG::VERBOSE))
 
+
 Service::~Service() {
     if (m_svcManager) m_svcManager->removeService(this).ignore();
 }

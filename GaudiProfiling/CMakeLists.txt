@@ -38,7 +38,7 @@ include_directories(src/component)
 #-----------------------------------
 # PerfMon profiler
 #-----------------------------------
-if(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
+if(UNWIND_FOUND AND CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
   gaudi_add_module(GaudiProfiling src/component/*.cpp
                    LINK_LIBRARIES GaudiKernel z
                    INCLUDE_DIRS unwind)

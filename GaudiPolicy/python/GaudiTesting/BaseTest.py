@@ -825,7 +825,9 @@ lineSkipper = LineSkipper(["//GP:",
                                         r"^ +[0-9]+ \|.*ROOT",
                                         r"^ +[0-9]+ \|.*\|.*Dict",
                                         # Hide success StatusCodeSvc message
-                                        r"StatusCodeSvc.*all StatusCode instances where checked",\
+                                        r"StatusCodeSvc.*all StatusCode instances where checked",
+                                        # Hide EventLoopMgr total timing report
+                                        r"EventLoopMgr.*---> Loop Finished",
                                         # Remove ROOT TTree summary table, which changes from one version to the other
                                         r"^\*.*\*$",
                                         # Remove Histos Summaries
@@ -1094,7 +1096,9 @@ def GetPlatform(self):
        """
    arch = "None"
    # check architecture name
-   if "CMTCONFIG" in os.environ:
+   if "BINARY_TAG" in os.environ:
+       arch = os.environ["BINARY_TAG"]
+   elif "CMTCONFIG" in os.environ:
        arch = os.environ["CMTCONFIG"]
    elif "SCRAM_ARCH" in os.environ:
        arch = os.environ["SCRAM_ARCH"]

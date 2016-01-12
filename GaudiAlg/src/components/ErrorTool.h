@@ -125,7 +125,7 @@ public:
   ( const std::string    & msg                        ,
     const GaudiException & exc                        ,
     const StatusCode       sc  = StatusCode::FAILURE  ) const override
-  { Exception ( msg , exc , sc ) ; }
+  { GaudiTool::Exception ( msg , exc , sc ) ; }
 
   /** Create and (re)-throw the exception
    *  @see GaudiException
@@ -139,7 +139,7 @@ public:
   ( const std::string    & msg                        ,
     const std::exception & exc                        ,
     const StatusCode       sc  = StatusCode::FAILURE  ) const override
-  { Exception ( msg , exc , sc ) ; }
+  { GaudiTool::Exception ( msg , exc , sc ) ; }
 
   /** Create and throw the exception
    *  @see GaudiException
@@ -151,7 +151,7 @@ public:
   void Exception
   ( const std::string& msg = "no message"        ,
     const StatusCode   sc  = StatusCode::FAILURE ) const override
-  { Exception ( msg , sc ) ; }
+  { GaudiTool::Exception ( msg , sc ) ; }
 
 };
 

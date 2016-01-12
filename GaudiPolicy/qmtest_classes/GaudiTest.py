@@ -545,6 +545,9 @@ lineSkipper = LineSkipper(["//GP:",
                                  "INFO  'CnvServices':[", # changed the level of the message from INFO to DEBUG
                                  # The signal handler complains about SIGXCPU not defined on some platforms
                                  'SIGXCPU',
+                                 # FIXME: special lines printed in GaudiHive
+                                 'EventLoopMgr      SUCCESS Event Number = ',
+                                 'EventLoopMgr      SUCCESS ---> Loop Finished',
                                  ],regexps = [
                                  r"^JobOptionsSvc        INFO *$",
                                  r"^#", # Ignore python comments
@@ -570,6 +573,8 @@ lineSkipper = LineSkipper(["//GP:",
                                  r"^ +[0-9]+ \|.*\|.*Dict",
                                  # Hide success StatusCodeSvc message
                                  r"StatusCodeSvc.*all StatusCode instances where checked",
+                                 # Hide EventLoopMgr total timing report
+                                 r"EventLoopMgr.*---> Loop Finished",
                                  # Remove ROOT TTree summary table, which changes from one version to the other
                                  r"^\*.*\*$",
                                  # Remove Histos Summaries

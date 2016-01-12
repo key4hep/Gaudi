@@ -2,6 +2,7 @@
 #define GAUDIKERNEL_IMPLEMENTS_H
 
 #include "GaudiKernel/IInterface.h"
+#include <atomic>
 
 /// Base class used to implement the interfaces.
 template <typename... Interfaces>
@@ -12,16 +13,16 @@ struct GAUDI_API implements: virtual public extend_interfaces<Interfaces...> {
   using extend_interfaces_base = extend_interfaces<Interfaces...>;
   using iids = typename extend_interfaces_base::ext_iids;
 
-public: 
-  /**Implementation of IInterface::i_cast. */ 
-  void *i_cast(const InterfaceID &tid) const override { 
+public:
+  /**Implementation of IInterface::i_cast. */
+  void *i_cast(const InterfaceID &tid) const override {
     return Gaudi::iid_cast(tid,iids{},this);
   }
   /** Implementation of IInterface::queryInterface. */
   StatusCode queryInterface(const InterfaceID &ti, void** pp) override {
     if (!pp) return StatusCode::FAILURE;
     *pp = Gaudi::iid_cast(ti,iids{},this);
-    if (!*pp)  return StatusCode::FAILURE; /* cast failed */ 
+    if (!*pp)  return StatusCode::FAILURE; /* cast failed */
     this->addRef();
     return StatusCode::SUCCESS;
   }
@@ -44,16 +45,16 @@ public:
   /** Release Interface instance                 */
   unsigned long release() override {
     /* Avoid to decrement 0 */
-    auto count = ( m_refCount ? --m_refCount : m_refCount );
+    auto count = ( m_refCount ? --m_refCount : m_refCount.load() );
     if (count == 0) delete this;
     return count;
   }
   /** Current reference count                    */
-  unsigned long refCount() const override { return m_refCount; }
+  unsigned long refCount() const override { return m_refCount.load(); }
 
 protected:
   /** Reference counter                          */
-  unsigned long m_refCount = 0;
+  std::atomic_ulong m_refCount = {0};
 };
 
 

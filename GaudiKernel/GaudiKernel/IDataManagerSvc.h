@@ -18,6 +18,8 @@ class IDataStoreAgent;
 class IOpaqueAddress;
 // Registry entry definition
 class IRegistry;
+// Data provider svc
+class IDataProviderSvc;
 
 /** @class IDataManagerSvc IDataManagerSvc.h GaudiKernel/IDataManagerSvc.h
 
@@ -54,9 +56,11 @@ public:
   /** Pass a default data loader to the service. This service will be
       asked to load non existant data items.
       @param      svc        [IN] Pointer to persistency service instance
+      @param      dpsvc      [IN] Pointer to data provider instance (optional)
       @return                     Status code indicating success or failure
   */
-  virtual StatusCode setDataLoader( IConversionSvc* svc ) = 0;
+  virtual StatusCode setDataLoader( IConversionSvc* svc,
+                                    IDataProviderSvc* dpsvc = nullptr ) = 0;
 
   /** IDataManagerSvc: Explore the object store: retrieve the object's parent.
       The object is identified by its pointer.

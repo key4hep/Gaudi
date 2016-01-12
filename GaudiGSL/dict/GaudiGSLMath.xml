@@ -2,8 +2,6 @@
   <selection>
   <class pattern="GaudiMath::*"       />
   <class pattern="Genfun::GaudiMath*" />
-  <class pattern="IGsl*"              />
-  <class pattern="Gsl*"               />
   </selection>
 
   <exclusion>

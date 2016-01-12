@@ -55,6 +55,7 @@
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/HashMap.h"
 #include "GaudiKernel/GaudiHandle.h"
+#include "GaudiKernel/DataObjectDescriptor.h"
 
 #include "GaudiKernel/Auditor.h"
 #include "GaudiKernel/Service.h"
@@ -115,6 +116,8 @@ class configGenerator
   /// to import GaudiHandles (ie: if one of the components has a XyzHandle<T>)
   bool    m_importGaudiHandles;
 
+  bool m_importDataObjectDescriptors;
+
   /// buffer of generated configurables informations for the "Db" file
   /// The "Db" file is holding informations about the generated configurables
   /// This file is later one used by the PropertyProxy.py to locate
@@ -135,6 +138,7 @@ public:
     m_outputDirName     ( outputDirName ),
     m_pyBuf             ( ),
     m_importGaudiHandles( false ),
+    m_importDataObjectDescriptors( false ),
     m_dbBuf             ( ),
     m_configurable      ( )
   {}
@@ -512,6 +516,7 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
 
     // reset state
     m_importGaudiHandles = false;
+    m_importDataObjectDescriptors = false;
     m_pyBuf.str("");
     m_dbBuf.str("");
 
@@ -715,6 +720,10 @@ void configGenerator::genHeader( std::ostream& py,
     py << "from GaudiKernel.GaudiHandles import *\n";
   }
 
+  if ( m_importDataObjectDescriptors ) {
+     py << "from GaudiKernel.DataObjectDescriptor import *\n";
+   }
+
   genImport(py,boost::format("from %1%.Configurable import *"));
 
   // db file part
@@ -888,6 +897,24 @@ void configGenerator::pythonizeValue( const Property* p,
 
     pvalue = base.pythonRepr();
     ptype  = "GaudiHandleArray";
+  }
+  else if ( ti == typeid(DataObjectDescriptor) ) {
+      m_importDataObjectDescriptors = true;
+      const DataObjectDescriptorProperty& hdl
+        = dynamic_cast<const DataObjectDescriptorProperty&>(*p);
+      const DataObjectDescriptor&     base = hdl.value();
+
+      pvalue = base.pythonRepr();
+      ptype  = "DataDescriptor";
+  }
+  else if ( ti == typeid(DataObjectDescriptorCollection) ) {
+      m_importDataObjectDescriptors = true;
+      const DataObjectDescriptorCollectionProperty& hdl
+        = dynamic_cast<const DataObjectDescriptorCollectionProperty&>(*p);
+      const DataObjectDescriptorCollection&     base = hdl.value();
+
+      pvalue = base.pythonRepr();
+      ptype  = "DataDescriptorCollection";
   }
   else {
     std::ostringstream v_str;

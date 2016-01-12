@@ -43,8 +43,9 @@ GaudiCommon<PBASE>::fullTESLocation( const std::string & location,
            :
              0 == location.find("/Event/") ?
                rootInTES() + location.substr(7)
-             :
-               rootInTES() + location );
+             : location[0] == '/' ?
+            	 rootInTES() + location.substr(1)
+               : rootInTES() + location );
 }
 // ============================================================================
 // Templated access to the data in Gaudi Transient Store
@@ -141,8 +142,8 @@ inline TOOL* GaudiCommon<PBASE>::tool( const std::string& type           ,
   { Exception("tool():: Could not retrieve Tool '" + type + "'/'" + name + "'", sc ) ; }
   if ( !Tool )
   { Exception("tool():: Could not retrieve Tool '" + type + "'/'" + name + "'"     ) ; }
-  // add the tool into list of known tools to be properly released
-  addToToolList( Tool );
+  // insert tool into list of tools
+  PBASE::registerTool(Tool);
   // return *VALID* located tool
   return Tool ;
 }
@@ -166,7 +167,7 @@ inline TOOL* GaudiCommon<PBASE>::tool( const std::string& type   ,
   if ( !Tool )
   { Exception("tool():: Could not retrieve Tool '" + type + "'"     ) ; }
   // add the tool into the list of known tools to be properly released
-  addToToolList( Tool );
+  PBASE::registerTool(Tool);
   // return *VALID* located tool
   return Tool ;
 }

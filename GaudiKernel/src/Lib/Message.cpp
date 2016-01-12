@@ -9,6 +9,7 @@
 #include "GaudiKernel/Message.h"
 #include "GaudiKernel/Timing.h"
 #include "GaudiKernel/Time.h"
+#include "GaudiKernel/ContextSpecificPtr.h"
 
 using namespace MSG;
 
@@ -26,9 +27,25 @@ namespace {
 // Purpose:
 // ---------------------------------------------------------------------------
 //
+Message::Message()
+{
+  m_ecSlot = Gaudi::Hive::currentContextId();
+  m_ecEvt = Gaudi::Hive::currentContextEvt();
+  m_ecThrd = pthread_self();
+}
+
+//#############################################################################
+// ---------------------------------------------------------------------------
+// Routine: Constructor.
+// Purpose:
+// ---------------------------------------------------------------------------
+//
 Message::Message ( const char* src, int type, const char* msg ) :
   m_message( msg ), m_source( src ), m_type( type )
 {
+  m_ecSlot = Gaudi::Hive::currentContextId();
+  m_ecEvt = Gaudi::Hive::currentContextEvt();
+  m_ecThrd = pthread_self();
 }
 
 //#############################################################################
@@ -40,6 +57,9 @@ Message::Message ( const char* src, int type, const char* msg ) :
 Message::Message ( std::string src, int type, std::string msg ) :
   m_message( std::move(msg) ), m_source( std::move(src) ), m_type( type )
 {
+  m_ecSlot = Gaudi::Hive::currentContextId();
+  m_ecEvt = Gaudi::Hive::currentContextEvt();
+  m_ecThrd = pthread_self();
 }
 
 //#############################################################################
@@ -247,6 +267,7 @@ void Message::makeFormattedMsg( const std::string& format ) const
     while( i != format.end() && *i != FORMAT_PREFIX &&
            *i != MESSAGE && *i != TYPE && *i != SOURCE &&
            *i != FILL && *i != WIDTH && *i != TIME && *i != UTIME &&
+           *i != SLOT && *i != EVTNUM && *i != THREAD &&
            *i != JUSTIFY_LEFT && *i != JUSTIFY_RIGHT ) {
       this_format += *i++;
     }
@@ -294,6 +315,44 @@ void Message::decodeFormat( const std::string& format ) const
     case UTIME:
       {
         sizeField( formattedTime ( m_time_format, true ) );
+      }
+      break;
+
+    case THREAD:
+      {
+	std::ostringstream ost;
+	//	ost << "0x" << std::hex << pthread_self();
+	ost << "0x" << std::hex << m_ecThrd;
+	const std::string& thrStr( ost.str() );
+	sizeField( thrStr );
+      }
+      break;
+
+    case SLOT:
+      {
+        if (m_ecEvt >= 0) {
+          std::ostringstream ost;
+          ost << m_ecSlot;
+          const std::string& slotStr (ost.str());
+          sizeField( slotStr );
+        } else {
+          const std::string& slotStr( "" );
+          sizeField( slotStr );
+        }
+      }
+      break;
+
+    case EVTNUM:
+      {
+        if (m_ecEvt >= 0 ) {
+          std::ostringstream ost;
+          ost << m_ecEvt;
+          const std::string& slotStr (ost.str());
+          sizeField( slotStr );
+        } else {
+          const std::string& slotStr( "" );
+          sizeField( slotStr );
+        }
       }
       break;
 
@@ -357,10 +416,10 @@ namespace {
     // Check that a container only contains digits.
     constexpr struct all_digit_t {
         template <typename C>
-        bool operator()(const C& c) const { 
-            return std::all_of( std::begin(c), std::end(c), 
-                                [](typename C::const_reference i) { 
-                                     return isdigit(i); 
+        bool operator()(const C& c) const {
+            return std::all_of( std::begin(c), std::end(c),
+                                [](typename C::const_reference i) {
+                                     return isdigit(i);
             } );
         }
     } all_digits {};

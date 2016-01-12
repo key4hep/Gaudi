@@ -139,6 +139,10 @@ Commit Id: $Format:%H$
 
    See merge request !7
 
+! 2015-07-21 - Marco Clemencic
+ - Fixed some unchecked StatusCode.
+ - Fixed some whitespaces.
+
 =============================== GaudiAlg v15r3 ===============================
 ! 2015-07-09 - Gerhard Raven
  - Fixed GAUDI-996: GaudiSequencer calls resetExecuted of subAlgorithms

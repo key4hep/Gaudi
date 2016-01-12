@@ -55,6 +55,12 @@
 
    See merge request !7
 
+! 2014-07-18 - Illya Shapoval
+ - Catching-up with the previous fix: algorithms list is a thread_specific_ptr.
+
+! 2014-07-18 - Marco Clemencic
+ - Fixed segmentation fault in genconf step in LHCb.
+
 ============================ GaudiCommonSvc v3r5 =============================
 ! 2015-05-21 - Marco Clemencic
  - Fixed compilation with CMT.

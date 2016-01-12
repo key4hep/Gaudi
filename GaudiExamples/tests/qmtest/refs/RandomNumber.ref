@@ -1,4 +1,4 @@
-JobOptionsSvc        INFO # =======> /afs/cern.ch/work/r/raaij/dev-dir/GAUDI/GAUDI_v26r3/GaudiExamples/options/RandomNumber.opts
+JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/RandomNumber.opts
 JobOptionsSvc        INFO # (5,1): AuditorSvc.Auditors = ["ChronoAuditor"]
 JobOptionsSvc        INFO # (12,1): ApplicationMgr.TopAlg = ["RandomNumberAlg"]
 JobOptionsSvc        INFO # (15,1): MessageSvc.OutputLevel = 2
@@ -7,12 +7,12 @@ JobOptionsSvc        INFO # (21,1): ApplicationMgr.EvtSel = "NONE"
 JobOptionsSvc        INFO # (31,1): ApplicationMgr.HistogramPersistency = "ROOT"
 JobOptionsSvc        INFO # (32,1): HistogramPersistencySvc.OutputFile = "histo.root"
 JobOptionsSvc        INFO # (33,1): NTupleSvc.Output = ["FILE1 DATAFILE='NTuple.root' OPT='NEW' TYP='ROOT'"]
-JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/work/r/raaij/dev-dir/GAUDI/GAUDI_v26r3/GaudiExamples/options/RandomNumber.opts
+JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/RandomNumber.opts
 ApplicationMgr      DEBUG Getting my own properties
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr (GaudiCoreSvc v3r5)
-                                          running on lxplus0090.cern.ch on Tue Aug 25 14:01:55 2015
+                                          running on pclhcb117 on Mon Sep 28 17:29:43 2015
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 ServiceManager      DEBUG Initializing service AppMgrRunable
@@ -22,6 +22,10 @@ EventLoopMgr        DEBUG Service base class initialized successfully
 IncidentSvc         DEBUG Service base class initialized successfully
 IncidentSvc         DEBUG Adding [AbortEvent] listener '<unknown>' with priority 0
 EventLoopMgr        DEBUG Creating Top Algorithm RandomNumberAlg with name RandomNumberAlg
+EventDataSvc        DEBUG Service base class initialized successfully
+EventPersistenc...  DEBUG Service base class initialized successfully
+TimelineSvc         DEBUG Service base class initialized successfully
+TimelineSvc         DEBUG initialize
 RndmGenSvc          DEBUG Service base class initialized successfully
 RndmGenSvc.Engine   DEBUG Service base class initialized successfully
 RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
@@ -38,20 +42,20 @@ NTupleSvcConver...  DEBUG Service base class initialized successfully
 NTupleSvc            INFO Added stream file:NTuple.root as FILE1
 RFileCnv             INFO opening Root file "NTuple.root" for writing
 RFileCnv            DEBUG creating ROOT file NTuple.root
-EventDataSvc        DEBUG Service base class initialized successfully
-EventPersistenc...  DEBUG Service base class initialized successfully
+RandomNumberAlg     DEBUG Adding tools for RandomNumberAlg
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
 ApplicationMgr       INFO Application Manager Initialized successfully
 ServiceManager      DEBUG Starting service AppMgrRunable
 ServiceManager      DEBUG Starting service IncidentSvc
+ServiceManager      DEBUG Starting service EventPersistencySvc
+ServiceManager      DEBUG Starting service EventDataSvc
+ServiceManager      DEBUG Starting service TimelineSvc
 ServiceManager      DEBUG Starting service RndmGenSvc
 ServiceManager      DEBUG Starting service RootHistSvc
 ServiceManager      DEBUG Starting service HistogramPersistencySvc
 ServiceManager      DEBUG Starting service HistogramDataSvc
 ServiceManager      DEBUG Starting service NTupleSvc
-ServiceManager      DEBUG Starting service EventPersistencySvc
-ServiceManager      DEBUG Starting service EventDataSvc
 ServiceManager      DEBUG Starting service EventLoopMgr
 ApplicationMgr       INFO Application Manager Started successfully
 RRWNTupleCnv         INFO ID 100: added branch: Event# / Event#/I
@@ -60,14 +64,16 @@ RRWNTupleCnv         INFO ID 100: added branch: Gauss / Gauss/F
 RRWNTupleCnv         INFO ID 100: added branch: Exp / Exp/F
 RRWNTupleCnv         INFO ID 100: added branch: Poisson / Poisson/F
 RRWNTupleCnv         INFO Booked TTree with ID:100 "Hello World"
+EventLoopMgr         INFO ---> Loop Finished -  WSS 116.887 | total time (skipping 1st evt) 12816729 ns
 ServiceManager      DEBUG Stopping service EventLoopMgr
-ServiceManager      DEBUG Stopping service EventDataSvc
-ServiceManager      DEBUG Stopping service EventPersistencySvc
 ServiceManager      DEBUG Stopping service NTupleSvc
 ServiceManager      DEBUG Stopping service HistogramDataSvc
 ServiceManager      DEBUG Stopping service HistogramPersistencySvc
 ServiceManager      DEBUG Stopping service RootHistSvc
 ServiceManager      DEBUG Stopping service RndmGenSvc
+ServiceManager      DEBUG Stopping service TimelineSvc
+ServiceManager      DEBUG Stopping service EventDataSvc
+ServiceManager      DEBUG Stopping service EventPersistencySvc
 ServiceManager      DEBUG Stopping service IncidentSvc
 ServiceManager      DEBUG Stopping service AppMgrRunable
 ApplicationMgr       INFO Application Manager Stopped successfully
@@ -75,8 +81,6 @@ ServiceManager      DEBUG Finalizing service EventLoopMgr
 Destructor Called for RandomNumberAlg
 IncidentSvc         DEBUG Removing [AbortEvent] listener '<unknown>'
 EventLoopMgr         INFO Histograms converted successfully according to request.
-ServiceManager      DEBUG Finalizing service EventDataSvc
-ServiceManager      DEBUG Finalizing service EventPersistencySvc
 ServiceManager      DEBUG Finalizing service NTupleSvc
 RFileCnv             INFO dumping contents of /NTUPLES/FILE1
 TFile: name=NTuple.root, title=Gaudi Trees, option=CREATE
@@ -116,22 +120,26 @@ HistogramPersis...  DEBUG Converted Histos : #4
 ServiceManager      DEBUG Finalizing service RootHistSvc
 RootHistSvc         DEBUG RootHistCnv::PersSvc::finalize()
 ServiceManager      DEBUG Finalizing service RndmGenSvc
+ServiceManager      DEBUG Finalizing service TimelineSvc
+ServiceManager      DEBUG Finalizing service EventDataSvc
+ServiceManager      DEBUG Finalizing service EventPersistencySvc
 ServiceManager      DEBUG Finalizing service IncidentSvc
-IncidentSvc         DEBUG Incident  timing: Mean(+-rms)/Min/Max:0.001(+-0.031607)/0/1[ms] Total:0.004[s]
+IncidentSvc         DEBUG Incident  timing: Mean(+-rms)/Min/Max:0.0005(+-0.0223551)/0/1[ms] Total:0.002[s]
 ServiceManager      DEBUG Finalizing service AppMgrRunable
 ServiceManager      DEBUG Looping over all active services...
-ServiceManager      DEBUG ---- MessageSvc (refCount = 15)
+ServiceManager      DEBUG ---- MessageSvc (refCount = 16)
 ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 3)
 ServiceManager      DEBUG ---- RndmGenSvc.Engine (refCount = 2)
 ServiceManager      DEBUG ---- AppMgrRunable (refCount = 3)
 ServiceManager      DEBUG ---- IncidentSvc (refCount = 2)
+ServiceManager      DEBUG ---- EventPersistencySvc (refCount = 2)
+ServiceManager      DEBUG ---- EventDataSvc (refCount = 3)
+ServiceManager      DEBUG ---- TimelineSvc (refCount = 2)
 ServiceManager      DEBUG ---- RndmGenSvc (refCount = 2)
 ServiceManager      DEBUG ---- RootHistSvc (refCount = 3)
 ServiceManager      DEBUG ---- HistogramPersistencySvc (refCount = 2)
 ServiceManager      DEBUG ---- HistogramDataSvc (refCount = 3)
 ServiceManager      DEBUG ---- NTupleSvc (refCount = 2)
-ServiceManager      DEBUG ---- EventPersistencySvc (refCount = 2)
-ServiceManager      DEBUG ---- EventDataSvc (refCount = 3)
 ServiceManager      DEBUG ---- EventLoopMgr (refCount = 3)
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully

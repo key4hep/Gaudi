@@ -43,6 +43,9 @@ use GaudiProfiling v2r7
 # Multi Processing libraries
 use GaudiMP v3r3
 
+# Hive
+use GaudiHive v2
+
 # Examples packages
 use GaudiExamples   v26r4
 

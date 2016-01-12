@@ -26,7 +26,6 @@
 
 #include "GaudiCoreSvcVersion.h"
 
-
 using System::getEnv;
 using System::isEnvSet;
 
@@ -58,15 +57,17 @@ ApplicationMgr::ApplicationMgr(IInterface*)
 
   // Instantiate component managers
   m_managers[IService::interfaceID().id()] = new ServiceManager(this);
-  AlgorithmManager *algMgr = new AlgorithmManager(this);
-  m_managers[IAlgorithm::interfaceID().id()] = algMgr;
 
+  m_propertyMgr  = new PropertyMgr(this);
   m_svcLocator = svcManager();
 
   // Instantiate internal services
   // SvcLocator/Factory HAS to be already instantiated
   m_classManager = new DLLClassManager(this);
-  m_propertyMgr  = new PropertyMgr(this);
+
+  AlgorithmManager *algMgr = new AlgorithmManager(this);
+  m_managers[IAlgorithm::interfaceID().id()] = algMgr;
+  //  m_managers[IAlgorithm::interfaceID().id()] = new HiveAlgorithmManager(this);
 
   m_propertyMgr->declareProperty("Go",            m_SIGo = 0 );
   m_propertyMgr->declareProperty("Exit",          m_SIExit = 0 );
@@ -92,6 +93,8 @@ ApplicationMgr::ApplicationMgr(IInterface*)
   // Declare Job Options Service properties and set default
   m_propertyMgr->declareProperty("JobOptionsType", m_jobOptionsType = "FILE");
   m_propertyMgr->declareProperty("JobOptionsPath", m_jobOptionsPath = "");
+  m_propertyMgr->declareProperty("JobOptionsPostAction", m_jobOptionsPostAction = "");
+  m_propertyMgr->declareProperty("JobOptionsPreAction", m_jobOptionsPreAction = "");
   m_propertyMgr->declareProperty("EvtMax",         m_evtMax = -1);
   m_propertyMgr->declareProperty("EvtSel",         m_evtsel );
   m_propertyMgr->declareProperty("OutputLevel",    m_outputLevel = MSG::INFO);
@@ -143,8 +146,8 @@ ApplicationMgr::ApplicationMgr(IInterface*)
   m_outStreamType.declareUpdateHandler(&ApplicationMgr::evtLoopPropertyHandler, this);
   m_pluginDebugLevel.declareUpdateHandler(&ApplicationMgr::pluginDebugPropertyHandler, this);
 
-  m_svcMapping.insert( std::end(m_svcMapping), 
-                     { "EvtDataSvc/EventDataSvc", 
+  m_svcMapping.insert( std::end(m_svcMapping),
+                     { "EvtDataSvc/EventDataSvc",
                        "DetDataSvc/DetectorDataSvc",
                        "HistogramSvc/HistogramDataSvc",
                        "HbookCnv::PersSvc/HbookHistSvc",
@@ -195,6 +198,7 @@ StatusCode ApplicationMgr::queryInterface
 // ApplicationMgr::i_startup()
 //============================================================================
 StatusCode ApplicationMgr::i_startup() {
+
   StatusCode  sc;
 
   // declare factories in current module
@@ -222,6 +226,22 @@ StatusCode ApplicationMgr::i_startup() {
   if( !sc.isSuccess() )   {
     fatal() << "Error setting TYPE option in JobOptionsSvc" << endmsg;
     return sc;
+  }
+
+  if ( m_jobOptionsPreAction != "") {
+    sc = jobOptsIProp->setProperty( StringProperty("PYTHONPARAMS", m_jobOptionsPreAction) );
+    if( !sc.isSuccess() ) {
+      fatal() << "Error setting JobOptionsPreAction option in JobOptionsSvc" << endmsg;
+      return sc;
+    }
+  }
+
+  if ( m_jobOptionsPostAction != "") {
+    sc = jobOptsIProp->setProperty( StringProperty("PYTHONACTION", m_jobOptionsPostAction) );
+    if( !sc.isSuccess() ) {
+      fatal() << "Error setting JobOptionsPostAction option in JobOptionsSvc" << endmsg;
+      return sc;
+    }
   }
 
   if ( !m_jobOptionsPath.empty() ) {         // The command line takes precedence
@@ -289,6 +309,7 @@ StatusCode ApplicationMgr::i_startup() {
 // IAppMgrUI implementation: ApplicationMgr::configure()
 //============================================================================
 StatusCode ApplicationMgr::configure() {
+
   // Check if the state is compatible with the transition
   MsgStream tlog( m_messageSvc, name() );
   if( Gaudi::StateMachine::CONFIGURED == m_state ) {

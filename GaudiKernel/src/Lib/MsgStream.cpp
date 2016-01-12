@@ -66,7 +66,7 @@ MsgStream& MsgStream::doOutput()       {
     // This piece of code may throw and we cannot afford it when we print a message
     // in the middle of a catch block.
     if ( isActive() )   {
-      Message msg(m_source,m_currLevel,m_stream.str());
+      const Message msg(m_source, m_currLevel,m_stream.str());
       if ( m_service )   {
         m_service->reportMessage (msg, m_currLevel);
       } else {

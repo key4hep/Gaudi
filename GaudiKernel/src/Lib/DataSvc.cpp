@@ -167,7 +167,7 @@ StatusCode DataSvc::i_setRoot(std::string root_path,
     m_root = new RegEntry(std::move(root_path));
     m_root->makeHard(pRootObj);
     m_root->setDataSvc(this);
-    preLoad().ignore();
+    // No done with GaudiHive. preLoad().ignore();
   }
   return SUCCESS;
 }
@@ -193,15 +193,15 @@ StatusCode DataSvc::i_setRoot(std::string root_path,
     m_root = new RegEntry(std::move(root_path));
     m_root->makeHard(pRootAddr);
     m_root->setDataSvc(this);
-    preLoad().ignore();
+    // Not done with GaudiHive. preLoad().ignore();
   }
   return SUCCESS;
 }
 
 /// IDataManagerSvc: Pass a default data loader to the service.
-StatusCode DataSvc::setDataLoader(IConversionSvc* pDataLoader)    {
-  if ( pDataLoader  )  pDataLoader->setDataProvider(this).ignore();
+StatusCode DataSvc::setDataLoader(IConversionSvc* pDataLoader, IDataProviderSvc* dpsvc) {
   m_dataLoader = pDataLoader;
+  if ( m_dataLoader ) m_dataLoader->setDataProvider(dpsvc ? dpsvc :this).ignore();
   return SUCCESS;
 }
 
@@ -236,7 +236,7 @@ StatusCode DataSvc::objectLeaves( const IRegistry*   pRegistry,
   if ( !checkRoot() )    return INVALID_ROOT;
   const RegEntry* node_entry = CAST_REGENTRY(const RegEntry*,pRegistry);
   if ( !node_entry )     return INVALID_OBJECT;
-  leaves = node_entry->leaves();
+  std::copy(node_entry->leaves().begin(), node_entry->leaves().end(), back_inserter(leaves));
   return StatusCode::SUCCESS;
 }
 
@@ -783,7 +783,7 @@ StatusCode DataSvc::retrieveObject(const std::string& parentPath,
                                    DataObject*& pObject)   {
   DataObject* parent = nullptr;
   StatusCode status = retrieveObject(parentPath, parent);
-  return  status.isSuccess() ? retrieveObject (parent, objectPath, pObject) 
+  return  status.isSuccess() ? retrieveObject (parent, objectPath, pObject)
                              : status;
 }
 
@@ -847,7 +847,7 @@ StatusCode DataSvc::findObject(const std::string& parentPath,
                                DataObject*& pObject)   {
   DataObject* parent = nullptr;
   StatusCode status = findObject(parentPath, parent);
-  return status.isSuccess() ? findObject (parent, objectPath, pObject) 
+  return status.isSuccess() ? findObject (parent, objectPath, pObject)
                             : status;
 }
 

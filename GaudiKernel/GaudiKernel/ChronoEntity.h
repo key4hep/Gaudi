@@ -88,6 +88,9 @@ public:
   /// comparison operator
   bool operator<( const ChronoEntity& entity ) const;
   // ==========================================================================
+  /// Compound assignment operator
+  ChronoEntity& operator+=( const ChronoEntity& entity );
+  // ==========================================================================
 public:
   // ==========================================================================
   /// print the chrono ;

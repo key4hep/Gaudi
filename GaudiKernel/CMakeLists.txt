@@ -4,11 +4,12 @@ gaudi_depends_on_subdirs(GaudiPluginService)
 
 find_package(Boost REQUIRED COMPONENTS filesystem thread system regex)
 find_package(ROOT REQUIRED COMPONENTS Core)
+find_package(TBB)
 
 #---Libraries---------------------------------------------------------------
 gaudi_add_library(GaudiKernel src/Lib/*.cpp
-                  LINK_LIBRARIES ${CMAKE_DL_LIBS} Boost ROOT GaudiPluginService
-                  INCLUDE_DIRS Boost ROOT
+                  LINK_LIBRARIES ${CMAKE_DL_LIBS} Boost ROOT TBB GaudiPluginService
+                  INCLUDE_DIRS Boost ROOT TBB
                   PUBLIC_HEADERS GaudiKernel)
 
 #---Tests-------------------------------------------------------------------
@@ -26,6 +27,10 @@ gaudi_add_unit_test(Parsers_test tests/src/parsers.cpp
                     LINK_LIBRARIES GaudiKernel)
 gaudi_add_unit_test(Memory_test tests/src/Memory_test.cpp
                     LINK_LIBRARIES GaudiKernel)
+gaudi_add_unit_test(SerialTaskQueue_test tests/src/SerialTaskQueue_test.cpp
+                    LINK_LIBRARIES GaudiKernel TBB)
+gaudi_add_unit_test(ContextSpecificPtrTest tests/src/test_ContextSpecificPtr.cpp
+                    LINK_LIBRARIES GaudiKernel TYPE Boost)
 # These are a compile-time tests.
 gaudi_add_unit_test(test_headers_build tests/src/test_headers_build.cpp
                     LINK_LIBRARIES GaudiKernel)

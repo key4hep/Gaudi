@@ -61,6 +61,18 @@ public:
       To be implemented in derived class. */
   virtual std::string pythonRepr() const = 0;
 
+protected:
+
+	/** The component type */
+	void setComponentType(const std::string& componentType) {
+		m_componentType = componentType;
+	}
+
+	/** The name of the parent */
+	void setParentName(const std::string& parent) {
+		m_parentName = parent;
+	}
+
 private:
   //
   // Data members
@@ -183,6 +195,10 @@ public:
     // update ref-counting
     if ( m_pObject ) m_pObject->addRef();
     return *this;
+  }
+
+  ~GaudiHandle(){
+	  //release();
   }
 
   /** Retrieve the component. Release existing component if needed. */
