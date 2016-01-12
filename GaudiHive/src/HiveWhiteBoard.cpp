@@ -477,11 +477,11 @@ return IDataProviderSvc::INVALID_ROOT;
 
 
   /// Get the partition number corresponding to a given event
-  size_t getPartitionNumber(int eventnumber)  const override {
-    size_t index;
+  size_t getPartitionNumber(int eventnumber) const override {
+    size_t index{};
     for (auto& p : m_partitions) {
-      if( p.eventNumber == eventnumber) return index;
-      index++;
+      if (p.eventNumber == eventnumber) return index;
+      ++index;
     }
     return std::string::npos;
   }

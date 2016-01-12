@@ -241,8 +241,13 @@ else()
 endif()
 
 if(LCG_COMP STREQUAL clang AND LCG_COMPVERS MATCHES "37")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Qunused-arguments -Wno-unused-local-typedefs --gcc-toolchain=${lcg_system_compiler_path}")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Qunused-arguments -Wno-missing-braces -Wno-unused-local-typedefs --gcc-toolchain=${lcg_system_compiler_path}")
 endif()
+
+if(LCG_COMP STREQUAL gcc AND NOT LCG_COMPVERS VERSION_LESS "50")
+ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wsuggest-override")
+endif()
+
 
 if(NOT GAUDI_V21)
   if(GAUDI_V22)
