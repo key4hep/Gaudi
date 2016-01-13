@@ -18,7 +18,10 @@ A Gaudi algorithm has also been developped to perform memory heap dumps at vario
 and is configured using the StartFromEventN, StopAtEventN and DumpPeriod, as described
 in the example below.
 
-Run
+A Gaudi service is also available to provide the same functionality, with the advantage
+of being able to profile without modifying the algorithm sequence. 
+
+Running with the JemallocProfile algorithm
 --------------------------------------------------------------------------------
 
 ### Change Options File
@@ -46,6 +49,27 @@ $> gaudirun.py --profilerName=jemalloc --run-info-file=runinfo.json myoptions.py
 Please note the the `--profilerName=jemalloc` to enbale the profiling, and the `--run-info-file` that produces
 a file containing information useful to interpret the results (process id of the Gaudi job, and the absolute path
 of the executable, necessary to run the pprof analysis tool).
+
+Running with the JemallocProfileSvc service 
+--------------------------------------------------------------------------------
+
+### Change Options File
+
+Simple example of using the JemallocProfileSvc service in a Gaudi configurable:
+
+~~~~~~~{.py}
+#!/usr/bin/env gaudirun.py
+from Configurables import JemallocProfileSvc
+#...
+ApplicationMgr().ExtSvc += { "JemallocProfileSvc" } 
+JemallocProfileSvc().StartFromEventN=3
+JemallocProfileSvc().StopAtEventN=7
+JemallocProfileSvc().OutputLevel=DEBUG
+~~~~~~~
+
+### Run the job
+This is identical as for the algorithm version.
+
 
 Analyze
 --------------------------------------------------------------------------------
