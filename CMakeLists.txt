@@ -32,3 +32,8 @@ gaudi_add_test(cmake.CMakeModules
                COMMAND nosetests ${CMAKE_SOURCE_DIR}/cmake/tests)
 gaudi_add_test(cmake.QMTDeps
                COMMAND nosetests --with-doctest ${CMAKE_SOURCE_DIR}/cmake/extract_qmtest_metadata.py)
+
+# Generate binary RPMs from the project for ATLAS:
+if( GAUDI_ATLAS )
+   atlas_cpack_setup()
+endif()
