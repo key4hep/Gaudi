@@ -392,7 +392,7 @@ macro(gaudi_project project version)
           FILES_MATCHING PATTERN "*.py" PATTERN "*.conf")
 
   if (CMAKE_EXPORT_COMPILE_COMMANDS)
-    install(FILES ${CMAKE_BINARY_DIR}/compile_commands.json DESTINATION .)
+    install(FILES ${CMAKE_BINARY_DIR}/compile_commands.json DESTINATION . OPTIONAL)
   endif()
 
   #--- Global actions for the project
