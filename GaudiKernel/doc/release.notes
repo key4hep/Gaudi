@@ -8,6 +8,18 @@ Commit Id: $Format:%H$
 ! 2015-10-29 - Charles Leggett
  - DataObjID: change order of parameters in constructor to ClassID/Key
 
+! 2015-10-22 - Charles Leggett
+ - DataObjID: identification of objects in store via EDS Path or CLID/key
+   with hashing for fast lookup
+ - DataHandles: integration with Algorithms and AlgTools for automatic
+   data dependency registration. Inheritance tree is
+       DataHandle -> DataObjectHandleBase -> DataObjectHandle<T>
+   Enables setting in jobOpts via DataObjectHandleProperty class
+ - ToolHandle: revert private constructor for uniform initialization style of
+   all Handles in constructor of owner.
+ - IThreadPoolSvc, IThreadInitTool abstract interfaces for ThreadPool 
+   initialization, and thread local initialization tools
+
 ! 2015-07-21 - Marco Clemencic
  - Fixed some unchecked StatusCode.
  - Fixed some whitespaces.

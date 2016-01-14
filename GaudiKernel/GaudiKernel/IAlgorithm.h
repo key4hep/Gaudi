@@ -6,8 +6,6 @@
 #include "GaudiKernel/IStateful.h"
 #include <string>
 
-class MinimalDataObjectHandle;
-class DataObjectDescriptorCollection;
 class IAlgTool;
 
 /** @class IAlgorithm IAlgorithm.h GaudiKernel/IAlgorithm.h
@@ -50,13 +48,6 @@ public:
    */
   virtual const std::vector<std::string>& neededResources() const = 0;
     
-  /** The data object handles associated to the algorithm
-   */
-  __attribute__ ((deprecated)) virtual const std::vector<MinimalDataObjectHandle*> handles() = 0;
-  
-  virtual const DataObjectDescriptorCollection & inputDataObjects() const = 0;
-  virtual const DataObjectDescriptorCollection & outputDataObjects() const = 0;
-
   /** The action to be performed by the algorithm on an event. This method is
       invoked once per event for top level algorithms by the application manager.
   */

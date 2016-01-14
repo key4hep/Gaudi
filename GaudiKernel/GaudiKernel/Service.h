@@ -18,6 +18,7 @@
 
 // ============================================================================
 #include <vector>
+#include <mutex>
 // ============================================================================
 // Forward declarations
 // ============================================================================
@@ -314,6 +315,11 @@ protected:
   int  outputLevel() const { return m_outputLevel.value(); }
 
 private:
+
+  void sysInitialize_imp();
+  StatusCode m_initSC;
+  std::once_flag m_initFlag;
+
   /** Service Name  */
   std::string   m_name;
   /** Service Locator reference                  */

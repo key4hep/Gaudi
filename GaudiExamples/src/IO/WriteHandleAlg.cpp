@@ -11,14 +11,16 @@ DECLARE_ALGORITHM_FACTORY(WriteHandleAlg)
 
 //---------------------------------------------------------------------------  
 
-WriteHandleAlg::WriteHandleAlg ( const std::string& name , // the algorithm instance name 
-              ISvcLocator*pSvc ):
-              GaudiAlgorithm ( name , pSvc ){
+WriteHandleAlg::WriteHandleAlg ( const std::string& name , 
+                                 ISvcLocator*pSvc )
+: GaudiAlgorithm ( name , pSvc ),
+  m_output_handle("/Event/MyCollision",Gaudi::DataHandle::Writer,this)
+{
 
       declareProperty("UseHandle", m_useHandle = true, "Specify the usage of the handle to write");
 
       // For Concurrent run
-      declareOutput("Output", m_output_handle);
+  declareProperty("Output", m_output_handle);
     }
 //---------------------------------------------------------------------------
 

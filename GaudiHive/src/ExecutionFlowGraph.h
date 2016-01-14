@@ -259,8 +259,9 @@ private:
 typedef std::unordered_map<std::string,AlgorithmNode*> AlgoNodesMap;
 typedef std::unordered_map<std::string,DecisionNode*> DecisionHubsMap;
 typedef std::unordered_map<std::string,DataNode*> DataNodesMap;
-typedef std::unordered_map<std::string,const DataObjectDescriptorCollection*> AlgoInputsMap;
-typedef std::unordered_map<std::string,const DataObjectDescriptorCollection*> AlgoOutputsMap;
+
+  typedef std::unordered_map<std::string, DataObjIDColl > AlgoInputsMap;
+  typedef std::unordered_map<std::string, DataObjIDColl > AlgoOutputsMap;
 
 class ExecutionFlowManager;
 struct IExecutionFlowGraph {

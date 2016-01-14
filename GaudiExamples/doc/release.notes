@@ -2,6 +2,9 @@ Package GaudiExamples
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2015-10-22 - Charles Leggett
+ - Updated examples and tests for new DataHandles
+
 ============================ GaudiExamples v26r4 =============================
 
 ! 2015-10-07 - commit e3e20a4

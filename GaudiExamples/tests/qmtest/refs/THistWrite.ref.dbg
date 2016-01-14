@@ -1,4 +1,4 @@
-JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/THistWrite.opts
+JobOptionsSvc        INFO # =======> /afs/cern.ch/work/l/leggett/hive/DH/Gaudi/GaudiExamples/options/THistWrite.opts
 JobOptionsSvc        INFO # (5,1): AuditorSvc.Auditors = ["ChronoAuditor"]
 JobOptionsSvc        INFO # (12,1): ApplicationMgr.TopAlg = ["THistWrite"]
 JobOptionsSvc        INFO # (15,1): MessageSvc.OutputLevel = 3
@@ -12,11 +12,11 @@ JobOptionsSvc        INFO # (26,1): THistSvc.Output += ["rec DATAFILE='tuple3.rt
 JobOptionsSvc        INFO # (28,1): THistSvc.PrintAll = 1
 JobOptionsSvc        INFO # (33,1): ApplicationMgr.EvtMax = 20
 JobOptionsSvc        INFO # (34,1): ApplicationMgr.EvtSel = "NONE"
-JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/THistWrite.opts
+JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/work/l/leggett/hive/DH/Gaudi/GaudiExamples/options/THistWrite.opts
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v1r4)
-                                          running on pclhcb117 on Mon Jun 24 11:58:17 2013
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r6)
+                                          running on p05614910w96644.cern.ch on Thu Jan 14 02:26:20 2016
 ====================================================================================================================================[m
 ApplicationMgr    VERBOSE declareMultiSvcType: declared service EvtDataSvc/EventDataSvc[m
 ApplicationMgr    VERBOSE declareMultiSvcType: declared service DetDataSvc/DetectorDataSvc[m

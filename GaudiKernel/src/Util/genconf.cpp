@@ -36,12 +36,6 @@
 #include "boost/format.hpp"
 #include "boost/regex.hpp"
 
-#include <boost/log/core.hpp>
-#include <boost/log/trivial.hpp>
-#include <boost/log/expressions.hpp>
-#include <boost/log/utility/setup/console.hpp>
-#include <boost/log/utility/setup/common_attributes.hpp>
-
 #include "GaudiKernel/System.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IProperty.h"
@@ -55,7 +49,8 @@
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/HashMap.h"
 #include "GaudiKernel/GaudiHandle.h"
-#include "GaudiKernel/DataObjectDescriptor.h"
+#include "GaudiKernel/DataObjectHandleBase.h"
+#include "GaudiKernel/DataObjectHandleProperty.h"
 
 #include "GaudiKernel/Auditor.h"
 #include "GaudiKernel/Service.h"
@@ -78,11 +73,6 @@
 
 namespace po = boost::program_options;
 namespace fs = boost::filesystem;
-
-#define LOG_ERROR    BOOST_LOG_TRIVIAL(error)
-#define LOG_WARNING  BOOST_LOG_TRIVIAL(warning)
-#define LOG_INFO     BOOST_LOG_TRIVIAL(info)
-#define LOG_DEBUG    BOOST_LOG_TRIVIAL(debug)
 
 using namespace std;
 
@@ -116,7 +106,7 @@ class configGenerator
   /// to import GaudiHandles (ie: if one of the components has a XyzHandle<T>)
   bool    m_importGaudiHandles;
 
-  bool m_importDataObjectDescriptors;
+  bool m_importDataObjectHandles;
 
   /// buffer of generated configurables informations for the "Db" file
   /// The "Db" file is holding informations about the generated configurables
@@ -138,7 +128,7 @@ public:
     m_outputDirName     ( outputDirName ),
     m_pyBuf             ( ),
     m_importGaudiHandles( false ),
-    m_importDataObjectDescriptors( false ),
+    m_importDataObjectHandles( false ),
     m_dbBuf             ( ),
     m_configurable      ( )
   {}
@@ -212,39 +202,10 @@ private:
 
 int createAppMgr();
 
-void init_logging(boost::log::trivial::severity_level level)
-{
-    namespace logging = boost::log;
-    namespace keywords = boost::log::keywords;
-    namespace expr = boost::log::expressions;
-
-    logging::add_console_log
-    (
-        std::cout,
-        keywords::format = (
-            expr::stream
-                        << "[" << std::setw(7) << std::left
-                               << logging::trivial::severity
-                        << "] " << expr::smessage
-        )
-    );
-
-    logging::core::get()->set_filter
-    (
-        logging::trivial::severity >= level
-    );
-
-}
-
-
 //--- Command main program-----------------------------------------------------
 int main ( int argc, char** argv )
 //-----------------------------------------------------------------------------
 {
-  init_logging((System::isEnvSet("VERBOSE") && !System::getEnv("VERBOSE").empty())
-               ? boost::log::trivial::info
-               : boost::log::trivial::warning);
-
   fs::path pwd = fs::initial_path();
   fs::path out;
   Strings_t libs;
@@ -335,9 +296,7 @@ int main ( int argc, char** argv )
     po::notify(vm);
   }
   catch ( po::error& err ) {
-    LOG_ERROR
-        << "error detected while parsing command options: "
-        << err.what();
+    cout << "ERROR: error detected while parsing command options: "<< err.what() << endl;
     return EXIT_FAILURE;
   }
 
@@ -351,14 +310,14 @@ int main ( int argc, char** argv )
     pkgName = vm["package-name"].as<string>();
   }
   else {
-    LOG_ERROR << "'package-name' required";
+    cout << "ERROR: 'package-name' required" << endl;
     cout << visible << endl;
     return EXIT_FAILURE;
   }
 
   if( vm.count("user-module") ) {
     userModule = vm["user-module"].as<string>();
-    LOG_INFO << "INFO: will import user module " << userModule;
+    cout << "INFO: will import user module " << userModule << endl;
   }
 
   if( vm.count("input-libraries") ) {
@@ -390,15 +349,16 @@ int main ( int argc, char** argv )
       }
     } //> end loop over input-libraries
     if ( libs.empty() ) {
-      LOG_ERROR << "input component library(ies) required !\n";
-      LOG_ERROR << "'input-libraries' argument was ["
+      cout << "ERROR: input component library(ies) required !\n"
+           << "ERROR: 'input-libraries' argument was ["
            << vm["input-libraries"].as<string>()
-           << "]";
+           << "]"
+           << endl;
       return EXIT_FAILURE;
     }
   }
   else {
-    LOG_ERROR << "input component library(ies) required";
+    cout << "ERROR: input component library(ies) required" << endl;
     cout << visible << endl;
     return EXIT_FAILURE;
   }
@@ -420,7 +380,7 @@ int main ( int argc, char** argv )
       System::ImageHandle tmp; // we ignore the library handle
       unsigned long err = System::loadDynamicLib(*lLib, &tmp);
       if (err != 1) {
-        LOG_WARNING << "failed to load: "<< *lLib;
+        cout << "WARNING: failed to load: "<< *lLib << endl;
       }
     }
   }
@@ -431,18 +391,14 @@ int main ( int argc, char** argv )
       fs::create_directory(out);
     }
     catch ( fs::filesystem_error &err ) {
-      LOG_ERROR << "error creating directory: "<< err.what();
+      cout << "ERROR: error creating directory: "<< err.what() << endl;
       return EXIT_FAILURE;
     }
   }
 
-  {
-    std::ostringstream msg;
-    msg << ":::::: libraries : [ ";
-    copy( libs.begin(), libs.end(), ostream_iterator<string>(msg, " ") );
-    msg << "] ::::::";
-    LOG_INFO << msg.str();
-  }
+  cout << ":::::: libraries : [ ";
+  copy( libs.begin(), libs.end(), ostream_iterator<string>(cout, " ") );
+  cout << "] ::::::" << endl;
 
   configGenerator py( pkgName, out.string() );
   py.setConfigurableModule     (vm["configurable-module"].as<string>());
@@ -469,13 +425,10 @@ int main ( int argc, char** argv )
     initPy << "## Hook for " << pkgName << " genConf module\n" << flush;
   }
 
-  {
-    std::ostringstream msg;
-    msg << ":::::: libraries : [ ";
-    copy( libs.begin(), libs.end(), ostream_iterator<string>(msg, " ") );
-    msg << "] :::::: [DONE]";
-    LOG_INFO << msg.str();
-  }
+  cout << ":::::: libraries : [ ";
+  copy( libs.begin(), libs.end(), ostream_iterator<string>(cout, " ") );
+  cout << "] :::::: [DONE]" << endl;
+
   return sc;
 }
 
@@ -512,11 +465,11 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
   // iterate over all the requested libraries
   for ( Strings_t::const_iterator iLib=libs.begin(); iLib != endLib; ++iLib ) {
 
-    LOG_INFO << ":::: processing library: " << *iLib << "...";
+    std::cout << ":::: processing library: " << *iLib << "..." << std::endl;
 
     // reset state
     m_importGaudiHandles = false;
-    m_importDataObjectDescriptors = false;
+    m_importDataObjectHandles = false;
     m_pyBuf.str("");
     m_dbBuf.str("");
 
@@ -524,7 +477,7 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
     System::ImageHandle handle;
     unsigned long err = System::loadDynamicLib( *iLib, &handle );
     if ( err != 1 ) {
-      LOG_ERROR << System::getLastErrorString();
+      cout << "ERROR: " << System::getLastErrorString() << endl;
       allGood = false;
       continue;
     }
@@ -536,7 +489,7 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
       const string ident = *it;
       if ( bkgNames.find(ident) != bkgNames.end() ) {
         if ( Gaudi::PluginService::Details::logger().level() <= 1 ) {
-          LOG_INFO << "\t==> skipping [" << ident << "]...";
+          cout << "\t==> skipping [" << ident << "]..." << endl;
         }
         continue;
       }
@@ -553,9 +506,9 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
       // from the same library we are processing (i.e. we found a symbol that
       // is coming from a library loaded by the linker).
       if ( !DsoUtils::inDso( info.ptr, DsoUtils::libNativeName(*iLib) ) ) {
-        LOG_WARNING << "library [" << *iLib << "] exposes factory ["
+        cout << "WARNING: library [" << *iLib << "] exposes factory ["
              << ident << "] which is declared in ["
-             << DsoUtils::dsoName(info.ptr) << "] !!";
+             << DsoUtils::dsoName(info.ptr) << "] !!" << endl;
         continue;
       }
 
@@ -586,15 +539,16 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
       }
 
       if ( !known ) {
-        LOG_WARNING << "Unknown (return) type [" << System::typeinfoName(rtype.c_str()) << "] !!"
-             << " Component [" << ident << "] is skipped !";
+        cout << "WARNING: Unknown (return) type [" << System::typeinfoName(rtype.c_str()) << "] !!"
+             << " Component [" << ident << "] is skipped !"
+             << endl;
         continue;
       }
 
-      LOG_INFO << " - component: " << info.className
-               << " (" << (info.className != name ? (name + ": ")
-                                                  : std::string())
-               << type << ")";
+      cout << " - component: " << info.className << " (";
+      if (info.className != name)
+        cout << name << ": ";
+      cout << type << ")" << endl;
 
       string cname = "DefaultName";
       SmartIF<IProperty> prop;
@@ -621,15 +575,15 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
         }
       }
       catch ( exception& e ) {
-        LOG_ERROR << "Error instantiating " << name
-                  << " from " << *iLib;
-        LOG_ERROR << "Got exception: " << e.what();
+        cout << "ERROR: Error instantiating " << name
+             << " from " << *iLib << endl;
+        cout << "ERROR: Got exception: " << e.what() << endl;
         allGood = false;
         continue;
       }
       catch ( ... ) {
-        LOG_ERROR << "Error instantiating " << name
-                  << " from " << *iLib;
+        cout << "ERROR: Error instantiating " << name
+             << " from " << *iLib << endl;
         allGood = false;
         continue;
       }
@@ -639,10 +593,11 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
         }
         prop.reset();
       } else {
-        LOG_ERROR << "could not cast IInterface* object to an IProperty* !";
-        LOG_ERROR << "return type from PluginSvc is [" << rtype << "]...";
-        LOG_ERROR << "NO Configurable will be generated for ["
-                  << name << "] !";
+        cout << "ERROR: could not cast IInterface* object to an IProperty* !\n"
+             << "ERROR: return type from PluginSvc is [" << rtype << "]...\n"
+             << "ERROR: NO Configurable will be generated for ["
+             << name << "] !"
+             << endl;
         allGood = false;
       }
     } //> end loop over factories
@@ -720,8 +675,8 @@ void configGenerator::genHeader( std::ostream& py,
     py << "from GaudiKernel.GaudiHandles import *\n";
   }
 
-  if ( m_importDataObjectDescriptors ) {
-     py << "from GaudiKernel.DataObjectDescriptor import *\n";
+  if ( m_importDataObjectHandles ) {
+    py << "from GaudiKernel.DataObjectHandleBase import *\n";
    }
 
   genImport(py,boost::format("from %1%.Configurable import *"));
@@ -898,23 +853,14 @@ void configGenerator::pythonizeValue( const Property* p,
     pvalue = base.pythonRepr();
     ptype  = "GaudiHandleArray";
   }
-  else if ( ti == typeid(DataObjectDescriptor) ) {
-      m_importDataObjectDescriptors = true;
-      const DataObjectDescriptorProperty& hdl
-        = dynamic_cast<const DataObjectDescriptorProperty&>(*p);
-      const DataObjectDescriptor&     base = hdl.value();
+  else if ( ti == typeid(DataObjectHandleBase) ) {
+      m_importDataObjectHandles = true;
+      const DataObjectHandleProperty& hdl
+        = dynamic_cast<const DataObjectHandleProperty&>(*p);
+      const DataObjectHandleBase&     base = hdl.value();
 
       pvalue = base.pythonRepr();
-      ptype  = "DataDescriptor";
-  }
-  else if ( ti == typeid(DataObjectDescriptorCollection) ) {
-      m_importDataObjectDescriptors = true;
-      const DataObjectDescriptorCollectionProperty& hdl
-        = dynamic_cast<const DataObjectDescriptorCollectionProperty&>(*p);
-      const DataObjectDescriptorCollection&     base = hdl.value();
-
-      pvalue = base.pythonRepr();
-      ptype  = "DataDescriptorCollection";
+      ptype  = "DataObjectHandleBase";
   }
   else {
     std::ostringstream v_str;
@@ -925,7 +871,6 @@ void configGenerator::pythonizeValue( const Property* p,
   }
 }
 
-#include "GaudiKernel/IMessageSvc.h"
 //-----------------------------------------------------------------------------
 int createAppMgr()
 //-----------------------------------------------------------------------------

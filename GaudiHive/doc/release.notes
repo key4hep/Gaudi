@@ -1,6 +1,12 @@
 Package : GaudiKernel
 Commit Id: $Format:%H$
 
+! 2015-10-22 - Charles Leggett
+ - updated schedulers and examples for DataObjID and DataHandles
+ - added ThreadPoolSvc and initialization tools
+ - better debug output for ForwardScheduler when state is dumped
+ - enable partial output of TimelineSvc (in case job does not terminate properly)
+
 ! 2015-02-27 - Marco Clemencic
  - Changed level of some messages in TimelineSvc.
 

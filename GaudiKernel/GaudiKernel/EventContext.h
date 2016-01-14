@@ -21,34 +21,44 @@
 
 class EventContext{
 public:
-  typedef size_t ID_type;
+  typedef size_t ContextID_t;
+  typedef long int ContextEvt_t;
+
+  static const ContextID_t  INVALID_CONTEXT_ID  = 99999;
+  static const ContextEvt_t INVALID_CONTEXT_EVT = -1;
+
 
   EventContext():
-    m_evt_num(-1),
-    m_evt_slot(0),    
+    m_evt_num(INVALID_CONTEXT_EVT),
+    m_evt_slot(INVALID_CONTEXT_ID),    
     m_valid(false),
     m_evt_failed(false){};
-  EventContext(const long int& e, const ID_type& s=0):m_evt_num(e), 
-						     m_evt_slot(s),
-						     m_evt_failed(false){
-    m_valid = (e<0) ? false: true;
+  EventContext(const ContextEvt_t& e, const ContextID_t& s=INVALID_CONTEXT_ID)
+    :m_evt_num(e), m_evt_slot(s), m_evt_failed(false){
+    m_valid = (e<0 || s == INVALID_CONTEXT_ID) ? false: true;
   }
 
-  long int evt() const { return m_evt_num; }
-  ID_type slot() const { return m_evt_slot; }
+  ContextEvt_t evt() const { return m_evt_num; }
+  ContextID_t slot() const { return m_evt_slot; }
   bool valid() const {return m_valid;}
   bool evtFail() const { return m_evt_failed; }
 
-  void set(const long int& e=0, const ID_type& s=0, const bool f=false) {
-    m_valid = (e<0) ? false : true;
+  void set(const ContextEvt_t& e=0, const ContextID_t& s=INVALID_CONTEXT_ID, 
+           const bool f=false) {
+    m_valid = (e<0 || s == INVALID_CONTEXT_ID) ? false : true;
     m_evt_num = e;
     m_evt_slot = s;
     m_evt_failed = f;
   }
 
-  void setEvt(const long int& e) {
-    m_valid = (e<0) ? false : true;
+  void setEvt(const ContextEvt_t& e) {
+    if (e < 0) setValid(false); 
     m_evt_num = e;
+  }
+
+  void setSlot(const ContextID_t& s) {
+    if ( s == INVALID_CONTEXT_ID ) setValid(false); 
+    m_evt_slot = s;
   }
 
   void setFail(const bool& b=true) {
@@ -57,6 +67,10 @@ public:
 
   void setValid(const bool& b=true) {
     m_valid = b;
+    if (!m_valid) {
+      m_evt_slot = INVALID_CONTEXT_ID;
+      m_evt_num =  INVALID_CONTEXT_EVT;
+    }
   }
 
   EventContext& operator=(const EventContext& c) {
@@ -68,8 +82,8 @@ public:
   }
 
 private:
-  long int m_evt_num;
-  ID_type   m_evt_slot;
+  ContextEvt_t m_evt_num;
+  ContextID_t   m_evt_slot;
   bool m_valid;
   bool m_evt_failed;
 };

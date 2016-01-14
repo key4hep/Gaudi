@@ -12,6 +12,7 @@
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/DataObject.h"
+#include "GaudiKernel/DataObjID.h"
 #include "GaudiKernel/DataSvc.h"
 #include "GaudiKernel/ThreadLocalPtr.h"
 #include "tbb/spin_mutex.h"
@@ -41,7 +42,7 @@ namespace {
     SmartIF<IDataProviderSvc>        dataProvider;
     SmartIF<IDataManagerSvc>         dataManager;
     wbMutex               storeMutex;
-    std::vector<std::string> newDataObjects;
+    DataObjIDColl newDataObjects;
     int                      eventNumber;
     Partition() : dataProvider(0), dataManager(0), eventNumber(-1) {}
     Partition(IDataProviderSvc* dp, IDataManagerSvc* dm) : dataProvider(dp), dataManager(dm), eventNumber(-1) {}
@@ -54,13 +55,13 @@ namespace {
   };
   class DataAgent : virtual public IDataStoreAgent  {
   private:
-    std::vector<std::string>& m_dataObjects;
+    DataObjIDColl& m_dataObjects;
   public:
-    DataAgent(std::vector<std::string>& objs) : m_dataObjects(objs) {}
+    DataAgent(DataObjIDColl& objs) : m_dataObjects(objs) {}
     virtual ~DataAgent() {}
     virtual bool analyse(IRegistry* pReg, int )   {
       if (0 != pReg->object()) {
-        m_dataObjects.emplace_back(pReg->identifier());
+        m_dataObjects.insert(DataObjID(pReg->identifier()));
         return true;
       }
       else {
@@ -260,7 +261,7 @@ return IDataProviderSvc::INVALID_ROOT;
     wbMutex::scoped_lock lock; lock.acquire(s_current->storeMutex);
     StatusCode sc = s_current->dataProvider->registerObject(path, pObj);
     if( sc.isSuccess()) {
-      s_current->newDataObjects.push_back(path);
+      s_current->newDataObjects.insert(DataObjID(path));
     }
     return sc;
   }
@@ -437,7 +438,7 @@ return IDataProviderSvc::INVALID_ROOT;
   }
 
   /// Get the list of new DataObjects in the current store.
-  StatusCode getNewDataObjects(std::vector<std::string>& products) override {
+  StatusCode getNewDataObjects(DataObjIDColl& products) {
     wbMutex::scoped_lock lock; lock.acquire(s_current->storeMutex);
     products = s_current->newDataObjects;
     s_current->newDataObjects.clear();
