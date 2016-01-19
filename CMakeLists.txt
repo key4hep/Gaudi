@@ -32,3 +32,14 @@ gaudi_add_test(cmake.CMakeModules
                COMMAND nosetests ${CMAKE_SOURCE_DIR}/cmake/tests)
 gaudi_add_test(cmake.QMTDeps
                COMMAND nosetests --with-doctest ${CMAKE_SOURCE_DIR}/cmake/extract_qmtest_metadata.py)
+
+# Configure how CPack should run:
+find_file( _cpack_config NAMES GaudiCPackSettings.cmake
+   PATHS ${CMAKE_MODULE_PATH} )
+if( _cpack_config )
+   include( ${_cpack_config} )
+else()
+   message( WARNING "Could not find GaudiCPackSettings.cmake" )
+endif()
+unset( _cpack_config )
+mark_as_advanced( _cpack_config )
