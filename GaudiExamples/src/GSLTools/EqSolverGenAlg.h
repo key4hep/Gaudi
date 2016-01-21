@@ -1,7 +1,5 @@
-#ifndef ALGTOOLS_EQSOLVERIALG_H
-#define ALGTOOLS_EQSOLVERIALG_H 1
-
-
+#ifndef ALGTOOLS_EQSOLVERGENALG_H 
+#define ALGTOOLS_EQSOLVERGENALG_H 1
 // Include files
 
 // from Gaudi
@@ -13,7 +11,7 @@
 class IEqSolver;
 
 //-----------------------------------------------------------------------------
-/**  @class EqSolverIAlg EqSolver.h
+/**  @class EqSolverGenAlg EqSolver.h
  *   @file Algorithm file for the class IEqSolver
  *   @see GaudiGSL/IEqSolver.h
  *   @author Kirill Miklyaev kirillm@iris1.itep.ru
@@ -21,13 +19,13 @@ class IEqSolver;
  */
 //-----------------------------------------------------------------------------
 
-class EqSolverIAlg : public Algorithm {
+class EqSolverGenAlg : public Algorithm {
 
 public:
   /// Standard constructor
-  EqSolverIAlg( const std::string& name, ISvcLocator* pSvcLocator );
+  EqSolverGenAlg( const std::string& name, ISvcLocator* pSvcLocator );
 
-  virtual ~EqSolverIAlg( ); ///< Destructor
+  virtual ~EqSolverGenAlg( ); ///< Destructor
 
   virtual StatusCode initialize();    ///< Algorithm initialization
   virtual StatusCode execute   ();    ///< Algorithm execution
@@ -41,4 +39,4 @@ private:
   IEqSolver*   m_publicTool;
 
 };
-#endif // ALGTOOLS_EQSOLVERIALG_H
+#endif // ALGTOOLS_EQSOLVERGENALG_H
