@@ -236,7 +236,7 @@ StatusCode DataSvc::objectLeaves( const IRegistry*   pRegistry,
   if ( !checkRoot() )    return INVALID_ROOT;
   const RegEntry* node_entry = CAST_REGENTRY(const RegEntry*,pRegistry);
   if ( !node_entry )     return INVALID_OBJECT;
-  std::copy(node_entry->leaves().begin(), node_entry->leaves().end(), back_inserter(leaves));
+  leaves = node_entry->leaves();
   return StatusCode::SUCCESS;
 }
 
