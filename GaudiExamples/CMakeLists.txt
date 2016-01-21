@@ -25,6 +25,7 @@ set(GaudiExamples_srcs
     src/AlgTools/*.cpp
     src/DataOnDemand/*.cpp
     src/AlgErrAud/*.cpp
+    src/GSLTools/*.cpp
     src/RandomNumber/*.cpp
     src/Histograms/*.cpp
     src/NTuples/*.cpp
