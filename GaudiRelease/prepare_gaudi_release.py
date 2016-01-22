@@ -177,9 +177,7 @@ def newmain():
 
 def main():
     logging.basicConfig(level=logging.DEBUG)
-
-    os.chdir(os.path.dirname(os.path.dirname(__file__)))
-
+    os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     # Find the version of HEPTools (LCG)
     for l in open('toolchain.cmake'):
         m = re.match(r'^\s*set\(\s*heptools_version\s+(\S*)\s*\)', l)
@@ -280,4 +278,3 @@ def main():
 if __name__ == '__main__':
     checkGitVersion()
     main()
-
