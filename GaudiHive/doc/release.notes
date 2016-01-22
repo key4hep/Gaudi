@@ -1,37 +1,38 @@
 Package : GaudiKernel
 Commit Id: $Format:%H$
 
-! 2015-02-27 - Marco Clemencic
- - Changed level of some messages in TimelineSvc.
+=============================== GaudiHive v1r1 ===============================
 
-! 2015-02-14 - Illya Shapoval
-  o Expose the possibility to dump intra-event concurrency dynamics to a csv file
-    (controlled by the DumpIntraEventDynamics property of the FWD scheduler )
+! 2016-01-12 - commit 4dbdc8e
 
-! 2014-11-25 - Illya Shapoval
-  o First implementation of the optimizer mode, using data realm eccentricity
-    to rank algorithms.
+ - fixed clang 3.7 compilation warnings
 
-! 2014-11-25 - Illya Shapoval
-  o proper switcher between execution optimization modes is introduced
-    (use the ForwardSchedulerSvc property "Optimizer" to set the mode)
+   Fixes GAUDI-1083.
+ See merge request !89
 
-! 2014-10-30 - Illya Shapoval
-  o new mode for execution planner added: based on algorithm eccentricities
+! 2016-01-07 - commit fabc739
 
-! 2014-10-21 - Charles Leggett
-  - fixed requirements for boost graph
+ - fixed compilation with clang 3.7 (after hive merge)
 
-! 2014-06-03 - Charles Leggett
-  updates for EventContext class
+   * fixed compilation problems related to `operator<<` (gcc is more
+    permissive than clang).
+   * fixed also some clang warnings.
+    Fixes GAUDI-1157.
+    See merge request !84
 
-#	modified:   src/AlgoExecutionTask.cpp
-#	modified:   src/CPUCruncher.cpp
-#	modified:   src/ForwardSchedulerSvc.cpp
-#	modified:   src/HiveEventLoopMgr.cpp
-#	modified:   src/HiveReadAlgorithm.cpp
-#	modified:   src/HiveSlimEventLoopMgr.cpp
-#	modified:   src/HiveTestAlgorithm.cpp
-#	modified:   src/ParallelSequentialSchedulerSvc.cpp
-#	modified:   src/RoundRobinSchedulerSvc.cpp
-#	modified:   src/SequentialSchedulerSvc.cpp
+! 2015-11-11 - commit 0a0032f
+
+ - Merge branch 'GAUDI-1130' into 'master'
+
+   fixes to support native build on Ubuntu 15.10
+    Fixes GAUDI-1130.
+    See merge request !70
+
+! 2015-11-02 - commit 57f356c
+
+ - Merge branch 'hive' into 'master'
+
+   Fixes GAUDI-978.
+
+   See merge request !65
+

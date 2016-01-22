@@ -2,6 +2,165 @@ Package GaudiExamples
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+============================ GaudiExamples v27r0 =============================
+
+! 2016-01-21 - commit 10300ee
+
+ - Revert "remove unused GSL components"
+
+   This reverts commit 4244357375685702d7d6322f9990bf539b6375a1.
+ Fixes
+   GAUDI-1167.
+ See merge request !98
+    Conflicts:
+
+   GaudiExamples/src/GSLTools/EqSolverIAlg.h
+   GaudiExamples/src/GSLTools/EqSolverPAlg.h
+   GaudiExamples/src/GSLTools/FuncMinimumGenAlg.h
+   GaudiExamples/src/GSLTools/FuncMinimumIAlg.h
+   GaudiExamples/src/GSLTools/FuncMinimumPAlg.h
+   GaudiGSL/GaudiGSL/GaudiGSL.h
+   GaudiGSL/GaudiGSL/GslError.h
+   GaudiGSL/GaudiGSL/GslErrorHandlers.h
+   GaudiGSL/GaudiGSL/IFuncMinimum.h
+   GaudiGSL/GaudiGSL/IGslErrorHandler.h
+   GaudiGSL/GaudiGSL/IGslSvc.h
+   GaudiGSL/src/Components/EqSolver.cpp
+   GaudiGSL/src/Components/EqSolver.h
+   GaudiGSL/src/Components/FuncMinimum.cpp
+   GaudiGSL/src/Components/FuncMinimum.h
+   GaudiGSL/src/Components/GslErrorCount.cpp
+   GaudiGSL/src/Components/GslErrorCount.h
+   GaudiGSL/src/Components/GslErrorException.cpp
+   GaudiGSL/src/Components/GslErrorException.h
+   GaudiGSL/src/Components/GslErrorPrint.cpp
+   GaudiGSL/src/Components/GslErrorPrint.h
+   GaudiGSL/src/Components/GslSvc.cpp
+   GaudiGSL/src/Components/GslSvc.h
+   GaudiGSL/src/Lib/GaudiGSL.cpp
+   GaudiGSL/src/Lib/GslErrorHandlers.cpp
+
+
+! 2016-01-12 - commit 4dbdc8e
+
+ - fixed clang 3.7 compilation warnings
+
+   Fixes GAUDI-1083.
+ See merge request !89
+
+! 2016-01-12 - commit 5165b50
+
+ - extend the functionality of TupleObj::farray
+
+   - accept an arbitrary number of columns
+   - accept generic 'callables'
+    With the exception of an added 'projection', this implements the
+
+   functionality discussed in GAUDI-1100.
+    See merge request !77
+
+! 2016-01-12 - commit 8ec1b7b
+
+ - return the just-added tool from addTool
+
+   augment addTool to return the tool it just added.
+ This allows one to write:
+   ```python
+ myToolWithName = myalg.addTool(tool_conf2,"ToolWithName")
+
+   myToolWithName.String = "xyz"
+   ```
+ instead of
+   ```python
+ myalg.addTool(tool_conf2,"ToolWithName")
+
+   myalg.ToolWithName.String = "xyz"
+   ```
+ which requires one to duplicate the "ToolWithName" -- once as string,
+   and
+ once as attribute, but only rarely does anybody use getattr for the 2nd
+
+   case to just avoid the duplication.
+    Of course, one could write
+   ```python
+ myalg.addTool(tool_conf2,"ToolWithName", String="xyz")
+   ```
+ or even pass in a complete dictionary with **, but the configuration of
+
+   the tool isn't necessarily complete at the time of creation of its
+
+   configurable.
+    Fixes GAUDI-1162.
+ See merge request !87
+
+! 2015-11-11 - commit 0a0032f
+
+ - Merge branch 'GAUDI-1130' into 'master'
+
+   fixes to support native build on Ubuntu 15.10
+    Fixes GAUDI-1130.
+    See merge request !70
+
+! 2015-11-02 - commit 57f356c
+
+ - Merge branch 'hive' into 'master'
+
+   Fixes GAUDI-978.
+
+   See merge request !65
+
+
+! 2015-10-29 - commit aa624e1
+
+ - Allow compilation of Gaudi with clang 3.7 using gcc 4.9 externals
+
+   To do so, some arguments have to be passed to cmake, assuming CMTCONFIG is
+   x86_64-slc6-clang37-opt
+    * LCG_SYSTEM: To specify the flavour of the externals to use
+    * LCG_FORCE_COMPILER: To specify the compiler to use, with the
+      format "<compiler>-<version>" (an lcg wrapper has to exist for
+      this to work).
+
+   Using the LHCb Makefiles, you just need to specify:
+   ``` export CMAKEFLAGS="-DLCG_SYSTEM=x86_64-slc6-gcc49
+   -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DLCG_FORCE_COMPILER=clang-3.7"
+   ```
+
+   Fixes GAUDI-1123 and LBCORE-934.
+
+   See merge request !48
+
+
+! 2015-10-29 - commit 584c6e3
+
+ - fixed GaudiCommonTests.opts after merge request !52
+
+   See merge request !62
+
+
+! 2015-10-28 - commit 0335830
+
+ - remove RootOnTES property from GaudiCommon
+
+   RootOnTES has been marked as deprecated in favour of RootInTES since
+   (at least) 2009.
+
+   Fixes GAUDI-1112.
+
+   See merge request !52
+
+
+! 2015-10-26 - commit de80db5
+
+ - More modernization changes
+
+   Fix (almost) all warnings from clang 3.7, and use clang-modernize to further
+   modernize the code.
+
+   Fixes GAUDI-1118.
+
+   See merge request !49
+
 ============================ GaudiExamples v26r4 =============================
 
 ! 2015-10-07 - commit e3e20a4
