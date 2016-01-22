@@ -4,12 +4,22 @@
 ! Purpose     : The package for Gaudi multithreading tools and machinery
 !-----------------------------------------------------------------------------
 
-! 2012-07-30 - Illya Shapoval
- - The GaudiParallelizer algorithm is ported to the TBB library (the one
-   replaced is ThreadPool).
+============================= GaudiMTTools v1r1 ==============================
 
-! 2012-07-13 - Marco Clemencic
- - Fixed compilation with Boost 1.50.
+! 2016-01-12 - commit 4dbdc8e
+
+ - fixed clang 3.7 compilation warnings
+
+   Fixes GAUDI-1083.
+ See merge request !89
+
+! 2015-11-02 - commit 57f356c
+
+ - Merge branch 'hive' into 'master'
+
+   Fixes GAUDI-978.
+
+   See merge request !65
 
 !======================= GaudiMTTools v1r0 2012-01-27 ============================
 ! 2012-01-27 - Illya Shapoval

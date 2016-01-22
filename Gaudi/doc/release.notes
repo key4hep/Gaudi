@@ -2,6 +2,16 @@ Package : Gaudi
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+================================ Gaudi v27r0 =================================
+
+! 2015-11-02 - commit 57f356c
+
+ - Merge branch 'hive' into 'master'
+
+   Fixes GAUDI-978.
+
+   See merge request !65
+
 ================================ Gaudi v26r4 =================================
 
 ! 2015-10-06 - commit 0b7a459

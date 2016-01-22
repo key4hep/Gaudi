@@ -5,6 +5,45 @@
 # Commit Id: $Format:%H$
 ################################################################################
 
+============================ GaudiCommonSvc v4r0 =============================
+
+! 2016-01-12 - commit 4dbdc8e
+
+ - fixed clang 3.7 compilation warnings
+
+   Fixes GAUDI-1083.
+ See merge request !89
+
+! 2016-01-07 - commit fabc739
+
+ - fixed compilation with clang 3.7 (after hive merge)
+
+   * fixed compilation problems related to `operator<<` (gcc is more
+    permissive than clang).
+   * fixed also some clang warnings.
+    Fixes GAUDI-1157.
+    See merge request !84
+
+! 2015-11-02 - commit 57f356c
+
+ - Merge branch 'hive' into 'master'
+
+   Fixes GAUDI-978.
+
+   See merge request !65
+
+
+! 2015-10-26 - commit de80db5
+
+ - More modernization changes
+
+   Fix (almost) all warnings from clang 3.7, and use clang-modernize to further
+   modernize the code.
+
+   Fixes GAUDI-1118.
+
+   See merge request !49
+
 ============================ GaudiCommonSvc v3r6 =============================
 
 ! 2015-10-08 - commit c50c176

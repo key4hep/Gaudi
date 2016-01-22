@@ -2,6 +2,27 @@ Package: GaudiMonitor
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+============================= GaudiMonitor v5r6 ==============================
+
+! 2015-11-11 - commit 0a0032f
+
+ - Merge branch 'GAUDI-1130' into 'master'
+
+   fixes to support native build on Ubuntu 15.10
+    Fixes GAUDI-1130.
+    See merge request !70
+
+! 2015-10-26 - commit de80db5
+
+ - More modernization changes
+
+   Fix (almost) all warnings from clang 3.7, and use clang-modernize to further
+   modernize the code.
+
+   Fixes GAUDI-1118.
+
+   See merge request !49
+
 ============================= GaudiMonitor v5r5 ==============================
 
 ! 2015-09-25 - commit 35dd00c

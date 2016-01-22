@@ -2,8 +2,35 @@ Package : ParticleProp
 Package manager : Charles Leggett
 Commit Id: $Format:%H$
 
-! 2015-10-26 - Charles Leggett
- - GAUDI-1119: fix input file parser
+============================== PartPropSvc v7r0 ==============================
+
+! 2015-10-27 - commit e585b09
+
+ - PartPropSvc: patch for bad parsing of input files: GAUDI-1119
+
+   In the PartPropSvc, after upgrade to boost::regex, parsing of input files
+   fails silently if no "=" is present in the token (ie file type is not
+   specified), and the file loaded will be the default table instead of the user
+   supplied one.
+
+   eg: InputFile = "myPDGTABLE.MeV" will result in "PDGTABLE.MeV" being loaded
+   instead, with no message that this has taken place.
+
+   Fixes GAUDI-1119.
+
+   See merge request !59
+
+
+! 2015-10-26 - commit de80db5
+
+ - More modernization changes
+
+   Fix (almost) all warnings from clang 3.7, and use clang-modernize to further
+   modernize the code.
+
+   Fixes GAUDI-1118.
+
+   See merge request !49
 
 ============================== PartPropSvc v6r4 ==============================
 
