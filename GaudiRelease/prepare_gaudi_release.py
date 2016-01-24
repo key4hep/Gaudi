@@ -1,4 +1,4 @@
-#!/usr/bin.env python
+#!/usr/bin/env python
 '''
 Script to prepare the release of Gaudi.
 
@@ -12,6 +12,21 @@ import re
 import ConfigParser
 from subprocess import Popen, PIPE
 
+def checkGitVersion():
+    '''
+    Ensure we have a usable version of Git (>= 1.7.9.1).
+
+    See:
+    * https://raw.githubusercontent.com/git/git/master/Documentation/RelNotes/1.7.9.1.txt
+    * https://github.com/git/git/commit/36ed1913e1d5de0930e59db6eeec3ccb2bd58bd9
+    '''
+    proc = Popen(['git', '--version'], stdout=PIPE)
+    version = proc.communicate()[0].split()[-1]
+    if proc.returncode:
+        raise RuntimeError('could not get git version')
+    if versionKey(version) < versionKey('1.7.9.1'):
+        raise RuntimeError('bad version of git found: %s (1.7.9.1 required)' % version)
+
 _VK_RE = re.compile(r'(\d+|\D+)')
 def versionKey(x):
     '''
@@ -19,7 +34,7 @@ def versionKey(x):
     as version numbers.
     '''
     return [int(i) if i[0] in '0123456789' else i
-            for i in _VK_RE.split('v10r31')
+            for i in _VK_RE.split(x)
             if i]
 
 def findLatestTag():
@@ -162,9 +177,7 @@ def newmain():
 
 def main():
     logging.basicConfig(level=logging.DEBUG)
-
-    os.chdir(os.path.dirname(os.path.dirname(__file__)))
-
+    os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     # Find the version of HEPTools (LCG)
     for l in open('toolchain.cmake'):
         m = re.match(r'^\s*set\(\s*heptools_version\s+(\S*)\s*\)', l)
@@ -222,7 +235,7 @@ def main():
                                                                        git_log)
                 vers = raw_input(msg)
                 while not vers or vers == old_vers:
-                    vers = raw_input('give me a version')
+                    vers = raw_input('give me a version, please. ')
         if vers:
             change_version(pkgdir, vers)
             updateReleaseNotes(pkgdir,
@@ -263,5 +276,5 @@ def main():
 
 
 if __name__ == '__main__':
+    checkGitVersion()
     main()
-

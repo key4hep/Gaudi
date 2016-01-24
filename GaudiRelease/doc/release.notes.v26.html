@@ -1,0 +1,499 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+
+  <title>Gaudi Release Notes</title>
+  <script type="text/javascript" language="JavaScript">
+<!-- Work around for old browsers
+  function addLinks(){
+    // do nothing
+  }
+//-->
+  </script>
+  <script type="text/javascript" language="JavaScript1.2">
+<!-- This function requires JavaScript 1.2
+  // replaces the occurrences of (patch|task|bug)+number with the link to the savannah page
+  function LinkToSavannah()
+  {
+    patch = "<a href='https://savannah.cern.ch/patch/index.php?$2'>$1&nbsp;#$2</a>";
+    bug = "<a href='https://savannah.cern.ch/bug/index.php?$2'>$1&nbsp;#$2</a>";
+    task = "<a href='https://savannah.cern.ch/task/index.php?$2'>$1&nbsp;#$2</a>";
+    s = document.getElementsByTagName("body")[0].innerHTML;
+    s = s.replace(/([Pp]atch) #([0-9]*)/g,patch);
+    s = s.replace(/([Tt]ask) #([0-9]*)/g,task);
+    s = s.replace(/([Bb]ug) #([0-9]*)/g,bug);
+    document.getElementsByTagName("body")[0].innerHTML = s;
+  }
+  // replaces the occurrences of ([A-Z]+-[0-9]+) with the link to the JIRA issue
+  function LinkToJIRA()
+  {
+    s = document.getElementsByTagName("body")[0].innerHTML;
+    s = s.replace(/([A-Z]+)-[0-9]+/g, function(match, p1) {
+      var url = "https://its.cern.ch/jira/browse/";
+      if (p1 == "ROOT" || p1 == "SPI" || p1 == "PF" || p1 == "CFHEP" ||
+          p1 == "CVM")
+          url = "https://sft.its.cern.ch/jira/browse/";
+      return '<a href="' + url + match + '">' + match + '</a>';
+    });
+    document.getElementsByTagName("body")[0].innerHTML = s;
+  }
+  function addLinks() {
+    LinkToSavannah();
+    LinkToJIRA();
+  }
+// -->
+  </script>
+  <style type="text/css">
+span.author { color: #737373; }
+  </style>
+</head>
+<body onload="javascript:addLinks()">
+<pre>
+Package: GaudiRelease<br>
+Package Coordinator: Marco Clemencic, Charles Leggett, Benedikt Hegner<br>
+Purpose: Gaudi common set of packages<br><br>
+</pre>
+<h2><a name="v26r4">Gaudi v26r4</a> (2015-10-09)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=79">LCG_79</a></h3>
+<h3>        Bug
+</h3>
+<ul>
+<li>[GAUDI-1076] -         DataObject defines copy constructor (?) but not assignment operator
+</li>
+<li>[GAUDI-1079] -         race condition in merge_files.py
+</li>
+<li>[GAUDI-1081] -         Compilation with -O0 fails after commit 7bbd190f
+</li>
+<li>[GAUDI-1082] -         GaudiSvc compilation fails with CLHEP 2 after merge request 7
+</li>
+<li>[GAUDI-1084] -         tests hanging forever (after timeout?)
+</li>
+<li>[GAUDI-1101] -         xenv should not stop on SIGSTOP
+</li>
+<li>[GAUDI-1103] -         minor (rare) problem with the fix to GAUDI-1101
+</li>
+<li>[GAUDI-1105] -         Directory creation race condition in install.py
+</li>
+</ul>
+
+<h3>        Improvement
+</h3>
+<ul>
+<li>[GAUDI-1056] -         attach gdb to gaudi process with command line option
+</li>
+<li>[GAUDI-1089] -         Functions added to GaudiUtils that allow generation of random numbers from integer and string input
+</li>
+<li>[GAUDI-1092] -         make IStateful baseclass of IAlgTool, IAlgorithm and IService
+</li>
+<li>[GAUDI-1093] -         replace use of (deprecated) Python module &quot;commands&quot;
+</li>
+<li>[GAUDI-1094] -         Provide (and use) C++11 smart pointer &#39;look and feel&#39; for SmartIF
+</li>
+<li>[GAUDI-1102] -         add DataObjID class to GaudiKernel
+</li>
+</ul>
+
+<h3>        New Feature
+</h3>
+<ul>
+<li>[GAUDI-1078] -         Update to GaudiAlg to include the caller algorithm name in messages from public tools
+</li>
+<li>[GAUDI-1091] -         extract gaudiComponentHelp from hive
+</li>
+</ul>
+
+<h3>        Task
+</h3>
+<ul>
+<li>[GAUDI-1055] -         Allow use of Python configurables and components at build time.
+</li>
+<li>[GAUDI-1057] -         C++11 modernization changes
+</li>
+<li>[GAUDI-1060] -         xenv command should not handle STOP signals, but just forward them to the subprocess
+</li>
+<li>[GAUDI-1062] -         add OpenCL algorithm example
+</li>
+<li>[GAUDI-1085] -         Switch IAppMgrUI inheritance from Interface to INamedInterface and remove the pure virtual name()
+</li>
+<li>[GAUDI-1086] -         Generalize CommonMessaging, and use it to implement the messaging functionality in GaudiAlg/GaudiCommon
+</li>
+<li>[GAUDI-1088] -         restore IncidentSvc debug printout for listeners removal
+</li>
+</ul>
+
+<h3>        User Documentation
+</h3>
+<ul>
+<li>[GAUDI-964] -         Update the CMake README.rst
+</li>
+</ul>
+<!-- ====================================================================== -->
+<h2><a name="v26r3">Gaudi v26r3</a> (2015-07-14)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=79">LCG_79</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Fixed GAUDI-996: GaudiSequencer calls resetExecuted of subAlgorithms<br/>
+    (<span class="author">Gerhard Raven</span>)</li>
+<li>Fixed GAUDI-1045: segfault running "LD_PRELOAD=libjemalloc.so gaudirun.py"<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added Jemalloc profiling.<br/>
+    (<span class="author">Ben Couturier</span>)</li>
+<li>GAUDI-1042: replaced "static const" with "constexpr" in physics constants.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>GAUDI-1044: allow 'L' numeric suffix in .opts files parsed with Gaudi.exe.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added example/test of how to declare a custom factory for an algorithm.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Minor bugfixes</li>
+</ul>
+See also the <a href="https://its.cern.ch/jira/secure/ReleaseNote.jspa?projectId=14707&version=23503">release notes on JIRA</a>.
+<h3>Packages Changes</h3>
+<ul>
+<li>GaudiAlg (v15r3):
+<ul>
+<li>Fixed GAUDI-996: GaudiSequencer calls resetExecuted of subAlgorithms<br/>
+    (<span class="author">Gerhard Raven</span>)</li>
+</ul>
+</li>
+<li>Gaudi (v26r3):
+<ul>
+<li>Fixed GAUDI-1045: segfault running "LD_PRELOAD=libjemalloc.so gaudirun.py"<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiProfiling (v2r6):
+<ul>
+<li>Added Jemalloc profiling.<br/>
+    (<span class="author">Ben Couturier</span>)</li>
+<li>Added test for GAUDI-1045 (segfault with LD_PRELOAD=libjemalloc.so).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiKernel (v31r6):
+<ul>
+<li>GAUDI-1042: replaced "static const" with "constexpr" in physics constants.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiCoreSvc (v3r5):
+<ul>
+<li>GAUDI-1044: allow 'L' numeric suffix in .opts files parsed with Gaudi.exe.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiExamples (v26r3):
+<ul>
+<li>GAUDI-1044: added test<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added example/test of how to declare a custom factory for an algorithm.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+</ul>
+<!-- ====================================================================== -->
+<h2><a name="v26r2">Gaudi v26r2</a> (2015-05-15)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=76root6">LCGCMT_76root6</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Fixes and improvements to the CMake configuration system
+    <ul>
+    <li>Fixed GAUDI-981: -DNDEBUG not passed to genreflex</li>
+    <li>Modified Findtcmalloc.cmake to support new gperftools headers path.</li>
+    <li>Use "c++14" (instead of "c++1y") for gcc >= 5.1</li>
+    <li>LHCBPS-1394: disable optimizations in debug with -do0 BINARY_TAG suffix</li>
+    <li>Fixed GAUDI-1031: improve XML errors report in xenv</li>
+    <li>Fixed GAUDI-1019: use relocatable path for gcc</li>
+    <li>Fixed LBCORE-766: simultaneous use of Qt4 and Qt5</li>
+    <li>Fixed GAUDI-991: toolchain.cmake should fail when a project is missing</li>
+    <li>GAUDI-1012: disable optimization in debug if GAUDI_SLOW_DEBUG=TRUE</li>
+    <li>Fixed GAUDI-1010: too aggressive search of .qmt files</li>
+    <li>Fixed GAUDI-1007: tests in a directory are added in alphabetical order</li>
+    </ul>
+    (<span class="author">Marco Clemencic</span>)</li>
+    <li>LBCORE-716: include path order not correct</li>
+    <li>LBCORE-725: relocatability of CMake builds</li>
+    <li>added the possibility to extend the toolchain for a project</li>
+    <li>GAUDI-1004: avoid cmake segfault when there is a loop in the dependencies between projects.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+    <li>GAUDI-1024: Replaced Tokenizer with AttribStringParser or a regular expression.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+    <li>GAUDI-986: Improve memory and time usage of application bootstrap with gaudirun.py.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+    <li>GAUDI-986: Improve memory and time usage of application bootstrap with gaudirun.py.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+    <li>GAUDI-1023: issue a warning when re-declaring a property<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+    <li>Fixes to build on aarch64 (ARM64).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+See also the <a href="https://its.cern.ch/jira/secure/ReleaseNote.jspa?projectId=14707&version=19334">release notes on JIRA</a>.
+<h3>Packages Changes</h3>
+<ul>
+<li>GaudiMonitor (v5r4):
+<ul>
+<li>GAUDI-1024: Replaced Tokenizer with AttribStringParser or a regular expression.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>Gaudi (v26r2):
+<ul>
+<li>GAUDI-986: Improve memory and time usage of application bootstrap with gaudirun.py.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Fixed GAUDI-1033: segfaults when calling Python functions from C++.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>PartPropSvc (v6r3):
+<ul>
+<li>GAUDI-1024: Replaced Tokenizer with AttribStringParser or a regular expression.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiSvc (v21r6):
+<ul>
+<li>GAUDI-1024: Replaced Tokenizer with AttribStringParser or a regular expression.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Use C++11 lambdas instead of boost::bind in FileMgr<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiProfiling (v2r5):
+<ul>
+<li>Modified GoogleAuditor.cpp to support new gperftools headers path.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>RootCnv (v1r23p2):
+<ul>
+<li>GAUDI-1024: Replaced Tokenizer with AttribStringParser or a regular expression.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiKernel (v31r5):
+<ul>
+<li>Improved ToolHandle constructor.<br/>
+    (<span class="author">Charles Leggett</span>)</li>
+<li>Fixed GAUDI-312: invalid read in Tokenizer.<br/>
+    (<span class="author">Stewart Martin-Haugh</span>)</li>
+<li>GAUDI-1024: Replaced Tokenizer with AttribStringParser or a regular expression.
+   <ul><li>Added Gaudi::Utils::AttribStringParser to replace Tokenizer</li>
+       <li>Added deprecation warning to Tokenizer.h.</li></ul>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>GAUDI-1023: issue a warning when re-declaring a property<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>GAUDI-1018: Respect VERBOSE setting in genconf and genconfuser.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Use C++11 functional instead of boost/function.hpp in IFileMgr.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Fixed GAUDI-1028: typo in ConfigurableUser<br/>
+    (<span class="author">Rosen Matev</span>)</li>
+<li>Fixed GAUDI-1030: remove Algorithm property "ErrorCount"
+    <ul><li>Renamed the property to "ErrorCounter".</li>
+    <li>Added accessor Algorithm::errorCount().</li></ul>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>GAUDI-1016: allow checking of GaudiHandle wrapped pointer without retrieving it<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>GAUDI-1011: Support std::tuple and std::array properties in jobs options<br/>
+    (<span class="author">Sasha Mazurov</span>)</li>
+<li>Fixed GAUDI-1017: GaudiUtils::Map cannot be used as property after GAUDI-1011<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</li>
+<li>GaudiPython (v13r5):
+<ul>
+<li>GAUDI-1009: remove GaudiPython.Bindings.makeClass<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Faster version of the workaround for ROOT-6697.<br/>
+    (<span class="author">Rosen Matev</span>)</li>
+</ul>
+</li>
+<li>GaudiCoreSvc (v3r4):
+<ul>
+<li>GAUDI-1024: Replaced Tokenizer with AttribStringParser or a regular expression.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiPolicy (v15r5):
+<ul>
+<li>Fixed GAUDI-1035: cannot build a satellite project with only GaudiExamples<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Fixed escaping of special XML/HTML chars in CTestXML2HTML.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Select 'dbg' in test reference files if the platform contains 'do0'.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiCommonSvc (v3r5):
+<ul>
+<li>Fixed GAUDI-1036: Unchecked StatusCodes.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>GAUDI-1024: Replaced Tokenizer with AttribStringParser or a regular expression.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Fixed GAUDI-1014: Unchecked StatusCode with gcc 4.9<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiExamples (v26r2):
+<ul>
+<li>Do not build MultiInput example if RootCnvLib is not built (CMake version).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Updated test reference files.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+</ul>
+<!-- ====================================================================== -->
+<h2><a name="v26r1">Gaudi v26r1</a> (2015-02-16)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=74root6">LCGCMT_74root6</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>Fixes and improvements to the CMake configuration system
+    <ul>
+    <li>LBCORE-716: include path order not correct</li>
+    <li>LBCORE-725: relocatability of CMake builds</li>
+    <li>added the possibility to extend the toolchain for a project</li>
+    <li>GAUDI-1004: avoid cmake segfault when there is a loop in the dependencies between projects</li>
+    </ul>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Replaced QMTest with a home made test wrapper.<br/>
+    (<span class="author">Marco Clemencic</span>, <span class="author">Valentin Comte</span>)</li>
+</ul>
+<h3>Packages Changes</h3>
+<ul>
+<li>Gaudi (v26r1):
+<ul>
+<li>Fixed GAUDI-1001: '\' and '\n' not correctly interpreted by gaudirun.py<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Added command line option to restart gaudirun.py from old options (smaller
+   memory footprint) after having parsed the options in Python.<br/>
+   (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiKernel (v31r4):
+<ul>
+<li>Added methods to IToolSvc to get all the tool instances.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>GAUDI-999: Add code which determines the 'instruction level' of the CPU.<br/>
+    (<span class="author">Gerhard Raven</span>)</li>
+</ul>
+</li>
+<li>GaudiPolicy (v15r4):
+<ul>
+<li>Introduced the Python module GaudiTesting as a replacement for QMTest with
+    the GaudiTest extension.<br/>
+    (<span class="author">Marco Clemencic</span>, <span class="author">Valentin Comte</span>)</li>
+</ul>
+</li>
+<li>GaudiCommonSvc (v3r4):
+<ul>
+<li>Added _PyObject_GC_Malloc to the whitelist of StatusCodeSvc (visible only
+   with gcc4.9).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+</ul>
+<!-- ====================================================================== -->
+<h2><a name="v26r0">Gaudi v26r0</a> (2015-01-12)</h2>
+<h3>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=72root6">LCGCMT_72root6</a></h3>
+<h3>General Changes</h3>
+<ul>
+<li>This is the first version officially released with CMake.</li>
+<li>Improvements to the Doxygen documentation (GAUDI-980).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Minor fixes and improvements in a few tests.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+<h3>Packages Changes</h3>
+<ul>
+<li>GaudiMonitor (v5r3):
+<ul>
+<li>Adapted HistorySvc to the changes introduced with GAUDI-995 (backward
+    incompatible change in IAlgManager).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Refactored HistorySvc implementation using some C++11 constructs.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiPluginService (v2r2):
+<ul>
+<li>Improved Doxygen documentation.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiSvc (v21r5):
+<ul>
+<li>Fixed g++ 4.9 warning (unused typedef).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiProfiling (v2r4):
+<ul>
+<li>Modified interlprofiler.md to use Doxygen flavour of markdown.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiKernel (v31r3):
+<ul>
+<li>GAUDI-992: improve StatusCode::~StatusCode (plus fixes and fine tunings)<br/>
+    (<span class="author">Gerhard Raven</span>,
+     <span class="author">Marco Clemencic</span>)</li>
+<li>GAUDI-993: Improve performances of DataSvc::retrieveEntry<br/>
+    (<span class="author">Gerhard Raven</span>)</li>
+<li>GAUDI-995: improve Algorithm storage/management in AlgorithmManager<br/>
+    (<span class="author">Gerhard Raven</span>)</li>
+<li>Added the class StatusCode::ScopedDisableChecking to ignore all the
+   StatusCode instances produced in a scope.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Fixed g++ 4.9 warning (unused typedef).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiPython (v13r4):
+<ul>
+<li>Adapted GaudiPython.Bindings to the changes introduced with GAUDI-995
+   (backward incompatible change in IAlgManager).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiCoreSvc (v3r2):
+<ul>
+<li>GAUDI-995: improve Algorithm storage/management in AlgorithmManager<br/>
+    (<span class="author">Gerhard Raven</span>)</li>
+</ul>
+</li>
+<li>GaudiPolicy (v15r3):
+<ul>
+<li>Minor addition to test reference exclusions.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiRelease (v26r0):
+<ul>
+<li>Added CMake target to build Doxygen documentation.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiCommonSvc (v3r3):
+<ul>
+<li>Modified StatusCodeSvc to report that there is no "unchecked" StatusCode, to
+   simplify the testing (DEBUG).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+<li>GaudiExamples (v26r0):
+<ul>
+<li>Reorganized and improved StatusCodeSvc tests.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Implemented a special test to expose the regression introduced with
+   GAUDI-992 (only in CMake build).<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+<li>Extended StatusCodeSvc tests to check the new class
+   StatusCode::ScopedDisableChecking.<br/>
+    (<span class="author">Marco Clemencic</span>)</li>
+</ul>
+</li>
+</ul>
+<hr/>
+<a href="release.notes.v25.html">Older versions</a>
+</body>
+</html>

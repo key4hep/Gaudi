@@ -677,13 +677,10 @@ class Configurable( object ):
         if not hasattr(self, name):
             return False
         else:
-            try:
-                default = self.getDefaultProperties()[name]
-                if isinstance(default, (list, dict)):
-                    value = getattr(self, name)
-                    return value != default
-            except KeyError:
-                pass # no default found
+            default = self.getDefaultProperty(name)
+            if isinstance(default, (list, dict)):
+                value = getattr(self, name)
+                return value != default
             return True
 
     def getType( cls ):
@@ -789,6 +786,7 @@ class Configurable( object ):
         if name in self.__slots__:
             # this is to avoid that the property hides the tool
             setattr(self,name,self.__tools[name])
+        return self.__tools[name]
 
     def _isInSetDefaults( self ):
         return self._inSetDefaults

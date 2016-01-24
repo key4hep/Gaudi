@@ -11,6 +11,7 @@
 #include <vector>
 #include <algorithm>
 #include <ostream>
+#include <initializer_list>
 // ============================================================================
 // GaudiKernel
 // ============================================================================
@@ -728,6 +729,16 @@ namespace GaudiUtils
                 INPUT last  ,
                 const allocator_type& alloc = allocator_type () )
       : m_vct ( first , last , alloc )
+    { std::sort ( m_vct.begin(), m_vct.end(), compare() ) ; }
+    // ========================================================================
+    /** tconstructor from initializer list
+     *  @param list
+     *  @param cmp comparison criteria for the key
+     *  @param alloc allocator to be used
+     */
+    VectorMap ( std::initializer_list<value_type> first ,
+                const allocator_type& alloc = allocator_type () )
+      : m_vct ( first , alloc )
     { std::sort ( m_vct.begin(), m_vct.end(), compare() ) ; }
     // ========================================================================
     /// destructor (non-virtual!)

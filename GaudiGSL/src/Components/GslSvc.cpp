@@ -89,11 +89,11 @@ StatusCode GslSvc::initialize()
   GslErrorHandler handler = gsl_set_error_handler( nullptr );
   gsl_set_error_handler( handler );
   if( handler )
-    { log << MSG::VERBOSE
+    { verbose()
           << " GSL Error Handler is '"
           << System::typeinfoName( typeid(*handler) ) << "'"
           << endmsg; }
-  else { log << MSG::INFO << " Error Handler is NULL" << endmsg ; }
+  else { info() << " Error Handler is NULL" << endmsg ; }
 
   if( !m_handlersTypeNames.empty() )
     {
@@ -107,11 +107,11 @@ StatusCode GslSvc::initialize()
         {
           auto pos = it.find('/');
           IGslErrorHandler* eh = nullptr ;
-          if( pos != std::string::npos ) { 
+          if( pos != std::string::npos ) {
               sc = toolsvc->retrieveTool
-                ( it.substr( 0 , pos ), it.substr( pos + 1 ), eh , this ) ; 
-          } else { 
-              sc = toolsvc->retrieveTool( it , it , eh , this ) ; 
+                ( it.substr( 0 , pos ), it.substr( pos + 1 ), eh , this ) ;
+          } else {
+              sc = toolsvc->retrieveTool( it , it , eh , this ) ;
           }
           if( sc.isFailure() )
             { error()
@@ -172,10 +172,9 @@ IGslSvc::GslErrorHandler GslSvc::setHandler
 {
   gsl_set_error_handler( handler );
   {
-    debug() << " New GSL handler is set '" ;
-    if( !handler ) { log << "NULL"                                  ; }
-    else           { log << System::typeinfoName( typeid(handler) ) ; }
-    log << "'" << endmsg ;
+    debug() << " New GSL handler is set '"
+            << ( handler ? System::typeinfoName( typeid(handler) )  : "NULL" )
+            << "'" << endmsg ;
   }
   return handler ;
 }

@@ -67,17 +67,17 @@ public:
   const std::function<void(Property&)>& updateCallBack() const { return m_updateCallBack; }
 
   /// set new callback for reading
-  virtual void  declareReadHandler   ( std::function<void(Property&)> fun ) ;
+  virtual Property&  declareReadHandler   ( std::function<void(Property&)> fun ) ;
   /// set new callback for update
-  virtual void  declareUpdateHandler ( std::function<void(Property&)> fun ) ;
+  virtual Property&  declareUpdateHandler ( std::function<void(Property&)> fun ) ;
 
   template< class HT >
-  inline void declareReadHandler( void ( HT::* MF ) ( Property& ) , HT* instance )
-  { declareReadHandler( [=](Property& p) { (instance->*MF)(p); } ) ; }
+  inline Property& declareReadHandler( void ( HT::* MF ) ( Property& ) , HT* instance )
+  { return declareReadHandler( [=](Property& p) { (instance->*MF)(p); } ) ; }
 
   template< class HT >
-  inline void declareUpdateHandler( void ( HT::* MF ) ( Property& ) , HT* instance )
-  { declareUpdateHandler ( [=](Property& p) { (instance->*MF)(p); } ); }
+  inline Property& declareUpdateHandler( void ( HT::* MF ) ( Property& ) , HT* instance )
+  { return declareUpdateHandler ( [=](Property& p) { (instance->*MF)(p); } ); }
 
   /// use the call-back function at reading
   virtual void useReadHandler   () const ;

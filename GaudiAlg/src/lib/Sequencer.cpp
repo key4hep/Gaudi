@@ -546,11 +546,11 @@ Sequencer::decodeNames( StringArrayProperty& theNames,
     for ( ; ai != theAlgs.end(); ++ai, ++li ) {
 
       if ( ai != theAlgs.begin() ) info() << ", ";
-
-      if ( (*ai)->name() == System::typeinfoName(typeid(**ai)) )
-        info() << (*ai)->name();
+      auto alg = *ai;
+      if ( alg->name() == System::typeinfoName(typeid(*alg)) )
+        info() << alg->name();
       else
-        info() << System::typeinfoName(typeid(**ai)) << "/" << (*ai)->name();
+        info() << System::typeinfoName(typeid(*alg)) << "/" << alg->name();
 
       if (*li) info() << ":invert";
     }

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 The Python module holding Python bindings to DataObjectDescriptor.
 """
@@ -97,7 +98,10 @@ class DataObjectDescriptorCollection(object):
         return "%s(%r)" % (self.__class__.__name__, str(self))
 
     def __eq__(self, other):
-        return self.__dict__ == other.__dict__
+        try:
+            return self.__dict__ == other.__dict__
+        except AttributeError:
+            return False
 
     def toStringProperty(self):
         return str(self)

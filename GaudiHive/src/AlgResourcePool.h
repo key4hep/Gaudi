@@ -97,9 +97,6 @@ private:
   /// The top list of algorithms
   std::list<IAlgorithm*> m_topAlgPtrList;
 
-  /// OMG this has so to be removed
-  bool m_doHacks;
-
   /// OMG yet another hack
   concurrency::ExecutionFlowGraph* m_EFGraph;
 };

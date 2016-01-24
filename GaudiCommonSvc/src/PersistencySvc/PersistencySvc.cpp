@@ -506,7 +506,8 @@ StatusCode PersistencySvc::getService(const std::string& service_type, IConversi
         return StatusCode::SUCCESS;
       }
       // Check wether this is already an active service: now check by service type
-      if ( System::typeinfoName(typeid(*(svc.get()))) == service_type )  {
+      auto instance = svc.get();
+      if ( System::typeinfoName(typeid(*instance)) == service_type )  {
         refpSvc = i.second.conversionSvc();
         return StatusCode::SUCCESS;
       }

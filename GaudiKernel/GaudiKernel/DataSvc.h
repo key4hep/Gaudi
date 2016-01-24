@@ -8,6 +8,7 @@
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/IIncidentSvc.h"
 #include "GaudiKernel/SmartIF.h"
+#include "GaudiKernel/IConversionSvc.h"
 
 #include <boost/utility/string_ref.hpp>
 

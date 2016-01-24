@@ -2,6 +2,68 @@ Package: GaudiAlg
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+=============================== GaudiAlg v17r0 ===============================
+
+! 2016-01-12 - commit 4dbdc8e
+
+ - fixed clang 3.7 compilation warnings
+
+   Fixes GAUDI-1083.
+ See merge request !89
+
+! 2016-01-12 - commit 5165b50
+
+ - extend the functionality of TupleObj::farray
+
+   - accept an arbitrary number of columns
+   - accept generic 'callables'
+    With the exception of an added 'projection', this implements the
+
+   functionality discussed in GAUDI-1100.
+    See merge request !77
+
+! 2015-12-17 - commit 8119d23
+
+ - Merge branch 'GAUDI-1151' into 'master'
+
+   GAUDI-1151: fixed reference counting of CounterSummarySvc
+    In the merge commit fd7f1add, the conflicts in GaudiCommon.icpp were not
+
+   correctly resolved, resulting in a wrong reference count.
+    See merge request !81
+
+! 2015-11-02 - commit 57f356c
+
+ - Merge branch 'hive' into 'master'
+
+   Fixes GAUDI-978.
+
+   See merge request !65
+
+
+! 2015-10-28 - commit 0335830
+
+ - remove RootOnTES property from GaudiCommon
+
+   RootOnTES has been marked as deprecated in favour of RootInTES since
+   (at least) 2009.
+
+   Fixes GAUDI-1112.
+
+   See merge request !52
+
+
+! 2015-10-26 - commit de80db5
+
+ - More modernization changes
+
+   Fix (almost) all warnings from clang 3.7, and use clang-modernize to further
+   modernize the code.
+
+   Fixes GAUDI-1118.
+
+   See merge request !49
+
 =============================== GaudiAlg v16r0 ===============================
 
 ! 2015-10-07 - commit e3e20a4
