@@ -7,6 +7,9 @@ find_package(TBB)
 find_package(PythonLibs)
 include_directories (${PYTHON_INCLUDE_DIRS})
 
+# Hide some Boost compile time warnings
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
+
 #---Libraries---------------------------------------------------------------
 gaudi_add_module(GaudiCoreSvc
                  src/ApplicationMgr/*.cpp
