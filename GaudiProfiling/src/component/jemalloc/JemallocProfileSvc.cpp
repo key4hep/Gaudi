@@ -134,6 +134,8 @@ void JemallocProfileSvc::handle(const Incident& incident)
     {
       if (startincident == incident.type()) 
       {
+        info() << "Starting Jemalloc profile at incident "
+               <<  incident.type() << endmsg;
         startProfiling();
         break;
       }
@@ -141,17 +143,19 @@ void JemallocProfileSvc::handle(const Incident& incident)
   } // If checking incidents to start
 
   // If already processing we can ignore the incidents for start
-  if (!m_profiling && m_hasStopIncident) 
+  if (m_profiling && m_hasStopIncident) 
   {
     for(std::string stopincident: m_stopAtIncidents) 
     {
       if (stopincident == incident.type()) 
       {
+        info() << "Stopping Jemalloc profile at incident "
+               <<  incident.type() << endmsg;
         stopProfiling();
         break;
       }
     } // Loop on incidents 
-  } // If checking incidents to start
+  } // If checking incidents to stop
 
   
 }
@@ -215,7 +219,7 @@ inline void JemallocProfileSvc::stopProfiling()
  */
 inline void JemallocProfileSvc::dumpProfile()
 {
-    info() << "Stopping Jemalloc profile at event " 
+    info() << "Dumping Jemalloc profile at event " 
            <<  m_eventNumber << endmsg;
     mallctl("prof.dump", NULL, NULL, NULL, 0);
 

@@ -67,6 +67,15 @@ JemallocProfileSvc().StopAtEventN=7
 JemallocProfileSvc().OutputLevel=DEBUG
 ~~~~~~~
 
+It is also possible to trigger the profiling using incidents:
+
+~~~~~~~{.py}
+from Configurables import JemallocProfileSvc
+ApplicationMgr().ExtSvc += { "JemallocProfileSvc" } 
+JemallocProfileSvc().StartFromIncidents= [ "MyStartIncident1", "MyStartIncident2" ]
+JemallocProfileSvc().StopAtIncidents= [ "MyStopIncident" ]
+~~~~~~~
+
 ### Run the job
 This is identical as for the algorithm version.
 
