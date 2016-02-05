@@ -199,14 +199,22 @@ StatusCode Algorithm::sysInitialize() {
     m_isClonable = true;
   }
 
+  using reporter_t = std::function<void(const DataObjectDescriptorCollection&, const std::string&)>;
+
+  auto init_report = (UNLIKELY(m_outputLevel <= MSG::DEBUG)) ?
+      reporter_t([&log](const DataObjectDescriptorCollection& coll, const std::string& tag) {
+          log << MSG::DEBUG << "Data Handle " << tag << " ("
+              << coll[tag].dataProductName()
+              << ") initialized" << endmsg;
+      })
+    :
+      reporter_t([](const DataObjectDescriptorCollection&, const std::string&) {});
 
   //init data handle
   for (auto tag : m_inputDataObjects) {
     if (m_inputDataObjects[tag].isValid()) {
-      if (m_inputDataObjects[tag].initialize().isSuccess())
-        log << MSG::DEBUG << "Data Handle " << tag << " ("
-            << m_inputDataObjects[tag].dataProductName()
-            << ") initialized" << endmsg;
+      if (m_inputDataObjects[tag].initialize())
+        init_report(m_inputDataObjects, tag);
       else
         log << MSG::FATAL << "Data Handle " << tag << " ("
             << m_inputDataObjects[tag].dataProductName()
@@ -215,10 +223,8 @@ StatusCode Algorithm::sysInitialize() {
   }
   for (auto tag : m_outputDataObjects) {
     if (m_outputDataObjects[tag].isValid()) {
-      if (m_outputDataObjects[tag].initialize().isSuccess())
-        log << MSG::DEBUG << "Data Handle " << tag << " ("
-            << m_outputDataObjects[tag].dataProductName()
-            << ") initialized" << endmsg;
+      if (m_outputDataObjects[tag].initialize())
+        init_report(m_outputDataObjects, tag);
       else
         log << MSG::FATAL << "Data Handle " << tag << " ("
             << m_outputDataObjects[tag].dataProductName()
@@ -234,8 +240,9 @@ StatusCode Algorithm::sysInitialize() {
     MsgStream log ( msgSvc() , name() ) ;
 
     if (visited_parents.find(parent) != end(visited_parents)) {
-      log << MSG::DEBUG << "parent object already visited: stopping recursion"
-          << endmsg;
+      if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
+        log << MSG::DEBUG << "parent object already visited: stopping recursion"
+            << endmsg;
       return;
     }
     visited_parents.insert(parent);
@@ -254,17 +261,20 @@ StatusCode Algorithm::sysInitialize() {
     }
 
     for(auto tool : tools){
-
-      log << MSG::DEBUG << "Adding data dependencies for tool " << tool->name() << " (" << tool->type() << ")" << endmsg;
+      if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
+        log << MSG::DEBUG << "Adding data dependencies for tool "
+            << tool->name() << " (" << tool->type() << ")" << endmsg;
       auto inputs = tool->inputDataObjects();
       for(auto dod : inputs){
-        log << MSG::DEBUG << "\tInput: " << dod << endmsg;
+        if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
+          log << MSG::DEBUG << "\tInput: " << dod << endmsg;
         m_inputDataObjects.insert(&inputs[dod]);
       }
 
       auto outputs = tool->outputDataObjects();
       for(auto dod : outputs){
-        log << MSG::DEBUG << "\tOutput: " << dod << endmsg;
+        if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
+          log << MSG::DEBUG << "\tOutput: " << dod << endmsg;
         m_outputDataObjects.insert(&outputs[dod]);
       }
 
@@ -272,7 +282,8 @@ StatusCode Algorithm::sysInitialize() {
     }
   };
 
-  log << MSG::DEBUG << "Adding tools for " << this->name() << endmsg;
+  if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
+    log << MSG::DEBUG << "Adding tools for " << this->name() << endmsg;
   addToolDOD(this);
 
   return sc;
