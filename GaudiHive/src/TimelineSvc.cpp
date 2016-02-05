@@ -28,8 +28,8 @@ TimelineSvc::initialize() {
   StatusCode sc = Service::initialize();
   if (!sc.isSuccess()) return sc;
 
-  MsgStream log( msgSvc(), name() );
-  log << MSG::DEBUG << "initialize" << endmsg;
+  if (msgLevel(MSG::DEBUG))
+    debug() << "initialize" << endmsg;
 
   m_events.clear();
 
