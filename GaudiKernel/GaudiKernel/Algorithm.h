@@ -600,9 +600,10 @@ public:
     MsgStream log(msgSvc(), name());
 
     if (LIKELY(res)) {
-      log << MSG::DEBUG << "Handle for " << propertyName << " ("
-          << address << ")" << " successfully created and stored."
-          << endmsg;
+      if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
+        log << MSG::DEBUG << "Handle for " << propertyName << " ("
+            << address << ")" << " successfully created and stored."
+            << endmsg;
     } else {
       log << MSG::ERROR << "Handle for " << propertyName << " ("
           << address << ")" << " could not be created." << endmsg;
@@ -639,9 +640,10 @@ public:
     MsgStream log(msgSvc(), name());
 
     if (LIKELY(res)) {
-      log << MSG::DEBUG << "Handle for " << propertyName << " ("
-          << (addresses.empty() ? DataObjectDescriptor::NULL_ : addresses[0]) << ")" << " successfully created and stored."
-          << endmsg;
+      if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
+        log << MSG::DEBUG << "Handle for " << propertyName << " ("
+            << (addresses.empty() ? DataObjectDescriptor::NULL_ : addresses[0]) << ")" << " successfully created and stored."
+            << endmsg;
     } else {
       log << MSG::ERROR << "Handle for " << propertyName << " ("
           << (addresses.empty() ? DataObjectDescriptor::NULL_ : addresses[0]) << ")" << " could not be created." << endmsg;
@@ -678,9 +680,10 @@ public:
     MsgStream log(msgSvc(), name());
 
     if (LIKELY(res)) {
-      log << MSG::DEBUG << "Handle for " << propertyName << " ("
-          << address << ")" << " successfully created and stored."
-          << endmsg;
+      if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
+        log << MSG::DEBUG << "Handle for " << propertyName << " ("
+            << address << ")" << " successfully created and stored."
+            << endmsg;
     } else {
       log << MSG::ERROR << "Handle for " << propertyName << " ("
           << address << ")" << " could not be created." << endmsg;
@@ -703,9 +706,10 @@ public:
 
   void registerTool(IAlgTool * tool) const {
 
-    MsgStream log(msgSvc(), name());
-
-    log << MSG::DEBUG << "Registering tool " << tool->name() << endmsg;
+    if (UNLIKELY(m_outputLevel <= MSG::DEBUG)) {
+      MsgStream log(msgSvc(), name());
+      log << MSG::DEBUG << "Registering tool " << tool->name() << endmsg;
+    }
 
     m_tools.push_back(tool);
   }
@@ -716,12 +720,13 @@ public:
 
     MsgStream log(msgSvc(), name());
     if (it != m_tools.end()) {
-
-      log << MSG::DEBUG << "De-Registering tool " << tool->name() << endmsg;
+      if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
+        log << MSG::DEBUG << "De-Registering tool " << tool->name() << endmsg;
 
       m_tools.erase(it);
     } else {
-      log << MSG::DEBUG << "Could not de-register tool " << tool->name() << endmsg;
+      if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
+        log << MSG::DEBUG << "Could not de-register tool " << tool->name() << endmsg;
     }
   }
 
@@ -747,8 +752,9 @@ public:
     MsgStream log(msgSvc(), name());
 
     if (sc.isSuccess()) {
-      log << MSG::DEBUG << "Handle for private tool" << toolTypeAndName
-          << " successfully created and stored." << endmsg;
+      if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
+        log << MSG::DEBUG << "Handle for private tool" << toolTypeAndName
+            << " successfully created and stored." << endmsg;
     } else {
 
       log << MSG::ERROR << "Handle for private tool" << toolTypeAndName
@@ -780,8 +786,9 @@ public:
     MsgStream log(msgSvc(), name());
 
     if (sc.isSuccess()) {
-      log << MSG::DEBUG << "Handle for public tool" << toolTypeAndName
-          << " successfully created and stored." << endmsg;
+      if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
+        log << MSG::DEBUG << "Handle for public tool" << toolTypeAndName
+            << " successfully created and stored." << endmsg;
     } else {
 
       log << MSG::ERROR << "Handle for public tool" << toolTypeAndName
