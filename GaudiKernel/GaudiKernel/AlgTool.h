@@ -288,6 +288,7 @@ public:
 		MsgStream log(msgSvc(), name());
 
 		if (LIKELY(res)) {
+		      if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
 			log << MSG::DEBUG << "Handle for " << propertyName << " ("
 					<< address << ")" << " successfully created and stored."
 					<< endmsg;
@@ -327,6 +328,7 @@ public:
 		MsgStream log(msgSvc(), name());
 
 		if (LIKELY(res)) {
+		      if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
 			log << MSG::DEBUG << "Handle for " << propertyName << " ("
 					<< (addresses.empty() ? DataObjectDescriptor::NULL_ : addresses[0]) << ")" << " successfully created and stored."
 					<< endmsg;
@@ -365,6 +367,7 @@ public:
 		MsgStream log(msgSvc(), name());
 
 		if (LIKELY(res)) {
+		      if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
 			log << MSG::DEBUG << "Handle for " << propertyName << " ("
 					<< address << ")" << " successfully created and stored."
 					<< endmsg;
@@ -394,9 +397,10 @@ public:
 	}
 
 	void registerTool(IAlgTool * tool) const {
-		MsgStream log(msgSvc(), name());
-
-		log << MSG::DEBUG << "Registering tool " << tool->name() << endmsg;
+		if (UNLIKELY(m_outputLevel <= MSG::DEBUG)) {
+		  MsgStream log(msgSvc(), name());
+		  log << MSG::DEBUG << "Registering tool " << tool->name() << endmsg;
+		}
 		m_tools.push_back(tool);
 	}
 
@@ -406,11 +410,13 @@ public:
 
 		MsgStream log(msgSvc(), name());
 		if (it != m_tools.end()) {
-			log << MSG::DEBUG << "De-Registering tool " << tool->name()
+		  if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
+		    log << MSG::DEBUG << "De-Registering tool " << tool->name()
 					<< endmsg;
 			m_tools.erase(it);
 		} else {
-			log << MSG::DEBUG << "Could not de-register tool " << tool->name()
+		  if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
+		    log << MSG::DEBUG << "Could not de-register tool " << tool->name()
 					<< endmsg;
 		}
 	}
@@ -436,7 +442,8 @@ public:
 		MsgStream log(msgSvc(), name());
 
 		if (sc.isSuccess()) {
-			log << MSG::DEBUG << "Handle for public tool" << toolTypeAndName
+		  if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
+		    log << MSG::DEBUG << "Handle for public tool" << toolTypeAndName
 					<< " successfully created and stored." << endmsg;
 		} else {
 
@@ -469,6 +476,7 @@ public:
 		MsgStream log(msgSvc(), name());
 
 		if (sc.isSuccess()) {
+                  if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
 			log << MSG::DEBUG << "Handle for private tool" << toolTypeAndName
 					<< " successfully created and stored." << endmsg;
 		} else {
