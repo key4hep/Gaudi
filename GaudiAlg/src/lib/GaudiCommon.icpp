@@ -240,7 +240,8 @@ StatusCode GaudiCommon<PBASE>::
     //check whether we have an absolute path if yes return it - else prepend DataManager Root
     result = (result[0] == '/' ? result : rootName + result);
 
-    this->debug() << "Changing " << location << " to " << result << endmsg;
+    if ( this->msgLevel(MSG::DEBUG) )
+      this->debug() << "Changing " << location << " to " << result << endmsg;
 
     return result;
   };
