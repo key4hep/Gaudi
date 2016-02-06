@@ -1155,9 +1155,11 @@ void Algorithm::initToolHandles() const{
 		//get generic tool interface from ToolHandle
 		if(th->retrieve(tool).isSuccess() && tool != nullptr){
 			m_tools.push_back(tool);
-			log << MSG::DEBUG << "Adding ToolHandle tool " << tool->name() << " (" << tool->type() << ")" << endmsg;
+			if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
+			  log << MSG::DEBUG << "Adding ToolHandle tool " << tool->name() << " (" << tool->type() << ")" << endmsg;
 		} else {
-			log << MSG::DEBUG << "Trying to add nullptr tool" << endmsg;
+		        if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
+			  log << MSG::DEBUG << "Trying to add nullptr tool" << endmsg;
 		}
 	}
 
@@ -1186,8 +1188,8 @@ void Algorithm::addSubAlgorithmDataObjectHandles(){
 	for(auto alg: m_subAlgms){
 
 		assert(alg->isInitialized());
-
-		log << MSG::DEBUG << "Adding subAlg DOHs for " << alg->name() << endmsg;
+		if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
+		  log << MSG::DEBUG << "Adding subAlg DOHs for " << alg->name() << endmsg;
 
 		for(auto tag : alg->inputDataObjects()){
 			auto doh = &alg->inputDataObjects()[tag];
@@ -1197,11 +1199,13 @@ void Algorithm::addSubAlgorithmDataObjectHandles(){
 
 			//if the output of an previous algorithm produces the required input don't add it
 			if(!m_outputDataObjects.contains(doh)){
+			  if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
 				log << MSG::DEBUG << "\tinput handle " << doh->dataProductName() << " is real input to sequence, adding as "
 					<< (alg->name() + "/" + doh->descriptor()->tag()) << endmsg;
 
 				m_inputDataObjects.insert(alg->name() + "/" + doh->descriptor()->tag() ,doh);
 			} else {
+			  if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
 				log << MSG::DEBUG << "\tinput handle " << doh->dataProductName() << " is produced by algorithm in sequence" << endmsg;
 			}
 		}
@@ -1212,9 +1216,9 @@ void Algorithm::addSubAlgorithmDataObjectHandles(){
 
 			if(!doh->isValid())
 				continue;
-
-			log << MSG::DEBUG << "\toutput handle " << doh->dataProductName() << " is output of sequence, adding as "
-				<< (alg->name() + "/" + doh->descriptor()->tag()) << endmsg;
+			if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
+			  log << MSG::DEBUG << "\toutput handle " << doh->dataProductName() << " is output of sequence, adding as "
+			      << (alg->name() + "/" + doh->descriptor()->tag()) << endmsg;
 
 			m_outputDataObjects.insert(alg->name() + "/" + doh->descriptor()->tag(), doh);
 		}
