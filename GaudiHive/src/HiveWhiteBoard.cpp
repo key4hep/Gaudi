@@ -14,7 +14,6 @@
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/DataObjID.h"
 #include "GaudiKernel/DataSvc.h"
-#include "GaudiKernel/ThreadLocalPtr.h"
 #include "tbb/spin_mutex.h"
 #include "tbb/recursive_mutex.h"
 
@@ -71,7 +70,7 @@ namespace {
   };
 }
 
-THREAD_LOCAL_PTR Partition* s_current(0);
+thread_local Partition* s_current(0);
 
 /**
  * @class HiveWhiteBoard

@@ -1,10 +1,7 @@
 #include "GaudiKernel/ContextSpecificPtr.h"
-#include "GaudiKernel/ThreadLocalPtr.h"
 #include "GaudiKernel/EventContext.h"
 
-
-
-static THREAD_LOCAL_PTR EventContext s_curCtx;
+static thread_local EventContext s_curCtx;
 
 namespace Gaudi {
   namespace Hive {
