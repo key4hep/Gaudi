@@ -1,4 +1,4 @@
-gaudi_subdir(GaudiHive v1r0)
+gaudi_subdir(GaudiHive v1r1)
 
 gaudi_depends_on_subdirs(GaudiKernel GaudiAlg GaudiCommonSvc GaudiCoreSvc)
 

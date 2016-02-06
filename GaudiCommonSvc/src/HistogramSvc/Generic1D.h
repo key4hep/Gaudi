@@ -11,9 +11,13 @@
 #include "AIDA/IProfile1D.h"
 #include "TFile.h"
 
-/*
- *    Gaudi namespace
- */
+#ifdef __clang__
+#pragma clang diagnostic push
+// Hide warning message:
+// warning: 'XYZ' overrides a member function but is not marked 'override'
+#pragma clang diagnostic ignored "-Winconsistent-missing-override"
+#endif
+
 namespace Gaudi {
 
   /** @class Generic1D Generic1D.h GaudiPI/Generic1D.h
@@ -231,6 +235,10 @@ namespace Gaudi {
     f->Close();
     return nbytes;
   }
-} // end namespace AIDA
+}
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
 #endif // AIDAROOT_GENERIC1D_H

@@ -13,7 +13,8 @@
 #include <list>
 #include <vector>
 #include <algorithm>
-#include <mutex>
+#include <memory>
+#include "boost/thread.hpp"
 
 // Forward declarations
 class IService;
@@ -138,15 +139,19 @@ public:
 private:
 
   inline ListSvc::iterator find(const std::string &name) {
+    boost::lock_guard<boost::recursive_mutex> lck(m_gLock);      
     return std::find(m_listsvc.begin(), m_listsvc.end(), name);
   }
   inline ListSvc::const_iterator find(const std::string &name) const {
+    boost::lock_guard<boost::recursive_mutex> lck(m_gLock);      
     return std::find(m_listsvc.begin(), m_listsvc.end(), name);
   }
   inline ListSvc::iterator find(const IService *ptr) {
+    boost::lock_guard<boost::recursive_mutex> lck(m_gLock);      
     return std::find(m_listsvc.begin(), m_listsvc.end(), ptr);
   }
   inline ListSvc::const_iterator find(const IService *ptr) const {
+    boost::lock_guard<boost::recursive_mutex> lck(m_gLock);      
     return std::find(m_listsvc.begin(), m_listsvc.end(), ptr);
   }
 
@@ -177,7 +182,12 @@ private:
   GaudiUtils::Map<InterfaceID, SmartIF<IInterface> > m_defaultImplementations;
 
   /// Mutex to synchronize shared service initialization between threads
-  std::recursive_mutex  m_svcinitmutex;
+  typedef boost::recursive_mutex Mutex_t;
+  typedef boost::lock_guard<Mutex_t> LockGuard_t;
+
+  mutable Mutex_t m_gLock;
+  mutable std::map<std::string, std::unique_ptr<Mutex_t> > m_lockMap;
+  
 
 private:
   void dump() const;

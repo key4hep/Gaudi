@@ -3,6 +3,14 @@
 // ============================================================================
 // Include files
 // ============================================================================
+#include "GaudiGSL/GaudiGSL.h"
+#include "GaudiGSL/GslError.h"
+#include "GaudiGSL/GslErrorHandlers.h"
+#include "GaudiGSL/IEqSolver.h"
+#include "GaudiGSL/IFuncMinimum.h"
+#include "GaudiGSL/IGslErrorHandler.h"
+#include "GaudiGSL/IGslSvc.h"
+// ============================================================================
 #include "GaudiMath/GaudiMath.h"
 // ============================================================================
 

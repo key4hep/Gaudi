@@ -391,6 +391,10 @@ macro(gaudi_project project version)
   install(DIRECTORY cmake/EnvConfig DESTINATION scripts
           FILES_MATCHING PATTERN "*.py" PATTERN "*.conf")
 
+  if (CMAKE_EXPORT_COMPILE_COMMANDS)
+    install(FILES ${CMAKE_BINARY_DIR}/compile_commands.json DESTINATION . OPTIONAL)
+  endif()
+
   #--- Global actions for the project
   #message(STATUS "CMAKE_MODULE_PATH -> ${CMAKE_MODULE_PATH}")
   include(GaudiBuildFlags)
@@ -711,33 +715,6 @@ __path__ = [d for d in [os.path.join(d, '${pypack}') for d in sys.path if d]
   #--- Generate the manifest.xml file.
   gaudi_generate_project_manifest(${CMAKE_CONFIG_OUTPUT_DIRECTORY}/manifest.xml ${ARGV})
   install(FILES ${CMAKE_CONFIG_OUTPUT_DIRECTORY}/manifest.xml DESTINATION .)
-
-  #--- CPack configuration
-  set(CPACK_PACKAGE_NAME ${project})
-  foreach(t MAJOR MINOR PATCH)
-    set(CPACK_PACKAGE_VERSION_${t} ${CMAKE_PROJECT_VERSION_${t}})
-  endforeach()
-  set(CPACK_SYSTEM_NAME ${BINARY_TAG})
-
-  set(CPACK_SOURCE_IGNORE_FILES "/InstallArea/;/build\\\\..*/;/\\\\.svn/;/\\\\.git/;/\\\\.settings/;\\\\..*project;\\\\.gitignore")
-
-  # for the binary
-  set(CPACK_INSTALL_PREFIX "usr/${project}/${version}/InstallArea/${BINARY_TAG}")
-  set(CPACK_INSTALL_SCRIPT "${GaudiProject_DIR}/cpack_install.cmake")
-
-  # for the source
-  set(CPACK_SOURCE_INSTALLED_DIRECTORIES "${CMAKE_SOURCE_DIR};/usr/${project}/${version}")
-
-  # for the RPMs
-  set(CPACK_PACKAGE_DEFAULT_LOCATION "/usr")
-  set(CPACK_GENERATOR "RPM")
-  set(CPACK_RPM_PACKAGE_VERSION "${version}")
-  set(CPACK_SOURCE_GENERATOR "RPM")
-  set(CPACK_SOURCE_RPM "ON")
-  set(CPACK_SOURCE_RPM_PACKAGE_ARCHITECTURE "noarch")
-  set(CPACK_SOURCE_RPM_PACKAGE_NAME "${project}-source")
-
-  include(CPack)
 
 endmacro()
 

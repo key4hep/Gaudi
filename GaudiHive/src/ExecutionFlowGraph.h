@@ -232,9 +232,9 @@ namespace concurrency {
 class DataNode {
 public:
     /// Constructor
-    DataNode(ExecutionFlowGraph& graph, const std::string& path) : m_graph(&graph), m_data_object_path(path) {};
+    DataNode(ExecutionFlowGraph& /*graph*/, const std::string& path): m_data_object_path(path) {}
     /// Destructor
-    ~DataNode() {};
+    ~DataNode() {}
     const std::string& getPath() {return m_data_object_path;}
     /// Associate an AlgorithmNode, which is a data supplier for this one
     void addProducerNode(AlgorithmNode* node) {
@@ -251,7 +251,6 @@ public:
     /// Get all data object consumers
     const std::vector<AlgorithmNode*>& getConsumers() const {return m_consumers;}
 private:
-    ExecutionFlowGraph* m_graph;
     std::string m_data_object_path;
     std::vector<AlgorithmNode*> m_producers;
     std::vector<AlgorithmNode*> m_consumers;
@@ -260,8 +259,9 @@ private:
 typedef std::unordered_map<std::string,AlgorithmNode*> AlgoNodesMap;
 typedef std::unordered_map<std::string,DecisionNode*> DecisionHubsMap;
 typedef std::unordered_map<std::string,DataNode*> DataNodesMap;
-typedef std::unordered_map<std::string,const DataObjectDescriptorCollection*> AlgoInputsMap;
-typedef std::unordered_map<std::string,const DataObjectDescriptorCollection*> AlgoOutputsMap;
+
+  typedef std::unordered_map<std::string, DataObjIDColl > AlgoInputsMap;
+  typedef std::unordered_map<std::string, DataObjIDColl > AlgoOutputsMap;
 
 class ExecutionFlowManager;
 struct IExecutionFlowGraph {
@@ -274,11 +274,11 @@ public:
     /// Constructor
     ExecutionFlowGraph(const std::string& name, SmartIF<ISvcLocator> svc) :
      m_headNode(0), m_nodeCounter(0), m_svcLocator(svc), m_name(name), m_initTime(std::chrono::high_resolution_clock::now()),
-     m_eventSlots(nullptr) {};
+     m_eventSlots(nullptr) {}
     /// Destructor
     ~ExecutionFlowGraph() override {
       if (m_headNode != 0) delete m_headNode;
-    };
+    }
     /// Initialize graph
     StatusCode initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map);
     StatusCode initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map,
@@ -328,9 +328,9 @@ public:
     ///
     const std::vector<AlgorithmNode*> getDataIndependentNodes() const;
     /// Retrieve name of the service
-    const std::string& name() const {return m_name;}
+    const std::string& name() const override {return m_name;}
     /// Retrieve pointer to service locator
-    SmartIF<ISvcLocator>& serviceLocator() const {return m_svcLocator;}
+    SmartIF<ISvcLocator>& serviceLocator() const override {return m_svcLocator;}
     ///
     const std::chrono::system_clock::time_point getInitTime() const {return m_initTime;};
     ///

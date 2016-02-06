@@ -1,4 +1,5 @@
 #include "ExecutionFlowGraph.h"
+#include "GaudiKernel/DataHandleHolderVisitor.h"
 
 namespace concurrency {
 
@@ -213,7 +214,7 @@ namespace concurrency {
     bool result = false;
 
     if (State::INITIAL == state) {
-      states.updateState(m_algoIndex, State::CONTROLREADY);
+      states.updateState(m_algoIndex, State::CONTROLREADY).ignore();
       //std::cout << "----> UPDATING ALGORITHM to CONTROLREADY: " << m_algoName << std::endl;
       result = true;
     } else if (State::CONTROLREADY == state) {
@@ -233,7 +234,7 @@ namespace concurrency {
     if (State::CONTROLREADY == state) {
       if (dataDependenciesSatisfied(slotNum)) {
         //std::cout << "----> UPDATING ALGORITHM to DATAREADY: " << m_algoName << std::endl;
-        states.updateState(m_algoIndex, State::DATAREADY);
+        states.updateState(m_algoIndex, State::DATAREADY).ignore();
         result = true;
 
         //m_graph->addEdgeToExecutionPlan(requestor, this);
@@ -315,7 +316,7 @@ namespace concurrency {
     // if it hasn't already
     const State& state = states[m_algoIndex];
     unsigned int decision = -1;
-    if (State::INITIAL == state) {states.updateState(m_algoIndex, State::CONTROLREADY);}
+    if (State::INITIAL == state) {states.updateState(m_algoIndex, State::CONTROLREADY).ignore();}
     // now derive the proper result to pass back
     if (true == m_allPass) {
       decision = 1;
@@ -433,23 +434,24 @@ namespace concurrency {
 
     const std::string& algoName = algo->name();
 
-    const DataObjectDescriptorCollection& inputDOCollection = algo->inputDataObjects();
-    m_algoNameToAlgoInputsMap[algoName] = &inputDOCollection;
+
+    DataObjIDColl inputObjs, outputObjs;
+    DHHVisitor avis(inputObjs, outputObjs);
+    algo->accept(&avis);
+
+    m_algoNameToAlgoInputsMap[algoName] = inputObjs;
 
     debug() << "Inputs of " << algoName << ": ";
-    for (auto tag : inputDOCollection) {
-      if (inputDOCollection[tag].isValid())
-        debug() << inputDOCollection[tag].dataProductName() << " | ";
+    for (auto tag : inputObjs) {
+      debug() << tag << " | ";
     }
     debug() << endmsg;
 
-    const DataObjectDescriptorCollection& outputDOCollection = algo->outputDataObjects();
-    m_algoNameToAlgoOutputsMap[algoName] = &outputDOCollection;
+    m_algoNameToAlgoOutputsMap[algoName] = outputObjs;
 
     debug() << "Outputs of " << algoName << ": ";
-    for (auto tag : outputDOCollection) {
-      if (outputDOCollection[tag].isValid())
-        debug() << outputDOCollection[tag].dataProductName() << " | ";
+    for (auto tag : outputObjs) {
+      debug() << tag << " | ";
     }
     debug() << endmsg;
   }
@@ -464,13 +466,14 @@ namespace concurrency {
       auto targetNode = m_algoNameToAlgoNodeMap[algo.first];
 
       // Find producers for all the inputs of the target node
-      auto& targetInCollection = *m_algoNameToAlgoInputsMap[algo.first];
+      auto& targetInCollection = m_algoNameToAlgoInputsMap[algo.first];
       for (auto inputTag : targetInCollection) {
-        auto& input2Match = targetInCollection[inputTag].dataProductName();
+        //        auto& input2Match = targetInCollection[inputTag].dataProductName();
         for (auto producer : m_algoNameToAlgoOutputsMap) {
-          auto& outputs = *m_algoNameToAlgoOutputsMap[producer.first];
+          auto& outputs = m_algoNameToAlgoOutputsMap[producer.first];
           for (auto outputTag : outputs) {
-            if (outputs[outputTag].isValid() && outputs[outputTag].dataProductName() == input2Match) {
+            // if (outputs[outputTag].isValid() && outputs[outputTag].dataProductName() == input2Match) {
+            if (inputTag == outputTag) {
               auto& known_producers = targetNode->getSupplierNodes();
               auto valid_producer = m_algoNameToAlgoNodeMap[producer.first];
               auto& known_consumers = valid_producer->getConsumerNodes();
@@ -484,13 +487,14 @@ namespace concurrency {
       }
 
       // Find consumers for all the outputs of the target node
-      auto& targetOutCollection = *m_algoNameToAlgoOutputsMap[algo.first];
+      auto& targetOutCollection = m_algoNameToAlgoOutputsMap[algo.first];
       for (auto outputTag : targetOutCollection) {
-        auto& output2Match = targetOutCollection[outputTag].dataProductName();
+        //        auto& output2Match = targetOutCollection[outputTag].dataProductName();
         for (auto consumer : m_algoNameToAlgoInputsMap) {
-          auto& inputs = *m_algoNameToAlgoInputsMap[consumer.first];
+          auto& inputs = m_algoNameToAlgoInputsMap[consumer.first];
           for (auto inputTag : inputs) {
-            if (inputs[inputTag].isValid() && inputs[inputTag].dataProductName() == output2Match) {
+            // if (inputs[inputTag].isValid() && inputs[inputTag].dataProductName() == output2Match) {
+            if (inputTag == outputTag) {
               auto& known_consumers = targetNode->getConsumerNodes();
               auto valid_consumer = m_algoNameToAlgoNodeMap[consumer.first];
               auto& known_producers = valid_consumer->getSupplierNodes();
@@ -516,53 +520,55 @@ namespace concurrency {
     for (auto algo : m_algoNameToAlgoNodeMap) {
 
       StatusCode sc;
-      auto& outCollection = *m_algoNameToAlgoOutputsMap[algo.first];
+      auto& outCollection = m_algoNameToAlgoOutputsMap[algo.first];
       for (auto outputTag : outCollection) {
-        if (outCollection[outputTag].isValid()) {
-          auto& output = outCollection[outputTag].dataProductName();
-          sc = addDataNode(output);
+        //        if (outCollection[outputTag].isValid()) {
+        //          auto& output = outCollection[outputTag].dataProductName();
+        sc = addDataNode(outputTag.fullKey());
           if (!sc.isSuccess()) {
-            error() << "Extra producer (" << algo.first << ") for DataObject @ " << output
+          error() << "Extra producer (" << algo.first << ") for DataObject @ " 
+                  << outputTag
                     << " has been detected: this is not allowed." << endmsg;
             global_sc = StatusCode::FAILURE;
           }
-          auto dataNode = getDataNode(output);
+        auto dataNode = getDataNode(outputTag.fullKey());
           dataNode->addProducerNode(algo.second);
           algo.second->addOutputDataNode(dataNode);
-        }
+        //        }
       }
     }
 
     // Connect previously created DO realm to DO consumers (AlgorithmNodes)
     for (auto algo : m_algoNameToAlgoNodeMap) {
-      auto& inCollection = *m_algoNameToAlgoInputsMap[algo.first];
+      auto& inCollection = m_algoNameToAlgoInputsMap[algo.first];
       for (auto inputTag : inCollection) {
-        if (inCollection[inputTag].isValid()) {
+        //        if (inCollection[inputTag].isValid()) {
           DataNode* dataNode = nullptr;
-          auto& primaryPath = inCollection[inputTag].dataProductName();
+        //          auto& primaryPath = inCollection[inputTag].dataProductName();
+        auto primaryPath = inputTag.fullKey();
           auto itP = m_dataPathToDataNodeMap.find(primaryPath);
           if (itP != m_dataPathToDataNodeMap.end()) {
             dataNode = getDataNode(primaryPath);
-            if (!inCollection[inputTag].alternativeDataProductNames().empty())
-              warning() << "Dropping all alternative data dependencies in the graph, but '" << primaryPath
-                        << "', for algorithm " << algo.first << endmsg;
-          } else {
-            for (auto alterPath : inCollection[inputTag].alternativeDataProductNames()) {
-              auto itAP = m_dataPathToDataNodeMap.find(alterPath);
-              if (itAP != m_dataPathToDataNodeMap.end()) {
-                dataNode = getDataNode(alterPath);
-                warning() << "Dropping all alternative data dependencies in the graph, but '" << alterPath
-                          << "', for algorithm " << algo.first << endmsg;
-                break;
-              }
-            }
+          // if (!inCollection[inputTag].alternativeDataProductNames().empty())
+          //   warning() << "Dropping all alternative data dependencies in the graph, but '" << primaryPath
+          //             << "', for algorithm " << algo.first << endmsg;
+          // } else {
+          //   for (auto alterPath : inCollection[inputTag].alternativeDataProductNames()) {
+          //     auto itAP = m_dataPathToDataNodeMap.find(alterPath);
+          //     if (itAP != m_dataPathToDataNodeMap.end()) {
+          //       dataNode = getDataNode(alterPath);
+          //       warning() << "Dropping all alternative data dependencies in the graph, but '" << alterPath
+          //                 << "', for algorithm " << algo.first << endmsg;
+          //       break;
+          //     }
+          //   }
           }
           if (dataNode) {
             dataNode->addConsumerNode(algo.second);
             algo.second->addInputDataNode(dataNode);
           }
 
-        }
+        //        }
       }
     }
 
@@ -712,12 +718,12 @@ namespace concurrency {
     std::vector<AlgorithmNode*> result;
 
     for (auto node : m_algoNameToAlgoInputsMap) {
-      const DataObjectDescriptorCollection& collection = *(node.second);
+      DataObjIDColl collection = (node.second);
       for (auto tag : collection)
-        if (collection[tag].isValid()) {
+        //        if (collection[tag].isValid()) {
           result.push_back(getAlgorithmNode(node.first));
           break;
-        }
+      // }
     }
 
     return result;

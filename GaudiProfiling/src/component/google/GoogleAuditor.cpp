@@ -107,7 +107,7 @@ namespace Google
     }
 
     /// Check if auditing is enabled for the current processing phase
-    inline bool isPhaseEnabled( const CustomEventTypeRef& type ) const
+    inline bool isPhaseEnabled( CustomEventTypeRef type ) const
     {
       return ( std::find(m_when.begin(),m_when.end(),type) != m_when.end() );
     }
@@ -121,7 +121,7 @@ namespace Google
     }
 
     // Construct the dump name based on processing phase and component name
-    std::string getDumpName( const CustomEventTypeRef& type,
+    std::string getDumpName( CustomEventTypeRef type,
                              const std::string& name ) const
     {
       std::ostringstream t;

@@ -31,6 +31,7 @@ private:
   void outputTimeline();
 
   bool m_isEnabled;
+  bool m_partial;
   std::string m_timelineFile;
   tbb::concurrent_vector<TimelineEvent> m_events;
 

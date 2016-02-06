@@ -10,7 +10,7 @@
 /// Class representing the event slot
 class EventSlot{
 public:
-  EventSlot(const std::vector<std::vector<std::string>>& algoDependencies,
+  EventSlot(const std::vector<DataObjIDColl>& algoDependencies,
             unsigned int numberOfAlgorithms,
             unsigned int numberOfControlFlowNodes,
             SmartIF<IMessageSvc> MS):

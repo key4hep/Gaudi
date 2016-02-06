@@ -24,7 +24,11 @@ Service::~Service() {
 
 // IService::sysInitialize
 StatusCode Service::sysInitialize() {
-  StatusCode sc;
+  std::call_once( m_initFlag, &Service::sysInitialize_imp, this );
+  return m_initSC;
+}
+
+void Service::sysInitialize_imp() {
 
   try {
     m_targetState = Gaudi::StateMachine::INITIALIZED;
@@ -34,10 +38,10 @@ StatusCode Service::sysInitialize() {
                                       IAuditor::Initialize);
     if ((name() != "MessageSvc") && msgSvc()) // pre-set the outputLevel from the MessageSvc value
       m_outputLevel = msgSvc()->outputLevel(name());
-    sc = initialize(); // This should change the state to Gaudi::StateMachine::CONFIGURED
-    if (sc.isSuccess())
+    m_initSC = initialize(); // This should change the state to Gaudi::StateMachine::CONFIGURED
+    if (m_initSC.isSuccess())
       m_state = m_targetState;
-    return sc;
+    return;
   }
   catch ( const GaudiException& Exception )  {
     fatal() << "in sysInitialize(): exception with tag=" << Exception.tag()
@@ -55,7 +59,8 @@ StatusCode Service::sysInitialize() {
     //	  Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
   }
 
-  return StatusCode::FAILURE;
+  m_initSC = StatusCode::FAILURE;
+
 }
 
 
