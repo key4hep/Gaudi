@@ -277,6 +277,11 @@ public:
 					MinimalDataObjectHandle::READ) {
 
 		bool res = m_inputDataObjects.insert(propertyName, &handle);
+		if (UNLIKELY(!res)) {
+		      throw GaudiException{"Cannot create handle for " + propertyName +
+		                           " (" + address + ")",
+		                           name(), res};
+		}
 
 		handle.descriptor()->setTag(propertyName);
 		handle.descriptor()->setAddress(address);
@@ -285,20 +290,7 @@ public:
 
 		handle.setOwner(this);
 
-		MsgStream log(msgSvc(), name());
-
-		if (LIKELY(res)) {
-		      if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
-			log << MSG::DEBUG << "Handle for " << propertyName << " ("
-					<< address << ")" << " successfully created and stored."
-					<< endmsg;
-		} else {
-			log << MSG::ERROR << "Handle for " << propertyName << " ("
-					<< address << ")" << " could not be created." << endmsg;
-		}
-
 		return res;
-
 	}
 
 	/** Declare input data object
@@ -317,6 +309,11 @@ public:
 					MinimalDataObjectHandle::READ) {
 
 		bool res = m_inputDataObjects.insert(propertyName, &handle);
+		if (UNLIKELY(!res)) {
+		      throw GaudiException{"Cannot create handle for " + propertyName +
+		                           " (" + (addresses.empty() ? DataObjectDescriptor::NULL_ : addresses[0]) + ")",
+		                           name(), res};
+		}
 
 		handle.descriptor()->setTag(propertyName);
 		handle.descriptor()->setAddresses(addresses);
@@ -325,20 +322,7 @@ public:
 
 		handle.setOwner(this);
 
-		MsgStream log(msgSvc(), name());
-
-		if (LIKELY(res)) {
-		      if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
-			log << MSG::DEBUG << "Handle for " << propertyName << " ("
-					<< (addresses.empty() ? DataObjectDescriptor::NULL_ : addresses[0]) << ")" << " successfully created and stored."
-					<< endmsg;
-		} else {
-			log << MSG::ERROR << "Handle for " << propertyName << " ("
-					<< (addresses.empty() ? DataObjectDescriptor::NULL_ : addresses[0]) << ")" << " could not be created." << endmsg;
-		}
-
 		return res;
-
 	}
 
 	/** Declare output data object
@@ -356,6 +340,11 @@ public:
 			MinimalDataObjectHandle::AccessType accessType = MinimalDataObjectHandle::WRITE) {
 
 		bool res = m_outputDataObjects.insert(propertyName, &handle);
+		if (UNLIKELY(!res)) {
+		      throw GaudiException{"Cannot create handle for " + propertyName +
+		                           " (" + address + ")",
+		                           name(), res};
+		}
 
 		handle.descriptor()->setTag(propertyName);
 		handle.descriptor()->setAddress(address);
@@ -363,18 +352,6 @@ public:
 		handle.descriptor()->setOptional(optional);
 
 		handle.setOwner(this);
-
-		MsgStream log(msgSvc(), name());
-
-		if (LIKELY(res)) {
-		      if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
-			log << MSG::DEBUG << "Handle for " << propertyName << " ("
-					<< address << ")" << " successfully created and stored."
-					<< endmsg;
-		} else {
-			log << MSG::ERROR << "Handle for " << propertyName << " ("
-					<< address << ")" << " could not be created." << endmsg;
-		}
 
 		return res;
 
@@ -436,23 +413,14 @@ public:
 			toolTypeAndName = System::typeinfoName(typeid(T));
 
 		StatusCode sc = handle.initialize(toolTypeAndName, 0, createIf);
+		if (UNLIKELY(!sc)) {
+		      throw GaudiException{"Cannot create handle for public tool " + toolTypeAndName,
+		                           name(), sc};
+		}
 
 		m_toolHandles.push_back(&handle);
 
-		MsgStream log(msgSvc(), name());
-
-		if (sc.isSuccess()) {
-		  if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
-		    log << MSG::DEBUG << "Handle for public tool" << toolTypeAndName
-					<< " successfully created and stored." << endmsg;
-		} else {
-
-			log << MSG::ERROR << "Handle for public tool" << toolTypeAndName
-					<< " could not be created." << endmsg;
-		}
-
 		return sc;
-
 	}
 
 	/** Declare used private tool
@@ -470,23 +438,14 @@ public:
 			toolTypeAndName = System::typeinfoName(typeid(T));
 
 		StatusCode sc = handle.initialize(toolTypeAndName, this, createIf);
+		if (UNLIKELY(!sc)) {
+		      throw GaudiException{"Cannot create handle for private tool " + toolTypeAndName,
+		                           name(), sc};
+		}
 
 		m_toolHandles.push_back(&handle);
 
-		MsgStream log(msgSvc(), name());
-
-		if (sc.isSuccess()) {
-                  if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
-			log << MSG::DEBUG << "Handle for private tool" << toolTypeAndName
-					<< " successfully created and stored." << endmsg;
-		} else {
-
-			log << MSG::ERROR << "Handle for private tool" << toolTypeAndName
-					<< " could not be created." << endmsg;
-		}
-
 		return sc;
-
 	}
 
 	const std::vector<IAlgTool *> & tools() const;
