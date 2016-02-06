@@ -1,7 +1,7 @@
 <lcgdict>
   <selection>
 
- <class pattern="DataObjectDescriptor*"/>
+ <class pattern="DataObjectHandle*"/>
 
   <!-- Base classes in GaudiKernel -->
   <class name="IssueSeverity"/>

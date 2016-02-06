@@ -1090,7 +1090,7 @@ namespace Tuples
 
       // adjust the lenfth
       if( std::distance(first,last) > static_cast<std::ptrdiff_t>(maxv) ) {
-        using GaudiUtils::detail::ostream_joiner;
+        using GaudiUtils::details::ostream_joiner;
         std::ostringstream os;
         ostream_joiner( os, items, ",",
                         [](std::ostream& os, const Item& i) -> std::ostream&

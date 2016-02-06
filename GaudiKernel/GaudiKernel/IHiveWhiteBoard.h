@@ -4,6 +4,7 @@
 
 // Framework include files
 #include "GaudiKernel/IInterface.h"
+#include "GaudiKernel/DataObjID.h"
 
 // C++ include files
 #include <string>
@@ -52,7 +53,7 @@ public:
    * @param  products     [IN]     Partition number (event slot)   *
    * @return Status code indicating failure or success.
    */
-  virtual StatusCode getNewDataObjects(std::vector<std::string>& products) = 0;
+  virtual StatusCode getNewDataObjects(DataObjIDColl& products) = 0;
 
   /** Check if something is new in the whiteboard without getting the products.
    *

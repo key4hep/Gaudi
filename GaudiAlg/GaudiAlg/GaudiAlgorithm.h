@@ -14,6 +14,7 @@
 // ============================================================================
 #include "GaudiAlg/GaudiAlg.h"
 #include "GaudiAlg/GaudiCommon.h"
+#include "GaudiKernel/DataObjectHandle.h"
 // ============================================================================
 // forward declarations:
 // ============================================================================
@@ -686,6 +687,31 @@ private:
   /// process the event only if one or more of these objects are present in TES
   std::vector<std::string> m_requireObjs;
   // ==========================================================================
+
+ public:
+  using Algorithm::declareProperty;
+  template <class T>
+    Property* declareProperty
+    ( const std::string& name,
+      DataObjectHandle<T>&     hndl,
+      const std::string& doc = "none" ) const
+  {
+          
+    if ( hndl.mode() & Gaudi::DataHandle::Reader ) {      
+      (const_cast<GaudiAlgorithm*>(this))->Algorithm::declareInput(&hndl);
+    }
+    
+    if ( hndl.mode() & Gaudi::DataHandle::Writer ) {      
+      (const_cast<GaudiAlgorithm*>(this))->Algorithm::declareOutput(&hndl);
+    }
+    
+    if (hndl.owner() == 0) {
+      hndl.setOwner((const_cast<GaudiAlgorithm*>(this)));
+    }
+    
+    return m_propertyMgr->declareProperty(name, hndl, doc);
+  }
+  
 };
 // ============================================================================
 // The END

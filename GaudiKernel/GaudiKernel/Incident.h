@@ -3,6 +3,7 @@
 
 // Include files
 #include "GaudiKernel/Kernel.h"
+#include "GaudiKernel/EventContext.h"
 #include <string>
 
 /** @class Incident Incident.h GaudiKernel/Incident.h
@@ -18,11 +19,17 @@ class GAUDI_API Incident {
 public:
 
   /// Default Constructor
-  Incident ( std::string source, ///< Incident source (service or algorithm name)
-             std::string type    ///< Incident type
+  Incident ( const std::string& source, ///< Incident source (service or algorithm name)
+             const std::string& type    ///< Incident type
+             ) ;
+
+  Incident ( const std::string& source, ///< Incident source (service or algorithm name)
+             const std::string& type,   ///< Incident type
+	     const EventContext& ctx    ///< EventContext
              )
-    : m_source ( std::move(source) ),
-      m_type   ( std::move(type)   ) { }
+    : m_source ( source ),
+    m_type     ( type   ),
+    m_ctx      ( ctx    ) { }
 
   /// Destructor
   virtual ~Incident() = default;
@@ -39,10 +46,17 @@ public:
    */
   const std::string& source() const { return m_source; }
 
+  /** Access to the EventContext of the source of the incident
+   *
+   *  @return EventContext of the component that initiated the incident
+   */
+  EventContext context() const { return m_ctx; }
+
 private:
 
   std::string m_source; ///< Incident source
   std::string m_type;   ///< incident type
+  EventContext m_ctx;   ///< Event Context when Incident created
 
 };
 

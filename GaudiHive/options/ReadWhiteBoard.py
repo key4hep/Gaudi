@@ -30,7 +30,7 @@ loader = HiveReadAlgorithm("Loader",
 reader = ReadHandleAlg ("Reader",
                          Cardinality=4,
                          OutputLevel=INFO)
-reader.DataInputs.Input.Path=product_name
+reader.Input.Path=product_name
 
 evtslots = 5
 algoparallel = 10
@@ -43,8 +43,8 @@ eventloopmgr = HiveSlimEventLoopMgr(OutputLevel=INFO)
 # We must put the full path in this deprecated expression of dependencies.
 # Using a controlflow for the output would be the way to go
 scheduler = ForwardSchedulerSvc(MaxAlgosInFlight = algoparallel,
-                                OutputLevel=WARNING,
-                                AlgosDependencies = [[],[product_name_full_path]])
+                                OutputLevel=WARNING)
+
                                 
 # Application setup
 ApplicationMgr( TopAlg = [loader, reader],

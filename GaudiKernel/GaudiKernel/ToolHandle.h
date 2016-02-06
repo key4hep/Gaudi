@@ -7,11 +7,11 @@
 #include "GaudiKernel/IToolSvc.h"
 #include "GaudiKernel/INamedInterface.h"
 #include "GaudiKernel/IAlgTool.h"
+//#include "GaudiKernel/SmartIF.h"
 
 #include <string>
 #include <vector>
 #include <stdexcept>
-#include <type_traits>
 
 // forward declarations
 class IInterface;
@@ -24,30 +24,45 @@ class Service;
 /** General info and helper functions for toolhandles and arrays */
 class ToolHandleInfo {
 protected:
-  ToolHandleInfo(const IInterface* parent = nullptr, bool createIf = true )
+  ToolHandleInfo(const IInterface* parent = 0, bool createIf = true )
     : m_parent(parent), m_createIf(createIf)
   {}
 
 public:
-  virtual ~ToolHandleInfo() = default;
+  virtual ~ToolHandleInfo() {};
 
-  bool isPublic() const { return !m_parent; }
+  bool isPublic() const {
+    return !m_parent;
+  }
 
-  bool createIf() const { return m_createIf; }
+  bool createIf() const {
+    return m_createIf;
+  }
 
-  const IInterface* parent() const { return m_parent; }
+  const IInterface* parent() const {
+    return m_parent;
+  }
 
   //
   // Some helper functions
   //
-  static std::string toolComponentType(const IInterface* parent) {
+  const std::string toolComponentType( const IInterface* parent ) const {
     return parent ? "PrivateTool" : "PublicTool";
   }
 
-  static std::string toolParentName(const IInterface* parent) {
-    if (!parent) return "ToolSvc";
+  const std::string toolParentName( const IInterface* parent ) const {
+    if (parent) {
+      //SmartIF<INamedInterface> pNamed(const_cast<IInterface*>(parent));
+      //if (pNamed.isValid()) {
     const INamedInterface* pNamed = dynamic_cast<const INamedInterface*>(parent);
-    return pNamed ? pNamed->name() : "";
+      if (pNamed) {
+        return pNamed->name();
+      } else {
+        return "";
+      }
+    } else {
+      return "ToolSvc";
+    }
   }
 
 protected:
@@ -66,18 +81,17 @@ protected:
 class BaseToolHandle: public ToolHandleInfo {
 
 protected:
-  BaseToolHandle(const IInterface* parent = nullptr, bool createIf = true )
+  BaseToolHandle(const IInterface* parent = 0, bool createIf = true )
     : ToolHandleInfo(parent, createIf)
   {}
 
-  virtual StatusCode i_retrieve(IAlgTool*&) const = 0;
+public:
+  virtual ~BaseToolHandle() {};
 
 public:
-  virtual ~BaseToolHandle() {}
+  //Get a reference to the generic IAlgTool
+  virtual StatusCode retrieve( IAlgTool*& algTool ) const = 0;
 
-  StatusCode retrieve(IAlgTool*& tool) const {
-    return i_retrieve(tool);
-  }
 };
 
 /** @class ToolHandle ToolHandle.h GaudiKernel/ToolHandle.h
@@ -93,8 +107,6 @@ public:
 template< class T >
 class ToolHandle : public BaseToolHandle, public GaudiHandle<T> {
 
-  static_assert(std::is_base_of<IAlgTool,T>::value, "T must inherit from IAlgTool");
-
   friend class Algorithm;
   friend class AlgTool;
   friend class Service;
@@ -103,11 +115,11 @@ public:
   /** Constructor for a tool with default tool type and name.
       Can be called only if the type T is a concrete tool type (not an interface),
       and you want to use the default name. */
-  ToolHandle(const IInterface* parent = nullptr, bool createIf = true)
+  ToolHandle(const IInterface* parent=0, bool createIf = true )
     : BaseToolHandle(parent,createIf),
       GaudiHandle<T>( GaudiHandle<T>::getDefaultType(),
-                      toolComponentType(parent),
-                      toolParentName(parent) ),
+                      ToolHandleInfo::toolComponentType(parent),
+                      ToolHandleInfo::toolParentName(parent) ),
       m_pToolSvc( "ToolSvc", GaudiHandleBase::parentName() )
   {  }
 
@@ -135,30 +147,30 @@ public:
       @param createIf: if true, create tool if not yet existing.
   */
 
-#if defined(TOOLHANDLE_DEPR_WARN)
-  //warn about using deprecated explicit ToolHandle construction
-#pragma message("Untracked ToolHandle: Migrate explicit DataHandle constructor to declareTool Algorithm Property")
+// #if defined(ATLAS) && defined(TOOLHANDLE_DEPR_WARN)
+//   //warn about using deprecated explicit ToolHandle construction
+// #pragma message("Untracked ToolHandle: Migrate explicit DataHandle constructor to declareTool Algorithm Property")
 
-  __attribute__ ((deprecated))
+//   __attribute__ ((deprecated))
 
-#endif
-  ToolHandle(const std::string& toolTypeAndName,
-             const IInterface* parent = nullptr, bool createIf = true )
+// #endif
+
+  ToolHandle(const std::string& toolTypeAndName, const IInterface* parent = 0, bool createIf = true )
     : BaseToolHandle(parent,createIf),
       GaudiHandle<T>( toolTypeAndName,
-                      toolComponentType(parent),
-                      toolParentName(parent) ),
+                      ToolHandleInfo::toolComponentType(parent),
+                      ToolHandleInfo::toolParentName(parent) ),
       m_pToolSvc( "ToolSvc", GaudiHandleBase::parentName() )
   {  }
 
 public:
 
   StatusCode initialize(const std::string& toolTypeAndName,
-                        const IInterface* parent = nullptr, bool createIf = true){
+                        const IInterface* parent = 0, bool createIf = true){
 
     GaudiHandleBase::setTypeAndName(toolTypeAndName);
-    GaudiHandleBase::setComponentType(toolComponentType(parent));
-    GaudiHandleBase::setParentName(toolParentName(parent));
+    GaudiHandleBase::setComponentType(ToolHandleInfo::toolComponentType(parent));
+    GaudiHandleBase::setParentName(ToolHandleInfo::toolParentName(parent));
 
     m_parent = parent;
     m_createIf = createIf;
@@ -180,23 +192,155 @@ public:
     return GaudiHandle<T>::release();
   }
 
+
+  //  virtual StatusCode retrieve( T*& algTool ) const;
+  
+
   /** Do the real retrieval of the AlgTool. */
-  StatusCode retrieve( T*& algTool ) const override {
-    IAlgTool* iface = nullptr;
-    algTool = i_retrieve(iface) ? dynamic_cast<T*>(iface) : nullptr;
-    return algTool ? StatusCode::SUCCESS : StatusCode::FAILURE;
+  virtual StatusCode retrieve( T*& algTool ) const {
+
+    return m_pToolSvc->retrieve( GaudiHandleBase::typeAndName(), T::interfaceID(),
+                                 (IAlgTool*&)(algTool),
+                                 ToolHandleInfo::parent(), ToolHandleInfo::createIf() );
+
+  }
+
+  /** Get a generic reference of the IAlgTool for processing in the sysInitialize. */
+  virtual StatusCode retrieve( IAlgTool*& algTool ) const {
+
+    //This explicit casting is required in order to properly re-interpret the <T> Tool
+
+    T * tool;
+    StatusCode sc = retrieve(tool);
+    algTool = tool;
+
+    return sc;
   }
 
   /** Do the real release of the AlgTool. */
-  StatusCode release( T* algTool ) const override {
+  virtual StatusCode release( T* algTool ) const {
     return m_pToolSvc->releaseTool( algTool );
   }
 
-protected:
-  StatusCode i_retrieve(IAlgTool*& algTool) const override {
+private:
+  //
+  // Private data members
+  //
+  mutable ServiceHandle<IToolSvc> m_pToolSvc;
+};
+
+//-----------------------------------------------------------------------//
+
+// specialization for IAlgTool
+
+
+template<>
+class ToolHandle<IAlgTool> : public BaseToolHandle, public GaudiHandle<IAlgTool> {
+
+  friend class Algorithm;
+  friend class AlgTool;
+  friend class Service;
+
+public:
+  /** Constructor for a tool with default tool type and name.
+      Can be called only if the type T is a concrete tool type (not an interface),
+      and you want to use the default name. */
+  ToolHandle(const IInterface* parent=0, bool createIf = true )
+    : BaseToolHandle(parent,createIf),
+      GaudiHandle<IAlgTool>( GaudiHandle<IAlgTool>::getDefaultType(),
+                             ToolHandleInfo::toolComponentType(parent),
+                             ToolHandleInfo::toolParentName(parent) ),
+      m_pToolSvc( "ToolSvc", GaudiHandleBase::parentName() )
+  {  }
+
+public:
+  //
+  // Constructors etc.
+  //
+
+  /** Create a handle ('smart pointer') to a tool.
+      The arguments are passed on to ToolSvc, and have the same meaning:
+      @code
+      StatusCode ToolSvc::retrieveTool ( const std::string& type            ,
+      IAlgTool*&         tool            ,
+      const IInterface*  parent   = 0    ,
+      bool               createIf = true )
+      @endcode
+      @param owner: class owning the ToolHandle
+      @param toolType: "MyToolType/MyToolName"
+      "MyToolType" is short for "MyToolType/MyToolType"
+      'MyToolType' is the name of the class of the concrete tool
+      'MyToolName' is to distinguish several tool instances of the same class
+      @param parent: the parent Algorithm,Tool or Service of which this tool is a member.
+      If non-zero, the the tool is a private tool of the parent, otherwise it is
+      a public (shared) tool.
+      @param createIf: if true, create tool if not yet existing.
+  */
+
+// #if defined(ATLAS) && defined(TOOLHANDLE_DEPR_WARN)
+//   //warn about using deprecated explicit ToolHandle construction
+// #pragma message("Untracked ToolHandle: Migrate explicit DataHandle constructor to declareTool Algorithm Property")
+
+//   __attribute__ ((deprecated))
+
+// #endif
+
+  ToolHandle(const std::string& toolTypeAndName, const IInterface* parent = 0, bool createIf = true )
+    : BaseToolHandle(parent,createIf),
+      GaudiHandle<IAlgTool>( toolTypeAndName,
+                             ToolHandleInfo::toolComponentType(parent),
+                             ToolHandleInfo::toolParentName(parent) ),
+      m_pToolSvc( "ToolSvc", GaudiHandleBase::parentName() )
+  {  }
+
+public:
+
+  StatusCode initialize(const std::string& toolTypeAndName,
+                        const IInterface* parent = 0, bool createIf = true){
+
+    GaudiHandleBase::setTypeAndName(toolTypeAndName);
+    GaudiHandleBase::setComponentType(ToolHandleInfo::toolComponentType(parent));
+    GaudiHandleBase::setParentName(ToolHandleInfo::toolParentName(parent));
+
+    m_parent = parent;
+    m_createIf = createIf;
+
+    StatusCode sc = m_pToolSvc.initialize("ToolSvc", GaudiHandleBase::parentName());
+
+    return sc;
+  }
+
+  /** Retrieve the AlgTool. Release existing tool if needed.
+      Function must be repeated here to avoid hiding the function retrieve( T*& ) */
+  StatusCode retrieve() const { // not really const, because it updates m_pObject
+    return GaudiHandle<IAlgTool>::retrieve();
+  }
+
+  /** Release the AlgTool.
+      Function must be repeated here to avoid hiding the function release( T*& ) */
+  StatusCode release() const { // not really const, because it updates m_pObject
+    return GaudiHandle<IAlgTool>::release();
+  }
+
+  /** Get a generic reference of the IAlgTool for processing in the sysInitialize. */
+  virtual StatusCode retrieve( IAlgTool*& algTool ) const {
+
     return m_pToolSvc->retrieve( GaudiHandleBase::typeAndName(), IAlgTool::interfaceID(),
-                                 algTool,
+                                 (IAlgTool*&)(algTool),
                                  ToolHandleInfo::parent(), ToolHandleInfo::createIf() );
+
+    //This explicit casting is required in order to properly re-interpret the <T> Tool
+
+    // IAlgTool * tool;
+    // StatusCode sc = retrieve(tool);
+    // algTool = tool;
+
+    // return sc;
+  }
+
+  /** Do the real release of the AlgTool. */
+  virtual StatusCode release( IAlgTool* algTool ) const {
+    return m_pToolSvc->releaseTool( algTool );
   }
 
 private:
