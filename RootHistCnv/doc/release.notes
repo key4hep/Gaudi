@@ -2,6 +2,19 @@ Package: RootHistCnv
 Package manager : David Quarrie
 Commit Id: $Format:%H$
 
+============================= RootHistCnv v12r3 ==============================
+
+! 2015-10-26 - commit de80db5
+
+ - More modernization changes
+
+   Fix (almost) all warnings from clang 3.7, and use clang-modernize to further
+   modernize the code.
+
+   Fixes GAUDI-1118.
+
+   See merge request !49
+
 ============================= RootHistCnv v12r2 ==============================
 
 ! 2015-09-30 - commit 70dd6a7

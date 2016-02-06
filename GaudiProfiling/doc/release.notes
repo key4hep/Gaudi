@@ -5,6 +5,26 @@
 ! Commit Id   : $Format:%H$
 !-----------------------------------------------------------------------------
 
+============================ GaudiProfiling v2r8 =============================
+
+! 2016-01-07 - commit fabc739
+
+ - fixed compilation with clang 3.7 (after hive merge)
+
+   * fixed compilation problems related to `operator<<` (gcc is more
+    permissive than clang).
+   * fixed also some clang warnings.
+    Fixes GAUDI-1157.
+    See merge request !84
+
+! 2015-11-02 - commit 57f356c
+
+ - Merge branch 'hive' into 'master'
+
+   Fixes GAUDI-978.
+
+   See merge request !65
+
 ============================ GaudiProfiling v2r7 =============================
 
 ! 2015-10-08 - commit c50c176

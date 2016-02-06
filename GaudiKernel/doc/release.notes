@@ -2,34 +2,288 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
-! 2015-11-09 - Charles Leggett
- - DataObjID: made prettier
+============================= GaudiKernel v33r0 ==============================
 
-! 2015-10-29 - Charles Leggett
- - DataObjID: change order of parameters in constructor to ClassID/Key
+! 2016-01-21 - commit 1e44d49
 
-! 2015-10-22 - Charles Leggett
- - DataObjID: identification of objects in store via EDS Path or CLID/key
-   with hashing for fast lookup
- - DataHandles: integration with Algorithms and AlgTools for automatic
-   data dependency registration. Inheritance tree is
-       DataHandle -> DataObjectHandleBase -> DataObjectHandle<T>
-   Enables setting in jobOpts via DataObjectHandleProperty class
- - ToolHandle: revert private constructor for uniform initialization style of
-   all Handles in constructor of owner.
- - IThreadPoolSvc, IThreadInitTool abstract interfaces for ThreadPool 
-   initialization, and thread local initialization tools
+ - made DataObjectDescriptor.__eq__ more robust
 
-! 2015-07-21 - Marco Clemencic
- - Fixed some unchecked StatusCode.
- - Fixed some whitespaces.
+   Fixes GAUDI-1155.
+    See merge request !99
 
-! 2015-07-20 - Marco Clemencic
- - Fixed infinite recursion when collecting data dependencies from tools.
- - Minor clean up.
+! 2016-01-21 - commit f637ca4
 
-! 2015-02-27 - Marco Clemencic
- - Removed duplicated (wrong) test.
+ - ensure that destination vector for DataSvc::objectLeaves gets reset
+
+   The change restore the implementation in 'master' before the merge of 'hive'.
+
+    Fixes GAUDI-1166.
+ See merge request !97
+
+! 2016-01-12 - commit f5ed7cd
+
+ - Add missing header to GaudiKernel/DataSvc.h
+
+   Some packages in the ATLAS offline code started failing because of this
+
+   missing include. Since the SmartIF<IConversionSvc> member variable does
+ need
+   a full declaration of this type.
+    Fixes GAUDI-1163.
+ See merge request !90
+
+! 2016-01-12 - commit 8ec1b7b
+
+ - return the just-added tool from addTool
+
+   augment addTool to return the tool it just added.
+ This allows one to write:
+   ```python
+ myToolWithName = myalg.addTool(tool_conf2,"ToolWithName")
+
+   myToolWithName.String = "xyz"
+   ```
+ instead of
+   ```python
+ myalg.addTool(tool_conf2,"ToolWithName")
+
+   myalg.ToolWithName.String = "xyz"
+   ```
+ which requires one to duplicate the "ToolWithName" -- once as string,
+   and
+ once as attribute, but only rarely does anybody use getattr for the 2nd
+
+   case to just avoid the duplication.
+    Of course, one could write
+   ```python
+ myalg.addTool(tool_conf2,"ToolWithName", String="xyz")
+   ```
+ or even pass in a complete dictionary with **, but the configuration of
+
+   the tool isn't necessarily complete at the time of creation of its
+
+   configurable.
+    Fixes GAUDI-1162.
+ See merge request !87
+
+! 2016-01-11 - commit ce14297
+
+ - change return type of Property::declare{Read,Update}Handler from void to
+   Property&,
+
+   The reason is that this way one can write code like this:
+   ```C++
+    declareProperty("trackMaxChi2", m_trackMaxChi2 = 25.)
+      ->declareUpdateHandler( [this](Property&){ this->m_trackChi =
+   std::sqrt(this->m_trackMaxChi2); } )
+      .useUpdateHandler();
+   ```
+ this keeps m_trackChi in sync with m_trackMaxChi2. Without the call
+ to
+   useUpdateHandler, if there is no entry in the JobOptionsSvc,
+ m_trackChi
+   would not be set, and one would have to duplicate the
+ code to 'derive'
+   m_trackChi from m_trackMaxChi2 just to initialize
+ it to the proper default.
+    Fixes GAUDI-1160.
+    See merge request !85
+
+! 2016-01-11 - commit cd47f7e
+
+ - add support for std::array in SerializeSTL
+
+   Fixes GAUDI-1159.
+    See merge request !86
+
+! 2016-01-08 - commit 85c99bc
+
+ - Speed up Configurable.isPropertySet
+
+   Fixes GAUDI-1158.
+    See merge request !88
+
+! 2016-01-07 - commit fabc739
+
+ - fixed compilation with clang 3.7 (after hive merge)
+
+   * fixed compilation problems related to `operator<<` (gcc is more
+    permissive than clang).
+   * fixed also some clang warnings.
+    Fixes GAUDI-1157.
+    See merge request !84
+
+! 2016-01-06 - commit 19beffc
+
+ - add constructor from std::initializer_list to GaudiUtils::VectorMap
+
+   add support to construct a GaudiUtils::VectorMap from an
+   std::initializer_list
+    Fixes GAUDI-1154.
+    See merge request !82
+
+! 2015-12-04 - commit 1652f3b
+
+ - fixed logic of Gaudi::popCurrentDataObject()
+
+   fixes GAUDI-1068
+    See merge request !71
+
+! 2015-11-11 - commit 0a0032f
+
+ - Merge branch 'GAUDI-1130' into 'master'
+
+   fixes to support native build on Ubuntu 15.10
+    Fixes GAUDI-1130.
+    See merge request !70
+
+! 2015-11-11 - commit 0feb8ab
+
+ - Merge branch 'GAUDI-1127' into 'master'
+
+   removed the need for ToolHandle<IAlgTool> specialization
+    Modified the implementation of BaseToolHandle so that the retrieve
+ method
+   can be implemented without conflicting with the retrieve method
+ of
+   ToolHandle<T> with T=IAlgTool.
+    This, BTW, fixes GAUDI-1127.
+    See CFHEP-177 and merge request !10.
+    See merge request !67
+
+! 2015-11-10 - commit 3c3e9d9
+
+ - Merge branch 'GAUDI-1127' into 'master'
+
+   removed the need for ToolHandle<IAlgTool> specialization
+    Modified the implementation of BaseToolHandle so that the retrieve
+ method
+   can be implemented without conflicting with the retrieve method
+ of
+   ToolHandle<T> with T=IAlgTool.
+    This, BTW, fixes GAUDI-1127.
+    See CFHEP-177 and merge request !10.
+    See merge request !67
+
+! 2015-11-10 - commit 44b1ef5
+
+ - update to DataObjID: switch order of parameters in constructor
+
+   Change the order of the parameters in the DataObjID constructor from
+   (Key,ClassID) to (ClassID,Key) in order to match more general usage in Atlas.
+
+   Update to GAUDI-1102.
+
+   See merge request !64
+
+
+! 2015-11-10 - commit 148f1bc
+
+ - Merge branch 'GAUDI-1126' into 'master'
+
+   use external linkage for IncidentType constants
+    Fixes GAUDI-1126.
+    See merge request !69
+
+! 2015-11-09 - commit c5f6d91
+
+ - Merge branch 'GAUDI-1128' into 'master'
+
+   change IInspector enum names to avoid conflicts with Oracle
+    Changed IInspector::MUTABLE and IInspector::CONST to IInspector::Mutable
+
+   and IInspector::Const.
+    Fixes GAUDI-1128.
+    See merge request !68
+
+! 2015-11-09 - commit 2a28fda
+
+ - Merge branch 'GAUDI-1127' into 'master'
+
+   removed the need for ToolHandle<IAlgTool> specialization
+    Modified the implementation of BaseToolHandle so that the retrieve
+ method
+   can be implemented without conflicting with the retrieve method
+ of
+   ToolHandle<T> with T=IAlgTool.
+    This, BTW, fixes GAUDI-1127.
+    See CFHEP-177 and merge request !10.
+    See merge request !67
+
+! 2015-11-09 - commit 0870b7f
+
+ - Merge branch 'GAUDI-1124' into 'master'
+
+   remove usage of "#pragma once"
+    Fixes GAUDI-1124.
+    See merge request !66
+
+! 2015-11-02 - commit 57f356c
+
+ - Merge branch 'hive' into 'master'
+
+   Fixes GAUDI-978.
+
+   See merge request !65
+
+
+! 2015-10-29 - commit aa624e1
+
+ - Allow compilation of Gaudi with clang 3.7 using gcc 4.9 externals
+
+   To do so, some arguments have to be passed to cmake, assuming CMTCONFIG is
+   x86_64-slc6-clang37-opt
+    * LCG_SYSTEM: To specify the flavour of the externals to use
+    * LCG_FORCE_COMPILER: To specify the compiler to use, with the
+      format "<compiler>-<version>" (an lcg wrapper has to exist for
+      this to work).
+
+   Using the LHCb Makefiles, you just need to specify:
+   ``` export CMAKEFLAGS="-DLCG_SYSTEM=x86_64-slc6-gcc49
+   -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DLCG_FORCE_COMPILER=clang-3.7"
+   ```
+
+   Fixes GAUDI-1123 and LBCORE-934.
+
+   See merge request !48
+
+
+! 2015-10-27 - commit 1031fb3
+
+ - Merge branch 'GAUDI-1121' into 'master'
+
+   use `double` parser for floats with Boost 1.59
+
+   * introduced a test to expose the problem
+   * use the parser for doubles to parse strings into floats when Boost > 1.55
+
+   Fixes GAUDI-1121.
+
+   See merge request !60
+
+
+! 2015-10-26 - commit de80db5
+
+ - More modernization changes
+
+   Fix (almost) all warnings from clang 3.7, and use clang-modernize to further
+   modernize the code.
+
+   Fixes GAUDI-1118.
+
+   See merge request !49
+
+
+! 2015-10-22 - commit ef41582
+
+ - Fix GAUDI-1108: bad ObjectVector and ObjectList copy constructor
+
+   mark copy constructor and assignment operator of ObjectList and ObjectVector
+   as = delete as both ObjectList and ObjectVector assume they own the pointers
+   they contain, and hence a plain copy or assignment will result in two object
+   which both assume they own these pointers.
+
+   See merge request !50
 
 ============================= GaudiKernel v32r0 ==============================
 
