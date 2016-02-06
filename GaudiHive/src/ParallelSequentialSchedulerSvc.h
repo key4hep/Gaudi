@@ -107,9 +107,6 @@ private:
   /// Map to bookkeep the information necessary to the name2index conversion
   std::unordered_map<std::string,unsigned int> m_algname_index_map;
 
-  /// Ugly, will disappear when the deps are declared only within the C++ code of the algos.
-  std::vector<std::vector<std::string>> m_algosDependencies;
-
   // Needed to queue actions on algorithm finishing and decrement algos in flight
   friend class SequentialTask;
 

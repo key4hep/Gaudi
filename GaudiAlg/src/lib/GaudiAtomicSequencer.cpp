@@ -33,7 +33,7 @@ StatusCode GaudiAtomicSequencer::initialize() {
   if (msgLevel(MSG::DEBUG)) debug() << "==> Initialise" << endmsg;
   if ( !status.isSuccess() ) return status;
 
-  addSubAlgorithmDataObjectHandles();
+  //  addSubAlgorithmDataObjectHandles();
 
   return status;
 }

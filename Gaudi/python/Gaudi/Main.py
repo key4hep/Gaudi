@@ -257,7 +257,7 @@ class gaudimain(object) :
 
         # give debugger some time to attach to the python process
         import time
-        time.sleep( 1 )
+        time.sleep( 5 )
 
         # verify the process' existence (will raise OSError if failed)
         os.waitpid( pid, os.WNOHANG )

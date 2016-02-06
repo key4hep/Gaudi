@@ -2,7 +2,7 @@
 #define GAUDIEXAMPLES_READALG_H
 
 // Framework include files
-#include "GaudiKernel/Algorithm.h"  // Required for inheritance
+#include "GaudiAlg/GaudiAlgorithm.h"
 #include "GaudiKernel/IIncidentListener.h"  // Required for inheritance
 
 // Forward declarations
@@ -18,16 +18,14 @@ using namespace Gaudi::Examples;
 /** @class ReadHandleAlg ReadHandleAlg.h
 */
 
-class ReadHandleAlg : public Algorithm {
+class ReadHandleAlg : public GaudiAlgorithm {
 
   DataObjectHandle<Collision> m_inputHandle;
 
 public:
   /// Constructor: A constructor of this form must be provided.
-  ReadHandleAlg(const std::string& nam, ISvcLocator* pSvc)
-    : Algorithm(nam, pSvc){
-     declareInput ( "Input", m_inputHandle);
-    }
+  ReadHandleAlg(const std::string& nam, ISvcLocator* pSvc);
+
   /// Standard Destructor
   virtual ~ReadHandleAlg() { }
 

@@ -95,7 +95,7 @@
 #include "GaudiKernel/IUpdateManagerSvc.h"
 #include "GaudiKernel/IValidity.h"
 #include "GaudiKernel/IDataStreamTool.h"
-#include "GaudiKernel/DataObjectDescriptor.h"
+#include "GaudiKernel/DataObjectHandle.h"
 
 namespace GaudiKernelDict {
   struct __Instantiations :

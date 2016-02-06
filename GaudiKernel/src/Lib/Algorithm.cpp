@@ -27,6 +27,9 @@
 #include "GaudiKernel/Guards.h"
 #include "GaudiKernel/AlgTool.h"
 #include "GaudiKernel/ToolHandle.h"
+#include "GaudiKernel/DataHandleHolderVisitor.h"
+
+#include "GaudiKernel/DataObjIDProperty.h"
 
 namespace {
     template <StatusCode (Algorithm::*f)(), typename C > bool for_algorithms(C& c) {
@@ -52,9 +55,10 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
   declareProperty( "ErrorMax",           m_errorMax  = 1);
   declareProperty( "ErrorCounter",       m_errorCount = 0);
 
-  //declare input and output properties
-  declareProperty( "DataInputs", m_inputDataObjects);
-  declareProperty( "DataOutputs", m_outputDataObjects);
+  // FIXME: this should eventually be deprecated
+  //declare Extra input and output properties
+  declareProperty( "ExtraInputs",  m_extInputDataObjs);
+  declareProperty( "ExtraOutputs", m_extOutputDataObjs);
 
   // Auditor monitoring properties
 
@@ -81,6 +85,7 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
   declareProperty( "AuditEndRun"      , m_auditorEndRun       = audit ) ;
   declareProperty( "AuditStart"       , m_auditorStart        = audit ) ;
   declareProperty( "AuditStop"        , m_auditorStop         = audit ) ;
+  declareProperty( "Timeline"         , m_doTimeline          = true  ) ;
 
   declareProperty( "MonitorService"   , m_monitorSvcName      = "MonitorSvc" );
 
@@ -199,94 +204,48 @@ StatusCode Algorithm::sysInitialize() {
     m_isClonable = true;
   }
 
-  using reporter_t = std::function<void(const DataObjectDescriptorCollection&, const std::string&)>;
+  //
+  //// build list of data dependencies
+  //
 
-  auto init_report = (UNLIKELY(m_outputLevel <= MSG::DEBUG)) ?
-      reporter_t([&log](const DataObjectDescriptorCollection& coll, const std::string& tag) {
-          log << MSG::DEBUG << "Data Handle " << tag << " ("
-              << coll[tag].dataProductName()
-              << ") initialized" << endmsg;
-      })
-    :
-      reporter_t([](const DataObjectDescriptorCollection&, const std::string&) {});
-
-  //init data handle
-  for (auto tag : m_inputDataObjects) {
-    if (m_inputDataObjects[tag].isValid()) {
-      if (m_inputDataObjects[tag].initialize())
-        init_report(m_inputDataObjects, tag);
-      else
-        log << MSG::FATAL << "Data Handle " << tag << " ("
-            << m_inputDataObjects[tag].dataProductName()
-            << ") could NOT be initialized" << endmsg;
-    }
-  }
-  for (auto tag : m_outputDataObjects) {
-    if (m_outputDataObjects[tag].isValid()) {
-      if (m_outputDataObjects[tag].initialize())
-        init_report(m_outputDataObjects, tag);
-      else
-        log << MSG::FATAL << "Data Handle " << tag << " ("
-            << m_outputDataObjects[tag].dataProductName()
-            << ") could NOT be initialized" << endmsg;
-    }
+  if (UNLIKELY(m_outputLevel <= MSG::DEBUG)) {
+    log << MSG::DEBUG << "input handles: " << inputHandles().size() << endmsg;
+    log << MSG::DEBUG << "output handles: " << outputHandles().size() << endmsg;
   }
 
-  std::set<const IInterface*> visited_parents;
-  //all TES accessing tools have been created in initialize() of derived class
-  //query toolSvc for own tools and build dependencies
-  std::function<void(const IInterface *)> addToolDOD = [&] (const IInterface * parent) {
+  // visit all sub-algs and tools, build full set
+  DHHVisitor avis(m_inputDataObjs, m_outputDataObjs);
+  accept(&avis);
 
-    MsgStream log ( msgSvc() , name() ) ;
-
-    if (visited_parents.find(parent) != end(visited_parents)) {
-      if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
-        log << MSG::DEBUG << "parent object already visited: stopping recursion"
-            << endmsg;
-      return;
+  if (UNLIKELY(m_outputLevel <= MSG::DEBUG)) {
+    log << MSG::DEBUG << "Data Deps for " << name();
+    for (auto h : m_inputDataObjs) {
+      log << "\n  + INPUT  " << h;
     }
-    visited_parents.insert(parent);
-
-    std::vector<IAlgTool *> tools;
-
-    const Algorithm * alg = dynamic_cast<const Algorithm *>(parent);
-    if(alg != NULL)
-      tools = alg->tools();
-    else{
-      const AlgTool * algTool = dynamic_cast<const AlgTool *>(parent);
-      if(algTool != NULL)
-        tools = algTool->tools();
-      else
-        log << MSG::FATAL << "Could not build data dependencies of algorithm, wrong parameter" << endmsg;
+    for (auto h : m_outputDataObjs) {
+      log << "\n  + OUTPUT " << h;
     }
-
-    for(auto tool : tools){
-      if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
-        log << MSG::DEBUG << "Adding data dependencies for tool "
-            << tool->name() << " (" << tool->type() << ")" << endmsg;
-      auto inputs = tool->inputDataObjects();
-      for(auto dod : inputs){
-        if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
-          log << MSG::DEBUG << "\tInput: " << dod << endmsg;
-        m_inputDataObjects.insert(&inputs[dod]);
-      }
-
-      auto outputs = tool->outputDataObjects();
-      for(auto dod : outputs){
-        if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
-          log << MSG::DEBUG << "\tOutput: " << dod << endmsg;
-        m_outputDataObjects.insert(&outputs[dod]);
-      }
-
-      addToolDOD(tool);
-    }
-  };
-
-  if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
-    log << MSG::DEBUG << "Adding tools for " << this->name() << endmsg;
-  addToolDOD(this);
+    log << endmsg;
+  }
 
   return sc;
+}
+
+void
+Algorithm::accept(IDataHandleVisitor *vis) const {
+  vis->visit(this);
+
+  // loop through tools
+  for (auto tool : tools()) {
+    AlgTool* at = dynamic_cast<AlgTool*>(tool);
+    vis->visit(at);
+    }
+
+  // loop through sub-algs
+  for (auto alg : *subAlgorithms()) {
+    vis->visit(alg);
+  }
+
 }
 
 // IAlgorithm implementation
@@ -691,6 +650,7 @@ StatusCode Algorithm::sysExecute() {
   TimelineEvent timeline;
   timeline.algorithm = this->name();
   //  timeline.thread = getContext() ? getContext()->m_thread_id : 0;
+  timeline.thread = pthread_self();
   timeline.slot = getContext() ? getContext()->slot() : 0;
   timeline.event = getContext() ? getContext()->evt() : 0;
 
@@ -1128,20 +1088,6 @@ bool Algorithm::hasProperty(const std::string& name) const {
   return m_propertyMgr->hasProperty(name);
 }
 
-const std::vector<MinimalDataObjectHandle*> Algorithm::handles(){
-
-	std::vector<MinimalDataObjectHandle*> handles;
-
-	for(auto it : m_inputDataObjects)
-		handles.push_back(&m_inputDataObjects[it]);
-
-	for(auto it : m_outputDataObjects)
-		handles.push_back(&m_outputDataObjects[it]);
-
-	return handles;
-
-}
-
 void Algorithm::initToolHandles() const{
 
 	MsgStream log ( msgSvc() , name() ) ;
@@ -1155,8 +1101,11 @@ void Algorithm::initToolHandles() const{
 		//get generic tool interface from ToolHandle
 		if(th->retrieve(tool).isSuccess() && tool != nullptr){
 			m_tools.push_back(tool);
-			if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
-			  log << MSG::DEBUG << "Adding ToolHandle tool " << tool->name() << " (" << tool->type() << ")" << endmsg;
+    if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
+      log << MSG::DEBUG << "Adding "
+	  << (th->isPublic() ? "Public" : "Private" )
+	  << " ToolHandle tool " << tool->name()
+	  << " (" << tool->type() << ")" << endmsg;
 		} else {
 		        if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
 			  log << MSG::DEBUG << "Trying to add nullptr tool" << endmsg;
@@ -1178,51 +1127,6 @@ std::vector<IAlgTool *> & Algorithm::tools() {
 		initToolHandles();
 
 	return m_tools;
-}
-
-void Algorithm::addSubAlgorithmDataObjectHandles(){
-	//add all DOHs of SubAlgs to own collection
-
-	MsgStream log ( msgSvc() , name() ) ;
-
-	for(auto alg: m_subAlgms){
-
-		assert(alg->isInitialized());
-		if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
-		  log << MSG::DEBUG << "Adding subAlg DOHs for " << alg->name() << endmsg;
-
-		for(auto tag : alg->inputDataObjects()){
-			auto doh = &alg->inputDataObjects()[tag];
-
-			if(!doh->isValid())
-				continue;
-
-			//if the output of an previous algorithm produces the required input don't add it
-			if(!m_outputDataObjects.contains(doh)){
-			  if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
-				log << MSG::DEBUG << "\tinput handle " << doh->dataProductName() << " is real input to sequence, adding as "
-					<< (alg->name() + "/" + doh->descriptor()->tag()) << endmsg;
-
-				m_inputDataObjects.insert(alg->name() + "/" + doh->descriptor()->tag() ,doh);
-			} else {
-			  if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
-				log << MSG::DEBUG << "\tinput handle " << doh->dataProductName() << " is produced by algorithm in sequence" << endmsg;
-			}
-		}
-
-		//add output after input to properly treat update DOH
-		for(auto tag : alg->outputDataObjects()){
-			auto doh = &alg->outputDataObjects()[tag];
-
-			if(!doh->isValid())
-				continue;
-			if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
-			  log << MSG::DEBUG << "\toutput handle " << doh->dataProductName() << " is output of sequence, adding as "
-			      << (alg->name() + "/" + doh->descriptor()->tag()) << endmsg;
-
-			m_outputDataObjects.insert(alg->name() + "/" + doh->descriptor()->tag(), doh);
-		}
-	}
 }
 
 /**
@@ -1255,4 +1159,49 @@ Algorithm::service_i(const std::string& svcType,
 SmartIF<IService> Algorithm::service(const std::string& name, const bool createIf, const bool quiet) const {
   const ServiceLocatorHelper helper(*serviceLocator(), *this);
   return helper.service(name, quiet, createIf);
+}
+
+//-----------------------------------------------------------------------------
+void
+Algorithm::commitHandles() {
+  //-----------------------------------------------------------------------------
+
+  for (auto h : m_outputHandles) {
+    h->commit();
+  }
+
+  for (auto t : m_tools) {
+    AlgTool* at = dynamic_cast<AlgTool*>(t);
+    if (at != 0) at->commitHandles();
+  }
+
+  for (auto& a : m_subAlgms ) {
+    a->commitHandles();
+  }
+
+}
+
+void
+Algorithm::registerTool(IAlgTool * tool) const {
+
+    MsgStream log(msgSvc(), name());
+    log << MSG::DEBUG << "Registering tool " << tool->name() << endmsg;
+    m_tools.push_back(tool);
+}
+
+
+void
+Algorithm::deregisterTool(IAlgTool * tool) const {
+  std::vector<IAlgTool *>::iterator it = std::find(m_tools.begin(),
+                                                   m_tools.end(), tool);
+
+  MsgStream log(msgSvc(), name());
+  if (it != m_tools.end()) {
+    log << MSG::DEBUG << "De-Registering tool " << tool->name()
+        << endmsg;
+    m_tools.erase(it);
+  } else {
+    log << MSG::DEBUG << "Could not de-register tool " << tool->name()
+        << endmsg;
+  }
 }

@@ -31,10 +31,6 @@
     virtual StatusCode initialize();
     /// the finalization of the algorithm
     virtual StatusCode finalize () ; // the finalization of the algorithm
-    /// Get the inputs
-    virtual const std::vector<std::string> get_inputs();
-    /// Get the outputs
-    virtual const std::vector<std::string> get_outputs();
 
     double get_runtime() const { return m_avg_runtime; };
 
@@ -78,6 +74,8 @@
 
     std::vector<DataObjectHandle<DataObject> *> m_inputHandles;
     std::vector<DataObjectHandle<DataObject> *> m_outputHandles;
+
+    std::vector<std::string> m_inpKeys, m_outKeys;
 
     unsigned int m_rwRepetitions;
 

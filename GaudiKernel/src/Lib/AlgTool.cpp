@@ -14,6 +14,7 @@
 #include "GaudiKernel/ThreadGaudi.h"
 #include "GaudiKernel/Guards.h"
 #include "GaudiKernel/ToolHandle.h"
+#include "GaudiKernel/DataObjIDProperty.h"
 
 //------------------------------------------------------------------------------
 namespace {
@@ -273,6 +274,11 @@ AlgTool::AlgTool( const std::string& type,
     declareProperty ( "AuditFinalize"   , m_auditorFinalize   = audit ) ;
   }
 
+  //declare Extra input and output properties
+  declareProperty( "ExtraInputs",  m_extInputDataObjs);
+  declareProperty( "ExtraOutputs", m_extOutputDataObjs);
+
+
   // check thread ID and try if tool name indicates thread ID
   if ( m_threadID.empty() )
   { m_threadID = getGaudiThreadIDfromName ( AlgTool::name() ) ; }
@@ -289,34 +295,6 @@ StatusCode AlgTool::sysInitialize() {
                                       IAuditor::Initialize);
     StatusCode sc = initialize();
     if (sc.isSuccess()) m_state = m_targetState;
-
-    // update DataHandles to point to full TES location
-    // init data handle
-    MsgStream log(msgSvc(), name());
-    for (auto tag : m_inputDataObjects) {
-      if (m_inputDataObjects[tag].isValid()) {
-        if (m_inputDataObjects[tag].initialize().isSuccess())
-          log << MSG::DEBUG << "Data Handle " << tag << " ("
-          << m_inputDataObjects[tag].dataProductName()
-          << ") initialized" << endmsg;
-        else
-          log << MSG::FATAL << "Data Handle " << tag << " ("
-          << m_inputDataObjects[tag].dataProductName()
-          << ") could NOT be initialized" << endmsg;
-      }
-    }
-    for (auto tag : m_outputDataObjects) {
-      if (m_outputDataObjects[tag].isValid()) {
-        if (m_outputDataObjects[tag].initialize().isSuccess())
-          log << MSG::DEBUG << "Data Handle " << tag << " ("
-          << m_outputDataObjects[tag].dataProductName()
-          << ") initialized" << endmsg;
-        else
-          log << MSG::FATAL << "Data Handle " << tag << " ("
-          << m_outputDataObjects[tag].dataProductName()
-          << ") could NOT be initialized" << endmsg;
-      }
-    }
 
     return sc;
   } );
@@ -579,3 +557,32 @@ void  AlgTool::initOutputLevel(Property& /*prop*/) {
    // do nothing... yet ?
 }
 
+
+//-----------------------------------------------------------------------------
+void  
+AlgTool::accept(IDataHandleVisitor *vis) const{
+  //-----------------------------------------------------------------------------
+  vis->visit(this);
+  
+  for (auto tool : tools()) {
+    AlgTool *at = dynamic_cast<AlgTool*>(tool);
+    vis->visit(at);
+  }
+
+}
+
+//-----------------------------------------------------------------------------
+void  
+AlgTool::commitHandles() {
+  //-----------------------------------------------------------------------------
+  
+  for (auto h : m_outputHandles) {
+    h->commit();
+  }
+
+  for (auto t : m_tools) {
+    AlgTool* at = dynamic_cast<AlgTool*>(t);
+    if (at != 0) at->commitHandles();
+  }
+
+}

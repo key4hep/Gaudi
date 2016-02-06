@@ -22,23 +22,22 @@ a1 = CPUCruncher("A1",
                  shortCalib=True,
                  varRuntime=.1, 
                  avgRuntime=.5 )
-a1.DataOutputs.output_0.Path = '/Event/a1'
+a1.outKeys = ['/Event/a1']
 
 a2 = CPUCruncher("A2", 
                  shortCalib=True)
-a2.DataInputs.input_0.Path = '/Event/a1'
-a2.DataOutputs.output_0.Path = '/Event/a2'
+a2.inpKeys = ['/Event/a1']
+a2.outKeys = ['/Event/a2']
 
 a3 = CPUCruncher("A3", 
                  shortCalib=True)
-a3.DataInputs.input_0.Path = '/Event/a1'
-a3.DataOutputs.output_0.Path = '/Event/a3'
+a3.inpKeys = ['/Event/a1']
+a3.outKeys = ['/Event/a3']
 
 a4 = CPUCruncher("A4", 
                  shortCalib=True)
-a4.DataInputs.input_0.Path = '/Event/a2'
-a4.DataInputs.input_1.Path = '/Event/a3'
-a4.DataOutputs.output_0.Path = '/Event/a4'
+a4.inpKeys = ['/Event/a2','/Event/a3']
+a4.outKeys = ['/Event/a4']
 
 
 for algo in [a1,a2,a3,a4]:

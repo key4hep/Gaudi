@@ -5,6 +5,7 @@
 #include "GaudiKernel/Service.h"
 #include "GaudiKernel/IToolSvc.h"
 #include <vector>
+#include <mutex>
 
 /** @class ToolSvc ToolSvc.h
  *  This service manages tools.
@@ -104,6 +105,9 @@ private: // data
   IHistorySvc* m_pHistorySvc = nullptr;
 
   std::vector<IToolSvc::Observer*> m_observers;
+  
+  typedef std::recursive_mutex CallMutex;
+  mutable CallMutex m_mut;
 };
 
 #endif

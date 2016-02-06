@@ -235,34 +235,45 @@ StatusCode GaudiCommon<PBASE>::
     rootName = rootName + "/";
   }
 
+
   auto fixLocation = [&] (const std::string & location) -> std::string {
-    std::string result = fullTESLocation(location, UseRootInTES);
+    std::string result = fullTESLocation( (const std::string&)location, UseRootInTES);
     //check whether we have an absolute path if yes return it - else prepend DataManager Root
     result = (result[0] == '/' ? result : rootName + result);
 
-    if ( this->msgLevel(MSG::DEBUG) )
+    if (result != location && this->msgLevel(MSG::DEBUG))
       this->debug() << "Changing " << location << " to " << result << endmsg;
 
     return result;
   };
 
-  for(auto tag : PBASE::inputDataObjects()){
-    if(PBASE::inputDataObjects()[tag].isValid()){
-      PBASE::inputDataObjects()[tag].setDataProductName(
-          fixLocation(PBASE::inputDataObjects()[tag].dataProductName())).ignore();
 
-      auto altAddress = PBASE::inputDataObjects()[tag].alternativeDataProductNames();
-      for(uint i = 0; i < altAddress.size(); ++i)
-        altAddress[i] = fixLocation(altAddress[i]);
-      PBASE::inputDataObjects()[tag].setAlternativeDataProductNames(altAddress).ignore();
+  class DHHFixer : public IDataHandleVisitor {
+  public:
+    DHHFixer(){};
+    DHHFixer(std::function<std::string (const std::string&)> f): m_f(f) {};
+    virtual void visit(const IDataHandleHolder* idhh) {
+      if (idhh == 0) return;
+
+      std::string r;
+      for (auto h : idhh->inputHandles()) {
+        r = m_f(h->objKey());
+        if (r != h->objKey())
+          h->updateKey( r );
+      }
+      for (auto h : idhh->outputHandles()) {
+        r = m_f(h->objKey());
+        if (r != h->objKey())
+          h->updateKey( r );
     }
   }
-  for(auto tag : PBASE::outputDataObjects()){
-    if(PBASE::outputDataObjects()[tag].isValid()){
-      PBASE::outputDataObjects()[tag].setDataProductName(
-          fixLocation(PBASE::outputDataObjects()[tag].dataProductName())).ignore();
-    }
-  }
+  private:
+    std::function<std::string (const std::string&)> m_f;
+  };
+
+  DHHFixer dhf( fixLocation );
+
+  PBASE::accept( &dhf );
 
   return sc;
 }

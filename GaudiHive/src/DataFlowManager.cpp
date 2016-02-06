@@ -3,8 +3,8 @@
 //---------------------------------------------------------------------------
 // Static members
 std::vector< DataFlowManager::dependency_bitset > DataFlowManager::m_algosRequirements;
-std::unordered_map<std::string,long int> DataFlowManager::m_productName_index_map;
-std::vector<std::string> DataFlowManager::m_productName_vec;
+std::unordered_map<DataObjID,long int,DataObjID_Hasher> DataFlowManager::m_productName_index_map;
+std::vector<DataObjID> DataFlowManager::m_productName_vec;
 //---------------------------------------------------------------------------
 /**
  * If this is the first instance, the constructor fills the requirements of 
@@ -31,7 +31,7 @@ DataFlowManager::DataFlowManager(algosDependenciesCollection algosDependencies){
       // Make a local alias for better readability
       auto& dependency_bits = m_algosRequirements[algoIndex];    
       for (auto& product : thisAlgoDependencies){
-        auto ret_val = m_productName_index_map.insert(std::pair<std::string, long int>(product,productIndex));
+        auto ret_val = m_productName_index_map.insert(std::pair<DataObjID, long int>(product,productIndex));
         // insert successful means product wasn't known before. So increment counter
         if (ret_val.second==true) ++productIndex;
         // in any case the return value holds the proper product index
@@ -62,8 +62,9 @@ bool DataFlowManager::canAlgorithmRun(unsigned int iAlgo){
 //---------------------------------------------------------------------------
 
 /// Update the catalog of available products in the slot
-void DataFlowManager::updateDataObjectsCatalog(const std::vector<std::string>& newProducts){
+void DataFlowManager::updateDataObjectsCatalog(const DataObjIDColl& newProducts){
   for (const auto& new_product : newProducts){
+    m_fc.insert(new_product);
     const int index = productName2index(new_product);
     if (index>=0)
       m_dataObjectsCatalog[index]=true;
@@ -76,29 +77,28 @@ void DataFlowManager::updateDataObjectsCatalog(const std::vector<std::string>& n
 /// Reset the slot for a new event
 void DataFlowManager::reset(){
   m_dataObjectsCatalog.reset();
+  m_fc.clear();
 }
 
 //---------------------------------------------------------------------------
 
 /// Get the content (inefficient, only for debug in case of crashes)
-std::vector<std::string> DataFlowManager::content() const{  
-  // with move semantics this is ~fine
-  std::vector<std::string> products;
-  for (unsigned int i=0;i<m_dataObjectsCatalog.size();++i){
-    if (m_dataObjectsCatalog[i])
-      products.push_back(m_productName_vec[i]);
+DataObjIDColl DataFlowManager::content() const{  
+  DataObjIDColl products;
+  for (const auto& p : m_fc) {
+    products.insert( p );
   }
   return products;
 }
 
 //---------------------------------------------------------------------------
 /// Get the data dependencies (inefficient, only for debug in case of crashes)
-std::vector<std::string> DataFlowManager::dataDependencies(unsigned int iAlgo) const{
+DataObjIDColl DataFlowManager::dataDependencies(unsigned int iAlgo) const{
   // with move semantics this is ~fine
-  std::vector<std::string> deps;
+  DataObjIDColl deps;
   for (unsigned int i=0;i<m_productName_vec.size();++i){
     if (m_algosRequirements[iAlgo][i])
-      deps.push_back(m_productName_vec[i]);
+      deps.insert(m_productName_vec[i]);
   }
   return deps;
 }

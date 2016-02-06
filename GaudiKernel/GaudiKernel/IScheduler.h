@@ -38,5 +38,7 @@ public:
   /// Get the free event processing slots
   virtual unsigned int freeSlots() = 0;
   
+  virtual void dumpState() {};
+  
 };
 #endif
