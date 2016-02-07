@@ -1183,9 +1183,10 @@ Algorithm::commitHandles() {
 
 void
 Algorithm::registerTool(IAlgTool * tool) const {
-
-    MsgStream log(msgSvc(), name());
-    log << MSG::DEBUG << "Registering tool " << tool->name() << endmsg;
+    if (UNLIKELY(m_outputLevel <= MSG::DEBUG)) {
+      MsgStream log(msgSvc(), name());
+      log << MSG::DEBUG << "Registering tool " << tool->name() << endmsg;
+    }
     m_tools.push_back(tool);
 }
 
@@ -1197,11 +1198,13 @@ Algorithm::deregisterTool(IAlgTool * tool) const {
 
   MsgStream log(msgSvc(), name());
   if (it != m_tools.end()) {
-    log << MSG::DEBUG << "De-Registering tool " << tool->name()
+    if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
+      log << MSG::DEBUG << "De-Registering tool " << tool->name()
         << endmsg;
     m_tools.erase(it);
   } else {
-    log << MSG::DEBUG << "Could not de-register tool " << tool->name()
+    if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
+      log << MSG::DEBUG << "Could not de-register tool " << tool->name()
         << endmsg;
   }
 }
