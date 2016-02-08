@@ -215,7 +215,7 @@ StatusCode Algorithm::sysInitialize() {
 
   // visit all sub-algs and tools, build full set
   DHHVisitor avis(m_inputDataObjs, m_outputDataObjs);
-  accept(&avis);
+  acceptDHVisitor(&avis);
 
   if (UNLIKELY(m_outputLevel <= MSG::DEBUG)) {
     log << MSG::DEBUG << "Data Deps for " << name();
@@ -232,7 +232,7 @@ StatusCode Algorithm::sysInitialize() {
 }
 
 void
-Algorithm::accept(IDataHandleVisitor *vis) const {
+Algorithm::acceptDHVisitor(IDataHandleVisitor *vis) const {
   vis->visit(this);
 
   // loop through tools

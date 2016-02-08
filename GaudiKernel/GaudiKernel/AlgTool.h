@@ -309,7 +309,7 @@ public:
 	}
 
 
-  virtual void accept(IDataHandleVisitor*) const override;
+  virtual void acceptDHVisitor(IDataHandleVisitor*) const override;
 
   DataObjIDColl inputDataObjs() const { return m_inputDataObjs; }
   DataObjIDColl outputDataObjs() const { return m_outputDataObjs; }

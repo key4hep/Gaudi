@@ -560,7 +560,7 @@ void  AlgTool::initOutputLevel(Property& /*prop*/) {
 
 //-----------------------------------------------------------------------------
 void  
-AlgTool::accept(IDataHandleVisitor *vis) const{
+AlgTool::acceptDHVisitor(IDataHandleVisitor *vis) const{
   //-----------------------------------------------------------------------------
   vis->visit(this);
   
