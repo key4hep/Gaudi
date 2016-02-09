@@ -592,7 +592,7 @@ public:
     return m_extOutputDataObjs;
   }
 
-  virtual void accept(IDataHandleVisitor*) const override ;
+  virtual void acceptDHVisitor(IDataHandleVisitor*) const override ;
 
   const DataObjIDColl& inputDataObjs() const { return m_inputDataObjs; }
   const DataObjIDColl& outputDataObjs() const { return m_outputDataObjs; }

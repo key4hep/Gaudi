@@ -273,7 +273,7 @@ StatusCode GaudiCommon<PBASE>::
 
   DHHFixer dhf( fixLocation );
 
-  PBASE::accept( &dhf );
+  PBASE::acceptDHVisitor( &dhf );
 
   return sc;
 }
