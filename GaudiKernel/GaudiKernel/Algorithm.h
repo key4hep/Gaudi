@@ -611,7 +611,7 @@ public:
   void deregisterTool(IAlgTool * tool) const;
 
   template<class T>
-    StatusCode declareTool(ToolHandle<T> &handle, 
+    StatusCode declareTool(ToolHandle<T> &handle,
 			   std::string toolTypeAndName = "",
 			   bool createIf = true) {
     if (handle.isPublic()) {
@@ -638,22 +638,14 @@ public:
       toolTypeAndName = handle.typeAndName();
 
     StatusCode sc = handle.initialize(toolTypeAndName, this, createIf);
+    if (UNLIKELY(!sc)) {
+      throw GaudiException{"Cannot create handle for private tool " + toolTypeAndName,
+                           name(), sc};
+    }
 
     m_toolHandles.push_back(&handle);
 
-    MsgStream log(msgSvc(), name());
-
-    if (sc.isSuccess()) {
-      log << MSG::DEBUG << "Handle for private tool" << toolTypeAndName
-          << " successfully created and stored." << endmsg;
-    } else {
-
-      log << MSG::ERROR << "Handle for private tool" << toolTypeAndName
-          << " could not be created." << endmsg;
-    }
-
     return sc;
-
   }
 
   /** Declare used Public tool
@@ -672,19 +664,12 @@ public:
       toolTypeAndName = handle.typeAndName();
 
     StatusCode sc = handle.initialize(toolTypeAndName, 0, createIf);
+    if (UNLIKELY(!sc)) {
+      throw GaudiException{"Cannot create handle for public tool " + toolTypeAndName,
+                           name(), sc};
+    }
 
     m_toolHandles.push_back(&handle);
-
-    MsgStream log(msgSvc(), name());
-
-    if (sc.isSuccess()) {
-      log << MSG::DEBUG << "Handle for public tool" << toolTypeAndName
-          << " successfully created and stored." << endmsg;
-    } else {
-
-      log << MSG::ERROR << "Handle for public tool" << toolTypeAndName
-          << " could not be created." << endmsg;
-    }
 
     return sc;
 

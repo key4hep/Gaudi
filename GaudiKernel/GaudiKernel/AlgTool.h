@@ -41,7 +41,7 @@ class ToolHandleInfo;
  *  @author Gloria Corti
  *  @author Pere Mato
  */
-class GAUDI_API AlgTool: public implements4<IAlgTool, IDataHandleHolder, 
+class GAUDI_API AlgTool: public implements4<IAlgTool, IDataHandleHolder,
                                             IProperty, IStateful> {
   friend class ToolSvc;
 public:
@@ -275,7 +275,7 @@ public:
 		}
 
 	template<class T>
-    StatusCode declareTool(ToolHandle<T> &handle, 
+    StatusCode declareTool(ToolHandle<T> &handle,
                            std::string toolTypeAndName = "",
                            bool createIf = true) {
     if (handle.isPublic()) {
@@ -296,7 +296,7 @@ public:
 		}
  public:
 
-  virtual std::vector<Gaudi::DataHandle*> inputHandles() const override { 
+  virtual std::vector<Gaudi::DataHandle*> inputHandles() const override {
     return m_inputHandles; }
   virtual std::vector<Gaudi::DataHandle*> outputHandles() const override {
     return m_outputHandles; }
@@ -318,7 +318,7 @@ public:
 
 
  private:
-  std::vector<Gaudi::DataHandle*> m_inputHandles, m_outputHandles;  
+  std::vector<Gaudi::DataHandle*> m_inputHandles, m_outputHandles;
   DataObjIDColl m_inputDataObjs, m_outputDataObjs;
 
   DataObjIDColl m_extInputDataObjs, m_extOutputDataObjs;
@@ -328,9 +328,10 @@ public:
 
 
 	void registerTool(IAlgTool * tool) const {
-		MsgStream log(msgSvc(), name());
-
-		log << MSG::DEBUG << "Registering tool " << tool->name() << endmsg;
+		if (UNLIKELY(m_outputLevel <= MSG::DEBUG)) {
+		  MsgStream log(msgSvc(), name());
+		  log << MSG::DEBUG << "Registering tool " << tool->name() << endmsg;
+		}
 		m_tools.push_back(tool);
 	}
 
@@ -340,11 +341,13 @@ public:
 
 		MsgStream log(msgSvc(), name());
 		if (it != m_tools.end()) {
-			log << MSG::DEBUG << "De-Registering tool " << tool->name()
+		  if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
+		    log << MSG::DEBUG << "De-Registering tool " << tool->name()
 					<< endmsg;
 			m_tools.erase(it);
 		} else {
-			log << MSG::DEBUG << "Could not de-register tool " << tool->name()
+		  if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
+		    log << MSG::DEBUG << "Could not de-register tool " << tool->name()
 					<< endmsg;
 		}
 	}
@@ -357,8 +360,8 @@ public:
 	 *  @param create if necessary, default true
 	 */
 	template<class T>
-    StatusCode declarePublicTool(ToolHandle<T> & handle, 
-                                 std::string toolTypeAndName = "", 
+    StatusCode declarePublicTool(ToolHandle<T> & handle,
+                                 std::string toolTypeAndName = "",
                                  bool createIf = true) {
 
 		if (toolTypeAndName == "")
@@ -366,22 +369,14 @@ public:
       toolTypeAndName = handle.typeAndName();
 
 		StatusCode sc = handle.initialize(toolTypeAndName, 0, createIf);
+		if (UNLIKELY(!sc)) {
+		      throw GaudiException{"Cannot create handle for public tool " + toolTypeAndName,
+		                           name(), sc};
+		}
 
 		m_toolHandles.push_back(&handle);
 
-		MsgStream log(msgSvc(), name());
-
-		if (sc.isSuccess()) {
-			log << MSG::DEBUG << "Handle for public tool" << toolTypeAndName
-					<< " successfully created and stored." << endmsg;
-		} else {
-
-			log << MSG::ERROR << "Handle for public tool" << toolTypeAndName
-					<< " could not be created." << endmsg;
-		}
-
 		return sc;
-
 	}
 
 	/** Declare used private tool
@@ -392,8 +387,8 @@ public:
 	 *  @param create if necessary, default true
 	 */
 	template<class T>
-    StatusCode declarePrivateTool(ToolHandle<T> & handle, 
-                                  std::string toolTypeAndName = "", 
+    StatusCode declarePrivateTool(ToolHandle<T> & handle,
+                                  std::string toolTypeAndName = "",
                                   bool createIf = true) {
 
 		if (toolTypeAndName == "")
@@ -401,22 +396,14 @@ public:
       toolTypeAndName = handle.typeAndName();
 
 		StatusCode sc = handle.initialize(toolTypeAndName, this, createIf);
+		if (UNLIKELY(!sc)) {
+		      throw GaudiException{"Cannot create handle for private tool " + toolTypeAndName,
+		                           name(), sc};
+		}
 
 		m_toolHandles.push_back(&handle);
 
-		MsgStream log(msgSvc(), name());
-
-		if (sc.isSuccess()) {
-			log << MSG::DEBUG << "Handle for private tool" << toolTypeAndName
-					<< " successfully created and stored." << endmsg;
-		} else {
-
-			log << MSG::ERROR << "Handle for private tool" << toolTypeAndName
-					<< " could not be created." << endmsg;
-		}
-
 		return sc;
-
 	}
 
 	const std::vector<IAlgTool *> & tools() const;
@@ -576,4 +563,4 @@ public:
 
 
 #endif // GAUDIKERNEL_ALGTOOL_H
- 
+

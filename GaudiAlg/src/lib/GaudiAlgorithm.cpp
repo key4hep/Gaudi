@@ -36,7 +36,7 @@ GaudiAlgorithm::GaudiAlgorithm ( const std::string&  name        ,
   : GaudiCommon<Algorithm> ( name , pSvcLocator )
 {
   setProperty ( "RegisterForContextService" , true ).ignore() ;
-  
+
   declareProperty( "VetoObjects", m_vetoObjs,
                    "Skip execute if one or more of these TES objects exists" );
   declareProperty( "RequireObjects", m_requireObjs,
@@ -63,10 +63,10 @@ StatusCode GaudiAlgorithm::finalize()
 {
   if ( msgLevel(MSG::DEBUG) )
     debug() << "Finalize base class GaudiAlgorithm" << endmsg;
-  
+
   // reset pointers
   m_evtColSvc.reset() ;
-  
+
   // finalize the base class and return
   return GaudiCommon<Algorithm>::finalize() ;
 }
@@ -106,13 +106,14 @@ StatusCode GaudiAlgorithm::sysExecute ()
   auto it = std::find_if( std::begin(m_vetoObjs), std::end(m_vetoObjs),
                           [&](const std::string& loc) { return this->exist<DataObject>(loc); } );
   if ( it != std::end(m_vetoObjs) ) {
+    if ( msgLevel(MSG::DEBUG) )
       debug() << *it << " found, skipping event " << endmsg;
-      return StatusCode::SUCCESS;
+    return StatusCode::SUCCESS;
   }
 
   // Execute if m_requireObjs is empty
   // or if one or more of the m_requireObjs exist in TES
-  bool doIt = m_requireObjs.empty() || 
+  bool doIt = m_requireObjs.empty() ||
               std::any_of( std::begin(m_requireObjs), std::end(m_requireObjs),
                            [&](const std::string& loc) { return this->exist<DataObject>(loc); } );
 

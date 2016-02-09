@@ -252,6 +252,7 @@ public:
 		MsgStream log(msgSvc(), name());
 
 		if (sc.isSuccess()) {
+                  if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
 			log << MSG::DEBUG << "Handle for private tool" << toolTypeAndName
 					<< " successfully created and stored." << endmsg;
 		} else {
@@ -283,6 +284,7 @@ public:
 		MsgStream log(msgSvc(), name());
 
 		if (sc.isSuccess()) {
+                  if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
 			log << MSG::DEBUG << "Handle for public tool" << toolTypeAndName
 					<< " successfully created and stored." << endmsg;
 		} else {

@@ -208,24 +208,28 @@ StatusCode Algorithm::sysInitialize() {
   //// build list of data dependencies
   //
 
-  log << MSG::DEBUG << "input handles: " << inputHandles().size() << endmsg;
-  log << MSG::DEBUG << "output handles: " << outputHandles().size() << endmsg;
+  if (UNLIKELY(m_outputLevel <= MSG::DEBUG)) {
+    log << MSG::DEBUG << "input handles: " << inputHandles().size() << endmsg;
+    log << MSG::DEBUG << "output handles: " << outputHandles().size() << endmsg;
+  }
 
   // visit all sub-algs and tools, build full set
-  DHHVisitor avis(m_inputDataObjs, m_outputDataObjs);             
+  DHHVisitor avis(m_inputDataObjs, m_outputDataObjs);
   accept(&avis);
 
-  log << MSG::DEBUG << "Data Deps for " << name();
-  for (auto h : m_inputDataObjs) {
-    log << "\n  + INPUT  " << h;
+  if (UNLIKELY(m_outputLevel <= MSG::DEBUG)) {
+    log << MSG::DEBUG << "Data Deps for " << name();
+    for (auto h : m_inputDataObjs) {
+      log << "\n  + INPUT  " << h;
     }
-  for (auto h : m_outputDataObjs) {
-    log << "\n  + OUTPUT " << h;
+    for (auto h : m_outputDataObjs) {
+      log << "\n  + OUTPUT " << h;
     }
-  log << endmsg;
+    log << endmsg;
+  }
 
   return sc;
-      }
+}
 
 void
 Algorithm::accept(IDataHandleVisitor *vis) const {
@@ -1097,12 +1101,14 @@ void Algorithm::initToolHandles() const{
 		//get generic tool interface from ToolHandle
 		if(th->retrieve(tool).isSuccess() && tool != nullptr){
 			m_tools.push_back(tool);
-      log << MSG::DEBUG << "Adding " 
-	  << (th->isPublic() ? "Public" : "Private" ) 
-	  << " ToolHandle tool " << tool->name() 
+    if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
+      log << MSG::DEBUG << "Adding "
+	  << (th->isPublic() ? "Public" : "Private" )
+	  << " ToolHandle tool " << tool->name()
 	  << " (" << tool->type() << ")" << endmsg;
 		} else {
-			log << MSG::DEBUG << "Trying to add nullptr tool" << endmsg;
+		        if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
+			  log << MSG::DEBUG << "Trying to add nullptr tool" << endmsg;
 		}
 	}
 
@@ -1122,7 +1128,6 @@ std::vector<IAlgTool *> & Algorithm::tools() {
 
 	return m_tools;
 }
-
 
 /**
  ** Protected Member Functions
@@ -1157,10 +1162,10 @@ SmartIF<IService> Algorithm::service(const std::string& name, const bool createI
 }
 
 //-----------------------------------------------------------------------------
-void  
+void
 Algorithm::commitHandles() {
   //-----------------------------------------------------------------------------
-  
+
   for (auto h : m_outputHandles) {
     h->commit();
   }
@@ -1176,27 +1181,30 @@ Algorithm::commitHandles() {
 
 }
 
-void 
+void
 Algorithm::registerTool(IAlgTool * tool) const {
-
-    MsgStream log(msgSvc(), name());
-    log << MSG::DEBUG << "Registering tool " << tool->name() << endmsg;
+    if (UNLIKELY(m_outputLevel <= MSG::DEBUG)) {
+      MsgStream log(msgSvc(), name());
+      log << MSG::DEBUG << "Registering tool " << tool->name() << endmsg;
+    }
     m_tools.push_back(tool);
 }
 
 
-void 
+void
 Algorithm::deregisterTool(IAlgTool * tool) const {
   std::vector<IAlgTool *>::iterator it = std::find(m_tools.begin(),
                                                    m_tools.end(), tool);
-  
+
   MsgStream log(msgSvc(), name());
-  if (it != m_tools.end()) {   
-    log << MSG::DEBUG << "De-Registering tool " << tool->name()
+  if (it != m_tools.end()) {
+    if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
+      log << MSG::DEBUG << "De-Registering tool " << tool->name()
         << endmsg;
     m_tools.erase(it);
   } else {
-    log << MSG::DEBUG << "Could not de-register tool " << tool->name()
+    if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
+      log << MSG::DEBUG << "Could not de-register tool " << tool->name()
         << endmsg;
   }
 }
