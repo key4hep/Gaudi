@@ -27,7 +27,7 @@ StatusCode ColorMsgAlg::initialize() {
 
 StatusCode ColorMsgAlg::execute() {
 
-  MsgStream log(msgSvc(), name());
+  auto& log = msgStream();
 
   log << MSG::FATAL << "THIS IS A FATAL MESSAGE" << endmsg;
   log << MSG::ERROR << "THIS IS AN ERROR MESSAGE" << endmsg;

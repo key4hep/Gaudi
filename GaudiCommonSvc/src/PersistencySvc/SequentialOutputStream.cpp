@@ -37,8 +37,7 @@ StatusCode SequentialOutputStream::writeObjects()
    try {
       makeFilename();
    } catch ( const GaudiException& except ) {
-      MsgStream log(msgSvc(), name());
-      log << MSG::ERROR << except.message() << endmsg;
+      error() << except.message() << endmsg;
       return StatusCode::FAILURE;
    }
    return OutputStream::writeObjects();

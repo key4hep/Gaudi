@@ -168,13 +168,11 @@ StatusCode ChronoStatSvc::initialize()
   StatusCode sc = Service::initialize();
   if ( sc.isFailure() ) return sc;
   ///
-  MsgStream log( msgSvc() , this->name() );
-
   // Set my own properties
   sc = setProperties();
 
   if (sc.isFailure()) {
-    log << MSG::ERROR << "setting my properties" << endmsg;
+    error() << "setting my properties" << endmsg;
     return StatusCode::FAILURE;
   }
 
@@ -182,20 +180,20 @@ StatusCode ChronoStatSvc::initialize()
   if (!m_perEventFile.empty()) {
     m_ofd.open(m_perEventFile);
     if (!m_ofd.is_open()) {
-      log << MSG::ERROR << "unable to open per-event output file \""
+      error() << "unable to open per-event output file \""
 	  << m_perEventFile << "\"" << endmsg;
       return StatusCode::FAILURE;
     } else {
       auto ii = serviceLocator()->service<IIncidentSvc>("IncidentSvc");
       if ( !ii) {
-        log << MSG::ERROR << "Unable to find IncidentSvc" << endmsg;
+        error() << "Unable to find IncidentSvc" << endmsg;
         return StatusCode::FAILURE;
       }
       ii->addListener(this, IncidentType::EndEvent);
     }
   }
 
-  log << MSG::INFO << " Number of skipped events for MemStat"
+  info() << " Number of skipped events for MemStat"
       << m_numberOfSkippedEventsForMemStat << endmsg ;
 
   ///
@@ -238,8 +236,7 @@ StatusCode ChronoStatSvc::finalize()
   chronoStop( name() ) ;
 
   if (m_ofd.is_open()) {
-    MsgStream log(msgSvc(), name());
-    log << MSG::DEBUG << "writing per-event timing data to '" << m_perEventFile << "'" << endmsg;
+    debug() << "writing per-event timing data to '" << m_perEventFile << "'" << endmsg;
     for (const auto& itr:m_perEvtTime) {
       m_ofd << itr.first.substr(0,itr.first.length()-8 ) << " ";
       for (const auto& itt:itr.second) {
@@ -508,8 +505,7 @@ void ChronoStatSvc::saveStats()
   std::ofstream out( m_statsOutFileName.value(),
 		             std::ios_base::out | std::ios_base::trunc );
   if ( !out.good() ) {
-    MsgStream msg( msgSvc() , name() );
-    msg << MSG::INFO
+    info() 
 	<< "Could not open the output file for writing chrono statistics ["
 	<< m_statsOutFileName.value() << "]"
 	<< endmsg;

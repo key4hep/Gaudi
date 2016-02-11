@@ -13,32 +13,26 @@ LoopAlg::LoopAlg(const std::string& name,
 {
 }
 
-
 //------------------------------------------------------------------------------
 StatusCode LoopAlg::initialize()
 //------------------------------------------------------------------------------
 {
-  IService *pService(0);
+  IService *pService = nullptr;
   const bool CREATENOW(true);
   return service("ServiceB", pService, CREATENOW);
 }
-
 
 //------------------------------------------------------------------------------
 StatusCode LoopAlg::execute()
 //------------------------------------------------------------------------------
 {
-  MsgStream log(msgSvc(), name());
-  log << MSG::INFO << "Execute..." << endmsg;
-
+  info() << "Execute..." << endmsg;
   return StatusCode::SUCCESS;
 }
 //------------------------------------------------------------------------------
 StatusCode LoopAlg::finalize()
 //------------------------------------------------------------------------------
 {
-  MsgStream log(msgSvc(), name());
-  log << MSG::INFO << "Finalizing..." << endmsg;
-
+  info() << "Finalizing..." << endmsg;
   return StatusCode::SUCCESS;
 }

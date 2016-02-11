@@ -439,7 +439,7 @@ namespace Gaudi
                            << location2 << "'" << endmsg ; }
           return o ;
         }
-        return_type ret = obj ;
+        auto ret = obj.ptr() ;
         /// check the data
         common.Assert ( !(!ret) , "get():: No valid data at '" + location + "'"  ) ;
         if ( common.msgLevel ( MSG::DEBUG ) )

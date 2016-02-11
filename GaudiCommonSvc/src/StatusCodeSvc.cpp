@@ -1,5 +1,4 @@
 #include "StatusCodeSvc.h"
-#include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/StatusCode.h"
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -34,8 +33,7 @@ StatusCodeSvc::initialize() {
   StatusCode sc = Service::initialize();
   if (!sc.isSuccess()) return sc;
 
-  MsgStream log( msgSvc(), name() );
-  log << MSG::INFO << "initialize" << endmsg;
+  info() << "initialize" << endmsg;
 
   for (const auto& itr : m_pFilter.value()) {
     // we need to do this if someone has gotten to regFnc before initialize
@@ -64,8 +62,7 @@ StatusCodeSvc::initialize() {
 StatusCode
 StatusCodeSvc::reinitialize() {
 
-  MsgStream log( msgSvc(), name() );
-  log << MSG::INFO << "reinitialize" << endmsg;
+  info() << "reinitialize" << endmsg;
 
   return StatusCode::SUCCESS;
 
@@ -74,18 +71,17 @@ StatusCodeSvc::reinitialize() {
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 StatusCode
 StatusCodeSvc::finalize() {
-  MsgStream log( msgSvc(), name() );
 
   if (!m_dat.empty()) {
 
-    log << MSG::INFO << "listing all unchecked return codes:" << endmsg;
+    info() << "listing all unchecked return codes:" << endmsg;
 
     list();
 
   } else {
 
     if (msgLevel(MSG::DEBUG))
-      log << MSG::DEBUG << "all StatusCode instances where checked" << endmsg;
+      debug() << "all StatusCode instances where checked" << endmsg;
 
   }
 
@@ -126,8 +122,7 @@ StatusCodeSvc::regFnc(const std::string& fnc, const std::string& lib) {
   }
 
   if (m_abort) {
-    MsgStream log( msgSvc(), name() );
-    log << MSG::FATAL << "Unchecked StatusCode in " << fnc << " from lib "
+    fatal() << "Unchecked StatusCode in " << fnc << " from lib "
 	<< lib << endmsg;
     abort();
   }
@@ -157,15 +152,12 @@ StatusCodeSvc::regFnc(const std::string& fnc, const std::string& lib) {
 void
 StatusCodeSvc::list() const {
 
-  MsgStream log( msgSvc(), name() );
-  log << MSG::INFO << endl;
 
 
   std::ostringstream os;
   os << "Num | Function                       | Source Library" << endl;
   os << "----+--------------------------------+-------------------"
      << "-----------------------" << endl;
-
 
   for(const auto& itr : m_dat) {
     const auto& dat = itr.second;
@@ -187,8 +179,7 @@ StatusCodeSvc::list() const {
 
   }
 
-
-  log << os.str() << endmsg;
+  info() << endl << os.str() << endmsg;
 
 }
 
@@ -242,8 +233,7 @@ StatusCodeSvc::parseFilter(const string& str, string& fnc, string& lib) {
       fnc.clear();
       lib.clear();
 
-      MsgStream log( msgSvc(), name() );
-      log << MSG::WARNING << "ignoring unknown token in Filter: " << str
+      warning() << "ignoring unknown token in Filter: " << str
 	  << endmsg;
     }
   }

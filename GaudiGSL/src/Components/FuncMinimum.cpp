@@ -134,8 +134,6 @@ StatusCode FuncMinimum::minimum (const IFuncMinimum::GenFunc&   func  ,
 
   gsl_vector_view vect = gsl_vector_view_array ( &arg[0] ,
                                                  arg.dimension() );
-  MsgStream log( msgSvc(), name() );
-
   FuncMinimumMisc local (func, arg);
 
   gsl_multimin_function_fdf function;
@@ -182,12 +180,12 @@ StatusCode FuncMinimum::minimum (const IFuncMinimum::GenFunc&   func  ,
 
   if (status == GSL_SUCCESS)
     {
-      log << MSG::DEBUG
+      debug()
           << "We stopped in the method on the " << iter
           << " iteration (we have maximum "     << m_max_iter
           << " iterations)"                     << endmsg;
 
-      log << "The Euclidean norm of gradient = "
+      msgStream() << "The Euclidean norm of gradient = "
           << gsl_blas_dnrm2 (s->gradient)
           << " by the absolute tolerance = "
           << m_norm_gradient << endmsg;
@@ -227,8 +225,6 @@ StatusCode FuncMinimum::minimum (const IFuncMinimum::GenFunc&   func  ,
                                  IFuncMinimum::Covariance&      covar ) const
 //=============================================================================
 {
-  MsgStream log( msgSvc(), name() );
-
   /// Find minimum of our function
   StatusCode sc = minimum (func, arg) ;
 
@@ -270,8 +266,6 @@ StatusCode  FuncMinimum::initialize()
 {
   StatusCode sc = GaudiTool::initialize() ;
 
-  MsgStream log( msgSvc() , name() ) ;
-
   if ( sc.isFailure() )
     {
       return Error ("Could not initialize base class GaudiTool", sc);
@@ -281,7 +275,7 @@ StatusCode  FuncMinimum::initialize()
   if(       "conjugate_fr" == m_algType )
     {
       m_type = gsl_multimin_fdfminimizer_conjugate_fr     ;
-      log << MSG::DEBUG
+      debug()
           << "Minimization algorithm to be used: "
           << "'gsl_multimin_fdfminimizer_conjugate_fr'"
           << endmsg;
@@ -289,7 +283,7 @@ StatusCode  FuncMinimum::initialize()
   else if ( "conjugate_pr" == m_algType )
     {
       m_type = gsl_multimin_fdfminimizer_conjugate_pr     ;
-      log << MSG::DEBUG
+      debug()
           << "Minimization algorithm to be used: "
           << "'gsl_multimin_fdfminimizer_conjugate_pr'"
           << endmsg;
@@ -297,14 +291,14 @@ StatusCode  FuncMinimum::initialize()
   else if ( "vector_bfgs" == m_algType )
     {
       m_type = gsl_multimin_fdfminimizer_vector_bfgs      ;
-      log << MSG::DEBUG
+      debug()
           << "Minimization algorithm to be used: " <<
           "'gsl_multimin_fdfminimizer_vector_bfgs'" << endmsg;
     }
   else if ( "steepest_descent" == m_algType )
     {
       m_type = gsl_multimin_fdfminimizer_steepest_descent ;
-      log << MSG::DEBUG
+      debug()
           << "Minimization algorithm to be used: "
           << "'gsl_multimin_fdfminimizer_steepest_descent'"
           << endmsg;
@@ -320,8 +314,6 @@ StatusCode  FuncMinimum::initialize()
 StatusCode FuncMinimum::finalize   ()
 {
   StatusCode sc = GaudiTool::finalize() ;
-
-  MsgStream log( msgSvc() , name() ) ;
 
   if ( sc.isFailure() )
     {

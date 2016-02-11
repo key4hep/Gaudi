@@ -27,11 +27,10 @@ JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/wor
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr (GaudiCoreSvc v4r0)
-                                          running on pclhcb117 on Thu Feb 11 12:52:41 2016
+                                          running on pclhcb117 on Thu Feb 11 14:53:00 2016
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
-MyAlg               DEBUG Property update for OutputLevel : new value = 2
 MyAlg               DEBUG Property update for OutputLevel : new value = 2
 MyAlg               DEBUG Initialize base class GaudiCommon<Algorithm>
 MyAlg               DEBUG could not locate CounterSummarySvc, no counter summary will be made
@@ -80,6 +79,7 @@ MyAlg               DEBUG Property ['Name': Value] =  'ErrorCounter':0
 MyAlg               DEBUG Property ['Name': Value] =  'ErrorMax':1
 MyAlg               DEBUG Property ['Name': Value] =  'Enable':True
 MyAlg               DEBUG Property ['Name': Value] =  'OutputLevel':2
+MyAlg.PrivToolH...  DEBUG Property update for OutputLevel : new value = 2
 MyAlg.PrivToolH...   INFO intialize() has been called
 MyAlg.PrivToolH...   INFO Int    = 100
 MyAlg.PrivToolH...   INFO Double = 100
@@ -105,6 +105,7 @@ ToolSvc.MyTool       INFO Double = 2.011e+12
 ToolSvc.MyTool       INFO String = two hundred and one
 ToolSvc.MyTool       INFO Bool   = 1
 MyAlg               DEBUG Registering tool ToolSvc.MyTool
+MyAlg.MyTool        DEBUG Property update for OutputLevel : new value = 2
 MyAlg.MyTool         INFO intialize() has been called
 MyAlg.MyTool         INFO Int    = 101
 MyAlg.MyTool         INFO Double = 1.011e+12
@@ -153,6 +154,7 @@ MyAlg.MyGaudiTool    INFO Double = 100
 MyAlg.MyGaudiTool    INFO String = hundred
 MyAlg.MyGaudiTool    INFO Bool   = 1
 MyAlg               DEBUG Registering tool MyAlg.MyGaudiTool
+MyAlg.ToolWithName  DEBUG Property update for OutputLevel : new value = 2
 MyAlg.ToolWithName   INFO intialize() has been called
 MyAlg.ToolWithName   INFO Int    = 100
 MyAlg.ToolWithName   INFO Double = 100
@@ -165,7 +167,13 @@ MyAlg                INFO /Event/Rec/Hits
 MyAlg                INFO /Rec/RAW
 MyAlg                INFO /Event/MyAnalysis/Tracks
 MyAlg                INFO ....initialization done
-ToolSvc.ToolA       DEBUG Property update for OutputLevel : new value = 2
+MyAlg               DEBUG input handles: 3
+MyAlg               DEBUG output handles: 1
+MyAlg               DEBUG Data Deps for MyAlg
+  + INPUT  ('/Rec/RAW')
+  + INPUT  ('/Event/Rec/Hits')
+  + INPUT  ('/Event/Rec/Tracks')
+  + OUTPUT ('/Event/MyAnalysis/Tracks')
 ToolSvc.ToolA       DEBUG Property update for OutputLevel : new value = 2
 ToolSvc.ToolA       DEBUG Initialize
 ToolSvc.ToolA       DEBUG Initialize base class GaudiCommon<AlgTool>
@@ -195,7 +203,6 @@ ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditTools':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'OutputLevel':2
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
 ToolSvc.ToolA       DEBUG Loading tool ToolB of type TestTool
-ToolSvc.ToolB       DEBUG Property update for OutputLevel : new value = 2
 ToolSvc.ToolB       DEBUG Property update for OutputLevel : new value = 2
 ToolSvc.ToolB       DEBUG Initialize
 ToolSvc.ToolB       DEBUG Initialize base class GaudiCommon<AlgTool>

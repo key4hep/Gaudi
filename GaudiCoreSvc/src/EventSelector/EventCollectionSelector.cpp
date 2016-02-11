@@ -2,7 +2,6 @@
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/ObjectFactory.h"
 #include "GaudiKernel/GenericAddress.h"
-#include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/IRegistry.h"
 #include "GaudiKernel/INTupleSvc.h"
 #include "GaudiKernel/ISvcLocator.h"
@@ -91,19 +90,18 @@ EventCollectionSelector::EventCollectionSelector(const std::string& name, ISvcLo
 StatusCode EventCollectionSelector::initialize()    {
   // Initialize base class
   StatusCode status = Service::initialize();
-  MsgStream log(msgSvc(), name());
   if ( !status.isSuccess() )    {
-    log << MSG::ERROR << "Error initializing base class Service!" << endmsg;
+    error() << "Error initializing base class Service!" << endmsg;
     return status;
   }
   m_pAddrCreator = serviceLocator()->service("EventPersistencySvc");
   if(!m_pAddrCreator) {
-    log << MSG::ERROR << "Unable to locate IAddressCreator interface of " << "EventPersistencySvc" << endmsg;
+    error() << "Unable to locate IAddressCreator interface of " << "EventPersistencySvc" << endmsg;
     return status;
   }
   m_tupleSvc = serviceLocator()->service(m_tupleSvcName);
   if( !m_tupleSvc )   {
-    log << MSG::ERROR << "Unable to locate INTupleSvc interface of " << m_tupleSvcName << endmsg;
+    error() << "Unable to locate INTupleSvc interface of " << m_tupleSvcName << endmsg;
     return status;
   }
   return status;
@@ -139,14 +137,12 @@ EventCollectionSelector::connectTuple(const std::string& nam, const std::string&
     item = new NTuple::Item<IOpaqueAddress*>();
     status = tup->item(itName, *item);
     if ( status.isSuccess() ) return status;
-    MsgStream log(msgSvc(), name());
-    log << MSG::ERROR << "Item " << itName << " is not part of the collection:" << top << endmsg;
+    error() << "Item " << itName << " is not part of the collection:" << top << endmsg;
     delete item;
     item = nullptr;
   }
   else  {
-    MsgStream err(msgSvc(), name());
-    err << MSG::ERROR << "Cannot connect to collection:" << top << endmsg;
+    error() << "Cannot connect to collection:" << top << endmsg;
   }
   tup = nullptr;
   return status;
@@ -254,8 +250,7 @@ EventCollectionSelector::createContext(Context*& refpCtxt) const
   std::unique_ptr<MyContextType> ctxt(new MyContextType());
   StatusCode status = connectCollection(ctxt.get());
   if( !status.isSuccess() )  {
-    MsgStream log(msgSvc(), name());
-    log << MSG::ERROR << "Unable to connect Collection file \"" << m_database << "\"" << endmsg;
+    error() << "Unable to connect Collection file \"" << m_database << "\"" << endmsg;
     return status;
   }
   refpCtxt = ctxt.release();
@@ -334,8 +329,7 @@ EventCollectionSelector::createAddress(const Context& refCtxt, IOpaqueAddress*& 
         return StatusCode::SUCCESS;
       }
       else    {
-        MsgStream log(msgSvc(), name());
-        log << MSG::ERROR << "Failed to access " << pA->par()[0]
+        error() << "Failed to access " << pA->par()[0]
             << ":" << pA->par()[1]
             << " SvcTyp:" << long(pA->svcType())
             << " CLID:"   << pA->clID()

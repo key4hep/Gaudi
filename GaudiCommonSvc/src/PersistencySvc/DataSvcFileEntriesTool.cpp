@@ -125,15 +125,13 @@ StatusCode DataSvcFileEntriesTool::initialize(){
 
   m_incidentSvc = serviceLocator()->service("IncidentSvc");
   if ( ! m_incidentSvc ) {
-    MsgStream log(msgSvc(), name());
-    log << MSG::ERROR << "Cannot get IncidentSvc" << endmsg;
+    error() << "Cannot get IncidentSvc" << endmsg;
     return StatusCode::FAILURE;
   }
 
   m_dataMgrSvc = m_dataSvc = serviceLocator()->service(m_dataSvcName);
   if ( ! m_dataSvc || ! m_dataMgrSvc ) {
-    MsgStream log(msgSvc(), name());
-    log << MSG::ERROR << "Cannot get IDataProviderSvc+IDataManagerSvc " << m_dataSvcName << endmsg;
+    error() << "Cannot get IDataProviderSvc+IDataManagerSvc " << m_dataSvcName << endmsg;
     return StatusCode::FAILURE;
   }
 
@@ -173,8 +171,7 @@ void DataSvcFileEntriesTool::handle(const Incident& incident) {
 
   m_leaves.clear();
   if (m_scanOnBeginEvent) {
-    MsgStream log(msgSvc(), name());
-    log << MSG::VERBOSE << "::handle scanning on " << incident.type() << endmsg;
+    verbose() << "::handle scanning on " << incident.type() << endmsg;
     i_collectLeaves();
   }
 }
@@ -202,12 +199,11 @@ void DataSvcFileEntriesTool::i_collectLeaves() {
 
 /// todo: implement the scanning as an IDataStoreAgent
 void DataSvcFileEntriesTool::i_collectLeaves(IRegistry* reg) {
-  MsgStream log(msgSvc(), name());
   // I do not put sanity checks on the pointers because I know how I'm calling the function
   IOpaqueAddress *addr = reg->address();
   if (addr) { // we consider only objects that are in a file
-    if (outputLevel() <= MSG::VERBOSE)
-      log << MSG::VERBOSE << "::i_collectLeaves added " << reg->identifier() << endmsg;
+    if (msgLevel(MSG::VERBOSE))
+      verbose() << "::i_collectLeaves added " << reg->identifier() << endmsg;
     m_leaves.push_back(reg->object()); // add this object
     // Origin of the current object
     const std::string& base = addr->par()[0];

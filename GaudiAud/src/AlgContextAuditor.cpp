@@ -44,8 +44,7 @@ StatusCode AlgContextAuditor::initialize()
   if ( sc.isFailure() ) { return sc ; }                           // RETURN
   m_svc = service(  "AlgContextSvc" , true ) ;
   if ( !m_svc ) {
-    MsgStream log ( msgSvc() , name() ) ;
-    log << MSG::ERROR << "Invalid pointer to IAlgContextSvc" << endmsg ;
+    error() << "Invalid pointer to IAlgContextSvc" << endmsg ;
     return StatusCode::FAILURE ;           // RETURN
   }
   return StatusCode::SUCCESS ;

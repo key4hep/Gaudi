@@ -15,11 +15,9 @@ public:
   MyAlgorithm(const std::string& name, ISvcLocator* pSvcLocator);
 
   /// Three mandatory member functions of any algorithm
-  StatusCode initialize();
-  StatusCode execute();
-  StatusCode finalize();
-
-  virtual ~MyAlgorithm(){}
+  StatusCode initialize() override;
+  StatusCode execute() override;
+  StatusCode finalize() override;
 
 private:
 
@@ -41,16 +39,15 @@ MyAlgorithm::MyAlgorithm(const std::string& name, ISvcLocator* ploc)
 StatusCode MyAlgorithm::initialize() {
 //------------------------------------------------------------------------------
 
-  MsgStream log(msgSvc(), name());
   StatusCode sc;
-  log << MSG::INFO << "initializing...." << endmsg;
+  info() << "initializing...." << endmsg;
 
   sc = toolSvc()->retrieveTool(m_toolName, m_tool, this );
   if( sc.isFailure() ) {
-    log << MSG::ERROR<< "Error retrieving the tool" << endmsg;
+    error()<< "Error retrieving the tool" << endmsg;
     return sc;
   }
-  log << MSG::INFO << "....initialization done" << endmsg;
+  info() << "....initialization done" << endmsg;
 
   return StatusCode::SUCCESS;
 }
@@ -59,8 +56,7 @@ StatusCode MyAlgorithm::initialize() {
 //------------------------------------------------------------------------------
 StatusCode MyAlgorithm::execute() {
 //------------------------------------------------------------------------------
-  MsgStream         log( msgSvc(), name() );
-  log << MSG::INFO << "executing...." << endmsg;
+  info() << "executing...." << endmsg;
 
   m_tool->doIt();
 
@@ -71,8 +67,7 @@ StatusCode MyAlgorithm::execute() {
 //------------------------------------------------------------------------------
 StatusCode MyAlgorithm::finalize() {
 //------------------------------------------------------------------------------
-  MsgStream log(msgSvc(), name());
-  log << MSG::INFO << "finalizing...." << endmsg;
+  info() << "finalizing...." << endmsg;
 
   toolSvc()->releaseTool( m_tool ).ignore();
 

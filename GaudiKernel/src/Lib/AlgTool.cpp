@@ -83,17 +83,10 @@ const IInterface* AlgTool::parent() const
 }
 
 //------------------------------------------------------------------------------
-ISvcLocator* AlgTool::serviceLocator()  const
+SmartIF<ISvcLocator>& AlgTool::serviceLocator()  const
 //------------------------------------------------------------------------------
 {
   return m_svcLocator;
-}
-
-//------------------------------------------------------------------------------
-IMessageSvc* AlgTool::msgSvc()  const
-//------------------------------------------------------------------------------
-{
-  return m_messageSvc;
 }
 
 // ============================================================================
@@ -192,13 +185,7 @@ StatusCode AlgTool::setProperties()
       return StatusCode::FAILURE;
     }
   }
-
-  // Change my own outputlevel
-  if ( m_messageSvc ) {
-    if ( MSG::NIL != m_outputLevel )
-    { m_messageSvc -> setOutputLevel ( name (), m_outputLevel ) ; }
-    m_outputLevel = m_messageSvc -> outputLevel ( name () ) ;
-  }
+  updateMsgStreamOutputLevel( m_outputLevel );
   return StatusCode::SUCCESS;
 }
 
@@ -220,7 +207,7 @@ AlgTool::AlgTool( const std::string& type,
     const Property* _p = Gaudi::Utils::getProperty ( parent , "OutputLevel") ;
     if ( _p ) { m_outputLevel.assign( *_p ) ; }
     declareProperty ( "OutputLevel"     , m_outputLevel ) ;
-     m_outputLevel.declareUpdateHandler(&AlgTool::initOutputLevel, this);
+     m_outputLevel.declareUpdateHandler([this](Property&) { this->updateMsgStreamOutputLevel(this->m_outputLevel) ; } );
   }
 
   IInterface* _p = const_cast<IInterface*> ( parent ) ;
@@ -228,25 +215,21 @@ AlgTool::AlgTool( const std::string& type,
   if      ( Algorithm* _alg = dynamic_cast<Algorithm*> ( _p ) )
   {
     m_svcLocator  = _alg -> serviceLocator  () ;
-    m_messageSvc  = _alg -> msgSvc          () ;
     m_threadID    = getGaudiThreadIDfromName ( _alg -> name() ) ;
   }
   else if ( Service*   _svc = dynamic_cast<Service*>  ( _p ) )
   {
     m_svcLocator  = _svc -> serviceLocator () ;
-    m_messageSvc  = _svc -> msgSvc         () ;
     m_threadID    = getGaudiThreadIDfromName ( _svc -> name() ) ;
   }
   else if ( AlgTool*   _too = dynamic_cast<AlgTool*>  ( _p ) )
   {
     m_svcLocator  = _too -> serviceLocator ();
-    m_messageSvc  = _too -> msgSvc         ();
     m_threadID    = getGaudiThreadIDfromName ( _too ->m_threadID ) ;
   }
   else if ( Auditor*   _aud = dynamic_cast<Auditor*>  ( _p ) )
   {
     m_svcLocator  = _aud -> serviceLocator() ;
-    m_messageSvc  = _aud -> msgSvc()         ;
     m_threadID    = getGaudiThreadIDfromName ( _aud -> name() )    ;
   }
   else
@@ -383,8 +366,7 @@ StatusCode AlgTool::sysReinitialize() {
 
   // Check that the current status is the correct one.
   if ( Gaudi::StateMachine::INITIALIZED != FSMState() ) {
-    MsgStream log ( msgSvc(), name() );
-    log << MSG::ERROR
+    error()
         << "sysReinitialize(): cannot reinitialize tool not initialized"
         << endmsg;
     return StatusCode::FAILURE;
@@ -411,14 +393,12 @@ StatusCode AlgTool::reinitialize()
   // Default implementation is finalize+initialize
   StatusCode sc = finalize();
   if (sc.isFailure()) {
-    MsgStream log ( msgSvc(), name() );
-    log << MSG::ERROR << "reinitialize(): cannot be finalized" << endmsg;
+    error() << "reinitialize(): cannot be finalized" << endmsg;
     return sc;
   }
   sc = initialize();
   if (sc.isFailure()) {
-    MsgStream log ( msgSvc(), name() );
-    log << MSG::ERROR << "reinitialize(): cannot be initialized" << endmsg;
+    error() << "reinitialize(): cannot be initialized" << endmsg;
     return sc;
   }
   */
@@ -431,8 +411,7 @@ StatusCode AlgTool::sysRestart() {
 
   // Check that the current status is the correct one.
   if ( Gaudi::StateMachine::RUNNING != FSMState() ) {
-    MsgStream log ( msgSvc(), name() );
-    log << MSG::ERROR
+    error()
         << "sysRestart(): cannot reinitialize tool not started"
         << endmsg;
     return StatusCode::FAILURE;
@@ -455,14 +434,12 @@ StatusCode AlgTool::restart()
   // Default implementation is stop+start
   StatusCode sc = stop();
   if (sc.isFailure()) {
-    MsgStream log ( msgSvc(), name() );
-    log << MSG::ERROR << "restart(): cannot be stopped" << endmsg;
+    error() << "restart(): cannot be stopped" << endmsg;
     return sc;
   }
   sc = start();
   if (sc.isFailure()) {
-    MsgStream log ( msgSvc(), name() );
-    log << MSG::ERROR << "restart(): cannot be started" << endmsg;
+    error() << "restart(): cannot be started" << endmsg;
     return sc;
   }
   return StatusCode::SUCCESS;
@@ -478,20 +455,19 @@ AlgTool::~AlgTool()
 
 void AlgTool::initToolHandles() const{
 
-	MsgStream log ( msgSvc() , name() ) ;
 
 	for(auto th : m_toolHandles){
 		IAlgTool * tool = nullptr;
 
 		//if(th->retrieve().isFailure())
-			//log << MSG::DEBUG << "Error in retrieving tool from ToolHandle" << endmsg;
+			//debug() << "Error in retrieving tool from ToolHandle" << endmsg;
 
 		//get generic tool interface from ToolHandle
 		if(th->retrieve(tool).isSuccess() && tool != nullptr){
 			m_tools.push_back(tool);
-			log << MSG::DEBUG << "Adding ToolHandle tool " << tool->name() << " (" << tool->type() << ")" << endmsg;
+			debug() << "Adding ToolHandle tool " << tool->name() << " (" << tool->type() << ")" << endmsg;
 		} else {
-			log << MSG::DEBUG << "Trying to add nullptr tool" << endmsg;
+			debug() << "Trying to add nullptr tool" << endmsg;
 		}
 	}
 
@@ -550,20 +526,12 @@ IAuditorSvc* AlgTool::auditorSvc() const {
   return m_pAuditorSvc.get();
 }
 
-
 //-----------------------------------------------------------------------------
-void  AlgTool::initOutputLevel(Property& /*prop*/) {
-//-----------------------------------------------------------------------------
-   // do nothing... yet ?
-}
-
-
-//-----------------------------------------------------------------------------
-void  
+void
 AlgTool::acceptDHVisitor(IDataHandleVisitor *vis) const{
   //-----------------------------------------------------------------------------
   vis->visit(this);
-  
+
   for (auto tool : tools()) {
     AlgTool *at = dynamic_cast<AlgTool*>(tool);
     vis->visit(at);
@@ -572,10 +540,10 @@ AlgTool::acceptDHVisitor(IDataHandleVisitor *vis) const{
 }
 
 //-----------------------------------------------------------------------------
-void  
+void
 AlgTool::commitHandles() {
   //-----------------------------------------------------------------------------
-  
+
   for (auto h : m_outputHandles) {
     h->commit();
   }

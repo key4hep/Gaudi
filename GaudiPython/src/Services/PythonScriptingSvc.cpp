@@ -39,7 +39,6 @@ StatusCode PythonScriptingSvc::initialize()
   StatusCode sc = Service::initialize();
   if ( sc.isFailure() ) return sc;
 
-  MsgStream log( msgSvc(), name() );
 
   // Setup startup script. If none is explicitly specified, then
   // use the ApplicationMgr JobOptionsPath property as long as
@@ -66,7 +65,7 @@ StatusCode PythonScriptingSvc::initialize()
   std::string fullversion = Py_GetVersion();
   std::string version( fullversion, 0, fullversion.find_first_of(' '));
   std::string vers(version, 0, version.find_first_of('.',version.find_first_of('.')+1));
-  log << MSG::INFO << "Python version: [" << vers << "]" << endmsg;
+  info() << "Python version: [" << vers << "]" << endmsg;
 
 #if defined(__linux)
   // This is hack to make global the python symbols
@@ -110,7 +109,6 @@ StatusCode PythonScriptingSvc::finalize()
 StatusCode PythonScriptingSvc::run()
 //----------------------------------------------------------------------------------
 {
-  MsgStream log( msgSvc(), name() );
   if ( !m_startupScript.empty() ) {
     std::ifstream file{m_startupScript};
     std::stringstream stream;
@@ -124,7 +122,7 @@ StatusCode PythonScriptingSvc::run()
       file.close();
       PyRun_SimpleString( buffer.c_str() );
     } else {
-      log << MSG::WARNING << "Python startup file " << m_startupScript << " not found" << endmsg;
+      warning() << "Python startup file " << m_startupScript << " not found" << endmsg;
     }
   }
   PyRun_InteractiveLoop(stdin, "\0");

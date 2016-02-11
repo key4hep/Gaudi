@@ -272,7 +272,7 @@ StatusCode AlgResourcePool::decodeTopAlgs()    {
     if (!algorithm) fatal() << "Conversion from IAlgorithm to Algorithm failed" << endmsg;
     sc = flattenSequencer(algorithm, m_flatUniqueAlgList, "EVENT LOOP");
   }
-  if (outputLevel() <= MSG::DEBUG){
+  if (msgLevel(MSG::DEBUG)){
     debug() << "List of algorithms is: " << endmsg;
     for (auto& algo : m_flatUniqueAlgList)
       debug() << "  o " << algo->type() << "/" << algo->name() << " @ " << algo <<  endmsg;

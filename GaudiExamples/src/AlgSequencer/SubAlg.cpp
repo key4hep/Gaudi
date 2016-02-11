@@ -18,9 +18,7 @@ SubAlg::SubAlg(const std::string& name, ISvcLocator* ploc)
 //------------------------------------------------------------------------------
 StatusCode SubAlg::initialize() {
 //------------------------------------------------------------------------------
-  MsgStream log(msgSvc(), name());
-  log << MSG::INFO << "initializing...." << endmsg;
-//  return StatusCode::FAILURE;
+  info() << "initializing...." << endmsg;
   return StatusCode::SUCCESS;
 }
 
@@ -28,8 +26,7 @@ StatusCode SubAlg::initialize() {
 //------------------------------------------------------------------------------
 StatusCode SubAlg::execute() {
 //------------------------------------------------------------------------------
-  MsgStream         log( msgSvc(), name() );
-  log << MSG::INFO << "executing...." << endmsg;
+  info() << "executing...." << endmsg;
   return StatusCode::SUCCESS;
 }
 
@@ -37,7 +34,6 @@ StatusCode SubAlg::execute() {
 //------------------------------------------------------------------------------
 StatusCode SubAlg::finalize() {
 //------------------------------------------------------------------------------
-  MsgStream log(msgSvc(), name());
-  log << MSG::INFO << "finalizing...." << endmsg;
+  info() << "finalizing...." << endmsg;
   return StatusCode::SUCCESS;
 }

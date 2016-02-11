@@ -21,11 +21,10 @@ StatusCode VFSSvc::initialize() {
   StatusCode sc = Service::initialize();
   if (sc.isFailure()) return sc;
 
-  MsgStream log(msgSvc(), name());
 
   m_toolSvc = serviceLocator()->service("ToolSvc");
   if (!m_toolSvc){
-    log << MSG::ERROR << "Cannot locate ToolSvc" << endmsg;
+    error() << "Cannot locate ToolSvc" << endmsg;
     return StatusCode::FAILURE;
   }
 
@@ -34,13 +33,13 @@ StatusCode VFSSvc::initialize() {
     // retrieve the tool and the pointer to the interface
     sc = m_toolSvc->retrieve(i,IAlgTool::interfaceID(),tool,nullptr,true);
     if (sc.isFailure()){
-      log << MSG::ERROR << "Cannot get tool " << i << endmsg;
+      error() << "Cannot get tool " << i << endmsg;
       return sc;
     }
     m_acquiredTools.push_back(tool); // this is one tool that we will have to release
     auto hndlr = SmartIF<IFileAccess>(tool);
     if (!hndlr){
-      log << MSG::ERROR << i << " does not implement IFileAccess" << endmsg;
+      error() << i << " does not implement IFileAccess" << endmsg;
       return StatusCode::FAILURE;
     }
     // We do not need to increase the reference count for the IFileAccess interface
@@ -51,7 +50,7 @@ StatusCode VFSSvc::initialize() {
 
   // Now let's check if we can handle the fallback protocol
   if ( m_urlHandlers.find(m_fallBackProtocol) == m_urlHandlers.end() ) {
-    log << MSG::ERROR << "No handler specified for fallback protocol prefix "
+    error() << "No handler specified for fallback protocol prefix "
         << m_fallBackProtocol << endmsg;
     return StatusCode::FAILURE;
   }

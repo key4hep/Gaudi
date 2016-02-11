@@ -79,12 +79,11 @@ StatusCode ConversionSvc::makeCall(int typ,
         return status;
       }
       status.ignore();
-      MsgStream log(msgSvc(), name());
-      log << MSG::INFO << "No converter for object ";
+      info() << "No converter for object ";
       if ( pObject )   {
-        log << System::typeinfoName(typeid(*pObject));
+        msgStream() << System::typeinfoName(typeid(*pObject));
       }
-      log << "  CLID= " << obj_class << endmsg;
+      msgStream() << "  CLID= " << obj_class << endmsg;
       return NO_CONVERTER;
     }
     return INVALID_OBJECT;
@@ -166,8 +165,7 @@ StatusCode ConversionSvc::setDataProvider(IDataProviderSvc* pDataSvc)    {
   for(auto& i : m_workers ) {
     IConverter* cnv = i.converter();
     if ( cnv && cnv->setDataProvider(m_dataSvc).isFailure()) {
-      MsgStream log(msgSvc(), name());
-      log << MSG::ERROR << "setting Data Provider" << endmsg;
+      error() << "setting Data Provider" << endmsg;
     }
   }
   return StatusCode::SUCCESS;
@@ -185,8 +183,7 @@ StatusCode ConversionSvc::setAddressCreator(IAddressCreator* creator)   {
     auto* cnv = i.converter();
     if ( cnv )   {
       if (cnv->setAddressCreator(m_addressCreator).isFailure()) {
-	MsgStream log(msgSvc(), name());
-	log << MSG::ERROR << "setting Address Creator"  << endmsg;
+	error() << "setting Address Creator"  << endmsg;
       }
     }
   }
@@ -270,10 +267,9 @@ StatusCode ConversionSvc::initialize()     {
 /// stop the service.
 StatusCode ConversionSvc::finalize()      {
   // Release all workers.
-  MsgStream log(msgSvc(), name());
   for ( auto& i : m_workers ) {
     if ( i.converter()->finalize().isFailure() ) {
-      log << MSG::ERROR << "finalizing worker" << endmsg;
+      error() << "finalizing worker" << endmsg;
     }
     i.converter()->release();
   }

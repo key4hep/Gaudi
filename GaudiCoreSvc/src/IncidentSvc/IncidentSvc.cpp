@@ -39,8 +39,8 @@ namespace
   // ==========================================================================
 }
 
-#define ON_DEBUG if (UNLIKELY(outputLevel() <= MSG::DEBUG))
-#define ON_VERBOSE if (UNLIKELY(outputLevel() <= MSG::VERBOSE))
+#define ON_DEBUG if (msgLevel(MSG::DEBUG))
+#define ON_VERBOSE if (msgLevel(MSG::VERBOSE))
 
 #define DEBMSG ON_DEBUG debug()
 #define VERMSG ON_VERBOSE verbose()

@@ -1,6 +1,5 @@
 // Framework include files
 #include "GaudiKernel/SmartIF.h"
-#include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/IRegistry.h"
 #include "GaudiKernel/AttribStringParser.h"
 #include "GaudiKernel/SmartDataPtr.h"
@@ -30,8 +29,7 @@ TagCollectionStream::TagCollectionStream(const std::string& nam, ISvcLocator* pS
 StatusCode TagCollectionStream::connectAddress()  {
   NTuplePtr nt(m_collectionSvc, m_tagName);
   if ( !nt )    {
-    MsgStream log(msgSvc(), name());
-    log << MSG::ERROR << "Failed to connect to the tag collection "
+    error() << "Failed to connect to the tag collection "
         << m_tagName << endmsg;
     return StatusCode::FAILURE;
   }
@@ -42,8 +40,7 @@ StatusCode TagCollectionStream::connectAddress()  {
     m_addrColumn = m_item.operator->();
     return sc;
   }
-  MsgStream log(msgSvc(), name());
-  log << MSG::ERROR << "Failed to add the address column:"
+  error() << "Failed to add the address column:"
       << m_addrColName << " to the tag collection " << m_tagName
       << endmsg;
   return sc;
@@ -92,14 +89,12 @@ StatusCode TagCollectionStream::initialize() {
       }
     }
   }
-  MsgStream log(msgSvc(), name());
-  log << MSG::ERROR << "Failed to initialize TagCollection Stream." << endmsg;
+  error() << "Failed to initialize TagCollection Stream." << endmsg;
   return StatusCode::FAILURE;
 }
 
 // terminate data writer
 StatusCode TagCollectionStream::finalize() {
-  MsgStream log(msgSvc(), name());
   StatusCode status = OutputStream::finalize();
   m_collectionSvc.reset();
   m_addrColumn = nullptr;
@@ -110,8 +105,7 @@ StatusCode TagCollectionStream::finalize() {
 StatusCode TagCollectionStream::writeTuple() {
   StatusCode sc = m_collectionSvc->writeRecord(m_tagName);
   if ( !sc.isSuccess() )  {
-    MsgStream log(msgSvc(), name());
-    log << MSG::ERROR << "Failed to write tag collection " << m_tagName << ". "
+    error() << "Failed to write tag collection " << m_tagName << ". "
         << "[Tuple write error]" << endmsg;
   }
   return sc;
@@ -121,8 +115,7 @@ StatusCode TagCollectionStream::writeTuple() {
 StatusCode TagCollectionStream::writeData() {
   StatusCode sc = OutputStream::writeObjects();
   if ( !sc.isSuccess() )  {
-    MsgStream log(msgSvc(), name());
-    log << MSG::ERROR << "Failed to write tag collection " << m_tagName << ". "
+    error() << "Failed to write tag collection " << m_tagName << ". "
         << "[Object write error]" << endmsg;
   }
   return sc;
@@ -144,15 +137,13 @@ StatusCode TagCollectionStream::writeObjects() {
     if ( status.isSuccess() && !m_addrColName.empty() )  {
       SmartDataPtr<DataObject> top(eventSvc(), m_topLeafName);
       if ( !top )  {
-        MsgStream log0(msgSvc(), name());
-        log0 << MSG::ERROR << "Failed to write tag collection " << m_tagName << ". "
+        error() << "Failed to write tag collection " << m_tagName << ". "
             << m_topLeafName << " not found." << endmsg;
         return StatusCode::FAILURE;
       }
       IOpaqueAddress* pA = top->registry()->address();
       if ( !pA )  {
-        MsgStream log1(msgSvc(), name());
-        log1 << MSG::ERROR << "Failed to write tag collection " << m_tagName << ". "
+        error() << "Failed to write tag collection " << m_tagName << ". "
             << m_topLeafName << "'s address not found." << endmsg;
         return StatusCode::FAILURE;
       }
@@ -170,15 +161,13 @@ StatusCode TagCollectionStream::writeObjects() {
       // is the same like leaving this out....
       SmartDataPtr<DataObject> leaf(eventSvc(), m_addrLeaf);
       if ( !leaf )  {
-        MsgStream log2(msgSvc(), name());
-        log2 << MSG::ERROR << "Failed to write tag collection " << m_tagName << ". "
+        error() << "Failed to write tag collection " << m_tagName << ". "
             << m_addrLeaf << " not found." << endmsg;
         return StatusCode::FAILURE;
       }
       IOpaqueAddress* redir = leaf->registry()->address();
       if ( !redir )  {
-        MsgStream log3(msgSvc(), name());
-        log3 << MSG::ERROR << "Failed to write tag collection " << m_tagName << ". "
+        error() << "Failed to write tag collection " << m_tagName << ". "
             << m_addrLeaf << "'s address not found." << endmsg;
         return StatusCode::FAILURE;
       }

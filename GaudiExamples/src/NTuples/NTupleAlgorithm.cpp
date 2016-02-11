@@ -15,10 +15,10 @@ DECLARE_COMPONENT(NTupleAlgorithm)
 NTupleAlgorithm::NTupleAlgorithm(const std::string& name,
                                  ISvcLocator* pSvcLocator) :
   Algorithm(name, pSvcLocator)
-                                //------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 {
-  m_tuple1 = 0;
-  m_tuple2 = 0;
+  m_tuple1 = nullptr;
+  m_tuple2 = nullptr;
 }
 
 
@@ -26,9 +26,6 @@ NTupleAlgorithm::NTupleAlgorithm(const std::string& name,
 StatusCode NTupleAlgorithm::initialize()
 //------------------------------------------------------------------------------
 {
-  MsgStream log( msgSvc(), name() );
-
-
   //  Book N-tuple 1
   NTuplePtr nt1(ntupleSvc(), "MyTuples/1");
   if ( nt1 ) m_tuple1 = nt1;
@@ -39,7 +36,7 @@ StatusCode NTupleAlgorithm::initialize()
       m_tuple1->addItem ("Energy",   m_energy).ignore();
     }
     else    {   // did not manage to book the N tuple....
-      log << MSG::ERROR << "    Cannot book N-tuple:" << long(m_tuple1) << endmsg;
+      error() << "    Cannot book N-tuple:" << long(m_tuple1) << endmsg;
       return StatusCode::FAILURE;
     }
   }
@@ -55,11 +52,11 @@ StatusCode NTupleAlgorithm::initialize()
       m_tuple2->addItem ("INumbers", m_n, m_iNumbers).ignore();
     }
     else    {   // did not manage to book the N tuple....
-      log << MSG::ERROR << "    Cannot book N-tuple:" << long(m_tuple2) << endmsg;
+      error() << "    Cannot book N-tuple:" << long(m_tuple2) << endmsg;
       return StatusCode::FAILURE;
     }
   }
-  log << MSG::INFO << "Finished booking NTuples" << endmsg;
+  info() << "Finished booking NTuples" << endmsg;
   return StatusCode::SUCCESS;
 }
 
@@ -69,7 +66,6 @@ StatusCode NTupleAlgorithm::execute()
 //------------------------------------------------------------------------------
 {
   StatusCode status;
-  MsgStream log( msgSvc(), name() );
 
   static int n = 0;
 
@@ -88,12 +84,12 @@ StatusCode NTupleAlgorithm::execute()
 
   status = m_tuple1->write();
   if( status.isFailure() ){
-    log << MSG::ERROR << "    Cannot fill N-tuple:" << long(m_tuple1) << endmsg;
+    error() << "    Cannot fill N-tuple:" << long(m_tuple1) << endmsg;
     return StatusCode::FAILURE;
   }
   status = m_tuple2->write();
   if( status.isFailure() ){
-    log << MSG::ERROR << "    Cannot fill N-tuple:" << long(m_tuple2) << endmsg;
+    error() << "    Cannot fill N-tuple:" << long(m_tuple2) << endmsg;
     return StatusCode::FAILURE;
   }
 
@@ -105,8 +101,6 @@ StatusCode NTupleAlgorithm::execute()
 StatusCode NTupleAlgorithm::finalize()
 //------------------------------------------------------------------------------
 {
-  MsgStream log(msgSvc(), name());
-  log << MSG::INFO << "Finalizing..." << endmsg;
-
+  info() << "Finalizing..." << endmsg;
   return StatusCode::SUCCESS;
 }

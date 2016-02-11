@@ -57,8 +57,6 @@ private:
 
   inputFunPtr parseTableType(const std::string&);
 
-  mutable MsgStream m_log;
-
   bool m_upid_local = false;
 
 };

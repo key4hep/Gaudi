@@ -20,19 +20,19 @@ public:
               const IInterface* parent);
 
   // IMyTool interface
-  virtual const std::string&  message() const;
-  virtual void  doIt();
+  const std::string&  message() const override;
+  void  doIt() override;
 
   // IMyOtherTool interface
-  virtual void doItAgain();
+  void doItAgain() override;
 
   /// Overriding initialize and finalize
-  virtual StatusCode initialize();
-  virtual StatusCode finalize();
+  StatusCode initialize() override;
+  StatusCode finalize() override;
 
 protected:
   /// Standard destructor
-  virtual ~MyGaudiTool( );
+  ~MyGaudiTool( ) override;
 private:
   /// Properties
   int          m_int;

@@ -31,7 +31,6 @@ RandomNumberAlg::~RandomNumberAlg()   {
 // The "functional" part of the class: For the EmptyAlgorithm example they do
 //  nothing apart from print out info messages.
 StatusCode RandomNumberAlg::initialize() {
-  MsgStream log(msgSvc(), name());
   StatusCode sc;
 
   // Initilize random number generators
@@ -53,7 +52,6 @@ StatusCode RandomNumberAlg::initialize() {
 }
 
 StatusCode RandomNumberAlg::execute()   {
-  MsgStream log(msgSvc(), name());
   StatusCode sc;
 
   m_gaussHisto->fill(m_gaussNumbers(), 1.0 );

@@ -208,6 +208,7 @@ void PropertyMgr::assertUniqueName(const std::string& name) const {
   if (UNLIKELY(hasProperty(name))) {
     auto owner = SmartIF<INamedInterface>( m_pOuter );
     auto msgSvc = Gaudi::svcLocator()->service<IMessageSvc>("MessageSvc");
+    if (!msgSvc) { std::cerr<< "error: cannot get MessageSvc!" << std::endl; }
     MsgStream log(msgSvc, owner ? owner->name() : "PropertyMgr"  );
     log << MSG::WARNING
         << "duplicated property name '" << name

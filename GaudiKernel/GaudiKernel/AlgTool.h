@@ -15,6 +15,7 @@
 #include "GaudiKernel/IStateful.h"
 #include <Gaudi/PluginService.h>
 #include "GaudiKernel/ToolHandle.h"
+#include "GaudiKernel/CommonMessaging.h"
 
 #include "GaudiKernel/IDataHandleHolder.h"
 #include "GaudiKernel/DataHandle.h"
@@ -41,9 +42,8 @@ class ToolHandleInfo;
  *  @author Gloria Corti
  *  @author Pere Mato
  */
-class GAUDI_API AlgTool: public implements4<IAlgTool, IDataHandleHolder,
-                                            IProperty, IStateful> {
-  friend class ToolSvc;
+class GAUDI_API AlgTool: public CommonMessaging<implements4<IAlgTool, IDataHandleHolder,
+                                                            IProperty, IStateful>> {
 public:
 #ifndef __REFLEX__
   typedef Gaudi::PluginService::Factory<IAlgTool*,
@@ -165,13 +165,10 @@ public:
            const IInterface* parent);
 
   /// Retrieve pointer to service locator.
-  ISvcLocator* serviceLocator()  const;
+  SmartIF<ISvcLocator>& serviceLocator()  const override;
 
   /// shortcut for the method service locator
   ISvcLocator* svcLoc()  const { return serviceLocator() ; }
-
-  /// Retrieve pointer to message service.
-  IMessageSvc* msgSvc() const;
 
   /** accessor to event service  service
    *  @return pointer to detector service
@@ -328,27 +325,20 @@ public:
 
 
 	void registerTool(IAlgTool * tool) const {
-		if (UNLIKELY(m_outputLevel <= MSG::DEBUG)) {
-		  MsgStream log(msgSvc(), name());
-		  log << MSG::DEBUG << "Registering tool " << tool->name() << endmsg;
-		}
+		if (UNLIKELY(msgLevel(MSG::DEBUG)))
+		  debug() << "Registering tool " << tool->name() << endmsg;
 		m_tools.push_back(tool);
 	}
 
 	void deregisterTool(IAlgTool * tool) const {
-		std::vector<IAlgTool *>::iterator it = std::find(m_tools.begin(),
-				m_tools.end(), tool);
-
-		MsgStream log(msgSvc(), name());
+		auto it = std::find(m_tools.begin(), m_tools.end(), tool);
 		if (it != m_tools.end()) {
-		  if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
-		    log << MSG::DEBUG << "De-Registering tool " << tool->name()
-					<< endmsg;
+		        if (UNLIKELY(msgLevel(MSG::DEBUG)))
+			  debug() << "De-Registering tool " << tool->name() << endmsg;
 			m_tools.erase(it);
 		} else {
-		  if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
-		    log << MSG::DEBUG << "Could not de-register tool " << tool->name()
-					<< endmsg;
+		        if (UNLIKELY(msgLevel(MSG::DEBUG)))
+			  debug() << "Could not de-register tool " << tool->name() << endmsg;
 		}
 	}
 
@@ -365,7 +355,6 @@ public:
                                  bool createIf = true) {
 
 		if (toolTypeAndName == "")
-      //      toolTypeAndName = System::typeinfoName(typeid(T));
       toolTypeAndName = handle.typeAndName();
 
 		StatusCode sc = handle.initialize(toolTypeAndName, 0, createIf);
@@ -392,7 +381,6 @@ public:
                                   bool createIf = true) {
 
 		if (toolTypeAndName == "")
-      //      toolTypeAndName = System::typeinfoName(typeid(T));
       toolTypeAndName = handle.typeAndName();
 
 		StatusCode sc = handle.initialize(toolTypeAndName, this, createIf);
@@ -469,21 +457,6 @@ public:
     if ( mS ) mS->declareInfo(name, format, var, size, desc, this);
   }
 
-protected:
-
-  /// get tool's output level
-  int           outputLevel () const { return (int)m_outputLevel ; }
-
-  /// Accessor for the Message level property
-  IntegerProperty & outputLevelProperty() { return m_outputLevel; }
-
-  /** callback for output level property */
-  void initOutputLevel(Property& prop);
-
-
-
-protected:
-
   // Standard destructor.
   ~AlgTool() override;
 
@@ -493,8 +466,7 @@ private:
   std::string          m_type;             ///< AlgTool type (concrete class name)
   const std::string    m_name;             ///< AlgTool full name
   const IInterface*    m_parent = nullptr;           ///< AlgTool parent
-  mutable ISvcLocator* m_svcLocator = nullptr;       ///< Pointer to Service Locator service
-  mutable IMessageSvc* m_messageSvc = nullptr;       ///< Message service
+  mutable SmartIF<ISvcLocator> m_svcLocator ;       ///< Pointer to Service Locator service
   mutable SmartIF<IDataProviderSvc> m_evtSvc;      ///< Event data service
   mutable SmartIF<IToolSvc> m_ptoolSvc;         ///< Tool service
   mutable SmartIF<IMonitorSvc> m_pMonitorSvc;      ///< Online Monitoring Service
@@ -537,14 +509,11 @@ private:
 
 #ifndef GAUDI_NEW_PLUGIN_SERVICE
 template <class T>
-class ToolFactory {
-public:
-#ifndef __REFLEX__
+struct ToolFactory {
   template <typename S, typename... Args>
   static typename S::ReturnType create(Args&&... args) {
     return new T(std::forward<Args>(args)...);
   }
-#endif
 };
 
 // Macros to declare component factories
