@@ -72,7 +72,7 @@ TimelineSvc         DEBUG initialize
 DataCreator       VERBOSE ServiceLocatorHelper::service: found service TimelineSvc
 DataCreator         DEBUG Initialize base class GaudiCommon<Algorithm>
 DataCreator         DEBUG could not locate CounterSummarySvc, no counter summary will be made
-DataCreator         DEBUG List of ALL properties of GaudiTesting::PutDataObjectAlg/DataCreator  #properties = 39
+DataCreator         DEBUG List of ALL properties of GaudiTesting::PutDataObjectAlg/DataCreator  #properties = 38
 DataCreator         DEBUG Property ['Name': Value] =  'DataSvc':EventDataSvc
 DataCreator         DEBUG Property ['Name': Value] =  'Paths':[ 'A' , 'B' , 'C' , 'D' ]
 DataCreator         DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
@@ -83,7 +83,6 @@ DataCreator         DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':T
 DataCreator         DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
 DataCreator         DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
 DataCreator         DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-DataCreator         DEBUG Property ['Name': Value] =  'GlobalTimeOffset':0.0000000
 DataCreator         DEBUG Property ['Name': Value] =  'RootInTES':
 DataCreator         DEBUG Property ['Name': Value] =  'Context':
 DataCreator         DEBUG Property ['Name': Value] =  'TypePrint':True
@@ -123,7 +122,7 @@ OddEvents         VERBOSE ServiceLocatorHelper::service: found service EventData
 OddEvents         VERBOSE ServiceLocatorHelper::service: found service TimelineSvc
 OddEvents           DEBUG Initialize base class GaudiCommon<Algorithm>
 OddEvents           DEBUG could not locate CounterSummarySvc, no counter summary will be made
-OddEvents           DEBUG List of ALL properties of GaudiTesting::OddEventsFilter/OddEvents  #properties = 37
+OddEvents           DEBUG List of ALL properties of GaudiTesting::OddEventsFilter/OddEvents  #properties = 36
 OddEvents           DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
 OddEvents           DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
 OddEvents           DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
@@ -132,7 +131,6 @@ OddEvents           DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':T
 OddEvents           DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
 OddEvents           DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
 OddEvents           DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-OddEvents           DEBUG Property ['Name': Value] =  'GlobalTimeOffset':0.0000000
 OddEvents           DEBUG Property ['Name': Value] =  'RootInTES':
 OddEvents           DEBUG Property ['Name': Value] =  'Context':
 OddEvents           DEBUG Property ['Name': Value] =  'TypePrint':True
@@ -171,7 +169,7 @@ EvenEvents        VERBOSE ServiceLocatorHelper::service: found service EventData
 EvenEvents        VERBOSE ServiceLocatorHelper::service: found service TimelineSvc
 EvenEvents          DEBUG Initialize base class GaudiCommon<Algorithm>
 EvenEvents          DEBUG could not locate CounterSummarySvc, no counter summary will be made
-EvenEvents          DEBUG List of ALL properties of GaudiTesting::EvenEventsFilter/EvenEvents  #properties = 37
+EvenEvents          DEBUG List of ALL properties of GaudiTesting::EvenEventsFilter/EvenEvents  #properties = 36
 EvenEvents          DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
 EvenEvents          DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
 EvenEvents          DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
@@ -180,7 +178,6 @@ EvenEvents          DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':T
 EvenEvents          DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
 EvenEvents          DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
 EvenEvents          DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-EvenEvents          DEBUG Property ['Name': Value] =  'GlobalTimeOffset':0.0000000
 EvenEvents          DEBUG Property ['Name': Value] =  'RootInTES':
 EvenEvents          DEBUG Property ['Name': Value] =  'Context':
 EvenEvents          DEBUG Property ['Name': Value] =  'TypePrint':True

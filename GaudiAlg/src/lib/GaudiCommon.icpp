@@ -101,8 +101,6 @@ GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface * parent )
   this->declareProperty ( "Context"         , m_context     ) ;
   // root in TES
   this->declareProperty ( "RootInTES"       , m_rootInTES   ) ;
-  // global time offset
-  this->declareProperty ( "GlobalTimeOffset", m_globalTimeOffset ) ;
 
 
   // the header row for counters printout
@@ -144,13 +142,11 @@ GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface * parent )
     {
       m_context = gAlg->context();
       m_rootInTES = gAlg->rootInTES();
-      m_globalTimeOffset = gAlg->globalTimeOffset();
     }
     else if ( const GaudiTool*     gTool = dynamic_cast<const GaudiTool*>     (parent) )
     {
       m_context = gTool->context();
       m_rootInTES = gTool->rootInTES();
-      m_globalTimeOffset = gTool->globalTimeOffset();
     }
   }
 
@@ -172,8 +168,6 @@ GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface * parent )
           m_context = sp->value();
         } else if (  iter->name().compare("RootInTES") == 0 ) {
           m_rootInTES = sp->value();
-        } else if ( iter->name().compare("GlobalTimeOffset") == 0 ) {
-          m_globalTimeOffset = std::stod( sp->value() );
         }
       }
     }
