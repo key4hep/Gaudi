@@ -38,6 +38,8 @@ private:
   ToolHandle<IMyTool> m_myPrivToolHandle;
   ToolHandle<IMyTool> m_myPubToolHandle;
 
+  ToolHandle<IAlgTool> m_myGenericToolHandle;
+
   ToolHandleArray<IMyTool> m_tha;
 
   DataObjectHandle<DataObject> m_tracks;
