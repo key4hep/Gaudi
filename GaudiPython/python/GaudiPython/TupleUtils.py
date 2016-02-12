@@ -52,7 +52,6 @@ def _getToolSvc( **kwargs ) :
 ## Retrive N-Tuple ( book on demand )
 def _nTuple_ ( s , *args ) :
     """ Retrive N-tuple ( book on demand )  """
-    print 'ARGS:' , args
     return _Deco.nTuple ( s , *args)
 
 # =============================================================================
@@ -159,14 +158,11 @@ def releaseTuples () :
     The method needs to be invoked explicitely at the end of the job
     """
     if not _TOOLS_ : return
-    print ' %s/%s: release all pending ITupleTools: %s' % ( __file__     ,
-                                                           __name__     ,
-                                                           len(_TOOLS_) )
     from GaudiPython.Bindings import _gaudi
     if not _gaudi : return
-    
+
     toolSvc = _getToolSvc()
-    if toolSvc.isValid() : 
+    if toolSvc.isValid() :
         while _TOOLS_ :
             t = _TOOLS_.pop()
             if not t : continue
