@@ -3172,6 +3172,7 @@ function(gaudi_generate_project_manifest filename project version)
     set(data "${data}    <version>${heptools_version}</version>\n")
     # platform specifications
     set(data "${data}    <binary_tag>${BINARY_TAG}</binary_tag>\n")
+    set(data "${data}    <lcg_platform>${LCG_platform}</lcg_platform>\n")
     set(data "${data}    <lcg_system>${LCG_SYSTEM}</lcg_system>\n")
     # look for packages provided by heptools
     # - compile a list of the paths required at runtime
