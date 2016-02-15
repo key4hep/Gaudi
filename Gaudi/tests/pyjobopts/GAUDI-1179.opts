@@ -5,3 +5,7 @@ Dummy.MultiLineValue1 = "1;
 3
 4
 5";
+
+Dummy.MultiLineValue2 = "
+hi
+";
