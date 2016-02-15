@@ -941,7 +941,7 @@ def getCmpFailingValues(reference, to_check, fail_path):
     return (fail_path, r, c)
 
 # signature of the print-out of the histograms
-h_count_re = re.compile(r"^(.*)SUCCESS\s+Booked (\d+) Histogram\(s\) :\s+(.*)")
+h_count_re = re.compile(r"^(.*)SUCCESS\s+Booked (\d+) Histogram\(s\) :\s+([\s\w=-]*)")
 
 
 def _parseTTreeSummary(lines, pos):
