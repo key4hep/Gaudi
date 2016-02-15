@@ -69,7 +69,6 @@ set(GAUDI_CXX_STANDARD "${GAUDI_CXX_STANDARD_DEFAULT}"
     CACHE STRING "Version of the C++ standard to be used.")
 
 #--- Compilation Flags ---------------------------------------------------------
-add_definitions(-DGOD_NOALLOC)
 if(NOT GAUDI_FLAGS_SET)
   #message(STATUS "Setting cached build flags")
 
