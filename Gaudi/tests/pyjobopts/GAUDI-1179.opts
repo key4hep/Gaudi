@@ -1,1 +1,7 @@
 Dummy.Value = "a;b;c";
+
+Dummy.MultiLineValue1 = "1;
+2;
+3
+4
+5";

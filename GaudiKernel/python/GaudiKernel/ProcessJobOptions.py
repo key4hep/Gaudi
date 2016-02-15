@@ -161,6 +161,8 @@ class JobOptsParser:
         ifdef_skipping = False
         ifdef_skipping_level = 0
 
+        in_string = False
+
         f = open(_find_file(file))
         l = f.readline()
         if l.startswith("#!"):
@@ -240,15 +242,52 @@ class JobOptsParser:
                     raise ParserError("End Of File reached before end of multi-line comment")
                 l += l1[m.end():]
 
+            # if we are in a multiline string, we add to the statement
+            # everything until the next '"'
+            if in_string:
+                string_end = l.find('"')
+                if string_end >= 0:
+                    statement += l[:string_end+1]
+                    l = l[string_end+1:]
+                    in_string = False # the string ends here
+                else:
+                    statement += l
+                    l = ''
+
             if self.statement_sep in l:
-                i = l.index(self.statement_sep)
-                statement += l[:i]
-                self._eval_statement(statement.strip().replace("\n","\\n"))
-                statement = l[i+1:]
-                # it may happen (bug #37479) that the rest of the statement
-                # contains a comment.
-                if statement.lstrip().startswith("//"):
-                    statement = ""
+                # look for the first separator that is not inside a string
+                # cases:
+                # - '...;...("...)'
+                # - '..."...;..."...'
+                # - '..."...;...'
+
+                string_start = l.find('"')
+                i = l.find(self.statement_sep)
+                if string_start < 0 or i < string_start:
+                    # either we do not have '"' or the ';' comes first
+                    pass
+                elif string_start >= 0:
+                    # the ';' is after the '"', we must find the closing '"'
+                    string_end = l.find('"', string_start + 1)
+                    if string_end >= 0:
+                        # we found the closing '"'
+                        i = l.find(self.statement_sep, string_end + 1)
+                    else:
+                        # no closing quotes, so it's a multiline string
+                        i = -1
+                        in_string = True
+
+                if i >= 0:
+                    # we found a valid separator
+                    statement += l[:i]
+                    self._eval_statement(statement.strip().replace("\n","\\n"))
+                    statement = l[i+1:]
+                    # it may happen (bug #37479) that the rest of the statement
+                    # contains a comment.
+                    if statement.lstrip().startswith("//"):
+                        statement = ""
+                else:
+                    statement += l
             else:
                 statement += l
 
