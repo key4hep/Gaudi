@@ -161,6 +161,8 @@ class JobOptsParser:
         ifdef_skipping = False
         ifdef_skipping_level = 0
 
+        in_string = False
+
         f = open(_find_file(file))
         l = f.readline()
         if l.startswith("#!"):
@@ -239,6 +241,32 @@ class JobOptsParser:
                 if not l1 and not m:
                     raise ParserError("End Of File reached before end of multi-line comment")
                 l += l1[m.end():]
+
+            # if we are in a multiline string, we add to the statement
+            # everything until the next '"'
+            if in_string:
+                string_end = l.find('"')
+                if string_end >= 0:
+                    statement += l[:string_end+1]
+                    l = l[string_end+1:]
+                    in_string = False # the string ends here
+                else:
+                    statement += l
+                    l = ''
+            else: # check if we have a string
+                string_start = l.find('"')
+                if string_start >= 0:
+                    string_end = l.find('"', string_start + 1)
+                    if string_end >= 0:
+                        # the string is opened and closed
+                        statement += l[:string_end+1]
+                        l = l[string_end+1:]
+                    else:
+                        # the string is only opened
+                        statement += l
+                        in_string = True
+                        l = f.readline()
+                        continue
 
             if self.statement_sep in l:
                 i = l.index(self.statement_sep)
