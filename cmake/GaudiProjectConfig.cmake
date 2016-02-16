@@ -3028,7 +3028,9 @@ macro(gaudi_external_project_environment)
   endforeach()
 
   foreach(val ${binary_path})
-    set(project_environment ${project_environment} PREPEND PATH ${val})
+    if(NOT val MATCHES "^(/usr|/usr/local)?/bin" )
+      set(project_environment ${project_environment} PREPEND PATH ${val})
+    endif()
   endforeach()
 
   foreach(val ${library_path})
