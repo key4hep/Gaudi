@@ -9,7 +9,6 @@
 //      ====================================================================
 // Framework include files
 #include "GaudiKernel/SmartDataPtr.h"
-#include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/RndmGenerators.h"
 
 #include "GaudiKernel/IDataProviderSvc.h"
@@ -34,8 +33,7 @@ DECLARE_COMPONENT(WriteAlg)
 StatusCode WriteAlg::put(IDataProviderSvc* s, const std::string& path, DataObject* pObj) {
   StatusCode sc = s->registerObject(path,pObj);
   if( sc.isFailure() ) {
-    MsgStream log(msgSvc(), name());
-    log << MSG::ERROR << "Unable to register object " << path << endmsg;
+    error() << "Unable to register object " << path << endmsg;
   }
   return sc;
 }
@@ -44,10 +42,9 @@ StatusCode WriteAlg::put(IDataProviderSvc* s, const std::string& path, DataObjec
 // Initialize
 //--------------------------------------------------------------------
 StatusCode WriteAlg::initialize() {
-  MsgStream log(msgSvc(), name());
   m_recordSvc = service("FileRecordDataSvc",true);
   if( !m_recordSvc ) { 
-    log << MSG::ERROR << "Unable to retrieve run records service" << endmsg;
+    error() << "Unable to retrieve run records service" << endmsg;
     return StatusCode::FAILURE;
   }
   return put(m_recordSvc.get(),"/FileRecords/EvtCount",m_evtCount=new Counter());
@@ -57,7 +54,6 @@ StatusCode WriteAlg::initialize() {
 // Finalize
 //--------------------------------------------------------------------
 StatusCode WriteAlg::finalize() {
-  MsgStream log(msgSvc(), name());
   Counter* pObj = new Counter();
   pObj->set(123456);
   put(m_recordSvc.get(),"/FileRecords/SumCount",pObj);
@@ -75,7 +71,6 @@ StatusCode WriteAlg::execute() {
   static int evtnum = 0;
   static int runnum = 999;
 
-  MsgStream log(msgSvc(), name());
   Rndm::Numbers rndmflat(randSvc(), Rndm::Flat(0.,1.));
   Rndm::Numbers rndmgauss(randSvc(), Rndm::Gauss(10.,1.));
 
@@ -89,7 +84,7 @@ StatusCode WriteAlg::execute() {
 
   sc = eventSvc()->registerObject("/Event","Header",evt);
   if( sc.isFailure() ) {
-    log << MSG::ERROR << "Unable to register Event Header" << endmsg;
+    error() << "Unable to register Event Header" << endmsg;
     return sc;
   }
 
@@ -99,7 +94,7 @@ StatusCode WriteAlg::execute() {
 
   sc = eventSvc()->registerObject("/Event","Collision_0",coll0);
   if( sc.isFailure() ) {
-    log << MSG::ERROR << "Unable to register Collision 0" << endmsg;
+    error() << "Unable to register Collision 0" << endmsg;
     return sc;
   }
   sc = put(eventSvc(),"/Event/Collision_1",coll1);

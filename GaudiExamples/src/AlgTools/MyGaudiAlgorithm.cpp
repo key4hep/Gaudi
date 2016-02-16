@@ -15,6 +15,7 @@ MyGaudiAlgorithm::MyGaudiAlgorithm(const std::string& name, ISvcLocator* ploc)
   : GaudiAlgorithm(name, ploc),
   m_myPrivToolHandle("MyTool/PrivToolHandle",this),
   m_myPubToolHandle("MyTool/PubToolHandle"),
+  m_myGenericToolHandle("MyTool/GenericToolHandle"),
   m_tracks("/Event/Rec/Tracks",Gaudi::DataHandle::Reader, this),
   m_hits("/Event/Rec/Hits",Gaudi::DataHandle::Reader,this),
   m_raw("/Rec/RAW",Gaudi::DataHandle::Reader,this),
@@ -25,6 +26,7 @@ MyGaudiAlgorithm::MyGaudiAlgorithm(const std::string& name, ISvcLocator* ploc)
                   "Type of the tool to use (internal name is ToolWithName)");
   declareProperty("PrivToolHandle", m_myPrivToolHandle);
   declareProperty("PubToolHandle", m_myPubToolHandle);
+  declareProperty("GenericToolHandle", m_myGenericToolHandle);
 
   declareProperty("tracks", m_tracks, "the tracks");
   declareProperty("hits", m_hits, "the hits");
@@ -54,7 +56,8 @@ StatusCode MyGaudiAlgorithm::initialize() {
   m_privateOtherInterface = tool<IMyOtherTool>("MyGaudiTool", this);
   // force initialization of tool handles
   if ( ! (m_myPrivToolHandle.retrieve() &&
-          m_myPubToolHandle.retrieve() ) ) {
+          m_myPubToolHandle.retrieve()  &&
+          m_myGenericToolHandle.retrieve() ) ) {
     error() << "Unable to retrive one of the ToolHandles" << endmsg;
     return StatusCode::FAILURE;
   }

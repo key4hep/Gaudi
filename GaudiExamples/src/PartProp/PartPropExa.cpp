@@ -21,16 +21,14 @@ PartPropExa::PartPropExa( const std::string& name, ISvcLocator* pSvcLocator ) :
 
 StatusCode PartPropExa::initialize() {
 
-  MsgStream log(msgSvc(), name());
-
   if (service("PartPropSvc",m_pps).isFailure()) {
-    log << MSG::ERROR << "Could not get PartPropSvc" << endmsg;
+    error() << "Could not get PartPropSvc" << endmsg;
     return StatusCode::FAILURE;
   }
 
   m_pps->setUnknownParticleHandler(new HepPDT::TestUnknownID, "My Unknwon PID Test");
 
-  log << MSG::INFO << "this should cause a warning: " << endmsg;
+  info() << "this should cause a warning: " << endmsg;
   m_pps->setUnknownParticleHandler(new HepPDT::TestUnknownID, "Second Unknwon PID Test");
 
   HepPDT::ParticleDataTable *pdt = m_pps->PDT();
@@ -40,7 +38,7 @@ StatusCode PartPropExa::initialize() {
   std::ostringstream ost;
   pdt->writeParticleData( ost );
 
-  log << MSG::INFO << ost.str() << endmsg;
+  info() << ost.str() << endmsg;
 
   return StatusCode::SUCCESS;
 
@@ -50,15 +48,12 @@ StatusCode PartPropExa::initialize() {
 
 StatusCode PartPropExa::execute() {
 
-
   return StatusCode::SUCCESS;
 
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 StatusCode PartPropExa::finalize() {
-
-  MsgStream log(msgSvc(), name());
 
   return StatusCode::SUCCESS;
 

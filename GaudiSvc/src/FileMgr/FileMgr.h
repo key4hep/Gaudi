@@ -12,7 +12,6 @@
 #include "GaudiKernel/Service.h"
 #include "GaudiKernel/IIncidentListener.h"
 #include "GaudiKernel/ClassID.h"
-#include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/StatusCode.h"
 
 #include <string>
@@ -168,7 +167,6 @@ private:
 
   std::unique_ptr<RootFileHandler> m_rfh;
   std::unique_ptr<POSIXFileHandler> m_pfh;
-  mutable MsgStream m_log;
 
 };
 

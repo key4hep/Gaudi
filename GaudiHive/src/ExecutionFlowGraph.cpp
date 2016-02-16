@@ -437,7 +437,7 @@ namespace concurrency {
 
     DataObjIDColl inputObjs, outputObjs;
     DHHVisitor avis(inputObjs, outputObjs);
-    algo->accept(&avis);
+    algo->acceptDHVisitor(&avis);
 
     m_algoNameToAlgoInputsMap[algoName] = inputObjs;
 
@@ -526,7 +526,7 @@ namespace concurrency {
         //          auto& output = outCollection[outputTag].dataProductName();
         sc = addDataNode(outputTag.fullKey());
           if (!sc.isSuccess()) {
-          error() << "Extra producer (" << algo.first << ") for DataObject @ " 
+          error() << "Extra producer (" << algo.first << ") for DataObject @ "
                   << outputTag
                     << " has been detected: this is not allowed." << endmsg;
             global_sc = StatusCode::FAILURE;

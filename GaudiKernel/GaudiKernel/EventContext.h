@@ -1,8 +1,10 @@
 #ifndef GAUDIKERNEL_EVENTCONTEXT_H
-#define GAUDIKERNEL_EVENTCONTEXT_H
+#define GAUDIKERNEL_EVENTCONTEXT_H 1
 
 #include <iostream>
 #include <unistd.h>
+#include <limits>
+#include "GaudiKernel/EventIDBase.h"
 
 /** @class EventContext EventContext.h GaudiKernel/EventContext.h
  *
@@ -18,41 +20,40 @@
  * @date 2012
  **/
 
+class IProxyDict;
 
 class EventContext{
 public:
   typedef size_t ContextID_t;
-  typedef long int ContextEvt_t;
+  typedef size_t ContextEvt_t;
 
-  static const ContextID_t  INVALID_CONTEXT_ID  = 99999;
-  static const ContextEvt_t INVALID_CONTEXT_EVT = -1;
+  static const ContextID_t  INVALID_CONTEXT_ID  = std::numeric_limits<ContextID_t>::max();
+  static const ContextEvt_t INVALID_CONTEXT_EVT = std::numeric_limits<ContextEvt_t>::max();
 
 
-  EventContext():
-    m_evt_num(INVALID_CONTEXT_EVT),
-    m_evt_slot(INVALID_CONTEXT_ID),    
-    m_valid(false),
-    m_evt_failed(false){};
+  EventContext() {};
   EventContext(const ContextEvt_t& e, const ContextID_t& s=INVALID_CONTEXT_ID)
-    :m_evt_num(e), m_evt_slot(s), m_evt_failed(false){
-    m_valid = (e<0 || s == INVALID_CONTEXT_ID) ? false: true;
+    :m_evt_num(e), m_evt_slot(s), m_evt_failed(false) {
+    m_valid = (e == INVALID_CONTEXT_EVT || s == INVALID_CONTEXT_ID) ? false: true;
   }
 
   ContextEvt_t evt() const { return m_evt_num; }
   ContextID_t slot() const { return m_evt_slot; }
   bool valid() const {return m_valid;}
   bool evtFail() const { return m_evt_failed; }
+  IProxyDict* proxy() const { return m_proxy; }
+  const EventIDBase& eventID() const { return m_eid; }
 
   void set(const ContextEvt_t& e=0, const ContextID_t& s=INVALID_CONTEXT_ID, 
            const bool f=false) {
-    m_valid = (e<0 || s == INVALID_CONTEXT_ID) ? false : true;
+    m_valid = (e == INVALID_CONTEXT_EVT || s == INVALID_CONTEXT_ID) ? false : true;
     m_evt_num = e;
     m_evt_slot = s;
     m_evt_failed = f;
   }
 
   void setEvt(const ContextEvt_t& e) {
-    if (e < 0) setValid(false); 
+    if (e == INVALID_CONTEXT_EVT) setValid(false); 
     m_evt_num = e;
   }
 
@@ -73,6 +74,14 @@ public:
     }
   }
 
+  void setEventID(const EventIDBase& e) {
+    m_eid = e;
+  }
+
+  void setProxy(IProxyDict* prx) {
+    m_proxy = prx;
+  }
+
   EventContext& operator=(const EventContext& c) {
     m_evt_num = c.m_evt_num;
     m_evt_slot = c.m_evt_slot;
@@ -80,12 +89,17 @@ public:
     m_evt_failed = c.m_evt_failed;
     return *this;
   }
+  
 
 private:
-  ContextEvt_t m_evt_num;
-  ContextID_t   m_evt_slot;
-  bool m_valid;
-  bool m_evt_failed;
+  ContextEvt_t m_evt_num  {INVALID_CONTEXT_EVT};
+  ContextID_t  m_evt_slot {INVALID_CONTEXT_ID};
+  bool m_valid {false};
+  bool m_evt_failed {false};
+
+  IProxyDict* m_proxy {0};
+
+  EventIDBase m_eid {};
 };
 
 inline std::ostream& operator<<( std::ostream& os, const EventContext& ctx ) {

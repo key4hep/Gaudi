@@ -26,26 +26,26 @@ ThreadPoolSvc::ThreadPoolSvc( const std::string& name, ISvcLocator* svcLoc ):
 {
 
   declareProperty("ThreadInitTools", m_threadInitTools, "ToolHandleArray of IThreadInitTools");
-  
+
 }
 
 //---------------------------------------------------------------------------
 
 ThreadPoolSvc::~ThreadPoolSvc() {
 
-  if (m_tbbSchedInit) 
+  if (m_tbbSchedInit)
     delete m_tbbSchedInit;
-  
+
   if (m_barrier)
     delete m_barrier;
-  
+
 }
 
 //---------------------------------------------------------------------------
 
 StatusCode
 ThreadPoolSvc::initialize() {
-  
+
   // Initialise mother class (read properties, ...)
   StatusCode sc(Service::initialize());
   if (!sc.isSuccess()) {
@@ -56,7 +56,7 @@ ThreadPoolSvc::initialize() {
   if (m_threadInitTools.retrieve().isFailure()) {
     error() << "Unable to retrieve ThreadInitTools Array"
   	    << endmsg;
-    
+
     return StatusCode::FAILURE;
   } else {
     if (m_threadInitTools.size() != 0) {
@@ -67,41 +67,43 @@ ThreadPoolSvc::initialize() {
    	     << endmsg;
     }
   }
-  
+
   return StatusCode::SUCCESS;
-  
+
 }
 
 //---------------------------------------------------------------------------
 
 StatusCode
 ThreadPoolSvc::finalize() {
-  
+
   if (!m_init) {
     warning() << "Looks like the ThreadPoolSvc was created, but thread pool was never initialized"
-    << endmsg;  
+    << endmsg;
   }
 
   return StatusCode::SUCCESS;
 
 }
-  
+
 //---------------------------------------------------------------------------
 
 StatusCode
 ThreadPoolSvc::initPool(const int& poolSize) {
-  
+
   tbb::spin_mutex::scoped_lock  lock( m_initMutex );
-  
+
   m_threadPoolSize = poolSize;
 
-  debug() << "ThreadPoolSvc::initPool() poolSize = " << poolSize << endmsg;
+  if (msgLevel(MSG::DEBUG))
+    debug() << "ThreadPoolSvc::initPool() poolSize = " << poolSize << endmsg;
 
   // -100 prevents the creation of the pool and the scheduler directly executes
   // the tasks.
   if (-100 != m_threadPoolSize){
-    debug() << "Initialising a ThreadPool thread pool of size " << m_threadPoolSize 
-	    << endmsg;
+    if (msgLevel(MSG::DEBUG))
+      debug() << "Initialising a ThreadPool thread pool of size " << m_threadPoolSize
+              << endmsg;
     // Leave -1 in case selected, increment otherwise
     int thePoolSize=m_threadPoolSize;
     if (thePoolSize!=-1)
@@ -110,33 +112,38 @@ ThreadPoolSvc::initPool(const int& poolSize) {
 
     // execute the Thread Init Tools if there are any, and wait at barrier
     if (m_threadInitTools.size() > 0) {
-      debug() << "creating barrier of size " << m_threadPoolSize + 1 << endmsg;
+      if (msgLevel(MSG::DEBUG))
+        debug() << "creating barrier of size " << m_threadPoolSize + 1 << endmsg;
       m_barrier = new boost::barrier( m_threadPoolSize + 1 );
-    
+
       // create ThreadInitTasks, wait until all have executed
       for (int i=0; i<m_threadPoolSize; ++i) {
-    	debug() << "creating ThreadInitTask " << i << endmsg;
+        if (msgLevel(MSG::DEBUG))
+          debug() << "creating ThreadInitTask " << i << endmsg;
     	tbb::task* t = new(tbb::task::allocate_root())
     	  ThreadInitTask( m_threadInitTools, m_barrier, serviceLocator() );
-     
+
     	tbb::task::enqueue( *t );
     	this_tbb_thread::sleep(tbb::tick_count::interval_t(.1));
       }
     }
 
   } else {
-    debug() << "Thread pool size is one. Pool not initialised." << endmsg;
+    if (msgLevel(MSG::DEBUG))
+      debug() << "Thread pool size is one. Pool not initialised." << endmsg;
 
     if (m_threadInitTools.size() > 0) {
-      debug() << "doing ThreadInitTask init in this thread" << endmsg;
+      if (msgLevel(MSG::DEBUG))
+        debug() << "doing ThreadInitTask init in this thread" << endmsg;
       ThreadInitTask theTask(m_threadInitTools, m_barrier, serviceLocator() );
       theTask.execute();
     }
-    
+
   }
 
   if (m_barrier) {
-    debug() << "waiting at barrier for all ThreadInitTool to finish executing" << endmsg;
+    if (msgLevel(MSG::DEBUG))
+      debug() << "waiting at barrier for all ThreadInitTool to finish executing" << endmsg;
     m_barrier->wait();
   }
 
@@ -155,7 +162,8 @@ ThreadPoolSvc::initPool(const int& poolSize) {
     }
   }
 
-  debug() << " Thread Pool initialization complete!" << endmsg;
+  if (msgLevel(MSG::DEBUG))
+    debug() << " Thread Pool initialization complete!" << endmsg;
 
   m_init = true;
 
@@ -167,14 +175,14 @@ ThreadPoolSvc::initPool(const int& poolSize) {
 
 std::vector<IThreadInitTool*>
 ThreadPoolSvc::getThreadInitTools() const {
-  
+
   std::vector<IThreadInitTool*> tools;
-  
+
   ToolHandleArray<IThreadInitTool>::const_iterator ito = m_threadInitTools.begin();
   for ( ; ito != m_threadInitTools.end(); ++ito ) {
-    IThreadInitTool* it = &(**ito);  
+    IThreadInitTool* it = &(**ito);
     tools.push_back(it);
   }
-  
+
   return tools;
 }

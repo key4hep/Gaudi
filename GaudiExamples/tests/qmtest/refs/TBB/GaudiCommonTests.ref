@@ -1,10 +1,11 @@
-# --> Including file '/afs/cern.ch/work/l/leggett/hive/DH/Gaudi/GaudiExamples/options/GaudiCommonTests.opts'
-# --> Including file '/afs/cern.ch/work/l/leggett/hive/DH/Gaudi/GaudiExamples/options/Common.opts'
-# --> Including file '/afs/cern.ch/work/l/leggett/hive/DH/Gaudi/GaudiExamples/options/Services.opts'
+# setting LC_ALL to "C"
+# --> Including file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/GaudiCommonTests.opts'
+# --> Including file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/Common.opts'
+# --> Including file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/Services.opts'
 # AuditorSvc.Auditors = { "ChronoAuditor" };
-# <-- End of file '/afs/cern.ch/work/l/leggett/hive/DH/Gaudi/GaudiExamples/options/Services.opts'
+# <-- End of file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/Services.opts'
 # ApplicationMgr.StatusCodeCheck = true;
-# <-- End of file '/afs/cern.ch/work/l/leggett/hive/DH/Gaudi/GaudiExamples/options/Common.opts'
+# <-- End of file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/Common.opts'
 # EventDataSvc.ForceLeaves = true;
 # EventDataSvc.RootCLID    =    1;
 # MessageSvc.OutputLevel     =  3;
@@ -17,21 +18,20 @@
 # ApplicationMgr.EvtMax    = 1;
 # ApplicationMgr.EvtSel   = "NONE";
 # ApplicationMgr.HistogramPersistency = "NONE";
-# <-- End of file '/afs/cern.ch/work/l/leggett/hive/DH/Gaudi/GaudiExamples/options/GaudiCommonTests.opts'
-# --> Including file '/tmp/leggett/tmpLl8BjO.py'
-# <-- End of file '/tmp/leggett/tmpLl8BjO.py'
+# <-- End of file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/GaudiCommonTests.opts'
+# --> Including file '/tmp/marcocle/tmp8TZMmV.py'
+# <-- End of file '/tmp/marcocle/tmp8TZMmV.py'
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r6)
-                                          running on p05614910w96644.cern.ch on Wed Jan 13 23:10:10 2016
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v4r0)
+                                          running on pclhcb117 on Thu Feb 11 14:59:55 2016
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
 Test1               DEBUG Property update for OutputLevel : new value = 2
-Test1               DEBUG Property update for OutputLevel : new value = 2
 Test1               DEBUG Initialize base class GaudiCommon<Algorithm>
 Test1               DEBUG could not locate CounterSummarySvc, no counter summary will be made
-Test1               DEBUG List of ALL properties of GaudiCommonTests/Test1  #properties = 37
+Test1               DEBUG List of ALL properties of GaudiCommonTests/Test1  #properties = 36
 Test1               DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
 Test1               DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
 Test1               DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
@@ -40,7 +40,6 @@ Test1               DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':T
 Test1               DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
 Test1               DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
 Test1               DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-Test1               DEBUG Property ['Name': Value] =  'GlobalTimeOffset':0.0000000
 Test1               DEBUG Property ['Name': Value] =  'RootInTES':
 Test1               DEBUG Property ['Name': Value] =  'Context':
 Test1               DEBUG Property ['Name': Value] =  'TypePrint':True
@@ -69,11 +68,13 @@ Test1               DEBUG Property ['Name': Value] =  'ErrorCounter':0
 Test1               DEBUG Property ['Name': Value] =  'ErrorMax':1
 Test1               DEBUG Property ['Name': Value] =  'Enable':True
 Test1               DEBUG Property ['Name': Value] =  'OutputLevel':2
-Test2               DEBUG Property update for OutputLevel : new value = 2
+Test1               DEBUG input handles: 0
+Test1               DEBUG output handles: 0
+Test1               DEBUG Data Deps for Test1
 Test2               DEBUG Property update for OutputLevel : new value = 2
 Test2               DEBUG Initialize base class GaudiCommon<Algorithm>
 Test2               DEBUG could not locate CounterSummarySvc, no counter summary will be made
-Test2               DEBUG List of ALL properties of GaudiCommonTests/Test2  #properties = 37
+Test2               DEBUG List of ALL properties of GaudiCommonTests/Test2  #properties = 36
 Test2               DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
 Test2               DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
 Test2               DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
@@ -82,7 +83,6 @@ Test2               DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':T
 Test2               DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
 Test2               DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
 Test2               DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-Test2               DEBUG Property ['Name': Value] =  'GlobalTimeOffset':0.0000000
 Test2               DEBUG Property ['Name': Value] =  'RootInTES':microDST/
 Test2               DEBUG Property ['Name': Value] =  'Context':
 Test2               DEBUG Property ['Name': Value] =  'TypePrint':True
@@ -111,13 +111,14 @@ Test2               DEBUG Property ['Name': Value] =  'ErrorCounter':0
 Test2               DEBUG Property ['Name': Value] =  'ErrorMax':1
 Test2               DEBUG Property ['Name': Value] =  'Enable':True
 Test2               DEBUG Property ['Name': Value] =  'OutputLevel':2
+Test2               DEBUG input handles: 0
+Test2               DEBUG output handles: 0
+Test2               DEBUG Data Deps for Test2
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
 HistogramPersis...WARNING Histograms saving not required.
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
-Test1               DEBUG Property update for OutputLevel : new value = 2
-Test2               DEBUG Property update for OutputLevel : new value = 2
 Test1                INFO Execute
 Test1               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address '/Event/Test1/Tracks1'
 Test1               DEBUG GaudiCommonTests:: The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >' is registered in TS at address '/Event/Test1/Tracks2'
@@ -166,8 +167,6 @@ Test2                INFO /Event/microDST
 Test2                INFO /Event
 Test2               DEBUG The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address 'microDST/Test2/Tracks1'
 Test2               DEBUG The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' could not be retrieved from TS at address 'microDST/Nowhere/To/Be/Found'
-Test1               DEBUG Property update for OutputLevel : new value = 2
-Test2               DEBUG Property update for OutputLevel : new value = 2
 ApplicationMgr       INFO Application Manager Stopped successfully
 Test1               DEBUG Finalize base class GaudiAlgorithm
 Test1               DEBUG Tools to release :

@@ -24,7 +24,7 @@ public:
    virtual const DataObjIDColl& extraInputDeps() const = 0;
    virtual const DataObjIDColl& extraOutputDeps() const = 0;
 
-   virtual void accept(IDataHandleVisitor*) const = 0;
+   virtual void acceptDHVisitor(IDataHandleVisitor*) const = 0;
 
    virtual void commitHandles() = 0;
 

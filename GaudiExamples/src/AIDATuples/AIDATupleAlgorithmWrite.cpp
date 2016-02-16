@@ -28,8 +28,7 @@ StatusCode AIDATupleAlgorithmWrite::initialize()
 //--------------------------------------
 {
   //StatusCode status;
-  MsgStream log( msgSvc(), name() );
-  log << MSG::INFO << "Initializing..." << endmsg;
+  info() << "Initializing..." << endmsg;
 
   //status = atupleSvc()->myTest();
 
@@ -42,12 +41,12 @@ StatusCode AIDATupleAlgorithmWrite::initialize()
     tuple = atupleSvc()->book ("MyTuples/1", "example tuple", columns);
 
     if ( !tuple ) { // did not manage to book the N tuple....
-		log << MSG::ERROR << "Cannot book N-tuple:" << long(tuple) << endmsg;
+		error() << "Cannot book N-tuple:" << long(tuple) << endmsg;
 		return StatusCode::FAILURE;
     }
   }
 
-  log << MSG::INFO << "Finished booking NTuples" << endmsg;
+  info() << "Finished booking NTuples" << endmsg;
   return StatusCode::SUCCESS;
 }
 
@@ -58,8 +57,7 @@ StatusCode AIDATupleAlgorithmWrite::execute()
 {
 
   //StatusCode status;
-  MsgStream log( msgSvc(), name() );
-  log << MSG::INFO << "Executing..." << endmsg;
+  info() << "Executing..." << endmsg;
 
   DRand48Engine randomEngine;
   RandGauss rBeamEnergy( randomEngine, 90, 5 );
@@ -80,7 +78,7 @@ StatusCode AIDATupleAlgorithmWrite::execute()
     tuple->addRow();
   }
 
-   log << MSG::INFO << "Filled the tuple with " << tuple->rows() << " rows" << endmsg;
+   info() << "Filled the tuple with " << tuple->rows() << " rows" << endmsg;
   return StatusCode::SUCCESS;
 }
 
@@ -89,8 +87,7 @@ StatusCode AIDATupleAlgorithmWrite::execute()
 StatusCode AIDATupleAlgorithmWrite::finalize()
 //------------------------------------
 {
-  MsgStream log(msgSvc(), name());
-  log << MSG::INFO << "Finalizing..." << endmsg;
+  info() << "Finalizing..." << endmsg;
 
 	return StatusCode::SUCCESS;
 }

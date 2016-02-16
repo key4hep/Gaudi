@@ -23,7 +23,6 @@
 #include "GaudiKernel/ISvcManager.h"
 #include "GaudiKernel/IRndmEngine.h"
 
-#include "GaudiKernel/MsgStream.h"
 
 #include "RndmGen.h"
 #include "RndmGenSvc.h"
@@ -43,7 +42,6 @@ RndmGenSvc::RndmGenSvc(const std::string& nam, ISvcLocator* svc)
 StatusCode RndmGenSvc::initialize()   {
   StatusCode status = Service::initialize();
 
-  MsgStream log(msgSvc(), name());
   auto mgr = serviceLocator()->as<ISvcManager>();
 
   if ( status.isSuccess() ) {
@@ -65,7 +63,7 @@ StatusCode RndmGenSvc::initialize()   {
           if ( status.isSuccess() )   {
             m_engine = engine;
             m_serialize = serial;
-            log << MSG::INFO << "Using Random engine:" << m_engineName << endmsg;
+            info() << "Using Random engine:" << m_engineName << endmsg;
           }
         }
       }
@@ -89,16 +87,14 @@ StatusCode RndmGenSvc::finalize()   {
 /// Input serialization from stream buffer. Restores the status of the generator engine.
 StreamBuffer& RndmGenSvc::serialize(StreamBuffer& str)    {
   if ( m_serialize ) return m_serialize->serialize(str);
-  MsgStream log(msgSvc(), name());
-  log << MSG::ERROR << "Cannot input serialize Generator settings!" << endmsg;
+  error() << "Cannot input serialize Generator settings!" << endmsg;
   return str;
 }
 
 /// Output serialization to stream buffer. Saves the status of the generator engine.
 StreamBuffer& RndmGenSvc::serialize(StreamBuffer& str) const    {
   if ( m_serialize ) return m_serialize->serialize(str);
-  MsgStream log(msgSvc(), name());
-  log << MSG::ERROR << "Cannot output serialize Generator settings!" << endmsg;
+  error() << "Cannot output serialize Generator settings!" << endmsg;
   return str;
 }
 

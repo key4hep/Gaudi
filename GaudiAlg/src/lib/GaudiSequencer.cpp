@@ -269,8 +269,7 @@ StatusCode GaudiSequencer::decodeNames( )  {
       // values... and are not set explicitly already.
       populate_JobOptionsSvc_t populate_guard{ theName, jos,
            std::forward_as_tuple( "Context",          context() ),
-           std::forward_as_tuple( "RootInTES",        rootInTES() ),
-           std::forward_as_tuple( "GlobalTimeOffset", globalTimeOffset() )
+           std::forward_as_tuple( "RootInTES",        rootInTES() )
       };
       Algorithm *myAlg = nullptr;
       result = createSubAlgorithm( theType, theName, myAlg );
@@ -336,7 +335,6 @@ StatusCode GaudiSequencer::decodeNames( )  {
   } );
   if ( !isDefault(context())  ) msg << ", with context '" << context() << "'";
   if ( !isDefault(rootInTES()) ) msg << ", with rootInTES '" << rootInTES() << "'";
-  if ( !isDefault(globalTimeOffset()) ) msg << ", with globalTimeOffset " << globalTimeOffset();
   msg << endmsg;
 
   return final;

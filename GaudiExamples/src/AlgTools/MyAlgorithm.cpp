@@ -1,5 +1,4 @@
 // Include files
-#include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/IToolSvc.h"
@@ -26,49 +25,48 @@ MyAlgorithm::MyAlgorithm(const std::string& name, ISvcLocator* ploc)
 StatusCode MyAlgorithm::initialize() {
 //------------------------------------------------------------------------------
 
-  MsgStream log(msgSvc(), name());
   StatusCode sc;
-  log << MSG::INFO << "initializing...." << endmsg;
+  info() << "initializing...." << endmsg;
 
   if ( !m_privateToolsOnly ){
     sc = toolSvc()->retrieveTool("MyTool", m_publicTool );
     if( sc.isFailure() ) {
-      log << MSG::ERROR<< "Error retrieving the public tool" << endmsg;
+      error()<< "Error retrieving the public tool" << endmsg;
       return sc;
     }
     sc = toolSvc()->retrieveTool("MyGaudiTool", m_publicGTool );
     if( sc.isFailure() ) {
-      log << MSG::ERROR<< "Error retrieving the Gaudi public tool" << endmsg;
+      error()<< "Error retrieving the Gaudi public tool" << endmsg;
       return sc;
     }
   }
 
   sc = toolSvc()->retrieveTool("MyTool", m_privateTool, this );
   if( sc.isFailure() ) {
-    log << MSG::ERROR<< "Error retrieving the private tool" << endmsg;
+    error()<< "Error retrieving the private tool" << endmsg;
     return sc;
   }
 
   sc = toolSvc()->retrieveTool("MyGaudiTool", m_privateGTool, this );
   if( sc.isFailure() ) {
-    log << MSG::ERROR<< "Error retrieving the Gaudi private tool" << endmsg;
+    error()<< "Error retrieving the Gaudi private tool" << endmsg;
     return sc;
   }
 
   sc = toolSvc()->retrieveTool(m_privateToolType, "ToolWithName",
                                m_privateToolWithName, this );
   if( sc.isFailure() ) {
-    log << MSG::ERROR<< "Error retrieving the private tool with name" << endmsg;
+    error()<< "Error retrieving the private tool with name" << endmsg;
     return sc;
   }
 
   sc = toolSvc()->retrieveTool("MyGaudiTool", m_privateOtherInterface, this );
   if( sc.isFailure() ) {
-    log << MSG::ERROR << "Error retrieving the Gaudi private tool with second interface" << endmsg;
+    error() << "Error retrieving the Gaudi private tool with second interface" << endmsg;
     return sc;
   }
 
-  log << MSG::INFO << "....initialization done" << endmsg;
+  info() << "....initialization done" << endmsg;
 
   return StatusCode::SUCCESS;
 }
@@ -77,8 +75,7 @@ StatusCode MyAlgorithm::initialize() {
 //------------------------------------------------------------------------------
 StatusCode MyAlgorithm::execute() {
 //------------------------------------------------------------------------------
-  MsgStream         log( msgSvc(), name() );
-  log << MSG::INFO << "executing...." << endmsg;
+  info() << "executing...." << endmsg;
 
   if ( !m_privateToolsOnly ){
     m_publicTool->doIt();
@@ -96,8 +93,7 @@ StatusCode MyAlgorithm::execute() {
 //------------------------------------------------------------------------------
 StatusCode MyAlgorithm::finalize() {
 //------------------------------------------------------------------------------
-  MsgStream log(msgSvc(), name());
-  log << MSG::INFO << "finalizing...." << endmsg;
+  info() << "finalizing...." << endmsg;
 
   if ( !m_privateToolsOnly ){
     toolSvc()->releaseTool( m_publicTool ).ignore();

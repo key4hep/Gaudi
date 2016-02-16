@@ -26,12 +26,11 @@ void MemoryAuditor::i_after(CustomEventTypeRef evt, const std::string& caller, c
 
 void MemoryAuditor::i_printinfo(const std::string& msg, CustomEventTypeRef evt, const std::string& caller)
 {
-   procInfo info;
+   procInfo pInfo;
    // The fetch method returns true if memory usage has changed...
-   if(getProcInfo(info)) {
-     MsgStream log(msgSvc(), name());
-     log << MSG::INFO << msg << " " << caller << " " << evt <<
-       " virtual size = " << info.vsize << " MB"  <<
-       " resident set size = " << info.rss << " MB" << endmsg;
+   if(getProcInfo(pInfo)) {
+     info() << msg << " " << caller << " " << evt <<
+       " virtual size = " << pInfo.vsize << " MB"  <<
+       " resident set size = " << pInfo.rss << " MB" << endmsg;
    }
 }

@@ -23,19 +23,26 @@ ApplicationMgr    SUCCESS
 ====================================================================================================================================[m
 [96;1mApplicationMgr       INFO Application Manager Configured successfully[m
 [92;1mServiceManager      DEBUG Initializing service StatusCodeSvc[m
+[92;1mStatusCodeSvc       DEBUG Property update for OutputLevel : new value = 1[m
 [92;1mStatusCodeSvc       DEBUG Service base class initialized successfully[m
 [96;1mStatusCodeSvc        INFO initialize[m
 [92;1mServiceManager      DEBUG Initializing service AppMgrRunable[m
+[92;1mAppMgrRunable       DEBUG Property update for OutputLevel : new value = 1[m
 [92;1mAppMgrRunable       DEBUG Service base class initialized successfully[m
 [92;1mServiceManager      DEBUG Initializing service EventLoopMgr[m
+[92;1mEventLoopMgr        DEBUG Property update for OutputLevel : new value = 1[m
 [92;1mEventLoopMgr        DEBUG Service base class initialized successfully[m
+[92;1mIncidentSvc         DEBUG Property update for OutputLevel : new value = 1[m
 [92;1mIncidentSvc         DEBUG Service base class initialized successfully[m
 [92;1mIncidentSvc         DEBUG Adding [AbortEvent] listener '<unknown>' with priority 0[m
 [92;1mEventLoopMgr        DEBUG Creating Top Algorithm ColorMsgAlg with name ColorMsgAlg[m
+[92;1mEventDataSvc        DEBUG Property update for OutputLevel : new value = 1[m
 [92;1mEventDataSvc        DEBUG Service base class initialized successfully[m
 [95;4mEventDataSvc      VERBOSE ServiceLocatorHelper::service: found service IncidentSvc[m
+[92;1mEventPersistenc...  DEBUG Property update for OutputLevel : new value = 1[m
 [92;1mEventPersistenc...  DEBUG Service base class initialized successfully[m
 [95;4mColorMsgAlg       VERBOSE ServiceLocatorHelper::service: found service EventDataSvc[m
+[92;1mTimelineSvc         DEBUG Property update for OutputLevel : new value = 1[m
 [92;1mTimelineSvc         DEBUG Service base class initialized successfully[m
 [92;1mTimelineSvc         DEBUG initialize[m
 [95;4mColorMsgAlg       VERBOSE ServiceLocatorHelper::service: found service TimelineSvc[m
@@ -44,9 +51,11 @@ ApplicationMgr    SUCCESS
 [92;1mColorMsgAlg         DEBUG Data Deps for ColorMsgAlg[m
 [98;1mEventLoopMgr      WARNING Unable to locate service "EventSelector" [m
 [98;1mEventLoopMgr      WARNING No events will be processed from external input.[m
+[92;1mHistogramDataSvc    DEBUG Property update for OutputLevel : new value = 1[m
 [92;1mHistogramDataSvc    DEBUG Service base class initialized successfully[m
 [95;4mHistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service IncidentSvc[m
 [92;1mHistogramPersis...  DEBUG  'CnvServices':[ 'RootHistSvc' ][m
+[92;1mHistogramPersis...  DEBUG Property update for OutputLevel : new value = 1[m
 [92;1mHistogramPersis...  DEBUG Service base class initialized successfully[m
 [98;1mHistogramPersis...WARNING Histograms saving not required.[m
 [95;4mHistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service HistogramPersistencySvc[m

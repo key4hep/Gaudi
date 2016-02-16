@@ -106,9 +106,7 @@ StatusCode JobOptionsSvc::setMyProperties( const std::string& client,
     StatusCode sc = myInt->setProperty ( *cur ) ;
     if ( sc.isFailure() )
     {
-      MsgStream my_log( msgSvc(), name() );
-      my_log
-        << MSG::ERROR
+      error() 
         << "Unable to set the property '" << cur->name() << "'"
         <<                        " of '" << client         << "'. "
         << "Check option and algorithm names, type and bounds."
@@ -127,13 +125,12 @@ std::vector<std::string> JobOptionsSvc::getClients() const {
 
 void JobOptionsSvc::dump (const std::string& file,
                           const gp::Catalog& catalog) const {
-  MsgStream log ( msgSvc() , name() ) ;
   std::ofstream out( file , std::ios_base::out | std::ios_base::trunc );
   if ( !out ) {
-    log << MSG::ERROR << "Unable to open dump-file \""+file+"\"" << endmsg ;
+    error() << "Unable to open dump-file \""+file+"\"" << endmsg ;
     return ;                                                   // RETURN
   }
-  log << MSG::INFO << "Properties are dumped into \""+file+"\"" << endmsg ;
+  info() << "Properties are dumped into \""+file+"\"" << endmsg ;
   // perform the actual dump:
   out << catalog;
 }
@@ -154,12 +151,10 @@ StatusCode JobOptionsSvc::readOptions ( const std::string& file,
     if ( search_path.empty() && !m_dir_search_path.empty() )
     { search_path =  m_dir_search_path ; }
     //
-    MsgStream my_log( msgSvc(), name() );
-    if (UNLIKELY(outputLevel() <= MSG::DEBUG))
-      my_log << MSG::DEBUG                             // debug
-             << "Reading options from the file "
-             << "'" << file << "'" << endmsg;
-    gp::Messages messages(my_log);
+    if (msgLevel(MSG::DEBUG))
+      debug() << "Reading options from the file "
+              << "'" << file << "'" << endmsg;
+    gp::Messages messages(msgStream());
     gp::Catalog catalog;
     gp::Units units;
     gp::PragmaOptions pragma;
@@ -171,19 +166,18 @@ StatusCode JobOptionsSvc::readOptions ( const std::string& file,
     if ( sc.isSuccess() )
     {
       if (pragma.IsPrintOptions()) {
-        my_log << MSG::INFO << "Print options" << std::endl << catalog
-            << endmsg;
+        info() << "Print options" << std::endl << catalog
+               << endmsg;
       }
       if (pragma.IsPrintTree()) {
-        my_log << MSG::INFO << "Print tree:" << std::endl << ast.ToString()
-            << endmsg;
+        info() << "Print tree:" << std::endl << ast.ToString()
+               << endmsg;
       }
       if (pragma.HasDumpFile()) dump(pragma.dumpFile(), catalog);
-      my_log << MSG::INFO
-             << "Job options successfully read in from " << file << endmsg;
+      info() << "Job options successfully read in from " << file << endmsg;
       fillServiceCatalog(catalog);
     } else {
-      my_log << MSG::FATAL << "Job options errors."<< endmsg;
+      fatal() << "Job options errors."<< endmsg;
     }
     // ----------------------------------------------------------------------------
     return sc;

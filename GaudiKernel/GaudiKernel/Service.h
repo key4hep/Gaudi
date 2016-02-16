@@ -249,14 +249,13 @@ public:
 
 		StatusCode sc = handle.initialize(toolTypeAndName, this, createIf);
 
-		MsgStream log(msgSvc(), name());
-
 		if (sc.isSuccess()) {
-			log << MSG::DEBUG << "Handle for private tool" << toolTypeAndName
+                  if (UNLIKELY(msgLevel(MSG::DEBUG)))
+			debug() << "Handle for private tool" << toolTypeAndName
 					<< " successfully created and stored." << endmsg;
 		} else {
 
-			log << MSG::ERROR << "Handle for private tool" << toolTypeAndName
+			error() << "Handle for private tool" << toolTypeAndName
 					<< " could not be created." << endmsg;
 		}
 
@@ -280,14 +279,14 @@ public:
 
 		StatusCode sc = handle.initialize(toolTypeAndName, 0, createIf);
 
-		MsgStream log(msgSvc(), name());
 
 		if (sc.isSuccess()) {
-			log << MSG::DEBUG << "Handle for public tool" << toolTypeAndName
+                  if (UNLIKELY(msgLevel(MSG::DEBUG)))
+			debug() << "Handle for public tool" << toolTypeAndName
 					<< " successfully created and stored." << endmsg;
 		} else {
 
-			log << MSG::ERROR << "Handle for public tool" << toolTypeAndName
+			error() << "Handle for public tool" << toolTypeAndName
 					<< " could not be created." << endmsg;
 		}
 

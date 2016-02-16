@@ -101,8 +101,6 @@ GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface * parent )
   this->declareProperty ( "Context"         , m_context     ) ;
   // root in TES
   this->declareProperty ( "RootInTES"       , m_rootInTES   ) ;
-  // global time offset
-  this->declareProperty ( "GlobalTimeOffset", m_globalTimeOffset ) ;
 
 
   // the header row for counters printout
@@ -134,9 +132,6 @@ GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface * parent )
 	m_statEntityList=std::vector<std::string>(0),
 	"RegEx list, of StatEntity counters for CounterSummary.");
 
-  // add handler for message level changes
-  this->outputLevelProperty().declareUpdateHandler( &GaudiCommon<PBASE>::msgLevelHandler, this );
-
   // setup context from parent if available
   if ( parent )
   {
@@ -144,13 +139,11 @@ GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface * parent )
     {
       m_context = gAlg->context();
       m_rootInTES = gAlg->rootInTES();
-      m_globalTimeOffset = gAlg->globalTimeOffset();
     }
     else if ( const GaudiTool*     gTool = dynamic_cast<const GaudiTool*>     (parent) )
     {
       m_context = gTool->context();
       m_rootInTES = gTool->rootInTES();
-      m_globalTimeOffset = gTool->globalTimeOffset();
     }
   }
 
@@ -172,8 +165,6 @@ GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface * parent )
           m_context = sp->value();
         } else if (  iter->name().compare("RootInTES") == 0 ) {
           m_rootInTES = sp->value();
-        } else if ( iter->name().compare("GlobalTimeOffset") == 0 ) {
-          m_globalTimeOffset = std::stod( sp->value() );
         }
       }
     }
@@ -241,8 +232,8 @@ StatusCode GaudiCommon<PBASE>::
     //check whether we have an absolute path if yes return it - else prepend DataManager Root
     result = (result[0] == '/' ? result : rootName + result);
 
-    if (result != location)
-    this->debug() << "Changing " << location << " to " << result << endmsg;
+    if (result != location && this->msgLevel(MSG::DEBUG))
+      this->debug() << "Changing " << location << " to " << result << endmsg;
 
     return result;
   };
@@ -273,7 +264,7 @@ StatusCode GaudiCommon<PBASE>::
 
   DHHFixer dhf( fixLocation );
 
-  PBASE::accept( &dhf );
+  PBASE::acceptDHVisitor( &dhf );
 
   return sc;
 }
@@ -351,8 +342,6 @@ StatusCode GaudiCommon<PBASE>::
     if ( errorsPrint() ) { printErrors () ; }
   }
 
-  // delete the MsgStream
-  resetMsgStream();
 
   // clear *ALL* counters explicitly
   m_counters   .clear() ;
@@ -685,36 +674,6 @@ long GaudiCommon<PBASE>::printProps ( const MSG::Level level ) const
     msg << "Property ['Name': Value] = " <<  *property << endmsg ;
   }
   return properties.size() ;
-}
-// ============================================================================
-
-// ============================================================================
-// Handle method for changes in the Messaging levels
-// ============================================================================
-template < class PBASE >
-void GaudiCommon<PBASE>::msgLevelHandler ( Property & theProp )
-{
-  // Force a new MsgStream object, to pick up the new settings
-  resetMsgStream();
-
-  // adjust internal message level
-  m_msgLevel =
-    this->outputLevel() <  (int) MSG::NIL        ?  MSG::NIL    :
-    this->outputLevel() >= (int) MSG::NUM_LEVELS ?  MSG::ALWAYS :
-    MSG::Level( this->outputLevel() ) ;
-
-  // Keep MessageSvc up to date if needed
-  if ( this->msgSvc()->outputLevel(this->name()) != this->outputLevel() )
-  {
-    this->msgSvc()->setOutputLevel( this->name(), this->outputLevel() );
-  }
-
-  // printout message
-  if ( this->msgLevel(MSG::DEBUG) )
-  {
-    this->debug() << "Property update for "
-            << theProp.name() << " : new value = " << this->outputLevel() << endmsg;
-  }
 }
 // ============================================================================
 

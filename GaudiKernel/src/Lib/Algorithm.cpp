@@ -70,9 +70,7 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
   if (appMgr) {
     const Property& prop = appMgr->getProperty("AuditAlgorithms");
     Property &pr = const_cast<Property&>(prop);
-    if (m_name != "IncidentSvc") {
-      setProperty( pr ).ignore();
-    }
+    if (m_name != "IncidentSvc") setProperty( pr ).ignore();
     audit = m_auditInit.value();
   }
 
@@ -99,13 +97,11 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
   declareProperty( "NeededResources"  , m_neededResources = std::vector<std::string>() );
 
   // update handlers.
-  m_outputLevel.declareUpdateHandler(&Algorithm::initOutputLevel, this);
+  m_outputLevel.declareUpdateHandler([this](Property&) { this->updateMsgStreamOutputLevel(this->m_outputLevel); } );
 }
 
 // IAlgorithm implementation
 StatusCode Algorithm::sysInitialize() {
-
-  MsgStream log ( msgSvc() , name() ) ;
 
   // Bypass the initialization if the algorithm
   // has already been initialized.
@@ -120,11 +116,6 @@ StatusCode Algorithm::sysInitialize() {
   if ( !isEnabled( ) ) return StatusCode::SUCCESS;
 
   m_targetState = Gaudi::StateMachine::ChangeState(Gaudi::StateMachine::INITIALIZE,m_state);
-
-  // Check current outputLevel to eventually inform the MessagsSvc
-  //if( m_outputLevel != MSG::NIL ) {
-  setOutputLevel( m_outputLevel );
-  //}
 
   // TODO: (MCl) where shoud we do this? initialize or start?
   // Reset Error count
@@ -161,8 +152,7 @@ StatusCode Algorithm::sysInitialize() {
       }
       if( fail ) {
 	sc = StatusCode::FAILURE;
-	MsgStream log ( msgSvc() , name() );
-	log << MSG::ERROR << " Error initializing one or several sub-algorithms"
+	error() << " Error initializing one or several sub-algorithms"
 	    << endmsg;
       } else {
 	// Update the state.
@@ -172,25 +162,22 @@ StatusCode Algorithm::sysInitialize() {
   }
   catch ( const GaudiException& Exception )
   {
-    MsgStream log ( msgSvc() , name() ) ;
-    log << MSG::FATAL << " Exception with tag=" << Exception.tag()
+    fatal() << " Exception with tag=" << Exception.tag()
         << " is caught " << endmsg;
-    log << MSG::ERROR << Exception  << endmsg;
+    error() << Exception  << endmsg;
     Stat stat( chronoSvc() , Exception.tag() );
     sc = StatusCode::FAILURE;
   }
   catch( const std::exception& Exception )
   {
-    MsgStream log ( msgSvc() , name() ) ;
-    log << MSG::FATAL << " Standard std::exception is caught " << endmsg;
-    log << MSG::ERROR << Exception.what()  << endmsg;
+    fatal() << " Standard std::exception is caught " << endmsg;
+    error() << Exception.what()  << endmsg;
     Stat stat( chronoSvc() , "*std::exception*" );
     sc = StatusCode::FAILURE;
   }
   catch(...)
   {
-    MsgStream log ( msgSvc() , name() ) ;
-    log << MSG::FATAL << "UNKNOWN Exception is caught " << endmsg;
+    fatal() << "UNKNOWN Exception is caught " << endmsg;
     Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
     sc = StatusCode::FAILURE;
   }
@@ -208,27 +195,31 @@ StatusCode Algorithm::sysInitialize() {
   //// build list of data dependencies
   //
 
-  log << MSG::DEBUG << "input handles: " << inputHandles().size() << endmsg;
-  log << MSG::DEBUG << "output handles: " << outputHandles().size() << endmsg;
+  if (UNLIKELY(msgLevel(MSG::DEBUG))) {
+    debug() << "input handles: " << inputHandles().size() << endmsg;
+    debug() << "output handles: " << outputHandles().size() << endmsg;
+  }
 
   // visit all sub-algs and tools, build full set
-  DHHVisitor avis(m_inputDataObjs, m_outputDataObjs);             
-  accept(&avis);
+  DHHVisitor avis(m_inputDataObjs, m_outputDataObjs);
+  acceptDHVisitor(&avis);
 
-  log << MSG::DEBUG << "Data Deps for " << name();
-  for (auto h : m_inputDataObjs) {
-    log << "\n  + INPUT  " << h;
+  if (UNLIKELY(msgLevel(MSG::DEBUG))) {
+    debug() << "Data Deps for " << name();
+    for (auto h : m_inputDataObjs) {
+      debug() << "\n  + INPUT  " << h;
     }
-  for (auto h : m_outputDataObjs) {
-    log << "\n  + OUTPUT " << h;
+    for (auto h : m_outputDataObjs) {
+      debug() << "\n  + OUTPUT " << h;
     }
-  log << endmsg;
+    debug() << endmsg;
+  }
 
   return sc;
-      }
+}
 
 void
-Algorithm::accept(IDataHandleVisitor *vis) const {
+Algorithm::acceptDHVisitor(IDataHandleVisitor *vis) const {
   vis->visit(this);
 
   // loop through tools
@@ -279,8 +270,7 @@ StatusCode Algorithm::sysStart() {
       // Now start any sub-algorithms
       if( !for_algorithms<&Algorithm::sysStart>( m_subAlgms ) ) {
 	sc = StatusCode::FAILURE;
-	MsgStream log ( msgSvc() , name() );
-	log << MSG::ERROR << " Error starting one or several sub-algorithms"
+	error() << " Error starting one or several sub-algorithms"
 	    << endmsg;
       } else {
 	// Update the state.
@@ -290,25 +280,22 @@ StatusCode Algorithm::sysStart() {
   }
   catch ( const GaudiException& Exception )
   {
-    MsgStream log ( msgSvc() , name() );
-    log << MSG::FATAL << "in sysStart(): exception with tag=" << Exception.tag()
+    fatal() << "in sysStart(): exception with tag=" << Exception.tag()
         << " is caught" << endmsg;
-    log << MSG::ERROR << Exception << endmsg;
+    error() << Exception << endmsg;
     Stat stat( chronoSvc() , Exception.tag() );
     sc = StatusCode::FAILURE;
   }
   catch( const std::exception& Exception )
   {
-    MsgStream log ( msgSvc() , name() );
-    log << MSG::FATAL << "in sysStart(): standard std::exception is caught" << endmsg;
-    log << MSG::ERROR << Exception.what()  << endmsg;
+    fatal() << "in sysStart(): standard std::exception is caught" << endmsg;
+    error() << Exception.what()  << endmsg;
     Stat stat( chronoSvc() , "*std::exception*" );
     sc = StatusCode::FAILURE;
   }
   catch(...)
   {
-    MsgStream log ( msgSvc() , name() );
-    log << MSG::FATAL << "in sysStart(): UNKNOWN Exception is caught" << endmsg;
+    fatal() << "in sysStart(): UNKNOWN Exception is caught" << endmsg;
     Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
     sc = StatusCode::FAILURE;
   }
@@ -324,17 +311,11 @@ StatusCode Algorithm::sysReinitialize() {
 
   // Check that the current status is the correct one.
   if ( Gaudi::StateMachine::INITIALIZED != FSMState() ) {
-    MsgStream log ( msgSvc() , name() );
-    log << MSG::ERROR
+    error()
         << "sysReinitialize(): cannot reinitialize algorithm not initialized"
         << endmsg;
     return StatusCode::FAILURE;
   }
-
-  // Check current outputLevel to evetually inform the MessagsSvc
-  //if( m_outputLevel != MSG::NIL ) {
-  setOutputLevel( m_outputLevel );
-  //}
 
   // Reset Error count
   // m_errorCount = 0; // done during start
@@ -359,8 +340,7 @@ StatusCode Algorithm::sysReinitialize() {
       // Now initialize care of any sub-algorithms
       if ( !for_algorithms<&Algorithm::sysReinitialize>( m_subAlgms ) ) {
 	sc = StatusCode::FAILURE;
-	MsgStream log ( msgSvc() , name() );
-	log << MSG::ERROR
+	error()
 	    << "sysReinitialize(): Error reinitializing one or several "
 	    << "sub-algorithms" << endmsg;
       }
@@ -368,25 +348,22 @@ StatusCode Algorithm::sysReinitialize() {
   }
   catch ( const GaudiException& Exception )
   {
-    MsgStream log ( msgSvc() , name() );
-    log << MSG::FATAL << "sysReinitialize(): Exception with tag=" << Exception.tag()
+    fatal() << "sysReinitialize(): Exception with tag=" << Exception.tag()
         << " is caught" << endmsg;
-    log << MSG::ERROR << Exception  << endmsg;
+    error() << Exception  << endmsg;
     Stat stat( chronoSvc() , Exception.tag() );
     sc = StatusCode::FAILURE;
   }
   catch( const std::exception& Exception )
   {
-    MsgStream log ( msgSvc() , name() );
-    log << MSG::FATAL << "sysReinitialize(): Standard std::exception is caught" << endmsg;
-    log << MSG::ERROR << Exception.what()  << endmsg;
+    fatal() << "sysReinitialize(): Standard std::exception is caught" << endmsg;
+    error() << Exception.what()  << endmsg;
     Stat stat( chronoSvc() , "*std::exception*" );
     sc = StatusCode::FAILURE;
   }
   catch(...)
   {
-    MsgStream log ( msgSvc() , name() );
-    log << MSG::FATAL << "sysReinitialize(): UNKNOWN Exception is caught" << endmsg;
+    fatal() << "sysReinitialize(): UNKNOWN Exception is caught" << endmsg;
     Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
     sc = StatusCode::FAILURE;
   }
@@ -402,17 +379,9 @@ StatusCode Algorithm::sysRestart() {
 
   // Check that the current status is the correct one.
   if ( Gaudi::StateMachine::RUNNING != FSMState() ) {
-    MsgStream log ( msgSvc() , name() );
-    log << MSG::ERROR
-        << "sysRestart(): cannot restart algorithm not started"
-        << endmsg;
+    error() << "sysRestart(): cannot restart algorithm not started" << endmsg;
     return StatusCode::FAILURE;
   }
-
-  // Check current outputLevel to evetually inform the MessagsSvc
-  //if( m_outputLevel != MSG::NIL ) {
-  setOutputLevel( m_outputLevel );
-  //}
 
   // Reset Error count
   m_errorCount = 0;
@@ -437,34 +406,28 @@ StatusCode Algorithm::sysRestart() {
       // Now initialize care of any sub-algorithms
       if( !for_algorithms<&Algorithm::sysRestart>( m_subAlgms ) ) {
 	sc = StatusCode::FAILURE;
-	MsgStream log ( msgSvc() , name() );
-	log << MSG::ERROR
-	    << "sysRestart(): Error restarting one or several sub-algorithms"
-	    << endmsg;
+	error() << "sysRestart(): Error restarting one or several sub-algorithms" << endmsg;
       }
     }
   }
   catch ( const GaudiException& Exception )
   {
-    MsgStream log ( msgSvc() , name() );
-    log << MSG::FATAL << "sysRestart(): Exception with tag=" << Exception.tag()
+    fatal() << "sysRestart(): Exception with tag=" << Exception.tag()
         << " is caught" << endmsg;
-    log << MSG::ERROR << Exception  << endmsg;
+    error() << Exception  << endmsg;
     Stat stat( chronoSvc() , Exception.tag() );
     sc = StatusCode::FAILURE;
   }
   catch( const std::exception& Exception )
   {
-    MsgStream log ( msgSvc() , name() );
-    log << MSG::FATAL << "sysRestart(): Standard std::exception is caught" << endmsg;
-    log << MSG::ERROR << Exception.what()  << endmsg;
+    fatal() << "sysRestart(): Standard std::exception is caught" << endmsg;
+    error() << Exception.what()  << endmsg;
     Stat stat( chronoSvc() , "*std::exception*" );
     sc = StatusCode::FAILURE;
   }
   catch(...)
   {
-    MsgStream log ( msgSvc() , name() );
-    log << MSG::FATAL << "sysRestart(): UNKNOWN Exception is caught" << endmsg;
+    fatal() << "sysRestart(): UNKNOWN Exception is caught" << endmsg;
     Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
     sc = StatusCode::FAILURE;
   }
@@ -477,11 +440,6 @@ StatusCode Algorithm::sysBeginRun() {
 
   // Bypass the beginRun if the algorithm is disabled.
   if ( !isEnabled( ) ) return StatusCode::SUCCESS;
-
-  // Check current outputLevel to evetually inform the MessagsSvc
-  //if( m_outputLevel != MSG::NIL ) {
-  setOutputLevel( m_outputLevel );
-  //}
 
   // Reset Error count
   m_errorCount = 0;
@@ -506,33 +464,29 @@ StatusCode Algorithm::sysBeginRun() {
       // Now call beginRun for any sub-algorithms
       if( !for_algorithms<&Algorithm::sysBeginRun>( m_subAlgms ) ) {
 	sc = StatusCode::FAILURE;
-	MsgStream log ( msgSvc() , name() );
-	log << MSG::ERROR << " Error executing BeginRun for one or several sub-algorithms"
+	error() << " Error executing BeginRun for one or several sub-algorithms"
           << endmsg;
       }
     }
   }
   catch ( const GaudiException& Exception )
   {
-    MsgStream log ( msgSvc() , name() );
-    log << MSG::FATAL << " Exception with tag=" << Exception.tag()
+    fatal() << " Exception with tag=" << Exception.tag()
         << " is caught " << endmsg;
-    log << MSG::ERROR << Exception  << endmsg;
+    error() << Exception  << endmsg;
     Stat stat( chronoSvc() , Exception.tag() );
     sc = StatusCode::FAILURE;
   }
   catch( const std::exception& Exception )
   {
-    MsgStream log ( msgSvc() , name() );
-    log << MSG::FATAL << " Standard std::exception is caught " << endmsg;
-    log << MSG::ERROR << Exception.what()  << endmsg;
+    fatal() << " Standard std::exception is caught " << endmsg;
+    error() << Exception.what()  << endmsg;
     Stat stat( chronoSvc() , "*std::exception*" );
     sc = StatusCode::FAILURE;
   }
   catch(...)
   {
-    MsgStream log ( msgSvc() , name() );
-    log << MSG::FATAL << "UNKNOWN Exception is caught " << endmsg;
+    fatal() << "UNKNOWN Exception is caught " << endmsg;
     Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
     sc = StatusCode::FAILURE;
   }
@@ -548,11 +502,6 @@ StatusCode Algorithm::sysEndRun() {
 
   // Bypass the endRun if the algorithm is disabled.
   if ( !isEnabled( ) ) return StatusCode::SUCCESS;
-
-  // Check current outputLevel to eventually inform the MessagsSvc
-  //if( m_outputLevel != MSG::NIL ) {
-  setOutputLevel( m_outputLevel );
-  //}
 
   // Reset Error count
   m_errorCount = 0;
@@ -577,33 +526,29 @@ StatusCode Algorithm::sysEndRun() {
       // Now call endRun for any sub-algorithms
       if( !for_algorithms<&Algorithm::sysEndRun>( m_subAlgms ) ) {
         sc = StatusCode::FAILURE;
-        MsgStream log ( msgSvc() , name() );
-        log << MSG::ERROR << " Error calling endRun for one or several sub-algorithms"
+        error() << " Error calling endRun for one or several sub-algorithms"
             << endmsg;
       }
     }
   }
   catch ( const GaudiException& Exception )
   {
-    MsgStream log ( msgSvc() , name() );
-    log << MSG::FATAL << " Exception with tag=" << Exception.tag()
+    fatal() << " Exception with tag=" << Exception.tag()
         << " is caught " << endmsg;
-    log << MSG::ERROR << Exception  << endmsg;
+    error() << Exception  << endmsg;
     Stat stat( chronoSvc() , Exception.tag() );
     sc = StatusCode::FAILURE;
   }
   catch( const std::exception& Exception )
   {
-    MsgStream log ( msgSvc() , name() );
-    log << MSG::FATAL << " Standard std::exception is caught " << endmsg;
-    log << MSG::ERROR << Exception.what()  << endmsg;
+    fatal() << " Standard std::exception is caught " << endmsg;
+    error() << Exception.what()  << endmsg;
     Stat stat( chronoSvc() , "*std::exception*" );
     sc = StatusCode::FAILURE;
   }
   catch(...)
   {
-    MsgStream log ( msgSvc() , name() );
-    log << MSG::FATAL << "UNKNOWN Exception is caught " << endmsg;
+    fatal() << "UNKNOWN Exception is caught " << endmsg;
     Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
     sc = StatusCode::FAILURE;
   }
@@ -617,9 +562,8 @@ StatusCode Algorithm::endRun() {
 
 StatusCode Algorithm::sysExecute() {
   if (!isEnabled()) {
-    if (UNLIKELY(m_outputLevel <= MSG::VERBOSE)) {
-      MsgStream log ( msgSvc() , name() );
-      log << MSG::VERBOSE << ".sysExecute(): is not enabled. Skip execution" << endmsg;
+    if ( msgLevel(MSG::VERBOSE) ) {
+      verbose() << ".sysExecute(): is not enabled. Skip execution" << endmsg;
     }
     return StatusCode::SUCCESS;
   }
@@ -670,17 +614,16 @@ StatusCode Algorithm::sysExecute() {
   {
     setExecuted(true);  // set the executed flag
 
-    MsgStream log ( msgSvc() , name() );
     if (Exception.code() == StatusCode::FAILURE) {
-      log << MSG::FATAL;
+      fatal();
     } else {
-      log << MSG::ERROR << " Recoverable";
+      error() << " Recoverable";
     }
 
-    log << " Exception with tag=" << Exception.tag()
+    msgStream() << " Exception with tag=" << Exception.tag()
         << " is caught " << endmsg;
 
-    log << MSG::ERROR << Exception  << endmsg;
+    error() << Exception  << endmsg;
 
     //Stat stat( chronoSvc() , Exception.tag() ) ;
     status = exceptionSvc()->handle(*this,Exception);
@@ -689,9 +632,8 @@ StatusCode Algorithm::sysExecute() {
   {
     setExecuted(true);  // set the executed flag
 
-    MsgStream log ( msgSvc() , name() );
-    log << MSG::FATAL << " Standard std::exception is caught " << endmsg;
-    log << MSG::ERROR << Exception.what()  << endmsg;
+    fatal() << " Standard std::exception is caught " << endmsg;
+    error() << Exception.what()  << endmsg;
     //Stat stat( chronoSvc() , "*std::exception*" ) ;
     status = exceptionSvc()->handle(*this,Exception);
   }
@@ -699,8 +641,7 @@ StatusCode Algorithm::sysExecute() {
   {
     setExecuted(true);  // set the executed flag
 
-    MsgStream log ( msgSvc() , name() );
-    log << MSG::FATAL << "UNKNOWN Exception is caught " << endmsg;
+    fatal() << "UNKNOWN Exception is caught " << endmsg;
     //Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
 
     status = exceptionSvc()->handle(*this);
@@ -710,12 +651,11 @@ StatusCode Algorithm::sysExecute() {
 	  timelineSvc()->registerTimelineEvent(timeline);
 
   if( status.isFailure() ) {
-    MsgStream log ( msgSvc() , name() );
     // Increment the error count
     m_errorCount++;
     // Check if maximum is exeeded
     if( m_errorCount < m_errorMax ) {
-      log << MSG::WARNING << "Continuing from error (cnt=" << m_errorCount
+      warning() << "Continuing from error (cnt=" << m_errorCount
           << ", max=" << m_errorMax << ")" << endmsg;
       // convert to success
       status = StatusCode::SUCCESS;
@@ -757,23 +697,20 @@ StatusCode Algorithm::sysStop() {
     }
   }
   catch ( const GaudiException& Exception )  {
-    MsgStream log ( msgSvc() , name() );
-    log << MSG::FATAL << "in sysStop(): exception with tag=" << Exception.tag()
+    fatal() << "in sysStop(): exception with tag=" << Exception.tag()
         << " is caught" << endmsg;
-    log << MSG::ERROR << Exception << endmsg;
+    error() << Exception << endmsg;
     Stat stat( chronoSvc() , Exception.tag() );
     sc = StatusCode::FAILURE;
   }
   catch( const std::exception& Exception ) {
-    MsgStream log ( msgSvc() , name() );
-    log << MSG::FATAL << "in sysStop(): standard std::exception is caught" << endmsg;
-    log << MSG::ERROR << Exception.what()  << endmsg;
+    fatal() << "in sysStop(): standard std::exception is caught" << endmsg;
+    error() << Exception.what()  << endmsg;
     Stat stat( chronoSvc() , "*std::exception*" );
     sc = StatusCode::FAILURE;
   }
   catch(...) {
-    MsgStream log ( msgSvc() , name() );
-    log << MSG::FATAL << "in sysStop(): UNKNOWN Exception is caught" << endmsg;
+    fatal() << "in sysStop(): UNKNOWN Exception is caught" << endmsg;
     Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
     sc = StatusCode::FAILURE;
   }
@@ -819,25 +756,22 @@ StatusCode Algorithm::sysFinalize() {
   }
   catch( const GaudiException& Exception )
   {
-    MsgStream log ( msgSvc() , name() );
-    log << MSG::FATAL << " Exception with tag=" << Exception.tag()
+    fatal() << " Exception with tag=" << Exception.tag()
         << " is caught " << endmsg;
-    log << MSG::ERROR << Exception  << endmsg;
+    error() << Exception  << endmsg;
     Stat stat( chronoSvc() , Exception.tag() ) ;
     sc = StatusCode::FAILURE;
   }
   catch( const std::exception& Exception )
   {
-    MsgStream log ( msgSvc() , name() );
-    log << MSG::FATAL << " Standard std::exception is caught " << endmsg;
-    log << MSG::ERROR << Exception.what()  << endmsg;
+    fatal() << " Standard std::exception is caught " << endmsg;
+    error() << Exception.what()  << endmsg;
     Stat stat( chronoSvc() , "*std::exception*" ) ;
     sc = StatusCode::FAILURE;
   }
   catch( ... )
   {
-    MsgStream log ( msgSvc() , name() );
-    log << MSG::FATAL << "UNKNOWN Exception is caught " << endmsg;
+    fatal() << "UNKNOWN Exception is caught " << endmsg;
     Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
     sc = StatusCode::FAILURE;
   }
@@ -852,14 +786,12 @@ StatusCode Algorithm::reinitialize() {
   // Default implementation is finalize+initialize
   StatusCode sc = finalize();
   if (sc.isFailure()) {
-    MsgStream log ( msgSvc() , name() );
-    log << MSG::ERROR << "reinitialize(): cannot be finalized" << endmsg;
+    error() << "reinitialize(): cannot be finalized" << endmsg;
     return sc;
   }
   sc = initialize();
   if (sc.isFailure()) {
-    MsgStream log ( msgSvc() , name() );
-    log << MSG::ERROR << "reinitialize(): cannot be initialized" << endmsg;
+    error() << "reinitialize(): cannot be initialized" << endmsg;
     return sc;
   }
   */
@@ -870,14 +802,12 @@ StatusCode Algorithm::restart() {
   // Default implementation is stop+start
   StatusCode sc = stop();
   if (sc.isFailure()) {
-    MsgStream log ( msgSvc() , name() );
-    log << MSG::ERROR << "restart(): cannot be stopped" << endmsg;
+    error() << "restart(): cannot be stopped" << endmsg;
     return sc;
   }
   sc = start();
   if (sc.isFailure()) {
-    MsgStream log ( msgSvc() , name() );
-    log << MSG::ERROR << "restart(): cannot be started" << endmsg;
+    error() << "restart(): cannot be started" << endmsg;
     return sc;
   }
   return StatusCode::SUCCESS;
@@ -928,14 +858,6 @@ std::vector<Algorithm*>* Algorithm::subAlgorithms( ) {
   return &m_subAlgms;
 }
 
-void Algorithm::setOutputLevel( int level ) {
-  if ( msgSvc() )
-  {
-    if ( level != MSG::NIL )
-    { msgSvc()->setOutputLevel( name(), level ) ; }
-    m_outputLevel = msgSvc()->outputLevel( name() );
-  }
-}
 
 #define serviceAccessor(METHOD,INTERFACE,NAME,MEMBER) \
 SmartIF<INTERFACE>& Algorithm::METHOD() const { \
@@ -963,19 +885,6 @@ serviceAccessor(toolSvc, IToolSvc, "ToolSvc", m_ptoolSvc)
 serviceAccessor(contextSvc, IAlgContextSvc,"AlgContextSvc", m_contextSvc)
 serviceAccessor(timelineSvc, ITimelineSvc,"TimelineSvc", m_timelineSvc)
 
-//serviceAccessor(msgSvc, IMessageSvc, "MessageSvc", m_MS)
-// Message service needs a special treatment to avoid infinite recursion
-SmartIF<IMessageSvc>& Algorithm::msgSvc() const {
-  if ( !m_MS ) {
-    //can not use service() method (infinite recursion!)
-    m_MS = serviceLocator(); // default message service
-    if( !m_MS ) {
-      throw GaudiException("Service [MessageSvc] not found", name(), StatusCode::FAILURE);
-    }
-  }
-  return m_MS;
-}
-
 // Obsoleted name, kept due to the backwards compatibility
 SmartIF<IChronoStatSvc>& Algorithm::chronoStatService() const {
   return chronoSvc();
@@ -1001,10 +910,6 @@ SmartIF<IHistogramSvc>& Algorithm::histogramDataService() const {
   return histoSvc();
 }
 // Obsoleted name, kept due to the backwards compatibility
-SmartIF<IMessageSvc>& Algorithm::messageService() const {
-  return msgSvc();
-}
-// Obsoleted name, kept due to the backwards compatibility
 SmartIF<INTupleSvc>& Algorithm::ntupleService() const {
   return ntupleSvc();
 }
@@ -1015,23 +920,21 @@ SmartIF<ISvcLocator>& Algorithm::serviceLocator() const {
 
 // Use the job options service to set declared properties
 StatusCode Algorithm::setProperties() {
-  if( m_pSvcLocator )    {
-    auto jos = m_pSvcLocator->service<IJobOptionsSvc>("JobOptionsSvc");
-    if( jos ) {
-      // set first generic Properties
-      StatusCode sc = jos->setMyProperties( getGaudiThreadGenericName(name()), this );
-      if( sc.isFailure() ) return StatusCode::FAILURE;
+  if( !m_pSvcLocator ) return StatusCode::FAILURE;
+  auto jos = m_pSvcLocator->service<IJobOptionsSvc>("JobOptionsSvc");
+  if( !jos )  return StatusCode::FAILURE;
+  // set first generic Properties
+  StatusCode sc = jos->setMyProperties( getGaudiThreadGenericName(name()), this );
+  if( sc.isFailure() ) return StatusCode::FAILURE;
 
-      // set specific Properties
-      if (isGaudiThreaded(name())) {
-        if(jos->setMyProperties( name(), this ).isFailure()) {
-          return StatusCode::FAILURE;
-        }
-      }
-      return sc;
+  // set specific Properties
+  if (isGaudiThreaded(name())) {
+    if(jos->setMyProperties( name(), this ).isFailure()) {
+      return StatusCode::FAILURE;
     }
   }
-  return StatusCode::FAILURE;
+  updateMsgStreamOutputLevel( m_outputLevel );
+  return sc;
 }
 
 StatusCode Algorithm::createSubAlgorithm(const std::string& type,
@@ -1086,23 +989,25 @@ bool Algorithm::hasProperty(const std::string& name) const {
 
 void Algorithm::initToolHandles() const{
 
-	MsgStream log ( msgSvc() , name() ) ;
 
 	for(auto th : m_toolHandles){
 		IAlgTool * tool = nullptr;
 
 		//if(th->retrieve().isFailure())
-			//log << MSG::DEBUG << "Error in retrieving tool from ToolHandle" << endmsg;
+			//debug() << "Error in retrieving tool from ToolHandle" << endmsg;
 
 		//get generic tool interface from ToolHandle
-		if(th->retrieve(tool).isSuccess() && tool != nullptr){
+        auto sc = th->retrieve(tool);
+		if(sc.isSuccess() && tool){
 			m_tools.push_back(tool);
-      log << MSG::DEBUG << "Adding " 
-	  << (th->isPublic() ? "Public" : "Private" ) 
-	  << " ToolHandle tool " << tool->name() 
+    if (UNLIKELY(msgLevel(MSG::DEBUG)))
+      debug() << "Adding "
+	  << (th->isPublic() ? "Public" : "Private" )
+	  << " ToolHandle tool " << tool->name()
 	  << " (" << tool->type() << ")" << endmsg;
 		} else {
-			log << MSG::DEBUG << "Trying to add nullptr tool" << endmsg;
+		        if (UNLIKELY(msgLevel(MSG::DEBUG)))
+			  debug() << "Trying to add nullptr tool" << endmsg;
 		}
 	}
 
@@ -1110,28 +1015,18 @@ void Algorithm::initToolHandles() const{
 }
 
 const std::vector<IAlgTool *> & Algorithm::tools() const {
-	if(UNLIKELY(!m_toolHandlesInit))
-		initToolHandles();
-
+	if(UNLIKELY(!m_toolHandlesInit)) initToolHandles();
 	return m_tools;
 }
 
 std::vector<IAlgTool *> & Algorithm::tools() {
-	if(UNLIKELY(!m_toolHandlesInit))
-		initToolHandles();
-
+	if(UNLIKELY(!m_toolHandlesInit)) initToolHandles();
 	return m_tools;
 }
-
 
 /**
  ** Protected Member Functions
  **/
-void
-Algorithm::initOutputLevel(Property& /*prop*/)
-{
-  // do nothing... yet ?
-}
 
 StatusCode
 Algorithm::service_i(const std::string& svcName,
@@ -1157,10 +1052,10 @@ SmartIF<IService> Algorithm::service(const std::string& name, const bool createI
 }
 
 //-----------------------------------------------------------------------------
-void  
+void
 Algorithm::commitHandles() {
   //-----------------------------------------------------------------------------
-  
+
   for (auto h : m_outputHandles) {
     h->commit();
   }
@@ -1176,27 +1071,30 @@ Algorithm::commitHandles() {
 
 }
 
-void 
+void
 Algorithm::registerTool(IAlgTool * tool) const {
-
-    MsgStream log(msgSvc(), name());
-    log << MSG::DEBUG << "Registering tool " << tool->name() << endmsg;
+    if (UNLIKELY(m_outputLevel <= MSG::DEBUG)) {
+      MsgStream log(msgSvc(), name());
+      log << MSG::DEBUG << "Registering tool " << tool->name() << endmsg;
+    }
     m_tools.push_back(tool);
 }
 
 
-void 
+void
 Algorithm::deregisterTool(IAlgTool * tool) const {
   std::vector<IAlgTool *>::iterator it = std::find(m_tools.begin(),
                                                    m_tools.end(), tool);
-  
+
   MsgStream log(msgSvc(), name());
-  if (it != m_tools.end()) {   
-    log << MSG::DEBUG << "De-Registering tool " << tool->name()
+  if (it != m_tools.end()) {
+    if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
+      log << MSG::DEBUG << "De-Registering tool " << tool->name()
         << endmsg;
     m_tools.erase(it);
   } else {
-    log << MSG::DEBUG << "Could not de-register tool " << tool->name()
+    if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
+      log << MSG::DEBUG << "Could not de-register tool " << tool->name()
         << endmsg;
   }
 }

@@ -24,7 +24,7 @@
 // Define the algorithm factory for the standard output data writer
 DECLARE_COMPONENT(OutputStream)
 
-#define ON_DEBUG if (log.level() <= MSG::DEBUG)
+#define ON_DEBUG if (msgLevel(MSG::DEBUG))
 
 // Standard Constructor
 OutputStream::OutputStream(const std::string& name, ISvcLocator* pSvcLocator)
@@ -68,32 +68,31 @@ OutputStream::OutputStream(const std::string& name, ISvcLocator* pSvcLocator)
 
 // initialize data writer
 StatusCode OutputStream::initialize() {
-  MsgStream log(msgSvc(), name());
 
   // Reset the number of events written
   m_events = 0;
   // Get access to the DataManagerSvc
   m_pDataManager = serviceLocator()->service(m_storeName);
   if( !m_pDataManager )   {
-    log << MSG::FATAL << "Unable to locate IDataManagerSvc interface" << endmsg;
+    fatal() << "Unable to locate IDataManagerSvc interface" << endmsg;
     return StatusCode::FAILURE;
   }
   // Get access to the IncidentService
   m_incidentSvc = serviceLocator()->service("IncidentSvc");
   if( !m_incidentSvc )  {
-    log << MSG::WARNING << "Error retrieving IncidentSvc." << endmsg;
+    warning() << "Error retrieving IncidentSvc." << endmsg;
     return StatusCode::FAILURE;
   }
   // Get access to the assigned data service
   m_pDataProvider = serviceLocator()->service(m_storeName);
   if( !m_pDataProvider )   {
-    log << MSG::FATAL << "Unable to locate IDataProviderSvc interface of " << m_storeName << endmsg;
+    fatal() << "Unable to locate IDataProviderSvc interface of " << m_storeName << endmsg;
     return StatusCode::FAILURE;
   }
   if ( hasInput() )  {
     StatusCode status = connectConversionSvc();
     if( !status.isSuccess() )   {
-      log << MSG::FATAL << "Unable to connect to conversion service." << endmsg;
+      fatal() << "Unable to connect to conversion service." << endmsg;
       if(m_outputName!="" && m_fireIncidents) m_incidentSvc->fireIncident(Incident(m_outputName,
                                                                                    IncidentType::FailOutputFile));
       return status;
@@ -106,15 +105,15 @@ StatusCode OutputStream::initialize() {
   clearItems(m_itemList);
 
   // Take the new item list from the properties.
-  ON_DEBUG log << MSG::DEBUG << "ItemList    : " << m_itemNames << endmsg;
+  ON_DEBUG debug() << "ItemList    : " << m_itemNames << endmsg;
   for( const auto& i : m_itemNames ) addItem( m_itemList, i );
 
   // Take the new item list from the properties.
-  ON_DEBUG log << MSG::DEBUG << "OptItemList : " << m_optItemNames << endmsg;
+  ON_DEBUG debug() << "OptItemList : " << m_optItemNames << endmsg;
   for( const auto& i : m_optItemNames ) addItem( m_optItemList, i );
 
   // prepare the algorithm selected dependent locations
-  ON_DEBUG log << MSG::DEBUG << "AlgDependentItemList : " << m_algDependentItemList << endmsg;
+  ON_DEBUG debug() << "AlgDependentItemList : " << m_algDependentItemList << endmsg;
   for ( const auto& a : m_algDependentItemList )
   {
     // Get the algorithm pointer
@@ -139,7 +138,7 @@ StatusCode OutputStream::initialize() {
   if ( m_doPreLoadOpt )    {
     for(auto& j : m_optItemList) m_pDataProvider->addPreLoadItem( *j ).ignore();
   }
-  log << MSG::INFO << "Data source: " << m_storeName  << " output: " << m_output << endmsg;
+  info() << "Data source: " << m_storeName  << " output: " << m_output << endmsg;
 
   // Decode the accept, required and veto Algorithms. The logic is the following:
   //  a. The event is accepted if all lists are empty.
@@ -158,8 +157,7 @@ StatusCode OutputStream::initialize() {
 
 // terminate data writer
 StatusCode OutputStream::finalize() {
-  MsgStream log(msgSvc(), name());
-  log << MSG::INFO << "Events output: " << m_events << endmsg;
+  info() << "Events output: " << m_events << endmsg;
   if(m_fireIncidents) m_incidentSvc->fireIncident(Incident(m_outputName,
                                                            IncidentType::EndOutputFile));
   m_incidentSvc.reset();
@@ -227,14 +225,13 @@ StatusCode OutputStream::writeObjects()
           }
           catch ( const std::exception & excpt )
           {
-            MsgStream log( msgSvc(), name() );
             const std::string loc = ( j->registry() ?
                                       j->registry()->identifier() : "UnRegistered" );
-            log << MSG::FATAL
+            fatal()
                 << "std::exception during createRep for '" << loc << "' "
                 << System::typeinfoName( typeid(*j) )
                 << endmsg;
-            log << MSG::FATAL << excpt.what() << endmsg;
+            fatal() << excpt.what() << endmsg;
             throw;
           }
         }
@@ -248,14 +245,13 @@ StatusCode OutputStream::writeObjects()
           }
           catch ( const std::exception & excpt )
           {
-            MsgStream log( msgSvc(), name() );
             const std::string loc = ( j->registry() ?
                                       j->registry()->identifier() : "UnRegistered" );
-            log << MSG::FATAL
+            fatal()
                 << "std::exception during fillRepRefs for '" << loc << "'"
                 << System::typeinfoName( typeid(*j) )
                 << endmsg;
-            log << MSG::FATAL << excpt.what() << endmsg;
+            fatal() << excpt.what() << endmsg;
             throw;
           }
         }
@@ -294,7 +290,6 @@ bool OutputStream::collect(IRegistry* dir, int level)    {
 
 /// Collect all objects to be written to the output stream
 StatusCode OutputStream::collectObjects()   {
-  MsgStream log(msgSvc(), name());
   StatusCode status = StatusCode::SUCCESS;
 
   // Traverse the tree and collect the requested objects
@@ -307,7 +302,7 @@ StatusCode OutputStream::collectObjects()   {
       if ( !iret.isSuccess() )  status = iret;
     }
     else  {
-      log << MSG::ERROR << "Cannot write mandatory object(s) (Not found) "
+      error() << "Cannot write mandatory object(s) (Not found) "
           << m_currentItem->path() << endmsg;
       status = iret;
     }
@@ -323,7 +318,7 @@ StatusCode OutputStream::collectObjects()   {
     }
     if ( !iret.isSuccess() )    {
       ON_DEBUG
-        log << MSG::DEBUG << "Ignore request to write non-mandatory object(s) "
+        debug() << "Ignore request to write non-mandatory object(s) "
             << m_currentItem->path() << endmsg;
     }
   }
@@ -336,7 +331,7 @@ StatusCode OutputStream::collectObjects()   {
     if ( alg->isExecuted() && alg->filterPassed() )
     {
       ON_DEBUG
-        log << MSG::DEBUG << "Algorithm '" << alg->name() << "' fired. Adding " << items << endmsg;
+        debug() << "Algorithm '" << alg->name() << "' fired. Adding " << items << endmsg;
       for ( const auto& i : items )
       {
         DataObject* obj = nullptr;
@@ -349,7 +344,7 @@ StatusCode OutputStream::collectObjects()   {
         }
         else
         {
-          log << MSG::ERROR << "Cannot write mandatory (algorithm dependent) object(s) (Not found) "
+          error() << "Cannot write mandatory (algorithm dependent) object(s) (Not found) "
               << m_currentItem->path() << endmsg;
           status = iret;
         }
@@ -401,7 +396,6 @@ OutputStream::findItem(const std::string& path)  {
 
 // Add item to output streamer list
 void OutputStream::addItem(Items& itms, const std::string& descriptor)   {
-  MsgStream log(msgSvc(), name());
   int level = 0;
   auto  sep = descriptor.rfind("#");
   std::string obj_path = descriptor.substr(0,sep);
@@ -420,7 +414,7 @@ void OutputStream::addItem(Items& itms, const std::string& descriptor)   {
   itms.push_back( new DataStoreItem(obj_path, level) );
   const auto& item = itms.back();
   ON_DEBUG
-    log << MSG::DEBUG << "Adding OutputStream item " << item->path()
+    debug() << "Adding OutputStream item " << item->path()
         << " with " << item->depth()
         << " level(s)." << endmsg;
 }
@@ -428,7 +422,6 @@ void OutputStream::addItem(Items& itms, const std::string& descriptor)   {
 // Connect to proper conversion service
 StatusCode OutputStream::connectConversionSvc()   {
   StatusCode status = StatusCode(StatusCode::FAILURE, true);
-  MsgStream log(msgSvc(), name());
   // Get output file from input
   std::string dbType, svc, shr;
   for(auto attrib: Gaudi::Utils::AttribStringParser(m_output)) {
@@ -481,13 +474,13 @@ StatusCode OutputStream::connectConversionSvc()   {
     std::string typ = !dbType.empty() ? dbType : svc;
     auto ipers = serviceLocator()->service<IPersistencySvc>(m_persName);
     if( !ipers )   {
-      log << MSG::FATAL << "Unable to locate IPersistencySvc interface of " << m_persName << endmsg;
+      fatal() << "Unable to locate IPersistencySvc interface of " << m_persName << endmsg;
       return StatusCode::FAILURE;
     }
     IConversionSvc *cnvSvc = nullptr;
     status = ipers->getService(typ, cnvSvc);
     if( !status.isSuccess() )   {
-      log << MSG::FATAL << "Unable to locate IConversionSvc interface of database type " << typ << endmsg;
+      fatal() << "Unable to locate IConversionSvc interface of database type " << typ << endmsg;
       return status;
     }
     // Increase reference count and keep service.
@@ -495,7 +488,7 @@ StatusCode OutputStream::connectConversionSvc()   {
   }
   else
   {
-    log << MSG::FATAL
+    fatal()
         << "Unable to locate IConversionSvc interface (Unknown technology) " << endmsg
         << "You either have to specify a technology name or a service name!" << endmsg
         << "Please correct the job option \"" << name() << ".Output\" !"     << endmsg;
@@ -505,9 +498,8 @@ StatusCode OutputStream::connectConversionSvc()   {
 }
 
 StatusCode OutputStream::decodeAcceptAlgs( ) {
-  MsgStream log(msgSvc(), name());
   ON_DEBUG
-    log << MSG::DEBUG << "AcceptAlgs  : " << m_acceptNames.value() << endmsg;
+    debug() << "AcceptAlgs  : " << m_acceptNames.value() << endmsg;
   return decodeAlgorithms( m_acceptNames, m_acceptAlgs );
 }
 
@@ -520,9 +512,8 @@ void OutputStream::acceptAlgsHandler( Property& /* theProp */ )  {
 }
 
 StatusCode OutputStream::decodeRequireAlgs( )  {
-  MsgStream log(msgSvc(), name());
   ON_DEBUG
-    log << MSG::DEBUG << "RequireAlgs : " << m_requireNames.value() << endmsg;
+    debug() << "RequireAlgs : " << m_requireNames.value() << endmsg;
   return decodeAlgorithms( m_requireNames, m_requireAlgs );
 }
 
@@ -535,9 +526,8 @@ void OutputStream::requireAlgsHandler( Property& /* theProp */ )  {
 }
 
 StatusCode OutputStream::decodeVetoAlgs( )  {
-  MsgStream log(msgSvc(), name());
   ON_DEBUG
-    log << MSG::DEBUG << "VetoAlgs    : " << m_vetoNames.value() << endmsg;
+    debug() << "VetoAlgs    : " << m_vetoNames.value() << endmsg;
   return decodeAlgorithms( m_vetoNames, m_vetoAlgs );
 }
 
@@ -573,15 +563,12 @@ Algorithm* OutputStream::decodeAlgorithm( const std::string& theName )
   }
   else
   {
-    MsgStream log( msgSvc( ), name( ) );
-    log << MSG::FATAL << "Can't locate ApplicationMgr!!!" << endmsg;
+    fatal() << "Can't locate ApplicationMgr!!!" << endmsg;
   }
 
   if ( !theAlgorithm )
   {
-    MsgStream log( msgSvc( ), name( ) );
-    log << MSG::WARNING
-        << "Failed to decode Algorithm name " << theName << endmsg;
+    warning() << "Failed to decode Algorithm name " << theName << endmsg;
   }
 
   return theAlgorithm;
@@ -610,8 +597,7 @@ StatusCode OutputStream::decodeAlgorithms( StringArrayProperty& theNames,
     }
     else
     {
-      MsgStream log( msgSvc( ), name( ) );
-      log << MSG::INFO << it << " doesn't exist - ignored" << endmsg;
+      info() << it << " doesn't exist - ignored" << endmsg;
     }
 
   }

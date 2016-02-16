@@ -530,9 +530,9 @@ void ServiceManager::setLoopCheckEnabled(bool en) {
 //------------------------------------------------------------------------------
 void ServiceManager::dump() const {
 
-  MsgStream log(msgSvc(),name());
 
-  log << MSG::INFO << "\n"
+  auto& log = info();
+  log << "\n"
       << "=====================  listing all services  ===================\n"
       << " prior   ref name                           active\n";
 

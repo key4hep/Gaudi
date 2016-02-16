@@ -32,6 +32,7 @@
 #include "GaudiKernel/System.h"
 #include <Gaudi/PluginService.h>
 #include "GaudiKernel/ToolHandle.h"
+#include "GaudiKernel/CommonMessaging.h"
 
 // For concurrency
 #include "GaudiKernel/EventContext.h"
@@ -70,7 +71,7 @@ class ToolHandleInfo;
  *  @author David Quarrie
  *  @date   1998
  */
-class GAUDI_API Algorithm: public implements4<IAlgorithm, IDataHandleHolder, IProperty, IStateful> {
+class GAUDI_API Algorithm: public CommonMessaging<implements4<IAlgorithm, IDataHandleHolder, IProperty, IStateful>> {
 public:
 #ifndef __REFLEX__
   typedef Gaudi::PluginService::Factory<IAlgorithm*,
@@ -243,9 +244,6 @@ public:
     return service(name,createIf,quiet).as<T>();
   }
 
-  /// Set the output level for current algorithm
-  void setOutputLevel( int level );
-
   /** The standard auditor service.May not be invoked before sysInitialize()
    *  has been invoked.
    */
@@ -297,15 +295,6 @@ public:
   /// Obsoleted name, kept due to the backwards compatibility
   SmartIF<IHistogramSvc>& histogramDataService() const;
 
-  /** The standard message service.
-   *  Returns a pointer to the standard message service.
-   *  May not be invoked before sysInitialize() has been invoked.
-   */
-  SmartIF<IMessageSvc>&      msgSvc() const;
-
-  /// Obsoleted name, kept due to the backwards compatibility
-  SmartIF<IMessageSvc>&      messageService() const;
-
   /** The standard N tuple service.
    *  Returns a pointer to the N tuple service if present.
    */
@@ -341,7 +330,7 @@ public:
    *  This service may be used by an algorithm to request
    *  any services it requires in addition to those provided by default.
    */
-  SmartIF<ISvcLocator>& serviceLocator() const;
+  SmartIF<ISvcLocator>& serviceLocator() const override;
   /// shortcut for method serviceLocator
   SmartIF<ISvcLocator>& svcLoc        () const { return serviceLocator() ; }
 
@@ -581,7 +570,6 @@ public:
   }
 
  public:
-
   virtual std::vector<Gaudi::DataHandle*> inputHandles() const override { return m_inputHandles; }
   virtual std::vector<Gaudi::DataHandle*> outputHandles() const override { return m_outputHandles; }
 
@@ -592,7 +580,7 @@ public:
     return m_extOutputDataObjs;
   }
 
-  virtual void accept(IDataHandleVisitor*) const override ;
+  virtual void acceptDHVisitor(IDataHandleVisitor*) const override ;
 
   const DataObjIDColl& inputDataObjs() const { return m_inputDataObjs; }
   const DataObjIDColl& outputDataObjs() const { return m_outputDataObjs; }
@@ -611,7 +599,7 @@ public:
   void deregisterTool(IAlgTool * tool) const;
 
   template<class T>
-    StatusCode declareTool(ToolHandle<T> &handle, 
+    StatusCode declareTool(ToolHandle<T> &handle,
 			   std::string toolTypeAndName = "",
 			   bool createIf = true) {
     if (handle.isPublic()) {
@@ -638,22 +626,14 @@ public:
       toolTypeAndName = handle.typeAndName();
 
     StatusCode sc = handle.initialize(toolTypeAndName, this, createIf);
+    if (UNLIKELY(!sc)) {
+      throw GaudiException{"Cannot create handle for private tool " + toolTypeAndName,
+                           name(), sc};
+    }
 
     m_toolHandles.push_back(&handle);
 
-    MsgStream log(msgSvc(), name());
-
-    if (sc.isSuccess()) {
-      log << MSG::DEBUG << "Handle for private tool" << toolTypeAndName
-          << " successfully created and stored." << endmsg;
-    } else {
-
-      log << MSG::ERROR << "Handle for private tool" << toolTypeAndName
-          << " could not be created." << endmsg;
-    }
-
     return sc;
-
   }
 
   /** Declare used Public tool
@@ -668,23 +648,15 @@ public:
       bool createIf = true) {
 
     if (toolTypeAndName == "")
-      //      toolTypeAndName = System::typeinfoName(typeid(T));
       toolTypeAndName = handle.typeAndName();
 
     StatusCode sc = handle.initialize(toolTypeAndName, 0, createIf);
+    if (UNLIKELY(!sc)) {
+      throw GaudiException{"Cannot create handle for public tool " + toolTypeAndName,
+                           name(), sc};
+    }
 
     m_toolHandles.push_back(&handle);
-
-    MsgStream log(msgSvc(), name());
-
-    if (sc.isSuccess()) {
-      log << MSG::DEBUG << "Handle for public tool" << toolTypeAndName
-          << " successfully created and stored." << endmsg;
-    } else {
-
-      log << MSG::ERROR << "Handle for public tool" << toolTypeAndName
-          << " could not be created." << endmsg;
-    }
 
     return sc;
 
@@ -721,15 +693,6 @@ protected:
 
   /// Has the Algorithm already been finalized?
   bool isFinalized( ) const  override{ return Gaudi::StateMachine::CONFIGURED == m_state; }
-
-  /// retrieve the Algorithm output level
-  int  outputLevel() const { return (int)m_outputLevel ; }
-
-  /// Accessor for the Message level property
-  IntegerProperty & outputLevelProperty() { return m_outputLevel; }
-
-  /// Callback for output level property
-  void initOutputLevel(Property& prop);
 
   /// Event specific data for multiple event processing
   EventContext* m_event_context;

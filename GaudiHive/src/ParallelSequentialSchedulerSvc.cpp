@@ -119,21 +119,21 @@ StatusCode ParallelSequentialSchedulerSvc::initialize(){
       DataObjIDColl algoDependencies;
       if (!algoHandles.empty()){
         info() << "Algorithm " << algoPtr->name() << " data dependencies:" << endmsg;
-        
+
         DataObjIDColl inputObjs, outputObjs;
         DHHVisitor avis(inputObjs, outputObjs);
-        
-        algoPtr->accept( &avis );
-        
+
+        algoPtr->acceptDHVisitor( &avis );
+
         for (auto id : inputObjs) {
           const std::string& productName = rootInTESName + id.key();
           info() << "  o Input dep for " << productName << endmsg;
           algoDependencies.insert(id);
         }
-        
-        
+
+
       } else {
-        info() << "Algorithm " << algoPtr->name() << " has no data dependencies." 
+        info() << "Algorithm " << algoPtr->name() << " has no data dependencies."
                << endmsg;
       }
 

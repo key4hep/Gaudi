@@ -20,10 +20,10 @@ DECLARE_COMPONENT(THistRead)
 //------------------------------------------------------------------------------
 THistRead::THistRead(const std::string& name,
 				 ISvcLocator* pSvcLocator) :
-  Algorithm(name, pSvcLocator), m_ths(0)
+  Algorithm(name, pSvcLocator), m_ths(nullptr)
 //------------------------------------------------------------------------------
 {
-  m_h1 = 0;
+  m_h1 = nullptr;
 }
 
 
@@ -31,87 +31,76 @@ THistRead::THistRead(const std::string& name,
 StatusCode THistRead::initialize()
 //------------------------------------------------------------------------------
 {
-  MsgStream log( msgSvc(), name() );
-
   if (service("THistSvc",m_ths).isFailure()) {
-    log << MSG::ERROR << "Couldn't get THistSvc" << endmsg;
+    error() << "Couldn't get THistSvc" << endmsg;
     return StatusCode::FAILURE;
   }
 
   // stream read1, 1D in "/xxx"
-  TH1 *h1(0);
+  TH1 *h1 = nullptr;
   if (m_ths->regHist("/read1/xxx/1Dgauss").isFailure() ||
       m_ths->getHist("/read1/xxx/1Dgauss",h1).isFailure()) {
-    log << MSG::ERROR << "Couldn't read gauss1d" << endmsg;
+    error() << "Couldn't read gauss1d" << endmsg;
   } else {
-    log << MSG::INFO << h1->GetName() << ": " << h1->GetEntries()
+    info() << h1->GetName() << ": " << h1->GetEntries()
 	<< endmsg;
   }
 
 
   // stream read2, 2D tree in "/"
-  TH2* h2(0);
+  TH2* h2 = nullptr;
   if (m_ths->regHist("/read2/2Dgauss").isFailure() ||
       m_ths->getHist("/read2/2Dgauss",h2).isFailure()) {
-    log << MSG::ERROR << "Couldn't read 2Dgauss" << endmsg;
+    error() << "Couldn't read 2Dgauss" << endmsg;
   } else {
-    log << MSG::INFO << h2->GetName() << ": " << h2->GetEntries()
+    info() << h2->GetName() << ": " << h2->GetEntries()
 	<< endmsg;
   }
 
   // 3D tree in "/"
-  TH3* h3(0);
+  TH3* h3 = nullptr;
   if (m_ths->regHist("/read2/3Dgauss").isFailure() ||
       m_ths->getHist("/read2/3Dgauss",h3).isFailure()) {
-    log << MSG::ERROR << "Couldn't read 3Dgauss" << endmsg;
+    error() << "Couldn't read 3Dgauss" << endmsg;
   } else {
-    log << MSG::INFO << h3->GetName() << ": " << h3->GetEntries()
+    info() << h3->GetName() << ": " << h3->GetEntries()
 	<< endmsg;
   }
 
   // Profile in "/"
-  TH1* tp(0);
+  TH1* tp = nullptr;
   if (m_ths->regHist("/read2/profile").isFailure() ||
       m_ths->getHist("/read2/profile",tp).isFailure()) {
-    log << MSG::ERROR << "Couldn't read profile" << endmsg;
+    error() << "Couldn't read profile" << endmsg;
   } else {
-    log << MSG::INFO << tp->GetName() << ": " << tp->GetEntries()
+    info() << tp->GetName() << ": " << tp->GetEntries()
 	<< endmsg;
   }
 
 
   // Tree with branches in "/trees/stuff"
-  TTree *tr(0);
+  TTree *tr = nullptr;
   if (m_ths->regTree("/read2/trees/stuff/treename").isFailure() ||
       m_ths->getTree("/read2/trees/stuff/treename",tr).isFailure()) {
-    log << MSG::ERROR << "Couldn't read tree" << endmsg;
+    error() << "Couldn't read tree" << endmsg;
   } else {
-    log << MSG::INFO << tr->GetName() << ": " << tr->GetEntries()
+    info() << tr->GetName() << ": " << tr->GetEntries()
 	<< endmsg;
   }
-
-
   return StatusCode::SUCCESS;
 }
-
 
 //------------------------------------------------------------------------------
 StatusCode THistRead::execute()
 //------------------------------------------------------------------------------
 {
-  MsgStream log( msgSvc(), name() );
-
-
   return StatusCode::SUCCESS;
 }
-
 
 //------------------------------------------------------------------------------
 StatusCode THistRead::finalize()
 //------------------------------------------------------------------------------
 {
-  MsgStream log(msgSvc(), name());
-  log << MSG::DEBUG << "Finalizing..." << endmsg;
-
+  debug() << "Finalizing..." << endmsg;
   return StatusCode::SUCCESS;
 }

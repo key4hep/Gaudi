@@ -39,7 +39,6 @@ RandomNumberAlg::~RandomNumberAlg()   {
 // The "functional" part of the class: For the EmptyAlgorithm example they do
 //  nothing apart from print out info messages.
 StatusCode RandomNumberAlg::initialize() {
-  MsgStream log(msgSvc(), name());
   // Use the Job options service to set the Algorithm's parameters
   StatusCode status = setProperties();
   //
@@ -119,7 +118,6 @@ StatusCode RandomNumberAlg::initialize() {
 }
 
 StatusCode RandomNumberAlg::execute()   {
-  MsgStream log(msgSvc(), name());
   StatusCode status;
   static int count = 0;
 
@@ -141,7 +139,7 @@ StatusCode RandomNumberAlg::execute()   {
 
   status = m_ntuple->write();
   if ( !status.isSuccess() )   {
-    log << MSG::ERROR << "Cannot fill NTuple" << endmsg;
+    error() << "Cannot fill NTuple" << endmsg;
   }
   return StatusCode::SUCCESS;
 }

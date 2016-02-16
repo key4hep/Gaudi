@@ -27,10 +27,10 @@ EventNodeKiller::EventNodeKiller( const std::string& name,
 //=============================================================================
 StatusCode EventNodeKiller::execute() {
 
-  if (msgLevel() <= MSG::DEBUG) debug() << "==> Execute" << endmsg;
+  if (msgLevel(MSG::DEBUG)) debug() << "==> Execute" << endmsg;
 
   for( auto& node : m_nodes ) {
-    if (msgLevel() <= MSG::DEBUG) debug() << "Killing node " << node << endmsg;
+    if (msgLevel(MSG::DEBUG)) debug() << "Killing node " << node << endmsg;
     eventSvc()->unlinkObject( node ).ignore();
   }
 
