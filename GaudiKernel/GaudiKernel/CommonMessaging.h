@@ -135,6 +135,9 @@ public:
   /// get the output level from the embedded MsgStream
   inline MSG::Level msgLevel() const { return m_level; }
 
+  /// Backward compatibility function for getting the output level
+  inline MSG::Level outputLevel() const __attribute__ ((deprecated)) { return m_level; }
+
   /// get the output level from the embedded MsgStream
   inline bool msgLevel(MSG::Level lvl) const { return UNLIKELY(msgLevel() <= lvl); }
 
