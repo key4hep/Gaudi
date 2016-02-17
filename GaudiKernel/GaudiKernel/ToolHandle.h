@@ -93,8 +93,6 @@ public:
 template< class T >
 class ToolHandle : public BaseToolHandle, public GaudiHandle<T> {
 
-  static_assert(std::is_base_of<IAlgTool,T>::value, "T must inherit from IAlgTool");
-
   friend class Algorithm;
   friend class AlgTool;
   friend class Service;
