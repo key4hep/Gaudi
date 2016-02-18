@@ -19,13 +19,13 @@ namespace Gaudi {
   namespace Utils {
     /** Parse attribute strings allowing iteration over the various attributes.
      * Example of usage:
-     * @code{
+     * \code{.cpp}
      * using Parser = Gaudi::Utils::AttribStringParser;
      * std::string input{"key1='value1' key2='value2'"};
      * for(auto attrib: Parser(input)) {
      *   std::cout << attrib.tag << " -> " << attrib.value << std::endl;
      * }
-     * @}
+     * \endcode
      */
     class AttribStringParser {
     public:
