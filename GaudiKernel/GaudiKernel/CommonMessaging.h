@@ -38,7 +38,7 @@
         using Base::Base;                                 \
         virtual ~add_ ## method () = default;             \
         virtual ret method args const = 0;                \
-    }; 
+    };
 
 namespace implementation_detail {
     template <typename> struct void_t { typedef void type; };
@@ -175,6 +175,7 @@ private:
       auto& ms = msgSvc();
       m_msgStream.reset(new MsgStream(ms, this->name()));
       m_createMsgStream = (!ms.isValid() || !m_msgStream);
+      m_level = m_msgStream ? m_msgStream->level() : MSG::NIL;
   }
 
 protected:
