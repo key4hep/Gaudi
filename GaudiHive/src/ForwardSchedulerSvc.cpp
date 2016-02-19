@@ -80,8 +80,10 @@ StatusCode ForwardSchedulerSvc::initialize(){
 
   // Get hold of the TBBSvc. This should initialize the thread pool
   m_threadPoolSvc = serviceLocator()->service("ThreadPoolSvc");
-  if (!m_threadPoolSvc.isValid()) 
+  if (!m_threadPoolSvc.isValid()) {
     fatal() << "Error retrieving ThreadPoolSvc" << endreq;
+    return StatusCode::FAILURE;
+  }
 
 
   // Activate the scheduler in another thread.
@@ -101,13 +103,18 @@ StatusCode ForwardSchedulerSvc::initialize(){
 
   // Get the algo resource pool
   m_algResourcePool = serviceLocator()->service("AlgResourcePool");
-  if (!m_algResourcePool.isValid())
-    error() << "Error retrieving AlgoResourcePool" << endmsg;
+  if (!m_algResourcePool.isValid()) {
+    fatal() << "Error retrieving AlgoResourcePool" << endmsg;
+    return StatusCode::FAILURE;
+  }
 
   // Get Whiteboard
   m_whiteboard = serviceLocator()->service(m_whiteboardSvcName);
-  if (!m_whiteboard.isValid())
-    fatal() << "Error retrieving EventDataSvc interface IHiveWhiteBoard." << endmsg;
+  if (!m_whiteboard.isValid()) {
+    fatal() << "Error retrieving EventDataSvc interface IHiveWhiteBoard." 
+            << endmsg;
+    return StatusCode::FAILURE;
+  }
 
   // Check the MaxEventsInFlight parameters and react
   // Deprecated for the moment
