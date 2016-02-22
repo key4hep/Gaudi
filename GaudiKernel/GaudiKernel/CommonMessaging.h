@@ -133,7 +133,10 @@ public:
   inline MsgStream&     msg() const { return msgStream(MSG::INFO); }
 
   /// get the output level from the embedded MsgStream
-  inline MSG::Level msgLevel() const { return m_level; }
+  inline MSG::Level msgLevel() const {
+    if (UNLIKELY(!m_msgStream)) create_msgStream();
+    return m_level;
+  }
 
   /// Backward compatibility function for getting the output level
   inline MSG::Level outputLevel() const __attribute__ ((deprecated)) { return m_level; }
