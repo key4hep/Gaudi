@@ -38,7 +38,7 @@
         using Base::Base;                                 \
         virtual ~add_ ## method () = default;             \
         virtual ret method args const = 0;                \
-    }; 
+    };
 
 namespace implementation_detail {
     template <typename> struct void_t { typedef void type; };
@@ -133,7 +133,10 @@ public:
   inline MsgStream&     msg() const { return msgStream(MSG::INFO); }
 
   /// get the output level from the embedded MsgStream
-  inline MSG::Level msgLevel() const { return m_level; }
+  inline MSG::Level msgLevel() const {
+    if (UNLIKELY(!m_msgStream)) create_msgStream();
+    return m_level;
+  }
 
   /// Backward compatibility function for getting the output level
   inline MSG::Level outputLevel() const __attribute__ ((deprecated)) { return m_level; }
@@ -175,6 +178,7 @@ private:
       auto& ms = msgSvc();
       m_msgStream.reset(new MsgStream(ms, this->name()));
       m_createMsgStream = (!ms.isValid() || !m_msgStream);
+      m_level = m_msgStream ? m_msgStream->level() : MSG::NIL;
   }
 
 protected:

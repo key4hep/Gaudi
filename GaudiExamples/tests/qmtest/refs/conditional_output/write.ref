@@ -32,7 +32,7 @@
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr (GaudiCoreSvc v4r0)
-                                          running on pclhcb117 on Thu Feb 11 14:53:47 2016
+                                          running on pclhcb117 on Mon Feb 22 12:03:40 2016
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 ServiceManager      DEBUG Initializing service FileRecordDataSvc
@@ -251,7 +251,6 @@ HistogramDataSvc    DEBUG Property update for OutputLevel : new value = 1
 HistogramDataSvc    DEBUG Service base class initialized successfully
 HistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service IncidentSvc
 HistogramPersis...  DEBUG  'CnvServices':[ 'RootHistSvc' ]
-HistogramPersis...  DEBUG Property update for OutputLevel : new value = 1
 HistogramPersis...  DEBUG Service base class initialized successfully
 HistogramPersis...WARNING Histograms saving not required.
 HistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service HistogramPersistencySvc
@@ -276,64 +275,62 @@ DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
-OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x40109d0, 0x2d59760, 0x3fc7dd0, 0x3f6b0d0]
-FileCatalog         DEBUG No writable file catalog found which contains FID:7A7943E0-C6D0-E511-971A-082E5F2B1B1D
-IODataManager        INFO Referring to dataset ConditionalOutput.dst by its file ID:7A7943E0-C6D0-E511-971A-082E5F2B1B1D
+OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x21c97c0, 0x28474c0, 0x21cae20, 0x2847010]
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
-OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x3d197e0, 0x3d19640, 0x33aa0d0, 0x3fc7a10]
+OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x2845570, 0x2846060, 0x2846730, 0x28461c0]
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
-OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x40109d0, 0x2d59760, 0x3fc7dd0, 0x3f6b0d0]
+OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x21c97c0, 0x28474c0, 0x21cae20, 0x2847010]
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
-OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x3d197e0, 0x3d19640, 0x33aa0d0, 0x3fc7a10]
+OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x2845570, 0x2846060, 0x2846730, 0x28461c0]
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
-OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x40109d0, 0x2d59760, 0x3fc7dd0, 0x3f6b0d0]
+OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x21c97c0, 0x28474c0, 0x21cae20, 0x2847010]
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
-OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x3d197e0, 0x3d19640, 0x33aa0d0, 0x3fc7a10]
+OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x2845570, 0x2846060, 0x2846730, 0x28461c0]
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
-OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x40109d0, 0x2d59760, 0x3fc7dd0, 0x3f6b0d0]
+OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x21c97c0, 0x28474c0, 0x21cae20, 0x2847010]
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
-OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x3d197e0, 0x3d19640, 0x33aa0d0, 0x3fc7a10]
+OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x2845570, 0x2846060, 0x2846730, 0x28461c0]
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
-OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x40109d0, 0x2d59760, 0x3fc7dd0, 0x3f6b0d0]
+OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x21c97c0, 0x28474c0, 0x21cae20, 0x2847010]
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
-OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x3d197e0, 0x3d19640, 0x33aa0d0, 0x3fc7a10]
-EventLoopMgr        DEBUG ---> Loop Finished -  WSS 189.383 | total time (skipping 1st evt) 742087 ns
+OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x2845570, 0x2846060, 0x2846730, 0x28461c0]
+EventLoopMgr        DEBUG ---> Loop Finished -  WSS 180.602 | total time (skipping 1st evt) 778912 ns
 ServiceManager      DEBUG Stopping service EventLoopMgr
 ServiceManager      DEBUG Stopping service HistogramDataSvc
 ServiceManager      DEBUG Stopping service HistogramPersistencySvc
@@ -365,10 +362,9 @@ EventLoopMgr         INFO Histograms converted successfully according to request
 ServiceManager      DEBUG Finalizing service HistogramDataSvc
 ServiceManager      DEBUG Finalizing service HistogramPersistencySvc
 ServiceManager      DEBUG Finalizing service RootCnvSvc
-RootCnvSvc           INFO Disconnected data IO:7A7943E0-C6D0-E511-971A-082E5F2B1B1D [ConditionalOutput.dst]
+RootCnvSvc           INFO Disconnected data IO:10160152-02D4-E511-82F5-082E5F2B1B1D [ConditionalOutput.dst]
 ServiceManager      DEBUG Finalizing service IODataManager
 ServiceManager      DEBUG Finalizing service FileCatalog
-XMLCatalog           INFO File 'ConditionalOutput.xml' does not exist. New file created.
 ServiceManager      DEBUG Finalizing service TimelineSvc
 ServiceManager      DEBUG Finalizing service EventDataSvc
 ServiceManager      DEBUG Finalizing service EventPersistencySvc
