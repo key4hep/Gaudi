@@ -1,4 +1,4 @@
-JobOptionsSvc        INFO # =======> /afs/cern.ch/work/l/leggett/hive/DH/Gaudi/GaudiExamples/options/RandomNumber.opts
+JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/RandomNumber.opts
 JobOptionsSvc        INFO # (5,1): AuditorSvc.Auditors = ["ChronoAuditor"]
 JobOptionsSvc        INFO # (12,1): ApplicationMgr.TopAlg = ["RandomNumberAlg"]
 JobOptionsSvc        INFO # (15,1): MessageSvc.OutputLevel = 2
@@ -7,12 +7,12 @@ JobOptionsSvc        INFO # (21,1): ApplicationMgr.EvtSel = "NONE"
 JobOptionsSvc        INFO # (31,1): ApplicationMgr.HistogramPersistency = "ROOT"
 JobOptionsSvc        INFO # (32,1): HistogramPersistencySvc.OutputFile = "histo.root"
 JobOptionsSvc        INFO # (33,1): NTupleSvc.Output = ["FILE1 DATAFILE='NTuple.root' OPT='NEW' TYP='ROOT'"]
-JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/work/l/leggett/hive/DH/Gaudi/GaudiExamples/options/RandomNumber.opts
+JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/RandomNumber.opts
 ApplicationMgr      DEBUG Getting my own properties
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r6)
-                                          running on p05614910w96644.cern.ch on Wed Jan 13 23:08:57 2016
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v4r0)
+                                          running on pclhcb117 on Mon Feb 22 12:10:29 2016
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 ServiceManager      DEBUG Initializing service AppMgrRunable
@@ -42,7 +42,6 @@ RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngin
 HistogramDataSvc    DEBUG Property update for OutputLevel : new value = 2
 HistogramDataSvc    DEBUG Service base class initialized successfully
 HistogramPersis...  DEBUG  'CnvServices':[ 'RootHistSvc' ]
-HistogramPersis...  DEBUG Property update for OutputLevel : new value = 2
 HistogramPersis...  DEBUG Service base class initialized successfully
 RootHistSvc         DEBUG Property update for OutputLevel : new value = 2
 RootHistSvc         DEBUG Service base class initialized successfully
@@ -79,7 +78,7 @@ RRWNTupleCnv         INFO ID 100: added branch: Gauss / Gauss/F
 RRWNTupleCnv         INFO ID 100: added branch: Exp / Exp/F
 RRWNTupleCnv         INFO ID 100: added branch: Poisson / Poisson/F
 RRWNTupleCnv         INFO Booked TTree with ID:100 "Hello World"
-EventLoopMgr        DEBUG ---> Loop Finished -  WSS 130.227 | total time (skipping 1st evt) 27341011 ns
+EventLoopMgr        DEBUG ---> Loop Finished -  WSS 122.316 | total time (skipping 1st evt) 16565786 ns
 ServiceManager      DEBUG Stopping service EventLoopMgr
 ServiceManager      DEBUG Stopping service NTupleSvc
 ServiceManager      DEBUG Stopping service HistogramDataSvc
@@ -139,7 +138,7 @@ ServiceManager      DEBUG Finalizing service TimelineSvc
 ServiceManager      DEBUG Finalizing service EventDataSvc
 ServiceManager      DEBUG Finalizing service EventPersistencySvc
 ServiceManager      DEBUG Finalizing service IncidentSvc
-IncidentSvc         DEBUG Incident  timing: Mean(+-rms)/Min/Max:0.00049975(+-0.0223439)/0/1[ms] Total:0.001999[s]
+IncidentSvc         DEBUG Incident  timing: Mean(+-rms)/Min/Max:0.00025(+-0.0158094)/0/1[ms] Total:0.001[s]
 ServiceManager      DEBUG Finalizing service AppMgrRunable
 ServiceManager      DEBUG Looping over all active services...
 ServiceManager      DEBUG ---- MessageSvc (refCount = 16)

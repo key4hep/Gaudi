@@ -1,8 +1,8 @@
-JobOptionsSvc        INFO # =======> /afs/cern.ch/work/l/leggett/hive/DH/Gaudi/GaudiExamples/options/Services.opts
+JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/Services.opts
 JobOptionsSvc        INFO # (12,1): AuditorSvc.Auditors = ["ChronoAuditor"]
-JobOptionsSvc        INFO # =======> /afs/cern.ch/work/l/leggett/hive/DH/Gaudi/GaudiExamples/options/Common.opts
+JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/Common.opts
 JobOptionsSvc        INFO # (9,1): ApplicationMgr.StatusCodeCheck = 1
-JobOptionsSvc        INFO # =======> /afs/cern.ch/work/l/leggett/hive/DH/Gaudi/GaudiExamples/options/History.opts
+JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/History.opts
 JobOptionsSvc        INFO # (10,1): ApplicationMgr.TopAlg = ["History"]
 JobOptionsSvc        INFO # (11,1): ApplicationMgr.ActivateHistory = 1
 JobOptionsSvc        INFO # (16,1): MessageSvc.OutputLevel = 1
@@ -17,12 +17,12 @@ JobOptionsSvc        INFO # (27,1): FastHistorySvc.Dump = 1
 JobOptionsSvc        INFO # (28,1): FastHistorySvc.OutputFile = "history.dat"
 JobOptionsSvc        INFO # (35,1): ApplicationMgr.EvtMax = 2
 JobOptionsSvc        INFO # (36,1): ApplicationMgr.EvtSel = "NONE"
-JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/work/l/leggett/hive/DH/Gaudi/GaudiExamples/options/History.opts
+JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/History.opts
 ApplicationMgr      DEBUG Getting my own properties[m
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r6)
-                                          running on p05614910w96644.cern.ch on Wed Jan 13 23:05:14 2016
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v4r0)
+                                          running on pclhcb117 on Mon Feb 22 12:06:37 2016
 ====================================================================================================================================[m
 ApplicationMgr       INFO Application Manager Configured successfully[m
 ServiceManager      DEBUG Initializing service StatusCodeSvc[m
@@ -60,7 +60,6 @@ HistogramDataSvc    DEBUG Property update for OutputLevel : new value = 1[m
 HistogramDataSvc    DEBUG Service base class initialized successfully[m
 HistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service IncidentSvc[m
 HistogramPersis...  DEBUG  'CnvServices':[ 'RootHistSvc' ][m
-HistogramPersis...  DEBUG Property update for OutputLevel : new value = 1[m
 HistogramPersis...  DEBUG Service base class initialized successfully[m
 [93;1mHistogramPersis...WARNING Histograms saving not required.[m
 HistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service HistogramPersistencySvc[m
@@ -112,7 +111,7 @@ HistorySvc          DEBUG [mRegistering Service: [96;1mToolSvc[m
 HistorySvc          DEBUG [mRegistering Service: [96;1mEventLoopMgr[m
 HistorySvc          DEBUG [mRegistering Service: [96;1mHistorySvc[m
 HistorySvc           INFO [mRegistered 14 Services[m
-EventLoopMgr        DEBUG ---> Loop Finished -  WSS 35.6055 | total time (skipping 1st evt) 44322 ns[m
+EventLoopMgr        DEBUG ---> Loop Finished -  WSS 30.3828 | total time (skipping 1st evt) 9524 ns[m
 ServiceManager      DEBUG Stopping service HistorySvc[m
 HistorySvc        VERBOSE MessageSvc is Service[m
 HistorySvc        VERBOSE JobOptionsSvc is Service[m
