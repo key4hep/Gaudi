@@ -2295,10 +2295,10 @@ function(gaudi_add_test name)
         set(test_cmd ${test_cmd} --skip-return-code 77)
       endif()
       set(test_cmd ${test_cmd}
-                       --workdir ${qmtest_root_dir}
-                       --common-tmpdir ${CMAKE_CURRENT_BINARY_DIR}/tests_tmp
                        --report ctest
-                       ${qmt_file})
+                       --common-tmpdir ${CMAKE_CURRENT_BINARY_DIR}/tests_tmp
+                       --workdir ${qmtest_root_dir}
+                       ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest/${qmt_file})
       gaudi_add_test(${qmt_name}
                      COMMAND ${test_cmd}
                      WORKING_DIRECTORY ${qmtest_root_dir}
