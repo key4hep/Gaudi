@@ -991,14 +991,13 @@ void Algorithm::initToolHandles() const{
   for(auto th : m_toolHandles){
     IAlgTool * tool = th->get();
     if(tool){
-      m_tools.push_back(tool);
       if (UNLIKELY(msgLevel(MSG::DEBUG)))
         debug() << "Adding "
-        << (th->isPublic() ? "Public" : "Private" )
+        << (th->isPublic() ? "public" : "private" )
         << " ToolHandle tool " << tool->name()
         << " (" << tool->type() << ")" << endmsg;
+      m_tools.push_back(tool);
     } else {
-      info()  << "ToolHandle " << th->typeAndName() << " not used" << endmsg;
       if (UNLIKELY(msgLevel(MSG::DEBUG)))
         debug() << "ToolHandle " << th->typeAndName() << " not used" << endmsg;
     }
