@@ -599,67 +599,26 @@ public:
   void deregisterTool(IAlgTool * tool) const;
 
   template<class T>
-    StatusCode declareTool(ToolHandle<T> &handle,
-			   std::string toolTypeAndName = "",
-			   bool createIf = true) {
-    if (handle.isPublic()) {
-      return declarePublicTool(handle, toolTypeAndName, createIf);
-    } else {
-      return declarePrivateTool(handle, toolTypeAndName, createIf);
-    }
-  }
+  StatusCode declareTool(ToolHandle<T> &handle,
+		  std::string toolTypeAndName = "",
+		  bool createIf = true) {
 
-  /** Declare used Private tool
-   *
-   *  @param handle ToolHandle<T>
-   *  @param toolTypeAndName
-   *  @param parent, default public tool
-   *  @param create if necessary, default true
-   */
-  template<class T>
-  StatusCode declarePrivateTool(ToolHandle<T> & handle,
-      std::string toolTypeAndName = "",
-      bool createIf = true) {
+	  if (toolTypeAndName == "")
+		  toolTypeAndName = handle.typeAndName();
 
-    if (toolTypeAndName == "")
-      //      toolTypeAndName = System::typeinfoName(typeid(T));
-      toolTypeAndName = handle.typeAndName();
+	  StatusCode sc = handle.initialize(toolTypeAndName,
+			  handle.isPublic() ? nullptr : this,
+					  createIf);
+	  if (UNLIKELY(!sc)) {
+		  throw GaudiException{std::string{"Cannot create handle for "} +
+			  (handle.isPublic() ? "public" : "private") +
+			  " tool " + toolTypeAndName,
+			  name(), sc};
+	  }
 
-    StatusCode sc = handle.initialize(toolTypeAndName, this, createIf);
-    if (UNLIKELY(!sc)) {
-      throw GaudiException{"Cannot create handle for private tool " + toolTypeAndName,
-                           name(), sc};
-    }
+	  m_toolHandles.push_back(&handle);
 
-    m_toolHandles.push_back(&handle);
-
-    return sc;
-  }
-
-  /** Declare used Public tool
-   *
-   *  @param handle ToolHandle<T>
-   *  @param toolTypeAndName
-   *  @param parent, default public tool
-   *  @param create if necessary, default true
-   */
-  template<class T>
-  StatusCode declarePublicTool(ToolHandle<T> & handle, std::string toolTypeAndName = "",
-      bool createIf = true) {
-
-    if (toolTypeAndName == "")
-      toolTypeAndName = handle.typeAndName();
-
-    StatusCode sc = handle.initialize(toolTypeAndName, 0, createIf);
-    if (UNLIKELY(!sc)) {
-      throw GaudiException{"Cannot create handle for public tool " + toolTypeAndName,
-                           name(), sc};
-    }
-
-    m_toolHandles.push_back(&handle);
-
-    return sc;
-
+	  return sc;
   }
 
   const std::vector<IAlgTool *> & tools() const;
