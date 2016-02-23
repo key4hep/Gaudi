@@ -277,7 +277,11 @@ StatusCode AlgTool::sysInitialize() {
                                       m_auditorInitialize ? auditorSvc() : nullptr,
                                       IAuditor::Initialize);
     StatusCode sc = initialize();
-    if (sc.isSuccess()) m_state = m_targetState;
+    if (!sc) return sc;
+
+    m_state = m_targetState;
+    if (m_updateDataHandles)
+    	acceptDHVisitor(m_updateDataHandles.get());
 
     return sc;
   } );

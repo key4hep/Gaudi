@@ -400,6 +400,9 @@ protected:
 
 	  std::vector<IAlgTool *> & tools();
 
+	  /// Hook for for derived classes to provide a custom visitor for data handles.
+	  std::unique_ptr<IDataHandleVisitor> m_updateDataHandles;
+
 private:
    //place IAlgTools defined via ToolHandles in m_tools
    void initToolHandles() const;

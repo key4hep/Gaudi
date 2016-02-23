@@ -1,8 +1,8 @@
-JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/Services.opts
+JobOptionsSvc        INFO # =======> /scratch/z5/marcocle/JIRA/GAUDI-1183/build/GAUDI/GAUDI_HEAD/GaudiExamples/options/Services.opts
 JobOptionsSvc        INFO # (12,1): AuditorSvc.Auditors = ["ChronoAuditor"]
-JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/Common.opts
+JobOptionsSvc        INFO # =======> /scratch/z5/marcocle/JIRA/GAUDI-1183/build/GAUDI/GAUDI_HEAD/GaudiExamples/options/Common.opts
 JobOptionsSvc        INFO # (9,1): ApplicationMgr.StatusCodeCheck = 1
-JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/AlgTools2.opts
+JobOptionsSvc        INFO # =======> /scratch/z5/marcocle/JIRA/GAUDI-1183/build/GAUDI/GAUDI_HEAD/GaudiExamples/options/AlgTools2.opts
 JobOptionsSvc        INFO # (10,1): ApplicationMgr.TopAlg = ["MyGaudiAlgorithm/MyAlg"]
 JobOptionsSvc        INFO # (13,1): MessageSvc.OutputLevel = 3
 JobOptionsSvc        INFO # (18,1): ApplicationMgr.EvtMax = 10
@@ -23,22 +23,23 @@ JobOptionsSvc        INFO # (44,1): ToolSvc.ToolA.Tools = ["TestTool/ToolB"]
 JobOptionsSvc        INFO # (45,1): ToolSvc.ToolB.Tools = ["TestTool/ToolA"]
 JobOptionsSvc        INFO # (46,1): ToolSvc.ToolA.OutputLevel = 2
 JobOptionsSvc        INFO # (47,1): ToolSvc.ToolB.OutputLevel = 2
-JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/AlgTools2.opts
+JobOptionsSvc        INFO Job options successfully read in from /scratch/z5/marcocle/JIRA/GAUDI-1183/build/GAUDI/GAUDI_HEAD/GaudiExamples/options/AlgTools2.opts
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr (GaudiCoreSvc v4r0)
-                                          running on pclhcb117 on Thu Feb 11 14:53:00 2016
+                                          running on pclhcb117 on Mon Feb 22 18:35:00 2016
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
 MyAlg               DEBUG Property update for OutputLevel : new value = 2
 MyAlg               DEBUG Initialize base class GaudiCommon<Algorithm>
 MyAlg               DEBUG could not locate CounterSummarySvc, no counter summary will be made
-MyAlg               DEBUG List of ALL properties of MyGaudiAlgorithm/MyAlg  #properties = 44
+MyAlg               DEBUG List of ALL properties of MyGaudiAlgorithm/MyAlg  #properties = 45
 MyAlg               DEBUG Property ['Name': Value] =  'trackSelection':('/Event/MyAnalysis/Tracks')  m: 16  o: MyAlg  opt: 0
 MyAlg               DEBUG Property ['Name': Value] =  'raw':('/Rec/RAW')  m: 4  o: MyAlg  opt: 0
 MyAlg               DEBUG Property ['Name': Value] =  'hits':('/Event/Rec/Hits')  m: 4  o: MyAlg  opt: 0
 MyAlg               DEBUG Property ['Name': Value] =  'tracks':('/Event/Rec/Tracks')  m: 4  o: MyAlg  opt: 0
+MyAlg               DEBUG Property ['Name': Value] =  'UnusedToolHandle':TestToolFailing
 MyAlg               DEBUG Property ['Name': Value] =  'GenericToolHandle':MyTool/GenericToolHandle
 MyAlg               DEBUG Property ['Name': Value] =  'PubToolHandle':MyTool/PubToolHandle
 MyAlg               DEBUG Property ['Name': Value] =  'PrivToolHandle':MyTool/PrivToolHandle
@@ -79,25 +80,6 @@ MyAlg               DEBUG Property ['Name': Value] =  'ErrorCounter':0
 MyAlg               DEBUG Property ['Name': Value] =  'ErrorMax':1
 MyAlg               DEBUG Property ['Name': Value] =  'Enable':True
 MyAlg               DEBUG Property ['Name': Value] =  'OutputLevel':2
-MyAlg.PrivToolH...  DEBUG Property update for OutputLevel : new value = 2
-MyAlg.PrivToolH...   INFO intialize() has been called
-MyAlg.PrivToolH...   INFO Int    = 100
-MyAlg.PrivToolH...   INFO Double = 100
-MyAlg.PrivToolH...   INFO String = hundred
-MyAlg.PrivToolH...   INFO Bool   = 1
-MyAlg               DEBUG Adding Private ToolHandle tool MyAlg.PrivToolHandle (MyTool)
-ToolSvc.PubTool...   INFO intialize() has been called
-ToolSvc.PubTool...   INFO Int    = 100
-ToolSvc.PubTool...   INFO Double = 100
-ToolSvc.PubTool...   INFO String = hundred
-ToolSvc.PubTool...   INFO Bool   = 1
-MyAlg               DEBUG Adding Public ToolHandle tool ToolSvc.PubToolHandle (MyTool)
-ToolSvc.Generic...   INFO intialize() has been called
-ToolSvc.Generic...   INFO Int    = 100
-ToolSvc.Generic...   INFO Double = 100
-ToolSvc.Generic...   INFO String = hundred
-ToolSvc.Generic...   INFO Bool   = 1
-MyAlg               DEBUG Adding Public ToolHandle tool ToolSvc.GenericToolHandle (MyTool)
 MyAlg                INFO initializing....
 ToolSvc.MyTool       INFO intialize() has been called
 ToolSvc.MyTool       INFO Int    = 201
@@ -162,6 +144,22 @@ MyAlg.ToolWithName   INFO String = hundred
 MyAlg.ToolWithName   INFO Bool   = 1
 MyAlg               DEBUG Registering tool MyAlg.ToolWithName
 MyAlg               DEBUG Registering tool MyAlg.MyGaudiTool
+MyAlg.PrivToolH...  DEBUG Property update for OutputLevel : new value = 2
+MyAlg.PrivToolH...   INFO intialize() has been called
+MyAlg.PrivToolH...   INFO Int    = 100
+MyAlg.PrivToolH...   INFO Double = 100
+MyAlg.PrivToolH...   INFO String = hundred
+MyAlg.PrivToolH...   INFO Bool   = 1
+ToolSvc.PubTool...   INFO intialize() has been called
+ToolSvc.PubTool...   INFO Int    = 100
+ToolSvc.PubTool...   INFO Double = 100
+ToolSvc.PubTool...   INFO String = hundred
+ToolSvc.PubTool...   INFO Bool   = 1
+ToolSvc.Generic...   INFO intialize() has been called
+ToolSvc.Generic...   INFO Int    = 100
+ToolSvc.Generic...   INFO Double = 100
+ToolSvc.Generic...   INFO String = hundred
+ToolSvc.Generic...   INFO Bool   = 1
 MyAlg                INFO /Event/Rec/Tracks
 MyAlg                INFO /Event/Rec/Hits
 MyAlg                INFO /Rec/RAW
@@ -169,6 +167,10 @@ MyAlg                INFO /Event/MyAnalysis/Tracks
 MyAlg                INFO ....initialization done
 MyAlg               DEBUG input handles: 3
 MyAlg               DEBUG output handles: 1
+MyAlg               DEBUG Adding private ToolHandle tool MyAlg.PrivToolHandle (MyTool)
+MyAlg               DEBUG Adding public ToolHandle tool ToolSvc.PubToolHandle (MyTool)
+MyAlg               DEBUG Adding public ToolHandle tool ToolSvc.GenericToolHandle (MyTool)
+MyAlg               DEBUG ToolHandle TestToolFailing not used
 MyAlg               DEBUG Data Deps for MyAlg
   + INPUT  ('/Rec/RAW')
   + INPUT  ('/Event/Rec/Hits')
@@ -402,7 +404,16 @@ ToolSvc.PubTool...   INFO doIt() has been called
 ApplicationMgr       INFO Application Manager Stopped successfully
 MyAlg                INFO finalizing....
 MyAlg               DEBUG Finalize base class GaudiAlgorithm
-MyAlg               DEBUG Tools to release : MyAlg.PrivToolHandle ToolSvc.PubToolHandle ToolSvc.GenericToolHandle ToolSvc.MyTool MyAlg.MyTool ToolSvc.MyGaudiTool MyAlg.MyGaudiTool MyAlg.ToolWithName MyAlg.MyGaudiTool
+MyAlg               DEBUG Tools to release : ToolSvc.MyTool MyAlg.MyTool ToolSvc.MyGaudiTool MyAlg.MyGaudiTool MyAlg.ToolWithName MyAlg.MyGaudiTool MyAlg.PrivToolHandle ToolSvc.PubToolHandle ToolSvc.GenericToolHandle
+MyAlg               DEBUG Releasing tool 'ToolSvc.GenericToolHandle'
+MyAlg               DEBUG De-Registering tool ToolSvc.GenericToolHandle
+MyAlg               DEBUG The tool 'ToolSvc.GenericToolHandle' of type 'MyTool' is released
+MyAlg               DEBUG Releasing tool 'ToolSvc.PubToolHandle'
+MyAlg               DEBUG De-Registering tool ToolSvc.PubToolHandle
+MyAlg               DEBUG The tool 'ToolSvc.PubToolHandle' of type 'MyTool' is released
+MyAlg               DEBUG Releasing tool 'MyAlg.PrivToolHandle'
+MyAlg               DEBUG De-Registering tool MyAlg.PrivToolHandle
+MyAlg               DEBUG The tool 'MyAlg.PrivToolHandle' of type 'MyTool' is released
 MyAlg               DEBUG Releasing tool 'MyAlg.MyGaudiTool'
 MyAlg               DEBUG De-Registering tool MyAlg.MyGaudiTool
 MyAlg               DEBUG The tool 'MyAlg.MyGaudiTool' of type 'MyGaudiTool' is released
@@ -421,18 +432,12 @@ MyAlg               DEBUG The tool 'MyAlg.MyTool' of type 'MyTool' is released
 MyAlg               DEBUG Releasing tool 'ToolSvc.MyTool'
 MyAlg               DEBUG De-Registering tool ToolSvc.MyTool
 MyAlg               DEBUG The tool 'ToolSvc.MyTool' of type 'MyTool' is released
-MyAlg               DEBUG Releasing tool 'ToolSvc.GenericToolHandle'
-MyAlg               DEBUG De-Registering tool ToolSvc.GenericToolHandle
-MyAlg               DEBUG The tool 'ToolSvc.GenericToolHandle' of type 'MyTool' is released
-MyAlg               DEBUG Releasing tool 'ToolSvc.PubToolHandle'
-MyAlg               DEBUG De-Registering tool ToolSvc.PubToolHandle
-MyAlg               DEBUG The tool 'ToolSvc.PubToolHandle' of type 'MyTool' is released
-MyAlg               DEBUG Releasing tool 'MyAlg.PrivToolHandle'
-MyAlg               DEBUG De-Registering tool MyAlg.PrivToolHandle
-MyAlg               DEBUG The tool 'MyAlg.PrivToolHandle' of type 'MyTool' is released
 MyAlg               DEBUG Services to release :
 EventLoopMgr         INFO Histograms converted successfully according to request.
 ToolSvc              INFO Removing all tools created by ToolSvc
+ToolSvc.Generic...   INFO finalize() has been called
+ToolSvc.PubTool...   INFO finalize() has been called
+MyAlg.PrivToolH...   INFO finalize() has been called
 MyAlg.ToolWithName   INFO finalize() has been called
 MyAlg.MyGaudiTool    INFO finalize() has been called
 MyAlg.MyGaudiTool   DEBUG  ==> Finalize the base class GaudiTool
@@ -456,16 +461,13 @@ ToolSvc.ToolA       DEBUG Releasing tool 'ToolSvc.ToolB'
 ToolSvc.ToolA       DEBUG De-Registering tool ToolSvc.ToolB
 ToolSvc.ToolA       DEBUG The tool 'ToolSvc.ToolB' of type 'TestTool' is released
 ToolSvc.ToolA       DEBUG Services to release :
-ToolSvc.Generic...   INFO finalize() has been called
-ToolSvc.PubTool...   INFO finalize() has been called
-MyAlg.PrivToolH...   INFO finalize() has been called
+ToolSvc.Generic...   INFO destructor has been called
+ToolSvc.PubTool...   INFO destructor has been called
+MyAlg.PrivToolH...   INFO destructor has been called
 MyAlg.ToolWithName   INFO destructor has been called
 MyAlg.MyGaudiTool    INFO destructor has been called
 ToolSvc.MyGaudi...   INFO destructor has been called
 MyAlg.MyTool         INFO destructor has been called
 ToolSvc.MyTool       INFO destructor has been called
-ToolSvc.Generic...   INFO destructor has been called
-ToolSvc.PubTool...   INFO destructor has been called
-MyAlg.PrivToolH...   INFO destructor has been called
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully

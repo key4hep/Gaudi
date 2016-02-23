@@ -200,6 +200,9 @@ StatusCode Algorithm::sysInitialize() {
     debug() << "output handles: " << outputHandles().size() << endmsg;
   }
 
+  if (m_updateDataHandles)
+	  acceptDHVisitor(m_updateDataHandles.get());
+
   // visit all sub-algs and tools, build full set
   DHHVisitor avis(m_inputDataObjs, m_outputDataObjs);
   acceptDHVisitor(&avis);

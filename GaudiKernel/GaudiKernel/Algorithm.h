@@ -694,6 +694,10 @@ private:
   SmartIF<ISvcLocator>  m_pSvcLocator;      ///< Pointer to service locator service
  protected:
   SmartIF<PropertyMgr> m_propertyMgr;      ///< For management of properties
+
+  /// Hook for for derived classes to provide a custom visitor for data handles.
+  std::unique_ptr<IDataHandleVisitor> m_updateDataHandles;
+
  private:
   IntegerProperty m_outputLevel;   ///< Algorithm output level
   int          m_errorMax;         ///< Algorithm Max number of errors
