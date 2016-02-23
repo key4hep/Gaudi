@@ -34,7 +34,7 @@ GaudiParallelizer::GaudiParallelizer(const std::string& name, ISvcLocator* pSvcL
 // ============================================================================
 // Destructor
 // ============================================================================
-GaudiParallelizer::~GaudiParallelizer() {}
+GaudiParallelizer::~GaudiParallelizer() noexcept {}
 
 // ============================================================================
 // Initialization

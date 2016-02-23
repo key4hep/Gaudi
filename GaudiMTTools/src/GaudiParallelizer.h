@@ -21,7 +21,7 @@ class GaudiParallelizer: public GaudiAlgorithm {
 public:
   /// Standard constructor
   GaudiParallelizer(const std::string& name, ISvcLocator* pSvcLocator);
-  virtual ~GaudiParallelizer(); ///< Destructor
+  virtual ~GaudiParallelizer() noexcept; ///< Destructor
 
   virtual StatusCode initialize();    ///< Algorithm initialization
   virtual StatusCode execute   ();    ///< Algorithm execution
