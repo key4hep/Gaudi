@@ -308,13 +308,13 @@ StatusCode GaudiCommon<PBASE>::
   if ( this->msgLevel(MSG::DEBUG) )
   {
     this->debug() << "Tools to release :";
-    for ( const auto& i : PBASE::tools() )
+    for ( const auto& i : m_managedTools )
     {
       this->debug() << " " << i->name();
     }
     this->debug() << endmsg;
   }
-  while ( !PBASE::tools().empty() ) { sc = releaseTool( PBASE::tools().back() ) && sc; }
+  while ( !m_managedTools.empty() ) { sc = releaseTool( m_managedTools.back() ) && sc; }
 
   // release all located services
   if ( this->msgLevel(MSG::DEBUG) )
@@ -384,8 +384,8 @@ StatusCode GaudiCommon<PBASE>::releaseTool ( const IAlgTool* algTool ) const
   if( !this->toolSvc() )
   { return Error ( "releaseTool(IAlgTool):: IToolSvc* points to NULL!" ) ; }
   // find a tool in the list of active tools
-  auto it = std::find( PBASE::tools().rbegin() , PBASE::tools().rend() , algTool ) ;
-  if(  PBASE::tools().rend() == it )
+  auto it = std::find(m_managedTools.begin(), m_managedTools.end(), algTool);
+  if (m_managedTools.end() == it)
   { return Warning("releaseTool(IAlgTool):: IAlgTool* is not active"   ) ; }
   // get the tool
   IAlgTool* t = *it ;
@@ -395,13 +395,14 @@ StatusCode GaudiCommon<PBASE>::releaseTool ( const IAlgTool* algTool ) const
   { this->debug() << "Releasing tool '" << name << "'" << endmsg; }
   // remove the tool from the lists
   PBASE::deregisterTool(t);
+  m_managedTools.erase(it);
   // release tool
   if ( this->msgLevel(MSG::DEBUG) ) {
     this->debug() << "The tool '" << t->name() << "' of type '"
                   << System::typeinfoName(typeid(*t))
                   << "' is released" << endmsg;
   }
-  const StatusCode sc = this->toolSvc()->releaseTool( t ) ;
+  const StatusCode sc = this->toolSvc()->releaseTool(t) ;
   return  sc.isSuccess() ?
             sc :
             Warning( "releaseTool(IAlgTool):: error from IToolSvc releasing "+name , sc ) ;
