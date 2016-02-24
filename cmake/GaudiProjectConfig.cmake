@@ -48,7 +48,8 @@ endif()
 
 find_program(ccache_cmd NAMES ccache ccache-swig)
 find_program(distcc_cmd distcc)
-mark_as_advanced(ccache_cmd distcc_cmd)
+find_program(clang_format_cmd NAMES lcg-clang-format-3.7 clang-format-3.7 clang-format)
+mark_as_advanced(ccache_cmd distcc_cmd clang_format_cmd)
 
 if(ccache_cmd)
   option(CMAKE_USE_CCACHE "Use ccache to speed up compilation." OFF)
@@ -715,6 +716,21 @@ __path__ = [d for d in [os.path.join(d, '${pypack}') for d in sys.path if d]
   #--- Generate the manifest.xml file.
   gaudi_generate_project_manifest(${CMAKE_CONFIG_OUTPUT_DIRECTORY}/manifest.xml ${ARGV})
   install(FILES ${CMAKE_CONFIG_OUTPUT_DIRECTORY}/manifest.xml DESTINATION .)
+
+  if(clang_format_cmd)
+    file(GLOB_RECURSE _all_sources RELATIVE ${CMAKE_SOURCE_DIR} *.h *.cpp *.icpp)
+    set(_commands)
+    foreach(source ${_all_sources})
+      set(_commands ${_commands} COMMAND ${clang_format_cmd}
+                  -style=${GaudiProject_DIR}/Gaudi.clang-format-style.yml
+                  -i "${source}")
+    endforeach()
+    add_custom_target(apply-coding-conventions
+      ${_commands}
+      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+      COMMENT "Applying coding conventions to all sources"
+    )
+  endif()
 
 endmacro()
 
