@@ -16,6 +16,7 @@ MyGaudiAlgorithm::MyGaudiAlgorithm(const std::string& name, ISvcLocator* ploc)
   m_myPrivToolHandle("MyTool/PrivToolHandle",this),
   m_myPubToolHandle("MyTool/PubToolHandle"),
   m_myGenericToolHandle("MyTool/GenericToolHandle"),
+  m_myUnusedToolHandle("TestToolFailing"),
   m_tracks("/Event/Rec/Tracks",Gaudi::DataHandle::Reader, this),
   m_hits("/Event/Rec/Hits",Gaudi::DataHandle::Reader,this),
   m_raw("/Rec/RAW",Gaudi::DataHandle::Reader,this),
@@ -27,6 +28,7 @@ MyGaudiAlgorithm::MyGaudiAlgorithm(const std::string& name, ISvcLocator* ploc)
   declareProperty("PrivToolHandle", m_myPrivToolHandle);
   declareProperty("PubToolHandle", m_myPubToolHandle);
   declareProperty("GenericToolHandle", m_myGenericToolHandle);
+  declareProperty("UnusedToolHandle", m_myUnusedToolHandle);
 
   declareProperty("tracks", m_tracks, "the tracks");
   declareProperty("hits", m_hits, "the hits");
