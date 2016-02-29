@@ -39,7 +39,7 @@ private:
 template <typename Out, typename... In>
 TransformAlgorithm<Out(const In&...)>::TransformAlgorithm( const std::string& name,
                                                            ISvcLocator* pSvcLocator,
-                                                           std::array< KeyValue,N> inputs,
+                                                           std::array<KeyValue,N> inputs,
                                                            KeyValue output )
   : GaudiAlgorithm ( name , pSvcLocator )
 {
@@ -52,25 +52,10 @@ template <typename Out, typename... In>
 template <std::size_t... I>
 StatusCode
 TransformAlgorithm<Out(const In&...)>::invoke(utility::index_sequence<I...>) {
-    //@TODO: maybe we should use 'get' instead and just skip any checking???
-    auto in = std::make_tuple( getIfExists<In>(m_inputs[I])... );
-    auto absent = detail::awol( { std::get<I>(in)... } );
-    if (!absent.empty()) {
-        for (const auto& i : absent ) {
-            error() << " Mandatory input at " << m_inputs[i] << " not found" << endmsg;
-        }
-        //@TODO: add policy / virtual function for what to do if input does not exist:
-        //        a) return StatusCode::FAILURE
-        //        b) do setFilterPassed(false), and return FAILURE
-        //        c) do setFilterPassed(false), and return SUCCESS
-        //       could be done by calling a virtual function, or policy template argument
-        //       as it is independent of the 'event' state of the algorithm
-        setFilterPassed(false);
-        return StatusCode::SUCCESS;
-    }
+    auto in = std::make_tuple( get<In>(m_inputs[I])... );
     auto result = detail::as_const(*this)( detail::as_const(*std::get<I>(in))... );
     //@TODO: add policy for setFilterPassed
-    //       a) just set to true
+    //       a) just set to true, defer filtering to a dedicated filter algorithm
     //       b) set to true if m_output is not empty
     //       c) have it returned together with result
     //       d) ask derived class, passing it the value of result.size()
