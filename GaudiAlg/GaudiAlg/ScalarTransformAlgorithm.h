@@ -24,6 +24,12 @@ namespace detail {
    template <typename Out>
    Out adapt_out( typename std::remove_pointer<Out>::type&& in )
    { return new typename std::remove_pointer<Out>::type( std::forward<typename std::remove_pointer<Out>::type>(in) ); }
+
+   template <typename Container, typename Value>
+   void adapt_insert(Container& c, Value&& v) { return c.push_back( std::forward<Value>(v) ); }
+
+   template <typename Value>
+   void adapt_insert(KeyedContainer<Value>& c, Value&& v) { return c.insert( std::forward<Value>(v) ); }
 }
 
 template <typename Out, typename In, typename ScalarFunctor>
@@ -40,16 +46,14 @@ public:
         : TransformAlgorithm<Out(const In&)> ( name , locator,
                                              { std::forward<KeyValue>(input) },
                                              std::forward<KeyValue>(output) ),
-          m_f( std::forward<Functor>(scalar_functor) ) {
+        m_f( std::forward<Functor>(scalar_functor) ) {
     }
 
     Out operator()(const In& in) const override {
         Out out; out.reserve(in.size());
         for (const auto& i : in) {
             auto o = detail::adapt_in( m_f, i );
-            //@FIXME: this requires container::insert(container::value_type&&)  to exist
-            //     -- must be made more generic!!
-            if (o) out.insert( detail::adapt_out<typename Out::value_type>( std::move( *o ) ) );
+            if (o) detail::adapt_insert(out, detail::adapt_out<typename Out::value_type>( std::move( *o ) ) );
         }
         return out;
     }
