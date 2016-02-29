@@ -458,8 +458,28 @@ AlgTool::~AlgTool()
 
 
 void AlgTool::initToolHandles() const{
+
+  IAlgTool* tool(0);
+  for (auto thArr : m_toolHandleArrays) {
+    debug() << "scanning ToolHandleArray " << thArr->propertyName() 
+            << " for tools";
+    for (auto th_name : thArr->typesAndNames()) {
+      if (toolSvc()->retrieveTool(th_name, tool, this).isSuccess()) {
+        debug() << std::endl << "  + adding Private tool " << th_name; 
+        m_tools.push_back(tool);
+      } else if (toolSvc()->retrieveTool(th_name, tool, 0).isSuccess()) {
+        debug() << std::endl << "  + adding Public tool " << th_name;
+        m_tools.push_back(tool);
+      } else {
+        debug() << endmsg;
+        warning() << std::endl << "unable to add tool " << th_name << endmsg;
+      }
+    }
+    debug() << endmsg;
+  }
+
   for(auto th : m_toolHandles){
-    IAlgTool * tool = th->get();
+    tool = th->get();
     if(tool){
       m_tools.push_back(tool);
       if (UNLIKELY(msgLevel(MSG::DEBUG)))
