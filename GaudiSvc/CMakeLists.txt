@@ -13,7 +13,8 @@ SET(GaudiSvc_srcs
     src/NTupleSvc/*.cpp
     src/RndmGenSvc/*.cpp
     src/THistSvc/*.cpp
-    src/FileMgr/*.cpp)
+    src/FileMgr/*.cpp
+    src/MetaDataSvc/*.cpp)
 
 if(NOT GAUDI_ATLAS)
   gaudi_add_module(GaudiSvc ${GaudiSvc_srcs}
