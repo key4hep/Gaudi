@@ -225,7 +225,8 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  bool AlgorithmNode::promoteToDataReadyState(const int& slotNum, const AlgorithmNode* /*requestor*/) const {
+  bool AlgorithmNode::promoteToDataReadyState(const int& slotNum, 
+                                              const AlgorithmNode* /*requestor*/) const {
 
     auto& states = m_graph->getAlgoStates(slotNum);
     auto& state = states[m_algoIndex];
@@ -302,9 +303,12 @@ namespace concurrency {
                                  AlgsExecutionStates& states,
                                  const std::vector<int>& node_decisions,
                                  const unsigned int& recursionLevel) const {
-    output << std::string(recursionLevel, ' ') << m_nodeName << " (" << m_nodeIndex << ")" << ", w/ decision: "
-           << stateToString(node_decisions[m_nodeIndex]) << "(" << node_decisions[m_nodeIndex] << ")"
-           << ", in state: " << states[m_algoIndex] << std::endl;
+    output << std::string(recursionLevel, ' ') << m_nodeName 
+           << " (" << m_nodeIndex << ")" << ", w/ decision: "
+           << stateToString(node_decisions[m_nodeIndex]) 
+           << "(" << node_decisions[m_nodeIndex] << ")"
+           << ", in state: " << AlgsExecutionStates::stateNames[states[m_algoIndex]] 
+           << std::endl;
   }
 
   //---------------------------------------------------------------------------
@@ -468,12 +472,12 @@ namespace concurrency {
       // Find producers for all the inputs of the target node
       auto& targetInCollection = m_algoNameToAlgoInputsMap[algo.first];
       for (auto inputTag : targetInCollection) {
-        //        auto& input2Match = targetInCollection[inputTag].dataProductName();
+	//        auto& input2Match = targetInCollection[inputTag].dataProductName();
         for (auto producer : m_algoNameToAlgoOutputsMap) {
           auto& outputs = m_algoNameToAlgoOutputsMap[producer.first];
           for (auto outputTag : outputs) {
             // if (outputs[outputTag].isValid() && outputs[outputTag].dataProductName() == input2Match) {
-            if (inputTag == outputTag) {
+	    if (inputTag == outputTag) {
               auto& known_producers = targetNode->getSupplierNodes();
               auto valid_producer = m_algoNameToAlgoNodeMap[producer.first];
               auto& known_consumers = valid_producer->getConsumerNodes();
@@ -489,12 +493,12 @@ namespace concurrency {
       // Find consumers for all the outputs of the target node
       auto& targetOutCollection = m_algoNameToAlgoOutputsMap[algo.first];
       for (auto outputTag : targetOutCollection) {
-        //        auto& output2Match = targetOutCollection[outputTag].dataProductName();
+	//        auto& output2Match = targetOutCollection[outputTag].dataProductName();
         for (auto consumer : m_algoNameToAlgoInputsMap) {
           auto& inputs = m_algoNameToAlgoInputsMap[consumer.first];
           for (auto inputTag : inputs) {
             // if (inputs[inputTag].isValid() && inputs[inputTag].dataProductName() == output2Match) {
-            if (inputTag == outputTag) {
+	    if (inputTag == outputTag) {
               auto& known_consumers = targetNode->getConsumerNodes();
               auto valid_consumer = m_algoNameToAlgoNodeMap[consumer.first];
               auto& known_producers = valid_consumer->getSupplierNodes();
@@ -522,19 +526,19 @@ namespace concurrency {
       StatusCode sc;
       auto& outCollection = m_algoNameToAlgoOutputsMap[algo.first];
       for (auto outputTag : outCollection) {
-        //        if (outCollection[outputTag].isValid()) {
-        //          auto& output = outCollection[outputTag].dataProductName();
-        sc = addDataNode(outputTag.fullKey());
+	//        if (outCollection[outputTag].isValid()) {
+	//          auto& output = outCollection[outputTag].dataProductName();
+	sc = addDataNode(outputTag);
           if (!sc.isSuccess()) {
-          error() << "Extra producer (" << algo.first << ") for DataObject @ "
-                  << outputTag
+            error() << "Extra producer (" << algo.first << ") for DataObject @ " 
+		    << outputTag
                     << " has been detected: this is not allowed." << endmsg;
             global_sc = StatusCode::FAILURE;
           }
-        auto dataNode = getDataNode(outputTag.fullKey());
+          auto dataNode = getDataNode(outputTag);
           dataNode->addProducerNode(algo.second);
           algo.second->addOutputDataNode(dataNode);
-        //        }
+	  //        }
       }
     }
 
@@ -542,16 +546,16 @@ namespace concurrency {
     for (auto algo : m_algoNameToAlgoNodeMap) {
       auto& inCollection = m_algoNameToAlgoInputsMap[algo.first];
       for (auto inputTag : inCollection) {
-        //        if (inCollection[inputTag].isValid()) {
+	//        if (inCollection[inputTag].isValid()) {
           DataNode* dataNode = nullptr;
-        //          auto& primaryPath = inCollection[inputTag].dataProductName();
-        auto primaryPath = inputTag.fullKey();
+	  //          auto& primaryPath = inCollection[inputTag].dataProductName();
+	  auto primaryPath = inputTag;
           auto itP = m_dataPathToDataNodeMap.find(primaryPath);
           if (itP != m_dataPathToDataNodeMap.end()) {
             dataNode = getDataNode(primaryPath);
-          // if (!inCollection[inputTag].alternativeDataProductNames().empty())
-          //   warning() << "Dropping all alternative data dependencies in the graph, but '" << primaryPath
-          //             << "', for algorithm " << algo.first << endmsg;
+            // if (!inCollection[inputTag].alternativeDataProductNames().empty())
+            //   warning() << "Dropping all alternative data dependencies in the graph, but '" << primaryPath
+            //             << "', for algorithm " << algo.first << endmsg;
           // } else {
           //   for (auto alterPath : inCollection[inputTag].alternativeDataProductNames()) {
           //     auto itAP = m_dataPathToDataNodeMap.find(alterPath);
@@ -568,7 +572,7 @@ namespace concurrency {
             algo.second->addInputDataNode(dataNode);
           }
 
-        //        }
+	  //        }
       }
     }
 
@@ -615,7 +619,7 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  StatusCode ExecutionFlowGraph::addDataNode(const std::string& dataPath) {
+  StatusCode ExecutionFlowGraph::addDataNode(const DataObjID& dataPath) {
 
     StatusCode sc;
 
@@ -636,7 +640,7 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  DataNode* ExecutionFlowGraph::getDataNode(const std::string& dataPath) const {
+  DataNode* ExecutionFlowGraph::getDataNode(const DataObjID& dataPath) const {
 
     return m_dataPathToDataNodeMap.at(dataPath);
   }
@@ -720,10 +724,10 @@ namespace concurrency {
     for (auto node : m_algoNameToAlgoInputsMap) {
       DataObjIDColl collection = (node.second);
       for (auto tag : collection)
-        //        if (collection[tag].isValid()) {
+	//        if (collection[tag].isValid()) {
           result.push_back(getAlgorithmNode(node.first));
           break;
-      // }
+        // }
     }
 
     return result;
@@ -732,25 +736,30 @@ namespace concurrency {
   //---------------------------------------------------------------------------
   void ExecutionFlowGraph::dumpDataFlow() const {
 
-    debug() << "====================================" << endmsg;
-    debug() << "Data origins and destinations:" << endmsg;
-    debug() << "====================================" << endmsg;
+    const char idt[] = "      ";
+
+    info() << std::endl << idt << "====================================" << std::endl;
+    info() << idt << "Data origins and destinations:" << std::endl;
+    info() << idt << "====================================" << std::endl;
 
     for (auto& pair : m_dataPathToDataNodeMap) {
 
       for (auto algoNode : pair.second->getProducers())
-        debug() << "  " << algoNode->getNodeName() << endmsg;
+        info() << idt << "  " << algoNode->getNodeName() << std::endl;
 
-      debug() << "  V" << endmsg;
-      debug() << "  o " << pair.first << endmsg;
-      debug() << "  V" << endmsg;
+      info() << idt << "  V" << std::endl;
+      info() << idt << "  o " << pair.first << std::endl;
+      info() << idt << "  V" << std::endl;
 
       for (auto algoNode : pair.second->getConsumers())
-        debug() << "  " << algoNode->getNodeName() << endmsg;
+        info() << idt << "  " << algoNode->getNodeName() << std::endl;
 
-      debug() << "  ====================================" << endmsg;
+      info() << idt << "====================================" << std::endl;
     }
+    info() << endmsg;
   }
+
+  //---------------------------------------------------------------------------
 
   void ExecutionFlowGraph::dumpExecutionPlan() {
     std::ofstream myfile;
@@ -770,12 +779,14 @@ namespace concurrency {
   void ExecutionFlowGraph::addEdgeToExecutionPlan(const AlgorithmNode* u, const AlgorithmNode* v) {
 
     boost::AlgoVertex source;
+    float runtime(0.);
     if (u == nullptr) {
       auto itT = m_exec_plan_map.find("ENTRY");
       if ( itT != m_exec_plan_map.end()) {
         source = itT->second;
       } else {
-        source = boost::add_vertex(boost::AlgoNodeStruct("ENTRY",-999,-999, 0), m_ExecPlan);
+        source = boost::add_vertex(boost::AlgoNodeStruct("ENTRY",-999,-999, 0), 
+                                   m_ExecPlan);
         m_exec_plan_map["ENTRY"] = source;
       }
     } else {
@@ -783,9 +794,22 @@ namespace concurrency {
       if ( itS != m_exec_plan_map.end()) {
         source = itS->second;
       } else {
-        auto cruncher = dynamic_cast<CPUCruncher*> ( u->getAlgorithmRepresentatives()[0] );
-        if (!cruncher) fatal() << "Conversion from IAlgorithm to CPUCruncher failed" << endmsg;
-        source = boost::add_vertex(boost::AlgoNodeStruct(u->getNodeName(),u->getAlgoIndex(),u->getRank(),cruncher->get_runtime()), m_ExecPlan);
+        auto alg = dynamic_cast<Algorithm*> ( u->getAlgorithmRepresentatives()[0] );
+        if (alg == 0) {
+          fatal() << "could not convert IAlgorithm to Algorithm!" << endmsg;
+        } else {
+          try {
+            const Property& p = alg->getProperty( "AvgRuntime" );
+            runtime = std::stof( p.toString() );
+          } catch(...) {
+            debug() << "no AvgRuntime for " << alg->name() << endmsg;
+            runtime = 1.;
+          }
+        }
+        source = boost::add_vertex(boost::AlgoNodeStruct(u->getNodeName(),
+                                                         u->getAlgoIndex(),
+                                                         u->getRank(),runtime), 
+                                   m_ExecPlan);
         m_exec_plan_map[u->getNodeName()] = source;
       }
     }
@@ -795,9 +819,22 @@ namespace concurrency {
     if ( itP != m_exec_plan_map.end()) {
       target = itP->second;
     } else {
-      auto cruncher = dynamic_cast<CPUCruncher*> ( v->getAlgorithmRepresentatives()[0] );
-      if (!cruncher) fatal() << "Conversion from IAlgorithm to CPUCruncher failed" << endmsg;
-      target = boost::add_vertex(boost::AlgoNodeStruct(v->getNodeName(),v->getAlgoIndex(),v->getRank(),cruncher->get_runtime()), m_ExecPlan);
+      auto alg = dynamic_cast<Algorithm*> ( v->getAlgorithmRepresentatives()[0] );
+      if (alg == 0) {
+        fatal() << "could not convert IAlgorithm to Algorithm!" << endmsg;
+      } else {
+        try {
+          const Property& p = alg->getProperty( "AvgRuntime" );
+          runtime = std::stof( p.toString() );
+        } catch(...) {
+          debug() << "no AvgRuntime for " << alg->name() << endmsg;
+          runtime = 1.;
+        }
+      }
+      target = boost::add_vertex(boost::AlgoNodeStruct(v->getNodeName(),
+                                                       v->getAlgoIndex(),
+                                                       v->getRank(),runtime), 
+                                 m_ExecPlan);
       m_exec_plan_map[v->getNodeName()] = target;
     }
 
