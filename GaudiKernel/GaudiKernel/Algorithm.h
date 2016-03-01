@@ -457,11 +457,8 @@ public:
     Property* declareProperty(const std::string& name,
                               ToolHandleArray<T>& hndlArr,
                               const std::string& doc = "none" ) const {
-
     m_toolHandleArrays.push_back( &hndlArr );
-
     return m_propertyMgr->declareProperty(name, hndlArr, doc);
-
   }
 
   // ==========================================================================
