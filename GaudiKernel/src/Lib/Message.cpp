@@ -9,7 +9,7 @@
 #include "GaudiKernel/Message.h"
 #include "GaudiKernel/Timing.h"
 #include "GaudiKernel/Time.h"
-#include "GaudiKernel/ContextSpecificPtr.h"
+#include "GaudiKernel/ThreadLocalContext.h"
 
 using namespace MSG;
 
