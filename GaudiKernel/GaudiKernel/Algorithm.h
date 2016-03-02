@@ -158,6 +158,7 @@ public:
    *  of the class configured to find tracks with different fit criteria.
    */
   const std::string& name() const override;
+  const Gaudi::StringKey& nameKey() const override;
 
   /** The type of the algorithm object.
    */
@@ -166,7 +167,7 @@ public:
 
   const std::string& version() const override;
 
-  unsigned int index() override;
+  unsigned int index() const override;
 
   /// Dummy implementation of IStateful::configure() method
   StatusCode configure() override { return StatusCode::SUCCESS ; }
@@ -656,9 +657,12 @@ protected:
   /// Event specific data for multiple event processing
   EventContext* m_event_context;
 
+  /// set instantiation index of Alg
+  void setIndex(const unsigned int& idx) override;
+
 private:
 
-  std::string m_name;            ///< Algorithm's name for identification
+  Gaudi::StringKey m_name;       ///< Algorithm's name for identification
   std::string m_type;            ///< Algorithm's type
   std::string m_version;         ///< Algorithm's version
   unsigned int m_index;          ///< Algorithm's index

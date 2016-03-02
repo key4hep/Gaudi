@@ -30,6 +30,7 @@
 #include "GaudiKernel/DataHandleHolderVisitor.h"
 
 #include "GaudiKernel/DataObjIDProperty.h"
+#include "GaudiKernel/StringKey.h"
 
 namespace {
     template <StatusCode (Algorithm::*f)(), typename C > bool for_algorithms(C& c) {
@@ -44,7 +45,7 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
   : m_event_context(nullptr),
     m_name(name),
     m_version(version),
-    m_index(123), // FIXME: to be fixed in the algorithmManager
+    m_index(0), // incremented by AlgResourcePool
     m_pSvcLocator(pSvcLocator),
     m_propertyMgr( new PropertyMgr() )
 {
@@ -817,6 +818,10 @@ StatusCode Algorithm::restart() {
 }
 
 const std::string& Algorithm::name() const {
+  return m_name.str();
+}
+
+const Gaudi::StringKey& Algorithm::nameKey() const {
   return m_name;
 }
 
@@ -824,8 +829,12 @@ const std::string& Algorithm::version() const {
   return m_version;
 }
 
-unsigned int Algorithm::index() {
+unsigned int Algorithm::index() const {
   return m_index;
+}
+
+void Algorithm::setIndex(const unsigned int& idx) {
+  m_index = idx;
 }
 
 bool Algorithm::isExecuted() const {
