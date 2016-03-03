@@ -25,7 +25,7 @@
 
  #define DECLARE_FACTORY_ENTRIES(x) void x##_load()
 
-#else  // ifdef ATLAS
+#else
 
  #ifdef GAUDI_NEW_PLUGIN_SERVICE
    #warning "obsolete empty header, please remove it"
