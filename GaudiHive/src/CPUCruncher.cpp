@@ -11,7 +11,8 @@ std::vector<unsigned int> CPUCruncher::m_niters_vect;
 std::vector<double> CPUCruncher::m_times_vect;
 CPUCruncher::CHM CPUCruncher::m_name_ncopies_map;
 
-DECLARE_ALGORITHM_FACTORY(CPUCruncher)
+//DECLARE_ALGORITHM_FACTORY(CPUCruncher)
+DECLARE_COMPONENT(CPUCruncher)
 
 //------------------------------------------------------------------------------
 
