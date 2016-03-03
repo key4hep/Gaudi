@@ -18,7 +18,7 @@ ApplicationMgr().EvtSel  = "NONE"
 
 # Output ROOT tuple file name
 ApplicationMgr().HistogramPersistency = "ROOT"
-NTupleSvc().Output = [ "MYLUN DATAFILE='TupleExTestAna.root' OPT='NEW' TYP='ROOT'" ]
+NTupleSvc().Output = [ "MYLUN DATAFILE='TupleEx.root' OPT='NEW' TYP='ROOT'" ]
 
 # Set the compression level for the ROOT tuple file
 from GaudiKernel.Configurable import ConfigurableGeneric as RFileCnv

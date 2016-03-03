@@ -30,10 +30,8 @@ public:
 
 	StatusCode collectData();
 
-	//interface
 	MetaData* getMetaData();
 	std::map <std::string, std::string> getMetaDataMap();
-	StatusCode writeMetaData(TFile* tfile);
 
 private:
 	bool m_isEnabled;

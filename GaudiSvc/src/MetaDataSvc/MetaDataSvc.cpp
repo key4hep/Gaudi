@@ -79,12 +79,6 @@ MetaData* MetaDataSvc::getMetaData() {
 std::map <std::string, std::string> MetaDataSvc::getMetaDataMap() {
   return m_metadata;
 }
-StatusCode MetaDataSvc::writeMetaData(TFile* rfile) {
-  if(rfile->WriteObject(&m_metadata, "info")) {
-    return StatusCode::SUCCESS;
-  }
-  else return StatusCode::FAILURE;
-}
 StatusCode MetaDataSvc::collectData ()
 {
   std::string temp;
@@ -98,7 +92,7 @@ StatusCode MetaDataSvc::collectData ()
       m_metadata[temp]=properties[i]->toString();
     }
   }
-  SmartIF<IProperty> mSvc(serviceLocator()->service("MessageSvc"));
+  auto mSvc = service<IProperty>("MessageSvc");
   if( mSvc.isValid() ) {
     const std::vector<Property*> properties2 = mSvc->getProperties();
     for( int i= 0; i< (signed)properties2.size(); i++ ){
@@ -107,7 +101,7 @@ StatusCode MetaDataSvc::collectData ()
     }
   }
 
-  SmartIF<IProperty> nSvc(serviceLocator()->service("NTupleSvc"));
+  auto nSvc = service<IProperty>("NTupleSvc");
   if( nSvc.isValid() ) {
     const std::vector<Property*> properties5 = nSvc->getProperties();
     for( int i= 0; i< (signed)properties5.size(); i++ ){
@@ -121,7 +115,7 @@ StatusCode MetaDataSvc::collectData ()
    * */
   SmartIF<IToolSvc> tSvc(serviceLocator()->service("ToolSvc"));
   if(tSvc.isValid() ) {
-    std::vector<std::string> TSvcs = tSvc->getInstances(""); // tool type in brackets ??
+    std::vector<std::string> TSvcs = tSvc->getInstances("");
     temp="";
     for( int i= 0; i< (signed)TSvcs.size(); i++ ){
       temp +=  TSvcs[i];
@@ -133,8 +127,8 @@ StatusCode MetaDataSvc::collectData ()
   /*
    * SERVICES
    * */
-  auto Svcs =serviceLocator()->getServices( );
-  temp="";
+  auto Svcs = serviceLocator()->getServices();
+  temp = "";
   first = true;
   for (auto svc: Svcs) {
     temp += svc->name();
@@ -164,7 +158,7 @@ StatusCode MetaDataSvc::collectData ()
   /*
    * JOB OPTIONS SERVICE
    * */
-  SmartIF<IProperty> joSvc(serviceLocator()->service("JobOptionsSvc"));
+  auto joSvc = service<IProperty>("JobOptionsSvc");
   if( !joSvc.isValid() ) { return StatusCode::FAILURE ;}
   const std::vector<Property*> properties7 = joSvc->getProperties();
   for( int i= 0; i< (signed)properties7.size(); i++ ){
