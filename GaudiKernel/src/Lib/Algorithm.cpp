@@ -200,6 +200,9 @@ StatusCode Algorithm::sysInitialize() {
     debug() << "output handles: " << outputHandles().size() << endmsg;
   }
 
+  if (m_updateDataHandles)
+	  acceptDHVisitor(m_updateDataHandles.get());
+
   // visit all sub-algs and tools, build full set
   DHHVisitor avis(m_inputDataObjs, m_outputDataObjs);
   acceptDHVisitor(&avis);
@@ -988,30 +991,22 @@ bool Algorithm::hasProperty(const std::string& name) const {
 }
 
 void Algorithm::initToolHandles() const{
+  for(auto th : m_toolHandles){
+    IAlgTool * tool = th->get();
+    if(tool){
+      if (UNLIKELY(msgLevel(MSG::DEBUG)))
+        debug() << "Adding "
+        << (th->isPublic() ? "public" : "private" )
+        << " ToolHandle tool " << tool->name()
+        << " (" << tool->type() << ")" << endmsg;
+      m_tools.push_back(tool);
+    } else {
+      if (UNLIKELY(msgLevel(MSG::DEBUG)))
+        debug() << "ToolHandle " << th->typeAndName() << " not used" << endmsg;
+    }
+  }
 
-
-	for(auto th : m_toolHandles){
-		IAlgTool * tool = nullptr;
-
-		//if(th->retrieve().isFailure())
-			//debug() << "Error in retrieving tool from ToolHandle" << endmsg;
-
-		//get generic tool interface from ToolHandle
-        auto sc = th->retrieve(tool);
-		if(sc.isSuccess() && tool){
-			m_tools.push_back(tool);
-    if (UNLIKELY(msgLevel(MSG::DEBUG)))
-      debug() << "Adding "
-	  << (th->isPublic() ? "Public" : "Private" )
-	  << " ToolHandle tool " << tool->name()
-	  << " (" << tool->type() << ")" << endmsg;
-		} else {
-		        if (UNLIKELY(msgLevel(MSG::DEBUG)))
-			  debug() << "Trying to add nullptr tool" << endmsg;
-		}
-	}
-
-	m_toolHandlesInit = true;
+  m_toolHandlesInit = true;
 }
 
 const std::vector<IAlgTool *> & Algorithm::tools() const {

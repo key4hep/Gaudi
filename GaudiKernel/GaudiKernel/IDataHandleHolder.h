@@ -16,7 +16,7 @@ class IDataHandleVisitor;
 
 class GAUDI_API IDataHandleHolder : virtual public INamedInterface {
 public:
-   virtual ~IDataHandleHolder() {};
+   virtual ~IDataHandleHolder() {}
 
    virtual std::vector<Gaudi::DataHandle*> inputHandles() const = 0;
    virtual std::vector<Gaudi::DataHandle*> outputHandles() const = 0;
@@ -33,12 +33,11 @@ public:
  protected:
    virtual void declareInput(Gaudi::DataHandle*) = 0;
    virtual void declareOutput(Gaudi::DataHandle*) = 0;
-
 };
-
 
 class IDataHandleVisitor {
 public:
+  virtual ~IDataHandleVisitor() {}
   virtual void visit(const IDataHandleHolder*) = 0;
 };
 

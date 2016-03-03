@@ -40,6 +40,8 @@ private:
 
   ToolHandle<IAlgTool> m_myGenericToolHandle;
 
+  ToolHandle<IAlgTool> m_myUnusedToolHandle;
+
   ToolHandleArray<IMyTool> m_tha;
 
   DataObjectHandle<DataObject> m_tracks;

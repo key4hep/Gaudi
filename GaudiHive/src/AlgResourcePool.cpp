@@ -328,9 +328,15 @@ StatusCode AlgResourcePool::decodeTopAlgs()    {
         debug() << "type/name to create clone of: " << item_type << "/" << item_name << endmsg;
         IAlgorithm* ialgoClone(nullptr);
         createAlg(item_type,item_name,ialgoClone);
-        ialgoClone->sysInitialize();
-        queue->push(ialgoClone);
-        m_n_of_created_instances[algo_id]+=1;
+        if (ialgoClone->sysInitialize().isFailure()) {
+          error() << "unable to initialize Algorithm clone " 
+                  << ialgoClone->name() << endmsg;
+          sc = StatusCode::FAILURE;
+          // FIXME: should we delete this failed clone?
+        } else {
+          queue->push(ialgoClone);
+          m_n_of_created_instances[algo_id]+=1;
+        }
       }
     }
 

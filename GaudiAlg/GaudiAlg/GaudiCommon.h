@@ -731,7 +731,7 @@ private:
   // ==========================================================================
 private:
   /// List of active  tools
-  mutable AlgTools   m_tools       ;
+  mutable AlgTools   m_managedTools;
   /// List of active  services
   mutable Services   m_services    ;
   // ==========================================================================
