@@ -26,11 +26,7 @@ public:
 
 	StatusCode initialize();
 	StatusCode start();
-	StatusCode finalize();
 	bool isEnabled() const ;
-
-	StatusCode sysInitialize();
-	StatusCode sysFinalize();
 
 	StatusCode collectData();
 
@@ -42,7 +38,7 @@ public:
 private:
 	bool m_isEnabled;
 	MetaData* md;
-	std::map <std::string, std::string> m;
+	std::map <std::string, std::string> m_metadata;
 };
 
 #endif /* GAUDISVC_SRC_METADATASVC_METADATASVC_H_ */
