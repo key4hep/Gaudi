@@ -5,11 +5,11 @@
 # ${1:MetaData service for self-descriptive n-tuples}
 
 The service adds information about n-tuple production into the resulting n-tuple.
-These information include application name and version and options used.
+These information include job options as well as application name and version.
 They are named 'info' and saved inside the n-tuple.
 
 ## Installation
-The service is included in the option file in the following way:
+The service can be included in the option file in the following way:
 ApplicationMgr().ExtSvc  += [ "MetaDataSvc" ]
 
 ## Usage
