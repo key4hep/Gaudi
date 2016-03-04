@@ -722,7 +722,7 @@ __path__ = [d for d in [os.path.join(d, '${pypack}') for d in sys.path if d]
     set(_commands)
     foreach(source ${_all_sources})
       set(_commands ${_commands} COMMAND ${clang_format_cmd}
-                  -style=${GaudiProject_DIR}/Gaudi.clang-format-style.yml
+                  -style=file
                   -i "${source}")
     endforeach()
     add_custom_target(apply-coding-conventions
