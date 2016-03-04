@@ -48,7 +48,9 @@ endif()
 
 find_program(ccache_cmd NAMES ccache ccache-swig)
 find_program(distcc_cmd distcc)
-find_program(clang_format_cmd NAMES lcg-clang-format-3.7 clang-format-3.7 clang-format)
+find_program(clang_format_cmd NAMES lcg-clang-format-3.9 clang-format-3.9
+                                    lcg-clang-format-3.7 clang-format-3.7
+                                    clang-format)
 mark_as_advanced(ccache_cmd distcc_cmd clang_format_cmd)
 
 if(ccache_cmd)
