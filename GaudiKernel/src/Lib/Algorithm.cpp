@@ -936,7 +936,10 @@ StatusCode Algorithm::setProperties() {
       return StatusCode::FAILURE;
     }
   }
-  updateMsgStreamOutputLevel( m_outputLevel );
+  if (m_outputLevel == MSG::NIL)
+    m_outputLevel = msgLevel();
+  else
+    updateMsgStreamOutputLevel( m_outputLevel );
   return sc;
 }
 
