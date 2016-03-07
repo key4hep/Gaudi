@@ -426,9 +426,7 @@ namespace concurrency {
     if (!sc.isSuccess())
       error() << "Could not build the data dependency realm." << endmsg;
 
-    if (msgLevel(MSG::DEBUG)) {
-      dumpDataFlow();
-    }
+    debug() << dumpDataFlow() << endmsg;
 
     return sc;
   }
@@ -734,29 +732,33 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  void ExecutionFlowGraph::dumpDataFlow() const {
+  std::string ExecutionFlowGraph::dumpDataFlow() const {
 
     const char idt[] = "      ";
+    std::ostringstream ost;
+    
 
-    info() << std::endl << idt << "====================================" << std::endl;
-    info() << idt << "Data origins and destinations:" << std::endl;
-    info() << idt << "====================================" << std::endl;
+    ost << std::endl << idt << "====================================" << std::endl;
+    ost << idt << "Data origins and destinations:" << std::endl;
+    ost << idt << "====================================" << std::endl;
 
     for (auto& pair : m_dataPathToDataNodeMap) {
 
       for (auto algoNode : pair.second->getProducers())
-        info() << idt << "  " << algoNode->getNodeName() << std::endl;
+        ost << idt << "  " << algoNode->getNodeName() << std::endl;
 
-      info() << idt << "  V" << std::endl;
-      info() << idt << "  o " << pair.first << std::endl;
-      info() << idt << "  V" << std::endl;
+      ost << idt << "  V" << std::endl;
+      ost << idt << "  o " << pair.first << std::endl;
+      ost << idt << "  V" << std::endl;
 
       for (auto algoNode : pair.second->getConsumers())
-        info() << idt << "  " << algoNode->getNodeName() << std::endl;
+        ost << idt << "  " << algoNode->getNodeName() << std::endl;
 
-      info() << idt << "====================================" << std::endl;
+      ost << idt << "====================================" << std::endl;
     }
-    info() << endmsg;
+    ost;
+
+    return ost.str();
   }
 
   //---------------------------------------------------------------------------

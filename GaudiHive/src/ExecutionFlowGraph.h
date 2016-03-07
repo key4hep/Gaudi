@@ -338,7 +338,7 @@ public:
     ///
     std::vector<int>& getNodeDecisions(const int& slotNum) const {return m_eventSlots->at(slotNum).controlFlowState;}
     /// Print out all data origins and destinations, as reflected in the EF graph
-    void dumpDataFlow() const;
+    std::string dumpDataFlow() const;
     /// dump to file encountered execution plan
     void dumpExecutionPlan();
     /// set cause-effect connection between two algorithms in the execution plan
