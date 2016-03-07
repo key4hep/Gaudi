@@ -721,14 +721,10 @@ __path__ = [d for d in [os.path.join(d, '${pypack}') for d in sys.path if d]
 
   if(clang_format_cmd)
     file(GLOB_RECURSE _all_sources RELATIVE ${CMAKE_SOURCE_DIR} *.h *.cpp *.icpp)
-    set(_commands)
-    foreach(source ${_all_sources})
-      set(_commands ${_commands} COMMAND ${clang_format_cmd}
-                  -style=file
-                  -i "${source}")
-    endforeach()
     add_custom_target(apply-coding-conventions
-      ${_commands}
+      COMMAND ${clang_format_cmd}
+                  -style=file
+                  -i ${_all_sources}
       WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
       COMMENT "Applying coding conventions to all sources"
     )
