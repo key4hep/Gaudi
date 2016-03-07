@@ -738,23 +738,23 @@ namespace concurrency {
     std::ostringstream ost;
     
 
-    ost << std::endl << idt << "====================================" << std::endl;
-    ost << idt << "Data origins and destinations:" << std::endl;
-    ost << idt << "====================================" << std::endl;
+    ost << "\n" << idt << "====================================\n";
+    ost << idt << "Data origins and destinations:\n";
+    ost << idt << "====================================\n";
 
     for (auto& pair : m_dataPathToDataNodeMap) {
 
       for (auto algoNode : pair.second->getProducers())
-        ost << idt << "  " << algoNode->getNodeName() << std::endl;
+        ost << idt << "  " << algoNode->getNodeName() << "\n";
 
-      ost << idt << "  V" << std::endl;
-      ost << idt << "  o " << pair.first << std::endl;
-      ost << idt << "  V" << std::endl;
+      ost << idt << "  V\n";
+      ost << idt << "  o " << pair.first << "\n";
+      ost << idt << "  V\n";
 
       for (auto algoNode : pair.second->getConsumers())
-        ost << idt << "  " << algoNode->getNodeName() << std::endl;
+        ost << idt << "  " << algoNode->getNodeName() << "\n";
 
-      ost << idt << "====================================" << std::endl;
+      ost << idt << "====================================\n";
     }
     ost;
 
