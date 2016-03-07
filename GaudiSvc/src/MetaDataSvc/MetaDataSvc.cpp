@@ -167,5 +167,15 @@ StatusCode MetaDataSvc::collectData ()
   }
 
   info() << "Job information collected" << endmsg;
+  std::stringstream ss_metadata;
+  for(std::map<std::string, std::string>::iterator iterator = m_metadata.begin(); iterator != m_metadata.end(); iterator++) {
+      ss_metadata << iterator->first
+                  << ':'
+                  << iterator->second
+                  << std::endl;
+  }
+  info() << "Metadata collected: \n" << ss_metadata.str() << endmsg;
+
+
   return StatusCode::SUCCESS;
 }

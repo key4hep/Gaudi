@@ -18,7 +18,7 @@
 // Definition of the CLID for this class
 static const CLID CLID_MetaData = 13507;
 
-class MetaData: public DataObject {
+class MetaData { //: public DataObject {
 private:
     std::map <std::string, std::string> m_metadata;
 public:
