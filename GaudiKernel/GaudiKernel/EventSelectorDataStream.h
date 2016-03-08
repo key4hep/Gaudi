@@ -42,7 +42,7 @@ class EventSelectorDataStream;
    @author R. Lambert
    @version 1.0
 */
-class GAUDI_API EventSelectorDataStream: public implements1<IInterface> {
+class GAUDI_API EventSelectorDataStream: public implements<IInterface> {
   /// Output friend for MsgStream
   friend MsgStream& operator<<(MsgStream& s, const EventSelectorDataStream& obj);
   /// Output friend for standard I/O

@@ -32,7 +32,8 @@ class Algorithm;
     @author Marco Clemencic
     @date   2008-03
 */
-class GAUDI_API Auditor : public CommonMessaging<implements2<IAuditor, IProperty>> {
+class GAUDI_API Auditor : public CommonMessaging<implements<IAuditor,
+                                                            IProperty>> {
 public:
 #ifndef __REFLEX__
   typedef Gaudi::PluginService::Factory<IAuditor*,

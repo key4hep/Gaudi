@@ -42,8 +42,10 @@ class ToolHandleInfo;
  *  @author Gloria Corti
  *  @author Pere Mato
  */
-class GAUDI_API AlgTool: public CommonMessaging<implements4<IAlgTool, IDataHandleHolder,
-                                                            IProperty, IStateful>> {
+class GAUDI_API AlgTool: public CommonMessaging<implements<IAlgTool,
+                                                           IDataHandleHolder,
+                                                           IProperty,
+                                                           IStateful>> {
 public:
 #ifndef __REFLEX__
   typedef Gaudi::PluginService::Factory<IAlgTool*,
