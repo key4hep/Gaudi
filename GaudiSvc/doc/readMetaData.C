@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include<map>
+#include <map>
 #include <string>
 #include "TTree.h"
 #include "TFile.h"
@@ -53,17 +53,17 @@ Widget::Widget(map<string, string> md)
 
         fHtml_text = fHeader;
 	fHtml_text += "<table border='1' style='width:100%'>";
-        
+
 	for(iter=md.begin(); iter!=md.end(); iter++){
 		fHtml_text +="<tr><td><font color='black'><b>";
-		fHtml_text += iter->first; 
-		fHtml_text+="</b></font></td><td><font color='blue'><b>"; 
+		fHtml_text += iter->first;
+		fHtml_text+="</b></font></td><td><font color='blue'><b>";
 		fHtml_text+=iter->second;
-		fHtml_text+="</b></font></td></tr>";			
+		fHtml_text+="</b></font></td></tr>";
 	}
 	fHtml_text += "</table>";
 	fHtml_text += fFooter;
-	
+
 	// Main  window.
 	fMain = new TGMainFrame(gClient->GetRoot(), 10, 10, kVerticalFrame);
 	fMain->SetCleanup(kDeepCleanup); // delete all subframes on exit
