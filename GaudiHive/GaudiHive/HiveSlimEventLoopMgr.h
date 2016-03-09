@@ -22,7 +22,8 @@ class IIncidentSvc;
 class IDataManagerSvc;
 class IDataProviderSvc;
 
-class HiveSlimEventLoopMgr: public extends1<Service, IEventProcessor>   {
+class HiveSlimEventLoopMgr: public extends<Service,
+                                           IEventProcessor> {
   
 protected:
   /// Reference to the Event Data Service's IDataManagerSvc interface

@@ -31,7 +31,8 @@
 
     @author Benedikt Hegner
 */
-class AlgResourcePool: public extends1<Service, IAlgResourcePool>{
+class AlgResourcePool: public extends<Service,
+                                      IAlgResourcePool> {
 public:
   // Standard constructor
   AlgResourcePool(  const std::string& name, ISvcLocator* svc );

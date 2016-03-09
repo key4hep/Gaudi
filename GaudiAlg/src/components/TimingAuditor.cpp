@@ -25,7 +25,8 @@
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
  *  @date 2007-01-31
  */
-class TimingAuditor: public extends1<Auditor, IIncidentListener> {
+class TimingAuditor: public extends<Auditor,
+                                    IIncidentListener> {
 public:
 
   void before(StandardEventType evt, INamedInterface* alg) override;

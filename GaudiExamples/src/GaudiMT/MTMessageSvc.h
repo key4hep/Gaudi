@@ -21,7 +21,8 @@ class ISvcLocator;
 //
 // Author:      Iain Last
 //
-class MTMessageSvc : public extends1<Service, IMessageSvc> {
+class MTMessageSvc : public extends<Service,
+                                    IMessageSvc> {
 public:
   typedef std::pair< std::string, std::ostream* > NamedStream;
   typedef std::multimap< int, NamedStream > StreamMap;

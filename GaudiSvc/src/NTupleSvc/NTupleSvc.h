@@ -21,7 +21,9 @@
  *
  *  @author M.Frank
  */
-class NTupleSvc : public extends2<DataSvc, INTupleSvc, IDataSourceMgr>
+class NTupleSvc : public extends<DataSvc,
+                                 INTupleSvc,
+                                 IDataSourceMgr>
 {
 private:
 protected:

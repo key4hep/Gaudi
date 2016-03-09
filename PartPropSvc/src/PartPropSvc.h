@@ -25,7 +25,8 @@
 //
 //------------------------------------------------------------------
 
-class PartPropSvc: public extends1<Service, IPartPropSvc> {
+class PartPropSvc: public extends<Service,
+                                  IPartPropSvc> {
 public:
 
   PartPropSvc( const std::string& name, ISvcLocator* svc );

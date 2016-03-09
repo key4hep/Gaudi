@@ -70,7 +70,8 @@ typedef AlgsExecutionStates::State State;
  *  @author  Benedikt Hegner
  *  @version 1.1
  */
-class ForwardSchedulerSvc: public extends1<Service, IScheduler> {
+class ForwardSchedulerSvc: public extends<Service,
+                                          IScheduler> {
 public:
   /// Constructor
   ForwardSchedulerSvc( const std::string& name, ISvcLocator* svc );

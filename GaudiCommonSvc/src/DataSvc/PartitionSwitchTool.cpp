@@ -9,7 +9,8 @@
  *  @author Markus Frank
  *  @date   2004-06-24
  */
-class PartitionSwitchTool: public extends1<AlgTool, IPartitionControl> {
+class PartitionSwitchTool: public extends<AlgTool,
+                                          IPartitionControl> {
 
   using CSTR = const std::string&;
   using STATUS = StatusCode;

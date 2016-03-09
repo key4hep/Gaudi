@@ -9,7 +9,8 @@
 
 #include "tbb/concurrent_vector.h"
 
-class TimelineSvc: public extends1<Service, ITimelineSvc> {
+class TimelineSvc: public extends<Service,
+                                  ITimelineSvc> {
 
 public:
 

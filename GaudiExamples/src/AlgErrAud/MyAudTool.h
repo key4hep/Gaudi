@@ -11,7 +11,8 @@
  *  @author Pere Mato
  *  @date   14/10/2001
  */
-class MyAudTool : public extends1<AlgTool, IMyAudTool> {
+class MyAudTool : public extends<AlgTool,
+                                 IMyAudTool> {
 public:
 
   /// Standard Constructor

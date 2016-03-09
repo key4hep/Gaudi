@@ -59,7 +59,9 @@ namespace DataSvcHelpers    {
  * @author Danilo Piparo
  * @version 1.1
 */
-class GAUDI_API TsDataSvc: public extends2<Service, IDataProviderSvc, IDataManagerSvc>
+class GAUDI_API TsDataSvc: public extends<Service,
+                                          IDataProviderSvc,
+                                          IDataManagerSvc>
 {
   /// The class creator is of course a friend!
   friend class SvcFactory<TsDataSvc>;
