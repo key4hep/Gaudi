@@ -18,7 +18,8 @@ class IAlgTool;
     @author D.Quarrie
     @author Marco Clemencic
 */
-class GAUDI_API IAlgorithm : virtual public extend_interfaces2<INamedInterface, IStateful> {
+class GAUDI_API IAlgorithm : virtual public extend_interfaces<INamedInterface,
+                                                              IStateful> {
 public:
   /// InterfaceID
   DeclareInterfaceID(IAlgorithm,5,0);
