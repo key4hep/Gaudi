@@ -10,11 +10,7 @@
 #include "GaudiKernel/IMetaDataSvc.h"
 #include "GaudiKernel/Service.h"
 
-// ROOT
-#include "TROOT.h"
-#include "TFile.h"
-
-class MetaDataSvc : public extends1<Service, IMetaDataSvc> {
+class MetaDataSvc : public extends<Service, IMetaDataSvc> {
 public:
 	// Standard Constructor.
 	//   Input:  name   String with service name

@@ -1,19 +1,19 @@
 
 from Gaudi.Configuration import *
 
-ApplicationMgr().ExtSvc  += [ "RndmGenSvc" , "MetaDataSvc" ]
+ApplicationMgr().ExtSvc  += [ "RndmGenSvc" ] 
 
 # Run various tupling algorithms
 from Configurables import TupleAlg, TupleAlg2, TupleAlg3
 ApplicationMgr().TopAlg   = [ TupleAlg ("Tuple", NTupleLUN="MYLUN"),
-                              TupleAlg2("Tuple2",NTupleLUN="MYLUN"),
+                              TupleAlg2("Tuple2",NTupleLUN="MYLUN"), 
                               TupleAlg3("Tuple3",NTupleLUN="MYLUN") ]
 
 # Output level
 MessageSvc().OutputLevel = 3
 
 # 10000 'events', no input
-ApplicationMgr().EvtMax  =  10000
+ApplicationMgr().EvtMax  =  10000 
 ApplicationMgr().EvtSel  = "NONE"
 
 # Output ROOT tuple file name

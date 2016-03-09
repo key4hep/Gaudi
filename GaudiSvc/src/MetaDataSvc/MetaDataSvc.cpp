@@ -46,7 +46,7 @@
 #include "GaudiKernel/IJobOptionsSvc.h"
 
 #include "MetaDataSvc.h"
-#include "TFile.h"
+
 DECLARE_COMPONENT(MetaDataSvc)
 
 // Standard Constructor.
@@ -67,7 +67,7 @@ bool MetaDataSvc::isEnabled( ) const {
   return m_isEnabled;
 }
 StatusCode MetaDataSvc::start(){
-  if (msgLevel(MSG::DEBUG)) debug() << ">>> started" << endmsg;
+  if (msgLevel(MSG::DEBUG)) debug() << "started" << endmsg;
   return collectData();
 }
 MetaDataSvc::~MetaDataSvc() {
@@ -131,11 +131,11 @@ StatusCode MetaDataSvc::collectData ()
   temp = "";
   first = true;
   for (auto svc: Svcs) {
-    temp += svc->name();
     if (!first)
       temp += ", ";
     else
       first = false;
+    temp += svc->name();
   }
   m_metadata["ISvcLocator.Services"]=temp;
 
@@ -147,13 +147,13 @@ StatusCode MetaDataSvc::collectData ()
   temp = "";
   first = true;
   for(auto alg: allAlgs) {
-    temp += alg->name();
     if (!first)
       temp += ", ";
     else
       first = false;
+    temp += alg->name();
   }
-  m_metadata["IAlgManager.Algorithm"] = temp;
+  m_metadata["IAlgManager.Algorithms"] = temp;
 
   /*
    * JOB OPTIONS SERVICE
@@ -166,16 +166,16 @@ StatusCode MetaDataSvc::collectData ()
     m_metadata[temp]=properties7[i]->toString();
   }
 
-  info() << "Job information collected" << endmsg;
-  std::stringstream ss_metadata;
-  for(std::map<std::string, std::string>::iterator iterator = m_metadata.begin(); iterator != m_metadata.end(); iterator++) {
-      ss_metadata << iterator->first
+  if (msgLevel(MSG::DEBUG)) {
+    std::stringstream ss_metadata;
+    for(auto item: m_metadata) {
+      ss_metadata << item.first
                   << ':'
-                  << iterator->second
-                  << std::endl;
+                  << item.second
+                  << '\n';
+    }
+    debug() << "Metadata collected:\n" << ss_metadata.str() << endmsg;
   }
-  info() << "Metadata collected: \n" << ss_metadata.str() << endmsg;
-
 
   return StatusCode::SUCCESS;
 }

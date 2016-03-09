@@ -1,0 +1,31 @@
+<?xml version="1.0" ?><!DOCTYPE extension  PUBLIC '-//QM/2.3/Extension//EN'  'http://www.codesourcery.com/qm/dtds/2.3/-//qm/2.3/extension//en.dtd'>
+<extension class="GaudiTest.GaudiExeTest" kind="test">
+<argument name="program"><text>gaudirun.py</text></argument>
+<argument name="args"><set>
+  <text>$GAUDIEXAMPLESROOT/options/TupleEx.py</text>
+  <text>--option</text>
+  <text>ApplicationMgr(EvtMax=10).ExtSvc.append('MetaDataSvc')</text>
+  <text>--option</text>
+  <text>from Configurables import MetaDataSvc; MetaDataSvc(OutputLevel=DEBUG)</text>
+</set></argument>
+<argument name="use_temp_dir"><enumeral>true</enumeral></argument>
+<argument name="reference"><text>refs/MetaDataSvc.ref</text></argument>
+<argument name="validator"><text>
+validateWithReference()
+from itertools import takewhile, islice, dropwhile
+stdout = filter(str.strip,
+                takewhile(str.strip,
+                          islice(dropwhile(lambda l: 'Metadata collected:' not in l,
+                                 stdout.splitlines()), 1, None)))
+stdout.sort()
+from subprocess import check_output, CalledProcessError
+try:
+    info = eval(check_output(['dumpMetaData', 'TupleEx.root']))
+    info = [':'.join(item) for item in info.items()]
+    info.sort()
+    if stdout != info:
+    	causes.append('metadata content')
+except CalledProcessError:
+    causes.append('dump metadata script failure')
+</text></argument>
+</extension>
