@@ -1,4 +1,4 @@
-#include "GaudiKernel/ContextSpecificPtr.h"
+#include "GaudiKernel/ThreadLocalContext.h"
 #include "GaudiKernel/EventContext.h"
 
 static thread_local EventContext s_curCtx;
@@ -30,7 +30,7 @@ namespace Gaudi {
     // FIXME: do we need this method?
     void setCurrentContextId(const EventContext* ctx) {
       s_curCtx = *ctx;
-      }
+    }
 
     void setCurrentContext(const EventContext* ctx) {
       s_curCtx = *ctx;

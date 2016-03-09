@@ -3,7 +3,7 @@
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/IProperty.h"
-#include "GaudiKernel/ContextSpecificPtr.h"
+#include "GaudiKernel/ThreadLocalContext.h"
 
 // C++
 #include <functional>
