@@ -87,7 +87,8 @@ class IToolSvc;
  * @author  M.Frank
  * @version 1.0
  */
-class DataOnDemandSvc: public extends1<Service, IIncidentListener>
+class DataOnDemandSvc: public extends<Service,
+                                      IIncidentListener>
 {
 public:
   // ==========================================================================

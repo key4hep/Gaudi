@@ -12,7 +12,8 @@
     @author David Quarrie
     @date   2001
 */
-class PythonScriptingSvc : public extends1<Service, IRunable> {
+class PythonScriptingSvc : public extends<Service,
+                                          IRunable> {
 
 public:
   /// Standard Constructor.

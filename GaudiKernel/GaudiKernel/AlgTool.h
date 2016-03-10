@@ -42,8 +42,10 @@ class ToolHandleInfo;
  *  @author Gloria Corti
  *  @author Pere Mato
  */
-class GAUDI_API AlgTool: public CommonMessaging<implements4<IAlgTool, IDataHandleHolder,
-                                                            IProperty, IStateful>> {
+class GAUDI_API AlgTool: public CommonMessaging<implements<IAlgTool,
+                                                           IDataHandleHolder,
+                                                           IProperty,
+                                                           IStateful>> {
 public:
 #ifndef __REFLEX__
   typedef Gaudi::PluginService::Factory<IAlgTool*,
@@ -243,35 +245,36 @@ public:
    *  @return the actual property objects
    */
   template <class T>
-  Property* declareProperty
-  ( const std::string& name         ,
-    T&                 property     ,
-    const std::string& doc = "none" ) const
+    Property* declareProperty
+    ( const std::string& name         ,
+      T&                 property     ,
+      const std::string& doc = "none" ) const
   {
     return m_propertyMgr -> declareProperty ( name , property , doc ) ;
   }
   /// Declare remote named properties
   Property* declareRemoteProperty
-  ( const std::string& name       ,
-    IProperty*         rsvc       ,
-    const std::string& rname = "" ) const
+    ( const std::string& name       ,
+      IProperty*         rsvc       ,
+      const std::string& rname = "" ) const
   {
     return m_propertyMgr-> declareRemoteProperty ( name , rsvc , rname ) ;
   }
-
-	template<class T>
+  
+  template<class T>
+    
     Property* declareProperty(const std::string& name,
                               ToolHandle<T>& hndl,
                               const std::string& doc = "none" ) const {
-
+    
     AlgTool* a = const_cast<AlgTool*>(this);
     a->declareTool(hndl).ignore();
-
+    
     return m_propertyMgr->declareProperty(name, hndl, doc);
-
-		}
-
-	template<class T>
+    
+  }
+  
+  template<class T>
     StatusCode declareTool(ToolHandle<T> &handle,
                            std::string toolTypeAndName = "",
                            bool createIf = true) {
@@ -282,6 +285,15 @@ public:
     }
   }
 
+  // ==========================================================================
+  // declare ToolHandleArrays to the AlgTool  
+  template <class T>
+    Property* declareProperty(const std::string& name,
+                              ToolHandleArray<T>& hndlArr,
+                              const std::string& doc = "none" ) const {
+    m_toolHandleArrays.push_back( &hndlArr );    
+    return m_propertyMgr->declareProperty(name, hndlArr, doc);
+  }
 
  protected:
   virtual void declareInput(Gaudi::DataHandle* im) override {
@@ -483,6 +495,7 @@ private:
   //tools used by tool
   mutable std::vector<IAlgTool *> m_tools;
   mutable std::vector<BaseToolHandle *> m_toolHandles;
+  mutable std::vector<GaudiHandleArrayBase*> m_toolHandleArrays;
   mutable bool m_toolHandlesInit = false;  /// flag indicating whether ToolHandle tools have been added to m_tools
 
   /** implementation of service method */

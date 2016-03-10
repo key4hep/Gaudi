@@ -27,7 +27,9 @@ class ISvcLocator;
 //
 // Author:      Iain Last
 //
-class MessageSvc : public extends2<Service, IMessageSvc, IInactiveMessageCounter> {
+class MessageSvc : public extends<Service,
+                                  IMessageSvc,
+                                  IInactiveMessageCounter> {
 public:
   typedef std::pair< std::string, std::ostream* > NamedStream;
   typedef std::multimap< int, NamedStream > StreamMap;
@@ -159,6 +161,7 @@ private:
 
   std::map<std::string,MsgAry> m_sourceMap, m_inactiveMap;
   BooleanProperty m_suppress, m_inactCount;
+  std::vector<std::string> m_tracedInactiveSources;
 
   std::string colTrans(std::string, int);
   typedef std::map<std::string, MSG::Color> ColorMap;

@@ -37,7 +37,8 @@ namespace Google
    *  @author Chris Jones
    *  @date   18/04/2011
    */
-  class AuditorBase : public extends1<Auditor, IIncidentListener>
+  class AuditorBase : public extends<Auditor,
+                                     IIncidentListener>
   {
 
   public:

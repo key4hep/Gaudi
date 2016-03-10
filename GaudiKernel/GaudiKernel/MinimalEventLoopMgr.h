@@ -22,7 +22,8 @@
  *  @author Markus Frank
  *  @version 1.0
  */
-class GAUDI_API MinimalEventLoopMgr: public extends1<Service, IEventProcessor>
+class GAUDI_API MinimalEventLoopMgr: public extends<Service,
+                                                    IEventProcessor>
 {
 public:
   typedef std::vector<SmartIF<IAlgorithm> >  ListAlg;

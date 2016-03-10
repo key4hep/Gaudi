@@ -34,7 +34,7 @@ template< class T> class DataObjectHandle;
  *  @author Paul Maley
  *  @author David Quarrie
  */
-class GAUDI_API PropertyMgr : public implements1<IProperty>
+class GAUDI_API PropertyMgr : public implements<IProperty>
 {
 public:
   /// constructor from the interface

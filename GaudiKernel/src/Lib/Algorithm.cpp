@@ -30,6 +30,7 @@
 #include "GaudiKernel/DataHandleHolderVisitor.h"
 
 #include "GaudiKernel/DataObjIDProperty.h"
+#include "GaudiKernel/StringKey.h"
 
 namespace {
     template <StatusCode (Algorithm::*f)(), typename C > bool for_algorithms(C& c) {
@@ -44,7 +45,7 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
   : m_event_context(nullptr),
     m_name(name),
     m_version(version),
-    m_index(123), // FIXME: to be fixed in the algorithmManager
+    m_index(0), // incremented by AlgResourcePool
     m_pSvcLocator(pSvcLocator),
     m_propertyMgr( new PropertyMgr() )
 {
@@ -817,6 +818,10 @@ StatusCode Algorithm::restart() {
 }
 
 const std::string& Algorithm::name() const {
+  return m_name.str();
+}
+
+const Gaudi::StringKey& Algorithm::nameKey() const {
   return m_name;
 }
 
@@ -824,8 +829,12 @@ const std::string& Algorithm::version() const {
   return m_version;
 }
 
-unsigned int Algorithm::index() {
+unsigned int Algorithm::index() const {
   return m_index;
+}
+
+void Algorithm::setIndex(const unsigned int& idx) {
+  m_index = idx;
 }
 
 bool Algorithm::isExecuted() const {
@@ -936,7 +945,10 @@ StatusCode Algorithm::setProperties() {
       return StatusCode::FAILURE;
     }
   }
-  updateMsgStreamOutputLevel( m_outputLevel );
+  if (m_outputLevel == MSG::NIL)
+    m_outputLevel = msgLevel();
+  else
+    updateMsgStreamOutputLevel( m_outputLevel );
   return sc;
 }
 
@@ -991,8 +1003,42 @@ bool Algorithm::hasProperty(const std::string& name) const {
 }
 
 void Algorithm::initToolHandles() const{
+
+  IAlgTool* tool(0);
+  for (auto thArr : m_toolHandleArrays) {
+    if (! thArr->retrieved()) {
+      if (UNLIKELY(msgLevel(MSG::DEBUG)))
+        debug() << "ToolHandleArray " << thArr->propertyName()
+                << " not used: not registering any of its Tools" << endmsg;
+    } else {
+      if (UNLIKELY(msgLevel(MSG::DEBUG)))
+        debug() << "Registering all Tools in ToolHandleArray " 
+                << thArr->propertyName() ;
+      for (auto th_name : thArr->typesAndNames()) {
+        if (UNLIKELY(msgLevel(MSG::DEBUG)))
+          debug() << std::endl << "    + " << th_name;
+        if (toolSvc()->retrieveTool(th_name, tool, this).isSuccess()) {
+          if (UNLIKELY(msgLevel(MSG::DEBUG)))
+            debug() << " (private)";
+          m_tools.push_back(tool);
+        } else if (toolSvc()->retrieveTool(th_name, tool, 0).isSuccess()) {
+          if (UNLIKELY(msgLevel(MSG::DEBUG)))
+            debug() << " (public)";
+          m_tools.push_back(tool);
+        } else {
+          if (UNLIKELY(msgLevel(MSG::DEBUG)))
+            debug() << " - ERROR" << endmsg;
+          warning() <<  "Error retrieving Tool " << th_name 
+                    << " in ToolHandleArray" << thArr->propertyName()
+                    << ". Not registered" << endmsg;
+        }
+      }
+      if (UNLIKELY(msgLevel(MSG::DEBUG))) debug() << endmsg;
+    }
+  }
+    
   for(auto th : m_toolHandles){
-    IAlgTool * tool = th->get();
+    tool = th->get();
     if(tool){
       if (UNLIKELY(msgLevel(MSG::DEBUG)))
         debug() << "Adding "
@@ -1068,11 +1114,10 @@ Algorithm::commitHandles() {
 
 void
 Algorithm::registerTool(IAlgTool * tool) const {
-    if (UNLIKELY(m_outputLevel <= MSG::DEBUG)) {
-      MsgStream log(msgSvc(), name());
-      log << MSG::DEBUG << "Registering tool " << tool->name() << endmsg;
-    }
-    m_tools.push_back(tool);
+  if (msgLevel(MSG::DEBUG)) {
+    debug() << "Registering tool " << tool->name() << endmsg;
+  }
+  m_tools.push_back(tool);
 }
 
 
@@ -1080,16 +1125,12 @@ void
 Algorithm::deregisterTool(IAlgTool * tool) const {
   std::vector<IAlgTool *>::iterator it = std::find(m_tools.begin(),
                                                    m_tools.end(), tool);
-
-  MsgStream log(msgSvc(), name());
   if (it != m_tools.end()) {
-    if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
-      log << MSG::DEBUG << "De-Registering tool " << tool->name()
-        << endmsg;
+    if (msgLevel(MSG::DEBUG))
+      debug() << "De-Registering tool " << tool->name() << endmsg;
     m_tools.erase(it);
   } else {
-    if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
-      log << MSG::DEBUG << "Could not de-register tool " << tool->name()
-        << endmsg;
+    if (msgLevel(MSG::DEBUG))
+      debug() << "Could not de-register tool " << tool->name() << endmsg;
   }
 }

@@ -21,7 +21,8 @@
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
  *  @date 2007-05-25
  */
-class CounterSvc: public extends1<Service, ICounterSvc> {
+class CounterSvc: public extends<Service,
+                                 ICounterSvc> {
 public:
   /// Standard Constructor
   CounterSvc ( const std::string& name   ,

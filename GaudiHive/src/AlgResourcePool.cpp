@@ -325,9 +325,11 @@ StatusCode AlgResourcePool::decodeTopAlgs()    {
     // potentially create clones; if not lazy creation we have to do it now
     if (!m_lazyCreation) {
       for (unsigned int i =1, end =ialgo->cardinality();i<end; ++i){
-        debug() << "type/name to create clone of: " << item_type << "/" << item_name << endmsg;
+        debug() << "type/name to create clone of: " << item_type << "/" 
+                << item_name << endmsg;
         IAlgorithm* ialgoClone(nullptr);
         createAlg(item_type,item_name,ialgoClone);
+        ialgoClone->setIndex(i);
         if (ialgoClone->sysInitialize().isFailure()) {
           error() << "unable to initialize Algorithm clone " 
                   << ialgoClone->name() << endmsg;

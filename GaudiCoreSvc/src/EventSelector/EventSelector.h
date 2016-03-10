@@ -50,7 +50,8 @@ class IDataStreamTool;
    @author R. Lambert
    @version 1.0
 */
-class EventSelector : public extends1<Service, IEvtSelector> {
+class EventSelector : public extends<Service,
+                                     IEvtSelector> {
 public:
   typedef std::vector<EventSelectorDataStream*>  Streams;
   typedef std::vector<std::string>               StreamSpecs;

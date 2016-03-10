@@ -30,7 +30,8 @@
 
 struct isSingleShot_t;
 
-class IncidentSvc : public extends1<Service, IIncidentSvc>
+class IncidentSvc : public extends<Service,
+                                   IIncidentSvc>
 {
     public:
   struct Listener final

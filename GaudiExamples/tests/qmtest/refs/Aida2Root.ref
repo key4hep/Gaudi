@@ -25,7 +25,7 @@ JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/wor
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr (GaudiCoreSvc v4r0)
-                                          running on pclhcb117 on Thu Feb 11 14:52:13 2016
+                                          running on pclhcb117 on Fri Mar  4 17:40:54 2016
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 SimpleHistos        DEBUG Property update for OutputLevel : new value = 2
@@ -147,7 +147,7 @@ Histos2           SUCCESS Property ['Name': Value] =  'ExtraInputs':[]
 Histos2           SUCCESS Property ['Name': Value] =  'ErrorCounter':0
 Histos2           SUCCESS Property ['Name': Value] =  'ErrorMax':1
 Histos2           SUCCESS Property ['Name': Value] =  'Enable':True
-Histos2           SUCCESS Property ['Name': Value] =  'OutputLevel':0
+Histos2           SUCCESS Property ['Name': Value] =  'OutputLevel':3
 Aida2Root         SUCCESS List of ALL properties of Aida2Root/Aida2Root  #properties = 56
 Aida2Root         SUCCESS Property ['Name': Value] =  'Profs2D':[ 'SimpleHistos/321' , 'SimpleHistos/2dprof' ]
 Aida2Root         SUCCESS Property ['Name': Value] =  'Profs1D':[ 'SimpleHistos/Expo V Gauss 1DProf' ]
@@ -204,7 +204,7 @@ Aida2Root         SUCCESS Property ['Name': Value] =  'ExtraInputs':[]
 Aida2Root         SUCCESS Property ['Name': Value] =  'ErrorCounter':0
 Aida2Root         SUCCESS Property ['Name': Value] =  'ErrorMax':1
 Aida2Root         SUCCESS Property ['Name': Value] =  'Enable':True
-Aida2Root         SUCCESS Property ['Name': Value] =  'OutputLevel':0
+Aida2Root         SUCCESS Property ['Name': Value] =  'OutputLevel':3
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
 ApplicationMgr       INFO Application Manager Initialized successfully

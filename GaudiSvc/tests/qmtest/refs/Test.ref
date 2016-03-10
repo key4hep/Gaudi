@@ -24,7 +24,7 @@ ApplicationMgr      DEBUG Getting my own properties
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr (GaudiCoreSvc v4r0)
-                                          running on pclhcb117 on Mon Feb 22 12:14:19 2016
+                                          running on pclhcb117 on Fri Mar  4 17:56:29 2016
 ====================================================================================================================================
 ApplicationMgr       INFO Successfully loaded modules : GaudiSvcTest
 ApplicationMgr       INFO Application Manager Configured successfully
@@ -82,6 +82,7 @@ ToolSvc             DEBUG Property update for OutputLevel : new value = 1
 ToolSvc             DEBUG Service base class initialized successfully
 Switcher          VERBOSE ServiceLocatorHelper::service: found service ToolSvc
 ToolSvc           VERBOSE Created tool PartitionSwitchTool/Switcher.PartitionSwitchTool
+Switcher.Partit...  DEBUG Property update for OutputLevel : new value = 1
 Switcher.Partit...VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
 Switcher            DEBUG input handles: 0
 Switcher            DEBUG output handles: 0

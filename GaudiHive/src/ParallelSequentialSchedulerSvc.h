@@ -38,7 +38,8 @@ class SequentialTask; //forward declaration
  *  @author  Daniel Funke
  *  @version 0.1
  */
-class ParallelSequentialSchedulerSvc: public extends1<Service, IScheduler> {
+class ParallelSequentialSchedulerSvc: public extends<Service,
+                                                     IScheduler> {
 public:
   /// Constructor
   ParallelSequentialSchedulerSvc( const std::string& name, ISvcLocator* svc );

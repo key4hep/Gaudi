@@ -44,7 +44,8 @@ namespace AIDA {
  *  HistogramSvc class definition
  *
  */
-class HistogramSvc : virtual public extends1<DataSvc, IHistogramSvc>,
+class HistogramSvc : virtual public extends<DataSvc,
+                                            IHistogramSvc>,
                      virtual public AIDA::IHistogramFactory
 {
 

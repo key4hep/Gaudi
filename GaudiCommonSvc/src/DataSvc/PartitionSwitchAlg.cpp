@@ -21,7 +21,8 @@
   * @version: 1.0
   */
 
-class PartitionSwitchAlg : public extends1<Algorithm, IPartitionControl> {
+class PartitionSwitchAlg : public extends<Algorithm,
+                                          IPartitionControl> {
 
   using STATUS = StatusCode;
   using CSTR = const std::string&;

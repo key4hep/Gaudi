@@ -13,7 +13,8 @@
  *  @author Marco Clemencic
  *  @date 2008-01-18
  */
-class FileReadTool : public extends1<AlgTool, IFileAccess> {
+class FileReadTool : public extends<AlgTool,
+                                    IFileAccess> {
 
 public:
 

@@ -71,7 +71,10 @@ class ToolHandleInfo;
  *  @author David Quarrie
  *  @date   1998
  */
-class GAUDI_API Algorithm: public CommonMessaging<implements4<IAlgorithm, IDataHandleHolder, IProperty, IStateful>> {
+class GAUDI_API Algorithm: public CommonMessaging<implements<IAlgorithm,
+                                                             IDataHandleHolder,
+                                                             IProperty,
+                                                             IStateful>> {
 public:
 #ifndef __REFLEX__
   typedef Gaudi::PluginService::Factory<IAlgorithm*,
@@ -158,6 +161,7 @@ public:
    *  of the class configured to find tracks with different fit criteria.
    */
   const std::string& name() const override;
+  const Gaudi::StringKey& nameKey() const override;
 
   /** The type of the algorithm object.
    */
@@ -166,7 +170,7 @@ public:
 
   const std::string& version() const override;
 
-  unsigned int index() override;
+  unsigned int index() const override;
 
   /// Dummy implementation of IStateful::configure() method
   StatusCode configure() override { return StatusCode::SUCCESS ; }
@@ -450,6 +454,16 @@ public:
 
   }
 
+  // ==========================================================================
+  // declare ToolHandleArrays to the Algorithms
+
+  template <class T>
+    Property* declareProperty(const std::string& name,
+                              ToolHandleArray<T>& hndlArr,
+                              const std::string& doc = "none" ) const {
+    m_toolHandleArrays.push_back( &hndlArr );
+    return m_propertyMgr->declareProperty(name, hndlArr, doc);
+  }
 
   // ==========================================================================
   /** @brief Access the monitor service
@@ -554,7 +568,7 @@ public:
 
   // For concurrency
   /// get the context
-  EventContext* getContext(){return m_event_context;}
+  EventContext* getContext() const {return m_event_context;}
 
   /// set the context
   void setContext(EventContext* context){m_event_context = context;}
@@ -656,9 +670,12 @@ protected:
   /// Event specific data for multiple event processing
   EventContext* m_event_context;
 
+  /// set instantiation index of Alg
+  void setIndex(const unsigned int& idx) override;
+
 private:
 
-  std::string m_name;            ///< Algorithm's name for identification
+  Gaudi::StringKey m_name;       ///< Algorithm's name for identification
   std::string m_type;            ///< Algorithm's type
   std::string m_version;         ///< Algorithm's version
   unsigned int m_index;          ///< Algorithm's index
@@ -667,6 +684,7 @@ private:
   //tools used by algorithm
   mutable std::vector<IAlgTool *> m_tools;
   mutable std::vector<BaseToolHandle *> m_toolHandles;
+  mutable std::vector<GaudiHandleArrayBase*> m_toolHandleArrays;
 
 
 private:
