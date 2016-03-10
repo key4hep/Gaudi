@@ -936,7 +936,10 @@ StatusCode Algorithm::setProperties() {
       return StatusCode::FAILURE;
     }
   }
-  updateMsgStreamOutputLevel( m_outputLevel );
+  if (m_outputLevel == MSG::NIL)
+    m_outputLevel = msgLevel();
+  else
+    updateMsgStreamOutputLevel( m_outputLevel );
   return sc;
 }
 
@@ -1068,11 +1071,10 @@ Algorithm::commitHandles() {
 
 void
 Algorithm::registerTool(IAlgTool * tool) const {
-    if (UNLIKELY(m_outputLevel <= MSG::DEBUG)) {
-      MsgStream log(msgSvc(), name());
-      log << MSG::DEBUG << "Registering tool " << tool->name() << endmsg;
-    }
-    m_tools.push_back(tool);
+  if (msgLevel(MSG::DEBUG)) {
+    debug() << "Registering tool " << tool->name() << endmsg;
+  }
+  m_tools.push_back(tool);
 }
 
 
@@ -1080,16 +1082,12 @@ void
 Algorithm::deregisterTool(IAlgTool * tool) const {
   std::vector<IAlgTool *>::iterator it = std::find(m_tools.begin(),
                                                    m_tools.end(), tool);
-
-  MsgStream log(msgSvc(), name());
   if (it != m_tools.end()) {
-    if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
-      log << MSG::DEBUG << "De-Registering tool " << tool->name()
-        << endmsg;
+    if (msgLevel(MSG::DEBUG))
+      debug() << "De-Registering tool " << tool->name() << endmsg;
     m_tools.erase(it);
   } else {
-    if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
-      log << MSG::DEBUG << "Could not de-register tool " << tool->name()
-        << endmsg;
+    if (msgLevel(MSG::DEBUG))
+      debug() << "Could not de-register tool " << tool->name() << endmsg;
   }
 }

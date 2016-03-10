@@ -23,7 +23,7 @@ JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/wor
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr (GaudiCoreSvc v4r0)
-                                          running on pclhcb117 on Thu Feb 11 14:56:01 2016
+                                          running on pclhcb117 on Fri Mar  4 17:47:18 2016
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 SimpleHistos        DEBUG Property update for OutputLevel : new value = 2
@@ -145,7 +145,7 @@ Histos2           SUCCESS Property ['Name': Value] =  'ExtraInputs':[]
 Histos2           SUCCESS Property ['Name': Value] =  'ErrorCounter':0
 Histos2           SUCCESS Property ['Name': Value] =  'ErrorMax':1
 Histos2           SUCCESS Property ['Name': Value] =  'Enable':True
-Histos2           SUCCESS Property ['Name': Value] =  'OutputLevel':0
+Histos2           SUCCESS Property ['Name': Value] =  'OutputLevel':3
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
 ApplicationMgr       INFO Application Manager Initialized successfully

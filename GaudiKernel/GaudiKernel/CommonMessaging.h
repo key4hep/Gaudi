@@ -186,9 +186,10 @@ protected:
   /// This function is meant to be called by the update handler of the OutputLevel property.
   void updateMsgStreamOutputLevel(int level) {
     if (level != MSG::NIL && level != m_level) {
-      msgSvc()->setOutputLevel ( this->name (), level ) ;
+      msgSvc()->setOutputLevel(this->name(), level);
       if (m_msgStream) m_msgStream->setLevel(level);
-      if (UNLIKELY(std::min(m_level,MSG::Level(level)) <= MSG::DEBUG)) debug() << "Property update for OutputLevel : new value = " << level << endmsg;
+      if (UNLIKELY(MSG::Level(level) <= MSG::DEBUG))
+        debug() << "Property update for OutputLevel : new value = " << level << endmsg;
       m_level = MSG::Level(level);
     }
   }
