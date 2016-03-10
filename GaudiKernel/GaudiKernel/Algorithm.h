@@ -454,6 +454,16 @@ public:
 
   }
 
+  // ==========================================================================
+  // declare ToolHandleArrays to the Algorithms
+
+  template <class T>
+    Property* declareProperty(const std::string& name,
+                              ToolHandleArray<T>& hndlArr,
+                              const std::string& doc = "none" ) const {
+    m_toolHandleArrays.push_back( &hndlArr );
+    return m_propertyMgr->declareProperty(name, hndlArr, doc);
+  }
 
   // ==========================================================================
   /** @brief Access the monitor service
@@ -558,7 +568,7 @@ public:
 
   // For concurrency
   /// get the context
-  EventContext* getContext(){return m_event_context;}
+  EventContext* getContext() const {return m_event_context;}
 
   /// set the context
   void setContext(EventContext* context){m_event_context = context;}
@@ -674,6 +684,7 @@ private:
   //tools used by algorithm
   mutable std::vector<IAlgTool *> m_tools;
   mutable std::vector<BaseToolHandle *> m_toolHandles;
+  mutable std::vector<GaudiHandleArrayBase*> m_toolHandleArrays;
 
 
 private:

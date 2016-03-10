@@ -1003,8 +1003,42 @@ bool Algorithm::hasProperty(const std::string& name) const {
 }
 
 void Algorithm::initToolHandles() const{
+
+  IAlgTool* tool(0);
+  for (auto thArr : m_toolHandleArrays) {
+    if (! thArr->retrieved()) {
+      if (UNLIKELY(msgLevel(MSG::DEBUG)))
+        debug() << "ToolHandleArray " << thArr->propertyName()
+                << " not used: not registering any of its Tools" << endmsg;
+    } else {
+      if (UNLIKELY(msgLevel(MSG::DEBUG)))
+        debug() << "Registering all Tools in ToolHandleArray " 
+                << thArr->propertyName() ;
+      for (auto th_name : thArr->typesAndNames()) {
+        if (UNLIKELY(msgLevel(MSG::DEBUG)))
+          debug() << std::endl << "    + " << th_name;
+        if (toolSvc()->retrieveTool(th_name, tool, this).isSuccess()) {
+          if (UNLIKELY(msgLevel(MSG::DEBUG)))
+            debug() << " (private)";
+          m_tools.push_back(tool);
+        } else if (toolSvc()->retrieveTool(th_name, tool, 0).isSuccess()) {
+          if (UNLIKELY(msgLevel(MSG::DEBUG)))
+            debug() << " (public)";
+          m_tools.push_back(tool);
+        } else {
+          if (UNLIKELY(msgLevel(MSG::DEBUG)))
+            debug() << " - ERROR" << endmsg;
+          warning() <<  "Error retrieving Tool " << th_name 
+                    << " in ToolHandleArray" << thArr->propertyName()
+                    << ". Not registered" << endmsg;
+        }
+      }
+      if (UNLIKELY(msgLevel(MSG::DEBUG))) debug() << endmsg;
+    }
+  }
+    
   for(auto th : m_toolHandles){
-    IAlgTool * tool = th->get();
+    tool = th->get();
     if(tool){
       if (UNLIKELY(msgLevel(MSG::DEBUG)))
         debug() << "Adding "
