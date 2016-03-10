@@ -225,7 +225,7 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  bool AlgorithmNode::promoteToDataReadyState(const int& slotNum, 
+  bool AlgorithmNode::promoteToDataReadyState(const int& slotNum,
                                               const AlgorithmNode* /*requestor*/) const {
 
     auto& states = m_graph->getAlgoStates(slotNum);
@@ -303,11 +303,11 @@ namespace concurrency {
                                  AlgsExecutionStates& states,
                                  const std::vector<int>& node_decisions,
                                  const unsigned int& recursionLevel) const {
-    output << std::string(recursionLevel, ' ') << m_nodeName 
+    output << std::string(recursionLevel, ' ') << m_nodeName
            << " (" << m_nodeIndex << ")" << ", w/ decision: "
-           << stateToString(node_decisions[m_nodeIndex]) 
+           << stateToString(node_decisions[m_nodeIndex])
            << "(" << node_decisions[m_nodeIndex] << ")"
-           << ", in state: " << AlgsExecutionStates::stateNames[states[m_algoIndex]] 
+           << ", in state: " << AlgsExecutionStates::stateNames[states[m_algoIndex]]
            << std::endl;
   }
 
@@ -528,7 +528,7 @@ namespace concurrency {
 	//          auto& output = outCollection[outputTag].dataProductName();
 	sc = addDataNode(outputTag);
           if (!sc.isSuccess()) {
-            error() << "Extra producer (" << algo.first << ") for DataObject @ " 
+            error() << "Extra producer (" << algo.first << ") for DataObject @ "
 		    << outputTag
                     << " has been detected: this is not allowed." << endmsg;
             global_sc = StatusCode::FAILURE;
@@ -736,7 +736,7 @@ namespace concurrency {
 
     const char idt[] = "      ";
     std::ostringstream ost;
-    
+
 
     ost << "\n" << idt << "====================================\n";
     ost << idt << "Data origins and destinations:\n";
@@ -756,7 +756,6 @@ namespace concurrency {
 
       ost << idt << "====================================\n";
     }
-    ost;
 
     return ost.str();
   }
@@ -787,7 +786,7 @@ namespace concurrency {
       if ( itT != m_exec_plan_map.end()) {
         source = itT->second;
       } else {
-        source = boost::add_vertex(boost::AlgoNodeStruct("ENTRY",-999,-999, 0), 
+        source = boost::add_vertex(boost::AlgoNodeStruct("ENTRY",-999,-999, 0),
                                    m_ExecPlan);
         m_exec_plan_map["ENTRY"] = source;
       }
@@ -810,7 +809,7 @@ namespace concurrency {
         }
         source = boost::add_vertex(boost::AlgoNodeStruct(u->getNodeName(),
                                                          u->getAlgoIndex(),
-                                                         u->getRank(),runtime), 
+                                                         u->getRank(),runtime),
                                    m_ExecPlan);
         m_exec_plan_map[u->getNodeName()] = source;
       }
@@ -835,7 +834,7 @@ namespace concurrency {
       }
       target = boost::add_vertex(boost::AlgoNodeStruct(v->getNodeName(),
                                                        v->getAlgoIndex(),
-                                                       v->getRank(),runtime), 
+                                                       v->getRank(),runtime),
                                  m_ExecPlan);
       m_exec_plan_map[v->getNodeName()] = target;
     }
