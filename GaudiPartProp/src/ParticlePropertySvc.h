@@ -68,7 +68,8 @@ namespace Gaudi {
  *
  *  The replaces/modified particles are reported.
  */
-class ParticlePropertySvc: public extends1<Service,IParticlePropertySvc>
+class ParticlePropertySvc: public extends<Service,
+                                          IParticlePropertySvc>
 {
 public:
   // typedefs for container type

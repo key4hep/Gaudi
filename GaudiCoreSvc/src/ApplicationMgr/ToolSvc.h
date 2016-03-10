@@ -20,7 +20,8 @@
  *
  *  @author G. Corti, P. Mato
  */
-class ToolSvc : public extends1<Service, IToolSvc> {
+class ToolSvc : public extends<Service,
+                               IToolSvc> {
 
 public:
 

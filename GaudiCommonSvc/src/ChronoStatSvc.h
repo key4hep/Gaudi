@@ -30,8 +30,9 @@ class IMessageSvc  ;
  *   @author:  Vanya BELYAEV Ivan.Belyaev@itep.ru
  *   @daate:   December 1, 1999
  */
-class ChronoStatSvc: public extends2<Service, IChronoStatSvc, 
-				     IIncidentListener> {
+class ChronoStatSvc: public extends<Service,
+                                    IChronoStatSvc,
+                                    IIncidentListener> {
 public:
   // ============================================================================
   /// some useful typedefs

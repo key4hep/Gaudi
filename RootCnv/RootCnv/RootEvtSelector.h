@@ -36,7 +36,8 @@ namespace Gaudi {
    *  @version 1.0
    *  @date    20/12/2009
    */
-  class GAUDI_API RootEvtSelector : public extends1<Service, IEvtSelector> {
+  class GAUDI_API RootEvtSelector : public extends<Service,
+                                                   IEvtSelector> {
 
     /// Helper method to issue error messages
     StatusCode error(const std::string& msg)  const;

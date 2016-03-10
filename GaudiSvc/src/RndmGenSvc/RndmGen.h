@@ -38,7 +38,7 @@ class IRndmEngine;
     Author:  M.Frank
     Version: 1.0
 */
-class RndmGen : public implements1<IRndmGen> {
+class RndmGen : public implements<IRndmGen> {
 
 protected:
   /// Generation parameters

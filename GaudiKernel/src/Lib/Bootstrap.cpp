@@ -37,7 +37,7 @@ namespace Gaudi
     ApplicationMgr instance is created explicitly.
 
 */
-  class BootSvcLocator : public implements1<ISvcLocator> {
+  class BootSvcLocator : public implements<ISvcLocator> {
   public:
     BootSvcLocator() = default;
     ~BootSvcLocator() override = default;

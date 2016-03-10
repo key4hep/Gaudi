@@ -16,7 +16,8 @@
  *  @date 2007-03-08
  */
 // ============================================================================
-class ExceptionSvc: public extends1<Service, IExceptionSvc> {
+class ExceptionSvc: public extends<Service,
+                                   IExceptionSvc> {
 public:
   /// Handle caught GaudiExceptions
   StatusCode handle

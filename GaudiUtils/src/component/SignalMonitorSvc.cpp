@@ -23,7 +23,8 @@ namespace Gaudi {
      * It can be interrogated to check if a signal has been received.
      *
      */
-    class SignalMonitorSvc: public extends1<Service, Gaudi::ISignalMonitor> {
+    class SignalMonitorSvc: public extends<Service,
+                                           Gaudi::ISignalMonitor> {
     public:
 #ifdef _WIN32
       typedef void (__cdecl *handler_t)(int);
@@ -336,7 +337,8 @@ namespace Gaudi {
      * registered when this service is initialized.
      *
      */
-    class StopSignalHandler: public extends1<Service, IIncidentListener> {
+    class StopSignalHandler: public extends<Service,
+                                            IIncidentListener> {
     public:
       StopSignalHandler(const std::string& name, ISvcLocator* svcLoc): base_class(name, svcLoc) {
         m_usedSignals.reserve(2);

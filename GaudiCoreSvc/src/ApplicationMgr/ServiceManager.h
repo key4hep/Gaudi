@@ -33,7 +33,9 @@ class Property;
 
     @author Pere Mato
 */
-class ServiceManager : public extends2<ComponentManager, ISvcManager, ISvcLocator>{
+class ServiceManager : public extends<ComponentManager,
+                                      ISvcManager,
+                                      ISvcLocator> {
 public:
 
   struct ServiceItem final {

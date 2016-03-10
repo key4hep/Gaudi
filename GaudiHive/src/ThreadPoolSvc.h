@@ -12,7 +12,8 @@
 
 #include <vector>
 
-class ThreadPoolSvc: public extends1<Service, IThreadPoolSvc> {
+class ThreadPoolSvc: public extends<Service,
+                                    IThreadPoolSvc> {
 public:
   /// Constructor
   ThreadPoolSvc( const std::string& name, ISvcLocator* svc );

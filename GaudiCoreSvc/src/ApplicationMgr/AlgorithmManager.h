@@ -28,7 +28,8 @@ class IMessageSvc;
 
     @author  Pere Mato
 */
-class AlgorithmManager : public extends1<ComponentManager, IAlgManager>{
+class AlgorithmManager : public extends<ComponentManager,
+                                        IAlgManager> {
 public:
 
   struct AlgorithmItem final {

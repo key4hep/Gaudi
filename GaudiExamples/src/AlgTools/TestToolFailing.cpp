@@ -11,7 +11,8 @@
 #include "ITestTool.h"
 
 
-class TestToolFailing: public extends1<GaudiTool, ITestTool> {
+class TestToolFailing: public extends<GaudiTool,
+                                      ITestTool> {
 
 public:
   TestToolFailing(const std::string& type,

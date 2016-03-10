@@ -20,7 +20,8 @@
  *  @date   2003-07-07
  */
 
-class EqSolver : public extends1<GaudiTool, IEqSolver> {
+class EqSolver : public extends<GaudiTool,
+                                IEqSolver> {
 public:
   typedef std::vector<Equations>   Jacobi ;
 public:

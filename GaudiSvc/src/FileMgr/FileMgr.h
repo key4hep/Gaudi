@@ -28,7 +28,9 @@ using Io::Fd;
 class RootFileHandler;
 class POSIXFileHandler;
 
-class FileMgr: public extends2<Service, IFileMgr, IIncidentListener> {
+class FileMgr: public extends<Service,
+                              IFileMgr,
+                              IIncidentListener> {
 public:
   FileMgr(const std::string& name, ISvcLocator* svc);
   ~FileMgr() override;

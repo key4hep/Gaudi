@@ -22,7 +22,7 @@ namespace Gaudi {
     *  the external XercesC library for parsing.
     *
     */
-  class XMLFileCatalog : public implements1<IFileCatalog> {
+  class XMLFileCatalog : public implements<IFileCatalog> {
   protected:
     typedef const std::string& CSTR;
 

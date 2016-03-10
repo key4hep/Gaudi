@@ -71,7 +71,10 @@ class ToolHandleInfo;
  *  @author David Quarrie
  *  @date   1998
  */
-class GAUDI_API Algorithm: public CommonMessaging<implements4<IAlgorithm, IDataHandleHolder, IProperty, IStateful>> {
+class GAUDI_API Algorithm: public CommonMessaging<implements<IAlgorithm,
+                                                             IDataHandleHolder,
+                                                             IProperty,
+                                                             IStateful>> {
 public:
 #ifndef __REFLEX__
   typedef Gaudi::PluginService::Factory<IAlgorithm*,

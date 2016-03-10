@@ -64,10 +64,10 @@ namespace {
  * @author Sebastien Ponce
  * @version 1.0
 */
-class MultiStoreSvc: public extends3<Service,
-                                     IDataProviderSvc,
-                                     IDataManagerSvc,
-                                     IPartitionControl>
+class MultiStoreSvc: public extends<Service,
+                                    IDataProviderSvc,
+                                    IDataManagerSvc,
+                                    IPartitionControl>
 {
 protected:
   typedef std::vector<std::string>         PartitionDefs;

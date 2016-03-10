@@ -21,7 +21,7 @@ class IRegistry;
     @author Markus Frank
     @version 1.0
 */
-class GAUDI_API Converter : public implements1<IConverter> {
+class GAUDI_API Converter : public implements<IConverter> {
 public:
 #ifndef __REFLEX__
   typedef Gaudi::PluginService::Factory<IConverter*,

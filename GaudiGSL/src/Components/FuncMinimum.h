@@ -21,7 +21,8 @@
  *  @date   2002-09-14
  */
 
-class FuncMinimum : public extends1<GaudiTool, IFuncMinimum> {
+class FuncMinimum : public extends<GaudiTool,
+                                   IFuncMinimum> {
 public:
   typedef std::vector<const GenFunc*> Gradient;
 public:

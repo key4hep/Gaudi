@@ -22,7 +22,8 @@
  *   @author  M.Frank
  *   @version 1.0
  */
-class RecordDataSvc  : public extends1<DataSvc, IIncidentListener> {
+class RecordDataSvc  : public extends<DataSvc,
+                                      IIncidentListener> {
  public:
   StatusCode initialize() override;
   StatusCode finalize() override;
