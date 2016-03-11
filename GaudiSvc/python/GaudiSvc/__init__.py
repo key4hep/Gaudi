@@ -1,6 +1,6 @@
 def getMetaData(path):
     '''
-    Extract job metadata recorded by MetaDataSvc from a file.
+    Extract job metadata recorded by Gaudi::MetaDataSvc from a file.
     '''
     from cppyy.gbl import TFile
     f = TFile.Open(path)

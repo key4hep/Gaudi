@@ -47,6 +47,8 @@
 
 #include "MetaDataSvc.h"
 
+using Gaudi::MetaDataSvc;
+
 DECLARE_COMPONENT(MetaDataSvc)
 
 // Standard Constructor.
@@ -73,8 +75,7 @@ StatusCode MetaDataSvc::start(){
 MetaDataSvc::~MetaDataSvc() {
 }
 MetaData* MetaDataSvc::getMetaData() {
-  md = new MetaData(m_metadata);
-  return md;
+  return new MetaData(m_metadata);
 }
 std::map <std::string, std::string> MetaDataSvc::getMetaDataMap() {
   return m_metadata;

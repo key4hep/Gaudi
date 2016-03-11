@@ -4,6 +4,23 @@
 ! Purpose     : The package for Gaudi multithreading tools and machinery
 !-----------------------------------------------------------------------------
 
+============================= GaudiMTTools v1r2 ==============================
+
+! 2016-02-11 - commit e2c585c
+
+ - Remove globalTimeOffset getter and GlobalTimeOffset property from GaudiCommon
+
+   GaudiCommon adds a property GlobalTimeOffset and a corresponding getter
+   globalTimeOffset to every algorithm/tool which uses GaudiCommon, regardless
+   on whether this property is used.
+
+   As there is no code anymore that actually uses globalTimeOffset, this patch
+   removes this accessor and the corresponding property.
+
+   Fixes GAUDI-1122.
+
+   See merge request !61
+
 ============================= GaudiMTTools v1r1 ==============================
 
 ! 2016-01-12 - commit 4dbdc8e

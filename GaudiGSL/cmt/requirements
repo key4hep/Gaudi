@@ -3,7 +3,7 @@
 # Maintainer : Vanya Belyaev Ivan.Belyaev@itep.ru
 # =============================================================================
 package           GaudiGSL
-version           v9r1
+version           v9r2
 
 # =============== package structure ===========================================
 branches          cmt doc src dict GaudiGSL GaudiMath

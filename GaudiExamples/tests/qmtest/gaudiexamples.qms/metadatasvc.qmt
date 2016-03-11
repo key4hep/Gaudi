@@ -4,9 +4,9 @@
 <argument name="args"><set>
   <text>$GAUDIEXAMPLESROOT/options/TupleEx.py</text>
   <text>--option</text>
-  <text>ApplicationMgr(EvtMax=10).ExtSvc.append('MetaDataSvc')</text>
+  <text>ApplicationMgr(EvtMax=10).ExtSvc.append('Gaudi::MetaDataSvc')</text>
   <text>--option</text>
-  <text>from Configurables import MetaDataSvc; MetaDataSvc(OutputLevel=DEBUG)</text>
+  <text>from Configurables import Gaudi__MetaDataSvc; Gaudi__MetaDataSvc(OutputLevel=DEBUG)</text>
 </set></argument>
 <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
 <argument name="reference"><text>refs/MetaDataSvc.ref</text></argument>

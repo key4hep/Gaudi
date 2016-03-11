@@ -4,22 +4,22 @@
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr (GaudiCoreSvc v4r0)
-                                          running on pclhcb117 on Wed Mar  9 18:10:21 2016
+                                          running on pclhcb117 on Fri Mar 11 09:58:09 2016
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
 RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
 RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
-MetaDataSvc         DEBUG Property update for OutputLevel : new value = 2
-MetaDataSvc         DEBUG Service base class initialized successfully
+Gaudi::MetaDataSvc  DEBUG Property update for OutputLevel : new value = 2
+Gaudi::MetaDataSvc  DEBUG Service base class initialized successfully
 RootHistSvc          INFO Writing ROOT histograms to: UndefinedROOTOutputFileName
 HistogramPersis...   INFO Added successfully Conversion service:RootHistSvc
 NTupleSvc            INFO Added stream file:TupleEx.root as MYLUN
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
 ApplicationMgr       INFO Application Manager Initialized successfully
-MetaDataSvc         DEBUG started
-MetaDataSvc         DEBUG Metadata collected:
+Gaudi::MetaDataSvc  DEBUG started
+Gaudi::MetaDataSvc  DEBUG Metadata collected:
 ApplicationMgr.ActivateHistory:False
 ApplicationMgr.AlgTypeAliases:{  }
 ApplicationMgr.AppName:ApplicationMgr
@@ -34,7 +34,7 @@ ApplicationMgr.EventLoop:EventLoopMgr
 ApplicationMgr.EvtMax:10
 ApplicationMgr.EvtSel:NONE
 ApplicationMgr.Exit:0
-ApplicationMgr.ExtSvc:[ 'RndmGenSvc' , 'MetaDataSvc' ]
+ApplicationMgr.ExtSvc:[ 'RndmGenSvc' , 'Gaudi::MetaDataSvc' ]
 ApplicationMgr.ExtSvcCreates:True
 ApplicationMgr.Go:0
 ApplicationMgr.HistogramPersistency:ROOT
@@ -61,7 +61,7 @@ ApplicationMgr.SvcMapping:[ 'EvtDataSvc/EventDataSvc' , 'DetDataSvc/DetectorData
 ApplicationMgr.SvcOptMapping:[  ]
 ApplicationMgr.TopAlg:[ 'TupleAlg/Tuple' , 'TupleAlg2/Tuple2' , 'TupleAlg3/Tuple3' ]
 IAlgManager.Algorithms:Tuple, Tuple2, Tuple3
-ISvcLocator.Services:MessageSvc, JobOptionsSvc, RndmGenSvc.Engine, RndmGenSvc, MetaDataSvc, AppMgrRunable, IncidentSvc, AlgContextSvc, EventPersistencySvc, EventDataSvc, TimelineSvc, RootHistSvc, HistogramPersistencySvc, HistogramDataSvc, NTupleSvc, EventLoopMgr, ToolSvc
+ISvcLocator.Services:MessageSvc, JobOptionsSvc, RndmGenSvc.Engine, RndmGenSvc, Gaudi::MetaDataSvc, AppMgrRunable, IncidentSvc, AlgContextSvc, EventPersistencySvc, EventDataSvc, TimelineSvc, RootHistSvc, HistogramPersistencySvc, HistogramDataSvc, NTupleSvc, EventLoopMgr, ToolSvc
 JobOptionsSvc.AuditFinalize:False
 JobOptionsSvc.AuditInitialize:False
 JobOptionsSvc.AuditReInitialize:False
@@ -103,6 +103,7 @@ MessageSvc.setWarning:[  ]
 MessageSvc.showStats:False
 MessageSvc.statLevel:0
 MessageSvc.timeFormat:%Y-%m-%d %H:%M:%S,%f
+MessageSvc.tracedInactiveSources:[  ]
 MessageSvc.useColors:False
 MessageSvc.verboseColorCode:[  ]
 MessageSvc.verboseLimit:500

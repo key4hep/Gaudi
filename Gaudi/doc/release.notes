@@ -2,6 +2,21 @@ Package : Gaudi
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+================================ Gaudi v27r1 =================================
+
+! 2016-02-15 - commit 4dc9082
+
+ - fixed handling of (multi line) strings and ';' in strings for .opts files
+
+   Fixes GAUDI-1179
+    See merge request !112
+
+! 2016-02-06 - commit d905569
+
+ - introduce DataHandle and DataObjectHandle
+
+   See merge requests !57 !94 !95
+
 ================================ Gaudi v27r0 =================================
 
 ! 2015-11-02 - commit 57f356c
