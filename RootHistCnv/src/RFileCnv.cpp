@@ -186,7 +186,7 @@ StatusCode RootHistCnv::RFileCnv::updateRep( IOpaqueAddress* pAddress,
   * March 2015
   * */
   SmartIF <IMetaDataSvc> mds;
-  mds = serviceLocator()->service("MetaDataSvc", false);
+  mds = serviceLocator()->service("Gaudi::MetaDataSvc", false);
   //auto mds = service<IMetaDataSvc>("MetaDataSvc", false);
   if (mds) {
           std::map <std::string, std::string> m_metadata = mds->getMetaDataMap();
