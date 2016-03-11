@@ -5,6 +5,62 @@
 <title>Gaudi Release Notes</title>
 </head>
 <body>
+<h1><a name="v27r1">Gaudi v27r1</a> (2016-03-11)</h1>
+Package Coordinators: Marco Clemencic, Charles Leggett, Benedikt Hegner
+<h2>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=84">LCG_84</a></h2>
+
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1168'>GAUDI-1168</a>] -         MinimalDataObjectHandle AccessType UPDATE conflicts with C macro in dim.h
+</li>
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1174'>GAUDI-1174</a>] -         Many new unprotected DEBUG messages detected in Gaudi v27r0
+</li>
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1177'>GAUDI-1177</a>] -         QMTest fails in python/GaudiTesting/BaseTest.py&quot;, line 1012, in parseHistosSummary  for COLORED MessageSvc
+</li>
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1178'>GAUDI-1178</a>] -         flag -DGOD_NOALLOC is used in optimized builds
+</li>
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1179'>GAUDI-1179</a>] -         gaudirun.py cannot parse old options with &#39;;&#39; in a string.
+</li>
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1182'>GAUDI-1182</a>] -         static_assert in ToolHandle is too restrictive for current ATLAS code
+</li>
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1183'>GAUDI-1183</a>] -         ToolHandle changes from GAUDI-1116 are breaking LHCb code
+</li>
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1184'>GAUDI-1184</a>] -         Errors during initialization of cloned Algorithms not property handled
+</li>
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1185'>GAUDI-1185</a>] -         CommonMessaging::m_level not initialized when needed
+</li>
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1189'>GAUDI-1189</a>] -         fix warning about use of __int128 in GaudiPython dictionary
+</li>
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1192'>GAUDI-1192</a>] -         unprotected debug messages in the latest version of Gaudi
+</li>
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1196'>GAUDI-1196</a>] -         officially support CentOS 7 in HepToolsMacros.cmake
+</li>
+</ul>
+
+<h2>        Improvement
+</h2>
+<ul>
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1116'>GAUDI-1116</a>] -         DataHandles for Hive
+</li>
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1146'>GAUDI-1146</a>] -         Improve CommonMessaging, and use it where possible
+</li>
+</ul>
+
+<h2>        Task
+</h2>
+<ul>
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1122'>GAUDI-1122</a>] -         remove globalTimeOffset() and corresponding GlobalTimeOffset property from GaudiCommon
+</li>
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1171'>GAUDI-1171</a>] -         Excessive printout in GaudiPython.TupleUtils module
+</li>
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1181'>GAUDI-1181</a>] -         new commonMessaging interface not backward compatible
+</li>
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1195'>GAUDI-1195</a>] -         update required HEPTools/LCG version to 84
+</li>
+</ul>
+
+<hr/>
 <h1><a name="v27r0">Gaudi v27r0</a> (2016-01-22)</h1>
 Package Coordinators: Marco Clemencic, Charles Leggett, Benedikt Hegner
 <h2>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=83">LCG_83</a></h2>
@@ -24,7 +80,7 @@ Package Coordinators: Marco Clemencic, Charles Leggett, Benedikt Hegner
 </li>
 <li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1115'>GAUDI-1115</a>] -         duplicated genreflex selection rules
 </li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1117'>GAUDI-1117</a>] -         unkown OS warning on CernVM/CentOS during CMake configuration
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1117'>GAUDI-1117</a>] -         unknown OS warning on CernVM/CentOS during CMake configuration
 </li>
 <li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1119'>GAUDI-1119</a>] -         PartPropSvc does not parse inputs properly after upgrade to boost::regex
 </li>
