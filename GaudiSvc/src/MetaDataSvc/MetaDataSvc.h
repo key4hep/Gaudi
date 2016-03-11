@@ -31,7 +31,6 @@ public:
 
 private:
 	bool m_isEnabled;
-	MetaData* md;
 	std::map <std::string, std::string> m_metadata;
 };
 
