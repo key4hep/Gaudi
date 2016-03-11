@@ -29,6 +29,9 @@ class GAUDI_API  IThreadPoolSvc : virtual public IInterface {
   /// Initializes the thread pool
   virtual StatusCode initPool(const int& poolSize) = 0;
 
+  /// Finalize the thread pool
+  virtual StatusCode terminatePool() = 0;
+
   /// Size of the initialized thread pool
   virtual int poolSize() const = 0;
 
