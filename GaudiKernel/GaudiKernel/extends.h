@@ -51,15 +51,15 @@ public:
   ~extends() override = default;
 };
 
-template <typename BASE, typename I1> using extends1 = extends<BASE,I1>;
+template <typename BASE, typename I1> using extends1 = extends<BASE, I1>;
 template <typename BASE, typename I1,
-                         typename I2> using extends2 = extends<BASE,I1,I2>;
+                         typename I2> using extends2 = extends<BASE, I1, I2>;
 template <typename BASE, typename I1,
                          typename I2,
-                         typename I3> using extends3 = extends<BASE,I1,I2,I3>;
+                         typename I3> using extends3 = extends<BASE, I1, I2, I3>;
 template <typename BASE, typename I1,
                          typename I2,
                          typename I3,
-                         typename I4> using extends4 = extends<BASE,I1,I2,I3,I4>;
+                         typename I4> using extends4 = extends<BASE, I1, I2, I3, I4>;
 
 #endif /* GAUDIKERNEL_EXTENDS_H */

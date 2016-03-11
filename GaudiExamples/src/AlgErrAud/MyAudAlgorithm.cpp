@@ -22,18 +22,17 @@ MyAudAlgorithm::MyAudAlgorithm(const std::string& name, ISvcLocator* ploc)
 StatusCode MyAudAlgorithm::initialize() {
 //------------------------------------------------------------------------------
 
-  MsgStream log(msgSvc(), name());
   StatusCode sc;
-  log << MSG::INFO << "initializing...." << endmsg;
+  info() << "initializing...." << endmsg;
 
   sc = toolSvc()->retrieveTool("MyAudTool", m_tool );
   if( sc.isFailure() ) {
-    log << MSG::ERROR<< "Error retrieving the tool" << endmsg;
+    error()<< "Error retrieving the tool" << endmsg;
   }
 
-  log << MSG::INFO << "....initialization done" << endmsg;
+  info() << "....initialization done" << endmsg;
 
-  log << MSG::INFO << "test "
+  info() << "test "
       << std::setw(4)
       << std::setfill('0')
       << 10 << endmsg;
@@ -45,14 +44,13 @@ StatusCode MyAudAlgorithm::initialize() {
 //------------------------------------------------------------------------------
 StatusCode MyAudAlgorithm::execute() {
 //------------------------------------------------------------------------------
-  MsgStream         log( msgSvc(), name() );
-  log << MSG::INFO << "executing...." << endmsg;
+  info() << "executing...." << endmsg;
 
   if (m_i%4 == 1) m_tool->doErr();
   if (m_i%4 == 2) m_tool->doFatal();
-  if (m_i%5 == 0) log << MSG::ERROR << "testing AlgErrorAud" << endmsg;
+  if (m_i%5 == 0) error() << "testing AlgErrorAud" << endmsg;
 
-  log << MSG::ALWAYS << "This message should never be suppressed" << endmsg;
+  always() << "This message should never be suppressed" << endmsg;
 
   m_i ++;
 
@@ -63,10 +61,9 @@ StatusCode MyAudAlgorithm::execute() {
 //------------------------------------------------------------------------------
 StatusCode MyAudAlgorithm::finalize() {
 //------------------------------------------------------------------------------
-  MsgStream log(msgSvc(), name());
-  log << MSG::INFO << "finalizing...." << endmsg;
+  info() << "finalizing...." << endmsg;
 
-  log << MSG::ALWAYS << "none of the following 10 messages should be suppressed"
+  always() << "none of the following 10 messages should be suppressed"
       << endmsg;
 
   for (int i=0; i<10; ++i) {

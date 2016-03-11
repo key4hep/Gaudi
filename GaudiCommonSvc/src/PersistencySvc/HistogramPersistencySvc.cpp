@@ -38,7 +38,14 @@
 // AIDA
 // ============================================================================
 /// @FIXME: AIDA interfaces visibility
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wkeyword-macro"
+#endif
 #define class class GAUDI_API
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 #include "AIDA/IBaseHistogram.h"
 #undef class
 // ============================================================================
@@ -51,16 +58,16 @@ DECLARE_COMPONENT(HistogramPersistencySvc)
 StatusCode HistogramPersistencySvc::finalize()
 {
   //
-  MsgStream log ( msgSvc() , name() );
   if ( !(m_convert.empty() && m_exclude.empty()) )
   { // print message if any of the two properties is used
-    log << MSG::INFO  << "Histograms Converted/Excluded: "
+    info()  << "Histograms Converted/Excluded: "
         << m_converted.size() << "/" << m_excluded.size() << endmsg ;
   }
   if (msgLevel(MSG::DEBUG)) {
     if ( !m_excluded.empty() )
     {
-      log << MSG::DEBUG << "Excluded  Histos : #" << m_excluded.size() ;
+      auto& log = debug();
+      log <<  "Excluded  Histos : #" << m_excluded.size() ;
       for ( const auto& item : m_excluded )
       { log << std::endl << "  '" << item << "'" ; }
       log << endmsg ;
@@ -68,7 +75,8 @@ StatusCode HistogramPersistencySvc::finalize()
     //
     if ( !m_converted.empty() )
     {
-      log << MSG::DEBUG << "Converted Histos : #" << m_converted.size() ;
+      auto& log = debug();
+      log << "Converted Histos : #" << m_converted.size() ;
       for ( const auto& item : m_converted )
       { log << std::endl << "  '" << item << "'" ; }
       log << endmsg ;
@@ -81,21 +89,17 @@ StatusCode HistogramPersistencySvc::finalize()
 // ============================================================================
 StatusCode HistogramPersistencySvc::initialize()     {
   StatusCode status = PersistencySvc::initialize();
-  if ( status.isSuccess() )   {
-    status = reinitialize();
-  }
-  return status;
+  return  status.isSuccess() ? reinitialize() : status;
 }
 // ============================================================================
 // Reinitialize the service.
 // ============================================================================
 StatusCode HistogramPersistencySvc::reinitialize()
 {
-  MsgStream log(msgSvc(), name());
   // Obtain the IProperty of the ApplicationMgr
   auto prpMgr = serviceLocator()->as<IProperty>();
   if ( !prpMgr )   {
-    log << MSG::FATAL << "IProperty interface not found in ApplicationMgr." << endmsg;
+    fatal() << "IProperty interface not found in ApplicationMgr." << endmsg;
     return StatusCode::FAILURE;
   }
   else {
@@ -135,7 +139,7 @@ StatusCode HistogramPersistencySvc::reinitialize()
   else if ( m_histPersName == "NONE" ) {
     enable(false);
     if ( m_warnings ) {
-      log << MSG::WARNING << "Histograms saving not required." << endmsg;
+      warning() << "Histograms saving not required." << endmsg;
     }
   }
   else {
@@ -145,7 +149,7 @@ StatusCode HistogramPersistencySvc::reinitialize()
     }
     enable(true);
     if ( m_warnings ) {
-      log << MSG::WARNING << "Unknown Histogram Persistency Mechanism " << m_histPersName << endmsg;
+      warning() << "Unknown Histogram Persistency Mechanism " << m_histPersName << endmsg;
     }
   }
   return StatusCode::SUCCESS;
@@ -179,7 +183,7 @@ namespace
   {
     if ( !obj ) { return s_NULL ; }
     auto reg = obj->registry() ;
-    return reg ? reg -> identifier() : obj -> name () ; 
+    return reg ? reg -> identifier() : obj -> name () ;
   }
   // ==========================================================================
   /** check the match of the full name of data object with the pattern
@@ -215,7 +219,7 @@ StatusCode HistogramPersistencySvc::createRep
 
     auto match_pObj = [&](const std::string& s) { return match( pObj , s ); };
     // Empty ConvertHistos property means convert all
-    bool select = ( m_convert.empty()  
+    bool select = ( m_convert.empty()
                     || std::any_of( m_convert.begin(), m_convert.end(), match_pObj )
                   ) && std::none_of( m_exclude.begin(), m_exclude.end(), match_pObj );
     //

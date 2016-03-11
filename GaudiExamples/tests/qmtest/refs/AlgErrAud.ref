@@ -1,41 +1,35 @@
-JobOptionsSvc        INFO
-//GP:================================================================================
-//GP: include "../options/AlgErrAud.opts"                                     (0,0)
-//GP: include "../options/Common.opts"                                        (4,10)
-//GP: include "../options/Services.opts"                                      (7,10)
-AuditorSvc.Auditors =  [ "ChronoAuditor" ] ;                            //GP: (1,1)
-//GP: end  "../options/Services.opts"                                         (24,1)
-ApplicationMgr.StatusCodeCheck = 1;                                     //GP: (7,10)
-//GP: end  "../options/Common.opts"                                           (16,1)
-AuditorSvc.Auditors =  [ "AlgErrorAuditor" ] ;                          //GP: (4,10)
-ApplicationMgr.AuditAlgorithms = 1;                                     //GP: (4,10)
-ApplicationMgr.TopAlg =  [ "MyAudAlgorithm" ] ;                         //GP: (4,10)
-MessageSvc.OutputLevel = 3;                                             //GP: (4,10)
-MessageSvc.enableSuppression = 1;                                       //GP: (4,10)
-MessageSvc.defaultLimit = 5;                                            //GP: (4,10)
-MessageSvc.infoLimit = 7;                                               //GP: (4,10)
-MessageSvc.alwaysLimit = 4;                                             //GP: (4,10)
-ApplicationMgr.EvtMax = 10;                                             //GP: (4,10)
-ApplicationMgr.EvtSel = "NONE";                                         //GP: (4,10)
-ToolSvc.MyAudTool.OutputLevel = 3;                                      //GP: (4,10)
-MyAudAlgorithm.OutputLevel = 2;                                         //GP: (4,10)
-//GP: end  "../options/AlgErrAud.opts"                                        (39,1)
-//GP:================================================================================
-
-JobOptionsSvc        INFO Job options successfully read in from ../options/AlgErrAud.opts
+JobOptionsSvc        INFO # =======> /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/AlgErrAud.opts
+JobOptionsSvc        INFO # (4,1): AuditorSvc.Auditors = ["AlgErrorAuditor"]
+JobOptionsSvc        INFO # (6,1): ApplicationMgr.AuditAlgorithms = 1
+JobOptionsSvc        INFO # (7,1): ApplicationMgr.StatusCodeCheck = 1
+JobOptionsSvc        INFO # (12,1): ApplicationMgr.TopAlg = ["MyAudAlgorithm"]
+JobOptionsSvc        INFO # (15,1): MessageSvc.OutputLevel = 3
+JobOptionsSvc        INFO # (17,1): MessageSvc.enableSuppression = 1
+JobOptionsSvc        INFO # (18,1): MessageSvc.defaultLimit = 5
+JobOptionsSvc        INFO # (19,1): MessageSvc.infoLimit = 7
+JobOptionsSvc        INFO # (20,1): MessageSvc.alwaysLimit = 4
+JobOptionsSvc        INFO # (25,1): ApplicationMgr.EvtMax = 10
+JobOptionsSvc        INFO # (26,1): ApplicationMgr.EvtSel = "NONE"
+JobOptionsSvc        INFO # (34,1): ToolSvc.MyAudTool.OutputLevel = 3
+JobOptionsSvc        INFO # (35,1): MyAudAlgorithm.OutputLevel = 2
+JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/AlgErrAud.opts
 MessageSvc ERROR: cannot suppress ALWAYS messages
 MessageSvc ERROR: cannot suppress ALWAYS messages
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr $Revision: 1.14 $
-                                          running on pclhcb55.cern.ch on Fri May 30 20:36:32 2008
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v4r0)
+                                          running on pclhcb117 on Thu Feb 11 14:52:53 2016
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
+MyAudAlgorithm      DEBUG Property update for OutputLevel : new value = 2
 MyAudAlgorithm       INFO initializing....
 ToolSvc.MyAudTool    INFO intialize() has been called
 MyAudAlgorithm       INFO ....initialization done
 MyAudAlgorithm       INFO test 0010
+MyAudAlgorithm      DEBUG input handles: 0
+MyAudAlgorithm      DEBUG output handles: 0
+MyAudAlgorithm      DEBUG Data Deps for MyAudAlgorithm
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
 HistogramPersis...WARNING Histograms saving not required.

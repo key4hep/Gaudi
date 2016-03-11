@@ -232,10 +232,10 @@ namespace concurrency {
 class DataNode {
 public:
     /// Constructor
-    DataNode(ExecutionFlowGraph& graph, const std::string& path) : m_graph(&graph), m_data_object_path(path) {};
+    DataNode(ExecutionFlowGraph& /*graph*/, const DataObjID& path): m_data_object_path(path) {}
     /// Destructor
-    ~DataNode() {};
-    const std::string& getPath() {return m_data_object_path;}
+    ~DataNode() {}
+    const DataObjID& getPath() {return m_data_object_path;}
     /// Associate an AlgorithmNode, which is a data supplier for this one
     void addProducerNode(AlgorithmNode* node) {
       if (std::find(m_producers.begin(),m_producers.end(),node) == m_producers.end())
@@ -251,17 +251,17 @@ public:
     /// Get all data object consumers
     const std::vector<AlgorithmNode*>& getConsumers() const {return m_consumers;}
 private:
-    ExecutionFlowGraph* m_graph;
-    std::string m_data_object_path;
+    DataObjID m_data_object_path;
     std::vector<AlgorithmNode*> m_producers;
     std::vector<AlgorithmNode*> m_consumers;
   };
 
-typedef std::unordered_map<std::string,AlgorithmNode*> AlgoNodesMap;
-typedef std::unordered_map<std::string,DecisionNode*> DecisionHubsMap;
-typedef std::unordered_map<std::string,DataNode*> DataNodesMap;
-typedef std::unordered_map<std::string,const DataObjectDescriptorCollection*> AlgoInputsMap;
-typedef std::unordered_map<std::string,const DataObjectDescriptorCollection*> AlgoOutputsMap;
+  typedef std::unordered_map<std::string,AlgorithmNode*> AlgoNodesMap;
+  typedef std::unordered_map<std::string,DecisionNode*> DecisionHubsMap;
+  typedef std::unordered_map<DataObjID,DataNode*,DataObjID_Hasher> DataNodesMap;
+
+  typedef std::unordered_map<std::string, DataObjIDColl > AlgoInputsMap;
+  typedef std::unordered_map<std::string, DataObjIDColl > AlgoOutputsMap;
 
 class ExecutionFlowManager;
 struct IExecutionFlowGraph {
@@ -274,11 +274,11 @@ public:
     /// Constructor
     ExecutionFlowGraph(const std::string& name, SmartIF<ISvcLocator> svc) :
      m_headNode(0), m_nodeCounter(0), m_svcLocator(svc), m_name(name), m_initTime(std::chrono::high_resolution_clock::now()),
-     m_eventSlots(nullptr) {};
+     m_eventSlots(nullptr) {}
     /// Destructor
     ~ExecutionFlowGraph() override {
       if (m_headNode != 0) delete m_headNode;
-    };
+    }
     /// Initialize graph
     StatusCode initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map);
     StatusCode initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map,
@@ -303,9 +303,9 @@ public:
     /// Get the AlgorithmNode from by algorithm name using graph index
     AlgorithmNode* getAlgorithmNode(const std::string& algoName) const;
     /// Add DataNode that represents DataObject
-    StatusCode addDataNode(const std::string& dataPath);
+    StatusCode addDataNode(const DataObjID& dataPath);
     /// Get DataNode by DataObject path using graph index
-    DataNode* getDataNode(const std::string& dataPath) const;
+    DataNode* getDataNode(const DataObjID& dataPath) const;
     /// Add a node, which aggregates decisions of direct daughter nodes
     StatusCode addDecisionHubNode(Algorithm* daughterAlgo, const std::string& parentName, bool modeOR, bool allPass, bool isLazy);
     /// Get total number of graph nodes
@@ -328,9 +328,9 @@ public:
     ///
     const std::vector<AlgorithmNode*> getDataIndependentNodes() const;
     /// Retrieve name of the service
-    const std::string& name() const {return m_name;}
+    const std::string& name() const override {return m_name;}
     /// Retrieve pointer to service locator
-    SmartIF<ISvcLocator>& serviceLocator() const {return m_svcLocator;}
+    SmartIF<ISvcLocator>& serviceLocator() const override {return m_svcLocator;}
     ///
     const std::chrono::system_clock::time_point getInitTime() const {return m_initTime;};
     ///
@@ -338,7 +338,7 @@ public:
     ///
     std::vector<int>& getNodeDecisions(const int& slotNum) const {return m_eventSlots->at(slotNum).controlFlowState;}
     /// Print out all data origins and destinations, as reflected in the EF graph
-    void dumpDataFlow() const;
+    std::string dumpDataFlow() const;
     /// dump to file encountered execution plan
     void dumpExecutionPlan();
     /// set cause-effect connection between two algorithms in the execution plan

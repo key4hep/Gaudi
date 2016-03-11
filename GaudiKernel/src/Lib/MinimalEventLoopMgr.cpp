@@ -17,7 +17,7 @@
 #include <algorithm>
 
 namespace {
-  class AbortEventListener: public implements1<IIncidentListener> {
+  class AbortEventListener: public implements<IIncidentListener> {
   public:
     AbortEventListener(bool &flag, std::string &source):m_flag(flag),
                                                         m_source(source){

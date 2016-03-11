@@ -25,7 +25,9 @@ class IIncidentSvc;
  *  @author incident listening  removed by Benedikt Hegner
  *  @date 2007-03-07 (modified)
  */
-class AlgContextSvc: public extends2<Service, IAlgContextSvc, IIncidentListener>
+class AlgContextSvc: public extends<Service,
+                                    IAlgContextSvc,
+                                    IIncidentListener>
 {
 public:
   /// set     the currently executing algorithm  ("push_back") @see IAlgContextSvc

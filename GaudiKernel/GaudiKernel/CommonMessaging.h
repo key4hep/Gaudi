@@ -38,7 +38,7 @@
         using Base::Base;                                 \
         virtual ~add_ ## method () = default;             \
         virtual ret method args const = 0;                \
-    }; 
+    };
 
 namespace implementation_detail {
     template <typename> struct void_t { typedef void type; };
@@ -55,26 +55,23 @@ namespace implementation_detail {
 template <typename Base> using add_name = implementation_detail::add_name< Base, ! implementation_detail::has_name<Base>::value >;
 template <typename Base> using add_serviceLocator = implementation_detail::add_serviceLocator< Base, ! implementation_detail::has_serviceLocator<Base>::value >;
 
+template <typename Base> class CommonMessaging;
 
-template <typename BASE>
-class GAUDI_API CommonMessaging: public add_serviceLocator<add_name<BASE>> {
+class CommonMessagingBase {
 public:
-  using base_class = CommonMessaging;
-
-  /// Forward constructor to base class constructor
-  using add_serviceLocator<add_name<BASE>>::add_serviceLocator;
-
   /// Virtual destructor
-  ~CommonMessaging() override = default;
+  virtual ~CommonMessagingBase() = default;
+  /// cold functionality
+  virtual void create_msgSvc() const = 0;
+  virtual void create_msgStream() const = 0;
+
+
 
   /** The standard message service.
    *  Returns a pointer to the standard message service.
    */
   inline SmartIF<IMessageSvc>& msgSvc() const {
-    if (!m_msgsvc) {
-      // Get default implementation of the message service.
-      m_msgsvc = this->serviceLocator();
-    }
+    if (UNLIKELY(!m_msgsvc)) create_msgSvc();
     return m_msgsvc;
   }
 
@@ -90,11 +87,7 @@ public:
 
   /// Return an uninitialized MsgStream.
   inline MsgStream& msgStream() const {
-    if (UNLIKELY((!m_msgStream) || (!m_streamWithService))) {
-      auto& ms = msgSvc();
-      m_msgStream.reset(new MsgStream(ms, this->name()));
-      m_streamWithService = ms.isValid();
-    }
+    if (UNLIKELY((m_createMsgStream))) create_msgStream();
     return *m_msgStream;
   }
 
@@ -141,28 +134,64 @@ public:
 
   /// get the output level from the embedded MsgStream
   inline MSG::Level msgLevel() const {
-    return msgStream().level();
+    if (UNLIKELY(!m_msgStream)) create_msgStream();
+    return m_level;
   }
+
+  /// Backward compatibility function for getting the output level
+  inline MSG::Level outputLevel() const __attribute__ ((deprecated)) { return m_level; }
 
   /// get the output level from the embedded MsgStream
-  inline bool msgLevel(MSG::Level lvl) const {
-    return UNLIKELY(msgLevel() <= lvl);
-  }
+  inline bool msgLevel(MSG::Level lvl) const { return UNLIKELY(msgLevel() <= lvl); }
 
-protected:
-  /// Pointer to the message service;
-  mutable SmartIF<IMessageSvc> m_msgsvc;
+private:
+  template <typename Base> friend class CommonMessaging;
 
   /// The predefined message stream
   mutable std::unique_ptr<MsgStream> m_msgStream;
 
-  /// Flag to create a new MsgStream if it was created without the message service
-  mutable bool m_streamWithService = false;
+  mutable MSG::Level m_level = MSG::NIL;
+  /// Flag to trigger a new MsgStream
+  mutable bool m_createMsgStream = true;
 
+  /// Pointer to the message service;
+  mutable SmartIF<IMessageSvc> m_msgsvc;
+
+
+};
+
+template <typename BASE>
+class GAUDI_API CommonMessaging: public add_serviceLocator<add_name<BASE>>, public CommonMessagingBase {
+public:
+  using base_class = CommonMessaging;
+
+  /// Forward constructor to base class constructor
+  using add_serviceLocator<add_name<BASE>>::add_serviceLocator;
+
+private:
+  // out-of-line 'cold' functions -- put here so as to not blow up the inline 'hot' functions
+  void create_msgSvc() const override final {
+      // Get default implementation of the message service.
+      m_msgsvc = this->serviceLocator();
+  }
+  void create_msgStream() const override final {
+      auto& ms = msgSvc();
+      m_msgStream.reset(new MsgStream(ms, this->name()));
+      m_createMsgStream = (!ms.isValid() || !m_msgStream);
+      m_level = m_msgStream ? m_msgStream->level() : MSG::NIL;
+  }
+
+protected:
   /// Update the output level of the cached MsgStream.
   /// This function is meant to be called by the update handler of the OutputLevel property.
   void updateMsgStreamOutputLevel(int level) {
-    if (m_msgStream) m_msgStream->setLevel(level);
+    if (level != MSG::NIL && level != m_level) {
+      msgSvc()->setOutputLevel(this->name(), level);
+      if (m_msgStream) m_msgStream->setLevel(level);
+      if (UNLIKELY(MSG::Level(level) <= MSG::DEBUG))
+        debug() << "Property update for OutputLevel : new value = " << level << endmsg;
+      m_level = MSG::Level(level);
+    }
   }
 
 };

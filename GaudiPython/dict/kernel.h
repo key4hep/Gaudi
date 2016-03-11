@@ -30,7 +30,14 @@
 #endif
 
 // Force visibility of the classes
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wkeyword-macro"
+#endif
 #define class class GAUDI_API
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 #ifdef _WIN32
 #include "AIDA/IAnnotation.h"
 #endif

@@ -64,8 +64,8 @@ namespace {
 //#define CAST_REGENTRY(x,y) (x)(y)
 typedef DataSvcHelpers::RegistryEntry RegEntry;
 
-#define ON_DEBUG if (UNLIKELY(outputLevel() <= MSG::DEBUG))
-#define ON_VERBOSE if (UNLIKELY(outputLevel() <= MSG::VERBOSE))
+#define ON_DEBUG if (msgLevel(MSG::DEBUG))
+#define ON_VERBOSE if (msgLevel(MSG::VERBOSE))
 
 #define DEBMSG ON_DEBUG debug()
 #define VERMSG ON_VERBOSE verbose()
@@ -236,7 +236,7 @@ StatusCode DataSvc::objectLeaves( const IRegistry*   pRegistry,
   if ( !checkRoot() )    return INVALID_ROOT;
   const RegEntry* node_entry = CAST_REGENTRY(const RegEntry*,pRegistry);
   if ( !node_entry )     return INVALID_OBJECT;
-  std::copy(node_entry->leaves().begin(), node_entry->leaves().end(), back_inserter(leaves));
+  leaves = node_entry->leaves();
   return StatusCode::SUCCESS;
 }
 

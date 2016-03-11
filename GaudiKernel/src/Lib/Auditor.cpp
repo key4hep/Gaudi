@@ -19,7 +19,7 @@ Auditor::Auditor( const std::string& name, ISvcLocator *pSvcLocator )
 {
 
   // Declare common Auditor properties with their defaults
-  declareProperty( "OutputLevel", m_outputLevel = MSG::NIL);
+  declareProperty( "OutputLevel", m_outputLevel = MSG::NIL)->declareUpdateHandler([this](Property&) { this->updateMsgStreamOutputLevel(this->m_outputLevel); } );
   declareProperty( "Enable", m_isEnabled = true);
 }
 
@@ -36,18 +36,9 @@ StatusCode Auditor::sysInitialize() {
     if( !m_pSvcLocator )
       return StatusCode::FAILURE;
 
-    // Set up message service
-    m_MS = serviceLocator(); // get default message service
-    if( !m_MS )  return StatusCode::FAILURE;
-
     // Set the Auditor's properties
     sc = setProperties();
     if( !sc.isSuccess() )  return StatusCode::FAILURE;
-
-    // Check current outputLevel to eventually inform the MessagsSvc
-    if( m_outputLevel != MSG::NIL ) {
-      setOutputLevel( m_outputLevel );
-    }
 
     {
       try{
@@ -62,7 +53,7 @@ StatusCode Auditor::sysInitialize() {
         {
           /// (1) perform the printout of message
 	  MsgStream log ( msgSvc() , name() + ".sysInitialize()" );
-	  log << MSG::FATAL << " Exception with tag=" << Exception.tag() << " is catched " << endmsg;
+	  log << MSG::FATAL << " Exception with tag=" << Exception.tag() << " is caught " << endmsg;
           /// (2) print  the exception itself (NB!  - GaudiException is a linked list of all "previous exceptions")
 	  MsgStream logEx ( msgSvc() , Exception.tag() );
 	  logEx << MSG::ERROR << Exception  << endmsg;
@@ -71,7 +62,7 @@ StatusCode Auditor::sysInitialize() {
         {
 	  /// (1) perform the printout of message
 	  MsgStream log ( msgSvc() , name() + ".sysInitialize()" );
-	  log << MSG::FATAL << " Standard std::exception is catched " << endmsg;
+	  log << MSG::FATAL << " Standard std::exception is caught " << endmsg;
 	  /// (2) print  the exception itself (NB!  - GaudiException is a linked list of all "previous exceptions")
 	  MsgStream logEx ( msgSvc() , name() + "*std::exception*" );
 	  logEx << MSG::ERROR << Exception.what()  << endmsg;
@@ -80,7 +71,7 @@ StatusCode Auditor::sysInitialize() {
         {
 	  /// (1) perform the printout
 	  MsgStream log ( msgSvc() , name() + ".sysInitialize()" );
-	  log << MSG::FATAL << " UNKNOWN Exception is  catched " << endmsg;
+	  log << MSG::FATAL << " UNKNOWN Exception is  caught " << endmsg;
         }
     }
   }
@@ -205,7 +196,6 @@ StatusCode Auditor::sysFinalize() {
 }
 
 StatusCode Auditor::finalize() {
-  m_MS.reset();// release message service
   return StatusCode::SUCCESS;
 }
 
@@ -217,13 +207,6 @@ bool Auditor::isEnabled( ) const {
   return m_isEnabled;
 }
 
-SmartIF<IMessageSvc>& Auditor::msgSvc() const {
-  return m_MS;
-}
-
-void Auditor::setOutputLevel( int level ) {
-  if( m_MS ) m_MS->setOutputLevel( name(), level );
-}
 
 SmartIF<ISvcLocator>& Auditor::serviceLocator() const {
   return m_pSvcLocator;
@@ -231,14 +214,12 @@ SmartIF<ISvcLocator>& Auditor::serviceLocator() const {
 
 // Use the job options service to set declared properties
 StatusCode Auditor::setProperties() {
-  if( m_pSvcLocator ) {
-    auto jos = service<IJobOptionsSvc>("JobOptionsSvc");
-    if( jos ) {
-      jos->setMyProperties( name(), this ).ignore();
-      return StatusCode::SUCCESS;
-    }
-  }
-  return StatusCode::FAILURE;
+  if( !m_pSvcLocator ) return StatusCode::FAILURE;
+  auto jos = service<IJobOptionsSvc>("JobOptionsSvc");
+  if( !jos ) return StatusCode::FAILURE;
+  jos->setMyProperties( name(), this ).ignore();
+  updateMsgStreamOutputLevel( m_outputLevel );
+  return StatusCode::SUCCESS;
 }
 
 // IProperty implementation

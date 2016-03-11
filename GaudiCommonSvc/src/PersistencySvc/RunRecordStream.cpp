@@ -12,11 +12,10 @@
 DECLARE_COMPONENT(RunRecordStream)
 
 StatusCode RunRecordStream::finalize() {
-  MsgStream log(msgSvc(), name());
-  log << MSG::INFO << "Set up File Summary Record" << endmsg;
+  info() << "Set up File Summary Record" << endmsg;
   StatusCode sc = OutputStream::execute();
   if( !sc.isSuccess() )  {
-    log << MSG::WARNING << "Error writing run summary record....." << endmsg;
+    warning() << "Error writing run summary record....." << endmsg;
   }
   return OutputStream::finalize();
 }

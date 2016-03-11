@@ -18,7 +18,8 @@
  *  @date   2004-03-08
  */
 
-class TestTool : public extends1<GaudiTool, ITestTool> {
+class TestTool : public extends<GaudiTool,
+                                ITestTool> {
 
 public:
 

@@ -19,7 +19,8 @@
  *  @date   30/04/2002
  */
 
-class GslErrorPrint: public extends1<AlgTool, IGslErrorHandler> {
+class GslErrorPrint: public extends<AlgTool,
+                                    IGslErrorHandler> {
 public:
 
   /** handle the GSL error

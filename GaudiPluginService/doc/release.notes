@@ -5,6 +5,32 @@
 ! Commit Id   : $Format:%H$
 !-----------------------------------------------------------------------------
 
+========================== GaudiPluginService v3r1 ===========================
+
+! 2015-10-26 - commit de80db5
+
+ - More modernization changes
+
+   Fix (almost) all warnings from clang 3.7, and use clang-modernize to further
+   modernize the code.
+
+   Fixes GAUDI-1118.
+
+   See merge request !49
+
+
+! 2015-10-16 - commit bf01805
+
+ - Merge branch 'GAUDI-1111' into 'master'
+
+   remove dependency on Boost from GaudiPluginService
+
+   Reverted the part of commit dddeca32 that introduce the dependency on Boost.
+
+   Fixes GAUDI-1111.
+
+   See merge request !53
+
 ========================== GaudiPluginService v3r0 ===========================
 
 ! 2015-09-11 - commit c062cbe

@@ -2,6 +2,310 @@ Package GaudiExamples
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+============================ GaudiExamples v27r1 =============================
+
+! 2016-03-11 - commit 4912fc9
+
+ - Renamed MetaDataSvc to Gaudi::MetaDataSvc
+
+   MetaDataSvc is moved into the Gaudi namespace to avoid conflicts
+ with the
+   existing MetaDataSvc in ATLAS.
+    This also includes a minor fix to MetaDataSvc.
+    Fixes GAUDI-1199
+    See merge request !138
+
+! 2016-03-10 - commit 2de9290
+
+ - added metadata service
+
+   The metadata service adds information about n-tuple production into the
+   resulting n-tuple.
+    Update and overrides !128
+    See merge request !136
+
+! 2016-03-10 - commit 4a18175
+
+ - removed uses of templates implements[1-4], extends[1-4] and
+   extend_interfaces[1-4]
+
+   Since merge request !22 they are unnecessary.
+    See merge request !133
+
+! 2016-03-10 - commit 8a11f51
+
+ - fixed unprotected debug messages
+
+   I also added the possibility of dumping a stack trace for unprotected
+
+   messages.
+    Fixes GAUDI-1192
+    See merge request !129
+
+! 2016-02-29 - commit 223ce08
+
+ - Merge branch 'GAUDI-1183' into 'master'
+
+   reorganize DataHandleHolder visitor acces to avoid non-retrieved tools
+    This is not a perfect fix, more a workaround.
+    The method `initToolHandles` have been modified to fill the list of used
+   `ToolHandle`s only with the tools retrieved explicitly in the `initialize`
+   method.
+
+   `GaudiCommon` required the introduction of a hook so that the custom _fixer_
+   visitor could be created in the `GaudiCommon::initialize`, but used only at
+   the end of `PBASE::sysInitialize` (eb39274).
+    I also fixed an issue (double delete) with the use of `ToolHandle` from
+   `GaudiCommon` (0a1bec8).
+    Fixes GAUDI-1183.
+    See merge request !120
+
+! 2016-02-22 - commit acafe77
+
+ - correctly initialize CommonMessaging::m_level
+
+   Fixes GAUDI-1185
+    See merge request !118
+
+! 2016-02-15 - commit 3fbae46
+
+ - fixed a reference file after commit 416a1ecc
+
+   See merge request !113 and !109
+
+! 2016-02-11 - commit b0618f7
+
+ - Improve CommonMessaging
+
+   Implementation of GAUDI-1146: Improve CommonMessaging and use it in more
+   places.
+
+   See merge request !76
+
+   Conflicts:
+   GaudiExamples/tests/qmtest/refs/AlgTools2.ref
+   GaudiExamples/tests/qmtest/refs/MultiInput/Read.ref
+   GaudiExamples/tests/qmtest/refs/conditional_output/write.ref
+   GaudiKernel/GaudiKernel/AlgTool.h
+   GaudiKernel/GaudiKernel/Algorithm.h
+   GaudiKernel/GaudiKernel/Service.h
+   GaudiKernel/src/Lib/AlgTool.cpp
+   GaudiKernel/src/Lib/Algorithm.cpp
+
+
+! 2016-02-11 - commit e2c585c
+
+ - Remove globalTimeOffset getter and GlobalTimeOffset property from GaudiCommon
+
+   GaudiCommon adds a property GlobalTimeOffset and a corresponding getter
+   globalTimeOffset to every algorithm/tool which uses GaudiCommon, regardless
+   on whether this property is used.
+
+   As there is no code anymore that actually uses globalTimeOffset, this patch
+   removes this accessor and the corresponding property.
+
+   Fixes GAUDI-1122.
+
+   See merge request !61
+
+
+! 2016-02-11 - commit dabf7a3
+
+ - Restore fixed ToolHandle.h
+
+   The version of ToolHandle.h before fa29ed33 included some improvements,
+ as
+   well as the fixes for https://sft.its.cern.ch/jira/browse/CFHEP-177 and
+   GAUDI-1127.
+    The version introduced with fa29ed33 does not work because of GAUDI-1127.
+    See merge request !106
+
+! 2016-02-09 - commit 11d42e4
+
+ - DataHandles fixes for LHCb
+
+   - renamed IDataHandleHolder::accept to acceptDHVisitor to avoid build time
+   warnings in LHCb
+   - fixed reference file for GaudiExamples.thistwrite
+
+   See merge request !104
+
+
+! 2016-02-09 - commit a4bea2b
+
+ - remove unprotected DEBUG messages added in v27r0
+
+   The merge of the 'hive' branch introduced several _unprotected_ DEBUG
+   messages,
+ which is against LHCb policies.
+    Fixes GAUDI-1174.
+    See merge request !102
+
+! 2016-02-06 - commit d905569
+
+ - introduce DataHandle and DataObjectHandle
+
+   See merge requests !57 !94 !95
+
+============================ GaudiExamples v27r0 =============================
+
+! 2016-01-21 - commit 10300ee
+
+ - Revert "remove unused GSL components"
+
+   This reverts commit 4244357375685702d7d6322f9990bf539b6375a1.
+ Fixes
+   GAUDI-1167.
+ See merge request !98
+    Conflicts:
+
+   GaudiExamples/src/GSLTools/EqSolverIAlg.h
+   GaudiExamples/src/GSLTools/EqSolverPAlg.h
+   GaudiExamples/src/GSLTools/FuncMinimumGenAlg.h
+   GaudiExamples/src/GSLTools/FuncMinimumIAlg.h
+   GaudiExamples/src/GSLTools/FuncMinimumPAlg.h
+   GaudiGSL/GaudiGSL/GaudiGSL.h
+   GaudiGSL/GaudiGSL/GslError.h
+   GaudiGSL/GaudiGSL/GslErrorHandlers.h
+   GaudiGSL/GaudiGSL/IFuncMinimum.h
+   GaudiGSL/GaudiGSL/IGslErrorHandler.h
+   GaudiGSL/GaudiGSL/IGslSvc.h
+   GaudiGSL/src/Components/EqSolver.cpp
+   GaudiGSL/src/Components/EqSolver.h
+   GaudiGSL/src/Components/FuncMinimum.cpp
+   GaudiGSL/src/Components/FuncMinimum.h
+   GaudiGSL/src/Components/GslErrorCount.cpp
+   GaudiGSL/src/Components/GslErrorCount.h
+   GaudiGSL/src/Components/GslErrorException.cpp
+   GaudiGSL/src/Components/GslErrorException.h
+   GaudiGSL/src/Components/GslErrorPrint.cpp
+   GaudiGSL/src/Components/GslErrorPrint.h
+   GaudiGSL/src/Components/GslSvc.cpp
+   GaudiGSL/src/Components/GslSvc.h
+   GaudiGSL/src/Lib/GaudiGSL.cpp
+   GaudiGSL/src/Lib/GslErrorHandlers.cpp
+
+
+! 2016-01-12 - commit 4dbdc8e
+
+ - fixed clang 3.7 compilation warnings
+
+   Fixes GAUDI-1083.
+ See merge request !89
+
+! 2016-01-12 - commit 5165b50
+
+ - extend the functionality of TupleObj::farray
+
+   - accept an arbitrary number of columns
+   - accept generic 'callables'
+    With the exception of an added 'projection', this implements the
+
+   functionality discussed in GAUDI-1100.
+    See merge request !77
+
+! 2016-01-12 - commit 8ec1b7b
+
+ - return the just-added tool from addTool
+
+   augment addTool to return the tool it just added.
+ This allows one to write:
+   ```python
+ myToolWithName = myalg.addTool(tool_conf2,"ToolWithName")
+
+   myToolWithName.String = "xyz"
+   ```
+ instead of
+   ```python
+ myalg.addTool(tool_conf2,"ToolWithName")
+
+   myalg.ToolWithName.String = "xyz"
+   ```
+ which requires one to duplicate the "ToolWithName" -- once as string,
+   and
+ once as attribute, but only rarely does anybody use getattr for the 2nd
+
+   case to just avoid the duplication.
+    Of course, one could write
+   ```python
+ myalg.addTool(tool_conf2,"ToolWithName", String="xyz")
+   ```
+ or even pass in a complete dictionary with **, but the configuration of
+
+   the tool isn't necessarily complete at the time of creation of its
+
+   configurable.
+    Fixes GAUDI-1162.
+ See merge request !87
+
+! 2015-11-11 - commit 0a0032f
+
+ - Merge branch 'GAUDI-1130' into 'master'
+
+   fixes to support native build on Ubuntu 15.10
+    Fixes GAUDI-1130.
+    See merge request !70
+
+! 2015-11-02 - commit 57f356c
+
+ - Merge branch 'hive' into 'master'
+
+   Fixes GAUDI-978.
+
+   See merge request !65
+
+
+! 2015-10-29 - commit aa624e1
+
+ - Allow compilation of Gaudi with clang 3.7 using gcc 4.9 externals
+
+   To do so, some arguments have to be passed to cmake, assuming CMTCONFIG is
+   x86_64-slc6-clang37-opt
+    * LCG_SYSTEM: To specify the flavour of the externals to use
+    * LCG_FORCE_COMPILER: To specify the compiler to use, with the
+      format "<compiler>-<version>" (an lcg wrapper has to exist for
+      this to work).
+
+   Using the LHCb Makefiles, you just need to specify:
+   ``` export CMAKEFLAGS="-DLCG_SYSTEM=x86_64-slc6-gcc49
+   -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DLCG_FORCE_COMPILER=clang-3.7"
+   ```
+
+   Fixes GAUDI-1123 and LBCORE-934.
+
+   See merge request !48
+
+
+! 2015-10-29 - commit 584c6e3
+
+ - fixed GaudiCommonTests.opts after merge request !52
+
+   See merge request !62
+
+
+! 2015-10-28 - commit 0335830
+
+ - remove RootOnTES property from GaudiCommon
+
+   RootOnTES has been marked as deprecated in favour of RootInTES since
+   (at least) 2009.
+
+   Fixes GAUDI-1112.
+
+   See merge request !52
+
+
+! 2015-10-26 - commit de80db5
+
+ - More modernization changes
+
+   Fix (almost) all warnings from clang 3.7, and use clang-modernize to further
+   modernize the code.
+
+   Fixes GAUDI-1118.
+
+   See merge request !49
+
 ============================ GaudiExamples v26r4 =============================
 
 ! 2015-10-07 - commit e3e20a4

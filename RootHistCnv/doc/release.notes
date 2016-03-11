@@ -2,6 +2,40 @@ Package: RootHistCnv
 Package manager : David Quarrie
 Commit Id: $Format:%H$
 
+============================= RootHistCnv v12r4 ==============================
+
+! 2016-03-11 - commit 4912fc9
+
+ - Renamed MetaDataSvc to Gaudi::MetaDataSvc
+
+   MetaDataSvc is moved into the Gaudi namespace to avoid conflicts
+ with the
+   existing MetaDataSvc in ATLAS.
+    This also includes a minor fix to MetaDataSvc.
+    Fixes GAUDI-1199
+    See merge request !138
+
+! 2016-03-10 - commit 2de9290
+
+ - added metadata service
+
+   The metadata service adds information about n-tuple production into the
+   resulting n-tuple.
+    Update and overrides !128
+    See merge request !136
+============================= RootHistCnv v12r3 ==============================
+
+! 2015-10-26 - commit de80db5
+
+ - More modernization changes
+
+   Fix (almost) all warnings from clang 3.7, and use clang-modernize to further
+   modernize the code.
+
+   Fixes GAUDI-1118.
+
+   See merge request !49
+
 ============================= RootHistCnv v12r2 ==============================
 
 ! 2015-09-30 - commit 70dd6a7

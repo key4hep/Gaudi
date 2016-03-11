@@ -16,7 +16,6 @@ DECLARE_COMPONENT(PropertyProxy)
 PropertyProxy::PropertyProxy(const std::string& name, ISvcLocator* ploc)
            : Algorithm(name, ploc) {
 //------------------------------------------------------------------------------
-  MsgStream log(msgSvc(), name);
   // Declare remote properties at this moment
   auto algMgr = serviceLocator()->as<IAlgManager>();
   SmartIF<IProperty> rAlgP(algMgr->algorithm("PropertyAlg"));
@@ -26,35 +25,32 @@ PropertyProxy::PropertyProxy(const std::string& name, ISvcLocator* ploc)
     declareRemoteProperty("String", rAlgP );
   }
   else {
-    log << MSG::WARNING << " The 'remote' Algorithm PropertyAlg is not found" << endmsg;
+    warning() << " The 'remote' Algorithm PropertyAlg is not found" << endmsg;
   }
 }
 
 //------------------------------------------------------------------------------
 StatusCode PropertyProxy::initialize() {
 //------------------------------------------------------------------------------
-  MsgStream log(msgSvc(), name());
-
   std::string value("empty");
   std::string value1("empty");
 
   this->getProperty("RInt", value).ignore();
-  log << MSG::INFO << " Got property this.RInt = " << value << ";" << endmsg;
+  info() << " Got property this.RInt = " << value << ";" << endmsg;
 
   this->setProperty("RInt", "1001").ignore();
-  log << MSG::INFO << " Set property this.RInt = " << "1001" << ";" << endmsg;
+  info() << " Set property this.RInt = " << "1001" << ";" << endmsg;
 
   this->getProperty("RInt", value).ignore();
-  log << MSG::INFO << " Got property this.RInt = " << value << ";" << endmsg;
+  info() << " Got property this.RInt = " << value << ";" << endmsg;
 
 
   this->getProperty("String", value).ignore();
   m_remAlg->getProperty("String", value1).ignore();
   if( value == value1 ) {
-    log << MSG::INFO << " Got property this.String = " << value << ";" << endmsg;
-  }
-  else {
-    log << MSG::ERROR << " Local property [" << value1 << "] not equal [" << value << "]" << endmsg;
+    info() << " Got property this.String = " << value << ";" << endmsg;
+  } else {
+    error() << " Local property [" << value1 << "] not equal [" << value << "]" << endmsg;
   }
 
   return StatusCode::SUCCESS;
@@ -64,8 +60,7 @@ StatusCode PropertyProxy::initialize() {
 //------------------------------------------------------------------------------
 StatusCode PropertyProxy::execute() {
 //------------------------------------------------------------------------------
-  MsgStream         log( msgSvc(), name() );
-  log << MSG::INFO << "executing...." << endmsg;
+  info() << "executing...." << endmsg;
 
   return StatusCode::SUCCESS;
 }
@@ -74,8 +69,7 @@ StatusCode PropertyProxy::execute() {
 //------------------------------------------------------------------------------
 StatusCode PropertyProxy::finalize() {
 //------------------------------------------------------------------------------
-  MsgStream log(msgSvc(), name());
-  log << MSG::INFO << "finalizing...." << endmsg;
+  info() << "finalizing...." << endmsg;
 
   return StatusCode::SUCCESS;
 }

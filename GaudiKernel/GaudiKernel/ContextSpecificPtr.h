@@ -8,27 +8,13 @@
 #include <type_traits>
 
 // For the definition of GAUDI_API
-#include "Kernel.h"
+#include "GaudiKernel/Kernel.h"
+#include "GaudiKernel/ThreadLocalContext.h"
 
 class EventContext;
 
 namespace Gaudi {
   namespace Hive {
-    /// Internal type used for the ContextId.
-    typedef size_t ContextIdType;
-
-    /// Return the current context id.
-    /// The returned id is valid only within the (sys)Execute method of
-    /// algorithms.
-    GAUDI_API ContextIdType currentContextId();
-    GAUDI_API ContextIdType currentContextEvt();
-
-    /// Used by the framework to change the value of the current context id.
-    GAUDI_API void setCurrentContextId(ContextIdType newId);
-    GAUDI_API void setCurrentContextEvt(long int evtN);
-    GAUDI_API void setCurrentContextId(ContextIdType newId, long int evtN);
-    GAUDI_API void setCurrentContextId(const EventContext* ctx);
-
     /**
      *  Simple implementation of a smart pointer with different values for
      *  different event contexts (slots).
@@ -122,6 +108,19 @@ namespace Gaudi {
         for(auto& i: m_ptrs) f(i.second);
       }
 
+      /// Call a function on each element, passing slot# as well
+      template< class F >
+      void for_all(F f) const {
+        std::lock_guard<std::mutex> lock(m_ptrs_lock);
+        for(auto& i: m_ptrs) f(i.first,i.second);
+      }
+      template< class F >
+      void for_all(F f) {
+        std::lock_guard<std::mutex> lock(m_ptrs_lock);
+        for(auto& i: m_ptrs) f(i.first,i.second);
+      }      
+
+
       void deleteAll() {
         for_each([](T*& p) {delete p; p = nullptr;});
       }
@@ -197,6 +196,18 @@ namespace Gaudi {
       void for_each(F f) {
         m_ptr.for_each([&f] (T* p) { f(*p); });
       }
+
+      /// Call a function on each element, passing slot# as well
+      template< class F >
+      void for_all(F f) const {
+        m_ptr.for_all([&f] (size_t s, const T* p) { f(s,*p); });
+      }
+      template< class F >
+      void for_all(F f) {
+        m_ptr.for_all([&f] (size_t s, T* p) { f(s,*p); });
+      }      
+
+
 
     private:
       // FIXME: implement a proper copy constructor

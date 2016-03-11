@@ -17,7 +17,9 @@ namespace Gaudi {
     *  This class manages multiple file catalogs.
     *
     */
-  class MultiFileCatalog: public extends2<Service, IFileCatalog, IFileCatalogMgr>
+  class MultiFileCatalog: public extends<Service,
+                                         IFileCatalog,
+                                         IFileCatalogMgr>
   {
   public:
     // disambiguate between Service::Factory and IFileCatalog::Factory

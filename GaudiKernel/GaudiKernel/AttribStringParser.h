@@ -4,19 +4,28 @@
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/System.h"
 #include <iterator>
+#ifdef __clang__
+#pragma clang diagnostic push
+// Hide warning message:
+// boost/regex/v4/instances.hpp:128:17: warning: keyword is hidden by macro definition
+#pragma clang diagnostic ignored "-Wkeyword-macro"
+#endif
 #include <boost/regex.hpp>
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
 namespace Gaudi {
   namespace Utils {
     /** Parse attribute strings allowing iteration over the various attributes.
      * Example of usage:
-     * @code{
+     * \code{.cpp}
      * using Parser = Gaudi::Utils::AttribStringParser;
      * std::string input{"key1='value1' key2='value2'"};
      * for(auto attrib: Parser(input)) {
      *   std::cout << attrib.tag << " -> " << attrib.value << std::endl;
      * }
-     * @}
+     * \endcode
      */
     class AttribStringParser {
     public:

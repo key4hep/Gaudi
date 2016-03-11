@@ -36,9 +36,14 @@ tool_conf2 = MyTool( 'MyTool_conf2',
                      OutputLevel = INFO )
 
 
-myalg.addTool(tool_conf2,"ToolWithName")
+myToolWithName = myalg.addTool(tool_conf2,"ToolWithName")
 
-myalg.ToolWithName.String = "abc"
+myalg.ToolWithName.String = "xyz"
+
+assert myToolWithName.String == "xyz"
+assert myalg.ToolWithName == myToolWithName
+
+myToolWithName.String = "abc"
 
 mygalg = MyGaudiAlgorithm('MyGaudiAlg')
 mygalg.PrivToolHandle.String = "Is a private tool"

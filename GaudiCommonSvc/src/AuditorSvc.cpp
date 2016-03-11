@@ -50,11 +50,10 @@ StatusCode AuditorSvc::syncAuditors_() {
   if ( m_audNameList.size() == m_pAudList.size() )
     return StatusCode::SUCCESS;
 
-  MsgStream log( msgSvc(), name() );
   StatusCode sc;
 
 //   if ( sc.isFailure() ) {
-//     log << MSG::ERROR << "Unable to locate ObjectManager Service" << endmsg;
+//     error() << "Unable to locate ObjectManager Service" << endmsg;
 //     return sc;
 //   }
 
@@ -64,11 +63,11 @@ StatusCode AuditorSvc::syncAuditors_() {
     // this is clumsy, but the PropertyMgr won't tell us when my property changes right
     // under my nose, so I'll have to figure this out the hard way
     if ( !findAuditor_( it ) ) { // if auditor does not yet exist
-      auto aud = newAuditor_( log, it );
+      auto aud = newAuditor_( msgStream(), it );
       if ( aud ) {
         m_pAudList.push_back( std::move(aud) );
       } else {
-        log << MSG::ERROR << "Error constructing Auditor " << it << endmsg;
+        error() << "Error constructing Auditor " << it << endmsg;
         sc = StatusCode::FAILURE;
       }
     }

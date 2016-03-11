@@ -183,7 +183,7 @@ namespace Gaudi
     inline std::ostream& toStream
     ( const std::map<KTYPE,VTYPE,CMP,ALLOCATOR>& obj, std::ostream& s )
     {
-      using GaudiUtils::detail::ostream_joiner;
+      using GaudiUtils::details::ostream_joiner;
       return ostream_joiner( s << "{ ", obj, " , ",
                              [](std::ostream& os, const std::pair<const KTYPE,VTYPE>& i)
                              -> std::ostream&
@@ -203,7 +203,7 @@ namespace Gaudi
     inline std::ostream& toStream
     ( const GaudiUtils::VectorMap<KTYPE,VTYPE,CMP,ALLOCATOR>& obj, std::ostream& s )
     {
-      using GaudiUtils::detail::ostream_joiner;
+      using GaudiUtils::details::ostream_joiner;
       return ostream_joiner( s << "{ ", obj, " , ",
                                [](std::ostream& os, const std::pair<const KTYPE,VTYPE>& i )
                                -> std::ostream&
@@ -223,7 +223,7 @@ namespace Gaudi
     inline std::ostream& toStream
     ( const GaudiUtils::Map<KTYPE,VTYPE,MAP>& obj, std::ostream& s)
     {
-      using GaudiUtils::detail::ostream_joiner;
+      using GaudiUtils::details::ostream_joiner;
       return ostream_joiner( s << "{ ", obj,  " , " ,
                              [](std::ostream& s, const std::pair<const KTYPE,VTYPE>& i )
                              -> std::ostream&
@@ -243,7 +243,7 @@ namespace Gaudi
     inline std::ostream& toStream
     ( const GaudiUtils::HashMap<KTYPE,VTYPE,HASH,MAP>& obj, std::ostream& s)
     {
-        using GaudiUtils::detail::ostream_joiner;
+        using GaudiUtils::details::ostream_joiner;
         return ostream_joiner( s << "{ ", obj,  " , ",
                                [](std::ostream& os, const std::pair<const KTYPE,VTYPE>& p)
                                -> std::ostream&
@@ -324,7 +324,7 @@ namespace Gaudi
       const std::string& delim )                       //             delimiter
     {
       using ref_t = typename std::iterator_traits<ITERATOR>::reference;
-      using GaudiUtils::detail::ostream_joiner;
+      using GaudiUtils::details::ostream_joiner;
       return ostream_joiner( s << open, first, last, delim,
                              [](std::ostream& os, ref_t i ) -> std::ostream&
                              { return toStream( i, os ); } ) << close;

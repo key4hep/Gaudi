@@ -69,7 +69,6 @@ set(GAUDI_CXX_STANDARD "${GAUDI_CXX_STANDARD_DEFAULT}"
     CACHE STRING "Version of the C++ standard to be used.")
 
 #--- Compilation Flags ---------------------------------------------------------
-add_definitions(-DGOD_NOALLOC)
 if(NOT GAUDI_FLAGS_SET)
   #message(STATUS "Setting cached build flags")
 
@@ -241,7 +240,7 @@ else()
 endif()
 
 if(LCG_COMP STREQUAL clang AND LCG_COMPVERS MATCHES "37")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Qunused-arguments -Wno-unused-local-typedefs --gcc-toolchain=${lcg_system_compiler_path}")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --gcc-toolchain=${lcg_system_compiler_path}")
 endif()
 
 if(NOT GAUDI_V21)
@@ -277,12 +276,16 @@ endif()
 #--- Tuning of warnings --------------------------------------------------------
 if(GAUDI_HIDE_WARNINGS)
   if(LCG_COMP MATCHES clang)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated -Wno-overloaded-virtual -Wno-char-subscripts -Wno-unused-parameter")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Qunused-arguments -Wno-deprecated -Wno-overloaded-virtual -Wno-char-subscripts -Wno-unused-parameter -Wno-unused-local-typedefs -Wno-missing-braces")
   else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated -Wno-empty-body")
-    if(LCG_COMPVERS MATCHES "48|49|max")
+    if(LCG_COMPVERS VERSION_GREATER "47")
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-local-typedefs")
     endif()
+  endif()
+else()
+  if(LCG_COMP STREQUAL gcc AND NOT LCG_COMPVERS VERSION_LESS "50")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wsuggest-override")
   endif()
 endif()
 

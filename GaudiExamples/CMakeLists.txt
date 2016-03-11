@@ -1,4 +1,4 @@
-gaudi_subdir(GaudiExamples v26r4)
+gaudi_subdir(GaudiExamples v27r1)
 
 gaudi_depends_on_subdirs(GaudiKernel GaudiUtils GaudiGSL GaudiAlg RootCnv)
 
@@ -25,6 +25,7 @@ set(GaudiExamples_srcs
     src/AlgTools/*.cpp
     src/DataOnDemand/*.cpp
     src/AlgErrAud/*.cpp
+    src/GSLTools/*.cpp
     src/RandomNumber/*.cpp
     src/Histograms/*.cpp
     src/NTuples/*.cpp

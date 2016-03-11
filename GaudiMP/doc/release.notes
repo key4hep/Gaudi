@@ -2,6 +2,25 @@ Package: GaudiMP
 Package manager : Sebastien Binet
 Commit Id: $Format:%H$
 
+================================ GaudiMP v3r5 ================================
+
+! 2016-03-10 - commit 4a18175
+
+ - removed uses of templates implements[1-4], extends[1-4] and
+   extend_interfaces[1-4]
+
+   Since merge request !22 they are unnecessary.
+    See merge request !133
+================================ GaudiMP v3r4 ================================
+
+! 2015-11-02 - commit 57f356c
+
+ - Merge branch 'hive' into 'master'
+
+   Fixes GAUDI-978.
+
+   See merge request !65
+
 ================================ GaudiMP v3r3 ================================
 
 ! 2015-10-08 - commit c50c176

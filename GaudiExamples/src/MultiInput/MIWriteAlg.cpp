@@ -51,7 +51,6 @@ StatusCode WriteAlg::finalize() {
 StatusCode WriteAlg::execute() {
   StatusCode sc;
 
-  MsgStream log(msgSvc(), name());
   Rndm::Numbers rndmflat(randSvc(), Rndm::Flat(0., 1.));
   Rndm::Numbers rndmgauss(randSvc(), Rndm::Gauss(10., 1.));
 
@@ -63,7 +62,7 @@ StatusCode WriteAlg::execute() {
 
   sc = eventSvc()->registerObject("Header", hdr);
   if( sc.isFailure() ) {
-    log << MSG::ERROR << "Unable to register Event Header" << endmsg;
+    error() << "Unable to register Event Header" << endmsg;
     return sc;
   }
 

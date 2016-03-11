@@ -144,6 +144,7 @@ inline TOOL* GaudiCommon<PBASE>::tool( const std::string& type           ,
   { Exception("tool():: Could not retrieve Tool '" + type + "'/'" + name + "'"     ) ; }
   // insert tool into list of tools
   PBASE::registerTool(Tool);
+  m_managedTools.push_back(Tool);
   // return *VALID* located tool
   return Tool ;
 }
@@ -168,6 +169,7 @@ inline TOOL* GaudiCommon<PBASE>::tool( const std::string& type   ,
   { Exception("tool():: Could not retrieve Tool '" + type + "'"     ) ; }
   // add the tool into the list of known tools to be properly released
   PBASE::registerTool(Tool);
+  m_managedTools.push_back(Tool);
   // return *VALID* located tool
   return Tool ;
 }
@@ -224,14 +226,6 @@ inline void GaudiCommon<PBASE>::Assert( const bool         ok  ,
                                         const StatusCode   sc  ) const
 {
   if (!ok) Exception( msg , sc );
-}
-// ============================================================================
-// Delete the current message stream object
-// ============================================================================
-template <class PBASE>
-inline void GaudiCommon<PBASE>::resetMsgStream() const
-{
-  m_msgStream.reset();
 }
 // ============================================================================
 // Assertion - throw exception, if condition is not fulfilled

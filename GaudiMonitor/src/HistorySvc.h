@@ -38,7 +38,9 @@ struct DHH;
  *
  */
 
-class HistorySvc: public extends2<Service, IHistorySvc, IIncidentListener> {
+class HistorySvc: public extends<Service,
+                                 IHistorySvc,
+                                 IIncidentListener> {
 public:
 
   virtual StatusCode initialize();

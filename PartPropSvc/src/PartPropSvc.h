@@ -25,7 +25,8 @@
 //
 //------------------------------------------------------------------
 
-class PartPropSvc: public extends1<Service, IPartPropSvc> {
+class PartPropSvc: public extends<Service,
+                                  IPartPropSvc> {
 public:
 
   PartPropSvc( const std::string& name, ISvcLocator* svc );
@@ -56,8 +57,6 @@ private:
   std::unique_ptr<HepPDT::ParticleDataTable> m_pdt;
 
   inputFunPtr parseTableType(const std::string&);
-
-  mutable MsgStream m_log;
 
   bool m_upid_local = false;
 

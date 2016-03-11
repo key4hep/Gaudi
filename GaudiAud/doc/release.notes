@@ -2,6 +2,40 @@ Package: GaudiAud
 Package manager : David Quarrie, Marco Clemencic
 Commit Id: $Format:%H$
 
+=============================== GaudiAud v10r5 ===============================
+
+! 2016-02-11 - commit b0618f7
+
+ - Improve CommonMessaging
+
+   Implementation of GAUDI-1146: Improve CommonMessaging and use it in more
+   places.
+
+   See merge request !76
+
+   Conflicts:
+   GaudiExamples/tests/qmtest/refs/AlgTools2.ref
+   GaudiExamples/tests/qmtest/refs/MultiInput/Read.ref
+   GaudiExamples/tests/qmtest/refs/conditional_output/write.ref
+   GaudiKernel/GaudiKernel/AlgTool.h
+   GaudiKernel/GaudiKernel/Algorithm.h
+   GaudiKernel/GaudiKernel/Service.h
+   GaudiKernel/src/Lib/AlgTool.cpp
+   GaudiKernel/src/Lib/Algorithm.cpp
+
+=============================== GaudiAud v10r4 ===============================
+
+! 2015-10-26 - commit de80db5
+
+ - More modernization changes
+
+   Fix (almost) all warnings from clang 3.7, and use clang-modernize to further
+   modernize the code.
+
+   Fixes GAUDI-1118.
+
+   See merge request !49
+
 =============================== GaudiAud v10r3 ===============================
 
 ! 2015-09-25 - commit 35dd00c

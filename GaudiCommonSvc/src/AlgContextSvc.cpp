@@ -52,8 +52,7 @@ StatusCode AlgContextSvc::initialize ()
     m_inc = Service::service ( "IncidentSvc" , true ) ;
     if ( !m_inc )
     {
-      MsgStream log ( msgSvc() , name() )  ;
-      log << MSG::ERROR << "Could not locate 'IncidentSvc'" << endmsg ;
+      error() << "Could not locate 'IncidentSvc'" << endmsg ;
       return StatusCode::FAILURE ;                                               // RETURN
     }
     m_inc -> addListener ( this , IncidentType::BeginEvent ) ;
@@ -61,10 +60,8 @@ StatusCode AlgContextSvc::initialize ()
   }
   if ( m_algorithms.get() && !m_algorithms->empty() )
   {
-    MsgStream log ( msgSvc() , name() ) ;
-    log << MSG::WARNING
-        << "Non-empty stack of algorithms #"
-        << m_algorithms->size() << endmsg ;
+    warning() << "Non-empty stack of algorithms #"
+              << m_algorithms->size() << endmsg ;
   }
   return StatusCode::SUCCESS ;
 }
@@ -75,10 +72,8 @@ StatusCode AlgContextSvc::finalize   ()
 {
   if ( m_algorithms.get() && !m_algorithms->empty() )
   {
-    MsgStream log ( msgSvc() , name() ) ;
-    log << MSG::WARNING
-        << "Non-empty stack of algorithms #"
-        << m_algorithms->size() << endmsg ;
+    warning() << "Non-empty stack of algorithms #"
+              << m_algorithms->size() << endmsg ;
   }
   // Incident Service
   if ( m_inc )
@@ -96,8 +91,7 @@ StatusCode AlgContextSvc::setCurrentAlg  ( IAlgorithm* a )
 {
   if ( !a )
   {
-    MsgStream log ( msgSvc() , name() ) ;
-    log << MSG::WARNING << "IAlgorithm* points to NULL" << endmsg ;
+    warning() << "IAlgorithm* points to NULL" << endmsg ;
     return StatusCode::RECOVERABLE ;                              // RETURN
   }
   // check whether thread-local algorithm list already exists
@@ -122,14 +116,12 @@ StatusCode AlgContextSvc::unSetCurrentAlg ( IAlgorithm* a )
 
   if ( !a )
   {
-    MsgStream log ( msgSvc() , name() ) ;
-    log << MSG::WARNING << "IAlgorithm* points to NULL" << endmsg ;
+    warning() << "IAlgorithm* points to NULL" << endmsg ;
     return StatusCode::RECOVERABLE ;                              // RETURN
   }
     if ( m_algorithms->empty() || m_algorithms->back() != a )
    {
-     MsgStream log ( msgSvc() , name() ) ;
-    log << MSG::ERROR << "Algorithm stack is invalid" << endmsg ;
+    error() << "Algorithm stack is invalid" << endmsg ;
     return StatusCode::FAILURE ;
   }
   m_algorithms->pop_back() ;                                      // POP_BACK
@@ -150,10 +142,8 @@ IAlgorithm* AlgContextSvc::currentAlg  () const
 // ============================================================================
 void AlgContextSvc::handle ( const Incident& ) {
   if ( m_algorithms.get() && !m_algorithms->empty() ) {
-    MsgStream log ( msgSvc() , name() ) ;
-    log << MSG::ERROR
-        << "Non-empty stack of algorithms #"
-        << m_algorithms->size() << endmsg ;
+    error() << "Non-empty stack of algorithms #"
+            << m_algorithms->size() << endmsg ;
   }
 }
 // ============================================================================

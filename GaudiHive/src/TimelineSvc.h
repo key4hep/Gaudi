@@ -9,7 +9,8 @@
 
 #include "tbb/concurrent_vector.h"
 
-class TimelineSvc: public extends1<Service, ITimelineSvc> {
+class TimelineSvc: public extends<Service,
+                                  ITimelineSvc> {
 
 public:
 
@@ -31,6 +32,7 @@ private:
   void outputTimeline();
 
   bool m_isEnabled;
+  bool m_partial;
   std::string m_timelineFile;
   tbb::concurrent_vector<TimelineEvent> m_events;
 

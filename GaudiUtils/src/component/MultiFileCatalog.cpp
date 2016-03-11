@@ -80,8 +80,7 @@ IFileCatalog* MultiFileCatalog::getCatalog(CSTR fid,
     printError("No writable file catalog found which contains FID:"+fid,throw_if_not);
   }
   else  {
-    MsgStream log(msgSvc(),name());
-    log << MSG::DEBUG << "No writable file catalog found which contains FID:" << fid << endmsg;
+    debug() << "No writable file catalog found which contains FID:" << fid << endmsg;
   }
   return nullptr;
 }
@@ -108,12 +107,11 @@ MultiFileCatalog::i_findCatalog(CSTR connect, bool must_be_writable)  {
 }
 // ----------------------------------------------------------------------------
 void MultiFileCatalog::printError(CSTR msg, bool rethrow)  const  {
-  MsgStream log(msgSvc(),name());
   if ( rethrow )  {
-    log << MSG::FATAL << msg << endmsg;
+    fatal() << msg << endmsg;
     throw runtime_error("Catalog> "+msg);
   }
-  log << MSG::ERROR << msg << endmsg;
+  error() << msg << endmsg;
 }
 // ----------------------------------------------------------------------------
 void MultiFileCatalog::addCatalog(CSTR con)  {
@@ -263,8 +261,7 @@ void MultiFileCatalog::propHandler(Property& /* p */)
   // start
   init() ;
   //
-  MsgStream log ( msgSvc() , name() ) ;
-  log << MSG::DEBUG
+  debug()
       << "New catalogs to be used: "
       << Gaudi::Utils::toString ( m_catalogNames ) << endmsg ;
 }

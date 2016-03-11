@@ -73,7 +73,7 @@ protected:
   /// All requirements
   std::vector<state_type> m_all_requirements;
   /// Register of input products
-  std::map<std::string,unsigned int> m_product_indices;
+  std::map<DataObjID,unsigned int> m_product_indices;
   /// Total number of algos in flight across all events
   std::atomic_uint m_total_algos_in_flight;
   /// Total number of algos

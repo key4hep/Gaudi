@@ -14,7 +14,8 @@
 // ============================================================================
 #include "GaudiKernel/Property.h"
 #include "GaudiKernel/IProperty.h"
-#include "GaudiKernel/DataObjectDescriptor.h"
+#include "GaudiKernel/DataObjectHandleProperty.h"
+
 // ============================================================================
 
 // pre-declaration of GaudiHandles is sufficient
@@ -22,6 +23,7 @@ template< class T> class ToolHandle;
 template< class T> class ServiceHandle;
 template< class T> class ToolHandleArray;
 template< class T> class ServiceHandleArray;
+template< class T> class DataObjectHandle;
 
 /** @class PropertyMgr PropertyMgr.h GaudiKernel/PropertyMgr.h
  *
@@ -32,7 +34,7 @@ template< class T> class ServiceHandleArray;
  *  @author Paul Maley
  *  @author David Quarrie
  */
-class GAUDI_API PropertyMgr : public implements1<IProperty>
+class GAUDI_API PropertyMgr : public implements<IProperty>
 {
 public:
   /// constructor from the interface
@@ -88,14 +90,10 @@ public:
     ServiceHandleArray<TYPE>& ref,
     const std::string& doc = "none" ) ;
   /// Declare a property (specialization)
+   template<class TYPE>
   Property* declareProperty
   ( const std::string& name,
-    DataObjectDescriptor& ref,
-    const std::string& doc = "none" ) ;
-  /// Declare a property (specialization)
-  Property* declareProperty
-  ( const std::string& name,
-    DataObjectDescriptorCollection& ref,
+     DataObjectHandle<TYPE>& ref, 
     const std::string& doc = "none" ) ;
   /// Declare a remote property
   Property* declareRemoteProperty
@@ -308,31 +306,15 @@ PropertyMgr::declareProperty
 }
 
 // ============================================================================
+template<class TYPE>
 inline Property*
 PropertyMgr::declareProperty
 ( const std::string& name,
-  DataObjectDescriptor& ref,
+  DataObjectHandle<TYPE>& ref, 
   const std::string& doc )
 {
   assertUniqueName(name);
-  m_todelete.emplace_back( new DataObjectDescriptorProperty( name, ref ) );
-  Property* p = m_todelete.back().get();
-  //
-  p -> setDocumentation    ( doc ) ;
-  m_properties . push_back ( p   ) ;
-  //
-  return p ;
-}
-// ============================================================================
-inline Property*
-PropertyMgr::declareProperty
-( const std::string& name,
-  DataObjectDescriptorCollection& ref,
-  const std::string& doc )
-{
-  assertUniqueName(name);
-  m_todelete.emplace_back( new DataObjectDescriptorCollectionProperty( name, ref ) );
-  Property* p = m_todelete.back().get();
+  Property* p = new DataObjectHandleProperty( name, ref );
   //
   p -> setDocumentation    ( doc ) ;
   m_properties . push_back ( p   ) ;

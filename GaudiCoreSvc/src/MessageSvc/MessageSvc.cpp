@@ -7,6 +7,7 @@
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/StatusCode.h"
 #include "GaudiKernel/Message.h"
+#include "GaudiKernel/System.h"
 #include "MessageSvc.h"
 
 #include <sstream>
@@ -94,6 +95,9 @@ MessageSvc::MessageSvc( const std::string& name, ISvcLocator* svcloc )
 
   declareProperty( "enableSuppression", m_suppress = false );
   declareProperty( "countInactive", m_inactCount = false )->declareUpdateHandler( &MessageSvc::setupInactCount, this );
+  declareProperty( "tracedInactiveSources", m_tracedInactiveSources,
+                   "for each message source specified, print a stack trace for"
+                   "the unprotected and unseen messages" );
 #ifndef NDEBUG
   // initialize the MsgStream static flag.
   MsgStream::enableCountInactive(m_inactCount);
@@ -696,7 +700,7 @@ int MessageSvc::outputLevel( const std::string& source )   const {
 // ---------------------------------------------------------------------------
   std::unique_lock<std::recursive_mutex> lock(m_thresholdMapMutex);
   auto it = m_thresholdMap.find( source );
-  return ( it != m_thresholdMap.end() ) ?  it->second : m_outputLevel.value();
+  return it != m_thresholdMap.end() ? it->second : m_outputLevel.value();
 }
 
 // ---------------------------------------------------------------------------
@@ -710,7 +714,13 @@ void MessageSvc::setOutputLevel(const std::string& source, int level)    {
 // ---------------------------------------------------------------------------
   std::unique_lock<std::recursive_mutex> lock(m_thresholdMapMutex);
 
-  m_thresholdMap[source] = level;
+  // only write if we really have to...
+  auto i = m_thresholdMap.find( source );
+  if (i == m_thresholdMap.end()) {
+    m_thresholdMap[source] = level;
+  } else if (i->second!=level) {
+    i->second = level;
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -729,9 +739,17 @@ int MessageSvc::messageCount( MSG::Level level) const   {
 // ---------------------------------------------------------------------------
 void
 MessageSvc::incrInactiveCount(MSG::Level level, const std::string& source) {
-
   ++(m_inactiveMap[source].msg[level]);
 
+  if (std::find(begin(m_tracedInactiveSources),
+                end(m_tracedInactiveSources),
+                source) != end(m_tracedInactiveSources)) {
+    std::cout << "== inactive message detected from "
+        << source << " ==" << std::endl;
+    std::string t;
+    System::backTrace(t, 25, 0);
+    std::cout << t << std::endl;
+  }
 }
 
 // ---------------------------------------------------------------------------

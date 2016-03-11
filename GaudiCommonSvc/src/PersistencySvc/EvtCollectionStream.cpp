@@ -31,20 +31,19 @@ EvtCollectionStream::EvtCollectionStream(const std::string& name, ISvcLocator* p
 
 // initialize data writer
 StatusCode EvtCollectionStream::initialize() {
-  MsgStream log(msgSvc(), name());
   // Use the Job options service to set the Algorithm's parameters
   setProperties();
   // Get access to the DataManagerSvc
   m_pTupleSvc = serviceLocator()->service(m_storeName);
   if( !m_pTupleSvc ) {
-    log << MSG::FATAL << "Unable to locate IDataManagerSvc interface" << endmsg;
+    fatal() << "Unable to locate IDataManagerSvc interface" << endmsg;
     return StatusCode::FAILURE;
   }
   // Clear the item list
   clearItems();
   // Take the new item list from the properties.
   for(const auto& i : m_itemNames) addItem( i );
-  log << MSG::INFO << "Data source:             " << m_storeName  << endmsg;
+  info() << "Data source:             " << m_storeName  << endmsg;
   return StatusCode::SUCCESS;
 }
 
@@ -74,7 +73,6 @@ void EvtCollectionStream::clearItems()     {
 
 // Add item to output streamer list
 void EvtCollectionStream::addItem(const std::string& descriptor)   {
-  MsgStream log(msgSvc(), name());
   auto  sep = descriptor.rfind("#");
   int level = 0;
   std::string obj_path = descriptor.substr(0,sep);
@@ -89,7 +87,7 @@ void EvtCollectionStream::addItem(const std::string& descriptor)   {
   }
   m_itemList.emplace_back( new DataStoreItem(obj_path, level) );
   const auto& item = m_itemList.back();
-  log << MSG::INFO << "Adding OutputStream item " << item->path()
+  info() << "Adding OutputStream item " << item->path()
       << " with " << item->depth()
       << " level(s)." << endmsg;
 }

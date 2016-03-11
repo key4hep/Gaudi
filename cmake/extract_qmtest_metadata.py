@@ -7,6 +7,7 @@ properties.
 __author__ = 'Marco Clemencic <marco.clemencic@cern.ch>'
 
 import os
+import platform
 import xml.etree.ElementTree as ET
 import collections
 import re

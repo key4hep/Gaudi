@@ -26,7 +26,8 @@ class IIncidentSvc;
  */
 
 
-class GAUDI_API DataStreamTool: public extends1<AlgTool, IDataStreamTool> {
+class GAUDI_API DataStreamTool: public extends<AlgTool,
+                                               IDataStreamTool> {
 public:
 
   typedef std::vector<EventSelectorDataStream*>  Streams;

@@ -43,7 +43,9 @@
     @author Markus Frank
     @version 1.0
 */
-class GAUDI_API ConversionSvc: public extends2<Service, IConversionSvc, IAddressCreator>
+class GAUDI_API ConversionSvc: public extends<Service,
+                                              IConversionSvc,
+                                              IAddressCreator>
 {
 public:
   class WorkerEntry final {

@@ -4,6 +4,115 @@
 ! Commit Id   : $Format:%H$
 ! =============================================================================
 
+=============================== GaudiGSL v9r2 ================================
+
+! 2016-03-10 - commit 4a18175
+
+ - removed uses of templates implements[1-4], extends[1-4] and
+   extend_interfaces[1-4]
+
+   Since merge request !22 they are unnecessary.
+    See merge request !133
+
+! 2016-02-11 - commit fcf9b05
+
+ - Fix for failing test GaudiGSL.InterpTest (on latest GSL)
+
+   This test confuses interpolation and extrapolation. These have
+ historically
+   been the same in GSL, but haven't been for a while now. If
+ you want to
+   extrapolate, you have to tell GSL to do so explicitly.
+    The test is modified to solely do interpolation.
+    See merge request !107
+
+! 2016-02-11 - commit b0618f7
+
+ - Improve CommonMessaging
+
+   Implementation of GAUDI-1146: Improve CommonMessaging and use it in more
+   places.
+
+   See merge request !76
+
+   Conflicts:
+   GaudiExamples/tests/qmtest/refs/AlgTools2.ref
+   GaudiExamples/tests/qmtest/refs/MultiInput/Read.ref
+   GaudiExamples/tests/qmtest/refs/conditional_output/write.ref
+   GaudiKernel/GaudiKernel/AlgTool.h
+   GaudiKernel/GaudiKernel/Algorithm.h
+   GaudiKernel/GaudiKernel/Service.h
+   GaudiKernel/src/Lib/AlgTool.cpp
+   GaudiKernel/src/Lib/Algorithm.cpp
+
+=============================== GaudiGSL v9r1 ================================
+
+! 2016-01-21 - commit 10300ee
+
+ - Revert "remove unused GSL components"
+
+   This reverts commit 4244357375685702d7d6322f9990bf539b6375a1.
+ Fixes
+   GAUDI-1167.
+ See merge request !98
+    Conflicts:
+
+   GaudiExamples/src/GSLTools/EqSolverIAlg.h
+   GaudiExamples/src/GSLTools/EqSolverPAlg.h
+   GaudiExamples/src/GSLTools/FuncMinimumGenAlg.h
+   GaudiExamples/src/GSLTools/FuncMinimumIAlg.h
+   GaudiExamples/src/GSLTools/FuncMinimumPAlg.h
+   GaudiGSL/GaudiGSL/GaudiGSL.h
+   GaudiGSL/GaudiGSL/GslError.h
+   GaudiGSL/GaudiGSL/GslErrorHandlers.h
+   GaudiGSL/GaudiGSL/IFuncMinimum.h
+   GaudiGSL/GaudiGSL/IGslErrorHandler.h
+   GaudiGSL/GaudiGSL/IGslSvc.h
+   GaudiGSL/src/Components/EqSolver.cpp
+   GaudiGSL/src/Components/EqSolver.h
+   GaudiGSL/src/Components/FuncMinimum.cpp
+   GaudiGSL/src/Components/FuncMinimum.h
+   GaudiGSL/src/Components/GslErrorCount.cpp
+   GaudiGSL/src/Components/GslErrorCount.h
+   GaudiGSL/src/Components/GslErrorException.cpp
+   GaudiGSL/src/Components/GslErrorException.h
+   GaudiGSL/src/Components/GslErrorPrint.cpp
+   GaudiGSL/src/Components/GslErrorPrint.h
+   GaudiGSL/src/Components/GslSvc.cpp
+   GaudiGSL/src/Components/GslSvc.h
+   GaudiGSL/src/Lib/GaudiGSL.cpp
+   GaudiGSL/src/Lib/GslErrorHandlers.cpp
+
+
+! 2015-11-02 - commit 57f356c
+
+ - Merge branch 'hive' into 'master'
+
+   Fixes GAUDI-978.
+
+   See merge request !65
+
+
+! 2015-10-26 - commit de80db5
+
+ - More modernization changes
+
+   Fix (almost) all warnings from clang 3.7, and use clang-modernize to further
+   modernize the code.
+
+   Fixes GAUDI-1118.
+
+   See merge request !49
+
+
+! 2015-10-21 - commit fecec81
+
+ - removed duplicated dictionary selections
+
+   Fixes GAUDI-1115.
+
+   See merge request !56
+
 =============================== GaudiGSL v9r0 ================================
 
 ! 2015-09-25 - commit 35dd00c

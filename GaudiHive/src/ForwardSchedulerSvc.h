@@ -7,6 +7,7 @@
 #include "GaudiKernel/Service.h"
 #include "GaudiKernel/IAlgResourcePool.h"
 #include "GaudiKernel/IHiveWhiteBoard.h"
+#include "GaudiKernel/IThreadPoolSvc.h"
 
 // Local includes
 #include "AlgsExecutionStates.h"
@@ -69,7 +70,8 @@ typedef AlgsExecutionStates::State State;
  *  @author  Benedikt Hegner
  *  @version 1.1
  */
-class ForwardSchedulerSvc: public extends1<Service, IScheduler> {
+class ForwardSchedulerSvc: public extends<Service,
+                                          IScheduler> {
 public:
   /// Constructor
   ForwardSchedulerSvc( const std::string& name, ISvcLocator* svc );
@@ -101,6 +103,12 @@ public:
 
 private:
 
+  enum ActivationState {
+    INACTIVE = 0,
+    ACTIVE = 1,
+    FAILURE = 2
+  };
+
   // Utils and shortcuts ----------------------------------------------------
 
   /// Activate scheduler
@@ -110,7 +118,7 @@ private:
   StatusCode deactivate();
 
   /// Flag to track if the scheduler is active or not
-  bool m_isActive;
+  std::atomic<ActivationState> m_isActive;
 
   /// The thread in which the activate function runs
   std::thread m_thread;
@@ -181,7 +189,7 @@ private:
   /// Cache for the algorithm resource pool
   SmartIF<IAlgResourcePool>  m_algResourcePool;
 
-  /// Ugly, will disappear when the deps are declared only within the C++ code of the algos.
+  /// DEPRECATED!
   std::vector<std::vector<std::string>> m_algosDependencies;
 
   /// Drain the actions present in the queue
@@ -212,6 +220,64 @@ private:
 
   // Needed to queue actions on algorithm finishing and decrement algos in flight
   friend class AlgoExecutionTask;
+
+  // Service for thread pool initialization
+  SmartIF<IThreadPoolSvc>  m_threadPoolSvc;
+
+  bool m_first;
+
+  class SchedulerState {
+    
+  public:
+    SchedulerState(Algorithm* a, EventContext* e, pthread_t t):
+      m_a(a), m_e(*e), m_t(t)
+    {
+    }
+
+    Algorithm* alg() const { return m_a; }
+    EventContext ctx() const { return m_e; }
+    pthread_t thread() const { return m_t; }
+
+    friend std::ostream& operator<< (std::ostream& os, const SchedulerState& ss) {
+      os << ss.ctx()
+         << "  a: " << ss.alg()->name() 
+         << " [" << std::hex << ss.alg() << std::dec
+         << "]  t: 0x" << std::hex << ss.thread() << std::dec;
+      return os;
+    }
+
+    bool operator== (const SchedulerState& ss) const {
+      return ( m_a == ss.alg() );
+    }
+
+    bool operator== (Algorithm* a) const {
+      return ( m_a == a );
+    }
+
+    bool operator< ( const SchedulerState& rhs) const {
+      return ( m_a < rhs.alg() );
+    }
+
+  private:
+    Algorithm* m_a;
+    EventContext m_e;
+    pthread_t m_t;
+
+  };
+  
+  static std::list<SchedulerState> m_sState;
+  static std::mutex m_ssMut;
+
+public:
+  void addAlg(Algorithm*, EventContext*, pthread_t);
+  bool delAlg(Algorithm*);
+  void dumpState();
+
+private:
+  void dumpState(std::ostringstream&);
+
+  bool m_checkDeps;
+
 
 };
 

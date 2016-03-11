@@ -1,5 +1,5 @@
 package GaudiSvc
-version v21r7
+version v22r1
 
 branches src cmt doc
 use GaudiKernel *
@@ -14,7 +14,8 @@ library GaudiSvc -import=Boost -import=CLHEP -import=ROOT -no_static \
                  NTupleSvc/*.cpp \
                  RndmGenSvc/*.cpp \
                  THistSvc/*.cpp \
-		 FileMgr/*.cpp
+		 FileMgr/*.cpp \
+		 MetaDataSvc/*.cpp
 
 
 library GaudiSvcTest -group=tests ../tests/src/component/*.cpp -no_static

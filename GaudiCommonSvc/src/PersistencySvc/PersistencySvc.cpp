@@ -32,8 +32,8 @@
 // Implementation specific definitions
 #include "PersistencySvc.h"
 
-#define ON_DEBUG if (UNLIKELY(outputLevel() <= MSG::DEBUG))
-#define ON_VERBOSE if (UNLIKELY(outputLevel() <= MSG::VERBOSE))
+#define ON_DEBUG if (msgLevel(MSG::DEBUG))
+#define ON_VERBOSE if (msgLvel(MSG::VERBOSE))
 
 #define DEBMSG ON_DEBUG debug()
 #define VERMSG ON_VERBOSE verbose()
@@ -506,7 +506,8 @@ StatusCode PersistencySvc::getService(const std::string& service_type, IConversi
         return StatusCode::SUCCESS;
       }
       // Check wether this is already an active service: now check by service type
-      if ( System::typeinfoName(typeid(*(svc.get()))) == service_type )  {
+      auto instance = svc.get();
+      if ( System::typeinfoName(typeid(*instance)) == service_type )  {
         refpSvc = i.second.conversionSvc();
         return StatusCode::SUCCESS;
       }

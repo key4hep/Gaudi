@@ -76,8 +76,7 @@ StatusCode InputCopyStream::collectObjects()
   }
   catch ( const GaudiException & e )
   {
-    MsgStream log(msgSvc(), name());
-    log << MSG::ERROR << e.message() << endmsg;
+    error() << e.message() << endmsg;
     return StatusCode::FAILURE;
   }
 

@@ -1,4 +1,4 @@
-gaudi_subdir(GaudiMTTools v1r0)
+gaudi_subdir(GaudiMTTools v1r2)
 
 gaudi_depends_on_subdirs(GaudiAlg)
 

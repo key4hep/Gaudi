@@ -78,6 +78,9 @@ public:
   StatusCode retrieve(IAlgTool*& tool) const {
     return i_retrieve(tool);
   }
+
+  virtual IAlgTool* get() const = 0;
+  virtual std::string typeAndName() const = 0;
 };
 
 /** @class ToolHandle ToolHandle.h GaudiKernel/ToolHandle.h
@@ -92,8 +95,6 @@ public:
 */
 template< class T >
 class ToolHandle : public BaseToolHandle, public GaudiHandle<T> {
-
-  static_assert(std::is_base_of<IAlgTool,T>::value, "T must inherit from IAlgTool");
 
   friend class Algorithm;
   friend class AlgTool;
@@ -181,20 +182,27 @@ public:
   }
 
   /** Do the real retrieval of the AlgTool. */
-  StatusCode retrieve( T*& algTool ) const {
+  StatusCode retrieve( T*& algTool ) const override {
     IAlgTool* iface = nullptr;
     algTool = i_retrieve(iface) ? dynamic_cast<T*>(iface) : nullptr;
     return algTool ? StatusCode::SUCCESS : StatusCode::FAILURE;
   }
 
   /** Do the real release of the AlgTool. */
-  StatusCode release( T* algTool ) const {
+  StatusCode release( T* algTool ) const override {
     return m_pToolSvc->releaseTool( algTool );
+  }
+
+  IAlgTool *get() const override {
+    return GaudiHandle<T>::get();
+  }
+  std::string typeAndName() const override {
+    return GaudiHandleBase::typeAndName();
   }
 
 protected:
   StatusCode i_retrieve(IAlgTool*& algTool) const override {
-    return m_pToolSvc->retrieve( GaudiHandleBase::typeAndName(), IAlgTool::interfaceID(),
+    return m_pToolSvc->retrieve( typeAndName(), IAlgTool::interfaceID(),
                                  algTool,
                                  ToolHandleInfo::parent(), ToolHandleInfo::createIf() );
   }

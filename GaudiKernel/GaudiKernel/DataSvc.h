@@ -8,6 +8,7 @@
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/IIncidentSvc.h"
 #include "GaudiKernel/SmartIF.h"
+#include "GaudiKernel/IConversionSvc.h"
 
 #include <boost/utility/string_ref.hpp>
 
@@ -39,7 +40,9 @@ namespace DataSvcHelpers    {
  * @author Sebastien Ponce
  * @version 1.0
 */
-class GAUDI_API DataSvc: public extends2<Service, IDataProviderSvc, IDataManagerSvc>
+class GAUDI_API DataSvc: public extends<Service,
+                                        IDataProviderSvc,
+                                        IDataManagerSvc>
 {
 public:
   /// Define set of load items

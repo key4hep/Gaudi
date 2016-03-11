@@ -391,6 +391,10 @@ macro(gaudi_project project version)
   install(DIRECTORY cmake/EnvConfig DESTINATION scripts
           FILES_MATCHING PATTERN "*.py" PATTERN "*.conf")
 
+  if (CMAKE_EXPORT_COMPILE_COMMANDS)
+    install(FILES ${CMAKE_BINARY_DIR}/compile_commands.json DESTINATION . OPTIONAL)
+  endif()
+
   #--- Global actions for the project
   #message(STATUS "CMAKE_MODULE_PATH -> ${CMAKE_MODULE_PATH}")
   include(GaudiBuildFlags)
@@ -711,33 +715,6 @@ __path__ = [d for d in [os.path.join(d, '${pypack}') for d in sys.path if d]
   #--- Generate the manifest.xml file.
   gaudi_generate_project_manifest(${CMAKE_CONFIG_OUTPUT_DIRECTORY}/manifest.xml ${ARGV})
   install(FILES ${CMAKE_CONFIG_OUTPUT_DIRECTORY}/manifest.xml DESTINATION .)
-
-  #--- CPack configuration
-  set(CPACK_PACKAGE_NAME ${project})
-  foreach(t MAJOR MINOR PATCH)
-    set(CPACK_PACKAGE_VERSION_${t} ${CMAKE_PROJECT_VERSION_${t}})
-  endforeach()
-  set(CPACK_SYSTEM_NAME ${BINARY_TAG})
-
-  set(CPACK_SOURCE_IGNORE_FILES "/InstallArea/;/build\\\\..*/;/\\\\.svn/;/\\\\.git/;/\\\\.settings/;\\\\..*project;\\\\.gitignore")
-
-  # for the binary
-  set(CPACK_INSTALL_PREFIX "usr/${project}/${version}/InstallArea/${BINARY_TAG}")
-  set(CPACK_INSTALL_SCRIPT "${GaudiProject_DIR}/cpack_install.cmake")
-
-  # for the source
-  set(CPACK_SOURCE_INSTALLED_DIRECTORIES "${CMAKE_SOURCE_DIR};/usr/${project}/${version}")
-
-  # for the RPMs
-  set(CPACK_PACKAGE_DEFAULT_LOCATION "/usr")
-  set(CPACK_GENERATOR "RPM")
-  set(CPACK_RPM_PACKAGE_VERSION "${version}")
-  set(CPACK_SOURCE_GENERATOR "RPM")
-  set(CPACK_SOURCE_RPM "ON")
-  set(CPACK_SOURCE_RPM_PACKAGE_ARCHITECTURE "noarch")
-  set(CPACK_SOURCE_RPM_PACKAGE_NAME "${project}-source")
-
-  include(CPack)
 
 endmacro()
 
@@ -2318,10 +2295,10 @@ function(gaudi_add_test name)
         set(test_cmd ${test_cmd} --skip-return-code 77)
       endif()
       set(test_cmd ${test_cmd}
-                       --workdir ${qmtest_root_dir}
-                       --common-tmpdir ${CMAKE_CURRENT_BINARY_DIR}/tests_tmp
                        --report ctest
-                       ${qmt_file})
+                       --common-tmpdir ${CMAKE_CURRENT_BINARY_DIR}/tests_tmp
+                       --workdir ${qmtest_root_dir}
+                       ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest/${qmt_file})
       gaudi_add_test(${qmt_name}
                      COMMAND ${test_cmd}
                      WORKING_DIRECTORY ${qmtest_root_dir}
@@ -3051,7 +3028,9 @@ macro(gaudi_external_project_environment)
   endforeach()
 
   foreach(val ${binary_path})
-    set(project_environment ${project_environment} PREPEND PATH ${val})
+    if(NOT val MATCHES "^(/usr|/usr/local)?/bin" )
+      set(project_environment ${project_environment} PREPEND PATH ${val})
+    endif()
   endforeach()
 
   foreach(val ${library_path})
@@ -3195,6 +3174,7 @@ function(gaudi_generate_project_manifest filename project version)
     set(data "${data}    <version>${heptools_version}</version>\n")
     # platform specifications
     set(data "${data}    <binary_tag>${BINARY_TAG}</binary_tag>\n")
+    set(data "${data}    <lcg_platform>${LCG_platform}</lcg_platform>\n")
     set(data "${data}    <lcg_system>${LCG_SYSTEM}</lcg_system>\n")
     # look for packages provided by heptools
     # - compile a list of the paths required at runtime
