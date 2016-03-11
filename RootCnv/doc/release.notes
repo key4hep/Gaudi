@@ -5,6 +5,15 @@
 ! Commit Id   : $Format:%H$
 !-----------------------------------------------------------------------------
 
+================================ RootCnv v2r2 ================================
+
+! 2016-03-10 - commit 4a18175
+
+ - removed uses of templates implements[1-4], extends[1-4] and
+   extend_interfaces[1-4]
+
+   Since merge request !22 they are unnecessary.
+    See merge request !133
 ================================ RootCnv v2r1 ================================
 
 ! 2015-11-02 - commit 57f356c
