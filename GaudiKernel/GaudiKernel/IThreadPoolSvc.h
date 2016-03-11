@@ -5,18 +5,20 @@
 #include "GaudiKernel/IThreadInitTool.h"
 #include <vector>
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
-/** IThreadPoolSvc GaudiKernel/IThreadPoolSvc.h
+/** @class IThreadPoolSvc GaudiKernel/IThreadPoolSvc.h
  *
- * Abstract interface to initialize thread pool, and retrieve thread local
- * initialization tools.
+ *  @brief Abstract interface for a service that manages a thread pool.
  *
- * @author Charles Leggett
- * @date   2015-09-01
+ *  Also provides a method to retrieve a list of thread initialization tools.
+ *  initialization tools.
+ *
+ *  @author Charles Leggett
+ *  @date   2015-09-01
  */
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 class GAUDI_API  IThreadPoolSvc : virtual public IInterface {
  public:
@@ -24,10 +26,13 @@ class GAUDI_API  IThreadPoolSvc : virtual public IInterface {
   /// InterfaceID
   DeclareInterfaceID(IThreadPoolSvc,1,0);
 
+  /// Initializes the thread pool
   virtual StatusCode initPool(const int& poolSize) = 0;
 
+  /// Size of the initialized thread pool
   virtual int poolSize() const = 0;
 
+  /// Retrieve a list of thread initialization tools
   virtual std::vector<IThreadInitTool*> getThreadInitTools() const = 0;
 
 };
