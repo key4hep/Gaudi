@@ -47,6 +47,8 @@
 
 #include "MetaDataSvc.h"
 
+using Gaudi::MetaDataSvc;
+
 DECLARE_COMPONENT(MetaDataSvc)
 
 // Standard Constructor.

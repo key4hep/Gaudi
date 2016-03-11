@@ -5,11 +5,11 @@ These information include job options as well as application name and version.
 They are named 'info' and saved inside the n-tuple.
 
 ## Usage
-Metadata can be added to n-tuples adding MetaDataSvc to the list of extra
+Metadata can be added to n-tuples adding Gaudi::MetaDataSvc to the list of extra
 services in your options, for example with:
 
 ~~~{.py}
-ApplicationMgr().ExtSvc  += [ "MetaDataSvc" ]
+ApplicationMgr().ExtSvc  += [ "Gaudi::MetaDataSvc" ]
 ~~~
 
 The content of the metadata info in a file can be dumped with the command line

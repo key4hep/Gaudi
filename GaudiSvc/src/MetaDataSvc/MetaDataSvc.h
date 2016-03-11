@@ -10,6 +10,7 @@
 #include "GaudiKernel/IMetaDataSvc.h"
 #include "GaudiKernel/Service.h"
 
+namespace Gaudi {
 class MetaDataSvc : public extends<Service, IMetaDataSvc> {
 public:
 	// Standard Constructor.
@@ -33,5 +34,6 @@ private:
 	bool m_isEnabled;
 	std::map <std::string, std::string> m_metadata;
 };
+}
 
 #endif /* GAUDISVC_SRC_METADATASVC_METADATASVC_H_ */
