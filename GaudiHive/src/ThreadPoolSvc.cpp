@@ -13,7 +13,7 @@ using namespace tbb;
 
 DECLARE_SERVICE_FACTORY(ThreadPoolSvc)
 
-//===========================================================================
+//=============================================================================
 
 
 ThreadPoolSvc::ThreadPoolSvc( const std::string& name, ISvcLocator* svcLoc ):
@@ -21,27 +21,24 @@ ThreadPoolSvc::ThreadPoolSvc( const std::string& name, ISvcLocator* svcLoc ):
   m_init(false),
   m_threadPoolSize(0),
   m_threadInitTools(this),
-  m_tbbSchedInit(0),
-  m_barrier(0)
+  m_tbbSchedInit(0)
 {
 
-  declareProperty("ThreadInitTools", m_threadInitTools, "ToolHandleArray of IThreadInitTools");
+  declareProperty("ThreadInitTools", m_threadInitTools,
+                  "ToolHandleArray of IThreadInitTools");
 
 }
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 ThreadPoolSvc::~ThreadPoolSvc() {
 
   if (m_tbbSchedInit)
     delete m_tbbSchedInit;
 
-  if (m_barrier)
-    delete m_barrier;
-
 }
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 StatusCode
 ThreadPoolSvc::initialize() {
@@ -54,17 +51,15 @@ ThreadPoolSvc::initialize() {
   }
 
   if (m_threadInitTools.retrieve().isFailure()) {
-    error() << "Unable to retrieve ThreadInitTools Array"
-  	    << endmsg;
+    error() << "Unable to retrieve ThreadInitTools Array" << endmsg;
 
     return StatusCode::FAILURE;
   } else {
     if (m_threadInitTools.size() != 0) {
       info() << "retrieved " << m_threadInitTools.size() << " thread init tools"
-   	     << endmsg;
+             << endmsg;
     } else {
-      info() << "no thread init tools attached"
-   	     << endmsg;
+      info() << "no thread init tools attached" << endmsg;
     }
   }
 
@@ -72,98 +67,55 @@ ThreadPoolSvc::initialize() {
 
 }
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 StatusCode
 ThreadPoolSvc::finalize() {
 
   if (!m_init) {
-    warning() << "Looks like the ThreadPoolSvc was created, but thread pool was never initialized"
-    << endmsg;
+    warning() << "Looks like the ThreadPoolSvc was created, but thread pool "
+              << "was never initialized" << endmsg;
   }
 
   return StatusCode::SUCCESS;
 
 }
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 StatusCode
 ThreadPoolSvc::initPool(const int& poolSize) {
 
-  tbb::spin_mutex::scoped_lock  lock( m_initMutex );
+  tbb::spin_mutex::scoped_lock lock( m_initMutex );
 
   m_threadPoolSize = poolSize;
 
   if (msgLevel(MSG::DEBUG))
     debug() << "ThreadPoolSvc::initPool() poolSize = " << poolSize << endmsg;
 
-  // -100 prevents the creation of the pool and the scheduler directly executes
-  // the tasks.
-  if (-100 != m_threadPoolSize){
+  // -100 prevents the creation of the pool and the scheduler directly
+  // executes the tasks.
+  if (-100 != m_threadPoolSize) {
     if (msgLevel(MSG::DEBUG))
-      debug() << "Initialising a ThreadPool thread pool of size " << m_threadPoolSize
-              << endmsg;
+      debug() << "Initialising a thread pool of size "
+              << m_threadPoolSize << endmsg;
+
     // Leave -1 in case selected, increment otherwise
-    int thePoolSize=m_threadPoolSize;
-    if (thePoolSize!=-1)
-      thePoolSize+=1;
+    // - What?
+    int thePoolSize = m_threadPoolSize;
+    if (thePoolSize != -1) thePoolSize += 1;
+
+    // Create the TBB task scheduler
     m_tbbSchedInit = new tbb::task_scheduler_init (thePoolSize);
-
-    // execute the Thread Init Tools if there are any, and wait at barrier
-    if (m_threadInitTools.size() > 0) {
-      if (msgLevel(MSG::DEBUG))
-        debug() << "creating barrier of size " << m_threadPoolSize + 1 << endmsg;
-      m_barrier = new boost::barrier( m_threadPoolSize + 1 );
-
-      // create ThreadInitTasks, wait until all have executed
-      for (int i=0; i<m_threadPoolSize; ++i) {
-        if (msgLevel(MSG::DEBUG))
-          debug() << "creating ThreadInitTask " << i << endmsg;
-    	tbb::task* t = new(tbb::task::allocate_root())
-    	  ThreadInitTask( m_threadInitTools, m_barrier, serviceLocator() );
-
-    	tbb::task::enqueue( *t );
-    	this_tbb_thread::sleep(tbb::tick_count::interval_t(.1));
-      }
-    }
-
-  } else {
-    if (msgLevel(MSG::DEBUG))
-      debug() << "Thread pool size is one. Pool not initialised." << endmsg;
-
-    if (m_threadInitTools.size() > 0) {
-      if (msgLevel(MSG::DEBUG))
-        debug() << "doing ThreadInitTask init in this thread" << endmsg;
-      ThreadInitTask theTask(m_threadInitTools, m_barrier, serviceLocator() );
-      theTask.execute();
-    }
-
   }
 
-  if (m_barrier) {
-    if (msgLevel(MSG::DEBUG))
-      debug() << "waiting at barrier for all ThreadInitTool to finish executing" << endmsg;
-    m_barrier->wait();
-  }
-
-  if (ThreadInitTask::execFailed()) {
-    error() << "a ThreadInitTask failed to execute successfully" << endmsg;
+  // Launch the init tool tasks
+  const bool terminate = false;
+  if (launchTasks(terminate).isFailure())
     return StatusCode::FAILURE;
-  }
-
-  // check to make sure all Tools were initialized
-  for (auto t : m_threadInitTools) {
-    if (t->nInit() != (unsigned int)m_threadPoolSize && m_threadPoolSize != -100) {
-      error() << " not all threads initialized for tool " << t << " : "
-  	      << t->nInit() << " out of " << m_threadPoolSize
-  	      << endmsg;
-      return StatusCode::FAILURE;
-    }
-  }
 
   if (msgLevel(MSG::DEBUG))
-    debug() << " Thread Pool initialization complete!" << endmsg;
+    debug() << "Thread Pool initialization complete!" << endmsg;
 
   m_init = true;
 
@@ -171,7 +123,26 @@ ThreadPoolSvc::initPool(const int& poolSize) {
 
 }
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
+StatusCode
+ThreadPoolSvc::terminatePool() {
+  tbb::spin_mutex::scoped_lock lock( m_initMutex );
+  if (msgLevel(MSG::DEBUG))
+    debug() << "ThreadPoolSvc::terminatePool()" << endmsg;
+
+  // Launch the termination tasks
+  const bool terminate = true;
+  if (launchTasks(terminate).isFailure())
+    return StatusCode::FAILURE;
+
+  if (msgLevel(MSG::DEBUG))
+    debug() << "Thread pool termination complete!" << endmsg;
+
+  return StatusCode::SUCCESS;
+}
+
+//-----------------------------------------------------------------------------
 
 std::vector<IThreadInitTool*>
 ThreadPoolSvc::getThreadInitTools() const {
@@ -185,4 +156,79 @@ ThreadPoolSvc::getThreadInitTools() const {
   }
 
   return tools;
+}
+
+//-----------------------------------------------------------------------------
+
+StatusCode
+ThreadPoolSvc::launchTasks(bool terminate) {
+
+  if (m_threadInitTools.empty()) return StatusCode::SUCCESS;
+
+  const std::string taskType = terminate? "termination" : "initialization";
+
+  // If we have a thread pool (via a scheduler), then we want to queue
+  // the tasks in TBB to execute on each thread.
+  if(m_tbbSchedInit) {
+
+    // Create the barrier for task synchronization
+    if (msgLevel(MSG::DEBUG))
+      debug() << "creating barrier of size " << m_threadPoolSize + 1 << endmsg;
+    // Is it safe to use a local for this?
+    boost::barrier barrier(m_threadPoolSize + 1);
+
+    // Create one task for each worker thread in the pool
+    for (int i = 0; i < m_threadPoolSize; ++i) {
+      if (msgLevel(MSG::DEBUG))
+        debug() << "creating ThreadInitTask " << i << endmsg;
+      tbb::task* t = new(tbb::task::allocate_root())
+        ThreadInitTask( m_threadInitTools, &barrier, serviceLocator(), terminate );
+
+      // Queue the task
+      tbb::task::enqueue( *t );
+      this_tbb_thread::sleep(tbb::tick_count::interval_t(.1));
+    }
+
+    // Now wait for all the workers to reach the barrier
+    if (msgLevel(MSG::DEBUG))
+      debug() << "waiting at barrier for all ThreadInitTool to finish executing" << endmsg;
+    barrier.wait();
+
+    // Should I wait for the tash scheduler to drain here?
+
+    // Check to make sure all Tools were invoked.
+    // I'm not sure this mechanism is worthwhile.
+    for (auto& t : m_threadInitTools) {
+      // Number of threads initialized but not terminated.
+      int numInit = t->nInit();
+      // Expected number based on the type of task.
+      int expectedNumInit = terminate? 0 : m_threadPoolSize;
+      if (numInit != expectedNumInit) {
+        error() << "not all threads " << (terminate? "terminated" : "initialized")
+                << "for tool " << t << " : "
+                << t->nInit() << " out of " << m_threadPoolSize
+                << " are currently active" << endmsg;
+        return StatusCode::FAILURE;
+      }
+    }
+
+  }
+
+  // In single-threaded mode, there is no scheduler, so we simply call
+  // the task wrapper directly in this thread.
+  else {
+    if (msgLevel(MSG::DEBUG))
+      debug() << "launching ThreadInitTask " << taskType << "in this thread." << endmsg;
+    boost::barrier* noBarrier = nullptr;
+    ThreadInitTask theTask(m_threadInitTools, noBarrier, serviceLocator(), terminate);
+    theTask.execute();
+  }
+
+  // Now, we do some error checking
+  if (ThreadInitTask::execFailed()) {
+    error() << "a ThreadInitTask failed to execute successfully" << endmsg;
+    return StatusCode::FAILURE;
+  }
+
+  return StatusCode::SUCCESS;
 }
