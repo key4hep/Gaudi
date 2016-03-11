@@ -4,6 +4,47 @@
 ! Commit Id   : $Format:%H$
 ! =============================================================================
 
+=============================== GaudiGSL v9r2 ================================
+
+! 2016-03-10 - commit 4a18175
+
+ - removed uses of templates implements[1-4], extends[1-4] and
+   extend_interfaces[1-4]
+
+   Since merge request !22 they are unnecessary.
+    See merge request !133
+
+! 2016-02-11 - commit fcf9b05
+
+ - Fix for failing test GaudiGSL.InterpTest (on latest GSL)
+
+   This test confuses interpolation and extrapolation. These have
+ historically
+   been the same in GSL, but haven't been for a while now. If
+ you want to
+   extrapolate, you have to tell GSL to do so explicitly.
+    The test is modified to solely do interpolation.
+    See merge request !107
+
+! 2016-02-11 - commit b0618f7
+
+ - Improve CommonMessaging
+
+   Implementation of GAUDI-1146: Improve CommonMessaging and use it in more
+   places.
+
+   See merge request !76
+
+   Conflicts:
+   GaudiExamples/tests/qmtest/refs/AlgTools2.ref
+   GaudiExamples/tests/qmtest/refs/MultiInput/Read.ref
+   GaudiExamples/tests/qmtest/refs/conditional_output/write.ref
+   GaudiKernel/GaudiKernel/AlgTool.h
+   GaudiKernel/GaudiKernel/Algorithm.h
+   GaudiKernel/GaudiKernel/Service.h
+   GaudiKernel/src/Lib/AlgTool.cpp
+   GaudiKernel/src/Lib/Algorithm.cpp
+
 =============================== GaudiGSL v9r1 ================================
 
 ! 2016-01-21 - commit 10300ee

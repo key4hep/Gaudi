@@ -1,4 +1,4 @@
-gaudi_subdir(PartPropSvc v7r0)
+gaudi_subdir(PartPropSvc v7r1)
 
 gaudi_depends_on_subdirs(GaudiKernel)
 

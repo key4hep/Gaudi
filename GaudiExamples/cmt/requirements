@@ -1,5 +1,5 @@
 package GaudiExamples
-version v27r0
+version v27r1
 
 use ROOT         * LCG_Interfaces
 use RELAX        * LCG_Interfaces -no_auto_imports

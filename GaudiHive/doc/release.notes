@@ -1,6 +1,128 @@
 Package : GaudiKernel
 Commit Id: $Format:%H$
 
+=============================== GaudiHive v2r0 ===============================
+
+! 2016-03-10 - commit 02f2560
+
+ - use StringKey for Alg name, add IAlgorithm::setIndex
+
+   this patch does 3 things:
+
+   - makes Algorithm::index() const (as it should have been), set the initial
+   value to 0 instead of 123 (!)
+   - adds a protected Algorithm::setIndex(unsigned int) method. this allows you
+   to distinguish between clones. AlgResourcePool is the one who does the
+   setting, and is declared as a friend to IAlgorithm
+   - turns Algorithm::m_name into a StringKey (from a string), so we can hash on
+   the name of Algorithms more easily (a useful ability when dealing with Alg
+   clones, and trying to treat them all the same way)
+    See merge request !125
+
+! 2016-03-10 - commit a001f80
+
+ - fixed compile time warning in ExecutionFlowGraph
+
+   commit a1a61fc caused the warning:
+
+      statement has no effect [-Wunused-value]
+
+    See merge request !137
+
+! 2016-03-10 - commit 4a18175
+
+ - removed uses of templates implements[1-4], extends[1-4] and
+   extend_interfaces[1-4]
+
+   Since merge request !22 they are unnecessary.
+    See merge request !133
+
+! 2016-03-09 - commit bae38a9
+
+ - fully use DataObjID in ExecutionFlowGraph
+
+   `ExecutionFlowGraph` was still using some string paths instead of
+   `DataObjID`.
+    See merge request !123
+
+! 2016-03-03 - commit 5925940
+
+ - restored DeclareFactoryEntry macros for ATLAS
+
+   restored the (dummy) DeclareFactoryEntry macros for ATLAS compatibility.
+
+   these are protected with a `#ifdef ATLAS` macro
+    also fixed GaudiHive/CPUCruncher to remove this usage
+    See merge request !126
+
+! 2016-03-02 - commit a146191
+
+ - separate thread local EventContext handling from ContextSpecificPtr
+
+   Moved all the setting/getting methods for the thread local
+   `EventContext` from `GaudiKernel/ContextSpecificPtr.h` to a new file
+   `GaudiKernel/ThreadLocalContext.h`.
+    See merge request !122
+
+! 2016-02-29 - commit aa945af
+
+ - better failure handling during initialization
+
+   Several essential services that fail initialization during the
+   `ForwardSchedulerSvc::initialize` merely print error/warning
+ messages, but
+   the errors aren't propagated, and the job doesn't
+ abort.
+    Fixes GAUDI-1184
+    See merge request !117
+
+! 2016-02-11 - commit b0618f7
+
+ - Improve CommonMessaging
+
+   Implementation of GAUDI-1146: Improve CommonMessaging and use it in more
+   places.
+
+   See merge request !76
+
+   Conflicts:
+   GaudiExamples/tests/qmtest/refs/AlgTools2.ref
+   GaudiExamples/tests/qmtest/refs/MultiInput/Read.ref
+   GaudiExamples/tests/qmtest/refs/conditional_output/write.ref
+   GaudiKernel/GaudiKernel/AlgTool.h
+   GaudiKernel/GaudiKernel/Algorithm.h
+   GaudiKernel/GaudiKernel/Service.h
+   GaudiKernel/src/Lib/AlgTool.cpp
+   GaudiKernel/src/Lib/Algorithm.cpp
+
+
+! 2016-02-09 - commit 11d42e4
+
+ - DataHandles fixes for LHCb
+
+   - renamed IDataHandleHolder::accept to acceptDHVisitor to avoid build time
+   warnings in LHCb
+   - fixed reference file for GaudiExamples.thistwrite
+
+   See merge request !104
+
+
+! 2016-02-09 - commit a4bea2b
+
+ - remove unprotected DEBUG messages added in v27r0
+
+   The merge of the 'hive' branch introduced several _unprotected_ DEBUG
+   messages,
+ which is against LHCb policies.
+    Fixes GAUDI-1174.
+    See merge request !102
+
+! 2016-02-06 - commit d905569
+
+ - introduce DataHandle and DataObjectHandle
+
+   See merge requests !57 !94 !95
+
 =============================== GaudiHive v1r1 ===============================
 
 ! 2016-01-12 - commit 4dbdc8e
