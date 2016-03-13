@@ -37,7 +37,7 @@ DECLARE_SERVICE_FACTORY(ForwardSchedulerSvc)
 ForwardSchedulerSvc::ForwardSchedulerSvc( const std::string& name, ISvcLocator* svcLoc ):
  base_class(name,svcLoc),
   m_isActive(INACTIVE),
- m_algosInFlight(0),
+  m_algosInFlight(0),
   m_updateNeeded(true),
   m_first(true), m_checkDeps(false)
 
@@ -273,6 +273,12 @@ StatusCode ForwardSchedulerSvc::finalize(){
   if (!sc.isSuccess())
     warning () << "Scheduler could not be deactivated" << endmsg;
 
+  info() << "Terminating thread-pool resources" << endmsg;
+  if (m_threadPoolSvc->terminatePool().isFailure()) {
+    error() << "Problems terminating thread pool" << endmsg;
+    return StatusCode::FAILURE;
+  }
+
   info() << "Joining Scheduler thread" << endmsg;
   m_thread.join();
 
@@ -296,7 +302,7 @@ void ForwardSchedulerSvc::activate(){
 
   debug() << "ForwardSchedulerSvc::activate()" << endmsg;
 
-  if ( m_threadPoolSvc->initPool(m_threadPoolSize).isFailure()) {
+  if (m_threadPoolSvc->initPool(m_threadPoolSize).isFailure()) {
     error() << "problems initializing ThreadPoolSvc" << endmsg;
     m_isActive = FAILURE;
     return;
