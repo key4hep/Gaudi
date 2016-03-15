@@ -47,24 +47,23 @@ def main():
 
     parser = OptionParser()
     parser.add_option('-I', action='append', dest='include_dirs')
-    parser.add_option('-t', '--target')
+    parser.add_option('-v', '--deps-var')
     parser.add_option('-o', '--output')
 
     opts, args = parser.parse_args()
 
-    with open(opts.output, 'w') as f:
-        for filename in args:
-            #f.write('''message(STATUS "Dependencies for %s")\n''' % filename)
-            deps = find_deps(filename, opts.include_dirs)
-            #for dep in sorted(deps):
-            #    f.write('''message(STATUS "  - %s")\n''' % dep)
-            f.write('''
-set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
-   {deps})
-set({target}FileDeps DEPENDS
-   {deps})
-'''
-                    .format(deps='\n   '.join(deps), target=opts.target))
+    old_deps = open(opts.output).read() if exists(opts.output) else None
+
+    deps = set()
+    for filename in args:
+        find_deps(filename, opts.include_dirs, deps)
+    deps = sorted(deps)
+    new_deps = 'set({deps_var}\n    {deps})\n' \
+        .format(deps='\n    '.join(deps), deps_var=opts.deps_var)
+
+    if new_deps != old_deps:
+        open(opts.output, 'w').write(new_deps)
+        print 'info: dependencies changed: next build will trigger a reconfigure'
 
 if __name__ == '__main__':
     main()

@@ -223,13 +223,17 @@ macro(reflex_generate_dictionary dictionary _headerfile _selectionfile)
       set(impl_deps ${impl_deps} CXX ${hf})
     endforeach()
     set(${dictionary}GenFileDeps)
+    set(deps_scan_cmd)
   elseif (scan_dicts_deps)
-    message(STATUS "scanning dependencies for ${dictionary}Gen")
-    execute_process(COMMAND ${scan_dicts_deps}
-                    ${include_dirs} -t ${dictionary}Gen
-                    -o ${CMAKE_CURRENT_BINARY_DIR}/${dictionary}GenDeps.cmake
+    set(deps_scan_cmd COMMAND ${scan_dicts_deps}
+                    ${include_dirs} -v ${dictionary}GenFileDeps
+                    -o ${CMAKE_CURRENT_BINARY_DIR}/${dictionary}GenFileDeps.cmake
                     ${headerfiles})
-    include(${CMAKE_CURRENT_BINARY_DIR}/${dictionary}GenDeps.cmake)
+    if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/${dictionary}GenFileDeps.cmake)
+      message(STATUS "scanning dependencies for ${dictionary}Gen")
+      execute_process(${deps_scan_cmd})
+    endif()
+    include(${CMAKE_CURRENT_BINARY_DIR}/${dictionary}GenFileDeps.cmake)
     set(impl_deps)
   elseif(NOT _root_dicts_deps_warning)
     message(WARNING "generator is not Makefile and Python not available: the dependencies of the dictionary will be incomplete")
@@ -241,6 +245,7 @@ macro(reflex_generate_dictionary dictionary _headerfile _selectionfile)
     COMMAND ${ROOT_genreflex_CMD}
          ${headerfiles} -o ${gensrcdict} ${rootmapopts} --select=${selectionfile}
          ${ARG_OPTIONS} ${include_dirs} ${definitions}
+    ${deps_scan_cmd}
     DEPENDS ${headerfiles} ${selectionfile} ${dictionary}GenDeps ${${dictionary}GenFileDeps}
     ${impl_deps})
 
