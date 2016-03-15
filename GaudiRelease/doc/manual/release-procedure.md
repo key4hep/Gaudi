@@ -1,4 +1,4 @@
-Procedure to Release Gaudi
+Procedure to Release Gaudi {#release-procedure}
 ==========================
 
 ## Updated versions and release notes
@@ -32,21 +32,21 @@ After the release is installed in AFS, run the following commands:
 
 1. synchronize the version in the trunk:
 
-    cd /afs/cern.ch/sw/Gaudi/git/gateway/Gaudi
-    git checkout master
-    git pull --ff-only
-    git checkout gw/trunk
-    git merge --no-ff -c 'synchronize with Gaudi vXrY' master
-    git svn dcommit
-    git checkout master
-    git svn fetch
-    git push
+        cd /afs/cern.ch/sw/Gaudi/git/gateway/Gaudi
+        git checkout master
+        git pull --ff-only
+        git checkout gw/trunk
+        git merge --no-ff -c 'synchronize with Gaudi vXrY' master
+        git svn dcommit
+        git checkout master
+        git svn fetch
+        git push
 
 2. create the svn tags:
 
-    cd /afs/cern.ch/sw/Gaudi/git/gateway/Gaudi
-    GaudiRelease/cmt/svn_tag_release.py
-    git checkout master
-    git svn fetch
-    git push
+        cd /afs/cern.ch/sw/Gaudi/git/gateway/Gaudi
+        GaudiRelease/cmt/svn_tag_release.py
+        git checkout master
+        git svn fetch
+        git push
 
