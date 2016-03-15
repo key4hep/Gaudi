@@ -69,7 +69,8 @@ def main():
 
     if new_deps != old_deps: # write it only if it has changed
         open(output, 'w').write(new_deps)
-        print 'info: dependencies changed: next build will trigger a reconfigure'
+        if old_deps:
+            print 'info: dependencies changed: next build will trigger a reconfigure'
 
 if __name__ == '__main__':
     main()
