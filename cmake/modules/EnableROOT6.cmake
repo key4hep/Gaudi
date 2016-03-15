@@ -6,6 +6,18 @@ set(ROOT_ALL_COMPONENTS Core Cling RIO Hist Tree TreePlayer Matrix
 # and build tools
 set(ROOT_ALL_TOOLS root rootcling genreflex)
 
+option(ROOT_DICT_USE_IMPLICIT_DEPENDS
+       "Use CMake IMPLICIT_DEPENDS for dictionary dependencies (if using Makefile generator)"
+       ON)
+
+# checks for computation of dependencies of dictionaries
+if (NOT (CMAKE_GENERATOR MATCHES "Makefile" AND ROOT_DICT_USE_IMPLICIT_DEPENDS))
+  find_package(PythonInterp QUIET)
+  if (PYTHON_EXECUTABLE)
+    set(scan_dicts_deps ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_LIST_DIR}/scan_dict_deps.py)
+  endif()
+endif()
+
 # Helper macro to discover the dependencies between components needed on Mac)
 macro(_root_get_deps libpath var)
   # reset output var
@@ -205,17 +217,32 @@ macro(reflex_generate_dictionary dictionary _headerfile _selectionfile)
     set(pcmname)
   endif()
 
-  set(impl_deps)
-  foreach(hf ${headerfiles})
-    set(impl_deps ${impl_deps} CXX ${hf})
-  endforeach()
+  if (CMAKE_GENERATOR MATCHES "Makefile" AND ROOT_DICT_USE_IMPLICIT_DEPENDS)
+    set(impl_deps IMPLICIT_DEPENDS)
+    foreach(hf ${headerfiles})
+      set(impl_deps ${impl_deps} CXX ${hf})
+    endforeach()
+    set(${dictionary}GenFileDeps)
+  elseif (scan_dicts_deps)
+    message(STATUS "scanning dependencies for ${dictionary}Gen")
+    execute_process(COMMAND ${scan_dicts_deps}
+                    ${include_dirs} -t ${dictionary}Gen
+                    -o ${CMAKE_CURRENT_BINARY_DIR}/${dictionary}GenDeps.cmake
+                    ${headerfiles})
+    include(${CMAKE_CURRENT_BINARY_DIR}/${dictionary}GenDeps.cmake)
+    set(impl_deps)
+  elseif(NOT _root_dicts_deps_warning)
+    message(WARNING "generator is not Makefile and Python not available: the dependencies of the dictionary will be incomplete")
+    set(_root_dicts_deps_warning 1 CACHE INTERNAL "")
+  endif()
+
   add_custom_command(
     OUTPUT ${gensrcdict} ${rootmapname} ${gensrcclassdef} ${pcmname}
     COMMAND ${ROOT_genreflex_CMD}
          ${headerfiles} -o ${gensrcdict} ${rootmapopts} --select=${selectionfile}
          ${ARG_OPTIONS} ${include_dirs} ${definitions}
-    DEPENDS ${headerfiles} ${selectionfile} ${dictionary}GenDeps
-    IMPLICIT_DEPENDS ${impl_deps})
+    DEPENDS ${headerfiles} ${selectionfile} ${dictionary}GenDeps ${${dictionary}GenFileDeps}
+    ${impl_deps})
 
   # Creating this target at ALL level enables the possibility to generate dictionaries (genreflex step)
   # well before the dependent libraries of the dictionary are build
