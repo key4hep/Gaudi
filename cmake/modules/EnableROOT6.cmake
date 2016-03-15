@@ -226,8 +226,9 @@ macro(reflex_generate_dictionary dictionary _headerfile _selectionfile)
     set(deps_scan_cmd)
   elseif (scan_dicts_deps)
     set(deps_scan_cmd COMMAND ${scan_dicts_deps}
-                    ${include_dirs} -v ${dictionary}GenFileDeps
-                    -o ${CMAKE_CURRENT_BINARY_DIR}/${dictionary}GenFileDeps.cmake
+                    ${include_dirs}
+                    ${CMAKE_CURRENT_BINARY_DIR}/${dictionary}GenFileDeps.cmake
+                    ${dictionary}GenFileDeps
                     ${headerfiles})
     if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/${dictionary}GenFileDeps.cmake)
       message(STATUS "scanning dependencies for ${dictionary}Gen")

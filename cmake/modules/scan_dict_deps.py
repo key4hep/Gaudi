@@ -45,24 +45,30 @@ def find_deps(filename, searchpath, deps=None):
 def main():
     from optparse import OptionParser
 
-    parser = OptionParser()
+    parser = OptionParser(usage='%prog [options] output_file variable_name headers...')
     parser.add_option('-I', action='append', dest='include_dirs')
-    parser.add_option('-v', '--deps-var')
-    parser.add_option('-o', '--output')
 
     opts, args = parser.parse_args()
+    if len(args) < 2:
+        parser.error('you must specify output file and variable name')
 
-    old_deps = open(opts.output).read() if exists(opts.output) else None
+    output, variable = args[:2]
+    headers = args[2:]
 
+    old_deps = open(output).read() if exists(output) else None
+
+    # scan for dependencies
     deps = set()
-    for filename in args:
+    for filename in headers:
         find_deps(filename, opts.include_dirs, deps)
     deps = sorted(deps)
-    new_deps = 'set({deps_var}\n    {deps})\n' \
-        .format(deps='\n    '.join(deps), deps_var=opts.deps_var)
 
-    if new_deps != old_deps:
-        open(opts.output, 'w').write(new_deps)
+    # prepare content of output file
+    new_deps = 'set({deps_var}\n    {deps})\n' \
+        .format(deps='\n    '.join(deps), deps_var=variable)
+
+    if new_deps != old_deps: # write it only if it has changed
+        open(output, 'w').write(new_deps)
         print 'info: dependencies changed: next build will trigger a reconfigure'
 
 if __name__ == '__main__':
