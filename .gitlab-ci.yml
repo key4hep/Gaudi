@@ -1,0 +1,8 @@
+before_script:
+  - ln -sf Makefile-cmake.mk Makefile
+  - . /afs/cern.ch/lhcb/software/releases/LBSCRIPTS/dev/InstallArea/scripts/LbLogin.sh
+doxygen:
+  script:
+    - make purge
+    - make 
+    - make doc
