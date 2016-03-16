@@ -1,6 +1,8 @@
 before_script:
   - ln -sf Makefile-cmake.mk Makefile
   - . /afs/cern.ch/lhcb/software/releases/LBSCRIPTS/dev/InstallArea/scripts/LbLogin.sh
+  - unset VERBOSE
+  - export PATH=/afs/cern.ch/sw/lcg/contrib/ninja/1.4.0/x86_64-slc6/ninja:${PATH}
 
 doxygen:
   script:
