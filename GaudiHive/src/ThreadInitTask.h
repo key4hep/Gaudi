@@ -12,11 +12,11 @@
 #include "boost/thread.hpp"
 
 /** @class ThreadInitTask
-  * @brief Special TBB task used by ThreadPoolSvc to wrap execution of
-  * IThreadInitTools.
-  *
-  * @author Charles Leggett
-  */
+ *  @brief Special TBB task used by ThreadPoolSvc to wrap execution of
+ *  IThreadInitTools.
+ *
+ *  @author Charles Leggett
+ */
 
 class ThreadInitTask: virtual public tbb::task
 
@@ -31,9 +31,9 @@ public:
     m_terminate(terminate){};
 
   /** @brief Execute the task
-    *
-    * Will loop over IThreadInitTools and execute each one.
-    */
+   *
+   *  Will loop over IThreadInitTools and execute each one.
+   */
   virtual tbb::task* execute();
 
   static bool execFailed() { return m_execFailed; }
