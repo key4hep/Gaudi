@@ -273,14 +273,14 @@ StatusCode ForwardSchedulerSvc::finalize(){
   if (!sc.isSuccess())
     warning () << "Scheduler could not be deactivated" << endmsg;
 
-  info() << "Terminating thread-pool resources" << endmsg;
-  if (m_threadPoolSvc->terminatePool().isFailure()) {
-    error() << "Problems terminating thread pool" << endmsg;
-    return StatusCode::FAILURE;
-  }
-
   info() << "Joining Scheduler thread" << endmsg;
   m_thread.join();
+
+  // Final error check after thread pool termination
+  if (m_isActive == FAILURE) {
+    error() << "problems in scheduler thread" << endmsg;
+    return StatusCode::FAILURE;
+  }
 
   //m_efManager.getExecutionFlowGraph()->dumpExecutionPlan();
 
@@ -324,6 +324,12 @@ void ForwardSchedulerSvc::activate(){
       verbose() << "Action did not succeed (which is not bad per se)." << endmsg;
     else
       verbose() << "Action succeeded." << endmsg;
+  }
+
+  info() << "Terminating thread-pool resources" << endmsg;
+  if (m_threadPoolSvc->terminatePool().isFailure()) {
+    error() << "Problems terminating thread pool" << endmsg;
+    m_isActive = FAILURE;
   }
 
 }
