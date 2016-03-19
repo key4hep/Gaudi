@@ -194,8 +194,6 @@ ThreadPoolSvc::launchTasks(bool terminate) {
       debug() << "waiting at barrier for all ThreadInitTool to finish executing" << endmsg;
     barrier.wait();
 
-    // Should I wait for the tash scheduler to drain here?
-
     // Check to make sure all Tools were invoked.
     // I'm not sure this mechanism is worthwhile.
     for (auto& t : m_threadInitTools) {
@@ -205,7 +203,7 @@ ThreadPoolSvc::launchTasks(bool terminate) {
       int expectedNumInit = terminate? 0 : m_threadPoolSize;
       if (numInit != expectedNumInit) {
         error() << "not all threads " << (terminate? "terminated" : "initialized")
-                << "for tool " << t << " : "
+                << " for tool " << t << " : "
                 << t->nInit() << " out of " << m_threadPoolSize
                 << " are currently active" << endmsg;
         return StatusCode::FAILURE;
