@@ -2,7 +2,7 @@
 set(Base_heptools_version 69)
 set(Base_heptools_system x86_64-slc6-gcc48)
 
-set(Base_PLATFORM x86_64-slc6-gcc48-opt)
+set(Base_PLATFORM x86_64-slc0-gcc99-opt)
 
 set(Base_VERSION v1r0)
 set(Base_VERSION_MAJOR 1)
