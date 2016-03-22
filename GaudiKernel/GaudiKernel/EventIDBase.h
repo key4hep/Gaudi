@@ -14,6 +14,7 @@
  */
 
 #include <iostream>
+#include <tuple>
 #include <stdint.h>
 
 
@@ -166,25 +167,24 @@ inline bool operator<(const EventIDBase& lhs, const EventIDBase& rhs) {
   // then try ordering by lumi/event if both have non-zero lumi
   // then order by run/event
 
+
   if (lhs.m_time_stamp != 0 && rhs.m_time_stamp != 0) {
     return (lhs.m_time_stamp < rhs.m_time_stamp);
   } else {
     if (lhs.m_lumiBlock != 0 && rhs.m_lumiBlock != 0) {
-      return ( lhs.m_lumiBlock < rhs.m_lumiBlock ||
-               ( lhs.m_lumiBlock == rhs.m_lumiBlock &&
-                 lhs.m_event_number < rhs.m_event_number) );
+      return (std::tie(lhs.m_lumiBlock, lhs.m_event_number) < 
+              std::tie(rhs.m_lumiBlock, rhs.m_event_number) );
     } else {
-      return ( lhs.m_run_number<rhs.m_run_number ||
-               ( lhs.m_run_number==rhs.m_run_number && 
-                 lhs.m_event_number<rhs.m_event_number) );
+      return (std::tie(lhs.m_run_number, lhs.m_event_number) < 
+              std::tie(rhs.m_run_number, rhs.m_event_number) );
     }
   }
 }
 
 inline bool operator==(const EventIDBase& lhs, const EventIDBase& rhs) {
   // We assume that equality via run/event numbers is sufficient
-  return lhs.m_run_number   == rhs.m_run_number && 
-    lhs.m_event_number == rhs.m_event_number;
+  return ( lhs.m_run_number  == rhs.m_run_number && 
+           lhs.m_event_number == rhs.m_event_number );
 }
 inline bool operator>(const EventIDBase& lhs, const EventIDBase& rhs) {
   return !( (lhs < rhs) || (lhs == rhs));
