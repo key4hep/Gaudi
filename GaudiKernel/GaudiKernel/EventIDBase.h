@@ -9,13 +9,13 @@
  *
  * @author RD Schaffer <R.D.Schaffer@cern.ch>
  * @author Paolo Calafiura <pcalafiura@lbl.gov>
+ * @author Charles Leggett
  *
  */
 
-//<<<<<< INCLUDES                                                       >>>>>>
-
 #include <iostream>
 #include <stdint.h>
+
 
 /**
  * @class EventIDBase
@@ -34,11 +34,11 @@ public:
   //@{
   EventIDBase() {};
   EventIDBase(number_type run_number, 
-	      uint64_t event_number,
-	      number_type time_stamp=0,
-	      number_type time_stamp_ns_offset=0,
-	      number_type lumi_block=0,
-	      number_type bunch_crossing_id=0);
+              uint64_t event_number,
+              number_type time_stamp=0,
+              number_type time_stamp_ns_offset=0,
+              number_type lumi_block=0,
+              number_type bunch_crossing_id=0);
   // Use default copy constructor.
   virtual ~EventIDBase();
   //@}
@@ -89,9 +89,55 @@ public:
   friend bool operator<=(const EventIDBase& lhs, const EventIDBase& rhs);
   friend bool operator>=(const EventIDBase& lhs, const EventIDBase& rhs);
   
+  bool isRunEvent() const;
+  bool isTimeStamp() const;
+  bool isLumiEvent() const;
+
   /// Extraction operators
   friend std::ostream& operator<<(std::ostream& os, const EventIDBase& rhs);
-  
+
+  class SortByTimeStamp {
+  public:
+    bool operator() ( const EventIDBase& t1, const EventIDBase& t2 ) const {
+      if (t1.time_stamp() == t2.time_stamp()) {
+        return t1.time_stamp_ns_offset() > t2.time_stamp_ns_offset();
+      } else {
+        return t1.time_stamp() > t2.time_stamp();
+      }
+    }
+    bool operator() ( const EventIDBase* t1, const EventIDBase* t2 ) const {
+      return ( SortByTimeStamp()(*t1,*t2) );
+    }
+  };
+
+  class SortByRunEvent {
+  public:
+    bool operator() ( const EventIDBase& t1, const EventIDBase& t2 ) const {
+      if (t1.run_number() == t2.run_number()) {
+        return t1.event_number() > t2.event_number();
+      } else {
+        return t1.run_number() > t2.run_number();
+      }
+    }
+    bool operator() ( const EventIDBase* t1, const EventIDBase* t2 ) const {
+      return ( SortByRunEvent()(*t1,*t2) );
+    }
+  };
+
+  class SortByLumiEvent {
+  public:
+    bool operator() ( const EventIDBase& t1, const EventIDBase& t2 ) const {
+      if (t1.lumi_block() == t2.lumi_block()) {
+        return t1.event_number() > t2.event_number();
+      } else {
+        return t1.lumi_block() > t2.lumi_block();
+      }
+    }
+    bool operator() ( const EventIDBase* t1, const EventIDBase* t2 ) const {
+      return ( SortByLumiEvent()(*t1,*t2) );
+    }
+  };
+
 private:
   
   /// run number
@@ -115,20 +161,30 @@ private:
   
 };
 
-
 inline bool operator<(const EventIDBase& lhs, const EventIDBase& rhs) {
-  // We are assuming that ALL events will have run and event numbers,
-  // and never just a time stamp.
-  // FIXME: any use for also ordering by lumi-block ?
-  return lhs.m_run_number<rhs.m_run_number ||
-         ( lhs.m_run_number==rhs.m_run_number && 
-           lhs.m_event_number<rhs.m_event_number) ;
+  // first try ordering by timestamp if both are non-zero
+  // then try ordering by lumi/event if both have non-zero lumi
+  // then order by run/event
+
+  if (lhs.m_time_stamp != 0 && rhs.m_time_stamp != 0) {
+    return (lhs.m_time_stamp < rhs.m_time_stamp);
+  } else {
+    if (lhs.m_lumiBlock != 0 && rhs.m_lumiBlock != 0) {
+      return ( lhs.m_lumiBlock < rhs.m_lumiBlock ||
+               ( lhs.m_lumiBlock == rhs.m_lumiBlock &&
+                 lhs.m_event_number < rhs.m_event_number) );
+    } else {
+      return ( lhs.m_run_number<rhs.m_run_number ||
+               ( lhs.m_run_number==rhs.m_run_number && 
+                 lhs.m_event_number<rhs.m_event_number) );
+    }
+  }
 }
 
 inline bool operator==(const EventIDBase& lhs, const EventIDBase& rhs) {
-    // We assume that equality via run/event numbers is sufficient
+  // We assume that equality via run/event numbers is sufficient
   return lhs.m_run_number   == rhs.m_run_number && 
-         lhs.m_event_number == rhs.m_event_number;
+    lhs.m_event_number == rhs.m_event_number;
 }
 inline bool operator>(const EventIDBase& lhs, const EventIDBase& rhs) {
   return !( (lhs < rhs) || (lhs == rhs));
@@ -163,13 +219,5 @@ inline std::ostream& operator<<(std::ostream& os, const EventIDBase& rhs) {
   return os;
 }
 
-
-//<<<<<< INLINE MEMBER FUNCTIONS                                        >>>>>>
-
 #endif // EVENTINFO_EVENTID_H
-
-
-
-
-
 
