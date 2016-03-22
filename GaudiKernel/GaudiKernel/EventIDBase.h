@@ -220,4 +220,3 @@ inline std::ostream& operator<<(std::ostream& os, const EventIDBase& rhs) {
 }
 
 #endif // EVENTINFO_EVENTID_H
-
