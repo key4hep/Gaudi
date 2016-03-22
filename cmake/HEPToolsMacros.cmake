@@ -465,6 +465,7 @@ macro(lcg_prepare_paths)
       if(EXISTS "${Qt_home}/bin/qmake")
         set(QT_QMAKE_EXECUTABLE "${Qt_home}/bin/qmake" CACHE INTERNAL "")
       endif()
+      set(CMAKE_PREFIX_PATH ${Qt5_home}/lib/cmake ${CMAKE_PREFIX_PATH})
     endif()
   endif()
 
