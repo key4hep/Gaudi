@@ -62,7 +62,7 @@ Release notes of the packages:
     # in principle this is not needed, but it allows to run Doxygen and install
     # MathJax at the same time
     add_custom_target(install-MathJax DEPENDS ${CMAKE_BINARY_DIR}/doxygen/mathjax)
-    add_dependencies(doc install-MathJax)
+    add_dependencies(run-doxygen install-MathJax)
     set(MATHJAX_RELPATH "../mathjax")
   else()
     set(MATHJAX_RELPATH "http://cdn.mathjax.org/mathjax/latest")
@@ -81,7 +81,7 @@ Release notes of the packages:
                          -P ${CMAKE_CURRENT_SOURCE_DIR}/get_cppreference_tags.cmake
                        COMMENT "Getting cppreference.com doxygen tags...")
     add_custom_target(get-ccpreference-tags DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/cppreference-doxygen-web.tag.xml)
-    add_dependencies(doc get-ccpreference-tags)
+    add_dependencies(run-doxygen get-ccpreference-tags)
     set(DOXYGEN_TAGFILES
         "${DOXYGEN_TAGFILES} \"${CMAKE_CURRENT_BINARY_DIR}/cppreference-doxygen-web.tag.xml=http://en.cppreference.com/w/\"")
   endif()
