@@ -1,4 +1,4 @@
-PLATFORM: x86_64-slc6-gcc48-opt
+PLATFORM: x86_64-slc0-gcc99-opt
 VERSION: 123
 COMPILER: GNU 4.8.2
 # this is a comment
