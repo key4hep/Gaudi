@@ -853,11 +853,6 @@ macro_append cppflags "" \
          no-hide-warnings "" \
          target-clang " -Wno-overloaded-virtual -Wno-char-subscripts"
 
-# FIXME: (MCl) gccmax is an alias to gcc47
-macro_append gccxml_cppflags "" \
-         target-gccmax " -D__STRICT_ANSI__" \
-         target-gcc47 " -D__STRICT_ANSI__"
-
 # ppcmd=-I can be used on Windows as on Linux
 macro ppcmd "-I"
 
