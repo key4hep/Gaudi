@@ -5,15 +5,9 @@
 
 #include <string>
 
-#ifndef __GCCXML__
-
-	#include <chrono>
-	typedef std::chrono::high_resolution_clock Clock;
-	typedef Clock::time_point time_point;
-
-#else
-	typedef uint time_point;
-#endif
+#include <chrono>
+typedef std::chrono::high_resolution_clock Clock;
+typedef Clock::time_point time_point;
 
 struct TimelineEvent{
 	uint thread;
