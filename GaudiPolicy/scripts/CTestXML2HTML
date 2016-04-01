@@ -414,8 +414,6 @@ def updateAnnotations(site,Testing,outputTemp,annotationsList):
                        }
         if site.get("qmtest.run.userid") is not None:
             annotations["qmtest.run.userid"] = cleanWebChar(site.get("qmtest.run.userid"))
-        if site.get("BuildName") is not None:
-            annotations["cmt.cmtconfig"] = cleanWebChar(site.get("BuildName"))
         if site.get("qmtest.run.username") is not None:
             annotations["qmtest.run.username"] = cleanWebChar(site.get("qmtest.run.username"))
         if site.get("qmtest.run.command_line") is not None:
