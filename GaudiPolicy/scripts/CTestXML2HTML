@@ -405,7 +405,11 @@ def updateAnnotations(site,Testing,outputTemp,annotationsList):
                        "end_ts" : int(cleanWebChar(Testing.find("EndTestTime").text or '0')),
                        "start_time" : cleanWebChar(Testing.find("StartDateTime").text),
                        "start_ts" : int(cleanWebChar(Testing.find("StartTestTime").text or '0')),
-                       "uname" : cleanWebChar(site.get("OSName")+site.get("Name")+site.get("OSRelease")+site.get("OSVersion")+site.get("OSPlatform")) ,
+                       "uname" : cleanWebChar(' '.join([site.get("OSName"),
+                                                        site.get("Name"),
+                                                        site.get("OSRelease"),
+                                                        site.get("OSVersion"),
+                                                        site.get("OSPlatform")])),
                        "version" : [cleanWebChar(site.get("Generator"))]
                        }
         if site.get("qmtest.run.userid") is not None:
