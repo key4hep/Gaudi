@@ -507,7 +507,7 @@ def main():
         os.makedirs(output)
 
     # Copy the project build manifest, if present.
-    manifest_file = os.path.join(options.inputDirectory, 'manifest.xml')
+    manifest_file = os.path.join(options.inputDirectory, 'config', 'manifest.xml')
     if os.path.exists(manifest_file):
         shutil.copy(manifest_file, output)
 
