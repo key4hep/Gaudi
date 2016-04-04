@@ -180,7 +180,7 @@ class TestOrganizer :
         ul.insert(index,element)
         element.set("linkreference",father.get("linkreference")+"/"+cleanBrackets(sonName)+str(fatherLevel))
         subSpan = ET.SubElement(element, "span", {"class":"clickable folded"})
-        subImg = ET.SubElement(subSpan, "img", {"src":"plus.png"})
+        subImg = ET.SubElement(subSpan, "img", {"src":"images/plus.png"})
         subImg.text = sonName+": "
 
         return element
@@ -209,12 +209,12 @@ class TestOrganizer :
         #test
         li = ET.SubElement(span, "li", {"class":"test foldable"})
         span2 = ET.SubElement(li, "span", {"class":"clickable folded"})
-        ET.SubElement(span2, "img", {"src":"plus.png"})
+        ET.SubElement(span2, "img", {"src":"images/plus.png"})
         ET.SubElement(span2, "span", { "id":cleanBrackets(testName), "class":"testid"}).text = testName+": "
 
         # direct link
         link = ET.SubElement(li, "a", {"class": "permalink", "href": father.get("linkreference")+"//"+cleanBrackets(testName)})
-        ET.SubElement(link, "img", {"title":"Direct link to the test","src":"link.png"})
+        ET.SubElement(link, "img", {"title":"Direct link to the test","src":"images/link.png"})
 
         status = testElement.get("Status")
         if status in self.status :
