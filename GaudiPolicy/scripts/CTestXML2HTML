@@ -611,12 +611,21 @@ def main():
                 print "Cannot find skeleton directory in ${DATA_PATH}"
                 exit(1)
 
-            # Copy the files in the template directory excluding the directories
-            for f in os.listdir(skel):
-                src = os.path.join(skel, f)
-                dst = os.path.join(outputTemp, f)
-                if not os.path.isdir(src) and not os.path.exists(dst):
-                    shutil.copy(src, dst)
+            # Copy the template directory (do not overwrite)
+            for dirpath, dirnames, filenames in os.walk(skel):
+                destpath = os.path.join(outputTemp,
+                                        os.path.relpath(dirpath, skel))
+                for d in dirnames:
+                    if d in ('.svn', '.git'):
+                        continue
+                    d = os.path.join(destpath, d)
+                    if not os.path.exists(d):
+                        os.mkdir(d)
+                for f in filenames:
+                    src = os.path.join(dirpath, f)
+                    dst = os.path.join(destpath, f)
+                    if not os.path.exists(dst):
+                        shutil.copy(src, dst)
 
             # process each test case
             for Test in tests:
