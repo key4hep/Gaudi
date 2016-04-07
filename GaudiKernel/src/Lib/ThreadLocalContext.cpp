@@ -11,7 +11,7 @@ namespace Gaudi {
     ContextIdType currentContextEvt() {
       return s_curCtx.evt();
     }
-    EventContext currentContext() {
+    const EventContext& currentContext() {
       return s_curCtx;
     }
 

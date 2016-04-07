@@ -17,7 +17,7 @@ namespace Gaudi {
     /// algorithms.
     GAUDI_API ContextIdType currentContextId();
     GAUDI_API ContextIdType currentContextEvt();
-    GAUDI_API EventContext  currentContext();
+    GAUDI_API const EventContext&  currentContext();
 
     /// Used by the framework to change the value of the current context id.
     GAUDI_API void setCurrentContextId(ContextIdType newId);
