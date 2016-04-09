@@ -568,10 +568,10 @@ public:
 
   // For concurrency
   /// get the context
-  EventContext* getContext() const {return m_event_context;}
+  const EventContext* getContext() const {return m_event_context;}
 
   /// set the context
-  void setContext(EventContext* context){m_event_context = context;}
+  void setContext(const EventContext* context){m_event_context = context;}
 
   // From IDataHandleHolder:
 
@@ -668,7 +668,7 @@ protected:
   bool isFinalized( ) const  override{ return Gaudi::StateMachine::CONFIGURED == m_state; }
 
   /// Event specific data for multiple event processing
-  EventContext* m_event_context;
+  const EventContext* m_event_context;
 
   /// set instantiation index of Alg
   void setIndex(const unsigned int& idx) override;

@@ -5,6 +5,7 @@
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/ISvcLocator.h"
+#include "GaudiKernel/EventContext.h"
 
 #include "ForwardSchedulerSvc.h"
 
@@ -15,15 +16,18 @@ class AlgoExecutionTask: public tbb::task {
 public:
   AlgoExecutionTask(IAlgorithm* algorithm, 
                     unsigned int algoIndex, 
+                    EventContext* ctx,
                     ISvcLocator* svcLocator,
                     ForwardSchedulerSvc* schedSvc):
     m_algorithm(algorithm),
+    m_evtCtx(ctx),
     m_algoIndex(algoIndex),
     m_schedSvc(schedSvc),
     m_serviceLocator(svcLocator){};
   virtual tbb::task* execute();
 private:  
   SmartIF<IAlgorithm> m_algorithm;
+  EventContext* m_evtCtx;
   const unsigned int m_algoIndex;
   // For the callbacks on task finishing
   SmartIF<ForwardSchedulerSvc> m_schedSvc;

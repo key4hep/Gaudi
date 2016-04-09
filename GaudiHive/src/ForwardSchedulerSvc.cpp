@@ -892,10 +892,11 @@ StatusCode ForwardSchedulerSvc::promoteToScheduled(unsigned int iAlgo, int si) {
     ++m_algosInFlight;
     // Avoid to use tbb if the pool size is 1 and run in this thread
     if (-100 != m_threadPoolSize) {
-      tbb::task* t = new( tbb::task::allocate_root() ) AlgoExecutionTask(ialgoPtr, iAlgo, serviceLocator(), this);
+      tbb::task* t = new( tbb::task::allocate_root() ) 
+        AlgoExecutionTask(ialgoPtr, iAlgo, eventContext, serviceLocator(), this);
       tbb::task::enqueue( *t);
     } else {
-      AlgoExecutionTask theTask(ialgoPtr, iAlgo, serviceLocator(), this);
+      AlgoExecutionTask theTask(ialgoPtr, iAlgo, eventContext, serviceLocator(), this);
       theTask.execute();
     }
 
@@ -925,13 +926,15 @@ StatusCode ForwardSchedulerSvc::promoteToScheduled(unsigned int iAlgo, int si) {
 /**
  * The call to this method is triggered only from within the AlgoExecutionTask.
 */
-StatusCode ForwardSchedulerSvc::promoteToExecuted(unsigned int iAlgo, int si, IAlgorithm* algo) {
+StatusCode ForwardSchedulerSvc::promoteToExecuted(unsigned int iAlgo, int si, 
+                                                  IAlgorithm* algo, 
+                                                  EventContext* eventContext) {
 
   // Put back the instance
   Algorithm* castedAlgo = dynamic_cast<Algorithm*>(algo); // DP: expose context getter in IAlgo?
   if (!castedAlgo)
     fatal() << "The casting did not succeed!" << endmsg;
-  EventContext* eventContext = castedAlgo->getContext();
+  //  EventContext* eventContext = castedAlgo->getContext();
 
   // Check if the execution failed
   if (eventContext->evtFail())
