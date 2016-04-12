@@ -12,7 +12,9 @@
 #  GPERFTOOLS_LIBRARIES (not cached)
 #  GPERFTOOLS_LIBRARY_DIRS (not cached)
 #  GPERFTOOLS_PPROF_EXECUTABLE
-
+# 
+#  Sami Kama<sami_dot_kama_at_cern_dot_ch> Apr 2016
+#
 
 find_path(GPERFTOOLS_INCLUDE_DIR tcmalloc.h  HINTS ${GPERFTOOLS_INSTALL_DIR} PATH_SUFFIXES  "include/gperftools" "include/google" NO_DEFAULT_PATH ) #override with commandline define
 find_path(GPERFTOOLS_INCLUDE_DIR tcmalloc.h  HINTS ${GPERFTOOLS_INSTALL_DIR} PATH_SUFFIXES  "gperftools" "google" ) #If fails look a system installation
