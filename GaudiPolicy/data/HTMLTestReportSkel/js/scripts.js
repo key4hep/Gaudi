@@ -46,7 +46,7 @@ function parseSummary(summary) {
  * Note: the image has been downloaded from http://www.ajaxload.info
  */
 jQuery.fn.loadingIcon = function() {
-	return this.html('<img src="ajax-loader.gif"/>');
+	return this.html('<img src="images/ajax-loader.gif"/>');
 }
 
 /**
@@ -124,10 +124,10 @@ function foldingAction() {
 	var me = $(this);
     if (me.hasClass('folded')) {
  	   me.nextAll('div,ul').slideDown();
- 	   me.find('img').attr('src', 'minus.png');
+ 	   me.find('img').attr('src', 'images/minus.png');
     } else {
  	   me.nextAll('div,ul').slideUp();
- 	   me.find('img').attr('src', 'plus.png');
+ 	   me.find('img').attr('src', 'images/plus.png');
     }
     me.toggleClass("folded");
 	me.toggleClass("unfolded");
@@ -145,7 +145,7 @@ jQuery.fn.loader = function() {
     this.each(function() { // loop over all the selected elements
       var me = $(this);
       if (me.data("url")) { // modify the element only if it does have a data "url"
-	  me.addClass("foldable").prepend('<img src="plus.png"/>&nbsp;')
+	  me.addClass("foldable").prepend('<img src="images/plus.png"/>&nbsp;')
 	      // wrap the "text" of the element with a clickable span that loads the url
 	      .wrapInner($("<span class='clickable'/>")
 			 .click(function(){ // trigger the loading on click
@@ -157,7 +157,7 @@ jQuery.fn.loader = function() {
 					   .prev()
 					   .unbind("click") // replace the click handler
 					   .click(foldingAction)
-					   .find('img').attr('src', 'minus.png');
+					   .find('img').attr('src', 'images/minus.png');
 				 	}));
 				 return false; // avoid bubbling of the event
 			     }));
