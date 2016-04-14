@@ -82,15 +82,6 @@ public:
     m_proxy = prx;
   }
 
-  EventContext& operator=(const EventContext& c) {
-    m_evt_num = c.m_evt_num;
-    m_evt_slot = c.m_evt_slot;
-    m_valid = c.m_valid;
-    m_evt_failed = c.m_evt_failed;
-    return *this;
-  }
-  
-
 private:
   ContextEvt_t m_evt_num  {INVALID_CONTEXT_EVT};
   ContextID_t  m_evt_slot {INVALID_CONTEXT_ID};
