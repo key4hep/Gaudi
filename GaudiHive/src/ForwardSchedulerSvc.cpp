@@ -37,7 +37,7 @@ DECLARE_SERVICE_FACTORY(ForwardSchedulerSvc)
 ForwardSchedulerSvc::ForwardSchedulerSvc( const std::string& name, ISvcLocator* svcLoc ):
  base_class(name,svcLoc),
   m_isActive(INACTIVE),
- m_algosInFlight(0),
+  m_algosInFlight(0),
   m_updateNeeded(true),
   m_first(true), m_checkDeps(false)
 
@@ -50,9 +50,9 @@ ForwardSchedulerSvc::ForwardSchedulerSvc( const std::string& name, ISvcLocator* 
   declareProperty("useGraphFlowManagement", m_CFNext = false );
   declareProperty("DataFlowManagerNext", m_DFNext = false );
   declareProperty("SimulateExecution", m_simulateExecution = false );
-  declareProperty("Optimizer", m_optimizationMode = "", 
+  declareProperty("Optimizer", m_optimizationMode = "",
                   "The following modes are currently available: PCE, COD, DRE, E" );
-  declareProperty("DumpIntraEventDynamics", m_dumpIntraEventDynamics = false, 
+  declareProperty("DumpIntraEventDynamics", m_dumpIntraEventDynamics = false,
                   "Dump intra-event concurrency dynamics to csv file" );
 
   /// Deprecated
@@ -157,13 +157,13 @@ StatusCode ForwardSchedulerSvc::initialize(){
   info() << "Data Dependencies for Algorithms:";
 
   std::vector<DataObjIDColl> m_algosDependencies;
-    for (IAlgorithm* ialgoPtr : algos) {
-      Algorithm* algoPtr = dynamic_cast<Algorithm*>(ialgoPtr);
-      if (nullptr == algoPtr)
-        fatal() << "Could not convert IAlgorithm into Algorithm: this will result in a crash." << endmsg;
+  for (IAlgorithm* ialgoPtr : algos) {
+    Algorithm* algoPtr = dynamic_cast<Algorithm*>(ialgoPtr);
+    if (nullptr == algoPtr)
+      fatal() << "Could not convert IAlgorithm into Algorithm: this will result in a crash." << endmsg;
 
     info() << "\n  " << algoPtr->name();
-    
+
     // FIXME
     DataObjIDColl algoDependencies;
     if (!algoPtr->inputDataObjs().empty() || !algoPtr->outputDataObjs().empty()) {
@@ -175,12 +175,12 @@ StatusCode ForwardSchedulerSvc::initialize(){
       for (auto id : algoPtr->outputDataObjs()) {
         info() << "\n    o OUTPUT " << id;
         globalOutp.insert(id);
-        }
-      } else {
-      info()   << "\n      none";
       }
-      m_algosDependencies.emplace_back(algoDependencies);
+    } else {
+      info()   << "\n      none";
     }
+    m_algosDependencies.emplace_back(algoDependencies);
+  }
   info() << endmsg;
 
   // Fill the containers to convert algo names to index
@@ -226,11 +226,11 @@ StatusCode ForwardSchedulerSvc::initialize(){
     fatal() << "Execution optimization is only available with the graph-based execution flow management" << endmsg;
     return StatusCode::FAILURE;
   }
-  const AlgResourcePool* algPool = 
+  const AlgResourcePool* algPool =
     dynamic_cast<const AlgResourcePool*>(m_algResourcePool.get());
-  sc = m_efManager.initialize(algPool->getExecutionFlowGraph(), m_algname_index_map, 
+  sc = m_efManager.initialize(algPool->getExecutionFlowGraph(), m_algname_index_map,
                               m_eventSlots, m_optimizationMode);
-  unsigned int controlFlowNodeNumber = 
+  unsigned int controlFlowNodeNumber =
     m_efManager.getExecutionFlowGraph()->getControlFlowNodeCounter();
 
   // Shortcut for the message service
@@ -276,11 +276,17 @@ StatusCode ForwardSchedulerSvc::finalize(){
   info() << "Joining Scheduler thread" << endmsg;
   m_thread.join();
 
+  // Final error check after thread pool termination
+  if (m_isActive == FAILURE) {
+    error() << "problems in scheduler thread" << endmsg;
+    return StatusCode::FAILURE;
+  }
+
   //m_efManager.getExecutionFlowGraph()->dumpExecutionPlan();
 
   return sc;
 
-  }
+}
 //---------------------------------------------------------------------------
 /**
  * Activate the scheduler. From this moment on the queue of actions is
@@ -296,7 +302,7 @@ void ForwardSchedulerSvc::activate(){
 
   debug() << "ForwardSchedulerSvc::activate()" << endmsg;
 
-  if ( m_threadPoolSvc->initPool(m_threadPoolSize).isFailure()) {
+  if (m_threadPoolSvc->initPool(m_threadPoolSize).isFailure()) {
     error() << "problems initializing ThreadPoolSvc" << endmsg;
     m_isActive = FAILURE;
     return;
@@ -318,6 +324,12 @@ void ForwardSchedulerSvc::activate(){
       verbose() << "Action did not succeed (which is not bad per se)." << endmsg;
     else
       verbose() << "Action succeeded." << endmsg;
+  }
+
+  info() << "Terminating thread-pool resources" << endmsg;
+  if (m_threadPoolSvc->terminatePool().isFailure()) {
+    error() << "Problems terminating thread pool" << endmsg;
+    m_isActive = FAILURE;
   }
 
 }
@@ -392,13 +404,13 @@ StatusCode ForwardSchedulerSvc::pushNewEvent(EventContext* eventContext){
     const unsigned int thisSlotNum = eventContext->slot();
     EventSlot& thisSlot = m_eventSlots[thisSlotNum];
     if (!thisSlot.complete) {
-      fatal() << "The slot " << thisSlotNum 
+      fatal() << "The slot " << thisSlotNum
               << " is supposed to be a finished event but it's not" << endmsg;
       return StatusCode::FAILURE;
     }
-    
-    info() << "Executing event " << eventContext->evt() << " on slot " 
-    << thisSlotNum << endmsg;
+
+    info() << "Executing event " << eventContext->evt() << " on slot "
+           << thisSlotNum << endmsg;
     thisSlot.reset(eventContext);
     // XXX: CF tests
     if (m_CFNext) {
@@ -552,24 +564,24 @@ StatusCode ForwardSchedulerSvc::updateStates(int si, const std::string& algo_nam
 
   StatusCode global_sc(StatusCode::FAILURE,true);
 
-   // Sort from the oldest to the newest event
-   // Prepare a vector of pointers to the slots to avoid copies
-   std::vector<EventSlot*> eventSlotsPtrs;
+  // Sort from the oldest to the newest event
+  // Prepare a vector of pointers to the slots to avoid copies
+  std::vector<EventSlot*> eventSlotsPtrs;
 
-   // Consider all slots if si <0 or just one otherwise
-   if (si<0) {
-     const int eventsSlotsSize(m_eventSlots.size());
-     eventSlotsPtrs.reserve(eventsSlotsSize);
-     for (auto slotIt=m_eventSlots.begin();slotIt!=m_eventSlots.end();slotIt++) {
-       if (!slotIt->complete)
-         eventSlotsPtrs.push_back(&(*slotIt));
-     }
-     std::sort(eventSlotsPtrs.begin(),
-               eventSlotsPtrs.end(),
-               [](EventSlot* a, EventSlot* b) {return a->eventContext->evt() < b->eventContext->evt();});
-   } else {
-     eventSlotsPtrs.push_back(&m_eventSlots[si]);
-   }
+  // Consider all slots if si <0 or just one otherwise
+  if (si<0) {
+    const int eventsSlotsSize(m_eventSlots.size());
+    eventSlotsPtrs.reserve(eventsSlotsSize);
+    for (auto slotIt=m_eventSlots.begin();slotIt!=m_eventSlots.end();slotIt++) {
+      if (!slotIt->complete)
+        eventSlotsPtrs.push_back(&(*slotIt));
+    }
+    std::sort(eventSlotsPtrs.begin(),
+              eventSlotsPtrs.end(),
+              [](EventSlot* a, EventSlot* b) {return a->eventContext->evt() < b->eventContext->evt();});
+  } else {
+    eventSlotsPtrs.push_back(&m_eventSlots[si]);
+  }
 
   for (EventSlot* thisSlotPtr : eventSlotsPtrs) {
     int iSlot = thisSlotPtr->eventContext->slot();
@@ -621,16 +633,16 @@ StatusCode ForwardSchedulerSvc::updateStates(int si, const std::string& algo_nam
         if (partial_sc.isFailure())
           if (msgLevel(MSG::DEBUG))
             verbose() << "Could not apply transition from "
-                    << AlgsExecutionStates::stateNames[AlgsExecutionStates::State::CONTROLREADY]
-                    << " for algorithm " << index2algname(algIndex) << " on processing slot " << iSlot << endmsg;
+                      << AlgsExecutionStates::stateNames[AlgsExecutionStates::State::CONTROLREADY]
+                      << " for algorithm " << index2algname(algIndex) << " on processing slot " << iSlot << endmsg;
       }
     }
 
     //now update DATAREADY to SCHEDULED
     if (!m_optimizationMode.empty()) {
       auto comp_nodes = [this] (const uint& i,const uint& j) {
-          return (m_efManager.getExecutionFlowGraph()->getAlgorithmNode(index2algname(i))->getRank() <
-          m_efManager.getExecutionFlowGraph()->getAlgorithmNode(index2algname(j))->getRank());
+        return (m_efManager.getExecutionFlowGraph()->getAlgorithmNode(index2algname(i))->getRank() <
+                m_efManager.getExecutionFlowGraph()->getAlgorithmNode(index2algname(j))->getRank());
       };
       std::priority_queue<uint,std::vector<uint>,std::function<bool(const uint&,const uint&)>> buffer(comp_nodes,std::vector<uint>());
       for(auto it = thisAlgsStates.begin(AlgsExecutionStates::State::DATAREADY);
@@ -772,8 +784,8 @@ void ForwardSchedulerSvc::dumpSchedulerState(int iSlot) {
     if ( thisSlot.complete )
       continue;
 
-    outputMessageStream << "-----------  slot: " << thisSlot.eventContext->slot() 
-                        << "  event: " << thisSlot.eventContext->evt() 
+    outputMessageStream << "-----------  slot: " << thisSlot.eventContext->slot()
+                        << "  event: " << thisSlot.eventContext->evt()
                         << " -----------"<< std::endl;
 
     if ( 0 > iSlot or iSlot == slotCount) {
@@ -818,15 +830,15 @@ void ForwardSchedulerSvc::dumpSchedulerState(int iSlot) {
       std::stringstream cFlowStateStringStream;
       m_efManager.printEventState(cFlowStateStringStream, thisSlot.algsStates, thisSlot.controlFlowState,0);
 
-      outputMessageStream << cFlowStateStringStream.str() << std::endl;      
+      outputMessageStream << cFlowStateStringStream.str() << std::endl;
     }
   }
 
-  outputMessageStream 
+  outputMessageStream
     << "=================================== END ======================================"
     << std::endl;
 
-  info() << "Dumping Scheduler State " << std::endl 
+  info() << "Dumping Scheduler State " << std::endl
          << outputMessageStream.str() << endmsg;
 
 }
@@ -839,7 +851,7 @@ StatusCode ForwardSchedulerSvc::promoteToControlReady(unsigned int iAlgo, int si
   StatusCode sc = m_eventSlots[si].algsStates.updateState(iAlgo,AlgsExecutionStates::CONTROLREADY);
   if (sc.isSuccess())
     if (msgLevel(MSG::VERBOSE))
-      verbose() << "Promoting " << index2algname(iAlgo) << " to CONTROLREADY on slot " 
+      verbose() << "Promoting " << index2algname(iAlgo) << " to CONTROLREADY on slot "
                 << si << endmsg;
 
   return sc;
@@ -863,7 +875,7 @@ StatusCode ForwardSchedulerSvc::promoteToDataReady(unsigned int iAlgo, int si) {
 
   if (updateSc.isSuccess())
     if (msgLevel(MSG::VERBOSE))
-      verbose() << "Promoting " << index2algname(iAlgo) << " to DATAREADY on slot " 
+      verbose() << "Promoting " << index2algname(iAlgo) << " to DATAREADY on slot "
                 << si<< endmsg;
 
   return updateSc;
@@ -901,7 +913,7 @@ StatusCode ForwardSchedulerSvc::promoteToScheduled(unsigned int iAlgo, int si) {
     }
 
     if (msgLevel(MSG::DEBUG))
-      debug() << "Algorithm " << algName << " was submitted on event " 
+      debug() << "Algorithm " << algName << " was submitted on event "
               << eventContext->evt() << " in slot " << si
               << ". Algorithms scheduled are " << m_algosInFlight << endmsg;
 
@@ -911,7 +923,7 @@ StatusCode ForwardSchedulerSvc::promoteToScheduled(unsigned int iAlgo, int si) {
 
     if (updateSc.isSuccess())
       if (msgLevel(MSG::VERBOSE))
-        verbose() << "Promoting " << index2algname(iAlgo) << " to SCHEDULED on slot " 
+        verbose() << "Promoting " << index2algname(iAlgo) << " to SCHEDULED on slot "
                   << si << endmsg;
     return updateSc;
   } else {
@@ -943,8 +955,8 @@ StatusCode ForwardSchedulerSvc::promoteToExecuted(unsigned int iAlgo, int si,
   StatusCode sc = m_algResourcePool->releaseAlgorithm(algo->name(),algo);
 
   if (!sc.isSuccess()) {
-    error() << "[Event " << eventContext->evt() << ", Slot " << eventContext->slot()  
-            << "] "   << "Instance of algorithm " << algo->name() 
+    error() << "[Event " << eventContext->evt() << ", Slot " << eventContext->slot()
+            << "] "   << "Instance of algorithm " << algo->name()
             << " could not be properly put back." << endmsg;
     return StatusCode::FAILURE;
     }
@@ -968,7 +980,7 @@ StatusCode ForwardSchedulerSvc::promoteToExecuted(unsigned int iAlgo, int si,
   }
 
   if (msgLevel(MSG::DEBUG))
-    debug() << "Algorithm " << algo->name() << " executed in slot " << si 
+    debug() << "Algorithm " << algo->name() << " executed in slot " << si
             << ". Algorithms scheduled are " << m_algosInFlight << endmsg;
 
   // Limit number of updates
@@ -981,7 +993,7 @@ StatusCode ForwardSchedulerSvc::promoteToExecuted(unsigned int iAlgo, int si,
   }
 
   if (msgLevel(MSG::DEBUG))
-    debug() << "Trying to handle execution result of " << index2algname(iAlgo) 
+    debug() << "Trying to handle execution result of " << index2algname(iAlgo)
             << " on slot " << si << endmsg;
   State state;
   if (algo->filterPassed()) {
@@ -1001,7 +1013,7 @@ StatusCode ForwardSchedulerSvc::promoteToExecuted(unsigned int iAlgo, int si,
 }
 
 //===========================================================================
-void 
+void
 ForwardSchedulerSvc::addAlg(Algorithm* a, EventContext* e, pthread_t t) {
 
   std::lock_guard<std::mutex> lock(m_ssMut);
@@ -1014,7 +1026,7 @@ bool
 ForwardSchedulerSvc::delAlg(Algorithm* a) {
 
   std::lock_guard<std::mutex> lock(m_ssMut);
-  
+
   for (std::list<SchedulerState>::iterator itr = m_sState.begin();
        itr != m_sState.end(); ++itr) {
     if (*itr == a) {
@@ -1030,7 +1042,7 @@ ForwardSchedulerSvc::delAlg(Algorithm* a) {
 //===========================================================================
 void
 ForwardSchedulerSvc::dumpState(std::ostringstream& ost) {
-  
+
   std::lock_guard<std::mutex> lock(m_ssMut);
 
   for (auto it : m_sState) {
@@ -1042,7 +1054,7 @@ ForwardSchedulerSvc::dumpState(std::ostringstream& ost) {
 //===========================================================================
 void
 ForwardSchedulerSvc::dumpState() {
-  
+
   std::lock_guard<std::mutex> lock(m_ssMut);
 
   std::ostringstream ost;
@@ -1052,5 +1064,3 @@ ForwardSchedulerSvc::dumpState() {
   info() << ost.str() << endmsg;
 
 }
-    
- 
