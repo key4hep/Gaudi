@@ -534,7 +534,7 @@ public:
   }
 
   /** has Array been retreived? **/
-  bool retrieved() const { return m_retrieved; }
+  virtual bool retrieved() const override { return m_retrieved; }
 
 private:
   //
