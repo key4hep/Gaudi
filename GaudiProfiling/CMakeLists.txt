@@ -6,9 +6,10 @@ if (CMAKE_SYSTEM_NAME MATCHES Linux)
 
 find_package(Boost COMPONENTS python)
 find_package(PythonLibs)
-find_package(unwind)
-find_package(tcmalloc)
-
+find_package(unwind REQUIRED)
+#find_package(tcmalloc)
+find_package(gperftools REQUIRED)
+find_package(IntelAmplifier)
 #---------------------------------------------------------------------------
 # Hack the VTune detection
 if(NOT VTune_FOUND)
@@ -57,9 +58,10 @@ endif()
 #-----------------------------------
 # Google PerfTools profiler
 #-----------------------------------
-gaudi_add_module(GaudiGoogleProfiling src/component/google/*.cpp
-                 LINK_LIBRARIES GaudiKernel GaudiAlgLib z
-                 INCLUDE_DIRS tcmalloc)
+if(GPERFTOOLS_FOUND)
+  gaudi_add_module(GaudiGoogleProfiling src/component/google/*.cpp
+                   LINK_LIBRARIES GaudiKernel GaudiAlgLib z
+                   INCLUDE_DIRS ${GPERFTOOLS_INCLUDE_DIRS})
 
 # Special handling of unresorlved symbols in GaudiGoogleProfiling.
 # The profilers need to have libtcmalloc.so or libprofiler.so pre-loaded to
@@ -77,20 +79,29 @@ foreach(undef_symbol IsHeapProfilerRunning
 endforeach()
 set_target_properties(GaudiGoogleProfiling PROPERTIES LINK_FLAGS "${gprof_linker_flags}")
 
-if(NOT EXISTS ${TCMALLOC_INCLUDE_DIR}/gperftools/tcmalloc.h)
-  # assume old-style tcmalloc headers
+if(GPERFTOOLS_VERSION VERSION_LESS 2.0)
+  # if(NOT EXISTS ${GPERFTOOLS_INCLUDE_DIR}/../gperftools/tcmalloc.h)
+  #   # assume old-style tcmalloc headers
+  #   set_property(TARGET GaudiGoogleProfiling
+  #                APPEND PROPERTY COMPILE_DEFINITIONS TCMALLOC_OLD_GOOGLE_HEADERS)
+  # endif()
   set_property(TARGET GaudiGoogleProfiling
-               APPEND PROPERTY COMPILE_DEFINITIONS TCMALLOC_OLD_GOOGLE_HEADERS)
+    APPEND PROPERTY COMPILE_DEFINITIONS TCMALLOC_OLD_GOOGLE_HEADERS)
+  
+# else()
+# message(STATUS "Found gperftools version ${GPERFTOOLS_VERSION}")
 endif()
-
-
+else()
+    message(STATUS "gperftools not found. Skipping GaudiGoogleProfiling")
+    
+endif()
 #-----------------------------------
 # Intel VTune profiler
 #-----------------------------------
-if(VTune_FOUND)
+if(INTELAMPLIFIER_FOUND)
   gaudi_add_module(IntelProfiler src/component/intel/*.cpp
-                   LINK_LIBRARIES ${VTune_LIBRARIES} GaudiKernel
-                   INCLUDE_DIRS ${VTune_INCLUDE_DIRS})
+                   LINK_LIBRARIES ${INTELAMPLIFIER_LIBITTNOTIFY} GaudiKernel
+                   INCLUDE_DIRS ${INTELAMPLIFIER_INCLUDE_DIRS})
 else()
   message(WARNING "VTune libraries not found, the module IntelProfiler is disabled")
 endif()
