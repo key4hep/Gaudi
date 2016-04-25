@@ -21,8 +21,8 @@ class GaudiParallelizer: public GaudiAlgorithm {
 public:
   /// Standard constructor
   GaudiParallelizer(const std::string& name, ISvcLocator* pSvcLocator);
-  virtual ~GaudiParallelizer()noexcept(true); ///< Destructor
-
+  /// Destructor. An explicit noexcept(true) is necessary for Gaudi to build (see GAUDI-1187)
+  virtual ~GaudiParallelizer() noexcept(true) override { }
   virtual StatusCode initialize();    ///< Algorithm initialization
   virtual StatusCode execute   ();    ///< Algorithm execution
   virtual StatusCode finalize  ();    ///< Algorithm finalization

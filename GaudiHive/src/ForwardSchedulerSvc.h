@@ -173,7 +173,7 @@ private:
   StatusCode promoteToControlReady(unsigned int iAlgo, int si);
   StatusCode promoteToDataReady(unsigned int iAlgo, int si);
   StatusCode promoteToScheduled(unsigned int iAlgo, int si);
-  StatusCode promoteToExecuted(unsigned int iAlgo, int si, IAlgorithm* algo);
+  StatusCode promoteToExecuted(unsigned int iAlgo, int si, IAlgorithm* algo, EventContext*);
   StatusCode promoteToFinished(unsigned int iAlgo, int si);
 
   /// Check if the scheduling is in a stall

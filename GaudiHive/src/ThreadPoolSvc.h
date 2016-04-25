@@ -12,6 +12,16 @@
 
 #include <vector>
 
+/** @class ThreadPoolSvc
+  * @brief A service which initializes a TBB thread pool.
+  *
+  * This service can be configured with an array of IThreadInitTools which
+  * will each be invoked concurrently on each worker thread. A ThreadInitTask
+  * is created for each thread and given the list of tools. A boost::barrier
+  * is used to synchronize the calling of each tool concurrently on all
+  * threads at the same time.
+  *
+  */
 class ThreadPoolSvc: public extends<Service,
                                     IThreadPoolSvc> {
 public:
@@ -22,19 +32,30 @@ public:
   ~ThreadPoolSvc();
 
   /// Initialise
-  virtual StatusCode initialize();
+  virtual StatusCode initialize() override final;
 
   /// Finalise
-  virtual StatusCode finalize();
+  virtual StatusCode finalize() override final;
 
+  /// Initialize the thread pool and launch the ThreadInitTasks.
+  virtual StatusCode initPool(const int& poolSize) override final;
 
-  virtual StatusCode initPool(const int& poolSize);
-  virtual int poolSize() const {return m_threadPoolSize;}
+  /// Terminate the thread pool and launch thread termination tasks.
+  virtual StatusCode terminatePool() override final;
+
+  virtual int poolSize() const override final {
+    return m_threadPoolSize;
+  }
+
   virtual bool isInit() const { return m_init; }
 
-  virtual std::vector<IThreadInitTool*> getThreadInitTools() const;
+  virtual std::vector<IThreadInitTool*> getThreadInitTools()
+    const override final;
 
 private:
+
+  /// Launch tasks to execute the ThreadInitTools
+  StatusCode launchTasks(bool finalize=false);
 
   bool m_init;
   int m_threadPoolSize;
@@ -44,9 +65,6 @@ private:
   tbb::spin_mutex m_initMutex;
 
   tbb::task_scheduler_init* m_tbbSchedInit;
-
-  boost::barrier *m_barrier;
-
 
 };
 
