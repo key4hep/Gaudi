@@ -2,11 +2,11 @@ gaudi_subdir(GaudiExamples v27r1)
 
 gaudi_depends_on_subdirs(GaudiKernel GaudiUtils GaudiGSL GaudiAlg RootCnv)
 
-find_package(HepPDT)
-find_package(ROOT COMPONENTS Tree RIO Hist Net)
-find_package(Boost COMPONENTS python)
-find_package(CLHEP)
-find_package(GSL)
+find_package(HepPDT REQUIRED)
+find_package(ROOT COMPONENTS Tree RIO Hist Net REQUIRED)
+find_package(Boost COMPONENTS python REQUIRED)
+find_package(CLHEP REQUIRED)
+find_package(GSL REQUIRED)
 find_package(PythonLibs)
 find_package(RELAX)
 
