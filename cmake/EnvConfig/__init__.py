@@ -208,10 +208,12 @@ class Script(object):
             from pprint import pprint
             pprint(self.env)
         else:
-            template = {'sh':  "export %s='%s'",
-                        'csh': "setenv %s '%s';"}.get(self.opts.shell, "%s=%s")
-            for nv in sorted(self.env.items()):
-                print template % nv
+            template = {'sh':  "export {0}='{1}'",
+                        'csh': "setenv {0} '{1}';"}.get(self.opts.shell,
+                                                        "{0}={1}")
+            for name, value in sorted(self.env.items()):
+                if os.environ.get(name) != value:
+                    print template.format(name, value)
 
     def expandEnvVars(self, iterable):
         '''

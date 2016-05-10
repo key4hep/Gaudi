@@ -19,7 +19,7 @@ StatusCode HiveReadAlgorithm::initialize(){
 
 StatusCode HiveReadAlgorithm::execute()
 {
-  EventContext* ctxt = getContext();
+  const EventContext* ctxt = getContext();
   if (ctxt){
     info() << "Running now for event " << ctxt->evt() << endmsg;
   }

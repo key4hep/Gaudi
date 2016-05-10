@@ -47,10 +47,10 @@
    @author Markus Frank
    @version 1.0
 */
-class PersistencySvc  : public extends3<Service,
-                                        IConversionSvc,
-                                        IPersistencySvc,
-                                        IAddressCreator> {
+class PersistencySvc  : public extends<Service,
+                                       IConversionSvc,
+                                       IPersistencySvc,
+                                       IAddressCreator> {
 protected:
 
   class ServiceEntry final {

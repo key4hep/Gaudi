@@ -7,7 +7,7 @@
 #include "GaudiKernel/CommonMessaging.h"
 #include "GaudiKernel/IDataManagerSvc.h"
 
-#include "GaudiKernel/ContextSpecificPtr.h"
+#include "GaudiKernel/ThreadLocalContext.h"
 #include "GaudiKernel/DataHandleHolderVisitor.h"
 
 // C++

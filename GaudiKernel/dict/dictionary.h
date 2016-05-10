@@ -4,6 +4,7 @@
 
 #include "GaudiKernel/SmartRefVector.h"
 #include "GaudiKernel/DataObject.h"
+#include "GaudiKernel/MetaData.h"
 #include "GaudiKernel/LinkManager.h"
 #include "GaudiKernel/SmartRefVector.h"
 #include "GaudiKernel/KeyedObject.h"

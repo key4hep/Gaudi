@@ -1,7 +1,7 @@
 Profiling Gaudi jobs with Jemalloc {#profiling-jemalloc}
 ===============================================================================
 
-Integration of Jemalloc within gaudi jobs.
+Integration of Jemalloc within Gaudi jobs.
 Uses the Jemalloc library from http://www.canonware.com/jemalloc/
 
 It is possible to profile the memory used by Gaudi jobs, using the jemalloc library
@@ -14,12 +14,12 @@ To run the profiler, it is necessary to:
 gaudirun.py has been updated to set the environment accordingly (a prerequisite is however
 that libjemalloc.so has to be available in the library path).
 
-A Gaudi algorithm has also been developped to perform memory heap dumps at various event,
+A Gaudi algorithm has also been developed to perform memory heap dumps at various event,
 and is configured using the StartFromEventN, StopAtEventN and DumpPeriod, as described
 in the example below.
 
 A Gaudi service is also available to provide the same functionality, with the advantage
-of being able to profile without modifying the algorithm sequence. 
+of being able to profile without modifying the algorithm sequence.
 
 Running with the JemallocProfile algorithm
 --------------------------------------------------------------------------------
@@ -48,9 +48,9 @@ $> gaudirun.py --profilerName=jemalloc --run-info-file=runinfo.json myoptions.py
 
 Please note the the `--profilerName=jemalloc` to enbale the profiling, and the `--run-info-file` that produces
 a file containing information useful to interpret the results (process id of the Gaudi job, and the absolute path
-of the executable, necessary to run the pprof analysis tool).
+of the executable, necessary to run the jeprof analysis tool).
 
-Running with the JemallocProfileSvc service 
+Running with the JemallocProfileSvc service
 --------------------------------------------------------------------------------
 
 ### Change Options File
@@ -60,20 +60,22 @@ Simple example of using the JemallocProfileSvc service in a Gaudi configurable:
 ~~~~~~~{.py}
 #!/usr/bin/env gaudirun.py
 from Configurables import JemallocProfileSvc
+from Gaudi.Configuration import DEBUG
 #...
-ApplicationMgr().ExtSvc += { "JemallocProfileSvc" } 
-JemallocProfileSvc().StartFromEventN=3
-JemallocProfileSvc().StopAtEventN=7
-JemallocProfileSvc().OutputLevel=DEBUG
+jps = JemallocProfileSvc(StartFromEventN=3,
+                         StopAtEventN=7,
+                         OutputLevel=DEBUG)
+ApplicationMgr().ExtSvc.append(jps)
 ~~~~~~~
 
 It is also possible to trigger the profiling using incidents:
 
 ~~~~~~~{.py}
 from Configurables import JemallocProfileSvc
-ApplicationMgr().ExtSvc += { "JemallocProfileSvc" } 
-JemallocProfileSvc().StartFromIncidents= [ "MyStartIncident1", "MyStartIncident2" ]
-JemallocProfileSvc().StopAtIncidents= [ "MyStopIncident" ]
+jps = JemallocProfileSvc(StartFromIncidents=['MyStartIncident1',
+                                             'MyStartIncident2'],
+                         StopAtIncidents=['MyStopIncident'])
+ApplicationMgr().ExtSvc.append(jps)
 ~~~~~~~
 
 ### Run the job
@@ -84,17 +86,17 @@ Analyze
 --------------------------------------------------------------------------------
 ### With text output
 
-The pprof analysis tool from the Google performances tools (http://goog-perftools.sourceforge.net/)
+The jeprof analysis tool from the Google performances tools (http://goog-perftools.sourceforge.net/)
 is necessary to analyze the heap files.
 
-It can be used to comapre the memory in two heap files in the following way:
+It can be used to compare the memory in two heap files in the following way:
 
 ~~~~~~~~{.sh}
-$> pprof -text --base=<firstheap>.heap <executable name> <comparewith>.heap
+$> jeprof -text --base=<firstheap>.heap <executable name> <comparewith>.heap
 ~~~~~~~~
 
 ### To produce a postscript file
 
 ~~~~~~~~{.sh}
-$> pprof -gv --base=<firstheap>.heap <executable name> <comparewith>.heap
+$> jeprof -gv --base=<firstheap>.heap <executable name> <comparewith>.heap
 ~~~~~~~~

@@ -7,6 +7,10 @@
 #include <string>
 
 class IAlgTool;
+class AlgResourcePool;
+namespace Gaudi {
+  class StringKey;
+}
 
 /** @class IAlgorithm IAlgorithm.h GaudiKernel/IAlgorithm.h
 
@@ -18,8 +22,12 @@ class IAlgTool;
     @author D.Quarrie
     @author Marco Clemencic
 */
-class GAUDI_API IAlgorithm : virtual public extend_interfaces2<INamedInterface, IStateful> {
+class GAUDI_API IAlgorithm : virtual public extend_interfaces<INamedInterface,
+                                                              IStateful> {
 public:
+
+  friend AlgResourcePool;
+
   /// InterfaceID
   DeclareInterfaceID(IAlgorithm,5,0);
 
@@ -32,9 +40,13 @@ public:
   virtual const std::string& type() const = 0;
   virtual void  setType(const std::string& ) = 0;
   
+  /** StringKey rep of name
+   */
+  virtual const Gaudi::StringKey& nameKey() const = 0;
+
   /** The index of the algorithm
    */  
-  virtual unsigned int index() = 0;
+  virtual unsigned int index() const = 0;
   
   /** Specify if the algorithm is clonable
    */ 
@@ -138,6 +150,10 @@ public:
 
   /// Set the filter passed flag to the specified state
   virtual void setFilterPassed( bool state ) = 0;
+
+ protected:
+  /// Set instantiation index of Alg
+  virtual void setIndex(const unsigned int& idx) = 0;
 
 };
 

@@ -10,7 +10,7 @@
  *
  * @author Marco Clemencic
  */
-class GAUDI_API ComponentManager: public CommonMessaging<implements1<IComponentManager> > {
+class GAUDI_API ComponentManager: public CommonMessaging<implements<IComponentManager> > {
 public:
 
   /// Constructor.

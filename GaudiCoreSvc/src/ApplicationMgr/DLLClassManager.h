@@ -23,7 +23,7 @@ class IObjManager;
 //
 // Author:      Pere Mato
 //
-class DLLClassManager : public implements1<IClassManager> {
+class DLLClassManager : public implements<IClassManager> {
 public:
   // default creator
   DLLClassManager( IInterface* iface );

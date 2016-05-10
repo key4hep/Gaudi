@@ -23,7 +23,9 @@ class IRegistry;
  * \par
  * \b ScanOnBeginEvent (bool): If the scan has to be started during the BeginEvent incident (true) or on demand (false, default)
  */
-class DataSvcFileEntriesTool: public extends2<AlgTool, IDataStoreLeaves, IIncidentListener> {
+class DataSvcFileEntriesTool: public extends<AlgTool,
+                                             IDataStoreLeaves,
+                                             IIncidentListener> {
 public:
   /// Standard constructor
   DataSvcFileEntriesTool(const std::string& type,

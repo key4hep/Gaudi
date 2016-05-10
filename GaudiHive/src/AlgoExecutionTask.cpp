@@ -3,7 +3,7 @@
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/IProperty.h"
-#include "GaudiKernel/ContextSpecificPtr.h"
+#include "GaudiKernel/ThreadLocalContext.h"
 
 // C++
 #include <functional>
@@ -19,11 +19,10 @@ tbb::task* AlgoExecutionTask::execute() {
    }
 
   bool eventfailed=false;
-  EventContext* eventContext = this_algo->getContext();
-  //  eventContext->m_thread_id = pthread_self();
-  Gaudi::Hive::setCurrentContext( eventContext );
+  this_algo->setContext(m_evtCtx);
+  Gaudi::Hive::setCurrentContext( m_evtCtx );
 
-  m_schedSvc->addAlg(this_algo, eventContext, pthread_self());
+  m_schedSvc->addAlg(this_algo, m_evtCtx, pthread_self());
 
   // Get the IProperty interface of the ApplicationMgr to pass it to RetCodeGuard
   const SmartIF<IProperty> appmgr(m_serviceLocator);
@@ -59,14 +58,15 @@ tbb::task* AlgoExecutionTask::execute() {
   // DP it is important to propagate the failure of an event.
   // We need to stop execution when this happens so that execute run can 
   // then receive the FAILURE
-  eventContext->setFail(eventfailed);
+  m_evtCtx->setFail(eventfailed);
   
   // Push in the scheduler queue an action to be performed 
   auto action_promote2Executed = std::bind(&ForwardSchedulerSvc::promoteToExecuted,
                                            m_schedSvc, 
                                            m_algoIndex, 
-                                           eventContext->slot(),
-                                           m_algorithm);
+                                           m_evtCtx->slot(),
+                                           m_algorithm,
+                                           m_evtCtx);
 
   m_schedSvc->m_actionsQueue.push(action_promote2Executed);    
 

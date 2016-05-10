@@ -71,7 +71,10 @@ class ToolHandleInfo;
  *  @author David Quarrie
  *  @date   1998
  */
-class GAUDI_API Algorithm: public CommonMessaging<implements4<IAlgorithm, IDataHandleHolder, IProperty, IStateful>> {
+class GAUDI_API Algorithm: public CommonMessaging<implements<IAlgorithm,
+                                                             IDataHandleHolder,
+                                                             IProperty,
+                                                             IStateful>> {
 public:
 #ifndef __REFLEX__
   typedef Gaudi::PluginService::Factory<IAlgorithm*,
@@ -158,6 +161,7 @@ public:
    *  of the class configured to find tracks with different fit criteria.
    */
   const std::string& name() const override;
+  const Gaudi::StringKey& nameKey() const override;
 
   /** The type of the algorithm object.
    */
@@ -166,7 +170,7 @@ public:
 
   const std::string& version() const override;
 
-  unsigned int index() override;
+  unsigned int index() const override;
 
   /// Dummy implementation of IStateful::configure() method
   StatusCode configure() override { return StatusCode::SUCCESS ; }
@@ -450,6 +454,16 @@ public:
 
   }
 
+  // ==========================================================================
+  // declare ToolHandleArrays to the Algorithms
+
+  template <class T>
+    Property* declareProperty(const std::string& name,
+                              ToolHandleArray<T>& hndlArr,
+                              const std::string& doc = "none" ) const {
+    m_toolHandleArrays.push_back( &hndlArr );
+    return m_propertyMgr->declareProperty(name, hndlArr, doc);
+  }
 
   // ==========================================================================
   /** @brief Access the monitor service
@@ -554,10 +568,10 @@ public:
 
   // For concurrency
   /// get the context
-  EventContext* getContext(){return m_event_context;}
+  const EventContext* getContext() const {return m_event_context;}
 
   /// set the context
-  void setContext(EventContext* context){m_event_context = context;}
+  void setContext(const EventContext* context){m_event_context = context;}
 
   // From IDataHandleHolder:
 
@@ -599,67 +613,26 @@ public:
   void deregisterTool(IAlgTool * tool) const;
 
   template<class T>
-    StatusCode declareTool(ToolHandle<T> &handle,
-			   std::string toolTypeAndName = "",
-			   bool createIf = true) {
-    if (handle.isPublic()) {
-      return declarePublicTool(handle, toolTypeAndName, createIf);
-    } else {
-      return declarePrivateTool(handle, toolTypeAndName, createIf);
-    }
-  }
+  StatusCode declareTool(ToolHandle<T> &handle,
+		  std::string toolTypeAndName = "",
+		  bool createIf = true) {
 
-  /** Declare used Private tool
-   *
-   *  @param handle ToolHandle<T>
-   *  @param toolTypeAndName
-   *  @param parent, default public tool
-   *  @param create if necessary, default true
-   */
-  template<class T>
-  StatusCode declarePrivateTool(ToolHandle<T> & handle,
-      std::string toolTypeAndName = "",
-      bool createIf = true) {
+	  if (toolTypeAndName == "")
+		  toolTypeAndName = handle.typeAndName();
 
-    if (toolTypeAndName == "")
-      //      toolTypeAndName = System::typeinfoName(typeid(T));
-      toolTypeAndName = handle.typeAndName();
+	  StatusCode sc = handle.initialize(toolTypeAndName,
+			  handle.isPublic() ? nullptr : this,
+					  createIf);
+	  if (UNLIKELY(!sc)) {
+		  throw GaudiException{std::string{"Cannot create handle for "} +
+			  (handle.isPublic() ? "public" : "private") +
+			  " tool " + toolTypeAndName,
+			  name(), sc};
+	  }
 
-    StatusCode sc = handle.initialize(toolTypeAndName, this, createIf);
-    if (UNLIKELY(!sc)) {
-      throw GaudiException{"Cannot create handle for private tool " + toolTypeAndName,
-                           name(), sc};
-    }
+	  m_toolHandles.push_back(&handle);
 
-    m_toolHandles.push_back(&handle);
-
-    return sc;
-  }
-
-  /** Declare used Public tool
-   *
-   *  @param handle ToolHandle<T>
-   *  @param toolTypeAndName
-   *  @param parent, default public tool
-   *  @param create if necessary, default true
-   */
-  template<class T>
-  StatusCode declarePublicTool(ToolHandle<T> & handle, std::string toolTypeAndName = "",
-      bool createIf = true) {
-
-    if (toolTypeAndName == "")
-      toolTypeAndName = handle.typeAndName();
-
-    StatusCode sc = handle.initialize(toolTypeAndName, 0, createIf);
-    if (UNLIKELY(!sc)) {
-      throw GaudiException{"Cannot create handle for public tool " + toolTypeAndName,
-                           name(), sc};
-    }
-
-    m_toolHandles.push_back(&handle);
-
-    return sc;
-
+	  return sc;
   }
 
   const std::vector<IAlgTool *> & tools() const;
@@ -695,11 +668,14 @@ protected:
   bool isFinalized( ) const  override{ return Gaudi::StateMachine::CONFIGURED == m_state; }
 
   /// Event specific data for multiple event processing
-  EventContext* m_event_context;
+  const EventContext* m_event_context;
+
+  /// set instantiation index of Alg
+  void setIndex(const unsigned int& idx) override;
 
 private:
 
-  std::string m_name;            ///< Algorithm's name for identification
+  Gaudi::StringKey m_name;       ///< Algorithm's name for identification
   std::string m_type;            ///< Algorithm's type
   std::string m_version;         ///< Algorithm's version
   unsigned int m_index;          ///< Algorithm's index
@@ -708,6 +684,7 @@ private:
   //tools used by algorithm
   mutable std::vector<IAlgTool *> m_tools;
   mutable std::vector<BaseToolHandle *> m_toolHandles;
+  mutable std::vector<GaudiHandleArrayBase*> m_toolHandleArrays;
 
 
 private:
@@ -735,6 +712,10 @@ private:
   SmartIF<ISvcLocator>  m_pSvcLocator;      ///< Pointer to service locator service
  protected:
   SmartIF<PropertyMgr> m_propertyMgr;      ///< For management of properties
+
+  /// Hook for for derived classes to provide a custom visitor for data handles.
+  std::unique_ptr<IDataHandleVisitor> m_updateDataHandles;
+
  private:
   IntegerProperty m_outputLevel;   ///< Algorithm output level
   int          m_errorMax;         ///< Algorithm Max number of errors

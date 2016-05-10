@@ -25,7 +25,9 @@ class IAddressCreator;
 
 *///--------------------------------------------------------------------------
 
-class DetDataSvc  : public extends2<TsDataSvc, IDetDataSvc, IIncidentListener>
+class DetDataSvc  : public extends<TsDataSvc,
+                                   IDetDataSvc,
+                                   IIncidentListener>
 {
 
   // unhides DataSvc updateObject methods

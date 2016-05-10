@@ -277,7 +277,11 @@ StatusCode AlgTool::sysInitialize() {
                                       m_auditorInitialize ? auditorSvc() : nullptr,
                                       IAuditor::Initialize);
     StatusCode sc = initialize();
-    if (sc.isSuccess()) m_state = m_targetState;
+    if (!sc) return sc;
+
+    m_state = m_targetState;
+    if (m_updateDataHandles)
+    	acceptDHVisitor(m_updateDataHandles.get());
 
     return sc;
   } );
@@ -455,23 +459,54 @@ AlgTool::~AlgTool()
 
 void AlgTool::initToolHandles() const{
 
+  IAlgTool* tool(0);
+  for (auto thArr : m_toolHandleArrays) {
+    if (! thArr->retrieved()) {
+      if (UNLIKELY(msgLevel(MSG::DEBUG)))
+        debug() << "ToolHandleArray " << thArr->propertyName()
+                << " not used: not registering any of its Tools" << endmsg;
+    } else {
+      if (UNLIKELY(msgLevel(MSG::DEBUG)))
+        debug() << "Registering all Tools in ToolHandleArray " 
+                << thArr->propertyName() ;
+      for (auto th_name : thArr->typesAndNames()) {
+        if (UNLIKELY(msgLevel(MSG::DEBUG)))
+          debug() << std::endl << "    + " << th_name;
+        if (toolSvc()->retrieveTool(th_name, tool, this).isSuccess()) {
+          if (UNLIKELY(msgLevel(MSG::DEBUG)))
+            debug() << " (private)";
+          m_tools.push_back(tool);
+        } else if (toolSvc()->retrieveTool(th_name, tool, 0).isSuccess()) {
+          if (UNLIKELY(msgLevel(MSG::DEBUG)))
+            debug() << " (public)";
+          m_tools.push_back(tool);
+        } else {
+          if (UNLIKELY(msgLevel(MSG::DEBUG)))
+            debug() << " - ERROR" << endmsg;
+          warning() <<  "Error retrieving Tool " << th_name 
+                    << " in ToolHandleArray" << thArr->propertyName()
+                    << ". Not registered" << endmsg;
+        }
+      }
+      if (UNLIKELY(msgLevel(MSG::DEBUG))) debug() << endmsg;
+    }
+  }
 
-	for(auto th : m_toolHandles){
-		IAlgTool * tool = nullptr;
-
-		//if(th->retrieve().isFailure())
-			//debug() << "Error in retrieving tool from ToolHandle" << endmsg;
-
-		//get generic tool interface from ToolHandle
-		if(th->retrieve(tool).isSuccess() && tool != nullptr){
-			m_tools.push_back(tool);
-			debug() << "Adding ToolHandle tool " << tool->name() << " (" << tool->type() << ")" << endmsg;
-		} else {
-			debug() << "Trying to add nullptr tool" << endmsg;
-		}
-	}
-
-	m_toolHandlesInit = true;
+  for(auto th : m_toolHandles){
+    tool = th->get();
+    if(tool){
+      m_tools.push_back(tool);
+      if (UNLIKELY(msgLevel(MSG::DEBUG)))
+        debug() << "Adding "
+        << (th->isPublic() ? "Public" : "Private" )
+        << " ToolHandle tool " << tool->name()
+        << " (" << tool->type() << ")" << endmsg;
+    } else {
+      if (UNLIKELY(msgLevel(MSG::DEBUG)))
+        debug() << "ToolHandle " << th->typeAndName() << " not used" << endmsg;
+    }
+  }
+  m_toolHandlesInit = true;
 }
 
 const std::vector<IAlgTool *> & AlgTool::tools() const {

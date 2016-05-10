@@ -84,7 +84,7 @@ thread_local Partition* s_current(0);
  * @author Pere Mato
  * @version 1.0
 */
-class HiveWhiteBoard: public extends3<Service,
+class HiveWhiteBoard: public extends<Service,
                                      IDataProviderSvc,
                                      IDataManagerSvc,
                                      IHiveWhiteBoard>

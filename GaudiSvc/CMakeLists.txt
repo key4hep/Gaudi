@@ -1,4 +1,4 @@
-gaudi_subdir(GaudiSvc v22r0)
+gaudi_subdir(GaudiSvc v22r1)
 
 gaudi_depends_on_subdirs(GaudiKernel)
 
@@ -13,7 +13,8 @@ SET(GaudiSvc_srcs
     src/NTupleSvc/*.cpp
     src/RndmGenSvc/*.cpp
     src/THistSvc/*.cpp
-    src/FileMgr/*.cpp)
+    src/FileMgr/*.cpp
+    src/MetaDataSvc/*.cpp)
 
 if(NOT GAUDI_ATLAS)
   gaudi_add_module(GaudiSvc ${GaudiSvc_srcs}
@@ -31,6 +32,7 @@ if(GAUDI_BUILD_TESTS)
 endif()
 
 gaudi_install_python_modules()
+gaudi_install_scripts()
 
 #---Test-----------------------------------------------------------------------
 gaudi_add_test(QMTest QMTEST)

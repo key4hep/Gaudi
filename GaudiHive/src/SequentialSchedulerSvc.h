@@ -33,7 +33,8 @@
  *  @author  Benedikt Hegner 
  *  @version 1.1
  */
-class SequentialSchedulerSvc: public extends1<Service, IScheduler> {
+class SequentialSchedulerSvc: public extends<Service,
+                                             IScheduler> {
 public:
   /// Constructor
   SequentialSchedulerSvc( const std::string& name, ISvcLocator* svc );

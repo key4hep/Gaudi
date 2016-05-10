@@ -19,8 +19,6 @@
   class CPUCruncher : public GaudiAlgorithm
   {
 
-    friend class AlgFactory<CPUCruncher> ;
-
   public:
 
     typedef tbb::concurrent_hash_map<std::string,unsigned int> CHM;
@@ -33,8 +31,6 @@
     virtual StatusCode finalize () ; // the finalization of the algorithm
 
     double get_runtime() const { return m_avg_runtime; };
-
-  protected:
 
     CPUCruncher
     ( const std::string& name , // the algorithm instance name

@@ -2,6 +2,97 @@ Package: GaudiAlg
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+=============================== GaudiAlg v17r1 ===============================
+
+! 2016-03-10 - commit 4a18175
+
+ - removed uses of templates implements[1-4], extends[1-4] and
+   extend_interfaces[1-4]
+
+   Since merge request !22 they are unnecessary.
+    See merge request !133
+
+! 2016-02-29 - commit 223ce08
+
+ - Merge branch 'GAUDI-1183' into 'master'
+
+   reorganize DataHandleHolder visitor acces to avoid non-retrieved tools
+    This is not a perfect fix, more a workaround.
+    The method `initToolHandles` have been modified to fill the list of used
+   `ToolHandle`s only with the tools retrieved explicitly in the `initialize`
+   method.
+
+   `GaudiCommon` required the introduction of a hook so that the custom _fixer_
+   visitor could be created in the `GaudiCommon::initialize`, but used only at
+   the end of `PBASE::sysInitialize` (eb39274).
+    I also fixed an issue (double delete) with the use of `ToolHandle` from
+   `GaudiCommon` (0a1bec8).
+    Fixes GAUDI-1183.
+    See merge request !120
+
+! 2016-02-11 - commit b0618f7
+
+ - Improve CommonMessaging
+
+   Implementation of GAUDI-1146: Improve CommonMessaging and use it in more
+   places.
+
+   See merge request !76
+
+   Conflicts:
+   GaudiExamples/tests/qmtest/refs/AlgTools2.ref
+   GaudiExamples/tests/qmtest/refs/MultiInput/Read.ref
+   GaudiExamples/tests/qmtest/refs/conditional_output/write.ref
+   GaudiKernel/GaudiKernel/AlgTool.h
+   GaudiKernel/GaudiKernel/Algorithm.h
+   GaudiKernel/GaudiKernel/Service.h
+   GaudiKernel/src/Lib/AlgTool.cpp
+   GaudiKernel/src/Lib/Algorithm.cpp
+
+
+! 2016-02-11 - commit e2c585c
+
+ - Remove globalTimeOffset getter and GlobalTimeOffset property from GaudiCommon
+
+   GaudiCommon adds a property GlobalTimeOffset and a corresponding getter
+   globalTimeOffset to every algorithm/tool which uses GaudiCommon, regardless
+   on whether this property is used.
+
+   As there is no code anymore that actually uses globalTimeOffset, this patch
+   removes this accessor and the corresponding property.
+
+   Fixes GAUDI-1122.
+
+   See merge request !61
+
+
+! 2016-02-09 - commit 11d42e4
+
+ - DataHandles fixes for LHCb
+
+   - renamed IDataHandleHolder::accept to acceptDHVisitor to avoid build time
+   warnings in LHCb
+   - fixed reference file for GaudiExamples.thistwrite
+
+   See merge request !104
+
+
+! 2016-02-09 - commit a4bea2b
+
+ - remove unprotected DEBUG messages added in v27r0
+
+   The merge of the 'hive' branch introduced several _unprotected_ DEBUG
+   messages,
+ which is against LHCb policies.
+    Fixes GAUDI-1174.
+    See merge request !102
+
+! 2016-02-06 - commit d905569
+
+ - introduce DataHandle and DataObjectHandle
+
+   See merge requests !57 !94 !95
+
 =============================== GaudiAlg v17r0 ===============================
 
 ! 2016-01-12 - commit 4dbdc8e

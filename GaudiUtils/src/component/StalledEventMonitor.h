@@ -26,7 +26,8 @@ class IIncidentSvc;
  *  @author Marco Clemencic
  *  @date   Apr 19, 2010
  */
-class StalledEventMonitor: public extends1<Service, IIncidentListener> {
+class StalledEventMonitor: public extends<Service,
+                                          IIncidentListener> {
 public:
   /// Constructor
   StalledEventMonitor(const std::string& name, ISvcLocator* svcLoc);

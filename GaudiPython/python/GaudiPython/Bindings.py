@@ -235,7 +235,7 @@ class iProperty(object) :
             elif hasattr( value , 'toString' ) : value = value.toString()
             elif type(value) == long: value = '%d'   % value # prevent pending 'L'
             sp = StringProperty( name , str(value))
-            self._optsvc.addPropertyToCatalogue( self._name , sp )
+            self._optsvc.addPropertyToCatalogue( self._name , sp ).ignore()
     def __getattr__(self, name ):
         """
         The method which returns the value for the given property

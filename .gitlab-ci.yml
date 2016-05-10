@@ -1,0 +1,15 @@
+before_script:
+  - . /afs/cern.ch/lhcb/software/releases/LBSCRIPTS/dev/InstallArea/scripts/LbLogin.sh
+  - unset VERBOSE
+  - export PATH=/afs/cern.ch/sw/lcg/contrib/ninja/1.4.0/x86_64-slc6:${PATH}
+  - ln -sf Makefile-cmake.mk Makefile
+  - echo 'set(CMAKE_USE_CCACHE ON CACHE BOOL "")' >> cache_preload.cmake
+
+doxygen:
+  script:
+    - make
+    - make doc
+    - mv build.${CMTCONFIG}/doxygen .
+  artifacts:
+    paths:
+      - doxygen/

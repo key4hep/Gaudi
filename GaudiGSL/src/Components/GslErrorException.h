@@ -23,7 +23,8 @@
  *  @date   30/04/2002
  */
 
-class GslErrorException: public extends1<AlgTool, IGslErrorHandler> {
+class GslErrorException: public extends<AlgTool,
+                                        IGslErrorHandler> {
 public:
 
   /** handle the GSL error

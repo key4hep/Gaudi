@@ -5,7 +5,7 @@
 #include "GaudiKernel/IProperty.h"
 #include "GaudiKernel/AppReturnCode.h"
 
-#include "GaudiKernel/ContextSpecificPtr.h"
+#include "GaudiKernel/ThreadLocalContext.h"
 
 // C++
 #include <list>

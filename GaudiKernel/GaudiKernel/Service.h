@@ -33,7 +33,9 @@ class ServiceManager;
  *  @author Pere Mato
  *  @author Marco Clemencic
  */
-class GAUDI_API Service: public CommonMessaging<implements3<IService, IProperty, IStateful> > {
+class GAUDI_API Service: public CommonMessaging<implements<IService,
+                                                           IProperty,
+                                                           IStateful> > {
 public:
 #ifndef __REFLEX__
   typedef Gaudi::PluginService::Factory<IService*,

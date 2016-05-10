@@ -372,6 +372,10 @@ public:
   /** Get a read-write vector of GaudiHandleBase* pointing to the real handles.
       Implemented in GaudiHandleArray. */
   virtual BaseHandleArray getBaseArray() = 0;
+
+  /** To be able to tell if Array was ever retreived **/
+  virtual bool retrieved() const = 0;
+
 };
 
 
@@ -515,6 +519,7 @@ public:
 	  // stop at first failure
       if ( i.retrieve().isFailure() ) return StatusCode::FAILURE;
     }
+    m_retrieved = true;
     return StatusCode::SUCCESS;
   }
 
@@ -528,11 +533,15 @@ public:
     return sc;
   }
 
+  /** has Array been retreived? **/
+  virtual bool retrieved() const override { return m_retrieved; }
+
 private:
   //
   // Private data members
   //
   HandleVector m_handleArray;
+  bool m_retrieved { false };
 };
 
 // Easy printing out of Handles and HandleArrays

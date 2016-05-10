@@ -2,6 +2,216 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+============================= GaudiKernel v33r1 ==============================
+
+! 2016-03-10 - commit f84ad02
+
+ - Register Tools declared in ToolHandleArray in parent Algorithm/AlgTool
+
+   data deps of Tools in ToolHandleArrays are not pushed to parent Alg/AlgTool
+    need to add a declareProperty(... ToolHandleArray<T> ...) to Algorithm and
+   AlgTool, and add all ToolHandleArrays thus declared to a container that gets
+   processed during initToolHandles. In order to avoid adding tools from Arrays
+   that haven't been retrieved, we have to add a bool flag to the
+   GaudiHandleArrayBase to detect if it's been retrieved. there's a bit of
+   ugliness in extracting a ptr to an IAlgTool from the untemplated
+   GaudiHandleArrayBase, as we have to explicitly retrieve the tool from the
+   ToolSvc by name, but since it's already been retrieved when the Array gets
+   retrieved, we won't be doing any new creations.
+    I believe that the testing for whether the retrieved tool is public or
+   private is redundant, as I don't think you can put a Public tool into a
+   Private ToolHandleArray (at least you can't seem to do so in ATLAS), but I
+   left it in just in case.
+
+    See GAUDI-1190
+
+
+    See merge request !124
+
+! 2016-03-10 - commit 02f2560
+
+ - use StringKey for Alg name, add IAlgorithm::setIndex
+
+   this patch does 3 things:
+
+   - makes Algorithm::index() const (as it should have been), set the initial
+   value to 0 instead of 123 (!)
+   - adds a protected Algorithm::setIndex(unsigned int) method. this allows you
+   to distinguish between clones. AlgResourcePool is the one who does the
+   setting, and is declared as a friend to IAlgorithm
+   - turns Algorithm::m_name into a StringKey (from a string), so we can hash on
+   the name of Algorithms more easily (a useful ability when dealing with Alg
+   clones, and trying to treat them all the same way)
+    See merge request !125
+
+! 2016-03-10 - commit 2de9290
+
+ - added metadata service
+
+   The metadata service adds information about n-tuple production into the
+   resulting n-tuple.
+    Update and overrides !128
+    See merge request !136
+
+! 2016-03-10 - commit 4a18175
+
+ - removed uses of templates implements[1-4], extends[1-4] and
+   extend_interfaces[1-4]
+
+   Since merge request !22 they are unnecessary.
+    See merge request !133
+
+! 2016-03-10 - commit 8a11f51
+
+ - fixed unprotected debug messages
+
+   I also added the possibility of dumping a stack trace for unprotected
+
+   messages.
+    Fixes GAUDI-1192
+    See merge request !129
+
+! 2016-03-09 - commit 8685ac9
+
+ - various fixes and (minor) improvements to documentation
+
+   See merge request !127
+
+! 2016-03-03 - commit 5925940
+
+ - restored DeclareFactoryEntry macros for ATLAS
+
+   restored the (dummy) DeclareFactoryEntry macros for ATLAS compatibility.
+
+   these are protected with a `#ifdef ATLAS` macro
+    also fixed GaudiHive/CPUCruncher to remove this usage
+    See merge request !126
+
+! 2016-03-02 - commit a146191
+
+ - separate thread local EventContext handling from ContextSpecificPtr
+
+   Moved all the setting/getting methods for the thread local
+   `EventContext` from `GaudiKernel/ContextSpecificPtr.h` to a new file
+   `GaudiKernel/ThreadLocalContext.h`.
+    See merge request !122
+
+! 2016-02-29 - commit 223ce08
+
+ - Merge branch 'GAUDI-1183' into 'master'
+
+   reorganize DataHandleHolder visitor acces to avoid non-retrieved tools
+    This is not a perfect fix, more a workaround.
+    The method `initToolHandles` have been modified to fill the list of used
+   `ToolHandle`s only with the tools retrieved explicitly in the `initialize`
+   method.
+
+   `GaudiCommon` required the introduction of a hook so that the custom _fixer_
+   visitor could be created in the `GaudiCommon::initialize`, but used only at
+   the end of `PBASE::sysInitialize` (eb39274).
+    I also fixed an issue (double delete) with the use of `ToolHandle` from
+   `GaudiCommon` (0a1bec8).
+    Fixes GAUDI-1183.
+    See merge request !120
+
+! 2016-02-22 - commit acafe77
+
+ - correctly initialize CommonMessaging::m_level
+
+   Fixes GAUDI-1185
+    See merge request !118
+
+! 2016-02-17 - commit 7b13bd5
+
+ - removed static_assert in ToolHandle.h
+
+   Fixes GAUDI-1182
+    See merge request !116
+
+! 2016-02-17 - commit 3aa8fa9
+
+ - Fixes for compatibility with ATLAS code
+
+   * protect PATH from local directories
+   * restore `outputLevel()` method removed with mr !76 (b0618f78)
+    Fixes GAUDI-1181
+    See merge request !115
+
+! 2016-02-15 - commit 4dc9082
+
+ - fixed handling of (multi line) strings and ';' in strings for .opts files
+
+   Fixes GAUDI-1179
+    See merge request !112
+
+! 2016-02-11 - commit b0618f7
+
+ - Improve CommonMessaging
+
+   Implementation of GAUDI-1146: Improve CommonMessaging and use it in more
+   places.
+
+   See merge request !76
+
+   Conflicts:
+   GaudiExamples/tests/qmtest/refs/AlgTools2.ref
+   GaudiExamples/tests/qmtest/refs/MultiInput/Read.ref
+   GaudiExamples/tests/qmtest/refs/conditional_output/write.ref
+   GaudiKernel/GaudiKernel/AlgTool.h
+   GaudiKernel/GaudiKernel/Algorithm.h
+   GaudiKernel/GaudiKernel/Service.h
+   GaudiKernel/src/Lib/AlgTool.cpp
+   GaudiKernel/src/Lib/Algorithm.cpp
+
+
+! 2016-02-11 - commit dabf7a3
+
+ - Restore fixed ToolHandle.h
+
+   The version of ToolHandle.h before fa29ed33 included some improvements,
+ as
+   well as the fixes for https://sft.its.cern.ch/jira/browse/CFHEP-177 and
+   GAUDI-1127.
+    The version introduced with fa29ed33 does not work because of GAUDI-1127.
+    See merge request !106
+
+! 2016-02-09 - commit 11d42e4
+
+ - DataHandles fixes for LHCb
+
+   - renamed IDataHandleHolder::accept to acceptDHVisitor to avoid build time
+   warnings in LHCb
+   - fixed reference file for GaudiExamples.thistwrite
+
+   See merge request !104
+
+
+! 2016-02-09 - commit a4bea2b
+
+ - remove unprotected DEBUG messages added in v27r0
+
+   The merge of the 'hive' branch introduced several _unprotected_ DEBUG
+   messages,
+ which is against LHCb policies.
+    Fixes GAUDI-1174.
+    See merge request !102
+
+! 2016-02-09 - commit dfa9d35
+
+ - expanded EventContext and EventIDBase
+
+   the EventContext class needs to be expanded in two ways
+   - bring in event identifying information (event#, run#, timestamp,
+    lumi#, etc)
+   - some experiment dependent ptr for other stuff
+    See merge request !103
+
+! 2016-02-06 - commit d905569
+
+ - introduce DataHandle and DataObjectHandle
+
+   See merge requests !57 !94 !95
+
 ============================= GaudiKernel v33r0 ==============================
 
 ! 2016-01-21 - commit 1e44d49
