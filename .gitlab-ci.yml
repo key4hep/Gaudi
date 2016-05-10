@@ -5,7 +5,32 @@ before_script:
   - ln -sf Makefile-cmake.mk Makefile
   - echo 'set(CMAKE_USE_CCACHE ON CACHE BOOL "")' >> cache_preload.cmake
 
+stages:
+  - build
+  - test
+  - deploy
+
+build:
+  stage: build
+  tags:
+    - slc6
+  script:
+    - make
+  tags:
+    - slc6
+
+coding-conventions:
+  stage: test
+  tags:
+    - slc6
+  script:
+    - make apply-coding-conventions
+    - git diff --stat --exit-code
+
 doxygen:
+  stage: deploy
+  tags:
+    - slc6
   script:
     - make
     - make doc
