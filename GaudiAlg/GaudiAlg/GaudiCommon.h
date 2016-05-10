@@ -165,7 +165,7 @@ public:
   getIfExists ( IDataProviderSvc*  svc         ,
                 const std::string& location    ,
                 const bool useRootInTES = true ) const ;
-    /** @brief Check the existence of a data object or container
+  /** @brief Check the existence of a data object or container
    *         in the Gaudi Transient Event Store
    *
    *  @code

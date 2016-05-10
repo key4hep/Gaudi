@@ -65,6 +65,7 @@ typedef struct {
 
 #define PFM_COREDUO_SEL_INV	0x1	/* inverse */
 #define PFM_COREDUO_SEL_EDGE	0x2	/* edge detect */
+
 /*
  * model-specific parameters for the library
  */

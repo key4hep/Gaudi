@@ -52,7 +52,7 @@ namespace Gaudi
     /// empty key?
     bool operator!() const { return       empty() ; }
     // ========================================================================
-  public: // equality
+  public:
     // ========================================================================
     /** equality                                                            Key
      *  for efficiency reason compare the hash-values first
@@ -71,8 +71,9 @@ namespace Gaudi
     /// non-equality                                                   string
     bool operator!=( const std::string& o ) const { return !(*this==o) ; }
     // ========================================================================
-  public: // ordering
+    // ordering
     // ========================================================================
+    public:
     /** less                                                                key
      *  It can be used as a key for std::map, e.g.
      *  <code>std::map<StringKey,double></code>
@@ -102,8 +103,9 @@ namespace Gaudi
     /// greater or equal                                                    key
     bool operator >=( const StringKey& o ) const { return !(*this < o ) ; }
     // ========================================================================
-  public:  // few helper methods for indirect usage, mainly for Python
+    // few helper methods for indirect usage, mainly for Python
     // ========================================================================
+    public:
     /** the actual access to the hash
      *  @attention NEVER use the actual hash value for anything stored in
      *             files, as it is not guaranteed that the hashing scheme

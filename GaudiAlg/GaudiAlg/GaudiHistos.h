@@ -337,7 +337,7 @@ public:
     const Gaudi::Histo1DDef& hdef         ,
     const double             weight = 1.0 ) const ;
   // ==========================================================================
- /** fill the 1D histogram (book on demand)
+  /** fill the 1D histogram (book on demand)
    *
    *  Wrapper method for the equivalent plot1D method.
    *  Retained for backwards compatibility, please use plot1D instead.
@@ -1993,7 +1993,7 @@ public:
     const double         weight = 1.0 ) const;
   // ==========================================================================
 
-public: // 1D Fixed
+public:
 
   // ==========================================================================
   /** book the 1D histogram
@@ -2097,7 +2097,7 @@ public: // 1D Fixed
     const Gaudi::Histo1DDef& hdef ) const ;
   // ==========================================================================
 
-public: // 1D Variable
+public:
 
   // ==========================================================================
   /** book the 1D variable binning histogram
@@ -2129,7 +2129,7 @@ public: // 1D Variable
     const HistoBinEdges& edges        ) const ;
   // ==========================================================================
 
-public: // 2D Fixed
+public:
 
   // ==========================================================================
   /** book the 2D histogram
@@ -2176,7 +2176,7 @@ public: // 2D Fixed
     const unsigned long binsY   =  50 ) const ;
   // ==========================================================================
 
-public: // 2D Variable
+public:
 
   // ==========================================================================
   /** book the 2D variable binning histogram
@@ -2212,7 +2212,7 @@ public: // 2D Variable
     const HistoBinEdges& edgesY       ) const ;
   // ==========================================================================
 
-public: // 3D Fixed
+public:
 
   // ==========================================================================
   /** book the 3D histogram
@@ -2274,7 +2274,7 @@ public: // 3D Fixed
     const unsigned long binsZ   =  10 ) const ;
   // ==========================================================================
 
-public: // 3D Variable
+public:
 
   // ==========================================================================
   /** book the 3D variable binning histogram
@@ -2314,7 +2314,7 @@ public: // 3D Variable
     const HistoBinEdges& edgesZ       ) const ;
   // ==========================================================================
 
-public: // 1D Fixed Profiles
+public:
 
   // ==========================================================================
   /** book the 1D profile histogram
@@ -2366,7 +2366,7 @@ public: // 1D Fixed Profiles
     const double        highY  =  std::numeric_limits<double>::max() ) const;
  // ==========================================================================
 
-public: // 1D Variable Profiles
+public:
 
   // ==========================================================================
   /** book the 1D profile histogram
@@ -2397,7 +2397,7 @@ public: // 1D Variable Profiles
     const HistoBinEdges& edges        ) const;
  // ==========================================================================
 
-public: // 2D Profiles
+public:
 
   // ==========================================================================
   /** book the 2D profile histogram
@@ -2447,7 +2447,7 @@ public: // 2D Profiles
     const unsigned long binsY   =  50 ) const ;
   // ==========================================================================
 
-public: // 2D Profiles
+public:
 
   // ==========================================================================
   /** book the 2D profile histogram

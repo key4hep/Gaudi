@@ -182,8 +182,9 @@ public:
   /// shortcut, @see StatEntity::efficiencyErr
   double effErr        () const { return efficiencyErr () ; }
   // ==========================================================================
-public: // operators
+  // operators
   // ==========================================================================
+  public:
   /** General increment operator for the flag
    *  Could be used for easy manipulation with StatEntity object:
    *

@@ -697,7 +697,7 @@ public:
   /// check the existence AND validity of the histogram with given title
   virtual bool histoExists ( const HistoID&     ID     )  const = 0 ;
 
-public:  // non-virtual methods
+public:
 
   /** fill the 1D histogram with information from
    *  [first,last) sequence

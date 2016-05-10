@@ -18,9 +18,9 @@
 // ============================================================================
 // forward declarations:
 // ============================================================================
-class                   INTupleSvc     ; // GaudiKernel
+class                   INTupleSvc     ;
 // ============================================================================
-/* @file GaudiAlgorithm.h
+/** @file GaudiAlgorithm.h
  *
  * Header file for class GaudiAlgorithm.
  * The actual code is mainly imported from
@@ -672,7 +672,7 @@ public:
   // ==========================================================================
   // no default/copy constructor, no assignment -- except that ROOT really
   // wants a default constructor declared. So we define it, and don't implement
-  // it... 
+  // it...
   GaudiAlgorithm             ( const GaudiAlgorithm& ) = delete;
   GaudiAlgorithm& operator = ( const GaudiAlgorithm& ) = delete;
 private :
@@ -696,22 +696,22 @@ private:
       DataObjectHandle<T>&     hndl,
       const std::string& doc = "none" ) const
   {
-          
-    if ( hndl.mode() & Gaudi::DataHandle::Reader ) {      
+
+    if ( hndl.mode() & Gaudi::DataHandle::Reader ) {
       (const_cast<GaudiAlgorithm*>(this))->Algorithm::declareInput(&hndl);
     }
-    
-    if ( hndl.mode() & Gaudi::DataHandle::Writer ) {      
+
+    if ( hndl.mode() & Gaudi::DataHandle::Writer ) {
       (const_cast<GaudiAlgorithm*>(this))->Algorithm::declareOutput(&hndl);
     }
-    
+
     if (hndl.owner() == 0) {
       hndl.setOwner((const_cast<GaudiAlgorithm*>(this)));
     }
-    
+
     return m_propertyMgr->declareProperty(name, hndl, doc);
   }
-  
+
 };
 // ============================================================================
 // The END

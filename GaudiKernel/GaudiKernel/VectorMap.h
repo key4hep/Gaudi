@@ -742,7 +742,7 @@ namespace GaudiUtils
     { std::sort ( m_vct.begin(), m_vct.end(), compare() ) ; }
     // ========================================================================
     /// destructor (non-virtual!)
-    ~VectorMap() { clear() ; }                     // destructor (non-virtual!)
+    ~VectorMap() { clear() ; }
     // ========================================================================
     /* assignement operator
      * @param rigth object to be assigned

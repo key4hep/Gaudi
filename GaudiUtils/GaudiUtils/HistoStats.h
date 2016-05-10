@@ -118,16 +118,16 @@ namespace Gaudi
       ( const AIDA::IHistogram1D* histo ) ;
       // ======================================================================
       /// the fraction of overflow entries  (useful for shape comparison)
-      static double overflowEntriesFrac 
+      static double overflowEntriesFrac
       ( const AIDA::IHistogram1D* histo     ) ;
       /// the fraction of underflow entries (useful for shape comparison)
       static double underflowEntriesFrac
       ( const AIDA::IHistogram1D* histo     ) ;
       /// error on fraction of overflow entries  (useful for shape comparison)
-      static double overflowEntriesFracErr 
+      static double overflowEntriesFracErr
       ( const AIDA::IHistogram1D* histo     ) ;
       /// the error on fraction of underflow entries (useful for shape comparison)
-      static double underflowEntriesFracErr  
+      static double underflowEntriesFracErr
       ( const AIDA::IHistogram1D* histo     ) ;
       // ======================================================================
       /// the fraction of overflow intergal  (useful for shape comparison)
@@ -136,78 +136,78 @@ namespace Gaudi
       /// the fraction of underflow integral (useful for shape comparison)
       static double underflowIntegralFrac
       ( const AIDA::IHistogram1D* histo     ) ;
-      /// the error on fraction of overflow intergal 
-      static double overflowIntegralFracErr 
+      /// the error on fraction of overflow intergal
+      static double overflowIntegralFracErr
       ( const AIDA::IHistogram1D* histo     ) ;
       /// the error on fraction of underflow integral
-      static double underflowIntegralFracErr 
+      static double underflowIntegralFracErr
       ( const AIDA::IHistogram1D* histo     ) ;
       // ======================================================================
-      /** get number of entries in histogram up to 
+      /** get number of entries in histogram up to
        *  the certain bin (not-included)
-       *  @attention underflow bin is included! 
-       *  @param histo the pointer to the histogram 
-       *  @param imax  the bin number (not included) 
-       *  @param number of entries 
+       *  @attention underflow bin is included!
+       *  @param histo the pointer to the histogram
+       *  @param imax  the bin number (not included)
+       *  @param number of entries
        */
-      static long   nEntries 
-      ( const AIDA::IHistogram1D* histo , 
+      static long   nEntries
+      ( const AIDA::IHistogram1D* histo ,
         const int                 imax  ) ;
-      /** get number of entries in histogram form the certain 
+      /** get number of entries in histogram form the certain
        *  minimal bin up to the certain maximal bin (not-included)
-       *  @param histo the pointer to the histogram 
-       *  @param imin  the minimal bin number (included) 
-       *  @param imax  the maximal bin number (not included) 
-       *  @param number of entries 
+       *  @param histo the pointer to the histogram
+       *  @param imin  the minimal bin number (included)
+       *  @param imax  the maximal bin number (not included)
+       *  @param number of entries
        */
-      static long   nEntries 
-      ( const AIDA::IHistogram1D* histo , 
-        const int                 imin  ,  //     minimal bin number (included) 
-        const int                 imax  ) ;// maximal bin number (not included) 
+      static long   nEntries
+      ( const AIDA::IHistogram1D* histo ,
+        const int                 imin  ,  //     minimal bin number (included)
+        const int                 imax  ) ;// maximal bin number (not included)
       // ======================================================================
-      /** get the fraction of entries in histogram up to 
+      /** get the fraction of entries in histogram up to
        *  the certain bin (not-included)
-       *  @attention underflow bin is included! 
-       *  @param histo the pointer to the histogram 
-       *  @param imax  the bin number (not included) 
-       *  @param fraction of entries 
+       *  @attention underflow bin is included!
+       *  @param histo the pointer to the histogram
+       *  @param imax  the bin number (not included)
+       *  @param fraction of entries
        */
-      static double nEntriesFrac 
-      ( const AIDA::IHistogram1D* histo , 
+      static double nEntriesFrac
+      ( const AIDA::IHistogram1D* histo ,
         const int                 imax  ) ;
-      /** get fraction of entries in histogram form the certain 
+      /** get fraction of entries in histogram form the certain
        *  minimal bin up to the certain maximal bin (not-included)
-       *  @param histo the pointer to the histogram 
-       *  @param imin  the minimal bin number (included) 
-       *  @param imax  the maximal bin number (not included) 
-       *  @param fraction of entries 
+       *  @param histo the pointer to the histogram
+       *  @param imin  the minimal bin number (included)
+       *  @param imax  the maximal bin number (not included)
+       *  @param fraction of entries
        */
-      static double nEntriesFrac 
-      ( const AIDA::IHistogram1D* histo , 
-        const int                 imin  ,  //     minimal bin number (included) 
-        const int                 imax  ) ;// maximal bin number (not included) 
+      static double nEntriesFrac
+      ( const AIDA::IHistogram1D* histo ,
+        const int                 imin  ,
+        const int                 imax  ) ;
       // ======================================================================
-      /** get the (binominal) error for the fraction of entries 
+      /** get the (binominal) error for the fraction of entries
        *  in histogram up to the certain bin (not-included)
-       *  @attention underflow bin is included! 
-       *  @param histo the pointer to the histogram 
-       *  @param imax  the bin number (not included) 
-       *  @param error for the fraction of entries 
+       *  @attention underflow bin is included!
+       *  @param histo the pointer to the histogram
+       *  @param imax  the bin number (not included)
+       *  @param error for the fraction of entries
        */
       static double nEntriesFracErr
-      ( const AIDA::IHistogram1D* histo , 
+      ( const AIDA::IHistogram1D* histo ,
         const int                 imax  ) ;
-      /** get the (binomial) error for the fraction of entries in histogram 
+      /** get the (binomial) error for the fraction of entries in histogram
        *  from the certain minimal bin up to the certain maximal bin (not-included)
-       *  @param histo the pointer to the histogram 
-       *  @param imin  the minimal bin number (included) 
-       *  @param imax  the maximal bin number (not included) 
-       *  @param error for the fraction of entries 
+       *  @param histo the pointer to the histogram
+       *  @param imin  the minimal bin number (included)
+       *  @param imax  the maximal bin number (not included)
+       *  @param error for the fraction of entries
        */
       static double nEntriesFracErr
-      ( const AIDA::IHistogram1D* histo , 
-        const int                 imin  ,  //     minimal bin number (included) 
-        const int                 imax  ) ;// maximal bin number (not included) 
+      ( const AIDA::IHistogram1D* histo ,
+        const int                 imin  ,
+        const int                 imax  ) ;
       // ======================================================================
     } ;
     // ========================================================================

@@ -306,8 +306,9 @@ public:
   bool operator < ( const ConstVector&            right ) const
   { return m_data <  right        ; }
   // ==========================================================================
-public: // ObjectContainerBase methods:
+  // ObjectContainerBase methods:
   // ==========================================================================
+public:
   /** Distance of a given object from the beginning of its container
    *  @param object the object to be checked
    */

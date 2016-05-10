@@ -47,13 +47,14 @@ namespace GaudiPython
   {
   public:
     // ========================================================================
-    /// the actual type of vector of counters  
+    /// the actual type of vector of counters
     typedef std::vector<const StatEntity*> Counters   ;
     typedef std::vector<IAlgTool*>         Tools      ;
     typedef std::vector<IService*>         Services   ;
     // ========================================================================
-  public: // the general functional methods 
+    // the general functional methods
     // ========================================================================
+  public:
     /** get the tool from GaudiAlgorithm
      *  @param alg GaudiAlgorithm
      *  @param type tool type
@@ -91,13 +92,14 @@ namespace GaudiPython
       const std::string&    name           ,
       const bool            create = false ) ;
     // ========================================================================
-  public: // get the data from TES 
+    // get the data from TES
     // ========================================================================
-    /** get the data from TES 
+  public: 
+    /** get the data from TES
      *  @param alg          GaudiAlgorithm
-     *  @param location     data location in TES 
-     *  @param useRoonInTes flag to respect RootInTes 
-     *  @return the data 
+     *  @param location     data location in TES
+     *  @param useRoonInTes flag to respect RootInTes
+     *  @return the data
      */
     static DataObject* get_
     ( const GaudiAlgorithm*   alg          ,
@@ -106,11 +108,11 @@ namespace GaudiPython
     // ========================================================================
   public:
     // ========================================================================
-    /** get the data from TES 
+    /** get the data from TES
      *  @param alg          GaudiAlgorithm
-     *  @param location     data location in TES 
-     *  @param useRoonInTes flag to respect RootInTes 
-     *  @return the data 
+     *  @param location     data location in TES
+     *  @param useRoonInTes flag to respect RootInTes
+     *  @return the data
      */
     static bool exist
     ( const GaudiAlgorithm*   alg          ,
@@ -119,42 +121,42 @@ namespace GaudiPython
     // ========================================================================
   public: // inspection: get all counters:
     // ========================================================================
-    static size_t _counters_a_ 
-    ( const GaudiAlgorithm*     alg   , 
+    static size_t _counters_a_
+    ( const GaudiAlgorithm*     alg   ,
       std::vector<std::string>& names , Counters&  out ) ;
-    static size_t _counters_t_ 
-    ( const GaudiTool*          alg   , 
+    static size_t _counters_t_
+    ( const GaudiTool*          alg   ,
       std::vector<std::string>& names , Counters&  out ) ;
-    static size_t _counters_a_ 
-    ( const IAlgorithm*         alg   , 
+    static size_t _counters_a_
+    ( const IAlgorithm*         alg   ,
       std::vector<std::string>& names , Counters&  out ) ;
-    static size_t _counters_t_ 
-    ( const IAlgTool*           alg   , 
+    static size_t _counters_t_
+    ( const IAlgTool*           alg   ,
       std::vector<std::string>& names , Counters&  out ) ;
     // ========================================================================
   public: // inspection: get the counter
-    // ========================================================================    
-    static const StatEntity* _counter_a_ 
+    // ========================================================================
+    static const StatEntity* _counter_a_
     ( const GaudiAlgorithm*     alg   , const std::string& name ) ;
-    static const StatEntity* _counter_t_ 
+    static const StatEntity* _counter_t_
     ( const GaudiTool*          alg   , const std::string& name ) ;
-    static const StatEntity* _counter_a_ 
+    static const StatEntity* _counter_a_
     ( const IAlgorithm*         alg   , const std::string& name ) ;
-    static const StatEntity* _counter_t_ 
+    static const StatEntity* _counter_t_
     ( const IAlgTool*           alg   , const std::string& name ) ;
-    // ========================================================================    
-  public: // inspection: get all tools 
-    // ========================================================================    
+    // ========================================================================
+  public: // inspection: get all tools
+    // ========================================================================
     static size_t _tools_a_ ( const GaudiAlgorithm* , Tools&    tools ) ;
     static size_t _tools_t_ ( const GaudiTool*      , Tools&    tools ) ;
     static size_t _tools_a_ ( const IAlgorithm*     , Tools&    tools ) ;
     static size_t _tools_t_ ( const IAlgTool*       , Tools&    tools ) ;
-    // ========================================================================    
+    // ========================================================================
   };
   // ==========================================================================
 } //                                               end of namespace GaudiPython
 // ============================================================================
-// The END 
+// The END
 // ============================================================================
 #endif // GAUDIPYTHON_ALGDECORATORS_H
 // ============================================================================

@@ -9,11 +9,11 @@
 namespace Gaudi {
 
   /**@class Histogram1D
-    *
-    * AIDA implementation for 1 D histograms using ROOT THD1
-    *
-    * @author  M.Frank
-    */
+   *
+   * AIDA implementation for 1 D histograms using ROOT THD1
+   *
+   * @author  M.Frank
+   */
   class GAUDI_API Histogram1D : public DataObject, public Gaudi::Generic1D<AIDA::IHistogram1D,TH1D>   {
   private:
     void init(const std::string& title, bool initialize_axis=true);
@@ -46,15 +46,15 @@ namespace Gaudi {
     const CLID& clID() const override { return classID(); }
     static const CLID& classID()     { return CLID_H1D; }
     /** Serialization mechanism, Serialize the object for reading.
-      * @param s the StreamBuffer containing the data to be read
-      * @return the resulting StreamBuffer, after reading
-      */
+     * @param s the StreamBuffer containing the data to be read
+     * @return the resulting StreamBuffer, after reading
+     */
     StreamBuffer& serialize(StreamBuffer& s);
 
     /** Serialization mechanism, Serialize the object for writing.
-      * @param s the StreamBuffer where to write the data
-      * @return the resulting StreamBuffer, after wrinting
-      */
+     * @param s the StreamBuffer where to write the data
+     * @return the resulting StreamBuffer, after wrinting
+     */
     StreamBuffer& serialize(StreamBuffer& s) const;
 
   }; // end class IHistogram1D
