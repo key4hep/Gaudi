@@ -355,6 +355,9 @@ macro(gaudi_project project version)
   find_program(gaudirun_cmd gaudirun.py HINTS ${binary_paths})
   set(gaudirun_cmd ${PYTHON_EXECUTABLE} ${gaudirun_cmd})
 
+  find_program(python_reindent_cmd reindent.py HINTS ${binary_paths})
+  set(python_reindent_cmd ${PYTHON_EXECUTABLE} ${python_reindent_cmd})
+
   # genconf is special because it must be known before we actually declare the
   # target in GaudiKernel/src/Util (because we need to be dynamic and agnostic).
   if(TARGET genconf)
@@ -720,17 +723,26 @@ __path__ = [d for d in [os.path.join(d, '${pypack}') for d in sys.path if d]
   gaudi_generate_project_manifest(${CMAKE_CONFIG_OUTPUT_DIRECTORY}/manifest.xml ${ARGV})
   install(FILES ${CMAKE_CONFIG_OUTPUT_DIRECTORY}/manifest.xml DESTINATION .)
 
+  add_custom_target(apply-coding-conventions)
   if(clang_format_cmd)
     file(GLOB_RECURSE _all_sources RELATIVE ${CMAKE_SOURCE_DIR} *.h *.cpp *.icpp)
-    add_custom_target(apply-coding-conventions
+    add_custom_target(apply-coding-conventions-c++
       COMMAND ${clang_format_cmd}
                   -style=file
                   -i ${_all_sources}
       WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-      COMMENT "Applying coding conventions to all sources"
+      COMMENT "Applying coding conventions to C++ sources"
     )
+    add_dependencies(apply-coding-conventions apply-coding-conventions-c++)
   endif()
-
+  if(python_reindent_cmd)
+    add_custom_target(apply-coding-conventions-python
+      COMMAND ${python_reindent_cmd}
+                  --recurse --nobackup ${CMAKE_SOURCE_DIR}
+      COMMENT "Applying coding conventions to Python sources"
+    )
+    add_dependencies(apply-coding-conventions apply-coding-conventions-python)
+  endif()
 endmacro()
 
 #-------------------------------------------------------------------------------
