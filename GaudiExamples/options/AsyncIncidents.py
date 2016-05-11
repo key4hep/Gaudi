@@ -17,7 +17,7 @@ ApplicationMgr().SvcMapping.append(msgSvc)
 IncidentSvc(OutputLevel=DEBUG)
 
 # metaconfig
-evtslots = 1
+evtslots = 5
 evtMax = 20
 cardinality=10
 algosInFlight=10
@@ -48,7 +48,7 @@ AITestSvc1=IncidentAsyncTestSvc("IncidentAwareService1",
                                 Priority=1000)
 AITestSvc2=IncidentAsyncTestSvc("IncidentAwareService2",
                                 FileOffset=10000000*100,
-                                EventMultiplier=1000*100,
+                                EventMultiplier=1000*1000,
                                 IncidentNames=['BeginEvent','EndEvent'],
                                 Priority=1)
 AITestAlg1=IncidentAsyncTestAlg("IncidentAwareTestAlg1",
