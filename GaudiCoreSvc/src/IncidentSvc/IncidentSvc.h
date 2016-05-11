@@ -17,6 +17,11 @@
 #include "GaudiKernel/HashMap.h"
 #include "GaudiKernel/ChronoEntity.h"
 // ============================================================================
+// TBB
+// ============================================================================
+#include "tbb/concurrent_queue.h"
+#include "tbb/concurrent_unordered_map.h"
+// ============================================================================
 /**
  * @class IncidentSvc
  * @brief Default implementation of the IIncidentSvc interface.
@@ -66,6 +71,7 @@ public:
 
   void removeListener( IIncidentListener* l, const std::string& type = "" ) override;
   void fireIncident( const Incident& incident) override;
+  void fireIncident( std::unique_ptr<Incident> incident) override;
   //TODO: return by value instead...
   void getListeners (std::vector<IIncidentListener*>& lis,
                      const std::string& type = "") const override;
@@ -74,6 +80,7 @@ public:
   IncidentSvc( const std::string& name, ISvcLocator* svc );
   // Destructor.
   ~IncidentSvc() override;
+  IIncidentSvc::IncidentPack getIncidents(const EventContext* ctx);
 
 private:
   ListenerMap::iterator removeListenerFromList(ListenerMap::iterator, 
@@ -82,6 +89,7 @@ private:
   // ==========================================================================
   /// Internal function to allow incidents listening to all events
   void i_fireIncident(const Incident& incident, const std::string& type);
+
 
   /// List of auditor names
   ListenerMap  m_listenerMap;
@@ -97,6 +105,8 @@ private:
   mutable ChronoEntity m_timer     ;
   mutable bool         m_timerLock = false ;
   // ==========================================================================
+  typedef tbb::concurrent_queue<std::unique_ptr<Incident>> IncQueue_t;
+  tbb::concurrent_unordered_map<EventContext,IncQueue_t,EventContextHash,EventContextHash> m_firedIncidents;
 
 };
 // ============================================================================
