@@ -22,7 +22,6 @@ def build():
                        stdout=PIPE, stderr=PIPE)
     build_log, _err = build_proc.communicate()
     build_err=_err
-    print build_log
     build_returncode = build_proc.returncode
 
 def setup():
