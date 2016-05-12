@@ -11,6 +11,7 @@
 #include "boost/thread.hpp"
 
 #include <vector>
+#include <memory>
 
 /** @class ThreadPoolSvc
   * @brief A service which initializes a TBB thread pool.
@@ -29,7 +30,7 @@ public:
   ThreadPoolSvc( const std::string& name, ISvcLocator* svc );
 
   /// Destructor
-  ~ThreadPoolSvc();
+  virtual ~ThreadPoolSvc() {};
 
   /// Initialise
   virtual StatusCode initialize() override final;
@@ -49,6 +50,7 @@ public:
 
   virtual bool isInit() const { return m_init; }
 
+  /// @todo Do we actually need this method?
   virtual std::vector<IThreadInitTool*> getThreadInitTools()
     const override final;
 
@@ -57,14 +59,23 @@ private:
   /// Launch tasks to execute the ThreadInitTools
   StatusCode launchTasks(bool finalize=false);
 
-  bool m_init;
-  int m_threadPoolSize;
-
+  /// Handle array of thread init tools
   ToolHandleArray<IThreadInitTool> m_threadInitTools;
 
+  /// Was the thread pool initialized?
+  bool m_init;
+
+  /// Size of the thread pool allocated
+  int m_threadPoolSize;
+
+  /// Mutex used to protect the initPool and terminatePool methods.
   tbb::spin_mutex m_initMutex;
 
-  tbb::task_scheduler_init* m_tbbSchedInit;
+  /// TBB task scheduler initializer
+  std::unique_ptr<tbb::task_scheduler_init> m_tbbSchedInit;
+
+  /// Barrier used to synchronization thread init tasks
+  std::unique_ptr<boost::barrier> m_barrier;
 
 };
 
