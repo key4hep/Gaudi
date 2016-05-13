@@ -7,31 +7,8 @@ if (CMAKE_SYSTEM_NAME MATCHES Linux)
 find_package(Boost COMPONENTS python)
 find_package(PythonLibs)
 find_package(unwind REQUIRED)
-#find_package(tcmalloc)
 find_package(gperftools REQUIRED)
 find_package(IntelAmplifier)
-#---------------------------------------------------------------------------
-# Hack the VTune detection
-if(NOT VTune_FOUND)
-  set(VTune_version 2011)
-  set(VTune_home /afs/cern.ch/sw/IntelSoftware/linux/${CMAKE_HOST_SYSTEM_PROCESSOR}/xe${VTune_version}/vtune_amplifier_xe_${VTune_version})
-  if(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
-    set(VTune_LIBRARY_DIR_HINT ${VTune_home}/lib64)
-  else()
-    set(VTune_LIBRARY_DIR_HINT ${VTune_home}/lib32)
-  endif()
-  set(VTune_INCLUDE_DIR_HINT ${VTune_home}/include)
-
-  find_library(VTune_LIBRARIES ittnotify HINTS ${VTune_LIBRARY_DIR_HINT})
-  find_path(VTune_INCLUDE_DIRS ittnotify.h HINTS ${VTune_INCLUDE_DIR_HINT})
-
-  if(VTune_LIBRARIES AND VTune_INCLUDE_DIRS)
-    set(VTune_FOUND ${VTune_LIBRARIES} CACHE INTERNAL "")
-    message(STATUS "Found VTune: ${VTune_LIBRARIES}")
-  endif()
-  mark_as_advanced(VTune_INCLUDE_DIRS VTune_LIBRARIES)
-endif()
-#---------------------------------------------------------------------------
 
 #---Components--------------------------------------------------------------
 include_directories(src/component)
@@ -80,20 +57,11 @@ endforeach()
 set_target_properties(GaudiGoogleProfiling PROPERTIES LINK_FLAGS "${gprof_linker_flags}")
 
 if(GPERFTOOLS_VERSION VERSION_LESS 2.0)
-  # if(NOT EXISTS ${GPERFTOOLS_INCLUDE_DIR}/../gperftools/tcmalloc.h)
-  #   # assume old-style tcmalloc headers
-  #   set_property(TARGET GaudiGoogleProfiling
-  #                APPEND PROPERTY COMPILE_DEFINITIONS TCMALLOC_OLD_GOOGLE_HEADERS)
-  # endif()
   set_property(TARGET GaudiGoogleProfiling
     APPEND PROPERTY COMPILE_DEFINITIONS TCMALLOC_OLD_GOOGLE_HEADERS)
-  
-# else()
-# message(STATUS "Found gperftools version ${GPERFTOOLS_VERSION}")
 endif()
 else()
     message(STATUS "gperftools not found. Skipping GaudiGoogleProfiling")
-    
 endif()
 #-----------------------------------
 # Intel VTune profiler
