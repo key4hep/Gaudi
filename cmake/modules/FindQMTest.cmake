@@ -13,16 +13,17 @@ find_program(QMTEST_EXECUTABLE
         $ENV{QMTEST_ROOT_DIR}/bin
 )
 
-get_filename_component(QMTEST_BINARY_PATH ${QMTEST_EXECUTABLE} PATH)
-get_filename_component(QMTEST_PREFIX_PATH ${QMTEST_BINARY_PATH} PATH)
+if(QMTEST_EXECUTABLE)
+  get_filename_component(QMTEST_BINARY_PATH ${QMTEST_EXECUTABLE} PATH)
+  get_filename_component(QMTEST_PREFIX_PATH ${QMTEST_BINARY_PATH} PATH)
 
-find_path(QMTEST_PYTHON_PATH
-  NAMES qm/__init__.py
-  PATHS
-   ${QMTEST_PREFIX_PATH}/lib/python${Python_config_version_twodigit}/site-packages
-   ${QMTEST_PREFIX_PATH}/Lib/site-packages
-)
-
+  find_path(QMTEST_PYTHON_PATH
+    NAMES qm/__init__.py
+    PATHS
+    ${QMTEST_PREFIX_PATH}/lib/python${Python_config_version_twodigit}/site-packages
+    ${QMTEST_PREFIX_PATH}/Lib/site-packages
+    )
+endif()
 if (NOT QMTEST_PYTHON_PATH)
   # let's try to find the qm module in the standard environment
   find_package(PythonInterp)
