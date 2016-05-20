@@ -33,22 +33,11 @@ namespace detail {
 
    // adapt to differences between eg. std::vector (which has push_back) and KeyedContainer (which has insert)
 
-   template <typename> struct void_t { typedef void type; };
-   template <typename T> using is_valid_t = typename void_t<T>::type;
-
-   template <typename T, typename SFINAE = void> struct has_push_back : std::false_type {};
-   template <typename T>                         struct has_push_back<T, is_valid_t<decltype(std::declval<T>().push_back( std::declval<typename T::value_type>() ))>> : std::true_type {};
-
-   template <typename T, typename SFINAE = void> struct has_insert : std::false_type {};
-   template <typename T>                         struct has_insert<T, is_valid_t<decltype(std::declval<T>().insert( std::declval<typename T::value_type>() ))>> : std::true_type {};
+   template <typename Container, typename Value>
+   auto adapt_insert(Container& c, Value&& v) -> decltype( c.push_back(v) ) { return c.push_back( std::forward<Value>(v) ); }
 
    template <typename Container, typename Value>
-   typename std::enable_if< has_push_back<Container>::value, void >::type
-   adapt_insert(Container& c, Value&& v) { c.push_back( std::forward<Value>(v) ); }
-
-   template <typename Container, typename Value>
-   typename std::enable_if< has_insert<Container>::value, void >::type
-   adapt_insert(Container& c, Value&& v) { c.insert( std::forward<Value>(v) ); }
+   auto adapt_insert(Container& c, Value&& v) -> decltype( c.insert(v) ) { return c.insert( std::forward<Value>(v) ); }
 }
 
 template <typename Out, typename In, typename ScalarFunctor>
