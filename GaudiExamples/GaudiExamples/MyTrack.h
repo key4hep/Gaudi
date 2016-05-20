@@ -74,6 +74,7 @@ namespace Gaudi
       MyTrack();
       /// Standard constructor
       MyTrack(float x, float y, float z);
+      MyTrack(const MyTrack& t);
       /// Standard Destructor
       virtual ~MyTrack();
       /// Retrieve pointer to class definition structure

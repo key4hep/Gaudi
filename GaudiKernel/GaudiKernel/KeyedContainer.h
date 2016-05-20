@@ -183,6 +183,16 @@ public:
     seq_type*  sptr = &m_sequential;
     m_cont.setup((void*)sptr,(void**)rptr);
   }
+  KeyedContainer(KeyedContainer&& other):
+      m_cont(std::move(other.m_cont)),
+      m_sequential(std::move(other.m_sequential))
+  {
+    m_cont.setup((void*)&m_sequential,(void**)&m_random);
+    std::for_each(begin(), end(), [this](ContainedObject* obj) {obj->setParent(this);});
+
+    other.m_cont.setup((void*)&other.m_sequential, (void**)&other.m_random);
+  }
+  KeyedContainer(const KeyedContainer&) = delete;
   /// Destructor
   virtual ~KeyedContainer();
   //@}
@@ -489,7 +499,7 @@ public:
 template <class DATATYPE, class MAPPING> inline
 KeyedContainer<DATATYPE, MAPPING>::~KeyedContainer()
 {
-  erase(begin(), end());
+  clear();
   m_cont.clear();
 }
 
