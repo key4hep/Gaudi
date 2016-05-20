@@ -1077,7 +1077,7 @@ THistSvc::getHists() const {
   transform_if( std::begin(m_uids), std::end(m_uids),
                 std::back_inserter(names), select1st,
                 [](uidMap::const_reference i) { 
-                    return i.second.obj->IsA()->InheritsFrom("TH11"); }
+                    return i.second.obj->IsA()->InheritsFrom("TH1"); }
   );
   return names;
 
