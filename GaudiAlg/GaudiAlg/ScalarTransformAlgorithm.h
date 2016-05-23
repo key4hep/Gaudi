@@ -10,6 +10,9 @@ template <typename ExternalSignature, typename ScalarFunctor> class ScalarTransf
 
 namespace detail {
 
+   // we want 'user code' to never get pointers as input -- so adapt such that
+   // if we get a pointer, we derefence it before calling the 'user code'.
+
    template <typename In, typename Fun>
    auto adapt_in( const Fun& f, const In& in,
                   typename std::enable_if< !std::is_pointer<In>::value>::type* = nullptr )
@@ -18,6 +21,9 @@ namespace detail {
    template <typename In, typename Fun>
    auto adapt_in( const Fun& f, const In* in ) { return f(*in); }
 
+   // we always receive a T, but sometimes we must output a T* -- so adapt if neccessary...
+   // (backwards compatibility: until we get a 'move aware' AnyDataHandle)
+
    template <typename Out>
    Out adapt_out( Out&& in ) { return std::forward<Out>(in); }
 
@@ -25,11 +31,13 @@ namespace detail {
    Out adapt_out( typename std::remove_pointer<Out>::type&& in )
    { return new typename std::remove_pointer<Out>::type( std::forward<typename std::remove_pointer<Out>::type>(in) ); }
 
-   template <typename Container, typename Value>
-   void adapt_insert(Container& c, Value&& v) { return c.push_back( std::forward<Value>(v) ); }
+   // adapt to differences between eg. std::vector (which has push_back) and KeyedContainer (which has insert)
 
-   template <typename Value>
-   void adapt_insert(KeyedContainer<Value>& c, Value&& v) { return c.insert( std::forward<Value>(v) ); }
+   template <typename Container, typename Value>
+   auto adapt_insert(Container& c, Value&& v) -> decltype( c.push_back(v) ) { return c.push_back( std::forward<Value>(v) ); }
+
+   template <typename Container, typename Value>
+   auto adapt_insert(Container& c, Value&& v) -> decltype( c.insert(v) ) { return c.insert( std::forward<Value>(v) ); }
 }
 
 template <typename Out, typename In, typename ScalarFunctor>

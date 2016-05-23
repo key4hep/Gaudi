@@ -15,7 +15,8 @@ namespace detail {
     template <typename T>
     void as_const(T&& t) = delete;
 
-    // helper to check for absentees amongst a list of (named) inputs
+    // helper to check for absentees amongst a list of inputs
+    // return a vector of indices of missing inputs
     template< template <typename> class Container = std::initializer_list>
     std::vector<int> awol(Container<void*> inputs) {
         std::vector<int> result;
