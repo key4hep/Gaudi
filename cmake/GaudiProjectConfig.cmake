@@ -385,7 +385,9 @@ macro(gaudi_project project version)
 
   #--- Project Installations------------------------------------------------------------------------
   install(DIRECTORY cmake/ DESTINATION cmake
-                           FILES_MATCHING PATTERN "*.cmake"
+                           FILES_MATCHING
+                           PATTERN "*.cmake"
+                           PATTERN "*.py"
                            PATTERN ".svn" EXCLUDE)
   install(PROGRAMS cmake/xenv DESTINATION scripts OPTIONAL)
   install(DIRECTORY cmake/EnvConfig DESTINATION scripts
@@ -2551,6 +2553,7 @@ macro(gaudi_install_cmake_modules)
           DESTINATION cmake
           FILES_MATCHING
             PATTERN "*.cmake"
+            PATTERN "*.py"
             PATTERN "CVS" EXCLUDE
             PATTERN ".svn" EXCLUDE)
   set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
