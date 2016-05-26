@@ -140,7 +140,7 @@ class Visitor(object):
     def enter(self, visitee):
         self.depths += 1
         print "%sEntering %s" % (self.depths*" ", type(visitee))
-        if isinstance(visitee, Algorithm):
+        if isinstance(visitee, ControlFlowLeaf):
             print "%s Algorithm name: %s" % (" "*self.depths, visitee)
 
     def leave(self, visitee):
