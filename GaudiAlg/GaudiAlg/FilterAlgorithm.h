@@ -1,65 +1,67 @@
 #ifndef FILTER_ALGORITHM_H
 #define FILTER_ALGORITHM_H
-#include "GaudiKernel/index_sequence.h"
+#include <utility>
+#include "GaudiKernel/DataObjectHandle.h"
 #include "GaudiAlg/GaudiAlgorithm.h"
-#include "GaudiAlg/Algorithm_details.h"
+#include "GaudiAlg/Algorithm_details.h" // for details::as_const (which is C++17)
 
 template <typename T> class FilterAlgorithm;
 
 template <typename... In>
-class FilterAlgorithm<void(const In&...)> : public GaudiAlgorithm {
+class FilterAlgorithm<bool(const In&...)> : public GaudiAlgorithm {
 public:
-  using KeyValue = std::pair<std::string, std::string>;
-    constexpr static std::size_t N = sizeof...(In);
+    using KeyValue = std::pair<std::string, std::string>; // (name,value) of the  data handle property
+    constexpr static std::size_t N = sizeof...(In);       // the number of inputs
+    using KeyValues = std::array<KeyValue,N>;
 
     FilterAlgorithm(const std::string& name, ISvcLocator* locator,
-                    std::array<KeyValue,N> inputs);
-    StatusCode execute() override final; // derived classes can NOT implement execute
+                    const KeyValues& inputs);
 
+    // derived classes are NOT allowed to implement execute ...
+    StatusCode execute() override final
+    { return invoke(std::make_index_sequence<N>{}); }
+
+    // ... instead, they must implement the following operator
     virtual bool operator()(const In&...) const = 0;
 
 private:
+
+    // note: invoke is not const, as DataObjectHandle<In>::get is not const
     template <std::size_t... I>
-    StatusCode invoke(utility::index_sequence<I...>);
-    std::array<StringProperty,N>  m_inputs;
+    StatusCode invoke(std::index_sequence<I...>) {
+        auto pass = detail::as_const(*this)( detail::as_const(*std::get<I>(m_inputs).get())... );
+        setFilterPassed( pass );
+        return StatusCode::SUCCESS;
+    }
+
+    template <typename KeyValues, std::size_t... I>
+    void declare(const KeyValues& inputs, std::index_sequence<I...>) {
+        std::initializer_list<int>{
+            (this->declareProperty( std::get<I>(inputs).first,
+                                    std::get<I>(m_inputs)      ),0)...
+        };
+    }
+
+    std::tuple< DataObjectHandle<In>... > m_inputs;
 };
 
+namespace FilterAlgorithm_detail {
+
+   template <typename...  In, typename KeyValues, std::size_t... I>
+   auto make_handles( IDataHandleHolder* o, const KeyValues& initvalue, std::index_sequence<I...> ) {
+       return std::make_tuple( DataObjectHandle<In>(std::get<I>(initvalue).second, Gaudi::DataHandle::Reader, o) ... );
+   }
+
+}
 
 template <typename... In>
-FilterAlgorithm<void(const In&...)>::FilterAlgorithm( const std::string& name,
+FilterAlgorithm<bool(const In&...)>::FilterAlgorithm( const std::string& name,
                                         ISvcLocator* pSvcLocator,
-                                        std::array< KeyValue,N> inputs )
-  : GaudiAlgorithm ( name , pSvcLocator )
+                                        const KeyValues& inputs )
+  : GaudiAlgorithm ( name , pSvcLocator ),
+    m_inputs( FilterAlgorithm_detail::make_handles<In...>( this, inputs, std::make_index_sequence<N>{} ) )
 {
-    auto prop = std::begin(m_inputs);
-    for (const auto& arg : inputs) declareProperty( arg.first, *prop++ = arg.second );
+    declare( inputs, std::make_index_sequence<N>{} );
 }
 
-template <typename... In>
-template <std::size_t... I>
-StatusCode
-FilterAlgorithm<void(const In&...)>::invoke(utility::index_sequence<I...>) {
-    auto in = std::make_tuple( getIfExists<In>(m_inputs[I])... );
-    auto absent = detail::awol( { std::get<I>(in)... } );
-    if (!absent.empty()) {
-      for (const auto& i : absent ) {
-          error() << " Mandatory input at " << m_inputs[i] << " not found" << endmsg;
-      }
-      //@TODO: add policy / virtual function for what to do if input does not exist:
-      //        a) return StatusCode::FAILURE
-      //        b) do setFilterPassed(false), and return FAILURE
-      //        c) do setFilterPassed(false), and return SUCCESS
-      //       could be done by calling a virtual function, or policy template argument
-      //       as it is independent of the 'event' state of the algorithm
-      setFilterPassed(false);
-    } else {
-      setFilterPassed(detail::as_const(*this)( detail::as_const(*std::get<I>(in))... ));
-    }
-    return StatusCode::SUCCESS;
-}
-template <typename... In>
-StatusCode
-FilterAlgorithm<void(const In&...)>::execute() {
-    return invoke(utility::make_index_sequence<N>{});
-}
 #endif

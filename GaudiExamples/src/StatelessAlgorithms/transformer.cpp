@@ -32,21 +32,23 @@ namespace Gaudi { namespace Examples {
   DECLARE_COMPONENT(SelectTracks)
 
 
-  class CountSelectedTracks: public FilterAlgorithm<void(const MyTrackVector&)> {
+
+  class CountSelectedTracks: public FilterAlgorithm<bool(const MyTrackVector&)> {
   public:
     CountSelectedTracks(const std::string& name, ISvcLocator* pSvc):
       FilterAlgorithm(name, pSvc, 
                       { KeyValue("InputData",{"MyOutTracks"}) }) {
     }
+
     StatusCode initialize() {
       StatusCode sc = FilterAlgorithm::initialize();
-      if (sc) {
-         m_tracksCount = 0;
-         m_eventsCount = 0;
-      }
+      if (!sc) return sc;
+      m_tracksCount = 0;
+      m_eventsCount = 0;
       return sc;
     }
-    bool operator()(const MyTrackVector& in_tracks) const {
+
+    bool operator()(const MyTrackVector& in_tracks) const override {
       ++m_eventsCount;
       m_tracksCount += in_tracks.size();
       return true;
@@ -62,5 +64,6 @@ namespace Gaudi { namespace Examples {
   };
 
   DECLARE_COMPONENT(CountSelectedTracks)
-}}
 
+ 
+}}
