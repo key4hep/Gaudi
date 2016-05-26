@@ -133,7 +133,7 @@ class line(object):
         self.item.visitNode(visitor)
 
 
-class Visitor(object):
+class _TestVisitor(object):
     def __init__(self):
         self.depths = 0
 
@@ -218,7 +218,7 @@ def test():
     expression = sequence | ~c & par(d & e)
     a = (expression == expression)
     aLine = line("MyTriggerPath", expression)
-    visitor = Visitor()
+    visitor = _TestVisitor()
     print "\nPrinting trigger line:"
     print aLine
     print "\nPrinting expression:"
