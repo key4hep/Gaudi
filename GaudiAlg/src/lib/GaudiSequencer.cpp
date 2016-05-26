@@ -98,6 +98,7 @@ GaudiSequencer::GaudiSequencer( const std::string& name,
   declareProperty( "MeasureTime"         , m_measureTime    = false );
   declareProperty( "ReturnOK"            , m_returnOK       = false );
   declareProperty( "ShortCircuit"        , m_shortCircuit   = true  );
+  declareProperty( "Invert"              , m_invert         = false );
 
   m_names.declareUpdateHandler (& GaudiSequencer::membershipHandler, this );
 }
@@ -205,7 +206,8 @@ StatusCode GaudiSequencer::execute() {
   }
   if (msgLevel(MSG::VERBOSE))
       verbose() << "SeqPass is " << (seqPass ? "true" : "false") << endmsg;
-  if ( !m_ignoreFilter && !m_entries.empty() ) setFilterPassed( seqPass );
+  if ( !m_ignoreFilter && !m_entries.empty() )
+    setFilterPassed( m_invert ? !seqPass : seqPass );
   setExecuted( true );
 
   if ( m_measureTime ) m_timerTool->stop( m_timer );
