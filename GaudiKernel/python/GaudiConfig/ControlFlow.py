@@ -23,14 +23,14 @@ class ControlFlowNode(object):
         pass
 
     def __eq__(self, other):
-        return (str(self) == str(other))
+        return (repr(self) == repr(other))
 
 
 class Algorithm(ControlFlowNode):
     def __init__(self, name):
         self.name = name
 
-    def __str__(self):
+    def __repr__(self):
         return self.name
 
 
@@ -39,8 +39,8 @@ class OrderedNode(ControlFlowNode):
         self.lhs = lhs
         self.rhs = rhs
 
-    def __str__(self):
-        return "%s >> %s" % (self.lhs, self.rhs)
+    def __repr__(self):
+        return "%r >> %r" % (self.lhs, self.rhs)
 
     def _visitSubNodes(self, visitor):
         self.lhs.visitNode(visitor)
@@ -52,8 +52,8 @@ class AndNode(ControlFlowNode):
         self.lhs = lhs
         self.rhs = rhs
 
-    def __str__(self):
-        return "%s & %s" % (self.lhs, self.rhs)
+    def __repr__(self):
+        return "(%r & %r)" % (self.lhs, self.rhs)
 
     def _visitSubNodes(self, visitor):
         self.lhs.visitNode(visitor)
@@ -65,8 +65,8 @@ class OrNode(ControlFlowNode):
         self.lhs = lhs
         self.rhs = rhs
 
-    def __str__(self):
-        return "%s | %s" % (self.lhs, self.rhs)
+    def __repr__(self):
+        return "(%r | %r)" % (self.lhs, self.rhs)
 
     def _visitSubNodes(self, visitor):
         self.lhs.visitNode(visitor)
@@ -77,8 +77,8 @@ class InvertNode(ControlFlowNode):
     def __init__(self, item):
         self.item = item
 
-    def __str__(self):
-        return "~%s" % self.item
+    def __repr__(self):
+        return "~%r" % self.item
 
     def _visitSubNodes(self, visitor):
         self.item.visitNode(visitor)
@@ -88,8 +88,8 @@ class IgnoreNode(ControlFlowNode):
     def __init__(self, item):
         self.item = item
 
-    def __str__(self):
-        return "ignore(%s)" % self.item
+    def __repr__(self):
+        return "ignore(%r)" % self.item
 
     def _visitSubNodes(self, visitor):
         self.item.visitNode(visitor)
@@ -103,8 +103,8 @@ class ParallelExecutionNode(ControlFlowNode):
     def __init__(self, item):
         self.item = item
 
-    def __str__(self):
-        return "par(%s)" % self.item
+    def __repr__(self):
+        return "par(%r)" % self.item
 
     def _visitSubNodes(self, visitor):
         self.item.visitNode(visitor)
@@ -118,8 +118,8 @@ class seq(ControlFlowNode):
     def __init__(self, item):
         self.item = item
 
-    def __str__(self):
-        return "seq(%s)" % self.item
+    def __repr__(self):
+        return "seq(%r)" % self.item
 
     def _visitSubNodes(self, visitor):
         self.item.visitNode(visitor)
@@ -130,8 +130,8 @@ class line(object):
         self.name = name
         self.item = item
 
-    def __str__(self):
-        return "line('%s', %s)" % (self.name, self.item)
+    def __repr__(self):
+        return "line(%r, %r)" % (self.name, self.item)
 
     def _visitSubNodes(self, visitor):
         self.item.visitNode(visitor)
