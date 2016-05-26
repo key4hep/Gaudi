@@ -1,0 +1,27 @@
+# setting LC_ALL to "C"
+# Running /home/raaij/hackaton/GAUDI/GAUDI_future/Gaudi/scripts/gaudirun.py with arguments ['/tmp/tmpNrzGoJ.py']
+# --> Including file '/tmp/tmpNrzGoJ.py'
+# <-- End of file '/tmp/tmpNrzGoJ.py'
+ApplicationMgr    SUCCESS 
+====================================================================================================================================
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v4r1)
+                                          running on hltperf-intel-e5-2630 on Thu May 26 16:34:24 2016
+====================================================================================================================================
+ApplicationMgr       INFO Application Manager Configured successfully
+EventLoopMgr      WARNING Unable to locate service "EventSelector" 
+EventLoopMgr      WARNING No events will be processed from external input.
+HistogramPersis...WARNING Histograms saving not required.
+ApplicationMgr       INFO Application Manager Initialized successfully
+ApplicationMgr       INFO Application Manager Started successfully
+AnyDataGetAlgor...   INFO Got base from TestAnyData/One
+AnyDataGetAlgor...   INFO Got int from TestAnyData/One: 0
+AnyDataGetAlgor...   INFO Got base from TestAnyData/Two
+AnyDataGetAlgor...   INFO Got int from TestAnyData/Two: 1
+AnyDataGetAlgor...   INFO Got base from TestAnyData/One
+AnyDataGetAlgor...   INFO Got int from TestAnyData/One: 0
+AnyDataGetAlgor...   INFO Got base from TestAnyData/Two
+AnyDataGetAlgor...   INFO Got int from TestAnyData/Two: 1
+ApplicationMgr       INFO Application Manager Stopped successfully
+EventLoopMgr         INFO Histograms converted successfully according to request.
+ApplicationMgr       INFO Application Manager Finalized successfully
+ApplicationMgr       INFO Application Manager Terminated successfully
