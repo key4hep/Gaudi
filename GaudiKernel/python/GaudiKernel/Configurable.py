@@ -12,6 +12,8 @@ from GaudiKernel.PropertyProxy import PropertyProxy
 from GaudiKernel.GaudiHandles import *
 from GaudiKernel.DataObjectHandleBase import *
 
+import GaudiConfig.ControlFlow
+
 ### data ---------------------------------------------------------------------
 __all__ = [ 'Configurable',
             'ConfigurableAlgorithm',
@@ -58,7 +60,7 @@ class Error(RuntimeError):
 class PropertyReference(object):
     def __init__(self,propname):
         self.name = propname
-    def __repr__(self):
+    def __str__(self):
         return "@%s"%self.name
     def __resolve__(self):
         # late binding for property references
@@ -838,9 +840,6 @@ class Configurable( object ):
         postLen = max(preLen,postLen)
         return indentStr + '\\%s (End of %s) %s' % (preLen*'-',title,postLen*'-')
 
-    def __repr__( self ):
-        return '<%s at %s>' % (self.getFullJobOptName(),hex(id(self)))
-
     def __str__( self, indent = 0, headerLastIndentUnit=indentUnit ):
         global log  # to print some info depending on output level
         indentStr = indent*Configurable.indentUnit
@@ -977,7 +976,7 @@ class ConfigurableGeneric( Configurable ):
 
 
 ### base classes for individual Gaudi algorithms/services/algtools ===========
-class ConfigurableAlgorithm( Configurable ):
+class ConfigurableAlgorithm( Configurable, GaudiConfig.ControlFlow.Algorithm ):
     __slots__ = { '_jobOptName' : 0, 'OutputLevel' : 0, \
        'Enable' : 1, 'ErrorMax' : 1, 'ErrorCount' : 0, 'AuditAlgorithms' : 0, \
        'AuditInitialize' : 0, 'AuditReinitialize' : 0, 'AuditExecute' : 0, \
