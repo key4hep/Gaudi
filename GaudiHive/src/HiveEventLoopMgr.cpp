@@ -204,6 +204,12 @@ StatusCode HiveEventLoopMgr::initialize()    {
 	  return StatusCode::FAILURE;
         }
 
+	// Replace the unflattened TopAlg list with the one flattened by the AlgResourcePool
+	m_topAlgList.clear();
+	auto flatAlgsList = m_algResourcePool->getFlatAlgList(); 	
+	for (auto algoPtr :flatAlgsList )
+	  m_topAlgList.emplace_back(algoPtr);
+
 	// Setup tbb task scheduler
 	// TODO: shouldn't be in this case
 	// One more for the current thread
@@ -565,8 +571,9 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
                        // To be transferred to the algomanager, this is inefficient
                        ListAlg::iterator algoIt = m_topAlgList.begin();
                        std::advance(algoIt, algo_counter);
+		       log << MSG::DEBUG << "Acquiring algorithm " << algoIt->get()->name() <<  " on event " << event_Context->evt() << endmsg;
                        if(m_algResourcePool->acquireAlgorithm(algoIt->get()->name(),ialgo)){
-                           log << MSG::INFO << "Launching algo " << algo_counter<<  " on event " << event_Context->evt() << endmsg;
+			    log << MSG::INFO << "Launching algo " << algoIt->get()->name() << " [" << algo_counter<<  "] on event " << event_Context->evt() << endmsg;
                             // Attach context to the algo
                             Algorithm* algo = dynamic_cast<Algorithm*> (ialgo);
                             algo->setContext(event_Context);

@@ -5,6 +5,7 @@
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/ThreadGaudi.h"
+#include "GaudiAlg/GaudiSequencer.h"
 
 // C++
 #include <functional>
@@ -173,9 +174,10 @@ StatusCode AlgResourcePool::flattenSequencer(Algorithm* algo, ListAlg& alglist, 
   StatusCode sc = StatusCode::SUCCESS;
 
   std::vector<Algorithm*>* subAlgorithms = algo->subAlgorithms();
+  auto isGaudiSequencer = dynamic_cast<GaudiSequencer*> (algo);
   if ( //we only want to add basic algorithms -> have no subAlgs
           // and exclude the case of empty GaudiSequencers
-       (subAlgorithms->empty() and not (algo->type() == "GaudiSequencer"))
+        (subAlgorithms->empty() and not isGaudiSequencer)
        // we want to add non-empty GaudiAtomicSequencers
        or (algo->type() == "GaudiAtomicSequencer" and not subAlgorithms->empty())){
 
@@ -194,7 +196,7 @@ StatusCode AlgResourcePool::flattenSequencer(Algorithm* algo, ListAlg& alglist, 
   bool modeOR = false;
   bool allPass = false;
   bool isLazy = false;
-  if ("GaudiSequencer" == algo->type()) {
+  if ( isGaudiSequencer ) {
     modeOR  = (algo->getProperty("ModeOR").toString() == "True")? true : false;
     allPass = (algo->getProperty("IgnoreFilterPassed").toString() == "True")? true : false;
     isLazy = (algo->getProperty("ShortCircuit").toString() == "True")? true : false;
