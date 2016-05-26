@@ -1,4 +1,13 @@
+'''
+Classes for the implementation of the Control Flow Structure Syntax.
+
+@see: https://github.com/lhcb/scheduling-event-model/tree/master/controlflow_syntax
+'''
+
 class ControlFlowNode(object):
+    '''
+    Basic entry in the control flow graph.
+    '''
     def __init__(self):
         pass
 
@@ -23,24 +32,26 @@ class ControlFlowNode(object):
         pass
 
     def __eq__(self, other):
-        return (str(self) == str(other))
+        return (repr(self) == repr(other))
 
 
-class Algorithm(ControlFlowNode):
-    def __init__(self, name):
-        self.name = name
-
-    def __str__(self):
-        return self.name
+class ControlFlowLeaf(ControlFlowNode):
+    '''
+    Class used to identify a note without sub-nodes.
+    '''
+    pass
 
 
 class OrderedNode(ControlFlowNode):
+    '''
+    Represent order of execution of nodes.
+    '''
     def __init__(self, lhs, rhs):
         self.lhs = lhs
         self.rhs = rhs
 
-    def __str__(self):
-        return "%s >> %s" % (self.lhs, self.rhs)
+    def __repr__(self):
+        return "(%r >> %r)" % (self.lhs, self.rhs)
 
     def _visitSubNodes(self, visitor):
         self.lhs.visitNode(visitor)
@@ -48,12 +59,15 @@ class OrderedNode(ControlFlowNode):
 
 
 class AndNode(ControlFlowNode):
+    '''
+    And operation between control flow nodes.
+    '''
     def __init__(self, lhs, rhs):
         self.lhs = lhs
         self.rhs = rhs
 
-    def __str__(self):
-        return "%s & %s" % (self.lhs, self.rhs)
+    def __repr__(self):
+        return "(%r & %r)" % (self.lhs, self.rhs)
 
     def _visitSubNodes(self, visitor):
         self.lhs.visitNode(visitor)
@@ -61,12 +75,15 @@ class AndNode(ControlFlowNode):
 
 
 class OrNode(ControlFlowNode):
+    '''
+    Or operation between control flow nodes.
+    '''
     def __init__(self, lhs, rhs):
         self.lhs = lhs
         self.rhs = rhs
 
-    def __str__(self):
-        return "%s | %s" % (self.lhs, self.rhs)
+    def __repr__(self):
+        return "(%r | %r)" % (self.lhs, self.rhs)
 
     def _visitSubNodes(self, visitor):
         self.lhs.visitNode(visitor)
@@ -74,22 +91,28 @@ class OrNode(ControlFlowNode):
 
 
 class InvertNode(ControlFlowNode):
+    '''
+    Invert logic (negation) of a control flow node.
+    '''
     def __init__(self, item):
         self.item = item
 
-    def __str__(self):
-        return "~%s" % self.item
+    def __repr__(self):
+        return "~%r" % self.item
 
     def _visitSubNodes(self, visitor):
         self.item.visitNode(visitor)
 
 
 class IgnoreNode(ControlFlowNode):
+    '''
+    Treat a control flow node as always successful, equivalent to (a | ~ a).
+    '''
     def __init__(self, item):
         self.item = item
 
-    def __str__(self):
-        return "ignore(%s)" % self.item
+    def __repr__(self):
+        return "ignore(%r)" % self.item
 
     def _visitSubNodes(self, visitor):
         self.item.visitNode(visitor)
@@ -103,8 +126,8 @@ class ParallelExecutionNode(ControlFlowNode):
     def __init__(self, item):
         self.item = item
 
-    def __str__(self):
-        return "par(%s)" % self.item
+    def __repr__(self):
+        return "par(%r)" % self.item
 
     def _visitSubNodes(self, visitor):
         self.item.visitNode(visitor)
@@ -118,8 +141,8 @@ class seq(ControlFlowNode):
     def __init__(self, item):
         self.item = item
 
-    def __str__(self):
-        return "seq(%s)" % self.item
+    def __repr__(self):
+        return "seq(%r)" % self.item
 
     def _visitSubNodes(self, visitor):
         self.item.visitNode(visitor)
@@ -130,21 +153,21 @@ class line(object):
         self.name = name
         self.item = item
 
-    def __str__(self):
-        return "line('%s', %s)" % (self.name, self.item)
+    def __repr__(self):
+        return "line(%r, %r)" % (self.name, self.item)
 
     def _visitSubNodes(self, visitor):
         self.item.visitNode(visitor)
 
 
-class Visitor(object):
+class _TestVisitor(object):
     def __init__(self):
         self.depths = 0
 
     def enter(self, visitee):
         self.depths += 1
         print "%sEntering %s" % (self.depths*" ", type(visitee))
-        if isinstance(visitee, Algorithm):
+        if isinstance(visitee, ControlFlowLeaf):
             print "%s Algorithm name: %s" % (" "*self.depths, visitee)
 
     def leave(self, visitee):
@@ -152,7 +175,16 @@ class Visitor(object):
         self.depths -= 1
 
 
+class _TestAlgorithm(ControlFlowLeaf):
+    def __init__(self, name):
+        self.name = name
+    def __repr__(self):
+        return self.name
+
+
 def test():
+    Algorithm = _TestAlgorithm
+
     a = Algorithm("a")
     b = Algorithm("b")
     c = Algorithm("c")
@@ -162,7 +194,7 @@ def test():
     expression = sequence | ~c & par(d & e)
     a = (expression == expression)
     aLine = line("MyTriggerPath", expression)
-    visitor = Visitor()
+    visitor = _TestVisitor()
     print "\nPrinting trigger line:"
     print aLine
     print "\nPrinting expression:"

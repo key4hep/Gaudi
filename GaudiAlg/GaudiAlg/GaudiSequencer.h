@@ -11,12 +11,12 @@ class ISequencerTimerTool;
 /** @class GaudiSequencer GaudiSequencer.h
  *  Sequencer for executing several algorithms, stopping when one is faulty.
  *
- *  Default behaviour (ModeOR=False) is to execute all algorithms until one returns 
- *  filterPassed() = False. If ShortCircuit is set to False, then all algorithms 
+ *  Default behaviour (ModeOR=False) is to execute all algorithms until one returns
+ *  filterPassed() = False. If ShortCircuit is set to False, then all algorithms
  *  will be executed.
  *
- *  In OR mode, the logic is opposite. All algorithms until one returns 
- *  filterPassed() = True. To then exit one must onter-intuitively set 
+ *  In OR mode, the logic is opposite. All algorithms until one returns
+ *  filterPassed() = True. To then exit one must onter-intuitively set
  *  ShortCircuit to False. If the default value ShortCircuit=True is left
  *  then all algorithms will be executed.
  *
@@ -82,5 +82,6 @@ private:
   bool m_returnOK;                       ///< Forces the sequencer to return a good status
   ISequencerTimerTool* m_timerTool = nullptr;      ///< Pointer to the timer tool
   int  m_timer;                          ///< Timer number for the sequencer
+  bool m_invert;                         ///< If the logic result of the sequencer should be inverted
 };
 #endif // GAUDISEQUENCER_H

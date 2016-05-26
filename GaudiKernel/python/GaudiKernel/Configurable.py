@@ -12,6 +12,10 @@ from GaudiKernel.PropertyProxy import PropertyProxy
 from GaudiKernel.GaudiHandles import *
 from GaudiKernel.DataObjectHandleBase import *
 
+from GaudiConfig.ControlFlow import (OrNode, AndNode, OrderedNode,
+                                     IgnoreNode, InvertNode,
+                                     ControlFlowLeaf, ControlFlowNode)
+
 ### data ---------------------------------------------------------------------
 __all__ = [ 'Configurable',
             'ConfigurableAlgorithm',
@@ -58,7 +62,7 @@ class Error(RuntimeError):
 class PropertyReference(object):
     def __init__(self,propname):
         self.name = propname
-    def __repr__(self):
+    def __str__(self):
         return "@%s"%self.name
     def __resolve__(self):
         # late binding for property references
@@ -838,9 +842,6 @@ class Configurable( object ):
         postLen = max(preLen,postLen)
         return indentStr + '\\%s (End of %s) %s' % (preLen*'-',title,postLen*'-')
 
-    def __repr__( self ):
-        return '<%s at %s>' % (self.getFullJobOptName(),hex(id(self)))
-
     def __str__( self, indent = 0, headerLastIndentUnit=indentUnit ):
         global log  # to print some info depending on output level
         indentStr = indent*Configurable.indentUnit
@@ -977,7 +978,7 @@ class ConfigurableGeneric( Configurable ):
 
 
 ### base classes for individual Gaudi algorithms/services/algtools ===========
-class ConfigurableAlgorithm( Configurable ):
+class ConfigurableAlgorithm( Configurable, ControlFlowLeaf ):
     __slots__ = { '_jobOptName' : 0, 'OutputLevel' : 0, \
        'Enable' : 1, 'ErrorMax' : 1, 'ErrorCount' : 0, 'AuditAlgorithms' : 0, \
        'AuditInitialize' : 0, 'AuditReinitialize' : 0, 'AuditExecute' : 0, \
@@ -1000,6 +1001,8 @@ class ConfigurableAlgorithm( Configurable ):
     def getJobOptName( self ):
         return self._jobOptName
 
+    def __repr__(self):
+        return '{0}({1!r})'.format(self.getType(), self.name())
 
 class ConfigurableService( Configurable ):
     __slots__ = { 'OutputLevel' : 0, \
@@ -1516,3 +1519,65 @@ def purge():
         if basname in sys.modules:
             del sys.modules[basname]
     _included_files.clear()
+
+
+class CreateSequencesVisitor(object):
+    def __init__(self):
+        self.stack = []
+
+    @property
+    def sequence(self):
+        return self.stack[-1]
+
+    def enter(self, visitee):
+        pass
+
+    def _getUniqueName(self, prefix):
+        from Gaudi.Configuration import allConfigurables
+        cnt = 0
+        name = prefix + str(cnt)
+        while name in allConfigurables:
+            cnt += 1
+            name = prefix + str(cnt)
+        return name
+
+    def _newSeq(self, prefix='seq_', **kwargs):
+        from Configurables import GaudiSequencer
+        return GaudiSequencer(self._getUniqueName('seq_'),
+                              **kwargs)
+
+    def leave(self, visitee):
+        stack = self.stack
+        if isinstance(visitee, ControlFlowLeaf):
+            stack.append(visitee)
+        elif isinstance(visitee, (OrNode, AndNode, OrderedNode)):
+            b = stack.pop()
+            a = stack.pop()
+            seq = self._newSeq(Members=[a, b],
+                               ModeOR=isinstance(visitee, OrNode),
+                               ShortCircuit=not isinstance(visitee, OrderedNode),
+                               MeasureTime=True)
+            stack.append(seq)
+        elif isinstance(visitee, IgnoreNode):
+            if hasattr(stack[-1], 'IgnoreFilterPassed'):
+                stack[-1].IgnoreFilterPassed = True
+            else:
+                stack.append(self._newSeq(Members=[stack.pop()],
+                                          IgnoreFilterPassed=True))
+        elif isinstance(visitee, InvertNode):
+            if hasattr(stack[-1], 'Invert'):
+                stack[-1].Invert = True
+            else:
+                stack.append(self._newSeq(Members=[stack.pop()],
+                                          Invert=True))
+
+def makeSequences(expression):
+    '''
+    Convert a control flow expression to nested GaudiSequencers.
+    '''
+    if not isinstance(expression, ControlFlowNode):
+        raise ValueError('ControlFlowNode instance expected, got %s' %
+                         type(expression).__name__)
+    visitor = CreateSequencesVisitor()
+    expression.visitNode(visitor)
+    return visitor.sequence

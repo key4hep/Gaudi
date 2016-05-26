@@ -856,11 +856,13 @@ class ReferenceFileValidator:
         self.preproc = preproc
 
     def __call__(self,stdout, result) :
-        causes=[]
+        causes = []
         if os.path.isfile(self.reffile):
-            orig=open(self.reffile).xreadlines()
+            orig = open(self.reffile).xreadlines()
             if self.preproc:
                 orig = self.preproc(orig)
+                result[self.result_key + '.proproc.orig'] = \
+                    result.Quote('\n'.join(map(str.strip, orig)))
         else:
             orig = []
         new = stdout.splitlines()
@@ -875,6 +877,8 @@ class ReferenceFileValidator:
                 Legend:
                 -) reference file
                 +) standard output of the test""")
+            result[self.result_key + '.proproc.new'] = \
+                result.Quote('\n'.join(map(str.strip, new)))
             causes.append(self.cause)
         return causes
 
@@ -1113,4 +1117,3 @@ def isWinPlatform(self):
        """
    platform = GetPlatform(self)
    return "winxp" in platform or platform.startswith("win")
-
