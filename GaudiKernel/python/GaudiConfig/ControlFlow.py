@@ -26,14 +26,6 @@ class ControlFlowNode(object):
         return (repr(self) == repr(other))
 
 
-class Algorithm(ControlFlowNode):
-    def __init__(self, name):
-        self.name = name
-
-    def __repr__(self):
-        return self.name
-
-
 class OrderedNode(ControlFlowNode):
     def __init__(self, lhs, rhs):
         self.lhs = lhs
@@ -152,7 +144,16 @@ class Visitor(object):
         self.depths -= 1
 
 
+class _TestAlgorithm(ControlFlowNode):
+    def __init__(self, name):
+        self.name = name
+    def __repr__(self):
+        return self.name
+
+
 def test():
+    Algorithm = _TestAlgorithm
+
     a = Algorithm("a")
     b = Algorithm("b")
     c = Algorithm("c")

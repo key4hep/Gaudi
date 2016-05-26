@@ -976,7 +976,7 @@ class ConfigurableGeneric( Configurable ):
 
 
 ### base classes for individual Gaudi algorithms/services/algtools ===========
-class ConfigurableAlgorithm( Configurable, GaudiConfig.ControlFlow.Algorithm ):
+class ConfigurableAlgorithm( Configurable, GaudiConfig.ControlFlow.ControlFlowNode ):
     __slots__ = { '_jobOptName' : 0, 'OutputLevel' : 0, \
        'Enable' : 1, 'ErrorMax' : 1, 'ErrorCount' : 0, 'AuditAlgorithms' : 0, \
        'AuditInitialize' : 0, 'AuditReinitialize' : 0, 'AuditExecute' : 0, \
