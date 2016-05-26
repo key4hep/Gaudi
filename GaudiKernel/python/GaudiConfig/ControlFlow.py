@@ -36,7 +36,7 @@ class OrderedNode(ControlFlowNode):
         self.rhs = rhs
 
     def __repr__(self):
-        return "%r >> %r" % (self.lhs, self.rhs)
+        return "(%r >> %r)" % (self.lhs, self.rhs)
 
     def _visitSubNodes(self, visitor):
         self.lhs.visitNode(visitor)
