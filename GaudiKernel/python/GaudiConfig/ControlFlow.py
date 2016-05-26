@@ -148,7 +148,27 @@ class Visitor(object):
         self.depths -= 1
 
 
-class _TestAlgorithm(ControlFlowNode):
+class CreateSequencesVisitor(object):
+    def __init__(self):
+        self.stack = []
+
+    @property
+    def sequence(self):
+        return self.stack[-1]
+
+    def enter(self, visitee):
+        pass
+
+    def leave(self, visitee):
+        if isinstance(visitee, ControlFlowLeaf):
+            self.stack.append(visitee)
+        elif isinstance(visitee, (OrNode, AndNode, OrderedNode)):
+            b = self.stack.pop()
+            a = self.stack.pop()
+            self.stack.append([a, b])
+
+
+class _TestAlgorithm(ControlFlowLeaf):
     def __init__(self, name):
         self.name = name
     def __repr__(self):
@@ -174,3 +194,18 @@ def test():
     print expression
     print "\nTraversing through expression:\n"
     expression.visitNode(visitor)
+
+def test_sequences():
+    Algorithm = _TestAlgorithm
+
+    a = Algorithm("a")
+    b = Algorithm("b")
+    c = Algorithm("c")
+    d = Algorithm("d")
+    e = Algorithm("e")
+    sequence = seq(b >> a)
+    expression = sequence | ~c & par(d & e)
+    visitor = CreateSequencesVisitor()
+    expression.visitNode(visitor)
+    print visitor.sequence
+    assert visitor.sequence == [[b, a], [c, [d, e]]]
