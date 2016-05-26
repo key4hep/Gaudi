@@ -191,6 +191,12 @@ class CreateSequencesVisitor(object):
             else:
                 stack.append(self._newSeq(Members=[stack.pop()],
                                           IgnoreFilterPassed=True))
+        elif isinstance(visitee, InvertNode):
+            if hasattr(stack[-1], 'Invert'):
+                stack[-1].Invert = True
+            else:
+                stack.append(self._newSeq(Members=[stack.pop()],
+                                          Invert=True))
 
 
 class _TestAlgorithm(ControlFlowLeaf):
