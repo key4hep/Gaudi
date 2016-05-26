@@ -18,12 +18,18 @@
 // provides macros for the tests
 #include <cppunit/extensions/HelperMacros.h>
 
+// Standard headers
+#include <vector>
+#include <memory>
+
 namespace GaudiKernelTest {
 
   class AnyDataObject: public CppUnit::TestFixture {
     CPPUNIT_TEST_SUITE( AnyDataObject );
     
+    CPPUNIT_TEST( test_OldWrapper );
     CPPUNIT_TEST( test_wrapper );
+    CPPUNIT_TEST( test_wrapperVector );
     
     CPPUNIT_TEST_SUITE_END();
       
@@ -32,13 +38,73 @@ namespace GaudiKernelTest {
     AnyDataObject() {}
     virtual ~AnyDataObject() {}
 
-    void test_wrapper() {
-      auto ado = AnyDataWrapper<int>();
+    /**
+     * Initial Wrapper test
+     */
+    void test_OldWrapper() {
+      auto adw = AnyDataWrapperBasic<int>();
       int *lwe = new int(42);
-      ado.setData(lwe);
-      CPPUNIT_ASSERT_EQUAL(*lwe, *ado.getData() );
-      delete(lwe);
+      adw.setData(lwe);
+      CPPUNIT_ASSERT_EQUAL(*lwe, *adw.getData() );
     }
+
+    /**
+     * Simple wrapper test
+     */
+    void test_wrapper() {
+      auto adw = AnyDataWrapper<int>(42);
+      CPPUNIT_ASSERT_EQUAL(42, adw.getData());
+
+      int myval = 43;
+      {
+	auto adw2 = AnyDataWrapper<int>(std::move(myval));
+	CPPUNIT_ASSERT_EQUAL(43, adw2.getData());
+
+      }
+
+    }
+
+    /**
+     * wrapping std::vectors
+     */
+    void test_wrapperVector() {
+
+      using V = std::vector<int>;
+      using VSize = V::size_type;
+      
+      // Test move of a vector
+      {
+	auto adw = AnyDataWrapper<V>({1,2,3,4});
+	VSize s4(4);
+	CPPUNIT_ASSERT_EQUAL(s4, (adw.getData()).size());
+      }
+
+      // Making sure that the vector is copied
+      {
+	V myvector{1,2,3,4};
+	CPPUNIT_ASSERT_EQUAL(static_cast<VSize>(4), myvector.size());
+
+	auto adw = AnyDataWrapper<V>(std::move(myvector));
+
+	CPPUNIT_ASSERT_EQUAL(static_cast<VSize>(4),
+			     (adw.getData()).size());
+
+	CPPUNIT_ASSERT_EQUAL(static_cast<VSize>(0),
+			     myvector.size());
+	
+      }
+
+      // Trying with std::unique_ptr
+      {
+	auto myvector = std::make_unique<V>(V{1,2,3,4});
+	auto adw = AnyDataWrapper<decltype(myvector)>(std::move(myvector));
+       	CPPUNIT_ASSERT_EQUAL(static_cast<VSize>(4),
+			     (adw.getData())->size());	
+      }
+
+    }
+
+
   };
   
   CPPUNIT_TEST_SUITE_REGISTRATION( AnyDataObject );
