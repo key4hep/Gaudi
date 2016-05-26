@@ -26,6 +26,10 @@ class ControlFlowNode(object):
         return (repr(self) == repr(other))
 
 
+class ControlFlowLeaf(ControlFlowNode):
+    pass
+
+
 class OrderedNode(ControlFlowNode):
     def __init__(self, lhs, rhs):
         self.lhs = lhs
