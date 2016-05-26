@@ -159,13 +159,25 @@ class CreateSequencesVisitor(object):
     def enter(self, visitee):
         pass
 
+    def _getUniqueName(self, prefix):
+        from Gaudi.Configuration import allConfigurables
+        cnt = 0
+        name = prefix + str(cnt)
+        while name in allConfigurables:
+            cnt += 1
+            name = prefix + str(cnt)
+        return name
+
     def leave(self, visitee):
         if isinstance(visitee, ControlFlowLeaf):
             self.stack.append(visitee)
         elif isinstance(visitee, (OrNode, AndNode, OrderedNode)):
+            from Configurables import GaudiSequencer
             b = self.stack.pop()
             a = self.stack.pop()
-            self.stack.append([a, b])
+            self.stack.append(GaudiSequencer(self._getUniqueName('seq_'),
+                                             Members=[a, b],
+                                             ModeOR=isinstance(visitee, OrNode)))
 
 
 class _TestAlgorithm(ControlFlowLeaf):
