@@ -5,6 +5,9 @@
 from Gaudi.Configuration import *
 from Configurables import ParentAlg, StopperAlg, Prescaler, HelloWorld, TimingAuditor
 
+from GaudiConfig.ControlFlow import seq
+from GaudiKernel.Configurable import makeSequences
+
 from Configurables import GaudiExamplesCommonConf
 GaudiExamplesCommonConf()
 
@@ -17,8 +20,8 @@ h   = HelloWorld( OutputLevel = DEBUG  )
 c1  = EventCounter('Counter1')
 c2  = EventCounter('Counter2')
 
-s1 = p1 >> h >> c1
-s2 = p2 >> h >> c2
+s1 = seq(p1 & h & c1)
+s2 = seq(p2 & h & c2)
 top = s1 >> s2
 #s1  = Sequencer('Sequence1', Members = [p1, h, c1] )
 #s2  = Sequencer('Sequence2', Members = [p2, h, c2] )
@@ -38,9 +41,6 @@ sor = HelloWorld('OR') | EventCounter('ORCounter')
 #                       ModeOR = 1 )
 
 all = ParentAlg() >> StopperAlg(StopCount=20) >> top >> sand >> sor
-
-# make sequences out of the expression
-from GaudiKernel.Configurable import makeSequences
 
 #-----------------------------------------------------------------
 ApplicationMgr( TopAlg = [makeSequences(all)],
