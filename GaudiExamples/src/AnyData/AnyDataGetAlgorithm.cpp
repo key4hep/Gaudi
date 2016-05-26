@@ -1,4 +1,5 @@
 // Include files
+#include <vector>
 
  // from Gaudi
 #include "GaudiKernel/AlgFactory.h"
@@ -14,27 +15,34 @@
 //-----------------------------------------------------------------------------
 
 // Declaration of the Algorithm Factory
-DECLARE_ALGORITHM_FACTORY( AnyDataGetAlgorithm )
+DECLARE_COMPONENT_WITH_ID( AnyDataGetAlgorithm<int>, "AnyDataGetAlgorithm_Int" )
+DECLARE_COMPONENT_WITH_ID( AnyDataGetAlgorithm<std::vector<int>>, "AnyDataGetAlgorithm_VectorInt" )
 
+namespace {
+   using std::vector;
+}
 
 //=============================================================================
 // Standard constructor, initializes variables
 //=============================================================================
-AnyDataGetAlgorithm::AnyDataGetAlgorithm( const std::string& name,
+template <class T>
+AnyDataGetAlgorithm<T>::AnyDataGetAlgorithm( const std::string& name,
                                           ISvcLocator* pSvcLocator)
   : GaudiAlgorithm ( name , pSvcLocator )
 {
-   declareProperty("Locations", m_locations);
+   declareProperty("Location", m_location);
 }
 //=============================================================================
 // Destructor
 //=============================================================================
-AnyDataGetAlgorithm::~AnyDataGetAlgorithm() {}
+template <class T>
+AnyDataGetAlgorithm<T>::~AnyDataGetAlgorithm() {}
 
 //=============================================================================
 // Initialization
 //=============================================================================
-StatusCode AnyDataGetAlgorithm::initialize() {
+template <class T>
+StatusCode AnyDataGetAlgorithm<T>::initialize() {
   StatusCode sc = GaudiAlgorithm::initialize(); // must be executed first
   if ( sc.isFailure() ) return sc;  // error printed already by GaudiAlgorithm
 
@@ -46,19 +54,19 @@ StatusCode AnyDataGetAlgorithm::initialize() {
 //=============================================================================
 // Main execution
 //=============================================================================
-StatusCode AnyDataGetAlgorithm::execute() {
+template <class T>
+StatusCode AnyDataGetAlgorithm<T>::execute() {
 
   if ( msgLevel(MSG::DEBUG) ) debug() << "==> Execute" << endmsg;
 
-  for (const auto& l : m_locations) {
-     auto base = getIfExists<AnyDataWrapperBase>(l);
-     if (base) {
-        info() << "Got base from " << l << endmsg;
-     }
-     const auto i = dynamic_cast<const AnyDataWrapper<int>*>(base);
-     if (i) {
-        info() << "Got int from " << l << ": " << *(i->getData()) << endmsg;
-     }
+  auto base = getIfExists<AnyDataWrapperBase>(m_location);
+  if (base) {
+     info() << "Got base from " << m_location << endmsg;
+  }
+  const auto i = dynamic_cast<const AnyDataWrapper<T>*>(base);
+  if (i) {
+     info() << "Got " << System::typeinfoName(typeid(T)) << " from " << m_location
+            << ": " << i->getData() << endmsg;
   }
 
   return StatusCode::SUCCESS;
@@ -67,7 +75,8 @@ StatusCode AnyDataGetAlgorithm::execute() {
 //=============================================================================
 //  Finalize
 //=============================================================================
-StatusCode AnyDataGetAlgorithm::finalize() {
+template <class T>
+StatusCode AnyDataGetAlgorithm<T>::finalize() {
 
   if ( msgLevel(MSG::DEBUG) ) debug() << "==> Finalize" << endmsg;
 

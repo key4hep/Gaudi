@@ -14,6 +14,7 @@
  *  @author Roel Aaij
  *  @date   2016-05-26
  */
+template<class T>
 class AnyDataGetAlgorithm : public GaudiAlgorithm {
 public:
   /// Standard constructor
@@ -27,7 +28,7 @@ public:
 
 private:
 
-   std::vector<std::string> m_locations;
+   std::string m_location;
 
 };
 #endif // ANYDATA_ANADATAGETALGORITHM_H

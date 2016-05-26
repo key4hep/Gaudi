@@ -12,23 +12,22 @@ class GAUDI_API AnyDataWrapperBase : public DataObject {
 };
 
 template<class T>
-class GAUDI_API AnyDataWrapper : public AnyDataWrapperBase {
+class GAUDI_API AnyDataWrapper: public AnyDataWrapperBase {
  public:
 
-  AnyDataWrapper() : AnyDataWrapperBase(), m_data(nullptr){};
-  virtual ~AnyDataWrapper();
+   AnyDataWrapper(T&& data) : AnyDataWrapperBase(),
+      m_data(std::move(data)) {};
 
-  const T* getData() const {return m_data;}
-  void setData(T* data) {m_data = data;}
+   AnyDataWrapper(AnyDataWrapper&& other) : AnyDataWrapperBase(),
+      m_data(std::move(other.m_data)) {};
+
+   virtual ~AnyDataWrapper() {};
+
+   const T& getData() const {return m_data;}
 
  private:
-  T* m_data;
+   T m_data;
 
 };
-
-template<class T>
-AnyDataWrapper<T>::~AnyDataWrapper<T>() {
-  if (m_data!=nullptr) delete m_data;
-}
 
 #endif

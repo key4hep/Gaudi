@@ -1,4 +1,5 @@
 // Include files
+#include <vector>
 
 // from Gaudi
 #include "GaudiKernel/AlgFactory.h"
@@ -15,6 +16,10 @@
 
 // Declaration of the Algorithm Factory
 DECLARE_ALGORITHM_FACTORY( AnyDataPutAlgorithm )
+
+namespace {
+   using std::vector;
+}
 
 //=============================================================================
 // Standard constructor, initializes variables
@@ -49,8 +54,8 @@ StatusCode AnyDataPutAlgorithm::execute() {
 
    if ( msgLevel(MSG::DEBUG) ) debug() << "==> Execute" << endmsg;
 
-   auto i = new AnyDataWrapper<int>{}; i->setData(new int{0});
-   auto j = new AnyDataWrapper<int>{}; j->setData(new int{1});
+   auto i = new AnyDataWrapper<int>{0};
+   auto j = new AnyDataWrapper<vector<int>>{vector<int>{0, 1, 2, 3}};
 
    put(i, m_loc + "/One");
    put(j, m_loc + "/Two");
