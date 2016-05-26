@@ -1,11 +1,11 @@
 #include "GaudiKernel/AnyDataWrapper.h"
 
 // from SPI version of the testdriver
-#include <cppunit/extensions/TestFactoryRegistry.h> 
-#include <cppunit/TextTestRunner.h> 
-#include <cppunit/CompilerOutputter.h> 
-#include <cppunit/TextOutputter.h> 
-#include <cppunit/XmlOutputter.h> 
+#include <cppunit/extensions/TestFactoryRegistry.h>
+#include <cppunit/TextTestRunner.h>
+#include <cppunit/CompilerOutputter.h>
+#include <cppunit/TextOutputter.h>
+#include <cppunit/XmlOutputter.h>
 
 // to produce one line per test
 #include <cppunit/TestResult.h>
@@ -26,27 +26,16 @@ namespace GaudiKernelTest {
 
   class AnyDataObject: public CppUnit::TestFixture {
     CPPUNIT_TEST_SUITE( AnyDataObject );
-    
-    CPPUNIT_TEST( test_OldWrapper );
+
     CPPUNIT_TEST( test_wrapper );
     CPPUNIT_TEST( test_wrapperVector );
-    
+
     CPPUNIT_TEST_SUITE_END();
-      
+
   public:
-    
+
     AnyDataObject() {}
     virtual ~AnyDataObject() {}
-
-    /**
-     * Initial Wrapper test
-     */
-    void test_OldWrapper() {
-      auto adw = AnyDataWrapperBasic<int>();
-      int *lwe = new int(42);
-      adw.setData(lwe);
-      CPPUNIT_ASSERT_EQUAL(*lwe, *adw.getData() );
-    }
 
     /**
      * Simple wrapper test
@@ -71,7 +60,7 @@ namespace GaudiKernelTest {
 
       using V = std::vector<int>;
       using VSize = V::size_type;
-      
+
       // Test move of a vector
       {
 	auto adw = AnyDataWrapper<V>({1,2,3,4});
@@ -91,7 +80,7 @@ namespace GaudiKernelTest {
 
 	CPPUNIT_ASSERT_EQUAL(static_cast<VSize>(0),
 			     myvector.size());
-	
+
       }
 
       // Trying with std::unique_ptr
@@ -99,22 +88,22 @@ namespace GaudiKernelTest {
 	auto myvector = std::make_unique<V>(V{1,2,3,4});
 	auto adw = AnyDataWrapper<decltype(myvector)>(std::move(myvector));
        	CPPUNIT_ASSERT_EQUAL(static_cast<VSize>(4),
-			     (adw.getData())->size());	
+			     (adw.getData())->size());
       }
 
     }
 
 
   };
-  
+
   CPPUNIT_TEST_SUITE_REGISTRATION( AnyDataObject );
 
   // Copied from the COOL implementation
   /** @class ProgressListener
    *
    *  Simple TestListener printing one line per test in the standard output.
-   *  
-   *  Based on  CppUnit::BriefTestProgressListener (copy and paste) 
+   *
+   *  Based on  CppUnit::BriefTestProgressListener (copy and paste)
    *  using std::cout instead of std::cerr.
    *
    *  @author Marco Clemencic
@@ -127,14 +116,14 @@ namespace GaudiKernelTest {
 
     /// Default constructor.
     ProgressListener(): m_lastTestFailed(false) {}
-    
+
     /// Destructor.
     virtual ~ProgressListener() {}
-    
+
     void startTest( CppUnit::Test *test ) override
     {
       std::cout << test->getName();
-      std::cout.flush();      
+      std::cout.flush();
       m_lastTestFailed = false;
     }
 
@@ -143,14 +132,14 @@ namespace GaudiKernelTest {
       std::cout << " : " << (failure.isError() ? "error" : "assertion");
       m_lastTestFailed  = true;
     }
-    
+
     void endTest( CppUnit::Test * /*test*/ ) override
     {
       if ( !m_lastTestFailed )
         std::cout  <<  " : OK";
       std::cout << std::endl;
     }
-    
+
   private:
 
     bool m_lastTestFailed;
@@ -182,7 +171,7 @@ int main( int argc, char* argv[] )
 
   // Change the default outputter to a compiler error format outputter
   // uncomment the following line if you need a compiler outputter.
-  runner.setOutputter( new CppUnit::CompilerOutputter( &runner.result(), 
+  runner.setOutputter( new CppUnit::CompilerOutputter( &runner.result(),
                                                        std::cout ) );
 
   // Change the default outputter to a xml error format outputter
@@ -192,13 +181,13 @@ int main( int argc, char* argv[] )
 
   runner.eventManager().addListener( new GaudiKernelTest::ProgressListener() );
 
-  //CppUnit::TestResultCollector *collector = 
+  //CppUnit::TestResultCollector *collector =
   //  new CppUnit::TestResultCollector();
   //runner.eventManager().addListener(collector);
 
   bool wasSuccessful = false;
 
-  try 
+  try
   {
     wasSuccessful = runner.run( testPath, false, true, false );
   }
@@ -231,7 +220,7 @@ int main( int argc, char* argv[] )
   // Print a message on standard error if something failed (for QMTest)
   if ( ! wasSuccessful ) std::cerr << "Error: CppUnit Failures" << std::endl;
   int retcode = wasSuccessful ? 0 : 1;
-  
+
   // Uncomment the next line if you want to integrate CppUnit with Oval
   // std::cout << "[OVAL] Cppunit-result =" << retcode << std::endl;
   return retcode;
