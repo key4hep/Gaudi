@@ -168,16 +168,29 @@ class CreateSequencesVisitor(object):
             name = prefix + str(cnt)
         return name
 
+    def _newSeq(self, prefix='seq_', **kwargs):
+        from Configurables import GaudiSequencer
+        return GaudiSequencer(self._getUniqueName('seq_'),
+                              **kwargs)
+
     def leave(self, visitee):
+        stack = self.stack
         if isinstance(visitee, ControlFlowLeaf):
-            self.stack.append(visitee)
+            stack.append(visitee)
         elif isinstance(visitee, (OrNode, AndNode, OrderedNode)):
-            from Configurables import GaudiSequencer
-            b = self.stack.pop()
-            a = self.stack.pop()
-            self.stack.append(GaudiSequencer(self._getUniqueName('seq_'),
-                                             Members=[a, b],
-                                             ModeOR=isinstance(visitee, OrNode)))
+            b = stack.pop()
+            a = stack.pop()
+            seq = self._newSeq(Members=[a, b],
+                               ModeOR=isinstance(visitee, OrNode),
+                               ShortCircuit=not isinstance(visitee, OrderedNode),
+                               MeasureTime=True)
+            stack.append(seq)
+        elif isinstance(visitee, IgnoreNode):
+            if hasattr(stack[-1], 'IgnoreFilterPassed'):
+                stack[-1].IgnoreFilterPassed = True
+            else:
+                stack.append(self._newSeq(Members=[stack.pop()],
+                                          IgnoreFilterPassed=True))
 
 
 class _TestAlgorithm(ControlFlowLeaf):
