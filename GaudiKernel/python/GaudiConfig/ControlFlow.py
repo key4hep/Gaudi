@@ -175,57 +175,6 @@ class _TestVisitor(object):
         self.depths -= 1
 
 
-class CreateSequencesVisitor(object):
-    def __init__(self):
-        self.stack = []
-
-    @property
-    def sequence(self):
-        return self.stack[-1]
-
-    def enter(self, visitee):
-        pass
-
-    def _getUniqueName(self, prefix):
-        from Gaudi.Configuration import allConfigurables
-        cnt = 0
-        name = prefix + str(cnt)
-        while name in allConfigurables:
-            cnt += 1
-            name = prefix + str(cnt)
-        return name
-
-    def _newSeq(self, prefix='seq_', **kwargs):
-        from Configurables import GaudiSequencer
-        return GaudiSequencer(self._getUniqueName('seq_'),
-                              **kwargs)
-
-    def leave(self, visitee):
-        stack = self.stack
-        if isinstance(visitee, ControlFlowLeaf):
-            stack.append(visitee)
-        elif isinstance(visitee, (OrNode, AndNode, OrderedNode)):
-            b = stack.pop()
-            a = stack.pop()
-            seq = self._newSeq(Members=[a, b],
-                               ModeOR=isinstance(visitee, OrNode),
-                               ShortCircuit=not isinstance(visitee, OrderedNode),
-                               MeasureTime=True)
-            stack.append(seq)
-        elif isinstance(visitee, IgnoreNode):
-            if hasattr(stack[-1], 'IgnoreFilterPassed'):
-                stack[-1].IgnoreFilterPassed = True
-            else:
-                stack.append(self._newSeq(Members=[stack.pop()],
-                                          IgnoreFilterPassed=True))
-        elif isinstance(visitee, InvertNode):
-            if hasattr(stack[-1], 'Invert'):
-                stack[-1].Invert = True
-            else:
-                stack.append(self._newSeq(Members=[stack.pop()],
-                                          Invert=True))
-
-
 class _TestAlgorithm(ControlFlowLeaf):
     def __init__(self, name):
         self.name = name
@@ -252,18 +201,3 @@ def test():
     print expression
     print "\nTraversing through expression:\n"
     expression.visitNode(visitor)
-
-def test_sequences():
-    Algorithm = _TestAlgorithm
-
-    a = Algorithm("a")
-    b = Algorithm("b")
-    c = Algorithm("c")
-    d = Algorithm("d")
-    e = Algorithm("e")
-    sequence = seq(b >> a)
-    expression = sequence | ~c & par(d & e)
-    visitor = CreateSequencesVisitor()
-    expression.visitNode(visitor)
-    print visitor.sequence
-    assert visitor.sequence == [[b, a], [c, [d, e]]]

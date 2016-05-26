@@ -40,12 +40,10 @@ sor = HelloWorld('OR') | EventCounter('ORCounter')
 all = ParentAlg() >> StopperAlg(StopCount=20) >> top >> sand >> sor
 
 # make sequences out of the expression
-from GaudiConfig.ControlFlow import CreateSequencesVisitor
-visitor = CreateSequencesVisitor()
-all.visitNode(visitor)
+from GaudiKernel.Configurable import makeSequences
 
 #-----------------------------------------------------------------
-ApplicationMgr( TopAlg = [visitor.sequence],  # [toSequences(all)],
+ApplicationMgr( TopAlg = [makeSequences(all)],
                 EvtMax = 10,     # events to be processed (default is 10)
                 EvtSel = 'NONE', # do not use any event input
                 ExtSvc = ['ToolSvc', 'AuditorSvc' ],
