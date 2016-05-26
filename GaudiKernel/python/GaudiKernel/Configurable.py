@@ -1000,7 +1000,7 @@ class ConfigurableAlgorithm( Configurable, GaudiConfig.ControlFlow.ControlFlowNo
         return self._jobOptName
 
     def __repr__(self):
-        return self.name()
+        return '{0}({1!r})'.format(self.getType(), self.name())
 
 class ConfigurableService( Configurable ):
     __slots__ = { 'OutputLevel' : 0, \
