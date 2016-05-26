@@ -1,4 +1,13 @@
+'''
+Classes for the implementation of the Control Flow Structure Syntax.
+
+@see: https://github.com/lhcb/scheduling-event-model/tree/master/controlflow_syntax
+'''
+
 class ControlFlowNode(object):
+    '''
+    Basic entry in the control flow graph.
+    '''
     def __init__(self):
         pass
 
@@ -27,10 +36,16 @@ class ControlFlowNode(object):
 
 
 class ControlFlowLeaf(ControlFlowNode):
+    '''
+    Class used to identify a note without sub-nodes.
+    '''
     pass
 
 
 class OrderedNode(ControlFlowNode):
+    '''
+    Represent order of execution of nodes.
+    '''
     def __init__(self, lhs, rhs):
         self.lhs = lhs
         self.rhs = rhs
@@ -44,6 +59,9 @@ class OrderedNode(ControlFlowNode):
 
 
 class AndNode(ControlFlowNode):
+    '''
+    And operation between control flow nodes.
+    '''
     def __init__(self, lhs, rhs):
         self.lhs = lhs
         self.rhs = rhs
@@ -57,6 +75,9 @@ class AndNode(ControlFlowNode):
 
 
 class OrNode(ControlFlowNode):
+    '''
+    Or operation between control flow nodes.
+    '''
     def __init__(self, lhs, rhs):
         self.lhs = lhs
         self.rhs = rhs
@@ -70,6 +91,9 @@ class OrNode(ControlFlowNode):
 
 
 class InvertNode(ControlFlowNode):
+    '''
+    Invert logic (negation) of a control flow node.
+    '''
     def __init__(self, item):
         self.item = item
 
@@ -81,6 +105,9 @@ class InvertNode(ControlFlowNode):
 
 
 class IgnoreNode(ControlFlowNode):
+    '''
+    Treat a control flow node as always successful, equivalent to (a | ~ a).
+    '''
     def __init__(self, item):
         self.item = item
 
