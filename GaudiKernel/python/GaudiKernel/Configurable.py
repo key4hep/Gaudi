@@ -13,7 +13,7 @@ from GaudiKernel.GaudiHandles import *
 from GaudiKernel.DataObjectHandleBase import *
 
 from GaudiConfig.ControlFlow import (OrNode, AndNode, OrderedNode,
-                                     IgnoreNode, InvertNode,
+                                     ignore, InvertNode,
                                      ControlFlowLeaf, ControlFlowNode)
 
 ### data ---------------------------------------------------------------------
@@ -1558,7 +1558,7 @@ class CreateSequencesVisitor(object):
                                ShortCircuit=not isinstance(visitee, OrderedNode),
                                MeasureTime=True)
             stack.append(seq)
-        elif isinstance(visitee, IgnoreNode):
+        elif isinstance(visitee, ignore):
             if hasattr(stack[-1], 'IgnoreFilterPassed'):
                 stack[-1].IgnoreFilterPassed = True
             else:

@@ -105,7 +105,7 @@ class InvertNode(ControlFlowNode):
         self.item.visitNode(visitor)
 
 
-class IgnoreNode(ControlFlowNode):
+class ignore(ControlFlowNode):
     '''
     Treat a control flow node as always successful, equivalent to (a | ~ a).
     '''
@@ -119,11 +119,7 @@ class IgnoreNode(ControlFlowNode):
         self.item.visitNode(visitor)
 
 
-def ignore(item):
-    return IgnoreNode(item)
-
-
-class ParallelExecutionNode(ControlFlowNode):
+class par(ControlFlowNode):
     def __init__(self, item):
         self.item = item
 
@@ -132,10 +128,6 @@ class ParallelExecutionNode(ControlFlowNode):
 
     def _visitSubNodes(self, visitor):
         self.item.visitNode(visitor)
-
-
-def par(item):
-    return ParallelExecutionNode(item)
 
 
 class seq(ControlFlowNode):
@@ -212,7 +204,7 @@ class DotVisitor(object):
                 entry = '%s [label=">>", shape=point]' % dot_id
             elif isinstance(visitee, InvertNode):
                 entry = '%s [label="NOT", shape=circle, color=red]' % dot_id
-            elif isinstance(visitee, ParallelExecutionNode):
+            elif isinstance(visitee, par):
                 entry = '%s [label="PAR", shape=circle]' % dot_id
             elif isinstance(visitee, seq):
                 entry = '%s [label="SEQ", shape=circle]' % dot_id
