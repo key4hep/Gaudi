@@ -45,6 +45,8 @@ protected:
   StringArrayProperty m_topAlgNames;
   /// List of output stream names
   StringArrayProperty m_outStreamNames;
+  ///
+  BooleanProperty     m_printCFExp{"PrintControlFlowExpression", false};
   /// State of the object
   State               m_state = OFFLINE;
   /// Scheduled stop of event processing
