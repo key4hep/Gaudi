@@ -4,6 +4,7 @@
 
 from Gaudi.Configuration import *
 from Configurables import ParentAlg, StopperAlg, Prescaler, HelloWorld, TimingAuditor
+from Configurables import EventLoopMgr
 
 from GaudiConfig.ControlFlow import seq
 from GaudiKernel.Configurable import makeSequences
@@ -42,6 +43,10 @@ sor = HelloWorld('OR') | EventCounter('ORCounter')
 
 all = ParentAlg() >> StopperAlg(StopCount=20) >> top >> sand >> sor
 
+print '# --- Configured Control Flow Expression:'
+print '#', all
+print '# ---'
+EventLoopMgr(PrintControlFlowExpression=True)
 #-----------------------------------------------------------------
 ApplicationMgr( TopAlg = [makeSequences(all)],
                 EvtMax = 10,     # events to be processed (default is 10)
