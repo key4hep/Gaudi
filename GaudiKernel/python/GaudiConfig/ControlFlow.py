@@ -193,10 +193,13 @@ class DotVisitor(object):
         self.edges = []
         self.number = 0
         self.stack = []
+        self.ids = {}
 
     def enter(self, visitee):
-        self.number += 1
-        dot_id = 'T%s' % self.number
+        if visitee not in self.ids:
+            self.number += 1
+            dot_id = self.ids[visitee] = 'T%s' % self.number
+        dot_id = self.ids[visitee]
         mother = None
         if self.is_needed(visitee):
             if isinstance(visitee, ControlFlowLeaf):
