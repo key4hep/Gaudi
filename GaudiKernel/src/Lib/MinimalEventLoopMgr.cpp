@@ -144,7 +144,6 @@ StatusCode MinimalEventLoopMgr::initialize()    {
     auto& first = m_topAlgList.front();
     for(auto& ialg: m_topAlgList) {
       if (ialg != first) expr << " >> ";
-      info() << "processing " << ialg->name() << endmsg;
       ialg->toControlFlowExpression(expr);
     }
     info() << expr.str() << endmsg;
