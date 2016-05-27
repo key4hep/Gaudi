@@ -13,9 +13,17 @@ class ControlFlowNode(object):
         pass
 
     def __and__(self, rhs):
+        if rhs is CFTrue:
+            return self
+        elif rhs is CFFalse:
+            return CFFalse
         return AndNode(self, rhs)
 
     def __or__(self, rhs):
+        if rhs is CFFalse:
+            return self
+        elif rhs is CFTrue:
+            return CFTrue
         return OrNode(self, rhs)
 
     def __invert__(self):
@@ -42,6 +50,22 @@ class ControlFlowLeaf(ControlFlowNode):
     '''
     pass
 
+
+class ControlFlowBool(ControlFlowLeaf):
+    def __init__(self, value):
+        self.value = value
+    def __and__(self, rhs):
+        return rhs if self.value else self
+    def __or__(self, rhs):
+        return self if self.value else rhs
+    def __invert__(self):
+        return CFFalse if self.value else CFTrue
+    def __repr__(self):
+        return 'CFTrue' if self.value else 'CFFalse'
+
+CFTrue = ControlFlowBool(True)
+CFFalse = ControlFlowBool(False)
+del ControlFlowBool
 
 class OrderedNode(ControlFlowNode):
     '''

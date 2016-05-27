@@ -14,7 +14,8 @@ from GaudiKernel.DataObjectHandleBase import *
 
 from GaudiConfig.ControlFlow import (OrNode, AndNode, OrderedNode,
                                      ignore, InvertNode,
-                                     ControlFlowLeaf, ControlFlowNode)
+                                     ControlFlowLeaf, ControlFlowNode,
+                                     CFTrue, CFFalse)
 
 ### data ---------------------------------------------------------------------
 __all__ = [ 'Configurable',
@@ -1548,7 +1549,9 @@ class CreateSequencesVisitor(object):
 
     def leave(self, visitee):
         stack = self.stack
-        if isinstance(visitee, ControlFlowLeaf):
+        if visitee in (CFTrue, CFFalse):
+            stack.append(self._newSeq(Invert=visitee is CFFalse))
+        elif isinstance(visitee, ControlFlowLeaf):
             stack.append(visitee)
         elif isinstance(visitee, (OrNode, AndNode, OrderedNode)):
             b = stack.pop()
