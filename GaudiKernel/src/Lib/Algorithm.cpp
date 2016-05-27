@@ -1012,7 +1012,7 @@ void Algorithm::initToolHandles() const{
                 << " not used: not registering any of its Tools" << endmsg;
     } else {
       if (UNLIKELY(msgLevel(MSG::DEBUG)))
-        debug() << "Registering all Tools in ToolHandleArray " 
+        debug() << "Registering all Tools in ToolHandleArray "
                 << thArr->propertyName() ;
       for (auto th_name : thArr->typesAndNames()) {
         if (UNLIKELY(msgLevel(MSG::DEBUG)))
@@ -1028,7 +1028,7 @@ void Algorithm::initToolHandles() const{
         } else {
           if (UNLIKELY(msgLevel(MSG::DEBUG)))
             debug() << " - ERROR" << endmsg;
-          warning() <<  "Error retrieving Tool " << th_name 
+          warning() <<  "Error retrieving Tool " << th_name
                     << " in ToolHandleArray" << thArr->propertyName()
                     << ". Not registered" << endmsg;
         }
@@ -1036,7 +1036,7 @@ void Algorithm::initToolHandles() const{
       if (UNLIKELY(msgLevel(MSG::DEBUG))) debug() << endmsg;
     }
   }
-    
+
   for(auto th : m_toolHandles){
     tool = th->get();
     if(tool){
@@ -1133,4 +1133,8 @@ Algorithm::deregisterTool(IAlgTool * tool) const {
     if (msgLevel(MSG::DEBUG))
       debug() << "Could not de-register tool " << tool->name() << endmsg;
   }
+}
+
+std::ostream& Algorithm::toControlFlowExpression(std::ostream& os) const {
+  return os << type() << "('" << name() << "')";
 }

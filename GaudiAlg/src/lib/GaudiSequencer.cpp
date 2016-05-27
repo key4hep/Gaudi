@@ -372,4 +372,25 @@ void GaudiSequencer::membershipHandler ( Property& /* p */ )
   m_timerTool->decreaseIndent();
 
 }
+
+std::ostream& GaudiSequencer::toControlFlowExpression(std::ostream& os) const {
+  if (m_invert) os << "~";
+  // if we have only one element, we do not need a name
+  if (m_entries.size() > 1)
+    os << "seq(";
+
+  const auto op = m_modeOR ? " | " : " & ";
+  const auto first = begin(m_entries);
+  const auto last = end(m_entries);
+  auto iterator = first;
+  while (iterator != last) {
+    if (iterator != first) os << op;
+    if (iterator->reverse()) os << "~";
+    iterator->algorithm()->toControlFlowExpression(os);
+    ++iterator;
+  }
+
+  if (m_entries.size() > 1) os << ")";
+  return os;
+}
 //=============================================================================

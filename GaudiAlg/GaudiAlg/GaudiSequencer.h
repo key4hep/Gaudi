@@ -62,6 +62,10 @@ protected:
   /** Decode a vector of string. */
   StatusCode decodeNames(  );
 
+public:
+  /// Produce string represention of the control flow expression.
+  std::ostream& toControlFlowExpression(std::ostream& os) const override;
+
 private:
 
   /** Private copy, copy not allowed **/
