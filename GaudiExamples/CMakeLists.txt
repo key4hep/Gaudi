@@ -23,6 +23,7 @@ set(GaudiExamples_srcs
     src/AbortEvent/*.cpp
     src/AlgSequencer/*.cpp
     src/AlgTools/*.cpp
+    src/AnyData/*.cpp
     src/DataOnDemand/*.cpp
     src/AlgErrAud/*.cpp
     src/GSLTools/*.cpp
