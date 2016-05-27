@@ -4,6 +4,7 @@ Classes for the implementation of the Control Flow Structure Syntax.
 @see: https://github.com/lhcb/scheduling-event-model/tree/master/controlflow_syntax
 '''
 
+
 class ControlFlowNode(object):
     '''
     Basic entry in the control flow graph.
@@ -177,9 +178,91 @@ class _TestVisitor(object):
 
 class _TestAlgorithm(ControlFlowLeaf):
     def __init__(self, name):
-        self.name = name
+        self._name = name
+
     def __repr__(self):
-        return self.name
+        return self._name
+
+    def name(self):
+        return self._name
+
+
+class DotVisitor(object):
+    def __init__(self):
+        self.nodes = []
+        self.edges = []
+        self.number = 0
+        self.stack = []
+
+    def enter(self, visitee):
+        self.number += 1
+        dot_id = 'T%s' % self.number
+        mother = None
+        if self.is_needed(visitee):
+            if isinstance(visitee, ControlFlowLeaf):
+                entry = '%s [label="%s", shape=box]' % (dot_id, visitee.name())
+            elif isinstance(visitee, OrNode):
+                entry = '%s [label="OR", shape=invhouse]' % dot_id
+            elif isinstance(visitee, AndNode):
+                entry = '%s [label="AND", shape=invhouse]' % dot_id
+            elif isinstance(visitee, OrderedNode):
+                entry = '%s [label=">>", shape=point]' % dot_id
+            elif isinstance(visitee, InvertNode):
+                entry = '%s [label="NOT", shape=circle, color=red]' % dot_id
+            elif isinstance(visitee, ParallelExecutionNode):
+                entry = '%s [label="PAR", shape=circle]' % dot_id
+            elif isinstance(visitee, seq):
+                entry = '%s [label="SEQ", shape=circle]' % dot_id
+            else:
+                entry = '%s [label="%s", shape=circle]' % (dot_id, type(visitee))
+            self.nodes.append(entry)
+            if len(self.stack) != 0:
+                mother = self.collapse_identical_ancestors(type(self.stack[-1][0]))
+                if not mother:
+                    mother = self.stack[-1][1]
+                edge = "%s->%s" % (dot_id, mother)
+                self.edges.append(edge)
+        self.stack.append((visitee, dot_id))
+
+    def leave(self, visitee):
+        self.stack.pop()
+
+    def collapse_identical_ancestors(self, thetype):
+        '''
+        If AND nodes are inside AND nodes, the graph could be simplified
+        to not contain those (same true for OR and ordered)
+        '''
+        counter = 0
+        if len(self.stack) != 0:
+            mother = self.stack[-1][1]
+            for entry in self.stack[::-1]:
+                if type(entry[0]) != thetype:
+                    break
+                mother = entry[1]
+            return mother
+        return None
+
+    def is_needed(self, visitee):
+        '''
+        Check whether this node is actually needed
+        '''
+        if len(self.stack) != 0:
+            return not isinstance(visitee, type(self.stack[-1][0]))
+        return True
+
+    def write(self, filename):
+        output = """
+digraph graphname{
+
+%s
+
+%s
+
+}
+""" % ("\n".join(self.nodes), "\n".join(self.edges))
+
+        with open(filename, "w") as outfile:
+            outfile.write(output)
 
 
 def test():
@@ -190,14 +273,19 @@ def test():
     c = Algorithm("c")
     d = Algorithm("d")
     e = Algorithm("e")
-    sequence = seq(b >> a)
-    expression = sequence | ~c & par(d & e)
+    f = Algorithm("f")
+    g = Algorithm("g")
+    sequence = seq(b >> a >> f)
+    expression = sequence | ~c & par(d & e & g)
     a = (expression == expression)
     aLine = line("MyTriggerPath", expression)
     visitor = _TestVisitor()
+    visitor2 = DotVisitor()
     print "\nPrinting trigger line:"
     print aLine
     print "\nPrinting expression:"
     print expression
     print "\nTraversing through expression:\n"
     expression.visitNode(visitor)
+    expression.visitNode(visitor2)
+    visitor2.write("out.dot")
