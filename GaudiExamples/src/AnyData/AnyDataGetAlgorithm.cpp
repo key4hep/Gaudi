@@ -28,7 +28,8 @@ namespace {
 template <class T>
 AnyDataGetAlgorithm<T>::AnyDataGetAlgorithm( const std::string& name,
                                           ISvcLocator* pSvcLocator)
-  : GaudiAlgorithm ( name , pSvcLocator )
+  : GaudiAlgorithm ( name , pSvcLocator ),
+    m_ids("/Event/Test/Ids", Gaudi::DataHandle::Reader, this)
 {
    declareProperty("Location", m_location);
 }
@@ -69,6 +70,12 @@ StatusCode AnyDataGetAlgorithm<T>::execute() {
             << ": " << i->getData() << endmsg;
   }
 
+  const auto ids = m_ids.get();
+  info() << "AnyDataHandler holds:";
+  for (const auto& i: *ids) {
+    info() << i  << " ";
+  }
+  info() << endmsg;
   return StatusCode::SUCCESS;
 }
 
