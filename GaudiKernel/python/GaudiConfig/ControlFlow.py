@@ -271,7 +271,8 @@ class DotVisitor(object):
 
     def write(self, filename):
         output = """
-digraph graphname{
+digraph graphname {
+rankdir=LR
 
 %s
 
