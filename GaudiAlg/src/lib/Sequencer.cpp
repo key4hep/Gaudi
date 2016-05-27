@@ -633,8 +633,10 @@ Sequencer::remove( const std::string& algname, std::vector<Algorithm*>& theAlgs 
 }
 
 std::ostream& Sequencer::toControlFlowExpression(std::ostream& os) const {
-  os << "seq(";
   auto &theAlgs = *subAlgorithms();
+  if (theAlgs.empty()) return os << "CFTrue";
+
+  os << "seq(";
   const auto algs_count = theAlgs.size();
   const auto op = isStopOverride() ? " >> " : " & ";
   size_t i = 0;

@@ -375,9 +375,11 @@ void GaudiSequencer::membershipHandler ( Property& /* p */ )
 
 std::ostream& GaudiSequencer::toControlFlowExpression(std::ostream& os) const {
   if (m_invert) os << "~";
+  // the default filterpass value for an empty sequencer depends on ModeOR
+  if (m_entries.empty()) return os << ((!m_modeOR) ? "CFTrue" : "CFFalse");
+
   // if we have only one element, we do not need a name
-  if (m_entries.size() > 1)
-    os << "seq(";
+  if (m_entries.size() > 1) os << "seq(";
 
   const auto op = m_modeOR ? " | " : " & ";
   const auto first = begin(m_entries);
