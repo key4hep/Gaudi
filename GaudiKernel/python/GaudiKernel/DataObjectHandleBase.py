@@ -27,28 +27,24 @@ class DataObjectHandleBase(object):
             self.fromArray(args)
             
     def fromString(self,s):
-        if s == "":
-            return
+        if s == "": return
         
         fields = s.split(FIELD_SEP)
         self.fromArray(fields)
         
     def fromArray(self, a):
-        if len(a) != 4:
-            return
+        if len(a) != 4: return
 
         self.Path = a[0]
         self.Mode = a[1]
         self.Optional = a[2]
-        self.AlternativePaths = a[3]
+        self.AlternativePaths = [ i for i in a[3].split(ADDR_SEP) if i ]
                 
     def __str__(self):
 
         s = self.Path + FIELD_SEP + str(int(self.Mode)) + FIELD_SEP
         s += str(int(self.Optional)) + FIELD_SEP
-
-        for a in self.AlternativePaths:
-            s += ADDR_SEP + a
+        s += ADDR_SEP.join( self.AlternativePaths )
         
         return s
                

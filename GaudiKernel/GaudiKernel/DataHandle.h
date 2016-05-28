@@ -39,7 +39,7 @@ public:
 	     IDataHandleHolder* owner=0): 
     m_key(k), m_owner(owner), m_mode(a){};
 
-  virtual ~DataHandle(){}
+  virtual ~DataHandle() = default;
 
   virtual void setOwner(IDataHandleHolder* o) { m_owner = o; }
   virtual IDataHandleHolder* owner() const { return m_owner; }
@@ -55,7 +55,7 @@ public:
   virtual void reset(bool) {};
   virtual StatusCode commit() { return StatusCode::SUCCESS; }
 
-  virtual const std::string pythonRepr() const;
+  virtual std::string pythonRepr() const;
 
 protected:
   virtual void setMode(const Mode& mode) { m_mode = mode; }
