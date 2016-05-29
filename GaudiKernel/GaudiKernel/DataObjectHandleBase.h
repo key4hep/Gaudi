@@ -25,17 +25,15 @@ class DataObjectHandleBase : public Gaudi::DataHandle {
 
 public:
 
-  DataObjectHandleBase();
+  DataObjectHandleBase() = default;
   DataObjectHandleBase(const DataObjID& k, Gaudi::DataHandle::Mode a,
-		   IDataHandleHolder* o);
+		   IDataHandleHolder* o, std::vector<std::string> alternates = {} );
   DataObjectHandleBase(const std::string& k, Gaudi::DataHandle::Mode a,
 		   IDataHandleHolder* o);
-  
-  virtual ~DataObjectHandleBase() {}
-  
-  
-  const std::string toString() const;
-  const std::string pythonRepr() const;
+
+
+  std::string toString() const;
+  std::string pythonRepr() const;
   void fromString(const std::string& s);
 
   friend std::ostream& operator<< (std::ostream& str, const DataObjectHandleBase& d);
@@ -45,31 +43,35 @@ public:
   bool isOptional() const {return m_optional;}
   void setOptional(bool optional = true) { m_optional = optional; }
 
-  const std::vector<std::string> & alternativeDataProductNames() const {
-    return m_altNames; }
-  void setAlternativeDataProductNames(const std::vector<std::string> & alternativeAddresses) { m_altNames = alternativeAddresses; }
-  
+  const std::vector<std::string> & alternativeDataProductNames() const
+  { return m_altNames; }
+  void setAlternativeDataProductNames(const std::vector<std::string> & alternativeAddresses)
+  { m_altNames = alternativeAddresses; }
+
   bool initialized() const { return m_init; }
   bool wasRead() const { return m_wasRead; }
   bool wasWritten() const { return m_wasWritten; }
 
   bool isValid() const;
-  
+
 protected:
   void setRead(bool wasRead=true) {m_wasRead = wasRead;}
   void setWritten(bool wasWritten=true) {m_wasWritten = wasWritten;}
 
   void init();
 
+  DataObject* fetch();
+
 protected:
 
   SmartIF<IDataProviderSvc> m_EDS;
   SmartIF<IMessageSvc> m_MS;
 
-  bool  m_init;
-  bool  m_goodType;
-  bool  m_optional;
-  bool  m_wasRead, m_wasWritten;
+  bool  m_init = false;
+  bool  m_goodType = false;
+  bool  m_optional = false;
+  bool  m_wasRead = false;
+  bool  m_wasWritten = false;
 
   std::vector<std::string> m_altNames;
 
@@ -79,7 +81,7 @@ protected:
 //---------------------------------------------------------------------------
 
 
-namespace Gaudi { 
+namespace Gaudi {
   namespace Parsers {
     StatusCode parse(DataObjectHandleBase&, const std::string&);
   }
@@ -87,5 +89,5 @@ namespace Gaudi {
     GAUDI_API std::ostream& toStream(const DataObjectHandleBase& v, std::ostream& o);
   }
 }
-                    
+
 #endif

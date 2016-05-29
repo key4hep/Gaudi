@@ -15,24 +15,22 @@
 
 
 
-namespace Gaudi { 
+namespace Gaudi {
   namespace Parsers {
-    
-    StatusCode 
-    parse(DataObjectHandleBase& v, const std::string& s) {
 
-      // std::cerr << "parse(DataObjectHandleBase) : " << s << std::endl;
+    StatusCode
+    parse(DataObjectHandleBase& v, const std::string& s) {
 
       StatusCode sc(StatusCode::FAILURE);
       std::string prop;
       sc = Gaudi::Parsers::parse(prop, s);
-            
+
       if (sc.isSuccess()) {
 
         typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
         boost::char_separator<char> sep("|");
         tokenizer tokens(prop, sep);
-        int nToks(distance(tokens.begin(), tokens.end()));    
+        int nToks(distance(tokens.begin(), tokens.end()));
         auto it = tokens.begin();
 
         if (nToks < 3 || nToks > 4) {
@@ -59,7 +57,7 @@ namespace Gaudi {
 
 
         bool o = bool(std::stoi(*it));
-        
+
         v.setOptional(o);
         v.setKey( DataObjID(k) );
 
@@ -72,11 +70,10 @@ namespace Gaudi {
           std::vector<std::string> av = v.alternativeDataProductNames();
           boost::char_separator<char> sep2("&");
           tokenizer tok2(alt,sep2);
-                    
+
           for (auto it2 : tok2 ) {
-            std::string aa = it2;
-            av.push_back(aa);
-            // std::cout << "          altA: " << aa << std::endl;
+            av.push_back(it2);
+            // std::cout << "          altA: " << it2 << std::endl;
           }
 
           v.setAlternativeDataProductNames(av);
@@ -90,12 +87,11 @@ namespace Gaudi {
   }
 
   namespace Utils {
-    
-    std::ostream& 
+
+    std::ostream&
     toStream(const DataObjectHandleBase& v, std::ostream& o) {
-      o << v;
       //      std::cerr << "toStream(DataObjectHandleBase) : " << v << std::endl;
-      return o;
+      return o << v;
     }
 
   }
@@ -103,20 +99,15 @@ namespace Gaudi {
 
 //---------------------------------------------------------------------------
 
-DataObjectHandleProperty::DataObjectHandleProperty( const std::string& name, 
+DataObjectHandleProperty::DataObjectHandleProperty( const std::string& name,
                                       DataObjectHandleBase& ref )
-  : Property( name, typeid( DataObjectHandleBase ) ), 
-    m_pValue( &ref ) 
+  : Property( name, typeid( DataObjectHandleBase ) ),
+    m_pValue( &ref )
 {}
 
 //---------------------------------------------------------------------------
 
-DataObjectHandleProperty::~DataObjectHandleProperty()
-{}
-
-//---------------------------------------------------------------------------
-
-StatusCode 
+StatusCode
 DataObjectHandleProperty::fromString(const std::string& s)
 {
   if (!Gaudi::Parsers::parse(*m_pValue, s).isSuccess()) {
@@ -128,9 +119,8 @@ DataObjectHandleProperty::fromString(const std::string& s)
 }
 
 
-const std::string 
+std::string
 DataObjectHandleProperty::pythonRepr() const {
-  //  std::cerr << "DataObjectHandleProperty::pythonRepr() " << std::endl;
   return "DataObjectHandleBase(\"" + toString() + "\")";
 }
 
@@ -138,7 +128,7 @@ DataObjectHandleProperty::pythonRepr() const {
 //---------------------------------------------------------------------------
 
 bool
-DataObjectHandleProperty::setValue( const DataObjectHandleBase& value ) 
+DataObjectHandleProperty::setValue( const DataObjectHandleBase& value )
 {
   m_pValue->operator=(value);
   return useUpdateHandler();
@@ -147,7 +137,7 @@ DataObjectHandleProperty::setValue( const DataObjectHandleBase& value )
 //---------------------------------------------------------------------------
 
 std::string
-DataObjectHandleProperty::toString( ) const 
+DataObjectHandleProperty::toString( ) const
 {
   useReadHandler();
   std::ostringstream o;
@@ -165,8 +155,8 @@ DataObjectHandleProperty::toStream(std::ostream& out) const
 
 //---------------------------------------------------------------------------
 
-DataObjectHandleProperty& 
-DataObjectHandleProperty::operator=( const DataObjectHandleBase& value ) 
+DataObjectHandleProperty&
+DataObjectHandleProperty::operator=( const DataObjectHandleBase& value )
 {
   setValue( value );
   return *this;
@@ -174,8 +164,8 @@ DataObjectHandleProperty::operator=( const DataObjectHandleBase& value )
 
 //---------------------------------------------------------------------------
 
-DataObjectHandleProperty* 
-DataObjectHandleProperty::clone() const 
+DataObjectHandleProperty*
+DataObjectHandleProperty::clone() const
 {
   return new DataObjectHandleProperty( *this );
 }
@@ -183,7 +173,7 @@ DataObjectHandleProperty::clone() const
 //---------------------------------------------------------------------------
 
 bool
-DataObjectHandleProperty::load( Property& destination ) const 
+DataObjectHandleProperty::load( Property& destination ) const
 {
   return destination.assign( *this );
 }
@@ -191,15 +181,15 @@ DataObjectHandleProperty::load( Property& destination ) const
 //---------------------------------------------------------------------------
 
 bool
-DataObjectHandleProperty::assign( const Property& source ) 
+DataObjectHandleProperty::assign( const Property& source )
 {
   return fromString( source.toString() ).isSuccess();
 }
 
 //---------------------------------------------------------------------------
 
-const DataObjectHandleBase& 
-DataObjectHandleProperty::value() const 
+const DataObjectHandleBase&
+DataObjectHandleProperty::value() const
 {
   useReadHandler();
   return *m_pValue;

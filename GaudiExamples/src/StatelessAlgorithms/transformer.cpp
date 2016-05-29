@@ -17,13 +17,11 @@ namespace Gaudi { namespace Examples {
                            KeyValue("OutputData",{"MyOutTracks"}) ) {
     }
 
-    MyTrackVector operator()(const MyTrackVector& in_tracks) const {
+    MyTrackVector operator()(const MyTrackVector& in_tracks) const override {
       MyTrackVector out_tracks;
       std::for_each(in_tracks.begin(), in_tracks.end(),
-                    [&out_tracks, this](const MyTrack* t) {
-                      if (t->px() >= 10.) {
-                        out_tracks.add(new MyTrack(*t));
-                      }
+                    [&out_tracks](const MyTrack* t) {
+                      if (t->px() >= 10.) out_tracks.add(new MyTrack(*t));
                     });
       return out_tracks;
     }
@@ -37,10 +35,11 @@ namespace Gaudi { namespace Examples {
   public:
     CountSelectedTracks(const std::string& name, ISvcLocator* pSvc):
       FilterAlgorithm(name, pSvc, 
-                      { KeyValue("InputData",{"MyOutTracks"}) }) {
+                      { KeyValue("InputData",{"BogusLocation&MoreBogus&MyOutTracks"}) } ) {
+
     }
 
-    StatusCode initialize() {
+    StatusCode initialize() override {
       StatusCode sc = FilterAlgorithm::initialize();
       if (!sc) return sc;
       m_tracksCount = 0;
@@ -54,7 +53,7 @@ namespace Gaudi { namespace Examples {
       return true;
     }
 
-    StatusCode finalize() {
+    StatusCode finalize() override {
       info() << "extracted " << m_tracksCount << " tracks in " << m_eventsCount << " events" << endmsg;
       return FilterAlgorithm::finalize();
     }
