@@ -673,6 +673,10 @@ protected:
   /// set instantiation index of Alg
   void setIndex(const unsigned int& idx) override;
 
+public:
+  /// Produce string represention of the control flow expression.
+  std::ostream& toControlFlowExpression(std::ostream& os) const override;
+
 private:
 
   Gaudi::StringKey m_name;       ///< Algorithm's name for identification

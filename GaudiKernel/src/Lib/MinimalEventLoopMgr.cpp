@@ -55,6 +55,7 @@ MinimalEventLoopMgr::MinimalEventLoopMgr(const std::string& nam, ISvcLocator* sv
   declareProperty("TopAlg",         m_topAlgNames );
   declareProperty("OutStream",      m_outStreamNames );
   declareProperty("OutStreamType",  m_outStreamType = "OutputStream");
+  declareProperty(m_printCFExp.name(), m_printCFExp);
   m_topAlgNames.declareUpdateHandler   ( &MinimalEventLoopMgr::topAlgHandler, this );
   m_outStreamNames.declareUpdateHandler( &MinimalEventLoopMgr::outStreamHandler, this );
 }
@@ -137,6 +138,16 @@ StatusCode MinimalEventLoopMgr::initialize()    {
     }
   }
 
+  if (m_printCFExp && !m_topAlgList.empty()) {
+    info() << "Control Flow Expression:" << endmsg;
+    std::stringstream expr;
+    auto& first = m_topAlgList.front();
+    for(auto& ialg: m_topAlgList) {
+      if (ialg != first) expr << " >> ";
+      ialg->toControlFlowExpression(expr);
+    }
+    info() << expr.str() << endmsg;
+  }
   return StatusCode::SUCCESS;
 }
 //--------------------------------------------------------------------------------------------
@@ -538,5 +549,3 @@ StatusCode MinimalEventLoopMgr::decodeOutStreams( )    {
   }
   return sc;
 }
-
-
