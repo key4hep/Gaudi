@@ -8,6 +8,7 @@
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/AlgTool.h"
 
+#include <type_traits>
 
 //---------------------------------------------------------------------------
 
@@ -119,9 +120,9 @@ T* DataObjectHandle<T>::get(bool mustExist) {
       m_goodType = (NULL != dynamic_cast<T*> (dataObjectp));
       //( typeid(tmp) == typeid(*dataObjectp) ) ;
 
-      T tmp;
-
-      const std::string dataType(typeid(tmp).name());
+      //T tmp;
+      //const std::string dataType(typeid(tmp).name());
+      const std::string dataType(typeid(T).name());
 
       if (!m_goodType){
         std::string errorMsg("The type provided for "+ objKey()

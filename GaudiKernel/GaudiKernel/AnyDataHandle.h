@@ -14,36 +14,29 @@ template<typename T>
 class AnyDataHandle : public DataObjectHandle<AnyDataWrapper<T> > {
 
 public:
-	friend class Algorithm;
-	friend class AlgTool;
+  friend class Algorithm;
+  friend class AlgTool;
 
 public:
 
-  AnyDataHandle();
+  using DataObjectHandle<AnyDataWrapper<T>>::DataObjectHandle;
 
-  /// Initialises mother class
-  AnyDataHandle(DataObjectDescriptor & descriptor,
-                   IAlgorithm* fatherAlg);
-  
-  /// Initialises mother class
-  AnyDataHandle(DataObjectDescriptor & descriptor,
-                   IAlgTool* fatherAlg);
- 
   /**
    * Retrieve object from transient data store
    */
   const T* get();
-
+  
   /**
    * Register object in transient store
    */
   void put (T* object);
-  
-};
 
-//---------------------------------------------------------------------------
-template<typename T>
-AnyDataHandle<T>::AnyDataHandle() {}
+  /**
+   * Register object in transient store
+   */
+  void put (T&& object);
+
+};
 
 //---------------------------------------------------------------------------                                           
 
@@ -56,15 +49,26 @@ AnyDataHandle<T>::AnyDataHandle() {}
  */
 template<typename T>  
 const T* AnyDataHandle<T>::get() {
-  return DataObjectHandle<AnyDataWrapper<T> >::get()->getData();
+  auto doh = DataObjectHandle<AnyDataWrapper<T>>::get();
+  return &(doh->getData());
 }
-  
+
+
 //---------------------------------------------------------------------------
 template<typename T>  
 void AnyDataHandle<T>::put (T *objectp){
-    AnyDataWrapper<T>* dw = new AnyDataWrapper<T>();  
-    dw->setData(objectp); 
-    DataObjectHandle<AnyDataWrapper<T> >::put(dw);
+  AnyDataWrapper<T>* dw = new AnyDataWrapper<T>();  
+  dw->setData(objectp); 
+  DataObjectHandle<AnyDataWrapper<T> >::put(dw);
 }
+
+template<typename T>  
+void AnyDataHandle<T>::put (T&& objectp){
+
+  AnyDataWrapper<T>* dw = new AnyDataWrapper<T>(std::move(objectp));  
+  DataObjectHandle<AnyDataWrapper<T> >::put(dw);
+
+}
+
 
 #endif

@@ -7,6 +7,7 @@
 
 // from Gaudi
 #include "GaudiAlg/GaudiAlgorithm.h"
+#include "GaudiKernel/AnyDataHandle.h"
 
 /** @class AnyDataPutAlgorithm AnyDataPutAlgorithm.h AnyData/AnyDataPutAlgorithm.h
  *
@@ -28,6 +29,7 @@ public:
 private:
 
    std::string m_loc;
-
+   AnyDataHandle<std::vector<int>> m_ids;
+   
 };
 #endif // ANYDATA_ANADATAPUTALGORITHM_H

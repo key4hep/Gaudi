@@ -26,9 +26,11 @@ namespace {
 //=============================================================================
 AnyDataPutAlgorithm::AnyDataPutAlgorithm( const std::string& name,
                                           ISvcLocator* pSvcLocator)
-: GaudiAlgorithm ( name , pSvcLocator )
+  : GaudiAlgorithm ( name , pSvcLocator ),
+    m_ids("/Event/Test/Ids", Gaudi::DataHandle::Writer, this)
 {
    declareProperty("Location", m_loc = "Test");
+ 
 }
 //=============================================================================
 // Destructor
@@ -60,6 +62,8 @@ StatusCode AnyDataPutAlgorithm::execute() {
    put(i, m_loc + "/One");
    put(j, m_loc + "/Two");
 
+   m_ids.put(vector<int>({42,84}));
+   
    return StatusCode::SUCCESS;
 }
 
