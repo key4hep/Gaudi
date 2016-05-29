@@ -48,7 +48,7 @@ private:
 namespace FilterAlgorithm_detail {
 
    template <typename...  In, typename KeyValues, std::size_t... I>
-   auto make_handles( IDataHandleHolder* o, const KeyValues& initvalue, std::index_sequence<I...> ) {
+   auto make_read_handles( IDataHandleHolder* o, const KeyValues& initvalue, std::index_sequence<I...> ) {
        return std::make_tuple( DataObjectHandle<In>(std::get<I>(initvalue).second, Gaudi::DataHandle::Reader, o) ... );
    }
 
@@ -59,7 +59,7 @@ FilterAlgorithm<bool(const In&...)>::FilterAlgorithm( const std::string& name,
                                         ISvcLocator* pSvcLocator,
                                         const KeyValues& inputs )
   : GaudiAlgorithm ( name , pSvcLocator ),
-    m_inputs( FilterAlgorithm_detail::make_handles<In...>( this, inputs, std::make_index_sequence<N>{} ) )
+    m_inputs( FilterAlgorithm_detail::make_read_handles<In...>( this, inputs, std::make_index_sequence<N>{} ) )
 {
     declare( inputs, std::make_index_sequence<N>{} );
 }

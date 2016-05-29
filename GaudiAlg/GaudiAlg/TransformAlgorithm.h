@@ -23,50 +23,60 @@ public:
     constexpr static std::size_t N = sizeof...(In);
 
     TransformAlgorithm(const std::string& name, ISvcLocator* locator,
-                       std::array<KeyValue,N> inputs,
-                       KeyValue output);
-    StatusCode execute() override final; // derived classes can NOT implement execute
+                       const std::array<KeyValue,N>& inputs,
+                       const KeyValue& output);
 
+    // derived classes can NOT implement execute
+    StatusCode execute() override final { return invoke(utility::make_index_sequence<N>{}); }
+
+    // instead they MUST implement this operator
     virtual Out operator()(const In&...) const = 0;
 
 private:
     template <std::size_t... I>
     StatusCode invoke(utility::index_sequence<I...>);
-    std::array<StringProperty,N>  m_inputs;
-    StringProperty                m_output;
+
+    template <typename KeyValues, std::size_t... I>
+    void declare_input(const KeyValues& inputs, std::index_sequence<I...>) {
+        std::initializer_list<int>{
+            (this->declareProperty( std::get<I>(inputs).first,
+                                    std::get<I>(m_inputs)      ),0)...
+        };
+    }
+
+    std::tuple<DataObjectHandle<In>...>  m_inputs;
+    DataObjectHandle<Out>                m_output;
 };
+
+namespace TransformAlgorithm_detail {
+
+   template <typename...  In, typename KeyValues, std::size_t... I>
+   auto make_read_handles( IDataHandleHolder* o, const KeyValues& initvalue, std::index_sequence<I...> ) {
+       return std::make_tuple( DataObjectHandle<In>(std::get<I>(initvalue).second, Gaudi::DataHandle::Reader, o) ... );
+   }
+
+}
 
 template <typename Out, typename... In>
 TransformAlgorithm<Out(const In&...)>::TransformAlgorithm( const std::string& name,
                                                            ISvcLocator* pSvcLocator,
-                                                           std::array<KeyValue,N> inputs,
-                                                           KeyValue output )
-  : GaudiAlgorithm ( name , pSvcLocator )
+                                                           const std::array<KeyValue,N>& inputs,
+                                                           const KeyValue& output )
+  : GaudiAlgorithm ( name , pSvcLocator ),
+    m_inputs( TransformAlgorithm_detail::make_read_handles<In...>( this, inputs, std::make_index_sequence<N>{} ) ),
+    m_output( output.second,  Gaudi::DataHandle::Writer, this )
 {
-    auto prop = std::begin(m_inputs);
-    for (const auto& arg : inputs) declareProperty( arg.first, *prop++ = arg.second );
-    declareProperty( output.first, m_output = output.second );
+    declare_input( inputs, std::make_index_sequence<N>{} );
+    declareProperty( output.first, m_output );
 }
 
 template <typename Out, typename... In>
 template <std::size_t... I>
 StatusCode
 TransformAlgorithm<Out(const In&...)>::invoke(utility::index_sequence<I...>) {
-    auto in = std::make_tuple( get<In>(m_inputs[I])... );
-    auto result = detail::as_const(*this)( detail::as_const(*std::get<I>(in))... );
-    //@TODO: add policy for setFilterPassed
-    //       a) just set to true, defer filtering to a dedicated filter algorithm
-    //       b) set to true if m_output is not empty
-    //       c) have it returned together with result
-    //       d) ask derived class, passing it the value of result.size()
-    setFilterPassed(!result.empty());
-    put( evtSvc(), new Out( std::move(result) ), m_output );
+    auto result = detail::as_const(*this)( detail::as_const(*std::get<I>(m_inputs).get())... );
+    m_output.put( new Out( std::move(result) ) );
     return StatusCode::SUCCESS;
 }
 
-template <typename Out, typename... In>
-StatusCode
-TransformAlgorithm<Out(const In&...)>::execute() {
-    return invoke(utility::make_index_sequence<N>{});
-}
 #endif
