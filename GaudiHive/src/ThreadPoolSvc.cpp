@@ -18,23 +18,15 @@ DECLARE_SERVICE_FACTORY(ThreadPoolSvc)
 
 ThreadPoolSvc::ThreadPoolSvc( const std::string& name, ISvcLocator* svcLoc ):
   base_class(name,svcLoc),
+  m_threadInitTools(this),
   m_init(false),
   m_threadPoolSize(0),
-  m_threadInitTools(this),
-  m_tbbSchedInit(0)
+  m_tbbSchedInit(nullptr),
+  m_barrier(nullptr)
 {
 
   declareProperty("ThreadInitTools", m_threadInitTools,
                   "ToolHandleArray of IThreadInitTools");
-
-}
-
-//-----------------------------------------------------------------------------
-
-ThreadPoolSvc::~ThreadPoolSvc() {
-
-  if (m_tbbSchedInit)
-    delete m_tbbSchedInit;
 
 }
 
@@ -92,6 +84,14 @@ ThreadPoolSvc::initPool(const int& poolSize) {
 
   if (msgLevel(MSG::DEBUG))
     debug() << "ThreadPoolSvc::initPool() poolSize = " << poolSize << endmsg;
+  //There is a problem in the piece of the code below.  if
+  // m_threadPoolSize is set to something negative which is < -1,
+  // algorithm below might not behave as expected. For the time being
+  // I've choosen to create the barrier with the default number of
+  // threads created by the task scheduler init assuming that a
+  // negative value will choose automatic thread creation which will
+  // create default number of threads.
+  // SK
 
   // -100 prevents the creation of the pool and the scheduler directly
   // executes the tasks.
@@ -105,8 +105,16 @@ ThreadPoolSvc::initPool(const int& poolSize) {
     int thePoolSize = m_threadPoolSize;
     if (thePoolSize != -1) thePoolSize += 1;
 
+
     // Create the TBB task scheduler
-    m_tbbSchedInit = new tbb::task_scheduler_init (thePoolSize);
+    m_tbbSchedInit = std::unique_ptr<tbb::task_scheduler_init>( new tbb::task_scheduler_init(thePoolSize) );
+    // Create the barrier for task synchronization
+    if(m_threadPoolSize<=-1)thePoolSize=m_tbbSchedInit->default_num_threads();
+    if (msgLevel(MSG::DEBUG)){
+      debug() << "creating barrier of size " << thePoolSize << endmsg;
+    }
+    m_barrier = std::unique_ptr<boost::barrier>( new boost::barrier(thePoolSize) );
+
   }
 
   // Launch the init tool tasks
@@ -130,6 +138,11 @@ ThreadPoolSvc::terminatePool() {
   tbb::spin_mutex::scoped_lock lock( m_initMutex );
   if (msgLevel(MSG::DEBUG))
     debug() << "ThreadPoolSvc::terminatePool()" << endmsg;
+
+  if (!m_init) {
+    error() << "Trying to terminate uninitialized thread pool!" << endmsg;
+    return StatusCode::FAILURE;
+  }
 
   // Launch the termination tasks
   const bool terminate = true;
@@ -171,18 +184,12 @@ ThreadPoolSvc::launchTasks(bool terminate) {
   // the tasks in TBB to execute on each thread.
   if(m_tbbSchedInit) {
 
-    // Create the barrier for task synchronization
-    if (msgLevel(MSG::DEBUG))
-      debug() << "creating barrier of size " << m_threadPoolSize + 1 << endmsg;
-    // Is it safe to use a local for this?
-    boost::barrier barrier(m_threadPoolSize + 1);
-
     // Create one task for each worker thread in the pool
     for (int i = 0; i < m_threadPoolSize; ++i) {
       if (msgLevel(MSG::DEBUG))
         debug() << "creating ThreadInitTask " << i << endmsg;
       tbb::task* t = new(tbb::task::allocate_root())
-        ThreadInitTask( m_threadInitTools, &barrier, serviceLocator(), terminate );
+        ThreadInitTask( m_threadInitTools, m_barrier.get(), serviceLocator(), terminate );
 
       // Queue the task
       tbb::task::enqueue( *t );
@@ -192,7 +199,7 @@ ThreadPoolSvc::launchTasks(bool terminate) {
     // Now wait for all the workers to reach the barrier
     if (msgLevel(MSG::DEBUG))
       debug() << "waiting at barrier for all ThreadInitTool to finish executing" << endmsg;
-    barrier.wait();
+    m_barrier->wait();
 
     // Check to make sure all Tools were invoked.
     // I'm not sure this mechanism is worthwhile.

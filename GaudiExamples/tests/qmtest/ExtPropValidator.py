@@ -45,7 +45,8 @@ def validate(stdout,stderr,result,causes):
     # Hack for win32: 'string' become 'basic_string...', so I have to
     #                 modify the keys of the dictionary
     import os
-    if "winxp" in os.environ['CMTCONFIG'].split("-"):
+    
+    if 'CMTCONFIG' in os.environ and "winxp" in os.environ['CMTCONFIG'].split("-"):
         for k in expected.keys():
             if 'string' in k:
                 expected[k.replace('string','basic_string<char,char_traits<char> >').replace('>>','> >')] = expected[k]
