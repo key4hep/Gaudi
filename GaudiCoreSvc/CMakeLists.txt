@@ -1,4 +1,4 @@
-gaudi_subdir(GaudiCoreSvc v4r1)
+gaudi_subdir(GaudiCoreSvc)
 
 gaudi_depends_on_subdirs(GaudiKernel)
 
@@ -14,6 +14,5 @@ gaudi_add_module(GaudiCoreSvc
                  src/IncidentSvc/*.cpp
                  src/JobOptionsSvc/*.cpp
                  src/MessageSvc/*.cpp
-                 LINK_LIBRARIES GaudiKernel Boost TBB rt ${PYTHON_LIBRARIES} 
+                 LINK_LIBRARIES GaudiKernel Boost TBB rt ${PYTHON_LIBRARIES}
                  INCLUDE_DIRS TBB)
-
