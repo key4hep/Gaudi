@@ -30,6 +30,9 @@ def find_deps(filename, searchpath, deps=None):
         deps = set()
 
     filename = find_file(filename, searchpath)
+    if not filename:
+        # ignore missing files (useful for generated .h files)
+        return deps
 
     # Look for all "#include" lines in the file, then consider each of the
     # included files, ignoring those already included in the recursion
