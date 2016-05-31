@@ -1,5 +1,5 @@
 package GaudiKernel
-version v31r4
+version v33r1
 author "LHCb Gaudi Team"
 
 branches GaudiKernel cmt doc src
@@ -41,8 +41,12 @@ macro genconfig_cmd           $(GAUDIKERNELROOT)/$(tag)/genconf.exe \
 
 private
 
+macro Boost_linkopts_log     " -lboost_log-$(Boost_compiler_version)-mt-$(Boost_debug)$(Boost_file_version) "
+macro Boost_linkopts_log_setup     " -lboost_log_setup-$(Boost_compiler_version)-mt-$(Boost_debug)$(Boost_file_version) "
+
 application genconf -import=Boost Util/genconf.cpp
-macro_append genconflinkopts "-ldl $(GaudiKernel_linkopts) $(Boost_linkopts) $(Boost_linkopts_filesystem) $(Boost_linkopts_regex) $(Boost_linkopts_program_options)"
+macro_append genconflinkopts "-ldl $(GaudiKernel_linkopts) $(Boost_linkopts) $(Boost_linkopts_filesystem) $(Boost_linkopts_regex) $(Boost_linkopts_program_options) $(Boost_linkopts_log) $(Boost_linkopts_log_setup)"
+macro_append genconf_pp_cppflags "-DBOOST_LOG_DYN_LINK"
 macro genconf_dependencies GaudiKernel
 
 # FIXME: (MCl) I do not understand why genconf gets the CppUnit link options,
@@ -59,6 +63,9 @@ macro_append Boost_linkopts ' $(Boost_linkopts_thread) $(Boost_linkopts_date_tim
 
 ## For DirSearchPath
 macro_append Boost_linkopts ' $(Boost_linkopts_system) $(Boost_linkopts_filesystem) '
+
+## For AttribStringParser
+macro_append Boost_linkopts ' $(Boost_linkopts_regex) '
 
 application DirSearchPath_test -group=tests ../tests/src/DirSearchPath_test.cpp
 

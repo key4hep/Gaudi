@@ -1,14 +1,15 @@
 // ============================================================================
 // Include files
 // ============================================================================
+// Local
+// ============================================================================
+#include "AlgContextSvc.h"
+// ============================================================================
 // GaudiKernel
 // ============================================================================
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/ISvcLocator.h"
-// ============================================================================
-// Local
-// ============================================================================
-#include "AlgContextSvc.h"
+#include "GaudiKernel/IIncidentSvc.h"
 // ============================================================================
 /** @file
  *  Implementation firl for class AlgContextSvc
@@ -28,11 +29,9 @@ AlgContextSvc::AlgContextSvc
 ( const std::string& name ,
   ISvcLocator*       svc  )
   : base_class ( name , svc  )
-{}
-// ============================================================================
-// Standard Destructor
-// ============================================================================
-AlgContextSvc::~AlgContextSvc() {}
+{
+  declareProperty ( "Check" , m_check , "Flag to perform more checks" );
+}
 // ============================================================================
 // standard initialization of the service
 // ============================================================================
@@ -41,6 +40,29 @@ StatusCode AlgContextSvc::initialize ()
   // Initialize the base class
   StatusCode sc = Service::initialize () ;
   if ( sc.isFailure () ) { return sc ; }
+  // Incident Service
+  if ( m_inc     )
+  {
+    m_inc -> removeListener ( this ) ;
+    m_inc.reset();
+  }
+  // perform more checks?
+  if ( m_check )
+  {
+    m_inc = Service::service ( "IncidentSvc" , true ) ;
+    if ( !m_inc )
+    {
+      error() << "Could not locate 'IncidentSvc'" << endmsg ;
+      return StatusCode::FAILURE ;                                               // RETURN
+    }
+    m_inc -> addListener ( this , IncidentType::BeginEvent ) ;
+    m_inc -> addListener ( this , IncidentType::EndEvent   ) ;
+  }
+  if ( m_algorithms.get() && !m_algorithms->empty() )
+  {
+    warning() << "Non-empty stack of algorithms #"
+              << m_algorithms->size() << endmsg ;
+  }
   return StatusCode::SUCCESS ;
 }
 // ============================================================================
@@ -48,6 +70,17 @@ StatusCode AlgContextSvc::initialize ()
 // ============================================================================
 StatusCode AlgContextSvc::finalize   ()
 {
+  if ( m_algorithms.get() && !m_algorithms->empty() )
+  {
+    warning() << "Non-empty stack of algorithms #"
+              << m_algorithms->size() << endmsg ;
+  }
+  // Incident Service
+  if ( m_inc )
+  {
+    m_inc -> removeListener ( this ) ;
+    m_inc.reset();
+  }
   // finalize the base class
   return Service::finalize () ;
 }
@@ -56,15 +89,14 @@ StatusCode AlgContextSvc::finalize   ()
 // ============================================================================
 StatusCode AlgContextSvc::setCurrentAlg  ( IAlgorithm* a )
 {
-  if ( 0 == a )
+  if ( !a )
   {
-    MsgStream log ( msgSvc() , name() ) ;
-    log << MSG::WARNING << "IAlgorithm* points to NULL" << endmsg ;
+    warning() << "IAlgorithm* points to NULL" << endmsg ;
     return StatusCode::RECOVERABLE ;                              // RETURN
   }
   // check whether thread-local algorithm list already exists
   // if not, create it
-  if ( NULL == m_algorithms.get()) {
+  if ( ! m_algorithms.get()) {
     m_algorithms.reset( new IAlgContextSvc::Algorithms() );
   }
   m_algorithms->push_back ( a ) ;
@@ -78,20 +110,18 @@ StatusCode AlgContextSvc::unSetCurrentAlg ( IAlgorithm* a )
 {
   // check whether thread-local algorithm list already exists
   // if not, create it
-  if ( NULL == m_algorithms.get()) {
+  if ( ! m_algorithms.get()) {
     m_algorithms.reset( new IAlgContextSvc::Algorithms() );
   }
 
-  if ( 0 == a )
+  if ( !a )
   {
-    MsgStream log ( msgSvc() , name() ) ;
-    log << MSG::WARNING << "IAlgorithm* points to NULL" << endmsg ;
+    warning() << "IAlgorithm* points to NULL" << endmsg ;
     return StatusCode::RECOVERABLE ;                              // RETURN
   }
     if ( m_algorithms->empty() || m_algorithms->back() != a )
    {
-     MsgStream log ( msgSvc() , name() ) ;
-    log << MSG::ERROR << "Algorithm stack is invalid" << endmsg ;
+    error() << "Algorithm stack is invalid" << endmsg ;
     return StatusCode::FAILURE ;
   }
   m_algorithms->pop_back() ;                                      // POP_BACK
@@ -108,7 +138,15 @@ IAlgorithm* AlgContextSvc::currentAlg  () const
     : nullptr;
 }
 // ============================================================================
-
+// handle incident @see IIncidentListener
+// ============================================================================
+void AlgContextSvc::handle ( const Incident& ) {
+  if ( m_algorithms.get() && !m_algorithms->empty() ) {
+    error() << "Non-empty stack of algorithms #"
+            << m_algorithms->size() << endmsg ;
+  }
+}
+// ============================================================================
 // ============================================================================
 /// The END
 // ============================================================================

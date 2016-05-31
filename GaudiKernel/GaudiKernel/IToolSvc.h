@@ -144,7 +144,7 @@ public:
   template <class T>
   StatusCode retrieveTool ( const std::string& type            ,
                             T*&                tool            ,
-                            const IInterface*  parent   = 0    ,
+                            const IInterface*  parent   = nullptr,
                             bool               createIf = true )
   {
     return retrieve( type,
@@ -201,7 +201,7 @@ public:
   StatusCode retrieveTool ( const std::string& type            ,
                             const std::string& name            ,
                             T*&                tool            ,
-                            const IInterface*  parent   = 0    ,
+                            const IInterface*  parent   = nullptr ,
                             bool               createIf = true )
   {
     return retrieve ( type,
@@ -243,14 +243,13 @@ public:
    */
   class Observer {
   public:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
     virtual void onCreate(const IAlgTool*) {}
     virtual void onRetrieve(const IAlgTool*) {}
   };
 
   virtual void registerObserver(Observer *obs) = 0;
   virtual void unRegisterObserver(Observer *obs) = 0;
-
 
 };
 

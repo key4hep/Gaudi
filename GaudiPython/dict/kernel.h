@@ -1,6 +1,3 @@
-// $Id:
-// ============================================================================
-// CVS tag $Name:  $, version $Revision: 1.37 $
 // ============================================================================
 // Python must always be the first.
 #include "Python.h"
@@ -9,7 +6,6 @@
 #include "GaudiKernel/ParticleProperty.h"
 #include "GaudiKernel/CArrayAsProperty.h"
 #include "GaudiKernel/Property.h"
-#include "GaudiKernel/PropertyCallbackFunctor.h"
 #include "GaudiKernel/Chrono.h"
 #include "GaudiKernel/ChronoEntity.h"
 #include "GaudiKernel/Stat.h"
@@ -34,7 +30,14 @@
 #endif
 
 // Force visibility of the classes
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wkeyword-macro"
+#endif
 #define class class GAUDI_API
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 #ifdef _WIN32
 #include "AIDA/IAnnotation.h"
 #endif
@@ -80,6 +83,7 @@
 #include "GaudiUtils/HistoStats.h"
 #include "GaudiUtils/HistoDump.h"
 #include "GaudiUtils/HistoStrings.h"
+#include "GaudiUtils/QuasiRandom.h"
 
 #include <iostream>
 #include <istream>

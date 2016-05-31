@@ -43,7 +43,10 @@ class IIncidentSvc;
     Author:  M.Frank
     Version: 1.0
 */
-class RndmEngine: public extends3<Service, IRndmEngine, ISerialize, IIncidentListener>
+class RndmEngine: public extends<Service,
+                                 IRndmEngine,
+                                 ISerialize,
+                                 IIncidentListener>
 {
 protected:
   /// Reference to the incident service

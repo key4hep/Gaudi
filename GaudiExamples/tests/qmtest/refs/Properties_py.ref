@@ -1,12 +1,11 @@
-# setting LC_ALL to "C"
-# --> Including file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/Properties.py'
-# --> Including file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/optsub1/dummy1.opts'
+# --> Including file '/afs/cern.ch/work/l/leggett/GaudiSrc/hive/git/DataObjID/Gaudi.3/GaudiExamples/options/Properties.py'
+# --> Including file '/afs/cern.ch/work/l/leggett/GaudiSrc/hive/git/DataObjID/Gaudi.3/GaudiExamples/options/optsub1/dummy1.opts'
 # Dummy1.Property=true;
-# --> Including file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/optsub2/dummy2.opts'
+# --> Including file '/afs/cern.ch/work/l/leggett/GaudiSrc/hive/git/DataObjID/Gaudi.3/GaudiExamples/options/optsub2/dummy2.opts'
 # Dummy2.Property=true;
-# <-- End of file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/optsub2/dummy2.opts'
-# <-- End of file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/optsub1/dummy1.opts'
-# <-- End of file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/Properties.py'
+# <-- End of file '/afs/cern.ch/work/l/leggett/GaudiSrc/hive/git/DataObjID/Gaudi.3/GaudiExamples/options/optsub2/dummy2.opts'
+# <-- End of file '/afs/cern.ch/work/l/leggett/GaudiSrc/hive/git/DataObjID/Gaudi.3/GaudiExamples/options/optsub1/dummy1.opts'
+# <-- End of file '/afs/cern.ch/work/l/leggett/GaudiSrc/hive/git/DataObjID/Gaudi.3/GaudiExamples/options/Properties.py'
 # applying configuration of GaudiExamplesCommonConf
 # /***** User GaudiExamplesCommonConf/GaudiExamplesCommonConf ****************************************
 # |-OutputLevel = 3  (default: 3)
@@ -14,11 +13,12 @@
 # \----- (End of User GaudiExamplesCommonConf/GaudiExamplesCommonConf) -------------------------------
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r3)
-                                          running on pclhcb117 on Fri Feb 27 12:15:57 2015
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r5)
+                                          running on p05614910w96644.cern.ch on Wed Oct 21 20:04:12 2015
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
+EventLoopMgr        DEBUG Property update for OutputLevel : new value = 2
 EventLoopMgr        DEBUG Service base class initialized successfully
 EventLoopMgr        DEBUG Creating Top Algorithm PropertyAlg with name PropertyAlg
 PropertyAlg          INFO Before Initialization......
@@ -112,8 +112,7 @@ PropertyAlg          INFO Dump of the property catalogue....
 PropertyAlg          INFO  Properties of AuditorSvc: Auditors
 PropertyAlg          INFO  Properties of Dummy1: Property
 PropertyAlg          INFO  Properties of Dummy2: Property
-PropertyAlg          INFO  Properties of PropertyAlg: DoubleArray, Int64Array, Bool, UInt64Array, StringArray, Inputs, PBool, Outputs, PDoubleArray, PDouble, PInt, BoolArray, Double, PStringArray, OutputLevel, Int64, PBoolArray, IntArray, String, UInt64, IntPairArray, PIntArray, Int, DoubleArrayWithUnits, DoublePairArray, PString, DoubleArrayWithoutUnits
-PropertyAlg          INFO  Properties of PropertyProxy: Inputs, Outputs
+PropertyAlg          INFO  Properties of PropertyAlg: DoubleArray, Int64Array, Bool, UInt64Array, StringArray, PBool, DoublePairArray, PDoubleArray, PDouble, PInt, BoolArray, Double, PStringArray, OutputLevel, Int64, PBoolArray, IntArray, String, UInt64, IntPairArray, PIntArray, Int, DoubleArrayWithUnits, PString, DoubleArrayWithoutUnits
 PropertyAlg          INFO =================================================
 PropertyAlg          INFO Changed property DoubleArray in catalogue
 PropertyAlg          INFO Read handler called for property:  'PDouble':10100000.
@@ -132,7 +131,7 @@ ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
 PropertyAlg          INFO executing....
 PropertyProxy        INFO executing....
-EventLoopMgr         INFO ---> Loop Finished -  WSS 269.633 | total time (skipping 1st evt) 252926 ns
+EventLoopMgr         INFO ---> Loop Finished -  WSS 51.9219 | total time (skipping 1st evt) 123471 ns
 ApplicationMgr       INFO Application Manager Stopped successfully
 PropertyAlg          INFO finalizing....
 PropertyProxy        INFO finalizing....

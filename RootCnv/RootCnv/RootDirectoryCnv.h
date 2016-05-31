@@ -1,4 +1,3 @@
-// $Id: RootDirectoryCnv.h,v 1.2 2010-08-24 23:30:32 frankb Exp $
 //------------------------------------------------------------------------------
 // Definition of class :  RootDirectoryCnv
 //--------------------------------------------------------------------
@@ -41,7 +40,7 @@ namespace Gaudi {
     RootDirectoryCnv(long typ, const CLID& clid, ISvcLocator* svc, RootCnvSvc* mgr);
 
     /// Standard Destructor
-    virtual ~RootDirectoryCnv()   {  }
+    virtual ~RootDirectoryCnv() = default;
 
     /** Converter overrides: Create transient object from persistent data
      *

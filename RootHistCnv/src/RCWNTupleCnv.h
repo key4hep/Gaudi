@@ -1,4 +1,3 @@
-// $Id: RCWNTupleCnv.h,v 1.7 2006/11/30 15:04:07 mato Exp $
 #ifndef ROOTHISTCNV_RCWNTCNV_H
 #define ROOTHISTCNV_RCWNTCNV_H 1
 

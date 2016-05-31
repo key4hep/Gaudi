@@ -1,6 +1,3 @@
-// $Id: IChronoStatSvc.h,v 1.10 2007/08/06 08:39:39 marcocle Exp $
-// ============================================================================
-// CVS tag $Name:  $, version $Revision: 1.10 $#i
 // ============================================================================
 #ifndef     GAUDIKERNEL_ICHRONOSTATSVC_H
 #define     GAUDIKERNEL_ICHRONOSTATSVC_H
@@ -33,16 +30,16 @@
  *  @date December 1, 1999
  *  @date 2007-07-08
  */
-class GAUDI_API IChronoStatSvc: virtual public extend_interfaces3<IService,
-                                                                  IChronoSvc,
-                                                                  IStatSvc>
+class GAUDI_API IChronoStatSvc: virtual public extend_interfaces<IService,
+                                                                 IChronoSvc,
+                                                                 IStatSvc>
 {
 public:
   /// InterfaceID
-  DeclareInterfaceIDMultiBase(IChronoStatSvc,6,0);
+  DeclareInterfaceID(IChronoStatSvc,6,0);
 protected:
   // protected and virtual destructor
-  virtual ~IChronoStatSvc(); ///< virtual desctructor
+  virtual ~IChronoStatSvc() = default; ///< virtual desctructor
 };
 // ============================================================================
 // The END

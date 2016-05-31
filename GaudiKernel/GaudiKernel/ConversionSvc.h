@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/ConversionSvc.h,v 1.15 2007/06/01 17:24:21 marcocle Exp $
 #ifndef GAUDIKERNEL_CONVERSIONSVC_H
 #define GAUDIKERNEL_CONVERSIONSVC_H 1
 
@@ -44,10 +43,12 @@
     @author Markus Frank
     @version 1.0
 */
-class GAUDI_API ConversionSvc: public extends2<Service, IConversionSvc, IAddressCreator>
+class GAUDI_API ConversionSvc: public extends<Service,
+                                              IConversionSvc,
+                                              IAddressCreator>
 {
 public:
-  class WorkerEntry {
+  class WorkerEntry final {
   private:
     CLID        m_class;
     IConverter* m_converter;
@@ -63,8 +64,6 @@ public:
       m_converter = copy.m_converter;
       return *this;
     }
-    virtual ~WorkerEntry()  {
-    }
     IConverter*     converter()  {
       return m_converter;
     }
@@ -72,18 +71,15 @@ public:
       return m_class;
     }
   };
-  typedef std::vector<WorkerEntry> Workers;
 
   class CnvTest : public std::unary_function<WorkerEntry, bool>   {
-  protected:
+  private:
     const CLID m_test;
   public:
     CnvTest(const CLID& test) : m_test(test)    {
     }
-    virtual ~CnvTest()    {
-    }
-    bool operator()( const WorkerEntry& testee )  {
-        return (m_test == testee.clID()) ? true : false;
+    bool operator()( const WorkerEntry& testee ) const {
+        return m_test == testee.clID();
     }
   };
 
@@ -234,7 +230,7 @@ protected:
   /// Conversion service type
   long                m_type;
   /// List of conversion workers
-  Workers*            m_workers;
+  std::vector<WorkerEntry> m_workers;
 
 private:
   /// Fake copy constructor (never implemented).

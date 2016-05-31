@@ -1,6 +1,5 @@
-# setting LC_ALL to "C"
-# --> Including file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/EvtColsEx/Prepare.py'
-# <-- End of file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/EvtColsEx/Prepare.py'
+# --> Including file '/afs/cern.ch/work/l/leggett/GaudiSrc/hive/git/DataObjID/Gaudi.3/GaudiExamples/options/EvtColsEx/Prepare.py'
+# <-- End of file '/afs/cern.ch/work/l/leggett/GaudiSrc/hive/git/DataObjID/Gaudi.3/GaudiExamples/options/EvtColsEx/Prepare.py'
 # applying configuration of GaudiPersistency
 # /***** User GaudiPersistency/GaudiPersistency ******************************************************
 # |-<no properties>
@@ -16,14 +15,12 @@
  'EventPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']},
  'FileCatalog': {'Catalogs': ['xmlcatalog_file:EvtColsEx.xml']},
  'FileRecordPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']},
- 'RootDst': {'Inputs': DataObjectDescriptorCollection(),
-             'ItemList': ['/Event#1'],
-             'Output': "DATAFILE='PFN:EvtColsEx.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'",
-             'Outputs': DataObjectDescriptorCollection()}}
+ 'RootDst': {'ItemList': ['/Event#1'],
+             'Output': "DATAFILE='PFN:EvtColsEx.dst'  SVC='Gaudi::RootCnvSvc' OPT='RECREATE'"}}
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r3)
-                                          running on pclhcb117 on Fri Feb 27 12:12:59 2015
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r5)
+                                          running on p05614910w96644.cern.ch on Wed Oct 21 20:00:37 2015
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 EventPersistenc...   INFO Added successfully Conversion service:RootCnvSvc
@@ -33,10 +30,12 @@ EventLoopMgr      WARNING No events will be processed from external input.
 HistogramPersis...WARNING Histograms saving not required.
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
-EventLoopMgr         INFO ---> Loop Finished -  WSS 267.305 | total time (skipping 1st evt) 9571160321 ns
+IODataManager        INFO Referring to dataset EvtColsEx.dst by its file ID:B85E1EA3-1D78-E511-A7D1-001E67ABF0AC
+EventLoopMgr         INFO ---> Loop Finished -  WSS 160.008 | total time (skipping 1st evt) 6477226976 ns
 ApplicationMgr       INFO Application Manager Stopped successfully
 RootDst              INFO Events output: 50000
 EventLoopMgr         INFO Histograms converted successfully according to request.
-RootCnvSvc           INFO Disconnected data IO:5C68B3C0-DCBD-E411-8368-082E5F2B1B1D [EvtColsEx.dst]
+RootCnvSvc           INFO Disconnected data IO:B85E1EA3-1D78-E511-A7D1-001E67ABF0AC [EvtColsEx.dst]
+XMLCatalog           INFO File 'EvtColsEx.xml' does not exist. New file created.
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully

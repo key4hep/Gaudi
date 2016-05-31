@@ -9,10 +9,15 @@
 #include "GaudiKernel/HistogramBase.h"
 #include "AIDA/IHistogram3D.h"
 #include <stdexcept>
+#include <memory>
 
-/*
- *    Gaudi namespace
- */
+#ifdef __clang__
+#pragma clang diagnostic push
+// Hide warning message:
+// warning: 'XYZ' overrides a member function but is not marked 'override'
+#pragma clang diagnostic ignored "-Winconsistent-missing-override"
+#endif
+
 namespace Gaudi {
 
   /** @class Generic3D Generic3D.h GaudiPI/Generic3D.h
@@ -30,65 +35,69 @@ namespace Gaudi {
   public:
     typedef Generic3D<INTERFACE,IMPLEMENTATION> Base;
     /// Default constructor
-    Generic3D() : m_rep(0)  {}
+    Generic3D() = default;
+  protected:
+    /// constructor
+    Generic3D(IMPLEMENTATION* p) : m_rep(p) { }
+  public:
     /// Destructor.
-    virtual ~Generic3D()    { delete m_rep; }
+    ~Generic3D() override = default;
     /// ROOT object implementation
-    TObject* representation() const                      { return m_rep;                       }
+    TObject* representation() const override             { return m_rep.get();                       }
     /// Adopt ROOT histogram representation
-    virtual void adoptRepresentation(TObject* rep);
+    void adoptRepresentation(TObject* rep) override;
 
     /// Get the Histogram's dimension.
-    virtual int  dimension() const  { return 3; }
+    int  dimension() const  override { return 3; }
     /// Get the title of the object
-    virtual std::string title() const                    {  return m_annotation.value("Title");}
+    std::string title() const override { return m_annotation.value("Title");}
     /// Set the title of the object
-    virtual bool setTitle(const std::string & title);
+    bool setTitle(const std::string & title) override;
     /// object name
-    virtual std::string name() const                     { return m_annotation.value("Name"); }
+    std::string name() const { return m_annotation.value("Name"); }
     /// Sets the name of the object
     bool setName( const std::string& newName);
     /// Access annotation object
-    virtual AIDA::IAnnotation & annotation()             { return m_annotation;               }
+    AIDA::IAnnotation & annotation()  override { return m_annotation;               }
     /// Access annotation object (cons)
-    virtual const AIDA::IAnnotation & annotation() const { return m_annotation;               }
+    const AIDA::IAnnotation & annotation() const  override {  return m_annotation;               }
 
     /// Get the number or all the entries
-    virtual int entries() const;
+    int entries() const override;
     /// Get the number or all the entries, both in range and underflow/overflow bins of the IProfile.
-    virtual int allEntries() const;
+    int allEntries() const override;
     /// Get the sum of in range bin heights in the IProfile.
-    virtual double sumBinHeights() const;
+    double sumBinHeights() const override;
     /// Get the sum of all the bins heights (including underflow and overflow bin).
-    virtual double sumAllBinHeights() const;
+    double sumAllBinHeights() const override;
     /// Get the sum of the underflow and overflow bin height.
-    virtual double  sumExtraBinHeights (  ) const  { return  sumAllBinHeights()-sumBinHeights(); }
+    double  sumExtraBinHeights (  ) const override { return  sumAllBinHeights()-sumBinHeights(); }
     /// Get the minimum height of the in-range bins.
-    virtual double minBinHeight() const;
+    double minBinHeight() const override;
     /// Get the maximum height of the in-range bins.
-    virtual double maxBinHeight() const;
+    double maxBinHeight() const override;
 
     int rIndexX(int index) const { return m_xAxis.rIndex(index);}
     int rIndexY(int index) const { return m_yAxis.rIndex(index);}
     int rIndexZ(int index) const { return m_zAxis.rIndex(index);}
 
     /// The weighted mean along the x axis of a given bin.
-    double binMeanX(int indexX,int ,int ) const
-    { return (m_rep->GetXaxis())->GetBinCenter( rIndexX(indexX) ); }
+    double binMeanX(int indexX,int ,int ) const override
+    { return m_rep->GetXaxis()->GetBinCenter( rIndexX(indexX) ); }
     /// The weighted mean along the y axis of a given bin.
-    double binMeanY(int,int indexY,int  ) const
-    { return (m_rep->GetYaxis())->GetBinCenter( rIndexY(indexY) ); }
+    double binMeanY(int,int indexY,int  ) const override
+    { return m_rep->GetYaxis()->GetBinCenter( rIndexY(indexY) ); }
     /// The weighted mean along the z axis of a given bin.
-    double binMeanZ(int ,int ,int indexZ) const
-    { return (m_rep->GetYaxis())->GetBinCenter( rIndexY(indexZ) ); }
+    double binMeanZ(int ,int ,int indexZ) const override
+    { return m_rep->GetYaxis()->GetBinCenter( rIndexY(indexZ) ); }
     /// Number of entries in the corresponding bin (ie the number of times fill was calle d for this bin).
-    int binEntries(int indexX,int indexY,int indexZ) const    {
+    int binEntries(int indexX,int indexY,int indexZ) const override {
       if (binHeight(indexX, indexY, indexZ)<=0) return 0;
       double xx =  binHeight(indexX, indexY, indexZ)/binError(indexX, indexY, indexZ);
       return int(xx*xx+0.5);
     }
     /// Sum of all the entries of the bins along a given x bin.
-    virtual int binEntriesX(int index) const    {
+    int binEntriesX(int index) const override {
       int n = 0;
       for (int i = -2; i < yAxis().bins(); ++i)
         for (int j = -2; j < zAxis().bins(); ++j)
@@ -97,7 +106,7 @@ namespace Gaudi {
 
     }
     /// Sum of all the entries of the bins along a given y bin.
-    virtual int binEntriesY(int index) const    {
+    int binEntriesY(int index) const override {
       int n = 0;
       for (int i = -2; i < xAxis().bins(); ++i)
         for (int j = -2; j < zAxis().bins(); ++j)
@@ -106,7 +115,7 @@ namespace Gaudi {
     }
 
     /// Sum of all the entries of the bins along a given z bin.
-    virtual int binEntriesZ(int index) const    {
+    int binEntriesZ(int index) const override {
       int n = 0;
       for (int i = -2; i < xAxis().bins(); ++i)
         for (int j = -2; j < yAxis().bins(); ++j)
@@ -119,7 +128,7 @@ namespace Gaudi {
     { return m_rep->GetBinContent ( rIndexX(indexX), rIndexY(indexY), rIndexZ(indexZ) ); }
 
     /// Sum of all the heights of the bins along a given x bin.
-    virtual double binHeightX(int index) const    {
+    double binHeightX(int index) const override {
       double s = 0;
       for (int i = -2; i < yAxis().bins(); ++i)
         for (int j = -2; j < zAxis().bins(); ++j)
@@ -127,7 +136,7 @@ namespace Gaudi {
       return s;
     }
     /// Sum of all the heights of the bins along a given y bin.
-    virtual double binHeightY(int index) const    {
+    double binHeightY(int index) const override {
       double s = 0;
       for (int i = -2; i < xAxis().bins(); ++i)
         for (int j = -2; j < zAxis().bins(); ++j)
@@ -135,7 +144,7 @@ namespace Gaudi {
       return s;
     }
     /// Sum of all the heights of the bins along a given z bin.
-    virtual double binHeightZ(int index) const    {
+    double binHeightZ(int index) const override {
       double s = 0;
       for (int i = -2; i < xAxis().bins(); ++i)
         for (int j = -2; j < yAxis().bins(); ++j)
@@ -143,50 +152,48 @@ namespace Gaudi {
       return s;
     }
     /// The error of a given bin.
-    virtual double  binError ( int indexX,int indexY,int indexZ ) const
+    double  binError ( int indexX,int indexY,int indexZ ) const override
     { return m_rep->GetBinError ( rIndexX(indexX), rIndexY(indexY ), rIndexZ(indexZ ) ); }
     /// The mean of the IHistogram3D along the x axis.
-    virtual double  meanX (  ) const  { return m_rep->GetMean ( 1); }
+    double  meanX (  ) const override { return m_rep->GetMean ( 1); }
 
     /// The mean of the IHistogram3D along the y axis.
-    virtual double  meanY (  ) const  { return m_rep->GetMean ( 2 ); }
+    double  meanY (  ) const override { return m_rep->GetMean ( 2 ); }
     /// The mean of the IHistogram3D along the z axis.
-    virtual double  meanZ (  ) const  { return m_rep->GetMean ( 3 ); }
+    double  meanZ (  ) const override { return m_rep->GetMean ( 3 ); }
     /// The RMS of the IHistogram3D along the x axis.
-    virtual double  rmsX (  ) const  { return m_rep->GetRMS( 1 ); }
+    double  rmsX (  ) const override { return m_rep->GetRMS( 1 ); }
     /// The RMS of the IHistogram3D along the y axis.
-    virtual double  rmsY (  ) const  { return m_rep->GetRMS( 2 ); }
+    double  rmsY (  ) const override { return m_rep->GetRMS( 2 ); }
     /// The RMS of the IHistogram3D along the z axis.
-    virtual double  rmsZ (  ) const  { return m_rep->GetRMS( 3 ); }
+    double  rmsZ (  ) const override { return m_rep->GetRMS( 3 ); }
     /// Get the x axis of the IHistogram3D.
-    virtual const AIDA::IAxis & xAxis (  ) const  { return m_xAxis; }
+    const AIDA::IAxis & xAxis (  ) const override { return m_xAxis; }
     /// Get the y axis of the IHistogram3D.
-    virtual const AIDA::IAxis & yAxis (  ) const  { return m_yAxis; }
+    const AIDA::IAxis & yAxis (  ) const override { return m_yAxis; }
     /// Get the z axis of the IHistogram3D.
-    virtual const AIDA::IAxis & zAxis (  ) const  { return m_zAxis; }
+    const AIDA::IAxis & zAxis (  ) const override { return m_zAxis; }
     /// Get the bin number corresponding to a given coordinate along the x axis.
-    virtual int  coordToIndexX ( double coord ) const { return xAxis().coordToIndex(coord);}
+    int  coordToIndexX ( double coord ) const override { return xAxis().coordToIndex(coord);}
     /// Get the bin number corresponding to a given coordinate along the y axis.
-    virtual int  coordToIndexY ( double coord ) const { return yAxis().coordToIndex(coord);}
+    int  coordToIndexY ( double coord ) const override { return yAxis().coordToIndex(coord);}
     /// Get the bin number corresponding to a given coordinate along the z axis.
-    virtual int  coordToIndexZ ( double coord ) const { return zAxis().coordToIndex(coord);}
+    int  coordToIndexZ ( double coord ) const override { return zAxis().coordToIndex(coord);}
 
     /// Number of equivalent entries, i.e. <tt>SUM[ weight ] ^ 2 / SUM[ weight^2 ]</tt>
-    virtual double equivalentBinEntries (  ) const;
+    double equivalentBinEntries (  ) const override;
     /// Scale the weights and the errors of all the IHistogram's bins (in-range and out-of-range ones) by a given scale factor.
-    virtual bool scale( double scaleFactor );
+    bool scale( double scaleFactor ) override;
     /// Add to this Histogram3D the contents of another IHistogram3D.
-    virtual bool  add ( const INTERFACE & hist ) {
+    bool  add ( const INTERFACE & hist ) override {
       const Base* p = dynamic_cast<const Base*>(&hist);
-      if ( p )  {
-        m_rep->Add(p->m_rep);
-        return true;
-      }
-      throw std::runtime_error("Cannot add profile histograms of different implementations.");
+      if ( !p )  throw std::runtime_error("Cannot add profile histograms of different implementations.");
+      m_rep->Add(p->m_rep.get());
+      return true;
     }
 
     // overwrite extraentries
-    int extraEntries() const {
+    int extraEntries() const override {
       return
         binEntries(AIDA::IAxis::UNDERFLOW_BIN,AIDA::IAxis::UNDERFLOW_BIN,AIDA::IAxis::UNDERFLOW_BIN) +
         binEntries(AIDA::IAxis::UNDERFLOW_BIN,AIDA::IAxis::UNDERFLOW_BIN,AIDA::IAxis::OVERFLOW_BIN)  +
@@ -197,11 +204,11 @@ namespace Gaudi {
         binEntries(AIDA::IAxis::OVERFLOW_BIN, AIDA::IAxis::OVERFLOW_BIN,AIDA::IAxis::OVERFLOW_BIN);
     }
     /// Print (ASCII) the histogram into the output stream
-    virtual std::ostream& print( std::ostream& s ) const;
+    std::ostream& print( std::ostream& s ) const override;
     /// Write (ASCII) the histogram table into the output stream
-    virtual std::ostream& write( std::ostream& s ) const;
+    std::ostream& write( std::ostream& s ) const override;
     /// Write (ASCII) the histogram table into a file
-    virtual int write( const char* file_name ) const;
+    int write( const char* file_name ) const override;
 
   protected:
     Gaudi::Axis              m_xAxis;
@@ -210,11 +217,11 @@ namespace Gaudi {
     /// Object annotations
     mutable AIDA::Annotation m_annotation;
     /// Reference to underlying implementation
-    IMPLEMENTATION*          m_rep;
+    std::unique_ptr<IMPLEMENTATION>          m_rep;
     // class type
     std::string              m_classType;
     // cache sumEntries (allEntries)   when setting contents since Root can't compute by himself
-    int                      m_sumEntries;
+    int                      m_sumEntries = 0;
   }; // end class IHistogram3D
 
   template <class INTERFACE, class IMPLEMENTATION>
@@ -235,7 +242,7 @@ namespace Gaudi {
   }
   template <class INTERFACE, class IMPLEMENTATION>
   int Generic3D<INTERFACE,IMPLEMENTATION>::entries() const                       {
-    return (int)m_rep->GetEntries();
+    return m_rep->GetEntries();
   }
 
   template <class INTERFACE, class IMPLEMENTATION>
@@ -313,5 +320,10 @@ namespace Gaudi {
     f->Close();
     return nbytes;
   }
-} // end namespace AIDA
+}
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+
 #endif // GAUDIPI_GENERIC3D_H

@@ -2,6 +2,83 @@ Package : ParticleProp
 Package manager : Charles Leggett
 Commit Id: $Format:%H$
 
+============================== PartPropSvc v7r1 ==============================
+
+! 2016-03-10 - commit 4a18175
+
+ - removed uses of templates implements[1-4], extends[1-4] and
+   extend_interfaces[1-4]
+
+   Since merge request !22 they are unnecessary.
+    See merge request !133
+
+! 2016-02-11 - commit b0618f7
+
+ - Improve CommonMessaging
+
+   Implementation of GAUDI-1146: Improve CommonMessaging and use it in more
+   places.
+
+   See merge request !76
+
+   Conflicts:
+   GaudiExamples/tests/qmtest/refs/AlgTools2.ref
+   GaudiExamples/tests/qmtest/refs/MultiInput/Read.ref
+   GaudiExamples/tests/qmtest/refs/conditional_output/write.ref
+   GaudiKernel/GaudiKernel/AlgTool.h
+   GaudiKernel/GaudiKernel/Algorithm.h
+   GaudiKernel/GaudiKernel/Service.h
+   GaudiKernel/src/Lib/AlgTool.cpp
+   GaudiKernel/src/Lib/Algorithm.cpp
+
+============================== PartPropSvc v7r0 ==============================
+
+! 2015-10-27 - commit e585b09
+
+ - PartPropSvc: patch for bad parsing of input files: GAUDI-1119
+
+   In the PartPropSvc, after upgrade to boost::regex, parsing of input files
+   fails silently if no "=" is present in the token (ie file type is not
+   specified), and the file loaded will be the default table instead of the user
+   supplied one.
+
+   eg: InputFile = "myPDGTABLE.MeV" will result in "PDGTABLE.MeV" being loaded
+   instead, with no message that this has taken place.
+
+   Fixes GAUDI-1119.
+
+   See merge request !59
+
+
+! 2015-10-26 - commit de80db5
+
+ - More modernization changes
+
+   Fix (almost) all warnings from clang 3.7, and use clang-modernize to further
+   modernize the code.
+
+   Fixes GAUDI-1118.
+
+   See merge request !49
+
+============================== PartPropSvc v6r4 ==============================
+
+! 2015-09-11 - commit c062cbe
+
+ - C++11 modernization changes
+
+   Some trivial - and some not so trivial! - changes which take advantage of
+   C++11...
+
+   See merge request !7
+
+============================== PartPropSvc v6r3 ==============================
+! 2015-05-21 - Marco Clemencic
+ - Fixed compilation with CMT.
+
+! 2015-04-15 - Marco Clemencic
+ - GAUDI-1024: Replaced Tokenizer with regular expression.
+
 ============================== PartPropSvc v6r2 ==============================
 ! 2014-10-07 - Charles Leggett
  - added missing neutrinos and gluon to PDGTABLE.MeV and PDGTABLE.2014.MeV

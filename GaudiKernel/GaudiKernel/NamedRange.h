@@ -1,5 +1,3 @@
-// $Id: NamedRange.h,v 1.1 2008/10/10 08:06:32 marcocle Exp $
-// ============================================================================
 #ifndef GAUDI_NAMEDRANGE_H
 #define GAUDI_NAMEDRANGE_H 1
 // ============================================================================
@@ -54,7 +52,7 @@ namespace Gaudi
   public:
     // ========================================================================
     /// default constructor
-    NamedRange_() : Base() , m_name() {};
+    NamedRange_()  = default;
     /** Constructor
      *  @param ibegin  iterator to begin of the sequence
      *  @param iend    iterator to end   of the sequence
@@ -62,38 +60,38 @@ namespace Gaudi
      */
     NamedRange_( typename Base::iterator ibegin    ,
                  typename Base::iterator iend      ,
-                 const std::string&      name = "" )
-      : Base   ( ibegin , iend ) , m_name ( name ) {} ;
+                 std::string      name = "" )
+      : Base   ( ibegin , iend ) , m_name ( std::move(name) ) {} ;
     /** constructor from the base class
      *  @param base base objects
      *  @param name name of the range
      */
     NamedRange_( const Base&        base      ,
-                 const std::string& name = "" )
-      : Base   ( base ) , m_name ( name ) {};
+                 std::string name = "" )
+      : Base   ( base ) , m_name ( std::move(name) ) {};
     /** constructor from the base class
      *  @param base base objects
      *  @param name name of the range
      */
     NamedRange_( const typename Base::_Base& base      ,
-                 const std::string&          name = "" )
-      : Base   ( base ) , m_name ( name ) {};
+                 std::string          name = "" )
+      : Base   ( base ) , m_name ( std::move(name) ) {};
     /** constructor from the base class
      *  @param base base objects
      *  @param name name of the range
      */
     NamedRange_( const typename Base::Container& base      ,
-                 const std::string&              name = "" )
-      : Base   ( base ) , m_name ( name ) {};
+                 std::string              name = "" )
+      : Base   ( base ) , m_name ( std::move(name) ) {};
     /* constructor of empty range/sequence
      * @param ibegin  iterator to begin of empty sequence
      *  @param name name of the range
      */
     NamedRange_( typename Base::iterator ibegin      ,
-                 const std::string&      name   = "" )
-      : Base   ( ibegin , ibegin ) , m_name ( name ) {};
+                 std::string      name   = "" )
+      : Base   ( ibegin , ibegin ) , m_name ( std::move(name) ) {};
     /// destructor
-    ~NamedRange_(){};
+    ~NamedRange_() = default;
     // ========================================================================
   public:
     // ========================================================================
@@ -119,8 +117,7 @@ namespace Gaudi
    *  @code
    *
    *    const CONTAINER& cnt = ... ;
-   *
-   *    NamedRange_<CONTAINER> r = range ( cnt , "some name") ;
+   *    auto r = range ( cnt , "some name") ;
    *
    *  @endcode
    *
@@ -131,8 +128,8 @@ namespace Gaudi
   inline
   NamedRange_<CONTAINER>
   range ( const CONTAINER&   cnt  ,
-          const std::string& name )
-  { return NamedRange_<CONTAINER>( cnt.begin() , cnt.end() , name ) ; }
+          std::string name )
+  { return NamedRange_<CONTAINER>( cnt.begin() , cnt.end() , std::move(name) ) ; }
   // ==========================================================================
 } // end of namespace Gaudi
 // ============================================================================

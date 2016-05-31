@@ -1,5 +1,4 @@
 // Framework include files
-#include "GaudiKernel/Tokenizer.h"
 #include "GaudiKernel/IRegistry.h"
 #include "GaudiKernel/IAlgManager.h"
 #include "GaudiKernel/ISvcLocator.h"
@@ -15,6 +14,8 @@
 #include "GaudiKernel/strcasecmp.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/DataStoreItem.h"
+#include "GaudiKernel/AttribStringParser.h"
+
 #include "OutputStream.h"
 #include "OutputStreamAgent.h"
 
@@ -23,24 +24,19 @@
 // Define the algorithm factory for the standard output data writer
 DECLARE_COMPONENT(OutputStream)
 
-#define ON_DEBUG if (log.level() <= MSG::DEBUG)
+#define ON_DEBUG if (msgLevel(MSG::DEBUG))
 
 // Standard Constructor
 OutputStream::OutputStream(const std::string& name, ISvcLocator* pSvcLocator)
-: Algorithm(name, pSvcLocator)
+: Algorithm(name, pSvcLocator),
+  m_agent          { new OutputStreamAgent(this) }
 {
   m_doPreLoad      = true;
   m_doPreLoadOpt   = false;
   m_verifyItems    = true;
-  m_output         = "";
-  m_outputName     = "";
   m_outputType     = "UPDATE";
   m_storeName      = "EventDataSvc";
   m_persName       = "EventPersistencySvc";
-  m_agent          = new OutputStreamAgent(this);
-  m_acceptAlgs     = new std::vector<Algorithm*>();
-  m_requireAlgs    = new std::vector<Algorithm*>();
-  m_vetoAlgs       = new std::vector<Algorithm*>();
   ///in the baseclass, always fire the incidents by default
   ///in e.g. RecordStream this will be set to false, and configurable
   m_fireIncidents  = true;
@@ -69,42 +65,34 @@ OutputStream::OutputStream(const std::string& name, ISvcLocator* pSvcLocator)
 
 }
 
-// Standard Destructor
-OutputStream::~OutputStream()   {
-  delete m_agent;
-  delete m_acceptAlgs;
-  delete m_requireAlgs;
-  delete m_vetoAlgs;
-}
 
 // initialize data writer
 StatusCode OutputStream::initialize() {
-  MsgStream log(msgSvc(), name());
 
   // Reset the number of events written
   m_events = 0;
   // Get access to the DataManagerSvc
   m_pDataManager = serviceLocator()->service(m_storeName);
-  if( !m_pDataManager.isValid() )   {
-    log << MSG::FATAL << "Unable to locate IDataManagerSvc interface" << endmsg;
+  if( !m_pDataManager )   {
+    fatal() << "Unable to locate IDataManagerSvc interface" << endmsg;
     return StatusCode::FAILURE;
   }
   // Get access to the IncidentService
   m_incidentSvc = serviceLocator()->service("IncidentSvc");
-  if( !m_incidentSvc.isValid() )  {
-    log << MSG::WARNING << "Error retrieving IncidentSvc." << endmsg;
+  if( !m_incidentSvc )  {
+    warning() << "Error retrieving IncidentSvc." << endmsg;
     return StatusCode::FAILURE;
   }
   // Get access to the assigned data service
   m_pDataProvider = serviceLocator()->service(m_storeName);
-  if( !m_pDataProvider.isValid() )   {
-    log << MSG::FATAL << "Unable to locate IDataProviderSvc interface of " << m_storeName << endmsg;
+  if( !m_pDataProvider )   {
+    fatal() << "Unable to locate IDataProviderSvc interface of " << m_storeName << endmsg;
     return StatusCode::FAILURE;
   }
   if ( hasInput() )  {
     StatusCode status = connectConversionSvc();
     if( !status.isSuccess() )   {
-      log << MSG::FATAL << "Unable to connect to conversion service." << endmsg;
+      fatal() << "Unable to connect to conversion service." << endmsg;
       if(m_outputName!="" && m_fireIncidents) m_incidentSvc->fireIncident(Incident(m_outputName,
                                                                                    IncidentType::FailOutputFile));
       return status;
@@ -117,57 +105,40 @@ StatusCode OutputStream::initialize() {
   clearItems(m_itemList);
 
   // Take the new item list from the properties.
-  ON_DEBUG log << MSG::DEBUG << "ItemList    : " << m_itemNames << endmsg;
-  for( ItemNames::const_iterator i = m_itemNames.begin();
-       i != m_itemNames.end(); ++i )
-  {
-    addItem( m_itemList, *i );
-  }
+  ON_DEBUG debug() << "ItemList    : " << m_itemNames << endmsg;
+  for( const auto& i : m_itemNames ) addItem( m_itemList, i );
 
   // Take the new item list from the properties.
-  ON_DEBUG log << MSG::DEBUG << "OptItemList : " << m_optItemNames << endmsg;
-  for( ItemNames::const_iterator i = m_optItemNames.begin();
-       i != m_optItemNames.end(); ++i )
-  {
-    addItem( m_optItemList, *i );
-  }
+  ON_DEBUG debug() << "OptItemList : " << m_optItemNames << endmsg;
+  for( const auto& i : m_optItemNames ) addItem( m_optItemList, i );
 
   // prepare the algorithm selected dependent locations
-  ON_DEBUG log << MSG::DEBUG << "AlgDependentItemList : " << m_algDependentItemList << endmsg;
-  for ( AlgDependentItemNames::const_iterator a = m_algDependentItemList.begin();
-        a != m_algDependentItemList.end(); ++a )
+  ON_DEBUG debug() << "AlgDependentItemList : " << m_algDependentItemList << endmsg;
+  for ( const auto& a : m_algDependentItemList )
   {
     // Get the algorithm pointer
-    Algorithm * theAlgorithm = decodeAlgorithm( a->first );
+    Algorithm * theAlgorithm = decodeAlgorithm( a.first );
     if ( theAlgorithm )
     {
       // Get the item list for this alg
-      Items& items = m_algDependentItems[theAlgorithm];
+      auto& items = m_algDependentItems[theAlgorithm];
       // Clear the list for this alg
       clearItems( items );
       // fill the list again
-      for ( ItemNames::const_iterator i = a->second.begin();
-            i != a->second.end(); ++i )
-      {
-        addItem( items, *i );
-      }
+      for ( const auto& i : a.second ) addItem( items, i );
     }
   }
 
   // Take the item list to the data service preload list.
   if ( m_doPreLoad )    {
-    for(Items::iterator j = m_itemList.begin(); j != m_itemList.end(); j++)   {
-      m_pDataProvider->addPreLoadItem( *(*j) ).ignore();
-    }
+    for(auto& j : m_itemList) m_pDataProvider->addPreLoadItem( *j ).ignore();
     // Not working: bad reference counting! pdataSvc->release();
   }
 
   if ( m_doPreLoadOpt )    {
-    for(Items::iterator j=m_optItemList.begin(); j!=m_optItemList.end(); j++) {
-      m_pDataProvider->addPreLoadItem( *(*j) );
-    }
+    for(auto& j : m_optItemList) m_pDataProvider->addPreLoadItem( *j ).ignore();
   }
-  log << MSG::INFO << "Data source: " << m_storeName  << " output: " << m_output << endmsg;
+  info() << "Data source: " << m_storeName  << " output: " << m_output << endmsg;
 
   // Decode the accept, required and veto Algorithms. The logic is the following:
   //  a. The event is accepted if all lists are empty.
@@ -186,8 +157,7 @@ StatusCode OutputStream::initialize() {
 
 // terminate data writer
 StatusCode OutputStream::finalize() {
-  MsgStream log(msgSvc(), name());
-  log << MSG::INFO << "Events output: " << m_events << endmsg;
+  info() << "Events output: " << m_events << endmsg;
   if(m_fireIncidents) m_incidentSvc->fireIncident(Incident(m_outputName,
                                                            IncidentType::EndOutputFile));
   m_incidentSvc.reset();
@@ -239,54 +209,49 @@ StatusCode OutputStream::writeObjects()
       if ( status.isSuccess() )
       {
         // Now pass the collection to the persistency service
-        IOpaqueAddress* pAddress = NULL;
-        for ( IDataSelector::iterator j = sel->begin(); j != sel->end(); ++j )
+        IOpaqueAddress* pAddress = nullptr;
+        for ( auto& j : *sel )
         {
           try
           {
-            const StatusCode iret = m_pConversionSvc->createRep( *j, pAddress );
+            const StatusCode iret = m_pConversionSvc->createRep( j, pAddress );
             if ( !iret.isSuccess() )
             {
               status = iret;
               continue;
             }
-            IRegistry* pReg = (*j)->registry();
+            IRegistry* pReg = j->registry();
             pReg->setAddress(pAddress);
           }
           catch ( const std::exception & excpt )
           {
-            MsgStream log( msgSvc(), name() );
-            const std::string loc = ( (*j)->registry() ?
-                                      (*j)->registry()->identifier() : "UnRegistered" );
-            log << MSG::FATAL
+            const std::string loc = ( j->registry() ?
+                                      j->registry()->identifier() : "UnRegistered" );
+            fatal()
                 << "std::exception during createRep for '" << loc << "' "
-                << System::typeinfoName( typeid(**j) )
+                << System::typeinfoName( typeid(*j) )
                 << endmsg;
-            log << MSG::FATAL << excpt.what() << endmsg;
+            fatal() << excpt.what() << endmsg;
             throw;
           }
         }
-        for ( IDataSelector::iterator j = sel->begin(); j != sel->end(); ++j )
+        for ( auto& j : *sel )
         {
           try
           {
-            IRegistry* pReg = (*j)->registry();
-            const StatusCode iret = m_pConversionSvc->fillRepRefs( pReg->address(), *j );
-            if ( !iret.isSuccess() )
-            {
-              status = iret;
-            }
+            IRegistry* pReg = j->registry();
+            const StatusCode iret = m_pConversionSvc->fillRepRefs( pReg->address(), j );
+            if ( !iret.isSuccess() ) status = iret;
           }
           catch ( const std::exception & excpt )
           {
-            MsgStream log( msgSvc(), name() );
-            const std::string loc = ( (*j)->registry() ?
-                                      (*j)->registry()->identifier() : "UnRegistered" );
-            log << MSG::FATAL
+            const std::string loc = ( j->registry() ?
+                                      j->registry()->identifier() : "UnRegistered" );
+            fatal()
                 << "std::exception during fillRepRefs for '" << loc << "'"
-                << System::typeinfoName( typeid(**j) )
+                << System::typeinfoName( typeid(*j) )
                 << endmsg;
-            log << MSG::FATAL << excpt.what() << endmsg;
+            fatal() << excpt.what() << endmsg;
             throw;
           }
         }
@@ -308,7 +273,7 @@ StatusCode OutputStream::writeObjects()
 // Place holder to create configurable data store agent
 bool OutputStream::collect(IRegistry* dir, int level)    {
   if ( level < m_currentItem->depth() )   {
-    if ( dir->object() != 0 )   {
+    if ( dir->object() )   {
       /*
         std::cout << "Analysing ("
         << dir->name()
@@ -325,65 +290,61 @@ bool OutputStream::collect(IRegistry* dir, int level)    {
 
 /// Collect all objects to be written to the output stream
 StatusCode OutputStream::collectObjects()   {
-  MsgStream log(msgSvc(), name());
   StatusCode status = StatusCode::SUCCESS;
 
   // Traverse the tree and collect the requested objects
-  for ( Items::iterator i = m_itemList.begin(); i != m_itemList.end(); i++ )    {
-    DataObject* obj = 0;
-    m_currentItem = (*i);
+  for ( auto& i : m_itemList) {
+    DataObject* obj = nullptr;
+    m_currentItem = i;
     StatusCode iret = m_pDataProvider->retrieveObject(m_currentItem->path(), obj);
     if ( iret.isSuccess() )  {
-      iret = m_pDataManager->traverseSubTree(obj, m_agent);
-      if ( !iret.isSuccess() )  {
-        status = iret;
-      }
+      iret = m_pDataManager->traverseSubTree(obj, m_agent.get());
+      if ( !iret.isSuccess() )  status = iret;
     }
     else  {
-      log << MSG::ERROR << "Cannot write mandatory object(s) (Not found) "
+      error() << "Cannot write mandatory object(s) (Not found) "
           << m_currentItem->path() << endmsg;
       status = iret;
     }
   }
 
   // Traverse the tree and collect the requested objects (tolerate missing items here)
-  for ( Items::iterator i = m_optItemList.begin(); i != m_optItemList.end(); i++ )    {
-    DataObject* obj = 0;
-    m_currentItem = (*i);
+  for ( auto&  i : m_optItemList ) {
+    DataObject* obj = nullptr;
+    m_currentItem = i;
     StatusCode iret = m_pDataProvider->retrieveObject(m_currentItem->path(), obj);
     if ( iret.isSuccess() )  {
-      iret = m_pDataManager->traverseSubTree(obj, m_agent);
+      iret = m_pDataManager->traverseSubTree(obj, m_agent.get());
     }
     if ( !iret.isSuccess() )    {
       ON_DEBUG
-        log << MSG::DEBUG << "Ignore request to write non-mandatory object(s) "
+        debug() << "Ignore request to write non-mandatory object(s) "
             << m_currentItem->path() << endmsg;
     }
   }
 
   // Collect objects dependent on particular algorithms
-  for ( AlgDependentItems::const_iterator iAlgItems = m_algDependentItems.begin();
-        iAlgItems != m_algDependentItems.end(); ++iAlgItems )
+  for ( const auto& iAlgItems : m_algDependentItems )
   {
-    Algorithm * alg    = iAlgItems->first;
-    const Items& items = iAlgItems->second;
+    Algorithm * alg    = iAlgItems.first;
+    const Items& items = iAlgItems.second;
     if ( alg->isExecuted() && alg->filterPassed() )
     {
       ON_DEBUG
-        log << MSG::DEBUG << "Algorithm '" << alg->name() << "' fired. Adding " << items << endmsg;
-      for ( Items::const_iterator i = items.begin(); i != items.end(); ++i ) 
+        debug() << "Algorithm '" << alg->name() << "' fired. Adding " << items << endmsg;
+      for ( const auto& i : items )
       {
-        DataObject* obj = NULL;
-        m_currentItem = (*i);
+        DataObject* obj = nullptr;
+        m_currentItem = i;
         StatusCode iret = m_pDataProvider->retrieveObject(m_currentItem->path(),obj);
-        if ( iret.isSuccess() ) 
+        if ( iret.isSuccess() )
         {
-          iret = m_pDataManager->traverseSubTree(obj,m_agent);
-          if ( !iret.isSuccess() ) { status = iret; }
+          iret = m_pDataManager->traverseSubTree(obj,m_agent.get());
+          if ( !iret.isSuccess() ) status = iret;
         }
-        else  
+        else
         {
-          log << MSG::ERROR << "Cannot write mandatory (algorithm dependent) object(s) (Not found) "
+          error() << "Cannot write mandatory (algorithm dependent) object(s) (Not found) "
               << m_currentItem->path() << endmsg;
           status = iret;
         }
@@ -397,11 +358,11 @@ StatusCode OutputStream::collectObjects()   {
     std::set<DataObject*> unique;
     std::vector<DataObject*> tmp; // temporary vector with the reduced list
     tmp.reserve(m_objects.size());
-    for (std::vector<DataObject*>::iterator o = m_objects.begin(); o != m_objects.end(); ++o) {
-      if (!unique.count(*o)) {
+    for (auto& o : m_objects ) {
+      if (!unique.count(o)) {
         // if the pointer is not in the set, add it to both the set and the temporary vector
-        unique.insert(*o);
-        tmp.push_back(*o);
+        unique.insert(o);
+        tmp.push_back(o);
       }
     }
     m_objects.swap(tmp); // swap the data of the two vectors
@@ -412,71 +373,60 @@ StatusCode OutputStream::collectObjects()   {
 
 // Clear collected object list
 void OutputStream::clearSelection()     {
-  m_objects.erase(m_objects.begin(), m_objects.end());
+  m_objects.clear();
 }
 
 // Remove all items from the output streamer list;
 void OutputStream::clearItems(Items& itms)     {
-  for ( Items::iterator i = itms.begin(); i != itms.end(); i++ )    {
-    delete (*i);
-  }
-  itms.erase(itms.begin(), itms.end());
+  for ( auto& i : itms ) delete i;
+  itms.clear();
 }
 
 // Find single item identified by its path (exact match)
 DataStoreItem*
 OutputStream::findItem(const std::string& path)  {
-  for(Items::const_iterator i=m_itemList.begin(); i != m_itemList.end(); ++i)  {
-    if ( (*i)->path() == path )  return (*i);
+  auto matchPath = [&](const DataStoreItem* i) { return i->path() == path; } ;
+  auto i = std::find_if( m_itemList.begin(), m_itemList.end(), matchPath );
+  if (i == m_itemList.end()) {
+     i = std::find_if( m_optItemList.begin(), m_optItemList.end(), matchPath );
+     if (i == m_optItemList.end()) return nullptr;
   }
-  for(Items::const_iterator j=m_optItemList.begin(); j != m_optItemList.end(); ++j)  {
-    if ( (*j)->path() == path )  return (*j);
-  }
-  return 0;
+  return *i;
 }
 
 // Add item to output streamer list
 void OutputStream::addItem(Items& itms, const std::string& descriptor)   {
-  MsgStream log(msgSvc(), name());
   int level = 0;
-  size_t sep = descriptor.rfind("#");
-  std::string obj_path (descriptor,0,sep);
-  std::string slevel   (descriptor,sep+1,descriptor.length());
-  if ( slevel == "*" )  {
-    level = 9999999;
-  }
-  else   {
-    level = atoi(slevel.c_str());
+  auto  sep = descriptor.rfind("#");
+  std::string obj_path = descriptor.substr(0,sep);
+  if ( sep != std::string::npos ) {
+    std::string slevel = descriptor.substr(sep+1);
+    level = ( slevel == "*" ) ? 9999999 : std::stoi(slevel);
   }
   if ( m_verifyItems )  {
     size_t idx = obj_path.find("/",1);
     while(idx != std::string::npos)  {
       std::string sub_item = obj_path.substr(0,idx);
-      if ( 0 == findItem(sub_item) )   {
-        addItem(itms, sub_item+"#1");
-      }
+      if ( !findItem(sub_item) ) addItem(itms, sub_item+"#1");
       idx = obj_path.find("/",idx+1);
     }
   }
-  DataStoreItem* item = new DataStoreItem(obj_path, level);
+  itms.push_back( new DataStoreItem(obj_path, level) );
+  const auto& item = itms.back();
   ON_DEBUG
-    log << MSG::DEBUG << "Adding OutputStream item " << item->path()
+    debug() << "Adding OutputStream item " << item->path()
         << " with " << item->depth()
         << " level(s)." << endmsg;
-  itms.push_back( item );
 }
 
 // Connect to proper conversion service
 StatusCode OutputStream::connectConversionSvc()   {
   StatusCode status = StatusCode(StatusCode::FAILURE, true);
-  MsgStream log(msgSvc(), name());
   // Get output file from input
   std::string dbType, svc, shr;
-  Tokenizer tok(true);
-  tok.analyse(m_output, " ", "", "", "=", "'", "'");
-  for(Tokenizer::Items::iterator i = tok.items().begin(); i != tok.items().end(); ++i)   {
-    const std::string& tag = (*i).tag();
-    const std::string& val = (*i).value();
+  for(auto attrib: Gaudi::Utils::AttribStringParser(m_output)) {
+    const std::string& tag = attrib.tag;
+    const std::string& val = attrib.value;
     switch( ::toupper(tag[0]) )    {
     case 'D':
       m_outputName = val;
@@ -520,25 +470,25 @@ StatusCode OutputStream::connectConversionSvc()   {
   // The default service is the same for input as for output.
   // If this is not desired, then a specialized OutputStream must overwrite
   // this value.
-  if ( dbType.length() > 0 || svc.length() > 0 )   {
-    std::string typ = dbType.length()>0 ? dbType : svc;
-    SmartIF<IPersistencySvc> ipers(serviceLocator()->service(m_persName));
-    if( !ipers.isValid() )   {
-      log << MSG::FATAL << "Unable to locate IPersistencySvc interface of " << m_persName << endmsg;
+  if ( !dbType.empty() || !svc.empty() )   {
+    std::string typ = !dbType.empty() ? dbType : svc;
+    auto ipers = serviceLocator()->service<IPersistencySvc>(m_persName);
+    if( !ipers )   {
+      fatal() << "Unable to locate IPersistencySvc interface of " << m_persName << endmsg;
       return StatusCode::FAILURE;
     }
-    IConversionSvc *cnvSvc = 0;
+    IConversionSvc *cnvSvc = nullptr;
     status = ipers->getService(typ, cnvSvc);
     if( !status.isSuccess() )   {
-      log << MSG::FATAL << "Unable to locate IConversionSvc interface of database type " << typ << endmsg;
+      fatal() << "Unable to locate IConversionSvc interface of database type " << typ << endmsg;
       return status;
     }
     // Increase reference count and keep service.
     m_pConversionSvc = cnvSvc;
   }
-  else  
+  else
   {
-    log << MSG::FATAL
+    fatal()
         << "Unable to locate IConversionSvc interface (Unknown technology) " << endmsg
         << "You either have to specify a technology name or a service name!" << endmsg
         << "Please correct the job option \"" << name() << ".Output\" !"     << endmsg;
@@ -548,9 +498,8 @@ StatusCode OutputStream::connectConversionSvc()   {
 }
 
 StatusCode OutputStream::decodeAcceptAlgs( ) {
-  MsgStream log(msgSvc(), name());
   ON_DEBUG
-    log << MSG::DEBUG << "AcceptAlgs  : " << m_acceptNames.value() << endmsg;
+    debug() << "AcceptAlgs  : " << m_acceptNames.value() << endmsg;
   return decodeAlgorithms( m_acceptNames, m_acceptAlgs );
 }
 
@@ -563,9 +512,8 @@ void OutputStream::acceptAlgsHandler( Property& /* theProp */ )  {
 }
 
 StatusCode OutputStream::decodeRequireAlgs( )  {
-  MsgStream log(msgSvc(), name());
   ON_DEBUG
-    log << MSG::DEBUG << "RequireAlgs : " << m_requireNames.value() << endmsg;
+    debug() << "RequireAlgs : " << m_requireNames.value() << endmsg;
   return decodeAlgorithms( m_requireNames, m_requireAlgs );
 }
 
@@ -578,9 +526,8 @@ void OutputStream::requireAlgsHandler( Property& /* theProp */ )  {
 }
 
 StatusCode OutputStream::decodeVetoAlgs( )  {
-  MsgStream log(msgSvc(), name());
   ON_DEBUG
-    log << MSG::DEBUG << "VetoAlgs    : " << m_vetoNames.value() << endmsg;
+    debug() << "VetoAlgs    : " << m_vetoNames.value() << endmsg;
   return decodeAlgorithms( m_vetoNames, m_vetoAlgs );
 }
 
@@ -594,15 +541,15 @@ void OutputStream::vetoAlgsHandler( Property& /* theProp */ )  {
 
 Algorithm* OutputStream::decodeAlgorithm( const std::string& theName )
 {
-  Algorithm * theAlgorithm = NULL;
+  Algorithm * theAlgorithm = nullptr;
 
-  SmartIF<IAlgManager> theAlgMgr(serviceLocator());
-  if ( theAlgMgr.isValid() )
+  auto theAlgMgr = serviceLocator()->as<IAlgManager>();
+  if ( theAlgMgr )
   {
     // Check whether the supplied name corresponds to an existing
     // Algorithm object.
     SmartIF<IAlgorithm> &theIAlg = theAlgMgr->algorithm(theName);
-    if ( theIAlg.isValid() )
+    if ( theIAlg )
     {
       try
       {
@@ -616,58 +563,41 @@ Algorithm* OutputStream::decodeAlgorithm( const std::string& theName )
   }
   else
   {
-    MsgStream log( msgSvc( ), name( ) );
-    log << MSG::FATAL << "Can't locate ApplicationMgr!!!" << endmsg;
+    fatal() << "Can't locate ApplicationMgr!!!" << endmsg;
   }
 
   if ( !theAlgorithm )
   {
-    MsgStream log( msgSvc( ), name( ) );
-    log << MSG::WARNING
-        << "Failed to decode Algorithm name " << theName << endmsg;
+    warning() << "Failed to decode Algorithm name " << theName << endmsg;
   }
 
   return theAlgorithm;
 }
 
 StatusCode OutputStream::decodeAlgorithms( StringArrayProperty& theNames,
-                                           std::vector<Algorithm*>* theAlgs )
+                                           std::vector<Algorithm*>& theAlgs )
 {
   // Reset the list of Algorithms
-  theAlgs->clear( );
+  theAlgs.clear( );
 
   StatusCode result = StatusCode::SUCCESS;
 
   // Build the list of Algorithms from the names list
-  const std::vector<std::string> nameList = theNames.value( );
-  for ( std::vector<std::string>::const_iterator it = nameList.begin();
-        it != nameList.end(); ++it )
+  for ( const auto& it : theNames.value() ) 
   {
 
-    Algorithm * theAlgorithm = decodeAlgorithm( *it );
+    Algorithm * theAlgorithm = decodeAlgorithm( it );
     if ( theAlgorithm )
     {
       // Check that the specified algorithm doesn't already exist in the list
-      for ( std::vector<Algorithm*>::iterator ita = theAlgs->begin();
-            ita != theAlgs->end(); ++ita )
-      {
-        Algorithm * existAlgorithm = (*ita);
-        if ( theAlgorithm == existAlgorithm )
-        {
-          result = StatusCode::FAILURE;
-          break;
-        }
-      }
-      if ( result.isSuccess( ) )
-      {
+      if ( std::find( std::begin(theAlgs), std::end(theAlgs), theAlgorithm ) == std::end(theAlgs) ) {
         theAlgorithm->addRef();
-        theAlgs->push_back( theAlgorithm );
+        theAlgs.push_back( theAlgorithm );
       }
     }
     else
     {
-      MsgStream log( msgSvc( ), name( ) );
-      log << MSG::INFO << *it << " doesn't exist - ignored" << endmsg;
+      info() << it << " doesn't exist - ignored" << endmsg;
     }
 
   }
@@ -677,47 +607,30 @@ StatusCode OutputStream::decodeAlgorithms( StringArrayProperty& theNames,
 }
 
 bool OutputStream::isEventAccepted( ) const  {
-  typedef std::vector<Algorithm*>::iterator AlgIter;
-  bool result = true;
+  auto passed = [](const Algorithm* alg) { return alg->isExecuted() 
+                                               && alg->filterPassed(); };
 
   // Loop over all Algorithms in the accept list to see
   // whether any have been executed and have their filter
   // passed flag set. Any match causes the event to be
   // provisionally accepted.
-  if ( ! m_acceptAlgs->empty() ) {
-    result = false;
-    for(AlgIter i=m_acceptAlgs->begin(),end=m_acceptAlgs->end(); i != end; ++i) {
-      if ( (*i)->isExecuted() && (*i)->filterPassed() ) {
-        result = true;
-        break;
-      }
-    }
-  }
+  bool result = m_acceptAlgs.empty() ||
+           std::any_of( std::begin(m_acceptAlgs), std::end(m_acceptAlgs), passed);
 
   // Loop over all Algorithms in the required list to see
   // whether all have been executed and have their filter
   // passed flag set. Any mismatch causes the event to be
   // rejected.
-  if ( result && ! m_requireAlgs->empty() ) {
-    for(AlgIter i=m_requireAlgs->begin(),end=m_requireAlgs->end(); i != end; ++i) {
-      if ( !(*i)->isExecuted() || !(*i)->filterPassed() ) {
-        result = false;
-        break;
-      }
-    }
+  if ( result && !m_requireAlgs.empty() ) {
+    result = std::all_of( std::begin(m_requireAlgs), std::end(m_requireAlgs), passed);
   }
 
   // Loop over all Algorithms in the veto list to see
   // whether any have been executed and have their filter
   // passed flag set. Any match causes the event to be
   // rejected.
-  if ( result && ! m_vetoAlgs->empty() ) {
-    for(AlgIter i=m_vetoAlgs->begin(),end=m_vetoAlgs->end(); i != end; ++i) {
-      if ( (*i)->isExecuted() && (*i)->filterPassed() ) {
-        result = false;
-        break;
-      }
-    }
+  if ( result && !m_vetoAlgs.empty() ) {
+    result = std::none_of( std::begin(m_vetoAlgs), std::end(m_vetoAlgs), passed);
   }
   return result;
 }

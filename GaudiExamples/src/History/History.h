@@ -1,34 +1,18 @@
 #ifndef GAUDIEXAMPLES_HISTORY_H
 # define GAUDIEXAMPLES_HISTORY_H
 
-//<<<<<< INCLUDES                                                       >>>>>>
 #include "GaudiKernel/Algorithm.h"
-//<<<<<< CLASS DECLARATIONS                                             >>>>>>
-/** @class ColorMgs
- * @brief  an algorithm to test the color setting options of MsgService
- * @author Paolo Calafiura <pcalafiura@lbl.gov> - ATLAS Collaboration
- *$Id: History.h,v 1.1 2006/09/14 12:34:15 hmd Exp $
- */
-
-class IHistorySvc;
+#include "GaudiKernel/IHistorySvc.h"
 
 class History : public Algorithm {
+  SmartIF<IHistorySvc> m_histSvc;
 
 public:
   History (const std::string& name, ISvcLocator* pSvcLocator);
-  StatusCode initialize();
-  StatusCode execute();
-  StatusCode finalize();
-  
-private:
+  StatusCode initialize() override;
+  StatusCode execute() override;
 
-  IHistorySvc* m_histSvc;
 
 };
-
-
-
-//<<<<<< INLINE PUBLIC FUNCTIONS                                        >>>>>>
-//<<<<<< INLINE MEMBER FUNCTIONS                                        >>>>>>
 
 #endif // GAUDIEXAMPLES_HISTORY_H

@@ -449,7 +449,6 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
     };
 
     typedef std::tuple<EventContext*,EventSchedulingState*> contextSchedState_tuple;
-    typedef DataSvcHelpers::RegistryEntry regEntry;
 
     MsgStream log(msgSvc(), name());
 
@@ -585,7 +584,8 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
                }// end loop on algo indices
 
                // update the event state with what has been put into the DataSvc
-               std::vector<std::string> new_products;
+	//	std::vector<std::string> new_products;
+	DataObjIDColl new_products;
                m_whiteboard->selectStore(event_Context->slot()).ignore();
                sc = m_whiteboard->getNewDataObjects(new_products);
                if( !sc.isSuccess() ){

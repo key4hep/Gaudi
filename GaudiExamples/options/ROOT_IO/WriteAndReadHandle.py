@@ -35,15 +35,13 @@ RootCnvSvc(OutputLevel=INFO)
 GaudiPersistency()
 
 
-writer = WriteHandleAlg ("Writer",
-                         Output="/Event/MyCollision",
-                         UseHandle=True,
-                         OutputLevel=DEBUG)
-                         
-reader = ReadHandleAlg ("Reader",
-                         Input="MyCollision",
-                         OutputLevel=DEBUG)                         
+writer = WriteHandleAlg("Writer",
+                        UseHandle=True,
+                        OutputLevel=DEBUG)
+writer.Output.Path = "/Event/MyCollision"
 
+reader = ReadHandleAlg("Reader", OutputLevel=DEBUG)
+reader.Input.Path = "MyCollision"
 
 # Application setup
 app = ApplicationMgr()

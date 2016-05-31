@@ -1,4 +1,3 @@
-// $Id: RootDatabaseCnv.h,v 1.2 2010-08-24 14:03:03 frankb Exp $
 //====================================================================
 //  Statistics file converter class definition
 //
@@ -39,14 +38,14 @@ namespace Gaudi {
     RootDatabaseCnv(long typ, const CLID&, ISvcLocator* svc, RootCnvSvc* mgr);
 
     /// Standard destructor
-    virtual ~RootDatabaseCnv();
+    ~RootDatabaseCnv() override = default;
 
     /** Retrieve the name of the container a given object is placed into
      * @param      pReg     [IN]    Pointer to registry entry.
      *
      * @return     Name of the container the object should be put to.
      */
-    virtual const std::string containerName(IRegistry* /* pReg */)  const  {
+    const std::string containerName(IRegistry* /* pReg */)  const  override {
       return "<local>";
     }
 
@@ -57,7 +56,7 @@ namespace Gaudi {
      *
      * @return Status code indicating success or failure.
      */
-    virtual StatusCode createObj(IOpaqueAddress* pAddr, DataObject*& refpObj);
+    StatusCode createObj(IOpaqueAddress* pAddr, DataObject*& refpObj) override;
   };
 }
 #endif    // GAUDIROOTCNV_ROOTDATABASECNV_H

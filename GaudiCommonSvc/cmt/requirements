@@ -3,7 +3,7 @@
 # Maintainer : Marco Clemencic
 # ============================================================================
 package    GaudiCommonSvc
-version    v3r4
+version    v4r1
 
 # ============================================================================
 # Structure, i.e. directories to process.
@@ -34,7 +34,7 @@ library GaudiCommonSvc -no_static -import=AIDA -import=Boost -import=ROOT \
 apply_pattern component_library library=GaudiCommonSvc
 
 private
-macro_append Boost_linkopts " $(Boost_linkopts_system) $(Boost_linkopts_filesystem) $(Boost_linkopts_thread) "
+macro_append Boost_linkopts " $(Boost_linkopts_system) $(Boost_linkopts_filesystem) $(Boost_linkopts_thread) $(Boost_linkopts_regex)"
 macro_append ROOT_linkopts " -lHist" \
               target-winxp " libHist.lib" \
              target-mac104 " -lHist"

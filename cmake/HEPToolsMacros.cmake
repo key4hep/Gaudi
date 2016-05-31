@@ -55,16 +55,25 @@ function(lcg_find_host_os)
       set(os winxp)
       set(osvers)
     else()
-      execute_process(COMMAND cat /etc/issue OUTPUT_VARIABLE issue OUTPUT_STRIP_TRAILING_WHITESPACE)
-      if(issue MATCHES Ubuntu)
+      if(EXISTS /etc/redhat-release)
+        file(READ /etc/redhat-release release_file)
+      else()
+        file(READ /etc/issue release_file)
+      endif()
+      if(release_file MATCHES Ubuntu)
         set(os ubuntu)
         string(REGEX REPLACE ".*Ubuntu ([0-9]+)[.]([0-9]+).*" "\\1.\\2" osvers "${issue}")
-      elseif(issue MATCHES SLC|Fedora) # RedHat-like distributions
-        string(TOLOWER "${CMAKE_MATCH_0}" os)
-        if(os STREQUAL fedora)
-          set(os fc) # we use an abbreviation for Fedora
+      elseif(release_file MATCHES "Fedora|Scientific Linux( CERN)?|CentOS") # RedHat-like distributions
+        if(CMAKE_MATCH_0 STREQUAL "Scientific Linux CERN")
+          set(os slc)
+        elseif(CMAKE_MATCH_0 STREQUAL "Scientific Linux") # SL or CernVM
+          set(os sl)
+        elseif(CMAKE_MATCH_0 STREQUAL "Fedora")
+          set(os fc)
+        else()
+          string(TOLOWER "${CMAKE_MATCH_0}" os)
         endif()
-        string(REGEX REPLACE ".*release ([0-9]+)[. ].*" "\\1" osvers "${issue}")
+        string(REGEX REPLACE ".*release ([0-9]+)[. ].*" "\\1" osvers "${release_file}")
       else()
         message(WARNING "Unkown OS, assuming 'linux'")
         set(os linux)
@@ -152,6 +161,7 @@ function(lcg_get_target_platform)
       set(tag $ENV{CMTCONFIG})
       set(tag_source CMTCONFIG)
     else()
+      lcg_detect_host_platform()
       set(tag ${LCG_HOST_SYSTEM}-opt)
       set(tag_source default)
     endif()
@@ -159,11 +169,18 @@ function(lcg_get_target_platform)
     set(BINARY_TAG ${tag} CACHE STRING "Platform id for the produced binaries.")
   endif()
   # Split the target binary tag
+  #message(STATUS "BINARY_TAG=${BINARY_TAG} LCG_HOST_SYSTEM=${LCG_HOST_SYSTEM}")
   string(REGEX MATCHALL "[^-]+" out ${BINARY_TAG})
   list(GET out 0 arch)
   list(GET out 1 os)
   list(GET out 2 comp)
   list(GET out 3 type)
+
+  # special cases for the build type
+  if(type STREQUAL "do0")
+    # "*-do0" in Gaudi means "-g -O0" and it corresponds to "*-dbg" in AA
+    set(type "dbg")
+  endif()
 
   set(LCG_BUILD_TYPE ${type} CACHE STRING "Type of build (LCG id).")
 
@@ -219,7 +236,7 @@ function(lcg_get_target_platform)
     set(CMAKE_SYSTEM_NAME Windows PARENT_SCOPE)
   elseif(LCG_OS STREQUAL "mac")
     set(CMAKE_SYSTEM_NAME Darwin PARENT_SCOPE)
-  elseif(LCG_OS STREQUAL "slc" OR LCG_OS STREQUAL "ubuntu" OR LCG_OS STREQUAL "fc" OR LCG_OS STREQUAL "linux")
+  elseif(LCG_OS MATCHES "^(slc?|ubuntu|fc|centos|linux)$")
     set(CMAKE_SYSTEM_NAME Linux PARENT_SCOPE)
   else()
     set(CMAKE_SYSTEM_NAME ${CMAKE_HOST_SYSTEM_NAME})
@@ -300,6 +317,24 @@ macro(lcg_set_compiler flavor)
 endmacro()
 
 ################################################################################
+# Add a specific compiler to the path
+macro(lcg_set_lcg_system_compiler_path flavor)
+  if(NOT ${flavor} STREQUAL "NATIVE")
+    set(version ${ARGV1})
+    if(${flavor} MATCHES "^gcc|GNU$")
+      set(lcg_system_compiler_path ${LCG_external}/gcc/${version}/${LCG_HOST_ARCH}-${LCG_HOST_OS}${LCG_HOST_OSVERS})
+    elseif(${flavor} STREQUAL "icc")
+      # Note: icc must be in the path already because of the licensing
+      set(lcg_system_compiler_path)
+    elseif(${flavor} STREQUAL "clang")
+      set(lcg_system_compiler_path ${LCG_external}/llvm/${version}/${LCG_HOST_ARCH}-${LCG_HOST_OS}${LCG_HOST_OSVERS})
+    else()
+      message(FATAL_ERROR "Uknown compiler flavor ${flavor}.")
+    endif()
+  endif()
+endmacro()
+
+################################################################################
 # Define variables and location of the compiler.
 macro(_lcg_compiler id flavor version)
   #message(STATUS "LCG_compiler(${ARGV})")
@@ -322,6 +357,7 @@ macro(lcg_common_compilers_definitions)
     _lcg_compiler(clang33 clang 3.3)
     _lcg_compiler(clang34 clang 3.4)
     _lcg_compiler(clang35 clang 3.5)
+    _lcg_compiler(clang37 clang 3.7)
   endif()
 endmacro()
 
@@ -356,7 +392,10 @@ macro(lcg_set_external name hash version dir)
         list(APPEND LCG_projects ${name})
     elseif("${name}" STREQUAL "cmaketools" AND
            NOT EXISTS "${cmaketools_home}/CMakeToolsConfig.cmake")
-        # ignore problematic externals
+        # ignore old versions of cmaketools
+    elseif("${name}" STREQUAL "Qt5" AND
+           CMAKE_VERSION VERSION_LESS "2.12")
+        # we cannot mix Qt5 and Qt4 with CMake < 2.12, so we ignore Qt5
     else()
         #message(STATUS "External ${name} -> ${${name}_config_version}")
         list(APPEND LCG_externals ${name})
@@ -421,8 +460,15 @@ macro(lcg_prepare_paths)
   # Required if both Qt3 and Qt4 are available.
   if(Qt_config_version)
     string(REGEX MATCH "[0-9]+" _qt_major_version ${Qt_config_version})
-    set(DESIRED_QT_VERSION ${_qt_major_version} CACHE STRING "Pick a version of QT to use: 3 or 4")
+    set(DESIRED_QT_VERSION ${_qt_major_version} CACHE STRING "Pick a version of QT to use: 4 or 5")
     mark_as_advanced(DESIRED_QT_VERSION)
+    if(Qt5_config_version AND NOT CMAKE_VERSION VERSION_LESS "2.12")
+      # Required if both Qt(4) and Qt5 are available.
+      if(EXISTS "${Qt_home}/bin/qmake")
+        set(QT_QMAKE_EXECUTABLE "${Qt_home}/bin/qmake" CACHE INTERNAL "")
+      endif()
+      set(CMAKE_PREFIX_PATH ${Qt5_home}/lib/cmake ${CMAKE_PREFIX_PATH})
+    endif()
   endif()
 
   if(LCG_COMP MATCHES "clang")

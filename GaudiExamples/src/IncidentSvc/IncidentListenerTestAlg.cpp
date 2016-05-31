@@ -23,31 +23,20 @@ IncidentListenerTestAlg::IncidentListenerTestAlg(const std::string& name ,
 }
 
 //=============================================================================
-IncidentListenerTestAlg::~IncidentListenerTestAlg()
-{
-}
-
-//=============================================================================
 StatusCode IncidentListenerTestAlg::initialize() {
   StatusCode sc = GaudiAlgorithm::initialize();
   if (sc.isFailure()) return sc;
 
   // get a the incident service
-  m_incSvc = svc<IIncidentSvc>("IncidentSvc",true);
+  m_incSvc = service("IncidentSvc",true);
 
   // instantiate listeners
-  m_listener[0] =
-    std::auto_ptr<IncidentListenerTest>(new IncidentListenerTest("Listener 0",serviceLocator()));
-  m_listener[1] =
-    std::auto_ptr<IncidentListenerTest>(new IncidentListenerTest("Listener 1",serviceLocator(),3));
-  m_listener[2] =
-    std::auto_ptr<IncidentListenerTest>(new IncidentListenerTest("Listener 2",serviceLocator()));
-  m_listener[3] =
-    std::auto_ptr<IncidentListenerTest>(new IncidentListenerTest("Listener 3",serviceLocator()));
-  m_listener[4] =
-    std::auto_ptr<IncidentListenerTest>(new IncidentListenerTest("EventBoundary",serviceLocator()));
-  m_listener[5] =
-    std::auto_ptr<IncidentListenerTest>(new IncidentListenerTest("Generic Listener",serviceLocator()));
+  m_listener[0].reset(new IncidentListenerTest("Listener 0",serviceLocator()));
+  m_listener[1].reset(new IncidentListenerTest("Listener 1",serviceLocator(),3));
+  m_listener[2].reset(new IncidentListenerTest("Listener 2",serviceLocator()));
+  m_listener[3].reset(new IncidentListenerTest("Listener 3",serviceLocator()));
+  m_listener[4].reset(new IncidentListenerTest("EventBoundary",serviceLocator()));
+  m_listener[5].reset(new IncidentListenerTest("Generic Listener",serviceLocator()));
 
   info() << "Registering incident listeners" << endmsg;
 

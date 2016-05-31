@@ -1,15 +1,15 @@
-Gaudi Intel Profiler
+Gaudi Intel Profiler {#profiling-intel}
 ===============================================================================
 
-Auditor for profilng Gaudi jobs. 
+Auditor for profilng Gaudi jobs.
 Based on [Intel® VTune™ Amplifier XE ][amplifier].
 
 
 
 
-Unless IntelProfiler doesn't pushed to Gaudi source repository (svn) and you 
-cann't use getpack command, you need to compile package by yourself at lxplus 
-(on whenever cern afs is accesible and we can link it with intel amplifier 
+Unless IntelProfiler doesn't pushed to Gaudi source repository (svn) and you
+cann't use getpack command, you need to compile package by yourself at lxplus
+(on whenever cern afs is accesible and we can link it with intel amplifier
 static library):
 
 [A video guide to installing profiler package][video].
@@ -59,15 +59,15 @@ The script change  environment variables:
 $> intelprofiler -o ~/profiler myoptions.py
 ~~~~~~~~
 
-, where ```~/profiler``` is a directorory where a profiling database will be 
-stored. After the each run of a profiling job you will get directories 
+, where ```~/profiler``` is a directorory where a profiling database will be
+stored. After the each run of a profiling job you will get directories
 like ~/profiler/r000hs, ~/profiler/r0001hs, ~/profiler/r_RunNumber_hs.
 
-If script could not find intel `amplxe-cl` command, 
+If script could not find intel `amplxe-cl` command,
 it will try to setup intel environment (see previous section).
 
 * P.S. At lxplus during the profiling you can see the following messages:
-  
+
    ```
    sh: lsmod: command not found
    ERROR: ld.so: object '/$LIB/snoopy.so' from /etc/ld.so.preload cannot be preloaded: ignored.

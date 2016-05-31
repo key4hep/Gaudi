@@ -23,7 +23,6 @@
 #include "GaudiKernel/IOpaqueAddress.h"
 #include "GaudiKernel/IConversionSvc.h"
 
-#include "GaudiKernel/xtoa.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/GaudiException.h"
 
@@ -46,7 +45,7 @@ namespace {
   /// Helper function to convert item numbers to path strings
   /// i.e. int -> "/" + int
   inline std::string itemToPath(int item) {
-    return std::string{'/'} + std::to_string(item);
+    return '/' + std::to_string(item);
   }
 
   inline boost::string_ref::size_type find( boost::string_ref s, char c, size_t o ) {
@@ -65,8 +64,8 @@ namespace {
 //#define CAST_REGENTRY(x,y) (x)(y)
 typedef DataSvcHelpers::RegistryEntry RegEntry;
 
-#define ON_DEBUG if (UNLIKELY(outputLevel() <= MSG::DEBUG))
-#define ON_VERBOSE if (UNLIKELY(outputLevel() <= MSG::VERBOSE))
+#define ON_DEBUG if (msgLevel(MSG::DEBUG))
+#define ON_VERBOSE if (msgLevel(MSG::VERBOSE))
 
 #define DEBMSG ON_DEBUG debug()
 #define VERMSG ON_VERBOSE verbose()
@@ -151,10 +150,10 @@ StatusCode DataSvc::traverseTree(IDataStoreAgent* pAgent)   {
  * Initialize data store for new event by giving new event path and root
  * object. Takes care to clear the store before reinitializing it
  */
-StatusCode DataSvc::setRoot(const std::string& root_path,
+StatusCode DataSvc::setRoot(std::string root_path,
                             DataObject* pRootObj)    {
   clearStore().ignore();
-  return i_setRoot (root_path, pRootObj);
+  return i_setRoot (std::move(root_path), pRootObj);
 }
 
 /**
@@ -162,10 +161,10 @@ StatusCode DataSvc::setRoot(const std::string& root_path,
  * object. Does not clear the store before reinitializing it. This could
  * lead to errors and should be handle with care. Use setRoot if unsure
  */
-StatusCode DataSvc::i_setRoot(const std::string& root_path,
+StatusCode DataSvc::i_setRoot(std::string root_path,
                               DataObject* pRootObj)    {
   if ( pRootObj )  {
-    m_root = new RegEntry(root_path);
+    m_root = new RegEntry(std::move(root_path));
     m_root->makeHard(pRootObj);
     m_root->setDataSvc(this);
     // No done with GaudiHive. preLoad().ignore();
@@ -177,10 +176,10 @@ StatusCode DataSvc::i_setRoot(const std::string& root_path,
  * Initialize data store for new event by giving new event path and address
  * of root object. Takes care to clear the store before reinitializing it
  */
-StatusCode DataSvc::setRoot(const std::string& root_path,
-                            IOpaqueAddress* pRootAddr)    {
+StatusCode DataSvc::setRoot(std::string root_path,
+                            IOpaqueAddress* pRootAddr) {
   clearStore().ignore();
-  return i_setRoot (root_path, pRootAddr);
+  return i_setRoot (std::move(root_path), pRootAddr);
 }
 
 /**
@@ -188,10 +187,10 @@ StatusCode DataSvc::setRoot(const std::string& root_path,
  * of root object. Does not clear the store before reinitializing it. This
  * could lead to errors and should be handle with care. Use setRoot if unsure
  */
-StatusCode DataSvc::i_setRoot(const std::string& root_path,
-                              IOpaqueAddress* pRootAddr)    {
+StatusCode DataSvc::i_setRoot(std::string root_path,
+                              IOpaqueAddress* pRootAddr) {
   if ( pRootAddr )  {
-    m_root = new RegEntry(root_path);
+    m_root = new RegEntry(std::move(root_path));
     m_root->makeHard(pRootAddr);
     m_root->setDataSvc(this);
     // Not done with GaudiHive. preLoad().ignore();
@@ -200,13 +199,9 @@ StatusCode DataSvc::i_setRoot(const std::string& root_path,
 }
 
 /// IDataManagerSvc: Pass a default data loader to the service.
-StatusCode DataSvc::setDataLoader(IConversionSvc* pDataLoader, IDataProviderSvc* dpsvc)    {
-  if ( pDataLoader  ) pDataLoader->addRef();
-  if ( m_dataLoader ) m_dataLoader->release();
-  if ( pDataLoader  )    {
-    pDataLoader->setDataProvider(dpsvc == nullptr ? this : dpsvc).ignore();
-  }
+StatusCode DataSvc::setDataLoader(IConversionSvc* pDataLoader, IDataProviderSvc* dpsvc) {
   m_dataLoader = pDataLoader;
+  if ( m_dataLoader ) m_dataLoader->setDataProvider(dpsvc ? dpsvc :this).ignore();
   return SUCCESS;
 }
 
@@ -241,7 +236,7 @@ StatusCode DataSvc::objectLeaves( const IRegistry*   pRegistry,
   if ( !checkRoot() )    return INVALID_ROOT;
   const RegEntry* node_entry = CAST_REGENTRY(const RegEntry*,pRegistry);
   if ( !node_entry )     return INVALID_OBJECT;
-  std::copy(node_entry->leaves().begin(), node_entry->leaves().end(), back_inserter(leaves));
+  leaves = node_entry->leaves();
   return StatusCode::SUCCESS;
 }
 
@@ -293,7 +288,7 @@ StatusCode DataSvc::registerAddress(IRegistry* parentObj,
     RegEntry* p_entry = par_entry->findLeaf(p_path);
     // Create default object leafs if the
     // intermediate nodes are not present
-    if ( 0 == p_entry && m_forceLeaves )    {
+    if ( !p_entry && m_forceLeaves )    {
       DataObject *pLeaf = createDefaultObject();
       StatusCode sc = registerObject(par_entry->identifier(),
                                      p_path,
@@ -401,13 +396,12 @@ StatusCode DataSvc::registerObject(DataObject* parentObj,
 
   if ( !parentObj )   {
     if ( !objPath.empty() )   {
-      if ( objPath.front() == SEPARATOR )    {
-        std::string::size_type sep = objPath.find(SEPARATOR,1);
-        if ( sep != std::string::npos )    {
+      if ( objPath.front() == SEPARATOR ) {
+        auto sep = objPath.find(SEPARATOR,1);
+        if ( sep != std::string::npos ) {
           return registerObject(objPath.substr( 0, sep), objPath.substr( sep ), pObject);
         }
-      }
-      else  {
+      } else  {
         return registerObject(m_rootName, objPath, pObject);
       }
     }
@@ -416,29 +410,25 @@ StatusCode DataSvc::registerObject(DataObject* parentObj,
   RegEntry* node_entry = CAST_REGENTRY(RegEntry*,parentObj->registry());
   if ( node_entry )   {
     StatusCode status = INVALID_PARENT;
-    std::string::size_type sep = objPath.find(SEPARATOR,1);
+    auto sep = objPath.find(SEPARATOR,1);
     if ( sep != std::string::npos )    {
       auto p_path = objPath.substr( 0, sep );
       auto o_path = objPath.substr( sep );
       RegEntry* par_entry = node_entry->findLeaf(p_path);
       // Create default object leafs if the
       // intermediate nodes are not present
-      if ( 0 == par_entry && m_forceLeaves )    {
+      if ( !par_entry && m_forceLeaves )    {
         DataObject *pLeaf = createDefaultObject();
         StatusCode sc = registerObject(parentObj, p_path, pLeaf);
-        if ( ! sc.isSuccess() )   {
-          delete pLeaf;
-        }
+        if ( ! sc.isSuccess() )   delete pLeaf;
         par_entry = node_entry->findLeaf(p_path);
       }
-      else if ( 0 != par_entry && par_entry->object() == 0 )  {
+      else if ( par_entry && !par_entry->object() )  {
         status = i_retrieveEntry( node_entry, p_path, par_entry);
         if ( !status.isSuccess() && !par_entry->address() && m_forceLeaves )  {
           DataObject *pLeaf = createDefaultObject();
           StatusCode sc = registerObject(parentObj, p_path, pLeaf);
-          if ( ! sc.isSuccess() )   {
-            delete pLeaf;
-          }
+          if ( ! sc.isSuccess() )   delete pLeaf;
           par_entry = node_entry->findLeaf(p_path);
         }
       }
@@ -462,10 +452,8 @@ StatusCode DataSvc::registerObject(DataObject* parentObj,
             error() << "registerObject: trying to register null DataObject" << endmsg;
             return StatusCode::FAILURE;
           }
-          else  {
-            pObject->setRegistry(leaf);
-          }
-          leaf->setAddress(0);
+          pObject->setRegistry(leaf);
+          leaf->setAddress(nullptr);
           leaf->setObject(pObject);
           status = StatusCode::SUCCESS;
         }
@@ -486,12 +474,9 @@ StatusCode DataSvc::unregisterObject(const std::string& fullPath)   {
   if ( status.isFailure() )    return status;
   RegEntry* pEntry = CAST_REGENTRY(RegEntry*,pObject->registry());
   if ( !pEntry )    return INVALID_ROOT;
-
   if ( !pEntry->isEmpty() )    return DIR_NOT_EMPTY;
-
   RegEntry* pParent = pEntry->parentEntry();
   if ( !pParent )   return INVALID_PARENT;
-
   if ( pObject )    pObject->addRef();
   pParent->remove(pEntry);
   return StatusCode::SUCCESS;
@@ -502,8 +487,7 @@ StatusCode DataSvc::unregisterObject(const std::string& parentPath,
                                      const std::string& objPath)   {
   DataObject* pO = nullptr;
   StatusCode status = findObject(parentPath, pO);
-  if ( status.isFailure() )   return status;
-  return  unregisterObject(pO, objPath);
+  return status.isSuccess() ?  unregisterObject(pO, objPath) : status;
 }
 
 /// Unregister object from the data store.
@@ -572,15 +556,14 @@ DataObject* DataSvc::i_handleDataFault(IRegistry* pReg, boost::string_ref path)
       m_incidentSvc->fireIncident(incident);
       return pReg->object();
     }
-    else if ( pReg )  {
+    if ( pReg )  {
       std::string p = pReg->identifier();
       if (path.front() != SEPARATOR ) p += SEPARATOR;
       p.append(path.data(),path.size());
       DataIncident incident(name(), m_faultName, p);
       m_incidentSvc->fireIncident(incident);
       pLeaf = m_root->findLeaf(p);
-    }
-    else  {
+    } else  {
       std::string p = m_root->identifier();
       if (path.front() != SEPARATOR ) p += SEPARATOR;
       p.append(path.data(),path.size());
@@ -610,12 +593,10 @@ StatusCode DataSvc::loadObject(IConversionSvc* pLoader, IRegistry* pRegistry) {
   StatusCode status = INVALID_OBJ_ADDR;
   DataObject* pObject = nullptr;
   if ( !pLoader )   {         // Precondition: Data loader must be present
-    if (handleDataFault(pRegistry)) return  SUCCESS;
-    else                            return  NO_DATA_LOADER;
+    return  handleDataFault(pRegistry) ? StatusCode{SUCCESS} : NO_DATA_LOADER;
   }
   if ( !pRegistry )    {      // Precondition: Directory must be valid
-    if (handleDataFault(pRegistry)) return  SUCCESS;
-    else                            return  INVALID_OBJ_ADDR;
+    return handleDataFault(pRegistry) ? StatusCode{SUCCESS} : INVALID_OBJ_ADDR;
   }
 
   VERMSG << "Requested object " << pRegistry->identifier() << endmsg;
@@ -785,9 +766,7 @@ StatusCode DataSvc::retrieveObject(IRegistry* pRegistry,
   pObject = nullptr;
   RegEntry *result = nullptr, *parent = CAST_REGENTRY(RegEntry*,pRegistry);
   StatusCode status = i_retrieveEntry(parent, path, result);
-  if ( status.isSuccess() )   {
-    pObject = result->object();
-  }
+  if ( status.isSuccess() )   pObject = result->object();
   return status;
 }
 
@@ -804,10 +783,8 @@ StatusCode DataSvc::retrieveObject(const std::string& parentPath,
                                    DataObject*& pObject)   {
   DataObject* parent = nullptr;
   StatusCode status = retrieveObject(parentPath, parent);
-  if ( status.isSuccess() )   {
-    status = retrieveObject (parent, objectPath, pObject);
-  }
-  return status;
+  return  status.isSuccess() ? retrieveObject (parent, objectPath, pObject)
+                             : status;
 }
 
 /// Retrieve object identified by its full path from the data store.
@@ -840,12 +817,8 @@ StatusCode DataSvc::findObject(IRegistry* pRegistry,
   IRegistry* pReg = ( pRegistry ? pRegistry : m_root );
   RegEntry* root_entry = CAST_REGENTRY(RegEntry*, pReg);
   if ( root_entry )    {
-    if ( !path.empty() )  {
-      pReg = root_entry->find(path);
-    }
-    if ( !pReg )    {
-      return INVALID_OBJ_PATH;
-    }
+    if ( !path.empty() ) pReg = root_entry->find(path);
+    if ( !pReg ) return INVALID_OBJ_PATH;
     pObject = pReg->object();
   }
   return (!pObject) ? OBJ_NOT_LOADED : IDataProviderSvc_NO_ERROR;
@@ -858,7 +831,7 @@ StatusCode DataSvc::findObject(const std::string& path,
   if ( checkRoot() )  {
     if ( path.empty() || path == m_rootName )   {
       pObject = m_root->object();
-      return (0 == pObject) ? OBJ_NOT_LOADED : IDataProviderSvc_NO_ERROR;
+      return !pObject ? OBJ_NOT_LOADED : IDataProviderSvc_NO_ERROR;
     }
     else if ( path.front() != SEPARATOR )    {
       return findObject(m_rootName, path, pObject);
@@ -874,10 +847,8 @@ StatusCode DataSvc::findObject(const std::string& parentPath,
                                DataObject*& pObject)   {
   DataObject* parent = nullptr;
   StatusCode status = findObject(parentPath, parent);
-  if ( status.isSuccess() )   {
-    status = findObject (parent, objectPath, pObject);
-  }
-  return status;
+  return status.isSuccess() ? findObject (parent, objectPath, pObject)
+                            : status;
 }
 
 /// Retrieve object identified by its full path from the data store.
@@ -905,10 +876,8 @@ StatusCode DataSvc::findObject(DataObject* parentObj,
 StatusCode DataSvc::updateObject(const std::string& updatePath)   {
   DataObject* pO = nullptr;
   StatusCode status = findObject(updatePath, pO);
-  if ( status.isSuccess() )   {
-    return updateObject(pO);
-  }
-  return retrieveObject(updatePath, pO);
+  return  status.isSuccess() ? updateObject(pO)
+                             : retrieveObject(updatePath, pO);
 }
 
 /// Update object.
@@ -980,10 +949,8 @@ StatusCode DataSvc::updateObject(const std::string& parentPath,
                                  const std::string& updatePath)    {
   DataObject* pParent = nullptr;
   StatusCode status = findObject(parentPath, pParent);
-  if ( status.isSuccess() )   {
-    status = updateObject( pParent, updatePath);
-  }
-  return status;
+  return status.isSuccess() ? updateObject( pParent, updatePath)
+                            : status;
 }
 
 /// Update object.
@@ -991,10 +958,8 @@ StatusCode DataSvc::updateObject(DataObject* parent,
                                  const std::string& updatePath)   {
   DataObject* pObject = nullptr;
   StatusCode status = findObject(parent, updatePath, pObject);
-  if ( status.isSuccess() )   {
-    status = updateObject(pObject);
-  }
-  return status;
+  return status.isSuccess() ? updateObject(pObject)
+                            : status;
 }
 
 // Link object
@@ -1009,21 +974,18 @@ StatusCode DataSvc::linkObject(IRegistry* from,
         if ( !to_entry )   {
           return INVALID_OBJECT;
         }
-        else  {
-          std::string::size_type sep = objPath.rfind(SEPARATOR);
-          if ( sep > 0 && sep != std::string::npos )    {   // in case the objPath is a sub-directory itself
-            DataObject* pO = nullptr;
-            StatusCode sc = retrieveObject(from, objPath.substr(0,sep), pO);
-            if ( sc.isSuccess() )    {
-              sc = linkObject(pO->registry(), objPath.substr(sep), to);
-            }
-            return sc;
+        std::string::size_type sep = objPath.rfind(SEPARATOR);
+        if ( sep > 0 && sep != std::string::npos )    {   // in case the objPath is a sub-directory itself
+          DataObject* pO = nullptr;
+          StatusCode sc = retrieveObject(from, objPath.substr(0,sep), pO);
+          if ( sc.isSuccess() )    {
+            sc = linkObject(pO->registry(), objPath.substr(sep), to);
           }
-          // Now register the soft link
-          StatusCode status = from_entry->add( objPath, to, true);
-          return status.isSuccess() ?
-            IDataProviderSvc_NO_ERROR : DOUBL_OBJ_PATH;
+          return sc;
         }
+        // Now register the soft link
+        StatusCode status = from_entry->add( objPath, to, true);
+        return status.isSuccess() ? IDataProviderSvc_NO_ERROR : DOUBL_OBJ_PATH;
       }
     }
     catch (...) {
@@ -1052,10 +1014,8 @@ StatusCode DataSvc::linkObject(const std::string& from,
                                DataObject* to)    {
   DataObject* pO = nullptr;
   StatusCode status = retrieveObject(from, pO);
-  if ( status.isSuccess() )   {
-    return linkObject(pO->registry(), objPath, to);
-  }
-  return status;
+  return status.isSuccess() ? linkObject(pO->registry(), objPath, to)
+                            : status;
 }
 
 /// Add a link to another object.
@@ -1088,9 +1048,7 @@ StatusCode DataSvc::unlinkObject(IRegistry* from,
           return sc;
         }
         StatusCode status = from_entry->remove( objPath );
-        if ( status.isSuccess() )     {
-          return status;
-        }
+        if ( status.isSuccess() )  return status;
         return INVALID_OBJ_PATH;
       }
     }
@@ -1103,14 +1061,12 @@ StatusCode DataSvc::unlinkObject(IRegistry* from,
 
 /// Remove a link to another object.
 StatusCode DataSvc::unlinkObject(const std::string& fullPath)    {
-  if ( !fullPath.empty() )    {
-    if ( fullPath.front() != SEPARATOR )   {
-      return unlinkObject(m_rootName, fullPath);
-    }
-    auto sep = fullPath.rfind(SEPARATOR);
-    return unlinkObject(fullPath.substr(0,sep), fullPath.substr(sep));
+  if ( fullPath.empty() )    return INVALID_OBJ_PATH;
+  if ( fullPath.front() != SEPARATOR )   {
+    return unlinkObject(m_rootName, fullPath);
   }
-  return INVALID_OBJ_PATH;
+  auto sep = fullPath.rfind(SEPARATOR);
+  return unlinkObject(fullPath.substr(0,sep), fullPath.substr(sep));
 }
 
 /// Remove a link to another object.
@@ -1118,20 +1074,16 @@ StatusCode DataSvc::unlinkObject(const std::string& from,
                                  const std::string& objPath)    {
   DataObject* pObject = nullptr;
   StatusCode status = findObject(from, pObject);
-  if ( status.isSuccess() )   {
-    status = unlinkObject(pObject->registry(), objPath);
-  }
-  return status;
+  return status.isSuccess() ? unlinkObject(pObject->registry(), objPath)
+                            : status;
 }
 
 /// Remove a link to another object.
 StatusCode DataSvc::unlinkObject(DataObject* from,
                                  const std::string& objPath)    {
-  if ( checkRoot() )  {
-    IRegistry* from_entry = m_root->findLeaf(from);
-    return unlinkObject(from_entry, objPath);
-  }
-  return INVALID_ROOT;
+  if ( !checkRoot() )  return INVALID_ROOT;
+  IRegistry* from_entry = m_root->findLeaf(from);
+  return unlinkObject(from_entry, objPath);
 }
 
 /// Add an item to the preload list
@@ -1201,11 +1153,9 @@ StatusCode DataSvc::preLoad()   {
 StatusCode DataSvc::initialize()    {
   // Nothing to do: just call base class initialisation
   StatusCode sc = Service::initialize();
-  if ( !sc.isSuccess() )  {
-    return sc;
-  }
-  sc = service("IncidentSvc", m_incidentSvc, true);
-  if ( UNLIKELY(!sc.isSuccess()) )  {
+  if ( UNLIKELY(!sc.isSuccess()) )  return sc;
+  m_incidentSvc = service("IncidentSvc", true);
+  if ( UNLIKELY(!m_incidentSvc) )  {
     error() << "Failed to access incident service." << endmsg;
   }
   return sc;
@@ -1217,10 +1167,7 @@ StatusCode DataSvc::reinitialize()    {
   setDataLoader(nullptr).ignore();
   resetPreLoad().ignore();
   clearStore().ignore();
-  if ( m_incidentSvc )  {
-    m_incidentSvc->release();
-    m_incidentSvc = nullptr;
-  }
+  m_incidentSvc.reset();
   // re-initialize the base class
   StatusCode sc = Service::reinitialize();
   if ( UNLIKELY(!sc.isSuccess()) ) {
@@ -1228,10 +1175,10 @@ StatusCode DataSvc::reinitialize()    {
     return sc;
   }
   // the initialize part is copied here
-  sc = service("IncidentSvc", m_incidentSvc, true);
-  if ( UNLIKELY(!sc.isSuccess()) )  {
+  m_incidentSvc = service("IncidentSvc", true);
+  if ( UNLIKELY(!m_incidentSvc) )  {
     error() << "Failed to access incident service." << endmsg;
-    return sc;
+    return StatusCode::FAILURE;
   }
   // return
   return StatusCode::SUCCESS;
@@ -1243,10 +1190,7 @@ StatusCode DataSvc::finalize()    {
   setDataLoader(nullptr).ignore();
   resetPreLoad().ignore();
   clearStore().ignore();
-  if ( m_incidentSvc )  {
-    m_incidentSvc->release();
-    m_incidentSvc = nullptr;
-  }
+  m_incidentSvc.reset();
   return Service::finalize();
 }
 
@@ -1256,8 +1200,8 @@ CLID DataSvc::rootCLID() const {
 }
 
 /// Name for root Event
-std::string DataSvc::rootName() const {
-  return( m_rootName );
+const std::string& DataSvc::rootName() const {
+  return m_rootName;
 }
 
 /// Create default objects in case forced creation of leaves is requested
@@ -1269,22 +1213,13 @@ DataObject* DataSvc::createDefaultObject()   const    {
  *  be retrieved
  */
 IConversionSvc* DataSvc::getDataLoader(IRegistry* /* pReg */)   {
-  return m_dataLoader;
+  return m_dataLoader.get();
 }
 
 /// Standard Constructor
 DataSvc::DataSvc(const std::string& name,ISvcLocator* svc)
-: base_class(name,svc), m_rootCLID( /*CLID_Event*/ 110),
-  m_rootName( "/Event"), m_root(nullptr)
+: base_class(name,svc)
 {
-  m_dataLoader = nullptr;
-  m_inhibitMap = 0;
-  m_incidentSvc = nullptr;
-  m_forceLeaves = false;
-  m_enableFaultHdlr = false;
-  m_enableAccessHdlr = false;
-  m_faultName  = "DataFault";
-  m_accessName = "DataAccess";
   declareProperty("RootCLID",            m_rootCLID);
   declareProperty("RootName",            m_rootName);
   declareProperty("ForceLeaves",         m_forceLeaves);

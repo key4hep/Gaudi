@@ -7,7 +7,7 @@
 import os
 import sys
 from datetime import datetime
-import locker
+import fcntl
 
 def mergeFiles( fragFileNames, mergedFileName, commentChar, doMerge, ignoreMissing ):
 
@@ -31,10 +31,19 @@ def mergeFiles( fragFileNames, mergedFileName, commentChar, doMerge, ignoreMissi
             os.makedirs(path_to_file)
         open(mergedFileName,'a')
 
-    mergedFile = open( mergedFileName, 'r+' )
+    lockFile = open( mergedFileName + '.lock', 'a' )
 
     # locking file, gaining exclusive access to it
-    lock = locker.lock( mergedFile )
+    # code from locker.py, only posix relevant part - we don't support NT - did we ever ??
+    # Lock with a simple call to lockf() - this blocks until the lock is aquired
+    try:
+        fcntl.lockf( lockFile, fcntl.LOCK_EX )
+    except IOError, exc_value:
+        print "Problem when trying to lock {0}, IOError {1}".format(mergedFile, exc_value[0])
+        raise
+
+    mergedFile = open( mergedFileName, 'r' )
+
     try:
 
         newLines = [ ]
@@ -69,13 +78,18 @@ def mergeFiles( fragFileNames, mergedFileName, commentChar, doMerge, ignoreMissi
                     newLines.append('\n')
                 newLines.append(endMark + bf + '\n')
 
-        mergedFile.seek(0)
-        mergedFile.truncate(0)
-        mergedFile.writelines(newLines)
+        #mergedFile.seek(0)
+        #mergedFile.truncate(0)
+        #mergedFile.writelines(newLines)
+
+        newFile = open( mergedFileName + ".new" , 'w' )
+        newFile.writelines(newLines)
+        newFile.close()
+        os.rename(mergedFileName + ".new",mergedFileName)
 
     finally:
         # unlock file
-        locker.unlock( mergedFile )
+        fcntl.lockf( lockFile, fcntl.LOCK_UN )
 
     return 0
 
@@ -169,6 +183,7 @@ if __name__ == "__main__":
     logging.basicConfig(level = logging.INFO)
 
     if "GAUDI_BUILD_LOCK" in os.environ:
+        import locker
         globalLock = locker.LockFile(os.environ["GAUDI_BUILD_LOCK"], temporary =  True)
     else:
         globalLock = None

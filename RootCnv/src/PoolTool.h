@@ -1,4 +1,5 @@
 #include "RootCnv/PoolClasses.h"
+#include <algorithm>
 /*
 *  Gaudi namespace declaration
 */
@@ -24,8 +25,7 @@ namespace Gaudi {
 
     /// Convert TES object identifier to ROOT tree name
     string _treeName(string t) {
-      for(string::iterator j = t.begin(); j != t.end(); ++j )
-        if ( *j == '/' ) *j = '_';
+      std::replace(std::begin(t),std::end(t),'/','_');
       return t;
     }
 
@@ -104,7 +104,7 @@ namespace Gaudi {
           << branch_name << " [" << tname << "]" << endmsg;
         t->Print();
       }
-      return 0;
+      return nullptr;
     }
 
     /// Save references section when closing data file (NOT SUPPORTED)
@@ -118,13 +118,9 @@ namespace Gaudi {
 
       // First read ##Params
       TTree* t = (TTree*)c->file()->Get("##Params");
-      if ( 0 == t ) {
-        return StatusCode::FAILURE;
-      }
+      if ( !t ) return StatusCode::FAILURE;
       TBranch* b = t->GetBranch("db_string");
-      if ( 0 == b ) {
-        return StatusCode::FAILURE;
-      }
+      if ( !b ) return StatusCode::FAILURE;
       for(i=0,b->SetAddress(text); i < b->GetEntries(); ++i) {
         b->GetEvent(i);
         char* id1 = strstr(text,"[NAME=");
@@ -137,7 +133,7 @@ namespace Gaudi {
           if ( id11 && id22 )  {
             *id11 = 0;
             *id22 = 0;
-            params().push_back(make_pair(id1,id2));
+            params().emplace_back(id1,id2);
             msgSvc() << "Param:" << id1 << "=" << id2 << "." << endmsg;
           }
         }
@@ -145,13 +141,9 @@ namespace Gaudi {
 
       // Read ##Links
       t = (TTree*)c->file()->Get("##Links");
-      if ( 0 == t ) {
-        return StatusCode::FAILURE;
-      }
+      if ( !t ) return StatusCode::FAILURE;
       b = t->GetBranch("db_string");
-      if ( 0 == b ) {
-        return StatusCode::FAILURE;
-      }
+      if ( !b ) return StatusCode::FAILURE;
       m_poolLinks.resize((size_t)b->GetEntries()+2); // Take into account the ##Links and ##Shapes entry of POOL!
       for(i=0,b->SetAddress(text); i < b->GetEntries(); ++i) {
         b->GetEvent(i);

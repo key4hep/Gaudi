@@ -1,4 +1,3 @@
-// $Id: MyGaudiTool.h,v 1.3 2008/10/10 15:18:56 marcocle Exp $
 #ifndef GAUDIEXANMPLES_MYGAUDITOOL_H
 #define GAUDIEXANMPLES_MYGAUDITOOL_H 1
 
@@ -12,7 +11,9 @@
  *  @author Pere Mato
  *  @date   14/10/2001
  */
-class MyGaudiTool : public extends2<GaudiTool, IMyTool, IMyOtherTool> {
+class MyGaudiTool : public extends<GaudiTool,
+                                   IMyTool,
+                                   IMyOtherTool> {
 public:
 
   /// Standard Constructor
@@ -21,19 +22,19 @@ public:
               const IInterface* parent);
 
   // IMyTool interface
-  virtual const std::string&  message() const;
-  virtual void  doIt();
+  const std::string&  message() const override;
+  void  doIt() override;
 
   // IMyOtherTool interface
-  virtual void doItAgain();
+  void doItAgain() override;
 
   /// Overriding initialize and finalize
-  virtual StatusCode initialize();
-  virtual StatusCode finalize();
+  StatusCode initialize() override;
+  StatusCode finalize() override;
 
 protected:
   /// Standard destructor
-  virtual ~MyGaudiTool( );
+  ~MyGaudiTool( ) override;
 private:
   /// Properties
   int          m_int;

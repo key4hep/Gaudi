@@ -1,6 +1,4 @@
 //==============================================================================
-// $Id: SelectStatement.h,v 1.3 2004/07/06 10:17:40 mato Exp $
-//------------------------------------------------------------------------------
 //
 // Package : Kernel
 //
@@ -43,7 +41,7 @@
     Author:  M.Frank
     Version: 1.0
 */
-class GAUDI_API SelectStatement: public implements1<ISelectStatement> {
+class GAUDI_API SelectStatement: public implements<ISelectStatement> {
 public:
   /// Standard Constructor initializing select string
   explicit SelectStatement(const std::string& s, long typ)

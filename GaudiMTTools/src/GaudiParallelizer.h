@@ -21,8 +21,8 @@ class GaudiParallelizer: public GaudiAlgorithm {
 public:
   /// Standard constructor
   GaudiParallelizer(const std::string& name, ISvcLocator* pSvcLocator);
-  virtual ~GaudiParallelizer(); ///< Destructor
-
+  /// Destructor. An explicit noexcept(true) is necessary for Gaudi to build (see GAUDI-1187)
+  virtual ~GaudiParallelizer() noexcept(true) override { }
   virtual StatusCode initialize();    ///< Algorithm initialization
   virtual StatusCode execute   ();    ///< Algorithm execution
   virtual StatusCode finalize  ();    ///< Algorithm finalization
@@ -72,7 +72,6 @@ private:
   std::vector<AlgorithmEntry> m_entries; ///< List of algorithms to process.
   bool m_modeOR;                         ///< Indicates that the OR is wanted instead of AND
 
-  bool m_ignoreFilter;                   ///< True if one continues always.
   bool m_measureTime;                    ///< Flag to measure time
   bool m_returnOK;                       ///< Forces the sequencer to return a good status
   ISequencerTimerTool* m_timerTool;      ///< Pointer to the timer tool

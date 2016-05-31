@@ -1,6 +1,4 @@
-// $Id: MyAudTool.cpp,v 1.1 2007/01/22 16:06:14 hmd Exp $
 // Framework include files
-#include "GaudiKernel/ToolFactory.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/GaudiException.h"
 
@@ -33,22 +31,19 @@ const std::string&  MyAudTool::message() const
 void  MyAudTool::doErr()
 //------------------------------------------------------------------------------
 {
-  MsgStream log(msgSvc(), name());
-  log << MSG::ERROR << "doErr() has been called" << endmsg;
+  error() << "doErr() has been called" << endmsg;
 }
 void  MyAudTool::doFatal()
 //------------------------------------------------------------------------------
 {
-  MsgStream log(msgSvc(), name());
-  log << MSG::FATAL << "doFatal() has been called" << endmsg;
+  fatal() << "doFatal() has been called" << endmsg;
 }
 
 //------------------------------------------------------------------------------
 StatusCode  MyAudTool::initialize()
 //------------------------------------------------------------------------------
 {
-  MsgStream log(msgSvc(), name());
-  log << MSG::INFO << "intialize() has been called" << endmsg;
+  info() << "intialize() has been called" << endmsg;
 
   return StatusCode::SUCCESS;
 }
@@ -56,8 +51,7 @@ StatusCode  MyAudTool::initialize()
 StatusCode  MyAudTool::finalize()
 //------------------------------------------------------------------------------
 {
-  MsgStream log(msgSvc(), name());
-  log << MSG::INFO << "finalize() has been called" << endmsg;
+  info() << "finalize() has been called" << endmsg;
   return StatusCode::SUCCESS;
 }
 
@@ -65,8 +59,7 @@ StatusCode  MyAudTool::finalize()
 MyAudTool::~MyAudTool( )
 //------------------------------------------------------------------------------
 {
-  MsgStream log(msgSvc(), name());
-  log << MSG::INFO << "destructor has been called" << endmsg;
+  info() << "destructor has been called" << endmsg;
 }
 
 

@@ -17,12 +17,12 @@ AIDA::IHistogram3D*  GaudiHistos<PBASE>::book3D
   const unsigned long binsZ   ) const
 {
   //
-  if  ( !produceHistos() )                   { return 0    ; } // RETURN
+  if  ( !produceHistos() )                   { return nullptr    ; } // RETURN
   //
   // exist?
-  AIDA::IHistogram3D* hist = histo3D ( title ) ;
+  auto hist = histo3D ( title ) ;
   // histogram is already booked
-  if( 0 != hist      )                           { return hist ; } // RETURN !!
+  if( hist )                           { return hist ; } // RETURN !!
 
   // propose the histogram ID
   HistoID ID;
@@ -52,19 +52,19 @@ AIDA::IHistogram3D*  GaudiHistos<PBASE>::book3D
   const unsigned long binsZ   ) const
 {
   //
-  if  ( !produceHistos() )                   { return 0    ; } // RETURN
+  if  ( !produceHistos() )                   { return nullptr; } // RETURN
   //
   // Check ID
   if (ID.undefined())
   {
     this->Error("Undefined Histogram ID : Title='"+title+"'");
-    return NULL;
+    return nullptr;
   }
 
   // exist?
-  AIDA::IHistogram3D* hist = histo3D( ID ) ;
+  auto hist = histo3D( ID ) ;
   // histogram is already booked
-  if( 0 != hist       )                        { return hist ; } // RETURN !!
+  if( hist )                        { return hist ; } // RETURN !!
 
   // Histogram title
   const std::string & htitle =
@@ -103,9 +103,9 @@ AIDA::IHistogram3D*  GaudiHistos<PBASE>::book3D
   }
 
   // Check OK
-  if( 0 == hist )
+  if( !hist )
   { this->Error( "IHistogram3D* points to NULL! ID='" + ID.idAsString() +
-                 "' title='"+htitle+"'" ) ; return 0; } // RETURN !!
+                 "' title='"+htitle+"'" ) ; return nullptr; } // RETURN !!
 
   // add histogram into histogram storages
   m_histo3DMapID    [ ID    ] = hist ;
@@ -135,15 +135,15 @@ AIDA::IHistogram3D* GaudiHistos<PBASE>::fill
   const double        weight ,
   const std::string&  title  ) const
 {
-  if ( 0 == histo ) { return 0 ; } // RETURN
+  if ( !histo ) { return nullptr ; } // RETURN
   //
   if ( !checkForNaN() )
   { Gaudi::Utils::Histos::fill ( histo , valueX , valueY , valueZ , weight ) ; }
-  else if  ( lfin ( valueX ) && lfin ( valueY ) &&
-             lfin ( valueZ ) && lfin ( weight ) )
+  else if  ( std::isfinite ( valueX ) && std::isfinite ( valueY ) &&
+             std::isfinite ( valueZ ) && std::isfinite ( weight ) )
   { Gaudi::Utils::Histos::fill ( histo , valueX , valueY , valueZ , weight ) ; }
-  else if  ( lnan ( valueX ) || lnan ( valueY ) ||
-             lnan ( valueZ ) || lnan ( weight ) )
+  else if  ( std::isnan ( valueX ) || std::isnan ( valueY ) ||
+             std::isnan ( valueZ ) || std::isnan ( weight ) )
   {
     this -> Warning
       ("fill():: 'NaN'      value is skipped from the histogram '"
@@ -178,12 +178,12 @@ AIDA::IHistogram3D*  GaudiHistos<PBASE>::plot3D
   const unsigned long binsZ        ,
   const double        weight       ) const
 {
-  AIDA::IHistogram3D * h(0);
+  AIDA::IHistogram3D * h(nullptr);
   if ( produceHistos() )
   {
     // retrieve or book the histogram
     h = histo3D ( title ) ;
-    if ( 0 == h ) { h = book3D ( title ,
+    if ( !h ) { h = book3D ( title ,
                                  lowX , highX , binsX ,
                                  lowY , highY , binsY ,
                                  lowZ , highZ , binsZ ) ; }
@@ -213,12 +213,12 @@ AIDA::IHistogram3D* GaudiHistos<PBASE>::plot3D
   const unsigned long binsZ        ,
   const double        weight       ) const
 {
-  AIDA::IHistogram3D * h(0);
+  AIDA::IHistogram3D * h(nullptr);
   if ( produceHistos() )
   {
     // retrieve or book the histogram
     h = histo3D ( ID ) ;
-    if ( 0 == h ) { h = book3D ( ID , title ,
+    if ( !h ) { h = book3D ( ID , title ,
                                  lowX , highX , binsX ,
                                  lowY , highY , binsY ,
                                  lowZ , highZ , binsZ ) ; }

@@ -38,7 +38,8 @@ class SequentialTask; //forward declaration
  *  @author  Daniel Funke
  *  @version 0.1
  */
-class ParallelSequentialSchedulerSvc: public extends1<Service, IScheduler> {
+class ParallelSequentialSchedulerSvc: public extends<Service,
+                                                     IScheduler> {
 public:
   /// Constructor
   ParallelSequentialSchedulerSvc( const std::string& name, ISvcLocator* svc );
@@ -76,9 +77,6 @@ private:
   /// Cache the list of algs to be executed
   std::list<IAlgorithm*> m_algList;
 
-  /// The context of the event being processed
-  EventContext* m_eventContext;
-
   /// Queue of finished events
   tbb::concurrent_bounded_queue<EventContext*> m_finishedEvents;
 
@@ -87,31 +85,28 @@ private:
   std::atomic_int m_freeSlots;
 
   /// A shortcut to the whiteboard
-   SmartIF<IHiveWhiteBoard> m_whiteboard;
+  SmartIF<IHiveWhiteBoard> m_whiteboard;
 
-   /// The whiteboard name
-   std::string m_whiteboardSvcName;
+  /// The whiteboard name
+  std::string m_whiteboardSvcName;
 
-   /// Cache for the algorithm resource pool
-   SmartIF<IAlgResourcePool>  m_algResourcePool;
+  /// Cache for the algorithm resource pool
+  SmartIF<IAlgResourcePool>  m_algResourcePool;
 
-   /// Size of the threadpool initialised by TBB; a value of -1 gives TBB the freedom to choose
-    int m_threadPoolSize;
+  /// Size of the threadpool initialised by TBB; a value of -1 gives TBB the freedom to choose
+  int m_threadPoolSize;
 
-   //TBB scheduler
-   tbb::task_scheduler_init* m_tbb_sched;
+  //TBB scheduler
+  std::unique_ptr<tbb::task_scheduler_init> m_tbb_sched;
 
-   //control flow manager
-   concurrency::ExecutionFlowManager m_controlFlow;
+  //control flow manager
+  concurrency::ExecutionFlowManager m_controlFlow;
 
-   /// Vector to bookkeep the information necessary to the index2name conversion
-   std::vector<std::string> m_algname_vect;
+  /// Vector to bookkeep the information necessary to the index2name conversion
+  std::vector<std::string> m_algname_vect;
 
-   /// Map to bookkeep the information necessary to the name2index conversion
-   std::unordered_map<std::string,unsigned int> m_algname_index_map;
-
-   /// Ugly, will disappear when the deps are declared only within the C++ code of the algos.
-   std::vector<std::vector<std::string>> m_algosDependencies;
+  /// Map to bookkeep the information necessary to the name2index conversion
+  std::unordered_map<std::string,unsigned int> m_algname_index_map;
 
   // Needed to queue actions on algorithm finishing and decrement algos in flight
   friend class SequentialTask;
@@ -120,23 +115,23 @@ private:
 
 class SequentialTask: public tbb::task {
 public:
-    SequentialTask(ISvcLocator* svcLocator,
-                   EventContext* eventContext,
-                   ParallelSequentialSchedulerSvc* scheduler,
-                   IAlgResourcePool* algPool):
+  SequentialTask(ISvcLocator* svcLocator,
+                 EventContext* eventContext,
+                 ParallelSequentialSchedulerSvc* scheduler,
+                 IAlgResourcePool* algPool):
 
-                m_serviceLocator(svcLocator),
-                m_eventContext(eventContext),
-                m_scheduler(scheduler),
-                m_algPool(algPool){
+                   m_serviceLocator(svcLocator),
+                   m_eventContext(eventContext),
+                   m_scheduler(scheduler),
+                   m_algPool(algPool){
 
-    };
-    virtual tbb::task* execute();
+  };
+  virtual tbb::task* execute();
 private:
-    SmartIF<ISvcLocator> m_serviceLocator;
-    EventContext* m_eventContext;
-    SmartIF<ParallelSequentialSchedulerSvc> m_scheduler;
-    SmartIF<IAlgResourcePool> m_algPool;
+  SmartIF<ISvcLocator> m_serviceLocator;
+  EventContext* m_eventContext;
+  SmartIF<ParallelSequentialSchedulerSvc> m_scheduler;
+  SmartIF<IAlgResourcePool> m_algPool;
 };
 
 #endif // GAUDIHIVE_PARALLELSEQUENTIALSCHEDULERSVC_H

@@ -11,7 +11,7 @@
 #include <string>
 #include "GaudiKernel/ICounterSvc.h"
 #include "GaudiKernel/Algorithm.h"
-#include "GaudiKernel/MsgStream.h"
+#include "GaudiKernel/Stat.h"
 
 /** @class CounterTestAlg CounterTestAlg.h
 
@@ -34,15 +34,14 @@ namespace GaudiSvcTest  {
     }
     /// Initialize
     virtual StatusCode initialize()   {
-      MsgStream log(msgSvc(), name());
       StatusCode sc = service("CounterSvc", m_cntSvc, true);
       if ( !sc.isSuccess() )    {
-        log << MSG::ERROR << "Could not connect to CounterSvc." << endmsg;
+        error() << "Could not connect to CounterSvc." << endmsg;
         return sc;
       }
       sc = m_cntSvc->create("CounterTest", "EventCount", 1000, m_evtCount);
       if ( !sc.isSuccess() )    {
-        log << MSG::ERROR << "Could not create counter CounterTest::EventCount." << endmsg;
+        error() << "Could not create counter CounterTest::EventCount." << endmsg;
         return sc;
       }
       m_total = m_cntSvc->create("CounterTest", "TotalCount").counter();
@@ -50,7 +49,7 @@ namespace GaudiSvcTest  {
         m_total = m_cntSvc->create("CounterTest", "TotalCount").counter();
       }
       catch( std::exception& e)  {
-        log << MSG::ALWAYS << "Exception: " << e.what() << endmsg;
+        always() << "Exception: " << e.what() << endmsg;
       }
       ICounterSvc::Printout p(m_cntSvc);
       m_cntSvc->print("CounterTest", "EventCount", p);
@@ -59,14 +58,13 @@ namespace GaudiSvcTest  {
     }
     /// Finalize
     virtual StatusCode finalize()   {
-      MsgStream log(msgSvc(), name());
       ICounterSvc::Printout p(m_cntSvc);
-      log << MSG::INFO << "Single counter:CounterTest::EventCount" << endmsg;
+      info() << "Single counter:CounterTest::EventCount" << endmsg;
       m_cntSvc->print("CounterTest", "EventCount", p);
-      log << MSG::INFO << "Counter group: CounterTest" << endmsg;
+      info() << "Counter group: CounterTest" << endmsg;
       m_cntSvc->print("CounterTest", p);
       m_cntSvc->remove("CounterTest", "EventCount");
-      log << MSG::INFO << "After removal CounterTest::EventCount:" << endmsg;
+      info() << "After removal CounterTest::EventCount:" << endmsg;
       m_cntSvc->print(p);
       if ( m_cntSvc ) m_cntSvc->release();
       m_cntSvc = 0;

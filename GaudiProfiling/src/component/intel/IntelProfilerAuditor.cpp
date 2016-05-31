@@ -9,9 +9,6 @@
 #include <iomanip>
 #include <sstream>
 
-// * Boost
-#include <boost/foreach.hpp>
-
 // * Gaudi libraries.
 #include "GaudiKernel/Auditor.h"
 #include "GaudiKernel/IAuditorSvc.h"
@@ -86,8 +83,6 @@ private:
   // parameters of amplxe-cl tool to separate slow, medium and fast events.
   int m_frames_rate;
 private:
-  // Logger.
-  MsgStream m_log;
   // Events counter.
   int m_nEvents;
   // Domain for event loop.
@@ -120,7 +115,7 @@ private:
 // ## Implementation.
 // Constructor
 IntelProfilerAuditor::IntelProfilerAuditor(const std::string& name,
-  ISvcLocator* pSvcLocator) : Auditor(name, pSvcLocator), m_log(msgSvc(), name)
+  ISvcLocator* pSvcLocator) : Auditor(name, pSvcLocator)
     ,m_nEvents(0), m_isStarted(false) {
   // ## Properties
   declareProperty("IncludeAlgorithms", m_included,
@@ -190,18 +185,18 @@ void IntelProfilerAuditor::start_profiling_component(const std::string& name) {
   }
 
   if (taskId && state.parent_event) {
-    m_log << MSG::DEBUG << stackIndent() << "Pause event " <<
+    debug() << stackIndent() << "Pause event " <<
       state.parent_event << endmsg;
     __itt_event_end(state.parent_event);
   }
   m_stack.push_back(state);
 
-  m_log << MSG::DEBUG << stackIndent() << "Start profiling component "
+  debug() << stackIndent() << "Start profiling component "
     << typeName << endmsg;
 
   if (taskId) {
      // Start event
-    m_log << MSG::DEBUG << stackIndent() << "Start event type "
+    debug() << stackIndent() << "Start event type "
       << state.event << " for "  << typeName << endmsg;
     __itt_event_start(state.event);
   }
@@ -211,20 +206,20 @@ void IntelProfilerAuditor::start_profiling_component(const std::string& name) {
 
 void IntelProfilerAuditor::resume() {
   if (!m_isStarted) return;
-  m_log << MSG::DEBUG << stackIndent() << "Resume" << endmsg;
+  debug() << stackIndent() << "Resume" << endmsg;
   __itt_resume();
 }
 
 void IntelProfilerAuditor::pause() {
   if (!m_isStarted) return;
-  m_log << MSG::DEBUG << stackIndent() << "Pause" << endmsg;
+  debug() << stackIndent() << "Pause" << endmsg;
   __itt_pause();
 }
 
 void IntelProfilerAuditor::skip_profiling_component(const std::string& name) {
   if (!m_isStarted) return;
   m_stack.push_back(stack_entity(name, false));
-  m_log << MSG::DEBUG << stackIndent() << "Skip component "
+  debug() << stackIndent() << "Skip component "
     << name << endmsg;
 }
 
@@ -266,8 +261,7 @@ std::string
 IntelProfilerAuditor::taskTypeName(const std::string& component_name) const {
   std::string result;
   std::string delim = "";
-  BOOST_FOREACH(const stack_entity& value,
-     m_stack) {
+  for (const auto& value : m_stack) {
     result += delim+value.name;
     delim = m_alg_delim;
   }
@@ -275,8 +269,7 @@ IntelProfilerAuditor::taskTypeName(const std::string& component_name) const {
 }
 
 StatusCode IntelProfilerAuditor::initialize() {
-  m_log.setLevel(outputLevel());
-  m_log << MSG::INFO << "Initialised" << endmsg;
+  info() << "Initialised" << endmsg;
 
   IIncidentSvc * inSvc = NULL;
   const StatusCode sc = serviceLocator()->service("IncidentSvc", inSvc);
@@ -291,32 +284,28 @@ StatusCode IntelProfilerAuditor::initialize() {
   inSvc->addListener(this, IncidentType::EndProcessing);
 
   std::string str_excluded, str_included, str_eventtypes;
-  BOOST_FOREACH(const std::string& name, m_excluded)
-  {
+  for (const auto& name : m_excluded) {
     str_excluded += " " + name;
   }
-  BOOST_FOREACH(const std::string& name, m_included)
-  {
+  for (const auto& name : m_included) {
     str_included += " " + name;
   }
-
-  BOOST_FOREACH(const std::string& name, m_algs_for_tasktypes)
-  {
+  for (const auto& name : m_algs_for_tasktypes) {
     str_eventtypes += " " + name;
   }
 
   if (!m_included.empty()) {
-    m_log << MSG::INFO << "Included algorithms (" << m_included.size()
+    info() << "Included algorithms (" << m_included.size()
       << "): " << str_included << endmsg;
   }
 
   if (!m_excluded.empty()){
-    m_log << MSG::INFO << "Excluded algorithms (" << m_excluded.size()
+    info() << "Excluded algorithms (" << m_excluded.size()
       << "): " << str_excluded << endmsg;
   }
 
   if (!m_algs_for_tasktypes.empty()){
-    m_log << MSG::INFO << "Event types (" << m_algs_for_tasktypes.size()
+    info() << "Event types (" << m_algs_for_tasktypes.size()
       << "): " << str_eventtypes << endmsg;
   }
 
@@ -335,13 +324,13 @@ void IntelProfilerAuditor::handle(const Incident& incident) {
   ++m_nEvents;
 
   if (m_nStartFromEvent == m_nEvents) {
-    m_log << MSG::INFO << "Start profiling (event #" << m_nEvents << ")"
+    info() << "Start profiling (event #" << m_nEvents << ")"
         << endmsg;
     start();
   }
 
   if (m_nStopAtEvent == m_nEvents) {
-    m_log << MSG::INFO << "Stop profiling (event #" << m_nEvents << ")"
+    info() << "Stop profiling (event #" << m_nEvents << ")"
         << endmsg;
     stop();
   }
@@ -353,7 +342,7 @@ void IntelProfilerAuditor::before(StandardEventType type, INamedInterface* i) {
 
   // Name of the current component.
   const std::string& name = i->name();
-  //m_log << MSG::DEBUG <<  "Before: " << name << " " << type << endmsg;
+  //debug() <<  "Before: " << name << " " << type << endmsg;
 
   if (isRunning()) {
     if (isExcluded(name)) {
@@ -411,12 +400,12 @@ void IntelProfilerAuditor::after(StandardEventType type,
 
 
   if (state.event != 0) {
-     m_log << MSG::DEBUG << stackIndent(true) << "End event for "
+     debug() << stackIndent(true) << "End event for "
       << name << endmsg;
     __itt_event_end(state.event);
 
     if (state.parent_event != 0) {
-      m_log << MSG::DEBUG << stackIndent() << "Resume event for "
+      debug() << stackIndent() << "Resume event for "
         << state.parent_event << endmsg;
       __itt_event_start(state.parent_event);
     }

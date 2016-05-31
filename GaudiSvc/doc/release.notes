@@ -2,6 +2,150 @@ Package: GaudiSvc
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+=============================== GaudiSvc v22r1 ===============================
+
+! 2016-03-11 - commit 4912fc9
+
+ - Renamed MetaDataSvc to Gaudi::MetaDataSvc
+
+   MetaDataSvc is moved into the Gaudi namespace to avoid conflicts
+ with the
+   existing MetaDataSvc in ATLAS.
+    This also includes a minor fix to MetaDataSvc.
+    Fixes GAUDI-1199
+    See merge request !138
+
+! 2016-03-10 - commit 2de9290
+
+ - added metadata service
+
+   The metadata service adds information about n-tuple production into the
+   resulting n-tuple.
+    Update and overrides !128
+    See merge request !136
+
+! 2016-03-10 - commit 4a18175
+
+ - removed uses of templates implements[1-4], extends[1-4] and
+   extend_interfaces[1-4]
+
+   Since merge request !22 they are unnecessary.
+    See merge request !133
+
+! 2016-03-10 - commit 8a11f51
+
+ - fixed unprotected debug messages
+
+   I also added the possibility of dumping a stack trace for unprotected
+
+   messages.
+    Fixes GAUDI-1192
+    See merge request !129
+
+! 2016-02-22 - commit acafe77
+
+ - correctly initialize CommonMessaging::m_level
+
+   Fixes GAUDI-1185
+    See merge request !118
+
+! 2016-02-11 - commit b0618f7
+
+ - Improve CommonMessaging
+
+   Implementation of GAUDI-1146: Improve CommonMessaging and use it in more
+   places.
+
+   See merge request !76
+
+   Conflicts:
+   GaudiExamples/tests/qmtest/refs/AlgTools2.ref
+   GaudiExamples/tests/qmtest/refs/MultiInput/Read.ref
+   GaudiExamples/tests/qmtest/refs/conditional_output/write.ref
+   GaudiKernel/GaudiKernel/AlgTool.h
+   GaudiKernel/GaudiKernel/Algorithm.h
+   GaudiKernel/GaudiKernel/Service.h
+   GaudiKernel/src/Lib/AlgTool.cpp
+   GaudiKernel/src/Lib/Algorithm.cpp
+
+
+! 2016-02-06 - commit d905569
+
+ - introduce DataHandle and DataObjectHandle
+
+   See merge requests !57 !94 !95
+
+=============================== GaudiSvc v22r0 ===============================
+
+! 2015-11-02 - commit 57f356c
+
+ - Merge branch 'hive' into 'master'
+
+   Fixes GAUDI-978.
+
+   See merge request !65
+
+
+! 2015-10-26 - commit de80db5
+
+ - More modernization changes
+
+   Fix (almost) all warnings from clang 3.7, and use clang-modernize to further
+   modernize the code.
+
+   Fixes GAUDI-1118.
+
+   See merge request !49
+
+=============================== GaudiSvc v21r7 ===============================
+
+! 2015-09-25 - commit 35dd00c
+
+ - Merge branch 'dev-smartif-use' into 'master'
+
+   Provide (and use) C++11 smart pointer 'look and feel' for SmartIF
+
+   The aim of this branch is to confine, for everything that inherits from
+   IInterface, the calls to addRef(), release() and queryInterface() to the
+   SmartIF implementation. Exceptions are a few places where interfaces
+   (currently) return bare pointers (instead of SmartIF...) and where one thus
+   has to addRef() explicitly to avoid returning a dangling pointer. This can be
+   avoided by changing the relevant interface to return a SmartIF instead of a
+   bare pointer.
+
+   In addition, make SmartIF 'look and feel' like a smart pointer.
+
+   - use explict bool conversion instead of .isValid()
+   - add SmartIF::as<IFace>(), to return a SmartIF<IFace> to an alternate
+      interface -- which (together with move) encourages the use of auto
+   - add ISvcLocator::as<IFace>(), to return a SmartIF<IFace> to the current
+   ISvcLocator.
+   - add ServiceManager::service<IFace>() which return SmartIF<IFace> which
+   encourages
+      the use of auto
+
+   And add a few other C++11 modernizations (eg. prefer STL over raw loop)
+
+   Fixes GAUDI-1094
+
+   See merge request !24
+
+
+! 2015-09-14 - commit f7feb7c
+
+ - GAUDI-1082: Fixed compilation with CLHEP 2 after merge request !7
+
+
+
+! 2015-09-11 - commit c062cbe
+
+ - C++11 modernization changes
+
+   Some trivial - and some not so trivial! - changes which take advantage of
+   C++11...
+
+   See merge request !7
+
 ! 2015-02-27 - Marco Clemencic
  - Updated test reference file.
 
@@ -9,6 +153,16 @@ Commit Id: $Format:%H$
  - updated generate_rootmap to generate_componentlist
 
 M	cmt/requirements
+
+=============================== GaudiSvc v21r6 ===============================
+! 2015-05-21 - Marco Clemencic
+ - Fixed compilation with CMT.
+
+! 2015-03-14 - Marco Clemencic
+ - GAUDI-1024: Replaced GaudiKernel/Tokenizer with the new AttribStringParser.
+
+! 2015-04-09 - Marco Clemencic
+ - Use C++11 lambdas instead of boost::bind in FileMgr.
 
 =============================== GaudiSvc v21r5 ===============================
 ! 2015-01-07 - Marco Clemencic

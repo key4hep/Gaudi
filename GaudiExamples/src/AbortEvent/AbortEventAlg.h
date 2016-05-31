@@ -1,7 +1,5 @@
 #ifndef ABORTEVENTALG_H_
 #define ABORTEVENTALG_H_
-// $Id: AbortEventAlg.h,v 1.1 2007/11/16 18:34:56 marcocle Exp $
-
 // Include files
 // from Gaudi
 #include "GaudiAlg/GaudiAlgorithm.h"
@@ -30,7 +28,7 @@ protected:
 
 private:
   /// Pointer to the incident service.
-  IIncidentSvc *m_incidentSvc;
+  SmartIF<IIncidentSvc> m_incidentSvc;
   /// Event at which to abort.
   long m_count;
   /// Counter of events.

@@ -1,4 +1,3 @@
-// $Id: RndmTypeInfos.cpp,v 1.1 2003/02/18 09:10:49 mato Exp $
 // Include files
 #include <typeinfo>
 
@@ -9,6 +8,8 @@
 #ifdef __ICC
 // disable icc remark #177: declared but never referenced
 #pragma warning(disable:177)
+#elif __clang__
+#pragma clang diagnostic ignored "-Wunused-variable"
 #endif
 
 /**
@@ -20,6 +21,7 @@
  *
  * @author Sebastien Ponce
  */
+
 namespace {
   const std::type_info& Param = typeid(IRndmGen::Param);
   const std::type_info& GaussInfo = typeid(Rndm::Gauss);

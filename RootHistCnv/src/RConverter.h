@@ -34,11 +34,11 @@ namespace RootHistCnv {
   class RConverter : public Converter   {
   public:
     /// Convert the transient object to the requested representation.
-    virtual StatusCode createRep(DataObject*      pObj,
-                                 IOpaqueAddress*& refpAddr);
+    StatusCode createRep(DataObject*      pObj,
+                         IOpaqueAddress*& refpAddr) override;
     /// Inquire storage type
     static long storageType()    {         return ROOT_StorageType;    }
-    long repSvcType() const      {         return i_repSvcType();      }
+    long repSvcType() const override {         return i_repSvcType();      }
 
     StatusCode error(const std::string& msg);
     StatusCode regTFile(const std::string, const TFile*);
@@ -59,7 +59,7 @@ namespace RootHistCnv {
     RConverter( const CLID& clid, ISvcLocator* svc )
     : Converter(storageType(), clid, svc)  {    }
     /// Standard destructor
-    virtual ~RConverter() {     }
+    ~RConverter() override = default;
     /// Create the transient representation of an object.
     virtual StatusCode readObject( IOpaqueAddress* pAddr,
                                    DataObject*& refpObj);

@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 # =============================================================================
-# $Id: GaudiAlgs.py,v 1.2 2008/07/15 16:05:53 marcocle Exp $
-# =============================================================================
 ## @file
 #
 # Helper module, which effectively 'imports' few useful C++ algorithmic
@@ -1048,6 +1046,13 @@ class TupleDecColumnDispatcher(object):
     def __init__(self, func):
         self.func = func
         self.__doc__ = func.__doc__
+
+        mapping = {int: 'int', bool: 'bool', float: 'double'}
+        for k in mapping:
+            signature = 'const Tuples::Tuple& tuple, const string& name, const %s value'%(mapping[k])
+            mapping[k] = func.disp(signature)
+        self.mapping = mapping
+
     def __call__(self, *a):
         '''
         Explicitly call the explicit signature for the case with 3 arguments and
@@ -1056,10 +1061,10 @@ class TupleDecColumnDispatcher(object):
         '''
         if len(a) == 3:
             t = type(a[-1])
-            mapping = {int: 'int', bool: 'bool', float: 'double'}
-            if t in mapping:
-                signature = 'const Tuples::Tuple& tuple, const string& name, const %s value' % mapping[t]
-                return self.func.disp(signature)(*a)
+            try:
+                return self.mapping[t](*a)
+            except KeyError:
+                pass
         return self.func(*a)
 
 if ROOT6WorkAroundEnabled('ROOT-6697'):

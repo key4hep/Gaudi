@@ -62,7 +62,7 @@ public:
       @param  fullPath      Full path leading to the data object.
   */
   SmartDataPtr(IDataProviderSvc* pService, const std::string& fullPath)
-    : SmartDataStorePtr<TYPE,SmartDataObjectPtr::ObjectLoader>( pService,0,fullPath)
+    : SmartDataStorePtr<TYPE,SmartDataObjectPtr::ObjectLoader>( pService,nullptr,fullPath)
   {
   }
 
@@ -91,11 +91,9 @@ public:
       @param  path          Path to the data object relative to the parent object.
   */
   SmartDataPtr(IDataProviderSvc* pService, DataObject* pObject, const std::string& path)
-    : SmartDataStorePtr<TYPE,SmartDataObjectPtr::ObjectLoader>( pService,0,path)
+    : SmartDataStorePtr<TYPE,SmartDataObjectPtr::ObjectLoader>( pService,nullptr,path)
   {
-    if ( 0 != pObject )   {
-      this->m_pRegistry = pObject->registry();
-    }
+    if ( pObject ) this->m_pRegistry = pObject->registry();
   }
 
   /** Standard constructor: Construct an SmartDataPtr instance which is
@@ -136,8 +134,7 @@ public:
 
   /** Standard destructor
   */
-  virtual ~SmartDataPtr()   {
-  }
+  virtual ~SmartDataPtr() = default;
 
   /// Automatic conversion to data type
   template <class OTHER>

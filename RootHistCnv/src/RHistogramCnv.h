@@ -1,4 +1,3 @@
-// $Id: RHistogramCnv.h,v 1.4 2007/01/08 17:16:02 mato Exp $
 #ifndef ROOTHISTCNV_RHISTOGRAMCNV_H
 #define ROOTHISTCNV_RHISTOGRAMCNV_H 1
 
@@ -41,7 +40,7 @@ namespace RootHistCnv {
       if ( r && h )   {
         // Need to flip representation .... clumsy for the time being, because
         // THXY constructor has no "generic" copy constructor
-        std::auto_ptr<T> p(new T());
+        std::unique_ptr<T> p(new T());
         S *s = dynamic_cast<S*>(r->tObj());
         if ( s && p.get() )  {
           TTH<S>* casted = (TTH<S>*)s;
@@ -87,7 +86,7 @@ namespace RootHistCnv {
     static const CLID& classID();
     /// Standard constructor
     RHistogramCnv(ISvcLocator* svc) : RConverter(classID(), svc) {}
-    virtual ~RHistogramCnv() {}
+    virtual ~RHistogramCnv() = default;
   };
 }       // namespace RootHistCnv
 #endif  // ROOTHISTCNV_RHISTOGRAMCNV_H

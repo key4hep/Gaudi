@@ -29,28 +29,26 @@ bool StatusCode::checkingEnabled() {
 }
 
 const IssueSeverity& StatusCode::severity() const {
-  static IssueSeverity dummy;
-  if (m_severity) return *m_severity;
-  else            return dummy;
+  static const IssueSeverity dummy;
+  return  m_severity ? *m_severity : dummy;
 }
 
 void StatusCode::check() {
 
   if (!m_checked && !GaudiException::s_proc && !std::uncaught_exception() ) {
 
-    SmartIF<IMessageSvc> msg(Gaudi::svcLocator());
-
-    SmartIF<IStatusCodeSvc> scs(Gaudi::svcLocator()->service("StatusCodeSvc"));
+    auto msg = Gaudi::svcLocator()->as<IMessageSvc>();
+    auto scs = Gaudi::svcLocator()->service<IStatusCodeSvc>("StatusCodeSvc");
 
     const size_t depth = 21;
     void* addresses[depth];
 
     std::string lib, fnc;
-    void* addr = 0;
+    void* addr = nullptr;
     /// @FIXME : (MCl) use backTrace(std::string&, const int, const int) instead
     if (System::backTrace(addresses, depth)) {
 
-      for(size_t idx: {2, 3})
+      for(size_t idx: {2, 3}) {
         if (System::getStackLevel(addresses[idx], addr, fnc, lib) &&
             fnc != "StatusCode::~StatusCode()") {
 
@@ -63,7 +61,7 @@ void StatusCode::check() {
           }
           break;
         }
-
+      }
     }
   }
 }

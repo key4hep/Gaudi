@@ -42,7 +42,7 @@ namespace RootHistCnv {
     RNTupleCnv( ISvcLocator* svc, const CLID& clid );
 
     /// Standard destructor
-    virtual ~RNTupleCnv();
+    virtual ~RNTupleCnv() = default;
 
     /// Create the transient representation of an object.
     virtual StatusCode load(TTree* tree, INTuple*& refpObj ) = 0;
@@ -71,7 +71,7 @@ namespace RootHistCnv {
 				TYP minimum, TYP maximum,
 				INTuple* tuple);
 
-  bool parseName(std::string full, std::string &blk, std::string &var);
+  bool parseName(const std::string& full, std::string &blk, std::string &var);
 
 }    // namespace RootHistCnv
 

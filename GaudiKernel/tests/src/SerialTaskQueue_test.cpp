@@ -7,6 +7,10 @@
 
 #include "GaudiKernel/SerialTaskQueue.h"
 
+// Default serialization of STL containers.
+#include "GaudiKernel/SerializeSTL.h"
+using namespace GaudiUtils;
+
 // from SPI version of the testdriver
 #include <cppunit/extensions/TestFactoryRegistry.h>
 #include <cppunit/TextTestRunner.h>
@@ -27,10 +31,6 @@
 // provides macros for the tests
 #include <cppunit/extensions/HelperMacros.h>
 
-// Default serialization of STL containers.
-#include "GaudiKernel/SerializeSTL.h"
-using namespace GaudiUtils;
-
 #include <iostream>
 
 #include <tbb/task_group.h>
@@ -38,6 +38,8 @@ using namespace GaudiUtils;
 // #include <thread>
 #include <chrono>
 #include "GaudiKernel/Sleep.h"
+
+#include <algorithm>
 
 namespace GaudiKernelTest {
   class SerialTaskQueueTest: public CppUnit::TestFixture {
@@ -77,7 +79,7 @@ namespace GaudiKernelTest {
     public:
       Enqueuer(Gaudi::SerialTaskQueue& q, std::vector<int>& r, int _n):
         queue(q), results(r), n(_n) {}
-      void operator() () {
+      void operator() () const {
         queue.add(new PushBackTask(results, n));
       }
     private:

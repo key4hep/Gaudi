@@ -1,5 +1,5 @@
 package GaudiExamples
-version v26r1
+version v27r1
 
 use ROOT         * LCG_Interfaces
 use RELAX        * LCG_Interfaces -no_auto_imports
@@ -22,8 +22,7 @@ use HepPDT * LCG_Interfaces
 apply_pattern install_more_includes more=GaudiExamples
 library GaudiExamplesLib -no_static Lib/*.cpp
 
-library GaudiExamples    -no_static \
-                          AbortEvent/*.cpp \
+macro GaudiExamples_src  "AbortEvent/*.cpp \
                           AlgSequencer/*.cpp \
                           AlgTools/*.cpp \
                           DataOnDemand/*.cpp \
@@ -57,8 +56,12 @@ library GaudiExamples    -no_static \
                           FileMgr/*.cpp \
                           testing/*.cpp \
                           IntelProfiler/*.cpp \
-                          PluginService/*.cpp \
-                          MultiInput/*.cpp
+                          PluginService/*.cpp "
+
+macro_append GaudiExamples_src " MultiInput/*.cpp " \
+             ATLAS ""
+
+library GaudiExamples    -no_static ${GaudiExamples_src}
 
 
 apply_pattern reflex_dictionary dictionary=GaudiExamples \

@@ -5,6 +5,43 @@
 ! Commit Id   : $Format:%H$
 !-----------------------------------------------------------------------------
 
+========================== GaudiPluginService v3r1 ===========================
+
+! 2015-10-26 - commit de80db5
+
+ - More modernization changes
+
+   Fix (almost) all warnings from clang 3.7, and use clang-modernize to further
+   modernize the code.
+
+   Fixes GAUDI-1118.
+
+   See merge request !49
+
+
+! 2015-10-16 - commit bf01805
+
+ - Merge branch 'GAUDI-1111' into 'master'
+
+   remove dependency on Boost from GaudiPluginService
+
+   Reverted the part of commit dddeca32 that introduce the dependency on Boost.
+
+   Fixes GAUDI-1111.
+
+   See merge request !53
+
+========================== GaudiPluginService v3r0 ===========================
+
+! 2015-09-11 - commit c062cbe
+
+ - C++11 modernization changes
+
+   Some trivial - and some not so trivial! - changes which take advantage of
+   C++11...
+
+   See merge request !7
+
 ========================== GaudiPluginService v2r2 ===========================
 ! 2014-07-04 - Marco Clemencic
  - Improved Doxygen documentation.
@@ -20,7 +57,7 @@
 
 ! 2014-05-07 - Sebastien Binet
  - leverage C++11 variadic templates for the factories.
- - internally, also use l-value references and std::forward
+ - internally, also use r-value references and std::forward
  - hide the C++11 constructs from Reflex as GCC-XML parser predates C++11
 
 ========================== GaudiPluginService v1r2 ===========================

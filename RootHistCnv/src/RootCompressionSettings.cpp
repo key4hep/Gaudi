@@ -1,4 +1,3 @@
-
 // STD
 #include <stdexcept>
 	
@@ -7,9 +6,6 @@
 
 // ROOT
 #include "Compression.h"
-
-// boost
-#include "boost/lexical_cast.hpp"
 
 //-----------------------------------------------------------------------------
 // Implementation file for class : RootCompressionSettings
@@ -22,15 +18,13 @@
 //=============================================================================
 RootHistCnv::RootCompressionSettings::
 RootCompressionSettings( const std::string & settings ) 
-  : m_compSettings ( settings ),
-    m_level ( ROOT::CompressionSettings(ROOT::kZLIB,1) )
+:  m_level ( ROOT::CompressionSettings(ROOT::kZLIB,1) )
 {
-
-  const std::string::size_type idx = m_compSettings.find(':');
+  const std::string::size_type idx = settings.find(':');
   if ( idx != std::string::npos )
   {
     // Get compression algorithm type
-    const std::string alg = m_compSettings.substr(0,idx);
+    const std::string alg = settings.substr(0,idx);
     ROOT::ECompressionAlgorithm alg_code = ROOT::kUseGlobalSetting;
     if      ( alg == "ZLIB" ) { alg_code = ROOT::kZLIB; }
     else if ( alg == "LZMA" ) { alg_code = ROOT::kLZMA; }
@@ -40,14 +34,12 @@ RootCompressionSettings( const std::string & settings )
     }
 
     // get compression level
-    const std::string slev = m_compSettings.substr(idx+1);
-    const int         ilev = boost::lexical_cast<int>(slev);
+    const std::string slev = settings.substr(idx+1);
+    const int         ilev = std::stoi(slev);
     
     // set the level
     m_level = ROOT::CompressionSettings(alg_code,ilev);
   }
-
 }
 
 //=============================================================================
-

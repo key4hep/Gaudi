@@ -21,10 +21,9 @@ ErrorLogTest::ErrorLogTest(const std::string& name,
 StatusCode ErrorLogTest::initialize()
 //------------------------------------------------------------------------------
 {
-  MsgStream log( msgSvc(), name() );
 
 //   if (service("THistSvc",m_ths).isFailure()) {
-//     log << MSG::ERROR << "Couldn't get THistSvc" << endmsg;
+//     error() << "Couldn't get THistSvc" << endmsg;
 //     return StatusCode::FAILURE;
 //   }
 
@@ -48,10 +47,7 @@ StatusCode ErrorLogTest::initialize()
 StatusCode ErrorLogTest::execute()
 //------------------------------------------------------------------------------
 {
-  MsgStream log( msgSvc(), name() );
-
-  ISSUE(IssueSeverity::WARNING,"warmomg level ErrObj in execute");
-
+  ISSUE(IssueSeverity::WARNING,"warning level ErrObj in execute");
   return StatusCode::SUCCESS;
 }
 
@@ -60,10 +56,6 @@ StatusCode ErrorLogTest::execute()
 StatusCode ErrorLogTest::finalize()
 //------------------------------------------------------------------------------
 {
-  MsgStream log(msgSvc(), name());
-  log << MSG::WARNING << "Finalizing..." << endmsg;
-
-
-
+  warning() << "Finalizing..." << endmsg;
   return StatusCode::SUCCESS;
 }

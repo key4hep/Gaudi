@@ -21,32 +21,42 @@ JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/wor
 ApplicationMgr      DEBUG Getting my own properties[m
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r3)
-                                          running on pclhcb117 on Fri Feb 27 12:14:38 2015
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v4r0)
+                                          running on pclhcb117 on Mon Feb 22 12:06:37 2016
 ====================================================================================================================================[m
 ApplicationMgr       INFO Application Manager Configured successfully[m
 ServiceManager      DEBUG Initializing service StatusCodeSvc[m
+StatusCodeSvc       DEBUG Property update for OutputLevel : new value = 2[m
 StatusCodeSvc       DEBUG Service base class initialized successfully[m
 StatusCodeSvc        INFO initialize[m
 ServiceManager      DEBUG Initializing service AppMgrRunable[m
+AppMgrRunable       DEBUG Property update for OutputLevel : new value = 1[m
 AppMgrRunable       DEBUG Service base class initialized successfully[m
 ServiceManager      DEBUG Initializing service EventLoopMgr[m
+EventLoopMgr        DEBUG Property update for OutputLevel : new value = 1[m
 EventLoopMgr        DEBUG Service base class initialized successfully[m
+IncidentSvc         DEBUG Property update for OutputLevel : new value = 2[m
 IncidentSvc         DEBUG Service base class initialized successfully[m
 IncidentSvc         DEBUG Adding [AbortEvent] listener '<unknown>' with priority 0[m
 EventLoopMgr        DEBUG Creating Top Algorithm History with name History[m
+EventDataSvc        DEBUG Property update for OutputLevel : new value = 1[m
 EventDataSvc        DEBUG Service base class initialized successfully[m
 EventDataSvc      VERBOSE ServiceLocatorHelper::service: found service IncidentSvc[m
+EventPersistenc...  DEBUG Property update for OutputLevel : new value = 1[m
 EventPersistenc...  DEBUG Service base class initialized successfully[m
 History           VERBOSE ServiceLocatorHelper::service: found service EventDataSvc[m
+TimelineSvc         DEBUG Property update for OutputLevel : new value = 1[m
 TimelineSvc         DEBUG Service base class initialized successfully[m
 TimelineSvc         DEBUG initialize[m
 History           VERBOSE ServiceLocatorHelper::service: found service TimelineSvc[m
 History           VERBOSE ServiceLocatorHelper::service: found service HistorySvc[m
 History              INFO got historySvc: HistorySvc[m
-History             DEBUG Adding tools for History[m
+History             DEBUG input handles: 0[m
+History             DEBUG output handles: 0[m
+History             DEBUG Data Deps for History[m
 [93;1mEventLoopMgr      WARNING Unable to locate service "EventSelector" [m
 [93;1mEventLoopMgr      WARNING No events will be processed from external input.[m
+HistogramDataSvc    DEBUG Property update for OutputLevel : new value = 1[m
 HistogramDataSvc    DEBUG Service base class initialized successfully[m
 HistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service IncidentSvc[m
 HistogramPersis...  DEBUG  'CnvServices':[ 'RootHistSvc' ][m
@@ -54,11 +64,17 @@ HistogramPersis...  DEBUG Service base class initialized successfully[m
 [93;1mHistogramPersis...WARNING Histograms saving not required.[m
 HistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service HistogramPersistencySvc[m
 ServiceManager      DEBUG Initializing service HistorySvc[m
+HistorySvc          DEBUG Property update for OutputLevel : new value = 1[m
 HistorySvc          DEBUG Service base class initialized successfully[m
 HistorySvc          DEBUG Initializing HistorySvc[m
+AlgContextSvc       DEBUG Property update for OutputLevel : new value = 1[m
 AlgContextSvc       DEBUG Service base class initialized successfully[m
+AlgContextSvc     VERBOSE ServiceLocatorHelper::service: found service IncidentSvc[m
+IncidentSvc         DEBUG Adding [BeginEvent] listener 'AlgContextSvc' with priority 0[m
+IncidentSvc         DEBUG Adding [EndEvent] listener 'AlgContextSvc' with priority 0[m
 HistorySvc        VERBOSE ServiceLocatorHelper::service: found service AlgContextSvc[m
 HistorySvc        VERBOSE ServiceLocatorHelper::service: found service IncidentSvc[m
+ToolSvc             DEBUG Property update for OutputLevel : new value = 1[m
 ToolSvc             DEBUG Service base class initialized successfully[m
 IncidentSvc         DEBUG Adding [BeginEvent] listener 'HistorySvc' with priority -9223372036854775808[m
 ApplicationMgr       INFO Application Manager Initialized successfully[m
@@ -95,7 +111,7 @@ HistorySvc          DEBUG [mRegistering Service: [96;1mToolSvc[m
 HistorySvc          DEBUG [mRegistering Service: [96;1mEventLoopMgr[m
 HistorySvc          DEBUG [mRegistering Service: [96;1mHistorySvc[m
 HistorySvc           INFO [mRegistered 14 Services[m
-EventLoopMgr         INFO ---> Loop Finished -  WSS 26.418 | total time (skipping 1st evt) 19416 ns[m
+EventLoopMgr        DEBUG ---> Loop Finished -  WSS 30.3828 | total time (skipping 1st evt) 9524 ns[m
 ServiceManager      DEBUG Stopping service HistorySvc[m
 HistorySvc        VERBOSE MessageSvc is Service[m
 HistorySvc        VERBOSE JobOptionsSvc is Service[m
@@ -133,11 +149,13 @@ ToolSvc              INFO Removing all tools created by ToolSvc[m
 ToolSvc             DEBUG   Tool List : [m
 ToolSvc             DEBUG Deleting 0 finalized tools[m
 ServiceManager      DEBUG Finalizing service AlgContextSvc[m
+IncidentSvc         DEBUG Removing [BeginEvent] listener 'AlgContextSvc'[m
+IncidentSvc         DEBUG Removing [EndEvent] listener 'AlgContextSvc'[m
 ServiceManager      DEBUG Finalizing service TimelineSvc[m
 ServiceManager      DEBUG Finalizing service EventDataSvc[m
 ServiceManager      DEBUG Finalizing service EventPersistencySvc[m
 ServiceManager      DEBUG Finalizing service IncidentSvc[m
-IncidentSvc         DEBUG Incident  timing: Mean(+-rms)/Min/Max:0(+-0)/0/0[ms] Total:0[s][m
+IncidentSvc         DEBUG Incident  timing: Mean(+-rms)/Min/Max:0.125(+-0.330719)/0/1[ms] Total:0.001[s][m
 ServiceManager      DEBUG Finalizing service AppMgrRunable[m
 ServiceManager      DEBUG Finalizing service HistogramDataSvc[m
 ServiceManager      DEBUG Finalizing service HistogramPersistencySvc[m
@@ -148,9 +166,9 @@ ServiceManager      DEBUG Finalizing service StatusCodeSvc[m
 StatusCodeSvc       DEBUG all StatusCode instances where checked[m
 ServiceManager      DEBUG Looping over all active services...[m
 ServiceManager      DEBUG ---- StatusCodeSvc (refCount = 3)[m
-ServiceManager      DEBUG ---- MessageSvc (refCount = 16)[m
-ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 4)[m
-ServiceManager      DEBUG ---- HistorySvc (refCount = 4)[m
+ServiceManager      DEBUG ---- MessageSvc (refCount = 17)[m
+ServiceManager      DEBUG ---- JobOptionsSvc (refCount = 5)[m
+ServiceManager      DEBUG ---- HistorySvc (refCount = 3)[m
 ServiceManager      DEBUG ---- HistogramPersistencySvc (refCount = 3)[m
 ServiceManager      DEBUG ---- HistogramDataSvc (refCount = 4)[m
 ServiceManager      DEBUG ---- AppMgrRunable (refCount = 4)[m

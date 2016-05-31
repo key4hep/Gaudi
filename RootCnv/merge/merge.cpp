@@ -14,7 +14,7 @@ static int usage() {
   return 1;
 }
 
-static ErrorHandlerFunc_t s_err = 0;
+static ErrorHandlerFunc_t s_err = nullptr;
 static void err_handler(Int_t level, Bool_t abort_bool, const char *location, const char *msg)
 {
   if ( msg && strstr(msg,"no dictionary for class") ) return;

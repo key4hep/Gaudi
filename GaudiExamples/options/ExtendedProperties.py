@@ -1,5 +1,3 @@
-# $Id: ExtendedProperties.py,v 1.4 2008/01/14 19:45:51 marcocle Exp $
-#
 # Translation of ExtendedProperties.opts into python job options.
 # @author Marco Clemencic
 from Gaudi.Configuration import *
@@ -108,6 +106,11 @@ xProps.MapUIntString = {
 
 xProps.EmptyMap = {}
 xProps.EmptyVector = []
+
+xProps.TupleStringIntDouble = ("hello", 10, 0.001)
+xProps.StdArrayDouble3 = (3.3, 2.2, 1.1)
+
+xProps.GaudiMapSS = {'a': '1', 'b': '2'}
 
 ######### END of xProp configuration
 

@@ -1,4 +1,3 @@
-// $Id: PythonScriptingSvc.h,v 1.2 2004/07/06 10:51:24 mato Exp $
 #ifndef GAUDIPYTHON_PYTHONSCRIPTINGSVC_H
 #define GAUDIPYTHON_PYTHONSCRIPTINGSVC_H
 
@@ -13,7 +12,8 @@
     @author David Quarrie
     @date   2001
 */
-class PythonScriptingSvc : public extends1<Service, IRunable> {
+class PythonScriptingSvc : public extends<Service,
+                                          IRunable> {
 
 public:
   /// Standard Constructor.

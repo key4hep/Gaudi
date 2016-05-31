@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/src/Lib/RegistryEntry.cpp,v 1.12 2006/07/07 13:15:30 hmd Exp $
 //====================================================================
 //	RegistryEntry.cpp
 //--------------------------------------------------------------------
@@ -41,20 +40,10 @@
 //#define CAST_REGENTRY(x,y) (x)(y)
 constexpr char SEPARATOR { '/' };
 
-namespace {
-  inline std::string operator+(std::string s, boost::string_ref p) {
-    return s.append(p.data(),p.size());
-  }
-}
 /// Standard Constructor
-DataSvcHelpers::RegistryEntry::RegistryEntry(std::string path, RegistryEntry* parent)
-: m_refCount(0),
-  m_isSoft(false),
+DataSvcHelpers::RegistryEntry::RegistryEntry(std::string path, RegistryEntry* parent) :
   m_path(std::move(path)),
-  m_pParent(parent),
-  m_pAddress(nullptr),
-  m_pObject(nullptr),
-  m_pDataProviderSvc(nullptr)
+  m_pParent(parent)
 {
   std::string::size_type sep = m_path.rfind(SEPARATOR);
   if ( m_path.front() != SEPARATOR ) m_path.insert(0,1,SEPARATOR);
@@ -86,7 +75,7 @@ unsigned long DataSvcHelpers::RegistryEntry::release()  {
 /// Set new parent pointer
 void DataSvcHelpers::RegistryEntry::setParent(RegistryEntry* pParent)    {
   m_pParent = pParent;
-  m_fullpath = "";
+  m_fullpath.clear();
   assemblePath(m_fullpath);
 }
 

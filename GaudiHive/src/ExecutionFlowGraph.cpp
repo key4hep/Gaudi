@@ -1,4 +1,5 @@
 #include "ExecutionFlowGraph.h"
+#include "GaudiKernel/DataHandleHolderVisitor.h"
 
 namespace concurrency {
 
@@ -205,15 +206,15 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  bool AlgorithmNode::promoteToControlReadyState(const int& slotNum,
+  bool AlgorithmNode::promoteToControlReadyState(const int& /*slotNum*/,
                                                  AlgsExecutionStates& states,
-                                                 std::vector<int>& node_decisions) const {
+                                                 std::vector<int>& /*node_decisions*/) const {
 
     auto& state = states[m_algoIndex];
     bool result = false;
 
     if (State::INITIAL == state) {
-      states.updateState(m_algoIndex, State::CONTROLREADY);
+      states.updateState(m_algoIndex, State::CONTROLREADY).ignore();
       //std::cout << "----> UPDATING ALGORITHM to CONTROLREADY: " << m_algoName << std::endl;
       result = true;
     } else if (State::CONTROLREADY == state) {
@@ -224,7 +225,8 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  bool AlgorithmNode::promoteToDataReadyState(const int& slotNum, const AlgorithmNode* requestor) const {
+  bool AlgorithmNode::promoteToDataReadyState(const int& slotNum,
+                                              const AlgorithmNode* /*requestor*/) const {
 
     auto& states = m_graph->getAlgoStates(slotNum);
     auto& state = states[m_algoIndex];
@@ -233,7 +235,7 @@ namespace concurrency {
     if (State::CONTROLREADY == state) {
       if (dataDependenciesSatisfied(slotNum)) {
         //std::cout << "----> UPDATING ALGORITHM to DATAREADY: " << m_algoName << std::endl;
-        states.updateState(m_algoIndex, State::DATAREADY);
+        states.updateState(m_algoIndex, State::DATAREADY).ignore();
         result = true;
 
         //m_graph->addEdgeToExecutionPlan(requestor, this);
@@ -301,9 +303,12 @@ namespace concurrency {
                                  AlgsExecutionStates& states,
                                  const std::vector<int>& node_decisions,
                                  const unsigned int& recursionLevel) const {
-    output << std::string(recursionLevel, ' ') << m_nodeName << " (" << m_nodeIndex << ")" << ", w/ decision: "
-           << stateToString(node_decisions[m_nodeIndex]) << "(" << node_decisions[m_nodeIndex] << ")"
-           << ", in state: " << states[m_algoIndex] << std::endl;
+    output << std::string(recursionLevel, ' ') << m_nodeName
+           << " (" << m_nodeIndex << ")" << ", w/ decision: "
+           << stateToString(node_decisions[m_nodeIndex])
+           << "(" << node_decisions[m_nodeIndex] << ")"
+           << ", in state: " << AlgsExecutionStates::stateNames[states[m_algoIndex]]
+           << std::endl;
   }
 
   //---------------------------------------------------------------------------
@@ -315,7 +320,7 @@ namespace concurrency {
     // if it hasn't already
     const State& state = states[m_algoIndex];
     unsigned int decision = -1;
-    if (State::INITIAL == state) {states.updateState(m_algoIndex, State::CONTROLREADY);}
+    if (State::INITIAL == state) {states.updateState(m_algoIndex, State::CONTROLREADY).ignore();}
     // now derive the proper result to pass back
     if (true == m_allPass) {
       decision = 1;
@@ -421,9 +426,7 @@ namespace concurrency {
     if (!sc.isSuccess())
       error() << "Could not build the data dependency realm." << endmsg;
 
-    if (msgLevel(MSG::DEBUG)) {
-      dumpDataFlow();
-    }
+    debug() << dumpDataFlow() << endmsg;
 
     return sc;
   }
@@ -433,23 +436,24 @@ namespace concurrency {
 
     const std::string& algoName = algo->name();
 
-    const DataObjectDescriptorCollection& inputDOCollection = algo->inputDataObjects();
-    m_algoNameToAlgoInputsMap[algoName] = &inputDOCollection;
+
+    DataObjIDColl inputObjs, outputObjs;
+    DHHVisitor avis(inputObjs, outputObjs);
+    algo->acceptDHVisitor(&avis);
+
+    m_algoNameToAlgoInputsMap[algoName] = inputObjs;
 
     debug() << "Inputs of " << algoName << ": ";
-    for (auto tag : inputDOCollection) {
-      if (inputDOCollection[tag].isValid())
-        debug() << inputDOCollection[tag].dataProductName() << " | ";
+    for (auto tag : inputObjs) {
+      debug() << tag << " | ";
     }
     debug() << endmsg;
 
-    const DataObjectDescriptorCollection& outputDOCollection = algo->outputDataObjects();
-    m_algoNameToAlgoOutputsMap[algoName] = &outputDOCollection;
+    m_algoNameToAlgoOutputsMap[algoName] = outputObjs;
 
     debug() << "Outputs of " << algoName << ": ";
-    for (auto tag : outputDOCollection) {
-      if (outputDOCollection[tag].isValid())
-        debug() << outputDOCollection[tag].dataProductName() << " | ";
+    for (auto tag : outputObjs) {
+      debug() << tag << " | ";
     }
     debug() << endmsg;
   }
@@ -464,13 +468,14 @@ namespace concurrency {
       auto targetNode = m_algoNameToAlgoNodeMap[algo.first];
 
       // Find producers for all the inputs of the target node
-      auto& targetInCollection = *m_algoNameToAlgoInputsMap[algo.first];
+      auto& targetInCollection = m_algoNameToAlgoInputsMap[algo.first];
       for (auto inputTag : targetInCollection) {
-        auto& input2Match = targetInCollection[inputTag].dataProductName();
+	//        auto& input2Match = targetInCollection[inputTag].dataProductName();
         for (auto producer : m_algoNameToAlgoOutputsMap) {
-          auto& outputs = *m_algoNameToAlgoOutputsMap[producer.first];
+          auto& outputs = m_algoNameToAlgoOutputsMap[producer.first];
           for (auto outputTag : outputs) {
-            if (outputs[outputTag].isValid() && outputs[outputTag].dataProductName() == input2Match) {
+            // if (outputs[outputTag].isValid() && outputs[outputTag].dataProductName() == input2Match) {
+	    if (inputTag == outputTag) {
               auto& known_producers = targetNode->getSupplierNodes();
               auto valid_producer = m_algoNameToAlgoNodeMap[producer.first];
               auto& known_consumers = valid_producer->getConsumerNodes();
@@ -484,13 +489,14 @@ namespace concurrency {
       }
 
       // Find consumers for all the outputs of the target node
-      auto& targetOutCollection = *m_algoNameToAlgoOutputsMap[algo.first];
+      auto& targetOutCollection = m_algoNameToAlgoOutputsMap[algo.first];
       for (auto outputTag : targetOutCollection) {
-        auto& output2Match = targetOutCollection[outputTag].dataProductName();
+	//        auto& output2Match = targetOutCollection[outputTag].dataProductName();
         for (auto consumer : m_algoNameToAlgoInputsMap) {
-          auto& inputs = *m_algoNameToAlgoInputsMap[consumer.first];
+          auto& inputs = m_algoNameToAlgoInputsMap[consumer.first];
           for (auto inputTag : inputs) {
-            if (inputs[inputTag].isValid() && inputs[inputTag].dataProductName() == output2Match) {
+            // if (inputs[inputTag].isValid() && inputs[inputTag].dataProductName() == output2Match) {
+	    if (inputTag == outputTag) {
               auto& known_consumers = targetNode->getConsumerNodes();
               auto valid_consumer = m_algoNameToAlgoNodeMap[consumer.first];
               auto& known_producers = valid_consumer->getSupplierNodes();
@@ -516,53 +522,55 @@ namespace concurrency {
     for (auto algo : m_algoNameToAlgoNodeMap) {
 
       StatusCode sc;
-      auto& outCollection = *m_algoNameToAlgoOutputsMap[algo.first];
+      auto& outCollection = m_algoNameToAlgoOutputsMap[algo.first];
       for (auto outputTag : outCollection) {
-        if (outCollection[outputTag].isValid()) {
-          auto& output = outCollection[outputTag].dataProductName();
-          sc = addDataNode(output);
+	//        if (outCollection[outputTag].isValid()) {
+	//          auto& output = outCollection[outputTag].dataProductName();
+	sc = addDataNode(outputTag);
           if (!sc.isSuccess()) {
-            error() << "Extra producer (" << algo.first << ") for DataObject @ " << output
+            error() << "Extra producer (" << algo.first << ") for DataObject @ "
+		    << outputTag
                     << " has been detected: this is not allowed." << endmsg;
             global_sc = StatusCode::FAILURE;
           }
-          auto dataNode = getDataNode(output);
+          auto dataNode = getDataNode(outputTag);
           dataNode->addProducerNode(algo.second);
           algo.second->addOutputDataNode(dataNode);
-        }
+	  //        }
       }
     }
 
     // Connect previously created DO realm to DO consumers (AlgorithmNodes)
     for (auto algo : m_algoNameToAlgoNodeMap) {
-      auto& inCollection = *m_algoNameToAlgoInputsMap[algo.first];
+      auto& inCollection = m_algoNameToAlgoInputsMap[algo.first];
       for (auto inputTag : inCollection) {
-        if (inCollection[inputTag].isValid()) {
+	//        if (inCollection[inputTag].isValid()) {
           DataNode* dataNode = nullptr;
-          auto& primaryPath = inCollection[inputTag].dataProductName();
+	  //          auto& primaryPath = inCollection[inputTag].dataProductName();
+	  auto primaryPath = inputTag;
           auto itP = m_dataPathToDataNodeMap.find(primaryPath);
           if (itP != m_dataPathToDataNodeMap.end()) {
             dataNode = getDataNode(primaryPath);
-            if (!inCollection[inputTag].alternativeDataProductNames().empty())
-              warning() << "Dropping all alternative data dependencies in the graph, but '" << primaryPath
-                        << "', for algorithm " << algo.first << endmsg;
-          } else {
-            for (auto alterPath : inCollection[inputTag].alternativeDataProductNames()) {
-              auto itAP = m_dataPathToDataNodeMap.find(alterPath);
-              if (itAP != m_dataPathToDataNodeMap.end()) {
-                dataNode = getDataNode(alterPath);
-                warning() << "Dropping all alternative data dependencies in the graph, but '" << alterPath
-                          << "', for algorithm " << algo.first << endmsg;
-                break;
-              }
-            }
+            // if (!inCollection[inputTag].alternativeDataProductNames().empty())
+            //   warning() << "Dropping all alternative data dependencies in the graph, but '" << primaryPath
+            //             << "', for algorithm " << algo.first << endmsg;
+          // } else {
+          //   for (auto alterPath : inCollection[inputTag].alternativeDataProductNames()) {
+          //     auto itAP = m_dataPathToDataNodeMap.find(alterPath);
+          //     if (itAP != m_dataPathToDataNodeMap.end()) {
+          //       dataNode = getDataNode(alterPath);
+          //       warning() << "Dropping all alternative data dependencies in the graph, but '" << alterPath
+          //                 << "', for algorithm " << algo.first << endmsg;
+          //       break;
+          //     }
+          //   }
           }
           if (dataNode) {
             dataNode->addConsumerNode(algo.second);
             algo.second->addInputDataNode(dataNode);
           }
 
-        }
+	  //        }
       }
     }
 
@@ -609,7 +617,7 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  StatusCode ExecutionFlowGraph::addDataNode(const std::string& dataPath) {
+  StatusCode ExecutionFlowGraph::addDataNode(const DataObjID& dataPath) {
 
     StatusCode sc;
 
@@ -630,7 +638,7 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  DataNode* ExecutionFlowGraph::getDataNode(const std::string& dataPath) const {
+  DataNode* ExecutionFlowGraph::getDataNode(const DataObjID& dataPath) const {
 
     return m_dataPathToDataNodeMap.at(dataPath);
   }
@@ -712,39 +720,47 @@ namespace concurrency {
     std::vector<AlgorithmNode*> result;
 
     for (auto node : m_algoNameToAlgoInputsMap) {
-      const DataObjectDescriptorCollection& collection = *(node.second);
+      DataObjIDColl collection = (node.second);
       for (auto tag : collection)
-        if (collection[tag].isValid()) {
+	//        if (collection[tag].isValid()) {
           result.push_back(getAlgorithmNode(node.first));
           break;
-        }
+        // }
     }
 
     return result;
   }
 
   //---------------------------------------------------------------------------
-  void ExecutionFlowGraph::dumpDataFlow() const {
+  std::string ExecutionFlowGraph::dumpDataFlow() const {
 
-    debug() << "====================================" << endmsg;
-    debug() << "Data origins and destinations:" << endmsg;
-    debug() << "====================================" << endmsg;
+    const char idt[] = "      ";
+    std::ostringstream ost;
+
+
+    ost << "\n" << idt << "====================================\n";
+    ost << idt << "Data origins and destinations:\n";
+    ost << idt << "====================================\n";
 
     for (auto& pair : m_dataPathToDataNodeMap) {
 
       for (auto algoNode : pair.second->getProducers())
-        debug() << "  " << algoNode->getNodeName() << endmsg;
+        ost << idt << "  " << algoNode->getNodeName() << "\n";
 
-      debug() << "  V" << endmsg;
-      debug() << "  o " << pair.first << endmsg;
-      debug() << "  V" << endmsg;
+      ost << idt << "  V\n";
+      ost << idt << "  o " << pair.first << "\n";
+      ost << idt << "  V\n";
 
       for (auto algoNode : pair.second->getConsumers())
-        debug() << "  " << algoNode->getNodeName() << endmsg;
+        ost << idt << "  " << algoNode->getNodeName() << "\n";
 
-      debug() << "  ====================================" << endmsg;
+      ost << idt << "====================================\n";
     }
+
+    return ost.str();
   }
+
+  //---------------------------------------------------------------------------
 
   void ExecutionFlowGraph::dumpExecutionPlan() {
     std::ofstream myfile;
@@ -764,12 +780,14 @@ namespace concurrency {
   void ExecutionFlowGraph::addEdgeToExecutionPlan(const AlgorithmNode* u, const AlgorithmNode* v) {
 
     boost::AlgoVertex source;
+    float runtime(0.);
     if (u == nullptr) {
       auto itT = m_exec_plan_map.find("ENTRY");
       if ( itT != m_exec_plan_map.end()) {
         source = itT->second;
       } else {
-        source = boost::add_vertex(boost::AlgoNodeStruct("ENTRY",-999,-999, 0), m_ExecPlan);
+        source = boost::add_vertex(boost::AlgoNodeStruct("ENTRY",-999,-999, 0),
+                                   m_ExecPlan);
         m_exec_plan_map["ENTRY"] = source;
       }
     } else {
@@ -777,9 +795,22 @@ namespace concurrency {
       if ( itS != m_exec_plan_map.end()) {
         source = itS->second;
       } else {
-        auto cruncher = dynamic_cast<CPUCruncher*> ( u->getAlgorithmRepresentatives()[0] );
-        if (!cruncher) fatal() << "Conversion from IAlgorithm to CPUCruncher failed" << endmsg;
-        source = boost::add_vertex(boost::AlgoNodeStruct(u->getNodeName(),u->getAlgoIndex(),u->getRank(),cruncher->get_runtime()), m_ExecPlan);
+        auto alg = dynamic_cast<Algorithm*> ( u->getAlgorithmRepresentatives()[0] );
+        if (alg == 0) {
+          fatal() << "could not convert IAlgorithm to Algorithm!" << endmsg;
+        } else {
+          try {
+            const Property& p = alg->getProperty( "AvgRuntime" );
+            runtime = std::stof( p.toString() );
+          } catch(...) {
+            debug() << "no AvgRuntime for " << alg->name() << endmsg;
+            runtime = 1.;
+          }
+        }
+        source = boost::add_vertex(boost::AlgoNodeStruct(u->getNodeName(),
+                                                         u->getAlgoIndex(),
+                                                         u->getRank(),runtime),
+                                   m_ExecPlan);
         m_exec_plan_map[u->getNodeName()] = source;
       }
     }
@@ -789,9 +820,22 @@ namespace concurrency {
     if ( itP != m_exec_plan_map.end()) {
       target = itP->second;
     } else {
-      auto cruncher = dynamic_cast<CPUCruncher*> ( v->getAlgorithmRepresentatives()[0] );
-      if (!cruncher) fatal() << "Conversion from IAlgorithm to CPUCruncher failed" << endmsg;
-      target = boost::add_vertex(boost::AlgoNodeStruct(v->getNodeName(),v->getAlgoIndex(),v->getRank(),cruncher->get_runtime()), m_ExecPlan);
+      auto alg = dynamic_cast<Algorithm*> ( v->getAlgorithmRepresentatives()[0] );
+      if (alg == 0) {
+        fatal() << "could not convert IAlgorithm to Algorithm!" << endmsg;
+      } else {
+        try {
+          const Property& p = alg->getProperty( "AvgRuntime" );
+          runtime = std::stof( p.toString() );
+        } catch(...) {
+          debug() << "no AvgRuntime for " << alg->name() << endmsg;
+          runtime = 1.;
+        }
+      }
+      target = boost::add_vertex(boost::AlgoNodeStruct(v->getNodeName(),
+                                                       v->getAlgoIndex(),
+                                                       v->getRank(),runtime),
+                                 m_ExecPlan);
       m_exec_plan_map[v->getNodeName()] = target;
     }
 

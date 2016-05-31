@@ -5,14 +5,14 @@
 #include "GaudiKernel/IProperty.h"
 #include "GaudiKernel/AppReturnCode.h"
 
-#include "GaudiKernel/ContextSpecificPtr.h"
+#include "GaudiKernel/ThreadLocalContext.h"
 
 // C++
 #include <list>
 #include <thread>
 #include <csignal>
 
-// Local 
+// Local
 #include "RoundRobinSchedulerSvc.h"
 #include "AlgResourcePool.h"
 #include "RetCodeGuard.h"
@@ -35,21 +35,21 @@ RoundRobinSchedulerSvc::~RoundRobinSchedulerSvc(){}
 
 StatusCode RoundRobinSchedulerSvc::initialize(){
 
-  // Initialise mother class (read properties, ...)  
+  // Initialise mother class (read properties, ...)
   StatusCode sc(Service::initialize());
   if (!sc.isSuccess())
-    warning () << "Base class could not be initialized" << endmsg;  
+    warning () << "Base class could not be initialized" << endmsg;
 
   // Get the algo resource pool
  m_algResourcePool =  serviceLocator()->service("AlgResourcePool");
   if (!m_algResourcePool.isValid()){
-    error() << "Error retrieving AlgResourcePool" << endmsg;  
+    error() << "Error retrieving AlgResourcePool" << endmsg;
     return StatusCode::FAILURE;
   }
-  
+
   // Get the list of algorithms
   m_algList = m_useTopAlgList ? m_algResourcePool->getTopAlgList() : m_algResourcePool->getFlatAlgList();
-  info() << "Found " <<  m_algList.size() << " algorithms" << endmsg;    
+  info() << "Found " <<  m_algList.size() << " algorithms" << endmsg;
 
   // Fill the containers to convert algo names to index
   	m_algname_index_map.reserve(m_algList.size());
@@ -70,27 +70,27 @@ StatusCode RoundRobinSchedulerSvc::initialize(){
   return StatusCode::SUCCESS;
 
   // prepare the event slots
-  // TODO !  
+  // TODO !
 
 }
-//---------------------------------------------------------------------------  
+//---------------------------------------------------------------------------
 
 StatusCode RoundRobinSchedulerSvc::finalize(){
   StatusCode sc(Service::finalize());
   if (!sc.isSuccess())
 	  warning () << "Base class could not be finalized" << endmsg;
-  return sc;  
+  return sc;
 }
 
-//---------------------------------------------------------------------------  
+//---------------------------------------------------------------------------
 
-/** Make an event available to the scheduler. Immediately the algortihms are 
+/** Make an event available to the scheduler. Immediately the algortihms are
  * executed.
  */
 StatusCode RoundRobinSchedulerSvc::pushNewEvent(EventContext* eventContext){
 
 	// consistency check
-	if (!(m_freeSlots > 0)) {
+	if (!m_freeSlots) {
 		fatal() << "More contexts than slots provided" << m_freeSlots << endmsg;
 		return StatusCode::FAILURE;
 	}
@@ -246,7 +246,7 @@ StatusCode RoundRobinSchedulerSvc::processEvents(){
 	return sc; //TODO: define proper return value
 }
 
-//---------------------------------------------------------------------------   
+//---------------------------------------------------------------------------
 /// Blocks until an event is availble
 StatusCode RoundRobinSchedulerSvc::popFinishedEvent(EventContext*& eventContext){
 
@@ -259,9 +259,9 @@ StatusCode RoundRobinSchedulerSvc::popFinishedEvent(EventContext*& eventContext)
           << eventContext->evt() << ")" << endmsg;
   return StatusCode::SUCCESS;
 }
-  
-//---------------------------------------------------------------------------  
-/// Try to get a finished event, if not available just return a failure 
+
+//---------------------------------------------------------------------------
+/// Try to get a finished event, if not available just return a failure
 StatusCode RoundRobinSchedulerSvc::tryPopFinishedEvent(EventContext*& eventContext){
   if (m_finishedEvents.try_pop(eventContext)){
     debug() << "Try Pop successful slot " << eventContext->slot()
@@ -272,9 +272,9 @@ StatusCode RoundRobinSchedulerSvc::tryPopFinishedEvent(EventContext*& eventConte
   return StatusCode::FAILURE;
 
 }
-//---------------------------------------------------------------------------  
+//---------------------------------------------------------------------------
 
-/** Get free slots number. Given that the scheduler is sequential and its 
+/** Get free slots number. Given that the scheduler is sequential and its
  * methods non reentrant, this is always 1.
  */
 unsigned int RoundRobinSchedulerSvc::freeSlots(){return m_freeSlots;}

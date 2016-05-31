@@ -6,29 +6,29 @@
 
 #include "RootFileHandler.h"
 #include "GaudiKernel/MsgStream.h"
+#include "boost/algorithm/string.hpp"
 
+namespace ba = boost::algorithm;
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 RootFileHandler::RootFileHandler( IMessageSvc* msg, const std::string& p,
 				  const std::string& c):
-  m_log(msg,"RootFileHandler"), m_userProxy(p), m_certDir(c), 
-  m_ssl_setup(false) {
-
+  m_log(msg,"RootFileHandler"), m_userProxy(p), m_certDir(c)
+{
   // Protect against multiple instances of TROOT
-  if ( 0 == gROOT )   {
+  if ( !gROOT )   {
     static TROOT root("root","ROOT I/O");
   }
   m_level = msg->outputLevel("RootFileHandler");
 
 }
-
   
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 Io::open_t   
 RootFileHandler::openRootFile(const std::string& n, const Io::IoFlags& f, 
-	     const std::string& desc, Io::Fd& fd, void*& ptr) {
+                              const std::string& desc, Io::Fd& fd, void*& ptr) {
 
   m_log.setLevel(m_level);
 
@@ -37,7 +37,7 @@ RootFileHandler::openRootFile(const std::string& n, const Io::IoFlags& f,
 	  << f << "," << desc << ")" 
 	  << endmsg;
   
-  ptr = 0;
+  ptr = nullptr;
   fd = -1;
 
   std::string opt;
@@ -57,12 +57,10 @@ RootFileHandler::openRootFile(const std::string& n, const Io::IoFlags& f,
     return 1;
   }
 
-  TFile *tf(0);
+  std::unique_ptr<TFile> tf;
 
-  if (n.find("https://") != std::string::npos ||
-      n.find("HTTPS://") != std::string::npos ||
-      n.find("http://") != std::string::npos  ||
-      n.find("HTTP://") != std::string::npos ) {
+  if (ba::starts_with(n,"https://",ba::is_iequal{})  ||
+      ba::starts_with(n,"http://",ba::is_iequal{})) {
 
 
     if ( !f.isRead() ) {
@@ -72,8 +70,7 @@ RootFileHandler::openRootFile(const std::string& n, const Io::IoFlags& f,
       return 1;
     }
 
-    if (!m_ssl_setup && (n.find("https://") != std::string::npos ||
-			 n.find("HTTPS://") != std::string::npos )) {
+    if (!m_ssl_setup && ba::starts_with(n,"https://",ba::is_iequal{}) ) {
 
       if (!setupSSL()) {
 	m_log << MSG::ERROR 
@@ -84,7 +81,7 @@ RootFileHandler::openRootFile(const std::string& n, const Io::IoFlags& f,
 
 
     try {
-      tf = new TWebFile(n.c_str());
+      tf.reset( new TWebFile(n.c_str()));
     } catch (const std::exception& Exception) {
       m_log << MSG::ERROR << "exception caught while trying to open root"
 	    << " file for reading: " << Exception.what() << std::endl
@@ -96,11 +93,10 @@ RootFileHandler::openRootFile(const std::string& n, const Io::IoFlags& f,
       return 1;
     }
 
-    if (tf != 0 && tf->IsZombie()) {
+    if (tf && tf->IsZombie()) {
       m_log << MSG::ERROR << "Problems opening input file  \"" << n
 	    << "\": file does not exist or in not accessible" << endmsg;
-      delete tf;
-      tf = 0;
+      tf.reset();
       return 1;
     }
 
@@ -108,7 +104,7 @@ RootFileHandler::openRootFile(const std::string& n, const Io::IoFlags& f,
   } else {
     
     try {
-      tf = TFile::Open(n.c_str(),opt.c_str());
+      tf.reset( TFile::Open(n.c_str(),opt.c_str()) );
     } catch (const std::exception& Exception) {
       m_log << MSG::ERROR << "exception caught while trying to open root"
 	    << " file for reading: " << Exception.what() << std::endl
@@ -122,26 +118,22 @@ RootFileHandler::openRootFile(const std::string& n, const Io::IoFlags& f,
     
   }
 
-  if (tf == 0 || !tf->IsOpen()) {
+  if (!tf || !tf->IsOpen()) {
     m_log << MSG::ERROR << "Unable to open ROOT file \"" << n
 	  << "\" with options \"" << opt << "\"" << endmsg;
 
-    delete tf;
-    tf = 0;
+    tf.reset();
     return 1;
   }
 
   fd = tf->GetFd();
 
-  ptr = (void*) tf;
+  ptr = tf.release();
 
   if (m_log.level() <= MSG::DEBUG) 
-    m_log << MSG::DEBUG << "opened TFile " << (void*) ptr << " Fd: " << fd
-	  << endmsg;
+    m_log << MSG::DEBUG << "opened TFile " <<  ptr << " Fd: " << fd << endmsg;
   
-
   return 0;
-
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
@@ -153,13 +145,13 @@ RootFileHandler::closeRootFile(void* ptr) {
     m_log << MSG::DEBUG << "closeRootFile(ptr:" << ptr << ")"
 	  << endmsg;
 
-  if (ptr == 0) {
+  if ( !ptr ) {
     m_log << MSG::ERROR << "Unable to close file: ptr == 0"
 	  << endmsg;
     return -1;
   }
 
-  TFile* tf = (TFile*) ptr;
+  TFile* tf = static_cast<TFile*>(ptr);
 
   try {
     tf->Close();
@@ -185,7 +177,6 @@ Io::reopen_t
 RootFileHandler::reopenRootFile(void*, const Io::IoFlags&) {
 
   m_log << MSG::ERROR << "reopen not implemented" << endmsg;
-
   return -1;
 
 }

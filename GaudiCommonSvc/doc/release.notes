@@ -5,11 +5,143 @@
 # Commit Id: $Format:%H$
 ################################################################################
 
+============================ GaudiCommonSvc v4r1 =============================
+
+! 2016-03-10 - commit 4a18175
+
+ - removed uses of templates implements[1-4], extends[1-4] and
+   extend_interfaces[1-4]
+
+   Since merge request !22 they are unnecessary.
+    See merge request !133
+
+! 2016-02-11 - commit b0618f7
+
+ - Improve CommonMessaging
+
+   Implementation of GAUDI-1146: Improve CommonMessaging and use it in more
+   places.
+
+   See merge request !76
+
+   Conflicts:
+   GaudiExamples/tests/qmtest/refs/AlgTools2.ref
+   GaudiExamples/tests/qmtest/refs/MultiInput/Read.ref
+   GaudiExamples/tests/qmtest/refs/conditional_output/write.ref
+   GaudiKernel/GaudiKernel/AlgTool.h
+   GaudiKernel/GaudiKernel/Algorithm.h
+   GaudiKernel/GaudiKernel/Service.h
+   GaudiKernel/src/Lib/AlgTool.cpp
+   GaudiKernel/src/Lib/Algorithm.cpp
+
+============================ GaudiCommonSvc v4r0 =============================
+
+! 2016-01-12 - commit 4dbdc8e
+
+ - fixed clang 3.7 compilation warnings
+
+   Fixes GAUDI-1083.
+ See merge request !89
+
+! 2016-01-07 - commit fabc739
+
+ - fixed compilation with clang 3.7 (after hive merge)
+
+   * fixed compilation problems related to `operator<<` (gcc is more
+    permissive than clang).
+   * fixed also some clang warnings.
+    Fixes GAUDI-1157.
+    See merge request !84
+
+! 2015-11-02 - commit 57f356c
+
+ - Merge branch 'hive' into 'master'
+
+   Fixes GAUDI-978.
+
+   See merge request !65
+
+
+! 2015-10-26 - commit de80db5
+
+ - More modernization changes
+
+   Fix (almost) all warnings from clang 3.7, and use clang-modernize to further
+   modernize the code.
+
+   Fixes GAUDI-1118.
+
+   See merge request !49
+
+============================ GaudiCommonSvc v3r6 =============================
+
+! 2015-10-08 - commit c50c176
+
+ - improvements to documentation and release tools
+
+   See merge request !43
+
+
+! 2015-09-25 - commit 35dd00c
+
+ - Merge branch 'dev-smartif-use' into 'master'
+
+   Provide (and use) C++11 smart pointer 'look and feel' for SmartIF
+
+   The aim of this branch is to confine, for everything that inherits from
+   IInterface, the calls to addRef(), release() and queryInterface() to the
+   SmartIF implementation. Exceptions are a few places where interfaces
+   (currently) return bare pointers (instead of SmartIF...) and where one thus
+   has to addRef() explicitly to avoid returning a dangling pointer. This can be
+   avoided by changing the relevant interface to return a SmartIF instead of a
+   bare pointer.
+
+   In addition, make SmartIF 'look and feel' like a smart pointer.
+
+   - use explict bool conversion instead of .isValid()
+   - add SmartIF::as<IFace>(), to return a SmartIF<IFace> to an alternate
+      interface -- which (together with move) encourages the use of auto
+   - add ISvcLocator::as<IFace>(), to return a SmartIF<IFace> to the current
+   ISvcLocator.
+   - add ServiceManager::service<IFace>() which return SmartIF<IFace> which
+   encourages
+      the use of auto
+
+   And add a few other C++11 modernizations (eg. prefer STL over raw loop)
+
+   Fixes GAUDI-1094
+
+   See merge request !24
+
+
+! 2015-09-11 - commit c062cbe
+
+ - C++11 modernization changes
+
+   Some trivial - and some not so trivial! - changes which take advantage of
+   C++11...
+
+   See merge request !7
+
 ! 2014-07-18 - Illya Shapoval
  - Catching-up with the previous fix: algorithms list is a thread_specific_ptr.
 
 ! 2014-07-18 - Marco Clemencic
  - Fixed segmentation fault in genconf step in LHCb.
+
+============================ GaudiCommonSvc v3r5 =============================
+! 2015-05-21 - Marco Clemencic
+ - Fixed compilation with CMT.
+
+! 2015-05-18 - Marco Clemencic
+ - Fixed GAUDI-1036: Unchecked StatusCodes
+
+! 2015-03-14 - Marco Clemencic
+ - GAUDI-1024: Replaced GaudiKernel/Tokenizer with the new AttribStringParser.
+
+! 2015-03-04 - Marco Clemencic
+ - Fixed GAUDI-1014: Unchecked StatusCode with gcc 4.9
+   A spurious unchecked StatusCode seems to come from libCling.so.
 
 ============================ GaudiCommonSvc v3r4 =============================
 ! 2015-01-07 - Marco Clemencic

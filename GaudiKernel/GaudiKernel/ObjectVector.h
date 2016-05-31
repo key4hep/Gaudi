@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/ObjectVector.h,v 1.11 2008/10/09 16:46:49 marcocle Exp $
 #ifndef GAUDIKERNEL_OBJECTVECTOR_H
 #define GAUDIKERNEL_OBJECTVECTOR_H
 
@@ -64,17 +63,17 @@ public:
     : m_vector(0) { }
   ObjectVector( const char* /* name */ )
     : m_vector(0) { }
-  /// Copy constructor
-  ObjectVector( const ObjectVector<TYPE>& value )
-    : ObjectContainerBase(), m_vector(value.m_vector) { }
+
+  ObjectVector( const ObjectVector<TYPE>& ) = delete;
+  ObjectVector& operator=( const ObjectVector<TYPE>& ) = delete;
 
   /// Destructor
   virtual ~ObjectVector() {
-    for( typename ObjectVector<TYPE>::iterator i = begin(); i != end(); i++ ) {
+    for( auto& i : m_vector )  {
       // Set the back pointer to 0 to avoid repetitional searching
       // for the object in the container, and deleting the object
-      (*i)->setParent (0);
-      delete *i;
+      i->setParent (nullptr);
+      delete i;
     }
   }
 
@@ -84,15 +83,10 @@ public:
   }
   /// Retrieve class ID
   static const CLID& classID() {
-    static CLID clid = TYPE::classID() + CLID_ObjectVector;
+    static const CLID clid = TYPE::classID() + CLID_ObjectVector;
     return clid;
   }
 
-  /// Clone operator
-  const ObjectVector<TYPE>& operator = (const ObjectVector<TYPE> &right) {
-    m_vector = right.m_vector;
-    return *this;
-  }
 
   /// Return an iterator pointing to the beginning of the container
   typename ObjectVector<TYPE>::iterator begin () {
@@ -197,7 +191,7 @@ public:
 
   /// push_back = append = insert a new element at the end of the container
   void push_back( typename ObjectVector<TYPE>::const_reference value )  {
-    if( 0 != value->parent() ) {
+    if( value->parent() ) {
       const_cast<ObjectContainerBase*>(value->parent())->remove(value);
     }
     value->setParent(this);
@@ -207,9 +201,8 @@ public:
   /// Add an object to the container
   virtual long add(ContainedObject* pObject) {
     try {
-      typename ObjectVector<TYPE>::value_type ptr =
-            dynamic_cast<typename ObjectVector<TYPE>::value_type>(pObject);
-      if ( 0 != ptr ) {
+      auto ptr = dynamic_cast<typename ObjectVector<TYPE>::value_type>(pObject);
+      if ( ptr ) {
         push_back(ptr);
         return m_vector.size()-1;
       }
@@ -222,10 +215,10 @@ public:
   /// pop_back = remove the last element from the container
   /// The removed object will be deleted (see the method release)
   void pop_back () {
-    typename ObjectVector<TYPE>::value_type position = m_vector.back();
+    auto position = m_vector.back();
     // Set the back pointer to 0 to avoid repetitional searching
     // for the object in the container, and deleting the object
-    position->setParent (0);
+    position->setParent(nullptr);
     delete position;
     // Removing from the container itself
     m_vector.pop_back();
@@ -235,40 +228,32 @@ public:
   /// from the container, but the object itself will remain alive) (see the method pop_back)
   virtual long remove(ContainedObject* value) {
     // Find the object of the value value
-    typename ObjectVector<TYPE>::iterator i;
-    for( i = begin(); i != end(); i++ ) {
-      if( value == *i ) {
-        break;
-      }
-    }
-    if( end() == i )  {
+    auto i = std::find_if( begin(), end(), [&](const ContainedObject* j) { return j==value; } );
+    if( i == end() )  {
       // Object cannot be released from the conatiner,
       // as it is not contained in it
       return StatusCode::FAILURE;
     }
-    else  {
-      // Set the back pointer to 0 to avoid repetitional searching
-      // for the object in the container and deleting the object
-      (*i)->setParent (0);
-      erase(i);
-      return StatusCode::SUCCESS;
-    }
+    // Set the back pointer to 0 to avoid repetitional searching
+    // for the object in the container and deleting the object
+    (*i)->setParent (nullptr);
+    erase(i);
+    return StatusCode::SUCCESS;
   }
 
   /// Insert "value" before "position"
   typename ObjectVector<TYPE>::iterator insert( typename ObjectVector<TYPE>::iterator position,
                                                 typename ObjectVector<TYPE>::const_reference value ) {
     value->setParent(this);
-    typename ObjectVector<TYPE>::iterator i = m_vector.insert(position, value);
-    return i;
+    return m_vector.insert(position, value);
   }
 
   /// Erase the object at "position" from the container. The removed object will be deleted.
   void erase( typename ObjectVector<TYPE>::iterator position ) {
-    if( 0 != (*position)->parent() ) {
+    if( (*position)->parent() ) {
       // Set the back pointer to 0 to avoid repetitional searching
       // for the object in the container, and deleting the object
-      (*position)->setParent (0);
+      (*position)->setParent (nullptr);
       delete *position;
     }
     // Removing from the container itself
@@ -278,10 +263,10 @@ public:
   /// Erase the range [first, last) from the container. The removed object will be deleted
   void erase( typename ObjectVector<TYPE>::iterator first,
               typename ObjectVector<TYPE>::iterator last ) {
-    for(typename ObjectVector<TYPE>::iterator i = first; i != last; i++ ) {
+    for(auto i = first; i != last; i++ ) {
       // Set the back pointer to 0 to avoid repetitional searching
       // for the object in the container, and deleting the object
-      (*i)->setParent(0);
+      (*i)->setParent(nullptr);
       delete *i;
     }
     // Removing from the container itself
@@ -295,13 +280,13 @@ public:
 
   /// Return the reference to the n'th object in the container
   typename ObjectVector<TYPE>::reference
-    operator[] (typename ObjectVector<TYPE>::size_type n) {
+  operator[] (typename ObjectVector<TYPE>::size_type n) {
     return m_vector[n];
   }
 
   /// Return the const_reference to the n'th object in the container
   typename ObjectVector<TYPE>::const_reference
-    operator[] (typename ObjectVector<TYPE>::size_type n) const {
+  operator[] (typename ObjectVector<TYPE>::size_type n) const {
     return m_vector[n];
   }
 
@@ -309,13 +294,9 @@ public:
   /// It correcponds to the "index" ( from 0 to size()-1 )
   /// If "obj" not fount, return -1
   virtual long index( const ContainedObject* obj ) const {
-    long i;
-    for( i = 0; i < (long)m_vector.size(); i++ ) {
-      if( m_vector[i] == obj ) {
-        return i;
-      }
-    }
-    return -1;
+    auto i = std::find_if( begin(), end(), [&](const ContainedObject *o)
+                           { return o == obj; } );
+    return i!=end() ? std::distance( begin(), i ) : -1 ;
   }
 
   /// Return const pointer to an object of a given distance (index)
@@ -330,15 +311,14 @@ public:
       << size() << "\n";
     // Output the base class
     //ObjectContainerBase::fillStream(s);
-    if ( 0 != size() ) {
+    if ( !empty() ) {
       s << "\nContents of the STL vector :";
       long   count = 0;
-      typename ObjectVector<TYPE>::const_iterator iter;
-      for( iter = m_vector.begin(); iter != m_vector.end(); iter++, count++ ) {
+      for(const auto& i : m_vector) {
         s << "\nIndex "
           << std::setw(12)
-          << count
-          << " of object of type " << **iter;
+          << count++
+          << " of object of type " << *i;
       }
     }
     return s;
@@ -350,4 +330,3 @@ private:
 };
 
 #endif    // GAUDIKERNEL_OBJECTVECTOR_H
-

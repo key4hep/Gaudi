@@ -10,11 +10,17 @@
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/SmartDataPtr.h"
 
+#include "GaudiUtils/QuasiRandom.h"
+
 #include "AIDA/IHistogram1D.h"
 using AIDA::IHistogram1D;
 
 // Example related include files
 #include "RandomNumberAlg.h"
+
+namespace {
+   namespace QuasiRandom = Gaudi::Utils::QuasiRandom;
+}
 
 DECLARE_COMPONENT(RandomNumberAlg)
 
@@ -33,7 +39,6 @@ RandomNumberAlg::~RandomNumberAlg()   {
 // The "functional" part of the class: For the EmptyAlgorithm example they do
 //  nothing apart from print out info messages.
 StatusCode RandomNumberAlg::initialize() {
-  MsgStream log(msgSvc(), name());
   // Use the Job options service to set the Algorithm's parameters
   StatusCode status = setProperties();
   //
@@ -42,13 +47,8 @@ StatusCode RandomNumberAlg::initialize() {
   // but shows the usage of the raw interfaces
   //
   // Get random number generator:
-  SmartIF<IRndmGen> gen;
-  {
-    IRndmGen* tmpPtr = 0;
-    status = randSvc()->generator( Rndm::Gauss(0.5,0.2), tmpPtr );
-    gen = tmpPtr;
-  }
-  if ( status.isSuccess() )   {
+  auto gen = randSvc()->generator( Rndm::Gauss(0.5,0.2) );
+  if ( gen )   {
     std::vector<double> numbers;
     gen->shootArray(numbers, 5000).ignore();
     IHistogram1D* his = histoSvc()->book( "1", "Gauss", 40, 0., 3.);
@@ -102,20 +102,22 @@ StatusCode RandomNumberAlg::initialize() {
     return StatusCode::FAILURE;
   }
 
-  // Book N-tuple
+  // Initial randomness for deterministic random numbers
+  m_initial = QuasiRandom::mixString(name().size(), name());
 
+  // Book N-tuple
   m_ntuple = ntupleSvc()->book ("/NTUPLES/FILE1/100", CLID_RowWiseTuple, "Hello World");
   if ( m_ntuple )    {
-    status = m_ntuple->addItem ("Event#",  m_int);
-    status = m_ntuple->addItem ("Gauss",   m_gauss);
-    status = m_ntuple->addItem ("Exp",     m_exponential);
-    status = m_ntuple->addItem ("Poisson", m_poisson);
+    status = m_ntuple->addItem ("Event#",   m_int);
+    status = m_ntuple->addItem ("DeterInt", m_deter);
+    status = m_ntuple->addItem ("Gauss",    m_gauss);
+    status = m_ntuple->addItem ("Exp",      m_exponential);
+    status = m_ntuple->addItem ("Poisson",  m_poisson);
   }
   return status;
 }
 
 StatusCode RandomNumberAlg::execute()   {
-  MsgStream log(msgSvc(), name());
   StatusCode status;
   static int count = 0;
 
@@ -123,14 +125,21 @@ StatusCode RandomNumberAlg::execute()   {
   Rndm::Numbers exponential(randSvc(), Rndm::Exponential(0.2));
   Rndm::Numbers poisson(randSvc(),     Rndm::Poisson(0.3));
 
+  // Return integer in interval [0, size) from random integer in interval [0, MAX_INT]
+  auto scale = [](uint32_t x, uint32_t size) {
+     const uint32_t denom = boost::integer_traits<uint32_t>::const_max / size;
+     return x / denom;
+  };
+
   m_int         = ++count;
+  m_deter       = scale(QuasiRandom::mix32(m_initial, m_int), 100);
   m_gauss       = (float)gauss();
   m_exponential = (float)exponential();
   m_poisson     = (float)poisson();
 
   status = m_ntuple->write();
   if ( !status.isSuccess() )   {
-    log << MSG::ERROR << "Cannot fill NTuple" << endmsg;
+    error() << "Cannot fill NTuple" << endmsg;
   }
   return StatusCode::SUCCESS;
 }
@@ -139,4 +148,3 @@ StatusCode RandomNumberAlg::finalize()   {
   m_numbers.finalize().ignore();
   return StatusCode::SUCCESS;
 }
-

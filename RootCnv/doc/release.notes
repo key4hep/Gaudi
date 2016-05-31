@@ -5,6 +5,96 @@
 ! Commit Id   : $Format:%H$
 !-----------------------------------------------------------------------------
 
+================================ RootCnv v2r2 ================================
+
+! 2016-03-10 - commit 4a18175
+
+ - removed uses of templates implements[1-4], extends[1-4] and
+   extend_interfaces[1-4]
+
+   Since merge request !22 they are unnecessary.
+    See merge request !133
+================================ RootCnv v2r1 ================================
+
+! 2015-11-02 - commit 57f356c
+
+ - Merge branch 'hive' into 'master'
+
+   Fixes GAUDI-978.
+
+   See merge request !65
+
+
+! 2015-10-26 - commit de80db5
+
+ - More modernization changes
+
+   Fix (almost) all warnings from clang 3.7, and use clang-modernize to further
+   modernize the code.
+
+   Fixes GAUDI-1118.
+
+   See merge request !49
+
+
+! 2015-10-15 - commit 30d16f1
+
+ - Fixed GAUDI-1109: RootCnv not compiling with ROOT 6.02.08
+
+   Added inclusion of `algorithm`.
+
+   See merge request !51
+
+================================ RootCnv v2r0 ================================
+
+! 2015-09-25 - commit 35dd00c
+
+ - Merge branch 'dev-smartif-use' into 'master'
+
+   Provide (and use) C++11 smart pointer 'look and feel' for SmartIF
+
+   The aim of this branch is to confine, for everything that inherits from
+   IInterface, the calls to addRef(), release() and queryInterface() to the
+   SmartIF implementation. Exceptions are a few places where interfaces
+   (currently) return bare pointers (instead of SmartIF...) and where one thus
+   has to addRef() explicitly to avoid returning a dangling pointer. This can be
+   avoided by changing the relevant interface to return a SmartIF instead of a
+   bare pointer.
+
+   In addition, make SmartIF 'look and feel' like a smart pointer.
+
+   - use explict bool conversion instead of .isValid()
+   - add SmartIF::as<IFace>(), to return a SmartIF<IFace> to an alternate
+      interface -- which (together with move) encourages the use of auto
+   - add ISvcLocator::as<IFace>(), to return a SmartIF<IFace> to the current
+   ISvcLocator.
+   - add ServiceManager::service<IFace>() which return SmartIF<IFace> which
+   encourages
+      the use of auto
+
+   And add a few other C++11 modernizations (eg. prefer STL over raw loop)
+
+   Fixes GAUDI-1094
+
+   See merge request !24
+
+
+! 2015-09-11 - commit c062cbe
+
+ - C++11 modernization changes
+
+   Some trivial - and some not so trivial! - changes which take advantage of
+   C++11...
+
+   See merge request !7
+
+============================== RootCnv v1r23p3 ===============================
+! 2015-05-21 - Marco Clemencic
+ - Fixed compilation with CMT.
+
+! 2015-03-14 - Marco Clemencic
+ - GAUDI-1024: Replaced GaudiKernel/Tokenizer with the new AttribStringParser.
+
 ============================== RootCnv v1r23p2 ===============================
 ! 2014-10-10 - Marco Clemencic
  - Fixed warning about redeclared macro when building the latest Gaudi with

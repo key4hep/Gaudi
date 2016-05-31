@@ -1,4 +1,3 @@
-// $Id: HistoDecorator.h,v 1.4 2008/10/09 09:59:14 marcocle Exp $
 // ============================================================================
 #ifndef GAUDIPYTHON_HISTODECORATOR_H
 #define GAUDIPYTHON_HISTODECORATOR_H 1

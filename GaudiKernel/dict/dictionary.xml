@@ -1,7 +1,7 @@
 <lcgdict>
   <selection>
 
- <class pattern="DataObjectDescriptor*"/>
+ <class pattern="DataObjectHandle*"/>
 
   <!-- Base classes in GaudiKernel -->
   <class name="IssueSeverity"/>
@@ -27,11 +27,6 @@
     <field name="m_pObject" transient="true"/>
   </class>
   <class name="std::vector&lt;LinkManager::Link*&gt;"/>
-
-  <!-- IInterface templated helpers -->
-  <class pattern="extend_interfaces*&lt;*&gt;"/>
-  <class pattern="extends*&lt;*&gt;"/>
-  <class pattern="implements*&lt;*&gt;"/>
 
   <!-- Interfaces in GaudiKernel -->
   <class name="IAddressCreator"/>
@@ -116,6 +111,7 @@
   <class name="IUpdateManagerSvc"/>
   <class name="IUpdateManagerSvc::PythonHelper"/>
   <class name="IValidity"/>
+  <class name="MetaData"/>
 
   <!-- Gaudi data store classes  -->
   <class name="ContainedObject"         id="000000BE-0000-0000-0000-000000000000">
@@ -219,6 +215,11 @@
     <field name="m_contd" transient="true"/>
   </class>
   <class name="std::vector<SmartRef<KeyedObject<unsigned long> > >"/>
+
+  <class name="Containers::KeyedObjectManager<Containers::hashmap>"/>
+  <class name="Containers::KeyedObjectManager<Containers::map>"/>
+  <class name="Containers::KeyedObjectManager<Containers::array>"/>
+  <class name="Containers::KeyedObjectManager<Containers::vector>"/>
 
   <!--class name="std::vector<std::basic_string<char> >"/-->
 

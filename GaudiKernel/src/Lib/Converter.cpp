@@ -1,5 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/src/Lib/Converter.cpp,v 1.17 2007/12/12 16:02:32 marcocle Exp $
-
 // Include Files
 #include "GaudiKernel/Converter.h"
 #include "GaudiKernel/INamedInterface.h"
@@ -66,7 +64,7 @@ StatusCode Converter::updateRepRefs(IOpaqueAddress*, DataObject*)    {
 /// Initialize the converter
 StatusCode Converter::initialize()    {
   // Get a reference to the Message Service
-  if ( !msgSvc().isValid() )   {
+  if ( !msgSvc() )   {
     return StatusCode::FAILURE;
   }
   return StatusCode::SUCCESS;
@@ -75,11 +73,11 @@ StatusCode Converter::initialize()    {
 /// Finalize the converter
 StatusCode Converter::finalize() {
   // release services
-  m_messageSvc = 0;
-  m_dataManager = 0;
-  m_dataProvider = 0;
-  m_conversionSvc = 0;
-  m_addressCreator = 0;
+  m_messageSvc = nullptr;
+  m_dataManager = nullptr;
+  m_dataProvider = nullptr;
+  m_conversionSvc = nullptr;
+  m_addressCreator = nullptr;
   return StatusCode::SUCCESS;
 }
 
@@ -129,9 +127,9 @@ SmartIF<ISvcLocator>& Converter::serviceLocator()  const     {
 
 ///--- Retrieve pointer to message service
 SmartIF<IMessageSvc>& Converter::msgSvc()  const   {
-  if ( !m_messageSvc.isValid() ) {
+  if ( !m_messageSvc ) {
     m_messageSvc = serviceLocator();
-    if( !m_messageSvc.isValid() ) {
+    if( !m_messageSvc ) {
       throw GaudiException("Service [MessageSvc] not found", "Converter", StatusCode::FAILURE);
     }
   }
@@ -151,16 +149,12 @@ Converter::Converter(long storage_type, const CLID& class_type, ISvcLocator* svc
 {
 }
 
-/// Standard Destructor
-Converter::~Converter() {
-}
-
 StatusCode
 Converter::service_i(const std::string& svcName, bool createIf,
 		     const InterfaceID& iid, void** ppSvc) const {
   // Check for name of conversion service
   SmartIF<INamedInterface> cnvsvc(conversionSvc());
-  if (cnvsvc.isValid()) {
+  if (cnvsvc) {
     const ServiceLocatorHelper helper(*serviceLocator(), "Converter", cnvsvc->name());
     return helper.getService(svcName, createIf, iid, ppSvc);
   }
@@ -172,7 +166,7 @@ Converter::service_i(const std::string& svcType, const std::string& svcName,
 		     const InterfaceID& iid, void** ppSvc) const {
   // Check for name of conversion service
   SmartIF<INamedInterface> cnvsvc(conversionSvc());
-  if (cnvsvc.isValid()) {
+  if (cnvsvc) {
     const ServiceLocatorHelper helper(*serviceLocator(), "Converter", cnvsvc->name());
     return helper.createService(svcType, svcName, iid, ppSvc);
   }
@@ -182,7 +176,7 @@ Converter::service_i(const std::string& svcType, const std::string& svcName,
 SmartIF<IService> Converter::service(const std::string& name, const bool createIf) const {
   SmartIF<INamedInterface> cnvsvc(conversionSvc());
   SmartIF<IService> svc;
-  if (cnvsvc.isValid()) {
+  if (cnvsvc) {
     const ServiceLocatorHelper helper(*serviceLocator(), "Converter", cnvsvc->name());
     svc = helper.service(name, false, createIf);
   }

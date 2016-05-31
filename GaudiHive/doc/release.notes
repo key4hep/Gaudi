@@ -1,37 +1,168 @@
 Package : GaudiKernel
 Commit Id: $Format:%H$
 
-! 2015-02-27 - Marco Clemencic
- - Changed level of some messages in TimelineSvc.
 
-! 2015-02-14 - Illya Shapoval
-  o Expose the possibility to dump intra-event concurrency dynamics to a csv file
-    (controlled by the DumpIntraEventDynamics property of the FWD scheduler )
+! 2016-06-01 - (Merge of ae5ce72 and 8c5261b, plus few additional changes
+                on top of the merge)
 
-! 2014-11-25 - Illya Shapoval
-  o First implementation of the optimizer mode, using data realm eccentricity
-    to rank algorithms.
+ - Synchronizing the official master with my private dev/io-bound branch as
+   much as possible before requesting the merge of the dev/io-bound into the
+   official master.
 
-! 2014-11-25 - Illya Shapoval
-  o proper switcher between execution optimization modes is introduced
-    (use the ForwardSchedulerSvc property "Optimizer" to set the mode)
+=============================== GaudiHive v2r0 ===============================
 
-! 2014-10-30 - Illya Shapoval
-  o new mode for execution planner added: based on algorithm eccentricities
+! 2016-03-10 - commit 02f2560
 
-! 2014-10-21 - Charles Leggett
-  - fixed requirements for boost graph
+ - use StringKey for Alg name, add IAlgorithm::setIndex
 
-! 2014-06-03 - Charles Leggett
-  updates for EventContext class
+   this patch does 3 things:
 
-#	modified:   src/AlgoExecutionTask.cpp
-#	modified:   src/CPUCruncher.cpp
-#	modified:   src/ForwardSchedulerSvc.cpp
-#	modified:   src/HiveEventLoopMgr.cpp
-#	modified:   src/HiveReadAlgorithm.cpp
-#	modified:   src/HiveSlimEventLoopMgr.cpp
-#	modified:   src/HiveTestAlgorithm.cpp
-#	modified:   src/ParallelSequentialSchedulerSvc.cpp
-#	modified:   src/RoundRobinSchedulerSvc.cpp
-#	modified:   src/SequentialSchedulerSvc.cpp
+   - makes Algorithm::index() const (as it should have been), set the initial
+   value to 0 instead of 123 (!)
+   - adds a protected Algorithm::setIndex(unsigned int) method. this allows you
+   to distinguish between clones. AlgResourcePool is the one who does the
+   setting, and is declared as a friend to IAlgorithm
+   - turns Algorithm::m_name into a StringKey (from a string), so we can hash on
+   the name of Algorithms more easily (a useful ability when dealing with Alg
+   clones, and trying to treat them all the same way)
+    See merge request !125
+
+! 2016-03-10 - commit a001f80
+
+ - fixed compile time warning in ExecutionFlowGraph
+
+   commit a1a61fc caused the warning:
+
+      statement has no effect [-Wunused-value]
+
+    See merge request !137
+
+! 2016-03-10 - commit 4a18175
+
+ - removed uses of templates implements[1-4], extends[1-4] and
+   extend_interfaces[1-4]
+
+   Since merge request !22 they are unnecessary.
+    See merge request !133
+
+! 2016-03-09 - commit bae38a9
+
+ - fully use DataObjID in ExecutionFlowGraph
+
+   `ExecutionFlowGraph` was still using some string paths instead of
+   `DataObjID`.
+    See merge request !123
+
+! 2016-03-03 - commit 5925940
+
+ - restored DeclareFactoryEntry macros for ATLAS
+
+   restored the (dummy) DeclareFactoryEntry macros for ATLAS compatibility.
+
+   these are protected with a `#ifdef ATLAS` macro
+    also fixed GaudiHive/CPUCruncher to remove this usage
+    See merge request !126
+
+! 2016-03-02 - commit a146191
+
+ - separate thread local EventContext handling from ContextSpecificPtr
+
+   Moved all the setting/getting methods for the thread local
+   `EventContext` from `GaudiKernel/ContextSpecificPtr.h` to a new file
+   `GaudiKernel/ThreadLocalContext.h`.
+    See merge request !122
+
+! 2016-02-29 - commit aa945af
+
+ - better failure handling during initialization
+
+   Several essential services that fail initialization during the
+   `ForwardSchedulerSvc::initialize` merely print error/warning
+ messages, but
+   the errors aren't propagated, and the job doesn't
+ abort.
+    Fixes GAUDI-1184
+    See merge request !117
+
+! 2016-02-11 - commit b0618f7
+
+ - Improve CommonMessaging
+
+   Implementation of GAUDI-1146: Improve CommonMessaging and use it in more
+   places.
+
+   See merge request !76
+
+   Conflicts:
+   GaudiExamples/tests/qmtest/refs/AlgTools2.ref
+   GaudiExamples/tests/qmtest/refs/MultiInput/Read.ref
+   GaudiExamples/tests/qmtest/refs/conditional_output/write.ref
+   GaudiKernel/GaudiKernel/AlgTool.h
+   GaudiKernel/GaudiKernel/Algorithm.h
+   GaudiKernel/GaudiKernel/Service.h
+   GaudiKernel/src/Lib/AlgTool.cpp
+   GaudiKernel/src/Lib/Algorithm.cpp
+
+
+! 2016-02-09 - commit 11d42e4
+
+ - DataHandles fixes for LHCb
+
+   - renamed IDataHandleHolder::accept to acceptDHVisitor to avoid build time
+   warnings in LHCb
+   - fixed reference file for GaudiExamples.thistwrite
+
+   See merge request !104
+
+
+! 2016-02-09 - commit a4bea2b
+
+ - remove unprotected DEBUG messages added in v27r0
+
+   The merge of the 'hive' branch introduced several _unprotected_ DEBUG
+   messages,
+ which is against LHCb policies.
+    Fixes GAUDI-1174.
+    See merge request !102
+
+! 2016-02-06 - commit d905569
+
+ - introduce DataHandle and DataObjectHandle
+
+   See merge requests !57 !94 !95
+
+=============================== GaudiHive v1r1 ===============================
+
+! 2016-01-12 - commit 4dbdc8e
+
+ - fixed clang 3.7 compilation warnings
+
+   Fixes GAUDI-1083.
+ See merge request !89
+
+! 2016-01-07 - commit fabc739
+
+ - fixed compilation with clang 3.7 (after hive merge)
+
+   * fixed compilation problems related to `operator<<` (gcc is more
+    permissive than clang).
+   * fixed also some clang warnings.
+    Fixes GAUDI-1157.
+    See merge request !84
+
+! 2015-11-11 - commit 0a0032f
+
+ - Merge branch 'GAUDI-1130' into 'master'
+
+   fixes to support native build on Ubuntu 15.10
+    Fixes GAUDI-1130.
+    See merge request !70
+
+! 2015-11-02 - commit 57f356c
+
+ - Merge branch 'hive' into 'master'
+
+   Fixes GAUDI-978.
+
+   See merge request !65
+

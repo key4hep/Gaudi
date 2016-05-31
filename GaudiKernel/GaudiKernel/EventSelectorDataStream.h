@@ -42,7 +42,7 @@ class EventSelectorDataStream;
    @author R. Lambert
    @version 1.0
 */
-class GAUDI_API EventSelectorDataStream: public implements1<IInterface> {
+class GAUDI_API EventSelectorDataStream: public implements<IInterface> {
   /// Output friend for MsgStream
   friend MsgStream& operator<<(MsgStream& s, const EventSelectorDataStream& obj);
   /// Output friend for standard I/O
@@ -61,18 +61,18 @@ protected:
   /// Event selector type
   std::string             m_selectorType;
   /// Pointer to valid selector
-  IEvtSelector*           m_pSelector;
+  SmartIF<IEvtSelector>   m_pSelector;
   /// Reference to service locator
   ISvcLocator*            m_pSvcLocator;
   /// Properties vector
-  Properties*             m_properties;
+  Properties              m_properties;
   /// Initialization state
-  bool                    m_initialized;
+  bool                    m_initialized = false;
   /// Standard Destructor
-  virtual ~EventSelectorDataStream();
+  virtual ~EventSelectorDataStream() = default;
 public:
   /// Standard Constructor
-  EventSelectorDataStream(const std::string& nam, const std::string& def, ISvcLocator* svcloc);
+  EventSelectorDataStream(std::string nam, std::string def, ISvcLocator* svcloc);
   /// Attach event selector object
   virtual void setSelector(IEvtSelector* pSelector);
   /// Parse input criteria
@@ -85,7 +85,7 @@ public:
   const StringProperty* property(const std::string& nam)  const;
   /// Access properties
   const Properties& properties()    {
-    return *m_properties;
+    return m_properties;
   }
   /// Retrieve stream name
   const std::string& name()   const   {
@@ -109,7 +109,7 @@ public:
   }
   /// Retrieve event selector object
   IEvtSelector* selector()  const  {
-    return m_pSelector;
+    return m_pSelector.get();
   }
   /// Check initialization status
   bool isInitialized()  const   {

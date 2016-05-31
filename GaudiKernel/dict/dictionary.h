@@ -4,6 +4,7 @@
 
 #include "GaudiKernel/SmartRefVector.h"
 #include "GaudiKernel/DataObject.h"
+#include "GaudiKernel/MetaData.h"
 #include "GaudiKernel/LinkManager.h"
 #include "GaudiKernel/SmartRefVector.h"
 #include "GaudiKernel/KeyedObject.h"
@@ -95,7 +96,7 @@
 #include "GaudiKernel/IUpdateManagerSvc.h"
 #include "GaudiKernel/IValidity.h"
 #include "GaudiKernel/IDataStreamTool.h"
-#include "GaudiKernel/DataObjectDescriptor.h"
+#include "GaudiKernel/DataObjectHandle.h"
 
 namespace GaudiKernelDict {
   struct __Instantiations :

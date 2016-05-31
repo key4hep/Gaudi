@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/src/Lib/Memory.cpp,v 1.1 2001/03/14 15:30:16 mato Exp $
 //====================================================================
 //	Memory.cpp
 //--------------------------------------------------------------------
@@ -58,7 +57,7 @@ long System::basePriority(InfoType fetch, long pid)   {
 
 /// Basic Process Information: Process ID
 long System::procID()   {
-  static long s_pid = ::getpid();
+  static const long s_pid = ::getpid();
   return s_pid;
 }
 

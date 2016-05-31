@@ -26,10 +26,11 @@ namespace Gaudi  {
     *  @author  R. Lambert
     *  @date    03/09/2009
     */
-  class IODataManager : public extends1<Service, IIODataManager> {
+  class IODataManager : public extends<Service,
+                                       IIODataManager> {
   protected:
     typedef const std::string& CSTR;
-    struct Entry  {
+    struct Entry final {
       std::string      type;
       IoType           ioType;
       IDataConnection* connection;
@@ -76,30 +77,30 @@ namespace Gaudi  {
     IODataManager(CSTR nam, ISvcLocator* loc);
 
     /// Standard destructor
-    virtual ~IODataManager()  {}
+    ~IODataManager() override = default;
 
     /// IService implementation: initialize the service
-    virtual StatusCode initialize();
+    StatusCode initialize() override;
 
     /// IService implementation: finalize the service
-    virtual StatusCode finalize();
+    StatusCode finalize() override;
 
     /// Open data stream in read mode
-    virtual StatusCode connectRead(bool keep_open, Connection* ioDesc);
+    StatusCode connectRead(bool keep_open, Connection* ioDesc) override;
     /// Open data stream in write mode
-    virtual StatusCode connectWrite(Connection* con,IoType mode=Connection::CREATE,CSTR doctype="UNKNOWN");
+    StatusCode connectWrite(Connection* con,IoType mode=Connection::CREATE,CSTR doctype="UNKNOWN") override;
     /// Release data stream
-    virtual StatusCode disconnect(Connection* ioDesc);
+    StatusCode disconnect(Connection* ioDesc) override;
     /// Retrieve known connection
-    virtual Connection* connection(const std::string& dsn) const;
+    Connection* connection(const std::string& dsn) const override;
     /// Get connection by owner instance (0=ALL)
-    virtual Connections connections(const IInterface* owner) const;
+    Connections connections(const IInterface* owner) const override;
     /// Read raw byte buffer from input stream
-    virtual StatusCode read(Connection* ioDesc, void* const data, size_t len);
+    StatusCode read(Connection* ioDesc, void* const data, size_t len) override;
     /// Write raw byte buffer to output stream
-    virtual StatusCode write(Connection* con, const void* data, int len);
+    StatusCode write(Connection* con, const void* data, int len) override;
     /// Seek on the file described by ioDesc. Arguments as in ::seek()
-    virtual long long int seek(Connection* ioDesc, long long int where, int origin);
+    long long int seek(Connection* ioDesc, long long int where, int origin) override;
   };
 }         // End namespace Gaudi
 #endif    // GAUDIUTILS_IODATAMANAGER_H

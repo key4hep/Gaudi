@@ -63,9 +63,9 @@ HiveSlimEventLoopMgr::HiveSlimEventLoopMgr(const std::string& name, ISvcLocator*
   declareProperty("SchedulerName", m_schedulerName="ForwardSchedulerSvc",
                   "Name of the scheduler to be used");
   declareProperty("EventNumberBlackList", m_eventNumberBlacklist);
-  
+
   m_scheduledStop = false;
-  
+
 }
 
 //--------------------------------------------------------------------------------------------
@@ -84,7 +84,7 @@ HiveSlimEventLoopMgr::~HiveSlimEventLoopMgr()   {
 // implementation of IAppMgrUI::initialize
 //--------------------------------------------------------------------------------------------
 StatusCode HiveSlimEventLoopMgr::initialize()    {
- 
+
     if ( !m_appMgrUI.isValid() ) {
         return StatusCode::FAILURE;
     }
@@ -116,7 +116,7 @@ StatusCode HiveSlimEventLoopMgr::initialize()    {
     m_schedulerSvc = serviceLocator()->service(m_schedulerName);
     if ( !m_schedulerSvc.isValid()){
         fatal() << "Error retrieving SchedulerSvc interface ISchedulerSvc." << endmsg;
-        return StatusCode::FAILURE;    
+        return StatusCode::FAILURE;
     }
     // Obtain the IProperty of the ApplicationMgr
     m_appMgrProperty = serviceLocator();
@@ -124,10 +124,10 @@ StatusCode HiveSlimEventLoopMgr::initialize()    {
         fatal() << "IProperty interface not found in ApplicationMgr." << endmsg;
         return StatusCode::FAILURE;
     }
-    
+
     // We do not expect a Event Selector necessarily being declared
     setProperty(m_appMgrProperty->getProperty("EvtSel")).ignore();
-    
+
     if( m_evtsel != "NONE" || m_evtsel.length() == 0) {
         m_evtSelector = serviceLocator()->service("EventSelector");
         if( m_evtSelector.isValid() ) {
@@ -151,7 +151,7 @@ StatusCode HiveSlimEventLoopMgr::initialize()    {
             warning() << "No events will be processed from external input." << endmsg;
         }
     }
-    
+
     // Setup access to histogramming services
     m_histoDataMgrSvc = serviceLocator()->service("HistogramDataSvc");
     if( !m_histoDataMgrSvc.isValid() )  {
@@ -164,14 +164,14 @@ StatusCode HiveSlimEventLoopMgr::initialize()    {
         warning() << "Histograms cannot not be saved - though required." << endmsg;
         return sc;
     }
-    
+
     // Setup algorithm resource pool
     m_algResourcePool = serviceLocator()->service("AlgResourcePool");
     if( !m_algResourcePool.isValid() ) {
         fatal() << "Error retrieving AlgResourcePool" << endmsg;
         return StatusCode::FAILURE;
     }
-    
+
     std::sort(m_eventNumberBlacklist.begin(), m_eventNumberBlacklist.end());
     info() << "Found " << m_eventNumberBlacklist.size() << " events in black list" << endmsg;
 
@@ -189,7 +189,7 @@ StatusCode HiveSlimEventLoopMgr::reinitialize() {
     SmartIF<IService> theSvc(serviceLocator()->service("EventSelector"));
     SmartIF<IEvtSelector> theEvtSel(theSvc);
     StatusCode sc;
-    if( theEvtSel.isValid() && ( theEvtSel.get() != m_evtSelector.get() ) ) {      
+    if( theEvtSel.isValid() && ( theEvtSel.get() != m_evtSelector.get() ) ) {
       // Setup Event Selector
       if ( m_evtSelector.get() && m_evtContext ) {
         // Need to release context before switching to new event selector
@@ -258,7 +258,7 @@ StatusCode HiveSlimEventLoopMgr::stop()    {
 //--------------------------------------------------------------------------------------------
 // Removed call to MinimalEventLoopMgr!
 StatusCode HiveSlimEventLoopMgr::finalize()    {
-  
+
   StatusCode scRet;
   StatusCode sc = Service::finalize();
 
@@ -266,7 +266,7 @@ StatusCode HiveSlimEventLoopMgr::finalize()    {
     scRet = StatusCode::FAILURE;
     error() << "Problems finalizing Service base class" << endmsg;
   }
-    
+
   // Save Histograms Now
   if ( m_histoPersSvc != 0 )    {
     HistogramAgent agent;
@@ -307,7 +307,7 @@ StatusCode HiveSlimEventLoopMgr::finalize()    {
   }
 
   scRet=sc;
-  
+
   // Release event selector context
   if ( m_evtSelector && m_evtContext )   {
     m_evtSelector->releaseContext(m_evtContext).ignore();
@@ -316,7 +316,7 @@ StatusCode HiveSlimEventLoopMgr::finalize()    {
 
   m_incidentSvc = 0; // release
   m_appMgrUI = 0; // release
-  
+
   // Release all interfaces...
   m_histoDataMgrSvc = 0;
   m_histoPersSvc    = 0;
@@ -337,7 +337,7 @@ StatusCode HiveSlimEventLoopMgr::executeEvent(void* createdEvts_IntPtr)    {
   int& createdEvts = *((int*)createdEvts_IntPtr);
 
   EventContext* evtContext(nullptr);
-  
+
   // Check if event number is in blacklist
   if(LIKELY(m_blackListBS != nullptr)){ //we are processing a finite number of events, use bitset blacklist
 	  if(m_blackListBS->test(createdEvts)){
@@ -354,7 +354,7 @@ StatusCode HiveSlimEventLoopMgr::executeEvent(void* createdEvts_IntPtr)    {
     fatal() << "Impossible to create event context" << endmsg;
     return StatusCode::FAILURE;
   }
-  
+
   verbose() << "Beginning to process event " <<  createdEvts << endmsg;
 
   // An incident may schedule a stop, in which case is better to exit before the actual execution.
@@ -362,23 +362,23 @@ StatusCode HiveSlimEventLoopMgr::executeEvent(void* createdEvts_IntPtr)    {
 /*  if ( m_scheduledStop ) {
     always() << "Terminating event processing loop due to a stop scheduled by an incident listener" << endmsg;
     return StatusCode::SUCCESS;
-  }*/      
+  }*/
 
-  
+
   StatusCode declEvtRootSc = declareEventRootAddress();
   if (declEvtRootSc.isFailure()) { // We ran out of events!
     createdEvts = -1;  // Set created event to a negative value: we finished!
     return StatusCode::SUCCESS;
     }
-    
+
   // Fire BeginEvent "Incident"
   m_incidentSvc->fireIncident(Incident(name(),IncidentType::BeginEvent));
-  
-  // Now add event to the scheduler 
+
+  // Now add event to the scheduler
   verbose() << "Adding event " << evtContext->evt()
 	 << ", slot " << evtContext->slot()
           << " to the scheduler" << endmsg;
-  
+
   m_incidentSvc->fireIncident(Incident(name(), IncidentType::BeginProcessing));
 
   StatusCode addEventStatus = m_schedulerSvc->pushNewEvent(evtContext);
@@ -399,16 +399,17 @@ StatusCode HiveSlimEventLoopMgr::executeEvent(void* createdEvts_IntPtr)    {
 StatusCode HiveSlimEventLoopMgr::executeRun( int maxevt )    {
   StatusCode  sc;
   bool eventfailed = false;
-  
+
   if(maxevt > 0){ //finite number of events to process
-	  m_blackListBS = new boost::dynamic_bitset<>(maxevt); //all initialized to zero
-	  for(uint i = 0; i < m_eventNumberBlacklist.size() && m_eventNumberBlacklist[i] <= maxevt; ++i ){ //black list is sorted in init
-		  m_blackListBS->set(m_eventNumberBlacklist[i], true);
-	  }
+    const unsigned int umaxevt = static_cast<unsigned int>(maxevt);
+    m_blackListBS = new boost::dynamic_bitset<>(maxevt); //all initialized to zero
+    for(unsigned int i = 0; i < m_eventNumberBlacklist.size() && m_eventNumberBlacklist[i] <= umaxevt; ++i ){ //black list is sorted in init
+      m_blackListBS->set(m_eventNumberBlacklist[i], true);
+    }
   }
 
   sc = m_algResourcePool->beginRun();
-  if (sc.isFailure()) 
+  if (sc.isFailure())
     eventfailed=true;
 
   // Call now the nextEvent(...)
@@ -423,9 +424,9 @@ StatusCode HiveSlimEventLoopMgr::executeRun( int maxevt )    {
   if(m_blackListBS != nullptr)
 	  delete m_blackListBS;
 
-  if (eventfailed) 
+  if (eventfailed)
     return StatusCode::FAILURE;
-  else 
+  else
     return StatusCode::SUCCESS;
 }
 
@@ -457,8 +458,8 @@ StatusCode HiveSlimEventLoopMgr::nextEvent(int maxevt)   {
   typedef Clock::time_point time_point;
 
   // Reset the application return code.
-  Gaudi::setAppReturnCode(m_appMgrProperty, Gaudi::ReturnCode::Success, true).ignore();  
-  
+  Gaudi::setAppReturnCode(m_appMgrProperty, Gaudi::ReturnCode::Success, true).ignore();
+
   int finishedEvts =0;
   int createdEvts =0;
   int skippedEvts = 0;
@@ -469,12 +470,12 @@ StatusCode HiveSlimEventLoopMgr::nextEvent(int maxevt)   {
   bool newEvtAllowed = false ;
 
   constexpr double oneOver1204 = 1./1024.;
-  
+
   uint iteration = 0;
   time_point start_time = Clock::now();
   while ( !loop_ended and (maxevt < 0 or (finishedEvts+skippedEvts) < maxevt)){
 	  debug() << "work loop iteration " << iteration++ << endmsg;
-    // if the created events did not reach maxevt, create an event    
+    // if the created events did not reach maxevt, create an event
     if ((newEvtAllowed or createdEvts == 0 ) && // Launch the first event alone
         createdEvts >= 0 && // The events are not finished with an unlimited number of events
         (createdEvts < maxevt or maxevt<0) &&  // The events are not finished with a limited number of events
@@ -482,15 +483,15 @@ StatusCode HiveSlimEventLoopMgr::nextEvent(int maxevt)   {
 
       if (1==createdEvts) // reset counter to count from event 1
         start_time = Clock::now();
-        
+
       debug() << "createdEvts: " << createdEvts << ", freeslots: " << m_schedulerSvc->freeSlots() << endmsg;
 //  DP remove to remove the syscalls...
-//      if (0!=createdEvts){        
+//      if (0!=createdEvts){
 //        info()   << "Event Number = " << createdEvts
 //                 << " WSS (MB) = " << System::mappedMemory(System::MemoryUnit::kByte)*oneOver1204
 //                << " Time (s) = " << secsFromStart(start_time) << endmsg;
 //        }
-    
+
       //TODO can we adapt the interface of executeEvent for a nicer solution?
       StatusCode sc = StatusCode::RECOVERABLE;
       while(!sc.isSuccess() //we haven't created an event yet
@@ -511,10 +512,10 @@ StatusCode HiveSlimEventLoopMgr::nextEvent(int maxevt)   {
     		  return StatusCode::FAILURE;
     	  } // else we have an success --> exit loop
       }
-      
+
     } // end if condition createdEvts < maxevt
-    else{ 
-      // all the events were created but not all finished or the slots were 
+    else{
+      // all the events were created but not all finished or the slots were
       // all busy: the scheduler should finish its job
 
       debug() << "Draining the scheduler" << endmsg;
@@ -534,7 +535,7 @@ StatusCode HiveSlimEventLoopMgr::nextEvent(int maxevt)   {
   info() << skippedEvts << " events were SKIPed" << endmsg;
 
   return StatusCode::SUCCESS;
-  
+
 }
 
 //---------------------------------------------------------------------------
@@ -563,9 +564,9 @@ StatusCode HiveSlimEventLoopMgr::getEventRoot(IOpaqueAddress*& refpAddr)  {
 //---------------------------------------------------------------------------
 
 StatusCode HiveSlimEventLoopMgr::declareEventRootAddress(){
-  
+
   StatusCode sc;
-  if( m_evtContext ) {      
+  if( m_evtContext ) {
       //---This is the "event iterator" context from EventSelector
       IOpaqueAddress* pAddr = 0;
       sc = getEventRoot(pAddr);
@@ -594,12 +595,12 @@ StatusCode  HiveSlimEventLoopMgr::createEventContext(EventContext*& evtContext, 
   evtContext = new EventContext;
 
   evtContext->set(createdEvts, m_whiteboard->allocateStore(createdEvts));
-  
+
   StatusCode sc = m_whiteboard->selectStore(evtContext->slot());
   if (sc.isFailure()){
-    warning() << "Slot " << evtContext->slot() 
+    warning() << "Slot " << evtContext->slot()
               << " could not be selected for the WhiteBoard" << endmsg;
-  }  
+  }
   return sc;
 }
 
@@ -608,7 +609,7 @@ StatusCode  HiveSlimEventLoopMgr::createEventContext(EventContext*& evtContext, 
 StatusCode HiveSlimEventLoopMgr::drainScheduler(int& finishedEvts){
 
   StatusCode sc(StatusCode::SUCCESS);
-    
+
   // maybe we can do better
   std::vector<EventContext*> finishedEvtContexts;
 
@@ -620,14 +621,14 @@ StatusCode HiveSlimEventLoopMgr::drainScheduler(int& finishedEvts){
 
   // We got past it: cache the pointer
   if (sc.isSuccess()){
-    debug() << "Context obtained" << endmsg;    
+    debug() << "Context obtained" << endmsg;
   } else{
     // A problem occurred.
     debug() << "Context not obtained: a problem in the scheduling?" << endmsg;
 //     return StatusCode::FAILURE;
   }
   finishedEvtContexts.push_back(finishedEvtContext);
-  
+
   // Let's see if we can pop other event contexts
   while (m_schedulerSvc->tryPopFinishedEvent(finishedEvtContext).isSuccess()){
     finishedEvtContexts.push_back(finishedEvtContext);
@@ -640,7 +641,7 @@ StatusCode HiveSlimEventLoopMgr::drainScheduler(int& finishedEvts){
       error() << "Detected nullptr ctxt before clearing WB!"<< endmsg;
       finalSC = StatusCode::FAILURE;
       continue;
-    }    
+    }
     if (thisFinishedEvtContext->evtFail()){
       fatal() << "Failed event detected"<< endmsg;
       finalSC = StatusCode::FAILURE;
@@ -648,21 +649,21 @@ StatusCode HiveSlimEventLoopMgr::drainScheduler(int& finishedEvts){
 
     m_incidentSvc->fireIncident(Incident(name(), IncidentType::EndProcessing));
     m_incidentSvc->fireIncident(Incident(name(),IncidentType::EndEvent));
-    
+
     debug() << "Clearing slot " << thisFinishedEvtContext->slot()
 	    << " (event " << thisFinishedEvtContext->evt()
           << ") of the whiteboard" << endmsg;
-    
+
     StatusCode sc = clearWBSlot(thisFinishedEvtContext->slot());
     if (!sc.isSuccess())
-      error() << "Whiteboard slot " << thisFinishedEvtContext->slot() 
+      error() << "Whiteboard slot " << thisFinishedEvtContext->slot()
                 << " could not be properly cleared";
 
-    
+
     delete thisFinishedEvtContext;
-    
+
     finishedEvts++;
-    
+
   }
   return finalSC;
 }
@@ -672,9 +673,9 @@ StatusCode HiveSlimEventLoopMgr::drainScheduler(int& finishedEvts){
 StatusCode HiveSlimEventLoopMgr::clearWBSlot(int evtSlot)  {
   StatusCode sc = m_whiteboard->clearStore(evtSlot);
   if( !sc.isSuccess() )  {
-    warning() << "Clear of Event data store failed" << endmsg;    
+    warning() << "Clear of Event data store failed" << endmsg;
   }
-  return m_whiteboard->freeStore(evtSlot);  
+  return m_whiteboard->freeStore(evtSlot);
 }
 //---------------------------------------------------------------------------
 

@@ -158,8 +158,18 @@ macro(reflex_generate_dictionary dictionary _headerfile _selectionfile)
 
   get_directory_property(_defs COMPILE_DEFINITIONS)
   foreach(d ${_defs})
+   if(d MATCHES "\"")
+     string(REPLACE "\"" "\\\"" d "${d}")
+   endif()
    set(definitions ${definitions} -D${d})
   endforeach()
+  # by default CMake passes -DNDEBUG in the flags and not in the definitions
+  if(CMAKE_BUILD_TYPE)
+    string(TOUPPER "_${CMAKE_BUILD_TYPE}" _build_type_upper)
+  endif()
+  if(CMAKE_CXX_FLAGS${_build_type_upper} MATCHES "-DNDEBUG")
+    set(definitions ${definitions} -DNDEBUG)
+  endif()
 
   if(gccxmlopts)
     set(gccxmlopts "--gccxmlopt=${gccxmlopts}")
@@ -170,12 +180,18 @@ macro(reflex_generate_dictionary dictionary _headerfile _selectionfile)
   add_custom_target(${dictionary}GenDeps)
 
   get_filename_component(GCCXML_home ${GCCXML} PATH)
+
+  set(impl_deps)
+  foreach(hf ${headerfiles})
+    set(impl_deps ${impl_deps} CXX ${hf})
+  endforeach()
   add_custom_command(
     OUTPUT ${gensrcdict} ${rootmapname} ${gensrcclassdef}
     COMMAND ${ROOT_genreflex_CMD}
          ${headerfiles} -o ${gensrcdict} ${gccxmlopts} ${rootmapopts} --select=${selectionfile}
          --gccxmlpath=${GCCXML_home} ${ARG_OPTIONS} ${include_dirs} ${definitions}
-    DEPENDS ${headerfiles} ${selectionfile} ${dictionary}GenDeps)
+    DEPENDS ${headerfiles} ${selectionfile} ${dictionary}GenDeps
+    IMPLICIT_DEPENDS ${impl_deps})
 
   # Creating this target at ALL level enables the possibility to generate dictionaries (genreflex step)
   # well before the dependent libraries of the dictionary are build

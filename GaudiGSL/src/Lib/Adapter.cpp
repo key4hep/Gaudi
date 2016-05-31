@@ -1,4 +1,3 @@
-// $Id: Adapter.cpp,v 1.2 2004/03/28 18:50:36 mato Exp $
 // Include files
 // ============================================================================
 // GaudiMath
@@ -32,7 +31,7 @@ namespace Genfun
       , m_arg ( right.m_arg )
     {}
 
-    AdapterIFunction::~AdapterIFunction(){}
+    AdapterIFunction::~AdapterIFunction() = default;
 
     double AdapterIFunction::operator() ( double x ) const
     {
@@ -72,7 +71,7 @@ namespace Genfun
       , m_func    ( right.m_func )
     {}
 
-    Adapter2DoubleFunction::~Adapter2DoubleFunction(){}
+    Adapter2DoubleFunction::~Adapter2DoubleFunction() = default;
 
     double Adapter2DoubleFunction::operator()
       (       double    x ) const
@@ -113,7 +112,7 @@ namespace Genfun
       , m_func      ( right.m_func )
     {}
 
-    Adapter3DoubleFunction::~Adapter3DoubleFunction(){}
+    Adapter3DoubleFunction::~Adapter3DoubleFunction() = default;
 
     double Adapter3DoubleFunction::operator()
       (       double    x ) const
@@ -158,10 +157,8 @@ namespace Genfun
       , m_case      ( SimpleFunction::TrivialArg )
       , m_DIM       ( 1    )
       , m_func1     ( func )
-      , m_func2     ( 0    )
-      , m_arg2      ( 0    )
-      , m_func3     ( 0    )
-      , m_arg3      (      )
+      , m_func2     ( nullptr    )
+      , m_func3     ( nullptr    )
     {}
     // ========================================================================
 
@@ -177,13 +174,11 @@ namespace Genfun
       : AbsFunction ()
       , m_case      ( SimpleFunction::ArrayArg  )
       , m_DIM       ( dim  )
-      , m_func1     ( 0    )
+      , m_func1     ( nullptr    )
       , m_func2     ( func )
-      , m_arg2      ( 0    )
-      , m_func3     ( 0    )
-      , m_arg3      (      )
+      , m_arg2      ( new double[dim] )
+      , m_func3     ( nullptr    )
     {
-      m_arg2 = new double[dim];
     }
     // ========================================================================
 
@@ -199,9 +194,8 @@ namespace Genfun
       : AbsFunction ()
       , m_case      ( SimpleFunction::VectorArg  )
       , m_DIM       ( dim  )
-      , m_func1     ( 0    )
-      , m_func2     ( 0    )
-      , m_arg2      ( 0    )
+      , m_func1     ( nullptr    )
+      , m_func2     ( nullptr    )
       , m_func3     ( func )
       , m_arg3      ( dim  , 0 )
     {}
@@ -217,22 +211,17 @@ namespace Genfun
       , m_DIM       ( right.m_DIM   )
       , m_func1     ( right.m_func1 )
       , m_func2     ( right.m_func2 )
-      , m_arg2      ( 0             )
       , m_func3     ( right.m_func3 )
       , m_arg3      ( right.m_arg3  )
     {
-      if (  0 != right.m_arg2 )
+      if ( right.m_arg2 )
       {
-        std::memcpy(m_arg2, right.m_arg2, m_DIM);
+        m_arg2.reset( new double[m_DIM] );
+        std::copy_n(right.m_arg2.get(), m_DIM, m_arg2.get());
       }
     }
     // ========================================================================
 
-    // ========================================================================
-    /// destructor
-    // ========================================================================
-    SimpleFunction::~SimpleFunction()
-    { if( 0 != m_arg2 ) { delete m_arg2 ; m_arg2 = 0 ;} }
     // ========================================================================
 
     // ========================================================================
@@ -260,9 +249,9 @@ namespace Genfun
       case TrivialArg  :
         result = (*m_func1) ( value  ) ; break ;
       case ArrayArg    :
-        std::fill ( m_arg2 , m_arg2 + m_DIM , 0.0 );
+        std::fill_n( m_arg2.get() , m_DIM , 0.0 );
         m_arg2[0] = value  ;
-        result = (*m_func2) ( m_arg2 ) ; break ;
+        result = (*m_func2) ( m_arg2.get() ) ; break ;
       case VectorArg   :
         std::fill ( m_arg3.begin () , m_arg3.end () , 0.0 );
         m_arg3[0] = value  ;
@@ -286,7 +275,7 @@ namespace Genfun
         result = (*m_func1) ( argument[0]  ) ; break ;
       case ArrayArg    :
         for( size_t i = 0 ; i < m_DIM ; ++i ) { m_arg2[i] = argument[i] ; }
-        return (*m_func2)( m_arg2 ) ;        ; break ;
+        return (*m_func2)( m_arg2.get() ) ;        ; break ;
       case VectorArg   :
         for( size_t i = 0 ; i < m_DIM ; ++i ) { m_arg3[i] = argument[i] ; }
         result = (*m_func3) ( m_arg3 ) ; break ;

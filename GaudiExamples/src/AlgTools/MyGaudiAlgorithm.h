@@ -1,4 +1,3 @@
-// $Id: MyGaudiAlgorithm.h,v 1.1 2008/10/10 15:18:56 marcocle Exp $
 #ifndef GAUDIEXAMPLE_MYALGORITHM_H
 #define GAUDIEXAMPLE_MYALGORITHM_H 1
 
@@ -38,6 +37,12 @@ private:
 
   ToolHandle<IMyTool> m_myPrivToolHandle;
   ToolHandle<IMyTool> m_myPubToolHandle;
+
+  ToolHandle<IAlgTool> m_myGenericToolHandle;
+
+  ToolHandle<IAlgTool> m_myUnusedToolHandle;
+
+  ToolHandleArray<IMyTool> m_tha;
 
   DataObjectHandle<DataObject> m_tracks;
   DataObjectHandle<DataObject> m_hits;

@@ -2,6 +2,146 @@ Package: GaudiPython
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+============================= GaudiPython v14r2 ==============================
+
+! 2016-03-10 - commit 4a18175
+
+ - removed uses of templates implements[1-4], extends[1-4] and
+   extend_interfaces[1-4]
+
+   Since merge request !22 they are unnecessary.
+    See merge request !133
+
+! 2016-03-01 - commit 12c3a15
+
+ - Merge branch 'GAUDI-1189' into 'master'
+
+   exclude classes referring to `__int128` from GaudiPythonDict
+    Fixes GAUDI-1189
+    See merge request !121
+
+! 2016-02-12 - commit 416a1ec
+
+ - remove unnecessary printouts in GaudiPython.TupleUtils
+
+   Fixes GAUDI-1171
+    See merge request !109
+
+! 2016-02-11 - commit b0618f7
+
+ - Improve CommonMessaging
+
+   Implementation of GAUDI-1146: Improve CommonMessaging and use it in more
+   places.
+
+   See merge request !76
+
+   Conflicts:
+   GaudiExamples/tests/qmtest/refs/AlgTools2.ref
+   GaudiExamples/tests/qmtest/refs/MultiInput/Read.ref
+   GaudiExamples/tests/qmtest/refs/conditional_output/write.ref
+   GaudiKernel/GaudiKernel/AlgTool.h
+   GaudiKernel/GaudiKernel/Algorithm.h
+   GaudiKernel/GaudiKernel/Service.h
+   GaudiKernel/src/Lib/AlgTool.cpp
+   GaudiKernel/src/Lib/Algorithm.cpp
+
+============================= GaudiPython v14r1 ==============================
+
+! 2016-01-07 - commit fabc739
+
+ - fixed compilation with clang 3.7 (after hive merge)
+
+   * fixed compilation problems related to `operator<<` (gcc is more
+    permissive than clang).
+   * fixed also some clang warnings.
+    Fixes GAUDI-1157.
+    See merge request !84
+
+! 2015-10-21 - commit fecec81
+
+ - removed duplicated dictionary selections
+
+   Fixes GAUDI-1115.
+
+   See merge request !56
+
+============================= GaudiPython v14r0 ==============================
+
+! 2015-09-25 - commit 35dd00c
+
+ - Merge branch 'dev-smartif-use' into 'master'
+
+   Provide (and use) C++11 smart pointer 'look and feel' for SmartIF
+
+   The aim of this branch is to confine, for everything that inherits from
+   IInterface, the calls to addRef(), release() and queryInterface() to the
+   SmartIF implementation. Exceptions are a few places where interfaces
+   (currently) return bare pointers (instead of SmartIF...) and where one thus
+   has to addRef() explicitly to avoid returning a dangling pointer. This can be
+   avoided by changing the relevant interface to return a SmartIF instead of a
+   bare pointer.
+
+   In addition, make SmartIF 'look and feel' like a smart pointer.
+
+   - use explict bool conversion instead of .isValid()
+   - add SmartIF::as<IFace>(), to return a SmartIF<IFace> to an alternate
+      interface -- which (together with move) encourages the use of auto
+   - add ISvcLocator::as<IFace>(), to return a SmartIF<IFace> to the current
+   ISvcLocator.
+   - add ServiceManager::service<IFace>() which return SmartIF<IFace> which
+   encourages
+      the use of auto
+
+   And add a few other C++11 modernizations (eg. prefer STL over raw loop)
+
+   Fixes GAUDI-1094
+
+   See merge request !24
+
+
+! 2015-09-21 - commit 850d801
+
+ - Merge branch 'master' into 'master'
+
+   Functions added to GaudiUtils that allow generation of random numbers from
+   integer and string input
+
+   Add hash functions with good avalanche characteristiscs to GaudiUtils.
+
+   - Header and implementation are QuasiRandom.{h,cpp} in GaudiUtils
+   - Relevant functions have been added to GaudiPython dictionary for
+    interactive use
+   - Update RandomNumber test to include these functions
+   - Update RandomNumber test reference
+
+   See merge request !20
+
+
+! 2015-09-11 - commit c062cbe
+
+ - C++11 modernization changes
+
+   Some trivial - and some not so trivial! - changes which take advantage of
+   C++11...
+
+   See merge request !7
+
+============================= GaudiPython v13r5 ==============================
+! 2015-04-13 - Marco Clemencic
+ - Refactored printing of alg sequences and moved it after the initialize,
+   to allow an implemetation in C++ (to avoid GaudiPython in gaudirun.py).
+
+! 2015-04-10 - Marco Clemencic
+ - Added missing 'terminate' method to AppMgr.
+
+! 2015-03-23 - Marco Clemencic
+ - Removed workaround for ROOT-6032 and added workaround for ROOT-7201
+   (it's practically the same bug)
+
+! 2015-03-23 - Rosen Matev
+ - Faster version of the workaround for ROOT-6697.
+
 ! 2015-02-19 - Marco Clemencic
  - GAUDI-1009: remove GaudiPython.Bindings.makeClass
 

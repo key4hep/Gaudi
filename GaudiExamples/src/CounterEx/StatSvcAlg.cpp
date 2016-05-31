@@ -46,7 +46,7 @@ namespace GaudiExamples
     {
       StatusCode sc = GaudiAlgorithm::initialize () ;
       if ( sc.isFailure() ) { return sc ; }                      // RETURN
-      m_stat = svc<IStatSvc> ( "ChronoStatSvc" , true ) ;
+      m_stat = service( "ChronoStatSvc" , true ) ;
       return StatusCode::SUCCESS ;
     }
     /// the main execution method
@@ -55,13 +55,12 @@ namespace GaudiExamples
     /// standard constructor from name and Service Locator
     StatSvcAlg ( const std::string& name , ISvcLocator* svc )
       : GaudiAlgorithm ( name , svc )
-      , m_stat         ( 0 )
     {}
     /// destructor (virtual and protected)
     virtual ~StatSvcAlg() {} ;
   private:
     // pointer to Stat Service
-    IStatSvc* m_stat ; ///< pointer to Stat Service
+    SmartIF<IStatSvc> m_stat ; ///< pointer to Stat Service
   } ;
 } // end of namespace GaudiExamples
 // ============================================================================

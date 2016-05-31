@@ -17,9 +17,15 @@
 
 #include "boost/assign/list_of.hpp"
 
+#ifdef TCMALLOC_OLD_GOOGLE_HEADERS
 #include "google/heap-profiler.h"
 #include "google/heap-checker.h"
 #include "google/profiler.h"
+#else
+#include "gperftools/heap-profiler.h"
+#include "gperftools/heap-checker.h"
+#include "gperftools/profiler.h"
+#endif
 
 namespace Google
 {
@@ -31,7 +37,8 @@ namespace Google
    *  @author Chris Jones
    *  @date   18/04/2011
    */
-  class AuditorBase : public extends1<Auditor, IIncidentListener>
+  class AuditorBase : public extends<Auditor,
+                                     IIncidentListener>
   {
 
   public:
@@ -48,8 +55,8 @@ namespace Google
       m_log << MSG::INFO << "Initialised" << endmsg;
 
       // add a listener for begin event
-      SmartIF<IIncidentSvc> inSvc(serviceLocator()->service("IncidentSvc"));
-      if ( ! inSvc.isValid() ) return StatusCode::FAILURE;
+      auto inSvc = serviceLocator()->service<IIncidentSvc>("IncidentSvc");
+      if ( !inSvc ) return StatusCode::FAILURE;
       inSvc->addListener( this, IncidentType::BeginEvent );
 
       // sort various lists for speed when searching
@@ -101,7 +108,7 @@ namespace Google
     }
 
     /// Check if auditing is enabled for the current processing phase
-    inline bool isPhaseEnabled( const CustomEventTypeRef& type ) const
+    inline bool isPhaseEnabled( CustomEventTypeRef type ) const
     {
       return ( std::find(m_when.begin(),m_when.end(),type) != m_when.end() );
     }
@@ -110,12 +117,12 @@ namespace Google
     inline bool isComponentEnabled( const std::string& name ) const
     {
       return ( std::find(m_veto.begin(),m_veto.end(),name) == m_veto.end() &&
-               ( m_list.empty() || 
+               ( m_list.empty() ||
                  std::find(m_list.begin(),m_list.end(),name) != m_list.end() ) );
     }
 
     // Construct the dump name based on processing phase and component name
-    std::string getDumpName( const CustomEventTypeRef& type, 
+    std::string getDumpName( CustomEventTypeRef type,
                              const std::string& name ) const
     {
       std::ostringstream t;
@@ -191,13 +198,13 @@ namespace Google
 
     void before(CustomEventTypeRef type, const std::string& s)
     {
-      if ( !m_fullEventAudit && m_audit && 
+      if ( !m_fullEventAudit && m_audit &&
            isPhaseEnabled(type) && isComponentEnabled(s) )
       {
         if ( !alreadyRunning() )
         {
-          m_log << MSG::INFO 
-                << "Starting Auditor for " << s << ":" << type 
+          m_log << MSG::INFO
+                << "Starting Auditor for " << s << ":" << type
                 << endmsg;
           m_startedBy = s;
           google_before( getDumpName(type,s) );
@@ -238,7 +245,7 @@ namespace Google
 
     void after(CustomEventTypeRef type, const std::string& s, const StatusCode&)
     {
-      if ( !m_fullEventAudit && m_audit && 
+      if ( !m_fullEventAudit && m_audit &&
            isPhaseEnabled(type) && isComponentEnabled(s) )
       {
         if ( s == m_startedBy ) { google_after( getDumpName(type,s) ); }

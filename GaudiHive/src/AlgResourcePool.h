@@ -31,7 +31,8 @@
 
     @author Benedikt Hegner
 */
-class AlgResourcePool: public extends1<Service, IAlgResourcePool>{
+class AlgResourcePool: public extends<Service,
+                                      IAlgResourcePool> {
 public:
   // Standard constructor
   AlgResourcePool(  const std::string& name, ISvcLocator* svc );
@@ -96,9 +97,6 @@ private:
 
   /// The top list of algorithms
   std::list<IAlgorithm*> m_topAlgPtrList;
-
-  /// OMG this has so to be removed
-  bool m_doHacks;
 
   /// OMG yet another hack
   concurrency::ExecutionFlowGraph* m_EFGraph;

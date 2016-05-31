@@ -6,6 +6,7 @@
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/ISvcLocator.h"
+#include "GaudiKernel/EventContext.h"
 
 #include "ForwardSchedulerSvc.h"
 
@@ -21,10 +22,12 @@
 class IOBoundAlgTask : public IAlgTask {
 public:
     IOBoundAlgTask(IAlgorithm* algorithm,
-                           unsigned int algoIndex,
-                           ISvcLocator* svcLocator,
-                           ForwardSchedulerSvc* schedSvc):
+                   unsigned int algoIndex,
+                   EventContext* ctx,
+                   ISvcLocator* svcLocator,
+                   ForwardSchedulerSvc* schedSvc):
     m_algorithm(algorithm),
+    m_evtCtx(ctx),
     m_algoIndex(algoIndex),
     m_schedSvc(schedSvc),
     m_serviceLocator(svcLocator){};
@@ -35,6 +38,7 @@ public:
 
 private:
   SmartIF<IAlgorithm> m_algorithm;
+  EventContext* m_evtCtx;
   const unsigned int m_algoIndex;
   // For the callbacks on task finishing
   SmartIF<ForwardSchedulerSvc> m_schedSvc; // TODO consider using it through its interface (IScheduler?)

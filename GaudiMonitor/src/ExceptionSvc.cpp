@@ -9,12 +9,13 @@
 // GaudiKernel
 // ============================================================================
 #include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/Tokenizer.h"
 // ============================================================================
 //Local
 // ============================================================================
 #include "ExceptionSvc.h"
 // ============================================================================
+
+#include <boost/regex.hpp>
 
 using namespace std;
 
@@ -32,10 +33,9 @@ inline void toupper(std::string &s)
 ///////////////////////////////////////////////////////////////////////////
 //
 
-ExceptionSvc::ExceptionSvc( const std::string& name, ISvcLocator* svc )
-  : base_class( name, svc )
-  , m_mode_exc ( ALL ), m_mode_err( NONE )
-  , m_log(msgSvc(), name )
+ExceptionSvc::ExceptionSvc( const std::string& nam, ISvcLocator* svc )
+  : base_class( nam, svc )
+  , m_log(msgSvc(), name() )
 {
   // for exceptions
   declareProperty( "Catch"      , m_mode_exc_s="ALL" ) ;
@@ -43,13 +43,6 @@ ExceptionSvc::ExceptionSvc( const std::string& name, ISvcLocator* svc )
   // for return codes
   declareProperty( "Errors"     , m_mode_err_s="NONE" ) ;
 }
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-ExceptionSvc::~ExceptionSvc() {
-
-}
-
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -62,20 +55,13 @@ ExceptionSvc::initialize() {
 
   string key = m_mode_exc_s.value();
 
-  string::size_type loc = key.find(" ");
-  std::string mode;
-  if (loc == std::string::npos) {
-    mode = key;
-  } else {
-    mode = key.substr(0,loc);
-  }
+  auto loc = key.find(" ");
+  std::string mode = key.substr(0,loc);
 
   toupper(mode);
 
-  if (mode == "NONE") {
-    m_mode_exc = NONE;
-  } else if (mode == "ALL") {
-    m_mode_exc = ALL;
+  if (mode == "NONE") {       m_mode_exc = NONE;
+  } else if (mode == "ALL") { m_mode_exc = ALL;
   } else {
     m_log << MSG::ERROR << "Unknown mode for Exception handling: \"" << mode
 	<< "\". Default must be one of \"ALL\" or \"NONE\"" << endmsg;
@@ -84,35 +70,27 @@ ExceptionSvc::initialize() {
   }
 
   if (loc == string::npos) {
-    key = "";
+    key.clear();
   } else {
-    key = key.substr(loc+1,key.length());
+    key = key.substr(loc+1);
   }
 
-  Tokenizer tok(true);
-  std::string val,VAL,TAG;
+  std::string VAL, TAG;
 
-  tok.analyse( key, " ", "", "", "=", "", "");
-
-  for ( Tokenizer::Items::iterator i = tok.items().begin();
-	i != tok.items().end(); i++)    {
-    const std::string& tag = (*i).tag();
-    TAG = tag;
-
-    val = (*i).value();
-    VAL = val;
+  static const boost::regex exp{"[[:space:]]*([^[:space:]]+)[[:space:]]*=[[:space:]]*([^[:space:]]+)"};
+  static const auto tok_end = boost::sregex_iterator();
+  for (auto tok_iter = boost::sregex_iterator(begin(key), end(key), exp);
+       tok_iter != tok_end; ++tok_iter)
+  {
+    TAG = (*tok_iter)[1];
+    VAL = (*tok_iter)[2];
     toupper(VAL);
 
-    if (VAL == "SUCCESS") {
-      m_retCodesExc[TAG] = SUCCESS;
-    } else if ( VAL == "FAILURE" ) {
-      m_retCodesExc[TAG] = FAILURE;
-    } else if ( VAL == "REVOVERABLE" ) {
-      m_retCodesExc[TAG] = RECOVERABLE;
-    } else if ( VAL == "RETHROW" ) {
-      m_retCodesExc[TAG] = RETHROW;
-    } else if ( VAL == "DEFAULT" ) {
-      m_retCodesExc[TAG] = DEFAULT;
+    if (VAL == "SUCCESS") {              m_retCodesExc[TAG] = SUCCESS;
+    } else if ( VAL == "FAILURE" ) {     m_retCodesExc[TAG] = FAILURE;
+    } else if ( VAL == "REVOVERABLE" ) { m_retCodesExc[TAG] = RECOVERABLE;
+    } else if ( VAL == "RETHROW" ) {     m_retCodesExc[TAG] = RETHROW;
+    } else if ( VAL == "DEFAULT" ) {     m_retCodesExc[TAG] = DEFAULT;
     } else {
       m_log << MSG::ERROR << "In JobOpts: unknown return code \"" << VAL
             << "\" for Algorithm " << TAG << std::endl
@@ -123,27 +101,20 @@ ExceptionSvc::initialize() {
     }
 
     m_log << MSG::DEBUG << "Will catch exceptions thrown by: " << TAG
-	<< " -> action: " << VAL << endmsg;
+	      << " -> action: " << VAL << endmsg;
 
   }
 
   // now process errors
-
   key = m_mode_err_s.value();
 
   loc = key.find(" ");
-  if (loc == std::string::npos) {
-    mode = key;
-  } else {
-    mode = key.substr(0,loc);
-  }
+  mode = key.substr(0,loc);
 
   toupper(mode);
 
-  if (mode == "NONE") {
-    m_mode_err = NONE;
-  } else if (mode == "ALL") {
-    m_mode_err = ALL;
+  if (mode == "NONE") {       m_mode_err = NONE;
+  } else if (mode == "ALL") { m_mode_err = ALL;
   } else {
     m_log << MSG::ERROR << "Unknown mode for Error handling: \"" << mode
           << "\". Default must be one of \"ALL\" or \"NONE\"" << endmsg;
@@ -152,29 +123,21 @@ ExceptionSvc::initialize() {
   }
 
   if (loc == string::npos) {
-    key = "";
+    key.clear();
   } else {
-    key = key.substr(loc+1,key.length());
+    key = key.substr(loc+1);
   }
 
-  Tokenizer tok2(true);
-  tok2.analyse( key, " ", "", "", "=", "", "");
-
-  for ( Tokenizer::Items::iterator i = tok2.items().begin();
-        i != tok2.items().end(); i++)    {
-    const std::string& tag = (*i).tag();
-    TAG = tag;
-
-    val = (*i).value();
-    VAL = val;
+  for (auto tok_iter = boost::sregex_iterator(begin(key), end(key), exp);
+       tok_iter != tok_end; ++tok_iter)
+  {
+    TAG = (*tok_iter)[1];
+    VAL = (*tok_iter)[2];
     toupper(VAL);
 
-    if (VAL == "SUCCESS") {
-      m_retCodesErr[TAG] = SUCCESS;
-    } else if ( VAL == "FAILURE" ) {
-      m_retCodesErr[TAG] = FAILURE;
-    } else if ( VAL == "RECOVERABLE" ) {
-      m_retCodesErr[TAG] = RECOVERABLE;
+    if (VAL == "SUCCESS") {              m_retCodesErr[TAG] = SUCCESS;
+    } else if ( VAL == "FAILURE" ) {     m_retCodesErr[TAG] = FAILURE;
+    } else if ( VAL == "RECOVERABLE" ) { m_retCodesErr[TAG] = RECOVERABLE;
     } else {
       m_log << MSG::ERROR << "In JobOpts: unknown return code \"" << VAL
             << "\" for Algorithm " << TAG << std::endl
@@ -185,19 +148,8 @@ ExceptionSvc::initialize() {
     }
 
     m_log << MSG::DEBUG << "Will process Errors returned by: " << TAG
-	<< " -> action: " << VAL << endmsg;
-
+	      << " -> action: " << VAL << endmsg;
   }
-
-  return status;
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-StatusCode
-ExceptionSvc::finalize() {
-  StatusCode status = Service::finalize();
-
   return status;
 }
 
@@ -210,37 +162,24 @@ StatusCode ExceptionSvc::handleErr
   m_log << MSG::DEBUG << "Handling Error from " << alg.name() << endmsg;
 
   // is this Alg special?
-  if (m_retCodesErr.find(alg.name()) != m_retCodesErr.end()) {
-    ReturnState iret = m_retCodesErr.find(alg.name())->second;
-
-    switch ( iret ) {
-    case SUCCESS:
-      return StatusCode::SUCCESS;
-    case FAILURE:
-      return StatusCode::FAILURE;
-    case RECOVERABLE:
-      return StatusCode::RECOVERABLE;
-    case RETHROW:
+  auto i = m_retCodesErr.find(alg.name());
+  if ( i != m_retCodesErr.end()) {
+    switch ( i->second ) {
+    case SUCCESS:     return StatusCode::SUCCESS;
+    case FAILURE:     return StatusCode::FAILURE;
+    case RECOVERABLE: return StatusCode::RECOVERABLE;
       // should never get here
-      break;
-    case DEFAULT:
-      // should never get here
-      break;
+    case RETHROW: break;
+    case DEFAULT: break;
     }
 
   } else {
 
-    if (m_mode_err == ALL) {
-      // turn it into a FAILURE
-      return StatusCode::FAILURE;
-
-    } else {
-      assert (m_mode_err == NONE );
-      // don't touch the return code
-      return st;
-    }
+    if (m_mode_err == ALL) return StatusCode::FAILURE; // turn it into FAILURE
+    assert (m_mode_err == NONE );
+    // don't touch the return code
+    return st;
   }
-
   return StatusCode::FAILURE;
 }
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -250,33 +189,20 @@ StatusCode ExceptionSvc::process
 {
 
   // is this Alg special?
-  if (m_retCodesExc.find(alg.name()) != m_retCodesExc.end()) {
-    ReturnState iret = m_retCodesExc.find(alg.name())->second;
+  auto i = m_retCodesExc.find(alg.name());
+  if ( i != m_retCodesExc.end()) {
 
-    switch ( iret ) {
-    case DEFAULT:
-      // there is no default
-      return StatusCode::FAILURE;
-    case SUCCESS:
-      return StatusCode::SUCCESS;
-    case FAILURE:
-      return StatusCode::FAILURE;
-    case RECOVERABLE:
-      return StatusCode::RECOVERABLE;
-    case RETHROW:
-      throw;
+    switch ( i->second ) {
+    case DEFAULT:     return StatusCode::FAILURE; // there is no default
+    case SUCCESS:     return StatusCode::SUCCESS;
+    case FAILURE:     return StatusCode::FAILURE;
+    case RECOVERABLE: return StatusCode::RECOVERABLE;
+    case RETHROW:     throw;
     }
+  } 
 
-  } else {
-
-    if (m_mode_exc == ALL) {
-      throw;
-    } else {
-      assert (m_mode_exc == NONE);
-      return StatusCode::FAILURE;
-    }
-  }
-
+  if (m_mode_exc == ALL) { throw; }
+  assert (m_mode_exc == NONE);
   return StatusCode::FAILURE;
 }
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -286,7 +212,6 @@ StatusCode ExceptionSvc::handle
 {
   m_log << MSG::DEBUG << "Handling unknown exception for " << alg.name()
         << endmsg;
-
   return process(alg);
 }
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -297,9 +222,7 @@ StatusCode ExceptionSvc::handle
 {
   m_log << MSG::DEBUG << "Handling std:except: \"" << exc.what() << "\" for "
         << alg.name() << endmsg;
-
   return process(alg) ;
-
 }
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -309,9 +232,7 @@ StatusCode ExceptionSvc::handle
 {
   m_log << MSG::DEBUG << "Handling GaudiException: \"" << exc << "\" for "
         << alg.name() << endmsg;
-
   return process(alg);
-
 }
 
 // ============================================================================

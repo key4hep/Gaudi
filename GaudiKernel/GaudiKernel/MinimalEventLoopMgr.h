@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/MinimalEventLoopMgr.h,v 1.4 2008/07/15 12:48:18 marcocle Exp $
 #ifndef GAUDIKERNEL_MINIMALEVENTLOOPMGR_H
 #define GAUDIKERNEL_MINIMALEVENTLOOPMGR_H 1
 
@@ -23,13 +22,11 @@
  *  @author Markus Frank
  *  @version 1.0
  */
-class GAUDI_API MinimalEventLoopMgr: public extends1<Service, IEventProcessor>
+class GAUDI_API MinimalEventLoopMgr: public extends<Service,
+                                                    IEventProcessor>
 {
 public:
-  typedef std::list<SmartIF<IAlgorithm> >  ListAlg;
-  typedef std::list<IAlgorithm*>  ListAlgPtrs;
-  typedef std::list<std::string>   ListName;
-  typedef std::vector<std::string> VectorName;
+  typedef std::vector<SmartIF<IAlgorithm> >  ListAlg;
 
 protected:
   // enums
@@ -49,14 +46,14 @@ protected:
   /// List of output stream names
   StringArrayProperty m_outStreamNames;
   /// State of the object
-  State               m_state;
+  State               m_state = OFFLINE;
   /// Scheduled stop of event processing
-  bool                m_scheduledStop;
+  bool                m_scheduledStop = false;
   /// Instance of the incident listener waiting for AbortEvent.
   SmartIF<IIncidentListener>  m_abortEventListener;
   /// Flag signalling that the event being processedhas to be aborted
   /// (skip all following top algs).
-  bool                m_abortEvent;
+  bool                m_abortEvent = false;
   /// Source of the AbortEvent incident.
   std::string         m_abortEventSource;
 
@@ -64,7 +61,7 @@ public:
   /// Standard Constructor
   MinimalEventLoopMgr(const std::string& nam, ISvcLocator* svcLoc);
   /// Standard Destructor
-  virtual ~MinimalEventLoopMgr();
+  ~MinimalEventLoopMgr() override = default;
 
 #if defined(GAUDI_V20_COMPAT) && !defined(G21_NO_DEPRECATED)
 protected:
@@ -77,26 +74,26 @@ public:
 #endif
 
   /// implementation of IService::initialize
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
   /// implementation of IService::start
-  virtual StatusCode start();
+  StatusCode start() override;
   /// implementation of IService::stop
-  virtual StatusCode stop();
+  StatusCode stop() override;
   /// implementation of IService::finalize
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
   /// implementation of IService::reinitialize
-  virtual StatusCode reinitialize();
+  StatusCode reinitialize() override;
   /// implementation of IService::restart
-  virtual StatusCode restart();
+  StatusCode restart() override;
 
   /// implementation of IEventProcessor::nextEvent
-  virtual StatusCode nextEvent(int maxevt);
+  StatusCode nextEvent(int maxevt) override;
   /// implementation of IEventProcessor::executeEvent(void* par)
-  virtual StatusCode executeEvent(void* par );
+  StatusCode executeEvent(void* par ) override;
   /// implementation of IEventProcessor::executeRun( )
-  virtual StatusCode executeRun(int maxevt);
+  StatusCode executeRun(int maxevt) override;
   /// implementation of IEventProcessor::stopRun( )
-  virtual StatusCode stopRun();
+  StatusCode stopRun() override;
 
   /// Top algorithm List handler
   void topAlgHandler( Property& p);

@@ -145,7 +145,7 @@ def main():
     elif opts.verbose:
         log_level = logging.VERBOSE
     else:
-        log_level = logging.INFO
+        log_level = logging.INFO if os.environ.get('VERBOSE') else logging.WARNING
     logging.basicConfig(format = "%(levelname)s: %(message)s",
                         stream = sys.stdout,
                         level = log_level)

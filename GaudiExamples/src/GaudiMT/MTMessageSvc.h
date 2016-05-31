@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiExamples/src/GaudiMT/MTMessageSvc.h,v 1.4 2007/01/18 14:53:54 hmd Exp $
 #ifndef GAUDI_MTMESSAGESVC_H
 #define GAUDI_MTMESSAGESVC_H
 
@@ -22,7 +21,8 @@ class ISvcLocator;
 //
 // Author:      Iain Last
 //
-class MTMessageSvc : public extends1<Service, IMessageSvc> {
+class MTMessageSvc : public extends<Service,
+                                    IMessageSvc> {
 public:
   typedef std::pair< std::string, std::ostream* > NamedStream;
   typedef std::multimap< int, NamedStream > StreamMap;

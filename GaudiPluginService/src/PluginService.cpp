@@ -38,28 +38,33 @@ namespace {
 #define SINGLETON_LOCK
 #endif
 
+#include <algorithm>
+
+namespace {
 // string trimming functions taken from
 // http://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
-#include <algorithm>
-// trim from start
-static inline std::string &ltrim(std::string &s) {
-        s.erase(s.begin(),
-                std::find_if(s.begin(), s.end(),
-                             std::not1(std::ptr_fun<int, int>(std::isspace))));
-        return s;
-}
 
-// trim from end
-static inline std::string &rtrim(std::string &s) {
-        s.erase(std::find_if(s.rbegin(), s.rend(),
-                             std::not1(std::ptr_fun<int, int>(std::isspace)))
-                                       .base(),
-                s.end());
-        return s;
-}
-// trim from both ends
-static inline std::string &trim(std::string &s) {
-        return ltrim(rtrim(s));
+  constexpr struct is_space_t {
+      bool operator()(int i) const { return std::isspace(i); }
+  } is_space {};
+
+  // trim from start
+  static inline std::string &ltrim(std::string &s) {
+          s.erase(s.begin(),
+                  std::find_if_not(s.begin(), s.end(), is_space ) );
+          return s;
+  }
+
+  // trim from end
+  static inline std::string &rtrim(std::string &s) {
+          s.erase(std::find_if_not(s.rbegin(), s.rend(), is_space).base(),
+                  s.end());
+          return s;
+  }
+  // trim from both ends
+  static inline std::string &trim(std::string &s) {
+          return ltrim(rtrim(s));
+  }
 }
 
 namespace {
@@ -72,10 +77,9 @@ namespace {
     if (dest.empty()) {
       dest = value;
     } else if (dest != value) {
-      std::ostringstream o;
-      o << "new factory loaded for '" << id << "' with different "
-        << desc << ": " << dest << " != " << value;
-      Gaudi::PluginService::Details::logger().warning(o.str());
+      Gaudi::PluginService::Details::logger().warning(
+       "new factory loaded for '" + id + "' with different "
+        + desc + ": " + dest + " != " + value );
     }
   }
 
@@ -109,7 +113,7 @@ namespace {
 
 namespace Gaudi { namespace PluginService {
 
-  Exception::Exception(const std::string& msg): m_msg(msg) {}
+  Exception::Exception(std::string msg): m_msg(std::move(msg)) {}
   Exception::~Exception() throw() {}
   const char*  Exception::what() const throw() {
     return m_msg.c_str();
@@ -122,12 +126,10 @@ namespace Gaudi { namespace PluginService {
 
     std::string demangle(const std::string& id) {
       int   status;
-      char* realname;
-      realname = abi::__cxa_demangle(id.c_str(), 0, 0, &status);
-      if (realname == 0) return id;
-      std::string result(realname);
-      free(realname);
-      return result;
+      auto realname = std::unique_ptr<char,decltype(free)*>( abi::__cxa_demangle(id.c_str(), nullptr, nullptr, &status),
+                                                             free );
+      if (!realname) return id;
+      return std::string{realname.get()};
     }
     std::string demangle(const std::type_info& id) {
       return demangle(id.name());
@@ -188,7 +190,7 @@ namespace Gaudi { namespace PluginService {
                 }
                 // read the file
                 logger().debug(std::string("  reading ") + name);
-                std::ifstream factories(fullPath.c_str());
+                std::ifstream factories{fullPath};
                 std::string line;
                 int factoriesCount = 0;
                 int lineCount = 0;
@@ -199,32 +201,30 @@ namespace Gaudi { namespace PluginService {
                   // skip empty lines and lines starting with '#'
                   if (line.empty() || line[0] == '#') continue;
                   // look for the separator
-                  std::string::size_type pos = line.find(':');
+                  auto pos = line.find(':');
                   if (pos == std::string::npos) {
-                    std::ostringstream o;
-                    o << "failed to parse line " << fullPath
-                      << ':' << lineCount;
-                    logger().warning(o.str());
+                    logger().warning( "failed to parse line "
+                                      + fullPath +  ':'
+                                      + std::to_string(lineCount) );
                     continue;
                   }
                   const std::string lib(line, 0, pos);
                   const std::string fact(line, pos+1);
-                  m_factories.insert(std::make_pair(fact, FactoryInfo(lib)));
+                  m_factories.emplace(fact, FactoryInfo(lib));
 #ifdef GAUDI_REFLEX_COMPONENT_ALIASES
                   // add an alias for the factory using the Reflex convention
                   std::string old_name = old_style_name(fact);
                   if (fact != old_name) {
                     FactoryInfo old_info(lib);
                     old_info.properties["ReflexName"] = "true";
-                    m_factories.insert(std::make_pair(old_name, old_info));
+                    m_factories.emplace(old_name, old_info);
                   }
 #endif
                   ++factoriesCount;
                 }
                 if (logger().level() <= Logger::Debug) {
-                  std::ostringstream o;
-                  o << "  found " << factoriesCount << " factories";
-                  logger().debug(o.str());
+                  logger().debug(  "  found " + std::to_string( factoriesCount )
+                                 + " factories" );
                 }
               }
             }
@@ -241,18 +241,15 @@ namespace Gaudi { namespace PluginService {
                   const Properties& props){
       REG_SCOPE_LOCK
       FactoryMap &facts = factories();
-      FactoryMap::iterator entry = facts.find(id);
+      auto entry = facts.find(id);
       if (entry == facts.end())
       {
         // this factory was not known yet
-        entry = facts.insert(std::make_pair(id,
-                                            FactoryInfo("unknown", factory,
-                                                        type, rtype, className, props))).first;
+        entry = facts.emplace( id, FactoryInfo("unknown", factory,
+                                                type, rtype, className, props) ).first;
       } else {
         // do not replace an existing factory with a new one
-        if (!entry->second.ptr) {
-          entry->second.ptr = factory;
-        }
+        if (!entry->second.ptr) entry->second.ptr = factory;
         factoryInfoSetHelper(entry->second.type, type, "type", id);
         factoryInfoSetHelper(entry->second.rtype, rtype, "return type", id);
         factoryInfoSetHelper(entry->second.className, className, "class", id);
@@ -270,7 +267,7 @@ namespace Gaudi { namespace PluginService {
     void* Registry::get(const std::string& id, const std::string& type) const {
       REG_SCOPE_LOCK
       const FactoryMap &facts = factories();
-      FactoryMap::const_iterator f = facts.find(id);
+      auto f = facts.find(id);
       if (f != facts.end())
       {
 #ifdef GAUDI_REFLEX_COMPONENT_ALIASES
@@ -284,32 +281,24 @@ namespace Gaudi { namespace PluginService {
             logger().warning("cannot load " + f->second.library +
                              " for factory " + id);
             char *dlmsg = dlerror();
-            if (dlmsg)
-              logger().warning(dlmsg);
-            return 0;
+            if (dlmsg) logger().warning(dlmsg);
+            return nullptr;
           }
           f = facts.find(id); // ensure that the iterator is valid
         }
-        if (f->second.type == type) {
-          return f->second.ptr;
-        } else {
-          logger().warning("found factory " + id + ", but of wrong type: " +
-              demangle(f->second.type) + " instead of " + demangle(type));
-        }
+        if (f->second.type == type)  return f->second.ptr;
+        logger().warning("found factory " + id + ", but of wrong type: " +
+            demangle(f->second.type) + " instead of " + demangle(type));
       }
-      return 0; // factory not found
+      return nullptr; // factory not found
     }
 
     const Registry::FactoryInfo& Registry::getInfo(const std::string& id) const {
       REG_SCOPE_LOCK
-      static FactoryInfo unknown("unknown");
+      static const FactoryInfo unknown("unknown");
       const FactoryMap &facts = factories();
-      FactoryMap::const_iterator f = facts.find(id);
-      if (f != facts.end())
-      {
-        return f->second;
-      }
-      return unknown; // factory not found
+      auto f = facts.find(id);
+      return (f != facts.end()) ? f->second : unknown;
     }
 
     Registry&
@@ -318,11 +307,8 @@ namespace Gaudi { namespace PluginService {
                           const std::string& v) {
       REG_SCOPE_LOCK
       FactoryMap &facts = factories();
-      FactoryMap::iterator f = facts.find(id);
-      if (f != facts.end())
-      {
-        f->second.properties[k] = v;
-      }
+      auto f = facts.find(id);
+      if (f != facts.end()) f->second.properties[k] = v;
       return *this;
     }
 
@@ -330,11 +316,9 @@ namespace Gaudi { namespace PluginService {
       REG_SCOPE_LOCK
       const FactoryMap &facts = factories();
       std::set<KeyType> l;
-      for (FactoryMap::const_iterator f = facts.begin();
-           f != facts.end(); ++f)
+      for (const auto& f : facts )
       {
-        if (f->second.ptr)
-          l.insert(f->first);
+        if (f.second.ptr) l.insert(f.first);
       }
       return l;
     }
@@ -349,13 +333,9 @@ namespace Gaudi { namespace PluginService {
       }
     }
 
-    static std::auto_ptr<Logger> s_logger(new Logger);
-    Logger& logger() {
-      return *s_logger;
-    }
-    void setLogger(Logger* logger) {
-      s_logger.reset(logger);
-    }
+    static std::unique_ptr<Logger> s_logger(new Logger);
+    Logger& logger() { return *s_logger; }
+    void setLogger(Logger* logger) { s_logger.reset(logger); }
 
   } // namespace Details
 
@@ -372,8 +352,8 @@ namespace Gaudi { namespace PluginService {
   int Debug() {
     using namespace Details;
     switch (logger().level()) {
-    case Logger::Debug: return 2; break;
-    case Logger::Info: return 1; break;
+    case Logger::Debug: return 2;
+    case Logger::Info: return 1;
     default: return 0;
     }
   }

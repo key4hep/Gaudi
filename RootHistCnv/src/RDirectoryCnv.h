@@ -1,4 +1,3 @@
-// $Id: RDirectoryCnv.h,v 1.7 2006/11/13 15:19:36 hmd Exp $
 #ifndef ROOTHIST_RDIRECTORYCNV_H
 #define ROOTHIST_RDIRECTORYCNV_H 1
 
@@ -17,13 +16,13 @@ namespace RootHistCnv {
   class RDirectoryCnv : public RConverter {
   public:
     /// Create the transient representation of an object.
-    virtual StatusCode createObj(IOpaqueAddress* pAddr, DataObject*& refpObj);
+    StatusCode createObj(IOpaqueAddress* pAddr, DataObject*& refpObj) override;
     /// Update the transient object from the other representation.
-    virtual StatusCode fillObjRefs(IOpaqueAddress* pAddr, DataObject* refpObj);
+    StatusCode fillObjRefs(IOpaqueAddress* pAddr, DataObject* refpObj) override;
     /// Convert the transient object to the requested representation.
-    virtual StatusCode createRep( DataObject* pObj, IOpaqueAddress*& refpAddr);
+    StatusCode createRep( DataObject* pObj, IOpaqueAddress*& refpAddr) override;
     /// Convert the transient object to the requested representation.
-    virtual StatusCode updateRep( IOpaqueAddress* pAddr, DataObject* pObject );
+    StatusCode updateRep( IOpaqueAddress* pAddr, DataObject* pObject ) override;
     /// Inquire class type
     static const CLID& classID()      {      return CLID_NTupleDirectory;    }
     /// Standard constructor
@@ -31,7 +30,7 @@ namespace RootHistCnv {
     /// Standard constructor
     RDirectoryCnv(ISvcLocator* svc,const CLID& clid) : RConverter(clid, svc){}
     /// Standard destructor
-    virtual ~RDirectoryCnv()  {}
+    ~RDirectoryCnv() override = default;
   };
 }    // namespace RootHistCnv
 

@@ -32,7 +32,6 @@ StatusCode WriteAlg::execute() {
   static int evtnum = 0;
   static int runnum = 999;
 
-  MsgStream log(msgSvc(), name());
   Rndm::Numbers rndmflat(randSvc(), Rndm::Flat(0.,1.));
   Rndm::Numbers rndmgauss(randSvc(), Rndm::Gauss(10.,1.));
 
@@ -42,10 +41,10 @@ StatusCode WriteAlg::execute() {
   event->setRun(runnum);
   event->setTime(Gaudi::Time());
 
-  SmartIF<IDataManagerSvc> evtmgr(eventSvc());
+  auto evtmgr = eventSvc().as<IDataManagerSvc>();
   sc = evtmgr->setRoot("/Event", event);
   if( sc.isFailure() ) {
-    log << MSG::ERROR << "Unable to register /Event object" << endmsg;
+    error() << "Unable to register /Event object" << endmsg;
     return sc;
   }
   // Create containers
@@ -83,17 +82,17 @@ StatusCode WriteAlg::execute() {
 
   sc = eventSvc()->registerObject("/Event","MyTracks",myTracks);
   if( sc.isFailure() ) {
-    log << MSG::ERROR << "Unable to register MyTracks" << endmsg;
+    error() << "Unable to register MyTracks" << endmsg;
     return sc;
   }
   sc = eventSvc()->registerObject("/Event","MyVertices",myVertices);
   if( sc.isFailure() ) {
-    log << MSG::ERROR << "Unable to register MyVertices" << endmsg;
+    error() << "Unable to register MyVertices" << endmsg;
     return sc;
   }
 
   // All done
-  log << MSG::INFO << "Generated event " << evtnum << endmsg;
+  info() << "Generated event " << evtnum << endmsg;
   return StatusCode::SUCCESS;
 }
 

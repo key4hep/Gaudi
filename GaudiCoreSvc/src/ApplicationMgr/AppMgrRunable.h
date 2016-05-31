@@ -1,4 +1,3 @@
-// $Id: AppMgrRunable.h,v 1.4 2008/06/02 14:21:35 marcocle Exp $
 #ifndef GAUDISVC_APPMGRRUNABLE_H
 #define GAUDISVC_APPMGRRUNABLE_H 1
 
@@ -26,10 +25,11 @@ class IAppMgrUI;
    @author Markus Frank
    @version 1.0
 */
-class AppMgrRunable : public extends1<Service, IRunable> {
+class AppMgrRunable : public extends<Service,
+                                     IRunable> {
 protected:
   /// Reference to application manager UI
-  IAppMgrUI*    m_appMgrUI;
+  IAppMgrUI*    m_appMgrUI = nullptr;
   /// Number of events to be processed
   int           m_evtMax;
 
@@ -37,17 +37,17 @@ public:
   /// Standard Constructor
   AppMgrRunable(const std::string& nam, ISvcLocator* svcLoc);
   /// Standard Destructor
-  virtual ~AppMgrRunable();
+  ~AppMgrRunable() override = default;
 
   /// IService implementation: initialize the service
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
   /// IService implementation: start the service
-  virtual StatusCode start();
+  StatusCode start() override;
   /// IService implementation: stop the service
-  virtual StatusCode stop();
+  StatusCode stop() override;
   /// IService implementation: finalize the service
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
   /// IRunable implementation : Run the class implementation
-  virtual StatusCode run();
+  StatusCode run() override;
 };
 #endif // GAUDISVC_APPMGRRUNABLE_H

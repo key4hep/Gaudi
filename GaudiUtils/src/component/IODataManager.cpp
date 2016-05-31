@@ -11,6 +11,28 @@
 
 #include <set>
 
+namespace {
+
+constexpr struct select2nd_t  {
+    template<typename S, typename T> 
+    const T& operator()(const std::pair<S,T>& p) const { return p.second; }
+} select2nd {} ;
+
+template <typename InputIterator, typename OutputIterator, 
+          typename UnaryOperation, typename UnaryPredicate>
+OutputIterator transform_copy_if( InputIterator first, InputIterator last,
+                             OutputIterator result,
+                             UnaryOperation op, 
+                             UnaryPredicate pred) {
+    while (first != last) {
+        auto val = op(*first);
+        if (pred(val)) *result++ = std::move(val);
+        ++first;
+    }
+    return result;
+}
+}
+
 using namespace Gaudi;
 
 DECLARE_COMPONENT(IODataManager)
@@ -20,7 +42,7 @@ enum { S_OK = StatusCode::SUCCESS, S_ERROR=StatusCode::FAILURE };
 static std::set<std::string>    s_badFiles;
 
 IODataManager::IODataManager(CSTR nam, ISvcLocator* svcloc)
-  : base_class(nam, svcloc), m_ageLimit(2)
+  : base_class(nam, svcloc)
 {
   declareProperty("CatalogType",      m_catalogSvcName="Gaudi::MultiFileCatalog/FileCatalog");
   declareProperty("UseGFAL",          m_useGFAL = true);
@@ -28,7 +50,7 @@ IODataManager::IODataManager(CSTR nam, ISvcLocator* svcloc)
   declareProperty("AgeLimit",         m_ageLimit = 2);
   declareProperty("DisablePFNWarning", m_disablePFNWarning = false,
                   "if set to True, we will not report when a file "
-                  "is opened by it's physical name");
+                  "is opened by its physical name");
 }
 
 /// IService implementation: Db event selector override
@@ -42,24 +64,23 @@ StatusCode IODataManager::initialize()  {
   }
   // Retrieve conversion service handling event iteration
   m_catalog = serviceLocator()->service(m_catalogSvcName);
-  if( !m_catalog.isValid() ) {
+  if( !m_catalog ) {
     log << MSG::ERROR
         << "Unable to localize interface IFileCatalog from service:"
         << m_catalogSvcName << endmsg;
     return StatusCode::FAILURE;
   }
   m_incSvc = serviceLocator()->service("IncidentSvc");
-  if( !m_incSvc.isValid() ) {
+  if( !m_incSvc ) {
     log << MSG::ERROR << "Error initializing IncidentSvc Service!" << endmsg;
     return status;
   }
-
   return status;
 }
 
 /// IService implementation: finalize the service
 StatusCode IODataManager::finalize()  {
-  m_catalog = 0; // release
+  m_catalog = nullptr; // release
   return Service::finalize();
 }
 
@@ -67,20 +88,17 @@ StatusCode IODataManager::finalize()  {
 StatusCode IODataManager::error(CSTR msg, bool rethrow)  {
   MsgStream log(msgSvc(),name());
   log << MSG::ERROR << "Error: " << msg << endmsg;
-  if ( rethrow )  {
-    System::breakExecution();
-  }
+  if ( rethrow )  System::breakExecution();
   return S_ERROR;
 }
 
 /// Get connection by owner instance (0=ALL)
 IODataManager::Connections IODataManager::connections(const IInterface* owner) const  {
   Connections conns;
-  for(ConnectionMap::const_iterator i=m_connectionMap.begin(); i!=m_connectionMap.end();++i) {
-    IDataConnection* c = (*i).second->connection;
-    if ( 0 == owner || c->owner() == owner )
-      conns.push_back(c);
-  }
+  transform_copy_if( std::begin(m_connectionMap), std::end(m_connectionMap),
+                     std::back_inserter(conns),
+                     [](ConnectionMap::const_reference i ) { return i.second->connection; },
+                     [&](const IDataConnection* c) { return !owner || c->owner() == owner; } );
   return conns;
 }
 
@@ -129,31 +147,28 @@ StatusCode IODataManager::disconnect(Connection* con)    {
     else if ( ::strncasecmp(dsn.c_str(),"PFN:",4)==0 )
       dsn = dataset.substr(4);
 
-    FidMap::iterator j = m_fidMap.find(dataset);
+    auto j = m_fidMap.find(dataset);
     if ( j != m_fidMap.end() )  {
-      std::string fid = (*j).second;
+      std::string fid = j->second;
       std::string gfal_name = "gfal:guid:" + fid;
-      ConnectionMap::iterator i=m_connectionMap.find(fid);
+      auto i=m_connectionMap.find(fid);
       m_fidMap.erase(j);
       if ( (j=m_fidMap.find(fid)) != m_fidMap.end() )
         m_fidMap.erase(j);
       if ( (j=m_fidMap.find(gfal_name)) != m_fidMap.end() )
         m_fidMap.erase(j);
-      if ( i != m_connectionMap.end() ) {
-        if ( (*i).second )  {
-          IDataConnection* c = (*i).second->connection;
-          std::string pfn = c->pfn();
-          if ( (j=m_fidMap.find(pfn)) != m_fidMap.end() )
-            m_fidMap.erase(j);
-          if ( c->isConnected() )  {
-            MsgStream log(msgSvc(),name());
-            c->disconnect();
-            log << MSG::INFO << "Disconnect from dataset " << dsn
-                << " [" << fid << "]" << endmsg;
-          }
-          delete (*i).second;
-          m_connectionMap.erase(i);
+      if ( i != m_connectionMap.end() && i->second ) {
+        IDataConnection* c = i->second->connection;
+        if ( (j=m_fidMap.find(c->pfn())) != m_fidMap.end() )
+          m_fidMap.erase(j);
+        if ( c->isConnected() )  {
+          MsgStream log(msgSvc(),name());
+          c->disconnect();
+          log << MSG::INFO << "Disconnect from dataset " << dsn
+              << " [" << fid << "]" << endmsg;
         }
+        delete i->second;
+        m_connectionMap.erase(i);
       }
     }
     return sc;
@@ -179,23 +194,23 @@ StatusCode IODataManager::reconnect(Entry* e)  {
     if ( sc.isSuccess() && e->ioType == Connection::READ )  {
       std::vector<Entry*> to_retire;
       e->connection->resetAge();
-      for(ConnectionMap::iterator i=m_connectionMap.begin(); i!=m_connectionMap.end();++i) {
-        IDataConnection* c = (*i).second->connection;
-        if ( e->connection != c && c->isConnected() && !(*i).second->keepOpen )  {
-          c->ageFile();
-          if ( c->age() > m_ageLimit ) {
-            to_retire.push_back((*i).second);
-          }
-        }
-      }
+      transform_copy_if( std::begin(m_connectionMap), std::end(m_connectionMap),
+                         std::back_inserter(to_retire),
+                         select2nd,
+                         [&](Entry* i) { 
+                            IDataConnection* c = i->connection;
+                            return e->connection!=c && c->isConnected() && 
+                                   !i->keepOpen && c->ageFile() > m_ageLimit;
+                         });
       if ( !to_retire.empty() )  {
         MsgStream log(msgSvc(),name());
-        for(std::vector<Entry*>::iterator j=to_retire.begin(); j!=to_retire.end();++j)  {
-          IDataConnection* c = (*j)->connection;
-          c->disconnect();
-          log << MSG::INFO << "Disconnect from dataset " << c->pfn()
-              << " [" << c->fid() << "]" << endmsg;
-        }
+        std::for_each( std::begin(to_retire), std::end(to_retire),
+                       [&](Entry* j) {
+                            IDataConnection* c = j->connection;
+                            c->disconnect();
+                            log << MSG::INFO << "Disconnect from dataset " << c->pfn()
+                                << " [" << c->fid() << "]" << endmsg;
+                       } );
       }
     }
   }
@@ -204,34 +219,29 @@ StatusCode IODataManager::reconnect(Entry* e)  {
 
 /// Retrieve known connection
 IIODataManager::Connection* IODataManager::connection(CSTR dataset) const  {
-  FidMap::const_iterator j = m_fidMap.find(dataset);
-  if ( j != m_fidMap.end() )  {
-    ConnectionMap::const_iterator i=m_connectionMap.find((*j).second);
-    return (i != m_connectionMap.end()) ? (*i).second->connection : 0;
-  }
-  return 0;
+  auto j = m_fidMap.find(dataset);
+  if ( j == m_fidMap.end() )  return nullptr;
+  auto i=m_connectionMap.find(j->second);
+  return (i != m_connectionMap.end()) ? i->second->connection : nullptr;
 }
 
 StatusCode IODataManager::establishConnection(Connection* con)  {
-  if ( con )  {
-    if ( !con->isConnected() )  {
-      ConnectionMap::const_iterator i=m_connectionMap.find(con->name());
-      if ( i != m_connectionMap.end() )  {
-        Connection* c = (*i).second->connection;
-        if ( c != con )  {
-          m_incSvc->fireIncident(Incident(con->name(),IncidentType::FailInputFile));
-          return error("Severe logic bug: Twice identical connection object for DSN:"+con->name(),true);
-        }
-        if ( reconnect((*i).second).isSuccess() ) {
-          return S_OK;
-        }
-      }
-      return S_ERROR;
-    }
+  if ( !con )  return error("Severe logic bug: No connection object avalible.",true);
+  
+  if ( con->isConnected() )  {
     con->resetAge();
     return S_OK;
   }
-  return error("Severe logic bug: No connection object avalible.",true);
+  auto i=m_connectionMap.find(con->name());
+  if ( i != m_connectionMap.end() )  {
+    Connection* c = i->second->connection;
+    if ( c != con )  {
+      m_incSvc->fireIncident(Incident(con->name(),IncidentType::FailInputFile));
+      return error("Severe logic bug: Twice identical connection object for DSN:"+con->name(),true);
+    }
+    if ( reconnect(i->second).isSuccess() ) return S_OK;
+  }
+  return S_ERROR;
 }
 
 StatusCode
@@ -254,16 +264,16 @@ IODataManager::connectDataIO(int typ, IoType rw, CSTR dataset, CSTR technology,b
       return IDataConnection::BAD_DATA_CONNECTION;
     }
     if ( typ == FID )  {
-      ConnectionMap::iterator fi = m_connectionMap.find(dsn);
+      auto fi = m_connectionMap.find(dsn);
       if ( fi == m_connectionMap.end() )  {
         IFileCatalog::Files files;
         m_catalog->getPFN(dsn,files);
-        if ( files.size() == 0 ) {
+        if ( files.empty() ) {
           if ( !m_useGFAL )   {
             if ( m_quarantine ) s_badFiles.insert(dsn);
             m_incSvc->fireIncident(Incident(dsn,IncidentType::FailInputFile));
             error("connectDataIO> failed to resolve FID:"+dsn,false).ignore();
-	    return IDataConnection::BAD_DATA_CONNECTION;
+            return IDataConnection::BAD_DATA_CONNECTION;
           }
           else if ( dsn.length() == 36 && dsn[8]=='-' && dsn[13]=='-' )  {
             std::string gfal_name = "gfal:guid:" + dsn;
@@ -279,11 +289,11 @@ IODataManager::connectDataIO(int typ, IoType rw, CSTR dataset, CSTR technology,b
         }
         // keep track of the current return code before we start iterating over
         // replicas
-        SmartIF<IProperty> appmgr(serviceLocator());
+        auto appmgr = serviceLocator()->as<IProperty>();
         int origReturnCode = Gaudi::getAppReturnCode(appmgr);
-	for(IFileCatalog::Files::const_iterator i=files.begin(); i!=files.end(); ++i)  {
-	  std::string pfn = (*i).first;
-	  if ( i != files.begin() )  {
+	for(auto i=files.cbegin(); i!=files.cend(); ++i)  {
+	  std::string pfn = i->first;
+	  if ( i != files.cbegin() )  {
 	    log << MSG::WARNING << "Attempt to connect dsn:" << dsn
 		<< " with next entry in data federation:" << pfn << "." << endmsg;
 	  }
@@ -307,7 +317,7 @@ IODataManager::connectDataIO(int typ, IoType rw, CSTR dataset, CSTR technology,b
       return S_ERROR;
     }
     std::string fid;
-    FidMap::iterator j = m_fidMap.find(dsn);
+    auto j = m_fidMap.find(dsn);
     if ( j == m_fidMap.end() )  {
       IFileCatalog::Files files;
       switch(typ)  {
@@ -338,15 +348,15 @@ IODataManager::connectDataIO(int typ, IoType rw, CSTR dataset, CSTR technology,b
       }
     }
     else {
-      fid = (*j).second;
+      fid = j->second;
     }
     if ( typ == PFN )  {
       // Open PFN
-      ConnectionMap::iterator fi = m_connectionMap.find(fid);
+      auto fi = m_connectionMap.find(fid);
       if ( fi == m_connectionMap.end() )  {
         connection->setFID(fid);
         connection->setPFN(dsn);
-        Entry* e = new Entry(technology, keep_open, rw, connection);
+        auto  e = new Entry(technology, keep_open, rw, connection);
         // Here we open the file!
         if ( !reconnect(e).isSuccess() )   {
           delete e;
@@ -365,7 +375,7 @@ IODataManager::connectDataIO(int typ, IoType rw, CSTR dataset, CSTR technology,b
                 << " -- processing continues" << endmsg;
           }
         }
-        m_connectionMap.insert(std::make_pair(fid,e));
+        m_connectionMap.emplace( fid, e ); // note: only if we disconnect does e get deleted??
         return S_OK;
       }
       // Here we open the file!

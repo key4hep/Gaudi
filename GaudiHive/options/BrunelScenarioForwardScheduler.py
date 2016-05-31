@@ -84,8 +84,8 @@ def load_brunel_scenario(filename):
         outputs = [item for item in deps[2]]
         new_algo = CPUCruncher(alg,
                                avgRuntime=float(timing[alg]),
-                               Inputs=map( lambda s: "/Event/"+s, inputs),
-                               Outputs=map( lambda s: "/Event/"+s, outputs),
+                               DataInputs=map( lambda s: "/Event/"+s, inputs),
+                               DataOutputs=map( lambda s: "/Event/"+s, outputs),
                                OutputLevel = 6,
                                shortCalib=True
                               )
@@ -99,9 +99,9 @@ def load_brunel_scenario(filename):
   #look for the objects that haven't been provided within the job. Assume this needs to come via input
   new_algo = CPUCruncher("input",
                          avgRuntime=1,
-                         Inputs=[],
+                         DataInputs=[],
                          OutputLevel = WARNING,
-                         Outputs=map( lambda s: "/Event/"+s, [item for item in all_inputs.difference(all_outputs)])
+                         DataOutputs=map( lambda s: "/Event/"+s, [item for item in all_inputs.difference(all_outputs)])
                          )
   all_algos.append(new_algo)
   all_algos_inputs.append([])

@@ -113,13 +113,16 @@ class Script(object):
                           help="XML file describing the changes to the environment")
         parser.add_option("--sh",
                           action="store_const", const="sh", dest="shell",
-                          help="Print the environment as shell commands for 'sh'-derived shells.")
+                          help="Print the changes to the environment as shell commands for 'sh'-derived shells.")
         parser.add_option("--csh",
                           action="store_const", const="csh", dest="shell",
-                          help="Print the environment as shell commands for 'csh'-derived shells.")
+                          help="Print the changes to the environment as shell commands for 'csh'-derived shells.")
         parser.add_option("--py",
                           action="store_const", const="py", dest="shell",
-                          help="Print the environment as Python dictionary.")
+                          help="Print the changes to the environment as Python dictionary.")
+        parser.add_option("-A", "--all",
+                          action="store_true",
+                          help="Print all variables, instead of just the changes, with --sh, --csh and --py.")
 
         parser.add_option('--verbose', action='store_const',
                           const=logging.INFO, dest='log_level',
@@ -204,14 +207,24 @@ class Script(object):
         '''
         Print to standard output the final environment in the required format.
         '''
+        if not self.opts.shell or self.opts.all:
+            # 'env' behaviour: print the whole environment
+            env = self.env
+        else:
+            # special dumps: print only the diffs
+            env = dict((name, value)
+                       for name, value in sorted(self.env.items())
+                       if os.environ.get(name) != value)
+
         if self.opts.shell == 'py':
             from pprint import pprint
-            pprint(self.env)
+            pprint(env)
         else:
-            template = {'sh':  "export %s='%s'",
-                        'csh': "setenv %s '%s'"}.get(self.opts.shell, "%s=%s")
-            for nv in sorted(self.env.items()):
-                print template % nv
+            template = {'sh':  "export {0}='{1}'",
+                        'csh': "setenv {0} '{1}';"}.get(self.opts.shell,
+                                                        "{0}={1}")
+            print '\n'.join(template.format(name, value)
+                            for name, value in sorted(env.items()))
 
     def expandEnvVars(self, iterable):
         '''
@@ -231,13 +244,18 @@ class Script(object):
         '''
         from subprocess import Popen
         cmd = self.expandEnvVars(self.cmd)
-        rc = Popen(cmd, env=self.env).wait()
+        proc = Popen(cmd, env=self.env)
+        while proc.poll() is None:
+            try:
+                proc.wait()
+            except KeyboardInterrupt:
+                self.log.fatal('KeyboardInterrupt, '
+                               'waiting for subprocess %d to end', proc.pid)
+        rc = proc.returncode
         # There is a mismatch between Popen return code and sys.exit argument in
         # case of signal.
         # E.g. Popen returns -6 that is translated to 250 instead of 134
-        if rc < 0:
-            rc = 128 - rc
-        return rc
+        return rc if rc >= 0 else 128 - rc
 
     def main(self):
         '''

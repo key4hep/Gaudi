@@ -1,4 +1,3 @@
-// $Id: NTupleSvc.h,v 1.9 2006/11/30 14:57:04 mato Exp $
 #ifndef GAUDI_NTUPLESVC_H
 #define GAUDI_NTUPLESVC_H 1
 
@@ -22,11 +21,13 @@
  *
  *  @author M.Frank
  */
-class NTupleSvc : public extends2<DataSvc, INTupleSvc, IDataSourceMgr>
+class NTupleSvc : public extends<DataSvc,
+                                 INTupleSvc,
+                                 IDataSourceMgr>
 {
 private:
 protected:
-  struct Connection  {
+  struct Connection final {
     IConversionSvc* service;
     Connection(IConversionSvc* s) : service(s) {}
     Connection(const Connection& c) : service(c.service) {}

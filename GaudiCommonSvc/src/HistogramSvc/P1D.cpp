@@ -19,9 +19,9 @@ std::pair<DataObject*,AIDA::IProfile1D*> Gaudi::createProf1D
   int nBins  , double xlow, double xup,
   double ylow, double yup, const std::string& opt )
 {
-  TProfile* _p = new TProfile(title.c_str(),title.c_str(),nBins,xlow,xup,ylow,yup,opt.c_str() ) ;
-  Profile1D* p = new Profile1D(_p);
-  return std::pair<DataObject*,AIDA::IProfile1D*>(p,p);
+  auto _p = new TProfile(title.c_str(),title.c_str(),nBins,xlow,xup,ylow,yup,opt.c_str() ) ;
+  auto p = new Profile1D(_p);
+  return {p,p};
 }
 
 std::pair<DataObject*,AIDA::IProfile1D*> Gaudi::createProf1D
@@ -29,14 +29,14 @@ std::pair<DataObject*,AIDA::IProfile1D*> Gaudi::createProf1D
   const Edges& e, double ylow, double yup ,
   const std::string& opt )
 {
-  Profile1D* p = new Profile1D(new TProfile(title.c_str(),title.c_str(),e.size()-1,&e.front(),ylow,yup,opt.c_str()));
-  return std::pair<DataObject*,AIDA::IProfile1D*>(p,p);
+  auto p = new Profile1D(new TProfile(title.c_str(),title.c_str(),e.size()-1,&e.front(),ylow,yup,opt.c_str()));
+  return {p,p};
 }
 
 std::pair<DataObject*,AIDA::IProfile1D*> Gaudi::createProf1D(const AIDA::IProfile1D& hist)  {
   TProfile *h = getRepresentation<AIDA::IProfile1D,TProfile>(hist);
-  Profile1D *n = h ? new Profile1D(new TProfile(*h)) : 0;
-  return std::pair<DataObject*,AIDA::IProfile1D*>(n,n);
+  auto n = ( h ? new Profile1D(new TProfile(*h)) : nullptr );
+  return {n,n};
 }
 
 namespace Gaudi {
@@ -52,32 +52,30 @@ namespace Gaudi {
       return const_cast<AIDA::IProfile*>((AIDA::IProfile*)this);
     else if (className == "AIDA::IBaseHistogram")
       return const_cast<AIDA::IBaseHistogram*>((AIDA::IBaseHistogram*)this);
-    return 0;
+    return nullptr;
   }
 
   template <>
   void Generic1D<AIDA::IProfile1D,TProfile>::adoptRepresentation(TObject* rep)  {
     TProfile* imp = dynamic_cast<TProfile*>(rep);
-    if ( imp )  {
-    if ( m_rep ) delete m_rep;
-      m_rep = imp;
-      m_axis.initialize(m_rep->GetXaxis(),true);
-      const TArrayD* a = m_rep->GetSumw2();
-      if ( 0 == a || (a && a->GetSize()==0) ) m_rep->Sumw2();
-      setTitle(m_rep->GetTitle());
-      return;
-    }
-    throw std::runtime_error("Cannot adopt native histogram representation.");
+    if ( !imp )  throw std::runtime_error("Cannot adopt native histogram representation.");
+    m_rep.reset( imp );
+    m_axis.initialize(m_rep->GetXaxis(),true);
+    const TArrayD* a = m_rep->GetSumw2();
+    if ( !a || (a && a->GetSize()==0) ) m_rep->Sumw2();
+    setTitle(m_rep->GetTitle());
   }
 }
 
-Gaudi::Profile1D::Profile1D() {
-  m_rep = new TProfile();
+Gaudi::Profile1D::Profile1D() 
+ : Base( new TProfile() )
+{
   init("",false);
 }
 
-Gaudi::Profile1D::Profile1D(TProfile* rep)  {
-  m_rep = rep;
+Gaudi::Profile1D::Profile1D(TProfile* rep)  
+  : Base( rep)
+{
   init(m_rep->GetTitle());
 }
 
@@ -89,7 +87,7 @@ void Gaudi::Profile1D::init(const std::string& title, bool initialize_axis) {
     axis().initialize(m_rep->GetXaxis(),false);
   }
   //m_rep->SetErrorOption("s");
-  m_rep->SetDirectory(0);
+  m_rep->SetDirectory(nullptr);
   m_sumEntries = 0;
 }
 

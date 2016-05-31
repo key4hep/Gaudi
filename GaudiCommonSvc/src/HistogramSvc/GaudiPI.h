@@ -19,7 +19,7 @@ namespace Gaudi {
   typedef std::vector<double> Edges;
 
   template <class Q, class T> T* getRepresentation(const Q& hist)  {
-    T* result = 0;
+    T* result = nullptr;
     const HistogramBase *p = dynamic_cast<const HistogramBase*>(&hist);
     if ( p )  {
       result = dynamic_cast<T*>(p->representation());

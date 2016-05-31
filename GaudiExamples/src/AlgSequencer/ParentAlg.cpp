@@ -18,10 +18,9 @@ ParentAlg::ParentAlg(const std::string& name, ISvcLocator* ploc)
 //------------------------------------------------------------------------------
 StatusCode ParentAlg::initialize() {
 //------------------------------------------------------------------------------
-  MsgStream log(msgSvc(), name());
   StatusCode sc;
 
-  log << MSG::INFO << "creating sub-algorithms...." << endmsg;
+  info() << "creating sub-algorithms...." << endmsg;
 
   sc =  createSubAlgorithm( "SubAlg", "SubAlg1", m_subalg1);
   if( sc.isFailure() ) return Error("Error creating Sub-Algorithm SubAlg1",sc);
@@ -35,16 +34,13 @@ StatusCode ParentAlg::initialize() {
 //------------------------------------------------------------------------------
 StatusCode ParentAlg::execute() {
 //------------------------------------------------------------------------------
-  MsgStream         log( msgSvc(), name() );
   StatusCode sc;
-  log << MSG::INFO << "executing...." << endmsg;
+  info() << "executing...." << endmsg;
 
-  std::vector<Algorithm*>::const_iterator it  = subAlgorithms()->begin();
-  std::vector<Algorithm*>::const_iterator end = subAlgorithms()->end();
-  for ( ; it != end; it++) {
-    sc = (*it)->execute();
+  for (auto alg : (*subAlgorithms()) ) {
+    sc = alg->execute();
     if( sc.isFailure() ) {
-      log << "Error executing Sub-Algorithm" << (*it)->name() << endmsg;
+      error() << "Error executing Sub-Algorithm" << alg->name() << endmsg;
     }
   }
   return StatusCode::SUCCESS;
@@ -54,7 +50,6 @@ StatusCode ParentAlg::execute() {
 //------------------------------------------------------------------------------
 StatusCode ParentAlg::finalize() {
 //------------------------------------------------------------------------------
-  MsgStream log(msgSvc(), name());
-  log << MSG::INFO << "finalizing...." << endmsg;
+  info() << "finalizing...." << endmsg;
   return StatusCode::SUCCESS;
 }

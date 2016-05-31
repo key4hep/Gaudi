@@ -27,17 +27,15 @@ StatusCode StopperAlg::initialize() {
 //------------------------------------------------------------------------------
 StatusCode StopperAlg::execute() {
 //------------------------------------------------------------------------------
-  MsgStream         log( msgSvc(), name() );
   static int count = 0;
 
   if ( ++count >= m_stopcount ) {
-    log << MSG::INFO << "scheduling a event processing stop...." << endmsg;
-    IEventProcessor* evt = svc<IEventProcessor>("ApplicationMgr");
+    info() << "scheduling a event processing stop...." << endmsg;
+    auto evt = service<IEventProcessor>("ApplicationMgr");
     if (evt->stopRun().isFailure()) {
-      log << MSG::ERROR << "unable to schedule a stopRun" << endmsg;
+      error() << "unable to schedule a stopRun" << endmsg;
       return StatusCode::FAILURE;
     }
-    evt->release();
   }
 
   return StatusCode::SUCCESS;

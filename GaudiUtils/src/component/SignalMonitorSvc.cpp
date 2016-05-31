@@ -23,7 +23,8 @@ namespace Gaudi {
      * It can be interrogated to check if a signal has been received.
      *
      */
-    class SignalMonitorSvc: public extends1<Service, Gaudi::ISignalMonitor> {
+    class SignalMonitorSvc: public extends<Service,
+                                           Gaudi::ISignalMonitor> {
     public:
 #ifdef _WIN32
       typedef void (__cdecl *handler_t)(int);
@@ -33,7 +34,7 @@ namespace Gaudi {
 
       /// Declare a signal to be monitored.
       /// It installs a signal handler for the requested signal.
-      void monitorSignal(int signum, bool propagate) {
+      void monitorSignal(int signum, bool propagate) override {
         if (!m_monitored[signum]) {
           handler_t sa;
           handler_t oldact;
@@ -54,12 +55,12 @@ namespace Gaudi {
 
       /// Remove the specific signal handler for the requested signal, restoring
       /// the previous signal handler.
-      void ignoreSignal(int signum) {
+      void ignoreSignal(int signum) override {
         if (m_monitored[signum]) {
 #ifdef _WIN32
           (void) signal(signum, m_oldActions[signum]);
 #else
-          sigaction(signum, &m_oldActions[signum], 0);
+          sigaction(signum, &m_oldActions[signum], nullptr);
 #endif
           m_oldActions[signum] = m_defaultAction;
           m_monitored[signum] = ignored;
@@ -67,17 +68,17 @@ namespace Gaudi {
       }
 
       /// Check if the given signal has been received.
-      bool gotSignal(int signum) const {
+      bool gotSignal(int signum) const override {
         return m_caught[signum] != 0;
       }
 
       /// Set the flag for the given signal, as if the signal was received.
-      void setSignal(int signum) {
+      void setSignal(int signum) override {
         m_caught[signum] = 1;
       }
 
       /// Clear the flag for the given signal, so that a new occurrence can be identified.
-      void clearSignal(int signum) {
+      void clearSignal(int signum) override {
         m_caught[signum] = 0;
       }
 
@@ -100,11 +101,9 @@ namespace Gaudi {
       }
 
       /// Stop monitoring signals and clear the instance pointer.
-      virtual ~SignalMonitorSvc() {
-        for (int i = 0; i < NSIG; ++i) {
-          ignoreSignal(i);
-        }
-        setInstance(0);
+      ~SignalMonitorSvc() override {
+        for (int i = 0; i < NSIG; ++i) ignoreSignal(i);
+        setInstance(nullptr);
       }
 
     private:
@@ -181,7 +180,7 @@ namespace {
   // hack because windows doesn't provide sys_siglist
   const char *sig_desc(int signum) {
     if (signum >= NSIG || signum < 0)
-      return 0;
+      return nullptr;
 #ifdef _WIN32
     switch (signum) {
     case SIGINT:   return "Interrupt";
@@ -216,12 +215,8 @@ namespace {
     }
     /// Return the signal number corresponding to a signal name or description (-1 if not known).
     inline int signum(const std::string &str) const {
-      GaudiUtils::HashMap<std::string, int>::const_iterator it;
-      it = m_name2num.find(str);
-      if (it == m_name2num.end()) {
-        return -1;
-      }
-      return it->second;
+      auto it = m_name2num.find(str);
+      return it != m_name2num.end() ? it->second : -1;
     }
   private:
     /// Constructor.
@@ -342,7 +337,8 @@ namespace Gaudi {
      * registered when this service is initialized.
      *
      */
-    class StopSignalHandler: public extends1<Service, IIncidentListener> {
+    class StopSignalHandler: public extends<Service,
+                                            IIncidentListener> {
     public:
       StopSignalHandler(const std::string& name, ISvcLocator* svcLoc): base_class(name, svcLoc) {
         m_usedSignals.reserve(2);
@@ -354,7 +350,7 @@ namespace Gaudi {
             "If the signal is followed by a '+' the signal is propagated the previously "
             "registered handler (if any).");
       }
-      StatusCode initialize() {
+      StatusCode initialize() override {
         StatusCode sc = Service::initialize();
         if (sc.isFailure()) {
           return sc;
@@ -378,68 +374,62 @@ namespace Gaudi {
                        "the return code will not be changed" << endmsg;
         }
         // Decode the signal names
-        std::pair<int, bool> sigid;
-        for (std::vector<std::string>::const_iterator signame = m_usedSignals.begin();
-            signame != m_usedSignals.end(); ++signame) {
-          sigid = i_decodeSignal(*signame);
+        for (const auto&  signame : m_usedSignals ) {
+          auto sigid = i_decodeSignal(signame);
           if (sigid.first >= 0) {
             m_signals[sigid.first] = sigid.second;
           }
         }
         debug() << "Stopping on the signals:" << endmsg;
         const SigMap& sigmap(SigMap::instance());
-        for (std::map<int, bool>::const_iterator s = m_signals.begin();
-            s != m_signals.end(); ++s) {
-          debug() << "\t" << sigmap.name(s->first) << ": "
-                  << sigmap.desc(s->first) << " (" << s->first << ")";
-          if (s->second) debug() << " propagated";
+        for (const auto& s : m_signals ) {
+          debug() << "\t" << sigmap.name(s.first) << ": "
+                  << sigmap.desc(s.first) << " (" << s.first << ")";
+          if (s.second) debug() << " propagated";
           debug() << endmsg;
           // tell the signal monitor that we are interested in these signals
-          m_signalMonitor->monitorSignal(s->first, s->second);
+          m_signalMonitor->monitorSignal(s.first, s.second);
         }
         m_stopRequested = false;
         debug() << "Register to the IncidentSvc" << endmsg;
         m_incidentSvc->addListener(this, IncidentType::BeginEvent);
         return StatusCode::SUCCESS;
       }
-      StatusCode finalize() {
+      StatusCode finalize() override {
         m_incidentSvc->removeListener(this, IncidentType::BeginEvent);
         m_incidentSvc.reset();
         // disable the monitoring of the signals
-        for (std::map<int, bool>::const_iterator s = m_signals.begin();
-            s != m_signals.end(); ++s) {
-          // tell the signal monitor that we are interested in these signals
-          m_signalMonitor->ignoreSignal(s->first);
-        }
+        std::for_each( std::begin(m_signals), std::end(m_signals),
+                       [&](const std::pair<int,bool>& s) {
+            // tell the signal monitor that we are interested in these signals
+            m_signalMonitor->ignoreSignal(s.first);
+        } );
         m_signalMonitor.reset();
         return Service::finalize();
       }
 
-      virtual void handle(const Incident&) {
+      void handle(const Incident&) override {
         if (!m_stopRequested) {
           const SigMap& sigmap(SigMap::instance());
-          for (std::map<int, bool>::const_iterator s = m_signals.begin();
-              s != m_signals.end(); ++s) {
-            if (m_signalMonitor->gotSignal(s->first)) {
-              warning() << "Received signal '" << sigmap.name(s->first)
-                        << "' (" << s->first;
-              const std::string &desc = sigmap.desc(s->first);
-              if ( ! desc.empty() ) {
-                warning() << ", " << desc;
-              }
-              warning() << ")" << endmsg;
-              m_stopRequested = true;
-              // Report the termination by signal at the end of the application
-              using Gaudi::ReturnCode::SignalOffset;
-              if (Gaudi::setAppReturnCode(m_appProperty, SignalOffset + s->first).isFailure()) {
-                error() << "Could not set return code of the application ("
-                    << SignalOffset + s->first << ")"
-                    << endmsg;
-              }
+          for (const auto& s : m_signals ) {
+            if (!m_signalMonitor->gotSignal(s.first)) continue;
+            warning() << "Received signal '" << sigmap.name(s.first)
+                      << "' (" << s.first;
+            const std::string &desc = sigmap.desc(s.first);
+            if ( ! desc.empty() ) warning() << ", " << desc;
+            warning() << ")" << endmsg;
+            m_stopRequested = true;
+            // Report the termination by signal at the end of the application
+            using Gaudi::ReturnCode::SignalOffset;
+            if (Gaudi::setAppReturnCode(m_appProperty, SignalOffset + s.first).isFailure()) {
+              error() << "Could not set return code of the application ("
+                  << SignalOffset + s.first << ")"
+                  << endmsg;
             }
+            
           }
           if (m_stopRequested) {
-            SmartIF<IEventProcessor> ep(serviceLocator());
+            auto ep = serviceLocator()->as<IEventProcessor>();
             if (ep) {
               warning() << "Scheduling a stop" << endmsg;
               ep->stopRun().ignore();
@@ -468,7 +458,7 @@ namespace Gaudi {
         debug() << "Decoding signal declaration '" << sig << "'" << endmsg;
         if ( sig.empty() || sig == "+" ) {
           debug() << "Empty signal, ignored" << endmsg;
-          return std::make_pair<int, bool>(-1, false); // silently ignore empty strings
+          return {-1, false}; // silently ignore empty strings
         }
         const SigMap& sigmap(SigMap::instance());
         std::string signal = sig;
@@ -499,7 +489,7 @@ namespace Gaudi {
           }
           verbose() << ")" << endmsg;
         }
-        return std::make_pair(signum, propagate);
+        return {signum, propagate};
       }
     };
 
@@ -507,7 +497,7 @@ namespace Gaudi {
 } // namespace Gaudi
 
 // Initialization of static data member
-Gaudi::Utils::SignalMonitorSvc* Gaudi::Utils::SignalMonitorSvc::s_instance = 0;
+Gaudi::Utils::SignalMonitorSvc* Gaudi::Utils::SignalMonitorSvc::s_instance = nullptr;
 
 // ========================================================================
 // Instantiation of a static factory class used by clients to create instances of this service

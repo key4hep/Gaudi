@@ -23,72 +23,74 @@
 #include <map>
 
 class IIncidentSvc;
-class THistSvc: public extends3<Service, ITHistSvc, IIncidentListener,
-				IIoComponent> {
+class THistSvc: public extends<Service,
+                               ITHistSvc,
+                               IIncidentListener,
+                               IIoComponent> {
 
 public:
 
-  virtual StatusCode initialize();
-  virtual StatusCode reinitialize();
-  virtual StatusCode finalize();
+  StatusCode initialize() override;
+  StatusCode reinitialize() override;
+  StatusCode finalize() override;
 
-  virtual StatusCode regHist(const std::string& name);
-  virtual StatusCode regHist(const std::string& name, TH1*);
-  virtual StatusCode regHist(const std::string& name, TH2*);
-  virtual StatusCode regHist(const std::string& name, TH3*);
+  StatusCode regHist(const std::string& name) override;
+  StatusCode regHist(const std::string& name, TH1*) override;
+  StatusCode regHist(const std::string& name, TH2*) override;
+  StatusCode regHist(const std::string& name, TH3*) override;
 
-  virtual StatusCode getHist(const std::string& name, TH1*&) const;
-  virtual StatusCode getHist(const std::string& name, TH2*&) const;
-  virtual StatusCode getHist(const std::string& name, TH3*&) const;
+  StatusCode getHist(const std::string& name, TH1*&) const override;
+  StatusCode getHist(const std::string& name, TH2*&) const override;
+  StatusCode getHist(const std::string& name, TH3*&) const override;
 
-  virtual StatusCode regTree(const std::string& name);
-  virtual StatusCode regTree(const std::string& name, TTree*);
-  virtual StatusCode getTree(const std::string& name, TTree*&) const;
+  StatusCode regTree(const std::string& name) override;
+  StatusCode regTree(const std::string& name, TTree*) override;
+  StatusCode getTree(const std::string& name, TTree*&) const override;
 
-  virtual StatusCode regGraph(const std::string& name);
-  virtual StatusCode regGraph(const std::string& name, TGraph*);
-  virtual StatusCode getGraph(const std::string& name, TGraph*&) const;
+  StatusCode regGraph(const std::string& name) override;
+  StatusCode regGraph(const std::string& name, TGraph*) override;
+  StatusCode getGraph(const std::string& name, TGraph*&) const override;
 
-  virtual StatusCode deReg(TObject* obj);
-  virtual StatusCode deReg(const std::string& name);
+  StatusCode deReg(TObject* obj) override;
+  StatusCode deReg(const std::string& name) override;
 
-  virtual std::vector<std::string> getHists() const;
-  virtual std::vector<std::string> getTrees() const;
-  virtual std::vector<std::string> getGraphs() const;
+  std::vector<std::string> getHists() const override;
+  std::vector<std::string> getTrees() const override;
+  std::vector<std::string> getGraphs() const override;
 
-  virtual StatusCode getTHists(TDirectory *td, TList &,
-			       bool recurse=false) const;
-  virtual StatusCode getTHists(const std::string& name, TList &,
-			       bool recurse=false) const;
+  StatusCode getTHists(TDirectory *td, TList &,
+           bool recurse=false) const override;
+  StatusCode getTHists(const std::string& name, TList &,
+           bool recurse=false) const override;
 
-  virtual StatusCode getTHists(TDirectory *td, TList &tl,
-			       bool recurse=false, bool reg=false);
-  virtual StatusCode getTHists(const std::string& name, TList &tl,
-			       bool recurse=false, bool reg=false);
+  StatusCode getTHists(TDirectory *td, TList &tl,
+           bool recurse=false, bool reg=false) override;
+  StatusCode getTHists(const std::string& name, TList &tl,
+		  bool recurse=false, bool reg=false) override;
 
-  virtual StatusCode getTTrees(TDirectory *td, TList &,
-			       bool recurse=false) const;
-  virtual StatusCode getTTrees(const std::string& name, TList &,
-			       bool recurse=false) const;
+  StatusCode getTTrees(TDirectory *td, TList &,
+           bool recurse=false) const override;
+  StatusCode getTTrees(const std::string& name, TList &,
+           bool recurse=false) const override;
 
-  virtual StatusCode getTTrees(TDirectory *td, TList & tl,
-			       bool recurse=false, bool reg=false);
-  virtual StatusCode getTTrees(const std::string& name, TList & tl,
-			       bool recurse=false, bool reg=false);
+  StatusCode getTTrees(TDirectory *td, TList & tl,
+           bool recurse=false, bool reg=false) override;
+  StatusCode getTTrees(const std::string& name, TList & tl,
+           bool recurse=false, bool reg=false) override;
 
-  virtual bool exists(const std::string& name) const;
+  bool exists(const std::string& name) const override;
 
   THistSvc(const std::string& name, ISvcLocator *svc );
 
-  void handle(const Incident&);
+  void handle(const Incident&) override;
 
   // From IIoComponent
-  virtual StatusCode io_reinit ();
+  StatusCode io_reinit () override;
 
 
 protected:
 
-  virtual ~THistSvc();
+  ~THistSvc() override = default;
 
 private:
 
@@ -205,13 +207,13 @@ private:
 
   std::map<std::string, std::string > m_sharedFiles; // stream->filename of shared files
 
-  bool signaledStop;
-  bool m_delayConnect, m_okToConnect;
+  bool signaledStop = false;
+  bool m_delayConnect = false, m_okToConnect = false;
 
   mutable std::string m_curstream;
 
-  IIncidentSvc* p_incSvc;
-  IFileMgr* p_fileMgr;
+  IIncidentSvc* p_incSvc = nullptr;
+  IFileMgr* p_fileMgr = nullptr;
 
   StatusCode rootOpenAction( FILEMGR_CALLBACK_ARGS );
   StatusCode rootOpenErrAction( FILEMGR_CALLBACK_ARGS );

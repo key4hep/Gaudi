@@ -24,28 +24,28 @@ scheduler = ForwardSchedulerSvc(MaxEventsInFlight = evtslots,
 AlgResourcePool(OutputLevel=DEBUG)
 
 FakeInput = CPUCruncher("FakeInput", 
-                        Outputs = ['/Event/DAQ/ODIN','/Event/DAQ/RawEvent','/Event/Hlt/LumiSummary'],
+                        DataOutputs = ['/Event/DAQ/ODIN','/Event/DAQ/RawEvent','/Event/Hlt/LumiSummary'],
                         shortCalib=True,
                         varRuntime=.1, 
                         avgRuntime=.1 )
 
 BrunelInit = CPUCruncher("BrunelInit",
-                         Inputs = ['/Event/DAQ/ODIN','/Event/DAQ/RawEvent'],
-                         Outputs = ['/Event/Rec/Status', '/Event/Rec/Header'],
+                         DataInputs = ['/Event/DAQ/ODIN','/Event/DAQ/RawEvent'],
+                         DataOutputs = ['/Event/Rec/Status', '/Event/Rec/Header'],
                          shortCalib=True)
 
 PhysFilter = CPUCruncher("PhysFilter", 
                          shortCalib=True,
-                         Inputs = ['/Event/Hlt/LumiSummary'])
+                         DataInputs = ['/Event/Hlt/LumiSummary'])
 
 HltDecReportsDecoder = CPUCruncher("HltDecReportsDecoder", 
                                    shortCalib=True,
-                                   Inputs = ['/Event/DAQ/RawEvent'],
-                                   Outputs = ['/Event/Hlt/DecReports'])
+                                   DataInputs = ['/Event/DAQ/RawEvent'],
+                                   DataOutputs = ['/Event/Hlt/DecReports'])
 
 HltErrorFilter = CPUCruncher("HltErrorFilter",
                              shortCalib=True,
-                             Inputs = ['/Event/Hlt/DecReports'])
+                             DataInputs = ['/Event/Hlt/DecReports'])
                                    
 sequence1 = GaudiSequencer("Sequence1")
 sequence1.Members += [FakeInput,BrunelInit,PhysFilter,HltDecReportsDecoder]

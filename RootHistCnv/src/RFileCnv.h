@@ -1,4 +1,3 @@
-// $Id: RFileCnv.h,v 1.7 2006/11/30 20:51:35 mato Exp $
 #ifndef ROOTHISTCNV_RFILECNV_H
 #define ROOTHISTCNV_RFILECNV_H 1
 
@@ -26,16 +25,16 @@ namespace RootHistCnv {
   public:
 
     /// Initialise
-    virtual StatusCode initialize();
+    StatusCode initialize() override;
 
   public:
 
     /// Create the transient representation of an object.
-    virtual StatusCode createObj( IOpaqueAddress* pAddress, DataObject*& refpObject );
+    StatusCode createObj( IOpaqueAddress* pAddress, DataObject*& refpObject ) override;
     /// Convert the transient object to the requested representation.
-    virtual StatusCode createRep( DataObject* pObject, IOpaqueAddress*& refpAddress );
+    StatusCode createRep( DataObject* pObject, IOpaqueAddress*& refpAddress ) override;
     /// Convert the transient object to the requested representation.
-    virtual StatusCode updateRep( IOpaqueAddress* pAddress, DataObject* pObject );
+    StatusCode updateRep( IOpaqueAddress* pAddress, DataObject* pObject ) override;
 
   public:
 
@@ -48,7 +47,7 @@ namespace RootHistCnv {
     RFileCnv( ISvcLocator* svc );
 
     /// Standard destructor
-    virtual ~RFileCnv();
+    ~RFileCnv() override = default;
 
   protected:
 

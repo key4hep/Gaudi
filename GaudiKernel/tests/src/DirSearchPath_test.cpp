@@ -3,7 +3,6 @@
   * @author Paolo Calafiura <pcalafiura@lbl.gov> - ATLAS Collaboration
   */
 
-// $Id: DirSearchPath_test.cpp,v 1.2 2007/10/22 18:53:46 marcocle Exp $
 
 //<<<<<< INCLUDES                                                       >>>>>>
 

@@ -1,4 +1,3 @@
-// $Id: Time.cpp,v 1.1 2006/01/26 09:24:03 hmd Exp $
 // Include files
 #include "GaudiKernel/Time.h"
 
@@ -118,11 +117,11 @@ Time Time::current (void) {
   return from (&ftime);
 #else
   timeval tv;
-  if (gettimeofday (&tv, 0) != 0) {
+  if (gettimeofday (&tv, nullptr) != 0) {
     char buf[256];
     std::ostringstream tag,msg;
     tag << "errno=" << errno;
-    if( strerror_r(errno, buf, 256) == 0 ) {
+    if( strerror_r(errno, buf, 256) == nullptr ) {
       msg << buf;
     } else {
       msg << "Unknown error retrieving current time";

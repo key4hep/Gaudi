@@ -1,4 +1,3 @@
-// $Id: HistoTableFormat.cpp,v 1.2 2008/04/03 22:12:27 marcocle Exp $
 // ============================================================================
 // Include files
 // ============================================================================
@@ -12,7 +11,14 @@
 /// @FIXME: AIDA interfaces visibility
 #include <vector>
 #include "GaudiKernel/Kernel.h"
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wkeyword-macro"
+#endif
 #define class class GAUDI_API
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 #include "AIDA/IHistogram1D.h"
 #include "AIDA/IAxis.h"
 #undef class

@@ -1,4 +1,3 @@
-// $Id: IAlgManager.h,v 1.7 2008/06/02 14:20:38 marcocle Exp $
 #ifndef GAUDIKERNEL_IALGMANAGER_H
 #define GAUDIKERNEL_IALGMANAGER_H
 
@@ -51,7 +50,7 @@ public:
                                  ) const {
     SmartIF<IAlgorithm> &si = const_cast<IAlgManager*>(this)->algorithm(name, false);
     alg = si.get();
-    return si.isValid() ? StatusCode::SUCCESS : StatusCode::FAILURE;
+    return si ? StatusCode::SUCCESS : StatusCode::FAILURE;
   }
 #endif
   /// Check the existence of an algorithm with a given name in the list of known algorithms

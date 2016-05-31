@@ -1,5 +1,3 @@
-// $Id: DataHistory.h,v 1.1 2006/11/09 10:24:05 mato Exp $
-
 #ifndef GAUDIKERNEL_DATAHISTORY_H
 #define GAUDIKERNEL_DATAHISTORY_H
 
@@ -26,7 +24,7 @@ class GAUDI_API DataHistory: public HistoryObj {
 
 public:
 
-  class DataHistoryOrder {
+  class DataHistoryOrder final {
   public:
     bool operator() ( const DataHistory* lhs, const DataHistory* rhs ) const {
       if (lhs->m_dataClassID == rhs->m_dataClassID) {
@@ -53,11 +51,11 @@ public:
     }
   };
 
-  DataHistory(const CLID& id, const std::string& key, AlgorithmHistory* alg);
+  DataHistory(const CLID& id, std::string key, AlgorithmHistory* alg);
 
-  ~DataHistory(){};
+  ~DataHistory() override = default;
 
-  virtual const CLID& clID() const { return DataHistory::classID(); }
+  const CLID& clID() const override { return DataHistory::classID(); }
   static const CLID& classID();
 
 
@@ -66,14 +64,14 @@ public:
 
   AlgorithmHistory* algorithmHistory() const { return m_algHist; }
 
-  void dump(std::ostream &, const bool isXML=false, int indent=0) const;
+  void dump(std::ostream &, const bool isXML=false, int indent=0) const override;
 
 private:
 
   CLID m_dataClassID;
   std::string m_dataKey;
   AlgorithmHistory* m_algHist;
-  std::string m_dummy;
+  std::string m_dummy = "none";
 
 
 };

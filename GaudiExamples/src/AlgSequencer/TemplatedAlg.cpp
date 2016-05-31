@@ -29,8 +29,7 @@ TemplatedAlg<T,R>::TemplatedAlg(const std::string& name, ISvcLocator* ploc)
 template <typename T, typename R>
 StatusCode TemplatedAlg<T,R>::initialize() {
 //------------------------------------------------------------------------------
-  MsgStream log( msgSvc(), name() );
-  log << MSG::INFO << "Initializing TemplatedAlg instance " << name() << " of type " << typeid(*this).name() << endmsg;
+  info() << "Initializing TemplatedAlg instance " << name() << " of type " << typeid(*this).name() << endmsg;
   return StatusCode::SUCCESS;
 }
 

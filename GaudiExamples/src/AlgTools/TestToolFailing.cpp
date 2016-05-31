@@ -11,7 +11,8 @@
 #include "ITestTool.h"
 
 
-class TestToolFailing: public extends1<GaudiTool, ITestTool> {
+class TestToolFailing: public extends<GaudiTool,
+                                      ITestTool> {
 
 public:
   TestToolFailing(const std::string& type,
@@ -25,7 +26,6 @@ public:
 
 };
 
-#include "GaudiKernel/ToolFactory.h"
 // Declaration of the Tool Factory
 DECLARE_COMPONENT(TestToolFailing)
 

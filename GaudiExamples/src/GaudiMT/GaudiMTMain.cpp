@@ -13,6 +13,8 @@ const int MAX_THREADS(1023); //to check command line parameter
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/ThreadGaudi.h"
 
+#include "boost/algorithm/string/predicate.hpp"
+
 #include <cassert>
 #include <iostream>
 
@@ -61,7 +63,7 @@ void* work (void* counter)
 
   std::string value ;
   SmartIF<IProperty> propMgr ( m_pesaAppMgr );
-  if( !propMgr.isValid() ) {
+  if( !propMgr ) {
     COUTTHREAD(" Fatal error while retrieving Gaudi PropertyMgr ")
   } else {
     StatusCode sc = propMgr->getProperty( "EventLoop", value );
@@ -76,7 +78,7 @@ void* work (void* counter)
     if( sc.isFailure() ) {
       COUTTHREAD(" Fatal error while retrieving Property EvtMax ")
     } else {
-      m_evtMax = std::atoi(value.c_str()) ;
+      m_evtMax = std::stoi(value) ;
     }
   }
 
@@ -86,7 +88,7 @@ void* work (void* counter)
   StatusCode sc ;
   IEventProcessor* m_processingMgr = 0 ;
   SmartIF<ISvcLocator> svcLoc( m_pesaAppMgr );
-  if (svcLoc.isValid()) {
+  if (svcLoc) {
     sc = svcLoc->service( nameEventLoopMgr , m_processingMgr);
     if( !sc.isSuccess() )  {
       COUTTHREAD("FATAL Error retrieving Processing manager:")
@@ -99,7 +101,7 @@ void* work (void* counter)
     if ( 0 != m_processingMgr ) {
       SmartIF<IEventProcessor> processor(m_processingMgr);
 
-      if ( processor.isValid() )    {
+      if ( processor )    {
 	COUTTHREAD(" ---> Executing WorkerThread---> " << id_thread)
 	sc = processor->executeEvent(NULL);
 	if( sc.isFailure() ) {
@@ -129,12 +131,11 @@ int main (int argc, char** argv)
 
 
   // Create an instance of an application manager
-  IInterface* iface = Gaudi::createApplicationMgr();
-  SmartIF<IProperty>     propMgr ( iface );
-  SmartIF<IAppMgrUI>     appMgr  ( iface );
-  SmartIF<IClassManager> dllMgr  ( iface );
+  auto appMgr  = SmartIF<IAppMgrUI>( Gaudi::createApplicationMgr() );
+  auto propMgr = appMgr.as<IProperty>();
+  auto dllMgr  = appMgr.as<IClassManager>();
 
-  if( !appMgr.isValid() || !propMgr.isValid() || !dllMgr.isValid()) {
+  if( !appMgr || !propMgr || !dllMgr ) {
     std::cout << "Fatal error while creating the ApplicationMgr " << std::endl;
     return 1;
   }
@@ -157,7 +158,7 @@ int main (int argc, char** argv)
   propMgr->setProperty( "NoOfThreads", s_nt);
   propMgr->setProperty( "EvtSel",         "NONE" );
   propMgr->setProperty( "MessageSvcType", "MTMessageSvc" );
-  if( opts.substr( opts.length() - 3, 3 ) == ".py" ) {
+  if( boost::algorithm::ends_with( opts, ".py" ) ) {
     std::cout << "Running with Python not supported" << std::endl;
     return 1;
   }
@@ -167,6 +168,7 @@ int main (int argc, char** argv)
     std::cerr << "Can not load MTMessageSvc module (GaudiMTExample)" << std::endl;
     return 1;
   }
+  dllMgr.reset();
 
   StatusCode sc ;
   std::string v_nt ;
@@ -176,7 +178,7 @@ int main (int argc, char** argv)
     std::cout << "Cannot get get number of worker threads" << std::endl;
     return 1;
   } else {
-    nt = std::atoi(v_nt.c_str()) ;
+    nt = std::stoi(v_nt) ;
     if ( nt <= 0 || nt > MAX_THREADS ) {
       std::cout << "Invalid number of worker threads =>> " << v_nt << std::endl;
       return 1;
@@ -184,6 +186,7 @@ int main (int argc, char** argv)
       std::cout << "---> Use " << nt << " worker threads <---" << std::endl;
     }
   }
+  propMgr.reset();
 
   // Configure the application manager
   sc = appMgr->configure();
@@ -243,6 +246,7 @@ int main (int argc, char** argv)
   pthread_mutex_destroy(&coutmutex);
 
   // All done - exit
-  iface->release();
+  appMgr.reset();
+
   return 0;
 }

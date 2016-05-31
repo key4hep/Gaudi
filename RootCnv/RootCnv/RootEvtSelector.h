@@ -1,4 +1,3 @@
-// $Id: RootEvtSelector.h,v 1.3 2010-08-24 23:30:32 frankb Exp $
 //====================================================================
 //	RootTreeEvtSelector.h
 //--------------------------------------------------------------------
@@ -13,7 +12,6 @@
 //  Created    : 4/01/99
 //
 //====================================================================
-// $Header: /afs/cern.ch/project/cvs/reps/lhcb/Online/RootCnv/src/RootEvtSelector.h,v 1.3 2010-08-24 23:30:32 frankb Exp $
 
 #ifndef GAUDIROOTCNV_ROOTEVTSELECTOR_H
 #define GAUDIROOTCNV_ROOTEVTSELECTOR_H 1
@@ -38,7 +36,8 @@ namespace Gaudi {
    *  @version 1.0
    *  @date    20/12/2009
    */
-  class GAUDI_API RootEvtSelector : public extends1<Service, IEvtSelector> {
+  class GAUDI_API RootEvtSelector : public extends<Service,
+                                                   IEvtSelector> {
 
     /// Helper method to issue error messages
     StatusCode error(const std::string& msg)  const;
@@ -48,7 +47,7 @@ namespace Gaudi {
     RootEvtSelector(const std::string& name, ISvcLocator* svcloc);
 
     /// Standard destructor
-    virtual ~RootEvtSelector() {}
+    virtual ~RootEvtSelector() = default;
 
     /// IService implementation: Db event selector override
     virtual StatusCode initialize();

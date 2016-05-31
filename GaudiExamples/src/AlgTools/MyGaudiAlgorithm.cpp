@@ -12,27 +12,33 @@ DECLARE_COMPONENT(MyGaudiAlgorithm)
 // Constructor
 //------------------------------------------------------------------------------
 MyGaudiAlgorithm::MyGaudiAlgorithm(const std::string& name, ISvcLocator* ploc)
-  : GaudiAlgorithm(name, ploc) {
+  : GaudiAlgorithm(name, ploc),
+  m_myPrivToolHandle("MyTool/PrivToolHandle",this),
+  m_myPubToolHandle("MyTool/PubToolHandle"),
+  m_myGenericToolHandle("MyTool/GenericToolHandle"),
+  m_myUnusedToolHandle("TestToolFailing"),
+  m_tracks("/Event/Rec/Tracks",Gaudi::DataHandle::Reader, this),
+  m_hits("/Event/Rec/Hits",Gaudi::DataHandle::Reader,this),
+  m_raw("/Rec/RAW",Gaudi::DataHandle::Reader,this),
+  m_selectedTracks("/Event/MyAnalysis/Tracks",Gaudi::DataHandle::Writer,this)
+ {
   //------------------------------------------------------------------------------
   declareProperty("ToolWithName", m_privateToolType = "MyTool",
                   "Type of the tool to use (internal name is ToolWithName)");
   declareProperty("PrivToolHandle", m_myPrivToolHandle);
   declareProperty("PubToolHandle", m_myPubToolHandle);
+  declareProperty("GenericToolHandle", m_myGenericToolHandle);
+  declareProperty("UnusedToolHandle", m_myUnusedToolHandle);
 
-  declareInput("tracks", m_tracks, "/Event/Rec/Tracks");
-  declareInput("hits", m_hits, "/Event/Rec/Hits");
+  declareProperty("tracks", m_tracks, "the tracks");
+  declareProperty("hits", m_hits, "the hits");
+  declareProperty("raw", m_raw, "the raw stuff");
 
-  declareInput("raw", m_raw, std::vector<std::string>({"/Rec/RAW", "/DAQ/RAW"}));
+  declareProperty("trackSelection", m_selectedTracks, "the selected tracks");
 
-  declareOutput("trackSelection", m_selectedTracks, "/Event/MyAnalysis/Tracks");
+  // declarePrivateTool(m_myPrivToolHandle, "MyTool/PrivToolHandle");
+  // declarePublicTool(m_myPubToolHandle, "MyTool/PubToolHandle");
 
-  std::cout << "handle " << m_tracks.dataProductName() << " is " << (m_tracks.isValid() ? "" : "NOT") << " valid" << std::endl;
-  std::cout << "handle " << m_hits.dataProductName() << " is " << (m_hits.isValid() ? "" : "NOT") << " valid" << std::endl;
-  std::cout << "handle " << m_raw.dataProductName() << " is " << (m_raw.isValid() ? "" : "NOT") << " valid" << std::endl;
-  std::cout << "handle " << m_selectedTracks.dataProductName() << " is " << (m_selectedTracks.isValid() ? "" : "NOT") << " valid" << std::endl;
-
-  declarePrivateTool(m_myPrivToolHandle, "MyTool/PrivToolHandle");
-  declarePublicTool(m_myPubToolHandle, "MyTool/PubToolHandle");
 }
 
 //------------------------------------------------------------------------------
@@ -51,16 +57,18 @@ StatusCode MyGaudiAlgorithm::initialize() {
   m_privateToolWithName = tool<IMyTool>(m_privateToolType, "ToolWithName", this);
   m_privateOtherInterface = tool<IMyOtherTool>("MyGaudiTool", this);
   // force initialization of tool handles
-  if ( m_myPrivToolHandle.retrieve().isFailure() ||
-       m_myPubToolHandle.retrieve().isFailure() ) {
+  if ( ! (m_myPrivToolHandle.retrieve() &&
+          m_myPubToolHandle.retrieve()  &&
+          m_myGenericToolHandle.retrieve() ) ) {
+    error() << "Unable to retrive one of the ToolHandles" << endmsg;
     return StatusCode::FAILURE;
   }
 
-  info() << m_tracks.dataProductName() << endmsg;
-  info() << m_hits.dataProductName() << endmsg;
-  info() << m_raw.dataProductName() << endmsg;
+  info() << m_tracks.objKey() << endmsg;
+  info() << m_hits.objKey() << endmsg;
+  info() << m_raw.objKey() << endmsg;
 
-  info() << m_selectedTracks.dataProductName() << endmsg;
+  info() << m_selectedTracks.objKey() << endmsg;
 
   info() << "....initialization done" << endmsg;
 

@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/ObjectList.h,v 1.10 2008/10/09 16:46:49 marcocle Exp $
 #ifndef GAUDIKERNEL_OBJECTLIST_H
 #define GAUDIKERNEL_OBJECTLIST_H
 
@@ -60,11 +59,10 @@ public:
 
 public:
   /// Constructors
-  ObjectList()
-    : m_list(0) { }
-  /// Copy Constructor
-  ObjectList( const ObjectList<TYPE>& value )
-    : m_list(value.m_list) { }
+  ObjectList() = default;
+
+  ObjectList( const ObjectList<TYPE>& ) = delete;
+  ObjectList& operator=( const ObjectList<TYPE>& ) = delete;
 
   /// Destructor
   virtual ~ObjectList() {
@@ -124,6 +122,7 @@ public:
   /// Return the size of the container
   /// Size means the number of objects stored in the container, independently on the amount of information stored in each object
   typename ObjectList<TYPE>::size_type size () const {
+    // C++11: std::list::size is constant (pre C++11 it could be linear!)
     return m_list.size();
   }
   /// The same as size(), return number of objects in the container
@@ -163,7 +162,7 @@ public:
 
   /// push_back = append = insert a new element at the end of the container
   void push_back( typename ObjectList<TYPE>::const_reference value ) {
-    if( 0 != value->parent() ) {
+    if( value->parent() ) {
       const_cast<ObjectContainerBase*>(value->parent())->remove(value);
     }
     value->setParent(this);
@@ -173,9 +172,8 @@ public:
   /// Add an object to the container
   virtual long add(ContainedObject* pObject) {
     try {
-      typename ObjectList<TYPE>::value_type ptr =
-            dynamic_cast<typename ObjectList<TYPE>::value_type>(pObject);
-      if ( 0 != ptr ) {
+      auto ptr = dynamic_cast<typename ObjectList<TYPE>::value_type>(pObject);
+      if ( ptr ) {
         push_back(ptr);
         return m_list.size()-1;
       }
@@ -188,10 +186,10 @@ public:
   /// pop_back = remove the last element from the container
   /// The removed object will be deleted (see the method release)
   void pop_back () {
-    typename ObjectList<TYPE>::value_type position = m_list.back();
+    auto position = m_list.back();
     // Set the back pointer to 0 to avoid repetitional searching
     // for the object in the container, and deleting the object
-    position->setParent (0);
+    position->setParent (nullptr);
     delete position;
     // Removing from the container itself
     m_list.pop_back();
@@ -202,40 +200,33 @@ public:
   virtual long remove(ContainedObject* value) {
     // Find the object of value value
     long idx = 0;
-    typename ObjectList<TYPE>::iterator   iter;
-    for( iter = begin(); iter != end(); iter++, idx++ )  {
-      if( value == *iter ) {
-        break;
-      }
-    }
-    if( end() == iter )  {
+    auto iter = std::find_if( begin(), end(), [&](const ContainedObject* i) { return i == value; } );
+    if( iter == end() )  {
       // Object cannot be released from the container,
       // as it is not contained in it
       return -1;
     }
-    else  {
-      // Set the back pointer to 0 to avoid repetitional searching
-      // for the object in the container and deleting the object
-      (*iter)->setParent (0);
-      erase(iter);
-      return idx;
-    }
+
+    // Set the back pointer to 0 to avoid repetitional searching
+    // for the object in the container and deleting the object
+    (*iter)->setParent(nullptr);
+    erase(iter);
+    return idx;
   }
 
   /// Insert "value" before "position"
   typename ObjectList<TYPE>::iterator insert( typename ObjectList<TYPE>::iterator position,
                                      typename ObjectList<TYPE>::const_reference value ) {
     value->setParent(this);
-    typename ObjectList<TYPE>::iterator i = m_list.insert(position, value);
-    return i;
+    return m_list.insert(position, value);
   }
 
   /// Erase the object at "position" from the container. The removed object will be deleted.
   void erase( typename ObjectList<TYPE>::iterator position ) {
-    if( 0 != (*position)->parent() ) {
+    if( (*position)->parent() ) {
       // Set the back pointer to 0 to avoid repetitional searching
       // for the object in the container, and deleting the object
-      (*position)->setParent (0);
+      (*position)->setParent(nullptr);
       delete *position;
     }
     // Removing from the container itself
@@ -245,10 +236,10 @@ public:
   /// Erase the range [first, last) from the container. The removed object will be deleted
   void erase( typename ObjectList<TYPE>::iterator first,
               typename ObjectList<TYPE>::iterator last ) {
-    for( typename ObjectList<TYPE>::iterator iter = first; iter != last; iter++ )  {
+    for( auto iter = first; iter != last; ++iter )  {
       // Set the back pointer to 0 to avoid repetitional searching
       // for the object in the container, and deleting the object
-      (*iter)->setParent (0);
+      (*iter)->setParent(nullptr);
       delete *iter;
     }
     // Removing from the container itself
@@ -263,28 +254,15 @@ public:
   /// Return distance of a given object from the beginning of its container
   /// It corresponds to the "index" ( from 0 to size()-1 ) If "obj" not fount, return -1
   virtual long index( const ContainedObject* obj ) const {
-    long i = 0;
-    typename ObjectList<TYPE>::const_iterator   iter;
-    for( iter = begin(); iter != end(); iter++ )  {
-      if( *iter == obj ) {
-        return i;
-      }
-      i++;
-    }
-    return -1;
+    auto i = std::find_if(begin(),end(), 
+                          [&](const ContainedObject* o)
+                          { return o == obj; } );
+    return i!=end() ? std::distance( begin(), i ) : -1 ;
   }
 
   /// Return const pointer to an object of a given distance
   virtual ContainedObject* containedObject( long dist ) const {
-    long i = 0;
-    typename ObjectList<TYPE>::const_iterator   iter;
-    for( iter = begin(); iter != end(); iter++ )  {
-      if( dist == i ) {
-        return *iter;
-      }
-      i++;
-    }
-    return 0;
+    return  dist < size() ? *std::next( begin(), dist ) : nullptr;
   }
 
   /// Fill the output stream (ASCII)
@@ -294,22 +272,20 @@ public:
       << size() << "\n";
     // Output the base class
     //ObjectContainerBase::fillStream(s);
-    if ( 0 != size() ) {
+    if ( !empty() ) {
       s << "\nContents of the STL list :";
       long   count = 0;
-      typename ObjectList<TYPE>::const_iterator iter;
-      for( iter = m_list.begin(); iter != m_list.end(); iter++, count++ ) {
+      for( const auto& iter : m_list ) {
         s << "\nIndex "
           << std::setw(12)
-          << count
-          << " of object of type "<< **iter;
+          << count++
+          << " of object of type "<< *iter;
       }
     }
     return s;
   }
 
 private:
-
   /// The STL list
   std::list<TYPE*> m_list;
 };

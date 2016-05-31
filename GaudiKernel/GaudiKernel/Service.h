@@ -18,6 +18,7 @@
 
 // ============================================================================
 #include <vector>
+#include <mutex>
 // ============================================================================
 // Forward declarations
 // ============================================================================
@@ -32,7 +33,9 @@ class ServiceManager;
  *  @author Pere Mato
  *  @author Marco Clemencic
  */
-class GAUDI_API Service: public CommonMessaging<implements3<IService, IProperty, IStateful> > {
+class GAUDI_API Service: public CommonMessaging<implements<IService,
+                                                           IProperty,
+                                                           IStateful> > {
 public:
 #ifndef __REFLEX__
   typedef Gaudi::PluginService::Factory<IService*,
@@ -41,46 +44,43 @@ public:
 #endif
   friend class ServiceManager;
 
-  /// Release Interface instance.
-  /// Specialized implementation because the default one is not enough.
-  virtual unsigned long release();
-
   /** Retrieve name of the service               */
-  virtual const std::string& name() const;
+  const std::string& name() const override;
 
   // State machine implementation
-  virtual StatusCode configure() { return StatusCode::SUCCESS; }
-  virtual StatusCode initialize();
-  virtual StatusCode start();
-  virtual StatusCode stop();
-  virtual StatusCode finalize();
-  virtual StatusCode terminate() { return StatusCode::SUCCESS; }
-  virtual Gaudi::StateMachine::State FSMState() const { return m_state; }
-  virtual Gaudi::StateMachine::State targetFSMState() const { return m_targetState; }
-  virtual StatusCode reinitialize();
-  virtual StatusCode restart();
+  StatusCode configure() override { return StatusCode::SUCCESS; }
+  StatusCode initialize() override;
+  StatusCode start() override;
+  StatusCode stop() override;
+  StatusCode finalize() override;
+  StatusCode terminate() override { return StatusCode::SUCCESS; }
+  Gaudi::StateMachine::State FSMState() const override { return m_state; }
+  Gaudi::StateMachine::State targetFSMState() const override { return m_targetState; }
+  StatusCode reinitialize() override;
+  StatusCode restart() override;
 
   /** Initialize Service                          */
-  virtual StatusCode sysInitialize();
+  StatusCode sysInitialize() override;
   /** Initialize Service                          */
-  virtual StatusCode sysStart();
+  StatusCode sysStart() override;
   /** Initialize Service                          */
-  virtual StatusCode sysStop();
+  StatusCode sysStop() override;
   /** Finalize Service                           */
-  virtual StatusCode sysFinalize();
+  StatusCode sysFinalize() override;
   /// Re-initialize the Service
-  virtual StatusCode sysReinitialize();
+  StatusCode sysReinitialize() override;
   /// Re-initialize the Service
-  virtual StatusCode sysRestart();
+  StatusCode sysRestart() override;
 
   // Default implementations for ISetProperty
-  virtual StatusCode setProperty(const Property& p);
-  virtual StatusCode setProperty( const std::string& s );
-  virtual StatusCode setProperty( const std::string& n, const std::string& v);
-  virtual StatusCode getProperty(Property* p) const;
-  virtual const Property& getProperty( const std::string& name) const;
-  virtual StatusCode getProperty( const std::string& n, std::string& v ) const;
-  virtual const std::vector<Property*>& getProperties( ) const;
+  StatusCode setProperty(const Property& p) override;
+  StatusCode setProperty( const std::string& s ) override;
+  StatusCode setProperty( const std::string& n, const std::string& v) override;
+  StatusCode getProperty(Property* p) const override;
+  const Property& getProperty( const std::string& name) const override;
+  StatusCode getProperty( const std::string& n, std::string& v ) const override;
+  const std::vector<Property*>& getProperties( ) const override;
+  bool hasProperty(const std::string& name) const override;
 
   /** set the property form the value
    *
@@ -126,12 +126,12 @@ public:
   StatusCode setProperty
   ( const std::string& name  ,
     const TYPE&        value )
-  { return Gaudi::Utils::setProperty ( m_propertyMgr , name , value ) ; }
+  { return Gaudi::Utils::setProperty ( m_propertyMgr.get() , name , value ) ; }
 
   /** Standard Constructor                       */
-  Service( const std::string& name, ISvcLocator* svcloc);
+  Service( std::string name, ISvcLocator* svcloc);
   /** Retrieve pointer to service locator        */
-  SmartIF<ISvcLocator>& serviceLocator() const;
+  SmartIF<ISvcLocator>& serviceLocator() const override;
 
   /** Method for setting declared properties to the values
       specified for the job.
@@ -143,33 +143,35 @@ public:
   template <class T>
   StatusCode service( const std::string& name, const T*& psvc, bool createIf = true ) const {
     ISvcLocator& svcLoc = *serviceLocator();
-    SmartIF<T> ptr(
-      ServiceLocatorHelper(svcLoc, *this).service(name, !createIf, // quiet
-                                                  createIf));
-    if (ptr.isValid()) {
+    auto ptr =
+      ServiceLocatorHelper(svcLoc, *this).service<T>(name, !createIf, // quiet
+                                                     createIf);
+    if (ptr) {
       psvc = ptr.get();
       const_cast<T*>(psvc)->addRef();
       return StatusCode::SUCCESS;
     }
     // else
-    psvc = 0;
+    psvc = nullptr;
     return StatusCode::FAILURE;
   }
 
   template <class T>
   StatusCode service( const std::string& name, T*& psvc, bool createIf = true ) const {
-    ISvcLocator& svcLoc = *serviceLocator();
-    SmartIF<T> ptr(
-      ServiceLocatorHelper(svcLoc, *this).service(name, !createIf, // quiet
-                                                  createIf));
-    if (ptr.isValid()) {
-      psvc = ptr.get();
+    auto  ptr = service<T>(name,createIf);
+    psvc = ( ptr ? ptr.get() : nullptr );
+    if (psvc) {
       psvc->addRef();
       return StatusCode::SUCCESS;
     }
-    // else
-    psvc = 0;
     return StatusCode::FAILURE;
+  }
+
+  template <typename IFace = IService>
+  SmartIF<IFace> service(const std::string& name, bool createIf = true) const {
+    return ServiceLocatorHelper(*serviceLocator(), *this).
+                               service<IFace>(name, !createIf, // quiet
+                                              createIf);
   }
 
   /** Access a service by name and type, creating it if it doesn't already exist.
@@ -249,14 +251,13 @@ public:
 
 		StatusCode sc = handle.initialize(toolTypeAndName, this, createIf);
 
-		MsgStream log(msgSvc(), name());
-
 		if (sc.isSuccess()) {
-			log << MSG::DEBUG << "Handle for private tool" << toolTypeAndName
+                  if (UNLIKELY(msgLevel(MSG::DEBUG)))
+			debug() << "Handle for private tool" << toolTypeAndName
 					<< " successfully created and stored." << endmsg;
 		} else {
 
-			log << MSG::ERROR << "Handle for private tool" << toolTypeAndName
+			error() << "Handle for private tool" << toolTypeAndName
 					<< " could not be created." << endmsg;
 		}
 
@@ -280,14 +281,14 @@ public:
 
 		StatusCode sc = handle.initialize(toolTypeAndName, 0, createIf);
 
-		MsgStream log(msgSvc(), name());
 
 		if (sc.isSuccess()) {
-			log << MSG::DEBUG << "Handle for public tool" << toolTypeAndName
+                  if (UNLIKELY(msgLevel(MSG::DEBUG)))
+			debug() << "Handle for public tool" << toolTypeAndName
 					<< " successfully created and stored." << endmsg;
 		} else {
 
-			log << MSG::ERROR << "Handle for public tool" << toolTypeAndName
+			error() << "Handle for public tool" << toolTypeAndName
 					<< " could not be created." << endmsg;
 		}
 
@@ -303,27 +304,32 @@ public:
 
 protected:
   /** Standard Destructor                        */
-  virtual ~Service();
+  ~Service() override;
   /** Service output level                       */
-  IntegerProperty m_outputLevel;
+  IntegerProperty m_outputLevel = MSG::NIL;
   /** Service state                              */
-  Gaudi::StateMachine::State    m_state;
+  Gaudi::StateMachine::State    m_state = Gaudi::StateMachine::OFFLINE;
   /** Service state                              */
-  Gaudi::StateMachine::State    m_targetState;
+  Gaudi::StateMachine::State    m_targetState = Gaudi::StateMachine::OFFLINE;
 
   /// get the @c Service's output level
   int  outputLevel() const { return m_outputLevel.value(); }
 
 private:
+
+  void sysInitialize_imp();
+  StatusCode m_initSC;
+  std::once_flag m_initFlag;
+
   /** Service Name  */
   std::string   m_name;
   /** Service Locator reference                  */
   mutable SmartIF<ISvcLocator> m_svcLocator;
   SmartIF<ISvcManager>  m_svcManager;
   /** Property Manager                           */
-  PropertyMgr*  m_propertyMgr;
+  SmartIF<PropertyMgr>  m_propertyMgr;
 
-  void setServiceManager(ISvcManager* ism);
+  void setServiceManager(ISvcManager* ism) override;
 
   /** Auditor Service                            */
   mutable SmartIF<IAuditorSvc>  m_pAuditorSvc;
@@ -345,8 +351,8 @@ class SvcFactory {
 public:
 #ifndef __REFLEX__
   template <typename S, typename... Args>
-  static typename S::ReturnType create(Args... args) {
-    return new T(args...);
+  static typename S::ReturnType create(Args&&... args) {
+    return new T(std::forward<Args>(args)...);
   }
 #endif
 };

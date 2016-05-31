@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/IRunable.h,v 1.1 2001/03/14 15:30:13 mato Exp $
 #ifndef GAUDIKERNEL_IRUNNABLE_H
 #define GAUDIKERNEL_IRUNNABLE_H
 

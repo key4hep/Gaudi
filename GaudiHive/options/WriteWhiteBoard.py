@@ -44,7 +44,7 @@ writer = WriteHandleAlg ("Writer",
                          Cardinality=4,
                          OutputLevel=WARNING)
 
-writer.Outputs.Output.Path ="/Event/"+product_name
+writer.Output.Path ="/Event/"+product_name
 
 
 evtslots = 20
@@ -58,8 +58,7 @@ eventloopmgr = HiveSlimEventLoopMgr(OutputLevel=INFO)
 # We must put the full path in this deprecated expression of dependencies.
 # Using a controlflow for the output would be the way to go
 scheduler = ForwardSchedulerSvc(MaxAlgosInFlight = algoparallel,
-                                OutputLevel=INFO,
-                                AlgosDependencies = [[],[product_name_full_path]])
+                                OutputLevel=INFO)
                                 
 # Application setup
 ApplicationMgr( TopAlg = [writer,dst],

@@ -3,7 +3,7 @@
 # Maintainer : Marco Clemencic
 # ============================================================================
 package    GaudiPartProp
-version    v2r1
+version    v2r3
 
 # ============================================================================
 # Structure, i.e. directories to process.

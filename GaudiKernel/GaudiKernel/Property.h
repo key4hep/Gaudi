@@ -1,7 +1,3 @@
-// $Id: Property.h,v 1.26 2008/10/27 16:41:34 marcocle Exp $
-// ============================================================================
-// CVS tag $Name:  $
-// ============================================================================
 #ifndef GAUDIKERNEL_PROPERTY_H
 #define GAUDIKERNEL_PROPERTY_H
 // ============================================================================
@@ -22,7 +18,6 @@
 
 // ============================================================================
 class Property   ;
-class PropertyCallbackFunctor ;
 class IProperty  ;
 class IInterface ;
 // ============================================================================
@@ -42,11 +37,14 @@ GAUDI_API std::ostream& operator<<(std::ostream& stream, const Property& prop);
  */
 class GAUDI_API Property
 {
+private:
+  // the default constructor is disabled
+  Property();
 public:
   /// property name
   const std::string&    name      () const { return m_name             ; }
   /// property documentation
-  const   std::string&    documentation() const { return m_documentation; }
+  const   std::string&  documentation() const { return m_documentation; }
   /// property type-info
   const std::type_info* type_info () const { return m_typeinfo         ; }
   /// property type
@@ -63,52 +61,53 @@ public:
   /// string -> value
   virtual StatusCode   fromString ( const std::string& value ) = 0 ;
 public:
-  /// Call-back functor at reading: the functor is owned by property!
-  const PropertyCallbackFunctor* readCallBack   () const ;
-  /// Call-back functor for update: the functor is owned by property!
-  const PropertyCallbackFunctor* updateCallBack () const ;
+  /// get a reference to the readCallBack
+  const std::function<void(Property&)>&  readCallBack() const { return m_readCallBack; }
+  /// get a reference to the updateCallBack
+  const std::function<void(Property&)>& updateCallBack() const { return m_updateCallBack; }
+
   /// set new callback for reading
-  virtual void  declareReadHandler   ( PropertyCallbackFunctor* pf ) ;
+  virtual Property&  declareReadHandler   ( std::function<void(Property&)> fun ) ;
   /// set new callback for update
-  virtual void  declareUpdateHandler ( PropertyCallbackFunctor* pf ) ;
+  virtual Property&  declareUpdateHandler ( std::function<void(Property&)> fun ) ;
+
   template< class HT >
-  void declareReadHandler
-  ( void ( HT::* MF ) ( Property& ) , HT* instance ) ;
+  inline Property& declareReadHandler( void ( HT::* MF ) ( Property& ) , HT* instance )
+  { return declareReadHandler( [=](Property& p) { (instance->*MF)(p); } ) ; }
+
   template< class HT >
-  void declareUpdateHandler
-  ( void ( HT::* MF ) ( Property& ) , HT* instance ) ;
+  inline Property& declareUpdateHandler( void ( HT::* MF ) ( Property& ) , HT* instance )
+  { return declareUpdateHandler ( [=](Property& p) { (instance->*MF)(p); } ); }
+
   /// use the call-back function at reading
   virtual void useReadHandler   () const ;
   /// use the call-back function at update
   virtual bool useUpdateHandler ()       ;
 public:
   /// virtual destructor
-  virtual ~Property() ;
+  virtual ~Property() = default;
   /// clone: "virtual constructor"
   virtual Property*          clone     () const = 0 ;
   /// set the new value for the property name
-  void setName ( const std::string& value ) { m_name = value ; }
+  void setName ( std::string value ) { m_name = std::move(value) ; }
   /// set the documentation string
-  void setDocumentation( const std::string& documentation ) {
-    m_documentation = documentation; }
+  void setDocumentation( std::string documentation ) {
+    m_documentation = std::move(documentation); }
   /// the printout of the property value
   virtual std::ostream& fillStream ( std::ostream& ) const ;
 protected:
   /// constructor from the property name and the type
   Property
   ( const std::type_info& type      ,
-    const std::string&    name = "" ) ;
+    std::string    name = "" ) ;
   /// constructor from the property name and the type
   Property
-  ( const std::string&    name      ,
+  ( std::string    name      ,
     const std::type_info& type      ) ;
   /// copy constructor
-  Property           ( const Property& right ) ;
+  Property           ( const Property& ) = default;
   /// assignment operator
-  Property& operator=( const Property& right ) ;
-private:
-  // the default constructor is disabled
-  Property() ;
+  Property& operator=( const Property& ) = default;
 private:
   // property name
   std::string              m_name           ;
@@ -118,22 +117,10 @@ private:
   const std::type_info*    m_typeinfo       ;
 protected:
   // call back functor for reading
-  mutable PropertyCallbackFunctor* m_readCallBack   ;
+  mutable std::function<void(Property&)> m_readCallBack;
   // call back functor for update
-  PropertyCallbackFunctor* m_updateCallBack ;
+  std::function<void(Property&)> m_updateCallBack;
 };
-// ============================================================================
-#include "GaudiKernel/PropertyCallbackFunctor.h"
-// ============================================================================
-template< class HT >
-inline void Property::declareReadHandler
-( void ( HT::* MF ) ( Property& ) , HT* obj )
-{ declareReadHandler ( new PropertyCallbackMemberFunctor< HT >( MF , obj ) ) ; }
-// ============================================================================
-template< class HT >
-inline void Property::declareUpdateHandler
-( void ( HT::* MF ) ( Property& ) , HT* obj )
-{ declareUpdateHandler ( new PropertyCallbackMemberFunctor< HT >( MF , obj ) ) ; }
 // ============================================================================
 /** @class PropertyWithValue
  *  Helper intermediate class which
@@ -157,7 +144,7 @@ protected:
   // ==========================================================================
   /// the constructor with property name and value
   inline PropertyWithValue
-  ( const std::string& name  ,
+  ( std::string        name  ,
     PVal               value ,
     const bool         owner ) ;
   /// copy constructor (don't let the compiler generate a buggy one)
@@ -166,7 +153,7 @@ protected:
   template <class OTHER>
   inline PropertyWithValue ( const PropertyWithValue<OTHER>& right ) ;
   /// virtual destructor
-  virtual inline ~PropertyWithValue() ;
+  ~PropertyWithValue() override ;
   /// assignment operator
   PropertyWithValue& operator=( const TYPE& value ) ;
   // assignment operator (don't let the compiler generate a buggy one)
@@ -187,15 +174,15 @@ public:
   /// NB: abstract : to be implemented when verifier is available
   virtual bool setValue ( const TYPE&     value  )  = 0  ;
   /// get the value from another property
-  virtual bool assign   ( const Property& source )       ;
+  bool assign   ( const Property& source )       override;
   /// set value for another property
-  virtual bool load     (       Property& dest   ) const ;
+  bool load     (       Property& dest   ) const override;
   /// string -> value
-  virtual StatusCode fromString ( const std::string& s )  ;
+  StatusCode fromString ( const std::string& s )  override;
   /// value  -> string
-  virtual std::string  toString   () const  ;
+  std::string  toString   () const  override;
   /// value  -> stream
-  virtual void  toStream (std::ostream& out) const  ;
+  void  toStream (std::ostream& out) const  override;
   // ==========================================================================
 protected:
   // ==========================================================================
@@ -223,10 +210,10 @@ private:
 template <class TYPE>
 inline
 PropertyWithValue<TYPE>::PropertyWithValue
-( const std::string& name  ,
-  PVal               value ,
-  const bool         own   )
-  : Property ( typeid( TYPE ) , name )
+( std::string  name  ,
+  PVal         value ,
+  const bool   own   )
+  : Property ( typeid( TYPE ) , std::move(name) )
   , m_value  ( value )
   , m_own    ( own   )
 {}
@@ -262,7 +249,6 @@ template <class TYPE>
 inline PropertyWithValue<TYPE>::~PropertyWithValue()
 {
   Traits::dele ( m_value , m_own ) ;
-  m_value = 0 ;
 }
 // ============================================================================
 /// assignment operator
@@ -285,7 +271,7 @@ PropertyWithValue<TYPE>::assign ( const Property& source )
   // 1) Is the property of "the same" type?
   const PropertyWithValue<TYPE>* p =
     dynamic_cast<const PropertyWithValue<TYPE>*>       ( &source ) ;
-  if ( 0 != p ) { return setValue ( p->value() ) ; }       // RETURN
+  if ( p ) { return setValue ( p->value() ) ; }       // RETURN
   // 2) Else use the string representation
   return this->fromString( source.toString() ).isSuccess() ;
 }
@@ -400,15 +386,15 @@ protected:
   // ==========================================================================
   /// the constructor with property name and value
   PropertyWithVerifier
-  ( const std::string&                                    name     ,
+  ( std::string                                           name     ,
     typename Gaudi::Utils::PropertyTypeTraits<TYPE>::PVal value    ,
     const bool                                            owner    ,
     const VERIFIER&                                       verifier )
-    : PropertyWithValue<TYPE> ( name , value , owner )
+    : PropertyWithValue<TYPE> ( std::move(name) , value , owner )
     , m_verifier ( verifier )
   {}
   /// virtual destructor
-  virtual ~PropertyWithVerifier() {}
+  ~PropertyWithVerifier() override = default;
   // ==========================================================================
 public:
   // ==========================================================================
@@ -417,7 +403,7 @@ public:
   /// update the value of the property/check the verifier
   bool set( const TYPE& value ) ;
   /// implementation of PropertyWithValue::setValue
-  virtual bool setValue( const TYPE& value ) { return set( value ) ; }
+  bool setValue( const TYPE& value ) override { return set( value ) ; }
   /// templated assignment
   template <class OTHER,class OTHERVERIFIER>
   PropertyWithVerifier& operator=
@@ -430,9 +416,8 @@ public:
   // ==========================================================================
 private:
   // ==========================================================================
-  /// the default constructor is disabled
-  PropertyWithVerifier() ;
-  /// the copy constructor is disabled
+  /// the default & copy constructors are deleted
+  PropertyWithVerifier(); 
   PropertyWithVerifier( const  PropertyWithVerifier& right );
   // ==========================================================================
 private:
@@ -520,7 +505,7 @@ public:
     VERIFIER           verifier = VERIFIER() ) ;
   /// The constructor from the name, value and verifier
   SimpleProperty
-  ( const std::string& name                  ,
+  ( std::string        name                  ,
     const TYPE&        value                 ,
     VERIFIER           verifier = VERIFIER() ) ;
   /// constructor from other property type
@@ -529,9 +514,9 @@ public:
   /// copy constructor (must be!)
   SimpleProperty ( const SimpleProperty& right ) ;
   /// virtual Destructor
-  virtual ~SimpleProperty() ;
+  ~SimpleProperty() override = default;
   /// implementation of Property::clone
-  virtual SimpleProperty* clone() const ;
+  SimpleProperty* clone() const override;
   /// assignment form the value
   SimpleProperty& operator=( const TYPE& value ) ;
   /// assignment form the other property type
@@ -563,11 +548,11 @@ SimpleProperty<TYPE,VERIFIER>::SimpleProperty
 // ============================================================================
 template <class TYPE,class VERIFIER>
 SimpleProperty<TYPE,VERIFIER>::SimpleProperty
-( const std::string& name     ,
+( std::string        name     ,
   const TYPE&        value    ,
   VERIFIER           verifier )
   : PropertyWithVerifier<TYPE,VERIFIER>
-( name , Traits::new_(value) , true , verifier )
+( std::move(name) , Traits::new_(value) , true , verifier )
 {}
 // ============================================================================
 /// constructor from other property type
@@ -588,11 +573,6 @@ SimpleProperty<TYPE,VERIFIER>::SimpleProperty
   : PropertyWithVerifier<TYPE,VERIFIER>
 ( right.name() , Traits::new_( right.value() ) , true , right.verifier() )
 {}
-// ============================================================================
-/// virtual Destructor
-// ============================================================================
-template <class TYPE,class VERIFIER>
-SimpleProperty<TYPE,VERIFIER>::~SimpleProperty(){}
 // ============================================================================
 /// implementation of Property::clone
 // ============================================================================
@@ -644,15 +624,15 @@ class SimplePropertyRef :
 public:
   /// Constructor from the name, the value and the verifier
   SimplePropertyRef
-  ( const std::string& name                  ,
+  ( std::string        name                  ,
     TYPE&              value                 ,  ///< NB! non-const reference
     VERIFIER           verifier = VERIFIER() ) ;
   /// copy constructor (must be!)
   SimplePropertyRef ( const SimplePropertyRef& right ) ;
   /// virtual Destructor
-  virtual ~SimplePropertyRef() ;
+  ~SimplePropertyRef() override = default;
   /// implementation of Property::clone
-  virtual SimplePropertyRef* clone() const ;
+  SimplePropertyRef* clone() const override;
   /// assignment form the value
   SimplePropertyRef& operator=( const TYPE& value ) ;
   /// assignment form the other property type
@@ -667,10 +647,10 @@ private:
 // ============================================================================
 template <class TYPE,class VERIFIER>
 SimplePropertyRef<TYPE,VERIFIER>::SimplePropertyRef
-( const std::string& name     ,
+( std::string        name     ,
   TYPE&              value    ,  ///< NB! non-const reference
   VERIFIER           verifier )
-  : PropertyWithVerifier<TYPE,VERIFIER> ( name , &value , false , verifier )
+  : PropertyWithVerifier<TYPE,VERIFIER> ( std::move(name) , &value , false , verifier )
 {}
 // ============================================================================
 /// copy constructor (must be!)
@@ -681,11 +661,6 @@ SimplePropertyRef<TYPE,VERIFIER>::SimplePropertyRef
   : PropertyWithVerifier<TYPE,VERIFIER>
 ( right.name() , right.i_get() , false , right.verifier() )
 {}
-// ============================================================================
-/// virtual Destructor
-// ============================================================================
-template <class TYPE,class VERIFIER>
-SimplePropertyRef<TYPE,VERIFIER>::~SimplePropertyRef(){}
 // ============================================================================
 /// implementation of Property::clone
 // ============================================================================
@@ -807,21 +782,21 @@ class GaudiHandleBase;
 
 class GAUDI_API GaudiHandleProperty : public Property {
 public:
-   GaudiHandleProperty( const std::string& name, GaudiHandleBase& ref );
+  GaudiHandleProperty( std::string name, GaudiHandleBase& ref );
 
   GaudiHandleProperty& operator=( const GaudiHandleBase& value );
 
-  virtual GaudiHandleProperty* clone() const;
+  GaudiHandleProperty* clone() const override;
 
-  virtual bool load( Property& destination ) const;
+  bool load( Property& destination ) const override;
 
-  virtual bool assign( const Property& source );
+  bool assign( const Property& source ) override;
 
-  virtual std::string toString() const;
+  std::string toString() const override;
 
-  virtual void toStream(std::ostream& out) const;
+  void toStream(std::ostream& out) const override;
 
-  virtual StatusCode fromString(const std::string& s);
+  StatusCode fromString(const std::string& s) override;
 
   const GaudiHandleBase& value() const;
 
@@ -866,21 +841,21 @@ class GaudiHandleArrayBase;
 class GAUDI_API GaudiHandleArrayProperty : public Property {
 public:
 
-  GaudiHandleArrayProperty( const std::string& name, GaudiHandleArrayBase& ref );
+  GaudiHandleArrayProperty( std::string name, GaudiHandleArrayBase& ref );
 
   GaudiHandleArrayProperty& operator=( const GaudiHandleArrayBase& value );
 
-  virtual GaudiHandleArrayProperty* clone() const;
+  GaudiHandleArrayProperty* clone() const override;
 
-  virtual bool load( Property& destination ) const;
+  bool load( Property& destination ) const override;
 
-  virtual bool assign( const Property& source );
+  bool assign( const Property& source ) override;
 
-  virtual std::string toString() const;
+  std::string toString() const override;
 
-  virtual void toStream(std::ostream& out) const;
+  void toStream(std::ostream& out) const override;
 
-  virtual StatusCode fromString(const std::string& s);
+  StatusCode fromString(const std::string& s) override;
 
   const GaudiHandleArrayBase& value() const;
 
@@ -1172,9 +1147,9 @@ namespace Gaudi
       const char         (&value)[N] ,
       const std::string& doc   = ""  )
     {
-      if ( 0 == component                    ) { return StatusCode::FAILURE ; }
-      const std::string val = std::string ( value , value + N ) ;
-      return setProperty ( component , name , val , doc ) ;
+      return component ? setProperty ( component , name , 
+                                       std::string ( value , value + N ), doc )
+                       : StatusCode::FAILURE;
     }
     // ========================================================================
     /** simple function to set the property of the given object from the value
@@ -1214,10 +1189,10 @@ namespace Gaudi
       const TYPE&        value      ,
       const std::string& doc        )
     {
-      if ( 0 == component ) { return StatusCode::FAILURE ; }   // RETURN
-      if ( !hasProperty ( component , name ) ) { return StatusCode::FAILURE ; }
-      const std::string val = Gaudi::Utils::toString ( value ) ;
-      return Gaudi::Utils::setProperty ( component , name , val , doc ) ;
+      return component && hasProperty(component,name) ?
+                Gaudi::Utils::setProperty ( component , name , 
+                                            Gaudi::Utils::toString ( value ) , doc ) :
+                StatusCode::FAILURE;
     }
     // ========================================================================
     /** simple function to set the property of the given object from another
@@ -1303,8 +1278,7 @@ namespace Gaudi
       const SimpleProperty<TYPE>& value     ,
       const std::string&          doc = ""  )
     {
-      const Property* property = &value ;
-      return setProperty ( component , name , property , doc ) ;
+      return setProperty ( component , name , &value , doc ) ;
     }
     // ========================================================================
     /** simple function to set the property of the given object from the value
@@ -1334,10 +1308,10 @@ namespace Gaudi
       const TYPE&        value     ,
       const std::string& doc = ""  )
     {
-      if ( 0 == component ) { return StatusCode::FAILURE ; }
-      SmartIF<IProperty> property ( component ) ;
-      if ( !property      ) { return StatusCode::FAILURE ; }
-      return setProperty ( property , name , value , doc ) ;
+      if ( !component ) { return StatusCode::FAILURE ; }
+      auto property = SmartIF<IProperty>{  component } ;
+      return property ? setProperty ( property , name , value , doc ) 
+                      : StatusCode::FAILURE;
     }
     // ========================================================================
     /** the full specialization of the
@@ -1397,8 +1371,8 @@ namespace Gaudi
       const std::string& doc  = ""   )
     {
       if ( 0 == component ) { return StatusCode::FAILURE ; }
-      const std::string val = std::string ( value , value + N ) ;
-      return setProperty ( component , name , val , doc ) ;
+      return setProperty ( component , name , 
+                           std::string{ value , value + N }, doc ) ;
     }
     // ========================================================================
     /** simple function to set the property of the given object from another
@@ -1485,8 +1459,7 @@ namespace Gaudi
       const SimpleProperty<TYPE>& value     ,
       const std::string&          doc = ""  )
     {
-      const Property* property = &value ;
-      return setProperty ( component , name , property , doc ) ;
+      return setProperty ( component , name , &value , doc ) ;
     }
     // ========================================================================
   } // end of namespace Gaudi::Utils

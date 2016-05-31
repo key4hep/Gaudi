@@ -23,23 +23,22 @@ a1 = CPUCruncher("A1",
                  shortCalib=True,
                  varRuntime=.1, 
                  avgRuntime=.5 )
-a1.Outputs.output_0.Path = '/Event/a1'
+a1.outKeys = ['/Event/a1']
 
 a2 = CPUCruncher("A2", 
                  shortCalib=True)
-a2.Inputs.input_0.Path = '/Event/a1'
-a2.Outputs.output_0.Path = '/Event/a2'
+a2.inpKeys = ['/Event/a1']
+a2.outKeys = ['/Event/a2']
 
 a3 = CPUCruncher("A3", 
                  shortCalib=True)
-a3.Inputs.input_0.Path = '/Event/a1'
-a3.Outputs.output_0.Path = '/Event/a3UPS!' #<=== MISTAKE!
+a3.inpKeys = ['/Event/a1']
+a3.outKeys = ['/Event/a3UPS!'] #<=== MISTAKE!
 
 a4 = CPUCruncher("A4", 
                  shortCalib=True)
-a4.Inputs.input_0.Path = '/Event/a2'
-a4.Inputs.input_1.Path = '/Event/a3'
-a4.Outputs.output_0.Path = '/Event/a4'
+a4.inpKeys = ['/Event/a2','/Event/a3']
+a4.outKeys = ['/Event/a4']
 
 for algo in [a1,a2,a3,a4]:
   algo.Cardinality = cardinality

@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/IDataManagerSvc.h,v 1.6 2001/11/20 11:15:52 mato Exp $
 #ifndef GAUDIKERNEL_IDATAMANAGERSVC_H
 #define GAUDIKERNEL_IDATAMANAGERSVC_H
 
@@ -46,13 +45,13 @@ class IDataProviderSvc;
 class GAUDI_API IDataManagerSvc: virtual public IInterface {
 public:
   /// InterfaceID
-  DeclareInterfaceID(IDataManagerSvc,2,0);
+  DeclareInterfaceID(IDataManagerSvc,3,0);
 
   /// Get class ID of root Event
   virtual CLID rootCLID() const = 0;
 
   /// Get Name of root Event
-  virtual std::string rootName() const = 0;
+  virtual const std::string& rootName() const = 0;
 
   /** Pass a default data loader to the service. This service will be
       asked to load non existant data items.
@@ -61,7 +60,7 @@ public:
       @return                     Status code indicating success or failure
   */
   virtual StatusCode setDataLoader( IConversionSvc* svc,
-                                    IDataProviderSvc* dpsvc = 0 ) = 0;
+                                    IDataProviderSvc* dpsvc = nullptr ) = 0;
 
   /** IDataManagerSvc: Explore the object store: retrieve the object's parent.
       The object is identified by its pointer.
@@ -148,7 +147,7 @@ public:
       @param      pObject    [IN] Pointer to root node object
       @return                     Status code indicating success or failure
   */
-  virtual StatusCode setRoot( const std::string& root_name,
+  virtual StatusCode setRoot( std::string root_name,
                               DataObject* pObject ) = 0;
 
   /** Initialize data store for new event by giving new event path.
@@ -157,7 +156,7 @@ public:
       @param      pRootAddr  [IN] Pointer to opaque root node address
       @return                     Status code indicating success or failure
   */
-  virtual StatusCode setRoot( const std::string& root_path,
+  virtual StatusCode setRoot( std::string root_path,
                               IOpaqueAddress* pRootAddr) = 0;
 
   /** Register object address with the data store.

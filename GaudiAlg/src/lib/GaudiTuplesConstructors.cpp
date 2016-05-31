@@ -1,4 +1,3 @@
-// $Id: GaudiTuplesConstructors.cpp,v 1.1 2005/09/23 16:14:20 hmd Exp $
 
 // ============================================================================
 /* @file GaudiTuplesConstructors.cpp
@@ -22,9 +21,9 @@
 // should NEVER be used...
 //=============================================================================
 template <>
-GaudiTuples<GaudiHistoTool>::GaudiTuples( const std::string & /* name */,
+GaudiTuples<GaudiHistoTool>::GaudiTuples( const std::string&  /* name */,
                                           ISvcLocator * /* pSvcLocator */ )
-  : GaudiHistoTool ( "ERROR" , "ERROR" , 0 )
+  : GaudiHistoTool ( "ERROR" , "ERROR" , nullptr )
 {
   throw GaudiException( "Invalid GaudiTuples<GaudiTool> constructor",
                         "GaudiTuples", StatusCode::FAILURE );
@@ -39,7 +38,7 @@ template <>
 GaudiTuples<GaudiHistoAlg>::GaudiTuples( const std::string& /* type */  ,
                                          const std::string& /* name */  ,
                                          const IInterface*  /* parent */ )
-  : GaudiHistoAlg ( "ERROR" , 0 )
+  : GaudiHistoAlg ( "ERROR" , nullptr )
 {
   throw GaudiException( "Invalid GaudiTuples<GaudiAlgorithm> constructor",
                         "GaudiTuples", StatusCode::FAILURE );
@@ -50,7 +49,7 @@ GaudiTuples<GaudiHistoAlg>::GaudiTuples( const std::string& /* type */  ,
 // Standard algorithm constructor, initializes variables
 //=============================================================================
 template <>
-GaudiTuples<GaudiHistoAlg>::GaudiTuples( const std::string & name,
+GaudiTuples<GaudiHistoAlg>::GaudiTuples( const std::string& name,
                                          ISvcLocator * pSvcLocator )
   : GaudiHistoAlg ( name , pSvcLocator )
 {

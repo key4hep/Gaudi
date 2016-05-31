@@ -175,10 +175,8 @@ class CruncherSequence(object):
 
         #print "===============================", algo_name, "========================================"
 
-        i=0
         cache=[]
         for in_n, out_n in self.dfg.in_edges(algo_name):
-            s = "input_" + str(i)
             addr = str(self.dfg.get_edge_data(in_n, out_n)['name'])#.lstrip('/Event/')
             #print "addr: ", addr, self.dfg.get_edge_data(in_n, out_n)['name']
             if not addr:
@@ -186,29 +184,25 @@ class CruncherSequence(object):
                 continue # if Path is "/Event". how to set it?
             if addr == '/Event': continue#addr = '/Event/TEMP'
             if addr not in cache:
-                getattr(algo.Inputs, s).Path = addr
+                algo.inpKeys.append(addr)
                 if addr not in self.unique_data_objects: self.unique_data_objects.append(addr)
             else:
                 pass#print "   has such an input already, skipping..", addr
             cache.append(addr)
-            i += 1
 
-        j=0
         cache=[]
         for out_n, in_n in self.dfg.out_edges(algo_name):
-            s = "output_" + str(j)
             addr = str(self.dfg.get_edge_data(out_n, in_n)['name'])#.lstrip('/Event/')
             if not addr:
                 #print "   empty output string, skipping"
                 continue # if Path is "/Event". how to set it?
             if addr == '/Event': continue#addr = '/Event/TEMP'
             if addr not in cache:
-                getattr(algo.Outputs, s).Path = addr
+                algo.outKeys.append(addr)
                 if addr not in self.unique_data_objects: self.unique_data_objects.append(addr)
             else:
                 pass#print "   has such an output already, skipping..", addr
             cache.append(addr)
-            j += 1
 
 
     def _generate_sequence(self, name, seq=None):
@@ -222,8 +216,7 @@ class CruncherSequence(object):
                                     varRuntime = varRuntime,
                                     avgRuntime = avgRuntime,
                                     SleepFraction = self.sleepFraction if self.IOboolValue.get() else 0.)
-            framework.Outputs.output_0.Path = '/Event/DAQ/RawEvent'
-            framework.Outputs.output_2.Path = '/Event/DAQ/ODIN'
+            framework.outKeys = ['/Event/DAQ/RawEvent', '/Event/DAQ/ODIN']
             seq.Members += [framework]
 
         for n in self.cfg[name]:
@@ -265,7 +258,7 @@ class CruncherSequence(object):
                 avgRuntime, varRuntime = self.timeValue.get(algo_name)
                 algo_daughter = CPUCruncher(algo_name,
                                 OutputLevel = DEBUG if self.algoDebug else INFO,
-                                #Outputs = ['/Event/DAQ/ODIN'],
+                                #outKeys = ['/Event/DAQ/ODIN'],
                                 shortCalib = True,
                                 varRuntime = varRuntime,
                                 avgRuntime = avgRuntime,

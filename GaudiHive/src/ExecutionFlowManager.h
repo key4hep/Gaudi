@@ -6,7 +6,9 @@
 
 namespace concurrency {
 
-  class IExecutionFlowManager {};
+  struct IExecutionFlowManager {
+    virtual ~IExecutionFlowManager() {}
+  };
 
   /**@class ExecutionFlowManager ExecutionFlowManager.h GaudiHive/src/ExecutionFlowManager.h
    *
@@ -21,7 +23,7 @@ namespace concurrency {
     /// Constructor
     ExecutionFlowManager() : m_name("ExecutionFlowManager"), m_EFGraph(0) {};
     /// Destructor
-    virtual ~ExecutionFlowManager() {};
+    ~ExecutionFlowManager() override = default;
     /// Initialize the control flow manager
     /// It greps the topalg list and the index map for the algo names
     StatusCode initialize(ExecutionFlowGraph* CFGraph,
@@ -62,9 +64,9 @@ namespace concurrency {
     /// Promote all algorithms, ready to be executed, to DataReady state
     void touchReadyAlgorithms(IGraphVisitor& visitor) const;
     /// Retrieve name of the service
-    const std::string& name() const {return m_name;}
+    const std::string& name() const override {return m_name;}
     /// Retrieve pointer to service locator
-    SmartIF<ISvcLocator>& serviceLocator() const {return m_EFGraph->serviceLocator();}
+    SmartIF<ISvcLocator>& serviceLocator() const override {return m_EFGraph->serviceLocator();}
   private:
     std::string m_name;
     /// the control flow graph

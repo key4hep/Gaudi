@@ -12,14 +12,9 @@ DECLARE_COMPONENT(AppMgrRunable)
 
 // Standard Constructor
 AppMgrRunable::AppMgrRunable(const std::string& nam, ISvcLocator* svcLoc)
-: base_class(nam, svcLoc), m_appMgrUI(0)
+: base_class(nam, svcLoc)
 {
   declareProperty("EvtMax", m_evtMax=0xFEEDBABE);
-}
-
-// Standard Destructor
-AppMgrRunable::~AppMgrRunable()
-{
 }
 
 // IService implementation: initialize the service
@@ -29,7 +24,7 @@ StatusCode AppMgrRunable::initialize()   {
     sc = serviceLocator()->queryInterface(IAppMgrUI::interfaceID(), pp_cast<void>(&m_appMgrUI));
     // get property from application manager
     if ( m_evtMax == (int)0xFEEDBABE )   {
-      SmartIF<IProperty> props(serviceLocator());
+      auto props = serviceLocator()->as<IProperty>();
       setProperty(props->getProperty("EvtMax")).ignore();
     }
   }
@@ -51,14 +46,14 @@ StatusCode AppMgrRunable::stop()   {
 // IService implementation: finalize the service
 StatusCode AppMgrRunable::finalize()     {
   StatusCode sc = Service::finalize();
-  if ( 0 != m_appMgrUI ) m_appMgrUI->release();
-  m_appMgrUI = 0;
+  if ( m_appMgrUI ) m_appMgrUI->release();
+  m_appMgrUI = nullptr;
   return sc;
 }
 
 // IRunable implementation : Run the class implementation
 StatusCode AppMgrRunable::run()   {
-  if ( 0 != m_appMgrUI )    {
+  if ( m_appMgrUI )    {
     // loop over the events
     return m_appMgrUI->nextEvent(m_evtMax);
   }

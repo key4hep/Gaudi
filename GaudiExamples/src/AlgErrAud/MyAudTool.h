@@ -1,4 +1,3 @@
-// $Id: MyAudTool.h,v 1.1 2007/01/22 16:06:14 hmd Exp $
 #ifndef GAUDIEXANMPLES_MYAUDTOOL_H
 #define GAUDIEXANMPLES_MYAUDTOOL_H 1
 
@@ -12,7 +11,8 @@
  *  @author Pere Mato
  *  @date   14/10/2001
  */
-class MyAudTool : public extends1<AlgTool, IMyAudTool> {
+class MyAudTool : public extends<AlgTool,
+                                 IMyAudTool> {
 public:
 
   /// Standard Constructor

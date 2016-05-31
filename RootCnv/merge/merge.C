@@ -1,10 +1,11 @@
 #ifndef GAUDIROOTCNV_ROOTDATABASEMERGER_H
 #define GAUDIROOTCNV_ROOTDATABASEMERGER_H
 
-// C++ includes 
+// C++ includes
 #include <string>
 #include <vector>
 #include <map>
+#include <memory>
 
 // Forward declarations
 class TTree;
@@ -17,9 +18,9 @@ class TBranch;
 namespace Gaudi {
 
   typedef int MergeStatus;
-  enum MergeStatusEnum { 
-    MERGE_ERROR=0, 
-    MERGE_SUCCESS=1 
+  enum MergeStatusEnum {
+    MERGE_ERROR=0,
+    MERGE_SUCCESS=1
   };
 
   struct ContainerSection {
@@ -38,8 +39,8 @@ namespace Gaudi {
     typedef std::map<std::string,ContainerSections> DatabaseSections;
 
     DatabaseSections   m_sections;
-    TFile*             m_output;
-    bool               m_treeSections;
+    std::unique_ptr<TFile> m_output;
+    bool               m_treeSections = false;
 
     union uuid_data {
       unsigned char  buf[16];
@@ -111,8 +112,7 @@ namespace {
 }
 
 /// Standard constructor
-RootDatabaseMerger::RootDatabaseMerger() : m_output(0), m_treeSections(false) {
-}
+RootDatabaseMerger::RootDatabaseMerger() = default;
 
 /// Default destructor
 RootDatabaseMerger::~RootDatabaseMerger() {
@@ -137,7 +137,7 @@ MergeStatus RootDatabaseMerger::attach(const string& file_id) {
     ::printf("+++ Cannot attach output file %s --- file does not exist.\n",fid);
     return MERGE_ERROR;
   }
-  m_output = TFile::Open(fid,"UPDATE");
+  m_output.reset( TFile::Open(fid,"UPDATE") );
   if ( m_output && !m_output->IsZombie() ) {
     //if ( s_dbg ) ::printf("+++ Update output file %s.\n",fid);
     //if ( s_dbg ) ::printf("+++ Update output file.\n");
@@ -157,7 +157,7 @@ MergeStatus RootDatabaseMerger::create(const string& fid) {
     ::printf("+++ Cannot create output file %s --- file already exists.\n",fid.c_str());
     return MERGE_ERROR;
   }
-  m_output = TFile::Open(fid.c_str(),"RECREATE");
+  m_output.reset( TFile::Open(fid.c_str(),"RECREATE") );
   if ( m_output && !m_output->IsZombie() )     {
     TTree* t1 = new TTree("Sections","Root Section data");
     TTree* t2 = new TTree("Refs","Root Section data");
@@ -210,8 +210,7 @@ MergeStatus RootDatabaseMerger::close() {
     m_output->Purge();
     if ( s_dbg ) m_output->ls();
     m_output->Close();
-    delete m_output;
-    m_output = 0;
+    m_output.reset();
   }
   return MERGE_SUCCESS;
 }
@@ -226,13 +225,11 @@ MergeStatus RootDatabaseMerger::saveSections()     {
       TBranch* b = t->GetBranch("Sections");
       if ( b ) {
 	b->SetAddress(text);
-	for(DatabaseSections::const_iterator i=m_sections.begin(); i!= m_sections.end();++i) {
-	  int cnt = 0;
-	  string cont = (*i).first;
-	  const ContainerSections& cntSects = (*i).second;
-	  for(ContainerSections::const_iterator j=cntSects.begin(); j != cntSects.end();++j, ++cnt) {
+	for(const auto&  i : m_sections) {
+	  string cont = i.first;
+	  for(const auto& j : i.second ) {
 	    ::sprintf(text,"[CNT=%s][START=%d][LEN=%d]",
-		      cont.c_str(),(*j).start,(*j).length); 
+		      cont.c_str(),j.start,j.length);
 	    nb = t->Fill();
 	    ++total;
 	    if ( nb > 0 )
@@ -264,16 +261,15 @@ MergeStatus RootDatabaseMerger::saveSections()     {
 
 /// Dump collected database sections
 void RootDatabaseMerger::dumpSections() {
-  for(DatabaseSections::const_iterator i=m_sections.begin(); i!= m_sections.end();++i) {
+  for(const auto& i : m_sections) {
     int cnt = 0;
-    string prefix = (*i).first;
-    const ContainerSections& cntSects = (*i).second;
-    for(ContainerSections::const_iterator j=cntSects.begin(); j != cntSects.end();++j, ++cnt) {
+    string prefix = i.first;
+    for(const auto&  j : i.second ) {
       char text[1024];
-      ::sprintf(text,"['%s'][%d]",prefix.c_str(),cnt); 
+      ::sprintf(text,"['%s'][%d]",prefix.c_str(),cnt++);
       if ( s_dbg ) {
-	::printf("+++ section %-55s Start:%8d ... %8d [%d entries]\n",
-		 text,(*j).start,(*j).start+(*j).length,(*j).length);
+	  ::printf("+++ section %-55s Start:%8d ... %8d [%d entries]\n",
+		 text,j.start,j.start+j.length,j.length);
       }
     }
   }
@@ -282,15 +278,14 @@ void RootDatabaseMerger::dumpSections() {
 /// Merge new input to existing output
 MergeStatus RootDatabaseMerger::merge(const string& fid) {
   if ( m_output )    {
-    TFile* source = TFile::Open(fid.c_str());
+    std::unique_ptr<TFile> source{  TFile::Open(fid.c_str()) };
     if ( source && !source->IsZombie() )  {
       size_t idx = fid.rfind('/');
       ::printf("+++ Start merging input file:%s\n",
 	       idx != string::npos ? fid.substr(idx+1).c_str() : fid.c_str());
-      if ( copyAllTrees(source) == MERGE_SUCCESS )  {
-	if ( copyRefs(source,"Refs") == MERGE_SUCCESS )  {
+      if ( copyAllTrees(source.get()) == MERGE_SUCCESS )  {
+	if ( copyRefs(source.get(),"Refs") == MERGE_SUCCESS )  {
 	  source->Close();
-	  delete source;
 	  return MERGE_SUCCESS;
 	}
       }
@@ -381,7 +376,7 @@ MergeStatus RootDatabaseMerger::copyTree(TFile* source, const string& name) {
       src_tree->SetEntries(1);
     }
     addSections(src_tree,out_tree);
-    if ( out_tree == 0 ) {
+    if ( !out_tree ) {
       out_tree = src_tree->CloneTree(-1,"fast");
       if ( s_dbg ) ::printf("+++ Created new Tree %s.\n",out_tree->GetName());
       out_tree->Write();
@@ -421,7 +416,7 @@ MergeStatus RootDatabaseMerger::copyTree(TFile* source, const string& name) {
 MergeStatus RootDatabaseMerger::copyRefs(TFile* source, const string& name) {
   TTree* src_tree = (TTree*)source->Get(name.c_str());
   if ( src_tree ) {
-    TTree *out_tree = (TTree*)m_output->Get(name.c_str());    
+    TTree *out_tree = (TTree*)m_output->Get(name.c_str());
     if ( out_tree ) {
       addSections(src_tree,out_tree);
       copyBranch(src_tree,out_tree,"Links");

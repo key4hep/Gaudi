@@ -1,4 +1,3 @@
-// $Id: AIDATupleAlgorithmWrite.h,v 1.2 2005/12/13 13:29:24 hmd Exp $
 #ifndef AIDATUPLES_AIDATupleAlgorithmWrite_H
 #define AIDATUPLES_AIDATupleAlgorithmWrite_H 1
 

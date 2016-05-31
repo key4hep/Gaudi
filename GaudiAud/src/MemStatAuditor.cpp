@@ -16,11 +16,9 @@
 DECLARE_COMPONENT(MemStatAuditor)
 
 MemStatAuditor::MemStatAuditor(const std::string& name, ISvcLocator* pSvcLocator) :
-  MemoryAuditor(name, pSvcLocator), m_vSize(-1.)
+  MemoryAuditor(name, pSvcLocator)
 {
 }
-
-MemStatAuditor::~MemStatAuditor() {}
 
 StatusCode MemStatAuditor::initialize() {
   StatusCode sc = CommonAuditor::initialize();
@@ -28,8 +26,7 @@ StatusCode MemStatAuditor::initialize() {
 
   m_stat = serviceLocator()->service("ChronoStatSvc");
   if (UNLIKELY(!m_stat.get())) {
-    MsgStream log(msgSvc(), name());
-    log << MSG::ERROR << "Cannot get ChronoStatSvc" << endmsg;
+    error() << "Cannot get ChronoStatSvc" << endmsg;
     return StatusCode::FAILURE;
   }
   return StatusCode::SUCCESS;
@@ -43,26 +40,25 @@ void MemStatAuditor::i_printinfo(const std::string& msg, CustomEventTypeRef evt,
   // cannot be exactly 0
   double deltaVSize = 0.00001;
 
-  procInfo info;
-  if (getProcInfo(info)) {
-    MsgStream log(msgSvc(), name());
+  procInfo pInfo;
+  if (getProcInfo(pInfo)) {
 
-    if (info.vsize > 0) {
+    if (pInfo.vsize > 0) {
       if (m_vSize > 0){
-        deltaVSize = info.vsize - m_vSize;
+        deltaVSize = pInfo.vsize - m_vSize;
       }
       // store the current VSize to be able to monitor the increment
-      m_vSize = info.vsize;
+      m_vSize = pInfo.vsize;
     }
 
-    log << MSG::INFO << msg << " " << caller << " " << evt <<
-        " \tvirtual size = " << info.vsize << " MB"  <<
-        " \tresident set size = " << info.rss << " MB" <<
+    info() << msg << " " << caller << " " << evt <<
+        " \tvirtual size = " << pInfo.vsize << " MB"  <<
+        " \tresident set size = " << pInfo.rss << " MB" <<
         " deltaVsize = " << deltaVSize << "  MB" << endmsg;
   }
   // fill the stat for every call, not just when there is a change
   // only monitor the increment in VSize
-  // Stat stv(statSvc(), caller + ":VMemUsage", info.vsize);
-  // Stat str(statSvc(), caller + ":RMemUsage", info.rss);
+  // Stat stv(statSvc(), caller + ":VMemUsage", pInfo.vsize);
+  // Stat str(statSvc(), caller + ":RMemUsage", pInfo.rss);
   Stat sts(statSvc(), caller + ":VMem", deltaVSize);
 }

@@ -1,4 +1,3 @@
-// $Id: EvtCollectionWrite.cpp,v 1.7 2008/11/04 22:49:24 marcocle Exp $
 //      ====================================================================
 //  EvtCollection.Write.cpp
 //      --------------------------------------------------------------------
@@ -74,10 +73,10 @@ StatusCode EvtCollectionWrite::initialize()   {
 
 // Event callback
 StatusCode EvtCollectionWrite::execute() {
-  MsgStream log(msgSvc(), name());
+  auto& log = msgStream();
   SmartDataPtr<DataObject> evtRoot(eventSvc(),"/Event");
   SmartDataPtr<Event> evt(eventSvc(),"/Event/Header");
-  if ( evt != 0 )    {
+  if ( evt )    {
     int evt_num = evt->event();
     SmartDataPtr<MyTrackVector> trkCont(eventSvc(), "/Event/MyTracks");
     if ( trkCont != 0 )    {
@@ -87,18 +86,17 @@ StatusCode EvtCollectionWrite::execute() {
       m_evtAddrColl = evtRoot->registry()->address();
       m_ntrkColl    = trkCont->size();
       m_eneColl     = 0.f;
+      log <<MSG::DEBUG<< " ->Track:";
+      for(size_t j=0; j<100; ++j)  { m_trkMomFixed[j] = 0; }
       int cnt = 0;
-      log << " ->Track:";
-      for(size_t j=0; j<100; ++j)  {
-        m_trkMomFixed[j] = 0.f;
-            }
-      for ( MyTrackVector::iterator i = trkCont->begin(); i != trkCont->end(); i++, cnt++ )   {
-        float p = float(sqrt( (*i)->px() * (*i)->px() +
-                              (*i)->py() * (*i)->py() +
-                              (*i)->pz() * (*i)->pz() ));
+      for ( const auto& i : *trkCont ) {
+        float p = sqrt( i->px() * i->px() +
+                        i->py() * i->py() +
+                        i->pz() * i->pz() );
         if ( cnt < 5000 ) m_trkMom[cnt] = p;
         if ( cnt <    5 ) m_trkMomFixed[cnt] = p;
         m_eneColl += p;
+        ++cnt;
       }
       m_trackItem = (0==m_ntrkColl) ? 0 : (*trkCont->begin());
       if ( evt_num < 10 || evt_num%500==0 )  {
@@ -118,6 +116,6 @@ StatusCode EvtCollectionWrite::execute() {
       return StatusCode::SUCCESS;
     }
   }
-  log << MSG::ERROR << "Unable to retrieve Event Header object" << endmsg;
+  error() << "Unable to retrieve Event Header object" << endmsg;
   return StatusCode::FAILURE;
 }

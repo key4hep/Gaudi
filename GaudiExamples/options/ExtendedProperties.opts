@@ -1,5 +1,4 @@
 #pragma print ON
-// $Id: ExtendedProperties.opts,v 1.6 2008/01/14 19:45:34 marcocle Exp $
 // ============================================================================
 // Include files
 // ============================================================================
@@ -112,6 +111,11 @@ xProps.MapUIntString = // std::map<unsigned int,std::string>
 
 xProps.EmptyMap = {};
 xProps.EmptyVector = [];
+
+xProps.TupleStringIntDouble = ("hello", 10, 0.001);
+xProps.StdArrayDouble3 = (3.3, 2.2, 1.1);
+
+xProps.GaudiMapSS = {"a": "1", "b": "2"};
 
 // ============================================================================
 

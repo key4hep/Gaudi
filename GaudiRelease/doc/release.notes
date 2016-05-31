@@ -2,11 +2,61 @@ Package: GaudiRelease
 Maintainer: Marco Clemencic
 Commit Id: $Format:%H$
 
-! 2014-05-08 - Charles Leggett
- - include GaudiHive in cmt/requirements
+============================= GaudiRelease v27r1 =============================
 
-#	modified:   GaudiRelease/cmt/requirements
+! 2016-03-10 - commit 2de9290
 
+ - added metadata service
+
+   The metadata service adds information about n-tuple production into the
+   resulting n-tuple.
+    Update and overrides !128
+    See merge request !136
+
+! 2016-03-09 - commit 8685ac9
+
+ - various fixes and (minor) improvements to documentation
+
+   See merge request !127
+============================= GaudiRelease v27r0 =============================
+
+! 2016-01-22 - commit 46a89dd
+
+ - fix relative path handling of prepare_gaudi_release
+
+! 2016-01-05 - commit 2d10efc
+
+ - Fixed GAUDI-1153: fixes to prepare_gaudi_release.py
+
+   * fixed she-bang line
+   * fixed implementation of versionKey function
+   * added check on the version of Git (require >= 1.7.9.1)
+    See merge request !83
+
+! 2015-11-11 - commit 73b596c
+
+ - moved GaudiHive global release notes
+
+
+
+! 2015-11-02 - commit 57f356c
+
+ - Merge branch 'hive' into 'master'
+
+   Fixes GAUDI-978.
+
+   See merge request !65
+
+============================= GaudiRelease v26r4 =============================
+
+! 2015-10-08 - commit c50c176
+
+ - improvements to documentation and release tools
+
+   See merge request !43
+
+============================= GaudiRelease v26r3 =============================
+============================= GaudiRelease v26r2 =============================
 ============================= GaudiRelease v26r1 =============================
 ! 2015-02-12 - Marco Clemencic
  - GAUDI-979: modified GaudiRelease scripts to use CMake configuration

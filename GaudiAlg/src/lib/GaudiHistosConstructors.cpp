@@ -1,5 +1,3 @@
-// $Id: GaudiHistosConstructors.cpp,v 1.1 2005/09/23 16:14:20 hmd Exp $
-
 // ============================================================================
 /* @file GaudiHistosConstructors.cpp
  *
@@ -24,7 +22,7 @@
 template <>
 GaudiHistos<GaudiTool>::GaudiHistos( const std::string & /* name */,
                                      ISvcLocator * /* pSvcLocator */ )
-  : GaudiTool ( "ERROR", "ERROR", 0 )
+  : GaudiTool ( "ERROR", "ERROR", nullptr )
 {
   throw GaudiException( "Invalid GaudiHistos<GaudiTool> constructor",
                         "GaudiHistos", StatusCode::FAILURE );
@@ -39,7 +37,7 @@ template <>
 GaudiHistos<GaudiAlgorithm>::GaudiHistos( const std::string& /* type */  ,
                                           const std::string& /* name */  ,
                                           const IInterface*  /* parent */ )
-  : GaudiAlgorithm ( "ERROR", 0 )
+  : GaudiAlgorithm ( "ERROR", nullptr )
 {
   throw GaudiException( "Invalid GaudiHistos<GaudiAlgorithm> constructor",
                         "GaudiHistos", StatusCode::FAILURE );

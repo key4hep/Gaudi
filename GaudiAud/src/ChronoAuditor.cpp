@@ -15,16 +15,13 @@ ChronoAuditor::ChronoAuditor(const std::string& name, ISvcLocator* pSvcLocator)
 : CommonAuditor(name, pSvcLocator) {
 }
 
-ChronoAuditor::~ChronoAuditor() {}
-
 StatusCode ChronoAuditor::initialize() {
   StatusCode sc = CommonAuditor::initialize();
   if (UNLIKELY(sc.isFailure())) return sc;
 
   m_chronoSvc = serviceLocator()->service("ChronoStatSvc");
   if (UNLIKELY(!m_chronoSvc.get())) {
-    MsgStream log(msgSvc(), name());
-    log << MSG::ERROR << "Cannot get ChronoStatSvc" << endmsg;
+    error() << "Cannot get ChronoStatSvc" << endmsg;
     return StatusCode::FAILURE;
   }
   return StatusCode::SUCCESS;

@@ -24,8 +24,8 @@
 #include "GaudiKernel/IMessageSvc.h"
 
 #include <iostream>
-#include <stdarg.h>
-#include <stdio.h>
+#include <cstdarg>
+#include <cstdio>
 
 bool MsgStream::m_countInactive = false;
 
@@ -41,32 +41,24 @@ bool MsgStream::countInactive() {
 
 
 MsgStream::MsgStream(IMessageSvc* svc, int)
-: m_service(svc),
-  m_source(""),
-  m_active(false),
-  m_inactCounter(0)
+: m_service(svc)
 {
-  setLevel((0==svc) ? MSG::INFO : svc->outputLevel());
-  m_useColors = (0==svc) ? false : svc->useColor();
+  setLevel( svc ?  svc->outputLevel() : MSG::INFO );
+  m_useColors = ( svc ? svc->useColor() : false );
 #ifndef NDEBUG
   m_inactCounter = svc ? Gaudi::Cast<IInactiveMessageCounter>(svc) : 0;
 #endif
 }
 
-MsgStream::MsgStream(IMessageSvc* svc, const std::string& source, int)
+MsgStream::MsgStream(IMessageSvc* svc, std::string source, int)
 : m_service(svc),
-  m_source(source),
-  m_active(false),
-  m_inactCounter(0)
+  m_source(std::move(source))
 {
-  setLevel((0==svc) ? MSG::INFO : svc->outputLevel(source));
-  m_useColors = (0==svc) ? false : svc->useColor();
+  setLevel( svc ? svc->outputLevel(m_source) : MSG::INFO );
+  m_useColors = ( svc &&  svc->useColor() );
 #ifndef NDEBUG
   m_inactCounter = svc ? Gaudi::Cast<IInactiveMessageCounter>(svc) : 0;
 #endif
-}
-
-MsgStream::~MsgStream()    {
 }
 
 MsgStream& MsgStream::doOutput()       {
@@ -74,11 +66,10 @@ MsgStream& MsgStream::doOutput()       {
     // This piece of code may throw and we cannot afford it when we print a message
     // in the middle of a catch block.
     if ( isActive() )   {
-      const Message msg(m_source,m_currLevel,m_stream.str());
-      if ( m_service != 0 )   {
+      const Message msg(m_source, m_currLevel,m_stream.str());
+      if ( m_service )   {
         m_service->reportMessage (msg, m_currLevel);
-      }
-      else     {
+      } else {
         std::cout << msg << std::endl;
       }
     }
@@ -125,19 +116,15 @@ void MsgStream::resetColor() {
 #endif
 }
 
-#ifdef WIN32
-// Disable warning
-//   C4996: 'vsprintf': This function or variable may be unsafe.
-#pragma warning(disable:4996)
-#endif
 std::string format( const char* fmt, ... )
 {
   const int buffsize = 2048;
   static char buffer[buffsize];
   va_list arguments;
   va_start( arguments, fmt );
-  if( vsprintf(buffer, fmt, arguments) >= buffsize )
-    throw GaudiException("Insufficient buffer size (2048) when formatting message",
+  if( vsnprintf(buffer, buffsize, fmt, arguments) >= buffsize )
+    throw GaudiException("Insufficient buffer size (" + std::to_string(buffsize) + ") when formatting message",
                          "MsgStream", 0);
+  va_end( arguments );
   return std::string(buffer);
 }

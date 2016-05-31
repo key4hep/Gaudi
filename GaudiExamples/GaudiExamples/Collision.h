@@ -1,12 +1,9 @@
-// $Header: /local/reps/Gaudi/GaudiExamples/src/Lib/Collision.h,v 1.2
-// 2006/11/27 09:53:06 hmd Exp $
 #ifndef GAUDIEXAMPLES_COLLISION_H
 #define GAUDIEXAMPLES_COLLISION_H 1
 
 // Include files
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/DataObject.h"
-#include "CLHEP/Matrix/Matrix.h"
 
 
 namespace Gaudi {

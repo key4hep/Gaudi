@@ -1,14 +1,22 @@
-gaudi_subdir(GaudiExamples v26r1)
+gaudi_subdir(GaudiExamples v27r1)
 
 gaudi_depends_on_subdirs(GaudiKernel GaudiUtils GaudiGSL GaudiAlg RootCnv)
 
-find_package(HepPDT)
-find_package(ROOT COMPONENTS Tree RIO Hist Net)
-find_package(Boost COMPONENTS python)
-find_package(CLHEP)
-find_package(GSL)
+find_package(HepPDT REQUIRED)
+find_package(ROOT COMPONENTS Tree RIO Hist Net REQUIRED)
+find_package(Boost COMPONENTS python REQUIRED)
+find_package(CLHEP REQUIRED)
+find_package(GSL REQUIRED)
 find_package(PythonLibs)
 find_package(RELAX)
+
+if(NOT CMAKE_VERSION VERSION_LESS 3.1)
+  # FindOpenCL.cmake has been introduced in CMake 3.1.0
+  find_package(OpenCL)
+  if(NOT OpenCL_FOUND)
+    message(WARNING "OpenCL not found, not building OpenCLAlg example.")
+  endif()
+endif()
 
 #---Libraries---------------------------------------------------------------
 set(GaudiExamples_srcs
@@ -17,6 +25,7 @@ set(GaudiExamples_srcs
     src/AlgTools/*.cpp
     src/DataOnDemand/*.cpp
     src/AlgErrAud/*.cpp
+    src/GSLTools/*.cpp
     src/RandomNumber/*.cpp
     src/Histograms/*.cpp
     src/NTuples/*.cpp
@@ -42,46 +51,59 @@ set(GaudiExamples_srcs
     src/SvcInitLoop/*.cpp
     src/StringKeys/*.cpp
     src/StatusCodeSvc/SCSAlg.cpp
-    src/StatusCodeSvc/special/SCSAlg_no_inline.cpp
     src/FileMgr/*.cpp
     src/testing/*.cpp
     src/IntelProfiler/*.cpp
-    src/PluginService/*.cpp
-    src/MultiInput/*.cpp)
+    src/PluginService/*.cpp)
+
+if (NOT LCG_COMP STREQUAL "clang")
+    list(APPEND GaudiExamples_srcs  src/StatusCodeSvc/special/SCSAlg_no_inline.cpp)
+endif()
+
+if(TARGET RootCnvLib)
+  list(APPEND GaudiExamples_srcs src/MultiInput/*.cpp)
+endif()
+
+if(OpenCL_FOUND)
+  list(APPEND GaudiExamples_srcs src/OpenCL/*.cpp)
+  set(extra_includes INCLUDE_DIRS ${OpenCL_INCLUDE_DIRS})
+  set(extra_libs ${OpenCL_LIBRARIES})
+endif()
 
 gaudi_add_library(GaudiExamplesLib src/Lib/*.cpp
                   LINK_LIBRARIES GaudiGSLLib GaudiUtilsLib HepPDT ROOT
                   INCLUDE_DIRS HepPDT ROOT
                   PUBLIC_HEADERS GaudiExamples)
 
-gaudi_add_module(GaudiExamples ${GaudiExamples_srcs} LINK_LIBRARIES GaudiExamplesLib)
 
-if(BOOST_python_FOUND)
+gaudi_add_module(GaudiExamples ${GaudiExamples_srcs}
+                 ${extra_includes}
+                 LINK_LIBRARIES GaudiExamplesLib ${extra_libs})
+
+if (NOT LCG_COMP STREQUAL "clang")
+  # we compile SCSAlg.cpp in a special way
+  # FIXME: this is to be compatible with CMT
+  set_property(SOURCE src/StatusCodeSvc/SCSAlg.cpp
+               PROPERTY COMPILE_DEFINITIONS special_fncUnchecked2)
+
+  find_file(StatusCodeHeader NAMES GaudiKernel/StatusCode.h
+            PATHS ${CMAKE_SOURCE_DIR}/GaudiKernel
+            HINTS ${Gaudi_DIR}/include)
+  if(NOT StatusCodeHeader)
+    message(FATAL_ERROR "Cannot file StatusCode.h for the StatusCodeSvc test")
+  endif()
+
+  message(STATUS "creating hacked version of ${StatusCodeHeader}")
+  file(READ ${StatusCodeHeader} StatusCodeHeaderData)
+  string(REPLACE "~StatusCode" "~StatusCode(); void _dummy" StatusCodeHeaderData "${StatusCodeHeaderData}")
+  file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/HackedStatusCode.h" "${StatusCodeHeaderData}")
+endif()
+
+if(Boost_PYTHON_FOUND)
   gaudi_add_python_module(PyExample src/PythonModule/*.cpp
                           LINK_LIBRARIES ${Boost_PYTHON_LIBRARY}
                           INCLUDE_DIRS Boost PythonLibs)
 endif()
-
-# we compile SCSAlg.cpp in a special way
-# FIXME: this is to be compatible with CMT
-set_property(SOURCE src/StatusCodeSvc/SCSAlg.cpp
-             PROPERTY COMPILE_DEFINITIONS special_fncUnchecked2)
-
-find_file(StatusCodeHeader NAMES GaudiKernel/StatusCode.h
-          PATHS ${CMAKE_SOURCE_DIR}/GaudiKernel)
-if(NOT StatusCodeHeader)
-  message(FATAL_ERROR "Cannot file StatusCode.h for the StatusCodeSvc test")
-endif()
-
-message(STATUS "creating hacked version of ${StatusCodeHeader}")
-file(READ ${StatusCodeHeader} StatusCodeHeaderData)
-string(REPLACE "~StatusCode" "~StatusCode(); void _dummy" StatusCodeHeaderData "${StatusCodeHeaderData}")
-file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/HackedStatusCode.h" "${StatusCodeHeaderData}")
-
-
-gaudi_add_python_module(PyExample src/PythonModule/*.cpp
-                        LINK_LIBRARIES ${Boost_PYTHON_LIBRARY}
-                        INCLUDE_DIRS Boost PythonLibs)
 
 gaudi_install_python_modules()
 
@@ -123,6 +145,3 @@ gaudi_add_test(WriteAndReadHandleError
 
 gaudi_add_test(WriteAndReadHandleWhiteBoard
                FRAMEWORK options/ROOT_IO/WriteAndReadHandleWhiteBoard.py)
-
-gaudi_add_test(CloneWithPrivateTools
-               FRAMEWORK options/AlgToolsClone.py TIMEOUT 120)

@@ -37,9 +37,9 @@ class StoreExplorerAlg : public Algorithm {
   /// Flag to indicate if missing entities should be printed
   long              m_printMissing;
   /// Internal counter to trigger printouts
-  long              m_total;
+  long              m_total = 0;
   /// Internal counter to adjust printout frequency
-  long              m_frqPrint;
+  long              m_frqPrint = 0;
   /// Flag to load non existing items
   bool              m_load;
   /// Flag to test access to objects (DataObject and ContainedObject)
@@ -47,7 +47,7 @@ class StoreExplorerAlg : public Algorithm {
   /// Flag to indicate if foreign files should be opened
   bool              m_accessForeign;
   /// Reference to data provider service
-  IDataProviderSvc* m_dataSvc;
+  SmartIF<IDataProviderSvc> m_dataSvc;
   /// Name of the data provider service
   std::string       m_dataSvcName;
   /// Name of the root leaf (obtained at initialize)
@@ -56,9 +56,8 @@ public:
 
   /// Standard algorithm constructor
   StoreExplorerAlg(const std::string& name, ISvcLocator* pSvcLocator)
-  :	Algorithm(name, pSvcLocator), m_dataSvc(0)
+  :	Algorithm(name, pSvcLocator)
   {
-    m_total = m_frqPrint = 0;
     declareProperty("Load",             m_load = false);
     declareProperty("PrintEvt",         m_print = 1);
     declareProperty("PrintMissing",     m_printMissing = 0);
@@ -69,28 +68,22 @@ public:
     declareProperty("AccessForeign",    m_accessForeign = false);
   }
   /// Standard Destructor
-  virtual ~StoreExplorerAlg()     {
-  }
+  ~StoreExplorerAlg() override  = default;
 
   template <class T>
   std::string access(T* p)  {
-    if ( p )  {
-      std::stringstream s;
-      for (typename T::const_iterator i = p->begin(); i != p->end(); ++i )  {
-        int idx = p->index(*i);
-        s << idx << ":" << (*i)->clID() << ",";
-      }
-      std::string result = s.str();
-      return result.substr(0, result.length()-2);
-    }
-    return "Access FAILED.";
+    if ( !p )  return "Access FAILED.";
+    std::string result = std::accumulate(std::begin(*p),std::end(*p),std::string{},
+                                         [&](std::string s,typename T::const_reference i) {
+        return s+std::to_string(p->index(i)) + ":" + std::to_string(i->clID()) + ",";
+    });
+    return result.substr(0, result.length()-2);
   }
 
 
   /// Print datastore leaf
   void printObj(IRegistry* pReg, std::vector<bool>& flg)    {
-    MsgStream log(msgSvc(), name());
-    log << MSG::INFO;
+    auto& log = info();
     for (size_t j = 1; j < flg.size(); j++ )     {
       if ( !flg[j-1] && flg[j] ) log << "| ";
       else if ( flg[j] ) log << "  ";
@@ -99,8 +92,8 @@ public:
     log << "+--> " << pReg->name();
     if ( pReg->address() )  {
       log << " [Address: CLID="
-	  << std::showbase << std::hex << pReg->address()->clID();
-      log << " Type=" << (void*)pReg->address()->svcType() << "]";
+	      << std::showbase << std::hex << pReg->address()->clID()
+          << " Type=" << (void*)pReg->address()->svcType() << "]";
     }
     else  {
       log << " [No Address]";
@@ -109,9 +102,7 @@ public:
     if ( p )   {
       try  {
         std::string typ = System::typeinfoName(typeid(*p));
-        if ( m_testAccess )  {
-          p->clID();
-        }
+        if ( m_testAccess )  p->clID();
         log << "  " << typ.substr(0,32);
       }
       catch (...)  {
@@ -157,34 +148,26 @@ public:
 
   void explore(IRegistry* pObj, std::vector<bool>& flg)    {
     printObj(pObj, flg);
-    if ( 0 != pObj )    {
-      SmartIF<IDataManagerSvc> mgr(eventSvc());
+    if ( pObj )    {
+      auto mgr = eventSvc().as<IDataManagerSvc>();
       if ( mgr )    {
-        typedef std::vector<IRegistry*> Leaves;
-        Leaves leaves;
+        std::vector<IRegistry*> leaves;
         StatusCode sc = mgr->objectLeaves(pObj, leaves);
-        const std::string* par0 = 0;
-        if ( pObj->address() )  {
-          par0 = pObj->address()->par();
-        }
+        const std::string* par0 = nullptr;
+        if ( pObj->address() )  par0 = pObj->address()->par();
         if ( sc.isSuccess() )  {
-          for ( Leaves::const_iterator i=leaves.begin(); i != leaves.end(); i++ )   {
+          for ( auto i=leaves.begin(); i != leaves.end(); i++ )   {
             const std::string& id = (*i)->identifier();
-            DataObject* p = 0;
+            DataObject* p = nullptr;
             if ( !m_accessForeign && (*i)->address() )  {
               if ( par0 )  {
                 const std::string* par1 = (*i)->address()->par();
-                if ( par1 )  {
-                  if ( par0[0] != par1[0] )  {
-                    continue;
-                  }
-                }
+                if ( par1 &&  par0[0] != par1[0] )  continue;
               }
             }
             if ( m_load )  {
               sc = eventSvc()->retrieveObject(id, p);
-            }
-            else {
+            } else {
               sc = eventSvc()->findObject(id, p);
             }
             if ( sc.isSuccess() )  {
@@ -193,8 +176,7 @@ public:
                 explore(*i, flg);
                 flg.pop_back();
               }
-            }
-            else {
+            } else {
               flg.push_back(i+1 == leaves.end());
               printObj(*i, flg);
               flg.pop_back();
@@ -206,59 +188,50 @@ public:
   }
 
   /// Initialize
-  virtual StatusCode initialize()   {
-    MsgStream log(msgSvc(), name());
-    m_rootName = "";
-    StatusCode sc = service(m_dataSvcName, m_dataSvc, true);
-    if ( sc.isSuccess() )  {
-      SmartIF<IDataManagerSvc> mgr(m_dataSvc);
-      if ( mgr )  {
-        m_rootName = mgr->rootName();
-        return sc;
-      }
-      log << MSG::ERROR << "Failed to retrieve IDataManagerSvc interface." << endmsg;
-      return StatusCode::FAILURE;
+  StatusCode initialize() override   {
+    m_rootName.clear();
+    m_dataSvc = service(m_dataSvcName,true);
+    if ( !m_dataSvc )  {
+        error() << "Failed to access service \""
+            << m_dataSvcName << "\"." << endmsg;
+        return StatusCode::FAILURE;
     }
-    log << MSG::ERROR << "Failed to access service \""
-        << m_dataSvcName << "\"." << endmsg;
-    return StatusCode::FAILURE;
+    auto mgr = m_dataSvc.as<IDataManagerSvc>();
+    if ( !mgr )  {
+        error() << "Failed to retrieve IDataManagerSvc interface." << endmsg;
+        return StatusCode::FAILURE;
+    }
+    m_rootName = mgr->rootName();
+    return StatusCode::SUCCESS;
   }
 
   /// Finalize
-  virtual StatusCode finalize() {
-    if ( m_dataSvc ) m_dataSvc->release();
-    m_dataSvc = 0;
+  StatusCode finalize() override {
+    m_dataSvc.reset();
     return StatusCode::SUCCESS;
   }
 
   /// Execute procedure
-  virtual StatusCode execute()    {
-    MsgStream log(msgSvc(), name());
-    SmartDataPtr<DataObject>   root(m_dataSvc,m_rootName);
+  StatusCode execute() override {
+    SmartDataPtr<DataObject>   root(m_dataSvc.get(),m_rootName);
     if ( ((m_print > m_total++) || (m_frequency*m_total > m_frqPrint)) && root )    {
-      if ( m_frequency*m_total > m_frqPrint )  {
-        m_frqPrint++;
-      }
+      if ( m_frequency*m_total > m_frqPrint )  m_frqPrint++;
       std::string store_name = "Unknown";
       IRegistry* pReg = root->registry();
       if ( pReg )  {
-        SmartIF<IService> isvc(pReg->dataSvc());
-        if ( isvc )  {
-          store_name = isvc->name();
-        }
+        auto isvc = SmartIF<IService>{pReg->dataSvc()};
+        if ( isvc )  store_name = isvc->name();
       }
-      log << MSG::INFO << "========= " << m_rootName << "["
-          << "0x" << std::hex << (unsigned long) root.ptr() << std::dec
+      info() << "========= " << m_rootName << "["
+          << std::showbase << std::hex << (unsigned long) root.ptr() << std::dec
           << "@" << store_name << "]:" << endmsg;
-      std::vector<bool> flg;
-      flg.push_back(true);
+      std::vector<bool> flg(1,true);
       explore(root->registry(), flg);
       return StatusCode::SUCCESS;
-    }
-    else if ( root )   {
+    } else if ( root )   {
       return StatusCode::SUCCESS;
     }
-    log << MSG::ERROR << "Cannot retrieve \"/Event\"!" << endmsg;
+    error() << "Cannot retrieve \"/Event\"!" << endmsg;
     return StatusCode::FAILURE;
   }
 };

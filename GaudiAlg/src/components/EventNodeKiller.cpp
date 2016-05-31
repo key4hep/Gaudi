@@ -21,22 +21,17 @@ EventNodeKiller::EventNodeKiller( const std::string& name,
 {
   declareProperty( "Nodes", m_nodes );
 }
-//=============================================================================
-// Destructor
-//=============================================================================
-EventNodeKiller::~EventNodeKiller() {}
 
 //=============================================================================
 // Main execution
 //=============================================================================
 StatusCode EventNodeKiller::execute() {
 
-  if (msgLevel() <= MSG::DEBUG) debug() << "==> Execute" << endmsg;
+  if (msgLevel(MSG::DEBUG)) debug() << "==> Execute" << endmsg;
 
-  std::vector<std::string>::iterator itS;
-  for( itS=m_nodes.begin(); itS != m_nodes.end(); itS++ ) {
-    if (msgLevel() <= MSG::DEBUG) debug() << "Killing node " << *itS << endmsg;
-    eventSvc()->unlinkObject( *itS ).ignore();
+  for( auto& node : m_nodes ) {
+    if (msgLevel(MSG::DEBUG)) debug() << "Killing node " << node << endmsg;
+    eventSvc()->unlinkObject( node ).ignore();
   }
 
   return StatusCode::SUCCESS;

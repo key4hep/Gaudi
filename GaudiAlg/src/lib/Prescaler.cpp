@@ -2,17 +2,13 @@
 
 #include "GaudiKernel/MsgStream.h"
 
-Prescaler::Prescaler(const std::string& name, ISvcLocator* pSvcLocator) :
-  GaudiAlgorithm(name, pSvcLocator) ,
+Prescaler::Prescaler(std::string name, ISvcLocator* pSvcLocator) :
+  GaudiAlgorithm( std::move(name), pSvcLocator) ,
   m_pass( 0 ),
   m_seen( 0 )
 {
   declareProperty( "PercentPass", m_percentPass=100.0 );
   m_percentPass.verifier().setBounds( 0.0, 100.0 );
-}
-
-Prescaler::~Prescaler( )
-{
 }
 
 StatusCode

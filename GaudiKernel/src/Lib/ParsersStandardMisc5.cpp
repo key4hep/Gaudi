@@ -9,7 +9,7 @@ StatusCode Gaudi::Parsers::parse(std::string& name, std::string& value ,
   Skipper skipper;
   KeyValueGrammar<IteratorT, Skipper> g;
   KeyValueGrammar<IteratorT, Skipper>::ResultT result;
-  std::string::const_iterator iter = input.begin();
+  auto iter = input.begin();
   bool parse_result = qi::phrase_parse(iter, input.end(), g, skipper,
       result) && (iter==input.end());
   if (parse_result) {

@@ -18,10 +18,9 @@ StatusCode IOBoundAlgTask::execute() {
    }
 
   bool eventfailed=false;
-  EventContext* eventContext = this_algo->getContext();
   //  eventContext->m_thread_id = pthread_self();
   //  Gaudi::Hive::setCurrentContextId(eventContext->slot(),eventContext->evt());
-  Gaudi::Hive::setCurrentContextId( eventContext );
+  Gaudi::Hive::setCurrentContextId(m_evtCtx);
 
   // Get the IProperty interface of the ApplicationMgr to pass it to RetCodeGuard
   const SmartIF<IProperty> appmgr(m_serviceLocator);
@@ -56,14 +55,15 @@ StatusCode IOBoundAlgTask::execute() {
   // DP it is important to propagate the failure of an event.
   // We need to stop execution when this happens so that execute run can
   // then receive the FAILURE
-  eventContext->setFail(eventfailed);
+  m_evtCtx->setFail(eventfailed);
 
   // Push in the scheduler queue an action to be performed
   auto action_promote2Executed = std::bind(&ForwardSchedulerSvc::promoteToAsyncExecuted,
                                            m_schedSvc,
                                            m_algoIndex,
-                                           eventContext->slot(),
-                                           m_algorithm);
+                                           m_evtCtx->slot(),
+                                           m_algorithm,
+                                           m_evtCtx);
 
   // TODO Expose a method to push actions in IScheduler?
   m_schedSvc->m_actionsQueue.push(action_promote2Executed);

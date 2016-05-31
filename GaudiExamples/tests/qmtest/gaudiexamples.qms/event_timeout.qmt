@@ -22,7 +22,7 @@ import re
 stdout = re.subn(r"size = [0-9]+(\.[0-9]*)? MB", "size = # MB", stdout)[0]
 stdout = '\n'.join(l for l in stdout.splitlines()
                    if 'EventLoopMgr      SUCCESS Event Number =' not in l and
-                      'EventLoopMgr      SUCCESS ---> Loop Finished' not in l)
+                      'EventLoopMgr         INFO ---> Loop Finished' not in l)
 
 findReferenceBlock("""
 ApplicationMgr       INFO Application Manager Started successfully

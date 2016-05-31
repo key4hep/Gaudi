@@ -31,28 +31,28 @@ namespace Gaudi {
     /// Standard Constructor
     Histogram3D(TH3D* rep);
     /// Destructor.
-    virtual ~Histogram3D() {}
+    ~Histogram3D() override = default;
     /// Fill bin content
-    bool fill ( double x, double y, double z, double weight);
+    bool fill ( double x, double y, double z, double weight) override;
     /// Fast filling method for a given bin. It can be also the over/underflow bin
     virtual bool setBinContents( int i, int j, int k, int entries,double height,double error,double centreX, double centreY, double centreZ );
     /// Sets the rms of the histogram.
     virtual bool setRms(double rmsX, double rmsY, double rmsZ);
     // overwrite reset
-    virtual bool reset();
+    bool reset() override;
     /// Introspection method
-    void* cast(const std::string & className) const;
+    void* cast(const std::string & className) const override;
     /// Create new histogram from any AIDA based histogram
     void  copyFromAida(const AIDA::IHistogram3D & h);
     /// Retrieve reference to class defininition identifier
-    virtual const CLID& clID() const { return classID(); }
+    const CLID& clID() const override { return classID(); }
     static const CLID& classID()     { return CLID_H3D; }
 
   protected:
     // cache sumwx and sumwy  when setting contents since I don't have bin mean
-    double m_sumwx;
-    double m_sumwy;
-    double m_sumwz;
+    double m_sumwx = 0;
+    double m_sumwy = 0;
+    double m_sumwz = 0;
   };
 }
 
@@ -60,60 +60,54 @@ namespace Gaudi {
   template <>
   void Generic3D<AIDA::IHistogram3D,TH3D>::adoptRepresentation(TObject* rep)  {
     TH3D* imp = dynamic_cast<TH3D*>(rep);
-    if ( imp )  {
-      if ( m_rep ) delete m_rep;
-      m_rep = imp;
-      m_xAxis.initialize(m_rep->GetXaxis(),true);
-      m_yAxis.initialize(m_rep->GetYaxis(),true);
-      m_zAxis.initialize(m_rep->GetZaxis(),true);
-      const TArrayD* a = m_rep->GetSumw2();
-      if ( 0 == a || (a && a->GetSize()==0) ) m_rep->Sumw2();
-      setTitle(m_rep->GetTitle());
-      return;
-    }
-    throw std::runtime_error("Cannot adopt native histogram representation.");
+    if ( !imp )  throw std::runtime_error("Cannot adopt native histogram representation.");
+    m_rep.reset( imp );
+    m_xAxis.initialize(m_rep->GetXaxis(),true);
+    m_yAxis.initialize(m_rep->GetYaxis(),true);
+    m_zAxis.initialize(m_rep->GetZaxis(),true);
+    const TArrayD* a = m_rep->GetSumw2();
+    if ( !a || (a && a->GetSize()==0) ) m_rep->Sumw2();
+    setTitle(m_rep->GetTitle());
   }
 }
 
 /// Create 3D histogram with fixed bins
 std::pair<DataObject*,AIDA::IHistogram3D*>
 Gaudi::createH3D(const std::string& title,int nBinsX,double xlow,double xup,int nBinsY,double ylow,double yup,int nBinsZ,double zlow,double zup) {
-  Histogram3D* p = new Histogram3D(new TH3D(title.c_str(),title.c_str(),nBinsX,xlow,xup,nBinsY,ylow,yup,nBinsZ,zlow,zup));
-  return std::pair<DataObject*,AIDA::IHistogram3D*>(p,p);
+  auto p = new Histogram3D(new TH3D(title.c_str(),title.c_str(),nBinsX,xlow,xup,nBinsY,ylow,yup,nBinsZ,zlow,zup));
+  return {p,p};
 }
 
 /// Create 3D histogram with variable bins
 std::pair<DataObject*,AIDA::IHistogram3D*>
 Gaudi::createH3D(const std::string& title, const Edges& eX,const Edges& eY,const Edges& eZ) {
-  Histogram3D* p = new Histogram3D(new TH3D(title.c_str(),title.c_str(),eX.size()-1,&eX.front(), eY.size()-1,&eY.front(), eZ.size()-1,&eZ.front()));
-  return std::pair<DataObject*,AIDA::IHistogram3D*>(p,p);
+  auto p = new Histogram3D(new TH3D(title.c_str(),title.c_str(),eX.size()-1,&eX.front(), eY.size()-1,&eY.front(), eZ.size()-1,&eZ.front()));
+  return {p,p};
 }
 
 std::pair<DataObject*,AIDA::IHistogram3D*> Gaudi::createH3D(const AIDA::IHistogram3D& hist)  {
   TH3D *h = getRepresentation<AIDA::IHistogram3D,TH3D>(hist);
-  Histogram3D *n = h ? new Histogram3D(new TH3D(*h)) : 0;
-  return std::pair<DataObject*,AIDA::IHistogram3D*>(n,n);
+  Histogram3D *n = h ? new Histogram3D(new TH3D(*h)) : nullptr;
+  return {n,n};
 }
 
-Gaudi::Histogram3D::Histogram3D() {
-  m_rep = new TH3D();
+Gaudi::Histogram3D::Histogram3D() 
+: Base( new TH3D() )
+{
   setTitle("");
   m_rep->Sumw2();
-  m_sumEntries = 0;
   m_sumwx = 0;
   m_sumwy = 0;
   m_sumwz = 0;
-  m_rep->SetDirectory(0);
+  m_rep->SetDirectory(nullptr);
 }
 
 Gaudi::Histogram3D::Histogram3D(TH3D* rep) {
-  m_rep = 0;
   adoptRepresentation(rep);
-  m_sumEntries = 0;
   m_sumwx = 0;
   m_sumwy = 0;
   m_sumwz = 0;
-  m_rep->SetDirectory(0);
+  m_rep->SetDirectory(nullptr);
 }
 
 // set bin content (entries and centre are not used )
@@ -151,7 +145,7 @@ void* Gaudi::Histogram3D::cast(const std::string & className) const   {
   else if (className == "AIDA::IHistogram")   {
     return (AIDA::IHistogram*)this;
   }
-  return 0;
+  return nullptr;
 }
 
 #ifdef __ICC
@@ -164,7 +158,7 @@ bool Gaudi::Histogram3D::setRms(double rmsX, double rmsY, double rmsZ   ) {
   m_rep->SetEntries(m_sumEntries);
   std::vector<double> stat(11);
   // sum weights
-  stat[0] =  sumBinHeights();
+  stat[0] = sumBinHeights();
   stat[1] = 0;
   if (equivalentBinEntries() != 0)
     stat[1] = (  sumBinHeights() * sumBinHeights() ) / equivalentBinEntries();
@@ -188,14 +182,13 @@ bool Gaudi::Histogram3D::setRms(double rmsX, double rmsY, double rmsZ   ) {
 }
 
 void Gaudi::Histogram3D::copyFromAida(const AIDA::IHistogram3D & h) {
-  delete m_rep;
   // implement here the copy
   const char* tit = h.title().c_str();
   if (h.xAxis().isFixedBinning() && h.yAxis().isFixedBinning() &&  h.zAxis().isFixedBinning() )  {
-    m_rep = new TH3D(tit,tit,
+    m_rep.reset( new TH3D(tit,tit,
       h.xAxis().bins(), h.xAxis().lowerEdge(), h.xAxis().upperEdge(),
       h.yAxis().bins(), h.yAxis().lowerEdge(), h.yAxis().upperEdge(),
-      h.zAxis().bins(), h.zAxis().lowerEdge(), h.zAxis().upperEdge() );
+      h.zAxis().bins(), h.zAxis().lowerEdge(), h.zAxis().upperEdge() ) );
   }
   else {
     Edges eX, eY, eZ;
@@ -211,13 +204,13 @@ void Gaudi::Histogram3D::copyFromAida(const AIDA::IHistogram3D & h) {
       eZ.push_back(h.zAxis().binLowerEdge(i));
     // add also upperedges at the end
     eZ.push_back(h.zAxis().upperEdge() );
-    m_rep = new TH3D(tit,tit,eX.size()-1,&eX.front(),eY.size()-1,&eY.front(),eZ.size()-1,&eZ.front());
+    m_rep.reset( new TH3D(tit,tit,eX.size()-1,&eX.front(),eY.size()-1,&eY.front(),eZ.size()-1,&eZ.front()) );
   }
   m_xAxis.initialize(m_rep->GetXaxis(),true);
   m_yAxis.initialize(m_rep->GetYaxis(),true);
   m_zAxis.initialize(m_rep->GetZaxis(),true);
   const TArrayD* a = m_rep->GetSumw2();
-  if ( 0 == a || (a && a->GetSize()==0) ) m_rep->Sumw2();
+  if ( !a || (a && a->GetSize()==0) ) m_rep->Sumw2();
   m_sumEntries = 0;
   m_sumwx = 0;
   m_sumwy = 0;

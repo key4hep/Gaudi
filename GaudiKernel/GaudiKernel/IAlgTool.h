@@ -1,10 +1,9 @@
-// $Id: IAlgTool.h,v 1.7 2008/06/02 14:20:38 marcocle Exp $
 #ifndef GAUDIKERNEL_IALGTOOL_H
 #define GAUDIKERNEL_IALGTOOL_H
 
 // Include files
 #include "GaudiKernel/INamedInterface.h"
-#include "GaudiKernel/StateMachine.h"
+#include "GaudiKernel/IStateful.h"
 #include <string>
 
 // Forward declarations
@@ -21,16 +20,13 @@ class IAlgorithm;
     @date 15/11/01 version 2 introduced
 */
 
-
-class DataObjectDescriptorCollection;
-
 class GAUDI_API IAlgTool: virtual public INamedInterface {
 public:
   /// InterfaceID
-  DeclareInterfaceID(IAlgTool,3,0);
+  DeclareInterfaceID(IAlgTool,4,0);
 
   /// Virtual destructor
-  virtual ~IAlgTool() { }
+  ~IAlgTool() override = default;
 
   /// The type of an AlgTool, meaning the concrete AlgTool class.
   virtual const std::string&  type() const = 0;
@@ -78,9 +74,6 @@ public:
    */
   virtual Gaudi::StateMachine::State FSMState() const = 0;
 
-  virtual const DataObjectDescriptorCollection & inputDataObjects() const = 0;
-  virtual const DataObjectDescriptorCollection & outputDataObjects() const = 0;
-
   /** Initialization of the Tool. This method is called typically
    *  by the ToolSvc. It allows to complete  the initialization that
    *  could not be done with a simply a constructor.
@@ -117,10 +110,6 @@ public:
    */
   virtual StatusCode sysRestart() = 0;
 
-  /** Current number of reference counts.
-      Avoids having to call addRef() + release() to get current refCount.
-  */
-  virtual unsigned long refCount() const = 0;
 };
 
 #endif  // GAUDIKERNEL_IALGTOOL_H

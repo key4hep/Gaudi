@@ -74,8 +74,7 @@ namespace RootHistCnv {
     }
     
     /// Standard Destructor
-    virtual ~RootObjAddress()   {
-    }
+    virtual ~RootObjAddress() = default;
 
     /// Add reference to object
     virtual unsigned long addRef   ()   {
@@ -84,9 +83,7 @@ namespace RootHistCnv {
 
     virtual unsigned long release  ()   {
       int cnt = --m_refCount;
-      if ( 0 == cnt )   {
-	delete this;
-      }
+      if ( 0 == cnt )   delete this;
       return cnt;
     }
     /// Pointer to directory

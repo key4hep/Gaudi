@@ -1,10 +1,9 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/IAppMgrUI.h,v 1.6 2008/06/02 14:20:38 marcocle Exp $
 #ifndef GAUDIKERNEL_IAPPMGRUI_H
 #define GAUDIKERNEL_IAPPMGRUI_H 1
 
 // Include files
 #include "GaudiKernel/StatusCode.h"
-#include "GaudiKernel/IInterface.h"
+#include "GaudiKernel/INamedInterface.h"
 #include "GaudiKernel/StateMachine.h"
 
 #include <string>
@@ -18,10 +17,10 @@
     @date   30/10/98
 */
 
-class GAUDI_API IAppMgrUI: virtual public IInterface {
+class GAUDI_API IAppMgrUI: virtual public INamedInterface {
 public:
   /// InterfaceID
-  DeclareInterfaceID(IAppMgrUI,3,0);
+  DeclareInterfaceID(IAppMgrUI,4,0);
   /// Run the complete job (from initialize to terminate)
   virtual StatusCode run() = 0;
   /// Configure the job
@@ -34,9 +33,6 @@ public:
   virtual StatusCode finalize() = 0;
   /// Process the next maxevt events
   virtual StatusCode nextEvent(int maxevt) = 0;
-
-  /// The identifying name of the AppMgrUI object.
-  virtual const std::string& name() const = 0;
 
   /// Start (from INITIALIZED to RUNNING).
   virtual StatusCode start() = 0;

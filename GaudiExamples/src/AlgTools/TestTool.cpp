@@ -1,7 +1,6 @@
 // Include files
 
 // from Gaudi
-#include "GaudiKernel/ToolFactory.h"
 #include "GaudiKernel/MsgStream.h"
 
 // local
@@ -38,14 +37,13 @@ StatusCode TestTool::initialize()
 
   // setup tool registry
   //IAlgTool * mytool;
-  for ( ToolList::iterator it = m_tools.begin();
-        it != m_tools.end(); ++it ) {
-    std::string name = (*it);
-    std::string type = (*it);
-    const int slash = (*it).find_first_of( "/" );
-    if ( slash > 0 ) {
-      type = (*it).substr( 0, slash );
-      name = (*it).substr( slash+1 );
+  for ( const auto& i : m_tools ) {
+    std::string name = i;
+    std::string type = i;
+    auto slash = i.find_first_of( "/" );
+    if ( slash != std::string::npos ) {
+      type = i.substr( 0, slash );
+      name = i.substr( slash+1 );
     }
     debug() << "Loading tool " << name << " of type " << type << endmsg;
     /* mytool = */ tool<IAlgTool>( type, name );

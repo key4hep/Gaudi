@@ -23,7 +23,9 @@ class IRegistry;
  * \par
  * \b ScanOnBeginEvent (bool): If the scan has to be started during the BeginEvent incident (true) or on demand (false, default)
  */
-class DataSvcFileEntriesTool: public extends2<AlgTool, IDataStoreLeaves, IIncidentListener> {
+class DataSvcFileEntriesTool: public extends<AlgTool,
+                                             IDataStoreLeaves,
+                                             IIncidentListener> {
 public:
   /// Standard constructor
   DataSvcFileEntriesTool(const std::string& type,
@@ -31,24 +33,24 @@ public:
       const IInterface* parent);
 
   /// Destructor
-  virtual ~DataSvcFileEntriesTool();
+  ~DataSvcFileEntriesTool() override = default;
 
   /// Initialize the tool.
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
 
   /// Finalize the tool.
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
 
   /// Return the list of collected objects.
   /// If the scan was not yet done since the last BeginEvent incident, it is done
   /// when calling this function.
   /// The result of the scan is cached.
-  virtual const LeavesList & leaves() const;
+  const LeavesList & leaves() const override;
 
   /// Call-back function for the BeginEvent incident.
   /// Clears the internal cache, cache the file ID of the \b Root node and, if
   /// the property \b ScanOnBeginEvent is set to true, scans the data service.
-  virtual void handle(const Incident& incident);
+  void handle(const Incident& incident) override;
 
 private:
 
@@ -117,8 +119,6 @@ DataSvcFileEntriesTool::DataSvcFileEntriesTool(const std::string& type,
       "Disable the detection of the change in the origin of object between the BeginEvent and the scan");
 }
 
-DataSvcFileEntriesTool::~DataSvcFileEntriesTool() {}
-
 StatusCode DataSvcFileEntriesTool::initialize(){
   StatusCode sc = AlgTool::initialize();
   if (sc.isFailure()) return sc;
@@ -127,15 +127,13 @@ StatusCode DataSvcFileEntriesTool::initialize(){
 
   m_incidentSvc = serviceLocator()->service("IncidentSvc");
   if ( ! m_incidentSvc ) {
-    MsgStream log(msgSvc(), name());
-    log << MSG::ERROR << "Cannot get IncidentSvc" << endmsg;
+    error() << "Cannot get IncidentSvc" << endmsg;
     return StatusCode::FAILURE;
   }
 
   m_dataMgrSvc = m_dataSvc = serviceLocator()->service(m_dataSvcName);
   if ( ! m_dataSvc || ! m_dataMgrSvc ) {
-    MsgStream log(msgSvc(), name());
-    log << MSG::ERROR << "Cannot get IDataProviderSvc+IDataManagerSvc " << m_dataSvcName << endmsg;
+    error() << "Cannot get IDataProviderSvc+IDataManagerSvc " << m_dataSvcName << endmsg;
     return StatusCode::FAILURE;
   }
 
@@ -175,8 +173,7 @@ void DataSvcFileEntriesTool::handle(const Incident& incident) {
 
   m_leaves.clear();
   if (m_scanOnBeginEvent) {
-    MsgStream log(msgSvc(), name());
-    log << MSG::VERBOSE << "::handle scanning on " << incident.type() << endmsg;
+    verbose() << "::handle scanning on " << incident.type() << endmsg;
     i_collectLeaves();
   }
 }
@@ -189,7 +186,7 @@ const IDataStoreLeaves::LeavesList & DataSvcFileEntriesTool::leaves() const {
 }
 
 IRegistry* DataSvcFileEntriesTool::i_getRootNode() {
-  DataObject * obj = 0;
+  DataObject * obj = nullptr;
   StatusCode sc = m_dataSvc->retrieveObject(m_rootNode, obj);
   if (sc.isFailure()) {
     throw GaudiException("Cannot get " + m_rootNode + " from " + m_dataSvcName, name(), StatusCode::FAILURE);
@@ -204,12 +201,11 @@ void DataSvcFileEntriesTool::i_collectLeaves() {
 
 /// todo: implement the scanning as an IDataStoreAgent
 void DataSvcFileEntriesTool::i_collectLeaves(IRegistry* reg) {
-  MsgStream log(msgSvc(), name());
   // I do not put sanity checks on the pointers because I know how I'm calling the function
   IOpaqueAddress *addr = reg->address();
   if (addr) { // we consider only objects that are in a file
-    if (outputLevel() <= MSG::VERBOSE)
-      log << MSG::VERBOSE << "::i_collectLeaves added " << reg->identifier() << endmsg;
+    if (msgLevel(MSG::VERBOSE))
+      verbose() << "::i_collectLeaves added " << reg->identifier() << endmsg;
     m_leaves.push_back(reg->object()); // add this object
     // Origin of the current object
     const std::string& base = addr->par()[0];
@@ -224,15 +220,15 @@ void DataSvcFileEntriesTool::i_collectLeaves(IRegistry* reg) {
     std::vector<IRegistry*> lfs; // leaves of the current object
     StatusCode sc = m_dataMgrSvc->objectLeaves(reg, lfs);
     if (sc.isSuccess()) {
-      for(std::vector<IRegistry*>::iterator i = lfs.begin(); i != lfs.end(); ++i)  {
+      for(const auto& i : lfs) {
         // Continue if the leaf has the same database as the parent
-        if ( (*i)->address() && (*i)->address()->par()[0] == base )  {
-          DataObject* obj = 0;
-          sc = m_dataSvc->retrieveObject(reg, (*i)->name(), obj);
+        if ( i->address() && i->address()->par()[0] == base )  {
+          DataObject* obj = nullptr;
+          sc = m_dataSvc->retrieveObject(reg, i->name(), obj);
           if (sc.isSuccess())  {
-            i_collectLeaves(*i);
+            i_collectLeaves(i);
           } else {
-            throw GaudiException("Cannot get " + (*i)->identifier() + " from " + m_dataSvcName, name(), StatusCode::FAILURE);
+            throw GaudiException("Cannot get " + i->identifier() + " from " + m_dataSvcName, name(), StatusCode::FAILURE);
           }
         }
       }
@@ -241,5 +237,4 @@ void DataSvcFileEntriesTool::i_collectLeaves(IRegistry* reg) {
 }
 
 
-#include "GaudiKernel/ToolFactory.h"
 DECLARE_COMPONENT(DataSvcFileEntriesTool)

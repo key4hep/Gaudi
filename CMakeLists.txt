@@ -13,8 +13,14 @@ find_package(GaudiProject)
 
 option(GAUDI_ATLAS "Enable ATLAS-specific settings" OFF)
 
+# Base Gaudi on the AtlasExternals project when building for ATLAS:
+if( GAUDI_ATLAS )
+   find_package( AtlasExternals )
+   gaudi_ctest_setup() # Needed for correct CTest usage in this setup
+endif()
+
 # Declare project name and version
-gaudi_project(Gaudi v26r1)
+gaudi_project(Gaudi v27r1)
 
 # These tests do not really fit in a subdirectory.
 gaudi_add_test(cmake.EnvConfigTests
@@ -26,3 +32,14 @@ gaudi_add_test(cmake.CMakeModules
                COMMAND nosetests ${CMAKE_SOURCE_DIR}/cmake/tests)
 gaudi_add_test(cmake.QMTDeps
                COMMAND nosetests --with-doctest ${CMAKE_SOURCE_DIR}/cmake/extract_qmtest_metadata.py)
+
+# Configure how CPack should run:
+find_file( _cpack_config NAMES GaudiCPackSettings.cmake
+   PATHS ${CMAKE_MODULE_PATH} )
+if( _cpack_config )
+   include( ${_cpack_config} )
+else()
+   message( WARNING "Could not find GaudiCPackSettings.cmake" )
+endif()
+unset( _cpack_config )
+mark_as_advanced( _cpack_config )

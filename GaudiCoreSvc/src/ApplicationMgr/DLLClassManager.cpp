@@ -1,5 +1,3 @@
-// $Id: DLLClassManager.cpp,v 1.17 2007/12/12 16:03:19 marcocle Exp $
-
 // Include files
 #include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/IService.h"
@@ -27,23 +25,17 @@ DLLClassManager::DLLClassManager( IInterface* iface ) {
   addRef(); // Initial count set to 1
 }
 
-// virtual destructor
-DLLClassManager::~DLLClassManager() {
-}
-
 // implementation of IClassManager::loadModule
 StatusCode DLLClassManager::loadModule( const std::string& module,
 					bool fireIncident ) {
   // Access the message service if not yet done already
-  if (!m_msgsvc.isValid()) {
-    m_msgsvc = m_svclocator;
-  }
+  if (!m_msgsvc) m_msgsvc = m_svclocator;
   MsgStream log(m_msgsvc, "DllClassManager");
 
   std::string mod = module=="" ? System::moduleNameFull() : module;
   if( module == "NONE" ) return StatusCode::SUCCESS;
 
-  void* libHandle = 0;
+  void* libHandle = nullptr;
   StatusCode status = StatusCode::FAILURE;
   try
   {
@@ -66,11 +58,11 @@ StatusCode DLLClassManager::loadModule( const std::string& module,
   }
   //FIXME this is a hack to avoid a very early call to moduleLoad from
   //FIXME AppMgr::i_startup
-  if (fireIncident && module != "") {
+  if (fireIncident && !module.empty()) {
     //now fire ModuleLoadedIncident
     const bool CREATEIF(true);
-    SmartIF<IIncidentSvc> pIncidentSvc(m_svclocator->service("IncidentSvc", CREATEIF));
-    if( !pIncidentSvc.isValid() )  {
+    auto pIncidentSvc = m_svclocator->service<IIncidentSvc>("IncidentSvc", CREATEIF);
+    if( !pIncidentSvc )  {
       log << MSG::FATAL << "Can not locate IncidentSvc" << endmsg;
       throw GaudiException("Error retrieving IncidentSvc",
 			   "DLLClassManager::DLLClassManager", StatusCode::FAILURE);

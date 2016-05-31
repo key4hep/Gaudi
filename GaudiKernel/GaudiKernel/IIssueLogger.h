@@ -1,9 +1,7 @@
 #ifndef GAUDIKERNEL_IISSUELOGGER_H
 #define GAUDIKERNEL_IISSUELOGGER_H
 
-#ifndef GAUDIKERNEL_ISERVICE_H
- #include "GaudiKernel/IService.h"
-#endif
+#include "GaudiKernel/IService.h"
 #include "GaudiKernel/IssueSeverity.h"
 #include <string>
 
@@ -15,7 +13,7 @@ public:
   DeclareInterfaceID(IIssueLogger,2,0);
 
   virtual void report(IssueSeverity::Level level, const std::string& msg,
-		      const std::string& origin) = 0;
+                      const std::string& origin) = 0;
   virtual void report(const IssueSeverity& err) = 0;
 
 };

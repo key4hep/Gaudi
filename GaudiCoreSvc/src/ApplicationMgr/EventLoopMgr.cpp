@@ -1,6 +1,5 @@
 #define  GAUDISVC_EVENTLOOPMGR_CPP
 
-#include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/Incident.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/DataObject.h"
@@ -33,16 +32,8 @@ DECLARE_COMPONENT(EventLoopMgr)
 EventLoopMgr::EventLoopMgr(const std::string& nam, ISvcLocator* svcLoc)
 : MinimalEventLoopMgr(nam, svcLoc)
 {
-  m_histoDataMgrSvc   = 0;
-  m_histoPersSvc      = 0;
-  m_evtDataMgrSvc     = 0;
-  m_evtDataSvc        = 0;
-  m_evtSelector       = 0;
-  m_evtContext        = 0;
-  m_endEventFired     = true;
-
   // Declare properties
-  declareProperty("HistogramPersistency", m_histPersName = "");
+  declareProperty("HistogramPersistency", m_histPersName );
   declareProperty("EvtSel", m_evtsel );
   declareProperty("Warnings",m_warnings=true,
 		  "Set this property to false to suppress warning messages");
@@ -52,12 +43,7 @@ EventLoopMgr::EventLoopMgr(const std::string& nam, ISvcLocator* svcLoc)
 // Standard Destructor
 //--------------------------------------------------------------------------------------------
 EventLoopMgr::~EventLoopMgr()   {
-  if( m_histoDataMgrSvc ) m_histoDataMgrSvc->release();
-  if( m_histoPersSvc ) m_histoPersSvc->release();
-  if( m_evtDataMgrSvc ) m_evtDataMgrSvc->release();
-  if( m_evtDataSvc ) m_evtDataSvc->release();
-  if( m_evtSelector ) m_evtSelector->release();
-  if( m_evtContext ) delete m_evtContext;
+  delete m_evtContext;
 }
 
 //--------------------------------------------------------------------------------------------
@@ -73,19 +59,19 @@ StatusCode EventLoopMgr::initialize()    {
 
   // Setup access to event data services
   m_evtDataMgrSvc = serviceLocator()->service("EventDataSvc");
-  if( !m_evtDataMgrSvc.isValid() )  {
+  if( !m_evtDataMgrSvc )  {
     fatal() << "Error retrieving EventDataSvc interface IDataManagerSvc." << endmsg;
     return StatusCode::FAILURE;
   }
   m_evtDataSvc = serviceLocator()->service("EventDataSvc");
-  if( !m_evtDataSvc.isValid() )  {
+  if( !m_evtDataSvc )  {
     fatal() << "Error retrieving EventDataSvc interface IDataProviderSvc." << endmsg;
     return StatusCode::FAILURE;
   }
 
   // Obtain the IProperty of the ApplicationMgr
   m_appMgrProperty = serviceLocator();
-  if ( ! m_appMgrProperty.isValid() )   {
+  if ( ! m_appMgrProperty )   {
     fatal() << "IProperty interface not found in ApplicationMgr." << endmsg;
     return StatusCode::FAILURE;
   }
@@ -95,7 +81,7 @@ StatusCode EventLoopMgr::initialize()    {
 
   if( m_evtsel != "NONE" || m_evtsel.length() == 0) {
     m_evtSelector = serviceLocator()->service("EventSelector");
-    if( m_evtSelector.isValid() ) {
+    if( m_evtSelector ) {
       // Setup Event Selector
       sc=m_evtSelector->createContext(m_evtContext);
       if( !sc.isSuccess() )   {
@@ -107,10 +93,9 @@ StatusCode EventLoopMgr::initialize()    {
       fatal() << "EventSelector not found." << endmsg;
       return sc;
     }
-  }
-  else {
-    m_evtSelector = 0;
-    m_evtContext = 0;
+  } else {
+    m_evtSelector = nullptr;
+    m_evtContext = nullptr;
     if ( m_warnings ) {
       warning() << "Unable to locate service \"EventSelector\" " << endmsg;
       warning() << "No events will be processed from external input." << endmsg;
@@ -119,13 +104,13 @@ StatusCode EventLoopMgr::initialize()    {
 
   // Setup access to histogramming services
   m_histoDataMgrSvc = serviceLocator()->service("HistogramDataSvc");
-  if( !m_histoDataMgrSvc.isValid() )  {
+  if( !m_histoDataMgrSvc )  {
     fatal() << "Error retrieving HistogramDataSvc." << endmsg;
     return sc;
   }
   // Setup histogram persistency
   m_histoPersSvc = serviceLocator()->service("HistogramPersistencySvc");
-  if( !m_histoPersSvc.isValid() ) {
+  if( !m_histoPersSvc ) {
     warning() << "Histograms cannot not be saved - though required." << endmsg;
     return sc;
   }
@@ -147,14 +132,14 @@ StatusCode EventLoopMgr::reinitialize() {
   // Check to see whether a new Event Selector has been specified
   setProperty(m_appMgrProperty->getProperty("EvtSel"));
   if( m_evtsel != "NONE" || m_evtsel.length() == 0) {
-    SmartIF<IService> theSvc(serviceLocator()->service("EventSelector"));
-    SmartIF<IEvtSelector> theEvtSel(theSvc);
-    if( theEvtSel.isValid() && ( theEvtSel.get() != m_evtSelector.get() ) ) {
+    auto theSvc = serviceLocator()->service<IService>("EventSelector");
+    auto theEvtSel = theSvc.as<IEvtSelector>();
+    if( theEvtSel && ( theEvtSel.get() != m_evtSelector.get() ) ) {
       // Setup Event Selector
       if ( m_evtSelector.get() && m_evtContext ) {
         // Need to release context before switching to new event selector
         m_evtSelector->releaseContext(m_evtContext);
-        m_evtContext = 0;
+        m_evtContext = nullptr;
       }
       m_evtSelector = theEvtSel;
       if (theSvc->FSMState() == Gaudi::StateMachine::INITIALIZED) {
@@ -164,8 +149,7 @@ StatusCode EventLoopMgr::reinitialize() {
                   << theSvc->name( ) << endmsg;
           return sc;
         }
-      }
-      else {
+      } else {
         sc = theSvc->sysInitialize();
         if( !sc.isSuccess() ) {
           error() << "Failure Initializing EventSelector "
@@ -181,10 +165,10 @@ StatusCode EventLoopMgr::reinitialize() {
       info() << "EventSelector service changed to "
              << theSvc->name( ) << endmsg;
     }
-    else if ( m_evtSelector.isValid() ) {
+    else if ( m_evtSelector ) {
       if ( m_evtContext ) {
         m_evtSelector->releaseContext(m_evtContext);
-        m_evtContext = 0;
+        m_evtContext = nullptr;
       }
       sc = m_evtSelector->createContext(m_evtContext);
       if( !sc.isSuccess() ) {
@@ -193,10 +177,10 @@ StatusCode EventLoopMgr::reinitialize() {
       }
     }
   }
-  else if ( m_evtSelector.isValid() && m_evtContext ) {
+  else if ( m_evtSelector && m_evtContext ) {
     m_evtSelector->releaseContext(m_evtContext);
-    m_evtSelector = 0;
-    m_evtContext = 0;
+    m_evtSelector = nullptr;
+    m_evtContext = nullptr;
   }
   return StatusCode::SUCCESS;
 }
@@ -228,30 +212,27 @@ StatusCode EventLoopMgr::finalize()    {
   }
 
   // Save Histograms Now
-  if ( m_histoPersSvc != 0 )    {
+  if ( m_histoPersSvc )    {
     HistogramAgent agent;
     sc = m_histoDataMgrSvc->traverseTree( &agent );
     if( sc.isSuccess() )   {
       IDataSelector* objects = agent.selectedObjects();
       // skip /stat entry!
       if ( objects->size() > 0 )    {
-        IDataSelector::iterator i;
-        for ( i = objects->begin(); i != objects->end(); i++ )    {
-          IOpaqueAddress* pAddr = 0;
-          StatusCode iret = m_histoPersSvc->createRep(*i, pAddr);
+        for ( auto&  i : *objects ) {
+          IOpaqueAddress* pAddr = nullptr;
+          StatusCode iret = m_histoPersSvc->createRep(i, pAddr);
           if ( iret.isSuccess() )     {
-            (*i)->registry()->setAddress(pAddr);
+            i->registry()->setAddress(pAddr);
           }
           else  {
             sc = iret;
           }
         }
-        for ( i = objects->begin(); i != objects->end(); i++ )    {
-          IRegistry* reg = (*i)->registry();
-          StatusCode iret = m_histoPersSvc->fillRepRefs(reg->address(), *i);
-          if ( !iret.isSuccess() )    {
-            sc = iret;
-          }
+        for ( auto& i : *objects )    {
+          IRegistry* reg = i->registry();
+          StatusCode iret = m_histoPersSvc->fillRepRefs(reg->address(), i);
+          if ( !iret.isSuccess() ) sc = iret;
         }
       }
       if ( sc.isSuccess() )    {
@@ -269,16 +250,16 @@ StatusCode EventLoopMgr::finalize()    {
   // Release event selector context
   if ( m_evtSelector && m_evtContext )   {
     m_evtSelector->releaseContext(m_evtContext).ignore();
-    m_evtContext = 0;
+    m_evtContext = nullptr;
   }
 
   // Release all interfaces...
-  m_histoDataMgrSvc = 0;
-  m_histoPersSvc    = 0;
+  m_histoDataMgrSvc = nullptr;
+  m_histoPersSvc    = nullptr;
 
-  m_evtSelector     = 0;
-  m_evtDataSvc      = 0;
-  m_evtDataMgrSvc   = 0;
+  m_evtSelector     = nullptr;
+  m_evtDataSvc      = nullptr;
+  m_evtDataMgrSvc   = nullptr;
 
   return StatusCode::SUCCESS;
 }
@@ -313,16 +294,6 @@ StatusCode EventLoopMgr::executeEvent(void* par)    {
 }
 
 //--------------------------------------------------------------------------------------------
-// IEventProcessing::executeRun
-//--------------------------------------------------------------------------------------------
-StatusCode EventLoopMgr::executeRun( int maxevt )    {
-  StatusCode  sc;
-  // initialize the base class
-  sc = MinimalEventLoopMgr::executeRun(maxevt);
-  return sc;
-}
-
-//--------------------------------------------------------------------------------------------
 // implementation of IAppMgrUI::nextEvent
 //--------------------------------------------------------------------------------------------
 // External libraries
@@ -338,13 +309,13 @@ StatusCode EventLoopMgr::nextEvent(int maxevt)   {
 
 
   static int        total_nevt = 0;
-  DataObject*       pObject = 0;
+  DataObject*       pObject = nullptr;
   StatusCode        sc(StatusCode::SUCCESS, true);
 
   // loop over events if the maxevt (received as input) if different from -1.
   // if evtmax is -1 it means infinite loop
   time_point start_time = Clock::now();
-  for( int nevt = 0; (maxevt == -1 ? true : nevt < maxevt);  nevt++, total_nevt++) {
+  for( int nevt = 0; maxevt == -1 || nevt < maxevt;  ++nevt, ++total_nevt) {
 
 	  if(1 == nevt) // reset after first evt
 		  start_time = Clock::now();
@@ -376,7 +347,7 @@ StatusCode EventLoopMgr::nextEvent(int maxevt)   {
 
     // Setup event in the event store
     if( m_evtContext ) {
-      IOpaqueAddress* addr = 0;
+      IOpaqueAddress* addr = nullptr;
       // Only if there is a EventSelector
       sc = getEventRoot(addr);
       if( !sc.isSuccess() )  {
@@ -394,15 +365,14 @@ StatusCode EventLoopMgr::nextEvent(int maxevt)   {
         warning() << "Unable to retrieve Event root object" << endmsg;
         break;
       }
-    }
-    else {
+    } else {
       sc = m_evtDataMgrSvc->setRoot ("/Event", new DataObject());
       if( !sc.isSuccess() )  {
         warning() << "Error declaring event root DataObject" << endmsg;
       }
     }
     // Execute event for all required algorithms
-    sc = executeEvent(NULL);
+    sc = executeEvent(nullptr);
     m_endEventFired = false;
     if( !sc.isSuccess() ){
       error() << "Terminating event processing loop due to errors" << endmsg;
@@ -412,22 +382,21 @@ StatusCode EventLoopMgr::nextEvent(int maxevt)   {
   }
   time_point end_time = Clock::now();
 
-  info() << "---> Loop Finished - "
-           << " WSS " << System::mappedMemory(System::MemoryUnit::kByte)*oneOver1024
-           << " | total time (skipping 1st evt) "
-           << std::chrono::duration_cast < std::chrono::nanoseconds > (end_time - start_time).count()
-           << " ns" << endmsg;
+  if (UNLIKELY(outputLevel() <= MSG::DEBUG))
+    debug() << "---> Loop Finished - "
+            << " WSS " << System::mappedMemory(System::MemoryUnit::kByte)*oneOver1024
+            << " | total time (skipping 1st evt) "
+            << std::chrono::duration_cast < std::chrono::nanoseconds > (end_time - start_time).count()
+            << " ns" << endmsg;
 
   return StatusCode::SUCCESS;
 }
 
 /// Create event address using event selector
 StatusCode EventLoopMgr::getEventRoot(IOpaqueAddress*& refpAddr)  {
-  refpAddr = 0;
+  refpAddr = nullptr;
   StatusCode sc = m_evtSelector->next(*m_evtContext);
-  if ( !sc.isSuccess() )  {
-    return sc;
-  }
+  if ( !sc.isSuccess() )  return sc;
   // Create root address and assign address to data service
   sc = m_evtSelector->createAddress(*m_evtContext,refpAddr);
   if( !sc.isSuccess() )  {

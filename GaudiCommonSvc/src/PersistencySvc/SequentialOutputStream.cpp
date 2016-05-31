@@ -1,8 +1,8 @@
+// standard headers
+#include <limits>
+
 // boost
-#include <boost/numeric/conversion/bounds.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/foreach.hpp>
-#include <boost/lexical_cast.hpp>
 
 // Framework include files
 #include "GaudiKernel/IRegistry.h"
@@ -19,16 +19,14 @@ DECLARE_COMPONENT( SequentialOutputStream )
 
 using namespace std;
 namespace bf = boost::filesystem;
-using boost::lexical_cast;
-using boost::bad_lexical_cast;
 
 //=============================================================================
 SequentialOutputStream::SequentialOutputStream( const string& name,
 						ISvcLocator* svc )
-: OutputStream( name, svc ), m_events( 0 ), m_iFile( 1 )
+: OutputStream( name, svc )
 {
    declareProperty( "EventsPerFile", m_eventsPerFile
-		    = boost::numeric::bounds< unsigned int>::highest() );
+		    = std::numeric_limits< unsigned int>::max() );
    declareProperty( "NumericFilename", m_numericFilename = false );
    declareProperty( "NumbersAdded", m_nNumbersAdded = 6 );
 }
@@ -39,8 +37,7 @@ StatusCode SequentialOutputStream::writeObjects()
    try {
       makeFilename();
    } catch ( const GaudiException& except ) {
-      MsgStream log(msgSvc(), name());
-      log << MSG::ERROR << except.message() << endmsg;
+      error() << except.message() << endmsg;
       return StatusCode::FAILURE;
    }
    return OutputStream::writeObjects();
@@ -55,7 +52,7 @@ StatusCode SequentialOutputStream::execute()
    if ( isEventAccepted() )  {
       StatusCode sc = writeObjects();
       clearSelection();
-      m_events++;
+      ++m_events;
       return sc;
    }
    return StatusCode::SUCCESS;
@@ -83,17 +80,14 @@ void SequentialOutputStream::makeFilename()
    if ( m_numericFilename ) {
       if ( m_events == 0 ) {
          try {
-            m_iFile = lexical_cast< unsigned int >( stem );
-         } catch( const bad_lexical_cast& /* cast */ ) {
-            stringstream stream;
-            stream << "Filename " << filename
-                   << " is not a number, which was needed.";
-            throw GaudiException( stream.str(), "error", StatusCode::FAILURE );
+            m_iFile = std::stoul( stem );
+         } catch( const std::invalid_argument& /* cast */ ) {
+            string msg = "Filename " +  filename
+                       + " is not a number, which was needed.";
+            throw GaudiException( msg, "error", StatusCode::FAILURE );
          }
       }
-      stringstream iFileStream;
-      iFileStream << m_iFile;
-      string iFile( iFileStream.str() );
+      string iFile = std::to_string(m_iFile);
       unsigned int length = 0;
 
       if ( stem.length() > iFile.length() ) {
@@ -101,9 +95,7 @@ void SequentialOutputStream::makeFilename()
       }
 
       stringstream name;
-      if ( !dir.empty() ) {
-         name << dir << "/";
-      }
+      if ( !dir.empty() ) name << dir << "/";
       for ( unsigned int i = 0; i < length; ++i ) {
          name << "0";
       }
@@ -115,9 +107,7 @@ void SequentialOutputStream::makeFilename()
          stem = stem.substr( 0, pos );
       }
 
-      stringstream iFileStream;
-      iFileStream << m_iFile;
-      string iFile( iFileStream.str() );
+      string iFile = std::to_string(m_iFile);
 
       unsigned int length = 0;
       if ( m_nNumbersAdded > iFile.length() ) {

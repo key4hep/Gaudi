@@ -1,4 +1,3 @@
-// $Id: System.cpp,v 1.45 2008/10/27 21:30:32 marcocle Exp $
 //====================================================================
 //	System.cpp
 //--------------------------------------------------------------------
@@ -19,6 +18,7 @@
 #include <iostream>
 #include <sstream>
 #include <typeinfo>
+#include <memory>
 
 #include "GaudiKernel/System.h"
 #include "instrset.h"
@@ -80,7 +80,7 @@ static unsigned long doLoad(const std::string& name, System::ImageHandle* handle
 #else
   const char* path = name.c_str();
 #if defined(__linux) || defined(__APPLE__)
-  void *mh = ::dlopen(name.length() == 0 ? 0 : path, RTLD_LAZY | RTLD_GLOBAL);
+  void *mh = ::dlopen(name.length() == 0 ? nullptr : path, RTLD_LAZY | RTLD_GLOBAL);
   *handle = mh;
 #elif __hpux
   shl_t mh = ::shl_load(name.length() == 0 ? 0 : path, BIND_IMMEDIATE | BIND_VERBOSE, 0);
@@ -98,7 +98,7 @@ static unsigned long doLoad(const std::string& name, System::ImageHandle* handle
   }
 #endif
 #endif
-  if ( 0 == *handle )   {
+  if ( ! *handle )   {
     return System::getLastError();
   }
   return 1;
@@ -140,7 +140,7 @@ unsigned long System::loadDynamicLib(const std::string& name, ImageHandle* handl
       // (i.e. without 'lib' and '.so')
       if (dllName.find('/') == std::string::npos) {
 #if defined(__linux) || defined(__APPLE__)
-        if (dllName.substr(0, 3) != "lib")
+        if (dllName.compare(0, 3, "lib") != 0)
           dllName = "lib" + dllName;
 #endif
         if (dllName.find(SHLIB_SUFFIX) == std::string::npos)
@@ -199,7 +199,7 @@ unsigned long System::getProcedureByName(ImageHandle handle, const std::string& 
 #else
   *pFunction = FuncPtrCast<EntryPoint>(::dlsym(handle, name.c_str()));
 #endif
-  if ( 0 == *pFunction )    {
+  if ( ! *pFunction )    {
     errno = 0xAFFEDEAD;
    // std::cout << "System::getProcedureByName>" << getLastErrorString() << std::endl;
     return 0;
@@ -273,14 +273,12 @@ const std::string System::getErrorString(unsigned long error)    {
   // Free the buffer allocated by the system
   ::LocalFree( lpMessageBuffer );
 #else
-  char *cerrString(0);
+  char *cerrString(nullptr);
   // Remember: for linux dl* routines must be handled differently!
   if ( error == 0xAFFEDEAD ) {
     cerrString = (char*)::dlerror();
-    if ( 0 == cerrString ) {
-      cerrString = ::strerror(error);
-    }
-    if ( 0 == cerrString ) {
+    if ( !cerrString ) cerrString = ::strerror(error);
+    if ( !cerrString ) {
       cerrString = (char *)"Unknown error. No information found in strerror()!";
     }
     else {
@@ -408,11 +406,9 @@ const std::string System::typeinfoName( const char* class_name) {
     }
     else  {
       int   status;
-      char* realname;
-      realname = abi::__cxa_demangle(class_name, 0, 0, &status);
-      if (realname == 0) return class_name;
-      result = realname;
-      free(realname);
+      auto realname = std::unique_ptr<char,decltype(free)*>( abi::__cxa_demangle(class_name, nullptr, nullptr, &status), std::free );
+      if (!realname) return class_name;
+      result = std::string{realname.get()};
       /// substitute ', ' with ','
       std::string::size_type pos = result.find(", ");
       while( std::string::npos != pos ) {
@@ -424,20 +420,23 @@ const std::string System::typeinfoName( const char* class_name) {
   return result;
 }
 
+namespace { 
+    std::string init_hostName()  {
+        std::array<char,512> buffer;
+        std::fill_n(buffer.begin(),buffer.size(),0);
+#ifdef _WIN32
+        unsigned long len = buffer.size();
+        ::GetComputerName(buffer.data(), &len);
+#else
+        ::gethostname(buffer.data(), buffer.size());
+#endif
+        return { buffer.data() };
+      }
+}
+
 /// Host name
 const std::string& System::hostName() {
-  static std::string host = "";
-  if ( host == "" ) {
-    char buffer[512];
-    memset(buffer,0,sizeof(buffer));
-#ifdef _WIN32
-    unsigned long len = sizeof(buffer);
-    ::GetComputerName(buffer, &len);
-#else
-    ::gethostname(buffer, sizeof(buffer));
-#endif
-    host = buffer;
-  }
+  static const std::string host = init_hostName();
   return host;
 }
 
@@ -519,8 +518,8 @@ const std::string& System::accountName() {
     account = buffer;
 #else
     const char* acct = ::getlogin();
-    if ( 0 == acct ) acct = ::getenv("LOGNAME");
-    if ( 0 == acct ) acct = ::getenv("USER");
+    if ( !acct ) acct = ::getenv("LOGNAME");
+    if ( !acct ) acct = ::getenv("USER");
     account = (acct) ? acct : "Unknown";
 #endif
   }
@@ -617,7 +616,7 @@ char** System::argv()    {
 /// get a particular env var, return "UNKNOWN" if not defined
 std::string System::getEnv(const char* var) {
   char* env;
-  if  ( (env = getenv(var)) != 0 ) {
+  if  ( (env = getenv(var)) != nullptr ) {
     return env;
   } else {
     return "UNKNOWN";
@@ -627,7 +626,7 @@ std::string System::getEnv(const char* var) {
 /// get a particular env var, storing the value in the passed string (if set)
 bool System::getEnv(const char* var, std::string &value) {
   char* env;
-  if  ( (env = getenv(var)) != 0 ) {
+  if  ( (env = getenv(var)) != nullptr ) {
     value = env;
     return true;
   } else {
@@ -636,7 +635,7 @@ bool System::getEnv(const char* var, std::string &value) {
 }
 
 bool System::isEnvSet(const char* var) {
-  return getenv(var) != 0;
+  return getenv(var) != nullptr;
 }
 
 /// get all defined environment vars
@@ -651,7 +650,7 @@ std::vector<std::string> System::getEnv() {
   static char **environ = *_NSGetEnviron();
 #endif
   std::vector<std::string> vars;
-  for (int i=0; environ[i] != 0; ++i) {
+  for (int i=0; environ[i] != nullptr; ++i) {
     vars.push_back(environ[i]);
   }
   return vars;
@@ -671,11 +670,7 @@ int System::backTrace(void** addresses __attribute__ ((unused)),
 #ifdef __linux
 
   int count = backtrace( addresses, depth );
-  if ( count > 0 ) {
-    return count;
-  } else {
-    return 0;
-  }
+  return count > 0 ? count : 0;
 
 #else // windows and osx parts not implemented
   return 0;
@@ -685,33 +680,29 @@ int System::backTrace(void** addresses __attribute__ ((unused)),
 
 bool System::backTrace(std::string& btrace, const int depth, const int offset)
 {
-  // Always hide the first two levels of the stack trace (that's us)
-  const int totalOffset = offset + 2;
-  const int totalDepth = depth + totalOffset;
+  try {
+      // Always hide the first two levels of the stack trace (that's us)
+      const int totalOffset = offset + 2;
+      const int totalDepth = depth + totalOffset;
 
-  std::string fnc, lib;
+      std::string fnc, lib;
 
-  void** addresses = (void**) malloc(totalDepth*sizeof(void *));
-  if ( addresses != 0 ){
-    int count = System::backTrace(addresses,totalDepth);
-    for (int i = totalOffset; i < count; ++i) {
-      void *addr = 0;
+      std::vector<void*> addresses( totalDepth, nullptr );
+      int count = System::backTrace(addresses.data(),totalDepth);
+      for (int i = totalOffset; i < count; ++i) {
+        void *addr = nullptr;
 
-      if (System::getStackLevel(addresses[i],addr,fnc,lib)) {
-        std::ostringstream ost;
-        ost << "#" << std::setw(3) << std::setiosflags( std::ios::left ) << i-totalOffset+1;
-        ost << std::hex << addr << std::dec << " " << fnc << "  [" << lib << "]" << std::endl;
-        btrace += ost.str();
+        if (System::getStackLevel(addresses[i],addr,fnc,lib)) {
+          std::ostringstream ost;
+          ost << "#" << std::setw(3) << std::setiosflags( std::ios::left ) << i-totalOffset+1;
+          ost << std::hex << addr << std::dec << " " << fnc << "  [" << lib << "]" << std::endl;
+          btrace += ost.str();
+        }
       }
-    }
-    free(addresses);
+      return true;
+  } catch ( const std::bad_alloc& e ) {
+      return false;
   }
-  else {
-    free(addresses);
-    return false;
-  }
-
-  return true;
 }
 
 bool System::getStackLevel(void* addresses  __attribute__ ((unused)),
@@ -727,20 +718,18 @@ bool System::getStackLevel(void* addresses  __attribute__ ((unused)),
   if ( dladdr( addresses, &info ) && info.dli_fname
       && info.dli_fname[0] != '\0' ) {
     const char* symbol = info.dli_sname
-    && info.dli_sname[0] != '\0' ? info.dli_sname : 0;
+    && info.dli_sname[0] != '\0' ? info.dli_sname : nullptr;
 
     lib = info.dli_fname;
     addr = info.dli_saddr;
-    const char* dmg(0);
 
-    if (symbol != 0) {
-      int stat;
-      dmg = abi::__cxa_demangle(symbol,0,0,&stat);
-      fnc = (stat == 0) ? dmg : symbol;
+    if (symbol) {
+      int stat = -1;
+      auto dmg = std::unique_ptr<char,decltype(free)*>( abi::__cxa_demangle(symbol,nullptr,nullptr,&stat), std::free );
+      fnc = (stat == 0) ? dmg.get() : symbol;
     } else {
       fnc = "local";
     }
-    free((void*)dmg);
     return true ;
   } else {
     return false ;

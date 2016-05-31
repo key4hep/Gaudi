@@ -13,6 +13,7 @@
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/Service.h"
 #include "GaudiKernel/HashMap.h"
+#include "GaudiKernel/Stat.h"
 // ============================================================================
 /** @class CounterSvc
  *  Simple implementation of the abstract interface ICounterSvc
@@ -20,23 +21,19 @@
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
  *  @date 2007-05-25
  */
-class CounterSvc: public extends1<Service, ICounterSvc> {
+class CounterSvc: public extends<Service,
+                                 ICounterSvc> {
 public:
   /// Standard Constructor
   CounterSvc ( const std::string& name   ,
                ISvcLocator*       svcLoc )
     : base_class(name, svcLoc)
-    , m_counts ()
-    , m_print  ( true )
-    //
     // the header row
     , m_header  ( "       Counter :: Group         |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |")
     // format for regular statistical printout rows
     , m_format1 ( " %|15.15s|%|-15.15s|%|32t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |"         )
     // format for "efficiency" statistical printout rows
     , m_format2 ( "*%|15.15s|%|-15.15s|%|32t||%|10d| |%|11.5g| |(%|#9.7g| +- %|-#9.7g|)%%|   -------   |   -------   |" )
-    // flag to use the special "efficiency" format
-    , m_useEffFormat ( true )
     //
   {
     declareProperty ("PrintStat" , m_print ) ;
@@ -58,11 +55,11 @@ public:
         "Use the special format for printout of efficiency counters" ) ;
   }
   /// Standard destructor
-  virtual ~CounterSvc() { remove().ignore() ; }
+  ~CounterSvc() override { remove().ignore() ; }
   /// Finalization
-  virtual StatusCode finalize()
+  StatusCode finalize() override
   {
-    if ( outputLevel() <= MSG::DEBUG || m_print ) { print () ; }
+    if ( msgLevel(MSG::DEBUG) || m_print ) { print () ; }
     remove().ignore() ;
     // finalize the base class
     return Service::finalize() ; ///< finalize the base class
@@ -75,11 +72,11 @@ public:
    *
    * @return Pointer to existing counter object (NULL if non existing).
    */
-  virtual Counter* get
+  Counter* get
   ( const std::string& group ,
-    const std::string& name  ) const;
+    const std::string& name  ) const override;
   /// get all counters form the given group:
-  virtual ICounterSvc::Counters get ( const std::string& group ) const ;
+  ICounterSvc::Counters get ( const std::string& group ) const override ;
   /** Create a new counter object. If the counter object exists already
    * the existing object is returned. In this event the return code is
    * COUNTER_EXISTS. The ownership of the actual counter stays with the
@@ -92,11 +89,11 @@ public:
    *
    * @return StatusCode indicating failure or success.
    */
-  virtual StatusCode create
+  StatusCode create
   ( const std::string& group ,
     const std::string& name  ,
     longlong initial_value   ,
-    Counter*& refpCounter    ) ;
+    Counter*& refpCounter    ) override ;
   /** Create a new counter object. If the counter object exists already,
    * a std::runtime_error exception is thrown. The ownership of the
    * actual counter stays with the service.
@@ -108,10 +105,10 @@ public:
    *
    * @return Fully initialized CountObject.
    */
-  virtual CountObject create
+  CountObject create
   ( const std::string& group    ,
     const std::string& name     ,
-    longlong initial_value = 0  ) ;
+    longlong initial_value = 0  ) override ;
   /** Remove a counter object. If the counter object does not exists,
    * the return code is COUNTER_NOT_PRESENT. The counter may not
    * be used anymore after this call.
@@ -121,16 +118,16 @@ public:
    * @param  refpCounter   [OUT]    Reference to store pointer to counter.
    * @return StatusCode indicating failure or success.
    */
-  virtual StatusCode remove
+  StatusCode remove
   ( const std::string& group ,
-    const std::string& name  ) ;
+    const std::string& name  ) override ;
   /** Remove all counters of a given group. If no such counter exists
    * the return code is COUNTER_NOT_PRESENT
    * @param  group         [IN]     Hint for smart printing
    * @return StatusCode indicating failure or success.
    */
-  virtual StatusCode remove
-  ( const std::string& group ) ;
+  StatusCode remove
+  ( const std::string& group ) override ;
   /// Remove all known counter objects
   virtual StatusCode remove();
   /** Print counter value
@@ -140,10 +137,10 @@ public:
    *
    * @return StatusCode indicating failure or success.
    */
-  virtual StatusCode print
+  StatusCode print
   ( const std::string& group,
     const std::string& name,
-    Printout& printer) const;
+    Printout& printer) const override;
   /** If no such counter exists the return code is COUNTER_NOT_PRESENT
    * Note: This call is not direct access.
    * @param  group         [IN]     Hint for smart printing
@@ -151,59 +148,58 @@ public:
    *
    * @return StatusCode indicating failure or success.
    */
-  virtual StatusCode print
+  StatusCode print
   (const std::string& group,
-   Printout& printer) const;
+   Printout& printer) const override;
   /** Print counter value
    * @param pCounter       [IN]     Pointer to Counter object
    * @param printer        [IN]     Print actor
    *
    * @return StatusCode indicating failure or success.
    */
-  virtual StatusCode print
+  StatusCode print
   ( const Counter* pCounter,
-    Printout& printer) const;
+    Printout& printer) const override;
   /** Print counter value
    * @param refCounter     [IN]     Reference to CountObject object
    * @param printer        [IN]     Print actor
    *
    * @return StatusCode indicating failure or success.
    */
-  virtual StatusCode print
+  StatusCode print
   ( const CountObject& pCounter,
-    Printout& printer) const;
+    Printout& printer) const override;
   /** @param printer        [IN]     Print actor
    *  @return StatusCode indicating failure or success.
    */
-  virtual StatusCode print(Printout& printer) const;
+  StatusCode print(Printout& printer) const override;
   /// Default Printout for counters
-  virtual StatusCode defaultPrintout
+  StatusCode defaultPrintout
   ( MsgStream& log,
-    const Counter* pCounter) const ;
+    const Counter* pCounter) const override ;
 private:
   // find group/name for the counter:
   inline std::pair<std::string,std::string> _find ( const Counter* c ) const
   {
-    if ( 0 == c ) { return std::pair<std::string,std::string>() ; }
-    for ( CountMap::const_iterator i = m_counts.begin() ; m_counts.end() != i ; ++i )
-    {
-      for ( NameMap::const_iterator j = i->second.begin() ; i->second.end() != j ; ++j )
-      { if ( j->second == c ) { return std::make_pair( i->first , j->first )  ; } }
+    if ( c ) {
+        for ( const auto& i : m_counts ) {
+          auto j = std::find_if( i.second.begin(), i.second.end(),
+                                 [&](const NameMap::value_type& k) {
+                                     return k.second == c;
+          });
+          if (j!=i.second.end()) return { i.first, j->first } ;
+        }
     }
-    return std::pair<std::string,std::string>() ;
+    return { };
   }
   // get the overall number of counters
   inline size_t num () const
   {
-    size_t result = 0 ;
-    {
-      for ( CountMap::const_iterator i = m_counts.begin(); i != m_counts.end(); ++i )
-      {
-        for ( NameMap::const_iterator j = i->second.begin() ; i->second.end() != j ; ++j )
-        { if ( 0 != j->second ) { ++result ; } ; }
-      }
-    }
-    return result ;
+    return std::accumulate( m_counts.begin(), m_counts.end(), size_t{0},
+                 [](size_t r, const CountMap::value_type& i) {
+                     return r + std::count_if(i.second.begin(),i.second.end(),
+                                              [](const NameMap::value_type& j) -> bool { return j.second; });
+                 });
   }
 public:
   /// "standard" printout a'la GaudiCommon
@@ -214,7 +210,7 @@ private:
   // the actual map of counters
   CountMap m_counts ; ///< the actual map of counters
   // boolean flag to print statistics
-  bool     m_print  ; ///< boolean flag to print statistics
+  bool     m_print  = true ; ///< boolean flag to print statistics
   // the header row
   std::string    m_header  ; ///< the header row
   // format for regular statistical printout rows
@@ -222,7 +218,7 @@ private:
   // format for "efficiency" statistical printout rows
   std::string    m_format2 ; ///< format for "efficiency" statistical printout rows
   // flag to use the special "efficiency" format
-  bool           m_useEffFormat ; ///< flag to use the special "efficiency" format
+  bool           m_useEffFormat = true; ///< flag to use the special "efficiency" format
 } ;
 // ===========================================================================
 // Instantiation of a static factory class used by clients
@@ -235,10 +231,10 @@ CounterSvc::Counter* CounterSvc::get
 ( const std::string& grp  ,
   const std::string& nam  ) const
 {
-  CountMap::const_iterator i = m_counts.find  ( grp ) ;
-  if (  m_counts.end() == i ) { return 0 ; }                    // RETURN
-  NameMap::const_iterator  j = i->second.find ( nam ) ;
-  if ( i->second.end() == j ) { return 0 ; }                    // RETURN
+  auto i = m_counts.find  ( grp ) ;
+  if (  m_counts.end() == i ) { return nullptr ; }              // RETURN
+  auto  j = i->second.find ( nam ) ;
+  if ( i->second.end() == j ) { return nullptr ; }              // RETURN
   return j->second ;                                            // RETURN
 }
 // ===========================================================================
@@ -247,10 +243,14 @@ CounterSvc::Counter* CounterSvc::get
 ICounterSvc::Counters CounterSvc::get ( const std::string& group ) const
 {
   ICounterSvc::Counters result ;
-  CountMap::const_iterator i = m_counts.find  ( group ) ;
-  if (  m_counts.end() == i ) { return result ; } // RETURN
-  for ( NameMap::const_iterator j = i->second.begin() ; i->second.end() != j ; ++j )
-  { result.push_back( CountObject ( j->second, i->first , j->first ) ) ; }
+  auto i = m_counts.find  ( group ) ;
+  if (  i != m_counts.end() ) {
+    std::transform( i->second.begin(), i->second.end(),
+                    std::back_inserter(result),
+                    [&](const NameMap::value_type& j) {
+        return CountObject{ j.second, i->first, j.first };
+    } );
+  }
   return result ;
 }
 // ===========================================================================
@@ -269,20 +269,20 @@ StatusCode CounterSvc::create
 {
   // try to find existing counter:
   refpCounter = get ( grp , nam ) ;
-  if ( 0 != refpCounter ) { return COUNTER_EXISTS ; }                // RETURN
+  if ( refpCounter ) { return COUNTER_EXISTS ; }                // RETURN
   // create the new counter
-  Counter* newc = new Counter() ;
+  auto  newc = new Counter() ;
   refpCounter = newc ;
   if ( 0 != initial_value ) {
     refpCounter->addFlag ( static_cast<double>(initial_value) ) ; // icc remark #2259
   }
   // find a proper group
-  CountMap::iterator i = m_counts.find  ( grp ) ;
+  auto i = m_counts.find  ( grp ) ;
   // (create a group if needed)
   if (  m_counts.end() == i )
-  { i = m_counts.insert ( std::make_pair ( grp , NameMap() ) ).first ; }
+  { i = m_counts.emplace ( grp , NameMap() ).first ; }
   // insert new counter with proper name into proper group:
-  i->second.insert( std::make_pair( nam , newc ) );
+  i->second.emplace( nam , newc );
   return StatusCode::SUCCESS ;                                     // RETURN
 }
 #ifdef __ICC
@@ -297,9 +297,9 @@ CounterSvc::CountObject CounterSvc::create
   const std::string& name  ,
   longlong initial_value   )
 {
-  Counter* p = 0;
+  Counter* p = nullptr;
   StatusCode sc = create ( group, name, initial_value, p ) ;
-  if ( sc.isSuccess() && 0 != p ) { return CountObject ( p , group , name ) ; }
+  if ( sc.isSuccess() && p ) { return CountObject ( p , group , name ) ; }
   throw std::runtime_error("CounterSvc::Counter('"+group+"::"+name+"') exists already!");
 }
 // ===========================================================================
@@ -309,9 +309,9 @@ StatusCode CounterSvc::remove
 ( const std::string& grp ,
   const std::string& nam )
 {
-  CountMap::iterator i = m_counts.find  ( grp ) ;
+  auto i = m_counts.find  ( grp ) ;
   if (  m_counts.end() == i ) { return COUNTER_NOT_PRESENT ; }  // RETURN
-  NameMap::iterator  j = i->second.find ( nam ) ;
+  auto  j = i->second.find ( nam ) ;
   if ( i->second.end() == j ) { return COUNTER_NOT_PRESENT ; }  // RETURN
   delete j->second ;
   i->second.erase ( j ) ;
@@ -322,10 +322,9 @@ StatusCode CounterSvc::remove
 // ===========================================================================
 StatusCode CounterSvc::remove ( const std::string& grp )
 {
-  CountMap::iterator i = m_counts.find ( grp  ) ;
+  auto i = m_counts.find ( grp  ) ;
   if (  m_counts.end() == i ) { return COUNTER_NOT_PRESENT ; }  // RETURN
-  for ( NameMap::iterator j = i->second.begin() ; i->second.end() != j ; ++j )
-  { delete j->second ; }
+  for ( auto& j : i->second ) delete j.second ;
   i->second.clear() ;
   return StatusCode::SUCCESS ;
 }
@@ -335,8 +334,7 @@ StatusCode CounterSvc::remove ( const std::string& grp )
 StatusCode CounterSvc::remove()
 {
   // remove group by group
-  for ( CountMap::iterator i = m_counts.begin() ; m_counts.end() != i ; ++i )
-  { remove ( i->first ).ignore () ; }
+  for ( auto& i : m_counts ) remove ( i.first ).ignore () ;
   m_counts.clear() ;
   return StatusCode::SUCCESS;
 }
@@ -349,10 +347,9 @@ StatusCode CounterSvc::print
   Printout& printer) const
 {
   const Counter* c = get( grp , nam ) ;
-  if ( 0 == c ) { return COUNTER_NOT_PRESENT ; }                  // RETURN
+  if ( !c ) { return COUNTER_NOT_PRESENT ; }                  // RETURN
   // create the stream and use it!
-  MsgStream log ( msgSvc() , name() ) ;
-  return printer ( log , c ) ;
+  return printer ( msgStream() , c ) ;
 }
 
 namespace {
@@ -378,15 +375,13 @@ StatusCode CounterSvc::print
 ( const std::string& grp ,
   Printout& printer      ) const
 {
-  CountMap::const_iterator i = m_counts.find ( grp ) ;
+  auto i = m_counts.find ( grp ) ;
   if ( m_counts.end() == i ) { return COUNTER_NOT_PRESENT ; }
 
-  MsgStream log(msgSvc(), name());
   // Force printing in alphabetical order
-  typedef std::map<std::string, Counter*> sorted_map_t;
-  sorted_map_t sorted_map(i->second.begin(), i->second.end());
+  std::map<std::string, Counter*> sorted_map(i->second.begin(), i->second.end());
   std::for_each(sorted_map.begin(), sorted_map.end(),
-                conditionalPrint(printer, log));
+                conditionalPrint(printer, msgStream()));
   return StatusCode::SUCCESS;   // RETURN
 }
 // ===========================================================================
@@ -396,8 +391,7 @@ StatusCode CounterSvc::print
 ( const Counter* pCounter,
   Printout& printer ) const
 {
-  MsgStream log(msgSvc(), name() ) ;
-  return printer ( log , pCounter ) ;
+  return printer ( msgStream() , pCounter ) ;
 }
 // ===========================================================================
 // Print counter value
@@ -411,19 +405,12 @@ StatusCode CounterSvc::print
 // ===========================================================================
 StatusCode CounterSvc::print( Printout& printer ) const
 {
-  MsgStream log ( msgSvc() , name() ) ;
   // Force printing in alphabetical order
-  typedef std::map<std::pair<std::string,std::string>, Counter*> sorted_map_t;
-  sorted_map_t sorted_map;
-  for ( CountMap::const_iterator i = m_counts.begin(); i != m_counts.end(); ++i )
-  {
-    for ( NameMap::const_iterator j = i->second.begin() ; i->second.end() != j ; ++j )
-    {
-      sorted_map[std::make_pair(i->first, j->first)] = j->second;
-    }
-  }
+  std::map<std::pair<std::string,std::string>, Counter*> sorted_map;
+  for ( const auto& i : m_counts ) for ( const auto&  j : i.second )
+      sorted_map[ { i.first, j.first } ] = j.second;
   std::for_each(sorted_map.begin(), sorted_map.end(),
-                conditionalPrint(printer, log));
+                conditionalPrint(printer, msgStream()));
   return StatusCode::SUCCESS;
 }
 // ===========================================================================
@@ -433,8 +420,8 @@ StatusCode CounterSvc::defaultPrintout
 ( MsgStream& log,
   const Counter* c ) const
 {
-  if ( 0 == c ) { return StatusCode::FAILURE ; }
-  std::pair<std::string,std::string> p = _find ( c ) ;
+  if ( !c ) { return StatusCode::FAILURE ; }
+  auto p = _find ( c ) ;
 
   log << MSG::ALWAYS
       << CountObject( const_cast<Counter*>(c) , p.first , p.second )
@@ -447,36 +434,29 @@ StatusCode CounterSvc::defaultPrintout
 // ===========================================================================
 void CounterSvc::print () const
 {
-  MsgStream log ( msgSvc() , name() ) ;
   // number of counters
-  const size_t _num = num() ;
+  const auto _num = num() ;
   if ( 0 != _num )
   {
-    log << MSG::ALWAYS
+    always()
         << "Number of counters : "  << _num << endmsg
         << m_header << endmsg ;
   }
-  {
-    // Force printing in alphabetical order
-    typedef std::map<std::pair<std::string,std::string>, Counter*> sorted_map_t;
-    sorted_map_t sorted_map;
-    for ( CountMap::const_iterator i = m_counts.begin(); i != m_counts.end(); ++i )
-    {
-      for ( NameMap::const_iterator j = i->second.begin() ; i->second.end() != j ; ++j )
-      {
-        Counter* c = j->second ;
-        if ( 0 == c ) { continue ; }
-        sorted_map[std::make_pair(i->first, j->first)] = c;
-      }
+  // Force printing in alphabetical order
+  std::map<std::pair<std::string,std::string>, Counter*> sorted_map;
+  for ( const auto& i : m_counts ) {
+    for ( const auto& j : i.second ) {
+      if ( j.second ) sorted_map[ {i.first, j.first} ] = j.second;
     }
-    for (sorted_map_t::const_iterator i = sorted_map.begin(); i != sorted_map.end(); ++i )
-      log << Gaudi::Utils::formatAsTableRow( i->first.second
-                                           , i->first.first
-                                           , *i->second
-                                           , m_useEffFormat
-                                           , m_format1
-                                           , m_format2 )
-          << endmsg ;
+  }
+  for ( const auto& i : sorted_map ) {
+    always() << Gaudi::Utils::formatAsTableRow( i.first.second
+                                         , i.first.first
+                                         , *i.second
+                                         , m_useEffFormat
+                                         , m_format1
+                                         , m_format2 )
+        << endmsg ;
   }
 }
 // ============================================================================

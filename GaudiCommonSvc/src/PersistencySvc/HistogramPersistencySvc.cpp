@@ -1,4 +1,3 @@
-// $Id: HistogramPersistencySvc.cpp,v 1.9 2008/10/09 13:40:18 marcocle Exp $
 // ============================================================================
 //	HistogramPersistencySvc.cpp
 //--------------------------------------------------------------------
@@ -39,7 +38,14 @@
 // AIDA
 // ============================================================================
 /// @FIXME: AIDA interfaces visibility
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wkeyword-macro"
+#endif
 #define class class GAUDI_API
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 #include "AIDA/IBaseHistogram.h"
 #undef class
 // ============================================================================
@@ -52,28 +58,27 @@ DECLARE_COMPONENT(HistogramPersistencySvc)
 StatusCode HistogramPersistencySvc::finalize()
 {
   //
-  MsgStream log ( msgSvc() , name() );
   if ( !(m_convert.empty() && m_exclude.empty()) )
   { // print message if any of the two properties is used
-    log << MSG::INFO  << "Histograms Converted/Excluded: "
+    info()  << "Histograms Converted/Excluded: "
         << m_converted.size() << "/" << m_excluded.size() << endmsg ;
   }
   if (msgLevel(MSG::DEBUG)) {
     if ( !m_excluded.empty() )
     {
-      log << MSG::DEBUG << "Excluded  Histos : #" << m_excluded.size() ;
-      for ( Set::const_iterator item = m_excluded.begin() ;
-          m_excluded.end() != item ; ++item )
-      { log << std::endl << "  '" << (*item) << "'" ; }
+      auto& log = debug();
+      log <<  "Excluded  Histos : #" << m_excluded.size() ;
+      for ( const auto& item : m_excluded )
+      { log << std::endl << "  '" << item << "'" ; }
       log << endmsg ;
     }
     //
     if ( !m_converted.empty() )
     {
-      log << MSG::DEBUG << "Converted Histos : #" << m_converted.size() ;
-      for ( Set::const_iterator item = m_converted.begin() ;
-          m_converted.end() != item ; ++item )
-      { log << std::endl << "  '" << (*item) << "'" ; }
+      auto& log = debug();
+      log << "Converted Histos : #" << m_converted.size() ;
+      for ( const auto& item : m_converted )
+      { log << std::endl << "  '" << item << "'" ; }
       log << endmsg ;
     }
   }
@@ -84,21 +89,17 @@ StatusCode HistogramPersistencySvc::finalize()
 // ============================================================================
 StatusCode HistogramPersistencySvc::initialize()     {
   StatusCode status = PersistencySvc::initialize();
-  if ( status.isSuccess() )   {
-    status = reinitialize();
-  }
-  return status;
+  return  status.isSuccess() ? reinitialize() : status;
 }
 // ============================================================================
 // Reinitialize the service.
 // ============================================================================
 StatusCode HistogramPersistencySvc::reinitialize()
 {
-  MsgStream log(msgSvc(), name());
   // Obtain the IProperty of the ApplicationMgr
-  SmartIF<IProperty> prpMgr(serviceLocator());
-  if ( !prpMgr.isValid() )   {
-    log << MSG::FATAL << "IProperty interface not found in ApplicationMgr." << endmsg;
+  auto prpMgr = serviceLocator()->as<IProperty>();
+  if ( !prpMgr )   {
+    fatal() << "IProperty interface not found in ApplicationMgr." << endmsg;
     return StatusCode::FAILURE;
   }
   else {
@@ -107,9 +108,9 @@ StatusCode HistogramPersistencySvc::reinitialize()
 
   // To keep backward compatibility, we set the property of conversion service
   // into JobOptions catalogue
-  if( m_outputFile != "" ) {
-    SmartIF<IJobOptionsSvc> joptsvc(serviceLocator()->service("JobOptionsSvc"));
-    if( joptsvc.isValid() ) {
+  if( !m_outputFile.empty() ) {
+    auto joptsvc = serviceLocator()->service<IJobOptionsSvc> ("JobOptionsSvc");
+    if( joptsvc ) {
       StringProperty p("OutputFile", m_outputFile);
       if ( m_histPersName == "ROOT" ) {
         joptsvc->addPropertyToCatalogue("RootHistSvc", p).ignore();
@@ -120,7 +121,7 @@ StatusCode HistogramPersistencySvc::reinitialize()
   }
 
   // Load the Histogram persistency service that's required as default
-  setConversionSvc(0).ignore();
+  setConversionSvc(nullptr).ignore();
   if ( m_histPersName == "ROOT" ) {
     setConversionSvc(service("RootHistSvc")).ignore();
     if ( !conversionSvc() ) {
@@ -138,7 +139,7 @@ StatusCode HistogramPersistencySvc::reinitialize()
   else if ( m_histPersName == "NONE" ) {
     enable(false);
     if ( m_warnings ) {
-      log << MSG::WARNING << "Histograms saving not required." << endmsg;
+      warning() << "Histograms saving not required." << endmsg;
     }
   }
   else {
@@ -148,7 +149,7 @@ StatusCode HistogramPersistencySvc::reinitialize()
     }
     enable(true);
     if ( m_warnings ) {
-      log << MSG::WARNING << "Unknown Histogram Persistency Mechanism " << m_histPersName << endmsg;
+      warning() << "Unknown Histogram Persistency Mechanism " << m_histPersName << endmsg;
     }
   }
   return StatusCode::SUCCESS;
@@ -180,9 +181,9 @@ namespace
    */
   inline const std::string& oname ( const DataObject* obj )
   {
-    if ( 0 == obj ) { return s_NULL ; }
-    const IRegistry* reg = obj->registry() ;
-    return ( 0 == reg ) ? obj -> name () : reg -> identifier () ;
+    if ( !obj ) { return s_NULL ; }
+    auto reg = obj->registry() ;
+    return reg ? reg -> identifier() : obj -> name () ;
   }
   // ==========================================================================
   /** check the match of the full name of data object with the pattern
@@ -193,8 +194,7 @@ namespace
   inline bool match ( const DataObject*  obj ,
                       const std::string& pat )
   {
-    if ( 0 == obj ) { return false ; }
-    return match ( oname ( obj ) , pat ) ;
+    return obj && match ( oname ( obj ) , pat ) ;
   }
   // ==========================================================================
 }
@@ -214,25 +214,18 @@ StatusCode HistogramPersistencySvc::createRep
     return PersistencySvc::createRep ( pObj , refpAddr ) ;   // RETURN
   }
   // histogram ?
-  if ( 0 != dynamic_cast<AIDA::IBaseHistogram*> ( pObj ) )
+  if ( dynamic_cast<AIDA::IBaseHistogram*> ( pObj ) )
   {
-    bool select = false ;
+
+    auto match_pObj = [&](const std::string& s) { return match( pObj , s ); };
     // Empty ConvertHistos property means convert all
-    if ( m_convert.empty() ) { select = true ; }
-    else
-    {
-      for ( Strings::const_iterator item = m_convert.begin() ;
-            m_convert.end() != item ; ++item )
-      { if ( match ( pObj , *item ) ) { select = true ; break ; } }
-    }
-    // exclude ?
-    for ( Strings::const_iterator item = m_exclude.begin() ;
-          m_exclude.end() != item && select ; ++item )
-    { if ( match ( pObj , *item ) ) { select = false ; break ; } }
+    bool select = ( m_convert.empty()
+                    || std::any_of( m_convert.begin(), m_convert.end(), match_pObj )
+                  ) && std::none_of( m_exclude.begin(), m_exclude.end(), match_pObj );
     //
     enable ( select ) ;
     //
-    const std::string& path = oname ( pObj ) ;
+    const auto& path = oname ( pObj ) ;
     //
     if ( !select ) { m_excluded.insert  ( path ) ; }
     else           { m_converted.insert ( path ) ; }
@@ -247,12 +240,6 @@ HistogramPersistencySvc::HistogramPersistencySvc
 ( const std::string& name ,
   ISvcLocator*       svc  )
   :  PersistencySvc(name, svc)
-  //
-  , m_convert   ()
-  , m_exclude   ()
-  , m_converted ()
-  , m_excluded  ()
-  //
 {
   std::vector<std::string> defServices;
   defServices.push_back("RootHistSvc");
@@ -270,12 +257,6 @@ HistogramPersistencySvc::HistogramPersistencySvc
   declareProperty("Warnings",m_warnings=true,
 		  "Set this property to false to suppress warning messages");
 }
-// ============================================================================
-// Standard Destructor
-// ============================================================================
-HistogramPersistencySvc::~HistogramPersistencySvc()   {}
-// ============================================================================
-
 
 // ============================================================================
 // The END

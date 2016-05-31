@@ -1,5 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/IHistorySvc.h,v 1.1 2004/07/14 18:13:57 leggett Exp $
-
 #ifndef GAUDIKERNEL_IHISTORYSVC_H
 #define GAUDIKERNEL_IHISTORYSVC_H
 

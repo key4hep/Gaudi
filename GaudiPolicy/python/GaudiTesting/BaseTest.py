@@ -27,6 +27,33 @@ def sanitize_for_xml(data):
         return ''.join('[NON-XML-CHAR-0x%2X]' % ord(c) for c in match.group())
     return bad_chars.sub(quote, data)
 
+def dumpProcs(name):
+    '''helper to debug GAUDI-1084, dump the list of processes'''
+    from getpass import getuser
+    if 'WORKSPACE' in os.environ:
+        p = Popen(['ps', '-fH', '-U', getuser()], stdout=PIPE)
+        with open(os.path.join(os.environ['WORKSPACE'], name), 'w') as f:
+            f.write(p.communicate()[0])
+
+def kill_tree(ppid, sig):
+    '''
+    Send a signal to a process and all its child processes (starting from the
+    leaves).
+    '''
+    log = logging.getLogger('kill_tree')
+    ps_cmd = ['ps', '--no-headers', '-o', 'pid', '--ppid', str(ppid)]
+    get_children = Popen(ps_cmd, stdout=PIPE, stderr=PIPE)
+    children = map(int, get_children.communicate()[0].split())
+    for child in children:
+        kill_tree(child, sig)
+    try:
+        log.debug('killing process %d', ppid)
+        os.kill(ppid, sig)
+    except OSError, err:
+        if err.errno != 3: # No such process
+            raise
+        log.debug('no such process %d', ppid)
+
 #-------------------------------------------------------------------------#
 class BaseTest(object):
 
@@ -134,25 +161,26 @@ class BaseTest(object):
                               params, workdir)
                 self.proc = Popen(params, stdout=PIPE, stderr=PIPE,
                                   env=self.environment)
+                logging.debug('(pid: %d)', self.proc.pid)
                 self.out, self.err = self.proc.communicate()
 
             thread = threading.Thread(target=target)
             thread.start()
-            #catching timeout
+            # catching timeout
             thread.join(self.timeout)
 
             if thread.is_alive():
+                logging.debug('time out in test %s (pid %d)', self.name, self.proc.pid)
                 # get the stack trace of the stuck process
-                cmd = ['gdb', '-p', str(self.proc.pid), '-n', '-q']
+                cmd = ['gdb', '--pid', str(self.proc.pid), '--batch',
+                       '--eval-command=thread apply all backtrace']
                 gdb = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
-                self.stack_trace = gdb.communicate('set pagination off\n'
-                                                   'set confirm off\n'
-                                                   'thread apply all backtrace\n'
-                                                   'quit\n')[0]
+                self.stack_trace = gdb.communicate()[0]
 
-                self.proc.send_signal(signal.SIGKILL)
-                logging.debug('time out in test %s', self.name)
-                thread.join()
+                kill_tree(self.proc.pid, signal.SIGTERM)
+                thread.join(60)
+                if thread.is_alive():
+                    kill_tree(self.proc.pid, signal.SIGKILL)
                 self.causes.append('timeout')
             else:
                 logging.debug('completed test %s', self.name)
@@ -471,6 +499,8 @@ class BaseTest(object):
             head = basename + "."
             head_len = len(head)
             platform = platformSplit(GetPlatform(self))
+            if 'do0' in platform:
+                platform.add('dbg')
             candidates = []
             for f in os.listdir(dirname):
                 if f.startswith(head):
@@ -748,6 +778,8 @@ for w,o,r in [
               (None, r"e([-+])0([0-9][0-9])", r"e\1\2"),
               # Output line changed in Gaudi v24
               (None, r'Service reference count check:', r'Looping over all active services...'),
+              # Change of property name in Algorithm (GAUDI-1030)
+              (None, r"Property(.*)'ErrorCount':", r"Property\1'ErrorCounter':"),
               ]: #[ ("TIMER.TIMER","[0-9]+[0-9.]*", "") ]
     normalizeExamples += RegexpReplacer(o,r,w)
 
@@ -909,7 +941,7 @@ def getCmpFailingValues(reference, to_check, fail_path):
     return (fail_path, r, c)
 
 # signature of the print-out of the histograms
-h_count_re = re.compile(r"^(.*)SUCCESS\s+Booked (\d+) Histogram\(s\) :\s+(.*)")
+h_count_re = re.compile(r"^(.*)SUCCESS\s+Booked (\d+) Histogram\(s\) :\s+([\s\w=-]*)")
 
 
 def _parseTTreeSummary(lines, pos):
@@ -1064,7 +1096,9 @@ def GetPlatform(self):
        """
    arch = "None"
    # check architecture name
-   if "CMTCONFIG" in os.environ:
+   if "BINARY_TAG" in os.environ:
+       arch = os.environ["BINARY_TAG"]
+   elif "CMTCONFIG" in os.environ:
        arch = os.environ["CMTCONFIG"]
    elif "SCRAM_ARCH" in os.environ:
        arch = os.environ["SCRAM_ARCH"]

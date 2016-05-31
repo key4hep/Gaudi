@@ -1,4 +1,3 @@
-// $Id: Splines.cpp,v 1.2 2005/11/25 10:27:03 mato Exp $
 // ============================================================================
 // Include files
 // ============================================================================
@@ -38,8 +37,8 @@ namespace Genfun
       , m_dim       ( x.size() )
       , m_x         ( new double[ x.size() ] )
       , m_y         ( new double[ y.size() ] )
-      , m_spline    ( 0 )
-      , m_accel     ( 0 )
+      , m_spline    ( nullptr )
+      , m_accel     ( nullptr )
       , m_type      ( type )
     {
 #ifdef WIN32
@@ -49,8 +48,8 @@ namespace Genfun
 #pragma warning(push)
 #pragma warning(disable:4996)
 #endif
-      std::copy( x.begin() , x.end() , m_x ) ;
-      std::copy( y.begin() , y.end() , m_y ) ;
+      std::copy( x.begin() , x.end() , m_x.get() ) ;
+      std::copy( y.begin() , y.end() , m_y.get() ) ;
 #ifdef WIN32
 #pragma warning(pop)
 #endif
@@ -71,17 +70,14 @@ namespace Genfun
       , m_dim       ( data.size() )
       , m_x         ( new double[ data.size() ] )
       , m_y         ( new double[ data.size() ] )
-      , m_spline    ( 0    )
-      , m_accel     ( 0    )
       , m_type      ( type )
     {
-      double*  _x = m_x ;
-      double*  _y = m_y ;
-      for( Data2D::const_iterator it =
-             data.begin() ; data.end() != it ; ++it )
+      double*  _x = m_x.get() ;
+      double*  _y = m_y.get() ;
+      for( const auto& i : data )
       {
-        *_x = it -> first  ; ++_x ;
-        *_y = it -> second ; ++_y ;
+        *_x = i.first  ; ++_x ;
+        *_y = i.second ; ++_y ;
       }
     }
     // ========================================================================
@@ -94,13 +90,10 @@ namespace Genfun
       , m_dim       ( right.m_dim )
       , m_x         ( new double[ right.m_dim ] )
       , m_y         ( new double[ right.m_dim ] )
-      , m_spline    ( 0            )
-      , m_accel     ( 0            )
       , m_type      ( right.m_type )
     {
-      const std::size_t size = sizeof(double) * m_dim;
-      std::memcpy(m_x, right.m_x, size);
-      std::memcpy(m_y, right.m_y, size);
+      std::copy_n(right.m_x.get(),m_dim,m_x.get());
+      std::copy_n(right.m_y.get(),m_dim,m_y.get());
     }
     // ========================================================================
 
@@ -109,11 +102,8 @@ namespace Genfun
     // ========================================================================
     SplineBase::~SplineBase()
     {
-      if ( 0 != m_spline ) { gsl_spline_free       ( m_spline ) ; }
-      if ( 0 != m_accel  ) { gsl_interp_accel_free ( m_accel  ) ; }
-
-      if ( 0 != m_x      ) { delete[] m_x      ; }
-      if ( 0 != m_y      ) { delete[] m_y      ; }
+      if ( m_spline ) { gsl_spline_free       ( m_spline ) ; }
+      if ( m_accel  ) { gsl_interp_accel_free ( m_accel  ) ; }
     }
     // ========================================================================
 
@@ -122,7 +112,7 @@ namespace Genfun
     {
       if ( m_init ) { return ; }                                 // RETURN
 
-      const gsl_interp_type* T = 0 ;
+      const gsl_interp_type* T = nullptr ;
 
       switch ( m_type )
       {
@@ -144,7 +134,7 @@ namespace Genfun
 
       m_spline = gsl_spline_alloc( T , m_dim ) ;
 
-      gsl_spline_init( m_spline , m_x , m_y , m_dim ) ;
+      gsl_spline_init( m_spline , m_x.get() , m_y.get() , m_dim ) ;
 
       m_accel  = gsl_interp_accel_alloc() ;
 
@@ -273,7 +263,7 @@ namespace Genfun
     // ========================================================================
     /// destructor
     // ========================================================================
-    GSLSpline::~GSLSpline(){}
+    GSLSpline::~GSLSpline() = default;
     // ========================================================================
 
     // ========================================================================

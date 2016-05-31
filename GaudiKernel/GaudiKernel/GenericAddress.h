@@ -1,4 +1,3 @@
-// $Id: GenericAddress.h,v 1.7 2003/08/05 13:49:15 mato Exp $
 #ifndef GAUDIKERNEL_GENERICADDRESS_H
 #define GAUDIKERNEL_GENERICADDRESS_H
 
@@ -21,32 +20,24 @@ class IRegistry;
 class GAUDI_API GenericAddress: public IOpaqueAddress  {
 protected:
   /// Reference count
-  unsigned long   m_refCount;
+  unsigned long   m_refCount = 0;
   /// Storage type
-  long            m_svcType;
+  long            m_svcType = 0;
   /// Class id
-  CLID            m_clID;
+  CLID            m_clID = 0;
   /// String parameters to be accessed
   std::string     m_par[3];
   /// Integer parameters to be accessed
-  unsigned long   m_ipar[2];
+  unsigned long   m_ipar[2] = {0xFFFFFFFF,0xFFFFFFFF};
   /// Pointer to corresponding directory
-  IRegistry*      m_pRegistry;
+  IRegistry*      m_pRegistry = nullptr;
 
 public:
   /// Dummy constructor
-  GenericAddress()
-    : m_refCount(0),
-      m_svcType(0),
-      m_clID(0),
-      m_pRegistry(0)
-  {
-    m_ipar[0]=m_ipar[1]=0xFFFFFFFF;
-  }
-  /// Standard Constructor
+  GenericAddress() = default;
+  /// Standard Copy Constructor (note: m_refCount is NOT copied)
   GenericAddress(const GenericAddress& copy)
     : IOpaqueAddress(copy),
-      m_refCount(0),
       m_svcType(copy.m_svcType),
       m_clID(copy.m_clID),
       m_pRegistry(copy.m_pRegistry)
@@ -59,47 +50,42 @@ public:
   /// Standard Constructor
   GenericAddress( long svc,
                   const CLID& clid,
-                  const std::string& p1="",
-                  const std::string& p2="",
+                  std::string p1="",
+                  std::string p2="",
                   unsigned long ip1=0,
                   unsigned long ip2=0)
-    : m_refCount(0),
-      m_svcType(svc),
-      m_clID(clid),
-      m_pRegistry(0)
+    : m_svcType(svc),
+      m_clID(clid)
   {
-    m_par[0]  = p1;
-    m_par[1]  = p2;
+    m_par[0]  = std::move(p1);
+    m_par[1]  = std::move(p2);
     m_ipar[0] = ip1;
     m_ipar[1] = ip2;
   }
 
   /// Standard Destructor
-  virtual ~GenericAddress()   {
-  }
+  ~GenericAddress() override  = default;
 
   /// Add reference to object
-  virtual unsigned long addRef   ()   {
+  unsigned long addRef () override {
     return ++m_refCount;
   }
   /// release reference to object
-  virtual unsigned long release  ()   {
+  unsigned long release() override {
     int cnt = --m_refCount;
-    if ( 0 == cnt )   {
-      delete this;
-    }
+    if ( 0 == cnt ) delete this;
     return cnt;
   }
   /// Pointer to directory
-  virtual IRegistry* registry()   const     {
+  IRegistry* registry()   const  override   {
     return m_pRegistry;
   }
   /// Set pointer to directory
-  virtual void setRegistry(IRegistry* pRegistry)   {
+  void setRegistry(IRegistry* pRegistry)   override {
     m_pRegistry = pRegistry;
   }
   /// Access : Retrieve class ID of the link
-  const CLID& clID()  const   {
+  const CLID& clID()  const override {
     return m_clID;
   }
   /// Access : Set class ID of the link
@@ -107,7 +93,7 @@ public:
     m_clID = clid;
   }
   /// Access : retrieve the storage type of the class id
-  long svcType()  const    {
+  long svcType()  const override{
     return m_svcType;
   }
   /// Access : set the storage type of the class id
@@ -115,13 +101,12 @@ public:
     m_svcType = typ;
   }
   /// Retrieve string parameters
-  virtual const std::string* par() const   {
+  const std::string* par() const override {
     return m_par;
   }
   /// Retrieve integer parameters
-  virtual const unsigned long* ipar()  const  {
+  const unsigned long* ipar()  const  override {
     return m_ipar;
   }
 };
 #endif // GAUDIKERNEL_GENERICADDRESS_H
-

@@ -1,4 +1,3 @@
-// $Id: HistogramAgent.h,v 1.3 2003/04/15 07:51:15 mato Exp $
 #ifndef GAUDIKERNEL_HISTOGRAMAGENT_H
 #define GAUDIKERNEL_HISTOGRAMAGENT_H
 
@@ -20,23 +19,21 @@ protected:
   IDataSelector m_objects;
 public:
   /// Default creator
-  HistogramAgent() {
-  }
+  HistogramAgent() = default;
+
   /// Destructor
-  virtual ~HistogramAgent()  {
-  }
+  ~HistogramAgent()  override = default;
+
   /// Return the set of selected DataObjects
   IDataSelector* selectedObjects()    {
     return &m_objects;
   }
   /// Analyses a given directory entry 
-  virtual bool analyse(IRegistry* pRegistry, int )   {
+  bool analyse(IRegistry* pRegistry, int )   override {
     DataObject* obj = pRegistry->object();
-    if ( 0 != obj )  {
-      if ( obj->clID() != CLID_StatisticsFile )    {
+    if ( obj &&  obj->clID() != CLID_StatisticsFile )    {
         m_objects.push_back(obj);
         return true;
-      }
     }
     return false;
   }

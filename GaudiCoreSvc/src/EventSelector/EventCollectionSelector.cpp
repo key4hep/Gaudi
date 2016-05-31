@@ -2,7 +2,6 @@
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/ObjectFactory.h"
 #include "GaudiKernel/GenericAddress.h"
-#include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/IRegistry.h"
 #include "GaudiKernel/INTupleSvc.h"
 #include "GaudiKernel/ISvcLocator.h"
@@ -27,8 +26,8 @@ class EventCollectionContext : public IEvtSelector::Context {
 public:
   typedef std::list<std::string> ListName;
 private:
-  GenericAddress*                m_pAddressBuffer;
-  const EventCollectionSelector* m_pSelector;
+  GenericAddress*                m_pAddressBuffer = nullptr;
+  const EventCollectionSelector* m_pSelector = nullptr;
   ListName                      m_files;
   std::string                   m_criteria;
   ListName::const_iterator      m_fileIterator;
@@ -38,7 +37,7 @@ public:
   /// Standard constructor
   EventCollectionContext(const EventCollectionSelector* pSelector);
   /// Standard destructor
-  virtual ~EventCollectionContext();
+  ~EventCollectionContext() override;
   const std::string& currentInput() const {
     return m_currentInput;
   }
@@ -48,7 +47,7 @@ public:
   ListName& files() {
     return m_files;
   }
-  virtual void* identifier() const {
+  void* identifier() const override {
     return (void*)m_pSelector;
   }
   void setCriteria(const std::string& crit) {
@@ -87,26 +86,22 @@ EventCollectionSelector::EventCollectionSelector(const std::string& name, ISvcLo
   declareProperty("Function",      m_statement= "NTuple::Selector");
 }
 
-EventCollectionSelector::~EventCollectionSelector()   {
-}
-
 // IService implementation: Db event selector override
 StatusCode EventCollectionSelector::initialize()    {
   // Initialize base class
   StatusCode status = Service::initialize();
-  MsgStream log(msgSvc(), name());
   if ( !status.isSuccess() )    {
-    log << MSG::ERROR << "Error initializing base class Service!" << endmsg;
+    error() << "Error initializing base class Service!" << endmsg;
     return status;
   }
   m_pAddrCreator = serviceLocator()->service("EventPersistencySvc");
-  if(!m_pAddrCreator.isValid()) {
-    log << MSG::ERROR << "Unable to locate IAddressCreator interface of " << "EventPersistencySvc" << endmsg;
+  if(!m_pAddrCreator) {
+    error() << "Unable to locate IAddressCreator interface of " << "EventPersistencySvc" << endmsg;
     return status;
   }
   m_tupleSvc = serviceLocator()->service(m_tupleSvcName);
-  if( !m_tupleSvc.isValid() )   {
-    log << MSG::ERROR << "Unable to locate INTupleSvc interface of " << m_tupleSvcName << endmsg;
+  if( !m_tupleSvc )   {
+    error() << "Unable to locate INTupleSvc interface of " << m_tupleSvcName << endmsg;
     return status;
   }
   return status;
@@ -117,9 +112,9 @@ StatusCode
 EventCollectionSelector::connectDataSource(const std::string& db, const std::string& /* typ */ )  const {
   StatusCode status = StatusCode::FAILURE;
   SmartIF<IDataSourceMgr> svc(m_tupleSvc);
-  if ( svc.isValid( ) && db.length() > 0 )   {
+  if ( svc && !db.empty()  )   {
     std::string ident = name() + ' ';
-    ident += "DATAFILE='" + m_database.substr(5,m_database.length()) + "' ";
+    ident += "DATAFILE='" + m_database.substr(5) + "' ";
     if ( !m_dbSvc.empty() )
       ident += "SVC='" + m_dbSvc + "' ";
     else
@@ -141,21 +136,15 @@ EventCollectionSelector::connectTuple(const std::string& nam, const std::string&
   if ( status.isSuccess() )    {
     item = new NTuple::Item<IOpaqueAddress*>();
     status = tup->item(itName, *item);
-    if ( status.isSuccess() )   {
-      return status;
-    }
-    else    {
-      MsgStream log(msgSvc(), name());
-      log << MSG::ERROR << "Item " << itName << " is not part of the collection:" << top << endmsg;
-    }
+    if ( status.isSuccess() ) return status;
+    error() << "Item " << itName << " is not part of the collection:" << top << endmsg;
     delete item;
-    item = 0;
+    item = nullptr;
   }
   else  {
-    MsgStream err(msgSvc(), name());
-    err << MSG::ERROR << "Cannot connect to collection:" << top << endmsg;
+    error() << "Cannot connect to collection:" << top << endmsg;
   }
-  tup = 0;
+  tup = nullptr;
   return status;
 }
 
@@ -163,11 +152,11 @@ EventCollectionSelector::connectTuple(const std::string& nam, const std::string&
 StatusCode
 EventCollectionSelector::connectStatement(const std::string& typ, const std::string& crit, INTuple* tuple)  const {
   std::string seltyp = typ;
-  if ( seltyp.length() > 0 || crit.length() > 0 )   {
-    if ( crit.length() > 0 && seltyp.length() == 0 ) seltyp = "NTuple::Selector";
+  if ( !seltyp.empty() || !crit.empty() )   {
+    if ( !crit.empty() && seltyp.length() == 0 ) seltyp = "NTuple::Selector";
     SmartIF<ISelectStatement> stmt(ObjFactory::create(seltyp, serviceLocator()));
-    if ( stmt.isValid( ) )    {
-      if ( crit.length() > 0 ) stmt->setCriteria(crit);
+    if ( stmt )    {
+      if ( !crit.empty() ) stmt->setCriteria(crit);
       tuple->attachSelector(stmt).ignore();
       return StatusCode::SUCCESS;
     }
@@ -179,7 +168,7 @@ EventCollectionSelector::connectStatement(const std::string& typ, const std::str
 /// Read next record of the N-tuple
 StatusCode EventCollectionSelector::getNextRecord(NTuple::Tuple* tuple)   const {
   StatusCode status = StatusCode::FAILURE;
-  if ( 0 != tuple )   {
+  if ( tuple )   {
     do {
       status = m_tupleSvc->readRecord(tuple);
       if ( status.isSuccess() )   {
@@ -248,8 +237,8 @@ StatusCode EventCollectionSelector::connectCollection(MyContextType* ctxt) const
 // Finalize service
 StatusCode EventCollectionSelector::finalize()    {
   // release services
-  m_pAddrCreator = 0;
-  m_tupleSvc = 0;
+  m_pAddrCreator = nullptr;
+  m_tupleSvc = nullptr;
   return Service::finalize();
 }
 
@@ -257,12 +246,11 @@ StatusCode EventCollectionSelector::finalize()    {
 StatusCode
 EventCollectionSelector::createContext(Context*& refpCtxt) const
 {
-  refpCtxt = 0;
-  std::auto_ptr<MyContextType> ctxt(new MyContextType());
+  refpCtxt = nullptr;
+  std::unique_ptr<MyContextType> ctxt(new MyContextType());
   StatusCode status = connectCollection(ctxt.get());
   if( !status.isSuccess() )  {
-    MsgStream log(msgSvc(), name());
-    log << MSG::ERROR << "Unable to connect Collection file \"" << m_database << "\"" << endmsg;
+    error() << "Unable to connect Collection file \"" << m_database << "\"" << endmsg;
     return status;
   }
   refpCtxt = ctxt.release();
@@ -330,7 +318,7 @@ EventCollectionSelector::createAddress(const Context& refCtxt, IOpaqueAddress*& 
   if ( ctxt )   {
     IOpaqueAddress* pA = *(ctxt->item);
     if ( pA )  {
-      IOpaqueAddress* pAddress = 0;
+      IOpaqueAddress* pAddress = nullptr;
       StatusCode status = m_pAddrCreator->createAddress(pA->svcType(),
                                                         pA->clID(),
                                                         pA->par(),
@@ -341,8 +329,7 @@ EventCollectionSelector::createAddress(const Context& refCtxt, IOpaqueAddress*& 
         return StatusCode::SUCCESS;
       }
       else    {
-        MsgStream log(msgSvc(), name());
-        log << MSG::ERROR << "Failed to access " << pA->par()[0]
+        error() << "Failed to access " << pA->par()[0]
             << ":" << pA->par()[1]
             << " SvcTyp:" << long(pA->svcType())
             << " CLID:"   << pA->clID()
@@ -360,7 +347,7 @@ EventCollectionSelector::releaseContext(Context*& refCtxt) const
   MyContextType *ctxt  = dynamic_cast<MyContextType*>(refCtxt);
   if ( ctxt )   {
     delete ctxt;
-    ctxt = 0;
+    ctxt = nullptr;
     return StatusCode::SUCCESS;
   }
   return StatusCode::FAILURE;

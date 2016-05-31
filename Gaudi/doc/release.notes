@@ -2,6 +2,116 @@ Package : Gaudi
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+================================ Gaudi v27r1 =================================
+
+! 2016-02-15 - commit 4dc9082
+
+ - fixed handling of (multi line) strings and ';' in strings for .opts files
+
+   Fixes GAUDI-1179
+    See merge request !112
+
+! 2016-02-06 - commit d905569
+
+ - introduce DataHandle and DataObjectHandle
+
+   See merge requests !57 !94 !95
+
+================================ Gaudi v27r0 =================================
+
+! 2015-11-02 - commit 57f356c
+
+ - Merge branch 'hive' into 'master'
+
+   Fixes GAUDI-978.
+
+   See merge request !65
+
+================================ Gaudi v26r4 =================================
+
+! 2015-10-06 - commit 0b7a459
+
+ - Merge branch 'GAUDI-1093' into 'master'
+
+   avoid (deprecated) Python module `commands`
+
+   fixes GAUDI-1093
+
+   See merge request !38
+
+
+! 2015-09-16 - commit 7eb8601
+
+ - Merge branch 'GAUDI-1055' into 'master'
+
+   GAUDI-1055: Allow use of Python configurables and components at build time.
+
+   this merge request also includes a minor fix to gaudirun.py
+
+   See merge request !12
+
+
+! 2015-07-23 - commit 5f7f60e
+
+ - Merge branch 'dev/gdb_hook' into 'master'
+
+   hook for gdb
+
+   add hook and command line option ("--gdb") to start up gdb and attach it to
+   currently running process.
+
+   See GAUDI-1056
+
+   See merge request !8
+
+================================ Gaudi v26r3 =================================
+! 2015-06-18 - Marco Clemencic
+ - Fixed GAUDI-1045: segfault running "LD_PRELOAD=libjemalloc.so gaudirun.py"
+
+   The segfault was due to a Python ctypes "feature": Python integers passed to
+   C functions are truncated to 32 bits even if the function is declared
+   expecting 64 bits numbers (like void*).
+   In addition, C functions declared to return void* get the return value
+   converted to (Python) int.
+   The net result is that the sequence:
+   ```
+   instance = lib.myFactory()
+   lib.doSomething(instance)
+   ```
+   may give a segfault if the pointer returned by lib.myFactory is too big (as
+   it happens with jemalloc).
+
+   The work-around is to ensure that the void* returned by lib.myFactory is
+   wrapped in a ctypes.c_void_p instance.
+
+   See http://stackoverflow.com/questions/17840144.
+
+================================ Gaudi v26r2 =================================
+! 2015-05-07 - Marco Clemencic
+ - Fixed GAUDI-1033: segfaults when calling Python functions from C++
+   Use ctypes.PyDLL instead of ctypes.CDLL. This prevents python threads to run
+   in parallel to the C++ code, but is consistent with the bootstrap via ROOT.
+   Once the user code is instrumented to correctly acquire the GIL, we can
+   revert to ctypes.CDLL.
+
+! 2015-04-20 - Marco Clemencic
+ - Modified the minimal boostrap function to force the import of GaudiPython
+   with ROOT <= 6.2.5, to work around a bug in ROOT.
+
+! 2015-04-13 - Marco Clemencic
+ - Refactored printing of alg sequences and moved it after the initialize,
+   to allow an implemetation in C++ (to avoid GaudiPython in gaudirun.py).
+
+! 2015-04-13 - Marco Clemencic
+ - Enable GaudiPython in gaudirun.py with an environment variable.
+   Setting GAUDIRUN_USE_GAUDIPYTHON (any non-empty value) forces the use of
+   GaudiPython for bootstrapping in gaudirun.py.
+
+! 2015-04-10 - Marco Clemencic
+ - Replaced GaudiPython/cppyy with ctypes in Gaudi.Main.
+   GaudiPython is still used for the --printsequence and custom main loop
+   cases.
+
 ================================ Gaudi v26r1 =================================
 ! 2015-02-02 - Marco Clemencic
  - Fixed GAUDI-1001: '\' and '\n' not correctly interpreted by gaudirun.py

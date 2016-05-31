@@ -1,15 +1,16 @@
-// $Id: IAlgorithm.h,v 1.12 2008/10/17 13:06:04 marcocle Exp $
 #ifndef GAUDIKERNEL_IALGORITHM_H
 #define GAUDIKERNEL_IALGORITHM_H
 
 // Include files
 #include "GaudiKernel/INamedInterface.h"
-#include "GaudiKernel/StateMachine.h"
+#include "GaudiKernel/IStateful.h"
 #include <string>
 
-class MinimalDataObjectHandle;
-class DataObjectDescriptorCollection;
 class IAlgTool;
+class AlgResourcePool;
+namespace Gaudi {
+  class StringKey;
+}
 
 /** @class IAlgorithm IAlgorithm.h GaudiKernel/IAlgorithm.h
 
@@ -21,10 +22,14 @@ class IAlgTool;
     @author D.Quarrie
     @author Marco Clemencic
 */
-class GAUDI_API IAlgorithm : virtual public INamedInterface {
+class GAUDI_API IAlgorithm : virtual public extend_interfaces<INamedInterface,
+                                                              IStateful> {
 public:
+
+  friend AlgResourcePool;
+
   /// InterfaceID
-  DeclareInterfaceID(IAlgorithm,4,0);
+  DeclareInterfaceID(IAlgorithm,5,0);
 
   /** The version of the algorithm
    */
@@ -35,9 +40,13 @@ public:
   virtual const std::string& type() const = 0;
   virtual void  setType(const std::string& ) = 0;
   
+  /** StringKey rep of name
+   */
+  virtual const Gaudi::StringKey& nameKey() const = 0;
+
   /** The index of the algorithm
    */  
-  virtual unsigned int index() = 0;
+  virtual unsigned int index() const = 0;
   
   /** Specify if the algorithm is clonable
    */ 
@@ -51,13 +60,6 @@ public:
    */
   virtual const std::vector<std::string>& neededResources() const = 0;
     
-  /** The data object handles associated to the algorithm
-   */
-  __attribute__ ((deprecated)) virtual const std::vector<MinimalDataObjectHandle*> handles() = 0;
-  
-  virtual const DataObjectDescriptorCollection & inputDataObjects() const = 0;
-  virtual const DataObjectDescriptorCollection & outputDataObjects() const = 0;
-
   /** The action to be performed by the algorithm on an event. This method is
       invoked once per event for top level algorithms by the application manager.
   */
@@ -69,43 +71,6 @@ public:
   virtual bool isFinalized() const = 0;
   /// check if the algorithm is already executed for the current event
   virtual bool isExecuted() const = 0;
-
-  // --- Methods from IStateful ---
-  /** Configuration (from OFFLINE to CONFIGURED).
-  */
-  virtual StatusCode configure() = 0;
-
-  /** Initialization (from CONFIGURED to INITIALIZED).
-   */
-  virtual StatusCode initialize() = 0;
-
-  /** Start (from INITIALIZED to RUNNING).
-  */
-  virtual StatusCode start() = 0;
-
-  /** Stop (from RUNNING to INITIALIZED).
-  */
-  virtual StatusCode stop() = 0;
-
-  /** Finalize (from INITIALIZED to CONFIGURED).
-  */
-  virtual StatusCode finalize() = 0;
-
-  /** Initialization (from CONFIGURED to OFFLINE).
-  */
-  virtual StatusCode terminate() = 0;
-
-  /** Initialization (from INITIALIZED or RUNNING to INITIALIZED, via CONFIGURED).
-  */
-  virtual StatusCode reinitialize() = 0;
-
-  /** Initialization (from RUNNING to RUNNING, via INITIALIZED).
-  */
-  virtual StatusCode restart() = 0;
-
-  /** Get the current state.
-   */
-  virtual Gaudi::StateMachine::State FSMState() const = 0;
 
   /** Initialization method invoked by the framework. This method is responsible
       for any bookkeeping of initialization required by the framework itself.
@@ -185,6 +150,10 @@ public:
 
   /// Set the filter passed flag to the specified state
   virtual void setFilterPassed( bool state ) = 0;
+
+ protected:
+  /// Set instantiation index of Alg
+  virtual void setIndex(const unsigned int& idx) = 0;
 
 };
 

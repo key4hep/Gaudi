@@ -13,9 +13,9 @@ mygalg.PrivToolHandle.String = "Is a private tool"
 
 print mygalg
 
-mygalg.Inputs.tracks.Path = 'BestTracks/Tracks'
-mygalg.Inputs.hits.Path = 'Rec/Hits'
-mygalg.Inputs.raw.AlternativePaths.insert(0, '/copy/RAW')
+mygalg.tracks.Path = 'BestTracks/Tracks'
+mygalg.hits.Path = 'Rec/Hits'
+mygalg.raw.AlternativePaths = ['/copy/RAW','/Rec/RAW','/DAQ/RAW']
 
 mygalg.RootInTES = '/Skim'
 

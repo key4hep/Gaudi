@@ -1,6 +1,5 @@
-# setting LC_ALL to "C"
-# --> Including file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/ROOT_IO/CollWrite.py'
-# <-- End of file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/ROOT_IO/CollWrite.py'
+# --> Including file '/afs/cern.ch/work/l/leggett/GaudiSrc/hive/git/DataObjID/Gaudi.2/GaudiExamples/options/ROOT_IO/CollWrite.py'
+# <-- End of file '/afs/cern.ch/work/l/leggett/GaudiSrc/hive/git/DataObjID/Gaudi.2/GaudiExamples/options/ROOT_IO/CollWrite.py'
 # applying configuration of GaudiPersistency
 # /***** User GaudiPersistency/GaudiPersistency ******************************************************
 # |-<no properties>
@@ -14,9 +13,7 @@
                                       'Gaudi::IODataManager/IODataManager',
                                       'Gaudi::RootCnvSvc/RootCnvSvc'],
                     'TopAlg': ['GaudiSequencer/EventAlgs']},
- 'EventAlgs': {'Inputs': DataObjectDescriptorCollection(),
-               'Members': ['EvtCollectionWrite/Writer'],
-               'Outputs': DataObjectDescriptorCollection(),
+ 'EventAlgs': {'Members': ['EvtCollectionWrite/Writer'],
                'VetoObjects': ['FSR']},
  'EventPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']},
  'EventSelector': {'Input': ["DATAFILE='PFN:ROOTIO.dst'  SVC='Gaudi::RootEvtSelector' OPT='READ'",
@@ -25,13 +22,11 @@
  'EvtTupleSvc': {'Output': ["EvtColl DATAFILE='PFN:ROOT_IO.tags' OPT='RECREATE' SVC='Gaudi::RootCnvSvc'"]},
  'FileCatalog': {'Catalogs': ['xmlcatalog_file:ROOTIO.xml']},
  'FileRecordPersistencySvc': {'CnvServices': ['Gaudi::RootCnvSvc/RootCnvSvc']},
- 'ToolSvc.SequencerTimerTool': {'OutputLevel': 4},
- 'Writer': {'Inputs': DataObjectDescriptorCollection(),
-            'Outputs': DataObjectDescriptorCollection()}}
+ 'ToolSvc.SequencerTimerTool': {'OutputLevel': 4}}
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r3)
-                                          running on pclhcb117 on Fri Feb 27 12:16:51 2015
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r5)
+                                          running on p05614910w96644.cern.ch on Tue Oct 20 23:05:54 2015
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 EvtTupleSvc          INFO Added stream file:PFN:ROOT_IO.tags as EvtColl
@@ -90,13 +85,13 @@ EventSelector     SUCCESS Reading Event record 1801. Record number within stream
 EventSelector     SUCCESS Reading Event record 1901. Record number within stream 2: 901
 Writer               INFO ================ EVENT:1000 RUN:999 ====== N(Track)=55 PASSED selection (>=50) ============
 EventLoopMgr         INFO No more events in event selection
-EventLoopMgr         INFO ---> Loop Finished -  WSS 294.957 | total time (skipping 1st evt) 987253348 ns
+EventLoopMgr         INFO ---> Loop Finished -  WSS 235.105 | total time (skipping 1st evt) 4507249661 ns
 ApplicationMgr       INFO Application Manager Stopped successfully
 EventLoopMgr         INFO Histograms converted successfully according to request.
-RootCnvSvc           INFO Disconnected data IO:4028740B-DDBD-E411-B7FC-082E5F2B1B1D [ROOTIO.mdst]
-RootCnvSvc           INFO Disconnected data IO:EEC94C0B-DDBD-E411-B7FC-082E5F2B1B1D [ROOTIO.dst]
+RootCnvSvc           INFO Disconnected data IO:02802356-5A77-E511-9E13-001E67ABF0AC [ROOTIO.mdst]
+RootCnvSvc           INFO Disconnected data IO:F68C0456-5A77-E511-9E13-001E67ABF0AC [ROOTIO.dst]
 ToolSvc              INFO Removing all tools created by ToolSvc
 EvtTupleSvc          INFO NTuples saved successfully
-EvtTupleSvc.Evt...   INFO Disconnected data IO:2633FD5E-DDBD-E411-8C50-082E5F2B1B1D [ROOT_IO.tags]
+EvtTupleSvc.Evt...   INFO Disconnected data IO:724BB682-5A77-E511-860B-001E67ABF0AC [ROOT_IO.tags]
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully

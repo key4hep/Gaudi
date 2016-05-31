@@ -1,4 +1,3 @@
-// $Id: $
 #ifdef __ICC
 // disable icc remark #2259: non-pointer conversion from "X" to "Y" may lose significant bits
 //   TODO: To be removed, since it comes from ROOT TMathBase.h
@@ -62,7 +61,7 @@ namespace
   struct Histo
   {
     // ========================================================================
-    Histo() : bins() , under() , over() {}
+    Histo() = default;
     // ========================================================================
     /** @struct Bin
      *  helper structure to keep the representation of bin
@@ -99,18 +98,20 @@ namespace
     /// get Y-max
     double maxY ( const bool withErr ) const
     {
-      double _m  = std::max ( under.height , over.height  ) ;
-      for ( Bins::const_iterator ib = bins.begin() ; bins.end() != ib ; ++ib )
-      { _m = std::max ( _m  , withErr ?  ib->height +  ib->error :  ib->height ) ; }
-      return _m ;
+      return std::accumulate( std::begin(bins), std::end(bins),
+                              std::max ( under.height, over.height  ),
+                              [&](double m, const Bin& b) {
+            return std::max ( m, withErr ? b.height + b.error : b.height ) ;
+      });
     }
     /// get Y-min
     double minY ( const bool withErr ) const
     {
-      double _m  = std::min ( under.height , over.height  ) ;
-      for ( Bins::const_iterator ib = bins.begin() ; bins.end() != ib ; ++ib )
-      { _m = std::min ( _m  , withErr ?  ib->height - ib->error :  ib->height ) ; }
-      return _m ;
+      return std::accumulate( std::begin(bins), std::end(bins),
+                              std::min ( under.height, over.height  ),
+                              [&](double m, const Bin& b) {
+            return std::min ( m, withErr ? b.height - b.error : b.height ) ;
+      });
     }
     /// rebin the histogram
     Histo rebin ( const unsigned int bin ) const
@@ -133,8 +134,8 @@ namespace
     // find "null-bin", if any
     int nullBin () const
     {
-      for ( Bins::const_iterator ib = bins.begin() ; bins.end() != ib + 1 ; ++ib )
-      { if ( ib->lower <= 0 && 0 < (ib+1)->lower ) { return ib - bins.begin() ; } }
+      for ( auto ib = bins.cbegin() ; bins.cend() != ib + 1 ; ++ib )
+      { if ( ib->lower <= 0 && 0 < (ib+1)->lower ) { return ib - bins.cbegin() ; } }
       return -1 ;
     }
     // ========================================================================
@@ -161,9 +162,9 @@ namespace
     // clear the histogram
     hist.bins.clear() ;
     //
-    if ( 0 == root  ) { return StatusCode::FAILURE ; } // RETURN
+    if ( !root  ) { return StatusCode::FAILURE ; } // RETURN
     const TAxis* axis  = root->GetXaxis() ;
-    if ( 0 == axis  ) { return StatusCode::FAILURE ; } // RETURN
+    if ( !axis  ) { return StatusCode::FAILURE ; } // RETURN
     const int    nbins = axis->GetNbins () ;
     if ( 0 == nbins ) { return StatusCode::FAILURE ; } // RETURN
 
@@ -180,10 +181,9 @@ namespace
     for ( int ibin = 1 ; ibin <= nbins ; ++ibin )
     {
       // add to the local histo
-      Histo::Bin bin ( root -> GetBinContent   ( ibin ) ,
-                       root -> GetBinError     ( ibin ) ,
-                       axis -> GetBinLowEdge   ( ibin ) ) ;
-      hist.bins.push_back ( bin ) ;
+      hist.bins.emplace_back( root -> GetBinContent ( ibin ) ,
+                              root -> GetBinError   ( ibin ) ,
+                              axis -> GetBinLowEdge ( ibin ) ) ;
     }
     return StatusCode::SUCCESS ;
   }
@@ -216,7 +216,7 @@ namespace
     // clear the histogram
     hist.bins.clear() ;
     //
-    if ( 0 == aida ) { return StatusCode::FAILURE ; } // RETURN
+    if ( !aida ) { return StatusCode::FAILURE ; } // RETURN
     //
     const AIDA::IAxis& axis  = aida -> axis () ;
     const int          nbins = axis .  bins () ;
@@ -233,10 +233,9 @@ namespace
     for ( int ibin = 0 ; ibin < nbins ; ++ibin )
     {
       // add to the local histo
-      Histo::Bin bin ( aida -> binHeight    ( ibin ) ,
-                       aida -> binError     ( ibin ) ,
-                       axis .  binLowerEdge ( ibin ) ) ;
-      hist.bins.push_back ( bin ) ;
+      hist.bins.emplace_back ( aida -> binHeight    ( ibin ) ,
+                               aida -> binError     ( ibin ) ,
+                               axis .  binLowerEdge ( ibin ) ) ;
     }
     return StatusCode::SUCCESS ;
   }
@@ -256,7 +255,7 @@ namespace
     // clear the histogram
     hist.bins.clear() ;
     //
-    if ( 0 == aida ) { return StatusCode::FAILURE ; } // RETURN
+    if ( !aida ) { return StatusCode::FAILURE ; } // RETURN
     //
     const AIDA::IAxis& axis  = aida -> axis () ;
     const int          nbins = axis .  bins () ;
@@ -277,17 +276,16 @@ namespace
     for ( int ibin = 0 ; ibin < nbins ; ++ibin )
     {
       // add to the local histo
-      Histo::Bin bin ( aida -> binHeight    ( ibin ) ,
-                       spread ?
-                       aida -> binRms       ( ibin ) :
-                       aida -> binError     ( ibin ) ,
-                       axis .  binLowerEdge ( ibin ) ) ;
-      hist.bins.push_back ( bin ) ;
+      hist.bins.emplace_back( aida -> binHeight    ( ibin ) ,
+                              spread ?
+                              aida -> binRms       ( ibin ) :
+                              aida -> binError     ( ibin ) ,
+                              axis .  binLowerEdge ( ibin ) ) ;
     }
     return StatusCode::SUCCESS ;
   }
   // ==========================================================================
-  /** find the approrpriate rebin factor
+  /** find the appropriate rebin factor
    *  (I suspect that there is some intelligent STD/STL routine for this purpose)
    *  @author Vanya BELYAEV  Ivan.BElyaev@nikhef.nl
    *  @date 2009-09-19
@@ -309,60 +307,50 @@ namespace
    */
   std::pair<double,int> decompose ( double v )
   {
-    if      ( 0 == v ) { return std::make_pair ( 0.0 , 0 ) ;  }       // RETURN
-    else if ( 1 == v ) { return std::make_pair ( 1.0 , 0 ) ;  }       // RETURN
+    if      ( 0 == v ) { return { 0.0 , 0 } ;  }       // RETURN
+    else if ( 1 == v ) { return { 1.0 , 0 } ;  }       // RETURN
     else if ( 0 >  v )
     {
-      std::pair<double,int> r = decompose ( -v ) ;
-      return std::pair<double,int>( -r.first , r.second ) ;          // RETURN
+      auto r = decompose ( -v ) ;
+      return { -r.first , r.second } ;          // RETURN
     }
     else if ( 0.1 > v  )
     {
       int i       = 0 ;
       while ( 0.1 > v   ) { ++i ; v *= 10 ; }       // STUPID
-      return std::make_pair ( v , -i ) ;
+      return { v , -i } ;
     }
     else if ( 1  < v  )
     {
       int i       = 0 ;
       while ( 1  <= v  ) { ++i ; v /= 10 ; }       // STUPID
-      return std::make_pair ( v , i ) ;
+      return { v , i } ;
     }
-    return std::make_pair ( v , 1 ) ;
+    return { v , 1 } ;
   }
   // ==========================================================================
   /** "efficient" pow-function
    *  @author Vanya BELYAEV  Ivan.Belyaev@nikhef.nl
    *  @date 2009-09-19
    */
-  inline double _pow ( double __x , unsigned long __n )
+  inline double _pow ( double x , unsigned long n )
   {
-    double __y = __n % 2 ? __x : 1;
-    while ( __n >>= 1 )
+    double y = n % 2 ? x : 1;
+    while ( n >>= 1 )
     {
-      __x = __x * __x;
-      if ( __n % 2) { __y = __y * __x; }
+      x = x * x;
+      if ( n % 2) { y *= x; }
     }
-    return __y ;
+    return y ;
   }
+  // forward declaration to break cyclic dependency between rValMin and rValMax
+  inline double rValMin ( double v );
   // ==========================================================================
   /** find the proper "round" value
    *  @author Vanya BELYAEV  Ivan.BElyaev@nikhef.nl
    *  @date 2009-09-19
    */
-  inline double rValMax ( const double v ) ;
-  // ==========================================================================
-  /** find the proper "round" value
-   *  @author Vanya BELYAEV  Ivan.BElyaev@nikhef.nl
-   *  @date 2009-09-19
-   */
-  inline double rValMin ( const double v ) ;
-  // ==========================================================================
-  /** find the proper "round" value
-   *  @author Vanya BELYAEV  Ivan.BElyaev@nikhef.nl
-   *  @date 2009-09-19
-   */
-  inline double rValMax ( const double v )
+  inline double rValMax ( double v )
   {
     if      ( 0 == v  ) { return 0                   ; }             // RETURN
     else if ( 0 >  v  ) { return -1 * rValMin ( -v ) ; }             // RETURN
@@ -378,7 +366,7 @@ namespace
    *  @author Vanya BELYAEV  Ivan.BElyaev@nikhef.nl
    *  @date 2009-09-19
    */
-  inline double rValMin ( const double v )
+  inline double rValMin ( double v )
   {
     if      ( 0 == v  ) { return 0                   ; }             // RETURN
     else if ( 0 >  v  ) { return -1 * rValMax ( -v ) ; }             // RETURN
@@ -393,7 +381,7 @@ namespace
    *  @author Vanya BELYAEV  Ivan.BElyaev@nikhef.nl
    *  @date 2009-09-19
    */
-  inline std::string yLabel  ( const double value )
+  inline std::string yLabel  ( double value )
   {
     boost::format fmt ( "%10.3g" ) ;
     fmt % value ;
@@ -521,14 +509,14 @@ namespace
       //
       std::string line2 ;
       //
-      for  ( Histo::Bins::const_iterator ibin = histo.bins.begin() ;
-             histo.bins.end() != ibin ; ++ibin )
+      for  ( auto ibin = histo.bins.cbegin() ;
+             histo.bins.cend() != ibin ; ++ibin )
       {
         //char symb = ' ' ;
-        const int i = ibin - histo.bins.begin () ;
+        const int i = ibin - histo.bins.cbegin () ;
         //
         const bool xnull =
-          ibin->lower <= 0 && ( ibin + 1 ) != histo.bins.end() && 0 < (ibin+1)->lower ;
+          ibin->lower <= 0 && ( ibin + 1 ) != histo.bins.cend() && 0 < (ibin+1)->lower ;
         const bool xlab  =  iNull == i % xSkip ;
         //
         char symb = symbBin ( *ibin, yLow , yHigh , ynull , errors ) ;
@@ -561,8 +549,8 @@ namespace
 
     // get x-labels
     std::vector<std::string> xlabels ;
-    for ( Histo::Bins::const_iterator ib = histo.bins.begin() ; histo.bins.end() != ib ; ++ib )
-    { xlabels.push_back ( xLabel ( ib->lower )  ) ; }
+    for ( auto ib = histo.bins.cbegin() ; histo.bins.cend() != ib ; ++ib )
+    {  xlabels.push_back ( xLabel ( ib->lower ) ) ; }
     // overflow& underflow  label
     const std::string oLabel = xLabel ( histo.over.lower  ) ;
     const std::string uLabel = xLabel ( histo.under.lower ) ;
@@ -583,9 +571,9 @@ namespace
       if ( uLabel.size() > yLine ) { line += uLabel[yLine] ; }
       else                         { line += ' '           ; }
       //
-      for  ( Histo::Bins::const_iterator ibin = histo.bins.begin() ; histo.bins.end() != ibin ; ++ibin )
+      for  ( auto ibin = histo.bins.cbegin() ; histo.bins.cend() != ibin ; ++ibin )
       {
-        int ib  = ibin - histo.bins.begin() ;
+        int ib  = ibin - histo.bins.cbegin() ;
         const bool xlab  =  ( iNull == ib % xSkip ) ;
         if ( xlab && yLine < xlabels[ib].size() ) { line += xlabels[ib][yLine] ; }
         else { line += ' ' ; }
@@ -625,7 +613,7 @@ std::ostream& Gaudi::Utils::Histos::histoDump_
   const bool                errors  )
 {
   stream << std::endl ;
-  if ( 0 == histo     ) { return stream ; }  // RETURN
+  if ( !histo     ) { return stream ; }  // RETURN
   Histo hist ;
   StatusCode sc = _getHisto ( histo , hist ) ;
   if ( sc.isFailure() ) { return stream ; }  // RETURN
@@ -736,7 +724,7 @@ std::ostream& Gaudi::Utils::Histos::histoDump_
   const bool                spread  )
 {
   stream << std::endl ;
-  if ( 0 == histo     ) { return stream ; }  // RETURN
+  if ( !histo     ) { return stream ; }  // RETURN
   Histo hist ;
   StatusCode sc = _getHisto ( histo , hist , spread ) ;
   if ( sc.isFailure() ) { return stream ; }  // RETURN
@@ -832,11 +820,11 @@ std::ostream& Gaudi::Utils::Histos::histoDump_
   const bool                errors )
 {
   const TProfile* profile = dynamic_cast<const TProfile*> ( histo ) ;
-  if ( 0 != profile )
+  if ( profile )
   { return histoDump_ ( profile , stream , width , height ) ; }
   //
   stream << std::endl ;
-  if ( 0 == histo     ) { return stream ; }  // RETURN
+  if ( !histo     ) { return stream ; }  // RETURN
   Histo hist ;
   StatusCode sc = _getHisto ( histo , hist ) ;
   if ( sc.isFailure() ) { return stream ; }  // RETURN
@@ -904,7 +892,7 @@ std::ostream& Gaudi::Utils::Histos::histoDump_
   const std::size_t         height )
 {
   stream << std::endl ;
-  if ( 0 == histo     ) { return stream ; }  // RETURN
+  if ( ! histo     ) { return stream ; }  // RETURN
   Histo hist ;
   StatusCode sc = _getHisto ( histo , hist , true ) ;
   if ( sc.isFailure() ) { return stream ; }  // RETURN
@@ -982,9 +970,6 @@ std::string Gaudi::Utils::Histos::histoDump
   return stream.str() ;
 }
 // ============================================================================
-
-
-
 
 // ============================================================================
 // The END

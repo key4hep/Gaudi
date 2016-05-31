@@ -6,7 +6,6 @@ import re
 import shutil
 import bisect
 import time
-import codecs
 
 from datetime import  datetime,timedelta
 from optparse import OptionParser
@@ -49,6 +48,15 @@ def cleanXml(xmlFileName):
         xmlFile = open(xmlFileName,'w')
         xmlFile.write(_illegal_xml_chars_Re.sub("", data))
         xmlFile.close()
+
+def formatMeasurementText(txt):
+    '''
+    Helper to correctly convert plain text to valid HTML (in a <pre> tag).
+    '''
+    from xml.sax.saxutils import escape
+    from codecs import encode
+    return '<pre>{0}</pre>'.format(escape(encode(txt, 'utf-8',
+                                                 'xmlcharrefreplace')))
 
 ## Some regular expression that is going to be used in the next functions
 space_Re = re.compile(r"[ ]")
@@ -172,7 +180,7 @@ class TestOrganizer :
         ul.insert(index,element)
         element.set("linkreference",father.get("linkreference")+"/"+cleanBrackets(sonName)+str(fatherLevel))
         subSpan = ET.SubElement(element, "span", {"class":"clickable folded"})
-        subImg = ET.SubElement(subSpan, "img", {"src":"plus.png"})
+        subImg = ET.SubElement(subSpan, "img", {"src":"images/plus.png"})
         subImg.text = sonName+": "
 
         return element
@@ -201,12 +209,12 @@ class TestOrganizer :
         #test
         li = ET.SubElement(span, "li", {"class":"test foldable"})
         span2 = ET.SubElement(li, "span", {"class":"clickable folded"})
-        ET.SubElement(span2, "img", {"src":"plus.png"})
+        ET.SubElement(span2, "img", {"src":"images/plus.png"})
         ET.SubElement(span2, "span", { "id":cleanBrackets(testName), "class":"testid"}).text = testName+": "
 
         # direct link
         link = ET.SubElement(li, "a", {"class": "permalink", "href": father.get("linkreference")+"//"+cleanBrackets(testName)})
-        ET.SubElement(link, "img", {"title":"Direct link to the test","src":"link.png"})
+        ET.SubElement(link, "img", {"title":"Direct link to the test","src":"images/link.png"})
 
         status = testElement.get("Status")
         if status in self.status :
@@ -377,6 +385,32 @@ class TestOrganizer :
             return None
 
 
+def get_cpuinfo():
+    '''
+    Return the CPU information of the machine as a list of dictionaries.
+
+    Only Linux is supported.
+    '''
+    cpuinfo = []
+    try:
+        current = {}
+        for l in open('/proc/cpuinfo'):
+            try:
+                k, v = map(str.strip, l.split(':', 1))
+                if k == 'processor':
+                    current = {k: v}
+                    cpuinfo.append(current)
+                elif k == 'flags':
+                    current[k] = v.split()
+                else:
+                    current[k] = v
+            except ValueError:
+                pass # ignore lines without a ':'
+    except IOError:
+        pass # ignore missing /proc/cpuinfo
+    return cpuinfo
+
+
 def updateAnnotations(site,Testing,outputTemp,annotationsList):
     """
     Update the global annotation file with the data of the current test.
@@ -397,17 +431,29 @@ def updateAnnotations(site,Testing,outputTemp,annotationsList):
                        "end_ts" : int(cleanWebChar(Testing.find("EndTestTime").text or '0')),
                        "start_time" : cleanWebChar(Testing.find("StartDateTime").text),
                        "start_ts" : int(cleanWebChar(Testing.find("StartTestTime").text or '0')),
-                       "uname" : cleanWebChar(site.get("OSName")+site.get("Name")+site.get("OSRelease")+site.get("OSVersion")+site.get("OSPlatform")) ,
+                       "uname" : cleanWebChar(' '.join([site.get("OSName"),
+                                                        site.get("Name"),
+                                                        site.get("OSRelease"),
+                                                        site.get("OSVersion"),
+                                                        site.get("OSPlatform")])),
                        "version" : [cleanWebChar(site.get("Generator"))]
                        }
         if site.get("qmtest.run.userid") is not None:
             annotations["qmtest.run.userid"] = cleanWebChar(site.get("qmtest.run.userid"))
-        if site.get("BuildName") is not None:
-            annotations["cmt.cmtconfig"] = cleanWebChar(site.get("BuildName"))
         if site.get("qmtest.run.username") is not None:
             annotations["qmtest.run.username"] = cleanWebChar(site.get("qmtest.run.username"))
         if site.get("qmtest.run.command_line") is not None:
             annotations["qmtest.run.command_line"] = [cleanWebChar(site.get("qmtest.run.command_line"))]
+
+        # FIXME: we assume the conversion is run on the same machine as the test
+        cpuinfo = get_cpuinfo()
+        if cpuinfo:
+            annotations['cpuinfo'] = [
+                'ncpus: {0}'.format(len(cpuinfo)),
+                'model name: {0}'.format(cpuinfo[0]['model name']),
+                'flags: {0}'.format(' '.join(cpuinfo[0]['flags'])),
+                ]
+
     else :
         annotations = annotationsList.pop(0)
         #update the start time
@@ -499,7 +545,7 @@ def main():
         os.makedirs(output)
 
     # Copy the project build manifest, if present.
-    manifest_file = os.path.join(options.inputDirectory, 'manifest.xml')
+    manifest_file = os.path.join(options.inputDirectory, 'config', 'manifest.xml')
     if os.path.exists(manifest_file):
         shutil.copy(manifest_file, output)
 
@@ -565,12 +611,21 @@ def main():
                 print "Cannot find skeleton directory in ${DATA_PATH}"
                 exit(1)
 
-            # Copy the files in the template directory excluding the directories
-            for f in os.listdir(skel):
-                src = os.path.join(skel, f)
-                dst = os.path.join(outputTemp, f)
-                if not os.path.isdir(src) and not os.path.exists(dst):
-                    shutil.copy(src, dst)
+            # Copy the template directory (do not overwrite)
+            for dirpath, dirnames, filenames in os.walk(skel):
+                destpath = os.path.join(outputTemp,
+                                        os.path.relpath(dirpath, skel))
+                for d in dirnames:
+                    if d in ('.svn', '.git'):
+                        continue
+                    d = os.path.join(destpath, d)
+                    if not os.path.exists(d):
+                        os.mkdir(d)
+                for f in filenames:
+                    src = os.path.join(dirpath, f)
+                    dst = os.path.join(destpath, f)
+                    if not os.path.exists(dst):
+                        shutil.copy(src, dst)
 
             # process each test case
             for Test in tests:
@@ -629,13 +684,10 @@ def main():
                 # write the stdout
                 if Results.find("Measurement") is not None :
                     value = Results.find("Measurement").find("Value")
-                    stdout = open(os.path.join(testCaseDir,"stdout"),"w")
+                    stdout = open(os.path.join(testCaseDir, "stdout"), "w")
                     if value is not None and value.text is not None :
-                        stdout.write("<pre>" +
-                                     codecs.encode(value.text, 'utf-8',
-                                                   'xmlcharrefreplace') +
-                                     "</pre>")
-                    else :
+                        stdout.write(formatMeasurementText(value.text))
+                    else:
                         stdout.write("<pre></pre>")
                     stdout.close()
                 else :
@@ -652,10 +704,7 @@ def main():
 
                         # Consider the void measurment
                         if value is not None and value.text is not None :
-                            NamedMeasurementFile.write("<pre>" +
-                                                       codecs.encode(value.text, 'utf-8',
-                                                                     'xmlcharrefreplace') +
-                                                       "</pre>")
+                            NamedMeasurementFile.write(formatMeasurementText(value.text))
                         else :
                             NamedMeasurementFile.write("<pre></pre>")
                         NamedMeasurementFile.close()
@@ -670,10 +719,7 @@ def main():
 
                         # Consider the void measurment
                         if value is not None and value.text is not None :
-                            NamedMeasurementFile.write("<pre>" +
-                                                       codecs.encode(value.text, 'utf-8',
-                                                                     'xmlcharrefreplace') +
-                                                       "</pre>")
+                            NamedMeasurementFile.write(formatMeasurementText(value.text))
                         else :
                             NamedMeasurementFile.write("<pre></pre>")
                         NamedMeasurementFile.close()

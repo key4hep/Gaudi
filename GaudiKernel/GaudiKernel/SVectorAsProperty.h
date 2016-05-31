@@ -1,5 +1,3 @@
-// $Id: $
-// ============================================================================
 #ifndef GAUDIKERNEL_GENVCTPARSERS_H
 #define GAUDIKERNEL_GENVCTPARSERS_H 1
 // ============================================================================
@@ -87,8 +85,7 @@ namespace Gaudi
     ( const ROOT::Math::SVector<SCALAR,N>& obj , std::ostream& s )
     {
       s << "( ";
-      for ( typename ROOT::Math::SVector<SCALAR,N>::const_iterator cur = obj.begin() ;
-            obj.end() != cur ; ++cur )
+      for ( auto cur = obj.begin() ; obj.end() != cur ; ++cur )
       {
         if ( obj.begin() != cur ) { s << " , "; }
         toStream ( *cur , s ) ;

@@ -14,10 +14,6 @@ AlgErrorAuditor::AlgErrorAuditor(const std::string& name, ISvcLocator* pSvcLocat
 		   "Throw GaudiException upon illegal Algorithm return code");
 }
 
-AlgErrorAuditor::~AlgErrorAuditor(){
-}
-
-
 void
 AlgErrorAuditor:: beforeExecute(INamedInterface* ){
   m_error = msgSvc()->messageCount(MSG::ERROR);
@@ -28,8 +24,7 @@ StatusCode
 AlgErrorAuditor:: initialize() {
 
   if (m_abort && m_throw) {
-    MsgStream log(msgSvc(), name());
-    log << MSG::INFO << "Both \"Throw\" and \"Abort\" options have been set."
+    info() << "Both \"Throw\" and \"Abort\" options have been set."
 	<< " Abort takes precedence." << endmsg;
   }
 
@@ -48,8 +43,7 @@ AlgErrorAuditor:: afterExecute(INamedInterface* alg, const StatusCode& sc) {
     os << std::endl << "Error policy described in "
 	 << "https://twiki.cern.ch/twiki/bin/view/AtlasComputing/ReportingErrors";
 
-    MsgStream log(msgSvc(), name());
-    log << MSG::ERROR << os.str() << endmsg;
+    error() << os.str() << endmsg;
     incrMap(alg->name(), 0);
     fail = true;
 
@@ -66,8 +60,7 @@ AlgErrorAuditor:: afterExecute(INamedInterface* alg, const StatusCode& sc) {
     os << std::endl << "Error policy described in "
 	 << "https://twiki.cern.ch/twiki/bin/view/AtlasComputing/ReportingErrors";
 
-    MsgStream log(msgSvc(), name());
-    log << MSG::ERROR << os.str() << endmsg;
+    error() << os.str() << endmsg;
     incrMap(alg->name(), 1);
     fail = true;
 
@@ -87,45 +80,38 @@ StatusCode
 AlgErrorAuditor::finalize() {
 
 
-  std::map<std::string,int>::const_iterator itr;
   if (m_algMap[0].size() != 0) {
-    MsgStream log(msgSvc(), name());
-    log << MSG::INFO << "Found " << m_algMap[0].size()
+    info() << "Found " << m_algMap[0].size()
 	<< " instances where an Algorithm::execute() produced an ERROR "
 	<< "but returned a SUCCESS:" << std::endl;
 
-    for (itr = m_algMap[0].begin(); itr != m_algMap[0].end(); ++itr) {
-      log << itr->first << ": " << itr->second << std::endl;
+    for (const auto&  i : m_algMap[0] ) {
+      msgStream() << i.first << ": " << i.second << std::endl;
     }
 
-    log << endmsg;
+    msgStream() << endmsg;
   }
 
   if (m_algMap[1].size() != 0) {
-    MsgStream log(msgSvc(), name());
-    log << MSG::INFO << "Found " << m_algMap[1].size()
+    info() << "Found " << m_algMap[1].size()
 	<< " instances where an Algorithm::execute() produced a FATAL "
 	<< "but returned a SUCCESS:" << std::endl;
 
-    for (itr = m_algMap[1].begin(); itr != m_algMap[1].end(); ++itr) {
-      log << itr->first << ": " << itr->second << std::endl;
+    for (const auto& i : m_algMap[1]) {
+      msgStream() << i.first << ": " << i.second << std::endl;
     }
 
-    log << endmsg;
+    msgStream() << endmsg;
   }
-
-
   return StatusCode::SUCCESS;
-
 }
 
 void
 AlgErrorAuditor::incrMap(const std::string& alg, int level) {
-  std::map<std::string, int>::iterator itr;
-  if ( (itr=m_algMap[level].find(alg)) != m_algMap[level].end()) {
-    itr->second++;
+  auto i=m_algMap[level].find(alg);
+  if ( i != m_algMap[level].end()) {
+    i->second++;
   } else {
-    m_algMap[level].insert( std::pair<std::string,int>(alg,1) );
+    m_algMap[level].emplace( alg,1 );
   }
 }
-

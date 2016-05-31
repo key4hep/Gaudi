@@ -1,4 +1,3 @@
-// $Id: RootDirectoryCnv.cpp,v 1.8 2010-09-27 15:43:53 frankb Exp $
 //------------------------------------------------------------------------------
 //
 // Implementation of class :  RootDirectoryCnv
@@ -80,14 +79,14 @@ RootDirectoryCnv::updateObjRefs(IOpaqueAddress* pAddr,
       string ident   = pReg->identifier();
       string fname   = fileName(pReg);
       string cntName = containerName(pReg);
-      RootDataConnection* con = 0;
+      RootDataConnection* con = nullptr;
       Leaves leaves;
       status = m_dbMgr->connectDatabase(fname, IDataConnection::READ, &con);
       if ( status.isSuccess() )  {
         TBranch* b = con->getBranch("##Descriptors","GaudiStatisticsDescription");
         if ( b ) {
           for(Long64_t n=b->GetEntries(), i=0; i<n; ++i)  {
-            RootNTupleDescriptor* ref=0;
+            RootNTupleDescriptor* ref=nullptr;
             b->SetAddress(&ref);
             int nb = b->GetEntry(i);
             if ( nb > 1 ) {
@@ -109,19 +108,14 @@ RootDirectoryCnv::updateObjRefs(IOpaqueAddress* pAddr,
         log() << MSG::DEBUG << "Got " << refs.size() << " tuple connection(s)....." << endmsg;
         status = m_dataMgr->objectLeaves(pObject, leaves);
         if ( status.isSuccess() )    {
-          for(REFS::iterator i = refs.begin(); i != refs.end(); ++i)  {
-            REFS::value_type& ref = *i;
+          for(auto& ref : refs ) {
             if ( ref )   {
-              bool need_to_add = true;
-              for(Leaves::iterator j=leaves.begin(); j != leaves.end(); ++j )  {
-                string curr_leaf = containerName(*j);
-                if ( curr_leaf == ref->container )  {
-                  need_to_add = false;
-                  break;
-                }
-              }
+              bool need_to_add = std::none_of( std::begin(leaves), std::end(leaves),
+                                               [&](Leaves::const_reference j) { 
+                  return  containerName(j) == ref->container;
+              });
               if ( need_to_add )  {
-                IOpaqueAddress* pA= 0;
+                IOpaqueAddress* pA= nullptr;
                 if ( ref->clid == CLID_StatisticsDirectory ||
                   ref->clid == CLID_StatisticsFile      ||
                   ref->clid == CLID_RowWiseTuple        ||
@@ -161,9 +155,7 @@ RootDirectoryCnv::updateObjRefs(IOpaqueAddress* pAddr,
       }
     }
   }
-  for(REFS::iterator k = refs.begin(); k != refs.end(); ++k)  {
-    if ( *k ) delete (*k);
-  }
+  for(auto & ref : refs)  delete ref;
   return status;
 }
 

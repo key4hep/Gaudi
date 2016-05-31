@@ -1,6 +1,3 @@
-// $Id: VectorMap.h,v 1.11 2007/05/24 14:39:11 hmd Exp $
-// ============================================================================
-// CVS tag $Name:  $, version $Revision: 1.11 $
 // ============================================================================
 #ifndef GAUDIKERNEL_VECTORMAP_H
 #define GAUDIKERNEL_VECTORMAP_H 1
@@ -14,6 +11,7 @@
 #include <vector>
 #include <algorithm>
 #include <ostream>
+#include <initializer_list>
 // ============================================================================
 // GaudiKernel
 // ============================================================================
@@ -733,6 +731,16 @@ namespace GaudiUtils
       : m_vct ( first , last , alloc )
     { std::sort ( m_vct.begin(), m_vct.end(), compare() ) ; }
     // ========================================================================
+    /** tconstructor from initializer list
+     *  @param list
+     *  @param cmp comparison criteria for the key
+     *  @param alloc allocator to be used
+     */
+    VectorMap ( std::initializer_list<value_type> first ,
+                const allocator_type& alloc = allocator_type () )
+      : m_vct ( first , alloc )
+    { std::sort ( m_vct.begin(), m_vct.end(), compare() ) ; }
+    // ========================================================================
     /// destructor (non-virtual!)
     ~VectorMap() { clear() ; }                     // destructor (non-virtual!)
     // ========================================================================
@@ -768,19 +776,14 @@ namespace GaudiUtils
     /// merge two maps
     inline VectorMap& merge ( const VectorMap& right )
     {
-      for ( const_iterator it = right.begin() ; right.end() != it ; ++it )
-      { update ( it->first , it->second ) ; }
-      //
+      for ( const auto& i : right ) { update ( i.first , i.second ) ; }
       return *this ;
     }
     /// merge two maps
     template <class K1,class K2, class K3,class K4>
     inline VectorMap& merge ( const VectorMap<K1,K2,K3,K4>& right )
     {
-      for ( typename VectorMap<K1,K2,K3,K4>::const_iterator it =
-              right.begin() ; right.end() != it ; ++it )
-      { update ( it->first , it->second ) ; }
-      //
+      for ( const auto&  i :  right ) { update ( i.first , i.second ) ; }
       return *this ;
     }
     // ========================================================================
@@ -795,7 +798,7 @@ namespace GaudiUtils
     {
       if ( index  >= size() )
       { this->throw_out_of_range_exception () ; }
-      const_iterator it = this->begin() ;
+      auto it = this->begin() ;
       std::advance ( it , index ) ;
       return it -> first ;
     }
@@ -808,7 +811,7 @@ namespace GaudiUtils
     {
       if ( index  >= size() )
       { this->throw_out_of_range_exception () ; }
-      const_iterator it = this->begin() ;
+      auto it = this->begin() ;
       std::advance ( it , index ) ;
       return it -> second ;
     }
@@ -839,7 +842,7 @@ namespace GaudiUtils
     /// the conversion from 'const' to 'non-const' iterator
     _iterator iter (  iterator p )
     {
-      _iterator result = m_vct.begin() ;
+      auto result = m_vct.begin() ;
       std::advance ( result , std::distance ( begin() , p ) ) ;
       return result ;
     }
@@ -847,7 +850,7 @@ namespace GaudiUtils
     /// the conversion from 'non-const' to 'const' iterator
     iterator  iter ( _iterator p )
     {
-      iterator result ( begin() ) ;
+      auto result = begin();
       std::advance ( result , std::distance (  m_vct.begin() , p ) ) ;
       return result ;
     }

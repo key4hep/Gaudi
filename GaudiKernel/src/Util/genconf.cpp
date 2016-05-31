@@ -49,7 +49,8 @@
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/HashMap.h"
 #include "GaudiKernel/GaudiHandle.h"
-#include "GaudiKernel/DataObjectDescriptor.h"
+#include "GaudiKernel/DataObjectHandleBase.h"
+#include "GaudiKernel/DataObjectHandleProperty.h"
 
 #include "GaudiKernel/Auditor.h"
 #include "GaudiKernel/Service.h"
@@ -105,7 +106,7 @@ class configGenerator
   /// to import GaudiHandles (ie: if one of the components has a XyzHandle<T>)
   bool    m_importGaudiHandles;
 
-  bool m_importDataObjectDescriptors;
+  bool m_importDataObjectHandles;
 
   /// buffer of generated configurables informations for the "Db" file
   /// The "Db" file is holding informations about the generated configurables
@@ -127,7 +128,7 @@ public:
     m_outputDirName     ( outputDirName ),
     m_pyBuf             ( ),
     m_importGaudiHandles( false ),
-    m_importDataObjectDescriptors( false ),
+    m_importDataObjectHandles( false ),
     m_dbBuf             ( ),
     m_configurable      ( )
   {}
@@ -288,7 +289,7 @@ int main ( int argc, char** argv )
     if( vm.count("input-cfg") ) {
       string cfgFileName = vm["input-cfg"].as<string>();
       cfgFileName = fs::system_complete( fs::path( cfgFileName ) ).string();
-      std::ifstream ifs( cfgFileName.c_str() );
+      std::ifstream ifs( cfgFileName );
       po::store( parse_config_file( ifs, config_file_options ), vm );
     }
 
@@ -419,7 +420,7 @@ int main ( int argc, char** argv )
 
   if ( EXIT_SUCCESS == sc && ! vm.count("no-init")) {
     // create an empty __init__.py file in the output dir
-    fstream initPy( ( out / fs::path( "__init__.py" ) ).string().c_str(),
+    fstream initPy( ( out / fs::path( "__init__.py" ) ).string(),
         std::ios_base::out|std::ios_base::trunc );
     initPy << "## Hook for " << pkgName << " genConf module\n" << flush;
   }
@@ -468,7 +469,7 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
 
     // reset state
     m_importGaudiHandles = false;
-    m_importDataObjectDescriptors = false;
+    m_importDataObjectHandles = false;
     m_pyBuf.str("");
     m_dbBuf.str("");
 
@@ -609,10 +610,8 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
     const std::string dbName = ( fs::path(m_outputDirName) /
                   fs::path(*iLib+".confdb") ).string();
 
-    std::fstream py( pyName.c_str(),
-              std::ios_base::out|std::ios_base::trunc );
-    std::fstream db( dbName.c_str(),
-              std::ios_base::out|std::ios_base::trunc );
+    std::fstream py( pyName, std::ios_base::out|std::ios_base::trunc );
+    std::fstream db( dbName, std::ios_base::out|std::ios_base::trunc );
 
     genHeader ( py, db );
     if (!userModule.empty())
@@ -676,8 +675,8 @@ void configGenerator::genHeader( std::ostream& py,
     py << "from GaudiKernel.GaudiHandles import *\n";
   }
 
-  if ( m_importDataObjectDescriptors ) {
-     py << "from GaudiKernel.DataObjectDescriptor import *\n";
+  if ( m_importDataObjectHandles ) {
+    py << "from GaudiKernel.DataObjectHandleBase import *\n";
    }
 
   genImport(py,boost::format("from %1%.Configurable import *"));
@@ -854,23 +853,14 @@ void configGenerator::pythonizeValue( const Property* p,
     pvalue = base.pythonRepr();
     ptype  = "GaudiHandleArray";
   }
-  else if ( ti == typeid(DataObjectDescriptor) ) {
-      m_importDataObjectDescriptors = true;
-      const DataObjectDescriptorProperty& hdl
-        = dynamic_cast<const DataObjectDescriptorProperty&>(*p);
-      const DataObjectDescriptor&     base = hdl.value();
+  else if ( ti == typeid(DataObjectHandleBase) ) {
+      m_importDataObjectHandles = true;
+      const DataObjectHandleProperty& hdl
+        = dynamic_cast<const DataObjectHandleProperty&>(*p);
+      const DataObjectHandleBase&     base = hdl.value();
 
       pvalue = base.pythonRepr();
-      ptype  = "DataDescriptor";
-  }
-  else if ( ti == typeid(DataObjectDescriptorCollection) ) {
-      m_importDataObjectDescriptors = true;
-      const DataObjectDescriptorCollectionProperty& hdl
-        = dynamic_cast<const DataObjectDescriptorCollectionProperty&>(*p);
-      const DataObjectDescriptorCollection&     base = hdl.value();
-
-      pvalue = base.pythonRepr();
-      ptype  = "DataDescriptorCollection";
+      ptype  = "DataObjectHandleBase";
   }
   else {
     std::ostringstream v_str;
@@ -886,17 +876,16 @@ int createAppMgr()
 //-----------------------------------------------------------------------------
 {
   IInterface* iface = Gaudi::createApplicationMgr();
-  SmartIF<IProperty> propMgr ( iface );
   SmartIF<IAppMgrUI> appUI  ( iface );
+  auto propMgr = appUI.as<IProperty>();
 
-  if ( propMgr.isValid() && appUI.isValid() ) {
-    propMgr->setProperty( "JobOptionsType", "NONE" );  // No job options
-    propMgr->setProperty( "AppName", "");              // No initial printout message
-    propMgr->setProperty( "OutputLevel", "7");         // No other printout messages
-    appUI->configure();
-    return EXIT_SUCCESS;
-  }
-  else {
-    return EXIT_FAILURE;
-  }
+  if ( !propMgr || !appUI ) return EXIT_FAILURE;
+  propMgr->setProperty( "JobOptionsType", "NONE" );  // No job options
+  propMgr->setProperty( "AppName", "");              // No initial printout message
+  propMgr->setProperty( "OutputLevel", "7");         // No other printout messages
+  appUI->configure();
+  SmartIF<IProperty> msgSvc{SmartIF<IMessageSvc>{iface}};
+  msgSvc->setProperty("setWarning", "['DefaultName', 'PropertyMgr']");
+  msgSvc->setProperty("Format", "%T %0W%M");
+  return EXIT_SUCCESS;
 }

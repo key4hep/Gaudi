@@ -1,4 +1,3 @@
-// $Id: RootStatCnv.cpp,v 1.6 2010-09-27 15:43:53 frankb Exp $
 //------------------------------------------------------------------------------
 //
 // Implementation of class :  RootStatCnv
@@ -23,7 +22,7 @@ using namespace Gaudi;
 
 // Standard Constructor
 RootStatCnv::RootStatCnv (long typ,const CLID& clid, ISvcLocator* svc, RootCnvSvc* mgr) 
-: RootConverter(typ, clid, svc, mgr), m_dataMgr(0), m_log(0)
+: RootConverter(typ, clid, svc, mgr)
 {
 }
 
@@ -31,26 +30,19 @@ RootStatCnv::RootStatCnv (long typ,const CLID& clid, ISvcLocator* svc, RootCnvSv
 StatusCode RootStatCnv::initialize() {
   StatusCode sc = RootConverter::initialize();
   if ( sc.isSuccess() ) {
-    sc = dataProvider()->queryInterface(IDataManagerSvc::interfaceID(),(void**)&m_dataMgr);
-    if ( !sc.isSuccess() ) {
+    m_dataMgr = dataProvider();
+    if ( !m_dataMgr ) {
       return makeError("Failed to access IDataManagerSvc interface.");
     }
   }
-  if ( m_log ) delete m_log;
-  m_log = new MsgStream(msgSvc(),System::typeinfoName(typeid(*this)));
+  m_log.reset( new MsgStream(msgSvc(),System::typeinfoName(typeid(*this))) );
   return sc;
 }
 
 // Finalize converter object
 StatusCode RootStatCnv::finalize() {
-  if ( m_log ) {
-    delete m_log;
-    m_log = 0;
-  }
-  if ( m_dataMgr ) {
-    m_dataMgr->release();
-    m_dataMgr = 0;
-  }
+  m_log.reset();
+  m_dataMgr.reset();
   return RootConverter::finalize();
 }
 
@@ -63,7 +55,7 @@ const string RootStatCnv::containerName(IRegistry* pReg) const {
   if ( loc > 0 )  {
     loc = path.find('/',++loc);
     if ( loc > 0 )  {
-      local += path.substr(loc,path.length()-loc);
+      local += path.substr(loc);
     }
   }
   //for(size_t i=0; i<local.length();++i)
@@ -74,7 +66,7 @@ const string RootStatCnv::containerName(IRegistry* pReg) const {
 // Retrieve the name of the file a given object is placed into
 const string RootStatCnv::fileName(IRegistry* pReg) const {
   string path = topLevel(pReg);
-  DataObject* pObj = 0;
+  DataObject* pObj = nullptr;
   dataProvider()->retrieveObject(path, pObj);
   if ( pObj )  {
     NTuple::File* fptr = dynamic_cast<NTuple::File*>(pObj);
@@ -123,13 +115,13 @@ RootStatCnv::saveDescription(const string&  path,
                              const string&  opt,
                              const CLID&    clid)
 {
-  RootDataConnection* con = 0;
+  RootDataConnection* con = nullptr;
   StatusCode status = m_dbMgr->connectDatabase(path, IDataConnection::UPDATE, &con);
   if ( status.isSuccess() )  {
     TClass* cl = gROOT->GetClass("Gaudi::RootNTupleDescriptor",kTRUE);
     if ( cl ) {
       RootNTupleDescriptor* ptr;
-      auto_ptr<RootNTupleDescriptor> dsc(ptr=new RootNTupleDescriptor());
+      std::unique_ptr<RootNTupleDescriptor> dsc(ptr=new RootNTupleDescriptor());
       TBranch* b = con->getBranch("##Descriptors","GaudiStatisticsDescription",cl,ptr,512,0);
       if ( b ) {
         dsc->description = desc;

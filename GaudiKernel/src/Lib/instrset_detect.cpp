@@ -12,10 +12,11 @@
 
 #include "instrset.h"
 
+#if ! __aarch64__
 // Define interface to cpuid instruction.
 // input:  eax = functionnumber, ecx = 0
 // output: eax = output[0], ebx = output[1], ecx = output[2], edx = output[3]
-static inline void cpuid (int output[4], int functionnumber) {	
+static inline void cpuid (int output[4], int functionnumber) {
 #if defined (_MSC_VER) || defined (__INTEL_COMPILER)       // Microsoft or Intel compiler, intrin.h included
 
     __cpuidex(output, functionnumber, 0);                  // intrinsic function for CPUID
@@ -46,7 +47,7 @@ static inline void cpuid (int output[4], int functionnumber) {
 }
 
 // Define interface to xgetbv instruction
-static inline int64_t xgetbv (int ctr) {	
+static inline int64_t xgetbv (int ctr) {
 #if (defined (_MSC_FULL_VER) && _MSC_FULL_VER >= 160040000) || (defined (__INTEL_COMPILER) && __INTEL_COMPILER >= 1200) // Microsoft or Intel compiler supporting _xgetbv intrinsic
 
     return _xgetbv(ctr);                                   // intrinsic function for XGETBV
@@ -151,3 +152,12 @@ bool hasXOP(void) {
     cpuid(abcd, 0x80000001);                               // call cpuid function 0x80000001
     return ((abcd[2] & (1 << 11)) != 0);                   // ecx bit 11 indicates XOP
 }
+#else
+// __aarch64__ version (no special feature yet)
+int instrset_detect(void) {
+  return 0;
+}
+bool hasFMA3(void) { return false; }
+bool hasFMA4(void) { return false; }
+bool hasXOP(void) { return false; }
+#endif

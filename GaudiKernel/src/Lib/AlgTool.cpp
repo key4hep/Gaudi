@@ -14,41 +14,53 @@
 #include "GaudiKernel/ThreadGaudi.h"
 #include "GaudiKernel/Guards.h"
 #include "GaudiKernel/ToolHandle.h"
+#include "GaudiKernel/DataObjIDProperty.h"
+
+//------------------------------------------------------------------------------
+namespace {
+template <typename FUN>
+StatusCode attempt( AlgTool& tool, const char* label, FUN&& fun ) {
+  try { return fun(); }
+  catch( const GaudiException& Exception ) {
+    MsgStream log ( tool.msgSvc(), tool.name() + "." + label );
+    log << MSG::FATAL << " Exception with tag=" << Exception.tag()
+        << " is caught" << endmsg;
+    log << MSG::ERROR << Exception  << endmsg;
+  }
+  catch( const std::exception& Exception ) {
+    MsgStream log ( tool.msgSvc(), tool.name() + "." + label );
+    log << MSG::FATAL << " Standard std::exception is caught" << endmsg;
+    log << MSG::ERROR << Exception.what()  << endmsg;
+  }
+  catch( ... ) {
+    MsgStream log ( tool.msgSvc(), tool.name() + "." + label );
+    log << MSG::FATAL << "UNKNOWN Exception is caught" << endmsg;
+  }
+  return StatusCode::FAILURE ;
+}
+}
 
 //------------------------------------------------------------------------------
 StatusCode AlgTool::queryInterface
-( const InterfaceID& riid ,
+( const InterfaceID& riid,
   void**             ppvi )
 //------------------------------------------------------------------------------
 {
-  if ( 0 == ppvi ) { return StatusCode::FAILURE ; } // RETURN
+  if ( !ppvi ) { return StatusCode::FAILURE ; } // RETURN
   StatusCode sc = base_class::queryInterface(riid,ppvi);
-  if (sc.isSuccess()) {
-    return sc;
-  }
-  else {
-    for ( InterfaceList::iterator it = m_interfaceList.begin() ;
-          m_interfaceList.end() != it ; ++it )
-    {
-      if ( !it->first.versionMatch ( riid ) ) { continue ; }
-      // OK
-      *ppvi = it->second ;
-      addRef() ;
-      return SUCCESS ;     // RETURN
-    }
-    *ppvi = 0 ;
+  if (sc.isSuccess()) return sc;
+  auto i = std::find_if( std::begin(m_interfaceList), std::end(m_interfaceList),
+                         [&](const std::pair<InterfaceID,void*>& item) {
+                             return item.first.versionMatch(riid);
+  } );
+  if ( i == std::end(m_interfaceList) ) {
+    *ppvi = nullptr ;
     return NO_INTERFACE ;  // RETURN
   }
-  // cannot reach this point
+  *ppvi = i->second ;
+  addRef() ;
+  return SUCCESS ;     // RETURN
 }
-//------------------------------------------------------------------------------
-void AlgTool::declInterface( const InterfaceID& iid, void* ii)
-//------------------------------------------------------------------------------
-{
-  m_interfaceList.push_back(std::make_pair(iid, ii));
-}
-
-
 //------------------------------------------------------------------------------
 const std::string& AlgTool::name()   const
 //------------------------------------------------------------------------------
@@ -71,17 +83,10 @@ const IInterface* AlgTool::parent() const
 }
 
 //------------------------------------------------------------------------------
-ISvcLocator* AlgTool::serviceLocator()  const
+SmartIF<ISvcLocator>& AlgTool::serviceLocator()  const
 //------------------------------------------------------------------------------
 {
   return m_svcLocator;
-}
-
-//------------------------------------------------------------------------------
-IMessageSvc* AlgTool::msgSvc()  const
-//------------------------------------------------------------------------------
-{
-  return m_messageSvc;
 }
 
 // ============================================================================
@@ -89,26 +94,25 @@ IMessageSvc* AlgTool::msgSvc()  const
 // ============================================================================
 IDataProviderSvc* AlgTool::evtSvc    () const
 {
-  if ( 0 == m_evtSvc )
-  {
-	StatusCode sc = service("EventDataSvc", m_evtSvc, true);
-	if (sc.isFailure()) {
-		throw GaudiException("Service [EventDataSvc] not found", name(), sc);
-	}
+  if ( !m_evtSvc ) {
+    m_evtSvc = service("EventDataSvc", true);
+    if ( !m_evtSvc ) {
+      throw GaudiException("Service [EventDataSvc] not found", name(), StatusCode::FAILURE);
+    }
   }
-  return m_evtSvc ;
+  return m_evtSvc.get();
 }
 //------------------------------------------------------------------------------
 IToolSvc* AlgTool::toolSvc() const
 //------------------------------------------------------------------------------
 {
-  if ( 0 == m_ptoolSvc ) {
-    StatusCode sc = service( "ToolSvc", m_ptoolSvc, true );
-    if( sc.isFailure() ) {
-      throw GaudiException("Service [ToolSvc] not found", name(), sc);
+  if ( !m_ptoolSvc ) {
+    m_ptoolSvc = service( "ToolSvc", true );
+    if( !m_ptoolSvc ) {
+      throw GaudiException("Service [ToolSvc] not found", name(), StatusCode::FAILURE);
     }
   }
-  return m_ptoolSvc;
+  return m_ptoolSvc.get();
 }
 
 //------------------------------------------------------------------------------
@@ -159,15 +163,17 @@ const std::vector<Property*>& AlgTool::getProperties() const
   return m_propertyMgr->getProperties();
 }
 
+bool AlgTool::hasProperty(const std::string& name) const {
+  return m_propertyMgr->hasProperty(name);
+}
+
 //------------------------------------------------------------------------------
 StatusCode AlgTool::setProperties()
 //------------------------------------------------------------------------------
 {
-  if( m_svcLocator == 0) {
-    return StatusCode::FAILURE;
-  }
-  SmartIF<IJobOptionsSvc> jos(m_svcLocator->service("JobOptionsSvc"));
-  if( !jos.isValid() )  return StatusCode::FAILURE;
+  if( !m_svcLocator ) return StatusCode::FAILURE;
+  auto jos = m_svcLocator->service<IJobOptionsSvc>("JobOptionsSvc");
+  if( !jos )  return StatusCode::FAILURE;
 
   // set first generic Properties
   StatusCode sc = jos->setMyProperties( getGaudiThreadGenericName(name()), this );
@@ -179,15 +185,7 @@ StatusCode AlgTool::setProperties()
       return StatusCode::FAILURE;
     }
   }
-
-  // Change my own outputlevel
-  if ( 0 != m_messageSvc )
-  {
-    if ( MSG::NIL != m_outputLevel )
-    { m_messageSvc -> setOutputLevel ( name () , m_outputLevel ) ; }
-    m_outputLevel = m_messageSvc -> outputLevel ( name () ) ;
-  }
-
+  updateMsgStreamOutputLevel( m_outputLevel );
   return StatusCode::SUCCESS;
 }
 
@@ -196,29 +194,10 @@ AlgTool::AlgTool( const std::string& type,
                   const std::string& name,
                   const IInterface* parent)
 //------------------------------------------------------------------------------
-  : m_outputLevel ( MSG::NIL )
-  , m_type          ( type )
+  : m_type          ( type )
   , m_name          ( name )
   , m_parent        ( parent )
-  , m_svcLocator    ( 0 )
-  , m_messageSvc    ( 0 )
-  , m_evtSvc		( 0 )
-  , m_ptoolSvc      ( 0 )
-  , m_pMonitorSvc   ( NULL )
   , m_propertyMgr   ( new PropertyMgr() )
-  , m_interfaceList (       )
-  , m_threadID      (       )
-  , m_toolHandlesInit(false)
-  , m_pAuditorSvc   ( 0     )
-  , m_auditInit     ( false )
-  , m_auditorInitialize(false)
-  , m_auditorStart(false)
-  , m_auditorStop(false)
-  , m_auditorFinalize(false)
-  , m_auditorReinitialize(false)
-  , m_auditorRestart(false)
-  , m_state         ( Gaudi::StateMachine::CONFIGURED )
-  , m_targetState   ( Gaudi::StateMachine::CONFIGURED )
 {
   addRef(); // Initial count set to 1
 
@@ -226,9 +205,9 @@ AlgTool::AlgTool( const std::string& type,
 
   { // get the "OutputLevel" property from parent
     const Property* _p = Gaudi::Utils::getProperty ( parent , "OutputLevel") ;
-    if ( 0 != _p ) { m_outputLevel.assign( *_p ) ; }
+    if ( _p ) { m_outputLevel.assign( *_p ) ; }
     declareProperty ( "OutputLevel"     , m_outputLevel ) ;
-     m_outputLevel.declareUpdateHandler(&AlgTool::initOutputLevel, this);
+     m_outputLevel.declareUpdateHandler([this](Property&) { this->updateMsgStreamOutputLevel(this->m_outputLevel) ; } );
   }
 
   IInterface* _p = const_cast<IInterface*> ( parent ) ;
@@ -236,25 +215,21 @@ AlgTool::AlgTool( const std::string& type,
   if      ( Algorithm* _alg = dynamic_cast<Algorithm*> ( _p ) )
   {
     m_svcLocator  = _alg -> serviceLocator  () ;
-    m_messageSvc  = _alg -> msgSvc          () ;
     m_threadID    = getGaudiThreadIDfromName ( _alg -> name() ) ;
   }
   else if ( Service*   _svc = dynamic_cast<Service*>  ( _p ) )
   {
     m_svcLocator  = _svc -> serviceLocator () ;
-    m_messageSvc  = _svc -> msgSvc         () ;
     m_threadID    = getGaudiThreadIDfromName ( _svc -> name() ) ;
   }
   else if ( AlgTool*   _too = dynamic_cast<AlgTool*>  ( _p ) )
   {
-    m_svcLocator  = _too -> m_svcLocator;
-    m_messageSvc  = _too -> m_messageSvc;
+    m_svcLocator  = _too -> serviceLocator ();
     m_threadID    = getGaudiThreadIDfromName ( _too ->m_threadID ) ;
   }
   else if ( Auditor*   _aud = dynamic_cast<Auditor*>  ( _p ) )
   {
     m_svcLocator  = _aud -> serviceLocator() ;
-    m_messageSvc  = _aud -> msgSvc()         ;
     m_threadID    = getGaudiThreadIDfromName ( _aud -> name() )    ;
   }
   else
@@ -267,12 +242,12 @@ AlgTool::AlgTool( const std::string& type,
 
 
   { // audit tools
-    SmartIF<IProperty> appMgr(m_svcLocator->service("ApplicationMgr"));
-    if ( !appMgr.isValid() ) {
+    auto appMgr = m_svcLocator->service<IProperty>("ApplicationMgr");
+    if ( !appMgr ) {
       throw GaudiException("Could not locate ApplicationMgr","AlgTool",0);
     }
     const Property* p = Gaudi::Utils::getProperty( appMgr , "AuditTools");
-    if ( 0 != p ) { m_auditInit.assign ( *p ) ; }
+    if ( p ) { m_auditInit.assign ( *p ) ; }
     declareProperty ( "AuditTools", m_auditInit );
     bool audit = m_auditInit.value();
     // Declare common AlgTool properties with their defaults
@@ -282,6 +257,11 @@ AlgTool::AlgTool( const std::string& type,
     declareProperty ( "AuditFinalize"   , m_auditorFinalize   = audit ) ;
   }
 
+  //declare Extra input and output properties
+  declareProperty( "ExtraInputs",  m_extInputDataObjs);
+  declareProperty( "ExtraOutputs", m_extOutputDataObjs);
+
+
   // check thread ID and try if tool name indicates thread ID
   if ( m_threadID.empty() )
   { m_threadID = getGaudiThreadIDfromName ( AlgTool::name() ) ; }
@@ -290,68 +270,22 @@ AlgTool::AlgTool( const std::string& type,
 //-----------------------------------------------------------------------------
 StatusCode AlgTool::sysInitialize() {
 //-----------------------------------------------------------------------------
-
-  StatusCode sc = StatusCode::FAILURE;
-  MsgStream log ( msgSvc() , name() ) ;
-
-  try {
-    m_targetState = Gaudi::StateMachine::ChangeState(Gaudi::StateMachine::INITIALIZE,m_state);
+  return attempt( *this, "sysInitialize", [&]() {
+    m_targetState = Gaudi::StateMachine::ChangeState( Gaudi::StateMachine::INITIALIZE, m_state);
     Gaudi::Guards::AuditorGuard guard(this,
                                       // check if we want to audit the initialize
-                                      (m_auditorInitialize) ? auditorSvc() : 0,
+                                      m_auditorInitialize ? auditorSvc() : nullptr,
                                       IAuditor::Initialize);
-    sc = initialize();
-    if (sc.isSuccess())
-      m_state = m_targetState;
-  }
-  catch( const GaudiException& Exception ) {
-    MsgStream log ( msgSvc() , name() + ".sysInitialize()" );
-    log << MSG::FATAL << " Exception with tag=" << Exception.tag()
-        << " is caught " << endmsg;
-    log << MSG::ERROR << Exception  << endmsg;
-  }
-  catch( const std::exception& Exception ) {
-    MsgStream log ( msgSvc() , name() + ".sysInitialize()" );
-    log << MSG::FATAL << " Standard std::exception is caught " << endmsg;
-    log << MSG::ERROR << Exception.what()  << endmsg;
-  }
-  catch( ... ) {
-    MsgStream log ( msgSvc() , name() + ".sysInitialize()" );
-    log << MSG::FATAL << "UNKNOWN Exception is caught " << endmsg;
-  }
+    StatusCode sc = initialize();
+    if (!sc) return sc;
 
-  //update DataHandles to point to full TES location
+    m_state = m_targetState;
+    if (m_updateDataHandles)
+    	acceptDHVisitor(m_updateDataHandles.get());
 
-	//init data handle
-	for (auto tag : m_inputDataObjects) {
-		if (m_inputDataObjects[tag].isValid()) {
-			if (m_inputDataObjects[tag].initialize().isSuccess())
-				log << MSG::DEBUG << "Data Handle " << tag << " ("
-						<< m_inputDataObjects[tag].dataProductName()
-						<< ") initialized" << endmsg;
-			else
-				log << MSG::FATAL << "Data Handle " << tag << " ("
-						<< m_inputDataObjects[tag].dataProductName()
-						<< ") could NOT be initialized" << endmsg;
-		}
-	}
-	for (auto tag : m_outputDataObjects) {
-		if (m_outputDataObjects[tag].isValid()) {
-			if (m_outputDataObjects[tag].initialize().isSuccess())
-				log << MSG::DEBUG << "Data Handle " << tag << " ("
-						<< m_outputDataObjects[tag].dataProductName()
-						<< ") initialized" << endmsg;
-			else
-				log << MSG::FATAL << "Data Handle " << tag << " ("
-						<< m_outputDataObjects[tag].dataProductName()
-						<< ") could NOT be initialized" << endmsg;
-		}
-	}
-
-  return sc;
-
+    return sc;
+  } );
 }
-
 //------------------------------------------------------------------------------
 StatusCode AlgTool::initialize()
 //------------------------------------------------------------------------------
@@ -365,35 +299,16 @@ StatusCode AlgTool::initialize()
 //-----------------------------------------------------------------------------
 StatusCode AlgTool::sysStart() {
 //-----------------------------------------------------------------------------
-
-  try {
-    m_targetState = Gaudi::StateMachine::ChangeState(Gaudi::StateMachine::START,m_state);
+  return attempt( *this, "sysInitialize", [&]() {
+    m_targetState = Gaudi::StateMachine::ChangeState( Gaudi::StateMachine::START, m_state);
     Gaudi::Guards::AuditorGuard guard(this,
                                       // check if we want to audit the initialize
-                                      (m_auditorStart) ? auditorSvc() : 0,
+                                      m_auditorStart ? auditorSvc() : nullptr,
                                       IAuditor::Start);
     StatusCode sc = start();
-    if (sc.isSuccess())
-      m_state = m_targetState;
+    if (sc.isSuccess()) m_state = m_targetState;
     return sc;
-  }
-  catch( const GaudiException& Exception ) {
-    MsgStream log ( msgSvc() , name() + ".sysStart()" );
-    log << MSG::FATAL << " Exception with tag=" << Exception.tag()
-        << " is caught " << endmsg;
-    log << MSG::ERROR << Exception  << endmsg;
-  }
-  catch( const std::exception& Exception ) {
-    MsgStream log ( msgSvc() , name() + ".sysStart()" );
-    log << MSG::FATAL << " Standard std::exception is caught " << endmsg;
-    log << MSG::ERROR << Exception.what()  << endmsg;
-  }
-  catch( ... ) {
-    MsgStream log ( msgSvc() , name() + ".sysStart()" );
-    log << MSG::FATAL << "UNKNOWN Exception is caught " << endmsg;
-  }
-  return StatusCode::FAILURE ;
-
+  } );
 }
 
 //------------------------------------------------------------------------------
@@ -407,35 +322,16 @@ StatusCode AlgTool::start()
 //-----------------------------------------------------------------------------
 StatusCode AlgTool::sysStop() {
 //-----------------------------------------------------------------------------
-
-  try {
-    m_targetState = Gaudi::StateMachine::ChangeState(Gaudi::StateMachine::STOP,m_state);
+  return attempt( *this, "sysStop", [&]() {
+    m_targetState = Gaudi::StateMachine::ChangeState( Gaudi::StateMachine::STOP, m_state);
     Gaudi::Guards::AuditorGuard guard(this,
                                       // check if we want to audit the initialize
-                                      (m_auditorStop) ? auditorSvc() : 0,
+                                      m_auditorStop ? auditorSvc() : nullptr,
                                       IAuditor::Stop);
     StatusCode sc = stop();
-    if (sc.isSuccess())
-      m_state = m_targetState;
+    if (sc.isSuccess()) m_state = m_targetState;
     return sc;
-  }
-  catch( const GaudiException& Exception ) {
-    MsgStream log ( msgSvc() , name() + ".sysStop()" );
-    log << MSG::FATAL << " Exception with tag=" << Exception.tag()
-        << " is caught " << endmsg;
-    log << MSG::ERROR << Exception  << endmsg;
-  }
-  catch( const std::exception& Exception ) {
-    MsgStream log ( msgSvc() , name() + ".sysStop()" );
-    log << MSG::FATAL << " Standard std::exception is caught " << endmsg;
-    log << MSG::ERROR << Exception.what()  << endmsg;
-  }
-  catch( ... ) {
-    MsgStream log ( msgSvc() , name() + ".sysStop()" );
-    log << MSG::FATAL << "UNKNOWN Exception is caught " << endmsg;
-  }
-  return StatusCode::FAILURE ;
-
+  } );
 }
 
 //------------------------------------------------------------------------------
@@ -449,35 +345,16 @@ StatusCode AlgTool::stop()
 //-----------------------------------------------------------------------------
 StatusCode AlgTool::sysFinalize() {
 //-----------------------------------------------------------------------------
-
-  try {
-    m_targetState = Gaudi::StateMachine::ChangeState(Gaudi::StateMachine::FINALIZE,m_state);
+  return attempt( *this, "sysFinalize", [&]() {
+    m_targetState = Gaudi::StateMachine::ChangeState( Gaudi::StateMachine::FINALIZE, m_state);
     Gaudi::Guards::AuditorGuard guard(this,
                                       // check if we want to audit the initialize
-                                      (m_auditorFinalize) ? auditorSvc() : 0,
+                                      m_auditorFinalize ? auditorSvc() : nullptr,
                                       IAuditor::Finalize);
     StatusCode sc = finalize();
-    if (sc.isSuccess())
-      m_state = m_targetState;
+    if (sc.isSuccess()) m_state = m_targetState;
     return sc;
-  }
-  catch( const GaudiException& Exception ) {
-    MsgStream log ( msgSvc() , name() + ".sysFinalize()" );
-    log << MSG::FATAL << " Exception with tag=" << Exception.tag()
-        << " is caught " << endmsg;
-    log << MSG::ERROR << Exception  << endmsg;
-  }
-  catch( const std::exception& Exception ) {
-    MsgStream log ( msgSvc() , name() + ".sysFinalize()" );
-    log << MSG::FATAL << " Standard std::exception is caught " << endmsg;
-    log << MSG::ERROR << Exception.what()  << endmsg;
-  }
-  catch( ... ) {
-    MsgStream log ( msgSvc() , name() + ".sysFinalize()" );
-    log << MSG::FATAL << "UNKNOWN Exception is caught " << endmsg;
-  }
-  return StatusCode::FAILURE;
-
+  } );
 }
 //------------------------------------------------------------------------------
 StatusCode  AlgTool::finalize()
@@ -493,37 +370,19 @@ StatusCode AlgTool::sysReinitialize() {
 
   // Check that the current status is the correct one.
   if ( Gaudi::StateMachine::INITIALIZED != FSMState() ) {
-    MsgStream log ( msgSvc() , name() );
-    log << MSG::ERROR
+    error()
         << "sysReinitialize(): cannot reinitialize tool not initialized"
         << endmsg;
     return StatusCode::FAILURE;
   }
 
-  try {
+  return attempt(*this, "SysReinitialize()", [&]() {
     Gaudi::Guards::AuditorGuard guard(this,
                                       // check if we want to audit the initialize
-                                      (m_auditorReinitialize) ? auditorSvc() : 0,
+                                      m_auditorReinitialize ? auditorSvc() : nullptr,
                                       IAuditor::ReInitialize);
-    StatusCode sc = reinitialize();
-    return sc;
-  }
-  catch( const GaudiException& Exception ) {
-    MsgStream log ( msgSvc() , name() + ".sysReinitialize()" );
-    log << MSG::FATAL << " Exception with tag=" << Exception.tag()
-        << " is caught" << endmsg;
-    log << MSG::ERROR << Exception  << endmsg;
-  }
-  catch( const std::exception& Exception ) {
-    MsgStream log ( msgSvc() , name() + ".sysReinitialize()" );
-    log << MSG::FATAL << " Standard std::exception is caught" << endmsg;
-    log << MSG::ERROR << Exception.what()  << endmsg;
-  }
-  catch( ... ) {
-    MsgStream log ( msgSvc() , name() + ".sysReinitialize()" );
-    log << MSG::FATAL << "UNKNOWN Exception is caught" << endmsg;
-  }
-  return StatusCode::FAILURE ;
+    return reinitialize();
+  } );
 
 }
 
@@ -538,14 +397,12 @@ StatusCode AlgTool::reinitialize()
   // Default implementation is finalize+initialize
   StatusCode sc = finalize();
   if (sc.isFailure()) {
-    MsgStream log ( msgSvc() , name() );
-    log << MSG::ERROR << "reinitialize(): cannot be finalized" << endmsg;
+    error() << "reinitialize(): cannot be finalized" << endmsg;
     return sc;
   }
   sc = initialize();
   if (sc.isFailure()) {
-    MsgStream log ( msgSvc() , name() );
-    log << MSG::ERROR << "reinitialize(): cannot be initialized" << endmsg;
+    error() << "reinitialize(): cannot be initialized" << endmsg;
     return sc;
   }
   */
@@ -558,39 +415,20 @@ StatusCode AlgTool::sysRestart() {
 
   // Check that the current status is the correct one.
   if ( Gaudi::StateMachine::RUNNING != FSMState() ) {
-    MsgStream log ( msgSvc() , name() );
-    log << MSG::ERROR
+    error()
         << "sysRestart(): cannot reinitialize tool not started"
         << endmsg;
     return StatusCode::FAILURE;
   }
 
-  try {
+  return attempt(*this, "sysRestart", [&]()  {
     m_targetState = Gaudi::StateMachine::ChangeState(Gaudi::StateMachine::START,m_state);
     Gaudi::Guards::AuditorGuard guard(this,
                                       // check if we want to audit the initialize
-                                      (m_auditorRestart) ? auditorSvc() : 0,
+                                      m_auditorRestart ? auditorSvc() : nullptr,
                                       IAuditor::ReStart);
-    StatusCode sc = restart();
-    return sc;
-  }
-  catch( const GaudiException& Exception ) {
-    MsgStream log ( msgSvc() , name() + ".sysRestart()" );
-    log << MSG::FATAL << " Exception with tag=" << Exception.tag()
-        << " is caught" << endmsg;
-    log << MSG::ERROR << Exception  << endmsg;
-  }
-  catch( const std::exception& Exception ) {
-    MsgStream log ( msgSvc() , name() + ".sysRestart()" );
-    log << MSG::FATAL << " Standard std::exception is caught" << endmsg;
-    log << MSG::ERROR << Exception.what()  << endmsg;
-  }
-  catch( ... ) {
-    MsgStream log ( msgSvc() , name() + ".sysRestart()" );
-    log << MSG::FATAL << "UNKNOWN Exception is caught" << endmsg;
-  }
-  return StatusCode::FAILURE ;
-
+    return restart();
+  } );
 }
 
 //------------------------------------------------------------------------------
@@ -600,14 +438,12 @@ StatusCode AlgTool::restart()
   // Default implementation is stop+start
   StatusCode sc = stop();
   if (sc.isFailure()) {
-    MsgStream log ( msgSvc() , name() );
-    log << MSG::ERROR << "restart(): cannot be stopped" << endmsg;
+    error() << "restart(): cannot be stopped" << endmsg;
     return sc;
   }
   sc = start();
   if (sc.isFailure()) {
-    MsgStream log ( msgSvc() , name() );
-    log << MSG::ERROR << "restart(): cannot be started" << endmsg;
+    error() << "restart(): cannot be started" << endmsg;
     return sc;
   }
   return StatusCode::SUCCESS;
@@ -617,34 +453,60 @@ StatusCode AlgTool::restart()
 AlgTool::~AlgTool()
 //------------------------------------------------------------------------------
 {
-  delete m_propertyMgr;
-  if( m_ptoolSvc ) m_ptoolSvc->release();
-  if( m_evtSvc ) m_evtSvc->release();
-  if( m_pAuditorSvc ) m_pAuditorSvc->release();
-  if ( m_pMonitorSvc ) { m_pMonitorSvc->undeclareAll(this); m_pMonitorSvc->release(); }
+  if( m_pMonitorSvc ) { m_pMonitorSvc->undeclareAll(this); }
 }
 
 
 void AlgTool::initToolHandles() const{
 
-	MsgStream log ( msgSvc() , name() ) ;
+  IAlgTool* tool(0);
+  for (auto thArr : m_toolHandleArrays) {
+    if (! thArr->retrieved()) {
+      if (UNLIKELY(msgLevel(MSG::DEBUG)))
+        debug() << "ToolHandleArray " << thArr->propertyName()
+                << " not used: not registering any of its Tools" << endmsg;
+    } else {
+      if (UNLIKELY(msgLevel(MSG::DEBUG)))
+        debug() << "Registering all Tools in ToolHandleArray " 
+                << thArr->propertyName() ;
+      for (auto th_name : thArr->typesAndNames()) {
+        if (UNLIKELY(msgLevel(MSG::DEBUG)))
+          debug() << std::endl << "    + " << th_name;
+        if (toolSvc()->retrieveTool(th_name, tool, this).isSuccess()) {
+          if (UNLIKELY(msgLevel(MSG::DEBUG)))
+            debug() << " (private)";
+          m_tools.push_back(tool);
+        } else if (toolSvc()->retrieveTool(th_name, tool, 0).isSuccess()) {
+          if (UNLIKELY(msgLevel(MSG::DEBUG)))
+            debug() << " (public)";
+          m_tools.push_back(tool);
+        } else {
+          if (UNLIKELY(msgLevel(MSG::DEBUG)))
+            debug() << " - ERROR" << endmsg;
+          warning() <<  "Error retrieving Tool " << th_name 
+                    << " in ToolHandleArray" << thArr->propertyName()
+                    << ". Not registered" << endmsg;
+        }
+      }
+      if (UNLIKELY(msgLevel(MSG::DEBUG))) debug() << endmsg;
+    }
+  }
 
-	for(auto th : m_toolHandles){
-		IAlgTool * tool = nullptr;
-
-		//if(th->retrieve().isFailure())
-			//log << MSG::DEBUG << "Error in retrieving tool from ToolHandle" << endmsg;
-
-		//get generic tool interface from ToolHandle
-		if(th->retrieve(tool).isSuccess() && tool != nullptr){
-			m_tools.push_back(tool);
-			log << MSG::DEBUG << "Adding ToolHandle tool " << tool->name() << " (" << tool->type() << ")" << endmsg;
-		} else {
-			log << MSG::DEBUG << "Trying to add nullptr tool" << endmsg;
-		}
-	}
-
-	m_toolHandlesInit = true;
+  for(auto th : m_toolHandles){
+    tool = th->get();
+    if(tool){
+      m_tools.push_back(tool);
+      if (UNLIKELY(msgLevel(MSG::DEBUG)))
+        debug() << "Adding "
+        << (th->isPublic() ? "Public" : "Private" )
+        << " ToolHandle tool " << tool->name()
+        << " (" << tool->type() << ")" << endmsg;
+    } else {
+      if (UNLIKELY(msgLevel(MSG::DEBUG)))
+        debug() << "ToolHandle " << th->typeAndName() << " not used" << endmsg;
+    }
+  }
+  m_toolHandlesInit = true;
 }
 
 const std::vector<IAlgTool *> & AlgTool::tools() const {
@@ -690,19 +552,40 @@ SmartIF<IService> AlgTool::service(const std::string& name, const bool createIf,
 //-----------------------------------------------------------------------------
 IAuditorSvc* AlgTool::auditorSvc() const {
 //---------------------------------------------------------------------------
-  if ( 0 == m_pAuditorSvc ) {
-    StatusCode sc = service( "AuditorSvc", m_pAuditorSvc, true );
-    if( sc.isFailure() ) {
-      throw GaudiException("Service [AuditorSvc] not found", name(), sc);
+  if ( !m_pAuditorSvc ) {
+    m_pAuditorSvc = service( "AuditorSvc", true );
+    if( !m_pAuditorSvc ) {
+      throw GaudiException("Service [AuditorSvc] not found", name(), StatusCode::FAILURE);
     }
   }
-  return m_pAuditorSvc;
+  return m_pAuditorSvc.get();
 }
 
+//-----------------------------------------------------------------------------
+void
+AlgTool::acceptDHVisitor(IDataHandleVisitor *vis) const{
+  //-----------------------------------------------------------------------------
+  vis->visit(this);
 
-//-----------------------------------------------------------------------------
-void  AlgTool::initOutputLevel(Property& /*prop*/) {
-//-----------------------------------------------------------------------------
-   // do nothing... yet ?
+  for (auto tool : tools()) {
+    AlgTool *at = dynamic_cast<AlgTool*>(tool);
+    vis->visit(at);
+  }
+
 }
 
+//-----------------------------------------------------------------------------
+void
+AlgTool::commitHandles() {
+  //-----------------------------------------------------------------------------
+
+  for (auto h : m_outputHandles) {
+    h->commit();
+  }
+
+  for (auto t : m_tools) {
+    AlgTool* at = dynamic_cast<AlgTool*>(t);
+    if (at != 0) at->commitHandles();
+  }
+
+}

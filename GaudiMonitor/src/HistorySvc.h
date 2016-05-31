@@ -1,5 +1,3 @@
-// $Id: HistorySvc.h,v 1.8 2008/06/04 12:35:15 marcocle Exp $
-
 #ifndef GAUDISVC_FASTHISTORYSVC_H
 #define GAUDISVC_FASTHISTORYSVC_H
 
@@ -40,7 +38,9 @@ struct DHH;
  *
  */
 
-class HistorySvc: public extends2<Service, IHistorySvc, IIncidentListener> {
+class HistorySvc: public extends<Service,
+                                 IHistorySvc,
+                                 IIncidentListener> {
 public:
 
   virtual StatusCode initialize();
@@ -86,7 +86,7 @@ public:
   virtual void handle(const Incident& inc);
 
   // Destructor.
-  virtual ~HistorySvc();
+  virtual ~HistorySvc() = default;
 
 private:
 
@@ -101,27 +101,23 @@ private:
 
   void clearState();
 
-  bool m_isInitialized;
-  bool m_dump;
-  bool m_activate;
+  bool m_isInitialized = false;
+  bool m_dump = false;
+  bool m_activate = true;
 
-  IAlgContextSvc *p_algCtxSvc;
+  IAlgContextSvc *p_algCtxSvc = nullptr;
 
-  std::set<const Algorithm*> m_algs;
   std::map<const Algorithm*, AlgorithmHistory*> m_algmap;
 
   std::set<const IAlgTool*> m_ialgtools;
-  std::set<const AlgTool*> m_algtools;
   std::map<const AlgTool*, AlgToolHistory*> m_algtoolmap;
-
-  std::set<const IService*> m_svcs;
   std::map<const IService*, ServiceHistory*> m_svcmap;
 
   std::multimap<DHH, DataHistory*> m_datMap;
 
 //   std::set<DataHistory*, DataHistory::DataHistoryOrder> m_datMap;
 
-  JobHistory *m_jobHistory;
+  std::unique_ptr<JobHistory> m_jobHistory;
 
   std::string m_outputFile;
 
@@ -138,11 +134,11 @@ private:
 
   IAlgorithm* getCurrentIAlg() const;
 
-  IIncidentSvc *m_incidentSvc;
+  IIncidentSvc *m_incidentSvc = nullptr;
   SmartIF<IToolSvc> m_toolSvc;
 
   mutable MsgStream m_log;
-  bool m_outputFileTypeXML;
+  bool m_outputFileTypeXML = false;
 
 };
 

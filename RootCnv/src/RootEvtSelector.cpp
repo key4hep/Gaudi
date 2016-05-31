@@ -1,4 +1,3 @@
-// $Id: RootEvtSelector.cpp,v 1.11 2010-09-27 15:43:53 frankb Exp $
 //====================================================================
 //	RootEvtSelector.cpp
 //--------------------------------------------------------------------
@@ -49,9 +48,9 @@ namespace Gaudi {
     std::string                   m_fid;
   public:
     /// Standard constructor with initialization
-    RootEvtSelectorContext(const RootEvtSelector* s) : m_sel(s),m_entry(-1),m_branch(0){}
+    RootEvtSelectorContext(const RootEvtSelector* s) : m_sel(s),m_entry(-1),m_branch(nullptr){}
     /// Standard destructor
-    virtual ~RootEvtSelectorContext()                {                        }
+    ~RootEvtSelectorContext() override = default;
     /// Access to the file container
     const Files& files() const                       { return m_files;        }
     /// Set the file container
@@ -60,7 +59,7 @@ namespace Gaudi {
       m_fiter = m_files.begin();
     }
     /// Context identifier
-    virtual void* identifier() const                 { return (void*)m_sel;   }
+    void* identifier() const override                { return const_cast<RootEvtSelector*>(m_sel);   }
     /// Access to the file iterator
     Files::const_iterator fileIterator() const       { return m_fiter;        }
     /// Set file iterator
@@ -84,7 +83,7 @@ namespace Gaudi {
 // Include files
 #include "GaudiKernel/ClassID.h"
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/Tokenizer.h"
+#include "GaudiKernel/AttribStringParser.h"
 #include "GaudiKernel/TypeNameString.h"
 #include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/IPersistencySvc.h"
@@ -121,11 +120,11 @@ StatusCode RootEvtSelector::initialize()    {
     return error("Error initializing base class Service!");
   }
 
-  SmartIF<IPersistencySvc> ipers(serviceLocator()->service(m_persName));
-  if( !ipers.isValid() )   {
+  auto ipers = serviceLocator()->service<IPersistencySvc>(m_persName);
+  if( !ipers )   {
     return error("Unable to locate IPersistencySvc interface of "+m_persName);
   }
-  IConversionSvc *cnvSvc = 0;
+  IConversionSvc *cnvSvc = nullptr;
   Gaudi::Utils::TypeNameString itm(m_cnvSvcName);
   status = ipers->getService(itm.name(),cnvSvc);
   if( !status.isSuccess() )   {
@@ -142,8 +141,8 @@ StatusCode RootEvtSelector::initialize()    {
   m_dbMgr->addRef();
 
   // Get DataSvc
-  SmartIF<IDataManagerSvc> eds(serviceLocator()->service("EventDataSvc"));
-  if( !eds.isValid() ) {
+  auto eds = serviceLocator()->service<IDataManagerSvc>("EventDataSvc");
+  if( !eds ) {
     return error("Unable to localize service EventDataSvc");
   }
   m_rootCLID = eds->rootCLID();
@@ -157,7 +156,7 @@ StatusCode RootEvtSelector::initialize()    {
 StatusCode RootEvtSelector::finalize()    {
   // Initialize base class
   if ( m_dbMgr ) m_dbMgr->release();
-  m_dbMgr = 0; // release
+  m_dbMgr = nullptr; // release
   return Service::finalize();
 }
 
@@ -178,11 +177,11 @@ StatusCode RootEvtSelector::next(Context& ctxt) const  {
   if ( pCtxt ) {
     TBranch* b = pCtxt->branch();
     if ( !b ) {
-      RootEvtSelectorContext::Files::const_iterator fileit = pCtxt->fileIterator();
-      pCtxt->setBranch(0);
+      auto fileit = pCtxt->fileIterator();
+      pCtxt->setBranch(nullptr);
       pCtxt->setEntry(-1);
       if ( fileit != pCtxt->files().end() ) {
-        RootDataConnection* con=0;
+        RootDataConnection* con=nullptr;
         string     in = *fileit;
         StatusCode sc = m_dbMgr->connectDatabase(in,IDataConnection::READ,&con);
         if ( sc.isSuccess() ) {
@@ -206,10 +205,10 @@ StatusCode RootEvtSelector::next(Context& ctxt) const  {
       pCtxt->setEntry(++ent);
       return StatusCode::SUCCESS;
     }
-    RootEvtSelectorContext::Files::const_iterator fit = pCtxt->fileIterator();
+    auto fit = pCtxt->fileIterator();
     pCtxt->setFileIterator(++fit);
     pCtxt->setEntry(-1);
-    pCtxt->setBranch(0);
+    pCtxt->setBranch(nullptr);
     pCtxt->setFID("");
     return next(ctxt);
   }
@@ -253,14 +252,14 @@ StatusCode RootEvtSelector::previous(Context& ctxt, int jump) const  {
 StatusCode RootEvtSelector::rewind(Context& ctxt) const   {
   RootEvtSelectorContext* pCtxt = dynamic_cast<RootEvtSelectorContext*>(&ctxt);
   if ( pCtxt ) {
-    RootEvtSelectorContext::Files::const_iterator fileit = pCtxt->fileIterator();
+    auto fileit = pCtxt->fileIterator();
     if ( fileit != pCtxt->files().end() ) {
       string input = *fileit;
       m_dbMgr->disconnect(input).ignore();
     }
     pCtxt->setFID("");
     pCtxt->setEntry(-1);
-    pCtxt->setBranch(0);
+    pCtxt->setBranch(nullptr);
     pCtxt->setFileIterator(pCtxt->files().begin());
     return StatusCode::SUCCESS;
   }
@@ -274,7 +273,7 @@ RootEvtSelector::createAddress(const Context& ctxt, IOpaqueAddress*& pAddr) cons
   if ( pctxt ) {
     long ent = pctxt->entry();
     if ( ent >= 0 )  {
-      RootEvtSelectorContext::Files::const_iterator fileit = pctxt->fileIterator();
+      auto fileit = pctxt->fileIterator();
       if ( fileit != pctxt->files().end() ) {
         const string par[2] = {pctxt->fid(), m_rootName};
         const unsigned long ipar[2] = {0,(unsigned long)ent};
@@ -282,7 +281,7 @@ RootEvtSelector::createAddress(const Context& ctxt, IOpaqueAddress*& pAddr) cons
       }
     }
   }
-  pAddr = 0;
+  pAddr = nullptr;
   return StatusCode::FAILURE;
 }
 
@@ -305,42 +304,41 @@ RootEvtSelector::resetCriteria(const string& criteria, Context& context)  const
   RootEvtSelectorContext* ctxt = dynamic_cast<RootEvtSelectorContext*>(&context);
   string db, typ, item, sel, stmt, aut, addr;
   if ( ctxt )  {
-    if ( criteria.substr(0,5) == "FILE " )  {
+    if ( criteria.compare(0,5,"FILE ")==0 )  {
       // The format for the criteria is:
       //        FILE  filename1, filename2 ...
       db = criteria.substr(5);
     }
     else  {
-      Tokenizer tok(true);
-      tok.analyse(criteria," ","","","=","'","'");
-      for(Tokenizer::Items::iterator i=tok.items().begin(); i!=tok.items().end();i++) {
-        string tmp = (*i).tag().substr(0,3);
+      using Parser = Gaudi::Utils::AttribStringParser;
+      for(auto attrib: Parser(criteria)) {
+        string tmp = attrib.tag.substr(0,3);
         if(tmp=="DAT")  {
-          db = (*i).value();
+          db = std::move(attrib.value);
         }
-        if(tmp=="OPT")   {
-          if((*i).value() != "REA")   {
-            log << MSG::ERROR << "Option:\"" << (*i).value() << "\" not valid" << endmsg;
+        else if(tmp=="OPT")   {
+          if(attrib.value.compare(0, 3,"REA") != 0)   {
+            log << MSG::ERROR << "Option:\"" << attrib.value << "\" not valid" << endmsg;
             return StatusCode::FAILURE;
           }
         }
-        if (tmp=="TYP") {
-          typ = (*i).value();
+        else if (tmp=="TYP") {
+          typ = std::move(attrib.value);
         }
-        if(tmp=="ADD")  {
-          item = (*i).value();
+        else if(tmp=="ADD")  {
+          item = std::move(attrib.value);
         }
-        if(tmp=="SEL")  {
-          sel = (*i).value();
+        else if(tmp=="SEL")  {
+          sel = std::move(attrib.value);
         }
-        if(tmp=="FUN")  {
-          stmt = (*i).value();
+        else if(tmp=="FUN")  {
+          stmt = std::move(attrib.value);
         }
-        if(tmp=="AUT")  {
-          aut = (*i).value();
+        else if(tmp=="AUT")  {
+          aut = std::move(attrib.value);
         }
-        if(tmp=="COL")  {
-          addr = (*i).value();
+        else if(tmp=="COL")  {
+          addr = std::move(attrib.value);
         }
       }
     }

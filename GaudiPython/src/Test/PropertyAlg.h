@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiPython/src/Test/PropertyAlg.h,v 1.1 2005/10/27 16:57:57 mato Exp $
 #ifndef GAUDIEXAMPLE_PROPERTYALG_H
 #define GAUDIEXAMPLE_PROPERTYALG_H
 

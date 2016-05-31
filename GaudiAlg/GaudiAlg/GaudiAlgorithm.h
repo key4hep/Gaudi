@@ -1,5 +1,3 @@
-// $Id: GaudiAlgorithm.h,v 1.19 2008/11/04 22:49:25 marcocle Exp $
-// ============================================================================
 #ifndef GAUDIALG_GaudiAlgorithm_H
 #define GAUDIALG_GaudiAlgorithm_H 1
 // ============================================================================
@@ -16,6 +14,7 @@
 // ============================================================================
 #include "GaudiAlg/GaudiAlg.h"
 #include "GaudiAlg/GaudiCommon.h"
+#include "GaudiKernel/DataObjectHandle.h"
 // ============================================================================
 // forward declarations:
 // ============================================================================
@@ -100,21 +99,21 @@ public:
    *  @see IAlgorithm
    *  @return status code
    */
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
   // ==========================================================================
   /** standard execution method
    *  @see  Algorithm
    *  @see IAlgorithm
    *  @return status code
    */
-  virtual StatusCode execute   ();
+  StatusCode execute   () override;
   // ==========================================================================
   /** standard finalization method
    *  @see  Algorithm
    *  @see IAlgorithm
    *  @return status code
    */
-  virtual StatusCode finalize  ();
+  StatusCode finalize  () override;
   // ==========================================================================
   /** the generic actions for the execution.
    *  @see  Algorithm
@@ -122,7 +121,7 @@ public:
    *  @see Algorithm::sysExecute
    *  @return status code
    */
-  virtual StatusCode sysExecute () ;
+  StatusCode sysExecute () override;
   // ==========================================================================
 public:
 
@@ -662,7 +661,7 @@ public:
                    ISvcLocator*       pSvcLocator );
   // ==========================================================================
   /// destructor, virtual and protected
-  virtual ~GaudiAlgorithm();
+  ~GaudiAlgorithm() override = default;
   // ==========================================================================
 public:
   // ==========================================================================
@@ -671,16 +670,13 @@ public:
    */
   SmartIF<INTupleSvc>&     evtColSvc  () const;
   // ==========================================================================
-private:
-  // ==========================================================================
-  // no public default constructor
-  GaudiAlgorithm(); ///< no public default constructor
-  // ==========================================================================
-  // no public copy constructor
-  GaudiAlgorithm             ( const GaudiAlgorithm& ); ///< no public copy
-  // ==========================================================================
-  // no public assignment operator
-  GaudiAlgorithm& operator = ( const GaudiAlgorithm& ); ///< no public assignment
+  // no default/copy constructor, no assignment -- except that ROOT really
+  // wants a default constructor declared. So we define it, and don't implement
+  // it... 
+  GaudiAlgorithm             ( const GaudiAlgorithm& ) = delete;
+  GaudiAlgorithm& operator = ( const GaudiAlgorithm& ) = delete;
+private :
+  GaudiAlgorithm() ;
   // ==========================================================================
 private:
   // ==========================================================================
@@ -691,11 +687,34 @@ private:
   /// process the event only if one or more of these objects are present in TES
   std::vector<std::string> m_requireObjs;
   // ==========================================================================
+
+ public:
+  using Algorithm::declareProperty;
+  template <class T>
+    Property* declareProperty
+    ( const std::string& name,
+      DataObjectHandle<T>&     hndl,
+      const std::string& doc = "none" ) const
+  {
+          
+    if ( hndl.mode() & Gaudi::DataHandle::Reader ) {      
+      (const_cast<GaudiAlgorithm*>(this))->Algorithm::declareInput(&hndl);
+    }
+    
+    if ( hndl.mode() & Gaudi::DataHandle::Writer ) {      
+      (const_cast<GaudiAlgorithm*>(this))->Algorithm::declareOutput(&hndl);
+    }
+    
+    if (hndl.owner() == 0) {
+      hndl.setOwner((const_cast<GaudiAlgorithm*>(this)));
+    }
+    
+    return m_propertyMgr->declareProperty(name, hndl, doc);
+  }
+  
 };
 // ============================================================================
 // The END
 // ============================================================================
 #endif // GAUDIALG_GaudiAlgorithm_H
 // ============================================================================
-
-

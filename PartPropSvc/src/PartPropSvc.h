@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 #include <iostream>
+#include <memory>
 
 //------------------------------------------------------------------
 //
@@ -24,43 +25,40 @@
 //
 //------------------------------------------------------------------
 
-class PartPropSvc: public extends1<Service, IPartPropSvc> {
+class PartPropSvc: public extends<Service,
+                                  IPartPropSvc> {
 public:
-
-  virtual StatusCode initialize();
-  virtual StatusCode reinitialize();
-  virtual StatusCode finalize();
-
-  // The table
-  HepPDT::ParticleDataTable *PDT();
-
-  void setUnknownParticleHandler( HepPDT::ProcessUnknownID*,
-				  const std::string&);
 
   PartPropSvc( const std::string& name, ISvcLocator* svc );
 
+  StatusCode initialize() override;
+  StatusCode finalize() override;
+
+  // The table
+  HepPDT::ParticleDataTable *PDT() override;
+
+  void setUnknownParticleHandler( HepPDT::ProcessUnknownID*,
+                                  const std::string&) override;
+
   // Destructor.
-  virtual ~PartPropSvc();
+  ~PartPropSvc() override = default;
 
 private:
 
+  using inputFunPtr = bool(*)(std::istream&,HepPDT::TableBuilder&);
 
   StatusCode createTable();
-  std::vector< std::pair<std::string,
-			 bool(*) (std::istream&,HepPDT::TableBuilder&)> > m_inputs;
+  std::vector<std::pair<std::string,inputFunPtr>> m_inputs;
 
   StringProperty m_pdtFiles;
-  HepPDT::ProcessUnknownID* m_upid;
+  HepPDT::ProcessUnknownID* m_upid = nullptr;
   std::string m_upid_name;
 
-  HepPDT::ParticleDataTable *m_pdt;
+  std::unique_ptr<HepPDT::ParticleDataTable> m_pdt;
 
-  bool (*parseTableType(std::string&))(std::istream&, HepPDT::TableBuilder&);
+  inputFunPtr parseTableType(const std::string&);
 
-  mutable MsgStream m_log;
-
-  bool m_upid_local;
-
+  bool m_upid_local = false;
 
 };
 

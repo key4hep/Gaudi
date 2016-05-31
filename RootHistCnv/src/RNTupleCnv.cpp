@@ -39,19 +39,13 @@ RootHistCnv::RNTupleCnv::RNTupleCnv( ISvcLocator* svc, const CLID& clid )
 
 
 //-----------------------------------------------------------------------------
-/// Standard destructor
-RootHistCnv::RNTupleCnv::~RNTupleCnv()             {
-}
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
 /// Initialize the converter
 StatusCode RootHistCnv::RNTupleCnv::initialize()   {
   //-----------------------------------------------------------------------------
   StatusCode status = Converter::initialize();
   if ( status.isSuccess() ) {
     m_ntupleSvc = serviceLocator()->service("NTupleSvc");
-    if (!m_ntupleSvc.isValid()) status = StatusCode::FAILURE;
+    if (!m_ntupleSvc) status = StatusCode::FAILURE;
   }
   return status;
 }
@@ -61,8 +55,7 @@ StatusCode RootHistCnv::RNTupleCnv::initialize()   {
 /// Finalize the converter
 StatusCode RootHistCnv::RNTupleCnv::finalize()     {
   //-----------------------------------------------------------------------------
-  /// @FIXME: the release at this point may brake (?)
-  m_ntupleSvc = 0; // release
+  m_ntupleSvc.reset();
   return Converter::finalize();
 }
 
@@ -78,7 +71,7 @@ StatusCode RootHistCnv::RNTupleCnv::updateObj(IOpaqueAddress* pAddress,
 
   RootObjAddress *rAddr = dynamic_cast<RootObjAddress*>(pAddress);
 
-  if (rAddr == 0) {
+  if ( !rAddr ) {
     log << MSG::ERROR << "Could not dynamic cast to RootObjAddress" << endmsg;
     return StatusCode::FAILURE;
   }
@@ -115,11 +108,11 @@ StatusCode RootHistCnv::RNTupleCnv::createObj(IOpaqueAddress* pAddress,
   StatusCode status = readObject(pAddress, refpObject);  // Doesn't do anything
   if ( status.isSuccess() )   {
     RootObjAddress *rAddr = dynamic_cast<RootObjAddress*>( pAddress );
-    if (rAddr == 0) {
+    if ( !rAddr ) {
       log << MSG::ERROR << "Could not cast to RootObjAddress" << endmsg;
       return StatusCode::FAILURE;
     }
-    INTuple* nt = 0;
+    INTuple* nt = nullptr;
     TTree* tobj = (TTree*) rAddr->tObj();
     status = load(tobj, nt);
     if (status.isSuccess()) {
@@ -139,22 +132,22 @@ StatusCode RootHistCnv::RNTupleCnv::createRep(DataObject* pObject,
 //-----------------------------------------------------------------------------
 {
   GlobalDirectoryRestore restore;
-  pAddr = 0;
+  pAddr = nullptr;
   try   {
     IRegistry* pReg = pObject->registry();
-    if ( 0 != pReg )    {
+    if ( pReg )    {
       pAddr = pReg->address();
-      if ( 0 == pAddr )   {
-        SmartIF<IDataManagerSvc> dataMgr(dataProvider());
-        if ( dataMgr.isValid() )    {
-          IRegistry* pParentReg = 0;
+      if ( !pAddr )   {
+        auto dataMgr = dataProvider().as<IDataManagerSvc>();
+        if ( dataMgr )    {
+          IRegistry* pParentReg = nullptr;
           StatusCode status = dataMgr->objectParent(pReg, pParentReg);
           if ( status.isSuccess() )  {
             IOpaqueAddress* pParAddr = pParentReg->address();
             if ( pParAddr )   {
               TDirectory* pParentDir = (TDirectory*)pParAddr->ipar()[0];
               if ( pParentDir )   {
-                TTree* pTree = 0;
+                TTree* pTree = nullptr;
                 std::string dsc = pReg->name().substr(1);
                 gDirectory = pParentDir;
                 status = book(dsc, dynamic_cast<INTuple*>(pObject), pTree);
@@ -174,7 +167,7 @@ StatusCode RootHistCnv::RNTupleCnv::createRep(DataObject* pObject,
       else  {
         TDirectory* pDir  = (TDirectory*)pAddr->ipar()[0];
         RootObjAddress *rAddr = dynamic_cast<RootObjAddress*>( pAddr );
-        if (rAddr == 0) {
+        if ( !rAddr ) {
           MsgStream log (msgSvc(), "RNTupleCnv");
           log << MSG::ERROR << "Could not cast to RootObjAddress" << endmsg;
           return StatusCode::FAILURE;
@@ -199,16 +192,16 @@ StatusCode RootHistCnv::RNTupleCnv::updateRep(IOpaqueAddress* pAddr,
 //-----------------------------------------------------------------------------
 {
   MsgStream log (msgSvc(), "RNTupleCnv");
-  if ( 0 != pAddr )    {
+  if ( pAddr )    {
     GlobalDirectoryRestore restore;
     TDirectory* pDir = (TDirectory*)pAddr->ipar()[0];
     RootObjAddress *rAddr = dynamic_cast<RootObjAddress*>( pAddr );
-    if (rAddr == 0) {
+    if ( !rAddr ) {
       log << MSG::ERROR << "Could not cast to RootObjAddress" << endmsg;
       return StatusCode::FAILURE;
     }
     TTree* pTree     = (TTree*) rAddr->tObj();
-    if ( 0 != pDir && 0 != pTree )  {
+    if ( pDir && pTree )  {
       gDirectory->cd(pDir->GetPath());
       pTree->Write("",TObject::kOverwrite);
       return StatusCode::SUCCESS;
@@ -217,7 +210,7 @@ StatusCode RootHistCnv::RNTupleCnv::updateRep(IOpaqueAddress* pAddr,
   else {
     log << MSG::WARNING << "empty ntuple: " << pObj->registry()->identifier()
         << endmsg;
-    return ( createRep(pObj,pAddr) );
+    return createRep(pObj,pAddr);
   }
   return StatusCode::FAILURE;
 }
@@ -248,12 +241,12 @@ std::string RootHistCnv::RNTupleCnv::rootVarType(int type) {
 }
 
 //-----------------------------------------------------------------------------
-bool RootHistCnv::parseName(std::string full, std::string &blk, std::string &var) {
+bool RootHistCnv::parseName(const std::string& full, std::string &blk, std::string &var) {
   //-----------------------------------------------------------------------------
   int sp;
   if ( (sp=full.find("/")) != -1 ) {
     blk = full.substr(0,sp);
-    var = full.substr(sp+1,full.length());
+    var = full.substr(sp+1);
     return true;
   } else {
     blk = "AUTO_BLK";
@@ -286,7 +279,7 @@ namespace RootHistCnv  {
     }
 
     TYP null = 0;
-    INTupleItem* col = 0;
+    INTupleItem* col = nullptr;
 
     if (min == 0 && max == 0) {
       min = NTuple::Range<TYP>::min();

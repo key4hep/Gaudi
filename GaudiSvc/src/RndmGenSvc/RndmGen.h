@@ -8,8 +8,10 @@
 #ifndef GAUDI_RANDOMGENSVC_RNDMGEN_H
 #define GAUDI_RANDOMGENSVC_RNDMGEN_H 1
 
+#include <memory>
 // Framework include files
 #include "GaudiKernel/IRndmGen.h"
+#include "GaudiKernel/SmartIF.h"
 
 // Forward declarations
 class IRndmEngine;
@@ -36,46 +38,44 @@ class IRndmEngine;
     Author:  M.Frank
     Version: 1.0
 */
-class RndmGen : public implements1<IRndmGen> {
+class RndmGen : public implements<IRndmGen> {
 
 protected:
   /// Generation parameters
-  IRndmGen::Param*  m_params;
+  std::unique_ptr<IRndmGen::Param>  m_params;
   /// Hosting service: Access must always be possible
-  IRndmEngine*      m_engine;
+  SmartIF<IRndmEngine>  m_engine;
 
   /// Standard Constructor
   RndmGen(IInterface* engine);
   /// Standard Destructor
-  virtual ~RndmGen();
+  ~RndmGen() override = default;
 
 public:
 
   /** IRndmGen implementation    */
   /// Initialize the generator
-  virtual StatusCode initialize(const IRndmGen::Param& par);
-  /// Initialize the generator
-  virtual StatusCode finalize();
+  StatusCode initialize(const IRndmGen::Param& par) override;
+  /// Finalize the generator
+  StatusCode finalize() override;
   /// Random number generator type
-  virtual const InterfaceID& type() const    {
+  const InterfaceID& type() const override {
     return (m_params != 0) ? m_params->type() : IID_IRndmFlat;
   }
   /// Random number generator ID
-  virtual long ID() const    {
+  long ID() const override {
     return long(this);
   }
   /// Access to random number generator parameters
-  virtual const IRndmGen::Param* parameters() const    {
-    return m_params;
+  const IRndmGen::Param* parameters() const override {
+    return m_params.get();
   }
-  /// Single shot returning single random number according to specified distribution
-  virtual double shoot() const;
   /** Multiple shots returning vector with random number according to specified distribution.
       @param  array    Array containing random numbers
       @param  howmany  fill 'howmany' random numbers into array
       @param  start    ... starting at position start
   */
-  virtual StatusCode shootArray( std::vector<double>& array, long howmany, long start) const;
+  StatusCode shootArray( std::vector<double>& array, long howmany, long start) const override;
 };
 
 #endif // GAUDI_RANDOMGENSVC_RNDMGEN_H

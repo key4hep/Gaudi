@@ -1,4 +1,3 @@
-// $Id:$
 #ifndef JOBOPTIONSVC_ANALYZER_H_
 #define JOBOPTIONSVC_ANALYZER_H_
 // ============================================================================

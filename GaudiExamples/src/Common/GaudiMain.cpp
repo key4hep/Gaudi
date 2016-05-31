@@ -1,31 +1,28 @@
-//$Id: GaudiMain.cpp,v 1.9 2006/11/17 16:04:46 mato Exp $	//
-
 // Include files
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/Bootstrap.h"
 #include "GaudiKernel/IAppMgrUI.h"
 #include "GaudiKernel/IProperty.h"
-
+#include "boost/algorithm/string/predicate.hpp"
 #include <iostream>
 
 //--- Example main program
 int main ( int argc, char** argv ) {
   // Create an instance of an application manager
-  IInterface* iface = Gaudi::createApplicationMgr();
-  SmartIF<IProperty>     propMgr ( iface );
-  SmartIF<IAppMgrUI>     appMgr  ( iface );
+  auto appMgr  = SmartIF<IAppMgrUI>( Gaudi::createApplicationMgr() );
+  auto propMgr = appMgr.as<IProperty>();
 
-  if( !appMgr.isValid() || !propMgr.isValid() ) {
+  if( !appMgr || !propMgr ) {
     std::cout << "Fatal error while creating the ApplicationMgr " << std::endl;
     return 1;
   }
 
   // Get the input configuration file from arguments
-  std:: string opts = (argc>1) ? argv[1] : "jobOptions.txt";
+  std:: string opts = ( argc>1 ? argv[1] : "jobOptions.txt" );
 
   propMgr->setProperty( "JobOptionsPath", opts );
 
-  if( opts.substr( opts.length() - 3, 3 ) == ".py" ) {
+  if( boost::algorithm::ends_with( opts, ".py" ) ) {
     propMgr->setProperty( "EvtSel",         "NONE" );
     propMgr->setProperty( "JobOptionsType", "NONE" );
     propMgr->setProperty( "DLLs",           "['GaudiPython']" );
@@ -36,6 +33,7 @@ int main ( int argc, char** argv ) {
   appMgr->run().ignore();
 
   // All done - exit
-  iface->release().ignore();
+  propMgr.reset();
+  appMgr.reset();
   return 0;
 }

@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/GaudiKernel/IAddressCreator.h,v 1.10 2003/11/27 10:20:57 mato Exp $
 #ifndef GAUDIKERNEL_IADDRESSCREATOR_H
 #define GAUDIKERNEL_IADDRESSCREATOR_H
 

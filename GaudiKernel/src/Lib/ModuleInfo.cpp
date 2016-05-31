@@ -1,4 +1,3 @@
-// $Header: /tmp/svngaudi/tmp.jEpFh25751/Gaudi/GaudiKernel/src/Lib/ModuleInfo.cpp,v 1.10 2008/10/28 10:40:19 marcocle Exp $
 //====================================================================
 //	ModuleInfo.cpp
 //--------------------------------------------------------------------
@@ -48,7 +47,7 @@ static PsApiFunctions _psApi;
   #include <dlfcn.h>
 #endif
 
-static System::ImageHandle      ModuleHandle = 0;
+static System::ImageHandle      ModuleHandle = nullptr;
 static std::vector<std::string> s_linkedModules;
 
 /// Retrieve base name of module
@@ -59,7 +58,7 @@ const std::string& System::moduleName()   {
 #ifdef _WIN32
       char moduleName[256] = {"Unknown.module"};
       moduleName[0] = 0;
-      if ( _psApi.isValid() )   {
+      if ( _psApi ) {
         _psApi.GetModuleBaseNameA( processHandle(), (HINSTANCE)moduleHandle(), moduleName, sizeof(moduleName) );
       }
       std::string mod = moduleName;
@@ -82,7 +81,7 @@ const std::string& System::moduleNameFull()   {
       char name[PATH_MAX] = {"Unknown.module"};
       name[0] = 0;
 #ifdef _WIN32
-      if ( _psApi.isValid() )   {
+      if ( _psApi )   {
         _psApi.GetModuleFileNameExA( processHandle(), (HINSTANCE)moduleHandle(), name,sizeof(name) );
         module = name;
       }
@@ -139,12 +138,12 @@ void System::setModuleHandle(System::ImageHandle handle)    {
 }
 
 System::ImageHandle System::moduleHandle()    {
-  if ( 0 == ModuleHandle )    {
+  if ( !ModuleHandle )    {
     if ( processHandle() )    {
 #ifdef _WIN32
       static HINSTANCE handle = 0;
       DWORD   cbNeeded;
-      if ( 0 == handle && _psApi.isValid() )    {
+      if ( 0 == handle && _psApi )    {
         if ( _psApi.EnumProcessModules( processHandle(), &handle, sizeof(ModuleHandle), &cbNeeded) )   {
         }
       }
@@ -174,7 +173,7 @@ System::ImageHandle System::exeHandle()    {
   if ( processHandle() )    {
     static HINSTANCE handle = 0;
     DWORD   cbNeeded;
-    if ( 0 == handle && _psApi.isValid() )    {
+    if ( 0 == handle && _psApi )    {
       if ( _psApi.EnumProcessModules( processHandle(), &handle, sizeof(ModuleHandle), &cbNeeded) )   {
       }
     }
@@ -184,13 +183,13 @@ System::ImageHandle System::exeHandle()    {
 #elif defined(__linux) || defined(__APPLE__)
   // This does NOT work!
   static Dl_info infoBuf, *info = &infoBuf;
-  if ( 0 == info ) {
-    void* handle = ::dlopen(0, RTLD_LAZY);
+  if ( !info ) {
+    void* handle = ::dlopen(nullptr, RTLD_LAZY);
     //printf("Exe handle:%X\n", handle);
-    if ( 0 != handle ) {
+    if ( handle ) {
       void* func = ::dlsym(handle, "main");
       //printf("Exe:Func handle:%X\n", func);
-      if ( 0 != func ) {
+      if ( func ) {
       	if ( 0 != ::dladdr(func, &infoBuf) ) {
 	        //std::cout << "All OK" << std::endl;
       	  info = &infoBuf;
@@ -211,7 +210,7 @@ const std::string& System::exeName()    {
     char name[PATH_MAX] = {"Unknown.module"};
     name[0] = 0;
 #ifdef _WIN32
-    if ( _psApi.isValid() && processHandle() )   {
+    if ( _psApi && processHandle() )   {
       _psApi.GetModuleFileNameExA( processHandle(), (HINSTANCE)exeHandle(), name,sizeof(name) );
       module = name;
     }
@@ -235,7 +234,7 @@ const std::vector<std::string> System::linkedModules()    {
     char   name[255];  // Maximum file name length on NT 4.0
     DWORD  cbNeeded;
     HINSTANCE handle[1024];
-    if ( _psApi.isValid() )    {
+    if ( _psApi )    {
       if ( _psApi.EnumProcessModules(processHandle(),handle,sizeof(handle),&cbNeeded) )   {
         for (size_t i = 0; i < cbNeeded/sizeof(HANDLE); i++ )    {
           if ( 0 < _psApi.GetModuleFileNameExA( processHandle(), handle[i], name, sizeof(name)) )   {

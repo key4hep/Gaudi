@@ -1,15 +1,17 @@
-gaudi_subdir(GaudiGSL v8r4)
+gaudi_subdir(GaudiGSL v9r2)
 
 gaudi_depends_on_subdirs(GaudiAlg)
 
-find_package(CLHEP)
-find_package(GSL)
+find_package(CLHEP REQUIRED)
+find_package(GSL REQUIRED)
 
 #---Libraries---------------------------------------------------------------
 gaudi_add_library(GaudiGSLLib src/Lib/*.cpp
                   LINK_LIBRARIES GaudiAlgLib GSL CLHEP
                   INCLUDE_DIRS GSL CLHEP
-                  PUBLIC_HEADERS GaudiMath)
+                  PUBLIC_HEADERS GaudiGSL GaudiMath)
+gaudi_add_module(GaudiGSL src/Components/*.cpp
+                 LINK_LIBRARIES GaudiGSLLib)
 
 #---Dictionaries------------------------------------------------------------
 gaudi_add_dictionary(GaudiGSLMath dict/GaudiGSLMath.h dict/GaudiGSLMath.xml LINK_LIBRARIES GaudiGSLLib)

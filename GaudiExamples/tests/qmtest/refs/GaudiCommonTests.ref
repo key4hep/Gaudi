@@ -11,23 +11,22 @@ JobOptionsSvc        INFO # (20,1): Test1.OutputLevel = 2
 JobOptionsSvc        INFO # (21,1): Test1.RootInTES = ""
 JobOptionsSvc        INFO # (23,1): ApplicationMgr.TopAlg += ["GaudiCommonTests/Test2"]
 JobOptionsSvc        INFO # (24,1): Test2.OutputLevel = 2
-JobOptionsSvc        INFO # (25,1): Test2.RootOnTES = "microDST/"
+JobOptionsSvc        INFO # (25,1): Test2.RootInTES = "microDST/"
 JobOptionsSvc        INFO # (30,1): ApplicationMgr.EvtMax = 1
 JobOptionsSvc        INFO # (31,1): ApplicationMgr.EvtSel = "NONE"
 JobOptionsSvc        INFO # (32,1): ApplicationMgr.HistogramPersistency = "NONE"
 JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/GaudiCommonTests.opts
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r3)
-                                          running on pclhcb117 on Fri Feb 27 12:13:55 2015
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v4r0)
+                                          running on pclhcb117 on Thu Feb 11 14:55:27 2016
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
 Test1               DEBUG Property update for OutputLevel : new value = 2
-Test1               DEBUG Property update for OutputLevel : new value = 2
 Test1               DEBUG Initialize base class GaudiCommon<Algorithm>
 Test1               DEBUG could not locate CounterSummarySvc, no counter summary will be made
-Test1               DEBUG List of ALL properties of GaudiCommonTests/Test1  #properties = 37
+Test1               DEBUG List of ALL properties of GaudiCommonTests/Test1  #properties = 36
 Test1               DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
 Test1               DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
 Test1               DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
@@ -36,8 +35,6 @@ Test1               DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':T
 Test1               DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
 Test1               DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
 Test1               DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-Test1               DEBUG Property ['Name': Value] =  'GlobalTimeOffset':0.0000000
-Test1               DEBUG Property ['Name': Value] =  'RootOnTES':
 Test1               DEBUG Property ['Name': Value] =  'RootInTES':
 Test1               DEBUG Property ['Name': Value] =  'Context':
 Test1               DEBUG Property ['Name': Value] =  'TypePrint':True
@@ -49,6 +46,7 @@ Test1               DEBUG Property ['Name': Value] =  'Cardinality':1
 Test1               DEBUG Property ['Name': Value] =  'IsClonable':False
 Test1               DEBUG Property ['Name': Value] =  'RegisterForContextService':True
 Test1               DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
+Test1               DEBUG Property ['Name': Value] =  'Timeline':False
 Test1               DEBUG Property ['Name': Value] =  'AuditStop':False
 Test1               DEBUG Property ['Name': Value] =  'AuditStart':False
 Test1               DEBUG Property ['Name': Value] =  'AuditEndRun':False
@@ -59,18 +57,19 @@ Test1               DEBUG Property ['Name': Value] =  'AuditRestart':False
 Test1               DEBUG Property ['Name': Value] =  'AuditReinitialize':False
 Test1               DEBUG Property ['Name': Value] =  'AuditInitialize':False
 Test1               DEBUG Property ['Name': Value] =  'AuditAlgorithms':False
-Test1               DEBUG Property ['Name': Value] =  'Outputs':
-Test1               DEBUG Property ['Name': Value] =  'Inputs':
-Test1               DEBUG Property ['Name': Value] =  'ErrorCount':0
+Test1               DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
+Test1               DEBUG Property ['Name': Value] =  'ExtraInputs':[]
+Test1               DEBUG Property ['Name': Value] =  'ErrorCounter':0
 Test1               DEBUG Property ['Name': Value] =  'ErrorMax':1
 Test1               DEBUG Property ['Name': Value] =  'Enable':True
 Test1               DEBUG Property ['Name': Value] =  'OutputLevel':2
-Test2               DEBUG Property update for OutputLevel : new value = 2
+Test1               DEBUG input handles: 0
+Test1               DEBUG output handles: 0
+Test1               DEBUG Data Deps for Test1
 Test2               DEBUG Property update for OutputLevel : new value = 2
 Test2               DEBUG Initialize base class GaudiCommon<Algorithm>
-Test2             WARNING GaudiCommonTests:: RootOnTES option is OBSOLETE -> Use RootInTES instead. RootInTES has been updated to microDST/
 Test2               DEBUG could not locate CounterSummarySvc, no counter summary will be made
-Test2               DEBUG List of ALL properties of GaudiCommonTests/Test2  #properties = 37
+Test2               DEBUG List of ALL properties of GaudiCommonTests/Test2  #properties = 36
 Test2               DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
 Test2               DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
 Test2               DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
@@ -79,8 +78,6 @@ Test2               DEBUG Property ['Name': Value] =  'UseEfficiencyRowFormat':T
 Test2               DEBUG Property ['Name': Value] =  'EfficiencyRowFormat': |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |
 Test2               DEBUG Property ['Name': Value] =  'RegularRowFormat': | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |
 Test2               DEBUG Property ['Name': Value] =  'StatTableHeader': |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |
-Test2               DEBUG Property ['Name': Value] =  'GlobalTimeOffset':0.0000000
-Test2               DEBUG Property ['Name': Value] =  'RootOnTES':microDST/
 Test2               DEBUG Property ['Name': Value] =  'RootInTES':microDST/
 Test2               DEBUG Property ['Name': Value] =  'Context':
 Test2               DEBUG Property ['Name': Value] =  'TypePrint':True
@@ -92,6 +89,7 @@ Test2               DEBUG Property ['Name': Value] =  'Cardinality':1
 Test2               DEBUG Property ['Name': Value] =  'IsClonable':False
 Test2               DEBUG Property ['Name': Value] =  'RegisterForContextService':True
 Test2               DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
+Test2               DEBUG Property ['Name': Value] =  'Timeline':False
 Test2               DEBUG Property ['Name': Value] =  'AuditStop':False
 Test2               DEBUG Property ['Name': Value] =  'AuditStart':False
 Test2               DEBUG Property ['Name': Value] =  'AuditEndRun':False
@@ -102,12 +100,15 @@ Test2               DEBUG Property ['Name': Value] =  'AuditRestart':False
 Test2               DEBUG Property ['Name': Value] =  'AuditReinitialize':False
 Test2               DEBUG Property ['Name': Value] =  'AuditInitialize':False
 Test2               DEBUG Property ['Name': Value] =  'AuditAlgorithms':False
-Test2               DEBUG Property ['Name': Value] =  'Outputs':
-Test2               DEBUG Property ['Name': Value] =  'Inputs':
-Test2               DEBUG Property ['Name': Value] =  'ErrorCount':0
+Test2               DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
+Test2               DEBUG Property ['Name': Value] =  'ExtraInputs':[]
+Test2               DEBUG Property ['Name': Value] =  'ErrorCounter':0
 Test2               DEBUG Property ['Name': Value] =  'ErrorMax':1
 Test2               DEBUG Property ['Name': Value] =  'Enable':True
 Test2               DEBUG Property ['Name': Value] =  'OutputLevel':2
+Test2               DEBUG input handles: 0
+Test2               DEBUG output handles: 0
+Test2               DEBUG Data Deps for Test2
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
 HistogramPersis...WARNING Histograms saving not required.
@@ -161,7 +162,6 @@ Test2                INFO /Event/microDST
 Test2                INFO /Event
 Test2               DEBUG The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' has been retrieved from TS at address 'microDST/Test2/Tracks1'
 Test2               DEBUG The object of type 'KeyedContainer<Gaudi::Examples::MyTrack,Containers::KeyedObjectManager<Containers::hashmap> >*' could not be retrieved from TS at address 'microDST/Nowhere/To/Be/Found'
-EventLoopMgr         INFO ---> Loop Finished -  WSS 26.1602 | total time (skipping 1st evt) 407645 ns
 ApplicationMgr       INFO Application Manager Stopped successfully
 Test1               DEBUG Finalize base class GaudiAlgorithm
 Test1               DEBUG Tools to release :
@@ -169,8 +169,6 @@ Test1               DEBUG Services to release :
 Test2               DEBUG Finalize base class GaudiAlgorithm
 Test2               DEBUG Tools to release :
 Test2               DEBUG Services to release :
-Test2             SUCCESS Exceptions/Errors/Warnings/Infos Statistics : 0/0/1/0
-Test2             SUCCESS  #WARNINGS   = 1        Message = 'RootOnTES option is OBSOLETE -> Use RootInTES instead. RootInTES has been updated to microDST/'
 EventLoopMgr         INFO Histograms converted successfully according to request.
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully

@@ -15,20 +15,20 @@
 class MemStatAuditor:public  MemoryAuditor {
 public:
   MemStatAuditor(const std::string& name, ISvcLocator* pSvcLocator);
-  virtual ~MemStatAuditor();
+  ~MemStatAuditor() override = default;
 
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
 private:
   /// Re-implement i_before to avoid monitoring the memory usage before a function.
-  virtual void i_before(CustomEventTypeRef evt, const std::string& caller);
+  void i_before(CustomEventTypeRef evt, const std::string& caller) override;
 
-  virtual void i_printinfo(const std::string& msg, CustomEventTypeRef evt, const std::string& caller);
+  void i_printinfo(const std::string& msg, CustomEventTypeRef evt, const std::string& caller) override;
 
   SmartIF<IChronoStatSvc>& statSvc() { return m_stat; }
   SmartIF<IChronoStatSvc> m_stat;
 
   /// vsize of the previous call to printinfo
-  double m_vSize ;
+  double m_vSize = -1;
 };
 
 #endif  //  GAUDIAUDITOR_MemStatAuditor_H

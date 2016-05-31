@@ -37,7 +37,7 @@ reader = ReadHandleAlg ("Reader",
                          IsClonable=True,
                          OutputLevel=INFO,
                          NeededResources=["ROOTIO"])
-reader.Inputs.Input.Path=product_name
+reader.Input.Path=product_name
 
 
 evtslots = 6
@@ -51,8 +51,7 @@ eventloopmgr = HiveSlimEventLoopMgr(OutputLevel=INFO)
 # We must put the full path in this deprecated expression of dependencies.
 # Using a controlflow for the output would be the way to go
 scheduler = ForwardSchedulerSvc(MaxAlgosInFlight = algoparallel,
-                                OutputLevel=WARNING,
-                                AlgosDependencies = [[],[product_name_full_path], [product_name_full_path]])
+                                OutputLevel=WARNING)
                                 
 ApplicationMgr( TopAlg = [loader, reader,dst],
                 EvtMax   = 44,

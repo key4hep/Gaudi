@@ -299,19 +299,18 @@ declareProperty("SAMPLE", sampling);
 declareProperty("START_AT_EVENT", start_at_event);
 declareProperty("IS_NEHALEM", is_nehalem_ret);
 
-// MsgStream log(msgSvc(), name());
 
 ///////////////////////////////////////////////////////////////////////////////////////
 /*
 // loading functions from PFM library
   void* handle = dlopen("libpfm.so", RTLD_NOW);
     if (!handle) {
-//      log << MSG::ERROR << "Cannot open library: " << dlerror() << endmsg;
+//      error() << "Cannot open library: " << dlerror() << endmsg;
     }
   typedef void (*hello_t)();
     hello_t hello = (hello_t) dlsym(handle, "hello");
     if (!hello) {
-//        log << MSG::ERROR << "Cannot load symbol 'hello': " << dlerror() << endmsg;
+//        error() << "Cannot load symbol 'hello': " << dlerror() << endmsg;
         dlclose(handle);
     }
 
@@ -331,11 +330,11 @@ declareProperty("IS_NEHALEM", is_nehalem_ret);
     pfm_set_options = (pfm_set_options_t) dlsym(handle, "pfm_set_options");
     pfm_get_num_counters = (pfm_get_num_counters_t) dlsym(handle, "pfm_get_num_counters");
     // use it to do the calculation
-//    log << MSG::INFO << "Calling hello..." << endmsg;
+//    info() << "Calling hello..." << endmsg;
 //    hello();
 
     // close the library
-//    log << MSG::INFO << "Closing library..." << endmsg;
+//    info() << "Closing library..." << endmsg;
     dlclose(handle);
 */
 
@@ -419,7 +418,6 @@ declareProperty("IS_NEHALEM", is_nehalem_ret);
 
 void PerfMonAuditor::startpm()
 {
-   MsgStream log(msgSvc(), name());
    memset(&ctx,0, sizeof(ctx));
    memset(&inp,0, sizeof(inp));
    memset(&outp,0, sizeof(outp));
@@ -434,7 +432,7 @@ void PerfMonAuditor::startpm()
     ret = m_pfm.pfm_find_full_event(event_cstr[i], &inp.pfp_events[i]);
     if(ret != PFMLIB_SUCCESS)
     {
-     log << MSG::ERROR << "ERROR: cannot find event: " << event_cstr[i] << ". Aborting..." << endmsg;
+     error() << "ERROR: cannot find event: " << event_cstr[i] << ". Aborting..." << endmsg;
     }
    }
    inp.pfp_dfl_plm = PFM_PLM3;
@@ -462,7 +460,7 @@ void PerfMonAuditor::startpm()
    }
    if(ret != PFMLIB_SUCCESS)
    {
-    log << MSG::ERROR << "ERROR: cannot dispatch events: " << m_pfm.pfm_strerror(ret) << ". Aborting..." << endmsg;
+    error() << "ERROR: cannot dispatch events: " << m_pfm.pfm_strerror(ret) << ". Aborting..." << endmsg;
    }
    for(unsigned int i=0; i<outp.pfp_pmc_count; i++)
    {
@@ -477,22 +475,21 @@ void PerfMonAuditor::startpm()
    fd = m_pfm.pfm_create_context(&ctx, NULL, 0, 0);
    if(fd == -1)
    {
-    log << MSG::ERROR << "ERROR: Context not created. Aborting..." << endmsg;
+    error() << "ERROR: Context not created. Aborting..." << endmsg;
    }
    if(m_pfm.pfm_write_pmcs(fd, pc, outp.pfp_pmc_count) == -1)
    {
-    log << MSG::ERROR << "ERROR: Could not write pmcs. Aborting..." << endmsg;
+    error() << "ERROR: Could not write pmcs. Aborting..." << endmsg;
    }
    if(m_pfm.pfm_write_pmds(fd, pd, outp.pfp_pmd_count) == -1)
    {
-    log << MSG::ERROR << "ERROR: Could not write pmds. Aborting..." << endmsg;
+    error() << "ERROR: Could not write pmds. Aborting..." << endmsg;
    }
    load_arg.load_pid = getpid();
    if(m_pfm.pfm_load_context(fd, &load_arg) == -1)
    {
-    log << MSG::ERROR << "ERROR: Could not load context. Aborting..." << endmsg;
-//  MsgStream log(msgSvc(), name());
-//  log << MSG::ERROR << "Could not read pmds" << endmsg;
+    error() << "ERROR: Could not load context. Aborting..." << endmsg;
+//  error() << "Could not read pmds" << endmsg;
    }
 
    m_pfm.pfm_start(fd, NULL);
@@ -507,11 +504,10 @@ void PerfMonAuditor::startpm()
    // stops the counting calling pfm_stop() and stores the counting results into the "results" map
 void PerfMonAuditor::stoppm()
 {
- MsgStream log(msgSvc(), name());
  m_pfm.pfm_stop(fd);
  if(m_pfm.pfm_read_pmds(fd, pd, inp.pfp_event_count) == -1)
  {
-  log << MSG::ERROR << "Could not read pmds" << endmsg;
+  error() << "Could not read pmds" << endmsg;
  }
    for(int i=0; i<used_counters_number; i++)
    {
@@ -524,11 +520,10 @@ void PerfMonAuditor::stoppm()
 
 void PerfMonAuditor::pausepm()
 {
- MsgStream log(msgSvc(), name());
  m_pfm.pfm_stop(fd);
  if(m_pfm.pfm_read_pmds(fd, pd, inp.pfp_event_count) == -1)
  {
-  log << MSG::ERROR << "Could not read pmds" << endmsg;
+  error() << "Could not read pmds" << endmsg;
  }
 
    for(int i=0; i<used_counters_number; i++)
@@ -545,8 +540,7 @@ void PerfMonAuditor::pausepm()
    // into the output file corresponding to the event being counted
 void PerfMonAuditor::finalizepm()
 {
- MsgStream log(msgSvc(), name());
-   log << MSG::INFO << "start of finalizepm ucn:" << used_counters_number << endmsg;
+   info() << "start of finalizepm ucn:" << used_counters_number << endmsg;
    char filename[MAX_OUTPUT_FILENAME_LENGTH];
    char to_cat[50];
    FILE *outfile;
@@ -571,7 +565,7 @@ void PerfMonAuditor::finalizepm()
      sprintf(to_cat, "%s_CMASK_%d", to_cat, cmask[i]);
     }
     sprintf(filename, "%s%s.txt", filename, to_cat);
-    log << MSG::INFO << "Filename:" << filename << endmsg;
+    info() << "Filename:" << filename << endmsg;
     outfile = fopen(filename, "w");
     if(nehalem)
     {
@@ -600,14 +594,12 @@ void PerfMonAuditor::finalizepm()
 
 StatusCode PerfMonAuditor::initialize()
 {
- MsgStream log(msgSvc(), name());
-
  if (!m_pfm.loaded) {
-  log << MSG::ERROR << "pfm library could not be loaded" << endmsg;
+  error() << "pfm library could not be loaded" << endmsg;
   return false;
  }
 
- log << MSG::INFO << "Initializing..." << endmsg;
+ info() << "Initializing..." << endmsg;
  StatusCode sc = Auditor::initialize() ;
  if(sc.isFailure())
  {
@@ -626,7 +618,7 @@ StatusCode PerfMonAuditor::initialize()
 
  if(m_pfm.pfm_initialize() != PFMLIB_SUCCESS)
  {
- log << MSG::ERROR << "Cannot initialize perfmon!!" << endmsg;
+ error() << "Cannot initialize perfmon!!" << endmsg;
  }
  ph_ev_count = 0;
  first_alg = true;
@@ -639,10 +631,10 @@ StatusCode PerfMonAuditor::initialize()
  else if(family.compare("WESTMERE")==0) westmere = true;
  else
  {
-  log << MSG::ERROR << "ERROR: Unsupported processor family " << family  << ". aborting..." << endmsg;
+  error() << "ERROR: Unsupported processor family " << family  << ". aborting..." << endmsg;
  }
 
- log << MSG::INFO << "Initialized!" << endmsg;
+ info() << "Initialized!" << endmsg;
  return StatusCode::SUCCESS ;
 }
 
@@ -693,18 +685,17 @@ void PerfMonAuditor::process_smpl_buf(pfm_dfl_smpl_hdr_t *hdr, size_t entry_size
    // signal handler used to catch sampling buffer overflows. When they occur it calls the process_smpl_buf() function
 void PerfMonAuditor::sigio_handler(int /*n*/, struct siginfo */*info*/, struct sigcontext */*sc*/)
 {
-   //MsgStream log(msgSvc(), name());
    PFMon& pfm = PFMon::instance();
    pfarg_msg_t msg;
    int fd = ctx_fd;
    int r;
    if(fd != ctx_fd)
    {
-    //log << MSG::ERROR << "ERROR: handler does not get valid file descriptor. Aborting..." << endmsg;
+    //error() << "ERROR: handler does not get valid file descriptor. Aborting..." << endmsg;
    }
    if(pfm.pfm_read_pmds(fd, pd_smpl+1, 1) == -1)
    {
-    //log << MSG::ERROR << "ERROR: pfm_read_pmds: " << strerror(errno) << ". Aborting..." << endmsg;
+    //error() << "ERROR: pfm_read_pmds: " << strerror(errno) << ". Aborting..." << endmsg;
    }
    while(true)
    {
@@ -716,7 +707,7 @@ void PerfMonAuditor::sigio_handler(int /*n*/, struct siginfo */*info*/, struct s
       printf("read interrupted, retrying\n");
       continue;
      }
-     //log << MSG::ERROR << "ERROR: cannot read overflow message: " << strerror(errno) << ". Aborting..." << endmsg;
+     //error() << "ERROR: cannot read overflow message: " << strerror(errno) << ". Aborting..." << endmsg;
     }
     break;
    }
@@ -729,7 +720,7 @@ void PerfMonAuditor::sigio_handler(int /*n*/, struct siginfo */*info*/, struct s
      {
       if(errno!=EBUSY)
       {
-       //log << MSG::ERROR << "ERROR: pfm_restart error errno " << errno << ". Aborting..." << endmsg;
+       //error() << "ERROR: pfm_restart error errno " << errno << ". Aborting..." << endmsg;
       }
       else
       {
@@ -738,7 +729,7 @@ void PerfMonAuditor::sigio_handler(int /*n*/, struct siginfo */*info*/, struct s
      }
      break;
     default:
-     //log << MSG::ERROR << "ERROR: unknown message type " << msg.type << ". Aborting..." << endmsg;
+     //error() << "ERROR: unknown message type " << msg.type << ". Aborting..." << endmsg;
      break;
    }
 
@@ -755,7 +746,6 @@ void PerfMonAuditor::sigio_handler(int /*n*/, struct siginfo */*info*/, struct s
    // initializes all the necessary structures to start the sampling, calling pfm_self_start()
 void PerfMonAuditor::start_smpl()
 {
-   MsgStream log(msgSvc(), name());
    ovfl_count = 0;
    num_smpl_pmds = 0;
    last_overflow = ~0;
@@ -767,7 +757,7 @@ void PerfMonAuditor::start_smpl()
    ret = m_pfm.pfm_initialize();
    if(ret != PFMLIB_SUCCESS)
    {
-    log << MSG::ERROR << "ERROR: Cannot initialize library: " << m_pfm.pfm_strerror(ret) << ". Aborting..." << endmsg;
+    error() << "ERROR: Cannot initialize library: " << m_pfm.pfm_strerror(ret) << ". Aborting..." << endmsg;
    }
    struct sigaction act;
    memset(&act, 0, sizeof(act));
@@ -790,7 +780,7 @@ void PerfMonAuditor::start_smpl()
     ret = m_pfm.pfm_find_full_event(event_cstr[i], &inp.pfp_events[i]);
     if(ret != PFMLIB_SUCCESS)
     {
-     log << MSG::ERROR << "ERROR: cannot find event: " << event_cstr[i] << ". Aborting..." << endmsg;
+     error() << "ERROR: cannot find event: " << event_cstr[i] << ". Aborting..." << endmsg;
     }
    }
    inp.pfp_dfl_plm = PFM_PLM3;
@@ -818,7 +808,7 @@ void PerfMonAuditor::start_smpl()
    }
    if(ret != PFMLIB_SUCCESS)
    {
-    log << MSG::ERROR << "ERROR: cannot configure events: " << m_pfm.pfm_strerror(ret) << ". Aborting..." << endmsg;
+    error() << "ERROR: cannot configure events: " << m_pfm.pfm_strerror(ret) << ". Aborting..." << endmsg;
    }
    for(unsigned int i=0; i<outp.pfp_pmc_count; i++)
    {
@@ -856,42 +846,42 @@ void PerfMonAuditor::start_smpl()
    {
     if(errno==ENOSYS)
     {
-     log << MSG::ERROR << "ERROR: Your kernel does not have performance monitoring support! Aborting..." << endmsg;
+     error() << "ERROR: Your kernel does not have performance monitoring support! Aborting..." << endmsg;
     }
-    log << MSG::ERROR << "ERROR: Can't create PFM context " << strerror(errno) << ". Aborting..." << endmsg;
+    error() << "ERROR: Can't create PFM context " << strerror(errno) << ". Aborting..." << endmsg;
    }
    buf_addr = mmap(NULL, (size_t)buf_arg.buf_size, PROT_READ, MAP_PRIVATE, ctx_fd, 0);
    if(buf_addr==MAP_FAILED)
    {
-    log << MSG::ERROR << "ERROR: cannot mmap sampling buffer: " << strerror(errno) << ". Aborting..." << endmsg;
+    error() << "ERROR: cannot mmap sampling buffer: " << strerror(errno) << ". Aborting..." << endmsg;
    }
    hdr = (pfm_dfl_smpl_hdr_t *)buf_addr;
    if(PFM_VERSION_MAJOR(hdr->hdr_version)<1)
    {
-    log << MSG::ERROR << "ERROR: invalid buffer format version. Aborting..." << endmsg;
+    error() << "ERROR: invalid buffer format version. Aborting..." << endmsg;
    }
    if(m_pfm.pfm_write_pmcs(ctx_fd, pc, outp.pfp_pmc_count))
    {
-    log << MSG::ERROR << "ERROR: pfm_write_pmcs error errno " << strerror(errno) << ". Aborting..." << endmsg;
+    error() << "ERROR: pfm_write_pmcs error errno " << strerror(errno) << ". Aborting..." << endmsg;
    }
    if(m_pfm.pfm_write_pmds(ctx_fd, pd_smpl, outp.pfp_pmd_count))
    {
-    log << MSG::ERROR << "ERROR: pfm_write_pmds error errno " << strerror(errno) << ". Aborting..." << endmsg;
+    error() << "ERROR: pfm_write_pmds error errno " << strerror(errno) << ". Aborting..." << endmsg;
    }
    load_args.load_pid = getpid();
    if(m_pfm.pfm_load_context(ctx_fd, &load_args))
    {
-    log << MSG::ERROR << "ERROR: pfm_load_context error errno " << strerror(errno) << ". Aborting..." << endmsg;
+    error() << "ERROR: pfm_load_context error errno " << strerror(errno) << ". Aborting..." << endmsg;
    }
    ret = fcntl(ctx_fd, F_SETFL, fcntl(ctx_fd, F_GETFL, 0) | O_ASYNC);
    if(ret == -1)
    {
-    log << MSG::ERROR << "ERROR: cannot set ASYNC: " << strerror(errno) << ". Aborting..." << endmsg;
+    error() << "ERROR: cannot set ASYNC: " << strerror(errno) << ". Aborting..." << endmsg;
    }
    ret = fcntl(ctx_fd, F_SETOWN, getpid());
    if(ret == -1)
    {
-    log << MSG::ERROR << "ERROR: cannot setown: " << strerror(errno) << ". Aborting..." << endmsg;
+    error() << "ERROR: cannot setown: " << strerror(errno) << ". Aborting..." << endmsg;
    }
    //pfm_self_start(ctx_fd); ==>
    m_pfm.pfm_start(ctx_fd, NULL);
@@ -903,14 +893,13 @@ void PerfMonAuditor::start_smpl()
    // stops the sampling and calls process_smpl_buf() one last time to process all the remaining samples
 void PerfMonAuditor::stop_smpl()
   {
- MsgStream log(msgSvc(), name());
    m_pfm.pfm_self_stop(ctx_fd);
    process_smpl_buf(hdr, entry_size);
    close(ctx_fd);
    ret = munmap(hdr, (size_t)buf_arg.buf_size);
    if(ret)
    {
-  log << MSG::ERROR << "Cannot unmap buffer: %s" << strerror(errno) << endmsg;
+  error() << "Cannot unmap buffer: %s" << strerror(errno) << endmsg;
    }
    return;
   }
@@ -922,7 +911,6 @@ void PerfMonAuditor::stop_smpl()
    // and then dumps the new found information into gzipped output files, to be processed later
 void PerfMonAuditor::finalize_smpl()
 {
-   MsgStream log(msgSvc(), name());
    char filename[MAX_OUTPUT_FILENAME_LENGTH];
    bzero(filename, MAX_OUTPUT_FILENAME_LENGTH);
    char to_cat[50];
@@ -965,7 +953,7 @@ void PerfMonAuditor::finalize_smpl()
      }
      if(gzprintf(outfile, "%s %d %d %d\n", event_cstr[i], cmask[i], inv[i], sp[i]) < (int)strlen(event_cstr[i]))
      {
-      log << MSG::ERROR << "ERROR: gzputs err: " << gzerror(outfile, &err) << ". Aborting..." << endmsg;
+      error() << "ERROR: gzputs err: " << gzerror(outfile, &err) << ". Aborting..." << endmsg;
      }
      for(std::map<std::string, std::map<unsigned long, unsigned int> >::iterator it=samples[i].begin(); it!=samples[i].end(); it++)
      {
@@ -976,7 +964,7 @@ void PerfMonAuditor::finalize_smpl()
       }
       if(gzprintf(outfile, "%s%%%llu\n", (it->first).c_str(), sum) < (int)((it->first).length()))
       {
-       log << MSG::ERROR << "ERROR: gzputs err: " << gzerror(outfile, &err) << ". Aborting..." << endmsg;
+       error() << "ERROR: gzputs err: " << gzerror(outfile, &err) << ". Aborting..." << endmsg;
       }
       for(std::map<unsigned long, unsigned int>::iterator jt=(it->second).begin(); jt!=(it->second).end(); jt++)
       {
@@ -1013,7 +1001,7 @@ void PerfMonAuditor::finalize_smpl()
          sprintf(sym_name, "%s%d ", sym_name, libOffset);
          if(strlen(sym_name)<=0)
          {
-          log << MSG::ERROR << "ERROR: Symbol name length is zero. Aborting..." << endmsg;
+          error() << "ERROR: Symbol name length is zero. Aborting..." << endmsg;
          }
         }
         else
@@ -1027,14 +1015,14 @@ void PerfMonAuditor::finalize_smpl()
        }
        if(gzprintf(outfile, "%s %d\n", sym_name, jt->second) < (int)strlen(sym_name))
        {
-        log << MSG::ERROR << "ERROR: gzputs err: " << gzerror(outfile, &err) << endmsg;
+        error() << "ERROR: gzputs err: " << gzerror(outfile, &err) << endmsg;
        }
       }
      }
     }
     else
     {
-     log << MSG::ERROR << "ERROR: Could not open file: " << filename << ". Aborting..." << endmsg;
+     error() << "ERROR: Could not open file: " << filename << ". Aborting..." << endmsg;
     }
     gzclose(outfile);
    }
@@ -1084,52 +1072,42 @@ void PerfMonAuditor::after(StandardEventType evt, INamedInterface *alg, const St
 
 void PerfMonAuditor::i_beforeInitialize(INamedInterface* alg)
 {
- if(alg == 0)
- {
-  return;
- }
+ if(!alg) return;
  return;
 }
 
 void PerfMonAuditor::i_afterInitialize(INamedInterface* alg)
 {
- if(alg == 0)
- {
-  return;
- }
+ if(!alg) return;
  return;
 }
 
 void PerfMonAuditor::i_beforeExecute(INamedInterface* alg)
 {
- MsgStream log(msgSvc(), name());
- if(alg == 0)
- {
-  return;
- }
- //log << MSG::INFO << "before:inside! " << alg->name() << endmsg;
+ if(!alg) return;
+ //info() << "before:inside! " << alg->name() << endmsg;
  if(first_alg)
  {
   first_alg = false;
   first_alg_name = alg->name();
-  //log << MSG::INFO << "first_alg_name= " << alg->name() << endmsg;
+  //info() << "first_alg_name= " << alg->name() << endmsg;
  }
  if(!event_count_reached)
  {
   if(!first_alg_name.compare(alg->name()))
   {
    ph_ev_count++;
-   //log << MSG::INFO << "EVENT COUNT: " << ph_ev_count << endmsg;
+   //info() << "EVENT COUNT: " << ph_ev_count << endmsg;
    if(ph_ev_count==start_at_event)
    {
     event_count_reached = true;
-    //log << MSG::INFO << "!!! EVENT COUNT REACHED: " << ph_ev_count << endmsg;
+    //info() << "!!! EVENT COUNT REACHED: " << ph_ev_count << endmsg;
    }
   }
  }
  if(event_count_reached)
  {
-   //log << MSG::INFO << "before:inside! " << alg->name() << endmsg;
+   //info() << "before:inside! " << alg->name() << endmsg;
 
   if(!alg_stack.empty())
   {
@@ -1142,20 +1120,16 @@ void PerfMonAuditor::i_beforeExecute(INamedInterface* alg)
   if(sampling == 0) startpm();
   else start_smpl();
  }
- return;
 }
 
 void PerfMonAuditor::i_afterExecute(INamedInterface* alg)
 {
- MsgStream log(msgSvc(), name());
- if(alg == 0)
- {
+ if(!alg) {
   return;
- }// log << MSG::INFO << "after:inside! " << alg->name() << endmsg;
+ }// info() << "after:inside! " << alg->name() << endmsg;
 
- if(event_count_reached)
- {
-   //log << MSG::INFO << "after:inside! " << alg->name() << endmsg;
+ if(event_count_reached) {
+   //info() << "after:inside! " << alg->name() << endmsg;
 
   if(sampling == 0) stoppm();
   else stop_smpl();
@@ -1167,7 +1141,6 @@ void PerfMonAuditor::i_afterExecute(INamedInterface* alg)
    else start_smpl(); //resuming father algorithm counting
    }
  }
- return;
 }
 
 DECLARE_COMPONENT(PerfMonAuditor)

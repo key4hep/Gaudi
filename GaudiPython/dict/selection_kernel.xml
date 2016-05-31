@@ -35,12 +35,6 @@
   <function name = "Gaudi::Utils::Histos::histoDump" />
   <class name    = "Gaudi::Utils::Histos::HistoStrings" />
 
-  <class pattern = "SimpleProperty<*>"/>
-  <class pattern = "SimplePropertyRef<*>"/>
-  <class pattern = "BoundedVerifier<*>"/>
-  <class pattern = "PropertyVerifier<*>"/>
-  <class name    = "PropertyCallbackFunctor"/>
-
   <class pattern = "GaudiAlg::*"              />
   <class name    = "GaudiAlgorithm"           />
   <class name    = "GaudiHistoAlg"            />
@@ -60,7 +54,6 @@
   <class name    = "Stat"                   />
   <class pattern = "Chrono*"                 />
 
-  <class pattern = "Property*Functor"        />
   <class pattern = "SimpleProperty<*>"       />
   <class pattern = "SimplePropertyRef<*>"    />
   <class pattern = "PropertyWithVerifier<*>" />
@@ -98,6 +91,11 @@
   <class    name= "Gaudi::Utils::Histos::Table"  />
   <class    name= "Gaudi::Utils::HistoStats"  />
 
+  <function name= "Gaudi::Utils::QuasiRandom::mix" />
+  <function name= "Gaudi::Utils::QuasiRandom::mix32" />
+  <function name= "Gaudi::Utils::QuasiRandom::mix64" />
+  <function name= "Gaudi::Utils::QuasiRandom::mixString" />
+
   <class    name= "Gaudi::RangeBase_"  />
 
   <exclusion>
@@ -115,6 +113,7 @@
     <class pattern = "std::unary_function<std::pair<*,Tuples::*>" />
     <class pattern = "std::unary_function<std::pair<*,NTuple::*>" />
     <class pattern = "std::unary_function<std::pair<*,AIDA::*>"   />
+    <class pattern = "*__int128*"   />
     <class name    = "GaudiPython::CallbackStreamBuf">
       <!-- assignment operator and copy constructor cannot compile -->
       <method name="="/>

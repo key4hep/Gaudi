@@ -88,14 +88,11 @@ namespace
   /// local function for evaluation of Tracks's momentum
   inline double trkMomentum ( const Gaudi::Examples::MyTrack* track )
   {
-    if ( 0 == track ) { return 0 ; }
+    if ( !track ) { return 0 ; }
     return ::sqrt ( track -> px () * track -> px () +
                     track -> py () * track -> py () +
                     track -> pz () * track -> pz () );
   }
-  /// local function for summation of Tracks's momenta
-  inline double sumEnergy ( const double e , const Gaudi::Examples::MyTrack* track )
-  { return trkMomentum ( track ) + e ; }
 }
 // ============================================================================
 /// the only one essential method: execute the algorithm
@@ -103,35 +100,35 @@ namespace
 StatusCode Gaudi::Examples::ExtendedEvtCol::execute ()
 {
   // get the event
-  DataObject*     event = get<DataObject> ( "/Event" ) ;
+  auto event  = get<DataObject> ( "/Event" ) ;
   // get the tracks
-  MyTrackVector* tracks = get<MyTrackVector> ( m_tracks ) ;
+  auto tracks = get<MyTrackVector> ( m_tracks ) ;
 
   // book/retreieve the Event Tag Collection:
-  Tuple tuple = evtCol ( TupleID("MyCOL1") , "Trivial Event Tag Collection" ) ;
+  auto tuple = evtCol ( TupleID("MyCOL1") , "Trivial Event Tag Collection" ) ;
 
   /// put the event address into the event tag collection:
   tuple -> column ( "Address" , event->registry()->address() ) ;
 
   /// put the information about the tracks
-  tuple -> farray ( "TrkMom" , std::ptr_fun(trkMomentum)  ,
-                    "px"     , std::mem_fun(&MyTrack::px) ,
-                    "py"     , std::mem_fun(&MyTrack::py) ,
-                    "pz"     , std::mem_fun(&MyTrack::pz) ,
+  tuple -> farray ( "TrkMom" , trkMomentum  ,
+                    "px"     , &MyTrack::px ,
+                    "py"     , &MyTrack::py ,
+                    "pz"     , &MyTrack::pz ,
                     tracks -> begin () ,
                     tracks -> end   () ,
                     "Ntrack" , 5000   ) ;
 
   // evaluate the total energy of all tracks:
-  const double energy = std::accumulate
-    ( tracks -> begin () , tracks -> end   () , 0.0 , sumEnergy ) ;
+  double energy = std::accumulate
+    ( tracks -> begin () , tracks -> end   () , 0.0 ,
+      [&](double e, const Gaudi::Examples::MyTrack* track)
+      { return e + trkMomentum(track); } );
 
   tuple -> column ("Energy" , energy ) ;
 
   // put a track into Event Tag Collection
-  MyTrack* track = 0 ;
-  if ( !tracks->empty() ) { track = *(tracks->begin()) ; }
-  tuple -> put ( "Track"  , track  ) ;
+  tuple -> put ( "Track"  , !tracks->empty() ? *(tracks->begin()) :  nullptr ) ;
 
   tuple -> write() ;
 

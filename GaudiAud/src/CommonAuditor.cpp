@@ -7,11 +7,8 @@ CommonAuditor::CommonAuditor(const std::string& name, ISvcLocator *svcloc): Audi
                   "OBSOLETE, use EventTypes instead")->declareUpdateHandler(&CommonAuditor::i_updateCustomTypes, this);
 }
 
-CommonAuditor::~CommonAuditor() {}
-
 void CommonAuditor::i_updateCustomTypes(Property &) {
-  MsgStream log(msgSvc(), name());
-  log << MSG::WARNING << "Property CustomEventTypes is deprecated, use EventTypes instead" << endmsg;
+  warning() << "Property CustomEventTypes is deprecated, use EventTypes instead" << endmsg;
   m_types.setValue(m_customTypes.value());
 }
 

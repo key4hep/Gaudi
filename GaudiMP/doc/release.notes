@@ -2,6 +2,86 @@ Package: GaudiMP
 Package manager : Sebastien Binet
 Commit Id: $Format:%H$
 
+================================ GaudiMP v3r5 ================================
+
+! 2016-03-10 - commit 4a18175
+
+ - removed uses of templates implements[1-4], extends[1-4] and
+   extend_interfaces[1-4]
+
+   Since merge request !22 they are unnecessary.
+    See merge request !133
+================================ GaudiMP v3r4 ================================
+
+! 2015-11-02 - commit 57f356c
+
+ - Merge branch 'hive' into 'master'
+
+   Fixes GAUDI-978.
+
+   See merge request !65
+
+================================ GaudiMP v3r3 ================================
+
+! 2015-10-08 - commit c50c176
+
+ - improvements to documentation and release tools
+
+   See merge request !43
+
+
+! 2015-10-06 - commit 0b7a459
+
+ - Merge branch 'GAUDI-1093' into 'master'
+
+   avoid (deprecated) Python module `commands`
+
+   fixes GAUDI-1093
+
+   See merge request !38
+
+
+! 2015-09-25 - commit 35dd00c
+
+ - Merge branch 'dev-smartif-use' into 'master'
+
+   Provide (and use) C++11 smart pointer 'look and feel' for SmartIF
+
+   The aim of this branch is to confine, for everything that inherits from
+   IInterface, the calls to addRef(), release() and queryInterface() to the
+   SmartIF implementation. Exceptions are a few places where interfaces
+   (currently) return bare pointers (instead of SmartIF...) and where one thus
+   has to addRef() explicitly to avoid returning a dangling pointer. This can be
+   avoided by changing the relevant interface to return a SmartIF instead of a
+   bare pointer.
+
+   In addition, make SmartIF 'look and feel' like a smart pointer.
+
+   - use explict bool conversion instead of .isValid()
+   - add SmartIF::as<IFace>(), to return a SmartIF<IFace> to an alternate
+      interface -- which (together with move) encourages the use of auto
+   - add ISvcLocator::as<IFace>(), to return a SmartIF<IFace> to the current
+   ISvcLocator.
+   - add ServiceManager::service<IFace>() which return SmartIF<IFace> which
+   encourages
+      the use of auto
+
+   And add a few other C++11 modernizations (eg. prefer STL over raw loop)
+
+   Fixes GAUDI-1094
+
+   See merge request !24
+
+
+! 2015-09-11 - commit c062cbe
+
+ - C++11 modernization changes
+
+   Some trivial - and some not so trivial! - changes which take advantage of
+   C++11...
+
+   See merge request !7
+
 ================================ GaudiMP v3r2 ================================
 ! 2014-05-27 - Marco Clemencic
  - Minor fix to CMake configuration (CMT equivalence).

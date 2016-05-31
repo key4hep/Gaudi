@@ -1,4 +1,3 @@
-// $Id: IMyTool.h,v 1.4 2008/10/10 15:18:56 marcocle Exp $
 #ifndef GAUDIEXAMPLE_IMYTOOL_H
 #define GAUDIEXAMPLE_IMYTOOL_H 1
 
