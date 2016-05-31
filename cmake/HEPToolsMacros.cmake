@@ -471,10 +471,6 @@ macro(lcg_prepare_paths)
     endif()
   endif()
 
-  if(LCG_COMP MATCHES "clang")
-    set(GCCXML_CXX_COMPILER g++ CACHE STRING "Compiler that GCCXML must use.")
-  endif()
-
   # This is not really needed because Xerces has its own version macro, but it was
   # added at some point, so it is kept for backward compatibility.
   #add_definitions(-DXERCESC_GE_31)
