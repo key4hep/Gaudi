@@ -1,6 +1,11 @@
 Package : GaudiKernel
 Commit Id: $Format:%H$
 
+
+! 2016-06-02
+ - Declare GaudiHive dependent on pytools and declare GraphScheduler.py
+   as a test.
+
 ! 2016-06-02
  - Adapt GraphScheduler.py to signature of precedence.CruncherSequence.
 
