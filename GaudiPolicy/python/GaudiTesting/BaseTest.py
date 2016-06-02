@@ -861,7 +861,7 @@ class ReferenceFileValidator:
             orig = open(self.reffile).xreadlines()
             if self.preproc:
                 orig = self.preproc(orig)
-                result[self.result_key + '.proproc.orig'] = \
+                result[self.result_key + '.preproc.orig'] = \
                     result.Quote('\n'.join(map(str.strip, orig)))
         else:
             orig = []
@@ -877,7 +877,7 @@ class ReferenceFileValidator:
                 Legend:
                 -) reference file
                 +) standard output of the test""")
-            result[self.result_key + '.proproc.new'] = \
+            result[self.result_key + '.preproc.new'] = \
                 result.Quote('\n'.join(map(str.strip, new)))
             causes.append(self.cause)
         return causes
