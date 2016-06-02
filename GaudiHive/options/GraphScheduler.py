@@ -37,7 +37,7 @@ timeValue = precedence.UniformTimeValue(algoAvgTime)
 ifIObound = precedence.UniformBooleanValue(False)
 #ifIObound = precedence.RndBiased10BooleanValue()
 
-sequencer = precedence.CruncherSequence(timeValue, ifIObound).get()
+sequencer = precedence.CruncherSequence(timeValue, ifIObound, sleepFraction=0.0).get()
 
 ApplicationMgr( EvtMax = evtMax,
                 EvtSel = 'NONE',

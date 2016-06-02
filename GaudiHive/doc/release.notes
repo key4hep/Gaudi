@@ -1,6 +1,8 @@
 Package : GaudiKernel
 Commit Id: $Format:%H$
 
+! 2016-06-02
+ - Adapt GraphScheduler.py to signature of precedence.CruncherSequence.
 
 ! 2016-06-01 - (Merge of ae5ce72 and 8c5261b, plus few additional changes
                 on top of the merge)
