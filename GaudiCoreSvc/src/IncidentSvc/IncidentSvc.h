@@ -47,7 +47,9 @@ class IncidentSvc : public extends<Service,
     private:
 
   // Typedefs
-  typedef std::vector<Listener> ListenerList;
+  // ListenerList should be a list rather than a vector because handing
+  // a fired incident may result in a call to addListener.
+  typedef std::list<Listener> ListenerList;
   typedef GaudiUtils::HashMap<Gaudi::StringKey, std::unique_ptr<ListenerList>> ListenerMap;
 
 public:

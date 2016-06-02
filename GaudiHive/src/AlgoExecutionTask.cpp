@@ -29,27 +29,30 @@ tbb::task* AlgoExecutionTask::execute() {
   
   SmartIF<IMessageSvc> messageSvc (m_serviceLocator);
   MsgStream log(messageSvc, "AlgoExecutionTask");
-
+  
   StatusCode sc(StatusCode::FAILURE);
   try {
     RetCodeGuard rcg(appmgr, Gaudi::ReturnCode::UnhandledException);
     sc = m_algorithm->sysExecute();
     if (UNLIKELY(!sc.isSuccess()))  {
       log << MSG::WARNING << "Execution of algorithm " << m_algorithm->name() << " failed" << endmsg;
-    eventfailed = true;
-  }    
+      eventfailed = true;
+    }    
     rcg.ignore(); // disarm the guard
   } catch ( const GaudiException& Exception ) {
     log << MSG::FATAL << ".executeEvent(): Exception with tag=" << Exception.tag()
             << " thrown by " << m_algorithm->name() << endmsg;
     log << MSG::ERROR << Exception << endmsg;
+    eventfailed = true;
   } catch ( const std::exception& Exception ) {
     log << MSG::FATAL << ".executeEvent(): Standard std::exception thrown by "
             << m_algorithm->name() << endmsg;
     log << MSG::ERROR <<  Exception.what()  << endmsg;
+    eventfailed = true;
   } catch(...) {
     log << MSG::FATAL << ".executeEvent(): UNKNOWN Exception thrown by "
             << m_algorithm->name() << endmsg;
+    eventfailed = true;
   }  
 
   // Commit all DataHandles
@@ -58,7 +61,8 @@ tbb::task* AlgoExecutionTask::execute() {
   // DP it is important to propagate the failure of an event.
   // We need to stop execution when this happens so that execute run can 
   // then receive the FAILURE
-  m_evtCtx->setFail(eventfailed);
+  if (eventfailed) 
+    m_evtCtx->setFail(eventfailed);
   
   // Push in the scheduler queue an action to be performed 
   auto action_promote2Executed = std::bind(&ForwardSchedulerSvc::promoteToExecuted,

@@ -518,6 +518,8 @@ StatusCode ForwardSchedulerSvc::eventFailed(EventContext* eventContext){
   // Set the number of slots available to an error code
   m_freeSlots.store(0);
 
+  eventContext->setFail(true);
+
   fatal() << "*** Event " << eventContext->evt() << " on slot "
           << eventContext->slot() << " failed! ***" << endmsg;
 
@@ -765,7 +767,7 @@ StatusCode ForwardSchedulerSvc::updateStates(int si, const std::string& algo_nam
     } else {
       StatusCode eventStalledSC = isStalled(iSlot);
       if (! eventStalledSC.isSuccess())
-        eventFailed(thisSlot.eventContext);
+        eventFailed(thisSlot.eventContext).ignore();
     }
   } // end loop on slots
 
@@ -1037,7 +1039,7 @@ StatusCode ForwardSchedulerSvc::promoteToExecuted(unsigned int iAlgo, int si,
 
   // Check if the execution failed
   if (eventContext->evtFail())
-    eventFailed(eventContext);
+    eventFailed(eventContext).ignore();
 
   StatusCode sc = m_algResourcePool->releaseAlgorithm(algo->name(),algo);
 
