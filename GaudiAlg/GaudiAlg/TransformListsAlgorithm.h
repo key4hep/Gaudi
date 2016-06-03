@@ -1,6 +1,5 @@
 #ifndef TRANSFORMLISTSALGORITHM_H
 #define TRANSFORMLISTSALGORITHM_H
-#include "GaudiKernel/index_sequence.h"
 #include <functional>
 #include "GaudiAlg/GaudiAlgorithm.h"
 #include "GaudiAlg/Algorithm_details.h"
