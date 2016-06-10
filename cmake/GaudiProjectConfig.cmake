@@ -524,19 +524,6 @@ macro(gaudi_project project version)
   # (so far, the build and the release envirnoments are identical)
   set(project_build_environment ${project_environment})
 
-  # FIXME: this should not be needed, but there is a bug in genreflex
-  if(BINARY_TAG MATCHES "i686-.*")
-    # special environment variables for GCCXML
-    if(GCCXML_CXX_COMPILER)
-      set(project_build_environment ${project_build_environment}
-          SET GCCXML_COMPILER "${GCCXML_CXX_COMPILER}")
-    endif()
-    if(GCCXML_CXX_FLAGS)
-      set(project_build_environment ${project_build_environment}
-          SET GCCXML_CXXFLAGS "${GCCXML_CXX_FLAGS}")
-    endif()
-  endif()
-
   # - collect internal environment
   message(STATUS "  environment for the project")
   #   - installation dirs
@@ -2954,8 +2941,6 @@ macro(gaudi_external_project_environment)
         endif()
       elseif(pack STREQUAL "Oracle")
         set(executable ${SQLPLUS_EXECUTABLE})
-      elseif(pack STREQUAL "GCCXML")
-        set(executable ${GCCXML})
       elseif(pack STREQUAL "tcmalloc")
         set(executable ${PPROF_EXECUTABLE})
       endif()
