@@ -39,12 +39,12 @@ class GAUDI_API Property
 {
 private:
   // the default constructor is disabled
-  Property();
+  Property() = delete;
 public:
   /// property name
   const std::string&    name      () const { return m_name             ; }
   /// property documentation
-  const   std::string&  documentation() const { return m_documentation; }
+  const std::string&    documentation() const { return m_documentation; }
   /// property type-info
   const std::type_info* type_info () const { return m_typeinfo         ; }
   /// property type
@@ -417,8 +417,8 @@ public:
 private:
   // ==========================================================================
   /// the default & copy constructors are deleted
-  PropertyWithVerifier(); 
-  PropertyWithVerifier( const  PropertyWithVerifier& right );
+  PropertyWithVerifier() = delete;
+  PropertyWithVerifier( const  PropertyWithVerifier& right ) = delete;
   // ==========================================================================
 private:
   // ==========================================================================
@@ -507,6 +507,7 @@ public:
   SimpleProperty
   ( std::string        name                  ,
     const TYPE&        value                 ,
+    std::string        doc = ""              ,
     VERIFIER           verifier = VERIFIER() ) ;
   /// constructor from other property type
   template <class OTHER>
@@ -550,10 +551,13 @@ template <class TYPE,class VERIFIER>
 SimpleProperty<TYPE,VERIFIER>::SimpleProperty
 ( std::string        name     ,
   const TYPE&        value    ,
+  std::string        doc      ,
   VERIFIER           verifier )
   : PropertyWithVerifier<TYPE,VERIFIER>
 ( std::move(name) , Traits::new_(value) , true , verifier )
-{}
+{
+  this->setDocumentation(std::move(doc));
+}
 // ============================================================================
 /// constructor from other property type
 // ============================================================================
@@ -1147,7 +1151,7 @@ namespace Gaudi
       const char         (&value)[N] ,
       const std::string& doc   = ""  )
     {
-      return component ? setProperty ( component , name , 
+      return component ? setProperty ( component , name ,
                                        std::string ( value , value + N ), doc )
                        : StatusCode::FAILURE;
     }
@@ -1190,7 +1194,7 @@ namespace Gaudi
       const std::string& doc        )
     {
       return component && hasProperty(component,name) ?
-                Gaudi::Utils::setProperty ( component , name , 
+                Gaudi::Utils::setProperty ( component , name ,
                                             Gaudi::Utils::toString ( value ) , doc ) :
                 StatusCode::FAILURE;
     }
@@ -1310,7 +1314,7 @@ namespace Gaudi
     {
       if ( !component ) { return StatusCode::FAILURE ; }
       auto property = SmartIF<IProperty>{  component } ;
-      return property ? setProperty ( property , name , value , doc ) 
+      return property ? setProperty ( property , name , value , doc )
                       : StatusCode::FAILURE;
     }
     // ========================================================================
@@ -1371,7 +1375,7 @@ namespace Gaudi
       const std::string& doc  = ""   )
     {
       if ( 0 == component ) { return StatusCode::FAILURE ; }
-      return setProperty ( component , name , 
+      return setProperty ( component , name ,
                            std::string{ value , value + N }, doc ) ;
     }
     // ========================================================================
