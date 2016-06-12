@@ -53,6 +53,8 @@ public:
     TYPE&                    value,
     const std::string&       doc = "none" ) ;
   /// Declare a property (specialization)
+  inline Property* declareProperty(Property& prop);
+  /// Declare a property (specialization)
   template <class TYPE>
   Property* declareProperty
   ( const std::string&       name  ,
@@ -93,7 +95,7 @@ public:
    template<class TYPE>
   Property* declareProperty
   ( const std::string& name,
-     DataObjectHandle<TYPE>& ref, 
+     DataObjectHandle<TYPE>& ref,
     const std::string& doc = "none" ) ;
   /// Declare a remote property
   Property* declareRemoteProperty
@@ -218,6 +220,15 @@ PropertyMgr::declareProperty
 // ============================================================================
 /// Declare a property (templated)
 // ============================================================================
+inline Property* PropertyMgr::declareProperty(Property& prop)
+{
+  assertUniqueName(prop.name());
+  m_properties.push_back(&prop);
+  return &prop;
+}
+// ============================================================================
+/// Declare a property (templated)
+// ============================================================================
 template <class TYPE>
 inline Property*
 PropertyMgr::declareProperty
@@ -310,7 +321,7 @@ template<class TYPE>
 inline Property*
 PropertyMgr::declareProperty
 ( const std::string& name,
-  DataObjectHandle<TYPE>& ref, 
+  DataObjectHandle<TYPE>& ref,
   const std::string& doc )
 {
   assertUniqueName(name);
@@ -327,4 +338,3 @@ PropertyMgr::declareProperty
 // ============================================================================
 #endif // GAUDIKERNEL_PROPERTYMGR_H
 // ============================================================================
-

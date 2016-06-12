@@ -260,20 +260,46 @@ public:
   {
     return m_propertyMgr-> declareRemoteProperty ( name , rsvc , rname ) ;
   }
-  
+
+  // ==========================================================================
+  /** Declare a property
+   *
+   *
+   *  @code
+   *
+   *  MyAlg ( const std::string& name ,
+   *          ISvcLocator*       pSvc )
+   *     : Algorithm ( name , pSvc )
+   *     , m_property1   ( ... )
+   *   {
+   *     // declare the property
+   *     declareProperty(m_property1);
+   *   }
+   *  @endcode
+   *
+   *  @see PropertyMgr
+   *  @see PropertyMgr::declareProperty
+   *
+   *  @param property the property itself,
+   *  @return pointer to the property object passed as argument
+   */
+  Property* declareProperty(Property &property) const {
+    return m_propertyMgr->declareProperty(property);
+  }
+
   template<class T>
-    
+
     Property* declareProperty(const std::string& name,
                               ToolHandle<T>& hndl,
                               const std::string& doc = "none" ) const {
-    
+
     AlgTool* a = const_cast<AlgTool*>(this);
     a->declareTool(hndl).ignore();
-    
+
     return m_propertyMgr->declareProperty(name, hndl, doc);
-    
+
   }
-  
+
   template<class T>
     StatusCode declareTool(ToolHandle<T> &handle,
                            std::string toolTypeAndName = "",
@@ -286,12 +312,12 @@ public:
   }
 
   // ==========================================================================
-  // declare ToolHandleArrays to the AlgTool  
+  // declare ToolHandleArrays to the AlgTool
   template <class T>
     Property* declareProperty(const std::string& name,
                               ToolHandleArray<T>& hndlArr,
                               const std::string& doc = "none" ) const {
-    m_toolHandleArrays.push_back( &hndlArr );    
+    m_toolHandleArrays.push_back( &hndlArr );
     return m_propertyMgr->declareProperty(name, hndlArr, doc);
   }
 
@@ -548,4 +574,3 @@ struct ToolFactory {
 
 
 #endif // GAUDIKERNEL_ALGTOOL_H
-

@@ -219,6 +219,31 @@ public:
     return m_propertyMgr -> declareProperty ( name , property , doc ) ;
   }
   // ==========================================================================
+  /** Declare a property
+   *
+   *
+   *  @code
+   *
+   *  MyAlg ( const std::string& name ,
+   *          ISvcLocator*       pSvc )
+   *     : Algorithm ( name , pSvc )
+   *     , m_property1   ( ... )
+   *   {
+   *     // declare the property
+   *     declareProperty(m_property1);
+   *   }
+   *  @endcode
+   *
+   *  @see PropertyMgr
+   *  @see PropertyMgr::declareProperty
+   *
+   *  @param property the property itself,
+   *  @return pointer to the property object passed as argument
+   */
+  Property* declareProperty(Property &property) const {
+    return m_propertyMgr->declareProperty(property);
+  }
+  // ==========================================================================
   /** Declare remote named properties. This is used to declare as a local property
       a property of another services or algorithm. The only needed information is
       IProperty interface of the remote service and the its property name if different

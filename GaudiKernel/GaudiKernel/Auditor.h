@@ -234,6 +234,32 @@ public:
 	return m_PropertyMgr->declareProperty(name, property, doc);
   }
 
+  // ==========================================================================
+  /** Declare a property
+   *
+   *
+   *  @code
+   *
+   *  MyAlg ( const std::string& name ,
+   *          ISvcLocator*       pSvc )
+   *     : Algorithm ( name , pSvc )
+   *     , m_property1   ( ... )
+   *   {
+   *     // declare the property
+   *     declareProperty(m_property1);
+   *   }
+   *  @endcode
+   *
+   *  @see PropertyMgr
+   *  @see PropertyMgr::declareProperty
+   *
+   *  @param property the property itself,
+   *  @return pointer to the property object passed as argument
+   */
+  Property* declareProperty(Property &property) const {
+    return m_PropertyMgr->declareProperty(property);
+  }
+
  private:
 
   std::string m_name;	          ///< Auditor's name for identification
@@ -279,4 +305,3 @@ public:
 #endif
 
 #endif //GAUDIKERNEL_AUDITOR_H
-
