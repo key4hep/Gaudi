@@ -21,7 +21,7 @@ class Property;
 class GAUDI_API IProperty: virtual public IInterface  {
 public:
   /// InterfaceID
-  DeclareInterfaceID(IProperty,2,1);
+  DeclareInterfaceID(IProperty,2,2);
 
   /// Set the property by property
   virtual StatusCode setProperty( const Property& p // Reference to the input property
@@ -43,7 +43,7 @@ public:
 
   /// Return true if we have a property with the given name.
   virtual bool hasProperty(const std::string& name) const = 0;
+
+  virtual Property& declareProperty(Property&) = 0;
 };
 #endif  // GAUDIKERNEL_IPROPERTY_H
-
-
