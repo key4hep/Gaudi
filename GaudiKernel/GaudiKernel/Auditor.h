@@ -256,7 +256,7 @@ public:
    *  @param property the property itself,
    *  @return pointer to the property object passed as argument
    */
-  Property* declareProperty(Property &property) const {
+  Property& declareProperty(Property &property) override {
     return m_PropertyMgr->declareProperty(property);
   }
 

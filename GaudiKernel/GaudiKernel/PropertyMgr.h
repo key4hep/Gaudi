@@ -53,7 +53,7 @@ public:
     TYPE&                    value,
     const std::string&       doc = "none" ) ;
   /// Declare a property (specialization)
-  inline Property* declareProperty(Property& prop);
+  inline Property& declareProperty(Property& prop) override;
   /// Declare a property (specialization)
   template <class TYPE>
   Property* declareProperty
@@ -220,11 +220,11 @@ PropertyMgr::declareProperty
 // ============================================================================
 /// Declare a property (templated)
 // ============================================================================
-inline Property* PropertyMgr::declareProperty(Property& prop)
+inline Property& PropertyMgr::declareProperty(Property& prop)
 {
   assertUniqueName(prop.name());
   m_properties.push_back(&prop);
-  return &prop;
+  return prop;
 }
 // ============================================================================
 /// Declare a property (templated)
