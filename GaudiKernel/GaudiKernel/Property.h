@@ -14,12 +14,11 @@
 #include "GaudiKernel/Parsers.h"
 #include "GaudiKernel/ToStream.h"
 #include "GaudiKernel/SmartIF.h"
+#include "GaudiKernel/IProperty.h"
 // ============================================================================
 
 // ============================================================================
 class Property   ;
-class IProperty  ;
-class IInterface ;
 // ============================================================================
 
 // ============================================================================
@@ -509,6 +508,13 @@ public:
     const TYPE&        value                 ,
     std::string        doc = ""              ,
     VERIFIER           verifier = VERIFIER() ) ;
+  /// The constructor from the name, value and verifier
+  SimpleProperty
+  ( IProperty *        owner                 ,
+    std::string        name                  ,
+    const TYPE&        value                 ,
+    std::string        doc = ""              ,
+    VERIFIER           verifier = VERIFIER() ) ;
   /// constructor from other property type
   template <class OTHER>
   SimpleProperty ( const PropertyWithValue<OTHER>& right ) ;
@@ -557,6 +563,20 @@ SimpleProperty<TYPE,VERIFIER>::SimpleProperty
 ( std::move(name) , Traits::new_(value) , true , verifier )
 {
   this->setDocumentation(std::move(doc));
+}
+// ============================================================================
+/// The constructor from the name, value and verifier
+// ============================================================================
+template <class TYPE,class VERIFIER>
+SimpleProperty<TYPE,VERIFIER>::SimpleProperty
+( IProperty *        owner    ,
+  std::string        name     ,
+  const TYPE&        value    ,
+  std::string        doc      ,
+  VERIFIER           verifier )
+  : SimpleProperty( std::move(name), value, std::move(doc), verifier )
+{
+  owner->declareProperty(*this);
 }
 // ============================================================================
 /// constructor from other property type
