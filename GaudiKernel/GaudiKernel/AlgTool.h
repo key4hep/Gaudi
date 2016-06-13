@@ -162,11 +162,8 @@ public:
 
     Property* declareProperty(const std::string& name,
                               ToolHandle<T>& hndl,
-                              const std::string& doc = "none" ) const {
-
-    AlgTool* a = const_cast<AlgTool*>(this);
-    a->declareTool(hndl).ignore();
-
+                              const std::string& doc = "none" ) {
+    this->declareTool(hndl).ignore();
     return PropertyMgr::declareProperty(name, hndl, doc);
 
   }
@@ -187,8 +184,8 @@ public:
   template <class T>
     Property* declareProperty(const std::string& name,
                               ToolHandleArray<T>& hndlArr,
-                              const std::string& doc = "none" ) const {
-    m_toolHandleArrays.push_back( &hndlArr );
+                              const std::string& doc = "none" ) {
+    m_toolHandleArrays.push_back(&hndlArr);
     return PropertyMgr::declareProperty(name, hndlArr, doc);
   }
 

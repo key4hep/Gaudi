@@ -694,19 +694,19 @@ private:
     Property* declareProperty
     ( const std::string& name,
       DataObjectHandle<T>&     hndl,
-      const std::string& doc = "none" ) const
+      const std::string& doc = "none" )
   {
 
     if ( hndl.mode() & Gaudi::DataHandle::Reader ) {
-      (const_cast<GaudiAlgorithm*>(this))->Algorithm::declareInput(&hndl);
+      this->declareInput(&hndl);
     }
 
     if ( hndl.mode() & Gaudi::DataHandle::Writer ) {
-      (const_cast<GaudiAlgorithm*>(this))->Algorithm::declareOutput(&hndl);
+      this->declareOutput(&hndl);
     }
 
     if (hndl.owner() == 0) {
-      hndl.setOwner((const_cast<GaudiAlgorithm*>(this)));
+      hndl.setOwner(this);
     }
 
     return PropertyMgr::declareProperty(name, hndl, doc);
