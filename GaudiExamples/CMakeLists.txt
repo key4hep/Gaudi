@@ -131,6 +131,7 @@ gaudi_build_env(UNSET GAUDIAPPNAME
 
 gaudi_add_test(QMTest QMTEST
                ENVIRONMENT
+                 BINARY_TAG=${BINARY_TAG}
                  STDOPTS=${CMAKE_CURRENT_SOURCE_DIR}/options
                  JOBOPTSEARCHPATH+=${CMAKE_CURRENT_SOURCE_DIR}/options
                  JOBOPTSEARCHPATH+=${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest
