@@ -512,7 +512,7 @@ public:
   SimpleProperty
   ( IProperty *        owner                 ,
     std::string        name                  ,
-    const TYPE&        value                 ,
+    const TYPE&        value = TYPE{}        ,
     std::string        doc = ""              ,
     VERIFIER           verifier = VERIFIER() ) ;
   /// constructor from other property type
