@@ -17,9 +17,9 @@
 namespace {
     constexpr struct select1st_t {
         template <typename S, typename T> const S& operator()(const std::pair<S,T>& p) const
-        { return p.first; } 
+        { return p.first; }
         template <typename S, typename T> S& operator()(std::pair<S,T>& p) const
-        { return p.first; } 
+        { return p.first; }
     } select1st {};
 }
 // ===========================================================================
@@ -88,13 +88,25 @@ SvcCatalog::findProperties( const std::string& client)
                                        : nullptr;
 }
 // ============================================================================
+std::pair<bool,SvcCatalog::PropertiesT::const_iterator>
+SvcCatalog::findProperty
+( const SvcCatalog::PropertiesT& props ,
+  const std::string&       name  ) const
+{
+  auto p = std::find_if( std::begin(props), std::end(props),
+                         [&](const Property* prop) {
+                             return boost::iequals( name, prop->name());
+  });
+  return { p != std::end(props), p };
+}
+// ============================================================================
 std::pair<bool,SvcCatalog::PropertiesT::iterator>
 SvcCatalog::findProperty
 ( SvcCatalog::PropertiesT& props ,
   const std::string&       name  )
 {
   auto p = std::find_if( std::begin(props), std::end(props),
-                         [&](const Property* prop) { 
+                         [&](const Property* prop) {
                              return boost::iequals( name, prop->name());
   });
   return { p != std::end(props), p };
@@ -106,13 +118,23 @@ std::ostream& SvcCatalog::fillStream( std::ostream& o ) const
   for ( const auto& iclient : m_catalog )
   {
     o << "Client '" << iclient.first << "'" << std::endl ;
-    for ( const auto& p : iclient.second ) 
+    for ( const auto& p : iclient.second )
     {
       if ( p ) o << "\t" << (*p) << std::endl ;
     }
   }
   //
   return o ;                                                   // RETURN
+}
+const Property* SvcCatalog::getProperty(const std::string& client, const std::string& name) const {
+  auto props = findProperties(client);
+  if (props) {
+    const auto res = findProperty(*props, name);
+    if(res.first) {
+      return *res.second;
+    }
+  }
+  return nullptr;
 }
 // ============================================================================
 // printoput operator

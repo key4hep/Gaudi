@@ -36,12 +36,14 @@ public:
                              const std::string& name );
   const PropertiesT* getProperties( const std::string& client) const;
   std::vector<std::string> getClients() const;
+  const Property* getProperty(const std::string& client, const std::string& name) const;
 public:
   /// dump the content of catalog to std::ostream
   std::ostream& fillStream ( std::ostream& o ) const ;
 private:
   const PropertiesT* findProperties(const std::string& client) const;
   PropertiesT* findProperties(const std::string& client) ;
+  std::pair<bool, PropertiesT::const_iterator> findProperty(const PropertiesT& props, const std::string& name) const;
   std::pair<bool, PropertiesT::iterator> findProperty(PropertiesT& props, const std::string& name);
   std::map<std::string, PropertiesT> m_catalog;
 };

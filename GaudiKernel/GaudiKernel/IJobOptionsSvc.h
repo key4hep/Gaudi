@@ -20,7 +20,7 @@ class Property;
 class GAUDI_API IJobOptionsSvc: virtual public IInterface {
 public:
   /// InterfaceID
-  DeclareInterfaceID(IJobOptionsSvc,4,0);
+  DeclareInterfaceID(IJobOptionsSvc,4,1);
 
   /** Override default properties of the calling client
       @param client Name of the client algorithm or service
@@ -38,6 +38,9 @@ public:
   /// Get the properties associated to a given client
   virtual const std::vector<const Property*>*
   getProperties( const std::string& client) const = 0;
+
+  /// Get a property for a client
+  virtual const Property* getProperty(const std::string& client, const std::string& name) const = 0;
 
   /// Get the list of clients
   virtual std::vector<std::string> getClients() const = 0;

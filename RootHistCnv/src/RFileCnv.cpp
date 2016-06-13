@@ -16,7 +16,6 @@
 #include <map>
 #include <string>
 #include <GaudiKernel/IMetaDataSvc.h>
-#include <GaudiKernel/PropertyMgr.h>
 
 // Instantiation of a static factory class used by clients to create
 // instances of this service
@@ -27,27 +26,17 @@ RootHistCnv::RFileCnv::RFileCnv( ISvcLocator* svc )
 : RDirectoryCnv ( svc, classID() )
 { }
 
-namespace {
-  const std::string emptyName{};
-  /// Helper to allow instantiation of PropertyMgr.
-  struct AnonymousPropertyMgr: public implements<IProperty, INamedInterface>,
-                               public PropertyMgr {
-    const std::string& name() const override { return emptyName; }
-  };
-}
 //------------------------------------------------------------------------------
 StatusCode RootHistCnv::RFileCnv::initialize()
 {
   // Set compression level property ...
-  std::unique_ptr<PropertyMgr> pmgr ( new AnonymousPropertyMgr() );
-  pmgr->declareProperty(m_compLevel);
   ISvcLocator * svcLoc = Gaudi::svcLocator();
   auto jobSvc = svcLoc->service<IJobOptionsSvc>("JobOptionsSvc");
-  const StatusCode sc = ( jobSvc &&
-                          jobSvc->setMyProperties("RFileCnv",pmgr.get()) );
+  auto prop = jobSvc->getProperty("RFileCnv", "GlobalCompression");
+  if (prop) m_compLevel = prop->toString();
 
   // initialise base class
-  return ( sc && RDirectoryCnv::initialize() );
+  return RDirectoryCnv::initialize();
 }
 //------------------------------------------------------------------------------
 
@@ -119,10 +108,9 @@ StatusCode RootHistCnv::RFileCnv::createObj( IOpaqueAddress* pAddress,
 
   } else if ( mode[0] == 'N' ) {
 
-    const auto& compLevel = m_compLevel.value();
     log << MSG::INFO << "opening Root file \"" << fname << "\" for writing";
-    if ( !compLevel.empty() )
-    { log << ", CompressionLevel='" << compLevel << "'"; }
+    if ( !m_compLevel.empty() )
+    { log << ", CompressionLevel='" << m_compLevel << "'"; }
     log << endmsg;
 
     rfile = TFile::Open( fname.c_str(), "RECREATE", "Gaudi Trees" );
@@ -131,9 +119,9 @@ StatusCode RootHistCnv::RFileCnv::createObj( IOpaqueAddress* pAddress,
           << endmsg;
       return StatusCode::FAILURE;
     }
-    if ( !compLevel.empty() )
+    if ( !m_compLevel.empty() )
     {
-      const RootCompressionSettings settings(compLevel);
+      const RootCompressionSettings settings(m_compLevel);
       rfile->SetCompressionSettings(settings.level());
     }
 
