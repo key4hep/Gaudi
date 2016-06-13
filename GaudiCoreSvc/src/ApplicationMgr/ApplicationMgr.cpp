@@ -12,7 +12,6 @@
 
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/MsgStream.h"
-#include "GaudiKernel/PropertyMgr.h"
 #include "GaudiKernel/ObjectFactory.h"
 
 #include "GaudiKernel/GaudiException.h"
@@ -58,7 +57,6 @@ ApplicationMgr::ApplicationMgr(IInterface*)
   // Instantiate component managers
   m_managers[IService::interfaceID().id()] = new ServiceManager(this);
 
-  m_propertyMgr  = new PropertyMgr(this);
   m_svcLocator = svcManager();
 
   // Instantiate internal services
@@ -69,73 +67,73 @@ ApplicationMgr::ApplicationMgr(IInterface*)
   m_managers[IAlgorithm::interfaceID().id()] = algMgr;
   //  m_managers[IAlgorithm::interfaceID().id()] = new HiveAlgorithmManager(this);
 
-  m_propertyMgr->declareProperty("Go",            m_SIGo = 0 );
-  m_propertyMgr->declareProperty("Exit",          m_SIExit = 0 );
-  m_propertyMgr->declareProperty("Dlls",          m_dllNameList );
-  m_propertyMgr->declareProperty("ExtSvc",        m_extSvcNameList );
-  m_propertyMgr->declareProperty("CreateSvc",     m_createSvcNameList );
-  m_propertyMgr->declareProperty("ExtSvcCreates", m_extSvcCreates=true );
+  declareProperty("Go",            m_SIGo = 0 );
+  declareProperty("Exit",          m_SIExit = 0 );
+  declareProperty("Dlls",          m_dllNameList );
+  declareProperty("ExtSvc",        m_extSvcNameList );
+  declareProperty("CreateSvc",     m_createSvcNameList );
+  declareProperty("ExtSvcCreates", m_extSvcCreates=true );
 
-  m_propertyMgr->declareProperty("SvcMapping",    m_svcMapping );
-  m_propertyMgr->declareProperty("SvcOptMapping", m_svcOptMapping );
+  declareProperty("SvcMapping",    m_svcMapping );
+  declareProperty("SvcOptMapping", m_svcOptMapping );
 
-  m_propertyMgr->declareProperty("TopAlg",        m_topAlgNameList );
-  m_propertyMgr->declareProperty("OutStream",     m_outStreamNameList );
-  m_propertyMgr->declareProperty("OutStreamType", m_outStreamType = "OutputStream" );
-  m_propertyMgr->declareProperty("MessageSvcType",m_messageSvcType= "MessageSvc" );
-  m_propertyMgr->declareProperty("JobOptionsSvcType",
+  declareProperty("TopAlg",        m_topAlgNameList );
+  declareProperty("OutStream",     m_outStreamNameList );
+  declareProperty("OutStreamType", m_outStreamType = "OutputStream" );
+  declareProperty("MessageSvcType",m_messageSvcType= "MessageSvc" );
+  declareProperty("JobOptionsSvcType",
                                  m_jobOptionsSvcType = "JobOptionsSvc" );
-  m_propertyMgr->declareProperty( s_runable,      m_runableType   = "AppMgrRunable");
-  m_propertyMgr->declareProperty( s_eventloop,    m_eventLoopMgr  = "EventLoopMgr");
+  declareProperty( s_runable,      m_runableType   = "AppMgrRunable");
+  declareProperty( s_eventloop,    m_eventLoopMgr  = "EventLoopMgr");
 
-  m_propertyMgr->declareProperty("HistogramPersistency", m_histPersName="NONE");
+  declareProperty("HistogramPersistency", m_histPersName="NONE");
 
   // Declare Job Options Service properties and set default
-  m_propertyMgr->declareProperty("JobOptionsType", m_jobOptionsType = "FILE");
-  m_propertyMgr->declareProperty("JobOptionsPath", m_jobOptionsPath = "");
-  m_propertyMgr->declareProperty("JobOptionsPostAction", m_jobOptionsPostAction = "");
-  m_propertyMgr->declareProperty("JobOptionsPreAction", m_jobOptionsPreAction = "");
-  m_propertyMgr->declareProperty("EvtMax",         m_evtMax = -1);
-  m_propertyMgr->declareProperty("EvtSel",         m_evtsel );
-  m_propertyMgr->declareProperty("OutputLevel",    m_outputLevel = MSG::INFO);
+  declareProperty("JobOptionsType", m_jobOptionsType = "FILE");
+  declareProperty("JobOptionsPath", m_jobOptionsPath = "");
+  declareProperty("JobOptionsPostAction", m_jobOptionsPostAction = "");
+  declareProperty("JobOptionsPreAction", m_jobOptionsPreAction = "");
+  declareProperty("EvtMax",         m_evtMax = -1);
+  declareProperty("EvtSel",         m_evtsel );
+  declareProperty("OutputLevel",    m_outputLevel = MSG::INFO);
 
-  m_propertyMgr->declareProperty("MultiThreadExtSvc", m_multiThreadSvcNameList);
-  m_propertyMgr->declareProperty("NoOfThreads",    m_noOfEvtThreads = 0);
-  m_propertyMgr->declareProperty("AppName",        m_appName = "ApplicationMgr");
-  m_propertyMgr->declareProperty("AppVersion",     m_appVersion = "");
+  declareProperty("MultiThreadExtSvc", m_multiThreadSvcNameList);
+  declareProperty("NoOfThreads",    m_noOfEvtThreads = 0);
+  declareProperty("AppName",        m_appName = "ApplicationMgr");
+  declareProperty("AppVersion",     m_appVersion = "");
 
-  m_propertyMgr->declareProperty("AuditTools",      m_auditTools = false);
-  m_propertyMgr->declareProperty("AuditServices",   m_auditSvcs = false);
-  m_propertyMgr->declareProperty("AuditAlgorithms", m_auditAlgs = false);
+  declareProperty("AuditTools",      m_auditTools = false);
+  declareProperty("AuditServices",   m_auditSvcs = false);
+  declareProperty("AuditAlgorithms", m_auditAlgs = false);
 
-  m_propertyMgr->declareProperty("ActivateHistory", m_actHistory = false);
-  m_propertyMgr->declareProperty("StatusCodeCheck", m_codeCheck = false);
+  declareProperty("ActivateHistory", m_actHistory = false);
+  declareProperty("StatusCodeCheck", m_codeCheck = false);
 
-  m_propertyMgr->declareProperty("Environment",    m_environment);
+  declareProperty("Environment",    m_environment);
 
   // ServiceMgr Initialization loop checking
-  m_propertyMgr->declareProperty("InitializationLoopCheck", m_loopCheck = true)
+  declareProperty("InitializationLoopCheck", m_loopCheck = true)
     ->declareUpdateHandler(&ApplicationMgr::initLoopCheckHndlr, this);
   svcManager()->setLoopCheckEnabled(m_loopCheck);
 
   // Flag to activate the printout of properties
-  m_propertyMgr->declareProperty
+  declareProperty
     ( "PropertiesPrint",
       m_propertiesPrint = false,
       "Flag to activate the printout of properties" );
 
-  m_propertyMgr->declareProperty("PluginDebugLevel", m_pluginDebugLevel = 0 );
+  declareProperty("PluginDebugLevel", m_pluginDebugLevel = 0 );
 
-  m_propertyMgr->declareProperty("StopOnSignal", m_stopOnSignal = false,
+  declareProperty("StopOnSignal", m_stopOnSignal = false,
       "Flag to enable/disable the signal handler that schedule a stop of the event loop");
 
-  m_propertyMgr->declareProperty("StalledEventMonitoring", m_stalledEventMonitoring = false,
+  declareProperty("StalledEventMonitoring", m_stalledEventMonitoring = false,
       "Flag to enable/disable the monitoring and reporting of stalled events");
 
-  m_propertyMgr->declareProperty("ReturnCode", m_returnCode = Gaudi::ReturnCode::Success,
+  declareProperty("ReturnCode", m_returnCode = Gaudi::ReturnCode::Success,
       "Return code of the application. Set internally in case of error conditions.");
 
-  m_propertyMgr->declareProperty("AlgTypeAliases", algMgr->typeAliases(),
+  declareProperty("AlgTypeAliases", algMgr->typeAliases(),
       "Aliases of algorithm types, to replace an algorithm type for every instance");
 
   // Add action handlers to the appropriate properties
@@ -180,8 +178,6 @@ StatusCode ApplicationMgr::queryInterface
   { return algManager()    -> queryInterface ( iid , ppvi ) ; }
   if ( IClassManager   ::interfaceID() . versionMatch ( iid ) )
   { return m_classManager  -> queryInterface ( iid , ppvi ) ; }
-  if ( IProperty       ::interfaceID() . versionMatch ( iid ) )
-  { return m_propertyMgr   -> queryInterface ( iid , ppvi ) ; }
   if ( IMessageSvc     ::interfaceID() . versionMatch ( iid ) )
   {
     *ppvi = reinterpret_cast<void*>(m_messageSvc.get());
@@ -337,7 +333,7 @@ StatusCode ApplicationMgr::configure() {
   // Get my own options using the Job options service
   if (log.level() <= MSG::DEBUG)
     log << MSG::DEBUG << "Getting my own properties" << endmsg;
-  sc = m_jobOptionsSvc->setMyProperties( name(), m_propertyMgr );
+  sc = m_jobOptionsSvc->setMyProperties( name(), this );
   if( !sc.isSuccess() ) {
     log << MSG::WARNING << "Problems getting my properties from JobOptionsSvc"
         << endmsg;
@@ -385,7 +381,7 @@ StatusCode ApplicationMgr::configure() {
   // print all own properties if the options "PropertiesPrint" is set to true
   if ( m_propertiesPrint )
   {
-    const auto& properties = m_propertyMgr->getProperties() ;
+    const auto& properties = getProperties() ;
     log << MSG::ALWAYS
         << "List of ALL properties of "
         << System::typeinfoName ( typeid( *this ) ) << "/" << this->name()

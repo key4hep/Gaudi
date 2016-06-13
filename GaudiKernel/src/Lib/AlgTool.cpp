@@ -116,58 +116,6 @@ IToolSvc* AlgTool::toolSvc() const
 }
 
 //------------------------------------------------------------------------------
-StatusCode AlgTool::setProperty(const Property& p)
-//------------------------------------------------------------------------------
-{
-  return m_propertyMgr->setProperty(p);
-}
-
-//------------------------------------------------------------------------------
-StatusCode AlgTool::setProperty(const std::string& s)
-//------------------------------------------------------------------------------
-{
-  return m_propertyMgr->setProperty(s);
-}
-
-//------------------------------------------------------------------------------
-StatusCode AlgTool::setProperty(const std::string& n, const std::string& v)
-//------------------------------------------------------------------------------
-{
-  return m_propertyMgr->setProperty(n,v);
-}
-
-//------------------------------------------------------------------------------
-StatusCode AlgTool::getProperty(Property* p) const
-//------------------------------------------------------------------------------
-{
-  return m_propertyMgr->getProperty(p);
-}
-
-//------------------------------------------------------------------------------
-const Property& AlgTool::getProperty(const std::string& n) const
-{
-  return m_propertyMgr->getProperty(n);
-}
-
-//------------------------------------------------------------------------------
-StatusCode AlgTool::getProperty(const std::string& n, std::string& v ) const
-//------------------------------------------------------------------------------
-{
-  return m_propertyMgr->getProperty(n,v);
-}
-
-//------------------------------------------------------------------------------
-const std::vector<Property*>& AlgTool::getProperties() const
-//------------------------------------------------------------------------------
-{
-  return m_propertyMgr->getProperties();
-}
-
-bool AlgTool::hasProperty(const std::string& name) const {
-  return m_propertyMgr->hasProperty(name);
-}
-
-//------------------------------------------------------------------------------
 StatusCode AlgTool::setProperties()
 //------------------------------------------------------------------------------
 {
@@ -197,7 +145,6 @@ AlgTool::AlgTool( const std::string& type,
   : m_type          ( type )
   , m_name          ( name )
   , m_parent        ( parent )
-  , m_propertyMgr   ( new PropertyMgr() )
 {
   addRef(); // Initial count set to 1
 
@@ -467,7 +414,7 @@ void AlgTool::initToolHandles() const{
                 << " not used: not registering any of its Tools" << endmsg;
     } else {
       if (UNLIKELY(msgLevel(MSG::DEBUG)))
-        debug() << "Registering all Tools in ToolHandleArray " 
+        debug() << "Registering all Tools in ToolHandleArray "
                 << thArr->propertyName() << endmsg;
       // Iterate over its tools:
       for( auto toolHandle : thArr->getBaseArray() ) {

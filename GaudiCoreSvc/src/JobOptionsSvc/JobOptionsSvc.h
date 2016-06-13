@@ -18,14 +18,9 @@ namespace Gaudi { namespace Parsers {
 
 
 class JobOptionsSvc : public extends<Service,
-                                     IProperty,
                                      IJobOptionsSvc> {
  public:
     typedef std::vector<const Property*> PropertiesT;
-  // unhides some of Service's methods
-   using Service::setProperty;
-   using Service::getProperty;
-   using Service::getProperties;
   // Constructor
   JobOptionsSvc(const std::string& name,ISvcLocator* svc);
   /// destructor
@@ -62,9 +57,6 @@ class JobOptionsSvc : public extends<Service,
   StatusCode readOptions ( const std::string& file,
       const std::string& path = "" ) override;
 
-  /// IProperty implementation (needed for initialisation)
-  StatusCode setProperty(const Property& p) override;
-  StatusCode getProperty(Property *p) const override;
  private:
   void fillServiceCatalog(const Gaudi::Parsers::Catalog& catalog);
   void dump (const std::string& file,
@@ -72,7 +64,6 @@ class JobOptionsSvc : public extends<Service,
   /// dump the content of Properties catalog to the predefined file
 
  private:
-  PropertyMgr m_pmgr;
   std::string m_source_path;
   std::string m_source_type;
   std::string m_dir_search_path;

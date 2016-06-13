@@ -12,7 +12,6 @@
 Auditor::Auditor( const std::string& name, ISvcLocator *pSvcLocator )
 : m_name(name),
   m_pSvcLocator(pSvcLocator),
-  m_PropertyMgr{ new PropertyMgr() },
   m_isEnabled(true),
   m_isInitialized(false),
   m_isFinalized(false)
@@ -220,31 +219,4 @@ StatusCode Auditor::setProperties() {
   jos->setMyProperties( name(), this ).ignore();
   updateMsgStreamOutputLevel( m_outputLevel );
   return StatusCode::SUCCESS;
-}
-
-// IProperty implementation
-// Delegate to the Property manager
-StatusCode Auditor::setProperty(const Property& p) {
-  return m_PropertyMgr->setProperty(p);
-}
-StatusCode Auditor::setProperty(const std::string& s) {
-  return m_PropertyMgr->setProperty(s);
-}
-StatusCode Auditor::setProperty(const std::string& n, const std::string& v) {
-  return m_PropertyMgr->setProperty(n,v);
-}
-StatusCode Auditor::getProperty(Property* p) const {
-  return m_PropertyMgr->getProperty(p);
-}
-const Property& Auditor::getProperty( const std::string& name) const{
-  return m_PropertyMgr->getProperty(name);
-}
-StatusCode Auditor::getProperty(const std::string& n, std::string& v ) const {
-  return m_PropertyMgr->getProperty(n,v);
-}
-const std::vector<Property*>& Auditor::getProperties( ) const {
-  return m_PropertyMgr->getProperties();
-}
-bool Auditor::hasProperty(const std::string& name) const {
-  return m_PropertyMgr->hasProperty(name);
 }

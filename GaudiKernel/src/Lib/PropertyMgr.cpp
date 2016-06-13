@@ -47,14 +47,6 @@ namespace
   // ==========================================================================
 }
 // ====================================================================
-// constructor from the interface
-// ====================================================================
-PropertyMgr::PropertyMgr(IInterface* iface)
-  : m_pOuter           ( iface )
-{
-  addRef(); // initial reference count set to 1
-}
-// ====================================================================
 // Declare a remote property
 // ====================================================================
 Property* PropertyMgr::declareRemoteProperty
@@ -185,17 +177,6 @@ StatusCode PropertyMgr::getProperty
 const std::vector<Property*>&
 PropertyMgr::getProperties( ) const { return m_properties; }
 // =====================================================================
-// Implementation of IInterface::queryInterface
-// =====================================================================
-StatusCode PropertyMgr::queryInterface(const InterfaceID& iid, void** pinterface) {
-  // try local interfaces
-  StatusCode sc= base_class::queryInterface(iid, pinterface);
-  if (sc.isSuccess()) return sc;
-  // fall back on the owner
-  return m_pOuter ? m_pOuter->queryInterface(iid, pinterface)
-                  : sc; // FAILURE
-}
-// =====================================================================
 // Implementation of IProperty::hasProperty
 // =====================================================================
 bool PropertyMgr::hasProperty(const std::string& name) const {
@@ -206,10 +187,9 @@ bool PropertyMgr::hasProperty(const std::string& name) const {
 }
 void PropertyMgr::assertUniqueName(const std::string& name) const {
   if (UNLIKELY(hasProperty(name))) {
-    auto owner = SmartIF<INamedInterface>( m_pOuter );
     auto msgSvc = Gaudi::svcLocator()->service<IMessageSvc>("MessageSvc");
     if (!msgSvc) { std::cerr<< "error: cannot get MessageSvc!" << std::endl; }
-    MsgStream log(msgSvc, owner ? owner->name() : "PropertyMgr"  );
+    MsgStream log(msgSvc, this->name());
     log << MSG::WARNING
         << "duplicated property name '" << name
         << "', see https://its.cern.ch/jira/browse/GAUDI-1023"<< endmsg;

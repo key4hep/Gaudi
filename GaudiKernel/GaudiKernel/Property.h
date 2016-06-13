@@ -19,6 +19,7 @@
 
 // ============================================================================
 class Property   ;
+class PropertyMgr;
 // ============================================================================
 
 // ============================================================================
@@ -115,6 +116,8 @@ private:
   // property type
   const std::type_info*    m_typeinfo       ;
 protected:
+  // Declare this property to a PropertyMgr instance.
+  void declareTo(PropertyMgr* owner);
   // call back functor for reading
   mutable std::function<void(Property&)> m_readCallBack;
   // call back functor for update
@@ -510,7 +513,7 @@ public:
     VERIFIER           verifier = VERIFIER() ) ;
   /// The constructor from the name, value and verifier
   SimpleProperty
-  ( IProperty *        owner                 ,
+  ( PropertyMgr*       owner                 ,
     std::string        name                  ,
     const TYPE&        value = TYPE{}        ,
     std::string        doc = ""              ,
@@ -569,14 +572,14 @@ SimpleProperty<TYPE,VERIFIER>::SimpleProperty
 // ============================================================================
 template <class TYPE,class VERIFIER>
 SimpleProperty<TYPE,VERIFIER>::SimpleProperty
-( IProperty *        owner    ,
+( PropertyMgr*       owner    ,
   std::string        name     ,
   const TYPE&        value    ,
   std::string        doc      ,
   VERIFIER           verifier )
   : SimpleProperty( std::move(name), value, std::move(doc), verifier )
 {
-  owner->declareProperty(*this);
+  this->declareTo(owner);
 }
 // ============================================================================
 /// constructor from other property type
@@ -1488,8 +1491,6 @@ namespace Gaudi
     // ========================================================================
   } // end of namespace Gaudi::Utils
 } // end of namespace Gaudi
-
-
 // ============================================================================
 // The END
 // ============================================================================

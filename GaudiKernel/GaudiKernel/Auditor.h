@@ -33,7 +33,8 @@ class Algorithm;
     @date   2008-03
 */
 class GAUDI_API Auditor : public CommonMessaging<implements<IAuditor,
-                                                            IProperty>> {
+                                                            IProperty>>,
+                          public PropertyMgr {
 public:
 #ifndef __REFLEX__
   typedef Gaudi::PluginService::Factory<IAuditor*,
@@ -123,76 +124,6 @@ public:
     return serviceLocator()->service<T>(name, createIf);
   }
 
-  /// Set a value of a property of an auditor.
-  StatusCode setProperty(const Property& p) override;
-
-  /// Implementation of IProperty::setProperty
-  StatusCode setProperty( const std::string& s ) override;
-
-  /// Implementation of IProperty::setProperty
-  StatusCode setProperty( const std::string& n, const std::string& v) override;
-
-  /// Get the value of a property.
-  StatusCode getProperty(Property* p) const override;
-
-  /// Get the property by name.
-  const Property& getProperty( const std::string& name) const override;
-
-  /// Implementation of IProperty::getProperty
-  StatusCode getProperty( const std::string& n, std::string& v ) const override;
-
-  /// Get all properties.
-  const std::vector<Property*>& getProperties( ) const override;
-
-  /// Implementation of IProperty::hasProperty
-  bool hasProperty(const std::string& name) const override;
-
-  /** set the property form the value
-   *
-   *  @code
-   *
-   *  std::vector<double> data = ... ;
-   *  setProperty( "Data" , data ) ;
-   *
-   *  std::map<std::string,double> cuts = ... ;
-   *  setProperty( "Cuts" , cuts ) ;
-   *
-   *  std::map<std::string,std::string> dict = ... ;
-   *  setProperty( "Dictionary" , dict ) ;
-   *
-   *  @endcode
-   *
-   *  Note: the interface IProperty allows setting of the properties either
-   *        directly from other properties or from strings only
-   *
-   *  This is very convenient in resetting of the default
-   *  properties in the derived classes.
-   *  E.g. without this method one needs to convert
-   *  everything into strings to use IProperty::setProperty
-   *
-   *  @code
-   *
-   *    setProperty ( "OutputLevel" , "1"    ) ;
-   *    setProperty ( "Enable"      , "True" ) ;
-   *    setProperty ( "ErrorMax"    , "10"   ) ;
-   *
-   *  @endcode
-   *
-   *  For simple cases it is more or less ok, but for complicated properties
-   *  it is just ugly..
-   *
-   *  @param name      name of the property
-   *  @param value     value of the property
-   *  @see Gaudi::Utils::setProperty
-   *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
-   *  @date 2007-05-13
-   */
-  template <class TYPE>
-  StatusCode setProperty
-  ( const std::string& name  ,
-    const TYPE&        value )
-  { return Gaudi::Utils::setProperty ( m_PropertyMgr.get() , name , value ) ; }
-
   /** Set the auditor's properties. This method requests the job options service
       to set the values of any declared properties. The method is invoked from
       within sysInitialize() by the framework and does not need to be explicitly
@@ -200,72 +131,11 @@ public:
   */
   StatusCode setProperties();
 
-  // ==========================================================================
-  /** Declare the named property
-   *
-   *  @code
-   *
-   *  MyAuditor( ... )
-   *     : Auditor ( ...  )
-   *     , m_property1   ( ... )
-   *     , m_property2   ( ... )
-   *   {
-   *     // declare the property
-   *     declareProperty( "Property1" , m_property1 , "Doc for property #1" ) ;
-   *
-   *     // declare the property and attach the handler to it
-   *     declareProperty( "Property2" , m_property2 , "Doc for property #2" )
-   *        -> declareUpdateHandler( &MyAuditor::handler_2 ) ;
-   *
-   *   }
-   *  @endcode
-   *
-   *  @see PropertyMgr
-   *  @see PropertyMgr::declareProperty
-   *
-   *  @param name the property name
-   *  @param property the property itself,
-   *  @param doc      the documentation string
-   *  @return the actual property objects
-   */
-  template <class T>
-  Property* declareProperty( const std::string& name, T& property,
-			     const std::string& doc = "none") const {
-	return m_PropertyMgr->declareProperty(name, property, doc);
-  }
-
-  // ==========================================================================
-  /** Declare a property
-   *
-   *
-   *  @code
-   *
-   *  MyAlg ( const std::string& name ,
-   *          ISvcLocator*       pSvc )
-   *     : Algorithm ( name , pSvc )
-   *     , m_property1   ( ... )
-   *   {
-   *     // declare the property
-   *     declareProperty(m_property1);
-   *   }
-   *  @endcode
-   *
-   *  @see PropertyMgr
-   *  @see PropertyMgr::declareProperty
-   *
-   *  @param property the property itself,
-   *  @return pointer to the property object passed as argument
-   */
-  Property& declareProperty(Property &property) override {
-    return m_PropertyMgr->declareProperty(property);
-  }
-
  private:
 
   std::string m_name;	          ///< Auditor's name for identification
 
   mutable SmartIF<ISvcLocator> m_pSvcLocator;   ///< Pointer to service locator service
-  SmartIF<PropertyMgr> m_PropertyMgr;   ///< For management of properties
   int          m_outputLevel;   ///< Auditor output level
   bool         m_isEnabled;     ///< Auditor is enabled flag
   bool         m_isInitialized; ///< Auditor has been initialized flag

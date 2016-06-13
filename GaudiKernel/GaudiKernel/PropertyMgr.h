@@ -14,6 +14,7 @@
 // ============================================================================
 #include "GaudiKernel/Property.h"
 #include "GaudiKernel/IProperty.h"
+#include "GaudiKernel/INamedInterface.h"
 #include "GaudiKernel/DataObjectHandleProperty.h"
 
 // ============================================================================
@@ -25,20 +26,21 @@ template< class T> class ToolHandleArray;
 template< class T> class ServiceHandleArray;
 template< class T> class DataObjectHandle;
 
-/** @class PropertyMgr PropertyMgr.h GaudiKernel/PropertyMgr.h
- *
+/**
  *  Property manager helper class. This class is used by algorithms and services
  *  for helping to manage its own set of properties. It implements the IProperty
  *  interface.
  *
  *  @author Paul Maley
  *  @author David Quarrie
+ *  @author Marco Clemencic
  */
-class GAUDI_API PropertyMgr : public implements<IProperty>
+class GAUDI_API PropertyMgr : public virtual IProperty,
+                              public virtual INamedInterface
 {
 public:
-  /// constructor from the interface
-  PropertyMgr ( IInterface* iface = nullptr );
+  // copy constructor
+  PropertyMgr ()  = default;
   // copy constructor
   PropertyMgr ( const PropertyMgr& )  = delete;
   // assignment operator
@@ -53,7 +55,7 @@ public:
     TYPE&                    value,
     const std::string&       doc = "none" ) ;
   /// Declare a property (specialization)
-  inline Property& declareProperty(Property& prop) override;
+  inline Property& declareProperty(Property& prop);
   /// Declare a property (specialization)
   template <class TYPE>
   Property* declareProperty
@@ -119,6 +121,51 @@ public:
    *  @see IProperty
    */
   StatusCode setProperty( const std::string& n, const std::string& v) override;
+  /** set the property form the value
+   *
+   *  @code
+   *
+   *  std::vector<double> data = ... ;
+   *  setProperty( "Data" , data ) ;
+   *
+   *  std::map<std::string,double> cuts = ... ;
+   *  setProperty( "Cuts" , cuts ) ;
+   *
+   *  std::map<std::string,std::string> dict = ... ;
+   *  setProperty( "Dictionary" , dict ) ;
+   *
+   *  @endcode
+   *
+   *  Note: the interface IProperty allows setting of the properties either
+   *        directly from other properties or from strings only
+   *
+   *  This is very convenient in resetting of the default
+   *  properties in the derived classes.
+   *  E.g. without this method one needs to convert
+   *  everything into strings to use IProperty::setProperty
+   *
+   *  @code
+   *
+   *    setProperty ( "OutputLevel" , "1"    ) ;
+   *    setProperty ( "Enable"      , "True" ) ;
+   *    setProperty ( "ErrorMax"    , "10"   ) ;
+   *
+   *  @endcode
+   *
+   *  For simple cases it is more or less ok, but for complicated properties
+   *  it is just ugly..
+   *
+   *  @param name      name of the property
+   *  @param value     value of the property
+   *  @see Gaudi::Utils::setProperty
+   *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
+   *  @date 2007-05-13
+   */
+  template <class TYPE>
+  StatusCode setProperty
+  ( const std::string& name  ,
+    const TYPE&        value )
+  { return Gaudi::Utils::setProperty(this, name, value); }
   // ==========================================================================
   /** get the property
    *  @see IProperty
@@ -144,9 +191,6 @@ public:
    *  @see IProperty
    */
   bool hasProperty(const std::string& name) const override;
-  // ==========================================================================
-  // IInterface implementation
-  StatusCode queryInterface(const InterfaceID& iid, void** pinterface) override;
   // ==========================================================================
 protected:
 
@@ -176,8 +220,6 @@ private:
   RemoteProperties       m_remoteProperties;  // Remote properties
   /// Properties to be deleted
   std::vector<std::unique_ptr<Property>> m_todelete ;  // properties to be deleted
-  /// Interface hub reference (ApplicationMgr)
-  IInterface*            m_pOuter  ;  // Interface hub reference
 };
 // ============================================================================
 /// Declare a property (templated)

@@ -46,8 +46,7 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
     m_name(name),
     m_version(version),
     m_index(0), // incremented by AlgResourcePool
-    m_pSvcLocator(pSvcLocator),
-    m_propertyMgr( new PropertyMgr() )
+    m_pSvcLocator(pSvcLocator)
 {
 
   // Declare common Algorithm properties with their defaults
@@ -975,33 +974,6 @@ StatusCode Algorithm::createSubAlgorithm(const std::string& type,
   return sc;
 }
 
-// IProperty implementation
-// Delegate to the Property manager
-StatusCode Algorithm::setProperty(const Property& p) {
-  return m_propertyMgr->setProperty(p);
-}
-StatusCode Algorithm::setProperty(const std::string& s) {
-  return m_propertyMgr->setProperty(s);
-}
-StatusCode Algorithm::setProperty(const std::string& n, const std::string& v) {
-  return m_propertyMgr->setProperty(n,v);
-}
-StatusCode Algorithm::getProperty(Property* p) const {
-  return m_propertyMgr->getProperty(p);
-}
-const Property& Algorithm::getProperty( const std::string& name) const{
-  return m_propertyMgr->getProperty(name);
-}
-StatusCode Algorithm::getProperty(const std::string& n, std::string& v ) const {
-  return m_propertyMgr->getProperty(n,v);
-}
-const std::vector<Property*>& Algorithm::getProperties( ) const {
-  return m_propertyMgr->getProperties();
-}
-bool Algorithm::hasProperty(const std::string& name) const {
-  return m_propertyMgr->hasProperty(name);
-}
-
 void Algorithm::initToolHandles() const{
 
   IAlgTool* tool(0);
@@ -1012,7 +984,7 @@ void Algorithm::initToolHandles() const{
                 << " not used: not registering any of its Tools" << endmsg;
     } else {
       if (UNLIKELY(msgLevel(MSG::DEBUG)))
-        debug() << "Registering all Tools in ToolHandleArray " 
+        debug() << "Registering all Tools in ToolHandleArray "
                 << thArr->propertyName() << endmsg;
       // Iterate over its tools:
       for( auto toolHandle : thArr->getBaseArray() ) {
@@ -1060,7 +1032,7 @@ void Algorithm::initToolHandles() const{
       }
     }
   }
-    
+
   for(auto th : m_toolHandles){
     tool = th->get();
     if(tool){

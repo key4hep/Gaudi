@@ -46,11 +46,16 @@ class IJobOptionsSvc;
 class ApplicationMgr : public CommonMessaging<implements<IAppMgrUI,
                                                          IEventProcessor,
                                                          IService,
-                                                         IStateful> > {
+                                                         IStateful,
+                                                         INamedInterface,
+                                                         IProperty>>,
+                       public PropertyMgr {
   typedef CommonMessaging<implements<IAppMgrUI,
                                      IEventProcessor,
                                      IService,
-                                     IStateful> > base_class;
+                                     IStateful,
+                                     INamedInterface,
+                                     IProperty>> base_class;
 public:
   typedef std::list<std::pair<IService*,int> >  ListSvc;
   typedef std::vector<std::string> VectorName;
@@ -196,8 +201,7 @@ protected:
 
   // data members
   mutable SmartIF<ISvcLocator> m_svcLocator; ///< Reference to its own service locator (must be instantiated prior to any service!)
-  SmartIF<DLLClassManager>    m_classManager;       ///< Reference to the class manager
-  SmartIF<PropertyMgr> m_propertyMgr;        ///< Reference to Property Manager
+  SmartIF<DLLClassManager>     m_classManager;       ///< Reference to the class manager
 
   IntegerProperty     m_SIGo;               ///< For SI's "Go" command via callback
   IntegerProperty     m_SIExit;             ///< For SI's "Exit" command via callback

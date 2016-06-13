@@ -325,40 +325,6 @@ SmartIF<ISvcLocator>& Service::serviceLocator() const {
   return m_svcLocator;
 }
 
-// IProperty implementation
-// Delegate to the Property manager
-StatusCode Service::setProperty(const Property& p) {
-  return m_propertyMgr->setProperty(p);
-}
-
-StatusCode Service::setProperty(const std::string& s) {
-  return m_propertyMgr->setProperty(s);
-}
-
-StatusCode Service::setProperty(const std::string& n, const std::string& v) {
-  return m_propertyMgr->setProperty(n,v);
-}
-
-StatusCode Service::getProperty(Property* p) const {
-  return m_propertyMgr->getProperty(p);
-}
-
-const Property& Service::getProperty(const std::string& n) const {
-  return m_propertyMgr->getProperty(n);
-}
-
-StatusCode Service::getProperty(const std::string& n, std::string& v ) const {
-  return m_propertyMgr->getProperty(n,v);
-}
-
-const std::vector<Property*>& Service::getProperties() const {
-  return m_propertyMgr->getProperties();
-}
-
-bool Service::hasProperty(const std::string& name) const {
-  return m_propertyMgr->hasProperty(name);
-}
-
 // Use the job options service to set declared properties
 StatusCode Service::setProperties() {
   const bool CREATEIF(true);
@@ -385,8 +351,7 @@ StatusCode Service::setProperties() {
 // Standard Constructor
 Service::Service(std::string name, ISvcLocator* svcloc) :
   m_name( std::move(name) ),
-  m_svcLocator(  svcloc ),
-  m_propertyMgr(  new PropertyMgr() )
+  m_svcLocator(  svcloc )
 {
   // Declare common Service properties with their defaults
   if ( (name != "MessageSvc") && msgSvc() )  {

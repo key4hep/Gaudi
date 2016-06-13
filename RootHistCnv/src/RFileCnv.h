@@ -52,7 +52,7 @@ namespace RootHistCnv {
   protected:
 
     TFile *rfile;            ///< Pointer to ROOT file
-    std::string m_compLevel; ///< Compression setting
+    StringProperty m_compLevel{"GlobalCompression", ""}; ///< Compression setting
 
   };
 }    // namespace RootHistCnv

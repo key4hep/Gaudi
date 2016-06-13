@@ -16,6 +16,7 @@
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/Property.h"
 #include "GaudiKernel/GaudiHandle.h"
+#include "GaudiKernel/PropertyMgr.h"
 // ============================================================================
 // Boost
 // ============================================================================
@@ -110,6 +111,10 @@ bool Property::useUpdateHandler ()
 std::ostream&
 Property::fillStream ( std::ostream& stream ) const
 { return stream << " '" <<name() << "':" << toString() ; }
+
+void Property::declareTo(PropertyMgr* owner) {
+  owner->declareProperty(*this);
+}
 // ============================================================================
 /*  simple function which check the existence of the property with
  *  the given name.
@@ -520,8 +525,8 @@ StatusCode Gaudi::Utils::setProperty
 {
   if ( !component ) { return StatusCode::FAILURE ; }
   SmartIF<IProperty> property ( component ) ;
-  return property ? setProperty ( property , name , value , doc ) 
-                  : StatusCode::FAILURE ; 
+  return property ? setProperty ( property , name , value , doc )
+                  : StatusCode::FAILURE ;
 }
 // ============================================================================
 /*  the full specialization of the

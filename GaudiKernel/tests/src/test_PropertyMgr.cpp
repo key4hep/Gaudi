@@ -5,13 +5,22 @@
 #include "GaudiKernel/PropertyMgr.h"
 #include "GaudiKernel/GaudiException.h"
 
+namespace {
+  const std::string emptyName{};
+  /// Helper to allow instantiation of PropertyMgr.
+  struct AnonymousPropertyMgr: public implements<IProperty, INamedInterface>,
+                               public PropertyMgr {
+    const std::string& name() const override { return emptyName; }
+  };
+}
+
 BOOST_AUTO_TEST_CASE( setters_and_getters )
 {
   StringProperty p1{"v1"};
   StringProperty p2{"v2"};
   StringProperty p3{"v3"};
   {
-    PropertyMgr mgr{nullptr};
+    AnonymousPropertyMgr mgr;
     mgr.declareProperty("p1", p1);
     mgr.declareProperty("p2", p2);
 

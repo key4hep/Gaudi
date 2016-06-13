@@ -27,12 +27,20 @@ RootHistCnv::RFileCnv::RFileCnv( ISvcLocator* svc )
 : RDirectoryCnv ( svc, classID() )
 { }
 
+namespace {
+  const std::string emptyName{};
+  /// Helper to allow instantiation of PropertyMgr.
+  struct AnonymousPropertyMgr: public implements<IProperty, INamedInterface>,
+                               public PropertyMgr {
+    const std::string& name() const override { return emptyName; }
+  };
+}
 //------------------------------------------------------------------------------
 StatusCode RootHistCnv::RFileCnv::initialize()
 {
   // Set compression level property ...
-  std::unique_ptr<PropertyMgr> pmgr ( new PropertyMgr() );
-  pmgr->declareProperty( "GlobalCompression", m_compLevel );
+  std::unique_ptr<PropertyMgr> pmgr ( new AnonymousPropertyMgr() );
+  pmgr->declareProperty(m_compLevel);
   ISvcLocator * svcLoc = Gaudi::svcLocator();
   auto jobSvc = svcLoc->service<IJobOptionsSvc>("JobOptionsSvc");
   const StatusCode sc = ( jobSvc &&
@@ -111,9 +119,10 @@ StatusCode RootHistCnv::RFileCnv::createObj( IOpaqueAddress* pAddress,
 
   } else if ( mode[0] == 'N' ) {
 
+    const auto& compLevel = m_compLevel.value();
     log << MSG::INFO << "opening Root file \"" << fname << "\" for writing";
-    if ( !m_compLevel.empty() )
-    { log << ", CompressionLevel='" << m_compLevel << "'"; }
+    if ( !compLevel.empty() )
+    { log << ", CompressionLevel='" << compLevel << "'"; }
     log << endmsg;
 
     rfile = TFile::Open( fname.c_str(), "RECREATE", "Gaudi Trees" );
@@ -122,9 +131,9 @@ StatusCode RootHistCnv::RFileCnv::createObj( IOpaqueAddress* pAddress,
           << endmsg;
       return StatusCode::FAILURE;
     }
-    if ( !m_compLevel.empty() )
+    if ( !compLevel.empty() )
     {
-      const RootCompressionSettings settings(m_compLevel);
+      const RootCompressionSettings settings(compLevel);
       rfile->SetCompressionSettings(settings.level());
     }
 

@@ -27,29 +27,18 @@ namespace gp = Gaudi::Parsers;
 JobOptionsSvc::JobOptionsSvc(const std::string& name,ISvcLocator* svc):
   base_class(name,svc)
 {
-  m_pmgr.addRef(); // make sure the refCount doesn't go to zero too soon...
   std::string tmp ;
   tmp = System::getEnv ( "JOBOPTSEARCHPATH" ) ;
   if ( !tmp.empty() && ("UNKNOWN" != tmp) ) { m_dir_search_path = tmp ; }
   tmp = System::getEnv ( "JOBOPTSDUMPFILE"  ) ;
   if ( !tmp.empty() && ("UNKNOWN" != tmp) ) { m_dump = tmp ; }
 
-  m_pmgr.declareProperty( "TYPE"       , m_source_type   ) ;
-  m_pmgr.declareProperty( "PATH"       , m_source_path   ) ;
-  m_pmgr.declareProperty( "SEARCHPATH" , m_dir_search_path ) ;
-  m_pmgr.declareProperty( "DUMPFILE"   , m_dump          ) ;
-  m_pmgr.declareProperty( "PYTHONACTION" , m_pythonAction  ) ;
-  m_pmgr.declareProperty( "PYTHONPARAMS" , m_pythonParams  ) ;
-}
-// ============================================================================
-StatusCode JobOptionsSvc::setProperty( const Property &p )
-{
-  return m_pmgr.setProperty( p );
-}
-// ============================================================================
-StatusCode JobOptionsSvc::getProperty( Property *p ) const
-{
-  return m_pmgr.getProperty( p );
+  declareProperty( "TYPE"       , m_source_type   ) ;
+  declareProperty( "PATH"       , m_source_path   ) ;
+  declareProperty( "SEARCHPATH" , m_dir_search_path ) ;
+  declareProperty( "DUMPFILE"   , m_dump          ) ;
+  declareProperty( "PYTHONACTION" , m_pythonAction  ) ;
+  declareProperty( "PYTHONPARAMS" , m_pythonParams  ) ;
 }
 // ============================================================================
 StatusCode JobOptionsSvc::initialize()
@@ -106,7 +95,7 @@ StatusCode JobOptionsSvc::setMyProperties( const std::string& client,
     StatusCode sc = myInt->setProperty ( *cur ) ;
     if ( sc.isFailure() )
     {
-      error() 
+      error()
         << "Unable to set the property '" << cur->name() << "'"
         <<                        " of '" << client         << "'. "
         << "Check option and algorithm names, type and bounds."

@@ -74,7 +74,8 @@ class ToolHandleInfo;
 class GAUDI_API Algorithm: public CommonMessaging<implements<IAlgorithm,
                                                              IDataHandleHolder,
                                                              IProperty,
-                                                             IStateful>> {
+                                                             IStateful>>,
+                           public PropertyMgr {
 public:
 #ifndef __REFLEX__
   typedef Gaudi::PluginService::Factory<IAlgorithm*,
@@ -364,25 +365,6 @@ public:
   /// List of sub-algorithms. Returns a pointer to a vector of (sub) Algorithms
   std::vector<Algorithm*>* subAlgorithms() ;
 
-  /// Implementation of IProperty::setProperty
-  StatusCode setProperty( const Property& p ) override;
-  /// Implementation of IProperty::setProperty
-  StatusCode setProperty( const std::string& s ) override;
-  /// Implementation of IProperty::setProperty
-  StatusCode setProperty( const std::string& n, const std::string& v) override;
-  /// Implementation of IProperty::getProperty
-  StatusCode getProperty(Property* p) const override;
-  /// Implementation of IProperty::getProperty
-  const Property& getProperty( const std::string& name) const override;
-  /// Implementation of IProperty::getProperty
-  StatusCode getProperty( const std::string& n, std::string& v ) const override;
-  /// Implementation of IProperty::getProperties
-  const std::vector<Property*>& getProperties( ) const override;
-  /// Implementation of IProperty::hasProperty
-  bool hasProperty(const std::string& name) const override;
-
-  inline PropertyMgr * getPropertyMgr() { return m_propertyMgr; }
-
   /** Set the algorithm's properties.
    *  This method requests the job options service
    *  to set the values of any declared properties.
@@ -391,82 +373,11 @@ public:
    *  called by a concrete algorithm.
    */
   StatusCode setProperties();
-  // ==========================================================================
-  /** Declare the named property
-   *
-   *
-   *  @code
-   *
-   *  MyAlg ( const std::string& name ,
-   *          ISvcLocator*       pSvc )
-   *     : Algorithm ( name , pSvc )
-   *     , m_property1   ( ... )
-   *     , m_property2   ( ... )
-   *   {
-   *     // declare the property
-   *     declareProperty( "Property1" , m_property1 , "Doc for property #1" ) ;
-   *
-   *     // declare the property and attach the handler to it
-   *     declareProperty( "Property2" , m_property2 , "Doc for property #2" )
-   *        -> declareUpdateHandler( &MyAlg::handler_2 ) ;
-   *
-   *   }
-   *  @endcode
-   *
-   *  @see PropertyMgr
-   *  @see PropertyMgr::declareProperty
-   *
-   *  @param name the property name
-   *  @param property the property itself,
-   *  @param doc      the documentation string
-   *  @return the actual property objects
-   */
-  template <class T>
-  Property* declareProperty
-  ( const std::string& name              ,
-    T&                 property          ,
-    const std::string& doc      = "none" ) const
-  {
-    return m_propertyMgr->declareProperty(name, property, doc);
-  }
-  // ==========================================================================
-  /** Declare a property
-   *
-   *
-   *  @code
-   *
-   *  MyAlg ( const std::string& name ,
-   *          ISvcLocator*       pSvc )
-   *     : Algorithm ( name , pSvc )
-   *     , m_property1   ( ... )
-   *   {
-   *     // declare the property
-   *     declareProperty(m_property1);
-   *   }
-   *  @endcode
-   *
-   *  @see PropertyMgr
-   *  @see PropertyMgr::declareProperty
-   *
-   *  @param property the property itself,
-   *  @return pointer to the property object passed as argument
-   */
-  Property& declareProperty(Property &property) override {
-    return m_propertyMgr->declareProperty(property);
-  }
-  // ==========================================================================
-  /// Declare remote named properties
-  Property* declareRemoteProperty
-  ( const std::string& name       ,
-    IProperty*         rsvc       ,
-    const std::string& rname = "" ) const
-  {
-    return m_propertyMgr -> declareRemoteProperty ( name , rsvc , rname );
-  }
 
   // ==========================================================================
+  using PropertyMgr::declareProperty;
+
   // declare Tools to the Algorithms
-
   template <class T>
     Property* declareProperty(const std::string& name,
 			      ToolHandle<T>& hndl,
@@ -475,8 +386,7 @@ public:
     Algorithm* a = const_cast<Algorithm*>(this);
     a->declareTool(hndl).ignore();
 
-    return m_propertyMgr->declareProperty(name, hndl, doc);
-
+    return PropertyMgr::declareProperty(name, hndl, doc);
   }
 
   // ==========================================================================
@@ -487,7 +397,7 @@ public:
                               ToolHandleArray<T>& hndlArr,
                               const std::string& doc = "none" ) const {
     m_toolHandleArrays.push_back( &hndlArr );
-    return m_propertyMgr->declareProperty(name, hndlArr, doc);
+    return PropertyMgr::declareProperty(name, hndlArr, doc);
   }
 
   // ==========================================================================
@@ -542,53 +452,6 @@ public:
 
   // ==========================================================================
 public:
-  // ==========================================================================
-  /** set the property form the value
-   *
-   *  @code
-   *
-   *  std::vector<double> data = ... ;
-   *
-   *  setProperty( "Data" , data ) ;
-   *
-   *  std::map<std::string,double> cuts = ... ;
-   *  setProperty( "Cuts" , cuts ) ;
-   *
-   *  std::map<std::string,std::string> dict = ... ;
-   *  setProperty( "Dictionary" , dict ) ;
-   *
-   *  @endcode
-   *
-   *  Note: the interface IProperty allows setting of the properties either
-   *        directly from other properties or from strings only
-   *
-   *  This is very convenient in resetting of the default
-   *  properties in the derived classes.
-   *  E.g. without this method one needs to convert
-   *  everything into strings to use IProperty::setProperty
-   *
-   *  @code
-   *
-   *    setProperty ( "OutputLevel" , "1"    ) ;
-   *    setProperty ( "Enable"      , "True" ) ;
-   *    setProperty ( "ErrorMax"    , "10"   ) ;
-   *
-   *  @endcode
-   *
-   *  For simple cases it is more or less ok, but for complicated properties
-   *  it is just ugly..
-   *
-   *  @param name      name of the property
-   *  @param value     value of the property
-   *  @see Gaudi::Utils::setProperty
-   *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
-   *  @date 2007-05-13
-   */
-  template <class TYPE>
-  StatusCode setProperty
-  ( const std::string& name  ,
-    const TYPE&        value )
-  { return Gaudi::Utils::setProperty ( m_propertyMgr.get() , name , value ) ; }
   // ==========================================================================
 
   // For concurrency
@@ -736,8 +599,6 @@ private:
   std::string               m_monitorSvcName; ///< Name to use for Monitor Service
   SmartIF<ISvcLocator>  m_pSvcLocator;      ///< Pointer to service locator service
  protected:
-  SmartIF<PropertyMgr> m_propertyMgr;      ///< For management of properties
-
   /// Hook for for derived classes to provide a custom visitor for data handles.
   std::unique_ptr<IDataHandleVisitor> m_updateDataHandles;
 
