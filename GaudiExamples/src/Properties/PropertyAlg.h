@@ -28,35 +28,35 @@ private:
   /// These data members are used in the execution of this algorithm
   /// They are set in the initialization phase by the job options service
 
-  int         m_int;
-  long long   m_int64;
-  unsigned long long   m_uint64;
-  double      m_double;
-  std::string m_string;
-  bool        m_bool;
+  IntegerProperty           m_int     {this, "Int", 100};
+  LongLongProperty          m_int64   {this, "Int64", 100};
+  UnsignedLongLongProperty  m_uint64  {this, "UInt64", 100};
+  DoubleProperty            m_double  {this, "Double", 100.};
+  StringProperty            m_string  {this, "String", "hundred"};
+  BooleanProperty           m_bool    {this, "Bool", true};
 
-  std::vector<int>         m_intarray;
-  std::vector<long long>   m_int64array;
-  std::vector<unsigned long long>   m_uint64array;
-  std::vector<double>      m_doublearray;
-  std::vector<std::string> m_stringarray;
-  std::vector<bool>        m_boolarray;
-  std::vector<double>      m_emptyarray;
-  std::vector<double>      u_doublearrayunits;
-  std::vector<double>      u_doublearray;
+  IntegerArrayProperty          m_intarray             {this, "IntArray"};
+  LongLongArrayProperty         m_int64array           {this, "Int64Array"};
+  UnsignedLongLongArrayProperty m_uint64array          {this, "UInt64Array"};
+  DoubleArrayProperty           m_doublearray          {this, "DoubleArray"};
+  StringArrayProperty           m_stringarray          {this, "StringArray"};
+  BooleanArrayProperty          m_boolarray            {this, "BoolArray"};
+  DoubleArrayProperty           m_emptyarray           {this, "EmptyArray"};
+  DoubleArrayProperty           u_doublearrayunits     {this, "DoubleArrayWithUnits"};
+  DoubleArrayProperty           u_doublearray          {this, "DoubleArrayWithoutUnits"};
 
-  std::vector<std::pair<int,int> > u_intpairarray;
-  std::vector<std::pair<double,double> > u_doublepairarray;
+  SimpleProperty<std::vector<std::pair<int,int>>>       u_intpairarray    {this, "IntPairArray"};
+  SimpleProperty<std::vector<std::pair<double,double>>> u_doublepairarray {this, "DoublePairArray"};
 
-  IntegerProperty  p_int;
-  DoubleProperty   p_double;
-  StringProperty   p_string;
-  BooleanProperty  p_bool;
+  IntegerProperty  p_int     {this, "PInt", 100, "An integer property"};
+  DoubleProperty   p_double  {this, "PDouble", 100.};
+  StringProperty   p_string  {this, "PString", "hundred"};
+  BooleanProperty  p_bool    {this, "PBool", false};
 
-  IntegerArrayProperty  p_intarray;
-  DoubleArrayProperty   p_doublearray;
-  StringArrayProperty   p_stringarray;
-  BooleanArrayProperty  p_boolarray;
+  IntegerArrayProperty  p_intarray     {this, "PIntArray"};
+  DoubleArrayProperty   p_doublearray  {this, "PDoubleArray"};
+  StringArrayProperty   p_stringarray  {this, "PStringArray"};
+  BooleanArrayProperty  p_boolarray    {this, "PBoolArray"};
 };
 
 #endif    // GAUDIEXAMPLE_PROPERTYALG_H

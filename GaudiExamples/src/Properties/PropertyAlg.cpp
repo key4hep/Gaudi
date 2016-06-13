@@ -20,7 +20,7 @@
 //------------------------------------------------------------------------------
 void PropertyAlg::readHandler(Property& p)
 {
-  info() << "Read handler called for property: " << p << endmsg ;
+  info() << "Read handler called for property: " << p << endmsg;
 }
 
 // Update Handler
@@ -38,42 +38,6 @@ void PropertyAlg::updateHandler(Property& p)
 PropertyAlg::PropertyAlg(const std::string& name, ISvcLocator* ploc)
            : Algorithm(name, ploc) {
 //------------------------------------------------------------------------------
-  // Declare the algorithm's properties
-
-  declareProperty( "Int",    m_int    = 100);
-  declareProperty( "Int64",  m_int64  = 100);
-  declareProperty( "UInt64", m_uint64 = 100);
-  declareProperty( "Double", m_double = 100.);
-  declareProperty( "String", m_string = "hundred");
-  declareProperty( "Bool",   m_bool   = true);
-
-  declareProperty( "IntArray",    m_intarray );
-  declareProperty( "Int64Array",  m_int64array );
-  declareProperty( "UInt64Array", m_uint64array );
-  declareProperty( "DoubleArray", m_doublearray);
-  declareProperty( "StringArray", m_stringarray);
-  declareProperty( "BoolArray",   m_boolarray);
-  declareProperty( "EmptyArray",  m_emptyarray);
-
-  declareProperty( "IntPairArray", u_intpairarray);
-  declareProperty( "DoublePairArray", u_doublepairarray);
-
-  // Declare the rest of the Algorithm properties
-
-  declareProperty( "PInt",    p_int    = 100);
-  declareProperty( "PDouble", p_double = 100.);
-  declareProperty( "PString", p_string = "hundred");
-  declareProperty( "PBool",   p_bool   = false);
-
-  declareProperty( "PIntArray",    p_intarray );
-  declareProperty( "PDoubleArray", p_doublearray);
-  declareProperty( "PStringArray", p_stringarray);
-  declareProperty( "PBoolArray",   p_boolarray);
-
-  // Units testing
-  declareProperty( "DoubleArrayWithUnits",    u_doublearrayunits);
-  declareProperty( "DoubleArrayWithoutUnits", u_doublearray);
-
   // Associate read and update handlers
 
   p_double.declareUpdateHandler( &PropertyAlg::updateHandler, this );
@@ -82,21 +46,21 @@ PropertyAlg::PropertyAlg(const std::string& name, ISvcLocator* ploc)
 
   info() << "Before Initialization......" << endmsg;
 
-  info() << "Int    = " << m_int << endmsg;
-  info() << "Int64  = " << m_int64 << endmsg;
-  info() << "UInt64 = " << m_uint64 << endmsg;
-  info() << "Double = " << m_double << endmsg;
-  info() << "String = " << m_string << endmsg;
-  info() << "Bool   = " << m_bool << endmsg;
-  info() << "IntArray    = " << m_intarray << endmsg;
-  info() << "Int64Array  = " << m_int64array << endmsg;
-  info() << "UInt64Array = " << m_uint64array << endmsg;
-  info() << "DoubleArray = " << m_doublearray << endmsg;
-  info() << "StringArray = " << m_stringarray << endmsg;
-  info() << "BoolArray   = " << m_boolarray << endmsg;
-  info() << "EmptyArray  = " << m_emptyarray << endmsg;
-  info() << "IntPairArray  = " << u_intpairarray << endmsg;
-  info() << "DoublePairArray  = " << u_doublepairarray << endmsg;
+  info() << "Int    = " << m_int.value() << endmsg;
+  info() << "Int64  = " << m_int64.value() << endmsg;
+  info() << "UInt64 = " << m_uint64.value() << endmsg;
+  info() << "Double = " << m_double.value() << endmsg;
+  info() << "String = " << m_string.value() << endmsg;
+  info() << "Bool   = " << m_bool.value() << endmsg;
+  info() << "IntArray    = " << m_intarray.value() << endmsg;
+  info() << "Int64Array  = " << m_int64array.value() << endmsg;
+  info() << "UInt64Array = " << m_uint64array.value() << endmsg;
+  info() << "DoubleArray = " << m_doublearray.value() << endmsg;
+  info() << "StringArray = " << m_stringarray.value() << endmsg;
+  info() << "BoolArray   = " << m_boolarray.value() << endmsg;
+  info() << "EmptyArray  = " << m_emptyarray.value() << endmsg;
+  info() << "IntPairArray  = " << u_intpairarray.value() << endmsg;
+  info() << "DoublePairArray  = " << u_doublepairarray.value() << endmsg;
 
   info() << "PInt    = " << p_int << endmsg;
   std::ostringstream os; os << p_double; // avoid read handler from printing _during_ info()!
@@ -119,21 +83,21 @@ StatusCode PropertyAlg::initialize() {
   //
   info() << "After Initialization having read the JobOptions file..." << endmsg;
 
-  info() << "Int    = " << m_int << endmsg;
-  info() << "Int64  = " << m_int64 << endmsg;
-  info() << "UInt64 = " << m_uint64 << endmsg;
-  info() << "Double = " << m_double << endmsg;
-  info() << "String = " << m_string << endmsg;
-  info() << "Bool   = " << m_bool << endmsg;
-  info() << "IntArray    = " << m_intarray << endmsg;
-  info() << "Int64Array  = " << m_int64array << endmsg;
-  info() << "UInt64Array = " << m_uint64array << endmsg;
-  info() << "DoubleArray = " << m_doublearray << endmsg;
-  info() << "StringArray = " << m_stringarray << endmsg;
-  info() << "BoolArray   = " << m_boolarray << endmsg;
-  info() << "EmptyArray  = " << m_emptyarray << endmsg;
-  info() << "IntPairArray  = " << u_intpairarray << endmsg;
-  info() << "DoublePairArray  = " << u_doublepairarray << endmsg;
+  info() << "Int    = " << m_int.value() << endmsg;
+  info() << "Int64  = " << m_int64.value() << endmsg;
+  info() << "UInt64 = " << m_uint64.value() << endmsg;
+  info() << "Double = " << m_double.value() << endmsg;
+  info() << "String = " << m_string.value() << endmsg;
+  info() << "Bool   = " << m_bool.value() << endmsg;
+  info() << "IntArray    = " << m_intarray.value() << endmsg;
+  info() << "Int64Array  = " << m_int64array.value() << endmsg;
+  info() << "UInt64Array = " << m_uint64array.value() << endmsg;
+  info() << "DoubleArray = " << m_doublearray.value() << endmsg;
+  info() << "StringArray = " << m_stringarray.value() << endmsg;
+  info() << "BoolArray   = " << m_boolarray.value() << endmsg;
+  info() << "EmptyArray  = " << m_emptyarray.value() << endmsg;
+  info() << "IntPairArray  = " << u_intpairarray.value() << endmsg;
+  info() << "DoublePairArray  = " << u_doublepairarray.value() << endmsg;
 
   info() << "PInt    = " << p_int << endmsg;
   std::ostringstream os; os << p_double; // avoid read handler from printing _during_ info()!
@@ -147,17 +111,19 @@ StatusCode PropertyAlg::initialize() {
   //
   // Checking units
   //
-  for (unsigned int i = 0; i < u_doublearrayunits.size(); i++ ) {
+  auto& doublearrayunits = u_doublearrayunits.value();
+  auto& doublearray = u_doublearray.value();
+  for (unsigned int i = 0; i < doublearrayunits.size(); i++ ) {
 
-    if( u_doublearrayunits[i] != u_doublearray[i] ) {
+    if( doublearrayunits[i] != doublearray[i] ) {
       error()
           << format
         ("DoubleArrayWithUnits[%d] = %g and should be %g",
-         i, u_doublearrayunits[i], u_doublearray[i] ) << endmsg;
+         i, doublearrayunits[i], doublearray[i] ) << endmsg;
     }
     else {
       info() << format("DoubleArrayWithUnits[%d] = %g",
-                                   i, u_doublearrayunits[i] ) << endmsg;
+                       i, doublearrayunits[i] ) << endmsg;
     }
   }
 
@@ -275,7 +241,7 @@ StatusCode PropertyAlg::initialize() {
   if( jopts->addPropertyToCatalogue( name(), sap ).isSuccess() ) {
     info() << "Changed property DoubleArray in catalogue" << endmsg;
     jopts->setMyProperties(name(),this).ignore();
-    info() << "DoubleArray = " << m_doublearray << endmsg;
+    info() << "DoubleArray = " << m_doublearray.value() << endmsg;
   } else {
     error()  << "Unable to change property in catalogue" << endmsg;
   }
