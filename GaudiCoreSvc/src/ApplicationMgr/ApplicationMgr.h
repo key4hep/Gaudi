@@ -13,6 +13,7 @@
 #include "GaudiKernel/Service.h"
 #include "GaudiKernel/CommonMessaging.h"
 #include "GaudiKernel/PropertyMgr.h"
+#include "GaudiKernel/AppReturnCode.h"
 
 // STL include files
 #include <list>
@@ -50,10 +51,6 @@ class ApplicationMgr : public CommonMessaging<implements<IAppMgrUI,
                                                          INamedInterface,
                                                          IProperty>>,
                        public PropertyMgr {
-public:
-  typedef std::list<std::pair<IService*,int> >  ListSvc;
-  typedef std::vector<std::string> VectorName;
-
 public:
 
   // default creator
@@ -197,21 +194,20 @@ protected:
   mutable SmartIF<ISvcLocator> m_svcLocator; ///< Reference to its own service locator (must be instantiated prior to any service!)
   SmartIF<DLLClassManager>     m_classManager;       ///< Reference to the class manager
 
-  IntegerProperty     m_SIGo;               ///< For SI's "Go" command via callback
-  IntegerProperty     m_SIExit;             ///< For SI's "Exit" command via callback
-  StringArrayProperty m_topAlgNameList;     ///< List of top level algorithms names
-  StringArrayProperty m_outStreamNameList;  ///< List of output stream names
-  StringProperty      m_outStreamType;      ///< Output stream type (obsolete?)
-  StringProperty      m_messageSvcType;     ///< MessageSvc type
-  StringProperty      m_jobOptionsSvcType;  ///< JobOptionsSvc type
+  IntegerProperty     m_SIGo               {this, "Go", 0, "For SI's \"Go\" command via callback"};
+  IntegerProperty     m_SIExit             {this, "Exit", 0, "For SI's \"Exit\" command via callback"};
+  StringArrayProperty m_topAlgNameList     {this, "TopAlg", {}, "List of top level algorithms names"};
+  StringArrayProperty m_outStreamNameList  {this, "OutStream", {}, "List of output stream names"};
+  StringProperty      m_outStreamType      {this, "OutStreamType", "OutputStream", "[deprecated] Output stream type"};
+  StringProperty      m_messageSvcType     {this, "MessageSvcType", "MessageSvc", "MessageSvc type"};
+  StringProperty      m_jobOptionsSvcType  {this, "JobOptionsSvcType", "JobOptionsSvc", "JobOptionsSvc type"};
 
   std::string         m_name = "ApplicationMgr";               ///< Name
   Gaudi::StateMachine::State m_state = Gaudi::StateMachine::OFFLINE;              ///< Internal State
   Gaudi::StateMachine::State m_targetState = Gaudi::StateMachine::OFFLINE;              ///< Internal State
 
-  VectorName          m_defServices;        ///< Vector default services names
-  VectorName          m_svcMapping;         ///< Default mapping of services
-  VectorName          m_svcOptMapping;      ///< Default mapping of services
+  StringArrayProperty       m_svcMapping    {this, "SvcMapping", {}, "Default mapping of services"};
+  StringArrayProperty       m_svcOptMapping {this, "SvcOptMapping", {}, "Default mapping of optional services"};
 
   SmartIF<IMessageSvc>      m_messageSvc;         ///< Reference to the message service
   SmartIF<IRunable>         m_runable;            ///< Reference to the runable object
@@ -222,55 +218,59 @@ protected:
   // The public ApplicationMgr properties
   //
 
-  int                  m_evtMax;            ///< Number of events to be processed
-  StringArrayProperty  m_extSvcNameList;    ///< List of external services names
-  BooleanProperty      m_extSvcCreates;     ///< LHCb or ATLAS defn of "ExtSvc"
+  IntegerProperty      m_evtMax                {this, "EvtMax", -1, "Number of events to be processed (-1 means all events)"};
+  StringArrayProperty  m_extSvcNameList        {this, "ExtSvc", {}, "List of external services names"};
+  BooleanProperty      m_extSvcCreates         {this, "ExtSvcCreates", true, "LHCb (default) or ATLAS definition of \"ExtSvc\""};
 
   /// List of external services names for which we want a copy per evt thread
-  StringArrayProperty  m_multiThreadSvcNameList;
-  int                  m_noOfEvtThreads;    ///< no of multiThreadSvc copies
+  StringArrayProperty  m_multiThreadSvcNameList {this, "MultiThreadExtSvc"};
+  IntegerProperty      m_noOfEvtThreads         {this, "NoOfThreads", 0, "MultiThreadSvc copies"};
 
-  StringArrayProperty  m_dllNameList;       ///< List of DDL's names
-  std::string          m_jobOptionsType;    ///< Source type (e.g. dbase, file...)
-  std::string          m_jobOptionsPath;    ///< The "file" to look for properties
-  std::string          m_jobOptionsPreAction;  ///< additional command to run on config
-  std::string          m_jobOptionsPostAction;  ///< additional command to run on config
-  std::string          m_runableType;       ///< Runable type
-  std::string          m_eventLoopMgr;      ///< Processing manager type
-  std::string          m_evtsel;            ///< Event selection
-  std::string          m_histPersName;      ///< CGL: Name of the Hist Pers Svc
-  int                  m_outputLevel;       ///< Message output level
-  std::string          m_appName;           ///< The name of the application
-  std::string          m_appVersion;        ///< The version of the application
-  bool                 m_actHistory;        ///< Activate HistorySvc
-  bool                 m_codeCheck;         ///< Activate StatusCode checking
-  IntegerProperty      m_pluginDebugLevel;  ///< Debug level for the plugin system
+  StringArrayProperty  m_dllNameList           {this, "Dlls", {}, "List of DDL's names"};
+  StringProperty       m_jobOptionsType        {this, "JobOptionsType", "FILE", "Source type (e.g. dbase, file...)"};
+  StringProperty       m_jobOptionsPath        {this, "JobOptionsPath", {}, "The \"file\" to look for properties"};
+  StringProperty       m_jobOptionsPreAction   {this, "JobOptionsPostAction", {}, "additional command to run on config"};
+  StringProperty       m_jobOptionsPostAction  {this, "JobOptionsPreAction", {}, "additional command to run on config"};
+  StringProperty       m_runableType           {this, "Runable", "AppMgrRunable", "Runable type"};
+  StringProperty       m_eventLoopMgr          {this, "EventLoop", "EventLoopMgr", "Processing manager type"};
+  StringProperty       m_evtsel                {this, "EvtSel", {}, "Event selection"};
+  StringProperty       m_histPersName          {this, "HistogramPersistency", "NONE", "Name of the Hist Pers Svc"};
+  IntegerProperty      m_outputLevel           {this, "OutputLevel", MSG::INFO, "Message output level"};
+  StringProperty       m_appName               {this, "AppName", "ApplicationMgr", "The name of the application"};
+  StringProperty       m_appVersion            {this, "AppVersion", {}, "The version of the application"};
+  BooleanProperty      m_actHistory            {this, "ActivateHistory", false, "Activate HistorySvc"};
+  BooleanProperty      m_codeCheck             {this, "StatusCodeCheck", false, "Activate StatusCode checking"};
+  IntegerProperty      m_pluginDebugLevel      {this, "PluginDebugLevel", 0, "Debug level for the plugin system"};
 
-  StringArrayProperty  m_createSvcNameList;
+  StringArrayProperty  m_createSvcNameList    {this, "CreateSvc", {}, "List of extra services to be created"};
 
   /// Defaults for auditors.
-  BooleanProperty      m_auditTools;
-  BooleanProperty      m_auditSvcs;
-  BooleanProperty      m_auditAlgs;
+  BooleanProperty      m_auditTools  {this, "AuditTools", false};
+  BooleanProperty      m_auditSvcs   {this, "AuditServices", false};
+  BooleanProperty      m_auditAlgs   {this, "AuditAlgorithms", false};
 
-  std::map<std::string,std::string> m_environment; ///< Environment variables to set
+  SimpleProperty<std::map<std::string, std::string>>
+    m_environment {this, "Environment", {}, "Environment variables to set"};
 
-  /// For ServiceMgr initialization loop checking
-  BooleanProperty      m_loopCheck;
+  BooleanProperty      m_loopCheck  {this, "InitializationLoopCheck", true,
+    "For ServiceMgr initialization loop checking"};
 
-  /// Property to enable/disable the "stop on signal" service (enabled by default).
+  /// Property to enable/disable the "stop on signal" service.
   /// @see Gaudi::Utils::StopSignalHandler
-  BooleanProperty      m_stopOnSignal;
+  BooleanProperty      m_stopOnSignal {this, "StopOnSignal", false,
+    "Flag to enable/disable the signal handler that schedule a stop of the event loop"};
 
-  /// Property to enable/disable the monitoring and reporting of stalled events (enabled by default).
+  /// Property to enable/disable the monitoring and reporting of stalled events.
   /// @see StalledEventMonitor
-  BooleanProperty      m_stalledEventMonitoring;
+  BooleanProperty      m_stalledEventMonitoring {this, "StalledEventMonitoring", false,
+    "Flag to enable/disable the monitoring and reporting of stalled events"};
 
-  // Flag to activate the printout of properties
-  bool                 m_propertiesPrint ; ///< flag to activate the printout of properties
+  BooleanProperty      m_propertiesPrint {this, "PropertiesPrint", false,
+    "Flag to activate the printout of properties"};
 
   /// Property to record the error conditions occurring during the running.
-  IntegerProperty      m_returnCode;
+  IntegerProperty      m_returnCode {this, "ReturnCode", Gaudi::ReturnCode::Success,
+    "Return code of the application. Set internally in case of error conditions."};
 
   // For concurrency
   bool m_useHiveAlgorithmManager;

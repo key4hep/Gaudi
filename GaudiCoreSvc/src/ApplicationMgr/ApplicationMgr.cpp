@@ -21,8 +21,6 @@
 #include "GaudiKernel/Time.h"
 #include "GaudiKernel/System.h"
 
-#include "GaudiKernel/AppReturnCode.h"
-
 #include "GaudiCoreSvcVersion.h"
 
 using System::getEnv;
@@ -32,9 +30,6 @@ using System::isEnvSet;
 #include <cassert>
 #include <ctime>
 #include <limits>
-
-static const char* s_eventloop = "EventLoop";
-static const char* s_runable   = "Runable";
 
 #define ON_DEBUG if (UNLIKELY(m_outputLevel <= MSG::DEBUG))
 #define ON_VERBOSE if (UNLIKELY(m_outputLevel <= MSG::VERBOSE))
@@ -67,72 +62,7 @@ ApplicationMgr::ApplicationMgr(IInterface*)
   m_managers[IAlgorithm::interfaceID().id()] = algMgr;
   //  m_managers[IAlgorithm::interfaceID().id()] = new HiveAlgorithmManager(this);
 
-  declareProperty("Go",            m_SIGo = 0 );
-  declareProperty("Exit",          m_SIExit = 0 );
-  declareProperty("Dlls",          m_dllNameList );
-  declareProperty("ExtSvc",        m_extSvcNameList );
-  declareProperty("CreateSvc",     m_createSvcNameList );
-  declareProperty("ExtSvcCreates", m_extSvcCreates=true );
-
-  declareProperty("SvcMapping",    m_svcMapping );
-  declareProperty("SvcOptMapping", m_svcOptMapping );
-
-  declareProperty("TopAlg",        m_topAlgNameList );
-  declareProperty("OutStream",     m_outStreamNameList );
-  declareProperty("OutStreamType", m_outStreamType = "OutputStream" );
-  declareProperty("MessageSvcType",m_messageSvcType= "MessageSvc" );
-  declareProperty("JobOptionsSvcType",
-                                 m_jobOptionsSvcType = "JobOptionsSvc" );
-  declareProperty( s_runable,      m_runableType   = "AppMgrRunable");
-  declareProperty( s_eventloop,    m_eventLoopMgr  = "EventLoopMgr");
-
-  declareProperty("HistogramPersistency", m_histPersName="NONE");
-
-  // Declare Job Options Service properties and set default
-  declareProperty("JobOptionsType", m_jobOptionsType = "FILE");
-  declareProperty("JobOptionsPath", m_jobOptionsPath = "");
-  declareProperty("JobOptionsPostAction", m_jobOptionsPostAction = "");
-  declareProperty("JobOptionsPreAction", m_jobOptionsPreAction = "");
-  declareProperty("EvtMax",         m_evtMax = -1);
-  declareProperty("EvtSel",         m_evtsel );
-  declareProperty("OutputLevel",    m_outputLevel = MSG::INFO);
-
-  declareProperty("MultiThreadExtSvc", m_multiThreadSvcNameList);
-  declareProperty("NoOfThreads",    m_noOfEvtThreads = 0);
-  declareProperty("AppName",        m_appName = "ApplicationMgr");
-  declareProperty("AppVersion",     m_appVersion = "");
-
-  declareProperty("AuditTools",      m_auditTools = false);
-  declareProperty("AuditServices",   m_auditSvcs = false);
-  declareProperty("AuditAlgorithms", m_auditAlgs = false);
-
-  declareProperty("ActivateHistory", m_actHistory = false);
-  declareProperty("StatusCodeCheck", m_codeCheck = false);
-
-  declareProperty("Environment",    m_environment);
-
-  // ServiceMgr Initialization loop checking
-  declareProperty("InitializationLoopCheck", m_loopCheck = true)
-    ->declareUpdateHandler(&ApplicationMgr::initLoopCheckHndlr, this);
-  svcManager()->setLoopCheckEnabled(m_loopCheck);
-
-  // Flag to activate the printout of properties
-  declareProperty
-    ( "PropertiesPrint",
-      m_propertiesPrint = false,
-      "Flag to activate the printout of properties" );
-
-  declareProperty("PluginDebugLevel", m_pluginDebugLevel = 0 );
-
-  declareProperty("StopOnSignal", m_stopOnSignal = false,
-      "Flag to enable/disable the signal handler that schedule a stop of the event loop");
-
-  declareProperty("StalledEventMonitoring", m_stalledEventMonitoring = false,
-      "Flag to enable/disable the monitoring and reporting of stalled events");
-
-  declareProperty("ReturnCode", m_returnCode = Gaudi::ReturnCode::Success,
-      "Return code of the application. Set internally in case of error conditions.");
-
+  // This property is not hosted in the ApplicationMgr instance
   declareProperty("AlgTypeAliases", algMgr->typeAliases(),
       "Aliases of algorithm types, to replace an algorithm type for every instance");
 
@@ -143,8 +73,12 @@ ApplicationMgr::ApplicationMgr(IInterface*)
   m_outStreamNameList.declareUpdateHandler(&ApplicationMgr::evtLoopPropertyHandler, this);
   m_outStreamType.declareUpdateHandler(&ApplicationMgr::evtLoopPropertyHandler, this);
   m_pluginDebugLevel.declareUpdateHandler(&ApplicationMgr::pluginDebugPropertyHandler, this);
+  // ServiceMgr Initialization loop checking
+  m_loopCheck.declareUpdateHandler(&ApplicationMgr::initLoopCheckHndlr, this);
+  svcManager()->setLoopCheckEnabled(m_loopCheck);
 
-  m_svcMapping.insert( std::end(m_svcMapping),
+  auto& svcMapping = const_cast<std::vector<std::string>&>(m_svcMapping.value());
+  svcMapping.insert( std::end(svcMapping),
                      { "EvtDataSvc/EventDataSvc",
                        "DetDataSvc/DetectorDataSvc",
                        "HistogramSvc/HistogramDataSvc",
@@ -224,7 +158,7 @@ StatusCode ApplicationMgr::i_startup() {
     return sc;
   }
 
-  if ( m_jobOptionsPreAction != "") {
+  if ( !m_jobOptionsPreAction.value().empty() ) {
     sc = jobOptsIProp->setProperty( StringProperty("PYTHONPARAMS", m_jobOptionsPreAction) );
     if( !sc.isSuccess() ) {
       fatal() << "Error setting JobOptionsPreAction option in JobOptionsSvc" << endmsg;
@@ -232,7 +166,7 @@ StatusCode ApplicationMgr::i_startup() {
     }
   }
 
-  if ( m_jobOptionsPostAction != "") {
+  if ( !m_jobOptionsPostAction.value().empty() ) {
     sc = jobOptsIProp->setProperty( StringProperty("PYTHONACTION", m_jobOptionsPostAction) );
     if( !sc.isSuccess() ) {
       fatal() << "Error setting JobOptionsPostAction option in JobOptionsSvc" << endmsg;
@@ -240,7 +174,7 @@ StatusCode ApplicationMgr::i_startup() {
     }
   }
 
-  if ( !m_jobOptionsPath.empty() ) {         // The command line takes precedence
+  if ( !m_jobOptionsPath.value().empty() ) {         // The command line takes precedence
     sc = jobOptsIProp->setProperty( StringProperty("PATH", m_jobOptionsPath) );
     if( !sc.isSuccess() )   {
       fatal() << "Error setting PATH option in JobOptionsSvc" << endmsg;
@@ -341,7 +275,7 @@ StatusCode ApplicationMgr::configure() {
   }
 
   // Check current outputLevel to eventually inform the MessageSvc
-  if( m_outputLevel != MSG::NIL && !m_appName.empty() ) {
+  if( m_outputLevel != MSG::NIL && !m_appName.value().empty() ) {
     assert(m_messageSvc);
     m_messageSvc->setOutputLevel( name(), m_outputLevel );
     // Print a welcome message
@@ -351,10 +285,10 @@ StatusCode ApplicationMgr::configure() {
         << "=================================================================="
         << std::endl
         << "                                "
-        << "                   Welcome to " << m_appName;
+        << "                   Welcome to " << m_appName.value();
 
-    if( "" != m_appVersion ) {
-      log << MSG::ALWAYS << " version " << m_appVersion;
+    if( !m_appVersion.value().empty() ) {
+      log << MSG::ALWAYS << " version " << m_appVersion.value();
     }
     else {
       log << MSG::ALWAYS
@@ -403,7 +337,7 @@ StatusCode ApplicationMgr::configure() {
   }
 
   // set the requested environment variables
-  for ( auto& var : m_environment ) {
+  for ( auto& var : m_environment.value() ) {
     const std::string &name  = var.first;
     const std::string &value = var.second;
     std::string old = System::getEnv(name.c_str());
@@ -416,14 +350,14 @@ StatusCode ApplicationMgr::configure() {
   }
 
   //Declare Service Types
-  for(auto& j : m_svcMapping)  {
+  for(auto& j : m_svcMapping.value())  {
     Gaudi::Utils::TypeNameString itm(j);
     if ( declareMultiSvcType(itm.name(), itm.type()).isFailure() )  {
       log << MSG::ERROR << "configure: declaring svc type:'" << j << "' failed." << endmsg;
       return StatusCode::FAILURE;
     }
   }
-  for(auto& j : m_svcOptMapping)  {
+  for(auto& j : m_svcOptMapping.value())  {
     Gaudi::Utils::TypeNameString itm(j);
     if ( declareMultiSvcType(itm.name(), itm.type()).isFailure() )  {
       log << MSG::ERROR << "configure: declaring svc type:'" << j << "' failed." << endmsg;
@@ -472,18 +406,18 @@ StatusCode ApplicationMgr::configure() {
   }
 
   if (m_noOfEvtThreads == 0) {
-    m_runable = m_svcLocator->service(m_runableType);
+    m_runable = m_svcLocator->service(m_runableType.value());
     if( !m_runable )  {
       log << MSG::FATAL
-          << "Error retrieving Runable:" << m_runableType
-          << "\n Check option ApplicationMgr." << s_runable << endmsg;
+          << "Error retrieving Runable: " << m_runableType.value()
+          << "\n Check option ApplicationMgr." << m_runableType.name() << endmsg;
       return sc;
     }
     m_processingMgr = m_svcLocator->service(evtloop_item);
     if( !m_processingMgr )  {
       log << MSG::FATAL
-          << "Error retrieving Processing manager:" << m_eventLoopMgr
-          << "\n Check option ApplicationMgr." << s_eventloop
+          << "Error retrieving Processing manager: " << m_eventLoopMgr.value()
+          << "\n Check option ApplicationMgr." << m_eventLoopMgr.name()
           << "\n No events will be processed." << endmsg;
       return sc;
     }
@@ -622,8 +556,8 @@ StatusCode ApplicationMgr::nextEvent(int maxevt)    {
   }
   if (!m_processingMgr)   {
     MsgStream log( m_messageSvc, name() );
-    log << MSG::FATAL << "No event processing manager specified. Check option:"
-        << s_eventloop << endmsg;
+    log << MSG::FATAL << "No event processing manager specified. Check option: "
+        << m_eventLoopMgr.name() << endmsg;
     return StatusCode::FAILURE;
   }
   return m_processingMgr->nextEvent(maxevt);
@@ -860,7 +794,7 @@ StatusCode ApplicationMgr::run() {
       }
     } else {
       log << MSG::FATAL << "Application has no runable object. Check option:"
-          << s_runable << endmsg;
+          << m_runableType.name() << endmsg;
     }
   }
   if (sc.isSuccess()) { // try to close cleanly
