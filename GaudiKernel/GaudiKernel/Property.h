@@ -34,6 +34,7 @@ GAUDI_API std::ostream& operator<<(std::ostream& stream, const Property& prop);
  * @author Paul Maley
  * @author CTDay
  * @author Vanya BELYAEV ibelyaev@physics.syr.edu
+ * @author Marco Clemencic
  */
 class GAUDI_API Property
 {
@@ -137,10 +138,12 @@ class PropertyWithValue : public Property
 {
 public:
   // ==========================================================================
+  /// Hosted type
+  using ValueType = TYPE;
   /// the type-traits for properties
-  typedef Gaudi::Utils::PropertyTypeTraits<TYPE>         Traits ;
+  using Traits = Gaudi::Utils::PropertyTypeTraits<ValueType>;
   /// the actual storage type
-  typedef typename Traits::PVal                          PVal   ;
+  using PVal = typename Traits::PVal;
   // ==========================================================================
 protected:
   // ==========================================================================
@@ -148,49 +151,124 @@ protected:
   inline PropertyWithValue
   ( std::string        name  ,
     PVal               value ,
-    const bool         owner ) ;
+    const bool         owner )
+    : Property(typeid(TYPE), std::move(name))
+    , m_value(value)
+    , m_own(owner)
+  {}
   /// copy constructor (don't let the compiler generate a buggy one)
-  inline PropertyWithValue ( const PropertyWithValue& rhs ) ;
+  inline PropertyWithValue ( const PropertyWithValue& right )
+    : Property( right         )
+    , m_value ( Traits::copy ( right.value() , right.m_own ) )
+    , m_own   ( right.m_own   )
+  {}
   /// copy constructor from any other type
   template <class OTHER>
-  inline PropertyWithValue ( const PropertyWithValue<OTHER>& right ) ;
+  inline PropertyWithValue ( const PropertyWithValue<OTHER>& right )
+    : Property( right         )
+    , m_value ( Traits::copy ( right.value() , right.m_own ) )
+    , m_own   ( right.m_own   )
+  {}
   /// virtual destructor
-  ~PropertyWithValue() override ;
+  ~PropertyWithValue() override {
+    Traits::dele ( m_value , m_own ) ;
+  }
   /// assignment operator
-  PropertyWithValue& operator=( const TYPE& value ) ;
+  PropertyWithValue& operator=( const ValueType& value ) {
+    if ( !setValue ( value ) )
+      throw std::out_of_range( "Value not verified" ) ;
+    return *this ;
+  }
   // assignment operator (don't let the compiler generate a buggy one)
-  PropertyWithValue& operator=( const PropertyWithValue& rhs ) ;
+  PropertyWithValue& operator=( const PropertyWithValue& right ) {
+    // assign the base class
+    Property::operator=( right ) ;
+    // assign the value
+    PropertyWithValue<ValueType>::operator=( right.value() ) ;
+    return *this ;
+  }
   // assignment operator
   template <class OTHER>
-  PropertyWithValue& operator=( const PropertyWithValue<OTHER>& right ) ;
+  PropertyWithValue& operator=( const PropertyWithValue<OTHER>& right )
+  {
+    // assign the base class
+    Property::operator=( right ) ;
+    // assign the value
+    PropertyWithValue<ValueType>::operator=( right.value() ) ;
+    return *this ;
+  }
   // ==========================================================================
 public:
   // ==========================================================================
   /// implicit conversion to the type
-  operator const TYPE&      () const { return value() ;}
+  operator const ValueType&      () const { return value() ;}
+  operator ValueType&      ()  { return value() ;}
   /// explicit conversion
-  inline const TYPE& value() const ;
-  inline TYPE& value();
+  inline const ValueType& value() const { useReadHandler() ; return *m_value ; }
+  inline ValueType& value() { useReadHandler() ; return *m_value ; }
+
+  /// @{
+  /// optional helpers to easy access containers and strings
+  template<class T=const ValueType>
+  inline decltype(std::declval<T>().size()) size() const { return value().size(); }
+  template<class T=const ValueType>
+  inline decltype(std::declval<T>().empty()) empty() const { return value().empty(); }
+  template<class T=const ValueType>
+  inline decltype(std::declval<T>().begin()) begin() const { return value().begin(); }
+  template<class T=const ValueType>
+  inline decltype(std::declval<T>().end()) end() const { return value().end(); }
+  template<class T=ValueType>
+  inline decltype(std::declval<T>().begin()) begin() { return value().begin(); }
+  template<class T=ValueType>
+  inline decltype(std::declval<T>().end()) end() { return value().end(); }
+  template<class T=const ValueType>
+  inline decltype(std::declval<T>()[typename T::key_type{}])
+    operator[] (const typename T::key_type & key) const { return value()[key]; }
+  template<class T=ValueType>
+  inline decltype(std::declval<T>()[typename T::key_type{}])
+    operator[] (const typename T::key_type & key) { return value()[key]; }
+  // @}
   // ==========================================================================
 public:
   // ==========================================================================
   /// NB: abstract : to be implemented when verifier is available
-  virtual bool setValue ( const TYPE&     value  )  = 0  ;
+  virtual bool setValue ( const ValueType&     value  )  = 0  ;
   /// get the value from another property
-  bool assign   ( const Property& source )       override;
+  bool assign   ( const Property& source )       override {
+    // 1) Is the property of "the same" type?
+    const PropertyWithValue<TYPE>* p =
+      dynamic_cast<const PropertyWithValue<TYPE>*>       ( &source ) ;
+    if ( p ) { return setValue ( p->value() ) ; }       // RETURN
+    // 2) Else use the string representation
+    return this->fromString( source.toString() ).isSuccess() ;
+  }
   /// set value for another property
-  bool load     (       Property& dest   ) const override;
+  bool load     (       Property& dest   ) const override {
+    // delegate to the 'opposite' method ;
+    return dest.assign( *this ) ;
+  }
   /// string -> value
-  StatusCode fromString ( const std::string& s )  override;
+  StatusCode fromString ( const std::string& source )  override {
+    ValueType tmp ;
+    StatusCode sc = Gaudi::Parsers::parse ( tmp , source ) ;
+    if ( sc.isFailure() ) { return sc ; }
+    return setValue ( tmp ) ? StatusCode::SUCCESS : StatusCode::FAILURE ;
+  }
   /// value  -> string
-  std::string  toString   () const  override;
+  std::string  toString   () const  override {
+    useReadHandler();
+    return Gaudi::Utils::toString( *m_value ) ;
+  }
   /// value  -> stream
-  void  toStream (std::ostream& out) const  override;
+  void  toStream (std::ostream& out) const  override {
+    useReadHandler();
+    Gaudi::Utils::toStream( *m_value, out ) ;
+  }
   // ==========================================================================
 protected:
   // ==========================================================================
   /// set the value
-  inline void  i_set ( const TYPE& value ) {
+  inline void  i_set ( const ValueType& value ) {
     Traits::assign(*m_value, value);
   }
   /// get the value
@@ -206,120 +284,6 @@ private:
   bool  m_own  ;                                   //      owner of the storage
   // ==========================================================================
 };
-
-// ============================================================================
-/// the constructor with property name and value
-// ============================================================================
-template <class TYPE>
-inline
-PropertyWithValue<TYPE>::PropertyWithValue
-( std::string  name  ,
-  PVal         value ,
-  const bool   own   )
-  : Property ( typeid( TYPE ) , std::move(name) )
-  , m_value  ( value )
-  , m_own    ( own   )
-{}
-// ============================================================================
-// copy constructor
-// ============================================================================
-template <class TYPE>
-inline PropertyWithValue<TYPE>::PropertyWithValue
-( const PropertyWithValue& right )
-  : Property( right         )
-  , m_value ( right.m_value )
-  , m_own   ( right.m_own   )
-{
-  m_value = Traits::copy ( right.value() , m_own ) ;
-}
-// ============================================================================
-// "copy" constructor form any other type
-// ============================================================================
-template <class TYPE>
-template <class OTHER>
-inline PropertyWithValue<TYPE>::PropertyWithValue
-( const PropertyWithValue<OTHER>& right )
-  : Property( right         )
-  , m_value ( right.m_value )
-  , m_own   ( right.m_own   )
-{
-  m_value = Traits::copy ( right.value() , m_own ) ;
-}
-// ============================================================================
-/// virtual destructor
-// ============================================================================
-template <class TYPE>
-inline PropertyWithValue<TYPE>::~PropertyWithValue()
-{
-  Traits::dele ( m_value , m_own ) ;
-}
-// ============================================================================
-/// assignment operator
-// ============================================================================
-template <class TYPE>
-inline PropertyWithValue<TYPE>&
-PropertyWithValue<TYPE>::operator=( const TYPE& value )
-{
-  if ( !setValue ( value ) )
-  { throw std::out_of_range( "Value not verified" ) ; }
-  return *this ;
-}
-// ============================================================================
-/// implementation of Property::assign
-// ============================================================================
-template <class TYPE>
-inline bool
-PropertyWithValue<TYPE>::assign ( const Property& source )
-{
-  // 1) Is the property of "the same" type?
-  const PropertyWithValue<TYPE>* p =
-    dynamic_cast<const PropertyWithValue<TYPE>*>       ( &source ) ;
-  if ( p ) { return setValue ( p->value() ) ; }       // RETURN
-  // 2) Else use the string representation
-  return this->fromString( source.toString() ).isSuccess() ;
-}
-// ============================================================================
-/// implementation of Property::load
-// ============================================================================
-template <class TYPE>
-inline bool
-PropertyWithValue<TYPE>::load( Property& dest ) const
-{
-  // delegate to the 'opposite' method ;
-  return dest.assign( *this ) ;
-}
-// ============================================================================
-/// Implementation of PropertyWithValue::toString
-// ============================================================================
-template <class TYPE>
-inline std::string
-PropertyWithValue<TYPE>::toString () const
-{
-  useReadHandler();
-  return Gaudi::Utils::toString( *m_value ) ;
-}
-// ============================================================================
-/// Implementation of PropertyWithValue::toStream
-// ============================================================================
-template <class TYPE>
-inline void
-PropertyWithValue<TYPE>::toStream (std::ostream& out) const
-{
-  useReadHandler();
-  Gaudi::Utils::toStream( *m_value, out ) ;
-}
-// ============================================================================
-/// Implementation of PropertyWithValue::fromString
-// ============================================================================
-template <class TYPE>
-inline StatusCode
-PropertyWithValue<TYPE>::fromString ( const std::string& source )
-{
-  TYPE tmp ;
-  StatusCode sc = Gaudi::Parsers::parse ( tmp , source ) ;
-  if ( sc.isFailure() ) { return sc ; }
-  return setValue ( tmp ) ? StatusCode::SUCCESS : StatusCode::FAILURE ;
-}
 // ============================================================================
 /// full specializations for std::string
 // ============================================================================
@@ -334,46 +298,6 @@ PropertyWithValue<std::string>::toString () const
 template <>
 inline bool PropertyWithValue<std::string>::assign ( const Property& source )
 { return this->fromString( source.toString() ).isSuccess() ; }
-// ============================================================================
-
-// ============================================================================
-/// get the access to the storage
-// ============================================================================
-template <class TYPE>
-inline const TYPE&
-PropertyWithValue<TYPE>::value() const
-{ useReadHandler() ; return *m_value ; }
-template <class TYPE>
-inline TYPE&
-PropertyWithValue<TYPE>::value()
-{ useReadHandler() ; return *m_value ; }
-// ============================================================================
-// assignment operator
-// ============================================================================
-template <class TYPE>
-PropertyWithValue<TYPE>& PropertyWithValue<TYPE>::operator=
-( const PropertyWithValue& right )
-{
-  // assign the base class
-  Property::operator=( right ) ;
-  // assign the value
-  PropertyWithValue<TYPE>::operator=( right.value() ) ;
-  return *this ;
-}
-// ============================================================================
-// templated assignment operator
-// ============================================================================
-template <class TYPE>
-template <class OTHER>
-PropertyWithValue<TYPE>& PropertyWithValue<TYPE>::operator=
-( const PropertyWithValue<OTHER>& right )
-{
-  // assign the base class
-  Property::operator=( right ) ;
-  // assign the value
-  PropertyWithValue<TYPE>::operator=( right.value() ) ;
-  return *this ;
-}
 // ============================================================================
 
 // ============================================================================

@@ -156,7 +156,7 @@ StatusCode ApplicationMgr::i_startup() {
     return sc;
   }
 
-  if ( !m_jobOptionsPreAction.value().empty() ) {
+  if ( !m_jobOptionsPreAction.empty() ) {
     sc = jobOptsIProp->setProperty( StringProperty("PYTHONPARAMS", m_jobOptionsPreAction) );
     if( !sc.isSuccess() ) {
       fatal() << "Error setting JobOptionsPreAction option in JobOptionsSvc" << endmsg;
@@ -164,7 +164,7 @@ StatusCode ApplicationMgr::i_startup() {
     }
   }
 
-  if ( !m_jobOptionsPostAction.value().empty() ) {
+  if ( !m_jobOptionsPostAction.empty() ) {
     sc = jobOptsIProp->setProperty( StringProperty("PYTHONACTION", m_jobOptionsPostAction) );
     if( !sc.isSuccess() ) {
       fatal() << "Error setting JobOptionsPostAction option in JobOptionsSvc" << endmsg;
@@ -172,7 +172,7 @@ StatusCode ApplicationMgr::i_startup() {
     }
   }
 
-  if ( !m_jobOptionsPath.value().empty() ) {         // The command line takes precedence
+  if ( !m_jobOptionsPath.empty() ) {         // The command line takes precedence
     sc = jobOptsIProp->setProperty( StringProperty("PATH", m_jobOptionsPath) );
     if( !sc.isSuccess() )   {
       fatal() << "Error setting PATH option in JobOptionsSvc" << endmsg;
@@ -273,7 +273,7 @@ StatusCode ApplicationMgr::configure() {
   }
 
   // Check current outputLevel to eventually inform the MessageSvc
-  if( m_outputLevel != MSG::NIL && !m_appName.value().empty() ) {
+  if( m_outputLevel != MSG::NIL && !m_appName.empty() ) {
     assert(m_messageSvc);
     m_messageSvc->setOutputLevel( name(), m_outputLevel );
     // Print a welcome message
@@ -285,7 +285,7 @@ StatusCode ApplicationMgr::configure() {
         << "                                "
         << "                   Welcome to " << m_appName.value();
 
-    if( !m_appVersion.value().empty() ) {
+    if( !m_appVersion.empty() ) {
       log << MSG::ALWAYS << " version " << m_appVersion.value();
     }
     else {
@@ -335,7 +335,7 @@ StatusCode ApplicationMgr::configure() {
   }
 
   // set the requested environment variables
-  for ( auto& var : m_environment.value() ) {
+  for (auto& var : m_environment) {
     const std::string &name  = var.first;
     const std::string &value = var.second;
     std::string old = System::getEnv(name.c_str());
@@ -348,14 +348,14 @@ StatusCode ApplicationMgr::configure() {
   }
 
   //Declare Service Types
-  for(auto& j : m_svcMapping.value())  {
+  for(auto& j : m_svcMapping)  {
     Gaudi::Utils::TypeNameString itm(j);
     if ( declareMultiSvcType(itm.name(), itm.type()).isFailure() )  {
       log << MSG::ERROR << "configure: declaring svc type:'" << j << "' failed." << endmsg;
       return StatusCode::FAILURE;
     }
   }
-  for(auto& j : m_svcOptMapping.value())  {
+  for(auto& j : m_svcOptMapping)  {
     Gaudi::Utils::TypeNameString itm(j);
     if ( declareMultiSvcType(itm.name(), itm.type()).isFailure() )  {
       log << MSG::ERROR << "configure: declaring svc type:'" << j << "' failed." << endmsg;
@@ -396,7 +396,7 @@ StatusCode ApplicationMgr::configure() {
   //--------------------------------------------------------------------------
   // Retrieve intrinsic services. If needed configure them.
   //--------------------------------------------------------------------------
-  Gaudi::Utils::TypeNameString evtloop_item(m_eventLoopMgr);
+  const Gaudi::Utils::TypeNameString evtloop_item(m_eventLoopMgr);
   sc = addMultiSvc(evtloop_item, ServiceManager::DEFAULT_SVC_PRIORITY*10);
   if( !sc.isSuccess() )  {
     log << MSG::FATAL << "Error adding :" << m_eventLoopMgr << endmsg;
@@ -404,7 +404,7 @@ StatusCode ApplicationMgr::configure() {
   }
 
   if (m_noOfEvtThreads == 0) {
-    m_runable = m_svcLocator->service(m_runableType.value());
+    m_runable = m_svcLocator->service(m_runableType);
     if( !m_runable )  {
       log << MSG::FATAL
           << "Error retrieving Runable: " << m_runableType.value()
@@ -1150,7 +1150,7 @@ StatusCode ApplicationMgr::decodeDllNameList() {
   // -------------------------------------------------------------------------
   std::vector<std::string> newList;
   std::map<std::string,unsigned int> dllInList, duplicateList;
-  {for ( const auto it : m_dllNameList.value()) {
+  {for (const auto it : m_dllNameList) {
     if ( 0 == dllInList[it] ) {
       newList.push_back(it);        // first instance of this module
     } else { ++duplicateList[it]; } // module listed multiple times

@@ -2,6 +2,7 @@
 #define GAUDIKERNEL_TYPENAMESTRING_H
 #include <string>
 #include <ostream>
+#include "GaudiKernel/Property.h"
 
 namespace Gaudi {
   namespace Utils {
@@ -16,9 +17,12 @@ namespace Gaudi {
         m_type = (m_haveType) ? tn.substr( 0, slash_pos ) : deftyp;
       }
     public:
-      TypeNameString(const char tn[]) : TypeNameString( std::string{tn} ) { } 
+      TypeNameString(const char tn[]) : TypeNameString( std::string{tn} ) { }
       TypeNameString(const std::string& tn) { init(tn, tn); }
       TypeNameString(const std::string& tn, const std::string& deftyp) { init(tn, deftyp); m_haveType = true; }
+      TypeNameString(const PropertyWithValue<std::string>& prop):
+        TypeNameString(prop.value()) {}
+
       const std::string& type() const { return m_type; }
       const std::string& name() const { return m_name; }
       bool haveType() const { return m_haveType; }
