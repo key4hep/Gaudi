@@ -77,16 +77,14 @@ ApplicationMgr::ApplicationMgr(IInterface*)
   m_loopCheck.declareUpdateHandler(&ApplicationMgr::initLoopCheckHndlr, this);
   svcManager()->setLoopCheckEnabled(m_loopCheck);
 
-  auto& svcMapping = m_svcMapping.value();
-  svcMapping.insert( std::end(svcMapping),
-                     { "EvtDataSvc/EventDataSvc",
-                       "DetDataSvc/DetectorDataSvc",
-                       "HistogramSvc/HistogramDataSvc",
-                       "HbookCnv::PersSvc/HbookHistSvc",
-                       "RootHistCnv::PersSvc/RootHistSvc",
-                       "EvtPersistencySvc/EventPersistencySvc",
-                       "DetPersistencySvc/DetectorPersistencySvc",
-                       "HistogramPersistencySvc/HistogramPersistencySvc" } );
+  m_svcMapping = { "EvtDataSvc/EventDataSvc",
+                   "DetDataSvc/DetectorDataSvc",
+                   "HistogramSvc/HistogramDataSvc",
+                   "HbookCnv::PersSvc/HbookHistSvc",
+                   "RootHistCnv::PersSvc/RootHistSvc",
+                   "EvtPersistencySvc/EventPersistencySvc",
+                   "DetPersistencySvc/DetectorPersistencySvc",
+                   "HistogramPersistencySvc/HistogramPersistencySvc" };
 }
 
 
