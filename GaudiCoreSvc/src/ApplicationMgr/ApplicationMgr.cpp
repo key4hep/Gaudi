@@ -77,7 +77,7 @@ ApplicationMgr::ApplicationMgr(IInterface*)
   m_loopCheck.declareUpdateHandler(&ApplicationMgr::initLoopCheckHndlr, this);
   svcManager()->setLoopCheckEnabled(m_loopCheck);
 
-  auto& svcMapping = const_cast<std::vector<std::string>&>(m_svcMapping.value());
+  auto& svcMapping = m_svcMapping.value();
   svcMapping.insert( std::end(svcMapping),
                      { "EvtDataSvc/EventDataSvc",
                        "DetDataSvc/DetectorDataSvc",

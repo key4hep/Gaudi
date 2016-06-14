@@ -170,6 +170,7 @@ public:
   operator const TYPE&      () const { return value() ;}
   /// explicit conversion
   inline const TYPE& value() const ;
+  inline TYPE& value();
   // ==========================================================================
 public:
   // ==========================================================================
@@ -341,6 +342,10 @@ inline bool PropertyWithValue<std::string>::assign ( const Property& source )
 template <class TYPE>
 inline const TYPE&
 PropertyWithValue<TYPE>::value() const
+{ useReadHandler() ; return *m_value ; }
+template <class TYPE>
+inline TYPE&
+PropertyWithValue<TYPE>::value()
 { useReadHandler() ; return *m_value ; }
 // ============================================================================
 // assignment operator
