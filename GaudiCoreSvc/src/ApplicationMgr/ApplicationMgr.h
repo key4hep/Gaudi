@@ -50,12 +50,6 @@ class ApplicationMgr : public CommonMessaging<implements<IAppMgrUI,
                                                          INamedInterface,
                                                          IProperty>>,
                        public PropertyMgr {
-  typedef CommonMessaging<implements<IAppMgrUI,
-                                     IEventProcessor,
-                                     IService,
-                                     IStateful,
-                                     INamedInterface,
-                                     IProperty>> base_class;
 public:
   typedef std::list<std::pair<IService*,int> >  ListSvc;
   typedef std::vector<std::string> VectorName;
