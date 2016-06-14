@@ -10,19 +10,26 @@ namespace Gaudi {
     class TypeNameString {
       std::string m_type, m_name;
       bool m_haveType;
-      void init(const std::string& tn, const std::string& deftyp)    {
-        const std::string::size_type slash_pos = tn.find_first_of("/");
-        m_haveType = slash_pos != std::string::npos;
-        m_name = (m_haveType) ? tn.substr( slash_pos + 1) : tn;
-        m_type = (m_haveType) ? tn.substr( 0, slash_pos ) : deftyp;
-      }
     public:
       TypeNameString(const char tn[]) : TypeNameString( std::string{tn} ) { }
-      TypeNameString(const std::string& tn) { init(tn, tn); }
-      TypeNameString(const std::string& tn, const std::string& deftyp) { init(tn, deftyp); m_haveType = true; }
+      TypeNameString(const std::string& tn): m_type{tn} {
+        const auto slash_pos = m_type.find_first_of("/");
+        m_haveType = slash_pos != std::string::npos;
+        if (m_haveType) {
+          m_name = m_type.substr(slash_pos + 1);
+          m_type = m_type.substr(0, slash_pos);
+        }
+        else
+          m_name = m_type;
+      }
+      TypeNameString(const std::string& tn, const std::string& deftyp):
+          TypeNameString(tn) {
+        if (!m_haveType) {
+          m_type = deftyp;
+        }
+      }
       TypeNameString(const PropertyWithValue<std::string>& prop):
         TypeNameString(prop.value()) {}
-
       const std::string& type() const { return m_type; }
       const std::string& name() const { return m_name; }
       bool haveType() const { return m_haveType; }
