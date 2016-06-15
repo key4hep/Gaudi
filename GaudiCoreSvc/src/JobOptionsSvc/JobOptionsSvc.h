@@ -41,6 +41,8 @@ class JobOptionsSvc : public extends<Service,
   /// Remove a property from the JobOptions catalog
   StatusCode removePropertyFromCatalogue( const std::string& client,
       const std::string& name ) override;
+
+  using Service::getProperties;
   /// Get the properties associated to a given client
   const std::vector<const Property*>*
   getProperties( const std::string& client) const override;
