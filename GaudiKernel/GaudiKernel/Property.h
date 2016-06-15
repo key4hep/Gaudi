@@ -314,6 +314,10 @@ template<class TYPE,class VERIFIER>
 class PropertyWithVerifier
   : public PropertyWithValue<TYPE>
 {
+public:
+  using ValueType = typename PropertyWithValue<TYPE>::ValueType;
+  using Traits = typename PropertyWithValue<TYPE>::Traits;
+  using VerifierType = VERIFIER;
 protected:
   // ==========================================================================
   /// the constructor with property name and value
@@ -321,7 +325,7 @@ protected:
   ( std::string                                           name     ,
     typename Gaudi::Utils::PropertyTypeTraits<TYPE>::PVal value    ,
     const bool                                            owner    ,
-    const VERIFIER&                                       verifier )
+    const VerifierType&                                   verifier )
     : PropertyWithValue<TYPE> ( std::move(name) , value , owner )
     , m_verifier ( verifier )
   {}
@@ -330,10 +334,10 @@ protected:
   // ==========================================================================
 public:
   // ==========================================================================
-  inline       VERIFIER& verifier()       { return m_verifier ; }
-  inline const VERIFIER& verifier() const { return m_verifier ; }
+  inline       VerifierType& verifier()       { return m_verifier ; }
+  inline const VerifierType& verifier() const { return m_verifier ; }
   /// update the value of the property/check the verifier
-  bool set( const TYPE& value ) ;
+  bool set( const ValueType& value ) ;
   /// implementation of PropertyWithValue::setValue
   bool setValue( const TYPE& value ) override { return set( value ) ; }
   /// templated assignment
@@ -355,7 +359,7 @@ private:
 private:
   // ==========================================================================
   /// the verifier itself
-  VERIFIER m_verifier ;                                  // the verifier itself
+  VerifierType m_verifier ;                                  // the verifier itself
   // ==========================================================================
 } ;
 // ============================================================================
@@ -363,7 +367,7 @@ private:
 // ============================================================================
 template <class TYPE,class VERIFIER>
 inline bool
-PropertyWithVerifier<TYPE,VERIFIER>::set( const TYPE& value )
+PropertyWithVerifier<TYPE,VERIFIER>::set( const ValueType& value )
 {
   /// use verifier!
   if ( !m_verifier.isValid( &value ) ) { return false ; }
@@ -422,32 +426,32 @@ template <class TYPE,class VERIFIER = BoundedVerifier<TYPE> >
 class SimpleProperty
   : public PropertyWithVerifier<TYPE,VERIFIER>
 {
-protected:
-  // ==========================================================================
-  typedef Gaudi::Utils::PropertyTypeTraits<TYPE>  Traits ;
-  // ==========================================================================
+public:
+  using ValueType = typename PropertyWithVerifier<TYPE,VERIFIER>::ValueType;
+  using Traits = typename PropertyWithVerifier<TYPE,VERIFIER>::Traits;
+  using VerifierType = typename PropertyWithVerifier<TYPE,VERIFIER>::VerifierType;
 public:
   // ==========================================================================
   /// "Almost default" constructor from verifier
   SimpleProperty
-  ( VERIFIER           verifier = VERIFIER() ) ;
+  ( VerifierType       verifier = VerifierType() ) ;
    /// The constructor from the value and verifier (ATLAS needs it!)
   SimpleProperty
-  ( const TYPE&        value                 ,
-    VERIFIER           verifier = VERIFIER() ) ;
+  ( const ValueType&        value                 ,
+    VerifierType       verifier = VerifierType() ) ;
   /// The constructor from the name, value and verifier
   SimpleProperty
   ( std::string        name                  ,
-    const TYPE&        value                 ,
+    const ValueType&        value                 ,
     std::string        doc = ""              ,
-    VERIFIER           verifier = VERIFIER() ) ;
+    VerifierType       verifier = VerifierType() ) ;
   /// The constructor from the name, value and verifier
   SimpleProperty
   ( PropertyMgr*       owner                 ,
     std::string        name                  ,
-    const TYPE&        value = TYPE{}        ,
+    const ValueType&        value = ValueType{}        ,
     std::string        doc = ""              ,
-    VERIFIER           verifier = VERIFIER() ) ;
+    VerifierType       verifier = VerifierType() ) ;
   /// constructor from other property type
   template <class OTHER>
   SimpleProperty ( const PropertyWithValue<OTHER>& right ) ;
@@ -469,7 +473,7 @@ public:
 // ============================================================================
 template <class TYPE,class VERIFIER>
 SimpleProperty<TYPE,VERIFIER>::SimpleProperty
-( VERIFIER           verifier )
+( VerifierType           verifier )
   : PropertyWithVerifier<TYPE,VERIFIER>
 ( "" , Traits::new_() , true , verifier )
 {}
@@ -478,8 +482,8 @@ SimpleProperty<TYPE,VERIFIER>::SimpleProperty
 // ============================================================================
 template <class TYPE,class VERIFIER>
 SimpleProperty<TYPE,VERIFIER>::SimpleProperty
-( const TYPE&        value    ,
-  VERIFIER           verifier )
+( const ValueType&        value    ,
+  VerifierType           verifier )
   : PropertyWithVerifier<TYPE,VERIFIER>
 ( "" , Traits::new_(value) , true , verifier )
 {}
@@ -489,9 +493,9 @@ SimpleProperty<TYPE,VERIFIER>::SimpleProperty
 template <class TYPE,class VERIFIER>
 SimpleProperty<TYPE,VERIFIER>::SimpleProperty
 ( std::string        name     ,
-  const TYPE&        value    ,
+  const ValueType&        value    ,
   std::string        doc      ,
-  VERIFIER           verifier )
+  VerifierType           verifier )
   : PropertyWithVerifier<TYPE,VERIFIER>
 ( std::move(name) , Traits::new_(value) , true , verifier )
 {
@@ -504,9 +508,9 @@ template <class TYPE,class VERIFIER>
 SimpleProperty<TYPE,VERIFIER>::SimpleProperty
 ( PropertyMgr*       owner    ,
   std::string        name     ,
-  const TYPE&        value    ,
+  const ValueType&        value    ,
   std::string        doc      ,
-  VERIFIER           verifier )
+  VerifierType           verifier )
   : SimpleProperty( std::move(name), value, std::move(doc), verifier )
 {
   this->declareTo(owner);
@@ -579,11 +583,15 @@ class SimplePropertyRef :
   public PropertyWithVerifier<TYPE,VERIFIER>
 {
 public:
+  using ValueType = typename PropertyWithVerifier<TYPE,VERIFIER>::ValueType;
+  using Traits = typename PropertyWithVerifier<TYPE,VERIFIER>::Traits;
+  using VerifierType = typename PropertyWithVerifier<TYPE,VERIFIER>::VerifierType;
+public:
   /// Constructor from the name, the value and the verifier
   SimplePropertyRef
   ( std::string        name                  ,
-    TYPE&              value                 ,  ///< NB! non-const reference
-    VERIFIER           verifier = VERIFIER() ) ;
+    ValueType&         value                 ,  ///< NB! non-const reference
+    VerifierType       verifier = VerifierType() ) ;
   /// copy constructor (must be!)
   SimplePropertyRef ( const SimplePropertyRef& right ) ;
   /// virtual Destructor
@@ -605,8 +613,8 @@ private:
 template <class TYPE,class VERIFIER>
 SimplePropertyRef<TYPE,VERIFIER>::SimplePropertyRef
 ( std::string        name     ,
-  TYPE&              value    ,  ///< NB! non-const reference
-  VERIFIER           verifier )
+  ValueType&         value    ,  ///< NB! non-const reference
+  VerifierType       verifier )
   : PropertyWithVerifier<TYPE,VERIFIER> ( std::move(name) , &value , false , verifier )
 {}
 // ============================================================================
