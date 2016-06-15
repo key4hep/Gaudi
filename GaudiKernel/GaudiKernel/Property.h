@@ -207,8 +207,9 @@ public:
   inline const ValueType& value() const { useReadHandler() ; return *m_value ; }
   inline ValueType& value() { useReadHandler() ; return *m_value ; }
 
+  /// @name Helpers for easy use of string and vector properties.
   /// @{
-  /// optional helpers to easy access containers and strings
+  /// They are instantiated only if they are implemented in the wrapped class.
   template<class T=const ValueType>
   inline decltype(std::declval<T>().size()) size() const { return value().size(); }
   template<class T=const ValueType>
@@ -227,7 +228,7 @@ public:
   template<class T=ValueType>
   inline decltype(std::declval<T>()[typename T::key_type{}])
     operator[] (const typename T::key_type & key) { return value()[key]; }
-  // @}
+  /// @}
   // ==========================================================================
 public:
   // ==========================================================================
