@@ -337,18 +337,34 @@ public:
   inline       VerifierType& verifier()       { return m_verifier ; }
   inline const VerifierType& verifier() const { return m_verifier ; }
   /// update the value of the property/check the verifier
-  bool set( const ValueType& value ) ;
+  bool set( const ValueType& value ) {
+    /// use verifier!
+    if ( !m_verifier.isValid( &value ) ) { return false ; }
+    /// update the value
+    this->i_set( value ) ;
+    /// invoke the update handler
+    return this->useUpdateHandler() ;
+  }
   /// implementation of PropertyWithValue::setValue
   bool setValue( const TYPE& value ) override { return set( value ) ; }
   /// templated assignment
   template <class OTHER,class OTHERVERIFIER>
   PropertyWithVerifier& operator=
-  ( const PropertyWithVerifier<OTHER,OTHERVERIFIER>& right ) ;
+  ( const PropertyWithVerifier<OTHER,OTHERVERIFIER>& right ) {
+    PropertyWithValue<TYPE>::operator=(right) ;
+    return *this ;
+  }
   /// templated assignment
   template <class OTHER>
-  PropertyWithVerifier& operator=( const PropertyWithValue<OTHER>& right ) ;
+  PropertyWithVerifier& operator=( const PropertyWithValue<OTHER>& right ) {
+    PropertyWithValue<TYPE>::operator=(right) ;
+    return *this ;
+  }
   /// assignment
-  PropertyWithVerifier& operator=( const TYPE& right ) ;
+  PropertyWithVerifier& operator=( const TYPE& right ) {
+    PropertyWithValue<TYPE>::operator=( right ) ;
+    return *this ;
+  }
   // ==========================================================================
 private:
   // ==========================================================================
@@ -362,55 +378,6 @@ private:
   VerifierType m_verifier ;                                  // the verifier itself
   // ==========================================================================
 } ;
-// ============================================================================
-/// Implementation of PropertyWithVerifier::set
-// ============================================================================
-template <class TYPE,class VERIFIER>
-inline bool
-PropertyWithVerifier<TYPE,VERIFIER>::set( const ValueType& value )
-{
-  /// use verifier!
-  if ( !m_verifier.isValid( &value ) ) { return false ; }
-  /// update the value
-  this->i_set( value ) ;
-  /// invoke the update handler
-  return this->useUpdateHandler() ;
-}
-// ============================================================================
-/// assignment
-// ============================================================================
-template <class TYPE,class VERIFIER>
-inline PropertyWithVerifier<TYPE,VERIFIER>&
-PropertyWithVerifier<TYPE,VERIFIER>::operator=( const TYPE& right )
-{
-  PropertyWithValue<TYPE>::operator=( right ) ;
-  return *this ;
-}
-// ============================================================================
-/// template assignment
-// ============================================================================
-template <class TYPE,class VERIFIER>
-template <class OTHER>
-inline PropertyWithVerifier<TYPE,VERIFIER>&
-PropertyWithVerifier<TYPE,VERIFIER>::operator=( const PropertyWithValue<OTHER>& right )
-{
-  PropertyWithValue<TYPE>::operator=(right) ;
-  return *this ;
-}
-// ============================================================================
-/// template assignment
-// ============================================================================
-template <class TYPE,class VERIFIER>
-template <class OTHER,class OTHERVERIFIER>
-inline PropertyWithVerifier<TYPE,VERIFIER>&
-PropertyWithVerifier<TYPE,VERIFIER>::operator=
-( const PropertyWithVerifier<OTHER,OTHERVERIFIER>& right )
-{
-  PropertyWithValue<TYPE>::operator=(right) ;
-  return *this ;
-}
-// ============================================================================
-
 // ============================================================================
 /** @class SimpleProperty Property.h GaudiKernel/Property.h
  *
@@ -434,138 +401,65 @@ public:
   // ==========================================================================
   /// "Almost default" constructor from verifier
   SimpleProperty
-  ( VerifierType       verifier = VerifierType() ) ;
+  ( VerifierType       verifier = VerifierType() )
+    : PropertyWithVerifier<TYPE,VERIFIER>("", Traits::new_(), true, verifier)
+  {}
    /// The constructor from the value and verifier (ATLAS needs it!)
   SimpleProperty
   ( const ValueType&        value                 ,
-    VerifierType       verifier = VerifierType() ) ;
+    VerifierType       verifier = VerifierType() )
+    : PropertyWithVerifier<TYPE,VERIFIER>("", Traits::new_(value), true, verifier)
+  {}
   /// The constructor from the name, value and verifier
   SimpleProperty
   ( std::string        name                  ,
     const ValueType&        value                 ,
     std::string        doc = ""              ,
-    VerifierType       verifier = VerifierType() ) ;
+    VerifierType       verifier = VerifierType() )
+    : PropertyWithVerifier<TYPE,VERIFIER>
+      ( std::move(name) , Traits::new_(value) , true , verifier )
+  {
+    this->setDocumentation(std::move(doc));
+  }
   /// The constructor from the name, value and verifier
   SimpleProperty
   ( PropertyMgr*       owner                 ,
     std::string        name                  ,
     const ValueType&        value = ValueType{}        ,
     std::string        doc = ""              ,
-    VerifierType       verifier = VerifierType() ) ;
+    VerifierType       verifier = VerifierType() )
+    : SimpleProperty( std::move(name), value, std::move(doc), verifier )
+  {
+    this->declareTo(owner);
+  }
   /// constructor from other property type
   template <class OTHER>
-  SimpleProperty ( const PropertyWithValue<OTHER>& right ) ;
+  SimpleProperty ( const PropertyWithValue<OTHER>& right )
+    : PropertyWithVerifier<TYPE,VERIFIER>
+      ( right.name() , Traits::new_( right.value() ) , true , VERIFIER() )
+  {}
   /// copy constructor (must be!)
-  SimpleProperty ( const SimpleProperty& right ) ;
+  SimpleProperty ( const SimpleProperty& right )
+    : PropertyWithVerifier<TYPE,VERIFIER>
+      ( right.name() , Traits::new_( right.value() ) , true , right.verifier() )
+  {}
   /// virtual Destructor
   ~SimpleProperty() override = default;
   /// implementation of Property::clone
-  SimpleProperty* clone() const override;
+  SimpleProperty* clone() const override { return new SimpleProperty(*this) ; }
   /// assignment form the value
-  SimpleProperty& operator=( const TYPE& value ) ;
+  SimpleProperty& operator=( const TYPE& value ) {
+    PropertyWithVerifier<TYPE,VERIFIER>::operator=( value );
+    return *this ;
+  }
   /// assignment form the other property type
   template <class OTHER>
-  SimpleProperty& operator=( const PropertyWithValue<OTHER>& right ) ;
+  SimpleProperty& operator=( const PropertyWithValue<OTHER>& right ) {
+    PropertyWithVerifier<TYPE,VERIFIER>::operator=( right );
+    return *this ;
+  }
   // ==========================================================================
 };
-// ============================================================================
-/// The constructor from verifier
-// ============================================================================
-template <class TYPE,class VERIFIER>
-SimpleProperty<TYPE,VERIFIER>::SimpleProperty
-( VerifierType           verifier )
-  : PropertyWithVerifier<TYPE,VERIFIER>
-( "" , Traits::new_() , true , verifier )
-{}
-// ============================================================================
-/// The constructor from the value and verifier
-// ============================================================================
-template <class TYPE,class VERIFIER>
-SimpleProperty<TYPE,VERIFIER>::SimpleProperty
-( const ValueType&        value    ,
-  VerifierType           verifier )
-  : PropertyWithVerifier<TYPE,VERIFIER>
-( "" , Traits::new_(value) , true , verifier )
-{}
-// ============================================================================
-/// The constructor from the name, value and verifier
-// ============================================================================
-template <class TYPE,class VERIFIER>
-SimpleProperty<TYPE,VERIFIER>::SimpleProperty
-( std::string        name     ,
-  const ValueType&        value    ,
-  std::string        doc      ,
-  VerifierType           verifier )
-  : PropertyWithVerifier<TYPE,VERIFIER>
-( std::move(name) , Traits::new_(value) , true , verifier )
-{
-  this->setDocumentation(std::move(doc));
-}
-// ============================================================================
-/// The constructor from the name, value and verifier
-// ============================================================================
-template <class TYPE,class VERIFIER>
-SimpleProperty<TYPE,VERIFIER>::SimpleProperty
-( PropertyMgr*       owner    ,
-  std::string        name     ,
-  const ValueType&        value    ,
-  std::string        doc      ,
-  VerifierType           verifier )
-  : SimpleProperty( std::move(name), value, std::move(doc), verifier )
-{
-  this->declareTo(owner);
-}
-// ============================================================================
-/// constructor from other property type
-// ============================================================================
-template <class TYPE,class VERIFIER>
-template <class OTHER>
-SimpleProperty<TYPE,VERIFIER>::SimpleProperty
-( const PropertyWithValue<OTHER>& right )
-  : PropertyWithVerifier<TYPE,VERIFIER>
-( right.name() , Traits::new_( right.value() ) , true , VERIFIER() )
-{}
-// ============================================================================
-/// copy constructor (must be!)
-// ============================================================================
-template <class TYPE,class VERIFIER>
-SimpleProperty<TYPE,VERIFIER>::SimpleProperty
-( const SimpleProperty& right )
-  : PropertyWithVerifier<TYPE,VERIFIER>
-( right.name() , Traits::new_( right.value() ) , true , right.verifier() )
-{}
-// ============================================================================
-/// implementation of Property::clone
-// ============================================================================
-template <class TYPE,class VERIFIER>
-inline
-SimpleProperty<TYPE,VERIFIER>*
-SimpleProperty<TYPE,VERIFIER>::clone() const
-{ return new SimpleProperty(*this) ; }
-// ============================================================================
-/// assignment form the value
-// ============================================================================
-template <class TYPE,class VERIFIER>
-inline
-SimpleProperty<TYPE,VERIFIER>&
-SimpleProperty<TYPE,VERIFIER>::operator=( const TYPE& value )
-{
-  PropertyWithVerifier<TYPE,VERIFIER>::operator=( value );
-  return *this ;
-}
-// ============================================================================
-/// assignment form the other property type
-// ============================================================================
-template <class TYPE,class VERIFIER>
-template <class OTHER>
-inline
-SimpleProperty<TYPE,VERIFIER>&
-SimpleProperty<TYPE,VERIFIER>::operator=
-( const PropertyWithValue<OTHER>& right )
-{
-  PropertyWithVerifier<TYPE,VERIFIER>::operator=( right );
-  return *this ;
-}
 // ============================================================================
 
 // ============================================================================
@@ -591,73 +485,33 @@ public:
   SimplePropertyRef
   ( std::string        name                  ,
     ValueType&         value                 ,  ///< NB! non-const reference
-    VerifierType       verifier = VerifierType() ) ;
+    VerifierType       verifier = VerifierType() )
+    : PropertyWithVerifier<TYPE,VERIFIER> ( std::move(name) , &value , false , verifier )
+  {}
   /// copy constructor (must be!)
-  SimplePropertyRef ( const SimplePropertyRef& right ) ;
+  SimplePropertyRef ( const SimplePropertyRef& right )
+    : PropertyWithVerifier<TYPE,VERIFIER>
+      ( right.name() , right.i_get() , false , right.verifier() )
+  {}
   /// virtual Destructor
   ~SimplePropertyRef() override = default;
   /// implementation of Property::clone
-  SimplePropertyRef* clone() const override;
+  SimplePropertyRef* clone() const override { return new SimplePropertyRef(*this) ; }
   /// assignment form the value
-  SimplePropertyRef& operator=( const TYPE& value ) ;
+  SimplePropertyRef& operator=( const TYPE& value ) {
+    PropertyWithVerifier<TYPE,VERIFIER>::operator=( value ) ;
+    return *this ;
+  }
   /// assignment form the other property type
   template <class OTHER>
-  SimplePropertyRef& operator=( const PropertyWithValue<OTHER>& right ) ;
+  SimplePropertyRef& operator=( const PropertyWithValue<OTHER>& right ) {
+    PropertyWithVerifier<TYPE,VERIFIER>::operator=( right );
+    return *this ;
+  }
 private:
   // the default constructor is disabled
-  SimplePropertyRef() ;
+  SimplePropertyRef() = delete;
 };
-// ============================================================================
-/// Constructor from the name, the value and the verifier
-// ============================================================================
-template <class TYPE,class VERIFIER>
-SimplePropertyRef<TYPE,VERIFIER>::SimplePropertyRef
-( std::string        name     ,
-  ValueType&         value    ,  ///< NB! non-const reference
-  VerifierType       verifier )
-  : PropertyWithVerifier<TYPE,VERIFIER> ( std::move(name) , &value , false , verifier )
-{}
-// ============================================================================
-/// copy constructor (must be!)
-// ============================================================================
-template <class TYPE,class VERIFIER>
-SimplePropertyRef<TYPE,VERIFIER>::SimplePropertyRef
-( const SimplePropertyRef& right )
-  : PropertyWithVerifier<TYPE,VERIFIER>
-( right.name() , right.i_get() , false , right.verifier() )
-{}
-// ============================================================================
-/// implementation of Property::clone
-// ============================================================================
-template <class TYPE,class VERIFIER>
-inline
-SimplePropertyRef<TYPE,VERIFIER>*
-SimplePropertyRef<TYPE,VERIFIER>::clone() const
-{ return new SimplePropertyRef(*this) ; }
-// ============================================================================
-/// assignment from the value
-// ============================================================================
-template <class TYPE,class VERIFIER>
-inline
-SimplePropertyRef<TYPE,VERIFIER>&
-SimplePropertyRef<TYPE,VERIFIER>::operator=( const TYPE& value )
-{
-  PropertyWithVerifier<TYPE,VERIFIER>::operator=( value ) ;
-  return *this ;
-}
-// ============================================================================
-/// assignment form the other property type
-// ============================================================================
-template <class TYPE,class VERIFIER>
-template <class OTHER>
-inline
-SimplePropertyRef<TYPE,VERIFIER>&
-SimplePropertyRef<TYPE,VERIFIER>::operator=
-( const PropertyWithValue<OTHER>& right )
-{
-  PropertyWithVerifier<TYPE,VERIFIER>::operator=( right );
-  return *this ;
-}
 // ============================================================================
 
 
@@ -742,20 +596,33 @@ typedef SimplePropertyRef< std::vector< long double > >          LongDoubleArray
 
 typedef SimplePropertyRef< std::vector< std::string > >          StringArrayPropertyRef;
 
-// pre-declaration is sufficient here
+// forward-declaration is sufficient here
 class GaudiHandleBase;
 
+// implementation in header file only where the GaudiHandleBase class
+// definition is not needed. The rest goes into the .cpp file.
+// The goal is to decouple the header files, to avoid that the whole
+// world depends on GaudiHandle.h
 class GAUDI_API GaudiHandleProperty : public Property {
 public:
   GaudiHandleProperty( std::string name, GaudiHandleBase& ref );
 
-  GaudiHandleProperty& operator=( const GaudiHandleBase& value );
+  GaudiHandleProperty& operator=( const GaudiHandleBase& value ) {
+        setValue( value );
+        return *this;
+  }
 
-  GaudiHandleProperty* clone() const override;
+  GaudiHandleProperty* clone() const override  {
+    return new GaudiHandleProperty( *this );
+  }
 
-  bool load( Property& destination ) const override;
+  bool load( Property& destination ) const override  {
+    return destination.assign( *this );
+  }
 
-  bool assign( const Property& source ) override;
+  bool assign( const Property& source ) override  {
+    return fromString( source.toString() ).isSuccess();
+  }
 
   std::string toString() const override;
 
@@ -763,7 +630,10 @@ public:
 
   StatusCode fromString(const std::string& s) override;
 
-  const GaudiHandleBase& value() const;
+  const GaudiHandleBase& value() const  {
+    useReadHandler();
+    return *m_pValue;
+  }
 
   bool setValue( const GaudiHandleBase& value );
 
@@ -773,34 +643,8 @@ private:
    GaudiHandleBase* m_pValue;
 };
 
-// implementation in header file only where the GaudiHandleBase class
-// definition is not needed. The rest goes into the .cpp file.
-// The goal is to decouple the header files, to avoid that the whole
-// world depends on GaudiHandle.h
-inline GaudiHandleProperty& GaudiHandleProperty::operator=( const GaudiHandleBase& value ) {
-      setValue( value );
-      return *this;
-}
 
-inline GaudiHandleProperty* GaudiHandleProperty::clone() const {
-  return new GaudiHandleProperty( *this );
-}
-
-inline bool GaudiHandleProperty::load( Property& destination ) const {
-  return destination.assign( *this );
-}
-
-inline bool GaudiHandleProperty::assign( const Property& source ) {
-  return fromString( source.toString() ).isSuccess();
-}
-
-inline const GaudiHandleBase& GaudiHandleProperty::value() const {
-  useReadHandler();
-  return *m_pValue;
-}
-
-
-// pre-declaration is sufficient here
+// forward-declaration is sufficient here
 class GaudiHandleArrayBase;
 
 class GAUDI_API GaudiHandleArrayProperty : public Property {
@@ -808,13 +652,22 @@ public:
 
   GaudiHandleArrayProperty( std::string name, GaudiHandleArrayBase& ref );
 
-  GaudiHandleArrayProperty& operator=( const GaudiHandleArrayBase& value );
+  GaudiHandleArrayProperty& operator=( const GaudiHandleArrayBase& value ) {
+    setValue( value );
+    return *this;
+  }
 
-  GaudiHandleArrayProperty* clone() const override;
+  GaudiHandleArrayProperty* clone() const override {
+    return new GaudiHandleArrayProperty( *this );
+  }
 
-  bool load( Property& destination ) const override;
+  bool load( Property& destination ) const override {
+    return destination.assign( *this );
+  }
 
-  bool assign( const Property& source ) override;
+  bool assign( const Property& source ) override {
+    return fromString( source.toString() ) != 0;
+  }
 
   std::string toString() const override;
 
@@ -822,7 +675,10 @@ public:
 
   StatusCode fromString(const std::string& s) override;
 
-  const GaudiHandleArrayBase& value() const;
+  const GaudiHandleArrayBase& value() const {
+    useReadHandler();
+    return *m_pValue;
+  }
 
   bool setValue( const GaudiHandleArrayBase& value );
 
@@ -832,32 +688,6 @@ private:
    GaudiHandleArrayBase* m_pValue;
 
 };
-
-// implementation in header file only where the GaudiHandleBase class
-// definition is not needed. The rest goes into the .cpp file.
-// The goal is to decouple the header files, to avoid that the whole
-// world depends on GaudiHandle.h
-inline GaudiHandleArrayProperty& GaudiHandleArrayProperty::operator=( const GaudiHandleArrayBase& value ) {
-  setValue( value );
-  return *this;
-}
-
-inline GaudiHandleArrayProperty* GaudiHandleArrayProperty::clone() const {
-  return new GaudiHandleArrayProperty( *this );
-}
-
-inline bool GaudiHandleArrayProperty::load( Property& destination ) const {
-  return destination.assign( *this );
-}
-
-inline bool GaudiHandleArrayProperty::assign( const Property& source ) {
-  return fromString( source.toString() ) != 0;
-}
-
-inline const GaudiHandleArrayBase& GaudiHandleArrayProperty::value() const {
-  useReadHandler();
-  return *m_pValue;
-}
 
 
 namespace Gaudi
