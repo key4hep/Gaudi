@@ -47,7 +47,7 @@ class JobOptionsSvc : public extends<Service,
 
   using Service::getProperty;
   /// Get a property for a client
-  const Property* getProperty(const std::string& client, const std::string& name) const override {
+  const Property* getClientProperty(const std::string& client, const std::string& name) const override {
     return m_svc_catalog.getProperty(client, name);
   }
   /// Get the list of clients

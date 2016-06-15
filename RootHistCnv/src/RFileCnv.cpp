@@ -32,7 +32,7 @@ StatusCode RootHistCnv::RFileCnv::initialize()
   // Set compression level property ...
   ISvcLocator * svcLoc = Gaudi::svcLocator();
   auto jobSvc = svcLoc->service<IJobOptionsSvc>("JobOptionsSvc");
-  auto prop = jobSvc->getProperty("RFileCnv", "GlobalCompression");
+  auto prop = jobSvc->getClientProperty("RFileCnv", "GlobalCompression");
   if (prop) m_compLevel = prop->toString();
 
   // initialise base class

@@ -40,7 +40,7 @@ public:
   getProperties( const std::string& client) const = 0;
 
   /// Get a property for a client
-  virtual const Property* getProperty(const std::string& client, const std::string& name) const = 0;
+  virtual const Property* getClientProperty(const std::string& client, const std::string& name) const = 0;
 
   /// Get the list of clients
   virtual std::vector<std::string> getClients() const = 0;
