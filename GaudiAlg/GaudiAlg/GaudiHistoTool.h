@@ -18,9 +18,6 @@
 #include "GaudiAlg/GaudiHistos.h"
 // ============================================================================
 
-// forward declarations
-class IHistogramSvc;
-
 // ============================================================================
 /** @class GaudiHistoTool GaudiHistoTool.h GaudiTools/GaudiHistoTool.h
  *
@@ -39,40 +36,12 @@ class IHistogramSvc;
  */
 // ============================================================================
 
-class GAUDI_API GaudiHistoTool: public GaudiHistos<GaudiTool>
+struct GAUDI_API GaudiHistoTool: public GaudiHistos<GaudiTool>
 {
 
-protected:
-
-  /** Standard constructor (protected)
-   *  @see GaudiTool
-   *  @see   AlgTool
-   *  @param type tool type (useless)
-   *  @param name tool name
-   *  @param parent pointer to parent object (service, algorithm or tool)
-   */
-  GaudiHistoTool ( const std::string& type   ,
-                   const std::string& name   ,
-                   const IInterface*  parent );
-
-  /// destructor, virtual and protected
-  ~GaudiHistoTool() override;
-
-  /** standard initialization method
-   *  @see  Algorithm
-   *  @see IAlgorithm
-   *  @return status code
-   */
-  StatusCode initialize () override;
-
-  /** standard finalization method
-   *  @see  Algorithm
-   *  @see IAlgorithm
-   *  @return status code
-   */
-  StatusCode finalize   () override;
-
-private:
+  using GaudiHistos<GaudiTool>::GaudiHistos;
+  using GaudiHistos<GaudiTool>::initialize;
+  using GaudiHistos<GaudiTool>::finalize;
 
   // delete default/copy constructor and assignment
   GaudiHistoTool() = delete;

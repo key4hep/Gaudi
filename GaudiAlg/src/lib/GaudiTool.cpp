@@ -182,10 +182,10 @@ StatusCode    GaudiTool::finalize   ()
     debug() << " ==> Finalize the base class GaudiTool " << endmsg;
 
   // clear "explicit services"
-  m_detSvc    = nullptr ;
-  m_chronoSvc = nullptr ;
-  m_incSvc    = nullptr ;
-  m_histoSvc  = nullptr ;
+  m_detSvc.reset();
+  m_chronoSvc.reset();
+  m_incSvc.reset();
+  m_histoSvc.reset();
 
   // finalize the base class
   const StatusCode sc = GaudiCommon<AlgTool>::finalize() ;
@@ -220,11 +220,7 @@ bool GaudiTool::isPublic() const
 // ============================================================================
 IDataProviderSvc* GaudiTool::detSvc () const
 {
-  if ( !m_detSvc )
-  {
-    m_detSvc =
-      svc<IDataProviderSvc>( GaudiToolServices::s_DetectorDataSvc , true ) ;
-  }
+  if ( UNLIKELY(!m_detSvc) ) m_detSvc = service( GaudiToolServices::s_DetectorDataSvc , true ) ;
   return m_detSvc ;
 }
 // ============================================================================
@@ -232,10 +228,7 @@ IDataProviderSvc* GaudiTool::detSvc () const
 // ============================================================================
 INTupleSvc* GaudiTool::ntupleSvc () const
 {
-  if ( !m_ntupleSvc )
-  {
-    m_ntupleSvc = svc<INTupleSvc>( "NTupleSvc" , true ) ;
-  }
+  if ( UNLIKELY(!m_ntupleSvc) ) m_ntupleSvc = service( "NTupleSvc" , true ) ;
   return m_ntupleSvc ;
 }
 // ============================================================================
@@ -243,10 +236,7 @@ INTupleSvc* GaudiTool::ntupleSvc () const
 // ============================================================================
 INTupleSvc* GaudiTool::evtColSvc () const
 {
-  if ( !m_evtColSvc )
-  {
-    m_evtColSvc = svc< INTupleSvc > ( "EvtTupleSvc" , true ) ;
-  }
+  if (UNLIKELY(!m_evtColSvc)) m_evtColSvc = service( "EvtTupleSvc" , true ) ;
   return m_evtColSvc ;
 }
 // ============================================================================
@@ -254,11 +244,7 @@ INTupleSvc* GaudiTool::evtColSvc () const
 // ============================================================================
 IIncidentSvc*      GaudiTool::incSvc () const
 {
-  if ( !m_incSvc )
-  {
-    m_incSvc =
-      svc<IIncidentSvc> ( GaudiToolServices::s_IncidentSvc , true ) ;
-  }
+  if (UNLIKELY(!m_incSvc)) m_incSvc = service( GaudiToolServices::s_IncidentSvc , true ) ;
   return m_incSvc ;
 }
 // ============================================================================
@@ -266,11 +252,7 @@ IIncidentSvc*      GaudiTool::incSvc () const
 // ============================================================================
 IChronoStatSvc*      GaudiTool::chronoSvc () const
 {
-  if ( !m_chronoSvc )
-  {
-    m_chronoSvc =
-      svc<IChronoStatSvc> ( GaudiToolServices::s_ChronoStatSvc , true ) ;
-  }
+  if (UNLIKELY( !m_chronoSvc)) m_chronoSvc = service( GaudiToolServices::s_ChronoStatSvc , true ) ;
   return m_chronoSvc ;
 }
 // ============================================================================
@@ -278,10 +260,7 @@ IChronoStatSvc*      GaudiTool::chronoSvc () const
 // ============================================================================
 IHistogramSvc*       GaudiTool::histoSvc () const
 {
-  if ( !m_histoSvc )
-  {
-    m_histoSvc = svc<IHistogramSvc> ( GaudiToolServices::s_HistoSvc, true ) ;
-  }
+  if (UNLIKELY(!m_histoSvc)) m_histoSvc = service ( GaudiToolServices::s_HistoSvc, true ) ;
   return m_histoSvc;
 }
 // ============================================================================
@@ -289,10 +268,7 @@ IHistogramSvc*       GaudiTool::histoSvc () const
 // ============================================================================
 IAlgContextSvc* GaudiTool::contextSvc () const
 {
-  if ( !m_contextSvc )
-  {
-    m_contextSvc = svc<IAlgContextSvc> ( m_contextSvcName , true ) ;
-  }
+  if (UNLIKELY(!m_contextSvc)) m_contextSvc = service( m_contextSvcName , true ) ;
   return m_contextSvc;
 }
 // ============================================================================

@@ -63,8 +63,6 @@
 
 #include "GaudiAlg/Tuple.h"
 #include "GaudiAlg/Print.h"
-#include "GaudiAlg/GaudiTupleAlg.h"
-#include "GaudiAlg/GaudiHistoAlg.h"
 #include "GaudiAlg/GaudiHistoID.h"
 #include "GaudiAlg/GaudiAlgorithm.h"
 #include "GaudiAlg/GaudiCommon.h"
