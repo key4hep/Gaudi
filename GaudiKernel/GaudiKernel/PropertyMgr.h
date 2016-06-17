@@ -57,16 +57,16 @@ public:
   /// Declare a property (specialization)
   inline Property& declareProperty(Property& prop);
   /// Declare a property (specialization)
-  template <class TYPE>
+  template <class TYPE, class VERIFIER>
   Property* declareProperty
   ( const std::string&       name  ,
-    SimpleProperty<TYPE>&    prop,
+    SimpleProperty<TYPE, VERIFIER>&    prop,
     const std::string&       doc = "none") ;
   /// Declare a property (specialization)
-  template <class TYPE>
+  template <class TYPE, class VERIFIER>
   Property* declareProperty
   ( const std::string&       name  ,
-    SimplePropertyRef<TYPE>& prop,
+    SimplePropertyRef<TYPE, VERIFIER>& prop,
     const std::string&       doc = "none") ;
   // partial specializations for various GaudiHandles
   /// Declare a property (specialization)
@@ -243,11 +243,11 @@ PropertyMgr::declareProperty
 // ============================================================================
 /// Declare a property (templated)
 // ============================================================================
-template <class TYPE>
+template <class TYPE, class VERIFIER>
 inline Property*
 PropertyMgr::declareProperty
 ( const std::string&       name ,
-  SimpleProperty<TYPE>&    prop,
+  SimpleProperty<TYPE, VERIFIER>&    prop,
   const std::string&       doc )
 {
   assertUniqueName(name);
@@ -271,11 +271,11 @@ inline Property& PropertyMgr::declareProperty(Property& prop)
 // ============================================================================
 /// Declare a property (templated)
 // ============================================================================
-template <class TYPE>
+template <class TYPE, class VERIFIER>
 inline Property*
 PropertyMgr::declareProperty
 ( const std::string&       name ,
-  SimplePropertyRef<TYPE>& prop,
+  SimplePropertyRef<TYPE, VERIFIER>& prop,
   const std::string&       doc )
 {
   assertUniqueName(name);

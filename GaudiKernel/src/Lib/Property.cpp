@@ -35,19 +35,6 @@ std::ostream& operator<<( std::ostream&   stream ,
 { return prop.fillStream ( stream ) ; }
 // ============================================================================
 /*  constructor from the property name and the type
- *  @param name proeprty name
- *  @param type property C++/RTTI type
- */
-// ============================================================================
-Property::Property
-( const std::type_info&  type ,
-  std::string     name )
-  : m_name            ( std::move(name) )
-  , m_documentation   ( m_name )
-  , m_typeinfo        ( &type )
-{}
-// ============================================================================
-/*  constructor from the property name and the type
  *  @param type property C++/RTTI type
  *  @param name proeprty name
  */
@@ -195,7 +182,8 @@ void GaudiHandleProperty::toStream(std::ostream& out) const {
 
 StatusCode GaudiHandleProperty::fromString( const std::string& s) {
   m_pValue->setTypeAndName( s );
-  return useUpdateHandler()?StatusCode::SUCCESS:StatusCode::FAILURE;
+  useUpdateHandler();
+  return StatusCode::SUCCESS;
 }
 
 
@@ -231,7 +219,8 @@ StatusCode GaudiHandleArrayProperty::fromString( const std::string& source ) {
   StatusCode sc = Gaudi::Parsers::parse ( tmp , source );
   if ( sc.isFailure() ) return sc;
   if ( !m_pValue->setTypesAndNames( std::move(tmp) ) ) return StatusCode::FAILURE;
-  return useUpdateHandler()?StatusCode::SUCCESS:StatusCode::FAILURE;
+  useUpdateHandler();
+  return StatusCode::SUCCESS;
 }
 
 

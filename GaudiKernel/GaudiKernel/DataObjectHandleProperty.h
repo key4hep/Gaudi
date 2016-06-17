@@ -39,23 +39,23 @@ class GAUDI_API DataObjectHandleProperty :  public ::Property {
   const std::string pythonRepr() const;
 
  private:
-  /** Pointer to the real property. Reference would be better, 
+  /** Pointer to the real property. Reference would be better,
    *  but Reflex does not support references yet
    */
   DataObjectHandleBase* m_pValue;
 };
 
 template<>
-class SimplePropertyRef< DataObjectHandleBase > :
+class PropertyWithValue<DataObjectHandleBase&, Gaudi::Details::Property::NullVerifier<DataObjectHandleBase>> :
   public ::DataObjectHandleProperty
 {
 public:
-  SimplePropertyRef(const std::string& name, DataObjectHandleBase& value) :
+  PropertyWithValue(const std::string& name, DataObjectHandleBase& value) :
     ::DataObjectHandleProperty(name, value)
   {}
 
   /// virtual Destructor
-  virtual ~SimplePropertyRef() {}
+  virtual ~PropertyWithValue() {}
 };
 
 

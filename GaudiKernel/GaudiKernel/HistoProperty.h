@@ -1,4 +1,4 @@
-#ifndef GAUDIKERNEL_HISTOPROPERTY_H 
+#ifndef GAUDIKERNEL_HISTOPROPERTY_H
 #define GAUDIKERNEL_HISTOPROPERTY_H 1
 // ============================================================================
 // Include files
@@ -7,38 +7,38 @@
 // ============================================================================
 #include "GaudiKernel/HistoDef.h"
 #include "GaudiKernel/Property.h"
+namespace Gaudi { namespace Details { namespace Property {
 // ============================================================================
-template <class TYPE>                class BoundedVerifier   ;
-template <class TYPE>                class NullVerifier      ;
-template <class TYPE,class VERIFIER> class SimpleProperty    ;
-template <class TYPE,class VERIFIER> class SimplePropertyRef ;
-// ============================================================================
-/** Check if the value is OK 
+/** Check if the value is OK
  *  it is a nesessary template specialisation to avoid the compilation error
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
- *  @date 2007-09-18 
+ *  @date 2007-09-18
  */
 template <>
-inline bool 
-BoundedVerifier<Gaudi::Histo1DDef>::isValid
-( const Gaudi::Histo1DDef* value ) const 
-{ 
-  return value && value->ok()
-    && ( ( m_hasLowerBound && ( *value       < m_lowerBound ) ) ? false : true ) 
-    && ( ( m_hasUpperBound && ( m_upperBound < *value       ) ) ? false : true ) ;
+inline void
+BoundedVerifier<Gaudi::Histo1DDef>::operator()
+( const Gaudi::Histo1DDef& value ) const
+{
+  if ( ! value.ok() ||
+       ( m_hasLowerBound && ( value < m_lowerBound )) ||
+       ( m_hasUpperBound && ( m_upperBound < value )) )
+    throw std::out_of_range("value " + Gaudi::Utils::toString(value) + " outside range");
 }
 // ============================================================================
-/** Check if the value is OK 
+/** Check if the value is OK
  *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
- *  @date 2007-09-18 
+ *  @date 2007-09-18
  */
 template <>
-inline bool 
-NullVerifier<Gaudi::Histo1DDef>::isValid
-( const Gaudi::Histo1DDef* value ) const 
-{ 
-  return value && value->ok() ;
+inline void
+NullVerifier<Gaudi::Histo1DDef>::operator()
+( const Gaudi::Histo1DDef& value ) const
+{
+  if ( ! value.ok() )
+    throw std::invalid_argument("bad value " + Gaudi::Utils::toString(value));
 }
+// ============================================================================
+}}} // end of namespace Gaudi::Details::Property
 // ============================================================================
 /// the actual type of "histogram property"
 typedef SimpleProperty   <Gaudi::Histo1DDef> Histo1DProperty    ;
@@ -48,7 +48,7 @@ typedef SimplePropertyRef<Gaudi::Histo1DDef> Histo1DPropertyRef ;
 // ============================================================================
 
 // ============================================================================
-// The END 
+// The END
 // ============================================================================
 #endif // GAUDIKERNEL_HISTOPROPERTY_H
 // ============================================================================
