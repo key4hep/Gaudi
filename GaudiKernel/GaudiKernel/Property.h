@@ -214,6 +214,8 @@ public:
   inline decltype(std::declval<T>().size()) size() const { return value().size(); }
   template<class T=const ValueType>
   inline decltype(std::declval<T>().empty()) empty() const { return value().empty(); }
+  template<class T=ValueType>
+  inline decltype(std::declval<T>().clear()) clear() { value().clear(); }
   template<class T=const ValueType>
   inline decltype(std::declval<T>().begin()) begin() const { return value().begin(); }
   template<class T=const ValueType>
