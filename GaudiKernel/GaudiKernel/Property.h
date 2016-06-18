@@ -133,10 +133,10 @@ namespace Gaudi {
     namespace Property {
       template<class TYPE>
       struct StringConverter {
-        inline static std::string toString(const TYPE& v) {
+        inline std::string toString(const TYPE& v) {
           return Gaudi::Utils::toString(v);
         }
-        inline static TYPE fromString(const std::string& s) {
+        inline TYPE fromString(const std::string& s) {
           TYPE tmp;
           if (Gaudi::Parsers::parse(tmp, s).isSuccess()) {
             return tmp;
@@ -147,14 +147,9 @@ namespace Gaudi {
         }
       };
       template<>
-      struct StringConverter<std::string> {
-        inline static std::string toString(const std::string& v) {
-          return v;
-        }
-        inline static std::string fromString(const std::string& s) {
-          return s;
-        }
-      };
+      inline std::string StringConverter<std::string>::toString(const std::string& v) {
+        return v;
+      }
       template<class TYPE>
       struct NullVerifier {
         void operator()(const TYPE&) const {}
@@ -352,9 +347,9 @@ public:
 public:
   /// get the value from another property
   bool assign(const Property& source) override {
-    // Is the property of "the same" type?
-    const PropertyWithValue* p =
-      dynamic_cast<const PropertyWithValue*>(&source) ;
+    // Check if the property of is of "the same" type, except for strings
+    const PropertyWithValue* p = (std::is_same<ValueType,std::string>::value) ?
+      nullptr : dynamic_cast<const PropertyWithValue*>(&source);
     if (p) {
       *this = p->value();
     } else {
@@ -370,13 +365,13 @@ public:
   /// string -> value
   StatusCode fromString(const std::string& source) override {
     using Converter = Gaudi::Details::Property::StringConverter<ValueType>;
-    *this = Converter::fromString(source);
+    *this = Converter().fromString(source);
     return StatusCode::SUCCESS;
   }
   /// value  -> string
   std::string toString() const override {
     using Converter = Gaudi::Details::Property::StringConverter<ValueType>;
-    return Converter::toString(*this);
+    return Converter().toString(*this);
   }
   /// value  -> stream
   void toStream(std::ostream& out) const  override {
