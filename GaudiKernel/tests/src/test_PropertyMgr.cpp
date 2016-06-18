@@ -14,7 +14,7 @@ namespace {
   };
 }
 
-BOOST_AUTO_TEST_CASE( setters_and_getters )
+BOOST_AUTO_TEST_CASE( declareProperty )
 {
   StringProperty p1{"v1"};
   StringProperty p2{"v2"};
