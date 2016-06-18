@@ -132,6 +132,30 @@ namespace Gaudi {
   namespace Details {
     namespace Property {
       template<class TYPE>
+      struct StringConverter {
+        inline static std::string toString(const TYPE& v) {
+          return Gaudi::Utils::toString(v);
+        }
+        inline static TYPE fromString(const std::string& s) {
+          TYPE tmp;
+          if (Gaudi::Parsers::parse(tmp, s).isSuccess()) {
+            return tmp;
+          } else {
+            throw std::invalid_argument("cannot parse '" + s + "' to " +
+                                        System::typeinfoName(typeid(TYPE)));
+          }
+        }
+      };
+      template<>
+      struct StringConverter<std::string> {
+        inline static std::string toString(const std::string& v) {
+          return v;
+        }
+        inline static std::string fromString(const std::string& s) {
+          return s;
+        }
+      };
+      template<class TYPE>
       struct NullVerifier {
         void operator()(const TYPE&) const {}
       };
@@ -345,18 +369,14 @@ public:
   }
   /// string -> value
   StatusCode fromString(const std::string& source) override {
-    ValueType tmp;
-    if (Gaudi::Parsers::parse(tmp, source).isSuccess()) {
-      *this = tmp;
-    } else {
-      throw std::invalid_argument("cannot parse '" + source + "' to " + this->type());
-    }
+    using Converter = Gaudi::Details::Property::StringConverter<ValueType>;
+    *this = Converter::fromString(source);
     return StatusCode::SUCCESS;
   }
   /// value  -> string
   std::string toString() const override {
-    useReadHandler();
-    return Gaudi::Utils::toString(m_value) ;
+    using Converter = Gaudi::Details::Property::StringConverter<ValueType>;
+    return Converter::toString(*this);
   }
   /// value  -> stream
   void toStream(std::ostream& out) const  override {
