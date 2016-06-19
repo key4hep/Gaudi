@@ -41,10 +41,11 @@ Gaudi = gbl.Gaudi
 
 _gaudi = None
 
-#----Useful shortcuts for classes -------------------------------------------------------
+# ---- Useful shortcuts for classes -------------------------------------------
+gbl.gInterpreter.Declare('#include "GaudiKernel/Property.h"')
 Helper              = gbl.GaudiPython.Helper
-StringProperty      = gbl.SimpleProperty     ('string','BoundedVerifier<string>')
-StringPropertyRef   = gbl.SimplePropertyRef  ('string','NullVerifier<string>')
+StringProperty      = gbl.StringProperty
+StringPropertyRef   = gbl.StringPropertyRef
 GaudiHandleProperty = gbl.GaudiHandleProperty
 GaudiHandleArrayProperty = gbl.GaudiHandleArrayProperty
 DataObject          = gbl.DataObject
