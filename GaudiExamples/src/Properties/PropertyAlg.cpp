@@ -196,13 +196,36 @@ StatusCode PropertyAlg::initialize() {
 
   }
   // Testing setting bool
-  const char* scases[] = {"true", "false", "True", "False", "TRUE", "FALSE", "T", "F", "10" };
-  bool  bcases[] = { true,   false,   true,   false,   true,   false,  true, true, true};
-  for (unsigned int i = 0; i < sizeof(scases)/sizeof(char*); i++ ) {
-    setProperty( "PBool", scases[i] ).ignore();
-    if( p_bool  != bcases[i] ) error() << "PBool can not be set to "<< scases[i] << endmsg;
-    setProperty( "Bool", scases[i] ).ignore();
-    if( m_bool  != bcases[i] ) error() << "Bool can not be set to "<< scases[i] << endmsg;
+  std::vector<std::tuple<std::string, bool>> cases = {
+    std::make_tuple("true",  true ),
+    std::make_tuple("false", false),
+    std::make_tuple("True",  true ),
+    std::make_tuple("False", false),
+    std::make_tuple("TRUE",  true ),
+    std::make_tuple("FALSE", false),
+    std::make_tuple("T",     true ), // not expected to work
+    std::make_tuple("F",     false), // not expected to work
+    std::make_tuple("10",    true ), // not expected to work
+  };
+  StatusCode sc = StatusCode::SUCCESS;
+  for(auto& c: cases) {
+    p_bool = m_bool = ! std::get<1>(c);
+    try {
+      sc = setProperty( "PBool", std::get<0>(c) );
+    } catch (...) {
+      sc = StatusCode::FAILURE;
+    }
+    if ( !sc || ( p_bool != std::get<1>(c) ) ) {
+      error() << "PBool can not be set to " << std::get<0>(c) << endmsg;
+    }
+    try {
+      sc = setProperty( "Bool", std::get<0>(c) );
+    } catch (...) {
+      sc = StatusCode::FAILURE;
+    }
+    if ( !sc || ( m_bool != std::get<1>(c) ) ) {
+      error() << "Bool can not be set to " << std::get<0>(c) << endmsg;
+    }
   }
 
   // Testing the control of the output level directly from MessageSvc
