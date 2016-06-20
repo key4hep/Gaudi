@@ -40,17 +40,6 @@ public:
   {
     m_verifier(m_value);
   }
-  /// the constructor with property name, value and documentation.
-  template <class T=ValueType>
-  inline PropertyWithValue
-  ( PropertyMgr*       owner   ,
-    std::string        name    ,
-    T&&                value = ValueType{},
-    std::string        doc = "")
-    : PropertyWithValue(std::move(name), std::forward<T>(value), std::move(doc))
-  {
-    this->declareTo(owner);
-  }
 
   /// Construct an anonymous property from a value.
   /// This constructor is not generated if T is the current type, so that the

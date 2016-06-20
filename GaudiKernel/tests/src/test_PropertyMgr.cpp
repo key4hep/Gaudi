@@ -8,8 +8,7 @@
 namespace {
   const std::string emptyName{};
   /// Helper to allow instantiation of PropertyMgr.
-  struct AnonymousPropertyMgr: public implements<IProperty, INamedInterface>,
-                               public PropertyMgr {
+  struct AnonymousPropertyMgr: public PropertyMgr<implements<IProperty, INamedInterface>> {
     const std::string& name() const override { return emptyName; }
   };
 }

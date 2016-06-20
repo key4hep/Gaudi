@@ -44,13 +44,12 @@ class IJobOptionsSvc;
 
     @author Pere Mato
 */
-class ApplicationMgr : public CommonMessaging<implements<IAppMgrUI,
-                                                         IEventProcessor,
-                                                         IService,
-                                                         IStateful,
-                                                         INamedInterface,
-                                                         IProperty>>,
-                       public PropertyMgr {
+class ApplicationMgr : public PropertyMgr<CommonMessaging<implements<IAppMgrUI,
+                                                                     IEventProcessor,
+                                                                     IService,
+                                                                     IStateful,
+                                                                     INamedInterface,
+                                                                     IProperty>>> {
 public:
 
   // default creator

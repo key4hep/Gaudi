@@ -46,27 +46,29 @@ class DataObjectHandle;
  *  @author David Quarrie
  *  @author Marco Clemencic
  */
-class GAUDI_API PropertyMgr : public virtual IProperty, public virtual INamedInterface
+template <class BASE>
+class GAUDI_API PropertyMgr : public BASE
 {
 private:
   /// Helpers
   /// @{
   /// case insensitive comparison of strings
-  constexpr static struct NoCaseCmp_t {
+  struct NoCaseCmp {
     inline bool operator()( const std::string& v1, const std::string& v2 ) const
     {
       return v1.size() == v2.size() && std::equal( std::begin( v1 ), std::end( v1 ), std::begin( v2 ),
                                                    []( char c1, char c2 ) { return toupper( c1 ) == toupper( c2 ); } );
     }
-  } noCaseCmp{};
+  };
   /// get the property by name
   struct PropByName {
     std::string m_name;
 
-    inline bool operator()( const Property* p ) const { return p && noCaseCmp( p->name(), m_name ); }
+    inline bool operator()( const Property* p ) const { return p && NoCaseCmp{}( p->name(), m_name ); }
   };
   /// @}
 public:
+  using PropertyMgrImpl = PropertyMgr<BASE>;
   // copy constructor
   PropertyMgr() = default;
   // copy constructor
@@ -334,7 +336,7 @@ public:
   bool hasProperty( const std::string& name ) const override
   {
     return any_of( begin( m_properties ), end( m_properties ),
-                   [&name]( const Property* prop ) { return noCaseCmp( prop->name(), name ); } );
+                   [&name]( const Property* prop ) { return NoCaseCmp{}( prop->name(), name ); } );
   }
   // ==========================================================================
 protected:
@@ -348,7 +350,7 @@ protected:
     }
     // look for remote property
     for ( const auto& it : m_remoteProperties ) {
-      if ( !noCaseCmp( it.first, name ) ) {
+      if ( !NoCaseCmp{}( it.first, name ) ) {
         continue;
       }
       const IProperty* p = it.second.first;

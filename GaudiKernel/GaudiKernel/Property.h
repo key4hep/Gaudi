@@ -393,7 +393,7 @@ public:
     if ( p ) {
       *this = p->value();
     } else {
-      this->fromString( source.toString() );
+      this->fromString( source.toString() ).ignore();
     }
     return true;
   }

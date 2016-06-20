@@ -71,11 +71,10 @@ class ToolHandleInfo;
  *  @author David Quarrie
  *  @date   1998
  */
-class GAUDI_API Algorithm: public CommonMessaging<implements<IAlgorithm,
-                                                             IDataHandleHolder,
-                                                             IProperty,
-                                                             IStateful>>,
-                           public PropertyMgr {
+class GAUDI_API Algorithm: public PropertyMgr<CommonMessaging<implements<IAlgorithm,
+                                                                         IDataHandleHolder,
+                                                                         IProperty,
+                                                                         IStateful>>> {
 public:
 #ifndef __REFLEX__
   typedef Gaudi::PluginService::Factory<IAlgorithm*,
@@ -375,7 +374,7 @@ public:
   StatusCode setProperties();
 
   // ==========================================================================
-  using PropertyMgr::declareProperty;
+  using PropertyMgrImpl::declareProperty;
 
   // declare Tools to the Algorithms
   template <class T>
@@ -385,7 +384,7 @@ public:
 
     this->declareTool(hndl).ignore();
 
-    return PropertyMgr::declareProperty(name, hndl, doc);
+    return PropertyMgrImpl::declareProperty(name, hndl, doc);
   }
 
   // ==========================================================================
@@ -396,7 +395,7 @@ public:
                               ToolHandleArray<T>& hndlArr,
                               const std::string& doc = "none" ) {
     m_toolHandleArrays.push_back( &hndlArr );
-    return PropertyMgr::declareProperty(name, hndlArr, doc);
+    return PropertyMgrImpl::declareProperty(name, hndlArr, doc);
   }
 
   // ==========================================================================

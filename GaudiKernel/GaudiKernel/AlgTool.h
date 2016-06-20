@@ -42,11 +42,10 @@ class ToolHandleInfo;
  *  @author Gloria Corti
  *  @author Pere Mato
  */
-class GAUDI_API AlgTool: public CommonMessaging<implements<IAlgTool,
-                                                           IDataHandleHolder,
-                                                           IProperty,
-                                                           IStateful>>,
-                         public PropertyMgr {
+class GAUDI_API AlgTool: public PropertyMgr<CommonMessaging<implements<IAlgTool,
+                                                                       IDataHandleHolder,
+                                                                       IProperty,
+                                                                       IStateful>>> {
 public:
 #ifndef __REFLEX__
   typedef Gaudi::PluginService::Factory<IAlgTool*,
@@ -156,7 +155,7 @@ protected:
   void declareInterface( I* i ) { m_interfaceList.emplace_back( I::interfaceID(), i ); }
 public:
 
-  using PropertyMgr::declareProperty;
+  using PropertyMgrImpl::declareProperty;
 
   template<class T>
 
@@ -164,7 +163,7 @@ public:
                               ToolHandle<T>& hndl,
                               const std::string& doc = "none" ) {
     this->declareTool(hndl).ignore();
-    return PropertyMgr::declareProperty(name, hndl, doc);
+    return PropertyMgrImpl::declareProperty(name, hndl, doc);
 
   }
 
@@ -186,7 +185,7 @@ public:
                               ToolHandleArray<T>& hndlArr,
                               const std::string& doc = "none" ) {
     m_toolHandleArrays.push_back(&hndlArr);
-    return PropertyMgr::declareProperty(name, hndlArr, doc);
+    return PropertyMgrImpl::declareProperty(name, hndlArr, doc);
   }
 
  protected:
