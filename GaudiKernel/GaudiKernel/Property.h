@@ -329,8 +329,8 @@ public:
     useReadHandler();
     return m_value;
   }
-  void setValue( const ValueType& v ) { *this = v; }
-  void set( const ValueType& v ) { *this = v; }
+  bool setValue( const ValueType& v ) { *this = v; return true; }
+  bool set( const ValueType& v ) { *this = v; return true; }
   /// @}
 
   /// @name Helpers for easy use of string and vector properties.
