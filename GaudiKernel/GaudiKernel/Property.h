@@ -125,8 +125,6 @@ private:
   const std::type_info* m_typeinfo;
 
 protected:
-  // Declare this property to a PropertyMgr instance.
-  void declareTo( PropertyMgr* owner );
   // call back functor for reading
   mutable std::function<void( Property& )> m_readCallBack;
   // call back functor for update
@@ -268,12 +266,14 @@ public:
   {
     m_verifier( m_value );
   }
-  /// the constructor with property name, value and documentation.
-  template <class T = ValueType>
-  inline PropertyWithValue( PropertyMgr* owner, std::string name, T&& value = ValueType{}, std::string doc = "" )
+  /// Autodeclaring constructor with property name, value and documentation.
+  /// @note the use std::enable_if is required to avoid ambiguities
+  template <class OWNER, class T = ValueType,
+            typename = typename std::enable_if<std::is_convertible<OWNER*, IProperty*>::value>::type>
+  inline PropertyWithValue( OWNER* owner, std::string name, T&& value = ValueType{}, std::string doc = "" )
       : PropertyWithValue( std::move( name ), std::forward<T>( value ), std::move( doc ) )
   {
-    this->declareTo( owner );
+    owner->declareProperty( *this );
   }
 
   /// Construct an anonymous property from a value.

@@ -99,7 +99,6 @@ std::ostream& Property::fillStream( std::ostream& stream ) const
   return stream << " '" << name() << "':" << toString();
 }
 
-void Property::declareTo( PropertyMgr* owner ) { owner->declareProperty( *this ); }
 // ============================================================================
 /*  simple function which check the existence of the property with
  *  the given name.
