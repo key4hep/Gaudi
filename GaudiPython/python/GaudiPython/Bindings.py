@@ -51,6 +51,14 @@ GaudiHandleArrayProperty = gbl.GaudiHandleArrayProperty
 DataObject          = gbl.DataObject
 SUCCESS             = gbl.StatusCode( gbl.StatusCode.SUCCESS, True )
 FAILURE             = gbl.StatusCode( gbl.StatusCode.FAILURE, True )
+# Helper to create a StringProperty
+cppyy.gbl.gInterpreter.Declare('''
+namespace GaudiPython { namespace Helpers {
+  StringProperty mkStringProperty(const std::string &name,
+                                  const std::string &value) {
+    return StringProperty{name, value};
+  }
+}}''')
 
 # toIntArray, toShortArray, etc.
 for l in [ l for l in dir(Helper) if re.match("^to.*Array$",l) ]:
@@ -235,7 +243,7 @@ class iProperty(object) :
             elif type(value) == tuple          : value = str(value)
             elif hasattr( value , 'toString' ) : value = value.toString()
             elif type(value) == long: value = '%d'   % value # prevent pending 'L'
-            sp = StringProperty( name , str(value))
+            sp = gbl.GaudiPython.Helpers.mkStringProperty(name, str(value))
             self._optsvc.addPropertyToCatalogue( self._name , sp ).ignore()
     def __getattr__(self, name ):
         """
@@ -729,6 +737,7 @@ class AppMgr(iService) :
         #---JobOptions------------------------------------------------------------
         self.__dict__['_optsvc'] = InterfaceCast(gbl.IJobOptionsSvc)(Helper.service(self._svcloc,'JobOptionsSvc'))
         #------Configurables initialization (part2)-------------------------------
+        mkStringProperty = gbl.GaudiPython.Helpers.mkStringProperty
         for n in getNeededConfigurables():
             c = Configurable.allConfigurables[n]
             if n in ['ApplicationMgr','MessageSvc'] : continue # These are already done---
@@ -741,7 +750,7 @@ class AppMgr(iService) :
                     v = v.__resolve__()
                 if   type(v) == str : v = '"%s"' % v # need double quotes
                 elif type(v) == long: v = '%d'   % v # prevent pending 'L'
-                self._optsvc.addPropertyToCatalogue(n, StringProperty(p,str(v)))
+                self._optsvc.addPropertyToCatalogue(n, mkStringProperty(p,str(v)))
         if hasattr(Configurable,"_configurationLocked"):
             Configurable._configurationLocked = True
 
