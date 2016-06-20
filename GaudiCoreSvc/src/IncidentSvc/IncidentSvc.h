@@ -105,7 +105,9 @@ private:
   mutable ChronoEntity m_timer     ;
   mutable bool         m_timerLock = false ;
   // ==========================================================================
-  typedef tbb::concurrent_queue<std::unique_ptr<Incident>> IncQueue_t;
+  // When TBB supports unique_ptrs in concurrent queue typedef should be changed
+  //typedef tbb::concurrent_queue<std::unique_ptr<Incident>> IncQueue_t;
+  typedef tbb::concurrent_queue<Incident*> IncQueue_t;
   tbb::concurrent_unordered_map<EventContext,IncQueue_t,EventContextHash,EventContextHash> m_firedIncidents;
 
 };

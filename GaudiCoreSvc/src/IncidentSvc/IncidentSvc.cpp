@@ -262,7 +262,7 @@ void IncidentSvc::fireIncident( std::unique_ptr<Incident> incident )
   DEBMSG<<"Async incident '"<<incident->type()<<"' fired on context "<<incident->context()<<endmsg;
   auto ctx=incident->context();
   auto res=m_firedIncidents.insert(std::make_pair(ctx,IncQueue_t()));
-  res.first->second.push(std::move(incident));
+  res.first->second.push(incident.release());
 }
 // ============================================================================
 
@@ -292,7 +292,8 @@ IIncidentSvc::IncidentPack IncidentSvc::getIncidents(const EventContext* ctx){
   if(ctx){
     auto incs=m_firedIncidents.find(*ctx);
     if(incs!=m_firedIncidents.end()){
-      std::unique_ptr<Incident> inc;
+      Incident* inc(0);
+      
       DEBMSG<<"Collecting listeners fired on context "<<*ctx<<endmsg;      
       while(incs->second.try_pop(inc)){
 	std::vector<IIncidentListener*> ls;
