@@ -2,17 +2,7 @@
 #define BOOST_TEST_MODULE test_PropertyMgr
 #include <boost/test/unit_test.hpp>
 
-#include "GaudiKernel/PropertyMgr.h"
-#include "GaudiKernel/GaudiException.h"
-
-namespace {
-  const std::string emptyName{};
-  /// Helper to allow instantiation of PropertyMgr.
-  struct AnonymousPropertyMgr: public implements<IProperty, INamedInterface>,
-                               public PropertyMgr {
-    const std::string& name() const override { return emptyName; }
-  };
-}
+#include "GaudiKernel/Property.h"
 
 BOOST_AUTO_TEST_CASE( value_props_constructors )
 {

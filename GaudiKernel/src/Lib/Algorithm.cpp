@@ -17,7 +17,6 @@
 #include "GaudiKernel/IProperty.h"
 
 #include "GaudiKernel/Algorithm.h"
-#include "GaudiKernel/PropertyMgr.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/Chrono.h"
 #include "GaudiKernel/Stat.h"

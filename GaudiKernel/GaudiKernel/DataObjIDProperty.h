@@ -4,7 +4,6 @@
 #include "GaudiKernel/StatusCode.h"
 #include "GaudiKernel/Parsers.h"
 #include "GaudiKernel/Property.h"
-#include "GaudiKernel/PropertyMgr.h"
 #include "GaudiKernel/ToStream.h"
 #include "GaudiKernel/DataObjID.h"
 
