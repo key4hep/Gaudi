@@ -136,3 +136,40 @@ BOOST_AUTO_TEST_CASE( implicit_conversion )
     BOOST_CHECK(convert_to<bool>(p) == false);
   }
 }
+
+BOOST_AUTO_TEST_CASE( copy_contructor )
+{
+  // std::cout << "copy_contructor " << std::endl;
+  StringProperty orig{"name", "value", "doc"};
+  StringProperty dest(orig);
+  BOOST_CHECK(dest.name() == "name");
+  BOOST_CHECK(dest.value() == "value");
+  BOOST_CHECK(dest.documentation() == "doc");
+}
+BOOST_AUTO_TEST_CASE( move_contructor )
+{
+  // std::cout << "move_contructor " << std::endl;
+  StringProperty orig{"name", "value", "doc"};
+  StringProperty dest(std::move(orig));
+  BOOST_CHECK(dest.name() == "name");
+  BOOST_CHECK(dest.value() == "value");
+  BOOST_CHECK(dest.documentation() == "doc");
+}
+BOOST_AUTO_TEST_CASE( copy_assignment )
+{
+  // std::cout << "copy_assignment " << std::endl;
+  StringProperty orig{"name", "value", "doc"};
+  StringProperty dest = orig;
+  BOOST_CHECK(dest.name() == "name");
+  BOOST_CHECK(dest.value() == "value");
+  BOOST_CHECK(dest.documentation() == "doc");
+}
+BOOST_AUTO_TEST_CASE( move_assignment )
+{
+  // std::cout << "move_assignment " << std::endl;
+  StringProperty orig{"name", "value", "doc"};
+  StringProperty dest = std::move(orig);
+  BOOST_CHECK(dest.name() == "name");
+  BOOST_CHECK(dest.value() == "value");
+  BOOST_CHECK(dest.documentation() == "doc");
+}

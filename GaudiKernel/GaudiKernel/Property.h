@@ -252,7 +252,7 @@ private:
   /// helper typedefs for SFINAE
   /// @{
   template <class T>
-  using is_this_type = std::is_same<Property, typename std::remove_reference<T>::type>;
+  using is_this_type = std::is_same<PropertyWithValue, typename std::remove_reference<T>::type>;
   template <class T>
   using not_copying = std::enable_if<!is_this_type<T>::value>;
   /// @}
