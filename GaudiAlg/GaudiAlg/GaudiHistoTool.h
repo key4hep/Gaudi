@@ -36,7 +36,7 @@
  */
 // ============================================================================
 
-struct GAUDI_API GaudiHistoTool: public GaudiHistos<GaudiTool>
+struct GAUDI_API GaudiHistoTool: GaudiHistos<GaudiTool>
 {
 
   using GaudiHistos<GaudiTool>::GaudiHistos;
