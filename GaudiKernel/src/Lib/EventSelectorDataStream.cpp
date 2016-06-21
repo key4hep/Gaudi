@@ -18,7 +18,6 @@
 #include "GaudiKernel/IConversionSvc.h"
 #include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/IPersistencySvc.h"
-#include "GaudiKernel/PropertyMgr.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/EventSelectorDataStream.h"
 

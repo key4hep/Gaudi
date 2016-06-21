@@ -312,10 +312,6 @@ public:
     return *this;
   }
 
-  /// Copy constructor.
-  // PropertyWithValue(const PropertyWithValue& other):
-  //   Property(other), value(other.m_value) {}
-
   /// Accessor to verifier.
   const VerifierType& verifier() const { return m_verifier; }
   /// Accessor to verifier.
@@ -329,8 +325,16 @@ public:
     useReadHandler();
     return m_value;
   }
-  bool setValue( const ValueType& v ) { *this = v; return true; }
-  bool set( const ValueType& v ) { *this = v; return true; }
+  bool setValue( const ValueType& v )
+  {
+    *this = v;
+    return true;
+  }
+  bool set( const ValueType& v )
+  {
+    *this = v;
+    return true;
+  }
   /// @}
 
   /// @name Helpers for easy use of string and vector properties.
