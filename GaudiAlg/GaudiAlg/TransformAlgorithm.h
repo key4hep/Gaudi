@@ -1,6 +1,6 @@
 #ifndef TRANSFORM_ALGORITHM_H
 #define TRANSFORM_ALGORITHM_H
-#include "GaudiKernel/index_sequence.h"
+#include <utility>
 #include "GaudiAlg/GaudiAlgorithm.h"
 #include "GaudiAlg/Algorithm_details.h"
 //
@@ -27,14 +27,14 @@ public:
                        const KeyValue& output);
 
     // derived classes can NOT implement execute
-    StatusCode execute() override final { return invoke(utility::make_index_sequence<N>{}); }
+    StatusCode execute() override final { return invoke(std::make_index_sequence<N>{}); }
 
     // instead they MUST implement this operator
     virtual Out operator()(const In&...) const = 0;
 
 private:
     template <std::size_t... I>
-    StatusCode invoke(utility::index_sequence<I...>);
+    StatusCode invoke(std::index_sequence<I...>);
 
     template <typename KeyValues, std::size_t... I>
     void declare_input(const KeyValues& inputs, std::index_sequence<I...>) {
@@ -73,7 +73,7 @@ TransformAlgorithm<Out(const In&...)>::TransformAlgorithm( const std::string& na
 template <typename Out, typename... In>
 template <std::size_t... I>
 StatusCode
-TransformAlgorithm<Out(const In&...)>::invoke(utility::index_sequence<I...>) {
+TransformAlgorithm<Out(const In&...)>::invoke(std::index_sequence<I...>) {
     auto result = detail::as_const(*this)( detail::as_const(*std::get<I>(m_inputs).get())... );
     m_output.put( new Out( std::move(result) ) );
     return StatusCode::SUCCESS;
