@@ -5,7 +5,7 @@
 #include "GaudiKernel/IProperty.h"
 #include "GaudiKernel/IJobOptionsSvc.h"
 #include "GaudiKernel/Property.h"
-#include "GaudiKernel/PropertyMgr.h"
+#include "GaudiKernel/PropertyHolder.h"
 #include "GaudiKernel/Service.h"
 
 #include "SvcCatalog.h"

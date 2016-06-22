@@ -72,7 +72,7 @@ endif()
 
 gaudi_add_unit_test(AttribStringParser_test tests/src/test_AttribStringParser.cpp
                     LINK_LIBRARIES GaudiKernel)
-gaudi_add_unit_test(test_PropertyMgr tests/src/test_PropertyMgr.cpp
+gaudi_add_unit_test(test_PropertyHolder tests/src/test_PropertyHolder.cpp
                     LINK_LIBRARIES GaudiKernel
                     TYPE Boost)
 gaudi_add_unit_test(test_Property tests/src/test_Property.cpp

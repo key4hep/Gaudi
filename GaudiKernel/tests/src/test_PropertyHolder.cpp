@@ -1,14 +1,14 @@
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE test_PropertyMgr
+#define BOOST_TEST_MODULE test_PropertyHolder
 #include <boost/test/unit_test.hpp>
 
-#include "GaudiKernel/PropertyMgr.h"
+#include "GaudiKernel/PropertyHolder.h"
 #include "GaudiKernel/GaudiException.h"
 
 namespace {
   const std::string emptyName{};
-  /// Helper to allow instantiation of PropertyMgr.
-  struct AnonymousPropertyMgr: public PropertyMgr<implements<IProperty, INamedInterface>> {
+  /// Helper to allow instantiation of PropertyHolder.
+  struct AnonymousPropertyHolder: public PropertyHolder<implements<IProperty, INamedInterface>> {
     const std::string& name() const override { return emptyName; }
   };
 }
@@ -19,7 +19,7 @@ BOOST_AUTO_TEST_CASE( declareProperty )
   StringProperty p2{"v2"};
   StringProperty p3{"v3"};
   {
-    AnonymousPropertyMgr mgr;
+    AnonymousPropertyHolder mgr;
     mgr.declareProperty("p1", p1);
     mgr.declareProperty("p2", p2);
 

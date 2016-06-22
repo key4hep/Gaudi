@@ -8,7 +8,7 @@
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/ISvcManager.h"
 #include "GaudiKernel/IAddressCreator.h"
-#include "GaudiKernel/PropertyMgr.h"
+#include "GaudiKernel/PropertyHolder.h"
 #include "GaudiKernel/EventSelectorDataStream.h"
 #include "GaudiKernel/DataStreamTool.h"
 #include "GaudiKernel/Service.h"

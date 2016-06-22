@@ -1,6 +1,6 @@
 // Include Files
 #include "GaudiKernel/Service.h"
-#include "GaudiKernel/PropertyMgr.h"
+#include "GaudiKernel/PropertyHolder.h"
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/ISvcLocator.h"

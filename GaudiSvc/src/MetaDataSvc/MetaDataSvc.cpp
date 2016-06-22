@@ -22,7 +22,7 @@
 
 #include "GaudiKernel/Bootstrap.h"
 
-#include "GaudiKernel/PropertyMgr.h"
+#include "GaudiKernel/PropertyHolder.h"
 #include "GaudiKernel/Service.h"
 #include "GaudiKernel/SmartIF.h"
 

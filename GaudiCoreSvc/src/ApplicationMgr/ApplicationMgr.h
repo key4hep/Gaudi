@@ -12,7 +12,7 @@
 #include "GaudiKernel/ISvcManager.h"
 #include "GaudiKernel/Service.h"
 #include "GaudiKernel/CommonMessaging.h"
-#include "GaudiKernel/PropertyMgr.h"
+#include "GaudiKernel/PropertyHolder.h"
 #include "GaudiKernel/AppReturnCode.h"
 
 // STL include files
@@ -44,7 +44,7 @@ class IJobOptionsSvc;
 
     @author Pere Mato
 */
-class ApplicationMgr : public PropertyMgr<CommonMessaging<implements<IAppMgrUI,
+class ApplicationMgr : public PropertyHolder<CommonMessaging<implements<IAppMgrUI,
                                                                      IEventProcessor,
                                                                      IService,
                                                                      IStateful,

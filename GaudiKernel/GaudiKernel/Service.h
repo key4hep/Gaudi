@@ -8,7 +8,7 @@
 #include "GaudiKernel/ServiceLocatorHelper.h"
 #include "GaudiKernel/IProperty.h"
 #include "GaudiKernel/IStateful.h"
-#include "GaudiKernel/PropertyMgr.h"
+#include "GaudiKernel/PropertyHolder.h"
 #include "GaudiKernel/Property.h"
 #include "GaudiKernel/IAuditorSvc.h"
 #include "GaudiKernel/CommonMessaging.h"
@@ -33,7 +33,7 @@ class ServiceManager;
  *  @author Pere Mato
  *  @author Marco Clemencic
  */
-class GAUDI_API Service: public PropertyMgr<CommonMessaging<implements<IService,
+class GAUDI_API Service: public PropertyHolder<CommonMessaging<implements<IService,
                                                                        IProperty,
                                                                        IStateful>>> {
 public:

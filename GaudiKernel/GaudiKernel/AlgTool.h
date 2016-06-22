@@ -9,7 +9,7 @@
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/IToolSvc.h"
-#include "GaudiKernel/PropertyMgr.h"
+#include "GaudiKernel/PropertyHolder.h"
 #include "GaudiKernel/IAuditorSvc.h"
 #include "GaudiKernel/IMonitorSvc.h"
 #include "GaudiKernel/IStateful.h"
@@ -42,7 +42,7 @@ class ToolHandleInfo;
  *  @author Gloria Corti
  *  @author Pere Mato
  */
-class GAUDI_API AlgTool: public PropertyMgr<CommonMessaging<implements<IAlgTool,
+class GAUDI_API AlgTool: public PropertyHolder<CommonMessaging<implements<IAlgTool,
                                                                        IDataHandleHolder,
                                                                        IProperty,
                                                                        IStateful>>> {
@@ -155,7 +155,7 @@ protected:
   void declareInterface( I* i ) { m_interfaceList.emplace_back( I::interfaceID(), i ); }
 public:
 
-  using PropertyMgrImpl::declareProperty;
+  using PropertyHolderImpl::declareProperty;
 
   template<class T>
 
@@ -163,7 +163,7 @@ public:
                               ToolHandle<T>& hndl,
                               const std::string& doc = "none" ) {
     this->declareTool(hndl).ignore();
-    return PropertyMgrImpl::declareProperty(name, hndl, doc);
+    return PropertyHolderImpl::declareProperty(name, hndl, doc);
 
   }
 
@@ -185,7 +185,7 @@ public:
                               ToolHandleArray<T>& hndlArr,
                               const std::string& doc = "none" ) {
     m_toolHandleArrays.push_back(&hndlArr);
-    return PropertyMgrImpl::declareProperty(name, hndlArr, doc);
+    return PropertyHolderImpl::declareProperty(name, hndlArr, doc);
   }
 
  protected:

@@ -709,7 +709,7 @@ private:
       hndl.setOwner(this);
     }
 
-    return PropertyMgr::declareProperty(name, hndl, doc);
+    return PropertyHolder::declareProperty(name, hndl, doc);
   }
 
 };

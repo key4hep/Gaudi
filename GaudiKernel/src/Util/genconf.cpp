@@ -931,7 +931,7 @@ int createAppMgr()
   propMgr->setProperty( "OutputLevel", "7");         // No other printout messages
   appUI->configure();
   SmartIF<IProperty> msgSvc{SmartIF<IMessageSvc>{iface}};
-  msgSvc->setProperty("setWarning", "['DefaultName', 'PropertyMgr']");
+  msgSvc->setProperty("setWarning", "['DefaultName', 'PropertyHolder']");
   msgSvc->setProperty("Format", "%T %0W%M");
   return EXIT_SUCCESS;
 }

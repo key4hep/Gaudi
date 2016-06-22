@@ -6,7 +6,7 @@
 #include "GaudiKernel/IAuditor.h"
 #include "GaudiKernel/IService.h"
 #include "GaudiKernel/ISvcLocator.h"  /*used by service(..)*/
-#include "GaudiKernel/PropertyMgr.h"
+#include "GaudiKernel/PropertyHolder.h"
 #include "GaudiKernel/CommonMessaging.h"
 #include <Gaudi/PluginService.h>
 #include <string>
@@ -32,7 +32,7 @@ class Algorithm;
     @author Marco Clemencic
     @date   2008-03
 */
-class GAUDI_API Auditor : public PropertyMgr<CommonMessaging<implements<IAuditor,
+class GAUDI_API Auditor : public PropertyHolder<CommonMessaging<implements<IAuditor,
                                                                         IProperty>>> {
 public:
 #ifndef __REFLEX__

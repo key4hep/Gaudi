@@ -848,7 +848,7 @@ class GAUDI_API GaudiTool: public GaudiCommon<AlgTool>
       hndl.setOwner(this);
     }
 
-    return PropertyMgr::declareProperty(name, hndl, doc);
+    return PropertyHolder::declareProperty(name, hndl, doc);
   }
 
 

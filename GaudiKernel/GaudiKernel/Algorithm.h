@@ -6,7 +6,7 @@
 #include "GaudiKernel/IProperty.h"
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/IService.h"
-#include "GaudiKernel/PropertyMgr.h"
+#include "GaudiKernel/PropertyHolder.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/IStateful.h"
@@ -71,7 +71,7 @@ class ToolHandleInfo;
  *  @author David Quarrie
  *  @date   1998
  */
-class GAUDI_API Algorithm: public PropertyMgr<CommonMessaging<implements<IAlgorithm,
+class GAUDI_API Algorithm: public PropertyHolder<CommonMessaging<implements<IAlgorithm,
                                                                          IDataHandleHolder,
                                                                          IProperty,
                                                                          IStateful>>> {
@@ -374,7 +374,7 @@ public:
   StatusCode setProperties();
 
   // ==========================================================================
-  using PropertyMgrImpl::declareProperty;
+  using PropertyHolderImpl::declareProperty;
 
   // declare Tools to the Algorithms
   template <class T>
@@ -384,7 +384,7 @@ public:
 
     this->declareTool(hndl).ignore();
 
-    return PropertyMgrImpl::declareProperty(name, hndl, doc);
+    return PropertyHolderImpl::declareProperty(name, hndl, doc);
   }
 
   // ==========================================================================
@@ -395,7 +395,7 @@ public:
                               ToolHandleArray<T>& hndlArr,
                               const std::string& doc = "none" ) {
     m_toolHandleArrays.push_back( &hndlArr );
-    return PropertyMgrImpl::declareProperty(name, hndlArr, doc);
+    return PropertyHolderImpl::declareProperty(name, hndlArr, doc);
   }
 
   // ==========================================================================

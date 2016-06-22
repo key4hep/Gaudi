@@ -15,7 +15,7 @@
 #include "GaudiKernel/GaudiHandle.h"
 #include "GaudiKernel/IProperty.h"
 #include "GaudiKernel/Property.h"
-#include "GaudiKernel/PropertyMgr.h"
+#include "GaudiKernel/PropertyHolder.h"
 #include "GaudiKernel/SmartIF.h"
 // ============================================================================
 // Boost

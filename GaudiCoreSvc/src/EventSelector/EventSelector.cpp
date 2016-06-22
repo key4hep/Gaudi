@@ -8,7 +8,7 @@
 #include "GaudiKernel/IToolSvc.h"
 #include "GaudiKernel/IDataStreamTool.h"
 #include "GaudiKernel/IAddressCreator.h"
-#include "GaudiKernel/PropertyMgr.h"
+#include "GaudiKernel/PropertyHolder.h"
 #include "GaudiKernel/EventSelectorDataStream.h"
 
 #include "EventSelector.h"
