@@ -81,7 +81,7 @@ public:
    *  (Alias to msgSvc())
    *  \deprecated{Will be removed in v28r1, see https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/80}
    */
-  [[deprecated("will be removed in v28r1, see https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/80")]]
+  [[deprecated("will be removed in v28r1, use msgSvc() instead, see https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/80")]]
   inline SmartIF<IMessageSvc>& messageService() const {
     return msgSvc();
   }
