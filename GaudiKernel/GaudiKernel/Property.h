@@ -15,24 +15,17 @@
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/ToStream.h"
 // ============================================================================
-
-// ============================================================================
-class Property;
-// ============================================================================
-
-// ============================================================================
 /// The output operator for friendly printout
 // ============================================================================
+class Property;
 GAUDI_API std::ostream& operator<<( std::ostream& stream, const Property& prop );
 // ============================================================================
-/** @class Property Property.h GaudiKernel/Property.h
+/** Property base class allowing Property* collections to be "homogeneous"
  *
- *  Property base class allowing Property* collections to be "homogeneous"
- *
- * @author Paul Maley
- * @author CTDay
- * @author Vanya BELYAEV ibelyaev@physics.syr.edu
- * @author Marco Clemencic
+ * \author Paul Maley
+ * \author CTDay
+ * \author Vanya BELYAEV ibelyaev@physics.syr.edu
+ * \author Marco Clemencic
  */
 class GAUDI_API Property
 {
@@ -116,11 +109,11 @@ protected:
   Property& operator=( const Property& ) = default;
 
 private:
-  // property name
+  /// property name
   std::string m_name;
-  // property doc string
+  /// property doc string
   std::string m_documentation;
-  // property type
+  /// property type
   const std::type_info* m_typeinfo;
 
 protected:
@@ -129,6 +122,7 @@ protected:
   // call back functor for update
   std::function<void( Property& )> m_updateCallBack;
 };
+
 namespace Gaudi
 {
   namespace Details
@@ -224,6 +218,7 @@ namespace Gaudi
     }
   }
 }
+
 // ============================================================================
 /** @class PropertyWithValue
  *  Helper intermediate class which

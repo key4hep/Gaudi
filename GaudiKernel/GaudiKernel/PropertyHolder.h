@@ -49,14 +49,25 @@ namespace Gaudi
     }
   }
 }
-/**
- *  Property manager helper class. This class is used by algorithms and services
- *  for helping to manage its own set of properties. It implements the IProperty
- *  interface.
+/** Helper class to implement the IProperty interface.
  *
- *  @author Paul Maley
- *  @author David Quarrie
- *  @author Marco Clemencic
+ *  PropertyHolder is used by components base classes (Algorithm, Service,
+ *  etc.) to provide a default implementation the IProperty interface.
+ *
+ *  When needing to implement the IProperty interface in a class, it is
+ *  enough to wrap the base of the class with PropertyHolder, as in
+ *
+ *  \code{.cpp}
+ *  class MyClass : public PropertyHolder<BaseClass> {
+ *    // ...
+ *  };
+ *  \endcode
+ *
+ *  where \c BaseClass should inherit from IProperty and INamedInterface.
+ *
+ *  \author Paul Maley
+ *  \author David Quarrie
+ *  \author Marco Clemencic
  */
 template <class BASE>
 class GAUDI_API PropertyHolder : public BASE
@@ -65,18 +76,35 @@ class GAUDI_API PropertyHolder : public BASE
                  "PropertyHolder template argument must inherit from IProperty and INamedInterface" );
 
 public:
+  /// Typedef used to refer to this class from derived classes, as in
+  /// \code{.cpp}
+  /// class MyClass : public PropertyHolder<BaseClass> {
+  ///   using PropertyHolderImpl::declareProperty;
+  /// };
+  /// \endcode
   using PropertyHolderImpl = PropertyHolder<BASE>;
-  // copy constructor
-  PropertyHolder() = default;
-  // copy constructor
-  PropertyHolder( const PropertyHolder& ) = delete;
-  // assignment operator
-  PropertyHolder& operator=( const PropertyHolder& ) = delete;
-  /// virtual destructor
+
+  PropertyHolder()           = default;
   ~PropertyHolder() override = default;
 
+  /// \{
+  /// prevent copies
+  PropertyHolder( const PropertyHolder& ) = delete;
+  PropertyHolder& operator=( const PropertyHolder& ) = delete;
+  /// \}
+
 public:
-  /// Declare a property (templated)
+  /// Declare a property.
+  /// Record a Property instance to be managed by PropertyHolder.
+  inline Property& declareProperty( Property& prop )
+  {
+    assertUniqueName( prop.name() );
+    m_properties.push_back( &prop );
+    return prop;
+  }
+
+  /// Helper to wrap a regular data member and use it as a regular property.
+  /// \deprecated{Prefer the signatures using a a fully initialized Property instance.}
   template <class TYPE>
   Property* declareProperty( const std::string& name, TYPE& value, const std::string& doc = "none" )
   {
@@ -87,43 +115,36 @@ public:
     m_properties.push_back( p );
     return p;
   }
-  /// Declare a property (specialization)
-  inline Property& declareProperty( Property& prop )
-  {
-    assertUniqueName( prop.name() );
-    m_properties.push_back( &prop );
-    return prop;
-  }
-  /// Declare a property (specialization)
+
+  /// Declare a Property instance setting name and documentation.
+  /// \deprecated{Prefer the signatures using a fully initialized Property instance.}
   template <class TYPE, class VERIFIER>
-  Property* declareProperty( const std::string& name, SimpleProperty<TYPE, VERIFIER>& prop,
+  Property* declareProperty( const std::string& name, PropertyWithValue<TYPE, VERIFIER>& prop,
                              const std::string& doc = "none" )
   {
     assertUniqueName( name );
     Property* p = &prop;
-
     p->setName( name );
     p->setDocumentation( doc );
     m_properties.push_back( p );
-
     return p;
   }
-  /// Declare a property (specialization)
-  template <class TYPE, class VERIFIER>
-  Property* declareProperty( const std::string& name, SimplePropertyRef<TYPE, VERIFIER>& prop,
-                             const std::string& doc = "none" )
+
+  /// Declare a remote property.
+  /// Bind \c name to the property \c rname of \c rsvc.
+  Property* declareRemoteProperty( const std::string& name, IProperty* rsvc, const std::string& rname = "" )
   {
-    assertUniqueName( name );
-    Property* p = &prop;
-
-    p->setName( name );
-    p->setDocumentation( doc );
-    m_properties.push_back( p );
-
+    if ( !rsvc ) {
+      return nullptr;
+    }
+    const std::string& nam = rname.empty() ? name : rname;
+    Property* p            = property( nam, rsvc->getProperties() );
+    m_remoteProperties.emplace_back( name, std::make_pair( rsvc, nam ) );
     return p;
   }
-  // partial specializations for various GaudiHandles
-  /// Declare a property (specialization)
+
+  /// Specializations for various GaudiHandles
+  /// \{
   template <class TYPE>
   Property* declareProperty( const std::string& name, ToolHandle<TYPE>& ref, const std::string& doc = "none" )
   {
@@ -136,7 +157,6 @@ public:
 
     return p;
   }
-  /// Declare a property (specialization)
   template <class TYPE>
   Property* declareProperty( const std::string& name, ServiceHandle<TYPE>& ref, const std::string& doc = "none" )
   {
@@ -149,7 +169,6 @@ public:
 
     return p;
   }
-  /// Declare a property (specialization)
   template <class TYPE>
   Property* declareProperty( const std::string& name, ToolHandleArray<TYPE>& ref, const std::string& doc = "none" )
   {
@@ -162,7 +181,6 @@ public:
 
     return p;
   }
-  /// Declare a property (specialization)
   template <class TYPE>
   Property* declareProperty( const std::string& name, ServiceHandleArray<TYPE>& ref, const std::string& doc = "none" )
   {
@@ -175,7 +193,6 @@ public:
 
     return p;
   }
-  /// Declare a property (specialization)
   template <class TYPE>
   Property* declareProperty( const std::string& name, DataObjectHandle<TYPE>& ref, const std::string& doc = "none" )
   {
@@ -187,17 +204,8 @@ public:
 
     return p;
   }
-  /// Declare a remote property
-  Property* declareRemoteProperty( const std::string& name, IProperty* rsvc, const std::string& rname = "" )
-  {
-    if ( !rsvc ) {
-      return nullptr;
-    }
-    const std::string& nam = rname.empty() ? name : rname;
-    Property* p            = property( nam, rsvc->getProperties() );
-    m_remoteProperties.emplace_back( name, std::make_pair( rsvc, nam ) );
-    return p;
-  }
+  /// \}
+
   // ==========================================================================
   // IProperty implementation
   // ==========================================================================
@@ -216,7 +224,7 @@ public:
     return StatusCode::FAILURE;
   }
   // ==========================================================================
-  /** set the property from the property formatted string
+  /** set the property from the formatted string
    *  @see IProperty
    */
   StatusCode setProperty( const std::string& s ) override
@@ -368,8 +376,8 @@ private:
     return ( it != props.end() ) ? *it : nullptr; // RETURN
   }
 
-  /// Throw an exception if the name is already present in the
-  /// list of properties (see GAUDI-1023).
+  /// Issue a runtime warning if the name is already present in the
+  /// list of properties (see <a href="https://its.cern.ch/jira/browse/GAUDI-1023">GAUDI-1023</a>).
   void assertUniqueName( const std::string& name ) const
   {
     if ( UNLIKELY( hasProperty( name ) ) ) {
@@ -383,16 +391,15 @@ private:
     }
   }
 
-  // Some typedef to simply typing
   typedef std::vector<Property*> Properties;
   typedef std::pair<std::string, std::pair<IProperty*, std::string>> RemProperty;
   typedef std::vector<RemProperty> RemoteProperties;
 
-  /// Collection of all declared properties
-  Properties m_properties; // local  properties
-  /// Collection of all declared remote properties
-  RemoteProperties m_remoteProperties; // Remote properties
-  /// Properties to be deleted
-  std::vector<std::unique_ptr<Property>> m_todelete; // properties to be deleted
+  /// Collection of all declared properties.
+  Properties m_properties;
+  /// Collection of all declared remote properties.
+  RemoteProperties m_remoteProperties;
+  /// Properties owned by PropertyHolder, to be deleted.
+  std::vector<std::unique_ptr<Property>> m_todelete;
 };
 #endif
