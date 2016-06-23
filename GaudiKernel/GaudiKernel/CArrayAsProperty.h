@@ -97,6 +97,7 @@ public:
   void set(const ValueType& v) {
     *this = v;
   }
+  Property* clone() const override { return new PropertyWithValue( *this ); }
   /// @}
 
   /// @name Helpers for easy use of string and vector properties.

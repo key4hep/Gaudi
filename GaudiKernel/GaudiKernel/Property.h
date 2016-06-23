@@ -86,14 +86,15 @@ public:
 public:
   /// virtual destructor
   virtual ~Property() = default;
-  /// clone: "virtual constructor"
-  // virtual Property*          clone     () const = 0 ;
   /// set the new value for the property name
   void setName( std::string value ) { m_name = std::move( value ); }
   /// set the documentation string
   void setDocumentation( std::string documentation ) { m_documentation = std::move( documentation ); }
   /// the printout of the property value
   virtual std::ostream& fillStream( std::ostream& ) const;
+  /// clones the current property
+  /// \deprecated{provided for backward compatibility, will be removed in v28r1}
+  [[deprecated( "provided for backward compatibility, will be removed in v28r1" )]] virtual Property* clone() const = 0;
 
 protected:
   /// constructor from the property name and the type
@@ -312,7 +313,7 @@ public:
   /// Accessor to verifier.
   VerifierType& verifier() { return m_verifier; }
 
-  /// Backward compatibility (deprecated)
+  /// Backward compatibility \deprecated{will be removed in v28r1}
   /// @{
   const ValueType& value() const { return *this; }
   ValueType& value()
@@ -330,6 +331,7 @@ public:
     *this = v;
     return true;
   }
+  Property* clone() const override { return new PropertyWithValue( *this ); }
   /// @}
 
   /// @name Helpers for easy use of string and vector properties.
@@ -535,9 +537,7 @@ public:
     return *this;
   }
 
-  // GaudiHandleProperty* clone() const override  {
-  //   return new GaudiHandleProperty( *this );
-  // }
+  GaudiHandleProperty* clone() const override { return new GaudiHandleProperty( *this ); }
 
   bool load( Property& destination ) const override { return destination.assign( *this ); }
 
@@ -577,9 +577,7 @@ public:
     return *this;
   }
 
-  // GaudiHandleArrayProperty* clone() const override {
-  //   return new GaudiHandleArrayProperty( *this );
-  // }
+  GaudiHandleArrayProperty* clone() const override { return new GaudiHandleArrayProperty( *this ); }
 
   bool load( Property& destination ) const override { return destination.assign( *this ); }
 
