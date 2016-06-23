@@ -61,6 +61,9 @@ namespace Gaudi
 template <class BASE>
 class GAUDI_API PropertyHolder : public BASE
 {
+  static_assert( std::is_base_of<IProperty, BASE>::value && std::is_base_of<INamedInterface, BASE>::value,
+                 "PropertyHolder template argument must inherit from IProperty and INamedInterface" );
+
 public:
   using PropertyHolderImpl = PropertyHolder<BASE>;
   // copy constructor
