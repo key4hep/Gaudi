@@ -116,6 +116,15 @@ public:
     return p;
   }
 
+  /// \deprecated{Kept for backward compatibility, use the non-const version instead, will be removed in v28r1.}
+  template <class TYPE>
+  [[deprecated(
+      "Kept for backward compatibility, use the non-const version instead, will be removed in v28r1" )]] Property*
+  declareProperty( const std::string& name, TYPE& value, const std::string& doc = "none" ) const
+  {
+    return const_cast<PropertyHolder*>( this )->declareProperty<TYPE>( name, value, doc );
+  }
+
   /// Declare a Property instance setting name and documentation.
   /// \deprecated{Prefer the signatures using a fully initialized Property instance.}
   template <class TYPE, class VERIFIER>
