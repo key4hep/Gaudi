@@ -372,14 +372,14 @@ StatusCode HiveSlimEventLoopMgr::executeEvent(void* createdEvts_IntPtr)    {
     }
 
   // Fire BeginEvent "Incident"
-  m_incidentSvc->fireIncident(Incident(name(),IncidentType::BeginEvent));
+  m_incidentSvc->fireIncident(std::unique_ptr<Incident>(new Incident(name(),IncidentType::BeginEvent,*evtContext)));
 
   // Now add event to the scheduler
   verbose() << "Adding event " << evtContext->evt()
-	 << ", slot " << evtContext->slot()
-          << " to the scheduler" << endmsg;
-
-  m_incidentSvc->fireIncident(Incident(name(), IncidentType::BeginProcessing));
+	    << ", slot " << evtContext->slot()
+	    << " to the scheduler" << endmsg;
+  
+  m_incidentSvc->fireIncident(std::unique_ptr<Incident>(new Incident(name(), IncidentType::BeginProcessing,*evtContext)));
 
   StatusCode addEventStatus = m_schedulerSvc->pushNewEvent(evtContext);
 
@@ -627,6 +627,7 @@ StatusCode HiveSlimEventLoopMgr::drainScheduler(int& finishedEvts){
     debug() << "Context not obtained: a problem in the scheduling?" << endmsg;
 //     return StatusCode::FAILURE;
   }
+
   finishedEvtContexts.push_back(finishedEvtContext);
 
   // Let's see if we can pop other event contexts
@@ -646,10 +647,13 @@ StatusCode HiveSlimEventLoopMgr::drainScheduler(int& finishedEvts){
       fatal() << "Failed event detected"<< endmsg;
       finalSC = StatusCode::FAILURE;
     }
-
-    m_incidentSvc->fireIncident(Incident(name(), IncidentType::EndProcessing));
-    m_incidentSvc->fireIncident(Incident(name(),IncidentType::EndEvent));
-
+    //shouldn't these incidents move to the forward scheduler? 
+    // If we want to consume incidents with an algorithm at the end of the graph
+    // we need to add this to forward scheduler lambda action,
+    // otherwise we have to do this serially on this thread!
+    m_incidentSvc->fireIncident(Incident(name(), IncidentType::EndProcessing,*thisFinishedEvtContext));
+    m_incidentSvc->fireIncident(Incident(name(),IncidentType::EndEvent,*thisFinishedEvtContext));
+    
     debug() << "Clearing slot " << thisFinishedEvtContext->slot()
 	    << " (event " << thisFinishedEvtContext->evt()
           << ") of the whiteboard" << endmsg;
