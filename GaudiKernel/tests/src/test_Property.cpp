@@ -142,12 +142,25 @@ BOOST_AUTO_TEST_CASE( implicit_conversion )
 
 BOOST_AUTO_TEST_CASE( copy_contructor )
 {
-  // std::cout << "copy_contructor " << std::endl;
-  StringProperty orig{"name", "value", "doc"};
-  StringProperty dest( orig );
-  BOOST_CHECK( dest.name() == "name" );
-  BOOST_CHECK( dest.value() == "value" );
-  BOOST_CHECK( dest.documentation() == "doc" );
+  {
+    // std::cout << "copy_contructor " << std::endl;
+    StringProperty orig{"name", "value", "doc"};
+    StringProperty dest( orig );
+    BOOST_CHECK( dest.name() == "name" );
+    BOOST_CHECK( dest.value() == "value" );
+    BOOST_CHECK( dest.documentation() == "doc" );
+  }
+  {
+    // std::cout << "copy_contructor " << std::endl;
+    std::string data{"value"};
+    StringPropertyRef orig{"name", data, "doc"};
+    StringPropertyRef dest( orig );
+    BOOST_CHECK( dest.name() == "name" );
+    BOOST_CHECK( dest.documentation() == "doc" );
+    BOOST_CHECK( dest.value() == "value" );
+    data = "newvalue";
+    BOOST_CHECK( dest.value() == "newvalue" );
+  }
 }
 BOOST_AUTO_TEST_CASE( move_contructor )
 {
