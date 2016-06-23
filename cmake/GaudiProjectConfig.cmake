@@ -723,25 +723,25 @@ __path__ = [d for d in [os.path.join(d, '${pypack}') for d in sys.path if d]
   gaudi_generate_project_manifest(${CMAKE_CONFIG_OUTPUT_DIRECTORY}/manifest.xml ${ARGV})
   install(FILES ${CMAKE_CONFIG_OUTPUT_DIRECTORY}/manifest.xml DESTINATION .)
 
-  add_custom_target(apply-coding-conventions)
+  add_custom_target(apply-formatting)
   if(clang_format_cmd)
     file(GLOB_RECURSE _all_sources RELATIVE ${CMAKE_SOURCE_DIR} *.h *.cpp *.icpp)
-    add_custom_target(apply-coding-conventions-c++
+    add_custom_target(apply-formatting-c++
       COMMAND ${clang_format_cmd}
                   -style=file
                   -i ${_all_sources}
       WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
       COMMENT "Applying coding conventions to C++ sources"
     )
-    add_dependencies(apply-coding-conventions apply-coding-conventions-c++)
+    add_dependencies(apply-formatting apply-formatting-c++)
   endif()
   if(python_reindent_cmd)
-    add_custom_target(apply-coding-conventions-python
+    add_custom_target(apply-formatting-python
       COMMAND ${python_reindent_cmd}
                   --recurse --nobackup ${CMAKE_SOURCE_DIR}
       COMMENT "Applying coding conventions to Python sources"
     )
-    add_dependencies(apply-coding-conventions apply-coding-conventions-python)
+    add_dependencies(apply-formatting apply-formatting-python)
   endif()
 endmacro()
 

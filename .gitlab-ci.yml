@@ -24,7 +24,7 @@ coding-conventions:
   tags:
     - slc6
   script:
-    - make apply-coding-conventions
+    - make apply-formatting
     - git diff --stat --exit-code
 
 doxygen:
