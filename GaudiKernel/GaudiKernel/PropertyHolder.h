@@ -1,5 +1,5 @@
-#ifndef GAUDIKERNEL_PROPERTYMGR_H
-#define GAUDIKERNEL_PROPERTYMGR_H
+#ifndef GAUDIKERNEL_PROPERTYHOLDER_H
+#define GAUDIKERNEL_PROPERTYHOLDER_H
 // ============================================================================
 // Include files
 // ============================================================================
