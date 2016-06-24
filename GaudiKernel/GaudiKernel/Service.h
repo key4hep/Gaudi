@@ -196,8 +196,6 @@ public:
 protected:
   /** Standard Destructor                        */
   ~Service() override;
-  /** Service output level                       */
-  IntegerProperty m_outputLevel = MSG::NIL;
   /** Service state                              */
   Gaudi::StateMachine::State    m_state = Gaudi::StateMachine::OFFLINE;
   /** Service state                              */
@@ -220,18 +218,20 @@ private:
 
   void setServiceManager(ISvcManager* ism) override;
 
+protected:
+  // Properties
+
+  IntegerProperty m_outputLevel{this, "OutputLevel", MSG::NIL, "output level"};
+  BooleanProperty m_auditorInitialize{this, "AuditInitialize", false, "trigger auditor on initialize()"};
+  BooleanProperty m_auditorStart{this, "AuditStart", false, "trigger auditor on start()"};
+  BooleanProperty m_auditorStop{this, "AuditStop", false, "trigger auditor on stop()"};
+  BooleanProperty m_auditorFinalize{this, "AuditFinalize", false, "trigger auditor on finalize()"};
+  BooleanProperty m_auditorReinitialize{this, "AuditReinitialize", false, "trigger auditor on reinitialize()"};
+  BooleanProperty m_auditorRestart{this, "AuditRestart", false, "trigger auditor on restart()"};
+
+
   /** Auditor Service                            */
   mutable SmartIF<IAuditorSvc>  m_pAuditorSvc;
-  BooleanProperty       m_auditInit;
-  bool                  m_auditorInitialize;
-  bool                  m_auditorStart;
-  bool                  m_auditorStop;
-  bool                  m_auditorFinalize;
-  bool                  m_auditorReinitialize;
-  bool                  m_auditorRestart;
-
-  /** callback for output level property */
-  void initOutputLevel(Property& prop);
 };
 
 #ifndef GAUDI_NEW_PLUGIN_SERVICE

@@ -36,8 +36,10 @@ void Service::sysInitialize_imp() {
                                       // check if we want to audit the initialize
                                       (m_auditorInitialize) ? auditorSvc().get() : nullptr,
                                       IAuditor::Initialize);
-    if ((name() != "MessageSvc") && msgSvc()) // pre-set the outputLevel from the MessageSvc value
-      m_outputLevel = msgSvc()->outputLevel(name());
+
+    m_initSC = setProperties();
+    if ( ! m_initSC ) return;
+
     m_initSC = initialize(); // This should change the state to Gaudi::StateMachine::CONFIGURED
     if (m_initSC.isSuccess())
       m_state = m_targetState;
@@ -66,11 +68,9 @@ void Service::sysInitialize_imp() {
 
 //--- IService::initialize
 StatusCode Service::initialize() {
-  // Set the Algorithm's properties
-  StatusCode sc = setProperties();
-  ON_DEBUG debug() <<  "Service base class initialized successfully" << endmsg;
-  m_state = Gaudi::StateMachine::ChangeState(Gaudi::StateMachine::CONFIGURE,m_state);
-  return sc ;
+  ON_DEBUG debug() << "Service base class initialized successfully" << endmsg;
+  m_state = Gaudi::StateMachine::ChangeState( Gaudi::StateMachine::CONFIGURE, m_state );
+  return StatusCode::SUCCESS ;
 }
 
 // IService::sysStart
@@ -342,8 +342,14 @@ StatusCode Service::setProperties() {
       return StatusCode::FAILURE;
     }
   }
-  if (name() != "MessageSvc") updateMsgStreamOutputLevel( m_outputLevel );
-  return StatusCode::SUCCESS;
+  // initialize output level (except for MessageSvc)
+  if ( name() != "MessageSvc" && msgSvc() ) {
+    if ( m_outputLevel == MSG::NIL ) // if not defined (via options)
+      m_outputLevel = msgLevel();    // set it from MessageSvc
+    else                             // otherwise notify MessageSvc
+      updateMsgStreamOutputLevel( m_outputLevel );
+  }
+  return sc;
 }
 
 
@@ -353,42 +359,25 @@ Service::Service(std::string name, ISvcLocator* svcloc) :
   m_name( std::move(name) ),
   m_svcLocator(  svcloc )
 {
-  // Declare common Service properties with their defaults
-  if ( (name != "MessageSvc") && msgSvc() )  {
-    // In genconf a service is instantiated without the ApplicationMgr
-    m_outputLevel = msgSvc()->outputLevel();
-  }
-  declareProperty("OutputLevel", m_outputLevel);
-  m_outputLevel.declareUpdateHandler(&Service::initOutputLevel, this);
-
-  // Get the default setting for service auditing from the AppMgr
-  declareProperty("AuditServices", m_auditInit = true);
-
-  bool audit(false);
-  auto appMgr = serviceLocator()->service<IProperty>("ApplicationMgr");
-  if (appMgr) {
-    const Property& prop = appMgr->getProperty("AuditServices");
-    if (m_name != "IncidentSvc") {
-      setProperty(prop).ignore();
-      audit = m_auditInit.value();
-    } else {
-      audit = false;
-    }
+  if ( m_name != "MessageSvc" ) { // the MessageSvc should not notify itself
+    m_outputLevel.declareUpdateHandler( [this]( Property& ) {
+      this->updateMsgStreamOutputLevel( this->m_outputLevel );
+    } );
   }
 
-  declareProperty( "AuditInitialize"   , m_auditorInitialize   = audit );
-  declareProperty( "AuditStart"        , m_auditorStart        = audit );
-  declareProperty( "AuditStop"         , m_auditorStop         = audit );
-  declareProperty( "AuditFinalize"     , m_auditorFinalize     = audit );
-  declareProperty( "AuditReInitialize" , m_auditorReinitialize = audit );
-  declareProperty( "AuditReStart"      , m_auditorRestart      = audit );
+  // Initialize the default value from ApplicationMgr AuditAlgorithms
+  BooleanProperty audit( false );
+  auto appMgr = serviceLocator()->service<IProperty>( "ApplicationMgr" );
+  if ( appMgr && appMgr->hasProperty( "AuditServices" ) ) {
+    audit.assign( appMgr->getProperty( "AuditServices" ) );
+  }
+  m_auditorInitialize   = audit;
+  m_auditorStart        = audit;
+  m_auditorStop         = audit;
+  m_auditorFinalize     = audit;
+  m_auditorReinitialize = audit;
+  m_auditorRestart      = audit;
 }
-
-// Callback to set output level
-void Service::initOutputLevel(Property& /*prop*/) {
-  if ( name() != "MessageSvc") updateMsgStreamOutputLevel(m_outputLevel);
-}
-
 
 SmartIF<IAuditorSvc>& Service::auditorSvc() const {
   if ( !m_pAuditorSvc ) {
