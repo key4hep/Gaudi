@@ -269,6 +269,7 @@ public:
       : PropertyWithValue( std::move( name ), std::forward<T>( value ), std::move( doc ) )
   {
     owner->declareProperty( *this );
+    setDocumentation(documentation() + " [" + System::typeinfoName(typeid(OWNER)) + "]");
   }
 
   /// Construct an anonymous property from a value.
@@ -313,7 +314,7 @@ public:
   /// Accessor to verifier.
   VerifierType& verifier() { return m_verifier; }
 
-  /// Backward compatibility \deprecated will be removed in v28r1 
+  /// Backward compatibility \deprecated will be removed in v28r1
   /// @{
   const ValueType& value() const { return *this; }
   ValueType& value()
