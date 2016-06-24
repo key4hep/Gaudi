@@ -52,9 +52,6 @@ namespace {
 MinimalEventLoopMgr::MinimalEventLoopMgr(const std::string& nam, ISvcLocator* svcLoc)
   : base_class(nam, svcLoc), m_appMgrUI(svcLoc)
 {
-  declareProperty("TopAlg",         m_topAlgNames );
-  declareProperty("OutStream",      m_outStreamNames );
-  declareProperty("OutStreamType",  m_outStreamType = "OutputStream");
   m_topAlgNames.declareUpdateHandler   ( &MinimalEventLoopMgr::topAlgHandler, this );
   m_outStreamNames.declareUpdateHandler( &MinimalEventLoopMgr::outStreamHandler, this );
 }
@@ -515,7 +512,7 @@ StatusCode MinimalEventLoopMgr::decodeOutStreams( )    {
       m_outStreamList.clear();
       for (const auto& it : m_outStreamNames.value( ) ) {
         Gaudi::Utils::TypeNameString item(it, m_outStreamType);
-        DEBMSG << "Creating " << m_outStreamType <<  it << endmsg;
+        DEBMSG << "Creating " << it << endmsg;
         const bool CREATE = false;
         SmartIF<IAlgorithm> os = algMan->algorithm( item, CREATE );
         if (os) {
@@ -538,5 +535,3 @@ StatusCode MinimalEventLoopMgr::decodeOutStreams( )    {
   }
   return sc;
 }
-
-

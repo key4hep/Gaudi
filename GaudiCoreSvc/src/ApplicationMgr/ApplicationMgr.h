@@ -197,7 +197,7 @@ protected:
   IntegerProperty     m_SIExit             {this, "Exit", 0, "For SI's \"Exit\" command via callback"};
   StringArrayProperty m_topAlgNameList     {this, "TopAlg", {}, "List of top level algorithms names"};
   StringArrayProperty m_outStreamNameList  {this, "OutStream", {}, "List of output stream names"};
-  StringProperty      m_outStreamType      {this, "OutStreamType", "OutputStream", "[deprecated] Output stream type"};
+  StringProperty      m_outStreamType      {this, "OutStreamType", "OutputStream", "[[deprecated]] Output stream type"};
   StringProperty      m_messageSvcType     {this, "MessageSvcType", "MessageSvc", "MessageSvc type"};
   StringProperty      m_jobOptionsSvcType  {this, "JobOptionsSvcType", "JobOptionsSvc", "JobOptionsSvc type"};
 

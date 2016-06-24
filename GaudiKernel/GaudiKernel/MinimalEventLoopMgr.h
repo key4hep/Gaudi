@@ -29,6 +29,11 @@ public:
   typedef std::vector<SmartIF<IAlgorithm> >  ListAlg;
 
 protected:
+  // Properties
+  StringArrayProperty m_topAlgNames{this, "TopAlg", {}, "list of top level algorithms names"};
+  StringArrayProperty m_outStreamNames{this, "OutStream", {}, "list of output stream names"};
+  StringProperty      m_outStreamType{this, "OutStreamType", "OutputStream", "[[deprecated]] default type for OutputStream instances"};
+
   // enums
   enum State { OFFLINE, CONFIGURED, FINALIZED, INITIALIZED };
   /// Reference to the IAppMgrUI interface of the application manager
@@ -39,12 +44,6 @@ protected:
   ListAlg             m_topAlgList;
   /// List of output streams
   ListAlg             m_outStreamList;
-  /// Out Stream type
-  std::string         m_outStreamType;
-  /// List of top level algorithms names
-  StringArrayProperty m_topAlgNames;
-  /// List of output stream names
-  StringArrayProperty m_outStreamNames;
   /// State of the object
   State               m_state = OFFLINE;
   /// Scheduled stop of event processing
