@@ -79,8 +79,7 @@ StatusCode Algorithm::sysInitialize()
   if ( Gaudi::StateMachine::INITIALIZED <= FSMState() ) return StatusCode::SUCCESS;
 
   // Set the Algorithm's properties
-  StatusCode sc = setProperties();
-  if ( sc.isFailure() ) return StatusCode::FAILURE;
+  if ( ! setProperties() ) return StatusCode::FAILURE;
 
   // Bypass the initialization if the algorithm is disabled.
   // Need to do this after setProperties.
@@ -101,6 +100,7 @@ StatusCode Algorithm::sysInitialize()
   // check whether timeline should be done
   m_doTimeline = timelineSvc()->isEnabled();
 
+  StatusCode sc;
   // Invoke initialize() method of the derived class inside a try/catch clause
   try {
 
@@ -788,10 +788,13 @@ StatusCode Algorithm::setProperties()
       return StatusCode::FAILURE;
     }
   }
-  if ( m_outputLevel == MSG::NIL )
-    m_outputLevel = msgLevel();
-  else
+
+  // initialize output level (except for MessageSvc)
+  if ( m_outputLevel == MSG::NIL ) // if not defined (via options)
+    m_outputLevel = msgLevel();    // set it from MessageSvc
+  else                             // otherwise notify MessageSvc
     updateMsgStreamOutputLevel( m_outputLevel );
+
   return sc;
 }
 
