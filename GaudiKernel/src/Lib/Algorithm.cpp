@@ -171,8 +171,14 @@ StatusCode Algorithm::sysInitialize()
     for ( auto h : m_inputDataObjs ) {
       debug() << "\n  + INPUT  " << h;
     }
-    for ( auto h : m_outputDataObjs ) {
+    for (auto id : avis.ignoredInpKeys()) {
+      debug() << "\n  + INPUT IGNORED " << id;
+    }
+    for (auto h : m_outputDataObjs) {
       debug() << "\n  + OUTPUT " << h;
+    }
+    for (auto id : avis.ignoredOutKeys()) {
+      debug() << "\n  + OUTPUT IGNORED " << id;
     }
     debug() << endmsg;
   }
