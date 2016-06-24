@@ -16,12 +16,8 @@ Auditor::Auditor( const std::string& name, ISvcLocator* pSvcLocator )
     , m_isInitialized( false )
     , m_isFinalized( false )
 {
-
-  // Declare common Auditor properties with their defaults
-  declareProperty( "OutputLevel", m_outputLevel = MSG::NIL )->declareUpdateHandler( [this]( Property& ) {
-    this->updateMsgStreamOutputLevel( this->m_outputLevel );
-  } );
-  declareProperty( "Enable", m_isEnabled = true );
+  m_outputLevel.declareUpdateHandler(
+      [this]( Property& ) { this->updateMsgStreamOutputLevel( this->m_outputLevel ); } );
 }
 
 // IAuditor implementation
@@ -152,27 +148,16 @@ void Auditor::after( CustomEventTypeRef, INamedInterface*, const StatusCode& ) {
 void Auditor::after( CustomEventTypeRef, const std::string&, const StatusCode& ) {}
 
 void Auditor::beforeInitialize( INamedInterface* ) {}
-
 void Auditor::afterInitialize( INamedInterface* ) {}
-
 void Auditor::beforeReinitialize( INamedInterface* ) {}
-
 void Auditor::afterReinitialize( INamedInterface* ) {}
-
 void Auditor::beforeExecute( INamedInterface* ) {}
-
 void Auditor::afterExecute( INamedInterface*, const StatusCode& ) {}
-
 void Auditor::beforeBeginRun( INamedInterface* ) {}
-
 void Auditor::afterBeginRun( INamedInterface* ) {}
-
 void Auditor::beforeEndRun( INamedInterface* ) {}
-
 void Auditor::afterEndRun( INamedInterface* ) {}
-
 void Auditor::beforeFinalize( INamedInterface* ) {}
-
 void Auditor::afterFinalize( INamedInterface* ) {}
 
 StatusCode Auditor::sysFinalize()

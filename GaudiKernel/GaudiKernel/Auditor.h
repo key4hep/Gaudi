@@ -43,8 +43,12 @@ public:
       @param name    The algorithm object's name
       @param svcloc  A pointer to a service location service */
   Auditor( const std::string& name, ISvcLocator* svcloc );
+
   /// Destructor
   ~Auditor() override = default;
+
+  Auditor( const Auditor& a ) = delete;
+  Auditor& operator=( const Auditor& rhs ) = delete;
 
   /** Initialization method invoked by the framework. This method is responsible
       for any bookkeeping of initialization required by the framework itself.
@@ -96,10 +100,8 @@ public:
 
   bool isEnabled() const override;
 
-  /** The standard service locator. Returns a pointer to the service locator
-     service.
-      This service may be used by an auditor to request any services it requires
-     in
+  /** The standard service locator. Returns a pointer to the service locator service.
+      This service may be used by an auditor to request any services it requires in
       addition to those provided by default.
   */
   SmartIF<ISvcLocator>& serviceLocator() const;
@@ -136,16 +138,12 @@ private:
   std::string m_name; ///< Auditor's name for identification
 
   mutable SmartIF<ISvcLocator> m_pSvcLocator; ///< Pointer to service locator service
-  int m_outputLevel;                          ///< Auditor output level
-  bool m_isEnabled;                           ///< Auditor is enabled flag
-  bool m_isInitialized;                       ///< Auditor has been initialized flag
-  bool m_isFinalized;                         ///< Auditor has been finalized flag
 
-  // Private Copy constructor: NO COPY ALLOWED
-  Auditor( const Auditor& a );
+  IntegerProperty m_outputLevel{this, "OutputLevel", MSG::NIL, "output level"};
+  BooleanProperty m_isEnabled{this, "Enable", true, "should the auditor be used or not"};
 
-  // Private assignment operator: NO ASSIGNMENT ALLOWED
-  Auditor& operator=( const Auditor& rhs );
+  bool m_isInitialized = false; ///< Auditor has been initialized flag
+  bool m_isFinalized   = false; ///< Auditor has been finalized flag
 };
 
 #ifndef GAUDI_NEW_PLUGIN_SERVICE
