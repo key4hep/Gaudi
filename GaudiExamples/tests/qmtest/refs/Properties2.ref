@@ -1,18 +1,19 @@
-# --> Including file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi.v23r2/GaudiExamples/options/Properties.opts'
-# --> Including file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi.v23r2/GaudiExamples/options/Common.opts'
-# --> Including file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi.v23r2/GaudiExamples/options/Services.opts'
+# setting LC_ALL to "C"
+# --> Including file '/home/marcocle/Devel/workspace/Gaudi/GaudiExamples/options/Properties.opts'
+# --> Including file '/home/marcocle/Devel/workspace/Gaudi/GaudiExamples/options/Common.opts'
+# --> Including file '/home/marcocle/Devel/workspace/Gaudi/GaudiExamples/options/Services.opts'
 # AuditorSvc.Auditors = { "ChronoAuditor" };
-# <-- End of file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi.v23r2/GaudiExamples/options/Services.opts'
+# <-- End of file '/home/marcocle/Devel/workspace/Gaudi/GaudiExamples/options/Services.opts'
 # ApplicationMgr.StatusCodeCheck = true;
-# <-- End of file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi.v23r2/GaudiExamples/options/Common.opts'
-# --> Including file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi.v23r2/GaudiExamples/options/units.opts'
-# <-- End of file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi.v23r2/GaudiExamples/options/units.opts'
-# --> Including file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi.v23r2/GaudiExamples/options/optsub1/dummy1.opts'
+# <-- End of file '/home/marcocle/Devel/workspace/Gaudi/GaudiExamples/options/Common.opts'
+# --> Including file '/home/marcocle/Devel/workspace/Gaudi/GaudiExamples/options/units.opts'
+# <-- End of file '/home/marcocle/Devel/workspace/Gaudi/GaudiExamples/options/units.opts'
+# --> Including file '/home/marcocle/Devel/workspace/Gaudi/GaudiExamples/options/optsub1/dummy1.opts'
 # Dummy1.Property=true;
-# --> Including file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi.v23r2/GaudiExamples/options/optsub2/dummy2.opts'
+# --> Including file '/home/marcocle/Devel/workspace/Gaudi/GaudiExamples/options/optsub2/dummy2.opts'
 # Dummy2.Property=true;
-# <-- End of file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi.v23r2/GaudiExamples/options/optsub2/dummy2.opts'
-# <-- End of file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi.v23r2/GaudiExamples/options/optsub1/dummy1.opts'
+# <-- End of file '/home/marcocle/Devel/workspace/Gaudi/GaudiExamples/options/optsub2/dummy2.opts'
+# <-- End of file '/home/marcocle/Devel/workspace/Gaudi/GaudiExamples/options/optsub1/dummy1.opts'
 # ApplicationMgr.TopAlg  = {   "PropertyAlg" };
 # ApplicationMgr.TopAlg  += {   "PropertyAlg", "PropertyProxy" };
 # ApplicationMgr.TopAlg  -=  {  "PropertyAlg" };
@@ -50,15 +51,14 @@
 # MessageSvc.setDebug += {"EventLoopMgr"};
 # MessageSvc.setVerbose  += {"MsgTest"};
 # MessageSvc.setWarning  += {"MsgTest"};
-# <-- End of file '/afs/cern.ch/work/m/marcocle/workspace/Gaudi.v23r2/GaudiExamples/options/Properties.opts'
+# <-- End of file '/home/marcocle/Devel/workspace/Gaudi/GaudiExamples/options/Properties.opts'
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v1r1)
-                                          running on lxplus445.cern.ch on Thu Jun 28 15:31:07 2012
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v4r1)
+                                          running on pclhcb117 on Fri Jun 24 17:52:46 2016
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
-EventLoopMgr        DEBUG Property update for OutputLevel : new value = 2
 EventLoopMgr        DEBUG Service base class initialized successfully
 EventLoopMgr        DEBUG Creating Top Algorithm PropertyAlg with name PropertyAlg
 PropertyAlg          INFO Before Initialization......
@@ -172,6 +172,7 @@ ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
 PropertyAlg          INFO executing....
 PropertyProxy        INFO executing....
+EventLoopMgr        DEBUG ---> Loop Finished -  WSS 51.3164 | total time (skipping 1st evt) 75895 ns
 ApplicationMgr       INFO Application Manager Stopped successfully
 PropertyAlg          INFO finalizing....
 PropertyProxy        INFO finalizing....
