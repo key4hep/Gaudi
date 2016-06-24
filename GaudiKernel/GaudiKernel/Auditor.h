@@ -2,12 +2,12 @@
 #define GAUDIKERNEL_AUDITOR_H
 
 // Include files
-#include "GaudiKernel/IProperty.h"
-#include "GaudiKernel/IAuditor.h"
-#include "GaudiKernel/IService.h"
-#include "GaudiKernel/ISvcLocator.h"  /*used by service(..)*/
-#include "GaudiKernel/PropertyHolder.h"
 #include "GaudiKernel/CommonMessaging.h"
+#include "GaudiKernel/IAuditor.h"
+#include "GaudiKernel/IProperty.h"
+#include "GaudiKernel/IService.h"
+#include "GaudiKernel/ISvcLocator.h" /*used by service(..)*/
+#include "GaudiKernel/PropertyHolder.h"
 #include <Gaudi/PluginService.h>
 #include <string>
 #include <vector>
@@ -32,19 +32,17 @@ class Algorithm;
     @author Marco Clemencic
     @date   2008-03
 */
-class GAUDI_API Auditor : public PropertyHolder<CommonMessaging<implements<IAuditor,
-                                                                        IProperty>>> {
+class GAUDI_API Auditor : public PropertyHolder<CommonMessaging<implements<IAuditor, IProperty>>>
+{
 public:
 #ifndef __REFLEX__
-  typedef Gaudi::PluginService::Factory<IAuditor*,
-                                        const std::string&,
-                                        ISvcLocator*> Factory;
+  typedef Gaudi::PluginService::Factory<IAuditor*, const std::string&, ISvcLocator*> Factory;
 #endif
 
   /** Constructor
       @param name    The algorithm object's name
       @param svcloc  A pointer to a service location service */
-  Auditor( const std::string& name, ISvcLocator *svcloc );
+  Auditor( const std::string& name, ISvcLocator* svcloc );
   /// Destructor
   ~Auditor() override = default;
 
@@ -59,47 +57,49 @@ public:
 
   /// The following methods are meant to be implemented by the child class...
 
-  void before(StandardEventType, INamedInterface*) override;
-  void before(StandardEventType, const std::string&) override;
+  void before( StandardEventType, INamedInterface* ) override;
+  void before( StandardEventType, const std::string& ) override;
 
-  void before(CustomEventTypeRef, INamedInterface*) override;
-  void before(CustomEventTypeRef, const std::string&) override;
+  void before( CustomEventTypeRef, INamedInterface* ) override;
+  void before( CustomEventTypeRef, const std::string& ) override;
 
-  void after(StandardEventType, INamedInterface*, const StatusCode&) override;
-  void after(StandardEventType, const std::string&, const StatusCode&) override;
+  void after( StandardEventType, INamedInterface*, const StatusCode& ) override;
+  void after( StandardEventType, const std::string&, const StatusCode& ) override;
 
-  void after(CustomEventTypeRef, INamedInterface*, const StatusCode&) override;
-  void after(CustomEventTypeRef, const std::string&, const StatusCode&) override;
+  void after( CustomEventTypeRef, INamedInterface*, const StatusCode& ) override;
+  void after( CustomEventTypeRef, const std::string&, const StatusCode& ) override;
 
   // Obsolete methods
 
-  void beforeInitialize(INamedInterface* )  override;
-  void afterInitialize(INamedInterface* )  override;
+  void beforeInitialize( INamedInterface* ) override;
+  void afterInitialize( INamedInterface* ) override;
 
-  void beforeReinitialize(INamedInterface* )  override;
-  void afterReinitialize(INamedInterface* )  override;
+  void beforeReinitialize( INamedInterface* ) override;
+  void afterReinitialize( INamedInterface* ) override;
 
-  void beforeExecute(INamedInterface* ) override;
-  void afterExecute(INamedInterface*, const StatusCode& ) override;
+  void beforeExecute( INamedInterface* ) override;
+  void afterExecute( INamedInterface*, const StatusCode& ) override;
 
-  void beforeFinalize(INamedInterface* )  override;
-  void afterFinalize(INamedInterface* )  override;
+  void beforeFinalize( INamedInterface* ) override;
+  void afterFinalize( INamedInterface* ) override;
 
-  void beforeBeginRun(INamedInterface* ) override;
-  void afterBeginRun(INamedInterface* ) override;
+  void beforeBeginRun( INamedInterface* ) override;
+  void afterBeginRun( INamedInterface* ) override;
 
-  void beforeEndRun(INamedInterface* ) override;
-  void afterEndRun(INamedInterface* ) override;
+  void beforeEndRun( INamedInterface* ) override;
+  void afterEndRun( INamedInterface* ) override;
 
   virtual StatusCode initialize();
   virtual StatusCode finalize();
 
-  const std::string&  name() const  override;
+  const std::string& name() const override;
 
-  bool isEnabled() const  override;
+  bool isEnabled() const override;
 
-  /** The standard service locator. Returns a pointer to the service locator service.
-      This service may be used by an auditor to request any services it requires in
+  /** The standard service locator. Returns a pointer to the service locator
+     service.
+      This service may be used by an auditor to request any services it requires
+     in
       addition to those provided by default.
   */
   SmartIF<ISvcLocator>& serviceLocator() const;
@@ -107,9 +107,10 @@ public:
   /** Access a service by name, creating it if it doesn't already exist.
   */
   template <class T>
-  StatusCode service( const std::string& name, T*& svc, bool createIf = false ) const {
-    auto ptr = serviceLocator()->service<T>(name, createIf);
-    if (ptr) {
+  StatusCode service( const std::string& name, T*& svc, bool createIf = false ) const
+  {
+    auto ptr = serviceLocator()->service<T>( name, createIf );
+    if ( ptr ) {
       svc = ptr.get();
       svc->addRef();
       return StatusCode::SUCCESS;
@@ -119,8 +120,9 @@ public:
   }
 
   template <class T = IService>
-  SmartIF<T> service( const std::string& name, bool createIf = false ) const {
-    return serviceLocator()->service<T>(name, createIf);
+  SmartIF<T> service( const std::string& name, bool createIf = false ) const
+  {
+    return serviceLocator()->service<T>( name, createIf );
   }
 
   /** Set the auditor's properties. This method requests the job options service
@@ -130,47 +132,46 @@ public:
   */
   StatusCode setProperties();
 
- private:
+private:
+  std::string m_name; ///< Auditor's name for identification
 
-  std::string m_name;	          ///< Auditor's name for identification
-
-  mutable SmartIF<ISvcLocator> m_pSvcLocator;   ///< Pointer to service locator service
-  int          m_outputLevel;   ///< Auditor output level
-  bool         m_isEnabled;     ///< Auditor is enabled flag
-  bool         m_isInitialized; ///< Auditor has been initialized flag
-  bool         m_isFinalized;   ///< Auditor has been finalized flag
+  mutable SmartIF<ISvcLocator> m_pSvcLocator; ///< Pointer to service locator service
+  int m_outputLevel;                          ///< Auditor output level
+  bool m_isEnabled;                           ///< Auditor is enabled flag
+  bool m_isInitialized;                       ///< Auditor has been initialized flag
+  bool m_isFinalized;                         ///< Auditor has been finalized flag
 
   // Private Copy constructor: NO COPY ALLOWED
-  Auditor(const Auditor& a);
+  Auditor( const Auditor& a );
 
   // Private assignment operator: NO ASSIGNMENT ALLOWED
-  Auditor& operator=(const Auditor& rhs);
+  Auditor& operator=( const Auditor& rhs );
 };
 
 #ifndef GAUDI_NEW_PLUGIN_SERVICE
 template <class T>
-class AudFactory {
+class AudFactory
+{
 public:
 #ifndef __REFLEX__
   template <typename S, typename... Args>
-  static typename S::ReturnType create(Args&&... args) {
-    return new T(std::forward<Args>(args)...);
+  static typename S::ReturnType create( Args&&... args )
+  {
+    return new T( std::forward<Args>( args )... );
   }
 #endif
 };
 
 // Macros to declare component factories
-#define DECLARE_AUDITOR_FACTORY(x) \
-  DECLARE_FACTORY_WITH_CREATOR(x, AudFactory< x >, Auditor::Factory)
-#define DECLARE_NAMESPACE_AUDITOR_FACTORY(n, x) \
-    DECLARE_AUDITOR_FACTORY(n::x)
+#define DECLARE_AUDITOR_FACTORY( x ) DECLARE_FACTORY_WITH_CREATOR( x, AudFactory<x>, Auditor::Factory )
+#define DECLARE_NAMESPACE_AUDITOR_FACTORY( n, x ) DECLARE_AUDITOR_FACTORY( n::x )
 
 #else
 
 // macros to declare factories
-#define DECLARE_AUDITOR_FACTORY(x)              DECLARE_COMPONENT(x)
-#define DECLARE_NAMESPACE_AUDITOR_FACTORY(n, x) DECLARE_COMPONENT(n::x)
+#define DECLARE_AUDITOR_FACTORY( x ) DECLARE_COMPONENT( x )
+#define DECLARE_NAMESPACE_AUDITOR_FACTORY( n, x ) DECLARE_COMPONENT( n::x )
 
 #endif
 
-#endif //GAUDIKERNEL_AUDITOR_H
+#endif // GAUDIKERNEL_AUDITOR_H
