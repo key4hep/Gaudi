@@ -594,8 +594,8 @@ private:
   IntegerProperty m_cardinality{this, "Cardinality", 1, "how many clones to create"};
   StringArrayProperty m_neededResources{this, "NeededResources", {}, "named resources needed during event looping"};
 
-  PropertyWithValue<DataObjIDColl> m_extInputDataObjs{this, "ExtraInputs", {}, "[[deprecated]]"};
-  PropertyWithValue<DataObjIDColl> m_extOutputDataObjs{this, "ExtraOutputs", {}, "[[deprecated]]"};
+  PropertyWithValue<DataObjIDColl> m_extInputDataObjs{this, "ExtraInputs", DataObjIDColl{}, "[[deprecated]]"};
+  PropertyWithValue<DataObjIDColl> m_extOutputDataObjs{this, "ExtraOutputs", DataObjIDColl{}, "[[deprecated]]"};
 
   bool m_filterPassed = true;  ///< Filter passed flag
   bool m_isExecuted   = false; ///< Algorithm is executed flag
