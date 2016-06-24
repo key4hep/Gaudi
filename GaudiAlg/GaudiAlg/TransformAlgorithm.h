@@ -27,7 +27,8 @@ public:
                        const KeyValue& output);
 
     // derived classes can NOT implement execute
-    StatusCode execute() override final { return invoke(std::make_index_sequence<N>{}); }
+    StatusCode execute() override final
+    { return invoke(std::make_index_sequence<N>{}); }
 
     // instead they MUST implement this operator
     virtual Out operator()(const In&...) const = 0;

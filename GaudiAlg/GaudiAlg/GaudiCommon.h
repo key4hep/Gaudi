@@ -629,13 +629,23 @@ public:
    */
   inline StatusCode runUpdate() { return updMgrSvc()->update(this); }
 public:
-  /// Algorithm constructor
+  /// Algorithm constructor - the SFINAE constraint below ensures that this is 
+  /// constructor is only defined if PBASE derives from Algorithm
+  template <typename U = PBASE, class = typename std::enable_if<std::is_base_of<Algorithm,PBASE>::value,U>::type>
   GaudiCommon ( const std::string&   name,
-                ISvcLocator * pSvcLocator );
-  /// Tool constructor
+                ISvcLocator * pSvcLocator ) : base_class( name, pSvcLocator )
+  {
+       initGaudiCommonConstructor();
+  }
+  /// Tool constructor - SFINAE-ed to insure this constructor is only defined
+  /// if PBASE derives from AlgTool.
+  template <typename U = PBASE, class = typename std::enable_if<std::is_base_of<AlgTool,PBASE>::value,U>::type >
   GaudiCommon ( const std::string& type   ,
                 const std::string& name   ,
-                const IInterface*  parent );
+                const IInterface*  ancestor ) : base_class( type, name, ancestor) 
+  {
+        initGaudiCommonConstructor(this->parent());
+  }
 public:
   /** standard initialization method
    *  @return status code
@@ -727,7 +737,7 @@ private:
   /// Add the given service to the list of acquired services
   void addToServiceList ( SmartIF<IService> svc ) const;
   /// Constructor initializations
-  void initGaudiCommonConstructor( const IInterface * parent = 0 );
+  void initGaudiCommonConstructor( const IInterface * parent = nullptr );
   // ==========================================================================
 private:
   /// List of active  tools

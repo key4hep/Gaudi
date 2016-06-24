@@ -795,19 +795,19 @@ class GAUDI_API GaudiTool: public GaudiCommon<AlgTool>
  private:
   // ==========================================================================
   /// pointer to the N-Tuple service
-  mutable INTupleSvc*    m_ntupleSvc = nullptr;
+  mutable SmartIF<INTupleSvc>     m_ntupleSvc;
   /// pointer to the event tag collection service
-  mutable INTupleSvc*    m_evtColSvc = nullptr;
+  mutable SmartIF<INTupleSvc>     m_evtColSvc;
   /// pointer to Detector Data Service
-  mutable IDataProviderSvc* m_detSvc = nullptr;
+  mutable SmartIF<IDataProviderSvc> m_detSvc;
   /// pointer to Chrono & Stat Service
-  mutable IChronoStatSvc*   m_chronoSvc = nullptr;
+  mutable SmartIF<IChronoStatSvc> m_chronoSvc;
   /// pointer to Incident Service
-  mutable IIncidentSvc*     m_incSvc = nullptr;
+  mutable SmartIF<IIncidentSvc>   m_incSvc;
   /// pointer for histogram service
-  mutable IHistogramSvc *  m_histoSvc = nullptr;
+  mutable SmartIF<IHistogramSvc>  m_histoSvc;
   // Pointer to the Algorithm Context Service
-  mutable IAlgContextSvc* m_contextSvc = nullptr; ///< Algorithm Context Service
+  mutable SmartIF<IAlgContextSvc> m_contextSvc; ///< Algorithm Context Service
   // The name of the Algorithm Context Service
   std::string             m_contextSvcName = "AlgContextSvc"; ///< Algorithm Context Service
   // ==========================================================================
@@ -844,9 +844,7 @@ class GAUDI_API GaudiTool: public GaudiCommon<AlgTool>
       (const_cast<GaudiTool*>(this))->AlgTool::declareOutput(&hndl);
     }
     
-    if (hndl.owner() == 0) {
-      hndl.setOwner((const_cast<GaudiTool*>(this)));
-    }
+    if (!hndl.owner()) hndl.setOwner((const_cast<GaudiTool*>(this)));
     
     return m_propertyMgr->declareProperty(name, hndl, doc);
   }
