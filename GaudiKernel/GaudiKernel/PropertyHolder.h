@@ -104,7 +104,7 @@ public:
   }
 
   /// Helper to wrap a regular data member and use it as a regular property.
-  /// \deprecated{Prefer the signatures using a a fully initialized Property instance.}
+  /// \deprecated Prefer the signatures using a a fully initialized Property instance.
   template <class TYPE>
   Property* declareProperty( const std::string& name, TYPE& value, const std::string& doc = "none" )
   {
@@ -116,7 +116,7 @@ public:
     return p;
   }
 
-  /// \deprecated{Kept for backward compatibility, use the non-const version instead, will be removed in v28r1.}
+  /// \deprecated Kept for backward compatibility, use the non-const version instead, will be removed in v28r1.
   template <class TYPE>
   [[deprecated(
       "Kept for backward compatibility, use the non-const version instead, will be removed in v28r1" )]] Property*
@@ -126,7 +126,7 @@ public:
   }
 
   /// Declare a Property instance setting name and documentation.
-  /// \deprecated{Prefer the signatures using a fully initialized Property instance.}
+  /// \deprecated Prefer the signatures using a fully initialized Property instance.
   template <class TYPE, class VERIFIER>
   Property* declareProperty( const std::string& name, PropertyWithValue<TYPE, VERIFIER>& prop,
                              const std::string& doc = "none" )

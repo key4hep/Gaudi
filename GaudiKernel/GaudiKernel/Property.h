@@ -93,7 +93,7 @@ public:
   /// the printout of the property value
   virtual std::ostream& fillStream( std::ostream& ) const;
   /// clones the current property
-  /// \deprecated{provided for backward compatibility, will be removed in v28r1}
+  /// \deprecated provided for backward compatibility, will be removed in v28r1
   [[deprecated( "provided for backward compatibility, will be removed in v28r1" )]] virtual Property* clone() const = 0;
 
 protected:
@@ -313,7 +313,7 @@ public:
   /// Accessor to verifier.
   VerifierType& verifier() { return m_verifier; }
 
-  /// Backward compatibility \deprecated{will be removed in v28r1}
+  /// Backward compatibility \deprecated will be removed in v28r1 
   /// @{
   const ValueType& value() const { return *this; }
   ValueType& value()
