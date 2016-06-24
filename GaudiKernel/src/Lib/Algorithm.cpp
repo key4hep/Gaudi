@@ -9,7 +9,6 @@
 #include "GaudiKernel/IJobOptionsSvc.h"
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/INTupleSvc.h"
-#include "GaudiKernel/IProperty.h"
 #include "GaudiKernel/IRndmGenSvc.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IToolSvc.h"
@@ -28,7 +27,6 @@
 #include "GaudiKernel/ThreadGaudi.h"
 #include "GaudiKernel/ToolHandle.h"
 
-#include "GaudiKernel/DataObjIDProperty.h"
 #include "GaudiKernel/StringKey.h"
 
 namespace
@@ -50,51 +48,22 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator* pSvcLocator, const s
     , // incremented by AlgResourcePool
     m_pSvcLocator( pSvcLocator )
 {
-
-  // Declare common Algorithm properties with their defaults
-  declareProperty( "OutputLevel", m_outputLevel = MSG::NIL );
-  declareProperty( "Enable", m_isEnabled = true );
-  declareProperty( "ErrorMax", m_errorMax = 1 );
-  declareProperty( "ErrorCounter", m_errorCount = 0 );
-
-  // FIXME: this should eventually be deprecated
-  // declare Extra input and output properties
-  declareProperty( "ExtraInputs", m_extInputDataObjs );
-  declareProperty( "ExtraOutputs", m_extOutputDataObjs );
-
   // Auditor monitoring properties
-
-  // Get the default setting for service auditing from the AppMgr
-  declareProperty( "AuditAlgorithms", m_auditInit );
-
-  bool audit( false );
+  // Initialize the default value from ApplicationMgr AuditAlgorithms
+  BooleanProperty audit( false );
   auto appMgr = serviceLocator()->service<IProperty>( "ApplicationMgr" );
-  if ( appMgr ) {
-    const Property& prop = appMgr->getProperty( "AuditAlgorithms" );
-    Property& pr         = const_cast<Property&>( prop );
-    if ( m_name != "IncidentSvc" ) setProperty( pr ).ignore();
-    audit = m_auditInit.value();
+  if ( appMgr && appMgr->hasProperty( "AuditAlgorithms" ) ) {
+    audit.assign( appMgr->getProperty( "AuditAlgorithms" ) );
   }
-
-  declareProperty( "AuditInitialize", m_auditorInitialize = audit );
-  declareProperty( "AuditReinitialize", m_auditorReinitialize = audit );
-  declareProperty( "AuditRestart", m_auditorRestart = audit );
-  declareProperty( "AuditExecute", m_auditorExecute = audit );
-  declareProperty( "AuditFinalize", m_auditorFinalize = audit );
-  declareProperty( "AuditBeginRun", m_auditorBeginRun = audit );
-  declareProperty( "AuditEndRun", m_auditorEndRun = audit );
-  declareProperty( "AuditStart", m_auditorStart = audit );
-  declareProperty( "AuditStop", m_auditorStop = audit );
-  declareProperty( "Timeline", m_doTimeline = true );
-
-  declareProperty( "MonitorService", m_monitorSvcName = "MonitorSvc" );
-
-  declareProperty( "RegisterForContextService", m_registerContext,
-                   "The flag to enforce the registration for Algorithm Context Service" );
-
-  declareProperty( "IsClonable", m_isClonable = false, "Thread-safe enough for cloning?" );
-  declareProperty( "Cardinality", m_cardinality = 1, "How many clones to create" );
-  declareProperty( "NeededResources", m_neededResources = std::vector<std::string>() );
+  m_auditorInitialize   = audit;
+  m_auditorReinitialize = audit;
+  m_auditorRestart      = audit;
+  m_auditorExecute      = audit;
+  m_auditorFinalize     = audit;
+  m_auditorBeginRun     = audit;
+  m_auditorEndRun       = audit;
+  m_auditorStart        = audit;
+  m_auditorStop         = audit;
 
   // update handlers.
   m_outputLevel.declareUpdateHandler(
@@ -579,7 +548,7 @@ StatusCode Algorithm::sysExecute()
 
   if ( status.isFailure() ) {
     // Increment the error count
-    m_errorCount++;
+    m_errorCount.value()++;
     // Check if maximum is exeeded
     if ( m_errorCount < m_errorMax ) {
       warning() << "Continuing from error (cnt=" << m_errorCount << ", max=" << m_errorMax << ")" << endmsg;

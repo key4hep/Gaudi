@@ -34,6 +34,8 @@
 #include "GaudiKernel/ToolHandle.h"
 #include <Gaudi/PluginService.h>
 
+#include "GaudiKernel/DataObjIDProperty.h"
+
 // For concurrency
 #include "GaudiKernel/DataHandle.h"
 #include "GaudiKernel/EventContext.h"
@@ -469,8 +471,6 @@ private:
   std::vector<Gaudi::DataHandle *> m_inputHandles, m_outputHandles;
   DataObjIDColl m_inputDataObjs, m_outputDataObjs;
 
-  DataObjIDColl m_extInputDataObjs, m_extOutputDataObjs;
-
 public:
   void registerTool( IAlgTool* tool ) const;
   void deregisterTool( IAlgTool* tool ) const;
@@ -559,40 +559,52 @@ private:
 
   mutable SmartIF<ITimelineSvc> m_timelineSvc; ///< Timeline Service
 
-  bool m_registerContext = false;     ///< flag to register for Algorithm Context Service
-  std::string m_monitorSvcName;       ///< Name to use for Monitor Service
   SmartIF<ISvcLocator> m_pSvcLocator; ///< Pointer to service locator service
+
 protected:
   /// Hook for for derived classes to provide a custom visitor for data handles.
   std::unique_ptr<IDataHandleVisitor> m_updateDataHandles;
 
 private:
-  IntegerProperty m_outputLevel;              ///< Algorithm output level
-  int m_errorMax;                             ///< Algorithm Max number of errors
-  int m_errorCount;                           ///< Algorithm error counter
-  BooleanProperty m_auditInit;                ///< global flag for auditors
-  bool m_auditorInitialize;                   ///< flag for auditors in "initialize()"
-  bool m_auditorReinitialize;                 ///< flag for auditors in "Reinitialize()"
-  bool m_auditorRestart;                      ///< flag for auditors in "Restart()"
-  bool m_auditorExecute;                      ///< flag for auditors in "execute()"
-  bool m_auditorFinalize;                     ///< flag for auditors in "finalize()"
-  bool m_auditorBeginRun;                     ///< flag for auditors in "beginRun()"
-  bool m_auditorEndRun;                       ///< flag for auditors in "endRun()"
-  bool m_auditorStart;                        ///< flag for auditors in "initialize()"
-  bool m_auditorStop;                         ///< flag for auditors in "Reinitialize()"
-  bool m_filterPassed                = true;  ///< Filter passed flag
-  bool m_isEnabled                   = true;  ///< Algorithm is enabled flag
-  bool m_isExecuted                  = false; ///< Algorithm is executed flag
-  mutable bool m_toolHandlesInit     = false; /// flag indicating whether ToolHandle tools have been added to m_tools
-  Gaudi::StateMachine::State m_state = Gaudi::StateMachine::CONFIGURED;       ///< Algorithm has been initialized flag
+  // Properties
+  IntegerProperty m_outputLevel{this, "OutputLevel", MSG::NIL, "output level"};
+  BooleanProperty m_isEnabled{this, "Enable", true, "should the algorithm be executed or not"};
+
+  IntegerProperty m_errorMax{this, "ErrorMax", 1, "[[deprecated]] max number of errors"};
+  IntegerProperty m_errorCount{this, "ErrorCounter", 0, "[[deprecated]] error counter"};
+
+  BooleanProperty m_auditorInitialize{this, "AuditInitialize", false, "trigger auditor on initialize()"};
+  BooleanProperty m_auditorReinitialize{this, "AuditReinitialize", false, "trigger auditor on reinitialize()"};
+  BooleanProperty m_auditorRestart{this, "AuditRestart", false, "trigger auditor on restart()"};
+  BooleanProperty m_auditorExecute{this, "AuditExecute", false, "trigger auditor on execute()"};
+  BooleanProperty m_auditorFinalize{this, "AuditFinalize", false, "trigger auditor on finalize()"};
+  BooleanProperty m_auditorBeginRun{this, "AuditBeginRun", false, "trigger auditor on beginRun()"};
+  BooleanProperty m_auditorEndRun{this, "AuditEndRun", false, "trigger auditor on endRun()"};
+  BooleanProperty m_auditorStart{this, "AuditStart", false, "trigger auditor on start()"};
+  BooleanProperty m_auditorStop{this, "AuditStop", false, "trigger auditor on stop()"};
+
+  BooleanProperty m_doTimeline{this, "Timeline", true, "send events to TimelineSvc"};
+
+  StringProperty m_monitorSvcName{this, "MonitorService", "MonitorSvc", "name to use for Monitor Service"};
+
+  BooleanProperty m_registerContext{this, "RegisterForContextService", false,
+                                    "flag to enforce the registration for Algorithm Context Service"};
+
+  BooleanProperty m_isClonable{this, "IsClonable", false, "thread-safe enough for cloning?"};
+  IntegerProperty m_cardinality{this, "Cardinality", 1, "how many clones to create"};
+  StringArrayProperty m_neededResources{this, "NeededResources", {}, "named resources needed during event looping"};
+
+  PropertyWithValue<DataObjIDColl> m_extInputDataObjs{this, "ExtraInputs", {}, "[[deprecated]]"};
+  PropertyWithValue<DataObjIDColl> m_extOutputDataObjs{this, "ExtraOutputs", {}, "[[deprecated]]"};
+
+  bool m_filterPassed = true;  ///< Filter passed flag
+  bool m_isExecuted   = false; ///< Algorithm is executed flag
+
+  mutable bool m_toolHandlesInit = false; /// flag indicating whether ToolHandle tools have been added to m_tools
+
+  Gaudi::StateMachine::State m_state       = Gaudi::StateMachine::CONFIGURED; ///< Algorithm has been initialized flag
   Gaudi::StateMachine::State m_targetState = Gaudi::StateMachine::CONFIGURED; ///< Algorithm has been initialized flag
   bool m_isFinalized;                                                         ///< Algorithm has been finalized flag
-
-  bool m_doTimeline; // send events to TimelineSvc
-
-  bool m_isClonable;                          ///< The algorithm clonability of the algorithm
-  unsigned int m_cardinality;                 ///< The maximum number of clones that can exist
-  std::vector<std::string> m_neededResources; ///< The named resources needed during event looping
 
   /// implementation of service method
   StatusCode service_i( const std::string& svcName, bool createIf, const InterfaceID& iid, void** ppSvc ) const;
