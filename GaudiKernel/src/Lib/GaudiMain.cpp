@@ -41,7 +41,7 @@ extern "C" GAUDI_API int GaudiMain(int argc,char **argv) {
   propMgr.reset();
   appMgr.reset();
   // All done - exit
-  if (sc.isFailure() && returnCode.value() == 0) {
+  if (sc.isFailure() && returnCode == 0) {
     // propagate a valid error code in case of failure
     returnCode.setValue(1);
   }

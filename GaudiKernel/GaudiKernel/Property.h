@@ -269,7 +269,7 @@ public:
       : PropertyWithValue( std::move( name ), std::forward<T>( value ), std::move( doc ) )
   {
     owner->declareProperty( *this );
-    setDocumentation(documentation() + " [" + System::typeinfoName(typeid(OWNER)) + "]");
+    setDocumentation( documentation() + " [" + System::typeinfoName( typeid( OWNER ) ) + "]" );
   }
 
   /// Construct an anonymous property from a value.
@@ -293,11 +293,32 @@ public:
     useReadHandler();
     return m_value;
   }
-  // /// Automatic conversion to value (const reference).
+  // /// Automatic conversion to value (reference).
   // operator ValueType& () {
   //   useReadHandler();
   //   return m_value;
   // }
+
+  /// equality comparison
+  template <class T>
+  inline bool operator==( const T& other ) const
+  {
+    return m_value == other;
+  }
+
+  /// "less" comparison
+  template <class T>
+  inline bool operator<( const T& other ) const
+  {
+    return m_value < other;
+  }
+
+  /// allow addition if possible between the property and the other types
+  template <class T>
+  decltype( std::declval<ValueType>() + std::declval<T>() ) operator+( const T& other )
+  {
+    return m_value + other;
+  }
 
   /// Assignment from value.
   template <class T          = ValueType>
@@ -342,6 +363,11 @@ public:
   inline decltype( std::declval<T>().size() ) size() const
   {
     return value().size();
+  }
+  template <class T = const ValueType>
+  inline decltype( std::declval<T>().length() ) length() const
+  {
+    return value().length();
   }
   template <class T = const ValueType>
   inline decltype( std::declval<T>().empty() ) empty() const
@@ -437,6 +463,20 @@ public:
   //   }
   //   // ==========================================================================
 };
+
+/// delegate (value == property) to property operator==
+template <class T, class TP, class V>
+bool operator==( const T& v, const PropertyWithValue<TP, V>& p )
+{
+  return p == v;
+}
+
+/// delegate (value + property) to property operator+
+template <class T, class TP, class V>
+decltype( std::declval<TP>() + std::declval<T>() ) operator+( const T& v, const PropertyWithValue<TP, V>& p )
+{
+  return p + v;
+}
 
 template <class TYPE, class VERIFIER = Gaudi::Details::Property::BoundedVerifier<TYPE>>
 using SimpleProperty = PropertyWithValue<TYPE, VERIFIER>;
