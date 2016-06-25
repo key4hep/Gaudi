@@ -14,7 +14,6 @@
 #include "GaudiKernel/ThreadGaudi.h"
 #include "GaudiKernel/Guards.h"
 #include "GaudiKernel/ToolHandle.h"
-#include "GaudiKernel/DataObjIDProperty.h"
 
 //------------------------------------------------------------------------------
 namespace {
@@ -148,16 +147,16 @@ AlgTool::AlgTool( const std::string& type,
 {
   addRef(); // Initial count set to 1
 
-  declareProperty( "MonitorService", m_monitorSvcName = "MonitorSvc" );
-
-  { // get the "OutputLevel" property from parent
-    const Property* _p = Gaudi::Utils::getProperty ( parent , "OutputLevel") ;
-    if ( _p ) { m_outputLevel.assign( *_p ) ; }
-    declareProperty ( "OutputLevel"     , m_outputLevel ) ;
-     m_outputLevel.declareUpdateHandler([this](Property&) { this->updateMsgStreamOutputLevel(this->m_outputLevel) ; } );
-  }
-
   IInterface* _p = const_cast<IInterface*> ( parent ) ;
+
+  // inherit output level from parent
+  { // get the "OutputLevel" property from parent
+    SmartIF<IProperty> pprop(_p);
+    if ( pprop && pprop->hasProperty("OutputLevel") ) {
+      m_outputLevel.assign( pprop->getProperty("OutputLevel") );
+    }
+  }
+  m_outputLevel.declareUpdateHandler( [this]( Property& ) { this->updateMsgStreamOutputLevel( this->m_outputLevel ); } );
 
   if      ( Algorithm* _alg = dynamic_cast<Algorithm*> ( _p ) )
   {
@@ -187,27 +186,22 @@ AlgTool::AlgTool( const std::string& type,
         + System::typeinfoName(typeid(*_p)) + "'", "AlgTool", 0 );
   }
 
-
-  { // audit tools
-    auto appMgr = m_svcLocator->service<IProperty>("ApplicationMgr");
-    if ( !appMgr ) {
-      throw GaudiException("Could not locate ApplicationMgr","AlgTool",0);
+  {
+    // Auditor monitoring properties
+    // Initialize the default value from ApplicationMgr AuditAlgorithms
+    BooleanProperty audit( false );
+    // note that here we need that the service locator is already defined
+    auto appMgr = serviceLocator()->service<IProperty>( "ApplicationMgr" );
+    if ( appMgr && appMgr->hasProperty( "AuditTools" ) ) {
+      audit.assign( appMgr->getProperty( "AuditTools" ) );
     }
-    const Property* p = Gaudi::Utils::getProperty( appMgr , "AuditTools");
-    if ( p ) { m_auditInit.assign ( *p ) ; }
-    declareProperty ( "AuditTools", m_auditInit );
-    bool audit = m_auditInit.value();
-    // Declare common AlgTool properties with their defaults
-    declareProperty ( "AuditInitialize" , m_auditorInitialize = audit ) ;
-    declareProperty ( "AuditStart"      , m_auditorStart      = audit ) ;
-    declareProperty ( "AuditStop"       , m_auditorStop       = audit ) ;
-    declareProperty ( "AuditFinalize"   , m_auditorFinalize   = audit ) ;
+    m_auditorInitialize   = audit;
+    m_auditorStart        = audit;
+    m_auditorStop         = audit;
+    m_auditorFinalize     = audit;
+    m_auditorReinitialize = audit;
+    m_auditorRestart      = audit;
   }
-
-  //declare Extra input and output properties
-  declareProperty( "ExtraInputs",  m_extInputDataObjs);
-  declareProperty( "ExtraOutputs", m_extOutputDataObjs);
-
 
   // check thread ID and try if tool name indicates thread ID
   if ( m_threadID.empty() )

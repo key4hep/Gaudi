@@ -19,6 +19,7 @@
 
 #include "GaudiKernel/IDataHandleHolder.h"
 #include "GaudiKernel/DataHandle.h"
+#include "GaudiKernel/DataObjIDProperty.h"
 
 template<class T>
 class DataObjectHandle;
@@ -223,11 +224,7 @@ public:
   std::vector<Gaudi::DataHandle*> m_inputHandles, m_outputHandles;
   DataObjIDColl m_inputDataObjs, m_outputDataObjs;
 
-  DataObjIDColl m_extInputDataObjs, m_extOutputDataObjs;
-
  public:
-
-
 
 	void registerTool(IAlgTool * tool) const {
 		if (UNLIKELY(msgLevel(MSG::DEBUG)))
@@ -370,16 +367,34 @@ public:
 
 private:
   typedef std::list<std::pair<InterfaceID,void*> >  InterfaceList;
-  IntegerProperty      m_outputLevel = MSG::NIL;      ///< AlgTool output level
+
   std::string          m_type;             ///< AlgTool type (concrete class name)
   const std::string    m_name;             ///< AlgTool full name
   const IInterface*    m_parent = nullptr;           ///< AlgTool parent
+
   mutable SmartIF<ISvcLocator> m_svcLocator ;       ///< Pointer to Service Locator service
   mutable SmartIF<IDataProviderSvc> m_evtSvc;      ///< Event data service
   mutable SmartIF<IToolSvc> m_ptoolSvc;         ///< Tool service
   mutable SmartIF<IMonitorSvc> m_pMonitorSvc;      ///< Online Monitoring Service
-  std::string          m_monitorSvcName;   ///< Name to use for Monitor Service
+  mutable SmartIF<IAuditorSvc> m_pAuditorSvc; ///< Auditor Service
+
   InterfaceList        m_interfaceList;    ///< Interface list
+
+  // Properties
+  IntegerProperty m_outputLevel{this, "OutputLevel", MSG::NIL, "output level"};
+
+  StringProperty m_monitorSvcName{this, "MonitorService", "MonitorSvc", "name to use for Monitor Service"};
+
+  BooleanProperty m_auditorInitialize{this, "AuditInitialize", false, "trigger auditor on initialize()"};
+  BooleanProperty m_auditorStart{this, "AuditStart", false, "trigger auditor on start()"};
+  BooleanProperty m_auditorStop{this, "AuditStop", false, "trigger auditor on stop()"};
+  BooleanProperty m_auditorFinalize{this, "AuditFinalize", false, "trigger auditor on finalize()"};
+  BooleanProperty m_auditorReinitialize{this, "AuditReinitialize", false, "trigger auditor on reinitialize()"};
+  BooleanProperty m_auditorRestart{this, "AuditRestart", false, "trigger auditor on restart()"};
+
+  PropertyWithValue<DataObjIDColl> m_extInputDataObjs{this, "ExtraInputs", DataObjIDColl{}, "[[deprecated]]"};
+  PropertyWithValue<DataObjIDColl> m_extOutputDataObjs{this, "ExtraOutputs", DataObjIDColl{}, "[[deprecated]]"};
+
   std::string          m_threadID;         ///< Thread Id for Alg Tool
 
   //tools used by tool
@@ -397,16 +412,6 @@ private:
                        const std::string& svcName,
                        const InterfaceID& iid,
                        void** ppS) const;
-
-  mutable SmartIF<IAuditorSvc> m_pAuditorSvc; ///< Auditor Service
-
-  BooleanProperty m_auditInit = false;
-  bool         m_auditorInitialize = false;///< flag for auditors in "initialize()"
-  bool         m_auditorStart = false;     ///< flag for auditors in "start()"
-  bool         m_auditorStop = false;      ///< flag for auditors in "stop()"
-  bool         m_auditorFinalize = false;  ///< flag for auditors in "finalize()"
-  bool         m_auditorReinitialize = false;///< flag for auditors in "reinitialize()"
-  bool         m_auditorRestart = false;     ///< flag for auditors in "restart()"
 
   Gaudi::StateMachine::State m_state = Gaudi::StateMachine::CONFIGURED ;            ///< state of the Tool
   Gaudi::StateMachine::State m_targetState = Gaudi::StateMachine::CONFIGURED ;      ///< state of the Tool
