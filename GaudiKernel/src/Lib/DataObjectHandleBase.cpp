@@ -79,8 +79,11 @@ DataObject* DataObjectHandleBase::fetch() {
 std::string
 DataObjectHandleBase::toString() const {
   std::ostringstream ost;
-  ost << m_key << "|" << mode() << "|" << isOptional() << "|";
-  GaudiUtils::details::ostream_joiner( ost, alternativeDataProductNames(),"&" );
+  GaudiUtils::details::ostream_joiner( ost << m_key
+                                           << "|" << mode()
+                                           << "|" << isOptional()
+                                           << "|",
+                                       alternativeDataProductNames(),"&" );
   return ost.str();
 }
 
@@ -140,7 +143,7 @@ std::ostream&
 operator<< (std::ostream& str, const DataObjectHandleBase& d) {
 
   str << d.fullKey() << "  m: " << d.mode();
-  if (d.owner() != 0) str << "  o: " << d.owner()->name();
+  if (d.owner()) str << "  o: " << d.owner()->name();
 
   str << "  opt: " << d.isOptional();
 

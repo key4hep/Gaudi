@@ -3,17 +3,13 @@
 #include "GaudiKernel/Parsers.h"
 #include "GaudiKernel/DataObjectHandleBase.h"
 
+#include "GaudiKernel/System.h"
+
+
 #include <sstream>
 #include <map>
 #include <boost/tokenizer.hpp>
 #include <boost/algorithm/string.hpp>
-
-// using namespace Gaudi;
-// using namespace Gaudi::Parsers;
-// using namespace Gaudi::Utils;
-
-
-
 
 namespace Gaudi {
   namespace Parsers {
@@ -36,6 +32,13 @@ namespace Gaudi {
         if (nToks < 3 || nToks > 4) {
           std::cerr << "Unable to instantiante DataObjectHandle from Property: " << s
                     << " :: Format is bad" << std::endl;
+          //std::cerr << "Need either 3 or 4 tokens. Got: " << std::endl;
+          //for (auto i = tokens.begin(); i != tokens.end(); ++i ) {
+          //    std::cerr <<"token: \"" << *i  <<"\"" << std::endl;
+          //}
+          //std::string stack;
+          //System::backTrace(stack, 30, 0);
+          //std::cerr << "Stack Trace:\n" << stack  << std::endl;
           return StatusCode::FAILURE;
         }
 
@@ -140,17 +143,15 @@ std::string
 DataObjectHandleProperty::toString( ) const
 {
   useReadHandler();
-  std::ostringstream o;
-  Gaudi::Utils::toStream(*m_pValue, o);
-  return o.str();
+  return m_pValue->toString();
 }
 
 //---------------------------------------------------------------------------
 void
 DataObjectHandleProperty::toStream(std::ostream& out) const
 {
-  useReadHandler();
-  out << this->toString();
+  // implicitly invokes useReadHandler()
+  out << toString();
 }
 
 //---------------------------------------------------------------------------
