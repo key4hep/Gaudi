@@ -1216,20 +1216,6 @@ IConversionSvc* DataSvc::getDataLoader(IRegistry* /* pReg */)   {
   return m_dataLoader.get();
 }
 
-/// Standard Constructor
-DataSvc::DataSvc(const std::string& name,ISvcLocator* svc)
-: base_class(name,svc)
-{
-  declareProperty("RootCLID",            m_rootCLID);
-  declareProperty("RootName",            m_rootName);
-  declareProperty("ForceLeaves",         m_forceLeaves);
-  declareProperty("InhibitPathes",       m_inhibitPathes);
-  declareProperty("DataFaultName",       m_faultName);
-  declareProperty("DataAccessName",      m_accessName);
-  declareProperty("EnableFaultHandler",  m_enableFaultHdlr);
-  declareProperty("EnableAccessHandler", m_enableAccessHdlr);
-}
-
 /// Standard Destructor
 DataSvc::~DataSvc()  {
   setDataLoader(nullptr).ignore();

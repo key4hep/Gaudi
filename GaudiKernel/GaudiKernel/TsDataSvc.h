@@ -1,4 +1,3 @@
-// $Id: TsDataSvc.h,v 1.14 2006/11/30 14:43:13 mato Exp $
 #ifndef GAUDIKERNEL_TSDATASVC_H
 #define GAUDIKERNEL_TSDATASVC_H
 
@@ -26,8 +25,6 @@ class IOpaqueAddress;
 class DataObject;
 // Data store agent
 class IDataStoreAgent;
-// Service factory
-template <class TYPE> class SvcFactory;
 
 // Do not clutter global namespace for helpers...
 namespace DataSvcHelpers    {
@@ -63,40 +60,33 @@ class GAUDI_API TsDataSvc: public extends<Service,
                                           IDataProviderSvc,
                                           IDataManagerSvc>
 {
-  /// The class creator is of course a friend!
-  friend class SvcFactory<TsDataSvc>;
-
 public:
   /// Define set of load items
   typedef std::vector<DataStoreItem> LoadItems;
 
 protected:
-  /// Integer Property corresponding to CLID of root entry
-  CLID                            m_rootCLID;
-  /// Name of root event
-  std::string                     m_rootName;
   /// Pointer to data loader service
-  IConversionSvc*                 m_dataLoader;
+  IConversionSvc*                 m_dataLoader = nullptr;
   /// Pointer to incident service
-  IIncidentSvc*                   m_incidentSvc;
+  IIncidentSvc*                   m_incidentSvc = nullptr;
+
+  SimpleProperty<CLID> m_rootCLID{this, "RootCLID", 110 /*CLID_Event*/, "CLID of root entry"};
+  StringProperty m_rootName{this, "RootName", "/Event", "name of root entry"};
+  BooleanProperty m_forceLeaves{this, "ForceLeaves", false, "force creation of default leaves on registerObject"};
+  StringArrayProperty m_inhibitPathes{this, "InhibitPathes", {}, "inhibited leaves"};
+
+  BooleanProperty m_enableFaultHdlr{this, "EnableFaultHandler", false, "enable incidents on data creation requests"};
+  StringProperty m_faultName{this, "DataFaultName", "DataFault", "Name of the data fault incident"};
+
+  BooleanProperty m_enableAccessHdlr{this, "EnableAccessHandler", false, "enable incidents on data access requests"};
+  StringProperty m_accessName{this, "DataAccessName", "DataAccess", "Name of the data access incident"};
+
   /// Items to be pre-loaded
   LoadItems                       m_preLoads;
-  /// Allow forced creation of default leaves on registerObject
-  bool                            m_forceLeaves;
-  /// Flag to enable interrupts on data access requests
-  bool                            m_enableAccessHdlr;
-  /// Flag to enable interrupts on data creation requests
-  bool                            m_enableFaultHdlr;
   /// Pointer to root entry
-  DataSvcHelpers::RegistryEntry*  m_root;
+  DataSvcHelpers::RegistryEntry*  m_root = nullptr;
   /// Map with object paths to be inhibited from loading
-  DataSvcHelpers::InhibitMap*     m_inhibitMap;
-  /// Property for the inhibited leaves
-  std::vector<std::string>        m_inhibitPathes;
-  /// Name of the data access incident
-  std::string                     m_accessName;
-  /// Name of the data fault incident
-  std::string                     m_faultName;
+  DataSvcHelpers::InhibitMap*     m_inhibitMap = nullptr;
 public:
 
   /// IDataManagerSvc: Accessor for root event CLID
@@ -200,8 +190,7 @@ public:
   /** IDataManagerSvc: IDataManagerSvc: Pass a default data loader to the
    *  service and optionally a data provider
    */
-  StatusCode setDataLoader( IConversionSvc* svc,
-                            IDataProviderSvc* dpsvc = 0 ) override;
+  StatusCode setDataLoader( IConversionSvc* svc, IDataProviderSvc* dpsvc = nullptr ) override;
 
   /// Add an item to the preload list
   StatusCode addPreLoadItem( const DataStoreItem& item ) override;
@@ -397,16 +386,16 @@ public:
   StatusCode finalize() override;
 
   /// Standard Constructor
-  TsDataSvc( const std::string& name, ISvcLocator* svc );
+  TsDataSvc( const std::string& name, ISvcLocator* svc ): base_class( name, svc ) {}
 
   /// Standard Destructor
-  virtual ~TsDataSvc();
+  ~TsDataSvc() override;
 
 private:
   /// Fake copy constructor (never implemented).
-  TsDataSvc(const TsDataSvc&);
+  TsDataSvc(const TsDataSvc&) = delete;
   /// Fake assignment operator (never implemented).
-  TsDataSvc& operator= (const TsDataSvc&);
+  TsDataSvc& operator= (const TsDataSvc&) = delete;
 
 protected:
   /// Check if root path is valid
@@ -450,4 +439,3 @@ protected:
 
 };
 #endif // GAUDIKERNEL_TSDATASVC_H
-

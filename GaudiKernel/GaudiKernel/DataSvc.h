@@ -49,32 +49,28 @@ public:
   typedef std::vector<DataStoreItem> LoadItems;
 
 protected:
-  /// Integer Property corresponding to CLID of root entry
-  CLID                            m_rootCLID = 110; /*CLID_Event*/
-  /// Name of root event
-  std::string                     m_rootName = "/Event" ;
   /// Pointer to data loader service
   SmartIF<IConversionSvc>         m_dataLoader = nullptr;
   /// Pointer to incident service
   SmartIF<IIncidentSvc>           m_incidentSvc = nullptr;
+
+  SimpleProperty<CLID> m_rootCLID{this, "RootCLID", 110 /*CLID_Event*/, "CLID of root entry"};
+  StringProperty m_rootName{this, "RootName", "/Event", "name of root entry"};
+  BooleanProperty m_forceLeaves{this, "ForceLeaves", false, "force creation of default leaves on registerObject"};
+  StringArrayProperty m_inhibitPathes{this, "InhibitPathes", {}, "inhibited leaves"};
+
+  BooleanProperty m_enableFaultHdlr{this, "EnableFaultHandler", false, "enable incidents on data creation requests"};
+  StringProperty m_faultName{this, "DataFaultName", "DataFault", "Name of the data fault incident"};
+
+  BooleanProperty m_enableAccessHdlr{this, "EnableAccessHandler", false, "enable incidents on data access requests"};
+  StringProperty m_accessName{this, "DataAccessName", "DataAccess", "Name of the data access incident"};
+
   /// Items to be pre-loaded
   LoadItems                       m_preLoads;
-  /// Allow forced creation of default leaves on registerObject
-  bool                            m_forceLeaves = false;
-  /// Flag to enable interrupts on data access requests
-  bool                            m_enableAccessHdlr = false;
-  /// Flag to enable interrupts on data creation requests
-  bool                            m_enableFaultHdlr = false;
   /// Pointer to root entry
   DataSvcHelpers::RegistryEntry*  m_root = nullptr;
   /// Map with object paths to be inhibited from loading
   DataSvcHelpers::InhibitMap*     m_inhibitMap = nullptr;
-  /// Property for the inhibited leaves
-  std::vector<std::string>        m_inhibitPathes;
-  /// Name of the data access incident
-  std::string                     m_accessName = "DataAccess";
-  /// Name of the data fault incident
-  std::string                     m_faultName = "DataFault";
 public:
 
   /// IDataManagerSvc: Accessor for root event CLID
@@ -374,7 +370,7 @@ public:
   StatusCode finalize() override;
 
   /// Standard Constructor
-  DataSvc( const std::string& name, ISvcLocator* svc );
+  DataSvc( const std::string& name, ISvcLocator* svc ): base_class( name, svc ) {}
 
   /// Standard Destructor
   ~DataSvc() override;
