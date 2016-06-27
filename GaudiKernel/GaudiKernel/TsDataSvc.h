@@ -385,8 +385,8 @@ public:
   /// Service initialization
   StatusCode finalize() override;
 
-  /// Standard Constructor
-  TsDataSvc( const std::string& name, ISvcLocator* svc ): base_class( name, svc ) {}
+  /// inherit contructor
+  using extends::extends;
 
   /// Standard Destructor
   ~TsDataSvc() override;

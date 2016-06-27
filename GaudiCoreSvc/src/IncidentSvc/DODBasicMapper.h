@@ -20,9 +20,11 @@ class DODBasicMapper: public extends<AlgTool,
                                      IDODAlgMapper,
                                      IDODNodeMapper> {
 public:
-  /// Standard constructor
-  DODBasicMapper(const std::string& type, const std::string& name, const IInterface* parent);
-  ~DODBasicMapper() override = default; ///< Destructor
+  /// inherit contructor
+  using extends::extends;
+
+  //DODBasicMapper(const std::string& type, const std::string& name, const IInterface* parent);
+  ~DODBasicMapper() override = default;
 
   /// @see IDODAlgMapper
   Gaudi::Utils::TypeNameString algorithmForPath(const std::string &path) override;
@@ -31,8 +33,13 @@ public:
   std::string nodeTypeForPath(const std::string &path) override;
 
 private:
-  GaudiUtils::HashMap<std::string, Gaudi::Utils::TypeNameString>  m_algMap;
-  GaudiUtils::HashMap<std::string, std::string>                   m_nodeMap;
+  template <class T>
+  using MapProp = PropertyWithValue<GaudiUtils::HashMap<std::string, T>>;
+
+  MapProp<std::string>                   m_nodeMap{this, "Nodes", {},
+      "map of the type of nodes to be associated to paths (path -> data_type)."};
+  MapProp<Gaudi::Utils::TypeNameString>  m_algMap{this, "Algorithms", {},
+      "map of algorithms to be used to produce entries (path -> alg_name)."};
 };
 
 #endif // INCIDENTSVC_DODBASICMAPPER_H

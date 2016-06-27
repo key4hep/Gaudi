@@ -369,8 +369,8 @@ public:
   /// Service initialization
   StatusCode finalize() override;
 
-  /// Standard Constructor
-  DataSvc( const std::string& name, ISvcLocator* svc ): base_class( name, svc ) {}
+  /// inherit contructor
+  using extends::extends;
 
   /// Standard Destructor
   ~DataSvc() override;

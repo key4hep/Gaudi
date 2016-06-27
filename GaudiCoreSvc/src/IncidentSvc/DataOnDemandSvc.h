@@ -216,14 +216,6 @@ protected:
   /// Internal method to initialize an algorithm handler.
   StatusCode i_setAlgHandler(const std::string &name, const Gaudi::Utils::TypeNameString &alg);
   // ==========================================================================
-public:
-  // ==========================================================================
-  void update_1 ( Property& p ) ;
-  void update_2 ( Property& p ) ;
-  void update_3 ( Property& p ) ;
-  /// update handler for 'Dump' property
-  void update_dump ( Property& /* p */ ) ;// update handler for 'Dump' property
-  // ==========================================================================
 protected:
   // ==========================================================================
   /// update the handlers
@@ -244,35 +236,12 @@ private:
   SmartIF<IDataProviderSvc> m_dataSvc = nullptr;
   /// Data provider reference
   SmartIF<IToolSvc>         m_toolSvc;
-  /// Trap name
-  std::string       m_trapType = "DataFault";
-  /// Data service name
-  std::string       m_dataSvcName = "EventDataSvc" ;
-  /// Flag to allow for the creation of partial leaves
-  bool              m_partialPath = true;
-  /// flag to force the printout
-  bool              m_dump  = false;
-  /// flag to warm up the configuration
-  bool              m_init  = false;
-  /// flag to allow DataOnDemand initialization to succeed even if the
-  /// (pre)initialization of the algorithms fails (m_init).
-  bool              m_allowInitFailure = false;
-  /// Mapping to algorithms
-  Setup             m_algMapping;
-  /// Mapping to nodes
-  Setup             m_nodeMapping;
   /// Map of algorithms to handle incidents
   AlgMap            m_algs;
   /// Map of "empty" objects to be placed as intermediate nodes
   NodeMap           m_nodes;
-  //
-  typedef std::map<std::string,std::string> Map ;
-  /// the major configuration property { 'data' : 'algorithm' }
-  Map                m_algMap          ; // { 'data' : 'algorithm' }
-  /// the major configuration property  { 'data' : 'type' }
-  Map                m_nodeMap         ; // { 'data' : 'type' }
+
   bool               m_updateRequired = true ;
-  std::string        m_prefix         = "/Event/"  ;
   // ==========================================================================
   ChronoEntity       m_total           ;
   ulonglong          m_statAlg        = 0;
@@ -286,10 +255,29 @@ private:
   bool               m_locked_algs    = false ;
   bool               m_locked_all     = false ;
   // ==========================================================================
-  std::vector<std::string> m_nodeMapTools;
   std::vector<IDODNodeMapper *> m_nodeMappers;
-  std::vector<std::string> m_algMapTools;
   std::vector<IDODAlgMapper *> m_algMappers;
+  // ==========================================================================
+  // Properties
+  StringProperty m_trapType{this, "IncidentName", "DataFault", "the type of handled Incident"};
+  StringProperty m_dataSvcName{this, "DataSvc", "EventDataSvc", "DataSvc name"};
+
+  BooleanProperty m_partialPath{this, "UsePreceedingPath", true,  "allow creation of partial leaves"};
+  BooleanProperty m_dump{this, "Dump", false, "dump configuration and stastics, if set to True after initialize it triggers a dump imeediately"};
+  BooleanProperty m_init{this, "PreInitialize", false, "(pre)initialize all algorithms"};
+  BooleanProperty m_allowInitFailure{this, "AllowPreInitializeFailure", false, "allow (pre)initialization of algorithms to fail without stopping the application"};
+
+  PropertyWithValue<Setup> m_algMapping{this, "Algorithms", {}, "[[deprecated]] use AlgMap"};
+  PropertyWithValue<Setup> m_nodeMapping{this, "Nodes", {}, "[[deprecated]] use NodeMap"};
+
+  typedef std::map<std::string,std::string> Map;
+  PropertyWithValue<Map> m_algMap{this, "AlgMap", {}, "mapping {'data': 'algorithm'}"};
+  PropertyWithValue<Map> m_nodeMap{this, "NodeMap", {}, "mapping {'data': 'type'}"};
+
+  StringProperty  m_prefix{this, "Prefix", "/Event/"};
+
+  StringArrayProperty m_nodeMapTools{this, "NodeMappingTools", {}, "list of tools of type IDODNodeMapper"};
+  StringArrayProperty m_algMapTools{this, "AlgMappingTools", {}, "list of tools of type IDODAlgMapper"};
 };
 // ============================================================================
 
@@ -298,4 +286,3 @@ private:
 // ============================================================================
 #endif // GAUDISVC_DATAONDEMANDSVC_H
 // ============================================================================
-

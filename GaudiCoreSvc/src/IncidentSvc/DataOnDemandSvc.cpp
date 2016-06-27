@@ -41,90 +41,26 @@ DataOnDemandSvc::DataOnDemandSvc
 ( const std::string& name, ISvcLocator* svc )
   : base_class( name, svc )
 {
-  // ==========================================================================
-  declareProperty
-    ( "IncidentName"       ,
-      m_trapType           ,
-      "The type of handled Incident" ) ;
-  //
-  declareProperty ( "DataSvc"            , m_dataSvcName ) ;
-  //
-  declareProperty ( "UsePreceedingPath"  , m_partialPath ) ;
-  declareProperty
-    ( "Dump"        ,
-      m_dump        ,
-      "Dump the configuration and stastics" )  ->
-    declareUpdateHandler ( &DataOnDemandSvc::update_dump , this ) ;
-  //
-  declareProperty
-    ( "PreInitialize" ,
-      m_init          ,
-      "Flag to (pre)initialize all algorithms" ) ;
-  declareProperty
-    ( "AllowPreInitializeFailure" ,
-      m_allowInitFailure          ,
-      "Allow (pre)initialization of algorithms to fail without stopping the application" ) ;
-  //
-  declareProperty ( "Algorithms"         , m_algMapping  )  ->
-    declareUpdateHandler ( &DataOnDemandSvc::update_2 , this ) ;
-  declareProperty ( "Nodes"              , m_nodeMapping ) ->
-    declareUpdateHandler ( &DataOnDemandSvc::update_3 , this ) ;
-  //
-  declareProperty ( "AlgMap"  , m_algMap  ) ->
-    declareUpdateHandler ( &DataOnDemandSvc::update_1 , this ) ;
-  declareProperty ( "NodeMap" , m_nodeMap ) ->
-    declareUpdateHandler ( &DataOnDemandSvc::update_1 , this ) ;
+  m_dump.declareUpdateHandler( [this](Property&) {
+    if (m_dump && FSMState() >= Gaudi::StateMachine::INITIALIZED) {
+      dump( MSG::ALWAYS );
+    }
+  } );
 
-  declareProperty ( "Prefix"             , m_prefix      ) ;
+  auto force_update = [this](Property& p) {
+    verbose() << "updated property " << p.name() << ", forcig update" << endmsg;
+    m_updateRequired = true;
+  };
+  m_algMap.declareUpdateHandler(force_update);
+  m_nodeMap.declareUpdateHandler(force_update);
 
-  declareProperty("NodeMappingTools", m_nodeMapTools,
-                  "List of tools of type IDODNodeMapper");
-  declareProperty("AlgMappingTools", m_algMapTools,
-                  "List of tools of type IDODAlgMapper");
+  auto deprecated_property = [this, force_update](Property& p) {
+    warning() << p.name() << " " << p.documentation() << endmsg;
+    force_update(p);
+  };
+  m_algMapping.declareUpdateHandler(deprecated_property);
+  m_nodeMapping.declareUpdateHandler(deprecated_property);
   // ==========================================================================
-}
-// ============================================================================
-// Update handler
-// ============================================================================
-void DataOnDemandSvc::update_1 ( Property& p )
-{
-  verbose() << " I am update handler for property " << p << endmsg ;
-  // force update
-  m_updateRequired = true ;
-}
-// ============================================================================
-// Update handler
-// ============================================================================
-void DataOnDemandSvc::update_3 ( Property& /* p */ )
-{
-  warning()
-           << "The property 'Nodes'      is obsolete, switch to map-like 'NodeMap' "
-           << " = { 'data' : 'type'      } "
-           << endmsg ;
-  // force update
-  m_updateRequired = true ;
-}
-// ============================================================================
-// Update handler
-// ============================================================================
-void DataOnDemandSvc::update_2 ( Property& /* p */ )
-{
-  warning()
-           << "The property 'Algorithms' is obsolete, switch to map-like 'AlgMap'  "
-           << " = { 'data' : 'algorithm' } "
-           << endmsg ;
-  // force update
-  m_updateRequired = true ;
-}
-// ============================================================================
-// Update handler
-// ============================================================================
-void DataOnDemandSvc::update_dump ( Property& /* p */ )
-{
-  // no action if not yet initialized
-  if ( FSMState() < Gaudi::StateMachine::INITIALIZED ) { return ; }
-  // dump the configuration:
-  if ( m_dump ) { dump ( MSG::ALWAYS ) ; }
 }
 // ============================================================================
 // anonymous namespace to hide few local functions
@@ -157,8 +93,8 @@ namespace
     // empty  prefix
     if ( prefix.empty() ) { return 0 ; }                    // RETURN
     /// loop over all entries to find the  proper keys
-    auto it = std::find_if_not( _map.begin(), _map.end(), 
-                            [&](typename MAP::const_reference i) {
+    auto it = std::find_if_not( _map.begin(), _map.end(),
+                            [&](typename MAP::ValueType::const_reference i) {
                                 return boost::algorithm::starts_with(i.first,prefix);
     } );
     if ( it == _map.end() ) return 0 ;

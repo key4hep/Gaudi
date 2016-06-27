@@ -79,24 +79,18 @@ protected:
   /// Reference to Tuple service
   mutable SmartIF<INTupleSvc>      m_tupleSvc;
   mutable SmartIF<IAddressCreator> m_pAddrCreator;
-  /// Name of the event collection service name
-  std::string              m_tupleSvcName;
-  /// Authentication string (if needed)
-  std::string              m_authentication;
-  /// Container name
-  std::string              m_cntName;
-  /// Item name
-  std::string              m_itemName;
-  /// Criteria
-  std::string              m_criteria;
-  /// Datafile name
-  std::string              m_database;
-  /// Database type identifier
-  std::string              m_dbType;
-  /// Database service (exclusive property with db type)
-  std::string              m_dbSvc;
-  /// Selector name
-  std::string              m_statement;
+
+  // Properties
+  StringProperty m_tupleSvcName{this, "CnvService", "EvtTupleSvc", "name of the event collection service"};
+  StringProperty m_authentication{this, "Authentication", "", "authentication string (if needed)"};
+  StringProperty m_cntName{this, "Container", "B2PiPi", "container name"};
+  StringProperty m_itemName{this, "Item", "Address", "item name"};
+  StringProperty m_criteria{this, "Criteria", "", "criteria"};
+  StringProperty m_database{this, "DB", "", "datafile name"};
+  StringProperty m_dbType{this, "DbType", "", "database type identifier"};
+  StringProperty m_dbSvc{this, "DbService", "", "database service (exclusive property with db type)"};
+  StringProperty m_statement{this, "Function", "NTuple::Selector", "selector name"};
+
 public:
 
   /// Service override: Initialize service
@@ -194,8 +188,9 @@ public:
   /// Read next record of the N-tuple
   virtual StatusCode getPreviousRecord(NTuple::Tuple* tuple)  const;
 
-  /// Standard Constructor
-  EventCollectionSelector( const std::string& name, ISvcLocator* svcloc );
+  /// inherit constructor
+  using extends::extends;
+
   /// Standard Destructor
   ~EventCollectionSelector() override = default;
 };

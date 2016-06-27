@@ -30,12 +30,11 @@ class AppMgrRunable : public extends<Service,
 protected:
   /// Reference to application manager UI
   IAppMgrUI*    m_appMgrUI = nullptr;
-  /// Number of events to be processed
-  int           m_evtMax;
+  IntegerProperty m_evtMax{this, "EvtMax", 0xFEEDBABE, "number of events to be processed"};
 
 public:
-  /// Standard Constructor
-  AppMgrRunable(const std::string& nam, ISvcLocator* svcLoc);
+  /// inherit contructor
+  using extends::extends;
   /// Standard Destructor
   ~AppMgrRunable() override = default;
 

@@ -69,24 +69,19 @@ protected:
 
   /// Reconfigure occurred
   bool                  m_reconfigure = false;
-  /// Input stream specifiers (for job options)
-  StreamSpecs           m_streamSpecs;
   /// Input stream specifiers (last used)
   StreamSpecs           m_streamSpecsLast;
   /// Input streams
   Streams               m_streams;
   /// Input stream counter (0..oo, monotonely increasing)
   int                   m_streamCount = 0;
-  /// First event to be processed
-  int                   m_firstEvent = 0;
-  /// Maximum number of events to be processed
-  int                   m_evtMax = INT_MAX;
-  /// Printout frequency
-  int                   m_evtPrintFrequency = 10;
 
-  std::string           m_streamManager="DataStreamTool";
-
-
+  // Properties
+  PropertyWithValue<StreamSpecs> m_streamSpecs{this, "Input", {}, "input stream specifiers (for job options)"};
+  IntegerProperty m_firstEvent{this, "FirstEvent", 0, "first event to be processed"};
+  IntegerProperty m_evtMax{this, "EvtMax", INT_MAX, "maximum number of events to be processed"};
+  IntegerProperty m_evtPrintFrequency{this, "PrintFreq", 10, "printout frequency"};
+  StringProperty m_streamManager{this, "StreamManager", "DataStreamTool", ""};
 
   /// Progress report
   virtual void printEvtInfo(const EvtSelectorContext* iter) const;
@@ -182,8 +177,8 @@ public:
   /// Retrieve last entry of the previous data stream
   StatusCode lastOfPreviousStream ( bool shutDown, EvtSelectorContext& it) const;
 
-  /// Standard Constructor
-  EventSelector( const std::string& name, ISvcLocator* svcloc );
+  /// inherit constructor
+  using extends::extends;
 
   /// Standard Destructor
   ~EventSelector() override = default;

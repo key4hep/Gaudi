@@ -39,6 +39,12 @@ class EventLoopMgr : public MinimalEventLoopMgr   {
 public:
 
 protected:
+  // Properties
+
+  StringProperty       m_histPersName{this, "HistogramPersistency", {}, "name of the Hist Pers type"};
+  StringProperty       m_evtsel{this, "EvtSel", {}, "event selector"};
+  BooleanProperty      m_warnings{this, "Warnings", true, "set to false to suppress warning messages"};
+
   /// Reference to the Event Data Service's IDataManagerSvc interface
   SmartIF<IDataManagerSvc>  m_evtDataMgrSvc = nullptr;
   /// Reference to the Event Data Service's IDataProviderSvc interface
@@ -47,25 +53,20 @@ protected:
   SmartIF<IEvtSelector>     m_evtSelector = nullptr;
   /// Event Iterator
   IEvtSelector::Context*      m_evtContext = nullptr;
-  /// Event selector
-  std::string       m_evtsel;
   /// Reference to the Histogram Data Service
   SmartIF<IDataManagerSvc>  m_histoDataMgrSvc = nullptr;
   /// Reference to the Histogram Persistency Service
   SmartIF<IConversionSvc>   m_histoPersSvc = nullptr;
-  /// Name of the Hist Pers type
-  std::string       m_histPersName;
   /// Property interface of ApplicationMgr
   SmartIF<IProperty>        m_appMgrProperty = nullptr;
   /// Flag to avoid to fire the EnvEvent incident twice in a row
   /// (and also not before the first event)
   bool              m_endEventFired = true;
-  /// Flag to disable warning messages when using external input
-  bool              m_warnings = true;
 
 public:
-  /// Standard Constructor
-  EventLoopMgr(const std::string& nam, ISvcLocator* svcLoc);
+  // inherit contructor from base class
+  using MinimalEventLoopMgr::MinimalEventLoopMgr;
+
   /// Standard Destructor
   ~EventLoopMgr() override;
   /// Create event address using event selector
