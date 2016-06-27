@@ -306,6 +306,13 @@ public:
     return m_value == other;
   }
 
+  /// inequality comparison
+  template <class T>
+  inline bool operator!=( const T& other ) const
+  {
+    return m_value != other;
+  }
+
   /// "less" comparison
   template <class T>
   inline bool operator<( const T& other ) const
@@ -315,7 +322,7 @@ public:
 
   /// allow addition if possible between the property and the other types
   template <class T>
-  decltype( std::declval<ValueType>() + std::declval<T>() ) operator+( const T& other )
+  decltype( std::declval<ValueType>() + std::declval<T>() ) operator+( const T& other ) const
   {
     return m_value + other;
   }
@@ -409,6 +416,21 @@ public:
   {
     return value()[key];
   }
+  template <class T = const ValueType>
+  inline decltype( std::declval<T>().find(typename T::key_type{}) ) find( const typename T::key_type& key ) const
+  {
+    return value().find(key);
+  }
+  template <class T = ValueType>
+  inline decltype( std::declval<T>().find(typename T::key_type{}) ) find( const typename T::key_type& key )
+  {
+    return value().find(key);
+  }
+  template <class ARG, class T = ValueType>
+  inline decltype( std::declval<T>().erase(ARG{}) ) erase(ARG arg)
+  {
+    return value().erase(arg);
+  }
   /// @}
   // ==========================================================================
 public:
@@ -469,6 +491,13 @@ template <class T, class TP, class V>
 bool operator==( const T& v, const PropertyWithValue<TP, V>& p )
 {
   return p == v;
+}
+
+/// delegate (value != property) to property operator!=
+template <class T, class TP, class V>
+bool operator!=( const T& v, const PropertyWithValue<TP, V>& p )
+{
+  return p != v;
 }
 
 /// delegate (value + property) to property operator+
