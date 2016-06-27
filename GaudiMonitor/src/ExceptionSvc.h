@@ -38,13 +38,7 @@ public:
   /// initialize the service
   StatusCode initialize   () override;
 public:
-  /** standard constructor
-   *  @param name service instance name
-   *  @param pSvc pointer to Service Locator
-   */
-  ExceptionSvc
-  ( const std::string& name ,
-    ISvcLocator*       svc  ) ;
+  using extends::extends;
   /// Destructor.
   ~ExceptionSvc() override = default;
 private:
@@ -62,11 +56,10 @@ private:
   enum ReturnState { SUCCESS, FAILURE, RECOVERABLE, RETHROW, DEFAULT };
 
   Policy m_mode_exc = ALL, m_mode_err = NONE;
-  StringProperty m_mode_exc_s, m_mode_err_s;
   std::map<std::string,ReturnState> m_retCodesExc, m_retCodesErr;
 
-  mutable MsgStream m_log;
-
+  StringProperty m_mode_exc_s{this, "Catch", "ALL"};
+  StringProperty m_mode_err_s{this, "Errors", "NONE"};
 };
 
 // ============================================================================

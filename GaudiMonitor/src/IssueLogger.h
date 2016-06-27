@@ -27,9 +27,11 @@ public:
 
 private:
 
-  StringArrayProperty m_outputfile;
-  StringProperty m_reportLevelS, m_traceLevelS;
-  BooleanProperty m_showTime;
+  StringArrayProperty m_outputfile{this, "Output"};
+  StringProperty m_reportLevelS{this, "ReportLevel", "WARNING"};
+  StringProperty m_traceLevelS{this, "TracebackLevel", "ERROR"};
+  BooleanProperty m_showTime{this, "ShowTime", false};
+
   IssueSeverity::Level m_reportLevel, m_traceLevel;
 
   class logger_t final {
@@ -37,8 +39,8 @@ private:
       void (StreamLogger::*m_fun)(const std::string&) = nullptr;
   public:
       logger_t() = default;
-      logger_t( StreamLogger* logger, void (StreamLogger::*fun)(const std::string&)  ) 
-          : m_logger{ logger }, m_fun{ fun } {} 
+      logger_t( StreamLogger* logger, void (StreamLogger::*fun)(const std::string&)  )
+          : m_logger{ logger }, m_fun{ fun } {}
       void operator()(const std::string& s) const { (m_logger.get()->*m_fun)(s); }
       const std::string& name() const { return m_logger->name(); }
       explicit operator bool () const { return bool(m_logger); }

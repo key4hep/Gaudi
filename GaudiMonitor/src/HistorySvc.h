@@ -3,13 +3,8 @@
 
 #include "GaudiKernel/IHistorySvc.h"
 
-#ifndef GAUDIKERNEL_SERVICE_H
- #include "GaudiKernel/Service.h"
-#endif
-#ifndef KERNEL_STATUSCODES_H
- #include "GaudiKernel/StatusCode.h"
-#endif
-
+#include "GaudiKernel/Service.h"
+#include "GaudiKernel/StatusCode.h"
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/AlgTool.h"
 #include "GaudiKernel/IIncidentListener.h"
@@ -81,7 +76,7 @@ public:
 			     const std::string& storeName,
 			     std::list<DataHistory*>& dhlist) const;
 
-  HistorySvc( const std::string& name, ISvcLocator* svc );
+  using extends::extends;
 
   virtual void handle(const Incident& inc);
 
@@ -99,11 +94,13 @@ private:
   typedef DataHistMap::iterator DHMitr;
   typedef DataHistMap::const_iterator DHMCitr;
 
+  BooleanProperty m_dump{this, "Dump", false};
+  BooleanProperty m_activate{this, "Activate", true};
+  StringProperty m_outputFile{this, "OutputFile"};
+
   void clearState();
 
   bool m_isInitialized = false;
-  bool m_dump = false;
-  bool m_activate = true;
 
   IAlgContextSvc *p_algCtxSvc = nullptr;
 
@@ -115,11 +112,7 @@ private:
 
   std::multimap<DHH, DataHistory*> m_datMap;
 
-//   std::set<DataHistory*, DataHistory::DataHistoryOrder> m_datMap;
-
   std::unique_ptr<JobHistory> m_jobHistory;
-
-  std::string m_outputFile;
 
   void dumpProperties(std::ofstream&) const;
   void dumpProperties(const IService&,  std::ofstream&) const;
@@ -137,9 +130,7 @@ private:
   IIncidentSvc *m_incidentSvc = nullptr;
   SmartIF<IToolSvc> m_toolSvc;
 
-  mutable MsgStream m_log;
   bool m_outputFileTypeXML = false;
-
 };
 
 #endif

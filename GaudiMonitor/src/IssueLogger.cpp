@@ -17,7 +17,7 @@ namespace {
     return stack;
   }
 
-  static const std::map<IssueSeverity::Level, MSG::Level> s_sevMsgMap = 
+  static const std::map<IssueSeverity::Level, MSG::Level> s_sevMsgMap =
                 { { IssueSeverity::NIL,         MSG::NIL     },
                   { IssueSeverity::VERBOSE,     MSG::VERBOSE },
                   { IssueSeverity::DEBUG,       MSG::DEBUG   },
@@ -44,7 +44,7 @@ namespace {
                    { IssueSeverity::FATAL,        "FATAL" },
                    { IssueSeverity::ALWAYS,       "ALWAYS" } };
 
-  static const std::map<std::string, IssueSeverity::Level> s_levelSTrans = 
+  static const std::map<std::string, IssueSeverity::Level> s_levelSTrans =
                   { { "VERBOSE",      IssueSeverity::VERBOSE },
                     { "DEBUG",        IssueSeverity::DEBUG },
                     { "DEBUG1",       IssueSeverity::DEBUG1 },
@@ -71,11 +71,6 @@ inline void toupper(std::string &s)
 
 IssueLogger::IssueLogger( const std::string& name, ISvcLocator* svc )
   : base_class(name, svc) {
-
-  declareProperty ("Output", m_outputfile );
-  declareProperty ("ReportLevel", m_reportLevelS="WARNING");
-  declareProperty ("TracebackLevel", m_traceLevelS="ERROR");
-  declareProperty ("ShowTime", m_showTime=false);
 
   m_reportLevelS.declareUpdateHandler(&IssueLogger::setupLevels,this);
   m_traceLevelS.declareUpdateHandler(&IssueLogger::setupLevels,this);
@@ -112,8 +107,8 @@ StatusCode
 IssueLogger::finalize() {
 
   debug() << "IssueLogger::finalize" << endmsg;
-  std::for_each( std::begin(m_log), std::end(m_log), 
-                 [](logger_t& i) 
+  std::for_each( std::begin(m_log), std::end(m_log),
+                 [](logger_t& i)
                  { i.reset(); } );
   return Service::finalize();
 }
@@ -216,7 +211,7 @@ IssueLogger::setupLevels(Property& prop) {
   } else if (prop.name() == "TracebackLevel") {
     set(m_traceLevel, IssueSeverity::ERROR );
   } else {
-    error() << "setting up unknown property \"" 
+    error() << "setting up unknown property \""
                       << prop.name() << "\"" << endmsg;
   }
 }
