@@ -406,15 +406,15 @@ public:
   {
     return value().end();
   }
-  template <class T = const ValueType>
-  inline decltype( std::declval<T>()[typename T::key_type{}] ) operator[]( const typename T::key_type& key ) const
+  template <class ARG, class T = const ValueType>
+  inline decltype( std::declval<T>()[ARG{}] ) operator[]( const ARG& arg ) const
   {
-    return value()[key];
+    return value()[arg];
   }
-  template <class T = ValueType>
-  inline decltype( std::declval<T>()[typename T::key_type{}] ) operator[]( const typename T::key_type& key )
+  template <class ARG, class T = ValueType>
+  inline decltype( std::declval<T>()[ARG{}] ) operator[]( const ARG& arg )
   {
-    return value()[key];
+    return value()[arg];
   }
   template <class T = const ValueType>
   inline decltype( std::declval<T>().find(typename T::key_type{}) ) find( const typename T::key_type& key ) const
