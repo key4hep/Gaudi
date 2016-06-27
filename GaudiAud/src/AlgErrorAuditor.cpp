@@ -5,15 +5,6 @@
 
 DECLARE_COMPONENT(AlgErrorAuditor)
 
-AlgErrorAuditor::AlgErrorAuditor(const std::string& name, ISvcLocator* pSvcLocator)
-  : Auditor(name, pSvcLocator), m_error(0), m_fatal(0) {
-
-  declareProperty( "Abort", m_abort = false,
-		   "Abort job upon illegal Algorithm return code");
-  declareProperty( "Throw", m_throw = false,
-		   "Throw GaudiException upon illegal Algorithm return code");
-}
-
 void
 AlgErrorAuditor:: beforeExecute(INamedInterface* ){
   m_error = msgSvc()->messageCount(MSG::ERROR);
@@ -25,7 +16,7 @@ AlgErrorAuditor:: initialize() {
 
   if (m_abort && m_throw) {
     info() << "Both \"Throw\" and \"Abort\" options have been set."
-	<< " Abort takes precedence." << endmsg;
+           << " Abort takes precedence." << endmsg;
   }
 
   return StatusCode::SUCCESS;
@@ -41,7 +32,7 @@ AlgErrorAuditor:: afterExecute(INamedInterface* alg, const StatusCode& sc) {
     os << "Illegal Return Code: Algorithm " << alg->name()
        << " reported an ERROR, but returned a StatusCode \"" << sc << "\"";
     os << std::endl << "Error policy described in "
-	 << "https://twiki.cern.ch/twiki/bin/view/AtlasComputing/ReportingErrors";
+       << "https://twiki.cern.ch/twiki/bin/view/AtlasComputing/ReportingErrors";
 
     error() << os.str() << endmsg;
     incrMap(alg->name(), 0);
@@ -58,7 +49,7 @@ AlgErrorAuditor:: afterExecute(INamedInterface* alg, const StatusCode& sc) {
     os << "Illegal Return Code: Algorithm " << alg->name()
        << " reported a FATAL, but returned a StatusCode \"" << sc << "\"";
     os << std::endl << "Error policy described in "
-	 << "https://twiki.cern.ch/twiki/bin/view/AtlasComputing/ReportingErrors";
+       << "https://twiki.cern.ch/twiki/bin/view/AtlasComputing/ReportingErrors";
 
     error() << os.str() << endmsg;
     incrMap(alg->name(), 1);
@@ -79,11 +70,10 @@ AlgErrorAuditor:: afterExecute(INamedInterface* alg, const StatusCode& sc) {
 StatusCode
 AlgErrorAuditor::finalize() {
 
-
   if (m_algMap[0].size() != 0) {
     info() << "Found " << m_algMap[0].size()
-	<< " instances where an Algorithm::execute() produced an ERROR "
-	<< "but returned a SUCCESS:" << std::endl;
+           << " instances where an Algorithm::execute() produced an ERROR "
+           << "but returned a SUCCESS:" << std::endl;
 
     for (const auto&  i : m_algMap[0] ) {
       msgStream() << i.first << ": " << i.second << std::endl;
@@ -94,8 +84,8 @@ AlgErrorAuditor::finalize() {
 
   if (m_algMap[1].size() != 0) {
     info() << "Found " << m_algMap[1].size()
-	<< " instances where an Algorithm::execute() produced a FATAL "
-	<< "but returned a SUCCESS:" << std::endl;
+           << " instances where an Algorithm::execute() produced a FATAL "
+           << "but returned a SUCCESS:" << std::endl;
 
     for (const auto& i : m_algMap[1]) {
       msgStream() << i.first << ": " << i.second << std::endl;

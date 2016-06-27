@@ -1,15 +1,11 @@
 #include "CommonAuditor.h"
 
 CommonAuditor::CommonAuditor(const std::string& name, ISvcLocator *svcloc): Auditor(name, svcloc) {
-  declareProperty("EventTypes", m_types,
-                  "List of event types to audit ([]=all, ['none']=none)");
-  declareProperty("CustomEventTypes", m_customTypes,
-                  "OBSOLETE, use EventTypes instead")->declareUpdateHandler(&CommonAuditor::i_updateCustomTypes, this);
-}
-
-void CommonAuditor::i_updateCustomTypes(Property &) {
-  warning() << "Property CustomEventTypes is deprecated, use EventTypes instead" << endmsg;
-  m_types.setValue(m_customTypes.value());
+  auto deprecated_property = [this](Property& p) {
+    warning() << p.name() << " " << p.documentation() << endmsg;
+    m_types = m_customTypes;
+  };
+  m_customTypes.declareUpdateHandler(deprecated_property);
 }
 
 void CommonAuditor::before(StandardEventType evt, INamedInterface* caller)

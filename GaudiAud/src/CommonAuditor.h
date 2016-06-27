@@ -51,9 +51,6 @@ protected:
            );
   }
 
-  StringArrayProperty m_types;
-
-  /// Update handler for the obsolete property CustomEventTypes
-  void i_updateCustomTypes(Property &);
-  StringArrayProperty m_customTypes;
+  StringArrayProperty m_types{this, "EventTypes", {}, "list of event types to audit ([]=all, ['none']=none)"};
+  StringArrayProperty m_customTypes{this, "CustomEventTypes", {}, "[[deprecated]] use EventTypes instead"};
 };
