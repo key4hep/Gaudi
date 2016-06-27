@@ -808,8 +808,8 @@ class GAUDI_API GaudiTool: public GaudiCommon<AlgTool>
   mutable IHistogramSvc *  m_histoSvc = nullptr;
   // Pointer to the Algorithm Context Service
   mutable IAlgContextSvc* m_contextSvc = nullptr; ///< Algorithm Context Service
-  // The name of the Algorithm Context Service
-  std::string             m_contextSvcName = "AlgContextSvc"; ///< Algorithm Context Service
+
+  StringProperty          m_contextSvcName{this, "ContextService", "AlgContextSvc", "the name of Algorithm Context Service"};
   // ==========================================================================
  private:
   // ==========================================================================

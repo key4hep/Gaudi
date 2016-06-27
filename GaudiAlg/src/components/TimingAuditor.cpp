@@ -53,12 +53,7 @@ public:
   StatusCode finalize   ()  override;
 
 public:
-  /// standard constructor
-  TimingAuditor ( const std::string& name, ISvcLocator* pSvc )
-    : base_class ( name , pSvc )
-  {
-    declareProperty ( "OptimizedForDOD" , m_goodForDOD ) ;
-  } 
+  using extends::extends;
   /// destructor
   ~TimingAuditor() override = default;
 
@@ -81,15 +76,13 @@ private:
   int                  m_indent  = 0 ; ///< indentation level
   // "in event"
   bool                 m_inEvent = false ; ///< "In event" flag
-  // "optimized for Data-On-Demand Service"
-  bool                 m_goodForDOD = false ; ///< "optimized for DOD"
   //
   GaudiUtils::HashMap<std::string,int> m_mapUser ; ///< map used to record user timing events
 
   // Whether the timing has been saved already
   bool                 m_histoSaved = false ;
 
-
+  BooleanProperty m_goodForDOD{this, "OptimizedForDOD", false, "enable optimization for Data-On-Demand Service"};
 } ;
 // ============================================================================
 /// factory:

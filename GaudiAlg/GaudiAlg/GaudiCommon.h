@@ -113,10 +113,6 @@ protected: // few actual data types
   //protected members such that they can be used in the derived classes
   /// a pointer to the CounterSummarySvc
   SmartIF<ICounterSummarySvc> m_counterSummarySvc ;
-  ///list of counters to declare. Set by property CounterList. This can be a regular expression.
-  std::vector<std::string> m_counterList = std::vector<std::string>(1,".*");
-  //list of stat entities to write. Set by property StatEntityList. This can be a regular expression.
-  std::vector<std::string> m_statEntityList = std::vector<std::string>(0);
 public:
   // ==========================================================================
   /** @brief Templated access to the data in Gaudi Transient Store
@@ -749,29 +745,32 @@ private:
   /// Pointer to the Update Manager Service instance
   mutable IUpdateManagerSvc* m_updMgrSvc = nullptr;
   // ==========================================================================
-  /// insert  the actual C++ type of the algorithm in the messages?
-  bool        m_typePrint = true    ;
-  /// print properties at initialization?
-  bool        m_propsPrint = false   ;
-  /// print counters at finalization ?
-  bool        m_statPrint = true    ;
-  /// print warning and error counters at finalization ?
-  bool        m_errorsPrint = true  ;
-  // ==========================================================================
-  /// The context string
-  std::string m_context;
-  /// The rootInTES string
-  std::string m_rootInTES;
-  // ==========================================================================
-  // the header row
-  std::string    m_header  ; ///< the header row
-  // format for regular statistical printout rows
-  std::string    m_format1 ; ///< format for regular statistical printout rows
-  // format for "efficiency" statistical printout rows
-  std::string    m_format2 ; ///< format for "efficiency" statistical printout rows
-  // flag to use the special "efficiency" format
-  bool           m_useEffFormat ; ///< flag to use the special "efficiency" format
-} ;
+  // Properties
+  BooleanProperty m_errorsPrint{this, "ErrorsPrint", true, "print the statistics of errors/warnings/exceptions"};
+  BooleanProperty m_propsPrint{this, "PropertiesPrint", false, "print the properties of the component"};
+  BooleanProperty m_statPrint{this, "StatPrint", true, "print the table of counters"};
+  BooleanProperty m_typePrint{this, "TypePrint", true, "add the actual C++ component type into the messages"};
+
+  StringProperty m_context{this, "Context", {}, "note: overridden by parent settings"};
+  StringProperty m_rootInTES{this, "RootInTES", {}, "note: overridden by parent settings"};
+
+  StringProperty m_header{this, "StatTableHeader",
+    " |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |",
+    "the header row for the output Stat-table"};
+  StringProperty m_format1{this, "RegularRowFormat",
+    " | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |",
+    "the format for regular row in the output Stat-table"};
+  StringProperty m_format2{this, "EfficiencyRowFormat",
+    " |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |",
+    "The format for \"efficiency\" row in the output Stat-table"};
+  BooleanProperty m_useEffFormat{this, "UseEfficiencyRowFormat", true,
+    "use the special format for printout of efficiency counters"};
+
+  StringArrayProperty m_counterList{this, "CounterList", {".*"},
+    "RegEx list, of simple integer counters for CounterSummary"};
+  StringArrayProperty m_statEntityList{this, "StatEntityList", {},
+    "RegEx list, of StatEntity counters for CounterSummary"};
+};
 // ============================================================================
 #include "GaudiAlg/GaudiCommonImp.h"
 // ============================================================================

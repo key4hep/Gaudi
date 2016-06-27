@@ -329,69 +329,8 @@ private:
   /// Constructor initialization and job options
   inline void initGaudiTuplesConstructor()
   {
-    m_produceNTuples = true ;     // Switch ON/OFF ntuple production
-    m_splitNTupleDir = false ;    // for HBOOK it is better to use 'true'
-    m_nTupleLUN      = "FILE1" ;  // logical unit for ntuples
-    m_nTupleTopDir   = "" ;       // top level ntuple directory
-    m_nTupleDir      = boost::algorithm::replace_all_copy( this->name(), ":","_" );    // ntuple directory
-    m_nTupleOffSet   = 0  ;       // offset for ntuples
-    //
-    m_produceEvtCols = false ;    // Switch ON/OFF ntupel production
-    m_splitEvtColDir = false ;    // for HBOOK it is better to use 'true'
-    m_evtColLUN      = "EVTCOL" ; // logical unit for ntuples
-    m_evtColTopDir   = ""    ;    // top level ntuple directory
-    m_evtColDir      = boost::algorithm::replace_all_copy( this->name(), ":", "_");   // ntuple directory
-    m_evtColOffSet   = 0   ;      // offset for ntuples
-    //
-    m_tuplesPrint    = true  ;    // print tuples at end of job
-    m_evtColsPrint   = false  ;   // print event collections at end of job
-    //
-    this -> declareProperty
-      ( "NTupleProduce"  , m_produceNTuples         ,
-        "General switch to enable/disable N-tuples" ) ;
-    this -> declareProperty
-      ( "NTuplePrint"    , m_tuplesPrint    ,
-        "Print N-tuple statistics"        )
-      -> declareUpdateHandler ( &GaudiTuples<PBASE>::printNTupleHandler , this ) ;
-    this -> declareProperty
-      ( "NTupleSplitDir" , m_splitNTupleDir ,
-        "Split long directory names into short pieces (suitable for HBOOK)" ) ;
-    this -> declareProperty
-      ( "NTupleOffSet"   , m_nTupleOffSet   ,
-        "Offset for numerical N-tuple ID" ) ;
-    this -> declareProperty
-      ( "NTupleLUN"      , m_nTupleLUN      ,
-        "Logical File Unit for N-tuples"  ) ;
-    this -> declareProperty
-      ( "NTupleTopDir"   , m_nTupleTopDir   ,
-        "Top-level directory for N-Tuples") ;
-    this -> declareProperty
-      ( "NTupleDir"      , m_nTupleDir      ,
-        "Subdirectory for N-Tuples"       ) ;
-    // ========================================================================
-    this -> declareProperty
-      ( "EvtColsProduce" , m_produceEvtCols ,
-        "General switch to enable/disable Event Tag Collections" ) ;
-    this -> declareProperty
-      ( "EvtColsPrint"   , m_evtColsPrint   ,
-        "Print statistics for Event Tag Collections " )
-      -> declareUpdateHandler ( &GaudiTuples<PBASE>::printEvtColHandler , this ) ;
-    this -> declareProperty
-      ( "EvtColSplitDir" , m_splitEvtColDir ,
-        "Split long directory names into short pieces" ) ;
-    this -> declareProperty
-      ( "EvtColOffSet"   , m_evtColOffSet   ,
-        "Offset for numerical N-tuple ID" ) ;
-    this -> declareProperty
-      ( "EvtColLUN"      , m_evtColLUN      ,
-        "Logical File Unit for Event Tag Collections"   ) ;
-    this -> declareProperty
-      ( "EvtColTopDir"   , m_evtColTopDir   ,
-        "Top-level directory for Event Tag Collections" ) ;
-    this -> declareProperty
-      ( "EvtColDir"      , m_evtColDir      ,
-        "Subdirectory for Event Tag Collections"        ) ;
-    // ========================================================================
+    m_tuplesPrint.declareUpdateHandler ( &GaudiTuples<PBASE>::printNTupleHandler , this );
+    m_evtColsPrint.declareUpdateHandler ( &GaudiTuples<PBASE>::printEvtColHandler , this ) ;
   }
   // ==========================================================================
 private:
@@ -403,36 +342,25 @@ private:
   // ==========================================================================
 private:
   // ==========================================================================
-  /// flag to switch ON/OFF the ntuple filling and booking
-  bool        m_produceNTuples ;
-  /// flag to indicate splitting of tuple directories (useful for HBOOK)
-  bool        m_splitNTupleDir ;
-  /// name of logical unit for tuple directory
-  std::string m_nTupleLUN      ;
-  /// top level tuple directory
-  std::string m_nTupleTopDir   ;
-  /// local tuple directory
-  std::string m_nTupleDir      ;
-  /// the offset for ntuple numerical ID
-  TupleID::NumericID     m_nTupleOffSet   ;
-  // ==========================================================================
-  /// flag to switch ON/OFF the ntuple filling and booking
-  bool        m_produceEvtCols ;
-  /// flag to indicate splitting of tuple directories (useful for HBOOK)
-  bool        m_splitEvtColDir ;
-  /// name of Logical Unit for tuple directory
-  std::string m_evtColLUN      ;
-  /// top level tuple directory
-  std::string m_evtColTopDir   ;
-  /// local tuple directory
-  std::string m_evtColDir      ;
-  /// the offset for ntuple numerical ID
-  TupleID::NumericID     m_evtColOffSet   ;
-  // ==========================================================================
-  /// print tuples at finalization?
-  bool m_tuplesPrint    ;                      // print tuples at finalization?
-  /// print event collections at finalization
-  bool m_evtColsPrint   ;            // print event collections at finalization
+  BooleanProperty m_produceNTuples{this, "NTupleProduce", true, "general switch to enable/disable N-tuples"};
+  BooleanProperty m_tuplesPrint{this, "NTuplePrint", true, "print N-tuple statistics"};
+  BooleanProperty m_splitNTupleDir{this, "NTupleSplitDir", false,
+                                   "split long directory names into short pieces (suitable for HBOOK)"};
+  PropertyWithValue<TupleID::NumericID> m_nTupleOffSet{this, "NTupleOffSet", 0, "offset for numerical N-tuple ID"};
+  StringProperty m_nTupleLUN{this, "NTupleLUN", "FILE1", "Logical File Unit for N-tuples"};
+  StringProperty m_nTupleTopDir{this, "NTupleTopDir", "", "top-level directory for N-Tuples"};
+  StringProperty m_nTupleDir{this, "NTupleDir", boost::algorithm::replace_all_copy( this->name(), ":", "_" ),
+                             "subdirectory for N-Tuples"};
+
+  BooleanProperty m_produceEvtCols{this, "EvtColsProduce", false,
+                                   "general switch to enable/disable Event Tag Collections"};
+  BooleanProperty m_evtColsPrint{this, "EvtColsPrint", false, "print statistics for Event Tag Collections "};
+  BooleanProperty m_splitEvtColDir{this, "EvtColSplitDir", false, "split long directory names into short pieces"};
+  PropertyWithValue<TupleID::NumericID> m_evtColOffSet{this, "EvtColOffSet", 0, "offset for numerical N-tuple ID"};
+  StringProperty m_evtColLUN{this, "EvtColLUN", "EVTCOL", "Logical File Unit for Event Tag Collections"};
+  StringProperty m_evtColTopDir{this, "EvtColTopDir", "", "Top-level directory for Event Tag Collections"};
+  StringProperty m_evtColDir{this, "EvtColDir", boost::algorithm::replace_all_copy( this->name(), ":", "_" ),
+                             "Subdirectory for Event Tag Collections"};
   // ==========================================================================
   /// the actual storage of ntuples by title
   mutable TupleMapTitle  m_nTupleMapTitle ;

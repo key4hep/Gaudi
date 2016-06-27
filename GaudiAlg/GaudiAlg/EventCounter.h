@@ -33,7 +33,7 @@ private:
      ** should be reported. The default is 1, corresponding
      ** to every event.
      **/
-    IntegerProperty m_frequency;
+    IntegerProperty m_frequency{this, "Frequency", 1};
 
     /**
      ** The number of events skipped since the last time

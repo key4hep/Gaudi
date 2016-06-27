@@ -1,4 +1,4 @@
-#ifndef EVENTNODEKILLER_H 
+#ifndef EVENTNODEKILLER_H
 #define EVENTNODEKILLER_H 1
 
 // Include files
@@ -15,15 +15,13 @@
  *  @date   2005-07-14
  */
 class EventNodeKiller : public GaudiAlgorithm {
-public: 
-  /// Standard constructor
-  EventNodeKiller( const std::string& name, ISvcLocator* pSvcLocator );
+public:
+  using GaudiAlgorithm::GaudiAlgorithm;
+  ~EventNodeKiller( ) override = default;
 
-  ~EventNodeKiller( ) override = default; ///< Destructor
-
-  StatusCode execute() override;    ///< Algorithm execution
+  StatusCode execute() override;
 
 private:
-  std::vector<std::string> m_nodes; ///< String property "Nodes"
+  StringArrayProperty m_nodes{this, "Nodes"};
 };
 #endif // EVENTNODEKILLER_H

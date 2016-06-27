@@ -92,13 +92,6 @@ GaudiSequencer::GaudiSequencer( const std::string& name,
                                 ISvcLocator* pSvcLocator)
   : GaudiAlgorithm ( name , pSvcLocator )
 {
-  declareProperty( "Members"             , m_names                  );
-  declareProperty( "ModeOR"              , m_modeOR         = false );
-  declareProperty( "IgnoreFilterPassed"  , m_ignoreFilter   = false );
-  declareProperty( "MeasureTime"         , m_measureTime    = false );
-  declareProperty( "ReturnOK"            , m_returnOK       = false );
-  declareProperty( "ShortCircuit"        , m_shortCircuit   = true  );
-
   m_names.declareUpdateHandler (& GaudiSequencer::membershipHandler, this );
 }
 //=============================================================================

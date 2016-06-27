@@ -16,10 +16,15 @@
 // ============================================================================
 #include <limits>
 #include <vector>
+#include <boost/algorithm/string/replace.hpp>
 // ============================================================================
 // GaudiKernel
 // ============================================================================
 #include "GaudiKernel/HistoProperty.h"
+// ============================================================================
+// GaudiUtils
+// ============================================================================
+#include "GaudiUtils/HistoTableFormat.h"
 // ============================================================================
 // GaudiAlg
 // ============================================================================
@@ -3059,65 +3064,62 @@ private:
   void printHistoHandler ( Property& /* theProp */ ) ;          // "HistoPrint"
   // ==========================================================================
 private:
-  // ==========================================================================
-  /// flag to SWITCH ON/SWITCH OFF  the histogrm fillling and booking
-  bool        m_produceHistos ;
-  /// flag to control output level of histograms
-  bool        m_fullDetail;
-  /// flag to control check for Nan/Finite while filling the histogram
-  bool        m_checkForNaN   ;
-  /// split histogram directory name (very useful for Hbook)
-  bool        m_splitHistoDir ;
-  /// general histogram ID offset (only works for automatically assigned numeric IDs)
-  HistoID::NumericID     m_histoOffSet ;
-  /// histogram top level directory
-  std::string m_histoTopDir   ;
-  /// histogram directory
-  std::string m_histoDir      ;
-  /// print histograms at finalization
-  bool        m_histosPrint   ;
-  /// print histogram counters at finalization
-  bool        m_histoCountersPrint   ;
-  /// Flag to turn on/off the registration of histograms to the Monitoring Service
-  bool        m_declareMoniHists;
+  BooleanProperty m_produceHistos{this, "HistoProduce", true, "Switch on/off the production of histograms"};
+  BooleanProperty m_histosPrint{this, "HistoPrint", false, "Switch on/off the printout of histograms at finalization"};
+  BooleanProperty m_histoCountersPrint{this, "HistoCountersPrint", true,
+                                       "Switch on/off the printout of histogram counters at finalization"};
+  BooleanProperty m_checkForNaN{this, "HistoCheckForNaN", true,
+                                "Switch on/off the checks for NaN and Infinity for histogram fill"};
+  BooleanProperty m_splitHistoDir{this, "HistoSplitDir", false,
+                                  "Split long directory names into short pieces (suitable for HBOOK)"};
+  PropertyWithValue<HistoID::NumericID> m_histoOffSet{
+      this, "HistoOffSet", 0, "OffSet for automatically assigned histogram numerical identifiers "};
+  StringProperty m_histoTopDir{this, "HistoTopDir", "",
+                               "Top level histogram directory (take care that it ends with '/')"};
+  StringProperty m_histoDir{this, "HistoDir", boost::algorithm::replace_all_copy( this->name(), ":", "_" ),
+                            "Histogram Directory"};
+  BooleanProperty m_fullDetail{this, "FullDetail", false};
+  BooleanProperty m_declareMoniHists{this, "MonitorHistograms", true};
+  StringProperty m_histo1DTableFormat{this, "FormatFor1DHistoTable", Gaudi::Utils::Histos::Formats::format(),
+                                      "Format string for printout of 1D histograms"};
+  StringProperty m_histo1DTableFormatShort{this, "ShortFormatFor1DHistoTable", " | %1$-25.25s %2%",
+                                           "Format string for printout of 1D histograms"};
+  StringProperty m_histo1DTableHeader{this, "HeaderFor1DHistoTable", Gaudi::Utils::Histos::Formats::header(),
+                                      "The table header for printout of 1D histograms "};
+  BooleanProperty m_useNumericAutoIDs{
+      this, "UseSequencialNumericAutoIDs", false,
+      "Flag to allow users to switch back to the old style of creating numerical automatic IDs"};
+  PropertyWithValue<std::map<std::string, std::string>> m_idReplaceInfo{
+      this,
+      "AutoStringIDPurgeMap",
+      {{"/", "=SLASH="}},
+      "Map of strings to search and replace when using the title "
+      "as the basis of automatically generated literal IDs"};
   // ==========================================================================
   /// the actual storage/access of 1D histograms by unique title
-  mutable Histo1DMapTitle     m_histo1DMapTitle ;
+  mutable Histo1DMapTitle m_histo1DMapTitle;
   /// the actual storage/access of 1D histograms by unique ID
-  mutable Histo1DMapID        m_histo1DMapID    ;
+  mutable Histo1DMapID m_histo1DMapID;
   // ==========================================================================
   /// the actual storage/access of 2D histograms by unique title
-  mutable Histo2DMapTitle     m_histo2DMapTitle ;
+  mutable Histo2DMapTitle m_histo2DMapTitle;
   /// the actual storage/access of 2D histograms by unique ID
-  mutable Histo2DMapID        m_histo2DMapID    ;
+  mutable Histo2DMapID m_histo2DMapID;
   // ==========================================================================
   /// the actual storage/access of 3D histograms by unique title
-  mutable Histo3DMapTitle     m_histo3DMapTitle ;
+  mutable Histo3DMapTitle m_histo3DMapTitle;
   /// the actual storage/access of 3D histograms by unique ID
-  mutable Histo3DMapID        m_histo3DMapID    ;
+  mutable Histo3DMapID m_histo3DMapID;
   // ==========================================================================
   /// the actual storage/access of 1D profile histograms by unique title
-  mutable Profile1DMapTitle   m_profile1DMapTitle ;
+  mutable Profile1DMapTitle m_profile1DMapTitle;
   /// the actual storage/access of 1D profile histograms by unique ID
-  mutable Profile1DMapID      m_profile1DMapID    ;
+  mutable Profile1DMapID m_profile1DMapID;
   // ==========================================================================
   /// the actual storage/access of 2D profile histograms by unique title
-  mutable Profile2DMapTitle   m_profile2DMapTitle ;
+  mutable Profile2DMapTitle m_profile2DMapTitle;
   /// the actual storage/access of 2D profile histograms by unique ID
-  mutable Profile2DMapID      m_profile2DMapID    ;
-  // ==========================================================================
-  /// format for printout of 1D-histograms as a table
-  std::string  m_histo1DTableFormat      ;
-  /// format for printout of 1D-histograms as a table
-  std::string  m_histo1DTableFormatShort ;
-  /// the header for the table of 1-D historgrams
-  std::string  m_histo1DTableHeader      ;
-  /// Flag to switch back to the old style sequencial numerical automatic IDs
-  bool        m_useNumericAutoIDs;
-  /** Map of strings to search and replace when using the title as the basis
-   *  of automatically generated literal IDs
-   */
-  std::map<std::string,std::string> m_idReplaceInfo;
+  mutable Profile2DMapID m_profile2DMapID;
   // ==========================================================================
 };
 // ============================================================================

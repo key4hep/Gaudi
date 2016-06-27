@@ -20,15 +20,13 @@
 Sequencer::Sequencer( const std::string& name, ISvcLocator* pSvcLocator )
 : Algorithm( name, pSvcLocator )
 {
-  // Declare Sequencer properties with their defaults
-  declareProperty( "Members", m_names );
-  declareProperty( "BranchMembers", m_branchNames );
-  declareProperty( "StopOverride", m_stopOverride=false );
-
   // Associate action handlers with the "Members" and "BranchMembers" properties
-  m_names.declareUpdateHandler      ( &Sequencer::membershipHandler      , this );
-  m_branchNames.declareUpdateHandler( &Sequencer::branchMembershipHandler, this );
-
+  m_names.declareUpdateHandler( [this](Property&){
+    if ( isInitialized() ) decodeMemberNames().ignore();
+  } );
+  m_branchNames.declareUpdateHandler( [this](Property&){
+    if ( isInitialized() ) decodeBranchMemberNames().ignore();
+  } );
 }
 
 StatusCode
@@ -391,12 +389,6 @@ Sequencer::decodeMemberNames( )
                         m_isInverted );
 }
 
-void
-Sequencer::membershipHandler( Property& /* theProp */ )
-{
-  if ( isInitialized() ) decodeMemberNames();
-}
-
 StatusCode
 Sequencer::decodeBranchMemberNames( )
 {
@@ -404,12 +396,6 @@ Sequencer::decodeBranchMemberNames( )
   return   decodeNames( m_branchNames,
                         branchAlgorithms( ),
                         m_isBranchInverted );
-}
-
-void
-Sequencer::branchMembershipHandler( Property& /* theProp */ )
-{
-  if ( isInitialized() ) decodeBranchMemberNames();
 }
 
 /**

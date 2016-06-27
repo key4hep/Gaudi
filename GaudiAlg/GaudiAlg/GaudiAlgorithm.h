@@ -682,10 +682,9 @@ private:
   // ==========================================================================
   // Pointer to the Event Tag Collection Service
   mutable SmartIF<INTupleSvc> m_evtColSvc ; ///< Event Tag Collection Service
-  /// skip the event if any of these objects are present in TES
-  std::vector<std::string> m_vetoObjs;
-  /// process the event only if one or more of these objects are present in TES
-  std::vector<std::string> m_requireObjs;
+
+  StringArrayProperty m_vetoObjs{this, "VetoObjects", {}, "skip execute if one or more of these TES objects exist"};
+  StringArrayProperty m_requireObjs{this, "RequireObjects", {}, "execute only if one or more of these TES objects exist"};
   // ==========================================================================
 
  public:

@@ -18,16 +18,10 @@
 #include <set>
 #include <cmath>
 // ============================================================================
-#include "boost/algorithm/string/replace.hpp"
-// ============================================================================
 // GaudiKernel
 // ============================================================================
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/IHistogramSvc.h"
-// ============================================================================
-// GaudiUtils
-// ============================================================================
-#include "GaudiUtils/HistoTableFormat.h"
 // ============================================================================
 // GaudiAlg
 // ============================================================================
@@ -87,71 +81,7 @@ namespace {
 template <class PBASE>
 void GaudiHistos<PBASE>::initGaudiHistosConstructor()
 {
-  // SWITCH ON/OFF the histograms
-  this->declareProperty
-    ( "HistoProduce"          ,
-      m_produceHistos = true  ,
-      "Switch on/off the production of histograms" ) ;
-  // print the histograms at finalization
-  this->declareProperty
-    ( "HistoPrint"            ,
-      m_histosPrint   = false ,
-      "Switch on/off the printout of histograms at finalization" )
-    -> declareUpdateHandler ( &GaudiHistos<PBASE>::printHistoHandler, this ) ;
-  this->declareProperty
-    ( "HistoCountersPrint"         ,
-      m_histoCountersPrint = true ,
-      "Switch on/off the printout of histogram counters at finalization" ) ;
-  // check for NaN/Finite
-  this->declareProperty
-    ( "HistoCheckForNaN"      ,
-      m_checkForNaN   = true  ,
-      "Switch on/off the checks for NaN and Infinity for histogram fill" ) ;
-  // for HBOOK persistency, 'true' can be useful
-  this->declareProperty
-    ( "HistoSplitDir"         ,
-      m_splitHistoDir = false ,
-      "Split long directory names into short pieces (suitable for HBOOK)" );
-  // general OffSet for histogram ID
-  this->declareProperty
-    ( "HistoOffSet"           ,
-      m_histoOffSet   =   0   ,
-      "OffSet for automatically assigned histogram numerical identifiers " ) ;
-  // top level histogram directory
-  this->declareProperty
-    ( "HistoTopDir"           ,
-      m_histoTopDir   =   ""  ,
-      "Top level histogram directory (take care that it ends with '/')" ) ;
-  // histogram directory
-  this->declareProperty
-    ( "HistoDir"             ,
-      m_histoDir      = boost::algorithm::replace_all_copy( this->name(), ":", "_" ) ,
-      "Histogram Directory" ) ;
-  // control output level of histograms
-  this->declareProperty ( "FullDetail"            , m_fullDetail    = false ) ;
-  // monitor histograms
-  this->declareProperty ( "MonitorHistograms"     , m_declareMoniHists = true ) ;
-  // format for 1D-histograms printout
-  this->declareProperty
-    ( "FormatFor1DHistoTable" ,
-      m_histo1DTableFormat   = Gaudi::Utils::Histos::Formats::format () ,
-      "Format string for printout of 1D histograms"      ) ;
-  // "short" format for 1D-histograms printout
-  this->declareProperty
-    ( "ShortFormatFor1DHistoTable" ,
-      m_histo1DTableFormatShort   = " | %1$-25.25s %2%"  ,
-      "Format string for printout of 1D histograms"      ) ;
-  // the header for 1D-histogram table
-  this->declareProperty
-    ( "HeaderFor1DHistoTable" ,
-      m_histo1DTableHeader   = Gaudi::Utils::Histos::Formats::header () ,
-      "The table header for printout of 1D histograms "  ) ;
-  this->declareProperty
-    ( "UseSequencialNumericAutoIDs", m_useNumericAutoIDs = false,
-      "Flag to allow users to switch back to the old style of creating numerical automatic IDs" );
-  this->declareProperty
-    ( "AutoStringIDPurgeMap", m_idReplaceInfo = { { "/", "=SLASH=" } } ,
-      "Map of strings to search and replace when using the title as the basis of automatically generated literal IDs" );
+  m_histosPrint.declareUpdateHandler ( &GaudiHistos<PBASE>::printHistoHandler, this ) ;
 }
 // ============================================================================
 // Initialise Histogramming

@@ -63,74 +63,9 @@ template <class PBASE>
 void
 GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface * parent )
 {
-  // initialise data members
-
-  // the header row for counters printout
-  m_header  = " |    Counter                                      |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |" ;
-  // format for regular statistical printout rows
-  m_format1 = " | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |" ;
-  // format for "efficiency" statistical printout rows
-  m_format2 = " |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |" ;
-  // flag to use the special "efficiency" format
-  m_useEffFormat = true ; ///< flag to use the special "efficiency" format
-
-  // job options
-  // print error counters at finalization ?
-  this->declareProperty
-    ( "ErrorsPrint"     , m_errorsPrint     ,
-      "Print the statistics of errors/warnings/exceptions")
-    -> declareUpdateHandler
-    ( &GaudiCommon<PBASE>::printErrorHandler, this  ) ;
-  // print properties at initialization?
-  this->declareProperty
-    ( "PropertiesPrint" , m_propsPrint  ,
-      "Print the properties of the component ")
-    -> declareUpdateHandler
-    ( &GaudiCommon<PBASE>::printPropsHandler, this  ) ;
-  // print statistical counters at finalization ?
-  this->declareProperty
-    ( "StatPrint"       , m_statPrint   ,
-      "Print the table of counters"  )
-    -> declareUpdateHandler
-    ( &GaudiCommon<PBASE>::printStatHandler, this  ) ;
-  // insert  the actual C++ type of the algorithm or tool in the messages?
-  this->declareProperty
-    ( "TypePrint"       , m_typePrint   ,
-      "Add the actal C++ component type into the messages" ) ;
-  // context
-  this->declareProperty ( "Context"         , m_context     ) ;
-  // root in TES
-  this->declareProperty ( "RootInTES"       , m_rootInTES   ) ;
-
-
-  // the header row for counters printout
-  this->declareProperty
-    ( "StatTableHeader"        , m_header                          ,
-      "The header row for the output Stat-table"                   ) ;
-  // format for regular statistical printout rows
-  this->declareProperty
-    ( "RegularRowFormat"       , m_format1                         ,
-      "The format for the regular row in the output Stat-table"    ) ;
-  // format for "efficiency" statistical printout rows
-  this->declareProperty
-    ( "EfficiencyRowFormat"    , m_format2                         ,
-      "The format for the regular row in the output Stat-table"    ) ;
-  // flag to use the special "efficiency" format
-  this->declareProperty
-    ( "UseEfficiencyRowFormat" , m_useEffFormat                    ,
-      "Use the special format for printout of efficiency counters" ) ;
-
-
-  //declare the list of simple counters to write.
-  this->declareProperty(
-	"CounterList",
-	m_counterList=std::vector<std::string>(1,".*"),
-	"RegEx list, of simple integer counters for CounterSummary.");
-  //declare the list of stat entities to write.
-  this->declareProperty(
-	"StatEntityList",
-	m_statEntityList=std::vector<std::string>(0),
-	"RegEx list, of StatEntity counters for CounterSummary.");
+  m_errorsPrint.declareUpdateHandler( &GaudiCommon<PBASE>::printErrorHandler, this );
+  m_propsPrint.declareUpdateHandler( &GaudiCommon<PBASE>::printPropsHandler, this );
+  m_statPrint.declareUpdateHandler( &GaudiCommon<PBASE>::printStatHandler, this );
 
   // setup context from parent if available
   if ( parent )
@@ -201,8 +136,7 @@ StatusCode GaudiCommon<PBASE>::
   }
 
   // Check rootInTES ends with a /
-  if ( !m_rootInTES.empty() &&
-       m_rootInTES.substr(m_rootInTES.size()-1) != "/" ) m_rootInTES += "/";
+  if ( !m_rootInTES.empty() && m_rootInTES[m_rootInTES.size()-1] != '/' ) m_rootInTES = m_rootInTES + "/";
 
   //Set up the CounterSummarySvc May need to be changed
   m_counterSummarySvc = this->svcLoc()->service("CounterSummarySvc",false);
@@ -292,8 +226,8 @@ StatusCode GaudiCommon<PBASE>::
   {
     if ( this->msgLevel(MSG::DEBUG) ) this->debug() << "adding counters to CounterSummarySvc" << endmsg;
 
-    Gaudi::Utils::RegEx::matchList statList{ m_statEntityList };
-    Gaudi::Utils::RegEx::matchList counterList{ m_counterList };
+    Gaudi::Utils::RegEx::matchList statList{ m_statEntityList.value() };
+    Gaudi::Utils::RegEx::matchList counterList{ m_counterList.value() };
 
     for( const auto& i : this->counters() )
     {
@@ -603,7 +537,7 @@ long GaudiCommon<PBASE>::printStat( const MSG::Level level ) const
   //
   msg << "Number of counters : "  << counters().size() ;
   //
-  if ( !counters().empty() ) { msg << std::endl << m_header ; }
+  if ( !counters().empty() ) { msg << std::endl << m_header.value() ; }
   //
   for ( const auto& entry : counters() )
   {

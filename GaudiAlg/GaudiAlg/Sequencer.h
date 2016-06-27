@@ -165,17 +165,11 @@ class GAUDI_API Sequencer: public Algorithm {
     const std::vector<Algorithm*>& branchAlgorithms( ) const;
     std::vector<Algorithm*>& branchAlgorithms( );
 
-     /// Decode Member Name list
-     StatusCode decodeMemberNames( );
+    /// Decode Member Name list
+    StatusCode decodeMemberNames( );
 
-     /// "Members" property handler
-     void       membershipHandler( Property& theProp );
-
-     /// Decode branch member name list
-     StatusCode decodeBranchMemberNames( );
-
-     /// "BranchMembers" property handler
-     void       branchMembershipHandler( Property& theProp );
+    /// Decode branch member name list
+    StatusCode decodeBranchMemberNames( );
 
 protected:
 
@@ -236,14 +230,15 @@ private:
      ** Private Data Members **
      **************************/
 
-    StringArrayProperty m_names;             // Member names
+    StringArrayProperty m_names{this, "Members", {}, "member names"};
+    StringArrayProperty m_branchNames{this, "BranchMembers", {}, "branch member names"};
+    BooleanProperty m_stopOverride{this, "StopOverride", false, "stop on filter failure override"};
+
     std::vector<bool> m_isInverted;          // Member logic inverted list
-    StringArrayProperty m_branchNames;       // Branch Member names
     std::vector<Algorithm*> m_branchAlgs;    // Branch algorithms
     std::vector<bool> m_isBranchInverted;    // Branch Member logic inverted list
-    BooleanProperty m_stopOverride;          // Stop on filter failure Override flag
+
     bool m_branchFilterPassed = false;               // Branch filter passed flag
 };
 
 #endif //ALGORITHM_SEQUENCER_H
-

@@ -141,10 +141,6 @@ GaudiTool::GaudiTool ( const std::string& this_type   ,
   : GaudiCommon<AlgTool> ( this_type , this_name , parent )
   , m_local       ( this_type + "/" + this_name )
 {
-  declareProperty
-    ( "ContextService" ,
-      m_contextSvcName ,
-      "The name of Algorithm Context Service" ) ;
   // make instance counts
   GaudiToolLocal::s_InstanceCounter.increment ( m_local ) ;
 }
