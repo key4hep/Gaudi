@@ -21,7 +21,7 @@ class IAddressCreator;
     allows concurrent retrieval of DataObjects.
 
     @author Marco Clemencic (previous author unknown)
-    @author Danilo Piparo 
+    @author Danilo Piparo
 
 *///--------------------------------------------------------------------------
 
@@ -85,20 +85,11 @@ public:
 
 private:
 
-  /// Detector Data Persistency Storage type
-  int              m_detStorageType = XML_StorageType;
-
-  /// Location of detector Db (filename,URL)
-  std::string      m_detDbLocation = "empty";
-
-  /// Name of the root node of the detector
-  std::string      m_detDbRootName = "dd";
-
-  /// Name of the persistency service.
-  std::string      m_persistencySvcName = "DetectorPersistencySvc";
-
-  /// Flag to control if the persistency is required
-  bool             m_usePersistency = false;
+  IntegerProperty   m_detStorageType {this, "DetStorageType",  XML_StorageType, "Detector Data Persistency Storage type"};
+  StringProperty    m_detDbLocation  {this, "DetDbLocation",  "empty", "location of detector Db (filename,URL)"};
+  StringProperty    m_detDbRootName  {this, "DetDbRootName",  "dd", "name of the root node of the detector"};
+  BooleanProperty   m_usePersistency {this, "UsePersistency",  false, "control if the persistency is required"};
+  StringProperty   m_persistencySvcName {this, "PersistencySvc",  "DetectorPersistencySvc", "name of the persistency service"};
 
   /// Current event time
   Gaudi::Time        m_eventTime = 0;

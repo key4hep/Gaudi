@@ -124,14 +124,13 @@ namespace {
   * @version: 1.0
   */
 class CollectionCloneAlg : public Algorithm {
+
+  StringProperty m_tupleSvc{this, "EvtTupleSvc", "EvtTupleSvc", "name of the data provider service"};
+  StringArrayProperty m_inputs{this, "Input", {}, "input specifications"};
+  StringProperty m_output{this, "Output", {}, "output specification"};
+
   /// Reference to data provider service
   SmartIF<INTupleSvc>       m_dataSvc;
-  /// Name of the data provider service
-  std::string               m_tupleSvc;
-  /// Output specification
-  std::string               m_output;
-  /// input specifications
-  std::vector<std::string>  m_inputs;
   /// Name of the root leaf (obtained at initialize)
   std::string               m_rootName;
   /// Output tuple name
@@ -143,19 +142,13 @@ class CollectionCloneAlg : public Algorithm {
 public:
 
   /// Standard algorithm constructor
-  CollectionCloneAlg(const std::string& name, ISvcLocator* pSvcLocator)
-  :	Algorithm(name, pSvcLocator)
-  {
-    declareProperty("EvtTupleSvc", m_tupleSvc="EvtTupleSvc");
-    declareProperty("Input",       m_inputs);
-    declareProperty("Output",      m_output);
-  }
+  using Algorithm::Algorithm;
+
   /// Standard Destructor
-  virtual ~CollectionCloneAlg()     {
-  }
+  ~CollectionCloneAlg() override = default;
 
   /// Initialize
-  virtual StatusCode initialize()   {
+  StatusCode initialize() override {
     MsgStream log(msgSvc(), name());
     m_rootName = "";
     m_outName = "";
@@ -196,13 +189,13 @@ public:
   }
 
   /// Finalize
-  virtual StatusCode finalize() {
+  StatusCode finalize() override {
     m_dataSvc.reset();
     return StatusCode::SUCCESS;
   }
 
   /// Execute procedure
-  virtual StatusCode execute()    {
+  StatusCode execute() override {
     StatusCode status = connect();
     if ( status.isSuccess() )  {
       status = mergeInputTuples();
@@ -480,7 +473,7 @@ public:
   /// Merge all N-tuple entries
   StatusCode mergeInputTuples()  {
     MsgStream log(msgSvc(), name());
-    for( const auto& input : m_inputs ) { 
+    for( const auto& input : m_inputs ) {
       StatusCode sc = mergeEntries(input);
       if ( !sc.isSuccess() ) {
         log << MSG::ERROR << "Failed to merge tuple:" << input << endmsg;

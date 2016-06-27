@@ -13,25 +13,21 @@
 namespace Gaudi {
 class MetaDataSvc : public extends<Service, IMetaDataSvc> {
 public:
-	// Standard Constructor.
-	//   Input:  name   String with service name
-	//   Input:  svc    Pointer to service locator interface
-	MetaDataSvc( const std::string& name, ISvcLocator* svc );
+	using extends::extends;
+	~MetaDataSvc() override = default;
 
-	// Destructor.
-	~MetaDataSvc();
+	StatusCode start() override;
 
-	StatusCode initialize();
-	StatusCode start();
-	bool isEnabled() const ;
+	inline bool isEnabled() const { return m_isEnabled; }
 
 	StatusCode collectData();
 
-	MetaData* getMetaData();
-	std::map <std::string, std::string> getMetaDataMap();
+	MetaData* getMetaData() override;
+	std::map <std::string, std::string> getMetaDataMap() override;
 
 private:
-	bool m_isEnabled;
+	BooleanProperty m_isEnabled{this, "Enabled", true};
+
 	std::map <std::string, std::string> m_metadata;
 };
 }

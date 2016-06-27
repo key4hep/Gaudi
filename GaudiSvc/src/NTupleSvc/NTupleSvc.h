@@ -25,7 +25,6 @@ class NTupleSvc : public extends<DataSvc,
                                  INTupleSvc,
                                  IDataSourceMgr>
 {
-private:
 protected:
   struct Connection final {
     IConversionSvc* service;
@@ -36,7 +35,6 @@ protected:
   typedef std::map<std::string, Connection>       Connections;
   typedef std::pair<std::string,std::string>      Prop;
 
-private:
 public:
   /// DataSvc overrides: Initialize the service.
   virtual StatusCode initialize();
@@ -105,7 +103,8 @@ public:
   /// Standard Constructor
   NTupleSvc(const std::string& name, ISvcLocator* svc);
   /// Standard Destructor
-  virtual ~NTupleSvc();
+  ~NTupleSvc() override = default;
+
 protected:
 
   /// Create conversion service
@@ -120,10 +119,9 @@ protected:
   /// Update directory data
   StatusCode updateDirectories();
 
-  /// Output streams
-  DBaseEntries                 m_output;
-  /// Input streams
-  DBaseEntries                 m_input;
+  PropertyWithValue<DBaseEntries> m_input{this, "Input", {}, "input streams"};
+  PropertyWithValue<DBaseEntries> m_output{this, "Output", {}, "output streams"};
+
   /// Container of connection points
   Connections                  m_connections;
 };

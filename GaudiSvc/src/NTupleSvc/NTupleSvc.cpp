@@ -44,7 +44,7 @@
 // instances of this service
 DECLARE_COMPONENT(NTupleSvc)
 
-/// Selector factory instantiation
+// Selector factory instantiation
 DECLARE_NAMESPACE_OBJECT_FACTORY(NTuple,Selector)
 
 #include <sstream>
@@ -56,21 +56,14 @@ namespace {
   }
 }
 
-/// Standard Constructor
 NTupleSvc::NTupleSvc(const std::string& name, ISvcLocator* svc)
  : base_class(name, svc)
 {
-  declareProperty("Input",  m_input);
-  declareProperty("Output", m_output);
   m_rootName = "/NTUPLES";
   m_rootCLID = CLID_DataObject;
 }
 
-/// Standard Destructor
-NTupleSvc::~NTupleSvc()   {
-}
-
-/// Initialize the service.
+// Initialize the service.
 StatusCode NTupleSvc::initialize()     {
   StatusCode status = DataSvc::initialize();
   if ( status.isSuccess() )   {

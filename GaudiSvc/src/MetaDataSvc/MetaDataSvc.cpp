@@ -51,28 +51,9 @@ using Gaudi::MetaDataSvc;
 
 DECLARE_COMPONENT(MetaDataSvc)
 
-// Standard Constructor.
-//   Input:  name   String with service name
-//   Input:  svc    Pointer to service locator interface
-
-MetaDataSvc::MetaDataSvc( const std::string& name, ISvcLocator* svc )
-: base_class(name, svc) {
-  declareProperty("Enable", m_isEnabled = true);
-}
-// Initialize the service.
-StatusCode MetaDataSvc::initialize() {
-  StatusCode sc = Service::initialize();
-  if ( sc.isFailure() ) return sc;
-  return sc;
-}
-bool MetaDataSvc::isEnabled( ) const {
-  return m_isEnabled;
-}
 StatusCode MetaDataSvc::start(){
   if (msgLevel(MSG::DEBUG)) debug() << "started" << endmsg;
   return collectData();
-}
-MetaDataSvc::~MetaDataSvc() {
 }
 MetaData* MetaDataSvc::getMetaData() {
   return new MetaData(m_metadata);

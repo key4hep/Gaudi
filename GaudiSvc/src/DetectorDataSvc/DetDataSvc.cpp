@@ -69,8 +69,8 @@ StatusCode DetDataSvc::setupDetectorDescription() {
 
       /// @todo: remove references to obsolete package XMLDDDBROOT
       if ( isEnvSet("XMLDDDBROOT") ) {
-        m_detDbLocation  = getEnv("XMLDDDBROOT");
-        m_detDbLocation += "/DDDB/lhcb.xml";
+        const std::string loc = getEnv("XMLDDDBROOT");
+        m_detDbLocation = loc + "/DDDB/lhcb.xml";
       }
     }
     if( m_detDbLocation.empty() || "empty" == m_detDbLocation ) {
@@ -88,7 +88,7 @@ StatusCode DetDataSvc::setupDetectorDescription() {
                                                     iargs,
                                                     rootAddr);
       if( sc.isSuccess() ) {
-        sc = i_setRoot( "/" + m_detDbRootName, rootAddr );
+        sc = i_setRoot( m_rootName, rootAddr );
         if( sc.isFailure() ) {
           error() << "Unable to set detector data store root" << endmsg;
           return sc;
@@ -163,7 +163,7 @@ StatusCode DetDataSvc::clearStore()   {
                                                   rootAddr);
     // Set detector data store root
     if( sc.isSuccess() ) {
-      sc = i_setRoot( "/" + m_detDbRootName, rootAddr );
+      sc = i_setRoot( m_rootName, rootAddr );
       if( sc.isFailure() ) {
         error() << "Unable to set detector data store root" << endmsg;
       }
@@ -180,12 +180,10 @@ StatusCode DetDataSvc::clearStore()   {
 /// Standard Constructor
 DetDataSvc::DetDataSvc(const std::string& name,ISvcLocator* svc) :
   base_class(name,svc) {
-  declareProperty("DetStorageType",  m_detStorageType = XML_StorageType );
-  declareProperty("DetDbLocation",   m_detDbLocation  = "empty" );
-  declareProperty("DetDbRootName",   m_detDbRootName  = "dd" );
-  declareProperty("UsePersistency",  m_usePersistency = false );
-  declareProperty("PersistencySvc",  m_persistencySvcName = "DetectorPersistencySvc" );
-  m_rootName = "/dd";
+  m_detDbRootName.declareUpdateHandler( [this](Property&){
+    m_rootName = "/" + m_detDbRootName;
+  } );
+  m_rootName = "/" + m_detDbRootName;
   m_rootCLID = CLID_Catalog;
 }
 
@@ -247,7 +245,7 @@ StatusCode DetDataSvc::updateObject( DataObject* toUpdate ) {
   if ( condition->isValid( eventTime() ) ) {
     DEBMSG << "DataObject is valid: no need to update" << endmsg;
     return StatusCode::SUCCESS;
-  } 
+  }
 
   DEBMSG << "DataObject is invalid: update it" << endmsg;
   // TODO: before loading updated object, update HERE its parent in data store

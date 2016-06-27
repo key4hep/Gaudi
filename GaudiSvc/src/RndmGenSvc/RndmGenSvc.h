@@ -55,12 +55,12 @@ private:
   mutable SmartIF<IRndmEngine> m_engine;
   /// Serialization interface of random number engine
   mutable SmartIF<ISerialize>  m_serialize;
-  /// Engine name
-  std::string          m_engineName;
+
+  StringProperty m_engineName{this, "Engine", "HepRndm::Engine<CLHEP::RanluxEngine>", "engine name"};
+
 public:
-  /// Standard Service constructor
-  RndmGenSvc(const std::string& name, ISvcLocator* svc);
-  /// Standard Service destructor
+  // inherits constructor from base class
+  using extends::extends;
   ~RndmGenSvc() override = default;
 public:
   /// Service override: initialization

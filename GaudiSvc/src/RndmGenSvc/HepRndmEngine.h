@@ -6,7 +6,7 @@
 //	Author     : M.Frank
 //  History    :
 // +---------+----------------------------------------------+---------
-// |    Date |                 Comment                      | Who     
+// |    Date |                 Comment                      | Who
 // +---------+----------------------------------------------+---------
 // | 29/10/99| Initial version                              | MF
 // +---------+----------------------------------------------+---------
@@ -24,14 +24,17 @@ namespace HepRndm  {
   template <class TYPE>
   class Engine : public BaseEngine   {
   protected:
-    // Seed table
-    mutable std::vector<long>   m_seeds;
-    // Other parameters
-    int  m_row, m_col, m_lux;
-    bool m_useTable, m_setSingleton;
-  public: 
+    mutable PropertyWithValue<std::vector<long>> m_seeds{this, "Seeds", {}, "seed table"};
+
+    IntegerProperty       m_col {this, "Column",  0};
+    IntegerProperty          m_row {this, "Row",  1};
+    IntegerProperty       m_lux {this, "Luxury",  3};
+    BooleanProperty     m_useTable     {this, "UseTable",  false};
+    BooleanProperty m_setSingleton {this, "SetSingleton",  false};
+
+  public:
     /// Standard Constructor
-    Engine(const std::string& name, ISvcLocator* loc);
+    using BaseEngine::BaseEngine;
     /// Standard Destructor
     ~Engine() override = default;
     /// Initialize the Engine

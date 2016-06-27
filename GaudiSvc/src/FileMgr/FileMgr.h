@@ -2,8 +2,8 @@
 // FileMgr.h
 // Manages all file open/reopen/close
 // implementation of IFileMgr
-// Author: C.Leggett 
-/////////////////////////////////////////////////////////////////// 
+// Author: C.Leggett
+///////////////////////////////////////////////////////////////////
 
 #ifndef GAUDISVC_FILEMGR_H
 #define GAUDISVC_FILEMGR_H 1
@@ -32,7 +32,7 @@ class FileMgr: public extends<Service,
                               IFileMgr,
                               IIncidentListener> {
 public:
-  FileMgr(const std::string& name, ISvcLocator* svc);
+  using extends::extends;
   ~FileMgr() override;
 
   StatusCode initialize() override;
@@ -58,27 +58,27 @@ public:
   virtual void listSuppression() const ; // does not override...
 
   int getFiles(std::vector<std::string>&, bool onlyOpen=true) const override;
-  int getFiles(std::vector<const Io::FileAttr*>&, 
+  int getFiles(std::vector<const Io::FileAttr*>&,
 		       bool onlyOpen=true) const override;
   int getFiles(const Io::IoTech&, std::vector<std::string>&,
 		       bool onlyOpen=true) const override;
   int getFiles(const Io::IoTech&, std::vector<const Io::FileAttr*>&,
 		       bool onlyOpen=true) const override;
-  int getFiles(const Io::IoTech&, const Io::IoFlags&, 
+  int getFiles(const Io::IoTech&, const Io::IoFlags&,
 		       std::vector<std::string>&, bool onlyOpen=true) const override;
-  int getFiles(const Io::IoTech&, const Io::IoFlags&, 
-		       std::vector<const Io::FileAttr*>&, 
+  int getFiles(const Io::IoTech&, const Io::IoFlags&,
+		       std::vector<const Io::FileAttr*>&,
 		       bool onlyOpen=true) const override;
 
   int getFd(std::vector<Fd>&) const override;
   int getFd(const Io::IoTech&, std::vector<Io::Fd>&) const override;
-  int getFd(const Io::IoTech&, const Io::IoFlags&, 
+  int getFd(const Io::IoTech&, const Io::IoFlags&,
 		    std::vector<Io::Fd> &) const override;
-  
+
   // get file name given Fd or ptr
   const std::string& fname(const Io::Fd&) const override;
   const std::string& fname(void*) const override;
-  
+
   // get Fd or ptr given file name
   Io::Fd fd(const std::string&) const override;
   Io::Fd fd(void*) const override;
@@ -87,19 +87,19 @@ public:
   void* fptr(const Io::Fd&) const override;
 
   int getLastError(std::string&) const override;
-  
+
 
   // Open file, get Fd and ptr
   Io::open_t open(const Io::IoTech&, const std::string& caller,
 			  const std::string& fname,
 			  const Io::IoFlags&, Io::Fd& fd, void*& ptr,
-			  const std::string& desc="", 
+			  const std::string& desc="",
 			  const bool shared=false) override;
 
   // Open file, get Fd
-  Io::open_t open(const Io::IoTech&, const std::string& caller, 
+  Io::open_t open(const Io::IoTech&, const std::string& caller,
 			  const std::string& fname,
-			  const Io::IoFlags&, Io::Fd&, 
+			  const Io::IoFlags&, Io::Fd&,
 			  const std::string& desc="",
 			  const bool shared=false) override;
 
@@ -114,28 +114,32 @@ public:
   Io::close_t  close(const Fd, const std::string& caller) override;
   Io::close_t  close(void*, const std::string& caller) override;
 
-  Io::reopen_t reopen(const Fd, const IoFlags&, 
+  Io::reopen_t reopen(const Fd, const IoFlags&,
 			      const std::string& caller) override;
-  Io::reopen_t reopen(void*, const IoFlags&, 
+  Io::reopen_t reopen(void*, const IoFlags&,
 			      const std::string& caller) override;
-  
-  
-  StatusCode regAction(Io::bfcn_action_t, const Io::Action&, 
+
+
+  StatusCode regAction(Io::bfcn_action_t, const Io::Action&,
 			       const std::string& desc="") override;
-  StatusCode regAction(Io::bfcn_action_t, const Io::Action&, 
+  StatusCode regAction(Io::bfcn_action_t, const Io::Action&,
 			       const Io::IoTech&, const std::string& desc="") override;
-  
+
   void suppressAction(const std::string&) override;
   void suppressAction(const std::string&, const Io::Action&) override;
-  
+
 private:
-  
-  StringProperty m_logfile;
-  BooleanProperty m_printSummary, m_loadRootHandler, m_loadPosixHandler;
-  StringProperty m_ssl_proxy, m_ssl_cert;
-  
+
+  StringProperty m_logfile{this, "LogFile"};
+  BooleanProperty m_printSummary{this, "PrintSummary", false};
+  BooleanProperty  m_loadRootHandler{this, "LoadROOTHandler", true};
+  BooleanProperty  m_loadPosixHandler{this, "LoadPOSIXHandler", true};
+
+  StringProperty  m_ssl_proxy{this, "TSSL_UserProxy", "X509"};
+  StringProperty  m_ssl_cert{this, "TSSL_CertDir", "X509"};
+
   virtual Io::open_t   open(const IoTech&, const std::string& caller,
-			    const std::string& fname, const std::string& desc, 
+			    const std::string& fname, const std::string& desc,
 			    const IoFlags&, Fd&, void*&,
 			    const bool shared) ; // does not override...
 
@@ -145,7 +149,7 @@ private:
   StatusCode execActs(Io::FileAttr*, const std::string&, const Io::Action&,
 		      const actionMap& m) const;
 
-  bool accessMatch(const Io::IoFlags&, const Io::IoFlags&, 
+  bool accessMatch(const Io::IoFlags&, const Io::IoFlags&,
 		   bool strict=false) const;
   bool isShareable(const std::string& filename, const Io::IoFlags&) const;
 
@@ -158,7 +162,7 @@ private:
   std::vector<std::unique_ptr<FileAttr>> m_attr;
 
   std::vector<FileAttr*> m_oldFiles;
-  
+
   std::map< IoTech, actionMap > m_actions;
 
   typedef std::map<std::string, int> supMap;
@@ -173,4 +177,3 @@ private:
 };
 
 #endif
- 
