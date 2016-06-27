@@ -500,11 +500,11 @@ bool operator!=( const T& v, const PropertyWithValue<TP, V>& p )
   return p != v;
 }
 
-/// delegate (value + property) to property operator+
+/// implemantation of (value + property)
 template <class T, class TP, class V>
 decltype( std::declval<TP>() + std::declval<T>() ) operator+( const T& v, const PropertyWithValue<TP, V>& p )
 {
-  return p + v;
+  return v + p.value();
 }
 
 template <class TYPE, class VERIFIER = Gaudi::Details::Property::BoundedVerifier<TYPE>>
