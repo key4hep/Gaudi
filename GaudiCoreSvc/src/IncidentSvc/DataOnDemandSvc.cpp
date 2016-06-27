@@ -253,7 +253,7 @@ StatusCode DataOnDemandSvc::finalize()
 {
   //
   info()
-    << "Handled \"" << m_trapType << "\" incidents: "
+    << "Handled \"" << m_trapType.value() << "\" incidents: "
     << m_statAlg  << "/" << m_statNode << "/" << m_stat << "(Alg/Node/Total)."
     << endmsg ;
   if ( m_dump || msgLevel(MSG::DEBUG) )
