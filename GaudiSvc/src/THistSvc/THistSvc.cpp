@@ -73,22 +73,6 @@ StatusCode
 THistSvc::initialize() {
   GlobalDirectoryRestore restore;
 
-  // Super ugly hack to make sure we have the OutputLevel set first, so we
-  // can see DEBUG printouts in update handlers.
-  auto jos = serviceLocator()->service<IJobOptionsSvc>( "JobOptionsSvc", true );
-  if( jos ) {
-    const auto props = jos->getProperties( name() );
-
-    if ( props ) {
-      auto i = std::find_if(std::begin(*props),std::end(*props),
-                            [](const Property* p) { return p->name() == "OutputLevel"; } );
-      if ( i != std::end(*props)) {
-          setProperty( **i ).ignore();
-      }
-    }
-  }
-
-
   StatusCode status = Service::initialize();
 
   if (status.isFailure()) {

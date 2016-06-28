@@ -85,21 +85,6 @@ FileMgr::~FileMgr() {
 
 StatusCode
 FileMgr::initialize() {
-
-  // Super ugly hack to make sure we have the OutputLevel set first, so we
-  // can see DEBUG printouts in update handlers.
-  auto jos = serviceLocator()->service<IJobOptionsSvc>( "JobOptionsSvc", true );
-  const auto *props = ( jos ? jos->getProperties( name() ) : nullptr );
-  if (props) {
-    auto prop = std::find_if( std::begin(*props), std::end(*props),
-                              [&](const Property* p) {
-                                  return p->name() == "OutputLevel";
-    });
-    if (prop!=std::end(*props)) {
-      setProperty( **prop ).ignore();
-    }
-  }
-
   StatusCode status = Service::initialize();
 
   if (status.isFailure()) {
