@@ -71,12 +71,13 @@ class JobOptionsSvc : public extends<Service,
   /// dump the content of Properties catalog to the predefined file
 
  private:
-  std::string m_source_path;
-  std::string m_source_type;
-  std::string m_dir_search_path;
-  std::string m_dump;
-  std::string m_pythonAction;
-  std::string m_pythonParams;
+  StringProperty m_source_type{this, "TYPE"};
+  StringProperty m_source_path{this, "PATH"};
+  StringProperty m_dir_search_path{this, "SEARCHPATH"};
+  StringProperty m_dump{this, "DUMPFILE"};
+  StringProperty m_pythonAction{this, "PYTHONACTION"};
+  StringProperty m_pythonParams{this, "PYTHONPARAMS"};
+
   SvcCatalog  m_svc_catalog;
 };
 #endif /* JOBOPTIONSSVC_H_ */

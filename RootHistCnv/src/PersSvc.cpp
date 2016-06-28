@@ -6,8 +6,14 @@
 #include "GaudiKernel/SmartDataPtr.h"
 #include "RootObjAddress.h"
 #include "RConverter.h"
-#include "PersSvc.h"
 #include "TFile.h"
+
+namespace RootHistCnv {
+  static std::string stat_dir = "/stat";
+  static std::string undefFileName = "UndefinedROOTOutputFileName";
+}
+
+#include "PersSvc.h"
 
 //-----------------------------------------------------------------------------
 //
@@ -22,10 +28,6 @@
 using RootHistCnv::PersSvc;
 DECLARE_COMPONENT(PersSvc)
 
-namespace RootHistCnv {
-  static std::string stat_dir = "/stat";
-  static std::string undefFileName = "UndefinedROOTOutputFileName";
-}
 
 //-----------------------------------------------------------------------------
 StatusCode RootHistCnv::PersSvc::initialize()
@@ -44,11 +46,11 @@ StatusCode RootHistCnv::PersSvc::initialize()
   if (m_outputEnabled) {
     // Initialize ROOT if output file name is defined
     if( undefFileName != m_defFileName ) {
-      m_hfile.reset( TFile::Open(m_defFileName.c_str(),"RECREATE","GAUDI Histograms") );
+      m_hfile.reset( TFile::Open(m_defFileName.value().c_str(),"RECREATE","GAUDI Histograms") );
     } else {
       m_hfile.reset();
     }
-    log << MSG::INFO << "Writing ROOT histograms to: " << m_defFileName
+    log << MSG::INFO << "Writing ROOT histograms to: " << m_defFileName.value()
         << endmsg;
   }
   else {
@@ -121,14 +123,4 @@ StatusCode RootHistCnv::PersSvc::createRep(DataObject* pObject,
     }
   }
   return StatusCode::SUCCESS;
-}
-
-//-----------------------------------------------------------------------------
-RootHistCnv::PersSvc::PersSvc(const std::string& name, ISvcLocator* svc)
-//-----------------------------------------------------------------------------
-: ConversionSvc(name, svc, ROOT_StorageType) {
-  declareProperty("OutputFile", m_defFileName = undefFileName);
-  declareProperty("ForceAlphaIds", m_alphaIds = false);
-  declareProperty("OutputEnabled", m_outputEnabled = true,
-                  "Flag to enable/disable the output to file.");
 }

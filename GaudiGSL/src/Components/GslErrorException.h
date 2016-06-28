@@ -35,24 +35,15 @@ public:
    */
   StatusCode handle( const GslError& error ) const override;
 
-  /** Standard constructor
-   *  @param type   tool type (?)
-   *  @param name   tool name
-   *  @param parent pointer to parent
-   */
-  GslErrorException
-  ( const std::string& type   ,
-    const std::string& name   ,
-    const IInterface*  parent );
+  /// Inherited constructor
+  using extends::extends;
 
   /// destructor (protected and virtual)
   ~GslErrorException( ) override = default;
 
 private:
 
-  /// codes to be ignored:
-  std::vector<int>    m_ignore ;
-
+  IntegerArrayProperty    m_ignore{this, "IgnoreCodes", {}, "codes to be ignored"};
 };
 
 // ============================================================================

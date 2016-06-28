@@ -20,14 +20,7 @@ DECLARE_ALGORITHM_FACTORY(GaudiParallelizer)
 // ============================================================================
 GaudiParallelizer::GaudiParallelizer(const std::string& name, ISvcLocator* pSvcLocator)
   : GaudiAlgorithm(name, pSvcLocator)
-  , m_timerTool( 0 )
 {
-  declareProperty( "Members"        , m_names                  );
-  declareProperty( "ModeOR"         , m_modeOR         = false );
-  declareProperty( "MeasureTime"    , m_measureTime    = false );
-  declareProperty( "ReturnOK"       , m_returnOK       = false );
-  declareProperty( "NumberOfThreads", m_nthreads       = 0 );
-
   m_names.declareUpdateHandler (&GaudiParallelizer::membershipHandler, this );
 }
 

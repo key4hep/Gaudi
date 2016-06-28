@@ -340,16 +340,7 @@ namespace Gaudi {
     class StopSignalHandler: public extends<Service,
                                             IIncidentListener> {
     public:
-      StopSignalHandler(const std::string& name, ISvcLocator* svcLoc): base_class(name, svcLoc) {
-        m_usedSignals.reserve(2);
-        m_usedSignals.push_back("SIGINT");
-        m_usedSignals.push_back("SIGXCPU");
-        m_stopRequested = false;
-        declareProperty("Signals", m_usedSignals,
-            "List of signal names or numbers to use to schedule a stop. "
-            "If the signal is followed by a '+' the signal is propagated the previously "
-            "registered handler (if any).");
-      }
+      using extends::extends;
       StatusCode initialize() override {
         StatusCode sc = Service::initialize();
         if (sc.isFailure()) {
@@ -426,7 +417,7 @@ namespace Gaudi {
                   << SignalOffset + s.first << ")"
                   << endmsg;
             }
-            
+
           }
           if (m_stopRequested) {
             auto ep = serviceLocator()->as<IEventProcessor>();
@@ -442,11 +433,15 @@ namespace Gaudi {
       }
       private:
       /// List of signal names or numbers (encoded as strings) to use to schedule a stop.
-      std::vector<std::string> m_usedSignals;
+      StringArrayProperty m_usedSignals{this, "Signals", { "SIGINT", "SIGXCPU" },
+          "List of signal names or numbers to use to schedule a stop. "
+          "If the signal is followed by a '+' the signal is propagated the previously "
+          "registered handler (if any)."
+      };
       /// Map of monitored signal numbers to the flag telling if they have to be propagated or not.
       std::map<int, bool> m_signals;
       /// Flag to remember if the stop has been requested because of a signal.
-      bool m_stopRequested;
+      bool m_stopRequested = false;
       /// Pointer to the signal monitor service.
       SmartIF<Gaudi::ISignalMonitor> m_signalMonitor;
       /// Pointer to the incident service.

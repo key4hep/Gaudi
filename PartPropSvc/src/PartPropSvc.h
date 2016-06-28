@@ -28,8 +28,7 @@
 class PartPropSvc: public extends<Service,
                                   IPartPropSvc> {
 public:
-
-  PartPropSvc( const std::string& name, ISvcLocator* svc );
+  using extends::extends;
 
   StatusCode initialize() override;
   StatusCode finalize() override;
@@ -50,7 +49,8 @@ private:
   StatusCode createTable();
   std::vector<std::pair<std::string,inputFunPtr>> m_inputs;
 
-  StringProperty m_pdtFiles;
+  StringProperty m_pdtFiles{this, "InputFile", "PDGTABLE.MeV"};
+
   HepPDT::ProcessUnknownID* m_upid = nullptr;
   std::string m_upid_name;
 

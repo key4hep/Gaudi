@@ -75,16 +75,8 @@ public:
     Gradient         m_grad  ;
   };
 
-
-  /** Standard constructor
-   *  @see GaudiTool
-   *  @param type    tool type
-   *  @param name    tool name
-   *  @param parent  parent of the tool
-   */
-  FuncMinimum( const std::string& type,
-               const std::string& name,
-               const IInterface* parent);
+  /// Inherited constructor
+  using extends::extends;
 
 private:
 
@@ -97,11 +89,12 @@ private:
 
 private:
 
-  std::string m_algType         = "conjugate_fr";
-  double      m_max_iter        = 200;
-  double      m_norm_gradient   = 1.0e-10;
-  double      m_step_size       = 0.01;
-  double      m_tol             = 1e-10;
+  StringProperty  m_algType {this,  "Algorithm",  "conjugate_fr" ,  "type of the algorithm for multidimensional minimization"     };
+  DoubleProperty  m_max_iter {this,  "Iteration",  200   ,  "maximum of iteration"  };
+  DoubleProperty  m_norm_gradient {this,  "Gradient" ,  1.0e-10,  "absolute tolerance for the Euclidean norm of the gradient"};
+  DoubleProperty  m_step_size   {this,  "Step_size",  0.01 ,  "size of the first trial step" };
+  DoubleProperty  m_tol      {this,  "Tol"      ,  1e-10  ,  "accuracy of the line minimization"   };
+
   const gsl_multimin_fdfminimizer_type* m_type = nullptr;
 };
 

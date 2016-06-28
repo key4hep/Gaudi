@@ -19,21 +19,6 @@
 // ----------------------------------------------------------------------------
 DECLARE_ALGORITHM_FACTORY(ReplayOutputStream)
 
-// ============================================================================
-// Standard constructor, initializes variables
-// ============================================================================
-ReplayOutputStream::ReplayOutputStream(const std::string& name, ISvcLocator* pSvcLocator)
-  : GaudiAlgorithm(name, pSvcLocator)
-{
-  declareProperty("OutputStreams", m_outputStreamNames,
-      "OutputStream instances that can be called.");
-}
-
-// ============================================================================
-// Destructor
-// ============================================================================
-ReplayOutputStream::~ReplayOutputStream() {}
-
 namespace {
 
   /// Helper class to call trigger the transitions in an OutputStream

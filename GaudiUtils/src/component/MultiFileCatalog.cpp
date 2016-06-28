@@ -12,7 +12,7 @@ using namespace Gaudi;
 using namespace std;
 
 namespace {
-    template <typename C, typename F> 
+    template <typename C, typename F>
     F for_each( C& c, F&& f ) {
         return std::for_each( std::begin(c), std::end(c), std::forward<F>(f) );
     }
@@ -24,8 +24,7 @@ DECLARE_COMPONENT(MultiFileCatalog)
 MultiFileCatalog::MultiFileCatalog(const std::string& nam, ISvcLocator* svc)
   : base_class(nam, svc)
 {
-  declareProperty("Catalogs", m_catalogNames, "The list of Catalogs")
-    -> declareUpdateHandler ( &Gaudi::MultiFileCatalog::propHandler, this ) ;
+  m_catalogNames.declareUpdateHandler ( &Gaudi::MultiFileCatalog::propHandler, this ) ;
 }
 // ----------------------------------------------------------------------------
 StatusCode MultiFileCatalog::initialize()  {
@@ -229,22 +228,22 @@ void MultiFileCatalog::registerLFN(CSTR fid, CSTR lfn) const  {
 }
 // ----------------------------------------------------------------------------
 bool MultiFileCatalog::readOnly() const
-{  return std::all_of( std::begin(m_catalogs), std::end(m_catalogs), 
+{  return std::all_of( std::begin(m_catalogs), std::end(m_catalogs),
                        [](const IFileCatalog* i) { return i->readOnly(); } );
 }
 // ----------------------------------------------------------------------------
 bool MultiFileCatalog::dirty() const
-{  return std::any_of( std::begin(m_catalogs), std::end(m_catalogs), 
-                       [](const IFileCatalog* i) { return i->dirty();} ) ; 
+{  return std::any_of( std::begin(m_catalogs), std::end(m_catalogs),
+                       [](const IFileCatalog* i) { return i->dirty();} ) ;
 }
 // ----------------------------------------------------------------------------
-void MultiFileCatalog::init() 
+void MultiFileCatalog::init()
 { for_each(m_catalogs,[](IFileCatalog* i) { i->init(); }); m_started=true; }
 // ----------------------------------------------------------------------------
-void MultiFileCatalog::commit() 
+void MultiFileCatalog::commit()
 { for_each(m_catalogs,[](IFileCatalog* i) { i->commit(); } ); }
 // ----------------------------------------------------------------------------
-void MultiFileCatalog::rollback() 
+void MultiFileCatalog::rollback()
 { for_each(m_catalogs, [](IFileCatalog* i) { i->rollback(); } ); }
 // ----------------------------------------------------------------------------
 void MultiFileCatalog::propHandler(Property& /* p */)

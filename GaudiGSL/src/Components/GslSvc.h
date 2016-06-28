@@ -127,13 +127,7 @@ public:
    */
   StatusCode    finalize   () override;
 
-  /** Standard constructor
-   *  @see Service
-   *  @param name service name
-   *  @param scv  pointer to service locator
-   */
-  GslSvc ( const std::string& name ,
-           ISvcLocator*       svc  );
+  using extends::extends;
 
   /// destructor, virtual and protected
   ~GslSvc() override = default;
@@ -149,17 +143,12 @@ private:
 
 private:
 
-  /// error policy
-  std::string    m_errorPolicy = "GSL" ;
+  StringProperty  m_errorPolicy   {this,  "ErrorPolicy" ,  "GSL"     , ""} ;
+  StringArrayProperty  m_handlersTypeNames {this,  "Handlers"    ,  {} , ""} ;
+  IntegerArrayProperty  m_ignore {this,  "IgnoreCodes" ,  {},  "codes to be ignored"} ;
 
-  /// external handlers
-  typedef std::vector<std::string>       Names               ;
-  Names                                  m_handlersTypeNames ;
   typedef std::vector<IGslErrorHandler*> Handlers            ;
   Handlers                               m_handlers          ;
-
-  /// codes to be ignored
-  std::vector<int>                       m_ignore            ;
 
 };
 

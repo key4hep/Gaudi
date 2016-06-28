@@ -20,13 +20,13 @@
   */
 class RecordOutputStream: public GaudiAlgorithm {
 public:
-  /// Standard constructor
-  RecordOutputStream(const std::string& name, ISvcLocator* pSvcLocator);
-  virtual ~RecordOutputStream(); ///< Destructor
+  using GaudiAlgorithm::GaudiAlgorithm;
 
-  virtual StatusCode initialize();    ///< Algorithm initialization
-  virtual StatusCode execute   ();    ///< Algorithm execution
-  virtual StatusCode finalize  ();    ///< Algorithm finalization
+  ~RecordOutputStream() override = default; ///< Destructor
+
+  StatusCode initialize() override;    ///< Algorithm initialization
+  StatusCode execute   () override;    ///< Algorithm execution
+  StatusCode finalize  () override;    ///< Algorithm finalization
 
   /// Return the path in the Transient Store used to record the triggered
   /// instances.
@@ -35,9 +35,8 @@ public:
   }
 protected:
 private:
-  /// Name of the OuputStream that should be called when this algorithm is
-  /// triggered.
-  std::string m_streamName;
+
+  StringProperty  m_streamName {this, "OutputStreamName",  {},  "Name of the OutputStream instance should be triggered."};
 
   /// location of the DataObject flag used to record that this algorithm was
   /// called

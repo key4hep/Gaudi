@@ -41,7 +41,7 @@ namespace Gaudi {
     template <class A1,class F> void _collect(A1& arg1,F f)  const {
       A1 tmp;
       for(const auto & i : m_catalogs ) {
-        f(i,tmp); // tmp = f(i) 
+        f(i,tmp); // tmp = f(i)
         arg1.insert(arg1.end(),tmp.begin(),tmp.end());
         tmp.clear();
       }
@@ -169,8 +169,9 @@ namespace Gaudi {
 
     /// Container with references to known catalogs
     Catalogs        m_catalogs;
-    /// Property : Container with catalog names
-    CatalogNames    m_catalogNames = { { "xmlcatalog_file:test_catalog.xml" } };
+
+    PropertyWithValue<CatalogNames>  m_catalogNames{this, "Catalogs", { { "xmlcatalog_file:test_catalog.xml" } }, "catalog names"};
+
     /// Flag to indicate if catalog is started
     bool            m_started = false;
     /// BACKUP:: Container with catalog names

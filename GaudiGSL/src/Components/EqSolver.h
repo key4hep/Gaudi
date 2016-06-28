@@ -68,32 +68,25 @@ public:
     Jacobi           m_jac   ;
   };
 
-
-  /** Standard constructor
-   *  @see GaudiTool
-   *  @param type    tool type
-   *  @param name    tool name
-   *  @param parent  parent of the tool
-   */
-  EqSolver( const std::string& type,
-            const std::string& name,
-            const IInterface* parent);
+  /// Inherited constructor
+  using extends::extends;
 
 private:
 
   /// default constructor is private
-  EqSolver();
+  EqSolver() = delete;
   /// copy constructor is private
-  EqSolver           ( const EqSolver& );
+  EqSolver           ( const EqSolver& ) = delete;
   /// assignment operator is
-  EqSolver& operator=( const EqSolver& );
+  EqSolver& operator=( const EqSolver& ) = delete;
 
 private:
 
-  std::string m_algType         ;
-  double      m_max_iter        ;
-  double      m_norm_residual   ;
-  const gsl_multiroot_fdfsolver_type* m_type ;
+  StringProperty m_algType{this, "Algorithm", "fdfsolver_hybridsj", "type of the algorithm for root finding"}         ;
+  DoubleProperty m_max_iter{this, "Iteration", 1000, "maximum of iteration"}        ;
+  DoubleProperty m_norm_residual{this, "Residual", 1.0e-7, "absolute error bound for the residual value"}   ;
+
+  const gsl_multiroot_fdfsolver_type* m_type = nullptr;
 
 };
 

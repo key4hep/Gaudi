@@ -42,17 +42,11 @@ namespace Gaudi  {
     typedef std::map<std::string,Entry*>       ConnectionMap;
     typedef std::map<std::string, std::string> FidMap;
 
-    /// Property: Name of the file catalog service
-    std::string          m_catalogSvcName;
-    /// Property: Age limit
-    int                  m_ageLimit;
-    /// Property: Flag for auto gfal data access
-    bool                 m_useGFAL;
-    /// Property: Flag if unaccessible files should be quarantines in job
-    bool                 m_quarantine;
-    /// Property DisablePFNWarning: if set to True will not report when a file
-    /// is opened by it's physical name.
-    bool                 m_disablePFNWarning;
+    StringProperty       m_catalogSvcName{this, "CatalogType", "Gaudi::MultiFileCatalog/FileCatalog",  "name of the file catalog service"};
+    BooleanProperty           m_useGFAL {this, "UseGFAL",  true,  "flag for auto gfal data access"};
+    BooleanProperty   m_quarantine {this, "QuarantineFiles",  true,  "if unaccessible files should be quarantines in job"};
+    IntegerProperty          m_ageLimit {this, "AgeLimit",  2,  "age limit"};
+    BooleanProperty  m_disablePFNWarning {this, "DisablePFNWarning",  false, "if set to True,  we will not report when a file is opened by its physical name"};
 
     /// Map with I/O descriptors
     ConnectionMap        m_connectionMap;
@@ -68,13 +62,8 @@ namespace Gaudi  {
     SmartIF<IIncidentSvc> m_incSvc; ///the incident service
 
   public:
-
-    /** Initializing constructor
-      *  @param[in]   nam   Name of the service
-      *  @param[in]   loc   Pointer to the service locator object
-      *  @return Initialized reference to service object
-      */
-    IODataManager(CSTR nam, ISvcLocator* loc);
+    /// Inherited constructor
+    using extends::extends;
 
     /// Standard destructor
     ~IODataManager() override = default;

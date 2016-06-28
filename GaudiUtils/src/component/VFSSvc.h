@@ -37,21 +37,19 @@ public:
   /// @see IFileAccess::protocols
   const std::vector<std::string> &protocols() const override;
 
-  /// Standard constructor
-  VFSSvc(const std::string& name, ISvcLocator* svcloc);
+  /// Inherited constructor
+  using extends::extends;
 
   ~VFSSvc() override = default; ///< Destructor
 
 private:
 
-  /// Names of the handlers to use
-  std::vector<std::string> m_urlHandlersNames = { { "FileReadTool" } };
+  StringArrayProperty m_urlHandlersNames {this, "FileAccessTools",  { { "FileReadTool" } },  "List of tools implementing the IFileAccess interface."};
+  StringProperty m_fallBackProtocol {this, "FallBackProtocol",  "file",  "URL prefix to use if the prefix is not present."};
 
   /// Protocols registered
   std::vector<std::string> m_protocols;
 
-  /// Protocol to use in case there is not a specific tool to handle the URL.
-  std::string m_fallBackProtocol;
 
   /// Map of the tools handling the known protocols.
   GaudiUtils::HashMap<std::string,IFileAccess*> m_urlHandlers;

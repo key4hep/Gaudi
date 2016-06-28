@@ -758,8 +758,6 @@ class GAUDI_API GaudiTool: public GaudiCommon<AlgTool>
   /// is summary enabled?
   static bool summaryEnabled (      ) ;               // is summary enabled?
   // ==========================================================================
- protected:
-  // ==========================================================================
   /** Standard constructor
    *  @see AlgTool
    *  @param type tool type (useless)

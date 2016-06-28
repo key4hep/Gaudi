@@ -27,18 +27,10 @@ namespace gp = Gaudi::Parsers;
 JobOptionsSvc::JobOptionsSvc(const std::string& name,ISvcLocator* svc):
   base_class(name,svc)
 {
-  std::string tmp ;
-  tmp = System::getEnv ( "JOBOPTSEARCHPATH" ) ;
-  if ( !tmp.empty() && ("UNKNOWN" != tmp) ) { m_dir_search_path = tmp ; }
-  tmp = System::getEnv ( "JOBOPTSDUMPFILE"  ) ;
-  if ( !tmp.empty() && ("UNKNOWN" != tmp) ) { m_dump = tmp ; }
-
-  declareProperty( "TYPE"       , m_source_type   ) ;
-  declareProperty( "PATH"       , m_source_path   ) ;
-  declareProperty( "SEARCHPATH" , m_dir_search_path ) ;
-  declareProperty( "DUMPFILE"   , m_dump          ) ;
-  declareProperty( "PYTHONACTION" , m_pythonAction  ) ;
-  declareProperty( "PYTHONPARAMS" , m_pythonParams  ) ;
+  if ( System::isEnvSet("JOBOPTSEARCHPATH") )
+    m_dir_search_path = System::getEnv( "JOBOPTSEARCHPATH" );
+  if ( System::isEnvSet("JOBOPTSDUMPFILE") )
+    m_dump = System::getEnv( "JOBOPTSDUMPFILE" );
 }
 // ============================================================================
 StatusCode JobOptionsSvc::initialize()

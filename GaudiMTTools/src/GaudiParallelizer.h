@@ -68,17 +68,19 @@ protected:
   StatusCode decodeNames(  );
 
 private:
-  StringArrayProperty   m_names;         ///< Input string, list of algorithms
-  std::vector<AlgorithmEntry> m_entries; ///< List of algorithms to process.
-  bool m_modeOR;                         ///< Indicates that the OR is wanted instead of AND
 
-  bool m_measureTime;                    ///< Flag to measure time
-  bool m_returnOK;                       ///< Forces the sequencer to return a good status
-  ISequencerTimerTool* m_timerTool;      ///< Pointer to the timer tool
+  StringArrayProperty m_names{this, "Members", {}, "list of algorithms"};
+  BooleanProperty m_modeOR{this, "ModeOR", false, "use OR loginc instead of AND"};
+  BooleanProperty m_measureTime{this, "MeasureTime", false, "measure time"};
+  BooleanProperty m_returnOK{this, "ReturnOK", false, "forces the sequencer to return a good status"};
+  PropertyWithValue<unsigned short>  m_nthreads       {this,  "NumberOfThreads",  0 , "number of threads in the thread pool"};
+
+  std::vector<AlgorithmEntry> m_entries; ///< List of algorithms to process.
+
+  ISequencerTimerTool* m_timerTool = nullptr;      ///< Pointer to the timer tool
   int  m_timer;                          ///< Timer number for the sequencer
 
   tbb::task_group m_task_group;          ///< TBB task group
-  unsigned short m_nthreads;             ///< Number of threads in the thread pool
 };
 
 #endif // LIB_GAUDIPARALLELIZER_H

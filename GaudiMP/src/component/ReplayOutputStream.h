@@ -17,20 +17,19 @@ class IDataManagerSvc;
   */
 class ReplayOutputStream: public GaudiAlgorithm {
 public:
-  /// Standard constructor
-  ReplayOutputStream(const std::string& name, ISvcLocator* pSvcLocator);
-  virtual ~ReplayOutputStream(); ///< Destructor
+  /// Inherited constructor
+  using GaudiAlgorithm::GaudiAlgorithm;
+  ~ReplayOutputStream() override = default; ///< Destructor
 
-  virtual StatusCode initialize();    ///< Algorithm initialization
-  virtual StatusCode start     ();    ///< Algorithm initialization
-  virtual StatusCode execute   ();    ///< Algorithm execution
-  virtual StatusCode stop      ();    ///< Algorithm finalization
-  virtual StatusCode finalize  ();    ///< Algorithm finalization
+  StatusCode initialize() override;    ///< Algorithm initialization
+  StatusCode start     () override;    ///< Algorithm initialization
+  StatusCode execute   () override;    ///< Algorithm execution
+  StatusCode stop      () override;    ///< Algorithm finalization
+  StatusCode finalize  () override;    ///< Algorithm finalization
 
   /// Class used to hold the OutputStream instances
   typedef GaudiUtils::HashMap<std::string, SmartIF<IAlgorithm> > OutStreamsMapType;
 
-protected:
 private:
 
   /// Add a new algorithm to the list of OutputStreams
@@ -73,8 +72,8 @@ private:
   template <Gaudi::StateMachine::Transition TR>
   StatusCode i_outStreamTransition();
 
-  /// (property) Type/Name list of OutputStream we have to call.
-  std::vector<std::string> m_outputStreamNames;
+  StringArrayProperty  m_outputStreamNames {this, "OutputStreams",  {},  "OutputStream instances that can be called."};
+
   /// Internal storage for the OutputStreams to call.
   OutStreamsMapType m_outputStreams;
 
