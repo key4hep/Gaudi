@@ -24,36 +24,8 @@
 class CounterSvc: public extends<Service,
                                  ICounterSvc> {
 public:
-  /// Standard Constructor
-  CounterSvc ( const std::string& name   ,
-               ISvcLocator*       svcLoc )
-    : base_class(name, svcLoc)
-    // the header row
-    , m_header  ( "       Counter :: Group         |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |")
-    // format for regular statistical printout rows
-    , m_format1 ( " %|15.15s|%|-15.15s|%|32t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |"         )
-    // format for "efficiency" statistical printout rows
-    , m_format2 ( "*%|15.15s|%|-15.15s|%|32t||%|10d| |%|11.5g| |(%|#9.7g| +- %|-#9.7g|)%%|   -------   |   -------   |" )
-    //
-  {
-    declareProperty ("PrintStat" , m_print ) ;
-    //
-    declareProperty
-      ( "StatTableHeader"        , m_header                          ,
-        "The header row for the output Stat-table"                   ) ;
-    //
-    declareProperty
-      ( "RegularRowFormat"       , m_format1                         ,
-        "The format for the regular row in the output Stat-table"    ) ;
-    //
-    declareProperty
-      ( "EfficiencyRowFormat"    , m_format2                         ,
-        "The format for the regular row in the outptu Stat-table"    ) ;
-    //
-    declareProperty
-      ( "UseEfficiencyRowFormat" , m_useEffFormat                    ,
-        "Use the special format for printout of efficiency counters" ) ;
-  }
+  // inherit constructor
+  using extends::extends;
   /// Standard destructor
   ~CounterSvc() override { remove().ignore() ; }
   /// Finalization
@@ -209,17 +181,21 @@ private:
   typedef GaudiUtils::HashMap<std::string,NameMap>  CountMap ;
   // the actual map of counters
   CountMap m_counts ; ///< the actual map of counters
-  // boolean flag to print statistics
-  bool     m_print  = true ; ///< boolean flag to print statistics
-  // the header row
-  std::string    m_header  ; ///< the header row
-  // format for regular statistical printout rows
-  std::string    m_format1 ; ///< format for regular statistical printout rows
-  // format for "efficiency" statistical printout rows
-  std::string    m_format2 ; ///< format for "efficiency" statistical printout rows
-  // flag to use the special "efficiency" format
-  bool           m_useEffFormat = true; ///< flag to use the special "efficiency" format
-} ;
+
+  BooleanProperty m_print{this, "PrintStat", true, "print statistics"};
+  StringProperty m_header{this, "StatTableHeader", "       Counter :: Group         |     #     |    sum     | "
+                                                   "mean/eff^* | rms/err^*  |     min     |     max     |",
+                          "the header row for the output Stat-table"};
+  StringProperty m_format1{this, "RegularRowFormat",
+                           " %|15.15s|%|-15.15s|%|32t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |",
+                           "the format for the regular row in the output Stat-table"};
+  StringProperty m_format2{
+      this, "EfficiencyRowFormat",
+      "*%|15.15s|%|-15.15s|%|32t||%|10d| |%|11.5g| |(%|#9.7g| +- %|-#9.7g|)%%|   -------   |   -------   |",
+      "the format for the regular row in the outptu Stat-table"};
+  BooleanProperty m_useEffFormat{this, "UseEfficiencyRowFormat", true,
+                                 "use the special format for printout of efficiency counters"};
+};
 // ===========================================================================
 // Instantiation of a static factory class used by clients
 // ===========================================================================
@@ -440,7 +416,7 @@ void CounterSvc::print () const
   {
     always()
         << "Number of counters : "  << _num << endmsg
-        << m_header << endmsg ;
+        << m_header.value() << endmsg ;
   }
   // Force printing in alphabetical order
   std::map<std::pair<std::string,std::string>, Counter*> sorted_map;

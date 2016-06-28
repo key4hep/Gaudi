@@ -13,19 +13,7 @@ inline void toupper(std::string &s)
                  (int(*)(int)) toupper);
 }
 
-StatusCodeSvc::StatusCodeSvc(const std::string& name, ISvcLocator* svc )
-  : base_class( name, svc )
-{
-
-  declareProperty("Filter",m_pFilter);
-  declareProperty("AbortOnError",m_abort=false);
-  declareProperty("SuppressCheck", m_suppress=false);
-  declareProperty("IgnoreDicts",m_dict=true);
-
-}
-
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
 
 StatusCode
 StatusCodeSvc::initialize() {

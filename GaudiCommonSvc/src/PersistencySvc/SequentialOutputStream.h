@@ -11,17 +11,17 @@
  * @author  M.Frank
  * @version 1.0
  */
-class SequentialOutputStream : public OutputStream     {
-   
+class SequentialOutputStream : public OutputStream {
+
  protected:
-   
-   /// OutputStream override: Select the different objects and write them to file 
+
+   /// OutputStream override: Select the different objects and write them to file
    StatusCode writeObjects() override;
 
  public:
 
-   /// Standard algorithm Constructor
-   SequentialOutputStream(const std::string& nam, ISvcLocator* svc);
+   using OutputStream::OutputStream;
+
    /// Standard Destructor
    ~SequentialOutputStream() override = default;
 
@@ -29,10 +29,9 @@ class SequentialOutputStream : public OutputStream     {
 
  private:
 
-   // Properties
-   unsigned int m_eventsPerFile;
-   unsigned int m_nNumbersAdded;
-   bool m_numericFilename;
+   PropertyWithValue<unsigned int>  m_eventsPerFile {this,  "EventsPerFile",  std::numeric_limits< unsigned int>::max()};
+   BooleanProperty  m_numericFilename {this,  "NumericFilename",  false };
+   PropertyWithValue<unsigned int>  m_nNumbersAdded {this,  "NumbersAdded",  6};
 
    // Data members
    unsigned int m_events = 0;

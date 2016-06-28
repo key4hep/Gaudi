@@ -18,7 +18,6 @@ InputCopyStream::InputCopyStream(const std::string& name, ISvcLocator* pSvcLocat
 {
   m_doPreLoad      = false;
   m_doPreLoadOpt   = false;
-  declareProperty( "TESVetoList", m_tesVetoList );
 }
 
 // Initialize the instance.

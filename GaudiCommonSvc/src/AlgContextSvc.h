@@ -48,10 +48,7 @@ public:
   /// standard finalization  of the service  @see IService
   StatusCode finalize   () override;
 public:
-  /// Standard Constructor @see Service
-  AlgContextSvc
-  ( const std::string& name ,
-    ISvcLocator*       svc  ) ;
+  using extends::extends;
   /// Standard Destructor
   ~AlgContextSvc() override = default;
 private:
@@ -64,13 +61,12 @@ private:
   boost::thread_specific_ptr<IAlgContextSvc::Algorithms> m_algorithms; ///< the stack of current algorithms
   // pointer to Incident Service
   SmartIF<IIncidentSvc>     m_inc      = nullptr  ; ///< pointer to Incident Service
-  // flag to perform more checking
-  bool                       m_check    = true   ;
-} ;
+
+  BooleanProperty m_check{this, "Check", true, "Flag to perform more checks"};
+};
 
 // ============================================================================
 // The END
 // ============================================================================
 #endif // GAUDISVC_ALGCONTEXTSVC_H
 // ============================================================================
-

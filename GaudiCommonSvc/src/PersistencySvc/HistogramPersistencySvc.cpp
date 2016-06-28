@@ -241,21 +241,7 @@ HistogramPersistencySvc::HistogramPersistencySvc
   ISvcLocator*       svc  )
   :  PersistencySvc(name, svc)
 {
-  std::vector<std::string> defServices;
-  defServices.push_back("RootHistSvc");
-  m_svcNames.set(defServices);
-  declareProperty ("HistogramPersistency", m_histPersName = "");
-  declareProperty ("OutputFile", m_outputFile = "");
-  //
-  declareProperty
-    ("ConvertHistos" , m_convert ,
-     "The list of patterns to be accepted for conversion" ) ;
-  //
-  declareProperty
-    ("ExcludeHistos" , m_exclude ,
-     "The list of patterns to be excluded for conversion" ) ;
-  declareProperty("Warnings",m_warnings=true,
-		  "Set this property to false to suppress warning messages");
+  m_svcNames = std::vector<std::string>{{"RootHistSvc"}};
 }
 
 // ============================================================================

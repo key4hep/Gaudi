@@ -42,8 +42,7 @@ private:
   /// Pointer to the (public) tool used to retrieve the objects in a file.
   IDataStoreLeaves *m_leavesTool = nullptr;
 
-  /// Names of TES locations to Veto
-  std::vector<std::string> m_tesVetoList;
+  StringArrayProperty m_tesVetoList{this, "TESVetoList", {}, "names of TES locations to Veto"};
 
 protected:
 

@@ -72,12 +72,13 @@ class MultiStoreSvc: public extends<Service,
 protected:
   typedef std::vector<std::string>         PartitionDefs;
   typedef std::map<std::string, Partition> Partitions;
-  /// Integer Property corresponding to CLID of root entry
-  CLID                m_rootCLID;
-  /// Name of root event
-  std::string         m_rootName;
-  /// Data loader name
-  std::string         m_loader;
+
+  PropertyWithValue<CLID> m_rootCLID {this, "RootCLID",  110, "CLID of root entry"};
+  StringProperty          m_rootName {this, "RootName",  "/Event", "name of root entry"};
+  PropertyWithValue<PartitionDefs> m_partitionDefs{this, "Partitions", {}, "datastore partition definitions"};
+  StringProperty        m_loader{this, "DataLoader", "EventPersistencySvc", "data loader name"};
+  StringProperty  m_defaultPartition{this, "DefaultPartition", "Default", "default partition name"};
+
   /// Pointer to data loader service
   SmartIF<IConversionSvc>  m_dataLoader;
   /// Reference to address creator
@@ -97,10 +98,6 @@ protected:
   Partition                m_current;
   /// Datastore partitions
   Partitions               m_partitions;
-  /// Datastore partition definitions
-  PartitionDefs            m_partitionDefs;
-  /// Default partition
-  std::string              m_defaultPartition;
 
   // member templates to help writing the function calls
   template <typename... Args, typename... UArgs>
@@ -598,16 +595,8 @@ public:
 
 //protected:
 
-  /// Standard Constructor
-  MultiStoreSvc( CSTR& name, ISvcLocator* svc )
-  : base_class(name,svc)
-  {
-    declareProperty("RootCLID",         m_rootCLID = 110);
-    declareProperty("RootName",         m_rootName = "/Event");
-    declareProperty("Partitions",       m_partitionDefs);
-    declareProperty("DataLoader",       m_loader="EventPersistencySvc");
-    declareProperty("DefaultPartition", m_defaultPartition="Default");
-  }
+  /// Inherited constructor
+  using extends::extends;
 
   /// Standard Destructor
   ~MultiStoreSvc() override {

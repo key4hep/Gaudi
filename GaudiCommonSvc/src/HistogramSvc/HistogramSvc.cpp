@@ -255,7 +255,7 @@ StatusCode HistogramSvc::initialize()   {
   if (status.isSuccess()) {
     std::unique_ptr<DataObject> rootObj{ new DataObject() };
     status = setRoot("/stat", rootObj.get());
-    if (status.isSuccess()) { 
+    if (status.isSuccess()) {
         rootObj.release();
     } else {
       error() << "Unable to set hstogram data store root." << endmsg;
@@ -371,13 +371,7 @@ HistogramSvc::HistogramSvc(const std::string& nam, ISvcLocator* svc)
   // Properties can be declared here
   m_rootName = "/stat";
   m_rootCLID = CLID_DataObject;
-  declareProperty ( "Input",  m_input);
-  declareProperty ( "Predefined1DHistos" , m_defs1D ,
-                    "Histograms with predefined parameters" ) ;
-  // update handler
-  Property* p = Gaudi::Utils::getProperty ( this , "Predefined1DHistos" ) ;
-  p->declareUpdateHandler ( &HistogramSvc::update1Ddefs , this ) ;
-
+  m_defs1D.declareUpdateHandler( &HistogramSvc::update1Ddefs, this );
 }
 // ============================================================================
 // handler to be invoked for updating property m_defs1D
@@ -405,7 +399,7 @@ namespace
 void HistogramSvc::update1Ddefs ( Property& )
 {
   // check and remove the leading '/stat/'
-  removeLeading  ( m_defs1D , "/stat/" ) ;
+  removeLeading  ( m_defs1D.value() , "/stat/" ) ;
 }
 // ============================================================================
 // finalize the service

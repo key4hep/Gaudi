@@ -98,7 +98,7 @@ void RecordDataSvc::handle(const Incident& incident) {
       if ( !m_incidentName.empty() ) {
         auto  incidents = m_incidents;
         m_incidents.clear();
-        for( const auto& i : incidents) 
+        for( const auto& i : incidents)
             m_incidentSvc->fireIncident(Incident{i,m_incidentName});
       }
     }
@@ -152,8 +152,4 @@ RecordDataSvc::RecordDataSvc(const string& name,ISvcLocator* svc)
 : base_class(name,svc)
 {
   m_rootName = "/Records";
-  declareProperty("AutoLoad",       m_autoLoad = true);
-  declareProperty("IncidentName",   m_incidentName = "");
-  declareProperty("SaveIncident",   m_saveIncidentName = "SAVE_RECORD");
-  declareProperty("PersistencySvc", m_persSvcName = "PersistencySvc/RecordPersistencySvc");
 }

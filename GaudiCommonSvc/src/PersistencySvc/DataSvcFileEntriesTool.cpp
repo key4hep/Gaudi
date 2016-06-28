@@ -27,10 +27,8 @@ class DataSvcFileEntriesTool: public extends<AlgTool,
                                              IDataStoreLeaves,
                                              IIncidentListener> {
 public:
-  /// Standard constructor
-  DataSvcFileEntriesTool(const std::string& type,
-      const std::string& name,
-      const IInterface* parent);
+  /// Inherited constructor
+  using extends::extends;
 
   /// Destructor
   ~DataSvcFileEntriesTool() override = default;
@@ -54,12 +52,10 @@ public:
 
 private:
 
-  /// Variable for the property \b DataService
-  std::string m_dataSvcName;
-  /// Variable for the property \b Root
-  std::string m_rootNode;
-  /// Variable for the property \b ScanOnBeginEvent
-  bool m_scanOnBeginEvent;
+  StringProperty m_dataSvcName{this, "DataService", "EventDataSvc", "Name of the data service to use"};
+  StringProperty m_rootNode{this, "Root", "", "Path to the element from which to start the scan"};
+  BooleanProperty m_scanOnBeginEvent{this, "ScanOnBeginEvent", false, "If the scan has to be started during the BeginEvent incident (true) or on demand (false, default)"};
+  BooleanProperty m_ignoreOriginChange{this, "IgnoreOriginChange", false, "Disable the detection of the change in the origin of object between the BeginEvent and the scan"};
 
   /// Pointer to the incident service.
   SmartIF<IIncidentSvc> m_incidentSvc;
@@ -86,8 +82,6 @@ private:
   /// previous calls to an OutputStream.
   std::string m_initialBase;
 
-  /// Variable for the property \b ScanOnBeginEvent
-  bool m_ignoreOriginChange;
 };
 
 // ========== implementation
@@ -100,24 +94,6 @@ private:
 #include "GaudiKernel/DataStoreItem.h"
 
 #include "GaudiKernel/GaudiException.h"
-
-DataSvcFileEntriesTool::DataSvcFileEntriesTool(const std::string& type,
-      const std::string& name,
-      const IInterface* parent):
-   base_class(type, name, parent) {
-
-  declareProperty("DataService", m_dataSvcName = "EventDataSvc",
-      "Name of the data service to use");
-
-  declareProperty("Root", m_rootNode,
-      "Path to the element from which to start the scan");
-
-  declareProperty("ScanOnBeginEvent", m_scanOnBeginEvent = false,
-      "If the scan has to be started during the BeginEvent incident (true) or on demand (false, default)");
-
-  declareProperty("IgnoreOriginChange", m_ignoreOriginChange = false,
-      "Disable the detection of the change in the origin of object between the BeginEvent and the scan");
-}
 
 StatusCode DataSvcFileEntriesTool::initialize(){
   StatusCode sc = AlgTool::initialize();

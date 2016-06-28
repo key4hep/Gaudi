@@ -44,8 +44,7 @@ namespace AIDA {
  *  HistogramSvc class definition
  *
  */
-class HistogramSvc : virtual public extends<DataSvc,
-                                            IHistogramSvc>,
+class HistogramSvc : public extends<DataSvc, IHistogramSvc>,
                      virtual public AIDA::IHistogramFactory
 {
 
@@ -132,10 +131,6 @@ protected:
       return nullptr;
     }
   };
-
-
-  /// Input streams
-  DBaseEntries                      m_input;
 
 public:
   /** Statndard Constructor
@@ -961,9 +956,10 @@ public:
   typedef std::map<std::string,Gaudi::Histo1DDef> Histo1DMap ;
   // ==========================================================================
 private:
-  // ==========================================================================
-  // container with the definition of "the special" histograms
-  Histo1DMap                  m_defs1D ;
+
+  PropertyWithValue<DBaseEntries> m_input{this, "Input", {}, "input streams"};
+  PropertyWithValue<Histo1DMap> m_defs1D{this, "Predefined1DHistos", {}, "histograms with predefined parameters"};
+
   // ==========================================================================
   // modified histograms:
   std::set<std::string>       m_mods1D ;

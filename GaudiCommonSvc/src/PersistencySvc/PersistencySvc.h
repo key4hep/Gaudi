@@ -271,10 +271,9 @@ protected:
   Services            m_cnvServices;
   /// Default output service
   mutable SmartIF<IConversionSvc>     m_cnvDefault;
-  /** Names of services to be requested from
-      the service locator and added by default.
-  */
-  StringArrayProperty m_svcNames;
+
+  StringArrayProperty m_svcNames{this, "CnvServices", {}, "Names of services to be requested from the service locator and added by default"};
+
   /// Flag to indicate that the service is enabled
   bool                m_enable = true;
 

@@ -54,85 +54,6 @@ constexpr struct  CompareFirstOfPointerPair_t
   }
 } CompareFirstOfPointerPair {} ;
 // ============================================================================
-// Constructor
-// ============================================================================
-ChronoStatSvc::ChronoStatSvc
-( const std::string& name, ISvcLocator* svcloc )
-  : base_class( name , svcloc )
-  //
-  // the header row
-  , m_header  ( "     Counter     |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |")
-  // format for regular statistical printout rows
-  , m_format1 ( " %|-15.15s|%|17t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |" )
-  // format for "efficiency" statistical printout rows
-  , m_format2 ( "*%|-15.15s|%|17t||%|10d| |%|11.5g| |(%|#9.7g| +- %|-#9.7g|)%%|   -------   |   -------   |" )
-{
-  /// decide if the final printout should be performed
-  declareProperty ( "ChronoPrintOutTable"    ,
-                    m_chronoTableFlag      = true      );
-  /// define the destination of the table to be printed
-  declareProperty ( "ChronoDestinationCout"  ,
-                    m_chronoCoutFlag       = false     );
-  /// print level
-  declareProperty ( "ChronoPrintLevel"       ,
-                    m_intChronoPrintLevel  = MSG::INFO );
-  /// if printout is to be performed,
-  /// should one take care about some ordering?
-  declareProperty ( "ChronoTableToBeOrdered" ,
-                    m_chronoOrderFlag      = true      );
-  /// if User     Time information to be printed?
-  declareProperty ( "PrintUserTime"          ,
-                    m_printUserTime        = true      );
-  /// if System   Time information to be printed?
-  declareProperty ( "PrintSystemTime"        ,
-                    m_printSystemTime      = false     );
-  /// if Ellapsed Time information to be printed?
-  declareProperty ( "PrintEllapsedTime"      ,
-                    m_printEllapsedTime    = false     );
-  ///
-  /// deside if the final printout should be performed
-  declareProperty ( "StatPrintOutTable"      ,
-                    m_statTableFlag        = true      );
-  /// define the destination of the table to be printed
-  declareProperty ( "StatDestinationCout"    ,
-                    m_statCoutFlag         = false     );
-  /// print level
-  declareProperty ( "StatPrintLevel"         ,
-                    m_intStatPrintLevel    = MSG::INFO );
-  /// if printout is to be performed,
-  /// should one take care about some ordering?
-  declareProperty ( "StatTableToBeOrdered"   ,
-                    m_statOrderFlag        = true      );
-
-  // specify the number of events to be skipped by the memory auditor
-  // in order to better spot memory leak
-  declareProperty ( "NumberOfSkippedEventsForMemStat"      ,
-                    m_numberOfSkippedEventsForMemStat = -1 ) ;
-
-  declareProperty( "AsciiStatsOutputFile",
-		   m_statsOutFileName = "",
-		   "Name of the output file storing the stats. If empty, no"
-		   " statistics will be saved (default)" );
-
-  declareProperty
-    ( "StatTableHeader"        , m_header                          ,
-      "The header row for the output Stat-table"                   ) ;
-  declareProperty
-    ( "RegularRowFormat"       , m_format1                         ,
-      "The format for the regular row in the output Stat-table"    ) ;
-  declareProperty
-    ( "EfficiencyRowFormat"    , m_format2                         ,
-      "The format for the regular row in the output Stat-table"    ) ;
-  declareProperty
-    ( "UseEfficiencyRowFormat" , m_useEffFormat                    ,
-      "Use the special format for printout of efficiency counters" ) ;
-
-  declareProperty
-    ( "PerEventFile", m_perEventFile="",
-      "File name for per-event deltas" );
-
-}
-// ============================================================================
 // Compound assignment operator.
 // ============================================================================
 void ChronoStatSvc::merge ( const ChronoStatSvc& css){
@@ -159,6 +80,21 @@ void ChronoStatSvc::merge ( const ChronoStatSvc& css){
 			m_statEntities.insert (std::pair<IChronoStatSvc::StatTag,StatEntity>(key,val));
 	}
 
+}
+ChronoStatSvc::ChronoStatSvc ( const std::string& name, ISvcLocator* svcloc ) :
+    base_class(name, svcloc)
+ {
+  // basically limit the integer to MSG::Level range
+  auto int2level = []( int l ) -> MSG::Level {
+    return static_cast<MSG::Level>( std::max( std::min( l, static_cast<int>(MSG::FATAL) ), static_cast<int>(MSG::NIL) ) );
+  };
+
+  m_intStatPrintLevel.declareUpdateHandler( [this, int2level](Property&) {
+    m_statPrintLevel = int2level(m_intStatPrintLevel);
+  } );
+  m_intChronoPrintLevel.declareUpdateHandler( [this, int2level](Property&) {
+    m_chronoPrintLevel = int2level(m_intChronoPrintLevel);
+  } );
 }
 // ============================================================================
 // Implementation of IService::initialize()
@@ -194,21 +130,8 @@ StatusCode ChronoStatSvc::initialize()
   }
 
   info() << " Number of skipped events for MemStat"
-      << m_numberOfSkippedEventsForMemStat << endmsg ;
+      << m_numberOfSkippedEventsForMemStat.value() << endmsg ;
 
-  ///
-  /// redefine some "properties"
-  ///
-  m_statPrintLevel =
-    ( MSG::FATAL < m_intStatPrintLevel   ) ? MSG::FATAL :
-    ( MSG::NIL   > m_intStatPrintLevel   ) ? MSG::NIL   :
-    ( MSG::Level ) m_intStatPrintLevel  ;
-  ///
-  m_chronoPrintLevel =
-    ( MSG::FATAL < m_intChronoPrintLevel ) ? MSG::FATAL :
-    ( MSG::NIL   > m_intChronoPrintLevel ) ? MSG::NIL   :
-    ( MSG::Level ) m_intChronoPrintLevel ;
-  ///
   if( m_chronoTableFlag  &&
       !m_printUserTime   &&
       !m_printSystemTime &&
@@ -505,7 +428,7 @@ void ChronoStatSvc::saveStats()
   std::ofstream out( m_statsOutFileName.value(),
 		             std::ios_base::out | std::ios_base::trunc );
   if ( !out.good() ) {
-    info() 
+    info()
 	<< "Could not open the output file for writing chrono statistics ["
 	<< m_statsOutFileName.value() << "]"
 	<< endmsg;
@@ -610,8 +533,8 @@ void ChronoStatSvc::printStats()
     if ( m_statOrderFlag ) std::sort( tmpCont.begin(), tmpCont.end(),
                                       CompareFirstOfPointerPair );
     // print the table header
-    if ( m_statCoutFlag ) { std::cout <<                     m_header << std::endl ; }
-    else                  { log       << m_statPrintLevel << m_header << endmsg    ; }
+    if ( m_statCoutFlag ) { std::cout <<                     m_header.value() << std::endl ; }
+    else                  { log       << m_statPrintLevel << m_header.value() << endmsg    ; }
 
     // loop over counters and print them:
     for ( const auto& iter : tmpCont ) {

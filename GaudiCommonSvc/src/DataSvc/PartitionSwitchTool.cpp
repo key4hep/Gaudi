@@ -17,21 +17,14 @@ class PartitionSwitchTool: public extends<AlgTool,
 
 private:
 
-  /// Job option to set the multi-service name
-  std::string                m_actorName;
+  StringProperty m_actorName{this, "Actor", "EventDataService", "option to set the multi-service name"};
   /// reference to Partition Controller
   SmartIF<IPartitionControl> m_actor;
 
 public:
-
-  /// Standard constructor
-  PartitionSwitchTool(const std::string& typ, const std::string& nam, const IInterface* parent)
-  : base_class( typ, nam , parent)
-  {
-    declareProperty("Actor", m_actorName = "EventDataService");
-  }
+  using extends::extends;
   /// Standard destructor
-  ~PartitionSwitchTool()   override = default; 
+  ~PartitionSwitchTool()   override = default;
 
   /// Initialize
   STATUS initialize()  override {
@@ -47,7 +40,7 @@ public:
     m_actor = tmpPtr;
     if ( !sc.isSuccess() )  {
       error() << "Cannot retrieve partition controller \""
-          << m_actorName << "\"!" << endmsg;
+          << m_actorName.value() << "\"!" << endmsg;
       return sc;
     }
     return sc;

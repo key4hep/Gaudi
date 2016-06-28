@@ -29,22 +29,15 @@ class PartitionSwitchAlg : public extends<Algorithm,
 
 private:
 
-  /// Job option to set the requested partition name
-  std::string        m_partName;
-  /// Job option to set the tool manipulating the multi-service name
-  std::string        m_toolType;
+  StringProperty m_partName{this, "Partition", "", "option to set the requested partition name"};
+  StringProperty m_toolType{this, "Tool", "PartitionSwitchTool", "option to set the tool manipulating the multi-service name"};
+
   /// reference to Partition Controller
   IPartitionControl* m_actor = nullptr;
 
 public:
+  using extends::extends;
 
-  /// Standard algorithm constructor
-  PartitionSwitchAlg(const std::string& name, ISvcLocator* pSvcLocator)
-  : base_class(name, pSvcLocator)
-  {
-    declareProperty("Partition",  m_partName);
-    declareProperty("Tool",       m_toolType="PartitionSwitchTool");
-  }
   /// Standard Destructor
   ~PartitionSwitchAlg() override = default;
 

@@ -45,14 +45,12 @@ class RecordDataSvc  : public extends<DataSvc,
   void loadRecords(IRegistry* pReg);
 
  protected:
-  /// Property: autoload of records (default: true)
-  bool            m_autoLoad;
-  ///Property:  name of incident to be fired if new record arrives
-  std::string     m_incidentName;
-  /// Property: name of the "save" incident
-  std::string     m_saveIncidentName;
-  /// Property: name of the persistency service
-  std::string     m_persSvcName;
+
+  BooleanProperty m_autoLoad {this, "AutoLoad",  true, "autoload of records"};
+  StringProperty  m_incidentName {this, "IncidentName",  "", "name of incident to be fired if new record arrives"};
+  StringProperty  m_saveIncidentName {this, "SaveIncident",  "SAVE_RECORD", "name of the 'save' incident"};
+  StringProperty  m_persSvcName {this, "PersistencySvc",  "PersistencySvc/RecordPersistencySvc", "name of the persistency service"};
+
   /// Pending new file incidents
   std::vector<std::string> m_incidents;
   /// Reference to the main data conversion service

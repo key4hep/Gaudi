@@ -567,6 +567,5 @@ bool PersistencySvc::enable(bool value)
 PersistencySvc::PersistencySvc(const std::string& name, ISvcLocator* svc)
 :  base_class(name, svc)
 {
-  declareProperty("CnvServices", m_svcNames);
   m_svcNames.declareUpdateHandler( &PersistencySvc::svcNamesHandler, this );
 }

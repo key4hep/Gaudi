@@ -75,15 +75,6 @@ StatusCode AuditorSvc::syncAuditors_() {
   return sc;
 }
 
-// Standard Constructor.
-//   Input:  name   String with service name
-//   Input:  svc    Pointer to service locator interface
-AuditorSvc::AuditorSvc( const std::string& name, ISvcLocator* svc )
-: base_class(name, svc) {
-  declareProperty("Auditors", m_audNameList );
-  declareProperty("Enable", m_isEnabled = true);
-}
-
 // Inherited Service overrides:
 //
   // Initialize the service.

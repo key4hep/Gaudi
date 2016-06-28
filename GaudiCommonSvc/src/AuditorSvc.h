@@ -82,10 +82,7 @@ public:
   // management functionality: retrieve an Auditor
   IAuditor* getAuditor( const std::string& name ) override;
 
-  // Standard Constructor.
-  //   Input:  name   String with service name
-  //   Input:  svc    Pointer to service locator interface
-  AuditorSvc( const std::string& name, ISvcLocator* svc );
+  using extends::extends;
 
   // Destructor.
   ~AuditorSvc() override = default;
@@ -96,14 +93,11 @@ private:
   SmartIF<IAuditor> findAuditor_( const std::string& );
   StatusCode syncAuditors_();
 
-  // List of auditor names
-  std::vector<std::string> m_audNameList;
+  StringArrayProperty m_audNameList{this, "Auditors", {}, "list of auditors names"};
+  BooleanProperty m_isEnabled{this, "Enable", true, "enable/disable alltogether the auditors"};
 
   // Manager list of Auditors
   std::vector<SmartIF<IAuditor>>     m_pAudList;
-
-  // To disable alltogether the auditors
-  bool m_isEnabled = true;
 };
 
 #endif

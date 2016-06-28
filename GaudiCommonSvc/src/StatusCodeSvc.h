@@ -22,7 +22,7 @@ public:
   void list() const override;
   bool suppressCheck() const override { return m_suppress.value() ; }
 
-  StatusCodeSvc( const std::string& name, ISvcLocator* svc );
+  using extends::extends;
 
   // Destructor.
   ~StatusCodeSvc() override = default;
@@ -39,8 +39,10 @@ private:
   void filterFnc(const std::string&);
   void filterLib(const std::string&);
 
-  StringArrayProperty m_pFilter;
-  BooleanProperty m_abort, m_suppress, m_dict;
+  StringArrayProperty m_pFilter{this, "Filter"};
+  BooleanProperty m_abort{this, "AbortOnError", false};
+  BooleanProperty  m_suppress{this, "SuppressCheck", false};
+  BooleanProperty m_dict{this, "IgnoreDicts", true};
 
   std::map<std::string,StatCodeDat> m_dat;
   std::set<std::string> m_filterfnc, m_filterlib;

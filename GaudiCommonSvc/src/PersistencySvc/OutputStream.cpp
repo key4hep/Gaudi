@@ -31,38 +31,10 @@ OutputStream::OutputStream(const std::string& name, ISvcLocator* pSvcLocator)
 : Algorithm(name, pSvcLocator),
   m_agent          { new OutputStreamAgent(this) }
 {
-  m_doPreLoad      = true;
-  m_doPreLoadOpt   = false;
-  m_verifyItems    = true;
-  m_outputType     = "UPDATE";
-  m_storeName      = "EventDataSvc";
-  m_persName       = "EventPersistencySvc";
-  ///in the baseclass, always fire the incidents by default
-  ///in e.g. RecordStream this will be set to false, and configurable
-  m_fireIncidents  = true;
-  declareProperty("ItemList",         m_itemNames);
-  declareProperty("OptItemList",      m_optItemNames);
-  declareProperty("AlgDependentItemList", m_algDependentItemList);
-  declareProperty("Preload",          m_doPreLoad);
-  declareProperty("PreloadOptItems",  m_doPreLoadOpt);
-  declareProperty("Output",           m_output);
-  declareProperty("OutputFile",       m_outputName);
-  declareProperty("EvtDataSvc",       m_storeName);
-  declareProperty("EvtConversionSvc", m_persName);
-  declareProperty("AcceptAlgs",       m_acceptNames);
-  declareProperty("RequireAlgs",      m_requireNames);
-  declareProperty("VetoAlgs",         m_vetoNames);
-  declareProperty("VerifyItems",      m_verifyItems);
-  ///in the baseclass, always fire the incidents by default
-  ///in RecordStream this will be set to false, and configurable
-
   // Associate action handlers with the AcceptAlgs, RequireAlgs and VetoAlgs.
   m_acceptNames.declareUpdateHandler ( &OutputStream::acceptAlgsHandler , this );
   m_requireNames.declareUpdateHandler( &OutputStream::requireAlgsHandler, this );
   m_vetoNames.declareUpdateHandler   ( &OutputStream::vetoAlgsHandler   , this );
-
-  //setProperty( "OutputLevel", 2 );
-
 }
 
 
@@ -105,15 +77,15 @@ StatusCode OutputStream::initialize() {
   clearItems(m_itemList);
 
   // Take the new item list from the properties.
-  ON_DEBUG debug() << "ItemList    : " << m_itemNames << endmsg;
+  ON_DEBUG debug() << "ItemList    : " << m_itemNames.value() << endmsg;
   for( const auto& i : m_itemNames ) addItem( m_itemList, i );
 
   // Take the new item list from the properties.
-  ON_DEBUG debug() << "OptItemList : " << m_optItemNames << endmsg;
+  ON_DEBUG debug() << "OptItemList : " << m_optItemNames.value() << endmsg;
   for( const auto& i : m_optItemNames ) addItem( m_optItemList, i );
 
   // prepare the algorithm selected dependent locations
-  ON_DEBUG debug() << "AlgDependentItemList : " << m_algDependentItemList << endmsg;
+  ON_DEBUG debug() << "AlgDependentItemList : " << m_algDependentItemList.value() << endmsg;
   for ( const auto& a : m_algDependentItemList )
   {
     // Get the algorithm pointer
@@ -138,7 +110,7 @@ StatusCode OutputStream::initialize() {
   if ( m_doPreLoadOpt )    {
     for(auto& j : m_optItemList) m_pDataProvider->addPreLoadItem( *j ).ignore();
   }
-  info() << "Data source: " << m_storeName  << " output: " << m_output << endmsg;
+  info() << "Data source: " << m_storeName.value() << " output: " << m_output.value() << endmsg;
 
   // Decode the accept, required and veto Algorithms. The logic is the following:
   //  a. The event is accepted if all lists are empty.
@@ -583,7 +555,7 @@ StatusCode OutputStream::decodeAlgorithms( StringArrayProperty& theNames,
   StatusCode result = StatusCode::SUCCESS;
 
   // Build the list of Algorithms from the names list
-  for ( const auto& it : theNames.value() ) 
+  for ( const auto& it : theNames.value() )
   {
 
     Algorithm * theAlgorithm = decodeAlgorithm( it );
@@ -607,7 +579,7 @@ StatusCode OutputStream::decodeAlgorithms( StringArrayProperty& theNames,
 }
 
 bool OutputStream::isEventAccepted( ) const  {
-  auto passed = [](const Algorithm* alg) { return alg->isExecuted() 
+  auto passed = [](const Algorithm* alg) { return alg->isExecuted()
                                                && alg->filterPassed(); };
 
   // Loop over all Algorithms in the accept list to see
