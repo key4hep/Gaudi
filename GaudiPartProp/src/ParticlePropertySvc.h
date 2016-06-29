@@ -178,13 +178,9 @@ protected:
     const ParticleProperty* n              ,
     const MSG::Level l = MSG::DEBUG ) const ;
 private:
-  typedef std::vector<std::string> Files ;
-  typedef std::vector<std::string> Particles ;
-
-  std::string m_filename = "ParticleTable.txt"  ; ///< Filename of the particle properties file
-  Files m_other ; ///< additional file names
-  // properties to be redefined explicitly
-  Particles m_particles ;
+  StringProperty m_filename{this, "ParticlePropertiesFile", "ParticleTable.txt", "Filename of the particle properties file"};
+  StringArrayProperty m_other{this, "OtherFiles", {}, "additional file names"};
+  StringArrayProperty m_particles{this, "Particles", {}, "properties to be redefined explicitly"};
 
   VectPP      m_vectpp;          ///< Vector of all particle properties
   MapID       m_idmap;           ///< Map for geant IDs
@@ -204,5 +200,3 @@ private:
 // =============================================================================
 #endif
 // =============================================================================
-
-

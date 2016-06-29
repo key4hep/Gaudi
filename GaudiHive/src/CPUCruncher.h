@@ -54,31 +54,27 @@
     void calibrate();
     long unsigned int getNCaliIters(double);
 
-    double m_avg_runtime ; //Avg Runtime
-    double m_var_runtime ; //Variance of Runtime
-    bool m_local_rndm_gen; //Decide what random number generation to use
-    bool m_shortCalib;
+
+    StringArrayProperty  m_inpKeys {this, "inpKeys",  {}, ""};
+    StringArrayProperty  m_outKeys {this, "outKeys",  {}, ""};
+
+    DoubleProperty  m_avg_runtime {this, "avgRuntime",  1.,  "Average runtime of the module."};
+    DoubleProperty  m_var_runtime {this, "varRuntime",  0.01,  "Variance of the runtime of the module."};
+    BooleanProperty  m_local_rndm_gen {this, "localRndm",  true,  "Decide if the local random generator is to be used"};
+    BooleanProperty  m_shortCalib {this, "shortCalib",  false,  "Enable coarse grained calibration"};
+    UnsignedIntegerProperty  m_rwRepetitions {this, "RwRepetitions",  1,  "Increase access to the WB"};
+    BooleanProperty  m_sleepyExecution {this, "SleepyExecution",  false,  "Sleep during execution instead of crunching"};
 
     // To calib only once
-    static std::vector<unsigned int>m_niters_vect;
+    static std::vector<unsigned int> m_niters_vect;
     static std::vector<double> m_times_vect;
 
     // For the concurrency
-
     const uint MAX_INPUTS = 40;
     const uint MAX_OUTPUTS = 10;
 
     std::vector<DataObjectHandle<DataObject> *> m_inputHandles;
     std::vector<DataObjectHandle<DataObject> *> m_outputHandles;
 
-    std::vector<std::string> m_inpKeys, m_outKeys;
-
-    unsigned int m_rwRepetitions;
-
     static CHM m_name_ncopies_map;
-
-    // Sleep during execution instead of real CPU crunching
-    bool m_sleepyExecution;
-
   };
-

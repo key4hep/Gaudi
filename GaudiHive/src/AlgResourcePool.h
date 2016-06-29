@@ -35,9 +35,9 @@ class AlgResourcePool: public extends<Service,
                                       IAlgResourcePool> {
 public:
   // Standard constructor
-  AlgResourcePool(  const std::string& name, ISvcLocator* svc );
+  using extends::extends;
   // Standard destructor
-  ~AlgResourcePool();
+  ~AlgResourcePool() override;
 
   virtual StatusCode start();
   virtual StatusCode initialize();
@@ -66,8 +66,8 @@ private:
   typedef boost::dynamic_bitset<> state_type;
 
   std::mutex m_resource_mutex;
-  bool m_lazyCreation;
-  state_type m_available_resources;
+
+  state_type m_available_resources{0};
   std::map<size_t,concurrentQueueIAlgPtr*> m_algqueue_map;
   std::map<size_t,state_type> m_resource_requirements;
   std::map<size_t,size_t> m_n_of_allowed_instances;
@@ -80,8 +80,8 @@ private:
   /// Recursively flatten an algList
   StatusCode flattenSequencer(Algorithm* sequencer, ListAlg& alglist, const std::string& parentName, unsigned int recursionDepth=0);
 
-  /// The names of the algorithms to be passed to the algorithm manager
-  StringArrayProperty m_topAlgNames;
+  BooleanProperty  m_lazyCreation {this, "CreateLazily",  false, ""};
+  StringArrayProperty  m_topAlgNames {this, "TopAlg",  {},  "names of the algorithms to be passed to the algorithm manager"};
 
   /// The list of all algorithms created withing the Pool which are not top
   ListAlg m_algList;
@@ -99,7 +99,7 @@ private:
   std::list<IAlgorithm*> m_topAlgPtrList;
 
   /// OMG yet another hack
-  concurrency::ExecutionFlowGraph* m_EFGraph;
+  concurrency::ExecutionFlowGraph* m_EFGraph = nullptr;
 };
 
 #endif  // GAUDIHIVE_ALGRESOURCEPOOL_H

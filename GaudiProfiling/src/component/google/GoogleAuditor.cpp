@@ -44,15 +44,15 @@ namespace Google
   public:
 
     /// Constructor
-    AuditorBase( const std::string& name, ISvcLocator* pSvcLocator);
+    using extends::extends;
 
     /// Destructor
-    virtual ~AuditorBase() {  }
+    ~AuditorBase() override = default;
 
     /// Initialize the auditor base
     StatusCode initialize()
     {
-      m_log << MSG::INFO << "Initialised" << endmsg;
+      info() << "Initialised" << endmsg;
 
       // add a listener for begin event
       auto inSvc = serviceLocator()->service<IIncidentSvc>("IncidentSvc");
@@ -79,7 +79,7 @@ namespace Google
     /// Start a full event audit
     inline void startAudit()
     {
-      m_log << MSG::INFO << " -> Starting full audit from event " << m_nEvts << " to "
+      info() << " -> Starting full audit from event " << m_nEvts << " to "
             << m_nEvts+m_nSampleEvents << endmsg;
       m_inFullAudit = true;
       m_sampleEventCount = 1;
@@ -91,7 +91,7 @@ namespace Google
     /// stop a full event audit
     inline void stopAudit()
     {
-      m_log << MSG::INFO << " -> Stopping full audit" << endmsg;
+      info() << " -> Stopping full audit" << endmsg;
       std::ostringstream t;
       t << "FULL-Events" << m_nEvts << "To" << m_nEvts+m_nSampleEvents ;
       google_after(t.str());
@@ -147,8 +147,9 @@ namespace Google
                     ( m_freq < 0            ||
                       m_nEvts == 1          ||
                       m_nEvts % m_freq == 0  ) );
-        m_log << MSG::DEBUG << "Event " << m_nEvts
-              << " Audit=" << m_audit << endmsg;
+        if (UNLIKELY(msgLevel(MSG::DEBUG)))
+          debug() << "Event " << m_nEvts
+                  << " Audit=" << m_audit << endmsg;
         if ( m_fullEventAudit )
         {
           if ( m_inFullAudit )
@@ -203,7 +204,7 @@ namespace Google
       {
         if ( !alreadyRunning() )
         {
-          m_log << MSG::INFO
+          info()
                 << "Starting Auditor for " << s << ":" << type
                 << endmsg;
           m_startedBy = s;
@@ -211,7 +212,7 @@ namespace Google
         }
         else
         {
-          m_log << MSG::WARNING
+          warning()
                 << "Auditor already running. Cannot be started for " << s
                 << endmsg;
         }
@@ -278,76 +279,23 @@ namespace Google
     /// check if we are already running the tool
     virtual bool alreadyRunning() = 0;
 
-  protected:
-
-    mutable MsgStream         m_log;   ///< Messaging object
-
   private:
 
-    std::vector<std::string>  m_when;  ///< When to audit the algorithms
-    std::vector<std::string>  m_veto;  ///< Veto list. Any component in this list will not be audited
-    std::vector<std::string>  m_list;  ///< Any component in this list will be audited. If empty, all will be done.
+    StringArrayProperty  m_when {this, "ActivateAt",  {"Initialize", "ReInitialize", "Execute", "BeginRun", "EndRun", "Finalize"},  "List of phases to activate the Auditoring during"};
+    StringArrayProperty  m_veto {this, "DisableFor",  {},  "List of component names to disable the auditing for"};
+    StringArrayProperty  m_list {this, "EnableFor",  {}, "Any component in this list will be audited. If empty,  all will be done."};
+    IntegerProperty  m_freq {this, "ProfileFreq",  -1,  "The frequence to audit events. -1 means all events"};
+    BooleanProperty  m_fullEventAudit {this, "DoFullEventProfile",  false, "If true, instead of individually auditing components,  the full event (or events) will be audited in one go"};
+    UnsignedLongLongProperty  m_nSampleEvents {this, "FullEventNSampleEvents",  1, "The number of events to include in a full event audit,  if enabled"};
+    UnsignedLongLongProperty  m_eventsToSkip {this, "SkipEvents",  0,  "Number of events to skip before activating the auditing"};
+    BooleanProperty  m_skipSequencers {this, "SkipSequencers",  true, "If true,  auditing will be skipped for Sequencer objects."};
 
-    unsigned long long m_eventsToSkip; ///< Number of events to skip before auditing
-
-    bool m_skipSequencers; ///< Boolean indicating if sequencers should be skipped or not
-
-    int m_freq;   ///< The frequency to audit events. -1 means all events.
-
-    bool m_audit; ///< Internal flag to say if auditing is enabled or not for the current event
-
-    unsigned long long m_nEvts; ///< Number of events processed.
-
-    bool m_fullEventAudit; ///< Flag to indicate if full event auditing is enabled or not.
-
-    unsigned long long m_nSampleEvents; ///< Number of events to include in a full event audit
-
-    unsigned long long m_sampleEventCount; ///< Internal count of the number of events currently processed during an audit
-
-    bool m_inFullAudit; ///< Internal flag to indicate if we are current in a full event audit
-
+    bool m_audit = true; ///< Internal flag to say if auditing is enabled or not for the current event
+    unsigned long long m_nEvts = 0; ///< Number of events processed.
+    unsigned long long m_sampleEventCount = 0; ///< Internal count of the number of events currently processed during an audit
+    bool m_inFullAudit = false; ///< Internal flag to indicate if we are current in a full event audit
     std::string m_startedBy; ///< Name of the component we are currently auditing
-
   };
-
-  AuditorBase::AuditorBase( const std::string& name,
-                            ISvcLocator* pSvcLocator )
-    : base_class ( name , pSvcLocator )
-    , m_log      ( msgSvc() , name )
-    , m_audit    ( true )
-    , m_nEvts    ( 0 )
-    , m_sampleEventCount( 0 )
-    , m_inFullAudit ( false )
-  {
-    {
-      // Note: 'tmp' is needed to avoid an issue with list_of and C++11.
-      const std::vector<std::string> tmp =
-        boost::assign::list_of
-          ("Initialize")
-          ("ReInitialize")
-          ("Execute")
-          ("BeginRun")
-          ("EndRun")
-          ("Finalize");
-      m_when = tmp;
-    }
-
-    declareProperty("ActivateAt", m_when,
-                    "List of phases to activate the Auditoring during" );
-    declareProperty("DisableFor", m_veto,
-                    "List of component names to disable the auditing for" );
-    declareProperty("EnableFor", m_list );
-    declareProperty("ProfileFreq", m_freq = -1,
-                    "The frequence to audit events. -1 means all events" );
-    declareProperty("DoFullEventProfile", m_fullEventAudit = false,
-                    "If true, instead of individually auditing components, the full event (or events) will be audited in one go" );
-    declareProperty("FullEventNSampleEvents", m_nSampleEvents = 1,
-                    "The number of events to include in a full event audit, if enabled" );
-    declareProperty("SkipEvents", m_eventsToSkip = 0,
-                    "Number of events to skip before activating the auditing" );
-    declareProperty("SkipSequencers", m_skipSequencers = true,
-                    "If true, auditing will be skipped for Sequencer objects." );
-  }
 
   /** @class HeapProfiler GoogleAuditor.cpp
    *
@@ -368,12 +316,7 @@ namespace Google
   public:
 
     /// Constructor
-    HeapProfiler( const std::string& name, ISvcLocator* pSvcLocator)
-      : AuditorBase( name, pSvcLocator )
-    {
-      declareProperty( "DumpHeapProfiles",    m_dumpProfileHeaps   = true  );
-      declareProperty( "PrintProfilesToLog",  m_printProfilesToLog = false );
-    }
+    using AuditorBase::AuditorBase;
 
   protected:
 
@@ -391,7 +334,7 @@ namespace Google
       if ( m_printProfilesToLog )
       {
         const char * profile = GetHeapProfile();
-        m_log << MSG::INFO << profile << endmsg;
+        info() << profile << endmsg;
         delete profile;
       }
       HeapProfilerStop();
@@ -401,8 +344,8 @@ namespace Google
 
   private:
 
-    bool m_dumpProfileHeaps;
-    bool m_printProfilesToLog;
+    BooleanProperty     m_dumpProfileHeaps   {this,  "DumpHeapProfiles",  true  , ""};
+    BooleanProperty   m_printProfilesToLog {this,  "PrintProfilesToLog",  false , ""};
 
   };
 
@@ -425,13 +368,9 @@ namespace Google
   public:
 
     /// Constructor
-    HeapChecker( const std::string& name, ISvcLocator* pSvcLocator)
-      : AuditorBase ( name, pSvcLocator ),
-        m_enabled   ( true ),
-        m_checker   ( NULL )
-    { }
+    using AuditorBase::AuditorBase;
 
-    virtual ~HeapChecker() { delete m_checker; }
+    ~HeapChecker() override = default;
 
   public:
 
@@ -443,14 +382,14 @@ namespace Google
       const char * HEAPCHECK = getenv("HEAPCHECK");
       if ( !HEAPCHECK )
       {
-        m_log << MSG::FATAL
+        fatal()
               << "Environment variable HEAPCHECK must be set to 'local'"
               << endmsg;
         return StatusCode::FAILURE;
       }
       if ( std::string(HEAPCHECK) != "local" )
       {
-        m_log << MSG::WARNING
+        warning()
               << "Environment variable HEAPCHECK is set to " << HEAPCHECK
               << " Partial Program Heap Checking is disabled"
               << endmsg;
@@ -466,7 +405,7 @@ namespace Google
     {
       if ( m_enabled && !m_checker )
       {
-        m_checker = new HeapLeakChecker(s.c_str());
+        m_checker.reset(new HeapLeakChecker(s.c_str()));
       }
     }
 
@@ -476,19 +415,18 @@ namespace Google
       {
         if ( ! m_checker->NoLeaks() )
         {
-          m_log << MSG::WARNING << "Leak detected for " << s << endmsg;
+          warning() << "Leak detected for " << s << endmsg;
         }
-        delete m_checker;
-        m_checker = NULL;
+        m_checker.reset();
       }
     }
 
-    bool alreadyRunning() { return m_enabled && m_checker != NULL ; }
+    bool alreadyRunning() { return m_enabled && m_checker; }
 
   private:
 
-    bool m_enabled;
-    HeapLeakChecker * m_checker;
+    bool m_enabled = true;
+    std::unique_ptr<HeapLeakChecker> m_checker;
 
   };
 
@@ -509,11 +447,7 @@ namespace Google
   {
 
   public:
-
-    CPUProfiler( const std::string& name, ISvcLocator* pSvcLocator )
-      : AuditorBase ( name, pSvcLocator ),
-        m_running   ( false )
-    { }
+    using AuditorBase::AuditorBase;
 
   protected:
 
@@ -539,7 +473,7 @@ namespace Google
 
   private:
 
-    bool m_running;
+    bool m_running = false;
 
   };
 

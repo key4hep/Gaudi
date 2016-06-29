@@ -20,19 +20,19 @@ class JemallocProfileSvc : public extends<Service,
 
 public:
   /// Standard constructor
-  JemallocProfileSvc(const std::string &name, ISvcLocator *svcLoc);
+  using extends::extends;
 
   /// Initializer
-  StatusCode initialize();
+  StatusCode initialize() override;
 
   /// Finalizer
-  StatusCode finalize();
+  StatusCode finalize() override;
 
   // Handler for incident
   void handle(const Incident &incident);
 
   ///< Destructor
-  virtual ~JemallocProfileSvc();
+  ~JemallocProfileSvc() override = default;
 
 protected:
   void handleBegin();
@@ -40,22 +40,23 @@ protected:
   void startProfiling();
   void stopProfiling();
   void dumpProfile();
-  
 
 private:
-  /// Start, End event and counter
-  int m_nStartFromEvent; // Event to start profiling at
-  int m_nStopAtEvent;    // Event to stop profiling at
-  int m_dumpPeriod;      // Period at which to dump the heap
-  int m_eventNumber;     // Current event number
-  std::vector<std::string> m_startFromIncidents; // Incidents to use as trigger
-  std::vector<std::string> m_stopAtIncidents; // Incidents to use as trigger
-  bool m_hasStartIncident;
-  bool m_hasStopIncident;
-  
+
+  IntegerProperty  m_nStartFromEvent {this, "StartFromEventN",  0,  "After what event we start profiling."};
+  StringArrayProperty  m_startFromIncidents {this, "StartFromIncidents",  {},  "Incidents that trigger profiling start"};
+  IntegerProperty  m_nStopAtEvent {this, "StopAtEventN",  0,  "After what event we stop profiling. If 0 than we also profile finalization stage. Default = 0."};
+  StringArrayProperty  m_stopAtIncidents {this, "StopAtIncidents",  {},  "Incidents that trigger profiling start"};
+  IntegerProperty  m_dumpPeriod {this, "DumpPeriod",  100,  "Period for dumping head to a file. Default=100"};
+
+  /// Current event number
+  int m_eventNumber = 0;
+
+  bool m_hasStartIncident = false;
+  bool m_hasStopIncident = false;
 
   /// Status of the profiling
-  bool m_profiling;
+  bool m_profiling = false;
 
   /// Pointer to the incident service.
   SmartIF<IIncidentSvc> m_incidentSvc;

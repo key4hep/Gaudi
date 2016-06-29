@@ -1,13 +1,13 @@
-#ifndef JEMALLOC_PROFILE_H 
+#ifndef JEMALLOC_PROFILE_H
 #define JEMALLOC_PROFILE_H 1
 
-// Include files 
+// Include files
 // from Gaudi
 #include "GaudiAlg/GaudiAlgorithm.h"
 
 
 /** @class JemallocProfile JemallocProfile.h jemalloc/JemallocProfile.h
- *  
+ *
  * Algorithm to enable/disable the profiling of the head by Jemalloc.
  * For this to run, you must set the env variables:
  * LD_PRELOAD=<jemalloc lib>
@@ -18,23 +18,25 @@
  *  @date   2015-06-09
  */
 class JemallocProfile : public GaudiAlgorithm {
-public: 
+public:
   /// Standard constructor
-  JemallocProfile( const std::string& name, ISvcLocator* pSvcLocator );
+  using GaudiAlgorithm::GaudiAlgorithm;
 
-  virtual ~JemallocProfile( ); ///< Destructor
+  ~JemallocProfile( ) override = default; ///< Destructor
 
-  virtual StatusCode initialize();    ///< Algorithm initialization
-  virtual StatusCode execute   ();    ///< Algorithm execution
-  virtual StatusCode finalize  ();    ///< Algorithm finalization
+  StatusCode initialize() override;    ///< Algorithm initialization
+  StatusCode execute   () override;    ///< Algorithm execution
+  StatusCode finalize  () override;    ///< Algorithm finalization
 
 protected:
 
 private:
-  int m_nStartFromEvent; // Event to start profiling at
-  int m_nStopAtEvent;  // Event to stop profiling at
-  bool m_profiling; // whether we are profiling...
-  int m_dumpPeriod;  // Period at which to dump the heap
-  int m_eventNumber;   // Current event number
+
+  IntegerProperty  m_nStartFromEvent {this, "StartFromEventN",  1,  "After what event we start profiling. "};
+  IntegerProperty  m_nStopAtEvent {this, "StopAtEventN",  0,  "After what event we stop profiling. If 0 than we also profile finalization stage. Default = 0."};
+  IntegerProperty  m_dumpPeriod {this, "DumpPeriod",  100,  "Period for dumping head to a file. Default=100"};
+
+  bool m_profiling = false; // whether we are profiling...
+  int m_eventNumber = 0;   // Current event number
 };
 #endif // JEMALLOC_PROFILE_H

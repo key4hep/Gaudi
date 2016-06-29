@@ -18,29 +18,12 @@ DECLARE_COMPONENT(CPUCruncher)
 
 CPUCruncher::CPUCruncher(const std::string& name, // the algorithm instance name
 		ISvcLocator*pSvc) :
-		GaudiAlgorithm(name, pSvc), m_avg_runtime(1.), m_var_runtime(.01), m_shortCalib(
-				false) {
+		GaudiAlgorithm(name, pSvc) {
 
-  declareProperty("inpKeys", m_inpKeys);
-  declareProperty("outKeys", m_outKeys);
-
-
-	declareProperty("avgRuntime", m_avg_runtime,
-			"Average runtime of the module.");
-	declareProperty("varRuntime", m_var_runtime,
-			"Variance of the runtime of the module.");
-	declareProperty("localRndm", m_local_rndm_gen = true,
-			"Decide if the local random generator is to be used");
 	declareProperty("NIterationsVect", m_niters_vect,
 			"Number of iterations for the calibration.");
 	declareProperty("NTimesVect", m_times_vect,
 			"Number of seconds for the calibration.");
-	declareProperty("shortCalib", m_shortCalib = false,
-			"Enable coarse grained calibration");
-	declareProperty("RwRepetitions", m_rwRepetitions = 1,
-			"Increase access to the WB");
-	declareProperty("SleepyExecution", m_sleepyExecution = false,
-	                "Sleep during execution instead of crunching");
 
 	// Register the algo in the static concurrent hash map in order to
 	// monitor the # of copies
@@ -66,7 +49,7 @@ StatusCode CPUCruncher::initialize(){
   }
 
   // This is a bit ugly. There is no way to declare a vector of DataObjectHandles, so
-  // we need to wait until initialize when we've read in the input and output key 
+  // we need to wait until initialize when we've read in the input and output key
   // properties, and know their size, and then turn them
   // into Handles and register them with the framework by calling declareProperty. We
   // could call declareInput/declareOutput on them too.
@@ -394,6 +377,3 @@ StatusCode CPUCruncher::finalize () // the finalization of the algorithm
 }
 
 //------------------------------------------------------------------------------
-
-
-

@@ -28,17 +28,18 @@ typedef std::map<std::string, __itt_event> TaskTypes;
 // Gaudi profiling auditor. The auditor use Intel API for control profiling
 // flow. We need to run profiling  throw Intel Amplifier amplxe-cl command
 // line tool.
-class IntelProfilerAuditor: public Auditor, virtual public IIncidentListener {
+class IntelProfilerAuditor: public extends<Auditor,
+                                           IIncidentListener> {
 public:
   // ## Public functions.
-  IntelProfilerAuditor(const std::string& name, ISvcLocator* pSvcLocator);
-  StatusCode initialize();
+  using extends::extends;
+  StatusCode initialize() override;
   // Overridden functions.
-  void handle(const Incident& incident);
+  void handle(const Incident& incident) override;
   using Auditor::before; // avoid hiding base-class methods
-  void before(StandardEventType type, INamedInterface* i);
+  void before(StandardEventType type, INamedInterface* i) override;
   using Auditor::after; // avoid hiding base-class methods
-  void after(StandardEventType type, INamedInterface* i, const StatusCode& sc);
+  void after(StandardEventType type, INamedInterface* i, const StatusCode& sc) override;
 // ## Private attributes.
 private:
   // Stack for store current component(algorithm) chain with useful
@@ -60,35 +61,39 @@ private:
     __itt_event parent_event;
   };
 private:
-  // From what event to start profiling. Default = 1.
-  int m_nStartFromEvent;
-  // After what event we stop profiling. If 0 than we also profile finalization
-  // stage. Default = 0.
-  int m_nStopAtEvent;
-   // Names of excluded algorithms.
-  std::vector<std::string> m_excluded;
-  // Names of included algorithms.
-  std::vector<std::string> m_included;
-  // Algorithm name, for which intel amplifier event type will be created.
-  std::vector<std::string> m_algs_for_tasktypes;
-  // The String delimiter between sequences/algorithms names in
-  // "Task Type" grouping at Amplifier.
-  std::string m_alg_delim;
-  // Enable frames (needed for detecting slow events).
-  bool m_enable_frames;
-  // Frames rate. The recommended maximum rate for calling the Frame API is
-  // 1000 frames (events) per second. A higher rate may result in large product
-  // memory consumption and slow finalization.
-  // You need update "slow-frames-threshold" and "fast-frames-threshold"
-  // parameters of amplxe-cl tool to separate slow, medium and fast events.
-  int m_frames_rate;
+  StringArrayProperty m_included{this, "IncludeAlgorithms", {}, "Names of included algorithms."};
+  StringArrayProperty m_excluded{this, "ExcludeAlgorithms", {}, "Names of excluded algorithms."};
+  IntegerProperty m_nStartFromEvent{
+      this, "StartFromEventN", 1, "After what event we stop profiling. If 0 than we also profile finalization stage."};
+  IntegerProperty m_nStopAtEvent{
+      this, "StopAtEventN", 0,
+      "After what event we stop profiling. If 0 than we also profile finalization stage. Default = 0."};
+  StringArrayProperty m_algs_for_tasktypes{this,
+                                           "ComponentsForTaskTypes",
+                                           {},
+                                           "Algorithm name,  for which intel amplifier task type will be created."
+                                           "By default all algorithms have a corresponding task type."};
+  StringProperty m_alg_delim{this, "TaskTypeNameDelimeter", " ",
+                             "The String delimiter between sequences/algorithms names in "
+                             "\"Task Type\" grouping at Amplifier. Default=\" \"."};
+  BooleanProperty m_enable_frames{this, "EnableFrames", false,
+                                  "Enable frames (needed for detecting slow events). Default=false.", ""};
+  IntegerProperty m_frames_rate{this, "FramesRate", 100,
+                                "Frames rate. The recommended maximum rate for calling the Frame API is "
+                                "1000 frames (events) per second. A higher rate may result in large product"
+                                " memory consumption and slow finalization. "
+                                "You need update \"slow-frames-threshold\" and \"fast-frames-threshold\" "
+                                "parameters of amplxe-cl tool to separate slow,  medium and fast events. "
+                                "For use frames you need to switch on \"EnableFrames\". "
+                                "Default=100"};
+
 private:
   // Events counter.
-  int m_nEvents;
+  int m_nEvents = 0;
   // Domain for event loop.
-  __itt_domain* domain;
+  __itt_domain* domain = nullptr;
   // True if profiler is started.
-  bool m_isStarted;
+  bool m_isStarted = false;
   // Current stack of sequences/algorithms.
   std::vector<stack_entity> m_stack;
   // Mapping of task type name to Amplifier event .
@@ -118,39 +123,6 @@ IntelProfilerAuditor::IntelProfilerAuditor(const std::string& name,
   ISvcLocator* pSvcLocator) : Auditor(name, pSvcLocator)
     ,m_nEvents(0), m_isStarted(false) {
   // ## Properties
-  declareProperty("IncludeAlgorithms", m_included,
-    "Names of included algorithms."
-  );
-  declareProperty("ExcludeAlgorithms", m_excluded,
-    "Names of excluded algorithms."
-  );
-  declareProperty("StartFromEventN", m_nStartFromEvent = 1,
-    "After what event we stop profiling. "
-    "If 0 than we also profile finalization stage."
-  );
-  declareProperty("StopAtEventN", m_nStopAtEvent = 0,
-    "After what event we stop profiling. "
-    "If 0 than we also profile finalization stage. Default = 0."
-  );
-  declareProperty("ComponentsForTaskTypes", m_algs_for_tasktypes,
-    "Algorithm name, for which intel amplifier task type will be created."
-    "By default all algorithms have a corresponding task type.");
-  declareProperty("TaskTypeNameDelimeter", m_alg_delim = " ",
-    "The String delimiter between sequences/algorithms names in "
-    "\"Task Type\" grouping at Amplifier. Default=\" \"."
-  );
-  declareProperty("EnableFrames", m_enable_frames = false,
-    "Enable frames (needed for detecting slow events). Default=false."
-  );
-  declareProperty("FramesRate", m_frames_rate = 100,
-    "Frames rate. The recommended maximum rate for calling the Frame API is "
-    "1000 frames (events) per second. A higher rate may result in large product"
-    " memory consumption and slow finalization. "
-    "You need update \"slow-frames-threshold\" and \"fast-frames-threshold\" "
-    "parameters of amplxe-cl tool to separate slow, medium and fast events. "
-    "For use frames you need to switch on \"EnableFrames\". "
-    "Default=100"
-  );
 }
 
 void IntelProfilerAuditor::start() {
