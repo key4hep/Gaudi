@@ -431,6 +431,28 @@ public:
   {
     return value().erase(arg);
   }
+  template <class = ValueType>
+  inline PropertyWithValue& operator++()
+  {
+    ++value();
+    return *this;
+  }
+  template <class = ValueType>
+  inline ValueType operator++(int)
+  {
+    return m_value++;
+  }
+  template <class = ValueType>
+  inline PropertyWithValue& operator--()
+  {
+    --value();
+    return *this;
+  }
+  template <class = ValueType>
+  inline ValueType operator--(int)
+  {
+    return m_value--;
+  }
   /// @}
   // ==========================================================================
 public:

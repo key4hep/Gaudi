@@ -554,7 +554,7 @@ StatusCode Algorithm::sysExecute()
 
   if ( status.isFailure() ) {
     // Increment the error count
-    m_errorCount.value()++;
+    m_errorCount++;
     // Check if maximum is exeeded
     if ( m_errorCount < m_errorMax ) {
       warning() << "Continuing from error (cnt=" << m_errorCount << ", max=" << m_errorMax << ")" << endmsg;
