@@ -11,13 +11,13 @@
 class CpuHungryAlg: public GaudiAlgorithm {
 public:
   /// Standard constructor
-  CpuHungryAlg(const std::string& name, ISvcLocator* pSvcLocator);
+  using GaudiAlgorithm::GaudiAlgorithm;
   /// ... and destructor
-  virtual ~CpuHungryAlg(); ///< Destructor
+  ~CpuHungryAlg() override = default; ///< Destructor
 
-  virtual StatusCode initialize();    ///< Algorithm initialization
-  virtual StatusCode execute   ();    ///< Algorithm execution
-  virtual StatusCode finalize  ();    ///< Algorithm finalization
+  StatusCode initialize() override;    ///< Algorithm initialization
+  StatusCode execute   () override;    ///< Algorithm execution
+  StatusCode finalize  () override;    ///< Algorithm finalization
 
 private:
   double mysin();
@@ -25,22 +25,13 @@ private:
   double mytan();
   double myatan();
 private:
-  long m_loops;
-  int m_nevent;
+  LongProperty  m_loops {this, "Loops",  1000000, ""};
+  int m_nevent = 0;
 };
 
 
 // Register algorithm
 DECLARE_COMPONENT(CpuHungryAlg)
-
-CpuHungryAlg::CpuHungryAlg(const std::string& name, ISvcLocator* pSvcLocator)
-  : GaudiAlgorithm(name, pSvcLocator),m_nevent(0)
-{
-  declareProperty("Loops", m_loops = 1000000);
-}
-
-
-CpuHungryAlg::~CpuHungryAlg() {}
 
 /// Initialization.
 StatusCode CpuHungryAlg::initialize() {

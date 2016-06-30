@@ -25,10 +25,7 @@ namespace GaudiExamples
   {
   public:
     /// Constructor: A constructor of this form must be provided.
-    CounterSvcAlg(const std::string& name, ISvcLocator* pSvcLocator)
-      :	Algorithm(name, pSvcLocator)  {
-      declareProperty("CounterBaseName", m_counterBaseName = "CounterTest");
-    }
+    using Algorithm::Algorithm;
     /// Standard Destructor
     virtual ~CounterSvcAlg() = default;
     /// Initialize
@@ -101,7 +98,7 @@ namespace GaudiExamples
     ICounterSvc::Counter* m_total = nullptr;
     SmartIF<ICounterSvc>  m_cntSvc = nullptr;
 
-    std::string m_counterBaseName;
+    StringProperty  m_counterBaseName {this, "CounterBaseName",  "CounterTest"};
   };
 
   // ==========================================================================

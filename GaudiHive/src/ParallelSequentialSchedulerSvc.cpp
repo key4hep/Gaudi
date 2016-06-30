@@ -25,19 +25,6 @@ DECLARE_SERVICE_FACTORY(ParallelSequentialSchedulerSvc)
 //===========================================================================
 // Infrastructure methods
 
-ParallelSequentialSchedulerSvc::ParallelSequentialSchedulerSvc(const std::string& name, ISvcLocator* svcLoc):
-    base_class(name,svcLoc) {
-
-  declareProperty("UseTopAlgList", m_useTopAlgList = false);
-  declareProperty("ThreadPoolSize", m_threadPoolSize = -1);
-  declareProperty("WhiteboardSvc", m_whiteboardSvcName = "EventDataSvc");
-
-}
-
-//---------------------------------------------------------------------------
-ParallelSequentialSchedulerSvc::~ParallelSequentialSchedulerSvc(){}
-//---------------------------------------------------------------------------
-
 StatusCode ParallelSequentialSchedulerSvc::initialize(){
 
   // Initialise mother class (read properties, ...)

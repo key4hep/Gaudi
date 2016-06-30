@@ -3,8 +3,8 @@
 
 // Framework include files
 #include "GaudiKernel/IScheduler.h"
-#include "GaudiKernel/IRunable.h" 
-#include "GaudiKernel/Service.h" 
+#include "GaudiKernel/IRunable.h"
+#include "GaudiKernel/Service.h"
 #include "GaudiKernel/IAlgResourcePool.h"
 
 // C++ include files
@@ -20,64 +20,63 @@
 
 //---------------------------------------------------------------------------
 
-/**@class SequentialSchedulerSvc SequentialSchedulerSvc.h 
- * 
- *  This SchedulerSvc implements the IScheduler interface. 
- * It executes all the algorithms in sequence, pulling them from the 
+/**@class SequentialSchedulerSvc SequentialSchedulerSvc.h
+ *
+ *  This SchedulerSvc implements the IScheduler interface.
+ * It executes all the algorithms in sequence, pulling them from the
  * AlgResourcePool. No task level parallelism is involved.
  * Given its sequential nature, the scheduler does not run in its own thread.
- * It has therefore to be treated a as a THREAD UNSAFE and NON REENTRANT 
+ * It has therefore to be treated a as a THREAD UNSAFE and NON REENTRANT
  * entity.
- * 
+ *
  *  @author  Danilo Piparo
- *  @author  Benedikt Hegner 
+ *  @author  Benedikt Hegner
  *  @version 1.1
  */
 class SequentialSchedulerSvc: public extends<Service,
                                              IScheduler> {
 public:
   /// Constructor
-  SequentialSchedulerSvc( const std::string& name, ISvcLocator* svc );
+  using extends::extends;
 
   /// Destructor
-  ~SequentialSchedulerSvc();
+  ~SequentialSchedulerSvc() override = default;
 
   /// Initialise
-  virtual StatusCode initialize();
-  
+  StatusCode initialize() override;
+
   /// Finalise
-  virtual StatusCode finalize();  
+  StatusCode finalize() override;
 
   /// Make an event available to the scheduler
-  virtual StatusCode pushNewEvent(EventContext* eventContext);
+  StatusCode pushNewEvent(EventContext* eventContext) override;
 
   // Make multiple events available to the scheduler
-  virtual StatusCode pushNewEvents(std::vector<EventContext*>& eventContexts);
-  
+  StatusCode pushNewEvents(std::vector<EventContext*>& eventContexts) override;
+
   /// Blocks until an event is availble
-  virtual StatusCode popFinishedEvent(EventContext*& eventContext);  
+  StatusCode popFinishedEvent(EventContext*& eventContext) override;
 
   /// Try to fetch an event from the scheduler
-  virtual StatusCode tryPopFinishedEvent(EventContext*& eventContext);  
+  StatusCode tryPopFinishedEvent(EventContext*& eventContext) override;
 
   /// Get free slots number
-  virtual unsigned int freeSlots();
+  unsigned int freeSlots() override;
 
 
 private:
-  
-  /// Decide if the top alglist or its flat version has to be used
-  bool m_useTopAlgList;
-  
+
+  BooleanProperty  m_useTopAlgList{this, "UseTopAlgList", true,  "Decide if the top alglist or its flat version has to be used"};
+
   /// Cache the list of algs to be executed
   std::list<IAlgorithm*> m_algList;
-  
+
   /// The context of the event being processed
-  EventContext* m_eventContext;
-  
+  EventContext* m_eventContext = nullptr;
+
   /// The number of free slots (0 or 1)
-  int m_freeSlots;
-  
+  int m_freeSlots = 1;
+
 };
 
 #endif // GAUDIHIVE_SEQUENTIALSCHEDULERSVC_H

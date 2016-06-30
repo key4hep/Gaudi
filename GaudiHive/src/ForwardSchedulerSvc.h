@@ -74,10 +74,10 @@ class ForwardSchedulerSvc: public extends<Service,
                                           IScheduler> {
 public:
   /// Constructor
-  ForwardSchedulerSvc( const std::string& name, ISvcLocator* svc );
+  using extends::extends;
 
   /// Destructor
-  ~ForwardSchedulerSvc();
+  ~ForwardSchedulerSvc() override = default;
 
   /// Initialise
   virtual StatusCode initialize();
@@ -109,6 +109,20 @@ private:
     FAILURE = 2
   };
 
+  IntegerProperty  m_maxEventsInFlight {this, "MaxEventsInFlight",  0,  "Maximum number of event processed simultaneously"};
+  IntegerProperty  m_threadPoolSize {this, "ThreadPoolSize",  -1, "Size of the threadpool initialised by TBB; a value of -1 gives TBB the freedom to choose"};
+  StringProperty  m_whiteboardSvcName {this, "WhiteboardSvc",  "EventDataSvc",  "The whiteboard name"};
+  UnsignedIntegerProperty  m_maxAlgosInFlight {this, "MaxAlgosInFlight",  0,  "[[deprecated]] Taken from the whiteboard" };
+  // XXX: CF tests. Temporary property to switch between ControlFlow implementations
+  BooleanProperty  m_CFNext {this, "useGraphFlowManagement",  false,  "Temporary property to switch between ControlFlow implementations"};
+  // XXX: CF tests. Temporary property to switch between DataFlow implementations
+  BooleanProperty  m_DFNext {this, "DataFlowManagerNext",  false,  "Temporary property to switch between DataFlow implementations"};
+  BooleanProperty  m_simulateExecution {this, "SimulateExecution",  false,  "Flag to perform single-pass simulation of execution flow before the actual execution"};
+  StringProperty  m_optimizationMode {this, "Optimizer",  "", "The following modes are currently available: PCE, COD, DRE,  E" };
+  BooleanProperty  m_dumpIntraEventDynamics {this, "DumpIntraEventDynamics",  false,  "Dump intra-event concurrency dynamics to csv file" };
+  PropertyWithValue<std::vector<std::vector<std::string>>> m_algosDependencies {this, "AlgosDependencies",  {},  "[[deprecated]]"};
+  BooleanProperty  m_checkDeps {this, "CheckDependencies",  false,  "[[deprecated]]"};
+
   // Utils and shortcuts ----------------------------------------------------
 
   /// Activate scheduler
@@ -118,7 +132,7 @@ private:
   StatusCode deactivate();
 
   /// Flag to track if the scheduler is active or not
-  std::atomic<ActivationState> m_isActive;
+  std::atomic<ActivationState> m_isActive{INACTIVE};
 
   /// The thread in which the activate function runs
   std::thread m_thread;
@@ -138,14 +152,8 @@ private:
   /// A shortcut to the whiteboard
   SmartIF<IHiveWhiteBoard> m_whiteboard;
 
-  /// The whiteboard name
-  std::string m_whiteboardSvcName;
-
   /// Vector of events slots
   std::vector<EventSlot> m_eventSlots;
-
-  /// Maximum number of event processed simultaneously
-  int m_maxEventsInFlight;
 
   /// Atomic to account for asyncronous updates by the scheduler wrt the rest
   std::atomic_int m_freeSlots;
@@ -159,11 +167,8 @@ private:
 
   // States management ------------------------------------------------------
 
-  /// Maximum number of simultaneous algorithms
-  unsigned int m_maxAlgosInFlight;
-
   /// Number of algoritms presently in flight
-  unsigned int m_algosInFlight;
+  unsigned int m_algosInFlight = 0;
 
   /// Loop on algorithm in the slots and promote them to successive states (-1 means all slots, while empty string
   /// means skipping an update of the Control Flow state)
@@ -183,20 +188,14 @@ private:
   void dumpSchedulerState(int iSlot);
 
   /// Keep track of update actions scheduled
-  bool m_updateNeeded;
+  bool m_updateNeeded = true;
 
   // Algos Management -------------------------------------------------------
   /// Cache for the algorithm resource pool
   SmartIF<IAlgResourcePool>  m_algResourcePool;
 
-  /// DEPRECATED!
-  std::vector<std::vector<std::string>> m_algosDependencies;
-
   /// Drain the actions present in the queue
   StatusCode m_drain();
-
-  /// Size of the threadpool initialised by TBB; a value of -1 gives TBB the freedom to choose
-  int m_threadPoolSize;
 
   // Actions management -----------------------------------------------------
 
@@ -207,16 +206,6 @@ private:
 
   /// Member to take care of the control flow
   concurrency::ExecutionFlowManager m_efManager;
-  // XXX: CF tests. Temporary property to switch between ControlFlow implementations
-  bool m_CFNext;
-  // XXX: CF tests. Temporary property to switch between DataFlow implementations
-  bool m_DFNext;
-  // Flag to perform single-pass simulation of execution flow before the actual execution
-  bool m_simulateExecution;
-  // Optimization mode in which algorithms, ready for execution, are prioritized in special way
-  std::string m_optimizationMode;
-  // Dump intra-event concurrency dynamics to csv file
-  bool m_dumpIntraEventDynamics;
 
   // Needed to queue actions on algorithm finishing and decrement algos in flight
   friend class AlgoExecutionTask;
@@ -224,10 +213,10 @@ private:
   // Service for thread pool initialization
   SmartIF<IThreadPoolSvc>  m_threadPoolSvc;
 
-  bool m_first;
+  bool m_first = true;
 
   class SchedulerState {
-    
+
   public:
     SchedulerState(Algorithm* a, EventContext* e, pthread_t t):
       m_a(a), m_e(*e), m_t(t)
@@ -240,7 +229,7 @@ private:
 
     friend std::ostream& operator<< (std::ostream& os, const SchedulerState& ss) {
       os << ss.ctx()
-         << "  a: " << ss.alg()->name() 
+         << "  a: " << ss.alg()->name()
          << " [" << std::hex << ss.alg() << std::dec
          << "]  t: 0x" << std::hex << ss.thread() << std::dec;
       return os;
@@ -264,7 +253,7 @@ private:
     pthread_t m_t;
 
   };
-  
+
   static std::list<SchedulerState> m_sState;
   static std::mutex m_ssMut;
 
@@ -275,10 +264,6 @@ public:
 
 private:
   void dumpState(std::ostringstream&);
-
-  bool m_checkDeps;
-
-
 };
 
 #endif // GAUDIHIVE_FORWARDSCHEDULERSVC_H

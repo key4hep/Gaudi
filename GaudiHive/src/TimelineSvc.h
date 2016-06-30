@@ -14,26 +14,27 @@ class TimelineSvc: public extends<Service,
 
 public:
 
-  virtual StatusCode initialize();
-  virtual StatusCode reinitialize();
-  virtual StatusCode finalize();
+  StatusCode initialize() override;
+  StatusCode reinitialize() override;
+  StatusCode finalize() override;
 
-  virtual void registerTimelineEvent(const TimelineEvent & e);
+  void registerTimelineEvent(const TimelineEvent & e) override;
 
   bool isEnabled() const { return m_isEnabled; }
 
-  TimelineSvc( const std::string& name, ISvcLocator* svc );
+  using extends::extends;
 
   // Destructor.
-  virtual ~TimelineSvc();
+  ~TimelineSvc() override = default;
 
 private:
 
   void outputTimeline();
 
-  bool m_isEnabled;
-  bool m_partial;
-  std::string m_timelineFile;
+  StringProperty m_timelineFile{this, "TimelineFile",  "timeline.csv", ""};
+  BooleanProperty m_isEnabled{this, "RecordTimeline",  false, ""};
+  BooleanProperty m_partial{this, "Partial",  false, ""};
+
   tbb::concurrent_vector<TimelineEvent> m_events;
 
 };

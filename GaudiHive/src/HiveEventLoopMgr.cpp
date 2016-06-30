@@ -79,43 +79,17 @@ tbb::task* HiveAlgoTask::execute() {
 HiveEventLoopMgr::HiveEventLoopMgr(const std::string& nam, ISvcLocator* svcLoc)
 : MinimalEventLoopMgr(nam, svcLoc)
 {
-	m_histoDataMgrSvc   = 0;
-	m_histoPersSvc      = 0;
-	m_evtDataMgrSvc     = 0;
-	m_evtDataSvc        = 0;
-	m_evtSelector       = 0;
-	m_evtContext        = 0;
-        m_algResourcePool   = 0;
-	m_endEventFired     = true;
-	m_total_algos_in_flight=0;
-	m_max_parallel = 1;
-	m_evts_parallel = 1;
-	m_num_threads = 1;
-	m_DumpQueues = true;
-        m_nProducts = 0;
-
-	// Declare properties
-	declareProperty("HistogramPersistency", m_histPersName = "");
-	declareProperty("EvtSel", m_evtsel );
-	declareProperty("Warnings",m_warnings=true,
-			"Set this property to false to suppress warning messages");
-	declareProperty("MaxAlgosParallel", m_max_parallel );
-	declareProperty("MaxEventsParallel", m_evts_parallel);
-	declareProperty("NumThreads", m_num_threads);
-	declareProperty("DumpQueues", m_DumpQueues= false);
-	declareProperty("CloneAlgorithms", m_CloneAlgorithms= false);
-	declareProperty("AlgosDependencies", m_AlgosDependencies);
 }
 
 //--------------------------------------------------------------------------------------------
 // Standard Destructor
 //--------------------------------------------------------------------------------------------
 HiveEventLoopMgr::~HiveEventLoopMgr()   {
-	if( m_histoDataMgrSvc ) m_histoDataMgrSvc->release();
-	if( m_histoPersSvc ) m_histoPersSvc->release();
-	if( m_evtDataMgrSvc ) m_evtDataMgrSvc->release();
-	if( m_evtDataSvc ) m_evtDataSvc->release();
-	if( m_evtSelector ) m_evtSelector->release();
+	m_histoDataMgrSvc.reset();
+	m_histoPersSvc.reset();
+	m_evtDataMgrSvc.reset();
+	m_evtDataSvc.reset();
+	m_evtSelector.reset();
 	if( m_evtContext ) delete m_evtContext;
 }
 
@@ -463,9 +437,9 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
 
     // Useful for the Logs
     always() << "Running with "
-             << m_evts_parallel << " parallel events, "
-             << m_max_parallel << " max concurrent algorithms, "
-             << m_num_threads << " threads."
+             << m_evts_parallel.value() << " parallel events, "
+             << m_max_parallel.value() << " max concurrent algorithms, "
+             << m_num_threads.value() << " threads."
              << endmsg;
 
     int n_processed_events = 0;
@@ -487,8 +461,8 @@ StatusCode HiveEventLoopMgr::nextEvent(int maxevt)   {
             n_acquirable_events = n_evts_to_process;
 
         log << MSG::INFO << "Evts in flight: " <<  n_events_in_flight << endmsg;
-        log << MSG::INFO << "Evts processed: " <<  n_processed_events<< endmsg;
-        log << MSG::INFO << "Evts parallel: " << m_evts_parallel << endmsg;
+        log << MSG::INFO << "Evts processed: " <<  n_processed_events << endmsg;
+        log << MSG::INFO << "Evts parallel: " << m_evts_parallel.value() << endmsg;
         log << MSG::INFO << "Acquirable Events are " << n_acquirable_events << endmsg;
 
         // Initialisation section ------------------------------------------------

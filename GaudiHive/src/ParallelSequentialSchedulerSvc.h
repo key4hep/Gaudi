@@ -42,37 +42,37 @@ class ParallelSequentialSchedulerSvc: public extends<Service,
                                                      IScheduler> {
 public:
   /// Constructor
-  ParallelSequentialSchedulerSvc( const std::string& name, ISvcLocator* svc );
+  using extends::extends;
 
   /// Destructor
-  ~ParallelSequentialSchedulerSvc();
+  ~ParallelSequentialSchedulerSvc() override = default;
 
   /// Initialise
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
 
   /// Finalise
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
 
   /// Make an event available to the scheduler
-  virtual StatusCode pushNewEvent(EventContext* eventContext);
+  StatusCode pushNewEvent(EventContext* eventContext) override;
 
   // Make multiple events available to the scheduler
-  virtual StatusCode pushNewEvents(std::vector<EventContext*>& eventContexts);
+  StatusCode pushNewEvents(std::vector<EventContext*>& eventContexts) override;
 
   /// Blocks until an event is availble
-  virtual StatusCode popFinishedEvent(EventContext*& eventContext);
+  StatusCode popFinishedEvent(EventContext*& eventContext) override;
 
   /// Try to fetch an event from the scheduler
-  virtual StatusCode tryPopFinishedEvent(EventContext*& eventContext);
+  StatusCode tryPopFinishedEvent(EventContext*& eventContext) override;
 
   /// Get free slots number
-  virtual unsigned int freeSlots();
-
+  unsigned int freeSlots() override;
 
 private:
 
-  /// Decide if the top alglist or its flat version has to be used
-  bool m_useTopAlgList;
+  BooleanProperty  m_useTopAlgList{this, "UseTopAlgList", true,  "Decide if the top alglist or its flat version has to be used"};
+  IntegerProperty  m_threadPoolSize {this, "ThreadPoolSize",  -1, "Size of the threadpool initialised by TBB; a value of -1 gives TBB the freedom to choose"};
+  StringProperty  m_whiteboardSvcName {this, "WhiteboardSvc",  "EventDataSvc",  "The whiteboard name"};
 
   /// Cache the list of algs to be executed
   std::list<IAlgorithm*> m_algList;
@@ -87,14 +87,8 @@ private:
   /// A shortcut to the whiteboard
   SmartIF<IHiveWhiteBoard> m_whiteboard;
 
-  /// The whiteboard name
-  std::string m_whiteboardSvcName;
-
   /// Cache for the algorithm resource pool
   SmartIF<IAlgResourcePool>  m_algResourcePool;
-
-  /// Size of the threadpool initialised by TBB; a value of -1 gives TBB the freedom to choose
-  int m_threadPoolSize;
 
   //TBB scheduler
   std::unique_ptr<tbb::task_scheduler_init> m_tbb_sched;

@@ -37,41 +37,18 @@ namespace Gaudi
       // ======================================================================
     public:
       // ======================================================================
-      /** standard constructor
-       *  @param name algorithm instance name
-       *  @param pSvc pointer to Service Locator
-       */
-      StringKeyEx
-      ( const std::string& name ,                //    algorithm instance name
-        ISvcLocator*       pSvc )                // pointer to Service Locator
-        : GaudiAlgorithm ( name , pSvc )
-        , m_key  ()
-        , m_keys ()
-      {
-        declareProperty ( "Key"  , m_key  , "The string key" ) ;
-        declareProperty ( "Keys" , m_keys , "The vector of keys" ) ;
-      }
+      /// standard constructor
+      using GaudiAlgorithm::GaudiAlgorithm;
       /// virtual & protected destructor
-      virtual ~StringKeyEx () {}             // virtual & protected destructor
-      // ======================================================================
-    private:
-      // ======================================================================
-      /// the default constructor is disabled
-      StringKeyEx () ;                    // the default constructor is disabled
-      /// the copy  constructor is disabled
-      StringKeyEx ( const StringKeyEx& ) ;  // the copy  constructor is disabled
-      /// the assignment operator is disabled
-      StringKeyEx& operator=( const StringKeyEx& ) ;          // no assignment
+      ~StringKeyEx () override = default;
       // ======================================================================
     private:
       // ======================================================================
       typedef Gaudi::StringKey  Key  ;
       typedef std::vector<Key>  Keys ;
       // ======================================================================
-      /// get the key ;
-      Key  m_key  ;                                              // get the key
-      /// get the keys
-      Keys m_keys ;                                             // get the keys
+      PropertyWithValue<Key>  m_key {this,  "Key"  ,  {} ,  "The string key" };
+      PropertyWithValue<Keys>  m_keys {this,  "Keys" ,  {},  "The vector of keys" };
       // ======================================================================
     } ;
     // ========================================================================
@@ -84,8 +61,8 @@ namespace Gaudi
 StatusCode Gaudi::Examples::StringKeyEx::execute()
 {
   // 1. check the settings of key from the properties
-  always() << "The Key  : " << Gaudi::Utils::toString ( m_key  ) << endmsg ;
-  always() << "The Keys : " << Gaudi::Utils::toString ( m_keys ) << endmsg ;
+  always() << "The Key  : " << Gaudi::Utils::toString ( m_key.value()  ) << endmsg ;
+  always() << "The Keys : " << Gaudi::Utils::toString ( m_keys.value() ) << endmsg ;
   //
 
   // prepare some maps
@@ -137,10 +114,10 @@ StatusCode Gaudi::Examples::StringKeyEx::execute()
 
   always() << "check for       StringKey " << Gaudi::Utils::toString ( m_key ) << endmsg ;
 
-  always () << " In Map 1: " << Gaudi::Utils::toString ( map1.end() != map1.find ( m_key ) ) << endmsg ;
-  always () << " In Map 2: " << Gaudi::Utils::toString ( map2.end() != map2.find ( m_key ) ) << endmsg ;
-  always () << " In Map 3: " << Gaudi::Utils::toString ( map3.end() != map3.find ( m_key ) ) << endmsg ;
-  always () << " In Map 4: " << Gaudi::Utils::toString ( map4.end() != map4.find ( m_key ) ) << endmsg ;
+  always () << " In Map 1: " << Gaudi::Utils::toString ( map1.end() != map1.find ( m_key.value() ) ) << endmsg ;
+  always () << " In Map 2: " << Gaudi::Utils::toString ( map2.end() != map2.find ( m_key.value() ) ) << endmsg ;
+  always () << " In Map 3: " << Gaudi::Utils::toString ( map3.end() != map3.find ( m_key.value() ) ) << endmsg ;
+  always () << " In Map 4: " << Gaudi::Utils::toString ( map4.end() != map4.find ( m_key.value() ) ) << endmsg ;
 
   always () << " In Map01: " << Gaudi::Utils::toString ( map01.end() != map01.find ( m_key ) ) << endmsg ;
   always () << " In Map02: " << Gaudi::Utils::toString ( map02.end() != map02.find ( m_key ) ) << endmsg ;

@@ -20,21 +20,18 @@ class TestToolAlgFailure : public GaudiAlgorithm {
 public:
 
   /// Standard constructor
-  TestToolAlgFailure( const std::string& name, ISvcLocator* pSvcLocator );
+  using GaudiAlgorithm::GaudiAlgorithm;
 
-  virtual ~TestToolAlgFailure( ); ///< Destructor
+  ~TestToolAlgFailure() override = default; ///< Destructor
 
-  virtual StatusCode initialize();
-  virtual StatusCode execute();
-  virtual StatusCode finalize();
+  StatusCode initialize() override;
+  StatusCode execute() override;
+  StatusCode finalize() override;
 
 private:
 
-  // list of tools to test
-  typedef std::vector<std::string> ToolList;
-  ToolList m_tools;
-
-  bool m_ignoreFailure;
+  StringArrayProperty m_tools{this, "Tools", {}, "list of tools to test"};
+  BooleanProperty m_ignoreFailure{this, "IgnoreFailure", false};
 
 };
 

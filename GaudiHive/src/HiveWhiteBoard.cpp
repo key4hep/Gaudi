@@ -92,24 +92,19 @@ class HiveWhiteBoard: public extends<Service,
 protected:
   typedef std::vector<Partition> Partitions;
 
-  /// Integer Property corresponding to CLID of root entry
-  CLID                m_rootCLID;
-  /// Name of root event
-  std::string         m_rootName;
-  /// Data loader name
-  std::string         m_loader;
+  SimpleProperty<CLID> m_rootCLID{this, "RootCLID", 110 /*CLID_Event*/, "CLID of root entry"};
+  StringProperty m_rootName{this, "RootName", "/Event", "name of root entry"};
+  StringProperty m_loader{this, "DataLoader", "EventPersistencySvc", ""};
+  IntegerProperty m_slots {this, "EventSlots",  1, "number of event slots"};
+  BooleanProperty m_forceLeaves{this, "ForceLeaves", false, "force creation of default leaves on registerObject"};
+  BooleanProperty m_enableFaultHdlr{this, "EnableFaultHandler", false, "enable incidents on data creation requests"};
+
   /// Pointer to data loader service
-  IConversionSvc*     m_dataLoader;
+  IConversionSvc*     m_dataLoader = nullptr;
   /// Reference to address creator
-  IAddressCreator*    m_addrCreator;
+  IAddressCreator*    m_addrCreator = nullptr;
   /// Datastore partitions
   Partitions          m_partitions;
-  /// Datastore slots
-  int              m_slots;
-  /// Allow forced creation of default leaves on registerObject.
-  bool                m_forceLeaves;
-  /// Flag to enable interrupts on data creation requests.
-  bool m_enableFaultHdlr;
 
 public:
   /// IDataManagerSvc: Accessor for root event CLID
@@ -537,10 +532,10 @@ return IDataProviderSvc::INVALID_ROOT;
       oss << name() << "_" << i;
       DataSvc* svc = new DataSvc(oss.str(), serviceLocator());
       // Percolate properties
-      svc->setProperty("RootCLID", std::to_string(m_rootCLID));
-      svc->setProperty("RootName", m_rootName);
-      svc->setProperty("ForceLeaves", std::to_string(m_forceLeaves));
-      svc->setProperty("EnableFaultHandler", std::to_string(m_enableFaultHdlr));
+      svc->setProperty(m_rootCLID);
+      svc->setProperty(m_rootName);
+      svc->setProperty(m_forceLeaves);
+      svc->setProperty(m_enableFaultHdlr);
 
       sc = svc->initialize();
       if (!sc.isSuccess()) {
@@ -576,22 +571,8 @@ return IDataProviderSvc::INVALID_ROOT;
     return Service::finalize();
   }
 
-
-//protected:
-
-  /// Standard Constructor
-  HiveWhiteBoard( const std::string& name, ISvcLocator* svc )
-  : base_class(name,svc), m_rootCLID(110), m_rootName("/Event"),
-    m_dataLoader(0), m_addrCreator(0)
-  {
-    m_dataLoader = 0;
-    declareProperty("RootCLID",           m_rootCLID);
-    declareProperty("RootName",           m_rootName);
-    declareProperty("DataLoader",         m_loader="EventPersistencySvc");
-    declareProperty("EventSlots",         m_slots = 1);
-    declareProperty("ForceLeaves",        m_forceLeaves = 1);
-    declareProperty("EnableFaultHandler", m_enableFaultHdlr = 0);
-  }
+  /// Inherited constructor
+  using extends::extends;
 
   /// Standard Destructor
   virtual ~HiveWhiteBoard()  {

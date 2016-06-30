@@ -40,39 +40,40 @@ class RoundRobinSchedulerSvc: public extends<Service,
                                              IScheduler> {
 public:
   /// Constructor
-  RoundRobinSchedulerSvc( const std::string& name, ISvcLocator* svc );
+  using extends::extends;
 
   /// Destructor
-  ~RoundRobinSchedulerSvc();
+  ~RoundRobinSchedulerSvc() override = default;
 
   /// Initialise
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
 
   /// Finalise
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
 
   /// Make an event available to the scheduler
-  virtual StatusCode pushNewEvent(EventContext* eventContext);
+  StatusCode pushNewEvent(EventContext* eventContext) override;
 
   // Make multiple events available to the scheduler
-  virtual StatusCode pushNewEvents(std::vector<EventContext*>& eventContexts);
+  StatusCode pushNewEvents(std::vector<EventContext*>& eventContexts) override;
 
   /// Blocks until an event is availble
-  virtual StatusCode popFinishedEvent(EventContext*& eventContext);
+  StatusCode popFinishedEvent(EventContext*& eventContext) override;
 
   /// Try to fetch an event from the scheduler
-  virtual StatusCode tryPopFinishedEvent(EventContext*& eventContext);
+  StatusCode tryPopFinishedEvent(EventContext*& eventContext) override;
 
   /// Get free slots number
-  virtual unsigned int freeSlots();
+  unsigned int freeSlots() override;
 
 
 private:
 
+  BooleanProperty  m_useTopAlgList{this, "UseTopAlgList", true,  "Decide if the top alglist or its flat version has to be used"};
+  UnsignedIntegerProperty  m_freeSlots{this, "SimultaneousEvents", 1, ""};
+
   StatusCode processEvents();
 
-  /// Decide if the top alglist or its flat version has to be used
-  bool m_useTopAlgList;
   SmartIF<IAlgResourcePool> m_algResourcePool;
 
   //control flow manager
@@ -93,8 +94,6 @@ private:
   /// Queue of finished events
   tbb::concurrent_bounded_queue<EventContext*> m_finishedEvents;
 
-  /// The number of free slots (0 or 1)
-  unsigned int m_freeSlots;
   std::vector<EventContext*> m_evtCtx_buffer;
 
 };

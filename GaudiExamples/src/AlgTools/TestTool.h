@@ -24,23 +24,19 @@ class TestTool : public extends<GaudiTool,
 public:
 
   /// Standard constructor
-  TestTool( const std::string& type,
-            const std::string& name,
-            const IInterface* parent);
+  using extends::extends;
 
   /// Initialize method
-  StatusCode initialize();
+  StatusCode initialize() override;
 
   /// Finalize method
-  StatusCode finalize();
+  StatusCode finalize() override;
 
-  virtual ~TestTool( ) {} ///< Destructor
+  ~TestTool() override = default; ///< Destructor
 
 private:
 
-  // list of tools to test
-  typedef std::vector<std::string> ToolList;
-  ToolList m_tools;
+  StringArrayProperty m_tools{this, "Tools", {}, "list of tools to test"};
 
 };
 #endif // TESTTOOL_H

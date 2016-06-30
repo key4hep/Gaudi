@@ -4,14 +4,16 @@
 
 class MTHelloWorld:public Algorithm {
 public:
-  MTHelloWorld (const std::string& name, ISvcLocator* pSvcLocator);
-  StatusCode initialize();
-  StatusCode execute();
-  StatusCode finalize();
-  
+  using Algorithm::Algorithm;
+  StatusCode initialize() override;
+  StatusCode execute() override;
+  StatusCode finalize() override;
+
 private:
-  int m_myInt;
-  bool m_myBool;
-  double m_myDouble;
-  std::vector<std::string> m_myStringVec;
+
+  IntegerProperty  m_myInt {this, "MyInt",  0};
+  BooleanProperty  m_myBool {this, "MyBool",  0;
+  DoubleProperty  m_myDouble {this, "MyDouble",  0};
+
+  StringArrayProperty  m_myStringVec {this, "MyStringVec",  {}};
 };

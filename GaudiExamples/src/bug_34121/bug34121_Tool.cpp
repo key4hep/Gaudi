@@ -8,47 +8,26 @@
 // Accessing data:
 #include "GaudiKernel/PhysicalConstants.h"
 
-namespace bug_34121 {
+namespace bug_34121 { // see https://its.cern.ch/jira/browse/GAUDI-200
 
 // Tool example
-class Tool : public AlgTool,
-                      virtual public IMyTool {
+class Tool : public extends<AlgTool, IMyTool> {
 public:
 
   /// Standard Constructor
-  Tool(const std::string& type,
-                const std::string& name,
-                const IInterface* parent);
+  using extends::extends;
 
   /// IMyTool interface
-  virtual const std::string&  message() const;
-  virtual void  doIt();
+  const std::string&  message() const override;
+  void  doIt() override;
   /// Overriding initialize and finalize
-  virtual StatusCode initialize();
-  virtual StatusCode finalize();
-
-protected:
-  /// Standard destructor
-  virtual ~Tool( );
+  StatusCode initialize() override;
+  StatusCode finalize() override;
 
 private:
   /// Properties
-  double       m_double;
+  DoubleProperty m_double{this, "Double", 100.};
 };
-
-//------------------------------------------------------------------------------
-Tool::Tool( const std::string& type,
-                              const std::string& name,
-                              const IInterface* parent )
-//------------------------------------------------------------------------------
-: AlgTool( type, name, parent ) {
-
-  // declare my special interface
-  declareInterface<IMyTool>(this);
-
-  // declare properties
-  declareProperty( "Double", m_double = 100.);
-}
 
 //------------------------------------------------------------------------------
 const std::string&  Tool::message() const
@@ -70,7 +49,7 @@ StatusCode  Tool::initialize()
 //------------------------------------------------------------------------------
 {
   info() << "Initialize" << endmsg;
-  info() << "Double = " << m_double << endmsg;
+  info() << "Double = " << m_double.value() << endmsg;
   return StatusCode::SUCCESS;
 }
 //------------------------------------------------------------------------------
@@ -80,10 +59,6 @@ StatusCode  Tool::finalize()
   info() << "Finalize" << endmsg;
   return StatusCode::SUCCESS;
 }
-
-//------------------------------------------------------------------------------
-Tool::~Tool( ) {}
-//------------------------------------------------------------------------------
 
 // Declaration of the AlgTool Factory
 DECLARE_COMPONENT(Tool)

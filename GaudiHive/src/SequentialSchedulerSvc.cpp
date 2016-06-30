@@ -20,17 +20,6 @@ DECLARE_SERVICE_FACTORY(SequentialSchedulerSvc)
 //===========================================================================
 // Infrastructure methods
 
-SequentialSchedulerSvc::SequentialSchedulerSvc( const std::string& name, ISvcLocator* svcLoc ):
- base_class(name,svcLoc),
- m_eventContext(nullptr),
- m_freeSlots(1){
-  declareProperty("UseTopAlgList", m_useTopAlgList=true);
-}
-
-//---------------------------------------------------------------------------
-SequentialSchedulerSvc::~SequentialSchedulerSvc(){}
-//---------------------------------------------------------------------------
-
 StatusCode SequentialSchedulerSvc::initialize(){
 
   // Initialise mother class (read properties, ...)

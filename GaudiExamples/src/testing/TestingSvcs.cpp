@@ -7,14 +7,8 @@ namespace GaudiTesting {
   class FailingSvc: public Service {
   public:
     /// Standard Constructor
-    FailingSvc(const std::string& name, ISvcLocator *pSvcLocator):
-      Service(name, pSvcLocator) {
-      declareProperty("Transition", m_transition = "",
-          "In which transition to fail ['initialize', 'start', 'stop', 'finalize']");
-      declareProperty("Mode", m_mode = "failure",
-          "Type of failure ['failure', 'exception']");
-    }
-    virtual ~FailingSvc(){}
+    using Service::Service;
+    ~FailingSvc() override = default;
 
     StatusCode initialize() {
       StatusCode sc = Service::initialize();
@@ -44,10 +38,10 @@ namespace GaudiTesting {
     }
 
   private:
-    /// when the service should fail: initialize, start, stop, finalize
-    std::string m_transition;
-    /// how to fail: failure, exception
-    std::string m_mode;
+
+    StringProperty  m_transition {this, "Transition",  "", "In which transition to fail ['initialize', 'start', 'stop',  'finalize']"};
+    StringProperty  m_mode {this, "Mode",  "failure", "Type of failure ['failure',  'exception']"};
+
     inline StatusCode handle(const std::string &transition) {
       if (m_transition == transition) {
         if (m_mode == "exception") {

@@ -33,39 +33,6 @@ DECLARE_SERVICE_FACTORY(ForwardSchedulerSvc)
 
 //===========================================================================
 // Infrastructure methods
-
-ForwardSchedulerSvc::ForwardSchedulerSvc( const std::string& name, ISvcLocator* svcLoc ):
- base_class(name,svcLoc),
-  m_isActive(INACTIVE),
-  m_algosInFlight(0),
-  m_updateNeeded(true),
-  m_first(true), m_checkDeps(false)
-
-{
-  declareProperty("MaxEventsInFlight", m_maxEventsInFlight = 0 );
-  declareProperty("ThreadPoolSize", m_threadPoolSize = -1 );
-  declareProperty("WhiteboardSvc", m_whiteboardSvcName = "EventDataSvc" );
-  declareProperty("MaxAlgosInFlight", m_maxAlgosInFlight = 0, "Taken from the whiteboard. Deprecated" );
-  // XXX: CF tests. Temporary property to switch between ControlFlow implementations
-  declareProperty("useGraphFlowManagement", m_CFNext = false );
-  declareProperty("DataFlowManagerNext", m_DFNext = false );
-  declareProperty("SimulateExecution", m_simulateExecution = false );
-  declareProperty("Optimizer", m_optimizationMode = "",
-                  "The following modes are currently available: PCE, COD, DRE, E" );
-  declareProperty("DumpIntraEventDynamics", m_dumpIntraEventDynamics = false,
-                  "Dump intra-event concurrency dynamics to csv file" );
-
-  /// Deprecated
-  declareProperty("AlgosDependencies", m_algosDependencies);
-
-  declareProperty("CheckDependencies", m_checkDeps = false);
-
-}
-
-//---------------------------------------------------------------------------
-ForwardSchedulerSvc::~ForwardSchedulerSvc(){}
-//---------------------------------------------------------------------------
-
 /**
  * Here, among some "bureaucracy" operations, the scheduler is activated,
  * executing the activate() function in a new thread.
@@ -111,7 +78,7 @@ StatusCode ForwardSchedulerSvc::initialize(){
   // Get Whiteboard
   m_whiteboard = serviceLocator()->service(m_whiteboardSvcName);
   if (!m_whiteboard.isValid()) {
-    fatal() << "Error retrieving EventDataSvc interface IHiveWhiteBoard." 
+    fatal() << "Error retrieving EventDataSvc interface IHiveWhiteBoard."
             << endmsg;
     return StatusCode::FAILURE;
   }
@@ -906,7 +873,7 @@ StatusCode ForwardSchedulerSvc::promoteToScheduled(unsigned int iAlgo, int si) {
     ++m_algosInFlight;
     // Avoid to use tbb if the pool size is 1 and run in this thread
     if (-100 != m_threadPoolSize) {
-      tbb::task* t = new( tbb::task::allocate_root() ) 
+      tbb::task* t = new( tbb::task::allocate_root() )
         AlgoExecutionTask(ialgoPtr, iAlgo, eventContext, serviceLocator(), this);
       tbb::task::enqueue( *t);
     } else {
@@ -940,8 +907,8 @@ StatusCode ForwardSchedulerSvc::promoteToScheduled(unsigned int iAlgo, int si) {
 /**
  * The call to this method is triggered only from within the AlgoExecutionTask.
 */
-StatusCode ForwardSchedulerSvc::promoteToExecuted(unsigned int iAlgo, int si, 
-                                                  IAlgorithm* algo, 
+StatusCode ForwardSchedulerSvc::promoteToExecuted(unsigned int iAlgo, int si,
+                                                  IAlgorithm* algo,
                                                   EventContext* eventContext) {
 
   // Put back the instance

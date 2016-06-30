@@ -23,16 +23,6 @@ DECLARE_SERVICE_FACTORY(RoundRobinSchedulerSvc)
 //===========================================================================
 // Infrastructure methods
 
-RoundRobinSchedulerSvc::RoundRobinSchedulerSvc( const std::string& name, ISvcLocator* svcLoc ):
- base_class(name,svcLoc){
-  declareProperty("UseTopAlgList", m_useTopAlgList=true);
-  declareProperty("SimultaneousEvents", m_freeSlots=1);
-}
-
-//---------------------------------------------------------------------------
-RoundRobinSchedulerSvc::~RoundRobinSchedulerSvc(){}
-//---------------------------------------------------------------------------
-
 StatusCode RoundRobinSchedulerSvc::initialize(){
 
   // Initialise mother class (read properties, ...)

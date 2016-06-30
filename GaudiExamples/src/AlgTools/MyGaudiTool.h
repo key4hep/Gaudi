@@ -11,19 +11,15 @@
  *  @author Pere Mato
  *  @date   14/10/2001
  */
-class MyGaudiTool : public extends<GaudiTool,
-                                   IMyTool,
-                                   IMyOtherTool> {
+class MyGaudiTool : public extends<GaudiTool, IMyTool, IMyOtherTool>
+{
 public:
-
   /// Standard Constructor
-  MyGaudiTool(const std::string& type,
-              const std::string& name,
-              const IInterface* parent);
+  using extends::extends;
 
   // IMyTool interface
-  const std::string&  message() const override;
-  void  doIt() override;
+  const std::string& message() const override;
+  void doIt() override;
 
   // IMyOtherTool interface
   void doItAgain() override;
@@ -34,12 +30,13 @@ public:
 
 protected:
   /// Standard destructor
-  ~MyGaudiTool( ) override;
+  ~MyGaudiTool() override;
+
 private:
   /// Properties
-  int          m_int;
-  double       m_double;
-  std::string  m_string;
-  bool         m_bool;
+  IntegerProperty m_int{this, "Int", 100};
+  DoubleProperty m_double{this, "Double", 100.};
+  StringProperty m_string{this, "String", "hundred"};
+  BooleanProperty m_bool{this, "Bool", true};
 };
 #endif // GAUDIEXANMPLES_MYTOOL_H

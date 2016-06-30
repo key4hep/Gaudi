@@ -4,21 +4,6 @@
 
 DECLARE_COMPONENT(MTHelloWorld);
 
-/////////////////////////////////////////////////////////////////////////////
-
-MTHelloWorld::MTHelloWorld(const std::string& name, ISvcLocator* pSvcLocator) :
-  Algorithm(name, pSvcLocator), m_myInt(0), m_myBool(0), m_myDouble(0)
-{
-
-  // Part 2: Declare the properties
-  declareProperty("MyInt", m_myInt);
-  declareProperty("MyBool", m_myBool);
-  declareProperty("MyDouble", m_myDouble);
-
-  declareProperty("MyStringVec",m_myStringVec);
-
-}
-
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
 StatusCode MTHelloWorld::initialize(){
@@ -33,11 +18,11 @@ StatusCode MTHelloWorld::initialize(){
   }
 
   // Part 2: Print out the property values
-  info() << "  MyInt =    " << m_myInt << endmsg;
-  info() << "  MyBool =   " << (int)m_myBool << endmsg;
-  info() << "  MyDouble = " << m_myDouble << endmsg;
+  info() << "  MyInt =    " << m_myInt.value() << endmsg;
+  info() << "  MyBool =   " << (int)m_myBool.value() << endmsg;
+  info() << "  MyDouble = " << m_myDouble.value() << endmsg;
 
-  for (unsigned int i=0; i<m_myStringVec.size(); i++) {
+  for (unsigned int i=0; i < m_myStringVec.size(); i++) {
     info() << "  MyStringVec[" << i << "] = " << m_myStringVec[i]
            << endmsg;
   }

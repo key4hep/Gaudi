@@ -12,8 +12,8 @@ class IDataProviderSvc;
 
 /** Class definition of MTEventLoopMgr.
     This is the default processing manager of the application manager.
-    This object handles the minimal requirements needed by the 
-    application manager. It also handles the default user 
+    This object handles the minimal requirements needed by the
+    application manager. It also handles the default user
     configuration setup for standard event processing.
 
     <UL>
@@ -33,8 +33,10 @@ class IDataProviderSvc;
    @version 1.0
 */
 class MTEventLoopMgr : public MinimalEventLoopMgr   {
-public:
 protected:
+  StringProperty  m_histPersName {this, "HistogramPersistency",  {},  "Name of the Hist Pers type"};
+  StringProperty  m_evtsel {this, "EvtSel",  {},  "Event selector"};
+
   /// Reference to the indicent service
   IIncidentSvc*     m_incidentSvc = nullptr;
   /// Reference to the Event Data Service's IDataManagerSvc interface
@@ -45,21 +47,17 @@ protected:
   IEvtSelector*     m_evtSelector = nullptr;
   /// Event Iterator
   IEvtSelector::Context* m_evtCtxt = nullptr;
-  /// Event selector
-  std::string       m_evtsel;
   /// Reference to the Histogram Data Service
   IDataManagerSvc*  m_histoDataMgrSvc = nullptr;
   /// Reference to the Histogram Persistency Service
   IConversionSvc*   m_histoPersSvc = nullptr;
-  /// Name of the Hist Pers type
-  std::string       m_histPersName;
   /// Property interface of ApplicationMgr
   IProperty*        m_appMgrProperty = nullptr;
 
 
 public:
   /// Standard Constructor
-  MTEventLoopMgr(const std::string& nam, ISvcLocator* svcLoc);
+  using MinimalEventLoopMgr::MinimalEventLoopMgr;
   /// Standard Destructor
   virtual ~MTEventLoopMgr();
   /// Create event address using event selector
