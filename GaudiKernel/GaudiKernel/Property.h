@@ -417,19 +417,19 @@ public:
     return value()[arg];
   }
   template <class T = const ValueType>
-  inline decltype( std::declval<T>().find(typename T::key_type{}) ) find( const typename T::key_type& key ) const
+  inline decltype( std::declval<T>().find( typename T::key_type{} ) ) find( const typename T::key_type& key ) const
   {
-    return value().find(key);
+    return value().find( key );
   }
   template <class T = ValueType>
-  inline decltype( std::declval<T>().find(typename T::key_type{}) ) find( const typename T::key_type& key )
+  inline decltype( std::declval<T>().find( typename T::key_type{} ) ) find( const typename T::key_type& key )
   {
-    return value().find(key);
+    return value().find( key );
   }
   template <class ARG, class T = ValueType>
-  inline decltype( std::declval<T>().erase(ARG{}) ) erase(ARG arg)
+  inline decltype( std::declval<T>().erase( ARG{} ) ) erase( ARG arg )
   {
-    return value().erase(arg);
+    return value().erase( arg );
   }
   template <class = ValueType>
   inline PropertyWithValue& operator++()
@@ -438,7 +438,7 @@ public:
     return *this;
   }
   template <class = ValueType>
-  inline ValueType operator++(int)
+  inline ValueType operator++( int )
   {
     return m_value++;
   }
@@ -449,9 +449,21 @@ public:
     return *this;
   }
   template <class = ValueType>
-  inline ValueType operator--(int)
+  inline ValueType operator--( int )
   {
     return m_value--;
+  }
+  template <class T = ValueType>
+  inline PropertyWithValue& operator+=( const T& other )
+  {
+    m_value += other;
+    return *this;
+  }
+  template <class T = ValueType>
+  inline PropertyWithValue& operator-=( const T& other )
+  {
+    m_value -= other;
+    return *this;
   }
   /// @}
   // ==========================================================================
