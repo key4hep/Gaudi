@@ -7,32 +7,32 @@
 class IIncidentSvc;
 
 /** @class AbortEventAlg AbortEventAlg.h
- *  
+ *
  *  Small algorithm that after a given number of events triggers an AbortEvent.
  *
  *  @author Marco Clemencic
  *  @date   Nov 16, 2007
  */
 class AbortEventAlg : public GaudiAlgorithm {
-public: 
+public:
   /// Standard constructor
-  AbortEventAlg( const std::string& name, ISvcLocator* pSvcLocator );
+  using GaudiAlgorithm::GaudiAlgorithm;
 
-  virtual ~AbortEventAlg( ); ///< Destructor
+  ~AbortEventAlg() override = default; ///< Destructor
 
-  virtual StatusCode initialize();    ///< Algorithm initialization
-  virtual StatusCode execute   ();    ///< Algorithm execution
-  virtual StatusCode finalize  ();    ///< Algorithm finalization
+  StatusCode initialize() override;    ///< Algorithm initialization
+  StatusCode execute   () override;    ///< Algorithm execution
+  StatusCode finalize  () override;    ///< Algorithm finalization
 
 protected:
 
 private:
+  LongProperty  m_count{this, "AbortedEventNumber", 3, "At which event to trigger an abort"};
+
   /// Pointer to the incident service.
   SmartIF<IIncidentSvc> m_incidentSvc;
-  /// Event at which to abort.
-  long m_count;
   /// Counter of events.
-  long m_counter;
+  long m_counter = 0;
 };
 
 #endif /*ABORTEVENTALG_H_*/

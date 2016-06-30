@@ -52,6 +52,19 @@ namespace Gaudi {
   class GAUDI_API RootCnvSvc : public ConversionSvc  {
   protected:
 
+    StringProperty m_ioPerfStats{this, "IOPerfStats", "", "Enable TTree IOperfStats if not empty; otherwise perf stat file name"};
+    StringProperty m_shareFiles{this, "ShareFiles", "NO", "Share files? If set to YES,  files will not be closed on finalize"};
+    BooleanProperty m_incidentEnabled{this, "EnableIncident", true, "Flag to enable incidents on FILE_OPEN"};
+    StringProperty m_recordName{this, "RecordsName", "/FileRecords", "Records name to fire incident for file records"};
+
+    // ROOT Write parameters
+    IntegerProperty m_autoFlush{this, "AutoFlush",  100, "AutoFlush parameter for ROOT TTree (Number of events between auto flushes)"};
+    IntegerProperty m_basketSize{this, "BasketSize",  2 * 1024 * 1024 /*MBYTE*/, "Basket optimization parameter for ROOT TTree (total basket size)"};
+    IntegerProperty m_bufferSize{this, "BufferSize",  2 * 1024 /*kBYTE*/,  "Buffer size optimization parameter for ROOT TTree"};
+    IntegerProperty m_splitLevel{this, "SplitLevel",  0,  "Split level optimization parameter for ROOT TTree"};
+    StringProperty m_compression{this, "GlobalCompression",  "", "Compression-algorithm:compression-level,  empty: do nothing"};
+
+
     /// Reference to the I/O data manager
     SmartIF<Gaudi::IIODataManager>      m_ioMgr;
     /// Reference to incident service
@@ -59,33 +72,13 @@ namespace Gaudi {
     /// On writing: reference to active output stream
     Gaudi::RootDataConnection*  m_current = nullptr;
     /// TClass pointer to reference class
-    TClass*                     m_classRefs;
+    TClass*                     m_classRefs = nullptr;
     /// TClass pointer to DataObject class
-    TClass*                     m_classDO;
+    TClass*                     m_classDO = nullptr;
     /// Setup structure (ref-counted) and passed to data connections
     std::shared_ptr<RootConnectionSetup> m_setup;
     /// Property: ROOT section name
     std::string                 m_currSection;
-
-    /// Property: Flag to enable incidents on FILE_OPEN
-    bool                        m_incidentEnabled;
-    /// Property: Share files ? If set to YES, files will not be closed on finalize
-    std::string                 m_shareFiles;
-    /// Property: Records name to fire incident for file records
-    std::string                 m_recordName;
-    /// Property: Enable TTree IOperfStats if not empty; otherwise perf stat file name
-    std::string                 m_ioPerfStats;
-    /// Property: Compression-algorithm:compression-level
-    std::string                 m_compression;
-
-    /// Property: AutoFlush parameter for ROOT TTree (Number of events between auto flushes)
-    int                         m_autoFlush;
-    /// Property: Basket optimization parameter for ROOT TTree (total basket size)
-    int                         m_basketSize;
-    /// Property: Buffer size optimization parameter for ROOT TTree
-    int		                m_bufferSize;
-    /// Property: Split level optimization parameter for ROOT TTree
-    int		                m_splitLevel;
 
     /// Set with bad files/tables
     std::set<std::string>       m_badFiles;
@@ -104,7 +97,7 @@ namespace Gaudi {
     RootCnvSvc(const std::string& name, ISvcLocator* svc);
 
     /// Standard destructor
-    virtual ~RootCnvSvc();
+    ~RootCnvSvc() override = default;
 
     /// Update state of the service
     virtual StatusCode updateServiceState(IOpaqueAddress* /* pAddress */)

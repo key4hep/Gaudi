@@ -11,14 +11,14 @@
 class DataCreator : public GaudiAlgorithm {
 public:
   /// Constructor of this form must be provided
-  DataCreator(const std::string& name, ISvcLocator* pSvcLocator); 
+  using GaudiAlgorithm::GaudiAlgorithm;
 
   /// Three mandatory member functions of any algorithm
-  StatusCode initialize();
-  StatusCode execute();
-  StatusCode finalize();
+  StatusCode initialize() override;
+  StatusCode execute() override;
+  StatusCode finalize() override;
 private:
-  std::string m_data;
+  StringProperty m_data{this, "Data", "/Event/Unknown"};
 };
 
 #endif    // GAUDIEXAMPLE_HELLOWORLD_H

@@ -32,7 +32,7 @@ public:
   // Default constructor.
   MTMessageSvc( const std::string& name, ISvcLocator* svcloc );
   // Destructor.
-  virtual ~MTMessageSvc() {}
+  ~MTMessageSvc() override = default;
 
   // Implementation of IService::initialize()
   virtual StatusCode initialize();
@@ -114,13 +114,22 @@ public:
   virtual int messageCount( MSG::Level /* level */ ) const { return 0; }
 
 private:
-  std::ostream* m_defaultStream;      ///< Pointer to the output stream.
+  StringProperty       m_defaultFormat {this,  "Format",  "% F%18W%S%7W%R%T %0W%M", ""};
+  std::array<PropertyWithValue<std::vector<std::string>>, MSG::NUM_LEVELS>
+    m_thresholdProp{{this, "setVerbose"},
+                    {this, "setDebug"},
+                    {this, "setInfo"},
+                    {this, "setWarning"},
+                    {this, "setError"},
+                    {this, "setFatal"},
+                    {this, "setAlways"}};
+
+
+  std::ostream* m_defaultStream = &std::cout;      ///< Pointer to the output stream.
   Message m_defaultMessage;           ///< Default Message
   StreamMap m_streamMap;              ///< Stream map
   MessageMap m_messageMap;            ///< Message map
   ThresholdMap m_thresholdMap;        ///< Output level threshold map
-  std::string m_defaultFormat;        ///< Default format for the messages
-  std::vector<std::string> m_thresholdProp[MSG::NUM_LEVELS]; ///< Properties controling
 };
 
 #endif

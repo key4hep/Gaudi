@@ -25,15 +25,17 @@ public:
   StatusCode execute();
   StatusCode finalize();
 private:
-  IMyTool*   m_privateTool;
-  IMyTool*   m_publicTool;
-  IMyTool*   m_privateGTool;
-  IMyTool*   m_publicGTool;
 
-  std::string m_privateToolType;
-  IMyTool*   m_privateToolWithName;
+  StringProperty  m_privateToolType {this, "ToolWithName",  "MyTool", "Type of the tool to use (internal name is ToolWithName)"};
 
-  IMyOtherTool* m_privateOtherInterface;
+  IMyTool*   m_privateTool = nullptr;
+  IMyTool*   m_publicTool = nullptr;
+  IMyTool*   m_privateGTool = nullptr;
+  IMyTool*   m_publicGTool = nullptr;
+
+  IMyTool*   m_privateToolWithName = nullptr;
+
+  IMyOtherTool* m_privateOtherInterface = nullptr;
 
   ToolHandle<IMyTool> m_myPrivToolHandle;
   ToolHandle<IMyTool> m_myPubToolHandle;

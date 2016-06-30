@@ -29,17 +29,6 @@ typedef const string& CSTR;
 #define S_OK   StatusCode::SUCCESS
 #define S_FAIL StatusCode::FAILURE
 
-// Standard constructor
-RootPerfMonSvc::RootPerfMonSvc(CSTR nam, ISvcLocator* svc)
-  : Service( nam, svc)
-{
-  declareProperty("IOPerfStats", m_ioPerfStats);
-  declareProperty("Streams",     m_setStreams);
-  declareProperty("BasketSize",  m_basketSize);
-  declareProperty("BufferSize",  m_bufferSize);
-  declareProperty("SplitLevel",  m_splitLevel);
-}
-
 // Small routine to issue exceptions
 StatusCode RootPerfMonSvc::error(CSTR msg)  {
   if ( m_log ) {
@@ -70,7 +59,7 @@ StatusCode RootPerfMonSvc::initialize()  {
     return error("Performance monitoring file IOPerfStats was not defined.");
 
   TDirectory::TContext ctxt(nullptr);
-  m_perfFile.reset( new TFile(m_ioPerfStats.c_str(),"RECREATE") );
+  m_perfFile.reset( new TFile(m_ioPerfStats.value().c_str(),"RECREATE") );
   if (!m_perfFile ) return error("Could not create ROOT file.");
 
   if (!(m_perfTree = new TTree("T", "performance measurement")))
@@ -95,10 +84,10 @@ StatusCode RootPerfMonSvc::initialize()  {
 	  m_splitLevel = "undefined";
 
   auto map = new TMap();
-  map->Add(new TObjString("streams"), new TObjString(m_setStreams.c_str()));
-  map->Add(new TObjString("basket_size"), new TObjString(m_basketSize.c_str()));
-  map->Add(new TObjString("buffer_size"), new TObjString(m_bufferSize.c_str()));
-  map->Add(new TObjString("split_level"), new TObjString(m_splitLevel.c_str()));
+  map->Add(new TObjString("streams"), new TObjString(m_setStreams.value().c_str()));
+  map->Add(new TObjString("basket_size"), new TObjString(m_basketSize.value().c_str()));
+  map->Add(new TObjString("buffer_size"), new TObjString(m_bufferSize.value().c_str()));
+  map->Add(new TObjString("split_level"), new TObjString(m_splitLevel.value().c_str()));
   map->Write("params", TObject::kSingleKey);
   return S_OK;
 }

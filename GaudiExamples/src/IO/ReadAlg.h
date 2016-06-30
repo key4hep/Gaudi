@@ -20,17 +20,13 @@ class ReadAlg : public Algorithm, virtual public IIncidentListener {
   SmartIF<IDataProviderSvc> m_recordSvc;
   /// Reference to incident service
   SmartIF<IIncidentSvc>     m_incidentSvc;
-  /// Property: incident name of records service
-  std::string       m_incidentName;
+  StringProperty m_incidentName{this, "IncidentName", "", "incident name of records service"};
 
 public:
   /// Constructor: A constructor of this form must be provided.
-  ReadAlg(const std::string& nam, ISvcLocator* pSvc)
-    : Algorithm(nam, pSvc), m_recordSvc(0), m_incidentSvc(0) { 
-    declareProperty("IncidentName",m_incidentName="");
-  }
+  using Algorithm::Algorithm;
   /// Standard Destructor
-  virtual ~ReadAlg() { }
+  virtual ~ReadAlg() = default;
   /// Initialize
   virtual StatusCode initialize();
   /// Finalize

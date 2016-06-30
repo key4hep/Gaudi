@@ -30,42 +30,21 @@ namespace Gaudi
     public:
       // ======================================================================
       /// execute it!
-      StatusCode execute () ;
+      StatusCode execute () override;
       // ======================================================================
     public:
       // ======================================================================
-      /** Standard constructor
-       *
-       */
-      BoostArrayProperties ( const std::string& name ,    // algorithm instance name
-                             ISvcLocator*       pSvc )    //         service locator
-        : GaudiAlgorithm ( name , pSvc )
-      {
-        //
-        std::fill( m_doubles.begin() , m_doubles.end() , -1 )      ;
-        std::fill( m_strings.begin() , m_strings.end() , "bla-bla" ) ;
-        //
-        declareProperty ( "Doubles" , m_doubles , "Boost-array of doubles" ) ;
-        declareProperty ( "Strings" , m_strings , "Boost-array of strings" ) ;
-      }
+      /// Standard constructor
+      using GaudiAlgorithm::GaudiAlgorithm;
       /// virtual destructor
-      virtual ~BoostArrayProperties() {}
-      // ======================================================================
-    private:
-      // ======================================================================
-      /// the default constructor is disabled
-      BoostArrayProperties () ;          // the default constructor is disabled
-      /// copy constructor is disabled
-      BoostArrayProperties ( const BoostArrayProperties& ) ;
-      /// assignment operator is disabled
-      BoostArrayProperties& operator=( const BoostArrayProperties& ) ;
+      ~BoostArrayProperties() override = default;
       // ======================================================================
     private:
       // ======================================================================
       /// array  of doubles
-      boost::array<double,5>       m_doubles ;             // array  of doubles
+      PropertyWithValue<boost::array<double,5>>       m_doubles{this, "Doubles", {-1, -1, -1, -1, -1}, "Boost-array of doubles"};
       /// array of strings
-      boost::array<std::string,4>  m_strings ;              // array of strings
+      PropertyWithValue<boost::array<std::string,4>>  m_strings{this, "Strings", {"bla-bla", "bla-bla", "bla-bla", "bla-bla"}, "Boost-array of strings"};
       // ======================================================================
     } ;
     // ========================================================================

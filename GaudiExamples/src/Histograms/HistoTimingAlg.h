@@ -25,12 +25,12 @@ class HistoTimingAlg : public GaudiHistoAlg
 public:
 
   /// Standard constructor
-  HistoTimingAlg( const std::string& name, ISvcLocator* pSvcLocator );
+  using GaudiHistoAlg::GaudiHistoAlg;
 
-  virtual ~HistoTimingAlg( ); ///< Destructor
+  ~HistoTimingAlg() override = default; ///< Destructor
 
-  virtual StatusCode initialize();    ///< Algorithm initialization
-  virtual StatusCode execute   ();    ///< Algorithm execution
+  StatusCode initialize() override;    ///< Algorithm initialization
+  StatusCode execute   () override;    ///< Algorithm execution
 
 private:
 
@@ -40,11 +40,9 @@ private:
 
   HistoMap m_histos;
 
-  unsigned int m_nHistos;
-
-  unsigned int m_nTracks;
-
-  bool m_useGaudiAlg;
+  BooleanProperty  m_useGaudiAlg {this,  "UseLookup",  false , ""};
+  UnsignedIntegerProperty  m_nHistos {this,  "NumHistos",  20 , ""};
+  UnsignedIntegerProperty  m_nTracks {this,  "NumTracks",  30 , ""};
 
 };
 

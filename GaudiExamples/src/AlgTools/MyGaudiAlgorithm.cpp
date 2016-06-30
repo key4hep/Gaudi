@@ -13,18 +13,16 @@ DECLARE_COMPONENT(MyGaudiAlgorithm)
 //------------------------------------------------------------------------------
 MyGaudiAlgorithm::MyGaudiAlgorithm(const std::string& name, ISvcLocator* ploc)
   : GaudiAlgorithm(name, ploc),
-  m_myPrivToolHandle("MyTool/PrivToolHandle",this),
+  m_myPrivToolHandle("MyTool/PrivToolHandle", this),
   m_myPubToolHandle("MyTool/PubToolHandle"),
   m_myGenericToolHandle("MyTool/GenericToolHandle"),
   m_myUnusedToolHandle("TestToolFailing"),
-  m_tracks("/Event/Rec/Tracks",Gaudi::DataHandle::Reader, this),
-  m_hits("/Event/Rec/Hits",Gaudi::DataHandle::Reader,this),
-  m_raw("/Rec/RAW",Gaudi::DataHandle::Reader,this),
-  m_selectedTracks("/Event/MyAnalysis/Tracks",Gaudi::DataHandle::Writer,this)
+  m_tracks("/Event/Rec/Tracks", Gaudi::DataHandle::Reader, this),
+  m_hits("/Event/Rec/Hits", Gaudi::DataHandle::Reader, this),
+  m_raw("/Rec/RAW", Gaudi::DataHandle::Reader, this),
+  m_selectedTracks("/Event/MyAnalysis/Tracks", Gaudi::DataHandle::Writer, this)
  {
   //------------------------------------------------------------------------------
-  declareProperty("ToolWithName", m_privateToolType = "MyTool",
-                  "Type of the tool to use (internal name is ToolWithName)");
   declareProperty("PrivToolHandle", m_myPrivToolHandle);
   declareProperty("PubToolHandle", m_myPubToolHandle);
   declareProperty("GenericToolHandle", m_myGenericToolHandle);

@@ -10,6 +10,7 @@
 #include <memory>
 // Framework include files
 #include "GaudiKernel/IIncidentListener.h"
+#include "GaudiKernel/IIncidentSvc.h"
 #include "GaudiKernel/Service.h"
 
 #include "TTree.h"
@@ -19,9 +20,6 @@
 
 // C/C++ include files
 #include <set>
-
-// Forward declarations
-class IIncidentSvc;
 
 /*
  * Gaudi namespace declaration
@@ -38,20 +36,20 @@ namespace Gaudi {
    *  @version 1.0
    *  @date    20/12/2009
    */
-  class GAUDI_API RootPerfMonSvc : public Service, virtual public IIncidentListener {
+  class GAUDI_API RootPerfMonSvc : public extends<Service, IIncidentListener> {
   protected:
+
+    StringProperty m_ioPerfStats{this, "IOPerfStats", "", "Enable TTree IOperfStats if not empty; otherwise perf stat file name"};
+    // Passed parameters
+    StringProperty m_setStreams{this, "Streams", "", ""};
+    StringProperty m_basketSize{this, "BasketSize", "", ""};
+    StringProperty m_bufferSize{this, "BufferSize", "", ""};
+    StringProperty m_splitLevel{this, "SplitLevel", "", ""};
 
     /// Reference to incident service
     SmartIF<IIncidentSvc>               m_incidentSvc ;
-    /// Property: Enable TTree IOperfStats if not empty; otherwise perf stat file name
-    std::string                 m_ioPerfStats;
     /// Message streamer
     std::unique_ptr<MsgStream>  m_log;
-    // Passed parameters
-    std::string                 m_setStreams;
-    std::string                 m_basketSize;
-    std::string                 m_bufferSize;
-    std::string                 m_splitLevel;
     // Reference to a tree with statistics
     TTree*                      m_perfTree;
     // Reference to a file where statistics are persisted
@@ -74,7 +72,7 @@ namespace Gaudi {
 
   public:
     /// Standard constructor
-    RootPerfMonSvc(const std::string& name, ISvcLocator* svc);
+    using extends::extends;
 
     /// Standard destructor
     ~RootPerfMonSvc() override = default;

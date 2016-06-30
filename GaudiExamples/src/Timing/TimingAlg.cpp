@@ -43,29 +43,10 @@ namespace GaudiExamples
     // ========================================================================
   public:
     // ========================================================================
-    /** standard constructor
-     *  @param name the algorithm instance name
-     *  @param pSvc the Service Locator
-     */
-    TimingAlg
-    ( const std::string& name , // the algorithm instance name
-      ISvcLocator*       pSvc ) // the Service Locator
-      : GaudiAlgorithm ( name , pSvc )
-      , m_cycles ( 10000 )
-    {
-      declareProperty ( "Cycles" , m_cycles , "The number of cycles" ) ;
-    }
-    /// virtual & protected destructor
-    virtual ~TimingAlg() {}     // virtual & protected destructor
-    // ========================================================================
-  private:
-    // ========================================================================
-    /// the default constructor is disabled
-    TimingAlg () ;                              // no default constructor
-    /// the copy constructor is disabled
-    TimingAlg            ( const TimingAlg& ) ; // no copy constructor
-    /// the assignment operator is disabled
-    TimingAlg& operator= ( const TimingAlg& ) ; // no assignment
+    /// standard constructor
+    using GaudiAlgorithm::GaudiAlgorithm;
+    /// destructor
+    ~TimingAlg() override = default;
     // ========================================================================
   protected:
     // ========================================================================
@@ -75,7 +56,7 @@ namespace GaudiExamples
   private:
     // ========================================================================
     /// the length of the internal loops (property)
-    unsigned long m_cycles ; //the length of the internal loops (property)
+    UnsignedLongProperty m_cycles{this, "Cycles" , 10000, "The number of cycles"};
     // ========================================================================
   private:
     // ========================================================================
@@ -180,5 +161,3 @@ DECLARE_COMPONENT(TimingAlg)
 // ============================================================================
 // The END
 // ============================================================================
-
-

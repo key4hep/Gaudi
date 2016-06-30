@@ -8,21 +8,21 @@
 
 /** @class TemplateAlg
     Trivial Algorithm for tutotial purposes
-    
+
     @author nobody
 */
 template <typename T, typename R> class TemplatedAlg : public GaudiAlgorithm {
 public:
   /// Constructor of this form must be provided
-  TemplatedAlg(const std::string& name, ISvcLocator* pSvcLocator); 
+  using GaudiAlgorithm::GaudiAlgorithm;
 
   /// Three mandatory member functions of any algorithm
-  StatusCode initialize();
-  StatusCode execute();
-  StatusCode finalize();
+  StatusCode initialize() override;
+  StatusCode execute() override;
+  StatusCode finalize() override;
 private:
-  T  m_t;
-  R  m_r;
+  PropertyWithValue<T>  m_t{this, "TProperty", {}};
+  PropertyWithValue<R>  m_r{this, "RProperty", {}};
 };
 
 #endif    // GAUDIEXAMPLE_TEMPLATEDALG_H

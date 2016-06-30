@@ -17,24 +17,25 @@ class IMyTool;
 class MyAlgorithm : public Algorithm {
 public:
   /// Constructor of this form must be provided
-  MyAlgorithm(const std::string& name, ISvcLocator* pSvcLocator);
+  using Algorithm::Algorithm;
 
   /// Three mandatory member functions of any algorithm
-  StatusCode initialize();
-  StatusCode execute();
-  StatusCode finalize();
+  StatusCode initialize() override;
+  StatusCode execute() override;
+  StatusCode finalize() override;
 private:
-  bool m_privateToolsOnly;
-  IMyTool*   m_privateTool;
-  IMyTool*   m_publicTool;
-  IMyTool*   m_privateGTool;
-  IMyTool*   m_publicGTool;
 
-  std::string m_privateToolType;
-  IMyTool*   m_privateToolWithName;
+  StringProperty m_privateToolType{this, "ToolWithName", "MyTool", "Type of the tool to use (internal name is ToolWithName)"};
+  BooleanProperty m_privateToolsOnly{this, "PrivateToolsOnly", false, "Do not look for public tools."};
 
-  IMyOtherTool* m_privateOtherInterface;
+  IMyTool*   m_privateTool = nullptr;
+  IMyTool*   m_publicTool = nullptr;
+  IMyTool*   m_privateGTool = nullptr;
+  IMyTool*   m_publicGTool = nullptr;
 
+  IMyTool*   m_privateToolWithName = nullptr;
+
+  IMyOtherTool* m_privateOtherInterface = nullptr;
 };
 
 #endif    // GAUDIEXAMPLE_MYALGORITHM_H

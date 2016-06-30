@@ -44,7 +44,7 @@ namespace Gaudi {
   public:
 
     /// Service Constructor
-    RootEvtSelector(const std::string& name, ISvcLocator* svcloc);
+    using extends::extends;
 
     /// Standard destructor
     virtual ~RootEvtSelector() = default;
@@ -130,17 +130,17 @@ namespace Gaudi {
     /// Reference to the corresponding conversion service
     mutable RootCnvSvc*             m_dbMgr;
     /// Class id of root node to create opaque address
-    CLID                            m_rootCLID;
-    /// Property; Name of the persistency service to search for conversion service.
-    std::string                     m_persName;
+    CLID                            m_rootCLID = CLID_NULL;
+
+    StringProperty  m_persName{this, "EvtPersistencySvc", "EventPersistencySvc",  "Name of the persistency service to search for conversion service"};
+    StringProperty  m_dummy{this, "DbType", "",  "dummy property to fake backwards compatibility"};
+
     /// Property; Name of the concversion service used to create opaque addresses
-    std::string                     m_cnvSvcName;
+    std::string                     m_cnvSvcName = "Gaudi::RootCnvSvc/RootCnvSvc";
     /// Property: Name of the ROOT entry name
     std::string                     m_rootName;
     /// Property: File criteria to define item iteration
     std::string                     m_criteria;
-    /// Property: dummy to fake backwards compatibility
-    std::string                     m_dummy;
   };
 }
 #endif  // GAUDIROOTCNV_ROOTEVTSELECTOR_H

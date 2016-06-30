@@ -12,7 +12,7 @@ namespace bug_34121 {
 class MyAlgorithm : public Algorithm {
 public:
   /// Constructor of this form must be provided
-  MyAlgorithm(const std::string& name, ISvcLocator* pSvcLocator);
+  using Algorithm::Algorithm;
 
   /// Three mandatory member functions of any algorithm
   StatusCode initialize() override;
@@ -20,20 +20,9 @@ public:
   StatusCode finalize() override;
 
 private:
-
-  std::string   m_toolName;
-  IMyTool*      m_tool;
-
+  StringProperty m_toolName{this, "Tool", "bug_34121::Tool", "Type of the tool to use"};
+  IMyTool*      m_tool = nullptr;
 };
-
-// Constructor
-//------------------------------------------------------------------------------
-MyAlgorithm::MyAlgorithm(const std::string& name, ISvcLocator* ploc)
-           : Algorithm(name, ploc) {
-//------------------------------------------------------------------------------
-  declareProperty("Tool", m_toolName = "bug_34121::Tool",
-                  "Type of the tool to use");
-}
 
 //------------------------------------------------------------------------------
 StatusCode MyAlgorithm::initialize() {
