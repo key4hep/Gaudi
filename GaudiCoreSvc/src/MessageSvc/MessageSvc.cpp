@@ -57,55 +57,15 @@ static const std::string levelNames[MSG::NUM_LEVELS] = {
 // Constructor
 MessageSvc::MessageSvc( const std::string& name, ISvcLocator* svcloc )
   : base_class( name, svcloc ) {
-  m_defaultStream = &std::cout;
-  declareProperty( "Format",      m_defaultFormat = Message::getDefaultFormat() );
-  declareProperty( "timeFormat",  m_defaultTimeFormat = Message::getDefaultTimeFormat() );
-  declareProperty( "showStats",   m_stats = false );
-  declareProperty( "statLevel",   m_statLevel = 0 );
 
-  // Special properties to control output level of individual sources
-  declareProperty( "setVerbose",  m_thresholdProp[MSG::VERBOSE] );
-  declareProperty( "setDebug",    m_thresholdProp[MSG::DEBUG] );
-  declareProperty( "setInfo",     m_thresholdProp[MSG::INFO] );
-  declareProperty( "setWarning",  m_thresholdProp[MSG::WARNING] );
-  declareProperty( "setError",    m_thresholdProp[MSG::ERROR] );
-  declareProperty( "setFatal",    m_thresholdProp[MSG::FATAL] );
-  declareProperty( "setAlways",   m_thresholdProp[MSG::ALWAYS] );
+  m_color.declareUpdateHandler(&MessageSvc::initColors, this);
 
-  declareProperty( "useColors",        m_color=false)->declareUpdateHandler(&MessageSvc::initColors, this);
+  m_inactCount.declareUpdateHandler( &MessageSvc::setupInactCount, this );
 
-  declareProperty( "fatalColorCode",   m_logColors[MSG::FATAL] );
-  declareProperty( "errorColorCode",   m_logColors[MSG::ERROR] );
-  declareProperty( "warningColorCode", m_logColors[MSG::WARNING] );
-  declareProperty( "infoColorCode",    m_logColors[MSG::INFO] );
-  declareProperty( "debugColorCode",   m_logColors[MSG::DEBUG] );
-  declareProperty( "verboseColorCode", m_logColors[MSG::VERBOSE] );
-  declareProperty( "alwaysColorCode",  m_logColors[MSG::ALWAYS] );
-
-  const int defaultLimit = 500;
-  declareProperty( "fatalLimit",    m_msgLimit[MSG::FATAL]   = defaultLimit );
-  declareProperty( "errorLimit",    m_msgLimit[MSG::ERROR]   = defaultLimit );
-  declareProperty( "warningLimit",  m_msgLimit[MSG::WARNING] = defaultLimit );
-  declareProperty( "infoLimit",     m_msgLimit[MSG::INFO]    = defaultLimit );
-  declareProperty( "debugLimit",    m_msgLimit[MSG::DEBUG]   = defaultLimit );
-  declareProperty( "verboseLimit",  m_msgLimit[MSG::VERBOSE] = defaultLimit );
-  declareProperty( "alwaysLimit",   m_msgLimit[MSG::ALWAYS]  = 0 );
-
-  declareProperty( "defaultLimit",  m_msgLimit[MSG::NIL]     = defaultLimit );
-
-  declareProperty( "enableSuppression", m_suppress = false );
-  declareProperty( "countInactive", m_inactCount = false )->declareUpdateHandler( &MessageSvc::setupInactCount, this );
-  declareProperty( "tracedInactiveSources", m_tracedInactiveSources,
-                   "for each message source specified, print a stack trace for"
-                   "the unprotected and unseen messages" );
 #ifndef NDEBUG
   // initialize the MsgStream static flag.
   MsgStream::enableCountInactive(m_inactCount);
 #endif
-
-  declareProperty( "loggedStreams",
-                   m_loggedStreamsName,
-                   "MessageStream sources we want to dump into a logfile" );
 
   for (int ic=0; ic<MSG::NUM_LEVELS; ++ic) {
     m_logColors[ic].declareUpdateHandler(&MessageSvc::setupColors, this);
@@ -113,7 +73,7 @@ MessageSvc::MessageSvc( const std::string& name, ISvcLocator* svcloc )
     m_thresholdProp[ic].declareUpdateHandler(&MessageSvc::setupThreshold, this);
   }
 
-  std::fill( std::begin(m_msgCount),std::end(m_msgCount), 0 );
+  std::fill( std::begin(m_msgCount), std::end(m_msgCount), 0 );
 }
 
 //#############################################################################
