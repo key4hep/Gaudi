@@ -31,6 +31,9 @@ namespace Gaudi {
     Version: 1.0
 */
 class EvtCollectionWrite : public Algorithm {
+
+  IntegerProperty  m_nMCcut{this, "NumMcTracks", 50, ""};
+
   NTuple::Item<int>               m_ntrkColl;
   NTuple::Item<float>             m_eneColl;
   NTuple::Item<Gaudi::Examples::MyTrack*>          m_trackItem;
@@ -38,22 +41,21 @@ class EvtCollectionWrite : public Algorithm {
   NTuple::Array<float>            m_trkMomFixed;
   NTuple::Item<IOpaqueAddress*>   m_evtAddrColl;
   NTuple::Item<IOpaqueAddress*>   m_evtAddrCollEx;
-  int                             m_nMCcut;
-  INTupleSvc*                     m_evtTupleSvc;
+  INTupleSvc*                     m_evtTupleSvc = nullptr;
 
 public:
   /// Constructor: A constructor of this form must be provided.
-  EvtCollectionWrite(const std::string& name, ISvcLocator* pSvcLocator);
+  using Algorithm::Algorithm;
   /// Standard Destructor
-  virtual ~EvtCollectionWrite();
+  ~EvtCollectionWrite() override = default;
   /// Initialize
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
   /// Finalize
-  virtual StatusCode finalize() {
+  StatusCode finalize() override {
     return StatusCode::SUCCESS;
   }
   /// Event callback
-  virtual StatusCode execute();
+  StatusCode execute() override;
 };
 
 #endif // EVTCOLLECTION_WRITE_H

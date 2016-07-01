@@ -17,15 +17,14 @@ namespace Gaudi { namespace Examples {
   class CustomPropertiesAlg: public GaudiAlgorithm {
   public:
     /// Standard constructor
-    CustomPropertiesAlg(const std::string& name, ISvcLocator* pSvcLocator);
-    virtual ~CustomPropertiesAlg(); ///< Destructor
+    using GaudiAlgorithm::GaudiAlgorithm;
+    ~CustomPropertiesAlg() override = default; ///< Destructor
 
-    virtual StatusCode initialize();    ///< Algorithm initialization
-    virtual StatusCode execute   ();    ///< Algorithm execution
-    virtual StatusCode finalize  ();    ///< Algorithm finalization
-  protected:
+    StatusCode initialize() override;    ///< Algorithm initialization
+    StatusCode execute   () override;    ///< Algorithm execution
+    StatusCode finalize  () override;    ///< Algorithm finalization
   private:
-    std::unordered_map<std::string, std::string> m_unorderedMap;
+    PropertyWithValue<std::unordered_map<std::string, std::string>> m_unorderedMap {this, "UnorderedMap"};
   };
 }}
 

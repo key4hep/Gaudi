@@ -14,14 +14,14 @@ namespace Gaudi {
       /** Simple algorithm used to read data from two files. */
       class ReadAlg : public Algorithm {
       public:
-        ReadAlg(const std::string& name, ISvcLocator* pSvcLoc);
+        using Algorithm::Algorithm;
         ~ReadAlg() override = default;
         /// Initialize
         StatusCode initialize() override;
         /// Event callback
         StatusCode execute() override;
       private:
-        std::string m_addressfile;
+        StringProperty  m_addressfile {this, "AddressesFile",  {},  "File containing the address details of the extra data."};
         /// Address details for the data to be added to the main event.
         std::vector<RootAddressArgs> m_addresses;
         size_t m_count = 0;

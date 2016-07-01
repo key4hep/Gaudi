@@ -18,15 +18,12 @@ namespace Gaudi {
       /// Write the content of the RootAddress of a data object
       class DumpAddress: public Algorithm {
       public:
-        DumpAddress(const std::string &name, ISvcLocator *svcloc):
-          Algorithm(name, svcloc), m_count(0) {
-          declareProperty("OutputFile", m_output, "Name of the output file");
-          declareProperty("ObjectPath", m_path, "Path to the object in the transient store");
-        }
+        using Algorithm::Algorithm;
+
         StatusCode initialize() {
           StatusCode sc = Algorithm::initialize();
           if (sc.isFailure()) return sc;
-          m_outputFile.open(m_output.c_str());
+          m_outputFile.open(m_output.value().c_str());
           m_count = 0;
           return sc;
         }
@@ -43,7 +40,7 @@ namespace Gaudi {
               return StatusCode::FAILURE;
             }
           } else {
-            log << MSG::ERROR << "No data at " << m_path << endmsg;
+            log << MSG::ERROR << "No data at " << m_path.value() << endmsg;
             return StatusCode::FAILURE;
           }
           ++m_count;
@@ -55,13 +52,12 @@ namespace Gaudi {
           return Algorithm::finalize();
         }
       private:
-        std::string m_output;
-        std::string m_path;
+        StringProperty  m_output {this, "OutputFile",  {},  "Name of the output file"};
+        StringProperty  m_path {this, "ObjectPath",  {},  "Path to the object in the transient store"};
         std::ofstream m_outputFile;
-        long m_count;
+        long m_count = 0;
       };
       DECLARE_COMPONENT(DumpAddress)
     }
   }
 }
-

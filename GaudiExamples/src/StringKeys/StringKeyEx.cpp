@@ -112,7 +112,7 @@ StatusCode Gaudi::Examples::StringKeyEx::execute()
   always() << "Map03:" << Gaudi::Utils::toString ( map03 ) << endmsg ;
   always() << "Map04:" << Gaudi::Utils::toString ( map04 ) << endmsg ;
 
-  always() << "check for       StringKey " << Gaudi::Utils::toString ( m_key ) << endmsg ;
+  always() << "check for       StringKey " << Gaudi::Utils::toString ( m_key.value() ) << endmsg ;
 
   always () << " In Map 1: " << Gaudi::Utils::toString ( map1.end() != map1.find ( m_key.value() ) ) << endmsg ;
   always () << " In Map 2: " << Gaudi::Utils::toString ( map2.end() != map2.find ( m_key.value() ) ) << endmsg ;

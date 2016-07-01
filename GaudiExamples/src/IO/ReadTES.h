@@ -1,4 +1,4 @@
-#ifndef POOLIO_READTES_H 
+#ifndef POOLIO_READTES_H
 #define POOLIO_READTES_H 1
 
 // Include files
@@ -11,24 +11,22 @@
 
 
 /** @class ReadTES ReadTES.h
- *  
+ *
  *
  *  @author Marco Cattaneo
  *  @date   2008-11-03
  */
 class ReadTES : public GaudiAlgorithm {
-public: 
+public:
   /// Standard constructor
-  ReadTES( const std::string& name, ISvcLocator* pSvcLocator );
+  using GaudiAlgorithm::GaudiAlgorithm;
 
-  virtual ~ReadTES( ); ///< Destructor
-
-  virtual StatusCode initialize();    ///< Algorithm initialization
-  virtual StatusCode execute   ();    ///< Algorithm execution
+  StatusCode initialize() override;    ///< Algorithm initialization
+  StatusCode execute   () override;    ///< Algorithm execution
 
 protected:
 
 private:
-  std::vector<std::string> m_locations; ///< Objects to read from TES
+  StringArrayProperty m_locations{this, "Locations", {}, "Locations to read"};
 };
 #endif // POOLIO_READTES_H

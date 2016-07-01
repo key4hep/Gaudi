@@ -47,9 +47,7 @@ namespace Gaudi
       ( const std::string& name ,
         ISvcLocator*       pSvc )
         : GaudiTupleAlg ( name , pSvc )
-        , m_tracks ( "MyTracks" )
       {
-        declareProperty ( "Tracks" , m_tracks ) ;
         /// redefine the default values for various properties
         setProperty ( "NTupleProduce"    , "false" ).ignore() ;
         setProperty ( "NTuplePrint"      , "false" ).ignore() ;
@@ -62,16 +60,9 @@ namespace Gaudi
         setProperty ( "EvtColsPrint"     , "true"  ).ignore() ;
       }
       /// virtual destructor
-      virtual ~ExtendedEvtCol() {}
+      ~ExtendedEvtCol() override = default;
     private:
-      // default constructor is desabled
-      ExtendedEvtCol() ;                                    ///< no default constructor
-      // copy constructor is desabled
-      ExtendedEvtCol           ( const  ExtendedEvtCol& ) ; ///< no copy constructor
-      // assignement operator is desabled
-      ExtendedEvtCol& operator=( const  ExtendedEvtCol& ) ; ///< no assignement
-    private:
-      std::string  m_tracks ;
+      StringProperty  m_tracks{this, "Tracks", "MyTracks"};
     } ;
   } // end of namespace Examples
 } // end of namespace Gaudi
@@ -138,4 +129,3 @@ StatusCode Gaudi::Examples::ExtendedEvtCol::execute ()
 // ============================================================================
 /// The END
 // ============================================================================
-
