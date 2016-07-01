@@ -54,14 +54,9 @@
   <class name    = "Stat"                   />
   <class pattern = "Chrono*"                 />
 
-  <class pattern = "SimpleProperty<*>"       />
-  <class pattern = "SimplePropertyRef<*>"    />
-  <class pattern = "PropertyWithVerifier<*>" />
   <class pattern = "PropertyWithValue<*>">
     <field name="m_value" transient="true"/>
   </class>
-  <class pattern = "BoundedVerifier<*>"      />
-  <class pattern = "PropertyVerifier<*>"     />
 
   <class pattern = "AIDA::I*"  />
   <class name    = "GaudiPython::PyAlgorithm"/>
