@@ -77,7 +77,7 @@ private:
                              "The String delimiter between sequences/algorithms names in "
                              "\"Task Type\" grouping at Amplifier. Default=\" \"."};
   BooleanProperty m_enable_frames{this, "EnableFrames", false,
-                                  "Enable frames (needed for detecting slow events). Default=false.", ""};
+                                  "Enable frames (needed for detecting slow events). Default=false."};
   IntegerProperty m_frames_rate{this, "FramesRate", 100,
                                 "Frames rate. The recommended maximum rate for calling the Frame API is "
                                 "1000 frames (events) per second. A higher rate may result in large product"
