@@ -52,23 +52,22 @@ DataObject* DataObjectHandleBase::fetch() {
   if (UNLIKELY(!m_init)) init();
 
   StatusCode sc = m_EDS->retrieveObject(objKey(), p);
-  if ( UNLIKELY( sc.isFailure() ) &&
-       UNLIKELY( !alternativeDataProductNames().empty()) ) {
-      // let's try our alternatives
-      for (const auto& alt : alternativeDataProductNames() ) {
-          sc = m_EDS->retrieveObject(alt , p);
-          if (sc.isSuccess()) {
-	          MsgStream log(m_MS,"DataObjectHandle");
-              log << MSG::WARNING << "could not find " << objKey()
-                  << " -- but found alternative: " << alt
-                  << " making this the new default, and removing searchpath "
-                  << endmsg;
-              // found something -- set it as default,
-              // and zero out the alternatives
-              setKey(alt);
-              setAlternativeDataProductNames( { } );
-              break;
-          }
+  if ( UNLIKELY( sc.isFailure() ) ) {
+      // let's try our alternatives (if any)
+      auto alt = std::find_if( alternativeDataProductNames().begin(),
+                               alternativeDataProductNames().end(),
+                               [&](const std::string& n) {
+                                   return m_EDS->retrieveObject(n,p).isSuccess();
+                               } );
+      if (alt!=alternativeDataProductNames().end()) {
+	    MsgStream log(m_MS,m_owner->name() + ":DataObjectHandle");
+        log << MSG::INFO <<  ": could not find \"" << objKey()
+            << "\" -- using alternative source: \"" << *alt << "\" instead"
+            << endmsg;
+        // found something -- set it as default,
+        setKey(*alt);
+        // and zero out the alternatives
+        setAlternativeDataProductNames( { } );
       }
   }
   return p;
