@@ -100,7 +100,7 @@ StatusCode DetDataSvc::setupDetectorDescription() {
       }
     }
     // Writing the description file in the output log file [bugs #2854]
-    always() << "Detector description database: " << m_detDbLocation << endmsg;
+    always() << "Detector description database: " << m_detDbLocation.value() << endmsg;
   }
   else {
     info() << "Detector description not requested to be loaded" << endmsg;
