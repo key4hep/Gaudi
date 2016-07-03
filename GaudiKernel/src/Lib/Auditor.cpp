@@ -12,7 +12,6 @@
 Auditor::Auditor( const std::string& name, ISvcLocator* pSvcLocator )
     : m_name( name )
     , m_pSvcLocator( pSvcLocator )
-    , m_isEnabled( true )
     , m_isInitialized( false )
     , m_isFinalized( false )
 {
