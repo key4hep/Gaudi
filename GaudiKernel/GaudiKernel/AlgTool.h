@@ -385,6 +385,7 @@ private:
 
   StringProperty m_monitorSvcName{this, "MonitorService", "MonitorSvc", "name to use for Monitor Service"};
 
+  BooleanProperty m_auditInit{this, "AuditTools", false, "[[deprecated]] unused"};
   BooleanProperty m_auditorInitialize{this, "AuditInitialize", false, "trigger auditor on initialize()"};
   BooleanProperty m_auditorStart{this, "AuditStart", false, "trigger auditor on start()"};
   BooleanProperty m_auditorStop{this, "AuditStop", false, "trigger auditor on stop()"};
