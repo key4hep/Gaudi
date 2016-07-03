@@ -118,13 +118,6 @@ private:
   std::string taskTypeName(const std::string& component_name) const;
 };
 // ## Implementation.
-// Constructor
-IntelProfilerAuditor::IntelProfilerAuditor(const std::string& name,
-  ISvcLocator* pSvcLocator) : Auditor(name, pSvcLocator)
-    ,m_nEvents(0), m_isStarted(false) {
-  // ## Properties
-}
-
 void IntelProfilerAuditor::start() {
   m_isStarted = true;
   __itt_resume();
