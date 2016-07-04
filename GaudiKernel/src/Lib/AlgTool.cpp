@@ -195,6 +195,7 @@ AlgTool::AlgTool( const std::string& type,
     if ( appMgr && appMgr->hasProperty( "AuditTools" ) ) {
       audit.assign( appMgr->getProperty( "AuditTools" ) );
     }
+    m_auditInit           = audit;
     m_auditorInitialize   = audit;
     m_auditorStart        = audit;
     m_auditorStop         = audit;

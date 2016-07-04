@@ -371,6 +371,7 @@ Service::Service(std::string name, ISvcLocator* svcloc) :
   if ( appMgr && appMgr->hasProperty( "AuditServices" ) ) {
     audit.assign( appMgr->getProperty( "AuditServices" ) );
   }
+  m_auditInit           = audit;
   m_auditorInitialize   = audit;
   m_auditorStart        = audit;
   m_auditorStop         = audit;

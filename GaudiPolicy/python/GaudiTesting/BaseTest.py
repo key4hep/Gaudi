@@ -837,7 +837,7 @@ lineSkipper = LineSkipper(["//GP:",
                                         r"^ \|",
                                         r"^ ID=",
                                         # Ignore removed properties
-                                        r"Property(.*)'Audit(Algorithm|Tool)s':",
+                                        r"Property(.*)'Audit(Algorithm|Tool|Service)s':",
                                         ] )
 
 if ROOT6WorkAroundEnabled('ReadRootmapCheck'):

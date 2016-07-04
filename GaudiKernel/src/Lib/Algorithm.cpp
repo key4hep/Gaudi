@@ -55,6 +55,7 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator* pSvcLocator, const s
   if ( appMgr && appMgr->hasProperty( "AuditAlgorithms" ) ) {
     audit.assign( appMgr->getProperty( "AuditAlgorithms" ) );
   }
+  m_auditInit           = audit;
   m_auditorInitialize   = audit;
   m_auditorReinitialize = audit;
   m_auditorRestart      = audit;

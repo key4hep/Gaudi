@@ -573,6 +573,7 @@ private:
   IntegerProperty m_errorMax{this, "ErrorMax", 1, "[[deprecated]] max number of errors"};
   IntegerProperty m_errorCount{this, "ErrorCounter", 0, "[[deprecated]] error counter"};
 
+  BooleanProperty m_auditInit{this, "AuditAlgorithms", false, "[[deprecated]] unused"};
   BooleanProperty m_auditorInitialize{this, "AuditInitialize", false, "trigger auditor on initialize()"};
   BooleanProperty m_auditorReinitialize{this, "AuditReinitialize", false, "trigger auditor on reinitialize()"};
   BooleanProperty m_auditorRestart{this, "AuditRestart", false, "trigger auditor on restart()"};

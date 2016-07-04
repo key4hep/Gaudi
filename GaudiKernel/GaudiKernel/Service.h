@@ -222,6 +222,7 @@ protected:
   // Properties
 
   IntegerProperty m_outputLevel{this, "OutputLevel", MSG::NIL, "output level"};
+  BooleanProperty m_auditInit{this, "AuditServices", false, "[[deprecated]] unused"};
   BooleanProperty m_auditorInitialize{this, "AuditInitialize", false, "trigger auditor on initialize()"};
   BooleanProperty m_auditorStart{this, "AuditStart", false, "trigger auditor on start()"};
   BooleanProperty m_auditorStop{this, "AuditStop", false, "trigger auditor on stop()"};
