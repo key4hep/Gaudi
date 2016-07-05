@@ -56,11 +56,6 @@ public:
   virtual StatusCode fromString( const std::string& value ) = 0;
 
 public:
-  /// get a reference to the readCallBack
-  const std::function<void( Property& )>& readCallBack() const { return m_readCallBack; }
-  /// get a reference to the updateCallBack
-  const std::function<void( Property& )>& updateCallBack() const { return m_updateCallBack; }
-
   /// set new callback for reading
   virtual Property& declareReadHandler( std::function<void( Property& )> fun );
   /// set new callback for update
@@ -77,11 +72,6 @@ public:
   {
     return declareUpdateHandler( [=]( Property& p ) { ( instance->*MF )( p ); } );
   }
-
-  /// use the call-back function at reading
-  virtual void useReadHandler() const;
-  /// use the call-back function at update
-  virtual bool useUpdateHandler();
 
 public:
   /// virtual destructor
@@ -116,12 +106,6 @@ private:
   std::string m_documentation;
   /// property type
   const std::type_info* m_typeinfo;
-
-protected:
-  // call back functor for reading
-  mutable std::function<void( Property& )> m_readCallBack;
-  // call back functor for update
-  std::function<void( Property& )> m_updateCallBack;
 };
 
 namespace Gaudi
@@ -136,11 +120,10 @@ namespace Gaudi
         inline TYPE fromString( const std::string& s )
         {
           TYPE tmp;
-          if ( Gaudi::Parsers::parse( tmp, s ).isSuccess() ) {
-            return tmp;
-          } else {
+          if ( !Gaudi::Parsers::parse( tmp, s ).isSuccess() ) {
             throw std::invalid_argument( "cannot parse '" + s + "' to " + System::typeinfoName( typeid( TYPE ) ) );
           }
+          return tmp;
         }
       };
       template <>
@@ -216,6 +199,74 @@ namespace Gaudi
         TYPE m_lowerBound{};
         TYPE m_upperBound{};
       };
+      namespace HandlerBits
+      {
+        struct EmptyRead {
+          void useReadHandler(::Property& ) const {}
+          void setReadHandler( const ::Property& owner, std::function<void(::Property& )> )
+          {
+            throw std::logic_error( "read handler not available for " + owner.name() );
+          }
+        };
+        struct EmptyUpdate {
+          void useUpdateHandler(::Property& ) {}
+          void setUpdateHandler( const ::Property& owner, std::function<void(::Property& )> )
+          {
+            throw std::logic_error( "update handler not available for " + owner.name() );
+          }
+        };
+
+        class ActualRead
+        {
+          mutable std::function<void(::Property& )> m_readCallBack;
+
+        public:
+          void useReadHandler(::Property& p ) const
+          {
+            if ( m_readCallBack ) {
+              // avoid infinite loop
+              std::function<void(::Property& )> theCallBack;
+              theCallBack.swap( m_readCallBack );
+              theCallBack( p );
+              m_readCallBack.swap( theCallBack );
+            }
+          }
+          void setReadHandler( const ::Property&, std::function<void(::Property& )> fun )
+          {
+            m_readCallBack = std::move( fun );
+          }
+        };
+
+        class ActualUpdate
+        {
+          std::function<void(::Property& )> m_updateCallBack;
+
+        public:
+          void useUpdateHandler(::Property& p )
+          {
+            if ( m_updateCallBack ) {
+              // avoid infinite loop
+              std::function<void(::Property& )> theCallBack;
+              theCallBack.swap( m_updateCallBack );
+              theCallBack( p );
+              m_updateCallBack.swap( theCallBack );
+            }
+          }
+          void setUpdateHandler( const ::Property&, std::function<void(::Property& )> fun )
+          {
+            m_updateCallBack = std::move( fun );
+          }
+        };
+      }
+
+      struct NoHandler : HandlerBits::EmptyRead, HandlerBits::EmptyUpdate {
+      };
+      struct ReadHandler : HandlerBits::ActualRead, HandlerBits::EmptyUpdate {
+      };
+      struct UpdateHandler : HandlerBits::EmptyRead, HandlerBits::ActualUpdate {
+      };
+      struct ReadUpdateHandler : HandlerBits::ActualRead, HandlerBits::ActualUpdate {
+      };
     }
   }
 }
@@ -231,7 +282,8 @@ namespace Gaudi
  *  @date 2016-06-16
  */
 // ============================================================================
-template <class TYPE, class VERIFIER = Gaudi::Details::Property::NullVerifier<TYPE>>
+template <class TYPE, class VERIFIER = Gaudi::Details::Property::NullVerifier<TYPE>,
+          class HANDLERS = Gaudi::Details::Property::ReadUpdateHandler>
 class PropertyWithValue : public Property
 {
 public:
@@ -240,11 +292,13 @@ public:
   using StorageType  = TYPE;
   using ValueType    = typename std::remove_reference<StorageType>::type;
   using VerifierType = VERIFIER;
+  using HandlersType = HANDLERS;
 
 private:
   /// Storage.
   StorageType m_value;
   VerifierType m_verifier;
+  HandlersType m_handlers;
   /// helper typedefs for SFINAE
   /// @{
   template <class T>
@@ -285,6 +339,38 @@ public:
   template <typename = void>
   PropertyWithValue() : Property( typeid( ValueType ), "", "" ), m_value()
   {
+  }
+
+  using Property::declareReadHandler;
+  using Property::declareUpdateHandler;
+
+  /// set new callback for reading
+  Property& declareReadHandler( std::function<void( Property& )> fun ) override
+  {
+    m_handlers.setReadHandler( *this, std::move( fun ) );
+    return *this;
+  }
+  /// set new callback for update
+  Property& declareUpdateHandler( std::function<void( Property& )> fun ) override
+  {
+    m_handlers.setUpdateHandler( *this, std::move( fun ) );
+    return *this;
+  }
+
+  /// use the call-back function at reading, if available
+  void useReadHandler() const
+  {
+    m_handlers.useReadHandler( const_cast<Property&>( static_cast<const Property&>( *this ) ) );
+  }
+
+  /// use the call-back function at update, if available
+  void useUpdateHandler()
+  {
+    try {
+      m_handlers.useUpdateHandler( *this );
+    } catch ( const std::exception& x ) {
+      throw std::invalid_argument( "failure in update handler of '" + name() + "': " + x.what() );
+    }
   }
 
   /// Automatic conversion to value (const reference).
@@ -333,7 +419,7 @@ public:
   {
     m_verifier( v );
     m_value = std::forward<T>( v );
-    if ( !useUpdateHandler() ) throw std::invalid_argument( "failure in update handler of '" + name() + "'" );
+    useUpdateHandler();
     return *this;
   }
 
@@ -345,11 +431,7 @@ public:
   /// Backward compatibility \deprecated will be removed in v28r1
   /// @{
   const ValueType& value() const { return *this; }
-  ValueType& value()
-  {
-    useReadHandler();
-    return m_value;
-  }
+  ValueType& value() { return const_cast<ValueType&>( (const ValueType&)*this ); }
   bool setValue( const ValueType& v )
   {
     *this = v;
@@ -506,6 +588,7 @@ public:
     useReadHandler();
     Gaudi::Utils::toStream( m_value, out );
   }
+
   // ==========================================================================
   // protected:
   //   // ==========================================================================
@@ -521,31 +604,33 @@ public:
 };
 
 /// delegate (value == property) to property operator==
-template <class T, class TP, class V>
-bool operator==( const T& v, const PropertyWithValue<TP, V>& p )
+template <class T, class TP, class V, class H>
+bool operator==( const T& v, const PropertyWithValue<TP, V, H>& p )
 {
   return p == v;
 }
 
 /// delegate (value != property) to property operator!=
-template <class T, class TP, class V>
-bool operator!=( const T& v, const PropertyWithValue<TP, V>& p )
+template <class T, class TP, class V, class H>
+bool operator!=( const T& v, const PropertyWithValue<TP, V, H>& p )
 {
   return p != v;
 }
 
 /// implemantation of (value + property)
-template <class T, class TP, class V>
-decltype( std::declval<TP>() + std::declval<T>() ) operator+( const T& v, const PropertyWithValue<TP, V>& p )
+template <class T, class TP, class V, class H>
+decltype( std::declval<TP>() + std::declval<T>() ) operator+( const T& v, const PropertyWithValue<TP, V, H>& p )
 {
   return v + p.value();
 }
 
-template <class TYPE, class VERIFIER = Gaudi::Details::Property::BoundedVerifier<TYPE>>
-using SimpleProperty = PropertyWithValue<TYPE, VERIFIER>;
+template <class TYPE, class VERIFIER = Gaudi::Details::Property::BoundedVerifier<TYPE>,
+          class HANDLERS = Gaudi::Details::Property::ReadUpdateHandler>
+using SimpleProperty     = PropertyWithValue<TYPE, VERIFIER, HANDLERS>;
 
-template <class TYPE, class VERIFIER = Gaudi::Details::Property::NullVerifier<TYPE>>
-using SimplePropertyRef = PropertyWithValue<TYPE&, VERIFIER>;
+template <class TYPE, class VERIFIER = Gaudi::Details::Property::NullVerifier<TYPE>,
+          class HANDLERS = Gaudi::Details::Property::ReadUpdateHandler>
+using SimplePropertyRef  = PropertyWithValue<TYPE&, VERIFIER, HANDLERS>;
 
 // Typedef Properties for built-in types
 typedef SimpleProperty<bool> BooleanProperty;
@@ -623,6 +708,34 @@ typedef SimplePropertyRef<std::vector<long double>> LongDoubleArrayPropertyRef;
 
 typedef SimplePropertyRef<std::vector<std::string>> StringArrayPropertyRef;
 
+/// Helper class to simplify the migration old properties deriving directly from
+/// Property.
+class PropertyWithHandlers : public Property
+{
+  Gaudi::Details::Property::ReadUpdateHandler m_handlers;
+
+public:
+  using Property::Property;
+
+  /// use the call-back function at reading, if available
+  void useReadHandler() const
+  {
+    m_handlers.useReadHandler( const_cast<Property&>( static_cast<const Property&>( *this ) ) );
+    ;
+  }
+
+  /// use the call-back function at update, if available
+  bool useUpdateHandler()
+  {
+    try {
+      m_handlers.useUpdateHandler( *this );
+    } catch ( const std::exception& x ) {
+      throw std::invalid_argument( "failure in update handler of '" + name() + "': " + x.what() );
+    }
+    return true;
+  }
+};
+
 // forward-declaration is sufficient here
 class GaudiHandleBase;
 
@@ -630,7 +743,7 @@ class GaudiHandleBase;
 // definition is not needed. The rest goes into the .cpp file.
 // The goal is to decouple the header files, to avoid that the whole
 // world depends on GaudiHandle.h
-class GAUDI_API GaudiHandleProperty : public Property
+class GAUDI_API GaudiHandleProperty : public PropertyWithHandlers
 {
 public:
   GaudiHandleProperty( std::string name, GaudiHandleBase& ref );
@@ -670,7 +783,7 @@ private:
 // forward-declaration is sufficient here
 class GaudiHandleArrayBase;
 
-class GAUDI_API GaudiHandleArrayProperty : public Property
+class GAUDI_API GaudiHandleArrayProperty : public PropertyWithHandlers
 {
 public:
   GaudiHandleArrayProperty( std::string name, GaudiHandleArrayBase& ref );

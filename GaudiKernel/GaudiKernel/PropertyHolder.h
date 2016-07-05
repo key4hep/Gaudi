@@ -127,8 +127,8 @@ public:
 
   /// Declare a Property instance setting name and documentation.
   /// \deprecated Prefer the signatures using a fully initialized Property instance.
-  template <class TYPE, class VERIFIER>
-  Property* declareProperty( const std::string& name, PropertyWithValue<TYPE, VERIFIER>& prop,
+  template <class TYPE, class VERIFIER, class HANDLERS>
+  Property* declareProperty( const std::string& name, PropertyWithValue<TYPE, VERIFIER, HANDLERS>& prop,
                              const std::string& doc = "none" )
   {
     assertUniqueName( name );

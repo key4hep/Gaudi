@@ -3,8 +3,8 @@
 #define GAUDIKERNEL_CARRAYASPROPERTY_H
 #include "GaudiKernel/Property.h"
 
-template <class TYPE, size_t N, class VERIFIER>
-class PropertyWithValue<TYPE ( & )[N], VERIFIER> : public Property
+template <class TYPE, size_t N, class VERIFIER, class HANDLERS>
+class PropertyWithValue<TYPE ( & )[N], VERIFIER, HANDLERS> : public Property
 {
 public:
   // ==========================================================================
@@ -12,15 +12,17 @@ public:
   using StorageType  = TYPE ( & )[N];
   using ValueType    = typename std::remove_reference<StorageType>::type;
   using VerifierType = VERIFIER;
+  using HandlersType = HANDLERS;
 
 private:
   /// Storage.
   StorageType m_value;
   VerifierType m_verifier;
+  HandlersType m_handlers;
   /// helper typedefs for SFINAE
   /// @{
   template <class T>
-  using is_this_type = std::is_same<Property, typename std::remove_reference<T>::type>;
+  using is_this_type = std::is_same<PropertyWithValue, typename std::remove_reference<T>::type>;
   template <class T>
   using not_copying = std::enable_if<!is_this_type<T>::value>;
   /// @}
@@ -49,13 +51,45 @@ public:
   {
   }
 
+  using Property::declareReadHandler;
+  using Property::declareUpdateHandler;
+
+  /// set new callback for reading
+  Property& declareReadHandler( std::function<void( Property& )> fun ) override
+  {
+    m_handlers.setReadHandler( *this, std::move( fun ) );
+    return *this;
+  }
+  /// set new callback for update
+  Property& declareUpdateHandler( std::function<void( Property& )> fun ) override
+  {
+    m_handlers.setUpdateHandler( *this, std::move( fun ) );
+    return *this;
+  }
+
+  /// use the call-back function at reading, if available
+  void useReadHandler() const
+  {
+    m_handlers.useReadHandler( const_cast<Property&>( static_cast<const Property&>( *this ) ) );
+  }
+
+  /// use the call-back function at update, if available
+  void useUpdateHandler()
+  {
+    try {
+      m_handlers.useUpdateHandler( *this );
+    } catch ( const std::exception& x ) {
+      throw std::invalid_argument( "failure in update handler of '" + name() + "': " + x.what() );
+    }
+  }
+
   /// Automatic conversion to value (const reference).
   operator const ValueType&() const
   {
     useReadHandler();
     return m_value;
   }
-  // /// Automatic conversion to value (const reference).
+  // /// Automatic conversion to value (reference).
   // operator ValueType& () {
   //   useReadHandler();
   //   return m_value;
@@ -81,16 +115,20 @@ public:
   /// Accessor to verifier.
   VerifierType& verifier() { return m_verifier; }
 
-  /// Backward compatibility (deprecated)
+  /// Backward compatibility \deprecated will be removed in v28r1
   /// @{
   const ValueType& value() const { return *this; }
-  ValueType& value()
+  ValueType& value() { return const_cast<ValueType&>( (const ValueType&)*this ); }
+  bool setValue( const ValueType& v )
   {
-    useReadHandler();
-    return m_value;
+    *this = v;
+    return true;
   }
-  void setValue( const ValueType& v ) { *this = v; }
-  void set( const ValueType& v ) { *this = v; }
+  bool set( const ValueType& v )
+  {
+    *this = v;
+    return true;
+  }
   Property* clone() const override { return new PropertyWithValue( *this ); }
   /// @}
 
@@ -120,7 +158,7 @@ public:
     if ( p ) {
       *this = p->value();
     } else {
-      this->fromString( source.toString() );
+      this->fromString( source.toString() ).ignore();
     }
     return true;
   }

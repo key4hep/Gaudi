@@ -20,7 +20,7 @@ class DataObjectHandleBase;
 
 //---------------------------------------------------------------------------
 
-class GAUDI_API DataObjectHandleProperty :  public ::Property {
+class GAUDI_API DataObjectHandleProperty :  public PropertyWithHandlers {
  public:
 
   DataObjectHandleProperty( const std::string& name, DataObjectHandleBase& ref );

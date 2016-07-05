@@ -44,52 +44,18 @@ Property::Property( std::string name, const std::type_info& type )
 // ============================================================================
 // set new callback for reading
 // ============================================================================
-Property& Property::declareReadHandler( std::function<void( Property& )> fun )
+Property& Property::declareReadHandler( std::function<void( Property& )> )
 {
-  m_readCallBack = std::move( fun );
+  throw std::logic_error("read handler not available for " + System::typeinfoName( typeid( *this ) ) );
   return *this;
 }
 // ============================================================================
 // set new callback for update
 // ============================================================================
-Property& Property::declareUpdateHandler( std::function<void( Property& )> fun )
+Property& Property::declareUpdateHandler( std::function<void( Property& )> )
 {
-  m_updateCallBack = std::move( fun );
+  throw std::logic_error("update handler not available for " + System::typeinfoName( typeid( *this ) ) );
   return *this;
-}
-// ============================================================================
-// use the call-back function at reading
-// ============================================================================
-void Property::useReadHandler() const
-{
-  if ( !m_readCallBack ) {
-    return;
-  } // RETURN
-  // avoid infinite loop
-  std::function<void( Property& )> theCallBack;
-  theCallBack.swap( m_readCallBack );
-  theCallBack( const_cast<Property&>( *this ) );
-  m_readCallBack.swap( theCallBack );
-}
-// ============================================================================
-// use the call-back function at update
-// ============================================================================
-bool Property::useUpdateHandler()
-{
-  bool sc( true );
-  if ( !m_updateCallBack ) {
-    return sc;
-  } // RETURN
-  // avoid infinite loop
-  std::function<void( Property& )> theCallBack;
-  theCallBack.swap( m_updateCallBack );
-  try {
-    theCallBack( *this );
-  } catch ( ... ) {
-    sc = false;
-  }
-  m_updateCallBack.swap( theCallBack );
-  return sc;
 }
 // ============================================================================
 // the printout of the property value
@@ -152,7 +118,7 @@ bool Gaudi::Utils::hasProperty( const IProperty* p, const std::string& name )
 // GaudiHandleProperty implementation
 //
 GaudiHandleProperty::GaudiHandleProperty( std::string name_, GaudiHandleBase& ref )
-    : Property( std::move( name_ ), typeid( GaudiHandleBase ) ), m_pValue( &ref )
+    : PropertyWithHandlers( std::move( name_ ), typeid( GaudiHandleBase ) ), m_pValue( &ref )
 {
   m_pValue->setPropertyName( name() );
 }
@@ -186,7 +152,7 @@ StatusCode GaudiHandleProperty::fromString( const std::string& s )
 // GaudiHandlePropertyArray implementation
 //
 GaudiHandleArrayProperty::GaudiHandleArrayProperty( std::string name_, GaudiHandleArrayBase& ref )
-    : Property( std::move( name_ ), typeid( GaudiHandleArrayBase ) ), m_pValue( &ref )
+    : PropertyWithHandlers( std::move( name_ ), typeid( GaudiHandleArrayBase ) ), m_pValue( &ref )
 {
   m_pValue->setPropertyName( name() );
 }

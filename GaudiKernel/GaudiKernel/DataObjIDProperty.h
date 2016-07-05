@@ -24,7 +24,7 @@
 //---------------------------------------------------------------------------
 
 
-class GAUDI_API DataObjIDProperty :  public ::Property {
+class GAUDI_API DataObjIDProperty :  public PropertyWithHandlers {
  public:
 
   DataObjIDProperty( const std::string& name, DataObjID& ref );
@@ -100,7 +100,7 @@ DataObjIDProperty::value() const
 
 //---------------------------------------------------------------------------
 
-class GAUDI_API DataObjIDCollProperty :  public ::Property {
+class GAUDI_API DataObjIDCollProperty :  public PropertyWithHandlers {
  public:
 
   DataObjIDCollProperty( const std::string& name, DataObjIDColl& ref );

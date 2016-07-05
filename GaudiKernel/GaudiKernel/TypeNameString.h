@@ -28,8 +28,8 @@ namespace Gaudi {
           m_type = deftyp;
         }
       }
-      template<class T, class V>
-      TypeNameString(const PropertyWithValue<T, V>& prop):
+      template<class T, class V, class H>
+      TypeNameString(const PropertyWithValue<T, V, H>& prop):
         TypeNameString(prop.value()) {}
       const std::string& type() const { return m_type; }
       const std::string& name() const { return m_name; }
