@@ -263,7 +263,7 @@ private:
   StringProperty m_dataSvcName{this, "DataSvc", "EventDataSvc", "DataSvc name"};
 
   BooleanProperty m_partialPath{this, "UsePreceedingPath", true,  "allow creation of partial leaves"};
-  BooleanProperty m_dump{this, "Dump", false, "dump configuration and stastics, if set to True after initialize it triggers a dump imeediately"};
+  BooleanProperty m_dump{this, "Dump", false, "dump configuration and stastics, if set to True after initialize it triggers a dump immediately"};
   BooleanProperty m_init{this, "PreInitialize", false, "(pre)initialize all algorithms"};
   BooleanProperty m_allowInitFailure{this, "AllowPreInitializeFailure", false, "allow (pre)initialization of algorithms to fail without stopping the application"};
 
