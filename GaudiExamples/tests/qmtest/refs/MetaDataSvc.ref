@@ -4,7 +4,7 @@
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr (GaudiCoreSvc v4r1)
-                                          running on pcphlbc16 on Fri Jul  1 10:44:03 2016
+                                          running on pcphlbc16 on Wed Jul  6 15:07:54 2016
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
@@ -66,6 +66,7 @@ JobOptionsSvc.AuditFinalize:False
 JobOptionsSvc.AuditInitialize:False
 JobOptionsSvc.AuditReinitialize:False
 JobOptionsSvc.AuditRestart:False
+JobOptionsSvc.AuditServices:False
 JobOptionsSvc.AuditStart:False
 JobOptionsSvc.AuditStop:False
 JobOptionsSvc.DUMPFILE:
@@ -79,6 +80,7 @@ MessageSvc.AuditFinalize:False
 MessageSvc.AuditInitialize:False
 MessageSvc.AuditReinitialize:False
 MessageSvc.AuditRestart:False
+MessageSvc.AuditServices:False
 MessageSvc.AuditStart:False
 MessageSvc.AuditStop:False
 MessageSvc.Format:% F%18W%S%7W%R%T %0W%M
@@ -117,6 +119,7 @@ NTupleSvc.AuditFinalize:False
 NTupleSvc.AuditInitialize:False
 NTupleSvc.AuditReinitialize:False
 NTupleSvc.AuditRestart:False
+NTupleSvc.AuditServices:False
 NTupleSvc.AuditStart:False
 NTupleSvc.AuditStop:False
 NTupleSvc.DataAccessName:DataAccess

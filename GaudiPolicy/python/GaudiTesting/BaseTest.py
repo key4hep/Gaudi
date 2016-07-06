@@ -781,7 +781,7 @@ for w,o,r in [
               # Change of property name in Algorithm (GAUDI-1030)
               (None, r"Property(.*)'ErrorCount':", r"Property\1'ErrorCounter':"),
               # Ignore count of declared properties (anyway they are all printed)
-              (None, r"^(.*DEBUG List of ALL properties of .*#properties = )\d+", r"\1NN"),
+              (None, r"^(.*(DEBUG|SUCCESS) List of ALL properties of .*#properties = )\d+", r"\1NN"),
               ]: #[ ("TIMER.TIMER","[0-9]+[0-9.]*", "") ]
     normalizeExamples += RegexpReplacer(o,r,w)
 
