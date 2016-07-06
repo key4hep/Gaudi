@@ -42,22 +42,6 @@ Property::Property( std::string name, const std::type_info& type )
 {
 }
 // ============================================================================
-// set new callback for reading
-// ============================================================================
-Property& Property::declareReadHandler( std::function<void( Property& )> )
-{
-  throw std::logic_error("read handler not available for " + System::typeinfoName( typeid( *this ) ) );
-  return *this;
-}
-// ============================================================================
-// set new callback for update
-// ============================================================================
-Property& Property::declareUpdateHandler( std::function<void( Property& )> )
-{
-  throw std::logic_error("update handler not available for " + System::typeinfoName( typeid( *this ) ) );
-  return *this;
-}
-// ============================================================================
 // the printout of the property value
 // ============================================================================
 std::ostream& Property::fillStream( std::ostream& stream ) const

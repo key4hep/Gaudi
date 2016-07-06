@@ -57,9 +57,11 @@ public:
 
 public:
   /// set new callback for reading
-  virtual Property& declareReadHandler( std::function<void( Property& )> fun );
+  virtual Property& declareReadHandler( std::function<void( Property& )> fun ) = 0;
   /// set new callback for update
-  virtual Property& declareUpdateHandler( std::function<void( Property& )> fun );
+  virtual Property& declareUpdateHandler( std::function<void( Property& )> fun ) = 0;
+  /// manual trigger for callback for update
+  virtual bool useUpdateHandler() = 0;
 
   template <class HT>
   inline Property& declareReadHandler( void ( HT::*MF )( Property& ), HT* instance )
@@ -133,7 +135,9 @@ namespace Gaudi
       }
       struct NullVerifier {
         template <class TYPE>
-        void operator()( const TYPE& ) const {}
+        void operator()( const TYPE& ) const
+        {
+        }
       };
       template <class TYPE>
       struct BoundedVerifier {
@@ -200,26 +204,28 @@ namespace Gaudi
         TYPE m_upperBound{};
       };
 
+      /// helper to disable a while triggering it, to avoid infinite recursion
+      struct SwapCall {
+        using callback_t = std::function<void(::Property& )>;
+        callback_t tmp, &orig;
+        SwapCall( callback_t& input ) : orig( input ) { tmp.swap( orig ); }
+        ~SwapCall() { orig.swap( tmp ); }
+        void operator()(::Property& p ) const { tmp( p ); }
+      };
+
       struct NoHandler {
       };
       struct ReadHandler {
         mutable std::function<void(::Property& )> m_readCallBack;
 
       public:
-        void useReadHandler(::Property& p ) const
+        void useReadHandler( const ::Property& p ) const
         {
           if ( m_readCallBack ) {
-            // avoid infinite loop
-            std::function<void(::Property& )> theCallBack;
-            theCallBack.swap( m_readCallBack );
-            theCallBack( p );
-            m_readCallBack.swap( theCallBack );
+            SwapCall{m_readCallBack}( const_cast<::Property&>( p ) );
           }
         }
-        void setReadHandler( std::function<void(::Property& )> fun )
-        {
-          m_readCallBack = std::move( fun );
-        }
+        void setReadHandler( std::function<void(::Property& )> fun ) { m_readCallBack = std::move( fun ); }
       };
       struct UpdateHandler {
         std::function<void(::Property& )> m_updateCallBack;
@@ -228,17 +234,14 @@ namespace Gaudi
         void useUpdateHandler(::Property& p )
         {
           if ( m_updateCallBack ) {
-            // avoid infinite loop
-            std::function<void(::Property& )> theCallBack;
-            theCallBack.swap( m_updateCallBack );
-            theCallBack( p );
-            m_updateCallBack.swap( theCallBack );
+            try {
+              SwapCall{m_updateCallBack}( p );
+            } catch ( const std::exception& x ) {
+              throw std::invalid_argument( "failure in update handler of '" + p.name() + "': " + x.what() );
+            }
           }
         }
-        void setUpdateHandler( std::function<void(::Property& )> fun )
-        {
-          m_updateCallBack = std::move( fun );
-        }
+        void setUpdateHandler( std::function<void(::Property& )> fun ) { m_updateCallBack = std::move( fun ); }
       };
       struct ReadUpdateHandler : ReadHandler, UpdateHandler {
       };
@@ -332,26 +335,17 @@ public:
     return *this;
   }
 
-  /// use the call-back function at reading, if available
-  void useReadHandler() const
+  /// manual trigger for callback for update
+  bool useUpdateHandler() override
   {
-    m_handlers.useReadHandler( const_cast<Property&>( static_cast<const Property&>( *this ) ) );
-  }
-
-  /// use the call-back function at update, if available
-  void useUpdateHandler()
-  {
-    try {
-      m_handlers.useUpdateHandler( *this );
-    } catch ( const std::exception& x ) {
-      throw std::invalid_argument( "failure in update handler of '" + name() + "': " + x.what() );
-    }
+    m_handlers.useUpdateHandler( *this );
+    return true;
   }
 
   /// Automatic conversion to value (const reference).
   operator const ValueType&() const
   {
-    useReadHandler();
+    m_handlers.useReadHandler( *this );
     return m_value;
   }
   // /// Automatic conversion to value (reference).
@@ -394,7 +388,7 @@ public:
   {
     m_verifier( v );
     m_value = std::forward<T>( v );
-    useUpdateHandler();
+    m_handlers.useUpdateHandler( *this );
     return *this;
   }
 
@@ -560,22 +554,9 @@ public:
   /// value  -> stream
   void toStream( std::ostream& out ) const override
   {
-    useReadHandler();
+    m_handlers.useReadHandler( *this );
     Gaudi::Utils::toStream( m_value, out );
   }
-
-  // ==========================================================================
-  // protected:
-  //   // ==========================================================================
-  //   /// set the value
-  //   inline void  i_set ( const ValueType& value ) {
-  //     Traits::assign(*m_value, value);
-  //   }
-  //   /// get the value
-  //   inline PVal  i_get () const {
-  //     return m_value;
-  //   }
-  //   // ==========================================================================
 };
 
 /// delegate (value == property) to property operator==
@@ -692,21 +673,26 @@ class PropertyWithHandlers : public Property
 public:
   using Property::Property;
 
-  /// use the call-back function at reading, if available
-  void useReadHandler() const
+  /// set new callback for reading
+  Property& declareReadHandler( std::function<void( Property& )> fun ) override
   {
-    m_handlers.useReadHandler( const_cast<Property&>( static_cast<const Property&>( *this ) ) );
-    ;
+    m_handlers.setReadHandler( std::move( fun ) );
+    return *this;
+  }
+  /// set new callback for update
+  Property& declareUpdateHandler( std::function<void( Property& )> fun ) override
+  {
+    m_handlers.setUpdateHandler( std::move( fun ) );
+    return *this;
   }
 
+  /// use the call-back function at reading, if available
+  void useReadHandler() const { m_handlers.useReadHandler( *this ); }
+
   /// use the call-back function at update, if available
-  bool useUpdateHandler()
+  bool useUpdateHandler() override
   {
-    try {
-      m_handlers.useUpdateHandler( *this );
-    } catch ( const std::exception& x ) {
-      throw std::invalid_argument( "failure in update handler of '" + name() + "': " + x.what() );
-    }
+    m_handlers.useUpdateHandler( *this );
     return true;
   }
 };

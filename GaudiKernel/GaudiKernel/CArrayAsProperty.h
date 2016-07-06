@@ -67,26 +67,17 @@ public:
     return *this;
   }
 
-  /// use the call-back function at reading, if available
-  void useReadHandler() const
+  /// manual trigger for callback for update
+  bool useUpdateHandler() override
   {
-    m_handlers.useReadHandler( const_cast<Property&>( static_cast<const Property&>( *this ) ) );
-  }
-
-  /// use the call-back function at update, if available
-  void useUpdateHandler()
-  {
-    try {
-      m_handlers.useUpdateHandler( *this );
-    } catch ( const std::exception& x ) {
-      throw std::invalid_argument( "failure in update handler of '" + name() + "': " + x.what() );
-    }
+    m_handlers.useUpdateHandler( *this );
+    return true;
   }
 
   /// Automatic conversion to value (const reference).
   operator const ValueType&() const
   {
-    useReadHandler();
+    m_handlers.useReadHandler( *this );
     return m_value;
   }
   // /// Automatic conversion to value (reference).
@@ -102,7 +93,7 @@ public:
     for ( size_t i = 0; i != N; ++i ) {
       m_value[i] = v[i];
     }
-    useUpdateHandler();
+    m_handlers.useUpdateHandler( *this );
     return *this;
   }
 
@@ -182,13 +173,13 @@ public:
   /// value  -> string
   std::string toString() const override
   {
-    useReadHandler();
+    m_handlers.useReadHandler( *this );
     return Gaudi::Utils::toString( m_value );
   }
   /// value  -> stream
   void toStream( std::ostream& out ) const override
   {
-    useReadHandler();
+    m_handlers.useReadHandler( *this );
     Gaudi::Utils::toStream( m_value, out );
   }
 };
