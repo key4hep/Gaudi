@@ -131,8 +131,8 @@ namespace Gaudi
       {
         return v;
       }
-      template <class TYPE>
       struct NullVerifier {
+        template <class TYPE>
         void operator()( const TYPE& ) const {}
       };
       template <class TYPE>
@@ -257,7 +257,7 @@ namespace Gaudi
  *  @date 2016-06-16
  */
 // ============================================================================
-template <class TYPE, class VERIFIER = Gaudi::Details::Property::NullVerifier<TYPE>,
+template <class TYPE, class VERIFIER = Gaudi::Details::Property::NullVerifier,
           class HANDLERS = Gaudi::Details::Property::ReadUpdateHandler>
 class PropertyWithValue : public Property
 {
@@ -603,7 +603,7 @@ template <class TYPE, class VERIFIER = Gaudi::Details::Property::BoundedVerifier
           class HANDLERS = Gaudi::Details::Property::ReadUpdateHandler>
 using SimpleProperty     = PropertyWithValue<TYPE, VERIFIER, HANDLERS>;
 
-template <class TYPE, class VERIFIER = Gaudi::Details::Property::NullVerifier<TYPE>,
+template <class TYPE, class VERIFIER = Gaudi::Details::Property::NullVerifier,
           class HANDLERS = Gaudi::Details::Property::ReadUpdateHandler>
 using SimplePropertyRef  = PropertyWithValue<TYPE&, VERIFIER, HANDLERS>;
 

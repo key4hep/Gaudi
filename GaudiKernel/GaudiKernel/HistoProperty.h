@@ -31,7 +31,7 @@ BoundedVerifier<Gaudi::Histo1DDef>::operator()
  */
 template <>
 inline void
-NullVerifier<Gaudi::Histo1DDef>::operator()
+NullVerifier::operator()<Gaudi::Histo1DDef>
 ( const Gaudi::Histo1DDef& value ) const
 {
   if ( ! value.ok() )

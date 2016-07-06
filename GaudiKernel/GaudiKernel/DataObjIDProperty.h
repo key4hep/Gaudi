@@ -48,7 +48,7 @@ class GAUDI_API DataObjIDProperty :  public PropertyWithHandlers {
 };
 
 template<>
-class PropertyWithValue<DataObjID&, Gaudi::Details::Property::NullVerifier<DataObjID>> :
+class PropertyWithValue<DataObjID&, Gaudi::Details::Property::NullVerifier> :
   public ::DataObjIDProperty
 {
 public:
@@ -124,7 +124,7 @@ class GAUDI_API DataObjIDCollProperty :  public PropertyWithHandlers {
 };
 
 template<>
-class PropertyWithValue<DataObjIDColl&, Gaudi::Details::Property::NullVerifier<DataObjIDColl>> :
+class PropertyWithValue<DataObjIDColl&, Gaudi::Details::Property::NullVerifier> :
   public ::DataObjIDCollProperty
 {
 public:
@@ -137,7 +137,7 @@ public:
 };
 
 template<>
-class PropertyWithValue<DataObjIDColl, Gaudi::Details::Property::NullVerifier<DataObjIDColl>> :
+class PropertyWithValue<DataObjIDColl, Gaudi::Details::Property::NullVerifier> :
   public ::DataObjIDCollProperty
 {
 public:

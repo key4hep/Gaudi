@@ -46,7 +46,7 @@ class GAUDI_API DataObjectHandleProperty :  public PropertyWithHandlers {
 };
 
 template<>
-class PropertyWithValue<DataObjectHandleBase&, Gaudi::Details::Property::NullVerifier<DataObjectHandleBase>> :
+class PropertyWithValue<DataObjectHandleBase&, Gaudi::Details::Property::NullVerifier> :
   public ::DataObjectHandleProperty
 {
 public:
