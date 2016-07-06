@@ -199,73 +199,48 @@ namespace Gaudi
         TYPE m_lowerBound{};
         TYPE m_upperBound{};
       };
-      namespace HandlerBits
-      {
-        struct EmptyRead {
-          void useReadHandler(::Property& ) const {}
-          void setReadHandler( const ::Property& owner, std::function<void(::Property& )> )
-          {
-            throw std::logic_error( "read handler not available for " + owner.name() );
-          }
-        };
-        struct EmptyUpdate {
-          void useUpdateHandler(::Property& ) {}
-          void setUpdateHandler( const ::Property& owner, std::function<void(::Property& )> )
-          {
-            throw std::logic_error( "update handler not available for " + owner.name() );
-          }
-        };
 
-        class ActualRead
+      struct NoHandler {
+      };
+      struct ReadHandler {
+        mutable std::function<void(::Property& )> m_readCallBack;
+
+      public:
+        void useReadHandler(::Property& p ) const
         {
-          mutable std::function<void(::Property& )> m_readCallBack;
-
-        public:
-          void useReadHandler(::Property& p ) const
-          {
-            if ( m_readCallBack ) {
-              // avoid infinite loop
-              std::function<void(::Property& )> theCallBack;
-              theCallBack.swap( m_readCallBack );
-              theCallBack( p );
-              m_readCallBack.swap( theCallBack );
-            }
+          if ( m_readCallBack ) {
+            // avoid infinite loop
+            std::function<void(::Property& )> theCallBack;
+            theCallBack.swap( m_readCallBack );
+            theCallBack( p );
+            m_readCallBack.swap( theCallBack );
           }
-          void setReadHandler( const ::Property&, std::function<void(::Property& )> fun )
-          {
-            m_readCallBack = std::move( fun );
-          }
-        };
-
-        class ActualUpdate
+        }
+        void setReadHandler( std::function<void(::Property& )> fun )
         {
-          std::function<void(::Property& )> m_updateCallBack;
+          m_readCallBack = std::move( fun );
+        }
+      };
+      struct UpdateHandler {
+        std::function<void(::Property& )> m_updateCallBack;
 
-        public:
-          void useUpdateHandler(::Property& p )
-          {
-            if ( m_updateCallBack ) {
-              // avoid infinite loop
-              std::function<void(::Property& )> theCallBack;
-              theCallBack.swap( m_updateCallBack );
-              theCallBack( p );
-              m_updateCallBack.swap( theCallBack );
-            }
+      public:
+        void useUpdateHandler(::Property& p )
+        {
+          if ( m_updateCallBack ) {
+            // avoid infinite loop
+            std::function<void(::Property& )> theCallBack;
+            theCallBack.swap( m_updateCallBack );
+            theCallBack( p );
+            m_updateCallBack.swap( theCallBack );
           }
-          void setUpdateHandler( const ::Property&, std::function<void(::Property& )> fun )
-          {
-            m_updateCallBack = std::move( fun );
-          }
-        };
-      }
-
-      struct NoHandler : HandlerBits::EmptyRead, HandlerBits::EmptyUpdate {
+        }
+        void setUpdateHandler( std::function<void(::Property& )> fun )
+        {
+          m_updateCallBack = std::move( fun );
+        }
       };
-      struct ReadHandler : HandlerBits::ActualRead, HandlerBits::EmptyUpdate {
-      };
-      struct UpdateHandler : HandlerBits::EmptyRead, HandlerBits::ActualUpdate {
-      };
-      struct ReadUpdateHandler : HandlerBits::ActualRead, HandlerBits::ActualUpdate {
+      struct ReadUpdateHandler : ReadHandler, UpdateHandler {
       };
     }
   }
@@ -347,13 +322,13 @@ public:
   /// set new callback for reading
   Property& declareReadHandler( std::function<void( Property& )> fun ) override
   {
-    m_handlers.setReadHandler( *this, std::move( fun ) );
+    m_handlers.setReadHandler( std::move( fun ) );
     return *this;
   }
   /// set new callback for update
   Property& declareUpdateHandler( std::function<void( Property& )> fun ) override
   {
-    m_handlers.setUpdateHandler( *this, std::move( fun ) );
+    m_handlers.setUpdateHandler( std::move( fun ) );
     return *this;
   }
 

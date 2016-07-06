@@ -57,13 +57,13 @@ public:
   /// set new callback for reading
   Property& declareReadHandler( std::function<void( Property& )> fun ) override
   {
-    m_handlers.setReadHandler( *this, std::move( fun ) );
+    m_handlers.setReadHandler( std::move( fun ) );
     return *this;
   }
   /// set new callback for update
   Property& declareUpdateHandler( std::function<void( Property& )> fun ) override
   {
-    m_handlers.setUpdateHandler( *this, std::move( fun ) );
+    m_handlers.setUpdateHandler( std::move( fun ) );
     return *this;
   }
 
