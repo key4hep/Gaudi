@@ -56,7 +56,7 @@ set(GaudiExamples_srcs
     src/testing/*.cpp
     src/IntelProfiler/*.cpp
     src/PluginService/*.cpp
-    src/StatelessAlgorithms/*.cpp
+    src/FunctionalAlgorithms/*.cpp
 )
 
 if (NOT LCG_COMP STREQUAL "clang")
