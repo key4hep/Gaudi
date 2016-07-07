@@ -1,20 +1,21 @@
 #include <algorithm>
 #include <atomic>
 
-#include "GaudiAlg/TransformAlgorithm.h"
-#include "GaudiAlg/FilterAlgorithm.h"
+#include "GaudiAlg/Transformer.h"
+#include "GaudiAlg/FilterPredicate.h"
 
 // Event Model related classes
 #include "GaudiExamples/MyTrack.h"
 
 namespace Gaudi { namespace Examples {
 
-  class SelectTracks: public TransformAlgorithm<MyTrackVector(const MyTrackVector&)> {
+  class SelectTracks: public Functional::Transformer<MyTrackVector(const MyTrackVector&)> {
   public:
     SelectTracks(const std::string& name, ISvcLocator* pSvc):
-      TransformAlgorithm(name, pSvc, 
-                         { KeyValue("InputData",{"MyTracks"}) },
-                           KeyValue("OutputData",{"MyOutTracks"}) ) {
+      Transformer(name,
+                  pSvc, 
+                  { KeyValue("InputData",{"MyTracks"}) },
+                  KeyValue("OutputData",{"MyOutTracks"}) ) {
     }
 
     MyTrackVector operator()(const MyTrackVector& in_tracks) const override {
@@ -31,16 +32,16 @@ namespace Gaudi { namespace Examples {
 
 
 
-  class CountSelectedTracks: public FilterAlgorithm<bool(const MyTrackVector&)> {
+  class CountSelectedTracks: public Functional::FilterPredicate<bool(const MyTrackVector&)> {
   public:
     CountSelectedTracks(const std::string& name, ISvcLocator* pSvc):
-      FilterAlgorithm(name, pSvc, 
+      FilterPredicate(name, pSvc, 
                       { KeyValue("InputData",{"BogusLocation&MoreBogus&MyOutTracks"}) } ) {
 
     }
 
     StatusCode initialize() override {
-      StatusCode sc = FilterAlgorithm::initialize();
+      StatusCode sc = FilterPredicate::initialize();
       if (!sc) return sc;
       m_tracksCount = 0;
       m_eventsCount = 0;
@@ -55,7 +56,7 @@ namespace Gaudi { namespace Examples {
 
     StatusCode finalize() override {
       info() << "extracted " << m_tracksCount << " tracks in " << m_eventsCount << " events" << endmsg;
-      return FilterAlgorithm::finalize();
+      return FilterPredicate::finalize();
     }
   private:
     mutable std::atomic<long> m_tracksCount{0};
