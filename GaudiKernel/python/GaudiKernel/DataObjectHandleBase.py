@@ -12,9 +12,9 @@ class DataObjectHandleBase(object):
     __slots__ = ('Path', 'Mode', 'AlternativePaths', 'Optional')
 
     #define accessTypes
-    READ = 0
-    WRITE = 1
-    UPDATE = 2
+    READ = 1 << 2
+    WRITE = 1 << 4
+    UPDATE = READ | WRITE
     
     def __init__(self, *args):
         object.__init__(self)
