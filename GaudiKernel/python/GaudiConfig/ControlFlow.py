@@ -43,6 +43,17 @@ class ControlFlowNode(object):
     def __eq__(self, other):
         return (repr(self) == repr(other))
 
+    def getFullName(self):
+        '''
+        Allow use of an expression as an algorihtm/sequence in a Gaudi job
+        configuration.
+
+        Convert the expression in nested sequencers and return the full name of
+        the top one.
+        '''
+        from GaudiKernel.Configurable import makeSequences
+        return makeSequences(self).getFullName()
+
 
 class ControlFlowLeaf(ControlFlowNode):
     '''

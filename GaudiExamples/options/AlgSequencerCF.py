@@ -7,7 +7,6 @@ from Configurables import ParentAlg, StopperAlg, Prescaler, HelloWorld, TimingAu
 from Configurables import EventLoopMgr
 
 from GaudiConfig.ControlFlow import seq
-from GaudiKernel.Configurable import makeSequences
 
 from Configurables import GaudiExamplesCommonConf
 GaudiExamplesCommonConf()
@@ -48,7 +47,7 @@ print '#', all
 print '# ---'
 EventLoopMgr(PrintControlFlowExpression=True)
 #-----------------------------------------------------------------
-ApplicationMgr( TopAlg = [makeSequences(all)],
+ApplicationMgr( TopAlg = [all],
                 EvtMax = 10,     # events to be processed (default is 10)
                 EvtSel = 'NONE', # do not use any event input
                 ExtSvc = ['ToolSvc', 'AuditorSvc' ],
