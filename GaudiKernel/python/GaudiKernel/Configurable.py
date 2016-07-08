@@ -1624,20 +1624,55 @@ class SuperAlgorithm(ControlFlowNode):
     Helper class to use a ControlFlowNode as an algorithm configurable
     instance.
     '''
-    __slots__ = ('name', 'item')
-    def __init__(self, name=None, item=None, **kwargs):
-        self.name = name
-        self.item = item
+    def __new__(cls, name=None, **kwargs):
+        if name is None:
+            name = cls.__name__
+        if name in Configurable.allConfigurables:
+            instance = Configurable.allConfigurables[name]
+            assert type(instance) is cls, \
+                ('trying to reuse {0!r} as name of a {1} instance while it''s '
+                 'already used for an instance of {2}').format(
+                     name,
+                     cls.__name__,
+                     type(instance).__name__)
+            return instance
+        else:
+            instance = super(SuperAlgorithm, cls).__new__(cls, name, **kwargs)
+            Configurable.allConfigurables[name] = instance
+            return instance
+
+    def __init__(self, name=None, **kwargs):
+        self._name = name or self.getType()
+        self.item = self._initGraph()
         for key in kwargs:
             setattr(self, key, kwargs[key])
 
+    @property
+    def name(self):  # name is a read only property
+        return self._name
+
+    @classmethod
+    def getType(cls):
+        return cls.__name__
+
+    # required to be registered in allConfigurables
+    def properties(self):
+        pass
+
+    # required to be registered in allConfigurables
+    def isApplicable(self):
+        return False
+
+    # required to be registered in allConfigurables
+    def getGaudiType(self):
+        return 'User'
+
+    def _makeAlg(self, typ, **kwargs):
+        name = '{0}_{1}'.format(self.name, kwargs.pop('name', typ.getType()))
+        return typ(name, **kwargs)
+
     def __repr__(self):
-        return "%s(%s)" % (self.__class__.__name__,
-                           ', '.join('%s=%r' % (name, getattr(self, name))
-                                     for name in ['name', 'item']
-                                        + list(self.__dict__)
-                                     if hasattr(self, name) and getattr(self, name)
-                                    ))
+        return '{0}({1!r})'.format(self.getType(), self.name)
 
     def _visitSubNodes(self, visitor):
         if self.item:
@@ -1645,9 +1680,10 @@ class SuperAlgorithm(ControlFlowNode):
 
     def __setattr__(self, name, value):
         super(SuperAlgorithm, self).__setattr__(name, value)
-        if name in self.__slots__:
+        if name in ('_name', 'item'):
             # do not propagate internal data members
             return
+
         class PropSetter(object):
             def enter(self, node):
                 try:
@@ -1657,4 +1693,5 @@ class SuperAlgorithm(ControlFlowNode):
                     pass
             def leave(self, node):
                 pass
+
         self._visitSubNodes(PropSetter())
