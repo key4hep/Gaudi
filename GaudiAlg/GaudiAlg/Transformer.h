@@ -12,10 +12,12 @@
 namespace Gaudi { namespace Functional {
 
    struct useDataObjectHandle {
-       template <typename T> using Handle = DataObjectHandle<T>;
+       template <typename T> using InputHandle = DataObjectHandle<T>;
+       template <typename T> using OutputHandle = DataObjectHandle<T>;
    };
    struct useAnyDataHandle {
-       template <typename T> using Handle = AnyDataHandle<T>;
+       template <typename T> using InputHandle = AnyDataHandle<T>;
+       template <typename T> using OutputHandle = AnyDataHandle<T>;
    };
 
    //
@@ -28,7 +30,6 @@ namespace Gaudi { namespace Functional {
    //
 
    template <typename Signature,typename Traits=useDataObjectHandle> class Transformer;
-
 
    // general N -> 1 algorithms
 
@@ -61,11 +62,11 @@ namespace Gaudi { namespace Functional {
            };
        }
 
+       template <typename T> using InputHandle = typename Traits::template InputHandle<T>;
+       template <typename T> using OutputHandle = typename Traits::template OutputHandle<T>;
 
-       template <typename T> using Handle = typename Traits::template Handle<T>;
-
-       std::tuple<Handle<In>...>  m_inputs;
-       Handle<Out>                m_output;
+       std::tuple<InputHandle<In>...>  m_inputs;
+       OutputHandle<Out>               m_output;
    };
 
    namespace Transformer_detail {
@@ -82,13 +83,13 @@ namespace Gaudi { namespace Functional {
       template <std::size_t N, typename Tuple >
       using Out_t = typename std::tuple_element<N, Tuple>::type;
 
-      template <typename... T, typename KeyValues, typename Traits, std::size_t... I>
-      auto make_tuple_of_handles_helper( IDataHandleHolder* o, const KeyValues& initvalue, Gaudi::DataHandle::Mode m, std::index_sequence<I...>, Traits ) {
-          return std::make_tuple( typename Traits::template Handle<T>(std::get<I>(initvalue).second, m, o) ... );
+      template <typename... Handles, typename KeyValues, std::size_t... I>
+      auto make_tuple_of_handles_helper( IDataHandleHolder* o, const KeyValues& initvalue, Gaudi::DataHandle::Mode m, std::index_sequence<I...> ) {
+          return std::make_tuple( Handles(std::get<I>(initvalue).second, m, o) ... );
       }
-      template <typename... T, typename KeyValues, typename Traits>
-      auto make_tuple_of_handles( IDataHandleHolder* owner, const KeyValues& initvalue, Gaudi::DataHandle::Mode mode, Traits) {
-          return make_tuple_of_handles_helper<T...>( owner, initvalue, mode, std::make_index_sequence<sizeof...(T)>{}, Traits{} );
+      template <typename... Handles, typename KeyValues >
+      auto make_tuple_of_handles( IDataHandleHolder* owner, const KeyValues& initvalue, Gaudi::DataHandle::Mode mode ) {
+          return make_tuple_of_handles_helper<Handles...>( owner, initvalue, mode, std::make_index_sequence<sizeof...(Handles)>{} );
       }
 
       template <typename KeyValues, typename Properties,  std::size_t... I>
@@ -115,7 +116,7 @@ namespace Gaudi { namespace Functional {
                                                        const std::array<KeyValue,N>& inputs,
                                                        const KeyValue& output )
      : GaudiAlgorithm ( name , pSvcLocator ),
-       m_inputs( Transformer_detail::make_tuple_of_handles<In...>( this, inputs, Gaudi::DataHandle::Reader, Traits{} ) ),
+       m_inputs( Transformer_detail::make_tuple_of_handles< typename Traits::template InputHandle<In>...>( this, inputs, Gaudi::DataHandle::Reader ) ),
        m_output( output.second,  Gaudi::DataHandle::Writer, this )
    {
        using Transformer_detail::declare_tuple_of_properties;
