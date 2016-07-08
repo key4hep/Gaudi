@@ -128,14 +128,14 @@ namespace Gaudi { namespace Functional {
    template <std::size_t... I>
    StatusCode
    Transformer<Out(const In&...),Traits>::invoke(std::index_sequence<I...>) {
+     using detail::as_const; using Transformer_detail::put;
      try {
-         using detail::as_const; using Transformer_detail::put;
          put( m_output,  as_const(*this)( as_const(*std::get<I>(m_inputs).get())... ) );
-         return StatusCode::SUCCESS;
      } catch ( GaudiException& e ) {
-         warning() << "Error during transform: " << e.message() << " returning " << e.code() << endmsg;
+         error() << "Error during transform: " << e.message() << " returning " << e.code() << endmsg;
          return e.code();
      }
+     return StatusCode::SUCCESS;
    }
 
 
@@ -192,8 +192,8 @@ namespace Gaudi { namespace Functional {
                                                                const std::array<KeyValue,N_in>& inputs,
                                                                const std::array<KeyValue,N_out>& outputs )
      : GaudiAlgorithm ( name , pSvcLocator ),
-       m_inputs( Transformer_detail::make_tuple_of_handles<In...>( this, inputs, Gaudi::DataHandle::Reader ) ),
-       m_outputs( Transformer_detail::make_tuple_of_handles<Out...>( this, outputs, Gaudi::DataHandle::Writer ) )
+       m_inputs( Transformer_detail::make_tuple_of_handles< DataObjectHandle<In>...>( this, inputs, Gaudi::DataHandle::Reader ) ),
+       m_outputs( Transformer_detail::make_tuple_of_handles< DataObjectHandle<Out>...>( this, outputs, Gaudi::DataHandle::Writer ) )
    {
        using Transformer_detail::declare_tuple_of_properties;
        declare_tuple_of_properties( this, inputs, m_inputs );
