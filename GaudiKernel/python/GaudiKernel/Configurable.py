@@ -979,7 +979,7 @@ class ConfigurableGeneric( Configurable ):
 
 
 ### base classes for individual Gaudi algorithms/services/algtools ===========
-class ConfigurableAlgorithm( Configurable, ControlFlowLeaf ):
+class ConfigurableAlgorithm( Configurable ):
     __slots__ = { '_jobOptName' : 0, 'OutputLevel' : 0, \
        'Enable' : 1, 'ErrorMax' : 1, 'ErrorCount' : 0, 'AuditAlgorithms' : 0, \
        'AuditInitialize' : 0, 'AuditReinitialize' : 0, 'AuditExecute' : 0, \
@@ -1004,6 +1004,39 @@ class ConfigurableAlgorithm( Configurable, ControlFlowLeaf ):
 
     def __repr__(self):
         return '{0}({1!r})'.format(self.getType(), self.name())
+
+    # mimick the ControlFlowLeaf interface
+    def __and__(self, rhs):
+        if rhs is CFTrue:
+            return self
+        elif rhs is CFFalse:
+            return CFFalse
+        return AndNode(self, rhs)
+
+    def __or__(self, rhs):
+        if rhs is CFFalse:
+            return self
+        elif rhs is CFTrue:
+            return CFTrue
+        return OrNode(self, rhs)
+
+    def __invert__(self):
+        return InvertNode(self)
+
+    def __rshift__(self, rhs):
+        return OrderedNode(self, rhs)
+
+    def visitNode(self, visitor):
+        visitor.enter(self)
+        self._visitSubNodes(visitor)
+        visitor.leave(self)
+
+    def _visitSubNodes(self, visitor):
+        pass
+
+    def __eq__(self, other):
+        return (repr(self) == repr(other))
+
 
 class ConfigurableService( Configurable ):
     __slots__ = { 'OutputLevel' : 0, \
@@ -1551,7 +1584,7 @@ class CreateSequencesVisitor(object):
         stack = self.stack
         if visitee in (CFTrue, CFFalse):
             stack.append(self._newSeq(Invert=visitee is CFFalse))
-        elif isinstance(visitee, ControlFlowLeaf):
+        elif isinstance(visitee, (ControlFlowLeaf, ConfigurableAlgorithm)):
             stack.append(visitee)
         elif isinstance(visitee, (OrNode, AndNode, OrderedNode)):
             b = stack.pop()
