@@ -34,7 +34,7 @@ class MySuperAlg(SuperAlgorithm):
     def UseHelloWorld(self, value):
         self._hello_flag = value
         # re-generate the graph (which takes into account the flag)
-        self.item = self._initGraph()
+        self.graph = self._initGraph()
 
     def _initGraph(self):
         '''

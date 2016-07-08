@@ -1643,7 +1643,7 @@ class SuperAlgorithm(ControlFlowNode):
 
     def __init__(self, name=None, **kwargs):
         self._name = name or self.getType()
-        self.item = self._initGraph()
+        self.graph = self._initGraph()
         for key in kwargs:
             setattr(self, key, kwargs[key])
 
@@ -1682,12 +1682,12 @@ class SuperAlgorithm(ControlFlowNode):
         return '{0}({1!r})'.format(self.getType(), self.name)
 
     def _visitSubNodes(self, visitor):
-        if self.item:
-            self.item.visitNode(visitor)
+        if self.graph:
+            self.graph.visitNode(visitor)
 
     def __setattr__(self, name, value):
         super(SuperAlgorithm, self).__setattr__(name, value)
-        if name in ('_name', 'item'):
+        if name in ('_name', 'graph'):
             # do not propagate internal data members
             return
 
