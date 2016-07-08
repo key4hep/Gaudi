@@ -27,7 +27,8 @@ namespace Gaudi { namespace Functional {
    //      (eg. histograms, counters will have to be mutable)
    //
 
-   template <typename T,typename Traits> class Transformer;
+   template <typename Signature,typename Traits=useDataObjectHandle> class Transformer;
+
 
    // general N -> 1 algorithms
 
@@ -137,7 +138,7 @@ namespace Gaudi { namespace Functional {
    }
 
 
-//// TODO: should this be called a MultiTransformer instead??
+
 //
 // general N -> M algorithms
 //
