@@ -1668,8 +1668,15 @@ class SuperAlgorithm(ControlFlowNode):
         return 'User'
 
     def _makeAlg(self, typ, **kwargs):
+        '''
+        Instantiate and algorithm of type 'typ' with a name suitable for use
+        inside a SuperAlgorithm.
+        '''
         name = '{0}_{1}'.format(self.name, kwargs.pop('name', typ.getType()))
         return typ(name, **kwargs)
+
+    def _initGraph(self):
+        raise NotImplementedError()
 
     def __repr__(self):
         return '{0}({1!r})'.format(self.getType(), self.name)
