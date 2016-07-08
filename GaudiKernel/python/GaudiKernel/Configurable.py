@@ -1617,3 +1617,44 @@ def makeSequences(expression):
     visitor = CreateSequencesVisitor()
     expression.visitNode(visitor)
     return visitor.sequence
+
+
+class SuperAlgorithm(ControlFlowNode):
+    '''
+    Helper class to use a ControlFlowNode as an algorithm configurable
+    instance.
+    '''
+    __slots__ = ('name', 'item')
+    def __init__(self, name=None, item=None, **kwargs):
+        self.name = name
+        self.item = item
+        for key in kwargs:
+            setattr(self, key, kwargs[key])
+
+    def __repr__(self):
+        return "%s(%s)" % (self.__class__.__name__,
+                           ', '.join('%s=%r' % (name, getattr(self, name))
+                                     for name in ['name', 'item']
+                                        + list(self.__dict__)
+                                     if hasattr(self, name) and getattr(self, name)
+                                    ))
+
+    def _visitSubNodes(self, visitor):
+        if self.item:
+            self.item.visitNode(visitor)
+
+    def __setattr__(self, name, value):
+        super(SuperAlgorithm, self).__setattr__(name, value)
+        if name in self.__slots__:
+            # do not propagate internal data members
+            return
+        class PropSetter(object):
+            def enter(self, node):
+                try:
+                    setattr(node, name, value)
+                except (ValueError, AttributeError):
+                    # ignore type and name mismatch
+                    pass
+            def leave(self, node):
+                pass
+        self._visitSubNodes(PropSetter())
