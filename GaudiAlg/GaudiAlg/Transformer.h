@@ -5,8 +5,18 @@
 #include "GaudiAlg/GaudiAlgorithm.h"
 #include "GaudiKernel/GaudiException.h"
 #include "GaudiAlg/Algorithm_details.h"
+// TODO: fwd declare instead?
+#include "GaudiKernel/DataObjectHandle.h"
+#include "GaudiKernel/AnyDataHandle.h"
 
 namespace Gaudi { namespace Functional {
+
+   struct useDataObjectHandle {
+       template <typename T> using Handle = DataObjectHandle<T>;
+   };
+   struct useAnyDataHandle {
+       template <typename T> using Handle = AnyDataHandle<T>;
+   };
 
    //
    //
@@ -17,12 +27,12 @@ namespace Gaudi { namespace Functional {
    //      (eg. histograms, counters will have to be mutable)
    //
 
-   template <typename T> class Transformer;
+   template <typename T,typename Traits> class Transformer;
 
    // general N -> 1 algorithms
 
-   template <typename Out, typename... In>
-   class Transformer<Out(const In&...)> : public GaudiAlgorithm {
+   template <typename Out, typename... In, typename Traits>
+   class Transformer<Out(const In&...),Traits> : public GaudiAlgorithm {
    public:
        using KeyValue = std::pair<std::string, std::string>;
        constexpr static std::size_t N = sizeof...(In);
@@ -50,22 +60,34 @@ namespace Gaudi { namespace Functional {
            };
        }
 
-       std::tuple<DataObjectHandle<In>...>  m_inputs;
-       DataObjectHandle<Out>                m_output;
+
+       template <typename T> using Handle = typename Traits::template Handle<T>;
+
+       std::tuple<Handle<In>...>  m_inputs;
+       Handle<Out>                m_output;
    };
 
    namespace Transformer_detail {
+      template <typename Out1, typename Out2>
+      void put( DataObjectHandle<Out1>& out_handle, Out2&& out ) {
+        out_handle.put( new Out1( std::forward<Out2>(out) ) );
+      }
+
+      template <typename Out1, typename Out2>
+      void put( AnyDataHandle<Out1>& out_handle, Out2&& out ) {
+        out_handle.put( std::forward<Out2>(out) );
+      }
 
       template <std::size_t N, typename Tuple >
       using Out_t = typename std::tuple_element<N, Tuple>::type;
 
-      template <typename... T, typename KeyValues, std::size_t... I>
-      auto make_tuple_of_handles_helper( IDataHandleHolder* o, const KeyValues& initvalue, Gaudi::DataHandle::Mode m, std::index_sequence<I...> ) {
-          return std::make_tuple( DataObjectHandle<T>(std::get<I>(initvalue).second, m, o) ... );
+      template <typename... T, typename KeyValues, typename Traits, std::size_t... I>
+      auto make_tuple_of_handles_helper( IDataHandleHolder* o, const KeyValues& initvalue, Gaudi::DataHandle::Mode m, std::index_sequence<I...>, Traits ) {
+          return std::make_tuple( typename Traits::template Handle<T>(std::get<I>(initvalue).second, m, o) ... );
       }
-      template <typename... T, typename KeyValues>
-      auto make_tuple_of_handles( IDataHandleHolder* owner, const KeyValues& initvalue, Gaudi::DataHandle::Mode mode) {
-          return make_tuple_of_handles_helper<T...>( owner, initvalue, mode, std::make_index_sequence<sizeof...(T)>{} );
+      template <typename... T, typename KeyValues, typename Traits>
+      auto make_tuple_of_handles( IDataHandleHolder* owner, const KeyValues& initvalue, Gaudi::DataHandle::Mode mode, Traits) {
+          return make_tuple_of_handles_helper<T...>( owner, initvalue, mode, std::make_index_sequence<sizeof...(T)>{}, Traits{} );
       }
 
       template <typename KeyValues, typename Properties,  std::size_t... I>
@@ -86,13 +108,13 @@ namespace Gaudi { namespace Functional {
 
    }
 
-   template <typename Out, typename... In>
-   Transformer<Out(const In&...)>::Transformer( const std::string& name,
-                                                ISvcLocator* pSvcLocator,
-                                                const std::array<KeyValue,N>& inputs,
-                                                const KeyValue& output )
+   template <typename Out, typename... In, typename Traits>
+   Transformer<Out(const In&...),Traits>::Transformer( const std::string& name,
+                                                       ISvcLocator* pSvcLocator,
+                                                       const std::array<KeyValue,N>& inputs,
+                                                       const KeyValue& output )
      : GaudiAlgorithm ( name , pSvcLocator ),
-       m_inputs( Transformer_detail::make_tuple_of_handles<In...>( this, inputs, Gaudi::DataHandle::Reader ) ),
+       m_inputs( Transformer_detail::make_tuple_of_handles<In...>( this, inputs, Gaudi::DataHandle::Reader, Traits{} ) ),
        m_output( output.second,  Gaudi::DataHandle::Writer, this )
    {
        using Transformer_detail::declare_tuple_of_properties;
@@ -100,13 +122,13 @@ namespace Gaudi { namespace Functional {
        declareProperty( output.first, m_output );
    }
 
-   template <typename Out, typename... In>
+   template <typename Out, typename... In, typename Traits>
    template <std::size_t... I>
    StatusCode
-   Transformer<Out(const In&...)>::invoke(std::index_sequence<I...>) {
+   Transformer<Out(const In&...),Traits>::invoke(std::index_sequence<I...>) {
      try {
-         using detail::as_const;
-         m_output.put( new Out( as_const(*this)( as_const(*std::get<I>(m_inputs).get())... ) ) );
+         using detail::as_const; using Transformer_detail::put;
+         put( m_output,  as_const(*this)( as_const(*std::get<I>(m_inputs).get())... ) );
          return StatusCode::SUCCESS;
      } catch ( GaudiException& e ) {
          warning() << "Error during transform: " << e.message() << " returning " << e.code() << endmsg;
@@ -123,6 +145,7 @@ namespace Gaudi { namespace Functional {
 
    template <typename ... Out, typename... In>
    class MultiTransformer<std::tuple<Out...>(const In&...)> : public GaudiAlgorithm {
+       template <typename T> using Handle = DataObjectHandle<T>;
    public:
        using KeyValue = std::pair<std::string, std::string>;
        constexpr static std::size_t N_in = sizeof...(In);
@@ -156,8 +179,8 @@ namespace Gaudi { namespace Functional {
          }
        }
 
-       std::tuple<DataObjectHandle<In>...>  m_inputs;
-       std::tuple<DataObjectHandle<Out>...> m_outputs;
+       std::tuple<Handle<In>...>  m_inputs;
+       std::tuple<Handle<Out>...> m_outputs;
    };
 
 
