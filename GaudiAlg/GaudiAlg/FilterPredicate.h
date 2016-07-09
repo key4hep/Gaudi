@@ -4,14 +4,15 @@
 #include <utility>
 #include "GaudiKernel/DataObjectHandle.h"
 #include "GaudiAlg/GaudiAlgorithm.h"
-#include "GaudiAlg/Algorithm_details.h" // for details::as_const (which is C++17)
+#include "GaudiAlg/FunctionalDetails.h"
+#include "GaudiAlg/FunctionalUtilities.h"
 
 namespace Gaudi { namespace Functional {
 
-   template <typename T> class FilterPredicate;
+   template <typename T, typename Traits = useDataObjectHandle> class FilterPredicate;
 
-   template <typename... In>
-   class FilterPredicate<bool(const In&...)> : public GaudiAlgorithm {
+   template <typename... In, typename Traits>
+   class FilterPredicate<bool(const In&...),Traits> : public GaudiAlgorithm {
    public:
        using KeyValue = std::pair<std::string, std::string>; // (name,value) of the  data handle property
        constexpr static std::size_t N = sizeof...(In);       // the number of inputs
@@ -29,42 +30,28 @@ namespace Gaudi { namespace Functional {
 
    private:
 
-       // note: invoke is not const, as DataObjectHandle<In>::get is not const
+       // note: invoke is not const, as DataObjectHandle<In>::get is not (yet!) const
        template <std::size_t... I>
        StatusCode invoke(std::index_sequence<I...>) {
-           auto pass = detail::as_const(*this)( detail::as_const(*std::get<I>(m_inputs).get())... );
+           using details::as_const;
+           auto pass = as_const(*this)( as_const(*std::get<I>(m_inputs).get())... );
            setFilterPassed( pass );
            return StatusCode::SUCCESS;
        }
 
-       template <typename KeyValues, std::size_t... I>
-       void declare(const KeyValues& inputs, std::index_sequence<I...>) {
-           std::initializer_list<int>{
-               (this->declareProperty( std::get<I>(inputs).first,
-                                       std::get<I>(m_inputs)      ),0)...
-           };
-       }
+       template <typename T> using InputHandle = typename Traits::template InputHandle<T>;
 
-       std::tuple< DataObjectHandle<In>... > m_inputs;
+       std::tuple< InputHandle<In>... > m_inputs;
    };
 
-   namespace FilterPredicate_detail {
-
-      template <typename...  In, typename KeyValues, std::size_t... I>
-      auto make_read_handles( IDataHandleHolder* o, const KeyValues& initvalue, std::index_sequence<I...> ) {
-          return std::make_tuple( DataObjectHandle<In>(std::get<I>(initvalue).second, Gaudi::DataHandle::Reader, o) ... );
-      }
-
-   }
-
-   template <typename... In>
-   FilterPredicate<bool(const In&...)>::FilterPredicate( const std::string& name,
-                                           ISvcLocator* pSvcLocator,
-                                           const KeyValues& inputs )
+   template <typename... In, typename Traits>
+   FilterPredicate<bool(const In&...),Traits>::FilterPredicate( const std::string& name,
+                                                                ISvcLocator* pSvcLocator,
+                                                                const KeyValues& inputs )
      : GaudiAlgorithm ( name , pSvcLocator ),
-       m_inputs( FilterPredicate_detail::make_read_handles<In...>( this, inputs, std::make_index_sequence<N>{} ) )
+       m_inputs( details::make_tuple_of_handles<DataObjectHandle<In>...>( this, inputs, Gaudi::DataHandle::Reader ) )
    {
-       declare( inputs, std::make_index_sequence<N>{} );
+       details::declare_tuple_of_properties( this, inputs, m_inputs );
    }
 
 }}

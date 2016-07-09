@@ -9,7 +9,6 @@
 namespace Gaudi { namespace Examples {
 
 
-
   class CountSelectedTracks: public Functional::FilterPredicate<bool(const MyTrackVector&)> {
   public:
     CountSelectedTracks(const std::string& name, ISvcLocator* pSvc):
