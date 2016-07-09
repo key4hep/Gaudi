@@ -77,16 +77,13 @@ namespace Gaudi { namespace Functional {
        return StatusCode::SUCCESS;
    }
 
-
-
 //
 // general N -> M algorithms
 //
-   template <typename T> class MultiTransformer;
+   template <typename Signature,typename Traits=useDataObjectHandle> class MultiTransformer;
 
-   template <typename ... Out, typename... In>
-   class MultiTransformer<std::tuple<Out...>(const In&...)> : public GaudiAlgorithm {
-       template <typename T> using Handle = DataObjectHandle<T>;
+   template <typename ... Out, typename... In, typename Traits>
+   class MultiTransformer<std::tuple<Out...>(const In&...),Traits> : public GaudiAlgorithm {
    public:
        using KeyValue = std::pair<std::string, std::string>;
        constexpr static std::size_t N_in = sizeof...(In);
@@ -118,20 +115,21 @@ namespace Gaudi { namespace Functional {
            }
            return StatusCode::SUCCESS;
        }
+       template <typename T> using InputHandle = typename Traits::template InputHandle<T>;
+       template <typename T> using OutputHandle = typename Traits::template OutputHandle<T>;
 
-       std::tuple<Handle<In>...>  m_inputs;
-       std::tuple<Handle<Out>...> m_outputs;
+       std::tuple<InputHandle<In>...>  m_inputs;
+       std::tuple<OutputHandle<Out>...> m_outputs;
    };
 
-
-   template <typename... Out, typename... In>
-   MultiTransformer<std::tuple<Out...>(const In&...)>::MultiTransformer( const std::string& name,
-                                                               ISvcLocator* pSvcLocator,
-                                                               const std::array<KeyValue,N_in>& inputs,
-                                                               const std::array<KeyValue,N_out>& outputs )
+   template <typename... Out, typename... In, typename Traits>
+   MultiTransformer<std::tuple<Out...>(const In&...),Traits>::MultiTransformer( const std::string& name,
+                                                                                ISvcLocator* pSvcLocator,
+                                                                                const std::array<KeyValue,N_in>& inputs,
+                                                                                const std::array<KeyValue,N_out>& outputs )
      : GaudiAlgorithm ( name , pSvcLocator ),
-       m_inputs( details::make_tuple_of_handles< DataObjectHandle<In>...>( this, inputs, Gaudi::DataHandle::Reader ) ),
-       m_outputs( details::make_tuple_of_handles< DataObjectHandle<Out>...>( this, outputs, Gaudi::DataHandle::Writer ) )
+       m_inputs( details::make_tuple_of_handles< typename Traits::template InputHandle<In>...>( this, inputs, Gaudi::DataHandle::Reader ) ),
+       m_outputs( details::make_tuple_of_handles< typename Traits::template OutputHandle<Out>...>( this, outputs, Gaudi::DataHandle::Writer ) )
    {
        using details::declare_tuple_of_properties;
        declare_tuple_of_properties( this, inputs, m_inputs );
