@@ -2,8 +2,6 @@
 #define __Algorithm_details_h__
 
 #include <type_traits>
-#include <utility>
-#include <initializer_list>
 
 namespace detail {
 
@@ -15,18 +13,6 @@ namespace detail {
     template <typename T>
     void as_const(T&& t) = delete;
 
-    // helper to check for absentees amongst a list of inputs
-    // return a vector of indices of missing inputs
-    template< template <typename> class Container = std::initializer_list>
-    std::vector<int> awol(Container<void*> inputs) {
-        std::vector<int> result;
-        int i=0;
-        for ( const auto& j : inputs ) {
-            if (!j) result.push_back(i);
-            ++i;
-        }
-        return result;
-    }
 }
 
 #endif
