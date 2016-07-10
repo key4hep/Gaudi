@@ -8,6 +8,7 @@
 // TODO: fwd declare instead?
 #include "GaudiKernel/DataObjectHandle.h"
 #include "GaudiKernel/AnyDataHandle.h"
+#include "GaudiAlg/GaudiAlgorithm.h"
 
 namespace Gaudi { namespace Functional {
 
@@ -18,12 +19,15 @@ namespace Gaudi { namespace Functional {
 
 
    // traits classes used to customize Transformer and FilterPredicate
-
+   // TODO: is there a way so that if a type is not defined in the
+   //       traits class a default is picked up instead?
    struct useDataObjectHandle {
+       using BaseClass = GaudiAlgorithm;
        template <typename T> using InputHandle = DataObjectHandle<T>;
        template <typename T> using OutputHandle = DataObjectHandle<T>;
    };
    struct useAnyDataHandle {
+       using BaseClass = GaudiAlgorithm;
        template <typename T> using InputHandle = AnyDataHandle<T>;
        template <typename T> using OutputHandle = AnyDataHandle<T>;
    };

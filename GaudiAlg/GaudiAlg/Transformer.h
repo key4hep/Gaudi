@@ -2,12 +2,12 @@
 #define TRANSFORMER_H
 
 #include <utility>
-#include "GaudiAlg/GaudiAlgorithm.h"
+#include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/GaudiException.h"
 #include "GaudiAlg/FunctionalDetails.h"
 #include "GaudiAlg/FunctionalUtilities.h"
 
-   // Adapt a GaudiAlgorithm so that derived classes
+   // Adapt an Algorithm (by default, GaudiAlgortihm) so that derived classes
    //   a) do not need to access the event store, and have to
    //      state their data dependencies
    //   b) are encouraged not to have state which depends on the events
@@ -21,7 +21,9 @@ namespace Gaudi { namespace Functional {
    // general N -> 1 algorithms
 
    template <typename Out, typename... In, typename Traits>
-   class Transformer<Out(const In&...),Traits> : public GaudiAlgorithm {
+   class Transformer<Out(const In&...),Traits> : public Traits::BaseClass {
+       static_assert( std::is_base_of<Algorithm,typename Traits::BaseClass>::value,
+                      "BaseClass must inherit from Algorithm");
    public:
        using KeyValue = std::pair<std::string, std::string>;
        constexpr static std::size_t N = sizeof...(In);
@@ -54,13 +56,12 @@ namespace Gaudi { namespace Functional {
                                                        ISvcLocator* pSvcLocator,
                                                        const std::array<KeyValue,N>& inputs,
                                                        const KeyValue& output )
-     : GaudiAlgorithm ( name , pSvcLocator ),
-       m_inputs( details::make_tuple_of_handles< typename Traits::template InputHandle<In>...>( this, inputs, Gaudi::DataHandle::Reader ) ),
+     : Traits::BaseClass ( name , pSvcLocator ),
+       m_inputs( details::make_tuple_of_handles<decltype(m_inputs)>( this, inputs, Gaudi::DataHandle::Reader ) ),
        m_output( output.second,  Gaudi::DataHandle::Writer, this )
    {
-       using details::declare_tuple_of_properties;
-       declare_tuple_of_properties( this, inputs, m_inputs);
-       declareProperty( output.first, m_output );
+       details::declare_tuple_of_properties( this, inputs, m_inputs);
+       this->declareProperty( output.first, m_output );
    }
 
    template <typename Out, typename... In, typename Traits>
@@ -71,7 +72,7 @@ namespace Gaudi { namespace Functional {
        try {
            put( m_output,  as_const(*this)( as_const(*std::get<I>(m_inputs).get())... ) );
        } catch ( GaudiException& e ) {
-           error() << "Error during transform: " << e.message() << " returning " << e.code() << endmsg;
+           this->error() << "Error during transform: " << e.message() << " returning " << e.code() << endmsg;
            return e.code();
        }
        return StatusCode::SUCCESS;
@@ -83,7 +84,9 @@ namespace Gaudi { namespace Functional {
    template <typename Signature,typename Traits=useDataObjectHandle> class MultiTransformer;
 
    template <typename ... Out, typename... In, typename Traits>
-   class MultiTransformer<std::tuple<Out...>(const In&...),Traits> : public GaudiAlgorithm {
+   class MultiTransformer<std::tuple<Out...>(const In&...),Traits> : public Traits::BaseClass {
+       static_assert( std::is_base_of<Algorithm,typename Traits::BaseClass>::value,
+                      "BaseClass must inherit from Algorithm");
    public:
        using KeyValue = std::pair<std::string, std::string>;
        constexpr static std::size_t N_in = sizeof...(In);
@@ -110,7 +113,7 @@ namespace Gaudi { namespace Functional {
                     (put(std::get<O>(m_outputs),std::move(std::get<O>(out))),0)...
                };
            } catch ( GaudiException& e ) {
-               warning() << "Error during transform: " << e.message() << " returning " << e.code() << endmsg;
+               this->error() << "Error during transform: " << e.message() << " returning " << e.code() << endmsg;
                return e.code();
            }
            return StatusCode::SUCCESS;
@@ -127,9 +130,9 @@ namespace Gaudi { namespace Functional {
                                                                                 ISvcLocator* pSvcLocator,
                                                                                 const std::array<KeyValue,N_in>& inputs,
                                                                                 const std::array<KeyValue,N_out>& outputs )
-     : GaudiAlgorithm ( name , pSvcLocator ),
-       m_inputs( details::make_tuple_of_handles< typename Traits::template InputHandle<In>...>( this, inputs, Gaudi::DataHandle::Reader ) ),
-       m_outputs( details::make_tuple_of_handles< typename Traits::template OutputHandle<Out>...>( this, outputs, Gaudi::DataHandle::Writer ) )
+     : Traits::BaseClass ( name , pSvcLocator ),
+       m_inputs( details::make_tuple_of_handles<decltype(m_inputs)>( this, inputs, Gaudi::DataHandle::Reader ) ),
+       m_outputs( details::make_tuple_of_handles<decltype(m_outputs)>( this, outputs, Gaudi::DataHandle::Writer ) )
    {
        using details::declare_tuple_of_properties;
        declare_tuple_of_properties( this, inputs, m_inputs );

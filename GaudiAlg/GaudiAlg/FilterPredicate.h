@@ -2,8 +2,6 @@
 #define FILTER_PREDICATE_H
 
 #include <utility>
-#include "GaudiKernel/DataObjectHandle.h"
-#include "GaudiAlg/GaudiAlgorithm.h"
 #include "GaudiAlg/FunctionalDetails.h"
 #include "GaudiAlg/FunctionalUtilities.h"
 
@@ -12,7 +10,9 @@ namespace Gaudi { namespace Functional {
    template <typename T, typename Traits = useDataObjectHandle> class FilterPredicate;
 
    template <typename... In, typename Traits>
-   class FilterPredicate<bool(const In&...),Traits> : public GaudiAlgorithm {
+   class FilterPredicate<bool(const In&...),Traits> : public Traits::BaseClass {
+       static_assert( std::is_base_of<Algorithm,typename Traits::BaseClass>::value,
+                      "BaseClass must inherit from Algorithm");
    public:
        using KeyValue = std::pair<std::string, std::string>; // (name,value) of the  data handle property
        constexpr static std::size_t N = sizeof...(In);       // the number of inputs
@@ -35,7 +35,7 @@ namespace Gaudi { namespace Functional {
        StatusCode invoke(std::index_sequence<I...>) {
            using details::as_const;
            auto pass = as_const(*this)( as_const(*std::get<I>(m_inputs).get())... );
-           setFilterPassed( pass );
+           this->setFilterPassed( pass );
            return StatusCode::SUCCESS;
        }
 
@@ -48,8 +48,8 @@ namespace Gaudi { namespace Functional {
    FilterPredicate<bool(const In&...),Traits>::FilterPredicate( const std::string& name,
                                                                 ISvcLocator* pSvcLocator,
                                                                 const KeyValues& inputs )
-     : GaudiAlgorithm ( name , pSvcLocator ),
-       m_inputs( details::make_tuple_of_handles<DataObjectHandle<In>...>( this, inputs, Gaudi::DataHandle::Reader ) )
+     : Traits::BaseClass ( name , pSvcLocator ),
+       m_inputs( details::make_tuple_of_handles<decltype(m_inputs)>( this, inputs, Gaudi::DataHandle::Reader ) )
    {
        details::declare_tuple_of_properties( this, inputs, m_inputs );
    }

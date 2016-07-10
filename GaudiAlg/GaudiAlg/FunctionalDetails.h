@@ -34,13 +34,13 @@ namespace Gaudi { namespace Functional { namespace details {
     template <std::size_t N, typename Tuple >
     using Out_t = typename std::tuple_element<N, Tuple>::type;
 
-    template <typename... Handles, typename KeyValues, std::size_t... I>
-    auto make_tuple_of_handles_helper( IDataHandleHolder* o, const KeyValues& initvalue, Gaudi::DataHandle::Mode m, std::index_sequence<I...> ) {
-        return std::make_tuple( Handles(std::get<I>(initvalue).second, m, o) ... );
+    template <typename Tuple, typename KeyValues, std::size_t... I>
+    Tuple make_tuple_of_handles_helper( IDataHandleHolder* o, const KeyValues& initvalue, Gaudi::DataHandle::Mode m, std::index_sequence<I...> ) {
+        return std::make_tuple( typename std::tuple_element<I,Tuple>::type{std::get<I>(initvalue).second, m, o} ... );
     }
-    template <typename... Handles, typename KeyValues >
-    auto make_tuple_of_handles( IDataHandleHolder* owner, const KeyValues& initvalue, Gaudi::DataHandle::Mode mode ) {
-        return make_tuple_of_handles_helper<Handles...>( owner, initvalue, mode, std::make_index_sequence<sizeof...(Handles)>{} );
+    template <typename Tuple, typename KeyValues >
+    Tuple make_tuple_of_handles( IDataHandleHolder* owner, const KeyValues& initvalue, Gaudi::DataHandle::Mode mode ) {
+        return make_tuple_of_handles_helper<Tuple>( owner, initvalue, mode, std::make_index_sequence<std::tuple_size<Tuple>::value>{} );
     }
 
     template <typename KeyValues, typename Properties,  std::size_t... I>
