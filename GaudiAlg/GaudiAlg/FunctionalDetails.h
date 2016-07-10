@@ -32,48 +32,75 @@ namespace Gaudi { namespace Functional { namespace details {
         out_handle.put( std::forward<Out2>(out) );
     }
 
-    // if the traits class defines the relevant type, use it, otherwise pick up
-    // the default
+    // detect whether a traits class defines the requested type,
+    //   if so, use it,
+    //   otherwise use the default
     //
-    template <typename> struct void_t { typedef void type; };
-    template <typename T> using is_valid_t = typename void_t<T>::type;
+    // based on http://en.cppreference.com/w/cpp/experimental/is_detected
+    // and the libstdc++ source, libstdc++-v3/include/std/type_traits
 
-    // check whether Traits::BaseClass is a valid type, if not, define
-    // it as GaudiAlgorithm
-    template <typename Tr, typename SFINAE = void> struct has_base                 : std::false_type {};
-    template <typename Tr> struct has_base<Tr, is_valid_t<typename Tr::BaseClass>> : std::true_type  {};
-    template <typename Tr, bool> struct add_Base;
-    template <typename Tr>       struct add_Base<Tr, true> : Tr { };
-    template <typename Tr>       struct add_Base<Tr,false> : Tr { using BaseClass = GaudiAlgorithm; };
-    template <typename Traits> using BaseClass_t = typename add_Base<Traits,has_base<Traits>::value>::BaseClass;
-    // now one can do eg.:
-    // BaseClass_t<Traits>
-    // which is either Traits::BaseClass in case it is defined, else GaudiAlgorithm
+    namespace detail2 { 
 
+        /// Implementation of the detection idiom (negative case).
+        template<typename Default, typename AlwaysVoid,
+                 template<typename...> class Op, typename... Args>
+        struct detector {
+            using type = Default;
+        };
 
-    // check whether Traits::OutputHandle<T> is a valid type, if not, define
-    // it as DataObjectHandle<T>
-    template <typename Tr, typename T, typename SFINAE = void> struct has_out_handle                 : std::false_type {};
-    template <typename Tr, typename T> struct has_out_handle<Tr, T, is_valid_t<typename Tr::template OutputHandle<T>>> : std::true_type  {};
-    template <typename Tr, bool> struct add_out_handle;
-    template <typename Tr>       struct add_out_handle<Tr, true> : Tr { };
-    template <typename Tr>       struct add_out_handle<Tr,false> : Tr { template<typename T> using OutputHandle = DataObjectHandle<T>; };
-    template <typename Tr, typename T> using OutputHandle_t = typename add_out_handle<Tr,has_out_handle<Tr,T>::value>::template OutputHandle<T>;
-    // now one can do eg.:
-    // OutputHandle_t<Traits,T>
-    // which is either Traits::OutputHandle<T> in case it is defined, else DataObjectHandle<T>
+#ifdef HAVE_CPP17
+        template<typename...> using void_t = void;
 
-    // check whether Traits::InputHandle<T> is a valid type, if not, define
-    // it as DataObjectHandle<T>
-    template <typename Tr, typename T, typename SFINAE = void> struct has_in_handle                 : std::false_type {};
-    template <typename Tr, typename T> struct has_in_handle<Tr, T, is_valid_t<typename Tr::template InputHandle<T>>> : std::true_type  {};
-    template <typename Tr, bool> struct add_in_handle;
-    template <typename Tr >      struct add_in_handle<Tr, true> : Tr { };
-    template <typename Tr >      struct add_in_handle<Tr,false> : Tr { template <typename T> using InputHandle = DataObjectHandle<T>; };
-    template <typename Tr, typename T> using InputHandle_t = typename add_in_handle<Tr,has_in_handle<Tr,T>::value>::template InputHandle<T>;
-    // now one can do eg.:
-    // InputHandle_t<Traits,T>
-    // which is either Traits::InputHandle<T> in case it is defined, else DataObjectHandle<T>
+        /// Implementation of the detection idiom (positive case).
+        template<typename Default,
+                 template<typename...> class Op, typename... Args>
+        struct detector<Default, void_t<Op<Args...>>, Op, Args...> {
+            using type = Op<Args...>;
+        };
+
+#else
+        template <typename> struct void_t { typedef void type; };
+        template <typename T> using is_valid_t = typename void_t<T>::type;
+
+        /// Implementation of the detection idiom (positive case).
+        template<typename Default,
+                 template<typename...> class Op, typename... Args>
+        struct detector<Default, is_valid_t<Op<Args...>>, Op, Args...> {
+            using type = Op<Args...>;
+        };
+
+#endif
+    }
+
+    // Detect whether Op<_Args...> is a valid type, use Default if not.
+    template<typename Default, template<typename...> class Op, typename... Args>
+    using detected_or = detail2::detector<Default, void, Op, Args...>;
+
+    // Op<Args...> if that is a valid type, otherwise Default.
+    template<typename Default, template<typename...> class Op, typename... Args>
+    using detected_or_t = typename detected_or<Default, Op, Args...>::type;
+
+     // Op<Args...> if that is a valid type, otherwise Default<Args...>.
+    template<template<typename...> class Default, template<typename...> class Op, typename... Args>
+    using detected_or_t_ = detected_or_t<Default<Args...>, Op, Args...>;
+
+    ///////////////
+
+    // check whether Traits::BaseClass is a valid type,
+    // if so, define BaseClass_t<Traits> as being Traits::BaseClass
+    // else   define BaseClass_t<Traits> as being GaudiAlgorithm
+    template <typename Tr> using BaseClass_  = typename Tr::BaseClass;
+    template <typename Tr> using BaseClass_t = detected_or_t< GaudiAlgorithm, BaseClass_, Tr >;
+
+    // check whether Traits::{Input,Output}Handle<T> is a valid type,
+    // if so, define {Input,Output}Handle_t<Traits,T> as being Traits::{Input,Output}Handle<T>
+    // else   define {Input,Output}Handle_t<Traits,T> as being DataHandle<T>
+    template <typename Tr, typename T> using DataObjectHandle_ = DataObjectHandle<T>;
+    template <typename Tr, typename T> using OutputHandle_  = typename Tr::template OutputHandle<T>;
+    template <typename Tr, typename T> using InputHandle_   = typename Tr::template InputHandle<T>;
+
+    template <typename Tr, typename T> using OutputHandle_t = detected_or_t_< DataObjectHandle_, OutputHandle_, Tr, T>;
+    template <typename Tr, typename T> using InputHandle_t  = detected_or_t_< DataObjectHandle_, InputHandle_,  Tr, T>;
 
     /////////
 
