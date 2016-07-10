@@ -9,6 +9,7 @@
 #include "GaudiKernel/DataObjectHandle.h"
 #include "GaudiKernel/AnyDataHandle.h"
 #include "GaudiAlg/GaudiAlgorithm.h"
+#include "GaudiAlg/GaudiHistoAlg.h"
 
 namespace Gaudi { namespace Functional {
 
@@ -17,20 +18,37 @@ namespace Gaudi { namespace Functional {
       return boost::algorithm::join(c,"&");
    }
 
+namespace Traits {
 
    // traits classes used to customize Transformer and FilterPredicate
-   // TODO: is there a way so that if a type is not defined in the
-   //       traits class a default is picked up instead?
-   struct useDataObjectHandle {
-       using BaseClass = GaudiAlgorithm;
-       template <typename T> using InputHandle = DataObjectHandle<T>;
-       template <typename T> using OutputHandle = DataObjectHandle<T>;
+   // Define the classes to to be used as baseclass, in- or output hanldes.
+   // In case a type is not specified in the traits struct, a default is used.
+   //
+   // The defaults are:
+   //
+   //      using BaseClass = GaudiAlgorithm
+   //      template <typename T> using InputHandle = DataObjectHandle<T>;
+   //      template <typename T> using OutputHandle = DataObjectHandle<T>;
+   //
+
+   // this uses the defaults -- and it itself is the default ;-)
+   struct useDefaults {
    };
+
+   // this example uses AnyDataHandle as input and output, and the default BaseClass
    struct useAnyDataHandle {
-       using BaseClass = GaudiAlgorithm;
        template <typename T> using InputHandle = AnyDataHandle<T>;
        template <typename T> using OutputHandle = AnyDataHandle<T>;
    };
+
+   // this example uses GaudiHistoAlg as baseclass, and the default handle types for
+   // input and output
+   struct useGaudiHistoAlg {
+       using BaseClass = GaudiHistoAlg;
+   };
+
+}
+
 }}
 
 #endif
