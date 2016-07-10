@@ -331,8 +331,8 @@ macro(gaudi_project project version)
   find_program(env_cmd xenv HINTS ${binary_paths})
   set(env_cmd ${PYTHON_EXECUTABLE} ${env_cmd})
 
-  find_program(default_merge_cmd merge_files.py HINTS ${binary_paths})
-  set(default_merge_cmd ${PYTHON_EXECUTABLE} ${default_merge_cmd} --no-stamp)
+  find_program(default_merge_cmd quick-merge HINTS ${binary_paths})
+  set(default_merge_cmd ${PYTHON_EXECUTABLE} ${default_merge_cmd})
 
   find_program(versheader_cmd createProjVersHeader.py HINTS ${binary_paths})
   if(versheader_cmd)
