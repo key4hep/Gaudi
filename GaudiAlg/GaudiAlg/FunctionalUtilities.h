@@ -18,6 +18,11 @@ namespace Gaudi { namespace Functional {
       return boost::algorithm::join(c,"&");
    }
 
+   template <typename... Strings>
+   std::string concat_alternatives(const Strings& ...s ) {
+      return concat_alternatives(std::initializer_list<std::string>{ s... });
+   }
+
 namespace Traits {
 
    // traits classes used to customize Transformer and FilterPredicate
