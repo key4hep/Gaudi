@@ -4,55 +4,64 @@
 
 #include "GaudiKernel/Property.h"
 
+struct MyClass {};
+
 BOOST_AUTO_TEST_CASE( value_props_constructors )
 {
   {
     StringProperty p;
     BOOST_CHECK( p.value() == "" );
     BOOST_CHECK( p.name() == "" );
-    BOOST_CHECK( p.documentation() == "" );
+    BOOST_CHECK( p.documentation() == " [unknown owner type]" );
   }
   {
     StringProperty p( "abc" );
     BOOST_CHECK( p.value() == "abc" );
     BOOST_CHECK( p.name() == "" );
-    BOOST_CHECK( p.documentation() == "" );
+    BOOST_CHECK( p.documentation() == " [unknown owner type]" );
   }
   {
     StringProperty p( "abc", "xyz" );
     BOOST_CHECK( p.value() == "xyz" );
     BOOST_CHECK( p.name() == "abc" );
-    BOOST_CHECK( p.documentation() == "" );
+    BOOST_CHECK( p.documentation() == " [unknown owner type]" );
   }
   {
     StringProperty p( "abc", "xyz", "doc" );
     BOOST_CHECK( p.value() == "xyz" );
     BOOST_CHECK( p.name() == "abc" );
-    BOOST_CHECK( p.documentation() == "doc" );
+    BOOST_CHECK( p.documentation() == "doc [unknown owner type]" );
   }
   {
     IntegerProperty p;
     BOOST_CHECK( p.value() == 0 );
     BOOST_CHECK( p.name() == "" );
-    BOOST_CHECK( p.documentation() == "" );
+    BOOST_CHECK( p.documentation() == " [unknown owner type]" );
   }
   {
     IntegerProperty p( 123 );
     BOOST_CHECK( p.value() == 123 );
     BOOST_CHECK( p.name() == "" );
-    BOOST_CHECK( p.documentation() == "" );
+    BOOST_CHECK( p.documentation() == " [unknown owner type]" );
   }
   {
     IntegerProperty p( "abc", 456 );
     BOOST_CHECK( p.value() == 456 );
     BOOST_CHECK( p.name() == "abc" );
-    BOOST_CHECK( p.documentation() == "" );
+    BOOST_CHECK( p.documentation() == " [unknown owner type]" );
   }
   {
     IntegerProperty p( "abc", 456, "doc" );
     BOOST_CHECK( p.value() == 456 );
     BOOST_CHECK( p.name() == "abc" );
-    BOOST_CHECK( p.documentation() == "doc" );
+    BOOST_CHECK( p.documentation() == "doc [unknown owner type]" );
+  }
+  {
+    IntegerProperty p( "abc", 456, "doc" );
+    p.setOwnerType<MyClass>();
+    BOOST_CHECK( p.value() == 456 );
+    BOOST_CHECK( p.name() == "abc" );
+    BOOST_CHECK( p.documentation() == "doc [MyClass]" );
   }
 }
 
@@ -148,7 +157,7 @@ BOOST_AUTO_TEST_CASE( copy_contructor )
     StringProperty dest( orig );
     BOOST_CHECK( dest.name() == "name" );
     BOOST_CHECK( dest.value() == "value" );
-    BOOST_CHECK( dest.documentation() == "doc" );
+    BOOST_CHECK( dest.documentation() == "doc [unknown owner type]" );
   }
   {
     // std::cout << "copy_contructor " << std::endl;
@@ -156,7 +165,7 @@ BOOST_AUTO_TEST_CASE( copy_contructor )
     StringPropertyRef orig{"name", data, "doc"};
     StringPropertyRef dest( orig );
     BOOST_CHECK( dest.name() == "name" );
-    BOOST_CHECK( dest.documentation() == "doc" );
+    BOOST_CHECK( dest.documentation() == "doc [unknown owner type]" );
     BOOST_CHECK( dest.value() == "value" );
     data = "newvalue";
     BOOST_CHECK( dest.value() == "newvalue" );
@@ -169,7 +178,7 @@ BOOST_AUTO_TEST_CASE( move_contructor )
   StringProperty dest( std::move( orig ) );
   BOOST_CHECK( dest.name() == "name" );
   BOOST_CHECK( dest.value() == "value" );
-  BOOST_CHECK( dest.documentation() == "doc" );
+  BOOST_CHECK( dest.documentation() == "doc [unknown owner type]" );
 }
 BOOST_AUTO_TEST_CASE( copy_assignment )
 {
@@ -178,7 +187,7 @@ BOOST_AUTO_TEST_CASE( copy_assignment )
   StringProperty dest = orig;
   BOOST_CHECK( dest.name() == "name" );
   BOOST_CHECK( dest.value() == "value" );
-  BOOST_CHECK( dest.documentation() == "doc" );
+  BOOST_CHECK( dest.documentation() == "doc [unknown owner type]" );
 }
 BOOST_AUTO_TEST_CASE( move_assignment )
 {
@@ -187,5 +196,5 @@ BOOST_AUTO_TEST_CASE( move_assignment )
   StringProperty dest = std::move( orig );
   BOOST_CHECK( dest.name() == "name" );
   BOOST_CHECK( dest.value() == "value" );
-  BOOST_CHECK( dest.documentation() == "doc" );
+  BOOST_CHECK( dest.documentation() == "doc [unknown owner type]" );
 }

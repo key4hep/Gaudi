@@ -155,6 +155,7 @@ public:
     m_data.reset( const_cast<DataObjIDColl*>( &value() ) );
     setDocumentation( std::move( doc ) );
     owner->declareProperty( *this );
+    setOwnerType<OWNER>();
   }
 
   operator const DataObjIDColl& () const { return value(); }

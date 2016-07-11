@@ -37,7 +37,9 @@ public:
   /// property name
   const std::string& name() const { return m_name; }
   /// property documentation
-  const std::string& documentation() const { return m_documentation; }
+  std::string documentation() const {
+    return m_documentation + " [" + ownerTypeName() + "]";
+  }
   /// property type-info
   const std::type_info* type_info() const { return m_typeinfo; }
   /// property type
@@ -88,6 +90,27 @@ public:
   /// \deprecated provided for backward compatibility, will be removed in v28r1
   [[deprecated( "provided for backward compatibility, will be removed in v28r1" )]] virtual Property* clone() const = 0;
 
+  /// set the type of the owner class (used for documentation)
+  void setOwnerType(const std::type_info& ownerType) {
+    m_ownerType = &ownerType;
+  }
+
+  /// set the type of the owner class (used for documentation)
+  template <class OWNER>
+  void setOwnerType() {
+    setOwnerType( typeid( OWNER ) );
+  }
+
+  /// get the type of the owner class (used for documentation)
+  const std::type_info* ownerType() const {
+    return m_ownerType;
+  }
+
+  /// get the string for the type of the owner class (used for documentation)
+  std::string ownerTypeName() const {
+    return m_ownerType ? System::typeinfoName( *m_ownerType ) : std::string("unknown owner type");
+  }
+
 protected:
   /// constructor from the property name and the type
   Property( const std::type_info& type, std::string name = "", std::string doc = "" )
@@ -108,6 +131,8 @@ private:
   std::string m_documentation;
   /// property type
   const std::type_info* m_typeinfo;
+  /// type of owner of the property (if defined)
+  const std::type_info* m_ownerType = nullptr;
 };
 
 namespace Gaudi
@@ -301,7 +326,7 @@ public:
       : PropertyWithValue( std::move( name ), std::forward<T>( value ), std::move( doc ) )
   {
     owner->declareProperty( *this );
-    setDocumentation( documentation() + " [" + System::typeinfoName( typeid( OWNER ) ) + "]" );
+    setOwnerType<OWNER>();
   }
 
   /// Construct an anonymous property from a value.
