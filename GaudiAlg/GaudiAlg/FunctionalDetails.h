@@ -50,6 +50,10 @@ namespace Gaudi { namespace Functional { namespace details {
 
 #ifdef HAVE_CPP17
         template<typename...> using void_t = void;
+#else
+        template <typename> struct void_t_ { typedef void type; };
+        template <typename T> using void_t = typename void_t_<T>::type;
+#endif
 
         /// Implementation of the detection idiom (positive case).
         template<typename Default,
@@ -57,19 +61,6 @@ namespace Gaudi { namespace Functional { namespace details {
         struct detector<Default, void_t<Op<Args...>>, Op, Args...> {
             using type = Op<Args...>;
         };
-
-#else
-        template <typename> struct void_t { typedef void type; };
-        template <typename T> using is_valid_t = typename void_t<T>::type;
-
-        /// Implementation of the detection idiom (positive case).
-        template<typename Default,
-                 template<typename...> class Op, typename... Args>
-        struct detector<Default, is_valid_t<Op<Args...>>, Op, Args...> {
-            using type = Op<Args...>;
-        };
-
-#endif
     }
 
     // Detect whether Op<_Args...> is a valid type, use Default if not.
@@ -85,22 +76,23 @@ namespace Gaudi { namespace Functional { namespace details {
     using detected_or_t_ = detected_or_t<Default<Args...>, Op, Args...>;
 
     ///////////////
+    namespace detail2 { // utilities for detected_or_t usage
+    template <typename Tr> using BaseClass_  = typename Tr::BaseClass;
+    template <typename Tr, typename T> using DataObjectHandle_ = DataObjectHandle<T>;
+    template <typename Tr, typename T> using OutputHandle_  = typename Tr::template OutputHandle<T>;
+    template <typename Tr, typename T> using InputHandle_   = typename Tr::template InputHandle<T>;
+    }
 
     // check whether Traits::BaseClass is a valid type,
     // if so, define BaseClass_t<Traits> as being Traits::BaseClass
     // else   define BaseClass_t<Traits> as being GaudiAlgorithm
-    template <typename Tr> using BaseClass_  = typename Tr::BaseClass;
-    template <typename Tr> using BaseClass_t = detected_or_t< GaudiAlgorithm, BaseClass_, Tr >;
+    template <typename Tr> using BaseClass_t = detected_or_t< GaudiAlgorithm, detail2::BaseClass_, Tr >;
 
     // check whether Traits::{Input,Output}Handle<T> is a valid type,
     // if so, define {Input,Output}Handle_t<Traits,T> as being Traits::{Input,Output}Handle<T>
     // else   define {Input,Output}Handle_t<Traits,T> as being DataHandle<T>
-    template <typename Tr, typename T> using DataObjectHandle_ = DataObjectHandle<T>;
-    template <typename Tr, typename T> using OutputHandle_  = typename Tr::template OutputHandle<T>;
-    template <typename Tr, typename T> using InputHandle_   = typename Tr::template InputHandle<T>;
-
-    template <typename Tr, typename T> using OutputHandle_t = detected_or_t_< DataObjectHandle_, OutputHandle_, Tr, T>;
-    template <typename Tr, typename T> using InputHandle_t  = detected_or_t_< DataObjectHandle_, InputHandle_,  Tr, T>;
+    template <typename Tr, typename T> using OutputHandle_t = detected_or_t_< detail2::DataObjectHandle_, detail2::OutputHandle_, Tr, T>;
+    template <typename Tr, typename T> using InputHandle_t  = detected_or_t_< detail2::DataObjectHandle_, detail2::InputHandle_,  Tr, T>;
 
     /////////
 
