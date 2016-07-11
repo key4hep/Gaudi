@@ -13,9 +13,9 @@ namespace Gaudi { namespace Examples {
   public:
     CountSelectedTracks(const std::string& name, ISvcLocator* pSvc):
       FilterPredicate(name, pSvc, 
-                      { KeyValue{"InputData",Functional::concat_alternatives({"BogusLocation",
-                                                                              "MoreBogus",
-                                                                              "MyOutTracks"})}
+                      { KeyValue{"InputData",Functional::concat_alternatives("BogusLocation",
+                                                                             "MoreBogus",
+                                                                             "MyOutTracks")}
                       }) {
     }
 
