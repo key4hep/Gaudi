@@ -105,3 +105,6 @@ if(GAUDI_HIDE_WARNINGS)
     set_property(TARGET GaudiKernelDict PROPERTY COMPILE_DEFINITIONS _SCL_SECURE_NO_WARNINGS)
   endif()
 endif()
+
+add_executable(profile_Property tests/src/profile_Property.cpp)
+target_link_libraries(profile_Property GaudiKernel)
