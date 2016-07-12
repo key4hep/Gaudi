@@ -160,9 +160,9 @@ public:
 
   template<class T>
 
-    Property* declareProperty(const std::string& name,
+    Property* declareProperty(boost::string_ref name,
                               ToolHandle<T>& hndl,
-                              const std::string& doc = "none" ) {
+                              boost::string_ref doc = "none" ) {
     this->declareTool(hndl).ignore();
     return PropertyHolderImpl::declareProperty(name, hndl, doc);
 
@@ -182,9 +182,9 @@ public:
   // ==========================================================================
   // declare ToolHandleArrays to the AlgTool
   template <class T>
-    Property* declareProperty(const std::string& name,
+    Property* declareProperty(boost::string_ref name,
                               ToolHandleArray<T>& hndlArr,
-                              const std::string& doc = "none" ) {
+                              boost::string_ref doc = "none" ) {
     m_toolHandleArrays.push_back(&hndlArr);
     return PropertyHolderImpl::declareProperty(name, hndlArr, doc);
   }

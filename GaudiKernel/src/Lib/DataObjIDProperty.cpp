@@ -168,7 +168,7 @@ namespace Gaudi {
 
 //---------------------------------------------------------------------------
 
-DataObjIDProperty::DataObjIDProperty( const std::string& name,
+DataObjIDProperty::DataObjIDProperty( boost::string_ref name,
                                       DataObjID& ref )
   : PropertyWithHandlers( name, typeid( DataObjID ) ),
     m_pValue( &ref )
@@ -224,7 +224,7 @@ DataObjIDProperty::toStream(std::ostream& out) const
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 
-DataObjIDCollProperty::DataObjIDCollProperty( const std::string& name,
+DataObjIDCollProperty::DataObjIDCollProperty( boost::string_ref name,
                                       DataObjIDColl& ref )
   : PropertyWithHandlers( name, typeid( DataObjIDColl ) ),
     m_pValue( &ref )

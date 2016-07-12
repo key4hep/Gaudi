@@ -53,57 +53,57 @@ public:
   /// Declare a property (templated)
   template<class TYPE>
   Property* declareProperty
-  ( const std::string&       name  ,
+  ( boost::string_ref       name  ,
     TYPE&                    value,
-    const std::string&       doc = "none" ) ;
+    boost::string_ref       doc = "none" ) ;
   /// Declare a property (specialization)
   template <class TYPE>
   Property* declareProperty
-  ( const std::string&       name  ,
+  ( boost::string_ref       name  ,
     SimpleProperty<TYPE>&    prop,
-    const std::string&       doc = "none") ;
+    boost::string_ref       doc = "none") ;
   /// Declare a property (specialization)
   template <class TYPE>
   Property* declareProperty
-  ( const std::string&       name  ,
+  ( boost::string_ref       name  ,
     SimplePropertyRef<TYPE>& prop,
-    const std::string&       doc = "none") ;
+    boost::string_ref       doc = "none") ;
   // partial specializations for various GaudiHandles
   /// Declare a property (specialization)
   template<class TYPE>
   Property* declareProperty
-  ( const std::string& name,
+  ( boost::string_ref name,
     ToolHandle<TYPE>& ref,
-    const std::string& doc = "none" ) ;
+    boost::string_ref doc = "none" ) ;
   /// Declare a property (specialization)
   template<class TYPE>
   Property* declareProperty
-  ( const std::string& name,
+  ( boost::string_ref name,
     ServiceHandle<TYPE>& ref,
-    const std::string& doc = "none" ) ;
+    boost::string_ref doc = "none" ) ;
   /// Declare a property (specialization)
   template<class TYPE>
   Property* declareProperty
-  ( const std::string& name,
+  ( boost::string_ref name,
     ToolHandleArray<TYPE>& ref,
-    const std::string& doc = "none" ) ;
+    boost::string_ref doc = "none" ) ;
   /// Declare a property (specialization)
   template<class TYPE>
   Property* declareProperty
-  ( const std::string& name,
+  ( boost::string_ref name,
     ServiceHandleArray<TYPE>& ref,
-    const std::string& doc = "none" ) ;
+    boost::string_ref doc = "none" ) ;
   /// Declare a property (specialization)
    template<class TYPE>
   Property* declareProperty
-  ( const std::string& name,
+  ( boost::string_ref name,
      DataObjectHandle<TYPE>& ref,
-    const std::string& doc = "none" ) ;
+    boost::string_ref doc = "none" ) ;
   /// Declare a remote property
   Property* declareRemoteProperty
-  ( const std::string& name       ,
+  ( boost::string_ref name       ,
     IProperty*         rsvc       ,
-    const std::string& rname = "" ) ;
+    boost::string_ref rname = "" ) ;
   // ==========================================================================
   // IProperty implementation
   // ==========================================================================
@@ -153,23 +153,23 @@ public:
 protected:
 
   // get local or remote property by name
-  Property* property       ( const std::string& name  ) const ;
+  Property* property       ( boost::string_ref name  ) const ;
 
 private:
 
   /// get the property by name form the proposed list
   Property* property
-  ( const std::string&             name  ,
+  ( boost::string_ref             name  ,
     const std::vector<Property*>&  props ) const ;
 
   /// Throw an exception if the name is already present in the
   /// list of properties (see GAUDI-1023).
-  void assertUniqueName(const std::string& name) const;
+  void assertUniqueName(boost::string_ref name) const;
 
   // Some typedef to simply typing
   typedef std::vector<Property*>   Properties       ;
-  typedef std::pair<std::string,
-                    std::pair<IProperty*, std::string> > RemProperty;
+  typedef std::pair<boost::string_ref,
+                    std::pair<IProperty*, boost::string_ref> > RemProperty;
   typedef std::vector<RemProperty> RemoteProperties ;
 
   /// Collection of all declared properties
@@ -187,9 +187,9 @@ private:
 template<class TYPE>
 inline Property*
 PropertyMgr::declareProperty
-( const std::string& name  ,
+( boost::string_ref name  ,
   TYPE&              value,
-  const std::string& doc )
+  boost::string_ref doc )
 {
   assertUniqueName(name);
   m_todelete.emplace_back( new SimplePropertyRef<TYPE> ( name , value ) );
@@ -206,9 +206,9 @@ PropertyMgr::declareProperty
 template <class TYPE>
 inline Property*
 PropertyMgr::declareProperty
-( const std::string&       name ,
+( boost::string_ref       name ,
   SimpleProperty<TYPE>&    prop,
-  const std::string&       doc )
+  boost::string_ref       doc )
 {
   assertUniqueName(name);
   Property* p = &prop ;
@@ -225,9 +225,9 @@ PropertyMgr::declareProperty
 template <class TYPE>
 inline Property*
 PropertyMgr::declareProperty
-( const std::string&       name ,
+( boost::string_ref       name ,
   SimplePropertyRef<TYPE>& prop,
-  const std::string&       doc )
+  boost::string_ref       doc )
 {
   assertUniqueName(name);
   Property* p = &prop ;
@@ -244,9 +244,9 @@ PropertyMgr::declareProperty
 template<class TYPE>
 inline Property*
 PropertyMgr::declareProperty
-( const std::string& name,
+( boost::string_ref name,
   ToolHandle<TYPE>& ref,
-  const std::string& doc )
+  boost::string_ref doc )
 {
   assertUniqueName(name);
   m_todelete   . emplace_back ( new GaudiHandleProperty( name, ref ) );
@@ -261,9 +261,9 @@ PropertyMgr::declareProperty
 template<class TYPE>
 inline Property*
 PropertyMgr::declareProperty
-( const std::string& name,
+( boost::string_ref name,
   ServiceHandle<TYPE>& ref,
-  const std::string& doc )
+  boost::string_ref doc )
 {
   assertUniqueName(name);
   m_todelete   . emplace_back (new GaudiHandleProperty( name, ref ));
@@ -278,9 +278,9 @@ PropertyMgr::declareProperty
 template<class TYPE>
 inline Property*
 PropertyMgr::declareProperty
-( const std::string& name,
+( boost::string_ref name,
   ToolHandleArray<TYPE>& ref,
-  const std::string& doc )
+  boost::string_ref doc )
 {
   assertUniqueName(name);
   m_todelete   . emplace_back ( new GaudiHandleArrayProperty( name, ref ) );
@@ -295,9 +295,9 @@ PropertyMgr::declareProperty
 template<class TYPE>
 inline Property*
 PropertyMgr::declareProperty
-( const std::string& name,
+( boost::string_ref name,
   ServiceHandleArray<TYPE>& ref,
-  const std::string& doc )
+  boost::string_ref doc )
 {
   assertUniqueName(name);
   m_todelete   . emplace_back ( new GaudiHandleArrayProperty( name, ref ) );
@@ -313,9 +313,9 @@ PropertyMgr::declareProperty
 template<class TYPE>
 inline Property*
 PropertyMgr::declareProperty
-( const std::string& name,
+( boost::string_ref name,
   DataObjectHandle<TYPE>& ref,
-  const std::string& doc )
+  boost::string_ref doc )
 {
   assertUniqueName(name);
   Property* p = new DataObjectHandleProperty( name, ref );

@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <string>
 #include <typeinfo>
+#include <boost/utility/string_ref.hpp>
 // ============================================================================
 // Application C++ Class Headers
 // ============================================================================
@@ -35,10 +36,10 @@ private:
 
 public:
   /// property name
-  const std::string& name() const { return m_name; }
+  std::string name() const { return m_name.to_string(); }
   /// property documentation
   std::string documentation() const {
-    return m_documentation + " [" + ownerTypeName() + "]";
+    return m_documentation.to_string() + " [" + ownerTypeName() + "]";
   }
   /// property type-info
   const std::type_info* type_info() const { return m_typeinfo; }
@@ -81,9 +82,9 @@ public:
   /// virtual destructor
   virtual ~Property() = default;
   /// set the new value for the property name
-  void setName( std::string value ) { m_name = std::move( value ); }
+  void setName( boost::string_ref value ) { m_name = std::move( value ); }
   /// set the documentation string
-  void setDocumentation( std::string documentation ) { m_documentation = std::move( documentation ); }
+  void setDocumentation( boost::string_ref documentation ) { m_documentation = std::move( documentation ); }
   /// the printout of the property value
   virtual std::ostream& fillStream( std::ostream& ) const;
   /// clones the current property
@@ -113,12 +114,12 @@ public:
 
 protected:
   /// constructor from the property name and the type
-  Property( const std::type_info& type, std::string name = "", std::string doc = "" )
-      : m_name( std::move( name ) ), m_documentation( std::move( doc ) ), m_typeinfo( &type )
+  Property( const std::type_info& type, boost::string_ref name = "", boost::string_ref doc = "" )
+      : m_name( name ), m_documentation( doc ), m_typeinfo( &type )
   {
   }
   /// constructor from the property name and the type
-  Property( std::string name, const std::type_info& type );
+  Property( boost::string_ref name, const std::type_info& type );
   /// copy constructor
   Property( const Property& ) = default;
   /// assignment operator
@@ -126,9 +127,9 @@ protected:
 
 private:
   /// property name
-  std::string m_name;
+  boost::string_ref m_name;
   /// property doc string
-  std::string m_documentation;
+  boost::string_ref m_documentation;
   /// property type
   const std::type_info* m_typeinfo;
   /// type of owner of the property (if defined)
@@ -313,8 +314,8 @@ public:
   // ==========================================================================
   /// the constructor with property name, value and documentation.
   template <class T = ValueType>
-  inline PropertyWithValue( std::string name, T&& value, std::string doc = "" )
-      : Property( typeid( ValueType ), std::move( name ), std::move( doc ) ), m_value( std::forward<T>( value ) )
+  inline PropertyWithValue( boost::string_ref name, T&& value, boost::string_ref doc = "" )
+      : Property( typeid( ValueType ), name, doc ), m_value( std::forward<T>( value ) )
   {
     m_verifier( m_value );
   }
@@ -322,8 +323,8 @@ public:
   /// @note the use std::enable_if is required to avoid ambiguities
   template <class OWNER, class T = ValueType,
             typename = typename std::enable_if<std::is_convertible<OWNER*, IProperty*>::value>::type>
-  inline PropertyWithValue( OWNER* owner, std::string name, T&& value = ValueType{}, std::string doc = "" )
-      : PropertyWithValue( std::move( name ), std::forward<T>( value ), std::move( doc ) )
+  inline PropertyWithValue( OWNER* owner, boost::string_ref name, T&& value = ValueType{}, boost::string_ref doc = "" )
+      : PropertyWithValue( name, std::forward<T>( value ), doc )
   {
     owner->declareProperty( *this );
     setOwnerType<OWNER>();
@@ -732,7 +733,7 @@ class GaudiHandleBase;
 class GAUDI_API GaudiHandleProperty : public PropertyWithHandlers
 {
 public:
-  GaudiHandleProperty( std::string name, GaudiHandleBase& ref );
+  GaudiHandleProperty( boost::string_ref name, GaudiHandleBase& ref );
 
   GaudiHandleProperty& operator=( const GaudiHandleBase& value )
   {
@@ -772,7 +773,7 @@ class GaudiHandleArrayBase;
 class GAUDI_API GaudiHandleArrayProperty : public PropertyWithHandlers
 {
 public:
-  GaudiHandleArrayProperty( std::string name, GaudiHandleArrayBase& ref );
+  GaudiHandleArrayProperty( boost::string_ref name, GaudiHandleArrayBase& ref );
 
   GaudiHandleArrayProperty& operator=( const GaudiHandleArrayBase& value )
   {

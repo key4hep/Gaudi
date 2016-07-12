@@ -23,7 +23,7 @@ class DataObjectHandleBase;
 class GAUDI_API DataObjectHandleProperty :  public PropertyWithHandlers {
  public:
 
-  DataObjectHandleProperty( const std::string& name, DataObjectHandleBase& ref );
+  DataObjectHandleProperty( boost::string_ref name, DataObjectHandleBase& ref );
   DataObjectHandleProperty& operator=( const DataObjectHandleBase& value );
   virtual ~DataObjectHandleProperty();
 
@@ -50,7 +50,7 @@ class PropertyWithValue<DataObjectHandleBase&, Gaudi::Details::Property::NullVer
   public ::DataObjectHandleProperty
 {
 public:
-  PropertyWithValue(const std::string& name, DataObjectHandleBase& value) :
+  PropertyWithValue(boost::string_ref name, DataObjectHandleBase& value) :
     ::DataObjectHandleProperty(name, value)
   {}
 

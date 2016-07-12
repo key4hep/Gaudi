@@ -42,7 +42,7 @@ namespace Gaudi
   namespace Utils
   {
     /// Helper for case insensitive string comparison.
-    inline bool iequal( const std::string& v1, const std::string& v2 )
+    inline bool iequal( boost::string_ref v1, boost::string_ref v2 )
     {
       return v1.size() == v2.size() && std::equal( std::begin( v1 ), std::end( v1 ), std::begin( v2 ),
                                                    []( char c1, char c2 ) { return toupper( c1 ) == toupper( c2 ); } );
@@ -106,7 +106,7 @@ public:
   /// Helper to wrap a regular data member and use it as a regular property.
   /// \deprecated Prefer the signatures using a a fully initialized Property instance.
   template <class TYPE>
-  Property* declareProperty( const std::string& name, TYPE& value, const std::string& doc = "none" )
+  Property* declareProperty( boost::string_ref name, TYPE& value, boost::string_ref doc = "none" )
   {
     assertUniqueName( name );
     m_todelete.emplace_back( new SimplePropertyRef<TYPE>( name, value ) );
@@ -120,7 +120,7 @@ public:
   template <class TYPE>
   [[deprecated(
       "Kept for backward compatibility, use the non-const version instead, will be removed in v28r1" )]] Property*
-  declareProperty( const std::string& name, TYPE& value, const std::string& doc = "none" ) const
+  declareProperty( boost::string_ref name, TYPE& value, const boost::string_ref doc = "none" ) const
   {
     return const_cast<PropertyHolder*>( this )->declareProperty<TYPE>( name, value, doc );
   }
@@ -128,8 +128,8 @@ public:
   /// Declare a Property instance setting name and documentation.
   /// \deprecated Prefer the signatures using a fully initialized Property instance.
   template <class TYPE, class VERIFIER, class HANDLERS>
-  Property* declareProperty( const std::string& name, PropertyWithValue<TYPE, VERIFIER, HANDLERS>& prop,
-                             const std::string& doc = "none" )
+  Property* declareProperty( boost::string_ref name, PropertyWithValue<TYPE, VERIFIER, HANDLERS>& prop,
+                             boost::string_ref doc = "none" )
   {
     assertUniqueName( name );
     Property* p = &prop;
@@ -141,12 +141,12 @@ public:
 
   /// Declare a remote property.
   /// Bind \c name to the property \c rname of \c rsvc.
-  Property* declareRemoteProperty( const std::string& name, IProperty* rsvc, const std::string& rname = "" )
+  Property* declareRemoteProperty( boost::string_ref name, IProperty* rsvc, boost::string_ref rname = "" )
   {
     if ( !rsvc ) {
       return nullptr;
     }
-    const std::string& nam = rname.empty() ? name : rname;
+    boost::string_ref nam = rname.empty() ? name : rname;
     Property* p            = property( nam, rsvc->getProperties() );
     m_remoteProperties.emplace_back( name, std::make_pair( rsvc, nam ) );
     return p;
@@ -155,7 +155,7 @@ public:
   /// Specializations for various GaudiHandles
   /// \{
   template <class TYPE>
-  Property* declareProperty( const std::string& name, ToolHandle<TYPE>& ref, const std::string& doc = "none" )
+  Property* declareProperty( boost::string_ref name, ToolHandle<TYPE>& ref, boost::string_ref doc = "none" )
   {
     assertUniqueName( name );
     m_todelete.emplace_back( new GaudiHandleProperty( name, ref ) );
@@ -167,7 +167,7 @@ public:
     return p;
   }
   template <class TYPE>
-  Property* declareProperty( const std::string& name, ServiceHandle<TYPE>& ref, const std::string& doc = "none" )
+  Property* declareProperty( boost::string_ref name, ServiceHandle<TYPE>& ref, boost::string_ref doc = "none" )
   {
     assertUniqueName( name );
     m_todelete.emplace_back( new GaudiHandleProperty( name, ref ) );
@@ -179,7 +179,7 @@ public:
     return p;
   }
   template <class TYPE>
-  Property* declareProperty( const std::string& name, ToolHandleArray<TYPE>& ref, const std::string& doc = "none" )
+  Property* declareProperty( boost::string_ref name, ToolHandleArray<TYPE>& ref, boost::string_ref doc = "none" )
   {
     assertUniqueName( name );
     m_todelete.emplace_back( new GaudiHandleArrayProperty( name, ref ) );
@@ -191,7 +191,7 @@ public:
     return p;
   }
   template <class TYPE>
-  Property* declareProperty( const std::string& name, ServiceHandleArray<TYPE>& ref, const std::string& doc = "none" )
+  Property* declareProperty( boost::string_ref name, ServiceHandleArray<TYPE>& ref, boost::string_ref doc = "none" )
   {
     assertUniqueName( name );
     m_todelete.emplace_back( new GaudiHandleArrayProperty( name, ref ) );
@@ -203,7 +203,7 @@ public:
     return p;
   }
   template <class TYPE>
-  Property* declareProperty( const std::string& name, DataObjectHandle<TYPE>& ref, const std::string& doc = "none" )
+  Property* declareProperty( boost::string_ref name, DataObjectHandle<TYPE>& ref, boost::string_ref doc = "none" )
   {
     assertUniqueName( name );
     Property* p = new DataObjectHandleProperty( name, ref );
@@ -355,7 +355,7 @@ public:
   // ==========================================================================
 protected:
   // get local or remote property by name
-  Property* property( const std::string& name ) const
+  Property* property( boost::string_ref name ) const
   {
     // local property ?
     Property* lp = property( name, m_properties );
@@ -378,7 +378,7 @@ protected:
 
 private:
   /// get the property by name form the proposed list
-  Property* property( const std::string& name, const std::vector<Property*>& props ) const
+  Property* property( boost::string_ref name, const std::vector<Property*>& props ) const
   {
     auto it = std::find_if( props.begin(), props.end(),
                             [&name]( Property* p ) { return p && Gaudi::Utils::iequal( p->name(), name ); } );
@@ -387,9 +387,9 @@ private:
 
   /// Issue a runtime warning if the name is already present in the
   /// list of properties (see <a href="https://its.cern.ch/jira/browse/GAUDI-1023">GAUDI-1023</a>).
-  void assertUniqueName( const std::string& name ) const
+  void assertUniqueName( boost::string_ref name ) const
   {
-    if ( UNLIKELY( hasProperty( name ) ) ) {
+    if ( UNLIKELY( hasProperty( name.to_string() ) ) ) {
       auto msgSvc = Gaudi::svcLocator()->service<IMessageSvc>( "MessageSvc" );
       if ( !msgSvc ) {
         std::cerr << "error: cannot get MessageSvc!" << std::endl;
@@ -401,7 +401,7 @@ private:
   }
 
   typedef std::vector<Property*> Properties;
-  typedef std::pair<std::string, std::pair<IProperty*, std::string>> RemProperty;
+  typedef std::pair<boost::string_ref, std::pair<IProperty*, boost::string_ref>> RemProperty;
   typedef std::vector<RemProperty> RemoteProperties;
 
   /// Collection of all declared properties.

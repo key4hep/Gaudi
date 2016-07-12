@@ -373,7 +373,7 @@ public:
 
   // declare Tools to the Algorithms
   template <class T>
-  Property* declareProperty( const std::string& name, ToolHandle<T>& hndl, const std::string& doc = "none" )
+  Property* declareProperty( boost::string_ref name, ToolHandle<T>& hndl, boost::string_ref doc = "none" )
   {
 
     this->declareTool( hndl ).ignore();
@@ -385,7 +385,7 @@ public:
   // declare ToolHandleArrays to the Algorithms
 
   template <class T>
-  Property* declareProperty( const std::string& name, ToolHandleArray<T>& hndlArr, const std::string& doc = "none" )
+  Property* declareProperty( boost::string_ref name, ToolHandleArray<T>& hndlArr, boost::string_ref doc = "none" )
   {
     m_toolHandleArrays.push_back( &hndlArr );
     return PropertyHolderImpl::declareProperty( name, hndlArr, doc );

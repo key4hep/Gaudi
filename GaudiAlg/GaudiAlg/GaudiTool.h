@@ -829,9 +829,9 @@ class GAUDI_API GaudiTool: public GaudiCommon<AlgTool>
   using AlgTool::declareProperty;
   template <class T>
     Property* declareProperty
-    ( const std::string& name,
+    ( boost::string_ref name,
       DataObjectHandle<T>&     hndl,
-      const std::string& doc = "none" )
+      boost::string_ref doc = "none" )
   {
 
     if ( hndl.mode() & Gaudi::DataHandle::Reader ) {
