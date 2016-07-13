@@ -49,17 +49,14 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
     m_pSvcLocator(pSvcLocator),
     m_propertyMgr( new PropertyMgr() )
 {
+  // Declare properties of parent class DataHandleHolderBase
+  initDataHandleHolderProperties(m_propertyMgr);
 
   // Declare common Algorithm properties with their defaults
   declareProperty( "OutputLevel",        m_outputLevel = MSG::NIL);
   declareProperty( "Enable",             m_isEnabled = true);
   declareProperty( "ErrorMax",           m_errorMax  = 1);
   declareProperty( "ErrorCounter",       m_errorCount = 0);
-
-  // FIXME: this should eventually be deprecated
-  //declare Extra input and output properties
-  declareProperty( "ExtraInputs",  m_extInputDataObjs);
-  declareProperty( "ExtraOutputs", m_extOutputDataObjs);
 
   // Auditor monitoring properties
 
@@ -218,6 +215,9 @@ StatusCode Algorithm::sysInitialize() {
     }
     debug() << endmsg;
   }
+
+  // initialize handles
+  initDataHandleHolder();
 
   return sc;
 }
@@ -1097,7 +1097,7 @@ void
 Algorithm::commitHandles() {
   //-----------------------------------------------------------------------------
 
-  for (auto h : m_outputHandles) {
+  for (auto h : outputHandles()) {
     h->commit();
   }
 
