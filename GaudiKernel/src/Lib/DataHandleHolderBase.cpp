@@ -1,5 +1,6 @@
 #include "GaudiKernel/DataHandleHolderBase.h"
 #include "GaudiKernel/DataHandle.h"
+#include "GaudiKernel/PropertyMgr.h"
 
 // initDataHandleHolderProperties
 void DataHandleHolderBase::initDataHandleHolderProperties(PropertyMgr *propertyMgr) {

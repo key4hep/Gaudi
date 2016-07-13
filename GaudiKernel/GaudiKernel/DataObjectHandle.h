@@ -39,18 +39,18 @@ public:
   /**
    * Retrieve object from transient data store
    */
-  T* get() { return get(true); }
+  T* get() const { return get(true); }
 
   /**
    * Bypass check of existence of object in transient store
    * Only uses main location of the
    */
-  T* getIfExists() { return get(false); }
+  T* getIfExists() const { return get(false); }
 
   /**
    * Check the existence of the object in the transient store
    */
-  bool exist() { return get(false) != nullptr; }
+  bool exist() const { return get(false) != nullptr; }
 
   /**
    * Get object from store or create a new one if it doesn't exist
@@ -64,7 +64,7 @@ public:
 
 private:
 
-  T* get(bool mustExist);
+  T* get(bool mustExist) const;
 
 };
 
@@ -97,7 +97,7 @@ DataObjectHandle<T>::DataObjectHandle(const std::string & k,
  * static cast: we do not need the checks of the dynamic cast for every access!
  */
 template<typename T>
-T* DataObjectHandle<T>::get(bool mustExist) {
+T* DataObjectHandle<T>::get(bool mustExist) const {
 
   auto dataObj = fetch();
 

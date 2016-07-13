@@ -46,8 +46,8 @@ public:
 
   virtual Mode mode() const { return m_mode; }
 
-  virtual void setKey(const DataObjID& key) { m_key = key; }
-  virtual void updateKey(const std::string& key) { m_key.updateKey(key); }
+  virtual void setKey(const DataObjID& key) const { m_key = key; }
+  virtual void updateKey(const std::string& key) const { m_key.updateKey(key); }
 
   virtual const std::string& objKey() const { return m_key.key(); }
   virtual const DataObjID& fullKey() const { return m_key; }
@@ -56,11 +56,18 @@ public:
   virtual StatusCode commit() { return StatusCode::SUCCESS; }
 
   virtual std::string pythonRepr() const;
+  virtual void init() {};
 
 protected:
   virtual void setMode(const Mode& mode) { m_mode = mode; }
 
-  DataObjID               m_key;
+  /**
+   * The key of the object behind this DataHandle
+   * Although it may look strange to have it mutable, this can actually
+   * change in case the object had alternative names, and it should not
+   * be visible to the end user, for which the Handle is still the same
+   */
+  mutable DataObjID       m_key;
   IDataHandleHolder*      m_owner;
 
 private:

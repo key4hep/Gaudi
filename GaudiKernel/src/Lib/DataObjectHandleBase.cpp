@@ -32,6 +32,27 @@ namespace {
 }
 
 //---------------------------------------------------------------------------
+DataObjectHandleBase::DataObjectHandleBase(DataObjectHandleBase&& other) {
+  *this = other;
+}
+
+//---------------------------------------------------------------------------
+DataObjectHandleBase& DataObjectHandleBase::operator=(const DataObjectHandleBase& other) {
+  // avoid modification of searchDone and altNames in other while we are copying
+  std::lock_guard<std::mutex> guard(other.m_searchMutex);
+  m_EDS = other.m_EDS;
+  m_MS = other.m_MS;
+  m_init = other.m_init;
+  m_goodType = other.m_goodType;
+  m_optional = other.m_optional;
+  m_wasRead = other.m_wasRead;
+  m_wasWritten = other.m_wasWritten;
+  m_searchDone = other.m_searchDone;
+  m_altNames = other.m_altNames;
+  return *this;
+}
+
+//---------------------------------------------------------------------------
 DataObjectHandleBase::DataObjectHandleBase(const DataObjID & k,
 				      Gaudi::DataHandle::Mode a,
 				      IDataHandleHolder* owner,
@@ -46,29 +67,47 @@ DataObjectHandleBase::DataObjectHandleBase(const std::string & k,
   DataObjectHandleBase(DataObjID(head_alternates(k)), a, owner, unpack(tail_alternates(k))){}
 
 //---------------------------------------------------------------------------
-DataObject* DataObjectHandleBase::fetch() {
+DataObject* DataObjectHandleBase::fetch() const {
 
+  assert(m_init);
   DataObject* p = nullptr;
-  if (UNLIKELY(!m_init)) init();
 
   StatusCode sc = m_EDS->retrieveObject(objKey(), p);
   if ( UNLIKELY( sc.isFailure() ) ) {
-      // let's try our alternatives (if any)
-      auto alt = std::find_if( alternativeDataProductNames().begin(),
-                               alternativeDataProductNames().end(),
-                               [&](const std::string& n) {
+    if (!m_searchDone) {
+      // take a lock to be sure we only execute this once at a time
+      std::lock_guard<std::mutex> guard(m_searchMutex);
+      // double check that search was not done now that the lock is taken
+      if (!m_searchDone) {
+        // let's try our alternatives (if any)
+        auto alt = std::find_if( alternativeDataProductNames().begin(),
+                                 alternativeDataProductNames().end(),
+                                 [&](const std::string& n) {
                                    return m_EDS->retrieveObject(n,p).isSuccess();
-                               } );
-      if (alt!=alternativeDataProductNames().end()) {
-	    MsgStream log(m_MS,m_owner->name() + ":DataObjectHandle");
-        log << MSG::INFO <<  ": could not find \"" << objKey()
-            << "\" -- using alternative source: \"" << *alt << "\" instead"
-            << endmsg;
-        // found something -- set it as default,
-        setKey(*alt);
-        // and zero out the alternatives
-        setAlternativeDataProductNames( { } );
+                                 } );
+        if (alt!=alternativeDataProductNames().end()) {
+          MsgStream log(m_MS,m_owner->name() + ":DataObjectHandle");
+          log << MSG::INFO <<  ": could not find \"" << objKey()
+              << "\" -- using alternative source: \"" << *alt << "\" instead"
+              << endmsg;
+          // found something -- set it as default,
+          setKey(*alt);
+          // and zero out the alternatives
+          setAlternativeDataProductNames( { } );
+        }
+        m_searchDone = true;
+      } else {
+        // we need to retry the retrieveObject as m_searchDone may have been
+        // modified between our first try and the taking of the lock
+        // In such a case, some other thread may have modified the key
+        StatusCode sc = m_EDS->retrieveObject(objKey(), p);
       }
+    } else {
+      // we need to retry the retrieveObject as m_searchDone may have been
+      // modified between our first try and the check we did
+        // In such a case, some other thread may have modified the key
+      StatusCode sc = m_EDS->retrieveObject(objKey(), p);
+    }
   }
   return p;
 }
@@ -103,7 +142,7 @@ DataObjectHandleBase::fromString(const std::string& s) {
 void
 DataObjectHandleBase::init() {
 
-  if (m_init) return;
+  assert(!m_init);
 
   if (!m_owner) return;
 

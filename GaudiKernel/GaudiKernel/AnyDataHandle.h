@@ -24,12 +24,7 @@ public:
   /**
    * Retrieve object from transient data store
    */
-  const T* get();
-  
-  /**
-   * Register object in transient store
-   */
-  void put (T* object);
+  const T* get() const;
 
   /**
    * Register object in transient store
@@ -48,18 +43,9 @@ public:
  * static cast: we do not need the checks of the dynamic cast for every access!
  */
 template<typename T>  
-const T* AnyDataHandle<T>::get() {
+const T* AnyDataHandle<T>::get() const {
   auto doh = DataObjectHandle<AnyDataWrapper<T>>::get();
   return &(doh->getData());
-}
-
-
-//---------------------------------------------------------------------------
-template<typename T>  
-void AnyDataHandle<T>::put (T *objectp){
-  AnyDataWrapper<T>* dw = new AnyDataWrapper<T>();  
-  dw->setData(objectp); 
-  DataObjectHandle<AnyDataWrapper<T> >::put(dw);
 }
 
 template<typename T>  

@@ -2,7 +2,6 @@
 #define GAUDIKERNEL_DATAHANDLEHOLDERBASE 1
 
 #include "GaudiKernel/IDataHandleHolder.h"
-#include "GaudiKernel/PropertyMgr.h"
 
 #include <vector>
 
