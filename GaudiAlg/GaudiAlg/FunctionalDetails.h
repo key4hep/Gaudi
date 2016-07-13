@@ -91,34 +91,43 @@ namespace Gaudi { namespace Functional { namespace details {
 
     /////////
 
-    template <std::size_t N, typename Tuple >
-    using element_t = typename std::tuple_element<N, Tuple>::type;
+    namespace details2 {
+        template <std::size_t N, typename Tuple >
+        using element_t = typename std::tuple_element<N, Tuple>::type;
 
-    template <typename Tuple, typename KeyValues, std::size_t... I>
-    Tuple make_tuple_of_handles_helper( IDataHandleHolder* o, const KeyValues& initvalue, Gaudi::DataHandle::Mode m, std::index_sequence<I...> ) {
-        return std::make_tuple( element_t<I,Tuple>{std::get<I>(initvalue).second, m, o} ... );
+        template <typename Tuple, typename KeyValues, std::size_t... I>
+        Tuple make_tuple_of_handles_helper( IDataHandleHolder* o, const KeyValues& initvalue, Gaudi::DataHandle::Mode m, std::index_sequence<I...> ) {
+            return std::make_tuple( element_t<I,Tuple>{std::get<I>(initvalue).second, m, o} ... );
+        }
+        template <typename KeyValues, typename Properties,  std::size_t... I>
+        void declare_tuple_of_properties_helper(Algorithm* owner, const KeyValues& inputs, Properties& props,  std::index_sequence<I...>) {
+            std::initializer_list<int>{
+                (owner->declareProperty( std::get<I>(inputs).first,
+                                         std::get<I>(props)         ),0)...
+            };
+        }
     }
 
     template <typename Tuple, typename KeyValues >
     Tuple make_tuple_of_handles( IDataHandleHolder* owner, const KeyValues& initvalue, Gaudi::DataHandle::Mode mode ) {
-        return make_tuple_of_handles_helper<Tuple>( owner, initvalue, mode, std::make_index_sequence<std::tuple_size<Tuple>::value>{} );
-    }
-
-    template <typename KeyValues, typename Properties,  std::size_t... I>
-    void declare_tuple_of_properties_helper(Algorithm* owner, const KeyValues& inputs, Properties& props,  std::index_sequence<I...>) {
-        std::initializer_list<int>{
-            (owner->declareProperty( std::get<I>(inputs).first,
-                                     std::get<I>(props)         ),0)...
-        };
+        return details2::make_tuple_of_handles_helper<Tuple>( owner, initvalue, mode, std::make_index_sequence<std::tuple_size<Tuple>::value>{} );
     }
 
     template <typename KeyValues, typename Properties>
     void declare_tuple_of_properties(Algorithm* owner, const KeyValues& inputs, Properties& props) {
         static_assert( std::tuple_size<KeyValues>::value == std::tuple_size<Properties>::value, "Inconsistent lengths" );
         constexpr auto N = std::tuple_size<KeyValues>::value;
-        declare_tuple_of_properties_helper( owner, inputs, props, std::make_index_sequence<N>{} );
+        details2::declare_tuple_of_properties_helper( owner, inputs, props, std::make_index_sequence<N>{} );
     }
 
+    template <typename Handles>
+    Handles make_vector_of_handles(IDataHandleHolder* owner, const std::vector<std::string>& init, Gaudi::DataHandle::Mode mode) {
+         Handles handles; handles.reserve(init.size());
+         std::transform( init.begin(), init.end(), std::back_inserter(handles),
+                         [&](const std::string& loc) -> typename Handles::value_type
+                         { return {loc,mode, owner}; });
+         return handles;
+    }
 
 } } }
 
