@@ -1,16 +1,14 @@
 #include <algorithm>
-#include <atomic>
 
 #include "GaudiAlg/Transformer.h"
-#include "GaudiAlg/FilterPredicate.h"
 
 // Event Model related classes
 #include "GaudiExamples/MyTrack.h"
 
 namespace Gaudi { namespace Examples {
 
-  class SelectTracks: public Functional::Transformer<MyTrackVector(const MyTrackVector&)> {
-  public:
+  struct SelectTracks : Functional::Transformer<MyTrackVector(const MyTrackVector&)> {
+
     SelectTracks(const std::string& name, ISvcLocator* pSvc):
       Transformer(name,
                   pSvc, 
@@ -26,44 +24,9 @@ namespace Gaudi { namespace Examples {
                     });
       return out_tracks;
     }
+
   };
 
   DECLARE_COMPONENT(SelectTracks)
-
-
-
-  class CountSelectedTracks: public Functional::FilterPredicate<bool(const MyTrackVector&)> {
-  public:
-    CountSelectedTracks(const std::string& name, ISvcLocator* pSvc):
-      FilterPredicate(name, pSvc, 
-                      { KeyValue("InputData",{"BogusLocation&MoreBogus&MyOutTracks"}) } ) {
-
-    }
-
-    StatusCode initialize() override {
-      StatusCode sc = FilterPredicate::initialize();
-      if (!sc) return sc;
-      m_tracksCount = 0;
-      m_eventsCount = 0;
-      return sc;
-    }
-
-    bool operator()(const MyTrackVector& in_tracks) const override {
-      ++m_eventsCount;
-      m_tracksCount += in_tracks.size();
-      return true;
-    }
-
-    StatusCode finalize() override {
-      info() << "extracted " << m_tracksCount << " tracks in " << m_eventsCount << " events" << endmsg;
-      return FilterPredicate::finalize();
-    }
-  private:
-    mutable std::atomic<long> m_tracksCount{0};
-    mutable std::atomic<long> m_eventsCount{0};
-  };
-
-  DECLARE_COMPONENT(CountSelectedTracks)
-
  
 }}
