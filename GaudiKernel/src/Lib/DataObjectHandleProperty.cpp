@@ -103,7 +103,7 @@ namespace Gaudi {
 
 //---------------------------------------------------------------------------
 
-DataObjectHandleProperty::DataObjectHandleProperty( boost::string_ref name,
+DataObjectHandleProperty::DataObjectHandleProperty( const std::string& name,
                                       DataObjectHandleBase& ref )
   : PropertyWithHandlers( name, typeid( DataObjectHandleBase ) ),
     m_pValue( &ref )

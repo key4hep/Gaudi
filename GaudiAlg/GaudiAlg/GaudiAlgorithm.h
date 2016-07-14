@@ -691,9 +691,9 @@ private:
   using Algorithm::declareProperty;
   template <class T>
     Property* declareProperty
-    ( boost::string_ref name,
+    ( const std::string& name,
       DataObjectHandle<T>&     hndl,
-      boost::string_ref doc = "none" )
+      const std::string& doc = "none" )
   {
 
     if ( hndl.mode() & Gaudi::DataHandle::Reader ) {

@@ -27,8 +27,8 @@ namespace
   /// case insensitive comparison of strings
   constexpr struct NoCaseCmp_t
   {
-    inline bool operator() ( boost::string_ref v1 ,
-                             boost::string_ref v2 ) const
+    inline bool operator() ( const std::string& v1 ,
+                             const std::string& v2 ) const
     {
       return v1.size() == v2.size() &&
              std::equal(std::begin(v1),std::end(v1),std::begin(v2),
@@ -41,7 +41,7 @@ namespace
   /// get the property by name
   struct PropByName
   {
-    boost::string_ref m_name ;
+    std::string m_name ;
 
     inline bool operator() ( const Property* p ) const
     { return  p && noCaseCmp( p->name() , m_name ) ; }
@@ -60,12 +60,12 @@ PropertyMgr::PropertyMgr(IInterface* iface)
 // Declare a remote property
 // ====================================================================
 Property* PropertyMgr::declareRemoteProperty
-( boost::string_ref name  ,
+( const std::string& name  ,
   IProperty*         rsvc  ,
-  boost::string_ref rname )
+  const std::string& rname )
 {
   if ( !rsvc ) { return nullptr ; }
-  boost::string_ref nam = rname.empty() ? name : rname ;
+  const std::string& nam = rname.empty() ? name : rname ;
   Property* p = property ( nam , rsvc->getProperties() )  ;
   m_remoteProperties.emplace_back ( name , std::make_pair( rsvc , nam ) ) ;
   return p ;
@@ -74,7 +74,7 @@ Property* PropertyMgr::declareRemoteProperty
 // get the property by name form the proposed list
 // ====================================================================
 Property* PropertyMgr::property
-( boost::string_ref            name  ,
+( const std::string&            name  ,
   const std::vector<Property*>& props ) const
 {
   auto it = std::find_if( props.begin(), props.end(), PropByName{ name } ) ;
@@ -84,7 +84,7 @@ Property* PropertyMgr::property
 // retrieve the property by name
 // ====================================================================
 Property* PropertyMgr::property
-( boost::string_ref name  ) const
+( const std::string& name  ) const
 {
   // local property ?
   Property* lp = property ( name , m_properties ) ;
@@ -206,8 +206,8 @@ bool PropertyMgr::hasProperty(const std::string& name) const {
     return noCaseCmp(prop->name(), name);
   });
 }
-void PropertyMgr::assertUniqueName(boost::string_ref name) const {
-  if (UNLIKELY(hasProperty(name.to_string()))) {
+void PropertyMgr::assertUniqueName(const std::string& name) const {
+  if (UNLIKELY(hasProperty(name))) {
     auto owner = SmartIF<INamedInterface>( m_pOuter );
     auto msgSvc = Gaudi::svcLocator()->service<IMessageSvc>("MessageSvc");
     if (!msgSvc) { std::cerr<< "error: cannot get MessageSvc!" << std::endl; }

@@ -37,8 +37,8 @@ std::ostream& operator<<( std::ostream& stream, const Property& prop ) { return 
  *  @param name proeprty name
  */
 // ============================================================================
-Property::Property( boost::string_ref name, const std::type_info& type )
-    : m_name( name  ), m_documentation( "undocumented" ), m_typeinfo( &type )
+Property::Property( std::string name, const std::type_info& type )
+    : m_name( std::move( name ) ), m_documentation( m_name ), m_typeinfo( &type )
 {
 }
 // ============================================================================
@@ -101,8 +101,8 @@ bool Gaudi::Utils::hasProperty( const IProperty* p, const std::string& name )
 //
 // GaudiHandleProperty implementation
 //
-GaudiHandleProperty::GaudiHandleProperty( boost::string_ref name_, GaudiHandleBase& ref )
-    : PropertyWithHandlers( name_ , typeid( GaudiHandleBase ) ), m_pValue( &ref )
+GaudiHandleProperty::GaudiHandleProperty( std::string name_, GaudiHandleBase& ref )
+    : PropertyWithHandlers( std::move( name_ ), typeid( GaudiHandleBase ) ), m_pValue( &ref )
 {
   m_pValue->setPropertyName( name() );
 }
@@ -135,8 +135,8 @@ StatusCode GaudiHandleProperty::fromString( const std::string& s )
 //
 // GaudiHandlePropertyArray implementation
 //
-GaudiHandleArrayProperty::GaudiHandleArrayProperty( boost::string_ref name_, GaudiHandleArrayBase& ref )
-    : PropertyWithHandlers( name_ , typeid( GaudiHandleArrayBase ) ), m_pValue( &ref )
+GaudiHandleArrayProperty::GaudiHandleArrayProperty( std::string name_, GaudiHandleArrayBase& ref )
+    : PropertyWithHandlers( std::move( name_ ), typeid( GaudiHandleArrayBase ) ), m_pValue( &ref )
 {
   m_pValue->setPropertyName( name() );
 }

@@ -27,7 +27,7 @@
 class GAUDI_API DataObjIDProperty :  public PropertyWithHandlers {
  public:
 
-  DataObjIDProperty( boost::string_ref name, DataObjID& ref );
+  DataObjIDProperty( const std::string& name, DataObjID& ref );
   DataObjIDProperty& operator=( const DataObjID& value );
   virtual ~DataObjIDProperty();
 
@@ -52,7 +52,7 @@ class PropertyWithValue<DataObjID&, Gaudi::Details::Property::NullVerifier> :
   public ::DataObjIDProperty
 {
 public:
-  PropertyWithValue(boost::string_ref name, DataObjID& value) :
+  PropertyWithValue(const std::string& name, DataObjID& value) :
     ::DataObjIDProperty(name, value)
   {}
 
@@ -103,7 +103,7 @@ DataObjIDProperty::value() const
 class GAUDI_API DataObjIDCollProperty :  public PropertyWithHandlers {
  public:
 
-  DataObjIDCollProperty( boost::string_ref name, DataObjIDColl& ref );
+  DataObjIDCollProperty( const std::string& name, DataObjIDColl& ref );
   DataObjIDCollProperty& operator=( const DataObjIDColl& value );
   virtual ~DataObjIDCollProperty();
 
@@ -128,7 +128,7 @@ class PropertyWithValue<DataObjIDColl&, Gaudi::Details::Property::NullVerifier> 
   public ::DataObjIDCollProperty
 {
 public:
-  PropertyWithValue(boost::string_ref name, DataObjIDColl& value) :
+  PropertyWithValue(const std::string& name, DataObjIDColl& value) :
     ::DataObjIDCollProperty(name, value)
   {}
 
@@ -141,19 +141,19 @@ class PropertyWithValue<DataObjIDColl, Gaudi::Details::Property::NullVerifier> :
   public ::DataObjIDCollProperty
 {
 public:
-  PropertyWithValue(boost::string_ref name, DataObjIDColl& value) :
+  PropertyWithValue(const std::string& name, DataObjIDColl& value) :
     ::DataObjIDCollProperty(name, value)
   {}
 
   /// Autodeclaring constructor with property name, value and documentation.
   template <class OWNER>
-  inline PropertyWithValue( OWNER* owner, boost::string_ref name, const DataObjIDColl& initval = DataObjIDColl{}, boost::string_ref doc = "" )
+  inline PropertyWithValue( OWNER* owner, const std::string& name, const DataObjIDColl& initval = DataObjIDColl{}, std::string doc = "" )
       : ::DataObjIDCollProperty( name, *(new DataObjIDColl{initval}) )
   {
     /// \fixme{DataObjIDCollProperty is a ref property by construction and this
     ///        is a temporary hack to have a "value" property}
     m_data.reset( const_cast<DataObjIDColl*>( &value() ) );
-    setDocumentation( doc );
+    setDocumentation( std::move( doc ) );
     owner->declareProperty( *this );
     setOwnerType<OWNER>();
   }

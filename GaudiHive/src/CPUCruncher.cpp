@@ -6,7 +6,6 @@
 
 #include <tbb/tick_count.h>
 #include <thread>
-#include <list>
 
 std::vector<unsigned int> CPUCruncher::m_niters_vect;
 std::vector<double> CPUCruncher::m_times_vect;
@@ -55,29 +54,20 @@ StatusCode CPUCruncher::initialize(){
   // into Handles and register them with the framework by calling declareProperty. We
   // could call declareInput/declareOutput on them too.
 
-  // properties require externals static storage for their names
-  static std::list<std::string> in_prop_names;
-  static std::list<std::string> out_prop_names;
-
-  for(size_t k = in_prop_names.size(); k < m_inpKeys.size(); ++k) {
-    in_prop_names.emplace_back("dummy_in_" + std::to_string(k));
-  }
-  for(size_t k = out_prop_names.size(); k < m_outKeys.size(); ++k) {
-    out_prop_names.emplace_back("dummy_out_" + std::to_string(k));
+  int i=0;
+  for (auto k: m_inpKeys) {
+    debug() << "adding input key " << k << endmsg;
+    m_inputHandles.push_back( new DataObjectHandle<DataObject>( k, Gaudi::DataHandle::Reader, this ));
+    declareProperty("dummy_in_" + std::to_string(i), *(m_inputHandles.back()) );
+    i++;
   }
 
-  auto n = in_prop_names.begin();
-  for (size_t i = 0; i != m_inpKeys.size(); ++i, ++n) {
-    debug() << "adding input key " << m_inpKeys[i] << endmsg;
-    m_inputHandles.push_back( new DataObjectHandle<DataObject>( m_inpKeys[i], Gaudi::DataHandle::Reader, this ));
-    declareProperty(*n, *(m_inputHandles.back()) );
-  }
-
-  n = out_prop_names.begin();
-  for (size_t i = 0; i != m_outKeys.size(); ++i, ++n) {
-    debug() << "adding output key " << m_outKeys[i] << endmsg;
-    m_outputHandles.push_back( new DataObjectHandle<DataObject>( m_outKeys[i], Gaudi::DataHandle::Writer, this ));
-    declareProperty(*n, *(m_outputHandles.back()) );
+  i = 0;
+  for (auto k: m_outKeys) {
+    debug() << "adding output key " << k << endmsg;
+    m_outputHandles.push_back( new DataObjectHandle<DataObject>( k, Gaudi::DataHandle::Writer, this ));
+    declareProperty("dummy_out_" + std::to_string(i), *(m_outputHandles.back()) );
+    i++;
   }
 
   return StatusCode::SUCCESS ;

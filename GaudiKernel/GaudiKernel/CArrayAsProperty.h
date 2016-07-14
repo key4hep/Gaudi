@@ -30,8 +30,8 @@ public:
   // ==========================================================================
   /// the constructor with property name, value and documentation.
   template <class T = ValueType>
-  inline PropertyWithValue( boost::string_ref name, T&& value, boost::string_ref doc = "" )
-      : Property( typeid( ValueType ), name, doc ), m_value( std::forward<T>( value ) )
+  inline PropertyWithValue( std::string name, T&& value, std::string doc = "" )
+      : Property( typeid( ValueType ), std::move( name ), std::move( doc ) ), m_value( std::forward<T>( value ) )
   {
     m_verifier( m_value );
   }

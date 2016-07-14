@@ -17,8 +17,6 @@
 
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/System.h"
-
-#include <set>
 // ============================================================================
 DECLARE_COMPONENT(JobOptionsSvc)
 // ============================================================================
@@ -54,21 +52,13 @@ StatusCode JobOptionsSvc::initialize()
 }
 
 // ============================================================================
-StatusCode JobOptionsSvc::addPropertyToCatalogue( const std::string& client, const Property& property )
+StatusCode JobOptionsSvc::addPropertyToCatalogue
+( const std::string& client,
+  const Property& property )
 {
-  // helper class to compare pointers to string using the strings
-  struct PtrCmp {
-    bool operator()( const std::unique_ptr<std::string>& a, const std::unique_ptr<std::string>& b ) const {
-      return *a < *b;
-    }
-  };
-  // storage for property names
-  static std::set<std::unique_ptr<std::string>, PtrCmp> all_names;
-  // reference to the name string, used to initialize Property name (boost::string_ref)
-  const std::string& name =
-      **( all_names.insert( std::unique_ptr<std::string>{new std::string{property.name()}} ).first );
-  std::unique_ptr<Property> p{new StringProperty( name, "" )};
-  return property.load( *p ) ? m_svc_catalog.addProperty( client, p.release() ) : StatusCode::FAILURE;
+  std::unique_ptr<Property> p { new StringProperty ( property.name(), "" ) } ;
+  return property.load( *p ) ? m_svc_catalog.addProperty( client , p.release() )
+                             : StatusCode::FAILURE ;
 }
 // ============================================================================
 StatusCode
