@@ -7,13 +7,19 @@
 
 int main()
 {
-  const size_t N     = 1000000;
-  const auto page_sz = sysconf( _SC_PAGESIZE );
+  const size_t N          = 1000000;
+  const size_t NPropNames = 50;
+  const auto page_sz      = sysconf( _SC_PAGESIZE );
 
   std::chrono::time_point<std::chrono::high_resolution_clock> start, end;
 
   unsigned long vm_size, vm_rss;
   unsigned long vsize_pages, rss_pages;
+
+  std::array<std::string, NPropNames> names;
+  for ( size_t i = 0; i != NPropNames; ++i ) {
+    names[i] = "PropertyName_" + std::to_string( i );
+  }
 
   {
 
@@ -32,7 +38,8 @@ int main()
     start = std::chrono::high_resolution_clock::now();
 
     for ( size_t i = 0; i != N; ++i ) {
-      props.emplace_back( "PropertyName", i, "some long documentation string describing what the property is for" );
+      props.emplace_back( names[i % NPropNames], i,
+                          "some long documentation string describing what the property is for" );
     }
 
     end = std::chrono::high_resolution_clock::now();
