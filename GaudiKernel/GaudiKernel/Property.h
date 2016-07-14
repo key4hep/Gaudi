@@ -3,6 +3,7 @@
 // ============================================================================
 // STD & STL
 // ============================================================================
+#include <boost/utility/string_ref.hpp>
 #include <stdexcept>
 #include <string>
 #include <typeinfo>
@@ -35,11 +36,9 @@ private:
 
 public:
   /// property name
-  const std::string& name() const { return m_name; }
+  const std::string name() const { return m_name.to_string(); }
   /// property documentation
-  std::string documentation() const {
-    return m_documentation + " [" + ownerTypeName() + "]";
-  }
+  std::string documentation() const { return m_documentation.to_string() + " [" + ownerTypeName() + "]"; }
   /// property type-info
   const std::type_info* type_info() const { return m_typeinfo; }
   /// property type
@@ -81,9 +80,9 @@ public:
   /// virtual destructor
   virtual ~Property() = default;
   /// set the new value for the property name
-  void setName( std::string value ) { m_name = std::move( value ); }
+  void setName( std::string value ) { m_name = to_view( std::move( value ) ); }
   /// set the documentation string
-  void setDocumentation( std::string documentation ) { m_documentation = std::move( documentation ); }
+  void setDocumentation( std::string value ) { m_documentation = to_view( std::move( value ) ); }
   /// the printout of the property value
   virtual std::ostream& fillStream( std::ostream& ) const;
   /// clones the current property
@@ -91,44 +90,47 @@ public:
   [[deprecated( "provided for backward compatibility, will be removed in v28r1" )]] virtual Property* clone() const = 0;
 
   /// set the type of the owner class (used for documentation)
-  void setOwnerType(const std::type_info& ownerType) {
-    m_ownerType = &ownerType;
-  }
+  void setOwnerType( const std::type_info& ownerType ) { m_ownerType = &ownerType; }
 
   /// set the type of the owner class (used for documentation)
   template <class OWNER>
-  void setOwnerType() {
+  void setOwnerType()
+  {
     setOwnerType( typeid( OWNER ) );
   }
 
   /// get the type of the owner class (used for documentation)
-  const std::type_info* ownerType() const {
-    return m_ownerType;
-  }
+  const std::type_info* ownerType() const { return m_ownerType; }
 
   /// get the string for the type of the owner class (used for documentation)
-  std::string ownerTypeName() const {
-    return m_ownerType ? System::typeinfoName( *m_ownerType ) : std::string("unknown owner type");
+  std::string ownerTypeName() const
+  {
+    return m_ownerType ? System::typeinfoName( *m_ownerType ) : std::string( "unknown owner type" );
   }
 
 protected:
   /// constructor from the property name and the type
   Property( const std::type_info& type, std::string name = "", std::string doc = "" )
-      : m_name( std::move( name ) ), m_documentation( std::move( doc ) ), m_typeinfo( &type )
+      : m_name( to_view( std::move( name ) ) ), m_documentation( to_view( std::move( doc ) ) ), m_typeinfo( &type )
   {
   }
   /// constructor from the property name and the type
-  Property( std::string name, const std::type_info& type );
+  Property( std::string name, const std::type_info& type )
+      : m_name( to_view( std::move( name ) ) ), m_documentation( m_name ), m_typeinfo( &type )
+  {
+  }
   /// copy constructor
   Property( const Property& ) = default;
   /// assignment operator
   Property& operator=( const Property& ) = default;
 
 private:
+  /// helper to map a string to a reliable boost::string_ref
+  static boost::string_ref to_view( std::string str );
   /// property name
-  std::string m_name;
+  boost::string_ref m_name;
   /// property doc string
-  std::string m_documentation;
+  boost::string_ref m_documentation;
   /// property type
   const std::type_info* m_typeinfo;
   /// type of owner of the property (if defined)

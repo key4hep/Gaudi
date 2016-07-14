@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <set>
 // ============================================================================
 // GaudiKernel
 // ============================================================================
@@ -31,16 +32,22 @@
 // The output operator for friendly printout
 // ============================================================================
 std::ostream& operator<<( std::ostream& stream, const Property& prop ) { return prop.fillStream( stream ); }
-// ============================================================================
-/*  constructor from the property name and the type
- *  @param type property C++/RTTI type
- *  @param name proeprty name
- */
-// ============================================================================
-Property::Property( std::string name, const std::type_info& type )
-    : m_name( std::move( name ) ), m_documentation( m_name ), m_typeinfo( &type )
-{
+
+namespace {
+  /// helper class to compare pointers to string using the strings
+  struct PtrCmp {
+    bool operator()( const std::unique_ptr<std::string>& a, const std::unique_ptr<std::string>& b ) const {
+      return *a < *b;
+    }
+  };
+  /// storage for property names and docs
+  std::set<std::unique_ptr<std::string>, PtrCmp> all_strings;
 }
+
+boost::string_ref Property::to_view(std::string str) {
+  return **( all_strings.insert( std::unique_ptr<std::string>{new std::string{std::move(str)}} ).first );
+}
+
 // ============================================================================
 // the printout of the property value
 // ============================================================================
