@@ -9,7 +9,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <set>
+#include <unordered_set>
 // ============================================================================
 // GaudiKernel
 // ============================================================================
@@ -37,11 +37,16 @@ namespace {
   /// helper class to compare pointers to string using the strings
   struct PtrCmp {
     bool operator()( const std::unique_ptr<std::string>& a, const std::unique_ptr<std::string>& b ) const {
-      return *a < *b;
+      return *a == *b;
+    }
+  };
+  struct PtrHash {
+    std::size_t operator()( const std::unique_ptr<std::string>& s ) const {
+      return std::hash<std::string>()(*s);
     }
   };
   /// storage for property names and docs
-  std::set<std::unique_ptr<std::string>, PtrCmp> all_strings;
+  std::unordered_set<std::unique_ptr<std::string>, PtrHash, PtrCmp> all_strings;
 }
 
 boost::string_ref Property::to_view(std::string str) {
