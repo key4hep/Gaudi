@@ -9,9 +9,6 @@ class ControlFlowNode(object):
     '''
     Basic entry in the control flow graph.
     '''
-    def __init__(self):
-        pass
-
     def __and__(self, rhs):
         if rhs is CFTrue:
             return self
@@ -42,6 +39,19 @@ class ControlFlowNode(object):
 
     def __eq__(self, other):
         return (repr(self) == repr(other))
+
+    def getFullName(self):
+        '''
+        Allow use of an expression as an algorihtm/sequence in a Gaudi job
+        configuration.
+
+        Convert the expression in nested sequencers and return the full name of
+        the top one.
+        '''
+        if not hasattr(self, '_fullname'):
+            from GaudiKernel.Configurable import makeSequences
+            self._fullname = makeSequences(self).getFullName()
+        return self._fullname
 
 
 class ControlFlowLeaf(ControlFlowNode):

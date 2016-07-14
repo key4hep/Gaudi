@@ -979,7 +979,7 @@ class ConfigurableGeneric( Configurable ):
 
 
 ### base classes for individual Gaudi algorithms/services/algtools ===========
-class ConfigurableAlgorithm( Configurable, ControlFlowLeaf ):
+class ConfigurableAlgorithm( Configurable ):
     __slots__ = { '_jobOptName' : 0, 'OutputLevel' : 0, \
        'Enable' : 1, 'ErrorMax' : 1, 'ErrorCount' : 0, 'AuditAlgorithms' : 0, \
        'AuditInitialize' : 0, 'AuditReinitialize' : 0, 'AuditExecute' : 0, \
@@ -1004,6 +1004,39 @@ class ConfigurableAlgorithm( Configurable, ControlFlowLeaf ):
 
     def __repr__(self):
         return '{0}({1!r})'.format(self.getType(), self.name())
+
+    # mimick the ControlFlowLeaf interface
+    def __and__(self, rhs):
+        if rhs is CFTrue:
+            return self
+        elif rhs is CFFalse:
+            return CFFalse
+        return AndNode(self, rhs)
+
+    def __or__(self, rhs):
+        if rhs is CFFalse:
+            return self
+        elif rhs is CFTrue:
+            return CFTrue
+        return OrNode(self, rhs)
+
+    def __invert__(self):
+        return InvertNode(self)
+
+    def __rshift__(self, rhs):
+        return OrderedNode(self, rhs)
+
+    def visitNode(self, visitor):
+        visitor.enter(self)
+        self._visitSubNodes(visitor)
+        visitor.leave(self)
+
+    def _visitSubNodes(self, visitor):
+        pass
+
+    def __eq__(self, other):
+        return (repr(self) == repr(other))
+
 
 class ConfigurableService( Configurable ):
     __slots__ = { 'OutputLevel' : 0, \
@@ -1551,7 +1584,7 @@ class CreateSequencesVisitor(object):
         stack = self.stack
         if visitee in (CFTrue, CFFalse):
             stack.append(self._newSeq(Invert=visitee is CFFalse))
-        elif isinstance(visitee, ControlFlowLeaf):
+        elif isinstance(visitee, (ControlFlowLeaf, ConfigurableAlgorithm)):
             stack.append(visitee)
         elif isinstance(visitee, (OrNode, AndNode, OrderedNode)):
             b = stack.pop()
@@ -1584,3 +1617,88 @@ def makeSequences(expression):
     visitor = CreateSequencesVisitor()
     expression.visitNode(visitor)
     return visitor.sequence
+
+
+class SuperAlgorithm(ControlFlowNode):
+    '''
+    Helper class to use a ControlFlowNode as an algorithm configurable
+    instance.
+    '''
+    def __new__(cls, name=None, **kwargs):
+        if name is None:
+            name = cls.__name__
+        if name in Configurable.allConfigurables:
+            instance = Configurable.allConfigurables[name]
+            assert type(instance) is cls, \
+                ('trying to reuse {0!r} as name of a {1} instance while it''s '
+                 'already used for an instance of {2}').format(
+                     name,
+                     cls.__name__,
+                     type(instance).__name__)
+            return instance
+        else:
+            instance = super(SuperAlgorithm, cls).__new__(cls, name, **kwargs)
+            Configurable.allConfigurables[name] = instance
+            return instance
+
+    def __init__(self, name=None, **kwargs):
+        self._name = name or self.getType()
+        self.graph = self._initGraph()
+        for key in kwargs:
+            setattr(self, key, kwargs[key])
+
+    @property
+    def name(self):  # name is a read only property
+        return self._name
+
+    @classmethod
+    def getType(cls):
+        return cls.__name__
+
+    # required to be registered in allConfigurables
+    def properties(self):
+        pass
+
+    # required to be registered in allConfigurables
+    def isApplicable(self):
+        return False
+
+    # required to be registered in allConfigurables
+    def getGaudiType(self):
+        return 'User'
+
+    def _makeAlg(self, typ, **kwargs):
+        '''
+        Instantiate and algorithm of type 'typ' with a name suitable for use
+        inside a SuperAlgorithm.
+        '''
+        name = '{0}_{1}'.format(self.name, kwargs.pop('name', typ.getType()))
+        return typ(name, **kwargs)
+
+    def _initGraph(self):
+        raise NotImplementedError()
+
+    def __repr__(self):
+        return '{0}({1!r})'.format(self.getType(), self.name)
+
+    def _visitSubNodes(self, visitor):
+        if self.graph:
+            self.graph.visitNode(visitor)
+
+    def __setattr__(self, name, value):
+        super(SuperAlgorithm, self).__setattr__(name, value)
+        if name in ('_name', 'graph'):
+            # do not propagate internal data members
+            return
+
+        class PropSetter(object):
+            def enter(self, node):
+                try:
+                    setattr(node, name, value)
+                except (ValueError, AttributeError):
+                    # ignore type and name mismatch
+                    pass
+            def leave(self, node):
+                pass
+
+        self._visitSubNodes(PropSetter())

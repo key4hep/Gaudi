@@ -1,10 +1,5 @@
-<?xml version="1.0" ?><!DOCTYPE extension  PUBLIC '-//QM/2.3/Extension//EN'  'http://www.codesourcery.com/qm/dtds/2.3/-//qm/2.3/extension//en.dtd'>
-<extension class="GaudiTest.GaudiExeTest" kind="test">
-  <argument name="program"><text>gaudirun.py</text></argument>
-  <argument name="args"><set><text>$GAUDIEXAMPLESROOT/options/AlgSequencerCF.py</text></set></argument>
-  <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
-  <argument name="reference"><text>refs/AlgSequencer_pyopts.ref</text></argument>
-  <argument name="validator"><text>
+from GaudiTesting.BaseTest import FilePreprocessor, normalizeExamples
+
 class DropUntil(FilePreprocessor):
     def __init__(self, regexp):
         import re
@@ -38,6 +33,3 @@ class TakeUntil(FilePreprocessor):
 preprocessor = (normalizeExamples +
                 DropUntil('ApplicationMgr       INFO Application Manager Started successfully') +
                 TakeUntil('ToolSvc              INFO Removing all tools created by ToolSvc'))
-validateWithReference(preproc = preprocessor)
-  </text></argument>
-</extension>

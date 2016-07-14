@@ -19,17 +19,21 @@ logging.addLevelName(logging.VERBOSE, "VERBOSE")
 logging.verbose = lambda msg, *args, **kwargs: \
     apply(logging.log, (logging.VERBOSE, msg) + args, kwargs)
 
-def _inheritsfrom(derived, basename):
+def _inheritsfrom(derived, basenames):
     """
-    Check if the class name 'basename' is anywhere in the base classes of the
-    class 'derived'.
-    If 'derived' _is_ 'basename', returns False.
+    Check if any of the class names in 'basenames' is anywhere in the base
+    classes of the class 'derived'.
+    If 'derived' _is_ one in 'basenames', returns False.
+
+    'basenames' can be a string or an iterable (of strings).
     """
+    if isinstance(basenames, basestring):
+        basenames = (basenames,)
     for b in derived.__bases__:
-        if b.__name__ == basename:
+        if b.__name__ in basenames:
             return True
         else:
-            if _inheritsfrom(b, basename):
+            if _inheritsfrom(b, basenames):
                 return True
     return False
 
@@ -116,7 +120,8 @@ def getConfigurableUsers(modulename, root, mayNotExist = False):
             logging.verbose("Object %r already found in module %r", name, cfg["module"])
             continue
         t = getattr(mod, name)
-        if isinstance(t, type) and  _inheritsfrom(t, "ConfigurableUser"):
+        if isinstance(t, type) and  _inheritsfrom(t, ('ConfigurableUser',
+                                                      'SuperAlgorithm')):
             result.append(name)
     logging.verbose("Found %r", result)
     return result
