@@ -27,18 +27,16 @@ class DataObjectHandleBase(object):
             self.fromArray(args)
             
     def fromString(self,s):
-        if s == "": return
-        
-        fields = s.split(FIELD_SEP)
-        self.fromArray(fields)
+        self.fromArray(s.split(FIELD_SEP))
         
     def fromArray(self, a):
-        if len(a) != 4: return
-
+        if len(a) == 0: raise RuntimeError("got empty array!")
         self.Path = a[0]
-        self.Mode = a[1]
-        self.Optional = a[2]
-        self.AlternativePaths = [ i for i in a[3].split(ADDR_SEP) if i ]
+        self.Mode = a[1] if len(a)>1 else self.READ
+        self.Optional = a[2] if len(a)>2 else 0
+        self.AlternativePaths = [ i for i in a[3].split(ADDR_SEP) if i ] if len(a)>3 else [ ]
+        if len(a) > 4: raise RuntimeError("got too long array: %s",a)
+
                 
     def __str__(self):
 
@@ -49,10 +47,8 @@ class DataObjectHandleBase(object):
         return s
                
     def __repr__(self):
-        print "DOHB:__repr__", self.__class__.__name__
         return "%s(""%s"")" % (self.__class__.__name__, self.__str__())
     
     def toStringProperty(self):
-        print "DOHB:toStringProperty"
         return self.__str__()
             
