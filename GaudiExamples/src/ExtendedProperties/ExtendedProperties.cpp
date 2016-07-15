@@ -168,6 +168,12 @@ namespace
       name.erase( ipos , 5 ) ;
       ipos = name.find("std::") ;
     }
+    ipos = name.find("__cxx11::") ;
+    while ( std::string::npos != ipos )
+    {
+      name.erase( ipos , 9 ) ;
+      ipos = name.find("__cxx11::") ;
+    }
     ipos = name.find(" ") ;
     while ( std::string::npos != ipos )
     {

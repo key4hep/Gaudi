@@ -45,14 +45,14 @@ def validate(stdout,stderr,result,causes):
     # Hack for win32: 'string' become 'basic_string...', so I have to
     #                 modify the keys of the dictionary
     import os
-    
-    if 'CMTCONFIG' in os.environ and "winxp" in os.environ['CMTCONFIG'].split("-"):
+    import re
+
+    if re.search(r'winxp|gcc6', os.environ.get('CMTCONFIG', '')):
         for k in expected.keys():
             if 'string' in k:
                 expected[k.replace('string','basic_string<char,char_traits<char> >').replace('>>','> >')] = expected[k]
                 del expected[k]
 
-    import re
     signature = re.compile(r'xProps\s*SUCCESS\s*My Properties :')
     prop_sign = re.compile(r'''xProps\s*SUCCESS\s*'([^']*)':(.*)''')
 
