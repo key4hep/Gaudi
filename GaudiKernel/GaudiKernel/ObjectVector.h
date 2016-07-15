@@ -59,13 +59,14 @@ public:
 
 public:
   /// Constructors
-  ObjectVector()
-    : m_vector(0) { }
-  ObjectVector( const char* /* name */ )
-    : m_vector(0) { }
+  ObjectVector() = default;
+  ObjectVector( const char* /* name */ ) : ObjectVector() {}
 
   ObjectVector( const ObjectVector<TYPE>& ) = delete;
   ObjectVector& operator=( const ObjectVector<TYPE>& ) = delete;
+
+  ObjectVector(ObjectVector&& rhs) = default;
+  ObjectVector& operator=(ObjectVector&& rhs) = default;
 
   /// Destructor
   virtual ~ObjectVector() {
