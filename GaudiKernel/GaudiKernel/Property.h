@@ -607,9 +607,13 @@ decltype( std::declval<TP>() + std::declval<T>() ) operator+( const T& v, const 
   return v + p.value();
 }
 
-template <class TYPE, class VERIFIER = Gaudi::Details::Property::BoundedVerifier<TYPE>,
+template <class TYPE, class VERIFIER = Gaudi::Details::Property::NullVerifier,
           class HANDLERS = Gaudi::Details::Property::ReadUpdateHandler>
 using SimpleProperty     = PropertyWithValue<TYPE, VERIFIER, HANDLERS>;
+
+template <class TYPE, class VERIFIER = Gaudi::Details::Property::BoundedVerifier<TYPE>,
+          class HANDLERS = Gaudi::Details::Property::ReadUpdateHandler>
+using CheckedProperty     = PropertyWithValue<TYPE, VERIFIER, HANDLERS>;
 
 template <class TYPE, class VERIFIER = Gaudi::Details::Property::NullVerifier,
           class HANDLERS = Gaudi::Details::Property::ReadUpdateHandler>
