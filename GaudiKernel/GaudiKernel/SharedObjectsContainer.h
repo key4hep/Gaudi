@@ -16,7 +16,7 @@
 /** @class SharedObjectsContainer GaudiKernel/SharedObjectsContainer.h
  *
  *  Very simple class to represent the container of objects which are
- *  not ownered by the container. This concept seem to be very useful for
+ *  not owned by this container. This concept seem to be very useful for
  *  LHCb HLT, DaVinci, tracking, alignments.
  *
  *  @warning the container is not persistable (on-purpose)
@@ -201,8 +201,7 @@ public:
   OUTPUT get ( const PREDICATE& cut    ,
                OUTPUT           output ) const
   {
-    std::copy_if( begin(), end(), output, std::cref(cut) );
-    return output ;
+    return std::copy_if( begin(), end(), output, std::cref(cut) );
   }
   /// erase the object by iterator
   void erase ( iterator i ) { m_data.erase ( i ) ; }
