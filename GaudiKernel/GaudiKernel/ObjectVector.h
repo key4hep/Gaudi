@@ -69,9 +69,6 @@ public:
     std::for_each(begin(), end(), [this](TYPE* obj) {obj->setParent(this);});
   }
 
-  ObjectVector(ObjectVector&& rhs) = default;
-  ObjectVector& operator=(ObjectVector&& rhs) = default;
-
   /// Destructor
   ~ObjectVector() override {
     for( auto& i : m_vector )  {
