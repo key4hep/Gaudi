@@ -60,16 +60,20 @@ public:
 public:
   /// Constructors
   ObjectVector() = default;
-  ObjectVector( const char* /* name */ ) : ObjectVector() {}
-
   ObjectVector( const ObjectVector<TYPE>& ) = delete;
   ObjectVector& operator=( const ObjectVector<TYPE>& ) = delete;
+  ObjectVector(ObjectVector&& rhs)
+      : ObjectContainerBase(std::move(rhs))
+      , m_vector{std::move(rhs.m_vector)}
+  {
+    std::for_each(begin(), end(), [this](TYPE* obj) {obj->setParent(this);});
+  }
 
   ObjectVector(ObjectVector&& rhs) = default;
   ObjectVector& operator=(ObjectVector&& rhs) = default;
 
   /// Destructor
-  virtual ~ObjectVector() {
+  ~ObjectVector() override {
     for( auto& i : m_vector )  {
       // Set the back pointer to 0 to avoid repetitional searching
       // for the object in the container, and deleting the object
@@ -79,7 +83,7 @@ public:
   }
 
   /// Retrieve class ID
-  virtual const CLID& clID() const {
+  const CLID& clID() const override {
     return ObjectVector<TYPE>::classID();
   }
   /// Retrieve class ID
@@ -139,7 +143,7 @@ public:
   }
 
   /// The same as size(), return number of objects in the container
-  virtual typename ObjectVector<TYPE>::size_type numberOfObjects() const {
+  typename ObjectVector<TYPE>::size_type numberOfObjects() const override {
     return m_vector.size();
   }
 
@@ -200,7 +204,7 @@ public:
   }
 
   /// Add an object to the container
-  virtual long add(ContainedObject* pObject) {
+  long add(ContainedObject* pObject) override {
     try {
       auto ptr = dynamic_cast<typename ObjectVector<TYPE>::value_type>(pObject);
       if ( ptr ) {
@@ -227,7 +231,7 @@ public:
 
   /// Release object from the container (the poiter will be removed
   /// from the container, but the object itself will remain alive) (see the method pop_back)
-  virtual long remove(ContainedObject* value) {
+  long remove(ContainedObject* value) override {
     // Find the object of the value value
     auto i = std::find_if( begin(), end(), [&](const ContainedObject* j) { return j==value; } );
     if( i == end() )  {
@@ -294,19 +298,19 @@ public:
   /// Return distance of a given object from the beginning of its container
   /// It correcponds to the "index" ( from 0 to size()-1 )
   /// If "obj" not fount, return -1
-  virtual long index( const ContainedObject* obj ) const {
+  long index( const ContainedObject* obj ) const override {
     auto i = std::find_if( begin(), end(), [&](const ContainedObject *o)
                            { return o == obj; } );
     return i!=end() ? std::distance( begin(), i ) : -1 ;
   }
 
   /// Return const pointer to an object of a given distance (index)
-  virtual ContainedObject* containedObject( long dist ) const {
+  ContainedObject* containedObject( long dist ) const override {
     return m_vector[dist];
   }
 
   /// Fill the output stream (ASCII)
-  virtual std::ostream& fillStream( std::ostream& s ) const {
+  std::ostream& fillStream( std::ostream& s ) const override {
     s << "class ObjectVector :    size = "
       << std::setw(12)
       << size() << "\n";
