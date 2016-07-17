@@ -318,7 +318,8 @@ PropertyMgr::declareProperty
   const std::string& doc )
 {
   assertUniqueName(name);
-  Property* p = new DataObjectHandleProperty( name, ref );
+  m_todelete.emplace_back( new DataObjectHandleProperty( name, ref ) );
+  Property* p = m_todelete.back().get();
   //
   p -> setDocumentation    ( doc ) ;
   m_properties . push_back ( p   ) ;
