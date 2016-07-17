@@ -50,7 +50,7 @@ namespace {
 }
 
 boost::string_ref Property::to_view(std::string str) {
-  return **( all_strings.insert( std::unique_ptr<std::string>{new std::string{std::move(str)}} ).first );
+  return **( all_strings.insert( std::make_unique<std::string>( std::move( str ) ) ).first );
 }
 
 // ============================================================================
