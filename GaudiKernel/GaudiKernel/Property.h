@@ -323,7 +323,7 @@ public:
   /// Autodeclaring constructor with property name, value and documentation.
   /// @note the use std::enable_if is required to avoid ambiguities
   template <class OWNER, class T = ValueType,
-            typename = typename std::enable_if<std::is_convertible<OWNER*, IProperty*>::value>::type>
+            typename = typename std::enable_if<std::is_base_of<IProperty, OWNER>::value>::type>
   inline PropertyWithValue( OWNER* owner, std::string name, T&& value = ValueType{}, std::string doc = "" )
       : PropertyWithValue( std::move( name ), std::forward<T>( value ), std::move( doc ) )
   {
