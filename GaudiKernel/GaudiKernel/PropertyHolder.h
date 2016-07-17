@@ -44,8 +44,8 @@ namespace Gaudi
     /// Helper for case insensitive string comparison.
     inline bool iequal( const std::string& v1, const std::string& v2 )
     {
-      return v1.size() == v2.size() && std::equal( std::begin( v1 ), std::end( v1 ), std::begin( v2 ),
-                                                   []( char c1, char c2 ) { return toupper( c1 ) == toupper( c2 ); } );
+      return std::equal( std::begin( v1 ), std::end( v1 ), std::begin( v2 ), std::end( v2 ),
+                         []( char c1, char c2 ) { return toupper( c1 ) == toupper( c2 ); } );
     }
   }
 }
