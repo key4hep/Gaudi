@@ -80,7 +80,7 @@ StatusCode Algorithm::sysInitialize()
   if ( Gaudi::StateMachine::INITIALIZED <= FSMState() ) return StatusCode::SUCCESS;
 
   // Set the Algorithm's properties
-  if ( ! setProperties() ) return StatusCode::FAILURE;
+  if ( !setProperties() ) return StatusCode::FAILURE;
 
   // Bypass the initialization if the algorithm is disabled.
   // Need to do this after setProperties.
@@ -172,13 +172,13 @@ StatusCode Algorithm::sysInitialize()
     for ( auto h : m_inputDataObjs ) {
       debug() << "\n  + INPUT  " << h;
     }
-    for (auto id : avis.ignoredInpKeys()) {
+    for ( auto id : avis.ignoredInpKeys() ) {
       debug() << "\n  + INPUT IGNORED " << id;
     }
-    for (auto h : m_outputDataObjs) {
+    for ( auto h : m_outputDataObjs ) {
       debug() << "\n  + OUTPUT " << h;
     }
-    for (auto id : avis.ignoredOutKeys()) {
+    for ( auto id : avis.ignoredOutKeys() ) {
       debug() << "\n  + OUTPUT IGNORED " << id;
     }
     debug() << endmsg;
@@ -732,50 +732,33 @@ const std::vector<Algorithm*>* Algorithm::subAlgorithms() const { return &m_subA
 
 std::vector<Algorithm*>* Algorithm::subAlgorithms() { return &m_subAlgms; }
 
-#define serviceAccessor( METHOD, INTERFACE, NAME, MEMBER )                                                             \
-  SmartIF<INTERFACE>& Algorithm::METHOD() const                                                                        \
-  {                                                                                                                    \
-    if ( !MEMBER ) {                                                                                                   \
-      MEMBER = service( NAME );                                                                                        \
-      if ( !MEMBER ) {                                                                                                 \
-        throw GaudiException( "Service [" NAME "] not found", name(), StatusCode::FAILURE );                           \
-      }                                                                                                                \
-    }                                                                                                                  \
-    return MEMBER;                                                                                                     \
-  }
-
-serviceAccessor( auditorSvc, IAuditorSvc, "AuditorSvc", m_pAuditorSvc ) serviceAccessor( chronoSvc, IChronoStatSvc,
-                                                                                         "ChronoStatSvc", m_CSS )
-    serviceAccessor( detSvc, IDataProviderSvc, "DetectorDataSvc",
-                     m_DDS ) serviceAccessor( detCnvSvc, IConversionSvc, "DetectorPersistencySvc", m_DCS )
-        serviceAccessor( eventSvc, IDataProviderSvc, "EventDataSvc", m_EDS )
-            serviceAccessor( whiteboard, IHiveWhiteBoard, "EventDataSvc", m_WB )
-                serviceAccessor( eventCnvSvc, IConversionSvc, "EventPersistencySvc", m_ECS )
-                    serviceAccessor( histoSvc, IHistogramSvc, "HistogramDataSvc", m_HDS )
-                        serviceAccessor( exceptionSvc, IExceptionSvc, "ExceptionSvc", m_EXS )
-                            serviceAccessor( ntupleSvc, INTupleSvc, "NTupleSvc", m_NTS )
-                                serviceAccessor( randSvc, IRndmGenSvc, "RndmGenSvc", m_RGS )
-                                    serviceAccessor( toolSvc, IToolSvc, "ToolSvc", m_ptoolSvc )
-                                        serviceAccessor( contextSvc, IAlgContextSvc, "AlgContextSvc", m_contextSvc )
-                                            serviceAccessor( timelineSvc, ITimelineSvc, "TimelineSvc", m_timelineSvc )
-
-    // Obsoleted name, kept due to the backwards compatibility
-    SmartIF<IChronoStatSvc>& Algorithm::chronoStatService() const
+template <typename IFace>
+SmartIF<IFace>& Algorithm::get_svc_( SmartIF<IFace>& p, const char* service_name ) const
 {
-  return chronoSvc();
+  if ( UNLIKELY( !p ) ) {
+    p = this->service( service_name );
+    if ( !p ) {
+      throw GaudiException( "Service [" + std::string{service_name} + "] not found", this->name(),
+                            StatusCode::FAILURE );
+    }
+  }
+  return p;
 }
-// Obsoleted name, kept due to the backwards compatibility
-SmartIF<IDataProviderSvc>& Algorithm::detDataService() const { return detSvc(); }
-// Obsoleted name, kept due to the backwards compatibility
-SmartIF<IConversionSvc>& Algorithm::detDataCnvService() const { return detCnvSvc(); }
-// Obsoleted name, kept due to the backwards compatibility
-SmartIF<IDataProviderSvc>& Algorithm::eventDataService() const { return eventSvc(); }
-// Obsoleted name, kept due to the backwards compatibility
-SmartIF<IConversionSvc>& Algorithm::eventDataCnvService() const { return eventCnvSvc(); }
-// Obsoleted name, kept due to the backwards compatibility
-SmartIF<IHistogramSvc>& Algorithm::histogramDataService() const { return histoSvc(); }
-// Obsoleted name, kept due to the backwards compatibility
-SmartIF<INTupleSvc>& Algorithm::ntupleService() const { return ntupleSvc(); }
+
+SmartIF<IAuditorSvc>& Algorithm::auditorSvc() const { return get_svc_( m_pAuditorSvc, "AuditorSvc" ); }
+SmartIF<IChronoStatSvc>& Algorithm::chronoSvc() const { return get_svc_( m_CSS, "ChronoStatSvc" ); }
+SmartIF<IDataProviderSvc>& Algorithm::detSvc() const { return get_svc_( m_DDS, "DetectorDataSvc" ); }
+SmartIF<IConversionSvc>& Algorithm::detCnvSvc() const { return get_svc_( m_DCS, "DetectorPersistencySvc" ); }
+SmartIF<IDataProviderSvc>& Algorithm::eventSvc() const { return get_svc_( m_EDS, "EventDataSvc" ); }
+SmartIF<IConversionSvc>& Algorithm::eventCnvSvc() const { return get_svc_( m_ECS, "EventPersistencySvc" ); }
+SmartIF<IHistogramSvc>& Algorithm::histoSvc() const { return get_svc_( m_HDS, "HistogramDataSvc" ); }
+SmartIF<INTupleSvc>& Algorithm::ntupleSvc() const { return get_svc_( m_NTS, "NTupleSvc" ); }
+SmartIF<IRndmGenSvc>& Algorithm::randSvc() const { return get_svc_( m_RGS, "RndmGenSvc" ); }
+SmartIF<IToolSvc>& Algorithm::toolSvc() const { return get_svc_( m_ptoolSvc, "ToolSvc" ); }
+SmartIF<IExceptionSvc>& Algorithm::exceptionSvc() const { return get_svc_( m_EXS, "ExceptionSvc" ); }
+SmartIF<IAlgContextSvc>& Algorithm::contextSvc() const { return get_svc_( m_contextSvc, "AlgContextSvc" ); }
+SmartIF<ITimelineSvc>& Algorithm::timelineSvc() const { return get_svc_( m_timelineSvc, "TimelineSvc" ); }
+SmartIF<IHiveWhiteBoard>& Algorithm::whiteboard() const { return get_svc_( m_WB, "EventDataSvc" ); }
 
 SmartIF<ISvcLocator>& Algorithm::serviceLocator() const { return *const_cast<SmartIF<ISvcLocator>*>( &m_pSvcLocator ); }
 

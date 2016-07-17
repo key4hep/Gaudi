@@ -254,24 +254,19 @@ public:
    *  Return a pointer to the service if present
    */
   SmartIF<IChronoStatSvc>& chronoSvc() const;
-  /// Obsoleted name, kept due to the backwards compatibility
-  SmartIF<IChronoStatSvc>& chronoStatService() const;
+  [[deprecated( "use chronoSvc() instead" )]] SmartIF<IChronoStatSvc>& chronoStatService() const { return chronoSvc(); }
 
   /** The standard detector data service.
    *  May not be invoked before sysInitialize() has been invoked.
    */
   SmartIF<IDataProviderSvc>& detSvc() const;
-
-  /// Obsoleted name, kept due to the backwards compatibility
-  SmartIF<IDataProviderSvc>& detDataService() const;
+  [[deprecated( "use detSvc() instead" )]] SmartIF<IDataProviderSvc>& detDataService() const { return detSvc(); };
 
   /** The standard detector data persistency conversion service.
    *  May not be invoked before sysInitialize() has been invoked.
    */
   SmartIF<IConversionSvc>& detCnvSvc() const;
-
-  /// Obsoleted name, kept due to the backwards compatibility
-  SmartIF<IConversionSvc>& detDataCnvService() const;
+  [[deprecated( "use detCnvSvc() instead" )]] SmartIF<IConversionSvc>& detDataCnvService() const { return detCnvSvc(); }
 
   /** The standard event data service.
    *  May not be invoked before sysInitialize() has been invoked.
@@ -279,35 +274,28 @@ public:
   SmartIF<IDataProviderSvc>& eventSvc() const;
   /// shortcut for  method eventSvc
   SmartIF<IDataProviderSvc>& evtSvc() const { return eventSvc(); }
-  /// Obsoleted name, kept due to the backwards compatibility
-  SmartIF<IDataProviderSvc>& eventDataService() const;
+  [[deprecated( "use eventSvc() instead" )]] SmartIF<IDataProviderSvc>& eventDataService() const { return eventSvc(); }
 
   /** The standard event data persistency conversion service.
    *  May not be invoked before sysInitialize() has been invoked.
    */
   SmartIF<IConversionSvc>& eventCnvSvc() const;
-  /// Obsoleted name, kept due to the backwards compatibility
-  SmartIF<IConversionSvc>& eventDataCnvService() const;
+  [[deprecated( "use eventCnvSvc() instead" )]] SmartIF<IConversionSvc>& eventDataCnvService() const
+  {
+    return eventCnvSvc();
+  }
 
   /** The standard histogram service.
    *  May not be invoked before sysInitialize() has been invoked.
    */
   SmartIF<IHistogramSvc>& histoSvc() const;
-  /// Obsoleted name, kept due to the backwards compatibility
-  SmartIF<IHistogramSvc>& histogramDataService() const;
+  [[deprecated( "use histoSvc() instead" )]] SmartIF<IHistogramSvc>& histogramDataService() const { return histoSvc(); }
 
   /** The standard N tuple service.
    *  Returns a pointer to the N tuple service if present.
    */
   SmartIF<INTupleSvc>& ntupleSvc() const;
-
-  /// Obsoleted name, kept due to the backwards compatibility
-  SmartIF<INTupleSvc>& ntupleService() const;
-
-  /** AIDA-based NTuple service
-   *  Returns a pointer to the AIDATuple service if present.
-   */
-  // SmartIF<IAIDATupleSvc>& atupleSvc() const;
+  [[deprecated( "use ntupleSvc() instead" )]] SmartIF<INTupleSvc>& ntupleService() const { return ntupleSvc(); }
 
   /** The standard RandomGen service,
    *  Return a pointer to the service if present
@@ -540,15 +528,17 @@ private:
   mutable std::vector<GaudiHandleArrayBase*> m_toolHandleArrays;
 
 private:
-  mutable SmartIF<IMessageSvc> m_MS;       ///< Message service
-  mutable SmartIF<IDataProviderSvc> m_EDS; ///< Event data service
-  mutable SmartIF<IHiveWhiteBoard> m_WB;   ///< Event data service (whiteboard)
-  mutable SmartIF<IConversionSvc> m_ECS;   ///< Event conversion service
-  mutable SmartIF<IDataProviderSvc> m_DDS; ///< Detector data service
-  mutable SmartIF<IConversionSvc> m_DCS;   ///< Detector conversion service
-  mutable SmartIF<IHistogramSvc> m_HDS;    ///< Histogram data service
-  mutable SmartIF<INTupleSvc> m_NTS;       ///< N tuple service
-  //  mutable SmartIF<IAIDATupleSvc>    m_ATS;      ///< AIDA tuple service
+  template <typename IFace>
+  SmartIF<IFace>& get_svc_( SmartIF<IFace>& p, const char* service_name ) const;
+
+  mutable SmartIF<IMessageSvc> m_MS;            ///< Message service
+  mutable SmartIF<IDataProviderSvc> m_EDS;      ///< Event data service
+  mutable SmartIF<IHiveWhiteBoard> m_WB;        ///< Event data service (whiteboard)
+  mutable SmartIF<IConversionSvc> m_ECS;        ///< Event conversion service
+  mutable SmartIF<IDataProviderSvc> m_DDS;      ///< Detector data service
+  mutable SmartIF<IConversionSvc> m_DCS;        ///< Detector conversion service
+  mutable SmartIF<IHistogramSvc> m_HDS;         ///< Histogram data service
+  mutable SmartIF<INTupleSvc> m_NTS;            ///< N tuple service
   mutable SmartIF<IChronoStatSvc> m_CSS;        ///< Chrono & Stat Service
   mutable SmartIF<IRndmGenSvc> m_RGS;           ///< Random Number Generator Service
   mutable SmartIF<IExceptionSvc> m_EXS;         ///< Exception Handler Service
