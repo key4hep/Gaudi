@@ -241,11 +241,19 @@ namespace Gaudi
       };
 
       struct NoHandler {
+        void useReadHandler( const ::Property& ) const {}
+        void setReadHandler( std::function<void(::Property& )> )
+        {
+          throw std::logic_error("setReadHandler not implemented for this class");
+        }
+        void useUpdateHandler( const ::Property& ) const {}
+        void setUpdateHandler( std::function<void(::Property& )> )
+        {
+          throw std::logic_error("setUpdateHandler not implemented for this class");
+        }
       };
-      struct ReadHandler {
+      struct ReadHandler : NoHandler {
         mutable std::function<void(::Property& )> m_readCallBack;
-
-      public:
         void useReadHandler( const ::Property& p ) const
         {
           if ( m_readCallBack ) {
@@ -254,10 +262,8 @@ namespace Gaudi
         }
         void setReadHandler( std::function<void(::Property& )> fun ) { m_readCallBack = std::move( fun ); }
       };
-      struct UpdateHandler {
+      struct UpdateHandler : NoHandler {
         std::function<void(::Property& )> m_updateCallBack;
-
-      public:
         void useUpdateHandler(::Property& p )
         {
           if ( m_updateCallBack ) {
@@ -271,6 +277,10 @@ namespace Gaudi
         void setUpdateHandler( std::function<void(::Property& )> fun ) { m_updateCallBack = std::move( fun ); }
       };
       struct ReadUpdateHandler : ReadHandler, UpdateHandler {
+        using ReadHandler::useReadHandler;
+        using ReadHandler::setReadHandler;
+        using UpdateHandler::useUpdateHandler;
+        using UpdateHandler::setUpdateHandler;
       };
     }
   }
