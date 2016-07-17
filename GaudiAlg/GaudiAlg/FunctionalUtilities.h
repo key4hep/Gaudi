@@ -23,10 +23,24 @@ namespace Gaudi { namespace Functional {
       return concat_alternatives(std::initializer_list<std::string>{ s... });
    }
 
+   inline void updateReadHandleLocation(Algorithm& parent, const std::string& prop, const std::string& newLoc) {
+        // "parse" the current text representation of the datahandle,
+        // and then update the first token (the default location).
+        // Ugly, but I don't see any better way of doing this...
+        // underlying problem is the "syntax" of the text representation
+        // of a datahandle property...
+        std::string s;
+        if (!parent.getProperty(prop,s))
+            throw GaudiException( parent.name() + " does not have the requested property \"" + prop + "\"",
+                                  parent.name(), StatusCode::FAILURE );
+        s.replace(0,s.find("|"),newLoc); // tokens are seperated by |
+        parent.setProperty(prop,s).ignore(); // first token is the default location
+    }
+
 namespace Traits {
 
    // traits classes used to customize Transformer and FilterPredicate
-   // Define the classes to to be used as baseclass, in- or output hanldes.
+   // Define the types to to be used as baseclass, and as in- resp. output hanldes.
    // In case a type is not specified in the traits struct, a default is used.
    //
    // The defaults are:
@@ -36,21 +50,29 @@ namespace Traits {
    //      template <typename T> using OutputHandle = DataObjectHandle<T>;
    //
 
-   // this uses the defaults -- and it itself is the default ;-)
-   struct useDefaults {
-   };
+   // the best way to 'compose' traits is by inheriting them one-by-one...
+   template <typename ... Base> struct use_ : Base... {};
 
-   // this example uses AnyDataHandle as input and output, and the default BaseClass
-   struct useAnyDataHandle {
-       template <typename T> using InputHandle = AnyDataHandle<T>;
-       template <typename T> using OutputHandle = AnyDataHandle<T>;
-   };
+    // helper classes one can inherit from to specify a specific trait
+   template <typename Base>
+   struct BaseClass_t { using BaseClass = Base; };
+
+   template <template<typename> class Handle>
+   struct InputHandle_t { template <typename T> using InputHandle = Handle<T>; };
+
+   template <template<typename> class Handle>
+   struct OutputHandle_t { template <typename T> using OutputHandle = Handle<T>; };
+
+   // this uses the defaults -- and it itself is the default ;-)
+   using useDefaults = use_<>;
+
+   // example: use AnyDataHandle as input and output, and the default BaseClass
+   using useAnyDataHandle = use_< InputHandle_t<AnyDataHandle>
+                                , OutputHandle_t<AnyDataHandle> > ;
 
    // this example uses GaudiHistoAlg as baseclass, and the default handle types for
    // input and output
-   struct useGaudiHistoAlg {
-       using BaseClass = GaudiHistoAlg;
-   };
+   using useGaudiHistoAlg = use_< BaseClass_t<GaudiHistoAlg> >;
 
 }
 
