@@ -67,6 +67,11 @@ public:
     return *this;
   }
 
+  /// get a reference to the readCallBack
+  const std::function<void( Property& )> readCallBack() const override { return m_handlers.getReadHandler(); }
+  /// get a reference to the updateCallBack
+  const std::function<void( Property& )> updateCallBack() const override { return m_handlers.getUpdateHandler(); }
+
   /// manual trigger for callback for update
   bool useUpdateHandler() override
   {

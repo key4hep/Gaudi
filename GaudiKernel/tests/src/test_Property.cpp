@@ -198,3 +198,21 @@ BOOST_AUTO_TEST_CASE( move_assignment )
   BOOST_CHECK( dest.value() == "value" );
   BOOST_CHECK( dest.documentation() == "doc [unknown owner type]" );
 }
+
+BOOST_AUTO_TEST_CASE( backward_compatibility )
+{
+  {
+    IntegerProperty ip{"name", 42};
+    BOOST_CHECK( ! ip.readCallBack() );
+    BOOST_CHECK( ! ip.updateCallBack() );
+
+    Property* p = &ip;
+    BOOST_CHECK( ! p->readCallBack() );
+    BOOST_CHECK( ! p->updateCallBack() );
+    BOOST_CHECK( 0 == p->updateCallBack() );
+
+    p->declareUpdateHandler([](Property&) {});
+    BOOST_CHECK( ip.updateCallBack() );
+    BOOST_CHECK( p->updateCallBack() );
+  }
+}

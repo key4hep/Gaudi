@@ -61,6 +61,12 @@ public:
   virtual Property& declareReadHandler( std::function<void( Property& )> fun ) = 0;
   /// set new callback for update
   virtual Property& declareUpdateHandler( std::function<void( Property& )> fun ) = 0;
+
+  /// get a reference to the readCallBack
+  virtual const std::function<void( Property& )> readCallBack() const = 0;
+  /// get a reference to the updateCallBack
+  virtual const std::function<void( Property& )> updateCallBack() const = 0;
+
   /// manual trigger for callback for update
   virtual bool useUpdateHandler() = 0;
 
@@ -244,13 +250,15 @@ namespace Gaudi
         void useReadHandler( const ::Property& ) const {}
         void setReadHandler( std::function<void(::Property& )> )
         {
-          throw std::logic_error("setReadHandler not implemented for this class");
+          throw std::logic_error( "setReadHandler not implemented for this class" );
         }
+        std::function<void(::Property& )> getReadHandler() const { return nullptr; }
         void useUpdateHandler( const ::Property& ) const {}
         void setUpdateHandler( std::function<void(::Property& )> )
         {
-          throw std::logic_error("setUpdateHandler not implemented for this class");
+          throw std::logic_error( "setUpdateHandler not implemented for this class" );
         }
+        std::function<void(::Property& )> getUpdateHandler() const { return nullptr; }
       };
       struct ReadHandler : NoHandler {
         mutable std::function<void(::Property& )> m_readCallBack;
@@ -261,6 +269,7 @@ namespace Gaudi
           }
         }
         void setReadHandler( std::function<void(::Property& )> fun ) { m_readCallBack = std::move( fun ); }
+        std::function<void(::Property& )> getReadHandler() const { return m_readCallBack; }
       };
       struct UpdateHandler : NoHandler {
         std::function<void(::Property& )> m_updateCallBack;
@@ -275,12 +284,15 @@ namespace Gaudi
           }
         }
         void setUpdateHandler( std::function<void(::Property& )> fun ) { m_updateCallBack = std::move( fun ); }
+        std::function<void(::Property& )> getUpdateHandler() const { return m_updateCallBack; }
       };
       struct ReadUpdateHandler : ReadHandler, UpdateHandler {
         using ReadHandler::useReadHandler;
         using ReadHandler::setReadHandler;
+        using ReadHandler::getReadHandler;
         using UpdateHandler::useUpdateHandler;
         using UpdateHandler::setUpdateHandler;
+        using UpdateHandler::getUpdateHandler;
       };
     }
   }
@@ -371,6 +383,11 @@ public:
     m_handlers.setUpdateHandler( std::move( fun ) );
     return *this;
   }
+
+  /// get a reference to the readCallBack
+  const std::function<void( Property& )> readCallBack() const override { return m_handlers.getReadHandler(); }
+  /// get a reference to the updateCallBack
+  const std::function<void( Property& )> updateCallBack() const override { return m_handlers.getUpdateHandler(); }
 
   /// manual trigger for callback for update
   bool useUpdateHandler() override
@@ -730,6 +747,11 @@ public:
     m_handlers.setUpdateHandler( std::move( fun ) );
     return *this;
   }
+
+  /// get a reference to the readCallBack
+  const std::function<void( Property& )> readCallBack() const override { return m_handlers.getReadHandler(); }
+  /// get a reference to the updateCallBack
+  const std::function<void( Property& )> updateCallBack() const override { return m_handlers.getUpdateHandler(); }
 
   /// use the call-back function at reading, if available
   void useReadHandler() const { m_handlers.useReadHandler( *this ); }
