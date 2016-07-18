@@ -38,3 +38,15 @@ BOOST_AUTO_TEST_CASE( declareProperty )
     //BOOST_CHECK_THROW(redeclare_property(), GaudiException);
   }
 }
+
+BOOST_AUTO_TEST_CASE( backward_compatibility )
+{
+  {
+    AnonymousPropertyHolder mgr;
+    StringArrayProperty vp{&mgr, "name", {}};
+
+    Gaudi::Utils::setProperty( &mgr, "name", std::vector<std::string>{ { "All" } } );
+
+    BOOST_CHECK( vp == std::vector<std::string>{ { "All" } } );
+  }
+}
