@@ -49,7 +49,7 @@ private:
   SimpleProperty<std::vector<std::pair<double,double>>> u_doublepairarray {this, "DoublePairArray"};
 
   CheckedProperty<int>  p_int     {this, "PInt", 100, "An integer property"};
-  DoubleProperty   p_double  {this, "PDouble", 100.};
+  PropertyWithReadHandler<double>  p_double  {this, "PDouble", 100.};
   StringProperty   p_string  {this, "PString", "hundred"};
   BooleanProperty  p_bool    {this, "PBool", false};
 

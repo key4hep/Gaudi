@@ -298,7 +298,7 @@ namespace Gaudi
  */
 // ============================================================================
 template <class TYPE, class VERIFIER = Gaudi::Details::Property::NullVerifier,
-          class HANDLERS = Gaudi::Details::Property::ReadUpdateHandler>
+          class HANDLERS = Gaudi::Details::Property::UpdateHandler>
 class PropertyWithValue : public Property
 {
 public:
@@ -618,15 +618,19 @@ decltype( std::declval<TP>() + std::declval<T>() ) operator+( const T& v, const 
 }
 
 template <class TYPE, class VERIFIER = Gaudi::Details::Property::NullVerifier,
-          class HANDLERS = Gaudi::Details::Property::ReadUpdateHandler>
+          class HANDLERS = Gaudi::Details::Property::UpdateHandler>
 using SimpleProperty     = PropertyWithValue<TYPE, VERIFIER, HANDLERS>;
 
 template <class TYPE, class VERIFIER = Gaudi::Details::Property::BoundedVerifier<TYPE>,
-          class HANDLERS = Gaudi::Details::Property::ReadUpdateHandler>
-using CheckedProperty     = PropertyWithValue<TYPE, VERIFIER, HANDLERS>;
+          class HANDLERS = Gaudi::Details::Property::UpdateHandler>
+using CheckedProperty    = PropertyWithValue<TYPE, VERIFIER, HANDLERS>;
 
 template <class TYPE, class VERIFIER = Gaudi::Details::Property::NullVerifier,
-          class HANDLERS = Gaudi::Details::Property::ReadUpdateHandler>
+          class HANDLERS      = Gaudi::Details::Property::ReadUpdateHandler>
+using PropertyWithReadHandler = PropertyWithValue<TYPE, VERIFIER, HANDLERS>;
+
+template <class TYPE, class VERIFIER = Gaudi::Details::Property::NullVerifier,
+          class HANDLERS = Gaudi::Details::Property::UpdateHandler>
 using SimplePropertyRef  = PropertyWithValue<TYPE&, VERIFIER, HANDLERS>;
 
 // Typedef Properties for built-in types
