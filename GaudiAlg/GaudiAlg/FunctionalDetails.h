@@ -29,6 +29,35 @@ namespace Gaudi { namespace Functional { namespace details {
     void put( AnyDataHandle<Out1>& out_handle, Out2&& out ) {
         out_handle.put( std::forward<Out2>(out) );
     }
+    ///////////////
+    template <typename Container>
+    class vector_of_ {
+        using ContainerVector = std::vector<Container*>;
+        ContainerVector m_containers;
+    public:
+        using value_type = Container;
+        using size_type  = typename ContainerVector::size_type;
+        class iterator {
+             typename ContainerVector::const_iterator m_i;
+             friend class vector_of_;
+             iterator(typename ContainerVector::const_iterator iter) : m_i(iter) {}
+         public:
+             friend bool operator!=(const iterator& lhs, const iterator& rhs) { return lhs.m_i != rhs.m_i; }
+             const Container& operator*() const { return **m_i; }
+             iterator& operator++() { ++m_i; return *this; }
+             iterator& operator--() { --m_i; return *this; }
+        };
+        void reserve(size_type size) { m_containers.reserve(size); }
+        void push_back(Container& c) { m_containers.push_back(&c); }
+        iterator begin() const { return m_containers.begin(); }
+        iterator end() const { return m_containers.end(); }
+    };
+
+    template <typename Container>
+    using vector_of_const_ = vector_of_<const Container>;
+    // using vector_of_const_ = vector_of_<typename std::add_const<Container>::type>;
+
+    ///////////////
 
     // detect whether a traits class defines the requested type,
     //   if so, use it,
