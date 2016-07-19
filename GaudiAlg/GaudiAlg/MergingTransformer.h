@@ -59,6 +59,8 @@ namespace Gaudi { namespace Functional {
                             (this, m_inputLocations, Gaudi::DataHandle::Reader);
        } );
        p->useUpdateHandler(); // invoke call-back now, to be sure the input handles are synced with the property...
+       std::for_each( this->m_inputs.begin(), this->m_inputs.end(), [&](auto& h) { this->declareInput(&h); } );
+
        this->declareProperty( output.first, m_output );
    }
 

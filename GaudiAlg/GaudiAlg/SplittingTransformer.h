@@ -70,6 +70,7 @@ namespace Gaudi { namespace Functional {
            }
        } );
        p->useUpdateHandler(); // invoke now, to be sure the input handles are synced with the property...
+       std::for_each( this->m_outputs.begin(), this->m_outputs.end(), [&](auto& h) { this->declareOutput(&h); } );
    }
 
    template <typename Out, typename... In, typename Traits_>
