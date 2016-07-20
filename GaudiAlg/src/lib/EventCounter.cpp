@@ -14,21 +14,19 @@ EventCounter::EventCounter(const std::string& name, ISvcLocator* pSvcLocator) :
 StatusCode
 EventCounter::initialize()
 {
-    MsgStream log(msgSvc(), name());
-    log << MSG::INFO << name( ) << ":EventCounter::initialize - Frequency: " << m_frequency << endmsg;
+    info() << name( ) << ":EventCounter::initialize - Frequency: " << m_frequency << endmsg;
     return StatusCode::SUCCESS;
 }
 
 StatusCode
 EventCounter::execute()
 {
-     MsgStream log(msgSvc(), name());
      m_total++;
      int freq = m_frequency;
      if ( freq > 0 ) {
          ++m_skip;
          if ( m_skip >= freq ) {
-             log << MSG::INFO << name( ) << ":EventCounter::execute - seen events: " << m_total << endmsg;
+             info() << name( ) << ":EventCounter::execute - seen events: " << m_total << endmsg;
              m_skip = 0;
          }
      }
@@ -38,7 +36,6 @@ EventCounter::execute()
 StatusCode
 EventCounter::finalize()
 {
-    MsgStream log(msgSvc(), name());
-    log << MSG::INFO << name( ) << ":EventCounter::finalize - total events: " << m_total << endmsg;
+    info() << name( ) << ":EventCounter::finalize - total events: " << m_total << endmsg;
     return StatusCode::SUCCESS;
 }

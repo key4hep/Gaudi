@@ -101,8 +101,7 @@ IssueLogger::initialize() {
 StatusCode
 IssueLogger::reinitialize() {
 
-  MsgStream log ( msgSvc(), name() );
-  log << MSG::WARNING << "reinitialize not implemented" << endmsg;
+  warning() << "reinitialize not implemented" << endmsg;
   return StatusCode::SUCCESS;
 
 }
@@ -112,8 +111,7 @@ IssueLogger::reinitialize() {
 StatusCode
 IssueLogger::finalize() {
 
-  MsgStream log ( msgSvc(), name() );
-  log << MSG::DEBUG << "IssueLogger::finalize" << endmsg;
+  debug() << "IssueLogger::finalize" << endmsg;
   std::for_each( std::begin(m_log), std::end(m_log), 
                  [](logger_t& i) 
                  { i.reset(); } );
@@ -124,8 +122,6 @@ IssueLogger::finalize() {
 
 StatusCode
 IssueLogger::connect(const std::string& ident) {
-
-  MsgStream log ( msgSvc(), name() );
 
   auto loc = ident.find(" ");
   using Parser = Gaudi::Utils::AttribStringParser;
@@ -140,13 +136,13 @@ IssueLogger::connect(const std::string& ident) {
     } else if ( attrib.tag == "ERROR") {       level = IssueSeverity::ERROR;
     } else if ( attrib.tag == "FATAL") {       level = IssueSeverity::FATAL;
     } else {
-      log << MSG::ERROR << "Unknown output level \"" << attrib.tag << "\""
+      error() << "Unknown output level \"" << attrib.tag << "\""
 	  << endmsg;
       continue;
     }
 
     if (m_log[level]) {
-      log << MSG::INFO << "closing stream " << m_log[level].name() << endmsg;
+      info() << "closing stream " << m_log[level].name() << endmsg;
       m_log[level].reset();
     }
 
@@ -162,12 +158,12 @@ IssueLogger::connect(const std::string& ident) {
       }
       catch (std::exception&) {
         m_log[level].reset();
-        log << MSG::ERROR << "Unable to open file \"" << attrib.value
+        error() << "Unable to open file \"" << attrib.value
             << "\" for writing issues at level " << attrib.tag << endmsg;
         return StatusCode::FAILURE;
       }
     }
-    log << MSG::DEBUG << "Writing " << s_levelTrans.at(level)
+    debug() << "Writing " << s_levelTrans.at(level)
                       << " issues to " << m_log[level].name() << endmsg;
   }
   return StatusCode::SUCCESS;
@@ -199,8 +195,7 @@ IssueLogger::setupLevels(Property& prop) {
 
   StringProperty *sap = dynamic_cast<StringProperty*> (&prop);
   if (!sap) {
-    MsgStream log ( msgSvc(), name() );
-    log << MSG::ERROR << "Could not convert " << prop.name()
+    error() << "Could not convert " << prop.name()
 	    << "to a StringProperty (which it should be!)" << endmsg;
     return;
   }
@@ -209,8 +204,7 @@ IssueLogger::setupLevels(Property& prop) {
   auto set = [&](IssueSeverity::Level& key, IssueSeverity::Level def) {
     if (s_levelSTrans.find(val) == s_levelSTrans.end()) {
       key = def;
-      MsgStream log ( this->msgSvc(), this->name() );
-      log << MSG::ERROR << "Option " << prop.name() << ": unknown Issue Severity level \""
+      error() << "Option " << prop.name() << ": unknown Issue Severity level \""
 	                    << val << "\". Setting it " << s_levelTrans.at(def) << endmsg;
     } else {
       key = s_levelSTrans.at(val);
@@ -222,8 +216,7 @@ IssueLogger::setupLevels(Property& prop) {
   } else if (prop.name() == "TracebackLevel") {
     set(m_traceLevel, IssueSeverity::ERROR );
   } else {
-    MsgStream log ( msgSvc(), name() );
-    log << MSG::ERROR << "setting up unknown property \"" 
+    error() << "setting up unknown property \"" 
                       << prop.name() << "\"" << endmsg;
   }
 }
@@ -235,15 +228,13 @@ IssueLogger::setupStreams(Property& prop) {
 
   StringArrayProperty *sap = dynamic_cast<StringArrayProperty*>( &prop );
   if ( !sap ) {
-    MsgStream log ( msgSvc(), name() );
-    log << MSG::ERROR << "Could not convert " << prop.name()
+    error() << "Could not convert " << prop.name()
 	<< "to a StringArrayProperty (which it should be!)" << endmsg;
     return;
   }
   for (const auto& s : sap->value() ) {
     if (connect(s).isFailure()) {
-      MsgStream log ( msgSvc(), name() );
-      log << MSG::ERROR << "Could not setup stream " << s << endmsg;
+      error() << "Could not setup stream " << s << endmsg;
     }
   }
 }
@@ -257,8 +248,7 @@ IssueLogger::setupDefaultLogger() {
       // default: dump to msgSvc
       IssueSeverity::Level j = IssueSeverity::Level (i);
       m_log[j] = {  new StreamLogger(msgSvc(), s_sevMsgMap.at(j)) , &StreamLogger::WriteToMsgSvc };
-      MsgStream log ( msgSvc(), name() );
-      log << MSG::DEBUG << "Writing " << s_levelTrans.at(j)
+      debug() << "Writing " << s_levelTrans.at(j)
 	                    << " issues to " << m_log[j].name() << endmsg;
     }
   }

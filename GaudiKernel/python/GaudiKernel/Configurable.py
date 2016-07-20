@@ -10,7 +10,7 @@ from GaudiKernel.Constants import error_explanation, \
                                   VERBOSE, DEBUG, INFO, WARNING, ERROR, FATAL
 from GaudiKernel.PropertyProxy import PropertyProxy
 from GaudiKernel.GaudiHandles import *
-from GaudiKernel.DataObjectDescriptor import *
+from GaudiKernel.DataObjectHandleBase import *
 
 ### data ---------------------------------------------------------------------
 __all__ = [ 'Configurable',
@@ -386,9 +386,7 @@ class Configurable( object ):
         if attr in self.__tools : return self.__tools[attr]
 
         if attr in self._properties:
-            if isinstance(self._properties[attr].__get__( self ), DataObjectDescriptor):
-                return self._properties[attr].__get__( self )
-            if isinstance(self._properties[attr].__get__( self ), DataObjectDescriptorCollection):
+            if isinstance(self._properties[attr].__get__( self ), DataObjectHandleBase):
                 return self._properties[attr].__get__( self )
 
         for c in self.__children:
@@ -1191,7 +1189,7 @@ class ConfigurableUser( Configurable ):
         for queried in self.__queried_configurables__:
             try:
                 if type(queried) is str:
-                    queried = confDbGetConfigurable(queried)
+                    queried = confDbGetConfigurable(used)
                 inst = queried(_enabled = False)
             except AttributeError:
                 inst = queried()

@@ -100,7 +100,8 @@ SmartIF<IService>& ServiceManager::createService(const Gaudi::Utils::TypeNameStr
 StatusCode ServiceManager::addService(IService* svc, int prio)
 //------------------------------------------------------------------------------
 {
-  auto it = find(svc);
+  ListSvc::iterator it = find(svc);
+  LockGuard_t lck(m_gLock);
   if (it != m_listsvc.end()) {
     it->priority = prio; // if the service is already known, it is equivalent to a setPriority
     it->active = true;   // and make it active
@@ -132,6 +133,7 @@ StatusCode ServiceManager::addService(const Gaudi::Utils::TypeNameString& typeNa
     if(sc.isFailure()) { // if initialization failed, remove it from the list
       error() << "Unable to initialize service \"" << typeName.name() << "\""
               << endmsg;
+      LockGuard_t lck(m_gLock);
       m_listsvc.erase(it);
       // Note: removing it from the list + the SmartIF going out of scope should trigger the delete
       // delete svc.get();
@@ -140,6 +142,7 @@ StatusCode ServiceManager::addService(const Gaudi::Utils::TypeNameString& typeNa
     // initialization successful, we can work with the service
     // Move the just initialized service to the back of the list
     // (we care more about order of initialization than of creation)
+    LockGuard_t lck(m_gLock);
     m_listsvc.push_back(*it);
     m_listsvc.erase(it);
     it = std::prev(std::end(m_listsvc)); // last entry (the iterator was invalidated by erase)
@@ -159,7 +162,23 @@ SmartIF<IService> &ServiceManager::service(const Gaudi::Utils::TypeNameString &t
   const std::string &name = typeName.name();
 
   // Acquire the RAII lock to avoid simultaneous attempts from different threads to initialize a service
-  std::lock_guard<std::recursive_mutex> lck(m_svcinitmutex);
+
+  Mutex_t *imut;
+  {
+    // get the global lock, then extract/create the service specific mutex
+    // then release global lock
+
+    LockGuard_t lk(m_gLock);      
+    auto mit = m_lockMap.find(name);
+    if (mit == m_lockMap.end()) {
+      mit = m_lockMap.emplace(name, std::unique_ptr<Mutex_t>( new Mutex_t )).first;
+    }
+    imut = mit->second.get();
+  }
+
+  {
+    // now we have the service specific lock on the above mutex
+    LockGuard_t lk2(*imut);
 
   auto it = find(name);
 
@@ -189,6 +208,7 @@ SmartIF<IService> &ServiceManager::service(const Gaudi::Utils::TypeNameString &t
   }
 
   return no_service;
+}
 }
 
 //------------------------------------------------------------------------------
@@ -510,9 +530,9 @@ void ServiceManager::setLoopCheckEnabled(bool en) {
 //------------------------------------------------------------------------------
 void ServiceManager::dump() const {
 
-  MsgStream log(msgSvc(),name());
 
-  log << MSG::INFO << "\n"
+  auto& log = info();
+  log << "\n"
       << "=====================  listing all services  ===================\n"
       << " prior   ref name                           active\n";
 

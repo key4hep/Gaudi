@@ -11,7 +11,8 @@
  *  @author Pere Mato
  *  @date   14/10/2001
  */
-class MyTool : public extends1<AlgTool, IMyTool> {
+class MyTool : public extends<AlgTool,
+                              IMyTool> {
 public:
 
   /// Standard Constructor

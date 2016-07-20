@@ -16,7 +16,9 @@
   * @author Marco Clemencic
   * @date 16/01/2012
   */
-class DODBasicMapper: public extends2<AlgTool, IDODAlgMapper, IDODNodeMapper> {
+class DODBasicMapper: public extends<AlgTool,
+                                     IDODAlgMapper,
+                                     IDODNodeMapper> {
 public:
   /// Standard constructor
   DODBasicMapper(const std::string& type, const std::string& name, const IInterface* parent);

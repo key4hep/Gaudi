@@ -1,4 +1,5 @@
 // Include files
+#include <sstream>
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/IDataProviderSvc.h"
@@ -19,16 +20,17 @@
 //------------------------------------------------------------------------------
 void PropertyAlg::readHandler(Property& p)
 {
-  MsgStream log(msgSvc(),name());
-  log << MSG::INFO << "Read handler called for property: " << p << endmsg ;
+  info() << "Read handler called for property: " << p << endmsg ;
 }
 
 // Update Handler
 //------------------------------------------------------------------------------
 void PropertyAlg::updateHandler(Property& p)
 {
-  MsgStream log(msgSvc(),name());
-  log << MSG::INFO << "Update handler called for property: " << p << endmsg;
+  // avoid the readHandler (which writes to the _same_ MsgStream!) from writing
+  // something in the middle of the printout of this message...
+  std::ostringstream os; os << p;
+  info() << "Update handler called for property: " << os.str() << endmsg;
 }
 
 // Constructor
@@ -77,86 +79,84 @@ PropertyAlg::PropertyAlg(const std::string& name, ISvcLocator* ploc)
   p_double.declareUpdateHandler( &PropertyAlg::updateHandler, this );
   p_double.declareReadHandler( &PropertyAlg::readHandler, this );
 
-  MsgStream log(msgSvc(),"PropertyAlg");
 
-  log << MSG::INFO << "Before Initialization......" << endmsg;
+  info() << "Before Initialization......" << endmsg;
 
-  log << MSG::INFO << "Int    = " << m_int << endmsg;
-  log << MSG::INFO << "Int64  = " << m_int64 << endmsg;
-  log << MSG::INFO << "UInt64 = " << m_uint64 << endmsg;
-  log << MSG::INFO << "Double = " << m_double << endmsg;
-  log << MSG::INFO << "String = " << m_string << endmsg;
-  log << MSG::INFO << "Bool   = " << m_bool << endmsg;
-  log << MSG::INFO << "IntArray    = " << m_intarray << endmsg;
-  log << MSG::INFO << "Int64Array  = " << m_int64array << endmsg;
-  log << MSG::INFO << "UInt64Array = " << m_uint64array << endmsg;
-  log << MSG::INFO << "DoubleArray = " << m_doublearray << endmsg;
-  log << MSG::INFO << "StringArray = " << m_stringarray << endmsg;
-  log << MSG::INFO << "BoolArray   = " << m_boolarray << endmsg;
-  log << MSG::INFO << "EmptyArray  = " << m_emptyarray << endmsg;
-  log << MSG::INFO << "IntPairArray  = " << u_intpairarray << endmsg;
-  log << MSG::INFO << "DoublePairArray  = " << u_doublepairarray << endmsg;
+  info() << "Int    = " << m_int << endmsg;
+  info() << "Int64  = " << m_int64 << endmsg;
+  info() << "UInt64 = " << m_uint64 << endmsg;
+  info() << "Double = " << m_double << endmsg;
+  info() << "String = " << m_string << endmsg;
+  info() << "Bool   = " << m_bool << endmsg;
+  info() << "IntArray    = " << m_intarray << endmsg;
+  info() << "Int64Array  = " << m_int64array << endmsg;
+  info() << "UInt64Array = " << m_uint64array << endmsg;
+  info() << "DoubleArray = " << m_doublearray << endmsg;
+  info() << "StringArray = " << m_stringarray << endmsg;
+  info() << "BoolArray   = " << m_boolarray << endmsg;
+  info() << "EmptyArray  = " << m_emptyarray << endmsg;
+  info() << "IntPairArray  = " << u_intpairarray << endmsg;
+  info() << "DoublePairArray  = " << u_doublepairarray << endmsg;
 
-  log << MSG::INFO << "PInt    = " << p_int << endmsg;
-  log << MSG::INFO << "PDouble = " << p_double << endmsg;
-  log << MSG::INFO << "PString = " << p_string << endmsg;
-  log << MSG::INFO << "PBool   = " << p_bool << endmsg;
-  log << MSG::INFO << "PIntArray    = " << p_intarray << endmsg;
-  log << MSG::INFO << "PDoubleArray = " << p_doublearray << endmsg;
-  log << MSG::INFO << "PStringArray = " << p_stringarray << endmsg;
-  log << MSG::INFO << "PBoolArray   = " << p_boolarray << endmsg;
+  info() << "PInt    = " << p_int << endmsg;
+  std::ostringstream os; os << p_double; // avoid read handler from printing _during_ info()!
+  info() << "PDouble = " << os.str() << endmsg;
+  info() << "PString = " << p_string << endmsg;
+  info() << "PBool   = " << p_bool << endmsg;
+  info() << "PIntArray    = " << p_intarray << endmsg;
+  info() << "PDoubleArray = " << p_doublearray << endmsg;
+  info() << "PStringArray = " << p_stringarray << endmsg;
+  info() << "PBoolArray   = " << p_boolarray << endmsg;
 
 }
 
 //------------------------------------------------------------------------------
 StatusCode PropertyAlg::initialize() {
 //------------------------------------------------------------------------------
-  MsgStream log(msgSvc(), name());
 
   //
   // Checking the JobOptions interface. Be able to set the properties
   //
-  log << MSG::INFO
-      << "After Initialization having read the JobOptions file..."
-      << endmsg;
+  info() << "After Initialization having read the JobOptions file..." << endmsg;
 
-  log << MSG::INFO << "Int    = " << m_int << endmsg;
-  log << MSG::INFO << "Int64  = " << m_int64 << endmsg;
-  log << MSG::INFO << "UInt64 = " << m_uint64 << endmsg;
-  log << MSG::INFO << "Double = " << m_double << endmsg;
-  log << MSG::INFO << "String = " << m_string << endmsg;
-  log << MSG::INFO << "Bool   = " << m_bool << endmsg;
-  log << MSG::INFO << "IntArray    = " << m_intarray << endmsg;
-  log << MSG::INFO << "Int64Array  = " << m_int64array << endmsg;
-  log << MSG::INFO << "UInt64Array = " << m_uint64array << endmsg;
-  log << MSG::INFO << "DoubleArray = " << m_doublearray << endmsg;
-  log << MSG::INFO << "StringArray = " << m_stringarray << endmsg;
-  log << MSG::INFO << "BoolArray   = " << m_boolarray << endmsg;
-  log << MSG::INFO << "EmptyArray  = " << m_emptyarray << endmsg;
-  log << MSG::INFO << "IntPairArray  = " << u_intpairarray << endmsg;
-  log << MSG::INFO << "DoublePairArray  = " << u_doublepairarray << endmsg;
+  info() << "Int    = " << m_int << endmsg;
+  info() << "Int64  = " << m_int64 << endmsg;
+  info() << "UInt64 = " << m_uint64 << endmsg;
+  info() << "Double = " << m_double << endmsg;
+  info() << "String = " << m_string << endmsg;
+  info() << "Bool   = " << m_bool << endmsg;
+  info() << "IntArray    = " << m_intarray << endmsg;
+  info() << "Int64Array  = " << m_int64array << endmsg;
+  info() << "UInt64Array = " << m_uint64array << endmsg;
+  info() << "DoubleArray = " << m_doublearray << endmsg;
+  info() << "StringArray = " << m_stringarray << endmsg;
+  info() << "BoolArray   = " << m_boolarray << endmsg;
+  info() << "EmptyArray  = " << m_emptyarray << endmsg;
+  info() << "IntPairArray  = " << u_intpairarray << endmsg;
+  info() << "DoublePairArray  = " << u_doublepairarray << endmsg;
 
-  log << MSG::INFO << "PInt    = " << p_int << endmsg;
-  log << MSG::INFO << "PDouble = " << p_double << endmsg;
-  log << MSG::INFO << "PString = " << p_string << endmsg;
-  log << MSG::INFO << "PBool   = " << p_bool << endmsg;
-  log << MSG::INFO << "PIntArray    = " << p_intarray << endmsg;
-  log << MSG::INFO << "PDoubleArray = " << p_doublearray << endmsg;
-  log << MSG::INFO << "PStringArray = " << p_stringarray << endmsg;
-  log << MSG::INFO << "PBoolArray   = " << p_boolarray << endmsg;
+  info() << "PInt    = " << p_int << endmsg;
+  std::ostringstream os; os << p_double; // avoid read handler from printing _during_ info()!
+  info() << "PDouble = " << os.str() << endmsg;
+  info() << "PString = " << p_string << endmsg;
+  info() << "PBool   = " << p_bool << endmsg;
+  info() << "PIntArray    = " << p_intarray << endmsg;
+  info() << "PDoubleArray = " << p_doublearray << endmsg;
+  info() << "PStringArray = " << p_stringarray << endmsg;
+  info() << "PBoolArray   = " << p_boolarray << endmsg;
   //
   // Checking units
   //
   for (unsigned int i = 0; i < u_doublearrayunits.size(); i++ ) {
 
     if( u_doublearrayunits[i] != u_doublearray[i] ) {
-      log << MSG::ERROR
+      error()
           << format
         ("DoubleArrayWithUnits[%d] = %g and should be %g",
          i, u_doublearrayunits[i], u_doublearray[i] ) << endmsg;
     }
     else {
-      log << MSG::INFO << format("DoubleArrayWithUnits[%d] = %g",
+      info() << format("DoubleArrayWithUnits[%d] = %g",
                                    i, u_doublearrayunits[i] ) << endmsg;
     }
   }
@@ -164,17 +164,17 @@ StatusCode PropertyAlg::initialize() {
   //
   // Checking the Property Verifier
   //
-  log << MSG::INFO
+  info()
       << "===============Checking Property Verifier ===============" << endmsg;
 
-  log << MSG::INFO << "Playing with PropertyVerifiers..." << endmsg;
+  info() << "Playing with PropertyVerifiers..." << endmsg;
 
   p_int.verifier().setBounds( 0, 200);
   p_int = 155;
-  //log << MSG::INFO << "PInt= " << p_int << " [should be 155, bounds are " <<
+  //info() << "PInt= " << p_int << " [should be 155, bounds are " <<
   //                     p_int.verifier().lower() << ", " <<
   //                     p_int.verifier().upper() << " ]" << endmsg;
-  log << MSG::INFO
+  info()
       << format
     ("PInt= %d [should be 155, bounds are %d, %d]",
      (int)p_int, (int)p_int.verifier().lower(),
@@ -182,51 +182,51 @@ StatusCode PropertyAlg::initialize() {
   try {
     p_int = 255;
   } catch (...) {
-    log << MSG::INFO
+    info()
         << "Got an exception when setting a value outside bounds" << endmsg;
   }
-  log << MSG::INFO << "PInt= " << p_int << " [should be 155]" << endmsg;
+  info() << "PInt= " << p_int << " [should be 155]" << endmsg;
 
   //
   //  Checking the Property CallBacks
   //
-  log << MSG::INFO
+  info()
       << "===============Checking Property CallBaks ===============" << endmsg;
 
   double d;
-  log << MSG::INFO << "Accessing PDouble ... " << endmsg;
+  info() << "Accessing PDouble ... " << endmsg;
   d = p_double;
 
-  log << MSG::INFO << "Value obtained is: " << d << endmsg;
+  info() << "Value obtained is: " << d << endmsg;
 
-  log << MSG::INFO << "Updating PDouble ... "<< endmsg;
+  info() << "Updating PDouble ... "<< endmsg;
   p_double = 999.;
 
   //
   //  Checking Accessing Properties by string
   //
 
-  log << MSG::INFO << "==========Checking Accesing Properties by string=========" << endmsg;
+  info() << "==========Checking Accesing Properties by string=========" << endmsg;
 
   auto appmgr = serviceLocator()->as<IProperty>();
   //StatusCode sc = serviceLocator()->service("ApplicationMgr", appmgr);
   if( !appmgr ) {
-    log << MSG::ERROR << "Unable to locate the ApplicationMgr" << endmsg;
+    error() << "Unable to locate the ApplicationMgr" << endmsg;
   }
   else {
     std::string value("empty");
     appmgr->getProperty("ExtSvc", value).ignore();
-    log << MSG::INFO << " Got property ApplicationMgr.ExtSvc = " << value << ";" << endmsg;
+    info() << " Got property ApplicationMgr.ExtSvc = " << value << ";" << endmsg;
 
     appmgr->setProperty("ExtSvc", "[\"EvtDataSvc/EventDataSvc\", \"DetDataSvc/DetectorDataSvc\"]").ignore();
-    log << MSG::INFO << " Set property ApplicationMgr.ExtSvc = " << " [\"EvtDataSvc/EventDataSvc\", \"DetDataSvc/DetectorDataSvc\"]" << ";" << endmsg;
+    info() << " Set property ApplicationMgr.ExtSvc = " << " [\"EvtDataSvc/EventDataSvc\", \"DetDataSvc/DetectorDataSvc\"]" << ";" << endmsg;
     appmgr->getProperty("ExtSvc", value).ignore();
-    log << MSG::INFO << " Got property ApplicationMgr.ExtSvc = " << value << ";" << endmsg;
+    info() << " Got property ApplicationMgr.ExtSvc = " << value << ";" << endmsg;
 
     appmgr->setProperty("ExtSvc", "[ 'EventDataSvc', 'DetectorDataSvc']").ignore();
-    log << MSG::INFO << " Set property ApplicationMgr.ExtSvc = " << " [ 'EventDataSvc', 'DetectorDataSvc']" << ";" << endmsg;
+    info() << " Set property ApplicationMgr.ExtSvc = " << " [ 'EventDataSvc', 'DetectorDataSvc']" << ";" << endmsg;
     appmgr->getProperty("ExtSvc", value).ignore();
-    log << MSG::INFO << " Got property ApplicationMgr.ExtSvc = " << value << ";" << endmsg;
+    info() << " Got property ApplicationMgr.ExtSvc = " << value << ";" << endmsg;
 
   }
   // Testing setting bool
@@ -234,9 +234,9 @@ StatusCode PropertyAlg::initialize() {
   bool  bcases[] = { true,   false,   true,   false,   true,   false,  true, true, true};
   for (unsigned int i = 0; i < sizeof(scases)/sizeof(char*); i++ ) {
     setProperty( "PBool", scases[i] ).ignore();
-    if( p_bool  != bcases[i] ) log << MSG::ERROR << "PBool can not be set to "<< scases[i] << endmsg;
+    if( p_bool  != bcases[i] ) error() << "PBool can not be set to "<< scases[i] << endmsg;
     setProperty( "Bool", scases[i] ).ignore();
-    if( m_bool  != bcases[i] ) log << MSG::ERROR << "Bool can not be set to "<< scases[i] << endmsg;
+    if( m_bool  != bcases[i] ) error() << "Bool can not be set to "<< scases[i] << endmsg;
   }
 
   // Testing the control of the output level directly from MessageSvc
@@ -250,47 +250,36 @@ StatusCode PropertyAlg::initialize() {
   newlog << MSG::ALWAYS << "This should be printed ALWAYS" << endmsg;
 
   // Testing access to the JobOptions catalogue
-  IJobOptionsSvc* jopts;
-  if( service("JobOptionsSvc", jopts ).isSuccess() ) {
-    // Dump of the catalogue
-    log << MSG::INFO << "=================================================" << endmsg;
-    log << MSG::INFO << "Dump of the property catalogue.... " << endmsg;
-    std::vector<std::string> clients = jopts->getClients();
-    std::vector<std::string>::iterator cit;
-    std::vector<const Property*>::const_iterator pit;
-
-    for( cit = clients.begin(); cit != clients.end(); cit++ ) {
-      log << MSG::INFO << " Properties of " <<  *cit << ": ";
-      const std::vector<const Property*>* properties = jopts->getProperties(*cit);
-      for( pit = properties->begin(); pit != properties->end(); pit++ ) {
-        log << (*pit)->name();
-        if( (pit+1) != properties->end())  log << ", ";
-      }
-      log << endmsg;
-    }
-    log << MSG::INFO << "=================================================" << endmsg;
-
-    // Change an option of my own....
-    jopts->addPropertyToCatalogue( name(), StringProperty("PInt", "155") ).ignore();
-    std::vector<std::string> values;
-    values.push_back("12.12");
-    values.push_back("13.13");
-    StringArrayProperty sap("DoubleArray", values );
-    if( jopts->addPropertyToCatalogue( name(), sap ).isSuccess() ) {
-      log << "Changed property DoubleArray in catalogue" << endmsg;
-      jopts->setMyProperties(name(),this).ignore();
-      log << MSG::INFO << "DoubleArray = " << m_doublearray << endmsg;
-    } else {
-      log << MSG::ERROR  << "Unable to change property in catalogue" << endmsg;
-    }
-    log << MSG::INFO << "=================================================" << endmsg;
-
-    jopts->release();
-  }
-  else {
-    log << MSG::ERROR << " Unable to access the JobOptionsSvc" << endmsg;
+  auto jopts = service<IJobOptionsSvc>("JobOptionsSvc");
+  if (!jopts) {
+    error() << " Unable to access the JobOptionsSvc" << endmsg;
+    return StatusCode::SUCCESS;
   }
 
+  // Dump of the catalogue
+  info() << "=================================================" << endmsg;
+  info() << "Dump of the property catalogue.... " << endmsg;
+  for( const auto&  cit : jopts->getClients() ) {
+    using GaudiUtils::details::ostream_joiner;
+    ostream_joiner( info() << " Properties of " <<  cit << ": ",
+                    *jopts->getProperties(cit), ", ",
+                    [](MsgStream& os, const Property* p) -> MsgStream&
+                    { return os << p->name(); } )
+    << endmsg;
+  }
+  info() << "=================================================" << endmsg;
+
+  // Change an option of my own....
+  jopts->addPropertyToCatalogue( name(), StringProperty("PInt", "155") ).ignore();
+  StringArrayProperty sap("DoubleArray", { "12.12", "13.13" } );
+  if( jopts->addPropertyToCatalogue( name(), sap ).isSuccess() ) {
+    info() << "Changed property DoubleArray in catalogue" << endmsg;
+    jopts->setMyProperties(name(),this).ignore();
+    info() << "DoubleArray = " << m_doublearray << endmsg;
+  } else {
+    error()  << "Unable to change property in catalogue" << endmsg;
+  }
+  info() << "=================================================" << endmsg;
   return StatusCode::SUCCESS;
 }
 
@@ -298,9 +287,7 @@ StatusCode PropertyAlg::initialize() {
 //------------------------------------------------------------------------------
 StatusCode PropertyAlg::execute() {
 //------------------------------------------------------------------------------
-  MsgStream         log( msgSvc(), name() );
-  log << MSG::INFO << "executing...." << endmsg;
-
+  info() << "executing...." << endmsg;
   return StatusCode::SUCCESS;
 }
 
@@ -308,9 +295,7 @@ StatusCode PropertyAlg::execute() {
 //------------------------------------------------------------------------------
 StatusCode PropertyAlg::finalize() {
 //------------------------------------------------------------------------------
-  MsgStream log(msgSvc(), name());
-  log << MSG::INFO << "finalizing...." << endmsg;
-
+  info() << "finalizing...." << endmsg;
   return StatusCode::SUCCESS;
 }
 

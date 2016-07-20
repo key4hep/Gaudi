@@ -41,22 +41,19 @@ void EventSelector::printEvtInfo(const EvtSelectorContext* iter) const {
     long count = iter->numEvent();
     // Print an message every m_evtPrintFrequency events
     if ( 0 == iter->context() )   {
-      MsgStream log(msgSvc(), name());
-      log << MSG::INFO << "End of event input reached." << endmsg;
+      info() << "End of event input reached." << endmsg;
     }
     else if( iter->numStreamEvent() == -1 ) {
       // Intial value for this stream
     }
     else if( m_evtPrintFrequency != -1 && (count % m_evtPrintFrequency == 0))   {
-      MsgStream log(msgSvc(), name());
-      log << MSG::ALWAYS << "Reading Event record " << count+1
+      always() << "Reading Event record " << count+1
           << ". Record number within stream " << iter->ID()+1
           << ": " << iter->numStreamEvent()+1 << endmsg;
     }
   }
   else  {
-    MsgStream log(msgSvc(), name());
-    log << MSG::INFO << "End of event input reached." << endmsg;
+    info() << "End of event input reached." << endmsg;
   }
 }
 
@@ -101,9 +98,8 @@ EventSelector::firstOfNextStream(bool shutDown, EvtSelectorContext& iter) const 
         if ( status.isSuccess() )   {
           status = sel->resetCriteria(s->criteria(), *ctxt);
           if ( status.isSuccess() )   {
-            MsgStream log(msgSvc(), name());
             iter.set(this, iter_id, ctxt, 0);
-            log << MSG::INFO << *s << endmsg;
+            info() << *s << endmsg;
             m_incidentSvc->fireIncident(Incident(s->dbName(),IncidentType::BeginInputFile));
             return StatusCode::SUCCESS;
           }
@@ -158,9 +154,8 @@ EventSelector::lastOfPreviousStream(bool shutDown, EvtSelectorContext& iter) con
         if ( status.isSuccess() )   {
           status = sel->resetCriteria(s->criteria(), *ctxt);
           if ( status.isSuccess() )   {
-            MsgStream log(msgSvc(), name());
             iter.set(this, iter_id, ctxt, 0);
-            log << MSG::INFO << *s << endmsg;
+            info() << *s << endmsg;
             return StatusCode::SUCCESS;
           }
         }
@@ -178,9 +173,8 @@ StatusCode EventSelector::createContext(Context*& refpCtxt) const
   // Max event is zero. Return begin = end
   refpCtxt = nullptr;
   if ( m_firstEvent < 0 ) {
-    MsgStream log(msgSvc(), name());
-    log << MSG::ERROR  << "First Event = " << m_firstEvent << " not valid" << endmsg;
-    log << MSG::ERROR  << "It should be > 0 " << endmsg;
+    error()  << "First Event = " << m_firstEvent << " not valid" << endmsg;
+    error()  << "It should be > 0 " << endmsg;
     return StatusCode::FAILURE;    // if failure => iterators = end();
   }
   EvtSelectorContext* ctxt = new EvtSelectorContext(this);
@@ -191,8 +185,7 @@ StatusCode EventSelector::createContext(Context*& refpCtxt) const
   while( --nskip > 0 )    {
     StatusCode sc = next(*refpCtxt);
     if ( sc.isFailure() ) {
-      MsgStream log(msgSvc(), name());
-      log << MSG::ERROR << " createContext() failed to start with event number "
+      error() << " createContext() failed to start with event number "
           << m_firstEvent << endmsg;
       releaseContext(refpCtxt);
       refpCtxt = nullptr;
@@ -301,8 +294,7 @@ StatusCode EventSelector::rewind(Context& refCtxt) const  {
     while( --nskip > 0 )    {
       StatusCode sc = next(*ctxt);
       if ( sc.isFailure() ) {
-        MsgStream log(msgSvc(), name());
-        log << MSG::ERROR << "rewind() failed to start with event number "
+        error() << "rewind() failed to start with event number "
             << m_firstEvent << endmsg;
         return StatusCode::FAILURE;
       }
@@ -358,27 +350,26 @@ StatusCode EventSelector::releaseContext(Context*& refCtxt) const  {
 StatusCode EventSelector::initialize()    {
   // Initialize base class
   StatusCode status = Service::initialize();
-  MsgStream logger(msgSvc(), name());
   if ( !status.isSuccess() )    {
-    logger << MSG::ERROR << "Error initializing base class Service!" << endmsg;
+    error() << "Error initializing base class Service!" << endmsg;
     return status;
   }
   // Get the references to the services that are needed by the ApplicationMgr itself
   m_incidentSvc = serviceLocator()->service("IncidentSvc");
   if( !m_incidentSvc )  {
-    logger << MSG::FATAL << "Error retrieving IncidentSvc." << endmsg;
+    fatal() << "Error retrieving IncidentSvc." << endmsg;
     return StatusCode::FAILURE;
   }
   if ( m_evtMax != INT_MAX )   {
-    logger << MSG::ERROR << "EvtMax is an obsolete property of the event selector." << endmsg;
-    logger << MSG::ERROR << "Please set \"ApplicationMgr.EvtMax = " << m_evtMax
+    error() << "EvtMax is an obsolete property of the event selector." << endmsg;
+    error() << "Please set \"ApplicationMgr.EvtMax = " << m_evtMax
            << ";\" to process the requested number of events." << endmsg;
     return StatusCode::FAILURE;
   }
 
   m_toolSvc = serviceLocator()->service("ToolSvc");
   if ( !m_toolSvc ) {
-    logger << MSG::ERROR << " Could not locate the Tool Service! " << endmsg;
+    error() << " Could not locate the Tool Service! " << endmsg;
     return StatusCode::FAILURE;
   }
   // make sure we finalize _prior_ to ToolSvc... we are about to get a
@@ -391,7 +382,7 @@ StatusCode EventSelector::initialize()    {
   status = m_toolSvc->retrieveTool(m_streamManager.c_str(), m_streamtool, this);
 
   if( status.isFailure() ) {
-    logger << MSG::ERROR << "Error initializing "
+    error() << "Error initializing "
            << m_streamManager << endmsg;
     return status;
   }
@@ -414,8 +405,7 @@ StatusCode EventSelector::initialize()    {
 // Re-initialize
 StatusCode EventSelector::reinitialize() {
   if ( FSMState() != Gaudi::StateMachine::INITIALIZED ) {
-    MsgStream logger(msgSvc(), name());
-    logger << MSG::ERROR << "Cannot reinitialize: service not in state initialized" << endmsg;
+    error() << "Cannot reinitialize: service not in state initialized" << endmsg;
     return StatusCode::FAILURE;
   }
 
@@ -434,8 +424,7 @@ StatusCode EventSelector::reinitialize() {
 StatusCode EventSelector::finalize()    {
 
   if (msgLevel(MSG::DEBUG)) {
-    MsgStream log(msgSvc(), name());
-    log << MSG::DEBUG << "finalize()" << endmsg;
+    debug() << "finalize()" << endmsg;
   }
 
   m_incidentSvc = nullptr;

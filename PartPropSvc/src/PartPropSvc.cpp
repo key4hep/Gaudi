@@ -23,10 +23,9 @@
 //*************************************************************************//
 
 PartPropSvc::PartPropSvc( const std::string& name_, ISvcLocator* svc )
-  : base_class( name_, svc ),  m_log(msgSvc(), name())  {
-
+  : base_class( name_, svc )
+{
   declareProperty( "InputFile", m_pdtFiles="PDGTABLE.MeV");
-
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
@@ -35,10 +34,9 @@ StatusCode
 PartPropSvc::initialize() {
 
   StatusCode status = Service::initialize();
-  m_log.setLevel( m_outputLevel.value() );
 
   if ( status.isFailure() ) {
-    m_log << MSG::ERROR << "Could not initialize main svc" << endmsg;
+    error() << "Could not initialize main svc" << endmsg;
     return StatusCode::FAILURE;
   }
 
@@ -59,7 +57,7 @@ PartPropSvc::initialize() {
     const std::string fname = *it2;
     std::string fmt;
     if (nToks == 1) {
-      m_log << MSG::INFO << "No table format type specified for \"" << fname
+      info() << "No table format type specified for \"" << fname
 	    << "\". Assuming PDG" << endmsg;
       fmt = "PDG";
     } else {
@@ -70,7 +68,7 @@ PartPropSvc::initialize() {
     // see if input file exists in $DATAPATH
     std::string rfile = System::PathResolver::find_file(fname,"DATAPATH");
     if (rfile.empty()) {
-      m_log << MSG::ERROR << "Could not find PDT file: \"" << fname
+      error() << "Could not find PDT file: \"" << fname
 	    << "\" in $DATAPATH" << endmsg;
       return StatusCode::FAILURE;
     }
@@ -78,7 +76,7 @@ PartPropSvc::initialize() {
     // is the file readable?
     std::ifstream pdfile{ rfile };
     if (!pdfile) {
-      m_log << MSG::ERROR << "Could not open PDT file: \"" << rfile
+      error() << "Could not open PDT file: \"" << rfile
 	    << "\"" << endmsg;
       return StatusCode::FAILURE;
     }
@@ -89,13 +87,13 @@ PartPropSvc::initialize() {
     try {
       pF = parseTableType(FMT);
     } catch (...) {
-      m_log << MSG::ERROR
+      error()
 	    << "Could not determine Particle Property table type: \""
 	    << FMT << "\" for file \"" << fname << "\"" << endmsg;
       return StatusCode::FAILURE;
     }
 
-    m_log << MSG::DEBUG << "Adding PDT file \"" << rfile << "\" type "
+    debug() << "Adding PDT file \"" << rfile << "\" type "
 	  << FMT << endmsg;
 
     m_inputs.emplace_back( rfile, pF );
@@ -120,11 +118,10 @@ PartPropSvc::finalize() {
     m_upid = nullptr;
   }
 
-  MsgStream m_log( msgSvc(), name() );
   StatusCode status = Service::finalize();
 
   if ( status.isSuccess() ) {
-    m_log << MSG::DEBUG << "Service finalised successfully" << endmsg;
+    debug() << "Service finalised successfully" << endmsg;
   }
 
   return status;
@@ -145,7 +142,7 @@ PartPropSvc::parseTableType(const std::string& typ)
                          [&](const std::pair<const char*,inputFunPtr>& p)
                          { return typ == p.first; } );
   if ( i == std::end(table) ) {
-    m_log << MSG::ERROR << "Unknown Particle Data file type: \""
+    error() << "Unknown Particle Data file type: \""
 	      << typ << "\"" << endmsg;
     throw  std::runtime_error("error parsing particle table type");
   }
@@ -172,13 +169,13 @@ PartPropSvc::createTable() {
     const auto& f = itr.first;
     const auto& pF = itr.second;
 
-    m_log << MSG::DEBUG << "Reading PDT file \"" << f << "\""
+    debug() << "Reading PDT file \"" << f << "\""
  	  << endmsg;
 
     std::ifstream pdfile{ f };
     // build a table from the file
     if ( ! pF(pdfile,tb) ) {
-      m_log << MSG::ERROR << "Error reading PDT file: \"" << f
+      error() << "Error reading PDT file: \"" << f
 	    << "\"" << endmsg;
       return StatusCode::FAILURE;
     }
@@ -195,9 +192,9 @@ HepPDT::ParticleDataTable*
 PartPropSvc::PDT() {
 
   if (!m_pdt ) {
-    m_log << MSG::DEBUG << "creating ParticleDataTable" << endmsg;
+    debug() << "creating ParticleDataTable" << endmsg;
     if (createTable().isFailure()) {
-      m_log << MSG::FATAL << "Could not create ParticleDataTable" << endmsg;
+      fatal() << "Could not create ParticleDataTable" << endmsg;
       m_pdt.reset(nullptr);
     }
   }
@@ -211,16 +208,16 @@ void
 PartPropSvc::setUnknownParticleHandler(HepPDT::ProcessUnknownID* puid,
 				       const std::string& n) {
   if (m_pdt) {
-    m_log << MSG::ERROR << "not setting Unknown Particle Handler \"" << n
+    error() << "not setting Unknown Particle Handler \"" << n
 	  << "\" as ParticleDataTable already instantiated" << endmsg;
     return;
   }
 
-  m_log << MSG::DEBUG << "setting Unknown Particle Handler \"" << n
+  debug() << "setting Unknown Particle Handler \"" << n
 	<< "\" at " << puid << endmsg;
 
   if (m_upid) {
-    m_log << MSG::WARNING
+    warning()
 	  << "overriding previously selected Unknown Particle Handler \""
 	  << m_upid_name << "\" with \"" << n << "\"" << endmsg;
   }

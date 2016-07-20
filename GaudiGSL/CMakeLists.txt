@@ -1,9 +1,9 @@
-gaudi_subdir(GaudiGSL v9r1)
+gaudi_subdir(GaudiGSL v9r2)
 
 gaudi_depends_on_subdirs(GaudiAlg)
 
-find_package(CLHEP)
-find_package(GSL)
+find_package(CLHEP REQUIRED)
+find_package(GSL REQUIRED)
 
 #---Libraries---------------------------------------------------------------
 gaudi_add_library(GaudiGSLLib src/Lib/*.cpp

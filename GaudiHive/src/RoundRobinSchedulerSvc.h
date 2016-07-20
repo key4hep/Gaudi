@@ -36,7 +36,8 @@
  *  @author  Benedikt Hegner
  *  @version 1.0
  */
-class RoundRobinSchedulerSvc: public extends1<Service, IScheduler> {
+class RoundRobinSchedulerSvc: public extends<Service,
+                                             IScheduler> {
 public:
   /// Constructor
   RoundRobinSchedulerSvc( const std::string& name, ISvcLocator* svc );

@@ -18,6 +18,7 @@
 
 // ============================================================================
 #include <vector>
+#include <mutex>
 // ============================================================================
 // Forward declarations
 // ============================================================================
@@ -32,7 +33,9 @@ class ServiceManager;
  *  @author Pere Mato
  *  @author Marco Clemencic
  */
-class GAUDI_API Service: public CommonMessaging<implements3<IService, IProperty, IStateful> > {
+class GAUDI_API Service: public CommonMessaging<implements<IService,
+                                                           IProperty,
+                                                           IStateful> > {
 public:
 #ifndef __REFLEX__
   typedef Gaudi::PluginService::Factory<IService*,
@@ -248,14 +251,13 @@ public:
 
 		StatusCode sc = handle.initialize(toolTypeAndName, this, createIf);
 
-		MsgStream log(msgSvc(), name());
-
 		if (sc.isSuccess()) {
-			log << MSG::DEBUG << "Handle for private tool" << toolTypeAndName
+                  if (UNLIKELY(msgLevel(MSG::DEBUG)))
+			debug() << "Handle for private tool" << toolTypeAndName
 					<< " successfully created and stored." << endmsg;
 		} else {
 
-			log << MSG::ERROR << "Handle for private tool" << toolTypeAndName
+			error() << "Handle for private tool" << toolTypeAndName
 					<< " could not be created." << endmsg;
 		}
 
@@ -279,14 +281,14 @@ public:
 
 		StatusCode sc = handle.initialize(toolTypeAndName, 0, createIf);
 
-		MsgStream log(msgSvc(), name());
 
 		if (sc.isSuccess()) {
-			log << MSG::DEBUG << "Handle for public tool" << toolTypeAndName
+                  if (UNLIKELY(msgLevel(MSG::DEBUG)))
+			debug() << "Handle for public tool" << toolTypeAndName
 					<< " successfully created and stored." << endmsg;
 		} else {
 
-			log << MSG::ERROR << "Handle for public tool" << toolTypeAndName
+			error() << "Handle for public tool" << toolTypeAndName
 					<< " could not be created." << endmsg;
 		}
 
@@ -314,6 +316,11 @@ protected:
   int  outputLevel() const { return m_outputLevel.value(); }
 
 private:
+
+  void sysInitialize_imp();
+  StatusCode m_initSC;
+  std::once_flag m_initFlag;
+
   /** Service Name  */
   std::string   m_name;
   /** Service Locator reference                  */

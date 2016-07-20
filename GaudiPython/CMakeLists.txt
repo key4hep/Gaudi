@@ -1,9 +1,9 @@
-gaudi_subdir(GaudiPython v14r1)
+gaudi_subdir(GaudiPython v14r2)
 
 gaudi_depends_on_subdirs(GaudiAlg GaudiUtils GaudiKernel)
 
-find_package(CLHEP)
-find_package(PythonLibs)
+find_package(CLHEP REQUIRED)
+find_package(PythonLibs REQUIRED)
 find_package(pytools)
 
 #---Libraries---------------------------------------------------------------

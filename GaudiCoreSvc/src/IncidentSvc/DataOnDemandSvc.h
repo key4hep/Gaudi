@@ -87,7 +87,8 @@ class IToolSvc;
  * @author  M.Frank
  * @version 1.0
  */
-class DataOnDemandSvc: public extends1<Service, IIncidentListener>
+class DataOnDemandSvc: public extends<Service,
+                                      IIncidentListener>
 {
 public:
   // ==========================================================================
@@ -227,12 +228,6 @@ protected:
   // ==========================================================================
   /// update the handlers
   StatusCode update() ;
-  /// get the message stream
-  inline MsgStream& stream () const
-  {
-    if ( !m_log ) m_log.reset( new MsgStream( msgSvc() , name() ) ); 
-    return *m_log;
-  }
   /** dump the content of DataOnDemand service
    *  @param level the printout level
    *  @param mode   the printout mode
@@ -278,7 +273,6 @@ private:
   Map                m_nodeMap         ; // { 'data' : 'type' }
   bool               m_updateRequired = true ;
   std::string        m_prefix         = "/Event/"  ;
-  mutable std::unique_ptr<MsgStream> m_log ;
   // ==========================================================================
   ChronoEntity       m_total           ;
   ulonglong          m_statAlg        = 0;

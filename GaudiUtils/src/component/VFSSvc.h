@@ -23,7 +23,8 @@ class IAlgTool;
  *  @date   2008-01-18
  */
 
-class VFSSvc: public extends1<Service, IFileAccess> {
+class VFSSvc: public extends<Service,
+                             IFileAccess> {
 public:
   /// Initialize Service
   StatusCode initialize() override;

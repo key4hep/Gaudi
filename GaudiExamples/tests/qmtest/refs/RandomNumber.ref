@@ -11,38 +11,52 @@ JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/wor
 ApplicationMgr      DEBUG Getting my own properties
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r5)
-                                          running on pclhcb117 on Mon Sep 28 17:29:43 2015
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v4r0)
+                                          running on pclhcb117 on Mon Feb 22 12:10:29 2016
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 ServiceManager      DEBUG Initializing service AppMgrRunable
+AppMgrRunable       DEBUG Property update for OutputLevel : new value = 2
 AppMgrRunable       DEBUG Service base class initialized successfully
 ServiceManager      DEBUG Initializing service EventLoopMgr
+EventLoopMgr        DEBUG Property update for OutputLevel : new value = 2
 EventLoopMgr        DEBUG Service base class initialized successfully
+IncidentSvc         DEBUG Property update for OutputLevel : new value = 2
 IncidentSvc         DEBUG Service base class initialized successfully
 IncidentSvc         DEBUG Adding [AbortEvent] listener '<unknown>' with priority 0
 EventLoopMgr        DEBUG Creating Top Algorithm RandomNumberAlg with name RandomNumberAlg
+EventDataSvc        DEBUG Property update for OutputLevel : new value = 2
 EventDataSvc        DEBUG Service base class initialized successfully
+EventPersistenc...  DEBUG Property update for OutputLevel : new value = 2
 EventPersistenc...  DEBUG Service base class initialized successfully
+TimelineSvc         DEBUG Property update for OutputLevel : new value = 2
 TimelineSvc         DEBUG Service base class initialized successfully
 TimelineSvc         DEBUG initialize
+RndmGenSvc          DEBUG Property update for OutputLevel : new value = 2
 RndmGenSvc          DEBUG Service base class initialized successfully
+RndmGenSvc.Engine   DEBUG Property update for OutputLevel : new value = 2
 RndmGenSvc.Engine   DEBUG Service base class initialized successfully
 RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
 RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
 RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
+HistogramDataSvc    DEBUG Property update for OutputLevel : new value = 2
 HistogramDataSvc    DEBUG Service base class initialized successfully
 HistogramPersis...  DEBUG  'CnvServices':[ 'RootHistSvc' ]
 HistogramPersis...  DEBUG Service base class initialized successfully
+RootHistSvc         DEBUG Property update for OutputLevel : new value = 2
 RootHistSvc         DEBUG Service base class initialized successfully
 RootHistSvc          INFO Writing ROOT histograms to: histo.root
 HistogramPersis...   INFO Added successfully Conversion service:RootHistSvc
+NTupleSvc           DEBUG Property update for OutputLevel : new value = 2
 NTupleSvc           DEBUG Service base class initialized successfully
+NTupleSvcConver...  DEBUG Property update for OutputLevel : new value = 2
 NTupleSvcConver...  DEBUG Service base class initialized successfully
 NTupleSvc            INFO Added stream file:NTuple.root as FILE1
 RFileCnv             INFO opening Root file "NTuple.root" for writing
 RFileCnv            DEBUG creating ROOT file NTuple.root
-RandomNumberAlg     DEBUG Adding tools for RandomNumberAlg
+RandomNumberAlg     DEBUG input handles: 0
+RandomNumberAlg     DEBUG output handles: 0
+RandomNumberAlg     DEBUG Data Deps for RandomNumberAlg
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
 ApplicationMgr       INFO Application Manager Initialized successfully
@@ -64,7 +78,7 @@ RRWNTupleCnv         INFO ID 100: added branch: Gauss / Gauss/F
 RRWNTupleCnv         INFO ID 100: added branch: Exp / Exp/F
 RRWNTupleCnv         INFO ID 100: added branch: Poisson / Poisson/F
 RRWNTupleCnv         INFO Booked TTree with ID:100 "Hello World"
-EventLoopMgr         INFO ---> Loop Finished -  WSS 116.887 | total time (skipping 1st evt) 12816729 ns
+EventLoopMgr        DEBUG ---> Loop Finished -  WSS 122.316 | total time (skipping 1st evt) 16565786 ns
 ServiceManager      DEBUG Stopping service EventLoopMgr
 ServiceManager      DEBUG Stopping service NTupleSvc
 ServiceManager      DEBUG Stopping service HistogramDataSvc
@@ -124,7 +138,7 @@ ServiceManager      DEBUG Finalizing service TimelineSvc
 ServiceManager      DEBUG Finalizing service EventDataSvc
 ServiceManager      DEBUG Finalizing service EventPersistencySvc
 ServiceManager      DEBUG Finalizing service IncidentSvc
-IncidentSvc         DEBUG Incident  timing: Mean(+-rms)/Min/Max:0.0005(+-0.0223551)/0/1[ms] Total:0.002[s]
+IncidentSvc         DEBUG Incident  timing: Mean(+-rms)/Min/Max:0.00025(+-0.0158094)/0/1[ms] Total:0.001[s]
 ServiceManager      DEBUG Finalizing service AppMgrRunable
 ServiceManager      DEBUG Looping over all active services...
 ServiceManager      DEBUG ---- MessageSvc (refCount = 16)

@@ -32,15 +32,12 @@
 #include "GaudiKernel/System.h"
 #include <Gaudi/PluginService.h>
 #include "GaudiKernel/ToolHandle.h"
+#include "GaudiKernel/CommonMessaging.h"
 
 // For concurrency
 #include "GaudiKernel/EventContext.h"
-#include "GaudiKernel/MinimalDataObjectHandle.h"
-#include "GaudiKernel/MinimalDataObjectHandle.h"
-#include "GaudiKernel/DataObjectDescriptor.h"
-
-template<class T>
-class DataObjectHandle;
+#include "GaudiKernel/DataHandle.h"
+#include "GaudiKernel/IDataHandleHolder.h"
 
 class IAlgTool;
 class ToolHandleInfo;
@@ -74,7 +71,10 @@ class ToolHandleInfo;
  *  @author David Quarrie
  *  @date   1998
  */
-class GAUDI_API Algorithm: public implements3<IAlgorithm, IProperty, IStateful> {
+class GAUDI_API Algorithm: public CommonMessaging<implements<IAlgorithm,
+                                                             IDataHandleHolder,
+                                                             IProperty,
+                                                             IStateful>> {
 public:
 #ifndef __REFLEX__
   typedef Gaudi::PluginService::Factory<IAlgorithm*,
@@ -161,6 +161,7 @@ public:
    *  of the class configured to find tracks with different fit criteria.
    */
   const std::string& name() const override;
+  const Gaudi::StringKey& nameKey() const override;
 
   /** The type of the algorithm object.
    */
@@ -169,7 +170,7 @@ public:
 
   const std::string& version() const override;
 
-  unsigned int index() override;
+  unsigned int index() const override;
 
   /// Dummy implementation of IStateful::configure() method
   StatusCode configure() override { return StatusCode::SUCCESS ; }
@@ -247,9 +248,6 @@ public:
     return service(name,createIf,quiet).as<T>();
   }
 
-  /// Set the output level for current algorithm
-  void setOutputLevel( int level );
-
   /** The standard auditor service.May not be invoked before sysInitialize()
    *  has been invoked.
    */
@@ -301,15 +299,6 @@ public:
   /// Obsoleted name, kept due to the backwards compatibility
   SmartIF<IHistogramSvc>& histogramDataService() const;
 
-  /** The standard message service.
-   *  Returns a pointer to the standard message service.
-   *  May not be invoked before sysInitialize() has been invoked.
-   */
-  SmartIF<IMessageSvc>&      msgSvc() const;
-
-  /// Obsoleted name, kept due to the backwards compatibility
-  SmartIF<IMessageSvc>&      messageService() const;
-
   /** The standard N tuple service.
    *  Returns a pointer to the N tuple service if present.
    */
@@ -345,7 +334,7 @@ public:
    *  This service may be used by an algorithm to request
    *  any services it requires in addition to those provided by default.
    */
-  SmartIF<ISvcLocator>& serviceLocator() const;
+  SmartIF<ISvcLocator>& serviceLocator() const override;
   /// shortcut for method serviceLocator
   SmartIF<ISvcLocator>& svcLoc        () const { return serviceLocator() ; }
 
@@ -391,6 +380,8 @@ public:
   const std::vector<Property*>& getProperties( ) const override;
   /// Implementation of IProperty::hasProperty
   bool hasProperty(const std::string& name) const override;
+
+  inline PropertyMgr * getPropertyMgr() { return m_propertyMgr; }
 
   /** Set the algorithm's properties.
    *  This method requests the job options service
@@ -447,6 +438,33 @@ public:
   {
     return m_propertyMgr -> declareRemoteProperty ( name , rsvc , rname );
   }
+
+  // ==========================================================================
+  // declare Tools to the Algorithms
+
+  template <class T>
+    Property* declareProperty(const std::string& name,
+			      ToolHandle<T>& hndl,
+			      const std::string& doc = "none" ) const {
+
+    Algorithm* a = const_cast<Algorithm*>(this);
+    a->declareTool(hndl).ignore();
+
+    return m_propertyMgr->declareProperty(name, hndl, doc);
+
+  }
+
+  // ==========================================================================
+  // declare ToolHandleArrays to the Algorithms
+
+  template <class T>
+    Property* declareProperty(const std::string& name,
+                              ToolHandleArray<T>& hndlArr,
+                              const std::string& doc = "none" ) const {
+    m_toolHandleArrays.push_back( &hndlArr );
+    return m_propertyMgr->declareProperty(name, hndlArr, doc);
+  }
+
   // ==========================================================================
   /** @brief Access the monitor service
    *
@@ -550,264 +568,82 @@ public:
 
   // For concurrency
   /// get the context
-  EventContext* getContext(){return m_event_context;}
+  const EventContext* getContext() const {return m_event_context;}
 
   /// set the context
-  void setContext(EventContext* context){m_event_context = context;}
+  void setContext(const EventContext* context){m_event_context = context;}
 
-  /// Declare data object
-  template <typename T>
-  __attribute__ ((deprecated)) StatusCode declareDataObj(const std::string& address,
-                            DataObjectHandle<T>*& doh,
-                            MinimalDataObjectHandle::AccessType accesstype=MinimalDataObjectHandle::READ,
-                            bool is_optional=false) {
+  // From IDataHandleHolder:
 
-    // GCCXML cannot understand c++11 yet, NULL used.
-    std::string::size_type slashPos = address.find_last_of('/');
-    std::string tag = address.substr(slashPos != std::string::npos ? slashPos : 0);
-
-    if(accesstype == MinimalDataObjectHandle::READ || accesstype == MinimalDataObjectHandle::UPDATE)
-      return declareInput<T>(tag, *doh, address, is_optional, accesstype);
-    else
-      return declareOutput<T>(tag, *doh, address, is_optional, accesstype);
-
+ protected:
+  virtual void declareInput(Gaudi::DataHandle* im) override {
+    m_inputHandles.push_back(im);
+  }
+  virtual void declareOutput(Gaudi::DataHandle* im) override {
+    m_outputHandles.push_back(im);
   }
 
-  /** Declare input data object
-   *
-   *  @param propertyName to identify input object in python config
-   *  @param handle data handle
-   *  @param address relative or absolute address in TES
-   *  @param optional optional input
-   *  @param accessType read, write or update
-   */
+ public:
+  virtual std::vector<Gaudi::DataHandle*> inputHandles() const override { return m_inputHandles; }
+  virtual std::vector<Gaudi::DataHandle*> outputHandles() const override { return m_outputHandles; }
+
+  virtual const DataObjIDColl& extraInputDeps() const override {
+    return m_extInputDataObjs;
+  }
+  virtual const DataObjIDColl& extraOutputDeps() const override {
+    return m_extOutputDataObjs;
+  }
+
+  virtual void acceptDHVisitor(IDataHandleVisitor*) const override ;
+
+  const DataObjIDColl& inputDataObjs() const { return m_inputDataObjs; }
+  const DataObjIDColl& outputDataObjs() const { return m_outputDataObjs; }
+
+  void commitHandles() override;
+
+ private:
+  std::vector<Gaudi::DataHandle*> m_inputHandles, m_outputHandles;
+  DataObjIDColl m_inputDataObjs, m_outputDataObjs;
+
+  DataObjIDColl m_extInputDataObjs, m_extOutputDataObjs;
+
+ public:
+
+  void registerTool(IAlgTool * tool) const;
+  void deregisterTool(IAlgTool * tool) const;
 
   template<class T>
-  StatusCode declareInput(const std::string& propertyName, DataObjectHandle<T> & handle,
-      const std::string& address = DataObjectDescriptor::NULL_,
-      bool optional = false, MinimalDataObjectHandle::AccessType accessType =
-          MinimalDataObjectHandle::READ) {
+  StatusCode declareTool(ToolHandle<T> &handle,
+		  std::string toolTypeAndName = "",
+		  bool createIf = true) {
 
-    bool res = m_inputDataObjects.insert(propertyName, &handle);
+	  if (toolTypeAndName == "")
+		  toolTypeAndName = handle.typeAndName();
 
-    handle.descriptor()->setTag(propertyName);
-    handle.descriptor()->setAddress(address);
-    handle.descriptor()->setAccessType(accessType);
-    handle.descriptor()->setOptional(optional);
+	  StatusCode sc = handle.initialize(toolTypeAndName,
+			  handle.isPublic() ? nullptr : this,
+					  createIf);
+	  if (UNLIKELY(!sc)) {
+		  throw GaudiException{std::string{"Cannot create handle for "} +
+			  (handle.isPublic() ? "public" : "private") +
+			  " tool " + toolTypeAndName,
+			  name(), sc};
+	  }
 
-    handle.setOwner(this);
+	  m_toolHandles.push_back(&handle);
 
-    MsgStream log(msgSvc(), name());
-
-    if (LIKELY(res)) {
-      log << MSG::DEBUG << "Handle for " << propertyName << " ("
-          << address << ")" << " successfully created and stored."
-          << endmsg;
-    } else {
-      log << MSG::ERROR << "Handle for " << propertyName << " ("
-          << address << ")" << " could not be created." << endmsg;
-    }
-
-    return res;
-
-  }
-
-  /** Declare input data object
-   *
-   *  @param propertyName to identify input object in python config
-   *  @param handle data handle
-   *  @param addresses relative or absolute addresses in TES, first is main address
-   *  @param optional optional input
-   *  @param accessType read, write or update
-   */
-
-  template<class T>
-  StatusCode declareInput(const std::string& propertyName, DataObjectHandle<T> & handle,
-      const std::vector<std::string>& addresses,
-      bool optional = false, MinimalDataObjectHandle::AccessType accessType =
-          MinimalDataObjectHandle::READ) {
-
-    bool res = m_inputDataObjects.insert(propertyName, &handle);
-
-    handle.descriptor()->setTag(propertyName);
-    handle.descriptor()->setAddresses(addresses);
-    handle.descriptor()->setAccessType(accessType);
-    handle.descriptor()->setOptional(optional);
-
-    handle.setOwner(this);
-
-    MsgStream log(msgSvc(), name());
-
-    if (LIKELY(res)) {
-      log << MSG::DEBUG << "Handle for " << propertyName << " ("
-          << (addresses.empty() ? DataObjectDescriptor::NULL_ : addresses[0]) << ")" << " successfully created and stored."
-          << endmsg;
-    } else {
-      log << MSG::ERROR << "Handle for " << propertyName << " ("
-          << (addresses.empty() ? DataObjectDescriptor::NULL_ : addresses[0]) << ")" << " could not be created." << endmsg;
-    }
-
-    return res;
-
-  }
-
-  /** Declare output data object
-   *
-   *  @param propertyName to identify input object in python config
-   *  @param handle data handle
-   *  @param address relative or absolute address in TES
-   *  @param optional optional input
-   *  @param accessType write or update
-   */
-  template<class T>
-  StatusCode declareOutput(const std::string& propertyName, DataObjectHandle<T> & handle,
-      const std::string& address = DataObjectDescriptor::NULL_,
-      bool optional = false,
-      MinimalDataObjectHandle::AccessType accessType = MinimalDataObjectHandle::WRITE) {
-
-    bool res = m_outputDataObjects.insert(propertyName, &handle);
-
-    handle.descriptor()->setTag(propertyName);
-    handle.descriptor()->setAddress(address);
-    handle.descriptor()->setAccessType(accessType);
-    handle.descriptor()->setOptional(optional);
-
-    handle.setOwner(this);
-
-
-    MsgStream log(msgSvc(), name());
-
-    if (LIKELY(res)) {
-      log << MSG::DEBUG << "Handle for " << propertyName << " ("
-          << address << ")" << " successfully created and stored."
-          << endmsg;
-    } else {
-      log << MSG::ERROR << "Handle for " << propertyName << " ("
-          << address << ")" << " could not be created." << endmsg;
-    }
-
-    return res;
-
-  }
-
-  /// Return the handles declared in the algorithm
-  __attribute__ ((deprecated)) const std::vector<
-      MinimalDataObjectHandle*> handles() override;
-
-  const DataObjectDescriptorCollection & inputDataObjects() const override {
-    return m_inputDataObjects;
-  }
-  const DataObjectDescriptorCollection & outputDataObjects() const override {
-    return m_outputDataObjects;
-  }
-
-  void registerTool(IAlgTool * tool) const {
-
-    MsgStream log(msgSvc(), name());
-
-    log << MSG::DEBUG << "Registering tool " << tool->name() << endmsg;
-
-    m_tools.push_back(tool);
-  }
-
-  void deregisterTool(IAlgTool * tool) const {
-    std::vector<IAlgTool *>::iterator it = std::find(m_tools.begin(),
-        m_tools.end(), tool);
-
-    MsgStream log(msgSvc(), name());
-    if (it != m_tools.end()) {
-
-      log << MSG::DEBUG << "De-Registering tool " << tool->name() << endmsg;
-
-      m_tools.erase(it);
-    } else {
-      log << MSG::DEBUG << "Could not de-register tool " << tool->name() << endmsg;
-    }
-  }
-
-  /** Declare used Private tool
-   *
-   *  @param handle ToolHandle<T>
-   *  @param toolTypeAndName
-   *  @param parent, default public tool
-   *  @param create if necessary, default true
-   */
-  template<class T>
-  StatusCode declarePrivateTool(ToolHandle<T> & handle,
-      std::string toolTypeAndName = "",
-      bool createIf = true) {
-
-    if (toolTypeAndName == "")
-      toolTypeAndName = System::typeinfoName(typeid(T));
-
-    StatusCode sc = handle.initialize(toolTypeAndName, this, createIf);
-
-    m_toolHandles.push_back(&handle);
-
-    MsgStream log(msgSvc(), name());
-
-    if (sc.isSuccess()) {
-      log << MSG::DEBUG << "Handle for private tool" << toolTypeAndName
-          << " successfully created and stored." << endmsg;
-    } else {
-
-      log << MSG::ERROR << "Handle for private tool" << toolTypeAndName
-          << " could not be created." << endmsg;
-    }
-
-    return sc;
-
-  }
-
-  /** Declare used Public tool
-   *
-   *  @param handle ToolHandle<T>
-   *  @param toolTypeAndName
-   *  @param parent, default public tool
-   *  @param create if necessary, default true
-   */
-  template<class T>
-  StatusCode declarePublicTool(ToolHandle<T> & handle, std::string toolTypeAndName = "",
-      bool createIf = true) {
-
-    if (toolTypeAndName == "")
-      toolTypeAndName = System::typeinfoName(typeid(T));
-
-    StatusCode sc = handle.initialize(toolTypeAndName, 0, createIf);
-
-    m_toolHandles.push_back(&handle);
-
-    MsgStream log(msgSvc(), name());
-
-    if (sc.isSuccess()) {
-      log << MSG::DEBUG << "Handle for public tool" << toolTypeAndName
-          << " successfully created and stored." << endmsg;
-    } else {
-
-      log << MSG::ERROR << "Handle for public tool" << toolTypeAndName
-          << " could not be created." << endmsg;
-    }
-
-    return sc;
-
+	  return sc;
   }
 
   const std::vector<IAlgTool *> & tools() const;
 
 protected:
 
-  DataObjectDescriptorCollection & inputDataObjects() {
-    return m_inputDataObjects;
-  }
-  DataObjectDescriptorCollection & outputDataObjects() {
-    return m_outputDataObjects;
-  }
-
   std::vector<IAlgTool *> & tools();
 
 
-  // adds declared in- and outputs of subAlgorithms to own DOHs
-  void addSubAlgorithmDataObjectHandles();
+  // // adds declared in- and outputs of subAlgorithms to own DOHs
+  //  void addSubAlgorithmDataObjectHandles();
 
 private:
   //place IAlgTools defined via ToolHandles in m_tools
@@ -831,33 +667,24 @@ protected:
   /// Has the Algorithm already been finalized?
   bool isFinalized( ) const  override{ return Gaudi::StateMachine::CONFIGURED == m_state; }
 
-  /// retrieve the Algorithm output level
-  int  outputLevel() const { return (int)m_outputLevel ; }
-
-  /// Accessor for the Message level property
-  IntegerProperty & outputLevelProperty() { return m_outputLevel; }
-
-  /// Callback for output level property
-  void initOutputLevel(Property& prop);
-
   /// Event specific data for multiple event processing
-  EventContext* m_event_context;
+  const EventContext* m_event_context;
+
+  /// set instantiation index of Alg
+  void setIndex(const unsigned int& idx) override;
 
 private:
 
-  std::string m_name;            ///< Algorithm's name for identification
+  Gaudi::StringKey m_name;       ///< Algorithm's name for identification
   std::string m_type;            ///< Algorithm's type
   std::string m_version;         ///< Algorithm's version
   unsigned int m_index;          ///< Algorithm's index
   std::vector<Algorithm *> m_subAlgms; ///< Sub algorithms
 
-  //input and output definition
-  DataObjectDescriptorCollection m_inputDataObjects;
-  DataObjectDescriptorCollection m_outputDataObjects;
-
   //tools used by algorithm
   mutable std::vector<IAlgTool *> m_tools;
   mutable std::vector<BaseToolHandle *> m_toolHandles;
+  mutable std::vector<GaudiHandleArrayBase*> m_toolHandleArrays;
 
 
 private:
@@ -883,7 +710,13 @@ private:
   bool  m_registerContext = false ; ///< flag to register for Algorithm Context Service
   std::string               m_monitorSvcName; ///< Name to use for Monitor Service
   SmartIF<ISvcLocator>  m_pSvcLocator;      ///< Pointer to service locator service
+ protected:
   SmartIF<PropertyMgr> m_propertyMgr;      ///< For management of properties
+
+  /// Hook for for derived classes to provide a custom visitor for data handles.
+  std::unique_ptr<IDataHandleVisitor> m_updateDataHandles;
+
+ private:
   IntegerProperty m_outputLevel;   ///< Algorithm output level
   int          m_errorMax;         ///< Algorithm Max number of errors
   int          m_errorCount;       ///< Algorithm error counter
@@ -927,8 +760,6 @@ private:
   /// Private assignment operator: NO ASSIGNMENT ALLOWED
   Algorithm& operator=(const Algorithm& rhs);
 };
-
-#include "GaudiKernel/DataObjectHandle.h"
 
 #ifndef GAUDI_NEW_PLUGIN_SERVICE
 template <class T>

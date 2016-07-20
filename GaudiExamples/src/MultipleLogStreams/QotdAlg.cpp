@@ -11,7 +11,6 @@ DECLARE_COMPONENT(QotdAlg)
 QotdAlg::QotdAlg(const std::string& name,
 		 ISvcLocator* pSvcLocator) :
   Algorithm( name,     pSvcLocator ),
-  m_msg    ( msgSvc(), name        ),
   m_evtCnt ( 0 )
 //------------------------------------------------------------------------------
 {}
@@ -21,10 +20,7 @@ QotdAlg::QotdAlg(const std::string& name,
 StatusCode QotdAlg::initialize()
 //------------------------------------------------------------------------------
 {
-  // configure our MsgStream
-  m_msg.setLevel( outputLevel() );
-
-  m_msg << MSG::INFO
+  info()
 	<< "Initializing " << name() << "..."
 	<< endmsg;
 
@@ -36,7 +32,7 @@ StatusCode QotdAlg::initialize()
 StatusCode QotdAlg::execute()
 //------------------------------------------------------------------------------
 {
-  m_msg << MSG::INFO << "Event #" << m_evtCnt++ << "\n"
+  info() << "Event #" << m_evtCnt++ << "\n"
 	<< " --- famous quotes ---\n"
 	<< " - God does not play dice with the Universe.\n"
 	<< " - 640K of memory should be enough for anybody.\n"
@@ -53,7 +49,7 @@ StatusCode QotdAlg::execute()
 StatusCode QotdAlg::finalize()
 //------------------------------------------------------------------------------
 {
-  m_msg << MSG::INFO << "Finalizing..." << endmsg;
+  info() << "Finalizing..." << endmsg;
   return StatusCode::SUCCESS;
 }
 

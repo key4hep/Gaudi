@@ -30,9 +30,9 @@
  *  @date December 1, 1999
  *  @date 2007-07-08
  */
-class GAUDI_API IChronoStatSvc: virtual public extend_interfaces3<IService,
-                                                                  IChronoSvc,
-                                                                  IStatSvc>
+class GAUDI_API IChronoStatSvc: virtual public extend_interfaces<IService,
+                                                                 IChronoSvc,
+                                                                 IStatSvc>
 {
 public:
   /// InterfaceID

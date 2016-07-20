@@ -17,13 +17,8 @@ MyDataAlgorithm::MyDataAlgorithm(const std::string& name, ISvcLocator* ploc)
 StatusCode MyDataAlgorithm::initialize() {
 //------------------------------------------------------------------------------
 
-  MsgStream log(msgSvc(), name());
-
-  log << MSG::INFO << "initializing...." << endmsg;
-
-
-
-  log << MSG::INFO << "....initialization done" << endmsg;
+  info() << "initializing...." << endmsg;
+  info() << "....initialization done" << endmsg;
 
   return StatusCode::SUCCESS;
 }
@@ -32,11 +27,10 @@ StatusCode MyDataAlgorithm::initialize() {
 //------------------------------------------------------------------------------
 StatusCode MyDataAlgorithm::execute() {
 //------------------------------------------------------------------------------
-  MsgStream         log( msgSvc(), name() );
-  log << MSG::INFO << "executing...." << endmsg;
+  info() << "executing...." << endmsg;
   get<DataObject>("Rec/Muon/Digits");
   get<DataObject>("Rec/Muon/Foos");
-  log << MSG::INFO << "....execution done" << endmsg;
+  info() << "....execution done" << endmsg;
   return StatusCode::SUCCESS;
 }
 
@@ -44,9 +38,6 @@ StatusCode MyDataAlgorithm::execute() {
 //------------------------------------------------------------------------------
 StatusCode MyDataAlgorithm::finalize() {
 //------------------------------------------------------------------------------
-  MsgStream log(msgSvc(), name());
-  log << MSG::INFO << "finalizing...." << endmsg;
-
-
+  info() << "finalizing...." << endmsg;
   return StatusCode::SUCCESS;
 }

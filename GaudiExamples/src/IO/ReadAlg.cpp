@@ -36,10 +36,9 @@ DECLARE_COMPONENT(ReadAlg)
 // Initialize
 //--------------------------------------------------------------------
 StatusCode ReadAlg::initialize() {
-  MsgStream log(msgSvc(), name());
   m_recordSvc =  service("FileRecordDataSvc",true);
   if( !m_recordSvc ) { 
-    log << MSG::ERROR << "Unable to retrieve run records service" << endmsg;
+    error() << "Unable to retrieve run records service" << endmsg;
     return StatusCode::FAILURE;
   }
   if ( !m_incidentName.empty() ) {
@@ -47,7 +46,7 @@ StatusCode ReadAlg::initialize() {
     setProperty("IncidentName",prp->getProperty("IncidentName"));
     m_incidentSvc = service("IncidentSvc", true);
     if ( !m_incidentSvc ) {
-      log << MSG::ERROR << "Failed to access IncidentSvc." << endmsg;
+      error() << "Failed to access IncidentSvc." << endmsg;
       return StatusCode::FAILURE;
     }
     m_incidentSvc->addListener(this,m_incidentName);
@@ -59,7 +58,6 @@ StatusCode ReadAlg::initialize() {
 // Finalize
 //--------------------------------------------------------------------
 StatusCode ReadAlg::finalize() {
-  MsgStream log(msgSvc(), name());
   if ( m_incidentSvc ) m_incidentSvc->removeListener(this);
   m_incidentSvc.reset();
   m_recordSvc.reset();
@@ -70,22 +68,21 @@ StatusCode ReadAlg::finalize() {
 // IIncidentListener override: Inform that a new incident has occured
 //--------------------------------------------------------------------
 void ReadAlg::handle(const Incident& incident) {
-  MsgStream log(msgSvc(),name());
-  log << MSG::ALWAYS << "Got incident: " << incident.type() << " Source:" << incident.source() << endmsg;
+  always() << "Got incident: " << incident.type() << " Source:" << incident.source() << endmsg;
   if ( incident.type() == m_incidentName ) {
     std::string n = incident.source();
-    log << MSG::ALWAYS << "Received incident:" << incident.type() << ": " << n << endmsg;
+    always() << "Received incident:" << incident.type() << ": " << n << endmsg;
     SmartDataPtr<Counter> evt_cnt(m_recordSvc.get(),n+"/EvtCount");
     if ( evt_cnt != 0 )
-      log << MSG::ALWAYS << "Incident: FileInfo record: " << n << "/EvtCount=" << evt_cnt->value() << endmsg;
+      always() << "Incident: FileInfo record: " << n << "/EvtCount=" << evt_cnt->value() << endmsg;
     else
-      log << MSG::ALWAYS << "Incident: NO FileInfo record EvtCounter for " << n << "/EvtCount" << endmsg;
+      always() << "Incident: NO FileInfo record EvtCounter for " << n << "/EvtCount" << endmsg;
 
     SmartDataPtr<Counter> sum_cnt(m_recordSvc.get(),n+"/SumCount");
     if ( sum_cnt != 0 )
-      log << MSG::ALWAYS << "Incident: FileInfo record: " << n << "/SumCount=" << sum_cnt->value() << endmsg;
+      always() << "Incident: FileInfo record: " << n << "/SumCount=" << sum_cnt->value() << endmsg;
     else
-      log << MSG::ALWAYS << "Incident: NO FileInfo record SumCounter for " << n << "/SumCount" << endmsg;
+      always() << "Incident: NO FileInfo record SumCounter for " << n << "/SumCount" << endmsg;
   }
 }
 
@@ -94,13 +91,13 @@ void ReadAlg::handle(const Incident& incident) {
 //--------------------------------------------------------------------
 StatusCode ReadAlg::execute() {
   // This just makes the code below a bit easier to read (and type)
-  MsgStream log(msgSvc(), name());
   SmartDataPtr<Event> evt(eventSvc(),"/Event/Header");
 
   if ( evt != 0 )    {
     int evt_num = evt->event();
     if ( evt_num <= 10 || evt_num%100==0 )  {
-      log << MSG::INFO << "========= EVENT:" << evt->event() << " RUN:" << evt->run()
+      auto& log = info();
+      log << "========= EVENT:" << evt->event() << " RUN:" << evt->run()
           << " TIME:" << evt->time();
       for (size_t nc=0; nc<evt->collisions().size(); ++nc) {
         if ( evt->collisions()[nc] )  {
@@ -125,22 +122,23 @@ StatusCode ReadAlg::execute() {
           fname = new_fname;
           SmartDataPtr<Counter> evt_cnt(m_recordSvc.get(),new_fname+"/EvtCount");
           if ( evt_cnt != 0 )
-            log << MSG::ALWAYS << "FileInfo record: " << new_fname << "/EvtCount=" << evt_cnt->value() << endmsg;
+            always() << "FileInfo record: " << new_fname << "/EvtCount=" << evt_cnt->value() << endmsg;
           else
-            log << MSG::ALWAYS << "NO FileInfo record EvtCounter for " << fname << endmsg;
+            always() << "NO FileInfo record EvtCounter for " << fname << endmsg;
 
           SmartDataPtr<Counter> sum_cnt(m_recordSvc.get(),new_fname+"/SumCount");
           if ( sum_cnt != 0 )
-            log << MSG::ALWAYS << "FileInfo record: " << new_fname << "/SumCount=" << sum_cnt->value() << endmsg;
+            always() << "FileInfo record: " << new_fname << "/SumCount=" << sum_cnt->value() << endmsg;
           else
-            log << MSG::ALWAYS << "NO FileInfo record SumCounter for " << fname << endmsg;
+            always() << "NO FileInfo record SumCounter for " << fname << endmsg;
         }
       }
 
       for ( MyTrackVector::iterator i = myTracks->begin(); i != myTracks->end() && count++ < 5; i++ )   {
         try   {
           if ( evt->event() < 10 || evt->event()%500==0 )  {
-            log << MSG::DEBUG << "Evt:";
+            auto& log = debug();
+            log << "Evt:";
             if ( (*i)->event() )  {
               log << (*i)->event()->event();
             }
@@ -191,14 +189,14 @@ StatusCode ReadAlg::execute() {
           }
         }
         catch(...)    {
-          log << MSG::ERROR << "Exception occurred!" << endmsg;
+          error() << "Exception occurred!" << endmsg;
         }
       }
     }
     else
-      log << MSG::WARNING << "No tracks found, Event " << evt->event() << endmsg;
+      warning() << "No tracks found, Event " << evt->event() << endmsg;
     return StatusCode::SUCCESS;
   }
-  log << MSG::ERROR << "Unable to retrieve Event Header object" << endmsg;
+  error() << "Unable to retrieve Event Header object" << endmsg;
   return StatusCode::FAILURE;
 }

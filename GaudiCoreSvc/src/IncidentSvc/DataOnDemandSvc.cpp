@@ -88,7 +88,7 @@ DataOnDemandSvc::DataOnDemandSvc
 // ============================================================================
 void DataOnDemandSvc::update_1 ( Property& p )
 {
-  stream() << MSG::VERBOSE << " I am update handler for property " << p << endmsg ;
+  verbose() << " I am update handler for property " << p << endmsg ;
   // force update
   m_updateRequired = true ;
 }
@@ -97,7 +97,7 @@ void DataOnDemandSvc::update_1 ( Property& p )
 // ============================================================================
 void DataOnDemandSvc::update_3 ( Property& /* p */ )
 {
-  stream() << MSG::WARNING
+  warning()
            << "The property 'Nodes'      is obsolete, switch to map-like 'NodeMap' "
            << " = { 'data' : 'type'      } "
            << endmsg ;
@@ -109,7 +109,7 @@ void DataOnDemandSvc::update_3 ( Property& /* p */ )
 // ============================================================================
 void DataOnDemandSvc::update_2 ( Property& /* p */ )
 {
-  stream() << MSG::WARNING
+  warning()
            << "The property 'Algorithms' is obsolete, switch to map-like 'AlgMap'  "
            << " = { 'data' : 'algorithm' } "
            << endmsg ;
@@ -244,14 +244,14 @@ StatusCode DataOnDemandSvc::update ()
   StatusCode sc = setupNodeHandlers() ; // convert "Nodes"      new "NodeMap"
   if ( sc.isFailure() )
   {
-    stream() << MSG::ERROR << "Failed to setup old \"Nodes\""      << endmsg ;
+    error() << "Failed to setup old \"Nodes\""      << endmsg ;
     return sc ;
   }
   /// convert obsolete "Algorithms" into new "AlgMap"
   sc = setupAlgHandlers()   ; // convert "Algorithms" into "AlgMap"
   if ( sc.isFailure() )
   {
-    stream() << MSG::ERROR << "Failed to setup old \"Algorithms\"" << endmsg ;
+    error() << "Failed to setup old \"Algorithms\"" << endmsg ;
     return sc ;
   }
   /// add the default prefix
@@ -303,8 +303,8 @@ StatusCode DataOnDemandSvc::initialize()
   sc = setup();
   if ( sc.isFailure() )  { return sc; }
   //
-  if      ( m_dump )                      { dump ( MSG::INFO  ) ; }
-  else if ( MSG::DEBUG >= outputLevel() ) { dump ( MSG::DEBUG ) ; }
+  if      ( m_dump )               { dump ( MSG::INFO  ) ; }
+  else if ( msgLevel(MSG::DEBUG) ) { dump ( MSG::DEBUG ) ; }
   //
   if ( m_init ) { return update () ; }
   //
@@ -316,37 +316,32 @@ StatusCode DataOnDemandSvc::initialize()
 StatusCode DataOnDemandSvc::finalize()
 {
   //
-  stream ()
-    << MSG::INFO
+  info()
     << "Handled \"" << m_trapType << "\" incidents: "
     << m_statAlg  << "/" << m_statNode << "/" << m_stat << "(Alg/Node/Total)."
     << endmsg ;
-  if ( m_dump || MSG::DEBUG >= outputLevel() )
+  if ( m_dump || msgLevel(MSG::DEBUG) )
   {
-    stream ()
-      << MSG::INFO
+    info()
       << m_total.outputUserTime
       ( "Algorithm timing: Mean(+-rms)/Min/Max:%3%(+-%4%)/%6%/%7%[ms] " , System::milliSec )
       << m_total.outputUserTime ( "Total:%2%[s]" , System::Sec ) << endmsg ;
-    stream ()
-      << MSG::INFO
+    info()
       << m_timer_nodes.outputUserTime
       ( "Nodes     timing: Mean(+-rms)/Min/Max:%3%(+-%4%)/%6%/%7%[ms] " , System::milliSec )
       << m_timer_nodes.outputUserTime ( "Total:%2%[s]" , System::Sec ) << endmsg ;
-    stream ()
-      << MSG::INFO
+    info()
       << m_timer_algs .outputUserTime
       ( "Algs      timing: Mean(+-rms)/Min/Max:%3%(+-%4%)/%6%/%7%[ms] " , System::milliSec )
       << m_timer_algs .outputUserTime ( "Total:%2%[s]" , System::Sec ) << endmsg ;
-    stream ()
-      << MSG::INFO
+    info()
       << m_timer_all  .outputUserTime
       ( "All       timing: Mean(+-rms)/Min/Max:%3%(+-%4%)/%6%/%7%[ms] " , System::milliSec )
       << m_timer_all  .outputUserTime ( "Total:%2%[s]" , System::Sec ) << endmsg ;
   }
   // dump it!
-  if      ( m_dump )                      { dump ( MSG::INFO  , false ) ; }
-  else if ( MSG::DEBUG >= outputLevel() ) { dump ( MSG::DEBUG , false ) ; }
+  if      ( m_dump )               { dump ( MSG::INFO  , false ) ; }
+  else if ( msgLevel(MSG::DEBUG) ) { dump ( MSG::DEBUG , false ) ; }
   //
   if ( m_incSvc )
   {
@@ -387,7 +382,6 @@ StatusCode DataOnDemandSvc::reinitialize()
   for(const auto& i : m_algMappers ) m_toolSvc->releaseTool(i).ignore();
   m_algMappers.clear();
   m_toolSvc.reset();
-  m_log.reset();
   //
   StatusCode sc = Service::reinitialize();
   if ( sc.isFailure() )  { return sc; }
@@ -396,7 +390,7 @@ StatusCode DataOnDemandSvc::reinitialize()
   if ( sc.isFailure() )  { return sc; }
   //
   if ( m_dump ) { dump ( MSG::INFO ) ; }
-  else if ( MSG::DEBUG >= outputLevel() ) { dump ( MSG::DEBUG  ) ; }
+  else if ( msgLevel(MSG::DEBUG) ) { dump ( MSG::DEBUG  ) ; }
   //
   return StatusCode::SUCCESS ;
 }
@@ -474,8 +468,7 @@ StatusCode DataOnDemandSvc::setupNodeHandlers()
     if ( m_algMap  .end () != m_algMap  .find ( tag ) ||
          m_nodeMap .end () != m_nodeMap .find ( tag ) )
     {
-      stream()
-        << MSG::WARNING
+      warning()
         << "The obsolete property 'Nodes' redefines the action for '"
         + tag + "' to be '" +nam+"'"
         << endmsg ;
@@ -511,8 +504,7 @@ StatusCode DataOnDemandSvc::setupAlgHandlers()
     if ( m_algMap  .end () != m_algMap  .find ( tag ) ||
          m_nodeMap .end () != m_nodeMap .find ( tag ) )
     {
-      stream()
-        << MSG::WARNING
+      warning()
         << "The obsolete property 'Algorithms' redefines the action for '"
         + tag + "' to be '" +item.type() +"/"+item.name()+"'"
         << endmsg ;
@@ -535,8 +527,7 @@ StatusCode DataOnDemandSvc::configureHandler(Leaf& l)
   StatusCode sc = m_algMgr->createAlgorithm ( l.type , l.name , l.algorithm , true ) ;
   if ( sc.isFailure() )
   {
-    stream()
-      << MSG::ERROR
+    error()
       << "Failed to create algorithm "
       << l.type << "('" << l.name<< "')" << endmsg;
     l.algorithm = nullptr ;
@@ -547,8 +538,7 @@ StatusCode DataOnDemandSvc::configureHandler(Leaf& l)
   sc = l.algorithm -> sysInitialize () ;
   if ( sc.isFailure() )
   {
-    stream()
-      << MSG::ERROR
+    error()
       << "Failed to initialize algorithm "
       << l.type << "('" << l.name<< "')" << endmsg;
     l.algorithm = nullptr ;
@@ -560,8 +550,7 @@ StatusCode DataOnDemandSvc::configureHandler(Leaf& l)
   sc = l.algorithm->sysStart() ;
   if ( sc.isFailure() )
   {
-    stream()
-      << MSG::ERROR
+    error()
       << "Failed to 'run'      algorithm "
       << l.type << "('" << l.name<< "')" << endmsg;
     l.algorithm = nullptr ;
@@ -646,7 +635,7 @@ void DataOnDemandSvc::handle ( const Incident& incident )
   // update if needed!
   if ( m_updateRequired ) { update() ; }
 
-  if ( MSG::VERBOSE >= outputLevel() )
+  if ( msgLevel(MSG::VERBOSE) )
   {
     verbose()
       << "Incident: [" << incident.type   () << "] "
@@ -674,14 +663,14 @@ void DataOnDemandSvc::handle ( const Incident& incident )
   // ==========================================================================
   // Fall back on the tools
   if (m_toolSvc) {
-    if (MSG::VERBOSE >= outputLevel())
+    if ( msgLevel(MSG::VERBOSE))
       verbose() << "Try to find mapping with mapping tools" << endmsg;
     Finder finder(no_prefix(inc->tag(), m_prefix), m_nodeMappers, m_algMappers);
     //  - try the node mappers
     std::string node = finder.node();
     if (isGood(node)) {
       // if one is found update the internal node mapping and try again.
-      if (MSG::VERBOSE >= outputLevel())
+      if (msgLevel(MSG::VERBOSE))
         verbose() << "Found Node handler: " << node << endmsg;
       i_setNodeHandler(inc->tag(), node);
       handle(incident);
@@ -692,7 +681,7 @@ void DataOnDemandSvc::handle ( const Incident& incident )
     Gaudi::Utils::TypeNameString alg = finder.alg();
     if (isGood(alg)) {
       // we got an algorithm, update alg map and try to handle again
-      if (MSG::VERBOSE >= outputLevel())
+      if (msgLevel(MSG::VERBOSE))
         verbose() << "Found Algorithm handler: " << alg << endmsg;
       i_setAlgHandler(inc->tag(), alg).ignore();
       handle(incident);
@@ -723,8 +712,7 @@ DataOnDemandSvc::execHandler ( const std::string& tag, Node& n)
     if ( !n.clazz  ) { n.clazz = TClass::GetClass(n.name.c_str()) ; }
     if ( !n.clazz  )
     {
-      stream()
-        << MSG::ERROR
+      error()
         << "Failed to get dictionary for class '"
         << n.name
         << "' for location:" << tag << endmsg;
@@ -735,8 +723,7 @@ DataOnDemandSvc::execHandler ( const std::string& tag, Node& n)
 
     if ( !object )
     {
-      stream()
-        << MSG::ERROR
+      error()
         << "Failed to create an object of type:"
         << n.clazz->GetName() << " for location:" << tag
         << endmsg;
@@ -747,8 +734,7 @@ DataOnDemandSvc::execHandler ( const std::string& tag, Node& n)
   StatusCode sc = m_dataSvc->registerObject(tag, object.release() );
   if ( sc.isFailure() )
   {
-    stream()
-      << MSG::ERROR << "Failed to register an object of type:"
+    error() << "Failed to register an object of type:"
       << n.name << " at location:" << tag
       << endmsg;
     return sc ;                                                  // RETURN
@@ -772,8 +758,7 @@ DataOnDemandSvc::execHandler(const std::string& tag, Leaf& l)
     StatusCode sc = configureHandler ( l ) ;
     if ( sc.isFailure() )
     {
-      stream()
-        << MSG::ERROR
+      error()
         << "Failed to configure handler for: "
         << l.name << "[" << l.type << "] " << tag << endmsg;
       return sc ;                                                 // RETURN
@@ -786,9 +771,8 @@ DataOnDemandSvc::execHandler(const std::string& tag, Leaf& l)
   StatusCode sc = l.algorithm->sysExecute();
   if ( sc.isFailure() )
   {
-    stream() << MSG::ERROR
-             << "Failed to execute the algorithm:"
-             << l.algorithm->name() << " for location:" << tag << endmsg;
+    error() << "Failed to execute the algorithm:"
+            << l.algorithm->name() << " for location:" << tag << endmsg;
     return sc ;                                                       // RETURN
   }
   ++l.num ;
@@ -814,9 +798,7 @@ void DataOnDemandSvc::dump
     auto check = _m.find(alg.first) ;
     if ( _m.end() != check )
     {
-      stream()
-        << MSG::WARNING
-        << " The data item is activated for '"
+      warning() << " The data item is activated for '"
         << check->first << "' as '" << check->second.first << "'" << endmsg ;
     }
     const Leaf& l = alg.second ;
@@ -836,9 +818,7 @@ void DataOnDemandSvc::dump
     auto check = _m.find(node.first) ;
     if ( _m.end() != check )
     {
-      stream()
-        << MSG::WARNING
-        << " The data item is already activated for '"
+      warning() << " The data item is already activated for '"
         << check->first << "' as '" << check->second.first << "'" << endmsg ;
     }
     const Node& n = node.second ;
@@ -878,7 +858,7 @@ void DataOnDemandSvc::dump
 
   const std::string _format  = _ff.str() ;
 
-  MsgStream& msg = stream() << level ;
+  auto& msg = msgStream(level);
 
   if ( mode ) { msg << "Data-On-Demand Actions enabled for:"       ; }
   else        { msg << "Data-On-Demand Actions has been used for:" ; }

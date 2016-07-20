@@ -11,7 +11,8 @@
 #include <map>
 
 
-class IssueLogger: public extends1<Service, IIssueLogger> {
+class IssueLogger: public extends<Service,
+                                  IIssueLogger> {
 public:
   IssueLogger(const std::string& name, ISvcLocator *svc );
   ~IssueLogger() override = default;

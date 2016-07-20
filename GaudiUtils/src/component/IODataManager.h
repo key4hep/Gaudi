@@ -26,7 +26,8 @@ namespace Gaudi  {
     *  @author  R. Lambert
     *  @date    03/09/2009
     */
-  class IODataManager : public extends1<Service, IIODataManager> {
+  class IODataManager : public extends<Service,
+                                       IIODataManager> {
   protected:
     typedef const std::string& CSTR;
     struct Entry final {

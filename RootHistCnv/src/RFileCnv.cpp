@@ -13,6 +13,10 @@
 
 // local
 #include "RootCompressionSettings.h"
+#include <map>
+#include <string>
+#include <GaudiKernel/IMetaDataSvc.h>
+#include <GaudiKernel/PropertyMgr.h>
 
 // Instantiation of a static factory class used by clients to create
 // instances of this service
@@ -175,6 +179,23 @@ StatusCode RootHistCnv::RFileCnv::updateRep( IOpaqueAddress* pAddress,
       log << MSG::INFO << "dumping contents of " << ooname << endmsg;
       rfile->Print();
     }
+
+  /*
+  * MetaData
+  * Ana Trisovic
+  * March 2015
+  * */
+  SmartIF <IMetaDataSvc> mds;
+  mds = serviceLocator()->service("Gaudi::MetaDataSvc", false);
+  //auto mds = service<IMetaDataSvc>("MetaDataSvc", false);
+  if (mds) {
+          std::map <std::string, std::string> m_metadata = mds->getMetaDataMap();
+          if(!rfile->WriteObject(&m_metadata, "info")){
+                  return StatusCode::FAILURE;
+          }
+  }
+  /* */
+
     rfile->Close();
     delete rfile;
 

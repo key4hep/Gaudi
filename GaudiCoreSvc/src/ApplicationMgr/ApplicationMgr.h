@@ -43,14 +43,14 @@ class IJobOptionsSvc;
 
     @author Pere Mato
 */
-class ApplicationMgr : public CommonMessaging<implements4<IAppMgrUI,
-                                                          IEventProcessor,
-                                                          IService,
-                                                          IStateful> > {
-  typedef CommonMessaging<implements4<IAppMgrUI,
-                                      IEventProcessor,
-                                      IService,
-                                      IStateful> > base_class;
+class ApplicationMgr : public CommonMessaging<implements<IAppMgrUI,
+                                                         IEventProcessor,
+                                                         IService,
+                                                         IStateful> > {
+  typedef CommonMessaging<implements<IAppMgrUI,
+                                     IEventProcessor,
+                                     IService,
+                                     IStateful> > base_class;
 public:
   typedef std::list<std::pair<IService*,int> >  ListSvc;
   typedef std::vector<std::string> VectorName;

@@ -9,7 +9,8 @@
 #include <map>
 #include <set>
 
-class StatusCodeSvc: public extends1<Service, IStatusCodeSvc> {
+class StatusCodeSvc: public extends<Service,
+                                    IStatusCodeSvc> {
 
 public:
 

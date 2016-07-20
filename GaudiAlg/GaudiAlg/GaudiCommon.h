@@ -28,7 +28,6 @@
 #include "GaudiKernel/IUpdateManagerSvc.h"
 #include "GaudiKernel/HashMap.h"
 #include "GaudiKernel/DataObjectHandle.h"
-#include "GaudiKernel/CommonMessaging.h"
 // ============================================================================
 // forward declarations
 // ============================================================================
@@ -71,9 +70,11 @@ namespace GaudiCommon_details {
  */
 // ============================================================================
 template < class PBASE >
-class GAUDI_API GaudiCommon: public CommonMessaging<PBASE>
+class GAUDI_API GaudiCommon: public PBASE
 {
 protected: // definitions
+  using base_class = PBASE;
+
   /** Simple definition to be used with the new useRootInTES argument get<TYPE>
    *  and put methods. If used with cause the RootInTES option to be IGNORED.
    *
@@ -512,7 +513,6 @@ public:
   inline StatEntity& counter( const std::string& tag ) const { return m_counters[tag] ; }
   // ==========================================================================
 public:
-  void resetMsgStream() const;
   /// Insert the actual C++ type of the algorithm/tool in the messages ?
   inline bool typePrint     () const { return m_typePrint    ; }
   /// Print properties at initialization ?
@@ -521,15 +521,6 @@ public:
   inline bool statPrint     () const { return m_statPrint    ; }
   /// Print error counters at finalization ?
   inline bool errorsPrint   () const { return m_errorsPrint  ; }
-  // ==========================================================================
-private:
-  // ==========================================================================
-  /** @brief Handle method for changes in the Messaging levels.
-   *  Called whenever the property "OutputLevel" changes to perform
-   *  all necessary actions locally.
-   *  @param theProp Reference to the Property that has changed
-   */
-  void msgLevelHandler ( Property& theProp );
   // ==========================================================================
 public:
   /** perform the actual printout of statistical counters
@@ -723,8 +714,6 @@ public:
    *  Used as the directory root in the TES for which all data access refers to (both saving and retrieving).
    */
   inline const std::string & rootInTES() const { return m_rootInTES; }
-  /// Returns the "globalTimeOffset" double.
-  inline double globalTimeOffset() const { return m_globalTimeOffset; }
   // ==========================================================================
 public:
   // ==========================================================================
@@ -741,13 +730,8 @@ private:
   void initGaudiCommonConstructor( const IInterface * parent = 0 );
   // ==========================================================================
 private:
-  /// The message level
-  MSG::Level  m_msgLevel    = MSG::NIL;
-private:
-  /// The predefined message stream
-  mutable std::unique_ptr<MsgStream> m_msgStream    ;
   /// List of active  tools
-  mutable AlgTools   m_tools       ;
+  mutable AlgTools   m_managedTools;
   /// List of active  services
   mutable Services   m_services    ;
   // ==========================================================================
@@ -778,8 +762,6 @@ private:
   std::string m_context;
   /// The rootInTES string
   std::string m_rootInTES;
-  /// The globalTimeOffset value
-  double m_globalTimeOffset = 0;
   // ==========================================================================
   // the header row
   std::string    m_header  ; ///< the header row

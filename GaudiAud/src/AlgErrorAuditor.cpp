@@ -24,8 +24,7 @@ StatusCode
 AlgErrorAuditor:: initialize() {
 
   if (m_abort && m_throw) {
-    MsgStream log(msgSvc(), name());
-    log << MSG::INFO << "Both \"Throw\" and \"Abort\" options have been set."
+    info() << "Both \"Throw\" and \"Abort\" options have been set."
 	<< " Abort takes precedence." << endmsg;
   }
 
@@ -44,8 +43,7 @@ AlgErrorAuditor:: afterExecute(INamedInterface* alg, const StatusCode& sc) {
     os << std::endl << "Error policy described in "
 	 << "https://twiki.cern.ch/twiki/bin/view/AtlasComputing/ReportingErrors";
 
-    MsgStream log(msgSvc(), name());
-    log << MSG::ERROR << os.str() << endmsg;
+    error() << os.str() << endmsg;
     incrMap(alg->name(), 0);
     fail = true;
 
@@ -62,8 +60,7 @@ AlgErrorAuditor:: afterExecute(INamedInterface* alg, const StatusCode& sc) {
     os << std::endl << "Error policy described in "
 	 << "https://twiki.cern.ch/twiki/bin/view/AtlasComputing/ReportingErrors";
 
-    MsgStream log(msgSvc(), name());
-    log << MSG::ERROR << os.str() << endmsg;
+    error() << os.str() << endmsg;
     incrMap(alg->name(), 1);
     fail = true;
 
@@ -84,29 +81,27 @@ AlgErrorAuditor::finalize() {
 
 
   if (m_algMap[0].size() != 0) {
-    MsgStream log(msgSvc(), name());
-    log << MSG::INFO << "Found " << m_algMap[0].size()
+    info() << "Found " << m_algMap[0].size()
 	<< " instances where an Algorithm::execute() produced an ERROR "
 	<< "but returned a SUCCESS:" << std::endl;
 
     for (const auto&  i : m_algMap[0] ) {
-      log << i.first << ": " << i.second << std::endl;
+      msgStream() << i.first << ": " << i.second << std::endl;
     }
 
-    log << endmsg;
+    msgStream() << endmsg;
   }
 
   if (m_algMap[1].size() != 0) {
-    MsgStream log(msgSvc(), name());
-    log << MSG::INFO << "Found " << m_algMap[1].size()
+    info() << "Found " << m_algMap[1].size()
 	<< " instances where an Algorithm::execute() produced a FATAL "
 	<< "but returned a SUCCESS:" << std::endl;
 
     for (const auto& i : m_algMap[1]) {
-      log << i.first << ": " << i.second << std::endl;
+      msgStream() << i.first << ": " << i.second << std::endl;
     }
 
-    log << endmsg;
+    msgStream() << endmsg;
   }
   return StatusCode::SUCCESS;
 }

@@ -34,7 +34,6 @@
 
 #include "GaudiKernel/Property.h"
 #include "GaudiKernel/Selector.h"
-#include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/ConversionSvc.h"
 #include "GaudiKernel/DataSelectionAgent.h"
 #include "GaudiKernel/NTupleImplementation.h"
@@ -121,8 +120,7 @@ StatusCode NTupleSvc::updateDirectories()   {
   long need_update = 0;
   DataObject* pO = nullptr;
   StatusCode iret = findObject(m_rootName, pO);
-  MsgStream log ( msgSvc(), name() );
-  //  log << MSG::DEBUG << "in finalize()" << endmsg;
+  //  debug() << "in finalize()" << endmsg;
   if ( iret.isSuccess() )   {
     Leaves leaves;
     iret = objectLeaves(pO, leaves);
@@ -161,11 +159,11 @@ StatusCode NTupleSvc::updateDirectories()   {
     }
   }
   if ( !iret.isSuccess() )    {
-    log << MSG::ERROR << "ERROR while saving NTuples" << endmsg;
+    error() << "ERROR while saving NTuples" << endmsg;
     return iret;
   }
   else if ( need_update > 0 )    {
-    log << MSG::INFO << "NTuples saved successfully" << endmsg;
+    info() << "NTuples saved successfully" << endmsg;
   }
   return iret;
 }
@@ -211,7 +209,6 @@ StatusCode NTupleSvc::connect(const std::string& ident)    {
 }
 
 StatusCode NTupleSvc::connect(const std::string& ident, std::string& logname)    {
-  MsgStream log ( msgSvc(), name() );
   DataObject* pO = nullptr;
   StatusCode status = findObject(m_rootName, pO);
   if ( status.isSuccess() )   {
@@ -270,7 +267,7 @@ StatusCode NTupleSvc::connect(const std::string& ident, std::string& logname)   
       }
     }
   }
-  log << MSG::ERROR << "Cannot add " << ident << " invalid filename!" << endmsg;
+  error() << "Cannot add " << ident << " invalid filename!" << endmsg;
   return StatusCode::FAILURE;
 }
 
@@ -279,20 +276,19 @@ StatusCode NTupleSvc::createService(const std::string&       /* nam */,
                                     const std::vector<Prop>& /* props */,
                                     IConversionSvc*&            pSvc)
 {
-  MsgStream log ( msgSvc(), name() );
   /// CGL: set the storage type
   // Get the value of the Stat persistancy mechanism from the AppMgr
   auto appPropMgr = serviceLocator()->as<IProperty>();
   if( !appPropMgr ) {
    // Report an error and return the FAILURE status code
-   log << MSG::ERROR << "Could not get PropMgr" << endmsg;
+   error() << "Could not get PropMgr" << endmsg;
    return StatusCode::FAILURE;
   }
 
   StringProperty sp("HistogramPersistency","");
   StatusCode sts = appPropMgr->getProperty( &sp );
   if ( !sts.isSuccess() ) {
-   log << MSG::ERROR << "Could not get NTuple Persistency format"
+   error() << "Could not get NTuple Persistency format"
        << " from ApplicationMgr properties" << endmsg;
    return sts;
   }
@@ -305,18 +301,18 @@ StatusCode NTupleSvc::createService(const std::string&       /* nam */,
     storage_typ = ROOT_StorageType;
   }
   else {
-    log << MSG::ERROR << "Unknown NTuple Persistency format: " << sp.value() << endmsg;
+    error() << "Unknown NTuple Persistency format: " << sp.value() << endmsg;
     return StatusCode::FAILURE;
   }
 
   if ( !typ.empty() && typ != sp.value() )    {
-    log << MSG::WARNING << "NTuple persistency type is "
+    warning() << "NTuple persistency type is "
         << sp.value() << "." << endmsg
         << "Type given by job option "
         << "NTupleSvc.Input/Output ignored!" << endmsg;
   }
 
-  //      log << MSG::DEBUG << "storage type: " << m_storageType << endmsg;
+  //      debug() << "storage type: " << m_storageType << endmsg;
 
   // FIXME: (MCl) why NTupleSvc has to directly create a ConversionSvc?
   IInterface* iface = new ConversionSvc(name()+"Conversions", serviceLocator(), storage_typ);
@@ -359,7 +355,6 @@ StatusCode NTupleSvc::create(const CLID& typ, const std::string& title, NTuple::
 NTuple::Tuple* NTupleSvc::book (const std::string& fullPath, const CLID& type, const std::string& title)  {
   DataObject* pObj = nullptr;
   std::string path = fullPath;
-  MsgStream log(msgSvc(), name());
   if ( path[0] != SEPARATOR )   {
     path = m_rootName;
     path += SEPARATOR;
@@ -367,12 +362,12 @@ NTuple::Tuple* NTupleSvc::book (const std::string& fullPath, const CLID& type, c
   }
   StatusCode status = retrieveObject(path, pObj);
   if ( status.isSuccess() ) {
-    log << MSG::ERROR << "Cannot book N-tuple " << path << " (Exists already)" << endmsg;
+    error() << "Cannot book N-tuple " << path << " (Exists already)" << endmsg;
     return nullptr;
   }
   auto sep = path.rfind(SEPARATOR);
   if ( sep == std::string::npos ) {
-    log << MSG::ERROR << "Cannot book N-tuple " << path << " (Invalid path)" << endmsg;
+    error() << "Cannot book N-tuple " << path << " (Invalid path)" << endmsg;
     return nullptr;
   }
 
@@ -380,13 +375,13 @@ NTuple::Tuple* NTupleSvc::book (const std::string& fullPath, const CLID& type, c
   std::string o_path (path, sep, path.length());
   DataObject* dir = createDirectory(p_path);
   if ( !dir ) {
-    log << MSG::ERROR << "Cannot book N-tuple " << path << " (Invalid parent directory)" << endmsg;
+    error() << "Cannot book N-tuple " << path << " (Invalid parent directory)" << endmsg;
     return nullptr;
   }
 
   NTuple::Tuple* tup = book( dir, o_path, type, title);
   if ( !tup ) {
-    log << MSG::ERROR << "Cannot book N-tuple " << path << " (Unknown reason)" << endmsg;
+    error() << "Cannot book N-tuple " << path << " (Unknown reason)" << endmsg;
   }
   return tup;
 }
@@ -464,7 +459,6 @@ NTuple::Directory* NTupleSvc::createDirectory (const std::string& dirPath, const
 }
 
 StatusCode NTupleSvc::attachTuple(const std::string& filename, const std::string& logname, const char typ, const long t)   {
-  MsgStream log(msgSvc(), name());
   DataObject* p;
   // First get the root object
   StatusCode status = retrieveObject(m_rootName, p);
@@ -477,12 +471,12 @@ StatusCode NTupleSvc::attachTuple(const std::string& filename, const std::string
        new GenericAddress(t, CLID_NTupleFile, filename, entryname, 0, typ);
     status = registerAddress(p, logname, pA);
     if ( status.isSuccess() )    {
-      log << MSG::INFO << "Added stream file:" << filename << " as " << logname << endmsg;
+      info() << "Added stream file:" << filename << " as " << logname << endmsg;
       return status;
     }
     pA->release();
   }
-  log << MSG::ERROR << "Cannot add file:" << filename << " as " << logname << endmsg;
+  error() << "Cannot add file:" << filename << " as " << logname << endmsg;
   return status;
 }
 
@@ -523,13 +517,11 @@ NTuple::Directory* NTupleSvc::createDirectory (const std::string& fullPath)   {
 
 /// Access N tuple on disk
 NTuple::Tuple* NTupleSvc::access(const std::string&, const std::string&)  {
-  MsgStream log ( msgSvc(), name() );
   return nullptr;
 }
 
 /// Save N tuple to disk. Must be called in order to close the ntuple file properly
 StatusCode NTupleSvc::save(const std::string& fullPath)  {
-  MsgStream log ( msgSvc(), name() );
   NTuple::Tuple* pObj = nullptr;
   StatusCode status = findObject(fullPath, *pp_cast<DataObject>(&pObj));  // Check if object is  present
   return  status.isSuccess() ? save ( pObj ) : INVALID_OBJ_PATH;

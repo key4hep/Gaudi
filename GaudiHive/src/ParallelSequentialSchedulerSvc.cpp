@@ -7,7 +7,8 @@
 #include "GaudiKernel/CommonMessaging.h"
 #include "GaudiKernel/IDataManagerSvc.h"
 
-#include "GaudiKernel/ContextSpecificPtr.h"
+#include "GaudiKernel/ThreadLocalContext.h"
+#include "GaudiKernel/DataHandleHolderVisitor.h"
 
 // C++
 #include <list>
@@ -27,8 +28,6 @@ DECLARE_SERVICE_FACTORY(ParallelSequentialSchedulerSvc)
 ParallelSequentialSchedulerSvc::ParallelSequentialSchedulerSvc(const std::string& name, ISvcLocator* svcLoc):
     base_class(name,svcLoc) {
 
-  // Will disappear when dependencies are properly propagated into the C++ code of the algos
-  declareProperty("AlgosDependencies", m_algosDependencies);
   declareProperty("UseTopAlgList", m_useTopAlgList = false);
   declareProperty("ThreadPoolSize", m_threadPoolSize = -1);
   declareProperty("WhiteboardSvc", m_whiteboardSvcName = "EventDataSvc");
@@ -93,7 +92,7 @@ StatusCode ParallelSequentialSchedulerSvc::initialize(){
 
   m_controlFlow.initialize(algPool->getExecutionFlowGraph(), m_algname_index_map);
 
-  const unsigned int algosDependenciesSize=m_algosDependencies.size();
+  const unsigned int algosDependenciesSize=0;
   info() << "Algodependecies size is " << algosDependenciesSize << endmsg;
 
   //get algorithm dependencies
@@ -116,26 +115,28 @@ StatusCode ParallelSequentialSchedulerSvc::initialize(){
         fatal() << "Could not convert IAlgorithm into Algorithm: this will result in a crash." << endmsg;
       }
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-      const std::vector<MinimalDataObjectHandle*>& algoHandles(algoPtr->handles());
-#pragma GCC diagnostic pop
-      std::vector<std::string> algoDependencies;
+      std::vector<Gaudi::DataHandle*> algoHandles(algoPtr->inputHandles());
+      DataObjIDColl algoDependencies;
       if (!algoHandles.empty()){
-
         info() << "Algorithm " << algoPtr->name() << " data dependencies:" << endmsg;
-        for (MinimalDataObjectHandle* handlePtr : algoHandles ){
-          if (handlePtr->accessType() == MinimalDataObjectHandle::AccessType::READ){
-            const std::string& productName = rootInTESName + handlePtr->dataProductName();
-            info() << "  o READ Handle found for product " << productName << endmsg;
-            algoDependencies.emplace_back(productName);
-          }
+
+        DataObjIDColl inputObjs, outputObjs;
+        DHHVisitor avis(inputObjs, outputObjs);
+
+        algoPtr->acceptDHVisitor( &avis );
+
+        for (auto id : inputObjs) {
+          const std::string& productName = rootInTESName + id.key();
+          info() << "  o Input dep for " << productName << endmsg;
+          algoDependencies.insert(id);
         }
+
+
       } else {
-        info() << "Algorithm " << algoPtr->name() << " has no data dependencies." << endmsg;
+        info() << "Algorithm " << algoPtr->name() << " has no data dependencies."
+               << endmsg;
       }
 
-      m_algosDependencies.emplace_back(algoDependencies);
     }
   }
 

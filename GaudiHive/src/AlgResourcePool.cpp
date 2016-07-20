@@ -272,7 +272,7 @@ StatusCode AlgResourcePool::decodeTopAlgs()    {
     if (!algorithm) fatal() << "Conversion from IAlgorithm to Algorithm failed" << endmsg;
     sc = flattenSequencer(algorithm, m_flatUniqueAlgList, "EVENT LOOP");
   }
-  if (outputLevel() <= MSG::DEBUG){
+  if (msgLevel(MSG::DEBUG)){
     debug() << "List of algorithms is: " << endmsg;
     for (auto& algo : m_flatUniqueAlgList)
       debug() << "  o " << algo->type() << "/" << algo->name() << " @ " << algo <<  endmsg;
@@ -325,12 +325,20 @@ StatusCode AlgResourcePool::decodeTopAlgs()    {
     // potentially create clones; if not lazy creation we have to do it now
     if (!m_lazyCreation) {
       for (unsigned int i =1, end =ialgo->cardinality();i<end; ++i){
-        debug() << "type/name to create clone of: " << item_type << "/" << item_name << endmsg;
+        debug() << "type/name to create clone of: " << item_type << "/" 
+                << item_name << endmsg;
         IAlgorithm* ialgoClone(nullptr);
         createAlg(item_type,item_name,ialgoClone);
-        ialgoClone->sysInitialize();
-        queue->push(ialgoClone);
-        m_n_of_created_instances[algo_id]+=1;
+        ialgoClone->setIndex(i);
+        if (ialgoClone->sysInitialize().isFailure()) {
+          error() << "unable to initialize Algorithm clone " 
+                  << ialgoClone->name() << endmsg;
+          sc = StatusCode::FAILURE;
+          // FIXME: should we delete this failed clone?
+        } else {
+          queue->push(ialgoClone);
+          m_n_of_created_instances[algo_id]+=1;
+        }
       }
     }
 

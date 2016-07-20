@@ -38,7 +38,8 @@ class SequentialTask; //forward declaration
  *  @author  Daniel Funke
  *  @version 0.1
  */
-class ParallelSequentialSchedulerSvc: public extends1<Service, IScheduler> {
+class ParallelSequentialSchedulerSvc: public extends<Service,
+                                                     IScheduler> {
 public:
   /// Constructor
   ParallelSequentialSchedulerSvc( const std::string& name, ISvcLocator* svc );
@@ -106,9 +107,6 @@ private:
 
   /// Map to bookkeep the information necessary to the name2index conversion
   std::unordered_map<std::string,unsigned int> m_algname_index_map;
-
-  /// Ugly, will disappear when the deps are declared only within the C++ code of the algos.
-  std::vector<std::vector<std::string>> m_algosDependencies;
 
   // Needed to queue actions on algorithm finishing and decrement algos in flight
   friend class SequentialTask;

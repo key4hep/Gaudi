@@ -34,15 +34,14 @@ namespace GaudiExamples
     /// Initialize
     virtual StatusCode initialize()
     {
-      MsgStream log(msgSvc(), name());
       m_cntSvc = service("CounterSvc", true);
       if ( !m_cntSvc ) {
-        log << MSG::ERROR << "Could not connect to CounterSvc." << endmsg;
+        error() << "Could not connect to CounterSvc." << endmsg;
         return StatusCode::FAILURE;;
       }
       auto sc = m_cntSvc->create(m_counterBaseName, "EventCount", 1000, m_evtCount);
       if ( !sc.isSuccess() )    {
-        log << MSG::ERROR << "Could not create counter CounterTest::EventCount." << endmsg;
+        error() << "Could not create counter CounterTest::EventCount." << endmsg;
         return sc;
       }
       m_total = m_cntSvc->create(m_counterBaseName, "TotalCount").counter();
@@ -50,7 +49,7 @@ namespace GaudiExamples
         m_total = m_cntSvc->create(m_counterBaseName, "TotalCount").counter();
       }
       catch( std::exception& e)  {
-        log << MSG::ALWAYS << "Exception: " << e.what() << endmsg;
+        always() << "Exception: " << e.what() << endmsg;
       }
       ICounterSvc::Printout p(m_cntSvc.get());
       m_cntSvc->print(m_counterBaseName, "EventCount", p).ignore();
@@ -65,14 +64,13 @@ namespace GaudiExamples
     /// Finalize
     virtual StatusCode finalize()
     {
-      MsgStream log(msgSvc(), name());
       ICounterSvc::Printout p(m_cntSvc.get());
-      log << MSG::INFO << "Single counter:CounterTest::EventCount" << endmsg;
+      info() << "Single counter:CounterTest::EventCount" << endmsg;
       m_cntSvc->print(m_counterBaseName, "EventCount", p).ignore();
-      log << MSG::INFO << "Counter group: CounterTest" << endmsg;
+      info() << "Counter group: CounterTest" << endmsg;
       m_cntSvc->print(m_counterBaseName, p).ignore();
       m_cntSvc->remove(m_counterBaseName, "EventCount").ignore();
-      log << MSG::INFO << "After removal CounterTest::EventCount:" << endmsg;
+      info() << "After removal CounterTest::EventCount:" << endmsg;
       m_cntSvc->print(p).ignore();
       m_cntSvc.reset();
       return StatusCode::SUCCESS;

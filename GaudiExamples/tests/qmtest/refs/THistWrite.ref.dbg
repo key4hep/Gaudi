@@ -15,8 +15,8 @@ JobOptionsSvc        INFO # (34,1): ApplicationMgr.EvtSel = "NONE"
 JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/THistWrite.opts
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v1r4)
-                                          running on pclhcb117 on Mon Jun 24 11:58:17 2013
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v4r0)
+                                          running on pclhcb117 on Fri Mar  4 17:53:56 2016
 ====================================================================================================================================[m
 ApplicationMgr    VERBOSE declareMultiSvcType: declared service EvtDataSvc/EventDataSvc[m
 ApplicationMgr    VERBOSE declareMultiSvcType: declared service DetDataSvc/DetectorDataSvc[m
@@ -29,6 +29,7 @@ ApplicationMgr    VERBOSE declareMultiSvcType: declared service HistogramPersist
 ApplicationMgr      DEBUG Loading declared DLL's[m
 ApplicationMgr    VERBOSE addMultiSvc: added service EventLoopMgr/EventLoopMgr[m
 ApplicationMgr       INFO Application Manager Configured successfully[m
+THistSvc            DEBUG Property update for OutputLevel : new value = 2[m
 THistSvc            DEBUG Delaying connection of Input Files until Initialize. now in OFFLINE[m
 THistSvc            DEBUG Service base class initialized successfully[m
 THistSvc            DEBUG Delaying connection of Input Files until Initialize. now in CONFIGURED[m

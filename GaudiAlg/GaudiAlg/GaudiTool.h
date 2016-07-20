@@ -12,6 +12,7 @@
 // ============================================================================
 #include "GaudiAlg/GaudiAlg.h"
 #include "GaudiAlg/GaudiCommon.h"
+#include "GaudiKernel/DataObjectHandle.h"
 // ============================================================================
 // forward declarations
 // ============================================================================
@@ -825,6 +826,32 @@ class GAUDI_API GaudiTool: public GaudiCommon<AlgTool>
   /// enable printout of summary?
   static bool s_enableSummary ;  // enable printout of summary?
   // ==========================================================================
+
+ public:
+  using AlgTool::declareProperty;
+  template <class T>
+    Property* declareProperty
+    ( const std::string& name,
+      DataObjectHandle<T>&     hndl,
+      const std::string& doc = "none" ) const
+  {
+    
+    if ( hndl.mode() & Gaudi::DataHandle::Reader ) {      
+      (const_cast<GaudiTool*>(this))->AlgTool::declareInput(&hndl);
+    }
+    
+    if ( hndl.mode() & Gaudi::DataHandle::Writer ) {      
+      (const_cast<GaudiTool*>(this))->AlgTool::declareOutput(&hndl);
+    }
+    
+    if (hndl.owner() == 0) {
+      hndl.setOwner((const_cast<GaudiTool*>(this)));
+    }
+    
+    return m_propertyMgr->declareProperty(name, hndl, doc);
+  }
+
+
 };
 // ============================================================================
 

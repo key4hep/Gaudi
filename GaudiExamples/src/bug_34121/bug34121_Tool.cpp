@@ -54,7 +54,7 @@ Tool::Tool( const std::string& type,
 const std::string&  Tool::message() const
 //------------------------------------------------------------------------------
 {
-  static std::string msg("It works!!!");
+  static const std::string msg("It works!!!");
   return msg;
 }
 
@@ -62,25 +62,22 @@ const std::string&  Tool::message() const
 void  Tool::doIt()
 //------------------------------------------------------------------------------
 {
-  MsgStream log(msgSvc(), name());
-  log << MSG::INFO << "Double = " << m_double << endmsg;
+  info() << "Double = " << m_double << endmsg;
 }
 
 //------------------------------------------------------------------------------
 StatusCode  Tool::initialize()
 //------------------------------------------------------------------------------
 {
-  MsgStream log(msgSvc(), name());
-  log << MSG::INFO << "Initialize" << endmsg;
-  log << MSG::INFO << "Double = " << m_double << endmsg;
+  info() << "Initialize" << endmsg;
+  info() << "Double = " << m_double << endmsg;
   return StatusCode::SUCCESS;
 }
 //------------------------------------------------------------------------------
 StatusCode  Tool::finalize()
 //------------------------------------------------------------------------------
 {
-  MsgStream log(msgSvc(), name());
-  log << MSG::INFO << "Finalize" << endmsg;
+  info() << "Finalize" << endmsg;
   return StatusCode::SUCCESS;
 }
 

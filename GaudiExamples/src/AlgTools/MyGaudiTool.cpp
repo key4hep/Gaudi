@@ -29,7 +29,7 @@ MyGaudiTool::MyGaudiTool( const std::string& type,
 const std::string&  MyGaudiTool::message() const
   //------------------------------------------------------------------------------
 {
-  static std::string msg("It works!!!");
+  static const std::string msg("It works!!!");
   return msg;
 }
 
@@ -82,5 +82,3 @@ MyGaudiTool::~MyGaudiTool( )
 {
   info() << "destructor has been called" << endmsg;
 }
-
-

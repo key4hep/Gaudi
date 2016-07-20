@@ -45,26 +45,25 @@ MTEventLoopMgr::~MTEventLoopMgr()   {
 // implementation of IAppMgrUI::initalize
 //--------------------------------------------------------------------------------------------
 StatusCode MTEventLoopMgr::initialize()    {
-  MsgStream log(msgSvc(), name());
-  log << MSG::DEBUG << " ---> MTEventLoopMgr = " << name() << " initializing " << endmsg;
+  debug() << " ---> MTEventLoopMgr = " << name() << " initializing " << endmsg;
   // initilaize the base class
   StatusCode sc = MinimalEventLoopMgr::initialize();
 
   if( sc.isFailure() ) {
-    log << MSG::DEBUG << "Error Initializing base class MinimalEventLoopMgr." << endmsg;
+    debug() << "Error Initializing base class MinimalEventLoopMgr." << endmsg;
     return sc;
   }
 
   // Setup access to event data services
   sc = service("EventDataSvc", m_evtDataMgrSvc, true);
   if( !sc.isSuccess() )  {
-    log << MSG::FATAL << "Error retrieving EventDataSvc interface IDataManagerSvc."
+    fatal() << "Error retrieving EventDataSvc interface IDataManagerSvc."
         << endmsg;
     return sc;
   }
   sc = service("EventDataSvc", m_evtDataSvc, false);
   if( !sc.isSuccess() )  {
-    log << MSG::FATAL << "Error retrieving EventDataSvc interface IDataProviderSvc."
+    fatal() << "Error retrieving EventDataSvc interface IDataProviderSvc."
         << endmsg;
     return sc;
   }
@@ -72,14 +71,14 @@ StatusCode MTEventLoopMgr::initialize()    {
   // Get the references to the services that are needed by the ApplicationMgr itself
   sc = service("IncidentSvc", m_incidentSvc, true);
   if( !sc.isSuccess() )  {
-    log << MSG::FATAL << "Error retrieving IncidentSvc" << endmsg;
+    fatal() << "Error retrieving IncidentSvc" << endmsg;
     return sc;
   }
 
   // Obtain the IProperty of the ApplicationMgr
   auto prpMgr = serviceLocator()->as<IProperty>();
   if ( ! prpMgr )   {
-    log << MSG::FATAL << "IProperty interface not found in ApplicationMgr." << endmsg;
+    fatal() << "IProperty interface not found in ApplicationMgr." << endmsg;
     return StatusCode::FAILURE;
   }
   else {
@@ -95,32 +94,32 @@ StatusCode MTEventLoopMgr::initialize()    {
       // Setup Event Selector
       sc = m_evtSelector->createContext(m_evtCtxt);
       if ( !sc.isSuccess() )  {
-        log << MSG::FATAL << "Failed to create EventSelector context." << endmsg;
+        fatal() << "Failed to create EventSelector context." << endmsg;
         return sc;
       }
     }
     else {
-      log << MSG::FATAL << "EventSelector not found." << endmsg;
+      fatal() << "EventSelector not found." << endmsg;
       return StatusCode::FAILURE;
     }
   }
   else {
     m_evtSelector = nullptr;
     m_evtCtxt = nullptr;
-    log << MSG::WARNING << "Unable to locate service \"EventSelector\" " << endmsg;
-    log << MSG::WARNING << "No events will be processed from external input." << endmsg;
+    warning() << "Unable to locate service \"EventSelector\" " << endmsg;
+    warning() << "No events will be processed from external input." << endmsg;
   }
 
   // Setup access to histogramming services
   sc = service("HistogramDataSvc", m_histoDataMgrSvc, true);
   if( !sc.isSuccess() )  {
-    log << MSG::FATAL << "Error retrieving HistogramDataSvc" << endmsg;
+    fatal() << "Error retrieving HistogramDataSvc" << endmsg;
     return sc;
   }
   // Setup histogram persistency
   sc = service("HistogramPersistencySvc", m_histoPersSvc, true);
   if( !sc.isSuccess() ) {
-    log << MSG::WARNING << "Histograms cannot not be saved - though required." << endmsg;
+    warning() << "Histograms cannot not be saved - though required." << endmsg;
     return sc;
   }
   return StatusCode::SUCCESS;
@@ -133,9 +132,8 @@ StatusCode MTEventLoopMgr::reinitialize() {
   // initilaize the base class
   StatusCode sc = MinimalEventLoopMgr::reinitialize();
 
-  MsgStream log(msgSvc(), name());
   if( sc.isFailure() ) {
-    log << MSG::DEBUG << "Error Initializing base class MinimalEventLoopMgr." << endmsg;
+    debug() << "Error Initializing base class MinimalEventLoopMgr." << endmsg;
     return sc;
   }
 
@@ -152,25 +150,25 @@ StatusCode MTEventLoopMgr::reinitialize() {
       if (theSvc->state() == IService::INITIALIZED) {
         sc = theSvc->reinitialize();
         if( sc.isFailure() ){
-          log << MSG::ERROR << "Failure Reinitializing EventSelector "
+          error() << "Failure Reinitializing EventSelector "
               << theSvc->name( ) << endmsg;
           return sc;
         }
       } else {
         sc = theSvc->initialize();
         if( sc.isFailure() ){
-          log << MSG::ERROR << "Failure Initializing EventSelector "
+          error() << "Failure Initializing EventSelector "
               << theSvc->name( ) << endmsg;
           return sc;
         }
       }
       sc = theEvtSel->createContext(m_evtCtxt);
       if( !sc.isSuccess() ) {
-        log << MSG::ERROR << "Can not create Context "
+        error() << "Can not create Context "
             << theSvc->name( ) << endmsg;
         return sc;
       }
-      log << MSG::INFO << "EventSelector service changed to "
+      info() << "EventSelector service changed to "
           << theSvc->name( ) << endmsg;
     }
   }
@@ -186,8 +184,7 @@ StatusCode MTEventLoopMgr::reinitialize() {
 //--------------------------------------------------------------------------------------------
 StatusCode MTEventLoopMgr::finalize()    {
   StatusCode sc;
-  MsgStream log(msgSvc(), name());
-  log << MSG::INFO << " Number of events processed : " << m_total_nevt << endmsg;
+  info() << " Number of events processed : " << m_total_nevt << endmsg;
 
   // Finalize base class
   MinimalEventLoopMgr::finalize();
@@ -220,14 +217,14 @@ StatusCode MTEventLoopMgr::finalize()    {
         }
       }
       if ( sc.isSuccess() )    {
-        log << MSG::INFO << "Histograms converted successfully according to request." << endmsg;
+        info() << "Histograms converted successfully according to request." << endmsg;
       }
       else  {
-        log << MSG::ERROR << "Error while saving Histograms." << endmsg;
+        error() << "Error while saving Histograms." << endmsg;
       }
     }
     else {
-      log << MSG::ERROR << "Error while traversing Histogram data store" << endmsg;
+      error() << "Error while traversing Histogram data store" << endmsg;
     }
   }
   if ( m_evtCtxt && m_evtSelector )  {
@@ -259,8 +256,7 @@ StatusCode MTEventLoopMgr::nextEvent(int maxevt)   {
     if( 0 != m_total_nevt ) {
       sc = m_evtDataMgrSvc->clearStore();
       if( !sc.isSuccess() )  {
-        MsgStream log( msgSvc(), name() );
-        log << MSG::DEBUG << "Clear of Event data store failed" << endmsg;
+        debug() << "Clear of Event data store failed" << endmsg;
       }
     }
 
@@ -270,29 +266,25 @@ StatusCode MTEventLoopMgr::nextEvent(int maxevt)   {
       // Only if there is a EventSelector
       sc = getEventRoot(addr);
       if( !sc.isSuccess() )  {
-        MsgStream log( msgSvc(), name() );
-        log << MSG::INFO << "No more events in event selection " << endmsg;
+        info() << "No more events in event selection " << endmsg;
         break;
       }
       // Set root clears the event data store first
       sc = m_evtDataMgrSvc->setRoot ("/Event", addr);
       if( !sc.isSuccess() )  {
-        MsgStream log( msgSvc(), name() );
-        log << MSG::WARNING << "Error declaring event root address." << endmsg;
+        warning() << "Error declaring event root address." << endmsg;
         continue;
       }
       sc = m_evtDataSvc->retrieveObject("/Event", pObject);
       if( !sc.isSuccess() ) {
-        MsgStream log( msgSvc(), name() );
-        log << MSG::WARNING << "Unable to retrieve Event root object" << endmsg;
+        warning() << "Unable to retrieve Event root object" << endmsg;
         break;
       }
     }
     else {
       sc = m_evtDataMgrSvc->setRoot ("/Event", new DataObject());
       if( !sc.isSuccess() )  {
-        MsgStream log( msgSvc(), name() );
-        log << MSG::WARNING << "Error declaring event root DataObject" << endmsg;
+        warning() << "Error declaring event root DataObject" << endmsg;
       }
     }
     // Execute event for all required algorithms
@@ -305,8 +297,7 @@ StatusCode MTEventLoopMgr::nextEvent(int maxevt)   {
     m_incidentSvc->fireIncident(Incident(name(),IncidentType::EndEvent));
 
     if( !sc.isSuccess() ){
-      MsgStream log( msgSvc(), name() );
-      log << MSG::ERROR << "Terminating event processing loop due to errors" << endmsg;
+      error() << "Terminating event processing loop due to errors" << endmsg;
       break;
     }
   }
@@ -329,8 +320,7 @@ StatusCode MTEventLoopMgr::getEventRoot(IOpaqueAddress*& refpAddr)  {
     if ( sc.isSuccess() )  {
       sc = m_evtSelector->createAddress(*m_evtCtxt,refpAddr);
       if ( !sc.isSuccess() )  {
-        MsgStream log( msgSvc(), name() );
-        log << MSG::WARNING << "Error creating IOpaqueAddress." << endmsg;
+        warning() << "Error creating IOpaqueAddress." << endmsg;
       }
     }
   }

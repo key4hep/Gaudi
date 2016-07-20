@@ -38,7 +38,8 @@ template <class TYPE> class EventIterator;
    @author Markus Frank
    @version 1.0
 */
-class EventCollectionSelector : public extends1<Service, IEvtSelector> {
+class EventCollectionSelector : public extends<Service,
+                                               IEvtSelector> {
 public:
   class MyContextType : public IEvtSelector::Context {
   public:

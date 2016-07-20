@@ -101,8 +101,6 @@ GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface * parent )
   this->declareProperty ( "Context"         , m_context     ) ;
   // root in TES
   this->declareProperty ( "RootInTES"       , m_rootInTES   ) ;
-  // global time offset
-  this->declareProperty ( "GlobalTimeOffset", m_globalTimeOffset ) ;
 
 
   // the header row for counters printout
@@ -134,9 +132,6 @@ GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface * parent )
 	m_statEntityList=std::vector<std::string>(0),
 	"RegEx list, of StatEntity counters for CounterSummary.");
 
-  // add handler for message level changes
-  this->outputLevelProperty().declareUpdateHandler( &GaudiCommon<PBASE>::msgLevelHandler, this );
-
   // setup context from parent if available
   if ( parent )
   {
@@ -144,13 +139,11 @@ GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface * parent )
     {
       m_context = gAlg->context();
       m_rootInTES = gAlg->rootInTES();
-      m_globalTimeOffset = gAlg->globalTimeOffset();
     }
     else if ( const GaudiTool*     gTool = dynamic_cast<const GaudiTool*>     (parent) )
     {
       m_context = gTool->context();
       m_rootInTES = gTool->rootInTES();
-      m_globalTimeOffset = gTool->globalTimeOffset();
     }
   }
 
@@ -172,8 +165,6 @@ GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface * parent )
           m_context = sp->value();
         } else if (  iter->name().compare("RootInTES") == 0 ) {
           m_rootInTES = sp->value();
-        } else if ( iter->name().compare("GlobalTimeOffset") == 0 ) {
-          m_globalTimeOffset = std::stod( sp->value() );
         }
       }
     }
@@ -235,33 +226,42 @@ StatusCode GaudiCommon<PBASE>::
     rootName = rootName + "/";
   }
 
-  auto fixLocation = [&] (const std::string & location) -> std::string {
+
+  auto fixLocation = [this, rootName] (const std::string & location) -> std::string {
     std::string result = fullTESLocation(location, UseRootInTES);
     //check whether we have an absolute path if yes return it - else prepend DataManager Root
     result = (result[0] == '/' ? result : rootName + result);
 
-    this->debug() << "Changing " << location << " to " << result << endmsg;
+    if (result != location && this->msgLevel(MSG::DEBUG))
+      this->debug() << "Changing " << location << " to " << result << endmsg;
 
     return result;
   };
 
-  for(auto tag : PBASE::inputDataObjects()){
-    if(PBASE::inputDataObjects()[tag].isValid()){
-      PBASE::inputDataObjects()[tag].setDataProductName(
-          fixLocation(PBASE::inputDataObjects()[tag].dataProductName())).ignore();
 
-      auto altAddress = PBASE::inputDataObjects()[tag].alternativeDataProductNames();
-      for(uint i = 0; i < altAddress.size(); ++i)
-        altAddress[i] = fixLocation(altAddress[i]);
-      PBASE::inputDataObjects()[tag].setAlternativeDataProductNames(altAddress).ignore();
+  class DHHFixer : public IDataHandleVisitor {
+  public:
+    DHHFixer(std::function<std::string (const std::string&)> f): m_f(f) {}
+    virtual void visit(const IDataHandleHolder* idhh) {
+      if (idhh == 0) return;
+
+      std::string r;
+      for (auto h : idhh->inputHandles()) {
+        r = m_f(h->objKey());
+        if (r != h->objKey())
+          h->updateKey( r );
+      }
+      for (auto h : idhh->outputHandles()) {
+        r = m_f(h->objKey());
+        if (r != h->objKey())
+          h->updateKey( r );
     }
   }
-  for(auto tag : PBASE::outputDataObjects()){
-    if(PBASE::outputDataObjects()[tag].isValid()){
-      PBASE::outputDataObjects()[tag].setDataProductName(
-          fixLocation(PBASE::outputDataObjects()[tag].dataProductName())).ignore();
-    }
-  }
+  private:
+    std::function<std::string (const std::string&)> m_f;
+  };
+
+  this->m_updateDataHandles.reset(new DHHFixer(fixLocation));
 
   return sc;
 }
@@ -308,13 +308,13 @@ StatusCode GaudiCommon<PBASE>::
   if ( this->msgLevel(MSG::DEBUG) )
   {
     this->debug() << "Tools to release :";
-    for ( const auto& i : PBASE::tools() )
+    for ( const auto& i : m_managedTools )
     {
       this->debug() << " " << i->name();
     }
     this->debug() << endmsg;
   }
-  while ( !PBASE::tools().empty() ) { sc = releaseTool( PBASE::tools().back() ) && sc; }
+  while ( !m_managedTools.empty() ) { sc = releaseTool( m_managedTools.back() ) && sc; }
 
   // release all located services
   if ( this->msgLevel(MSG::DEBUG) )
@@ -339,8 +339,6 @@ StatusCode GaudiCommon<PBASE>::
     if ( errorsPrint() ) { printErrors () ; }
   }
 
-  // delete the MsgStream
-  resetMsgStream();
 
   // clear *ALL* counters explicitly
   m_counters   .clear() ;
@@ -386,8 +384,8 @@ StatusCode GaudiCommon<PBASE>::releaseTool ( const IAlgTool* algTool ) const
   if( !this->toolSvc() )
   { return Error ( "releaseTool(IAlgTool):: IToolSvc* points to NULL!" ) ; }
   // find a tool in the list of active tools
-  auto it = std::find( PBASE::tools().rbegin() , PBASE::tools().rend() , algTool ) ;
-  if(  PBASE::tools().rend() == it )
+  auto it = std::find(m_managedTools.begin(), m_managedTools.end(), algTool);
+  if (m_managedTools.end() == it)
   { return Warning("releaseTool(IAlgTool):: IAlgTool* is not active"   ) ; }
   // get the tool
   IAlgTool* t = *it ;
@@ -397,13 +395,14 @@ StatusCode GaudiCommon<PBASE>::releaseTool ( const IAlgTool* algTool ) const
   { this->debug() << "Releasing tool '" << name << "'" << endmsg; }
   // remove the tool from the lists
   PBASE::deregisterTool(t);
+  m_managedTools.erase(it);
   // release tool
   if ( this->msgLevel(MSG::DEBUG) ) {
     this->debug() << "The tool '" << t->name() << "' of type '"
                   << System::typeinfoName(typeid(*t))
                   << "' is released" << endmsg;
   }
-  const StatusCode sc = this->toolSvc()->releaseTool( t ) ;
+  const StatusCode sc = this->toolSvc()->releaseTool(t) ;
   return  sc.isSuccess() ?
             sc :
             Warning( "releaseTool(IAlgTool):: error from IToolSvc releasing "+name , sc ) ;
@@ -673,36 +672,6 @@ long GaudiCommon<PBASE>::printProps ( const MSG::Level level ) const
     msg << "Property ['Name': Value] = " <<  *property << endmsg ;
   }
   return properties.size() ;
-}
-// ============================================================================
-
-// ============================================================================
-// Handle method for changes in the Messaging levels
-// ============================================================================
-template < class PBASE >
-void GaudiCommon<PBASE>::msgLevelHandler ( Property & theProp )
-{
-  // Force a new MsgStream object, to pick up the new settings
-  resetMsgStream();
-
-  // adjust internal message level
-  m_msgLevel =
-    this->outputLevel() <  (int) MSG::NIL        ?  MSG::NIL    :
-    this->outputLevel() >= (int) MSG::NUM_LEVELS ?  MSG::ALWAYS :
-    MSG::Level( this->outputLevel() ) ;
-
-  // Keep MessageSvc up to date if needed
-  if ( this->msgSvc()->outputLevel(this->name()) != this->outputLevel() )
-  {
-    this->msgSvc()->setOutputLevel( this->name(), this->outputLevel() );
-  }
-
-  // printout message
-  if ( this->msgLevel(MSG::DEBUG) )
-  {
-    this->debug() << "Property update for "
-            << theProp.name() << " : new value = " << this->outputLevel() << endmsg;
-  }
 }
 // ============================================================================
 

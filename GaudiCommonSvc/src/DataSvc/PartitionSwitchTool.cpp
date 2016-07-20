@@ -9,7 +9,8 @@
  *  @author Markus Frank
  *  @date   2004-06-24
  */
-class PartitionSwitchTool: public extends1<AlgTool, IPartitionControl> {
+class PartitionSwitchTool: public extends<AlgTool,
+                                          IPartitionControl> {
 
   using CSTR = const std::string&;
   using STATUS = StatusCode;
@@ -36,9 +37,8 @@ public:
   STATUS initialize()  override {
     /// Access partitioned multi-service
     STATUS sc = AlgTool::initialize();
-    MsgStream log(msgSvc(), name());
     if ( !sc.isSuccess() )  {
-      log << MSG::ERROR << "Cannot initialize base class!" << endmsg;
+      error() << "Cannot initialize base class!" << endmsg;
       return sc;
     }
     m_actor = nullptr;
@@ -46,7 +46,7 @@ public:
     sc = service(m_actorName, tmpPtr);
     m_actor = tmpPtr;
     if ( !sc.isSuccess() )  {
-      log << MSG::ERROR << "Cannot retrieve partition controller \""
+      error() << "Cannot retrieve partition controller \""
           << m_actorName << "\"!" << endmsg;
       return sc;
     }
@@ -59,8 +59,7 @@ public:
   }
 
   void _check(STATUS sc, CSTR msg)  const {
-    MsgStream log(msgSvc(), name());
-    log << MSG::ERROR << msg << " Status=" << sc.getCode() << endmsg;
+    error() << msg << " Status=" << sc.getCode() << endmsg;
   }
 #define CHECK(x,y) if ( !x.isSuccess() ) _check(x, y); return x;
 

@@ -62,8 +62,14 @@ FIND_PATH (TBB_ROOT_DIR
 FIND_PATH (TBB_INCLUDE_DIR
   NAMES tbb/tbb.h
   HINTS ${TBB_ROOT_DIR}
+  PATH_SUFFIXES "include" "../include"
+  DOC "TBB include directory" NO_DEFAULT_PATH) #Allow default tbb makefile layout
+
+FIND_PATH (TBB_INCLUDE_DIR
+  NAMES tbb/tbb.h
+  HINTS ${TBB_ROOT_DIR}
   PATH_SUFFIXES include
-  DOC "TBB include directory")
+  DOC "TBB include directory" )
 
 IF (MSVC11)
   SET (_TBB_COMPILER vc11)

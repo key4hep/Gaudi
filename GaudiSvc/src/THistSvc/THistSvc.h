@@ -23,8 +23,10 @@
 #include <map>
 
 class IIncidentSvc;
-class THistSvc: public extends3<Service, ITHistSvc, IIncidentListener,
-				IIoComponent> {
+class THistSvc: public extends<Service,
+                               ITHistSvc,
+                               IIncidentListener,
+                               IIoComponent> {
 
 public:
 

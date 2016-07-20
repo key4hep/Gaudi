@@ -8,8 +8,7 @@ CommonAuditor::CommonAuditor(const std::string& name, ISvcLocator *svcloc): Audi
 }
 
 void CommonAuditor::i_updateCustomTypes(Property &) {
-  MsgStream log(msgSvc(), name());
-  log << MSG::WARNING << "Property CustomEventTypes is deprecated, use EventTypes instead" << endmsg;
+  warning() << "Property CustomEventTypes is deprecated, use EventTypes instead" << endmsg;
   m_types.setValue(m_customTypes.value());
 }
 

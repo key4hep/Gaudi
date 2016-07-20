@@ -11,7 +11,8 @@ std::vector<unsigned int> CPUCruncher::m_niters_vect;
 std::vector<double> CPUCruncher::m_times_vect;
 CPUCruncher::CHM CPUCruncher::m_name_ncopies_map;
 
-DECLARE_ALGORITHM_FACTORY(CPUCruncher)
+//DECLARE_ALGORITHM_FACTORY(CPUCruncher)
+DECLARE_COMPONENT(CPUCruncher)
 
 //------------------------------------------------------------------------------
 
@@ -20,18 +21,9 @@ CPUCruncher::CPUCruncher(const std::string& name, // the algorithm instance name
 		GaudiAlgorithm(name, pSvc), m_avg_runtime(1.), m_var_runtime(.01), m_shortCalib(
 				false) {
 
-	// For Concurrent run
-	m_inputHandles.resize(MAX_INPUTS);
-	for (uint i = 0; i < MAX_INPUTS; ++i){
-		m_inputHandles[i] = new DataObjectHandle<DataObject>();
-		declareInput("input_" + std::to_string(i), *m_inputHandles[i]);
-	}
+  declareProperty("inpKeys", m_inpKeys);
+  declareProperty("outKeys", m_outKeys);
 
-	m_outputHandles.resize(MAX_OUTPUTS);
-	for (uint i = 0; i < MAX_OUTPUTS; ++i){
-		m_outputHandles[i] = new DataObjectHandle<DataObject>();
-		declareOutput("output_" + std::to_string(i), *m_outputHandles[i]);
-	}
 
 	declareProperty("avgRuntime", m_avg_runtime,
 			"Average runtime of the module.");
@@ -58,12 +50,12 @@ CPUCruncher::CPUCruncher(const std::string& name, // the algorithm instance name
 }
 
 CPUCruncher::~CPUCruncher() {
-	for (uint i = 0; i < MAX_INPUTS; ++i) {
+  for (uint i = 0; i < m_inputHandles.size(); ++i) {
 		delete m_inputHandles[i];
 	}
 
 	m_outputHandles.resize(MAX_OUTPUTS);
-	for (uint i = 0; i < MAX_OUTPUTS; ++i) {
+  for (uint i = 0; i < m_outputHandles.size(); ++i) {
 		delete m_outputHandles[i];
 	}
 }
@@ -71,6 +63,28 @@ CPUCruncher::~CPUCruncher() {
 StatusCode CPUCruncher::initialize(){
   if (m_times_vect.size()==0){
     calibrate();
+  }
+
+  // This is a bit ugly. There is no way to declare a vector of DataObjectHandles, so
+  // we need to wait until initialize when we've read in the input and output key 
+  // properties, and know their size, and then turn them
+  // into Handles and register them with the framework by calling declareProperty. We
+  // could call declareInput/declareOutput on them too.
+
+  int i=0;
+  for (auto k: m_inpKeys) {
+    debug() << "adding input key " << k << endmsg;
+    m_inputHandles.push_back( new DataObjectHandle<DataObject>( k, Gaudi::DataHandle::Reader, this ));
+    declareProperty("dummy_in_" + std::to_string(i), *(m_inputHandles.back()) );
+    i++;
+  }
+
+  i = 0;
+  for (auto k: m_outKeys) {
+    debug() << "adding output key " << k << endmsg;
+    m_outputHandles.push_back( new DataObjectHandle<DataObject>( k, Gaudi::DataHandle::Writer, this ));
+    declareProperty("dummy_out_" + std::to_string(i), *(m_outputHandles.back()) );
+    i++;
   }
 
   return StatusCode::SUCCESS ;
@@ -377,34 +391,6 @@ StatusCode CPUCruncher::finalize () // the finalization of the algorithm
       }
 
   return GaudiAlgorithm::finalize () ;
-}
-
-//------------------------------------------------------------------------------
-
-const std::vector<std::string>
-CPUCruncher::get_inputs()
-{
-  std::vector<std::string> di;
-  for (auto & h: m_inputHandles){
-  	  if(h->isValid())
-  		di.push_back(h->dataProductName());
-  }
-
-  return di;
-}
-
-//------------------------------------------------------------------------------
-
-const std::vector<std::string>
-CPUCruncher::get_outputs()
-{
-	  std::vector<std::string> di;
-	  for (auto & h: m_outputHandles){
-	  	  if(h->isValid())
-	  		di.push_back(h->dataProductName());
-	  }
-
-	  return di;
 }
 
 //------------------------------------------------------------------------------

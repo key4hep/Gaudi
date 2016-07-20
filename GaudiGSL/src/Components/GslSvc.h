@@ -80,7 +80,8 @@ class IGslErrorHandler                 ; // from GaudiGSL
  *  @author Vanya Belyaev Ivan.Belyaev@itep.ru
  *  @date   29/04/2002
  */
-class GslSvc: public extends1<Service, IGslSvc> {
+class GslSvc: public extends<Service,
+                             IGslSvc> {
 public:
 
   /** handle the GSL error

@@ -25,8 +25,9 @@
 // Forward declaration
 class ISvcLocator;
 
-class IoComponentMgr: public extends2<Service, IIoComponentMgr,
-		      IIncidentListener> {
+class IoComponentMgr: public extends<Service,
+                                     IIoComponentMgr,
+                                     IIncidentListener> {
   ///////////////////////////////////////////////////////////////////
   // Public methods:
   ///////////////////////////////////////////////////////////////////

@@ -17,7 +17,9 @@ namespace Gaudi { namespace Parsers {
 }}
 
 
-class JobOptionsSvc : public extends2<Service, IProperty, IJobOptionsSvc> {
+class JobOptionsSvc : public extends<Service,
+                                     IProperty,
+                                     IJobOptionsSvc> {
  public:
     typedef std::vector<const Property*> PropertiesT;
   // unhides some of Service's methods

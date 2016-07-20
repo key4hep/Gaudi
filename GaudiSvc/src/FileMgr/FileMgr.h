@@ -12,7 +12,6 @@
 #include "GaudiKernel/Service.h"
 #include "GaudiKernel/IIncidentListener.h"
 #include "GaudiKernel/ClassID.h"
-#include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/StatusCode.h"
 
 #include <string>
@@ -29,7 +28,9 @@ using Io::Fd;
 class RootFileHandler;
 class POSIXFileHandler;
 
-class FileMgr: public extends2<Service, IFileMgr, IIncidentListener> {
+class FileMgr: public extends<Service,
+                              IFileMgr,
+                              IIncidentListener> {
 public:
   FileMgr(const std::string& name, ISvcLocator* svc);
   ~FileMgr() override;
@@ -168,7 +169,6 @@ private:
 
   std::unique_ptr<RootFileHandler> m_rfh;
   std::unique_ptr<POSIXFileHandler> m_pfh;
-  mutable MsgStream m_log;
 
 };
 

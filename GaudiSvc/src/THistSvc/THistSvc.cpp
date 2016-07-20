@@ -930,7 +930,7 @@ THistSvc::deReg(TObject* obj) {
     auto mitr = m_ids.equal_range(rem);
     auto itr3 = std::find_if( mitr.first, mitr.second, [&](idMap::const_reference i) 
                                    { return i.second.obj == obj; } ) ;
-    if (itr3 != mitr.second ) {
+    if (itr3 == mitr.second ) {
       m_log << MSG::ERROR << "Problems deregistering TObject \""
             << obj->GetName()
             << "\" with id \"" << hid.id << "\"" << endmsg;
@@ -1077,7 +1077,7 @@ THistSvc::getHists() const {
   transform_if( std::begin(m_uids), std::end(m_uids),
                 std::back_inserter(names), select1st,
                 [](uidMap::const_reference i) { 
-                    return i.second.obj->IsA()->InheritsFrom("TH11"); }
+                    return i.second.obj->IsA()->InheritsFrom("TH1"); }
   );
   return names;
 
