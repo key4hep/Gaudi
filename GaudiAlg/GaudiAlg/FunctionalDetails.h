@@ -154,10 +154,13 @@ namespace Gaudi { namespace Functional { namespace details {
             return std::make_tuple( element_t<I,Tuple>{std::get<I>(initvalue).second, m, o} ... );
         }
         template <typename KeyValues, typename Properties,  std::size_t... I>
-        void declare_tuple_of_properties_helper(Algorithm* owner, const KeyValues& inputs, Properties& props,  std::index_sequence<I...>) {
+        void declare_tuple_of_properties_helper(GaudiAlgorithm* owner, const KeyValues& inputs, Properties& props,  std::index_sequence<I...>) {
+            // note: be very careful here! Only GaudiAlgorithm has a declareProperty that works with a DataObjectHandleBase.
+            // However, Algorithm does have a template that also matches (unless it is constrained explcitly against matching)
+            // so if 'owner' is of type Algorithm instead of GaudiAlgortihm, this ends up calling the wrong declareProperty...
             std::initializer_list<int>{
-                (owner->declareProperty( std::get<I>(inputs).first,
-                                         std::get<I>(props)         ),0)...
+                ( owner->declareProperty( std::get<I>(inputs).first,
+                                          std::get<I>(props)         ),0)...
             };
         }
     }
@@ -168,7 +171,7 @@ namespace Gaudi { namespace Functional { namespace details {
     }
 
     template <typename KeyValues, typename Properties>
-    void declare_tuple_of_properties(Algorithm* owner, const KeyValues& inputs, Properties& props) {
+    void declare_tuple_of_properties(GaudiAlgorithm* owner, const KeyValues& inputs, Properties& props) {
         static_assert( std::tuple_size<KeyValues>::value == std::tuple_size<Properties>::value, "Inconsistent lengths" );
         constexpr auto N = std::tuple_size<KeyValues>::value;
         details2::declare_tuple_of_properties_helper( owner, inputs, props, std::make_index_sequence<N>{} );

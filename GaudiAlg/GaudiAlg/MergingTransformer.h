@@ -20,8 +20,12 @@ namespace Gaudi { namespace Functional {
    :   public details::BaseClass_t<Traits_>
    {
        using base_class = details::BaseClass_t<Traits_>;
-       static_assert( std::is_base_of<Algorithm,base_class>::value,
-                      "BaseClass must inherit from Algorithm");
+       // the reason to demand that base_class inherits from GaudiAlgorithm
+       // is that only it has a working declareProperty for handles, but eg.
+       // Algorithm does have a template one that matches, but does the wrong
+       // thing...
+       static_assert( std::is_base_of<GaudiAlgorithm,base_class>::value,
+                      "BaseClass must inherit from GaudiAlgorithm");
    public:
        using KeyValue  = std::pair<std::string, std::string>;
        using KeyValues = std::pair<std::string, std::vector<std::string>>;

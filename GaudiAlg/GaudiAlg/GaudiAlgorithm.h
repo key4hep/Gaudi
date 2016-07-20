@@ -690,13 +690,11 @@ private:
 
  public:
   using Algorithm::declareProperty;
-  template <class T>
     Property* declareProperty
     ( const std::string& name,
-      DataObjectHandle<T>&     hndl,
+      DataObjectHandleBase&     hndl,
       const std::string& doc = "none" ) const
   {
-          
     if ( hndl.mode() & Gaudi::DataHandle::Reader ) {      
       (const_cast<GaudiAlgorithm*>(this))->Algorithm::declareInput(&hndl);
     }
