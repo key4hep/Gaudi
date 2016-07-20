@@ -68,6 +68,54 @@ Property* PropertyMgr::declareRemoteProperty
   m_remoteProperties.emplace_back ( name , std::make_pair( rsvc , nam ) ) ;
   return p ;
 }
+// ============================================================================
+// Declare a property
+// ============================================================================
+Property*
+PropertyMgr::declareProperty ( const std::string& name,
+                               GaudiHandleBase& ref,
+                               const std::string& doc )
+{
+  assertUniqueName(name);
+  m_todelete   . emplace_back (new GaudiHandleProperty( name, ref ));
+  Property* p = m_todelete.back().get();
+  //
+  p -> setDocumentation    ( doc ) ;
+  m_properties . push_back ( p   ) ;
+  //
+  return p ;
+}
+// ============================================================================
+Property*
+PropertyMgr::declareProperty ( const std::string& name,
+                               GaudiHandleArrayBase& ref,
+                               const std::string& doc )
+{
+  assertUniqueName(name);
+  m_todelete   . emplace_back ( new GaudiHandleArrayProperty( name, ref ) );
+  Property* p = m_todelete.back().get();
+  //
+  p -> setDocumentation    ( doc ) ;
+  m_properties . push_back ( p   ) ;
+  //
+  return p ;
+}
+
+// ============================================================================
+Property*
+PropertyMgr::declareProperty ( const std::string& name,
+                               DataObjectHandleBase& ref,
+                               const std::string& doc )
+{
+  assertUniqueName(name);
+  m_todelete   . emplace_back( new DataObjectHandleProperty( name, ref ) );
+  Property* p = m_todelete.back().get();
+  //
+  p -> setDocumentation    ( doc ) ;
+  m_properties . push_back ( p   ) ;
+  //
+  return p ;
+}
 // ====================================================================
 // get the property by name form the proposed list
 // ====================================================================
