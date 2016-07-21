@@ -67,9 +67,9 @@ THistSvc::THistSvc( const std::string& name, ISvcLocator* svc ) : base_class( na
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::initialize()
-{
-  GlobalDirectoryRestore restore;
+StatusCode
+THistSvc::initialize() {
+  GlobalDirectoryRestore restore(m_svcMut);
 
   StatusCode status = Service::initialize();
 
@@ -189,8 +189,8 @@ StatusCode THistSvc::initialize()
 StatusCode THistSvc::reinitialize()
 {
 
-  GlobalDirectoryRestore restore;
-  warning() << "reinitialize not implemented" << endmsg;
+  GlobalDirectoryRestore restore(m_svcMut);
+  m_log << MSG::WARNING << "reinitialize not implemented" << endmsg;
   return StatusCode::SUCCESS;
 }
 
@@ -199,13 +199,15 @@ StatusCode THistSvc::reinitialize()
 StatusCode THistSvc::finalize()
 {
 
-  GlobalDirectoryRestore restore;
+  GlobalDirectoryRestore restore(m_svcMut);
+
+  dump();
 
   if ( msgLevel( MSG::DEBUG ) ) debug() << "THistSvc::finalize" << endmsg;
 
 #ifndef NDEBUG
-  if ( msgLevel( MSG::DEBUG ) ) {
-    for ( const auto& uid : m_uids ) {
+  if (m_log.level() <= MSG::DEBUG) {
+  for (const auto& uid : m_uidsX ) {
 
       TObject* to = uid.second.obj;
 
@@ -332,8 +334,8 @@ StatusCode THistSvc::finalize()
   m_sharedFiles.clear();
   m_fileStreams.clear();
   m_files.clear();
-  m_uids.clear();
-  m_ids.clear();
+  m_uidsX.clear();
+  m_idsX.clear();
   m_tobjs.clear();
 
   return Service::finalize();
@@ -349,7 +351,7 @@ bool THistSvc::browseTDir( TDirectory* dir ) const
     return false;
   }
 
-  GlobalDirectoryRestore restore;
+  GlobalDirectoryRestore restore(m_svcMut);
 
   dir->cd();
 
@@ -390,9 +392,9 @@ bool THistSvc::browseTDir( TDirectory* dir ) const
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::getTHists( TDirectory* td, TList& tl, bool rcs ) const
-{
-  GlobalDirectoryRestore restore;
+StatusCode
+THistSvc::getTHists(TDirectory *td, TList & tl, bool rcs) const {
+  GlobalDirectoryRestore restore(m_svcMut);
 
   gErrorIgnoreLevel = kBreak;
 
@@ -440,7 +442,7 @@ StatusCode THistSvc::getTHists( TDirectory* td, TList& tl, bool rcs ) const
 StatusCode THistSvc::getTHists( const std::string& dir, TList& tl, bool rcs ) const
 {
 
-  GlobalDirectoryRestore restore;
+  GlobalDirectoryRestore restore(m_svcMut);
 
   gErrorIgnoreLevel = kBreak;
 
@@ -483,9 +485,9 @@ StatusCode THistSvc::getTHists( const std::string& dir, TList& tl, bool rcs ) co
 }
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::getTTrees( TDirectory* td, TList& tl, bool rcs ) const
-{
-  GlobalDirectoryRestore restore;
+StatusCode
+THistSvc::getTTrees(TDirectory *td, TList & tl, bool rcs) const {
+  GlobalDirectoryRestore restore(m_svcMut);
 
   gErrorIgnoreLevel = kBreak;
 
@@ -530,9 +532,9 @@ StatusCode THistSvc::getTTrees( TDirectory* td, TList& tl, bool rcs ) const
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::getTTrees( const std::string& dir, TList& tl, bool rcs ) const
-{
-  GlobalDirectoryRestore restore;
+StatusCode
+THistSvc::getTTrees(const std::string& dir, TList & tl, bool rcs) const {
+  GlobalDirectoryRestore restore(m_svcMut);
 
   gErrorIgnoreLevel = kBreak;
 
@@ -573,7 +575,7 @@ StatusCode THistSvc::getTTrees( const std::string& dir, TList& tl, bool rcs ) co
 StatusCode THistSvc::getTHists( TDirectory* td, TList& tl, bool rcs, bool reg )
 {
 
-  GlobalDirectoryRestore restore;
+  GlobalDirectoryRestore restore(m_svcMut);
 
   gErrorIgnoreLevel = kBreak;
 
@@ -638,7 +640,7 @@ StatusCode THistSvc::getTHists( TDirectory* td, TList& tl, bool rcs, bool reg )
 StatusCode THistSvc::getTHists( const std::string& dir, TList& tl, bool rcs, bool reg )
 {
 
-  GlobalDirectoryRestore restore;
+  GlobalDirectoryRestore restore(m_svcMut);
 
   gErrorIgnoreLevel = kBreak;
 
@@ -688,7 +690,7 @@ StatusCode THistSvc::getTHists( const std::string& dir, TList& tl, bool rcs, boo
 StatusCode THistSvc::getTTrees( TDirectory* td, TList& tl, bool rcs, bool reg )
 {
 
-  GlobalDirectoryRestore restore;
+  GlobalDirectoryRestore restore(m_svcMut);
 
   gErrorIgnoreLevel = kBreak;
 
@@ -753,7 +755,7 @@ StatusCode THistSvc::getTTrees( TDirectory* td, TList& tl, bool rcs, bool reg )
 StatusCode THistSvc::getTTrees( const std::string& dir, TList& tl, bool rcs, bool reg )
 {
 
-  GlobalDirectoryRestore restore;
+  GlobalDirectoryRestore restore(m_svcMut);
 
   gErrorIgnoreLevel = kBreak;
 
@@ -795,30 +797,34 @@ StatusCode THistSvc::getTTrees( const std::string& dir, TList& tl, bool rcs, boo
 StatusCode THistSvc::deReg( TObject* obj )
 {
 
-  auto itr = m_tobjs.find( obj );
-  if ( itr != m_tobjs.end() ) {
-    THistID hid = itr->second;
+  auto itr = m_tobjs.find(obj);
+  if (itr != m_tobjs.end()) {
+    THistID hid = itr->second.first->at(itr->second.second);
 
-    auto itr2 = m_uids.find( hid.id );
-    if ( itr2 == m_uids.end() ) {
-      error() << "Problems deregistering TObject \"" << obj->GetName() << "\" with id \"" << hid.id << "\"" << endmsg;
+    auto itr2 = m_uidsX.find(hid.id);
+    if (itr2 == m_uidsX.end()) {
+      m_log << MSG::ERROR << "Problems deregistering TObject \""
+            << obj->GetName()
+            << "\" with id \"" << hid.id << "\"" << endmsg;
       return StatusCode::FAILURE;
     }
 
     std::string id, root, rem;
     parseString( hid.id, root, rem );
 
-    auto mitr = m_ids.equal_range( rem );
-    auto itr3 =
-        std::find_if( mitr.first, mitr.second, [&]( idMap::const_reference i ) { return i.second.obj == obj; } );
-    if ( itr3 == mitr.second ) {
-      error() << "Problems deregistering TObject \"" << obj->GetName() << "\" with id \"" << hid.id << "\"" << endmsg;
+    auto mitr = m_idsX.equal_range(rem);
+    auto itr3 = std::find_if( mitr.first, mitr.second, [&](idXMap::const_reference i) 
+                                   { return i.second.obj == obj; } ) ;
+    if (itr3 == mitr.second ) {
+      m_log << MSG::ERROR << "Problems deregistering TObject \""
+            << obj->GetName()
+            << "\" with id \"" << hid.id << "\"" << endmsg;
       return StatusCode::FAILURE;
     }
 
-    m_tobjs.erase( itr );
-    m_uids.erase( itr2 );
-    m_ids.erase( itr3 );
+    m_tobjs.erase(itr);
+    m_uidsX.erase(itr2);
+    m_idsX.erase(itr3);
 
     return StatusCode::SUCCESS;
 
@@ -833,9 +839,10 @@ StatusCode THistSvc::deReg( TObject* obj )
 StatusCode THistSvc::deReg( const std::string& id )
 {
 
-  auto itr = m_uids.find( id );
-  if ( itr == m_uids.end() ) {
-    error() << "Problems deregistering id \"" << id << "\"" << endmsg;
+  auto itr = m_uidsX.find(id);
+  if (itr == m_uidsX.end()) {
+    m_log << MSG::ERROR << "Problems deregistering id \""
+          << id << "\"" << endmsg;
     return StatusCode::FAILURE;
   }
 
@@ -848,48 +855,64 @@ StatusCode THistSvc::deReg( const std::string& id )
 StatusCode THistSvc::regHist( const std::string& id )
 {
 
-  TH1* hist = nullptr;
-  return regHist_i( hist, id );
+  TH1 *hist = nullptr;
+  THistID* hid;
+  return regHist_i(hist, id, false, hid);
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::regHist( const std::string& id, TH1* hist ) { return regHist_i( hist, id ); }
-
-//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
-
-StatusCode THistSvc::regHist( const std::string& id, TH2* hist ) { return regHist_i( hist, id ); }
-
-//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
-
-StatusCode THistSvc::regHist( const std::string& id, TH3* hist ) { return regHist_i( hist, id ); }
-
-//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
-
-StatusCode THistSvc::regTree( const std::string& id )
-{
-  TTree* hist = nullptr;
-  return regHist_i( hist, id );
+StatusCode
+THistSvc::regHist(const std::string& id, TH1* hist) {
+  THistID* hid;
+  return regHist_i(hist, id, false, hid);
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::regTree( const std::string& id, TTree* hist )
-{
-  StatusCode sc = regHist_i( hist, id );
-  if ( hist && sc.isSuccess() ) {
-    if ( m_autoSave != 0 ) hist->SetAutoSave( m_autoSave );
-    hist->SetAutoFlush( m_autoFlush );
+StatusCode
+THistSvc::regHist(const std::string& id, TH2* hist) {
+  THistID* hid;
+  return regHist_i(hist, id, false, hid);
+}
+
+//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
+
+StatusCode
+THistSvc::regHist(const std::string& id, TH3* hist) {
+  THistID* hid;
+  return regHist_i(hist, id, false, hid);
+}
+
+//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
+
+StatusCode
+THistSvc::regTree(const std::string& id) {
+  TTree *hist = nullptr;  
+  THistID* hid;
+  return regHist_i(hist, id, false, hid);
+}
+
+//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
+
+StatusCode
+THistSvc::regTree(const std::string& id, TTree* hist) {
+  THistID* hid;
+  StatusCode sc = regHist_i(hist, id, false, hid);
+  if (hist && sc.isSuccess()) {
+    if (m_autoSave != 0) hist->SetAutoSave(m_autoSave);
+    hist->SetAutoFlush(m_autoFlush);
   }
   return sc;
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::regGraph( const std::string& id )
-{
-  TGraph* hist = nullptr;
-  return regHist_i( hist, id );
+StatusCode
+THistSvc::regGraph(const std::string& id) {
+  TGraph *hist = nullptr;
+  THistID* hid;
+  return regHist_i(hist, id, false, hid);
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
@@ -908,20 +931,30 @@ StatusCode THistSvc::regGraph( const std::string& id, TGraph* hist )
     hist->SetName( id2.c_str() );
   }
 
-  return regHist_i( hist, id );
+  THistID* hid;
+  return regHist_i(hist, id, false, hid);
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::getHist( const std::string& id, TH1*& hist ) const { return getHist_i( id, hist ); }
+StatusCode
+THistSvc::getHist(const std::string& id, TH1*& hist, size_t ind) const {
+  return getHist_i(id, hist, ind);
+}
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::getHist( const std::string& id, TH2*& hist ) const { return getHist_i( id, hist ); }
+StatusCode
+THistSvc::getHist(const std::string& id, TH2*& hist, size_t ind) const {
+  return getHist_i(id, hist, ind);
+}
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode THistSvc::getHist( const std::string& id, TH3*& hist ) const { return getHist_i( id, hist ); }
+StatusCode
+THistSvc::getHist(const std::string& id, TH3*& hist, size_t ind) const {
+  return getHist_i(id, hist, ind);
+}
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
@@ -929,9 +962,12 @@ std::vector<std::string> THistSvc::getHists() const
 {
 
   std::vector<std::string> names;
-  names.reserve( m_uids.size() );
-  transform_if( std::begin( m_uids ), std::end( m_uids ), std::back_inserter( names ), select1st,
-                []( uidMap::const_reference i ) { return i.second.obj->IsA()->InheritsFrom( "TH1" ); } );
+  names.reserve(m_uidsX.size());
+  transform_if( std::begin(m_uidsX), std::end(m_uidsX),
+                std::back_inserter(names), select1st,
+                [](uidXMap::const_reference i) { 
+                    return i.second.obj->IsA()->InheritsFrom("TH1"); }
+  );
   return names;
 }
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
@@ -944,9 +980,13 @@ std::vector<std::string> THistSvc::getTrees() const
 {
 
   std::vector<std::string> names;
-  names.reserve( m_uids.size() );
-  transform_if( std::begin( m_uids ), std::end( m_uids ), std::back_inserter( names ), select1st,
-                []( uidMap::const_reference i ) { return i.second.obj->IsA()->InheritsFrom( "TTree" ); } );
+  names.reserve(m_uidsX.size());
+  transform_if( std::begin(m_uidsX), std::end(m_uidsX),
+                std::back_inserter(names),
+                select1st,
+                [](uidXMap::const_reference i) { 
+                    return i.second.obj->IsA()->InheritsFrom("TTree"); }
+  );
   return names;
 }
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
@@ -959,9 +999,12 @@ std::vector<std::string> THistSvc::getGraphs() const
 {
 
   std::vector<std::string> names;
-  names.reserve( m_uids.size() );
-  transform_if( std::begin( m_uids ), std::end( m_uids ), std::back_inserter( names ), select1st,
-                []( uidMap::const_reference i ) { return i.second.obj->IsA()->InheritsFrom( "TTree" ); } );
+  names.reserve(m_uidsX.size());
+  transform_if( std::begin(m_uidsX), std::end(m_uidsX),
+                std::back_inserter(names), select1st,
+                [](uidXMap::const_reference i) { 
+                    return i.second.obj->IsA()->InheritsFrom("TGraph"); }
+  );
   return names;
 }
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
@@ -987,18 +1030,23 @@ bool THistSvc::findStream( const string& id, string& stream, string& rem, TFile*
 
   auto pos = id.find( "/" );
 
-  if ( pos == string::npos ) {
+  if (pos == string::npos) {
+    // no "/" in id
     stream = "temp";
-    rem    = id;
-  } else if ( pos != 0 ) {
+    rem = id;
+  } else if (pos != 0) {
+    // id does not start with "/"
     stream = "temp";
     rem    = id;
   } else {
+    // id starts with "/"
 
     auto pos2 = id.find( "/", pos + 1 );
 
-    if ( pos2 == string::npos ) {
-      error() << "badly formed Hist/Tree id: \"" << id << "\"" << endmsg;
+    if (pos2 == string::npos) {
+      // need at least 2 "/" in format "/STREAM/name" or "/STREAM/dir/name"
+      m_log << MSG::ERROR << "badly formed Hist/Tree id: \"" << id << "\""
+            << endmsg;
       return false;
     }
 
@@ -1115,7 +1163,8 @@ void THistSvc::updateFiles()
 
   if ( msgLevel( MSG::DEBUG ) ) debug() << "updateFiles()" << endmsg;
 
-  for ( auto uitr = m_uids.begin(); uitr != m_uids.end(); ++uitr ) {
+
+  for (auto uitr=m_uidsX.begin(); uitr != m_uidsX.end(); ++uitr) {
 #ifndef NDEBUG
     if ( msgLevel( MSG::VERBOSE ) )
       verbose() << " update: " << uitr->first << " " << uitr->second.id << " " << uitr->second.mode << endmsg;
@@ -1145,8 +1194,8 @@ void THistSvc::updateFiles()
           if ( itr.second.first == oldFile ) itr.second.first = newFile;
         }
 
-        for ( auto uitr2 = uitr; uitr2 != m_uids.end(); ++uitr2 ) {
-          if ( uitr2->second.file == oldFile ) {
+        for (auto uitr2 = uitr; uitr2 != m_uidsX.end(); ++uitr2) {
+          if (uitr2->second.file == oldFile) {
             uitr2->second.file = newFile;
           }
         }
@@ -1456,8 +1505,7 @@ std::string THistSvc::dirname( std::string& dir ) const
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-THistSvc::GlobalDirectoryRestore::GlobalDirectoryRestore()
-{
+THistSvc::GlobalDirectoryRestore::GlobalDirectoryRestore(THistSvcMutex_t& mut) : m_lock(mut) {
   m_gd = gDirectory;
   m_gf = gFile;
   m_ge = gErrorIgnoreLevel;
@@ -1553,7 +1601,8 @@ bool THistSvc::exists( const std::string& name ) const
 {
 
   TH1* h;
-  return getHist_i( name, h, true ).isSuccess();
+  return getHist_i(name,h,0,true).isSuccess();
+
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
@@ -1654,7 +1703,7 @@ StatusCode THistSvc::io_reinit()
     return StatusCode::FAILURE;
   }
 
-  GlobalDirectoryRestore restore;
+  GlobalDirectoryRestore restore(m_svcMut);
   // to hide the expected errors upon closing the files whose
   // file descriptors have been swept under the rug...
   gErrorIgnoreLevel = kFatal;
@@ -1698,7 +1747,7 @@ StatusCode THistSvc::io_reinit()
 
     // loop over all uids and migrate them to the new file
     // XXX FIXME: this double loop sucks...
-    for ( auto& uid : m_uids ) {
+    for ( auto& uid : m_uidsX ) {
       THistID& hid = uid.second;
       if ( hid.file != f ) continue;
       TDirectory* olddir = this->changeDir( hid );
@@ -1789,3 +1838,180 @@ StatusCode THistSvc::rootOpenErrAction( const Io::FileAttr* fa, const std::strin
 
   return StatusCode::SUCCESS;
 }
+
+//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
+
+size_t
+THistSvc::findHistID(const std::string& id, const THistID*& hid, 
+                     const size_t& index) const {
+
+  GlobalDirectoryRestore restore(m_svcMut);
+
+  std::string idr(id);
+  removeDoubleSlash( idr );
+
+  hid = 0;
+
+  if (idr.find("/") == 0) {
+    // fully specified name, starts with "/"
+    auto itr = m_uids.find(idr);
+    if (itr == m_uids.end()) {
+      // no matches found
+      return 0;
+    } else {
+      // one or more matches found (clones).
+      if (index >= itr->second->size()) {
+        error() << "no index " << index << " found for Hist "
+                << idr << endmsg;
+        return 0;
+      }
+      hid = & (itr->second->at(index));
+      //      return itr->second->size();
+      return 1;
+    }
+
+  } else {
+    // name not fully specified.
+    auto mitr = m_ids.equal_range(idr);
+
+    if (mitr.first == mitr.second) {
+      // not found
+      return 0;
+    } else if ( distance(mitr.first,mitr.second) == 1 ) {
+      // one found
+      if (index >= mitr.first->second->size()) {
+        error() << "no index " << index << " found for Hist "
+                << idr << endmsg;
+        return 0;
+      }
+      hid = & (mitr.first->second->at(0));
+      return 1;
+    } else {
+      // multiple matches
+      return distance(mitr.first, mitr.second);
+    }
+
+  }
+
+}
+
+//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
+
+StatusCode
+THistSvc::regSharedHist(const std::string& id, std::unique_ptr<TH1>& hist, 
+                        LockedHandle<TH1>& lh) {
+
+  return regSharedHist_i(id,hist,lh);
+
+}
+
+StatusCode
+THistSvc::regSharedHist(const std::string& id, std::unique_ptr<TH2>& hist, 
+                        LockedHandle<TH2>& lh) {
+
+  return regSharedHist_i(id,hist,lh);
+
+}
+
+StatusCode
+THistSvc::regSharedHist(const std::string& id, std::unique_ptr<TH3>& hist, 
+                        LockedHandle<TH3>& lh) {
+
+  return regSharedHist_i(id,hist,lh);
+
+}
+
+
+//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
+
+StatusCode
+THistSvc::getSharedHist(const std::string& name, LockedHandle<TH1>& hist) const {
+
+  GlobalDirectoryRestore restore(m_svcMut);
+
+  const THistID* hid;
+  size_t i = findHistID(name, hid);
+
+  //  THistID* hid = const_cast<THistID*>(hid_c);
+
+  if (i == 1) {
+
+    if ( !hid->shared ) {
+      error() << "getSharedHist: found Hist with id \"" << name
+              << "\", but it's not marked as shared"
+              << endmsg;
+      return StatusCode::FAILURE;
+    }
+    TH1* h1 = dynamic_cast< TH1*> ( hid->obj );
+    hist = LockedHandle<TH1> (h1, hid->mutex);
+
+    debug() << "getSharedHist: found THistID: " << *hid << endmsg;
+
+    return StatusCode::SUCCESS;
+  } else if (i == 0) {
+    error() << "no histograms matching id \"" << name << "\" found"
+            << endmsg;
+    return StatusCode::FAILURE;
+  } else {
+    info() << "multiple matches for id \"" << name << "\" found [" << i 
+           << "], probably from different streams"
+           << endmsg;
+    return StatusCode::FAILURE;
+  }
+
+
+}
+
+//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
+
+void
+THistSvc::dump() const {
+
+  ostringstream ost;
+
+  // list< vector<THistID> >
+  ost << "m_hlist:  size: " << m_hlist.size() << "\n";
+  for (auto& vh : m_hlist) {
+    ost << " - " << vh->at(0) << " :: [" << vh << "] " << vh->size() <<  " {";
+    for (auto &e : *vh) {
+      TObject *o = e.obj;
+      ost << "[" << o << "]";
+    }
+    ost << "}\n";
+  }
+
+  // map uid -> vector<THistID>*
+  ost << "\n" << "m_uids: " << m_uids.size() << "\n";
+  for (auto& e : m_uids) {
+    ost << " - " << e.first << "  [" << e.second << "]" << endl;
+  }
+
+  // multimap id -> vector<THistID>*
+  ost << "\n" << "m_ids: " << m_ids.size() << "\n";
+  for (auto& e : m_ids) {
+    ost << " - " << e.first << "  [" << e.second << "]" << endl;
+  }
+
+  // map TObject* -> THistID*
+  ost << "\n" << "m_tobjs: " << m_tobjs.size() << "\n";
+  for (auto &e : m_tobjs) {
+    TObject* o = e.first;
+    THistID& i = e.second.first->at(e.second.second);
+    ost << " - " << o << " -> " << i << endl;
+  }
+
+
+  info() << "dumping THistSvc contents\n" << ost.str() << endmsg;
+
+}
+    
+
+void
+THistSvc::dumpVHID(const vhid_t* vi) const {
+  debug() << "vHID: " << vi << " [" << vi->size() << "]";
+  for (auto &e : *vi) {
+    debug() << " " << &e;
+  }
+  debug() << endmsg;
+}
+

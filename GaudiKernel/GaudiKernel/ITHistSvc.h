@@ -4,8 +4,12 @@
 #ifndef GAUDIKERNEL_ISERVICE_H
 #include "GaudiKernel/IService.h"
 #endif
+
+#include "GaudiKernel/LockedHandle.h"
+
 #include <string>
 #include <vector>
+#include <memory>
 
 class TObject;
 class TH1;
@@ -28,9 +32,22 @@ public:
   virtual StatusCode regHist( const std::string& name, TH2* ) = 0;
   virtual StatusCode regHist( const std::string& name, TH3* ) = 0;
 
-  virtual StatusCode getHist( const std::string& name, TH1*& ) const = 0;
-  virtual StatusCode getHist( const std::string& name, TH2*& ) const = 0;
-  virtual StatusCode getHist( const std::string& name, TH3*& ) const = 0;
+  virtual StatusCode getHist(const std::string& name, TH1*&, size_t index=0) const = 0;
+  virtual StatusCode getHist(const std::string& name, TH2*&, size_t index=0) const = 0;
+  virtual StatusCode getHist(const std::string& name, TH3*&, size_t index=0) const = 0;
+
+  //  virtual StatusCode regSharedHist(const std::string& name, TH1*&) = 0;
+  //  virtual StatusCode regSharedHist(const std::string& name, std::unique_ptr<TH1>&) = 0;
+  virtual StatusCode getSharedHist(const std::string& name, 
+                                   LockedHandle<TH1>&) const = 0;
+
+  virtual StatusCode regSharedHist(const std::string& name, std::unique_ptr<TH1>&,
+                                   LockedHandle<TH1>&) = 0;
+  virtual StatusCode regSharedHist(const std::string& name, std::unique_ptr<TH2>&,
+                                   LockedHandle<TH2>&) = 0;
+  virtual StatusCode regSharedHist(const std::string& name, std::unique_ptr<TH3>&,
+                                   LockedHandle<TH3>&) = 0;
+
 
   virtual StatusCode regTree( const std::string& name ) = 0;
   virtual StatusCode regTree( const std::string& name, TTree* )        = 0;

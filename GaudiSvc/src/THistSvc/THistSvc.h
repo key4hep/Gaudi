@@ -35,9 +35,21 @@ public:
   StatusCode regHist( const std::string& name, TH2* ) override;
   StatusCode regHist( const std::string& name, TH3* ) override;
 
-  StatusCode getHist( const std::string& name, TH1*& ) const override;
-  StatusCode getHist( const std::string& name, TH2*& ) const override;
-  StatusCode getHist( const std::string& name, TH3*& ) const override;
+  StatusCode getHist(const std::string& name, TH1*&, size_t ind=0) const override;
+  StatusCode getHist(const std::string& name, TH2*&, size_t ind=0) const override;
+  StatusCode getHist(const std::string& name, TH3*&, size_t ind=0) const override;
+
+  //  StatusCode regSharedHist(const std::string& name, TH1*&) override;
+  //  StatusCode regSharedHist(const std::string& name, std::unique_ptr<TH1>&) override;
+  StatusCode getSharedHist(const std::string& name, LockedHandle<TH1>&) const override;
+
+  StatusCode regSharedHist(const std::string& name, std::unique_ptr<TH1>&,
+                           LockedHandle<TH1>&);
+  StatusCode regSharedHist(const std::string& name, std::unique_ptr<TH2>&,
+                           LockedHandle<TH2>&);
+  StatusCode regSharedHist(const std::string& name, std::unique_ptr<TH3>&,
+                           LockedHandle<TH3>&);
+
 
   StatusCode regTree( const std::string& name ) override;
   StatusCode regTree( const std::string& name, TTree* ) override;
@@ -79,53 +91,83 @@ protected:
   ~THistSvc() override = default;
 
 private:
-  class GlobalDirectoryRestore
-  {
+
+  typedef std::recursive_mutex THistSvcMutex_t;
+
+  class GlobalDirectoryRestore {
   public:
-    GlobalDirectoryRestore();
+    GlobalDirectoryRestore(THistSvcMutex_t& mut);
     ~GlobalDirectoryRestore();
 
   private:
     TDirectory* m_gd;
     TFile* m_gf;
     int m_ge;
+    std::lock_guard<THistSvcMutex_t> m_lock;
   };
 
   enum Mode { READ, WRITE, UPDATE, APPEND, SHARE, INVALID };
 
+  typedef std::mutex histMut_t;
+
   struct THistID {
-    std::string id;
-    bool temp;
-    TObject* obj;
-    TFile* file;
-    Mode mode;
+    std::string id     {""};
+    bool        temp   {true};
+    TObject*    obj    {nullptr};
+    TFile*      file   {nullptr};
+    Mode        mode   {INVALID};
+    histMut_t*  mutex  {nullptr};
+    bool        shared {false};
 
-    THistID() : id( "" ), temp( true ), obj( 0 ), file( 0 ), mode( INVALID ) {}
-    THistID( const THistID& rhs ) : id( rhs.id ), temp( rhs.temp ), obj( rhs.obj ), file( rhs.file ), mode( rhs.mode )
-    {
+    THistID() = default;
+    THistID(const THistID& rhs) = default;
+    THistID(std::string& i, bool& t, TObject* o, TFile* f)
+      : id(i), temp(t), obj(o), file(f) {
     }
-    THistID( std::string& i, bool& t, TObject* o, TFile* f ) : id( i ), temp( t ), obj( o ), file( f ), mode( INVALID )
-    {
-    }
-    THistID( std::string& i, bool& t, TObject* o, TFile* f, Mode m )
-        : id( i ), temp( t ), obj( o ), file( f ), mode( m )
-    {
+    THistID(std::string& i, bool& t, TObject* o, TFile* f, Mode m)
+      : id(i), temp(t), obj(o), file(f), mode(m) {
     }
 
-    bool operator<( THistID const& rhs ) const { return ( obj < rhs.obj ); }
+    void reset() { id = ""; temp=true; obj=nullptr; file=nullptr; mode=INVALID;
+      mutex = nullptr; shared=false; }
+
+    bool operator < (THistID const &rhs) const {
+      return (obj < rhs.obj);
+    }
+
+    friend std::ostream& operator<< (std::ostream& ost, const THistID& hid) {
+      ost << "id: " << hid.id << " t: " << hid.temp << " s: " << hid.shared
+          << " M: " << hid.mode << " m: " << hid.mutex << " o: " << hid.obj
+          << " " << hid.obj->IsA()->GetName();
+       return ost;
+    }
   };
 
+  // class THistIDHash {
+  //   std::size_t operator()( const THistID& id) const {
+  //     return ( id.__hash__() );
+  //   }
+  // }
+    
+
+
   template <typename T>
-  StatusCode regHist_i( T* hist, const std::string& name );
+  StatusCode regHist_i(T* hist, const std::string& name, bool shared, THistID*& hid);
   template <typename T>
-  StatusCode getHist_i( const std::string& name, T*& hist, bool quiet = false ) const;
+  StatusCode getHist_i(const std::string& name, T*& hist, const size_t& ind=0, 
+                       bool quiet=false) const;
   template <typename T>
   StatusCode readHist_i( const std::string& name, T*& hist ) const;
 
-  StatusCode readHist( const std::string& name, TH1*& ) const;
-  StatusCode readHist( const std::string& name, TH2*& ) const;
-  StatusCode readHist( const std::string& name, TH3*& ) const;
-  StatusCode readTree( const std::string& name, TTree*& ) const;
+  template <typename T>
+  StatusCode regSharedHist_i(const std::string& id, std::unique_ptr<T>& hist,
+                             LockedHandle<T>& lh);
+
+
+  StatusCode readHist(const std::string& name, TH1*&) const;
+  StatusCode readHist(const std::string& name, TH2*&) const;
+  StatusCode readHist(const std::string& name, TH3*&) const;
+  StatusCode readTree(const std::string& name, TTree*&) const;
 
   void updateFiles();
   StatusCode write();
@@ -149,7 +191,13 @@ private:
 
   void copyFileLayout( TDirectory*, TDirectory* );
 
-  void MergeRootFile( TDirectory* target, TDirectory* source );
+
+  size_t findHistID(const std::string& id, const THistID*& hid, 
+                    const size_t& index=0) const;
+
+  void dump() const;
+
+  ////////
 
   Gaudi::Property<int> m_autoSave{this, "AutoSave", 0};
   Gaudi::Property<int> m_autoFlush{this, "AutoFlush", 0};
@@ -170,14 +218,26 @@ private:
   /// registered by the setupOutputFile callback method
   std::set<std::string> m_alreadyConnectedOutFiles;
 
-  typedef std::map<std::string, THistID> uidMap;
-  typedef std::multimap<std::string, THistID> idMap;
-  typedef std::map<TObject*, THistID> objMap;
+
+  typedef std::map<std::string, THistID> uidXMap;
+  typedef std::multimap<std::string, THistID> idXMap;
   typedef std::multimap<std::string, std::string> streamMap;
 
-  uidMap m_uids;
-  idMap m_ids;
-  objMap m_tobjs;
+  uidXMap m_uidsX;
+  idXMap  m_idsX;
+
+  // containers for fast lookups
+  typedef std::vector<THistID> vhid_t;          // same uid for all elements in vec
+  typedef std::list< vhid_t* > hlist_t;                          // all THistIDs
+  typedef std::unordered_map<std::string, vhid_t*> uidMap_t;     // uid: /stream/name -> vhid
+  typedef std::unordered_multimap<std::string, vhid_t*> idMap_t; // name -> vhid
+  typedef std::unordered_map<TObject*, std::pair<vhid_t*,size_t> > objMap_t;
+
+  hlist_t  m_hlist;
+  uidMap_t m_uids;
+  idMap_t  m_ids;
+
+  objMap_t  m_tobjs;
 
   std::map<std::string, std::pair<TFile*, Mode>> m_files; // stream->file
   streamMap m_fileStreams;                                // fileName->streams
@@ -189,11 +249,17 @@ private:
 
   mutable std::string m_curstream;
 
+  mutable THistSvcMutex_t m_svcMut;
+
   IIncidentSvc* p_incSvc = nullptr;
   IFileMgr* p_fileMgr    = nullptr;
 
   StatusCode rootOpenAction( FILEMGR_CALLBACK_ARGS );
   StatusCode rootOpenErrAction( FILEMGR_CALLBACK_ARGS );
+
+  void dumpVHID(const vhid_t*) const;
+
+
 };
 
 #ifndef GAUDISVC_THISTSVC_ICC
