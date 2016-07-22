@@ -25,8 +25,8 @@ namespace Gaudi { namespace Functional {
        // is that only it has a working declareProperty for handles, but eg.
        // Algorithm does have a template one that matches, but does the wrong
        // thing...
-       static_assert( std::is_base_of<GuadiAlgorithm,base_class>::value,
-                      "BaseClass must inherit from GuadiAlgorithm");
+       static_assert( std::is_base_of<GaudiAlgorithm,base_class>::value,
+                      "BaseClass must inherit from GaudiAlgorithm");
    public:
        constexpr static std::size_t N_in = sizeof...(In);
        using KeyValue  = std::pair<std::string, std::string>;
