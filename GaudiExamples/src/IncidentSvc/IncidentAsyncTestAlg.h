@@ -2,6 +2,7 @@
 #define GAUDIEXAMPLES_INCIDENTASYNCTESTALG_H_
 
 #include "GaudiKernel/Algorithm.h"
+#include "GaudiKernel/DataObjectHandle.h"
 #include <memory>
 
 class IIncidentSvc;
