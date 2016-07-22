@@ -20,6 +20,7 @@ namespace Gaudi { namespace Functional {
        constexpr static std::size_t N = sizeof...(In);       // the number of inputs
        using KeyValues = std::array<KeyValue,N>;
 
+       // TODO: can we, for N=1, accept KeyValue instead of KeyValues? -- or replace std::array<KeyValue,1> with KeyValue???
        FilterPredicate(const std::string& name, ISvcLocator* locator,
                        const KeyValues& inputs);
 

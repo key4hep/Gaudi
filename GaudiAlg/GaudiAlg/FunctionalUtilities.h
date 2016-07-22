@@ -23,7 +23,7 @@ namespace Gaudi { namespace Functional {
       return concat_alternatives(std::initializer_list<std::string>{ s... });
    }
 
-   inline void updateReadHandleLocation(Algorithm& parent, const std::string& prop, const std::string& newLoc) {
+   inline void updateHandleLocation(IProperty& parent, const std::string& prop, const std::string& newLoc) {
         // "parse" the current text representation of the datahandle,
         // and then update the first token (the default location).
         // Ugly, but I don't see any better way of doing this...
@@ -31,11 +31,15 @@ namespace Gaudi { namespace Functional {
         // of a datahandle property...
         std::string s;
         if (!parent.getProperty(prop,s))
-            throw GaudiException( parent.name() + " does not have the requested property \"" + prop + "\"",
-                                  parent.name(), StatusCode::FAILURE );
+            throw GaudiException( "Could not get the requested property \"" + prop + "\"",
+                                  "updateHandleLocation", StatusCode::FAILURE );
         s.replace(0,s.find("|"),newLoc); // tokens are seperated by |
         parent.setProperty(prop,s).ignore(); // first token is the default location
     }
+
+   [[deprecated("please use updateHandleLocation instead")]]
+   inline void updateReadHandleLocation(IProperty& parent, const std::string& prop, const std::string& newLoc)
+   { return updateHandleLocation(parent,prop,newLoc); }
 
 namespace Traits {
 

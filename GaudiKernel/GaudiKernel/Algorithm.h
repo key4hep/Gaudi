@@ -421,7 +421,8 @@ public:
    *  @param doc      the documentation string
    *  @return the actual property objects
    */
-  template <class T>
+  template <typename T, typename = typename std::enable_if<!std::is_base_of<GaudiHandleBase,T>::value
+                                                         &&!std::is_base_of<Gaudi::DataHandle,T>::value>::type>
   Property* declareProperty
   ( const std::string& name              ,
     T&                 property          ,
