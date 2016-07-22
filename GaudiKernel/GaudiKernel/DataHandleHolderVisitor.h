@@ -9,10 +9,13 @@
 class DHHVisitor : public IDataHandleVisitor {
 public:
   DHHVisitor(DataObjIDColl& ido, DataObjIDColl& odo);
+  const DataObjIDColl& ignoredInpKeys() const { return m_ign_i; }
+  const DataObjIDColl& ignoredOutKeys() const { return m_ign_o; }
   
   virtual void visit(const IDataHandleHolder* idhh);
 private:
   DataObjIDColl &m_ido, &m_odo;
+  DataObjIDColl m_ign_i, m_ign_o;
   
 };
 

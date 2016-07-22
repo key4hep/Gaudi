@@ -213,8 +213,14 @@ StatusCode Algorithm::sysInitialize() {
     for (auto h : m_inputDataObjs) {
       debug() << "\n  + INPUT  " << h;
     }
+    for (auto id : avis.ignoredInpKeys()) {
+      debug() << "\n  + INPUT IGNORED " << id;
+    }
     for (auto h : m_outputDataObjs) {
       debug() << "\n  + OUTPUT " << h;
+    }
+    for (auto id : avis.ignoredOutKeys()) {
+      debug() << "\n  + OUTPUT IGNORED " << id;
     }
     debug() << endmsg;
   }
@@ -1012,28 +1018,52 @@ void Algorithm::initToolHandles() const{
                 << " not used: not registering any of its Tools" << endmsg;
     } else {
       if (UNLIKELY(msgLevel(MSG::DEBUG)))
-        debug() << "Registering all Tools in ToolHandleArray "
-                << thArr->propertyName() ;
-      for (auto th_name : thArr->typesAndNames()) {
-        if (UNLIKELY(msgLevel(MSG::DEBUG)))
-          debug() << std::endl << "    + " << th_name;
-        if (toolSvc()->retrieveTool(th_name, tool, this).isSuccess()) {
-          if (UNLIKELY(msgLevel(MSG::DEBUG)))
-            debug() << " (private)";
-          m_tools.push_back(tool);
-        } else if (toolSvc()->retrieveTool(th_name, tool, 0).isSuccess()) {
-          if (UNLIKELY(msgLevel(MSG::DEBUG)))
-            debug() << " (public)";
-          m_tools.push_back(tool);
-        } else {
-          if (UNLIKELY(msgLevel(MSG::DEBUG)))
-            debug() << " - ERROR" << endmsg;
-          warning() <<  "Error retrieving Tool " << th_name
-                    << " in ToolHandleArray" << thArr->propertyName()
-                    << ". Not registered" << endmsg;
-        }
+        debug() << "Registering all Tools in ToolHandleArray " 
+                << thArr->propertyName() << endmsg;
+      // Iterate over its tools:
+      for( auto toolHandle : thArr->getBaseArray() ) {
+         // Try to cast it into a BaseToolHandle pointer:
+         BaseToolHandle* bth = dynamic_cast< BaseToolHandle* >( toolHandle );
+         if( bth ) {
+            // If the cast was successful, the code is pretty simple:
+            tool = bth->get();
+            if( UNLIKELY( msgLevel( MSG::DEBUG ) ) ) {
+               debug() << "Adding "
+                       << ( bth->isPublic() ? "public" : "private" )
+                       << " ToolHandle tool " << tool->name()
+                       << " (" << tool->type() << ") from ToolHandleArray "
+                       << thArr->propertyName() << endmsg;
+            }
+            m_tools.push_back( tool );
+         } else {
+            // If it wasn't for some strange reason, then fall back on the
+            // logic implemented previously:
+            if( toolSvc()->retrieveTool( toolHandle->typeAndName(), tool,
+                                         this, false ).isSuccess() ) {
+               if( UNLIKELY( msgLevel( MSG::DEBUG ) ) ) {
+                  debug() << "Adding private"
+                          << " ToolHandle tool " << tool->name()
+                          << " (" << tool->type() << ") from ToolHandleArray "
+                          << thArr->propertyName() << endmsg;
+               }
+               m_tools.push_back( tool );
+            } else if( toolSvc()->retrieveTool( toolHandle->typeAndName(), tool,
+                                                0, false ).isSuccess() ) {
+               if( UNLIKELY( msgLevel( MSG::DEBUG ) ) ) {
+                  debug() << "Adding public"
+                          << " ToolHandle tool " << tool->name()
+                          << " (" << tool->type() << ") from ToolHandleArray "
+                          << thArr->propertyName() << endmsg;
+               }
+               m_tools.push_back( tool );
+            } else {
+               warning() <<  "Error retrieving Tool "
+                         << toolHandle->typeAndName()
+                         << " in ToolHandleArray " << thArr->propertyName()
+                         << ". Not registered" << endmsg;
+            }
+         }
       }
-      if (UNLIKELY(msgLevel(MSG::DEBUG))) debug() << endmsg;
     }
   }
 
