@@ -8,8 +8,10 @@
 
 #include <sstream>
 #include <map>
-#include <boost/tokenizer.hpp>
-#include <boost/algorithm/string.hpp>
+#include "boost/tokenizer.hpp"
+#include "boost/algorithm/string.hpp"
+#include "boost/range/algorithm_ext/erase.hpp"
+#include "boost/algorithm/string/classification.hpp"
 
 namespace Gaudi {
   namespace Parsers {
@@ -33,54 +35,33 @@ namespace Gaudi {
           std::cerr << "Unable to instantiante DataObjectHandle from Property: " << s
                     << " :: Format is bad" << std::endl;
           //std::cerr << "Need either 3 or 4 tokens. Got: " << std::endl;
-          //for (auto i = tokens.begin(); i != tokens.end(); ++i ) {
-          //    std::cerr <<"token: \"" << *i  <<"\"" << std::endl;
-          //}
-          //std::string stack;
-          //System::backTrace(stack, 30, 0);
-          //std::cerr << "Stack Trace:\n" << stack  << std::endl;
           return StatusCode::FAILURE;
         }
 
-        std::string k = *it;
-        boost::erase_all(k,"'");
-        boost::erase_all(k,"(");
-        boost::erase_all(k,")");
+        std::string k = *it++;
+        boost::remove_erase_if(k,boost::algorithm::is_any_of("'()"));
 
-        ++it;
-
-        int m = std::stoi(*it);
-        ++it;
-
+        int m = std::stoi(*it++);
         if (v.mode() != m) {
-          std::cerr << "ERROR: mismatch in access mode for DataObjectHandle "
-                    << v.fullKey() << "  " << v.mode() << " " << m << std::endl;
-          return StatusCode::FAILURE;
+          std::cerr << "WARNING: mismatch in access mode for DataObjectHandle "
+                    << v.fullKey() << "  " << v.mode() << " " << m 
+                    << " ignoring  the latter, specified value" << std::endl;
         }
-
-
-        bool o = bool(std::stoi(*it));
+        bool o = bool(std::stoi(*it++));
 
         v.setOptional(o);
         v.setKey( DataObjID(k) );
 
         // std::cout << "--> key: " << k << "  mode: " << m << "  opt: " << o << std::endl;
 
-        if (nToks == 4) {
-          // now parse the alt addresses
-          ++it;
-          std::string alt = *it;
-          std::vector<std::string> av = v.alternativeDataProductNames();
+        if (nToks == 4) { // now parse the alt addresses
+          std::string alt = *it++;
           boost::char_separator<char> sep2("&");
           tokenizer tok2(alt,sep2);
-
-          for (auto it2 : tok2 ) {
-            av.push_back(it2);
-            // std::cout << "          altA: " << it2 << std::endl;
-          }
-
+          // do we really want to _append_ instead of _assign_ ?
+          std::vector<std::string> av = v.alternativeDataProductNames();
+          for (auto it2 : tok2 ) av.push_back(it2);
           v.setAlternativeDataProductNames(av);
-
         }
       }
 
@@ -93,7 +74,6 @@ namespace Gaudi {
 
     std::ostream&
     toStream(const DataObjectHandleBase& v, std::ostream& o) {
-      //      std::cerr << "toStream(DataObjectHandleBase) : " << v << std::endl;
       return o << v;
     }
 
