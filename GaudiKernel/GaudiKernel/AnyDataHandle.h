@@ -29,7 +29,7 @@ public:
   /**
    * Register object in transient store
    */
-  void put (T&& object);
+  const T* put (T&& object);
 
 };
 
@@ -49,10 +49,10 @@ const T* AnyDataHandle<T>::get() const {
 }
 
 template<typename T>  
-void AnyDataHandle<T>::put (T&& objectp){
+const T* AnyDataHandle<T>::put (T&& objectp){
 
   AnyDataWrapper<T>* dw = new AnyDataWrapper<T>(std::move(objectp));  
-  DataObjectHandle<AnyDataWrapper<T> >::put(dw);
+  return &DataObjectHandle<AnyDataWrapper<T> >::put(dw)->getData();
 
 }
 
