@@ -829,27 +829,9 @@ class GAUDI_API GaudiTool: public GaudiCommon<AlgTool>
 
  public:
   using AlgTool::declareProperty;
-  template <class T>
-    Property* declareProperty
-    ( const std::string& name,
-      DataObjectHandle<T>&     hndl,
-      const std::string& doc = "none" ) const
-  {
-    
-    if ( hndl.mode() & Gaudi::DataHandle::Reader ) {      
-      (const_cast<GaudiTool*>(this))->AlgTool::declareInput(&hndl);
-    }
-    
-    if ( hndl.mode() & Gaudi::DataHandle::Writer ) {      
-      (const_cast<GaudiTool*>(this))->AlgTool::declareOutput(&hndl);
-    }
-    
-    if (!hndl.owner()) hndl.setOwner((const_cast<GaudiTool*>(this)));
-    
-    return m_propertyMgr->declareProperty(name, hndl, doc);
-  }
-
-
+  Property* declareProperty( const std::string& name,
+                             DataObjectHandleBase&     hndl,
+                             const std::string& doc = "none" ) const;
 };
 // ============================================================================
 
