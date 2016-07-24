@@ -157,14 +157,15 @@ DataObjectHandleBase::init() {
     m_MS = algorithm->msgSvc();
   } else {
     AlgTool* tool = dynamic_cast<AlgTool*>( owner() );
-    if (!tool) {
+    if (tool) {
+        m_EDS = tool->evtSvc();
+        m_MS = tool->msgSvc();
+    } else {
       throw GaudiException( "owner is not an AlgTool or Algorithm" ,
 			    "Invalid Cast", StatusCode::FAILURE) ;
     }
   }
-
   m_init = true;
-
 }
 
 //---------------------------------------------------------------------------
