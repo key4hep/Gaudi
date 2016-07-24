@@ -38,6 +38,7 @@ DataObjectHandleBase::DataObjectHandleBase(DataObjectHandleBase&& other) {
 
 //---------------------------------------------------------------------------
 DataObjectHandleBase& DataObjectHandleBase::operator=(const DataObjectHandleBase& other) {
+  Gaudi::DataHandle::operator=(other);
   // avoid modification of searchDone and altNames in other while we are copying
   std::lock_guard<std::mutex> guard(other.m_searchMutex);
   m_EDS = other.m_EDS;
