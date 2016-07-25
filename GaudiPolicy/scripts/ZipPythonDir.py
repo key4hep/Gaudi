@@ -13,9 +13,6 @@ import re
 import codecs
 from StringIO import StringIO
 
-# Add to the path the entry needed to import the locker module.
-import locker
-
 ## Class for generic exception coming from the zipdir() function
 class ZipdirError(RuntimeError):
     pass
@@ -138,7 +135,6 @@ def zipdir(directory, no_pyc = False):
         # create the file, they do not truncate each other file
         zipFile = open(filename, "ab")
 
-    locker.lock(zipFile)
     try:
         if zipfile.is_zipfile(filename):
             infolist = zipfile.ZipFile(filename).infolist()
@@ -174,7 +170,6 @@ def zipdir(directory, no_pyc = False):
         log.error("Probably you forgot the line '# -*- coding: utf-8 -*-'")
         sys.exit(1)
     finally:
-        locker.unlock(zipFile)
         zipFile.close()
 
 ## Main function of the script.
@@ -202,10 +197,8 @@ def main(argv = None):
         level = logging.WARNING
     if opts.debug:
         level = logging.DEBUG
-    logging.basicConfig(level = level)
+    logging.basicConfig(level=level)
 
-    if "GAUDI_BUILD_LOCK" in os.environ:
-        _scopedLock = locker.LockFile(os.environ["GAUDI_BUILD_LOCK"], temporary =  True)
     # zip all the directories passed as arguments
     for d in args:
         zipdir(d, opts.no_pyc)
