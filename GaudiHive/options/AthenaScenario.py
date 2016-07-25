@@ -1,7 +1,11 @@
 import json
 from Gaudi.Configuration import *
 # ============================================================================
-from Configurables import GaudiExamplesCommonConf, CPUCruncher,HiveEventLoopMgr, HiveWhiteBoard
+from Configurables import (GaudiExamplesCommonConf,
+                           CPUCruncher,
+                           HiveWhiteBoard,
+                           ForwardSchedulerSvc,
+                           HiveSlimEventLoopMgr)
 #GaudiExamplesCommonConf()
 # ============================================================================
 
@@ -10,8 +14,8 @@ from Configurables import GaudiExamplesCommonConf, CPUCruncher,HiveEventLoopMgr,
 
 NUMBEROFEVENTS = 1
 NUMBEROFEVENTSINFLIGHT = 1
-NUMBEROFALGOSINFLIGHT = 1000
-NUMBEROFTHREADS = 1
+NUMBEROFALGOSINFLIGHT = 1
+NUMBEROFTHREADS = NUMBEROFALGOSINFLIGHT
 CLONEALGOS = False
 DUMPQUEUES = False
 VERBOSITY = 3
@@ -68,6 +72,7 @@ def load_athena_scenario(filename):
   print len(cpu_cruncher_algos)
   return cpu_cruncher_algos,cpu_cruncher_algos_inputs
 
+
 # Set output level threshold 2=DEBUG, 3=INFO, 4=WARNING, 5=ERROR, 6=FATAL )
 ms = MessageSvc()
 ms.OutputLevel     =  Verbosity
@@ -76,21 +81,20 @@ crunchers,inputs = load_athena_scenario("Athena_loopfixed.json")
 
 whiteboard   = HiveWhiteBoard("EventDataSvc", EventSlots = NumberOfEventsInFlight)
 
-# Setup the Event Loop Manager
-evtloop = HiveEventLoopMgr()
-evtloop.MaxAlgosParallel = NumberOfAlgosInFlight
-evtloop.MaxEventsParallel = NumberOfEventsInFlight
-evtloop.NumThreads = NumberOfThreads
-evtloop.CloneAlgorithms = CloneAlgos
-evtloop.DumpQueues = DumpQueues
-evtloop.AlgosDependencies = inputs
+slimeventloopmgr = HiveSlimEventLoopMgr(OutputLevel=DEBUG)
+
+scheduler = ForwardSchedulerSvc(MaxAlgosInFlight = NumberOfAlgosInFlight,
+                                ThreadPoolSize = NumberOfThreads,
+                                useGraphFlowManagement = True,
+                                OutputLevel=INFO)
 
 # And the Application Manager
 app = ApplicationMgr()
 app.TopAlg = crunchers
 app.EvtSel = "NONE" # do not use any event input
 app.EvtMax = NumberOfEvents
-app.EventLoop = evtloop
+app.EventLoop = slimeventloopmgr
 app.ExtSvc =[whiteboard]
+app.MessageSvcType = "InertMessageSvc"
 #app.MessageSvcType = "TBBMessageSvc"
 
