@@ -244,7 +244,8 @@ public:
    *  @param doc      the documentation string
    *  @return the actual property objects
    */
-  template <class T>
+  template <typename T, typename = typename std::enable_if<!std::is_base_of<GaudiHandleBase,T>::value
+                                                         &&!std::is_base_of<Gaudi::DataHandle,T>::value>::type>
     Property* declareProperty
     ( const std::string& name         ,
       T&                 property     ,
@@ -262,16 +263,13 @@ public:
   }
   
   template<class T>
-    
     Property* declareProperty(const std::string& name,
                               ToolHandle<T>& hndl,
-                              const std::string& doc = "none" ) const {
-    
+                            const std::string& doc = "none" ) const 
+  {
     AlgTool* a = const_cast<AlgTool*>(this);
     a->declareTool(hndl).ignore();
-    
     return m_propertyMgr->declareProperty(name, hndl, doc);
-    
   }
   
   template<class T>
@@ -366,8 +364,7 @@ public:
                                  std::string toolTypeAndName = "",
                                  bool createIf = true) {
 
-		if (toolTypeAndName == "")
-      toolTypeAndName = handle.typeAndName();
+		if (toolTypeAndName.empty() ) toolTypeAndName = handle.typeAndName();
 
 		StatusCode sc = handle.initialize(toolTypeAndName, 0, createIf);
 		if (UNLIKELY(!sc)) {
