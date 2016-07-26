@@ -54,7 +54,7 @@ DataObjectHandleBase& DataObjectHandleBase::operator=(const DataObjectHandleBase
 }
 
 //---------------------------------------------------------------------------
-DataObjectHandleBase::DataObjectHandleBase(const DataObjID & k,
+DataObjectHandleBase::DataObjectHandleBase(const DataObjID& k,
 				      Gaudi::DataHandle::Mode a,
 				      IDataHandleHolder* owner,
                       std::vector<std::string> alternates):
@@ -62,7 +62,7 @@ DataObjectHandleBase::DataObjectHandleBase(const DataObjID & k,
 
 //---------------------------------------------------------------------------
 
-DataObjectHandleBase::DataObjectHandleBase(const std::string & k,
+DataObjectHandleBase::DataObjectHandleBase(const std::string& k,
 				      Gaudi::DataHandle::Mode a,
 				      IDataHandleHolder* owner):
   DataObjectHandleBase(DataObjID(head_alternates(k)), a, owner, unpack(tail_alternates(k))){}
@@ -70,46 +70,56 @@ DataObjectHandleBase::DataObjectHandleBase(const std::string & k,
 //---------------------------------------------------------------------------
 DataObject* DataObjectHandleBase::fetch() const {
 
-  assert(m_init);
   DataObject* p = nullptr;
+  if (LIKELY(m_searchDone)) { // fast path: searchDone, objKey is in its final state
+      m_EDS->retrieveObject(objKey(), p).ignore();
+      return p;
+  }
+
+  // slow path -- move into seperate function to improve code generation?
+
+  // convenience towards users -- remind them to register!
+  if (!m_init) { 
+    MsgStream log(m_MS,m_owner->name() + ":DataObjectHandle");
+    log << MSG::FATAL << "uninitialized data handle --  "
+        << "you probably forgot to declare it with either "
+        << "declareProperty, declareInput or declareOutput" << endmsg;
+  }
+
+  // as m_searchDone is not true yet, objKey may change... so in this
+  // branch we _first_ grab the mutex, to avoid objKey changing while we use it
+
+  // take a lock to be sure we only execute this once at a time
+  std::lock_guard<std::mutex> guard(m_searchMutex);
 
   StatusCode sc = m_EDS->retrieveObject(objKey(), p);
-  if ( UNLIKELY( sc.isFailure() ) ) {
-    if (!m_searchDone) {
-      // take a lock to be sure we only execute this once at a time
-      std::lock_guard<std::mutex> guard(m_searchMutex);
-      // double check that search was not done now that the lock is taken
-      if (!m_searchDone) {
-        // let's try our alternatives (if any)
-        auto alt = std::find_if( alternativeDataProductNames().begin(),
-                                 alternativeDataProductNames().end(),
-                                 [&](const std::string& n) {
-                                   return m_EDS->retrieveObject(n,p).isSuccess();
-                                 } );
-        if (alt!=alternativeDataProductNames().end()) {
-          MsgStream log(m_MS,m_owner->name() + ":DataObjectHandle");
-          log << MSG::INFO <<  ": could not find \"" << objKey()
-              << "\" -- using alternative source: \"" << *alt << "\" instead"
-              << endmsg;
-          // found something -- set it as default,
-          setKey(*alt);
-          // and zero out the alternatives
-          setAlternativeDataProductNames( { } );
-        }
-        m_searchDone = true;
-      } else {
-        // we need to retry the retrieveObject as m_searchDone may have been
-        // modified between our first try and the taking of the lock
-        // In such a case, some other thread may have modified the key
-        StatusCode sc = m_EDS->retrieveObject(objKey(), p);
-      }
-    } else {
-      // we need to retry the retrieveObject as m_searchDone may have been
-      // modified between our first try and the check we did
-        // In such a case, some other thread may have modified the key
-      StatusCode sc = m_EDS->retrieveObject(objKey(), p);
-    }
+  if (m_searchDone) { // another thread has done the search while we were blocked 
+                      // on the mutex. As a result, nothing left to do but return...
+      sc.ignore();
+      return p;
   }
+
+  if (!sc.isSuccess()) {
+      // let's try our alternatives (if any)
+      auto alt = std::find_if( alternativeDataProductNames().begin(),
+                               alternativeDataProductNames().end(),
+                               [&](const std::string& n) {
+                                 return m_EDS->retrieveObject(n,p).isSuccess();
+                               } );
+      if (alt!=alternativeDataProductNames().end()) {
+        MsgStream log(m_MS,m_owner->name() + ":DataObjectHandle");
+        log << MSG::INFO <<  ": could not find \"" << objKey()
+            << "\" -- using alternative source: \"" << *alt << "\" instead"
+            << endmsg;
+        // found something -- set it as default; this is not atomic, but
+        // at least in `fetch` there is no use of `objKey` that races with
+        // this assignment... (but there may be others!)
+        setKey(*alt);
+        // and zero out the alternatives
+        setAlternativeDataProductNames( { } );
+      }
+  }
+  m_searchDone = true;
   return p;
 }
 
@@ -161,7 +171,7 @@ DataObjectHandleBase::init() {
         m_EDS = tool->evtSvc();
         m_MS = tool->msgSvc();
     } else {
-      throw GaudiException( "owner is not an AlgTool or Algorithm" ,
+      throw GaudiException( "owner is neither AlgTool nor Algorithm" ,
 			    "Invalid Cast", StatusCode::FAILURE) ;
     }
   }
