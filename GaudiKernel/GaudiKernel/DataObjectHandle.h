@@ -29,12 +29,8 @@ template<typename T>
 class DataObjectHandle : public DataObjectHandleBase {
 
 public:
+  using DataObjectHandleBase::DataObjectHandleBase;
 
-  DataObjectHandle();
-  DataObjectHandle(const DataObjID& k, Gaudi::DataHandle::Mode a,
-		   IDataHandleHolder* o);
-  DataObjectHandle(const std::string& k, Gaudi::DataHandle::Mode a,
-		   IDataHandleHolder* o);
 
   /**
    * Retrieve object from transient data store
@@ -67,25 +63,6 @@ private:
   T* get(bool mustExist) const;
 
 };
-
-//---------------------------------------------------------------------------
-
-template<typename T>
-DataObjectHandle<T>::DataObjectHandle():
-  DataObjectHandleBase() {}
-
-//---------------------------------------------------------------------------
-template<typename T>
-DataObjectHandle<T>::DataObjectHandle(const DataObjID & k,
-				      Gaudi::DataHandle::Mode a,
-				      IDataHandleHolder* owner):
-  DataObjectHandleBase(k,a,owner) {}
-
-template<typename T>
-DataObjectHandle<T>::DataObjectHandle(const std::string & k,
-				      Gaudi::DataHandle::Mode a,
-				      IDataHandleHolder* owner):
-  DataObjectHandleBase(k,a,owner) {}
 
 //---------------------------------------------------------------------------
 //
