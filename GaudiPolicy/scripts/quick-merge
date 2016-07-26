@@ -33,9 +33,13 @@ if __name__ == '__main__':
                 logging.error('file %s not found', i)
             sys.exit(1)
     try:
+        # create the destination directory if missing
+        if not os.path.isdir(os.path.dirname(output)):
+            os.makedirs(os.path.dirname(output))
         with open(output, 'wb') as out:
             for input in inputs:
                 out.writelines(open(input, 'rb'))
     except:
-        os.remove(output)
+        if os.path.exists(output):
+            os.remove(output)
         raise
