@@ -126,8 +126,11 @@ namespace Gaudi { namespace Functional { namespace details {
 
     ///////////////
     namespace detail2 { // utilities for detected_or_t{,_} usage
+
         template <typename Tr> using BaseClass_  = typename Tr::BaseClass;
-        template <typename Tr, typename T> using DataObjectHandle_ = DataObjectHandle<T>;
+        template <typename Tr, typename T> using defaultHandle_ = typename std::conditional< std::is_base_of<DataObject,T>::value,
+                                                                                             DataObjectHandle<T>,
+                                                                                             AnyDataHandle<T>>::type;
         template <typename Tr, typename T> using OutputHandle_  = typename Tr::template OutputHandle<T>;
         template <typename Tr, typename T> using InputHandle_   = typename Tr::template InputHandle<T>;
     }
@@ -139,9 +142,9 @@ namespace Gaudi { namespace Functional { namespace details {
 
     // check whether Traits::{Input,Output}Handle<T> is a valid type,
     // if so, define {Input,Output}Handle_t<Traits,T> as being Traits::{Input,Output}Handle<T>
-    // else   define                                  as being DataHandle<T>
-    template <typename Tr, typename T> using OutputHandle_t = detected_or_t_< detail2::DataObjectHandle_, detail2::OutputHandle_, Tr, T>;
-    template <typename Tr, typename T> using InputHandle_t  = detected_or_t_< detail2::DataObjectHandle_, detail2::InputHandle_,  Tr, T>;
+    // else   define                                  as being DataObjectHandle<T> if T derives from DataObject, else AnyDataHandle<T>
+    template <typename Tr, typename T> using OutputHandle_t = detected_or_t_< detail2::defaultHandle_, detail2::OutputHandle_, Tr, T>;
+    template <typename Tr, typename T> using InputHandle_t  = detected_or_t_< detail2::defaultHandle_, detail2::InputHandle_,  Tr, T>;
 
     /////////
 
