@@ -47,7 +47,7 @@ class DataObjectHandleBase(object):
         return s
                
     def __repr__(self):
-        return "%s(""%s"")" % (self.__class__.__name__, self.__str__())
+        return "%s(\"%s\")" % (self.__class__.__name__, self.__str__())
     
     def toStringProperty(self):
         return self.__str__()
