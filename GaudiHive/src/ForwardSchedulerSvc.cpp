@@ -83,7 +83,7 @@ StatusCode ForwardSchedulerSvc::initialize(){
   // Get hold of the TBBSvc. This should initialize the thread pool
   m_threadPoolSvc = serviceLocator()->service("ThreadPoolSvc");
   if (!m_threadPoolSvc.isValid()) {
-    fatal() << "Error retrieving ThreadPoolSvc" << endreq;
+    fatal() << "Error retrieving ThreadPoolSvc" << endmsg;
     return StatusCode::FAILURE;
   }
 

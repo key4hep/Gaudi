@@ -255,8 +255,17 @@ void IncidentSvc::fireIncident( const Incident& incident )
     i_fireIncident(incident, "ALL");
   }
 }
-
 // ============================================================================
+void IncidentSvc::fireIncident( std::unique_ptr<Incident> incident )
+{
+  
+  DEBMSG<<"Async incident '"<<incident->type()<<"' fired on context "<<incident->context()<<endmsg;
+  auto ctx=incident->context();
+  auto res=m_firedIncidents.insert(std::make_pair(ctx,IncQueue_t()));
+  res.first->second.push(incident.release());
+}
+// ============================================================================
+
 void
 IncidentSvc::getListeners(std::vector<IIncidentListener*>& l,
                           const std::string& type) const
@@ -276,6 +285,26 @@ IncidentSvc::getListeners(std::vector<IIncidentListener*>& l,
   }
 }
 
+// ============================================================================
+
+IIncidentSvc::IncidentPack IncidentSvc::getIncidents(const EventContext* ctx){
+  IIncidentSvc::IncidentPack p;
+  if(ctx){
+    auto incs=m_firedIncidents.find(*ctx);
+    if(incs!=m_firedIncidents.end()){
+      Incident* inc(0);
+      
+      DEBMSG<<"Collecting listeners fired on context "<<*ctx<<endmsg;      
+      while(incs->second.try_pop(inc)){
+	std::vector<IIncidentListener*> ls;
+	getListeners(ls,inc->type());
+	p.incidents.emplace_back(std::move(inc));
+	p.listeners.emplace_back(std::move(ls));
+      }
+    }
+  }
+  return std::move(p);
+}
 // ============================================================================
 // The END
 // ============================================================================
