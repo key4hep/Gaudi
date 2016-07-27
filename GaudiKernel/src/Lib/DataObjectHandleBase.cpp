@@ -26,7 +26,7 @@ namespace {
     }
     std::vector<std::string> unpack(const std::string& alt) {
         std::vector<std::string> items;
-        boost::split(items, alt, boost::is_any_of(std::string{FIELD_SEP}), boost::token_compress_on);
+        if (!alt.empty()) boost::split(items, alt, boost::is_any_of(std::string{FIELD_SEP}), boost::token_compress_on);
         return items;
     }
 }
@@ -78,12 +78,13 @@ DataObject* DataObjectHandleBase::fetch() const {
 
   // slow path -- move into seperate function to improve code generation?
 
-  // convenience towards users -- remind them to register!
-  if (!m_init) { 
-    MsgStream log(m_MS,m_owner->name() + ":DataObjectHandle");
-    log << MSG::FATAL << "uninitialized data handle --  "
+  // convenience towards users -- remind them to register
+  // but as m_MS is not yet set, we cannot use a MsgStream...
+  if (!m_init) {
+    std::cerr << ( m_owner? m_owner->name() : "<UNKNOWN>:")
+        << "DataObjectHandle: uninitialized data handle --  "
         << "you probably forgot to declare it with either "
-        << "declareProperty, declareInput or declareOutput" << endmsg;
+        << "declareProperty, declareInput or declareOutput" << std::endl;;
   }
 
   // as m_searchDone is not true yet, objKey may change... so in this
@@ -93,7 +94,7 @@ DataObject* DataObjectHandleBase::fetch() const {
   std::lock_guard<std::mutex> guard(m_searchMutex);
 
   StatusCode sc = m_EDS->retrieveObject(objKey(), p);
-  if (m_searchDone) { // another thread has done the search while we were blocked 
+  if (m_searchDone) { // another thread has done the search while we were blocked
                       // on the mutex. As a result, nothing left to do but return...
       sc.ignore();
       return p;
@@ -197,10 +198,10 @@ operator<< (std::ostream& str, const DataObjectHandleBase& d) {
 
   str << "  opt: " << d.isOptional();
 
-  if (!d.alternativeDataProductNames().empty()) {
-    GaudiUtils::details::ostream_joiner(
-     str << "  alt: [", d.alternativeDataProductNames(), "," ) << "]";
-  }
+  GaudiUtils::details::ostream_joiner(
+    str << "  alt: [", d.alternativeDataProductNames(), "," ,
+    [](std::ostream& os,const std::string& s) { os << "\"" << s << "\"" ;}
+  ) << "]";
 
   return str;
 }
