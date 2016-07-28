@@ -413,7 +413,7 @@ THistSvc::readHist_i(const std::string& id, T*& hist) const {
 
 template <typename T>
 StatusCode 
-THistSvc::regSharedHist_i(const std::string& id, std::unique_ptr<T>& hist,
+THistSvc::regSharedObj_i(const std::string& id, std::unique_ptr<T>& hist,
                           LockedHandle<T>& lh) {
 
 
@@ -470,5 +470,45 @@ THistSvc::regSharedHist_i(const std::string& id, std::unique_ptr<T>& hist,
 }
 
 
+//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
+
+template <typename T>
+StatusCode 
+THistSvc::getSharedObj_i(const std::string& name, 
+                         LockedHandle<T>& hist) const {
+
+
+  GlobalDirectoryRestore restore(m_svcMut);
+
+  const THistID* hid;
+  size_t i = findHistID(name, hid);
+
+  if (i == 1) {
+
+    if ( !hid->shared ) {
+      error() << "getSharedHist: found Hist with id \"" << name
+              << "\", but it's not marked as shared"
+              << endmsg;
+      return StatusCode::FAILURE;
+    }
+    T* h1 = dynamic_cast< T*> ( hid->obj );
+    hist = LockedHandle<T> (h1, hid->mutex);
+
+    debug() << "getSharedHist: found THistID: " << *hid << endmsg;
+
+    return StatusCode::SUCCESS;
+  } else if (i == 0) {
+    error() << "no histograms matching id \"" << name << "\" found"
+            << endmsg;
+    return StatusCode::FAILURE;
+  } else {
+    info() << "multiple matches for id \"" << name << "\" found [" << i 
+           << "], probably from different streams"
+           << endmsg;
+    return StatusCode::FAILURE;
+  }
+
+
+}
 
 #endif

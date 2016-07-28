@@ -39,16 +39,16 @@ public:
   StatusCode getHist(const std::string& name, TH2*&, size_t ind=0) const override;
   StatusCode getHist(const std::string& name, TH3*&, size_t ind=0) const override;
 
-  //  StatusCode regSharedHist(const std::string& name, TH1*&) override;
-  //  StatusCode regSharedHist(const std::string& name, std::unique_ptr<TH1>&) override;
-  StatusCode getSharedHist(const std::string& name, LockedHandle<TH1>&) const override;
-
   StatusCode regSharedHist(const std::string& name, std::unique_ptr<TH1>&,
-                           LockedHandle<TH1>&);
+                           LockedHandle<TH1>&) override;
   StatusCode regSharedHist(const std::string& name, std::unique_ptr<TH2>&,
-                           LockedHandle<TH2>&);
+                           LockedHandle<TH2>&) override;
   StatusCode regSharedHist(const std::string& name, std::unique_ptr<TH3>&,
-                           LockedHandle<TH3>&);
+                           LockedHandle<TH3>&) override;
+
+  StatusCode getSharedHist(const std::string& name, LockedHandle<TH1>&) const override;
+  StatusCode getSharedHist(const std::string& name, LockedHandle<TH2>&) const override;
+  StatusCode getSharedHist(const std::string& name, LockedHandle<TH3>&) const override;
 
 
   StatusCode regTree( const std::string& name ) override;
@@ -59,8 +59,15 @@ public:
   StatusCode regGraph( const std::string& name, TGraph* ) override;
   StatusCode getGraph( const std::string& name, TGraph*& ) const override;
 
-  StatusCode deReg( TObject* obj ) override;
-  StatusCode deReg( const std::string& name ) override;
+
+  StatusCode regSharedGraph(const std::string& name, std::unique_ptr<TGraph>&,
+                            LockedHandle<TGraph>&) override;
+  StatusCode getSharedGraph(const std::string& name, 
+                            LockedHandle<TGraph>&) const override;
+
+
+  StatusCode deReg(TObject* obj) override;
+  StatusCode deReg(const std::string& name) override;
 
   std::vector<std::string> getHists() const override;
   std::vector<std::string> getTrees() const override;
@@ -85,7 +92,10 @@ public:
   void handle( const Incident& ) override;
 
   // From IIoComponent
-  StatusCode io_reinit() override;
+  StatusCode io_reinit () override;
+
+  StatusCode merge(const std::string& id) override;
+  StatusCode merge(TObject*) override;
 
 protected:
   ~THistSvc() override = default;
@@ -160,8 +170,11 @@ private:
   StatusCode readHist_i( const std::string& name, T*& hist ) const;
 
   template <typename T>
-  StatusCode regSharedHist_i(const std::string& id, std::unique_ptr<T>& hist,
+  StatusCode regSharedObj_i(const std::string& id, std::unique_ptr<T>& hist,
                              LockedHandle<T>& lh);
+
+  template <typename T>
+  StatusCode getSharedObj_i(const std::string& name, LockedHandle<T>& lh) const;
 
 
   StatusCode readHist(const std::string& name, TH1*&) const;
@@ -258,6 +271,9 @@ private:
   StatusCode rootOpenErrAction( FILEMGR_CALLBACK_ARGS );
 
   void dumpVHID(const vhid_t*) const;
+
+  StatusCode merge(const THistID&);
+  StatusCode merge(vhid_t*);
 
 
 };

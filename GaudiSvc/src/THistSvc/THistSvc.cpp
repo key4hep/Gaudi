@@ -207,44 +207,51 @@ StatusCode THistSvc::finalize()
 
 #ifndef NDEBUG
   if (m_log.level() <= MSG::DEBUG) {
-  for (const auto& uid : m_uidsX ) {
+    for (auto& itr : m_uids ) {
 
-      TObject* to = uid.second.obj;
+      THistID& thid = itr.second->at(0);
+      TObject* to = thid.obj;
 
-      string dirname( "none" );
-      if ( to && to->IsA()->InheritsFrom( "TTree" ) ) {
-        TTree* tr = dynamic_cast<TTree*>( to );
-        if ( tr->GetDirectory() != 0 ) {
-          dirname = tr->GetDirectory()->GetPath();
+    string dirname("none");
+      if (to && to->IsA()->InheritsFrom("TTree")) {
+      TTree* tr = dynamic_cast<TTree*>(to);
+      if (tr->GetDirectory() != 0) {
+        dirname = tr->GetDirectory()->GetPath();
+      }
+      } else if (to && to->IsA()->InheritsFrom("TGraph")) {
+        if (!thid.temp) {
+          dirname = thid.file->GetPath();
+          string id2(thid.id);
+        id2.erase(0,id2.find("/",1));
+        id2.erase(id2.rfind("/"), id2.length());
+        if (id2.find("/") == 0) {
+          id2.erase(0,1);
         }
-      } else if ( to && to->IsA()->InheritsFrom( "TGraph" ) ) {
-        if ( !uid.second.temp ) {
-          dirname = uid.second.file->GetPath();
-          string id2( uid.second.id );
-          id2.erase( 0, id2.find( "/", 1 ) );
-          id2.erase( id2.rfind( "/" ), id2.length() );
-          if ( id2.find( "/" ) == 0 ) {
-            id2.erase( 0, 1 );
-          }
-          dirname += id2;
-        } else {
-          dirname = "/tmp";
-        }
-      } else if ( to && to->IsA()->InheritsFrom( "TH1" ) ) {
-        TH1* th = dynamic_cast<TH1*>( to );
-        if ( th == 0 ) {
-          error() << "Couldn't dcast: " << uid.first << endmsg;
-        } else {
-          if ( th->GetDirectory() != 0 ) {
-            dirname = th->GetDirectory()->GetPath();
-          }
+        dirname += id2;
+      } else {
+        dirname = "/tmp";
+      }
+      } else if (to && to->IsA()->InheritsFrom("TH1")) {
+      TH1* th = dynamic_cast<TH1*>(to);
+      if (th == 0) {
+          m_log << MSG::ERROR << "Couldn't dcast: " << itr.first << endmsg;
+      } else {
+        if (th->GetDirectory() != 0) {
+          dirname = th->GetDirectory()->GetPath();
         }
       } else if ( !to ) {
         warning() << uid.first << " has NULL TObject ptr" << endmsg;
       }
-
-      debug() << "uid: \"" << uid.first << "\"  temp: " << uid.second.temp << "  dir: " << dirname << endmsg;
+      } else if (! to ) {
+        m_log << MSG::WARNING << itr.first << " has NULL TObject ptr"
+	      << endmsg;
     }
+
+      debug() << "finalize: " << thid << endmsg;
+      // m_log << MSG::DEBUG << "uid: \"" << itr->first << "\"  temp: "
+      //       << uid.second.temp << "  dir: " << dirname
+      //       << endmsg;
+  }
   }
 #endif
 
@@ -334,8 +341,9 @@ StatusCode THistSvc::finalize()
   m_sharedFiles.clear();
   m_fileStreams.clear();
   m_files.clear();
-  m_uidsX.clear();
-  m_idsX.clear();
+  m_uids.clear();
+  m_ids.clear();
+  m_hlist.clear();
   m_tobjs.clear();
 
   return Service::finalize();
@@ -799,32 +807,42 @@ StatusCode THistSvc::deReg( TObject* obj )
 
   auto itr = m_tobjs.find(obj);
   if (itr != m_tobjs.end()) {
+    vhid_t* vhid = itr->second.first;
     THistID hid = itr->second.first->at(itr->second.second);
 
-    auto itr2 = m_uidsX.find(hid.id);
-    if (itr2 == m_uidsX.end()) {
+    auto itr2 = m_uids.find(hid.id);
+    if (itr2 == m_uids.end()) {
       m_log << MSG::ERROR << "Problems deregistering TObject \""
             << obj->GetName()
-            << "\" with id \"" << hid.id << "\"" << endmsg;
+            << "\" with id \"" << hid.id << "\": not in uidMap" << endmsg;
       return StatusCode::FAILURE;
     }
 
     std::string id, root, rem;
     parseString( hid.id, root, rem );
 
-    auto mitr = m_idsX.equal_range(rem);
-    auto itr3 = std::find_if( mitr.first, mitr.second, [&](idXMap::const_reference i) 
-                                   { return i.second.obj == obj; } ) ;
+    auto mitr = m_ids.equal_range(rem);
+    auto itr3 = std::find_if( mitr.first, mitr.second, [&](idMap_t::const_reference i) 
+                              { return i.second->at(0).obj == obj; } ) ;
     if (itr3 == mitr.second ) {
       m_log << MSG::ERROR << "Problems deregistering TObject \""
             << obj->GetName()
-            << "\" with id \"" << hid.id << "\"" << endmsg;
+            << "\" with id \"" << hid.id << "\": not in idMap" << endmsg;
+      return StatusCode::FAILURE;
+    }
+
+    auto itr4 = m_hlist.find( vhid );
+    if (itr4 == m_hlist.end()) {
+      m_log << MSG::ERROR << "Problems deregistering TObject \""
+            << obj->GetName()
+            << "\" with id \"" << hid.id << "\": not in hlist" << endmsg;
       return StatusCode::FAILURE;
     }
 
     m_tobjs.erase(itr);
-    m_uidsX.erase(itr2);
-    m_idsX.erase(itr3);
+    m_uids.erase(itr2);
+    m_ids.erase(itr3);
+    m_hlist.erase(itr4);
 
     return StatusCode::SUCCESS;
 
@@ -962,11 +980,11 @@ std::vector<std::string> THistSvc::getHists() const
 {
 
   std::vector<std::string> names;
-  names.reserve(m_uidsX.size());
-  transform_if( std::begin(m_uidsX), std::end(m_uidsX),
+  names.reserve(m_uids.size());
+  transform_if( std::begin(m_uids), std::end(m_uids),
                 std::back_inserter(names), select1st,
-                [](uidXMap::const_reference i) { 
-                    return i.second.obj->IsA()->InheritsFrom("TH1"); }
+                [](uidMap_t::const_reference i) { 
+                  return i.second->at(0).obj->IsA()->InheritsFrom("TH1"); }
   );
   return names;
 }
@@ -980,12 +998,12 @@ std::vector<std::string> THistSvc::getTrees() const
 {
 
   std::vector<std::string> names;
-  names.reserve(m_uidsX.size());
-  transform_if( std::begin(m_uidsX), std::end(m_uidsX),
+  names.reserve(m_uids.size());
+  transform_if( std::begin(m_uids), std::end(m_uids),
                 std::back_inserter(names),
                 select1st,
-                [](uidXMap::const_reference i) { 
-                    return i.second.obj->IsA()->InheritsFrom("TTree"); }
+                [](uidMap_t::const_reference i) { 
+                  return i.second->at(0).obj->IsA()->InheritsFrom("TTree"); }
   );
   return names;
 }
@@ -999,11 +1017,11 @@ std::vector<std::string> THistSvc::getGraphs() const
 {
 
   std::vector<std::string> names;
-  names.reserve(m_uidsX.size());
-  transform_if( std::begin(m_uidsX), std::end(m_uidsX),
+  names.reserve(m_uids.size());
+  transform_if( std::begin(m_uids), std::end(m_uids),
                 std::back_inserter(names), select1st,
-                [](uidXMap::const_reference i) { 
-                    return i.second.obj->IsA()->InheritsFrom("TGraph"); }
+                [](uidMap_t::const_reference i) { 
+                  return i.second->at(0).obj->IsA()->InheritsFrom("TGraph"); }
   );
   return names;
 }
@@ -1897,70 +1915,84 @@ THistSvc::findHistID(const std::string& id, const THistID*& hid,
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode
-THistSvc::regSharedHist(const std::string& id, std::unique_ptr<TH1>& hist, 
-                        LockedHandle<TH1>& lh) {
+#define REG_SHARED_THING( FCN, OBJ )                                    \
+  StatusCode THistSvc::regShared ## FCN  (const std::string& id,        \
+                                          std::unique_ptr< OBJ >& hist, \
+                                          LockedHandle< OBJ >& lh) {    \
+    return regSharedObj_i(id,hist,lh);                                 \
+  }
 
-  return regSharedHist_i(id,hist,lh);
-
+#define GET_SHARED_THING( FCN, OBJ )                                         \
+  StatusCode THistSvc::getShared ## FCN (const std::string& name,            \
+                                          LockedHandle< OBJ >& hist) const { \
+    return getSharedObj_i( name, hist );                                    \
 }
 
-StatusCode
-THistSvc::regSharedHist(const std::string& id, std::unique_ptr<TH2>& hist, 
-                        LockedHandle<TH2>& lh) {
 
-  return regSharedHist_i(id,hist,lh);
+REG_SHARED_THING( Hist, TH1 )
+REG_SHARED_THING( Hist, TH2 )
+REG_SHARED_THING( Hist, TH3 )
+REG_SHARED_THING( Graph, TGraph )
 
-}
+GET_SHARED_THING( Hist, TH1 )
+GET_SHARED_THING( Hist, TH2 )
+GET_SHARED_THING( Hist, TH3 )
+GET_SHARED_THING( Graph, TGraph )
 
-StatusCode
-THistSvc::regSharedHist(const std::string& id, std::unique_ptr<TH3>& hist, 
-                        LockedHandle<TH3>& lh) {
 
-  return regSharedHist_i(id,hist,lh);
+// StatusCode
+// THistSvc::regSharedHist(const std::string& id, std::unique_ptr<TH1>& hist, 
+//                         LockedHandle<TH1>& lh) {
+//   return regSharedHist_i(id,hist,lh);
+// }
 
-}
+
+// StatusCode
+// THistSvc::getSharedHist(const std::string& name, LockedHandle<TH1>& hist) const {
+//   return getSharedHist_i( name, hist );
+// }
+
 
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
-StatusCode
-THistSvc::getSharedHist(const std::string& name, LockedHandle<TH1>& hist) const {
+// StatusCode
+// THistSvc::getSharedHist(const std::string& name, LockedHandle<TH1>& hist) const {
 
-  GlobalDirectoryRestore restore(m_svcMut);
+//   GlobalDirectoryRestore restore(m_svcMut);
 
-  const THistID* hid;
-  size_t i = findHistID(name, hid);
+//   const THistID* hid;
+//   size_t i = findHistID(name, hid);
 
-  //  THistID* hid = const_cast<THistID*>(hid_c);
+//   //  THistID* hid = const_cast<THistID*>(hid_c);
 
-  if (i == 1) {
+//   if (i == 1) {
 
-    if ( !hid->shared ) {
-      error() << "getSharedHist: found Hist with id \"" << name
-              << "\", but it's not marked as shared"
-              << endmsg;
-      return StatusCode::FAILURE;
-    }
-    TH1* h1 = dynamic_cast< TH1*> ( hid->obj );
-    hist = LockedHandle<TH1> (h1, hid->mutex);
+//     if ( !hid->shared ) {
+//       error() << "getSharedHist: found Hist with id \"" << name
+//               << "\", but it's not marked as shared"
+//               << endmsg;
+//       return StatusCode::FAILURE;
+//     }
+//     TH1* h1 = dynamic_cast< TH1*> ( hid->obj );
+//     hist = LockedHandle<TH1> (h1, hid->mutex);
 
-    debug() << "getSharedHist: found THistID: " << *hid << endmsg;
+//     debug() << "getSharedHist: found THistID: " << *hid << endmsg;
 
-    return StatusCode::SUCCESS;
-  } else if (i == 0) {
-    error() << "no histograms matching id \"" << name << "\" found"
-            << endmsg;
-    return StatusCode::FAILURE;
-  } else {
-    info() << "multiple matches for id \"" << name << "\" found [" << i 
-           << "], probably from different streams"
-           << endmsg;
-    return StatusCode::FAILURE;
-  }
+//     return StatusCode::SUCCESS;
+//   } else if (i == 0) {
+//     error() << "no histograms matching id \"" << name << "\" found"
+//             << endmsg;
+//     return StatusCode::FAILURE;
+//   } else {
+//     info() << "multiple matches for id \"" << name << "\" found [" << i 
+//            << "], probably from different streams"
+//            << endmsg;
+//     return StatusCode::FAILURE;
+//   }
 
 
-}
+// }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
@@ -2015,3 +2047,92 @@ THistSvc::dumpVHID(const vhid_t* vi) const {
   debug() << endmsg;
 }
 
+//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
+
+StatusCode
+THistSvc::merge(const THistID& hid) {
+  
+  return merge( hid.id );
+  
+}
+
+StatusCode
+THistSvc::merge(TObject* obj) {
+  objMap_t::iterator itr = m_tobjs.find(obj);
+  if (itr != m_tobjs.end()) {
+    return merge( itr->second.first);
+  } else {
+    error() << "merge: unknown object " << obj << endmsg;
+    return StatusCode::FAILURE;
+  }
+}
+
+StatusCode
+THistSvc::merge(const std::string& name) {
+  uidMap_t::iterator itr = m_uids.find( name );
+  
+  if (itr == m_uids.end()) {
+    error() << "merge: id \"" << name << "\" not found" << endmsg;
+    return StatusCode::FAILURE;
+  }
+  
+  return merge( itr->second );
+}
+
+
+StatusCode
+THistSvc::merge(vhid_t* vh) {
+
+  const std::string& name = vh->at(0).id;
+  if (vh->size() == 1) {
+    debug() << "merge: id: \"" 
+            << name << "\" is size 1. nothing to do" 
+            << endmsg;
+    return StatusCode::SUCCESS;
+  }
+  
+  if (! vh->at(0).obj->IsA()->InheritsFrom("TH1")) {
+    error() << "merge: id \"" << name << "\" is not a THn. Cannot merge" 
+            << endmsg;
+    return StatusCode::FAILURE;
+  }
+  
+  TList *l = new TList();
+  for (size_t i = 1; i < vh->size(); ++i) {
+    debug() << "merge: id: \"" << name 
+            << "\" adding index " << i
+            << endmsg;
+    l->Add( vh->at(i).obj );
+  }
+  
+  TH1* t0 = dynamic_cast<TH1*> (vh->at(0).obj);
+  if (t0 == 0) {
+      error() << "merge: could not dcast " << name << " index "
+              << 0 << " to TH1"
+              << endmsg;
+      return StatusCode::FAILURE;
+  }
+
+  Long64_t n = t0->Merge( l );
+  
+  debug() << "merge: id: \"" << name 
+          << "\" merged " << n << " entries"
+          << endmsg;
+  
+  for (size_t i=1; i<vh->size(); ++i) {
+    debug() << "clearing index " << i << endmsg;
+    TH1* th = dynamic_cast<TH1*>( vh->at(i).obj );
+    if (th != 0) {
+      th->Reset();
+    } else {
+      error() << "merge: could not dcast " << name << " index "
+              << i << " to TH1"
+              << endmsg;
+      return StatusCode::FAILURE;
+    }
+  }
+
+
+  return StatusCode::SUCCESS;
+
+}
