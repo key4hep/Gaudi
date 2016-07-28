@@ -6,7 +6,7 @@
 class ServiceA: public Service {
 public:
   ServiceA(const std::string& nam, ISvcLocator* svcLoc);
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
 };
 
 

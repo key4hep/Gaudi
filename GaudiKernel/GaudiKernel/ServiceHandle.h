@@ -65,7 +65,7 @@ public:
 
 protected:
  /** Do the real retrieval of the Service. */
-  StatusCode retrieve( T*& service ) const {
+  StatusCode retrieve( T*& service ) const override {
     const ServiceLocatorHelper helper(*serviceLocator(), GaudiHandleBase::messageName(), this->parentName());
     return helper.getService(GaudiHandleBase::typeAndName(), true, T::interfaceID(), (void**)&service);
   }

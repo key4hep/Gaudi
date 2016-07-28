@@ -17,11 +17,11 @@ public:
   HelloWorld(const std::string& name, ISvcLocator* pSvcLocator); 
 
   /// Three mandatory member functions of any algorithm
-  StatusCode initialize();
-  StatusCode execute();
-  StatusCode finalize();
-  StatusCode beginRun();
-  StatusCode endRun();
+  StatusCode initialize() override;
+  StatusCode execute() override;
+  StatusCode finalize() override;
+  StatusCode beginRun() override;
+  StatusCode endRun() override;
 private:
   bool m_initialized;
   /// These data members are used in the execution of this algorithm

@@ -29,12 +29,12 @@ public:
             const IInterface* parent);
 
   /// Initialize method
-  StatusCode initialize();
+  StatusCode initialize() override;
 
   /// Finalize method
-  StatusCode finalize();
+  StatusCode finalize() override;
 
-  virtual ~TestTool( ) {} ///< Destructor
+  virtual ~TestTool() override = default;
 
 private:
 

@@ -28,24 +28,24 @@ public:
   /// Standard constructor
   InertMessageSvc(const std::string& name, ISvcLocator* pSvcLocator);
 
-  virtual ~InertMessageSvc(); ///< Destructor
+  ~InertMessageSvc() override; ///< Destructor
 
   /// Initialization of the service.
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
 
   /// Finalization of the service.
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
 
   using MessageSvc::reportMessage;
 
   /// Implementation of IMessageSvc::reportMessage()
-  virtual void reportMessage(const Message& msg);
+  void reportMessage(const Message& msg) override;
 
   /// Implementation of IMessageSvc::reportMessage()
-  virtual void reportMessage(const Message& msg, int outputLevel);
+  void reportMessage(const Message& msg, int outputLevel) override;
 
   /// Implementation of IMessageSvc::reportMessage()
-  virtual void reportMessage(const StatusCode& code, const std::string& source = "");
+  void reportMessage(const StatusCode& code, const std::string& source = "") override;
 
 private:
  

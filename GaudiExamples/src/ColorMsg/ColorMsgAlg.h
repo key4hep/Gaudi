@@ -15,9 +15,9 @@ class ColorMsgAlg : public Algorithm {
 
 public:
   ColorMsgAlg (const std::string& name, ISvcLocator* pSvcLocator);
-  StatusCode initialize();
-  StatusCode execute();
-  StatusCode finalize();
+  StatusCode initialize() override;
+  StatusCode execute() override;
+  StatusCode finalize() override;
   
 private:
 

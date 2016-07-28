@@ -69,7 +69,7 @@ public:  // functions
   virtual ~AlgorithmHistory();
 
   // Class IDs
-  virtual const CLID& clID() const { return classID(); }
+  const CLID& clID() const override { return classID(); }
   static const CLID& classID();
 
   // Return the algorithm type.
@@ -85,7 +85,7 @@ public:  // functions
   const Algorithm* algorithm() const { return m_algorithm; }
 
   // Return the algorithm properties.
-  const PropertyList& properties() const { return m_properties; }
+  const PropertyList& properties() const override { return m_properties; }
 
   // Return the subalgorithm histories.
   const HistoryList& subalgorithm_histories() const
@@ -95,11 +95,11 @@ public:  // functions
   const JobHistory* jobHistory() const { return m_jobHistory; }
 
 
-  void dump(std::ostream &, const bool isXML=false, int indent=0) const;
+  void dump(std::ostream &, const bool isXML=false, int indent=0) const override;
 
-  const std::string& name() const { return algorithm_name(); }
-  const std::string& type() const { return algorithm_type(); }
-  const std::string& version() const { return algorithm_version(); }
+  const std::string& name() const override { return algorithm_name(); }
+  const std::string& type() const override { return algorithm_type(); }
+  const std::string& version() const override { return algorithm_version(); }
 
 };
 

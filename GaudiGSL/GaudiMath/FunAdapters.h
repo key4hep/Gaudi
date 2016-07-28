@@ -41,18 +41,18 @@ namespace Genfun
       /// copy constructor
       AdapterIFunction ( const AdapterIFunction& );
       /// desctructor
-      virtual ~AdapterIFunction() ;
+      ~AdapterIFunction() override;
 
-      virtual double operator() ( double a          ) const ;
+      double operator() ( double a          ) const override;
 
-      virtual double operator() ( const Argument& x ) const;
+      double operator() ( const Argument& x ) const override;
 
-      virtual unsigned int dimensionality () const { return m_dim ; }
+      unsigned int dimensionality () const override { return m_dim ; }
 
       /// Does this function have an analytic derivative?
-      virtual bool  hasAnalyticDerivative() const { return true ; }
+      bool  hasAnalyticDerivative() const override { return true ; }
       /// Derivatives
-      virtual Genfun::Derivative partial( unsigned int i  ) const ;
+      Genfun::Derivative partial( unsigned int i  ) const override;
 
     private:
       AdapterIFunction();
@@ -102,18 +102,18 @@ namespace Genfun
       Adapter2DoubleFunction ( Function func );
       /// copy coinstructor
       Adapter2DoubleFunction ( const Adapter2DoubleFunction& );
-      /// virtual destructor
-      virtual ~Adapter2DoubleFunction () ;
+      /// destructor
+      ~Adapter2DoubleFunction () override;
 
-      virtual double operator() (       double    x ) const ;
+      double operator() (       double    x ) const override;
 
-      virtual double operator() ( const Argument& x ) const ;
+      double operator() ( const Argument& x ) const override;
 
-      virtual unsigned int dimensionality() const { return 2    ; }
+      unsigned int dimensionality() const override { return 2    ; }
       /// Does this function have an analytic derivative?
-      virtual bool  hasAnalyticDerivative() const { return true ; }
+      bool  hasAnalyticDerivative() const override { return true ; }
       /// Derivatives
-      virtual Genfun::Derivative partial( unsigned int i  ) const ;
+      Genfun::Derivative partial( unsigned int i  ) const override;
     public:
       double operator() ( const double x , const double y ) const ;
     private:
@@ -166,18 +166,18 @@ namespace Genfun
       Adapter3DoubleFunction ( Function func );
       /// copy coinstructor
       Adapter3DoubleFunction ( const Adapter3DoubleFunction& );
-      /// virtual destructor
-      virtual ~Adapter3DoubleFunction () ;
+      /// destructor
+      ~Adapter3DoubleFunction () override ;
 
-      virtual double operator() (       double    x ) const ;
+      double operator() (       double    x ) const override ;
 
-      virtual double operator() ( const Argument& x ) const ;
+      double operator() ( const Argument& x ) const override ;
 
-      virtual unsigned int dimensionality() const { return 3    ; }
+      unsigned int dimensionality() const override { return 3    ; }
       /// Does this function have an analytic derivative?
-      virtual bool  hasAnalyticDerivative() const { return true ; }
+      bool  hasAnalyticDerivative() const override { return true ; }
       /// Derivatives
-      virtual Genfun::Derivative partial( unsigned int i  ) const ;
+      Genfun::Derivative partial( unsigned int i  ) const override ;
     public:
       double operator() ( const double x ,
                           const double y ,
@@ -236,19 +236,19 @@ namespace Genfun
       SimpleFunction ( const SimpleFunction& ) ;
 
       // destructor
-      virtual ~SimpleFunction() = default;
+      ~SimpleFunction() override = default;
     public:
 
       /// dimensionality of the problem
-      virtual unsigned int dimensionality         () const { return m_DIM   ; }
+      unsigned int dimensionality         () const override { return m_DIM   ; }
       /// Does this function have an analytic derivative?
-      virtual bool  hasAnalyticDerivative         () const { return true    ; }
+      bool  hasAnalyticDerivative         () const override { return true    ; }
       /// Function value
-      virtual double             operator()  ( double          ) const ;
+      double             operator()  ( double          ) const override ;
       /// Function value
-      virtual double             operator()  ( const Argument& ) const ;
+      double             operator()  ( const Argument& ) const override ;
       /// Derivatives
-      virtual Genfun::Derivative partial     ( unsigned int i  ) const ;
+      Genfun::Derivative partial     ( unsigned int i  ) const override ;
 
     private:
 

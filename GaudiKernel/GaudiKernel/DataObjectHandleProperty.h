@@ -27,12 +27,12 @@ class GAUDI_API DataObjectHandleProperty :  public ::Property {
   DataObjectHandleProperty& operator=( const DataObjectHandleBase& value );
   virtual ~DataObjectHandleProperty();
 
-  virtual DataObjectHandleProperty* clone() const;
-  virtual bool load( Property& destination ) const;
-  virtual bool assign( const Property& source );
-  virtual std::string toString() const;
-  virtual void toStream(std::ostream& out) const;
-  virtual StatusCode fromString(const std::string& s);
+  DataObjectHandleProperty* clone() const override;
+  bool load( Property& destination ) const override;
+  bool assign( const Property& source ) override;
+  std::string toString() const override;
+  void toStream(std::ostream& out) const override;
+  StatusCode fromString(const std::string& s) override;
   const DataObjectHandleBase& value() const;
   bool setValue( const DataObjectHandleBase& value );
 

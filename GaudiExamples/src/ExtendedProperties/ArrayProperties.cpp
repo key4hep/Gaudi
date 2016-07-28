@@ -26,7 +26,7 @@ namespace Gaudi
     public:
       // ======================================================================
       /// execute it!
-      StatusCode execute () ;
+      StatusCode execute () override ;
       // ======================================================================
     public:
       // ======================================================================
@@ -45,7 +45,7 @@ namespace Gaudi
         declareProperty ( "Strings" , m_strings , "C-array of strings" ) ;
       }
       /// virtual destructor
-      virtual ~ArrayProperties() {}
+      ~ArrayProperties() override {}
       // ======================================================================
     private:
       // ======================================================================

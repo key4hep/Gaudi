@@ -44,9 +44,9 @@ class Aida2Root : public GaudiHistoAlg
 {
 public:
   /// execution of the algorithm
-  StatusCode execute  () { return StatusCode::SUCCESS ; };
+  StatusCode execute  () override { return StatusCode::SUCCESS ; };
   /// finalization of the algorithm
-  StatusCode finalize () ;
+  StatusCode finalize () override ;
 public:
   // standard constructor
   Aida2Root

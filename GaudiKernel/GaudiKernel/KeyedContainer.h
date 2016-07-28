@@ -184,7 +184,7 @@ public:
     m_cont.setup((void*)sptr,(void**)rptr);
   }
   /// Destructor
-  virtual ~KeyedContainer();
+  ~KeyedContainer() override;
   //@}
 
   /**@name DataObject virtual function overloads.
@@ -193,7 +193,7 @@ public:
    */
   //@{
   /// Retrieve class ID
-  virtual const CLID& clID() const      {              return this->classID(); }
+  const CLID& clID() const override      {              return this->classID(); }
   /// Retrieve class ID
   static const CLID& classID()          {
     static CLID clid = contained_type::classID() + container_type::classID();
@@ -218,7 +218,7 @@ public:
    */
   //@{
   /// ObjectContainerBase overload: Number of objects in the container
-  virtual size_type numberOfObjects() const   {  return m_sequential.size();       }
+  size_type numberOfObjects() const override   {  return m_sequential.size();       }
   /** ObjectContainerBase overload: Add an object to the container.
    *  Plese see the documentation of the member function
    *
@@ -230,7 +230,7 @@ public:
    *                     container.
    *  @return            long integer representation of the key value.
    */
-  virtual long add(ContainedObject* pObject);
+  long add(ContainedObject* pObject) override;
 
   /** ObjectContainerBase overload: Remove an object from the container.
    *  Because this function is also called from the destructor of
@@ -244,18 +244,18 @@ public:
    *  @param   pObject   Pointer to the object to be removed from the
    *                     container.
    */
-  virtual long remove(ContainedObject* pObject);
+  long remove(ContainedObject* pObject) override;
 
   /** ObjectContainerBase overload: Retrieve the object by reference
    *  given the long integer representation of the object's key.
    */
-  virtual ContainedObject* containedObject(long key_value) const  {
+  ContainedObject* containedObject(long key_value) const override {
     return i_object( traits::makeKey( key_value ) );
   }
   /** ObjectContainerBase overload: Retrieve the full long integer
    *  representation of the object's key from the object base class pointer.
    */
-  virtual long index(const ContainedObject* p) const;
+  long index(const ContainedObject* p) const override;
   /** Retrieve the full content of the object container.
    *  @param   v          Vector of contained objects, which will host
    *                      all objects contained in this container.
@@ -287,7 +287,7 @@ public:
    *  This function reuses the "update" callback of the generic DataObject
    *  base class.
    */
-  virtual StatusCode update();
+  StatusCode update() override;
   //@}
 
   /**@name Sequential array access to objects using iterators.

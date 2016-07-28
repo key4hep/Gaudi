@@ -30,57 +30,57 @@ namespace Gaudi {
     /// Create a catalog file, initialization of XercesC.
     XMLFileCatalog(CSTR url, IMessageSvc* m);
     /// Destructor,
-    virtual ~XMLFileCatalog() = default;
+    ~XMLFileCatalog() override = default;
 
     /** Catalog interface                                               */
     /// Create file identifier using UUID mechanism
-    virtual std::string createFID() const;
+    std::string createFID() const override;
     /// Access to connect string
-    virtual CSTR connectInfo() const               { return m_file;                 }
+    CSTR connectInfo() const override               { return m_file;                 }
     /// Parse the DOM tree of the XML catalog
-    virtual void init();
+    void init() override;
     /// Save DOM catalog to file
-    virtual void commit();
+    void commit() override;
     /// Save DOM catalog to file
-    virtual void rollback()                       { if ( dirty() )  init();        }
+    void rollback() override                       { if ( dirty() )  init();        }
     /// Check if the catalog is read-only
-    virtual bool readOnly() const                 { return m_rdOnly;                }
+    bool readOnly() const override                 { return m_rdOnly;                }
     /// Check if the catalog should be updated
-    virtual bool dirty() const                    { return m_update;                }
+    bool dirty() const override                    { return m_update;                }
     /// Return the status of a physical file name
-    virtual bool existsPFN(CSTR pfn)  const       { return element(pfn,false) != 0; }
+    bool existsPFN(CSTR pfn)  const override       { return element(pfn,false) != 0; }
     /// Lookup file identifier by physical file name
-    virtual std::string lookupPFN(CSTR fid) const { return lookupFID(fid);          }
+    std::string lookupPFN(CSTR fid) const override { return lookupFID(fid);          }
     /// Return the status of a logical file name
-    virtual bool existsLFN(CSTR lfn)  const       { return element(lfn,false) != 0; }
+    bool existsLFN(CSTR lfn)  const override       { return element(lfn,false) != 0; }
     /// Lookup file identifier by logical file name
-    virtual std::string lookupLFN(CSTR lfn) const { return lookupFID(lfn);          }
+    std::string lookupLFN(CSTR lfn) const override { return lookupFID(lfn);          }
     /// Return the status of a FileID
-    virtual bool existsFID(CSTR fid)  const       { return element(fid,false) != 0; }
+    bool existsFID(CSTR fid)  const override       { return element(fid,false) != 0; }
     /// Dump all physical file names of the catalog and their attributes associate to the FileID
-    virtual void getPFN(CSTR fid, Files& files) const;
+    void getPFN(CSTR fid, Files& files) const override;
     /// Dump all logical file names of the catalog associate to the FileID
-    virtual void getLFN(CSTR fid, Files& files) const;
+    void getLFN(CSTR fid, Files& files) const override;
     /// Dump all file Identifiers
-    virtual void getFID(Strings& fids)  const;
+    void getFID(Strings& fids)  const override;
     /// Delete FileID Node from the catalog
-    virtual void deleteFID(CSTR FileID)  const;
+    void deleteFID(CSTR FileID)  const override;
     /// Create a FileID and Node of the physical file name with all the attributes
-    virtual void registerPFN(CSTR fid, CSTR pfn, CSTR ftype) const;
+    void registerPFN(CSTR fid, CSTR pfn, CSTR ftype) const override;
     /// Create a FileID and Node of the logical file name with all the attributes
-    virtual void registerLFN(CSTR fid, CSTR lfn) const;
+    void registerLFN(CSTR fid, CSTR lfn) const override;
     /// Create a FileID and Node
-    virtual void registerFID(CSTR fid) const;
+    void registerFID(CSTR fid) const override;
     /// Dump all MetaData of the catalog for a given file ID
-    virtual void getMetaData(CSTR fid, Attributes& attr) const;
+    void getMetaData(CSTR fid, Attributes& attr) const override;
     /// Access metadata item
-    virtual std::string getMetaDataItem(CSTR fid, CSTR name) const;
+    std::string getMetaDataItem(CSTR fid, CSTR name) const override;
     /// Insert/update metadata item
-    virtual void setMetaData(CSTR fid, CSTR name, CSTR value) const;
+    void setMetaData(CSTR fid, CSTR name, CSTR value) const override;
     /// Drop all metadata of one FID
-    virtual void dropMetaData(CSTR fid) const  {   dropMetaData(fid,"*");   }
+    void dropMetaData(CSTR fid) const override  {   dropMetaData(fid,"*");   }
     /// Drop specified metadata item
-    virtual void dropMetaData(CSTR fid, CSTR attr) const;
+    void dropMetaData(CSTR fid, CSTR attr) const override;
   private:
     xercesc::DOMDocument* getDoc(bool throw_if_no_exists=true)  const;
     std::string getfile(bool create);

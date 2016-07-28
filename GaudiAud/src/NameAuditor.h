@@ -14,9 +14,9 @@ public:
 
 private:
   /// Print a message on "before".
-  virtual void i_before(CustomEventTypeRef evt, const std::string& caller);
+  void i_before(CustomEventTypeRef evt, const std::string& caller) override;
   /// Print a message on "after".
-  virtual void i_after(CustomEventTypeRef evt, const std::string& caller, const StatusCode& sc);
+  void i_after(CustomEventTypeRef evt, const std::string& caller, const StatusCode& sc) override;
 
 };
 

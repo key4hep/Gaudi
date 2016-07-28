@@ -14,47 +14,47 @@ namespace GaudiExamples {
 class LoggingAuditor: public Auditor {
 public:
 
-  virtual void before(StandardEventType evt, INamedInterface* caller) {
+  void before(StandardEventType evt, INamedInterface* caller) override {
     auto& log = info();
     log << "Auditing before of " << evt;
     if (caller) log << " for " << caller->name();
     log << endmsg;
   }
 
-  virtual void after(StandardEventType evt, INamedInterface* caller, const StatusCode &) {
+  void after(StandardEventType evt, INamedInterface* caller, const StatusCode &) override {
     auto& log = info();
     log << "Auditing after of " << evt;
     if (caller) log << " for " << caller->name();
     log << endmsg;
   }
 
-  virtual void before(CustomEventTypeRef evt, INamedInterface* caller) {
+  void before(CustomEventTypeRef evt, INamedInterface* caller) override {
     auto& log = info();
     log << "Auditing before of " << evt;
     if (caller) log << " for " << caller->name();
     log << endmsg;
   }
 
-  virtual void after(CustomEventTypeRef evt, INamedInterface* caller, const StatusCode &) {
+  void after(CustomEventTypeRef evt, INamedInterface* caller, const StatusCode &) override {
     auto& log = info();
     log << "Auditing after of " << evt;
     if (caller) log << " for " << caller->name();
     log << endmsg;
   }
 
-  virtual void before(StandardEventType evt, const std::string& caller) {
+  void before(StandardEventType evt, const std::string& caller) override {
     info() << "Auditing before of " << evt << " for " << caller << endmsg;
   }
 
-  virtual void after(StandardEventType evt, const std::string& caller, const StatusCode &) {
+  void after(StandardEventType evt, const std::string& caller, const StatusCode &) override {
     info() << "Auditing after of " << evt << " for " << caller << endmsg;
   }
 
-  virtual void before(CustomEventTypeRef evt, const std::string& caller) {
+  void before(CustomEventTypeRef evt, const std::string& caller) override {
     info() << "Auditing before of " << evt << " for " << caller << endmsg;
   }
 
-  virtual void after(CustomEventTypeRef evt, const std::string& caller, const StatusCode &) {
+  void after(CustomEventTypeRef evt, const std::string& caller, const StatusCode &) override {
     info() << "Auditing after of " << evt << " for " << caller << endmsg;
   }
 

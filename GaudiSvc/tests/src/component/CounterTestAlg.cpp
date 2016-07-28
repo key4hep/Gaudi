@@ -30,10 +30,10 @@ namespace GaudiSvcTest  {
     :	Algorithm(name, pSvcLocator), m_evtCount(0), m_total(0), m_cntSvc(0) {
     }
     /// Standard Destructor
-    virtual ~CounterTestAlg() {
+    ~CounterTestAlg() override {
     }
     /// Initialize
-    virtual StatusCode initialize()   {
+    StatusCode initialize() override   {
       StatusCode sc = service("CounterSvc", m_cntSvc, true);
       if ( !sc.isSuccess() )    {
         error() << "Could not connect to CounterSvc." << endmsg;
@@ -57,7 +57,7 @@ namespace GaudiSvcTest  {
       return StatusCode::SUCCESS;
     }
     /// Finalize
-    virtual StatusCode finalize()   {
+    StatusCode finalize() override   {
       ICounterSvc::Printout p(m_cntSvc);
       info() << "Single counter:CounterTest::EventCount" << endmsg;
       m_cntSvc->print("CounterTest", "EventCount", p);
@@ -71,7 +71,7 @@ namespace GaudiSvcTest  {
       return StatusCode::SUCCESS;
     }
     /// Event callback
-    virtual StatusCode execute()    {
+    StatusCode execute() override    {
       ICounterSvc::CountObject cnt(m_total);
       (*m_evtCount)++;
       cnt++;

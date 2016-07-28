@@ -127,7 +127,7 @@ namespace Gaudi {
     // overwrite reset
     bool  reset (  ) override;
     /// Introspection method
-    void * cast(const std::string & className) const;
+    void * cast(const std::string & className) const override;
     /// The AIDA user-level unterface leaf class type
     const std::string& userLevelClassType() const { return m_classType; }
     /// Get the Histogram's dimension.

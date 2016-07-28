@@ -22,7 +22,7 @@ class WriteHandleAlg : public GaudiAlgorithm {
   public:
 
     /// the execution of the algorithm
-    virtual StatusCode execute  () ; // the execution of the algorithm
+    StatusCode execute  () override ; // the execution of the algorithm
 
   protected:
 
@@ -31,7 +31,7 @@ class WriteHandleAlg : public GaudiAlgorithm {
       ISvcLocator*       pSvc ); // the Service Locator
 
     /// virtual & protected desctrustor
-    virtual ~WriteHandleAlg() {}     // virtual & protected desctrustor
+    ~WriteHandleAlg() override = default;
 
   private:
 
