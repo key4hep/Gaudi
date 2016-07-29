@@ -109,7 +109,7 @@ DataObject* DataObjectHandleBase::fetch() const {
                                } );
       if (alt!=alternativeDataProductNames().end()) {
         MsgStream log(m_MS,m_owner->name() + ":DataObjectHandle");
-        log << MSG::INFO <<  ": could not find \"" << objKey()
+        log << MSG::DEBUG <<  ": could not find \"" << objKey()
             << "\" -- using alternative source: \"" << *alt << "\" instead"
             << endmsg;
         // found something -- set it as default; this is not atomic, but
