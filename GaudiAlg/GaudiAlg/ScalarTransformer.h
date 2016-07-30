@@ -3,71 +3,73 @@
 
 #include "GaudiAlg/Transformer.h"
 #include "boost/optional.hpp"
+#include <algorithm>
 #include <type_traits>
 
 namespace Gaudi { namespace Functional {
 
    // Scalar->Vector adapted 1->1 algoritm
-   // TODO: make variadic, then check that # of elems in each input container is the same...
-   template <typename ExternalSignature, typename ScalarFunctor> class ScalarTransformer;
+   // TODO: make variadic, then check that # of elems in each input container is the same,
+   //       and use a 'zip' iterator (dot product) for the input...
+   // TODO: add a 'tensor' variant
+   //
+   template <typename ScalarSignature, typename TransformerSignature, typename Traits_ = Traits::useDefaults> class ScalarTransformer;
 
-   namespace detail {
+   namespace details {
 
-      // we want 'user code' to never get pointers as input -- so adapt such that
-      // if we get a pointer, we derefence it before calling the 'user code'.
+      constexpr struct invoke_t {
+          template <typename In, typename = typename std::enable_if< !std::is_pointer<In>::value>::type>
+          const In& operator()( const In& in ) const { return in; }
 
-      template <typename In, typename Fun>
-      auto adapt_in( const Fun& f, const In& in,
-                     typename std::enable_if< !std::is_pointer<In>::value>::type* = nullptr )
-      { return f(in); }
-
-      template <typename In, typename Fun>
-      auto adapt_in( const Fun& f, const In* in ) { return f(*in); }
-
-      // we always receive a T, but sometimes we must output a T* -- so adapt if neccessary...
-      // (backwards compatibility: until we get a 'move aware' AnyDataHandle)
-
-      template <typename Out>
-      Out adapt_out( Out&& in ) { return std::forward<Out>(in); }
-
-      template <typename Out>
-      Out adapt_out( typename std::remove_pointer<Out>::type&& in )
-      { return new typename std::remove_pointer<Out>::type( std::forward<typename std::remove_pointer<Out>::type>(in) ); }
+          template <typename In>
+          const In& operator()( const In* in ) const { return *in; }
+      } adapt_in {};
 
       // adapt to differences between eg. std::vector (which has push_back) and KeyedContainer (which has insert)
+      // adapt to getting a T, and a container wanting T* by doing new T{ std::move(out) }
+      // adapt to getting a boost::optional<T>
 
-      template <typename Container, typename Value>
-      auto adapt_insert(Container& c, Value&& v) -> decltype( c.push_back(v) ) { return c.push_back( std::forward<Value>(v) ); }
+      constexpr struct insert_t {
+          // for Container<T*>, return T
+          template <typename Container>
+          using c_remove_ptr_t = typename std::remove_pointer<typename Container::value_type>::type;
 
-      template <typename Container, typename Value>
-      auto adapt_insert(Container& c, Value&& v) -> decltype( c.insert(v) ) { return c.insert( std::forward<Value>(v) ); }
+          template <typename Container, typename Value>
+          auto operator()(Container& c, Value&& v) const -> decltype( c.push_back(v) ) { return c.push_back( std::forward<Value>(v) ); }
+
+          template <typename Container, typename Value>
+          auto operator()(Container& c, Value&& v) const -> decltype( c.insert(v) ) { return c.insert( std::forward<Value>(v) ); }
+
+          // Container<T*> with T&& as argument
+          template <typename Container, typename = typename std::enable_if< std::is_pointer<typename Container::value_type>::value >::type >
+          auto operator()(Container& c, c_remove_ptr_t<Container>&& v) const
+          { return operator()( c, new c_remove_ptr_t<Container>{ std::move(v) } ); }
+
+          template <typename Container, typename Value>
+          void operator()(Container& c, boost::optional<Value>&& v) const { if (v) operator()(c,std::move(*v)); }
+      } insert_scalar {};
+
    }
 
-   template <typename Out, typename In, typename ScalarFunctor>
-   class ScalarTransformer<Out(const In&),ScalarFunctor> : public Transformer<Out(const In&)> {
-       ScalarFunctor m_f;
+
+   template <typename ScalarOp, typename Out, typename In, typename Traits_>
+   class ScalarTransformer<ScalarOp,Out(const In&),Traits_> : public Transformer<Out(const In&),Traits_> {
    public:
-       using KeyValue = typename Transformer<Out(const In&)>::KeyValue;
-
-       template <typename Functor>
-       ScalarTransformer(const std::string& name, ISvcLocator* locator,
-                         KeyValue&& input,
-                         KeyValue&& output,
-                         Functor&& scalar_functor)
-           : Transformer<Out(const In&)> ( name , locator,
-                                                { std::forward<KeyValue>(input) },
-                                                std::forward<KeyValue>(output) ),
-           m_f( std::forward<Functor>(scalar_functor) ) {
+     using Transformer<Out(const In&)>::Transformer;
+                                  //add 'chunking' properties (when we go task based),
+                                  // would be much easier in Marco's property design,
+                                  // as then we just declare properties and do not have
+                                  // to explicitly write a c'tor (body)...
+     Out operator()(const In& in) const override {
+       Out out; out.reserve(in.size());
+       const auto& scalar = scalarOp();
+       for (const auto& i : in) {
+          details::insert_scalar( out, scalar( details::adapt_in(i)) );
        }
-
-       Out operator()(const In& in) const override {
-           Out out; out.reserve(in.size());
-           for (const auto& i : in) {
-               auto o = detail::adapt_in( m_f, i );
-               if (o) detail::adapt_insert(out, detail::adapt_out<typename Out::value_type>( std::move( *o ) ) );
-           }
-           return out;
-       }
+       return out;
+     }
+   private:
+     const ScalarOp& scalarOp() const { return static_cast<const ScalarOp&>(*this); }
    };
 
 }}
