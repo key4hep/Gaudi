@@ -43,9 +43,9 @@ namespace Gaudi {
 
         int m = std::stoi(*it++);
         if (v.mode() != m) {
-          std::cerr << "WARNING: mismatch in access mode for DataObjectHandle "
-                    << v.fullKey() << "  " << v.mode() << " " << m 
-                    << " ignoring  the latter, specified value" << std::endl;
+          // std::cerr << "WARNING: mismatch in access mode for DataObjectHandle "
+          //           << v.fullKey() << "  " << v.mode() << " " << m 
+          //           << " ignoring  the latter, specified value" << std::endl;
         }
         bool o = bool(std::stoi(*it++));
 
