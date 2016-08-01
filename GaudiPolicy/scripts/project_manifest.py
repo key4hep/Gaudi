@@ -184,6 +184,12 @@ if __name__ == '__main__':
 
     # mapping between LCG_Interface name and RPM name for special cases
     rpm_names = {'Expat': 'expat'}
+
+    # Hack alert: tcmalloc LCG_interface corresponds to gperftools
+    # as from LCG 84. We rename the external in that case...
+    if int(filter(str.isdigit, lcg_version)) >= 84:
+        rpm_names['tcmalloc'] = 'gperftools'
+        
     fix_rpm_name = lambda n: rpm_names.get(n, n)
 
     packages = ET.Element('packages')

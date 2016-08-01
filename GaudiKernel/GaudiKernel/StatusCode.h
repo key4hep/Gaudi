@@ -42,11 +42,11 @@ public:
     catch (...) {}
   }
 
-  StatusCode( IssueSeverity&& is) : 
-        StatusCode( is.getLevel() == IssueSeverity::RECOVERABLE ? 
-                        StatusCode::RECOVERABLE : 
-                        ( is.getLevel() < IssueSeverity::ERROR ? 
-                            StatusCode::SUCCESS : 
+  StatusCode( IssueSeverity&& is) :
+        StatusCode( is.getLevel() == IssueSeverity::RECOVERABLE ?
+                        StatusCode::RECOVERABLE :
+                        ( is.getLevel() < IssueSeverity::ERROR ?
+                            StatusCode::SUCCESS :
                             StatusCode::FAILURE )
                    , std::move(is) )  { }
 
@@ -58,13 +58,11 @@ public:
     m_severity(rhs.m_severity)
     { rhs.m_checked = true; }
 
-#ifndef __GCCXML__
   /// Move constructor.
   StatusCode( StatusCode&& rhs ) noexcept:
     d_code(rhs.d_code), m_checked(rhs.m_checked),
     m_severity( std::move(rhs.m_severity) )
   { rhs.m_checked = true; }
-#endif
 
   /// Destructor.
   ~StatusCode()

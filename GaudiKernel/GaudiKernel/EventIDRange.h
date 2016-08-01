@@ -34,6 +34,17 @@ public:
     return ( t>=m_start && t<m_stop );
   }
 
+  static EventIDRange intersect(const EventIDRange& it) { return it; }
+  template <typename ... T>
+  static EventIDRange intersect(const EventIDRange& first, const T& ... rest) {
+    EventIDRange r = intersect(rest...);
+    
+    EventIDBase i1 = std::max(first.start(), r.start());
+    EventIDBase i2 = std::min(first.stop(), r.stop());
+    
+    return EventIDRange(i1,i2);
+  }
+
   friend bool operator==(const EventIDRange& lhs, const EventIDRange& rhs);
   friend bool operator!=(const EventIDRange& lhs, const EventIDRange& rhs);
 
