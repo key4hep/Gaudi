@@ -60,7 +60,7 @@ namespace Gaudi { namespace Functional {
                                   // would be much easier in Marco's property design,
                                   // as then we just declare properties and do not have
                                   // to explicitly write a c'tor (body)...
-     Out operator()(const In& in) const override {
+     Out operator()(const In& in) const final {
        Out out; out.reserve(in.size());
        const auto& scalar = scalarOp();
        for (const auto& i : in) {

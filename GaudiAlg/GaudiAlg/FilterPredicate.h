@@ -25,7 +25,7 @@ namespace Gaudi { namespace Functional {
                        const KeyValues& inputs);
 
        // derived classes are NOT allowed to implement execute ...
-       StatusCode execute() override final
+       StatusCode execute() final
        { return invoke(std::make_index_sequence<N>{}); }
 
        // ... instead, they must implement the following operator
