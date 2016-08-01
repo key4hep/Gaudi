@@ -201,6 +201,9 @@ AlgTool::AlgTool( const std::string& type,
 {
   addRef(); // Initial count set to 1
 
+  // Declare properties of parent class DataHandleHolderBase
+  initDataHandleHolderProperties(m_propertyMgr);
+
   declareProperty( "MonitorService", m_monitorSvcName = "MonitorSvc" );
 
   { // get the "OutputLevel" property from parent
@@ -257,11 +260,6 @@ AlgTool::AlgTool( const std::string& type,
     declareProperty ( "AuditFinalize"   , m_auditorFinalize   = audit ) ;
   }
 
-  //declare Extra input and output properties
-  declareProperty( "ExtraInputs",  m_extInputDataObjs);
-  declareProperty( "ExtraOutputs", m_extOutputDataObjs);
-
-
   // check thread ID and try if tool name indicates thread ID
   if ( m_threadID.empty() )
   { m_threadID = getGaudiThreadIDfromName ( AlgTool::name() ) ; }
@@ -282,6 +280,9 @@ StatusCode AlgTool::sysInitialize() {
     m_state = m_targetState;
     if (m_updateDataHandles)
     	acceptDHVisitor(m_updateDataHandles.get());
+
+    // initialize handles
+    initDataHandleHolder();
 
     return sc;
   } );
@@ -579,7 +580,7 @@ void
 AlgTool::commitHandles() {
   //-----------------------------------------------------------------------------
 
-  for (auto h : m_outputHandles) {
+  for (auto h : outputHandles()) {
     h->commit();
   }
 

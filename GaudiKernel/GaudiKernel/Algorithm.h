@@ -37,7 +37,7 @@
 // For concurrency
 #include "GaudiKernel/EventContext.h"
 #include "GaudiKernel/DataHandle.h"
-#include "GaudiKernel/IDataHandleHolder.h"
+#include "GaudiKernel/DataHandleHolderBase.h"
 
 class IAlgTool;
 class ToolHandleInfo;
@@ -74,7 +74,8 @@ class ToolHandleInfo;
 class GAUDI_API Algorithm: public CommonMessaging<implements<IAlgorithm,
                                                              IDataHandleHolder,
                                                              IProperty,
-                                                             IStateful>> {
+                                                             IStateful>>,
+                           public DataHandleHolderBase {
 public:
 #ifndef __REFLEX__
   typedef Gaudi::PluginService::Factory<IAlgorithm*,
@@ -576,24 +577,7 @@ public:
 
   // From IDataHandleHolder:
 
- protected:
-  virtual void declareInput(Gaudi::DataHandle* im) override {
-    m_inputHandles.push_back(im);
-  }
-  virtual void declareOutput(Gaudi::DataHandle* im) override {
-    m_outputHandles.push_back(im);
-  }
-
  public:
-  virtual std::vector<Gaudi::DataHandle*> inputHandles() const override { return m_inputHandles; }
-  virtual std::vector<Gaudi::DataHandle*> outputHandles() const override { return m_outputHandles; }
-
-  virtual const DataObjIDColl& extraInputDeps() const override {
-    return m_extInputDataObjs;
-  }
-  virtual const DataObjIDColl& extraOutputDeps() const override {
-    return m_extOutputDataObjs;
-  }
 
   virtual void acceptDHVisitor(IDataHandleVisitor*) const override ;
 
@@ -603,10 +587,7 @@ public:
   void commitHandles() override;
 
  private:
-  std::vector<Gaudi::DataHandle*> m_inputHandles, m_outputHandles;
   DataObjIDColl m_inputDataObjs, m_outputDataObjs;
-
-  DataObjIDColl m_extInputDataObjs, m_extOutputDataObjs;
 
  public:
 

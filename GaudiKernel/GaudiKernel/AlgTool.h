@@ -17,7 +17,7 @@
 #include "GaudiKernel/ToolHandle.h"
 #include "GaudiKernel/CommonMessaging.h"
 
-#include "GaudiKernel/IDataHandleHolder.h"
+#include "GaudiKernel/DataHandleHolderBase.h"
 #include "GaudiKernel/DataHandle.h"
 
 template<class T>
@@ -43,7 +43,7 @@ class ToolHandleInfo;
  *  @author Pere Mato
  */
 class GAUDI_API AlgTool: public CommonMessaging<implements<IAlgTool,
-                                                           IDataHandleHolder,
+                                                           DataHandleHolderBase,
                                                            IProperty,
                                                            IStateful>> {
 public:
@@ -293,42 +293,18 @@ public:
     return m_propertyMgr->declareProperty(name, hndlArr, doc);
   }
 
- protected:
-  virtual void declareInput(Gaudi::DataHandle* im) override {
-    m_inputHandles.push_back(im);
-  }
-
-  virtual void declareOutput(Gaudi::DataHandle* im) override {
-    m_outputHandles.push_back(im);
-		}
  public:
 
-  virtual std::vector<Gaudi::DataHandle*> inputHandles() const override {
-    return m_inputHandles; }
-  virtual std::vector<Gaudi::DataHandle*> outputHandles() const override {
-    return m_outputHandles; }
-
-  virtual const DataObjIDColl& extraInputDeps() const override {
-    return m_extInputDataObjs;
-  }
-  virtual const DataObjIDColl& extraOutputDeps() const override {
-    return m_extOutputDataObjs;
-	}
-
-
   virtual void acceptDHVisitor(IDataHandleVisitor*) const override;
+
+  void commitHandles() override;
 
   DataObjIDColl inputDataObjs() const { return m_inputDataObjs; }
   DataObjIDColl outputDataObjs() const { return m_outputDataObjs; }
 
-  void commitHandles() override;
-
 
  private:
-  std::vector<Gaudi::DataHandle*> m_inputHandles, m_outputHandles;
   DataObjIDColl m_inputDataObjs, m_outputDataObjs;
-
-  DataObjIDColl m_extInputDataObjs, m_extOutputDataObjs;
 
  public:
 

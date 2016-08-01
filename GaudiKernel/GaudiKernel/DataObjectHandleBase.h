@@ -1,6 +1,8 @@
 #ifndef GAUDIHIVE_DATAOBJECTHANDLEBASE_H
 #define GAUDIHIVE_DATAOBJECTHANDLEBASE_H
 
+#include <mutex>
+
 #include "GaudiKernel/DataHandle.h"
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/IDataProviderSvc.h"
@@ -30,7 +32,9 @@ public:
 		   IDataHandleHolder* o, std::vector<std::string> alternates = {} );
   DataObjectHandleBase(const std::string& k, Gaudi::DataHandle::Mode a,
 		   IDataHandleHolder* o);
+  DataObjectHandleBase(DataObjectHandleBase&&);
 
+  DataObjectHandleBase& operator=(const DataObjectHandleBase&);
 
   std::string toString() const;
   std::string pythonRepr() const;
@@ -45,7 +49,7 @@ public:
 
   const std::vector<std::string> & alternativeDataProductNames() const
   { return m_altNames; }
-  void setAlternativeDataProductNames(const std::vector<std::string> & alternativeAddresses)
+  void setAlternativeDataProductNames(const std::vector<std::string> & alternativeAddresses) const
   { m_altNames = alternativeAddresses; }
 
   bool initialized() const { return m_init; }
@@ -58,9 +62,9 @@ protected:
   void setRead(bool wasRead=true) {m_wasRead = wasRead;}
   void setWritten(bool wasWritten=true) {m_wasWritten = wasWritten;}
 
-  void init();
+  virtual void init();
 
-  DataObject* fetch();
+  DataObject* fetch() const;
 
 protected:
 
@@ -68,12 +72,25 @@ protected:
   SmartIF<IMessageSvc> m_MS;
 
   bool  m_init = false;
-  bool  m_goodType = false;
+  mutable bool  m_goodType = false;
   bool  m_optional = false;
   bool  m_wasRead = false;
   bool  m_wasWritten = false;
 
-  std::vector<std::string> m_altNames;
+  /**
+   * Whether the search part of the fetch method (so dealing with alt names
+   * was already executed or not. On subsequent calls (when this is true),
+   * it will be skipped.
+   */
+  mutable bool  m_searchDone = false;
+
+  /**
+   * A Mutex protecting the calls to the serach part of the fetch method,
+   * so that we are sure that we only call it once
+   */
+  mutable std::mutex m_searchMutex;
+
+  mutable std::vector<std::string> m_altNames;
 
 };
 

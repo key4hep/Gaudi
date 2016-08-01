@@ -26,13 +26,35 @@ namespace {
     }
     std::vector<std::string> unpack(const std::string& alt) {
         std::vector<std::string> items;
-        boost::split(items, alt, boost::is_any_of(std::string{FIELD_SEP}), boost::token_compress_on);
+        if (!alt.empty()) boost::split(items, alt, boost::is_any_of(std::string{FIELD_SEP}), boost::token_compress_on);
         return items;
     }
 }
 
 //---------------------------------------------------------------------------
-DataObjectHandleBase::DataObjectHandleBase(const DataObjID & k,
+DataObjectHandleBase::DataObjectHandleBase(DataObjectHandleBase&& other) {
+  *this = other;
+}
+
+//---------------------------------------------------------------------------
+DataObjectHandleBase& DataObjectHandleBase::operator=(const DataObjectHandleBase& other) {
+  Gaudi::DataHandle::operator=(other);
+  // avoid modification of searchDone and altNames in other while we are copying
+  std::lock_guard<std::mutex> guard(other.m_searchMutex);
+  m_EDS = other.m_EDS;
+  m_MS = other.m_MS;
+  m_init = other.m_init;
+  m_goodType = other.m_goodType;
+  m_optional = other.m_optional;
+  m_wasRead = other.m_wasRead;
+  m_wasWritten = other.m_wasWritten;
+  m_searchDone = other.m_searchDone;
+  m_altNames = other.m_altNames;
+  return *this;
+}
+
+//---------------------------------------------------------------------------
+DataObjectHandleBase::DataObjectHandleBase(const DataObjID& k,
 				      Gaudi::DataHandle::Mode a,
 				      IDataHandleHolder* owner,
                       std::vector<std::string> alternates):
@@ -40,36 +62,65 @@ DataObjectHandleBase::DataObjectHandleBase(const DataObjID & k,
 
 //---------------------------------------------------------------------------
 
-DataObjectHandleBase::DataObjectHandleBase(const std::string & k,
+DataObjectHandleBase::DataObjectHandleBase(const std::string& k,
 				      Gaudi::DataHandle::Mode a,
 				      IDataHandleHolder* owner):
   DataObjectHandleBase(DataObjID(head_alternates(k)), a, owner, unpack(tail_alternates(k))){}
 
 //---------------------------------------------------------------------------
-DataObject* DataObjectHandleBase::fetch() {
+DataObject* DataObjectHandleBase::fetch() const {
 
   DataObject* p = nullptr;
-  if (UNLIKELY(!m_init)) init();
+  if (LIKELY(m_searchDone)) { // fast path: searchDone, objKey is in its final state
+      m_EDS->retrieveObject(objKey(), p).ignore();
+      return p;
+  }
+
+  // slow path -- move into seperate function to improve code generation?
+
+  // convenience towards users -- remind them to register
+  // but as m_MS is not yet set, we cannot use a MsgStream...
+  if (!m_init) {
+    std::cerr << ( m_owner? m_owner->name() : "<UNKNOWN>:")
+        << "DataObjectHandle: uninitialized data handle --  "
+        << "you probably forgot to declare it with either "
+        << "declareProperty, declareInput or declareOutput" << std::endl;;
+  }
+
+  // as m_searchDone is not true yet, objKey may change... so in this
+  // branch we _first_ grab the mutex, to avoid objKey changing while we use it
+
+  // take a lock to be sure we only execute this once at a time
+  std::lock_guard<std::mutex> guard(m_searchMutex);
 
   StatusCode sc = m_EDS->retrieveObject(objKey(), p);
-  if ( UNLIKELY( sc.isFailure() ) ) {
+  if (m_searchDone) { // another thread has done the search while we were blocked
+                      // on the mutex. As a result, nothing left to do but return...
+      sc.ignore();
+      return p;
+  }
+
+  if (!sc.isSuccess()) {
       // let's try our alternatives (if any)
       auto alt = std::find_if( alternativeDataProductNames().begin(),
                                alternativeDataProductNames().end(),
                                [&](const std::string& n) {
-                                   return m_EDS->retrieveObject(n,p).isSuccess();
+                                 return m_EDS->retrieveObject(n,p).isSuccess();
                                } );
       if (alt!=alternativeDataProductNames().end()) {
-	    MsgStream log(m_MS,m_owner->name() + ":DataObjectHandle");
-        log << MSG::INFO <<  ": could not find \"" << objKey()
+        MsgStream log(m_MS,m_owner->name() + ":DataObjectHandle");
+        log << MSG::DEBUG <<  ": could not find \"" << objKey()
             << "\" -- using alternative source: \"" << *alt << "\" instead"
             << endmsg;
-        // found something -- set it as default,
+        // found something -- set it as default; this is not atomic, but
+        // at least in `fetch` there is no use of `objKey` that races with
+        // this assignment... (but there may be others!)
         setKey(*alt);
         // and zero out the alternatives
         setAlternativeDataProductNames( { } );
       }
   }
+  m_searchDone = true;
   return p;
 }
 
@@ -103,7 +154,7 @@ DataObjectHandleBase::fromString(const std::string& s) {
 void
 DataObjectHandleBase::init() {
 
-  if (m_init) return;
+  assert(!m_init);
 
   if (!m_owner) return;
 
@@ -117,14 +168,15 @@ DataObjectHandleBase::init() {
     m_MS = algorithm->msgSvc();
   } else {
     AlgTool* tool = dynamic_cast<AlgTool*>( owner() );
-    if (!tool) {
-      throw GaudiException( "owner is not an AlgTool or Algorithm" ,
+    if (tool) {
+        m_EDS = tool->evtSvc();
+        m_MS = tool->msgSvc();
+    } else {
+      throw GaudiException( "owner is neither AlgTool nor Algorithm" ,
 			    "Invalid Cast", StatusCode::FAILURE) ;
     }
   }
-
   m_init = true;
-
 }
 
 //---------------------------------------------------------------------------
@@ -146,10 +198,10 @@ operator<< (std::ostream& str, const DataObjectHandleBase& d) {
 
   str << "  opt: " << d.isOptional();
 
-  if (!d.alternativeDataProductNames().empty()) {
-    GaudiUtils::details::ostream_joiner(
-     str << "  alt: [", d.alternativeDataProductNames(), "," ) << "]";
-  }
+  GaudiUtils::details::ostream_joiner(
+    str << "  alt: [", d.alternativeDataProductNames(), "," ,
+    [](std::ostream& os,const std::string& s) { os << "\"" << s << "\"" ;}
+  ) << "]";
 
   return str;
 }
