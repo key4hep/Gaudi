@@ -12,7 +12,7 @@ namespace Gaudi { namespace Functional {
 
    template <typename Signature, typename Traits_=Traits::useDefaults> class MergingTransformer;
 
-   template <typename Container> using vector_of_const_ = details::vector_of_const_<Container>;
+   using details::vector_of_const_;
 
    ////// Many of the same -> 1
    template <typename Out, typename In, typename Traits_>
