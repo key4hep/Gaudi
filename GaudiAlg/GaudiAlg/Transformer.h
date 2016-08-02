@@ -23,8 +23,8 @@ namespace Gaudi { namespace Functional {
    template <typename Out, typename... In, typename Traits_>
    class Transformer<Out(const In&...),Traits_> : public details::BaseClass_t<Traits_> {
        using base_class = details::BaseClass_t<Traits_>;
-       static_assert( std::is_base_of<Algorithm,base_class>::value,
-                      "BaseClass must inherit from Algorithm");
+       static_assert( std::is_base_of<GaudiAlgorithm,base_class>::value,
+                      "BaseClass must inherit from GaudiAlgorithm");
    public:
        using KeyValue = std::pair<std::string, std::string>;
        constexpr static std::size_t N = sizeof...(In);
@@ -34,7 +34,7 @@ namespace Gaudi { namespace Functional {
                    const KeyValue& output);
 
        // derived classes can NOT implement execute
-       StatusCode execute() override final
+       StatusCode execute() final
        { return invoke(std::make_index_sequence<N>{}); }
 
        // instead they MUST implement this operator
@@ -87,8 +87,8 @@ namespace Gaudi { namespace Functional {
    template <typename ... Out, typename... In, typename Traits_>
    class MultiTransformer<std::tuple<Out...>(const In&...),Traits_> : public details::BaseClass_t<Traits_> {
        using base_class = details::BaseClass_t<Traits_>;
-       static_assert( std::is_base_of<Algorithm, base_class>::value,
-                      "BaseClass must inherit from Algorithm");
+       static_assert( std::is_base_of<GaudiAlgorithm, base_class>::value,
+                      "BaseClass must inherit from GaudiAlgorithm");
    public:
        using KeyValue = std::pair<std::string, std::string>;
        constexpr static std::size_t N_in = sizeof...(In);
