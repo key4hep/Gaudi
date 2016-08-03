@@ -33,6 +33,14 @@ namespace Gaudi { namespace Functional {
                    const std::array<KeyValue,N>& inputs,
                    const KeyValue& output);
 
+       Transformer(const std::string& name, ISvcLocator* locator,
+                   const KeyValue& input,
+                   const KeyValue& output)
+       : Transformer( name, locator, std::array<KeyValue,1>{ input }, output )
+       {
+         static_assert(N==1,"single input constructor requires single input signatur");
+       }
+
        // derived classes can NOT implement execute
        StatusCode execute() final
        { return invoke(std::make_index_sequence<N>{}); }
@@ -97,6 +105,14 @@ namespace Gaudi { namespace Functional {
        MultiTransformer(const std::string& name, ISvcLocator* locator,
                         const std::array<KeyValue,N_in>& inputs,
                         const std::array<KeyValue,N_out>& outputs);
+
+       MultiTransformer(const std::string& name, ISvcLocator* locator,
+                        const KeyValue& input,
+                        const std::array<KeyValue,N_out>& outputs)
+       : MultiTransformer( name, locator, std::array<KeyValue,1>{ input }, outputs )
+       {
+         static_assert(N_in==1,"single input constructor requires single input signature");
+       }
 
        // derived classes can NOT implement execute
        StatusCode execute() final

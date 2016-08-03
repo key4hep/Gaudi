@@ -18,7 +18,7 @@ namespace Gaudi { namespace Functional {
    ////// N -> Many of the same one (value of Many not known at compile time, but known at configuration time)
    template <typename Out, typename... In, typename Traits_>
    class SplittingTransformer<vector_of_<Out>(const In&...),Traits_>
-   :   public details::BaseClass_t<Traits_> 
+   :   public details::BaseClass_t<Traits_>
    {
        using base_class = details::BaseClass_t<Traits_>;
        // the reason to demand that base_class inherits from GaudiAlgorithm
@@ -28,17 +28,26 @@ namespace Gaudi { namespace Functional {
        static_assert( std::is_base_of<GaudiAlgorithm,base_class>::value,
                       "BaseClass must inherit from GaudiAlgorithm");
    public:
-       constexpr static std::size_t N_in = sizeof...(In);
+       constexpr static std::size_t N = sizeof...(In);
        using KeyValue  = std::pair<std::string, std::string>;
        using KeyValues = std::pair<std::string, std::vector<std::string>>;
 
        SplittingTransformer(const std::string& name, ISvcLocator* locator,
-                            const std::array<KeyValue,N_in>& inputs,
+                            const std::array<KeyValue,N>& inputs,
                             const KeyValues& output);
+
+       SplittingTransformer(const std::string& name, ISvcLocator* locator,
+                            const KeyValue& input,
+                            const KeyValues& output)
+       : SplittingTransformer( name, locator, std::array<KeyValue,1>{ input }, output )
+       {
+         static_assert(N==1,"single input argument requires single input signature");
+       }
+
 
        // derived classes can NOT implement execute
        StatusCode execute() final
-       { return invoke(std::make_index_sequence<N_in>{}); }
+       { return invoke(std::make_index_sequence<N>{}); }
 
        // TODO/FIXME: how does the callee know in which order to produce the outputs?
        //             (note: 'missing' items can be specified by making Out an boost::optional<Out>,
@@ -60,7 +69,7 @@ namespace Gaudi { namespace Functional {
    template <typename Out, typename... In, typename Traits_>
    SplittingTransformer<vector_of_<Out>(const In&...),Traits_>
    ::SplittingTransformer( const std::string& name, ISvcLocator* pSvcLocator,
-                           const std::array<KeyValue,N_in>&  inputs, const KeyValues& outputs )
+                           const std::array<KeyValue,N>&  inputs, const KeyValues& outputs )
    :   base_class ( name , pSvcLocator )
    ,   m_inputs( details::make_tuple_of_handles<decltype(m_inputs)>( this, inputs, Gaudi::DataHandle::Reader ) )
    ,   m_outputLocations( outputs.second )
