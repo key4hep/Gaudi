@@ -1,7 +1,8 @@
-#ifndef __Functional_details_h__
-#define __Functional_details_h__
+#ifndef FUNCTIONAL_DETAILS_H
+#define FUNCTIONAL_DETAILS_H
 
 #include <type_traits>
+#include <stdexcept>
 
 // TODO: fwd declare instead?
 #include "GaudiKernel/DataObjectHandle.h"
@@ -52,35 +53,34 @@ namespace Gaudi { namespace Functional { namespace details {
 
     /////////////////////////////////////////
     template <typename Container>
-    class vector_of_ {
-        using ContainerVector = std::vector<Container*>;
+    class vector_of_const_ {
+        using ContainerVector = std::vector<const Container*>;
         ContainerVector m_containers;
     public:
-        using value_type = Container;
+        using value_type = const Container;
         using size_type  = typename ContainerVector::size_type;
         class iterator {
              typename ContainerVector::const_iterator m_i;
-             friend class vector_of_;
+             friend class vector_of_const_;
              iterator(typename ContainerVector::const_iterator iter) : m_i(iter) {}
          public:
              friend bool operator!=(const iterator& lhs, const iterator& rhs) { return lhs.m_i != rhs.m_i; }
              const Container& operator*() const { return **m_i; }
              iterator& operator++() { ++m_i; return *this; }
              iterator& operator--() { --m_i; return *this; }
+             bool is_null() const { return !*m_i; }
+             explicit operator bool() const { return !is_null(); }
         };
-        vector_of_() = default;
-        vector_of_(size_type size) : m_containers(size) {}
+        vector_of_const_() = default;
         void reserve(size_type size) { m_containers.reserve(size); }
-        void push_back(Container& c) { m_containers.push_back(&c); } // note: does not copy its argument, so we're not really a container...
+        void push_back(const Container& c) { m_containers.push_back(&c); } // note: does not copy its argument, so we're not really a container...
         iterator begin() const { return m_containers.begin(); }
         iterator end() const { return m_containers.end(); }
         size_type size() const { return m_containers.size(); }
-        Container& operator[](size_type i) { return *m_containers[i]; }
+        const Container& operator[](size_type i) const { return *m_containers[i]; }
+        const Container& at(size_type i) const { if (i>=size()) throw std::out_of_range{"vector_of_const_::at"} ; return *m_containers[i]; }
+        bool is_null(size_type i) const { return !m_containers[i]; }
     };
-
-    template <typename Container>
-    using vector_of_const_ = vector_of_<const Container>;
-    // using vector_of_const_ = vector_of_<typename std::add_const<Container>::type>;
 
     /////////////////////////////////////////
 

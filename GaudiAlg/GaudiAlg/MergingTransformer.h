@@ -12,7 +12,7 @@ namespace Gaudi { namespace Functional {
 
    template <typename Signature, typename Traits_=Traits::useDefaults> class MergingTransformer;
 
-   template <typename Container> using vector_of_const_ = details::vector_of_const_<Container>;
+   using details::vector_of_const_;
 
    ////// Many of the same -> 1
    template <typename Out, typename In, typename Traits_>
@@ -34,7 +34,7 @@ namespace Gaudi { namespace Functional {
                           const KeyValues& inputs, const KeyValue& output);
 
        // derived classes can NOT implement execute
-       StatusCode execute() override final;
+       StatusCode execute() final;
 
        virtual Out operator()(const vector_of_const_<In>& inputs) const = 0;
 

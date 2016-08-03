@@ -12,8 +12,8 @@ namespace Gaudi { namespace Functional {
 
    template <typename Signature, typename Traits_=Traits::useDefaults> class SplittingTransformer;
 
-   template <typename Container> using vector_of_ = details::vector_of_<Container>;
-   template <typename Container> using vector_of_optional_ = details::vector_of_<boost::optional<Container>>;
+   template <typename Container> using vector_of_ = std::vector<Container>;
+   template <typename Container> using vector_of_optional_ = std::vector<boost::optional<Container>>;
 
    ////// N -> Many of the same one (value of Many not known at compile time, but known at configuration time)
    template <typename Out, typename... In, typename Traits_>
