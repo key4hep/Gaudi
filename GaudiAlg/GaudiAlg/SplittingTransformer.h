@@ -37,7 +37,7 @@ namespace Gaudi { namespace Functional {
                             const KeyValues& output);
 
        // derived classes can NOT implement execute
-       StatusCode execute() override final
+       StatusCode execute() final
        { return invoke(std::make_index_sequence<N_in>{}); }
 
        // TODO/FIXME: how does the callee know in which order to produce the outputs?

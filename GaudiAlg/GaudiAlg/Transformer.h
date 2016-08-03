@@ -99,7 +99,7 @@ namespace Gaudi { namespace Functional {
                         const std::array<KeyValue,N_out>& outputs);
 
        // derived classes can NOT implement execute
-       StatusCode execute() override final
+       StatusCode execute() final
        { return invoke(std::make_index_sequence<N_in>{},std::make_index_sequence<N_out>{}); }
 
        // instead they MUST implement this operator
