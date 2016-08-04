@@ -17,7 +17,7 @@ namespace Gaudi { namespace Functional {
 
    namespace details {
 
-      constexpr struct invoke_t {
+      constexpr struct adapt_in_t {
           template <typename In, typename = typename std::enable_if< !std::is_pointer<In>::value>::type>
           const In& operator()( const In& in ) const { return in; }
 

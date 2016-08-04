@@ -20,9 +20,15 @@ namespace Gaudi { namespace Functional {
        constexpr static std::size_t N = sizeof...(In);       // the number of inputs
        using KeyValues = std::array<KeyValue,N>;
 
-       // TODO: can we, for N=1, accept KeyValue instead of KeyValues? -- or replace std::array<KeyValue,1> with KeyValue???
        FilterPredicate(const std::string& name, ISvcLocator* locator,
                        const KeyValues& inputs);
+
+       FilterPredicate(const std::string& name, ISvcLocator* locator,
+                       const KeyValue& input)
+       : FilterPredicate( name, locator, KeyValues{ input } )
+       {
+         static_assert( N==1, "single input argument requires single input signature" );
+       }
 
        // derived classes are NOT allowed to implement execute ...
        StatusCode execute() final
