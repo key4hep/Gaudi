@@ -18,15 +18,9 @@ namespace Gaudi { namespace Functional {
    ////// N -> Many of the same one (value of Many not known at compile time, but known at configuration time)
    template <typename Out, typename... In, typename Traits_>
    class SplittingTransformer<vector_of_<Out>(const In&...),Traits_>
-   :   public details::BaseClass_t<Traits_>
+   :   public details::DataHandleMixin<void,std::tuple<In...>,Traits_>
    {
-       using base_class = details::BaseClass_t<Traits_>;
-       // the reason to demand that base_class inherits from GaudiAlgorithm
-       // is that only it has a working declareProperty for handles, but eg.
-       // Algorithm does have a template one that matches, but does the wrong
-       // thing...
-       static_assert( std::is_base_of<GaudiAlgorithm,base_class>::value,
-                      "BaseClass must inherit from GaudiAlgorithm");
+       using base_class = details::DataHandleMixin<void,std::tuple<In...>,Traits_>;
    public:
        constexpr static std::size_t N = sizeof...(In);
        using KeyValue  = std::pair<std::string, std::string>;
@@ -44,10 +38,9 @@ namespace Gaudi { namespace Functional {
          static_assert(N==1,"single input argument requires single input signature");
        }
 
-
        // derived classes can NOT implement execute
        StatusCode execute() final
-       { return invoke(std::make_index_sequence<N>{}); }
+       { return invoke(std::index_sequence_for<In...>{}); }
 
        // TODO/FIXME: how does the callee know in which order to produce the outputs?
        //             (note: 'missing' items can be specified by making Out an boost::optional<Out>,
@@ -55,12 +48,26 @@ namespace Gaudi { namespace Functional {
        virtual vector_of_<Out> operator()(const In&... ) const = 0;
 
    private:
-       template <std::size_t... I> StatusCode invoke(std::index_sequence<I...>);
-
-       template <typename T> using  InputHandle = details:: InputHandle_t<Traits_,T>;
+       template <std::size_t... I> StatusCode invoke(std::index_sequence<I...>)
+       {
+           try {
+               //TODO:FIXME: how does operator() know the number and order of expected outputs?
+               using details::as_const;
+               auto out = as_const(*this)( as_const(*std::get<I>(this->m_inputs).get())... );
+               if (out.size()!=m_outputs.size()) {
+                   throw GaudiException( "Error during transform: expected " + std::to_string(m_outputs.size())
+                                         + " containers, got " + std::to_string(out.size()) + " instead",
+                                         this->name(),
+                                         StatusCode::FAILURE );
+               }
+               for (unsigned i=0;i!=out.size();++i) details::put( m_outputs[i], std::move(out[i]) );
+           } catch ( GaudiException& e ) {
+               this->error() << "Error during transform: " << e.message() << " returning " << e.code() << endmsg;
+               return e.code();
+           }
+           return StatusCode::SUCCESS;
+       }
        template <typename T> using OutputHandle = details::OutputHandle_t<Traits_,details::remove_optional_t<T>>;
-
-       std::tuple<InputHandle<In>...> m_inputs;
        std::vector<std::string>        m_outputLocations; //TODO/FIXME  for now: use a call-back to update the actual handles!
        std::vector<OutputHandle<details::remove_optional_t<Out>>>  m_outputs;
    };
@@ -70,44 +77,25 @@ namespace Gaudi { namespace Functional {
    SplittingTransformer<vector_of_<Out>(const In&...),Traits_>
    ::SplittingTransformer( const std::string& name, ISvcLocator* pSvcLocator,
                            const std::array<KeyValue,N>&  inputs, const KeyValues& outputs )
-   :   base_class ( name , pSvcLocator )
-   ,   m_inputs( details::make_tuple_of_handles<decltype(m_inputs)>( this, inputs, Gaudi::DataHandle::Reader ) )
+   :   base_class ( name , pSvcLocator, inputs )
    ,   m_outputLocations( outputs.second )
    {
-       details::declare_tuple_of_properties( this, inputs, m_inputs);
        auto p = this->declareProperty( outputs.first, m_outputLocations );
        p->declareUpdateHandler( [=](Property&) {
+           //@FIXME/@TODO: retract any existing handle that is about to be removed...
+           // std::for_each( this->m_outputs.begin(), this->m_outputs.end(), [&](auto& h) { this->retractOutput(&h); } );
+           if (!this->m_outputs.empty()) {
+              this->warning() << "DataHandle property about to be updated, some DataHandles are about to run out of scope. This will cause a crash later..." << endmsg;
+           }
            this->m_outputs = details::make_vector_of_handles<decltype(this->m_outputs)>(this, m_outputLocations, Gaudi::DataHandle::Writer);
            if (details::is_optional<Out>::value) { // handle constructor does not (yet) allow to set optional flag... so do it explicitly here...
                std::for_each( this->m_outputs.begin(), this->m_outputs.end(), [](auto& h) { h.setOptional(true); } );
            }
+           std::for_each( this->m_outputs.begin(), this->m_outputs.end(), [&](auto& h) { this->declareOutput(&h); } );
        } );
        p->useUpdateHandler(); // invoke now, to be sure the input handles are synced with the property...
-       std::for_each( this->m_outputs.begin(), this->m_outputs.end(), [&](auto& h) { this->declareOutput(&h); } );
    }
 
-   template <typename Out, typename... In, typename Traits_>
-   template <std::size_t... I>
-   StatusCode
-   SplittingTransformer<vector_of_<Out>(const In&...),Traits_>::invoke(std::index_sequence<I...>)
-   {
-       try {
-           //TODO:FIXME: how does operator() know the number and order of expected outputs?
-           using details::as_const;
-           auto out = as_const(*this)( as_const(*std::get<I>(m_inputs).get())... );
-           if (out.size()!=m_outputs.size()) {
-               throw GaudiException( "Error during transform: expected " + std::to_string(m_outputs.size())
-                                     + " containers, got " + std::to_string(out.size()) + " instead",
-                                     this->name(),
-                                     StatusCode::FAILURE );
-           }
-           for (unsigned i=0;i!=out.size();++i) details::put( m_outputs[i], std::move(out[i]) );
-       } catch ( GaudiException& e ) {
-           this->error() << "Error during transform: " << e.message() << " returning " << e.code() << endmsg;
-           return e.code();
-       }
-       return StatusCode::SUCCESS;
-   }
 
 }}
 

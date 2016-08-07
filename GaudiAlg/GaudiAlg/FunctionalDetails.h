@@ -39,6 +39,42 @@ namespace Gaudi { namespace Functional { namespace details {
     void put( OutHandle& out_handle, boost::optional<Out>&& out) {
        if (out) put(out_handle,std::move(*out));
     }
+    /////////////////////////////////////////
+    // adapt to differences between eg. std::vector (which has push_back) and KeyedContainer (which has insert)
+    // adapt to getting a T, and a container wanting T* by doing new T{ std::move(out) }
+    // adapt to getting a boost::optional<T>
+
+    constexpr struct insert_t {
+        // for Container<T*>, return T
+        template <typename Container>
+        using c_remove_ptr_t = typename std::remove_pointer<typename Container::value_type>::type;
+
+        template <typename Container, typename Value>
+        auto operator()(Container& c, Value&& v) const -> decltype( c.push_back(v) ) { return c.push_back( std::forward<Value>(v) ); }
+
+        template <typename Container, typename Value>
+        auto operator()(Container& c, Value&& v) const -> decltype( c.insert(v) ) { return c.insert( std::forward<Value>(v) ); }
+
+        // Container<T*> with T&& as argument
+        template <typename Container, typename = typename std::enable_if< std::is_pointer<typename Container::value_type>::value >::type >
+        auto operator()(Container& c, c_remove_ptr_t<Container>&& v) const
+        { return operator()( c, new c_remove_ptr_t<Container>{ std::move(v) } ); }
+
+        template <typename Container, typename Value>
+        void operator()(Container& c, boost::optional<Value>&& v) const { if (v) operator()(c,std::move(*v)); }
+    } insert {};
+
+    /////////////////////////////////////////
+
+    constexpr struct deref_t {
+        template <typename In, typename = typename std::enable_if< !std::is_pointer<In>::value>::type>
+        In& operator()( In& in ) const { return in; }
+
+        template <typename In>
+        In& operator()( In* in ) const { assert(in!=nullptr); return *in; }
+    } deref {};
+
+    /////////////////////////////////////////
 
     namespace details2 {
         template< typename T > struct remove_optional      {typedef T type;};
@@ -188,6 +224,113 @@ namespace Gaudi { namespace Functional { namespace details {
                          { return {loc,mode, owner}; });
          return handles;
     }
+
+    ///////////////////////
+
+
+   template <typename OutputSpec, typename InputSpec, typename Traits_> class DataHandleMixin;
+
+   template <typename... Out, typename... In, typename Traits_>
+   class DataHandleMixin<std::tuple<Out...>, std::tuple<In...>,Traits_> : public BaseClass_t<Traits_> {
+       static_assert( std::is_base_of<GaudiAlgorithm, BaseClass_t<Traits_>>::value,
+                      "BaseClass must inherit from GaudiAlgorithm");
+   public:
+       using KeyValue = std::pair<std::string, std::string>;
+       constexpr static std::size_t N_in = sizeof...(In);
+       constexpr static std::size_t N_out = sizeof...(Out);
+
+       // generic constructor:  N -> M
+       DataHandleMixin(const std::string& name, ISvcLocator* pSvcLocator,
+                     const std::array<KeyValue,N_in>& inputs,
+                     const std::array<KeyValue,N_out>& outputs)
+       : BaseClass_t<Traits_>( name , pSvcLocator ),
+         m_inputs( make_tuple_of_handles<decltype(m_inputs)>( this, inputs, Gaudi::DataHandle::Reader ) ),
+         m_outputs( make_tuple_of_handles<decltype(m_outputs)>( this, outputs, Gaudi::DataHandle::Writer ) )
+       {
+         declare_tuple_of_properties( this, inputs, m_inputs );
+         declare_tuple_of_properties( this, outputs, m_outputs );
+       }
+
+       // special cases: forward to the generic case...
+       // 1 -> 1
+       DataHandleMixin(const std::string& name, ISvcLocator* locator,
+                     const KeyValue& input,
+                     const KeyValue& output)
+       : DataHandleMixin( name, locator, std::array<KeyValue,1>{ input }, std::array<KeyValue,1>{ output } )
+       { }
+       // 1 -> N
+       DataHandleMixin(const std::string& name, ISvcLocator* locator,
+                     const KeyValue& input,
+                     const std::array<KeyValue,N_out>& outputs)
+       : DataHandleMixin( name, locator, std::array<KeyValue,1>{ input }, outputs )
+       { }
+       // N -> 1
+       DataHandleMixin(const std::string& name, ISvcLocator* locator,
+                     const std::array<KeyValue,N_in>& inputs,
+                     const KeyValue& output )
+       : DataHandleMixin( name, locator, inputs, std::array<KeyValue,1>{ output } )
+       { }
+
+   protected:
+       std::tuple<details::InputHandle_t<Traits_,In>...>  m_inputs;
+       std::tuple<details::OutputHandle_t<Traits_,Out>...> m_outputs;
+   };
+
+   template <typename... In, typename Traits_>
+   class DataHandleMixin<void, std::tuple<In...>,Traits_> : public BaseClass_t<Traits_> {
+       static_assert( std::is_base_of<GaudiAlgorithm, BaseClass_t<Traits_>>::value,
+                      "BaseClass must inherit from GaudiAlgorithm");
+   public:
+       using KeyValue = std::pair<std::string, std::string>;
+       constexpr static std::size_t N_in = sizeof...(In);
+
+       // generic constructor:  N -> 0
+       DataHandleMixin(const std::string& name, ISvcLocator* pSvcLocator,
+                     const std::array<KeyValue,N_in>& inputs )
+       : BaseClass_t<Traits_>( name , pSvcLocator ),
+         m_inputs( make_tuple_of_handles<decltype(m_inputs)>( this, inputs, Gaudi::DataHandle::Reader ) )
+       {
+         declare_tuple_of_properties( this, inputs, m_inputs );
+       }
+
+       // special cases: forward to the generic case...
+       // 1 -> 0
+       DataHandleMixin(const std::string& name, ISvcLocator* locator,
+                     const KeyValue& input )
+       : DataHandleMixin( name, locator, std::array<KeyValue,1>{ input } )
+       { }
+
+   protected:
+       std::tuple<details::InputHandle_t<Traits_,In>...>  m_inputs;
+   };
+
+   template <typename... Out, typename Traits_>
+   class DataHandleMixin<std::tuple<Out...>, void,Traits_> : public BaseClass_t<Traits_> {
+       static_assert( std::is_base_of<GaudiAlgorithm, BaseClass_t<Traits_>>::value,
+                      "BaseClass must inherit from GaudiAlgorithm");
+   public:
+       using KeyValue = std::pair<std::string, std::string>;
+       constexpr static std::size_t N_out = sizeof...(Out);
+
+       // generic constructor:  0 -> N
+       DataHandleMixin(const std::string& name, ISvcLocator* pSvcLocator,
+                     const std::array<KeyValue,N_out>& outputs)
+       : BaseClass_t<Traits_>( name , pSvcLocator ),
+         m_outputs( make_tuple_of_handles<decltype(m_outputs)>( this, outputs, Gaudi::DataHandle::Writer ) )
+       {
+         declare_tuple_of_properties( this, outputs, m_outputs );
+       }
+
+       // 0 -> 1
+       DataHandleMixin(const std::string& name, ISvcLocator* locator,
+                       const KeyValue& output)
+       : DataHandleMixin( name, locator,  std::array<KeyValue,1>{ output } )
+       { }
+
+   protected:
+       std::tuple<details::OutputHandle_t<Traits_,Out>...> m_outputs;
+   };
+
 
 } } }
 

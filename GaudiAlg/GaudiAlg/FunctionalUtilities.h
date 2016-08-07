@@ -8,6 +8,7 @@
 // TODO: fwd declare instead?
 #include "GaudiKernel/DataObjectHandle.h"
 #include "GaudiKernel/AnyDataHandle.h"
+#include "GaudiKernel/SerializeSTL.h"
 #include "GaudiAlg/GaudiAlgorithm.h"
 #include "GaudiAlg/GaudiHistoAlg.h"
 
@@ -34,7 +35,23 @@ namespace Gaudi { namespace Functional {
             throw GaudiException( "Could not get the requested property \"" + prop + "\"",
                                   "updateHandleLocation", StatusCode::FAILURE );
         s.replace(0,s.find("|"),newLoc); // tokens are seperated by |
-        parent.setProperty(prop,s).ignore(); // first token is the default location
+        auto sc = parent.setProperty(prop,s);
+        if (sc.isFailure()) throw GaudiException("Could not set Property",s,sc);
+    }
+
+   inline void updateHandleLocations(IProperty& parent, const std::string& prop, const std::vector<std::string>& newLocs) {
+        // "parse" the current text representation of the datahandle,
+        // and then update the first token (the default location).
+        // Ugly, but I don't see any better way of doing this...
+        // underlying problem is the "syntax" of the text representation
+        // of a datahandle property...
+        std::ostringstream ss;
+        GaudiUtils::details::ostream_joiner( ss << "[", newLocs,",",
+                [](std::ostream& os, const std::string& s) -> std::ostream&
+                { return os << "\"" << s << "\""; }
+                ) << "]";
+        auto sc = parent.setProperty(prop,ss.str()); // first token is the default location
+        if (sc.isFailure()) throw GaudiException("Could not set Property",ss.str(),sc);
     }
 
    [[deprecated("please use updateHandleLocation instead")]]
