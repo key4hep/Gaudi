@@ -88,20 +88,44 @@ namespace Gaudi { namespace Functional { namespace details {
     // C++17: template <typename T> constexpr bool is_optional_v = is_optional<T>::value;
 
     /////////////////////////////////////////
+    // if Container is a pointer, then we're optional items
+    namespace details2 {
+         template <typename Container, typename Value>
+         void push_back(Container& c, const Value& v,  std::true_type) { c.push_back(v); }
+         template <typename Container, typename Value>
+         void push_back(Container& c, const Value& v, std::false_type) { c.push_back(&v); }
+
+         template <typename In>
+         struct get_from_handle {
+           template <template <typename> class Handle, typename I, typename = typename std::enable_if< std::is_convertible<I,In>::value >::type >
+           auto operator()( const Handle<I>& h ) -> const In& { return *h.get(); }
+           template <template <typename> class Handle, typename I, typename = typename std::enable_if<std::is_convertible<I*,In>::value>::type >
+           auto operator()( const Handle<I>& h ) -> const In { return h.getIfExists(); } // In is-a pointer
+         };
+
+         template <typename T> T* deref_if(T* const t,std::false_type) { return t; }
+         template <typename T> T& deref_if(T* const t,std::true_type)  { return *t; }
+    }
+
     template <typename Container>
     class vector_of_const_ {
-        using ContainerVector = std::vector<const Container*>;
+        static constexpr bool is_optional = std::is_pointer<Container>::value;
+        using val_t = std::add_const_t<std::remove_pointer_t<Container>>;
+        using ptr_t = std::add_pointer_t<val_t>;
+        using ref_t = std::add_lvalue_reference_t<val_t>;
+        using ContainerVector = std::vector<ptr_t>;
         ContainerVector m_containers;
     public:
-        using value_type = const Container;
+        using value_type = std::conditional_t<is_optional,ptr_t,val_t>;
         using size_type  = typename ContainerVector::size_type;
         class iterator {
              typename ContainerVector::const_iterator m_i;
              friend class vector_of_const_;
              iterator(typename ContainerVector::const_iterator iter) : m_i(iter) {}
+             using ret_t = std::conditional_t<is_optional,ptr_t,ref_t>;
          public:
              friend bool operator!=(const iterator& lhs, const iterator& rhs) { return lhs.m_i != rhs.m_i; }
-             const Container& operator*() const { return **m_i; }
+             ret_t operator*() const { return details2::deref_if(*m_i, std::integral_constant<bool,!is_optional>{}); }
              iterator& operator++() { ++m_i; return *this; }
              iterator& operator--() { --m_i; return *this; }
              bool is_null() const { return !*m_i; }
@@ -109,7 +133,8 @@ namespace Gaudi { namespace Functional { namespace details {
         };
         vector_of_const_() = default;
         void reserve(size_type size) { m_containers.reserve(size); }
-        void push_back(const Container& c) { m_containers.push_back(&c); } // note: does not copy its argument, so we're not really a container...
+        template <typename T> // , typename = std::is_convertible<T,std::conditional_t<is_optional,ptr_t,val_t>>
+        void push_back(T&& container) { details2::push_back(m_containers,std::forward<T>(container), std::integral_constant<bool,is_optional>{});} // note: does not copy its argument, so we're not really a container...
         iterator begin() const { return m_containers.begin(); }
         iterator end() const { return m_containers.end(); }
         size_type size() const { return m_containers.size(); }

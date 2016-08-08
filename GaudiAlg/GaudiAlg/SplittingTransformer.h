@@ -69,7 +69,7 @@ namespace Gaudi { namespace Functional {
        }
        template <typename T> using OutputHandle = details::OutputHandle_t<Traits_,details::remove_optional_t<T>>;
        std::vector<std::string>        m_outputLocations; //TODO/FIXME  for now: use a call-back to update the actual handles!
-       std::vector<OutputHandle<details::remove_optional_t<Out>>>  m_outputs;
+       std::vector<OutputHandle<Out>>  m_outputs;
    };
 
 
