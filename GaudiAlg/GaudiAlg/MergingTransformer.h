@@ -17,15 +17,9 @@ namespace Gaudi { namespace Functional {
    ////// Many of the same -> 1
    template <typename Out, typename In, typename Traits_>
    class MergingTransformer<Out(const vector_of_const_<In>&),Traits_>
-   :   public details::BaseClass_t<Traits_>
+   :   public details::DataHandleMixin<std::tuple<Out>,void,Traits_>
    {
-       using base_class = details::BaseClass_t<Traits_>;
-       // the reason to demand that base_class inherits from GaudiAlgorithm
-       // is that only it has a working declareProperty for handles, but eg.
-       // Algorithm does have a template one that matches, but does the wrong
-       // thing...
-       static_assert( std::is_base_of<GaudiAlgorithm,base_class>::value,
-                      "BaseClass must inherit from GaudiAlgorithm");
+       using base_class = details::DataHandleMixin<std::tuple<Out>,void,Traits_>;
    public:
        using KeyValue  = std::pair<std::string, std::string>;
        using KeyValues = std::pair<std::string, std::vector<std::string>>;
@@ -39,33 +33,36 @@ namespace Gaudi { namespace Functional {
        virtual Out operator()(const vector_of_const_<In>& inputs) const = 0;
 
    private:
-       template <typename T> using  InputHandle = details:: InputHandle_t<Traits_,T>;
-       template <typename T> using OutputHandle = details::OutputHandle_t<Traits_,T>;
-
+       // if In is a pointer, it signals optional (as opposed to mandatory) input
+       template <typename T> using InputHandle_t = details::InputHandle_t<Traits_,typename std::remove_pointer<T>::type>;
        std::vector<std::string>     m_inputLocations; // TODO/FIXME: remove this duplication...
-       std::vector<InputHandle<In>> m_inputs;         //   and make the handles properties instead...
-       OutputHandle<Out>            m_output;
+       std::vector<InputHandle_t<In>> m_inputs;  //   and make the handles properties instead...
    };
 
    template <typename Out, typename In, typename Traits_>
    MergingTransformer<Out(const vector_of_const_<In>&),Traits_>
    ::MergingTransformer( const std::string& name, ISvcLocator* pSvcLocator,
                          const KeyValues& inputs, const KeyValue& output )
-   :   base_class ( name , pSvcLocator )
+   :   base_class( name , pSvcLocator, output )
    ,   m_inputLocations( inputs.second )
-   ,   m_output( output.second,  Gaudi::DataHandle::Writer, this )
    {
        // TODO/FIXME: replace vector of string property + call-back with a
        //             vector<handle> property ... as soon as declareProperty can deal with that.
        auto p = this->declareProperty( inputs.first, m_inputLocations );
        p->declareUpdateHandler( [=](Property&) {
+           //@FIXME: if any handles, de-register ('retract') them first!
+           // std::for_each( this->m_inputs.begin(), this->m_inputs.end(), [&](auto& h) { this->retractInput(&h); } );
+           if (!this->m_inputs.empty()) {
+              this->warning() << "DataHandle property about to be updated, some DataHandles are about to run out of scope. This will cause a crash later..." << endmsg;
+           }
            this->m_inputs = details::make_vector_of_handles<decltype(this->m_inputs)>
                             (this, m_inputLocations, Gaudi::DataHandle::Reader);
+           if (std::is_pointer<In>::value) { // handle constructor does not (yet) allow to set optional flag... so do it explicitly here...
+               std::for_each( this->m_inputs.begin(), this->m_inputs.end(), [](auto& h) { h.setOptional(true); } );
+           }
+           std::for_each( this->m_inputs.begin(), this->m_inputs.end(), [&](auto& h) { this->declareInput(&h); } );
        } );
        p->useUpdateHandler(); // invoke call-back now, to be sure the input handles are synced with the property...
-       std::for_each( this->m_inputs.begin(), this->m_inputs.end(), [&](auto& h) { this->declareInput(&h); } );
-
-       this->declareProperty( output.first, m_output );
    }
 
    template <typename Out, typename In, typename Traits_>
@@ -73,12 +70,12 @@ namespace Gaudi { namespace Functional {
    MergingTransformer<Out(const vector_of_const_<In>&),Traits_>::execute()
    {
        vector_of_const_<In> ins; ins.reserve(m_inputs.size());
-       std::transform(m_inputs.begin(),m_inputs.end(),std::back_inserter(ins),
-                      [&](InputHandle<In>& handle) -> const In&
-                      { return *handle.get(); } );
+       std::transform(m_inputs.begin(),m_inputs.end(),
+                      std::back_inserter(ins),
+                      details::details2::get_from_handle<In>{} );
        try {
            using details::as_const;
-           details::put( m_output, as_const(*this)( as_const(ins) ) );
+           details::put( std::get<0>(this->m_outputs), as_const(*this)( as_const(ins) ) );
        } catch ( GaudiException& e ) {
            this->error() << "Error during transform: " << e.message() << " returning " << e.code() << endmsg;
            return e.code();

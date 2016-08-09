@@ -1,17 +1,16 @@
-#ifndef FILTER_PREDICATE_H
-#define FILTER_PREDICATE_H
+#ifndef GAUDI_FUNCTIONAL_CONSUMER_H
+#define GAUDI_FUNCTIONAL_CONSUMER_H
 
 #include <utility>
-#include <type_traits>
 #include "GaudiAlg/FunctionalDetails.h"
 #include "GaudiAlg/FunctionalUtilities.h"
 
 namespace Gaudi { namespace Functional {
 
-   template <typename T, typename Traits_ = Traits::useDefaults> class FilterPredicate;
+   template <typename Signature, typename Traits_ = Traits::useDefaults> class Consumer;
 
    template <typename... In, typename Traits_>
-   class FilterPredicate<bool(const In&...),Traits_>
+   class Consumer<void(const In&...),Traits_>
    : public details::DataHandleMixin<void,std::tuple<In...>,Traits_> {
    public:
        using details::DataHandleMixin<void,std::tuple<In...>,Traits_>::DataHandleMixin;
@@ -21,20 +20,15 @@ namespace Gaudi { namespace Functional {
        { return invoke(std::index_sequence_for<In...>{}); }
 
        // ... instead, they must implement the following operator
-       virtual bool operator()(const In&...) const = 0;
+       virtual void operator()(const In&...) const = 0;
 
    private:
-
-       // note: invoke is not const, as setFilterPassed is not (yet!) const
        template <std::size_t... I>
-       StatusCode invoke(std::index_sequence<I...>) {
-           using details::as_const;
-           auto pass = as_const(*this)( as_const(*std::get<I>(this->m_inputs).get())... );
-           this->setFilterPassed( pass );
+       StatusCode invoke(std::index_sequence<I...>) const {
+           (*this)( details::as_const(*std::get<I>(this->m_inputs).get())... );
            return StatusCode::SUCCESS;
        }
    };
-
 }}
 
 #endif
