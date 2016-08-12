@@ -34,9 +34,9 @@ public:
   };
 
 
-  DataHandle() : m_key("NONE"),  m_owner(0), m_mode(Reader) {};
+  DataHandle() = default;
   DataHandle(const DataObjID& k, Mode a=Reader,
-	     IDataHandleHolder* owner=0): 
+	     IDataHandleHolder* owner=nullptr):
     m_key(k), m_owner(owner), m_mode(a){};
 
   virtual ~DataHandle() = default;
@@ -67,11 +67,11 @@ protected:
    * change in case the object had alternative names, and it should not
    * be visible to the end user, for which the Handle is still the same
    */
-  mutable DataObjID       m_key;
-  IDataHandleHolder*      m_owner;
+  mutable DataObjID       m_key = { "NONE" };
+  IDataHandleHolder*      m_owner = nullptr;
 
 private:
-  Mode                    m_mode;
+  Mode                    m_mode = Reader;
 
 };
 

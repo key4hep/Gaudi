@@ -42,7 +42,6 @@ public:
 
   friend std::ostream& operator<< (std::ostream& str, const DataObjectHandleBase& d);
 
-
   /// Check if the data object declared is optional for the algorithm
   bool isOptional() const {return m_optional;}
   void setOptional(bool optional = true) { m_optional = optional; }
@@ -85,7 +84,7 @@ protected:
   mutable bool  m_searchDone = false;
 
   /**
-   * A Mutex protecting the calls to the serach part of the fetch method,
+   * A Mutex protecting the calls to the search part of the fetch method,
    * so that we are sure that we only call it once
    */
   mutable std::mutex m_searchMutex;
