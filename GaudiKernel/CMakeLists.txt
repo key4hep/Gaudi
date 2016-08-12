@@ -19,6 +19,8 @@ gaudi_add_unit_test(test_SerializeSTL tests/src/test_SerializeSTL.cpp
                     LINK_LIBRARIES GaudiKernel)
 gaudi_add_unit_test(test_AnyDataObject tests/src/test_AnyDataObject.cpp
                     LINK_LIBRARIES GaudiKernel)
+gaudi_add_unit_test(test_DataHandleVector tests/src/test_DataHandleVector.cpp
+                    LINK_LIBRARIES GaudiKernel)
 gaudi_add_unit_test(PathResolver_test tests/src/PathResolver_test.cpp
                     LINK_LIBRARIES GaudiKernel)
 gaudi_add_unit_test(test_GaudiTime tests/src/test_GaudiTime.cpp
