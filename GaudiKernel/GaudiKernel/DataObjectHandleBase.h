@@ -27,11 +27,12 @@ class DataObjectHandleBase : public Gaudi::DataHandle {
 
 public:
 
-  DataObjectHandleBase() = default;
   DataObjectHandleBase(const DataObjID& k, Gaudi::DataHandle::Mode a,
 		   IDataHandleHolder* o, std::vector<std::string> alternates = {} );
   DataObjectHandleBase(const std::string& k, Gaudi::DataHandle::Mode a,
 		   IDataHandleHolder* o);
+  virtual ~DataObjectHandleBase();
+  DataObjectHandleBase(const DataObjectHandleBase&) = delete;
   DataObjectHandleBase(DataObjectHandleBase&&);
 
   DataObjectHandleBase& operator=(const DataObjectHandleBase&);

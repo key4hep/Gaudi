@@ -695,18 +695,6 @@ private:
       DataObjectHandleBase&     hndl,
       const std::string& doc = "none" ) const
   {
-    if ( hndl.mode() & Gaudi::DataHandle::Reader ) {      
-      (const_cast<GaudiAlgorithm*>(this))->Algorithm::declareInput(&hndl);
-    }
-    
-    if ( hndl.mode() & Gaudi::DataHandle::Writer ) {      
-      (const_cast<GaudiAlgorithm*>(this))->Algorithm::declareOutput(&hndl);
-    }
-    
-    if (hndl.owner() == 0) {
-      hndl.setOwner((const_cast<GaudiAlgorithm*>(this)));
-    }
-    
     return m_propertyMgr->declareProperty(name, hndl, doc);
   }
   

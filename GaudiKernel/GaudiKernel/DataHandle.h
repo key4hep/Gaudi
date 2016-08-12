@@ -34,14 +34,12 @@ public:
   };
 
 
-  DataHandle() = default;
   DataHandle(const DataObjID& k, Mode a=Reader,
 	     IDataHandleHolder* owner=nullptr):
     m_key(k), m_owner(owner), m_mode(a){};
 
   virtual ~DataHandle() = default;
 
-  virtual void setOwner(IDataHandleHolder* o) { m_owner = o; }
   virtual IDataHandleHolder* owner() const { return m_owner; }
 
   virtual Mode mode() const { return m_mode; }
