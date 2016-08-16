@@ -31,6 +31,8 @@ gaudi_add_unit_test(SerialTaskQueue_test tests/src/SerialTaskQueue_test.cpp
                     LINK_LIBRARIES GaudiKernel TBB)
 gaudi_add_unit_test(ContextSpecificPtrTest tests/src/test_ContextSpecificPtr.cpp
                     LINK_LIBRARIES GaudiKernel TYPE Boost)
+gaudi_add_unit_test(test_LockedHandle tests/src/test_LockedHandle.cpp
+                    LINK_LIBRARIES GaudiKernel)
 # These are a compile-time tests.
 gaudi_add_unit_test(test_headers_build tests/src/test_headers_build.cpp
                     LINK_LIBRARIES GaudiKernel)
