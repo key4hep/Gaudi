@@ -119,7 +119,12 @@ T* DataObjectHandle<T>::put (T *objectp){
 
   if (UNLIKELY(!m_init)) init();
 
-  m_EDS->registerObject(objKey(), objectp).ignore();
+  StatusCode rc = m_EDS->registerObject(objKey(), objectp);
+  if (!rc.isSuccess()) {
+    throw GaudiException("Error in put of " + objKey(), 
+                         "DataObjectHandle<T>::put",
+                         StatusCode::FAILURE);
+  }
   // if ( LIKELY( sc.isSuccess() ) )
   //   setWritten();
   return objectp;
