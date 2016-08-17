@@ -32,8 +32,13 @@ namespace {
 }
 
 //---------------------------------------------------------------------------
-DataObjectHandleBase::DataObjectHandleBase(DataObjectHandleBase&& other) {
-  *this = other;
+DataObjectHandleBase::DataObjectHandleBase(DataObjectHandleBase&& other) :
+  Gaudi::DataHandle(other), m_EDS(std::move(other.m_EDS)),
+  m_MS(std::move(m_MS)), m_init(other.m_init),
+  m_goodType(other.m_goodType), m_optional(other.m_optional),
+  m_wasRead(other.m_wasRead), m_wasWritten(other.m_wasWritten),
+  m_searchDone(other.m_searchDone), m_altNames(std::move(other.m_altNames)) {
+  m_owner->declare(*this);
 }
 
 //---------------------------------------------------------------------------
@@ -58,7 +63,9 @@ DataObjectHandleBase::DataObjectHandleBase(const DataObjID& k,
 				      Gaudi::DataHandle::Mode a,
 				      IDataHandleHolder* owner,
                       std::vector<std::string> alternates):
-  Gaudi::DataHandle(k,a,owner), m_altNames( std::move(alternates) ) {}
+  Gaudi::DataHandle(k,a,owner), m_altNames( std::move(alternates) ) {
+  owner->declare(*this);
+}
 
 //---------------------------------------------------------------------------
 
@@ -68,8 +75,12 @@ DataObjectHandleBase::DataObjectHandleBase(const std::string& k,
   DataObjectHandleBase(DataObjID(head_alternates(k)), a, owner, unpack(tail_alternates(k))){}
 
 //---------------------------------------------------------------------------
-DataObject* DataObjectHandleBase::fetch() const {
+DataObjectHandleBase::~DataObjectHandleBase(){
+  owner()->renounce(*this);
+}
 
+//---------------------------------------------------------------------------
+DataObject* DataObjectHandleBase::fetch() const {
   DataObject* p = nullptr;
   if (LIKELY(m_searchDone)) { // fast path: searchDone, objKey is in its final state
       m_EDS->retrieveObject(objKey(), p).ignore();
@@ -82,9 +93,7 @@ DataObject* DataObjectHandleBase::fetch() const {
   // but as m_MS is not yet set, we cannot use a MsgStream...
   if (!m_init) {
     std::cerr << ( m_owner? m_owner->name() : "<UNKNOWN>:")
-        << "DataObjectHandle: uninitialized data handle --  "
-        << "you probably forgot to declare it with either "
-        << "declareProperty, declareInput or declareOutput" << std::endl;;
+        << "DataObjectHandle: uninitialized data handle" << std::endl;
   }
 
   // as m_searchDone is not true yet, objKey may change... so in this

@@ -11,6 +11,5 @@ void DataHandleHolderBase::initDataHandleHolderProperties(PropertyMgr *propertyM
 
 // initDataHandleHolder
 void DataHandleHolderBase::initDataHandleHolder() {
-  for (auto h : m_inputHandles) h->init();
-  for (auto h : m_outputHandles) h->init();
+  for (auto h : m_handles) h->init();
 }

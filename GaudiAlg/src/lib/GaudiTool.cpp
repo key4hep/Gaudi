@@ -279,16 +279,6 @@ Property* GaudiTool::declareProperty( const std::string& name,
                                       DataObjectHandleBase& hndl,
                                       const std::string& doc ) const
 {
-  if ( hndl.mode() & Gaudi::DataHandle::Reader ) {
-    (const_cast<GaudiTool*>(this))->AlgTool::declareInput(&hndl);
-  }
-
-  if ( hndl.mode() & Gaudi::DataHandle::Writer ) {
-    (const_cast<GaudiTool*>(this))->AlgTool::declareOutput(&hndl);
-  }
-
-  if (!hndl.owner()) hndl.setOwner((const_cast<GaudiTool*>(this)));
-
   return m_propertyMgr->declareProperty(name, hndl, doc);
 }
 

@@ -2,20 +2,34 @@
 #define GAUDIKERNEL_DATAHANDLEHOLDERBASE 1
 
 #include "GaudiKernel/IDataHandleHolder.h"
+#include "GaudiKernel/DataHandle.h"
+#include "GaudiKernel/GaudiException.h"
 
-#include <vector>
+#include <unordered_set>
+#include <algorithm>
 
 class PropertyMgr;
 
+namespace {
+    template <typename Container>
+    std::vector<Gaudi::DataHandle*> handles(Container& c, Gaudi::DataHandle::Mode mode) {
+      std::vector<Gaudi::DataHandle*> h;
+      std::copy_if( std::begin(c), std::end(c),
+                    std::back_inserter(h),
+                    [&](const Gaudi::DataHandle* hndl) -> bool
+                    { return hndl->mode() & mode ; }  );
+      return h;
+    }
+}
+
 class GAUDI_API DataHandleHolderBase : virtual public IDataHandleHolder {
  public:
-  virtual ~DataHandleHolderBase() {};
 
-  virtual std::vector<Gaudi::DataHandle*> inputHandles() const override {
-    return m_inputHandles;
+  std::vector<Gaudi::DataHandle*> inputHandles() const override {
+      return handles( m_handles, Gaudi::DataHandle::Reader );
   }
-  virtual std::vector<Gaudi::DataHandle*> outputHandles() const override {
-    return m_outputHandles;
+  std::vector<Gaudi::DataHandle*> outputHandles() const override {
+      return handles( m_handles, Gaudi::DataHandle::Writer );
   }
 
   virtual const DataObjIDColl& extraInputDeps() const override {
@@ -25,27 +39,40 @@ class GAUDI_API DataHandleHolderBase : virtual public IDataHandleHolder {
     return m_extOutputDataObjs;
   }
 
+  void declare(Gaudi::DataHandle& handle) override {
+    // the hndl owner is set in the handl c'tor -- how else can it get here?
+    // if (!handle.owner()) handle.setOwner(this);
+
+   if (handle.owner()!=this) {
+     throw GaudiException("Attempt to declare foreign handle with algorithm!",
+                           name(), StatusCode::FAILURE);
+   }
+
+    m_handles.insert(&handle);
+  }
+
+  void renounce(Gaudi::DataHandle& handle) override {
+   if (handle.owner()!=this) {
+     throw GaudiException("Attempt to renounce foreign handle with algorithm!",
+                           name(), StatusCode::FAILURE);
+   }
+   m_handles.erase(&handle);
+
+  }
+
  protected:
 
   /// initProperties - to be called by the constructor of the children
   /// once the PropertyManager is available
   void initDataHandleHolderProperties(PropertyMgr *propertyMgr);
 
-  /// initializes all handles, to ba called by the sysInitialize method
+  /// initializes all handles - called by the sysInitialize method
   /// of any descendant of this
   virtual void initDataHandleHolder();
 
-  virtual void declareInput(Gaudi::DataHandle* im) override {
-    m_inputHandles.push_back(im);
-  }
-
-  virtual void declareOutput(Gaudi::DataHandle* im) override {
-    m_outputHandles.push_back(im);
-  }
-
  private:
 
-  std::vector<Gaudi::DataHandle*> m_inputHandles, m_outputHandles;
+  std::unordered_set<Gaudi::DataHandle*> m_handles;
   DataObjIDColl m_extInputDataObjs, m_extOutputDataObjs;
 
 };

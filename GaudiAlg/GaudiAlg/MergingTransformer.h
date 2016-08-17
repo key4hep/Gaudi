@@ -60,7 +60,6 @@ namespace Gaudi { namespace Functional {
            if (std::is_pointer<In>::value) { // handle constructor does not (yet) allow to set optional flag... so do it explicitly here...
                std::for_each( this->m_inputs.begin(), this->m_inputs.end(), [](auto& h) { h.setOptional(true); } );
            }
-           std::for_each( this->m_inputs.begin(), this->m_inputs.end(), [&](auto& h) { this->declareInput(&h); } );
        } );
        p->useUpdateHandler(); // invoke call-back now, to be sure the input handles are synced with the property...
    }

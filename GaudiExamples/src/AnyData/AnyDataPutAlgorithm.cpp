@@ -1,4 +1,5 @@
 // Include files
+#include <string>
 #include <vector>
 
 // from Gaudi
@@ -30,7 +31,9 @@ AnyDataPutAlgorithm::AnyDataPutAlgorithm( const std::string& name,
     m_ids("/Event/Test/Ids", Gaudi::DataHandle::Writer, this)
 {
    declareProperty("Location", m_loc = "Test");
- 
+   for (int i = 0; i < 100; i++) {
+     m_id_vec.emplace_back("/Event/Test/Ids" + std::to_string(i), Gaudi::DataHandle::Writer, this);
+   } 
 }
 //=============================================================================
 // Destructor
@@ -63,6 +66,10 @@ StatusCode AnyDataPutAlgorithm::execute() {
    put(j, m_loc + "/Two");
 
    m_ids.put(vector<int>({42,84}));
+
+   for (int i = 0; i < 100; i++) {
+     m_id_vec[i].put(std::move(i));
+   }
    
    return StatusCode::SUCCESS;
 }

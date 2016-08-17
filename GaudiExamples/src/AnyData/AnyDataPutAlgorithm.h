@@ -4,6 +4,7 @@
 
 // Include files
 #include <string>
+#include <vector>
 
 // from Gaudi
 #include "GaudiAlg/GaudiAlgorithm.h"
@@ -30,6 +31,7 @@ private:
 
    std::string m_loc;
    AnyDataHandle<std::vector<int>> m_ids;
+   std::vector<AnyDataHandle<int>> m_id_vec;
    
 };
 #endif // ANYDATA_ANADATAPUTALGORITHM_H
