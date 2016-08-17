@@ -278,11 +278,10 @@ StatusCode AlgTool::sysInitialize() {
     if (!sc) return sc;
 
     m_state = m_targetState;
-    if (m_updateDataHandles)
-    	acceptDHVisitor(m_updateDataHandles.get());
+    if (m_updateDataHandles) acceptDHVisitor(m_updateDataHandles.get());
 
     // initialize handles
-    initDataHandleHolder();
+    initDataHandleHolder(); // this should 'freeze' the handle configuration.
 
     return sc;
   } );
@@ -591,12 +590,7 @@ void
 AlgTool::acceptDHVisitor(IDataHandleVisitor *vis) const{
   //-----------------------------------------------------------------------------
   vis->visit(this);
-
-  for (auto tool : tools()) {
-    AlgTool *at = dynamic_cast<AlgTool*>(tool);
-    vis->visit(at);
-  }
-
+  for (auto tool : tools()) vis->visit(dynamic_cast<AlgTool*>(tool));
 }
 
 //-----------------------------------------------------------------------------
@@ -604,13 +598,10 @@ void
 AlgTool::commitHandles() {
   //-----------------------------------------------------------------------------
 
-  for (auto h : outputHandles()) {
-    h->commit();
-  }
-
+  for (auto h : outputHandles()) h->commit();
   for (auto t : m_tools) {
     AlgTool* at = dynamic_cast<AlgTool*>(t);
-    if (at != 0) at->commitHandles();
+    if (at) at->commitHandles();
   }
 
 }

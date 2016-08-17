@@ -230,18 +230,14 @@ StatusCode Algorithm::sysInitialize() {
 
 void
 Algorithm::acceptDHVisitor(IDataHandleVisitor *vis) const {
+
   vis->visit(this);
 
   // loop through tools
-  for (auto tool : tools()) {
-    AlgTool* at = dynamic_cast<AlgTool*>(tool);
-    vis->visit(at);
-    }
+  for (auto tool : tools()) vis->visit(dynamic_cast<AlgTool*>(tool));
 
   // loop through sub-algs
-  for (auto alg : *subAlgorithms()) {
-    vis->visit(alg);
-  }
+  for (auto alg : *subAlgorithms()) vis->visit(alg);
 
 }
 

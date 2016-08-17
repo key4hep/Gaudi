@@ -91,7 +91,6 @@ namespace Gaudi { namespace Functional {
            if (details::is_optional<Out>::value) { // handle constructor does not (yet) allow to set optional flag... so do it explicitly here...
                std::for_each( this->m_outputs.begin(), this->m_outputs.end(), [](auto& h) { h.setOptional(true); } );
            }
-           std::for_each( this->m_outputs.begin(), this->m_outputs.end(), [&](auto& h) { this->declareOutput(&h); } );
        } );
        p->useUpdateHandler(); // invoke now, to be sure the input handles are synced with the property...
    }

@@ -14,7 +14,6 @@ class IncidentAsyncTestAlg: public Algorithm
 public:
   IncidentAsyncTestAlg(const std::string& name ,
 		       ISvcLocator*       pSvcLocator );
-  ~IncidentAsyncTestAlg() override;
   
   StatusCode initialize() override;
   StatusCode execute() override;
@@ -26,8 +25,8 @@ private:
   std::string m_serviceName;
   SmartIF<IIncidentAsyncTestSvc> m_service;
   std::vector<std::string> m_inpKeys, m_outKeys;
-  std::vector<DataObjectHandle<DataObject> *> m_inputObjHandles;
-  std::vector<DataObjectHandle<DataObject> *> m_outputObjHandles;
+  std::vector<std::unique_ptr<DataObjectHandle<DataObject>>> m_inputObjHandles;
+  std::vector<std::unique_ptr<DataObjectHandle<DataObject>>> m_outputObjHandles;
   
 };
 

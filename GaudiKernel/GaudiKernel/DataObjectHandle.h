@@ -27,10 +27,8 @@
 
 template<typename T>
 class DataObjectHandle : public DataObjectHandleBase {
-
 public:
   using DataObjectHandleBase::DataObjectHandleBase;
-
 
   /**
    * Retrieve object from transient data store
@@ -116,17 +114,13 @@ T* DataObjectHandle<T>::get(bool mustExist) const {
 //---------------------------------------------------------------------------
 template<typename T>
 T* DataObjectHandle<T>::put (T *objectp){
-
-  if (UNLIKELY(!m_init)) init();
-
+  assert(m_init);
   StatusCode rc = m_EDS->registerObject(objKey(), objectp);
   if (!rc.isSuccess()) {
     throw GaudiException("Error in put of " + objKey(), 
                          "DataObjectHandle<T>::put",
                          StatusCode::FAILURE);
   }
-  // if ( LIKELY( sc.isSuccess() ) )
-  //   setWritten();
   return objectp;
 }
 
