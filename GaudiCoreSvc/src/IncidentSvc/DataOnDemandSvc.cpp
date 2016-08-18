@@ -25,6 +25,7 @@
 #include "GaudiKernel/Chrono.h"
 #include "GaudiKernel/LockedChrono.h"
 #include "GaudiKernel/Property.h"
+//#include "GaudiKernel/ThreadLocalContext.h"
 // ============================================================================
 // Local
 // ============================================================================
@@ -768,6 +769,11 @@ DataOnDemandSvc::execHandler(const std::string& tag, Leaf& l)
   Chrono atimer ( m_total ) ;
   //
   Protection p(l.executing);
+  // FIXME: this will cause problems for Hive, as we need to set
+  // the EventContext of the called Algorithm.
+  // if (!l.algorithm->getContext()) {
+  //   l.algorithm->setContext( &Gaudi::Hive::currentContext() );
+  // }
   StatusCode sc = l.algorithm->sysExecute();
   if ( sc.isFailure() )
   {

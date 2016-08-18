@@ -6,6 +6,7 @@
 #include "GaudiKernel/IRunable.h"
 #include "GaudiKernel/Service.h"
 #include "GaudiKernel/IAlgResourcePool.h"
+#include "GaudiKernel/IAlgExecStateSvc.h"
 
 #include "AlgResourcePool.h"
 #include "ExecutionFlowManager.h"
@@ -74,6 +75,9 @@ private:
   /// Decide if the top alglist or its flat version has to be used
   bool m_useTopAlgList;
   SmartIF<IAlgResourcePool> m_algResourcePool;
+
+  /// Algorithm Execution State manager
+  SmartIF<IAlgExecStateSvc> m_aess;
 
   //control flow manager
   concurrency::ExecutionFlowManager m_controlFlow;

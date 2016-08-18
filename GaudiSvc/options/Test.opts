@@ -4,6 +4,7 @@ MessageSvc.OutputLevel     =  1;
 ApplicationMgr.HistogramPersistency = "NONE";
 ApplicationMgr.EvtSel      = "NONE"; // do not use any event input
 ApplicationMgr.EvtMax      = 100;
+AlgExecStateSvc.OutputLevel = 3;
 #include "$GAUDISVCROOT/options/CounterAlg.opts"
 #include "$GAUDISVCROOT/options/StoreExplorer.opts"
 #include "$GAUDISVCROOT/options/MultiStore.opts"

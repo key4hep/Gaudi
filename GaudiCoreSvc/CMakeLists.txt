@@ -14,6 +14,7 @@ gaudi_add_module(GaudiCoreSvc
                  src/IncidentSvc/*.cpp
                  src/JobOptionsSvc/*.cpp
                  src/MessageSvc/*.cpp
+                 src/AlgExecStateSvc/*.cpp
                  LINK_LIBRARIES GaudiKernel Boost TBB rt ${PYTHON_LIBRARIES} 
                  INCLUDE_DIRS TBB)
 

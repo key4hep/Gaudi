@@ -8,6 +8,7 @@
 #include "GaudiKernel/IAlgResourcePool.h"
 #include "GaudiKernel/IHiveWhiteBoard.h"
 #include "GaudiKernel/IThreadPoolSvc.h"
+#include "GaudiKernel/IAlgExecStateSvc.h"
 
 // Local includes
 #include "AlgsExecutionStates.h"
@@ -155,6 +156,9 @@ private:
 
   /// Method to check if an event failed and take appropriate actions
   StatusCode eventFailed(EventContext* eventContext);
+
+  /// Algorithm execution state manager
+  SmartIF<IAlgExecStateSvc> m_algExecStateSvc;
 
 
   // States management ------------------------------------------------------

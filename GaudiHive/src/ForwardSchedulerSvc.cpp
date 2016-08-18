@@ -2,9 +2,9 @@
 #include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/Algorithm.h" // will be IAlgorithm if context getter promoted to interface
-#include <GaudiAlg/GaudiAlgorithm.h>
+#include "GaudiAlg/GaudiAlgorithm.h"
 #include "GaudiKernel/DataHandleHolderVisitor.h"
-#include <GaudiKernel/IDataManagerSvc.h>
+#include "GaudiKernel/IDataManagerSvc.h"
 #include "tbb/task.h"
 #include "boost/thread.hpp"
 
@@ -105,6 +105,12 @@ StatusCode ForwardSchedulerSvc::initialize(){
   m_algResourcePool = serviceLocator()->service("AlgResourcePool");
   if (!m_algResourcePool.isValid()) {
     fatal() << "Error retrieving AlgoResourcePool" << endmsg;
+    return StatusCode::FAILURE;
+  }
+
+  m_algExecStateSvc = serviceLocator()->service("AlgExecStateSvc");
+  if (!m_algExecStateSvc.isValid()) {
+    fatal() << "Error retrieving AlgExecStateSvc" << endmsg;
     return StatusCode::FAILURE;
   }
 
@@ -510,10 +516,14 @@ StatusCode ForwardSchedulerSvc::eventFailed(EventContext* eventContext){
   // Set the number of slots available to an error code
   m_freeSlots.store(0);
 
-  eventContext->setFail(true);
-
   fatal() << "*** Event " << eventContext->evt() << " on slot "
           << eventContext->slot() << " failed! ***" << endmsg;
+
+  std::ostringstream ost;
+  m_algExecStateSvc->dump(ost, *eventContext);
+
+  info() << "Dumping Alg Exec State for slot " << eventContext->slot() 
+         << ":\n" << ost.str() << endmsg;
 
   dumpSchedulerState(-1);
 
@@ -706,7 +716,7 @@ StatusCode ForwardSchedulerSvc::updateStates(int si, const std::string& algo_nam
       thisSlot.complete=true;
       // if the event did not fail, add it to the finished events
       // otherwise it is taken care of in the error handling already
-      if (!thisSlot.eventContext->evtFail()) {
+      if(m_algExecStateSvc->eventStatus(*thisSlot.eventContext) == EventStatus::Success) {
         m_finishedEvents.push(thisSlot.eventContext);
         if (msgLevel(MSG::DEBUG))
           debug() << "Event " << thisSlot.eventContext->evt() << " finished (slot "
@@ -722,8 +732,10 @@ StatusCode ForwardSchedulerSvc::updateStates(int si, const std::string& algo_nam
       thisSlot.eventContext= nullptr;
     } else {
       StatusCode eventStalledSC = isStalled(iSlot);
-      if (! eventStalledSC.isSuccess())
+      if (! eventStalledSC.isSuccess()) {
+        m_algExecStateSvc->setEventStatus(EventStatus::AlgStall, *thisSlot.eventContext);
         eventFailed(thisSlot.eventContext).ignore();
+      }
     }
   } // end loop on slots
 
@@ -907,10 +919,12 @@ StatusCode ForwardSchedulerSvc::promoteToScheduled(unsigned int iAlgo, int si) {
     // Avoid to use tbb if the pool size is 1 and run in this thread
     if (-100 != m_threadPoolSize) {
       tbb::task* t = new( tbb::task::allocate_root() ) 
-        AlgoExecutionTask(ialgoPtr, iAlgo, eventContext, serviceLocator(), this);
+        AlgoExecutionTask(ialgoPtr, iAlgo, eventContext, serviceLocator(), 
+                          this, m_algExecStateSvc);
       tbb::task::enqueue( *t);
     } else {
-      AlgoExecutionTask theTask(ialgoPtr, iAlgo, eventContext, serviceLocator(), this);
+      AlgoExecutionTask theTask(ialgoPtr, iAlgo, eventContext, 
+                                serviceLocator(), this, m_algExecStateSvc);
       theTask.execute();
     }
 
@@ -951,7 +965,7 @@ StatusCode ForwardSchedulerSvc::promoteToExecuted(unsigned int iAlgo, int si,
   //  EventContext* eventContext = castedAlgo->getContext();
 
   // Check if the execution failed
-  if (eventContext->evtFail())
+  if (m_algExecStateSvc->eventStatus(*eventContext) != EventStatus::Success)
     eventFailed(eventContext).ignore();
 
   StatusCode sc = m_algResourcePool->releaseAlgorithm(algo->name(),algo);
