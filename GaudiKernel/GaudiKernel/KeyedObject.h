@@ -41,8 +41,8 @@ protected:
   friend struct Containers::key_traits<key_type>;
 //#endif
 
-  /// Object Key; It's initial value is not determined.
-  key_type m_key;
+  /// Object Key
+  key_type m_key{};
   /// Reference counter
   long     m_refCount = 0;
   /// Boolean to indicate wether a key was already assigned.
