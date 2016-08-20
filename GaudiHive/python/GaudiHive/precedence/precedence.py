@@ -99,7 +99,7 @@ class RndBiased10BooleanValue(object):
 
 
 class CruncherSequence(object):
-    """CPUCruncher-as-algorithm precedence sequence with real control flow and data flow dependencies of a Brunel workflow."""
+    """Constructs the sequence tree of CPUCrunchers with provided control flow and data flow precedence rules."""
 
     unique_sequencers=[]
     dupl_seqs={}
@@ -109,7 +109,7 @@ class CruncherSequence(object):
 
     unique_data_objects = []
 
-    def __init__(self, timeValue, IOboolValue, sleepFraction, cfgPath=None, dfgPath=None, showStat=False, algoDebug = False):
+    def __init__(self, timeValue, IOboolValue, sleepFraction, cfgPath, dfgPath, topSequencer, showStat=False, algoDebug = False):
         """
         Keyword arguments:
         timeValue -- timeValue object to set algorithm execution time
@@ -123,8 +123,6 @@ class CruncherSequence(object):
         self.IOboolValue = IOboolValue
         self.sleepFraction = sleepFraction
 
-        if not cfgPath: cfgPath = "cf_dependencies.graphml"
-        if not dfgPath: dfgPath = "data_dependencies.graphml"
         __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
         self.cfg = nx.read_graphml(os.path.join(__location__, cfgPath))
         self.dfg = nx.read_graphml(os.path.join(__location__, dfgPath))
@@ -132,19 +130,7 @@ class CruncherSequence(object):
         self.algoDebug = algoDebug
 
         # Generate control flow part
-        self.sequencer = self._generate_sequence('GaudiSequencer/BrunelSequencer')
-
-        avgRuntime, varRuntime = self.timeValue.get("DstWriter")
-        dstwriter = CPUCruncher("DstWriter",
-                                OutputLevel = DEBUG if self.algoDebug else INFO,
-                                shortCalib = True,
-                                varRuntime = varRuntime,
-                                avgRuntime = avgRuntime,
-                                SleepFraction = self.sleepFraction if self.IOboolValue.get() else 0.)
-
-        # Generate data flow part
-        self._attach_io_data_objects("DstWriter", dstwriter)
-        self.sequencer.Members += [dstwriter]
+        self.sequencer = self._generate_sequence(topSequencer)
 
         if showStat:
             import pprint
@@ -209,15 +195,6 @@ class CruncherSequence(object):
 
         if not seq:
             seq = GaudiSequencer(name, ShortCircuit = False)
-            avgRuntime, varRuntime = self.timeValue.get("Framework")
-            framework = CPUCruncher("Framework",
-                                    OutputLevel = DEBUG if self.algoDebug else INFO,
-                                    shortCalib = True,
-                                    varRuntime = varRuntime,
-                                    avgRuntime = avgRuntime,
-                                    SleepFraction = self.sleepFraction if self.IOboolValue.get() else 0.)
-            framework.outKeys = ['/Event/DAQ/RawEvent', '/Event/DAQ/ODIN']
-            seq.Members += [framework]
 
         for n in self.cfg[name]:
             if '/' in n:
@@ -258,7 +235,6 @@ class CruncherSequence(object):
                 avgRuntime, varRuntime = self.timeValue.get(algo_name)
                 algo_daughter = CPUCruncher(algo_name,
                                 OutputLevel = DEBUG if self.algoDebug else INFO,
-                                #outKeys = ['/Event/DAQ/ODIN'],
                                 shortCalib = True,
                                 varRuntime = varRuntime,
                                 avgRuntime = avgRuntime,

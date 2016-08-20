@@ -326,10 +326,6 @@
       <data key="d0">produces_for</data>
       <data key="d1">/Event/DAQ/ODIN</data>
     </edge>
-    <edge source="Framework" target="Framework">
-      <data key="d0">loads_for</data>
-      <data key="d1">/Event/DAQ/RawEvent</data>
-    </edge>
     <edge source="Framework" target="CreateOfflineTracks">
       <data key="d0">loads_for</data>
       <data key="d1">/Event</data>
