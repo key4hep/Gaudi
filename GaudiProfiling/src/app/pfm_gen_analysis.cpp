@@ -30,6 +30,7 @@ compile linking zlib: g++ -Wall -lz pfm_analysis.cpp
 #include <string>
 #include <vector>
 #include <sstream>
+#include <iostream>
 
 #include <dirent.h>
 #include <errno.h>
@@ -1524,7 +1525,11 @@ int read_C_file(const char *dir, const char *filename)
  strcat(path_name, "/");
  strcat(path_name, filename);
  FILE *fp = fopen(path_name, "r");
- fscanf(fp, "%s %s %s %s %s\n", arch, event, cmask_str, inv_str, sp_str);
+ int stat = fscanf(fp, "%s %s %s %s %s\n", arch, event, cmask_str, inv_str, sp_str);
+ if ( stat != 5 ) {
+   std::cerr << "ERROR: failed to parse " << path_name << std::endl;
+   exit(1);
+ }
  if(!strcmp(arch, "NHM")) nehalem = true; else nehalem = false;
  std::string event_str(event);
  if(atoi(cmask_str)>0)
@@ -1919,7 +1924,10 @@ int main(int argc, char *argv[])
   char c;
   while(read(fd_src, &c, 1))
   {
-   write(fd_dst, &c, 1);
+   if ( write(fd_dst, &c, 1) == -1 ) {
+     std::cerr << "ERROR: failed to write to " << dst << std::endl;
+     exit(1);
+   }
   }
   close(fd_dst);
   close(fd_src);
