@@ -19,3 +19,4 @@ gaudi_add_module(GaudiCoreSvc
                  src/AlgExecStateSvc/*.cpp
                  LINK_LIBRARIES GaudiKernel Boost TBB rt PythonLibs
                  INCLUDE_DIRS TBB PythonLibs)
+
