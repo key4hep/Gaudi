@@ -157,41 +157,27 @@ class CruncherSequence(object):
 
         return self.sequencer
 
-    def _attach_io_data_objects(self, algo_name, algo):
+    def _declare_data_deps(self, algo_name, algo):
+        """ Declare data inputs and outputs for a given algorithm. """
 
-        #print "===============================", algo_name, "========================================"
+        # Declare data inputs
+        for inNode, outNode in self.dfg.in_edges(algo_name):
+            dataName = inNode
+            if dataName not in self.unique_data_objects:
+                self.unique_data_objects.append(dataName)
 
-        cache=[]
-        for in_n, out_n in self.dfg.in_edges(algo_name):
-            addr = str(self.dfg.get_edge_data(in_n, out_n)['name'])#.lstrip('/Event/')
-            #print "addr: ", addr, self.dfg.get_edge_data(in_n, out_n)['name']
-            if not addr:
-                #print "   empty output string, skipping"
-                continue # if Path is "/Event". how to set it?
-            if addr == '/Event': continue#addr = '/Event/TEMP'
-            if addr not in cache:
-                algo.inpKeys.append(addr)
-                if addr not in self.unique_data_objects: self.unique_data_objects.append(addr)
-            else:
-                pass#print "   has such an input already, skipping..", addr
-            cache.append(addr)
+            algo.inpKeys.append(dataName)
 
-        cache=[]
-        for out_n, in_n in self.dfg.out_edges(algo_name):
-            addr = str(self.dfg.get_edge_data(out_n, in_n)['name'])#.lstrip('/Event/')
-            if not addr:
-                #print "   empty output string, skipping"
-                continue # if Path is "/Event". how to set it?
-            if addr == '/Event': continue#addr = '/Event/TEMP'
-            if addr not in cache:
-                algo.outKeys.append(addr)
-                if addr not in self.unique_data_objects: self.unique_data_objects.append(addr)
-            else:
-                pass#print "   has such an output already, skipping..", addr
-            cache.append(addr)
+        # Declare data outputs
+        for inNode, outNode in self.dfg.out_edges(algo_name):
+            dataName = outNode
+            if dataName not in self.unique_data_objects:
+                self.unique_data_objects.append(dataName)
+            algo.outKeys.append(dataName)
 
 
     def _generate_sequence(self, name, seq=None):
+        """ Assemble the tree of sequencers. """
 
         if not seq:
             seq = GaudiSequencer(name, ShortCircuit = False)
@@ -203,7 +189,7 @@ class CruncherSequence(object):
                 algo_type = 'GaudiAlgorithm'
                 algo_name = n
 
-            if algo_type in ['GaudiSequencer', 'ProcessPhase']:
+            if algo_type in ['GaudiSequencer', 'AthSequencer', 'ProcessPhase']:
                 if algo_name in ['RecoITSeq','RecoOTSeq','RecoTTSeq']: continue
 
                 if n not in self.unique_sequencers:
@@ -240,7 +226,7 @@ class CruncherSequence(object):
                                 avgRuntime = avgRuntime,
                                 SleepFraction = self.sleepFraction if self.IOboolValue.get() else 0.)
 
-                self._attach_io_data_objects(algo_name, algo_daughter)
+                self._declare_data_deps(algo_name, algo_daughter)
 
                 if algo_daughter not in seq.Members:
                     seq.Members += [algo_daughter]
