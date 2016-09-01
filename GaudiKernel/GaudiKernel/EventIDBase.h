@@ -16,6 +16,8 @@
 #include <iostream>
 #include <tuple>
 #include <stdint.h>
+#include "GaudiKernel/compact_optional.h"
+#include <limits>
 
 
 /**
@@ -32,41 +34,47 @@ public:
   typedef unsigned int       number_type;
   typedef uint64_t           event_number_t;
 
-  static const number_type    UNDEFNUM;
-  static const event_number_t UNDEFEVT;
 public:
-  
-  
+    
   /// \name structors
   //@{
   EventIDBase() {};
   EventIDBase(number_type run_number, 
+              event_number_t event_number);
+
+  EventIDBase(number_type run_number, 
               event_number_t event_number,
-              number_type time_stamp=UNDEFNUM,
-              number_type time_stamp_ns_offset=0,
-              number_type lumi_block=UNDEFNUM,
+              number_type time_stamp,
+              number_type time_stamp_ns_offset=0);
+
+  EventIDBase(number_type run_number, 
+              event_number_t event_number,
+              number_type time_stamp,
+              number_type time_stamp_ns_offset,
+              number_type lumi_block,
               number_type bunch_crossing_id=0);
+
   // Use default copy constructor.
   virtual ~EventIDBase();
   //@}
   
   /// run number - 32 bit unsigned
-  number_type   run_number () const { return m_run_number; }
+  number_type   run_number () const { return m_run_number.value(); }
   
   /// event number - 64 bit unsigned
-  event_number_t event_number () const { return m_event_number; }
+  event_number_t event_number () const { return m_event_number.value(); }
   
   /// time stamp - posix time in seconds from 1970, 32 bit unsigned
-  number_type   time_stamp   () const { return m_time_stamp; }
+  number_type   time_stamp   () const { return m_time_stamp.value(); }
   
   /// time stamp ns - ns time offset for time_stamp, 32 bit unsigned
-  number_type   time_stamp_ns_offset () const { return m_time_stamp_ns_offset; }
+  number_type   time_stamp_ns_offset () const { return m_time_stamp_ns_offset.value(); }
   
   /// luminosity block identifier, 32 bit unsigned
-  number_type   lumi_block           () const { return m_lumiBlock; }
+  number_type   lumi_block           () const { return m_lumiBlock.value(); }
   
   /// bunch crossing ID,  32 bit unsigned
-  number_type   bunch_crossing_id    () const { return m_bunch_crossing_id; }
+  number_type   bunch_crossing_id    () const { return m_bunch_crossing_id.value(); }
   
   /// set run number
   void set_run_number  (number_type runNumber) { m_run_number = runNumber; setRE();}
@@ -155,6 +163,14 @@ private:
     LumiEvent = 1 << 3
   };
 
+  using o_num_t = compact_optional<number_type, 
+                                   ~number_type{std::numeric_limits<number_type>::max()}>;
+  
+  using o_evt_t = compact_optional<event_number_t, 
+                                   ~event_number_t{std::numeric_limits<event_number_t>::max()}>;
+  
+  void setup();
+
   unsigned m_type {Invalid};
     
   void setRE() { m_type = m_type | RunEvent; }
@@ -162,23 +178,23 @@ private:
   void setLE() { m_type = m_type | LumiEvent; }
 
   /// run number
-  number_type   m_run_number {UNDEFNUM};
+  o_num_t   m_run_number;
   
   /// event number
-  event_number_t      m_event_number {UNDEFEVT};
+  o_evt_t   m_event_number;
   
   /// posix time in seconds since 1970/01/01
-  number_type   m_time_stamp {UNDEFNUM};
+  o_num_t   m_time_stamp;
   
   /// time stamp ns - ns time offset for time_stamp, 32 bit unsigned
-  number_type   m_time_stamp_ns_offset {UNDEFNUM}; 
+  o_num_t   m_time_stamp_ns_offset;
   
   /// luminosity block number: 
   /// the number which uniquely tags a luminosity block within a run
-  number_type   m_lumiBlock {UNDEFNUM};
+  o_num_t   m_lumiBlock;
   
   /// bunch crossing ID,  32 bit unsigned
-  number_type   m_bunch_crossing_id {UNDEFNUM};
+  o_num_t   m_bunch_crossing_id;
   
 };
 
@@ -188,22 +204,22 @@ inline bool operator<(const EventIDBase& lhs, const EventIDBase& rhs) {
   // then order by run/event
 
   if (lhs.isTimeStamp() && rhs.isTimeStamp()) {
-    return (lhs.m_time_stamp < rhs.m_time_stamp);
+    return (lhs.m_time_stamp.value() < rhs.m_time_stamp.value());
   } else {
     if (lhs.isLumiEvent() && rhs.isLumiEvent()) {
-      return (std::tie(lhs.m_lumiBlock, lhs.m_event_number) < 
-              std::tie(rhs.m_lumiBlock, rhs.m_event_number) );
+      return (std::tie(lhs.m_lumiBlock.value(), lhs.m_event_number.value()) < 
+              std::tie(rhs.m_lumiBlock.value(), rhs.m_event_number.value()) );
     } else {
-      return (std::tie(lhs.m_run_number, lhs.m_event_number) < 
-              std::tie(rhs.m_run_number, rhs.m_event_number) );
+      return (std::tie(lhs.m_run_number.value(), lhs.m_event_number.value()) < 
+              std::tie(rhs.m_run_number.value(), rhs.m_event_number.value()) );
     }
   }
 }
 
 inline bool operator==(const EventIDBase& lhs, const EventIDBase& rhs) {
   // We assume that equality via run/event numbers is sufficient
-  return ( lhs.m_run_number  == rhs.m_run_number && 
-           lhs.m_event_number == rhs.m_event_number );
+  return ( lhs.m_run_number.value()  == rhs.m_run_number.value() && 
+           lhs.m_event_number.value() == rhs.m_event_number.value() );
 }
 inline bool operator>(const EventIDBase& lhs, const EventIDBase& rhs) {
   return !( (lhs < rhs) || (lhs == rhs));
@@ -225,19 +241,19 @@ inline std::ostream& operator<<(std::ostream& os, const EventIDBase& rhs) {
   }
 
   os << "[" 
-     << rhs.m_run_number 
-     << "," << rhs.m_event_number;
+     << rhs.m_run_number.value() 
+     << "," << rhs.m_event_number.value();
   
   if ( rhs.isTimeStamp() != 0 ) {
-    os << "," << rhs.m_time_stamp << ":" << rhs.m_time_stamp_ns_offset;
+    os << "," << rhs.m_time_stamp.value() << ":" << rhs.m_time_stamp_ns_offset.value();
   }
 
   if ( rhs.isLumiEvent() != 0) {
-    os << ",l:" << rhs.m_lumiBlock;
+    os << ",l:" << rhs.m_lumiBlock.value();
   }
 
-  if ( rhs.m_bunch_crossing_id != 0) {
-    os << ",b:" << rhs.m_bunch_crossing_id;
+  if ( rhs.m_bunch_crossing_id.value() != 0) {
+    os << ",b:" << rhs.m_bunch_crossing_id.value();
   }
   os << "]";
   return os;

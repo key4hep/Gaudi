@@ -9,12 +9,27 @@
 
 #include "GaudiKernel/EventIDBase.h"
 
-#include <limits>
+EventIDBase::EventIDBase(number_type run_number, 
+                         event_number_t event_number)
+  :
+  m_run_number           (run_number),
+  m_event_number         (event_number) 
+{
+  setup();
+}
 
-const EventIDBase::number_type EventIDBase::UNDEFNUM = 
-  std::numeric_limits<EventIDBase::number_type>::max();
-const EventIDBase::event_number_t EventIDBase::UNDEFEVT = 
-  std::numeric_limits<EventIDBase::event_number_t>::max();
+EventIDBase::EventIDBase(number_type run_number, 
+                         event_number_t event_number,
+                         number_type time_stamp,
+                         number_type time_stamp_ns_offset)
+  :
+  m_run_number           (run_number),
+  m_event_number         (event_number),
+  m_time_stamp           (time_stamp),
+  m_time_stamp_ns_offset (time_stamp_ns_offset)
+{
+  setup();
+}
 
 EventIDBase::EventIDBase(number_type run_number, 
                          event_number_t event_number,
@@ -28,23 +43,26 @@ EventIDBase::EventIDBase(number_type run_number,
   m_time_stamp           (time_stamp),
   m_time_stamp_ns_offset (time_stamp_ns_offset),
   m_lumiBlock            (lumi_block),
-  m_bunch_crossing_id    (bunch_crossing_id)
+  m_bunch_crossing_id    (bunch_crossing_id) 
 {
-  if (m_run_number != UNDEFNUM && m_event_number != UNDEFEVT) {
+  setup();
+}
+
+void EventIDBase::setup() {
+  if ( (bool)m_run_number  && (bool)m_event_number) {
     setRE();
   }
 
-  if (m_time_stamp != UNDEFNUM) {
+  if ((bool) m_time_stamp) {
     setTS();
-    if (m_time_stamp_ns_offset == UNDEFNUM) {
+    if ( ! (bool) m_time_stamp_ns_offset ) {
       m_time_stamp_ns_offset = 0;
     }
   }
 
-  if (m_lumiBlock != UNDEFNUM && m_event_number != UNDEFEVT) {
+  if ( (bool)m_lumiBlock && (bool)m_event_number) {
     setLE();
   }
-
 }
 
 EventIDBase::~EventIDBase()
