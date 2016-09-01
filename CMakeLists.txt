@@ -11,11 +11,14 @@ endif()
 find_package(GaudiProject)
 #---------------------------------------------------------------
 
-option(GAUDI_ATLAS "Enable ATLAS-specific settings" OFF)
+option( GAUDI_ATLAS "Enable ATLAS-specific settings" OFF )
+set( GAUDI_ATLAS_BASE_PROJECT "AtlasExternals" CACHE STRING
+   "Name of the ATLAS base project to build Gaudi against" )
 
-# Base Gaudi on the AtlasExternals project when building for ATLAS:
+# Base Gaudi on "the ATLAS base project" (AtlasExternals by default) when
+# building for ATLAS:
 if( GAUDI_ATLAS )
-   find_package( AtlasExternals )
+   find_package( ${GAUDI_ATLAS_BASE_PROJECT} )
    gaudi_ctest_setup() # Needed for correct CTest usage in this setup
 endif()
 
