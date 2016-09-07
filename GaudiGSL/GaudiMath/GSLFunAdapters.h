@@ -66,6 +66,8 @@ namespace Genfun
       Function        m_function ;
       std::unique_ptr<gsl_sf_result>  m_result   ;
     };
+    /// mandatory macro from CLHEP/GenericFunctions
+    FUNCTION_OBJECT_IMP( GSLFunctionWithError )
 
     class GAUDI_API GSLFunctionWithMode : public AbsFunction
     {
@@ -102,6 +104,8 @@ namespace Genfun
       Function        m_function ;
       gsl_mode_t*     m_mode     ;
     };
+    /// mandatory macro from CLHEP/GenericFunctions
+    FUNCTION_OBJECT_IMP( GSLFunctionWithMode )
 
     class GAUDI_API GSLFunctionWithModeAndError : public AbsFunction
     {
@@ -146,6 +150,8 @@ namespace Genfun
       std::unique_ptr<gsl_mode_t>     m_mode     ;
       std::unique_ptr<gsl_sf_result>  m_result   ;
     };
+    /// mandatory macro from CLHEP/GenericFunctions
+    FUNCTION_OBJECT_IMP( GSLFunctionWithModeAndError )
 
   } // end of namespace GaudiMath Implemnentation
 } // end of namespace Genfun
