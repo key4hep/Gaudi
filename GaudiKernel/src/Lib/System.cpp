@@ -19,6 +19,7 @@
 #include <sstream>
 #include <typeinfo>
 #include <memory>
+#include <array>
 
 #include "GaudiKernel/System.h"
 #include "instrset.h"

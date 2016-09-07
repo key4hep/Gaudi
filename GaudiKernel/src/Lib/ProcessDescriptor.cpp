@@ -14,7 +14,7 @@
 //====================================================================
 #define GAUDIKERNEL_PROCSTAT_CPP
 
-static const long TICK_TO_100NSEC = 100000;
+//static const long TICK_TO_100NSEC = 100000;
 
 namespace System    {
   enum ProcessInfoCommand {
@@ -371,10 +371,10 @@ void readProcStat(long pid, linux_proc& pinfo) {
 //static long s_myPid  = ::getpid();
 // In order to properly support e.g. fork() calls, we cannot keep a copy of the pid!
 #define s_myPid (::getpid())
-static inline long processID(long pid) {
-  long thePid = (pid>0) ? pid : s_myPid;
-  return thePid;
-}
+//static inline long processID(long pid) {
+//  long thePid = (pid>0) ? pid : s_myPid;
+//  return thePid;
+//}
 
 // Framework include files
 #include "ProcessDescriptor.h"
