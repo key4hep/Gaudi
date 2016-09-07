@@ -3,7 +3,7 @@ gaudi_subdir(RootHistCnv v12r4)
 gaudi_depends_on_subdirs(GaudiKernel)
 
 find_package(AIDA)
-find_package(ROOT COMPONENTS RIO Hist Matrix Tree)
+find_package(ROOT COMPONENTS RIO Hist Matrix Tree Thread MathCore Net)
 find_package(Boost)
 
 #---Libraries---------------------------------------------------------------
