@@ -9,6 +9,7 @@
 // coming from TString.h
 #pragma warning(disable:4996)
 #endif
+#include <array>
 #include "H2D.h"
 #include "H1D.h"
 #include "P1D.h"
