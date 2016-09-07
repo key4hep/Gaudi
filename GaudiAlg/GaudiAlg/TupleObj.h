@@ -1951,8 +1951,8 @@ namespace Tuples
     {
       using Info = std::pair<KEY,VALUE>;
       static const std::array< std::function<float(const Info&)>, 2>
-                    fns = { [](const Info& i) { return i.first;  } ,
-                            [](const Info& i) { return i.second; } };
+         fns = { { [](const Info& i) { return i.first;  } ,
+                   [](const Info& i) { return i.second; } } };
       return fmatrix( name,
                       std::begin(fns), std::end(fns),
                       std::begin(info), std::end(info),

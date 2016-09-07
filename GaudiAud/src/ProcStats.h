@@ -7,11 +7,12 @@
 
 #include <string>
 #include <vector>
-#ifdef __linux
+#if defined(__linux__) or defined(__APPLE__)
 #include <unistd.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <fcntl.h>
-#endif
+#endif // __linux__ or __APPLE__
 
 struct procInfo
 {
