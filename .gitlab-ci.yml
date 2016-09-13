@@ -24,7 +24,7 @@ coding-conventions:
     - slc6
   script:
     - make apply-formatting
-    - git diff --stat --exit-code
+    - git diff --stat
 
 doxygen:
   stage: deploy
