@@ -36,6 +36,12 @@
 #include "boost/format.hpp"
 #include "boost/regex.hpp"
 
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
+#include <boost/log/utility/setup/console.hpp>
+#include <boost/log/utility/setup/common_attributes.hpp>
+
 #include "GaudiKernel/System.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IProperty.h"
@@ -73,6 +79,11 @@
 
 namespace po = boost::program_options;
 namespace fs = boost::filesystem;
+
+#define LOG_ERROR    BOOST_LOG_TRIVIAL(error)
+#define LOG_WARNING  BOOST_LOG_TRIVIAL(warning)
+#define LOG_INFO     BOOST_LOG_TRIVIAL(info)
+#define LOG_DEBUG    BOOST_LOG_TRIVIAL(debug)
 
 using namespace std;
 
@@ -202,10 +213,39 @@ private:
 
 int createAppMgr();
 
+void init_logging(boost::log::trivial::severity_level level)
+{
+    namespace logging = boost::log;
+    namespace keywords = boost::log::keywords;
+    namespace expr = boost::log::expressions;
+
+    logging::add_console_log
+    (
+        std::cout,
+        keywords::format = (
+            expr::stream
+                        << "[" << std::setw(7) << std::left
+                               << logging::trivial::severity
+                        << "] " << expr::smessage
+        )
+    );
+
+    logging::core::get()->set_filter
+    (
+        logging::trivial::severity >= level
+    );
+
+}
+
+
 //--- Command main program-----------------------------------------------------
 int main ( int argc, char** argv )
 //-----------------------------------------------------------------------------
 {
+  init_logging((System::isEnvSet("VERBOSE") && !System::getEnv("VERBOSE").empty())
+               ? boost::log::trivial::info
+               : boost::log::trivial::warning);
+
   fs::path pwd = fs::initial_path();
   fs::path out;
   Strings_t libs;
@@ -296,7 +336,9 @@ int main ( int argc, char** argv )
     po::notify(vm);
   }
   catch ( po::error& err ) {
-    cout << "ERROR: error detected while parsing command options: "<< err.what() << endl;
+    LOG_ERROR
+        << "error detected while parsing command options: "
+        << err.what();
     return EXIT_FAILURE;
   }
 
@@ -310,14 +352,14 @@ int main ( int argc, char** argv )
     pkgName = vm["package-name"].as<string>();
   }
   else {
-    cout << "ERROR: 'package-name' required" << endl;
+    LOG_ERROR << "'package-name' required";
     cout << visible << endl;
     return EXIT_FAILURE;
   }
 
   if( vm.count("user-module") ) {
     userModule = vm["user-module"].as<string>();
-    cout << "INFO: will import user module " << userModule << endl;
+    LOG_INFO << "INFO: will import user module " << userModule;
   }
 
   if( vm.count("input-libraries") ) {
@@ -349,16 +391,15 @@ int main ( int argc, char** argv )
       }
     } //> end loop over input-libraries
     if ( libs.empty() ) {
-      cout << "ERROR: input component library(ies) required !\n"
-           << "ERROR: 'input-libraries' argument was ["
+      LOG_ERROR << "input component library(ies) required !\n";
+      LOG_ERROR << "'input-libraries' argument was ["
            << vm["input-libraries"].as<string>()
-           << "]"
-           << endl;
+           << "]";
       return EXIT_FAILURE;
     }
   }
   else {
-    cout << "ERROR: input component library(ies) required" << endl;
+    LOG_ERROR << "input component library(ies) required";
     cout << visible << endl;
     return EXIT_FAILURE;
   }
@@ -380,7 +421,7 @@ int main ( int argc, char** argv )
       System::ImageHandle tmp; // we ignore the library handle
       unsigned long err = System::loadDynamicLib(*lLib, &tmp);
       if (err != 1) {
-        cout << "WARNING: failed to load: "<< *lLib << endl;
+        LOG_WARNING << "failed to load: "<< *lLib;
       }
     }
   }
@@ -391,14 +432,18 @@ int main ( int argc, char** argv )
       fs::create_directory(out);
     }
     catch ( fs::filesystem_error &err ) {
-      cout << "ERROR: error creating directory: "<< err.what() << endl;
+      LOG_ERROR << "error creating directory: "<< err.what();
       return EXIT_FAILURE;
     }
   }
 
-  cout << ":::::: libraries : [ ";
-  copy( libs.begin(), libs.end(), ostream_iterator<string>(cout, " ") );
-  cout << "] ::::::" << endl;
+  {
+    std::ostringstream msg;
+    msg << ":::::: libraries : [ ";
+    copy( libs.begin(), libs.end(), ostream_iterator<string>(msg, " ") );
+    msg << "] ::::::";
+    LOG_INFO << msg.str();
+  }
 
   configGenerator py( pkgName, out.string() );
   py.setConfigurableModule     (vm["configurable-module"].as<string>());
@@ -425,10 +470,13 @@ int main ( int argc, char** argv )
     initPy << "## Hook for " << pkgName << " genConf module\n" << flush;
   }
 
-  cout << ":::::: libraries : [ ";
-  copy( libs.begin(), libs.end(), ostream_iterator<string>(cout, " ") );
-  cout << "] :::::: [DONE]" << endl;
-
+  {
+    std::ostringstream msg;
+    msg << ":::::: libraries : [ ";
+    copy( libs.begin(), libs.end(), ostream_iterator<string>(msg, " ") );
+    msg << "] :::::: [DONE]";
+    LOG_INFO << msg.str();
+  }
   return sc;
 }
 
@@ -465,7 +513,7 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
   // iterate over all the requested libraries
   for ( Strings_t::const_iterator iLib=libs.begin(); iLib != endLib; ++iLib ) {
 
-    std::cout << ":::: processing library: " << *iLib << "..." << std::endl;
+    LOG_INFO << ":::: processing library: " << *iLib << "...";
 
     // reset state
     m_importGaudiHandles = false;
@@ -477,7 +525,7 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
     System::ImageHandle handle;
     unsigned long err = System::loadDynamicLib( *iLib, &handle );
     if ( err != 1 ) {
-      cout << "ERROR: " << System::getLastErrorString() << endl;
+      LOG_ERROR << System::getLastErrorString();
       allGood = false;
       continue;
     }
@@ -489,7 +537,7 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
       const string ident = *it;
       if ( bkgNames.find(ident) != bkgNames.end() ) {
         if ( Gaudi::PluginService::Details::logger().level() <= 1 ) {
-          cout << "\t==> skipping [" << ident << "]..." << endl;
+          LOG_INFO << "\t==> skipping [" << ident << "]...";
         }
         continue;
       }
@@ -506,9 +554,9 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
       // from the same library we are processing (i.e. we found a symbol that
       // is coming from a library loaded by the linker).
       if ( !DsoUtils::inDso( info.ptr, DsoUtils::libNativeName(*iLib) ) ) {
-        cout << "WARNING: library [" << *iLib << "] exposes factory ["
+        LOG_WARNING << "library [" << *iLib << "] exposes factory ["
              << ident << "] which is declared in ["
-             << DsoUtils::dsoName(info.ptr) << "] !!" << endl;
+             << DsoUtils::dsoName(info.ptr) << "] !!";
         continue;
       }
 
@@ -539,16 +587,15 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
       }
 
       if ( !known ) {
-        cout << "WARNING: Unknown (return) type [" << System::typeinfoName(rtype.c_str()) << "] !!"
-             << " Component [" << ident << "] is skipped !"
-             << endl;
+        LOG_WARNING << "Unknown (return) type [" << System::typeinfoName(rtype.c_str()) << "] !!"
+             << " Component [" << ident << "] is skipped !";
         continue;
       }
 
-      cout << " - component: " << info.className << " (";
-      if (info.className != name)
-        cout << name << ": ";
-      cout << type << ")" << endl;
+      LOG_INFO << " - component: " << info.className
+               << " (" << (info.className != name ? (name + ": ")
+                                                  : std::string())
+               << type << ")";
 
       string cname = "DefaultName";
       SmartIF<IProperty> prop;
@@ -575,15 +622,15 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
         }
       }
       catch ( exception& e ) {
-        cout << "ERROR: Error instantiating " << name
-             << " from " << *iLib << endl;
-        cout << "ERROR: Got exception: " << e.what() << endl;
+        LOG_ERROR << "Error instantiating " << name
+                  << " from " << *iLib;
+        LOG_ERROR << "Got exception: " << e.what();
         allGood = false;
         continue;
       }
       catch ( ... ) {
-        cout << "ERROR: Error instantiating " << name
-             << " from " << *iLib << endl;
+        LOG_ERROR << "Error instantiating " << name
+                  << " from " << *iLib;
         allGood = false;
         continue;
       }
@@ -593,11 +640,10 @@ int configGenerator::genConfig( const Strings_t& libs, const string& userModule 
         }
         prop.reset();
       } else {
-        cout << "ERROR: could not cast IInterface* object to an IProperty* !\n"
-             << "ERROR: return type from PluginSvc is [" << rtype << "]...\n"
-             << "ERROR: NO Configurable will be generated for ["
-             << name << "] !"
-             << endl;
+        LOG_ERROR << "could not cast IInterface* object to an IProperty* !";
+        LOG_ERROR << "return type from PluginSvc is [" << rtype << "]...";
+        LOG_ERROR << "NO Configurable will be generated for ["
+                  << name << "] !";
         allGood = false;
       }
     } //> end loop over factories

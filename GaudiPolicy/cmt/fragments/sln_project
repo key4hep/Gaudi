@@ -1,3 +1,0 @@
-Project("$(package_GUID)") = "${CONSTITUENT}", "${CONSTITUENT}.vcproj", "${CONSTITUENT_GUID}"
-EndProject
-

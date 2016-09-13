@@ -1,7 +1,11 @@
 <lcgdict>
   <selection>
-  <class pattern="GaudiMath::*"       />
-  <class pattern="Genfun::GaudiMath*" />
+  <class pattern="GaudiMath::*">
+    <field name="m_ws" transient="true"/>
+  </class>
+  <class pattern="Genfun::GaudiMath*">
+    <field name="m_ws" transient="true"/>
+  </class>
   </selection>
 
   <exclusion>

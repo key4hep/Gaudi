@@ -4,7 +4,6 @@
 // Include files
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/DataObject.h"
-#include "CLHEP/Matrix/Matrix.h"
 
 
 namespace Gaudi {

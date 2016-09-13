@@ -79,7 +79,7 @@ namespace GaudiKernelTest {
     public:
       Enqueuer(Gaudi::SerialTaskQueue& q, std::vector<int>& r, int _n):
         queue(q), results(r), n(_n) {}
-      void operator() () {
+      void operator() () const {
         queue.add(new PushBackTask(results, n));
       }
     private:

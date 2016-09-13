@@ -94,7 +94,6 @@ def updateReleaseNotes(path, notes):
         notes_file.writelines(dropuntil(re.compile(r'^!?============').match, orig_data))
 
 # guess current version
-_req_version_pattern = re.compile(r"^\s*version\s*(v[0-9]+r[0-9]+(?:p[0-9]+)?)\s*$")
 _cml_version_pattern = re.compile(r"^\s*gaudi_subdir\s*\(\s*\S+\s+(v[0-9]+r[0-9]+(?:p[0-9]+)?)\)\s*$")
 def extract_version(path):
     """
@@ -128,33 +127,12 @@ def change_version(packagedir, newversion):
 
     Returns true if the package have been modified.
     """
-    global _req_version_pattern
-    changed = False
-    out = []
-    req = os.path.join(packagedir, 'cmt', 'requirements')
-    for l in open(req):
-        m = _req_version_pattern.match(l)
-        if m:
-            if m.group(1) != newversion:
-                logging.debug('%s: %s -> %s', packagedir, m.group(1), newversion)
-                l = l.replace(m.group(1),newversion)
-                changed = True
-        out.append(l)
-    if changed:
-        open(req,"w").writelines(out)
-    # verify the version.cmt file
-    ver = os.path.join(packagedir,"version.cmt")
-    if os.path.exists(ver):
-        current = open(ver).read().strip()
-        if current != newversion:
-            open(ver,"w").write(newversion + "\n")
     # update CMakeLists.txt
     cml = os.path.normpath(os.path.join(packagedir, 'CMakeLists.txt'))
     change_cml_version(cml, newversion)
     if 'GaudiKernel' in packagedir:
         cml = os.path.normpath(os.path.join(packagedir, 'src', 'Util', 'CMakeLists.txt'))
         change_cml_version(cml, newversion)
-    return changed
 
 def tag_bar(pkg, version=None):
     title = ' %s %s ' % (pkg, version)
@@ -189,7 +167,7 @@ def main():
                                   dirname != 'cmake']
 
     # Packages which version must match the version of the project
-    special_subdirs = ["Gaudi", "GaudiExamples", "GaudiSys", "GaudiRelease"]
+    special_subdirs = ["Gaudi", "GaudiExamples", "GaudiRelease"]
 
     # Ask for the version of the project
     latest_tag = findLatestTag()
@@ -203,7 +181,6 @@ def main():
     # for each package in the project check if there were changes and ask for the new version number
     for pkgdir in all_subdirs():
         cmlfile = os.path.join(pkgdir, 'CMakeLists.txt')
-        reqfile = os.path.join(pkgdir, 'cmt', 'requirements')
 
         pkg = os.path.basename(pkgdir)
         old_vers = extract_version(pkgdir)
@@ -232,17 +209,6 @@ def main():
         new_versions[pkg] = vers or old_vers
         print "=" * 80
 
-    # The changes in the GaudiRelease requirements for the other packages can be postponed to now
-    reqfile = os.path.join('GaudiRelease', 'cmt', 'requirements')
-    out = []
-    for l in open(reqfile):
-        sl = l.strip().split()
-        if sl and sl[0] == "use":
-            if sl[1] in new_versions:
-                if sl[2] != new_versions[sl[1]]:
-                    l = l.replace(sl[2], new_versions[sl[1]])
-        out.append(l)
-    open(reqfile, "w").writelines(out)
     # Update project.info
     config = ConfigParser.ConfigParser()
     config.optionxform = str # make the options case sensitive

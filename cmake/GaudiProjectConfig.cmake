@@ -221,7 +221,6 @@ macro(gaudi_project project version)
   option(GAUDI_BUILD_TESTS "Set to OFF to disable the build of the tests (libraries and executables)." ON)
   option(GAUDI_HIDE_WARNINGS "Turn on or off options that are used to hide warning messages." ON)
   option(GAUDI_USE_EXE_SUFFIX "Add the .exe suffix to executables on Unix systems (like CMT does)." ON)
-  option(GAUDI_CHECK_MISSING_CONFIGS "Check that all the packages have the CMakeLists.txt." ON)
   #-------------------------------------------------------------------------------------------------
   set(GAUDI_DATA_SUFFIXES DBASE;PARAM;EXTRAPACKAGES CACHE STRING
       "List of (suffix) directories where to look for data packages.")
@@ -335,8 +334,8 @@ macro(gaudi_project project version)
   find_program(env_cmd xenv HINTS ${binary_paths})
   set(env_cmd ${PYTHON_EXECUTABLE} ${env_cmd})
 
-  find_program(default_merge_cmd merge_files.py HINTS ${binary_paths})
-  set(default_merge_cmd ${PYTHON_EXECUTABLE} ${default_merge_cmd} --no-stamp)
+  find_program(default_merge_cmd quick-merge HINTS ${binary_paths})
+  set(default_merge_cmd ${PYTHON_EXECUTABLE} ${default_merge_cmd})
 
   find_program(versheader_cmd createProjVersHeader.py HINTS ${binary_paths})
   if(versheader_cmd)
@@ -392,7 +391,9 @@ macro(gaudi_project project version)
 
   #--- Project Installations------------------------------------------------------------------------
   install(DIRECTORY cmake/ DESTINATION cmake
-                           FILES_MATCHING PATTERN "*.cmake"
+                           FILES_MATCHING
+                           PATTERN "*.cmake"
+                           PATTERN "*.py"
                            PATTERN ".svn" EXCLUDE)
   install(PROGRAMS cmake/xenv DESTINATION scripts OPTIONAL)
   install(DIRECTORY cmake/EnvConfig DESTINATION scripts
@@ -528,19 +529,6 @@ macro(gaudi_project project version)
 
   # (so far, the build and the release envirnoments are identical)
   set(project_build_environment ${project_environment})
-
-  # FIXME: this should not be needed, but there is a bug in genreflex
-  if(BINARY_TAG MATCHES "i686-.*")
-    # special environment variables for GCCXML
-    if(GCCXML_CXX_COMPILER)
-      set(project_build_environment ${project_build_environment}
-          SET GCCXML_COMPILER "${GCCXML_CXX_COMPILER}")
-    endif()
-    if(GCCXML_CXX_FLAGS)
-      set(project_build_environment ${project_build_environment}
-          SET GCCXML_CXXFLAGS "${GCCXML_CXX_FLAGS}")
-    endif()
-  endif()
 
   # - collect internal environment
   message(STATUS "  environment for the project")
@@ -1284,15 +1272,6 @@ function(gaudi_get_packages var)
   endforeach()
   list(SORT var)
   set(${var} ${packages} PARENT_SCOPE)
-  if (GAUDI_CHECK_MISSING_CONFIGS)
-    file(GLOB_RECURSE requirements_files RELATIVE ${CMAKE_SOURCE_DIR} requirements)
-    foreach(r ${requirements_files})
-      string(REPLACE cmt/requirements CMakeLists.txt c ${r})
-      if(NOT EXISTS ${CMAKE_SOURCE_DIR}/${c})
-        message(WARNING "found ${r} but no ${c}")
-      endif()
-    endforeach()
-  endif()
 endfunction()
 
 
@@ -2578,6 +2557,7 @@ macro(gaudi_install_cmake_modules)
           DESTINATION cmake
           FILES_MATCHING
             PATTERN "*.cmake"
+            PATTERN "*.py"
             PATTERN "CVS" EXCLUDE
             PATTERN ".svn" EXCLUDE)
   set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
@@ -2978,8 +2958,6 @@ macro(gaudi_external_project_environment)
         endif()
       elseif(pack STREQUAL "Oracle")
         set(executable ${SQLPLUS_EXECUTABLE})
-      elseif(pack STREQUAL "GCCXML")
-        set(executable ${GCCXML})
       elseif(pack STREQUAL "tcmalloc")
         set(executable ${PPROF_EXECUTABLE})
       endif()

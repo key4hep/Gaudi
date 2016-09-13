@@ -84,6 +84,14 @@ ThreadPoolSvc::initPool(const int& poolSize) {
 
   if (msgLevel(MSG::DEBUG))
     debug() << "ThreadPoolSvc::initPool() poolSize = " << poolSize << endmsg;
+  //There is a problem in the piece of the code below.  if
+  // m_threadPoolSize is set to something negative which is < -1,
+  // algorithm below might not behave as expected. For the time being
+  // I've choosen to create the barrier with the default number of
+  // threads created by the task scheduler init assuming that a
+  // negative value will choose automatic thread creation which will
+  // create default number of threads.
+  // SK
 
   // -100 prevents the creation of the pool and the scheduler directly
   // executes the tasks.
@@ -97,15 +105,16 @@ ThreadPoolSvc::initPool(const int& poolSize) {
     int thePoolSize = m_threadPoolSize;
     if (thePoolSize != -1) thePoolSize += 1;
 
-    // Create the barrier for task synchronization
-    if (msgLevel(MSG::DEBUG))
-      debug() << "creating barrier of size " << m_threadPoolSize + 1 << endmsg;
-    m_barrier = std::unique_ptr<boost::barrier>
-      ( new boost::barrier(m_threadPoolSize + 1) );
 
     // Create the TBB task scheduler
-    m_tbbSchedInit = std::unique_ptr<tbb::task_scheduler_init>
-      ( new tbb::task_scheduler_init(thePoolSize) );
+    m_tbbSchedInit = std::unique_ptr<tbb::task_scheduler_init>( new tbb::task_scheduler_init(thePoolSize) );
+    // Create the barrier for task synchronization
+    if(m_threadPoolSize<=-1)thePoolSize=m_tbbSchedInit->default_num_threads();
+    if (msgLevel(MSG::DEBUG)){
+      debug() << "creating barrier of size " << thePoolSize << endmsg;
+    }
+    m_barrier = std::unique_ptr<boost::barrier>( new boost::barrier(thePoolSize) );
+
   }
 
   // Launch the init tool tasks
