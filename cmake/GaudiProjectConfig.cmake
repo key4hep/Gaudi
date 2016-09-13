@@ -711,7 +711,12 @@ __path__ = [d for d in [os.path.join(d, '${pypack}') for d in sys.path if d]
   gaudi_generate_project_manifest(${CMAKE_CONFIG_OUTPUT_DIRECTORY}/manifest.xml ${ARGV})
   install(FILES ${CMAKE_CONFIG_OUTPUT_DIRECTORY}/manifest.xml DESTINATION .)
 
+  #--- Settings to allow re-formatting of files (C++ and Python)
   add_custom_target(apply-formatting)
+  file(WRITE ${CMAKE_BINARY_DIR}/apply-formatting "#!/bin/sh
+for f in \"$@\" ; do
+  case \"$f\" in
+    (*.h|*.cpp|*.icpp)\n")
   if(clang_format_cmd)
     file(GLOB_RECURSE _all_sources RELATIVE ${CMAKE_SOURCE_DIR} *.h *.cpp *.icpp)
     add_custom_target(apply-formatting-c++
@@ -722,7 +727,12 @@ __path__ = [d for d in [os.path.join(d, '${pypack}') for d in sys.path if d]
       COMMENT "Applying coding conventions to C++ sources"
     )
     add_dependencies(apply-formatting apply-formatting-c++)
+    file(APPEND ${CMAKE_BINARY_DIR}/apply-formatting "      ${clang_format_cmd} -style=file -i \"$f\" ;;\n")
+  else()
+    file(APPEND ${CMAKE_BINARY_DIR}/apply-formatting "      echo 'formatting of c++ not supported (install clang-format first)' ; exit 1 ;;\n")
   endif()
+
+  file(APPEND ${CMAKE_BINARY_DIR}/apply-formatting "    (*.py)\n")
   if(python_reindent_cmd)
     add_custom_target(apply-formatting-python
       COMMAND ${python_reindent_cmd}
@@ -730,7 +740,18 @@ __path__ = [d for d in [os.path.join(d, '${pypack}') for d in sys.path if d]
       COMMENT "Applying coding conventions to Python sources"
     )
     add_dependencies(apply-formatting apply-formatting-python)
+    set(_reind)
+    foreach(_c ${python_reindent_cmd})
+      set(_reind "${_reind} ${_c}")
+    endforeach()
+    file(APPEND ${CMAKE_BINARY_DIR}/apply-formatting "      ${_reind} --nobackup \"$f\" ;;\n")
+    unset(_reind)
+    unset(_c)
+  else()
+    file(APPEND ${CMAKE_BINARY_DIR}/apply-formatting "      echo 'formatting of c++ not supported (reindent.py is missing)' ; exit 1 ;;\n")
   endif()
+  file(APPEND ${CMAKE_BINARY_DIR}/apply-formatting "    (*) echo \"unknown file type $f\" ;;\n  esac\ndone\n")
+  execute_process(COMMAND chmod a+x ${CMAKE_BINARY_DIR}/apply-formatting)
 endmacro()
 
 #-------------------------------------------------------------------------------
