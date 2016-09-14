@@ -9,10 +9,6 @@
 namespace Gaudi { namespace Functional {
 
    // Scalar->Vector adapted 1->1 algoritm
-   // TODO: make variadic, then check that # of elems in each input container is the same,
-   //       and use a 'zip' iterator (dot product) for the input...
-   // TODO: add a 'tensor' variant
-   //
    template <typename ScalarSignature, typename TransformerSignature, typename Traits_ = Traits::useDefaults> class ScalarTransformer;
 
    template <typename ScalarOp, typename Out, typename In, typename Traits_>
@@ -22,9 +18,8 @@ namespace Gaudi { namespace Functional {
      Out operator()(const In& in) const final {
        Out out; out.reserve(in.size());
        const auto& scalar = scalarOp();
-       for (const auto& i : in) {
-          details::insert( out, scalar( details::deref(i) ) );
-       }
+       for (const auto& i : in) details::insert( out, scalar( details::deref(i) ) );
+       details::apply( scalar, out );
        return out;
      }
    private:

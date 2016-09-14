@@ -356,6 +356,17 @@ namespace Gaudi { namespace Functional { namespace details {
        std::tuple<details::OutputHandle_t<Traits_,Out>...> m_outputs;
    };
 
+   /////////////////
+   template <typename Fun, typename Container, typename... Args >
+   constexpr void apply(const Fun&, Container&, Args... )
+   { static_assert(sizeof...(Args)==0,"Args should not be used!");}
+
+   // TODO/FIXME: overload ambiguity if output container type == input container type
+   template <typename Fun, typename Container>
+   auto apply(const Fun& fun, Container& c)  -> decltype(fun(c),void())
+   { fun(c); }
+
+   /////////////////
 
 } } }
 
