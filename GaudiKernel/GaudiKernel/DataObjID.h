@@ -57,16 +57,16 @@ public:
 
   friend std::ostream& operator<< (std::ostream& str, const DataObjID& d);
 
-  bool operator< ( const DataObjID& other ) const {
-    return (m_hash < other.m_hash);
+  friend bool operator< (const DataObjID& lhs, const DataObjID& rhs ) {
+    return lhs.m_hash < rhs.m_hash;
   }
 
-  bool operator==( const DataObjID& other ) const {
-    return (m_hash == other.m_hash);
+  friend bool operator==(const DataObjID& lhs,  const DataObjID& rhs ) {
+    return lhs.m_hash == rhs.m_hash;
   }
 
-  bool operator!=( const DataObjID& other ) const {
-    return (m_hash != other.m_hash);
+  friend bool operator!=(const DataObjID& lhs,  const DataObjID& rhs ) {
+    return !( lhs == rhs );
   }
 
 private:
@@ -111,10 +111,9 @@ inline void DataObjID::updateKey(const std::string& key) {
   hashGen();
 }
 
-class DataObjID_Hasher {
-public:
+struct DataObjID_Hasher {
   std::size_t operator()(const DataObjID& k) const {
-    return (k.m_hash);
+    return k.m_hash;
   }
 };
 

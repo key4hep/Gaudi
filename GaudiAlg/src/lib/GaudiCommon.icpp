@@ -148,8 +148,8 @@ GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface * parent )
   }
 
   // Get the job option service
-  SmartIF<IJobOptionsSvc> jos(PBASE::service("JobOptionsSvc"));
-  if (!jos.isValid()) Exception("Cannot get JobOptionsSvc");
+  auto jos = PBASE::template service<IJobOptionsSvc>("JobOptionsSvc");
+  if (!jos) Exception("Cannot get JobOptionsSvc");
 
   // Get the "Context" option if in the file...
   const auto myList = jos->getProperties( this->name() );
