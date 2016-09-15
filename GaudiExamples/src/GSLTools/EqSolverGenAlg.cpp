@@ -37,6 +37,11 @@ EqSolverGenAlg::~EqSolverGenAlg() {}
 
 typedef Genfun::AbsFunction GenFunc;
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winconsistent-missing-override"
+#endif
+
 // Class for the function "GenFunc"
 // @see GaudiGSL/IEqSolver.h
 class Func1 : public AbsFunction
@@ -99,6 +104,10 @@ public:
   virtual ~Func3 () {};
 };
 FUNCTION_OBJECT_IMP(Func3)
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
 //=============================================================================
 // Initialisation. Check parameters

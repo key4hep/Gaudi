@@ -27,6 +27,11 @@
 // ============================================================================
 #include "GaudiKernel/Kernel.h"
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winconsistent-missing-override"
+#endif
+
 namespace Genfun
 {
   namespace GaudiMathImplementation
@@ -699,6 +704,10 @@ namespace Genfun
 
   }
 }
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
 #endif // GAUDIMATH_SPLINES_H
 // ============================================================================

@@ -39,6 +39,11 @@ FuncMinimumGenAlg::FuncMinimumGenAlg( const std::string& name,
 //=============================================================================
 FuncMinimumGenAlg::~FuncMinimumGenAlg() {}
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winconsistent-missing-override"
+#endif
+
 //=============================================================================
 // Class for the function "GenFunc"
 // @see GaudiGSL/IFuncMinimum.h
@@ -61,6 +66,10 @@ public:
   virtual unsigned int dimensionality () const {return 2;}
 };
 FUNCTION_OBJECT_IMP(Func)
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
 //=============================================================================
 // Initialisation. Check parameters

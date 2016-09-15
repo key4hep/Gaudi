@@ -14,6 +14,8 @@ if (${APPLE})
   set (LIBRT_NAME "")
 endif (${APPLE})
 
+# Hide some Boost compile time warnings
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
 #---Libraries---------------------------------------------------------------
 gaudi_add_module(GaudiHive
