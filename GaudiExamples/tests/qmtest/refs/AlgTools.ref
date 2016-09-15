@@ -77,8 +77,6 @@ ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'TypePrint':True
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'StatPrint':True
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'ErrorsPrint':True
-ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
-ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'ExtraInputs':[]
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditFinalize':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditStop':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditStart':False
@@ -86,6 +84,8 @@ ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditInitialize':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditTools':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'OutputLevel':2
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
+ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
+ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'ExtraInputs':[]
 ToolSvc.ToolA       DEBUG Loading tool ToolB of type TestTool
 ToolSvc.ToolB       DEBUG Property update for OutputLevel : new value = 2
 ToolSvc.ToolB       DEBUG Initialize
@@ -106,8 +106,6 @@ ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'TypePrint':True
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'StatPrint':True
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'ErrorsPrint':True
-ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
-ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'ExtraInputs':[]
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditFinalize':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditStop':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditStart':False
@@ -115,6 +113,8 @@ ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditInitialize':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditTools':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'OutputLevel':2
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
+ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
+ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'ExtraInputs':[]
 ToolSvc.ToolB       DEBUG Loading tool ToolA of type TestTool
 ToolSvc.ToolB       DEBUG Registering tool ToolSvc.ToolA
 ToolSvc.ToolA       DEBUG Registering tool ToolSvc.ToolB
