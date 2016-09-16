@@ -80,9 +80,10 @@ public:
   ToolSvc( const std::string& name, ISvcLocator* svc );
 
   /// Destructor.
-  ~ToolSvc() override;
+  ~ToolSvc() override = default;
 
   void registerObserver(IToolSvc::Observer *obs) override;
+  void unRegisterObserver(IToolSvc::Observer *obs) override;
 
 
 private: // methods
@@ -105,7 +106,7 @@ private: // data
   IHistorySvc* m_pHistorySvc = nullptr;
 
   std::vector<IToolSvc::Observer*> m_observers;
-
+  
   typedef std::recursive_mutex CallMutex;
   mutable CallMutex m_mut;
 };

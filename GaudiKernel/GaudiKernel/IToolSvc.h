@@ -5,7 +5,6 @@
 #include "GaudiKernel/System.h"
 #include <string>
 #include <list>
-#include <functional>
 
 // Forward declaration
 class IAlgTool;
@@ -244,16 +243,13 @@ public:
    */
   class Observer {
   public:
-    virtual ~Observer() { if (m_unregister) m_unregister(); }
-    void setUnregister(std::function<void()> unregister) { m_unregister=std::move(unregister); }
-
+    virtual ~Observer() = default;
     virtual void onCreate(const IAlgTool*) {}
     virtual void onRetrieve(const IAlgTool*) {}
-  private:
-    std::function<void()> m_unregister;
   };
 
   virtual void registerObserver(Observer *obs) = 0;
+  virtual void unRegisterObserver(Observer *obs) = 0;
 
 };
 
