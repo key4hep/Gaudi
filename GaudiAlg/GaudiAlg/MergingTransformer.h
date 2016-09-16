@@ -76,7 +76,7 @@ namespace Gaudi { namespace Functional {
            using details::as_const;
            details::put( std::get<0>(this->m_outputs), as_const(*this)( as_const(ins) ) );
        } catch ( GaudiException& e ) {
-           this->error() << "Error during transform: " << e.message() << " returning " << e.code() << endmsg;
+           (e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
            return e.code();
        }
        return StatusCode::SUCCESS;

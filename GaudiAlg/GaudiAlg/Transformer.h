@@ -40,7 +40,7 @@ namespace Gaudi { namespace Functional {
                put( std::get<0>(this->m_outputs),  as_const(*this)( as_const(*std::get<I>(this->m_inputs).get())... ) );
            } catch ( GaudiException& e ) {
                (e.code() ? this->warning() : this->error() )
-                   << "\"" << e.message() << "\"" << endmsg;
+                   << e.message() << endmsg;
                return e.code();
            }
            return StatusCode::SUCCESS;
@@ -77,7 +77,7 @@ namespace Gaudi { namespace Functional {
                };
            } catch ( GaudiException& e ) {
                (e.code() ? this->warning() : this->error() )
-                   << "\"" << e.message() << "\"" << endmsg;
+                   << e.message() << endmsg;
                return e.code();
            }
            return StatusCode::SUCCESS;
