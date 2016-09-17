@@ -62,7 +62,7 @@ namespace Gaudi { namespace Functional {
                }
                for (unsigned i=0;i!=out.size();++i) details::put( m_outputs[i], std::move(out[i]) );
            } catch ( GaudiException& e ) {
-               this->error() << "Error during transform: " << e.message() << " returning " << e.code() << endmsg;
+               (e.code() ? this->warning() : this->error() ) << e.message() << endmsg;
                return e.code();
            }
            return StatusCode::SUCCESS;

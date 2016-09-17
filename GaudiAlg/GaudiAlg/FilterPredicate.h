@@ -29,8 +29,14 @@ namespace Gaudi { namespace Functional {
        template <std::size_t... I>
        StatusCode invoke(std::index_sequence<I...>) {
            using details::as_const;
-           auto pass = as_const(*this)( as_const(*std::get<I>(this->m_inputs).get())... );
-           this->setFilterPassed( pass );
+           try {
+            auto pass = as_const(*this)( as_const(*std::get<I>(this->m_inputs).get())... );
+            this->setFilterPassed( pass );
+           } catch ( GaudiException& e ) {
+               (e.code() ? this->warning() : this->error() )
+                   << e.message() << endmsg;
+               return e.code();
+           }
            return StatusCode::SUCCESS;
        }
    };
