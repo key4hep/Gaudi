@@ -831,7 +831,7 @@ StatusCode THistSvc::deReg( TObject* obj )
       return StatusCode::FAILURE;
     }
 
-    auto itr4 = m_hlist.find( vhid );
+    auto itr4 = std::find(m_hlist.begin(), m_hlist.end(), vhid);
     if (itr4 == m_hlist.end()) {
       m_log << MSG::ERROR << "Problems deregistering TObject \""
             << obj->GetName()
