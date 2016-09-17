@@ -818,8 +818,17 @@ StatusCode THistSvc::deReg( TObject* obj )
       return StatusCode::FAILURE;
     }
 
-    std::string id, root, rem;
-    parseString( hid.id, root, rem );
+    m_tobjs.erase(itr);
+    vhid->erase( vhid->begin() + itr->second.second );
+
+    if (vhid->size() != 0) {
+      return StatusCode::SUCCESS;
+    }
+
+    debug() << "vhid for " << hid.id << " is empty. deleting" << endmsg;
+
+    std::string id,root,rem;
+    parseString(hid.id, root, rem);
 
     auto mitr = m_ids.equal_range(rem);
     auto itr3 = std::find_if( mitr.first, mitr.second, [&](idMap_t::const_reference i) 
@@ -839,10 +848,11 @@ StatusCode THistSvc::deReg( TObject* obj )
       return StatusCode::FAILURE;
     }
 
-    m_tobjs.erase(itr);
     m_uids.erase(itr2);
     m_ids.erase(itr3);
     m_hlist.erase(itr4);
+
+    delete vhid;
 
     return StatusCode::SUCCESS;
 
@@ -857,15 +867,29 @@ StatusCode THistSvc::deReg( TObject* obj )
 StatusCode THistSvc::deReg( const std::string& id )
 {
 
-  auto itr = m_uidsX.find(id);
-  if (itr == m_uidsX.end()) {
-    m_log << MSG::ERROR << "Problems deregistering id \""
-          << id << "\"" << endmsg;
+  auto itr = m_uids.find(id);
+  if (itr == m_uids.end()) {
+    error() << "Problem deregistering id \"" << id 
+            << "\": not found in registry" << endmsg;
     return StatusCode::FAILURE;
   }
 
-  TObject* obj = itr->second.obj;
-  return deReg( obj );
+  vhid_t* vh = itr->second;
+  debug() << "will deregister " << vh->size() << " elements of id \""
+          << id << "\"" << endmsg;
+  StatusCode sc(StatusCode::SUCCESS);
+  while (vh->size() > 0) {
+    if (deReg( vh->back().obj ).isFailure()) {
+      sc = StatusCode::FAILURE;
+      error() << "Problems deRegistering " << vh->size() 
+              << " element of id \"" << id << "\""
+              << endmsg;
+      break;
+    }
+  }
+
+  return sc;
+
 }
 
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
