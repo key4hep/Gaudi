@@ -75,12 +75,12 @@ SimpleHistos        DEBUG Property ['Name': Value] =  'AuditRestart':False
 SimpleHistos        DEBUG Property ['Name': Value] =  'AuditReinitialize':False
 SimpleHistos        DEBUG Property ['Name': Value] =  'AuditInitialize':False
 SimpleHistos        DEBUG Property ['Name': Value] =  'AuditAlgorithms':False
-SimpleHistos        DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
-SimpleHistos        DEBUG Property ['Name': Value] =  'ExtraInputs':[]
 SimpleHistos        DEBUG Property ['Name': Value] =  'ErrorCounter':0
 SimpleHistos        DEBUG Property ['Name': Value] =  'ErrorMax':1
 SimpleHistos        DEBUG Property ['Name': Value] =  'Enable':True
 SimpleHistos        DEBUG Property ['Name': Value] =  'OutputLevel':2
+SimpleHistos        DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
+SimpleHistos        DEBUG Property ['Name': Value] =  'ExtraInputs':[]
 HistogramDataSvc    DEBUG Property update for OutputLevel : new value = 2
 HistogramDataSvc    DEBUG Service base class initialized successfully
 RootHistSvc          INFO Writing ROOT histograms to: histo.root
@@ -140,12 +140,12 @@ Histos2           SUCCESS Property ['Name': Value] =  'AuditRestart':False
 Histos2           SUCCESS Property ['Name': Value] =  'AuditReinitialize':False
 Histos2           SUCCESS Property ['Name': Value] =  'AuditInitialize':False
 Histos2           SUCCESS Property ['Name': Value] =  'AuditAlgorithms':False
-Histos2           SUCCESS Property ['Name': Value] =  'ExtraOutputs':[]
-Histos2           SUCCESS Property ['Name': Value] =  'ExtraInputs':[]
 Histos2           SUCCESS Property ['Name': Value] =  'ErrorCounter':0
 Histos2           SUCCESS Property ['Name': Value] =  'ErrorMax':1
 Histos2           SUCCESS Property ['Name': Value] =  'Enable':True
 Histos2           SUCCESS Property ['Name': Value] =  'OutputLevel':3
+Histos2           SUCCESS Property ['Name': Value] =  'ExtraOutputs':[]
+Histos2           SUCCESS Property ['Name': Value] =  'ExtraInputs':[]
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
 ApplicationMgr       INFO Application Manager Initialized successfully

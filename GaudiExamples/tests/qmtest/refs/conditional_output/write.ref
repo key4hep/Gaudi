@@ -115,12 +115,12 @@ DataCreator         DEBUG Property ['Name': Value] =  'AuditRestart':False
 DataCreator         DEBUG Property ['Name': Value] =  'AuditReinitialize':False
 DataCreator         DEBUG Property ['Name': Value] =  'AuditInitialize':False
 DataCreator         DEBUG Property ['Name': Value] =  'AuditAlgorithms':False
-DataCreator         DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
-DataCreator         DEBUG Property ['Name': Value] =  'ExtraInputs':[]
 DataCreator         DEBUG Property ['Name': Value] =  'ErrorCounter':0
 DataCreator         DEBUG Property ['Name': Value] =  'ErrorMax':1
 DataCreator         DEBUG Property ['Name': Value] =  'Enable':True
 DataCreator         DEBUG Property ['Name': Value] =  'OutputLevel':1
+DataCreator         DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
+DataCreator         DEBUG Property ['Name': Value] =  'ExtraInputs':[]
 DataCreator       VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
 DataCreator       VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
 DataCreator         DEBUG input handles: 0
@@ -162,12 +162,12 @@ OddEvents           DEBUG Property ['Name': Value] =  'AuditRestart':False
 OddEvents           DEBUG Property ['Name': Value] =  'AuditReinitialize':False
 OddEvents           DEBUG Property ['Name': Value] =  'AuditInitialize':False
 OddEvents           DEBUG Property ['Name': Value] =  'AuditAlgorithms':False
-OddEvents           DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
-OddEvents           DEBUG Property ['Name': Value] =  'ExtraInputs':[]
 OddEvents           DEBUG Property ['Name': Value] =  'ErrorCounter':0
 OddEvents           DEBUG Property ['Name': Value] =  'ErrorMax':1
 OddEvents           DEBUG Property ['Name': Value] =  'Enable':True
 OddEvents           DEBUG Property ['Name': Value] =  'OutputLevel':1
+OddEvents           DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
+OddEvents           DEBUG Property ['Name': Value] =  'ExtraInputs':[]
 OddEvents         VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
 OddEvents           DEBUG input handles: 0
 OddEvents           DEBUG output handles: 0
@@ -208,12 +208,12 @@ EvenEvents          DEBUG Property ['Name': Value] =  'AuditRestart':False
 EvenEvents          DEBUG Property ['Name': Value] =  'AuditReinitialize':False
 EvenEvents          DEBUG Property ['Name': Value] =  'AuditInitialize':False
 EvenEvents          DEBUG Property ['Name': Value] =  'AuditAlgorithms':False
-EvenEvents          DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
-EvenEvents          DEBUG Property ['Name': Value] =  'ExtraInputs':[]
 EvenEvents          DEBUG Property ['Name': Value] =  'ErrorCounter':0
 EvenEvents          DEBUG Property ['Name': Value] =  'ErrorMax':1
 EvenEvents          DEBUG Property ['Name': Value] =  'Enable':True
 EvenEvents          DEBUG Property ['Name': Value] =  'OutputLevel':1
+EvenEvents          DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
+EvenEvents          DEBUG Property ['Name': Value] =  'ExtraInputs':[]
 EvenEvents        VERBOSE ServiceLocatorHelper::service: found service EventDataSvc
 EvenEvents          DEBUG input handles: 0
 EvenEvents          DEBUG output handles: 0
