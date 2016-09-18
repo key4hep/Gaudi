@@ -296,6 +296,12 @@ namespace Gaudi { namespace Functional { namespace details {
        : DataHandleMixin( name, locator, inputs, std::array<KeyValue,1>{ output } )
        { }
 
+       template <std::size_t N=0>
+       const std::string& inputLocation() const { return std::get<N>(m_inputs).objKey(); }
+
+       template <std::size_t N=0>
+       const std::string& outputLocation() const { return std::get<N>(m_outputs).objKey(); }
+
    protected:
        std::tuple<details::InputHandle_t<Traits_,In>...>  m_inputs;
        std::tuple<details::OutputHandle_t<Traits_,Out>...> m_outputs;
@@ -325,6 +331,9 @@ namespace Gaudi { namespace Functional { namespace details {
        : DataHandleMixin( name, locator, std::array<KeyValue,1>{ input } )
        { }
 
+       template <std::size_t N=0>
+       const std::string& inputLocation() const { return std::get<N>(m_inputs).objKey(); }
+
    protected:
        std::tuple<details::InputHandle_t<Traits_,In>...>  m_inputs;
    };
@@ -351,6 +360,9 @@ namespace Gaudi { namespace Functional { namespace details {
                        const KeyValue& output)
        : DataHandleMixin( name, locator,  std::array<KeyValue,1>{ output } )
        { }
+
+       template <std::size_t N=0>
+       const std::string& outputLocation() const { return std::get<N>(m_outputs).objKey(); }
 
    protected:
        std::tuple<details::OutputHandle_t<Traits_,Out>...> m_outputs;
