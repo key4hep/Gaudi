@@ -1,8 +1,13 @@
 #ifndef GAUDIKERNEL_ANYDATAHANDLE_H
 #define GAUDIKERNEL_ANYDATAHANDLE_H
 
+#include <type_traits>
+
 #include "GaudiKernel/AnyDataWrapper.h"
 #include <GaudiKernel/DataObjectHandle.h>
+#include <GaudiKernel/Range.h>
+#include <GaudiKernel/NamedRange.h>
+
 
 //TODO: we should derive directly from DataObjectHandleBase
 //      now that that is sufficient to get all the declareProperty
@@ -20,11 +25,13 @@ struct AnyDataHandle final : public DataObjectHandle<AnyDataWrapper<T> > {
    */
   const T* get() const;
 
+  
+  //const typename T::value_type::Range getr() const;
+
   /**
    * Register object in transient store
    */
   const T* put(T&& object);
-
 };
 
 //---------------------------------------------------------------------------
@@ -43,5 +50,32 @@ const T* AnyDataHandle<T>::put (T&& objectp){
   return &DataObjectHandle<AnyDataWrapper<T> >::put(dw)->getData();
 }
 
+//---------------------------------------------------------------------------
+
+/*
+ * Template specialization for AnyDataHandle of Ranges.
+ * We can get one, but not put it in...
+ */
+template<typename TT>
+struct AnyDataHandle<Gaudi::NamedRange_<TT>>  : 
+  public DataObjectHandle<AnyDataWrapper<TT>> {
+
+public:
+
+  using DataObjectHandle<AnyDataWrapper<TT>>::DataObjectHandle;
+
+  const Gaudi::NamedRange_<TT> get() const {
+    try {
+      auto m = DataObjectHandle<AnyDataWrapper<TT>>::get();
+      return Gaudi::NamedRange_<TT>(m->getData().begin(), 
+                                    m->getData().end());
+    } catch(const std::exception &exc) {
+
+      std::cout << "Got exception " << exc.what() << std::endl;
+      
+    }  
+    return Gaudi::NamedRange_<TT>();
+  }
+};
 
 #endif
