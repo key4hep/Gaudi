@@ -72,7 +72,6 @@ protected:
   SmartIF<IMessageSvc> m_MS;
 
   bool  m_init = false;
-  mutable bool  m_goodType = false;
   bool  m_optional = false;
   bool  m_wasRead = false;
   bool  m_wasWritten = false;

@@ -53,7 +53,7 @@ namespace Gaudi
       typedef KeyedContainer<MyTrack, Containers::HashMap> Container ;
 
       /// the range type
-      typedef  NamedRange_<Container> Range;
+      typedef  NamedRange_<ConstVector> Range;
 
 
       // ======================================================================
@@ -73,6 +73,9 @@ namespace Gaudi
       /// Standard constructor
       MyTrack(float x, float y, float z);
       MyTrack(const MyTrack& t);
+      MyTrack(MyTrack&& t) = default;
+      MyTrack& operator=(const MyTrack &) = default;
+      MyTrack& operator=(MyTrack &&) = default;
       /// Standard Destructor
       virtual ~MyTrack();
       /// Retrieve pointer to class definition structure

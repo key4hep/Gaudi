@@ -35,7 +35,7 @@ namespace {
 DataObjectHandleBase::DataObjectHandleBase(DataObjectHandleBase&& other) :
   Gaudi::DataHandle(other), m_EDS(std::move(other.m_EDS)),
   m_MS(std::move(m_MS)), m_init(other.m_init),
-  m_goodType(other.m_goodType), m_optional(other.m_optional),
+  m_optional(other.m_optional),
   m_wasRead(other.m_wasRead), m_wasWritten(other.m_wasWritten),
   m_searchDone(other.m_searchDone), m_altNames(std::move(other.m_altNames)) {
   m_owner->declare(*this);
@@ -49,7 +49,6 @@ DataObjectHandleBase& DataObjectHandleBase::operator=(const DataObjectHandleBase
   m_EDS = other.m_EDS;
   m_MS = other.m_MS;
   m_init = other.m_init;
-  m_goodType = other.m_goodType;
   m_optional = other.m_optional;
   m_wasRead = other.m_wasRead;
   m_wasWritten = other.m_wasWritten;

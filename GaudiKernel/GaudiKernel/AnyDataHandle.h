@@ -3,11 +3,16 @@
 
 #include <type_traits>
 
+
 #include "GaudiKernel/AnyDataWrapper.h"
 #include <GaudiKernel/DataObjectHandle.h>
 #include <GaudiKernel/Range.h>
 #include <GaudiKernel/NamedRange.h>
+#include <GaudiKernel/GetDataHelpers.h>
 
+// ============================================================================
+// Default implementation of the AnyDataHandle
+// ============================================================================
 
 //TODO: we should derive directly from DataObjectHandleBase
 //      now that that is sufficient to get all the declareProperty
@@ -24,9 +29,6 @@ struct AnyDataHandle final : public DataObjectHandle<AnyDataWrapper<T> > {
    * Retrieve object from transient data store
    */
   const T* get() const;
-
-  
-  //const typename T::value_type::Range getr() const;
 
   /**
    * Register object in transient store
@@ -50,32 +52,47 @@ const T* AnyDataHandle<T>::put (T&& objectp){
   return &DataObjectHandle<AnyDataWrapper<T> >::put(dw)->getData();
 }
 
-//---------------------------------------------------------------------------
+//----------------------------------------------------------------------------
+// Specialization for NamedRanges
 
-/*
- * Template specialization for AnyDataHandle of Ranges.
- * We can get one, but not put it in...
- */
-template<typename TT>
-struct AnyDataHandle<Gaudi::NamedRange_<TT>>  : 
-  public DataObjectHandle<AnyDataWrapper<TT>> {
+template<typename T>
+struct AnyDataHandle<Gaudi::NamedRange_<T>> final : 
+  public DataObjectHandle<Gaudi::NamedRange_<T>> {
 
-public:
+  using DataObjectHandle<Gaudi::NamedRange_<T>>::DataObjectHandle;
 
-  using DataObjectHandle<AnyDataWrapper<TT>>::DataObjectHandle;
+  /**
+   * Retrieve object from transient data store
+   */
+  const Gaudi::NamedRange_<T> get() const;
 
-  const Gaudi::NamedRange_<TT> get() const {
-    try {
-      auto m = DataObjectHandle<AnyDataWrapper<TT>>::get();
-      return Gaudi::NamedRange_<TT>(m->getData().begin(), 
-                                    m->getData().end());
-    } catch(const std::exception &exc) {
-
-      std::cout << "Got exception " << exc.what() << std::endl;
-      
-    }  
-    return Gaudi::NamedRange_<TT>();
-  }
 };
+
+template<typename T>
+const Gaudi::NamedRange_<T> AnyDataHandle<Gaudi::NamedRange_<T>>::get() const {
+  return DataObjectHandle<Gaudi::NamedRange_<T>>::get();
+}
+
+//---------------------------------------------------------------------------
+// Specialization for Ranges
+
+template<typename T>
+struct AnyDataHandle<Gaudi::Range_<T>> final : 
+  public DataObjectHandle<Gaudi::Range_<T>> {
+
+  using DataObjectHandle<Gaudi::Range_<T>>::DataObjectHandle;
+
+  /**
+   * Retrieve object from transient data store
+   */
+  const Gaudi::Range_<T> get() const;
+
+};
+
+template<typename T>
+const Gaudi::Range_<T> AnyDataHandle<Gaudi::Range_<T>>::get() const {
+  return DataObjectHandle<Gaudi::Range_<T>>::get();
+}
+
 
 #endif
