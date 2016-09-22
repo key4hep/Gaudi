@@ -16,6 +16,8 @@
 #include "GaudiKernel/DataSvc.h"
 #include "tbb/spin_mutex.h"
 #include "tbb/recursive_mutex.h"
+#include "Rtypes.h"
+#include "ThreadLocalStorage.h"
 
 
 //Interfaces
@@ -70,7 +72,7 @@ namespace {
   };
 }
 
-thread_local Partition* s_current(0);
+TTHREAD_TLS( Partition* ) s_current( 0 );
 
 /**
  * @class HiveWhiteBoard
@@ -437,7 +439,7 @@ return IDataProviderSvc::INVALID_ROOT;
   }
 
   /// Get the list of new DataObjects in the current store.
-  StatusCode getNewDataObjects(DataObjIDColl& products) {
+  StatusCode getNewDataObjects(DataObjIDColl& products) override {
     wbMutex::scoped_lock lock; lock.acquire(s_current->storeMutex);
     products = s_current->newDataObjects;
     s_current->newDataObjects.clear();

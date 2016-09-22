@@ -62,6 +62,8 @@ namespace Genfun
       size_t                      m_dim ;
       mutable std::vector<double> m_arg ;
     };
+    /// mandatory macro from CLHEP/GenericFunctions
+    FUNCTION_OBJECT_IMP( AdapterIFunction )
 
     // ========================================================================
     /** @class Adapter2DoubleFunction Adapters.h GaudiMath/Adapters.h
@@ -124,6 +126,8 @@ namespace Genfun
     private:
       Function                 m_func  ;
     };
+    /// mandatory macro from CLHEP/GenericFunctions
+    FUNCTION_OBJECT_IMP( Adapter2DoubleFunction )
 
     // ========================================================================
     /** @class Adapter3DoubleFunction Adapters.h GaudiMath/Adapters.h
@@ -190,6 +194,8 @@ namespace Genfun
     private:
       Function                 m_func  ;
     };
+    /// mandatory macro from CLHEP/GenericFunctions
+    FUNCTION_OBJECT_IMP( Adapter3DoubleFunction )
 
     // ========================================================================
     /** @class SimpleFunction Adapters.h GaudiMath/Adapters.h
@@ -270,6 +276,8 @@ namespace Genfun
       Function3                    m_func3    ;
       mutable std::vector<double>  m_arg3     ;
     };
+    /// From CLHEP/GenericFunctions
+    FUNCTION_OBJECT_IMP( SimpleFunction )
 
   } // end of namespace GaudiMathImeplementation
 } // end of namespace Genfun

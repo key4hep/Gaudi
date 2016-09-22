@@ -157,9 +157,9 @@ namespace Io {
   };
 
   inline std::ostream & operator << (std::ostream & s, const IoTech &t) {
-    static const std::array<const char*, SQLITE+1> tbl = {
+    static const std::array<const char*, SQLITE+1> tbl = { {
                  "UNKNOWN", "POSIX", "ROOT",
-                 "BS", "HDF5", "SQLITE" };
+                 "BS", "HDF5", "SQLITE" } };
     return t < tbl.size() ? s << tbl[t] : s;
   }
 
@@ -298,10 +298,10 @@ namespace Io {
   };
 
   inline std::ostream & operator << (std::ostream & s, const Action &t) {
-    static const std::array<const char*, INVALID_ACTION+1> tbl = {
+    static const std::array<const char*, INVALID_ACTION+1> tbl = { {
             "OPEN", "CLOSE", "REOPEN",
             "OPEN_ERR","CLOSE_ERR", "REOPEN_ERR",
-            "INVALID_ACTION" };
+            "INVALID_ACTION" } };
     return t < tbl.size() ? s<< tbl[t] : s;
   }
 

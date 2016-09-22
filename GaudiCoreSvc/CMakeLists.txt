@@ -9,6 +9,12 @@ find_package(PythonLibs)
 # Hide some Boost compile time warnings
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
+# Only link against the rt library on linux:
+set( extralibs )
+if( UNIX AND NOT APPLE )
+   set( extralibs rt )
+endif()
+
 #---Libraries---------------------------------------------------------------
 gaudi_add_module(GaudiCoreSvc
                  src/ApplicationMgr/*.cpp
@@ -16,6 +22,6 @@ gaudi_add_module(GaudiCoreSvc
                  src/IncidentSvc/*.cpp
                  src/JobOptionsSvc/*.cpp
                  src/MessageSvc/*.cpp
-                 LINK_LIBRARIES GaudiKernel Boost TBB rt PythonLibs
+                 LINK_LIBRARIES GaudiKernel Boost TBB PythonLibs ${extralibs}
                  INCLUDE_DIRS TBB PythonLibs)
 

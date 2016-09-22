@@ -37,6 +37,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # Ensure that the include directories added are always taken first.
 set(CMAKE_INCLUDE_DIRECTORIES_BEFORE ON)
 #set(CMAKE_SKIP_BUILD_RPATH TRUE)
+set(CMAKE_MACOSX_RPATH OFF)
 
 # Regular expression used to parse version strings in LHCb and ATLAS.
 # It handles versions strings like "vXrY[pZ[aN]]" and "1.2.3.4"
