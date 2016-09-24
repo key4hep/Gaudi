@@ -169,6 +169,9 @@ StatusCode ForwardSchedulerSvc::initialize(){
     if (!algoPtr->inputDataObjs().empty() || !algoPtr->outputDataObjs().empty()) {
       for (auto id : algoPtr->inputDataObjs()) {
         info() << "\n    o INPUT  " << id;
+        if (id.key().find(":")!=std::string::npos) {
+            info() << " contains alternatives which require resolution... " << endmsg;
+        }
         algoDependencies.insert(id);
         globalInp.insert(id);
       }
