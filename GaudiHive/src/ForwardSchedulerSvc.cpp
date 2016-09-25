@@ -7,6 +7,9 @@
 #include <GaudiKernel/IDataManagerSvc.h>
 #include "tbb/task.h"
 #include "boost/thread.hpp"
+#include "boost/tokenizer.hpp"
+#include "boost/algorithm/string.hpp"
+
 
 // C++
 #include <unordered_set>
@@ -154,6 +157,27 @@ StatusCode ForwardSchedulerSvc::initialize(){
 
   DataObjIDColl globalInp, globalOutp;
 
+  // figure out all outputs
+  for (IAlgorithm* ialgoPtr : algos) {
+    Algorithm* algoPtr = dynamic_cast<Algorithm*>(ialgoPtr);
+    if (!algoPtr) {
+      fatal() << "Could not convert IAlgorithm into Algorithm: this will result in a crash." << endmsg;
+    }
+    for (auto id : algoPtr->outputDataObjs()) {
+        auto r = globalOutp.insert(id);
+        if (!r.second) {
+           warning() << "multiple algorithms declare " << id << " as output! could be a single instance in multiple paths though, or control flow may guarantee only one runs...!" << endmsg;
+        }
+    }
+  }
+  info() << "outputs:\n" ;
+  for (const auto& i : globalOutp ) {
+      info() << i << '\n' ;
+  }
+  info() << endmsg;
+
+
+
   info() << "Data Dependencies for Algorithms:";
 
   std::vector<DataObjIDColl> m_algosDependencies;
@@ -171,13 +195,37 @@ StatusCode ForwardSchedulerSvc::initialize(){
         info() << "\n    o INPUT  " << id;
         if (id.key().find(":")!=std::string::npos) {
             info() << " contains alternatives which require resolution... " << endmsg;
+            auto tokens = boost::tokenizer<boost::char_separator<char>>{id.key(),boost::char_separator<char>{":"}};
+            auto itok = std::find_if( tokens.begin(), tokens.end(),
+                                     [&](const std::string& t) {
+                return globalOutp.find( DataObjID{t} ) != globalOutp.end();
+            } );
+            std::string alt = (itok!=tokens.end() ? *itok : std::string{} );
+            if (alt.empty()) { // now try to prefix by '/Event' -- should be RootInTES, but how to do that??
+                std::string RootInTES = "/Event/";
+                for (const auto& tok : tokens ) {
+                    if (!boost::algorithm::starts_with(tok,RootInTES)) {
+                            if ( globalOutp.find( DataObjID{RootInTES+tok} ) != globalOutp.end()) {
+                                alt = RootInTES+tok;
+                                break;
+                            }
+                    }
+                }
+            }
+            if (!alt.empty()) {
+                info() << "found matching output for " << alt << " -- but how to push it into the right handle?" << endmsg;
+            } else {
+                info() << "failed to find alternate in global output list" << endmsg;
+            }
         }
         algoDependencies.insert(id);
         globalInp.insert(id);
       }
       for (auto id : algoPtr->outputDataObjs()) {
         info() << "\n    o OUTPUT " << id;
-        globalOutp.insert(id);
+        if (id.key().find(":")!=std::string::npos) {
+            info() << " alternatives are NOT allowed for outputs..." << endmsg;
+        }
       }
     } else {
       info()   << "\n      none";
