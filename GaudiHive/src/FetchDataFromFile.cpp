@@ -4,7 +4,7 @@ namespace Gaudi {
   namespace Hive {
     class FetchDataFromFile final: public GaudiAlgorithm {
       StringArrayProperty m_dataKeys;
-      std::vector<DataObjectHandle<DataObject> *> m_outputHandles;
+      std::vector<DataObjectHandle<DataObject>> m_outputHandles;
     public:
       FetchDataFromFile(const std::string& name, ISvcLocator* svcLoc):
         GaudiAlgorithm(name, svcLoc)
@@ -19,8 +19,8 @@ namespace Gaudi {
           for (auto k: m_dataKeys.value()) {
             debug() << "adding data key " << k << endmsg;
             evtSvc()->addPreLoadItem(k);
-            m_outputHandles.push_back( new DataObjectHandle<DataObject>( k, Gaudi::DataHandle::Writer, this ) );
-            declareProperty("dummy_out_" + std::to_string(i), *(m_outputHandles.back()) );
+            m_outputHandles.emplace_back( k, Gaudi::DataHandle::Writer, this );
+            declareProperty("dummy_out_" + std::to_string(i), m_outputHandles.back() );
             i++;
           }
         }
@@ -28,11 +28,6 @@ namespace Gaudi {
       }
       StatusCode execute() override {
         return evtSvc()->preLoad();
-      }
-      ~FetchDataFromFile() override {
-        for (auto& h: m_outputHandles) {
-          delete h;
-        }
       }
     };
   }
