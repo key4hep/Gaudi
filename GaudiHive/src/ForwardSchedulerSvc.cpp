@@ -42,10 +42,10 @@ ForwardSchedulerSvc::ForwardSchedulerSvc( const std::string& name, ISvcLocator* 
   m_first(true), m_checkDeps(false)
 
 {
-  declareProperty("MaxEventsInFlight", m_maxEventsInFlight = 0 );
+  declareProperty("MaxEventsInFlight", m_maxEventsInFlight = 0 , "Taken from the whiteboard. Deprecated" );
   declareProperty("ThreadPoolSize", m_threadPoolSize = -1 );
   declareProperty("WhiteboardSvc", m_whiteboardSvcName = "EventDataSvc" );
-  declareProperty("MaxAlgosInFlight", m_maxAlgosInFlight = 0, "Taken from the whiteboard. Deprecated" );
+  declareProperty("MaxAlgosInFlight", m_maxAlgosInFlight = 0 );
   // XXX: CF tests. Temporary property to switch between ControlFlow implementations
   declareProperty("useGraphFlowManagement", m_CFNext = false );
   declareProperty("DataFlowManagerNext", m_DFNext = false );
@@ -111,7 +111,7 @@ StatusCode ForwardSchedulerSvc::initialize(){
   // Get Whiteboard
   m_whiteboard = serviceLocator()->service(m_whiteboardSvcName);
   if (!m_whiteboard.isValid()) {
-    fatal() << "Error retrieving EventDataSvc interface IHiveWhiteBoard." 
+    fatal() << "Error retrieving EventDataSvc interface IHiveWhiteBoard."
             << endmsg;
     return StatusCode::FAILURE;
   }
@@ -909,7 +909,7 @@ StatusCode ForwardSchedulerSvc::promoteToScheduled(unsigned int iAlgo, int si) {
     ++m_algosInFlight;
     // Avoid to use tbb if the pool size is 1 and run in this thread
     if (-100 != m_threadPoolSize) {
-      tbb::task* t = new( tbb::task::allocate_root() ) 
+      tbb::task* t = new( tbb::task::allocate_root() )
         AlgoExecutionTask(ialgoPtr, iAlgo, eventContext, serviceLocator(), this);
       tbb::task::enqueue( *t);
     } else {
@@ -943,8 +943,8 @@ StatusCode ForwardSchedulerSvc::promoteToScheduled(unsigned int iAlgo, int si) {
 /**
  * The call to this method is triggered only from within the AlgoExecutionTask.
 */
-StatusCode ForwardSchedulerSvc::promoteToExecuted(unsigned int iAlgo, int si, 
-                                                  IAlgorithm* algo, 
+StatusCode ForwardSchedulerSvc::promoteToExecuted(unsigned int iAlgo, int si,
+                                                  IAlgorithm* algo,
                                                   EventContext* eventContext) {
 
   // Put back the instance
