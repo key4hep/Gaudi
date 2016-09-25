@@ -15,13 +15,11 @@ namespace Gaudi {
         StatusCode sc = GaudiAlgorithm::initialize();
         if (sc) {
           // this is a hack to reuse the automatic dependencies declaration
-          int i = 0;
           for (auto k: m_dataKeys.value()) {
             debug() << "adding data key " << k << endmsg;
             evtSvc()->addPreLoadItem(k);
+            // note: the DataObjectHandleBase constructor will 'declare' the handle
             m_outputHandles.emplace_back( k, Gaudi::DataHandle::Writer, this );
-            declareProperty("dummy_out_" + std::to_string(i), m_outputHandles.back() );
-            i++;
           }
         }
         return sc;
