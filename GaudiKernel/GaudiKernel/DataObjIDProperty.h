@@ -49,7 +49,7 @@ private:
 namespace Gaudi
 {
   template <>
-  class Property<DataObjID&, Details::Property::NullVerifier> : public ::DataObjIDProperty
+  class Property<DataObjID&> : public ::DataObjIDProperty
   {
   public:
     Property( const std::string& name, DataObjID& value ) : ::DataObjIDProperty( name, value ) {}
@@ -111,7 +111,7 @@ private:
 namespace Gaudi
 {
   template <>
-  class Property<DataObjIDColl&, Details::Property::NullVerifier> : public ::DataObjIDCollProperty
+  class Property<DataObjIDColl&> : public ::DataObjIDCollProperty
   {
   public:
     Property( const std::string& name, DataObjIDColl& value ) : ::DataObjIDCollProperty( name, value ) {}
@@ -121,7 +121,7 @@ namespace Gaudi
   };
 
   template <>
-  class Property<DataObjIDColl, Details::Property::NullVerifier> : public ::DataObjIDCollProperty
+  class Property<DataObjIDColl> : public ::DataObjIDCollProperty
   {
   public:
     Property( const std::string& name, DataObjIDColl& value ) : ::DataObjIDCollProperty( name, value ) {}

@@ -48,7 +48,7 @@ private:
 namespace Gaudi
 {
   template <>
-  class Property<DataObjectHandleBase&, Details::Property::NullVerifier> : public ::DataObjectHandleProperty
+  class Property<DataObjectHandleBase&> : public ::DataObjectHandleProperty
   {
   public:
     Property( const std::string& name, DataObjectHandleBase& value ) : ::DataObjectHandleProperty( name, value ) {}

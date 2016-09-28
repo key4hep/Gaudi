@@ -651,11 +651,11 @@ namespace Gaudi
 
 } // namespace Gaudi
 
-template <class TYPE, class HANDLERS = Gaudi::Details::Property::UpdateHandler>
-using SimpleProperty = Gaudi::Property<TYPE, Gaudi::Details::Property::NullVerifier, HANDLERS>;
+template <class TYPE>
+using SimpleProperty = Gaudi::Property<TYPE>;
 
-template <class TYPE, class HANDLERS = Gaudi::Details::Property::UpdateHandler>
-using SimplePropertyRef = Gaudi::Property<TYPE&, Gaudi::Details::Property::NullVerifier, HANDLERS>;
+template <class TYPE>
+using SimplePropertyRef = Gaudi::Property<TYPE&>;
 
 // Typedef Properties for built-in types
 typedef Gaudi::Property<bool> BooleanProperty;
