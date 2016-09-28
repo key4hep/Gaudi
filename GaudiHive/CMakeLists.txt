@@ -26,10 +26,6 @@ gaudi_add_test(WhiteBoard
                FRAMEWORK options/testWhiteBoard.py
                TIMEOUT 120)
 
-gaudi_add_test(CPUCruncher
-               FRAMEWORK options/CPUCruncher.py
-               TIMEOUT 120)
-
 gaudi_add_test(WriteWhiteBoard
                FRAMEWORK options/WriteWhiteBoard.py
                TIMEOUT 120)

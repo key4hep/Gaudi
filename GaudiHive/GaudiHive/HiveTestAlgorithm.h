@@ -47,5 +47,8 @@ class GAUDI_API HiveTestAlgorithm: public GaudiAlgorithm {
 
   std::vector<std::string> m_inputs;
   std::vector<std::string> m_outputs;
+
+  std::vector<DataObjectHandle<DataObject> *> m_inputHandles;
+  std::vector<DataObjectHandle<DataObject> *> m_outputHandles;
 };
 
