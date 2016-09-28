@@ -642,23 +642,20 @@ namespace Gaudi
     return v + p.value();
   }
 
+  template <class TYPE, class HANDLERS = Details::Property::UpdateHandler>
+  using CheckedProperty = Property<TYPE, Details::Property::BoundedVerifier<TYPE>, HANDLERS>;
+
+  template <class TYPE>
+  using PropertyWithReadHandler =
+      Property<TYPE, Details::Property::NullVerifier, Gaudi::Details::Property::ReadUpdateHandler>;
+
 } // namespace Gaudi
 
-template <class TYPE, class VERIFIER = Gaudi::Details::Property::NullVerifier,
-          class HANDLERS = Gaudi::Details::Property::UpdateHandler>
-using SimpleProperty     = Gaudi::Property<TYPE, VERIFIER, HANDLERS>;
+template <class TYPE, class HANDLERS = Gaudi::Details::Property::UpdateHandler>
+using SimpleProperty = Gaudi::Property<TYPE, Gaudi::Details::Property::NullVerifier, HANDLERS>;
 
-template <class TYPE, class VERIFIER = Gaudi::Details::Property::BoundedVerifier<TYPE>,
-          class HANDLERS = Gaudi::Details::Property::UpdateHandler>
-using CheckedProperty    = Gaudi::Property<TYPE, VERIFIER, HANDLERS>;
-
-template <class TYPE, class VERIFIER = Gaudi::Details::Property::NullVerifier,
-          class HANDLERS      = Gaudi::Details::Property::ReadUpdateHandler>
-using PropertyWithReadHandler = Gaudi::Property<TYPE, VERIFIER, HANDLERS>;
-
-template <class TYPE, class VERIFIER = Gaudi::Details::Property::NullVerifier,
-          class HANDLERS = Gaudi::Details::Property::UpdateHandler>
-using SimplePropertyRef  = Gaudi::Property<TYPE&, VERIFIER, HANDLERS>;
+template <class TYPE, class HANDLERS = Gaudi::Details::Property::UpdateHandler>
+using SimplePropertyRef = Gaudi::Property<TYPE&, Gaudi::Details::Property::NullVerifier, HANDLERS>;
 
 // Typedef Properties for built-in types
 typedef Gaudi::Property<bool> BooleanProperty;

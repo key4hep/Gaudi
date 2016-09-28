@@ -49,8 +49,8 @@ private:
   Gaudi::Property<std::vector<std::pair<int, int>>> u_intpairarray{this, "IntPairArray"};
   Gaudi::Property<std::vector<std::pair<double, double>>> u_doublepairarray{this, "DoublePairArray"};
 
-  CheckedProperty<int> p_int{this, "PInt", 100, "An integer property"};
-  PropertyWithReadHandler<double> p_double{this, "PDouble", 100.};
+  Gaudi::CheckedProperty<int> p_int{this, "PInt", 100, "An integer property"};
+  Gaudi::PropertyWithReadHandler<double> p_double{this, "PDouble", 100.};
 
   Gaudi::Property<std::string> p_string{this, "PString", "hundred"};
   Gaudi::Property<bool> p_bool{this, "PBool", false};
