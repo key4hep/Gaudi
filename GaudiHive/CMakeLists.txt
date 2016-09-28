@@ -57,10 +57,6 @@ gaudi_add_test(ForwardSchedulerStall
                PASSREGEX "Stall detected"
                TIMEOUT 120)
 
-gaudi_add_test(SequentialSchedulerSimpleTest
-               FRAMEWORK options/SequentialSchedulerSimpleTest.py
-               TIMEOUT 120)
-
 gaudi_add_test(GraphSchedulerSimpleTest
                FRAMEWORK options/GraphSchedulerSimpleTest.py
                TIMEOUT 120)
