@@ -776,7 +776,8 @@ private:
   // Pointer to the Algorithm Context Service
   mutable IAlgContextSvc* m_contextSvc = nullptr; ///< Algorithm Context Service
 
-  StringProperty m_contextSvcName{this, "ContextService", "AlgContextSvc", "the name of Algorithm Context Service"};
+  Gaudi::Property<std::string> m_contextSvcName{this, "ContextService", "AlgContextSvc",
+                                                "the name of Algorithm Context Service"};
   // ==========================================================================
 private:
   // ==========================================================================

@@ -151,14 +151,14 @@ private:
 
   void MergeRootFile( TDirectory* target, TDirectory* source );
 
-  IntegerProperty m_autoSave{this, "AutoSave", 0};
-  IntegerProperty m_autoFlush{this, "AutoFlush", 0};
-  BooleanProperty m_print{this, "PrintAll", false};
-  IntegerProperty m_maxFileSize{this, "MaxFileSize", 10240,
-                                "maximum file size in MB. if exceeded, will cause an abort. -1 to never check."};
-  IntegerProperty m_compressionLevel{this, "CompressionLevel", 1};
-  StringArrayProperty m_outputfile{this, "Output", {}};
-  StringArrayProperty m_inputfile{this, "Input", {}};
+  Gaudi::Property<int> m_autoSave{this, "AutoSave", 0};
+  Gaudi::Property<int> m_autoFlush{this, "AutoFlush", 0};
+  Gaudi::Property<bool> m_print{this, "PrintAll", false};
+  Gaudi::Property<int> m_maxFileSize{this, "MaxFileSize", 10240,
+                                     "maximum file size in MB. if exceeded, will cause an abort. -1 to never check."};
+  Gaudi::Property<int> m_compressionLevel{this, "CompressionLevel", 1};
+  Gaudi::Property<std::vector<std::string>> m_outputfile{this, "Output", {}};
+  Gaudi::Property<std::vector<std::string>> m_inputfile{this, "Input", {}};
 
   std::vector<std::string> m_Rstream, m_Wstream;
 

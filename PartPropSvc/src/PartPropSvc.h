@@ -1,16 +1,16 @@
 #ifndef __PARTPROPSVC_H__
 #define __PARTPROPSVC_H__
 
-#include "GaudiKernel/Service.h"
 #include "GaudiKernel/IPartPropSvc.h"
+#include "GaudiKernel/Service.h"
 #include "HepPDT/ParticleDataTable.hh"
 #include "HepPDT/TableBuilder.hh"
 
-#include <vector>
-#include <string>
-#include <utility>
 #include <iostream>
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 //------------------------------------------------------------------
 //
@@ -25,8 +25,8 @@
 //
 //------------------------------------------------------------------
 
-class PartPropSvc: public extends<Service,
-                                  IPartPropSvc> {
+class PartPropSvc : public extends<Service, IPartPropSvc>
+{
 public:
   using extends::extends;
 
@@ -34,32 +34,29 @@ public:
   StatusCode finalize() override;
 
   // The table
-  HepPDT::ParticleDataTable *PDT() override;
+  HepPDT::ParticleDataTable* PDT() override;
 
-  void setUnknownParticleHandler( HepPDT::ProcessUnknownID*,
-                                  const std::string&) override;
+  void setUnknownParticleHandler( HepPDT::ProcessUnknownID*, const std::string& ) override;
 
   // Destructor.
   ~PartPropSvc() override = default;
 
 private:
-
-  using inputFunPtr = bool(*)(std::istream&,HepPDT::TableBuilder&);
+  using inputFunPtr = bool ( * )( std::istream&, HepPDT::TableBuilder& );
 
   StatusCode createTable();
-  std::vector<std::pair<std::string,inputFunPtr>> m_inputs;
+  std::vector<std::pair<std::string, inputFunPtr>> m_inputs;
 
-  StringProperty m_pdtFiles{this, "InputFile", "PDGTABLE.MeV"};
+  Gaudi::Property<std::string> m_pdtFiles{this, "InputFile", "PDGTABLE.MeV"};
 
   HepPDT::ProcessUnknownID* m_upid = nullptr;
   std::string m_upid_name;
 
   std::unique_ptr<HepPDT::ParticleDataTable> m_pdt;
 
-  inputFunPtr parseTableType(const std::string&);
+  inputFunPtr parseTableType( const std::string& );
 
   bool m_upid_local = false;
-
 };
 
 #endif

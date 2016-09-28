@@ -33,7 +33,7 @@ namespace
     {
       static_assert( std::tuple_size<T>::value == 2, "Expecting an std::tuple key-value pair" );
       using type   = typename std::decay<typename std::tuple_element<1, T>::type>::type;
-      using prop_t = SimpleProperty<type>;
+      using prop_t = Gaudi::Property<type>;
       if ( !isDefault( std::get<1>( t ) ) )
         m_props.push_back( make_unique_<prop_t>( std::get<0>( t ), std::get<1>( t ) ) );
     }

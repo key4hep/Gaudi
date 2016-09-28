@@ -4,10 +4,10 @@
 // Base classes
 //#include "GaudiKernel/DataSvc.h"
 // D. Piparo: Change to the new thread safe version
-#include "GaudiKernel/TsDataSvc.h"
 #include "GaudiKernel/IDetDataSvc.h"
 #include "GaudiKernel/IIncidentListener.h"
 #include "GaudiKernel/Time.h"
+#include "GaudiKernel/TsDataSvc.h"
 
 // Forward declarations
 class StatusCode;
@@ -23,18 +23,15 @@ class IAddressCreator;
     @author Marco Clemencic (previous author unknown)
     @author Danilo Piparo
 
-*///--------------------------------------------------------------------------
+*/ //--------------------------------------------------------------------------
 
-class DetDataSvc  : public extends<TsDataSvc,
-                                   IDetDataSvc,
-                                   IIncidentListener>
+class DetDataSvc : public extends<TsDataSvc, IDetDataSvc, IIncidentListener>
 {
 
   // unhides DataSvc updateObject methods
   using TsDataSvc::updateObject;
 
 public:
-
   // Overloaded DataSvc methods
 
   /// Initialize the service
@@ -53,7 +50,7 @@ public:
   StatusCode updateObject( DataObject* toUpdate ) override;
 
   /// Standard Constructor
-  DetDataSvc(const std::string& name, ISvcLocator* svc);
+  DetDataSvc( const std::string& name, ISvcLocator* svc );
 
   /// Standard Destructor
   ~DetDataSvc() override = default;
@@ -63,7 +60,6 @@ private:
   StatusCode setupDetectorDescription();
 
 public:
-
   // Implementation of the IDetDataSvc interface
 
   /// Check if the event time has been set.
@@ -77,26 +73,26 @@ public:
   void setEventTime( const Gaudi::Time& time ) override;
 
 public:
-
   // Implementation of the IIncidentListener interface
 
   /// Inform that a new incident has occured
   void handle( const Incident& ) override;
 
 private:
-
-  IntegerProperty   m_detStorageType {this, "DetStorageType",  XML_StorageType, "Detector Data Persistency Storage type"};
-  StringProperty    m_detDbLocation  {this, "DetDbLocation",  "empty", "location of detector Db (filename,URL)"};
-  StringProperty    m_detDbRootName  {this, "DetDbRootName",  "dd", "name of the root node of the detector"};
-  BooleanProperty   m_usePersistency {this, "UsePersistency",  false, "control if the persistency is required"};
-  StringProperty   m_persistencySvcName {this, "PersistencySvc",  "DetectorPersistencySvc", "name of the persistency service"};
+  Gaudi::Property<int> m_detStorageType{this, "DetStorageType", XML_StorageType,
+                                        "Detector Data Persistency Storage type"};
+  Gaudi::Property<std::string> m_detDbLocation{this, "DetDbLocation", "empty",
+                                               "location of detector Db (filename,URL)"};
+  Gaudi::Property<std::string> m_detDbRootName{this, "DetDbRootName", "dd", "name of the root node of the detector"};
+  Gaudi::Property<bool> m_usePersistency{this, "UsePersistency", false, "control if the persistency is required"};
+  Gaudi::Property<std::string> m_persistencySvcName{this, "PersistencySvc", "DetectorPersistencySvc",
+                                                    "name of the persistency service"};
 
   /// Current event time
-  Gaudi::Time        m_eventTime = 0;
+  Gaudi::Time m_eventTime = 0;
 
   /// Address Creator to be used
   SmartIF<IAddressCreator> m_addrCreator = nullptr;
-
 };
 
 #endif // DETECTORDATASVC_DETDATASVC_H

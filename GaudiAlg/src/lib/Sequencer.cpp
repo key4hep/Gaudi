@@ -366,8 +366,8 @@ StatusCode Sequencer::createAndAppend( const std::string& type, const std::strin
   return result;
 }
 
-StatusCode Sequencer::decodeNames( StringArrayProperty& theNames, std::vector<Algorithm*>& theAlgs,
-                                   std::vector<bool>& theLogic )
+StatusCode Sequencer::decodeNames( Gaudi::Property<std::vector<std::string>>& theNames,
+                                   std::vector<Algorithm*>& theAlgs, std::vector<bool>& theLogic )
 {
   StatusCode result;
   auto theAlgMgr = serviceLocator()->service<IAlgManager>( "ApplicationMgr" );

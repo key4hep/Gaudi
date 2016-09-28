@@ -55,7 +55,7 @@ class EventSelector : public extends<Service, IEvtSelector>
 public:
   typedef std::vector<EventSelectorDataStream*> Streams;
   typedef std::vector<std::string> StreamSpecs;
-  typedef std::vector<StringProperty> Properties;
+  typedef std::vector<Gaudi::Property<std::string>> Properties;
 
   long int m_streamID;
 
@@ -78,10 +78,10 @@ protected:
 
   // Properties
   Gaudi::Property<StreamSpecs> m_streamSpecs{this, "Input", {}, "input stream specifiers (for job options)"};
-  IntegerProperty m_firstEvent{this, "FirstEvent", 0, "first event to be processed"};
-  IntegerProperty m_evtMax{this, "EvtMax", INT_MAX, "maximum number of events to be processed"};
-  IntegerProperty m_evtPrintFrequency{this, "PrintFreq", 10, "printout frequency"};
-  StringProperty m_streamManager{this, "StreamManager", "DataStreamTool", ""};
+  Gaudi::Property<int> m_firstEvent{this, "FirstEvent", 0, "first event to be processed"};
+  Gaudi::Property<int> m_evtMax{this, "EvtMax", INT_MAX, "maximum number of events to be processed"};
+  Gaudi::Property<int> m_evtPrintFrequency{this, "PrintFreq", 10, "printout frequency"};
+  Gaudi::Property<std::string> m_streamManager{this, "StreamManager", "DataStreamTool", ""};
 
   /// Progress report
   virtual void printEvtInfo( const EvtSelectorContext* iter ) const;

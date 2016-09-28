@@ -503,7 +503,8 @@ Algorithm* OutputStream::decodeAlgorithm( const std::string& theName )
   return theAlgorithm;
 }
 
-StatusCode OutputStream::decodeAlgorithms( StringArrayProperty& theNames, std::vector<Algorithm*>& theAlgs )
+StatusCode OutputStream::decodeAlgorithms( Gaudi::Property<std::vector<std::string>>& theNames,
+                                           std::vector<Algorithm*>& theAlgs )
 {
   // Reset the list of Algorithms
   theAlgs.clear();

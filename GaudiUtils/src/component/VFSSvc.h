@@ -2,9 +2,9 @@
 #define GaudiSvc_VFSSvc_H 1
 
 // Include files
-#include "GaudiKernel/Service.h"
-#include "GaudiKernel/IFileAccess.h"
 #include "GaudiKernel/HashMap.h"
+#include "GaudiKernel/IFileAccess.h"
+#include "GaudiKernel/Service.h"
 
 #include <list>
 
@@ -23,8 +23,8 @@ class IAlgTool;
  *  @date   2008-01-18
  */
 
-class VFSSvc: public extends<Service,
-                             IFileAccess> {
+class VFSSvc : public extends<Service, IFileAccess>
+{
 public:
   /// Initialize Service
   StatusCode initialize() override;
@@ -32,10 +32,10 @@ public:
   StatusCode finalize() override;
 
   /// @see IFileAccess::open
-  std::unique_ptr<std::istream> open(const std::string &url) override;
+  std::unique_ptr<std::istream> open( const std::string& url ) override;
 
   /// @see IFileAccess::protocols
-  const std::vector<std::string> &protocols() const override;
+  const std::vector<std::string>& protocols() const override;
 
   /// Inherited constructor
   using extends::extends;
@@ -43,23 +43,22 @@ public:
   ~VFSSvc() override = default; ///< Destructor
 
 private:
-
-  StringArrayProperty m_urlHandlersNames {this, "FileAccessTools",  { { "FileReadTool" } },  "List of tools implementing the IFileAccess interface."};
-  StringProperty m_fallBackProtocol {this, "FallBackProtocol",  "file",  "URL prefix to use if the prefix is not present."};
+  Gaudi::Property<std::vector<std::string>> m_urlHandlersNames{
+      this, "FileAccessTools", {{"FileReadTool"}}, "List of tools implementing the IFileAccess interface."};
+  Gaudi::Property<std::string> m_fallBackProtocol{this, "FallBackProtocol", "file",
+                                                  "URL prefix to use if the prefix is not present."};
 
   /// Protocols registered
   std::vector<std::string> m_protocols;
 
-
   /// Map of the tools handling the known protocols.
-  GaudiUtils::HashMap<std::string,IFileAccess*> m_urlHandlers;
+  GaudiUtils::HashMap<std::string, IFileAccess*> m_urlHandlers;
 
   /// Handle to the tool service.
   SmartIF<IToolSvc> m_toolSvc;
 
   /// List of acquired tools (needed to release them).
   std::vector<IAlgTool*> m_acquiredTools;
-
 };
 
 #endif

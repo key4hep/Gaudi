@@ -131,21 +131,21 @@ protected:
   virtual void i_reportMessage( const StatusCode& code, const std::string& source );
 
 private:
-  StringProperty m_defaultFormat{this, "Format", Message::getDefaultFormat(), ""};
-  StringProperty m_defaultTimeFormat{this, "timeFormat", Message::getDefaultTimeFormat(), ""};
-  BooleanProperty m_stats{this, "showStats", false, ""};
-  UnsignedIntegerProperty m_statLevel{this, "statLevel", 0, ""};
+  Gaudi::Property<std::string> m_defaultFormat{this, "Format", Message::getDefaultFormat(), ""};
+  Gaudi::Property<std::string> m_defaultTimeFormat{this, "timeFormat", Message::getDefaultTimeFormat(), ""};
+  Gaudi::Property<bool> m_stats{this, "showStats", false, ""};
+  Gaudi::Property<unsigned int> m_statLevel{this, "statLevel", 0, ""};
 
-  std::array<StringArrayProperty, MSG::NUM_LEVELS> m_thresholdProp{{{/*ignored*/},
-                                                                    {this, "setVerbose"},
-                                                                    {this, "setDebug"},
-                                                                    {this, "setInfo"},
-                                                                    {this, "setWarning"},
-                                                                    {this, "setError"},
-                                                                    {this, "setFatal"},
-                                                                    {this, "setAlways"}}};
+  std::array<Gaudi::Property<std::vector<std::string>>, MSG::NUM_LEVELS> m_thresholdProp{{{/*ignored*/},
+                                                                                          {this, "setVerbose"},
+                                                                                          {this, "setDebug"},
+                                                                                          {this, "setInfo"},
+                                                                                          {this, "setWarning"},
+                                                                                          {this, "setError"},
+                                                                                          {this, "setFatal"},
+                                                                                          {this, "setAlways"}}};
 
-  BooleanProperty m_color{this, "useColors", false, ""};
+  Gaudi::Property<bool> m_color{this, "useColors", false, ""};
 
   std::array<Gaudi::Property<std::vector<std::string>>, MSG::NUM_LEVELS> m_logColors{{{/*ignored*/},
                                                                                       {this, "verboseColorCode"},
@@ -156,19 +156,19 @@ private:
                                                                                       {this, "fatalColorCode"},
                                                                                       {this, "alwaysColorCode"}}};
 
-  std::array<IntegerProperty, MSG::NUM_LEVELS> m_msgLimit{{{this, "defaultLimit", 500},
-                                                           {this, "verboseLimit", 500},
-                                                           {this, "debugLimit", 500},
-                                                           {this, "infoLimit", 500},
-                                                           {this, "warningLimit", 500},
-                                                           {this, "errorLimit", 500},
-                                                           {this, "fatalLimit", 500},
-                                                           {this, "alwaysLimit", 0}}};
+  std::array<Gaudi::Property<int>, MSG::NUM_LEVELS> m_msgLimit{{{this, "defaultLimit", 500},
+                                                                {this, "verboseLimit", 500},
+                                                                {this, "debugLimit", 500},
+                                                                {this, "infoLimit", 500},
+                                                                {this, "warningLimit", 500},
+                                                                {this, "errorLimit", 500},
+                                                                {this, "fatalLimit", 500},
+                                                                {this, "alwaysLimit", 0}}};
 
-  BooleanProperty m_suppress{this, "enableSuppression", false, ""};
-  BooleanProperty m_inactCount{this, "countInactive", false, ""};
+  Gaudi::Property<bool> m_suppress{this, "enableSuppression", false, ""};
+  Gaudi::Property<bool> m_inactCount{this, "countInactive", false, ""};
 
-  StringArrayProperty m_tracedInactiveSources{
+  Gaudi::Property<std::vector<std::string>> m_tracedInactiveSources{
       this,
       "tracedInactiveSources",
       {},
@@ -188,8 +188,7 @@ private:
   /// Private helper class to keep the count of messages of a type (MSG::LEVEL).
   struct MsgAry final {
     /// Internal array of counters.
-    std::array<int, MSG::NUM_LEVELS> msg = {
-        {0}}; // empty value-initialization will trigger zero-initialize of all elements (i.e. 0)
+    std::array<int, MSG::NUM_LEVELS> msg = {{0}};
     /// Default constructor.
     MsgAry() = default;
   };

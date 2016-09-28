@@ -2759,29 +2759,32 @@ private:
   void printHistoHandler( Gaudi::Details::PropertyBase& /* theProp */ ); // "HistoPrint"
   // ==========================================================================
 private:
-  BooleanProperty m_produceHistos{this, "HistoProduce", true, "Switch on/off the production of histograms"};
-  BooleanProperty m_histosPrint{this, "HistoPrint", false, "Switch on/off the printout of histograms at finalization"};
-  BooleanProperty m_histoCountersPrint{this, "HistoCountersPrint", true,
-                                       "Switch on/off the printout of histogram counters at finalization"};
-  BooleanProperty m_checkForNaN{this, "HistoCheckForNaN", true,
-                                "Switch on/off the checks for NaN and Infinity for histogram fill"};
-  BooleanProperty m_splitHistoDir{this, "HistoSplitDir", false,
-                                  "Split long directory names into short pieces (suitable for HBOOK)"};
+  Gaudi::Property<bool> m_produceHistos{this, "HistoProduce", true, "Switch on/off the production of histograms"};
+  Gaudi::Property<bool> m_histosPrint{this, "HistoPrint", false,
+                                      "Switch on/off the printout of histograms at finalization"};
+  Gaudi::Property<bool> m_histoCountersPrint{this, "HistoCountersPrint", true,
+                                             "Switch on/off the printout of histogram counters at finalization"};
+  Gaudi::Property<bool> m_checkForNaN{this, "HistoCheckForNaN", true,
+                                      "Switch on/off the checks for NaN and Infinity for histogram fill"};
+  Gaudi::Property<bool> m_splitHistoDir{this, "HistoSplitDir", false,
+                                        "Split long directory names into short pieces (suitable for HBOOK)"};
   Gaudi::Property<HistoID::NumericID> m_histoOffSet{
       this, "HistoOffSet", 0, "OffSet for automatically assigned histogram numerical identifiers "};
-  StringProperty m_histoTopDir{this, "HistoTopDir", "",
-                               "Top level histogram directory (take care that it ends with '/')"};
-  StringProperty m_histoDir{this, "HistoDir", boost::algorithm::replace_all_copy( this->name(), ":", "_" ),
-                            "Histogram Directory"};
-  BooleanProperty m_fullDetail{this, "FullDetail", false};
-  BooleanProperty m_declareMoniHists{this, "MonitorHistograms", true};
-  StringProperty m_histo1DTableFormat{this, "FormatFor1DHistoTable", Gaudi::Utils::Histos::Formats::format(),
-                                      "Format string for printout of 1D histograms"};
-  StringProperty m_histo1DTableFormatShort{this, "ShortFormatFor1DHistoTable", " | %1$-25.25s %2%",
-                                           "Format string for printout of 1D histograms"};
-  StringProperty m_histo1DTableHeader{this, "HeaderFor1DHistoTable", Gaudi::Utils::Histos::Formats::header(),
-                                      "The table header for printout of 1D histograms "};
-  BooleanProperty m_useNumericAutoIDs{
+  Gaudi::Property<std::string> m_histoTopDir{this, "HistoTopDir", "",
+                                             "Top level histogram directory (take care that it ends with '/')"};
+  Gaudi::Property<std::string> m_histoDir{
+      this, "HistoDir", boost::algorithm::replace_all_copy( this->name(), ":", "_" ), "Histogram Directory"};
+  Gaudi::Property<bool> m_fullDetail{this, "FullDetail", false};
+  Gaudi::Property<bool> m_declareMoniHists{this, "MonitorHistograms", true};
+  Gaudi::Property<std::string> m_histo1DTableFormat{this, "FormatFor1DHistoTable",
+                                                    Gaudi::Utils::Histos::Formats::format(),
+                                                    "Format string for printout of 1D histograms"};
+  Gaudi::Property<std::string> m_histo1DTableFormatShort{this, "ShortFormatFor1DHistoTable", " | %1$-25.25s %2%",
+                                                         "Format string for printout of 1D histograms"};
+  Gaudi::Property<std::string> m_histo1DTableHeader{this, "HeaderFor1DHistoTable",
+                                                    Gaudi::Utils::Histos::Formats::header(),
+                                                    "The table header for printout of 1D histograms "};
+  Gaudi::Property<bool> m_useNumericAutoIDs{
       this, "UseSequencialNumericAutoIDs", false,
       "Flag to allow users to switch back to the old style of creating numerical automatic IDs"};
   Gaudi::Property<std::map<std::string, std::string>> m_idReplaceInfo{

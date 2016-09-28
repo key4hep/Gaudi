@@ -176,7 +176,7 @@ protected:
   /// manager for IAlgTool will probably not allow any job to run).
   ManagersMap m_managers;
   /// Property to declare the list of known managers.
-  StringArrayProperty m_declaredManagers;
+  Gaudi::Property<std::vector<std::string>> m_declaredManagers;
 
   /// Cached pointer to the manager of services.
   SmartIF<ISvcManager> m_svcManager;
@@ -189,20 +189,22 @@ protected:
                                              /// any service!)
   SmartIF<DLLClassManager> m_classManager;   ///< Reference to the class manager
 
-  IntegerProperty m_SIGo{this, "Go", 0, "For SI's \"Go\" command via callback"};
-  IntegerProperty m_SIExit{this, "Exit", 0, "For SI's \"Exit\" command via callback"};
-  StringArrayProperty m_topAlgNameList{this, "TopAlg", {}, "List of top level algorithms names"};
-  StringArrayProperty m_outStreamNameList{this, "OutStream", {}, "List of output stream names"};
-  StringProperty m_outStreamType{this, "OutStreamType", "OutputStream", "[[deprecated]] Output stream type"};
-  StringProperty m_messageSvcType{this, "MessageSvcType", "MessageSvc", "MessageSvc type"};
-  StringProperty m_jobOptionsSvcType{this, "JobOptionsSvcType", "JobOptionsSvc", "JobOptionsSvc type"};
+  Gaudi::Property<int> m_SIGo{this, "Go", 0, "For SI's \"Go\" command via callback"};
+  Gaudi::Property<int> m_SIExit{this, "Exit", 0, "For SI's \"Exit\" command via callback"};
+  Gaudi::Property<std::vector<std::string>> m_topAlgNameList{this, "TopAlg", {}, "List of top level algorithms names"};
+  Gaudi::Property<std::vector<std::string>> m_outStreamNameList{this, "OutStream", {}, "List of output stream names"};
+  Gaudi::Property<std::string> m_outStreamType{this, "OutStreamType", "OutputStream",
+                                               "[[deprecated]] Output stream type"};
+  Gaudi::Property<std::string> m_messageSvcType{this, "MessageSvcType", "MessageSvc", "MessageSvc type"};
+  Gaudi::Property<std::string> m_jobOptionsSvcType{this, "JobOptionsSvcType", "JobOptionsSvc", "JobOptionsSvc type"};
 
   std::string m_name                       = "ApplicationMgr";             ///< Name
   Gaudi::StateMachine::State m_state       = Gaudi::StateMachine::OFFLINE; ///< Internal State
   Gaudi::StateMachine::State m_targetState = Gaudi::StateMachine::OFFLINE; ///< Internal State
 
-  StringArrayProperty m_svcMapping{this, "SvcMapping", {}, "Default mapping of services"};
-  StringArrayProperty m_svcOptMapping{this, "SvcOptMapping", {}, "Default mapping of optional services"};
+  Gaudi::Property<std::vector<std::string>> m_svcMapping{this, "SvcMapping", {}, "Default mapping of services"};
+  Gaudi::Property<std::vector<std::string>> m_svcOptMapping{
+      this, "SvcOptMapping", {}, "Default mapping of optional services"};
 
   SmartIF<IMessageSvc> m_messageSvc;        ///< Reference to the message service
   SmartIF<IRunable> m_runable;              ///< Reference to the runable object
@@ -213,57 +215,63 @@ protected:
   // The public ApplicationMgr properties
   //
 
-  IntegerProperty m_evtMax{this, "EvtMax", -1, "Number of events to be processed (-1 means all events)"};
-  StringArrayProperty m_extSvcNameList{this, "ExtSvc", {}, "List of external services names"};
-  BooleanProperty m_extSvcCreates{this, "ExtSvcCreates", true, "LHCb (default) or ATLAS definition of \"ExtSvc\""};
+  Gaudi::Property<int> m_evtMax{this, "EvtMax", -1, "Number of events to be processed (-1 means all events)"};
+  Gaudi::Property<std::vector<std::string>> m_extSvcNameList{this, "ExtSvc", {}, "List of external services names"};
+  Gaudi::Property<bool> m_extSvcCreates{this, "ExtSvcCreates", true,
+                                        "LHCb (default) or ATLAS definition of \"ExtSvc\""};
 
   /// List of external services names for which we want a copy per evt thread
-  StringArrayProperty m_multiThreadSvcNameList{this, "MultiThreadExtSvc"};
-  IntegerProperty m_noOfEvtThreads{this, "NoOfThreads", 0, "MultiThreadSvc copies"};
+  Gaudi::Property<std::vector<std::string>> m_multiThreadSvcNameList{this, "MultiThreadExtSvc"};
+  Gaudi::Property<int> m_noOfEvtThreads{this, "NoOfThreads", 0, "MultiThreadSvc copies"};
 
-  StringArrayProperty m_dllNameList{this, "Dlls", {}, "List of DDL's names"};
-  StringProperty m_jobOptionsType{this, "JobOptionsType", "FILE", "Source type (e.g. dbase, file...)"};
-  StringProperty m_jobOptionsPath{this, "JobOptionsPath", {}, "The \"file\" to look for properties"};
-  StringProperty m_jobOptionsPreAction{this, "JobOptionsPostAction", {}, "additional command to run on config"};
-  StringProperty m_jobOptionsPostAction{this, "JobOptionsPreAction", {}, "additional command to run on config"};
-  StringProperty m_runableType{this, "Runable", "AppMgrRunable", "Runable type"};
-  StringProperty m_eventLoopMgr{this, "EventLoop", "EventLoopMgr", "Processing manager type"};
-  StringProperty m_evtsel{this, "EvtSel", {}, "Event selection"};
-  StringProperty m_histPersName{this, "HistogramPersistency", "NONE", "Name of the Hist Pers Svc"};
-  IntegerProperty m_outputLevel{this, "OutputLevel", MSG::INFO, "Message output level"};
-  StringProperty m_appName{this, "AppName", "ApplicationMgr", "The name of the application"};
-  StringProperty m_appVersion{this, "AppVersion", {}, "The version of the application"};
-  BooleanProperty m_actHistory{this, "ActivateHistory", false, "Activate HistorySvc"};
-  BooleanProperty m_codeCheck{this, "StatusCodeCheck", false, "Activate StatusCode checking"};
-  IntegerProperty m_pluginDebugLevel{this, "PluginDebugLevel", 0, "Debug level for the plugin system"};
+  Gaudi::Property<std::vector<std::string>> m_dllNameList{this, "Dlls", {}, "List of DDL's names"};
+  Gaudi::Property<std::string> m_jobOptionsType{this, "JobOptionsType", "FILE", "Source type (e.g. dbase, file...)"};
+  Gaudi::Property<std::string> m_jobOptionsPath{this, "JobOptionsPath", {}, "The \"file\" to look for properties"};
+  Gaudi::Property<std::string> m_jobOptionsPreAction{
+      this, "JobOptionsPostAction", {}, "additional command to run on config"};
+  Gaudi::Property<std::string> m_jobOptionsPostAction{
+      this, "JobOptionsPreAction", {}, "additional command to run on config"};
+  Gaudi::Property<std::string> m_runableType{this, "Runable", "AppMgrRunable", "Runable type"};
+  Gaudi::Property<std::string> m_eventLoopMgr{this, "EventLoop", "EventLoopMgr", "Processing manager type"};
+  Gaudi::Property<std::string> m_evtsel{this, "EvtSel", {}, "Event selection"};
+  Gaudi::Property<std::string> m_histPersName{this, "HistogramPersistency", "NONE", "Name of the Hist Pers Svc"};
+  Gaudi::Property<int> m_outputLevel{this, "OutputLevel", MSG::INFO, "Message output level"};
+  Gaudi::Property<std::string> m_appName{this, "AppName", "ApplicationMgr", "The name of the application"};
+  Gaudi::Property<std::string> m_appVersion{this, "AppVersion", {}, "The version of the application"};
+  Gaudi::Property<bool> m_actHistory{this, "ActivateHistory", false, "Activate HistorySvc"};
+  Gaudi::Property<bool> m_codeCheck{this, "StatusCodeCheck", false, "Activate StatusCode checking"};
+  Gaudi::Property<int> m_pluginDebugLevel{this, "PluginDebugLevel", 0, "Debug level for the plugin system"};
 
-  StringArrayProperty m_createSvcNameList{this, "CreateSvc", {}, "List of extra services to be created"};
+  Gaudi::Property<std::vector<std::string>> m_createSvcNameList{
+      this, "CreateSvc", {}, "List of extra services to be created"};
 
   /// Defaults for auditors.
-  BooleanProperty m_auditTools{this, "AuditTools", false};
-  BooleanProperty m_auditSvcs{this, "AuditServices", false};
-  BooleanProperty m_auditAlgs{this, "AuditAlgorithms", false};
+  Gaudi::Property<bool> m_auditTools{this, "AuditTools", false};
+  Gaudi::Property<bool> m_auditSvcs{this, "AuditServices", false};
+  Gaudi::Property<bool> m_auditAlgs{this, "AuditAlgorithms", false};
 
-  SimpleProperty<std::map<std::string, std::string>> m_environment{
+  Gaudi::Property<std::map<std::string, std::string>> m_environment{
       this, "Environment", {}, "Environment variables to set"};
 
-  BooleanProperty m_loopCheck{this, "InitializationLoopCheck", true, "For ServiceMgr initialization loop checking"};
+  Gaudi::Property<bool> m_loopCheck{this, "InitializationLoopCheck", true,
+                                    "For ServiceMgr initialization loop checking"};
 
   /// Property to enable/disable the "stop on signal" service.
   /// @see Gaudi::Utils::StopSignalHandler
-  BooleanProperty m_stopOnSignal{this, "StopOnSignal", false,
-                                 "Flag to enable/disable the signal handler that schedule a stop of the event loop"};
+  Gaudi::Property<bool> m_stopOnSignal{
+      this, "StopOnSignal", false, "Flag to enable/disable the signal handler that schedule a stop of the event loop"};
 
   /// Property to enable/disable the monitoring and reporting of stalled events.
   /// @see StalledEventMonitor
-  BooleanProperty m_stalledEventMonitoring{this, "StalledEventMonitoring", false,
-                                           "Flag to enable/disable the monitoring and reporting of stalled events"};
+  Gaudi::Property<bool> m_stalledEventMonitoring{
+      this, "StalledEventMonitoring", false, "Flag to enable/disable the monitoring and reporting of stalled events"};
 
-  BooleanProperty m_propertiesPrint{this, "PropertiesPrint", false, "Flag to activate the printout of properties"};
+  Gaudi::Property<bool> m_propertiesPrint{this, "PropertiesPrint", false,
+                                          "Flag to activate the printout of properties"};
 
   /// Property to record the error conditions occurring during the running.
-  IntegerProperty m_returnCode{this, "ReturnCode", Gaudi::ReturnCode::Success,
-                               "Return code of the application. Set internally in case of error conditions."};
+  Gaudi::Property<int> m_returnCode{this, "ReturnCode", Gaudi::ReturnCode::Success,
+                                    "Return code of the application. Set internally in case of error conditions."};
 
   // For concurrency
   bool m_useHiveAlgorithmManager;

@@ -103,28 +103,30 @@ public:
 private:
   enum ActivationState { INACTIVE = 0, ACTIVE = 1, FAILURE = 2 };
 
-  IntegerProperty m_maxEventsInFlight{this, "MaxEventsInFlight", 0, "Maximum number of event processed simultaneously"};
-  IntegerProperty m_threadPoolSize{
+  Gaudi::Property<int> m_maxEventsInFlight{this, "MaxEventsInFlight", 0,
+                                           "Maximum number of event processed simultaneously"};
+  Gaudi::Property<int> m_threadPoolSize{
       this, "ThreadPoolSize", -1,
       "Size of the threadpool initialised by TBB; a value of -1 gives TBB the freedom to choose"};
-  StringProperty m_whiteboardSvcName{this, "WhiteboardSvc", "EventDataSvc", "The whiteboard name"};
-  UnsignedIntegerProperty m_maxAlgosInFlight{this, "MaxAlgosInFlight", 0, "[[deprecated]] Taken from the whiteboard"};
+  Gaudi::Property<std::string> m_whiteboardSvcName{this, "WhiteboardSvc", "EventDataSvc", "The whiteboard name"};
+  Gaudi::Property<unsigned int> m_maxAlgosInFlight{this, "MaxAlgosInFlight", 0,
+                                                   "[[deprecated]] Taken from the whiteboard"};
   // XXX: CF tests. Temporary property to switch between ControlFlow implementations
-  BooleanProperty m_CFNext{this, "useGraphFlowManagement", false,
-                           "Temporary property to switch between ControlFlow implementations"};
+  Gaudi::Property<bool> m_CFNext{this, "useGraphFlowManagement", false,
+                                 "Temporary property to switch between ControlFlow implementations"};
   // XXX: CF tests. Temporary property to switch between DataFlow implementations
-  BooleanProperty m_DFNext{this, "DataFlowManagerNext", false,
-                           "Temporary property to switch between DataFlow implementations"};
-  BooleanProperty m_simulateExecution{
+  Gaudi::Property<bool> m_DFNext{this, "DataFlowManagerNext", false,
+                                 "Temporary property to switch between DataFlow implementations"};
+  Gaudi::Property<bool> m_simulateExecution{
       this, "SimulateExecution", false,
       "Flag to perform single-pass simulation of execution flow before the actual execution"};
-  StringProperty m_optimizationMode{this, "Optimizer", "",
-                                    "The following modes are currently available: PCE, COD, DRE,  E"};
-  BooleanProperty m_dumpIntraEventDynamics{this, "DumpIntraEventDynamics", false,
-                                           "Dump intra-event concurrency dynamics to csv file"};
+  Gaudi::Property<std::string> m_optimizationMode{this, "Optimizer", "",
+                                                  "The following modes are currently available: PCE, COD, DRE,  E"};
+  Gaudi::Property<bool> m_dumpIntraEventDynamics{this, "DumpIntraEventDynamics", false,
+                                                 "Dump intra-event concurrency dynamics to csv file"};
   Gaudi::Property<std::vector<std::vector<std::string>>> m_algosDependencies{
       this, "AlgosDependencies", {}, "[[deprecated]]"};
-  BooleanProperty m_checkDeps{this, "CheckDependencies", false, "[[deprecated]]"};
+  Gaudi::Property<bool> m_checkDeps{this, "CheckDependencies", false, "[[deprecated]]"};
 
   // Utils and shortcuts ----------------------------------------------------
 

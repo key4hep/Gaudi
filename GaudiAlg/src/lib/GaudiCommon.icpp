@@ -86,7 +86,7 @@ void GaudiCommon<PBASE>::initGaudiCommonConstructor( const IInterface* parent )
   if ( myList ) {
     // Iterate over the list to set the options
     for ( const auto& iter : *myList ) {
-      const StringProperty* sp = dynamic_cast<const StringProperty*>( iter );
+      const Gaudi::Property<std::string>* sp = dynamic_cast<const Gaudi::Property<std::string>*>( iter );
       if ( sp ) {
         if ( iter->name().compare( "Context" ) == 0 ) {
           m_context = sp->value();

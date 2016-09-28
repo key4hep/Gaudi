@@ -2,8 +2,8 @@
 #define AuditorSvc_AuditorSvc_H
 
 // Include Files
-#include "GaudiKernel/Service.h"
 #include "GaudiKernel/IAuditorSvc.h"
+#include "GaudiKernel/Service.h"
 #include <list>
 #include <vector>
 
@@ -15,66 +15,64 @@
 //              Auditors can be inserted in the system to audit the Algorithms is
 //              in their functions.
 //------------------------------------------------------------------
-class AuditorSvc : public extends<Service,
-                                  IAuditorSvc> {
+class AuditorSvc : public extends<Service, IAuditorSvc>
+{
 public:
-
-
-// Inherited Service overrides:
-//
+  // Inherited Service overrides:
+  //
   // Initialize the service.
   StatusCode initialize() override;
 
   // Finalize the service.
   StatusCode finalize() override;
 
-// IAuditorSvc interfaces overwrite
-//
+  // IAuditorSvc interfaces overwrite
+  //
   /// The following methods are meant to be implemented by the child class...
 
-  void before(StandardEventType, INamedInterface*) override;
-  void before(StandardEventType, const std::string&) override;
+  void before( StandardEventType, INamedInterface* ) override;
+  void before( StandardEventType, const std::string& ) override;
 
-  void before(CustomEventTypeRef, INamedInterface*) override;
-  void before(CustomEventTypeRef, const std::string&) override;
+  void before( CustomEventTypeRef, INamedInterface* ) override;
+  void before( CustomEventTypeRef, const std::string& ) override;
 
-  void after(StandardEventType, INamedInterface*, const StatusCode&) override;
-  void after(StandardEventType, const std::string&, const StatusCode&) override;
+  void after( StandardEventType, INamedInterface*, const StatusCode& ) override;
+  void after( StandardEventType, const std::string&, const StatusCode& ) override;
 
-  void after(CustomEventTypeRef, INamedInterface*, const StatusCode&) override;
-  void after(CustomEventTypeRef, const std::string&, const StatusCode&) override;
+  void after( CustomEventTypeRef, INamedInterface*, const StatusCode& ) override;
+  void after( CustomEventTypeRef, const std::string&, const StatusCode& ) override;
 
   // inform Auditors that the initialize() is about to be called
-  void beforeInitialize(INamedInterface* ini) override;
+  void beforeInitialize( INamedInterface* ini ) override;
   // inform Auditors that the initialize() has been called
-  void afterInitialize(INamedInterface* ini) override;
+  void afterInitialize( INamedInterface* ini ) override;
 
   // inform Auditors that the reinitialize() is about to be called
-  void beforeReinitialize(INamedInterface* ini) override;
+  void beforeReinitialize( INamedInterface* ini ) override;
   // inform Auditors that the reinitialize() has been called
-  void afterReinitialize(INamedInterface* ini) override;
+  void afterReinitialize( INamedInterface* ini ) override;
 
   // inform Auditors that the execute() is about to be called
-  void beforeExecute(INamedInterface* ini) override;
+  void beforeExecute( INamedInterface* ini ) override;
   // inform Auditors that the execute() has been called
-  void afterExecute(INamedInterface* ini, const StatusCode& ) override;
+  void afterExecute( INamedInterface* ini, const StatusCode& ) override;
 
   // inform Auditors that the beginRun() is about to be called
-  void beforeBeginRun(INamedInterface* ini) override;
+  void beforeBeginRun( INamedInterface* ini ) override;
   // inform Auditors that the beginRun() has been called
-  void afterBeginRun(INamedInterface* ini) override;
+  void afterBeginRun( INamedInterface* ini ) override;
 
   // inform Auditors that the endRun() is about to be called
-  void beforeEndRun(INamedInterface* ini) override;
+  void beforeEndRun( INamedInterface* ini ) override;
   // inform Auditors that the endRun() has been called
-  void afterEndRun(INamedInterface* ini) override;
+  void afterEndRun( INamedInterface* ini ) override;
 
   // inform Auditors that the finalize() is about to be called
-  void beforeFinalize(INamedInterface* ini) override;
+  void beforeFinalize( INamedInterface* ini ) override;
   // inform Auditors that the finalize() has been called
-  void afterFinalize(INamedInterface* ini) override;
+  void afterFinalize( INamedInterface* ini ) override;
 
-  bool isEnabled() const  override;
+  bool isEnabled() const override;
 
   StatusCode sysInitialize() override;
   StatusCode sysFinalize() override;
@@ -93,11 +91,11 @@ private:
   SmartIF<IAuditor> findAuditor_( const std::string& );
   StatusCode syncAuditors_();
 
-  StringArrayProperty m_audNameList{this, "Auditors", {}, "list of auditors names"};
-  BooleanProperty m_isEnabled{this, "Enable", true, "enable/disable alltogether the auditors"};
+  Gaudi::Property<std::vector<std::string>> m_audNameList{this, "Auditors", {}, "list of auditors names"};
+  Gaudi::Property<bool> m_isEnabled{this, "Enable", true, "enable/disable alltogether the auditors"};
 
   // Manager list of Auditors
-  std::vector<SmartIF<IAuditor>>     m_pAudList;
+  std::vector<SmartIF<IAuditor>> m_pAudList;
 };
 
 #endif

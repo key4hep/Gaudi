@@ -559,33 +559,35 @@ protected:
 
 private:
   // Properties
-  IntegerProperty m_outputLevel{this, "OutputLevel", MSG::NIL, "output level"};
-  BooleanProperty m_isEnabled{this, "Enable", true, "should the algorithm be executed or not"};
+  Gaudi::Property<int> m_outputLevel{this, "OutputLevel", MSG::NIL, "output level"};
+  Gaudi::Property<bool> m_isEnabled{this, "Enable", true, "should the algorithm be executed or not"};
 
-  IntegerProperty m_errorMax{this, "ErrorMax", 1, "[[deprecated]] max number of errors"};
-  IntegerProperty m_errorCount{this, "ErrorCounter", 0, "[[deprecated]] error counter"};
+  Gaudi::Property<int> m_errorMax{this, "ErrorMax", 1, "[[deprecated]] max number of errors"};
+  Gaudi::Property<int> m_errorCount{this, "ErrorCounter", 0, "[[deprecated]] error counter"};
 
-  BooleanProperty m_auditInit{this, "AuditAlgorithms", false, "[[deprecated]] unused"};
-  BooleanProperty m_auditorInitialize{this, "AuditInitialize", false, "trigger auditor on initialize()"};
-  BooleanProperty m_auditorReinitialize{this, "AuditReinitialize", false, "trigger auditor on reinitialize()"};
-  BooleanProperty m_auditorRestart{this, "AuditRestart", false, "trigger auditor on restart()"};
-  BooleanProperty m_auditorExecute{this, "AuditExecute", false, "trigger auditor on execute()"};
-  BooleanProperty m_auditorFinalize{this, "AuditFinalize", false, "trigger auditor on finalize()"};
-  BooleanProperty m_auditorBeginRun{this, "AuditBeginRun", false, "trigger auditor on beginRun()"};
-  BooleanProperty m_auditorEndRun{this, "AuditEndRun", false, "trigger auditor on endRun()"};
-  BooleanProperty m_auditorStart{this, "AuditStart", false, "trigger auditor on start()"};
-  BooleanProperty m_auditorStop{this, "AuditStop", false, "trigger auditor on stop()"};
+  Gaudi::Property<bool> m_auditInit{this, "AuditAlgorithms", false, "[[deprecated]] unused"};
+  Gaudi::Property<bool> m_auditorInitialize{this, "AuditInitialize", false, "trigger auditor on initialize()"};
+  Gaudi::Property<bool> m_auditorReinitialize{this, "AuditReinitialize", false, "trigger auditor on reinitialize()"};
+  Gaudi::Property<bool> m_auditorRestart{this, "AuditRestart", false, "trigger auditor on restart()"};
+  Gaudi::Property<bool> m_auditorExecute{this, "AuditExecute", false, "trigger auditor on execute()"};
+  Gaudi::Property<bool> m_auditorFinalize{this, "AuditFinalize", false, "trigger auditor on finalize()"};
+  Gaudi::Property<bool> m_auditorBeginRun{this, "AuditBeginRun", false, "trigger auditor on beginRun()"};
+  Gaudi::Property<bool> m_auditorEndRun{this, "AuditEndRun", false, "trigger auditor on endRun()"};
+  Gaudi::Property<bool> m_auditorStart{this, "AuditStart", false, "trigger auditor on start()"};
+  Gaudi::Property<bool> m_auditorStop{this, "AuditStop", false, "trigger auditor on stop()"};
 
-  BooleanProperty m_doTimeline{this, "Timeline", true, "send events to TimelineSvc"};
+  Gaudi::Property<bool> m_doTimeline{this, "Timeline", true, "send events to TimelineSvc"};
 
-  StringProperty m_monitorSvcName{this, "MonitorService", "MonitorSvc", "name to use for Monitor Service"};
+  Gaudi::Property<std::string> m_monitorSvcName{this, "MonitorService", "MonitorSvc",
+                                                "name to use for Monitor Service"};
 
-  BooleanProperty m_registerContext{this, "RegisterForContextService", false,
-                                    "flag to enforce the registration for Algorithm Context Service"};
+  Gaudi::Property<bool> m_registerContext{this, "RegisterForContextService", false,
+                                          "flag to enforce the registration for Algorithm Context Service"};
 
-  BooleanProperty m_isClonable{this, "IsClonable", false, "thread-safe enough for cloning?"};
-  IntegerProperty m_cardinality{this, "Cardinality", 1, "how many clones to create"};
-  StringArrayProperty m_neededResources{this, "NeededResources", {}, "named resources needed during event looping"};
+  Gaudi::Property<bool> m_isClonable{this, "IsClonable", false, "thread-safe enough for cloning?"};
+  Gaudi::Property<int> m_cardinality{this, "Cardinality", 1, "how many clones to create"};
+  Gaudi::Property<std::vector<std::string>> m_neededResources{
+      this, "NeededResources", {}, "named resources needed during event looping"};
 
   Gaudi::Property<DataObjIDColl> m_extInputDataObjs{this, "ExtraInputs", DataObjIDColl{}, "[[deprecated]]"};
   Gaudi::Property<DataObjIDColl> m_extOutputDataObjs{this, "ExtraOutputs", DataObjIDColl{}, "[[deprecated]]"};

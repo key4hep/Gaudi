@@ -9,9 +9,9 @@
 #include "GaudiAlg/GaudiAlgorithm.h"
 #include "GaudiKernel/Property.h"
 
-class GAUDI_API HiveTestAlgorithm: public GaudiAlgorithm {
- public:
-
+class GAUDI_API HiveTestAlgorithm : public GaudiAlgorithm
+{
+public:
   /**
    ** Constructor(s)
    **/
@@ -34,8 +34,7 @@ class GAUDI_API HiveTestAlgorithm: public GaudiAlgorithm {
   virtual const std::vector<std::string> get_inputs();
   virtual const std::vector<std::string> get_outputs();
 
- private:
-
+private:
   /**************************
    ** Private Data Members **
    **************************/
@@ -45,6 +44,6 @@ class GAUDI_API HiveTestAlgorithm: public GaudiAlgorithm {
    **/
   int m_total = 0;
 
-  StringArrayProperty  m_inputs {this, "Input",  {},  "List of required inputs"};
-  StringArrayProperty  m_outputs {this, "Output",  {},  "List of provided outputs"};
+  Gaudi::Property<std::vector<std::string>> m_inputs{this, "Input", {}, "List of required inputs"};
+  Gaudi::Property<std::vector<std::string>> m_outputs{this, "Output", {}, "List of provided outputs"};
 };

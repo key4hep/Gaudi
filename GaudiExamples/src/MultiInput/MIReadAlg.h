@@ -3,16 +3,20 @@
 
 // Framework include files
 #include "GaudiKernel/Algorithm.h"
-#include "RootCnv/RootAddress.h"
 #include "MIHelpers.h"
+#include "RootCnv/RootAddress.h"
 
 #include <vector>
 
-namespace Gaudi {
-  namespace Examples {
-    namespace MultiInput {
+namespace Gaudi
+{
+  namespace Examples
+  {
+    namespace MultiInput
+    {
       /** Simple algorithm used to read data from two files. */
-      class ReadAlg : public Algorithm {
+      class ReadAlg : public Algorithm
+      {
       public:
         using Algorithm::Algorithm;
         ~ReadAlg() override = default;
@@ -20,8 +24,10 @@ namespace Gaudi {
         StatusCode initialize() override;
         /// Event callback
         StatusCode execute() override;
+
       private:
-        StringProperty  m_addressfile {this, "AddressesFile",  {},  "File containing the address details of the extra data."};
+        Gaudi::Property<std::string> m_addressfile{
+            this, "AddressesFile", {}, "File containing the address details of the extra data."};
         /// Address details for the data to be added to the main event.
         std::vector<RootAddressArgs> m_addresses;
         size_t m_count = 0;

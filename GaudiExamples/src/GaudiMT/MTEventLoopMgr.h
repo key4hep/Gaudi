@@ -32,28 +32,28 @@ class IDataProviderSvc;
    @author Markus Frank
    @version 1.0
 */
-class MTEventLoopMgr : public MinimalEventLoopMgr   {
+class MTEventLoopMgr : public MinimalEventLoopMgr
+{
 protected:
-  StringProperty  m_histPersName {this, "HistogramPersistency",  {},  "Name of the Hist Pers type"};
-  StringProperty  m_evtsel {this, "EvtSel",  {},  "Event selector"};
+  Gaudi::Property<std::string> m_histPersName{this, "HistogramPersistency", {}, "Name of the Hist Pers type"};
+  Gaudi::Property<std::string> m_evtsel{this, "EvtSel", {}, "Event selector"};
 
   /// Reference to the indicent service
-  IIncidentSvc*     m_incidentSvc = nullptr;
+  IIncidentSvc* m_incidentSvc = nullptr;
   /// Reference to the Event Data Service's IDataManagerSvc interface
-  IDataManagerSvc*  m_evtDataMgrSvc = nullptr;
+  IDataManagerSvc* m_evtDataMgrSvc = nullptr;
   /// Reference to the Event Data Service's IDataProviderSvc interface
   IDataProviderSvc* m_evtDataSvc = nullptr;
   /// Reference to the Event Selector
-  IEvtSelector*     m_evtSelector = nullptr;
+  IEvtSelector* m_evtSelector = nullptr;
   /// Event Iterator
   IEvtSelector::Context* m_evtCtxt = nullptr;
   /// Reference to the Histogram Data Service
-  IDataManagerSvc*  m_histoDataMgrSvc = nullptr;
+  IDataManagerSvc* m_histoDataMgrSvc = nullptr;
   /// Reference to the Histogram Persistency Service
-  IConversionSvc*   m_histoPersSvc = nullptr;
+  IConversionSvc* m_histoPersSvc = nullptr;
   /// Property interface of ApplicationMgr
-  IProperty*        m_appMgrProperty = nullptr;
-
+  IProperty* m_appMgrProperty = nullptr;
 
 public:
   /// Standard Constructor
@@ -61,7 +61,7 @@ public:
   /// Standard Destructor
   virtual ~MTEventLoopMgr();
   /// Create event address using event selector
-  StatusCode getEventRoot(IOpaqueAddress*& refpAddr);
+  StatusCode getEventRoot( IOpaqueAddress*& refpAddr );
 
   /// implementation of IService::initalize
   virtual StatusCode initialize();
@@ -70,13 +70,13 @@ public:
   /// implementation of IService::finalize
   virtual StatusCode finalize();
   /// implementation of IService::nextEvent
-  virtual StatusCode nextEvent(int maxevt);
+  virtual StatusCode nextEvent( int maxevt );
   /// implementation of IEventProcessor::executeEvent(void* par)
   //  virtual StatusCode executeEvent(void* par);
   /// implementation of IEventProcessor::executeRun()
   //  virtual StatusCode executeRun(int maxevt);
 
 private:
-  int m_total_nevt  = 0;
+  int m_total_nevt = 0;
 };
 #endif // GAUDISVC_MTEVENTLOOPMGR_H

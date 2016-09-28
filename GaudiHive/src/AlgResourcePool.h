@@ -2,22 +2,22 @@
 #define GAUDIHIVE_ALGRESOURCEPOOL_H
 
 // Include files
-#include "GaudiKernel/IAlgResourcePool.h"
-#include "GaudiKernel/IAlgManager.h"
-#include "GaudiKernel/Service.h"
-#include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/Algorithm.h"
+#include "GaudiKernel/IAlgManager.h"
+#include "GaudiKernel/IAlgResourcePool.h"
+#include "GaudiKernel/IAlgorithm.h"
+#include "GaudiKernel/Service.h"
 
 // TODO: include here is only a workaround
 #include "ExecutionFlowGraph.h"
 
 // std includes
-#include <string>
-#include <list>
-#include <vector>
-#include <bitset>
 #include <atomic>
+#include <bitset>
+#include <list>
 #include <mutex>
+#include <string>
+#include <vector>
 
 // External libs
 #include "boost/dynamic_bitset.hpp"
@@ -31,8 +31,8 @@
 
     @author Benedikt Hegner
 */
-class AlgResourcePool: public extends<Service,
-                                      IAlgResourcePool> {
+class AlgResourcePool : public extends<Service, IAlgResourcePool>
+{
 public:
   // Standard constructor
   using extends::extends;
@@ -42,13 +42,13 @@ public:
   virtual StatusCode start();
   virtual StatusCode initialize();
   /// Acquire a certain algorithm using its name
-  virtual StatusCode acquireAlgorithm(const std::string& name, IAlgorithm*& algo, bool blocking = false);
+  virtual StatusCode acquireAlgorithm( const std::string& name, IAlgorithm*& algo, bool blocking = false );
   /// Release a certain algorithm
-  virtual StatusCode releaseAlgorithm(const std::string& name, IAlgorithm*& algo);
+  virtual StatusCode releaseAlgorithm( const std::string& name, IAlgorithm*& algo );
   /// Acquire a certain resource
-  virtual StatusCode acquireResource(const std::string& name);
+  virtual StatusCode acquireResource( const std::string& name );
   /// Release a certrain resource
-  virtual StatusCode releaseResource(const std::string& name);
+  virtual StatusCode releaseResource( const std::string& name );
 
   virtual std::list<IAlgorithm*> getFlatAlgList();
   virtual std::list<IAlgorithm*> getTopAlgList();
@@ -58,30 +58,32 @@ public:
 
   virtual StatusCode stop();
 
-  virtual concurrency::ExecutionFlowGraph* getExecutionFlowGraph() const {return m_EFGraph;}
+  virtual concurrency::ExecutionFlowGraph* getExecutionFlowGraph() const { return m_EFGraph; }
 
 private:
   typedef tbb::concurrent_bounded_queue<IAlgorithm*> concurrentQueueIAlgPtr;
-  typedef std::list<SmartIF<IAlgorithm> > ListAlg;
+  typedef std::list<SmartIF<IAlgorithm>> ListAlg;
   typedef boost::dynamic_bitset<> state_type;
 
   std::mutex m_resource_mutex;
 
   state_type m_available_resources{0};
-  std::map<size_t,concurrentQueueIAlgPtr*> m_algqueue_map;
-  std::map<size_t,state_type> m_resource_requirements;
-  std::map<size_t,size_t> m_n_of_allowed_instances;
-  std::map<size_t,unsigned int> m_n_of_created_instances;
-  std::map<std::string,unsigned int> m_resource_indices;
+  std::map<size_t, concurrentQueueIAlgPtr*> m_algqueue_map;
+  std::map<size_t, state_type> m_resource_requirements;
+  std::map<size_t, size_t> m_n_of_allowed_instances;
+  std::map<size_t, unsigned int> m_n_of_created_instances;
+  std::map<std::string, unsigned int> m_resource_indices;
 
   /// Decode the top alg list
   StatusCode decodeTopAlgs();
 
   /// Recursively flatten an algList
-  StatusCode flattenSequencer(Algorithm* sequencer, ListAlg& alglist, const std::string& parentName, unsigned int recursionDepth=0);
+  StatusCode flattenSequencer( Algorithm* sequencer, ListAlg& alglist, const std::string& parentName,
+                               unsigned int recursionDepth = 0 );
 
-  BooleanProperty  m_lazyCreation {this, "CreateLazily",  false, ""};
-  StringArrayProperty  m_topAlgNames {this, "TopAlg",  {},  "names of the algorithms to be passed to the algorithm manager"};
+  Gaudi::Property<bool> m_lazyCreation{this, "CreateLazily", false, ""};
+  Gaudi::Property<std::vector<std::string>> m_topAlgNames{
+      this, "TopAlg", {}, "names of the algorithms to be passed to the algorithm manager"};
 
   /// The list of all algorithms created withing the Pool which are not top
   ListAlg m_algList;
@@ -102,4 +104,4 @@ private:
   concurrency::ExecutionFlowGraph* m_EFGraph = nullptr;
 };
 
-#endif  // GAUDIHIVE_ALGRESOURCEPOOL_H
+#endif // GAUDIHIVE_ALGRESOURCEPOOL_H

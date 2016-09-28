@@ -10,7 +10,6 @@
 
 #include "ITestTool.h"
 
-
 /** @class TestTool TestTool.h
  *
  *
@@ -18,11 +17,10 @@
  *  @date   2004-03-08
  */
 
-class TestTool : public extends<GaudiTool,
-                                ITestTool> {
+class TestTool : public extends<GaudiTool, ITestTool>
+{
 
 public:
-
   /// Standard constructor
   using extends::extends;
 
@@ -35,8 +33,6 @@ public:
   ~TestTool() override = default; ///< Destructor
 
 private:
-
-  StringArrayProperty m_tools{this, "Tools", {}, "list of tools to test"};
-
+  Gaudi::Property<std::vector<std::string>> m_tools{this, "Tools", {}, "list of tools to test"};
 };
 #endif // TESTTOOL_H

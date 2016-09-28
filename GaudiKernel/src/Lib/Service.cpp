@@ -329,7 +329,7 @@ Service::Service( std::string name, ISvcLocator* svcloc ) : m_name( std::move( n
   }
 
   // Initialize the default value from ApplicationMgr AuditAlgorithms
-  BooleanProperty audit( false );
+  Gaudi::Property<bool> audit( false );
   auto appMgr = serviceLocator()->service<IProperty>( "ApplicationMgr" );
   if ( appMgr && appMgr->hasProperty( "AuditServices" ) ) {
     audit.assign( appMgr->getProperty( "AuditServices" ) );

@@ -109,7 +109,7 @@ public:
   Gaudi::Details::PropertyBase* declareProperty( const std::string& name, TYPE& value, const std::string& doc = "none" )
   {
     assertUniqueName( name );
-    m_todelete.emplace_back( new SimplePropertyRef<TYPE>( name, value ) );
+    m_todelete.emplace_back( new Gaudi::Property<TYPE&>( name, value ) );
     Gaudi::Details::PropertyBase* p = m_todelete.back().get();
     p->setDocumentation( doc );
     m_properties.push_back( p );

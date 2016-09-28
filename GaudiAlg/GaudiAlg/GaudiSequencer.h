@@ -70,12 +70,12 @@ private:
   /** assignment not allowed **/
   GaudiSequencer& operator=( const GaudiSequencer& a ) = delete;
 
-  StringArrayProperty m_names{this, "Members", {}, "list of algorithms"};
-  BooleanProperty m_modeOR{this, "ModeOR", false, "use OR loginc instead of AND"};
-  BooleanProperty m_ignoreFilter{this, "IgnoreFilterPassed", false, "always continue"};
-  BooleanProperty m_measureTime{this, "MeasureTime", false, "measure time"};
-  BooleanProperty m_returnOK{this, "ReturnOK", false, "forces the sequencer to return a good status"};
-  BooleanProperty m_shortCircuit{this, "ShortCircuit", true, "stop processing as soon as possible"};
+  Gaudi::Property<std::vector<std::string>> m_names{this, "Members", {}, "list of algorithms"};
+  Gaudi::Property<bool> m_modeOR{this, "ModeOR", false, "use OR loginc instead of AND"};
+  Gaudi::Property<bool> m_ignoreFilter{this, "IgnoreFilterPassed", false, "always continue"};
+  Gaudi::Property<bool> m_measureTime{this, "MeasureTime", false, "measure time"};
+  Gaudi::Property<bool> m_returnOK{this, "ReturnOK", false, "forces the sequencer to return a good status"};
+  Gaudi::Property<bool> m_shortCircuit{this, "ShortCircuit", true, "stop processing as soon as possible"};
 
   bool m_isInitialized;                       ///< Indicate that we are ready
   std::vector<AlgorithmEntry> m_entries;      ///< List of algorithms to process.

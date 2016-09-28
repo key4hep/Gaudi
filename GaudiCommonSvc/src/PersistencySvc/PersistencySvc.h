@@ -245,7 +245,7 @@ protected:
   /// Default output service
   mutable SmartIF<IConversionSvc> m_cnvDefault;
 
-  StringArrayProperty m_svcNames{
+  Gaudi::Property<std::vector<std::string>> m_svcNames{
       this, "CnvServices", {}, "Names of services to be requested from the service locator and added by default"};
 
   /// Flag to indicate that the service is enabled

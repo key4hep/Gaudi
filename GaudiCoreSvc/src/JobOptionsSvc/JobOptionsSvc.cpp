@@ -49,7 +49,7 @@ StatusCode JobOptionsSvc::initialize()
 StatusCode JobOptionsSvc::addPropertyToCatalogue( const std::string& client,
                                                   const Gaudi::Details::PropertyBase& property )
 {
-  std::unique_ptr<Gaudi::Details::PropertyBase> p{new StringProperty( property.name(), "" )};
+  std::unique_ptr<Gaudi::Details::PropertyBase> p{new Gaudi::Property<std::string>( property.name(), "" )};
   return property.load( *p ) ? m_svc_catalog.addProperty( client, p.release() ) : StatusCode::FAILURE;
 }
 // ============================================================================
@@ -102,7 +102,8 @@ void JobOptionsSvc::fillServiceCatalog( const gp::Catalog& catalog )
 {
   for ( const auto& client : catalog ) {
     for ( const auto& current : client.second ) {
-      addPropertyToCatalogue( client.first, StringProperty{current.NameInClient(), current.ValueAsString()} );
+      addPropertyToCatalogue( client.first,
+                              Gaudi::Property<std::string>{current.NameInClient(), current.ValueAsString()} );
     }
   }
 }

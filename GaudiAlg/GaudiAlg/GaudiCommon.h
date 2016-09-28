@@ -728,30 +728,31 @@ private:
   mutable IUpdateManagerSvc* m_updMgrSvc = nullptr;
   // ==========================================================================
   // Properties
-  BooleanProperty m_errorsPrint{this, "ErrorsPrint", true, "print the statistics of errors/warnings/exceptions"};
-  BooleanProperty m_propsPrint{this, "PropertiesPrint", false, "print the properties of the component"};
-  BooleanProperty m_statPrint{this, "StatPrint", true, "print the table of counters"};
-  BooleanProperty m_typePrint{this, "TypePrint", true, "add the actual C++ component type into the messages"};
+  Gaudi::Property<bool> m_errorsPrint{this, "ErrorsPrint", true, "print the statistics of errors/warnings/exceptions"};
+  Gaudi::Property<bool> m_propsPrint{this, "PropertiesPrint", false, "print the properties of the component"};
+  Gaudi::Property<bool> m_statPrint{this, "StatPrint", true, "print the table of counters"};
+  Gaudi::Property<bool> m_typePrint{this, "TypePrint", true, "add the actual C++ component type into the messages"};
 
-  StringProperty m_context{this, "Context", {}, "note: overridden by parent settings"};
-  StringProperty m_rootInTES{this, "RootInTES", {}, "note: overridden by parent settings"};
+  Gaudi::Property<std::string> m_context{this, "Context", {}, "note: overridden by parent settings"};
+  Gaudi::Property<std::string> m_rootInTES{this, "RootInTES", {}, "note: overridden by parent settings"};
 
-  StringProperty m_header{this, "StatTableHeader", " |    Counter                                      |     #     |   "
-                                                   " sum     | mean/eff^* | rms/err^*  |     min     |     max     |",
-                          "the header row for the output Stat-table"};
-  StringProperty m_format1{this, "RegularRowFormat",
-                           " | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |",
-                           "the format for regular row in the output Stat-table"};
-  StringProperty m_format2{
+  Gaudi::Property<std::string> m_header{this, "StatTableHeader",
+                                        " |    Counter                                      |     #     |   "
+                                        " sum     | mean/eff^* | rms/err^*  |     min     |     max     |",
+                                        "the header row for the output Stat-table"};
+  Gaudi::Property<std::string> m_format1{
+      this, "RegularRowFormat", " | %|-48.48s|%|50t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |",
+      "the format for regular row in the output Stat-table"};
+  Gaudi::Property<std::string> m_format2{
       this, "EfficiencyRowFormat",
       " |*%|-48.48s|%|50t||%|10d| |%|11.5g| |(%|#9.6g| +- %|-#9.6g|)%%|   -------   |   -------   |",
       "The format for \"efficiency\" row in the output Stat-table"};
-  BooleanProperty m_useEffFormat{this, "UseEfficiencyRowFormat", true,
-                                 "use the special format for printout of efficiency counters"};
+  Gaudi::Property<bool> m_useEffFormat{this, "UseEfficiencyRowFormat", true,
+                                       "use the special format for printout of efficiency counters"};
 
-  StringArrayProperty m_counterList{
+  Gaudi::Property<std::vector<std::string>> m_counterList{
       this, "CounterList", {".*"}, "RegEx list, of simple integer counters for CounterSummary"};
-  StringArrayProperty m_statEntityList{
+  Gaudi::Property<std::vector<std::string>> m_statEntityList{
       this, "StatEntityList", {}, "RegEx list, of StatEntity counters for CounterSummary"};
 };
 // ============================================================================

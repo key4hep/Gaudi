@@ -45,7 +45,7 @@ namespace GaudiTesting
     }
 
   private:
-    IntegerProperty m_sleep{this, "SleepTime", 10, "Seconds to sleep during the execute"};
+    Gaudi::Property<int> m_sleep{this, "SleepTime", 10, "Seconds to sleep during the execute"};
     int m_counter = 0;
   };
 
@@ -70,8 +70,8 @@ namespace GaudiTesting
     }
 
   private:
-    IntegerProperty m_eventCount{this, "EventCount", 3, "Number of events to let go before raising the signal"};
-    IntegerProperty m_signal{this, "Signal", SIGINT, "Signal to raise"};
+    Gaudi::Property<int> m_eventCount{this, "EventCount", 3, "Number of events to let go before raising the signal"};
+    Gaudi::Property<int> m_signal{this, "Signal", SIGINT, "Signal to raise"};
   };
 
   class StopLoopAlg : public GaudiAlgorithm
@@ -104,8 +104,10 @@ namespace GaudiTesting
     }
 
   private:
-    IntegerProperty m_eventCount{this, "EventCount", 3, "Number of events to let go before breaking the event loop"};
-    StringProperty m_mode{this, "Mode", "failure", "Type of interruption ['exception', 'stopRun',  'failure']"};
+    Gaudi::Property<int> m_eventCount{this, "EventCount", 3,
+                                      "Number of events to let go before breaking the event loop"};
+    Gaudi::Property<std::string> m_mode{this, "Mode", "failure",
+                                        "Type of interruption ['exception', 'stopRun',  'failure']"};
   };
 
   class CustomIncidentAlg : public GaudiAlgorithm
@@ -148,8 +150,8 @@ namespace GaudiTesting
     }
 
   private:
-    IntegerProperty m_eventCount{this, "EventCount", 3, "Number of events to let go before firing the incident."};
-    StringProperty m_incident{this, "Incident", "", "Type of incident to fire."};
+    Gaudi::Property<int> m_eventCount{this, "EventCount", 3, "Number of events to let go before firing the incident."};
+    Gaudi::Property<std::string> m_incident{this, "Incident", "", "Type of incident to fire."};
     /// Incident service.
     SmartIF<IIncidentSvc> m_incidentSvc;
   };
@@ -194,8 +196,9 @@ namespace GaudiTesting
     }
 
   private:
-    StringArrayProperty m_paths{this, "Paths", {}, "List of paths in the transient store to load"};
-    StringProperty m_dataSvc{this, "DataSvc", "EventDataSvc", "Name of the data service to use"};
+    Gaudi::Property<std::vector<std::string>> m_paths{
+        this, "Paths", {}, "List of paths in the transient store to load"};
+    Gaudi::Property<std::string> m_dataSvc{this, "DataSvc", "EventDataSvc", "Name of the data service to use"};
     SmartIF<IDataProviderSvc> m_dataProvider;
   };
 
@@ -242,10 +245,11 @@ namespace GaudiTesting
     }
 
   private:
-    StringArrayProperty m_paths{this, "Paths", {}, "List of paths in the transient store to load"};
-    StringProperty m_dataSvc{this, "DataSvc", "EventDataSvc", "Name of the data service to use"};
-    BooleanProperty m_ignoreMissing{this, "IgnoreMissing", false,
-                                    "if True,  missing objects will not beconsidered an error"};
+    Gaudi::Property<std::vector<std::string>> m_paths{
+        this, "Paths", {}, "List of paths in the transient store to load"};
+    Gaudi::Property<std::string> m_dataSvc{this, "DataSvc", "EventDataSvc", "Name of the data service to use"};
+    Gaudi::Property<bool> m_ignoreMissing{this, "IgnoreMissing", false,
+                                          "if True,  missing objects will not beconsidered an error"};
     SmartIF<IDataProviderSvc> m_dataProvider;
   };
 
@@ -322,7 +326,7 @@ namespace GaudiTesting
     }
 
   protected:
-    IntegerProperty m_frequency{this, "Frequency", 1, "How often to print the memory usage (number of events)"};
+    Gaudi::Property<int> m_frequency{this, "Frequency", 1, "How often to print the memory usage (number of events)"};
     int m_counter = 0;
     void print()
     {

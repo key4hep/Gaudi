@@ -37,14 +37,16 @@ protected:
   typedef std::vector<std::vector<std::string>> algosDependenciesCollection;
 
   // Properties
-  StringProperty m_histPersName{this, "HistogramPersistency", "", "Name of the Hist Pers type"};
-  StringProperty m_evtsel{this, "EvtSel", "", "Event selector"};
-  BooleanProperty m_warnings{this, "Warnings", true, "Set this property to false to suppress warning messages"};
-  UnsignedIntegerProperty m_max_parallel{this, "MaxAlgosParallel", 1, "Maximum number of parallel running algorithms"};
-  UnsignedIntegerProperty m_evts_parallel{this, "MaxEventsParallel", 1, "Number of events in parallel"};
-  UnsignedIntegerProperty m_num_threads{this, "NumThreads", 1, "Total numbers of threads"};
-  BooleanProperty m_DumpQueues{this, "DumpQueues", false, "Dump the algorithm queues"};
-  BooleanProperty m_CloneAlgorithms{this, "CloneAlgorithms", false, "Clone algorithms to run them simultaneously"};
+  Gaudi::Property<std::string> m_histPersName{this, "HistogramPersistency", "", "Name of the Hist Pers type"};
+  Gaudi::Property<std::string> m_evtsel{this, "EvtSel", "", "Event selector"};
+  Gaudi::Property<bool> m_warnings{this, "Warnings", true, "Set this property to false to suppress warning messages"};
+  Gaudi::Property<unsigned int> m_max_parallel{this, "MaxAlgosParallel", 1,
+                                               "Maximum number of parallel running algorithms"};
+  Gaudi::Property<unsigned int> m_evts_parallel{this, "MaxEventsParallel", 1, "Number of events in parallel"};
+  Gaudi::Property<unsigned int> m_num_threads{this, "NumThreads", 1, "Total numbers of threads"};
+  Gaudi::Property<bool> m_DumpQueues{this, "DumpQueues", false, "Dump the algorithm queues"};
+  Gaudi::Property<bool> m_CloneAlgorithms{this, "CloneAlgorithms", false,
+                                          "Clone algorithms to run them simultaneously"};
   Gaudi::Property<algosDependenciesCollection> m_AlgosDependencies{this, "AlgosDependencies", {}, ""};
 
   /// Reference to the Event Data Service's IDataManagerSvc interface

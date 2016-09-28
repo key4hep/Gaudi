@@ -661,80 +661,80 @@ template <class TYPE, class VERIFIER = Gaudi::Details::Property::NullVerifier,
 using SimplePropertyRef  = Gaudi::Property<TYPE&, VERIFIER, HANDLERS>;
 
 // Typedef Properties for built-in types
-typedef SimpleProperty<bool> BooleanProperty;
-typedef SimpleProperty<char> CharProperty;
-typedef SimpleProperty<signed char> SignedCharProperty;
-typedef SimpleProperty<unsigned char> UnsignedCharProperty;
-typedef SimpleProperty<short> ShortProperty;
-typedef SimpleProperty<unsigned short> UnsignedShortProperty;
-typedef SimpleProperty<int> IntegerProperty;
-typedef SimpleProperty<unsigned int> UnsignedIntegerProperty;
-typedef SimpleProperty<long> LongProperty;
-typedef SimpleProperty<unsigned long> UnsignedLongProperty;
-typedef SimpleProperty<long long> LongLongProperty;
-typedef SimpleProperty<unsigned long long> UnsignedLongLongProperty;
-typedef SimpleProperty<float> FloatProperty;
-typedef SimpleProperty<double> DoubleProperty;
-typedef SimpleProperty<long double> LongDoubleProperty;
+typedef Gaudi::Property<bool> BooleanProperty;
+typedef Gaudi::Property<char> CharProperty;
+typedef Gaudi::Property<signed char> SignedCharProperty;
+typedef Gaudi::Property<unsigned char> UnsignedCharProperty;
+typedef Gaudi::Property<short> ShortProperty;
+typedef Gaudi::Property<unsigned short> UnsignedShortProperty;
+typedef Gaudi::Property<int> IntegerProperty;
+typedef Gaudi::Property<unsigned int> UnsignedIntegerProperty;
+typedef Gaudi::Property<long> LongProperty;
+typedef Gaudi::Property<unsigned long> UnsignedLongProperty;
+typedef Gaudi::Property<long long> LongLongProperty;
+typedef Gaudi::Property<unsigned long long> UnsignedLongLongProperty;
+typedef Gaudi::Property<float> FloatProperty;
+typedef Gaudi::Property<double> DoubleProperty;
+typedef Gaudi::Property<long double> LongDoubleProperty;
 
-typedef SimpleProperty<std::string> StringProperty;
+typedef Gaudi::Property<std::string> StringProperty;
 
 // Typedef PropertyRefs for built-in types
-typedef SimplePropertyRef<bool> BooleanPropertyRef;
-typedef SimplePropertyRef<char> CharPropertyRef;
-typedef SimplePropertyRef<signed char> SignedCharPropertyRef;
-typedef SimplePropertyRef<unsigned char> UnsignedCharPropertyRef;
-typedef SimplePropertyRef<short> ShortPropertyRef;
-typedef SimplePropertyRef<unsigned short> UnsignedShortPropertyRef;
-typedef SimplePropertyRef<int> IntegerPropertyRef;
-typedef SimplePropertyRef<unsigned int> UnsignedIntegerPropertyRef;
-typedef SimplePropertyRef<long> LongPropertyRef;
-typedef SimplePropertyRef<unsigned long> UnsignedLongPropertyRef;
-typedef SimplePropertyRef<long long> LongLongPropertyRef;
-typedef SimplePropertyRef<unsigned long long> UnsignedLongLongPropertyRef;
-typedef SimplePropertyRef<float> FloatPropertyRef;
-typedef SimplePropertyRef<double> DoublePropertyRef;
-typedef SimplePropertyRef<long double> LongDoublePropertyRef;
+typedef Gaudi::Property<bool&> BooleanPropertyRef;
+typedef Gaudi::Property<char&> CharPropertyRef;
+typedef Gaudi::Property<signed char&> SignedCharPropertyRef;
+typedef Gaudi::Property<unsigned char&> UnsignedCharPropertyRef;
+typedef Gaudi::Property<short&> ShortPropertyRef;
+typedef Gaudi::Property<unsigned short&> UnsignedShortPropertyRef;
+typedef Gaudi::Property<int&> IntegerPropertyRef;
+typedef Gaudi::Property<unsigned int&> UnsignedIntegerPropertyRef;
+typedef Gaudi::Property<long&> LongPropertyRef;
+typedef Gaudi::Property<unsigned long&> UnsignedLongPropertyRef;
+typedef Gaudi::Property<long long&> LongLongPropertyRef;
+typedef Gaudi::Property<unsigned long long&> UnsignedLongLongPropertyRef;
+typedef Gaudi::Property<float&> FloatPropertyRef;
+typedef Gaudi::Property<double&> DoublePropertyRef;
+typedef Gaudi::Property<long double&> LongDoublePropertyRef;
 
-typedef SimplePropertyRef<std::string> StringPropertyRef;
+typedef Gaudi::Property<std::string&> StringPropertyRef;
 
 // Typedef "Arrays" of Properties for built-in types
-typedef SimpleProperty<std::vector<bool>> BooleanArrayProperty;
-typedef SimpleProperty<std::vector<char>> CharArrayProperty;
-typedef SimpleProperty<std::vector<signed char>> SignedCharArrayProperty;
-typedef SimpleProperty<std::vector<unsigned char>> UnsignedCharArrayProperty;
-typedef SimpleProperty<std::vector<short>> ShortArrayProperty;
-typedef SimpleProperty<std::vector<unsigned short>> UnsignedShortArrayProperty;
-typedef SimpleProperty<std::vector<int>> IntegerArrayProperty;
-typedef SimpleProperty<std::vector<unsigned int>> UnsignedIntegerArrayProperty;
-typedef SimpleProperty<std::vector<long>> LongArrayProperty;
-typedef SimpleProperty<std::vector<unsigned long>> UnsignedLongArrayProperty;
-typedef SimpleProperty<std::vector<long long>> LongLongArrayProperty;
-typedef SimpleProperty<std::vector<unsigned long long>> UnsignedLongLongArrayProperty;
-typedef SimpleProperty<std::vector<float>> FloatArrayProperty;
-typedef SimpleProperty<std::vector<double>> DoubleArrayProperty;
-typedef SimpleProperty<std::vector<long double>> LongDoubleArrayProperty;
+typedef Gaudi::Property<std::vector<bool>> BooleanArrayProperty;
+typedef Gaudi::Property<std::vector<char>> CharArrayProperty;
+typedef Gaudi::Property<std::vector<signed char>> SignedCharArrayProperty;
+typedef Gaudi::Property<std::vector<unsigned char>> UnsignedCharArrayProperty;
+typedef Gaudi::Property<std::vector<short>> ShortArrayProperty;
+typedef Gaudi::Property<std::vector<unsigned short>> UnsignedShortArrayProperty;
+typedef Gaudi::Property<std::vector<int>> IntegerArrayProperty;
+typedef Gaudi::Property<std::vector<unsigned int>> UnsignedIntegerArrayProperty;
+typedef Gaudi::Property<std::vector<long>> LongArrayProperty;
+typedef Gaudi::Property<std::vector<unsigned long>> UnsignedLongArrayProperty;
+typedef Gaudi::Property<std::vector<long long>> LongLongArrayProperty;
+typedef Gaudi::Property<std::vector<unsigned long long>> UnsignedLongLongArrayProperty;
+typedef Gaudi::Property<std::vector<float>> FloatArrayProperty;
+typedef Gaudi::Property<std::vector<double>> DoubleArrayProperty;
+typedef Gaudi::Property<std::vector<long double>> LongDoubleArrayProperty;
 
-typedef SimpleProperty<std::vector<std::string>> StringArrayProperty;
+typedef Gaudi::Property<std::vector<std::string>> StringArrayProperty;
 
 // Typedef "Arrays" of PropertyRefs for built-in types
-typedef SimplePropertyRef<std::vector<bool>> BooleanArrayPropertyRef;
-typedef SimplePropertyRef<std::vector<char>> CharArrayPropertyRef;
-typedef SimplePropertyRef<std::vector<signed char>> SignedCharArrayPropertyRef;
-typedef SimplePropertyRef<std::vector<unsigned char>> UnsignedCharArrayPropertyRef;
-typedef SimplePropertyRef<std::vector<short>> ShortArrayPropertyRef;
-typedef SimplePropertyRef<std::vector<unsigned short>> UnsignedShortArrayPropertyRef;
-typedef SimplePropertyRef<std::vector<int>> IntegerArrayPropertyRef;
-typedef SimplePropertyRef<std::vector<unsigned int>> UnsignedIntegerArrayPropertyRef;
-typedef SimplePropertyRef<std::vector<long>> LongArrayPropertyRef;
-typedef SimplePropertyRef<std::vector<unsigned long>> UnsignedLongArrayPropertyRef;
-typedef SimplePropertyRef<std::vector<long long>> LongLongArrayPropertyRef;
-typedef SimplePropertyRef<std::vector<unsigned long long>> UnsignedLongLongArrayPropertyRef;
-typedef SimplePropertyRef<std::vector<float>> FloatArrayPropertyRef;
-typedef SimplePropertyRef<std::vector<double>> DoubleArrayPropertyRef;
-typedef SimplePropertyRef<std::vector<long double>> LongDoubleArrayPropertyRef;
+typedef Gaudi::Property<std::vector<bool>&> BooleanArrayPropertyRef;
+typedef Gaudi::Property<std::vector<char>&> CharArrayPropertyRef;
+typedef Gaudi::Property<std::vector<signed char>&> SignedCharArrayPropertyRef;
+typedef Gaudi::Property<std::vector<unsigned char>&> UnsignedCharArrayPropertyRef;
+typedef Gaudi::Property<std::vector<short>&> ShortArrayPropertyRef;
+typedef Gaudi::Property<std::vector<unsigned short>&> UnsignedShortArrayPropertyRef;
+typedef Gaudi::Property<std::vector<int>&> IntegerArrayPropertyRef;
+typedef Gaudi::Property<std::vector<unsigned int>&> UnsignedIntegerArrayPropertyRef;
+typedef Gaudi::Property<std::vector<long>&> LongArrayPropertyRef;
+typedef Gaudi::Property<std::vector<unsigned long>&> UnsignedLongArrayPropertyRef;
+typedef Gaudi::Property<std::vector<long long>&> LongLongArrayPropertyRef;
+typedef Gaudi::Property<std::vector<unsigned long long>&> UnsignedLongLongArrayPropertyRef;
+typedef Gaudi::Property<std::vector<float>&> FloatArrayPropertyRef;
+typedef Gaudi::Property<std::vector<double>&> DoubleArrayPropertyRef;
+typedef Gaudi::Property<std::vector<long double>&> LongDoubleArrayPropertyRef;
 
-typedef SimplePropertyRef<std::vector<std::string>> StringArrayPropertyRef;
+typedef Gaudi::Property<std::vector<std::string>&> StringArrayPropertyRef;
 
 /// Helper class to simplify the migration old properties deriving directly from
 /// PropertyBase.
@@ -1187,7 +1187,7 @@ namespace Gaudi
      *
      *  IProperty* component = ... ;
      *
-     *  SimpleProperty<std::vector<int> > m_data = ... ;
+     *  Gaudi::Property<std::vector<int> > m_data = ... ;
      *
      *  StatusCode sc = setProperty ( component , "Data" ,  prop  ) ;
      *
@@ -1203,7 +1203,7 @@ namespace Gaudi
      * @date 2007-05-13
      */
     template <class TYPE>
-    StatusCode setProperty( IProperty* component, const std::string& name, const SimpleProperty<TYPE>& value,
+    StatusCode setProperty( IProperty* component, const std::string& name, const Gaudi::Property<TYPE>& value,
                             const std::string& doc = "" )
     {
       return setProperty( component, name, &value, doc );
@@ -1348,7 +1348,7 @@ namespace Gaudi
      *
      *  IInterface* component = ... ;
      *
-     *  SimpleProperty<std::vector<int> > m_data = ... ;
+     *  Gaudi::Property<std::vector<int> > m_data = ... ;
      *
      *  StatusCode sc = setProperty ( component , "Data" ,  prop  ) ;
      *
@@ -1364,7 +1364,7 @@ namespace Gaudi
      * @date 2007-05-13
      */
     template <class TYPE>
-    StatusCode setProperty( IInterface* component, const std::string& name, const SimpleProperty<TYPE>& value,
+    StatusCode setProperty( IInterface* component, const std::string& name, const Gaudi::Property<TYPE>& value,
                             const std::string& doc = "" )
     {
       return setProperty( component, name, &value, doc );

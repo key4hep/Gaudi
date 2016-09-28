@@ -140,43 +140,45 @@ private:
   /// level of info printing
   MSG::Level m_statPrintLevel = MSG::INFO;
 
-  BooleanProperty m_chronoTableFlag{this, "ChronoPrintOutTable", true,
-                                    "decide if the final printout should be performed"};
-  BooleanProperty m_chronoCoutFlag{this, "ChronoDestinationCout", false,
-                                   "define the destination of the table to be printed"};
-  IntegerProperty m_intChronoPrintLevel{this, "ChronoPrintLevel", MSG::INFO, "print level"};
-  BooleanProperty m_chronoOrderFlag{this, "ChronoTableToBeOrdered", true, "should the printout be ordered"};
-  BooleanProperty m_printUserTime{this, "PrintUserTime", true};
-  BooleanProperty m_printSystemTime{this, "PrintSystemTime", false};
-  BooleanProperty m_printEllapsedTime{this, "PrintEllapsedTime", false};
-  BooleanProperty m_statTableFlag{this, "StatPrintOutTable", true, "decide if the final printout should be performed"};
-  BooleanProperty m_statCoutFlag{this, "StatDestinationCout", false,
-                                 "define the destination of the table to be printed"};
-  IntegerProperty m_intStatPrintLevel{this, "StatPrintLevel", MSG::INFO, "print level"};
-  BooleanProperty m_statOrderFlag{this, "StatTableToBeOrdered", true, "should the printout be ordered"};
+  Gaudi::Property<bool> m_chronoTableFlag{this, "ChronoPrintOutTable", true,
+                                          "decide if the final printout should be performed"};
+  Gaudi::Property<bool> m_chronoCoutFlag{this, "ChronoDestinationCout", false,
+                                         "define the destination of the table to be printed"};
+  Gaudi::Property<int> m_intChronoPrintLevel{this, "ChronoPrintLevel", MSG::INFO, "print level"};
+  Gaudi::Property<bool> m_chronoOrderFlag{this, "ChronoTableToBeOrdered", true, "should the printout be ordered"};
+  Gaudi::Property<bool> m_printUserTime{this, "PrintUserTime", true};
+  Gaudi::Property<bool> m_printSystemTime{this, "PrintSystemTime", false};
+  Gaudi::Property<bool> m_printEllapsedTime{this, "PrintEllapsedTime", false};
+  Gaudi::Property<bool> m_statTableFlag{this, "StatPrintOutTable", true,
+                                        "decide if the final printout should be performed"};
+  Gaudi::Property<bool> m_statCoutFlag{this, "StatDestinationCout", false,
+                                       "define the destination of the table to be printed"};
+  Gaudi::Property<int> m_intStatPrintLevel{this, "StatPrintLevel", MSG::INFO, "print level"};
+  Gaudi::Property<bool> m_statOrderFlag{this, "StatTableToBeOrdered", true, "should the printout be ordered"};
 
   Gaudi::Property<long> m_numberOfSkippedEventsForMemStat{
       this, "NumberOfSkippedEventsForMemStat", -1,
       "specify the number of events to be skipped by the memory auditor in order to better spot memory leak"};
 
-  StringProperty m_statsOutFileName{
+  Gaudi::Property<std::string> m_statsOutFileName{
       this, "AsciiStatsOutputFile", "",
       "Name of the output file storing the stats. If empty, no statistics will be saved (default)"};
 
-  StringProperty m_header{
+  Gaudi::Property<std::string> m_header{
       this, "StatTableHeader",
       "     Counter     |     #     |    sum     | mean/eff^* | rms/err^*  |     min     |     max     |",
       "The header row for the output Stat-table"};
-  StringProperty m_format1{this, "RegularRowFormat",
-                           " %|-15.15s|%|17t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |",
-                           "The format for the regular row in the output Stat-table"};
-  StringProperty m_format2{this, "EfficiencyRowFormat",
-                           "*%|-15.15s|%|17t||%|10d| |%|11.5g| |(%|#9.7g| +- %|-#9.7g|)%%|   -------   |   -------   |",
-                           "The format for the regular row in the output Stat-table"};
-  BooleanProperty m_useEffFormat{this, "UseEfficiencyRowFormat", true,
-                                 "Use the special format for printout of efficiency counters"};
+  Gaudi::Property<std::string> m_format1{
+      this, "RegularRowFormat", " %|-15.15s|%|17t||%|10d| |%|11.7g| |%|#11.5g| |%|#11.5g| |%|#12.5g| |%|#12.5g| |",
+      "The format for the regular row in the output Stat-table"};
+  Gaudi::Property<std::string> m_format2{
+      this, "EfficiencyRowFormat",
+      "*%|-15.15s|%|17t||%|10d| |%|11.5g| |(%|#9.7g| +- %|-#9.7g|)%%|   -------   |   -------   |",
+      "The format for the regular row in the output Stat-table"};
+  Gaudi::Property<bool> m_useEffFormat{this, "UseEfficiencyRowFormat", true,
+                                       "Use the special format for printout of efficiency counters"};
 
-  StringProperty m_perEventFile{this, "PerEventFile", "", "File name for per-event deltas"};
+  Gaudi::Property<std::string> m_perEventFile{this, "PerEventFile", "", "File name for per-event deltas"};
 
   typedef std::map<ChronoTag, std::vector<IChronoSvc::ChronoTime>> TimeMap;
   TimeMap m_perEvtTime;

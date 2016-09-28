@@ -127,15 +127,15 @@ StatusCode ExtendedProperties::execute()
   always() << " \t" << m_24 << endmsg;
 
   // some properties could be created from other (convertible) types:
-  SimpleProperty<short> m1( "a", 0 );
-  SimpleProperty<double> m2( "b", m1 );
+  Gaudi::Property<short> m1( "a", 0 );
+  Gaudi::Property<double> m2( "b", m1 );
 
   // some properties could be assigned from other (convertible) types
-  SimpleProperty<int> m3( "c", 0 );
+  Gaudi::Property<int> m3( "c", 0 );
   m3 = m1;
 
   float i = 10;
-  SimplePropertyRef<float> m4( "d", i );
+  Gaudi::Property<float&> m4( "d", i );
 
   m4 = 12;
 

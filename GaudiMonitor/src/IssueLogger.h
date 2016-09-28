@@ -24,10 +24,10 @@ public:
   void report( const IssueSeverity& err ) override;
 
 private:
-  StringArrayProperty m_outputfile{this, "Output"};
-  StringProperty m_reportLevelS{this, "ReportLevel", "WARNING"};
-  StringProperty m_traceLevelS{this, "TracebackLevel", "ERROR"};
-  BooleanProperty m_showTime{this, "ShowTime", false};
+  Gaudi::Property<std::vector<std::string>> m_outputfile{this, "Output"};
+  Gaudi::Property<std::string> m_reportLevelS{this, "ReportLevel", "WARNING"};
+  Gaudi::Property<std::string> m_traceLevelS{this, "TracebackLevel", "ERROR"};
+  Gaudi::Property<bool> m_showTime{this, "ShowTime", false};
 
   IssueSeverity::Level m_reportLevel, m_traceLevel;
 

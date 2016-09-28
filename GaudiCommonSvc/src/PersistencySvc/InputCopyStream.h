@@ -1,7 +1,6 @@
 #ifndef GAUDISVC_PERSISTENCYSVC_INPUTCOPYSTREAM_H
 #define GAUDISVC_PERSISTENCYSVC_INPUTCOPYSTREAM_H
 
-
 // Required for inheritance
 #include "OutputStream.h"
 
@@ -21,9 +20,8 @@ class InputCopyStream : public OutputStream
 {
 
 public:
-
   /// Standard algorithm Constructor
-  InputCopyStream(const std::string& name, ISvcLocator* pSvcLocator);
+  InputCopyStream( const std::string& name, ISvcLocator* pSvcLocator );
 
   /// Standard Destructor
   ~InputCopyStream() override = default;
@@ -38,17 +36,14 @@ public:
   StatusCode collectObjects() override;
 
 private:
-
   /// Pointer to the (public) tool used to retrieve the objects in a file.
-  IDataStoreLeaves *m_leavesTool = nullptr;
+  IDataStoreLeaves* m_leavesTool = nullptr;
 
-  StringArrayProperty m_tesVetoList{this, "TESVetoList", {}, "names of TES locations to Veto"};
+  Gaudi::Property<std::vector<std::string>> m_tesVetoList{this, "TESVetoList", {}, "names of TES locations to Veto"};
 
 protected:
-
   /// Overridden from the base class (InputCopyStream has always input).
   bool hasInput() const override { return true; }
-
 };
 
 #endif // GAUDISVC_PERSISTENCYSVC_INPUTCOPYSTREAM_H

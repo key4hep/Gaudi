@@ -14,23 +14,21 @@
  *  @date   2004-03-08
  */
 
-class TestToolAlg : public GaudiAlgorithm {
+class TestToolAlg : public GaudiAlgorithm
+{
 
 public:
-
   /// Standard constructor
   using GaudiAlgorithm::GaudiAlgorithm;
 
   ~TestToolAlg() override = default; ///< Destructor
 
-  StatusCode initialize() override;    ///< Algorithm initialization
-  StatusCode execute   () override;    ///< Algorithm execution
-  StatusCode finalize  () override;    ///< Algorithm finalization
+  StatusCode initialize() override; ///< Algorithm initialization
+  StatusCode execute() override;    ///< Algorithm execution
+  StatusCode finalize() override;   ///< Algorithm finalization
 
 private:
-
-  StringArrayProperty m_tools{this, "Tools", {}, "list of tools to test"};
-
+  Gaudi::Property<std::vector<std::string>> m_tools{this, "Tools", {}, "list of tools to test"};
 };
 
 #endif // TESTTOOLALG_H

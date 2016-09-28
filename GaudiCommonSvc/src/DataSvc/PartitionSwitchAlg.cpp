@@ -5,10 +5,10 @@
 //	Author    : Markus Frank
 //
 //	====================================================================
-#include "GaudiKernel/IPartitionControl.h"
 #include "GaudiKernel/Algorithm.h"
-#include "GaudiKernel/IToolSvc.h"
 #include "GaudiKernel/IAlgTool.h"
+#include "GaudiKernel/IPartitionControl.h"
+#include "GaudiKernel/IToolSvc.h"
 #include "GaudiKernel/SmartIF.h"
 
 /**@class PartitionSwitchAlg
@@ -21,16 +21,16 @@
   * @version: 1.0
   */
 
-class PartitionSwitchAlg : public extends<Algorithm,
-                                          IPartitionControl> {
+class PartitionSwitchAlg : public extends<Algorithm, IPartitionControl>
+{
 
   using STATUS = StatusCode;
-  using CSTR = const std::string&;
+  using CSTR   = const std::string&;
 
 private:
-
-  StringProperty m_partName{this, "Partition", "", "option to set the requested partition name"};
-  StringProperty m_toolType{this, "Tool", "PartitionSwitchTool", "option to set the tool manipulating the multi-service name"};
+  Gaudi::Property<std::string> m_partName{this, "Partition", "", "option to set the requested partition name"};
+  Gaudi::Property<std::string> m_toolType{this, "Tool", "PartitionSwitchTool",
+                                          "option to set the tool manipulating the multi-service name"};
 
   /// reference to Partition Controller
   IPartitionControl* m_actor = nullptr;
@@ -42,102 +42,114 @@ public:
   ~PartitionSwitchAlg() override = default;
 
   /// Initialize
-  STATUS initialize() override  {
-    SmartIF<IAlgTool> tool(m_actor);
-    STATUS sc = toolSvc()->retrieveTool(m_toolType,m_actor,this);
+  STATUS initialize() override
+  {
+    SmartIF<IAlgTool> tool( m_actor );
+    STATUS sc = toolSvc()->retrieveTool( m_toolType, m_actor, this );
     if ( sc.isFailure() ) {
-      error() << "Unable to load PartitionSwitchTool "
-          << m_toolType << endmsg;
+      error() << "Unable to load PartitionSwitchTool " << m_toolType << endmsg;
       return sc;
     }
     /// Release old tool
-    if ( tool ) toolSvc()->releaseTool(tool);
+    if ( tool ) toolSvc()->releaseTool( tool );
     /// Now check if the partition is present. If not: try to create it
     IInterface* partititon = nullptr;
-    sc = m_actor->get(m_partName, partititon);
-    if ( !sc.isSuccess() )  {
-      error() << "Cannot access partition \""
-          << m_partName << "\"" << endmsg;
+    sc                     = m_actor->get( m_partName, partititon );
+    if ( !sc.isSuccess() ) {
+      error() << "Cannot access partition \"" << m_partName << "\"" << endmsg;
     }
     return sc;
   }
 
   /// Finalize
-  STATUS finalize()  override {
-    SmartIF<IAlgTool> tool(m_actor);
-    if ( tool ) toolSvc()->releaseTool(tool);
+  STATUS finalize() override
+  {
+    SmartIF<IAlgTool> tool( m_actor );
+    if ( tool ) toolSvc()->releaseTool( tool );
     m_actor = nullptr;
     return STATUS::SUCCESS;
   }
 
   /// Execute procedure
-  STATUS execute()  override {
-    if ( m_actor )  {
-      STATUS sc = m_actor->activate(m_partName);
-      if ( !sc.isSuccess() )  {
-        error() << "Cannot activate partition \""
-            << m_partName << "\"!" << endmsg;
+  STATUS execute() override
+  {
+    if ( m_actor ) {
+      STATUS sc = m_actor->activate( m_partName );
+      if ( !sc.isSuccess() ) {
+        error() << "Cannot activate partition \"" << m_partName << "\"!" << endmsg;
       }
       return sc;
     }
-    error() << "The partition control tool \"" << name()
-        << "." << m_toolType << "\" cannot be accessed!" << endmsg;
+    error() << "The partition control tool \"" << name() << "." << m_toolType << "\" cannot be accessed!" << endmsg;
     return STATUS::FAILURE;
   }
+
 private:
-  StatusCode log_(StatusCode sc, const std::string& msg)  const {
+  StatusCode log_( StatusCode sc, const std::string& msg ) const
+  {
     error() << msg << " Status=" << sc.getCode() << endmsg;
     return sc;
   }
-  template < typename...FArgs, typename...Args>
-  StatusCode fwd_( StatusCode (IPartitionControl::*fun)(FArgs...),Args&&... args) {
-       return m_actor ? (m_actor->*fun)(std::forward<Args>(args)...) : NO_INTERFACE;
+  template <typename... FArgs, typename... Args>
+  StatusCode fwd_( StatusCode ( IPartitionControl::*fun )( FArgs... ), Args&&... args )
+  {
+    return m_actor ? ( m_actor->*fun )( std::forward<Args>( args )... ) : NO_INTERFACE;
   }
-  template < typename...FArgs, typename...Args>
-  StatusCode fwd_( StatusCode (IPartitionControl::*fun)(FArgs...) const,Args&&... args) const {
-       return m_actor ? (m_actor->*fun)(std::forward<Args>(args)...) : NO_INTERFACE;
+  template <typename... FArgs, typename... Args>
+  StatusCode fwd_( StatusCode ( IPartitionControl::*fun )( FArgs... ) const, Args&&... args ) const
+  {
+    return m_actor ? ( m_actor->*fun )( std::forward<Args>( args )... ) : NO_INTERFACE;
   }
+
 public:
   /// Create a partition object. The name identifies the partition uniquely
-  STATUS create(CSTR nam, CSTR typ)  override {
-    auto sc = fwd_<CSTR,CSTR>(&IPartitionControl::create,nam,typ);
-    return sc.isSuccess() ? sc : log_(sc, "Cannot create partition: "+nam+" of type "+typ);
+  STATUS create( CSTR nam, CSTR typ ) override
+  {
+    auto sc = fwd_<CSTR, CSTR>( &IPartitionControl::create, nam, typ );
+    return sc.isSuccess() ? sc : log_( sc, "Cannot create partition: " + nam + " of type " + typ );
   }
   /// Create a partition object. The name identifies the partition uniquely
-  STATUS create(CSTR nam, CSTR typ, IInterface*& pPartition)  override {
-    auto sc = fwd_<CSTR,CSTR,IInterface*&>(&IPartitionControl::create,nam,typ,pPartition);
-    return sc.isSuccess() ? sc : log_(sc, "Cannot create partition: "+nam+" of type "+typ);
+  STATUS create( CSTR nam, CSTR typ, IInterface*& pPartition ) override
+  {
+    auto sc = fwd_<CSTR, CSTR, IInterface*&>( &IPartitionControl::create, nam, typ, pPartition );
+    return sc.isSuccess() ? sc : log_( sc, "Cannot create partition: " + nam + " of type " + typ );
   }
   /// Drop a partition object. The name identifies the partition uniquely
-  STATUS drop(CSTR nam)  override {
-    auto sc = fwd_<CSTR>(&IPartitionControl::drop,nam);
-    return  sc.isSuccess() ? sc : log_(sc, "Cannot drop partition: "+nam);
+  STATUS drop( CSTR nam ) override
+  {
+    auto sc = fwd_<CSTR>( &IPartitionControl::drop, nam );
+    return sc.isSuccess() ? sc : log_( sc, "Cannot drop partition: " + nam );
   }
   /// Drop a partition object. The name identifies the partition uniquely
-  STATUS drop(IInterface* pPartition)  override {
-    auto sc = fwd_<IInterface*>(&IPartitionControl::drop,pPartition);
-    return sc.isSuccess() ? sc : log_(sc, "Cannot drop partition by Interface.");
+  STATUS drop( IInterface* pPartition ) override
+  {
+    auto sc = fwd_<IInterface*>( &IPartitionControl::drop, pPartition );
+    return sc.isSuccess() ? sc : log_( sc, "Cannot drop partition by Interface." );
   }
   /// Activate a partition object. The name identifies the partition uniquely.
-  STATUS activate(CSTR nam)  override {
-    auto sc = fwd_<CSTR>(&IPartitionControl::activate,nam);
-    return sc.isSuccess() ? sc : log_(sc, "Cannot activate partition: "+nam);
+  STATUS activate( CSTR nam ) override
+  {
+    auto sc = fwd_<CSTR>( &IPartitionControl::activate, nam );
+    return sc.isSuccess() ? sc : log_( sc, "Cannot activate partition: " + nam );
   }
   /// Activate a partition object.
-  STATUS activate(IInterface* pPartition)  override {
-    auto sc = fwd_<IInterface*>(&IPartitionControl::activate, pPartition);
-    return sc.isSuccess() ? sc : log_(sc, "Cannot activate partition by Interface.");
+  STATUS activate( IInterface* pPartition ) override
+  {
+    auto sc = fwd_<IInterface*>( &IPartitionControl::activate, pPartition );
+    return sc.isSuccess() ? sc : log_( sc, "Cannot activate partition by Interface." );
   }
   /// Access a partition object. The name identifies the partition uniquely.
-  STATUS get(CSTR nam, IInterface*& pPartition) const override {
-    auto sc = fwd_<CSTR,IInterface*&>(&IPartitionControl::get, nam, pPartition);
-    return sc.isSuccess() ? sc : log_(sc, "Cannot get partition "+nam);
+  STATUS get( CSTR nam, IInterface*& pPartition ) const override
+  {
+    auto sc = fwd_<CSTR, IInterface*&>( &IPartitionControl::get, nam, pPartition );
+    return sc.isSuccess() ? sc : log_( sc, "Cannot get partition " + nam );
   }
   /// Access the active partition object.
-  STATUS activePartition(std::string& nam, IInterface*& pPartition) const override {
-    auto sc = fwd_<std::string&,IInterface*&>(&IPartitionControl::activePartition,nam,pPartition);
-    return sc.isSuccess() ? sc : log_(sc, "Cannot determine active partition.");
+  STATUS activePartition( std::string& nam, IInterface*& pPartition ) const override
+  {
+    auto sc = fwd_<std::string&, IInterface*&>( &IPartitionControl::activePartition, nam, pPartition );
+    return sc.isSuccess() ? sc : log_( sc, "Cannot determine active partition." );
   }
 };
 
-DECLARE_COMPONENT(PartitionSwitchAlg)
+DECLARE_COMPONENT( PartitionSwitchAlg )

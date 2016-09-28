@@ -85,9 +85,9 @@ private:
   typedef DataHistMap::iterator DHMitr;
   typedef DataHistMap::const_iterator DHMCitr;
 
-  BooleanProperty m_dump{this, "Dump", false};
-  BooleanProperty m_activate{this, "Activate", true};
-  StringProperty m_outputFile{this, "OutputFile"};
+  Gaudi::Property<bool> m_dump{this, "Dump", false};
+  Gaudi::Property<bool> m_activate{this, "Activate", true};
+  Gaudi::Property<std::string> m_outputFile{this, "OutputFile"};
 
   void clearState();
 

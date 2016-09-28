@@ -30,14 +30,15 @@
 class StoreExplorerAlg : public Algorithm
 {
 
-  BooleanProperty m_load{this, "Load", false, "load non existing items"};
+  Gaudi::Property<bool> m_load{this, "Load", false, "load non existing items"};
   Gaudi::Property<long> m_print{this, "PrintEvt", 1, "limit printout to first N events"};
   Gaudi::Property<long> m_printMissing{this, "PrintMissing", 0, "indicate if missing entities should be printed"};
-  DoubleProperty m_frequency{this, "PrintFreq", 0.0, "printout frequency"};
-  BooleanProperty m_exploreRelations{this, "ExploreRelations", false, "if relations should be followed"};
-  StringProperty m_dataSvcName{this, "DataSvc", "EventDataSvc", "name of the data provider service"};
-  BooleanProperty m_testAccess{this, "TestAccess", false, "test access to objects (DataObject and ContainedObject)"};
-  BooleanProperty m_accessForeign{this, "AccessForeign", false, "indicate if foreign files should be opened"};
+  Gaudi::Property<double> m_frequency{this, "PrintFreq", 0.0, "printout frequency"};
+  Gaudi::Property<bool> m_exploreRelations{this, "ExploreRelations", false, "if relations should be followed"};
+  Gaudi::Property<std::string> m_dataSvcName{this, "DataSvc", "EventDataSvc", "name of the data provider service"};
+  Gaudi::Property<bool> m_testAccess{this, "TestAccess", false,
+                                     "test access to objects (DataObject and ContainedObject)"};
+  Gaudi::Property<bool> m_accessForeign{this, "AccessForeign", false, "indicate if foreign files should be opened"};
 
   /// Internal counter to trigger printouts
   long m_total = 0;

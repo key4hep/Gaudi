@@ -61,11 +61,11 @@ public:
                                                  const std::string& doc = "none" );
   /// Declare a property (specialization)
   template <class TYPE>
-  Gaudi::Details::PropertyBase* declareProperty( const std::string& name, SimpleProperty<TYPE>& prop,
+  Gaudi::Details::PropertyBase* declareProperty( const std::string& name, Gaudi::Property<TYPE>& prop,
                                                  const std::string& doc = "none" );
   /// Declare a property (specialization)
   template <class TYPE>
-  Gaudi::Details::PropertyBase* declareProperty( const std::string& name, SimplePropertyRef<TYPE>& prop,
+  Gaudi::Details::PropertyBase* declareProperty( const std::string& name, Gaudi::Property<TYPE&>& prop,
                                                  const std::string& doc = "none" );
   // partial specializations for various GaudiHandles
   /// Declare a property (specialization)
@@ -172,7 +172,7 @@ inline Gaudi::Details::PropertyBase* PropertyMgr::declareProperty( const std::st
                                                                    const std::string& doc )
 {
   assertUniqueName( name );
-  m_todelete.emplace_back( new SimplePropertyRef<TYPE>( name, value ) );
+  m_todelete.emplace_back( new Gaudi::Property<TYPE&>( name, value ) );
   Gaudi::Details::PropertyBase* p = m_todelete.back().get();
   //
   p->setDocumentation( doc );
@@ -184,7 +184,7 @@ inline Gaudi::Details::PropertyBase* PropertyMgr::declareProperty( const std::st
 /// Declare a property (templated)
 // ============================================================================
 template <class TYPE>
-inline Gaudi::Details::PropertyBase* PropertyMgr::declareProperty( const std::string& name, SimpleProperty<TYPE>& prop,
+inline Gaudi::Details::PropertyBase* PropertyMgr::declareProperty( const std::string& name, Gaudi::Property<TYPE>& prop,
                                                                    const std::string& doc )
 {
   assertUniqueName( name );
@@ -201,7 +201,7 @@ inline Gaudi::Details::PropertyBase* PropertyMgr::declareProperty( const std::st
 // ============================================================================
 template <class TYPE>
 inline Gaudi::Details::PropertyBase*
-PropertyMgr::declareProperty( const std::string& name, SimplePropertyRef<TYPE>& prop, const std::string& doc )
+PropertyMgr::declareProperty( const std::string& name, Gaudi::Property<TYPE&>& prop, const std::string& doc )
 {
   assertUniqueName( name );
   Gaudi::Details::PropertyBase* p = &prop;

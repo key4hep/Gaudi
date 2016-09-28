@@ -3,15 +3,16 @@
 
 // Include files
 #include "GaudiAlg/GaudiAlgorithm.h"
-#include "GaudiKernel/Property.h"
 #include "GaudiKernel/MsgStream.h"
+#include "GaudiKernel/Property.h"
 
 /** @class ParentAlg
     Trivial Algorithm for tutotial purposes
 
     @author nobody
 */
-class StopperAlg : public GaudiAlgorithm {
+class StopperAlg : public GaudiAlgorithm
+{
 public:
   /// Constructor of this form must be provided
   using GaudiAlgorithm::GaudiAlgorithm;
@@ -20,8 +21,9 @@ public:
   StatusCode initialize() override;
   StatusCode execute() override;
   StatusCode finalize() override;
+
 private:
-  IntegerProperty m_stopcount{this, "StopCount", 3};
+  Gaudi::Property<int> m_stopcount{this, "StopCount", 3};
 };
 
-#endif    // GAUDIEXAMPLE_STOPPERALG_H
+#endif // GAUDIEXAMPLE_STOPPERALG_H

@@ -2,9 +2,8 @@
 #define DATASVC_RECORDDATASVC_H
 
 #include "GaudiKernel/DataSvc.h"
-#include "GaudiKernel/IIncidentListener.h"
 #include "GaudiKernel/IConversionSvc.h"
-
+#include "GaudiKernel/IIncidentListener.h"
 
 /** @class RecordDataSvc RecordDataSvc.h
  *
@@ -22,34 +21,35 @@
  *   @author  M.Frank
  *   @version 1.0
  */
-class RecordDataSvc  : public extends<DataSvc,
-                                      IIncidentListener> {
- public:
+class RecordDataSvc : public extends<DataSvc, IIncidentListener>
+{
+public:
   StatusCode initialize() override;
   StatusCode finalize() override;
 
   /// IIncidentListener override: Inform that a new incident has occured
-  void handle(const Incident& incident) override;
+  void handle( const Incident& incident ) override;
 
   /// Standard Constructor
-  RecordDataSvc(const std::string& name, ISvcLocator* svc);
+  RecordDataSvc( const std::string& name, ISvcLocator* svc );
 
   /// Standard Destructor
   ~RecordDataSvc() override = default;
 
- protected:
+protected:
   /// Load new record into the data store if necessary
-  void registerRecord(const std::string& data, IOpaqueAddress* pAddr);
+  void registerRecord( const std::string& data, IOpaqueAddress* pAddr );
 
   /// Load dependent records into memory
-  void loadRecords(IRegistry* pReg);
+  void loadRecords( IRegistry* pReg );
 
- protected:
-
-  BooleanProperty m_autoLoad {this, "AutoLoad",  true, "autoload of records"};
-  StringProperty  m_incidentName {this, "IncidentName",  "", "name of incident to be fired if new record arrives"};
-  StringProperty  m_saveIncidentName {this, "SaveIncident",  "SAVE_RECORD", "name of the 'save' incident"};
-  StringProperty  m_persSvcName {this, "PersistencySvc",  "PersistencySvc/RecordPersistencySvc", "name of the persistency service"};
+protected:
+  Gaudi::Property<bool> m_autoLoad{this, "AutoLoad", true, "autoload of records"};
+  Gaudi::Property<std::string> m_incidentName{this, "IncidentName", "",
+                                              "name of incident to be fired if new record arrives"};
+  Gaudi::Property<std::string> m_saveIncidentName{this, "SaveIncident", "SAVE_RECORD", "name of the 'save' incident"};
+  Gaudi::Property<std::string> m_persSvcName{this, "PersistencySvc", "PersistencySvc/RecordPersistencySvc",
+                                             "name of the persistency service"};
 
   /// Pending new file incidents
   std::vector<std::string> m_incidents;

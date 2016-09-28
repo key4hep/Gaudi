@@ -73,9 +73,9 @@ public:
   void saveHistograms() override;
 
 private:
-  IntegerProperty m_shots{this, "Shots", 3500000, "number of shots for CPU normalization"};
-  BooleanProperty m_normalised{this, "Normalised", false, "normalise the time to a nominal PIII"};
-  BooleanProperty m_globalTiming{this, "GlobalTiming", false};
+  Gaudi::Property<int> m_shots{this, "Shots", 3500000, "number of shots for CPU normalization"};
+  Gaudi::Property<bool> m_normalised{this, "Normalised", false, "normalise the time to a nominal PIII"};
+  Gaudi::Property<bool> m_globalTiming{this, "GlobalTiming", false};
   Gaudi::Property<std::string::size_type> m_headerSize{this, "NameSize", 30,
                                                        "number of characters to be used in algorithm name column"};
 

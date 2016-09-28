@@ -23,27 +23,24 @@ class HistoTimingAlg : public GaudiHistoAlg
 {
 
 public:
-
   /// Standard constructor
   using GaudiHistoAlg::GaudiHistoAlg;
 
   ~HistoTimingAlg() override = default; ///< Destructor
 
-  StatusCode initialize() override;    ///< Algorithm initialization
-  StatusCode execute   () override;    ///< Algorithm execution
+  StatusCode initialize() override; ///< Algorithm initialization
+  StatusCode execute() override;    ///< Algorithm execution
 
 private:
-
   Rndm::Numbers m_rand;
 
-  typedef std::map<IHistogram1D*,std::string> HistoMap;
+  typedef std::map<IHistogram1D*, std::string> HistoMap;
 
   HistoMap m_histos;
 
-  BooleanProperty  m_useGaudiAlg {this,  "UseLookup",  false , ""};
-  UnsignedIntegerProperty  m_nHistos {this,  "NumHistos",  20 , ""};
-  UnsignedIntegerProperty  m_nTracks {this,  "NumTracks",  30 , ""};
-
+  Gaudi::Property<bool> m_useGaudiAlg{this, "UseLookup", false, ""};
+  Gaudi::Property<unsigned int> m_nHistos{this, "NumHistos", 20, ""};
+  Gaudi::Property<unsigned int> m_nTracks{this, "NumTracks", 30, ""};
 };
 
 #endif // HISTOGRAMS_HistoTimingAlg_H

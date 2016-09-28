@@ -8,7 +8,8 @@
     Trivial Algorithm for test purposes
     @author nobody
 */
-class DataCreator : public GaudiAlgorithm {
+class DataCreator : public GaudiAlgorithm
+{
 public:
   /// Constructor of this form must be provided
   using GaudiAlgorithm::GaudiAlgorithm;
@@ -17,8 +18,9 @@ public:
   StatusCode initialize() override;
   StatusCode execute() override;
   StatusCode finalize() override;
+
 private:
-  StringProperty m_data{this, "Data", "/Event/Unknown"};
+  Gaudi::Property<std::string> m_data{this, "Data", "/Event/Unknown"};
 };
 
-#endif    // GAUDIEXAMPLE_HELLOWORLD_H
+#endif // GAUDIEXAMPLE_HELLOWORLD_H

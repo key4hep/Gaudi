@@ -3,22 +3,22 @@
 // ============================================================================
 // Include files
 // ============================================================================
-#include "GaudiKernel/IService.h"
-#include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/ServiceLocatorHelper.h"
-#include "GaudiKernel/IProperty.h"
-#include "GaudiKernel/IStateful.h"
-#include "GaudiKernel/PropertyHolder.h"
-#include "GaudiKernel/Property.h"
-#include "GaudiKernel/IAuditorSvc.h"
 #include "GaudiKernel/CommonMessaging.h"
+#include "GaudiKernel/IAuditorSvc.h"
+#include "GaudiKernel/IProperty.h"
+#include "GaudiKernel/IService.h"
+#include "GaudiKernel/IStateful.h"
+#include "GaudiKernel/ISvcLocator.h"
+#include "GaudiKernel/Property.h"
+#include "GaudiKernel/PropertyHolder.h"
+#include "GaudiKernel/ServiceLocatorHelper.h"
 #include "GaudiKernel/SmartIF.h"
-#include <Gaudi/PluginService.h>
 #include "GaudiKernel/ToolHandle.h"
+#include <Gaudi/PluginService.h>
 
 // ============================================================================
-#include <vector>
 #include <mutex>
+#include <vector>
 // ============================================================================
 // Forward declarations
 // ============================================================================
@@ -33,14 +33,11 @@ class ServiceManager;
  *  @author Pere Mato
  *  @author Marco Clemencic
  */
-class GAUDI_API Service: public PropertyHolder<CommonMessaging<implements<IService,
-                                                                       IProperty,
-                                                                       IStateful>>> {
+class GAUDI_API Service : public PropertyHolder<CommonMessaging<implements<IService, IProperty, IStateful>>>
+{
 public:
 #ifndef __REFLEX__
-  typedef Gaudi::PluginService::Factory<IService*,
-                                        const std::string&,
-                                        ISvcLocator*> Factory;
+  typedef Gaudi::PluginService::Factory<IService*, const std::string&, ISvcLocator*> Factory;
 #endif
   friend class ServiceManager;
 
@@ -73,7 +70,7 @@ public:
   StatusCode sysRestart() override;
 
   /** Standard Constructor                       */
-  Service( std::string name, ISvcLocator* svcloc);
+  Service( std::string name, ISvcLocator* svcloc );
   /** Retrieve pointer to service locator        */
   SmartIF<ISvcLocator>& serviceLocator() const override;
 
@@ -85,14 +82,15 @@ public:
   /** Access a service by name, creating it if it doesn't already exist.
   */
   template <class T>
-  StatusCode service( const std::string& name, const T*& psvc, bool createIf = true ) const {
+  StatusCode service( const std::string& name, const T*& psvc, bool createIf = true ) const
+  {
     ISvcLocator& svcLoc = *serviceLocator();
-    auto ptr =
-      ServiceLocatorHelper(svcLoc, *this).service<T>(name, !createIf, // quiet
-                                                     createIf);
-    if (ptr) {
+    auto ptr            = ServiceLocatorHelper( svcLoc, *this )
+                   .service<T>( name, !createIf, // quiet
+                                createIf );
+    if ( ptr ) {
       psvc = ptr.get();
-      const_cast<T*>(psvc)->addRef();
+      const_cast<T*>( psvc )->addRef();
       return StatusCode::SUCCESS;
     }
     // else
@@ -101,10 +99,11 @@ public:
   }
 
   template <class T>
-  StatusCode service( const std::string& name, T*& psvc, bool createIf = true ) const {
-    auto  ptr = service<T>(name,createIf);
-    psvc = ( ptr ? ptr.get() : nullptr );
-    if (psvc) {
+  StatusCode service( const std::string& name, T*& psvc, bool createIf = true ) const
+  {
+    auto ptr = service<T>( name, createIf );
+    psvc     = ( ptr ? ptr.get() : nullptr );
+    if ( psvc ) {
       psvc->addRef();
       return StatusCode::SUCCESS;
     }
@@ -112,80 +111,72 @@ public:
   }
 
   template <typename IFace = IService>
-  SmartIF<IFace> service(const std::string& name, bool createIf = true) const {
-    return ServiceLocatorHelper(*serviceLocator(), *this).
-                               service<IFace>(name, !createIf, // quiet
-                                              createIf);
+  SmartIF<IFace> service( const std::string& name, bool createIf = true ) const
+  {
+    return ServiceLocatorHelper( *serviceLocator(), *this )
+        .service<IFace>( name, !createIf, // quiet
+                         createIf );
   }
 
   /** Access a service by name and type, creating it if it doesn't already exist.
   */
   template <class T>
-  StatusCode service( const std::string& svcType, const std::string& svcName,
-		      T*& psvc) const {
-    return service(svcType + "/" + svcName, psvc);
+  StatusCode service( const std::string& svcType, const std::string& svcName, T*& psvc ) const
+  {
+    return service( svcType + "/" + svcName, psvc );
   }
 
   /** Declare used Private tool
-	 *
-	 *  @param handle ToolHandle<T>
-	 *  @param toolTypeAndName
-	 *  @param parent, default public tool
-	 *  @param create if necessary, default true
-	 */
-	template<class T>
-	StatusCode declarePrivateTool(ToolHandle<T> & handle, std::string toolTypeAndName =
-			"", bool createIf = true) {
+         *
+         *  @param handle ToolHandle<T>
+         *  @param toolTypeAndName
+         *  @param parent, default public tool
+         *  @param create if necessary, default true
+         */
+  template <class T>
+  StatusCode declarePrivateTool( ToolHandle<T>& handle, std::string toolTypeAndName = "", bool createIf = true )
+  {
 
-		if (toolTypeAndName == "")
-			toolTypeAndName = System::typeinfoName(typeid(T));
+    if ( toolTypeAndName == "" ) toolTypeAndName = System::typeinfoName( typeid( T ) );
 
-		StatusCode sc = handle.initialize(toolTypeAndName, this, createIf);
+    StatusCode sc = handle.initialize( toolTypeAndName, this, createIf );
 
-		if (sc.isSuccess()) {
-                  if (UNLIKELY(msgLevel(MSG::DEBUG)))
-			debug() << "Handle for private tool" << toolTypeAndName
-					<< " successfully created and stored." << endmsg;
-		} else {
+    if ( sc.isSuccess() ) {
+      if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) )
+        debug() << "Handle for private tool" << toolTypeAndName << " successfully created and stored." << endmsg;
+    } else {
 
-			error() << "Handle for private tool" << toolTypeAndName
-					<< " could not be created." << endmsg;
-		}
+      error() << "Handle for private tool" << toolTypeAndName << " could not be created." << endmsg;
+    }
 
-		return sc;
+    return sc;
+  }
 
-	}
+  /** Declare used Public tool
+ *
+ *  @param handle ToolHandle<T>
+ *  @param toolTypeAndName
+ *  @param parent, default public tool
+ *  @param create if necessary, default true
+ */
+  template <class T>
+  StatusCode declarePublicTool( ToolHandle<T>& handle, std::string toolTypeAndName = "", bool createIf = true )
+  {
 
-	  /** Declare used Public tool
-	 *
-	 *  @param handle ToolHandle<T>
-	 *  @param toolTypeAndName
-	 *  @param parent, default public tool
-	 *  @param create if necessary, default true
-	 */
-	template<class T>
-	StatusCode declarePublicTool(ToolHandle<T> & handle, std::string toolTypeAndName =
-			"", bool createIf = true) {
+    if ( toolTypeAndName == "" ) toolTypeAndName = System::typeinfoName( typeid( T ) );
 
-		if (toolTypeAndName == "")
-			toolTypeAndName = System::typeinfoName(typeid(T));
+    StatusCode sc = handle.initialize( toolTypeAndName, 0, createIf );
 
-		StatusCode sc = handle.initialize(toolTypeAndName, 0, createIf);
+    if ( sc.isSuccess() ) {
+      if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) )
+        debug() << "Handle for public tool" << toolTypeAndName << " successfully created and stored." << endmsg;
+    } else {
 
+      error() << "Handle for public tool" << toolTypeAndName << " could not be created." << endmsg;
+    }
 
-		if (sc.isSuccess()) {
-                  if (UNLIKELY(msgLevel(MSG::DEBUG)))
-			debug() << "Handle for public tool" << toolTypeAndName
-					<< " successfully created and stored." << endmsg;
-		} else {
-
-			error() << "Handle for public tool" << toolTypeAndName
-					<< " could not be created." << endmsg;
-		}
-
-		return sc;
-
-	}
+    return sc;
+  }
 
   // ==========================================================================
   /** The standard auditor service.May not be invoked before sysInitialize()
@@ -197,70 +188,68 @@ protected:
   /** Standard Destructor                        */
   ~Service() override;
   /** Service state                              */
-  Gaudi::StateMachine::State    m_state = Gaudi::StateMachine::OFFLINE;
+  Gaudi::StateMachine::State m_state = Gaudi::StateMachine::OFFLINE;
   /** Service state                              */
-  Gaudi::StateMachine::State    m_targetState = Gaudi::StateMachine::OFFLINE;
+  Gaudi::StateMachine::State m_targetState = Gaudi::StateMachine::OFFLINE;
 
   /// get the @c Service's output level
-  int  outputLevel() const { return m_outputLevel.value(); }
+  int outputLevel() const { return m_outputLevel.value(); }
 
 private:
-
   void sysInitialize_imp();
   StatusCode m_initSC;
   std::once_flag m_initFlag;
 
   /** Service Name  */
-  std::string   m_name;
+  std::string m_name;
   /** Service Locator reference                  */
   mutable SmartIF<ISvcLocator> m_svcLocator;
-  SmartIF<ISvcManager>  m_svcManager;
+  SmartIF<ISvcManager> m_svcManager;
 
-  void setServiceManager(ISvcManager* ism) override;
+  void setServiceManager( ISvcManager* ism ) override;
 
 protected:
   // Properties
 
-  IntegerProperty m_outputLevel{this, "OutputLevel", MSG::NIL, "output level"};
-  BooleanProperty m_auditInit{this, "AuditServices", false, "[[deprecated]] unused"};
-  BooleanProperty m_auditorInitialize{this, "AuditInitialize", false, "trigger auditor on initialize()"};
-  BooleanProperty m_auditorStart{this, "AuditStart", false, "trigger auditor on start()"};
-  BooleanProperty m_auditorStop{this, "AuditStop", false, "trigger auditor on stop()"};
-  BooleanProperty m_auditorFinalize{this, "AuditFinalize", false, "trigger auditor on finalize()"};
-  BooleanProperty m_auditorReinitialize{this, "AuditReinitialize", false, "trigger auditor on reinitialize()"};
-  BooleanProperty m_auditorRestart{this, "AuditRestart", false, "trigger auditor on restart()"};
-
+  Gaudi::Property<int> m_outputLevel{this, "OutputLevel", MSG::NIL, "output level"};
+  Gaudi::Property<bool> m_auditInit{this, "AuditServices", false, "[[deprecated]] unused"};
+  Gaudi::Property<bool> m_auditorInitialize{this, "AuditInitialize", false, "trigger auditor on initialize()"};
+  Gaudi::Property<bool> m_auditorStart{this, "AuditStart", false, "trigger auditor on start()"};
+  Gaudi::Property<bool> m_auditorStop{this, "AuditStop", false, "trigger auditor on stop()"};
+  Gaudi::Property<bool> m_auditorFinalize{this, "AuditFinalize", false, "trigger auditor on finalize()"};
+  Gaudi::Property<bool> m_auditorReinitialize{this, "AuditReinitialize", false, "trigger auditor on reinitialize()"};
+  Gaudi::Property<bool> m_auditorRestart{this, "AuditRestart", false, "trigger auditor on restart()"};
 
   /** Auditor Service                            */
-  mutable SmartIF<IAuditorSvc>  m_pAuditorSvc;
+  mutable SmartIF<IAuditorSvc> m_pAuditorSvc;
 };
 
 #ifndef GAUDI_NEW_PLUGIN_SERVICE
 template <class T>
-class SvcFactory {
+class SvcFactory
+{
 public:
 #ifndef __REFLEX__
   template <typename S, typename... Args>
-  static typename S::ReturnType create(Args&&... args) {
-    return new T(std::forward<Args>(args)...);
+  static typename S::ReturnType create( Args&&... args )
+  {
+    return new T( std::forward<Args>( args )... );
   }
 #endif
 };
 
 // Macros to declare component factories
-#define DECLARE_SERVICE_FACTORY(x) \
-  DECLARE_FACTORY_WITH_CREATOR(x, SvcFactory< x >, Service::Factory)
-#define DECLARE_NAMED_SERVICE_FACTORY(x, n) \
-  DECLARE_FACTORY_WITH_CREATOR_AND_ID(x, SvcFactory< x >, #n, Service::Factory)
-#define DECLARE_NAMESPACE_SERVICE_FACTORY(n, x) \
-  DECLARE_SERVICE_FACTORY(n::x)
+#define DECLARE_SERVICE_FACTORY( x ) DECLARE_FACTORY_WITH_CREATOR( x, SvcFactory<x>, Service::Factory )
+#define DECLARE_NAMED_SERVICE_FACTORY( x, n )                                                                          \
+  DECLARE_FACTORY_WITH_CREATOR_AND_ID( x, SvcFactory<x>, #n, Service::Factory )
+#define DECLARE_NAMESPACE_SERVICE_FACTORY( n, x ) DECLARE_SERVICE_FACTORY( n::x )
 
 #else
 
 // macros to declare factories
-#define DECLARE_SERVICE_FACTORY(x)              DECLARE_COMPONENT(x)
-#define DECLARE_NAMED_SERVICE_FACTORY(x, n)     DECLARE_COMPONENT_WITH_ID(x, #n)
-#define DECLARE_NAMESPACE_SERVICE_FACTORY(n, x) DECLARE_COMPONENT(n::x)
+#define DECLARE_SERVICE_FACTORY( x ) DECLARE_COMPONENT( x )
+#define DECLARE_NAMED_SERVICE_FACTORY( x, n ) DECLARE_COMPONENT_WITH_ID( x, #n )
+#define DECLARE_NAMESPACE_SERVICE_FACTORY( n, x ) DECLARE_COMPONENT( n::x )
 
 #endif
 

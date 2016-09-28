@@ -50,7 +50,7 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator* pSvcLocator, const s
 {
   // Auditor monitoring properties
   // Initialize the default value from ApplicationMgr AuditAlgorithms
-  BooleanProperty audit( false );
+  Gaudi::Property<bool> audit( false );
   auto appMgr = serviceLocator()->service<IProperty>( "ApplicationMgr" );
   if ( appMgr && appMgr->hasProperty( "AuditAlgorithms" ) ) {
     audit.assign( appMgr->getProperty( "AuditAlgorithms" ) );

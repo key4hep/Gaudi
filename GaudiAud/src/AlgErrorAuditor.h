@@ -12,7 +12,8 @@ class IMessageSvc;
 
     @author David Quarrie
 */
-class AlgErrorAuditor : public Auditor {
+class AlgErrorAuditor : public Auditor
+{
 public:
   using Auditor::Auditor;
   virtual ~AlgErrorAuditor() = default;
@@ -20,20 +21,19 @@ public:
   virtual StatusCode initialize();
   virtual StatusCode finalize();
 
-  virtual void beforeExecute(INamedInterface* alg);
-  virtual void afterExecute(INamedInterface* alg, const StatusCode&);
+  virtual void beforeExecute( INamedInterface* alg );
+  virtual void afterExecute( INamedInterface* alg, const StatusCode& );
+
 private:
+  Gaudi::Property<bool> m_abort{this, "Abort", false, "abort job upon illegal Algorithm return code"};
+  Gaudi::Property<bool> m_throw{this, "Throw", false, "throw GaudiException upon illegal Algorithm return code"};
 
-  BooleanProperty m_abort{this, "Abort", false, "abort job upon illegal Algorithm return code"};
-  BooleanProperty m_throw{this, "Throw", false, "throw GaudiException upon illegal Algorithm return code"};
-
-  void incrMap(const std::string& algName, int level);
+  void incrMap( const std::string& algName, int level );
 
   int m_error = 0;
   int m_fatal = 0;
 
-  std::map <std::string, int> m_algMap[2];
-
+  std::map<std::string, int> m_algMap[2];
 };
 
 #endif

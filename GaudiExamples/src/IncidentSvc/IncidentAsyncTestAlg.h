@@ -8,7 +8,7 @@ class IIncidentSvc;
 class IncidentListener;
 class IIncidentAsyncTestSvc;
 
-class IncidentAsyncTestAlg: public Algorithm
+class IncidentAsyncTestAlg : public Algorithm
 {
 public:
   using Algorithm::Algorithm;
@@ -18,15 +18,15 @@ public:
   StatusCode execute() override;
   StatusCode finalize() override;
 
-  static std::string &incident();
+  static std::string& incident();
 
 private:
-  StringProperty  m_serviceName {this, "ServiceName",  "IncTestSvc" };
-  StringArrayProperty  m_inpKeys {this, "inpKeys"};
-  StringArrayProperty  m_outKeys {this, "outKeys"};
+  Gaudi::Property<std::string> m_serviceName{this, "ServiceName", "IncTestSvc"};
+  Gaudi::Property<std::vector<std::string>> m_inpKeys{this, "inpKeys"};
+  Gaudi::Property<std::vector<std::string>> m_outKeys{this, "outKeys"};
   SmartIF<IIncidentAsyncTestSvc> m_service;
-  std::vector<DataObjectHandle<DataObject> *> m_inputObjHandles;
-  std::vector<DataObjectHandle<DataObject> *> m_outputObjHandles;
+  std::vector<DataObjectHandle<DataObject>*> m_inputObjHandles;
+  std::vector<DataObjectHandle<DataObject>*> m_outputObjHandles;
 };
 
 #endif /*GAUDIEXAMPLES_INCIDENTREGISTRYTESTALG_H_*/

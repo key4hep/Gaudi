@@ -1,9 +1,9 @@
 #include "GaudiKernel/Algorithm.h"
 
 #include "GaudiKernel/DataObject.h"
-#include "GaudiKernel/SmartDataPtr.h"
-#include "GaudiKernel/IRegistry.h"
 #include "GaudiKernel/IDataManagerSvc.h"
+#include "GaudiKernel/IRegistry.h"
+#include "GaudiKernel/SmartDataPtr.h"
 #include "RootCnv/RootAddress.h"
 
 #include <fstream>
@@ -11,29 +11,35 @@
 
 #include "MIHelpers.h"
 
-namespace Gaudi {
-  namespace Examples {
-    namespace MultiInput {
+namespace Gaudi
+{
+  namespace Examples
+  {
+    namespace MultiInput
+    {
 
       /// Write the content of the RootAddress of a data object
-      class DumpAddress: public Algorithm {
+      class DumpAddress : public Algorithm
+      {
       public:
         using Algorithm::Algorithm;
 
-        StatusCode initialize() {
+        StatusCode initialize()
+        {
           StatusCode sc = Algorithm::initialize();
-          if (sc.isFailure()) return sc;
-          m_outputFile.open(m_output.value().c_str());
+          if ( sc.isFailure() ) return sc;
+          m_outputFile.open( m_output.value().c_str() );
           m_count = 0;
           return sc;
         }
 
-        StatusCode execute() {
-          MsgStream log(msgSvc());
-          SmartDataPtr<DataObject> obj(eventSvc(), m_path);
-          if (obj) {
-            Gaudi::RootAddress *addr = dynamic_cast<Gaudi::RootAddress*>(obj->registry()->address());
-            if (addr) {
+        StatusCode execute()
+        {
+          MsgStream log( msgSvc() );
+          SmartDataPtr<DataObject> obj( eventSvc(), m_path );
+          if ( obj ) {
+            Gaudi::RootAddress* addr = dynamic_cast<Gaudi::RootAddress*>( obj->registry()->address() );
+            if ( addr ) {
               m_outputFile << *addr << std::endl;
             } else {
               log << MSG::ERROR << "Event " << m_count << " does not have a Gaudi::RootAddress" << endmsg;
@@ -47,17 +53,19 @@ namespace Gaudi {
           return StatusCode::SUCCESS;
         }
 
-        StatusCode finalize() {
+        StatusCode finalize()
+        {
           m_outputFile.close();
           return Algorithm::finalize();
         }
+
       private:
-        StringProperty  m_output {this, "OutputFile",  {},  "Name of the output file"};
-        StringProperty  m_path {this, "ObjectPath",  {},  "Path to the object in the transient store"};
+        Gaudi::Property<std::string> m_output{this, "OutputFile", {}, "Name of the output file"};
+        Gaudi::Property<std::string> m_path{this, "ObjectPath", {}, "Path to the object in the transient store"};
         std::ofstream m_outputFile;
         long m_count = 0;
       };
-      DECLARE_COMPONENT(DumpAddress)
+      DECLARE_COMPONENT( DumpAddress )
     }
   }
 }

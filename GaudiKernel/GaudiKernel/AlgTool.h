@@ -351,17 +351,18 @@ private:
   InterfaceList m_interfaceList; ///< Interface list
 
   // Properties
-  IntegerProperty m_outputLevel{this, "OutputLevel", MSG::NIL, "output level"};
+  Gaudi::Property<int> m_outputLevel{this, "OutputLevel", MSG::NIL, "output level"};
 
-  StringProperty m_monitorSvcName{this, "MonitorService", "MonitorSvc", "name to use for Monitor Service"};
+  Gaudi::Property<std::string> m_monitorSvcName{this, "MonitorService", "MonitorSvc",
+                                                "name to use for Monitor Service"};
 
-  BooleanProperty m_auditInit{this, "AuditTools", false, "[[deprecated]] unused"};
-  BooleanProperty m_auditorInitialize{this, "AuditInitialize", false, "trigger auditor on initialize()"};
-  BooleanProperty m_auditorStart{this, "AuditStart", false, "trigger auditor on start()"};
-  BooleanProperty m_auditorStop{this, "AuditStop", false, "trigger auditor on stop()"};
-  BooleanProperty m_auditorFinalize{this, "AuditFinalize", false, "trigger auditor on finalize()"};
-  BooleanProperty m_auditorReinitialize{this, "AuditReinitialize", false, "trigger auditor on reinitialize()"};
-  BooleanProperty m_auditorRestart{this, "AuditRestart", false, "trigger auditor on restart()"};
+  Gaudi::Property<bool> m_auditInit{this, "AuditTools", false, "[[deprecated]] unused"};
+  Gaudi::Property<bool> m_auditorInitialize{this, "AuditInitialize", false, "trigger auditor on initialize()"};
+  Gaudi::Property<bool> m_auditorStart{this, "AuditStart", false, "trigger auditor on start()"};
+  Gaudi::Property<bool> m_auditorStop{this, "AuditStop", false, "trigger auditor on stop()"};
+  Gaudi::Property<bool> m_auditorFinalize{this, "AuditFinalize", false, "trigger auditor on finalize()"};
+  Gaudi::Property<bool> m_auditorReinitialize{this, "AuditReinitialize", false, "trigger auditor on reinitialize()"};
+  Gaudi::Property<bool> m_auditorRestart{this, "AuditRestart", false, "trigger auditor on restart()"};
 
   Gaudi::Property<DataObjIDColl> m_extInputDataObjs{this, "ExtraInputs", DataObjIDColl{}, "[[deprecated]]"};
   Gaudi::Property<DataObjIDColl> m_extOutputDataObjs{this, "ExtraOutputs", DataObjIDColl{}, "[[deprecated]]"};

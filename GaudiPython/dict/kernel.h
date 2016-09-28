@@ -99,8 +99,8 @@ namespace GaudiPython
   template <class TYPE>
   struct _Property {
     TYPE m_type;
-    SimpleProperty<TYPE> m_prop;
-    SimplePropertyRef<TYPE> m_ref;
+    Gaudi::Property<TYPE> m_prop;
+    Gaudi::Property<TYPE&> m_ref;
     // constructor
     _Property() : m_type(), m_prop(), m_ref( "", m_type ) {}
     //

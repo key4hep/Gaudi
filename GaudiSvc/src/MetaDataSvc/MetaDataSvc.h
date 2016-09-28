@@ -10,26 +10,28 @@
 #include "GaudiKernel/IMetaDataSvc.h"
 #include "GaudiKernel/Service.h"
 
-namespace Gaudi {
-class MetaDataSvc : public extends<Service, IMetaDataSvc> {
-public:
-	using extends::extends;
-	~MetaDataSvc() override = default;
+namespace Gaudi
+{
+  class MetaDataSvc : public extends<Service, IMetaDataSvc>
+  {
+  public:
+    using extends::extends;
+    ~MetaDataSvc() override = default;
 
-	StatusCode start() override;
+    StatusCode start() override;
 
-	inline bool isEnabled() const { return m_isEnabled; }
+    inline bool isEnabled() const { return m_isEnabled; }
 
-	StatusCode collectData();
+    StatusCode collectData();
 
-	MetaData* getMetaData() override;
-	std::map <std::string, std::string> getMetaDataMap() override;
+    MetaData* getMetaData() override;
+    std::map<std::string, std::string> getMetaDataMap() override;
 
-private:
-	BooleanProperty m_isEnabled{this, "Enabled", true};
+  private:
+    Gaudi::Property<bool> m_isEnabled{this, "Enabled", true};
 
-	std::map <std::string, std::string> m_metadata;
-};
+    std::map<std::string, std::string> m_metadata;
+  };
 }
 
 #endif /* GAUDISVC_SRC_METADATASVC_METADATASVC_H_ */

@@ -3,9 +3,9 @@
 
 // Include files
 #include "GaudiAlg/GaudiAlgorithm.h"
+#include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/ToolHandle.h"
-#include "GaudiKernel/DataObject.h"
 
 // Forward references
 class IMyTool;
@@ -15,25 +15,27 @@ class IMyTool;
 
     @author nobody
 */
-class MyGaudiAlgorithm : public GaudiAlgorithm {
+class MyGaudiAlgorithm : public GaudiAlgorithm
+{
 public:
   /// Constructor of this form must be provided
-  MyGaudiAlgorithm(const std::string& name, ISvcLocator* pSvcLocator);
+  MyGaudiAlgorithm( const std::string& name, ISvcLocator* pSvcLocator );
 
   /// Three mandatory member functions of any algorithm
   StatusCode initialize();
   StatusCode execute();
   StatusCode finalize();
+
 private:
+  Gaudi::Property<std::string> m_privateToolType{this, "ToolWithName", "MyTool",
+                                                 "Type of the tool to use (internal name is ToolWithName)"};
 
-  StringProperty  m_privateToolType {this, "ToolWithName",  "MyTool", "Type of the tool to use (internal name is ToolWithName)"};
+  IMyTool* m_privateTool  = nullptr;
+  IMyTool* m_publicTool   = nullptr;
+  IMyTool* m_privateGTool = nullptr;
+  IMyTool* m_publicGTool  = nullptr;
 
-  IMyTool*   m_privateTool = nullptr;
-  IMyTool*   m_publicTool = nullptr;
-  IMyTool*   m_privateGTool = nullptr;
-  IMyTool*   m_publicGTool = nullptr;
-
-  IMyTool*   m_privateToolWithName = nullptr;
+  IMyTool* m_privateToolWithName = nullptr;
 
   IMyOtherTool* m_privateOtherInterface = nullptr;
 
@@ -51,7 +53,6 @@ private:
   DataObjectHandle<DataObject> m_raw;
 
   DataObjectHandle<DataObject> m_selectedTracks;
-
 };
 
-#endif    // GAUDIEXAMPLE_MYALGORITHM_H
+#endif // GAUDIEXAMPLE_MYALGORITHM_H

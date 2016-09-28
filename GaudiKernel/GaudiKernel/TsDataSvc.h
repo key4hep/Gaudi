@@ -2,18 +2,19 @@
 #define GAUDIKERNEL_TSDATASVC_H
 
 // Include files
-#include "GaudiKernel/Service.h"
 #include "GaudiKernel/DataStoreItem.h"
 #include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/IDataProviderSvc.h"
+#include "GaudiKernel/Service.h"
 
 // External libraries
-#include "tbb/spin_mutex.h"
 #include "tbb/recursive_mutex.h"
+#include "tbb/spin_mutex.h"
 
-namespace {
-typedef  tbb::recursive_mutex tsDataSvcMutex;
-//typedef  tbb::spin_mutex tsDataSvcMutex;
+namespace
+{
+  typedef tbb::recursive_mutex tsDataSvcMutex;
+  // typedef  tbb::spin_mutex tsDataSvcMutex;
 }
 
 // Forward declarations
@@ -27,15 +28,13 @@ class DataObject;
 class IDataStoreAgent;
 
 // Do not clutter global namespace for helpers...
-namespace DataSvcHelpers    {
+namespace DataSvcHelpers
+{
   // Map of objects where loading is inhibited
   class InhibitMap;
   // Generic registry entry
   class RegistryEntry;
 }
-
-
-
 
 /**
  * @class TsDataSvc TsDataSvc.h GaudiKernel/TsDataSvc.h
@@ -56,9 +55,7 @@ namespace DataSvcHelpers    {
  * @author Danilo Piparo
  * @version 1.1
 */
-class GAUDI_API TsDataSvc: public extends<Service,
-                                          IDataProviderSvc,
-                                          IDataManagerSvc>
+class GAUDI_API TsDataSvc : public extends<Service, IDataProviderSvc, IDataManagerSvc>
 {
 public:
   /// Define set of load items
@@ -66,29 +63,31 @@ public:
 
 protected:
   /// Pointer to data loader service
-  IConversionSvc*                 m_dataLoader = nullptr;
+  IConversionSvc* m_dataLoader = nullptr;
   /// Pointer to incident service
-  IIncidentSvc*                   m_incidentSvc = nullptr;
+  IIncidentSvc* m_incidentSvc = nullptr;
 
-  SimpleProperty<CLID> m_rootCLID{this, "RootCLID", 110 /*CLID_Event*/, "CLID of root entry"};
-  StringProperty m_rootName{this, "RootName", "/Event", "name of root entry"};
-  BooleanProperty m_forceLeaves{this, "ForceLeaves", false, "force creation of default leaves on registerObject"};
-  StringArrayProperty m_inhibitPathes{this, "InhibitPathes", {}, "inhibited leaves"};
+  Gaudi::Property<CLID> m_rootCLID{this, "RootCLID", 110 /*CLID_Event*/, "CLID of root entry"};
+  Gaudi::Property<std::string> m_rootName{this, "RootName", "/Event", "name of root entry"};
+  Gaudi::Property<bool> m_forceLeaves{this, "ForceLeaves", false, "force creation of default leaves on registerObject"};
+  Gaudi::Property<std::vector<std::string>> m_inhibitPathes{this, "InhibitPathes", {}, "inhibited leaves"};
 
-  BooleanProperty m_enableFaultHdlr{this, "EnableFaultHandler", false, "enable incidents on data creation requests"};
-  StringProperty m_faultName{this, "DataFaultName", "DataFault", "Name of the data fault incident"};
+  Gaudi::Property<bool> m_enableFaultHdlr{this, "EnableFaultHandler", false,
+                                          "enable incidents on data creation requests"};
+  Gaudi::Property<std::string> m_faultName{this, "DataFaultName", "DataFault", "Name of the data fault incident"};
 
-  BooleanProperty m_enableAccessHdlr{this, "EnableAccessHandler", false, "enable incidents on data access requests"};
-  StringProperty m_accessName{this, "DataAccessName", "DataAccess", "Name of the data access incident"};
+  Gaudi::Property<bool> m_enableAccessHdlr{this, "EnableAccessHandler", false,
+                                           "enable incidents on data access requests"};
+  Gaudi::Property<std::string> m_accessName{this, "DataAccessName", "DataAccess", "Name of the data access incident"};
 
   /// Items to be pre-loaded
-  LoadItems                       m_preLoads;
+  LoadItems m_preLoads;
   /// Pointer to root entry
-  DataSvcHelpers::RegistryEntry*  m_root = nullptr;
+  DataSvcHelpers::RegistryEntry* m_root = nullptr;
   /// Map with object paths to be inhibited from loading
-  DataSvcHelpers::InhibitMap*     m_inhibitMap = nullptr;
-public:
+  DataSvcHelpers::InhibitMap* m_inhibitMap = nullptr;
 
+public:
   /// IDataManagerSvc: Accessor for root event CLID
   CLID rootCLID() const override;
 
@@ -96,47 +95,36 @@ public:
   const std::string& rootName() const override;
 
   /// IDataManagerSvc: Register object address with the data store.
-  StatusCode registerAddress( const std::string& fullPath,
-                              IOpaqueAddress* pAddress) override;
+  StatusCode registerAddress( const std::string& fullPath, IOpaqueAddress* pAddress ) override;
 
   /// IDataManagerSvc: Register object address with the data store.
-  StatusCode registerAddress( DataObject* parentObj,
-                              const std::string& objectPath,
-                              IOpaqueAddress* pAddress) override;
+  StatusCode registerAddress( DataObject* parentObj, const std::string& objectPath, IOpaqueAddress* pAddress ) override;
 
   /// IDataManagerSvc: Register object address with the data store.
-  StatusCode registerAddress( IRegistry* parentObj,
-                              const std::string& objectPath,
-                              IOpaqueAddress* pAddress) override;
+  StatusCode registerAddress( IRegistry* parentObj, const std::string& objectPath, IOpaqueAddress* pAddress ) override;
 
   /// IDataManagerSvc: Unregister object address from the data store.
-  StatusCode unregisterAddress(const std::string& fullPath) override;
+  StatusCode unregisterAddress( const std::string& fullPath ) override;
 
   /// IDataManagerSvc: Unregister object address from the data store.
-  StatusCode unregisterAddress( DataObject* pParent,
-                                const std::string& objPath) override;
+  StatusCode unregisterAddress( DataObject* pParent, const std::string& objPath ) override;
 
   /// IDataManagerSvc: Unregister object address from the data store.
-  StatusCode unregisterAddress( IRegistry* pParent,
-                                const std::string& objPath) override;
+  StatusCode unregisterAddress( IRegistry* pParent, const std::string& objPath ) override;
 
   /** IDataManagerSvc: Explore the object store: retrieve all leaves attached
    *  to the object
    */
-  StatusCode objectLeaves( const DataObject*  pObject,
-                           std::vector<IRegistry*>& refLeaves) override;
+  StatusCode objectLeaves( const DataObject* pObject, std::vector<IRegistry*>& refLeaves ) override;
   /** IDataManagerSvc: Explore the object store: retrieve all leaves attached
    *  to the object
    */
-  StatusCode objectLeaves( const IRegistry*   pRegistry,
-                           std::vector<IRegistry*>& refLeaves) override;
+  StatusCode objectLeaves( const IRegistry* pRegistry, std::vector<IRegistry*>& refLeaves ) override;
 
   /// IDataManagerSvc: Explore the object store: retrieve the object's parent
-  StatusCode objectParent( const DataObject*  pObject,
-                           IRegistry*& refpParent) override;
+  StatusCode objectParent( const DataObject* pObject, IRegistry*& refpParent ) override;
   /// IDataManagerSvc: Explore the object store: retrieve the object's parent
-  StatusCode objectParent( const IRegistry*   pRegistry,
-                           IRegistry*& refpParent) override;
+  StatusCode objectParent( const IRegistry* pRegistry, IRegistry*& refpParent ) override;
 
   /** IDataManagerSvc: Remove all data objects below the sub tree identified
    *  by its full path name.
@@ -154,38 +142,32 @@ public:
   /** IDataManagerSvc: Analyze by traversing all data objects below the sub
    *  tree identified by its full path name.
    */
-  StatusCode traverseSubTree( const std::string& sub_tree_path,
-                              IDataStoreAgent* pAgent ) override;
+  StatusCode traverseSubTree( const std::string& sub_tree_path, IDataStoreAgent* pAgent ) override;
 
   /// IDataManagerSvc: Analyze by traversing all data objects below the sub tree
-  StatusCode traverseSubTree( DataObject* pObject,
-                              IDataStoreAgent* pAgent ) override;
+  StatusCode traverseSubTree( DataObject* pObject, IDataStoreAgent* pAgent ) override;
 
   /// IDataManagerSvc: Analyze by traversing all data objects in the data store.
   StatusCode traverseTree( IDataStoreAgent* pAgent ) override;
 
   /** Initialize data store for new event by giving new event path and root
       object. Takes care to clear the store before reinitializing it  */
-  StatusCode setRoot( std::string root_name,
-                      DataObject* pRootObj) override;
+  StatusCode setRoot( std::string root_name, DataObject* pRootObj ) override;
 
   /** Initialize data store for new event by giving new event path and root
       object. Does not clear the store before reinitializing it. This could
       lead to errors and should be handle with care. Use setRoot if unsure */
-  virtual StatusCode i_setRoot( std::string root_name,
-                                DataObject* pRootObj);
+  virtual StatusCode i_setRoot( std::string root_name, DataObject* pRootObj );
 
   /** Initialize data store for new event by giving new event path and address
       of root object. Takes care to clear the store before reinitializing it */
-  StatusCode setRoot (std::string root_path,
-                      IOpaqueAddress* pRootAddr) override;
+  StatusCode setRoot( std::string root_path, IOpaqueAddress* pRootAddr ) override;
 
   /** Initialize data store for new event by giving new event path and address
    *  of root object. Does not clear the store before reinitializing it. This
    *  could lead to errors and should be handle with care. Use setRoot if unsure
    */
-  virtual StatusCode i_setRoot (std::string root_path,
-                                IOpaqueAddress* pRootAddr);
+  virtual StatusCode i_setRoot( std::string root_path, IOpaqueAddress* pRootAddr );
 
   /** IDataManagerSvc: IDataManagerSvc: Pass a default data loader to the
    *  service and optionally a data provider
@@ -214,167 +196,118 @@ public:
       @param   pObject      pointer to next level root object
       @return  Status code indicating success or failure.
   */
-  virtual StatusCode preLoad( int depth,
-                              int load_depth,
-                              DataObject* pObject );
+  virtual StatusCode preLoad( int depth, int load_depth, DataObject* pObject );
 
   /// load all preload items of the list
   StatusCode preLoad() override;
 
   /// Register object with the data store.
-  StatusCode registerObject(  const std::string& fullPath,
-                              DataObject* pObject ) override;
+  StatusCode registerObject( const std::string& fullPath, DataObject* pObject ) override;
 
   /// Register object with the data store.
-  StatusCode registerObject(  const std::string& parentPath,
-                              const std::string& objPath,
-                              DataObject* pObject ) override;
+  StatusCode registerObject( const std::string& parentPath, const std::string& objPath, DataObject* pObject ) override;
 
   /// Register object with the data store.
-  StatusCode registerObject(  const std::string& parentPath,
-                              int item,
-                              DataObject* pObject ) override;
+  StatusCode registerObject( const std::string& parentPath, int item, DataObject* pObject ) override;
 
   /// Register object with the data store.
-  StatusCode registerObject(  DataObject* parentObj,
-                              const std::string& objPath,
-                              DataObject* pObject ) override;
+  StatusCode registerObject( DataObject* parentObj, const std::string& objPath, DataObject* pObject ) override;
 
   /// Register object with the data store.
-  StatusCode registerObject(  DataObject* parentObj,
-                              int item,
-                              DataObject* pObject ) override;
+  StatusCode registerObject( DataObject* parentObj, int item, DataObject* pObject ) override;
 
   /// Unregister object from the data store.
-  StatusCode unregisterObject(const std::string& fullPath ) override;
+  StatusCode unregisterObject( const std::string& fullPath ) override;
 
   /// Unregister object from the data store.
-  StatusCode unregisterObject(const std::string& parentPath,
-                              const std::string& objectPath ) override;
+  StatusCode unregisterObject( const std::string& parentPath, const std::string& objectPath ) override;
 
   /// Unregister object from the data store.
-  StatusCode unregisterObject(const std::string& parentPath,
-                              int item ) override;
+  StatusCode unregisterObject( const std::string& parentPath, int item ) override;
 
   /// Unregister object from the data store.
-  StatusCode unregisterObject(DataObject* pObject ) override;
+  StatusCode unregisterObject( DataObject* pObject ) override;
 
   /// Unregister object from the data store.
-  StatusCode unregisterObject(DataObject* pObject,
-                              const std::string& objectPath ) override;
+  StatusCode unregisterObject( DataObject* pObject, const std::string& objectPath ) override;
 
   /// Unregister object from the data store.
-  StatusCode unregisterObject(DataObject* pObject,
-                              int item ) override;
+  StatusCode unregisterObject( DataObject* pObject, int item ) override;
 
   /// Retrieve object from data store.
-  StatusCode retrieveObject(  IRegistry* pDirectory,
-                              const std::string& path,
-                              DataObject*& pObject ) override;
+  StatusCode retrieveObject( IRegistry* pDirectory, const std::string& path, DataObject*& pObject ) override;
 
   /// Retrieve object identified by its full path from the data store.
-  StatusCode retrieveObject(  const std::string& fullPath,
-                              DataObject*& pObject ) override;
+  StatusCode retrieveObject( const std::string& fullPath, DataObject*& pObject ) override;
 
   /// Retrieve object from data store.
-  StatusCode retrieveObject(  const std::string& parentPath,
-                              const std::string& objPath,
-                              DataObject*& pObject ) override;
+  StatusCode retrieveObject( const std::string& parentPath, const std::string& objPath, DataObject*& pObject ) override;
 
   /// Retrieve object from data store.
-  StatusCode retrieveObject(  const std::string& parentPath,
-                              int item,
-                              DataObject*& pObject ) override;
+  StatusCode retrieveObject( const std::string& parentPath, int item, DataObject*& pObject ) override;
 
   /// Retrieve object from data store.
-  StatusCode retrieveObject(  DataObject* parentObj,
-                              const std::string& objPath,
-                              DataObject*& pObject ) override;
+  StatusCode retrieveObject( DataObject* parentObj, const std::string& objPath, DataObject*& pObject ) override;
 
   /// Retrieve object from data store.
-  StatusCode retrieveObject(  DataObject* parentObj,
-                              int item,
-                              DataObject*& pObject ) override;
+  StatusCode retrieveObject( DataObject* parentObj, int item, DataObject*& pObject ) override;
 
   /// Find object identified by its full path in the data store.
-  StatusCode findObject(  const std::string& fullPath,
-                          DataObject*& pObject ) override;
+  StatusCode findObject( const std::string& fullPath, DataObject*& pObject ) override;
 
   /// Find object identified by its full path in the data store.
-  StatusCode findObject(  IRegistry* pDirectory,
-                          const std::string& path,
-                          DataObject*& pObject ) override;
+  StatusCode findObject( IRegistry* pDirectory, const std::string& path, DataObject*& pObject ) override;
 
   /// Find object in the data store.
-  StatusCode findObject(  const std::string& parentPath,
-                          const std::string& objPath,
-                          DataObject*& pObject ) override;
+  StatusCode findObject( const std::string& parentPath, const std::string& objPath, DataObject*& pObject ) override;
 
   /// Find object in the data store.
-  StatusCode findObject(  const std::string& parentPath,
-                          int item,
-                          DataObject*& pObject ) override;
+  StatusCode findObject( const std::string& parentPath, int item, DataObject*& pObject ) override;
 
   /// Find object in the data store.
-  StatusCode findObject(  DataObject* parentObj,
-                          const std::string& objPath,
-                          DataObject*& pObject ) override;
+  StatusCode findObject( DataObject* parentObj, const std::string& objPath, DataObject*& pObject ) override;
 
   /// Find object in the data store.
-  StatusCode findObject(  DataObject* parentObj,
-                          int item,
-                          DataObject*& pObject ) override;
+  StatusCode findObject( DataObject* parentObj, int item, DataObject*& pObject ) override;
 
   /// Add a link to another object.
-  StatusCode linkObject(  IRegistry* from,
-                          const std::string& objPath,
-                          DataObject* to ) override;
+  StatusCode linkObject( IRegistry* from, const std::string& objPath, DataObject* to ) override;
 
   /// Add a link to another object.
-  StatusCode linkObject(  const std::string& fromPath,
-                          const std::string& objPath,
-                          DataObject* to ) override;
+  StatusCode linkObject( const std::string& fromPath, const std::string& objPath, DataObject* to ) override;
 
   /// Add a link to another object.
-  StatusCode linkObject(  DataObject* from,
-                          const std::string& objPath,
-                          DataObject* to ) override;
+  StatusCode linkObject( DataObject* from, const std::string& objPath, DataObject* to ) override;
 
   /// Add a link to another object.
-  StatusCode linkObject(  const std::string& fullPath,
-                          DataObject* to ) override;
+  StatusCode linkObject( const std::string& fullPath, DataObject* to ) override;
 
   /// Remove a link to another object.
-  StatusCode unlinkObject(IRegistry* from,
-                          const std::string& objPath ) override;
+  StatusCode unlinkObject( IRegistry* from, const std::string& objPath ) override;
 
   /// Remove a link to another object.
-  StatusCode unlinkObject(const std::string& fromPath,
-                          const std::string& objPath ) override;
+  StatusCode unlinkObject( const std::string& fromPath, const std::string& objPath ) override;
 
   /// Remove a link to another object.
-  StatusCode unlinkObject(DataObject* fromObj,
-                          const std::string& objPath ) override;
+  StatusCode unlinkObject( DataObject* fromObj, const std::string& objPath ) override;
 
   /// Remove a link to another object.
-  StatusCode unlinkObject(const std::string& fullPath ) override;
+  StatusCode unlinkObject( const std::string& fullPath ) override;
 
   /// Update object identified by its directory entry.
-  StatusCode updateObject(IRegistry* pDirectory ) override;
+  StatusCode updateObject( IRegistry* pDirectory ) override;
 
   /// Update object.
-  StatusCode updateObject(const std::string& updatePath ) override;
+  StatusCode updateObject( const std::string& updatePath ) override;
 
   /// Update object.
-  StatusCode updateObject(DataObject* toUpdate ) override;
+  StatusCode updateObject( DataObject* toUpdate ) override;
 
   /// Update object.
-  StatusCode updateObject(const std::string& parentPath,
-                          const std::string& updatePath ) override;
+  StatusCode updateObject( const std::string& parentPath, const std::string& updatePath ) override;
 
   /// Update object.
-  StatusCode updateObject(DataObject* pParent,
-                          const std::string& updatePath ) override;
+  StatusCode updateObject( DataObject* pParent, const std::string& updatePath ) override;
 
   /// Service initialization
   StatusCode initialize() override;
@@ -393,23 +326,21 @@ public:
 
 private:
   /// Fake copy constructor (never implemented).
-  TsDataSvc(const TsDataSvc&) = delete;
+  TsDataSvc( const TsDataSvc& ) = delete;
   /// Fake assignment operator (never implemented).
-  TsDataSvc& operator= (const TsDataSvc&) = delete;
+  TsDataSvc& operator=( const TsDataSvc& ) = delete;
 
 protected:
   /// Check if root path is valid
-  bool checkRoot()    {
-    return 0 != m_root;
-  }
+  bool checkRoot() { return 0 != m_root; }
 
   /** Retrieve customizable data loader according to registry entry to be
    *  retrieved
    */
-  virtual IConversionSvc* getDataLoader(IRegistry* pReg);
+  virtual IConversionSvc* getDataLoader( IRegistry* pReg );
 
   /// Create default objects in case forced creation of leaves is requested
-  virtual DataObject* createDefaultObject()   const;
+  virtual DataObject* createDefaultObject() const;
 
   /** Invoke Persistency service to create transient object from its
    *  persistent representation
@@ -419,12 +350,10 @@ protected:
   /** Invoke Persistency service to create transient object from its
    *  persistent representation
    */
-  virtual StatusCode loadObject( IConversionSvc* pLoader,
-                                 IRegistry* pNode );
+  virtual StatusCode loadObject( IConversionSvc* pLoader, IRegistry* pNode );
 
   /// Retrieve registry entry from store
-  StatusCode retrieveEntry( DataSvcHelpers::RegistryEntry* pNode,
-                            const std::string& path,
+  StatusCode retrieveEntry( DataSvcHelpers::RegistryEntry* pNode, const std::string& path,
                             DataSvcHelpers::RegistryEntry*& pEntry );
   /** Invoke data fault handling if enabled
     * @param pReg  [IN]   Pointer to missing registry entry
@@ -432,10 +361,9 @@ protected:
     *
     * @return Object corresponding to the specified leaf
     */
-  DataObject* handleDataFault(IRegistry* pReg, const std::string& path="");
+  DataObject* handleDataFault( IRegistry* pReg, const std::string& path = "" );
 
   /// Mutex to protect access to the store
   tsDataSvcMutex m_accessMutex;
-
 };
 #endif // GAUDIKERNEL_TSDATASVC_H

@@ -15,10 +15,10 @@
  *  @date   2008-10-22
  */
 
-class TestToolAlgFailure : public GaudiAlgorithm {
+class TestToolAlgFailure : public GaudiAlgorithm
+{
 
 public:
-
   /// Standard constructor
   using GaudiAlgorithm::GaudiAlgorithm;
 
@@ -29,10 +29,8 @@ public:
   StatusCode finalize() override;
 
 private:
-
-  StringArrayProperty m_tools{this, "Tools", {}, "list of tools to test"};
-  BooleanProperty m_ignoreFailure{this, "IgnoreFailure", false};
-
+  Gaudi::Property<std::vector<std::string>> m_tools{this, "Tools", {}, "list of tools to test"};
+  Gaudi::Property<bool> m_ignoreFailure{this, "IgnoreFailure", false};
 };
 
 #endif // TESTTOOLALG_H

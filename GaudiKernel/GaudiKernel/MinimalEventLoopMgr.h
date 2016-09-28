@@ -29,10 +29,10 @@ public:
 
 protected:
   // Properties
-  StringArrayProperty m_topAlgNames{this, "TopAlg", {}, "list of top level algorithms names"};
-  StringArrayProperty m_outStreamNames{this, "OutStream", {}, "list of output stream names"};
-  StringProperty m_outStreamType{this, "OutStreamType", "OutputStream",
-                                 "[[deprecated]] default type for OutputStream instances"};
+  Gaudi::Property<std::vector<std::string>> m_topAlgNames{this, "TopAlg", {}, "list of top level algorithms names"};
+  Gaudi::Property<std::vector<std::string>> m_outStreamNames{this, "OutStream", {}, "list of output stream names"};
+  Gaudi::Property<std::string> m_outStreamType{this, "OutStreamType", "OutputStream",
+                                               "[[deprecated]] default type for OutputStream instances"};
 
   // enums
   enum State { OFFLINE, CONFIGURED, FINALIZED, INITIALIZED };

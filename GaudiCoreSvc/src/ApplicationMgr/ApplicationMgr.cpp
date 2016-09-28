@@ -153,14 +153,14 @@ StatusCode ApplicationMgr::i_startup()
     fatal() << "Error locating JobOptionsSvc" << endmsg;
     return sc;
   }
-  sc = jobOptsIProp->setProperty( StringProperty( "TYPE", m_jobOptionsType ) );
+  sc = jobOptsIProp->setProperty( Gaudi::Property<std::string>( "TYPE", m_jobOptionsType ) );
   if ( !sc.isSuccess() ) {
     fatal() << "Error setting TYPE option in JobOptionsSvc" << endmsg;
     return sc;
   }
 
   if ( !m_jobOptionsPreAction.empty() ) {
-    sc = jobOptsIProp->setProperty( StringProperty( "PYTHONPARAMS", m_jobOptionsPreAction ) );
+    sc = jobOptsIProp->setProperty( Gaudi::Property<std::string>( "PYTHONPARAMS", m_jobOptionsPreAction ) );
     if ( !sc.isSuccess() ) {
       fatal() << "Error setting JobOptionsPreAction option in JobOptionsSvc" << endmsg;
       return sc;
@@ -168,7 +168,7 @@ StatusCode ApplicationMgr::i_startup()
   }
 
   if ( !m_jobOptionsPostAction.empty() ) {
-    sc = jobOptsIProp->setProperty( StringProperty( "PYTHONACTION", m_jobOptionsPostAction ) );
+    sc = jobOptsIProp->setProperty( Gaudi::Property<std::string>( "PYTHONACTION", m_jobOptionsPostAction ) );
     if ( !sc.isSuccess() ) {
       fatal() << "Error setting JobOptionsPostAction option in JobOptionsSvc" << endmsg;
       return sc;
@@ -176,19 +176,19 @@ StatusCode ApplicationMgr::i_startup()
   }
 
   if ( !m_jobOptionsPath.empty() ) { // The command line takes precedence
-    sc = jobOptsIProp->setProperty( StringProperty( "PATH", m_jobOptionsPath ) );
+    sc = jobOptsIProp->setProperty( Gaudi::Property<std::string>( "PATH", m_jobOptionsPath ) );
     if ( !sc.isSuccess() ) {
       fatal() << "Error setting PATH option in JobOptionsSvc" << endmsg;
       return sc;
     }
   } else if ( isEnvSet( "JOBOPTPATH" ) ) { // Otherwise the Environment JOBOPTPATH
-    sc = jobOptsIProp->setProperty( StringProperty( "PATH", getEnv( "JOBOPTPATH" ) ) );
+    sc = jobOptsIProp->setProperty( Gaudi::Property<std::string>( "PATH", getEnv( "JOBOPTPATH" ) ) );
     if ( !sc.isSuccess() ) {
       fatal() << "Error setting PATH option in JobOptionsSvc from env" << endmsg;
       return sc;
     }
   } else { // Otherwise the default
-    sc = jobOptsIProp->setProperty( StringProperty( "PATH", "../options/job.opts" ) );
+    sc = jobOptsIProp->setProperty( Gaudi::Property<std::string>( "PATH", "../options/job.opts" ) );
     if ( !sc.isSuccess() ) {
       fatal() << "Error setting PATH option in JobOptionsSvc to default" << endmsg;
       return sc;
@@ -199,7 +199,7 @@ StatusCode ApplicationMgr::i_startup()
   // Sets my default the Output Level of the Message service to be
   // the same as this
   auto msgSvcIProp = msgsvc.as<IProperty>();
-  msgSvcIProp->setProperty( IntegerProperty( "OutputLevel", m_outputLevel ) ).ignore();
+  msgSvcIProp->setProperty( Gaudi::Property<int>( "OutputLevel", m_outputLevel ) ).ignore();
   msgSvcIProp.reset();
 
   sc = jobsvc->sysInitialize();
@@ -586,7 +586,7 @@ StatusCode ApplicationMgr::finalize()
 
   // disable message suppression in finalize
   m_svcLocator->service<IProperty>( "MessageSvc" )
-      ->setProperty( BooleanProperty( "enableSuppression", false ) )
+      ->setProperty( Gaudi::Property<bool>( "enableSuppression", false ) )
       .ignore();
 
   // Finalize independently managed Algorithms
@@ -649,13 +649,13 @@ StatusCode ApplicationMgr::terminate()
   { // Force a disable the auditing of finalize for MessageSvc
     auto prop = m_messageSvc.as<IProperty>();
     if ( prop ) {
-      prop->setProperty( BooleanProperty( "AuditFinalize", false ) ).ignore();
+      prop->setProperty( Gaudi::Property<bool>( "AuditFinalize", false ) ).ignore();
     }
   }
   { // Force a disable the auditing of finalize for JobOptionsSvc
     auto prop = m_jobOptionsSvc.as<IProperty>();
     if ( prop ) {
-      prop->setProperty( BooleanProperty( "AuditFinalize", false ) ).ignore();
+      prop->setProperty( Gaudi::Property<bool>( "AuditFinalize", false ) ).ignore();
     }
   }
 

@@ -163,12 +163,12 @@ StatusCode GaudiParallelizer::decodeNames()
           }
         }
         if ( !foundContext && !context().empty() ) {
-          StringProperty contextProperty( "Context", context() );
+          Gaudi::Property<std::string> contextProperty( "Context", context() );
           jos->addPropertyToCatalogue( theName, contextProperty ).ignore();
           addedContext = true;
         }
         if ( !foundRootInTES && !rootInTES().empty() ) {
-          StringProperty rootInTESProperty( "RootInTES", rootInTES() );
+          Gaudi::Property<std::string> rootInTESProperty( "RootInTES", rootInTES() );
           jos->addPropertyToCatalogue( theName, rootInTESProperty ).ignore();
           addedRootInTES = true;
         }

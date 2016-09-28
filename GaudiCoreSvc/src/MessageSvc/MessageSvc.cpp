@@ -198,7 +198,7 @@ void MessageSvc::setupLimits( Gaudi::Details::PropertyBase& prop )
 {
   // Just report problems in the settings of the limits and unknown limit parameters
   if ( prop.name() == "alwaysLimit" ) {
-    IntegerProperty* p = dynamic_cast<IntegerProperty*>( &prop );
+    Gaudi::Property<int>* p = dynamic_cast<Gaudi::Property<int>*>( &prop );
     if ( p && p->value() != 0 ) {
       std::cout << "MessageSvc ERROR: cannot suppress ALWAYS messages" << std::endl;
       p->setValue( 0 );
@@ -236,9 +236,10 @@ void MessageSvc::setupThreshold( Gaudi::Details::PropertyBase& prop )
   }
   int ic = i->second;
 
-  StringArrayProperty* sap = dynamic_cast<StringArrayProperty*>( &prop );
+  Gaudi::Property<std::vector<std::string>>* sap = dynamic_cast<Gaudi::Property<std::vector<std::string>>*>( &prop );
   if ( !sap ) {
-    std::cerr << "could not dcast " << prop.name() << " to a StringArrayProperty (which it should be!)" << std::endl;
+    std::cerr << "could not dcast " << prop.name()
+              << " to a Gaudi::Property<std::vector<std::string>> (which it should be!)" << std::endl;
   } else {
     for ( auto& i : sap->value() ) setOutputLevel( i, ic );
   }
@@ -252,7 +253,7 @@ void MessageSvc::setupInactCount( Gaudi::Details::PropertyBase& ) {}
 void MessageSvc::setupInactCount( Gaudi::Details::PropertyBase& prop )
 {
   if ( prop.name() == "countInactive" ) {
-    BooleanProperty* p = dynamic_cast<BooleanProperty*>( &prop );
+    Gaudi::Property<bool>* p = dynamic_cast<Gaudi::Property<bool>*>( &prop );
     if ( p ) MsgStream::enableCountInactive( p->value() );
   }
 }

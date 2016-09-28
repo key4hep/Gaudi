@@ -2,31 +2,30 @@
 #define GAUDIHIVE_PARALLELSEQUENTIALSCHEDULERSVC_H
 
 // Framework include files
-#include "GaudiKernel/IScheduler.h"
-#include "GaudiKernel/IRunable.h"
-#include "GaudiKernel/Service.h"
-#include "GaudiKernel/IAlgResourcePool.h"
 #include "GaudiKernel/CommonMessaging.h"
 #include "GaudiKernel/EventContext.h"
+#include "GaudiKernel/IAlgResourcePool.h"
+#include "GaudiKernel/IRunable.h"
+#include "GaudiKernel/IScheduler.h"
+#include "GaudiKernel/Service.h"
 
 #include "AlgResourcePool.h"
-#include "ExecutionFlowManager.h"
 #include "DataFlowManager.h"
+#include "ExecutionFlowManager.h"
 
 // C++ include files
-#include <vector>
-#include <string>
-#include <unordered_map>
 #include <functional>
+#include <string>
 #include <thread>
+#include <unordered_map>
+#include <vector>
 
 // External libs
 #include "tbb/concurrent_queue.h"
 #include "tbb/task.h"
 #include "tbb/task_scheduler_init.h"
 
-class SequentialTask; //forward declaration
-
+class SequentialTask; // forward declaration
 
 //---------------------------------------------------------------------------
 
@@ -38,8 +37,8 @@ class SequentialTask; //forward declaration
  *  @author  Daniel Funke
  *  @version 0.1
  */
-class ParallelSequentialSchedulerSvc: public extends<Service,
-                                                     IScheduler> {
+class ParallelSequentialSchedulerSvc : public extends<Service, IScheduler>
+{
 public:
   /// Constructor
   using extends::extends;
@@ -54,25 +53,27 @@ public:
   StatusCode finalize() override;
 
   /// Make an event available to the scheduler
-  StatusCode pushNewEvent(EventContext* eventContext) override;
+  StatusCode pushNewEvent( EventContext* eventContext ) override;
 
   // Make multiple events available to the scheduler
-  StatusCode pushNewEvents(std::vector<EventContext*>& eventContexts) override;
+  StatusCode pushNewEvents( std::vector<EventContext*>& eventContexts ) override;
 
   /// Blocks until an event is availble
-  StatusCode popFinishedEvent(EventContext*& eventContext) override;
+  StatusCode popFinishedEvent( EventContext*& eventContext ) override;
 
   /// Try to fetch an event from the scheduler
-  StatusCode tryPopFinishedEvent(EventContext*& eventContext) override;
+  StatusCode tryPopFinishedEvent( EventContext*& eventContext ) override;
 
   /// Get free slots number
   unsigned int freeSlots() override;
 
 private:
-
-  BooleanProperty  m_useTopAlgList{this, "UseTopAlgList", true,  "Decide if the top alglist or its flat version has to be used"};
-  IntegerProperty  m_threadPoolSize {this, "ThreadPoolSize",  -1, "Size of the threadpool initialised by TBB; a value of -1 gives TBB the freedom to choose"};
-  StringProperty  m_whiteboardSvcName {this, "WhiteboardSvc",  "EventDataSvc",  "The whiteboard name"};
+  Gaudi::Property<bool> m_useTopAlgList{this, "UseTopAlgList", true,
+                                        "Decide if the top alglist or its flat version has to be used"};
+  Gaudi::Property<int> m_threadPoolSize{
+      this, "ThreadPoolSize", -1,
+      "Size of the threadpool initialised by TBB; a value of -1 gives TBB the freedom to choose"};
+  Gaudi::Property<std::string> m_whiteboardSvcName{this, "WhiteboardSvc", "EventDataSvc", "The whiteboard name"};
 
   /// Cache the list of algs to be executed
   std::list<IAlgorithm*> m_algList;
@@ -88,39 +89,39 @@ private:
   SmartIF<IHiveWhiteBoard> m_whiteboard;
 
   /// Cache for the algorithm resource pool
-  SmartIF<IAlgResourcePool>  m_algResourcePool;
+  SmartIF<IAlgResourcePool> m_algResourcePool;
 
-  //TBB scheduler
+  // TBB scheduler
   std::unique_ptr<tbb::task_scheduler_init> m_tbb_sched;
 
-  //control flow manager
+  // control flow manager
   concurrency::ExecutionFlowManager m_controlFlow;
 
   /// Vector to bookkeep the information necessary to the index2name conversion
   std::vector<std::string> m_algname_vect;
 
   /// Map to bookkeep the information necessary to the name2index conversion
-  std::unordered_map<std::string,unsigned int> m_algname_index_map;
+  std::unordered_map<std::string, unsigned int> m_algname_index_map;
 
   // Needed to queue actions on algorithm finishing and decrement algos in flight
   friend class SequentialTask;
-
 };
 
-class SequentialTask: public tbb::task {
+class SequentialTask : public tbb::task
+{
 public:
-  SequentialTask(ISvcLocator* svcLocator,
-                 EventContext* eventContext,
-                 ParallelSequentialSchedulerSvc* scheduler,
-                 IAlgResourcePool* algPool):
+  SequentialTask( ISvcLocator* svcLocator, EventContext* eventContext, ParallelSequentialSchedulerSvc* scheduler,
+                  IAlgResourcePool* algPool )
+      :
 
-                   m_serviceLocator(svcLocator),
-                   m_eventContext(eventContext),
-                   m_scheduler(scheduler),
-                   m_algPool(algPool){
+      m_serviceLocator( svcLocator )
+      , m_eventContext( eventContext )
+      , m_scheduler( scheduler )
+      , m_algPool( algPool ){
 
-  };
+        };
   virtual tbb::task* execute();
+
 private:
   SmartIF<ISvcLocator> m_serviceLocator;
   EventContext* m_eventContext;

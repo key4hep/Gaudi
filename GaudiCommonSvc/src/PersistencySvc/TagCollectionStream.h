@@ -2,12 +2,11 @@
 #define GAUDISVC_PERSISTENCYSVC_TAGCOLLECTIONSTREAM_H
 
 // Required for inheritance
-#include "OutputStream.h"
 #include "GaudiKernel/NTuple.h"
+#include "OutputStream.h"
 
 // forward declarations
 class GenericAddress;
-
 
 /** @class TagCollectionStream TagCollectionStream.h PersistencySvc/TagCollectionStream.h
   *
@@ -59,23 +58,26 @@ class GenericAddress;
   * Author:  M.Frank
   * Version: 1.0
   */
-class TagCollectionStream : public OutputStream     {
+class TagCollectionStream : public OutputStream
+{
 protected:
-
-  StringProperty m_addrLeaf{this, "AddressLeaf",  "/Event" , "name of the address leaf in the transient event store"};
-  StringProperty m_addrColName{this, "AddressColumn",  "Address", "name of the address column of the tag collection"};
-  StringProperty m_collSvcName{this, "TagCollectionSvc",  "NTupleSvc", "name of the collection service"};
-  BooleanProperty m_objectsFirst{this, "ObjectsFirst",  true, "flag to indicate that the objects should be written first"};
-  StringProperty m_tagName{this, "Collection",  "", "name of the tag collection in the transient store"};
+  Gaudi::Property<std::string> m_addrLeaf{this, "AddressLeaf", "/Event",
+                                          "name of the address leaf in the transient event store"};
+  Gaudi::Property<std::string> m_addrColName{this, "AddressColumn", "Address",
+                                             "name of the address column of the tag collection"};
+  Gaudi::Property<std::string> m_collSvcName{this, "TagCollectionSvc", "NTupleSvc", "name of the collection service"};
+  Gaudi::Property<bool> m_objectsFirst{this, "ObjectsFirst", true,
+                                       "flag to indicate that the objects should be written first"};
+  Gaudi::Property<std::string> m_tagName{this, "Collection", "", "name of the tag collection in the transient store"};
 
   /// NTuple column to hold the opaque address of the address leaf
-  INTupleItem*                  m_addrColumn = nullptr;
+  INTupleItem* m_addrColumn = nullptr;
   /// Name of the top leaf (performance cache)
-  std::string                   m_topLeafName;
+  std::string m_topLeafName;
   /// Short cut flag to indicate if the address leaf is the top leaf (performace cache)
-  bool                          m_isTopLeaf = false;
+  bool m_isTopLeaf = false;
   /// Keep reference to the tuple service
-  SmartIF<INTupleSvc>           m_collectionSvc;
+  SmartIF<INTupleSvc> m_collectionSvc;
   /// Address buffer
   std::unique_ptr<GenericAddress> m_addr;
   /// Address item buffer
@@ -92,8 +94,8 @@ protected:
   StatusCode writeRecord();
 
 public:
-	/// Standard algorithm Constructor
-	TagCollectionStream(const std::string& name, ISvcLocator* pSvcLocator);
+  /// Standard algorithm Constructor
+  TagCollectionStream( const std::string& name, ISvcLocator* pSvcLocator );
   /// Standard Destructor
   ~TagCollectionStream() override = default;
   /// Initialize TagCollectionStream

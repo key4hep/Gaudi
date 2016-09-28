@@ -5,7 +5,6 @@
 // from Gaudi
 #include "GaudiAlg/GaudiAlgorithm.h"
 
-
 /** @class JemallocProfile JemallocProfile.h jemalloc/JemallocProfile.h
  *
  * Algorithm to enable/disable the profiling of the head by Jemalloc.
@@ -17,26 +16,27 @@
  *  @author Ben Couturier
  *  @date   2015-06-09
  */
-class JemallocProfile : public GaudiAlgorithm {
+class JemallocProfile : public GaudiAlgorithm
+{
 public:
   /// Standard constructor
   using GaudiAlgorithm::GaudiAlgorithm;
 
-  ~JemallocProfile( ) override = default; ///< Destructor
+  ~JemallocProfile() override = default; ///< Destructor
 
-  StatusCode initialize() override;    ///< Algorithm initialization
-  StatusCode execute   () override;    ///< Algorithm execution
-  StatusCode finalize  () override;    ///< Algorithm finalization
+  StatusCode initialize() override; ///< Algorithm initialization
+  StatusCode execute() override;    ///< Algorithm execution
+  StatusCode finalize() override;   ///< Algorithm finalization
 
 protected:
-
 private:
+  Gaudi::Property<int> m_nStartFromEvent{this, "StartFromEventN", 1, "After what event we start profiling. "};
+  Gaudi::Property<int> m_nStopAtEvent{
+      this, "StopAtEventN", 0,
+      "After what event we stop profiling. If 0 than we also profile finalization stage. Default = 0."};
+  Gaudi::Property<int> m_dumpPeriod{this, "DumpPeriod", 100, "Period for dumping head to a file. Default=100"};
 
-  IntegerProperty  m_nStartFromEvent {this, "StartFromEventN",  1,  "After what event we start profiling. "};
-  IntegerProperty  m_nStopAtEvent {this, "StopAtEventN",  0,  "After what event we stop profiling. If 0 than we also profile finalization stage. Default = 0."};
-  IntegerProperty  m_dumpPeriod {this, "DumpPeriod",  100,  "Period for dumping head to a file. Default=100"};
-
-  bool m_profiling = false; // whether we are profiling...
-  int m_eventNumber = 0;   // Current event number
+  bool m_profiling  = false; // whether we are profiling...
+  int m_eventNumber = 0;     // Current event number
 };
 #endif // JEMALLOC_PROFILE_H

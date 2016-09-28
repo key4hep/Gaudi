@@ -2,8 +2,8 @@
 #define GAUDIEXAMPLES_READALG_H
 
 // Framework include files
-#include "GaudiKernel/Algorithm.h"  // Required for inheritance
-#include "GaudiKernel/IIncidentListener.h"  // Required for inheritance
+#include "GaudiKernel/Algorithm.h"         // Required for inheritance
+#include "GaudiKernel/IIncidentListener.h" // Required for inheritance
 
 // Forward declarations
 class IIncidentSvc;
@@ -15,12 +15,13 @@ class IIncidentSvc;
     @author Markus Frank
 */
 
-class ReadAlg : public Algorithm, virtual public IIncidentListener {
+class ReadAlg : public Algorithm, virtual public IIncidentListener
+{
   /// Reference to run records data service
   SmartIF<IDataProviderSvc> m_recordSvc;
   /// Reference to incident service
-  SmartIF<IIncidentSvc>     m_incidentSvc;
-  StringProperty m_incidentName{this, "IncidentName", "", "incident name of records service"};
+  SmartIF<IIncidentSvc> m_incidentSvc;
+  Gaudi::Property<std::string> m_incidentName{this, "IncidentName", "", "incident name of records service"};
 
 public:
   /// Constructor: A constructor of this form must be provided.
@@ -34,7 +35,7 @@ public:
   /// Event callback
   virtual StatusCode execute();
   /// IIncidentListener override: Inform that a new incident has occured
-  virtual void handle(const Incident& incident);
+  virtual void handle( const Incident& incident );
 };
 
 #endif // GAUDIEXAMPLES_READALG_H

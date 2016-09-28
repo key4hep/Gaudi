@@ -13,21 +13,21 @@ class IIncidentSvc;
  *  @author Marco Clemencic
  *  @date   Nov 16, 2007
  */
-class AbortEventAlg : public GaudiAlgorithm {
+class AbortEventAlg : public GaudiAlgorithm
+{
 public:
   /// Standard constructor
   using GaudiAlgorithm::GaudiAlgorithm;
 
   ~AbortEventAlg() override = default; ///< Destructor
 
-  StatusCode initialize() override;    ///< Algorithm initialization
-  StatusCode execute   () override;    ///< Algorithm execution
-  StatusCode finalize  () override;    ///< Algorithm finalization
+  StatusCode initialize() override; ///< Algorithm initialization
+  StatusCode execute() override;    ///< Algorithm execution
+  StatusCode finalize() override;   ///< Algorithm finalization
 
 protected:
-
 private:
-  LongProperty  m_count{this, "AbortedEventNumber", 3, "At which event to trigger an abort"};
+  Gaudi::Property<long> m_count{this, "AbortedEventNumber", 3, "At which event to trigger an abort"};
 
   /// Pointer to the incident service.
   SmartIF<IIncidentSvc> m_incidentSvc;

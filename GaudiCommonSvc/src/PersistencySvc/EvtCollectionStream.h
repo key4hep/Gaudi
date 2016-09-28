@@ -12,32 +12,34 @@
 
 // STL include files
 #include <memory>
-#include <vector>
 #include <string>
+#include <vector>
 
 // Required for inheritance
 #include "GaudiKernel/Algorithm.h"
-
 
 /** A small to stream Data I/O.
     Author:  M.Frank
     Version: 1.0
 */
-class EvtCollectionStream : public Algorithm {
+class EvtCollectionStream : public Algorithm
+{
 protected:
-
-  StringArrayProperty m_itemNames{this, "ItemList", {}, "vector of item names"};
-  StringProperty   m_storeName{this, "EvtDataSvc", "TagCollectionSvc", "name of the service managing the data store"};
+  Gaudi::Property<std::vector<std::string>> m_itemNames{this, "ItemList", {}, "vector of item names"};
+  Gaudi::Property<std::string> m_storeName{this, "EvtDataSvc", "TagCollectionSvc",
+                                           "name of the service managing the data store"};
 
   /// Reference to Tuple service for event collection (may or may not be NTuple service)
   SmartIF<INTupleSvc> m_pTupleSvc;
   /// Vector of items to be saved to this stream
   std::vector<std::unique_ptr<DataStoreItem>> m_itemList;
+
 protected:
   /// Clear item list
   void clearItems();
   /// Add item to output streamer list
-  void addItem(const std::string& descriptor);
+  void addItem( const std::string& descriptor );
+
 public:
   /// Inherited constructor
   using Algorithm::Algorithm;

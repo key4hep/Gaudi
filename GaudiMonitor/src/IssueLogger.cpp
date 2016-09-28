@@ -167,9 +167,10 @@ void IssueLogger::report( const IssueSeverity& err ) { report( err.getLevel(), e
 void IssueLogger::setupLevels( Gaudi::Details::PropertyBase& prop )
 {
 
-  StringProperty* sap = dynamic_cast<StringProperty*>( &prop );
+  Gaudi::Property<std::string>* sap = dynamic_cast<Gaudi::Property<std::string>*>( &prop );
   if ( !sap ) {
-    error() << "Could not convert " << prop.name() << "to a StringProperty (which it should be!)" << endmsg;
+    error() << "Could not convert " << prop.name() << "to a Gaudi::Property<std::string> (which it should be!)"
+            << endmsg;
     return;
   }
 
@@ -198,9 +199,10 @@ void IssueLogger::setupLevels( Gaudi::Details::PropertyBase& prop )
 void IssueLogger::setupStreams( Gaudi::Details::PropertyBase& prop )
 {
 
-  StringArrayProperty* sap = dynamic_cast<StringArrayProperty*>( &prop );
+  Gaudi::Property<std::vector<std::string>>* sap = dynamic_cast<Gaudi::Property<std::vector<std::string>>*>( &prop );
   if ( !sap ) {
-    error() << "Could not convert " << prop.name() << "to a StringArrayProperty (which it should be!)" << endmsg;
+    error() << "Could not convert " << prop.name()
+            << "to a Gaudi::Property<std::vector<std::string>> (which it should be!)" << endmsg;
     return;
   }
   for ( const auto& s : sap->value() ) {

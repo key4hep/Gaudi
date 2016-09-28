@@ -108,15 +108,15 @@ public:
   virtual int messageCount( MSG::Level /* level */ ) const { return 0; }
 
 private:
-  StringProperty m_defaultFormat{this, "Format", "% F%18W%S%7W%R%T %0W%M", ""};
-  std::array<StringArrayProperty, MSG::NUM_LEVELS> m_thresholdProp{{{/*ignored*/},
-                                                                    {this, "setVerbose"},
-                                                                    {this, "setDebug"},
-                                                                    {this, "setInfo"},
-                                                                    {this, "setWarning"},
-                                                                    {this, "setError"},
-                                                                    {this, "setFatal"},
-                                                                    {this, "setAlways"}}};
+  Gaudi::Property<std::string> m_defaultFormat{this, "Format", "% F%18W%S%7W%R%T %0W%M", ""};
+  std::array<Gaudi::Property<std::vector<std::string>>, MSG::NUM_LEVELS> m_thresholdProp{{{/*ignored*/},
+                                                                                          {this, "setVerbose"},
+                                                                                          {this, "setDebug"},
+                                                                                          {this, "setInfo"},
+                                                                                          {this, "setWarning"},
+                                                                                          {this, "setError"},
+                                                                                          {this, "setFatal"},
+                                                                                          {this, "setAlways"}}};
 
   std::ostream* m_defaultStream = &std::cout; ///< Pointer to the output stream.
   Message m_defaultMessage;                   ///< Default Message

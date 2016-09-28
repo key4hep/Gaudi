@@ -35,33 +35,33 @@ class IDataProviderSvc;
    @author Markus Frank
    @version 1.0
 */
-class EventLoopMgr : public MinimalEventLoopMgr   {
+class EventLoopMgr : public MinimalEventLoopMgr
+{
 public:
-
 protected:
   // Properties
 
-  StringProperty       m_histPersName{this, "HistogramPersistency", {}, "name of the Hist Pers type"};
-  StringProperty       m_evtsel{this, "EvtSel", {}, "event selector"};
-  BooleanProperty      m_warnings{this, "Warnings", true, "set to false to suppress warning messages"};
+  Gaudi::Property<std::string> m_histPersName{this, "HistogramPersistency", {}, "name of the Hist Pers type"};
+  Gaudi::Property<std::string> m_evtsel{this, "EvtSel", {}, "event selector"};
+  Gaudi::Property<bool> m_warnings{this, "Warnings", true, "set to false to suppress warning messages"};
 
   /// Reference to the Event Data Service's IDataManagerSvc interface
-  SmartIF<IDataManagerSvc>  m_evtDataMgrSvc = nullptr;
+  SmartIF<IDataManagerSvc> m_evtDataMgrSvc = nullptr;
   /// Reference to the Event Data Service's IDataProviderSvc interface
   SmartIF<IDataProviderSvc> m_evtDataSvc = nullptr;
   /// Reference to the Event Selector
-  SmartIF<IEvtSelector>     m_evtSelector = nullptr;
+  SmartIF<IEvtSelector> m_evtSelector = nullptr;
   /// Event Iterator
-  IEvtSelector::Context*      m_evtContext = nullptr;
+  IEvtSelector::Context* m_evtContext = nullptr;
   /// Reference to the Histogram Data Service
-  SmartIF<IDataManagerSvc>  m_histoDataMgrSvc = nullptr;
+  SmartIF<IDataManagerSvc> m_histoDataMgrSvc = nullptr;
   /// Reference to the Histogram Persistency Service
-  SmartIF<IConversionSvc>   m_histoPersSvc = nullptr;
+  SmartIF<IConversionSvc> m_histoPersSvc = nullptr;
   /// Property interface of ApplicationMgr
-  SmartIF<IProperty>        m_appMgrProperty = nullptr;
+  SmartIF<IProperty> m_appMgrProperty = nullptr;
   /// Flag to avoid to fire the EnvEvent incident twice in a row
   /// (and also not before the first event)
-  bool              m_endEventFired = true;
+  bool m_endEventFired = true;
 
 public:
   // inherit contructor from base class
@@ -70,7 +70,7 @@ public:
   /// Standard Destructor
   ~EventLoopMgr() override;
   /// Create event address using event selector
-  StatusCode getEventRoot(IOpaqueAddress*& refpAddr);
+  StatusCode getEventRoot( IOpaqueAddress*& refpAddr );
 
   /// implementation of IService::initialize
   StatusCode initialize() override;
@@ -81,8 +81,8 @@ public:
   /// implementation of IService::finalize
   StatusCode finalize() override;
   /// implementation of IService::nextEvent
-  StatusCode nextEvent(int maxevt) override;
+  StatusCode nextEvent( int maxevt ) override;
   /// implementation of IEventProcessor::executeEvent(void* par)
-  StatusCode executeEvent(void* par) override;
+  StatusCode executeEvent( void* par ) override;
 };
 #endif // GAUDISVC_EVENTLOOPMGR_H

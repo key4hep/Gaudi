@@ -44,8 +44,8 @@ _gaudi = None
 # ---- Useful shortcuts for classes -------------------------------------------
 gbl.gInterpreter.Declare('#include "GaudiKernel/Property.h"')
 Helper              = gbl.GaudiPython.Helper
-StringProperty      = gbl.StringProperty
-StringPropertyRef   = gbl.StringPropertyRef
+StringProperty      = gbl.Gaudi.Property('std::string')
+StringPropertyRef   = gbl.Gaudi.Property('std::string&')
 GaudiHandleProperty = gbl.GaudiHandleProperty
 GaudiHandleArrayProperty = gbl.GaudiHandleArrayProperty
 DataObject          = gbl.DataObject
@@ -54,9 +54,9 @@ FAILURE             = gbl.StatusCode( gbl.StatusCode.FAILURE, True )
 # Helper to create a StringProperty
 cppyy.gbl.gInterpreter.Declare('''
 namespace GaudiPython { namespace Helpers {
-  StringProperty mkStringProperty(const std::string &name,
-                                  const std::string &value) {
-    return StringProperty{name, value};
+  Gaudi::Property<std::string> mkStringProperty(const std::string &name,
+                                                const std::string &value) {
+    return Gaudi::Property<std::string>{name, value};
   }
 }}''')
 

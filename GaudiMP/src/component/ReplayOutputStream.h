@@ -15,56 +15,57 @@ class IDataManagerSvc;
   * @author Marco Clemencic
   * @date 30/08/2013
   */
-class ReplayOutputStream: public GaudiAlgorithm {
+class ReplayOutputStream : public GaudiAlgorithm
+{
 public:
   /// Inherited constructor
   using GaudiAlgorithm::GaudiAlgorithm;
   ~ReplayOutputStream() override = default; ///< Destructor
 
-  StatusCode initialize() override;    ///< Algorithm initialization
-  StatusCode start     () override;    ///< Algorithm initialization
-  StatusCode execute   () override;    ///< Algorithm execution
-  StatusCode stop      () override;    ///< Algorithm finalization
-  StatusCode finalize  () override;    ///< Algorithm finalization
+  StatusCode initialize() override; ///< Algorithm initialization
+  StatusCode start() override;      ///< Algorithm initialization
+  StatusCode execute() override;    ///< Algorithm execution
+  StatusCode stop() override;       ///< Algorithm finalization
+  StatusCode finalize() override;   ///< Algorithm finalization
 
   /// Class used to hold the OutputStream instances
-  typedef GaudiUtils::HashMap<std::string, SmartIF<IAlgorithm> > OutStreamsMapType;
+  typedef GaudiUtils::HashMap<std::string, SmartIF<IAlgorithm>> OutStreamsMapType;
 
 private:
-
   /// Add a new algorithm to the list of OutputStreams
-  void i_addOutputStream(const Gaudi::Utils::TypeNameString &outStream);
+  void i_addOutputStream( const Gaudi::Utils::TypeNameString& outStream );
 
   /// Helper class to fill the internal map of OutputStreams.
-  class OutStreamAdder {
+  class OutStreamAdder
+  {
   public:
-    OutStreamAdder(ReplayOutputStream *ptr): m_ptr(ptr) {}
-    inline void operator() (const Gaudi::Utils::TypeNameString &outStream) {
-      m_ptr->i_addOutputStream(outStream);
-    }
+    OutStreamAdder( ReplayOutputStream* ptr ) : m_ptr( ptr ) {}
+    inline void operator()( const Gaudi::Utils::TypeNameString& outStream ) { m_ptr->i_addOutputStream( outStream ); }
   private:
-    ReplayOutputStream *m_ptr;
+    ReplayOutputStream* m_ptr;
   };
 
   /// Helper class to call the required OutputStream.
-  class OutStreamTrigger {
+  class OutStreamTrigger
+  {
   public:
-    OutStreamTrigger(ReplayOutputStream *ptr): m_ptr(ptr) {}
-    inline void operator() (const std::string &name) const {
-      SmartIF<IAlgorithm> &alg = m_ptr->m_outputStreams[name];
-      if (alg) {
-        if (!alg->isExecuted()) {
+    OutStreamTrigger( ReplayOutputStream* ptr ) : m_ptr( ptr ) {}
+    inline void operator()( const std::string& name ) const
+    {
+      SmartIF<IAlgorithm>& alg = m_ptr->m_outputStreams[name];
+      if ( alg ) {
+        if ( !alg->isExecuted() ) {
           alg->sysExecute();
         } else {
-          m_ptr->warning() << name
-              << " already executed for the current event" << endmsg;
+          m_ptr->warning() << name << " already executed for the current event" << endmsg;
         }
       } else {
         m_ptr->warning() << "invalid OuputStream " << name << endmsg;
       }
     }
+
   private:
-    ReplayOutputStream *m_ptr;
+    ReplayOutputStream* m_ptr;
   };
 
   /// Helper function to call the transition on the contained OutputStreams.
@@ -72,7 +73,8 @@ private:
   template <Gaudi::StateMachine::Transition TR>
   StatusCode i_outStreamTransition();
 
-  StringArrayProperty  m_outputStreamNames {this, "OutputStreams",  {},  "OutputStream instances that can be called."};
+  Gaudi::Property<std::vector<std::string>> m_outputStreamNames{
+      this, "OutputStreams", {}, "OutputStream instances that can be called."};
 
   /// Internal storage for the OutputStreams to call.
   OutStreamsMapType m_outputStreams;

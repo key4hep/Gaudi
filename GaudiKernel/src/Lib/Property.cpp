@@ -154,21 +154,21 @@ bool GaudiHandleArrayProperty::setValue( const GaudiHandleArrayBase& value )
 
 std::string GaudiHandleArrayProperty::toString() const
 {
-  // treat as if a StringArrayProperty
+  // treat as if a Gaudi::Property<std::vector<std::string>>
   useReadHandler();
   return Gaudi::Utils::toString( m_pValue->typesAndNames() );
 }
 
 void GaudiHandleArrayProperty::toStream( std::ostream& out ) const
 {
-  // treat as if a StringArrayProperty
+  // treat as if a Gaudi::Property<std::vector<std::string>>
   useReadHandler();
   Gaudi::Utils::toStream( m_pValue->typesAndNames(), out );
 }
 
 StatusCode GaudiHandleArrayProperty::fromString( const std::string& source )
 {
-  // treat as if a StringArrayProperty
+  // treat as if a Gaudi::Property<std::vector<std::string>>
   std::vector<std::string> tmp;
   StatusCode sc = Gaudi::Parsers::parse( tmp, source );
   if ( sc.isFailure() ) return sc;

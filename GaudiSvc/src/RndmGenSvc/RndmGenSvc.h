@@ -12,11 +12,11 @@
 #include <vector>
 
 // Framework include files
-#include "GaudiKernel/Service.h"
-#include "GaudiKernel/ISerialize.h"
-#include "GaudiKernel/IRndmGen.h"
 #include "GaudiKernel/IRndmEngine.h"
+#include "GaudiKernel/IRndmGen.h"
 #include "GaudiKernel/IRndmGenSvc.h"
+#include "GaudiKernel/ISerialize.h"
+#include "GaudiKernel/Service.h"
 
 // Forward declarations
 class IRndmGenFactory;
@@ -46,22 +46,21 @@ class IMessageSvc;
     Author:  M.Frank
     Version: 1.0
 */
-class RndmGenSvc : public extends<Service,
-                                  IRndmGenSvc,
-                                  IRndmEngine,
-                                  ISerialize> {
+class RndmGenSvc : public extends<Service, IRndmGenSvc, IRndmEngine, ISerialize>
+{
 private:
   /// Random number engine
   mutable SmartIF<IRndmEngine> m_engine;
   /// Serialization interface of random number engine
-  mutable SmartIF<ISerialize>  m_serialize;
+  mutable SmartIF<ISerialize> m_serialize;
 
-  StringProperty m_engineName{this, "Engine", "HepRndm::Engine<CLHEP::RanluxEngine>", "engine name"};
+  Gaudi::Property<std::string> m_engineName{this, "Engine", "HepRndm::Engine<CLHEP::RanluxEngine>", "engine name"};
 
 public:
   // inherits constructor from base class
   using extends::extends;
   ~RndmGenSvc() override = default;
+
 public:
   /// Service override: initialization
   StatusCode initialize() override;
@@ -69,13 +68,13 @@ public:
   StatusCode finalize() override;
   /** IRndmGenSvc interface implementation  */
   /// Input serialization from stream buffer. Restores the status of the generator engine.
-  StreamBuffer& serialize(StreamBuffer& str) override;
+  StreamBuffer& serialize( StreamBuffer& str ) override;
   /// Output serialization to stream buffer. Saves the status of the generator engine.
-  StreamBuffer& serialize(StreamBuffer& str) const override;
+  StreamBuffer& serialize( StreamBuffer& str ) const override;
   /// Retrieve engine
   IRndmEngine* engine() override;
   /// Retrieve a valid generator from the service.
-  StatusCode generator(const IRndmGen::Param& par, IRndmGen*& refpGen) override;
+  StatusCode generator( const IRndmGen::Param& par, IRndmGen*& refpGen ) override;
   /// Single shot returning single random number
   double rndm() const override;
   /** Multiple shots returning vector with flat random numbers.
@@ -84,11 +83,11 @@ public:
       @param  start    ... starting at position start
       @return StatusCode indicating failure or success.
   */
-  StatusCode rndmArray( std::vector<double>& array, long howmany, long start = 0) const override;
+  StatusCode rndmArray( std::vector<double>& array, long howmany, long start = 0 ) const override;
   /// Allow to set new seeds
-  StatusCode setSeeds(const std::vector<long>& seeds) override;
+  StatusCode setSeeds( const std::vector<long>& seeds ) override;
   /// Allow to get seeds
-  StatusCode seeds(std::vector<long>& seeds)  const override;
+  StatusCode seeds( std::vector<long>& seeds ) const override;
 };
 
 #endif // GAUDI_RANDOMGENSVC_RNDMGENSVC_H

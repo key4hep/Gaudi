@@ -4,8 +4,8 @@
 // Include files
 // from Gaudi
 #include "GaudiAlg/GaudiAlgorithm.h"
-#include <vector>
 #include <string>
+#include <vector>
 
 /** @class EventNodeKiller EventNodeKiller.h
  *  Algorithm to kill nodes in the event data store. Useful if you want to
@@ -14,14 +14,15 @@
  *  @author Marco Cattaneo
  *  @date   2005-07-14
  */
-class EventNodeKiller : public GaudiAlgorithm {
+class EventNodeKiller : public GaudiAlgorithm
+{
 public:
   using GaudiAlgorithm::GaudiAlgorithm;
-  ~EventNodeKiller( ) override = default;
+  ~EventNodeKiller() override = default;
 
   StatusCode execute() override;
 
 private:
-  StringArrayProperty m_nodes{this, "Nodes"};
+  Gaudi::Property<std::vector<std::string>> m_nodes{this, "Nodes"};
 };
 #endif // EVENTNODEKILLER_H

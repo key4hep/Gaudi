@@ -249,8 +249,8 @@ StatusCode PropertyAlg::initialize()
   info() << "=================================================" << endmsg;
 
   // Change an option of my own....
-  jopts->addPropertyToCatalogue( name(), StringProperty( "PInt", "155" ) ).ignore();
-  StringArrayProperty sap( "DoubleArray", {"12.12", "13.13"} );
+  jopts->addPropertyToCatalogue( name(), Gaudi::Property<std::string>( "PInt", "155" ) ).ignore();
+  Gaudi::Property<std::vector<std::string>> sap( "DoubleArray", {"12.12", "13.13"} );
   if ( jopts->addPropertyToCatalogue( name(), sap ).isSuccess() ) {
     info() << "Changed property DoubleArray in catalogue" << endmsg;
     jopts->setMyProperties( name(), this ).ignore();

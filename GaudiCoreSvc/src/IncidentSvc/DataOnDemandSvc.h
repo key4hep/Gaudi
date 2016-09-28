@@ -246,15 +246,15 @@ private:
   std::vector<IDODAlgMapper*> m_algMappers;
   // ==========================================================================
   // Properties
-  StringProperty m_trapType{this, "IncidentName", "DataFault", "the type of handled Incident"};
-  StringProperty m_dataSvcName{this, "DataSvc", "EventDataSvc", "DataSvc name"};
+  Gaudi::Property<std::string> m_trapType{this, "IncidentName", "DataFault", "the type of handled Incident"};
+  Gaudi::Property<std::string> m_dataSvcName{this, "DataSvc", "EventDataSvc", "DataSvc name"};
 
-  BooleanProperty m_partialPath{this, "UsePreceedingPath", true, "allow creation of partial leaves"};
-  BooleanProperty m_dump{
+  Gaudi::Property<bool> m_partialPath{this, "UsePreceedingPath", true, "allow creation of partial leaves"};
+  Gaudi::Property<bool> m_dump{
       this, "Dump", false,
       "dump configuration and stastics, if set to True after initialize it triggers a dump immediately"};
-  BooleanProperty m_init{this, "PreInitialize", false, "(pre)initialize all algorithms"};
-  BooleanProperty m_allowInitFailure{
+  Gaudi::Property<bool> m_init{this, "PreInitialize", false, "(pre)initialize all algorithms"};
+  Gaudi::Property<bool> m_allowInitFailure{
       this, "AllowPreInitializeFailure", false,
       "allow (pre)initialization of algorithms to fail without stopping the application"};
 
@@ -265,10 +265,12 @@ private:
   Gaudi::Property<Map> m_algMap{this, "AlgMap", {}, "mapping {'data': 'algorithm'}"};
   Gaudi::Property<Map> m_nodeMap{this, "NodeMap", {}, "mapping {'data': 'type'}"};
 
-  StringProperty m_prefix{this, "Prefix", "/Event/"};
+  Gaudi::Property<std::string> m_prefix{this, "Prefix", "/Event/"};
 
-  StringArrayProperty m_nodeMapTools{this, "NodeMappingTools", {}, "list of tools of type IDODNodeMapper"};
-  StringArrayProperty m_algMapTools{this, "AlgMappingTools", {}, "list of tools of type IDODAlgMapper"};
+  Gaudi::Property<std::vector<std::string>> m_nodeMapTools{
+      this, "NodeMappingTools", {}, "list of tools of type IDODNodeMapper"};
+  Gaudi::Property<std::vector<std::string>> m_algMapTools{
+      this, "AlgMappingTools", {}, "list of tools of type IDODAlgMapper"};
 };
 // ============================================================================
 

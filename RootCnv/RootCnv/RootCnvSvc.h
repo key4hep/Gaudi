@@ -8,9 +8,9 @@
 #define GAUDIROOTCNV_GAUDIROOTCNVSVC_H
 
 // Framework include files
+#include "GaudiKernel/ClassID.h"
 #include "GaudiKernel/ConversionSvc.h"
 #include "GaudiKernel/DataObject.h"
-#include "GaudiKernel/ClassID.h"
 
 // C++ include files
 #include <set>
@@ -21,17 +21,18 @@ class IIncidentSvc;
 class TClass;
 
 // ROOT include files
-#include "TROOT.h"
-#include "TClass.h"
-#include "TTree.h"
 #include "TBranch.h"
+#include "TClass.h"
+#include "TROOT.h"
+#include "TTree.h"
 
 //#include "RootCnv/RootPerfMonSvc.h"
 
 /*
  * Gaudi namespace declaration
  */
-namespace Gaudi {
+namespace Gaudi
+{
 
   // Forward declarations
   class IIODataManager;
@@ -49,66 +50,70 @@ namespace Gaudi {
    *  @version 1.0
    *  @date    20/12/2009
    */
-  class GAUDI_API RootCnvSvc : public ConversionSvc  {
+  class GAUDI_API RootCnvSvc : public ConversionSvc
+  {
   protected:
-
-    StringProperty m_ioPerfStats{this, "IOPerfStats", "", "Enable TTree IOperfStats if not empty; otherwise perf stat file name"};
-    StringProperty m_shareFiles{this, "ShareFiles", "NO", "Share files? If set to YES,  files will not be closed on finalize"};
-    BooleanProperty m_incidentEnabled{this, "EnableIncident", true, "Flag to enable incidents on FILE_OPEN"};
-    StringProperty m_recordName{this, "RecordsName", "/FileRecords", "Records name to fire incident for file records"};
+    Gaudi::Property<std::string> m_ioPerfStats{this, "IOPerfStats", "",
+                                               "Enable TTree IOperfStats if not empty; otherwise perf stat file name"};
+    Gaudi::Property<std::string> m_shareFiles{this, "ShareFiles", "NO",
+                                              "Share files? If set to YES,  files will not be closed on finalize"};
+    Gaudi::Property<bool> m_incidentEnabled{this, "EnableIncident", true, "Flag to enable incidents on FILE_OPEN"};
+    Gaudi::Property<std::string> m_recordName{this, "RecordsName", "/FileRecords",
+                                              "Records name to fire incident for file records"};
 
     // ROOT Write parameters
-    IntegerProperty m_autoFlush{this, "AutoFlush",  100, "AutoFlush parameter for ROOT TTree (Number of events between auto flushes)"};
-    IntegerProperty m_basketSize{this, "BasketSize",  2 * 1024 * 1024 /*MBYTE*/, "Basket optimization parameter for ROOT TTree (total basket size)"};
-    IntegerProperty m_bufferSize{this, "BufferSize",  2 * 1024 /*kBYTE*/,  "Buffer size optimization parameter for ROOT TTree"};
-    IntegerProperty m_splitLevel{this, "SplitLevel",  0,  "Split level optimization parameter for ROOT TTree"};
-    StringProperty m_compression{this, "GlobalCompression",  "", "Compression-algorithm:compression-level,  empty: do nothing"};
-
+    Gaudi::Property<int> m_autoFlush{this, "AutoFlush", 100,
+                                     "AutoFlush parameter for ROOT TTree (Number of events between auto flushes)"};
+    Gaudi::Property<int> m_basketSize{this, "BasketSize", 2 * 1024 * 1024 /*MBYTE*/,
+                                      "Basket optimization parameter for ROOT TTree (total basket size)"};
+    Gaudi::Property<int> m_bufferSize{this, "BufferSize", 2 * 1024 /*kBYTE*/,
+                                      "Buffer size optimization parameter for ROOT TTree"};
+    Gaudi::Property<int> m_splitLevel{this, "SplitLevel", 0, "Split level optimization parameter for ROOT TTree"};
+    Gaudi::Property<std::string> m_compression{this, "GlobalCompression", "",
+                                               "Compression-algorithm:compression-level,  empty: do nothing"};
 
     /// Reference to the I/O data manager
-    SmartIF<Gaudi::IIODataManager>      m_ioMgr;
+    SmartIF<Gaudi::IIODataManager> m_ioMgr;
     /// Reference to incident service
-    SmartIF<IIncidentSvc>               m_incidentSvc;
+    SmartIF<IIncidentSvc> m_incidentSvc;
     /// On writing: reference to active output stream
-    Gaudi::RootDataConnection*  m_current = nullptr;
+    Gaudi::RootDataConnection* m_current = nullptr;
     /// TClass pointer to reference class
-    TClass*                     m_classRefs = nullptr;
+    TClass* m_classRefs = nullptr;
     /// TClass pointer to DataObject class
-    TClass*                     m_classDO = nullptr;
+    TClass* m_classDO = nullptr;
     /// Setup structure (ref-counted) and passed to data connections
     std::shared_ptr<RootConnectionSetup> m_setup;
     /// Property: ROOT section name
-    std::string                 m_currSection;
+    std::string m_currSection;
 
     /// Set with bad files/tables
-    std::set<std::string>       m_badFiles;
+    std::set<std::string> m_badFiles;
 
     /// Message streamer
-    std::unique_ptr<MsgStream>  m_log;
+    std::unique_ptr<MsgStream> m_log;
 
     /// Helper: Get TClass for a given DataObject pointer
-    TClass* getClass(DataObject* pObject);
+    TClass* getClass( DataObject* pObject );
     /// Helper: Use message streamer
-    MsgStream& log() const {   return *m_log; }
+    MsgStream& log() const { return *m_log; }
 
   public:
-
     /// Standard constructor
-    RootCnvSvc(const std::string& name, ISvcLocator* svc);
+    RootCnvSvc( const std::string& name, ISvcLocator* svc );
 
     /// Standard destructor
     ~RootCnvSvc() override = default;
 
     /// Update state of the service
-    virtual StatusCode updateServiceState(IOpaqueAddress* /* pAddress */)
-    { return StatusCode::SUCCESS;                  }
+    virtual StatusCode updateServiceState( IOpaqueAddress* /* pAddress */ ) { return StatusCode::SUCCESS; }
 
     /** Standard way to print errors. after the printout an exception is thrown.
      * @param      msg      [IN]     Message string to be printed.
      *
      * @return     Status code returning failure.
      */
-    StatusCode error(const std::string& msg);
+    StatusCode error( const std::string& msg );
 
     /** Connect the output file to the service with open mode.
      *  @param      dataset     String containig file name
@@ -116,7 +121,7 @@ namespace Gaudi {
      *
      *  @return     Status code indicating success or failure.
      */
-    StatusCode connectDatabase(const std::string& dataset, int mode, RootDataConnection** con);
+    StatusCode connectDatabase( const std::string& dataset, int mode, RootDataConnection** con );
 
     /// ConversionSvc overload: initialize Db service
     virtual StatusCode initialize();
@@ -125,12 +130,10 @@ namespace Gaudi {
     virtual StatusCode finalize();
 
     /// ConversionSvc overload: Create new Converter using factory
-    virtual IConverter* createConverter(long typ,
-					const CLID& wanted,
-					const ICnvFactory* fac);
+    virtual IConverter* createConverter( long typ, const CLID& wanted, const ICnvFactory* fac );
 
     /// ConversionSvc overload: Load the class (dictionary) for the converter
-    virtual void loadConverter(DataObject* pObj);
+    virtual void loadConverter( DataObject* pObj );
 
     /** Connect the output file to the service with open mode.
      *  @param      outputFile  String containig output file
@@ -138,15 +141,14 @@ namespace Gaudi {
      *
      *  @return     Status code indicating success or failure.
      */
-    virtual StatusCode connectOutput(const std::string& outputFile,
-				     const std::string& openMode);
+    virtual StatusCode connectOutput( const std::string& outputFile, const std::string& openMode );
 
     /** Connect the output file to the service.
      *  @param      outputFile  String containig output file
      *
      *  @return     Status code indicating success or failure.
      */
-    virtual StatusCode connectOutput(const std::string& outputFile);
+    virtual StatusCode connectOutput( const std::string& outputFile );
 
     /** Commit pending output.
      *  @param      outputFile  String containig output file
@@ -158,15 +160,14 @@ namespace Gaudi {
      *
      *  @return     Status code indicating success or failure.
      */
-    virtual StatusCode commitOutput(const std::string& outputFile,
-				    bool               do_commit);
+    virtual StatusCode commitOutput( const std::string& outputFile, bool do_commit );
 
     /** Disconnect from an existing data stream.
      * @param      dbName      String containing name of the database
      *
      * @return     Status code indicating success or failure.
      */
-    virtual StatusCode disconnect(const std::string& dbName);
+    virtual StatusCode disconnect( const std::string& dbName );
 
     /** IAddressCreator implementation: Address creation.
      * Create an address using the link infotmation together with
@@ -179,11 +180,8 @@ namespace Gaudi {
      *
      * @return                  StatusCode indicating SUCCESS or failure
      */
-    virtual StatusCode createAddress( long                 svc_type,
-				      const CLID&          clid,
-				      const std::string*   par,
-				      const unsigned long* ip,
-				      IOpaqueAddress*&     refpAddress);
+    virtual StatusCode createAddress( long svc_type, const CLID& clid, const std::string* par, const unsigned long* ip,
+                                      IOpaqueAddress*& refpAddress );
 
     /** IAddressCreator implementation: Creates an address in string form to object form
      *  @param      svc_type    Technology identifier encapsulated
@@ -194,11 +192,10 @@ namespace Gaudi {
      *  @param      refpAddress Output address in string form.
      *  @return     Status code indicating success or failure.
      */
-    virtual StatusCode createAddress( long svc_type,
-				      const CLID& clid,
-				      const std::string& refAddress,
-				      IOpaqueAddress*& refpAddress) {
-      return this->ConversionSvc::createAddress(svc_type,clid,refAddress,refpAddress);
+    virtual StatusCode createAddress( long svc_type, const CLID& clid, const std::string& refAddress,
+                                      IOpaqueAddress*& refpAddress )
+    {
+      return this->ConversionSvc::createAddress( svc_type, clid, refAddress, refpAddress );
     }
 
     /** Insert null marker for not existent transient object
@@ -207,7 +204,7 @@ namespace Gaudi {
      *
      * @return Status code indicating success or failure.
      */
-    virtual StatusCode createNullRep(const std::string& path);
+    virtual StatusCode createNullRep( const std::string& path );
 
     /** Insert null marker for not existent transient object
      *
@@ -215,7 +212,7 @@ namespace Gaudi {
      *
      * @return Status code indicating success or failure.
      */
-    virtual StatusCode createNullRef(const std::string& path);
+    virtual StatusCode createNullRef( const std::string& path );
 
     /** Convert the transient object to the requested persistent representation.
      *
@@ -224,8 +221,7 @@ namespace Gaudi {
      *
      * @return Status code indicating success or failure.
      */
-    virtual StatusCode i__createRep(DataObject* pObj, IOpaqueAddress*& refpAddr);
-
+    virtual StatusCode i__createRep( DataObject* pObj, IOpaqueAddress*& refpAddr );
 
     /** Resolve the references of the converted object.
      *
@@ -234,7 +230,7 @@ namespace Gaudi {
      *
      * @return Status code indicating success or failure.
      */
-    virtual StatusCode i__fillRepRefs(IOpaqueAddress* pAddr,DataObject* pObj);
+    virtual StatusCode i__fillRepRefs( IOpaqueAddress* pAddr, DataObject* pObj );
 
     /** Create transient object from persistent data
      *
@@ -243,17 +239,17 @@ namespace Gaudi {
      *
      * @return Status code indicating success or failure.
      */
-    virtual StatusCode i__createObj(IOpaqueAddress* pAddr, DataObject*& refpObj);
+    virtual StatusCode i__createObj( IOpaqueAddress* pAddr, DataObject*& refpObj );
 
-  /** Resolve the references of the created transient object.
-    *
-    * @param    pAddr    [IN]   Pointer to object address.
-    * @param    pObj     [IN]   Pointer to data object
-    *
-    * @return Status code indicating success or failure.
-    */
-    virtual StatusCode i__fillObjRefs(IOpaqueAddress* pAddr, DataObject* pObj);
+    /** Resolve the references of the created transient object.
+      *
+      * @param    pAddr    [IN]   Pointer to object address.
+      * @param    pObj     [IN]   Pointer to data object
+      *
+      * @return Status code indicating success or failure.
+      */
+    virtual StatusCode i__fillObjRefs( IOpaqueAddress* pAddr, DataObject* pObj );
   };
 }
 
-#endif  // GAUDIROOTCNV_GAUDIROOTCNVSVC_H
+#endif // GAUDIROOTCNV_GAUDIROOTCNVSVC_H

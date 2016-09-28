@@ -70,12 +70,12 @@ private:
   /// dump the content of Properties catalog to the predefined file
 
 private:
-  StringProperty m_source_type{this, "TYPE"};
-  StringProperty m_source_path{this, "PATH"};
-  StringProperty m_dir_search_path{this, "SEARCHPATH"};
-  StringProperty m_dump{this, "DUMPFILE"};
-  StringProperty m_pythonAction{this, "PYTHONACTION"};
-  StringProperty m_pythonParams{this, "PYTHONPARAMS"};
+  Gaudi::Property<std::string> m_source_type{this, "TYPE"};
+  Gaudi::Property<std::string> m_source_path{this, "PATH"};
+  Gaudi::Property<std::string> m_dir_search_path{this, "SEARCHPATH"};
+  Gaudi::Property<std::string> m_dump{this, "DUMPFILE"};
+  Gaudi::Property<std::string> m_pythonAction{this, "PYTHONACTION"};
+  Gaudi::Property<std::string> m_pythonParams{this, "PYTHONPARAMS"};
 
   SvcCatalog m_svc_catalog;
 };
