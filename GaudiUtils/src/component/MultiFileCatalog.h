@@ -173,7 +173,7 @@ namespace Gaudi
     /// Container with references to known catalogs
     Catalogs m_catalogs;
 
-    PropertyWithValue<CatalogNames> m_catalogNames{
+    Gaudi::Property<CatalogNames> m_catalogNames{
         this, "Catalogs", {{"xmlcatalog_file:test_catalog.xml"}}, "catalog names"};
 
     /// Flag to indicate if catalog is started

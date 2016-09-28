@@ -363,8 +363,8 @@ private:
   BooleanProperty m_auditorReinitialize{this, "AuditReinitialize", false, "trigger auditor on reinitialize()"};
   BooleanProperty m_auditorRestart{this, "AuditRestart", false, "trigger auditor on restart()"};
 
-  PropertyWithValue<DataObjIDColl> m_extInputDataObjs{this, "ExtraInputs", DataObjIDColl{}, "[[deprecated]]"};
-  PropertyWithValue<DataObjIDColl> m_extOutputDataObjs{this, "ExtraOutputs", DataObjIDColl{}, "[[deprecated]]"};
+  Gaudi::Property<DataObjIDColl> m_extInputDataObjs{this, "ExtraInputs", DataObjIDColl{}, "[[deprecated]]"};
+  Gaudi::Property<DataObjIDColl> m_extOutputDataObjs{this, "ExtraOutputs", DataObjIDColl{}, "[[deprecated]]"};
 
   std::string m_threadID; ///< Thread Id for Alg Tool
 

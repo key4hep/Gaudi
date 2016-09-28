@@ -30,7 +30,7 @@ namespace Gaudi
     public:
       // ======================================================================
       /// Execute the algorithm
-      StatusCode execute () override;
+      StatusCode execute() override;
       // ======================================================================
     public:
       // ======================================================================
@@ -38,39 +38,38 @@ namespace Gaudi
        *  @param name algorithm instance name
        *  @param pSvc  Service Locator
        */
-      HistoProps
-      ( const std::string& name ,
-        ISvcLocator*       pSvc )
-        : GaudiHistoAlg ( name , pSvc )
+      HistoProps( const std::string& name, ISvcLocator* pSvc ) : GaudiHistoAlg( name, pSvc )
       {
-        setProperty ( "PropertiesPrint" , true ) . ignore () ;
-        setProperty ( "HistoPrint"      , true ) . ignore () ;
+        setProperty( "PropertiesPrint", true ).ignore();
+        setProperty( "HistoPrint", true ).ignore();
       }
       /// destructor
       ~HistoProps() override = default;
       // ======================================================================
     private:
-      Histo1DProperty  m_hist1 {this,  "Histo1" ,  Gaudi::Histo1DDef ( "Histogram1" , -3 , 3 , 200 ) ,  "The parameters for the first  histogram" };
-      PropertyWithValue<Gaudi::Histo1DDef>  m_hist2 {this,  "Histo2" ,  {"Histogram2" , -5 , 5 , 200 } ,  "The parameters for the second histogram" };
+      Histo1DProperty m_hist1{this, "Histo1", Gaudi::Histo1DDef( "Histogram1", -3, 3, 200 ),
+                              "The parameters for the first  histogram"};
+      Gaudi::Property<Gaudi::Histo1DDef> m_hist2{
+          this, "Histo2", {"Histogram2", -5, 5, 200}, "The parameters for the second histogram"};
     };
   } // end of namespace Gaudi::Examples
 } // end of namespace Gaudi
 // ============================================================================
 /// the factory (necessary for instantiation)
 using Gaudi::Examples::HistoProps;
-DECLARE_COMPONENT(HistoProps)
+DECLARE_COMPONENT( HistoProps )
 // ============================================================================
 // Execute the algorithm
 // ============================================================================
-StatusCode Gaudi::Examples::HistoProps::execute ()
+StatusCode Gaudi::Examples::HistoProps::execute()
 {
 
-  Rndm::Numbers  gauss   ( randSvc() , Rndm::Gauss ( 0.0 ,  1.0 ) ) ;
+  Rndm::Numbers gauss( randSvc(), Rndm::Gauss( 0.0, 1.0 ) );
 
-  plot ( gauss() , m_hist1.value() ) ;
-  plot ( gauss() , m_hist2.value() ) ;
+  plot( gauss(), m_hist1.value() );
+  plot( gauss(), m_hist2.value() );
 
-  return StatusCode::SUCCESS ;
+  return StatusCode::SUCCESS;
 }
 // ============================================================================
 // The END

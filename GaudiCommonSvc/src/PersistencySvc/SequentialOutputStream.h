@@ -11,35 +11,32 @@
  * @author  M.Frank
  * @version 1.0
  */
-class SequentialOutputStream : public OutputStream {
+class SequentialOutputStream : public OutputStream
+{
 
- protected:
+protected:
+  /// OutputStream override: Select the different objects and write them to file
+  StatusCode writeObjects() override;
 
-   /// OutputStream override: Select the different objects and write them to file
-   StatusCode writeObjects() override;
+public:
+  using OutputStream::OutputStream;
 
- public:
+  /// Standard Destructor
+  ~SequentialOutputStream() override = default;
 
-   using OutputStream::OutputStream;
+  StatusCode execute() override;
 
-   /// Standard Destructor
-   ~SequentialOutputStream() override = default;
+private:
+  Gaudi::Property<unsigned int> m_eventsPerFile{this, "EventsPerFile", std::numeric_limits<unsigned int>::max()};
+  BooleanProperty m_numericFilename{this, "NumericFilename", false};
+  Gaudi::Property<unsigned int> m_nNumbersAdded{this, "NumbersAdded", 6};
 
-   StatusCode execute() override;
+  // Data members
+  unsigned int m_events = 0;
+  unsigned int m_iFile  = 1;
 
- private:
-
-   PropertyWithValue<unsigned int>  m_eventsPerFile {this,  "EventsPerFile",  std::numeric_limits< unsigned int>::max()};
-   BooleanProperty  m_numericFilename {this,  "NumericFilename",  false };
-   PropertyWithValue<unsigned int>  m_nNumbersAdded {this,  "NumbersAdded",  6};
-
-   // Data members
-   unsigned int m_events = 0;
-   unsigned int m_iFile = 1;
-
-   // Helper Methods
-   void makeFilename();
-
+  // Helper Methods
+  void makeFilename();
 };
 
 #endif // GAUDISVC_PERSISTENCYSVC_SEQUENTIALOUTPUTSTREAM_H

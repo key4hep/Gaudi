@@ -130,7 +130,7 @@ public:
   /// \deprecated Prefer the signatures using a fully initialized PropertyBase instance.
   template <class TYPE, class VERIFIER, class HANDLERS>
   Gaudi::Details::PropertyBase* declareProperty( const std::string& name,
-                                                 PropertyWithValue<TYPE, VERIFIER, HANDLERS>& prop,
+                                                 Gaudi::Property<TYPE, VERIFIER, HANDLERS>& prop,
                                                  const std::string& doc = "none" )
   {
     assertUniqueName( name );

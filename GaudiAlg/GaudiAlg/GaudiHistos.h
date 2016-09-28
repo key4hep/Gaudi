@@ -2767,7 +2767,7 @@ private:
                                 "Switch on/off the checks for NaN and Infinity for histogram fill"};
   BooleanProperty m_splitHistoDir{this, "HistoSplitDir", false,
                                   "Split long directory names into short pieces (suitable for HBOOK)"};
-  PropertyWithValue<HistoID::NumericID> m_histoOffSet{
+  Gaudi::Property<HistoID::NumericID> m_histoOffSet{
       this, "HistoOffSet", 0, "OffSet for automatically assigned histogram numerical identifiers "};
   StringProperty m_histoTopDir{this, "HistoTopDir", "",
                                "Top level histogram directory (take care that it ends with '/')"};
@@ -2784,7 +2784,7 @@ private:
   BooleanProperty m_useNumericAutoIDs{
       this, "UseSequencialNumericAutoIDs", false,
       "Flag to allow users to switch back to the old style of creating numerical automatic IDs"};
-  PropertyWithValue<std::map<std::string, std::string>> m_idReplaceInfo{
+  Gaudi::Property<std::map<std::string, std::string>> m_idReplaceInfo{
       this,
       "AutoStringIDPurgeMap",
       {{"/", "=SLASH="}},

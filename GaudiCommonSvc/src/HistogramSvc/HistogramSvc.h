@@ -1287,8 +1287,8 @@ public:
   typedef std::map<std::string, Gaudi::Histo1DDef> Histo1DMap;
   // ==========================================================================
 private:
-  PropertyWithValue<DBaseEntries> m_input{this, "Input", {}, "input streams"};
-  PropertyWithValue<Histo1DMap> m_defs1D{this, "Predefined1DHistos", {}, "histograms with predefined parameters"};
+  Gaudi::Property<DBaseEntries> m_input{this, "Input", {}, "input streams"};
+  Gaudi::Property<Histo1DMap> m_defs1D{this, "Predefined1DHistos", {}, "histograms with predefined parameters"};
 
   // ==========================================================================
   // modified histograms:

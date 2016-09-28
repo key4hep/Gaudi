@@ -335,7 +335,7 @@ private:
   BooleanProperty m_tuplesPrint{this, "NTuplePrint", true, "print N-tuple statistics"};
   BooleanProperty m_splitNTupleDir{this, "NTupleSplitDir", false,
                                    "split long directory names into short pieces (suitable for HBOOK)"};
-  PropertyWithValue<TupleID::NumericID> m_nTupleOffSet{this, "NTupleOffSet", 0, "offset for numerical N-tuple ID"};
+  Gaudi::Property<TupleID::NumericID> m_nTupleOffSet{this, "NTupleOffSet", 0, "offset for numerical N-tuple ID"};
   StringProperty m_nTupleLUN{this, "NTupleLUN", "FILE1", "Logical File Unit for N-tuples"};
   StringProperty m_nTupleTopDir{this, "NTupleTopDir", "", "top-level directory for N-Tuples"};
   StringProperty m_nTupleDir{this, "NTupleDir", boost::algorithm::replace_all_copy( this->name(), ":", "_" ),
@@ -345,7 +345,7 @@ private:
                                    "general switch to enable/disable Event Tag Collections"};
   BooleanProperty m_evtColsPrint{this, "EvtColsPrint", false, "print statistics for Event Tag Collections "};
   BooleanProperty m_splitEvtColDir{this, "EvtColSplitDir", false, "split long directory names into short pieces"};
-  PropertyWithValue<TupleID::NumericID> m_evtColOffSet{this, "EvtColOffSet", 0, "offset for numerical N-tuple ID"};
+  Gaudi::Property<TupleID::NumericID> m_evtColOffSet{this, "EvtColOffSet", 0, "offset for numerical N-tuple ID"};
   StringProperty m_evtColLUN{this, "EvtColLUN", "EVTCOL", "Logical File Unit for Event Tag Collections"};
   StringProperty m_evtColTopDir{this, "EvtColTopDir", "", "Top-level directory for Event Tag Collections"};
   StringProperty m_evtColDir{this, "EvtColDir", boost::algorithm::replace_all_copy( this->name(), ":", "_" ),

@@ -54,7 +54,7 @@
   <class name    = "Stat"                   />
   <class pattern = "Chrono*"                 />
 
-  <class pattern = "PropertyWithValue<*>">
+  <class pattern = "Gaudi::Property<*>">
     <field name="m_value" transient="true"/>
   </class>
 

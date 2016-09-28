@@ -16,30 +16,29 @@
   * @author Marco Clemencic
   * @date 16/01/2012
   */
-class DODBasicMapper: public extends<AlgTool,
-                                     IDODAlgMapper,
-                                     IDODNodeMapper> {
+class DODBasicMapper : public extends<AlgTool, IDODAlgMapper, IDODNodeMapper>
+{
 public:
   /// inherit contructor
   using extends::extends;
 
-  //DODBasicMapper(const std::string& type, const std::string& name, const IInterface* parent);
+  // DODBasicMapper(const std::string& type, const std::string& name, const IInterface* parent);
   ~DODBasicMapper() override = default;
 
   /// @see IDODAlgMapper
-  Gaudi::Utils::TypeNameString algorithmForPath(const std::string &path) override;
+  Gaudi::Utils::TypeNameString algorithmForPath( const std::string& path ) override;
 
   /// @see IDODNodeMapper
-  std::string nodeTypeForPath(const std::string &path) override;
+  std::string nodeTypeForPath( const std::string& path ) override;
 
 private:
   template <class T>
-  using MapProp = PropertyWithValue<GaudiUtils::HashMap<std::string, T>>;
+  using MapProp = Gaudi::Property<GaudiUtils::HashMap<std::string, T>>;
 
-  MapProp<std::string>                   m_nodeMap{this, "Nodes", {},
-      "map of the type of nodes to be associated to paths (path -> data_type)."};
-  MapProp<Gaudi::Utils::TypeNameString>  m_algMap{this, "Algorithms", {},
-      "map of algorithms to be used to produce entries (path -> alg_name)."};
+  MapProp<std::string> m_nodeMap{
+      this, "Nodes", {}, "map of the type of nodes to be associated to paths (path -> data_type)."};
+  MapProp<Gaudi::Utils::TypeNameString> m_algMap{
+      this, "Algorithms", {}, "map of algorithms to be used to produce entries (path -> alg_name)."};
 };
 
 #endif // INCIDENTSVC_DODBASICMAPPER_H

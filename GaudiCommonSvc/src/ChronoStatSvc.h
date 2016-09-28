@@ -1,26 +1,26 @@
-#ifndef      GAUDISVC_CHRONOSTATSVC_H__
-#define      GAUDISVC_CHRONOSTATSVC_H__
+#ifndef GAUDISVC_CHRONOSTATSVC_H__
+#define GAUDISVC_CHRONOSTATSVC_H__
 // ============================================================================
 // include files
 // ============================================================================
 // STD & STL
 // ============================================================================
-#include <string>
-#include <map>
-#include <functional>
 #include <fstream>
+#include <functional>
+#include <map>
+#include <string>
 // ============================================================================
 // GaudiKernel
 // ============================================================================
-#include "GaudiKernel/Kernel.h"
-#include "GaudiKernel/Service.h"
 #include "GaudiKernel/IChronoStatSvc.h"
 #include "GaudiKernel/IIncidentListener.h"
+#include "GaudiKernel/Kernel.h"
+#include "GaudiKernel/Service.h"
 // ============================================================================
 /// forward declarations
 // ============================================================================
-class ISvcLocator  ;
-class IMessageSvc  ;
+class ISvcLocator;
+class IMessageSvc;
 // ============================================================================
 /**  @class ChronoStatSvc  ChronoStatSvc.h
  *  The  Chrono & Stat Sservice:
@@ -30,14 +30,13 @@ class IMessageSvc  ;
  *   @author:  Vanya BELYAEV Ivan.Belyaev@itep.ru
  *   @daate:   December 1, 1999
  */
-class ChronoStatSvc: public extends<Service,
-                                    IChronoStatSvc,
-                                    IIncidentListener> {
+class ChronoStatSvc : public extends<Service, IChronoStatSvc, IIncidentListener>
+{
 public:
   // ============================================================================
   /// some useful typedefs
-  typedef std::map<IChronoStatSvc::ChronoTag,ChronoEntity>  ChronoMap ;
-  typedef std::map<IChronoStatSvc::StatTag,StatEntity>      StatMap   ;
+  typedef std::map<IChronoStatSvc::ChronoTag, ChronoEntity> ChronoMap;
+  typedef std::map<IChronoStatSvc::StatTag, StatEntity> StatMap;
   // ============================================================================
 public:
   // ============================================================================
@@ -51,91 +50,80 @@ public:
   /** Implementation of IChronoStatSvc::chronoStart
    *  @see IChronoStatSvc
    */
-  virtual       ChronoEntity* chronoStart
-  ( const IChronoStatSvc::ChronoTag& chronoTag ) override;
+  virtual ChronoEntity* chronoStart( const IChronoStatSvc::ChronoTag& chronoTag ) override;
   // ============================================================================
   /** Implementation of IChronoStatSvc::chronoStop
    *  @see IChronoStatSvc
    */
-  virtual const ChronoEntity* chronoStop
-  ( const IChronoStatSvc::ChronoTag& chronoTag ) override;
+  virtual const ChronoEntity* chronoStop( const IChronoStatSvc::ChronoTag& chronoTag ) override;
   // ============================================================================
   /** Implementation of IchronoStatSvc::chronoDelta
    *  @see IChronoStatSvc
    */
-  virtual IChronoStatSvc::ChronoTime chronoDelta
-  ( const IChronoStatSvc::ChronoTag& chronoTag,
-    IChronoStatSvc::ChronoType theType ) override;
+  virtual IChronoStatSvc::ChronoTime chronoDelta( const IChronoStatSvc::ChronoTag& chronoTag,
+                                                  IChronoStatSvc::ChronoType theType ) override;
   // ============================================================================
   /** Implementation of IChronoStatSvc::chronoPrint
    *  @see IChronoStatSvc
    */
-  virtual void    chronoPrint
-  ( const IChronoStatSvc::ChronoTag& chronoTag ) override;
+  virtual void chronoPrint( const IChronoStatSvc::ChronoTag& chronoTag ) override;
   // ============================================================================
   /** Implementation of IChronoStatSvc::chronoStatus
    *  @see IChronoStatSvc
    */
-  virtual ChronoStatus  chronoStatus
-  ( const IChronoStatSvc::ChronoTag& chronoTag ) override;
+  virtual ChronoStatus chronoStatus( const IChronoStatSvc::ChronoTag& chronoTag ) override;
   // ============================================================================
   /** Implementation of IChronoStatSvc::stat
    *  add statistical information to the entity , tagged by its name
    *  @see IChronoStatSvc
    */
-  virtual void     stat
-  ( const IChronoStatSvc::StatTag    &  statTag    ,
-    const IChronoStatSvc::StatFlag   &  statFlag   )  override;
+  virtual void stat( const IChronoStatSvc::StatTag& statTag, const IChronoStatSvc::StatFlag& statFlag ) override;
   // ============================================================================
   /** prints (using message service)  info about
    *  statistical entity, tagged by its name
    *  @see IChronoStatSvc
    */
-  virtual void     statPrint
-  (  const IChronoStatSvc::ChronoTag& statTag)  override;
+  virtual void statPrint( const IChronoStatSvc::ChronoTag& statTag ) override;
   // ============================================================================
   /** extract the chrono entity for the given tag (name)
    *  @see IChronoStatSvc
    *  @param t chrono tag(name)
    *  @return pointer to chrono entity
    */
-  virtual const ChronoEntity* chrono
-  ( const IChronoStatSvc::ChronoTag& t ) const   override;
+  virtual const ChronoEntity* chrono( const IChronoStatSvc::ChronoTag& t ) const override;
   // ============================================================================
   /** extract the stat   entity for the given tag (name)
    *  @see IChronoStatSvc
    *  @param t stat   tag(name)
    *  @return pointer to stat   entity
    */
-  virtual const StatEntity*   stat
-  ( const IChronoStatSvc::StatTag&   t ) const  override;
+  virtual const StatEntity* stat( const IChronoStatSvc::StatTag& t ) const override;
   // ============================================================================
   /**  Default constructor.
    *   @param name service instance name
    *   @param svcloc pointer to servcie locator
    */
-  ChronoStatSvc ( const std::string& name, ISvcLocator* svcloc );
+  ChronoStatSvc( const std::string& name, ISvcLocator* svcloc );
   /// Compound assignment operator
-  void merge ( const ChronoStatSvc& css);
+  void merge( const ChronoStatSvc& css );
   /// Destructor.
   ~ChronoStatSvc() override = default;
   // ============================================================================
 
 public:
-  void handle(const Incident& incident) override;
-
+  void handle( const Incident& incident ) override;
 
 protected:
   // ============================================================================
   // print the "Stat" part of the ChronoStatSvc
-  void printStats() ;
+  void printStats();
   // ============================================================================
 private:
   // ============================================================================
   // default/copy constructor and assignment are disabled
-  ChronoStatSvc() = delete;
-  ChronoStatSvc( const  ChronoStatSvc& ) = delete;
-  ChronoStatSvc& operator=( const  ChronoStatSvc& ) = delete;
+  ChronoStatSvc()                       = delete;
+  ChronoStatSvc( const ChronoStatSvc& ) = delete;
+  ChronoStatSvc& operator=( const ChronoStatSvc& ) = delete;
   // ============================================================================
   /// dump the statistics into an ASCII file for offline processing
   void saveStats();
@@ -143,14 +131,14 @@ private:
 private:
   // ============================================================================
   /// chrono part
-  ChronoMap      m_chronoEntities;
+  ChronoMap m_chronoEntities;
   /// level of info printing
-  MSG::Level     m_chronoPrintLevel    = MSG::INFO ;
+  MSG::Level m_chronoPrintLevel = MSG::INFO;
 
   /// stat part
-  StatMap        m_statEntities;
+  StatMap m_statEntities;
   /// level of info printing
-  MSG::Level     m_statPrintLevel     = MSG::INFO;
+  MSG::Level m_statPrintLevel = MSG::INFO;
 
   BooleanProperty m_chronoTableFlag{this, "ChronoPrintOutTable", true,
                                     "decide if the final printout should be performed"};
@@ -167,7 +155,7 @@ private:
   IntegerProperty m_intStatPrintLevel{this, "StatPrintLevel", MSG::INFO, "print level"};
   BooleanProperty m_statOrderFlag{this, "StatTableToBeOrdered", true, "should the printout be ordered"};
 
-  PropertyWithValue<long> m_numberOfSkippedEventsForMemStat{
+  Gaudi::Property<long> m_numberOfSkippedEventsForMemStat{
       this, "NumberOfSkippedEventsForMemStat", -1,
       "specify the number of events to be skipped by the memory auditor in order to better spot memory leak"};
 
@@ -190,7 +178,7 @@ private:
 
   StringProperty m_perEventFile{this, "PerEventFile", "", "File name for per-event deltas"};
 
-  typedef std::map<ChronoTag, std::vector<IChronoSvc::ChronoTime> > TimeMap;
+  typedef std::map<ChronoTag, std::vector<IChronoSvc::ChronoTime>> TimeMap;
   TimeMap m_perEvtTime;
   std::ofstream m_ofd;
 
@@ -199,5 +187,5 @@ private:
 // ============================================================================
 // The END
 // ============================================================================
-#endif   //  GAUDISVC_CHRONOSTATSVC_H
+#endif //  GAUDISVC_CHRONOSTATSVC_H
 // ============================================================================

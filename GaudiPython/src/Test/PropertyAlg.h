@@ -26,39 +26,38 @@ private:
   /// These data members are used in the execution of this algorithm
   /// They are set in the initialisation phase by the job options service
 
-  PropertyWithValue<bool> m_bool{this, "Bool", true, "doc for Bool property"};
-  PropertyWithValue<char> m_char{this, "Char", 100, "doc for Char property"};
-  PropertyWithValue<signed char> m_uchar{this, "Uchar", 100, "doc for Uchar property"};
-  PropertyWithValue<unsigned char> m_schar{this, "Schar", 100, "doc for Schar property"};
-  PropertyWithValue<short> m_short{this, "Short", 100, "doc for Short property"};
-  PropertyWithValue<unsigned short> m_ushort{this, "Ushort", 100, "doc for Ushort property"};
-  PropertyWithValue<int> m_int{this, "Int", 100, "doc for Int property"};
-  PropertyWithValue<unsigned int> m_uint{this, "Uint", 100, "doc for Uint property"};
-  PropertyWithValue<long> m_long{this, "Long", 100L, "doc for Long property"};
-  PropertyWithValue<unsigned long> m_ulong{this, "Ulong", 100L, "doc for Ulong property"};
-  PropertyWithValue<long long> m_longlong{this, "Longlong", 100LL, "doc for Longlong property"};
-  PropertyWithValue<unsigned long long> m_ulonglong{this, "Ulonglong", 100LL, "doc for Ulonglong property"};
-  PropertyWithValue<float> m_float{this, "Float", 100.0F, "doc for Float property"};
-  PropertyWithValue<double> m_double{this, "Double", 100., "doc for Double property"};
-  PropertyWithValue<std::string> m_string{this, "String", "hundred", "doc for String property"};
+  Gaudi::Property<bool> m_bool{this, "Bool", true, "doc for Bool property"};
+  Gaudi::Property<char> m_char{this, "Char", 100, "doc for Char property"};
+  Gaudi::Property<signed char> m_uchar{this, "Uchar", 100, "doc for Uchar property"};
+  Gaudi::Property<unsigned char> m_schar{this, "Schar", 100, "doc for Schar property"};
+  Gaudi::Property<short> m_short{this, "Short", 100, "doc for Short property"};
+  Gaudi::Property<unsigned short> m_ushort{this, "Ushort", 100, "doc for Ushort property"};
+  Gaudi::Property<int> m_int{this, "Int", 100, "doc for Int property"};
+  Gaudi::Property<unsigned int> m_uint{this, "Uint", 100, "doc for Uint property"};
+  Gaudi::Property<long> m_long{this, "Long", 100L, "doc for Long property"};
+  Gaudi::Property<unsigned long> m_ulong{this, "Ulong", 100L, "doc for Ulong property"};
+  Gaudi::Property<long long> m_longlong{this, "Longlong", 100LL, "doc for Longlong property"};
+  Gaudi::Property<unsigned long long> m_ulonglong{this, "Ulonglong", 100LL, "doc for Ulonglong property"};
+  Gaudi::Property<float> m_float{this, "Float", 100.0F, "doc for Float property"};
+  Gaudi::Property<double> m_double{this, "Double", 100., "doc for Double property"};
+  Gaudi::Property<std::string> m_string{this, "String", "hundred", "doc for String property"};
 
-  PropertyWithValue<std::vector<bool>> m_boolarray{this, "BoolArray", {}, "doc for BoolArray property"};
-  PropertyWithValue<std::vector<char>> m_chararray{this, "CharArray", {}, "doc for CharArray property"};
-  PropertyWithValue<std::vector<signed char>> m_uchararray{this, "UcharArray", {}, "doc for UcharArray property"};
-  PropertyWithValue<std::vector<unsigned char>> m_schararray{this, "ScharArray", {}, "doc for ScharArray property"};
-  PropertyWithValue<std::vector<short>> m_shortarray{this, "ShortArray", {}, "doc for ShortArray property"};
-  PropertyWithValue<std::vector<unsigned short>> m_ushortarray{this, "UshortArray", {}, "doc for UshortArray property"};
-  PropertyWithValue<std::vector<int>> m_intarray{this, "IntArray", {}, "doc for IntArray property"};
-  PropertyWithValue<std::vector<unsigned int>> m_uintarray{this, "UintArray", {}, "doc for UintArray property"};
-  PropertyWithValue<std::vector<long>> m_longarray{this, "LongArray", {}, "doc for LongArray property"};
-  PropertyWithValue<std::vector<unsigned long>> m_ulongarray{this, "UlongArray", {}, "doc for UlongArray property"};
-  PropertyWithValue<std::vector<long long>> m_longlongarray{
-      this, "LonglongArray", {}, "doc for LonglongArray property"};
-  PropertyWithValue<std::vector<unsigned long long>> m_ulonglongarray{
+  Gaudi::Property<std::vector<bool>> m_boolarray{this, "BoolArray", {}, "doc for BoolArray property"};
+  Gaudi::Property<std::vector<char>> m_chararray{this, "CharArray", {}, "doc for CharArray property"};
+  Gaudi::Property<std::vector<signed char>> m_uchararray{this, "UcharArray", {}, "doc for UcharArray property"};
+  Gaudi::Property<std::vector<unsigned char>> m_schararray{this, "ScharArray", {}, "doc for ScharArray property"};
+  Gaudi::Property<std::vector<short>> m_shortarray{this, "ShortArray", {}, "doc for ShortArray property"};
+  Gaudi::Property<std::vector<unsigned short>> m_ushortarray{this, "UshortArray", {}, "doc for UshortArray property"};
+  Gaudi::Property<std::vector<int>> m_intarray{this, "IntArray", {}, "doc for IntArray property"};
+  Gaudi::Property<std::vector<unsigned int>> m_uintarray{this, "UintArray", {}, "doc for UintArray property"};
+  Gaudi::Property<std::vector<long>> m_longarray{this, "LongArray", {}, "doc for LongArray property"};
+  Gaudi::Property<std::vector<unsigned long>> m_ulongarray{this, "UlongArray", {}, "doc for UlongArray property"};
+  Gaudi::Property<std::vector<long long>> m_longlongarray{this, "LonglongArray", {}, "doc for LonglongArray property"};
+  Gaudi::Property<std::vector<unsigned long long>> m_ulonglongarray{
       this, "UlonglongArray", {}, "doc for UlonglongArray property"};
-  PropertyWithValue<std::vector<float>> m_floatarray{this, "FloatArray", {}, "doc for FloatArray property"};
-  PropertyWithValue<std::vector<double>> m_doublearray{this, "DoubleArray", {}, "doc for DoubleArray property"};
-  PropertyWithValue<std::vector<std::string>> m_stringarray{this, "StringArray", {}, "doc for StringArray property"};
+  Gaudi::Property<std::vector<float>> m_floatarray{this, "FloatArray", {}, "doc for FloatArray property"};
+  Gaudi::Property<std::vector<double>> m_doublearray{this, "DoubleArray", {}, "doc for DoubleArray property"};
+  Gaudi::Property<std::vector<std::string>> m_stringarray{this, "StringArray", {}, "doc for StringArray property"};
 };
 
 #endif // GAUDIEXAMPLE_PROPERTYALG_H

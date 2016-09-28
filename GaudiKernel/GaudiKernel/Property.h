@@ -300,368 +300,365 @@ namespace Gaudi
     }
 
   } // namespace Details
+
+  // ============================================================================
+  /** Implementation of property with value of concrete type.
+   *
+   *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
+   *  @date 2006-02-27
+   *  @author Marco Clemencic
+   *  @date 2016-06-16
+   */
+  // ============================================================================
+  template <class TYPE, class VERIFIER = Details::Property::NullVerifier,
+            class HANDLERS = Details::Property::UpdateHandler>
+  class Property : public Details::PropertyBase
+  {
+  public:
+    // ==========================================================================
+    /// Hosted type
+    using StorageType  = TYPE;
+    using ValueType    = typename std::remove_reference<StorageType>::type;
+    using VerifierType = VERIFIER;
+    using HandlersType = HANDLERS;
+
+  private:
+    /// Storage.
+    StorageType m_value;
+    VerifierType m_verifier;
+    HandlersType m_handlers;
+    /// helper typedefs for SFINAE
+    /// @{
+    template <class T>
+    using is_this_type = std::is_same<Property, typename std::remove_reference<T>::type>;
+    template <class T>
+    using not_copying = std::enable_if<!is_this_type<T>::value>;
+    /// @}
+  public:
+    // ==========================================================================
+    /// the constructor with property name, value and documentation.
+    template <class T = ValueType>
+    inline Property( std::string name, T&& value, std::string doc = "" )
+        : Details::PropertyBase( typeid( ValueType ), std::move( name ), std::move( doc ) )
+        , m_value( std::forward<T>( value ) )
+    {
+      m_verifier( m_value );
+    }
+    /// Autodeclaring constructor with property name, value and documentation.
+    /// @note the use std::enable_if is required to avoid ambiguities
+    template <class OWNER, class T = ValueType,
+              typename = typename std::enable_if<std::is_base_of<IProperty, OWNER>::value>::type>
+    inline Property( OWNER* owner, std::string name, T&& value = ValueType{}, std::string doc = "" )
+        : Property( std::move( name ), std::forward<T>( value ), std::move( doc ) )
+    {
+      owner->declareProperty( *this );
+      setOwnerType<OWNER>();
+    }
+
+    /// Construct an anonymous property from a value.
+    /// This constructor is not generated if T is the current type, so that the
+    /// compiler picks up the copy constructor instead of this one.
+    template <class T = ValueType, typename = typename not_copying<T>::type>
+    Property( T&& v ) : Details::PropertyBase( typeid( ValueType ), "", "" ), m_value( std::forward<T>( v ) )
+    {
+    }
+
+    /// Construct an anonymous property with default constructed value.
+    /// Can be used only if StorageType is default constructible.
+    template <typename = void>
+    Property() : Details::PropertyBase( typeid( ValueType ), "", "" ), m_value()
+    {
+    }
+
+    using Details::PropertyBase::declareReadHandler;
+    using Details::PropertyBase::declareUpdateHandler;
+
+    /// set new callback for reading
+    Details::PropertyBase& declareReadHandler( std::function<void( Details::PropertyBase& )> fun ) override
+    {
+      m_handlers.setReadHandler( std::move( fun ) );
+      return *this;
+    }
+    /// set new callback for update
+    Details::PropertyBase& declareUpdateHandler( std::function<void( Details::PropertyBase& )> fun ) override
+    {
+      m_handlers.setUpdateHandler( std::move( fun ) );
+      return *this;
+    }
+
+    /// get a reference to the readCallBack
+    const std::function<void( Details::PropertyBase& )> readCallBack() const override
+    {
+      return m_handlers.getReadHandler();
+    }
+    /// get a reference to the updateCallBack
+    const std::function<void( Details::PropertyBase& )> updateCallBack() const override
+    {
+      return m_handlers.getUpdateHandler();
+    }
+
+    /// manual trigger for callback for update
+    bool useUpdateHandler() override
+    {
+      m_handlers.useUpdateHandler( *this );
+      return true;
+    }
+
+    /// Automatic conversion to value (const reference).
+    operator const ValueType&() const
+    {
+      m_handlers.useReadHandler( *this );
+      return m_value;
+    }
+    // /// Automatic conversion to value (reference).
+    // operator ValueType& () {
+    //   useReadHandler();
+    //   return m_value;
+    // }
+
+    /// equality comparison
+    template <class T>
+    inline bool operator==( const T& other ) const
+    {
+      return m_value == other;
+    }
+
+    /// inequality comparison
+    template <class T>
+    inline bool operator!=( const T& other ) const
+    {
+      return m_value != other;
+    }
+
+    /// "less" comparison
+    template <class T>
+    inline bool operator<( const T& other ) const
+    {
+      return m_value < other;
+    }
+
+    /// allow addition if possible between the property and the other types
+    template <class T>
+    decltype( std::declval<ValueType>() + std::declval<T>() ) operator+( const T& other ) const
+    {
+      return m_value + other;
+    }
+
+    /// Assignment from value.
+    template <class T = ValueType>
+    Property& operator=( T&& v )
+    {
+      m_verifier( v );
+      m_value = std::forward<T>( v );
+      m_handlers.useUpdateHandler( *this );
+      return *this;
+    }
+
+    /// Accessor to verifier.
+    const VerifierType& verifier() const { return m_verifier; }
+    /// Accessor to verifier.
+    VerifierType& verifier() { return m_verifier; }
+
+    /// Backward compatibility \deprecated will be removed in v28r1
+    /// @{
+    const ValueType& value() const { return *this; }
+    ValueType& value() { return const_cast<ValueType&>( (const ValueType&)*this ); }
+    bool setValue( const ValueType& v )
+    {
+      *this = v;
+      return true;
+    }
+    bool set( const ValueType& v )
+    {
+      *this = v;
+      return true;
+    }
+    Details::PropertyBase* clone() const override { return new Property( *this ); }
+    /// @}
+
+    /// @name Helpers for easy use of string and vector properties.
+    /// @{
+    /// They are instantiated only if they are implemented in the wrapped class.
+    template <class T = const ValueType>
+    inline decltype( std::declval<T>().size() ) size() const
+    {
+      return value().size();
+    }
+    template <class T = const ValueType>
+    inline decltype( std::declval<T>().length() ) length() const
+    {
+      return value().length();
+    }
+    template <class T = const ValueType>
+    inline decltype( std::declval<T>().empty() ) empty() const
+    {
+      return value().empty();
+    }
+    template <class T = ValueType>
+    inline decltype( std::declval<T>().clear() ) clear()
+    {
+      value().clear();
+    }
+    template <class T = const ValueType>
+    inline decltype( std::declval<T>().begin() ) begin() const
+    {
+      return value().begin();
+    }
+    template <class T = const ValueType>
+    inline decltype( std::declval<T>().end() ) end() const
+    {
+      return value().end();
+    }
+    template <class T = ValueType>
+    inline decltype( std::declval<T>().begin() ) begin()
+    {
+      return value().begin();
+    }
+    template <class T = ValueType>
+    inline decltype( std::declval<T>().end() ) end()
+    {
+      return value().end();
+    }
+    template <class ARG, class T = const ValueType>
+    inline decltype( std::declval<T>()[ARG{}] ) operator[]( const ARG& arg ) const
+    {
+      return value()[arg];
+    }
+    template <class ARG, class T = ValueType>
+    inline decltype( std::declval<T>()[ARG{}] ) operator[]( const ARG& arg )
+    {
+      return value()[arg];
+    }
+    template <class T = const ValueType>
+    inline decltype( std::declval<T>().find( typename T::key_type{} ) ) find( const typename T::key_type& key ) const
+    {
+      return value().find( key );
+    }
+    template <class T = ValueType>
+    inline decltype( std::declval<T>().find( typename T::key_type{} ) ) find( const typename T::key_type& key )
+    {
+      return value().find( key );
+    }
+    template <class ARG, class T = ValueType>
+    inline decltype( std::declval<T>().erase( ARG{} ) ) erase( ARG arg )
+    {
+      return value().erase( arg );
+    }
+    template <class = ValueType>
+    inline Property& operator++()
+    {
+      ++value();
+      return *this;
+    }
+    template <class = ValueType>
+    inline ValueType operator++( int )
+    {
+      return m_value++;
+    }
+    template <class = ValueType>
+    inline Property& operator--()
+    {
+      --value();
+      return *this;
+    }
+    template <class = ValueType>
+    inline ValueType operator--( int )
+    {
+      return m_value--;
+    }
+    template <class T = ValueType>
+    inline Property& operator+=( const T& other )
+    {
+      m_value += other;
+      return *this;
+    }
+    template <class T = ValueType>
+    inline Property& operator-=( const T& other )
+    {
+      m_value -= other;
+      return *this;
+    }
+    /// @}
+    // ==========================================================================
+  public:
+    /// get the value from another property
+    bool assign( const Details::PropertyBase& source ) override
+    {
+      // Check if the property of is of "the same" type, except for strings
+      const Property* p =
+          ( std::is_same<ValueType, std::string>::value ) ? nullptr : dynamic_cast<const Property*>( &source );
+      if ( p ) {
+        *this = p->value();
+      } else {
+        this->fromString( source.toString() ).ignore();
+      }
+      return true;
+    }
+    /// set value to another property
+    bool load( Details::PropertyBase& dest ) const override
+    {
+      // delegate to the 'opposite' method
+      return dest.assign( *this );
+    }
+    /// string -> value
+    StatusCode fromString( const std::string& source ) override
+    {
+      using Converter = Details::Property::StringConverter<ValueType>;
+      *this           = Converter().fromString( source );
+      return StatusCode::SUCCESS;
+    }
+    /// value  -> string
+    std::string toString() const override
+    {
+      using Converter = Details::Property::StringConverter<ValueType>;
+      return Converter().toString( *this );
+    }
+    /// value  -> stream
+    void toStream( std::ostream& out ) const override
+    {
+      m_handlers.useReadHandler( *this );
+      Utils::toStream( m_value, out );
+    }
+  };
+
+  /// delegate (value == property) to property operator==
+  template <class T, class TP, class V, class H>
+  bool operator==( const T& v, const Property<TP, V, H>& p )
+  {
+    return p == v;
+  }
+
+  /// delegate (value != property) to property operator!=
+  template <class T, class TP, class V, class H>
+  bool operator!=( const T& v, const Property<TP, V, H>& p )
+  {
+    return p != v;
+  }
+
+  /// implemantation of (value + property)
+  template <class T, class TP, class V, class H>
+  decltype( std::declval<TP>() + std::declval<T>() ) operator+( const T& v, const Property<TP, V, H>& p )
+  {
+    return v + p.value();
+  }
+
 } // namespace Gaudi
 
-// ============================================================================
-/** @class PropertyWithValue
- *  Helper intermediate class which
- *  represent partly implemented property
- *  with value of concrete type
- *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
- *  @date 2006-02-27
- *  @author Marco Clemencic
- *  @date 2016-06-16
- */
-// ============================================================================
 template <class TYPE, class VERIFIER = Gaudi::Details::Property::NullVerifier,
           class HANDLERS = Gaudi::Details::Property::UpdateHandler>
-class PropertyWithValue : public Gaudi::Details::PropertyBase
-{
-public:
-  // ==========================================================================
-  /// Hosted type
-  using StorageType  = TYPE;
-  using ValueType    = typename std::remove_reference<StorageType>::type;
-  using VerifierType = VERIFIER;
-  using HandlersType = HANDLERS;
-
-private:
-  /// Storage.
-  StorageType m_value;
-  VerifierType m_verifier;
-  HandlersType m_handlers;
-  /// helper typedefs for SFINAE
-  /// @{
-  template <class T>
-  using is_this_type = std::is_same<PropertyWithValue, typename std::remove_reference<T>::type>;
-  template <class T>
-  using not_copying = std::enable_if<!is_this_type<T>::value>;
-  /// @}
-public:
-  // ==========================================================================
-  /// the constructor with property name, value and documentation.
-  template <class T = ValueType>
-  inline PropertyWithValue( std::string name, T&& value, std::string doc = "" )
-      : Gaudi::Details::PropertyBase( typeid( ValueType ), std::move( name ), std::move( doc ) )
-      , m_value( std::forward<T>( value ) )
-  {
-    m_verifier( m_value );
-  }
-  /// Autodeclaring constructor with property name, value and documentation.
-  /// @note the use std::enable_if is required to avoid ambiguities
-  template <class OWNER, class T = ValueType,
-            typename = typename std::enable_if<std::is_base_of<IProperty, OWNER>::value>::type>
-  inline PropertyWithValue( OWNER* owner, std::string name, T&& value = ValueType{}, std::string doc = "" )
-      : PropertyWithValue( std::move( name ), std::forward<T>( value ), std::move( doc ) )
-  {
-    owner->declareProperty( *this );
-    setOwnerType<OWNER>();
-  }
-
-  /// Construct an anonymous property from a value.
-  /// This constructor is not generated if T is the current type, so that the
-  /// compiler picks up the copy constructor instead of this one.
-  template <class T = ValueType, typename = typename not_copying<T>::type>
-  PropertyWithValue( T&& v )
-      : Gaudi::Details::PropertyBase( typeid( ValueType ), "", "" ), m_value( std::forward<T>( v ) )
-  {
-  }
-
-  /// Construct an anonymous property with default constructed value.
-  /// Can be used only if StorageType is default constructible.
-  template <typename = void>
-  PropertyWithValue() : Gaudi::Details::PropertyBase( typeid( ValueType ), "", "" ), m_value()
-  {
-  }
-
-  using Gaudi::Details::PropertyBase::declareReadHandler;
-  using Gaudi::Details::PropertyBase::declareUpdateHandler;
-
-  /// set new callback for reading
-  Gaudi::Details::PropertyBase& declareReadHandler( std::function<void( Gaudi::Details::PropertyBase& )> fun ) override
-  {
-    m_handlers.setReadHandler( std::move( fun ) );
-    return *this;
-  }
-  /// set new callback for update
-  Gaudi::Details::PropertyBase&
-  declareUpdateHandler( std::function<void( Gaudi::Details::PropertyBase& )> fun ) override
-  {
-    m_handlers.setUpdateHandler( std::move( fun ) );
-    return *this;
-  }
-
-  /// get a reference to the readCallBack
-  const std::function<void( Gaudi::Details::PropertyBase& )> readCallBack() const override
-  {
-    return m_handlers.getReadHandler();
-  }
-  /// get a reference to the updateCallBack
-  const std::function<void( Gaudi::Details::PropertyBase& )> updateCallBack() const override
-  {
-    return m_handlers.getUpdateHandler();
-  }
-
-  /// manual trigger for callback for update
-  bool useUpdateHandler() override
-  {
-    m_handlers.useUpdateHandler( *this );
-    return true;
-  }
-
-  /// Automatic conversion to value (const reference).
-  operator const ValueType&() const
-  {
-    m_handlers.useReadHandler( *this );
-    return m_value;
-  }
-  // /// Automatic conversion to value (reference).
-  // operator ValueType& () {
-  //   useReadHandler();
-  //   return m_value;
-  // }
-
-  /// equality comparison
-  template <class T>
-  inline bool operator==( const T& other ) const
-  {
-    return m_value == other;
-  }
-
-  /// inequality comparison
-  template <class T>
-  inline bool operator!=( const T& other ) const
-  {
-    return m_value != other;
-  }
-
-  /// "less" comparison
-  template <class T>
-  inline bool operator<( const T& other ) const
-  {
-    return m_value < other;
-  }
-
-  /// allow addition if possible between the property and the other types
-  template <class T>
-  decltype( std::declval<ValueType>() + std::declval<T>() ) operator+( const T& other ) const
-  {
-    return m_value + other;
-  }
-
-  /// Assignment from value.
-  template <class T          = ValueType>
-  PropertyWithValue& operator=( T&& v )
-  {
-    m_verifier( v );
-    m_value = std::forward<T>( v );
-    m_handlers.useUpdateHandler( *this );
-    return *this;
-  }
-
-  /// Accessor to verifier.
-  const VerifierType& verifier() const { return m_verifier; }
-  /// Accessor to verifier.
-  VerifierType& verifier() { return m_verifier; }
-
-  /// Backward compatibility \deprecated will be removed in v28r1
-  /// @{
-  const ValueType& value() const { return *this; }
-  ValueType& value() { return const_cast<ValueType&>( (const ValueType&)*this ); }
-  bool setValue( const ValueType& v )
-  {
-    *this = v;
-    return true;
-  }
-  bool set( const ValueType& v )
-  {
-    *this = v;
-    return true;
-  }
-  Gaudi::Details::PropertyBase* clone() const override { return new PropertyWithValue( *this ); }
-  /// @}
-
-  /// @name Helpers for easy use of string and vector properties.
-  /// @{
-  /// They are instantiated only if they are implemented in the wrapped class.
-  template <class T = const ValueType>
-  inline decltype( std::declval<T>().size() ) size() const
-  {
-    return value().size();
-  }
-  template <class T = const ValueType>
-  inline decltype( std::declval<T>().length() ) length() const
-  {
-    return value().length();
-  }
-  template <class T = const ValueType>
-  inline decltype( std::declval<T>().empty() ) empty() const
-  {
-    return value().empty();
-  }
-  template <class T = ValueType>
-  inline decltype( std::declval<T>().clear() ) clear()
-  {
-    value().clear();
-  }
-  template <class T = const ValueType>
-  inline decltype( std::declval<T>().begin() ) begin() const
-  {
-    return value().begin();
-  }
-  template <class T = const ValueType>
-  inline decltype( std::declval<T>().end() ) end() const
-  {
-    return value().end();
-  }
-  template <class T = ValueType>
-  inline decltype( std::declval<T>().begin() ) begin()
-  {
-    return value().begin();
-  }
-  template <class T = ValueType>
-  inline decltype( std::declval<T>().end() ) end()
-  {
-    return value().end();
-  }
-  template <class ARG, class T = const ValueType>
-  inline decltype( std::declval<T>()[ARG{}] ) operator[]( const ARG& arg ) const
-  {
-    return value()[arg];
-  }
-  template <class ARG, class T = ValueType>
-  inline decltype( std::declval<T>()[ARG{}] ) operator[]( const ARG& arg )
-  {
-    return value()[arg];
-  }
-  template <class T = const ValueType>
-  inline decltype( std::declval<T>().find( typename T::key_type{} ) ) find( const typename T::key_type& key ) const
-  {
-    return value().find( key );
-  }
-  template <class T = ValueType>
-  inline decltype( std::declval<T>().find( typename T::key_type{} ) ) find( const typename T::key_type& key )
-  {
-    return value().find( key );
-  }
-  template <class ARG, class T = ValueType>
-  inline decltype( std::declval<T>().erase( ARG{} ) ) erase( ARG arg )
-  {
-    return value().erase( arg );
-  }
-  template <class = ValueType>
-  inline PropertyWithValue& operator++()
-  {
-    ++value();
-    return *this;
-  }
-  template <class = ValueType>
-  inline ValueType operator++( int )
-  {
-    return m_value++;
-  }
-  template <class = ValueType>
-  inline PropertyWithValue& operator--()
-  {
-    --value();
-    return *this;
-  }
-  template <class = ValueType>
-  inline ValueType operator--( int )
-  {
-    return m_value--;
-  }
-  template <class T = ValueType>
-  inline PropertyWithValue& operator+=( const T& other )
-  {
-    m_value += other;
-    return *this;
-  }
-  template <class T = ValueType>
-  inline PropertyWithValue& operator-=( const T& other )
-  {
-    m_value -= other;
-    return *this;
-  }
-  /// @}
-  // ==========================================================================
-public:
-  /// get the value from another property
-  bool assign( const Gaudi::Details::PropertyBase& source ) override
-  {
-    // Check if the property of is of "the same" type, except for strings
-    const PropertyWithValue* p =
-        ( std::is_same<ValueType, std::string>::value ) ? nullptr : dynamic_cast<const PropertyWithValue*>( &source );
-    if ( p ) {
-      *this = p->value();
-    } else {
-      this->fromString( source.toString() ).ignore();
-    }
-    return true;
-  }
-  /// set value to another property
-  bool load( Gaudi::Details::PropertyBase& dest ) const override
-  {
-    // delegate to the 'opposite' method
-    return dest.assign( *this );
-  }
-  /// string -> value
-  StatusCode fromString( const std::string& source ) override
-  {
-    using Converter = Gaudi::Details::Property::StringConverter<ValueType>;
-    *this           = Converter().fromString( source );
-    return StatusCode::SUCCESS;
-  }
-  /// value  -> string
-  std::string toString() const override
-  {
-    using Converter = Gaudi::Details::Property::StringConverter<ValueType>;
-    return Converter().toString( *this );
-  }
-  /// value  -> stream
-  void toStream( std::ostream& out ) const override
-  {
-    m_handlers.useReadHandler( *this );
-    Gaudi::Utils::toStream( m_value, out );
-  }
-};
-
-/// delegate (value == property) to property operator==
-template <class T, class TP, class V, class H>
-bool operator==( const T& v, const PropertyWithValue<TP, V, H>& p )
-{
-  return p == v;
-}
-
-/// delegate (value != property) to property operator!=
-template <class T, class TP, class V, class H>
-bool operator!=( const T& v, const PropertyWithValue<TP, V, H>& p )
-{
-  return p != v;
-}
-
-/// implemantation of (value + property)
-template <class T, class TP, class V, class H>
-decltype( std::declval<TP>() + std::declval<T>() ) operator+( const T& v, const PropertyWithValue<TP, V, H>& p )
-{
-  return v + p.value();
-}
-
-template <class TYPE, class VERIFIER = Gaudi::Details::Property::NullVerifier,
-          class HANDLERS = Gaudi::Details::Property::UpdateHandler>
-using SimpleProperty     = PropertyWithValue<TYPE, VERIFIER, HANDLERS>;
+using SimpleProperty     = Gaudi::Property<TYPE, VERIFIER, HANDLERS>;
 
 template <class TYPE, class VERIFIER = Gaudi::Details::Property::BoundedVerifier<TYPE>,
           class HANDLERS = Gaudi::Details::Property::UpdateHandler>
-using CheckedProperty    = PropertyWithValue<TYPE, VERIFIER, HANDLERS>;
+using CheckedProperty    = Gaudi::Property<TYPE, VERIFIER, HANDLERS>;
 
 template <class TYPE, class VERIFIER = Gaudi::Details::Property::NullVerifier,
           class HANDLERS      = Gaudi::Details::Property::ReadUpdateHandler>
-using PropertyWithReadHandler = PropertyWithValue<TYPE, VERIFIER, HANDLERS>;
+using PropertyWithReadHandler = Gaudi::Property<TYPE, VERIFIER, HANDLERS>;
 
 template <class TYPE, class VERIFIER = Gaudi::Details::Property::NullVerifier,
           class HANDLERS = Gaudi::Details::Property::UpdateHandler>
-using SimplePropertyRef  = PropertyWithValue<TYPE&, VERIFIER, HANDLERS>;
+using SimplePropertyRef  = Gaudi::Property<TYPE&, VERIFIER, HANDLERS>;
 
 // Typedef Properties for built-in types
 typedef SimpleProperty<bool> BooleanProperty;

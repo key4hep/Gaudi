@@ -46,15 +46,18 @@ private:
   DataObjID* m_pValue;
 };
 
-template <>
-class PropertyWithValue<DataObjID&, Gaudi::Details::Property::NullVerifier> : public ::DataObjIDProperty
+namespace Gaudi
 {
-public:
-  PropertyWithValue( const std::string& name, DataObjID& value ) : ::DataObjIDProperty( name, value ) {}
+  template <>
+  class Property<DataObjID&, Details::Property::NullVerifier> : public ::DataObjIDProperty
+  {
+  public:
+    Property( const std::string& name, DataObjID& value ) : ::DataObjIDProperty( name, value ) {}
 
-  /// virtual Destructor
-  virtual ~PropertyWithValue() {}
-};
+    /// virtual Destructor
+    virtual ~Property() {}
+  };
+} // namespace Gaudi
 
 inline DataObjIDProperty& DataObjIDProperty::operator=( const DataObjID& value )
 {
@@ -105,43 +108,46 @@ private:
   DataObjIDColl* m_pValue;
 };
 
-template <>
-class PropertyWithValue<DataObjIDColl&, Gaudi::Details::Property::NullVerifier> : public ::DataObjIDCollProperty
+namespace Gaudi
 {
-public:
-  PropertyWithValue( const std::string& name, DataObjIDColl& value ) : ::DataObjIDCollProperty( name, value ) {}
-
-  /// virtual Destructor
-  virtual ~PropertyWithValue() {}
-};
-
-template <>
-class PropertyWithValue<DataObjIDColl, Gaudi::Details::Property::NullVerifier> : public ::DataObjIDCollProperty
-{
-public:
-  PropertyWithValue( const std::string& name, DataObjIDColl& value ) : ::DataObjIDCollProperty( name, value ) {}
-
-  /// Autodeclaring constructor with property name, value and documentation.
-  template <class OWNER>
-  inline PropertyWithValue( OWNER* owner, const std::string& name, const DataObjIDColl& initval = DataObjIDColl{},
-                            std::string doc = "" )
-      : ::DataObjIDCollProperty( name, *( new DataObjIDColl{initval} ) )
+  template <>
+  class Property<DataObjIDColl&, Details::Property::NullVerifier> : public ::DataObjIDCollProperty
   {
-    /// \fixme{DataObjIDCollProperty is a ref property by construction and this
-    ///        is a temporary hack to have a "value" property}
-    m_data.reset( const_cast<DataObjIDColl*>( &value() ) );
-    setDocumentation( std::move( doc ) );
-    owner->declareProperty( *this );
-    setOwnerType<OWNER>();
-  }
+  public:
+    Property( const std::string& name, DataObjIDColl& value ) : ::DataObjIDCollProperty( name, value ) {}
 
-  operator const DataObjIDColl&() const { return value(); }
+    /// virtual Destructor
+    virtual ~Property() {}
+  };
 
-  /// virtual Destructor
-  virtual ~PropertyWithValue() {}
-private:
-  std::unique_ptr<DataObjIDColl> m_data;
-};
+  template <>
+  class Property<DataObjIDColl, Details::Property::NullVerifier> : public ::DataObjIDCollProperty
+  {
+  public:
+    Property( const std::string& name, DataObjIDColl& value ) : ::DataObjIDCollProperty( name, value ) {}
+
+    /// Autodeclaring constructor with property name, value and documentation.
+    template <class OWNER>
+    inline Property( OWNER* owner, const std::string& name, const DataObjIDColl& initval = DataObjIDColl{},
+                     std::string doc = "" )
+        : ::DataObjIDCollProperty( name, *( new DataObjIDColl{initval} ) )
+    {
+      /// \fixme{DataObjIDCollProperty is a ref property by construction and this
+      ///        is a temporary hack to have a "value" property}
+      m_data.reset( const_cast<DataObjIDColl*>( &value() ) );
+      setDocumentation( std::move( doc ) );
+      owner->declareProperty( *this );
+      setOwnerType<OWNER>();
+    }
+
+    operator const DataObjIDColl&() const { return value(); }
+
+    /// virtual Destructor
+    virtual ~Property() {}
+  private:
+    std::unique_ptr<DataObjIDColl> m_data;
+  };
+} // namespace Gaudi
 
 inline DataObjIDCollProperty& DataObjIDCollProperty::operator=( const DataObjIDColl& value )
 {

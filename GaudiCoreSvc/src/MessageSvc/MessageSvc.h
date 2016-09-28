@@ -147,14 +147,14 @@ private:
 
   BooleanProperty m_color{this, "useColors", false, ""};
 
-  std::array<PropertyWithValue<std::vector<std::string>>, MSG::NUM_LEVELS> m_logColors{{{/*ignored*/},
-                                                                                        {this, "verboseColorCode"},
-                                                                                        {this, "debugColorCode"},
-                                                                                        {this, "infoColorCode"},
-                                                                                        {this, "warningColorCode"},
-                                                                                        {this, "errorColorCode"},
-                                                                                        {this, "fatalColorCode"},
-                                                                                        {this, "alwaysColorCode"}}};
+  std::array<Gaudi::Property<std::vector<std::string>>, MSG::NUM_LEVELS> m_logColors{{{/*ignored*/},
+                                                                                      {this, "verboseColorCode"},
+                                                                                      {this, "debugColorCode"},
+                                                                                      {this, "infoColorCode"},
+                                                                                      {this, "warningColorCode"},
+                                                                                      {this, "errorColorCode"},
+                                                                                      {this, "fatalColorCode"},
+                                                                                      {this, "alwaysColorCode"}}};
 
   std::array<IntegerProperty, MSG::NUM_LEVELS> m_msgLimit{{{this, "defaultLimit", 500},
                                                            {this, "verboseLimit", 500},
@@ -174,7 +174,7 @@ private:
       {},
       "for each message source specified,  print a stack trace for the unprotected and unseen messages"};
 
-  PropertyWithValue<std::map<std::string, std::string>> m_loggedStreamsName{
+  Gaudi::Property<std::map<std::string, std::string>> m_loggedStreamsName{
       this, "loggedStreams", {}, "MessageStream sources we want to dump into a logfile"};
 
   std::ostream* m_defaultStream = &std::cout; ///< Pointer to the output stream.

@@ -45,17 +45,17 @@ private:
   DataObjectHandleBase* m_pValue;
 };
 
-template <>
-class PropertyWithValue<DataObjectHandleBase&, Gaudi::Details::Property::NullVerifier>
-    : public ::DataObjectHandleProperty
+namespace Gaudi
 {
-public:
-  PropertyWithValue( const std::string& name, DataObjectHandleBase& value ) : ::DataObjectHandleProperty( name, value )
+  template <>
+  class Property<DataObjectHandleBase&, Details::Property::NullVerifier> : public ::DataObjectHandleProperty
   {
-  }
+  public:
+    Property( const std::string& name, DataObjectHandleBase& value ) : ::DataObjectHandleProperty( name, value ) {}
 
-  /// virtual Destructor
-  virtual ~PropertyWithValue() {}
-};
+    /// virtual Destructor
+    virtual ~Property() {}
+  };
+}
 
 #endif

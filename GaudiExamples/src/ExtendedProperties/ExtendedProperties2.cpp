@@ -63,13 +63,13 @@ namespace Gaudi
       // ======================================================================
     private:
       // ======================================================================
-      PropertyWithValue<Gaudi::XYZPoint> m_point3D{this, "Point3D", {0, 1, 2}, "3D-point"};
-      PropertyWithValue<Gaudi::XYZVector> m_vector3D{this, "Vector3D", {1, 2, 3}, "3D-vector"};
-      PropertyWithValue<Gaudi::LorentzVector> m_vector4D{this, "Vector4D", {1, 2, 3, 4}, "Lorentz-vector"};
-      PropertyWithValue<Gaudi::Vector5> m_vector5{this, "SVector5", {}, "Generic-vector"};
-      PropertyWithValue<std::vector<Gaudi::XYZPoint>> m_points{this, "Points3D", {}, "Vector of 3D-points"};
-      PropertyWithValue<std::vector<Gaudi::XYZVector>> m_vectors{this, "Vectors3D", {}, "Vector of 3D-vectors"};
-      PropertyWithValue<std::vector<Gaudi::LorentzVector>> m_lvs{this, "Vectors4D", {}, "Vector of 4D-vectors"};
+      Gaudi::Property<Gaudi::XYZPoint> m_point3D{this, "Point3D", {0, 1, 2}, "3D-point"};
+      Gaudi::Property<Gaudi::XYZVector> m_vector3D{this, "Vector3D", {1, 2, 3}, "3D-vector"};
+      Gaudi::Property<Gaudi::LorentzVector> m_vector4D{this, "Vector4D", {1, 2, 3, 4}, "Lorentz-vector"};
+      Gaudi::Property<Gaudi::Vector5> m_vector5{this, "SVector5", {}, "Generic-vector"};
+      Gaudi::Property<std::vector<Gaudi::XYZPoint>> m_points{this, "Points3D", {}, "Vector of 3D-points"};
+      Gaudi::Property<std::vector<Gaudi::XYZVector>> m_vectors{this, "Vectors3D", {}, "Vector of 3D-vectors"};
+      Gaudi::Property<std::vector<Gaudi::LorentzVector>> m_lvs{this, "Vectors4D", {}, "Vector of 4D-vectors"};
       // ======================================================================
     };
     // ========================================================================

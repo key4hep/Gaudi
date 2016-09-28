@@ -9,7 +9,6 @@
 // local
 #include "TimerForSequencer.h"
 
-
 /** @class SequencerTimerTool SequencerTimerTool.h
  *  Implements the time measurement inside a sequencer
  *
@@ -23,24 +22,19 @@ TimingAuditor().TIMER.NameSize = 50 \endverbatim
  *  @date   2004-05-19
  */
 
-class SequencerTimerTool : public GaudiHistoTool,
-                           virtual public ISequencerTimerTool
+class SequencerTimerTool : public GaudiHistoTool, virtual public ISequencerTimerTool
 {
 
 public:
-
   using ISequencerTimerTool::start;
   using ISequencerTimerTool::stop;
   using ISequencerTimerTool::name;
 
 public:
+  /// Standard constructor
+  SequencerTimerTool( const std::string& type, const std::string& name, const IInterface* parent );
 
- /// Standard constructor
-  SequencerTimerTool( const std::string& type,
-                      const std::string& name,
-                      const IInterface* parent);
-
-  ~SequencerTimerTool( ) override = default; ///< Destructor
+  ~SequencerTimerTool() override = default; ///< Destructor
 
   /** initialize method, to compute the normalization factor **/
   StatusCode initialize() override;
@@ -55,10 +49,7 @@ public:
   void increaseIndent() override { m_indent += 1; }
 
   /** Decrease the indentation of the name **/
-  void decreaseIndent() override
-  {
-    m_indent = std::max( m_indent-1, 0 );
-  }
+  void decreaseIndent() override { m_indent = std::max( m_indent - 1, 0 ); }
 
   /** start the counter, i.e. register the current time **/
   void start( int index ) override { m_timerList[index].start(); }
@@ -82,16 +73,15 @@ public:
   void saveHistograms() override;
 
 private:
-
   IntegerProperty m_shots{this, "Shots", 3500000, "number of shots for CPU normalization"};
   BooleanProperty m_normalised{this, "Normalised", false, "normalise the time to a nominal PIII"};
   BooleanProperty m_globalTiming{this, "GlobalTiming", false};
-  PropertyWithValue<std::string::size_type> m_headerSize{this, "NameSize", 30,
-      "number of characters to be used in algorithm name column"};
+  Gaudi::Property<std::string::size_type> m_headerSize{this, "NameSize", 30,
+                                                       "number of characters to be used in algorithm name column"};
 
-  int m_indent = 0;      ///< Amount of indentation
+  int m_indent = 0; ///< Amount of indentation
   std::vector<TimerForSequencer> m_timerList;
-  double m_normFactor = 0.001 ; ///< Factor to convert to standard CPU (1 GHz PIII)
+  double m_normFactor = 0.001; ///< Factor to convert to standard CPU (1 GHz PIII)
   double m_speedRatio = 0;
 };
 #endif // SEQUENCERTIMERTOOL_H

@@ -76,7 +76,7 @@ private:
   BooleanProperty m_modeOR{this, "ModeOR", false, "use OR loginc instead of AND"};
   BooleanProperty m_measureTime{this, "MeasureTime", false, "measure time"};
   BooleanProperty m_returnOK{this, "ReturnOK", false, "forces the sequencer to return a good status"};
-  PropertyWithValue<unsigned short> m_nthreads{this, "NumberOfThreads", 0, "number of threads in the thread pool"};
+  Gaudi::Property<unsigned short> m_nthreads{this, "NumberOfThreads", 0, "number of threads in the thread pool"};
 
   std::vector<AlgorithmEntry> m_entries; ///< List of algorithms to process.
 

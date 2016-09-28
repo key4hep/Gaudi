@@ -2,25 +2,25 @@
 #define GAUDIHIVE_FORWARDSCHEDULERSVC_H
 
 // Framework include files
-#include "GaudiKernel/IScheduler.h"
-#include "GaudiKernel/IRunable.h"
-#include "GaudiKernel/Service.h"
 #include "GaudiKernel/IAlgResourcePool.h"
 #include "GaudiKernel/IHiveWhiteBoard.h"
+#include "GaudiKernel/IRunable.h"
+#include "GaudiKernel/IScheduler.h"
 #include "GaudiKernel/IThreadPoolSvc.h"
+#include "GaudiKernel/Service.h"
 
 // Local includes
 #include "AlgsExecutionStates.h"
+#include "DataFlowManager.h"
 #include "EventSlot.h"
 #include "ExecutionFlowManager.h"
-#include "DataFlowManager.h"
 
 // C++ include files
-#include <vector>
-#include <string>
-#include <unordered_map>
 #include <functional>
+#include <string>
 #include <thread>
+#include <unordered_map>
+#include <vector>
 
 // External libs
 #include "tbb/concurrent_queue.h"
@@ -70,8 +70,8 @@ typedef AlgsExecutionStates::State State;
  *  @author  Benedikt Hegner
  *  @version 1.1
  */
-class ForwardSchedulerSvc: public extends<Service,
-                                          IScheduler> {
+class ForwardSchedulerSvc : public extends<Service, IScheduler>
+{
 public:
   /// Constructor
   using extends::extends;
@@ -86,42 +86,45 @@ public:
   virtual StatusCode finalize();
 
   /// Make an event available to the scheduler
-  virtual StatusCode pushNewEvent(EventContext* eventContext);
+  virtual StatusCode pushNewEvent( EventContext* eventContext );
 
   // Make multiple events available to the scheduler
-  virtual StatusCode pushNewEvents(std::vector<EventContext*>& eventContexts);
+  virtual StatusCode pushNewEvents( std::vector<EventContext*>& eventContexts );
 
   /// Blocks until an event is availble
-  virtual StatusCode popFinishedEvent(EventContext*& eventContext);
+  virtual StatusCode popFinishedEvent( EventContext*& eventContext );
 
   /// Try to fetch an event from the scheduler
-  virtual StatusCode tryPopFinishedEvent(EventContext*& eventContext);
+  virtual StatusCode tryPopFinishedEvent( EventContext*& eventContext );
 
   /// Get free slots number
   virtual unsigned int freeSlots();
 
-
 private:
+  enum ActivationState { INACTIVE = 0, ACTIVE = 1, FAILURE = 2 };
 
-  enum ActivationState {
-    INACTIVE = 0,
-    ACTIVE = 1,
-    FAILURE = 2
-  };
-
-  IntegerProperty  m_maxEventsInFlight {this, "MaxEventsInFlight",  0,  "Maximum number of event processed simultaneously"};
-  IntegerProperty  m_threadPoolSize {this, "ThreadPoolSize",  -1, "Size of the threadpool initialised by TBB; a value of -1 gives TBB the freedom to choose"};
-  StringProperty  m_whiteboardSvcName {this, "WhiteboardSvc",  "EventDataSvc",  "The whiteboard name"};
-  UnsignedIntegerProperty  m_maxAlgosInFlight {this, "MaxAlgosInFlight",  0,  "[[deprecated]] Taken from the whiteboard" };
+  IntegerProperty m_maxEventsInFlight{this, "MaxEventsInFlight", 0, "Maximum number of event processed simultaneously"};
+  IntegerProperty m_threadPoolSize{
+      this, "ThreadPoolSize", -1,
+      "Size of the threadpool initialised by TBB; a value of -1 gives TBB the freedom to choose"};
+  StringProperty m_whiteboardSvcName{this, "WhiteboardSvc", "EventDataSvc", "The whiteboard name"};
+  UnsignedIntegerProperty m_maxAlgosInFlight{this, "MaxAlgosInFlight", 0, "[[deprecated]] Taken from the whiteboard"};
   // XXX: CF tests. Temporary property to switch between ControlFlow implementations
-  BooleanProperty  m_CFNext {this, "useGraphFlowManagement",  false,  "Temporary property to switch between ControlFlow implementations"};
+  BooleanProperty m_CFNext{this, "useGraphFlowManagement", false,
+                           "Temporary property to switch between ControlFlow implementations"};
   // XXX: CF tests. Temporary property to switch between DataFlow implementations
-  BooleanProperty  m_DFNext {this, "DataFlowManagerNext",  false,  "Temporary property to switch between DataFlow implementations"};
-  BooleanProperty  m_simulateExecution {this, "SimulateExecution",  false,  "Flag to perform single-pass simulation of execution flow before the actual execution"};
-  StringProperty  m_optimizationMode {this, "Optimizer",  "", "The following modes are currently available: PCE, COD, DRE,  E" };
-  BooleanProperty  m_dumpIntraEventDynamics {this, "DumpIntraEventDynamics",  false,  "Dump intra-event concurrency dynamics to csv file" };
-  PropertyWithValue<std::vector<std::vector<std::string>>> m_algosDependencies {this, "AlgosDependencies",  {},  "[[deprecated]]"};
-  BooleanProperty  m_checkDeps {this, "CheckDependencies",  false,  "[[deprecated]]"};
+  BooleanProperty m_DFNext{this, "DataFlowManagerNext", false,
+                           "Temporary property to switch between DataFlow implementations"};
+  BooleanProperty m_simulateExecution{
+      this, "SimulateExecution", false,
+      "Flag to perform single-pass simulation of execution flow before the actual execution"};
+  StringProperty m_optimizationMode{this, "Optimizer", "",
+                                    "The following modes are currently available: PCE, COD, DRE,  E"};
+  BooleanProperty m_dumpIntraEventDynamics{this, "DumpIntraEventDynamics", false,
+                                           "Dump intra-event concurrency dynamics to csv file"};
+  Gaudi::Property<std::vector<std::vector<std::string>>> m_algosDependencies{
+      this, "AlgosDependencies", {}, "[[deprecated]]"};
+  BooleanProperty m_checkDeps{this, "CheckDependencies", false, "[[deprecated]]"};
 
   // Utils and shortcuts ----------------------------------------------------
 
@@ -138,13 +141,13 @@ private:
   std::thread m_thread;
 
   /// Convert a name to an integer
-  inline unsigned int algname2index(const std::string& algoname);
+  inline unsigned int algname2index( const std::string& algoname );
 
   /// Map to bookkeep the information necessary to the name2index conversion
-  std::unordered_map<std::string,unsigned int> m_algname_index_map;
+  std::unordered_map<std::string, unsigned int> m_algname_index_map;
 
   /// Convert an integer to a name
-  inline const std::string& index2algname (unsigned int index);
+  inline const std::string& index2algname( unsigned int index );
 
   /// Vector to bookkeep the information necessary to the index2name conversion
   std::vector<std::string> m_algname_vect;
@@ -162,8 +165,7 @@ private:
   tbb::concurrent_bounded_queue<EventContext*> m_finishedEvents;
 
   /// Method to check if an event failed and take appropriate actions
-  StatusCode eventFailed(EventContext* eventContext);
-
+  StatusCode eventFailed( EventContext* eventContext );
 
   // States management ------------------------------------------------------
 
@@ -172,34 +174,34 @@ private:
 
   /// Loop on algorithm in the slots and promote them to successive states (-1 means all slots, while empty string
   /// means skipping an update of the Control Flow state)
-  StatusCode updateStates(int si=-1, const std::string& algo_name=std::string());
+  StatusCode updateStates( int si = -1, const std::string& algo_name = std::string() );
 
   /// Algorithm promotion: Accepted by the control flow
-  StatusCode promoteToControlReady(unsigned int iAlgo, int si);
-  StatusCode promoteToDataReady(unsigned int iAlgo, int si);
-  StatusCode promoteToScheduled(unsigned int iAlgo, int si);
-  StatusCode promoteToExecuted(unsigned int iAlgo, int si, IAlgorithm* algo, EventContext*);
-  StatusCode promoteToFinished(unsigned int iAlgo, int si);
+  StatusCode promoteToControlReady( unsigned int iAlgo, int si );
+  StatusCode promoteToDataReady( unsigned int iAlgo, int si );
+  StatusCode promoteToScheduled( unsigned int iAlgo, int si );
+  StatusCode promoteToExecuted( unsigned int iAlgo, int si, IAlgorithm* algo, EventContext* );
+  StatusCode promoteToFinished( unsigned int iAlgo, int si );
 
   /// Check if the scheduling is in a stall
-  StatusCode isStalled(int si);
+  StatusCode isStalled( int si );
 
   /// Dump the state of the scheduler
-  void dumpSchedulerState(int iSlot);
+  void dumpSchedulerState( int iSlot );
 
   /// Keep track of update actions scheduled
   bool m_updateNeeded = true;
 
   // Algos Management -------------------------------------------------------
   /// Cache for the algorithm resource pool
-  SmartIF<IAlgResourcePool>  m_algResourcePool;
+  SmartIF<IAlgResourcePool> m_algResourcePool;
 
   /// Drain the actions present in the queue
   StatusCode m_drain();
 
   // Actions management -----------------------------------------------------
 
-  typedef std::function<StatusCode ()> action;
+  typedef std::function<StatusCode()> action;
 
   /// Queue where closures are stored and picked for execution
   tbb::concurrent_bounded_queue<action> m_actionsQueue;
@@ -211,59 +213,49 @@ private:
   friend class AlgoExecutionTask;
 
   // Service for thread pool initialization
-  SmartIF<IThreadPoolSvc>  m_threadPoolSvc;
+  SmartIF<IThreadPoolSvc> m_threadPoolSvc;
 
   bool m_first = true;
 
-  class SchedulerState {
+  class SchedulerState
+  {
 
   public:
-    SchedulerState(Algorithm* a, EventContext* e, pthread_t t):
-      m_a(a), m_e(*e), m_t(t)
-    {
-    }
+    SchedulerState( Algorithm* a, EventContext* e, pthread_t t ) : m_a( a ), m_e( *e ), m_t( t ) {}
 
     Algorithm* alg() const { return m_a; }
     EventContext ctx() const { return m_e; }
     pthread_t thread() const { return m_t; }
 
-    friend std::ostream& operator<< (std::ostream& os, const SchedulerState& ss) {
-      os << ss.ctx()
-         << "  a: " << ss.alg()->name()
-         << " [" << std::hex << ss.alg() << std::dec
-         << "]  t: 0x" << std::hex << ss.thread() << std::dec;
+    friend std::ostream& operator<<( std::ostream& os, const SchedulerState& ss )
+    {
+      os << ss.ctx() << "  a: " << ss.alg()->name() << " [" << std::hex << ss.alg() << std::dec << "]  t: 0x"
+         << std::hex << ss.thread() << std::dec;
       return os;
     }
 
-    bool operator== (const SchedulerState& ss) const {
-      return ( m_a == ss.alg() );
-    }
+    bool operator==( const SchedulerState& ss ) const { return ( m_a == ss.alg() ); }
 
-    bool operator== (Algorithm* a) const {
-      return ( m_a == a );
-    }
+    bool operator==( Algorithm* a ) const { return ( m_a == a ); }
 
-    bool operator< ( const SchedulerState& rhs) const {
-      return ( m_a < rhs.alg() );
-    }
+    bool operator<( const SchedulerState& rhs ) const { return ( m_a < rhs.alg() ); }
 
   private:
     Algorithm* m_a;
     EventContext m_e;
     pthread_t m_t;
-
   };
 
   static std::list<SchedulerState> m_sState;
   static std::mutex m_ssMut;
 
 public:
-  void addAlg(Algorithm*, EventContext*, pthread_t);
-  bool delAlg(Algorithm*);
+  void addAlg( Algorithm*, EventContext*, pthread_t );
+  bool delAlg( Algorithm* );
   void dumpState();
 
 private:
-  void dumpState(std::ostringstream&);
+  void dumpState( std::ostringstream& );
 };
 
 #endif // GAUDIHIVE_FORWARDSCHEDULERSVC_H

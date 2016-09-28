@@ -31,7 +31,7 @@ int main()
     statm.close();
     // std::cout << vm_size << " " << vm_rss << std::endl;
 
-    using Prop = PropertyWithValue<int>;
+    using Prop = Gaudi::Property<int>;
     std::vector<Prop> props;
     props.reserve( N );
 

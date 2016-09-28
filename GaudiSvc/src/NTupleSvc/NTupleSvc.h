@@ -2,13 +2,12 @@
 #define GAUDI_NTUPLESVC_H 1
 
 // Framework include files
-#include "GaudiKernel/INTupleSvc.h"
-#include "GaudiKernel/IDataSourceMgr.h"
 #include "GaudiKernel/DataSvc.h"
+#include "GaudiKernel/IDataSourceMgr.h"
+#include "GaudiKernel/INTupleSvc.h"
 
 // STL include files
 #include <map>
-
 
 /** @class NTupleSvc NTupleSvc.h
  *
@@ -21,19 +20,17 @@
  *
  *  @author M.Frank
  */
-class NTupleSvc : public extends<DataSvc,
-                                 INTupleSvc,
-                                 IDataSourceMgr>
+class NTupleSvc : public extends<DataSvc, INTupleSvc, IDataSourceMgr>
 {
 protected:
   struct Connection final {
     IConversionSvc* service;
-    Connection(IConversionSvc* s) : service(s) {}
-    Connection(const Connection& c) : service(c.service) {}
+    Connection( IConversionSvc* s ) : service( s ) {}
+    Connection( const Connection& c ) : service( c.service ) {}
   };
-  typedef std::vector< std::string >              DBaseEntries;
-  typedef std::map<std::string, Connection>       Connections;
-  typedef std::pair<std::string,std::string>      Prop;
+  typedef std::vector<std::string> DBaseEntries;
+  typedef std::map<std::string, Connection> Connections;
+  typedef std::pair<std::string, std::string> Prop;
 
 public:
   /// DataSvc overrides: Initialize the service.
@@ -43,39 +40,41 @@ public:
   /// DataSvc overrides: stop the service.
   virtual StatusCode finalize();
   /// DataSvc overrides: Retrieve data loader
-  virtual IConversionSvc* getDataLoader(IRegistry* pReg);
+  virtual IConversionSvc* getDataLoader( IRegistry* pReg );
 
   /// Create Ntuple directory and register it with the data store.
-  virtual NTuple::Directory* createDirectory (DataObject* pParent, const std::string& title);
+  virtual NTuple::Directory* createDirectory( DataObject* pParent, const std::string& title );
   /// Create Ntuple directory and register it with the data store.
-  virtual NTuple::Directory* createDirectory (DataObject* pParent, long id);
+  virtual NTuple::Directory* createDirectory( DataObject* pParent, long id );
   /// Create Ntuple directory and register it with the data store.
-  virtual NTuple::Directory* createDirectory (const std::string& dirPath, long id);
+  virtual NTuple::Directory* createDirectory( const std::string& dirPath, long id );
   /// Create Ntuple directory and register it with the data store.
-  virtual NTuple::Directory* createDirectory (const std::string& dirPath, const std::string& title);
+  virtual NTuple::Directory* createDirectory( const std::string& dirPath, const std::string& title );
   /// Create Ntuple directory and register it with the data store.
-  virtual NTuple::Directory* createDirectory (const std::string& fullPath);
+  virtual NTuple::Directory* createDirectory( const std::string& fullPath );
 
   /// Create requested N tuple (Hide constructor)
-  virtual StatusCode create(const CLID& typ, const std::string& title, NTuple::Tuple*& refpTuple);
+  virtual StatusCode create( const CLID& typ, const std::string& title, NTuple::Tuple*& refpTuple );
   /// Book Ntuple and register it with the data store.
-  virtual NTuple::Tuple* book (const std::string& fullPath, const CLID& type, const std::string& title);
+  virtual NTuple::Tuple* book( const std::string& fullPath, const CLID& type, const std::string& title );
   /// Book Ntuple and register it with the data store.
-  virtual NTuple::Tuple* book (const std::string& dirPath, const std::string& relPath, const CLID& type, const std::string& title);
+  virtual NTuple::Tuple* book( const std::string& dirPath, const std::string& relPath, const CLID& type,
+                               const std::string& title );
   /// Book Ntuple and register it with the data store.
-  virtual NTuple::Tuple* book (const std::string& dirPath, long id, const CLID& type, const std::string& title);
+  virtual NTuple::Tuple* book( const std::string& dirPath, long id, const CLID& type, const std::string& title );
   /// Book Ntuple and register it with the data store.
-  virtual NTuple::Tuple* book (DataObject* pParent, const std::string& relPath, const CLID& type, const std::string& title);
+  virtual NTuple::Tuple* book( DataObject* pParent, const std::string& relPath, const CLID& type,
+                               const std::string& title );
   /// Book Ntuple and register it with the data store.
-  virtual NTuple::Tuple* book (DataObject* pParent, long id, const CLID& type, const std::string& title);
+  virtual NTuple::Tuple* book( DataObject* pParent, long id, const CLID& type, const std::string& title );
   /// Access N tuple on disk.
-  virtual NTuple::Tuple* access(const std::string& fullPath, const std::string& filename);
+  virtual NTuple::Tuple* access( const std::string& fullPath, const std::string& filename );
   /// Save N tuple to disk. Must be called in order to close the ntuple file properly
-  virtual StatusCode save(const std::string& fullPath);
+  virtual StatusCode save( const std::string& fullPath );
   /// Save N tuple to disk. Must be called in order to close the ntuple file properly
-  virtual StatusCode save(NTuple::Tuple* tuple);
+  virtual StatusCode save( NTuple::Tuple* tuple );
   /// Save N tuple to disk. Must be called in order to close the ntuple file properly
-  virtual StatusCode save(DataObject* pParent, const std::string& relPath);
+  virtual StatusCode save( DataObject* pParent, const std::string& relPath );
   /// Write single record to N tuple.
   virtual StatusCode writeRecord( NTuple::Tuple* tuple );
   /// Write single record to N tuple.
@@ -87,43 +86,40 @@ public:
   /// Read single record from N tuple.
   virtual StatusCode readRecord( const std::string& fullPath );
   /// Read single record from N tuple.
-  virtual StatusCode readRecord( DataObject* pParent, const std::string& relPath);
+  virtual StatusCode readRecord( DataObject* pParent, const std::string& relPath );
 
   /// Check if a datasource is connected
-  virtual bool isConnected(const std::string& identifier)   const;
+  virtual bool isConnected( const std::string& identifier ) const;
   /// Add file to list I/O list
-  virtual StatusCode connect(const std::string& ident);
+  virtual StatusCode connect( const std::string& ident );
   /// Add file to list I/O list
-  virtual StatusCode connect(const std::string& ident, std::string& logname);
+  virtual StatusCode connect( const std::string& ident, std::string& logname );
   /// Close open connection
-  virtual StatusCode disconnect(const std::string& nam);
+  virtual StatusCode disconnect( const std::string& nam );
   /// Close all open connections
   virtual StatusCode disconnectAll();
 
   /// Standard Constructor
-  NTupleSvc(const std::string& name, ISvcLocator* svc);
+  NTupleSvc( const std::string& name, ISvcLocator* svc );
   /// Standard Destructor
   ~NTupleSvc() override = default;
 
 protected:
-
   /// Create conversion service
-  StatusCode createService( const std::string& nam,
-                            const std::string& typ,
-                            const std::vector<Prop>& props,
-                            IConversionSvc*& pSvc);
+  StatusCode createService( const std::string& nam, const std::string& typ, const std::vector<Prop>& props,
+                            IConversionSvc*& pSvc );
   /// Finalize single service
-  void releaseConnection(Connection& c);
+  void releaseConnection( Connection& c );
   /// Attach output/input file
-  StatusCode attachTuple(const std::string& filename, const std::string& logname, const char typ, const long t);
+  StatusCode attachTuple( const std::string& filename, const std::string& logname, const char typ, const long t );
   /// Update directory data
   StatusCode updateDirectories();
 
-  PropertyWithValue<DBaseEntries> m_input{this, "Input", {}, "input streams"};
-  PropertyWithValue<DBaseEntries> m_output{this, "Output", {}, "output streams"};
+  Gaudi::Property<DBaseEntries> m_input{this, "Input", {}, "input streams"};
+  Gaudi::Property<DBaseEntries> m_output{this, "Output", {}, "output streams"};
 
   /// Container of connection points
-  Connections                  m_connections;
+  Connections m_connections;
 };
 
 #endif // GAUDI_NTUPLESVC_H

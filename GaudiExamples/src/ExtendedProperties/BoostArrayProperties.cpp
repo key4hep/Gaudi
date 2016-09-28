@@ -30,7 +30,7 @@ namespace Gaudi
     public:
       // ======================================================================
       /// execute it!
-      StatusCode execute () override;
+      StatusCode execute() override;
       // ======================================================================
     public:
       // ======================================================================
@@ -42,11 +42,13 @@ namespace Gaudi
     private:
       // ======================================================================
       /// array  of doubles
-      PropertyWithValue<boost::array<double,5>>       m_doubles{this, "Doubles", {-1, -1, -1, -1, -1}, "Boost-array of doubles"};
+      Gaudi::Property<boost::array<double, 5>> m_doubles{
+          this, "Doubles", {-1, -1, -1, -1, -1}, "Boost-array of doubles"};
       /// array of strings
-      PropertyWithValue<boost::array<std::string,4>>  m_strings{this, "Strings", {"bla-bla", "bla-bla", "bla-bla", "bla-bla"}, "Boost-array of strings"};
+      Gaudi::Property<boost::array<std::string, 4>> m_strings{
+          this, "Strings", {"bla-bla", "bla-bla", "bla-bla", "bla-bla"}, "Boost-array of strings"};
       // ======================================================================
-    } ;
+    };
     // ========================================================================
   } //                                         end of namespace Gaudi::Examples
   // ==========================================================================
@@ -54,20 +56,20 @@ namespace Gaudi
 // ============================================================================
 // execute it!
 // ============================================================================
-StatusCode Gaudi::Examples::BoostArrayProperties::execute ()
+StatusCode Gaudi::Examples::BoostArrayProperties::execute()
 {
-  propsPrint () ;
+  propsPrint();
   //
-  info() << " Doubles : " << Gaudi::Utils::toString ( m_doubles ) << endmsg ;
-  info() << " Strings : " << Gaudi::Utils::toString ( m_strings ) << endmsg ;
+  info() << " Doubles : " << Gaudi::Utils::toString( m_doubles ) << endmsg;
+  info() << " Strings : " << Gaudi::Utils::toString( m_strings ) << endmsg;
   //
-  return StatusCode::SUCCESS ;
+  return StatusCode::SUCCESS;
 }
 // ============================================================================
 /// The Factory
 // ============================================================================
 using Gaudi::Examples::BoostArrayProperties;
-DECLARE_COMPONENT(BoostArrayProperties)
+DECLARE_COMPONENT( BoostArrayProperties )
 // ============================================================================
 // The END
 // ============================================================================

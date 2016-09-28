@@ -35,10 +35,10 @@ public:
   typedef std::map<std::string, ItemNames> AlgDependentItemNames;
 
 protected:
-  PropertyWithValue<ItemNames> m_itemNames{this, "ItemList", {}, "vector of item names to be saved to this stream"};
-  PropertyWithValue<ItemNames> m_optItemNames{
+  Gaudi::Property<ItemNames> m_itemNames{this, "ItemList", {}, "vector of item names to be saved to this stream"};
+  Gaudi::Property<ItemNames> m_optItemNames{
       this, "OptItemList", {}, "vector of optional item names to be saved to this stream"};
-  PropertyWithValue<AlgDependentItemNames> m_algDependentItemList{
+  Gaudi::Property<AlgDependentItemNames> m_algDependentItemList{
       this,
       "AlgDependentItemList",
       {},
