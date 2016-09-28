@@ -4,9 +4,9 @@
 // from Gaudi
 #include "GaudiAlg/GaudiAlgorithm.h"
 
+#include <boost/bind.hpp>
 #include <tbb/task_group.h>
 #include <tbb/task_scheduler_init.h>
-#include <boost/bind.hpp>
 
 // Forward declarations
 class ISequencerTimerTool;
@@ -17,70 +17,73 @@ class ISequencerTimerTool;
   * @author Illya Shapoval
   * @date 09/12/2011
   */
-class GaudiParallelizer: public GaudiAlgorithm {
+class GaudiParallelizer : public GaudiAlgorithm
+{
 public:
   /// Standard constructor
-  GaudiParallelizer(const std::string& name, ISvcLocator* pSvcLocator);
+  GaudiParallelizer( const std::string& name, ISvcLocator* pSvcLocator );
   /// Destructor. An explicit noexcept(true) is necessary for Gaudi to build (see GAUDI-1187)
-  virtual ~GaudiParallelizer() noexcept(true) override { }
-  virtual StatusCode initialize();    ///< Algorithm initialization
-  virtual StatusCode execute   ();    ///< Algorithm execution
-  virtual StatusCode finalize  ();    ///< Algorithm finalization
+  virtual ~GaudiParallelizer() noexcept( true ) override {}
+  virtual StatusCode initialize(); ///< Algorithm initialization
+  virtual StatusCode execute();    ///< Algorithm execution
+  virtual StatusCode finalize();   ///< Algorithm finalization
 
   /** for asynchronous changes in the list of algorithms */
-  void membershipHandler( Property& theProp );
+  void membershipHandler( Gaudi::Details::PropertyBase& theProp );
 
 protected:
-  class AlgorithmEntry {
-    public:
-      /// Standard constructor
-      AlgorithmEntry( Algorithm* alg ) {
-        m_algorithm = alg;
-        m_reverse = false;
-        m_timer = 0;
-      }
+  class AlgorithmEntry
+  {
+  public:
+    /// Standard constructor
+    AlgorithmEntry( Algorithm* alg )
+    {
+      m_algorithm = alg;
+      m_reverse   = false;
+      m_timer     = 0;
+    }
 
-      virtual ~AlgorithmEntry( ) {}; ///< Destructor
-      void setReverse( bool flag )         { m_reverse   = flag; }
+    virtual ~AlgorithmEntry(){}; ///< Destructor
+    void setReverse( bool flag ) { m_reverse = flag; }
 
-      Algorithm* algorithm()        const  { return m_algorithm; }
-      bool       reverse()          const  { return m_reverse;   }
-      void       setTimer( int nb )        { m_timer = nb;       }
-      int        timer()            const  { return m_timer;     }
+    Algorithm* algorithm() const { return m_algorithm; }
+    bool reverse() const { return m_reverse; }
+    void setTimer( int nb ) { m_timer = nb; }
+    int timer() const { return m_timer; }
 
-      /// Thread task executor method to wrap an algorithm execution in
-      void       run( GaudiParallelizer& prlzr ) {
-        if ( prlzr.m_measureTime ) prlzr.m_timerTool->start( timer() );
-        m_returncode = m_algorithm->sysExecute();
-        if ( prlzr.m_measureTime ) prlzr.m_timerTool->stop( timer() );
-        algorithm()->setExecuted( true );
-      }
+    /// Thread task executor method to wrap an algorithm execution in
+    void run( GaudiParallelizer& prlzr )
+    {
+      if ( prlzr.m_measureTime ) prlzr.m_timerTool->start( timer() );
+      m_returncode = m_algorithm->sysExecute();
+      if ( prlzr.m_measureTime ) prlzr.m_timerTool->stop( timer() );
+      algorithm()->setExecuted( true );
+    }
 
-      StatusCode  m_returncode;  ///< StatusCode of an algorithm execution received from a thread
+    StatusCode m_returncode; ///< StatusCode of an algorithm execution received from a thread
 
-    private:
-      Algorithm*  m_algorithm;   ///< Algorithm pointer
-      bool        m_reverse;     ///< Indicates that the flag has to be inverted
-      int         m_timer;       ///< Timer number for this algorithm
-    };
+  private:
+    Algorithm* m_algorithm; ///< Algorithm pointer
+    bool m_reverse;         ///< Indicates that the flag has to be inverted
+    int m_timer;            ///< Timer number for this algorithm
+  };
 
   /** Decode a vector of string. */
-  StatusCode decodeNames(  );
+  StatusCode decodeNames();
 
 private:
-
   StringArrayProperty m_names{this, "Members", {}, "list of algorithms"};
   BooleanProperty m_modeOR{this, "ModeOR", false, "use OR loginc instead of AND"};
   BooleanProperty m_measureTime{this, "MeasureTime", false, "measure time"};
   BooleanProperty m_returnOK{this, "ReturnOK", false, "forces the sequencer to return a good status"};
-  PropertyWithValue<unsigned short>  m_nthreads       {this,  "NumberOfThreads",  0 , "number of threads in the thread pool"};
+  PropertyWithValue<unsigned short> m_nthreads{this, "NumberOfThreads", 0, "number of threads in the thread pool"};
 
   std::vector<AlgorithmEntry> m_entries; ///< List of algorithms to process.
 
-  ISequencerTimerTool* m_timerTool = nullptr;      ///< Pointer to the timer tool
-  int  m_timer;                          ///< Timer number for the sequencer
+  ISequencerTimerTool* m_timerTool = nullptr; ///< Pointer to the timer tool
+  int m_timer;                                ///< Timer number for the sequencer
 
-  tbb::task_group m_task_group;          ///< TBB task group
+  tbb::task_group m_task_group; ///< TBB task group
 };
 
 #endif // LIB_GAUDIPARALLELIZER_H

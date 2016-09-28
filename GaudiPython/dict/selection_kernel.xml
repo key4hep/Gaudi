@@ -4,8 +4,8 @@
   <class pattern = "std::unary_function<*>"/>
   <class name    = "GaudiPython::Helper"/>
 
-  <class name    = "std::vector<Property*>" />
-  <class name    = "std::vector<const Property*>"/>
+  <class name    = "std::vector<Gaudi::Details::PropertyBase*>" />
+  <class name    = "std::vector<const Gaudi::Details::PropertyBase*>"/>
   <class name    = "std::vector<std::basic_string<char> >" rootmap="false"/>
   <class name    = "std::vector<std::vector<double> >" rootmap="false"/>
   <class name    = "std::vector<IRegistry*>"/>

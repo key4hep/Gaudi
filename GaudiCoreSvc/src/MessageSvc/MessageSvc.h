@@ -204,11 +204,11 @@ private:
 
   std::map<std::string, std::shared_ptr<std::ostream>> m_loggedStreams;
 
-  void initColors( Property& prop );
-  void setupColors( Property& prop );
-  void setupLimits( Property& prop );
-  void setupThreshold( Property& prop );
-  void setupInactCount( Property& prop );
+  void initColors( Gaudi::Details::PropertyBase& prop );
+  void setupColors( Gaudi::Details::PropertyBase& prop );
+  void setupLimits( Gaudi::Details::PropertyBase& prop );
+  void setupThreshold( Gaudi::Details::PropertyBase& prop );
+  void setupInactCount( Gaudi::Details::PropertyBase& prop );
 
   void setupLogStreams();
 

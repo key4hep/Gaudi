@@ -4,7 +4,8 @@
 
 #include "GaudiKernel/Property.h"
 
-struct MyClass {};
+struct MyClass {
+};
 
 BOOST_AUTO_TEST_CASE( value_props_constructors )
 {
@@ -203,15 +204,15 @@ BOOST_AUTO_TEST_CASE( backward_compatibility )
 {
   {
     IntegerProperty ip{"name", 42};
-    BOOST_CHECK( ! ip.readCallBack() );
-    BOOST_CHECK( ! ip.updateCallBack() );
+    BOOST_CHECK( !ip.readCallBack() );
+    BOOST_CHECK( !ip.updateCallBack() );
 
-    Property* p = &ip;
-    BOOST_CHECK( ! p->readCallBack() );
-    BOOST_CHECK( ! p->updateCallBack() );
+    Gaudi::Details::PropertyBase* p = &ip;
+    BOOST_CHECK( !p->readCallBack() );
+    BOOST_CHECK( !p->updateCallBack() );
     BOOST_CHECK( 0 == p->updateCallBack() );
 
-    p->declareUpdateHandler([](Property&) {});
+    p->declareUpdateHandler( []( Gaudi::Details::PropertyBase& ) {} );
     BOOST_CHECK( ip.updateCallBack() );
     BOOST_CHECK( p->updateCallBack() );
   }

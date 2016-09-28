@@ -68,7 +68,7 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator* pSvcLocator, const s
 
   // update handlers.
   m_outputLevel.declareUpdateHandler(
-      [this]( Property& ) { this->updateMsgStreamOutputLevel( this->m_outputLevel ); } );
+      [this]( Gaudi::Details::PropertyBase& ) { this->updateMsgStreamOutputLevel( this->m_outputLevel ); } );
 }
 
 // IAlgorithm implementation

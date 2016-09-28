@@ -11,8 +11,8 @@
 ///////////////////////////////////////////////////////////////////////////
 
 #include "GaudiKernel/JobHistory.h"
-#include "GaudiKernel/System.h"
 #include "GaudiKernel/Property.h"
+#include "GaudiKernel/System.h"
 
 #include <cstdlib>
 #include <iostream>
@@ -22,49 +22,52 @@ using std::ostream;
 using std::endl;
 using std::vector;
 
+using Gaudi::Details::PropertyBase;
+
 //**********************************************************************
 // Member functions.
 //**********************************************************************
 
 // Constructor.
 
-JobHistory::JobHistory()
-: m_start_time(0) {
+JobHistory::JobHistory() : m_start_time( 0 )
+{
 
-  time(&m_start_time);
+  time( &m_start_time );
 
   std::string rel;
 
-  if  ( (rel = System::getEnv("ATLAS_BASE_RELEASE")) != "UNKNOWN" ) {
+  if ( ( rel = System::getEnv( "ATLAS_BASE_RELEASE" ) ) != "UNKNOWN" ) {
     m_release_version = rel;
-  } else if ( (rel = System::getEnv("GAUDIROOT")) != "UNKNOWN" ) {
+  } else if ( ( rel = System::getEnv( "GAUDIROOT" ) ) != "UNKNOWN" ) {
     m_release_version = rel;
   } else {
     m_release_version = "UNKNOWN";
   }
-  m_dir = System::getEnv("PWD");
-  m_cmtconfig = System::getEnv("CMTCONFIG");
+  m_dir       = System::getEnv( "PWD" );
+  m_cmtconfig = System::getEnv( "CMTCONFIG" );
 
-  m_osname = System::osName();
-  m_hostname = System::hostName();
+  m_osname     = System::osName();
+  m_hostname   = System::hostName();
   m_os_version = System::osVersion();
-  m_machine = System::machineType();
+  m_machine    = System::machineType();
 
   m_environ = System::getEnv();
- 
 }
 
-JobHistory::JobHistory(const std::string& rel, const std::string& os,
-		       const std::string& host, const std::string& dir,
-		       const std::string& osver, const std::string& mach,
-		       const std::string& cmtconfig,
-		       const time_t& time):
-  m_release_version(rel), m_dir(dir), m_cmtconfig(cmtconfig), m_osname(os), 
-  m_hostname(host),
-  m_os_version(osver), m_machine(mach), m_start_time(time) {
-
+JobHistory::JobHistory( const std::string& rel, const std::string& os, const std::string& host, const std::string& dir,
+                        const std::string& osver, const std::string& mach, const std::string& cmtconfig,
+                        const time_t& time )
+    : m_release_version( rel )
+    , m_dir( dir )
+    , m_cmtconfig( cmtconfig )
+    , m_osname( os )
+    , m_hostname( host )
+    , m_os_version( osver )
+    , m_machine( mach )
+    , m_start_time( time )
+{
 }
-  
 
 //**********************************************************************
 
@@ -72,25 +75,23 @@ JobHistory::JobHistory(const std::string& rel, const std::string& os,
 
 JobHistory::~JobHistory() = default;
 
-const CLID& 
-JobHistory::classID() {
+const CLID& JobHistory::classID()
+{
 
   static const CLID CLID_JobHistory = 247994533;
   return CLID_JobHistory;
-
 }
 
-void
-JobHistory::addProperty(const std::string& client, const Property* prop) {
-//  if (m_props.find(prop) == m_props.end()) 
-    m_ppl.emplace_back( client,prop );
+void JobHistory::addProperty( const std::string& client, const PropertyBase* prop )
+{
+  //  if (m_props.find(prop) == m_props.end())
+  m_ppl.emplace_back( client, prop );
 }
 
+void JobHistory::dump( std::ostream& ost, const bool isXML, int /*ind*/ ) const
+{
 
-void 
-JobHistory::dump(std::ostream& ost, const bool isXML, int /*ind*/) const {
-
-  if (!isXML) {
+  if ( !isXML ) {
     ost << "Release: " << release_version() << endl;
     ost << "OS:      " << os() << endl;
     ost << "OS ver:  " << os_version() << endl;
@@ -99,20 +100,19 @@ JobHistory::dump(std::ostream& ost, const bool isXML, int /*ind*/) const {
     ost << "Run dir: " << dir() << endl;
     ost << "CMTCONFIG: " << cmtconfig() << endl;
     ost << "Job start time: " << start_time() << endl << endl;
-    ost << "Properties: [" << endl;;
+    ost << "Properties: [" << endl;
+    ;
     for ( const auto& ipprop : propertyPairs() ) {
       const std::string& client = ipprop.first;
-      const Property* prop = ipprop.second;
+      const PropertyBase* prop  = ipprop.second;
       ost << client << ":  ";
-      prop->fillStream(ost);
+      prop->fillStream( ost );
       ost << endl;
     }
     ost << "]" << endl;
-    for (const auto& itr : environment() ) ost << itr << endl;
+    for ( const auto& itr : environment() ) ost << itr << endl;
   } else {
-
   }
-
 }
 
 //**********************************************************************
@@ -121,8 +121,9 @@ JobHistory::dump(std::ostream& ost, const bool isXML, int /*ind*/) const {
 
 // Output stream.
 
-ostream& operator<<(ostream& lhs, const JobHistory& rhs) {
-  rhs.dump(lhs,false);
+ostream& operator<<( ostream& lhs, const JobHistory& rhs )
+{
+  rhs.dump( lhs, false );
   return lhs;
 }
 

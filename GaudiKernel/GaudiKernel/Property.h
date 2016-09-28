@@ -13,140 +13,143 @@
 #include "GaudiKernel/IProperty.h"
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/Parsers.h"
+#include "GaudiKernel/PropertyFwd.h"
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/ToStream.h"
-// ============================================================================
-/// The output operator for friendly printout
-// ============================================================================
-class Property;
-GAUDI_API std::ostream& operator<<( std::ostream& stream, const Property& prop );
-// ============================================================================
-/** Property base class allowing Property* collections to be "homogeneous"
- *
- * \author Paul Maley
- * \author CTDay
- * \author Vanya BELYAEV ibelyaev@physics.syr.edu
- * \author Marco Clemencic
- */
-class GAUDI_API Property
-{
-private:
-  // the default constructor is disabled
-  Property() = delete;
-
-public:
-  /// property name
-  const std::string name() const { return m_name.to_string(); }
-  /// property documentation
-  std::string documentation() const { return m_documentation.to_string() + " [" + ownerTypeName() + "]"; }
-  /// property type-info
-  const std::type_info* type_info() const { return m_typeinfo; }
-  /// property type
-  std::string type() const { return m_typeinfo->name(); }
-  ///  export the property value to the destination
-  virtual bool load( Property& dest ) const = 0;
-  /// import the property value form the source
-  virtual bool assign( const Property& source ) = 0;
-
-public:
-  /// value  -> string
-  virtual std::string toString() const = 0;
-  /// value  -> stream
-  virtual void toStream( std::ostream& out ) const = 0;
-  /// string -> value
-  virtual StatusCode fromString( const std::string& value ) = 0;
-
-public:
-  /// set new callback for reading
-  virtual Property& declareReadHandler( std::function<void( Property& )> fun ) = 0;
-  /// set new callback for update
-  virtual Property& declareUpdateHandler( std::function<void( Property& )> fun ) = 0;
-
-  /// get a reference to the readCallBack
-  virtual const std::function<void( Property& )> readCallBack() const = 0;
-  /// get a reference to the updateCallBack
-  virtual const std::function<void( Property& )> updateCallBack() const = 0;
-
-  /// manual trigger for callback for update
-  virtual bool useUpdateHandler() = 0;
-
-  template <class HT>
-  inline Property& declareReadHandler( void ( HT::*MF )( Property& ), HT* instance )
-  {
-    return declareReadHandler( [=]( Property& p ) { ( instance->*MF )( p ); } );
-  }
-
-  template <class HT>
-  inline Property& declareUpdateHandler( void ( HT::*MF )( Property& ), HT* instance )
-  {
-    return declareUpdateHandler( [=]( Property& p ) { ( instance->*MF )( p ); } );
-  }
-
-public:
-  /// virtual destructor
-  virtual ~Property() = default;
-  /// set the new value for the property name
-  void setName( std::string value ) { m_name = to_view( std::move( value ) ); }
-  /// set the documentation string
-  void setDocumentation( std::string value ) { m_documentation = to_view( std::move( value ) ); }
-  /// the printout of the property value
-  virtual std::ostream& fillStream( std::ostream& ) const;
-  /// clones the current property
-  /// \deprecated provided for backward compatibility, will be removed in v28r1
-  [[deprecated( "provided for backward compatibility, will be removed in v28r1" )]] virtual Property* clone() const = 0;
-
-  /// set the type of the owner class (used for documentation)
-  void setOwnerType( const std::type_info& ownerType ) { m_ownerType = &ownerType; }
-
-  /// set the type of the owner class (used for documentation)
-  template <class OWNER>
-  void setOwnerType()
-  {
-    setOwnerType( typeid( OWNER ) );
-  }
-
-  /// get the type of the owner class (used for documentation)
-  const std::type_info* ownerType() const { return m_ownerType; }
-
-  /// get the string for the type of the owner class (used for documentation)
-  std::string ownerTypeName() const
-  {
-    return m_ownerType ? System::typeinfoName( *m_ownerType ) : std::string( "unknown owner type" );
-  }
-
-protected:
-  /// constructor from the property name and the type
-  Property( const std::type_info& type, std::string name = "", std::string doc = "" )
-      : m_name( to_view( std::move( name ) ) ), m_documentation( to_view( std::move( doc ) ) ), m_typeinfo( &type )
-  {
-  }
-  /// constructor from the property name and the type
-  Property( std::string name, const std::type_info& type )
-      : m_name( to_view( std::move( name ) ) ), m_documentation( m_name ), m_typeinfo( &type )
-  {
-  }
-  /// copy constructor
-  Property( const Property& ) = default;
-  /// assignment operator
-  Property& operator=( const Property& ) = default;
-
-private:
-  /// helper to map a string to a reliable boost::string_ref
-  static boost::string_ref to_view( std::string str );
-  /// property name
-  boost::string_ref m_name;
-  /// property doc string
-  boost::string_ref m_documentation;
-  /// property type
-  const std::type_info* m_typeinfo;
-  /// type of owner of the property (if defined)
-  const std::type_info* m_ownerType = nullptr;
-};
 
 namespace Gaudi
 {
   namespace Details
   {
+    // ============================================================================
+    /** PropertyBase base class allowing PropertyBase* collections to be "homogeneous"
+     *
+     * \author Paul Maley
+     * \author CTDay
+     * \author Vanya BELYAEV ibelyaev@physics.syr.edu
+     * \author Marco Clemencic
+     */
+    class GAUDI_API PropertyBase
+    {
+    private:
+      // the default constructor is disabled
+      PropertyBase() = delete;
+
+    public:
+      /// property name
+      const std::string name() const { return m_name.to_string(); }
+      /// property documentation
+      std::string documentation() const { return m_documentation.to_string() + " [" + ownerTypeName() + "]"; }
+      /// property type-info
+      const std::type_info* type_info() const { return m_typeinfo; }
+      /// property type
+      std::string type() const { return m_typeinfo->name(); }
+      ///  export the property value to the destination
+      virtual bool load( PropertyBase& dest ) const = 0;
+      /// import the property value form the source
+      virtual bool assign( const PropertyBase& source ) = 0;
+
+    public:
+      /// value  -> string
+      virtual std::string toString() const = 0;
+      /// value  -> stream
+      virtual void toStream( std::ostream& out ) const = 0;
+      /// string -> value
+      virtual StatusCode fromString( const std::string& value ) = 0;
+
+    public:
+      /// set new callback for reading
+      virtual PropertyBase& declareReadHandler( std::function<void( PropertyBase& )> fun ) = 0;
+      /// set new callback for update
+      virtual PropertyBase& declareUpdateHandler( std::function<void( PropertyBase& )> fun ) = 0;
+
+      /// get a reference to the readCallBack
+      virtual const std::function<void( PropertyBase& )> readCallBack() const = 0;
+      /// get a reference to the updateCallBack
+      virtual const std::function<void( PropertyBase& )> updateCallBack() const = 0;
+
+      /// manual trigger for callback for update
+      virtual bool useUpdateHandler() = 0;
+
+      template <class HT>
+      inline PropertyBase& declareReadHandler( void ( HT::*MF )( PropertyBase& ), HT* instance )
+      {
+        return declareReadHandler( [=]( PropertyBase& p ) { ( instance->*MF )( p ); } );
+      }
+
+      template <class HT>
+      inline PropertyBase& declareUpdateHandler( void ( HT::*MF )( PropertyBase& ), HT* instance )
+      {
+        return declareUpdateHandler( [=]( PropertyBase& p ) { ( instance->*MF )( p ); } );
+      }
+
+    public:
+      /// virtual destructor
+      virtual ~PropertyBase() = default;
+      /// set the new value for the property name
+      void setName( std::string value ) { m_name = to_view( std::move( value ) ); }
+      /// set the documentation string
+      void setDocumentation( std::string value ) { m_documentation = to_view( std::move( value ) ); }
+      /// the printout of the property value
+      virtual std::ostream& fillStream( std::ostream& ) const;
+      /// clones the current property
+      /// \deprecated provided for backward compatibility, will be removed in v28r1
+      [[deprecated( "provided for backward compatibility, will be removed in v28r1" )]] virtual PropertyBase*
+      clone() const = 0;
+
+      /// set the type of the owner class (used for documentation)
+      void setOwnerType( const std::type_info& ownerType ) { m_ownerType = &ownerType; }
+
+      /// set the type of the owner class (used for documentation)
+      template <class OWNER>
+      void setOwnerType()
+      {
+        setOwnerType( typeid( OWNER ) );
+      }
+
+      /// get the type of the owner class (used for documentation)
+      const std::type_info* ownerType() const { return m_ownerType; }
+
+      /// get the string for the type of the owner class (used for documentation)
+      std::string ownerTypeName() const
+      {
+        return m_ownerType ? System::typeinfoName( *m_ownerType ) : std::string( "unknown owner type" );
+      }
+
+    protected:
+      /// constructor from the property name and the type
+      PropertyBase( const std::type_info& type, std::string name = "", std::string doc = "" )
+          : m_name( to_view( std::move( name ) ) ), m_documentation( to_view( std::move( doc ) ) ), m_typeinfo( &type )
+      {
+      }
+      /// constructor from the property name and the type
+      PropertyBase( std::string name, const std::type_info& type )
+          : m_name( to_view( std::move( name ) ) ), m_documentation( m_name ), m_typeinfo( &type )
+      {
+      }
+      /// copy constructor
+      PropertyBase( const PropertyBase& ) = default;
+      /// assignment operator
+      PropertyBase& operator=( const PropertyBase& ) = default;
+
+    private:
+      /// helper to map a string to a reliable boost::string_ref
+      static boost::string_ref to_view( std::string str );
+      /// property name
+      boost::string_ref m_name;
+      /// property doc string
+      boost::string_ref m_documentation;
+      /// property type
+      const std::type_info* m_typeinfo;
+      /// type of owner of the property (if defined)
+      const std::type_info* m_ownerType = nullptr;
+    };
+
+    inline std::ostream& operator<<( std::ostream& stream, const PropertyBase& prop )
+    {
+      return prop.fillStream( stream );
+    }
+
     namespace Property
     {
       template <class TYPE>
@@ -239,41 +242,41 @@ namespace Gaudi
 
       /// helper to disable a while triggering it, to avoid infinite recursion
       struct SwapCall {
-        using callback_t = std::function<void(::Property& )>;
+        using callback_t = std::function<void( PropertyBase& )>;
         callback_t tmp, &orig;
         SwapCall( callback_t& input ) : orig( input ) { tmp.swap( orig ); }
         ~SwapCall() { orig.swap( tmp ); }
-        void operator()(::Property& p ) const { tmp( p ); }
+        void operator()( PropertyBase& p ) const { tmp( p ); }
       };
 
       struct NoHandler {
-        void useReadHandler( const ::Property& ) const {}
-        void setReadHandler( std::function<void(::Property& )> )
+        void useReadHandler( const PropertyBase& ) const {}
+        void setReadHandler( std::function<void( PropertyBase& )> )
         {
           throw std::logic_error( "setReadHandler not implemented for this class" );
         }
-        std::function<void(::Property& )> getReadHandler() const { return nullptr; }
-        void useUpdateHandler( const ::Property& ) const {}
-        void setUpdateHandler( std::function<void(::Property& )> )
+        std::function<void( PropertyBase& )> getReadHandler() const { return nullptr; }
+        void useUpdateHandler( const PropertyBase& ) const {}
+        void setUpdateHandler( std::function<void( PropertyBase& )> )
         {
           throw std::logic_error( "setUpdateHandler not implemented for this class" );
         }
-        std::function<void(::Property& )> getUpdateHandler() const { return nullptr; }
+        std::function<void( PropertyBase& )> getUpdateHandler() const { return nullptr; }
       };
       struct ReadHandler : NoHandler {
-        mutable std::function<void(::Property& )> m_readCallBack;
-        void useReadHandler( const ::Property& p ) const
+        mutable std::function<void( PropertyBase& )> m_readCallBack;
+        void useReadHandler( const PropertyBase& p ) const
         {
           if ( m_readCallBack ) {
-            SwapCall{m_readCallBack}( const_cast<::Property&>( p ) );
+            SwapCall{m_readCallBack}( const_cast<PropertyBase&>( p ) );
           }
         }
-        void setReadHandler( std::function<void(::Property& )> fun ) { m_readCallBack = std::move( fun ); }
-        std::function<void(::Property& )> getReadHandler() const { return m_readCallBack; }
+        void setReadHandler( std::function<void( PropertyBase& )> fun ) { m_readCallBack = std::move( fun ); }
+        std::function<void( PropertyBase& )> getReadHandler() const { return m_readCallBack; }
       };
       struct UpdateHandler : NoHandler {
-        std::function<void(::Property& )> m_updateCallBack;
-        void useUpdateHandler(::Property& p )
+        std::function<void( PropertyBase& )> m_updateCallBack;
+        void useUpdateHandler( PropertyBase& p )
         {
           if ( m_updateCallBack ) {
             try {
@@ -283,8 +286,8 @@ namespace Gaudi
             }
           }
         }
-        void setUpdateHandler( std::function<void(::Property& )> fun ) { m_updateCallBack = std::move( fun ); }
-        std::function<void(::Property& )> getUpdateHandler() const { return m_updateCallBack; }
+        void setUpdateHandler( std::function<void( PropertyBase& )> fun ) { m_updateCallBack = std::move( fun ); }
+        std::function<void( PropertyBase& )> getUpdateHandler() const { return m_updateCallBack; }
       };
       struct ReadUpdateHandler : ReadHandler, UpdateHandler {
         using ReadHandler::useReadHandler;
@@ -295,8 +298,9 @@ namespace Gaudi
         using UpdateHandler::getUpdateHandler;
       };
     }
-  }
-}
+
+  } // namespace Details
+} // namespace Gaudi
 
 // ============================================================================
 /** @class PropertyWithValue
@@ -311,7 +315,7 @@ namespace Gaudi
 // ============================================================================
 template <class TYPE, class VERIFIER = Gaudi::Details::Property::NullVerifier,
           class HANDLERS = Gaudi::Details::Property::UpdateHandler>
-class PropertyWithValue : public Property
+class PropertyWithValue : public Gaudi::Details::PropertyBase
 {
 public:
   // ==========================================================================
@@ -338,7 +342,8 @@ public:
   /// the constructor with property name, value and documentation.
   template <class T = ValueType>
   inline PropertyWithValue( std::string name, T&& value, std::string doc = "" )
-      : Property( typeid( ValueType ), std::move( name ), std::move( doc ) ), m_value( std::forward<T>( value ) )
+      : Gaudi::Details::PropertyBase( typeid( ValueType ), std::move( name ), std::move( doc ) )
+      , m_value( std::forward<T>( value ) )
   {
     m_verifier( m_value );
   }
@@ -357,37 +362,45 @@ public:
   /// This constructor is not generated if T is the current type, so that the
   /// compiler picks up the copy constructor instead of this one.
   template <class T = ValueType, typename = typename not_copying<T>::type>
-  PropertyWithValue( T&& v ) : Property( typeid( ValueType ), "", "" ), m_value( std::forward<T>( v ) )
+  PropertyWithValue( T&& v )
+      : Gaudi::Details::PropertyBase( typeid( ValueType ), "", "" ), m_value( std::forward<T>( v ) )
   {
   }
 
   /// Construct an anonymous property with default constructed value.
   /// Can be used only if StorageType is default constructible.
   template <typename = void>
-  PropertyWithValue() : Property( typeid( ValueType ), "", "" ), m_value()
+  PropertyWithValue() : Gaudi::Details::PropertyBase( typeid( ValueType ), "", "" ), m_value()
   {
   }
 
-  using Property::declareReadHandler;
-  using Property::declareUpdateHandler;
+  using Gaudi::Details::PropertyBase::declareReadHandler;
+  using Gaudi::Details::PropertyBase::declareUpdateHandler;
 
   /// set new callback for reading
-  Property& declareReadHandler( std::function<void( Property& )> fun ) override
+  Gaudi::Details::PropertyBase& declareReadHandler( std::function<void( Gaudi::Details::PropertyBase& )> fun ) override
   {
     m_handlers.setReadHandler( std::move( fun ) );
     return *this;
   }
   /// set new callback for update
-  Property& declareUpdateHandler( std::function<void( Property& )> fun ) override
+  Gaudi::Details::PropertyBase&
+  declareUpdateHandler( std::function<void( Gaudi::Details::PropertyBase& )> fun ) override
   {
     m_handlers.setUpdateHandler( std::move( fun ) );
     return *this;
   }
 
   /// get a reference to the readCallBack
-  const std::function<void( Property& )> readCallBack() const override { return m_handlers.getReadHandler(); }
+  const std::function<void( Gaudi::Details::PropertyBase& )> readCallBack() const override
+  {
+    return m_handlers.getReadHandler();
+  }
   /// get a reference to the updateCallBack
-  const std::function<void( Property& )> updateCallBack() const override { return m_handlers.getUpdateHandler(); }
+  const std::function<void( Gaudi::Details::PropertyBase& )> updateCallBack() const override
+  {
+    return m_handlers.getUpdateHandler();
+  }
 
   /// manual trigger for callback for update
   bool useUpdateHandler() override
@@ -465,7 +478,7 @@ public:
     *this = v;
     return true;
   }
-  Property* clone() const override { return new PropertyWithValue( *this ); }
+  Gaudi::Details::PropertyBase* clone() const override { return new PropertyWithValue( *this ); }
   /// @}
 
   /// @name Helpers for easy use of string and vector properties.
@@ -574,7 +587,7 @@ public:
   // ==========================================================================
 public:
   /// get the value from another property
-  bool assign( const Property& source ) override
+  bool assign( const Gaudi::Details::PropertyBase& source ) override
   {
     // Check if the property of is of "the same" type, except for strings
     const PropertyWithValue* p =
@@ -587,7 +600,7 @@ public:
     return true;
   }
   /// set value to another property
-  bool load( Property& dest ) const override
+  bool load( Gaudi::Details::PropertyBase& dest ) const override
   {
     // delegate to the 'opposite' method
     return dest.assign( *this );
@@ -727,31 +740,31 @@ typedef SimplePropertyRef<std::vector<long double>> LongDoubleArrayPropertyRef;
 typedef SimplePropertyRef<std::vector<std::string>> StringArrayPropertyRef;
 
 /// Helper class to simplify the migration old properties deriving directly from
-/// Property.
-class PropertyWithHandlers : public Property
+/// PropertyBase.
+class PropertyWithHandlers : public Gaudi::Details::PropertyBase
 {
   Gaudi::Details::Property::ReadUpdateHandler m_handlers;
 
 public:
-  using Property::Property;
+  using PropertyBase::PropertyBase;
 
   /// set new callback for reading
-  Property& declareReadHandler( std::function<void( Property& )> fun ) override
+  PropertyBase& declareReadHandler( std::function<void( PropertyBase& )> fun ) override
   {
     m_handlers.setReadHandler( std::move( fun ) );
     return *this;
   }
   /// set new callback for update
-  Property& declareUpdateHandler( std::function<void( Property& )> fun ) override
+  PropertyBase& declareUpdateHandler( std::function<void( PropertyBase& )> fun ) override
   {
     m_handlers.setUpdateHandler( std::move( fun ) );
     return *this;
   }
 
   /// get a reference to the readCallBack
-  const std::function<void( Property& )> readCallBack() const override { return m_handlers.getReadHandler(); }
+  const std::function<void( PropertyBase& )> readCallBack() const override { return m_handlers.getReadHandler(); }
   /// get a reference to the updateCallBack
-  const std::function<void( Property& )> updateCallBack() const override { return m_handlers.getUpdateHandler(); }
+  const std::function<void( PropertyBase& )> updateCallBack() const override { return m_handlers.getUpdateHandler(); }
 
   /// use the call-back function at reading, if available
   void useReadHandler() const { m_handlers.useReadHandler( *this ); }
@@ -784,9 +797,9 @@ public:
 
   GaudiHandleProperty* clone() const override { return new GaudiHandleProperty( *this ); }
 
-  bool load( Property& destination ) const override { return destination.assign( *this ); }
+  bool load( PropertyBase& destination ) const override { return destination.assign( *this ); }
 
-  bool assign( const Property& source ) override { return fromString( source.toString() ); }
+  bool assign( const PropertyBase& source ) override { return fromString( source.toString() ); }
 
   std::string toString() const override;
 
@@ -824,9 +837,9 @@ public:
 
   GaudiHandleArrayProperty* clone() const override { return new GaudiHandleArrayProperty( *this ); }
 
-  bool load( Property& destination ) const override { return destination.assign( *this ); }
+  bool load( PropertyBase& destination ) const override { return destination.assign( *this ); }
 
-  bool assign( const Property& source ) override { return fromString( source.toString() ); }
+  bool assign( const PropertyBase& source ) override { return fromString( source.toString() ); }
 
   std::string toString() const override;
 
@@ -898,7 +911,7 @@ namespace Gaudi
      *
      *  const IProperty* p = ... ;
      *
-     *  const Property* pro = getProperty( p , "Context" ) ;
+     *  const Gaudi::Details::PropertyBase* pro = getProperty( p , "Context" ) ;
      *
      *  @endcode
      *
@@ -908,7 +921,7 @@ namespace Gaudi
      *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
      *  @date   2006-09-09
      */
-    GAUDI_API Property* getProperty( const IProperty* p, const std::string& name );
+    GAUDI_API Gaudi::Details::PropertyBase* getProperty( const IProperty* p, const std::string& name );
     // ========================================================================
     /** simple function which gets the property with given name
      *  from the component
@@ -917,7 +930,7 @@ namespace Gaudi
      *
      *  const IInterface* p = ... ;
      *
-     *  const Property* pro = getProperty( p , "Context" ) ;
+     *  const Gaudi::Details::PropertyBase* pro = getProperty( p , "Context" ) ;
      *
      *  @endcode
      *
@@ -927,7 +940,7 @@ namespace Gaudi
      *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
      *  @date   2006-09-09
      */
-    GAUDI_API Property* getProperty( const IInterface* p, const std::string& name );
+    GAUDI_API Gaudi::Details::PropertyBase* getProperty( const IInterface* p, const std::string& name );
     // ========================================================================
     /** check  the property by name from  the list of the properties
      *
@@ -951,7 +964,7 @@ namespace Gaudi
      *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
      *  @date   2006-09-09
      */
-    GAUDI_API bool hasProperty( const std::vector<const Property*>* p, const std::string& name );
+    GAUDI_API bool hasProperty( const std::vector<const Gaudi::Details::PropertyBase*>* p, const std::string& name );
     // ========================================================================
     /** get the property by name from  the list of the properties
      *
@@ -962,7 +975,7 @@ namespace Gaudi
      *   const std::string client = ... ;
      *
      *  // get the property:
-     *  const Property* context =
+     *  const Gaudi::Details::PropertyBase* context =
      *      getProperty ( svc->getProperties( client ) , "Context" )
      *
      *  @endcode
@@ -975,7 +988,8 @@ namespace Gaudi
      *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
      *  @date   2006-09-09
      */
-    GAUDI_API const Property* getProperty( const std::vector<const Property*>* p, const std::string& name );
+    GAUDI_API const Gaudi::Details::PropertyBase*
+    getProperty( const std::vector<const Gaudi::Details::PropertyBase*>* p, const std::string& name );
     // ========================================================================
     /** simple function to set the property of the given object from the value
      *
@@ -1128,7 +1142,7 @@ namespace Gaudi
      *
      *  IProperty* component = ... ;
      *
-     *  const Property* prop = ... ;
+     *  const Gaudi::Details::PropertyBase* prop = ... ;
      *  StatusCode sc = setProperty ( component , "Data" ,  prop  ) ;
      *
      *  @endcode
@@ -1142,8 +1156,8 @@ namespace Gaudi
      * @author Vanya BELYAEV ibelyaev@physics.syr.edu
      * @date 2007-05-13
      */
-    GAUDI_API StatusCode setProperty( IProperty* component, const std::string& name, const Property* property,
-                                      const std::string& doc = "" );
+    GAUDI_API StatusCode setProperty( IProperty* component, const std::string& name,
+                                      const Gaudi::Details::PropertyBase* property, const std::string& doc = "" );
     // ========================================================================
     /** simple function to set the property of the given object from another
      *  property
@@ -1152,7 +1166,7 @@ namespace Gaudi
      *
      *  IProperty* component = ... ;
      *
-     *  const Property& prop = ... ;
+     *  const Gaudi::Details::PropertyBase& prop = ... ;
      *  StatusCode sc = setProperty ( component , "Data" ,  prop  ) ;
      *
      *  @endcode
@@ -1166,8 +1180,8 @@ namespace Gaudi
      * @author Vanya BELYAEV ibelyaev@physics.syr.edu
      * @date 2007-05-13
      */
-    GAUDI_API StatusCode setProperty( IProperty* component, const std::string& name, const Property& property,
-                                      const std::string& doc = "" );
+    GAUDI_API StatusCode setProperty( IProperty* component, const std::string& name,
+                                      const Gaudi::Details::PropertyBase& property, const std::string& doc = "" );
     // ========================================================================
     /** simple function to set the property of the given object from another
      *  property
@@ -1289,7 +1303,7 @@ namespace Gaudi
      *
      *  IInterface* component = ... ;
      *
-     *  const Property* prop = ... ;
+     *  const Gaudi::Details::PropertyBase* prop = ... ;
      *  StatusCode sc = setProperty ( component , "Data" ,  prop  ) ;
      *
      *  @endcode
@@ -1303,8 +1317,8 @@ namespace Gaudi
      * @author Vanya BELYAEV ibelyaev@physics.syr.edu
      * @date 2007-05-13
      */
-    GAUDI_API StatusCode setProperty( IInterface* component, const std::string& name, const Property* property,
-                                      const std::string& doc = "" );
+    GAUDI_API StatusCode setProperty( IInterface* component, const std::string& name,
+                                      const Gaudi::Details::PropertyBase* property, const std::string& doc = "" );
     // ========================================================================
     /** simple function to set the property of the given object from another
      *  property
@@ -1313,7 +1327,7 @@ namespace Gaudi
      *
      *  IInterface* component = ... ;
      *
-     *  const Property& prop = ... ;
+     *  const Gaudi::Details::PropertyBase& prop = ... ;
      *  StatusCode sc = setProperty ( component , "Data" ,  prop  ) ;
      *
      *  @endcode
@@ -1327,8 +1341,8 @@ namespace Gaudi
      * @author Vanya BELYAEV ibelyaev@physics.syr.edu
      * @date 2007-05-13
      */
-    GAUDI_API StatusCode setProperty( IInterface* component, const std::string& name, const Property& property,
-                                      const std::string& doc = "" );
+    GAUDI_API StatusCode setProperty( IInterface* component, const std::string& name,
+                                      const Gaudi::Details::PropertyBase& property, const std::string& doc = "" );
     // ========================================================================
     /** simple function to set the property of the given object from another
      *  property

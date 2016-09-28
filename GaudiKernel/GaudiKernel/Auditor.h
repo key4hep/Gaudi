@@ -7,6 +7,7 @@
 #include "GaudiKernel/IProperty.h"
 #include "GaudiKernel/IService.h"
 #include "GaudiKernel/ISvcLocator.h" /*used by service(..)*/
+#include "GaudiKernel/PropertyFwd.h"
 #include "GaudiKernel/PropertyHolder.h"
 #include <Gaudi/PluginService.h>
 #include <string>
@@ -15,7 +16,6 @@
 // Forward declarations
 class IService;
 class IMessageSvc;
-class Property;
 class Algorithm;
 
 /** @class Auditor Auditor.h GaudiKernel/Auditor.h

@@ -7,9 +7,9 @@
 #include <functional>
 #include <iostream>
 #include <string>
+#include <unordered_set>
 #include <utility>
 #include <vector>
-#include <unordered_set>
 // ============================================================================
 // GaudiKernel
 // ============================================================================
@@ -23,40 +23,33 @@
 // ============================================================================
 #include "boost/algorithm/string/compare.hpp"
 // ============================================================================
-/** @file
- *  The implementation file for the class Property and related classes
- *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
- *  @date 2006-02-27
- */
-// ============================================================================
-// The output operator for friendly printout
-// ============================================================================
-std::ostream& operator<<( std::ostream& stream, const Property& prop ) { return prop.fillStream( stream ); }
-
-namespace {
+namespace
+{
   /// helper class to compare pointers to string using the strings
   struct PtrCmp {
-    bool operator()( const std::unique_ptr<std::string>& a, const std::unique_ptr<std::string>& b ) const {
+    bool operator()( const std::unique_ptr<std::string>& a, const std::unique_ptr<std::string>& b ) const
+    {
       return *a == *b;
     }
   };
   struct PtrHash {
-    std::size_t operator()( const std::unique_ptr<std::string>& s ) const {
-      return std::hash<std::string>()(*s);
-    }
+    std::size_t operator()( const std::unique_ptr<std::string>& s ) const { return std::hash<std::string>()( *s ); }
   };
   /// storage for property names and docs
   std::unordered_set<std::unique_ptr<std::string>, PtrHash, PtrCmp> all_strings;
 }
 
-boost::string_ref Property::to_view(std::string str) {
+using Gaudi::Details::PropertyBase;
+
+boost::string_ref PropertyBase::to_view( std::string str )
+{
   return **( all_strings.insert( std::make_unique<std::string>( std::move( str ) ) ).first );
 }
 
 // ============================================================================
 // the printout of the property value
 // ============================================================================
-std::ostream& Property::fillStream( std::ostream& stream ) const
+std::ostream& PropertyBase::fillStream( std::ostream& stream ) const
 {
   return stream << " '" << name() << "':" << toString();
 }
@@ -199,7 +192,7 @@ namespace
     /// constructor from name
     is_iByName( const std::string& name ) : m_name( name ) {}
     /// the most essential method:
-    bool operator()( const Property* p ) const
+    bool operator()( const PropertyBase* p ) const
     {
       return p && equal_( m_name, p->name(), boost::algorithm::is_iequal{} );
     };
@@ -216,7 +209,7 @@ namespace
  *
  *  const IProperty* p = ... ;
  *
- *  const Property* pro = getProperty( p , "Context" ) ;
+ *  auto pro = getProperty( p , "Context" ) ;
  *
  *  @endcode
  *
@@ -227,7 +220,7 @@ namespace
  *  @date   2006-09-09
  */
 // ============================================================================
-Property* Gaudi::Utils::getProperty( const IProperty* p, const std::string& name )
+PropertyBase* Gaudi::Utils::getProperty( const IProperty* p, const std::string& name )
 {
   // trivial check
   if ( !p ) {
@@ -247,7 +240,7 @@ Property* Gaudi::Utils::getProperty( const IProperty* p, const std::string& name
  *
  *  const IInterface* p = ... ;
  *
- *  const Property* pro = getProperty( p , "Context" ) ;
+ *  auto pro = getProperty( p , "Context" ) ;
  *
  *  @endcode
  *
@@ -258,7 +251,7 @@ Property* Gaudi::Utils::getProperty( const IProperty* p, const std::string& name
  *  @date   2006-09-09
  */
 // ============================================================================
-Property* Gaudi::Utils::getProperty( const IInterface* p, const std::string& name )
+PropertyBase* Gaudi::Utils::getProperty( const IInterface* p, const std::string& name )
 {
   // trivial check
   if ( !p ) {
@@ -296,7 +289,7 @@ Property* Gaudi::Utils::getProperty( const IInterface* p, const std::string& nam
  *  @date   2006-09-09
  */
 // ============================================================================
-bool Gaudi::Utils::hasProperty( const std::vector<const Property*>* p, const std::string& name )
+bool Gaudi::Utils::hasProperty( const std::vector<const PropertyBase*>* p, const std::string& name )
 {
   // delegate to another method
   return getProperty( p, name );
@@ -311,8 +304,7 @@ bool Gaudi::Utils::hasProperty( const std::vector<const Property*>* p, const std
  *   const std::string client = ... ;
  *
  *  // get the property:
- *  const Property* context =
- *      getProperty ( svc->getProperties( client ) , "Context" )
+ *  auto context = getProperty ( svc->getProperties( client ) , "Context" )
  *
  *  @endcode
  *
@@ -325,7 +317,7 @@ bool Gaudi::Utils::hasProperty( const std::vector<const Property*>* p, const std
  *  @date   2006-09-09
  */
 // ============================================================================
-const Property* Gaudi::Utils::getProperty( const std::vector<const Property*>* p, const std::string& name )
+const PropertyBase* Gaudi::Utils::getProperty( const std::vector<const PropertyBase*>* p, const std::string& name )
 {
   // trivial check
   if ( !p ) {
@@ -379,7 +371,7 @@ StatusCode Gaudi::Utils::setProperty( IProperty* component, const std::string& n
   }
   StatusCode sc = component->setProperty( name, value );
   if ( !doc.empty() ) {
-    Property* p = getProperty( component, name );
+    PropertyBase* p = getProperty( component, name );
     if ( p ) {
       p->setDocumentation( doc );
     }
@@ -395,7 +387,7 @@ StatusCode Gaudi::Utils::setProperty( IProperty* component, const std::string& n
  *
  *  IProperty* component = ... ;
  *
- *  const Property* prop = ... ;
+ *  const Gaudi::Details::PropertyBase* prop = ... ;
  *  StatusCode sc = setProperty ( component , "Data" ,  prop  ) ;
  *
  *  @endcode
@@ -410,11 +402,11 @@ StatusCode Gaudi::Utils::setProperty( IProperty* component, const std::string& n
  * @date 2007-05-13
  */
 // ============================================================================
-StatusCode Gaudi::Utils::setProperty( IProperty* component, const std::string& name, const Property* property,
+StatusCode Gaudi::Utils::setProperty( IProperty* component, const std::string& name, const PropertyBase* property,
                                       const std::string& doc )
 {
   if ( !component || !property ) return StatusCode::FAILURE;
-  Property* p = getProperty( component, name );
+  PropertyBase* p = getProperty( component, name );
   if ( !p || !p->assign( *property ) ) return StatusCode::FAILURE;
   if ( !doc.empty() ) {
     p->setDocumentation( doc );
@@ -429,7 +421,7 @@ StatusCode Gaudi::Utils::setProperty( IProperty* component, const std::string& n
  *
  *  IProperty* component = ... ;
  *
- *  const Property& prop = ... ;
+ *  const Gaudi::Details::PropertyBase& prop = ... ;
  *  StatusCode sc = setProperty ( component , "Data" ,  prop  ) ;
  *
  *  @endcode
@@ -444,7 +436,7 @@ StatusCode Gaudi::Utils::setProperty( IProperty* component, const std::string& n
  * @date 2007-05-13
  */
 // ============================================================================
-StatusCode Gaudi::Utils::setProperty( IProperty* component, const std::string& name, const Property& property,
+StatusCode Gaudi::Utils::setProperty( IProperty* component, const std::string& name, const PropertyBase& property,
                                       const std::string& doc )
 {
   return setProperty( component, name, &property, doc );
@@ -499,7 +491,7 @@ StatusCode Gaudi::Utils::setProperty( IInterface* component, const std::string& 
  *
  *  IInterface* component = ... ;
  *
- *  const Property* prop = ... ;
+ *  const Gaudi::Details::PropertyBase* prop = ... ;
  *  StatusCode sc = setProperty ( component , "Data" ,  prop  ) ;
  *
  *  @endcode
@@ -514,7 +506,7 @@ StatusCode Gaudi::Utils::setProperty( IInterface* component, const std::string& 
  * @date 2007-05-13
  */
 // ============================================================================
-StatusCode Gaudi::Utils::setProperty( IInterface* component, const std::string& name, const Property* property,
+StatusCode Gaudi::Utils::setProperty( IInterface* component, const std::string& name, const PropertyBase* property,
                                       const std::string& doc )
 {
   if ( !component ) {
@@ -534,7 +526,7 @@ StatusCode Gaudi::Utils::setProperty( IInterface* component, const std::string& 
  *
  *  IInterface* component = ... ;
  *
- *  const Property& prop = ... ;
+ *  const Gaudi::Details::PropertyBase& prop = ... ;
  *  StatusCode sc = setProperty ( component , "Data" ,  prop  ) ;
  *
  *  @endcode
@@ -549,7 +541,7 @@ StatusCode Gaudi::Utils::setProperty( IInterface* component, const std::string& 
  * @date 2007-05-13
  */
 // ============================================================================
-StatusCode Gaudi::Utils::setProperty( IInterface* component, const std::string& name, const Property& property,
+StatusCode Gaudi::Utils::setProperty( IInterface* component, const std::string& name, const PropertyBase& property,
                                       const std::string& doc )
 {
   return setProperty( component, name, &property, doc );

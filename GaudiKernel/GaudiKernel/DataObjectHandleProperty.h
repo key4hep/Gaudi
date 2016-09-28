@@ -1,8 +1,8 @@
 #ifndef GAUDIKERNEL_DATAOBJECTHANDLEPROPERTY_H
 #define GAUDIKERNEL_DATAOBJECTHANDLEPROPERTY_H 1
 
-#include "GaudiKernel/StatusCode.h"
 #include "GaudiKernel/Property.h"
+#include "GaudiKernel/StatusCode.h"
 
 #include <iostream>
 
@@ -20,43 +20,42 @@ class DataObjectHandleBase;
 
 //---------------------------------------------------------------------------
 
-class GAUDI_API DataObjectHandleProperty :  public PropertyWithHandlers {
- public:
-
+class GAUDI_API DataObjectHandleProperty : public PropertyWithHandlers
+{
+public:
   DataObjectHandleProperty( const std::string& name, DataObjectHandleBase& ref );
   DataObjectHandleProperty& operator=( const DataObjectHandleBase& value );
   virtual ~DataObjectHandleProperty();
 
   virtual DataObjectHandleProperty* clone() const;
-  virtual bool load( Property& destination ) const;
-  virtual bool assign( const Property& source );
+  virtual bool load( Gaudi::Details::PropertyBase& destination ) const;
+  virtual bool assign( const Gaudi::Details::PropertyBase& source );
   virtual std::string toString() const;
-  virtual void toStream(std::ostream& out) const;
-  virtual StatusCode fromString(const std::string& s);
+  virtual void toStream( std::ostream& out ) const;
+  virtual StatusCode fromString( const std::string& s );
   const DataObjectHandleBase& value() const;
   bool setValue( const DataObjectHandleBase& value );
 
   const std::string pythonRepr() const;
 
- private:
+private:
   /** Pointer to the real property. Reference would be better,
    *  but Reflex does not support references yet
    */
   DataObjectHandleBase* m_pValue;
 };
 
-template<>
-class PropertyWithValue<DataObjectHandleBase&, Gaudi::Details::Property::NullVerifier> :
-  public ::DataObjectHandleProperty
+template <>
+class PropertyWithValue<DataObjectHandleBase&, Gaudi::Details::Property::NullVerifier>
+    : public ::DataObjectHandleProperty
 {
 public:
-  PropertyWithValue(const std::string& name, DataObjectHandleBase& value) :
-    ::DataObjectHandleProperty(name, value)
-  {}
+  PropertyWithValue( const std::string& name, DataObjectHandleBase& value ) : ::DataObjectHandleProperty( name, value )
+  {
+  }
 
   /// virtual Destructor
   virtual ~PropertyWithValue() {}
 };
-
 
 #endif

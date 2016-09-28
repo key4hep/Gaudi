@@ -10,13 +10,10 @@
 
 // Constructor
 Auditor::Auditor( const std::string& name, ISvcLocator* pSvcLocator )
-    : m_name( name )
-    , m_pSvcLocator( pSvcLocator )
-    , m_isInitialized( false )
-    , m_isFinalized( false )
+    : m_name( name ), m_pSvcLocator( pSvcLocator ), m_isInitialized( false ), m_isFinalized( false )
 {
   m_outputLevel.declareUpdateHandler(
-      [this]( Property& ) { this->updateMsgStreamOutputLevel( this->m_outputLevel ); } );
+      [this]( Gaudi::Details::PropertyBase& ) { this->updateMsgStreamOutputLevel( this->m_outputLevel ); } );
 }
 
 // IAuditor implementation

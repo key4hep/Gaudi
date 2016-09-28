@@ -23,47 +23,47 @@ class ISequencerTimerTool;
  *  @author Olivier Callot
  *  @date   2004-05-13
  */
-class GAUDI_API GaudiSequencer: public GaudiAlgorithm {
+class GAUDI_API GaudiSequencer : public GaudiAlgorithm
+{
 public:
   /// Standard constructor
   GaudiSequencer( const std::string& name, ISvcLocator* pSvcLocator );
 
-  ~GaudiSequencer( ) override = default; ///< Destructor
+  ~GaudiSequencer() override = default; ///< Destructor
 
-  StatusCode initialize() override;    ///< Algorithm initialization
-  StatusCode execute   () override;    ///< Algorithm execution
-  StatusCode finalize  () override;    ///< Algorithm finalization
+  StatusCode initialize() override; ///< Algorithm initialization
+  StatusCode execute() override;    ///< Algorithm execution
+  StatusCode finalize() override;   ///< Algorithm finalization
 
-  StatusCode beginRun  () override;    ///< Algorithm beginRun
-  StatusCode endRun    () override;    ///< Algorithm endRun
+  StatusCode beginRun() override; ///< Algorithm beginRun
+  StatusCode endRun() override;   ///< Algorithm endRun
 
   /** for asynchronous changes in the list of algorithms */
-  void membershipHandler( Property& theProp );
+  void membershipHandler( Gaudi::Details::PropertyBase& theProp );
 
 protected:
-
-  class AlgorithmEntry final {
+  class AlgorithmEntry final
+  {
   public:
     /// Standard constructor
-    AlgorithmEntry( Algorithm* alg ) : m_algorithm(alg) { }
+    AlgorithmEntry( Algorithm* alg ) : m_algorithm( alg ) {}
 
-    void setReverse( bool flag )            { m_reverse   = flag; }
+    void setReverse( bool flag ) { m_reverse = flag; }
 
-    Algorithm* algorithm()        const  { return m_algorithm; }
-    bool       reverse()          const  { return m_reverse;   }
-    void       setTimer( int nb )        { m_timer = nb;       }
-    int        timer()            const  { return m_timer;     }
+    Algorithm* algorithm() const { return m_algorithm; }
+    bool reverse() const { return m_reverse; }
+    void setTimer( int nb ) { m_timer = nb; }
+    int timer() const { return m_timer; }
   private:
-    Algorithm*  m_algorithm = nullptr; ///< Algorithm pointer
-    bool        m_reverse = false;     ///< Indicates that the flag has to be inverted
-    int         m_timer = 0;           ///< Timer number for this algorithm
+    Algorithm* m_algorithm = nullptr; ///< Algorithm pointer
+    bool m_reverse         = false;   ///< Indicates that the flag has to be inverted
+    int m_timer            = 0;       ///< Timer number for this algorithm
   };
 
   /** Decode a vector of string. */
-  StatusCode decodeNames(  );
+  StatusCode decodeNames();
 
 private:
-
   /** copy not allowed **/
   GaudiSequencer( const GaudiSequencer& a ) = delete;
 
@@ -77,9 +77,9 @@ private:
   BooleanProperty m_returnOK{this, "ReturnOK", false, "forces the sequencer to return a good status"};
   BooleanProperty m_shortCircuit{this, "ShortCircuit", true, "stop processing as soon as possible"};
 
-  bool m_isInitialized;                  ///< Indicate that we are ready
-  std::vector<AlgorithmEntry> m_entries; ///< List of algorithms to process.
-  ISequencerTimerTool* m_timerTool = nullptr;      ///< Pointer to the timer tool
-  int  m_timer;                          ///< Timer number for the sequencer
+  bool m_isInitialized;                       ///< Indicate that we are ready
+  std::vector<AlgorithmEntry> m_entries;      ///< List of algorithms to process.
+  ISequencerTimerTool* m_timerTool = nullptr; ///< Pointer to the timer tool
+  int m_timer;                                ///< Timer number for the sequencer
 };
 #endif // GAUDISEQUENCER_H

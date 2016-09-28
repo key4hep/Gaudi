@@ -3,6 +3,7 @@
 
 // Include Files
 #include "GaudiKernel/IInterface.h"
+#include "GaudiKernel/PropertyFwd.h"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -16,32 +17,31 @@
     @author Pere Mato
     @date   29/10/98
 */
-class Property;
-
-class GAUDI_API IProperty: virtual public IInterface  {
+class GAUDI_API IProperty : virtual public IInterface
+{
 public:
   /// InterfaceID
-  DeclareInterfaceID(IProperty,2,1);
+  DeclareInterfaceID( IProperty, 2, 1 );
 
   /// Set the property by property
-  virtual StatusCode setProperty( const Property& p // Reference to the input property
-                                ) = 0;
+  virtual StatusCode setProperty( const Gaudi::Details::PropertyBase& p // Reference to the input property
+                                  ) = 0;
   /// Set the property by string
   virtual StatusCode setProperty( const std::string& s ) = 0;
   /// Set the property by std::string
   virtual StatusCode setProperty( const std::string& n, const std::string& v ) = 0;
   /// Get the property by property
-  virtual StatusCode getProperty( Property* p       // Pointer to property to be set
-                                ) const = 0;
+  virtual StatusCode getProperty( Gaudi::Details::PropertyBase* p // Pointer to property to be set
+                                  ) const = 0;
   /// Get the property by name
-  virtual const Property& getProperty( const std::string& name  // Property name
-                                ) const = 0;
+  virtual const Gaudi::Details::PropertyBase& getProperty( const std::string& name // Property name
+                                                           ) const = 0;
   /// Get the property by std::string
   virtual StatusCode getProperty( const std::string& n, std::string& v ) const = 0;
   /// Get list of properties
-  virtual const std::vector<Property*>& getProperties( ) const = 0;
+  virtual const std::vector<Gaudi::Details::PropertyBase*>& getProperties() const = 0;
 
   /// Return true if we have a property with the given name.
-  virtual bool hasProperty(const std::string& name) const = 0;
+  virtual bool hasProperty( const std::string& name ) const = 0;
 };
-#endif  // GAUDIKERNEL_IPROPERTY_H
+#endif // GAUDIKERNEL_IPROPERTY_H

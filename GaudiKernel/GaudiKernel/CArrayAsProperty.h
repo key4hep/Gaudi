@@ -4,7 +4,7 @@
 #include "GaudiKernel/Property.h"
 
 template <class TYPE, size_t N, class VERIFIER, class HANDLERS>
-class PropertyWithValue<TYPE ( & )[N], VERIFIER, HANDLERS> : public Property
+class PropertyWithValue<TYPE ( & )[N], VERIFIER, HANDLERS> : public Gaudi::Details::PropertyBase
 {
 public:
   // ==========================================================================
@@ -31,7 +31,7 @@ public:
   /// the constructor with property name, value and documentation.
   template <class T = ValueType>
   inline PropertyWithValue( std::string name, T&& value, std::string doc = "" )
-      : Property( typeid( ValueType ), std::move( name ), std::move( doc ) ), m_value( std::forward<T>( value ) )
+      : PropertyBase( typeid( ValueType ), std::move( name ), std::move( doc ) ), m_value( std::forward<T>( value ) )
   {
     m_verifier( m_value );
   }
@@ -40,37 +40,37 @@ public:
   /// This constructor is not generated if T is the current type, so that the
   /// compiler picks up the copy constructor instead of this one.
   template <class T = ValueType, typename = typename not_copying<T>::type>
-  PropertyWithValue( T&& v ) : Property( typeid( ValueType ), "", "" ), m_value( std::forward<T>( v ) )
+  PropertyWithValue( T&& v ) : PropertyBase( typeid( ValueType ), "", "" ), m_value( std::forward<T>( v ) )
   {
   }
 
   /// Construct an anonymous property with default constructed value.
   /// Can be used only if StorageType is default constructible.
   template <typename = void>
-  PropertyWithValue() : Property( typeid( ValueType ), "", "" ), m_value()
+  PropertyWithValue() : PropertyBase( typeid( ValueType ), "", "" ), m_value()
   {
   }
 
-  using Property::declareReadHandler;
-  using Property::declareUpdateHandler;
+  using PropertyBase::declareReadHandler;
+  using PropertyBase::declareUpdateHandler;
 
   /// set new callback for reading
-  Property& declareReadHandler( std::function<void( Property& )> fun ) override
+  PropertyBase& declareReadHandler( std::function<void( PropertyBase& )> fun ) override
   {
     m_handlers.setReadHandler( std::move( fun ) );
     return *this;
   }
   /// set new callback for update
-  Property& declareUpdateHandler( std::function<void( Property& )> fun ) override
+  PropertyBase& declareUpdateHandler( std::function<void( PropertyBase& )> fun ) override
   {
     m_handlers.setUpdateHandler( std::move( fun ) );
     return *this;
   }
 
   /// get a reference to the readCallBack
-  const std::function<void( Property& )> readCallBack() const override { return m_handlers.getReadHandler(); }
+  const std::function<void( PropertyBase& )> readCallBack() const override { return m_handlers.getReadHandler(); }
   /// get a reference to the updateCallBack
-  const std::function<void( Property& )> updateCallBack() const override { return m_handlers.getUpdateHandler(); }
+  const std::function<void( PropertyBase& )> updateCallBack() const override { return m_handlers.getUpdateHandler(); }
 
   /// manual trigger for callback for update
   bool useUpdateHandler() override
@@ -104,7 +104,7 @@ public:
 
   /// Copy constructor.
   // PropertyWithValue(const PropertyWithValue& other):
-  //   Property(other), value(other.m_value) {}
+  //   PropertyBase(other), value(other.m_value) {}
 
   /// Accessor to verifier.
   const VerifierType& verifier() const { return m_verifier; }
@@ -125,7 +125,7 @@ public:
     *this = v;
     return true;
   }
-  Property* clone() const override { return new PropertyWithValue( *this ); }
+  PropertyBase* clone() const override { return new PropertyWithValue( *this ); }
   /// @}
 
   /// @name Helpers for easy use of string and vector properties.
@@ -147,7 +147,7 @@ public:
   // ==========================================================================
 public:
   /// get the value from another property
-  bool assign( const Property& source ) override
+  bool assign( const PropertyBase& source ) override
   {
     // Is the property of "the same" type?
     const PropertyWithValue* p = dynamic_cast<const PropertyWithValue*>( &source );
@@ -159,7 +159,7 @@ public:
     return true;
   }
   /// set value to another property
-  bool load( Property& dest ) const override
+  bool load( PropertyBase& dest ) const override
   {
     // delegate to the 'opposite' method
     return dest.assign( *this );
