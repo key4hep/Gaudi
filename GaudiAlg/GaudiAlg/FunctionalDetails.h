@@ -97,6 +97,8 @@ namespace Gaudi { namespace Functional { namespace details {
 
          template <typename In>
          struct get_from_handle {
+           template <template <typename> class Handle, typename I, typename = typename std::enable_if< std::is_convertible<Gaudi::Range_<I>,In>::value >::type >
+           auto operator()( const Handle<Gaudi::Range_<I>>& h ) -> const In { return h.get(); }
            template <template <typename> class Handle, typename I, typename = typename std::enable_if< std::is_convertible<I,In>::value >::type >
            auto operator()( const Handle<I>& h ) -> const In& { return *h.get(); }
            template <template <typename> class Handle, typename I, typename = typename std::enable_if<std::is_convertible<I*,In>::value>::type >
