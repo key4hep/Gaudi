@@ -143,7 +143,7 @@ namespace Gaudi
        *  @return the data
        */
       inline return_type operator()
-        (const DataObject *obj) const
+        (DataObject *obj) const
       {
         std::cout << "OBJ TYPE: " << typeid(*obj).name() << std::endl;
         
