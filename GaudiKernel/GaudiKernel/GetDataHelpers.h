@@ -72,7 +72,6 @@ namespace Gaudi
       inline return_type operator()
         (DataObject *obj) const
       {
-        std::cout << "FOUND DATAOBJECT: " << obj << std::endl;
         return dynamic_cast<return_type>(obj);
       }
     };
@@ -97,17 +96,13 @@ namespace Gaudi
       inline return_type operator()
         (DataObject *obj) const
       {
-        std::cout << "OBJ TYPE: " << typeid(*obj).name() << std::endl;
         
         const auto tmp = dynamic_cast<AnyDataWrapper<typename TYPE::Selection> *>(obj);
-        std::cout << "CASTING DATAOBJECT TO SELECTION: " << tmp << std::endl;
         if (tmp) {
           return return_type(tmp->getData().begin(), tmp->getData().end());
         } else {
           const auto tmpcont = dynamic_cast<AnyDataWrapper<typename TYPE::Container> *>(obj);      
-          std::cout << "CASTING DATAOBJECT TO CONTAINER: " << tmpcont << std::endl;
           if (tmpcont) {
-            std::cout << "Found container" << std::endl;
             return make_range(tmpcont->getData().begin(), tmpcont->getData().end());
           }
         }
@@ -145,17 +140,13 @@ namespace Gaudi
       inline return_type operator()
         (DataObject *obj) const
       {
-        std::cout << "OBJ TYPE: " << typeid(*obj).name() << std::endl;
         
         const auto tmp = dynamic_cast<AnyDataWrapper<typename TYPE::Selection> *>(obj);
-        std::cout << "CASTING DATAOBJECT TO SELECTION: " << tmp << std::endl;
         if (tmp) {
           return return_type(tmp->getData().begin(), tmp->getData().end());
         } else {
           const auto tmpcont = dynamic_cast<AnyDataWrapper<typename TYPE::Container> *>(obj);      
-          std::cout << "CASTING DATAOBJECT TO CONTAINER: " << tmpcont << std::endl;
           if (tmpcont) {
-            std::cout << "Found container" << std::endl;
             return make_range(tmpcont->getData().begin(), tmpcont->getData().end());
           }
         }
