@@ -66,8 +66,8 @@ gaudi_add_test(GraphSchedulerSimpleTest
                FRAMEWORK options/GraphSchedulerSimpleTest.py
                TIMEOUT 120)
 
-gaudi_add_test(GraphScheduler
-               FRAMEWORK options/GraphScheduler.py
+gaudi_add_test(BrunelScenarioGraphScheduler
+               FRAMEWORK options/BrunelScenarioGraphScheduler.py
                TIMEOUT 120)
 
 # Test the AtomicSequencer
