@@ -26,7 +26,7 @@ class RealTimeValue(object):
                        (and it will also be scaled by the 'factor' argument)
         """
 
-        self.path = path
+        self.path = os.path.realpath(os.path.join(os.environ.get('GAUDIHIVEROOT',''), "data", path))
         self.factor = factor
         self.defaultTime = defaultTime # typically 0.05s
         self.varRuntime = 0
@@ -109,13 +109,13 @@ class CruncherSequence(object):
 
     unique_data_objects = []
 
-    def __init__(self, timeValue, IOboolValue, sleepFraction, cfgPath=None, dfgPath=None, showStat=False, algoDebug = False):
+    def __init__(self, timeValue, IOboolValue, sleepFraction, cfgPath, dfgPath, showStat=False, algoDebug = False):
         """
         Keyword arguments:
         timeValue -- timeValue object to set algorithm execution time
         IOboolValue -- *BooleanValue object to set whether an algorithm has to experience IO-bound execution
-        cfgPath -- absolute path to GRAPHML file with control flow dependencies (if None then built-in CF graph is used)
-        dfgPath -- absolute path to GRAPHML file with data flow dependencies (if None then built-in DF graph is used)
+        cfgPath -- relative to $GAUDIHIVEROOT/data path to GRAPHML file with control flow dependencies
+        dfgPath -- relative to $GAUDIHIVEROOT/data path to GRAPHML file with data flow dependencies
         showStat -- print out statistics on precedence graph
         """
 
@@ -123,9 +123,7 @@ class CruncherSequence(object):
         self.IOboolValue = IOboolValue
         self.sleepFraction = sleepFraction
 
-        if not cfgPath: cfgPath = "cf_dependencies.graphml"
-        if not dfgPath: dfgPath = "data_dependencies.graphml"
-        __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+        __location__ = os.path.realpath(os.path.join(os.environ.get('GAUDIHIVEROOT',''), "data"))
         self.cfg = nx.read_graphml(os.path.join(__location__, cfgPath))
         self.dfg = nx.read_graphml(os.path.join(__location__, dfgPath))
 

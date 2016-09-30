@@ -37,7 +37,11 @@ timeValue = precedence.UniformTimeValue(algoAvgTime)
 ifIObound = precedence.UniformBooleanValue(False)
 #ifIObound = precedence.RndBiased10BooleanValue()
 
-sequencer = precedence.CruncherSequence(timeValue, ifIObound, sleepFraction=0.0).get()
+
+
+sequencer = precedence.CruncherSequence(timeValue, ifIObound, sleepFraction=0.0,
+                                        cfgPath = "lhcb/reco/cf_dependencies.graphml",
+                                        dfgPath = "lhcb/reco/data_dependencies.graphml").get()
 
 ApplicationMgr( EvtMax = evtMax,
                 EvtSel = 'NONE',
