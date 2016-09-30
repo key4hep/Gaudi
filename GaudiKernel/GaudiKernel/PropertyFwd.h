@@ -3,6 +3,10 @@
 #ifndef PROPERTY_FWD_H
 #define PROPERTY_FWD_H
 
+/// macro to help implementing backward compatible changed
+/// in derived projects
+#define GAUDI_PROPERTY_v2
+
 namespace Gaudi
 {
   namespace Details
