@@ -60,7 +60,7 @@ public:  // functions
   virtual ~JobHistory();
 
   // Class IDs
-  virtual const CLID& clID() const { return classID(); }
+  const CLID& clID() const override { return classID(); }
   static const CLID& classID();
 
   // add a global property
@@ -75,15 +75,15 @@ public:  // functions
   std::string dir() const { return m_dir; }
   std::string cmtconfig() const { return m_cmtconfig; }
   std::vector<std::string> environment() const { return m_environ; }
-  const PropertyList& properties() const { return m_props; }
+  const PropertyList& properties() const override { return m_props; }
   const PropertyPairList& propertyPairs() const { return m_ppl; }
   time_t start_time() const { return m_start_time; }
 
-  void dump(std::ostream &, const bool isXML=false, int indent=0) const;
+  void dump(std::ostream &, const bool isXML=false, int indent=0) const override;
 
-  const std::string& name() const { return m_machine; }
-  const std::string& version() const { return m_release_version;}
-  const std::string& type() const { return m_osname; }
+  const std::string& name() const override { return m_machine; }
+  const std::string& version() const override { return m_release_version;}
+  const std::string& type() const override { return m_osname; }
 
 private:
 

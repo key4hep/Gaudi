@@ -29,10 +29,10 @@ namespace Gaudi {
       return t;
     }
 
-    virtual RootRef poolRef(size_t i) const { return m_poolLinks[i]; }
+    RootRef poolRef(size_t i) const override { return m_poolLinks[i]; }
 
     /// Load references object from file
-    virtual int loadRefs(CSTR /* section */, CSTR cnt, unsigned long entry, RootObjectRefs& refs)   {
+    int loadRefs(CSTR /* section */, CSTR cnt, unsigned long entry, RootObjectRefs& refs) override {
       TTree* t = sections()[cnt];
       if ( !t ) {
         t = (TTree*)c->file()->Get(_treeName(cnt).c_str());
@@ -87,7 +87,7 @@ namespace Gaudi {
     }
 
     /// Access data branch by name: Get existing branch in read only mode
-    virtual TBranch* getBranch(CSTR /* section */, CSTR branch_name) {
+    TBranch* getBranch(CSTR /* section */, CSTR branch_name) override {
       TTree* t = sections()[branch_name];
       if ( t ) {
         return (TBranch*)t->GetListOfBranches()->At(0);
@@ -108,10 +108,10 @@ namespace Gaudi {
     }
 
     /// Save references section when closing data file (NOT SUPPORTED)
-    virtual StatusCode saveRefs()     {      return StatusCode::FAILURE;     }
+    StatusCode saveRefs() override     {      return StatusCode::FAILURE;     }
 
     /// Internal helper to read reference tables ##Params and ##Links
-    StatusCode readRefs()  {
+    StatusCode readRefs() override  {
       int i;
       char text[2048];
       msgSvc() << MSG::VERBOSE;

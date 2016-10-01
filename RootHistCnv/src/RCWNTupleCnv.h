@@ -29,17 +29,17 @@ namespace RootHistCnv {
     RCWNTupleCnv( ISvcLocator* svc ) : RNTupleCnv(svc, classID())    {
     }
     /// Standard destructor
-    virtual ~RCWNTupleCnv()   {
+    ~RCWNTupleCnv() override   {
     }
   protected:
     /// Create the transient representation of an object.
-    virtual StatusCode load(TTree* tree, INTuple*& refpObject);
+    StatusCode load(TTree* tree, INTuple*& refpObject) override;
     /// Book the N tuple
-    virtual StatusCode book(const std::string& desc, INTuple* pObject, TTree*& tree);
+    StatusCode book(const std::string& desc, INTuple* pObject, TTree*& tree) override;
     /// Write N tuple data
-    virtual StatusCode writeData(TTree* rtree, INTuple* pObject);
+    StatusCode writeData(TTree* rtree, INTuple* pObject) override;
     /// Read N tuple data
-    virtual StatusCode readData(TTree* rtree, INTuple* pObject, long ievt);
+    StatusCode readData(TTree* rtree, INTuple* pObject, long ievt) override;
 
     template <class T>
     size_t saveItem(char* target, const T* src, size_t len)   {

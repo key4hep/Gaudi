@@ -104,17 +104,17 @@ namespace {
     /// Constructor
     ErrHandler(IMessageSvc* m) : m_msg(m) {}
     /// Reset errors (Noop)
-    void resetErrors()                          {      }
+    void resetErrors() override                          {      }
     /// Warnings callback. Ignore them
-    void warning(const SAXParseException& /* e */)    {     }
+    void warning(const SAXParseException& /* e */) override    {     }
     /// Error handler
-    void error(const SAXParseException& e);
+    void error(const SAXParseException& e) override;
     /// Fatal error handler
-    void fatalError(const SAXParseException& e);
-    virtual ~ErrHandler() {}
+    void fatalError(const SAXParseException& e) override;
+    ~ErrHandler() override {}
   };
   struct DTDRedirect : public EntityResolver  {
-    InputSource* resolveEntity(const XMLCh* const /* pubId */, const XMLCh* const /* sysId */)  {
+    InputSource* resolveEntity(const XMLCh* const /* pubId */, const XMLCh* const /* sysId */) override {
       static const char* dtdID = "redirectinmem.dtd";
       static const char* dtd = \
         "\
@@ -139,7 +139,7 @@ namespace {
       static const size_t len = strlen(dtd);
       return new MemBufInputSource((const XMLByte*)dtd,len,dtdID,false);
     }
-    virtual ~DTDRedirect() = default;
+    ~DTDRedirect() override = default;
   };
 
   void ErrHandler::error(const SAXParseException& e)  {

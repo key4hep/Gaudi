@@ -49,7 +49,7 @@ namespace GaudiMP {
     void addOptItem(const std::string& path);
 
     /// Analysis callback
-    bool analyse(IRegistry* dir, int level);
+    bool analyse(IRegistry* dir, int level) override;
 
     /// print out the contents of m_itemList and m_optItemList (std::cout)
     void checkItems( );

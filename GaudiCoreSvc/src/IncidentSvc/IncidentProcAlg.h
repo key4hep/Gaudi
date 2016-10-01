@@ -23,9 +23,9 @@ class GAUDI_API IncidentProcAlg: public Algorithm {
    ** Public Function Members **
    *****************************/
 
-  StatusCode initialize();
-  StatusCode execute();
-  StatusCode finalize();
+  StatusCode initialize() override;
+  StatusCode execute() override;
+  StatusCode finalize() override;
 
 
  private:

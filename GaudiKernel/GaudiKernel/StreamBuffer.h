@@ -79,10 +79,10 @@ public:
     Istream(std::istream& str) : m_stream(&str)   {
     }
     /// Destructor
-    virtual ~Istream()  = default;
+    ~Istream() override = default;
 
     /// Data load method
-    virtual void load(StreamBuffer& stream)   {
+    void load(StreamBuffer& stream) override {
       // Generic implementation for istreams:
       int  len;
       (*m_stream) >> len;
@@ -102,7 +102,7 @@ public:
     virtual ~Ostream()  = default;
 
     /// Output dumper
-    virtual void dump(StreamBuffer& stream)   {
+    void dump(StreamBuffer& stream) override {
       // Generic implementation for ostreams:
       (*m_stream) << stream.buffPointer();
       m_stream->write(stream.data(), stream.buffPointer());

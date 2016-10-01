@@ -12,7 +12,7 @@ public:
   const DataObjIDColl& ignoredInpKeys() const { return m_ign_i; }
   const DataObjIDColl& ignoredOutKeys() const { return m_ign_o; }
   
-  virtual void visit(const IDataHandleHolder* idhh);
+  void visit(const IDataHandleHolder* idhh) override;
 private:
   DataObjIDColl &m_ido, &m_odo;
   DataObjIDColl m_ign_i, m_ign_o;

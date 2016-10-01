@@ -20,17 +20,17 @@ public:
   PythonScriptingSvc( const std::string& name, ISvcLocator* svc );
 
   /// Initialize the service.  [IService::initialize()]
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
 
   /// Finalize the service. [IService::finalize()]
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
 
   /// Run the service by taking full control. [IRunable::run()]
-  virtual StatusCode run();
+  StatusCode run() override;
 
 protected:
   /// Destructor.
-  virtual ~PythonScriptingSvc();
+  ~PythonScriptingSvc() override;
 private:
   /// Startup script
   std::string m_startupScript;

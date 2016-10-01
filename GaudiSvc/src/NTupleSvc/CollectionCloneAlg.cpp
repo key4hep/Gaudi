@@ -155,7 +155,7 @@ public:
   }
 
   /// Initialize
-  virtual StatusCode initialize()   {
+  StatusCode initialize() override  {
     MsgStream log(msgSvc(), name());
     m_rootName = "";
     m_outName = "";
@@ -196,13 +196,13 @@ public:
   }
 
   /// Finalize
-  virtual StatusCode finalize() {
+  StatusCode finalize() override {
     m_dataSvc.reset();
     return StatusCode::SUCCESS;
   }
 
   /// Execute procedure
-  virtual StatusCode execute()    {
+  StatusCode execute() override   {
     StatusCode status = connect();
     if ( status.isSuccess() )  {
       status = mergeInputTuples();

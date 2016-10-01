@@ -16,11 +16,11 @@ class ContextEventCounterPtr: public GaudiAlgorithm {
 public:
   /// Standard constructor
   ContextEventCounterPtr(const std::string& name, ISvcLocator* pSvcLocator);
-  virtual ~ContextEventCounterPtr(); ///< Destructor
+  ~ContextEventCounterPtr() override; ///< Destructor
 
-  virtual StatusCode initialize();    ///< Algorithm initialization
-  virtual StatusCode execute   ();    ///< Algorithm execution
-  virtual StatusCode finalize  ();    ///< Algorithm finalization
+  StatusCode initialize() override;    ///< Algorithm initialization
+  StatusCode execute   () override;    ///< Algorithm execution
+  StatusCode finalize  () override;    ///< Algorithm finalization
 protected:
 private:
 
@@ -31,11 +31,11 @@ class ContextEventCounterData: public GaudiAlgorithm {
 public:
   /// Standard constructor
   ContextEventCounterData(const std::string& name, ISvcLocator* pSvcLocator);
-  virtual ~ContextEventCounterData(); ///< Destructor
+  ~ContextEventCounterData() override; ///< Destructor
 
-  virtual StatusCode initialize();    ///< Algorithm initialization
-  virtual StatusCode execute   ();    ///< Algorithm execution
-  virtual StatusCode finalize  ();    ///< Algorithm finalization
+  StatusCode initialize() override;    ///< Algorithm initialization
+  StatusCode execute   () override;    ///< Algorithm execution
+  StatusCode finalize  () override;    ///< Algorithm finalization
 protected:
 private:
 
