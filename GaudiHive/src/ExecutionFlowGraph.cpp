@@ -711,9 +711,8 @@ namespace concurrency {
 
     for (auto node : m_algoNameToAlgoInputsMap) {
       DataObjIDColl collection = (node.second);
-      for (auto tag : collection)
+      if (collection.empty())
         result.push_back(getAlgorithmNode(node.first));
-        break;
     }
 
     return result;
