@@ -137,9 +137,9 @@ namespace concurrency {
   class AlgorithmNode : public ControlFlowNode {
   public:
     /// Constructor
-    AlgorithmNode(ExecutionFlowGraph& graph, unsigned int nodeIndex, const std::string& algoName, bool inverted, bool allPass) :
+    AlgorithmNode(ExecutionFlowGraph& graph, unsigned int nodeIndex, const std::string& algoName, bool inverted, bool allPass, bool IOBound) :
       ControlFlowNode(graph, nodeIndex, algoName),
-      m_algoIndex(0),m_algoName(algoName),m_inverted(inverted),m_allPass(allPass),m_rank(-1)
+      m_algoIndex(0),m_algoName(algoName),m_inverted(inverted),m_allPass(allPass),m_rank(-1),m_isIOBound(IOBound)
       {};
     /// Destructor
     ~AlgorithmNode();
@@ -178,6 +178,10 @@ namespace concurrency {
 
     /// XXX: CF tests
     const unsigned int& getAlgoIndex() const { return m_algoIndex; }
+    /// Set the I/O-boundness flag
+    void setIOBound(bool value) { m_isIOBound = value;}
+    /// Check if algorithm is I/O-bound
+    bool isIOBound() const {return m_isIOBound;}
     /// Method to check whether the Algorithm has its all data dependency satisfied
     bool dataDependenciesSatisfied(const int& slotNum) const;
     bool dataDependenciesSatisfied(AlgsExecutionStates& states) const;
@@ -227,6 +231,8 @@ namespace concurrency {
     float m_rank;
     /// Representatives (including clones) of the node
     std::vector<IAlgorithm*> m_representatives;
+    /// If an algorithm is I/O-bound (in the broad sense of Von Neumann bottleneck)
+    bool m_isIOBound;
   };
 
 class DataNode {
