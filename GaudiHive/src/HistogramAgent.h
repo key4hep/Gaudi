@@ -30,7 +30,7 @@ public:
     return &m_objects;
   }
   /// Analyses a given directory entry 
-  virtual bool analyse(IRegistry* pRegistry, int )   {
+  bool analyse(IRegistry* pRegistry, int )  override  {
     DataObject* obj = pRegistry->object();
     if ( 0 != obj )  {
       if ( obj->clID() != CLID_StatisticsFile )    {

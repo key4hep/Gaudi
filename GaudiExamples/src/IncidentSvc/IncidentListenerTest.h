@@ -19,10 +19,10 @@ public:
   IncidentListenerTest( const std::string& name, ISvcLocator* svcloc, long shots = -1 );
 
   /// Destructor
-  virtual ~IncidentListenerTest();
+  ~IncidentListenerTest() override;
 
   /// Reimplements from IIncidentListener
-  virtual void handle(const Incident& incident);
+  void handle(const Incident& incident) override;
 
 private:
   std::string m_name;

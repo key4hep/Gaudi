@@ -88,14 +88,14 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
 
   declareProperty( "MonitorService"   , m_monitorSvcName      = "MonitorSvc" );
 
-  declareProperty
-    ( "RegisterForContextService" ,
-      m_registerContext  ,
-      "The flag to enforce the registration for Algorithm Context Service") ;
+  declareProperty( "RegisterForContextService" , m_registerContext , "The flag to enforce the registration "
+                                                                     "for Algorithm Context Service") ;
 
   declareProperty( "IsClonable"       , m_isClonable = false, "Thread-safe enough for cloning?" );
   declareProperty( "Cardinality"      , m_cardinality = 1,    "How many clones to create" );
   declareProperty( "NeededResources"  , m_neededResources = std::vector<std::string>() );
+  declareProperty( "IsIOBound"        , m_isIOBound = false,  "If an algorithm is I/O-bound (in the broad "
+                                                              "sense of Von Neumann bottleneck)" );
 
   // update handlers.
   m_outputLevel.declareUpdateHandler([this](Property&) { this->updateMsgStreamOutputLevel(this->m_outputLevel); } );
@@ -148,6 +148,7 @@ StatusCode Algorithm::sysInitialize() {
     if( sc.isSuccess() ) {
       // Now initialize care of any sub-algorithms
       bool fail(false);
+
       for (auto& it : m_subAlgms ) {
         if (it->sysInitialize().isFailure()) fail = true;
       }
@@ -1052,6 +1053,7 @@ return m_propertyMgr->getProperty(n,v);
 const std::vector<Property*>& Algorithm::getProperties( ) const {
   return m_propertyMgr->getProperties();
 }
+
 bool Algorithm::hasProperty(const std::string& name) const {
   return m_propertyMgr->hasProperty(name);
 }
@@ -1066,7 +1068,7 @@ void Algorithm::initToolHandles() const{
                 << " not used: not registering any of its Tools" << endmsg;
     } else {
       if (UNLIKELY(msgLevel(MSG::DEBUG)))
-        debug() << "Registering all Tools in ToolHandleArray " 
+        debug() << "Registering all Tools in ToolHandleArray "
                 << thArr->propertyName() << endmsg;
       // Iterate over its tools:
       for( auto toolHandle : thArr->getBaseArray() ) {
@@ -1114,7 +1116,7 @@ void Algorithm::initToolHandles() const{
       }
     }
   }
-    
+
   for(auto th : m_toolHandles){
     tool = th->get();
     if(tool){

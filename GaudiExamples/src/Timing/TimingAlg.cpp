@@ -37,9 +37,9 @@ namespace GaudiExamples
   public:
     // ========================================================================
     /// the execution of the algorithm
-    virtual StatusCode execute  () ; // the execution of the algorithm
+    StatusCode execute  ()  override; // the execution of the algorithm
     /// the finalization of the algorithm
-    virtual StatusCode finalize () ; // the finalization of the algorithm
+    StatusCode finalize ()  override; // the finalization of the algorithm
     // ========================================================================
   public:
     // ========================================================================
@@ -56,7 +56,7 @@ namespace GaudiExamples
       declareProperty ( "Cycles" , m_cycles , "The number of cycles" ) ;
     }
     /// virtual & protected destructor
-    virtual ~TimingAlg() {}     // virtual & protected destructor
+    ~TimingAlg() override {}     // virtual & protected destructor
     // ========================================================================
   private:
     // ========================================================================

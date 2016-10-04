@@ -51,7 +51,7 @@ class TupleAlg : public GaudiTupleAlg
 {
 public:
   /// initialize the algorithm
-  StatusCode initialize ()
+  StatusCode initialize () override
   {
     StatusCode sc = GaudiTupleAlg::initialize() ;
     if ( sc.isFailure() ) { return sc ; }
@@ -63,7 +63,7 @@ public:
   /** the only one essential method
    *  @see IAlgoruthm
    */
-  StatusCode execute    () ;
+  StatusCode execute    () override ;
 
   /** standard constructor
    *  @param name algorithm instance name
@@ -74,7 +74,7 @@ public:
     ISvcLocator*       pSvc )
     : GaudiTupleAlg ( name , pSvc ) { }
   // destructor
-  virtual ~TupleAlg() {} ;
+  ~TupleAlg() override {}
 private:
   // default constructor is disabled
   TupleAlg() ;

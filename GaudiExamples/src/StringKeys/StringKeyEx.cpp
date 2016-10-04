@@ -33,7 +33,7 @@ namespace Gaudi
     public:
       // ======================================================================
       /// execution of the algorithm
-      virtual StatusCode execute () ;
+      StatusCode execute ()  override;
       // ======================================================================
     public:
       // ======================================================================
@@ -52,7 +52,7 @@ namespace Gaudi
         declareProperty ( "Keys" , m_keys , "The vector of keys" ) ;
       }
       /// virtual & protected destructor
-      virtual ~StringKeyEx () {}             // virtual & protected destructor
+      ~StringKeyEx () override {}             // virtual & protected destructor
       // ======================================================================
     private:
       // ======================================================================

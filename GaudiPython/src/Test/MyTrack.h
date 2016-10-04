@@ -41,7 +41,7 @@ public:
   virtual ~MyTrack()  {
   }
 	/// Retrieve pointer to class definition structure
-	virtual const CLID& clID() const    { return classID(); }
+        const CLID& clID() const  override   { return classID(); }
 	static const CLID& classID()        { return CLID_MyTrack; }
   /// Accessors: Retrieve x-component of the track momentum
   float px()  const         { return m_px;  }
@@ -71,7 +71,7 @@ public:
   /// Access to event object
   void setDecayVertex(MyVertex* decay);
 
-  std::ostream& fillStream( std::ostream& s ) const {
+  std::ostream& fillStream( std::ostream& s ) const override {
     s << "px: " << px() << "py: " << py() << "px: " << pz();
     return s;
   }

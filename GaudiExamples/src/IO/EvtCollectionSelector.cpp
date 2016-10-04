@@ -52,10 +52,10 @@ namespace Gaudi
         : NTuple::Selector  ( svc )
         , m_cut             ( 10  )
       {}
-      virtual ~EvtCollectionSelector()   { }
+      ~EvtCollectionSelector() override = default;
 
       /// Initialization
-      virtual StatusCode initialize ( NTuple::Tuple* nt )
+      StatusCode initialize ( NTuple::Tuple* nt ) override
       {
         StatusCode sc = StatusCode::SUCCESS ;
         sc = nt->item ( "TrkMom" , m_trkMom ) ;
@@ -91,7 +91,7 @@ namespace Gaudi
 
       using NTuple::Selector::operator(); // avoid hiding base-class methods
       /// Specialized callback for NTuples
-      virtual bool operator() ( NTuple::Tuple* /* nt */ )
+      bool operator() ( NTuple::Tuple* /* nt */ ) override
       {
         const int n = m_ntrack ;
         std::cout << System::typeinfoName ( typeid ( *this ) )

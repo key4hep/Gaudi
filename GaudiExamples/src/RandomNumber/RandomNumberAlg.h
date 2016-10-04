@@ -31,13 +31,13 @@ public:
   /// Constructor: A constructor of this form must be provided.
   RandomNumberAlg(const std::string& name, ISvcLocator* pSvcLocator); 
   /// Standard Destructor
-  virtual ~RandomNumberAlg();
+  ~RandomNumberAlg() override;
   /// Customized initialisation
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
   /// Customized finalisation
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
   /// Event callback
-  virtual StatusCode execute();
+  StatusCode execute() override;
 };
 
 #endif // GAUDIEXAMPLES_RANDOMNUMBERALG_H

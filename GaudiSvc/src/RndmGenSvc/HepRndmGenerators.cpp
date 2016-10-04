@@ -347,9 +347,9 @@ namespace HepRndm  {
     : RndmGen (engine) {
     }
     /// Standard Destructor
-    virtual ~Generator() = default;
+    ~Generator() override = default;
     /// Initialize the generator
-    virtual StatusCode initialize(const IRndmGen::Param& par)   {
+    StatusCode initialize(const IRndmGen::Param& par)  override  {
       StatusCode status = RndmGen::initialize(par);
       if ( status.isSuccess() )   {
         try   {
@@ -373,12 +373,12 @@ namespace HepRndm  {
       return StatusCode::FAILURE;
     }
     /// Finalize the generator
-    virtual StatusCode finalize()   {
+    StatusCode finalize() override   {
       m_generator.reset();
       return RndmGen::finalize();
     }
     /// Single shot
-    virtual double shoot() const    {
+    double shoot() const override    {
       return m_generator->shoot(m_hepEngine);
     }
   };

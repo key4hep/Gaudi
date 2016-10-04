@@ -30,15 +30,15 @@ public:
     declareProperty("IncidentName",m_incidentName="");
   }
   /// Standard Destructor
-  virtual ~ReadAlg() { }
+  ~ReadAlg() override = default;
   /// Initialize
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
   /// Finalize
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
   /// Event callback
-  virtual StatusCode execute();
+  StatusCode execute() override;
   /// IIncidentListener override: Inform that a new incident has occured
-  virtual void handle(const Incident& incident);
+  void handle(const Incident& incident) override;
 };
 
 #endif // GAUDIEXAMPLES_READALG_H

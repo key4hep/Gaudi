@@ -42,7 +42,7 @@ namespace GaudiExamples
   {
   public:
     /// initialize the algorithm
-    StatusCode initialize ()
+    StatusCode initialize () override
     {
       StatusCode sc = GaudiAlgorithm::initialize () ;
       if ( sc.isFailure() ) { return sc ; }                      // RETURN
@@ -50,14 +50,14 @@ namespace GaudiExamples
       return StatusCode::SUCCESS ;
     }
     /// the main execution method
-    StatusCode execute    () ;
+    StatusCode execute    () override ;
   public:
     /// standard constructor from name and Service Locator
     StatSvcAlg ( const std::string& name , ISvcLocator* svc )
       : GaudiAlgorithm ( name , svc )
     {}
     /// destructor (virtual and protected)
-    virtual ~StatSvcAlg() {} ;
+    ~StatSvcAlg()  override {}
   private:
     // pointer to Stat Service
     SmartIF<IStatSvc> m_stat ; ///< pointer to Stat Service
