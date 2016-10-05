@@ -37,9 +37,9 @@ namespace GaudiExamples
   public:
     // ========================================================================
     /// the execution of the algorithm
-    virtual StatusCode execute(); // the execution of the algorithm
+    virtual StatusCode execute() override; // the execution of the algorithm
     /// the finalization of the algorithm
-    virtual StatusCode finalize(); // the finalization of the algorithm
+    virtual StatusCode finalize() override; // the finalization of the algorithm
     // ========================================================================
   public:
     // ========================================================================

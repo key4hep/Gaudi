@@ -63,8 +63,8 @@ namespace
 
   public:
     DataAgent( DataObjIDColl& objs ) : m_dataObjects( objs ) {}
-    virtual ~DataAgent() {}
-    virtual bool analyse( IRegistry* pReg, int )
+    ~DataAgent() override {}
+    bool analyse( IRegistry* pReg, int ) override
     {
       if ( 0 != pReg->object() ) {
         m_dataObjects.insert( DataObjID( pReg->identifier() ) );
@@ -465,7 +465,7 @@ public:
   size_t getNumberOfStores() override { return m_slots; }
 
   /// Get the list of new DataObjects in the current store.
-  StatusCode getNewDataObjects( DataObjIDColl& products )
+  StatusCode getNewDataObjects( DataObjIDColl& products ) override
   {
     wbMutex::scoped_lock lock;
     lock.acquire( s_current->storeMutex );

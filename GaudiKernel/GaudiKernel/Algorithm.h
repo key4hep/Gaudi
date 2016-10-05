@@ -364,9 +364,7 @@ public:
   Gaudi::Details::PropertyBase* declareProperty( const std::string& name, ToolHandle<T>& hndl,
                                                  const std::string& doc = "none" )
   {
-
     this->declareTool( hndl ).ignore();
-
     return PropertyHolderImpl::declareProperty( name, hndl, doc );
   }
 
@@ -485,6 +483,11 @@ public:
 
   const std::vector<IAlgTool*>& tools() const;
 
+  // Return the I/O-boundness flag
+  bool isIOBound() const { return m_isIOBound; };
+  // Set the I/O-boundness flag
+  void setIOBound( bool value ) { m_isIOBound = value; };
+
 protected:
   std::vector<IAlgTool*>& tools();
 
@@ -591,6 +594,8 @@ private:
 
   Gaudi::Property<DataObjIDColl> m_extInputDataObjs{this, "ExtraInputs", DataObjIDColl{}, "[[deprecated]]"};
   Gaudi::Property<DataObjIDColl> m_extOutputDataObjs{this, "ExtraOutputs", DataObjIDColl{}, "[[deprecated]]"};
+  Gaudi::Property<bool> m_isIOBound{this, "IsIOBound", false,
+                                    "if the algorithm is I/O-bound (in the broad sense of Von Neumann bottleneck)"};
 
   bool m_filterPassed = true;  ///< Filter passed flag
   bool m_isExecuted   = false; ///< Algorithm is executed flag

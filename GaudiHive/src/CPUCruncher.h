@@ -59,8 +59,9 @@ private:
   Gaudi::Property<bool> m_local_rndm_gen{this, "localRndm", true, "Decide if the local random generator is to be used"};
   Gaudi::Property<bool> m_shortCalib{this, "shortCalib", false, "Enable coarse grained calibration"};
   Gaudi::Property<unsigned int> m_rwRepetitions{this, "RwRepetitions", 1, "Increase access to the WB"};
-  Gaudi::Property<bool> m_sleepyExecution{this, "SleepyExecution", false,
-                                          "Sleep during execution instead of crunching"};
+  Gaudi::Property<float> m_sleepFraction{
+      this, "SleepyFraction", 0.0f,
+      "Fraction of time, between 0 and 1, when an algorithm is actually sleeping instead of crunching"};
 
   // To calib only once
   static std::vector<unsigned int> m_niters_vect;

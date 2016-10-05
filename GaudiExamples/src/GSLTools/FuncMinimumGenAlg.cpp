@@ -39,6 +39,11 @@ FuncMinimumGenAlg::FuncMinimumGenAlg( const std::string& name,
 //=============================================================================
 FuncMinimumGenAlg::~FuncMinimumGenAlg() {}
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winconsistent-missing-override"
+#endif
+
 //=============================================================================
 // Class for the function "GenFunc"
 // @see GaudiGSL/IFuncMinimum.h
@@ -48,19 +53,23 @@ class Func : public AbsFunction
 public:
   FUNCTION_OBJECT_DEF(Func)
 public:
-  Func () {};
+  Func () {}
   Func ( const Func&  )
-    : AbsFunction() {};
-  virtual ~Func () {};
-  virtual double operator() (double /* argument */) const {return 0;};
-  virtual double operator() (const Argument& x) const
+    : AbsFunction() {}
+  ~Func () override {}
+  double operator() (double /* argument */) const override {return 0;}
+  double operator() (const Argument& x) const override
   {
     return 10 + 4 * x[0] * x[0] + 27 * x[1] * x[1]
       + 25 * x[1];
   }
-  virtual unsigned int dimensionality () const {return 2;}
+  unsigned int dimensionality () const override {return 2;}
 };
 FUNCTION_OBJECT_IMP(Func)
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
 //=============================================================================
 // Initialisation. Check parameters

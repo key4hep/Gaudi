@@ -33,7 +33,7 @@ class TupleAlg3 : public GaudiTupleAlg
 {
 public:
   /// initialize the algorithm
-  StatusCode initialize ()
+  StatusCode initialize () override
   {
     StatusCode sc = GaudiTupleAlg::initialize() ;
     if ( sc.isFailure() ) { return sc ; }
@@ -41,11 +41,11 @@ public:
     Assert ( randSvc() != 0 , "Random Service is not available!");
     //
     return StatusCode::SUCCESS ;
-  };
+  }
   /** the only one essential method
    *  @see IAlgoruthm
    */
-  StatusCode execute    () ;
+  StatusCode execute    () override ;
   /** standard constructor
    *  @param name algorithm instance name
    *  @param pSvc pointer to Service Locator
@@ -53,9 +53,9 @@ public:
   TupleAlg3
   ( const std::string& name ,
     ISvcLocator*       pSvc )
-    : GaudiTupleAlg ( name , pSvc ) {};
+    : GaudiTupleAlg ( name , pSvc ) {}
   // destructor
-  virtual ~TupleAlg3 () {} ;
+  ~TupleAlg3 () override {}
 private:
   // default constructor is disabled
   TupleAlg3() ;

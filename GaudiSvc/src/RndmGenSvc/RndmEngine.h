@@ -55,33 +55,33 @@ protected:
   /// Standard Constructor
   RndmEngine(const std::string& name, ISvcLocator* loc);
   /// Standard Destructor
-  virtual ~RndmEngine();
+  ~RndmEngine() override;
 public:
   /// Service override: initialization
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
   /// Service override: finalization
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
   /// Single shot returning single random number
-  virtual double rndm() const;
+  double rndm() const override;
   /** Multiple shots returning vector with flat random numbers.
       @param  array    Array containing random numbers
       @param  howmany  fill 'howmany' random numbers into array
       @param  start    ... starting at position start
       @return StatusCode indicating failure or success.
   */
-  virtual StatusCode rndmArray( std::vector<double>& array, long howmany, long start = 0) const;
+  StatusCode rndmArray( std::vector<double>& array, long howmany, long start = 0) const override;
   /** Input serialization from stream buffer. Restores the status of the object.
       @param   str    Reference to Streambuffer to be filled
       @return  Reference to filled stream buffer
   */
-  virtual StreamBuffer& serialize(StreamBuffer& str);
+  StreamBuffer& serialize(StreamBuffer& str) override;
   /** Output serialization to stream buffer. Saves the status of the object.
       @param   str    Reference to Streambuffer to be read
       @return  Reference to read stream buffer
   */
-  virtual StreamBuffer& serialize(StreamBuffer& str) const;
+  StreamBuffer& serialize(StreamBuffer& str) const override;
   /// Inform that a new incident has occurred
-  virtual void handle(const Incident& inc);
+  void handle(const Incident& inc) override;
 };
 
 #endif // GAUDI_RNDMGENSVC_RNDMENGINE_H

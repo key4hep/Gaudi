@@ -37,7 +37,7 @@ namespace Gaudi
     {
     public:
       /// the only one essential method: execute the algorithm
-      virtual StatusCode execute();
+      StatusCode execute () override;
 
     public:
       /** standard constructor

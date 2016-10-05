@@ -47,10 +47,10 @@ public:
                   const AlgTool* tool, const PropertyList& props, const JobHistory* job );
 
   // Destructor.
-  virtual ~AlgToolHistory(){};
+  virtual ~AlgToolHistory() override {}
 
   // Class IDs
-  virtual const CLID& clID() const { return classID(); }
+  const CLID& clID() const override { return classID(); }
   static const CLID& classID();
 
   // Return the algtool type.
@@ -66,16 +66,16 @@ public:
   const AlgTool* algtool_instance() const { return m_tool; }
 
   // Return the algorithm properties.
-  const PropertyList& properties() const { return m_properties; }
+  const PropertyList& properties() const override { return m_properties; }
 
   // Return the jobHistory
   const JobHistory* jobHistory() const { return m_jobHistory; }
 
-  void dump( std::ostream&, const bool isXML = false, int indent = 0 ) const;
+  void dump( std::ostream&, const bool isXML = false, int indent = 0 ) const override;
 
-  const std::string& name() const { return algtool_name(); }
-  const std::string& type() const { return algtool_type(); }
-  const std::string& version() const { return algtool_version(); }
+  const std::string& name() const override { return algtool_name(); }
+  const std::string& type() const override { return algtool_type(); }
+  const std::string& version() const override { return algtool_version(); }
 };
 
 // Output stream.

@@ -89,9 +89,13 @@ StatusCodeSvc::regFnc(const std::string& fnc, const std::string& lib) {
     return;
   }
 
+  // A StatusCode instance may be create internally by ROOT dictionaries and, 
+  // of course, it's not checked, so here we whitelist a few library names
+  // that are known to produce spurious reports.
   if (m_dict &&
       (lib.compare(lib.length()-7, 7, "Dict.so") == 0 ||
-       lib.compare(lib.length()-8, 8, "Cling.so") == 0)) {
+       lib.compare(lib.length()-8, 8, "Cling.so") == 0 ||
+       lib.compare(lib.length()-7, 7, "Core.so") == 0)) {
     return;
   }
   // this appears only with gcc 4.9...

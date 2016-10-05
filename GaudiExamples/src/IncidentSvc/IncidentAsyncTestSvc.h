@@ -29,7 +29,7 @@ public:
   StatusCode finalize() override;
 
   /// Reimplements from IIncidentListener
-  virtual void handle( const Incident& incident ) final;
+  virtual void handle( const Incident& incident ) final override;
   virtual void getData( uint64_t* data, EventContext* ctx = 0 ) const final override;
 
 private:

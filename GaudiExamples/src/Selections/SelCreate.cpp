@@ -37,7 +37,7 @@ namespace Gaudi
     public:
       // ======================================================================
       /// the only one essential method
-      virtual StatusCode execute()
+      StatusCode execute() override
       {
         // some random number generators, just to provide the numbers
         static Rndm::Numbers  gauss   ( randSvc () , Rndm::Gauss   (   0.0 ,   1.0 ) ) ;
@@ -96,7 +96,7 @@ namespace Gaudi
         : GaudiAlgorithm ( name , pSvc )
       {}
       /// virtual (and protected) destructor
-      virtual ~SelCreate() {}
+      ~SelCreate() override = default;
       // ======================================================================
     private:
       // ======================================================================

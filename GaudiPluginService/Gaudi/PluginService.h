@@ -65,8 +65,8 @@ namespace Gaudi { namespace PluginService {
   class GAUDIPS_EXPORT Exception: public std::exception {
   public:
     Exception(std::string msg);
-    virtual ~Exception() throw();
-    virtual const char* what() const throw();
+    ~Exception() throw() override;
+    const char* what() const throw() override;
   private:
     std::string m_msg;
   };

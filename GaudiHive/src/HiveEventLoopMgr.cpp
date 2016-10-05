@@ -55,7 +55,7 @@ public:
 			HiveEventLoopMgr* eventloopmanager): m_algorithm(algorithm),
 			m_scheduler(scheduler),
 			m_eventloopmanager(eventloopmanager){};
-	tbb::task* execute();
+        tbb::task* execute() override;
 	IAlgorithm* m_algorithm;
 	EventSchedulingState* m_scheduler;
 	HiveEventLoopMgr* m_eventloopmanager;

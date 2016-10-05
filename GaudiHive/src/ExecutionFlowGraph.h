@@ -49,7 +49,7 @@ namespace concurrency {
     ControlFlowNode(ExecutionFlowGraph& graph, unsigned int nodeIndex, const std::string& name) :
       m_graph(&graph), m_nodeIndex(nodeIndex), m_nodeName(name) {};
     /// Destructor
-    virtual ~ControlFlowNode() {};
+    virtual ~ControlFlowNode() {}
     /// Initialize
     virtual void initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map) = 0;
     ///
@@ -89,24 +89,24 @@ namespace concurrency {
     DecisionNode(ExecutionFlowGraph& graph, unsigned int nodeIndex, const std::string& name, bool modeOR, bool allPass, bool isLazy) :
       ControlFlowNode(graph, nodeIndex, name),
       m_modeOR(modeOR), m_allPass(allPass), m_isLazy(isLazy), m_children()
-      {};
+      {}
     /// Destructor
-    virtual ~DecisionNode();
+    ~DecisionNode() override;
     /// Initialize
-    virtual void initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map);
-    virtual bool accept(IGraphVisitor& visitor);
+    void initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map) override;
+    bool accept(IGraphVisitor& visitor) override;
     /// XXX: CF tests. Method to set algos to CONTROLREADY, if possible
-    virtual bool promoteToControlReadyState(const int& slotNum,
+    bool promoteToControlReadyState(const int& slotNum,
                                             AlgsExecutionStates& states,
-                                            std::vector<int>& node_decisions) const;
+                                            std::vector<int>& node_decisions) const override;
     /// XXX: CF tests
-    virtual void updateDecision(const int& slotNum,
+    void updateDecision(const int& slotNum,
                                 AlgsExecutionStates& states,
                                 std::vector<int>& node_decisions,
-                                const AlgorithmNode* requestor = nullptr) const;
+                                const AlgorithmNode* requestor = nullptr) const override;
     /// Method to set algos to CONTROLREADY, if possible
-    virtual int updateState(AlgsExecutionStates& states,
-                            std::vector<int>& node_decisions) const;
+    int updateState(AlgsExecutionStates& states,
+                            std::vector<int>& node_decisions) const override;
     /// XXX: CF tests. Method to add a parent node
     void addParentNode(DecisionNode* node);
     /// Add a daughter node
@@ -114,10 +114,10 @@ namespace concurrency {
     ///
     const std::vector<ControlFlowNode*>& getDaughters() const {return m_children;}
     /// Print a string representing the control flow state
-    virtual void printState(std::stringstream& output,
+    void printState(std::stringstream& output,
                             AlgsExecutionStates& states,
                             const std::vector<int>& node_decisions,
-                            const unsigned int& recursionLevel) const;
+                            const unsigned int& recursionLevel) const override;
   public:
     /// Whether acting as "and" (false) or "or" node (true)
     bool m_modeOR;
@@ -137,16 +137,16 @@ namespace concurrency {
   class AlgorithmNode : public ControlFlowNode {
   public:
     /// Constructor
-    AlgorithmNode(ExecutionFlowGraph& graph, unsigned int nodeIndex, const std::string& algoName, bool inverted, bool allPass) :
+    AlgorithmNode(ExecutionFlowGraph& graph, unsigned int nodeIndex, const std::string& algoName, bool inverted, bool allPass, bool IOBound) :
       ControlFlowNode(graph, nodeIndex, algoName),
-      m_algoIndex(0),m_algoName(algoName),m_inverted(inverted),m_allPass(allPass),m_rank(-1)
+      m_algoIndex(0),m_algoName(algoName),m_inverted(inverted),m_allPass(allPass),m_rank(-1),m_isIOBound(IOBound)
       {};
     /// Destructor
     ~AlgorithmNode();
     /// Initialize
-    virtual void initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map);
+    void initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map) override;
     ///
-    virtual bool accept(IGraphVisitor& visitor);
+    bool accept(IGraphVisitor& visitor) override;
     /// XXX: CF tests. Method to add a parent node
     void addParentNode(DecisionNode* node);
 
@@ -178,28 +178,32 @@ namespace concurrency {
 
     /// XXX: CF tests
     const unsigned int& getAlgoIndex() const { return m_algoIndex; }
+    /// Set the I/O-boundness flag
+    void setIOBound(bool value) { m_isIOBound = value;}
+    /// Check if algorithm is I/O-bound
+    bool isIOBound() const {return m_isIOBound;}
     /// Method to check whether the Algorithm has its all data dependency satisfied
     bool dataDependenciesSatisfied(const int& slotNum) const;
     bool dataDependenciesSatisfied(AlgsExecutionStates& states) const;
     /// Method to set algos to CONTROLREADY, if possible
-    virtual int updateState(AlgsExecutionStates& states,
-                            std::vector<int>& node_decisions) const;
+    int updateState(AlgsExecutionStates& states,
+                            std::vector<int>& node_decisions) const override;
     /// XXX: CF tests
-    virtual bool promoteToControlReadyState(const int& slotNum,
+    bool promoteToControlReadyState(const int& slotNum,
                                             AlgsExecutionStates& states,
-                                            std::vector<int>& node_decisions) const;
+                                            std::vector<int>& node_decisions) const override;
     ///
     bool promoteToDataReadyState(const int& slotNum, const AlgorithmNode* requestor = nullptr) const;
     /// XXX: CF tests
-    virtual void updateDecision(const int& slotNum,
+    void updateDecision(const int& slotNum,
                                 AlgsExecutionStates& states,
                                 std::vector<int>& node_decisions,
-                                const AlgorithmNode* requestor = nullptr) const;
+                                const AlgorithmNode* requestor = nullptr) const override;
     /// Print a string representing the control flow state
-    virtual void printState(std::stringstream& output,
+    void printState(std::stringstream& output,
                             AlgsExecutionStates& states,
                             const std::vector<int>& node_decisions,
-                            const unsigned int& recursionLevel) const;
+                            const unsigned int& recursionLevel) const override;
   private:
     /// The index of the algorithm
     unsigned int m_algoIndex;
@@ -227,6 +231,8 @@ namespace concurrency {
     float m_rank;
     /// Representatives (including clones) of the node
     std::vector<IAlgorithm*> m_representatives;
+    /// If an algorithm is I/O-bound (in the broad sense of Von Neumann bottleneck)
+    bool m_isIOBound;
   };
 
 class DataNode {

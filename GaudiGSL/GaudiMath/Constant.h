@@ -40,20 +40,20 @@ namespace Genfun // due to CLHEP
       Constant ( const Constant& right ) ;
 
       /// destructor
-      virtual ~Constant();
+      ~Constant() override;
 
     public:
 
       /// dimensionality of the problem
-      virtual unsigned int dimensionality         () const { return m_DIM   ; }
+      unsigned int dimensionality         () const override { return m_DIM   ; }
       /// Does this function have an analytic derivative?
-      virtual bool  hasAnalyticDerivative         () const { return true    ; }
+      bool  hasAnalyticDerivative         () const override { return true    ; }
       /// Function value
-      virtual double operator()  ( double          ) const { return m_value ; }
+      double operator()  ( double          ) const override { return m_value ; }
       /// Function value
-      virtual double operator()  ( const Argument& ) const { return m_value ; }
+      double operator()  ( const Argument& ) const override { return m_value ; }
       /// Derivatives
-      virtual Derivative partial ( unsigned int i  ) const ;
+      Derivative partial ( unsigned int i  ) const override ;
 
     private:
 

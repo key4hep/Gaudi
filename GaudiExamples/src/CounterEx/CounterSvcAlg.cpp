@@ -26,9 +26,9 @@ namespace GaudiExamples
     /// Constructor: A constructor of this form must be provided.
     using Algorithm::Algorithm;
     /// Standard Destructor
-    virtual ~CounterSvcAlg() = default;
+    ~CounterSvcAlg() override = default;
     /// Initialize
-    virtual StatusCode initialize()
+    StatusCode initialize() override
     {
       m_cntSvc = service( "CounterSvc", true );
       if ( !m_cntSvc ) {
@@ -58,7 +58,7 @@ namespace GaudiExamples
       return sc;
     }
     /// Finalize
-    virtual StatusCode finalize()
+    StatusCode finalize() override
     {
       ICounterSvc::Printout p( m_cntSvc.get() );
       info() << "Single counter:CounterTest::EventCount" << endmsg;
@@ -72,7 +72,7 @@ namespace GaudiExamples
       return StatusCode::SUCCESS;
     }
     /// Event callback
-    virtual StatusCode execute()
+    StatusCode execute() override
     {
       static size_t nEvent = 0;
       ++nEvent;

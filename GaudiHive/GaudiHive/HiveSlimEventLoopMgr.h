@@ -78,24 +78,24 @@ public:
   /// Standard Constructor
   HiveSlimEventLoopMgr( const std::string& nam, ISvcLocator* svcLoc );
   /// Standard Destructor
-  virtual ~HiveSlimEventLoopMgr();
+  ~HiveSlimEventLoopMgr() override;
   /// Create event address using event selector
   StatusCode getEventRoot( IOpaqueAddress*& refpAddr );
   /// implementation of IService::initialize
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
   /// implementation of IService::reinitialize
-  virtual StatusCode reinitialize();
+  StatusCode reinitialize() override;
   /// implementation of IService::stop
-  virtual StatusCode stop();
+  StatusCode stop() override;
   /// implementation of IService::finalize
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
   /// implementation of IService::nextEvent
-  virtual StatusCode nextEvent( int maxevt );
+  StatusCode nextEvent( int maxevt ) override;
   /// implementation of IEventProcessor::executeEvent(void* par)
-  virtual StatusCode executeEvent( void* par );
+  StatusCode executeEvent( void* par ) override;
   /// implementation of IEventProcessor::executeRun()
-  virtual StatusCode executeRun( int maxevt );
+  StatusCode executeRun( int maxevt ) override;
   /// implementation of IEventProcessor::stopRun()
-  virtual StatusCode stopRun();
+  StatusCode stopRun() override;
 };
 #endif // GAUDIHIVE_HIVESLIMEVENTLOOPMGR_H

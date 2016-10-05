@@ -119,8 +119,9 @@ public:
       , m_scheduler( scheduler )
       , m_algPool( algPool ){
 
-        };
-  virtual tbb::task* execute();
+  };
+
+  tbb::task* execute() override;
 
 private:
   SmartIF<ISvcLocator> m_serviceLocator;

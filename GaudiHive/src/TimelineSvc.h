@@ -19,7 +19,7 @@ public:
 
   void registerTimelineEvent( const TimelineEvent& e ) override;
 
-  bool isEnabled() const { return m_isEnabled; }
+  bool isEnabled() const override { return m_isEnabled; }
 
   using extends::extends;
 

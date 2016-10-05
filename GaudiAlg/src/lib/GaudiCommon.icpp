@@ -167,7 +167,7 @@ StatusCode GaudiCommon<PBASE>::
   {
   public:
     DHHFixer( std::function<std::string( const std::string& )> f ) : m_f( f ) {}
-    virtual void visit( const IDataHandleHolder* idhh )
+    void visit( const IDataHandleHolder* idhh ) override
     {
       if ( idhh == 0 ) return;
 

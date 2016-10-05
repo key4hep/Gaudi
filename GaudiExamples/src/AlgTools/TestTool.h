@@ -30,7 +30,7 @@ public:
   /// Finalize method
   StatusCode finalize() override;
 
-  ~TestTool() override = default; ///< Destructor
+  ~TestTool() override = default;
 
 private:
   Gaudi::Property<std::vector<std::string>> m_tools{this, "Tools", {}, "list of tools to test"};

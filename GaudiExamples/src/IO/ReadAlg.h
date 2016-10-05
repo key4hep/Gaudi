@@ -27,15 +27,15 @@ public:
   /// Constructor: A constructor of this form must be provided.
   using Algorithm::Algorithm;
   /// Standard Destructor
-  virtual ~ReadAlg() = default;
+  ~ReadAlg() override = default;
   /// Initialize
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
   /// Finalize
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
   /// Event callback
-  virtual StatusCode execute();
+  StatusCode execute() override;
   /// IIncidentListener override: Inform that a new incident has occured
-  virtual void handle( const Incident& incident );
+  virtual void handle( const Incident& incident ) override;
 };
 
 #endif // GAUDIEXAMPLES_READALG_H

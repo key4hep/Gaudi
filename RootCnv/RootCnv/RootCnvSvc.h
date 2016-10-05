@@ -124,16 +124,16 @@ namespace Gaudi
     StatusCode connectDatabase( const std::string& dataset, int mode, RootDataConnection** con );
 
     /// ConversionSvc overload: initialize Db service
-    virtual StatusCode initialize();
+    StatusCode initialize() override;
 
     /// ConversionSvc overload: Finalize Db service
-    virtual StatusCode finalize();
+    StatusCode finalize() override;
 
     /// ConversionSvc overload: Create new Converter using factory
-    virtual IConverter* createConverter( long typ, const CLID& wanted, const ICnvFactory* fac );
+    IConverter* createConverter( long typ, const CLID& wanted, const ICnvFactory* fac ) override;
 
     /// ConversionSvc overload: Load the class (dictionary) for the converter
-    virtual void loadConverter( DataObject* pObj );
+    void loadConverter( DataObject* pObj ) override;
 
     /** Connect the output file to the service with open mode.
      *  @param      outputFile  String containig output file
@@ -141,14 +141,14 @@ namespace Gaudi
      *
      *  @return     Status code indicating success or failure.
      */
-    virtual StatusCode connectOutput( const std::string& outputFile, const std::string& openMode );
+    StatusCode connectOutput( const std::string& outputFile, const std::string& openMode ) override;
 
     /** Connect the output file to the service.
      *  @param      outputFile  String containig output file
      *
      *  @return     Status code indicating success or failure.
      */
-    virtual StatusCode connectOutput( const std::string& outputFile );
+    StatusCode connectOutput( const std::string& outputFile ) override;
 
     /** Commit pending output.
      *  @param      outputFile  String containig output file
@@ -160,7 +160,7 @@ namespace Gaudi
      *
      *  @return     Status code indicating success or failure.
      */
-    virtual StatusCode commitOutput( const std::string& outputFile, bool do_commit );
+    StatusCode commitOutput( const std::string& outputFile, bool do_commit ) override;
 
     /** Disconnect from an existing data stream.
      * @param      dbName      String containing name of the database
@@ -180,8 +180,8 @@ namespace Gaudi
      *
      * @return                  StatusCode indicating SUCCESS or failure
      */
-    virtual StatusCode createAddress( long svc_type, const CLID& clid, const std::string* par, const unsigned long* ip,
-                                      IOpaqueAddress*& refpAddress );
+    StatusCode createAddress( long svc_type, const CLID& clid, const std::string* par, const unsigned long* ip,
+                              IOpaqueAddress*& refpAddress ) override;
 
     /** IAddressCreator implementation: Creates an address in string form to object form
      *  @param      svc_type    Technology identifier encapsulated
@@ -192,8 +192,8 @@ namespace Gaudi
      *  @param      refpAddress Output address in string form.
      *  @return     Status code indicating success or failure.
      */
-    virtual StatusCode createAddress( long svc_type, const CLID& clid, const std::string& refAddress,
-                                      IOpaqueAddress*& refpAddress )
+    StatusCode createAddress( long svc_type, const CLID& clid, const std::string& refAddress,
+                              IOpaqueAddress*& refpAddress ) override
     {
       return this->ConversionSvc::createAddress( svc_type, clid, refAddress, refpAddress );
     }

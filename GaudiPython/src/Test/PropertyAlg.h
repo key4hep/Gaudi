@@ -18,9 +18,9 @@ public:
   using Algorithm::Algorithm;
 
   /// Three mandatory member functions of any algorithm
-  StatusCode initialize() { return StatusCode::SUCCESS; }
-  StatusCode execute() { return StatusCode::SUCCESS; }
-  StatusCode finalize() { return StatusCode::SUCCESS; }
+  StatusCode initialize() override { return StatusCode::SUCCESS; }
+  StatusCode execute() override { return StatusCode::SUCCESS; }
+  StatusCode finalize() override { return StatusCode::SUCCESS; }
 
 private:
   /// These data members are used in the execution of this algorithm

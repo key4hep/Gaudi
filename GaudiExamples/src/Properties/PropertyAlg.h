@@ -17,9 +17,9 @@ public:
   /// Constructor of this form must be provided
   PropertyAlg( const std::string& name, ISvcLocator* pSvcLocator );
   /// Three mandatory member functions of any algorithm
-  StatusCode initialize();
-  StatusCode execute();
-  StatusCode finalize();
+  StatusCode initialize() override;
+  StatusCode execute() override;
+  StatusCode finalize() override;
 
   /// Callbacks for properties
   void readHandler( Gaudi::Details::PropertyBase& );

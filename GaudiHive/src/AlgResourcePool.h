@@ -39,24 +39,24 @@ public:
   // Standard destructor
   ~AlgResourcePool() override;
 
-  virtual StatusCode start();
-  virtual StatusCode initialize();
+  StatusCode start() override;
+  StatusCode initialize() override;
   /// Acquire a certain algorithm using its name
-  virtual StatusCode acquireAlgorithm( const std::string& name, IAlgorithm*& algo, bool blocking = false );
+  StatusCode acquireAlgorithm( const std::string& name, IAlgorithm*& algo, bool blocking = false ) override;
   /// Release a certain algorithm
-  virtual StatusCode releaseAlgorithm( const std::string& name, IAlgorithm*& algo );
+  StatusCode releaseAlgorithm( const std::string& name, IAlgorithm*& algo ) override;
   /// Acquire a certain resource
-  virtual StatusCode acquireResource( const std::string& name );
+  StatusCode acquireResource( const std::string& name ) override;
   /// Release a certrain resource
-  virtual StatusCode releaseResource( const std::string& name );
+  StatusCode releaseResource( const std::string& name ) override;
 
-  virtual std::list<IAlgorithm*> getFlatAlgList();
-  virtual std::list<IAlgorithm*> getTopAlgList();
+  std::list<IAlgorithm*> getFlatAlgList() override;
+  std::list<IAlgorithm*> getTopAlgList() override;
 
-  virtual StatusCode beginRun();
-  virtual StatusCode endRun();
+  StatusCode beginRun() override;
+  StatusCode endRun() override;
 
-  virtual StatusCode stop();
+  StatusCode stop() override;
 
   virtual concurrency::ExecutionFlowGraph* getExecutionFlowGraph() const { return m_EFGraph; }
 

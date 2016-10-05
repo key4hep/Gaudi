@@ -28,7 +28,7 @@ namespace Gaudi
     public:
       // ======================================================================
       /// the only one essential method
-      virtual StatusCode execute()
+      virtual StatusCode execute() override
       {
 
         typedef Gaudi::NamedRange_<Gaudi::Examples::MyTrack::ConstVector> Range;

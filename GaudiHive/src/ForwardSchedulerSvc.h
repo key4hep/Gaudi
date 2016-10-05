@@ -1,7 +1,17 @@
 #ifndef GAUDIHIVE_FORWARDSCHEDULERSVC_H
 #define GAUDIHIVE_FORWARDSCHEDULERSVC_H
 
+#include <functional>
+#include <string>
+#include <thread>
+#include <unordered_map>
+#include <vector>
+
+// External libs
+#include "tbb/concurrent_queue.h"
+
 // Framework include files
+#include "GaudiKernel/IAccelerator.h"
 #include "GaudiKernel/IAlgResourcePool.h"
 #include "GaudiKernel/IHiveWhiteBoard.h"
 #include "GaudiKernel/IRunable.h"
@@ -80,25 +90,25 @@ public:
   ~ForwardSchedulerSvc() override = default;
 
   /// Initialise
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
 
   /// Finalise
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
 
   /// Make an event available to the scheduler
-  virtual StatusCode pushNewEvent( EventContext* eventContext );
+  StatusCode pushNewEvent( EventContext* eventContext ) override;
 
   // Make multiple events available to the scheduler
-  virtual StatusCode pushNewEvents( std::vector<EventContext*>& eventContexts );
+  StatusCode pushNewEvents( std::vector<EventContext*>& eventContexts ) override;
 
   /// Blocks until an event is availble
-  virtual StatusCode popFinishedEvent( EventContext*& eventContext );
+  StatusCode popFinishedEvent( EventContext*& eventContext ) override;
 
   /// Try to fetch an event from the scheduler
-  virtual StatusCode tryPopFinishedEvent( EventContext*& eventContext );
+  StatusCode tryPopFinishedEvent( EventContext*& eventContext ) override;
 
   /// Get free slots number
-  virtual unsigned int freeSlots();
+  unsigned int freeSlots() override;
 
 private:
   enum ActivationState { INACTIVE = 0, ACTIVE = 1, FAILURE = 2 };
@@ -109,8 +119,12 @@ private:
       this, "ThreadPoolSize", -1,
       "Size of the threadpool initialised by TBB; a value of -1 gives TBB the freedom to choose"};
   Gaudi::Property<std::string> m_whiteboardSvcName{this, "WhiteboardSvc", "EventDataSvc", "The whiteboard name"};
+  Gaudi::Property<std::string> m_IOBoundAlgSchedulerSvcName{this, "IOBoundAlgSchedulerSvc", "IOBoundAlgSchedulerSvc"};
   Gaudi::Property<unsigned int> m_maxAlgosInFlight{this, "MaxAlgosInFlight", 0,
                                                    "[[deprecated]] Taken from the whiteboard"};
+
+  Gaudi::Property<unsigned int> m_maxIOBoundAlgosInFlight{this, "MaxIOBoundAlgosInFlight", 0,
+                                                          "Maximum number of simultaneous I/O-bound algorithms"};
   // XXX: CF tests. Temporary property to switch between ControlFlow implementations
   Gaudi::Property<bool> m_CFNext{this, "useGraphFlowManagement", false,
                                  "Temporary property to switch between ControlFlow implementations"};
@@ -124,6 +138,8 @@ private:
                                                   "The following modes are currently available: PCE, COD, DRE,  E"};
   Gaudi::Property<bool> m_dumpIntraEventDynamics{this, "DumpIntraEventDynamics", false,
                                                  "Dump intra-event concurrency dynamics to csv file"};
+  Gaudi::Property<bool> m_useIOBoundAlgScheduler{this, "PreemptiveIOBoundTasks", false,
+                                                 "Turn on preemptive way of scheduling of I/O-bound algorithms"};
   Gaudi::Property<std::vector<std::vector<std::string>>> m_algosDependencies{
       this, "AlgosDependencies", {}, "[[deprecated]]"};
   Gaudi::Property<bool> m_checkDeps{this, "CheckDependencies", false, "[[deprecated]]"};
@@ -157,6 +173,9 @@ private:
   /// A shortcut to the whiteboard
   SmartIF<IHiveWhiteBoard> m_whiteboard;
 
+  /// A shortcut to IO-bound algorithm scheduler
+  SmartIF<IAccelerator> m_IOBoundAlgScheduler;
+
   /// Vector of events slots
   std::vector<EventSlot> m_eventSlots;
 
@@ -174,6 +193,9 @@ private:
   /// Number of algoritms presently in flight
   unsigned int m_algosInFlight = 0;
 
+  /// Number of algoritms presently in flight
+  unsigned int m_IOBoundAlgosInFlight;
+
   /// Loop on algorithm in the slots and promote them to successive states (-1 means all slots, while empty string
   /// means skipping an update of the Control Flow state)
   StatusCode updateStates( int si = -1, const std::string& algo_name = std::string() );
@@ -182,7 +204,10 @@ private:
   StatusCode promoteToControlReady( unsigned int iAlgo, int si );
   StatusCode promoteToDataReady( unsigned int iAlgo, int si );
   StatusCode promoteToScheduled( unsigned int iAlgo, int si );
+  StatusCode promoteToAsyncScheduled( unsigned int iAlgo, int si ); // tests of an asynchronous scheduler
   StatusCode promoteToExecuted( unsigned int iAlgo, int si, IAlgorithm* algo, EventContext* );
+  StatusCode promoteToAsyncExecuted( unsigned int iAlgo, int si, IAlgorithm* algo,
+                                     EventContext* ); // tests of an asynchronous scheduler
   StatusCode promoteToFinished( unsigned int iAlgo, int si );
 
   /// Check if the scheduling is in a stall
@@ -213,6 +238,7 @@ private:
 
   // Needed to queue actions on algorithm finishing and decrement algos in flight
   friend class AlgoExecutionTask;
+  friend class IOBoundAlgTask;
 
   // Service for thread pool initialization
   SmartIF<IThreadPoolSvc> m_threadPoolSvc;

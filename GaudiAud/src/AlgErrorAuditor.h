@@ -16,13 +16,13 @@ class AlgErrorAuditor : public Auditor
 {
 public:
   using Auditor::Auditor;
-  virtual ~AlgErrorAuditor() = default;
+  ~AlgErrorAuditor() override = default;
 
-  virtual StatusCode initialize();
-  virtual StatusCode finalize();
+  StatusCode initialize() override;
+  StatusCode finalize() override;
 
-  virtual void beforeExecute( INamedInterface* alg );
-  virtual void afterExecute( INamedInterface* alg, const StatusCode& );
+  void beforeExecute( INamedInterface* alg ) override;
+  void afterExecute( INamedInterface* alg, const StatusCode& ) override;
 
 private:
   Gaudi::Property<bool> m_abort{this, "Abort", false, "abort job upon illegal Algorithm return code"};

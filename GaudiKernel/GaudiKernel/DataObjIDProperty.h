@@ -28,14 +28,14 @@ class GAUDI_API DataObjIDProperty : public PropertyWithHandlers
 public:
   DataObjIDProperty( const std::string& name, DataObjID& ref );
   DataObjIDProperty& operator=( const DataObjID& value );
-  virtual ~DataObjIDProperty();
+  ~DataObjIDProperty() override;
 
-  virtual DataObjIDProperty* clone() const;
-  virtual bool load( Gaudi::Details::PropertyBase& destination ) const;
-  virtual bool assign( const Gaudi::Details::PropertyBase& source );
-  virtual std::string toString() const;
-  virtual void toStream( std::ostream& out ) const;
-  virtual StatusCode fromString( const std::string& s );
+  DataObjIDProperty* clone() const override;
+  bool load( Property& destination ) const override;
+  bool assign( const Property& source ) override;
+  std::string toString() const override;
+  void toStream( std::ostream& out ) const override;
+  StatusCode fromString( const std::string& s ) override;
   const DataObjID& value() const;
   bool setValue( const DataObjID& value );
 
@@ -92,12 +92,12 @@ public:
   DataObjIDCollProperty& operator=( const DataObjIDColl& value );
   virtual ~DataObjIDCollProperty();
 
-  virtual DataObjIDCollProperty* clone() const;
-  virtual bool load( Gaudi::Details::PropertyBase& destination ) const;
-  virtual bool assign( const Gaudi::Details::PropertyBase& source );
-  virtual std::string toString() const;
-  virtual void toStream( std::ostream& out ) const;
-  virtual StatusCode fromString( const std::string& s );
+  DataObjIDCollProperty* clone() const override;
+  bool load( Property& destination ) const override;
+  bool assign( const Property& source ) override;
+  std::string toString() const override;
+  void toStream( std::ostream& out ) const override;
+  StatusCode fromString( const std::string& s ) override;
   const DataObjIDColl& value() const;
   bool setValue( const DataObjIDColl& value );
 

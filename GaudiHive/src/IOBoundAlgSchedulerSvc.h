@@ -1,0 +1,68 @@
+#ifndef GAUDIHIVE_IOBOUNDALGSCHEDULERSVC_H
+#define GAUDIHIVE_IOBOUNDALGSCHEDULERSVC_H
+
+#include <functional>
+#include <thread>
+
+// Framework include files
+#include "GaudiKernel/IRunable.h"
+#include "GaudiKernel/Service.h"
+#include "GaudiKernel/IAccelerator.h"
+#include "GaudiKernel/IAlgTask.h"
+
+// External libs
+#include "tbb/concurrent_queue.h"
+
+//---------------------------------------------------------------------------
+
+/**@class IOBoundAlgSchedulerSvc IOBoundAlgSchedulerSvc.h GaudiHive/src/IOBoundAlgSchedulerSvc.h
+ *
+ * Please refer to the full documentation of the methods for more details.
+ *
+ *  @author  Illya Shapoval
+ *  @version 1.0
+ */
+class IOBoundAlgSchedulerSvc: public extends1<Service, IAccelerator> {
+public:
+  /// Constructor
+  IOBoundAlgSchedulerSvc( const std::string& name, ISvcLocator* svc );
+
+  /// Destructor
+  ~IOBoundAlgSchedulerSvc();
+
+  /// Initialise
+  virtual StatusCode initialize();
+
+  /// Finalise
+  virtual StatusCode finalize();
+
+  /// Add an algorithm to local queue to run on accelerator
+  virtual StatusCode push(IAlgTask& task);
+
+private:
+
+  // Utils and shortcuts ----------------------------------------------------
+
+  /// Activate scheduler
+  void activate();
+
+  /// Deactivate scheduler
+  StatusCode deactivate();
+
+  /// Flag to track if the scheduler is active or not
+  bool m_isActive;
+
+  /// The thread in which the activate function runs
+  std::thread m_thread;
+
+  // Actions management -----------------------------------------------------
+
+  typedef std::function<StatusCode()> action;
+  /// This is done since the copy of the lambda storage is too expensive
+  //typedef std::shared_ptr<action> actionPtr;
+  /// Queue where closures are stored and picked for execution
+  tbb::concurrent_bounded_queue<action> m_actionsQueue;
+
+};
+
+#endif // GAUDIHIVE_IOBOUNDALGSCHEDULERSVC_H

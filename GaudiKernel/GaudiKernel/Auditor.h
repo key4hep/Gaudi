@@ -104,7 +104,7 @@ public:
       This service may be used by an auditor to request any services it requires in
       addition to those provided by default.
   */
-  SmartIF<ISvcLocator>& serviceLocator() const;
+  SmartIF<ISvcLocator>& serviceLocator() const override;
 
   /** Access a service by name, creating it if it doesn't already exist.
   */

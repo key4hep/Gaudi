@@ -34,7 +34,7 @@ public:
    *
    *  Will loop over IThreadInitTools and execute each one.
    */
-  virtual tbb::task* execute();
+  tbb::task* execute() override;
 
   static bool execFailed() { return m_execFailed; }
 

@@ -24,7 +24,7 @@ namespace Gaudi
       public:
         using Algorithm::Algorithm;
 
-        StatusCode initialize()
+        StatusCode initialize() override
         {
           StatusCode sc = Algorithm::initialize();
           if ( sc.isFailure() ) return sc;
@@ -33,7 +33,7 @@ namespace Gaudi
           return sc;
         }
 
-        StatusCode execute()
+        StatusCode execute() override
         {
           MsgStream log( msgSvc() );
           SmartDataPtr<DataObject> obj( eventSvc(), m_path );
@@ -53,7 +53,7 @@ namespace Gaudi
           return StatusCode::SUCCESS;
         }
 
-        StatusCode finalize()
+        StatusCode finalize() override
         {
           m_outputFile.close();
           return Algorithm::finalize();

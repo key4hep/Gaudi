@@ -27,6 +27,11 @@
 // ============================================================================
 #include "GaudiKernel/Kernel.h"
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winconsistent-missing-override"
+#endif
+
 namespace Genfun
 {
   namespace GaudiMathImplementation
@@ -102,7 +107,7 @@ namespace Genfun
       /// copy constructor
       SplineBase( const SplineBase& ) ;
       /// destructor
-      virtual ~SplineBase();
+      ~SplineBase();
     public:
       /// evaluate the function
       double eval   ( const double x ) const ;
@@ -243,17 +248,17 @@ namespace Genfun
       /// copy constructor
       GSLSpline ( const GSLSpline& ) ;
       /// destructor
-      virtual ~GSLSpline() ;
+      ~GSLSpline() override ;
     public:
       /// main methgod: evaluate teh function
-      virtual double operator() ( double a          ) const ;
+      double operator() ( double a          ) const override ;
       /// main methgod: evaluate teh function
-      virtual double operator() ( const Argument& x ) const ;
-      virtual unsigned int dimensionality () const { return 1   ; }
+      double operator() ( const Argument& x ) const override ;
+      unsigned int dimensionality () const override { return 1   ; }
       /// Does this function have an analytic derivative?
-      virtual bool  hasAnalyticDerivative() const { return true ; }
+      bool  hasAnalyticDerivative() const override { return true ; }
       /// Derivatives
-      virtual Genfun::Derivative partial( unsigned int i  ) const ;
+      Genfun::Derivative partial( unsigned int i  ) const override ;
     public:
       /// acess to the spline function
       inline   const SplineBase& spline() const { return m_spline ; }
@@ -699,6 +704,10 @@ namespace Genfun
 
   }
 }
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
 #endif // GAUDIMATH_SPLINES_H
 // ============================================================================

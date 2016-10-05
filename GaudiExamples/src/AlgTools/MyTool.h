@@ -18,15 +18,16 @@ public:
   using extends::extends;
 
   /// IMyTool interface
-  virtual const std::string& message() const;
-  virtual void doIt();
+  const std::string& message() const override;
+  void  doIt() override;
+
   /// Overriding initialize and finalize
-  virtual StatusCode initialize();
-  virtual StatusCode finalize();
+  StatusCode initialize() override;
+  StatusCode finalize() override;
 
 protected:
   /// Standard destructor
-  virtual ~MyTool();
+   ~MyTool() override;
 
 private:
   /// Properties

@@ -6,6 +6,9 @@ find_package(Boost REQUIRED COMPONENTS filesystem thread system regex)
 find_package(ROOT REQUIRED COMPONENTS Core)
 find_package(TBB)
 
+# Hide some Boost compile time warnings
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
+
 #---Libraries---------------------------------------------------------------
 gaudi_add_library(GaudiKernel src/Lib/*.cpp
                   LINK_LIBRARIES ${CMAKE_DL_LIBS} Boost ROOT TBB GaudiPluginService

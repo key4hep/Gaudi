@@ -48,7 +48,7 @@
 class ExtendedProperties : public GaudiAlgorithm
 {
 public:
-  StatusCode execute();
+  StatusCode execute() override;
 
   ExtendedProperties( const std::string& name, ISvcLocator* pSvc ) : GaudiAlgorithm( name, pSvc )
   {

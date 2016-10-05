@@ -29,7 +29,7 @@ public:
   StatusCode finalize() override;
 
   // Handler for incident
-  void handle( const Incident& incident );
+  void handle( const Incident& incident ) override;
 
   ///< Destructor
   ~JemallocProfileSvc() override = default;

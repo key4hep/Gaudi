@@ -1,3 +1,0 @@
-Microsoft Visual Studio Solution File, Format Version 8.00
-Project("$(package_GUID)") = "all", "all.vcproj", "$(GUID_all)"
-EndProject
