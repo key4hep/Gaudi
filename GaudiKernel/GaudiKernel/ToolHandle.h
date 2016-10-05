@@ -29,6 +29,7 @@ protected:
   {}
 
 public:
+
   virtual ~ToolHandleInfo() = default;
 
   bool isPublic() const { return !m_parent; }
@@ -40,19 +41,22 @@ public:
   //
   // Some helper functions
   //
-  static std::string toolComponentType(const IInterface* parent) {
+  static std::string toolComponentType(const IInterface* parent) 
+  {
     return parent ? "PrivateTool" : "PublicTool";
   }
-
-  static std::string toolParentName(const IInterface* parent) {
+  
+  static std::string toolParentName(const IInterface* parent) 
+  {
     if (!parent) return "ToolSvc";
     const INamedInterface* pNamed = dynamic_cast<const INamedInterface*>(parent);
     return pNamed ? pNamed->name() : "";
   }
 
 protected:
-  const IInterface* m_parent;
-  bool m_createIf;
+
+  const IInterface* m_parent = nullptr;
+  bool m_createIf{true};
 
 };
 
@@ -73,13 +77,14 @@ protected:
   virtual StatusCode i_retrieve(IAlgTool*&) const = 0;
 
 public:
+
   virtual ~BaseToolHandle() {}
 
   StatusCode retrieve(IAlgTool*& tool) const {
     return i_retrieve(tool);
   }
 
-  virtual IAlgTool* get() const = 0;
+  virtual IAlgTool * get() const = 0;
   virtual std::string typeAndName() const = 0;
 };
 
@@ -155,7 +160,8 @@ public:
 public:
 
   StatusCode initialize(const std::string& toolTypeAndName,
-                        const IInterface* parent = nullptr, bool createIf = true){
+                        const IInterface* parent = nullptr, bool createIf = true)
+  {
 
     GaudiHandleBase::setTypeAndName(toolTypeAndName);
     GaudiHandleBase::setComponentType(toolComponentType(parent));
@@ -164,9 +170,7 @@ public:
     m_parent = parent;
     m_createIf = createIf;
 
-    StatusCode sc = m_pToolSvc.initialize("ToolSvc", GaudiHandleBase::parentName());
-
-    return sc;
+    return m_pToolSvc.initialize("ToolSvc", GaudiHandleBase::parentName());
   }
 
   /** Retrieve the AlgTool. Release existing tool if needed.
@@ -189,22 +193,36 @@ public:
   }
 
   /** Do the real release of the AlgTool. */
-  StatusCode release( T* algTool ) const override {
-    return m_pToolSvc->releaseTool( algTool );
+  StatusCode release( T* algTool ) const override
+  {
+    return m_pToolSvc->releaseTool( nonConst(algTool) );
   }
 
-  IAlgTool *get() const override {
-    return GaudiHandle<T>::get();
+  IAlgTool * get() const override
+  {
+    // const cast to support T being const
+    return nonConst( GaudiHandle<T>::get() );
   }
+
   std::string typeAndName() const override {
     return GaudiHandleBase::typeAndName();
   }
 
+private:
+
+  template< class TOOL >
+  typename std::remove_const<TOOL>::type * nonConst( TOOL* algTool ) const
+  {
+    return const_cast< typename std::remove_const<TOOL>::type * >( algTool );
+  }
+
 protected:
-  StatusCode i_retrieve(IAlgTool*& algTool) const override {
+
+  StatusCode i_retrieve(IAlgTool*& algTool) const override 
+  {
     return m_pToolSvc->retrieve( typeAndName(), IAlgTool::interfaceID(),
-                                 algTool,
-                                 ToolHandleInfo::parent(), ToolHandleInfo::createIf() );
+				 algTool,
+				 ToolHandleInfo::parent(), ToolHandleInfo::createIf() );
   }
 
 private:
