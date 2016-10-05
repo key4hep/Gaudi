@@ -1,4 +1,4 @@
-JobOptionsSvc        INFO # =======> /afs/cern.ch/work/l/leggett/GaudiSrc/git/leggett/Gaudi/GaudiExamples/options/RandomNumber.opts
+JobOptionsSvc        INFO # =======> /build1/leggett/git/Gaudi/GaudiExamples/options/RandomNumber.opts
 JobOptionsSvc        INFO # (5,1): AuditorSvc.Auditors = ["ChronoAuditor"]
 JobOptionsSvc        INFO # (12,1): ApplicationMgr.TopAlg = ["RandomNumberAlg"]
 JobOptionsSvc        INFO # (15,1): MessageSvc.OutputLevel = 2
@@ -7,12 +7,12 @@ JobOptionsSvc        INFO # (21,1): ApplicationMgr.EvtSel = "NONE"
 JobOptionsSvc        INFO # (31,1): ApplicationMgr.HistogramPersistency = "ROOT"
 JobOptionsSvc        INFO # (32,1): HistogramPersistencySvc.OutputFile = "histo.root"
 JobOptionsSvc        INFO # (33,1): NTupleSvc.Output = ["FILE1 DATAFILE='NTuple.root' OPT='NEW' TYP='ROOT'"]
-JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/work/l/leggett/GaudiSrc/git/leggett/Gaudi/GaudiExamples/options/RandomNumber.opts
+JobOptionsSvc        INFO Job options successfully read in from /build1/leggett/git/Gaudi/GaudiExamples/options/RandomNumber.opts
 ApplicationMgr      DEBUG Getting my own properties
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr (GaudiCoreSvc v4r1)
-                                          running on p05614910w96644.cern.ch on Thu Aug 18 20:59:58 2016
+                                          running on p05614910w96644.cern.ch on Wed Oct  5 20:03:49 2016
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 ServiceManager      DEBUG Initializing service AppMgrRunable
@@ -77,14 +77,14 @@ ServiceManager      DEBUG Starting service AlgExecStateSvc
 ServiceManager      DEBUG Starting service EventLoopMgr
 ApplicationMgr       INFO Application Manager Started successfully
 AlgExecStateSvc     DEBUG resizing state containers to : 1
-AlgExecStateSvc     DEBUG adding alg RandomNumberAlg to slot 0
+AlgExecStateSvc     DEBUG adding alg RandomNumberAlg to 1 slots
 RRWNTupleCnv         INFO ID 100: added branch: Event# / Event#/I
 RRWNTupleCnv         INFO ID 100: added branch: DeterInt / DeterInt/i
 RRWNTupleCnv         INFO ID 100: added branch: Gauss / Gauss/F
 RRWNTupleCnv         INFO ID 100: added branch: Exp / Exp/F
 RRWNTupleCnv         INFO ID 100: added branch: Poisson / Poisson/F
 RRWNTupleCnv         INFO Booked TTree with ID:100 "Hello World"
-EventLoopMgr        DEBUG ---> Loop Finished -  WSS 133.855 | total time (skipping 1st evt) 24608897 ns
+EventLoopMgr        DEBUG ---> Loop Finished -  WSS 133.863 | total time (skipping 1st evt) 24814846 ns
 ServiceManager      DEBUG Stopping service EventLoopMgr
 ServiceManager      DEBUG Stopping service AlgExecStateSvc
 ServiceManager      DEBUG Stopping service NTupleSvc
