@@ -74,6 +74,21 @@ namespace Gaudi { namespace Functional { namespace details {
         In& operator()( In* in ) const { assert(in!=nullptr); return *in; }
     } deref {};
 
+    template <template <typename> class Handle, typename T>
+    const T& get_from_handle(const Handle<T>& handle) {
+      return *handle.get();
+    }
+
+    template <template <typename> class Handle, typename T>
+      const Gaudi::Range_<T> get_from_handle(const Handle<Gaudi::Range_<T>>& handle) {
+      return handle.get();
+    }
+
+    template <template <typename> class Handle, typename T>
+      const Gaudi::NamedRange_<T> get_from_handle(const Handle<Gaudi::NamedRange_<T>>& handle) {
+      return handle.get();
+    }
+
     /////////////////////////////////////////
 
     namespace details2 {
