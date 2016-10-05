@@ -7,6 +7,7 @@ find_package(Boost COMPONENTS system filesystem graph)
 find_package(ROOT COMPONENTS Hist RIO)
 find_package(TBB)
 find_package(pyanalysis)
+find_package(pytools)
 
 set (LIBRT_NAME "rt")
 if (${APPLE})
@@ -65,6 +66,10 @@ gaudi_add_test(GraphSchedulerSimpleTest
                FRAMEWORK options/GraphSchedulerSimpleTest.py
                TIMEOUT 120)
 
+gaudi_add_test(BrunelScenarioGraphScheduler
+               FRAMEWORK options/BrunelScenarioGraphScheduler.py
+               TIMEOUT 120)
+
 # Test the AtomicSequencer
 gaudi_add_test(AtomicSequencer
                FRAMEWORK options/AtomicAlgSequencerTest.py
@@ -76,3 +81,6 @@ gaudi_add_test(BugCFHEP114
                FRAMEWORK options/BugCFHEP114.py
                DEPENDS WhiteBoard
                TIMEOUT 120)
+
+#---Installation-----------------------------------------------------------------------------
+gaudi_install_python_modules()

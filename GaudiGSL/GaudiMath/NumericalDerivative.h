@@ -89,22 +89,22 @@ namespace Genfun
       NumericalDerivative
       ( const NumericalDerivative&   right    ) ;
 
-      /// virtual destructor
-      virtual ~NumericalDerivative () = default;
+      /// destructor
+      ~NumericalDerivative () override = default;
 
       /// dimensionality of the problem
-      virtual unsigned int dimensionality() const { return m_DIM ; }
+      unsigned int dimensionality() const override { return m_DIM ; }
 
       /// Function value
-      virtual double operator() ( double          argument ) const ;
+      double operator() ( double          argument ) const override ;
       /// Function value
-      virtual double operator() ( const Argument& argument ) const ;
+      double operator() ( const Argument& argument ) const override ;
 
       /// Does this function have an analytic derivative?
-      virtual bool hasAnalyticDerivative() const { return true ;}
+      bool hasAnalyticDerivative() const override { return true ;}
 
       /// Derivatives
-      virtual Derivative partial ( unsigned int index ) const;
+      Derivative partial ( unsigned int index ) const override;
 
     public:
 

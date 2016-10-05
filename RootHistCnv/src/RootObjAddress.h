@@ -74,28 +74,28 @@ namespace RootHistCnv {
     }
     
     /// Standard Destructor
-    virtual ~RootObjAddress() = default;
+    ~RootObjAddress() override = default;
 
     /// Add reference to object
-    virtual unsigned long addRef   ()   {
+    unsigned long addRef   () override   {
       return ++m_refCount;
     }
 
-    virtual unsigned long release  ()   {
+    unsigned long release  () override   {
       int cnt = --m_refCount;
       if ( 0 == cnt )   delete this;
       return cnt;
     }
     /// Pointer to directory
-    virtual IRegistry* registry()   const     {
+    IRegistry* registry()   const override     {
       return m_pRegistry;
     }
     /// Set pointer to directory
-    virtual void setRegistry(IRegistry* pRegistry)   {
+    void setRegistry(IRegistry* pRegistry) override   {
       m_pRegistry = pRegistry;
     }
     /// Access : Retrieve class ID of the link
-    virtual const CLID& clID()  const   {
+    const CLID& clID()  const override   {
       return m_clID;
     }
     /// Access : Set class ID of the link
@@ -103,7 +103,7 @@ namespace RootHistCnv {
       m_clID = clid;
     }
     /// Access : retrieve the storage type of the class id
-    virtual long svcType()  const    {
+    long svcType()  const override    {
       return m_svcType;
     }
     /// Access : set the storage type of the class id
@@ -111,11 +111,11 @@ namespace RootHistCnv {
       m_svcType = typ;
     }
     /// Retrieve string parameters
-    virtual const std::string* par() const   {
+    const std::string* par() const override   {
       return m_par;
     }
     /// Retrieve integer parameters
-    virtual const unsigned long* ipar()  const  {
+    const unsigned long* ipar()  const override  {
       return m_ipar;
     }
 

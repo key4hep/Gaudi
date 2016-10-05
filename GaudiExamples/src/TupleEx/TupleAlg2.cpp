@@ -35,7 +35,7 @@ class TupleAlg2 : public GaudiTupleAlg
 {
 public:
   /// initialize the algorithm
-  StatusCode initialize ()
+  StatusCode initialize () override
   {
     StatusCode sc = GaudiTupleAlg::initialize() ;
     if ( sc.isFailure() ) { return sc ; }
@@ -47,7 +47,7 @@ public:
   /** the only one essential method
    *  @see IAlgoruthm
    */
-  StatusCode execute    () ;
+  StatusCode execute    () override ;
 
   /** standard constructor
    *  @param name algorithm instance name
@@ -56,9 +56,9 @@ public:
   TupleAlg2
   ( const std::string& name ,
     ISvcLocator*       pSvc )
-    : GaudiTupleAlg ( name , pSvc ) {};
+    : GaudiTupleAlg ( name , pSvc ) {}
   // destructor
-  virtual ~TupleAlg2() {} ;
+  ~TupleAlg2() override = default;
 private:
   // default constructor is disabled
   TupleAlg2() ;

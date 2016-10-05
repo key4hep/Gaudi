@@ -23,6 +23,8 @@
 //  which allows for {} initialization of its member.
 //
 
+#include <utility>
+
 template <typename Iterable>
 struct reverse_wrapper { Iterable iterable; };
 

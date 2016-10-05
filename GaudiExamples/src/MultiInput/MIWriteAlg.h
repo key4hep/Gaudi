@@ -14,13 +14,13 @@ namespace Gaudi {
         /// Constructor: A constructor of this form must be provided.
         WriteAlg(const std::string& name, ISvcLocator* pSvcLoc);
         /// Standard Destructor
-        virtual ~WriteAlg();
+        ~WriteAlg() override;
         /// Initialize
-        virtual StatusCode initialize();
+        StatusCode initialize() override;
         /// Finalize
-        virtual StatusCode finalize();
+        StatusCode finalize() override;
         /// Event callback
-        virtual StatusCode execute();
+        StatusCode execute() override;
       private:
         int m_runnum, m_evtnum;
         std::vector<long> m_randomSeeds;

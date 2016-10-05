@@ -86,12 +86,12 @@ public:
     insert ( first , last , cut ) ;
   }
   /// destructor
-  virtual ~SharedObjectsContainer() { m_data.clear() ; }
+  ~SharedObjectsContainer() override { m_data.clear() ; }
   // ==========================================================================
 public:
   // ==========================================================================
   /// Retrieve the unique class ID (virtual)
-  virtual const CLID& clID() const
+  const CLID& clID() const override
   { return SharedObjectsContainer<TYPE>::classID(); }
   /// Retrieve the unuqie class ID (static)
   static const CLID& classID()
@@ -311,7 +311,7 @@ public: // ObjectContainerBase methods:
   /** Distance of a given object from the beginning of its container
    *  @param object the object to be checked
    */
-  virtual long index( const ContainedObject* object ) const
+  long index( const ContainedObject* object ) const override
   {
     auto _i = std::find ( begin() , end() , object ) ;
     return end() != _i ? ( _i - begin() ) : -1 ;                  // RETURN
@@ -320,19 +320,19 @@ public: // ObjectContainerBase methods:
    *  @param index th eindex to be checked
    *  @return the object
    */
-  virtual ContainedObject* containedObject ( long index ) const
+  ContainedObject* containedObject ( long index ) const override
   {
     if ( 0 > index || !(index < (long) size () ) ) { return 0 ; }    // RETURN
     const ContainedObject* co = m_data[index] ;
     return const_cast<ContainedObject*>( co ) ;
   }
   /// Number of objects in the container
-  virtual size_type numberOfObjects() const { return m_data.size() ; }
+  size_type numberOfObjects() const override { return m_data.size() ; }
   /** Virtual functions (forwards to the concrete container definitions)
    *  Add an object to the container. On success the object's index is
    *  returned.
    */
-  virtual long add ( ContainedObject* object)
+  long add ( ContainedObject* object) override
   {
     if ( !object ) { return -1 ; }                           // RETURN
     TYPE* _obj = dynamic_cast<TYPE*> ( object ) ;
@@ -345,7 +345,7 @@ public: // ObjectContainerBase methods:
    *  from the container, but the object itself will remain alive).
    *  If the object was found it's index is returned.
    */
-  virtual long remove ( ContainedObject* value )
+  long remove ( ContainedObject* value ) override
   {
     auto _i = std::find ( begin() , end() , value ) ;
     if ( end() == _i ) { return -1 ; }                          // RETURN

@@ -593,7 +593,7 @@ namespace concurrency {
       if ( itA != m_algoNameToAlgoNodeMap.end()) {
         algoNode = itA->second;
       } else {
-        algoNode = new concurrency::AlgorithmNode(*this,m_nodeCounter,algoName,inverted,allPass);
+        algoNode = new concurrency::AlgorithmNode(*this,m_nodeCounter,algoName,inverted,allPass,algo->isIOBound());
         ++m_nodeCounter;
         m_algoNameToAlgoNodeMap[algoName] = algoNode;
         debug() << "AlgoNode " << algoName << " added @ " << algoNode << endmsg;

@@ -444,8 +444,8 @@ public:
 
   template <class T>
     Property* declareProperty(const std::string& name,
-			      ToolHandle<T>& hndl,
-			      const std::string& doc = "none" ) const {
+                  ToolHandle<T>& hndl,
+                  const std::string& doc = "none" ) const {
 
     Algorithm* a = const_cast<Algorithm*>(this);
     a->declareTool(hndl).ignore();
@@ -614,28 +614,34 @@ public:
 
   template<class T>
   StatusCode declareTool(ToolHandle<T> &handle,
-		  std::string toolTypeAndName = "",
-		  bool createIf = true) {
+          std::string toolTypeAndName = "",
+          bool createIf = true) {
 
-	  if (toolTypeAndName == "")
-		  toolTypeAndName = handle.typeAndName();
+      if (toolTypeAndName == "")
+          toolTypeAndName = handle.typeAndName();
 
-	  StatusCode sc = handle.initialize(toolTypeAndName,
-			  handle.isPublic() ? nullptr : this,
-					  createIf);
-	  if (UNLIKELY(!sc)) {
-		  throw GaudiException{std::string{"Cannot create handle for "} +
-			  (handle.isPublic() ? "public" : "private") +
-			  " tool " + toolTypeAndName,
-			  name(), sc};
-	  }
+      StatusCode sc = handle.initialize(toolTypeAndName,
+              handle.isPublic() ? nullptr : this,
+                      createIf);
+      if (UNLIKELY(!sc)) {
+          throw GaudiException{std::string{"Cannot create handle for "} +
+              (handle.isPublic() ? "public" : "private") +
+              " tool " + toolTypeAndName,
+              name(), sc};
+      }
 
-	  m_toolHandles.push_back(&handle);
+      m_toolHandles.push_back(&handle);
 
-	  return sc;
+      return sc;
   }
 
   const std::vector<IAlgTool *> & tools() const;
+
+  // Return the I/O-boundness flag
+  bool isIOBound() const {return m_isIOBound;};
+  // Set the I/O-boundness flag
+  void setIOBound(bool value) { m_isIOBound = value;};
+
 
 protected:
 
@@ -743,6 +749,7 @@ private:
   bool         m_isClonable; ///< The algorithm clonability of the algorithm
   unsigned int m_cardinality; ///< The maximum number of clones that can exist
   std::vector<std::string> m_neededResources; ///< The named resources needed during event looping
+  bool         m_isIOBound = false;        ///< If an algorithm is blocking
 
   /// implementation of service method
   StatusCode service_i(const std::string& svcName,

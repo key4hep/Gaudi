@@ -41,7 +41,7 @@ namespace Gaudi
     class EvtColAlg : public GaudiTupleAlg
     {
     public:
-      StatusCode initialize ()
+      StatusCode initialize () override
       {
         StatusCode sc = GaudiTupleAlg::initialize() ;
         if ( sc.isFailure() ) { return sc ; }
@@ -51,7 +51,7 @@ namespace Gaudi
         return StatusCode::SUCCESS ;
       };
       /// the only one essential methos
-      StatusCode execute    ()  ;
+      StatusCode execute    () override  ;
       /** standard construtor
        *  @param name algorrithm instance name
        *  @param pSvc pointer to service locator
@@ -70,9 +70,9 @@ namespace Gaudi
         setProperty ( "TypePrint"        , "false" ).ignore() ;
         setProperty ( "EvtColsProduce"   , "true"  ).ignore() ;
         setProperty ( "EvtColsPrint"     , "true"  ).ignore() ;
-      } ;
+      }
       /// virtual and protected dectrustor
-      virtual ~EvtColAlg(){}
+      ~EvtColAlg() override {}
     private:
       // default constructor is private
       EvtColAlg() ;
