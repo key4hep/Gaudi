@@ -300,11 +300,11 @@ namespace Gaudi { namespace Functional { namespace details {
 
        template <std::size_t N=0>
        const std::string& inputLocation() const { return std::get<N>(m_inputs).objKey(); }
-       const unsigned int inputLocationSize() const { return m_inputs.size(); }
+       unsigned int inputLocationSize() const { return std::tuple_size<decltype(m_inputs)>::value; }
 
        template <std::size_t N=0>
        const std::string& outputLocation() const { return std::get<N>(m_outputs).objKey(); }
-       const unsigned int outputLocationSize() const { return m_outputs.size(); }
+       unsigned int outputLocationSize() const { return std::tuple_size<decltype(m_outputs)>::value; }
 
    protected:
        std::tuple<details::InputHandle_t<Traits_,In>...>  m_inputs;
@@ -337,7 +337,7 @@ namespace Gaudi { namespace Functional { namespace details {
 
        template <std::size_t N=0>
        const std::string& inputLocation() const { return std::get<N>(m_inputs).objKey(); }
-       const unsigned int inputLocationSize() const { return m_inputs.size(); }
+       unsigned int inputLocationSize() const { return std::tuple_size<decltype(m_inputs)>::value; }
 
    protected:
        std::tuple<details::InputHandle_t<Traits_,In>...>  m_inputs;
@@ -368,7 +368,7 @@ namespace Gaudi { namespace Functional { namespace details {
 
        template <std::size_t N=0>
        const std::string& outputLocation() const { return std::get<N>(m_outputs).objKey(); }
-       const unsigned int outputLocationSize() const { return m_outputs.size(); }
+       unsigned int outputLocationSize() const { return std::tuple_size<decltype(m_outputs)>::value; }
 
    protected:
        std::tuple<details::OutputHandle_t<Traits_,Out>...> m_outputs;
