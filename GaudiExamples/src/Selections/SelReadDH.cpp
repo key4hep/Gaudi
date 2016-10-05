@@ -97,17 +97,13 @@ namespace Gaudi
          declareProperty("selectedTracks", m_selectedTracks, "Selected tracks");
          declareProperty("rangeTracks", m_rangeTracks, "Range on selected tracks");
        }
-       /// virtual (and protected) destructor
-       virtual ~SelReadDH() {}
        // ======================================================================
      private:
        // ======================================================================
-       /// the default constructor is disabled
-       SelReadDH () ;                                  // no default constructor
        /// copy constructor is disabled
-       SelReadDH ( const SelReadDH& ) ;                   // no copy constructor
+       SelReadDH(const SelReadDH&) = delete;
        /// assignement operator is disabled
-       SelReadDH& operator=( const SelReadDH& ) ;     // no assignement operator
+       SelReadDH& operator=(const SelReadDH&) = delete;
 
        // ======================================================================
        AnyDataHandle<Gaudi::Examples::MyTrack::Container>  m_tracks;
