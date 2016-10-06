@@ -263,17 +263,21 @@ namespace concurrency {
   //---------------------------------------------------------------------------
   bool AlgorithmNode::dataDependenciesSatisfied(const int& slotNum) const {
 
-    bool result = true;
+    bool result = true; //return true if an algorithm has no data inputs
     auto& states = m_graph->getAlgoStates(slotNum);
 
     for (auto dataNode : m_inputs) {
+      // return false if the input has no producers at all (normally this case must be
+      // forbidden, and must be invalidated at configuration time)
       result = false;
-      for (auto algoNode : dataNode->getProducers())
-        if (State::EVTACCEPTED == states[algoNode->getAlgoIndex()]) {
-          result = true;
-          break;
+      for (auto algoNode : dataNode->getProducers()) { //require all producers to be executed
+        result = true;
+        if (State::EVTACCEPTED != states[algoNode->getAlgoIndex()]) {
+          result = false;
+          break; // skip checking other producers if at least one was not executed
         }
-      if (!result) break;
+      }
+      if (!result) break; // skip checking other inputs if this input was not produced yet
     }
 
     return result;
@@ -514,7 +518,8 @@ namespace concurrency {
 
     StatusCode global_sc(StatusCode::SUCCESS);
 
-    // Create the DataObjects (DO) realm (represented by DataNodes in the graph), connected to DO producers (AlgorithmNodes)
+    // Create the DataObjects (DO) realm (represented by DataNodes in the graph),
+    // connected to DO producers (AlgorithmNodes)
     for (auto algo : m_algoNameToAlgoNodeMap) {
 
       StatusCode sc;
@@ -527,9 +532,9 @@ namespace concurrency {
                   << " has been detected: this is not allowed." << endmsg;
           global_sc = StatusCode::FAILURE;
         }
-          auto dataNode = getDataNode(outputTag);
-          dataNode->addProducerNode(algo.second);
-          algo.second->addOutputDataNode(dataNode);
+        auto dataNode = getDataNode(outputTag);
+        dataNode->addProducerNode(algo.second);
+        algo.second->addOutputDataNode(dataNode);
       }
     }
 
