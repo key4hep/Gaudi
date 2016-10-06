@@ -58,7 +58,7 @@ namespace GaudiKernelTest {
     public:
       PushBackTask(std::vector<int>& results, int value):
         m_results(results), m_value(value) {}
-      void run() {
+      void run() override {
         using namespace std::chrono;
 
         milliseconds duration( 200 );
@@ -91,9 +91,9 @@ namespace GaudiKernelTest {
     SerialTaskQueueTest() {}
     virtual ~SerialTaskQueueTest() {}
 
-    void setUp() {}
+    void setUp() override {}
 
-    void tearDown() {}
+    void tearDown() override {}
 
     void test_basic_serial() {
       std::cout << std::endl;
@@ -165,20 +165,20 @@ namespace GaudiKernelTest {
     /// Destructor.
     virtual ~ProgressListener() {}
 
-    void startTest( CppUnit::Test *test )
+    void startTest( CppUnit::Test *test ) override
     {
       std::cout << test->getName();
       std::cout.flush();
       m_lastTestFailed = false;
     }
 
-    void addFailure( const CppUnit::TestFailure &failure )
+    void addFailure( const CppUnit::TestFailure &failure ) override
     {
       std::cout << " : " << (failure.isError() ? "error" : "assertion");
       m_lastTestFailed  = true;
     }
 
-    void endTest( CppUnit::Test * /*test*/ )
+    void endTest( CppUnit::Test * /*test*/ ) override
     {
       if ( !m_lastTestFailed )
         std::cout  <<  " : OK";

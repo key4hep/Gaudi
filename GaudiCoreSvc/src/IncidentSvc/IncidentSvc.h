@@ -82,7 +82,7 @@ public:
   IncidentSvc( const std::string& name, ISvcLocator* svc );
   // Destructor.
   ~IncidentSvc() override;
-  IIncidentSvc::IncidentPack getIncidents(const EventContext* ctx);
+  IIncidentSvc::IncidentPack getIncidents(const EventContext* ctx) override;
 
 private:
   ListenerMap::iterator removeListenerFromList(ListenerMap::iterator, 

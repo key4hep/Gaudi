@@ -7,7 +7,6 @@
 #include <vector>
 #include <memory>
 #include "GaudiKernel/EventContextHash.h"
-#include "tbb/concurrent_queue.h"
 #include "GaudiKernel/Incident.h"
 // Forward declarations
 class IIncidentListener;

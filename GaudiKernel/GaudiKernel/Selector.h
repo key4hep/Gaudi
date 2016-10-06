@@ -51,7 +51,7 @@ namespace NTuple    {
       return m_status;
     }
     /// Default callback from interface
-    virtual bool operator()(void* nt);
+    bool operator()(void* nt) override;
     /// Specialized callback for NTuples
     virtual bool operator()(NTuple::Tuple* nt);
     /// Selector Initialization

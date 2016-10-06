@@ -14,18 +14,18 @@ class TimelineSvc: public extends<Service,
 
 public:
 
-  virtual StatusCode initialize();
-  virtual StatusCode reinitialize();
-  virtual StatusCode finalize();
+  StatusCode initialize() override;
+  StatusCode reinitialize() override;
+  StatusCode finalize() override;
 
-  virtual void registerTimelineEvent(const TimelineEvent & e);
+  void registerTimelineEvent(const TimelineEvent & e) override;
 
-  bool isEnabled() const { return m_isEnabled; }
+  bool isEnabled() const override { return m_isEnabled; }
 
   TimelineSvc( const std::string& name, ISvcLocator* svc );
 
   // Destructor.
-  virtual ~TimelineSvc();
+  ~TimelineSvc() override;
 
 private:
 

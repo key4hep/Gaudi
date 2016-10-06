@@ -37,6 +37,11 @@ EqSolverGenAlg::~EqSolverGenAlg() {}
 
 typedef Genfun::AbsFunction GenFunc;
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winconsistent-missing-override"
+#endif
+
 // Class for the function "GenFunc"
 // @see GaudiGSL/IEqSolver.h
 class Func1 : public AbsFunction
@@ -44,17 +49,17 @@ class Func1 : public AbsFunction
 public:
   FUNCTION_OBJECT_DEF(Func1)
 public:
-  Func1 () {};
+  Func1 () {}
   Func1 ( const Func1&  )
-    : AbsFunction() {};
+    : AbsFunction() {}
 
-  virtual double operator() (double /* argument */) const {return 0;};
-  virtual double operator() (const Argument& x) const
+  double operator() (double /* argument */) const override {return 0;}
+  double operator() (const Argument& x) const override
   {
     return x[0] - 1;
   };
-  virtual unsigned int dimensionality () const { return 3; };
-  virtual ~Func1 () {};
+  unsigned int dimensionality () const override { return 3; }
+  ~Func1 () override {}
 };
 FUNCTION_OBJECT_IMP(Func1)
 
@@ -65,17 +70,17 @@ class Func2 : public AbsFunction
 public:
   FUNCTION_OBJECT_DEF(Func2)
 public:
-  Func2 () {};
+  Func2 () {}
   Func2 ( const Func2&  )
-    : AbsFunction() {};
+    : AbsFunction() {}
 
-  virtual double operator() (double /* argument */) const {return 0;};
-  virtual double operator() (const Argument& x) const
+  double operator() (double /* argument */) const override {return 0;}
+  double operator() (const Argument& x) const override
   {
     return x[1] - 1;
   };
-  virtual unsigned int dimensionality () const { return 3; };
-  virtual ~Func2 () {};
+  unsigned int dimensionality () const override { return 3; }
+  ~Func2 () override {}
 };
 FUNCTION_OBJECT_IMP(Func2)
 
@@ -86,19 +91,23 @@ class Func3 : public AbsFunction
 public:
   FUNCTION_OBJECT_DEF(Func3)
 public:
-  Func3 () {};
+  Func3 () {}
   Func3 ( const Func3&  )
-    : AbsFunction() {};
+    : AbsFunction() {}
 
-  virtual double operator() (double /* argument */) const {return 0;};
-  virtual double operator() (const Argument& x) const
+  double operator() (double /* argument */) const override {return 0;}
+  double operator() (const Argument& x) const override
   {
     return x[2] - 1;
   };
-  virtual unsigned int dimensionality () const { return 3; };
-  virtual ~Func3 () {};
+  unsigned int dimensionality () const override { return 3; }
+  ~Func3 () override {}
 };
 FUNCTION_OBJECT_IMP(Func3)
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
 //=============================================================================
 // Initialisation. Check parameters

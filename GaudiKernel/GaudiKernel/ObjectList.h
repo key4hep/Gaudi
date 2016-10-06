@@ -65,12 +65,12 @@ public:
   ObjectList& operator=( const ObjectList<TYPE>& ) = delete;
 
   /// Destructor
-  virtual ~ObjectList() {
+  ~ObjectList() override {
     clear();
   }
 
   /// Retrieve pointer to class definition structure
-  virtual const CLID& clID() const {
+  const CLID& clID() const override {
     return ObjectList<TYPE>::classID();
   }
   static const CLID& classID() {
@@ -126,7 +126,7 @@ public:
     return m_list.size();
   }
   /// The same as size(), return number of objects in the container
-  virtual typename ObjectList<TYPE>::size_type numberOfObjects() const {
+  typename ObjectList<TYPE>::size_type numberOfObjects() const override {
     return m_list.size();
   }
 
@@ -170,7 +170,7 @@ public:
   }
 
   /// Add an object to the container
-  virtual long add(ContainedObject* pObject) {
+  long add(ContainedObject* pObject) override {
     try {
       auto ptr = dynamic_cast<typename ObjectList<TYPE>::value_type>(pObject);
       if ( ptr ) {
@@ -197,7 +197,7 @@ public:
 
   /// Release object from the container (the pointer will be removed
   /// from the container, but the object itself will remain alive) (see the method pop_back)
-  virtual long remove(ContainedObject* value) {
+  long remove(ContainedObject* value) override {
     // Find the object of value value
     long idx = 0;
     auto iter = std::find_if( begin(), end(), [&](const ContainedObject* i) { return i == value; } );
@@ -253,7 +253,7 @@ public:
 
   /// Return distance of a given object from the beginning of its container
   /// It corresponds to the "index" ( from 0 to size()-1 ) If "obj" not fount, return -1
-  virtual long index( const ContainedObject* obj ) const {
+  long index( const ContainedObject* obj ) const override {
     auto i = std::find_if(begin(),end(), 
                           [&](const ContainedObject* o)
                           { return o == obj; } );
@@ -261,12 +261,12 @@ public:
   }
 
   /// Return const pointer to an object of a given distance
-  virtual ContainedObject* containedObject( long dist ) const {
+  ContainedObject* containedObject( long dist ) const override {
     return  dist < size() ? *std::next( begin(), dist ) : nullptr;
   }
 
   /// Fill the output stream (ASCII)
-  virtual std::ostream& fillStream( std::ostream& s ) const                    {
+  std::ostream& fillStream( std::ostream& s ) const  override                   {
     s << "class ObjectList :    size = "
       << std::setw(12)
       << size() << "\n";

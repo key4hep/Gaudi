@@ -28,7 +28,7 @@ namespace Gaudi
     public:
       // ======================================================================
       /// the only one essential method
-      virtual StatusCode execute()
+      virtual StatusCode execute() override
       {
 
         typedef Gaudi::NamedRange_<Gaudi::Examples::MyTrack::ConstVector>     Range ;
@@ -91,7 +91,7 @@ namespace Gaudi
             "TES location of input container" ) ;
       }
       /// virtual (and protected) destructor
-      virtual ~SelFilter() {}
+      ~SelFilter() override {}
       // ======================================================================
     private:
       // ======================================================================

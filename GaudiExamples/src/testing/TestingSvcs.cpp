@@ -16,7 +16,7 @@ namespace GaudiTesting {
     }
     virtual ~FailingSvc(){}
 
-    StatusCode initialize() {
+    StatusCode initialize() override {
       StatusCode sc = Service::initialize();
       if (sc.isFailure()) {
         error() << "failed to initialize base class" << endmsg;
@@ -24,7 +24,7 @@ namespace GaudiTesting {
       }
       return handle("initialize");
     }
-    StatusCode start() {
+    StatusCode start() override {
       StatusCode sc = Service::start();
       if (sc.isFailure()) {
         error() << "failed to start base class" << endmsg;
@@ -32,12 +32,12 @@ namespace GaudiTesting {
       }
       return handle("start");
     }
-    StatusCode stop() {
+    StatusCode stop() override {
       StatusCode sc = handle("stop");
       if (sc.isFailure()) return sc;
       return Service::stop();
     }
-    StatusCode finalize() {
+    StatusCode finalize() override {
       StatusCode sc = handle("finalize");
       if (sc.isFailure()) return sc;
       return Service::finalize();

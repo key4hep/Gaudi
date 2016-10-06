@@ -11,9 +11,9 @@ class PartPropExa : public Algorithm {
 
 public:
   PartPropExa (const std::string& name, ISvcLocator* pSvcLocator);
-  StatusCode initialize();
-  StatusCode execute();
-  StatusCode finalize();
+  StatusCode initialize() override;
+  StatusCode execute() override;
+  StatusCode finalize() override;
   
 private:
 
@@ -28,7 +28,7 @@ public:
 
   virtual 
   CommonParticleData *processUnknownID( ParticleID, 
-					const ParticleDataTable & pdt );
+                                        const ParticleDataTable & pdt ) override;
 
 };
 

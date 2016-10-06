@@ -14,10 +14,10 @@ public:
 
 protected:
   /// Default (catch-all) "before" Auditor hook
-  virtual void i_before(CustomEventTypeRef evt, const std::string& caller);
+  void i_before(CustomEventTypeRef evt, const std::string& caller) override;
 
   /// Default (catch-all) "after" Auditor hook
-  virtual void i_after(CustomEventTypeRef evt, const std::string& caller, const StatusCode& sc);
+  void i_after(CustomEventTypeRef evt, const std::string& caller, const StatusCode& sc) override;
 
   /// Report the memory usage.
   virtual void i_printinfo(const std::string& msg, CustomEventTypeRef evt, const std::string& caller);

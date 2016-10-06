@@ -14,6 +14,8 @@ if (${APPLE})
   set (LIBRT_NAME "")
 endif (${APPLE})
 
+# Hide some Boost compile time warnings
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
 #---Libraries---------------------------------------------------------------
 gaudi_add_module(GaudiHive
@@ -64,8 +66,8 @@ gaudi_add_test(GraphSchedulerSimpleTest
                FRAMEWORK options/GraphSchedulerSimpleTest.py
                TIMEOUT 120)
 
-gaudi_add_test(GraphScheduler
-               FRAMEWORK options/GraphScheduler.py
+gaudi_add_test(BrunelScenarioGraphScheduler
+               FRAMEWORK options/BrunelScenarioGraphScheduler.py
                TIMEOUT 120)
 
 # Test the AtomicSequencer

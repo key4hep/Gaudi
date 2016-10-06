@@ -106,6 +106,13 @@ if(NOT GAUDI_FLAGS_SET)
         CACHE STRING "Flags used by the compiler during all build types."
         FORCE)
 
+    if (LCG_COMP STREQUAL "gcc" AND LCG_COMPVERS VERSION_GREATER "50")
+        set(CMAKE_CXX_FLAGS
+            "${CMAKE_CXX_FLAGS} -Wsuggest-override"
+            CACHE STRING "Flags used by the compiler during all build types."
+            FORCE)
+    endif()
+
     # Build type compilation flags (if different from default or uknown to CMake)
     if(GAUDI_CMT_RELEASE)
       set(CMAKE_CXX_FLAGS_RELEASE "-O2 -DNDEBUG"

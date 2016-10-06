@@ -43,50 +43,50 @@ class HistorySvc: public extends<Service,
                                  IIncidentListener> {
 public:
 
-  virtual StatusCode initialize();
-  virtual StatusCode reinitialize();
-  virtual StatusCode finalize();
-  virtual StatusCode stop();
+  StatusCode initialize() override;
+  StatusCode reinitialize() override;
+  StatusCode finalize() override;
+  StatusCode stop() override;
 
   virtual StatusCode captureState();
 
-  virtual StatusCode registerJob();
-  virtual StatusCode listProperties() const;
-  virtual JobHistory* getJobHistory() const;
+  StatusCode registerJob() override;
+  StatusCode listProperties() const override;
+  JobHistory* getJobHistory() const override;
 
-  virtual StatusCode registerSvc(const IService&);
-  virtual StatusCode listProperties(const IService&) const;
-  virtual ServiceHistory* getServiceHistory(const IService&) const;
-  virtual void getServiceHistory(std::set<ServiceHistory*>&) const;
+  StatusCode registerSvc(const IService&) override;
+  StatusCode listProperties(const IService&) const override;
+  ServiceHistory* getServiceHistory(const IService&) const override;
+  void getServiceHistory(std::set<ServiceHistory*>&) const override;
 
-  virtual StatusCode registerAlg(const Algorithm&);
-  virtual StatusCode listProperties(const Algorithm&) const;
-  virtual AlgorithmHistory* getAlgHistory(const Algorithm&) const;
-  virtual void getAlgHistory(std::set<AlgorithmHistory*>&) const;
+  StatusCode registerAlg(const Algorithm&) override;
+  StatusCode listProperties(const Algorithm&) const override;
+  AlgorithmHistory* getAlgHistory(const Algorithm&) const override;
+  void getAlgHistory(std::set<AlgorithmHistory*>&) const override;
 
-  virtual StatusCode registerAlgTool(const IAlgTool&);
-  virtual StatusCode listProperties(const IAlgTool&) const;
-  virtual AlgToolHistory* getAlgToolHistory(const IAlgTool&) const;
-  virtual void getAlgToolHistory(std::set<AlgToolHistory*>&) const;
+  StatusCode registerAlgTool(const IAlgTool&) override;
+  StatusCode listProperties(const IAlgTool&) const override;
+  AlgToolHistory* getAlgToolHistory(const IAlgTool&) const override;
+  void getAlgToolHistory(std::set<AlgToolHistory*>&) const override;
 
-  virtual DataHistory* createDataHistoryObj(const CLID& id,
-					    const std::string& key,
-					    const std::string& store);
+  DataHistory* createDataHistoryObj(const CLID& id,
+                                    const std::string& key,
+                                    const std::string& store) override;
   virtual StatusCode registerDataHistory(const CLID& id,
 					 const std::string& key,
 					 const std::string& store);
-  virtual DataHistory* getDataHistory(const CLID& id, const std::string& key,
-				      const std::string& store) const;
+  DataHistory* getDataHistory(const CLID& id, const std::string& key,
+                              const std::string& store) const override;
   virtual int getDataHistory(const CLID& id, const std::string& key,
 			     const std::string& storeName,
 			     std::list<DataHistory*>& dhlist) const;
 
   HistorySvc( const std::string& name, ISvcLocator* svc );
 
-  virtual void handle(const Incident& inc);
+  void handle(const Incident& inc) override;
 
   // Destructor.
-  virtual ~HistorySvc() = default;
+  ~HistorySvc() override = default;
 
 private:
 

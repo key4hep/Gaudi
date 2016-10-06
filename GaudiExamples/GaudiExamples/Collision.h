@@ -21,10 +21,10 @@ namespace Gaudi {
       Collision() : DataObject() { }
       Collision(int num) : DataObject(), m_collision(num) { }
       /// Destructor
-      virtual ~Collision() { }
+      ~Collision() override= default;
 
       /// Retrieve reference to class definition structure
-      virtual const CLID& clID() const  { return classID(); }
+      const CLID& clID() const override  { return classID(); }
       static const CLID& classID() { return CLID_Collision; }
 
       void setCollision(int num) {
@@ -37,9 +37,9 @@ namespace Gaudi {
       //    return m_matrix;
       //  }
       /// Serialize the object for writing
-      virtual StreamBuffer& serialize( StreamBuffer& s ) const;
+      StreamBuffer& serialize( StreamBuffer& s ) const;
       /// Serialize the object for reading
-      virtual StreamBuffer& serialize( StreamBuffer& s );
+      StreamBuffer& serialize( StreamBuffer& s );
 
     private:
       /// Collision number
