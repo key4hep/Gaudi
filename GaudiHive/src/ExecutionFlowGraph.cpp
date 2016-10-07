@@ -270,13 +270,12 @@ namespace concurrency {
       // return false if the input has no producers at all (normally this case must be
       // forbidden, and must be invalidated at configuration time)
       result = false;
-      for (auto algoNode : dataNode->getProducers()) { //require all producers to be executed
-        result = true;
-        if (State::EVTACCEPTED != states[algoNode->getAlgoIndex()]) {
-          result = false;
-          break; // skip checking other producers if at least one was not executed
+      for (auto algoNode : dataNode->getProducers())
+        if (State::EVTACCEPTED == states[algoNode->getAlgoIndex()]) {
+          result = true;
+          break; // skip checking other producers if one was found to be executed
         }
-      }
+
       if (!result) break; // skip checking other inputs if this input was not produced yet
     }
 
