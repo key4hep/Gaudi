@@ -1,8 +1,21 @@
-import os, random, string, json
+import os, sys, random, string, json
 import networkx as nx
 
 from Gaudi.Configuration import INFO, DEBUG
 from Configurables import GaudiSequencer, CPUCruncher
+
+
+def _buildFilePath(filePath):
+
+    if not os.path.exists(filePath):
+        __fullFilePath__ = os.path.realpath(os.path.join(os.environ.get('GAUDIHIVEROOT',''), "data", filePath))
+        if not os.path.exists(__fullFilePath__):
+            print "\nERROR: invalid file path '%s'. It must be either absolute, or relative to '$GAUDIHIVEROOT/data/'." %filePath
+            sys.exit(1)
+    else:
+        __fullFilePath__ = filePath
+
+    return __fullFilePath__
 
 class UniformTimeValue(object):
     """A class to manage uniform algorithm timing"""
@@ -26,7 +39,7 @@ class RealTimeValue(object):
                        (and it will also be scaled by the 'factor' argument)
         """
 
-        self.path = os.path.realpath(os.path.join(os.environ.get('GAUDIHIVEROOT',''), "data", path))
+        self.path = os.path.realpath(_buildFilePath(path))
         self.factor = factor
         self.defaultTime = defaultTime # typically 0.05s
         self.varRuntime = 0
@@ -123,9 +136,8 @@ class CruncherSequence(object):
         self.IOboolValue = IOboolValue
         self.sleepFraction = sleepFraction
 
-        __location__ = os.path.realpath(os.path.join(os.environ.get('GAUDIHIVEROOT',''), "data"))
-        self.cfg = nx.read_graphml(os.path.join(__location__, cfgPath))
-        self.dfg = nx.read_graphml(os.path.join(__location__, dfgPath))
+        self.cfg = nx.read_graphml(_buildFilePath(cfgPath))
+        self.dfg = nx.read_graphml(_buildFilePath(dfgPath))
 
         self.algoDebug = algoDebug
 
