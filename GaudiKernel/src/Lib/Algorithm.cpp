@@ -875,7 +875,6 @@ void Algorithm::setExecuted( bool state ) {
 }
 
 void Algorithm::resetExecuted() {
-  warning() << "Algorithm::resetExecuted() is deprecated" << endmsg;
   if (m_event_context) {
     if (m_event_context->valid()) {
       return algExecStateSvc()->algExecState( (IAlgorithm*)this, *m_event_context).reset();

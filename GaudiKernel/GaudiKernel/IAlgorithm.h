@@ -130,6 +130,7 @@ public:
   virtual StatusCode sysEndRun( ) = 0;
 
   /// Reset the Algorithm executed state for the current event
+  [[deprecated("resetExecuted should be triggered globally via the AlgExecStateSvc, not individually for each Algorithm")]]
   virtual void resetExecuted( ) = 0;
 
   /** Algorithm begin run. This method is called at the beginning of the event loop.
