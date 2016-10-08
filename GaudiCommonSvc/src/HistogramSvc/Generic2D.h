@@ -11,12 +11,14 @@
 #include "Axis.h"
 #include "TFile.h"
 
-
-#ifdef __clang__
-#pragma clang diagnostic push
 // Hide warning message:
 // warning: 'XYZ' overrides a member function but is not marked 'override'
+#ifdef __clang__
+#pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Winconsistent-missing-override"
+#elif defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsuggest-override"
 #endif
 
 namespace Gaudi {
@@ -366,6 +368,8 @@ namespace Gaudi {
 
 #ifdef __clang__
 #pragma clang diagnostic pop
+#elif defined(__GNUC__)
+#pragma GCC diagnostic pop
 #endif
 
 #endif // GAUDIPI_GENERIC2D_H
