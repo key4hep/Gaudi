@@ -6,8 +6,8 @@ find_package(AIDA)
 find_package(Boost COMPONENTS regex)
 find_package(ROOT COMPONENTS RIO)
 
-# Hide some Boost compile time warnings
-include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
+# Hide some Boost/ROOT compile time warnings
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS})
 
 #---Libraries---------------------------------------------------------------
 gaudi_add_library(GaudiAlgLib src/lib/*.cpp

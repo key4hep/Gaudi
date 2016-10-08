@@ -3,6 +3,10 @@ gaudi_subdir(RootCnv v2r2)
 gaudi_depends_on_subdirs(GaudiKernel GaudiUtils)
 
 find_package(ROOT COMPONENTS RIO Tree TreePlayer MathCore Net Graf3d Graf Gpad)
+find_package(Boost)
+
+# Hide some ROOT/Boost compile time warnings
+include_directories(SYSTEM ${ROOT_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
 
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS __POOL_COMPATIBILITY)
 

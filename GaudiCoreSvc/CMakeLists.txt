@@ -5,9 +5,10 @@ gaudi_depends_on_subdirs(GaudiKernel)
 find_package(Boost COMPONENTS system filesystem regex thread python)
 find_package(TBB)
 find_package(PythonLibs)
+find_package(ROOT)
 
-# Hide some Boost compile time warnings
-include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
+# Hide some Boost/ROOT/TBB compile time warnings
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS} ${TBB_INCLUDE_DIRS})
 
 #---Libraries---------------------------------------------------------------
 gaudi_add_module(GaudiCoreSvc

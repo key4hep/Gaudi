@@ -2,6 +2,11 @@ gaudi_subdir(GaudiMonitor v5r7)
 
 gaudi_depends_on_subdirs(GaudiKernel)
 
+find_package(Boost)
+
+# Hide some Boost compile time warnings
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
+
 if(WIN32)
   set(winsocklib ws2_32.lib)
 endif()

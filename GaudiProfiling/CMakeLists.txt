@@ -10,6 +10,9 @@ find_package(unwind REQUIRED)
 find_package(gperftools REQUIRED)
 find_package(IntelAmplifier)
 
+# Hide some Boost compile time warnings
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
+
 #---Components--------------------------------------------------------------
 include_directories(src/component)
 
