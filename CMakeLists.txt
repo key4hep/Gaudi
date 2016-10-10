@@ -6,6 +6,35 @@ if(NOT GaudiProject_DIR AND ("$ENV{GaudiProject_DIR}" STREQUAL ""))
   set(GaudiProject_DIR ${CMAKE_SOURCE_DIR}/cmake)
 endif()
 
+
+option(GAUDI_USE_SYSTEM_CPP_GSL
+       "If to use the C++ Guidelines Support Library from the system or providing it through Gaudi"
+       NO)
+if(NOT GAUDI_USE_SYSTEM_CPP_GSL)
+  set(CPP_GSL_URL https://github.com/Microsoft/GSL)
+  set(CPP_GSL_VERSION 32ca283d)
+  message(STATUS "Using and shipping ${CPP_GSL_URL} version ${CPP_GSL_VERSION}")
+  if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/GSL)
+    execute_process(COMMAND git clone ${CPP_GSL_URL})
+  endif()
+  execute_process(COMMAND git checkout ${CPP_GSL_VERSION}
+                  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/GSL)
+  install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/GSL/gsl DESTINATION include)
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/GSL/LICENSE DESTINATION include/gsl/LICENSE)
+  set(CPP_GSL_INCLUDE_DIR NAMES ${CMAKE_CURRENT_BINARY_DIR}/GSL)
+else()
+  find_path(CPP_GSL_INCLUDE_DIR NAMES gsl/gsl)
+endif()
+if(CPP_GSL_INCLUDE_DIR)
+  set(CPP_GSL_INCLUDE_DIRS ${CPP_GSL_INCLUDE_DIR})
+  include_directories(SYSTEM ${CPP_GSL_INCLUDE_DIRS})
+  set(CPP_GSL_FOUND TRUE)
+else()
+  message(WARNING "C++ Guidelines Support Library not available")
+  set(CPP_GSL_FOUND FALSE)
+endif()
+
+
 #---------------------------------------------------------------
 # Load macros and functions for Gaudi-based projects
 find_package(GaudiProject)
