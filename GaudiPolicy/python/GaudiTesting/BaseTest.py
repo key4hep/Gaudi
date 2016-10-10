@@ -780,6 +780,8 @@ for w,o,r in [
               (None, r'Service reference count check:', r'Looping over all active services...'),
               # Change of property name in Algorithm (GAUDI-1030)
               (None, r"Property(.*)'ErrorCount':", r"Property\1'ErrorCounter':"),
+              # Ignore count of declared properties (anyway they are all printed)
+              (None, r"^(.*(DEBUG|SUCCESS) List of ALL properties of .*#properties = )\d+", r"\1NN"),
               ]: #[ ("TIMER.TIMER","[0-9]+[0-9.]*", "") ]
     normalizeExamples += RegexpReplacer(o,r,w)
 
@@ -834,6 +836,8 @@ lineSkipper = LineSkipper(["//GP:",
                                         r"SUCCESS\s*Booked \d+ Histogram\(s\)",
                                         r"^ \|",
                                         r"^ ID=",
+                                        # Ignore added/removed properties
+                                        r"Property(.*)'IsIOBound':",
                                         ] )
 
 if ROOT6WorkAroundEnabled('ReadRootmapCheck'):
@@ -1113,4 +1117,3 @@ def isWinPlatform(self):
        """
    platform = GetPlatform(self)
    return "winxp" in platform or platform.startswith("win")
-
