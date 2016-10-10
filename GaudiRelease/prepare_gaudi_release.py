@@ -10,7 +10,7 @@ import sys
 import logging
 import re
 import ConfigParser
-from subprocess import Popen, PIPE
+from subprocess import check_output, CalledProcessError
 
 def checkGitVersion():
     '''
@@ -20,10 +20,7 @@ def checkGitVersion():
     * https://raw.githubusercontent.com/git/git/master/Documentation/RelNotes/1.7.9.1.txt
     * https://github.com/git/git/commit/36ed1913e1d5de0930e59db6eeec3ccb2bd58bd9
     '''
-    proc = Popen(['git', '--version'], stdout=PIPE)
-    version = proc.communicate()[0].split()[-1]
-    if proc.returncode:
-        raise RuntimeError('could not get git version')
+    version = check_output(['git', '--version']).split()[-1]
     if versionKey(version) < versionKey('1.7.9.1'):
         raise RuntimeError('bad version of git found: %s (1.7.9.1 required)' % version)
 
@@ -44,11 +41,11 @@ def findLatestTag():
     logging.info('looking for latest tag')
     cmd = ['git', 'tag']
     logging.debug('using command %r', cmd)
-    proc = Popen(cmd, stdout=PIPE)
-    output = proc.communicate()[0]
+    output = check_output(cmd)
+    vers_exp = re.compile(r'^v\d+r\d+(p\d+)?$')
     tags = [tag
             for tag in output.splitlines()
-            if tag.startswith('GAUDI/GAUDI_')]
+            if vers_exp.match(tag)]
     if tags:
         tags.sort(key=versionKey)
         logging.info('found %s', tags[-1])
@@ -72,8 +69,21 @@ def releaseNotes(path=os.curdir, from_tag=None, branch=None):
     logging.info('preparing release notes for %s%s', path,
                  ' since ' + from_tag if from_tag else '')
     logging.debug('using command %r', cmd)
-    proc = Popen(cmd, stdout=PIPE)
-    return proc.communicate()[0]
+    # remove '\r' characters from commit messages
+    out = check_output(cmd).replace('\r', '')
+
+    # replace ' - commit 123abc' with ' - Contributor Name (commit 123abc)'
+    def add_contributors(match):
+        try:
+            authors = set(check_output(['git', 'log', '--pretty=format:%aN',
+                                        '{0}^1..{0}^2'.format(match.group(1)),
+                                        ]).splitlines())
+            return ' - {0} (commit {1})'.format(', '.join(sorted(authors)),
+                                                match.group(1))
+        except CalledProcessError:
+            return match.group(0)
+    out = re.sub(r' - commit ([0-9a-f]+)', add_contributors, out)
+    return out
 
 def updateReleaseNotes(path, notes):
     '''
@@ -189,9 +199,9 @@ def main():
         if pkg in special_subdirs:
             vers = new_version
         else:
-            git_log = Popen(['git', 'log', '-m', '--first-parent',
-                             '--stat', latest_tag + '..master', pkgdir],
-                            stdout=PIPE).communicate()[0].strip()
+            git_log = check_output(['git', 'log', '-m', '--first-parent',
+                                    '--stat', latest_tag + '..master', pkgdir],
+                                   ).strip()
             if git_log:
                 msg = ('\nThe old version of {0} is {1}, these are the changes:\n'
                        '{2}\n'
