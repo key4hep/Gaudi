@@ -9,7 +9,6 @@ import os
 import sys
 import logging
 import re
-import ConfigParser
 from subprocess import check_output, CalledProcessError
 
 def checkGitVersion():
@@ -218,17 +217,6 @@ def main():
                                releaseNotes(pkgdir, latest_tag, 'master'))
         new_versions[pkg] = vers or old_vers
         print "=" * 80
-
-    # Update project.info
-    config = ConfigParser.ConfigParser()
-    config.optionxform = str # make the options case sensitive
-    if os.path.exists('project.info'):
-        config.read('project.info')
-    if not config.has_section('Packages'):
-        config.add_section('Packages')
-    for pack_vers in sorted(new_versions.items()):
-        config.set('Packages', *pack_vers)
-    config.write(open('project.info', 'wb'))
 
     # update the global CMakeLists.txt
     out = []
