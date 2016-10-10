@@ -59,6 +59,7 @@ public:
 private:
 
   T* get(bool mustExist) const;
+  mutable bool  m_goodType = false;
 
 };
 
@@ -138,9 +139,6 @@ T* DataObjectHandle<T>::getOrCreate (){
 		//unlock();
 		return obj;
 	}
-
-	//MsgStream log(m_MS,"DataObjectHandle");
-    //log << MSG::DEBUG << "Object " << objKey() << " does not exist, creating it" << endmsg;
 
 	//create it
 	return put(new T{});
