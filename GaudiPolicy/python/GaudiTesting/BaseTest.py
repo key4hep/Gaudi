@@ -836,6 +836,8 @@ lineSkipper = LineSkipper(["//GP:",
                                         r"SUCCESS\s*Booked \d+ Histogram\(s\)",
                                         r"^ \|",
                                         r"^ ID=",
+                                        # Ignore added/removed properties
+                                        r"Property(.*)'IsIOBound':",
                                         ] )
 
 if ROOT6WorkAroundEnabled('ReadRootmapCheck'):
@@ -1115,4 +1117,3 @@ def isWinPlatform(self):
        """
    platform = GetPlatform(self)
    return "winxp" in platform or platform.startswith("win")
-
