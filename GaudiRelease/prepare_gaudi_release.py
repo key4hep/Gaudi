@@ -35,7 +35,7 @@ def versionKey(x):
 
 def findLatestTag():
     '''
-    Return the latest Gaudi tag (of the format "GAUDI/GAUDI_*").
+    Return the latest Gaudi tag (of the format "v*r*...").
     '''
     logging.info('looking for latest tag')
     cmd = ['git', 'tag']
@@ -100,48 +100,9 @@ def updateReleaseNotes(path, notes):
         notes_file.writelines(header)
         notes_file.write('\n')
         notes_file.writelines(l.rstrip() + '\n' for l in notes.splitlines())
+        notes_file.write('\n')
         notes_file.writelines(dropuntil(re.compile(r'^!?============').match, orig_data))
 
-# guess current version
-_cml_version_pattern = re.compile(r"^\s*gaudi_subdir\s*\(\s*\S+\s+(v[0-9]+r[0-9]+(?:p[0-9]+)?)\)\s*$")
-def extract_version(path):
-    """
-    Find the version number of a subdirectory.
-    """
-    global _cml_version_pattern
-    for l in open(os.path.join(path, 'CMakeLists.txt')):
-        m = _cml_version_pattern.match(l)
-        if m:
-            return m.group(1)
-    return None
-
-def change_cml_version(cml, newversion):
-    if os.path.exists(cml):
-        out = []
-        changed = False
-        for l in open(cml):
-            m = _cml_version_pattern.match(l)
-            if m and m.group(1) != newversion:
-                logging.debug('%s: %s -> %s', cml, m.group(1), newversion)
-                l = l.replace(m.group(1), newversion)
-                changed = True
-            out.append(l)
-        if changed:
-            open(cml, "w").writelines(out)
-
-def change_version(packagedir, newversion):
-    """
-    Compare the version of the package with the new one and update the package if
-    needed.
-
-    Returns true if the package have been modified.
-    """
-    # update CMakeLists.txt
-    cml = os.path.normpath(os.path.join(packagedir, 'CMakeLists.txt'))
-    change_cml_version(cml, newversion)
-    if 'GaudiKernel' in packagedir:
-        cml = os.path.normpath(os.path.join(packagedir, 'src', 'Util', 'CMakeLists.txt'))
-        change_cml_version(cml, newversion)
 
 def tag_bar(pkg, version=None):
     title = ' %s %s ' % (pkg, version)
@@ -149,6 +110,7 @@ def tag_bar(pkg, version=None):
     right_chars = 78 - letf_chars - len(title)
     separator = ('=' * letf_chars) + title + ('=' * right_chars)
     return separator
+
 
 def main():
     logging.basicConfig(level=logging.DEBUG)
@@ -172,51 +134,22 @@ def main():
                 yield dirpath
             else:
                 dirnames[:] = [dirname for dirname in dirnames
-                               if not dirname.startswith('build.') and
-                                  dirname != 'cmake']
-
-    # Packages which version must match the version of the project
-    special_subdirs = ["Gaudi", "GaudiExamples", "GaudiRelease"]
+                               if (not dirname.startswith('build.') and
+                                   dirname != 'cmake')]
 
     # Ask for the version of the project
     latest_tag = findLatestTag()
 
     old_version = latest_tag.split('_')[-1]
-    new_version = raw_input("The old version of the project is %s, which is the new one? " % old_version)
+    new_version = raw_input(("The old version of the project is %s, "
+                             "which is the new one? ") % old_version)
 
-    old_versions = {}
     release_notes = {}
-    new_versions = {}
-    # for each package in the project check if there were changes and ask for the new version number
+    # for each package in the project update the release.notes
     for pkgdir in all_subdirs():
-        cmlfile = os.path.join(pkgdir, 'CMakeLists.txt')
-
-        pkg = os.path.basename(pkgdir)
-        old_vers = extract_version(pkgdir)
-
-        vers = None
-        if pkg in special_subdirs:
-            vers = new_version
-        else:
-            git_log = check_output(['git', 'log', '-m', '--first-parent',
-                                    '--stat', latest_tag + '..master', pkgdir],
-                                   ).strip()
-            if git_log:
-                msg = ('\nThe old version of {0} is {1}, these are the changes:\n'
-                       '{2}\n'
-                       'Which version you want (old is {1})? ').format(pkg,
-                                                                       old_vers,
-                                                                       git_log)
-                vers = raw_input(msg)
-                while not vers or vers == old_vers:
-                    vers = raw_input('give me a version, please. ')
-        if vers:
-            change_version(pkgdir, vers)
-            updateReleaseNotes(pkgdir,
-                               tag_bar(pkg, vers) + '\n\n' +
-                               releaseNotes(pkgdir, latest_tag, 'master'))
-        new_versions[pkg] = vers or old_vers
-        print "=" * 80
+        updateReleaseNotes(pkgdir,
+                           tag_bar('Gaudi', new_version) + '\n\n' +
+                           releaseNotes(pkgdir, latest_tag, 'master'))
 
     # update the global CMakeLists.txt
     out = []
