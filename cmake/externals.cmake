@@ -30,3 +30,33 @@ else()
   message(WARNING "C++ Guidelines Support Library not available")
   set(CPP_GSL_FOUND FALSE)
 endif()
+
+# Ranges v3,
+# see https://its.cern.ch/jira/browse/GAUDI-1266
+# see https://github.com/ericniebler/range-v3
+option(GAUDI_USE_SYSTEM_RANGES_V3
+       "If to use the Ranges-v3 library from the system or providing it through Gaudi"
+       NO)
+if(NOT GAUDI_USE_SYSTEM_RANGES_V3)
+  set(RANGES_V3_URL https://github.com/ericniebler/range-v3)
+  set(RANGES_V3_VERSION c01e7d2a)
+  message(STATUS "Using and shipping ${RANGES_V3_URL} version ${RANGES_V3_VERSION}")
+  set(RANGES_V3_DIR ${CMAKE_CURRENT_BINARY_DIR}/ext/range-v3)
+  if(NOT EXISTS ${RANGES_V3_DIR})
+    execute_process(COMMAND git clone ${RANGES_V3_URL} ${RANGES_V3_DIR})
+  endif()
+  execute_process(COMMAND git checkout ${RANGES_V3_VERSION}
+                  WORKING_DIRECTORY ${RANGES_V3_DIR})
+  install(DIRECTORY ${RANGES_V3_DIR}/include/range/v3 DESTINATION include/range)
+  set(RANGES_V3_INCLUDE_DIR NAMES ${RANGES_V3_DIR})
+else()
+  find_path(RANGES_V3_INCLUDE_DIR NAMES range/v3/all.hpp)
+endif()
+if(RANGES_V3_INCLUDE_DIR)
+  set(RANGES_V3_INCLUDE_DIRS ${RANGES_V3_INCLUDE_DIR})
+  include_directories(SYSTEM ${RANGES_V3_INCLUDE_DIRS})
+  set(RANGES_V3_FOUND TRUE)
+else()
+  message(WARNING "Ranges-v3 library not available")
+  set(RANGES_V3_FOUND FALSE)
+endif()
