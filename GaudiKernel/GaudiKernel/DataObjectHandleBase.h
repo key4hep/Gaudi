@@ -35,7 +35,7 @@ public:
   
   
   const std::string toString() const;
-  const std::string pythonRepr() const;
+  const std::string pythonRepr() const override;
   void fromString(const std::string& s);
 
   friend std::ostream& operator<< (std::ostream& str, const DataObjectHandleBase& d);

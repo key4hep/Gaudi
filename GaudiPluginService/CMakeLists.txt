@@ -25,6 +25,10 @@ gaudi_install_python_modules()
 gaudi_add_executable(listcomponents src/listcomponents.cpp src/PluginService.cpp)
 target_link_libraries(listcomponents ${CMAKE_DL_LIBS})
 
+# Hide some Boost compile time warnings
+find_package(Boost)
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
+
 gaudi_add_unit_test(Test_GaudiPluginService_UseCases tests/src/UseCases.cpp
                     LINK_LIBRARIES GaudiPluginService
                     TYPE Boost)

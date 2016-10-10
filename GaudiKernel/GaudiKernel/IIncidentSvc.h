@@ -5,10 +5,12 @@
 #include "GaudiKernel/IInterface.h"
 #include <string>
 #include <vector>
-
+#include <memory>
+#include "GaudiKernel/EventContextHash.h"
+#include "GaudiKernel/Incident.h"
 // Forward declarations
 class IIncidentListener;
-class Incident;
+//class Incident;
 
 /** @class IIncidentSvc IIncidentSvc.h GaudiKernel/IIncidentSvc.h
 
@@ -48,6 +50,22 @@ public:
       @param Incident being fired
   */
   virtual void fireIncident( const Incident& incident ) = 0;
+
+  class IncidentPack{
+  public:
+    std::vector<std::unique_ptr<Incident>> incidents;
+    std::vector<std::vector<IIncidentListener*>> listeners;
+    IncidentPack(IncidentPack&& o):incidents(std::move(o.incidents)),listeners(std::move(o.listeners)){};
+    IncidentPack& operator=(IncidentPack&& o){incidents=std::move(o.incidents);listeners=std::move(o.listeners);return *this;};
+    IncidentPack(){};
+  };
+
+  virtual IIncidentSvc::IncidentPack getIncidents(const EventContext* ctx)=0;
+  /** Fire an Incident, Incident ownership has to be passed to the
+      service since it is going to be accessed asynchronously 
+      @param Incident being fired
+  */
+  virtual void fireIncident( std::unique_ptr<Incident> incident) = 0;
 
 };
 

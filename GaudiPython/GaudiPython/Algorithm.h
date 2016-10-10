@@ -40,13 +40,13 @@ namespace GaudiPython
     ( PyObject*          self ,
       const std::string& name ) ;
   public:
-    StatusCode  initialize () ;
-    StatusCode  start      () ;
-    StatusCode  beginRun   () ;
-    StatusCode  endRun     () ;
-    StatusCode  execute    () ;
-    StatusCode  stop       () ;
-    StatusCode  finalize   () ;
+    StatusCode  initialize () override ;
+    StatusCode  start      () override ;
+    StatusCode  beginRun   () override ;
+    StatusCode  endRun     () override ;
+    StatusCode  execute    () override ;
+    StatusCode  stop       () override ;
+    StatusCode  finalize   () override ;
     IAlgorithm* myself() { return this; }
   private:
     PyObject* m_self;

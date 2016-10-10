@@ -27,10 +27,10 @@ public:
   ReadHandleAlg(const std::string& nam, ISvcLocator* pSvc);
 
   /// Standard Destructor
-  virtual ~ReadHandleAlg() { }
+  ~ReadHandleAlg() override = default;
 
   /// Event callback
-  virtual StatusCode execute();
+  StatusCode execute() override;
 };
 
 #endif // GAUDIEXAMPLES_READALG_H

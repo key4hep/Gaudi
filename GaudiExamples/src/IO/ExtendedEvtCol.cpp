@@ -37,7 +37,7 @@ namespace Gaudi
     {
     public:
       /// the only one essential method: execute the algorithm
-      virtual StatusCode execute () ;
+      StatusCode execute () override ;
     public:
       /** standard constructor
        *  @param name algorithm instance name
@@ -61,8 +61,8 @@ namespace Gaudi
         setProperty ( "EvtColsProduce"   , "true"  ).ignore() ;
         setProperty ( "EvtColsPrint"     , "true"  ).ignore() ;
       }
-      /// virtual destructor
-      virtual ~ExtendedEvtCol() {}
+      /// destructor
+      ~ExtendedEvtCol() override {}
     private:
       // default constructor is desabled
       ExtendedEvtCol() ;                                    ///< no default constructor

@@ -15,13 +15,13 @@ class IMessageSvc;
 class AlgErrorAuditor : virtual public Auditor {
 public:
   AlgErrorAuditor(const std::string& name, ISvcLocator* pSvcLocator);
-  virtual ~AlgErrorAuditor() = default;
+  ~AlgErrorAuditor() override = default;
 
-  virtual StatusCode initialize();
-  virtual StatusCode finalize();
+  StatusCode initialize() override;
+  StatusCode finalize() override;
 
-  virtual void beforeExecute(INamedInterface* alg);
-  virtual void afterExecute(INamedInterface* alg, const StatusCode&);
+  void beforeExecute(INamedInterface* alg) override;
+  void afterExecute(INamedInterface* alg, const StatusCode&) override;
 private:
 
   BooleanProperty m_abort, m_throw;

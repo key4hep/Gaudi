@@ -28,9 +28,9 @@ public:
   /// Standard constructor
 	GaudiAtomicSequencer( const std::string& name, ISvcLocator* pSvcLocator );
 
-  virtual ~GaudiAtomicSequencer( ); ///< Destructor
+  ~GaudiAtomicSequencer() override; ///< Destructor
 
-  virtual StatusCode initialize();    ///< Algorithm initialization
+  StatusCode initialize() override;    ///< Algorithm initialization
 
 protected:
 

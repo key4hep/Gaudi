@@ -45,7 +45,7 @@ public:
   typedef double      Value  ;
 public:
   /// finalization
-  virtual StatusCode finalize  ()
+  virtual StatusCode finalize  () override
   {
     always()
       << endmsg
@@ -59,7 +59,7 @@ public:
     return GaudiAlgorithm::finalize () ; ///< finalize the base class
   } ;
   /// the main execution method
-  virtual StatusCode execute    () ;
+  StatusCode execute    ()  override;
 public:
   /** standard constructor
    *  @param name algoritmm instance name
@@ -67,9 +67,9 @@ public:
    */
   MapAlg ( const std::string& name ,
            ISvcLocator*       pSvc )
-    : GaudiAlgorithm ( name , pSvc ) {} ;
+    : GaudiAlgorithm ( name , pSvc ) {}
   /// virtual protected destructor
-  virtual ~MapAlg(){}
+  ~MapAlg() override {}
 private:
   /// The default constructor is disabled
   MapAlg() ;

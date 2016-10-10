@@ -6,6 +6,8 @@
 #include "GaudiKernel/Incident.h"
 #include <string>
 
+class EventContext;
+
 /** @class IIncidentListener IIncidentListener.h GaudiKernel/IIncidentListener.h
     The interface implemented by any class wanting to listen to Incidents.
     @author Pere Mato

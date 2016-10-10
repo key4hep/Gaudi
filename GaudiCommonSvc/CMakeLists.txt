@@ -6,6 +6,9 @@ find_package(AIDA)
 find_package(Boost COMPONENTS system filesystem)
 find_package(ROOT COMPONENTS Hist RIO)
 
+# Hide some Boost compile time warnings
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
+
 #---Libraries---------------------------------------------------------------
 gaudi_add_module(GaudiCommonSvc
                  src/*.cpp DataSvc/*.cpp HistogramSvc/*.cpp PersistencySvc/*.cpp

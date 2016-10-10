@@ -30,7 +30,7 @@ namespace Gaudi
     public:
       // ======================================================================
       /// execute it!
-      StatusCode execute () ;
+      StatusCode execute () override ;
       // ======================================================================
     public:
       // ======================================================================
@@ -49,7 +49,7 @@ namespace Gaudi
         declareProperty ( "Strings" , m_strings , "Boost-array of strings" ) ;
       }
       /// virtual destructor
-      virtual ~BoostArrayProperties() {}
+      ~BoostArrayProperties() override {}
       // ======================================================================
     private:
       // ======================================================================

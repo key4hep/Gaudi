@@ -24,7 +24,7 @@ public:
     m_algoIndex(algoIndex),
     m_schedSvc(schedSvc),
     m_serviceLocator(svcLocator){};
-  virtual tbb::task* execute();
+  tbb::task* execute() override;
 private:  
   SmartIF<IAlgorithm> m_algorithm;
   EventContext* m_evtCtx;
