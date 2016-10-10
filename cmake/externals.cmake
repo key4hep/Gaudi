@@ -17,7 +17,7 @@ if(NOT GAUDI_USE_SYSTEM_CPP_GSL)
   execute_process(COMMAND git checkout ${CPP_GSL_VERSION}
                   WORKING_DIRECTORY ${CPP_GSL_DIR})
   install(DIRECTORY ${CPP_GSL_DIR}/gsl DESTINATION include)
-  install(FILES ${CPP_GSL_DIR}/LICENSE DESTINATION include/gsl/LICENSE)
+  install(FILES ${CPP_GSL_DIR}/LICENSE DESTINATION include/gsl)
   set(CPP_GSL_INCLUDE_DIR NAMES ${CPP_GSL_DIR})
 else()
   find_path(CPP_GSL_INCLUDE_DIR NAMES gsl/gsl)
