@@ -39,29 +39,29 @@ namespace GaudiKernelTest {
   public:
     Hist(const std::string& id): m_id(id) {}
     const std::string& id() const { return m_id; }
-    void acc() { 
-      std::cout << "in Hist::access\n";  m_i++; 
+    void acc() {
+      std::cout << "in Hist::access\n";  m_i++;
     }
     void incr() {
       m_i++;
     }
     int val() const { return m_i; }
-    
+
     M& mut() { return m_mut; }
-    
+
   private:
     int m_i {0};
     std::string m_id;
     M m_mut;
   };
-  
+
 
   template <class T>
   void Task(T *lh, int i, size_t nIter) {
-    
+
     std::cout << "spawn Task " << i << "\n";
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    
+
     for (size_t j=0; j<nIter; ++j) {
       (*lh)->incr();
     }
@@ -85,10 +85,6 @@ namespace GaudiKernelTest {
     virtual ~LockedHandleTest() {}
 
     void test_handle() {
-
-      // this line is needed to avoid missing symbols (dlsym, dlopen, dlclose)
-      // during link phase!
-      System::getProcessTime();
 
       // test default template args
       Hist<> *h1 = new Hist<>("first");
