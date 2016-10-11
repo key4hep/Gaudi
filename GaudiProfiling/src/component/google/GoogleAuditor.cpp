@@ -47,10 +47,10 @@ namespace Google
     AuditorBase( const std::string& name, ISvcLocator* pSvcLocator);
 
     /// Destructor
-    virtual ~AuditorBase() {  }
+    ~AuditorBase() override {  }
 
     /// Initialize the auditor base
-    StatusCode initialize()
+    StatusCode initialize() override
     {
       m_log << MSG::INFO << "Initialised" << endmsg;
 
@@ -68,7 +68,7 @@ namespace Google
     }
 
     /// Finalize the auditor base
-    StatusCode finalize()
+    StatusCode finalize() override
     {
       if ( alreadyRunning() ) stopAudit();
       return StatusCode::SUCCESS;
@@ -138,7 +138,7 @@ namespace Google
      *
      *  @param incident The incident identifier
      */
-    void handle( const Incident& incident )
+    void handle( const Incident& incident ) override
     {
       if ( IncidentType::BeginEvent == incident.type() )
       {
@@ -173,7 +173,7 @@ namespace Google
 
   public:
 
-    void before(StandardEventType type, INamedInterface* i)
+    void before(StandardEventType type, INamedInterface* i) override
     {
       if ( !m_skipSequencers || !isSequencer(i) )
       {
@@ -181,7 +181,7 @@ namespace Google
       }
     }
 
-    void before(CustomEventTypeRef type, INamedInterface* i)
+    void before(CustomEventTypeRef type, INamedInterface* i) override
     {
       if ( !m_skipSequencers || !isSequencer(i) )
       {
@@ -189,14 +189,14 @@ namespace Google
       }
     }
 
-    void before(StandardEventType type, const std::string& s)
+    void before(StandardEventType type, const std::string& s) override
     {
       std::ostringstream t;
       t << type;
       before( t.str(), s );
     }
 
-    void before(CustomEventTypeRef type, const std::string& s)
+    void before(CustomEventTypeRef type, const std::string& s) override
     {
       if ( !m_fullEventAudit && m_audit &&
            isPhaseEnabled(type) && isComponentEnabled(s) )
@@ -218,7 +218,7 @@ namespace Google
       }
     }
 
-    void after(StandardEventType type, INamedInterface* i, const StatusCode& sc)
+    void after(StandardEventType type, INamedInterface* i, const StatusCode& sc) override
     {
       if ( !m_skipSequencers || !isSequencer(i) )
       {
@@ -228,7 +228,7 @@ namespace Google
       }
     }
 
-    void after(CustomEventTypeRef type, INamedInterface* i, const StatusCode& sc)
+    void after(CustomEventTypeRef type, INamedInterface* i, const StatusCode& sc) override
     {
       if ( !m_skipSequencers || !isSequencer(i) )
       {
@@ -236,14 +236,14 @@ namespace Google
       }
     }
 
-    void after(StandardEventType type, const std::string& s, const StatusCode& sc)
+    void after(StandardEventType type, const std::string& s, const StatusCode& sc) override
     {
       std::ostringstream t;
       t << type;
       after( t.str(), s, sc );
     }
 
-    void after(CustomEventTypeRef type, const std::string& s, const StatusCode&)
+    void after(CustomEventTypeRef type, const std::string& s, const StatusCode&) override
     {
       if ( !m_fullEventAudit && m_audit &&
            isPhaseEnabled(type) && isComponentEnabled(s) )
@@ -253,19 +253,19 @@ namespace Google
     }
 
     // Obsolete methods
-    void beforeInitialize  (INamedInterface *i) { return before(IAuditor::Initialize,i);   }
-    void beforeReinitialize(INamedInterface *i) { return before(IAuditor::ReInitialize,i); }
-    void beforeExecute     (INamedInterface *i) { return before(IAuditor::Execute,i);      }
-    void beforeBeginRun    (INamedInterface *i) { return before(IAuditor::BeginRun,i);     }
-    void beforeEndRun      (INamedInterface *i) { return before(IAuditor::EndRun,i);       }
-    void beforeFinalize    (INamedInterface *i) { return before(IAuditor::Finalize,i);     }
+    void beforeInitialize  (INamedInterface *i) override { return before(IAuditor::Initialize,i);   }
+    void beforeReinitialize(INamedInterface *i) override { return before(IAuditor::ReInitialize,i); }
+    void beforeExecute     (INamedInterface *i) override { return before(IAuditor::Execute,i);      }
+    void beforeBeginRun    (INamedInterface *i) override { return before(IAuditor::BeginRun,i);     }
+    void beforeEndRun      (INamedInterface *i) override { return before(IAuditor::EndRun,i);       }
+    void beforeFinalize    (INamedInterface *i) override { return before(IAuditor::Finalize,i);     }
 
-    void afterInitialize   (INamedInterface *i) { return after(IAuditor::Initialize,i,StatusCode::SUCCESS); }
-    void afterReinitialize (INamedInterface *i) { return after(IAuditor::ReInitialize,i,StatusCode::SUCCESS); }
-    void afterExecute      (INamedInterface *i, const StatusCode& s) { return after(IAuditor::Execute,i,s); }
-    void afterBeginRun     (INamedInterface *i) { return after(IAuditor::BeginRun,i,StatusCode::SUCCESS); }
-    void afterEndRun       (INamedInterface *i) { return after(IAuditor::EndRun,i,StatusCode::SUCCESS); }
-    void afterFinalize     (INamedInterface *i) { return after(IAuditor::Finalize,i,StatusCode::SUCCESS); }
+    void afterInitialize   (INamedInterface *i) override { return after(IAuditor::Initialize,i,StatusCode::SUCCESS); }
+    void afterReinitialize (INamedInterface *i) override { return after(IAuditor::ReInitialize,i,StatusCode::SUCCESS); }
+    void afterExecute      (INamedInterface *i, const StatusCode& s) override { return after(IAuditor::Execute,i,s); }
+    void afterBeginRun     (INamedInterface *i) override { return after(IAuditor::BeginRun,i,StatusCode::SUCCESS); }
+    void afterEndRun       (INamedInterface *i) override { return after(IAuditor::EndRun,i,StatusCode::SUCCESS); }
+    void afterFinalize     (INamedInterface *i) override { return after(IAuditor::Finalize,i,StatusCode::SUCCESS); }
 
   protected:
 
@@ -377,12 +377,12 @@ namespace Google
 
   protected:
 
-    void google_before(const std::string& s)
+    void google_before(const std::string& s) override
     {
       HeapProfilerStart(s.c_str());
     }
 
-    void google_after(const std::string& s)
+    void google_after(const std::string& s) override
     {
       if ( m_dumpProfileHeaps )
       {
@@ -397,7 +397,7 @@ namespace Google
       HeapProfilerStop();
     }
 
-    bool alreadyRunning() { return IsHeapProfilerRunning(); }
+    bool alreadyRunning() override { return IsHeapProfilerRunning(); }
 
   private:
 
@@ -431,11 +431,11 @@ namespace Google
         m_checker   ( NULL )
     { }
 
-    virtual ~HeapChecker() { delete m_checker; }
+    ~HeapChecker() override { delete m_checker; }
 
   public:
 
-    StatusCode initialize()
+    StatusCode initialize() override
     {
       const StatusCode sc = AuditorBase::initialize();
       if ( sc.isFailure() ) return sc;
@@ -462,7 +462,7 @@ namespace Google
 
   protected:
 
-    void google_before(const std::string& s)
+    void google_before(const std::string& s) override
     {
       if ( m_enabled && !m_checker )
       {
@@ -470,7 +470,7 @@ namespace Google
       }
     }
 
-    void google_after(const std::string& s)
+    void google_after(const std::string& s) override
     {
       if ( m_enabled && m_checker )
       {
@@ -483,7 +483,7 @@ namespace Google
       }
     }
 
-    bool alreadyRunning() { return m_enabled && m_checker != NULL ; }
+    bool alreadyRunning() override { return m_enabled && m_checker != NULL ; }
 
   private:
 
@@ -517,7 +517,7 @@ namespace Google
 
   protected:
 
-    void google_before(const std::string& s)
+    void google_before(const std::string& s) override
     {
       if ( !m_running )
       {
@@ -526,7 +526,7 @@ namespace Google
       }
     }
 
-    void google_after(const std::string&)
+    void google_after(const std::string&) override
     {
       if ( m_running )
       {
@@ -535,7 +535,7 @@ namespace Google
       }
     }
 
-    bool alreadyRunning() { return m_running; }
+    bool alreadyRunning() override { return m_running; }
 
   private:
 

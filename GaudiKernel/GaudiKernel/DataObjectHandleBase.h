@@ -29,13 +29,15 @@ public:
 		   IDataHandleHolder* owner );
   DataObjectHandleBase(const std::string& k, Gaudi::DataHandle::Mode a,
 		   IDataHandleHolder* owner);
+
   virtual ~DataObjectHandleBase();
   DataObjectHandleBase(const DataObjectHandleBase&) = delete;
   DataObjectHandleBase(DataObjectHandleBase&&);
   DataObjectHandleBase& operator=(const DataObjectHandleBase&);
 
+  
   std::string toString() const;
-  std::string pythonRepr() const;
+  std::string pythonRepr() const override;
   void fromString(const std::string& s);
 
   friend std::ostream& operator<< (std::ostream& str, const DataObjectHandleBase& d);
@@ -54,7 +56,7 @@ protected:
   void setRead(bool wasRead=true) {m_wasRead = wasRead;}
   void setWritten(bool wasWritten=true) {m_wasWritten = wasWritten;}
 
-  virtual void init();
+  void init() override;
 
   DataObject* fetch() const;
 

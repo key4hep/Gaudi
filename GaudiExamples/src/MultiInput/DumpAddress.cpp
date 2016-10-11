@@ -23,7 +23,7 @@ namespace Gaudi {
           declareProperty("OutputFile", m_output, "Name of the output file");
           declareProperty("ObjectPath", m_path, "Path to the object in the transient store");
         }
-        StatusCode initialize() {
+        StatusCode initialize() override {
           StatusCode sc = Algorithm::initialize();
           if (sc.isFailure()) return sc;
           m_outputFile.open(m_output.c_str());
@@ -31,7 +31,7 @@ namespace Gaudi {
           return sc;
         }
 
-        StatusCode execute() {
+        StatusCode execute() override {
           MsgStream log(msgSvc());
           SmartDataPtr<DataObject> obj(eventSvc(), m_path);
           if (obj) {
@@ -50,7 +50,7 @@ namespace Gaudi {
           return StatusCode::SUCCESS;
         }
 
-        StatusCode finalize() {
+        StatusCode finalize() override {
           m_outputFile.close();
           return Algorithm::finalize();
         }

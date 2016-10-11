@@ -14,7 +14,7 @@ namespace GaudiTesting {
         Algorithm(name, svcloc) {}
       friend class AlgFactory<Algorithm1>;
     public:
-      StatusCode execute() { return StatusCode::SUCCESS; }
+      StatusCode execute() override { return StatusCode::SUCCESS; }
     };
 
     DECLARE_ALGORITHM_FACTORY(Algorithm1)

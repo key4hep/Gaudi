@@ -83,7 +83,7 @@ namespace Gaudi {
       /// Initialize the instance.
       SerialWorkItemRunner(SerialWorkItem* item): m_item(item) {}
       /// Call the run method of the work item.
-      tbb::task* execute() {
+      tbb::task* execute() override {
         m_item->run();
         return NULL;
       }

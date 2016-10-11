@@ -22,11 +22,11 @@ public:
   /// Standard constructor
   TestToolAlgFailure( const std::string& name, ISvcLocator* pSvcLocator );
 
-  virtual ~TestToolAlgFailure( ); ///< Destructor
+  ~TestToolAlgFailure( ) override; ///< Destructor
 
-  virtual StatusCode initialize();
-  virtual StatusCode execute();
-  virtual StatusCode finalize();
+  StatusCode initialize() override;
+  StatusCode execute() override;
+  StatusCode finalize() override;
 
 private:
 

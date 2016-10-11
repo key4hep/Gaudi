@@ -132,7 +132,7 @@ namespace {
   /// Transient Event Store.
   struct OutputStreamsCollector: public IDataStoreAgent {
     std::list<std::string> names;
-    virtual bool analyse(IRegistry* pRegistry, int lvl) {
+    bool analyse(IRegistry* pRegistry, int lvl) override {
       if (lvl > 0)
         names.push_back(pRegistry->name());
       return true;

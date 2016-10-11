@@ -21,16 +21,16 @@ public:
             const IInterface* parent);
 
   /// IMyAudTool interface
-  virtual const std::string&  message() const;
-  virtual void  doErr();
-  virtual void  doFatal();
+  const std::string&  message() const override;
+  void  doErr() override;
+  void  doFatal() override;
   /// Overriding initialize and finalize
-  virtual StatusCode initialize();
-  virtual StatusCode finalize();
+  StatusCode initialize() override;
+  StatusCode finalize() override;
 
 protected:
   /// Standard destructor
-   virtual ~MyAudTool( );
+   ~MyAudTool() override;
 private:
   /// Properties
  };

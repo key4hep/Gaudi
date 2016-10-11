@@ -138,9 +138,6 @@ def main():
                       help="print some debugging information")
     parser.add_option("--debug", action="store_true",
                       help="print more debugging information")
-    parser.add_option("--lockerpath", action="store",
-                      metavar = "DIRNAME",
-                      help="directory where to find the module 'locker'")
     parser.set_defaults(root = os.path.join("..","python"))
 
     opts, args = parser.parse_args()
@@ -175,23 +172,6 @@ def main():
     else:
         outputfile = opts.output
 
-
-    # The locking ensures that nobody tries to modify the python.zip file while
-    # we read it.
-    dbLock = None
-    if "GAUDI_BUILD_LOCK" in os.environ:
-        if opts.lockerpath:
-            sys.path.append(opts.lockerpath)
-        # Get the LockFile class from the locker module in GaudiPolicy or use a fake
-        # factory.
-        try:
-            from locker import LockFile
-        except ImportError:
-            def LockFile(*args, **kwargs):
-                return None
-        # obtain the lock
-        dbLock = LockFile(os.environ["GAUDI_BUILD_LOCK"], temporary =  True)
-
     # We can disable the error on missing configurables only if we can import Gaudi.Configurables
     # It must be done at this point because it may conflict with logging.basicConfig
     try:
@@ -215,7 +195,6 @@ def main():
             package_module.__path__.insert(0, os.path.join(genConfDir, package_name))
     except:
         pass # ignore failures (not important)
-    del dbLock # Now we can let the others operate on the install area python directory
 
     # Collecting ConfigurableUser specializations
     cus = {}

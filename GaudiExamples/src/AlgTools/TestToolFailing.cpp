@@ -20,9 +20,9 @@ public:
                   const IInterface* parent);
 
   /// Initialize method
-  StatusCode initialize();
+  StatusCode initialize() override;
 
-  virtual ~TestToolFailing( ) {} ///< Destructor
+  ~TestToolFailing( ) override {} ///< Destructor
 
 };
 

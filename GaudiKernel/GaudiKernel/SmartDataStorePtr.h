@@ -80,7 +80,7 @@ public:
   }  
 
   /// unhides assignment operator of base class
-  SmartDataStorePtr& operator=( const SmartDataObjectPtr& copy ) {
+  SmartDataStorePtr& operator=( const SmartDataObjectPtr& copy ) override {
     this->m_pObject = dynamic_cast<TYPE*>(const_cast<SmartDataObjectPtr*>(&copy));
     return *this;
   }

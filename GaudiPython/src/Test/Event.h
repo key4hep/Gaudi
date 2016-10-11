@@ -29,7 +29,7 @@ public:
   virtual ~Event() { }
 
   /// Retrieve reference to class definition structure
-  virtual const CLID& clID() const  { return classID(); }
+  const CLID& clID() const override  { return classID(); }
   static const CLID& classID() { return CLID_Event; }
 
   /// Retrieve event number
@@ -52,7 +52,7 @@ public:
     return obj.fillStream(s);
   }
   /// Fill the output stream (ASCII)
-  virtual inline std::ostream& fillStream( std::ostream& s ) const;
+  inline std::ostream& fillStream( std::ostream& s ) const override;
 
 private:
   /// Event number

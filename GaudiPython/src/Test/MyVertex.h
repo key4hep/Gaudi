@@ -38,7 +38,7 @@ public:
   virtual ~MyVertex()  {
   }
 	/// Retrieve pointer to class definition structure
-	virtual const CLID& clID() const    { return classID(); }
+        const CLID& clID() const  override   { return classID(); }
 	static const CLID& classID()        { return CLID_MyVertex; }
   /// Accessors: Retrieve x-position
   double x()  const         { return m_x;  }
@@ -73,10 +73,10 @@ public:
   //void addDaughterTrack( SmartRef<MyTrack> value );
 
   /// Input streamer
-  virtual StreamBuffer& serialize(StreamBuffer& s);
+  StreamBuffer& serialize(StreamBuffer& s) override;
 
   /// Output streamer
-  virtual StreamBuffer& serialize(StreamBuffer& s)  const;
+  StreamBuffer& serialize(StreamBuffer& s)  const override;
 };
 
 #include "MyTrack.h"

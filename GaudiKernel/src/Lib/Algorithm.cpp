@@ -86,14 +86,14 @@ Algorithm::Algorithm( const std::string& name, ISvcLocator *pSvcLocator,
 
   declareProperty( "MonitorService"   , m_monitorSvcName      = "MonitorSvc" );
 
-  declareProperty
-    ( "RegisterForContextService" ,
-      m_registerContext  ,
-      "The flag to enforce the registration for Algorithm Context Service") ;
+  declareProperty( "RegisterForContextService" , m_registerContext , "The flag to enforce the registration "
+                                                                     "for Algorithm Context Service") ;
 
   declareProperty( "IsClonable"       , m_isClonable = false, "Thread-safe enough for cloning?" );
   declareProperty( "Cardinality"      , m_cardinality = 1,    "How many clones to create" );
   declareProperty( "NeededResources"  , m_neededResources = std::vector<std::string>() );
+  declareProperty( "IsIOBound"        , m_isIOBound = false,  "If an algorithm is I/O-bound (in the broad "
+                                                              "sense of Von Neumann bottleneck)" );
 
   // update handlers.
   m_outputLevel.declareUpdateHandler([this](Property&) { this->updateMsgStreamOutputLevel(this->m_outputLevel); } );
@@ -146,16 +146,17 @@ StatusCode Algorithm::sysInitialize() {
     if( sc.isSuccess() ) {
       // Now initialize care of any sub-algorithms
       bool fail(false);
+
       for (auto& it : m_subAlgms ) {
         if (it->sysInitialize().isFailure()) fail = true;
       }
       if( fail ) {
-	sc = StatusCode::FAILURE;
-	error() << " Error initializing one or several sub-algorithms"
-	    << endmsg;
+    sc = StatusCode::FAILURE;
+    error() << " Error initializing one or several sub-algorithms"
+        << endmsg;
       } else {
-	// Update the state.
-	m_state = m_targetState;
+    // Update the state.
+    m_state = m_targetState;
       }
     }
   }
@@ -200,7 +201,7 @@ StatusCode Algorithm::sysInitialize() {
   }
 
   if (m_updateDataHandles)
-	  acceptDHVisitor(m_updateDataHandles.get());
+      acceptDHVisitor(m_updateDataHandles.get());
 
   if (UNLIKELY(msgLevel(MSG::DEBUG))) {
     // visit all sub-algs and tools, build full set
@@ -282,12 +283,12 @@ StatusCode Algorithm::sysStart() {
 
       // Now start any sub-algorithms
       if( !for_algorithms<&Algorithm::sysStart>( m_subAlgms ) ) {
-	sc = StatusCode::FAILURE;
-	error() << " Error starting one or several sub-algorithms"
-	    << endmsg;
+    sc = StatusCode::FAILURE;
+    error() << " Error starting one or several sub-algorithms"
+        << endmsg;
       } else {
-	// Update the state.
-	m_state = m_targetState;
+    // Update the state.
+    m_state = m_targetState;
       }
     }
   }
@@ -352,10 +353,10 @@ StatusCode Algorithm::sysReinitialize() {
 
       // Now initialize care of any sub-algorithms
       if ( !for_algorithms<&Algorithm::sysReinitialize>( m_subAlgms ) ) {
-	sc = StatusCode::FAILURE;
-	error()
-	    << "sysReinitialize(): Error reinitializing one or several "
-	    << "sub-algorithms" << endmsg;
+    sc = StatusCode::FAILURE;
+    error()
+        << "sysReinitialize(): Error reinitializing one or several "
+        << "sub-algorithms" << endmsg;
       }
     }
   }
@@ -418,8 +419,8 @@ StatusCode Algorithm::sysRestart() {
 
       // Now initialize care of any sub-algorithms
       if( !for_algorithms<&Algorithm::sysRestart>( m_subAlgms ) ) {
-	sc = StatusCode::FAILURE;
-	error() << "sysRestart(): Error restarting one or several sub-algorithms" << endmsg;
+    sc = StatusCode::FAILURE;
+    error() << "sysRestart(): Error restarting one or several sub-algorithms" << endmsg;
       }
     }
   }
@@ -476,8 +477,8 @@ StatusCode Algorithm::sysBeginRun() {
 
       // Now call beginRun for any sub-algorithms
       if( !for_algorithms<&Algorithm::sysBeginRun>( m_subAlgms ) ) {
-	sc = StatusCode::FAILURE;
-	error() << " Error executing BeginRun for one or several sub-algorithms"
+    sc = StatusCode::FAILURE;
+    error() << " Error executing BeginRun for one or several sub-algorithms"
           << endmsg;
       }
     }
@@ -609,12 +610,12 @@ StatusCode Algorithm::sysExecute() {
 
   try {
 
-	if(UNLIKELY(m_doTimeline))
-		  timeline.start = Clock::now();
+    if(UNLIKELY(m_doTimeline))
+          timeline.start = Clock::now();
     status = execute();
 
     if(UNLIKELY(m_doTimeline))
-    	timeline.end = Clock::now();
+        timeline.end = Clock::now();
 
     setExecuted(true);  // set the executed flag
 
@@ -661,7 +662,7 @@ StatusCode Algorithm::sysExecute() {
   }
 
   if(UNLIKELY(m_doTimeline))
-	  timelineSvc()->registerTimelineEvent(timeline);
+      timelineSvc()->registerTimelineEvent(timeline);
 
   if( status.isFailure() ) {
     // Increment the error count
@@ -1007,6 +1008,7 @@ StatusCode Algorithm::getProperty(const std::string& n, std::string& v ) const {
 const std::vector<Property*>& Algorithm::getProperties( ) const {
   return m_propertyMgr->getProperties();
 }
+
 bool Algorithm::hasProperty(const std::string& name) const {
   return m_propertyMgr->hasProperty(name);
 }
@@ -1021,7 +1023,7 @@ void Algorithm::initToolHandles() const{
                 << " not used: not registering any of its Tools" << endmsg;
     } else {
       if (UNLIKELY(msgLevel(MSG::DEBUG)))
-        debug() << "Registering all Tools in ToolHandleArray " 
+        debug() << "Registering all Tools in ToolHandleArray "
                 << thArr->propertyName() << endmsg;
       // Iterate over its tools:
       for( auto toolHandle : thArr->getBaseArray() ) {
@@ -1089,13 +1091,13 @@ void Algorithm::initToolHandles() const{
 }
 
 const std::vector<IAlgTool *> & Algorithm::tools() const {
-	if(UNLIKELY(!m_toolHandlesInit)) initToolHandles();
-	return m_tools;
+    if(UNLIKELY(!m_toolHandlesInit)) initToolHandles();
+    return m_tools;
 }
 
 std::vector<IAlgTool *> & Algorithm::tools() {
-	if(UNLIKELY(!m_toolHandlesInit)) initToolHandles();
-	return m_tools;
+    if(UNLIKELY(!m_toolHandlesInit)) initToolHandles();
+    return m_tools;
 }
 
 /**

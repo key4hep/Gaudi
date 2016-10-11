@@ -14,21 +14,21 @@ namespace concurrency {
       m_slotNum = slotNum;
     };
     /// Destructor
-    virtual ~RunSimulator() {};
+    ~RunSimulator() override {}
 
-    virtual bool visitEnter(DecisionNode& node) const;
+    bool visitEnter(DecisionNode& node) const override;
 
-    virtual bool visit(DecisionNode& node);
+    bool visit(DecisionNode& node) override;
 
-    virtual bool visitLeave(DecisionNode& node) const;
-
-
-    virtual bool visitEnter(AlgorithmNode& node) const;
-
-    virtual bool visit(AlgorithmNode& node);
+    bool visitLeave(DecisionNode& node) const override;
 
 
-    virtual void reset() { m_nodesSucceeded = 0; }
+    bool visitEnter(AlgorithmNode& node) const override;
+
+    bool visit(AlgorithmNode& node) override;
+
+
+    void reset() override { m_nodesSucceeded = 0; }
 
   };
 
@@ -43,21 +43,21 @@ namespace concurrency {
         m_slotNum = slotNum;
       };
       /// Destructor
-      virtual ~Trigger() {};
+      ~Trigger() override {}
 
-      virtual bool visitEnter(DecisionNode& node) const;
+      bool visitEnter(DecisionNode& node) const override;
 
-      virtual bool visit(DecisionNode& node);
+      bool visit(DecisionNode& node) override;
 
-      virtual bool visitLeave(DecisionNode& node) const;
-
-
-      virtual bool visitEnter(AlgorithmNode& node) const;
-
-      virtual bool visit(AlgorithmNode& node);
+      bool visitLeave(DecisionNode& node) const override;
 
 
-      virtual void reset() { m_nodesSucceeded = 0; }
+      bool visitEnter(AlgorithmNode& node) const override;
+
+      bool visit(AlgorithmNode& node) override;
+
+
+      void reset() override { m_nodesSucceeded = 0; }
 
     };
 
@@ -69,21 +69,21 @@ namespace concurrency {
         m_slotNum = -1;
       };
       /// Destructor
-      virtual ~RankerByProductConsumption() {};
+      ~RankerByProductConsumption() override {}
 
-      virtual bool visitEnter(DecisionNode&) const {return true;};
+      bool visitEnter(DecisionNode&) const override {return true;}
 
-      virtual bool visit(DecisionNode&) {return true;};
+      bool visit(DecisionNode&) override {return true;}\
 
-      virtual bool visitLeave(DecisionNode&) const {return true;};
-
-
-      virtual bool visitEnter(AlgorithmNode&) const {return true;};
-
-      virtual bool visit(AlgorithmNode& node);
+      bool visitLeave(DecisionNode&) const override {return true;}
 
 
-      virtual void reset() { m_nodesSucceeded = 0; }
+      bool visitEnter(AlgorithmNode&) const override {return true;}
+
+      bool visit(AlgorithmNode& node) override;
+
+
+      void reset() override { m_nodesSucceeded = 0; }
 
       };
 
@@ -95,21 +95,21 @@ namespace concurrency {
         m_slotNum = -1;
       };
       /// Destructor
-      virtual ~RankerByCummulativeOutDegree() {};
+      ~RankerByCummulativeOutDegree() override {}
 
-      virtual bool visitEnter(DecisionNode&) const {return true;};
+      bool visitEnter(DecisionNode&) const override {return true;}
 
-      virtual bool visit(DecisionNode&) {return true;};
+      bool visit(DecisionNode&) override {return true;}
 
-      virtual bool visitLeave(DecisionNode&) const {return true;};
-
-
-      virtual bool visitEnter(AlgorithmNode&) const {return true;};
-
-      virtual bool visit(AlgorithmNode& node);
+      bool visitLeave(DecisionNode&) const override {return true;}
 
 
-      virtual void reset() { m_nodesSucceeded = 0; }
+      bool visitEnter(AlgorithmNode&) const override {return true;}
+
+      bool visit(AlgorithmNode& node) override;
+
+
+      void reset() override { m_nodesSucceeded = 0; }
 
       void runThroughAdjacents(boost::graph_traits<boost::ExecPlan>::vertex_descriptor vertex, boost::ExecPlan graph);
 
@@ -123,21 +123,21 @@ namespace concurrency {
         m_slotNum = -1;
       };
       /// Destructor
-      virtual ~RankerByTiming() {};
+      ~RankerByTiming() override {}
 
-      virtual bool visitEnter(DecisionNode&) const {return true;};
+      bool visitEnter(DecisionNode&) const override {return true;}
 
-      virtual bool visit(DecisionNode&) {return true;};
+      bool visit(DecisionNode&) override {return true;}
 
-      virtual bool visitLeave(DecisionNode&) const {return true;};
-
-
-      virtual bool visitEnter(AlgorithmNode&) const {return true;};
-
-      virtual bool visit(AlgorithmNode& node);
+      bool visitLeave(DecisionNode&) const override {return true;}
 
 
-      virtual void reset() { m_nodesSucceeded = 0; }
+      bool visitEnter(AlgorithmNode&) const override {return true;}
+
+      bool visit(AlgorithmNode& node) override;
+
+
+      void reset() override { m_nodesSucceeded = 0; }
 
       };
 
@@ -149,21 +149,21 @@ namespace concurrency {
         m_slotNum = -1;
       };
       /// Destructor
-      virtual ~RankerByEccentricity() {};
+      ~RankerByEccentricity() override {}
 
-      virtual bool visitEnter(DecisionNode&) const {return true;};
+      bool visitEnter(DecisionNode&) const override {return true;}
 
-      virtual bool visit(DecisionNode&) {return true;};
+      bool visit(DecisionNode&) override {return true;}
 
-      virtual bool visitLeave(DecisionNode&) const {return true;};
-
-
-      virtual bool visitEnter(AlgorithmNode&) const {return true;};
-
-      virtual bool visit(AlgorithmNode& node);
+      bool visitLeave(DecisionNode&) const override {return true;}
 
 
-      virtual void reset() { m_nodesSucceeded = 0; }
+      bool visitEnter(AlgorithmNode&) const override {return true;}
+
+      bool visit(AlgorithmNode& node) override;
+
+
+      void reset() override { m_nodesSucceeded = 0; }
 
       };
 
@@ -177,21 +177,21 @@ namespace concurrency {
         m_maxKnownDepth = 0;
       };
       /// Destructor
-      virtual ~RankerByDataRealmEccentricity() {};
+      ~RankerByDataRealmEccentricity() override {}
 
-      virtual bool visitEnter(DecisionNode&) const {return true;};
+      bool visitEnter(DecisionNode&) const override {return true;}
 
-      virtual bool visit(DecisionNode&) {return true;};
+      bool visit(DecisionNode&) override {return true;}
 
-      virtual bool visitLeave(DecisionNode&) const {return true;};
-
-
-      virtual bool visitEnter(AlgorithmNode&) const {return true;};
-
-      virtual bool visit(AlgorithmNode& node);
+      bool visitLeave(DecisionNode&) const override {return true;}
 
 
-      virtual void reset() {
+      bool visitEnter(AlgorithmNode&) const override {return true;}
+
+      bool visit(AlgorithmNode& node) override;
+
+
+      void reset() override {
         m_nodesSucceeded = 0;
         m_currentDepth = 0;
         m_maxKnownDepth = 0;

@@ -1,6 +1,21 @@
 Package : GaudiKernel
 Commit Id: $Format:%H$
 
+
+! 2016-06-02
+ - Declare GaudiHive dependent on pytools and declare GraphScheduler.py
+   as a test.
+
+! 2016-06-02
+ - Adapt GraphScheduler.py to signature of precedence.CruncherSequence.
+
+! 2016-06-01 - (Merge of ae5ce72 and 8c5261b, plus few additional changes
+                on top of the merge)
+
+ - Synchronizing the official master with my private dev/io-bound branch as
+   much as possible before requesting the merge of the dev/io-bound into the
+   official master.
+
 =============================== GaudiHive v2r0 ===============================
 
 ! 2016-03-10 - commit 02f2560

@@ -18,7 +18,7 @@ namespace Gaudi {
     /// Standard constructor
     RootTool(RootDataConnection* con) { c = con; }
     /// Access data branch by name: Get existing branch in read only mode
-    virtual TBranch* getBranch(CSTR section, CSTR branch_name) {
+    TBranch* getBranch(CSTR section, CSTR branch_name) override {
       std::string n = branch_name+".";
       for(int i=0, m=n.length()-1; i<m; ++i) if ( !isalnum(n[i]) ) n[i]='_';
       TTree* t = c->getSection(section);
@@ -28,7 +28,7 @@ namespace Gaudi {
       return b;
     }
     /// Load references object from file
-    virtual int loadRefs(CSTR section, CSTR cnt, unsigned long entry, RootObjectRefs& refs)   {
+    int loadRefs(CSTR section, CSTR cnt, unsigned long entry, RootObjectRefs& refs) override   {
       TBranch* b = getBranch(section,cnt+"#R");
       RootObjectRefs* prefs = &refs;
       if ( b ) {
@@ -191,7 +191,7 @@ namespace Gaudi {
       }
     }
     /// Read reference tables
-    StatusCode readRefs()  {
+    StatusCode readRefs() override  {
       TTree* t = (TTree*)c->file()->Get("Sections");
       StatusCode sc(StatusCode::SUCCESS,true);
       StringVec tmp;
@@ -235,7 +235,7 @@ namespace Gaudi {
       return StatusCode::FAILURE;
     }
     /// Save/update reference tables
-    StatusCode saveRefs() {
+    StatusCode saveRefs() override {
       if ( refs() ) {
         if ( !saveBranch("Databases", dbs(),   &RootTool::getEntry).isSuccess() )
           return StatusCode::FAILURE;
