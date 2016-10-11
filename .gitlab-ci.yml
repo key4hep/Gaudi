@@ -2,6 +2,7 @@ before_script:
   - . /cvmfs/lhcb.cern.ch/lib/LbLogin.sh
   - unset VERBOSE
   - export PATH=/cvmfs/lhcb.cern.ch/lib/contrib/ninja/1.4.0/x86_64-slc6:${PATH}
+  - export CMAKE_PREFIX_PATH=/cvmfs/sft.cern.ch/lcg/releases
   - echo 'set(CMAKE_USE_CCACHE ON CACHE BOOL "")' >> cache_preload.cmake
 
 build:
