@@ -10,6 +10,8 @@ build:
     - echo 'set(CMAKE_USE_CCACHE ON CACHE BOOL "")' >> cache_preload.cmake
     - make
     - mv build.${CMTCONFIG} build
+  tags:
+    - slc6
   artifacts:
     paths:
       - build/
@@ -20,6 +22,8 @@ doxygen:
     - mv build build.${CMTCONFIG}
     - make doc
     - mv build.${CMTCONFIG}/doxygen .
+  tags:
+    - slc6
   artifacts:
     paths:
       - doxygen/
@@ -30,6 +34,8 @@ test:
     - mv build build.${CMTCONFIG}
     - make test ARGS='-j4'
     - mv build.${CMTCONFIG}/html test_report
+  tags:
+    - slc6
   artifacts:
     paths:
       - test_report/
