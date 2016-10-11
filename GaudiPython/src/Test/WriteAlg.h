@@ -2,22 +2,19 @@
 #define GAUDIEXAMPLE_WRITEALG_H
 
 // Framework include files
-#include "GaudiKernel/Algorithm.h" 
+#include "GaudiKernel/Algorithm.h"
 
-/** @class WriteAlg WriteAlg.h
-
-    WriteAlg class for the RootIOExample
+/** WriteAlg class for the RootIOExample
 
     @author Markus Frank
 */
-
-class WriteAlg : public Algorithm {
+class WriteAlg : public Algorithm
+{
 public:
   /// Constructor: A constructor of this form must be provided.
-  WriteAlg(const std::string& name, ISvcLocator* pSvcLocator)
-  :	Algorithm(name, pSvcLocator) { }
+  WriteAlg( const std::string& name, ISvcLocator* pSvcLocator ) : Algorithm( name, pSvcLocator ) {}
   /// Standard Destructor
-  ~WriteAlg() override { }
+  ~WriteAlg() override {}
   /// Initialize
   StatusCode initialize() override;
   /// Finalize
