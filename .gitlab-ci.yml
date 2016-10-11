@@ -9,13 +9,15 @@ build:
   script:
     - echo 'set(CMAKE_USE_CCACHE ON CACHE BOOL "")' >> cache_preload.cmake
     - make
+    - mv build.${CMTCONFIG} build
   artifacts:
     paths:
-      - build.${CMTCONFIG}/
+      - build/
 
 doxygen:
   stage: test
   script:
+    - mv build build.${CMTCONFIG}
     - make doc
     - mv build.${CMTCONFIG}/doxygen .
   artifacts:
@@ -25,6 +27,7 @@ doxygen:
 test:
   stage: test
   script:
+    - mv build build.${CMTCONFIG}
     - make test ARGS='-j4'
     - mv build.${CMTCONFIG}/html test_report
   artifacts:
