@@ -9,9 +9,9 @@
 namespace Gaudi { namespace Examples {
 
 
-  class CountSelectedTracks: public Functional::FilterPredicate<bool(const MyTrackVector&)> {
+    class CountSelectedTracksRange: public Functional::FilterPredicate<bool(const MyTrack::Range&)> {
   public:
-    CountSelectedTracks(const std::string& name, ISvcLocator* pSvc):
+    CountSelectedTracksRange(const std::string& name, ISvcLocator* pSvc):
       FilterPredicate(name, pSvc,
                       { KeyValue{"InputData",Functional::concat_alternatives("BogusLocation",
                                                                              "MoreBogus",
@@ -27,7 +27,7 @@ namespace Gaudi { namespace Examples {
       return sc;
     }
 
-    bool operator()(const MyTrackVector& in_tracks) const override {
+    bool operator()(const MyTrack::Range& in_tracks) const override {
       ++m_eventsCount;
       m_tracksCount += in_tracks.size();
       return true;
@@ -42,6 +42,6 @@ namespace Gaudi { namespace Examples {
     mutable std::atomic<long> m_eventsCount{0};
   };
 
-  DECLARE_COMPONENT(CountSelectedTracks)
+  DECLARE_COMPONENT(CountSelectedTracksRange)
 
 }}

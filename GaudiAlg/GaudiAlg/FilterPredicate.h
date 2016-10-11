@@ -30,8 +30,8 @@ namespace Gaudi { namespace Functional {
        StatusCode invoke(std::index_sequence<I...>) {
            using details::as_const;
            try {
-            auto pass = as_const(*this)( as_const(*std::get<I>(this->m_inputs).get())... );
-            this->setFilterPassed( pass );
+               auto pass = as_const(*this)(details::get_from_handle(std::get<I>(this->m_inputs))...);
+               this->setFilterPassed( pass );
            } catch ( GaudiException& e ) {
                (e.code() ? this->warning() : this->error() )
                    << e.message() << endmsg;
