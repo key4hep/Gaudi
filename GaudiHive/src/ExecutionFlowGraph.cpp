@@ -429,7 +429,8 @@ namespace concurrency {
     if (!sc.isSuccess())
       error() << "Could not build the data dependency realm." << endmsg;
 
-    debug() << dumpDataFlow() << endmsg;
+    if (msgLevel(MSG::DEBUG))
+      debug() << dumpDataFlow() << endmsg;
 
     return sc;
   }
@@ -439,26 +440,24 @@ namespace concurrency {
 
     const std::string& algoName = algo->name();
 
-
     DataObjIDColl inputObjs, outputObjs;
     DHHVisitor avis(inputObjs, outputObjs);
     algo->acceptDHVisitor(&avis);
 
     m_algoNameToAlgoInputsMap[algoName] = inputObjs;
-
-    debug() << "Inputs of " << algoName << ": ";
-    for (auto tag : inputObjs) {
-      debug() << tag << " | ";
-    }
-    debug() << endmsg;
-
     m_algoNameToAlgoOutputsMap[algoName] = outputObjs;
 
-    debug() << "Outputs of " << algoName << ": ";
-    for (auto tag : outputObjs) {
-      debug() << tag << " | ";
+    if (msgLevel(MSG::DEBUG)) {
+      debug() << "Inputs of " << algoName << ": ";
+      for (auto tag : inputObjs)
+        debug() << tag << " | ";
+      debug() << endmsg;
+
+      debug() << "Outputs of " << algoName << ": ";
+      for (auto tag : outputObjs)
+        debug() << tag << " | ";
+      debug() << endmsg;
     }
-    debug() << endmsg;
   }
 
   //---------------------------------------------------------------------------
@@ -590,7 +589,8 @@ namespace concurrency {
         algoNode = new concurrency::AlgorithmNode(*this,m_nodeCounter,algoName,inverted,allPass,algo->isIOBound());
         ++m_nodeCounter;
         m_algoNameToAlgoNodeMap[algoName] = algoNode;
-        debug() << "AlgoNode " << algoName << " added @ " << algoNode << endmsg;
+        if (msgLevel(MSG::DEBUG))
+          debug() << "AlgoNode " << algoName << " added @ " << algoNode << endmsg;
         registerIODataObjects(algo);
       }
 
@@ -623,7 +623,8 @@ namespace concurrency {
     } else {
       dataNode = new concurrency::DataNode(*this,dataPath);
       m_dataPathToDataNodeMap[dataPath] = dataNode;
-      debug() << "  DataNode for " << dataPath << " added @ " << dataNode << endmsg;
+      if (msgLevel(MSG::DEBUG))
+        debug() << "  DataNode for " << dataPath << " added @ " << dataNode << endmsg;
       sc = StatusCode::SUCCESS;
     }
 
@@ -655,7 +656,8 @@ namespace concurrency {
         decisionHubNode = new concurrency::DecisionNode(*this,m_nodeCounter,decisionHubName,modeOR,allPass,isLazy);
         ++m_nodeCounter;
         m_decisionNameToDecisionHubMap[decisionHubName] = decisionHubNode;
-        debug() << "DecisionHubNode " << decisionHubName << " added @ " << decisionHubNode << endmsg;
+        if (msgLevel(MSG::DEBUG))
+          debug() << "DecisionHubNode " << decisionHubName << " added @ " << decisionHubNode << endmsg;
       }
 
       parentNode->addDaughterNode(decisionHubNode);
@@ -693,7 +695,8 @@ namespace concurrency {
                                         const int& slotNum,
                                         AlgsExecutionStates& algo_states,
                                         std::vector<int>& node_decisions) const {
-    //debug() << "(UPDATING)Setting decision of algorithm " << algo_name << " and propagating it upwards.." << endmsg;
+    //if (msgLevel(MSG::DEBUG))
+    //  debug() << "(UPDATING)Setting decision of algorithm " << algo_name << " and propagating it upwards.." << endmsg;
     getAlgorithmNode(algo_name)->updateDecision(slotNum, algo_states, node_decisions);
   }
 
@@ -702,9 +705,11 @@ namespace concurrency {
 
     info() << "Starting ranking by data outputs .. " << endmsg;
     for (auto& pair : m_algoNameToAlgoNodeMap) {
-      debug() << "  Ranking " << pair.first << "... " << endmsg;
+      if (msgLevel(MSG::DEBUG))
+        debug() << "  Ranking " << pair.first << "... " << endmsg;
       pair.second->accept(ranker);
-      debug() << "  Rank of " << pair.first << ": " << pair.second->getRank() << endmsg;
+      if (msgLevel(MSG::DEBUG))
+        debug() << "  ... rank of " << pair.first << ": " << pair.second->getRank() << endmsg;
     }
   }
 
@@ -794,7 +799,8 @@ namespace concurrency {
             const Property& p = alg->getProperty( "AvgRuntime" );
             runtime = std::stof( p.toString() );
           } catch(...) {
-            debug() << "no AvgRuntime for " << alg->name() << endmsg;
+            if (msgLevel(MSG::DEBUG))
+              debug() << "no AvgRuntime for " << alg->name() << endmsg;
             runtime = 1.;
           }
         }
@@ -819,7 +825,8 @@ namespace concurrency {
           const Property& p = alg->getProperty( "AvgRuntime" );
           runtime = std::stof( p.toString() );
         } catch(...) {
-          debug() << "no AvgRuntime for " << alg->name() << endmsg;
+          if (msgLevel(MSG::DEBUG))
+            debug() << "no AvgRuntime for " << alg->name() << endmsg;
           runtime = 1.;
         }
       }
@@ -830,7 +837,8 @@ namespace concurrency {
       m_exec_plan_map[v->getNodeName()] = target;
     }
 
-      debug() << "Edge added to execution plan" << endmsg;
+      if (msgLevel(MSG::DEBUG))
+        debug() << "Edge added to execution plan" << endmsg;
       boost::add_edge(source, target, m_ExecPlan);
   }
 

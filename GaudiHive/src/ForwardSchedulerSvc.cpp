@@ -308,7 +308,8 @@ StatusCode ForwardSchedulerSvc::finalize(){
  **/
 void ForwardSchedulerSvc::activate(){
 
-  debug() << "ForwardSchedulerSvc::activate()" << endmsg;
+  if (msgLevel(MSG::DEBUG))
+    debug() << "ForwardSchedulerSvc::activate()" << endmsg;
 
   if (m_threadPoolSvc->initPool(m_threadPoolSize).isFailure()) {
     error() << "problems initializing ThreadPoolSvc" << endmsg;
@@ -486,8 +487,9 @@ StatusCode ForwardSchedulerSvc::popFinishedEvent(EventContext*& eventContext){
     //      << " active: " << m_isActive << endmsg;
     m_finishedEvents.pop(eventContext);
     m_freeSlots++;
-    debug() << "Popped slot " << eventContext->slot() << "(event "
-            << eventContext->evt() << ")" << endmsg;
+    if (msgLevel(MSG::DEBUG))
+      debug() << "Popped slot " << eventContext->slot() << "(event "
+              << eventContext->evt() << ")" << endmsg;
     return StatusCode::SUCCESS;
   }
 }
