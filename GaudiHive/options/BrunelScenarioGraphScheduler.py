@@ -3,7 +3,8 @@
 from Gaudi.Configuration import *
 from Configurables import HiveWhiteBoard, HiveSlimEventLoopMgr, ForwardSchedulerSvc, AlgResourcePool
 
-from GaudiHive.precedence import precedence  # custom precedence graph, composed of CPUCrunchers
+# convenience machinery for assembling custom graphs of algorithm precedence rules (w/ CPUCrunchers as algorithms)
+from GaudiHive import precedence
 
 # metaconfig
 evtslots = 1
