@@ -4,7 +4,12 @@ from Gaudi.Configuration import *
 from Configurables import HiveWhiteBoard, HiveSlimEventLoopMgr, ForwardSchedulerSvc, AlgResourcePool
 
 # convenience machinery for assembling custom graphs of algorithm precedence rules (w/ CPUCrunchers as algorithms)
-from GaudiHive import precedence
+try:
+    from GaudiHive import precedence
+except ImportError:
+    # of versions of LCG/heptools do not provide the required package networkx
+    import sys
+    sys.exit(77)  # consider the test skipped
 
 # metaconfig
 evtslots = 1
