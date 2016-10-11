@@ -1,7 +1,0 @@
-<lcgdict>
-  <class name="GPyTest::Event"/>
-  <class name="GPyTest::MyTrack"/>
-  <class name="GPyTest::MyVertex"/>
-  <class pattern="KeyedContainer<*>"/>
-  <class name="std::vector<GPyTest::MyTrack*>"/>
-</lcgdict>
