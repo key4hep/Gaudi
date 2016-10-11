@@ -1,5 +1,7 @@
 #include <set>
 #include <algorithm>
+#include <numeric>
+
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IMessageSvc.h"
@@ -202,10 +204,11 @@ StatusCode Algorithm::sysInitialize() {
   if (m_updateDataHandles)
 	  acceptDHVisitor(m_updateDataHandles.get());
 
+  // visit all sub-algs and tools, build full set
+  DHHVisitor avis(m_inputDataObjs, m_outputDataObjs);
+  acceptDHVisitor(&avis);
+
   if (UNLIKELY(msgLevel(MSG::DEBUG))) {
-    // visit all sub-algs and tools, build full set
-    DHHVisitor avis(m_inputDataObjs, m_outputDataObjs);
-    acceptDHVisitor(&avis);
     // sort out DataObjects by path so that logging is reproducable
     // we define a little helper creating an ordered set from a non ordered one
     auto sort = [](const DataObjID a, const DataObjID b) -> bool {return a.fullKey() < b.fullKey();};
@@ -1021,7 +1024,7 @@ void Algorithm::initToolHandles() const{
                 << " not used: not registering any of its Tools" << endmsg;
     } else {
       if (UNLIKELY(msgLevel(MSG::DEBUG)))
-        debug() << "Registering all Tools in ToolHandleArray " 
+        debug() << "Registering all Tools in ToolHandleArray "
                 << thArr->propertyName() << endmsg;
       // Iterate over its tools:
       for( auto toolHandle : thArr->getBaseArray() ) {
