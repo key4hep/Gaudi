@@ -35,10 +35,6 @@ AnyDataPutAlgorithm::AnyDataPutAlgorithm( const std::string& name,
      m_id_vec.emplace_back("/Event/Test/Ids" + std::to_string(i), Gaudi::DataHandle::Writer, this);
    } 
 }
-//=============================================================================
-// Destructor
-//=============================================================================
-AnyDataPutAlgorithm::~AnyDataPutAlgorithm() {}
 
 //=============================================================================
 // Initialization

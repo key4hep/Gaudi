@@ -90,8 +90,7 @@ namespace Gaudi
     NamedRange_( typename Base::iterator ibegin      ,
                  std::string      name   = "" )
       : Base   ( ibegin , ibegin ) , m_name ( std::move(name) ) {};
-    /// destructor
-    ~NamedRange_() = default;
+
     // ========================================================================
   public:
     // ========================================================================

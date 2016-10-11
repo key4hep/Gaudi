@@ -5,8 +5,9 @@
 #include "GaudiKernel/ServiceLocatorHelper.h"
 #include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/Property.h"
-#include "GaudiKernel/Algorithm.h"
-#include "GaudiKernel/AlgTool.h"
+#include "GaudiKernel/GetDataHelpers.h"
+#include "GaudiKernel/AnyDataWrapper.h"
+
 
 #include <type_traits>
 
@@ -59,6 +60,9 @@ public:
 private:
 
   T* get(bool mustExist) const;
+  mutable bool  m_goodType = false;
+
+  Gaudi::Helpers::GetData<T> m_adapter;
 
 };
 
@@ -85,30 +89,9 @@ T* DataObjectHandle<T>::get(bool mustExist) const {
     }
     return nullptr;
   }
-
-  if (UNLIKELY(!m_goodType)) { // Check type compatibility once
-
-    T* obj = dynamic_cast<T*>(dataObj);
-    m_goodType = ( obj!=nullptr );
-
-    if (UNLIKELY(!m_goodType)) {
-
-      std::string errorMsg("The type provided for "+ objKey()
-                           + " is " + typeid(T).name()
-                           + " and is different form the one of the object in the store.");
-      //log << MSG::ERROR << errorMsg << endmsg;
-      throw GaudiException (errorMsg,"Wrong DataObjectType",StatusCode::FAILURE);
-    }
-    //log << MSG::DEBUG <<  "The data type (" <<  typeid(T).name()
-    //    << ") specified for the handle of " << dataProductName()
-    //    << " is the same of the object in the store. "
-    //    << "From now on the result of a static_cast will be returned." << endmsg;
-    return obj;
-  }
-
-  //  setRead();
-  // From the second read on, this is safe
-  return static_cast<T*> (dataObj);
+  
+  // Using the 
+  return m_adapter(dataObj);
 }
 
 //---------------------------------------------------------------------------
@@ -139,14 +122,92 @@ T* DataObjectHandle<T>::getOrCreate (){
 		return obj;
 	}
 
-	//MsgStream log(m_MS,"DataObjectHandle");
-    //log << MSG::DEBUG << "Object " << objKey() << " does not exist, creating it" << endmsg;
-
 	//create it
 	return put(new T{});
 
 	//unlock();
 }
+
+//---------------------------------------------------------------------------
+// Specialization for NamedRanges, in that case, we return it by value
+
+template<typename T>
+class DataObjectHandle<Gaudi::NamedRange_<T>> : public DataObjectHandleBase {
+public:
+  using DataObjectHandleBase::DataObjectHandleBase;
+
+  /**
+   * Retrieve object from transient data store
+   */
+  Gaudi::NamedRange_<T> get() const { return get(true); }
+
+private:
+
+  Gaudi::NamedRange_<T> get(bool mustExist) const;
+
+  Gaudi::Helpers::GetData<Gaudi::NamedRange_<T>> m_adapter;
+
+};
+
+template<typename T>
+Gaudi::NamedRange_<T> DataObjectHandle<Gaudi::NamedRange_<T>>::get(bool mustExist) const {
+
+  auto dataObj = fetch();
+
+  if (UNLIKELY(!dataObj) ) {
+    if (mustExist) { // Problems in getting from the store
+        throw GaudiException("Cannot retrieve " + objKey() +
+                             " from transient store.",
+                             m_owner ? owner()->name() : "no owner",
+                             StatusCode::FAILURE);
+    }
+    return Gaudi::NamedRange_<T>();
+  }
+  
+  return m_adapter(dataObj);
+}
+
+//---------------------------------------------------------------------------
+// Specialization for Ranges, in that case, we return it by value
+
+template<typename T>
+class DataObjectHandle<Gaudi::Range_<T>> : public DataObjectHandleBase {
+public:
+  using DataObjectHandleBase::DataObjectHandleBase;
+
+  /**
+   * Retrieve object from transient data store
+   */
+  Gaudi::Range_<T> get() const { return get(true); }
+
+private:
+
+  Gaudi::Range_<T> get(bool mustExist) const;
+
+  Gaudi::Helpers::GetData<Gaudi::Range_<T>> m_adapter;
+
+};
+
+template<typename T>
+Gaudi::Range_<T> DataObjectHandle<Gaudi::Range_<T>>::get(bool mustExist) const {
+
+  auto dataObj = fetch();
+
+  if (UNLIKELY(!dataObj) ) {
+    if (mustExist) { // Problems in getting from the store
+        throw GaudiException("Cannot retrieve " + objKey() +
+                             " from transient store.",
+                             m_owner ? owner()->name() : "no owner",
+                             StatusCode::FAILURE);
+    }
+    return Gaudi::Range_<T>();
+  }
+  
+  return m_adapter(dataObj);
+}
+
+
+//------------------------------------------------------------------------
 
 
 #endif

@@ -16,7 +16,7 @@ namespace Gaudi { namespace Functional {
 
    // This utility is needed when the inputs of a functional algorithm may be stored in several locations
    inline std::string concat_alternatives(std::initializer_list<std::string> c) {
-      return boost::algorithm::join(c,"&");
+      return boost::algorithm::join(c,":");
    }
 
    template <typename... Strings>
@@ -25,33 +25,17 @@ namespace Gaudi { namespace Functional {
    }
 
    inline void updateHandleLocation(IProperty& parent, const std::string& prop, const std::string& newLoc) {
-        // "parse" the current text representation of the datahandle,
-        // and then update the first token (the default location).
-        // Ugly, but I don't see any better way of doing this...
-        // underlying problem is the "syntax" of the text representation
-        // of a datahandle property...
-        std::string s;
-        if (!parent.getProperty(prop,s))
-            throw GaudiException( "Could not get the requested property \"" + prop + "\"",
-                                  "updateHandleLocation", StatusCode::FAILURE );
-        s.replace(0,s.find("|"),newLoc); // tokens are seperated by |
-        auto sc = parent.setProperty(prop,s);
-        if (sc.isFailure()) throw GaudiException("Could not set Property",s,sc);
+        auto sc = parent.setProperty(prop,newLoc);
+        if (sc.isFailure()) throw GaudiException("Could not set Property",prop + " -> " + newLoc ,sc);
     }
 
    inline void updateHandleLocations(IProperty& parent, const std::string& prop, const std::vector<std::string>& newLocs) {
-        // "parse" the current text representation of the datahandle,
-        // and then update the first token (the default location).
-        // Ugly, but I don't see any better way of doing this...
-        // underlying problem is the "syntax" of the text representation
-        // of a datahandle property...
         std::ostringstream ss;
-        GaudiUtils::details::ostream_joiner( ss << "[", newLocs,",",
-                [](std::ostream& os, const std::string& s) -> std::ostream&
-                { return os << "\"" << s << "\""; }
-                ) << "]";
-        auto sc = parent.setProperty(prop,ss.str()); // first token is the default location
-        if (sc.isFailure()) throw GaudiException("Could not set Property",ss.str(),sc);
+        GaudiUtils::details::ostream_joiner( ss << '[', newLocs, ", " , 
+                                             [](std::ostream& os, const auto& i)
+                                             -> auto& { return os << "'" << i << "'"; } ) << ']';
+        auto sc = parent.setProperty(prop,ss.str());
+        if (sc.isFailure()) throw GaudiException("Could not set Property",prop + " -> " + ss.str(),sc);
     }
 
    [[deprecated("please use updateHandleLocation instead")]]

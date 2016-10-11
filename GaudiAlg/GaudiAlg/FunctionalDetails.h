@@ -74,6 +74,21 @@ namespace Gaudi { namespace Functional { namespace details {
         In& operator()( In* in ) const { assert(in!=nullptr); return *in; }
     } deref {};
 
+    template <template <typename> class Handle, typename T>
+    const T& get_from_handle(const Handle<T>& handle) {
+      return *handle.get();
+    }
+
+    template <template <typename> class Handle, typename T>
+      const Gaudi::Range_<T> get_from_handle(const Handle<Gaudi::Range_<T>>& handle) {
+      return handle.get();
+    }
+
+    template <template <typename> class Handle, typename T>
+      const Gaudi::NamedRange_<T> get_from_handle(const Handle<Gaudi::NamedRange_<T>>& handle) {
+      return handle.get();
+    }
+
     /////////////////////////////////////////
 
     namespace details2 {
@@ -97,6 +112,8 @@ namespace Gaudi { namespace Functional { namespace details {
 
          template <typename In>
          struct get_from_handle {
+           template <template <typename> class Handle, typename I, typename = typename std::enable_if< std::is_convertible<Gaudi::Range_<I>,In>::value >::type >
+           auto operator()( const Handle<Gaudi::Range_<I>>& h ) -> const In { return h.get(); }
            template <template <typename> class Handle, typename I, typename = typename std::enable_if< std::is_convertible<I,In>::value >::type >
            auto operator()( const Handle<I>& h ) -> const In& { return *h.get(); }
            template <template <typename> class Handle, typename I, typename = typename std::enable_if<std::is_convertible<I*,In>::value>::type >
@@ -298,9 +315,11 @@ namespace Gaudi { namespace Functional { namespace details {
 
        template <std::size_t N=0>
        const std::string& inputLocation() const { return std::get<N>(m_inputs).objKey(); }
+       unsigned int inputLocationSize() const { return std::tuple_size<decltype(m_inputs)>::value; }
 
        template <std::size_t N=0>
        const std::string& outputLocation() const { return std::get<N>(m_outputs).objKey(); }
+       unsigned int outputLocationSize() const { return std::tuple_size<decltype(m_outputs)>::value; }
 
    protected:
        std::tuple<details::InputHandle_t<Traits_,In>...>  m_inputs;
@@ -333,6 +352,7 @@ namespace Gaudi { namespace Functional { namespace details {
 
        template <std::size_t N=0>
        const std::string& inputLocation() const { return std::get<N>(m_inputs).objKey(); }
+       unsigned int inputLocationSize() const { return std::tuple_size<decltype(m_inputs)>::value; }
 
    protected:
        std::tuple<details::InputHandle_t<Traits_,In>...>  m_inputs;
@@ -363,6 +383,7 @@ namespace Gaudi { namespace Functional { namespace details {
 
        template <std::size_t N=0>
        const std::string& outputLocation() const { return std::get<N>(m_outputs).objKey(); }
+       unsigned int outputLocationSize() const { return std::tuple_size<decltype(m_outputs)>::value; }
 
    protected:
        std::tuple<details::OutputHandle_t<Traits_,Out>...> m_outputs;

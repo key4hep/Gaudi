@@ -115,8 +115,11 @@ namespace Gaudi
      * @param ibegin  iterator to begin of empty sequence
      */
     Range_( iterator ibegin       ) : m_base( ibegin , ibegin ) {}
-    /// destructor
-    ~Range_() = default;
+
+    /* Copy constructor 
+     * @param r Range to move
+     */
+    Range_(const Range_ &r ) : m_base(r.m_base) {}
     // ========================================================================
     /// empty sequence ?
     inline bool   empty () const { return m_base.second == m_base.first  ; }

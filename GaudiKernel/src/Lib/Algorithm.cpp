@@ -1,3 +1,4 @@
+#include <set>
 #include <algorithm>
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/ISvcLocator.h"
@@ -201,22 +202,28 @@ StatusCode Algorithm::sysInitialize() {
   if (m_updateDataHandles)
 	  acceptDHVisitor(m_updateDataHandles.get());
 
-  // visit all sub-algs and tools, build full set
-  DHHVisitor avis(m_inputDataObjs, m_outputDataObjs);
-  acceptDHVisitor(&avis);
-
   if (UNLIKELY(msgLevel(MSG::DEBUG))) {
+    // visit all sub-algs and tools, build full set
+    DHHVisitor avis(m_inputDataObjs, m_outputDataObjs);
+    acceptDHVisitor(&avis);
+    // sort out DataObjects by path so that logging is reproducable
+    // we define a little helper creating an ordered set from a non ordered one
+    auto sort = [](const DataObjID a, const DataObjID b) -> bool {return a.fullKey() < b.fullKey();};
+    auto orderset = [&sort](const DataObjIDColl& in) -> std::set<DataObjID, decltype(sort)> {
+      return {in.begin(), in.end(), sort};
+    };
+    // Logging
     debug() << "Data Deps for " << name();
-    for (auto h : m_inputDataObjs) {
+    for (auto h : orderset(m_inputDataObjs)) {
       debug() << "\n  + INPUT  " << h;
     }
-    for (auto id : avis.ignoredInpKeys()) {
+    for (auto id : orderset(avis.ignoredInpKeys())) {
       debug() << "\n  + INPUT IGNORED " << id;
     }
-    for (auto h : m_outputDataObjs) {
+    for (auto h : orderset(m_outputDataObjs)) {
       debug() << "\n  + OUTPUT " << h;
     }
-    for (auto id : avis.ignoredOutKeys()) {
+    for (auto id : orderset(avis.ignoredOutKeys())) {
       debug() << "\n  + OUTPUT IGNORED " << id;
     }
     debug() << endmsg;
