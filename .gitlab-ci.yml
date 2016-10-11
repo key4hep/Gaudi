@@ -1,5 +1,5 @@
 before_script:
-  - . /cvmfs/lhcb.cern.ch/lib/LbLogin.sh
+  - . /cvmfs/lhcb.cern.ch/lib/LbLogin.sh -c x86_64-slc6-gcc49-opt
   - unset VERBOSE
   - export PATH=/cvmfs/lhcb.cern.ch/lib/contrib/ninja/1.4.0/x86_64-slc6:${PATH}
   - export CMAKE_PREFIX_PATH=/cvmfs/sft.cern.ch/lcg/releases
@@ -7,7 +7,7 @@ before_script:
 cache:
   paths:
     - cache_preload.cmake
-    - build.*/
+    - build.x86_64-slc6-gcc49-opt/
 
 build:
   stage: build
