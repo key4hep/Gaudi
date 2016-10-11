@@ -43,9 +43,9 @@ namespace Gaudi {
       /// Standard constructor
       MyVertex(float x, float y, float z);
       /// Standard Destructor
-      virtual ~MyVertex();
+      ~MyVertex() override;
       /// Retrieve pointer to class definition structure
-      virtual const CLID& clID() const    { return classID(); }
+      const CLID& clID() const override    { return classID(); }
       static const CLID& classID()        { return CLID_MyVertex; }
       /// Accessors: Retrieve x-component of the track momentum
       float x()  const         { return m_x;  }
@@ -93,9 +93,9 @@ namespace Gaudi {
       void removeCollision(Collision* vtx);
 
       /// Serialize the object for writing
-      virtual StreamBuffer& serialize( StreamBuffer& s ) const;
+      StreamBuffer& serialize( StreamBuffer& s ) const override;
       /// Serialize the object for reading
-      virtual StreamBuffer& serialize( StreamBuffer& s );
+      StreamBuffer& serialize( StreamBuffer& s ) override;
     };
 
     // Definition of all container types of MCParticle

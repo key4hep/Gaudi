@@ -160,7 +160,7 @@ public:
   virtual GaudiException* clone() const { return new GaudiException(*this); }
 
   /// method from std::exception
-  virtual const char* what () const throw() { return message().c_str() ; }
+  const char* what () const throw() override { return message().c_str() ; }
 protected:
   mutable std::string     m_message ;  /// error message
   mutable std::string     m_tag     ;  /// exception tag

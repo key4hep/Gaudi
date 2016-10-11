@@ -43,7 +43,7 @@ namespace Gaudi
     {
     public:
       /// the only one essential method:
-      virtual bool operator() ( const IAlgorithm* a ) const
+      bool operator() ( const IAlgorithm* a ) const override
       {   using TYPE_ = typename std::decay<TYPE>::type;
           using CTYPE = typename std::add_const<TYPE_>::type;
           using cptr  = typename std::add_pointer<CTYPE>::type;

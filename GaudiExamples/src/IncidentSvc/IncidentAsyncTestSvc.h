@@ -25,13 +25,13 @@ public:
   IncidentAsyncTestSvc( const std::string& name, ISvcLocator* svcloc);
   
   /// Destructor
-  virtual ~IncidentAsyncTestSvc();
+  ~IncidentAsyncTestSvc() override;
   StatusCode initialize() override;
   StatusCode finalize() override;
   
   /// Reimplements from IIncidentListener
-  virtual void handle(const Incident& incident) final;
-  virtual void getData(uint64_t* data,EventContext* ctx=0) const final override; 
+  void handle(const Incident& incident) final override;
+  void getData(uint64_t* data,EventContext* ctx=0) const final override;
 
 private:
   std::string m_name;

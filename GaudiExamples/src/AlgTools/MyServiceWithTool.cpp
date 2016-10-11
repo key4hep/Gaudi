@@ -16,18 +16,18 @@ namespace GaudiTesting {
     	declarePublicTool(m_tool);
 
     }
-    virtual ~SvcWithTool(){}
+    ~SvcWithTool() override = default;
 
-    StatusCode initialize() {
+    StatusCode initialize() override {
       return Service::initialize();
     }
-    StatusCode start() {
+    StatusCode start() override {
       return Service::start();
     }
-    StatusCode stop() {
+    StatusCode stop() override {
       return Service::stop();
     }
-    StatusCode finalize() {
+    StatusCode finalize() override {
       return Service::finalize();
     }
 

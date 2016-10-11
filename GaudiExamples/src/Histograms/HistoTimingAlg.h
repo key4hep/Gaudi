@@ -27,10 +27,10 @@ public:
   /// Standard constructor
   HistoTimingAlg( const std::string& name, ISvcLocator* pSvcLocator );
 
-  virtual ~HistoTimingAlg( ); ///< Destructor
+  ~HistoTimingAlg( ) override; ///< Destructor
 
-  virtual StatusCode initialize();    ///< Algorithm initialization
-  virtual StatusCode execute   ();    ///< Algorithm execution
+  StatusCode initialize() override;    ///< Algorithm initialization
+  StatusCode execute   () override;    ///< Algorithm execution
 
 private:
 

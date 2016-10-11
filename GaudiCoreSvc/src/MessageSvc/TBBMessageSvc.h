@@ -22,24 +22,24 @@ public:
   /// Standard constructor
   TBBMessageSvc(const std::string& name, ISvcLocator* pSvcLocator);
 
-  virtual ~TBBMessageSvc(); ///< Destructor
+  ~TBBMessageSvc() override; ///< Destructor
 
   /// Initialization of the service.
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
 
   /// Finalization of the service.
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
 
   using MessageSvc::reportMessage;
 
   /// Implementation of IMessageSvc::reportMessage()
-  virtual void reportMessage(const Message& msg);
+  void reportMessage(const Message& msg) override;
 
   /// Implementation of IMessageSvc::reportMessage()
-  virtual void reportMessage(const Message& msg, int outputLevel);
+  void reportMessage(const Message& msg, int outputLevel) override;
 
   /// Implementation of IMessageSvc::reportMessage()
-  virtual void reportMessage(const StatusCode& code, const std::string& source = "");
+  void reportMessage(const StatusCode& code, const std::string& source = "") override;
 
 protected:
 private:
@@ -64,7 +64,7 @@ private:
     MessageWithLevel(TBBMessageSvc& svc, Message msg, int level):
       MessageTaskCommon(svc),
       m_msg(msg), m_level(level) {}
-    virtual void run() {
+    virtual void run() override {
       m_svc.i_reportMessage(m_msg, m_level);
     }
   private:
@@ -78,7 +78,7 @@ private:
     MessageWithoutLevel(TBBMessageSvc& svc, Message msg):
       MessageTaskCommon(svc),
       m_msg(msg) {}
-    virtual void run() {
+    virtual void run() override {
       const int level = m_svc.outputLevel(m_msg.getSource());
       m_svc.i_reportMessage(m_msg, level);
     }
@@ -93,7 +93,7 @@ private:
       MessageTaskCommon(svc),
       m_sc(sc),
       m_source(source) {}
-    virtual void run() {
+    virtual void run() override {
       m_svc.i_reportMessage(m_sc, m_source);
     }
   private:

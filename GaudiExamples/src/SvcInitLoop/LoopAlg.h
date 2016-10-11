@@ -9,9 +9,9 @@ public:
   LoopAlg(const std::string& name, ISvcLocator* pSvcLocator);
 
   // Three mandatory member functions of any algorithm
-  StatusCode initialize();
-  StatusCode execute();
-  StatusCode finalize();
+  StatusCode initialize() override;
+  StatusCode execute() override;
+  StatusCode finalize() override;
 };
 
 # endif    // THIST_HISTOALGORITHM_H
