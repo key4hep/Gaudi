@@ -8,63 +8,45 @@
 #include <sstream>
 #include <string>
 #include <ostream>
-#include <boost/algorithm/string.hpp>
+#include <boost/tokenizer.hpp>
+
 
 
 const DataObjID INVALID_DATAOBJID = DataObjID();
-
-namespace {
-
-    const char FIELD_SEP = '&';
-
-    std::string head_alternates(const std::string& alternates) {
-        return alternates.substr(0,alternates.find(FIELD_SEP));
-    }
-    std::string tail_alternates(const std::string& alternates) {
-        auto i = alternates.find(FIELD_SEP);
-        return i == std::string::npos ? std::string{} : alternates.substr(i+1);
-    }
-    std::vector<std::string> unpack(const std::string& alt) {
-        std::vector<std::string> items;
-        if (!alt.empty()) boost::split(items, alt, boost::is_any_of(std::string{FIELD_SEP}), boost::token_compress_on);
-        return items;
-    }
-}
 
 //---------------------------------------------------------------------------
 DataObjectHandleBase::DataObjectHandleBase(DataObjectHandleBase&& other) :
   Gaudi::DataHandle(other), m_EDS(std::move(other.m_EDS)),
   m_MS(std::move(m_MS)), m_init(other.m_init),
-  m_goodType(other.m_goodType), m_optional(other.m_optional),
+  m_optional(other.m_optional),
   m_wasRead(other.m_wasRead), m_wasWritten(other.m_wasWritten),
-  m_searchDone(other.m_searchDone), m_altNames(std::move(other.m_altNames)) {
+  m_searchDone(other.m_searchDone)  {
   m_owner->declare(*this);
 }
 
+
 //---------------------------------------------------------------------------
 DataObjectHandleBase& DataObjectHandleBase::operator=(const DataObjectHandleBase& other) {
-  Gaudi::DataHandle::operator=(other);
-  // avoid modification of searchDone and altNames in other while we are copying
+  // avoid modification of searchDone in other while we are copying
   std::lock_guard<std::mutex> guard(other.m_searchMutex);
+  //FIXME: operator= should not change our owner, only our 'value'
+  Gaudi::DataHandle::operator=(other);
   m_EDS = other.m_EDS;
   m_MS = other.m_MS;
   m_init = other.m_init;
-  m_goodType = other.m_goodType;
   m_optional = other.m_optional;
   m_wasRead = other.m_wasRead;
   m_wasWritten = other.m_wasWritten;
   m_searchDone = other.m_searchDone;
-  m_altNames = other.m_altNames;
   return *this;
 }
 
 //---------------------------------------------------------------------------
 DataObjectHandleBase::DataObjectHandleBase(const DataObjID& k,
 				      Gaudi::DataHandle::Mode a,
-				      IDataHandleHolder* owner,
-                      std::vector<std::string> alternates):
-  Gaudi::DataHandle(k,a,owner), m_altNames( std::move(alternates) ) {
-  owner->declare(*this);
+				      IDataHandleHolder* owner ) :
+  Gaudi::DataHandle(k,a,owner) {
+  m_owner->declare(*this);
 }
 
 //---------------------------------------------------------------------------
@@ -72,7 +54,8 @@ DataObjectHandleBase::DataObjectHandleBase(const DataObjID& k,
 DataObjectHandleBase::DataObjectHandleBase(const std::string& k,
 				      Gaudi::DataHandle::Mode a,
 				      IDataHandleHolder* owner):
-  DataObjectHandleBase(DataObjID(head_alternates(k)), a, owner, unpack(tail_alternates(k))){}
+  DataObjectHandleBase(DataObjID(k), a, owner) 
+{}
 
 //---------------------------------------------------------------------------
 DataObjectHandleBase::~DataObjectHandleBase(){
@@ -92,7 +75,7 @@ DataObject* DataObjectHandleBase::fetch() const {
   // convenience towards users -- remind them to register
   // but as m_MS is not yet set, we cannot use a MsgStream...
   if (!m_init) {
-    std::cerr << ( m_owner? m_owner->name() : "<UNKNOWN>:")
+    std::cerr << ( owner() ? owner()->name() : "<UNKNOWN>:")
         << "DataObjectHandle: uninitialized data handle" << std::endl;
   }
 
@@ -110,14 +93,14 @@ DataObject* DataObjectHandleBase::fetch() const {
   }
 
   if (!sc.isSuccess()) {
+      auto tokens = boost::tokenizer<boost::char_separator<char>>{objKey(),boost::char_separator<char>{":"}};
       // let's try our alternatives (if any)
-      auto alt = std::find_if( alternativeDataProductNames().begin(),
-                               alternativeDataProductNames().end(),
+      auto alt = std::find_if( tokens.begin(), tokens.end(),
                                [&](const std::string& n) {
                                  return m_EDS->retrieveObject(n,p).isSuccess();
                                } );
-      if (alt!=alternativeDataProductNames().end()) {
-        MsgStream log(m_MS,m_owner->name() + ":DataObjectHandle");
+      if (alt!=tokens.end()) {
+        MsgStream log(m_MS,owner()->name() + ":DataObjectHandle");
         log << MSG::DEBUG <<  ": could not find \"" << objKey()
             << "\" -- using alternative source: \"" << *alt << "\" instead"
             << endmsg;
@@ -125,8 +108,6 @@ DataObject* DataObjectHandleBase::fetch() const {
         // at least in `fetch` there is no use of `objKey` that races with
         // this assignment... (but there may be others!)
         setKey(*alt);
-        // and zero out the alternatives
-        setAlternativeDataProductNames( { } );
       }
   }
   m_searchDone = true;
@@ -137,13 +118,7 @@ DataObject* DataObjectHandleBase::fetch() const {
 
 std::string
 DataObjectHandleBase::toString() const {
-  std::ostringstream ost;
-  GaudiUtils::details::ostream_joiner( ost << m_key
-                                           << "|" << mode()
-                                           << "|" << isOptional()
-                                           << "|",
-                                       alternativeDataProductNames(),"&" );
-  return ost.str();
+  return objKey();
 }
 
 //---------------------------------------------------------------------------
@@ -165,12 +140,12 @@ DataObjectHandleBase::init() {
 
   assert(!m_init);
 
-  if (!m_owner) return;
+  if (!owner()) return;
 
   setRead(false);
   setWritten(false);
 
-  Algorithm* algorithm = dynamic_cast<Algorithm*>( m_owner );
+  Algorithm* algorithm = dynamic_cast<Algorithm*>( owner() );
   if (algorithm) {
     // Fetch the event Data Service from the algorithm
     m_EDS = algorithm->evtSvc();
@@ -204,13 +179,6 @@ operator<< (std::ostream& str, const DataObjectHandleBase& d) {
 
   str << d.fullKey() << "  m: " << d.mode();
   if (d.owner()) str << "  o: " << d.owner()->name();
-
   str << "  opt: " << d.isOptional();
-
-  GaudiUtils::details::ostream_joiner(
-    str << "  alt: [", d.alternativeDataProductNames(), "," ,
-    [](std::ostream& os,const std::string& s) { os << "\"" << s << "\"" ;}
-  ) << "]";
-
   return str;
 }

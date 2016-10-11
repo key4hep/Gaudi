@@ -15,8 +15,6 @@
  * Base class for handles to Data Objects in the Event Store, to simplify
  * access via Properties.
  *
- * provides accessors to AlternateNames, and Optional parameters
- *
  * @author Charles Leggett
  * @date   2015-09-01
  */
@@ -28,13 +26,12 @@ class DataObjectHandleBase : public Gaudi::DataHandle {
 public:
 
   DataObjectHandleBase(const DataObjID& k, Gaudi::DataHandle::Mode a,
-		   IDataHandleHolder* o, std::vector<std::string> alternates = {} );
+		   IDataHandleHolder* owner );
   DataObjectHandleBase(const std::string& k, Gaudi::DataHandle::Mode a,
-		   IDataHandleHolder* o);
+		   IDataHandleHolder* owner);
   virtual ~DataObjectHandleBase();
   DataObjectHandleBase(const DataObjectHandleBase&) = delete;
   DataObjectHandleBase(DataObjectHandleBase&&);
-
   DataObjectHandleBase& operator=(const DataObjectHandleBase&);
 
   std::string toString() const;
@@ -46,11 +43,6 @@ public:
   /// Check if the data object declared is optional for the algorithm
   bool isOptional() const {return m_optional;}
   void setOptional(bool optional = true) { m_optional = optional; }
-
-  const std::vector<std::string> & alternativeDataProductNames() const
-  { return m_altNames; }
-  void setAlternativeDataProductNames(const std::vector<std::string> & alternativeAddresses) const
-  { m_altNames = alternativeAddresses; }
 
   bool initialized() const { return m_init; }
   bool wasRead() const { return m_wasRead; }
@@ -72,7 +64,6 @@ protected:
   SmartIF<IMessageSvc> m_MS;
 
   bool  m_init = false;
-  mutable bool  m_goodType = false;
   bool  m_optional = false;
   bool  m_wasRead = false;
   bool  m_wasWritten = false;
@@ -82,15 +73,13 @@ protected:
    * was already executed or not. On subsequent calls (when this is true),
    * it will be skipped.
    */
-  mutable bool  m_searchDone = false;
+  mutable bool  m_searchDone = false; // TODO: optimize it so that it is std::any_of( objKey, ":" )
 
   /**
    * A Mutex protecting the calls to the search part of the fetch method,
    * so that we are sure that we only call it once
    */
   mutable std::mutex m_searchMutex;
-
-  mutable std::vector<std::string> m_altNames;
 
 };
 

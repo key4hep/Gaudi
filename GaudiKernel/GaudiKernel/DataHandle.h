@@ -57,7 +57,6 @@ public:
   virtual void init() {};
 
 protected:
-  virtual void setMode(const Mode& mode) { m_mode = mode; }
 
   /**
    * The key of the object behind this DataHandle
