@@ -4,11 +4,25 @@ before_script:
   - export PATH=/cvmfs/lhcb.cern.ch/lib/contrib/ninja/1.4.0/x86_64-slc6:${PATH}
   - echo 'set(CMAKE_USE_CCACHE ON CACHE BOOL "")' >> cache_preload.cmake
 
-doxygen:
+build:
+  stage: build
   script:
     - make
+
+doxygen:
+  stage: test
+  script:
     - make doc
     - mv build.${CMTCONFIG}/doxygen .
   artifacts:
     paths:
       - doxygen/
+
+test:
+  stage: test
+  script:
+    - make test ARGS='-j4'
+    - mv build.${CMTCONFIG}/html test_report
+  artifacts:
+    paths:
+      - test_report/
