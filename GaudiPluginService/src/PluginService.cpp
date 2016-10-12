@@ -20,6 +20,7 @@
 #include <iostream>
 #include <fstream>
 #include <memory>
+#include <regex>
 
 #include <cxxabi.h>
 #include <sys/stat.h>
@@ -129,7 +130,13 @@ namespace Gaudi { namespace PluginService {
       auto realname = std::unique_ptr<char,decltype(free)*>( abi::__cxa_demangle(id.c_str(), nullptr, nullptr, &status),
                                                              free );
       if (!realname) return id;
+#if _GLIBCXX_USE_CXX11_ABI
+      return std::regex_replace(realname.get(),
+                                std::regex{"std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > ?"},
+                                "std::string");
+#else
       return std::string{realname.get()};
+#endif
     }
     std::string demangle(const std::type_info& id) {
       return demangle(id.name());

@@ -134,7 +134,8 @@ gaudi_add_test(QMTest QMTEST
                  STDOPTS=${CMAKE_CURRENT_SOURCE_DIR}/options
                  JOBOPTSEARCHPATH+=${CMAKE_CURRENT_SOURCE_DIR}/options
                  JOBOPTSEARCHPATH+=${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest
-                 PYTHONPATH+=${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest)
+                 PYTHONPATH+=${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest
+                 CMTCONFIG=${BINARY_TAG})
 
 gaudi_add_test(WriteAndReadHandle
                FRAMEWORK options/ROOT_IO/WriteAndReadHandle.py)
