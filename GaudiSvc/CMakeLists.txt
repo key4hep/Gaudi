@@ -7,6 +7,9 @@ find_package(Boost REQUIRED COMPONENTS regex)
 find_package(ROOT REQUIRED COMPONENTS Hist RIO Tree Net)
 find_package(CLHEP REQUIRED)
 
+# Hide some Boost/ROOT/CLHEP compile time warnings
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS} ${CLHEP_INCLUDE_DIRS})
+
 #---Libraries---------------------------------------------------------------
 SET(GaudiSvc_srcs
     src/DetectorDataSvc/*.cpp

@@ -13,6 +13,14 @@
 // ============================================================================
 #include "GaudiKernel/Kernel.h"
 
+#if defined(__clang__) || defined(__cling__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winconsistent-missing-override"
+#elif defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsuggest-override"
+#endif
+
 namespace AIDA { class IFunction ; }
 
 namespace Genfun
@@ -274,6 +282,11 @@ namespace Genfun
   } // end of namespace GaudiMathImeplementation
 } // end of namespace Genfun
 
+#if defined(__clang__) || defined(__cling__)
+#pragma clang diagnostic pop
+#elif defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
 
 #endif // GAUDIMATH_FUNADAPTERS_H
 // ============================================================================

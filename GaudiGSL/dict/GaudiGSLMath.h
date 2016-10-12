@@ -1,5 +1,13 @@
 #ifndef GAUDIGSL_GAUDIGSLMATH_H 
 #define GAUDIGSL_GAUDIGSLMATH_H 1
+
+// this trick defines the macro '__cling__' only when this header is processed
+// by cling parser, while it is not set when we compile the .cpp of the
+// dictionary (which is processed by the actual compiler)
+#ifndef G__DICTIONARY
+#define __cling__
+#endif
+
 // ============================================================================
 // Include files
 // ============================================================================
@@ -13,6 +21,10 @@
 // ============================================================================
 #include "GaudiMath/GaudiMath.h"
 // ============================================================================
+
+#ifndef G__DICTIONARY
+#undef __cling__
+#endif
 
 // ============================================================================
 // The 

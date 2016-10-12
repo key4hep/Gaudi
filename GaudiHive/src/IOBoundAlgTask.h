@@ -30,11 +30,11 @@ public:
     m_evtCtx(ctx),
     m_algoIndex(algoIndex),
     m_schedSvc(schedSvc),
-    m_serviceLocator(svcLocator){};
+    m_serviceLocator(svcLocator) {}
 
-    ~IOBoundAlgTask() {};
+    ~IOBoundAlgTask() override {}
 
-    virtual StatusCode execute();
+    virtual StatusCode execute() override;
 
 private:
   SmartIF<IAlgorithm> m_algorithm;
