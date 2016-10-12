@@ -1,7 +1,7 @@
 ################################################################################
 #
 # Generic Makefile to simplify the use of CMake projects
-# ------------------------------------------------------ 
+# ------------------------------------------------------
 #
 # This simple Makefile is meant to provide a simplified entry point for the
 # configuration and build of CMake-based projects that use a default toolchain
@@ -14,7 +14,7 @@
 #
 #     all
 #         (default) build everything
-#  
+#
 #     test [*]_
 #         run the declared tests
 #
@@ -36,7 +36,7 @@
 #
 # :Author: Marco Clemencic
 #
-# .. [*] Targets defined by this Makefile. 
+# .. [*] Targets defined by this Makefile.
 #
 ################################################################################
 
@@ -55,7 +55,7 @@ endif
 ifndef BINARY_TAG
   ifdef CMAKECONFIG
     BINARY_TAG := ${CMAKECONFIG}
-  else 
+  else
     ifdef CMTCONFIG
       BINARY_TAG := ${CMTCONFIG}
     endif
@@ -76,15 +76,15 @@ endif
 ifneq ($(USE_NINJA),)
   # enable Ninja
   override CMAKEFLAGS += -GNinja
-  ifneq ($(VERBOSE),)
-    NINJAFLAGS := -v $(NINJAFLAGS)
-  endif
-  BUILD_CMD := cd build.$(BINARY_TAG) && ninja $(NINJAFLAGS)
   BUILD_CONF_FILE := build.ninja
+  BUILDFLAGS := $(NINJAFLAGS)
+  ifneq ($(VERBOSE),)
+    BUILDFLAGS := -v $(BUILDFLAGS)
+  endif
 else
-  BUILD_CMD := cd build.$(BINARY_TAG) && $(MAKE)
   BUILD_CONF_FILE := Makefile
 endif
+BUILD_CMD := $(CMAKE) --build build.$(BINARY_TAG) --target
 
 # default target
 all:
@@ -97,7 +97,7 @@ purge:
 # delegate any target to the build directory (except 'purge')
 ifneq ($(MAKECMDGOALS),purge)
 %: $(BUILDDIR)/$(BUILD_CONF_FILE) FORCE
-	+$(BUILD_CMD) $*
+	+$(BUILD_CMD) $* -- $(BUILDFLAGS)
 endif
 
 # aliases
@@ -110,7 +110,7 @@ endif
 	@ # do not delegate further
 
 # This wrapping around the test target is used to ensure the generation of
-# the XML output from ctest. 
+# the XML output from ctest.
 test: $(BUILDDIR)/$(BUILD_CONF_FILE)
 	$(RM) -r $(BUILDDIR)/Testing $(BUILDDIR)/html
 	-cd $(BUILDDIR) && $(CTEST) -T test $(ARGS)
@@ -120,7 +120,7 @@ ifeq ($(VERBOSE),)
 # less verbose install (see GAUDI-1018)
 # (emulate the default CMake install target)
 install: all
-	cd $(BUILDDIR) && $(CMAKE) -P cmake_install.cmake| grep -v "^-- Up-to-date:"
+	cd $(BUILDDIR) && $(CMAKE) -P cmake_install.cmake | grep -v "^-- Up-to-date:"
 endif
 
 # ensure that the target are always passed to the CMake Makefile
