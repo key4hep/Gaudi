@@ -1,4 +1,4 @@
-gaudi_subdir(GaudiPython v14r2)
+gaudi_subdir(GaudiPython)
 
 gaudi_depends_on_subdirs(GaudiAlg GaudiUtils GaudiKernel)
 
@@ -30,4 +30,3 @@ endif()
 
 #---Installation------------------------------------------------------------
 gaudi_install_python_modules()
-
