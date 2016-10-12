@@ -140,6 +140,10 @@ else()
   set(GAUDI_DETACHED_DEBINFO OFF)
 endif()
 
+option(GAUDI_STRICT_VERSION_CHECK
+       "Require that the version of used projects is exactly the what specified"
+       OFF)
+
 # FIXME: workaroud to use LCG_releases_base also when we have an old toolchain
 #        that does not define it
 if(NOT LCG_releases_base AND LCG_TOOLCHAIN_INFO)
@@ -734,17 +738,22 @@ macro(_gaudi_use_other_projects)
     list(GET ARGN_ 1 other_project_version)
     list(REMOVE_AT ARGN_ 0 1)
 
-    message(STATUS "project -> ${other_project}, version -> ${other_project_version}")
-    if(other_project_version MATCHES "${GAUDI_VERSION_REGEX}")
-      set(other_project_cmake_version "${CMAKE_MATCH_1}.${CMAKE_MATCH_2}")
-      foreach(_i 4 7)
-        if(CMAKE_MATCH_${_i})
-          set(other_project_cmake_version "${other_project_cmake_version}.${CMAKE_MATCH_${_i}}")
-        endif()
-      endforeach()
+    if(GAUDI_STRICT_VERSION_CHECK)
+      message(STATUS "project -> ${other_project}, version -> ${other_project_version}")
+      if(other_project_version MATCHES "${GAUDI_VERSION_REGEX}")
+        set(other_project_cmake_version "${CMAKE_MATCH_1}.${CMAKE_MATCH_2}")
+        foreach(_i 4 7)
+          if(CMAKE_MATCH_${_i})
+            set(other_project_cmake_version "${other_project_cmake_version}.${CMAKE_MATCH_${_i}}")
+          endif()
+        endforeach()
+      else()
+        # Anything not recognised as a LHCb or ATLAS numbered version (mapped to 999.999).
+        set(other_project_cmake_version "999.999")
+      endif()
     else()
-      # Anything not recognised as a LHCb or ATLAS numbered version (mapped to 999.999).
-      set(other_project_cmake_version "999.999")
+      message(STATUS "project -> ${other_project}, version hint -> ${other_project_version}")
+      set(other_project_cmake_version)
     endif()
     #message(STATUS "other_project_cmake_version -> ${other_project_cmake_version}")
 
