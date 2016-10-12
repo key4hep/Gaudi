@@ -117,6 +117,7 @@ function(_internal_find_projects projects_var tools_var config_file)
                                    ${name})
         # recursion
         if(${name_upper}_CONFIG_FILE)
+            get_filename_component(${name_upper}_CONFIG_FILE ${${name_upper}_CONFIG_FILE} ABSOLUTE)
             # if the CMakeLists.txt of the other project was not found in the
             # suffixes, we get the CMakeLists.txt we started from (GAUDI-991)
             if(${name_upper}_CONFIG_FILE STREQUAL ${top_config_file} AND
