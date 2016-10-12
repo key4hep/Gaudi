@@ -836,8 +836,9 @@ lineSkipper = LineSkipper(["//GP:",
                                         r"SUCCESS\s*Booked \d+ Histogram\(s\)",
                                         r"^ \|",
                                         r"^ ID=",
-                                        # Ignore removed properties
+                                        # Ignore added/removed properties
                                         r"Property(.*)'Audit(Algorithm|Tool|Service)s':",
+                                        r"Property(.*)'IsIOBound':",
                                         ] )
 
 if ROOT6WorkAroundEnabled('ReadRootmapCheck'):
