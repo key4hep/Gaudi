@@ -298,6 +298,13 @@ macro(gaudi_project project version)
   # Locate and import used projects.
   if(PROJECT_USE)
     _gaudi_use_other_projects(${PROJECT_USE})
+    # reset _proj_versions to the values we found
+    list_unzip(PROJECT_USE _proj_names _proj_versions)
+    set(_proj_versions)
+    foreach(_proj_name ${_proj_names})
+      set(_proj_versions ${_proj_versions} ${${_proj_name}_VERSION})
+    endforeach()
+    list_zip(PROJECT_USE _proj_names _proj_versions)
   endif()
   if(used_gaudi_projects)
     list(REMOVE_DUPLICATES used_gaudi_projects)
@@ -706,7 +713,14 @@ __path__ = [d for d in [os.path.join(d, '${pypack}') for d in sys.path if d]
   gaudi_generate_exports(${packages})
 
   #--- Generate the manifest.xml file.
-  gaudi_generate_project_manifest(${CMAKE_CONFIG_OUTPUT_DIRECTORY}/manifest.xml ${ARGV})
+  set(_manifest_args)
+  foreach(_arg USE DATA TOOLS)
+    if(PROJECT_${_arg})
+      set(_manifest_args ${_manifest_args} ${_arg} ${PROJECT_${_arg}})
+    endif()
+  endforeach()
+  gaudi_generate_project_manifest(${CMAKE_CONFIG_OUTPUT_DIRECTORY}/manifest.xml
+                                  ${project} ${version} ${_manifest_args})
   install(FILES ${CMAKE_CONFIG_OUTPUT_DIRECTORY}/manifest.xml DESTINATION .)
 
 endmacro()
