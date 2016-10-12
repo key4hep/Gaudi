@@ -5,6 +5,7 @@
 // ============================================================================
 #include "GaudiKernel/IRndmGenSvc.h"
 #include "GaudiKernel/RndmGenerators.h"
+#include "GaudiKernel/AnyDataHandle.h"
 // ============================================================================
 // GaudiAlg
 // ============================================================================
@@ -14,75 +15,77 @@
 // ============================================================================
 #include "GaudiExamples/MyTrack.h"
 // ============================================================================
-#ifdef __ICC
-// disable icc remark #2259: non-pointer conversion from "double" to "float" may lose significant bits
-#pragma warning(disable:2259)
-#elif defined(WIN32)
-// disable warning
-//   C4244: 'argument' : conversion from 'double' to 'float', possible loss of data
-#pragma warning(disable:4244)
-#endif
+
+
+typedef Gaudi::NamedRange_<Gaudi::Examples::MyTrack::ConstVector> Range ;
 
 namespace Gaudi
 {
   namespace Examples
   {
-    /** @class SelCreate
-     *  Simple class to create few "containers" in TES
-     *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
-     *  @date 2008-07-23
+
+    // Defining our track range
+    /** @class SelCreateDH
      */
-    class SelCreate : public GaudiAlgorithm
+    class SelCreateDH : public GaudiAlgorithm
     {
     public:
       // ======================================================================
       /// the only one essential method
-      StatusCode execute() override
+      virtual StatusCode execute()
       {
         // some random number generators, just to provide the numbers
         static Rndm::Numbers  gauss   ( randSvc () , Rndm::Gauss   (   0.0 ,   1.0 ) ) ;
         static Rndm::Numbers  flat    ( randSvc () , Rndm::Flat    (  20.0 , 100.0 ) ) ;
 
         // create the data
-        Gaudi::Examples::MyTrack::Container* tracks =
-          new Gaudi::Examples::MyTrack::Container() ;
-
-        // register the container in TES
-        put ( tracks , name() ) ;
-
-
-        for ( int i = 0 ; i < 100 ; ++i )
+        Gaudi::Examples::MyTrack::Container  tracks;
+        
+        // fill it with some "data"
+        for ( int i = 0 ; i < 20 ; ++i )
         {
           // create new track
+          info () << "Adding track " << i << endmsg;
+          
           Gaudi::Examples::MyTrack* track = new Gaudi::Examples::MyTrack() ;
-
           // fill it with some "data"
           track -> setPx ( gauss ()           ) ;
           track -> setPy ( gauss ()           ) ;
           track -> setPz ( gauss () + flat () ) ;
 
           // insert it into the container
-          tracks -> insert ( track ) ;
+          tracks.insert( track ) ;
         }
+        
+        // Filtering and creating the subrange
+        Range range({ tracks.begin(), tracks.end()});
+        Gaudi::Examples::MyTrack::Selection sample;
+        const double pxCut =     0 ;
+        
+        // select particles with positive px
+        sample.insert
+          ( range.begin () ,
+            range.end   () ,
+            [pxCut](const Gaudi::Examples::MyTrack* track) { 
+            return track->px() > pxCut; });
 
-        typedef Gaudi::NamedRange_<Gaudi::Examples::MyTrack::ConstVector> Range ;
-        if ( !exist<Range> ( name()  ) )
-        { err () << "No Range is available at location " << name() << endmsg ; }
+        info() << "Sample size is "
+               << sample.size()
+               << "/" << range.size() << endmsg ;
 
-        // test "get-or-create":
+        info() << "Before put - tracks size is "
+               << tracks.size() << endmsg ;
 
-        Range r1 = getOrCreate<Range,Gaudi::Examples::MyTrack::Container> ( name() + "_1" ) ;
-        r1.empty(); // avoid icc remark #177: variable "X" was declared but never referenced
-        Range r2 = getOrCreate<Range,Gaudi::Examples::MyTrack::Selection> ( name() + "_2" ) ;
-        r2.empty(); // avoid icc remark #177: variable "X" was declared but never referenced
-
-        getOrCreate<Gaudi::Examples::MyTrack::Container,
-          Gaudi::Examples::MyTrack::Container> ( name() + "_3" ) ;
-        getOrCreate<Gaudi::Examples::MyTrack::Selection,
-          Gaudi::Examples::MyTrack::Selection> ( name() + "_4" ) ;
-
-
-        return StatusCode::SUCCESS ;
+        // register the container in TES
+        auto ret = m_tracks.put (std::move(tracks));        
+        info() << ret << endmsg;
+        info() << "After put - tracks size is "
+               << tracks.size() << endmsg ;
+        
+        // register Selection in TES
+        m_selectedTracks.put(std::move(sample)) ;
+        
+        return StatusCode::SUCCESS;
       }
       // ======================================================================
     public:
@@ -91,17 +94,27 @@ namespace Gaudi
        *  @param name the algorithm instance name
        *  @param pSvc pointer to Service Locator
        */
-      SelCreate ( const std::string& name ,   //    the algorithm instance name
-                  ISvcLocator*       pSvc )   // pointer to the Service Locator
-        : GaudiAlgorithm ( name , pSvc )
-      {}
+      SelCreateDH ( const std::string& name ,   //    the algorithm instance name
+                    ISvcLocator*       pSvc )   // pointer to the Service Locator
+        : GaudiAlgorithm ( name , pSvc ),
+          m_tracks("/Event/Test/Tracks", Gaudi::DataHandle::Writer, this),
+          m_selectedTracks("/Event/Test/SelectedTracks", Gaudi::DataHandle::Writer, this)
+      {
+        declareProperty("tracks", m_tracks, "All tracks");
+        declareProperty("selectedTracks", m_selectedTracks, "Selected tracks");
+      }
       // ======================================================================
     private:
       // ======================================================================
       /// copy constructor is disabled
-      SelCreate(const SelCreate&) = delete;
+      SelCreateDH(const SelCreateDH&) = delete;
       /// assignement operator is disabled
-      SelCreate& operator=(const SelCreate&) = delete;
+      SelCreateDH& operator=(const SelCreateDH&) = delete;
+
+      // ======================================================================
+      AnyDataHandle<Gaudi::Examples::MyTrack::Container>  m_tracks;
+      AnyDataHandle<Gaudi::Examples::MyTrack::Selection>  m_selectedTracks;
+
       // ======================================================================
     } ;
     // ========================================================================
@@ -109,8 +122,8 @@ namespace Gaudi
 } // end of namespace Gaudi
 // ============================================================================
 /// The factory (needed for instantiation)
-using Gaudi::Examples::SelCreate;
-DECLARE_COMPONENT(SelCreate)
+using Gaudi::Examples::SelCreateDH;
+DECLARE_COMPONENT(SelCreateDH)
 // ============================================================================
 // The END
 // ============================================================================

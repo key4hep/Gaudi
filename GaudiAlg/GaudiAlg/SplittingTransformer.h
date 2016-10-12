@@ -38,6 +38,10 @@ namespace Gaudi { namespace Functional {
          static_assert(N==1,"single input argument requires single input signature");
        }
 
+       // accessor to output Locations
+       const std::string& outputLocation(unsigned int n) const { return m_outputLocations[n]; }
+       unsigned int outputLocationSize() const { return m_outputLocations.size(); }
+
        // derived classes can NOT implement execute
        StatusCode execute() final
        { return invoke(std::index_sequence_for<In...>{}); }
@@ -53,7 +57,7 @@ namespace Gaudi { namespace Functional {
            try {
                //TODO:FIXME: how does operator() know the number and order of expected outputs?
                using details::as_const;
-               auto out = as_const(*this)( as_const(*std::get<I>(this->m_inputs).get())... );
+               auto out = as_const(*this)(details::get_from_handle(std::get<I>(this->m_inputs))...);
                if (out.size()!=m_outputs.size()) {
                    throw GaudiException( "Error during transform: expected " + std::to_string(m_outputs.size())
                                          + " containers, got " + std::to_string(out.size()) + " instead",

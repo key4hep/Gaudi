@@ -11,6 +11,7 @@
 #include "GaudiKernel/KeyedContainer.h"
 #include "GaudiKernel/ObjectVector.h"
 #include "GaudiKernel/SharedObjectsContainer.h"
+#include "GaudiKernel/NamedRange.h"
 // =============================================================================
 #include "GaudiExamples/Event.h"
 // ============================================================================
@@ -36,11 +37,7 @@ namespace Gaudi
     */
     //class MyTrack : public ContainedObject {
     class GAUDI_API MyTrack
-#ifdef __PLAIN_GAUDI
-      : public ContainedObject
-#else
         : public KeyedObject<int>
-#endif
     {
       friend class GaudiObjectHandler<MyTrack>;
     public:
@@ -51,13 +48,14 @@ namespace Gaudi
       typedef std::vector<const MyTrack*>                ConstVector ;
       /// the type of selection
       typedef SharedObjectsContainer<MyTrack>              Selection ;
-#ifdef __PLAIN_GAUDI
-      /// the actual type of container in TES
-      typedef ObjectVector<MyTrack>                        Container ;
-#else
+
       /// the actual type of container in TES
       typedef KeyedContainer<MyTrack, Containers::HashMap> Container ;
-#endif
+
+      /// the range type
+      typedef  NamedRange_<ConstVector> Range;
+
+
       // ======================================================================
     protected:
       /// The track momentum
@@ -75,6 +73,9 @@ namespace Gaudi
       /// Standard constructor
       MyTrack(float x, float y, float z);
       MyTrack(const MyTrack& t);
+      MyTrack(MyTrack&& t) = default;
+      MyTrack& operator=(const MyTrack &) = default;
+      MyTrack& operator=(MyTrack &&) = default;
       /// Standard Destructor
       ~MyTrack() override;
       /// Retrieve pointer to class definition structure
@@ -123,11 +124,7 @@ namespace Gaudi
     };
 
     // Definition of all container types of MCParticle
-#ifdef __PLAIN_GAUDI
-    typedef ObjectVector<MyTrack> MyTrackVector;
-#else
     typedef KeyedContainer<MyTrack> MyTrackVector;
-#endif
 
   }
 }
@@ -175,22 +172,14 @@ namespace Gaudi {
 
     /// Serialize the object for writing
     inline StreamBuffer& MyTrack::serialize( StreamBuffer& s ) const {
-#ifdef __PLAIN_GAUDI
-      ContainedObject::serialize(s);
-#else
       KeyedObject<int>::serialize(s);
-#endif
       return s << m_event(this) << m_originVertex(this) << m_decayVertices(this) << m_px << m_py << m_pz;
     }
 
 
     /// Serialize the object for reading
     inline StreamBuffer& MyTrack::serialize( StreamBuffer& s ) {
-#ifdef __PLAIN_GAUDI
-      ContainedObject::serialize(s);
-#else
       KeyedObject<int>::serialize(s);
-#endif
       return s >> m_event(this) >> m_originVertex(this) >> m_decayVertices(this) >> m_px >> m_py >> m_pz;
     }
 
