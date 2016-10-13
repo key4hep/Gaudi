@@ -308,7 +308,8 @@ StatusCode ForwardSchedulerSvc::finalize(){
  **/
 void ForwardSchedulerSvc::activate(){
 
-  debug() << "ForwardSchedulerSvc::activate()" << endmsg;
+  if (msgLevel(MSG::DEBUG))
+    debug() << "ForwardSchedulerSvc::activate()" << endmsg;
 
   if (m_threadPoolSvc->initPool(m_threadPoolSize).isFailure()) {
     error() << "problems initializing ThreadPoolSvc" << endmsg;
@@ -486,8 +487,9 @@ StatusCode ForwardSchedulerSvc::popFinishedEvent(EventContext*& eventContext){
     //      << " active: " << m_isActive << endmsg;
     m_finishedEvents.pop(eventContext);
     m_freeSlots++;
-    debug() << "Popped slot " << eventContext->slot() << "(event "
-            << eventContext->evt() << ")" << endmsg;
+    if (msgLevel(MSG::DEBUG))
+      debug() << "Popped slot " << eventContext->slot() << "(event "
+              << eventContext->evt() << ")" << endmsg;
     return StatusCode::SUCCESS;
   }
 }
@@ -727,10 +729,13 @@ StatusCode ForwardSchedulerSvc::updateStates(int si, const std::string& algo_nam
     }
 
     if (m_dumpIntraEventDynamics) {
+      auto now = std::chrono::high_resolution_clock::now();
       std::stringstream s;
-      s << algo_name << ", " << thisAlgsStates.sizeOfSubset(State::CONTROLREADY)
-                     << ", " << thisAlgsStates.sizeOfSubset(State::DATAREADY)
-                     << ", " << thisAlgsStates.sizeOfSubset(State::SCHEDULED) << "\n";
+      s << algo_name << ", " << thisAlgsStates.sizeOfSubset(State::CONTROLREADY) << ", "
+                     << thisAlgsStates.sizeOfSubset(State::DATAREADY) << ", "
+                     << thisAlgsStates.sizeOfSubset(State::SCHEDULED) << ", "
+                     << std::chrono::duration_cast<std::chrono::nanoseconds> (now - m_efManager.getExecutionFlowGraph()->getInitTime()).count()
+                     << "\n";
       auto threads = (m_threadPoolSize != -1) ? std::to_string(m_threadPoolSize)
                                               : std::to_string(tbb::task_scheduler_init::default_num_threads());
       std::ofstream myfile;
