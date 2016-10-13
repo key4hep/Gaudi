@@ -47,7 +47,7 @@ if(NOT GAUDI_USE_SYSTEM_RANGES_V3)
   endif()
   execute_process(COMMAND git checkout ${RANGES_V3_VERSION}
                   WORKING_DIRECTORY ${RANGES_V3_DIR})
-  install(DIRECTORY ${RANGES_V3_DIR}/include/range/v3 DESTINATION include/range)
+  install(DIRECTORY ${RANGES_V3_DIR}/include/ DESTINATION include)
   set(RANGES_V3_INCLUDE_DIR NAMES ${RANGES_V3_DIR})
 else()
   find_path(RANGES_V3_INCLUDE_DIR NAMES range/v3/all.hpp)
