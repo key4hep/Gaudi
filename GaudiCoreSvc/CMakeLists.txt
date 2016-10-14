@@ -1,4 +1,4 @@
-gaudi_subdir(GaudiCoreSvc v4r1)
+gaudi_subdir(GaudiCoreSvc)
 
 gaudi_depends_on_subdirs(GaudiKernel)
 
@@ -18,4 +18,3 @@ gaudi_add_module(GaudiCoreSvc
                  src/MessageSvc/*.cpp
                  LINK_LIBRARIES GaudiKernel Boost TBB rt PythonLibs
                  INCLUDE_DIRS TBB PythonLibs)
-

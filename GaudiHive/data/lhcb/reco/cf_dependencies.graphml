@@ -164,6 +164,9 @@
       <data key="d0">Algorithm</data>
       <data key="d1">CaloEFlowAlg</data>
     </node>
+    <node id="GaudiAlgorithm/DstWriter">
+      <data key="d0">Algorithm</data>
+    </node>
     <node id="ANNGlobalPID::ChargedProtoANNPIDAlg/ANNGPIDDownstreamProton">
       <data key="d0">Algorithm</data>
       <data key="d1">ANNGlobalPID::ChargedProtoANNPIDAlg</data>
@@ -258,11 +261,9 @@
       <data key="d0">Algorithm</data>
       <data key="d1">ANNGlobalPID::ChargedProtoANNPIDAlg</data>
     </node>
-    <node id="GaudiSequencer/RecoTrSeq">
-      <data key="d2">False</data>
-      <data key="d3">True</data>
-      <data key="d0">DecisionHub</data>
-      <data key="d1">GaudiSequencer</data>
+    <node id="TrackV0Finder/TrackV0Finder">
+      <data key="d0">Algorithm</data>
+      <data key="d1">TrackV0Finder</data>
     </node>
     <node id="MuonRec">
       <data key="d0">Algorithm</data>
@@ -283,6 +284,9 @@
     <node id="ChargedProtoParticleMoni/ChargedProtoPMoni">
       <data key="d0">Algorithm</data>
       <data key="d1">ChargedProtoParticleMoni</data>
+    </node>
+    <node id="FakeAlgorithm/Framework">
+      <data key="d0">Algorithm</data>
     </node>
     <node id="Rich::Rec::Initialise/CreateOfflinePixels">
       <data key="d0">Algorithm</data>
@@ -412,9 +416,11 @@
       <data key="d0">Algorithm</data>
       <data key="d1">PatMatch</data>
     </node>
-    <node id="EventAccounting/EventAccount">
-      <data key="d0">Algorithm</data>
-      <data key="d1">EventAccounting</data>
+    <node id="GaudiSequencer/TrackClonesSeq">
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
     </node>
     <node id="Rich::Rec::HierarchicalPIDMerge/MergeOfflineRichPIDs">
       <data key="d0">Algorithm</data>
@@ -579,10 +585,6 @@
     <node id="Rich::Rec::MC::AlignmentMonitor/RichAlignMoniR2Gas">
       <data key="d0">Algorithm</data>
       <data key="d1">Rich::Rec::MC::AlignmentMonitor</data>
-    </node>
-    <node id="TrackAddNNGhostId/TrackAddNNGhostId">
-      <data key="d0">Algorithm</data>
-      <data key="d1">TrackAddNNGhostId</data>
     </node>
     <node id="GaudiSequencer/RichRawDataSizeL0Seq">
       <data key="d2">False</data>
@@ -884,9 +886,9 @@
       <data key="d0">DecisionHub</data>
       <data key="d1">GaudiSequencer</data>
     </node>
-    <node id="ClusChi22ID/ClusChi22ID">
+    <node id="TrackAddNNGhostId/TrackAddNNGhostId">
       <data key="d0">Algorithm</data>
-      <data key="d1">ClusChi22ID</data>
+      <data key="d1">TrackAddNNGhostId</data>
     </node>
     <node id="Rich::Rec::PixelBackgroundAlg/RichOfflineBckEstIt1">
       <data key="d0">Algorithm</data>
@@ -1354,11 +1356,9 @@
       <data key="d0">DecisionHub</data>
       <data key="d1">GaudiSequencer</data>
     </node>
-    <node id="GaudiSequencer/ElectronReco">
-      <data key="d2">False</data>
-      <data key="d3">True</data>
-      <data key="d0">DecisionHub</data>
-      <data key="d1">GaudiSequencer</data>
+    <node id="HltCompositionMonitor/HltCompositionMonitor">
+      <data key="d0">Algorithm</data>
+      <data key="d1">HltCompositionMonitor</data>
     </node>
     <node id="GaudiSequencer/CaloMatch">
       <data key="d2">False</data>
@@ -1450,9 +1450,11 @@
       <data key="d0">Algorithm</data>
       <data key="d1">TrackAlignMonitor</data>
     </node>
-    <node id="TrackV0Finder/TrackV0Finder">
-      <data key="d0">Algorithm</data>
-      <data key="d1">TrackV0Finder</data>
+    <node id="GaudiSequencer/RecoTrSeq">
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
     </node>
     <node id="Rich::DAQ::RawDataSize/RichRawDataSize">
       <data key="d0">Algorithm</data>
@@ -1466,11 +1468,9 @@
       <data key="d0">Algorithm</data>
       <data key="d1">TTTrackMonitor</data>
     </node>
-    <node id="GaudiSequencer/TrackClonesSeq">
-      <data key="d2">False</data>
-      <data key="d3">True</data>
-      <data key="d0">DecisionHub</data>
-      <data key="d1">GaudiSequencer</data>
+    <node id="EventAccounting/EventAccount">
+      <data key="d0">Algorithm</data>
+      <data key="d1">EventAccounting</data>
     </node>
     <node id="GaudiSequencer/LumiBeam2Seq">
       <data key="d2">False</data>
@@ -1482,9 +1482,11 @@
       <data key="d0">Algorithm</data>
       <data key="d1">RawBankReadoutStatusConverter</data>
     </node>
-    <node id="HltCompositionMonitor/HltCompositionMonitor">
-      <data key="d0">Algorithm</data>
-      <data key="d1">HltCompositionMonitor</data>
+    <node id="GaudiSequencer/ElectronReco">
+      <data key="d2">False</data>
+      <data key="d3">True</data>
+      <data key="d0">DecisionHub</data>
+      <data key="d1">GaudiSequencer</data>
     </node>
     <node id="GaudiSequencer/CaloRecoForCaloProcessor">
       <data key="d2">False</data>
@@ -1596,6 +1598,10 @@
       <data key="d0">Algorithm</data>
       <data key="d1">TrackVertexMonitor</data>
     </node>
+    <node id="ClusChi22ID/ClusChi22ID">
+      <data key="d0">Algorithm</data>
+      <data key="d1">ClusChi22ID</data>
+    </node>
     <node id="TrackFitMatchMonitor/TrackFitMatchMonitor">
       <data key="d0">Algorithm</data>
       <data key="d1">TrackFitMatchMonitor</data>
@@ -1676,9 +1682,9 @@
     <edge source="GaudiSequencer/CaloProcessorCaloSeq" target="GaudiSequencer/CaloPIDsCaloPIDsForCaloProcessor" />
     <edge source="GaudiSequencer/CaloDLLmu" target="EcalPIDmuAlg/EcalPIDmu" />
     <edge source="GaudiSequencer/CaloDLLmu" target="HcalPIDmuAlg/HcalPIDmu" />
+    <edge source="GaudiSequencer/RecoDecodingSeq" target="RawBankToSTLiteClusterAlg/createTTLiteClusters" />
     <edge source="GaudiSequencer/RecoDecodingSeq" target="DecodeVeloRawBuffer/createBothVeloClusters" />
     <edge source="GaudiSequencer/RecoDecodingSeq" target="RawBankToSTClusterAlg/createITClusters" />
-    <edge source="GaudiSequencer/RecoDecodingSeq" target="RawBankToSTLiteClusterAlg/createTTLiteClusters" />
     <edge source="GaudiSequencer/RecoDecodingSeq" target="RawBankToSTClusterAlg/createTTClusters" />
     <edge source="GaudiSequencer/RecoDecodingSeq" target="RawBankToSTLiteClusterAlg/createITLiteClusters" />
     <edge source="GaudiSequencer/CaloChi2" target="EcalChi22ID/EcalChi22ID" />
@@ -1715,7 +1721,6 @@
     <edge source="GaudiSequencer/PhotonReco" target="GaudiSequencer/CaloTrackMatch" />
     <edge source="GaudiSequencer/PhotonReco" target="CaloSinglePhotonAlg/SinglePhotonRec" />
     <edge source="ProcessPhase/Output" target="GaudiSequencer/OutputDSTSeq" />
-    <edge source="GaudiSequencer/RecoTrSeq" target="ProcessPhase/Track" />
     <edge source="GaudiSequencer/RichPIDMoni" target="Rich::Rec::MC::PIDQC/RiPIDMonLong2To100" />
     <edge source="GaudiSequencer/RichPIDMoni" target="Rich::Rec::MC::PIDQC/RiPIDMonLong2To10" />
     <edge source="GaudiSequencer/RichPIDMoni" target="Rich::Rec::MC::PIDQC/RiPIDMonLong10To70" />
@@ -1743,20 +1748,22 @@
     <edge source="GaudiSequencer/MoniPROTOSeq" target="ChargedProtoParticleMoni/ChargedProtoPMoni" />
     <edge source="GaudiSequencer/MoniPROTOSeq" target="ANNGlobalPID::ChargedProtoANNPIDMoni/ChargedProtoANNPIDMoni" />
     <edge source="GaudiSequencer/CaloClustersMoni" target="CaloClusterMonitor/EcalClusterMon" />
+    <edge source="GaudiSequencer/TrackClonesSeq" target="TrackBuildCloneTable/FindTrackClones" />
+    <edge source="GaudiSequencer/TrackClonesSeq" target="TrackCloneCleaner/FlagTrackClones" />
     <edge source="GaudiSequencer/CaloEFlowMoni" target="CaloEFlowAlg/EcalEFlowMon" />
     <edge source="GaudiSequencer/CaloTrackMatch" target="InEcalAcceptanceAlg/InECAL" />
     <edge source="GaudiSequencer/CaloTrackMatch" target="PhotonMatchAlg/ClusterMatch" />
     <edge source="GaudiSequencer/ChargedProtoParticles" target="ChargedProtoParticleAddHcalInfo/ChargedProtoPAddHcal" />
-    <edge source="GaudiSequencer/ChargedProtoParticles" target="ChargedProtoParticleMaker/ChargedProtoPMaker" />
+    <edge source="GaudiSequencer/ChargedProtoParticles" target="ChargedProtoParticleAddEcalInfo/ChargedProtoPAddEcal" />
     <edge source="GaudiSequencer/ChargedProtoParticles" target="ChargedProtoParticleAddBremInfo/ChargedProtoPAddBrem" />
-    <edge source="GaudiSequencer/ChargedProtoParticles" target="ChargedProtoParticleAddMuonInfo/ChargedProtoPAddMuon" />
+    <edge source="GaudiSequencer/ChargedProtoParticles" target="ChargedProtoParticleMaker/ChargedProtoPMaker" />
     <edge source="GaudiSequencer/ChargedProtoParticles" target="ChargedProtoParticleAddRichInfo/ChargedProtoPAddRich" />
     <edge source="GaudiSequencer/ChargedProtoParticles" target="ChargedProtoCombineDLLsAlg/ChargedProtoPCombDLLs" />
     <edge source="GaudiSequencer/ChargedProtoParticles" target="ChargedProtoParticleAddPrsInfo/ChargedProtoPAddPrs" />
     <edge source="GaudiSequencer/ChargedProtoParticles" target="GaudiSequencer/ANNGPIDSeq" />
     <edge source="GaudiSequencer/ChargedProtoParticles" target="ChargedProtoParticleAddSpdInfo/ChargedProtoPAddSpd" />
     <edge source="GaudiSequencer/ChargedProtoParticles" target="ChargedProtoParticleAddVeloInfo/ChargedProtoPAddVeloDEDX" />
-    <edge source="GaudiSequencer/ChargedProtoParticles" target="ChargedProtoParticleAddEcalInfo/ChargedProtoPAddEcal" />
+    <edge source="GaudiSequencer/ChargedProtoParticles" target="ChargedProtoParticleAddMuonInfo/ChargedProtoPAddMuon" />
     <edge source="GaudiSequencer/MoniRICHSeq" target="GaudiSequencer/RichTrackMoni" />
     <edge source="GaudiSequencer/MoniRICHSeq" target="GaudiSequencer/RichRawMoni" />
     <edge source="GaudiSequencer/MoniRICHSeq" target="GaudiSequencer/RichRecoMoni" />
@@ -1826,9 +1833,9 @@
     <edge source="GaudiSequencer/PackDST" target="DataPacking::Pack&lt;LHCb::RichPIDPacker&gt;/PackRichPIDs" />
     <edge source="GaudiSequencer/PackDST" target="ChargedProtoParticleRemovePIDInfo/ProtoParticlePIDClean" />
     <edge source="GaudiSequencer/PackDST" target="PackProtoParticle/PackNeutralProtos" />
-    <edge source="GaudiSequencer/PackDST" target="PackTwoProngVertex/PackTwoProngVertex" />
-    <edge source="GaudiSequencer/PackDST" target="GaudiSequencer/CaloPacking" />
     <edge source="GaudiSequencer/PackDST" target="PackRecVertex/PackRecVertex" />
+    <edge source="GaudiSequencer/PackDST" target="GaudiSequencer/CaloPacking" />
+    <edge source="GaudiSequencer/PackDST" target="PackTwoProngVertex/PackTwoProngVertex" />
     <edge source="GaudiSequencer/PackDST" target="PackProtoParticle/PackChargedProtos" />
     <edge source="GaudiSequencer/RichHPDIonFeedback" target="Rich::Mon::HPDIonFeedbackMoni/RichHPDIFBMoni" />
     <edge source="GaudiSequencer/RichOfflinePhotonsSeq" target="Rich::Rec::Initialise/CreateOfflinePhotons" />
@@ -1853,8 +1860,8 @@
     <edge source="GaudiSequencer/RichOfflineENNRingFinderSeq" target="Rich::Rec::TracklessRingIsolationAlg/OfflineIsolatedENNRings" />
     <edge source="GaudiSequencer/RichOfflineENNRingFinderSeq" target="Rich::Rec::ENNRingFinder::Rich2GasRightPanel/OfflineENNFinderR2GasRight" />
     <edge source="GaudiSequencer/RichOfflineENNRingFinderSeq" target="Rich::Rec::ENNRingFinder::Rich1GasTopPanel/OfflineENNFinderR1GasTop" />
-    <edge source="GaudiSequencer/RichOfflineENNRingFinderSeq" target="Rich::Rec::TracklessRingFilterAlg/OfflineBestENNRings" />
     <edge source="GaudiSequencer/RichOfflineENNRingFinderSeq" target="Rich::Rec::ENNRingFinder::Rich2GasLeftPanel/OfflineENNFinderR2GasLeft" />
+    <edge source="GaudiSequencer/RichOfflineENNRingFinderSeq" target="Rich::Rec::TracklessRingFilterAlg/OfflineBestENNRings" />
     <edge source="GaudiSequencer/RichOfflineENNRingFinderSeq" target="Rich::Rec::ENNRingFinder::Rich1GasBottomPanel/OfflineENNFinderR1GasBottom" />
     <edge source="GaudiSequencer/RichOfflineENNRingFinderSeq" target="Rich::Rec::TracklessRingSegmentAssociationAlg/OfflineENNRingsSegAssoc" />
     <edge source="GaudiSequencer/HcalDigitsSeq" target="CaloZSupAlg/HcalZSup" />
@@ -1916,15 +1923,15 @@
     <edge source="GaudiSequencer/MoniVELOSeq" target="Velo::VeloIPResolutionMonitor/VeloIPResolutionMonitor" />
     <edge source="GaudiSequencer/MoniVELOSeq" target="Velo::VeloTrackMonitor/VeloTrackMonitor" />
     <edge source="ProcessPhase/Moni" target="GaudiSequencer/MoniSTSeq" />
-    <edge source="ProcessPhase/Moni" target="GaudiSequencer/MoniPROTOSeq" />
     <edge source="ProcessPhase/Moni" target="GaudiSequencer/MoniCALOSeq" />
-    <edge source="ProcessPhase/Moni" target="GaudiSequencer/MoniTrSeq" />
+    <edge source="ProcessPhase/Moni" target="GaudiSequencer/MoniPROTOSeq" />
     <edge source="ProcessPhase/Moni" target="GaudiSequencer/MoniOTSeq" />
     <edge source="ProcessPhase/Moni" target="GaudiSequencer/MoniRICHSeq" />
     <edge source="ProcessPhase/Moni" target="GaudiSequencer/MoniMUONSeq" />
     <edge source="ProcessPhase/Moni" target="GaudiSequencer/MoniHltSeq" />
     <edge source="ProcessPhase/Moni" target="GaudiSequencer/MoniVELOSeq" />
     <edge source="ProcessPhase/Moni" target="GaudiSequencer/MoniGENERALSeq" />
+    <edge source="ProcessPhase/Moni" target="GaudiSequencer/MoniTrSeq" />
     <edge source="GaudiSequencer/CaloDigitsMoni" target="CaloDigitMonitor/HcalDigitMon" />
     <edge source="GaudiSequencer/CaloDigitsMoni" target="CaloDigitMonitor/SpdDigitMon" />
     <edge source="GaudiSequencer/CaloDigitsMoni" target="SpdMonitor/SpdMon" />
@@ -1934,8 +1941,8 @@
     <edge source="GaudiSequencer/RichPixelMoni" target="Rich::Rec::PixelClusterMoni/RichRecPixelClusters" />
     <edge source="GaudiSequencer/CaloDLLe" target="EcalPIDeAlg/EcalPIDe" />
     <edge source="GaudiSequencer/CaloDLLe" target="HcalPIDeAlg/HcalPIDe" />
-    <edge source="GaudiSequencer/CaloDLLe" target="PrsPIDeAlg/PrsPIDe" />
     <edge source="GaudiSequencer/CaloDLLe" target="BremPIDeAlg/BremPIDe" />
+    <edge source="GaudiSequencer/CaloDLLe" target="PrsPIDeAlg/PrsPIDe" />
     <edge source="GaudiSequencer/MoniHltSeq" target="HltCompositionMonitor/HltCompositionMonitor" />
     <edge source="GaudiSequencer/MoniHltSeq" target="HltRateMonitor/HltRateMonitorMB" />
     <edge source="GaudiSequencer/MoniHltSeq" target="EventTimeMonitor/EventTimeMonitor" />
@@ -1945,7 +1952,6 @@
     <edge source="GaudiSequencer/ANNGPIDSeq" target="ANNGlobalPID::ChargedProtoANNPIDAlg/ANNGPIDDownstreamGhost" />
     <edge source="GaudiSequencer/ANNGPIDSeq" target="ANNGlobalPID::ChargedProtoANNPIDAlg/ANNGPIDDownstreamElectron" />
     <edge source="GaudiSequencer/ANNGPIDSeq" target="ANNGlobalPID::ChargedProtoANNPIDAlg/ANNGPIDDownstreamKaon" />
-    <edge source="GaudiSequencer/ANNGPIDSeq" target="ANNGlobalPID::ChargedProtoANNPIDAlg/ANNGPIDUpstreamProton" />
     <edge source="GaudiSequencer/ANNGPIDSeq" target="ANNGlobalPID::ChargedProtoANNPIDAlg/ANNGPIDLongPion" />
     <edge source="GaudiSequencer/ANNGPIDSeq" target="ANNGlobalPID::ChargedProtoANNPIDAlg/ANNGPIDUpstreamElectron" />
     <edge source="GaudiSequencer/ANNGPIDSeq" target="ANNGlobalPID::ChargedProtoANNPIDAlg/ANNGPIDUpstreamMuon" />
@@ -1956,6 +1962,7 @@
     <edge source="GaudiSequencer/ANNGPIDSeq" target="ANNGlobalPID::ChargedProtoANNPIDAlg/ANNGPIDLongGhost" />
     <edge source="GaudiSequencer/ANNGPIDSeq" target="ANNGlobalPID::ChargedProtoANNPIDAlg/ANNGPIDDownstreamMuon" />
     <edge source="GaudiSequencer/ANNGPIDSeq" target="ANNGlobalPID::ChargedProtoANNPIDAlg/ANNGPIDDownstreamPion" />
+    <edge source="GaudiSequencer/ANNGPIDSeq" target="ANNGlobalPID::ChargedProtoANNPIDAlg/ANNGPIDUpstreamProton" />
     <edge source="GaudiSequencer/ANNGPIDSeq" target="ANNGlobalPID::ChargedProtoANNPIDAlg/ANNGPIDLongKaon" />
     <edge source="GaudiSequencer/ANNGPIDSeq" target="ANNGlobalPID::ChargedProtoANNPIDAlg/ANNGPIDUpstreamKaon" />
     <edge source="GaudiSequencer/ANNGPIDSeq" target="ANNGlobalPID::ChargedProtoANNPIDAlg/ANNGPIDDownstreamProton" />
@@ -1973,15 +1980,15 @@
     <edge source="GaudiSequencer/MoniGENERALSeq" target="RecProcessingTimeMoni/RichEventProcTime" />
     <edge source="GaudiSequencer/MoniGENERALSeq" target="ProcStatAbortMoni/ProcStatAbortMoni" />
     <edge source="GaudiSequencer/MoniGENERALSeq" target="RecProcessingTimeMoni/CaloEventProcTime" />
-    <edge source="GaudiSequencer/ElectronReco" target="GaudiSequencer/CaloTrackMatch" />
-    <edge source="GaudiSequencer/ElectronReco" target="CaloElectronAlg/SingleElectronRec" />
     <edge source="GaudiSequencer/CaloMatch" target="BremMatchAlg/BremMatch" />
-    <edge source="GaudiSequencer/CaloMatch" target="ElectronMatchAlg/ElectronMatch" />
     <edge source="GaudiSequencer/CaloMatch" target="GaudiSequencer/CaloTrackMatch" />
+    <edge source="GaudiSequencer/CaloMatch" target="ElectronMatchAlg/ElectronMatch" />
+    <edge source="GaudiSequencer/BrunelSequencer" target="FakeAlgorithm/Framework" />
     <edge source="GaudiSequencer/BrunelSequencer" target="GaudiSequencer/NotPhysicsSeq" />
     <edge source="GaudiSequencer/BrunelSequencer" target="ProcessPhase/Output" />
     <edge source="GaudiSequencer/BrunelSequencer" target="GaudiSequencer/HltErrorSeq" />
     <edge source="GaudiSequencer/BrunelSequencer" target="GaudiSequencer/LumiSeq" />
+    <edge source="GaudiSequencer/BrunelSequencer" target="GaudiAlgorithm/DstWriter" />
     <edge source="GaudiSequencer/BrunelSequencer" target="GaudiSequencer/PhysicsSeq" />
     <edge source="GaudiSequencer/BrunelSequencer" target="ProcessPhase/Init" />
     <edge source="GaudiSequencer/MergedPi0Reco" target="CaloMergedPi0Alg/MergedPi0Rec" />
@@ -2008,13 +2015,14 @@
     <edge source="ProcessPhase/Reco" target="GaudiSequencer/RecoDecodingSeq" />
     <edge source="GaudiSequencer/HltErrorSeq" target="AddToProcStatus/HltErrorProc" />
     <edge source="GaudiSequencer/HltErrorSeq" target="GaudiSequencer/HltFilterSeq" />
-    <edge source="GaudiSequencer/TrackClonesSeq" target="TrackBuildCloneTable/FindTrackClones" />
-    <edge source="GaudiSequencer/TrackClonesSeq" target="TrackCloneCleaner/FlagTrackClones" />
+    <edge source="GaudiSequencer/RecoTrSeq" target="ProcessPhase/Track" />
     <edge source="GaudiSequencer/LumiBeam2Seq" target="FilterOnLumiSummary/LumiFilterBeam2" />
     <edge source="GaudiSequencer/LumiBeam2Seq" target="FilterFillingScheme/FillingBeam2" />
     <edge source="GaudiSequencer/LumiBeam2Seq" target="LumiAccounting/LumiCountBeam2" />
     <edge source="GaudiSequencer/LumiBeam2Seq" target="HltLumiSummaryDecoder/LumiDecodeBeam2" />
     <edge source="GaudiSequencer/LumiBeam2Seq" target="LoKi::ODINFilter/FilterBeam2" />
+    <edge source="GaudiSequencer/ElectronReco" target="GaudiSequencer/CaloTrackMatch" />
+    <edge source="GaudiSequencer/ElectronReco" target="CaloElectronAlg/SingleElectronRec" />
     <edge source="GaudiSequencer/CaloRecoForCaloProcessor" target="GaudiSequencer/MergedPi0Reco" />
     <edge source="GaudiSequencer/CaloRecoForCaloProcessor" target="GaudiSequencer/ElectronReco" />
     <edge source="GaudiSequencer/CaloRecoForCaloProcessor" target="GaudiSequencer/PhotonReco" />
