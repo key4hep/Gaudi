@@ -41,7 +41,7 @@ public:
   /** the only one essential method
    *  @return status code
    */
-  virtual StatusCode execute () ;
+  StatusCode execute ()  override;
 
   /** standard contructor
    *  @param name algorithm istance name
@@ -53,7 +53,7 @@ public:
     : GaudiAlgorithm ( name , pSvc )
   { setProperty( "StatPrint" , "true" ).ignore() ; }
   /// virtual protected dectrustor
-  virtual ~CounterAlg() {};
+  ~CounterAlg() override {}
 private:
   // default constructor is disabled
   CounterAlg() ;

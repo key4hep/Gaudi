@@ -280,7 +280,7 @@ public:
       This function overrides the one in GaudiHandleArray<T>, as this is a special case.
       The private/public choice and createIf is determined by what was given
       in the constructor of the ToolHandleArray. */
-  virtual bool push_back( const std::string& toolTypeAndName ) {
+  bool push_back( const std::string& toolTypeAndName ) override {
     ToolHandle<T> handle( toolTypeAndName,
                           ToolHandleInfo::parent(),
                           ToolHandleInfo::createIf() );
@@ -289,7 +289,7 @@ public:
   }
 
   /** Ensure that for added handles the parent and creatIf are taken from this array. */
-  virtual bool push_back( const ToolHandle<T>& myHandle ) {
+  bool push_back( const ToolHandle<T>& myHandle ) override {
     return push_back( myHandle.typeAndName() );
   }
 

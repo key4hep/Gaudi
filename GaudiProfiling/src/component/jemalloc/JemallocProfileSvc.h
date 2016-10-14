@@ -23,16 +23,16 @@ public:
   JemallocProfileSvc(const std::string &name, ISvcLocator *svcLoc);
 
   /// Initializer
-  StatusCode initialize();
+  StatusCode initialize() override;
 
   /// Finalizer
-  StatusCode finalize();
+  StatusCode finalize() override;
 
   // Handler for incident
-  void handle(const Incident &incident);
+  void handle(const Incident &incident) override;
 
   ///< Destructor
-  virtual ~JemallocProfileSvc();
+  ~JemallocProfileSvc() override;
 
 protected:
   void handleBegin();

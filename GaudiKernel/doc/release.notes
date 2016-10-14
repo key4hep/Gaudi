@@ -2,6 +2,9 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+! 2016-08-18 - Chris Jones
+ - Default initialise the key value in KeyedObject.
+
 ============================= GaudiKernel v33r1 ==============================
 
 ! 2016-03-10 - commit f84ad02

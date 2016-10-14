@@ -34,10 +34,10 @@ namespace Gaudi {
       /// Constructors
       Event();
       /// Destructor
-      virtual ~Event() { }
+      ~Event() override = default;
 
       /// Retrieve reference to class definition structure
-      virtual const CLID& clID() const  { return classID(); }
+      const CLID& clID() const override  { return classID(); }
       static const CLID& classID() { return CLID_Event; }
 
       /// Retrieve event number
@@ -71,7 +71,7 @@ namespace Gaudi {
       virtual StreamBuffer& serialize( StreamBuffer& s );
 
       /// Fill the output stream (ASCII)
-      virtual std::ostream& fillStream( std::ostream& s ) const;
+      std::ostream& fillStream( std::ostream& s ) const override;
 
     private:
       /// Event number

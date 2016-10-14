@@ -1,3 +1,7 @@
+// redefined anyway in features.h by _GNU_SOURCE
+#undef _XOPEN_SOURCE
+#undef _POSIX_C_SOURCE
+
 // ============================================================================
 // Python must always be the first.
 #include "Python.h"

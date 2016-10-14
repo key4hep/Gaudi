@@ -1,4 +1,4 @@
-gaudi_subdir(GaudiProfiling v2r9)
+gaudi_subdir(GaudiProfiling)
 
 gaudi_depends_on_subdirs(GaudiKernel GaudiAlg)
 

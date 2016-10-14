@@ -17,13 +17,13 @@ public:
   WriteAlg(const std::string& name, ISvcLocator* pSvcLocator)
   :	Algorithm(name, pSvcLocator) { }
   /// Standard Destructor
-  virtual ~WriteAlg() { }
+  ~WriteAlg() override { }
   /// Initialize
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
   /// Finalize
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
   /// Event callback
-  virtual StatusCode execute();
+  StatusCode execute() override;
 };
 
 #endif // GAUDIEXAMPLE_WRITEALG_H

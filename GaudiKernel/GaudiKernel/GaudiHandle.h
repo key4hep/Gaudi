@@ -142,7 +142,7 @@ public:
   /** Name of the componentType with "Handle" appended. Used as the python class name
       for the property in the genconf-generated configurables.
       The python class is defined in GaudiPython/python/GaudiHandles.py. */
-  std::string pythonPropertyClassName() const;
+  std::string pythonPropertyClassName() const override;
 
   /** name used for printing messages */
   std::string messageName() const;
@@ -150,7 +150,7 @@ public:
   /** Python representation of handle, i.e. python class name and argument.
       Can be used in the genconf-generated configurables.
       The corresponding python classes are defined in GaudiPython/GaudiHandles.py */
-  virtual std::string pythonRepr() const;
+  std::string pythonRepr() const override;
 
 private:
   //

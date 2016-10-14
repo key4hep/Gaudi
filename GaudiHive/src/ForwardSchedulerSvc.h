@@ -1,21 +1,6 @@
 #ifndef GAUDIHIVE_FORWARDSCHEDULERSVC_H
 #define GAUDIHIVE_FORWARDSCHEDULERSVC_H
 
-// Framework include files
-#include "GaudiKernel/IScheduler.h"
-#include "GaudiKernel/IRunable.h"
-#include "GaudiKernel/Service.h"
-#include "GaudiKernel/IAlgResourcePool.h"
-#include "GaudiKernel/IHiveWhiteBoard.h"
-#include "GaudiKernel/IThreadPoolSvc.h"
-
-// Local includes
-#include "AlgsExecutionStates.h"
-#include "EventSlot.h"
-#include "ExecutionFlowManager.h"
-#include "DataFlowManager.h"
-
-// C++ include files
 #include <vector>
 #include <string>
 #include <unordered_map>
@@ -24,6 +9,21 @@
 
 // External libs
 #include "tbb/concurrent_queue.h"
+
+// Framework include files
+#include "GaudiKernel/IScheduler.h"
+#include "GaudiKernel/IRunable.h"
+#include "GaudiKernel/Service.h"
+#include "GaudiKernel/IAlgResourcePool.h"
+#include "GaudiKernel/IHiveWhiteBoard.h"
+#include "GaudiKernel/IAccelerator.h"
+#include "GaudiKernel/IThreadPoolSvc.h"
+
+// Local includes
+#include "AlgsExecutionStates.h"
+#include "EventSlot.h"
+#include "ExecutionFlowManager.h"
+#include "DataFlowManager.h"
 
 typedef AlgsExecutionStates::State State;
 
@@ -80,25 +80,25 @@ public:
   ~ForwardSchedulerSvc();
 
   /// Initialise
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
 
   /// Finalise
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
 
   /// Make an event available to the scheduler
-  virtual StatusCode pushNewEvent(EventContext* eventContext);
+  StatusCode pushNewEvent(EventContext* eventContext) override;
 
   // Make multiple events available to the scheduler
-  virtual StatusCode pushNewEvents(std::vector<EventContext*>& eventContexts);
+  StatusCode pushNewEvents(std::vector<EventContext*>& eventContexts) override;
 
   /// Blocks until an event is availble
-  virtual StatusCode popFinishedEvent(EventContext*& eventContext);
+  StatusCode popFinishedEvent(EventContext*& eventContext) override;
 
   /// Try to fetch an event from the scheduler
-  virtual StatusCode tryPopFinishedEvent(EventContext*& eventContext);
+  StatusCode tryPopFinishedEvent(EventContext*& eventContext) override;
 
   /// Get free slots number
-  virtual unsigned int freeSlots();
+  unsigned int freeSlots() override;
 
 
 private:
@@ -141,6 +141,12 @@ private:
   /// The whiteboard name
   std::string m_whiteboardSvcName;
 
+  /// A shortcut to IO-bound algorithm scheduler
+  SmartIF<IAccelerator> m_IOBoundAlgScheduler;
+
+  /// The IO-bound algorithm scheduler's name
+  std::string m_IOBoundAlgSchedulerSvcName;
+
   /// Vector of events slots
   std::vector<EventSlot> m_eventSlots;
 
@@ -161,9 +167,13 @@ private:
 
   /// Maximum number of simultaneous algorithms
   unsigned int m_maxAlgosInFlight;
-
   /// Number of algoritms presently in flight
   unsigned int m_algosInFlight;
+
+  /// Maximum number of simultaneous algorithms
+  unsigned int m_maxIOBoundAlgosInFlight;
+  /// Number of algoritms presently in flight
+  unsigned int m_IOBoundAlgosInFlight;
 
   /// Loop on algorithm in the slots and promote them to successive states (-1 means all slots, while empty string
   /// means skipping an update of the Control Flow state)
@@ -173,7 +183,9 @@ private:
   StatusCode promoteToControlReady(unsigned int iAlgo, int si);
   StatusCode promoteToDataReady(unsigned int iAlgo, int si);
   StatusCode promoteToScheduled(unsigned int iAlgo, int si);
+  StatusCode promoteToAsyncScheduled(unsigned int iAlgo, int si); // tests of an asynchronous scheduler
   StatusCode promoteToExecuted(unsigned int iAlgo, int si, IAlgorithm* algo, EventContext*);
+  StatusCode promoteToAsyncExecuted(unsigned int iAlgo, int si, IAlgorithm* algo, EventContext*); // tests of an asynchronous scheduler
   StatusCode promoteToFinished(unsigned int iAlgo, int si);
 
   /// Check if the scheduling is in a stall
@@ -217,9 +229,12 @@ private:
   std::string m_optimizationMode;
   // Dump intra-event concurrency dynamics to csv file
   bool m_dumpIntraEventDynamics;
+  // Flag to control cooperative use of the scheduler, dedicated to I/O-bound algorithms
+  bool m_useIOBoundAlgScheduler;
 
   // Needed to queue actions on algorithm finishing and decrement algos in flight
   friend class AlgoExecutionTask;
+  friend class IOBoundAlgTask;
 
   // Service for thread pool initialization
   SmartIF<IThreadPoolSvc>  m_threadPoolSvc;
@@ -227,7 +242,7 @@ private:
   bool m_first;
 
   class SchedulerState {
-    
+
   public:
     SchedulerState(Algorithm* a, EventContext* e, pthread_t t):
       m_a(a), m_e(*e), m_t(t)
@@ -240,7 +255,7 @@ private:
 
     friend std::ostream& operator<< (std::ostream& os, const SchedulerState& ss) {
       os << ss.ctx()
-         << "  a: " << ss.alg()->name() 
+         << "  a: " << ss.alg()->name()
          << " [" << std::hex << ss.alg() << std::dec
          << "]  t: 0x" << std::hex << ss.thread() << std::dec;
       return os;
@@ -264,14 +279,14 @@ private:
     pthread_t m_t;
 
   };
-  
+
   static std::list<SchedulerState> m_sState;
   static std::mutex m_ssMut;
 
 public:
   void addAlg(Algorithm*, EventContext*, pthread_t);
   bool delAlg(Algorithm*);
-  void dumpState();
+  void dumpState() override;
 
 private:
   void dumpState(std::ostringstream&);

@@ -56,34 +56,34 @@ public:
   typedef std::vector<double> argument ;
 public:
   Function () { m_gradient.resize(2); }
-  virtual ~Function () {}
-  virtual double value ( const std::vector<double>& x ) const
+  ~Function () override {}
+  double value ( const std::vector<double>& x ) const override
   {
     return 10 * x[0] * x[0] + 20 * x[1] * x[1];
   }
-  virtual int dimension () const {return 2;}
-  bool setTitle(const std::string& ) { return false; }
-  std::string title(void) const {return "";}
-  bool isEqual(const AIDA::IFunction&) const { return false; }
-  const std::vector<double>& gradient(const std::vector<double>& x) const {
+  int dimension () const override {return 2;}
+  bool setTitle(const std::string& ) override { return false; }
+  std::string title(void) const override {return "";}
+  bool isEqual(const AIDA::IFunction&) const override { return false; }
+  const std::vector<double>& gradient(const std::vector<double>& x) const override {
     m_gradient[0] = 20*x[0];
     m_gradient[1] = 40*x[1];
     return m_gradient;
   }
-  bool providesGradient(void) const { return true; }
-  std::string variableName(int) const  { return ""; }
-  std::vector<std::string> variableNames(void) const {return m_names;}
-  bool setParameters(const std::vector<double> &) {return false;}
-  const std::vector<double>& parameters(void) const {return m_values;}
-  int numberOfParameters(void) const {return 0;}
-  std::vector<std::string> parameterNames() const {return m_names;}
-  bool setParameter(const std::string&, double){return false;}
-  double parameter(const std::string&) const { return 0.0;}
-  int indexOfParameter(const std::string&) const {return 0;}
-  const AIDA::IAnnotation& annotation(void) const {return *(AIDA::IAnnotation*)0;}
-  AIDA::IAnnotation& annotation(void){return *(AIDA::IAnnotation*)0;}
-  std::string codeletString(void) const {return "";}
-  void* cast(const std::string &) const { return 0; }
+  bool providesGradient(void) const override { return true; }
+  std::string variableName(int) const override  { return ""; }
+  std::vector<std::string> variableNames(void) const override {return m_names;}
+  bool setParameters(const std::vector<double> &) override {return false;}
+  const std::vector<double>& parameters(void) const override {return m_values;}
+  int numberOfParameters(void) const override {return 0;}
+  std::vector<std::string> parameterNames() const override {return m_names;}
+  bool setParameter(const std::string&, double) override {return false;}
+  double parameter(const std::string&) const override { return 0.0;}
+  int indexOfParameter(const std::string&) const override {return 0;}
+  const AIDA::IAnnotation& annotation(void) const override {return *(AIDA::IAnnotation*)0;}
+  AIDA::IAnnotation& annotation(void) override {return *(AIDA::IAnnotation*)0;}
+  std::string codeletString(void) const override {return "";}
+  void* cast(const std::string &) const override { return 0; }
 private:
   std::string              m_version ;
   std::string              m_label   ;

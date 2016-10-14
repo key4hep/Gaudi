@@ -45,15 +45,15 @@ public:
   /// Constructor: A constructor of this form must be provided.
   EvtCollectionWrite(const std::string& name, ISvcLocator* pSvcLocator);
   /// Standard Destructor
-  virtual ~EvtCollectionWrite();
+  ~EvtCollectionWrite() override;
   /// Initialize
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
   /// Finalize
-  virtual StatusCode finalize() {
+  StatusCode finalize() override {
     return StatusCode::SUCCESS;
   }
   /// Event callback
-  virtual StatusCode execute();
+  StatusCode execute() override;
 };
 
 #endif // EVTCOLLECTION_WRITE_H

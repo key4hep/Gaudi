@@ -19,16 +19,16 @@ public:
 	MetaDataSvc( const std::string& name, ISvcLocator* svc );
 
 	// Destructor.
-	~MetaDataSvc();
+        ~MetaDataSvc() override;
 
-	StatusCode initialize();
-	StatusCode start();
+        StatusCode initialize() override;
+        StatusCode start() override;
 	bool isEnabled() const ;
 
 	StatusCode collectData();
 
-	MetaData* getMetaData();
-	std::map <std::string, std::string> getMetaDataMap();
+        MetaData* getMetaData() override;
+        std::map <std::string, std::string> getMetaDataMap() override;
 
 private:
 	bool m_isEnabled;

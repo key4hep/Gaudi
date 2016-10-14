@@ -1,9 +1,13 @@
-gaudi_subdir(GaudiMP v3r5)
+gaudi_subdir(GaudiMP)
 
 gaudi_depends_on_subdirs(GaudiKernel GaudiAlg)
 
 find_package(ROOT)
 find_package(PythonLibs)
+
+# Hide some Boost compile time warnings
+find_package(Boost)
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
 #---Libraries---------------------------------------------------------------
 gaudi_add_library(GaudiMPLib src/Lib/*.cpp
