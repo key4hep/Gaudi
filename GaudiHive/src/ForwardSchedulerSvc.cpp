@@ -213,9 +213,10 @@ StatusCode ForwardSchedulerSvc::initialize(){
                 }
             }
             if (!alt.empty()) {
-                info() << "found matching output for " << alt << " -- but how to push it into the right handle?" << endmsg;
+                info() << "found matching output for " << alt << " -- updating scheduler info" << endmsg;
+                id.updateKey(alt);
             } else {
-                info() << "failed to find alternate in global output list" << endmsg;
+                error() << "failed to find alternate in global output list" << endmsg;
             }
         }
         algoDependencies.insert(id);
