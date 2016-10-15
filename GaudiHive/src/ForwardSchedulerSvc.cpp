@@ -181,9 +181,9 @@ StatusCode ForwardSchedulerSvc::initialize(){
         }
     }
   }
-  info() << "outputs:\n" ;
+  info() << "outputs:" << endmsg;
   for (const auto& i : globalOutp ) {
-      info() << i << '\n' ;
+      info() << i << endmsg ;
   }
   info() << endmsg;
 
@@ -197,13 +197,13 @@ StatusCode ForwardSchedulerSvc::initialize(){
     if (nullptr == algoPtr)
       fatal() << "Could not convert IAlgorithm into Algorithm: this will result in a crash." << endmsg;
 
-    info() << "\n  " << algoPtr->name();
+    info() << endmsg << "  " << algoPtr->name();
 
     // FIXME
     DataObjIDColl algoDependencies;
     if (!algoPtr->inputDataObjs().empty() || !algoPtr->outputDataObjs().empty()) {
       for (auto id : algoPtr->inputDataObjs()) {
-        info() << "\n    o INPUT  " << id;
+        info() << endmsg << "    o INPUT  " << id;
         if (id.key().find(":")!=std::string::npos) {
             info() << " contains alternatives which require resolution... " << endmsg;
             auto tokens = boost::tokenizer<boost::char_separator<char>>{id.key(),boost::char_separator<char>{":"}};
@@ -224,23 +224,23 @@ StatusCode ForwardSchedulerSvc::initialize(){
                 }
             }
             if (!alt.empty()) {
-                info() << "found matching output for " << alt << " -- updating scheduler info" << endmsg;
+                info() << "      -> found matching output for " << alt << " -- updating scheduler info";
                 id.updateKey(alt);
             } else {
-                error() << "failed to find alternate in global output list" << endmsg;
+                error() << "      -> failed to find alternate in global output list" << endmsg;
             }
         }
         algoDependencies.insert(id);
         globalInp.insert(id);
       }
       for (auto id : algoPtr->outputDataObjs()) {
-        info() << "\n    o OUTPUT " << id;
+        info() << endmsg << "    o OUTPUT " << id;
         if (id.key().find(":")!=std::string::npos) {
             info() << " alternatives are NOT allowed for outputs..." << endmsg;
         }
       }
     } else {
-      info()   << "\n      none";
+      info()   << endmsg << "      none";
     }
     m_algosDependencies.emplace_back(algoDependencies);
   }
@@ -269,10 +269,10 @@ StatusCode ForwardSchedulerSvc::initialize(){
     if (unmetDep.size() > 0) {
       fatal() << "The following unmet INPUT data dependencies were found: ";
       for (auto &o : unmetDep) {
-        fatal() << "\n   o " << o << "    required by Algorithm: ";
+        fatal() << endmsg << "   o " << o << "    required by Algorithm: ";
         for (size_t i =0; i<m_algosDependencies.size(); ++i) {
           if ( m_algosDependencies[i].find( o ) != m_algosDependencies[i].end() ) {
-            fatal() << "\n       * " << m_algname_vect[i];
+            fatal() << endmsg << "       * " << m_algname_vect[i];
           }
         }
       }
@@ -790,7 +790,7 @@ StatusCode ForwardSchedulerSvc::updateStates(int si, const std::string& algo_nam
                      << thisAlgsStates.sizeOfSubset(State::DATAREADY) << ", "
                      << thisAlgsStates.sizeOfSubset(State::SCHEDULED) << ", "
                      << std::chrono::duration_cast<std::chrono::nanoseconds> (now - m_efManager.getExecutionFlowGraph()->getInitTime()).count()
-                     << "\n";
+                     << endmsg;
       auto threads = (m_threadPoolSize != -1) ? std::to_string(m_threadPoolSize)
                                               : std::to_string(tbb::task_scheduler_init::default_num_threads());
       std::ofstream myfile;
@@ -854,7 +854,7 @@ StatusCode ForwardSchedulerSvc::isStalled(int iSlot) {
       (!thisSlot.algsStates.algsPresent(AlgsExecutionStates::DATAREADY))) {
 
     info() << "About to declare a stall" << endmsg;
-    fatal() << "*** Stall detected! ***\n" << endmsg;
+    fatal() << "*** Stall detected! ***" << endmsg;
     dumpSchedulerState(iSlot);
     //throw GaudiException ("Stall detected",name(),StatusCode::FAILURE);
 
@@ -928,12 +928,12 @@ void ForwardSchedulerSvc::dumpSchedulerState(int iSlot) {
       }
 
       // Snapshot of the WhiteBoard
-      outputMessageStream << "\nWhiteboard contents: "<< std::endl;
+      outputMessageStream << endmsg << "Whiteboard contents: "<< endmsg;
       for (auto& product : wbSlotContent )
-        outputMessageStream << " o " << product << std::endl;
+        outputMessageStream << " o " << product << endmsg;
 
       // Snapshot of the ControlFlow
-      outputMessageStream << "\nControl Flow:" << std::endl;
+      outputMessageStream << endmsg << "Control Flow:" << endmsg;
       std::stringstream cFlowStateStringStream;
       m_efManager.printEventState(cFlowStateStringStream, thisSlot.algsStates, thisSlot.controlFlowState,0);
 
@@ -945,7 +945,7 @@ void ForwardSchedulerSvc::dumpSchedulerState(int iSlot) {
     << "=================================== END ======================================"
     << std::endl;
 
-  info() << "Dumping Scheduler State " << std::endl
+  info() << "Dumping Scheduler State " << endmsg
          << outputMessageStream.str() << endmsg;
 
 }
