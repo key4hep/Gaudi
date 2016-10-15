@@ -90,9 +90,6 @@ public:
   virtual StatusCode commitOutput(const std::string& outputFile,
                                   bool do_commit) = 0;
 
-  /// Virtual destructor
-  ~IConversionSvc() override = default;
-
   /// Status code definitions
   enum Status  {
    /// Success

@@ -20,9 +20,6 @@ public:
   /// Basic interface id of the managed components.
   const InterfaceID& componentBaseInterface() const override;
 
-  /// Virtual destructor
-  ~ComponentManager() override = default;
-
   /// Specialized queryInterface implementation.
   /// If an interface is not fount in the implemented ones, we fall back on the
   /// owner.

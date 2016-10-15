@@ -79,8 +79,6 @@ public:
   /// Erase a property by StdHep id
   virtual StatusCode eraseByStdHepID( int stdHepID ) = 0;
 
-  /// virtual destructor
-  virtual ~IParticlePropertySvc() = default;
 };
 
 #endif

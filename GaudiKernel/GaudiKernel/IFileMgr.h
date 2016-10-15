@@ -317,11 +317,7 @@ class GAUDI_API IFileMgr: virtual public IService {
 
  public:
 
-  virtual ~IFileMgr() = default;
-
   DeclareInterfaceID(IFileMgr,1,0);
-
- public:
 
   // register handler function for file technology
   virtual StatusCode regHandler(Io::FileHdlr) = 0;
