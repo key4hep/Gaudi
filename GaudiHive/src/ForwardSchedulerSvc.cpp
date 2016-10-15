@@ -200,21 +200,9 @@ StatusCode ForwardSchedulerSvc::initialize(){
                                      [&](const std::string& t) {
                 return globalOutp.find( DataObjID{t} ) != globalOutp.end();
             } );
-            std::string alt = (itok!=tokens.end() ? *itok : std::string{} );
-            if (alt.empty()) { // now try to prefix by '/Event' -- should be RootInTES, but how to do that??
-                std::string RootInTES = "/Event/";
-                for (const auto& tok : tokens ) {
-                    if (!boost::algorithm::starts_with(tok,RootInTES)) {
-                            if ( globalOutp.find( DataObjID{RootInTES+tok} ) != globalOutp.end()) {
-                                alt = RootInTES+tok;
-                                break;
-                            }
-                    }
-                }
-            }
-            if (!alt.empty()) {
-                info() << "found matching output for " << alt << " -- updating scheduler info" << endmsg;
-                id.updateKey(alt);
+            if (itok!=tokens.end()) {
+                info() << "found matching output for " << *itok << " -- updating scheduler info" << endmsg;
+                id.updateKey(*itok);
             } else {
                 error() << "failed to find alternate in global output list" << endmsg;
             }
