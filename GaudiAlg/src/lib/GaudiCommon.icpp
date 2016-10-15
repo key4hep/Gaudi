@@ -223,17 +223,15 @@ StatusCode GaudiCommon<PBASE>::
 
   //get root of DataManager
   SmartIF<IDataManagerSvc> dataMgrSvc(PBASE::evtSvc());
-  std::string rootName(dataMgrSvc->rootName());
-  if ("" != rootName && '/' != rootName[rootName.size() - 1]) {
-    rootName = rootName + "/";
-  }
+  auto rootName = dataMgrSvc->rootName();
+  if ( !rootName.empty() && '/' != rootName.back() ) rootName += "/";
 
   auto fixLocation = [this, rootName] (const std::string & location) -> std::string {
     auto tokens = boost::tokenizer<boost::char_separator<char>>{location,boost::char_separator<char>{":"}};
     auto result = std::accumulate( tokens.begin(), tokens.end(), std::string{}, 
-                     [&](std::string s, std::string tok) {
+                     [&](std::string s, const std::string& tok) {
                         std::string r = fullTESLocation(tok, UseRootInTES);
-                        //check whether we have an absolute path if yes return it - else prepend DataManager Root
+                        //check whether we have an absolute path if yes use it - else prepend DataManager Root
                         if (r[0]!='/') r = rootName + r;
                         return s.empty() ? r : s + ':' + r;
                      } );
