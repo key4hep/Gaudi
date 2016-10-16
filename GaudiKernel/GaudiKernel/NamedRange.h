@@ -39,15 +39,15 @@ namespace Gaudi
    *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
    *  @date   2004-11-19
    */
-  template <class TYPE>
-  class NamedRange_ : public Gaudi::Range_<TYPE>
+  template <class CONTAINER, class ITERATOR= typename Gaudi::details::container<CONTAINER>::Iterator>
+  class NamedRange_ : public Gaudi::Range_<CONTAINER,ITERATOR>
   {
   protected:
     // ========================================================================
     /// the base class
-    typedef Gaudi::Range_<TYPE>  Base ;
+    typedef Gaudi::Range_<CONTAINER,ITERATOR>  Base ;
     /// "self"-type
-    typedef NamedRange_<TYPE>   Self ;
+    typedef NamedRange_<CONTAINER,ITERATOR>   Self ;
     // ========================================================================
   public:
     // ========================================================================
@@ -73,7 +73,7 @@ namespace Gaudi
      *  @param base base objects
      *  @param name name of the range
      */
-    NamedRange_( const typename Base::_Base& base      ,
+    NamedRange_( const typename Base::Base& base      ,
                  std::string          name = "" )
       : Base   ( base ) , m_name ( std::move(name) ) {};
     /** constructor from the base class
@@ -109,25 +109,24 @@ namespace Gaudi
     // ========================================================================
     /// the name, associated to the range
     std::string m_name ; // the name associated to the range
+    // ========================================================================
   };
   // ==========================================================================
-  /** simple function to create the named range form arbitrary container
-   *
+  /** simple function to create the named range from arbitrary container
    *  @code
    *
    *    const CONTAINER& cnt = ... ;
    *    auto r = range ( cnt , "some name") ;
    *
    *  @endcode
-   *
    *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
    *  @date 2007-11-29
    */
   template <class CONTAINER>
   inline
   NamedRange_<CONTAINER>
-  range ( const CONTAINER&   cnt  ,
-          std::string name )
+  range ( const CONTAINER& cnt  ,
+          std::string      name )
   { return NamedRange_<CONTAINER>( cnt.begin() , cnt.end() , std::move(name) ) ; }
   // ==========================================================================
 } // end of namespace Gaudi

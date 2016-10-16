@@ -48,6 +48,8 @@ gaudi_add_unit_test(test_headers_build tests/src/test_headers_build.cpp
                     LINK_LIBRARIES GaudiKernel)
 gaudi_add_unit_test(test_GAUDI-905 tests/src/GAUDI-905.cpp
                     LINK_LIBRARIES GaudiKernel)
+gaudi_add_unit_test(test_SmartRanges tests/src/test_SmartRanges.cpp
+                    LINK_LIBRARIES GaudiKernel)
 
 if(GAUDI_CPP11)
   gaudi_add_unit_test(test_GAUDI-973 tests/src/GAUDI-973.cpp
