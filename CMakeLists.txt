@@ -6,6 +6,8 @@ if(NOT GaudiProject_DIR AND ("$ENV{GaudiProject_DIR}" STREQUAL ""))
   set(GaudiProject_DIR ${CMAKE_SOURCE_DIR}/cmake)
 endif()
 
+include(${CMAKE_SOURCE_DIR}/cmake/externals.cmake)
+
 #---------------------------------------------------------------
 # Load macros and functions for Gaudi-based projects
 find_package(GaudiProject)
