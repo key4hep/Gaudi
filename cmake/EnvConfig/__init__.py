@@ -244,7 +244,13 @@ class Script(object):
         '''
         from subprocess import Popen
         cmd = self.expandEnvVars(self.cmd)
-        proc = Popen(cmd, env=self.env)
+        try:
+            proc = Popen(cmd, env=self.env)
+        except OSError, x:
+            print >> sys.stderr, '{0}: {1}: {2}'.format(sys.argv[0],
+                                                        cmd[0],
+                                                        x.strerror)
+            sys.exit(127)
         while proc.poll() is None:
             try:
                 proc.wait()
