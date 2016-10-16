@@ -1,9 +1,12 @@
-gaudi_subdir(Util v33r1)
+gaudi_subdir(Util)
 
 gaudi_depends_on_subdirs(GaudiKernel GaudiPluginService)
 
 find_package(Boost COMPONENTS program_options regex log log_setup)
 find_package(ROOT)
+
+# Hide some Boost compile time warnings
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
 #---Util Executables--------------------------------------------------------
 #set(CMAKE_BUILD_TYPE Release)

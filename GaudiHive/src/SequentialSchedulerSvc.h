@@ -43,25 +43,25 @@ public:
   ~SequentialSchedulerSvc();
 
   /// Initialise
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
   
   /// Finalise
-  virtual StatusCode finalize();  
+  StatusCode finalize() override;
 
   /// Make an event available to the scheduler
-  virtual StatusCode pushNewEvent(EventContext* eventContext);
+  StatusCode pushNewEvent(EventContext* eventContext) override;
 
   // Make multiple events available to the scheduler
-  virtual StatusCode pushNewEvents(std::vector<EventContext*>& eventContexts);
+  StatusCode pushNewEvents(std::vector<EventContext*>& eventContexts) override;
   
   /// Blocks until an event is availble
-  virtual StatusCode popFinishedEvent(EventContext*& eventContext);  
+  StatusCode popFinishedEvent(EventContext*& eventContext) override;
 
   /// Try to fetch an event from the scheduler
-  virtual StatusCode tryPopFinishedEvent(EventContext*& eventContext);  
+  StatusCode tryPopFinishedEvent(EventContext*& eventContext) override;
 
   /// Get free slots number
-  virtual unsigned int freeSlots();
+  unsigned int freeSlots() override;
 
 
 private:

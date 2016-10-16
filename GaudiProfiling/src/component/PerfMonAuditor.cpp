@@ -200,8 +200,8 @@ namespace {
 class PerfMonAuditor: virtual public Auditor
 {
  public:
-  virtual void before(StandardEventType evt, INamedInterface* alg);
-  virtual void after(StandardEventType evt, INamedInterface* alg, const StatusCode &sc);
+  void before(StandardEventType evt, INamedInterface* alg) override;
+  void after(StandardEventType evt, INamedInterface* alg, const StatusCode &sc) override;
   using Auditor::before;
   using Auditor::after;
 
@@ -212,8 +212,8 @@ class PerfMonAuditor: virtual public Auditor
   void i_afterExecute(INamedInterface* alg);
 
  public:
-  virtual StatusCode initialize();
-  virtual StatusCode finalize();
+  StatusCode initialize() override;
+  StatusCode finalize() override;
   int is_nehalem() {
 #ifdef __ICC
 // Disable ICC remark #593: variable "x" was set but never used

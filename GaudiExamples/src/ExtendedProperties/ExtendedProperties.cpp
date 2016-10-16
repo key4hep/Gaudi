@@ -50,7 +50,7 @@ class ExtendedProperties
   : public GaudiAlgorithm
 {
 public:
-  StatusCode execute() ;
+  StatusCode execute() override ;
 
   ExtendedProperties
   ( const std::string& name ,
@@ -109,7 +109,7 @@ public:
 
   }
   /// destruictor: virtual and protected
-  virtual ~ExtendedProperties(){}
+  ~ExtendedProperties() override {}
 private:
   // default constructor is disabled
   ExtendedProperties();

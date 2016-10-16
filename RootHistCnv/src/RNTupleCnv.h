@@ -24,25 +24,25 @@ namespace RootHistCnv {
   class RNTupleCnv : public RConverter   {
   public:
     /// Initialize the converter
-    virtual StatusCode initialize();
+    StatusCode initialize() override;
     /// Finalize the converter
-    virtual StatusCode finalize();
+    StatusCode finalize() override;
 
     /// Create the transient representation of an object.
-    virtual StatusCode createObj(IOpaqueAddress* pAddr, DataObject*& refpObj);
+    StatusCode createObj(IOpaqueAddress* pAddr, DataObject*& refpObj) override;
     /// Update the transient object from the other representation.
-    virtual StatusCode updateObj( IOpaqueAddress* pAddr, DataObject* refpObj);
+    StatusCode updateObj( IOpaqueAddress* pAddr, DataObject* refpObj) override;
     /// Convert the transient object to the requested representation.
-    virtual StatusCode createRep( DataObject* pObj, IOpaqueAddress*& refpAddr);
+    StatusCode createRep( DataObject* pObj, IOpaqueAddress*& refpAddr) override;
     /// Update the converted representation of a transient object.
-    virtual StatusCode updateRep( IOpaqueAddress* pAddr, DataObject* pObj);
+    StatusCode updateRep( IOpaqueAddress* pAddr, DataObject* pObj) override;
 
   protected:
     /// Standard constructor
     RNTupleCnv( ISvcLocator* svc, const CLID& clid );
 
     /// Standard destructor
-    virtual ~RNTupleCnv() = default;
+    ~RNTupleCnv() override = default;
 
     /// Create the transient representation of an object.
     virtual StatusCode load(TTree* tree, INTuple*& refpObj ) = 0;

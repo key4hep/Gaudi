@@ -62,28 +62,28 @@ public:
   virtual ~SelectStatement()  {
   }
   /// Access the type of the object
-  long type()   const   {
+  long type() const override {
     return m_type;
   }
   /// Access the selection string
-  const std::string& criteria()  const    {
+  const std::string& criteria() const override {
     return m_select;
   }
   /// Set the type
-  void setCriteria(const std::string& crit)    {
+  void setCriteria(const std::string& crit) override {
     m_select = crit;
     (m_select.length() > 0) ? m_type |= STRING : m_type &= ~STRING;
   }
   /// Change activity flag
-  void setActive(bool flag = true)   {
+  void setActive(bool flag = true) override {
     m_isActive = flag;
   }
   /// Check if selection is active
-  bool isActive()   const   {
+  bool isActive() const override {
     return m_isActive;
   }
   /// Stupid default implementation
-  virtual bool operator()(void* /* val */ )   {
+  virtual bool operator()(void* /* val */ ) override {
     return true;
   }
 protected:

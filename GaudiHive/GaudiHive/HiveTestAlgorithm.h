@@ -20,15 +20,15 @@ class GAUDI_API HiveTestAlgorithm: public GaudiAlgorithm {
   /**
    ** Destructor
    **/
-  virtual ~HiveTestAlgorithm( );
+  ~HiveTestAlgorithm( ) override;
 
   /*****************************
    ** Public Function Members **
    *****************************/
 
-  StatusCode initialize();
-  StatusCode execute();
-  StatusCode finalize();
+  StatusCode initialize() override;
+  StatusCode execute() override;
+  StatusCode finalize() override;
 
   // BH: concurrency additions
   virtual const std::vector<std::string> get_inputs();

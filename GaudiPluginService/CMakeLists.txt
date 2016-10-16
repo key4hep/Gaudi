@@ -1,7 +1,7 @@
 # Provide a simple and generic plugin system.
 # author: Marco Clemencic <marco.clemencic@cern.ch>
 
-gaudi_subdir(GaudiPluginService v3r1)
+gaudi_subdir(GaudiPluginService)
 
 # Local build options
 option(GAUDI_REFLEX_COMPONENT_ALIASES
@@ -24,6 +24,10 @@ gaudi_install_python_modules()
 # Application
 gaudi_add_executable(listcomponents src/listcomponents.cpp src/PluginService.cpp)
 target_link_libraries(listcomponents ${CMAKE_DL_LIBS})
+
+# Hide some Boost compile time warnings
+find_package(Boost)
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
 gaudi_add_unit_test(Test_GaudiPluginService_UseCases tests/src/UseCases.cpp
                     LINK_LIBRARIES GaudiPluginService

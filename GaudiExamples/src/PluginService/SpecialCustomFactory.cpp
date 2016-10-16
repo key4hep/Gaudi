@@ -8,9 +8,9 @@ namespace PluginServiceTest {
   public:
     CustomFactoryAlgorithm(const std::string& name, ISvcLocator *svcloc):
       GaudiAlgorithm(name, svcloc) {}
-    virtual ~CustomFactoryAlgorithm() {}
+    ~CustomFactoryAlgorithm() override {}
 
-    virtual StatusCode execute() {
+    StatusCode execute() override {
       info() << "running" << endmsg;
       return StatusCode::SUCCESS;
     }

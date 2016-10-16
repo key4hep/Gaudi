@@ -1,4 +1,4 @@
-gaudi_subdir(GaudiUtils v6r2)
+gaudi_subdir(GaudiUtils)
 
 gaudi_depends_on_subdirs(GaudiKernel)
 
@@ -11,6 +11,9 @@ endif (${APPLE})
 find_package(ROOT COMPONENTS RIO Hist ${XMLIO_PACKAGE_NAME} Thread Matrix MathCore)
 find_package(XercesC)
 find_package(UUID)
+
+# Hide some Boost compile time warnings
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
 #---Libraries---------------------------------------------------------------
 gaudi_add_library(GaudiUtilsLib src/Lib/*.cpp

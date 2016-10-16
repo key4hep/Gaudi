@@ -43,13 +43,13 @@ namespace Genfun
       /// copy constructor
       GSLFunctionWithError ( const GSLFunctionWithError& ) ;
       /// destructor
-      virtual ~GSLFunctionWithError ()  = default;
+      ~GSLFunctionWithError () override  = default;
       /// the main method
-      virtual double operator() (       double    x ) const ;
-      virtual double operator() ( const Argument& x ) const ;
-      virtual bool         hasAnalyticDerivative () const { return true ; }
-      virtual unsigned int dimensionality        () const { return    1 ; }
-      Genfun::Derivative partial ( unsigned int i ) const ;
+      double operator() (       double    x ) const override;
+      double operator() ( const Argument& x ) const override;
+      bool         hasAnalyticDerivative () const override { return true ; }
+      unsigned int dimensionality        () const override { return    1 ; }
+      Genfun::Derivative partial ( unsigned int i ) const override;
 
       /// get the function itself
       Function             function () const ;
@@ -82,13 +82,13 @@ namespace Genfun
       /// copy constructor
       GSLFunctionWithMode ( const GSLFunctionWithMode& ) ;
       /// destructor
-      virtual ~GSLFunctionWithMode () = default;
+      ~GSLFunctionWithMode () override = default;
       /// the main method
-      virtual double operator() (       double    x ) const ;
-      virtual double operator() ( const Argument& x ) const ;
-      virtual bool         hasAnalyticDerivative () const { return true ; }
-      virtual unsigned int dimensionality        () const { return    1 ; }
-      Genfun::Derivative partial ( unsigned int i ) const ;
+      double operator() (       double    x ) const override;
+      double operator() ( const Argument& x ) const override;
+      bool         hasAnalyticDerivative () const override { return true ; }
+      unsigned int dimensionality        () const override { return    1 ; }
+      Genfun::Derivative partial ( unsigned int i ) const override ;
       /// get the function itself
       Function             function () const ;
       /// get the current mode
@@ -120,13 +120,13 @@ namespace Genfun
       /// copy constructor
       GSLFunctionWithModeAndError ( const GSLFunctionWithModeAndError& ) ;
       /// destructor
-      virtual ~GSLFunctionWithModeAndError () = default;
+      ~GSLFunctionWithModeAndError () override = default;
       /// the main method
-      virtual double operator() (       double    x ) const ;
-      virtual double operator() ( const Argument& x ) const ;
-      virtual bool         hasAnalyticDerivative () const { return true ; }
-      virtual unsigned int dimensionality        () const { return    1 ; }
-      Genfun::Derivative partial ( unsigned int i ) const ;
+      double operator() (       double    x ) const override;
+      double operator() ( const Argument& x ) const override;
+      bool         hasAnalyticDerivative () const override { return true ; }
+      unsigned int dimensionality        () const override { return    1 ; }
+      Genfun::Derivative partial ( unsigned int i ) const override;
       /// get the function itself
       Function             function () const ;
       /// get the current mode

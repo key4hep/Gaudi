@@ -45,8 +45,7 @@ After the release is installed in AFS, run the following commands:
 2. create the svn tags:
 
         cd /afs/cern.ch/sw/Gaudi/git/gateway/Gaudi
-        GaudiRelease/cmt/svn_tag_release.py
+        GaudiRelease/svn_tag_release.py
         git checkout master
         git svn fetch
         git push
-

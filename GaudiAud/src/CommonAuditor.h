@@ -9,26 +9,26 @@ public:
       @param svcloc  A pointer to a service location service */
   CommonAuditor(const std::string& name, ISvcLocator *svcloc);
   /// Destructor
-  virtual ~CommonAuditor() = default;
+  ~CommonAuditor() override = default;
 
   /// \name "before" Auditor hooks
   /// The default behavior is to fall back on the version accepting 2 strings,
   /// which must be implemented in the derived class.
   //@{
-  virtual void before(StandardEventType evt, const std::string& caller);
-  virtual void before(StandardEventType evt, INamedInterface* caller);
-  virtual void before(CustomEventTypeRef evt, const std::string& caller);
-  virtual void before(CustomEventTypeRef evt, INamedInterface* caller);
+  void before(StandardEventType evt, const std::string& caller) override;
+  void before(StandardEventType evt, INamedInterface* caller) override;
+  void before(CustomEventTypeRef evt, const std::string& caller) override;
+  void before(CustomEventTypeRef evt, INamedInterface* caller) override;
   //@}
 
   /// \name "after" Auditor hooks
   /// The default behavior is to fall back on the version accepting 2 strings,
   /// which must be implemented in the derived class.
   //@{
-  virtual void after(StandardEventType evt, const std::string& caller, const StatusCode& sc);
-  virtual void after(StandardEventType evt, INamedInterface* caller, const StatusCode& sc);
-  virtual void after(CustomEventTypeRef evt, const std::string& caller, const StatusCode& sc);
-  virtual void after(CustomEventTypeRef evt, INamedInterface* caller, const StatusCode& sc);
+  void after(StandardEventType evt, const std::string& caller, const StatusCode& sc) override;
+  void after(StandardEventType evt, INamedInterface* caller, const StatusCode& sc) override;
+  void after(CustomEventTypeRef evt, const std::string& caller, const StatusCode& sc) override;
+  void after(CustomEventTypeRef evt, INamedInterface* caller, const StatusCode& sc) override;
   //@}
 
 protected:

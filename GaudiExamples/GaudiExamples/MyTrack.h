@@ -77,9 +77,9 @@ namespace Gaudi
       MyTrack& operator=(const MyTrack &) = default;
       MyTrack& operator=(MyTrack &&) = default;
       /// Standard Destructor
-      virtual ~MyTrack();
+      ~MyTrack() override;
       /// Retrieve pointer to class definition structure
-      virtual const CLID& clID() const    { return classID(); }
+      const CLID& clID() const override    { return classID(); }
       static const CLID& classID()        { return CLID_MyTrack; }
       /// Accessors: Retrieve x-component of the track momentum
       float px()  const         { return m_px;  }
@@ -118,9 +118,9 @@ namespace Gaudi
       void removeDecayVertex(MyVertex* vtx);
 
       /// Serialize the object for writing
-      virtual StreamBuffer& serialize( StreamBuffer& s ) const;
+      StreamBuffer& serialize( StreamBuffer& s ) const override;
       /// Serialize the object for reading
-      virtual StreamBuffer& serialize( StreamBuffer& s );
+      StreamBuffer& serialize( StreamBuffer& s ) override;
     };
 
     // Definition of all container types of MCParticle

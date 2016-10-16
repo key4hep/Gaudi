@@ -5,10 +5,10 @@
 class GAUDI_API HiveReadAlgorithm: public GaudiAlgorithm {
 public:
   HiveReadAlgorithm( const std::string& name, ISvcLocator* pSvcLocator ) :  GaudiAlgorithm(name, pSvcLocator) {}
-  virtual ~HiveReadAlgorithm() {}
-  StatusCode initialize();
-  StatusCode execute();
-  StatusCode finalize() {return StatusCode::SUCCESS;}
+  ~HiveReadAlgorithm() override {}
+  StatusCode initialize() override;
+  StatusCode execute() override;
+  StatusCode finalize() override {return StatusCode::SUCCESS;}
 };
 
 DECLARE_ALGORITHM_FACTORY(HiveReadAlgorithm)

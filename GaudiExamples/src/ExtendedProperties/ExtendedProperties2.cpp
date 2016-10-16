@@ -46,7 +46,7 @@ namespace Gaudi
     {
     public:
       // ======================================================================
-      StatusCode execute() ;
+      StatusCode execute() override ;
       // ======================================================================
     public:
       // ======================================================================
@@ -94,7 +94,7 @@ namespace Gaudi
         setProperty ( "PropertiesPrint", true ) . ignore() ;
       }
       /// destructor: virtual and protected
-      virtual ~ExtendedProperties2 (){}
+      ~ExtendedProperties2 () override {}
       // ======================================================================
     private:
       // ======================================================================

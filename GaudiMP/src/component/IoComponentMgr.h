@@ -39,19 +39,19 @@ class IoComponentMgr: public extends<Service,
   IoComponentMgr( const std::string& name, ISvcLocator* pSvcLocator );
 
   /// Destructor:
-  virtual ~IoComponentMgr();
+  ~IoComponentMgr() override;
 
   // Assignment operator:
   //IoComponentMgr &operator=(const IoComponentMgr &alg);
 
   /// Gaudi Service Implementation
   //@{
-  virtual StatusCode initialize();
-  virtual StatusCode finalize();
+  StatusCode initialize() override;
+  StatusCode finalize() override;
 
   //@}
 
-  void handle(const Incident&);
+  void handle(const Incident&) override;
 
   ///////////////////////////////////////////////////////////////////
   // Const methods:
@@ -59,15 +59,13 @@ class IoComponentMgr: public extends<Service,
 
   /** @brief: check if the registry contains a given @c IIoComponent
    */
-  virtual
-  bool io_hasitem (IIoComponent* iocomponent) const;
+  bool io_hasitem (IIoComponent* iocomponent) const override;
 
   /** @brief: check if the registry contains a given @c IIoComponent and
    *          that component had @param `fname` as a filename
    */
-  virtual
   bool io_contains (IIoComponent* iocomponent,
-		    const std::string& fname) const;
+                    const std::string& fname) const override;
 
   ///////////////////////////////////////////////////////////////////
   // Non-const methods:
@@ -79,8 +77,7 @@ class IoComponentMgr: public extends<Service,
    *          by calling @c IIoComponent::io_reinit on every registered
    *          component)
    */
-  virtual
-  StatusCode io_register (IIoComponent* iocomponent);
+  StatusCode io_register (IIoComponent* iocomponent) override;
 
   /** @brief: allow a @c IIoComponent to register itself with this
    *          manager so appropriate actions can be taken when e.g.
@@ -88,53 +85,46 @@ class IoComponentMgr: public extends<Service,
    *          by calling @c IIoComponent::io_reinit on every registered
    *          component)
    */
-  virtual
   StatusCode io_register (IIoComponent* iocomponent,
 			  IIoComponentMgr::IoMode::Type iomode,
 			  const std::string& fname,
-			  const std::string& pfn);
+                          const std::string& pfn) override;
 
   /** @brief: allow a @c IIoComponent to update the contents of the
    *          registry with a new file name
    */
-  virtual
   StatusCode io_update (IIoComponent* iocomponent,
 			const std::string& old_fname,
-			const std::string& new_fname);
+                        const std::string& new_fname) override;
 
   /** @brief: allow a @c IIoComponent to update the contents of the
    *          registry with a new work directory
    */
-  virtual
   StatusCode io_update (IIoComponent* iocomponent,
-			const std::string& work_dir);
+                        const std::string& work_dir) override;
 
   // VT. new method
   /** @brief: Update all @c IIoComponents with a new work directory
    */
-  virtual
-  StatusCode io_update_all (const std::string& work_dir);
+  StatusCode io_update_all (const std::string& work_dir) override;
 
   /** @brief: retrieve the new filename for a given @c IIoComponent and
    *          @param `fname` filename
    */
-  virtual
   StatusCode io_retrieve (IIoComponent* iocomponent,
-			  std::string& fname);
+                          std::string& fname) override;
 
   /** @brief: reinitialize the I/O subsystem.
    *  This effectively calls @c IIoComponent::io_reinit on all the registered
    *  @c IIoComponent.
    */
-  virtual
-  StatusCode io_reinitialize ();
+  StatusCode io_reinitialize () override;
 
   /** @brief: finalize the I/O subsystem.
    *  Hook to allow to e.g. give a chance to I/O subsystems to merge output
    *  files. Not sure how to do this correctly though...
    */
-  virtual
-  StatusCode io_finalize ();
+  StatusCode io_finalize () override;
 
   ///////////////////////////////////////////////////////////////////
   // Private data:

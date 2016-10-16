@@ -47,39 +47,39 @@ namespace Gaudi {
     RootEvtSelector(const std::string& name, ISvcLocator* svcloc);
 
     /// Standard destructor
-    virtual ~RootEvtSelector() = default;
+    ~RootEvtSelector() override = default;
 
     /// IService implementation: Db event selector override
-    virtual StatusCode initialize();
+    StatusCode initialize() override;
 
     /// IService implementation: Service finalization
-    virtual StatusCode finalize();
+    StatusCode finalize() override;
 
     /// Create a new event loop context
     /** @param refpCtxt   [IN/OUT]  Reference to pointer to store the context
      *
      * @return StatusCode indicating success or failure
      */
-    virtual StatusCode createContext(Context*& refpCtxt) const;
+    StatusCode createContext(Context*& refpCtxt) const override;
 
     /** Access last item in the iteration
      * @param refContext [IN/OUT] Reference to the Context object.
      */
-    virtual StatusCode last(Context& refContext) const;
+    StatusCode last(Context& refContext) const override;
 
     /// Get next iteration item from the event loop context
     /** @param refCtxt   [IN/OUT]  Reference to the context
      *
      * @return StatusCode indicating success or failure
      */
-    virtual StatusCode next(Context& refCtxt) const;
+    StatusCode next(Context& refCtxt) const override;
 
     /// Get next iteration item from the event loop context, but skip jump elements
     /** @param refCtxt   [IN/OUT]  Reference to the context
      *
      * @return StatusCode indicating success or failure
      */
-    virtual StatusCode next(Context& refCtxt,int jump) const;
+    StatusCode next(Context& refCtxt,int jump) const override;
 
     /// Get previous iteration item from the event loop context
     /** @param refCtxt   [IN/OUT]  Reference to the context
@@ -87,7 +87,7 @@ namespace Gaudi {
      *
      * @return StatusCode indicating success or failure
      */
-    virtual StatusCode previous(Context& refCtxt) const;
+    StatusCode previous(Context& refCtxt) const override;
 
     /// Get previous iteration item from the event loop context, but skip jump elements
     /** @param refCtxt   [IN/OUT]  Reference to the context
@@ -95,28 +95,28 @@ namespace Gaudi {
      *
      * @return StatusCode indicating success or failure
      */
-    virtual StatusCode previous(Context& refCtxt,int jump) const;
+    StatusCode previous(Context& refCtxt,int jump) const override;
 
     /// Rewind the dataset
     /** @param refCtxt   [IN/OUT]  Reference to the context
      *
      * @return StatusCode indicating success or failure
      */
-    virtual StatusCode rewind(Context& refCtxt) const;
+    StatusCode rewind(Context& refCtxt) const override;
 
     /// Create new Opaque address corresponding to the current record
     /** @param refCtxt   [IN/OUT]  Reference to the context
      *
      * @return StatusCode indicating success or failure
      */
-    virtual StatusCode createAddress(const Context& refCtxt, IOpaqueAddress*&) const;
+    StatusCode createAddress(const Context& refCtxt, IOpaqueAddress*&) const override;
 
     /// Release existing event iteration context
     /** @param refCtxt   [IN/OUT]  Reference to the context
      *
      * @return StatusCode indicating success or failure
      */
-    virtual StatusCode releaseContext(Context*& refCtxt) const;
+    StatusCode releaseContext(Context*& refCtxt) const override;
 
     /** Will set a new criteria for the selection of the next list of events and will change
      *  the state of the context in a way to point to the new list.
@@ -124,7 +124,7 @@ namespace Gaudi {
      * @param cr The new criteria string.
      * @param c Reference pointer to the Context object.
      */
-    virtual StatusCode resetCriteria(const std::string& cr,Context& c)const;
+    StatusCode resetCriteria(const std::string& cr,Context& c) const override;
   protected:
     // Data Members
     /// Reference to the corresponding conversion service
