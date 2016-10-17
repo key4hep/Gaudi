@@ -36,6 +36,7 @@ AlgExecStateSvc::init() {
     IHiveWhiteBoard *iwb = dynamic_cast<IHiveWhiteBoard*>(is);
     if (iwb != 0) {
       wbn = is->name();
+      if (msgLevel(MSG::VERBOSE))
       verbose() << "HiveWhiteBoard service name is " << wbn << endmsg;
       break;
     }
@@ -52,7 +53,9 @@ AlgExecStateSvc::init() {
     m_eventStatus.resize(1);
   }
 
-  debug() << "resizing state containers to : " << m_algStates.size() << endmsg;
+  if (msgLevel(MSG::DEBUG))
+    debug() << "resizing state containers to : " << m_algStates.size() 
+            << endmsg;
 
   SmartIF<IAlgManager> algMan( serviceLocator() );
   if (!algMan.isValid()) {
@@ -186,6 +189,7 @@ AlgExecStateSvc::addAlg(const Gaudi::StringKey& alg) {
   
 
   if (!m_isInit) {
+    if (msgLevel(MSG::DEBUG))
     debug() << "preInit: will add Alg " << alg.str() << " later" << endmsg;
     m_preInitAlgs.push_back( alg );
     return;
@@ -209,6 +213,7 @@ AlgExecStateSvc::addAlg(const Gaudi::StringKey& alg) {
     }
   }
 
+  if (msgLevel(MSG::DEBUG))
   debug() << "adding alg " << alg.str() << " to " 
           << m_algStates.size() << " slots" << endmsg;
   
@@ -398,6 +403,7 @@ AlgExecStateSvc::updateEventStatus(const bool& fail, const EventContext& ctx) {
 void
 AlgExecStateSvc::reset(const EventContext& ctx) {
 
+  if (msgLevel(MSG::DEBUG))
   verbose() << "reset(" << ctx.slot() << ")" << endmsg;
 
   std::call_once(m_initFlag, &AlgExecStateSvc::init, this);
@@ -414,6 +420,7 @@ AlgExecStateSvc::reset(const EventContext& ctx) {
 void
 AlgExecStateSvc::reset() {
 
+  if (msgLevel(MSG::DEBUG))
   verbose() << "reset()" << endmsg;
 
   std::call_once(m_initFlag, &AlgExecStateSvc::init, this);
