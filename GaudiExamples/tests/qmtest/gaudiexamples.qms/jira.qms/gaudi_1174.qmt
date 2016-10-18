@@ -16,8 +16,6 @@ Listing sources of Unprotected and Unseen messages
 ==================================================
  Message Source             |   Level |    Count
 ----------------------------+---------+-----------
- AlgExecStateSvc            | VERBOSE |       10
- AlgExecStateSvc            |   DEBUG |        7
  MyAlg.MyGaudiTool          |   DEBUG |       10
  MyAlg.MyTool               |   DEBUG |       10
  MyAlg.ToolWithName         |   DEBUG |       10
