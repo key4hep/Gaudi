@@ -6,6 +6,7 @@
 #include "GaudiKernel/IEvtSelector.h"
 #include "GaudiKernel/IHiveWhiteBoard.h"
 #include "GaudiKernel/MinimalEventLoopMgr.h"
+#include "GaudiKernel/IAlgExecStateSvc.h"
 
 // std includes
 #include <atomic>
@@ -40,7 +41,7 @@ protected:
   /// Reference to the Event Selector
   SmartIF<IEvtSelector>     m_evtSelector;
   /// Event Iterator
-  IEvtSelector::Context*      m_evtContext;
+  IEvtSelector::Context*    m_evtSelContext;
   /// Event selector
   std::string       m_evtsel;
   /// Reference to the Histogram Data Service
@@ -55,6 +56,8 @@ protected:
   std::string       m_histPersName;
   /// Property interface of ApplicationMgr
   SmartIF<IProperty>        m_appMgrProperty;
+  /// Algorithm Execution State Mgr
+  SmartIF<IAlgExecStateSvc>      m_aess;
   /// Flag to avoid to fire the EnvEvent incident twice in a row
   /// (and also not before the first event)
   bool              m_endEventFired;

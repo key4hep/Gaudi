@@ -8,6 +8,8 @@
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/IIncidentSvc.h"
 #include "GaudiKernel/IIncidentListener.h"
+#include "GaudiKernel/IAlgExecStateSvc.h"
+#include "GaudiKernel/EventContext.h"
 
 // STL include files
 #include <list>
@@ -36,6 +38,7 @@ protected:
   /// Reference to the incident service
   SmartIF<IIncidentSvc> m_incidentSvc;
   /// List of top level algorithms
+  SmartIF<IAlgExecStateSvc> m_aess;
   ListAlg             m_topAlgList;
   /// List of output streams
   ListAlg             m_outStreamList;
@@ -109,6 +112,12 @@ private:
   MinimalEventLoopMgr(const MinimalEventLoopMgr&);
   /// Fake assignment operator (never implemented).
   MinimalEventLoopMgr& operator= (const MinimalEventLoopMgr&);
+
+  /// EventContext
+  EventContext* m_eventContext;
+
+  // number of events processed
+  size_t m_nevt {0};
 
 };
 #endif // GAUDIKERNEL_MINIMALEVENTLOOPMGR_H

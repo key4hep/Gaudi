@@ -4,6 +4,7 @@
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/IProperty.h"
 #include "GaudiKernel/ThreadLocalContext.h"
+#include "GaudiKernel/IAlgExecStateSvc.h"
 
 // C++
 #include <functional>
@@ -13,11 +14,13 @@
 
 tbb::task* AlgoExecutionTask::execute() {
 
-  Algorithm* this_algo = dynamic_cast<Algorithm*>(m_algorithm.get());  
-   if (!this_algo){
-     throw GaudiException ("Cast to Algorithm failed!","AlgoExecutionTask",StatusCode::FAILURE);
-   }
-
+  IAlgorithm *ialg = m_algorithm.get();
+  Algorithm* this_algo = dynamic_cast<Algorithm*>(ialg);  
+  if (!this_algo){
+    throw GaudiException ("Cast to Algorithm failed!","AlgoExecutionTask",
+                          StatusCode::FAILURE);
+  }
+  
   bool eventfailed=false;
   this_algo->setContext(m_evtCtx);
   Gaudi::Hive::setCurrentContext( m_evtCtx );
@@ -35,7 +38,8 @@ tbb::task* AlgoExecutionTask::execute() {
     RetCodeGuard rcg(appmgr, Gaudi::ReturnCode::UnhandledException);
     sc = m_algorithm->sysExecute();
     if (UNLIKELY(!sc.isSuccess()))  {
-      log << MSG::WARNING << "Execution of algorithm " << m_algorithm->name() << " failed" << endmsg;
+      log << MSG::WARNING << "Execution of algorithm " 
+          << m_algorithm->name() << " failed" << endmsg;
       eventfailed = true;
     }    
     rcg.ignore(); // disarm the guard
@@ -61,8 +65,9 @@ tbb::task* AlgoExecutionTask::execute() {
   // DP it is important to propagate the failure of an event.
   // We need to stop execution when this happens so that execute run can 
   // then receive the FAILURE
-  if (eventfailed) 
-    m_evtCtx->setFail(eventfailed);
+  m_aess->algExecState(ialg,*m_evtCtx).setExecuted(true);
+  m_aess->algExecState(ialg,*m_evtCtx).setExecStatus(sc);
+  m_aess->updateEventStatus(eventfailed,*m_evtCtx);
   
   // Push in the scheduler queue an action to be performed 
   auto action_promote2Executed = std::bind(&ForwardSchedulerSvc::promoteToExecuted,

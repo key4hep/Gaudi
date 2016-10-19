@@ -140,6 +140,12 @@ StatusCode ParallelSequentialSchedulerSvc::initialize(){
     }
   }
 
+  m_aess = serviceLocator()->service("AlgExecStateSvc");
+  if( !m_aess.isValid() ) {
+    fatal() << "Error retrieving AlgExecStateSvc" << endmsg;
+    return StatusCode::FAILURE;
+  }
+
   return StatusCode::SUCCESS;
 
 }
@@ -160,7 +166,7 @@ StatusCode ParallelSequentialSchedulerSvc::finalize(){
 StatusCode ParallelSequentialSchedulerSvc::pushNewEvent(EventContext* eventContext){
   std::vector<EventContext*> eventContexts;
   eventContexts.push_back(eventContext);
-  eventContext->setFail(false);
+  m_aess->reset(*eventContext);
   return pushNewEvents(eventContexts);
 }
 
@@ -174,7 +180,7 @@ StatusCode ParallelSequentialSchedulerSvc::pushNewEvents(std::vector<EventContex
       debug() << "Enqueuing event " << evt->evt() << " @ " << evt->slot() << endmsg;
 
       tbb::task* t = new( tbb::task::allocate_root() )
-                 SequentialTask(serviceLocator(), evt, this, m_algResourcePool);
+        SequentialTask(serviceLocator(), evt, this, m_algResourcePool, m_aess);
       tbb::task::enqueue( *t);
     } else {
       return StatusCode::FAILURE;
@@ -272,7 +278,7 @@ tbb::task* SequentialTask::execute() {
 
       if(sc.isFailure() || ialgoPtr == nullptr){
         log << MSG::ERROR << "Could not acquire algorithm " << algName << endmsg;
-        m_eventContext->setFail(true);
+        m_aess->setEventStatus(EventStatus::Other, *m_eventContext);
       } else { // we got an algorithm
 
         //promote algorithm to scheduled
@@ -305,6 +311,7 @@ tbb::task* SequentialTask::execute() {
 
         if(sc.isFailure()){
           eventFailed = true;
+          m_aess->algExecState(ialgoPtr,*m_eventContext).setExecStatus(sc);
         }
 
         //std::cout << "Algorithm [" << algIndex << "] " << ialgorithm->name() << " for event " << m_eventContext->evt()
@@ -313,16 +320,17 @@ tbb::task* SequentialTask::execute() {
             << (eventFailed ? " failed" : " succeded") << endmsg;
 
         AlgsExecutionStates::State state;
-        if (ialgoPtr->filterPassed()){
+        if(m_aess->algExecState(ialgoPtr,*m_eventContext).filterPassed()) {
           state = AlgsExecutionStates::State::EVTACCEPTED;
         } else {
           state = AlgsExecutionStates::State::EVTREJECTED;
         }
 
-        //std::cout << "Algorithm [" << algIndex << "] " << ialgorithm->name() << " for event " << m_eventContext->evt()
-        //          << (ialgoPtr->filterPassed() ? " passed" : " rejected") << std::endl;
-        log << MSG::DEBUG << "Algorithm [" << algIndex << "] " << algName << " for event " << m_eventContext->evt()
-            << (ialgoPtr->filterPassed() ? " passed" : " rejected") << endmsg;
+        log << MSG::DEBUG << "Algorithm [" << algIndex << "] " << algName 
+            << " for event " << m_eventContext->evt()
+            << (m_aess->algExecState(ialgoPtr,*m_eventContext).filterPassed() ? 
+                " passed" : " rejected")
+            << endmsg;
 
         sc = m_algPool->releaseAlgorithm(algName,ialgoPtr);
 
@@ -347,9 +355,9 @@ tbb::task* SequentialTask::execute() {
     m_scheduler->m_controlFlow.updateEventState(algStates, nodeDecisions);
     m_scheduler->m_controlFlow.promoteToControlReadyState(algStates, nodeDecisions);
 
+    m_aess->updateEventStatus(eventFailed, *m_eventContext);
+
     if(eventFailed){
-      m_eventContext->setFail(eventFailed);
-      //std::cout << "ERROR: " << "event " << m_eventContext->evt() << " failed" << std::endl;
       break;
     }
 

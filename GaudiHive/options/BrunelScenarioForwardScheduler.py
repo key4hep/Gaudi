@@ -7,6 +7,7 @@ from Configurables import GaudiExamplesCommonConf, CPUCruncher, HiveSlimEventLoo
 NUMBEROFEVENTS = 23
 NUMBEROFEVENTSINFLIGHT = 7
 NUMBEROFALGOSINFLIGHT = 11
+NUMBEROFTHREADS = 2
 CARDINALITY=11
 SCALE = .1
 VERBOSITY = 5
@@ -14,6 +15,7 @@ VERBOSITY = 5
 NumberOfEvents = NUMBEROFEVENTS
 NumberOfEventsInFlight = NUMBEROFEVENTSINFLIGHT
 NumberOfAlgosInFlight = NUMBEROFALGOSINFLIGHT
+NumberOfThreads = NUMBEROFTHREADS
 Cardinality = CARDINALITY
 Scale = SCALE
 Verbosity = VERBOSITY
@@ -84,8 +86,10 @@ def load_brunel_scenario(filename):
         outputs = [item for item in deps[2]]
         new_algo = CPUCruncher(alg,
                                avgRuntime=float(timing[alg]),
-                               DataInputs=map( lambda s: "/Event/"+s, inputs),
-                               DataOutputs=map( lambda s: "/Event/"+s, outputs),
+                               inpKeys=map( lambda s: "/Event/"+s, inputs),
+                               outKeys=map( lambda s: "/Event/"+s, outputs),
+                               # DataInputs=map( lambda s: "/Event/"+s, inputs),
+                               # DataOutputs=map( lambda s: "/Event/"+s, outputs),
                                OutputLevel = 6,
                                shortCalib=True
                               )
@@ -99,9 +103,9 @@ def load_brunel_scenario(filename):
   #look for the objects that haven't been provided within the job. Assume this needs to come via input
   new_algo = CPUCruncher("input",
                          avgRuntime=1,
-                         DataInputs=[],
-                         OutputLevel = WARNING,
-                         DataOutputs=map( lambda s: "/Event/"+s, [item for item in all_inputs.difference(all_outputs)])
+                         inpKeys=[],
+                         outKeys=map( lambda s: "/Event/"+s, [item for item in all_inputs.difference(all_outputs)]),
+                         OutputLevel = WARNING
                          )
   all_algos.append(new_algo)
   all_algos_inputs.append([])
@@ -124,9 +128,10 @@ whiteboard   = HiveWhiteBoard("EventDataSvc",
 slimeventloopmgr = HiveSlimEventLoopMgr(OutputLevel = INFO)
 
 scheduler = ForwardSchedulerSvc(MaxEventsInFlight = NumberOfEventsInFlight,
-                         MaxAlgosInFlight = NumberOfAlgosInFlight,
-                         OutputLevel = WARNING,
-                         AlgosDependencies = inputs)
+                                MaxAlgosInFlight = NumberOfAlgosInFlight,
+                                ThreadPoolSize = NumberOfThreads,
+                                OutputLevel = INFO
+                               )
 
 # And the Application Manager
 app = ApplicationMgr()
@@ -135,6 +140,7 @@ app.EvtSel = "NONE" # do not use any event input
 app.EvtMax = NumberOfEvents
 app.EventLoop = slimeventloopmgr
 app.ExtSvc =[whiteboard]
-app.MessageSvcType = "TBBMessageSvc"
+app.MessageSvcType = "InertMessageSvc"
+app.OutputLevel = INFO
 
 

@@ -45,6 +45,12 @@ StatusCode SequentialSchedulerSvc::initialize(){
     return StatusCode::FAILURE;
   }
 
+  m_aess = serviceLocator()->service("AlgExecStateSvc");
+  if( !m_aess.isValid() ) {
+    fatal() << "Error retrieving AlgExecStateSvc" << endmsg;
+    return StatusCode::FAILURE;
+  }
+
   // Get the list of algorithms
   m_algList = m_useTopAlgList ? algResourcePool->getTopAlgList() : algResourcePool->getFlatAlgList();
   info() << "Found " <<  m_algList.size() << " algorithms" << endmsg;
@@ -115,14 +121,19 @@ StatusCode SequentialSchedulerSvc::pushNewEvent(EventContext* eventContext){
       error() << ".executeEvent(): Exception with tag=" << Exception.tag()
               << " thrown by " << ialgorithm->name() << endmsg;
       error() << Exception << endmsg;
+      eventfailed = true;
     } catch ( const std::exception& Exception ) {
       fatal() << ".executeEvent(): Standard std::exception thrown by "
               << ialgorithm->name() << endmsg;
       error() <<  Exception.what()  << endmsg;
+      eventfailed = true;
     } catch(...) {
       fatal() << ".executeEvent(): UNKNOWN Exception thrown by "
               << ialgorithm->name() << endmsg;
+      eventfailed = true;
     }
+
+    m_aess->algExecState(ialgorithm, *m_eventContext).setExecStatus( sc );
 
     debug() << "Algorithm " << this_algo->name() << (eventfailed ? " failed" : " succeeded") << endmsg;
     debug() << "Algorithm " << this_algo->name() << (this_algo->filterPassed() ? " passed" : " rejected") << endmsg;
@@ -130,7 +141,7 @@ StatusCode SequentialSchedulerSvc::pushNewEvent(EventContext* eventContext){
     // DP it is important to propagate the failure of an event.
     // We need to stop execution when this happens so that execute run can
     // then receive the FAILURE
-    m_eventContext->setFail(eventfailed);
+    m_aess->updateEventStatus(eventfailed, *m_eventContext);
 
     if (eventfailed)
       return StatusCode::FAILURE;
