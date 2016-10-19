@@ -1,4 +1,4 @@
-gaudi_subdir(GaudiHive v2r0)
+gaudi_subdir(GaudiHive)
 
 gaudi_depends_on_subdirs(GaudiKernel GaudiAlg GaudiCommonSvc GaudiCoreSvc)
 
@@ -69,6 +69,7 @@ gaudi_add_test(GraphSchedulerSimpleTest
 gaudi_add_test(BrunelScenarioGraphScheduler
                FRAMEWORK options/BrunelScenarioGraphScheduler.py
                TIMEOUT 120)
+set_property(TEST GaudiHive.BrunelScenarioGraphScheduler PROPERTY SKIP_RETURN_CODE 77)
 
 # Test the AtomicSequencer
 gaudi_add_test(AtomicSequencer

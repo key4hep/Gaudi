@@ -1,4 +1,4 @@
-gaudi_subdir(GaudiKernel v33r1)
+gaudi_subdir(GaudiKernel)
 
 gaudi_depends_on_subdirs(GaudiPluginService)
 
@@ -36,6 +36,11 @@ gaudi_add_unit_test(SerialTaskQueue_test tests/src/SerialTaskQueue_test.cpp
                     LINK_LIBRARIES GaudiKernel TBB)
 gaudi_add_unit_test(ContextSpecificPtrTest tests/src/test_ContextSpecificPtr.cpp
                     LINK_LIBRARIES GaudiKernel TYPE Boost)
+gaudi_add_unit_test(test_LockedHandle tests/src/test_LockedHandle.cpp)
+if(CMAKE_SYSTEM_NAME MATCHES Linux)
+  target_link_libraries(test_LockedHandle -Wl,--no-as-needed -ldl -Wl,--as-needed ${Boost_LIBRARIES})
+endif()
+
 # These are a compile-time tests.
 gaudi_add_unit_test(test_headers_build tests/src/test_headers_build.cpp
                     LINK_LIBRARIES GaudiKernel)

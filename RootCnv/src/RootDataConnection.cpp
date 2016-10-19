@@ -32,6 +32,7 @@ static int s_compressionLevel = 1;
 
 // C/C++ include files
 #include <stdexcept>
+#include <numeric>
 
 using namespace Gaudi;
 using namespace std;

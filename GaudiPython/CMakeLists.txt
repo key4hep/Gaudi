@@ -1,4 +1,4 @@
-gaudi_subdir(GaudiPython v14r2)
+gaudi_subdir(GaudiPython)
 
 gaudi_depends_on_subdirs(GaudiAlg GaudiUtils GaudiKernel)
 
@@ -22,16 +22,5 @@ gaudi_add_module(GaudiPython src/Services/*.cpp
 gaudi_add_dictionary(GaudiPython dict/kernel.h dict/selection_kernel.xml
                      LINK_LIBRARIES GaudiPythonLib GaudiUtilsLib)
 
-if(GAUDI_BUILD_TESTS)
-  gaudi_add_library(GPyTest src/Test/*.cpp
-                    LINK_LIBRARIES GaudiKernel PythonLibs CLHEP
-                    NO_PUBLIC_HEADERS)
-  gaudi_add_dictionary(test_GPyTest src/Test/test.h src/Test/test_selection.xml
-                       LINK_LIBRARIES GaudiKernel PythonLibs CLHEP
-                       INCLUDE_DIRS src/Test)
-  include_directories(src/Test)
-endif()
-
 #---Installation------------------------------------------------------------
 gaudi_install_python_modules()
-

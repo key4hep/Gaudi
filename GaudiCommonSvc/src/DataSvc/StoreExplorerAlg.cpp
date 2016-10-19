@@ -5,6 +5,7 @@
 //	Author    : Markus Frank
 //
 //	====================================================================
+#include <numeric>
 #include "GaudiKernel/ObjectContainerBase.h"
 #include "GaudiKernel/ObjectList.h"
 #include "GaudiKernel/ObjectVector.h"

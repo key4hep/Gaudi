@@ -1,4 +1,4 @@
-gaudi_subdir(GaudiCommonSvc v4r1)
+gaudi_subdir(GaudiCommonSvc)
 
 gaudi_depends_on_subdirs(GaudiKernel)
 
@@ -14,4 +14,3 @@ gaudi_add_module(GaudiCommonSvc
                  src/*.cpp DataSvc/*.cpp HistogramSvc/*.cpp PersistencySvc/*.cpp
                  LINK_LIBRARIES GaudiKernel GaudiHive Boost ROOT
                  INCLUDE_DIRS Boost ROOT AIDA)
-
