@@ -12,6 +12,7 @@
 #include <string>
 #include <cassert>
 #include <functional>
+#include <numeric>
 #include "boost/circular_buffer.hpp"
 #include "boost/algorithm/string/predicate.hpp"
 #include "boost/algorithm/string/erase.hpp"
@@ -711,7 +712,7 @@ unsigned long ToolSvc::minimumToolRefCount() const
 //------------------------------------------------------------------------------
 {
   auto i = std::min_element( std::begin(m_instancesTools), std::end(m_instancesTools),
-                             [](const IAlgTool* lhs, const IAlgTool* rhs) { 
+                             [](const IAlgTool* lhs, const IAlgTool* rhs) {
               return lhs->refCount() < rhs->refCount();
   } );
   return i!=std::end(m_instancesTools) ? (*i)->refCount() : 0;

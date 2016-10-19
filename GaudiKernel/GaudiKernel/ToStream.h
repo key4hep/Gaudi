@@ -243,12 +243,8 @@ namespace Gaudi
     inline std::ostream& toStream
     ( const GaudiUtils::HashMap<KTYPE,VTYPE,HASH,MAP>& obj, std::ostream& s)
     {
-        using GaudiUtils::details::ostream_joiner;
-        return ostream_joiner( s << "{ ", obj,  " , ",
-                               [](std::ostream& os, const std::pair<const KTYPE,VTYPE>& p)
-                               -> std::ostream&
-                               { return toStream( p.second, toStream( p.first, os) << " : " ); }
-               ) << " }";
+        // Copy the hash map into a map to have it ordered by key.
+        return toStream(GaudiUtils::Map<KTYPE,VTYPE>{obj.begin(), obj.end()}, s);
     }
     // ========================================================================
     /** the specialization for C-arrays, a'la python tuple
