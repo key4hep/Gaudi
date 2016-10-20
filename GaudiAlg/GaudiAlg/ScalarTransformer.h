@@ -41,7 +41,7 @@ template <typename ScalarOp,
         auto& scalar = scalarOp();
         for ( const auto && i : inrange ) 
         { details::insert( out, getScalar( i, scalar, std::index_sequence_for<In...>{} ) ); }
-        details::apply( scalar, out );
+        // details::apply( scalar, out );
         return out;
       }
 
@@ -103,7 +103,7 @@ template <typename ScalarOp,
           insert( getScalar( i, scalar, std::index_sequence_for<In...>{} ), out,
                   std::index_sequence_for<Out...>{} );
         }
-        details::apply( scalar, out );
+        // details::apply( scalar, out );
         return out;
       }
 
