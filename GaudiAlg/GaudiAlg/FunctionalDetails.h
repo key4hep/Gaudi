@@ -3,6 +3,7 @@
 
 #include <type_traits>
 #include <stdexcept>
+#include <cassert>
 
 // TODO: fwd declare instead?
 #include "GaudiKernel/DataObjectHandle.h"
@@ -19,6 +20,10 @@ namespace Gaudi { namespace Functional { namespace details {
     namespace zip
     {
     
+      /// Resolve case there is only one container in the range
+      template < typename A >
+      inline bool check_sizes( const A& ) noexcept { return true; }
+
       /// Compare sizes of two containers
       template < typename A, typename B >
       inline bool check_sizes( const A& a, const B& b ) noexcept
@@ -45,7 +50,7 @@ namespace Gaudi { namespace Functional { namespace details {
       template< typename... Args >
       inline decltype(auto) const_range( const Args&... args ) noexcept
       {
-        return ranges::view::const_( range(args...) );
+        return ranges::view::const_( range( args... ) );
       }
 
     }
