@@ -10,7 +10,45 @@
 #include "GaudiAlg/GaudiAlgorithm.h"
 #include "boost/optional.hpp"
 
+// Range V3
+#include <range/v3/view.hpp>
+
 namespace Gaudi { namespace Functional { namespace details {
+
+    // CRJ : Stuff for zipping
+    namespace zip
+    {
+    
+      /// Compare sizes of two containers
+      template < typename A, typename B >
+      inline bool check_sizes( const A& a, const B& b ) noexcept
+      {
+        return a.size() == b.size();
+      }
+      
+      /// Compare sizes of 3 or more containers
+      template < typename A, typename B, typename... C >
+      inline bool check_sizes( const A& a, const B& b, const C& ... c ) noexcept
+      {
+        return ( check_sizes(a,b) && check_sizes(b,c...) );
+      }
+      
+      /// Zips multiple containers together to form a single range
+      template< typename... Args >
+      inline decltype(auto) range( const Args&... args ) noexcept
+      {
+        assert( check_sizes( args... ) );
+        return ranges::view::zip( args... );
+      }
+      
+      /// Zips multiple containers together to form a single const range
+      template< typename... Args >
+      inline decltype(auto) const_range( const Args&... args ) noexcept
+      {
+        return ranges::view::const_( range(args...) );
+      }
+
+    }
 
     // implementation of C++17 std::as_const, see http://en.cppreference.com/w/cpp/utility/as_const
     template <typename T>
