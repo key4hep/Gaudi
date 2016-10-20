@@ -29,21 +29,23 @@ template <typename ScalarOp,
         return out;
       }
 
-      template< typename Tuple, std::size_t... I >
-      inline decltype(auto) getScalar( const Tuple & t, std::index_sequence<I...> ) const
+      template< typename Tuple, typename Scalar, std::size_t... I >
+      inline decltype(auto) getScalar( const Tuple & t, 
+                                       const Scalar & s, 
+                                       std::index_sequence<I...> ) const
       {
-        return scalarOp()( std::get<I>(t)... );
+        return s( std::get<I>(t)... );
       }
 
-      template < typename... ManyIn,
-                 typename Indices = std::make_index_sequence<sizeof...(In)> >
+      template < typename... ManyIn >
       inline Out processMany( const ManyIn&... in ) const
       {
         const auto inrange = details::zip::const_range(in...); 
         Out out; 
         out.reserve(inrange.size());
         auto& scalar = scalarOp();
-        for ( const auto && i : inrange ) { details::insert( out, getScalar( i, Indices() ) ); }
+        for ( const auto && i : inrange ) 
+        { details::insert( out, getScalar( i, scalar, std::index_sequence_for<In...>{} ) ); }
         details::apply( scalar, out );
         return out;
       }
