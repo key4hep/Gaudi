@@ -41,7 +41,7 @@ template <typename ScalarOp,
         auto& scalar = scalarOp();
         for ( const auto && i : inrange ) 
         { details::insert( out, getScalar( i, scalar, std::index_sequence_for<In...>{} ) ); }
-        // details::apply( scalar, out );
+        //details::apply( scalar, out );
         return out;
       }
 
@@ -80,11 +80,11 @@ template <typename ScalarOp,
 
       /// Insert the returned tuple of objects into the correct containers
       template< typename InTuple, typename OutTuple, std::size_t... I >
-      void insert( const InTuple & in, OutTuple & out, std::index_sequence<I...> ) const
+      void insert( InTuple && in, OutTuple & out, std::index_sequence<I...> ) const
       {
         if ( in )
         { std::initializer_list<long unsigned int> 
-          { ( details::insert( std::get<I>(out), std::get<I>(*in) ), I )... }; }
+          { ( details::insert( std::get<I>(out), std::move(std::get<I>(*in)) ), I )... }; }
       }
    
     public:
@@ -103,7 +103,7 @@ template <typename ScalarOp,
           insert( getScalar( i, scalar, std::index_sequence_for<In...>{} ), out,
                   std::index_sequence_for<Out...>{} );
         }
-        // details::apply( scalar, out );
+        //details::apply( scalar, out );
         return out;
       }
 
