@@ -112,11 +112,10 @@ StatusCode AlgResourcePool::acquireAlgorithm(const std::string& name, IAlgorithm
     if (msgLevel(MSG::DEBUG))
       debug() << "No instance of algorithm " << name << " could be retrieved in non-blocking mode" << endmsg;
 
-  //  if (m_lazyCreation ) {
-  // TODO: fill the lazyCreation part
-  //}
+  // if (m_lazyCreation ) {
+  //    TODO: fill the lazyCreation part
+  // }
   if (sc.isSuccess()){
-    algo->resetExecuted();
     state_type requirements = m_resource_requirements[algo_id];
     m_resource_mutex.lock();
     if (requirements.is_subset_of(m_available_resources)) {

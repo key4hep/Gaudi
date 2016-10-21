@@ -33,23 +33,20 @@ public:
 
   EventContext() {};
   EventContext(const ContextEvt_t& e, const ContextID_t& s=INVALID_CONTEXT_ID)
-    :m_evt_num(e), m_evt_slot(s), m_evt_failed(false) {
+    :m_evt_num(e), m_evt_slot(s) {
     m_valid = (e == INVALID_CONTEXT_EVT || s == INVALID_CONTEXT_ID) ? false: true;
   }
 
   ContextEvt_t evt() const { return m_evt_num; }
   ContextID_t slot() const { return m_evt_slot; }
   bool valid() const {return m_valid;}
-  bool evtFail() const { return m_evt_failed; }
   IProxyDict* proxy() const { return m_proxy; }
   const EventIDBase& eventID() const { return m_eid; }
 
-  void set(const ContextEvt_t& e=0, const ContextID_t& s=INVALID_CONTEXT_ID, 
-           const bool f=false) {
+  void set(const ContextEvt_t& e=0, const ContextID_t& s=INVALID_CONTEXT_ID) {
     m_valid = (e == INVALID_CONTEXT_EVT || s == INVALID_CONTEXT_ID) ? false : true;
     m_evt_num = e;
     m_evt_slot = s;
-    m_evt_failed = f;
   }
 
   void setEvt(const ContextEvt_t& e) {
@@ -60,10 +57,6 @@ public:
   void setSlot(const ContextID_t& s) {
     if ( s == INVALID_CONTEXT_ID ) setValid(false); 
     m_evt_slot = s;
-  }
-
-  void setFail(const bool& b=true) {
-    m_evt_failed = b;
   }
 
   void setValid(const bool& b=true) {
@@ -82,11 +75,11 @@ public:
     m_proxy = prx;
   }
 
+
 private:
   ContextEvt_t m_evt_num  {INVALID_CONTEXT_EVT};
   ContextID_t  m_evt_slot {INVALID_CONTEXT_ID};
   bool m_valid {false};
-  bool m_evt_failed {false};
 
   IProxyDict* m_proxy {0};
 

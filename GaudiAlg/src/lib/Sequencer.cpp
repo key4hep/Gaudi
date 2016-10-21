@@ -602,6 +602,7 @@ Sequencer::executeMember( Algorithm* theAlgorithm )
 {
   StatusCode result = StatusCode::SUCCESS;
   if ( theAlgorithm->isEnabled( ) ) {
+    theAlgorithm->setContext( getContext() );
     if ( ! theAlgorithm->isExecuted( ) ) {
       result = theAlgorithm->sysExecute( );
 

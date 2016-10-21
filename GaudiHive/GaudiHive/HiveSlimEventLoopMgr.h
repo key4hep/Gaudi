@@ -8,7 +8,8 @@
 #include "GaudiKernel/MinimalEventLoopMgr.h"
 #include "GaudiKernel/IScheduler.h"
 #include "GaudiKernel/IIncidentSvc.h"
-#include <GaudiKernel/IIncidentListener.h>
+#include "GaudiKernel/IIncidentListener.h"
+#include "GaudiKernel/IAlgExecStateSvc.h"
 
 // Standard includes
 #include <functional>
@@ -42,6 +43,8 @@ protected:
   SmartIF<IHiveWhiteBoard>  m_whiteboard;
   /// Reference to the Algorithm resource pool
   SmartIF<IAlgResourcePool>  m_algResourcePool;
+  /// Reference to the AlgExecStateSvc 
+  SmartIF<IAlgExecStateSvc> m_algExecStateSvc;
   /// Name of the Hist Pers type
   std::string       m_histPersName;
   /// Property interface of ApplicationMgr

@@ -24,7 +24,7 @@ DECLARE_SERVICE_FACTORY(RoundRobinSchedulerSvc)
 // Infrastructure methods
 
 RoundRobinSchedulerSvc::RoundRobinSchedulerSvc( const std::string& name, ISvcLocator* svcLoc ):
- base_class(name,svcLoc){
+base_class(name,svcLoc){
   declareProperty("UseTopAlgList", m_useTopAlgList=true);
   declareProperty("SimultaneousEvents", m_freeSlots=1);
 }
@@ -41,7 +41,7 @@ StatusCode RoundRobinSchedulerSvc::initialize(){
     warning () << "Base class could not be initialized" << endmsg;
 
   // Get the algo resource pool
- m_algResourcePool =  serviceLocator()->service("AlgResourcePool");
+  m_algResourcePool =  serviceLocator()->service("AlgResourcePool");
   if (!m_algResourcePool.isValid()){
     error() << "Error retrieving AlgResourcePool" << endmsg;
     return StatusCode::FAILURE;
@@ -52,20 +52,26 @@ StatusCode RoundRobinSchedulerSvc::initialize(){
   info() << "Found " <<  m_algList.size() << " algorithms" << endmsg;
 
   // Fill the containers to convert algo names to index
-  	m_algname_index_map.reserve(m_algList.size());
-  	m_algname_vect.reserve(m_algList.size());
-  	unsigned int index=0;
-  	for (IAlgorithm* algo : m_algList){
-  		const std::string& name = algo->name();
-  		m_algname_index_map[name]=index;
-  		m_algname_vect.emplace_back(name);
-  		index++;
-  	}
+  m_algname_index_map.reserve(m_algList.size());
+  m_algname_vect.reserve(m_algList.size());
+  unsigned int index=0;
+  for (IAlgorithm* algo : m_algList){
+    const std::string& name = algo->name();
+    m_algname_index_map[name]=index;
+    m_algname_vect.emplace_back(name);
+    index++;
+  }
 
   //initialize control flow manager
-  	const AlgResourcePool* algPool = dynamic_cast<const AlgResourcePool*>(m_algResourcePool.get());
+  const AlgResourcePool* algPool = dynamic_cast<const AlgResourcePool*>(m_algResourcePool.get());
 
-  	m_controlFlow.initialize(algPool->getExecutionFlowGraph(), m_algname_index_map);
+  m_controlFlow.initialize(algPool->getExecutionFlowGraph(), m_algname_index_map);
+
+  m_aess = serviceLocator()->service("AlgExecStateSvc");
+  if( !m_aess.isValid() ) {
+    fatal() << "Error retrieving AlgExecStateSvc" << endmsg;
+    return StatusCode::FAILURE;
+  }
 
   return StatusCode::SUCCESS;
 
@@ -78,7 +84,7 @@ StatusCode RoundRobinSchedulerSvc::initialize(){
 StatusCode RoundRobinSchedulerSvc::finalize(){
   StatusCode sc(Service::finalize());
   if (!sc.isSuccess())
-	  warning () << "Base class could not be finalized" << endmsg;
+    warning () << "Base class could not be finalized" << endmsg;
   return sc;
 }
 
@@ -89,171 +95,180 @@ StatusCode RoundRobinSchedulerSvc::finalize(){
  */
 StatusCode RoundRobinSchedulerSvc::pushNewEvent(EventContext* eventContext){
 
-	// consistency check
-	if (!m_freeSlots) {
-		fatal() << "More contexts than slots provided" << m_freeSlots << endmsg;
-		return StatusCode::FAILURE;
-	}
+  // consistency check
+  if (!m_freeSlots) {
+    fatal() << "More contexts than slots provided" << m_freeSlots << endmsg;
+    return StatusCode::FAILURE;
+  }
 
-	--m_freeSlots;
-	m_evtCtx_buffer.push_back(eventContext);
-	eventContext->setFail(false);
+  --m_freeSlots;
+  m_evtCtx_buffer.push_back(eventContext);
+  m_aess->reset(*eventContext);
 
-	return m_freeSlots > 0 ? StatusCode::SUCCESS : processEvents();
+  return m_freeSlots > 0 ? StatusCode::SUCCESS : processEvents();
 }
 
 StatusCode RoundRobinSchedulerSvc::pushNewEvents(std::vector<EventContext*>& eventContexts){
-	// consistency check
-	if (eventContexts.size() > m_freeSlots) {
-		fatal() << "More contexts than slots provided" << m_freeSlots << endmsg;
-		return StatusCode::FAILURE;
-	}
-	m_freeSlots -= eventContexts.size();
+  // consistency check
+  if (eventContexts.size() > m_freeSlots) {
+    fatal() << "More contexts than slots provided" << m_freeSlots << endmsg;
+    return StatusCode::FAILURE;
+  }
+  m_freeSlots -= eventContexts.size();
 
-	m_evtCtx_buffer.insert(m_evtCtx_buffer.end(), eventContexts.begin(), eventContexts.end());
+  m_evtCtx_buffer.insert(m_evtCtx_buffer.end(), eventContexts.begin(), eventContexts.end());
 
-	return m_freeSlots > 0 ? StatusCode::SUCCESS : processEvents();
+  return m_freeSlots > 0 ? StatusCode::SUCCESS : processEvents();
 }
 
 //---------------------------------------------------------------------------
 StatusCode RoundRobinSchedulerSvc::processEvents(){
-	StatusCode sc(StatusCode::SUCCESS);
+  StatusCode sc(StatusCode::SUCCESS);
 
-	// Get the IProperty interface of the ApplicationMgr to pass it to RetCodeGuard
-	const SmartIF<IProperty> appmgr(serviceLocator());
-	SmartIF<IMessageSvc> messageSvc (serviceLocator());
+  // Get the IProperty interface of the ApplicationMgr to pass it to RetCodeGuard
+  const SmartIF<IProperty> appmgr(serviceLocator());
+  SmartIF<IMessageSvc> messageSvc (serviceLocator());
 
-	//initialize control algorithm states and decisions
-	AlgsExecutionStates algStates(m_algList.size(), messageSvc);
-	const AlgResourcePool* algPool = dynamic_cast<const AlgResourcePool*>(m_algResourcePool.get());
-	std::vector<int> nodeDecisions(algPool->getExecutionFlowGraph()->getControlFlowNodeCounter(), -1);
+  //initialize control algorithm states and decisions
+  AlgsExecutionStates algStates(m_algList.size(), messageSvc);
+  const AlgResourcePool* algPool = dynamic_cast<const AlgResourcePool*>(m_algResourcePool.get());
+  std::vector<int> nodeDecisions(algPool->getExecutionFlowGraph()->getControlFlowNodeCounter(), -1);
 
 
-	m_controlFlow.updateEventState(algStates, nodeDecisions);
-	m_controlFlow.promoteToControlReadyState(algStates, nodeDecisions);
+  m_controlFlow.updateEventState(algStates, nodeDecisions);
+  m_controlFlow.promoteToControlReadyState(algStates, nodeDecisions);
 
-	//initialize data flow manager
-	//DataFlowManager dataFlow(m_scheduler->m_algosDependencies);
+  //initialize data flow manager
+  //DataFlowManager dataFlow(m_scheduler->m_algosDependencies);
 
-	info() << "Got " << m_evtCtx_buffer.size() << " events, starting loop" << endmsg;
+  info() << "Got " << m_evtCtx_buffer.size() << " events, starting loop" << endmsg;
 
-	while(algStates.algsPresent(AlgsExecutionStates::State::CONTROLREADY) ){
+  while(algStates.algsPresent(AlgsExecutionStates::State::CONTROLREADY) ){
 
-		debug() << "algorithms left" << endmsg;
+    debug() << "algorithms left" << endmsg;
 
-		//std::for_each(algStates.begin(AlgsExecutionStates::State::CONTROLREADY), algStates.end(AlgsExecutionStates::State::CONTROLREADY),
+    //std::for_each(algStates.begin(AlgsExecutionStates::State::CONTROLREADY), algStates.end(AlgsExecutionStates::State::CONTROLREADY),
 
-				//[&] (uint algIndex) {
-		for(auto it = algStates.begin(AlgsExecutionStates::State::CONTROLREADY); it != algStates.end(AlgsExecutionStates::State::CONTROLREADY); ++it){
+    //[&] (uint algIndex) {
+    for(auto it = algStates.begin(AlgsExecutionStates::State::CONTROLREADY); it != algStates.end(AlgsExecutionStates::State::CONTROLREADY); ++it){
 
-				uint algIndex = *it;
+      uint algIndex = *it;
 
-				std::string algName = m_algname_vect[algIndex];
+      std::string algName = m_algname_vect[algIndex];
 
-				debug() << "Running algorithm [" << algIndex << "] " << algName << endmsg;
+      debug() << "Running algorithm [" << algIndex << "] " << algName << endmsg;
 
-				std::vector<AlgsExecutionStates::State> algResults(m_evtCtx_buffer.size());
+      std::vector<AlgsExecutionStates::State> algResults(m_evtCtx_buffer.size());
 
-				//promote algorithm to data ready
-				algStates.updateState(algIndex,AlgsExecutionStates::DATAREADY);
+      //promote algorithm to data ready
+      algStates.updateState(algIndex,AlgsExecutionStates::DATAREADY);
 
-				IAlgorithm* ialgoPtr=nullptr;
-				m_algResourcePool->acquireAlgorithm(algName, ialgoPtr);
-				//promote algorithm to scheduled
-				algStates.updateState(algIndex,AlgsExecutionStates::SCHEDULED);
+      IAlgorithm* ialgoPtr=nullptr;
+      m_algResourcePool->acquireAlgorithm(algName, ialgoPtr);
+      //promote algorithm to scheduled
+      algStates.updateState(algIndex,AlgsExecutionStates::SCHEDULED);
 
-				Algorithm* algoPtr = dynamic_cast<Algorithm*> (ialgoPtr); // DP: expose the setter of the context?
-				algoPtr->resetExecuted();
+      Algorithm* algoPtr = dynamic_cast<Algorithm*> (ialgoPtr); // DP: expose the setter of the context?
+      algoPtr->resetExecuted();
 
-				for (uint i = 0; i < m_evtCtx_buffer.size(); ++i) {
-				  if (false == m_evtCtx_buffer[i]->evtFail()) {
-						bool eventfailed=false;
+      for (uint i = 0; i < m_evtCtx_buffer.size(); ++i) {
+        if (m_aess->eventStatus(*m_evtCtx_buffer[i]) == EventStatus::Success ||
+            m_aess->eventStatus(*m_evtCtx_buffer[i]) == EventStatus::Invalid ) {
+          bool eventfailed=false;
 
-						// m_evtCtx_buffer[i]->m_thread_id = pthread_self();
-						algoPtr->resetExecuted();
-						algoPtr->setContext(m_evtCtx_buffer[i]);
-						Gaudi::Hive::setCurrentContextId(m_evtCtx_buffer[i]->slot());
-						// Call the execute() method
-						try {
-							RetCodeGuard rcg(appmgr, Gaudi::ReturnCode::UnhandledException);
-							sc = ialgoPtr->sysExecute();
-							if (UNLIKELY(!sc.isSuccess()))  {
-								warning() << "Execution of algorithm " << algName << " failed for event " << m_evtCtx_buffer[i]->evt() << endmsg;
-								eventfailed = true;
-							}
-							rcg.ignore(); // disarm the guard
-						} catch ( const GaudiException& Exception ) {
-							error() << ".executeEvent(): Exception with tag=" << Exception.tag()
-        						   << " thrown by " << algName << endmsg;
-							error() << Exception << endmsg;
-						} catch ( const std::exception& Exception ) {
-							fatal() << ".executeEvent(): Standard std::exception thrown by "
-									<< algName << endmsg;
-							error() <<  Exception.what()  << endmsg;
-						} catch(...) {
-							fatal() << ".executeEvent(): UNKNOWN Exception thrown by "
-									<< algName << endmsg;
-						}
-						m_evtCtx_buffer[i]->setFail(eventfailed);
-					}
+          // m_evtCtx_buffer[i]->m_thread_id = pthread_self();
+          algoPtr->resetExecuted();
+          algoPtr->setContext(m_evtCtx_buffer[i]);
+          Gaudi::Hive::setCurrentContextId(m_evtCtx_buffer[i]->slot());
 
-					if (ialgoPtr->filterPassed()){
-						algResults[i] = AlgsExecutionStates::State::EVTACCEPTED;
-					} else {
-						algResults[i] = AlgsExecutionStates::State::EVTREJECTED;
-					}
+          sc = StatusCode::FAILURE;
 
-				}
+          // Call the execute() method
+          try {
+            RetCodeGuard rcg(appmgr, Gaudi::ReturnCode::UnhandledException);
+            sc = ialgoPtr->sysExecute();
+            if (UNLIKELY(!sc.isSuccess()))  {
+              warning() << "Execution of algorithm " << algName << " failed for event "
+                        << m_evtCtx_buffer[i]->evt() << endmsg;
+              eventfailed = true;
+            }
+            rcg.ignore(); // disarm the guard
+          } catch ( const GaudiException& Exception ) {
+            error() << ".executeEvent(): Exception with tag=" << Exception.tag()
+                    << " thrown by " << algName << endmsg;
+            error() << Exception << endmsg;
+            eventfailed = true;
+          } catch ( const std::exception& Exception ) {
+            fatal() << ".executeEvent(): Standard std::exception thrown by "
+                    << algName << endmsg;
+            error() <<  Exception.what()  << endmsg;
+            eventfailed = true;
+          } catch(...) {
+            fatal() << ".executeEvent(): UNKNOWN Exception thrown by "
+                    << algName << endmsg;
+            eventfailed = true;
+          }
+          m_aess->algExecState(ialgoPtr, *m_evtCtx_buffer[i]).setExecStatus( sc );
+          m_aess->updateEventStatus(eventfailed,*m_evtCtx_buffer[i]);
+        }
 
-				m_algResourcePool->releaseAlgorithm(algName,ialgoPtr);
+        if (m_aess->algExecState(ialgoPtr,*m_evtCtx_buffer[i]).filterPassed()) {
+          algResults[i] = AlgsExecutionStates::State::EVTACCEPTED;
+        } else {
+          algResults[i] = AlgsExecutionStates::State::EVTREJECTED;
+        }
 
-				AlgsExecutionStates::State result = algResults[0];
-				bool unanimous = true;
-				for(uint i = 1; i < algResults.size(); ++i)
-					if(result != algResults[i])
-						unanimous = false;
+      }
 
-				if(unanimous)
-					algStates.updateState(algIndex,result);
-				else{
-					fatal() << "divergent algorithm execution" << endmsg;
-					fatal() << "Algorithm results: ";
-					for(uint i =0; i < algResults.size(); ++i){
-						fatal() << i << ": " << (algResults[i] ==  AlgsExecutionStates::State::EVTACCEPTED ? "A" : "R") << "\t";
-						if(algResults[i] ==  AlgsExecutionStates::State::EVTREJECTED){
-							//std::cerr << m_evtCtx_buffer[i]->m_evt_num << std::endl;
-						}
-					}
-					fatal() << endmsg;
+      m_algResourcePool->releaseAlgorithm(algName,ialgoPtr);
 
-					sc = StatusCode::FAILURE;
-				}
-		}
-		//});
+      AlgsExecutionStates::State result = algResults[0];
+      bool unanimous = true;
+      for(uint i = 1; i < algResults.size(); ++i)
+        if(result != algResults[i])
+          unanimous = false;
 
-		if(sc.isFailure())
-			break; //abort execution of events, something went wrong
+      if(unanimous)
+        algStates.updateState(algIndex,result);
+      else{
+        fatal() << "divergent algorithm execution" << endmsg;
+        fatal() << "Algorithm results: ";
+        for(uint i =0; i < algResults.size(); ++i){
+          fatal() << i << ": " << (algResults[i] ==  AlgsExecutionStates::State::EVTACCEPTED ? "A" : "R") << "\t";
+          if(algResults[i] ==  AlgsExecutionStates::State::EVTREJECTED){
+            //std::cerr << m_evtCtx_buffer[i]->m_evt_num << std::endl;
+          }
+        }
+        fatal() << endmsg;
 
-		m_controlFlow.updateEventState(algStates, nodeDecisions);
-		m_controlFlow.promoteToControlReadyState(algStates, nodeDecisions);
-	}
-	for (EventContext* eventContext : m_evtCtx_buffer) {
-		m_finishedEvents.push(eventContext);
-	}
+        sc = StatusCode::FAILURE;
+      }
+    }
+    //});
 
-	m_evtCtx_buffer.clear();
+    if(sc.isFailure())
+      break; //abort execution of events, something went wrong
 
-	return sc; //TODO: define proper return value
+    m_controlFlow.updateEventState(algStates, nodeDecisions);
+    m_controlFlow.promoteToControlReadyState(algStates, nodeDecisions);
+  }
+  for (EventContext* eventContext : m_evtCtx_buffer) {
+    m_finishedEvents.push(eventContext);
+  }
+
+  m_evtCtx_buffer.clear();
+
+  return sc; //TODO: define proper return value
 }
 
 //---------------------------------------------------------------------------
 /// Blocks until an event is availble
 StatusCode RoundRobinSchedulerSvc::popFinishedEvent(EventContext*& eventContext){
 
-	if(m_finishedEvents.empty() && !m_evtCtx_buffer.empty())
-		processEvents();
+  if(m_finishedEvents.empty() && !m_evtCtx_buffer.empty())
+    processEvents();
 
-	m_finishedEvents.pop(eventContext);
+  m_finishedEvents.pop(eventContext);
   m_freeSlots++;
   debug() << "Popped slot " << eventContext->slot() << "(event "
           << eventContext->evt() << ")" << endmsg;
@@ -266,7 +281,7 @@ StatusCode RoundRobinSchedulerSvc::tryPopFinishedEvent(EventContext*& eventConte
   if (m_finishedEvents.try_pop(eventContext)){
     debug() << "Try Pop successful slot " << eventContext->slot()
             << "(event " << eventContext->evt() << ")" << endmsg;
-     m_freeSlots++;
+    m_freeSlots++;
     return StatusCode::SUCCESS;
   }
   return StatusCode::FAILURE;

@@ -34,6 +34,7 @@ FileCatalog(Catalogs = [ "xmlcatalog_file:ROOTIO.xml" ])
 MessageSvc(OutputLevel=VERBOSE)
 IncidentSvc(OutputLevel=DEBUG)
 RootCnvSvc(OutputLevel=INFO)
+AlgExecStateSvc(OutputLevel=INFO)
 
 GaudiPersistency()
 

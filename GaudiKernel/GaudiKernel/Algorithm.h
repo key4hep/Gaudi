@@ -14,6 +14,7 @@
 
 #include <string>
 #include <vector>
+#include <mutex>
 
 // Extra include files (forward declarations should be sufficient)
 #include "GaudiKernel/IDataProviderSvc.h"
@@ -38,6 +39,7 @@
 #include "GaudiKernel/EventContext.h"
 #include "GaudiKernel/DataHandle.h"
 #include "GaudiKernel/IDataHandleHolder.h"
+#include "GaudiKernel/IAlgExecStateSvc.h"
 
 class IAlgTool;
 class ToolHandleInfo;
@@ -340,6 +342,8 @@ public:
 
   SmartIF<IHiveWhiteBoard>& whiteboard() const;
 
+  SmartIF<IAlgExecStateSvc>& algExecStateSvc() const;
+
   /// register for Algorithm Context Service?
   bool registerContext() const { return m_registerContext ; }
 
@@ -568,10 +572,12 @@ public:
 
   // For concurrency
   /// get the context
-  const EventContext* getContext() const {return m_event_context;}
+  const EventContext* getContext() const override {return m_event_context;}
 
   /// set the context
-  void setContext(const EventContext* context){m_event_context = context;}
+  void setContext(const EventContext* context) override {
+    m_event_context = context;
+  }
 
   // From IDataHandleHolder:
 
@@ -679,6 +685,8 @@ protected:
   /// set instantiation index of Alg
   void setIndex(const unsigned int& idx) override;
 
+  int maxErrors() const { return m_errorMax; }
+
 private:
 
   Gaudi::StringKey m_name;       ///< Algorithm's name for identification
@@ -709,9 +717,10 @@ private:
   mutable SmartIF<IAuditorSvc>      m_pAuditorSvc; ///< Auditor Service
   mutable SmartIF<IToolSvc>         m_ptoolSvc;    ///< ToolSvc Service
   mutable SmartIF<IMonitorSvc>      m_pMonitorSvc; ///< Online Monitoring Service
-  mutable SmartIF<IAlgContextSvc>   m_contextSvc ; ///< Algorithm Context Service
+  mutable SmartIF<IAlgContextSvc>   m_contextSvc;  ///< Algorithm Context Service
 
-  mutable SmartIF<ITimelineSvc>   m_timelineSvc ; ///< Timeline Service
+  mutable SmartIF<ITimelineSvc>     m_timelineSvc; ///< Timeline Service
+  mutable SmartIF<IAlgExecStateSvc>      m_aess;         ///< Alg execution state mgr
 
   bool  m_registerContext = false ; ///< flag to register for Algorithm Context Service
   std::string               m_monitorSvcName; ///< Name to use for Monitor Service
@@ -721,6 +730,8 @@ private:
 
   /// Hook for for derived classes to provide a custom visitor for data handles.
   std::unique_ptr<IDataHandleVisitor> m_updateDataHandles;
+
+  std::mutex   m_lock;             ///< for re-entrant Algs
 
  private:
   IntegerProperty m_outputLevel;   ///< Algorithm output level
@@ -734,11 +745,9 @@ private:
   bool         m_auditorFinalize;  ///< flag for auditors in "finalize()"
   bool         m_auditorBeginRun;  ///< flag for auditors in "beginRun()"
   bool         m_auditorEndRun;    ///< flag for auditors in "endRun()"
-  bool         m_auditorStart;///< flag for auditors in "initialize()"
-  bool         m_auditorStop;///< flag for auditors in "Reinitialize()"
-  bool         m_filterPassed = true;     ///< Filter passed flag
+  bool         m_auditorStart;     ///< flag for auditors in "initialize()"
+  bool         m_auditorStop;      ///< flag for auditors in "Reinitialize()"
   bool         m_isEnabled = true;        ///< Algorithm is enabled flag
-  bool         m_isExecuted = false;      ///< Algorithm is executed flag
   mutable bool m_toolHandlesInit = false;  /// flag indicating whether ToolHandle tools have been added to m_tools
   Gaudi::StateMachine::State m_state = Gaudi::StateMachine::CONFIGURED;            ///< Algorithm has been initialized flag
   Gaudi::StateMachine::State m_targetState = Gaudi::StateMachine::CONFIGURED;      ///< Algorithm has been initialized flag

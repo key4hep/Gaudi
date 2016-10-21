@@ -3,6 +3,7 @@
 // ============================================================================
 #include "Node.h"
 #include <algorithm>
+#include <numeric>
 // ============================================================================
 namespace gp = Gaudi::Parsers;
 // ============================================================================
@@ -59,11 +60,11 @@ std::string gp::Node::ToString(int indent) const {
     if (position.line() != 0)
         result += " line=\"" + std::to_string(position.line()) + "\"";
     if (position.column() != 0)
-        result += " column=\"" + std::to_string(position.column()) + "\""; 
+        result += " column=\"" + std::to_string(position.column()) + "\"";
     if (children.empty()) {
         result += "/>\n";
     } else {
-        result = std::accumulate( std::begin(children), std::end(children), 
+        result = std::accumulate( std::begin(children), std::end(children),
                                   result + ">\n" , [&](std::string s, const gp::Node& node) {
                                       return s + node.ToString(indent+2);
                  }).append( ' ', indent ) + "</" + name() + ">\n";

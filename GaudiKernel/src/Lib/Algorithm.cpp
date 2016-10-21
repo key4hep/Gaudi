@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <numeric>
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IMessageSvc.h"
@@ -33,10 +34,10 @@
 #include "GaudiKernel/StringKey.h"
 
 namespace {
-    template <StatusCode (Algorithm::*f)(), typename C > bool for_algorithms(C& c) {
-       return std::accumulate( std::begin(c), std::end(c), true,
-                               [](bool b, Algorithm* a) { return (a->*f)().isSuccess() && b; } );
-    }
+  template <StatusCode (Algorithm::*f)(), typename C > bool for_algorithms(C& c) {
+    return std::accumulate( std::begin(c), std::end(c), true,
+                            [](bool b, Algorithm* a) { return (a->*f)().isSuccess() && b; } );
+  }
 }
 
 // Constructor
@@ -153,36 +154,36 @@ StatusCode Algorithm::sysInitialize() {
         if (it->sysInitialize().isFailure()) fail = true;
       }
       if( fail ) {
-    sc = StatusCode::FAILURE;
-    error() << " Error initializing one or several sub-algorithms"
-        << endmsg;
+        sc = StatusCode::FAILURE;
+        error() << " Error initializing one or several sub-algorithms"
+                << endmsg;
       } else {
-    // Update the state.
-    m_state = m_targetState;
+        // Update the state.
+        m_state = m_targetState;
       }
     }
   }
   catch ( const GaudiException& Exception )
-  {
-    fatal() << " Exception with tag=" << Exception.tag()
-        << " is caught " << endmsg;
-    error() << Exception  << endmsg;
-    Stat stat( chronoSvc() , Exception.tag() );
-    sc = StatusCode::FAILURE;
-  }
+    {
+      fatal() << " Exception with tag=" << Exception.tag()
+              << " is caught " << endmsg;
+      error() << Exception  << endmsg;
+      Stat stat( chronoSvc() , Exception.tag() );
+      sc = StatusCode::FAILURE;
+    }
   catch( const std::exception& Exception )
-  {
-    fatal() << " Standard std::exception is caught " << endmsg;
-    error() << Exception.what()  << endmsg;
-    Stat stat( chronoSvc() , "*std::exception*" );
-    sc = StatusCode::FAILURE;
-  }
+    {
+      fatal() << " Standard std::exception is caught " << endmsg;
+      error() << Exception.what()  << endmsg;
+      Stat stat( chronoSvc() , "*std::exception*" );
+      sc = StatusCode::FAILURE;
+    }
   catch(...)
-  {
-    fatal() << "UNKNOWN Exception is caught " << endmsg;
-    Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
-    sc = StatusCode::FAILURE;
-  }
+    {
+      fatal() << "UNKNOWN Exception is caught " << endmsg;
+      Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
+      sc = StatusCode::FAILURE;
+    }
 
   // If Cardinality is 0, bring the value to 1
   if (m_cardinality == 0 ) {
@@ -192,6 +193,8 @@ StatusCode Algorithm::sysInitialize() {
   else if (m_cardinality > 1 ) {
     m_isClonable = true;
   }
+
+  algExecStateSvc()->addAlg( this );
 
   //
   //// build list of data dependencies
@@ -203,7 +206,7 @@ StatusCode Algorithm::sysInitialize() {
   }
 
   if (m_updateDataHandles)
-      acceptDHVisitor(m_updateDataHandles.get());
+    acceptDHVisitor(m_updateDataHandles.get());
 
   // visit all sub-algs and tools, build full set
   DHHVisitor avis(m_inputDataObjs, m_outputDataObjs);
@@ -237,7 +240,7 @@ Algorithm::acceptDHVisitor(IDataHandleVisitor *vis) const {
   for (auto tool : tools()) {
     AlgTool* at = dynamic_cast<AlgTool*>(tool);
     vis->visit(at);
-    }
+  }
 
   // loop through sub-algs
   for (auto alg : *subAlgorithms()) {
@@ -266,50 +269,50 @@ StatusCode Algorithm::sysStart() {
   StatusCode sc(StatusCode::FAILURE);
   // Invoke start() method of the derived class inside a try/catch clause
   try
-  {
-    { // limit the scope of the guard
-      Gaudi::Guards::AuditorGuard guard
-        (this,
-         // check if we want to audit the initialize
-         (m_auditorStart) ? auditorSvc().get() : nullptr,
-         IAuditor::Start);
-      // Invoke the start() method of the derived class
-      sc = start();
-    }
-    if( sc.isSuccess() ) {
+    {
+      { // limit the scope of the guard
+        Gaudi::Guards::AuditorGuard guard
+          (this,
+           // check if we want to audit the initialize
+           (m_auditorStart) ? auditorSvc().get() : nullptr,
+           IAuditor::Start);
+        // Invoke the start() method of the derived class
+        sc = start();
+      }
+      if( sc.isSuccess() ) {
 
-      // Now start any sub-algorithms
-      if( !for_algorithms<&Algorithm::sysStart>( m_subAlgms ) ) {
-    sc = StatusCode::FAILURE;
-    error() << " Error starting one or several sub-algorithms"
-        << endmsg;
-      } else {
-    // Update the state.
-    m_state = m_targetState;
+        // Now start any sub-algorithms
+        if( !for_algorithms<&Algorithm::sysStart>( m_subAlgms ) ) {
+          sc = StatusCode::FAILURE;
+          error() << " Error starting one or several sub-algorithms"
+                  << endmsg;
+        } else {
+          // Update the state.
+          m_state = m_targetState;
+        }
       }
     }
-  }
   catch ( const GaudiException& Exception )
-  {
-    fatal() << "in sysStart(): exception with tag=" << Exception.tag()
-        << " is caught" << endmsg;
-    error() << Exception << endmsg;
-    Stat stat( chronoSvc() , Exception.tag() );
-    sc = StatusCode::FAILURE;
-  }
+    {
+      fatal() << "in sysStart(): exception with tag=" << Exception.tag()
+              << " is caught" << endmsg;
+      error() << Exception << endmsg;
+      Stat stat( chronoSvc() , Exception.tag() );
+      sc = StatusCode::FAILURE;
+    }
   catch( const std::exception& Exception )
-  {
-    fatal() << "in sysStart(): standard std::exception is caught" << endmsg;
-    error() << Exception.what()  << endmsg;
-    Stat stat( chronoSvc() , "*std::exception*" );
-    sc = StatusCode::FAILURE;
-  }
+    {
+      fatal() << "in sysStart(): standard std::exception is caught" << endmsg;
+      error() << Exception.what()  << endmsg;
+      Stat stat( chronoSvc() , "*std::exception*" );
+      sc = StatusCode::FAILURE;
+    }
   catch(...)
-  {
-    fatal() << "in sysStart(): UNKNOWN Exception is caught" << endmsg;
-    Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
-    sc = StatusCode::FAILURE;
-  }
+    {
+      fatal() << "in sysStart(): UNKNOWN Exception is caught" << endmsg;
+      Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
+      sc = StatusCode::FAILURE;
+    }
 
   return sc;
 }
@@ -323,8 +326,8 @@ StatusCode Algorithm::sysReinitialize() {
   // Check that the current status is the correct one.
   if ( Gaudi::StateMachine::INITIALIZED != FSMState() ) {
     error()
-        << "sysReinitialize(): cannot reinitialize algorithm not initialized"
-        << endmsg;
+      << "sysReinitialize(): cannot reinitialize algorithm not initialized"
+      << endmsg;
     return StatusCode::FAILURE;
   }
 
@@ -350,34 +353,34 @@ StatusCode Algorithm::sysReinitialize() {
 
       // Now initialize care of any sub-algorithms
       if ( !for_algorithms<&Algorithm::sysReinitialize>( m_subAlgms ) ) {
-    sc = StatusCode::FAILURE;
-    error()
-        << "sysReinitialize(): Error reinitializing one or several "
-        << "sub-algorithms" << endmsg;
+        sc = StatusCode::FAILURE;
+        error()
+          << "sysReinitialize(): Error reinitializing one or several "
+          << "sub-algorithms" << endmsg;
       }
     }
   }
   catch ( const GaudiException& Exception )
-  {
-    fatal() << "sysReinitialize(): Exception with tag=" << Exception.tag()
-        << " is caught" << endmsg;
-    error() << Exception  << endmsg;
-    Stat stat( chronoSvc() , Exception.tag() );
-    sc = StatusCode::FAILURE;
-  }
+    {
+      fatal() << "sysReinitialize(): Exception with tag=" << Exception.tag()
+              << " is caught" << endmsg;
+      error() << Exception  << endmsg;
+      Stat stat( chronoSvc() , Exception.tag() );
+      sc = StatusCode::FAILURE;
+    }
   catch( const std::exception& Exception )
-  {
-    fatal() << "sysReinitialize(): Standard std::exception is caught" << endmsg;
-    error() << Exception.what()  << endmsg;
-    Stat stat( chronoSvc() , "*std::exception*" );
-    sc = StatusCode::FAILURE;
-  }
+    {
+      fatal() << "sysReinitialize(): Standard std::exception is caught" << endmsg;
+      error() << Exception.what()  << endmsg;
+      Stat stat( chronoSvc() , "*std::exception*" );
+      sc = StatusCode::FAILURE;
+    }
   catch(...)
-  {
-    fatal() << "sysReinitialize(): UNKNOWN Exception is caught" << endmsg;
-    Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
-    sc = StatusCode::FAILURE;
-  }
+    {
+      fatal() << "sysReinitialize(): UNKNOWN Exception is caught" << endmsg;
+      Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
+      sc = StatusCode::FAILURE;
+    }
 
   return sc;
 }
@@ -416,32 +419,32 @@ StatusCode Algorithm::sysRestart() {
 
       // Now initialize care of any sub-algorithms
       if( !for_algorithms<&Algorithm::sysRestart>( m_subAlgms ) ) {
-    sc = StatusCode::FAILURE;
-    error() << "sysRestart(): Error restarting one or several sub-algorithms" << endmsg;
+        sc = StatusCode::FAILURE;
+        error() << "sysRestart(): Error restarting one or several sub-algorithms" << endmsg;
       }
     }
   }
   catch ( const GaudiException& Exception )
-  {
-    fatal() << "sysRestart(): Exception with tag=" << Exception.tag()
-        << " is caught" << endmsg;
-    error() << Exception  << endmsg;
-    Stat stat( chronoSvc() , Exception.tag() );
-    sc = StatusCode::FAILURE;
-  }
+    {
+      fatal() << "sysRestart(): Exception with tag=" << Exception.tag()
+              << " is caught" << endmsg;
+      error() << Exception  << endmsg;
+      Stat stat( chronoSvc() , Exception.tag() );
+      sc = StatusCode::FAILURE;
+    }
   catch( const std::exception& Exception )
-  {
-    fatal() << "sysRestart(): Standard std::exception is caught" << endmsg;
-    error() << Exception.what()  << endmsg;
-    Stat stat( chronoSvc() , "*std::exception*" );
-    sc = StatusCode::FAILURE;
-  }
+    {
+      fatal() << "sysRestart(): Standard std::exception is caught" << endmsg;
+      error() << Exception.what()  << endmsg;
+      Stat stat( chronoSvc() , "*std::exception*" );
+      sc = StatusCode::FAILURE;
+    }
   catch(...)
-  {
-    fatal() << "sysRestart(): UNKNOWN Exception is caught" << endmsg;
-    Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
-    sc = StatusCode::FAILURE;
-  }
+    {
+      fatal() << "sysRestart(): UNKNOWN Exception is caught" << endmsg;
+      Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
+      sc = StatusCode::FAILURE;
+    }
 
   return sc;
 }
@@ -474,33 +477,33 @@ StatusCode Algorithm::sysBeginRun() {
 
       // Now call beginRun for any sub-algorithms
       if( !for_algorithms<&Algorithm::sysBeginRun>( m_subAlgms ) ) {
-    sc = StatusCode::FAILURE;
-    error() << " Error executing BeginRun for one or several sub-algorithms"
-          << endmsg;
+        sc = StatusCode::FAILURE;
+        error() << " Error executing BeginRun for one or several sub-algorithms"
+                << endmsg;
       }
     }
   }
   catch ( const GaudiException& Exception )
-  {
-    fatal() << " Exception with tag=" << Exception.tag()
-        << " is caught " << endmsg;
-    error() << Exception  << endmsg;
-    Stat stat( chronoSvc() , Exception.tag() );
-    sc = StatusCode::FAILURE;
-  }
+    {
+      fatal() << " Exception with tag=" << Exception.tag()
+              << " is caught " << endmsg;
+      error() << Exception  << endmsg;
+      Stat stat( chronoSvc() , Exception.tag() );
+      sc = StatusCode::FAILURE;
+    }
   catch( const std::exception& Exception )
-  {
-    fatal() << " Standard std::exception is caught " << endmsg;
-    error() << Exception.what()  << endmsg;
-    Stat stat( chronoSvc() , "*std::exception*" );
-    sc = StatusCode::FAILURE;
-  }
+    {
+      fatal() << " Standard std::exception is caught " << endmsg;
+      error() << Exception.what()  << endmsg;
+      Stat stat( chronoSvc() , "*std::exception*" );
+      sc = StatusCode::FAILURE;
+    }
   catch(...)
-  {
-    fatal() << "UNKNOWN Exception is caught " << endmsg;
-    Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
-    sc = StatusCode::FAILURE;
-  }
+    {
+      fatal() << "UNKNOWN Exception is caught " << endmsg;
+      Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
+      sc = StatusCode::FAILURE;
+    }
   return sc;
 }
 
@@ -538,31 +541,31 @@ StatusCode Algorithm::sysEndRun() {
       if( !for_algorithms<&Algorithm::sysEndRun>( m_subAlgms ) ) {
         sc = StatusCode::FAILURE;
         error() << " Error calling endRun for one or several sub-algorithms"
-            << endmsg;
+                << endmsg;
       }
     }
   }
   catch ( const GaudiException& Exception )
-  {
-    fatal() << " Exception with tag=" << Exception.tag()
-        << " is caught " << endmsg;
-    error() << Exception  << endmsg;
-    Stat stat( chronoSvc() , Exception.tag() );
-    sc = StatusCode::FAILURE;
-  }
+    {
+      fatal() << " Exception with tag=" << Exception.tag()
+              << " is caught " << endmsg;
+      error() << Exception  << endmsg;
+      Stat stat( chronoSvc() , Exception.tag() );
+      sc = StatusCode::FAILURE;
+    }
   catch( const std::exception& Exception )
-  {
-    fatal() << " Standard std::exception is caught " << endmsg;
-    error() << Exception.what()  << endmsg;
-    Stat stat( chronoSvc() , "*std::exception*" );
-    sc = StatusCode::FAILURE;
-  }
+    {
+      fatal() << " Standard std::exception is caught " << endmsg;
+      error() << Exception.what()  << endmsg;
+      Stat stat( chronoSvc() , "*std::exception*" );
+      sc = StatusCode::FAILURE;
+    }
   catch(...)
-  {
-    fatal() << "UNKNOWN Exception is caught " << endmsg;
-    Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
-    sc = StatusCode::FAILURE;
-  }
+    {
+      fatal() << "UNKNOWN Exception is caught " << endmsg;
+      Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
+      sc = StatusCode::FAILURE;
+    }
   return sc;
 }
 
@@ -608,66 +611,69 @@ StatusCode Algorithm::sysExecute() {
   try {
 
     if(UNLIKELY(m_doTimeline))
-          timeline.start = Clock::now();
+      timeline.start = Clock::now();
     status = execute();
-
+    
     if(UNLIKELY(m_doTimeline))
-        timeline.end = Clock::now();
-
+      timeline.end = Clock::now();
+    
     setExecuted(true);  // set the executed flag
-
+    
     if (status.isFailure()) {
       status = exceptionSvc()->handleErr(*this,status);
     }
-
+    
   }
   catch( const GaudiException& Exception )
-  {
-    setExecuted(true);  // set the executed flag
+    {
+      setExecuted(true);  // set the executed flag
 
-    if (Exception.code() == StatusCode::FAILURE) {
-      fatal();
-    } else {
-      error() << " Recoverable";
+      if (Exception.code() == StatusCode::FAILURE) {
+        fatal();
+      } else {
+        error() << " Recoverable";
+      }
+
+      msgStream() << " Exception with tag=" << Exception.tag()
+                  << " is caught " << endmsg;
+
+      error() << Exception  << endmsg;
+
+      //Stat stat( chronoSvc() , Exception.tag() ) ;
+      status = exceptionSvc()->handle(*this,Exception);
+    }
+  catch( const std::exception& Exception )
+    {
+      setExecuted(true);  // set the executed flag
+
+      fatal() << " Standard std::exception is caught " << endmsg;
+      error() << Exception.what()  << endmsg;
+      //Stat stat( chronoSvc() , "*std::exception*" ) ;
+      status = exceptionSvc()->handle(*this,Exception);
+    }
+  catch(...)
+    {
+      setExecuted(true);  // set the executed flag
+
+      fatal() << "UNKNOWN Exception is caught " << endmsg;
+      //Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
+
+      status = exceptionSvc()->handle(*this);
     }
 
-    msgStream() << " Exception with tag=" << Exception.tag()
-        << " is caught " << endmsg;
-
-    error() << Exception  << endmsg;
-
-    //Stat stat( chronoSvc() , Exception.tag() ) ;
-    status = exceptionSvc()->handle(*this,Exception);
-  }
-  catch( const std::exception& Exception )
-  {
-    setExecuted(true);  // set the executed flag
-
-    fatal() << " Standard std::exception is caught " << endmsg;
-    error() << Exception.what()  << endmsg;
-    //Stat stat( chronoSvc() , "*std::exception*" ) ;
-    status = exceptionSvc()->handle(*this,Exception);
-  }
-  catch(...)
-  {
-    setExecuted(true);  // set the executed flag
-
-    fatal() << "UNKNOWN Exception is caught " << endmsg;
-    //Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
-
-    status = exceptionSvc()->handle(*this);
-  }
-
   if(UNLIKELY(m_doTimeline))
-      timelineSvc()->registerTimelineEvent(timeline);
+    timelineSvc()->registerTimelineEvent(timeline);
 
   if( status.isFailure() ) {
     // Increment the error count
-    m_errorCount++;
+    { 
+      std::lock_guard<std::mutex>  lock(m_lock);      
+      m_errorCount++;
+    }
     // Check if maximum is exeeded
     if( m_errorCount < m_errorMax ) {
       warning() << "Continuing from error (cnt=" << m_errorCount
-          << ", max=" << m_errorMax << ")" << endmsg;
+                << ", max=" << m_errorMax << ")" << endmsg;
       // convert to success
       status = StatusCode::SUCCESS;
     }
@@ -709,7 +715,7 @@ StatusCode Algorithm::sysStop() {
   }
   catch ( const GaudiException& Exception )  {
     fatal() << "in sysStop(): exception with tag=" << Exception.tag()
-        << " is caught" << endmsg;
+            << " is caught" << endmsg;
     error() << Exception << endmsg;
     Stat stat( chronoSvc() , Exception.tag() );
     sc = StatusCode::FAILURE;
@@ -766,26 +772,26 @@ StatusCode Algorithm::sysFinalize() {
     }
   }
   catch( const GaudiException& Exception )
-  {
-    fatal() << " Exception with tag=" << Exception.tag()
-        << " is caught " << endmsg;
-    error() << Exception  << endmsg;
-    Stat stat( chronoSvc() , Exception.tag() ) ;
-    sc = StatusCode::FAILURE;
-  }
+    {
+      fatal() << " Exception with tag=" << Exception.tag()
+              << " is caught " << endmsg;
+      error() << Exception  << endmsg;
+      Stat stat( chronoSvc() , Exception.tag() ) ;
+      sc = StatusCode::FAILURE;
+    }
   catch( const std::exception& Exception )
-  {
-    fatal() << " Standard std::exception is caught " << endmsg;
-    error() << Exception.what()  << endmsg;
-    Stat stat( chronoSvc() , "*std::exception*" ) ;
-    sc = StatusCode::FAILURE;
-  }
+    {
+      fatal() << " Standard std::exception is caught " << endmsg;
+      error() << Exception.what()  << endmsg;
+      Stat stat( chronoSvc() , "*std::exception*" ) ;
+      sc = StatusCode::FAILURE;
+    }
   catch( ... )
-  {
-    fatal() << "UNKNOWN Exception is caught " << endmsg;
-    Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
-    sc = StatusCode::FAILURE;
-  }
+    {
+      fatal() << "UNKNOWN Exception is caught " << endmsg;
+      Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
+      sc = StatusCode::FAILURE;
+    }
   return sc;
 }
 
@@ -794,17 +800,17 @@ StatusCode Algorithm::reinitialize() {
    * MCl 2008-10-23: the implementation of reinitialize as finalize+initialize
    *                 is causing too many problems
    *
-  // Default implementation is finalize+initialize
-  StatusCode sc = finalize();
-  if (sc.isFailure()) {
-    error() << "reinitialize(): cannot be finalized" << endmsg;
-    return sc;
-  }
-  sc = initialize();
-  if (sc.isFailure()) {
-    error() << "reinitialize(): cannot be initialized" << endmsg;
-    return sc;
-  }
+   // Default implementation is finalize+initialize
+   StatusCode sc = finalize();
+   if (sc.isFailure()) {
+   error() << "reinitialize(): cannot be finalized" << endmsg;
+   return sc;
+   }
+   sc = initialize();
+   if (sc.isFailure()) {
+   error() << "reinitialize(): cannot be initialized" << endmsg;
+   return sc;
+   }
   */
   return StatusCode::SUCCESS;
 }
@@ -845,16 +851,40 @@ void Algorithm::setIndex(const unsigned int& idx) {
 }
 
 bool Algorithm::isExecuted() const {
-  return m_isExecuted;
+  if (m_event_context) {
+    if (m_event_context->valid()) {
+      return algExecStateSvc()->algExecState((IAlgorithm*)this, *m_event_context).isExecuted();
+    } else {
+      error() << "EventContext is not valid" << endmsg;
+      return false;
+    }
+  } else {
+    return algExecStateSvc()->algExecState((IAlgorithm*)this).isExecuted();
+  }
 }
 
 void Algorithm::setExecuted( bool state ) {
-  m_isExecuted = state;
+  if (m_event_context) {
+    if (m_event_context->valid()) {
+      algExecStateSvc()->algExecState((IAlgorithm*)this, *m_event_context).setExecuted(state);
+    } else {
+      error() << "EventContext is not valid" << endmsg;
+    }
+  } else {
+    algExecStateSvc()->algExecState((IAlgorithm*)this).setExecuted(state);
+  }
 }
 
 void Algorithm::resetExecuted() {
-  m_isExecuted   = false;
-  m_filterPassed = true;
+  if (m_event_context) {
+    if (m_event_context->valid()) {
+      return algExecStateSvc()->algExecState( (IAlgorithm*)this, *m_event_context).reset();
+    } else {
+      error() << "EventContext is not valid" << endmsg;
+    }
+  } else {
+    return algExecStateSvc()->algExecState( (IAlgorithm*)this).reset();
+  }
 }
 
 bool Algorithm::isEnabled() const {
@@ -862,11 +892,28 @@ bool Algorithm::isEnabled() const {
 }
 
 bool Algorithm::filterPassed() const {
-  return m_filterPassed;
+  if (m_event_context) {
+    if (m_event_context->valid()) {
+      return algExecStateSvc()->algExecState((IAlgorithm*)this, *m_event_context).filterPassed();
+    } else {
+      error() << "EventContext is not valid" << endmsg;
+      return false;
+    }
+  } else {
+    return algExecStateSvc()->algExecState((IAlgorithm*)this).filterPassed();
+  }
 }
 
 void Algorithm::setFilterPassed( bool state ) {
-  m_filterPassed = state;
+  if (m_event_context) {
+    if (m_event_context->valid()) {
+      algExecStateSvc()->algExecState((IAlgorithm*)this, *m_event_context).setFilterPassed(state);
+    } else {
+      error() << "EventContext is not valid" << endmsg;
+    }
+  } else {
+    algExecStateSvc()->algExecState((IAlgorithm*)this).setFilterPassed(state);
+  }
 }
 
 const std::vector<Algorithm*>* Algorithm::subAlgorithms( ) const {
@@ -878,16 +925,16 @@ std::vector<Algorithm*>* Algorithm::subAlgorithms( ) {
 }
 
 
-#define serviceAccessor(METHOD,INTERFACE,NAME,MEMBER) \
-SmartIF<INTERFACE>& Algorithm::METHOD() const { \
-  if ( !MEMBER ) { \
-    MEMBER = service(NAME); \
-    if( !MEMBER ) { \
-      throw GaudiException("Service [" NAME  "] not found", name(), StatusCode::FAILURE); \
-    } \
-  } \
-  return MEMBER; \
-}
+#define serviceAccessor(METHOD,INTERFACE,NAME,MEMBER)                   \
+  SmartIF<INTERFACE>& Algorithm::METHOD() const {                       \
+    if ( !MEMBER ) {                                                    \
+      MEMBER = service(NAME);                                           \
+      if( !MEMBER ) {                                                   \
+        throw GaudiException("Service [" NAME  "] not found", name(), StatusCode::FAILURE); \
+      }                                                                 \
+    }                                                                   \
+    return MEMBER;                                                      \
+  }
 
 serviceAccessor(auditorSvc, IAuditorSvc, "AuditorSvc", m_pAuditorSvc)
 serviceAccessor(chronoSvc, IChronoStatSvc, "ChronoStatSvc", m_CSS)
@@ -895,6 +942,7 @@ serviceAccessor(detSvc, IDataProviderSvc, "DetectorDataSvc", m_DDS)
 serviceAccessor(detCnvSvc, IConversionSvc, "DetectorPersistencySvc", m_DCS)
 serviceAccessor(eventSvc, IDataProviderSvc, "EventDataSvc", m_EDS)
 serviceAccessor(whiteboard, IHiveWhiteBoard, "EventDataSvc", m_WB)
+serviceAccessor(algExecStateSvc, IAlgExecStateSvc, "AlgExecStateSvc", m_aess)
 serviceAccessor(eventCnvSvc, IConversionSvc, "EventPersistencySvc", m_ECS)
 serviceAccessor(histoSvc, IHistogramSvc, "HistogramDataSvc", m_HDS)
 serviceAccessor(exceptionSvc, IExceptionSvc, "ExceptionSvc", m_EXS)
@@ -906,101 +954,101 @@ serviceAccessor(timelineSvc, ITimelineSvc,"TimelineSvc", m_timelineSvc)
 
 // Obsoleted name, kept due to the backwards compatibility
 SmartIF<IChronoStatSvc>& Algorithm::chronoStatService() const {
-  return chronoSvc();
+return chronoSvc();
 }
 // Obsoleted name, kept due to the backwards compatibility
 SmartIF<IDataProviderSvc>& Algorithm::detDataService() const {
-  return detSvc();
+return detSvc();
 }
 // Obsoleted name, kept due to the backwards compatibility
 SmartIF<IConversionSvc>& Algorithm::detDataCnvService() const {
-  return detCnvSvc();
+return detCnvSvc();
 }
 // Obsoleted name, kept due to the backwards compatibility
 SmartIF<IDataProviderSvc>& Algorithm::eventDataService() const {
-  return eventSvc();
+return eventSvc();
 }
 // Obsoleted name, kept due to the backwards compatibility
 SmartIF<IConversionSvc>& Algorithm::eventDataCnvService() const {
-  return eventCnvSvc();
+return eventCnvSvc();
 }
 // Obsoleted name, kept due to the backwards compatibility
 SmartIF<IHistogramSvc>& Algorithm::histogramDataService() const {
-  return histoSvc();
+return histoSvc();
 }
 // Obsoleted name, kept due to the backwards compatibility
 SmartIF<INTupleSvc>& Algorithm::ntupleService() const {
-  return ntupleSvc();
+return ntupleSvc();
 }
 
 SmartIF<ISvcLocator>& Algorithm::serviceLocator() const {
-  return *const_cast<SmartIF<ISvcLocator>*>(&m_pSvcLocator);
+return *const_cast<SmartIF<ISvcLocator>*>(&m_pSvcLocator);
 }
 
 // Use the job options service to set declared properties
 StatusCode Algorithm::setProperties() {
-  if( !m_pSvcLocator ) return StatusCode::FAILURE;
-  auto jos = m_pSvcLocator->service<IJobOptionsSvc>("JobOptionsSvc");
-  if( !jos )  return StatusCode::FAILURE;
-  // set first generic Properties
-  StatusCode sc = jos->setMyProperties( getGaudiThreadGenericName(name()), this );
-  if( sc.isFailure() ) return StatusCode::FAILURE;
+if( !m_pSvcLocator ) return StatusCode::FAILURE;
+auto jos = m_pSvcLocator->service<IJobOptionsSvc>("JobOptionsSvc");
+if( !jos )  return StatusCode::FAILURE;
+// set first generic Properties
+StatusCode sc = jos->setMyProperties( getGaudiThreadGenericName(name()), this );
+if( sc.isFailure() ) return StatusCode::FAILURE;
 
-  // set specific Properties
-  if (isGaudiThreaded(name())) {
-    if(jos->setMyProperties( name(), this ).isFailure()) {
-      return StatusCode::FAILURE;
-    }
-  }
-  if (m_outputLevel == MSG::NIL)
-    m_outputLevel = msgLevel();
-  else
-    updateMsgStreamOutputLevel( m_outputLevel );
-  return sc;
+// set specific Properties
+if (isGaudiThreaded(name())) {
+if(jos->setMyProperties( name(), this ).isFailure()) {
+return StatusCode::FAILURE;
+}
+}
+if (m_outputLevel == MSG::NIL)
+  m_outputLevel = msgLevel();
+ else
+   updateMsgStreamOutputLevel( m_outputLevel );
+return sc;
 }
 
 StatusCode Algorithm::createSubAlgorithm(const std::string& type,
-                                         const std::string& name,
-                                         Algorithm*& pSubAlgorithm) {
-  if( !m_pSvcLocator ) return StatusCode::FAILURE;
+                                           const std::string& name,
+                                           Algorithm*& pSubAlgorithm) {
+if( !m_pSvcLocator ) return StatusCode::FAILURE;
 
-  SmartIF<IAlgManager> am(m_pSvcLocator);
-  if ( !am ) return StatusCode::FAILURE;
+SmartIF<IAlgManager> am(m_pSvcLocator);
+if ( !am ) return StatusCode::FAILURE;
 
-  // Maybe modify the AppMgr interface to return Algorithm* ??
-  IAlgorithm *tmp;
-  StatusCode sc = am->createAlgorithm
-    (type, name+getGaudiThreadIDfromName(Algorithm::name()), tmp);
-  if( sc.isFailure() ) return StatusCode::FAILURE;
+// Maybe modify the AppMgr interface to return Algorithm* ??
+IAlgorithm *tmp;
+StatusCode sc = am->createAlgorithm
+                                                             (type, name+getGaudiThreadIDfromName(Algorithm::name()), tmp);
+if( sc.isFailure() ) return StatusCode::FAILURE;
 
-  try{
-    pSubAlgorithm = dynamic_cast<Algorithm*>(tmp);
-    m_subAlgms.push_back(pSubAlgorithm);
-  } catch(...){
-    sc = StatusCode::FAILURE;
-  }
-  return sc;
+try{
+pSubAlgorithm = dynamic_cast<Algorithm*>(tmp);
+m_subAlgms.push_back(pSubAlgorithm);
+} catch(...){
+sc = StatusCode::FAILURE;
+}
+return sc;
 }
 
 // IProperty implementation
 // Delegate to the Property manager
 StatusCode Algorithm::setProperty(const Property& p) {
-  return m_propertyMgr->setProperty(p);
+return m_propertyMgr->setProperty(p);
 }
 StatusCode Algorithm::setProperty(const std::string& s) {
-  return m_propertyMgr->setProperty(s);
+return m_propertyMgr->setProperty(s);
 }
 StatusCode Algorithm::setProperty(const std::string& n, const std::string& v) {
-  return m_propertyMgr->setProperty(n,v);
+return m_propertyMgr->setProperty(n,v);
 }
 StatusCode Algorithm::getProperty(Property* p) const {
-  return m_propertyMgr->getProperty(p);
+return m_propertyMgr->getProperty(p);
 }
 const Property& Algorithm::getProperty( const std::string& name) const{
-  return m_propertyMgr->getProperty(name);
+return m_propertyMgr->getProperty(name);
 }
 StatusCode Algorithm::getProperty(const std::string& n, std::string& v ) const {
-  return m_propertyMgr->getProperty(n,v);
+return m_propertyMgr->getProperty(n,v);
 }
 const std::vector<Property*>& Algorithm::getProperties( ) const {
   return m_propertyMgr->getProperties();
@@ -1024,47 +1072,47 @@ void Algorithm::initToolHandles() const{
                 << thArr->propertyName() << endmsg;
       // Iterate over its tools:
       for( auto toolHandle : thArr->getBaseArray() ) {
-         // Try to cast it into a BaseToolHandle pointer:
-         BaseToolHandle* bth = dynamic_cast< BaseToolHandle* >( toolHandle );
-         if( bth ) {
-            // If the cast was successful, the code is pretty simple:
-            tool = bth->get();
+        // Try to cast it into a BaseToolHandle pointer:
+        BaseToolHandle* bth = dynamic_cast< BaseToolHandle* >( toolHandle );
+        if( bth ) {
+          // If the cast was successful, the code is pretty simple:
+          tool = bth->get();
+          if( UNLIKELY( msgLevel( MSG::DEBUG ) ) ) {
+            debug() << "Adding "
+                    << ( bth->isPublic() ? "public" : "private" )
+                    << " ToolHandle tool " << tool->name()
+                    << " (" << tool->type() << ") from ToolHandleArray "
+                    << thArr->propertyName() << endmsg;
+          }
+          m_tools.push_back( tool );
+        } else {
+          // If it wasn't for some strange reason, then fall back on the
+          // logic implemented previously:
+          if( toolSvc()->retrieveTool( toolHandle->typeAndName(), tool,
+                                       this, false ).isSuccess() ) {
             if( UNLIKELY( msgLevel( MSG::DEBUG ) ) ) {
-               debug() << "Adding "
-                       << ( bth->isPublic() ? "public" : "private" )
-                       << " ToolHandle tool " << tool->name()
-                       << " (" << tool->type() << ") from ToolHandleArray "
-                       << thArr->propertyName() << endmsg;
+              debug() << "Adding private"
+                      << " ToolHandle tool " << tool->name()
+                      << " (" << tool->type() << ") from ToolHandleArray "
+                      << thArr->propertyName() << endmsg;
             }
             m_tools.push_back( tool );
-         } else {
-            // If it wasn't for some strange reason, then fall back on the
-            // logic implemented previously:
-            if( toolSvc()->retrieveTool( toolHandle->typeAndName(), tool,
-                                         this, false ).isSuccess() ) {
-               if( UNLIKELY( msgLevel( MSG::DEBUG ) ) ) {
-                  debug() << "Adding private"
-                          << " ToolHandle tool " << tool->name()
-                          << " (" << tool->type() << ") from ToolHandleArray "
-                          << thArr->propertyName() << endmsg;
-               }
-               m_tools.push_back( tool );
-            } else if( toolSvc()->retrieveTool( toolHandle->typeAndName(), tool,
-                                                0, false ).isSuccess() ) {
-               if( UNLIKELY( msgLevel( MSG::DEBUG ) ) ) {
-                  debug() << "Adding public"
-                          << " ToolHandle tool " << tool->name()
-                          << " (" << tool->type() << ") from ToolHandleArray "
-                          << thArr->propertyName() << endmsg;
-               }
-               m_tools.push_back( tool );
-            } else {
-               warning() <<  "Error retrieving Tool "
-                         << toolHandle->typeAndName()
-                         << " in ToolHandleArray " << thArr->propertyName()
-                         << ". Not registered" << endmsg;
+          } else if( toolSvc()->retrieveTool( toolHandle->typeAndName(), tool,
+                                              0, false ).isSuccess() ) {
+            if( UNLIKELY( msgLevel( MSG::DEBUG ) ) ) {
+              debug() << "Adding public"
+                      << " ToolHandle tool " << tool->name()
+                      << " (" << tool->type() << ") from ToolHandleArray "
+                      << thArr->propertyName() << endmsg;
             }
-         }
+            m_tools.push_back( tool );
+          } else {
+            warning() <<  "Error retrieving Tool "
+                      << toolHandle->typeAndName()
+                      << " in ToolHandleArray " << thArr->propertyName()
+                      << ". Not registered" << endmsg;
+          }
+        }
       }
     }
   }
@@ -1074,9 +1122,9 @@ void Algorithm::initToolHandles() const{
     if(tool){
       if (UNLIKELY(msgLevel(MSG::DEBUG)))
         debug() << "Adding "
-        << (th->isPublic() ? "public" : "private" )
-        << " ToolHandle tool " << tool->name()
-        << " (" << tool->type() << ")" << endmsg;
+                << (th->isPublic() ? "public" : "private" )
+                << " ToolHandle tool " << tool->name()
+                << " (" << tool->type() << ")" << endmsg;
       m_tools.push_back(tool);
     } else {
       if (UNLIKELY(msgLevel(MSG::DEBUG)))
@@ -1088,13 +1136,13 @@ void Algorithm::initToolHandles() const{
 }
 
 const std::vector<IAlgTool *> & Algorithm::tools() const {
-    if(UNLIKELY(!m_toolHandlesInit)) initToolHandles();
-    return m_tools;
+  if(UNLIKELY(!m_toolHandlesInit)) initToolHandles();
+  return m_tools;
 }
 
 std::vector<IAlgTool *> & Algorithm::tools() {
-    if(UNLIKELY(!m_toolHandlesInit)) initToolHandles();
-    return m_tools;
+  if(UNLIKELY(!m_toolHandlesInit)) initToolHandles();
+  return m_tools;
 }
 
 /**

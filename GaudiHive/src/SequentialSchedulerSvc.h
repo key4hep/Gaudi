@@ -6,6 +6,7 @@
 #include "GaudiKernel/IRunable.h" 
 #include "GaudiKernel/Service.h" 
 #include "GaudiKernel/IAlgResourcePool.h"
+#include "GaudiKernel/IAlgExecStateSvc.h"
 
 // C++ include files
 #include <vector>
@@ -77,6 +78,9 @@ private:
   
   /// The number of free slots (0 or 1)
   int m_freeSlots;
+  
+  /// Algorithm Execution State manager
+  SmartIF<IAlgExecStateSvc> m_aess;
   
 };
 

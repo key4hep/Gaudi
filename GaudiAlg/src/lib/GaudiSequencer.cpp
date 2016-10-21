@@ -158,11 +158,8 @@ StatusCode GaudiSequencer::execute() {
   for (auto&  entry : m_entries) {
     Algorithm* myAlg = entry.algorithm();
     if ( ! myAlg->isEnabled() ) continue;
+    myAlg->setContext( getContext() );
     if ( ! myAlg->isExecuted() ) {
-
-      //DF: if we have a context set by GaudiHive scheduler propagate it to the children
-      if(getContext())
-        myAlg->setContext(getContext());
 
       if ( m_measureTime ) m_timerTool->start( entry.timer() );
       result = myAlg->sysExecute();

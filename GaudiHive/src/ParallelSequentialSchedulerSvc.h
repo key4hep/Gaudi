@@ -8,6 +8,7 @@
 #include "GaudiKernel/IAlgResourcePool.h"
 #include "GaudiKernel/CommonMessaging.h"
 #include "GaudiKernel/EventContext.h"
+#include "GaudiKernel/IAlgExecStateSvc.h"
 
 #include "AlgResourcePool.h"
 #include "ExecutionFlowManager.h"
@@ -93,6 +94,9 @@ private:
   /// Cache for the algorithm resource pool
   SmartIF<IAlgResourcePool>  m_algResourcePool;
 
+  /// Algorithm Execution State manager
+  SmartIF<IAlgExecStateSvc> m_aess;
+
   /// Size of the threadpool initialised by TBB; a value of -1 gives TBB the freedom to choose
   int m_threadPoolSize;
 
@@ -118,12 +122,14 @@ public:
   SequentialTask(ISvcLocator* svcLocator,
                  EventContext* eventContext,
                  ParallelSequentialSchedulerSvc* scheduler,
-                 IAlgResourcePool* algPool):
+                 IAlgResourcePool* algPool,
+                 IAlgExecStateSvc* aem):
 
                    m_serviceLocator(svcLocator),
                    m_eventContext(eventContext),
                    m_scheduler(scheduler),
-                   m_algPool(algPool){
+                   m_algPool(algPool),
+                   m_aess(aem) {
 
   };
   tbb::task* execute() override;
@@ -132,6 +138,7 @@ private:
   EventContext* m_eventContext;
   SmartIF<ParallelSequentialSchedulerSvc> m_scheduler;
   SmartIF<IAlgResourcePool> m_algPool;
+  SmartIF<IAlgExecStateSvc> m_aess;
 };
 
 #endif // GAUDIHIVE_PARALLELSEQUENTIALSCHEDULERSVC_H
