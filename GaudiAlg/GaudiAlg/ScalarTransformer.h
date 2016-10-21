@@ -38,10 +38,10 @@ template <typename ScalarOp,
         const auto inrange = details::zip::const_range(in...); 
         Out out; 
         out.reserve(inrange.size());
-        auto& scalar = scalarOp();
+        auto & scalar = scalarOp();
         for ( const auto && i : inrange ) 
         { details::insert( out, getScalar( i, scalar, std::index_sequence_for<In...>{} ) ); }
-        //details::apply( scalar, out );
+        //details::apply( scalar, out ); // awaiting a post-processor call
         return out;
       }
 
@@ -52,7 +52,8 @@ template <typename ScalarOp,
           typename TransformerSignature,
           typename Traits_ = Traits::useDefaults> class MultiScalarTransformer;
     template <typename ScalarOp, typename... Out, typename... In, typename Traits_>
-    class MultiScalarTransformer<ScalarOp,std::tuple<Out...>(const In&...),Traits_> : public MultiTransformer<std::tuple<Out...>(const In&...),Traits_> 
+    class MultiScalarTransformer<ScalarOp,std::tuple<Out...>(const In&...),Traits_>
+      : public MultiTransformer<std::tuple<Out...>(const In&...),Traits_> 
     {
     
       /// Access the scalar operator
@@ -97,13 +98,13 @@ template <typename ScalarOp,
         const auto inrange = details::zip::const_range(in...); 
         std::tuple<Out...> out; 
         reserve( out, inrange.size(), std::index_sequence_for<Out...>{} );
-        auto& scalar = scalarOp();
+        auto & scalar = scalarOp();
         for ( const auto && i : inrange ) 
         {
           insert( getScalar( i, scalar, std::index_sequence_for<In...>{} ), out,
                   std::index_sequence_for<Out...>{} );
         }
-        //details::apply( scalar, out );
+        //details::apply( scalar, out ); // awaiting a post-processor call
         return out;
       }
 
