@@ -12,7 +12,8 @@
 #include "boost/optional.hpp"
 
 // Range V3
-#include <range/v3/view.hpp>
+#include <range/v3/view/zip.hpp>
+#include <range/v3/view/const.hpp>
 
 namespace Gaudi { namespace Functional { namespace details {
 
