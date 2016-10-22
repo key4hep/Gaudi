@@ -52,6 +52,11 @@ option(GAUDI_CMT_RELEASE
        "use CMT deafult release flags instead of the CMake ones"
        ON)
 
+if (LCG_COMP STREQUAL "gcc" AND LCG_COMPVERS VERSION_GREATER "50")
+  option(GAUDI_SUGGEST_OVERRIDE "enable warnings for missing override keyword" ON)
+endif()
+
+
 if(BINARY_TAG MATCHES "-do0$")
   set(GAUDI_SLOW_DEBUG_DEFAULT ON)
 else()
@@ -113,7 +118,7 @@ if(NOT GAUDI_FLAGS_SET)
         CACHE STRING "Flags used by the compiler during all build types."
         FORCE)
 
-    if (LCG_COMP STREQUAL "gcc" AND LCG_COMPVERS VERSION_GREATER "50")
+    if (LCG_COMP STREQUAL "gcc" AND LCG_COMPVERS VERSION_GREATER "50" AND GAUDI_SUGGEST_OVERRIDE)
         set(CMAKE_CXX_FLAGS
             "${CMAKE_CXX_FLAGS} -Wsuggest-override"
             CACHE STRING "Flags used by the compiler during all build types."
