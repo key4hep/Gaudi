@@ -75,6 +75,14 @@ if(distcc_cmd)
   endif()
 endif()
 
+if(clang_format_cmd AND NOT GAUDI_CLANG_STYLE)
+  if(EXISTS ${CMAKE_SOURCE_DIR}/.clang-format)
+    set(GAUDI_CLANG_STYLE file CACHE STRING "style to use for clang-format (apply-formatting command and target)")
+  else()
+    set(GAUDI_CLANG_STYLE google CACHE STRING "style to use for clang-format (apply-formatting command and target)")
+  endif()
+endif()
+
 option(GAUDI_USE_CTEST_LAUNCHERS "Use CTest launchers to record details about warnings and errors." OFF)
 if(GAUDI_USE_CTEST_LAUNCHERS)
   file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/launch_logs)
@@ -721,13 +729,13 @@ for f in \"$@\" ; do
     file(GLOB_RECURSE _all_sources RELATIVE ${CMAKE_SOURCE_DIR} *.h *.cpp *.icpp)
     add_custom_target(apply-formatting-c++
       COMMAND ${clang_format_cmd}
-                  -style=file
+                  -style=${GAUDI_CLANG_STYLE}
                   -i ${_all_sources}
       WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
       COMMENT "Applying coding conventions to C++ sources"
     )
     add_dependencies(apply-formatting apply-formatting-c++)
-    file(APPEND ${CMAKE_BINARY_DIR}/apply-formatting "      ${clang_format_cmd} -style=file -i \"$f\" ;;\n")
+    file(APPEND ${CMAKE_BINARY_DIR}/apply-formatting "      ${clang_format_cmd} -style=${GAUDI_CLANG_STYLE} -i \"$f\" ;;\n")
   else()
     file(APPEND ${CMAKE_BINARY_DIR}/apply-formatting "      echo 'formatting of c++ not supported (install clang-format first)' ; exit 1 ;;\n")
   endif()
