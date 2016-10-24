@@ -268,6 +268,9 @@ macro(gaudi_project project version)
 
   #--- Find subdirectories
   message(STATUS "Looking for local directories...")
+  # First exclude the build directory from the search
+  file(WRITE ${CMAKE_BINARY_DIR}/.gaudi_project_ignore
+       "# do not look for packages in this directory")
   # Locate packages
   gaudi_get_packages(packages)
   message(STATUS "Found:")
@@ -1239,6 +1242,17 @@ macro(gaudi_list_dependencies variable subdir)
   #message(STATUS " --> ${${variable}}")
 endmacro()
 
+# helper for gaudi_get_packages to check if a subdir should be ignored
+macro(_gaudi_ignored_listfile var filename)
+  set(${var} FALSE)
+  foreach(p ${ARGN})
+    if("${filename}" MATCHES "${p}/.*CMakeLists.txt")
+      #message(STATUS "ignoring ${filename}")
+      set(${var} TRUE)
+      break()
+    endif()
+  endforeach()
+endmacro()
 #-------------------------------------------------------------------------------
 # gaudi_get_packages
 #
@@ -1246,24 +1260,25 @@ endmacro()
 # directories to the variable.
 #-------------------------------------------------------------------------------
 function(gaudi_get_packages var)
-  # FIXME: trick to get the relative path to the build directory
-  file(GLOB rel_build_dir RELATIVE ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR})
-  set(packages)
+  file(GLOB_RECURSE ignored_dir_stamps RELATIVE ${CMAKE_SOURCE_DIR} .gaudi_project_ignore)
   get_directory_property(_ignored_subdirs GAUDI_IGNORE_SUBDIRS)
+  foreach(stamp ${ignored_dir_stamps})
+    get_filename_component(stamp ${stamp} PATH)
+    set(_ignored_subdirs ${_ignored_subdirs} "${stamp}")
+  endforeach()
   file(GLOB_RECURSE cmakelist_files RELATIVE ${CMAKE_SOURCE_DIR} CMakeLists.txt)
+  set(packages)
   foreach(file ${cmakelist_files})
-    # ignore the source directory itself, files in the build directory and
-    # files in the cmake/tests directory
-    if(NOT file STREQUAL CMakeLists.txt AND
-       NOT file MATCHES "^(${rel_build_dir}|cmake/tests)")
-      get_filename_component(package ${file} PATH)
-      list(FIND _ignored_subdirs ${package} _ignored)
-      if(_ignored EQUAL -1) # not ignored
+    # ignore the source directory itself
+    if(NOT file STREQUAL CMakeLists.txt)
+      # ignore CMakeLists.txt files from specific paths
+      _gaudi_ignored_listfile(_ignored ${file} ${_ignored_subdirs})
+      if(NOT _ignored)
+        get_filename_component(package ${file} PATH)
         list(APPEND packages ${package})
       endif()
     endif()
   endforeach()
-  list(SORT var)
   set(${var} ${packages} PARENT_SCOPE)
 endfunction()
 
