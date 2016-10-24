@@ -51,7 +51,7 @@ public:
   virtual bool isInit() const { return m_init; }
 
   /// @todo Do we actually need this method?
-  virtual std::vector<IThreadInitTool*> getThreadInitTools()
+  virtual std::vector<const IThreadInitTool*> getThreadInitTools()
     const override final;
 
 private:

@@ -36,7 +36,7 @@ class GAUDI_API  IThreadPoolSvc : virtual public IInterface {
   virtual int poolSize() const = 0;
 
   /// Retrieve a list of thread initialization tools
-  virtual std::vector<IThreadInitTool*> getThreadInitTools() const = 0;
+  virtual std::vector<const IThreadInitTool*> getThreadInitTools() const = 0;
 
 };
 

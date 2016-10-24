@@ -157,15 +157,13 @@ ThreadPoolSvc::terminatePool() {
 
 //-----------------------------------------------------------------------------
 
-std::vector<IThreadInitTool*>
+std::vector<const IThreadInitTool*>
 ThreadPoolSvc::getThreadInitTools() const {
 
-  std::vector<IThreadInitTool*> tools;
+  std::vector<const IThreadInitTool*> tools;
 
-  ToolHandleArray<IThreadInitTool>::const_iterator ito = m_threadInitTools.begin();
-  for ( ; ito != m_threadInitTools.end(); ++ito ) {
-    IThreadInitTool* it = &(**ito);
-    tools.push_back(it);
+  for ( auto ito = m_threadInitTools.begin(); ito != m_threadInitTools.end(); ++ito ) {
+    tools.push_back( &(**ito) );
   }
 
   return tools;
