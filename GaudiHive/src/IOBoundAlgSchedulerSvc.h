@@ -28,16 +28,16 @@ public:
   IOBoundAlgSchedulerSvc( const std::string& name, ISvcLocator* svc );
 
   /// Destructor
-  ~IOBoundAlgSchedulerSvc();
+  ~IOBoundAlgSchedulerSvc() override;
 
   /// Initialise
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
 
   /// Finalise
-  virtual StatusCode finalize();
+  StatusCode finalize() override;
 
   /// Add an algorithm to local queue to run on accelerator
-  virtual StatusCode push(IAlgTask& task);
+  StatusCode push(IAlgTask& task) override;
 
 private:
 

@@ -33,12 +33,12 @@ public:
     m_algoIndex(algoIndex),
     m_schedSvc(schedSvc),
     m_aess(aem),
-    m_serviceLocator(svcLocator){};
-  
-  ~IOBoundAlgTask() {};
-  
-  virtual StatusCode execute();
-  
+    m_serviceLocator(svcLocator) {}
+
+    ~IOBoundAlgTask() override {}
+
+    virtual StatusCode execute() override;
+
 private:
   SmartIF<IAlgorithm> m_algorithm;
   EventContext* m_evtCtx;

@@ -4,6 +4,10 @@ gaudi_depends_on_subdirs(GaudiAlg)
 
 find_package(CLHEP REQUIRED)
 find_package(GSL REQUIRED)
+find_package(ROOT)
+
+# Hide some CLHEP/ROOT compile time warnings
+include_directories(SYSTEM ${CLHEP_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS})
 
 #---Libraries---------------------------------------------------------------
 gaudi_add_library(GaudiGSLLib src/Lib/*.cpp

@@ -30,37 +30,37 @@ public:
   typedef IAlgExecStateSvc::AlgStateMap_t AlgStateMap_t;
 
   const AlgExecState& algExecState(const Gaudi::StringKey& algName, 
-                                   const EventContext& ctx) const;
+                                   const EventContext& ctx) const override;
   const AlgExecState& algExecState(IAlgorithm* iAlg,     
-                                   const EventContext& ctx) const;
+                                   const EventContext& ctx) const override;
   AlgExecState& algExecState(IAlgorithm* iAlg,     
-                             const EventContext& ctx);
-  const AlgStateMap_t& algExecStates(const EventContext& ctx) const;
+                             const EventContext& ctx) override;
+  const AlgStateMap_t& algExecStates(const EventContext& ctx) const override;
 
   
-  const AlgExecState& algExecState(const Gaudi::StringKey& algName) const;
-  const AlgExecState& algExecState(IAlgorithm* iAlg) const;
-  AlgExecState& algExecState(IAlgorithm* iAlg);
-  const AlgStateMap_t& algExecStates() const;
+  const AlgExecState& algExecState(const Gaudi::StringKey& algName) const override;
+  const AlgExecState& algExecState(IAlgorithm* iAlg) const override;
+  AlgExecState& algExecState(IAlgorithm* iAlg) override;
+  const AlgStateMap_t& algExecStates() const override;
 
   
-  void reset(const EventContext& ctx);
-  void reset();
+  void reset(const EventContext& ctx) override;
+  void reset() override;
 
-  void addAlg(IAlgorithm* iAlg);
-  void addAlg(const Gaudi::StringKey& algName);
+  void addAlg(IAlgorithm* iAlg) override;
+  void addAlg(const Gaudi::StringKey& algName) override;
 
-  const EventStatus::Status& eventStatus() const;
-  const EventStatus::Status& eventStatus(const EventContext& ctx) const;
+  const EventStatus::Status& eventStatus() const override;
+  const EventStatus::Status& eventStatus(const EventContext& ctx) const override;
 
-  void setEventStatus(const EventStatus::Status& sc);
-  void setEventStatus(const EventStatus::Status& sc, const EventContext& ctx);
+  void setEventStatus(const EventStatus::Status& sc) override;
+  void setEventStatus(const EventStatus::Status& sc, const EventContext& ctx) override;
 
-  void updateEventStatus(const bool& b);
-  void updateEventStatus(const bool& b, const EventContext& ctx);
+  void updateEventStatus(const bool& b) override;
+  void updateEventStatus(const bool& b, const EventContext& ctx) override;
 
-  void dump(std::ostringstream& ost) const;
-  void dump(std::ostringstream& ost, const EventContext& ctx) const;
+  void dump(std::ostringstream& ost) const override;
+  void dump(std::ostringstream& ost, const EventContext& ctx) const override;
 
 private:
 
