@@ -7,7 +7,7 @@ option(GAUDI_USE_SYSTEM_CPP_GSL
        "If to use the C++ Guidelines Support Library from the system or providing it through Gaudi"
        NO)
 if(NOT GAUDI_USE_SYSTEM_CPP_GSL)
-  set(CPP_GSL_URL https://github.com/Microsoft/GSL)
+  set(CPP_GSL_URL https://github.com/Microsoft/GSL.git)
   set(CPP_GSL_VERSION 32ca283d)
   message(STATUS "Using and shipping ${CPP_GSL_URL} version ${CPP_GSL_VERSION}")
   set(CPP_GSL_DIR ${CMAKE_CURRENT_BINARY_DIR}/ext/GSL)
@@ -38,7 +38,7 @@ option(GAUDI_USE_SYSTEM_RANGES_V3
        "If to use the Ranges-v3 library from the system or providing it through Gaudi"
        NO)
 if(NOT GAUDI_USE_SYSTEM_RANGES_V3)
-  set(RANGES_V3_URL https://github.com/ericniebler/range-v3)
+  set(RANGES_V3_URL https://github.com/ericniebler/range-v3.git)
   set(RANGES_V3_VERSION c01e7d2a)
   message(STATUS "Using and shipping ${RANGES_V3_URL} version ${RANGES_V3_VERSION}")
   set(RANGES_V3_DIR ${CMAKE_CURRENT_BINARY_DIR}/ext/range-v3)
