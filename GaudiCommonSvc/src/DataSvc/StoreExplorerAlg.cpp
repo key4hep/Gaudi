@@ -19,6 +19,8 @@
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/SmartIF.h"
 
+#include <numeric>
+
 /**@class StoreExplorerAlg
   *
   * Small algorith, which traverses the data store and

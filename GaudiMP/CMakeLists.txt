@@ -2,7 +2,7 @@ gaudi_subdir(GaudiMP)
 
 gaudi_depends_on_subdirs(GaudiKernel GaudiAlg)
 
-find_package(ROOT)
+find_package(ROOT COMPONENTS Net RIO Thread)
 find_package(PythonLibs)
 
 # Hide some Boost/ROOT compile time warnings

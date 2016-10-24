@@ -422,6 +422,8 @@ namespace Genfun
       mutable  Argument                   m_argF     ;
 
     };
+    /// From CLHEP/GenericFunctions
+    FUNCTION_OBJECT_IMP( NumericalDefiniteIntegral )
 
   } // end of namespace GaudiMathImplementation
 } // end of namespace Genfun

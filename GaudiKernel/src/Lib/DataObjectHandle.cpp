@@ -6,9 +6,9 @@
 #include <csignal>
 #include <algorithm>
 
-const char ADDR_SEP = '&';
-const char FIELD_SEP = '|';
-const char ITEM_SEP = '#';
+//const char ADDR_SEP = '&';
+//const char FIELD_SEP = '|';
+//const char ITEM_SEP = '#';
 
 // const std::string DataObjectHandle::NULL_ = "NULL";
 

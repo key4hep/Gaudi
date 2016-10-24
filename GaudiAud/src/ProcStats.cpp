@@ -9,12 +9,14 @@
 
 #include "ProcStats.h"
 
-#ifdef __linux
+#if defined(__linux__) or defined(__APPLE__)
 #include <iostream>
 #include <sstream>
 #include <sys/signal.h>
 #include <sys/syscall.h>
-#include <sys/procfs.h>
+#ifdef __linux__
+#  include <sys/procfs.h>
+#endif // __linux__
 #include <cstdio>
 
 using std::cerr;
@@ -225,7 +227,7 @@ struct linux_proc {
   unsigned long sigcatch;
   unsigned long wchan;
 };
-#endif // __linux
+#endif // __linux__ or __APPLE__
 
 ProcStats::cleanup::~cleanup() {
   if(ProcStats::inst!=0)  {
@@ -244,7 +246,7 @@ ProcStats* ProcStats::inst = 0;
 
 ProcStats::ProcStats():valid(false)
 {
-#ifdef __linux
+#if defined(__linux__) or defined(__APPLE__)
   pg_size = sysconf(_SC_PAGESIZE); // getpagesize();
 
   fname = "/proc/" + std::to_string(getpid()) + "/stat"; 
@@ -255,7 +257,7 @@ ProcStats::ProcStats():valid(false)
     cerr << "Failed to open " << fname << endl;
     return;
   }
-#endif
+#endif // __linux__ or __APPLE__
   valid=true;
 }
 
@@ -264,7 +266,7 @@ bool ProcStats::fetch(procInfo& f)
 {
   if( valid == false ) return false;
 
-#ifdef __linux
+#if defined(__linux__) or defined(__APPLE__)
   double pr_size, pr_rssize;
   linux_proc pinfo;
   int cnt;
@@ -332,7 +334,7 @@ bool ProcStats::fetch(procInfo& f)
 #else
   f.vsize = 0;
   f.rss   = 0;
-#endif
+#endif // __linux__ or __APPLE__
 
   bool rc = (curr==f)?false:true;
 
@@ -341,4 +343,3 @@ bool ProcStats::fetch(procInfo& f)
 
   return rc;
 }
-

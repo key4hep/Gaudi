@@ -154,6 +154,8 @@ namespace Genfun
       mutable double     m_result    ;
       mutable double     m_error     ;
     };
+    /// From CLHEP/GenericFunctions
+    FUNCTION_OBJECT_IMP( NumericalDerivative )
 
   } // end of namespace GaudiMathImplementation
 } // end of namespace GenFun

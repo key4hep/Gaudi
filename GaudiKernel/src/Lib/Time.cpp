@@ -121,7 +121,7 @@ Time Time::current (void) {
     char buf[256];
     std::ostringstream tag,msg;
     tag << "errno=" << errno;
-    if( strerror_r(errno, buf, 256) == nullptr ) {
+    if( strerror_r(errno, buf, 256) == 0 ) {
       msg << buf;
     } else {
       msg << "Unknown error retrieving current time";

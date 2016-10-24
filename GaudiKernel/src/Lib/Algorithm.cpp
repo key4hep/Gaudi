@@ -1,5 +1,7 @@
+
 #include <algorithm>
 #include <numeric>
+
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IMessageSvc.h"

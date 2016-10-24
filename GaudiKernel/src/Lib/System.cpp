@@ -20,6 +20,7 @@
 #include <typeinfo>
 #include <memory>
 #include <regex>
+#include <array>
 
 #include "GaudiKernel/System.h"
 #include "instrset.h"

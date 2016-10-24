@@ -4,7 +4,9 @@
 
 // ============================================================================
 // Python must always be the first.
-#include "Python.h"
+#ifndef __APPLE__
+#   include "Python.h"
+#endif // not __APPLE__
 
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/ParticleProperty.h"

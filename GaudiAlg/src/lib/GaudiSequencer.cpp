@@ -18,7 +18,7 @@ namespace
   }
 
   bool isDefault(const std::string& s) { return s.empty(); }
-  constexpr bool isDefault(double x) { return x == 0; }
+   //  constexpr bool isDefault(double x) { return x == 0; }
 
    // utility class to populate some properties in the job options service
    // for a given instance name in case those options are not explicitly

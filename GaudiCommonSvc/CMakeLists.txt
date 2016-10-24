@@ -12,5 +12,5 @@ include_directories(SYSTEM ${Boost_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS})
 #---Libraries---------------------------------------------------------------
 gaudi_add_module(GaudiCommonSvc
                  src/*.cpp DataSvc/*.cpp HistogramSvc/*.cpp PersistencySvc/*.cpp
-                 LINK_LIBRARIES GaudiKernel GaudiHive Boost ROOT
+                 LINK_LIBRARIES GaudiKernel Boost ROOT
                  INCLUDE_DIRS Boost ROOT AIDA)
