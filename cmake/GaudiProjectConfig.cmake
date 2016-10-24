@@ -362,8 +362,7 @@ macro(gaudi_project project version)
   find_program(gaudirun_cmd gaudirun.py HINTS ${binary_paths})
   set(gaudirun_cmd ${PYTHON_EXECUTABLE} ${gaudirun_cmd})
 
-  find_program(python_reindent_cmd reindent.py HINTS ${binary_paths})
-  set(python_reindent_cmd ${PYTHON_EXECUTABLE} ${python_reindent_cmd})
+  find_program(autopep8_cmd autopep8 HINTS ${binary_paths})
 
   # genconf is special because it must be known before we actually declare the
   # target in GaudiKernel/src/Util (because we need to be dynamic and agnostic).
@@ -737,26 +736,20 @@ for f in \"$@\" ; do
     add_dependencies(apply-formatting apply-formatting-c++)
     file(APPEND ${CMAKE_BINARY_DIR}/apply-formatting "      ${clang_format_cmd} -style=${GAUDI_CLANG_STYLE} -i \"$f\" ;;\n")
   else()
-    file(APPEND ${CMAKE_BINARY_DIR}/apply-formatting "      echo 'formatting of c++ not supported (install clang-format first)' ; exit 1 ;;\n")
+    file(APPEND ${CMAKE_BINARY_DIR}/apply-formatting "      echo 'formatting of c++ code not supported (install clang-format first)' ; exit 1 ;;\n")
   endif()
 
   file(APPEND ${CMAKE_BINARY_DIR}/apply-formatting "    (*.py)\n")
-  if(python_reindent_cmd)
+  if(autopep8_cmd)
     add_custom_target(apply-formatting-python
-      COMMAND ${python_reindent_cmd}
-                  --recurse --nobackup ${CMAKE_SOURCE_DIR}
+      COMMAND ${autopep8_cmd}
+                  --recursive --in-place ${CMAKE_SOURCE_DIR}
       COMMENT "Applying coding conventions to Python sources"
     )
     add_dependencies(apply-formatting apply-formatting-python)
-    set(_reind)
-    foreach(_c ${python_reindent_cmd})
-      set(_reind "${_reind} ${_c}")
-    endforeach()
-    file(APPEND ${CMAKE_BINARY_DIR}/apply-formatting "      ${_reind} --nobackup \"$f\" ;;\n")
-    unset(_reind)
-    unset(_c)
+    file(APPEND ${CMAKE_BINARY_DIR}/apply-formatting "      ${autopep8_cmd} --in-place \"$f\" ;;\n")
   else()
-    file(APPEND ${CMAKE_BINARY_DIR}/apply-formatting "      echo 'formatting of c++ not supported (reindent.py is missing)' ; exit 1 ;;\n")
+    file(APPEND ${CMAKE_BINARY_DIR}/apply-formatting "      echo 'formatting of Python code not supported (install autopep8 first)' ; exit 1 ;;\n")
   endif()
   file(APPEND ${CMAKE_BINARY_DIR}/apply-formatting "    (*) echo \"unknown file type $f\" ;;\n  esac\ndone\n")
   execute_process(COMMAND chmod a+x ${CMAKE_BINARY_DIR}/apply-formatting)
