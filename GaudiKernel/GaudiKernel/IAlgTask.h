@@ -15,7 +15,7 @@
 class IAlgTask {
 public:
 
-  virtual ~IAlgTask() {};
+  virtual ~IAlgTask() = default;
 
   virtual StatusCode execute() = 0;
 

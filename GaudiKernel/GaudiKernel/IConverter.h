@@ -196,9 +196,6 @@ public:
    */
   virtual StatusCode updateRepRefs(IOpaqueAddress* pAddress, DataObject* pObject) = 0;
 
-  /// Virtual destructor
-  ~IConverter() override = default;
-
   /// Status code
   enum Status {
     /// Invalid address information

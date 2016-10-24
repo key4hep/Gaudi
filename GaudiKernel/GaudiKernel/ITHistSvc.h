@@ -69,8 +69,6 @@ public:
 
   virtual bool exists(const std::string& name) const = 0;
 
-  /// virtual destructor
-  virtual ~ITHistSvc() = default;
 };
 
 #endif

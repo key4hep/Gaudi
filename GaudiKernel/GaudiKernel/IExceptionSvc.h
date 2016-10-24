@@ -40,9 +40,6 @@ public:
   virtual StatusCode handleErr
   ( const INamedInterface& o ,
     const StatusCode&      s ) const = 0 ; ///< Handle errors
-protected :
-  // virtual and protected destructor
-  ~IExceptionSvc() override = default; ///< virtual and protected destructor
 } ;
 // ============================================================================
 

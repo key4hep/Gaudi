@@ -40,8 +40,7 @@ namespace NTuple    {
     {
     }
     /// Standard Destructor
-    virtual ~Selector() {
-    }
+    virtual ~Selector() = default;
     /// Check for first call
     bool firstCall()  const   {
       return m_firstCall;

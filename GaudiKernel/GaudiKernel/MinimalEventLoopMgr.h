@@ -63,8 +63,6 @@ protected:
 public:
   /// Standard Constructor
   MinimalEventLoopMgr(const std::string& nam, ISvcLocator* svcLoc);
-  /// Standard Destructor
-  ~MinimalEventLoopMgr() override = default;
 
 #if defined(GAUDI_V20_COMPAT) && !defined(G21_NO_DEPRECATED)
 protected:

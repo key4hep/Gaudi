@@ -29,8 +29,6 @@ public:
   virtual void registerTimelineEvent(const TimelineEvent & e) = 0;
   virtual bool isEnabled() const = 0;
 
-  /// virtual destructor
-  virtual ~ITimelineSvc() {}
 };
 
 #endif

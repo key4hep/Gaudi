@@ -250,9 +250,6 @@ public:
           COUNTER_EXISTS      = 4,  // Error ?
           COUNTER_REMOVED     = 3   // Type of success. Low bit set
   } ;
-protected:
-  /// protected virtual destructor
-  virtual ~ICounterSvc()= default ; ///< protected virtual destructor
 };
 // ============================================================================
 /// output operator for the counter object

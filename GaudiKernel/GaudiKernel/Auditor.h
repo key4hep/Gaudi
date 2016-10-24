@@ -45,8 +45,6 @@ public:
       @param name    The algorithm object's name
       @param svcloc  A pointer to a service location service */
   Auditor( const std::string& name, ISvcLocator *svcloc );
-  /// Destructor
-  ~Auditor() override = default;
 
   /** Initialization method invoked by the framework. This method is responsible
       for any bookkeeping of initialization required by the framework itself.

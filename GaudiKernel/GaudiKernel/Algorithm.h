@@ -90,8 +90,6 @@ public:
    */
   Algorithm( const std::string& name, ISvcLocator *svcloc,
              const std::string& version=PACKAGE_VERSION );
-  /// Destructor
-  ~Algorithm() override = default;
 
   /** Reinitialization method invoked by the framework. This method is responsible
    *  for any reinitialization required by the framework itself.

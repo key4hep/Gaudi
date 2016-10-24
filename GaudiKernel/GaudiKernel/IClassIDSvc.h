@@ -48,8 +48,6 @@ public:
   /// Gaudi boilerplate
   static const InterfaceID& interfaceID();
 
-  /// destructor
-  virtual ~IClassIDSvc();
 };
 
 //<<<<<< INLINE MEMBER FUNCTIONS                                        >>>>>>
