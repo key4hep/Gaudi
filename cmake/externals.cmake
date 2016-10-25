@@ -2,7 +2,7 @@
 
 option(GAUDI_USE_SYSTEM_LIBRARIES
        "Global option to disable/enable use of internally built externals"
-       NO)
+       YES)
 
 # C++ Guidelines Support Library,
 # see http://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines
