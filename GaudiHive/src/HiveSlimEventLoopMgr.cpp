@@ -96,7 +96,7 @@ StatusCode HiveSlimEventLoopMgr::initialize()    {
   }
   m_schedulerSvc = serviceLocator()->service(m_schedulerName);
   if ( !m_schedulerSvc.isValid()){
-    fatal() << "Error retrieving SchedulerSvc interface ISchedulerSvc." << endmsg;
+    fatal() << "Error retrieving SchedulerSvc interface IScheduler." << endmsg;
     return StatusCode::FAILURE;
   }
   // Obtain the IProperty of the ApplicationMgr
