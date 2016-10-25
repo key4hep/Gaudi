@@ -157,26 +157,12 @@ ThreadPoolSvc::terminatePool() {
 
 //-----------------------------------------------------------------------------
 
-std::vector<const IThreadInitTool*>
-ThreadPoolSvc::getThreadInitTools() const {
-
-  std::vector<const IThreadInitTool*> tools;
-
-  for ( auto ito = m_threadInitTools.begin(); ito != m_threadInitTools.end(); ++ito ) {
-    tools.push_back( &(**ito) );
-  }
-
-  return tools;
-}
-
-//-----------------------------------------------------------------------------
-
 StatusCode
 ThreadPoolSvc::launchTasks(bool terminate) {
 
   if (m_threadInitTools.empty()) return StatusCode::SUCCESS;
 
-  const std::string taskType = terminate? "termination" : "initialization";
+  const std::string taskType = terminate ? "termination" : "initialization";
 
   // If we have a thread pool (via a scheduler), then we want to queue
   // the tasks in TBB to execute on each thread.
