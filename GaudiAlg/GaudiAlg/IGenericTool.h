@@ -16,7 +16,7 @@ class GAUDI_API IGenericTool : virtual public IAlgTool
 public:
 
   /// InterfaceID
-  DeclareInterfaceID(IGenericTool,2,0);
+  DeclareInterfaceID(IGenericTool,3,0);
 
   /// Do the action
   virtual void execute() const = 0;
