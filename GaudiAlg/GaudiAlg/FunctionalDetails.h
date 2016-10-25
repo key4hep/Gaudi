@@ -8,7 +8,10 @@
 // TODO: fwd declare instead?
 #include "GaudiKernel/DataObjectHandle.h"
 #include "GaudiKernel/AnyDataHandle.h"
+#include "GaudiKernel/GaudiException.h"
 #include "GaudiAlg/GaudiAlgorithm.h"
+
+// Boost
 #include "boost/optional.hpp"
 
 // Range V3
@@ -38,20 +41,32 @@ namespace Gaudi { namespace Functional { namespace details {
       {
         return ( check_sizes(a,b) && check_sizes(b,c...) );
       }
-      
+
+      /// Verify the data container sizes have the same sizes
+      template< typename... Args >
+      inline decltype(auto) verifySizes( Args&... args )
+      {
+        if ( UNLIKELY( !check_sizes( args... ) ) ) 
+        { throw GaudiException( "Zipped containers have different sizes.", 
+                                "Gaudi::Functional::details::zip::verifySizes",
+                                StatusCode::FAILURE ); }
+      }
+ 
       /// Zips multiple containers together to form a single range
       template< typename... Args >
-      inline decltype(auto) range( Args&... args ) noexcept
+      inline decltype(auto) range( Args&... args )
       {
-        assert( check_sizes( args... ) );
+        //assert( check_sizes( args... ) );
+        verifySizes( args... );
         return ranges::view::zip( args... );
       }
       
       /// Zips multiple containers together to form a single const range
       template< typename... Args >
-      inline decltype(auto) const_range( const Args&... args ) noexcept
+      inline decltype(auto) const_range( const Args&... args )
       {
-        assert( check_sizes( args... ) );
+        //assert( check_sizes( args... ) );
+        verifySizes( args... );
         return ranges::view::const_( ranges::view::zip( args... ) );
       }
 
