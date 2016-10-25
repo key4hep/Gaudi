@@ -29,9 +29,6 @@ public:
   /// Constructor
   ThreadPoolSvc( const std::string& name, ISvcLocator* svc );
 
-  /// Destructor
-  virtual ~ThreadPoolSvc() {};
-
   /// Initialise
   virtual StatusCode initialize() override final;
 
@@ -49,10 +46,6 @@ public:
   }
 
   virtual bool isInit() const { return m_init; }
-
-  /// @todo Do we actually need this method?
-  virtual std::vector<IThreadInitTool*> getThreadInitTools()
-    const override final;
 
 private:
 

@@ -10,14 +10,17 @@
  *  @author Marco Cattaneo
  *  @date   2005-12-14
  */
-class GAUDI_API IGenericTool: virtual public IAlgTool {
+class GAUDI_API IGenericTool : virtual public IAlgTool
+{
+
 public:
+
   /// InterfaceID
-  DeclareInterfaceID(IGenericTool,2,0);
+  DeclareInterfaceID(IGenericTool,3,0);
 
   /// Do the action
-  virtual void execute() = 0;
+  virtual void execute() const = 0;
 
-  virtual ~IGenericTool() = default;
 };
+
 #endif // KERNEL_INORMALIZETOOL_H
