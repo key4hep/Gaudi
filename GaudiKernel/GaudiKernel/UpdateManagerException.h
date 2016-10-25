@@ -31,7 +31,7 @@ public:
   virtual ~UpdateManagerException() throw () {}
 
   /// Clone the exception.
-  virtual UpdateManagerException* clone() const { return new UpdateManagerException(*this); }
+  virtual UpdateManagerException* clone() const override { return new UpdateManagerException(*this); }
 
 };
 #endif // GAUDIKERNEL_UPDATEMANAGEREXCEPTION_H
