@@ -41,7 +41,7 @@ namespace Gaudi { namespace Functional { namespace details {
       
       /// Zips multiple containers together to form a single range
       template< typename... Args >
-      inline decltype(auto) range( const Args&... args ) noexcept
+      inline decltype(auto) range( Args&... args ) noexcept
       {
         assert( check_sizes( args... ) );
         return ranges::view::zip( args... );
@@ -51,7 +51,8 @@ namespace Gaudi { namespace Functional { namespace details {
       template< typename... Args >
       inline decltype(auto) const_range( const Args&... args ) noexcept
       {
-        return ranges::view::const_( range( args... ) );
+        assert( check_sizes( args... ) );
+        return ranges::view::const_( ranges::view::zip( args... ) );
       }
 
     }
