@@ -1,4 +1,11 @@
+#include <algorithm>
+#include <numeric>
+
+#include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/IAlgContextSvc.h"
+#include "GaudiKernel/ISvcLocator.h"
+#include "GaudiKernel/IMessageSvc.h"
+#include "GaudiKernel/IJobOptionsSvc.h"
 #include "GaudiKernel/IAlgManager.h"
 #include "GaudiKernel/IAuditorSvc.h"
 #include "GaudiKernel/IConversionSvc.h"
@@ -13,10 +20,8 @@
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IToolSvc.h"
 #include "GaudiKernel/Kernel.h"
-#include <algorithm>
 
 #include "GaudiKernel/AlgTool.h"
-#include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/Chrono.h"
 #include "GaudiKernel/DataHandleHolderVisitor.h"
 #include "GaudiKernel/GaudiException.h"
@@ -24,10 +29,11 @@
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/ServiceLocatorHelper.h"
 #include "GaudiKernel/Stat.h"
+#include "GaudiKernel/StringKey.h"
 #include "GaudiKernel/ThreadGaudi.h"
 #include "GaudiKernel/ToolHandle.h"
 
-#include "GaudiKernel/StringKey.h"
+#include "GaudiKernel/Algorithm.h"
 
 namespace
 {
@@ -151,6 +157,8 @@ StatusCode Algorithm::sysInitialize()
   else if ( m_cardinality > 1 ) {
     m_isClonable = true;
   }
+
+  algExecStateSvc()->addAlg( this );
 
   //
   //// build list of data dependencies
@@ -399,26 +407,34 @@ StatusCode Algorithm::sysBeginRun()
     if ( sc.isSuccess() ) {
 
       // Now call beginRun for any sub-algorithms
-      if ( !for_algorithms<&Algorithm::sysBeginRun>( m_subAlgms ) ) {
+      if( !for_algorithms<&Algorithm::sysBeginRun>( m_subAlgms ) ) {
         sc = StatusCode::FAILURE;
-        error() << " Error executing BeginRun for one or several sub-algorithms" << endmsg;
+        error() << " Error executing BeginRun for one or several sub-algorithms"
+                << endmsg;
       }
     }
-  } catch ( const GaudiException& Exception ) {
-    fatal() << " Exception with tag=" << Exception.tag() << " is caught " << endmsg;
-    error() << Exception << endmsg;
-    Stat stat( chronoSvc(), Exception.tag() );
-    sc = StatusCode::FAILURE;
-  } catch ( const std::exception& Exception ) {
-    fatal() << " Standard std::exception is caught " << endmsg;
-    error() << Exception.what() << endmsg;
-    Stat stat( chronoSvc(), "*std::exception*" );
-    sc = StatusCode::FAILURE;
-  } catch ( ... ) {
-    fatal() << "UNKNOWN Exception is caught " << endmsg;
-    Stat stat( chronoSvc(), "*UNKNOWN Exception*" );
-    sc = StatusCode::FAILURE;
   }
+  catch ( const GaudiException& Exception )
+    {
+      fatal() << " Exception with tag=" << Exception.tag()
+              << " is caught " << endmsg;
+      error() << Exception  << endmsg;
+      Stat stat( chronoSvc() , Exception.tag() );
+      sc = StatusCode::FAILURE;
+    }
+  catch( const std::exception& Exception )
+    {
+      fatal() << " Standard std::exception is caught " << endmsg;
+      error() << Exception.what()  << endmsg;
+      Stat stat( chronoSvc() , "*std::exception*" );
+      sc = StatusCode::FAILURE;
+    }
+  catch(...)
+    {
+      fatal() << "UNKNOWN Exception is caught " << endmsg;
+      Stat stat( chronoSvc() , "*UNKNOWN Exception*" ) ;
+      sc = StatusCode::FAILURE;
+    }
   return sc;
 }
 
@@ -510,7 +526,8 @@ StatusCode Algorithm::sysExecute()
   try {
 
     if ( UNLIKELY( m_doTimeline ) ) timeline.start = Clock::now();
-    status                                         = execute();
+
+    status = execute();
 
     if ( UNLIKELY( m_doTimeline ) ) timeline.end = Clock::now();
 
@@ -555,7 +572,10 @@ StatusCode Algorithm::sysExecute()
 
   if ( status.isFailure() ) {
     // Increment the error count
-    m_errorCount++;
+    { 
+      std::lock_guard<std::mutex>  lock(m_lock);      
+      m_errorCount++;
+    }
     // Check if maximum is exeeded
     if ( m_errorCount < m_errorMax ) {
       warning() << "Continuing from error (cnt=" << m_errorCount << ", max=" << m_errorMax << ")" << endmsg;
@@ -671,17 +691,17 @@ StatusCode Algorithm::reinitialize()
    * MCl 2008-10-23: the implementation of reinitialize as finalize+initialize
    *                 is causing too many problems
    *
-  // Default implementation is finalize+initialize
-  StatusCode sc = finalize();
-  if (sc.isFailure()) {
-    error() << "reinitialize(): cannot be finalized" << endmsg;
-    return sc;
-  }
-  sc = initialize();
-  if (sc.isFailure()) {
-    error() << "reinitialize(): cannot be initialized" << endmsg;
-    return sc;
-  }
+   // Default implementation is finalize+initialize
+   StatusCode sc = finalize();
+   if (sc.isFailure()) {
+   error() << "reinitialize(): cannot be finalized" << endmsg;
+   return sc;
+   }
+   sc = initialize();
+   if (sc.isFailure()) {
+   error() << "reinitialize(): cannot be initialized" << endmsg;
+   return sc;
+   }
   */
   return StatusCode::SUCCESS;
 }
@@ -712,21 +732,71 @@ unsigned int Algorithm::index() const { return m_index; }
 
 void Algorithm::setIndex( const unsigned int& idx ) { m_index = idx; }
 
-bool Algorithm::isExecuted() const { return m_isExecuted; }
-
-void Algorithm::setExecuted( bool state ) { m_isExecuted = state; }
-
-void Algorithm::resetExecuted()
-{
-  m_isExecuted   = false;
-  m_filterPassed = true;
+bool Algorithm::isExecuted() const {
+  if (m_event_context) {
+    if (m_event_context->valid()) {
+      return algExecStateSvc()->algExecState((IAlgorithm*)this, *m_event_context).isExecuted();
+    } else {
+      error() << "EventContext is not valid" << endmsg;
+      return false;
+    }
+  } else {
+    return algExecStateSvc()->algExecState((IAlgorithm*)this).isExecuted();
+  }
 }
 
-bool Algorithm::isEnabled() const { return m_isEnabled; }
+void Algorithm::setExecuted( bool state ) {
+  if (m_event_context) {
+    if (m_event_context->valid()) {
+      algExecStateSvc()->algExecState((IAlgorithm*)this, *m_event_context).setExecuted(state);
+    } else {
+      error() << "EventContext is not valid" << endmsg;
+    }
+  } else {
+    algExecStateSvc()->algExecState((IAlgorithm*)this).setExecuted(state);
+  }
+}
 
-bool Algorithm::filterPassed() const { return m_filterPassed; }
+void Algorithm::resetExecuted() {
+  if (m_event_context) {
+    if (m_event_context->valid()) {
+      return algExecStateSvc()->algExecState( (IAlgorithm*)this, *m_event_context).reset();
+    } else {
+      error() << "EventContext is not valid" << endmsg;
+    }
+  } else {
+    return algExecStateSvc()->algExecState( (IAlgorithm*)this).reset();
+  }
+}
 
-void Algorithm::setFilterPassed( bool state ) { m_filterPassed = state; }
+bool Algorithm::isEnabled() const {
+  return m_isEnabled;
+}
+
+bool Algorithm::filterPassed() const {
+  if (m_event_context) {
+    if (m_event_context->valid()) {
+      return algExecStateSvc()->algExecState((IAlgorithm*)this, *m_event_context).filterPassed();
+    } else {
+      error() << "EventContext is not valid" << endmsg;
+      return false;
+    }
+  } else {
+    return algExecStateSvc()->algExecState((IAlgorithm*)this).filterPassed();
+  }
+}
+
+void Algorithm::setFilterPassed( bool state ) {
+  if (m_event_context) {
+    if (m_event_context->valid()) {
+      algExecStateSvc()->algExecState((IAlgorithm*)this, *m_event_context).setFilterPassed(state);
+    } else {
+      error() << "EventContext is not valid" << endmsg;
+    }
+  } else {
+    algExecStateSvc()->algExecState((IAlgorithm*)this).setFilterPassed(state);
+  }
+}
 
 const std::vector<Algorithm*>* Algorithm::subAlgorithms() const { return &m_subAlgms; }
 
@@ -745,6 +815,7 @@ SmartIF<IFace>& Algorithm::get_svc_( SmartIF<IFace>& p, const char* service_name
   return p;
 }
 
+SmartIF<IAlgExecStateSvc>& Algorithm::algExecStateSvc() const { return get_svc_( m_aess, "AlgExecStateSvc" ); }
 SmartIF<IAuditorSvc>& Algorithm::auditorSvc() const { return get_svc_( m_pAuditorSvc, "AuditorSvc" ); }
 SmartIF<IChronoStatSvc>& Algorithm::chronoSvc() const { return get_svc_( m_CSS, "ChronoStatSvc" ); }
 SmartIF<IDataProviderSvc>& Algorithm::detSvc() const { return get_svc_( m_DDS, "DetectorDataSvc" ); }

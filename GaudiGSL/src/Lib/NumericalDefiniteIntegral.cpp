@@ -47,10 +47,6 @@ namespace Genfun
     { gsl_function*              fn ; };
 
     // ========================================================================
-    /// from CLHEP/GenericFunctions
-    // ========================================================================
-    FUNCTION_OBJECT_IMP( NumericalDefiniteIntegral )
-    // ========================================================================
 
     /** Standard constructor
      *  The function created with this constructor compute

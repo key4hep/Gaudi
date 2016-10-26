@@ -1,8 +1,21 @@
-import os, random, string, json
+import os, sys, random, string, json
 import networkx as nx
 
 from Gaudi.Configuration import INFO, DEBUG
 from Configurables import GaudiSequencer, CPUCruncher
+
+
+def _buildFilePath(filePath):
+
+    if not os.path.exists(filePath):
+        __fullFilePath__ = os.path.realpath(os.path.join(os.environ.get('GAUDIHIVEROOT',''), "data", filePath))
+        if not os.path.exists(__fullFilePath__):
+            print "\nERROR: invalid file path '%s'. It must be either absolute, or relative to '$GAUDIHIVEROOT/data/'." %filePath
+            sys.exit(1)
+    else:
+        __fullFilePath__ = filePath
+
+    return __fullFilePath__
 
 class UniformTimeValue(object):
     """A class to manage uniform algorithm timing"""
@@ -26,7 +39,7 @@ class RealTimeValue(object):
                        (and it will also be scaled by the 'factor' argument)
         """
 
-        self.path = os.path.realpath(os.path.join(os.environ.get('GAUDIHIVEROOT',''), "data", path))
+        self.path = os.path.realpath(_buildFilePath(path))
         self.factor = factor
         self.defaultTime = defaultTime # typically 0.05s
         self.varRuntime = 0
@@ -99,7 +112,7 @@ class RndBiased10BooleanValue(object):
 
 
 class CruncherSequence(object):
-    """CPUCruncher-as-algorithm precedence sequence with real control flow and data flow dependencies of a Brunel workflow."""
+    """Constructs the sequence tree of CPUCrunchers with provided control flow and data flow precedence rules."""
 
     unique_sequencers=[]
     dupl_seqs={}
@@ -109,7 +122,7 @@ class CruncherSequence(object):
 
     unique_data_objects = []
 
-    def __init__(self, timeValue, IOboolValue, sleepFraction, cfgPath, dfgPath, showStat=False, algoDebug = False):
+    def __init__(self, timeValue, IOboolValue, sleepFraction, cfgPath, dfgPath, topSequencer, showStat=False, algoDebug = False):
         """
         Keyword arguments:
         timeValue -- timeValue object to set algorithm execution time
@@ -123,26 +136,13 @@ class CruncherSequence(object):
         self.IOboolValue = IOboolValue
         self.sleepFraction = sleepFraction
 
-        __location__ = os.path.realpath(os.path.join(os.environ.get('GAUDIHIVEROOT',''), "data"))
-        self.cfg = nx.read_graphml(os.path.join(__location__, cfgPath))
-        self.dfg = nx.read_graphml(os.path.join(__location__, dfgPath))
+        self.cfg = nx.read_graphml(_buildFilePath(cfgPath))
+        self.dfg = nx.read_graphml(_buildFilePath(dfgPath))
 
         self.algoDebug = algoDebug
 
         # Generate control flow part
-        self.sequencer = self._generate_sequence('GaudiSequencer/BrunelSequencer')
-
-        avgRuntime, varRuntime = self.timeValue.get("DstWriter")
-        dstwriter = CPUCruncher("DstWriter",
-                                OutputLevel = DEBUG if self.algoDebug else INFO,
-                                shortCalib = True,
-                                varRuntime = varRuntime,
-                                avgRuntime = avgRuntime,
-                                SleepFraction = self.sleepFraction if self.IOboolValue.get() else 0.)
-
-        # Generate data flow part
-        self._attach_io_data_objects("DstWriter", dstwriter)
-        self.sequencer.Members += [dstwriter]
+        self.sequencer = self._generate_sequence(topSequencer)
 
         if showStat:
             import pprint
@@ -169,53 +169,30 @@ class CruncherSequence(object):
 
         return self.sequencer
 
-    def _attach_io_data_objects(self, algo_name, algo):
+    def _declare_data_deps(self, algo_name, algo):
+        """ Declare data inputs and outputs for a given algorithm. """
 
-        #print "===============================", algo_name, "========================================"
+        # Declare data inputs
+        for inNode, outNode in self.dfg.in_edges(algo_name):
+            dataName = inNode
+            if dataName not in self.unique_data_objects:
+                self.unique_data_objects.append(dataName)
 
-        cache=[]
-        for in_n, out_n in self.dfg.in_edges(algo_name):
-            addr = str(self.dfg.get_edge_data(in_n, out_n)['name'])#.lstrip('/Event/')
-            #print "addr: ", addr, self.dfg.get_edge_data(in_n, out_n)['name']
-            if not addr:
-                #print "   empty output string, skipping"
-                continue # if Path is "/Event". how to set it?
-            if addr == '/Event': continue#addr = '/Event/TEMP'
-            if addr not in cache:
-                algo.inpKeys.append(addr)
-                if addr not in self.unique_data_objects: self.unique_data_objects.append(addr)
-            else:
-                pass#print "   has such an input already, skipping..", addr
-            cache.append(addr)
+            algo.inpKeys.append(dataName)
 
-        cache=[]
-        for out_n, in_n in self.dfg.out_edges(algo_name):
-            addr = str(self.dfg.get_edge_data(out_n, in_n)['name'])#.lstrip('/Event/')
-            if not addr:
-                #print "   empty output string, skipping"
-                continue # if Path is "/Event". how to set it?
-            if addr == '/Event': continue#addr = '/Event/TEMP'
-            if addr not in cache:
-                algo.outKeys.append(addr)
-                if addr not in self.unique_data_objects: self.unique_data_objects.append(addr)
-            else:
-                pass#print "   has such an output already, skipping..", addr
-            cache.append(addr)
+        # Declare data outputs
+        for inNode, outNode in self.dfg.out_edges(algo_name):
+            dataName = outNode
+            if dataName not in self.unique_data_objects:
+                self.unique_data_objects.append(dataName)
+            algo.outKeys.append(dataName)
 
 
     def _generate_sequence(self, name, seq=None):
+        """ Assemble the tree of sequencers. """
 
         if not seq:
             seq = GaudiSequencer(name, ShortCircuit = False)
-            avgRuntime, varRuntime = self.timeValue.get("Framework")
-            framework = CPUCruncher("Framework",
-                                    OutputLevel = DEBUG if self.algoDebug else INFO,
-                                    shortCalib = True,
-                                    varRuntime = varRuntime,
-                                    avgRuntime = avgRuntime,
-                                    SleepFraction = self.sleepFraction if self.IOboolValue.get() else 0.)
-            framework.outKeys = ['/Event/DAQ/RawEvent', '/Event/DAQ/ODIN']
-            seq.Members += [framework]
 
         for n in self.cfg[name]:
             if '/' in n:
@@ -224,7 +201,7 @@ class CruncherSequence(object):
                 algo_type = 'GaudiAlgorithm'
                 algo_name = n
 
-            if algo_type in ['GaudiSequencer', 'ProcessPhase']:
+            if algo_type in ['GaudiSequencer', 'AthSequencer', 'ProcessPhase']:
                 if algo_name in ['RecoITSeq','RecoOTSeq','RecoTTSeq']: continue
 
                 if n not in self.unique_sequencers:
@@ -256,13 +233,12 @@ class CruncherSequence(object):
                 avgRuntime, varRuntime = self.timeValue.get(algo_name)
                 algo_daughter = CPUCruncher(algo_name,
                                 OutputLevel = DEBUG if self.algoDebug else INFO,
-                                #outKeys = ['/Event/DAQ/ODIN'],
                                 shortCalib = True,
                                 varRuntime = varRuntime,
                                 avgRuntime = avgRuntime,
                                 SleepFraction = self.sleepFraction if self.IOboolValue.get() else 0.)
 
-                self._attach_io_data_objects(algo_name, algo_daughter)
+                self._declare_data_deps(algo_name, algo_daughter)
 
                 if algo_daughter not in seq.Members:
                     seq.Members += [algo_daughter]

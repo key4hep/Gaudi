@@ -7,7 +7,9 @@
 
 #include <fstream>
 #include <stdio.h>
+#ifndef __APPLE__
 #include <ext/stdio_filebuf.h>  // __gnu_cxx::stdio_filebuf
+#endif // not __APPLE__
 
 // Static Factory declaration
 
@@ -211,6 +213,7 @@ StatusCode FileMgrTest::initialize() {
 
 StatusCode FileMgrTest::execute() {
 
+#ifndef __APPLE__
   info() << "writing to " << p_fileMgr->fname((void*)fp_2) << endmsg;
 
   std::ofstream ofs;
@@ -227,7 +230,7 @@ StatusCode FileMgrTest::execute() {
 
   ofs2.std::ios::rdbuf(&fb2);
   ofs2 << "Hello World!" << std::endl;
-
+#endif // not __APPLE__
 
 
   return StatusCode::SUCCESS;

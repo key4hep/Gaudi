@@ -12,8 +12,8 @@ find_package(ROOT COMPONENTS RIO Hist ${XMLIO_PACKAGE_NAME} Thread Matrix MathCo
 find_package(XercesC)
 find_package(UUID)
 
-# Hide some Boost compile time warnings
-include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
+# Hide some Boost/ROOT/XercesC compile time warnings
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS} ${XERCESC_INCLUDE_DIRS})
 
 #---Libraries---------------------------------------------------------------
 gaudi_add_library(GaudiUtilsLib src/Lib/*.cpp

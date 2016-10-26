@@ -48,9 +48,6 @@ public:
    *  @return pointer to stat   entity
    */
   virtual const StatEntity*   stat   ( const StatTag&   t ) const = 0 ;
-protected:
-  // virtual and protected destructor
-  virtual ~IStatSvc( ) = default; ///< Destructor
 };
 // ============================================================================
 // The END

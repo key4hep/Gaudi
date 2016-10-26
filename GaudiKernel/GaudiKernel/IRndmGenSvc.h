@@ -55,8 +55,6 @@ public:
     return r;
   }
 
-  /// virtual destructor
-  virtual ~IRndmGenSvc() = default;
 };
 
 #endif // GAUDIKERNEL_IRNDMGENSVC_H

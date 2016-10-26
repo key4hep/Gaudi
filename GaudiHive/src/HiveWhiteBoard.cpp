@@ -14,8 +14,10 @@
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/TypeNameString.h"
+#include "Rtypes.h"
 #include "tbb/recursive_mutex.h"
 #include "tbb/spin_mutex.h"
+#include "ThreadLocalStorage.h"
 
 // Interfaces
 #include "GaudiKernel/IAddressCreator.h"
@@ -76,7 +78,7 @@ namespace
   };
 }
 
-thread_local Partition* s_current( 0 );
+TTHREAD_TLS( Partition* ) s_current( 0 );
 
 /**
  * @class HiveWhiteBoard

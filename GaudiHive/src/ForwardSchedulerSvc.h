@@ -12,6 +12,7 @@
 
 // Framework include files
 #include "GaudiKernel/IAccelerator.h"
+#include "GaudiKernel/IAlgExecStateSvc.h"
 #include "GaudiKernel/IAlgResourcePool.h"
 #include "GaudiKernel/IHiveWhiteBoard.h"
 #include "GaudiKernel/IRunable.h"
@@ -187,6 +188,9 @@ private:
 
   /// Method to check if an event failed and take appropriate actions
   StatusCode eventFailed( EventContext* eventContext );
+
+  /// Algorithm execution state manager
+  SmartIF<IAlgExecStateSvc> m_algExecStateSvc;
 
   // States management ------------------------------------------------------
 

@@ -2,6 +2,8 @@
 #define GAUDIKERNEL_MINIMALEVENTLOOPMGR_H 1
 
 // Framework include files
+#include "GaudiKernel/EventContext.h"
+#include "GaudiKernel/IAlgExecStateSvc.h"
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/IAppMgrUI.h"
 #include "GaudiKernel/IEventProcessor.h"
@@ -41,6 +43,7 @@ protected:
   /// Reference to the incident service
   SmartIF<IIncidentSvc> m_incidentSvc;
   /// List of top level algorithms
+  SmartIF<IAlgExecStateSvc> m_aess;
   ListAlg m_topAlgList;
   /// List of output streams
   ListAlg m_outStreamList;
@@ -59,8 +62,6 @@ protected:
 public:
   /// Standard Constructor
   MinimalEventLoopMgr( const std::string& nam, ISvcLocator* svcLoc );
-  /// Standard Destructor
-  ~MinimalEventLoopMgr() override = default;
 
 #if defined( GAUDI_V20_COMPAT ) && !defined( G21_NO_DEPRECATED )
 protected:
@@ -111,5 +112,12 @@ private:
   MinimalEventLoopMgr( const MinimalEventLoopMgr& );
   /// Fake assignment operator (never implemented).
   MinimalEventLoopMgr& operator=( const MinimalEventLoopMgr& );
+
+  /// EventContext
+  EventContext* m_eventContext;
+
+  // number of events processed
+  size_t m_nevt {0};
+
 };
 #endif // GAUDIKERNEL_MINIMALEVENTLOOPMGR_H

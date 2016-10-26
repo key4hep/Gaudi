@@ -1951,8 +1951,8 @@ namespace Tuples
     {
       using Info = std::pair<KEY,VALUE>;
       static const std::array< std::function<float(const Info&)>, 2>
-                    fns = { [](const Info& i) { return i.first;  } ,
-                            [](const Info& i) { return i.second; } };
+         fns = { { [](const Info& i) { return i.first;  } ,
+                   [](const Info& i) { return i.second; } } };
       return fmatrix( name,
                       std::begin(fns), std::end(fns),
                       std::begin(info), std::end(info),
@@ -2063,77 +2063,9 @@ namespace Tuples
   private:
     // =======================================================================
     /// get the column
-    Bool*    bools      ( const std::string& name ) ;
-    // =======================================================================
-    /// get the column
-    Float*   floats     ( const std::string& name ) ;
-    // =======================================================================
-    /// get the column
-    Double*  doubles    ( const std::string& name ) ;
-    // =======================================================================
-    /// get the column
-    Char*   chars     ( const std::string& name ) ;
-    // =======================================================================
-    /// get the column
-    Char*   chars     ( const std::string& name ,
-                        const char         minv ,
-                        const char         maxv ) ;
-    // =======================================================================
-    /// get the column
-    UChar*  uchars    ( const std::string& name ) ;
-    // =======================================================================
-    /// get the column
-    UChar*  uchars    ( const std::string&  name ,
-                        unsigned char       minv ,
-                        unsigned char       maxv ) ;
-    // =======================================================================
-    /// get the column
-    Short*   shorts     ( const std::string& name ) ;
-    // =======================================================================
-    /// get the column
-    Short*   shorts     ( const std::string& name ,
-                          short              minv ,
-                          short              maxv ) ;
-    // =======================================================================
-    /// get the column
-    UShort*   ushorts   ( const std::string& name ) ;
-    // =======================================================================
-    /// get the column
-    UShort*   ushorts   ( const std::string& name ,
-                          unsigned short     minv ,
-                          unsigned short     maxv ) ;
-    // =======================================================================
-    /// get the column
-    Int*     ints       ( const std::string& name ) ;
-    // =======================================================================
-    /// get the column
     Int*     ints       ( const std::string& name ,
                           int                minv ,
                           int                maxv ) ;
-    // =======================================================================
-    /// get the column
-    UInt*     uints     ( const std::string& name ) ;
-    // =======================================================================
-    /// get the column
-    UInt*     uints     ( const std::string& name ,
-                          unsigned int       minv ,
-                          unsigned int       maxv ) ;
-    // =======================================================================
-    /// get the column
-    LongLong* longlongs ( const std::string& name );
-    // =======================================================================
-    /// get the column
-    LongLong* longlongs ( const std::string& name ,
-                          long long          minv ,
-                          long long          maxv ) ;
-    // =======================================================================
-    /// get the column
-    ULongLong* ulonglongs ( const std::string& name ) ;
-    // =======================================================================
-    /// get the column
-    ULongLong* ulonglongs ( const std::string& name ,
-                            unsigned long long minv ,
-                            unsigned long long maxv ) ;
     // =======================================================================
     /// get the column
     FArray*  fArray     ( const std::string& name ,
@@ -2208,22 +2140,6 @@ namespace Tuples
     typedef GaudiUtils::HashMap<std::string,std::unique_ptr<FMatrix>> FMatrices;
     // =======================================================================
   private:
-    template <typename T, NTuple::Item<T>* (TupleObj::*fun)(const std::string&), typename UT>
-    StatusCode column_(const std::string& name, UT&& value) {
-        if ( invalid() ) { return InvalidTuple  ; }
-        auto item = (this->*fun)( name );
-        if ( !item )     { return InvalidColumn ; }
-        *item = std::forward<UT>(value);
-        return StatusCode::SUCCESS ;
-    }
-    template <typename T, NTuple::Item<T>* (TupleObj::*fun)(const std::string&,T,T), typename UT>
-    StatusCode column_(const std::string& name, UT&& value, UT&& minv, UT&& maxv) {
-        if ( invalid() ) { return InvalidTuple  ; }
-        auto item = (this->*fun)( name, std::forward<UT>(minv),std::forward<UT>(maxv) );
-        if ( !item )     { return InvalidColumn ; }
-        *item = std::forward<UT>(value);
-        return StatusCode::SUCCESS ;
-    }
 
     // =======================================================================
     /// name

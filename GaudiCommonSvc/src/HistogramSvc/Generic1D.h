@@ -11,11 +11,14 @@
 #include "AIDA/IProfile1D.h"
 #include "TFile.h"
 
-#ifdef __clang__
-#pragma clang diagnostic push
 // Hide warning message:
 // warning: 'XYZ' overrides a member function but is not marked 'override'
+#ifdef __clang__
+#pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Winconsistent-missing-override"
+#elif defined(__GNUC__) && __GNUC__ >= 5
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsuggest-override"
 #endif
 
 namespace Gaudi {
@@ -239,6 +242,8 @@ namespace Gaudi {
 
 #ifdef __clang__
 #pragma clang diagnostic pop
+#elif defined(__GNUC__) && __GNUC__ >= 5
+#pragma GCC diagnostic pop
 #endif
 
 #endif // AIDAROOT_GENERIC1D_H

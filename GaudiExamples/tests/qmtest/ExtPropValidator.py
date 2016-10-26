@@ -43,6 +43,7 @@ def validate(stdout, stderr, result, causes):
         }
 
     import re
+
     signature = re.compile(r'xProps\s*SUCCESS\s*My Properties :')
     prop_sign = re.compile(r'''xProps\s*SUCCESS\s*'([^']*)'\s*:(.*)''')
 

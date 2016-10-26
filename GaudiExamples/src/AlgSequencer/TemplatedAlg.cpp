@@ -20,7 +20,8 @@ DECLARE_COMPONENT_WITH_ID(t2,"TAlgDB")
 template <typename T, typename R>
 StatusCode TemplatedAlg<T,R>::initialize() {
 //------------------------------------------------------------------------------
-  info() << "Initializing TemplatedAlg instance " << name() << " of type " << typeid(*this).name() << endmsg;
+  using Gaudi::PluginService::Details::demangle;
+  info() << "Initializing TemplatedAlg instance " << name() << " of type " << demangle(typeid(*this)) << endmsg;
   return StatusCode::SUCCESS;
 }
 

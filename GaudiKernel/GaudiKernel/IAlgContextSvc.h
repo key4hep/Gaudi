@@ -36,9 +36,6 @@ public:
   virtual IAlgorithm*       currentAlg  () const = 0 ;
   /// get the stack of executed algorithms
   virtual const Algorithms& algorithms  () const = 0 ;
-protected:
-  /// virtual and protected desctructor
-  ~IAlgContextSvc() override = default;
 } ;
 // ============================================================================
 namespace Gaudi

@@ -20,24 +20,14 @@ cgaudi_pluginsvc_get_factory_size(cgaudi_pluginsvc_t self)
   return int(fmap.size());
 }
 
-constexpr struct select1st_t {
-    template <typename S,typename T>
-    const S& operator()(const std::pair<S,T>& p) const 
-    { return p.first; }
-    template <typename S,typename T>
-    S& operator()(std::pair<S,T>& p) const 
-    { return p.first; }
-} select1st {};
-
 cgaudi_factory_t
 cgaudi_pluginsvc_get_factory_at(cgaudi_pluginsvc_t self, int n)
 {
   const Registry *reg = ((const Registry*)self.registry);
-  std::vector<Registry::KeyType> keys;
-  keys.reserve(reg->factories().size());
-  std::transform(reg->factories().begin(),reg->factories().end(),
-                 std::back_inserter(keys), select1st );
-  return { self, keys[n].c_str() };
+  const auto& factories = reg->factories();
+  if ( n >= (int)factories.size() )
+    return {self, nullptr};
+  return {self, next( begin( factories ), n)->first.c_str()};
 }
 
 const char*
@@ -82,11 +72,9 @@ cgaudi_factory_get_property_at(cgaudi_factory_t self, int n)
 {
   cgaudi_property_t cprop{ self.registry, self.id, nullptr };
   Registry &reg = Registry::instance();
-  const Registry::FactoryInfo& fi = reg.getInfo(cprop.id);
-  if (n<(long)fi.properties.size()) {
-    auto itr = std::next(fi.properties.cbegin(),n);
-    cprop.key = itr->first.c_str();
-  }
+  const Registry::FactoryInfo& fi = reg.getInfo( cprop.id );
+  if ( n < (int)fi.properties.size() )
+    cprop.key = next( begin( fi.properties ), n )->first.c_str();
   return cprop;
 }
 

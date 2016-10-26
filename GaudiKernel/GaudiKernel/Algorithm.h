@@ -14,6 +14,7 @@
 
 #include <string>
 #include <vector>
+#include <mutex>
 
 // Extra include files (forward declarations should be sufficient)
 #include "GaudiKernel/CommonMessaging.h"
@@ -40,6 +41,7 @@
 #include "GaudiKernel/DataHandle.h"
 #include "GaudiKernel/EventContext.h"
 #include "GaudiKernel/IDataHandleHolder.h"
+#include "GaudiKernel/IAlgExecStateSvc.h"
 
 class IAlgTool;
 class ToolHandleInfo;
@@ -86,8 +88,6 @@ public:
    *  @param svcloc  A pointer to a service location service
    */
   Algorithm( const std::string& name, ISvcLocator* svcloc, const std::string& version = PACKAGE_VERSION );
-  /// Destructor
-  ~Algorithm() override = default;
 
   /** Reinitialization method invoked by the framework. This method is responsible
    *  for any reinitialization required by the framework itself.
@@ -260,7 +260,7 @@ public:
    *  May not be invoked before sysInitialize() has been invoked.
    */
   SmartIF<IDataProviderSvc>& detSvc() const;
-  [[deprecated( "use detSvc() instead" )]] SmartIF<IDataProviderSvc>& detDataService() const { return detSvc(); };
+  [[deprecated( "use detSvc() instead" )]] SmartIF<IDataProviderSvc>& detDataService() const { return detSvc(); }
 
   /** The standard detector data persistency conversion service.
    *  May not be invoked before sysInitialize() has been invoked.
@@ -323,6 +323,8 @@ public:
   SmartIF<ISvcLocator>& svcLoc() const { return serviceLocator(); }
 
   SmartIF<IHiveWhiteBoard>& whiteboard() const;
+
+  SmartIF<IAlgExecStateSvc>& algExecStateSvc() const;
 
   /// register for Algorithm Context Service?
   bool registerContext() const { return m_registerContext; }
@@ -430,10 +432,10 @@ public:
 
   // For concurrency
   /// get the context
-  const EventContext* getContext() const { return m_event_context; }
+  const EventContext* getContext() const override { return m_event_context; }
 
   /// set the context
-  void setContext( const EventContext* context ) { m_event_context = context; }
+  void setContext( const EventContext* context ) override { m_event_context = context; }
 
   // From IDataHandleHolder:
 
@@ -484,9 +486,9 @@ public:
   const std::vector<IAlgTool*>& tools() const;
 
   // Return the I/O-boundness flag
-  bool isIOBound() const { return m_isIOBound; };
+  bool isIOBound() const { return m_isIOBound; }
   // Set the I/O-boundness flag
-  void setIOBound( bool value ) { m_isIOBound = value; };
+  void setIOBound( bool value ) { m_isIOBound = value; }
 
 protected:
   std::vector<IAlgTool*>& tools();
@@ -520,6 +522,8 @@ protected:
   /// set instantiation index of Alg
   void setIndex( const unsigned int& idx ) override;
 
+  int maxErrors() const { return m_errorMax; }
+
 private:
   Gaudi::StringKey m_name;            ///< Algorithm's name for identification
   std::string m_type;                 ///< Algorithm's type
@@ -552,7 +556,8 @@ private:
   mutable SmartIF<IMonitorSvc> m_pMonitorSvc;   ///< Online Monitoring Service
   mutable SmartIF<IAlgContextSvc> m_contextSvc; ///< Algorithm Context Service
 
-  mutable SmartIF<ITimelineSvc> m_timelineSvc; ///< Timeline Service
+  mutable SmartIF<ITimelineSvc> m_timelineSvc;  ///< Timeline Service
+  mutable SmartIF<IAlgExecStateSvc> m_aess;     ///< Alg execution state mgr
 
   SmartIF<ISvcLocator> m_pSvcLocator; ///< Pointer to service locator service
 
@@ -596,6 +601,8 @@ private:
   Gaudi::Property<DataObjIDColl> m_extOutputDataObjs{this, "ExtraOutputs", DataObjIDColl{}, "[[deprecated]]"};
   Gaudi::Property<bool> m_isIOBound{this, "IsIOBound", false,
                                     "if the algorithm is I/O-bound (in the broad sense of Von Neumann bottleneck)"};
+
+  std::mutex   m_lock;             ///< for re-entrant Algs
 
   bool m_filterPassed = true;  ///< Filter passed flag
   bool m_isExecuted   = false; ///< Algorithm is executed flag

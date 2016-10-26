@@ -73,7 +73,7 @@ StatusCode IncidentProcAlg::execute() {
 	// check wheter one of the listeners is singleShot
       }
     }
-    incPack=std::move(m_incSvc->getIncidents(getContext()));
+    incPack=m_incSvc->getIncidents(getContext());
   }
 
   return StatusCode::SUCCESS;

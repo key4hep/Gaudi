@@ -6,6 +6,7 @@
 //
 //	====================================================================
 #include "GaudiKernel/Algorithm.h"
+#include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/IOpaqueAddress.h"
@@ -17,6 +18,8 @@
 #include "GaudiKernel/ObjectVector.h"
 #include "GaudiKernel/SmartDataPtr.h"
 #include "GaudiKernel/SmartIF.h"
+
+#include <numeric>
 
 /**@class StoreExplorerAlg
   *

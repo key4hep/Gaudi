@@ -279,7 +279,7 @@ class ExecutionFlowGraph : public CommonMessaging<IExecutionFlowGraph> {
 public:
     /// Constructor
     ExecutionFlowGraph(const std::string& name, SmartIF<ISvcLocator> svc) :
-     m_headNode(0), m_nodeCounter(0), m_svcLocator(svc), m_name(name), m_initTime(std::chrono::high_resolution_clock::now()),
+     m_headNode(0), m_nodeCounter(0), m_svcLocator(svc), m_name(name), m_initTime(std::chrono::system_clock::now()),
      m_eventSlots(nullptr) {}
     /// Destructor
     ~ExecutionFlowGraph() override {

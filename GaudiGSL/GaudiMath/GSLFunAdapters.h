@@ -22,6 +22,14 @@
 // ============================================================================
 #include "GaudiKernel/Kernel.h"
 
+#if defined(__clang__) || defined(__cling__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winconsistent-missing-override"
+#elif defined(__GNUC__) && __GNUC__ >= 5
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsuggest-override"
+#endif
+
 namespace Genfun
 {
   namespace GaudiMathImplementation
@@ -66,6 +74,8 @@ namespace Genfun
       Function        m_function ;
       std::unique_ptr<gsl_sf_result>  m_result   ;
     };
+    /// mandatory macro from CLHEP/GenericFunctions
+    FUNCTION_OBJECT_IMP( GSLFunctionWithError )
 
     class GAUDI_API GSLFunctionWithMode : public AbsFunction
     {
@@ -102,6 +112,8 @@ namespace Genfun
       Function        m_function ;
       gsl_mode_t*     m_mode     ;
     };
+    /// mandatory macro from CLHEP/GenericFunctions
+    FUNCTION_OBJECT_IMP( GSLFunctionWithMode )
 
     class GAUDI_API GSLFunctionWithModeAndError : public AbsFunction
     {
@@ -146,9 +158,17 @@ namespace Genfun
       std::unique_ptr<gsl_mode_t>     m_mode     ;
       std::unique_ptr<gsl_sf_result>  m_result   ;
     };
+    /// mandatory macro from CLHEP/GenericFunctions
+    FUNCTION_OBJECT_IMP( GSLFunctionWithModeAndError )
 
   } // end of namespace GaudiMath Implemnentation
 } // end of namespace Genfun
+
+#if defined(__clang__) || defined(__cling__)
+#pragma clang diagnostic pop
+#elif defined(__GNUC__) && __GNUC__ >= 5
+#pragma GCC diagnostic pop
+#endif
 
 #endif // GAUDIMATH_GSLFUNADAPTERS_H
 // ============================================================================

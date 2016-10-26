@@ -16,8 +16,6 @@ public:
   /// Basic interface id of the managed components.
   virtual const InterfaceID& componentBaseInterface() const = 0;
 
-  /// Virtual destructor
-  ~IComponentManager() override = default;
 };
 
 #endif /* ICOMPONENTMANAGER_H_ */

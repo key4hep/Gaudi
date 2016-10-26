@@ -16,8 +16,7 @@ namespace
     return std::unique_ptr<T>( new T( std::forward<Args>( args )... ) );
   }
 
-  bool isDefault( const std::string& s ) { return s.empty(); }
-  constexpr bool isDefault( double x ) { return x == 0; }
+  bool isDefault(const std::string& s) { return s.empty(); }
 
   // utility class to populate some properties in the job options service
   // for a given instance name in case those options are not explicitly
@@ -163,11 +162,9 @@ StatusCode GaudiSequencer::execute()
 
   for ( auto& entry : m_entries ) {
     Algorithm* myAlg = entry.algorithm();
-    if ( !myAlg->isEnabled() ) continue;
-    if ( !myAlg->isExecuted() ) {
-
-      // DF: if we have a context set by GaudiHive scheduler propagate it to the children
-      if ( getContext() ) myAlg->setContext( getContext() );
+    if ( ! myAlg->isEnabled() ) continue;
+    myAlg->setContext( getContext() );
+    if ( ! myAlg->isExecuted() ) {
 
       if ( m_measureTime ) m_timerTool->start( entry.timer() );
       result = myAlg->sysExecute();

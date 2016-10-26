@@ -22,6 +22,14 @@
 #include "gsl/gsl_integration.h"
 
 
+#if defined(__clang__) || defined(__cling__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winconsistent-missing-override"
+#elif defined(__GNUC__) && __GNUC__ >= 5
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsuggest-override"
+#endif
+
 /// forward declaration
 
 namespace Genfun
@@ -389,9 +397,17 @@ namespace Genfun
       mutable  Argument                   m_argument ;
 
     };
+    /// From CLHEP/GenericFunctions
+    FUNCTION_OBJECT_IMP( NumericalIndefiniteIntegral )
 
   } // end of namespace GaudiMathImplementation
 } // end of namespace Genfun
+
+#if defined(__clang__) || defined(__cling__)
+#pragma clang diagnostic pop
+#elif defined(__GNUC__) && __GNUC__ >= 5
+#pragma GCC diagnostic pop
+#endif
 
 // ============================================================================
 // The END

@@ -96,11 +96,6 @@ public:
    */
   virtual const ChronoEntity* chrono ( const ChronoTag& t ) const = 0 ;
   // ==========================================================================
-protected:
-  // ==========================================================================
-  // protected and virtual destructor
-  ~IChronoSvc() override = default; ///< protected and virtual destructor
-  // ==========================================================================
 };
 // ============================================================================
 // The END

@@ -275,6 +275,7 @@ MsgStream& operator << (MsgStream& s, const std::_Smanip<_Tm>& manip) {
   return s;
 }
 #elif defined (__GNUC__)
+#ifndef __APPLE__
 inline MsgStream& operator << (MsgStream& s,
                                const std::_Setiosflags &manip) {
   try {
@@ -315,20 +316,7 @@ inline MsgStream& operator << (MsgStream& s,
   } catch (...) {}
   return s;
 }
-
-namespace MSG {
-  inline
-  MsgStream& dec(MsgStream& log) {
-    log.setf(std::ios_base::dec, std::ios_base::basefield);
-    return log;
-  }
-  inline
-  MsgStream& hex(MsgStream& log) {
-    log.setf(std::ios_base::hex, std::ios_base::basefield);
-    return log;
-  }
-}
-
+#endif // not __APPLE__
 #else // GCC, version << 3
 /// I/O Manipulator for setfill
 template<class _Tm> inline
@@ -340,6 +328,19 @@ MsgStream& operator << (MsgStream& s, const std::smanip<_Tm>& manip)  {
   return s;
 }
 #endif    // WIN32 or (__GNUC__)
+
+namespace MSG {
+  inline
+  MsgStream& dec(MsgStream& log) {
+    log << std::dec;
+    return log;
+  }
+  inline
+  MsgStream& hex(MsgStream& log) {
+    log << std::hex;
+    return log;
+  }
+}
 
 /// Specialization to avoid the generation of implementations for char[].
 /// \see {<a href="https://savannah.cern.ch/bugs/?87340">bug #87340</a>}
@@ -364,7 +365,7 @@ MsgStream& operator<< (MsgStream& lhs, const T& arg)  {
   return lhs;
 }
 
-#ifdef __GNUC__
+#if defined(__GNUC__) and not defined(__APPLE__)
 /// compiler is stupid. Must specialize
 template<typename T>
 MsgStream& operator << (MsgStream& lhs, const std::_Setfill<T> &manip) {

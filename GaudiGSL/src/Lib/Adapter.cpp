@@ -15,8 +15,6 @@ namespace Genfun
   namespace GaudiMathImplementation
   {
 
-    FUNCTION_OBJECT_IMP( AdapterIFunction )
-
     AdapterIFunction::AdapterIFunction ( const AIDA::IFunction& fun)
       : AbsFunction ( )
       , m_fun ( &fun  )
@@ -57,8 +55,6 @@ namespace Genfun
       return Genfun::FunctionNoop ( &aux ) ;
     }
 
-    FUNCTION_OBJECT_IMP( Adapter2DoubleFunction )
-
     Adapter2DoubleFunction::Adapter2DoubleFunction
     ( Adapter2DoubleFunction::Function  func )
       : AbsFunction (       )
@@ -97,8 +93,6 @@ namespace Genfun
       const AbsFunction& aux = GaudiMath::Derivative( *this , i ) ;
       return Genfun::FunctionNoop ( &aux ) ;
     }
-
-    FUNCTION_OBJECT_IMP( Adapter3DoubleFunction )
 
     Adapter3DoubleFunction::Adapter3DoubleFunction
     ( Adapter3DoubleFunction::Function  func )
@@ -140,10 +134,6 @@ namespace Genfun
       return Genfun::FunctionNoop ( &aux ) ;
     }
 
-    // ========================================================================
-    /// from CLHGEP/GenericFunctions
-    // ========================================================================
-    FUNCTION_OBJECT_IMP( SimpleFunction )
     // ========================================================================
 
     // =======================================================================

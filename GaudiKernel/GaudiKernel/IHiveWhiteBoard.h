@@ -1,4 +1,3 @@
-// $Id: IHiveWhiteBoard.h,v 1.1 2004/07/06 10:17:40 mato Exp $
 #ifndef GAUDIKERNEL_IHIVEWHITEBOARD_H
 #define GAUDIKERNEL_IHIVEWHITEBOARD_H
 

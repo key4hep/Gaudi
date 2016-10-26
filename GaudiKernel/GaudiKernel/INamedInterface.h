@@ -20,9 +20,6 @@ public:
   /// Retrieve the name of the instance.
   virtual const std::string& name() const = 0;
 
-  /// Virtual destructor (always needed for abstract classes).
-  virtual ~INamedInterface() = default;
-
 };
 
 #endif

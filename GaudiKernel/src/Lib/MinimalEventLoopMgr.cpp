@@ -10,6 +10,7 @@
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/ThreadGaudi.h"
+#include "GaudiKernel/ThreadLocalContext.h"
 #include "GaudiKernel/TypeNameString.h"
 
 #include "GaudiKernel/MinimalEventLoopMgr.h"
@@ -98,6 +99,9 @@ StatusCode MinimalEventLoopMgr::initialize()
   // The state is changed at this moment to allow decodeXXXX() to do something
   m_state = INITIALIZED;
 
+  // create an EventContext object
+  m_eventContext = new EventContext();
+
   //--------------------------------------------------------------------------------------------
   // Create output streams. Do not initialize them yet.
   // The state is updated temporarily in order to enable the handler, which
@@ -121,9 +125,10 @@ StatusCode MinimalEventLoopMgr::initialize()
     return sc;
   }
 
-  // Initialize all the new TopAlgs. In fact Algorithms are protected against getting
-  // initialized twice.
+  // Initialize all the new TopAlgs. In fact Algorithms are protected against
+  // getting initialized twice.
   for ( auto& ita : m_topAlgList ) {
+    ita->setContext( m_eventContext );
     sc = ita->sysInitialize();
     if ( !sc.isSuccess() ) {
       error() << "Unable to initialize Algorithm: " << ita->name() << endmsg;
@@ -132,10 +137,18 @@ StatusCode MinimalEventLoopMgr::initialize()
   }
   for ( auto& ita : m_outStreamList ) {
     sc = ita->sysInitialize();
-    if ( !sc.isSuccess() ) {
+    ita->setContext( m_eventContext );
+    if( !sc.isSuccess() ) {
       error() << "Unable to initialize Output Stream: " << ita->name() << endmsg;
       return sc;
     }
+  }
+
+  // get hold of the Algorithm Execution State mgr
+  m_aess = serviceLocator()->service("AlgExecStateSvc");
+  if( !m_aess )  {
+    fatal() << "Error retrieving AlgExecStateSvc." << endmsg;
+    return StatusCode::FAILURE;
   }
 
   return StatusCode::SUCCESS;
@@ -287,6 +300,8 @@ StatusCode MinimalEventLoopMgr::finalize()
   m_incidentSvc.reset();
   m_appMgrUI.reset();
 
+  delete m_eventContext;
+
   sc = Service::finalize();
 
   if ( sc.isFailure() ) {
@@ -370,15 +385,14 @@ StatusCode MinimalEventLoopMgr::executeEvent( void* /* par */ )
 {
   bool eventfailed = false;
 
-  // Call the resetExecuted() method of ALL "known" algorithms
+  // reset state of ALL "known" algorithms
   // (before we were reseting only the topalgs)
-  auto algMan = serviceLocator()->as<IAlgManager>();
-  if ( LIKELY( algMan.isValid() ) ) {
-    const auto& allAlgs = algMan->getAlgorithms();
-    std::for_each( std::begin( allAlgs ), std::end( allAlgs ), []( IAlgorithm* alg ) {
-      if ( LIKELY( alg != nullptr ) ) alg->resetExecuted();
-    } );
-  }
+  m_aess->reset();
+
+  // this should really be set from the EventSelector or the current
+  // event header in the EventStore
+  m_eventContext->set(m_nevt, 0);
+  Gaudi::Hive::setCurrentContext( m_eventContext );
 
   // Get the IProperty interface of the ApplicationMgr to pass it to RetCodeGuard
   const auto appmgr = serviceLocator()->as<IProperty>();
@@ -405,11 +419,16 @@ StatusCode MinimalEventLoopMgr::executeEvent( void* /* par */ )
       fatal() << ".executeEvent(): UNKNOWN Exception thrown by " << ita->name() << endmsg;
     }
 
+    m_aess->algExecState(ita).setExecuted(true);
+    m_aess->algExecState(ita).setExecStatus(sc);
+    
     if ( UNLIKELY( !sc.isSuccess() ) ) {
       warning() << "Execution of algorithm " << ita->name() << " failed" << endmsg;
       eventfailed = true;
     }
   }
+
+  m_aess->updateEventStatus(eventfailed);
 
   // ensure that the abortEvent flag is cleared before the next event
   if ( UNLIKELY( m_abortEvent ) ) {
@@ -419,20 +438,28 @@ StatusCode MinimalEventLoopMgr::executeEvent( void* /* par */ )
 
   // Call the execute() method of all output streams
   for ( auto& ito : m_outStreamList ) {
-    ito->resetExecuted();
+    m_aess->algExecState(ito).setExecuted(false);
+    m_aess->algExecState(ito).setFilterPassed(true);
     StatusCode sc;
     sc = ito->sysExecute();
+    m_aess->algExecState(ito).setExecStatus(sc);
     if ( UNLIKELY( !sc.isSuccess() ) ) {
       warning() << "Execution of output stream " << ito->name() << " failed" << endmsg;
       eventfailed = true;
     }
   }
 
+  m_nevt++;
+
   // Check if there was an error processing current event
   if ( UNLIKELY( eventfailed ) ) {
     error() << "Error processing event loop." << endmsg;
+    std::ostringstream ost;
+    m_aess->dump(ost);
+    debug() << "Dumping AlgExecStateSvc status:\n" << ost.str() << endmsg;
     return StatusCode( StatusCode::FAILURE, true );
   }
+
   return StatusCode( StatusCode::SUCCESS, true );
 }
 //--------------------------------------------------------------------------------------------

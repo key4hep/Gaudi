@@ -1,34 +1,28 @@
-# --> Including file '/build/mato/DEV/GaudiExamples/v20r2/options/TemplatedAlg.py'
-# --> Including file '/build/mato/DEV/GaudiExamples/v20r2/options/Common.opts'
-# --> Including file '/build/mato/DEV/GaudiExamples/v20r2/options/Services.opts'
-# AuditorSvc.Auditors = { "ChronoAuditor" };
-# <-- End of file '/build/mato/DEV/GaudiExamples/v20r2/options/Services.opts'
-# ApplicationMgr.StatusCodeCheck = true;
-# <-- End of file '/build/mato/DEV/GaudiExamples/v20r2/options/Common.opts'
-# <-- End of file '/build/mato/DEV/GaudiExamples/v20r2/options/TemplatedAlg.py'
-ApplicationMgr    SUCCESS 
+# setting LC_ALL to "C"
+# --> Including file '/build/marcocle/Gaudi/GaudiExamples/options/TemplatedAlg.py'
+# <-- End of file '/build/marcocle/Gaudi/GaudiExamples/options/TemplatedAlg.py'
+# applying configuration of GaudiExamplesCommonConf
+# /***** User GaudiExamplesCommonConf/GaudiExamplesCommonConf ****************************************
+# |-OutputLevel = 3
+# |-DummyEvents = -1
+# \----- (End of User GaudiExamplesCommonConf/GaudiExamplesCommonConf) -------------------------------
+ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr $Revision: 1.76 $
-                                          running on lxbuild114.cern.ch on Wed Sep  3 09:52:09 2008
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v4r1)
+                                          running on lbbuild10.cern.ch on Fri Jul 15 11:02:31 2016
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
-TAlgIS1              INFO Initializing TemplatedAlg instance TAlgIS1 of type 12TemplatedAlgIiSt6vectorISsSaISsEEE
-TAlgIS2              INFO Initializing TemplatedAlg instance TAlgIS2 of type 12TemplatedAlgIiSt6vectorISsSaISsEEE
-TAlgDB1              INFO Initializing TemplatedAlg instance TAlgDB1 of type 12TemplatedAlgIdbE
-TAlgDB2              INFO Initializing TemplatedAlg instance TAlgDB2 of type 12TemplatedAlgIdbE
-EventLoopMgr      WARNING Unable to locate service "EventSelector" 
+TAlgIS1              INFO Initializing TemplatedAlg instance TAlgIS1 of type TemplatedAlg<int, std::vector<std::string, std::allocator<std::string> > >
+TAlgIS2              INFO Initializing TemplatedAlg instance TAlgIS2 of type TemplatedAlg<int, std::vector<std::string, std::allocator<std::string> > >
+TAlgDB1              INFO Initializing TemplatedAlg instance TAlgDB1 of type TemplatedAlg<double, bool>
+TAlgDB2              INFO Initializing TemplatedAlg instance TAlgDB2 of type TemplatedAlg<double, bool>
+EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
 HistogramPersis...WARNING Histograms saving not required.
 ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
 ApplicationMgr       INFO Application Manager Stopped successfully
 EventLoopMgr         INFO Histograms converted successfully according to request.
-StatusCodeSvc        INFO listing all unchecked return codes:
-StatusCodeSvc        INFO 
-Num | Function                       | Source Library
-----+--------------------------------+------------------------------------------
- 11 | ROOT::Reflex::NewDelFunctionsT<StatusCode>::delete_T(void*) | libGaudiKernelDict.so
-
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully

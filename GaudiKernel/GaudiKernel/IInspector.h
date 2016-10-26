@@ -45,7 +45,6 @@ private:
     T m_O;
   public:
     _V(const T& v) : m_O(v)       {      m_P = &m_O;           }
-    virtual ~_V() = default;
     virtual long size()  const  {      return sizeof(T);     }
     virtual void construct(void* b) const { ::new(b) T();     }
   };

@@ -303,7 +303,7 @@ IIncidentSvc::IncidentPack IncidentSvc::getIncidents(const EventContext* ctx){
       }
     }
   }
-  return std::move(p);
+  return p;
 }
 // ============================================================================
 // The END

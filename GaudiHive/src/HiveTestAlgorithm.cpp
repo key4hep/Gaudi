@@ -28,6 +28,22 @@ HiveTestAlgorithm::initialize()
 {
   info() << ":HiveTestAlgorithm::initialize " << endmsg;
 
+  int i=0;
+  for (auto k: m_inputs) {
+    debug() << "adding input key " << k << endmsg;
+    m_inputHandles.push_back( new DataObjectHandle<DataObject>( k, Gaudi::DataHandle::Reader, this ));
+    declareProperty("dummy_in_" + std::to_string(i), *(m_inputHandles.back()) );
+    i++;
+  }
+
+  i = 0;
+  for (auto k: m_outputs) {
+    debug() << "adding output key " << k << endmsg;
+    m_outputHandles.push_back( new DataObjectHandle<DataObject>( k, Gaudi::DataHandle::Writer, this ));
+    declareProperty("dummy_out_" + std::to_string(i), *(m_outputHandles.back()) );
+    i++;
+  }
+
   return StatusCode::SUCCESS;
 }
 
@@ -39,16 +55,14 @@ HiveTestAlgorithm::execute()
 
   info() << ":HiveTestAlgorithm::getting inputs... " << evt << endmsg;
 
-  for(vector<string>::iterator i = m_inputs.begin(); i != m_inputs.end(); i++) {
-    MyObject* obj = get<MyObject>(*i);
-    info() << "Got data " << *i << " with value " << obj->getData() << endmsg;
+  for(auto& handle : m_inputHandles) {
+    auto obj = dynamic_cast<MyObject*>(handle->get());
+    info() << "Got data with value " << obj->getData() << endmsg;
   }
 
   info() << ":HiveTestAlgorithm::registering outputs... " << evt << endmsg;
 
-  for(vector<string>::iterator i = m_outputs.begin(); i != m_outputs.end(); i++) {
-    put(new MyObject(1000+evt), *i);
-  }
+  for (auto & outputHandle: m_outputHandles){ outputHandle->put(new MyObject(1000+evt)); }
 
   return StatusCode::SUCCESS;
 }
@@ -56,7 +70,7 @@ HiveTestAlgorithm::execute()
 StatusCode
 HiveTestAlgorithm::finalize()
 {
-  info() << name( ) << ":HiveTestAlgorithm::finalize - total events: " << m_total << endmsg;
+  info() << name() << ":HiveTestAlgorithm::finalize - total events: " << m_total << endmsg;
   MyObject::dump();
   return StatusCode::SUCCESS;
 }

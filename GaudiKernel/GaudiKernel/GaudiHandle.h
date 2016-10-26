@@ -11,6 +11,7 @@
 #include <vector>
 #include <stdexcept>
 #include <iostream>
+#include <type_traits>
 
 class GAUDI_API GaudiHandleInfo {
 protected:
@@ -63,15 +64,15 @@ public:
 
 protected:
 
-	/** The component type */
-	void setComponentType(const std::string& componentType) {
-		m_componentType = componentType;
-	}
-
-	/** The name of the parent */
-	void setParentName(const std::string& parent) {
-		m_parentName = parent;
-	}
+  /** The component type */
+  void setComponentType(const std::string& componentType) {
+    m_componentType = componentType;
+  }
+  
+  /** The name of the parent */
+  void setParentName(const std::string& parent) {
+    m_parentName = parent;
+  }
 
 private:
   //
@@ -233,7 +234,7 @@ public:
   }
 
   /// Return the wrapped pointer, not calling retrieve() if null.
-  T* get() const {
+  typename std::add_const<T>::type * get() const {
     return m_pObject;
   }
 
@@ -252,12 +253,14 @@ public:
     return m_pObject;
   }
 
-  T& operator*() const { // not really const, because it may update m_pObject
+  typename std::add_const<T>::type & operator*() const { 
+    // not really const, because it may update m_pObject
     assertObject();
     return *m_pObject;
   }
 
-  T* operator->() const { // not really const, because it may update m_pObject
+  typename std::add_const<T>::type * operator->() const {
+    // not really const, because it may update m_pObject
     assertObject();
     return m_pObject;
   }
@@ -268,19 +271,21 @@ public:
   }
 
   std::string getDefaultName() {
-    std::string defName = GaudiHandleBase::type();
-    if ( defName.empty() ) defName = getDefaultType();
-    return defName;
+    const auto defName = GaudiHandleBase::type();
+    return ( defName.empty() ? getDefaultType() : defName );
   }
 
 protected:
+
   /** Retrieve the component. To be implemented by the derived class. It will pass the pointer */
   virtual StatusCode retrieve( T*& ) const = 0; // not really const, because it updates m_pObject
 
   /** Release the component. Default implementation calls release() on the component.
-      Can be overridden by the derived class if something else if needed. */
+      Can be overridden by the derived class if something else is needed. */
   virtual StatusCode release( T* comp ) const { // not really const, because it updates m_pObject
-    comp->release();
+    // const cast to support T being a const type
+    auto * c = const_cast< typename std::remove_const<T>::type * >(comp);
+    c->release();
     return StatusCode::SUCCESS;
   }
 
