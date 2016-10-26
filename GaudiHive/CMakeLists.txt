@@ -27,10 +27,6 @@ gaudi_add_test(WhiteBoard
                FRAMEWORK options/testWhiteBoard.py
                TIMEOUT 120)
 
-gaudi_add_test(CPUCruncher
-               FRAMEWORK options/CPUCruncher.py
-               TIMEOUT 120)
-
 gaudi_add_test(WriteWhiteBoard
                FRAMEWORK options/WriteWhiteBoard.py
                TIMEOUT 120)
@@ -56,10 +52,6 @@ gaudi_add_test(ForwardSchedulerStall
                FRAMEWORK options/ForwardSchedulerStall.py
                DEPENDS ForwardScheduler,
                PASSREGEX "Stall detected"
-               TIMEOUT 120)
-
-gaudi_add_test(SequentialSchedulerSimpleTest
-               FRAMEWORK options/SequentialSchedulerSimpleTest.py
                TIMEOUT 120)
 
 gaudi_add_test(GraphSchedulerSimpleTest

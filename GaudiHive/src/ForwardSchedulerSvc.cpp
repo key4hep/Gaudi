@@ -58,7 +58,7 @@ ForwardSchedulerSvc::ForwardSchedulerSvc( const std::string& name, ISvcLocator* 
   declareProperty("ThreadPoolSize", m_threadPoolSize = -1 );
   declareProperty("WhiteboardSvc", m_whiteboardSvcName = "EventDataSvc" );
   declareProperty("IOBoundAlgSchedulerSvc", m_IOBoundAlgSchedulerSvcName = "IOBoundAlgSchedulerSvc" );
-  declareProperty("MaxAlgosInFlight", m_maxAlgosInFlight = 0, "Taken from the whiteboard. Deprecated" );
+  declareProperty("MaxAlgosInFlight", m_maxAlgosInFlight = 1, "Taken from the whiteboard. Deprecated" );
   declareProperty("MaxIOBoundAlgosInFlight", m_maxIOBoundAlgosInFlight = 0);
   // XXX: CF tests. Temporary property to switch between ControlFlow implementations
   declareProperty("useGraphFlowManagement", m_CFNext = false );
@@ -542,7 +542,7 @@ StatusCode ForwardSchedulerSvc::eventFailed(EventContext* eventContext){
   std::ostringstream ost;
   m_algExecStateSvc->dump(ost, *eventContext);
 
-  info() << "Dumping Alg Exec State for slot " << eventContext->slot() 
+  info() << "Dumping Alg Exec State for slot " << eventContext->slot()
          << ":\n" << ost.str() << endmsg;
 
   dumpSchedulerState(-1);
@@ -977,12 +977,12 @@ StatusCode ForwardSchedulerSvc::promoteToScheduled(unsigned int iAlgo, int si) {
     ++m_algosInFlight;
     // Avoid to use tbb if the pool size is 1 and run in this thread
     if (-100 != m_threadPoolSize) {
-      tbb::task* t = new( tbb::task::allocate_root() ) 
-        AlgoExecutionTask(ialgoPtr, iAlgo, eventContext, serviceLocator(), 
+      tbb::task* t = new( tbb::task::allocate_root() )
+        AlgoExecutionTask(ialgoPtr, iAlgo, eventContext, serviceLocator(),
                           this, m_algExecStateSvc);
       tbb::task::enqueue( *t);
     } else {
-      AlgoExecutionTask theTask(ialgoPtr, iAlgo, eventContext, 
+      AlgoExecutionTask theTask(ialgoPtr, iAlgo, eventContext,
                                 serviceLocator(), this, m_algExecStateSvc);
       theTask.execute();
     }
@@ -1031,13 +1031,13 @@ StatusCode ForwardSchedulerSvc::promoteToAsyncScheduled(unsigned int iAlgo, int 
     algoPtr->setContext(m_eventSlots[si].eventContext);
     ++m_IOBoundAlgosInFlight;
     // Can we use tbb-based overloaded new-operator for a "custom" task (an algorithm wrapper, not derived from tbb::task)? it seems it works..
-    IOBoundAlgTask* theTask = new( tbb::task::allocate_root() ) 
-      IOBoundAlgTask(ialgoPtr, iAlgo, eventContext, serviceLocator(), 
+    IOBoundAlgTask* theTask = new( tbb::task::allocate_root() )
+      IOBoundAlgTask(ialgoPtr, iAlgo, eventContext, serviceLocator(),
                      this, m_algExecStateSvc);
     m_IOBoundAlgScheduler->push(*theTask);
 
     if (msgLevel(MSG::DEBUG))
-      debug() << "[Asynchronous] Algorithm " << algName << " was submitted on event " 
+      debug() << "[Asynchronous] Algorithm " << algName << " was submitted on event "
               << eventContext->evt() << " in slot " << si
               << ". algorithms scheduled are " << m_IOBoundAlgosInFlight << endmsg;
 
@@ -1045,7 +1045,7 @@ StatusCode ForwardSchedulerSvc::promoteToAsyncScheduled(unsigned int iAlgo, int 
 
     if (updateSc.isSuccess())
       if (msgLevel(MSG::VERBOSE))
-        verbose() << "[Asynchronous] Promoting " << index2algname(iAlgo) 
+        verbose() << "[Asynchronous] Promoting " << index2algname(iAlgo)
                   << " to SCHEDULED on slot " << si << endmsg;
     return updateSc;
   } else {
@@ -1192,7 +1192,7 @@ StatusCode ForwardSchedulerSvc::promoteToAsyncExecuted(unsigned int iAlgo, int s
   }
 
   if (msgLevel(MSG::DEBUG))
-    debug() << "[Asynchronous] Trying to handle execution result of " 
+    debug() << "[Asynchronous] Trying to handle execution result of "
             << index2algname(iAlgo) << " on slot " << si << endmsg;
   State state;
   if (algo->filterPassed()) {
@@ -1205,7 +1205,7 @@ StatusCode ForwardSchedulerSvc::promoteToAsyncExecuted(unsigned int iAlgo, int s
 
   if (sc.isSuccess())
     if (msgLevel(MSG::VERBOSE))
-      verbose() << "[Asynchronous] Promoting " << index2algname(iAlgo) << " on slot " 
+      verbose() << "[Asynchronous] Promoting " << index2algname(iAlgo) << " on slot "
                 << si << " to " << AlgsExecutionStates::stateNames[state] << endmsg;
 
   return sc;
