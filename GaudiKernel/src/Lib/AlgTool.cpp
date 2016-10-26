@@ -240,9 +240,6 @@ StatusCode AlgTool::sysInitialize()
        debug() << endmsg;
     }
     
-    // initialize handles
-    initDataHandleHolder(); // this should 'freeze' the handle configuration.
-
     return sc;
   } );
 }
