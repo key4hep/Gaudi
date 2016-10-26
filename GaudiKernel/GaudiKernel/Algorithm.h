@@ -452,8 +452,8 @@ public:
 
   virtual void acceptDHVisitor( IDataHandleVisitor* ) const override;
 
-  const DataObjIDColl& inputDataObjs() const { return m_inputDataObjs; }
-  const DataObjIDColl& outputDataObjs() const { return m_outputDataObjs; }
+  const DataObjIDColl& inputDataObjs() const override { return m_inputDataObjs; }
+  const DataObjIDColl& outputDataObjs() const override { return m_outputDataObjs; }
 
   void commitHandles() override;
 

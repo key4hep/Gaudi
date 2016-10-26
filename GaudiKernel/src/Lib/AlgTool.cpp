@@ -210,7 +210,38 @@ StatusCode AlgTool::sysInitialize()
     if ( !sc ) return sc;
 
     m_state = m_targetState;
-    if ( m_updateDataHandles ) acceptDHVisitor( m_updateDataHandles.get() );
+    if (m_updateDataHandles) acceptDHVisitor(m_updateDataHandles.get());
+
+    // visit all sub-tools, build full set
+    DHHVisitor avis(m_inputDataObjs, m_outputDataObjs);
+    acceptDHVisitor(&avis);
+
+    if (UNLIKELY(msgLevel(MSG::DEBUG))) {
+       // sort out DataObjects by path so that logging is reproducable
+       // we define a little helper creating an ordered set from a non ordered one
+       auto sort = [](const DataObjID a, const DataObjID b) -> bool {return a.fullKey() < b.fullKey();};
+       auto orderset = [&sort](const DataObjIDColl& in) -> std::set<DataObjID, decltype(sort)> {
+          return {in.begin(), in.end(), sort};
+       };
+       // Logging
+       debug() << "Data Deps for " << name();
+       for (auto h : orderset(m_inputDataObjs)) {
+          debug() << "\n  + INPUT  " << h;
+       }
+       for (auto id : orderset(avis.ignoredInpKeys())) {
+          debug() << "\n  + INPUT IGNORED " << id;
+       }
+       for (auto h : orderset(m_outputDataObjs)) {
+          debug() << "\n  + OUTPUT " << h;
+       }
+       for (auto id : orderset(avis.ignoredOutKeys())) {
+          debug() << "\n  + OUTPUT IGNORED " << id;
+       }
+       debug() << endmsg;
+    }
+    
+    // initialize handles
+    initDataHandleHolder(); // this should 'freeze' the handle configuration.
 
     return sc;
   } );
@@ -229,7 +260,7 @@ StatusCode AlgTool::initialize()
 StatusCode AlgTool::sysStart()
 {
   //-----------------------------------------------------------------------------
-  return attempt( *this, "sysInitialize", [&]() {
+  return attempt( *this, "sysStart", [&]() {
     m_targetState = Gaudi::StateMachine::ChangeState( Gaudi::StateMachine::START, m_state );
     Gaudi::Guards::AuditorGuard guard( this,
                                        // check if we want to audit the initialize
