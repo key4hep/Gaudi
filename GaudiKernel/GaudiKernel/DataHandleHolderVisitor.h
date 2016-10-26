@@ -2,11 +2,8 @@
 #define GAUDIKERNEL_DATAHANDLEHOLDERVISTOR 1
 
 #include "GaudiKernel/IDataHandleHolder.h"
-#include "GaudiKernel/DataHandle.h"
 #include "GaudiKernel/DataObjID.h"
-#include "GaudiKernel/GaudiException.h"
 #include <set>
-#include <typeinfo>
 
 class DHHVisitor : public IDataHandleVisitor {
 public:
