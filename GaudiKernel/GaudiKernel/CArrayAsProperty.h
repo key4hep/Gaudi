@@ -1,4 +1,6 @@
+#ifndef NO_C_ARRAY_AS_PROPERTY_WARNING
 #warning deprecated header (will be removed in Gaudi v28r1), think about using std::array<T,N> instead of T[N]
+#endif
 #ifndef GAUDIKERNEL_CARRAYASPROPERTY_H
 #define GAUDIKERNEL_CARRAYASPROPERTY_H
 #include "GaudiKernel/Property.h"
