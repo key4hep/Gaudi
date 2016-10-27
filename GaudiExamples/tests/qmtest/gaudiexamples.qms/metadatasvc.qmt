@@ -11,7 +11,10 @@
 <argument name="use_temp_dir"><enumeral>true</enumeral></argument>
 <argument name="reference"><text>refs/MetaDataSvc.ref</text></argument>
 <argument name="validator"><text>
-validateWithReference()
+preprocessor = (normalizeExamples +
+     RegexpReplacer(r'JobOptionsSvc\.SEARCHPATH:.*', r'JobOptionsSvc\.SEARCHPATH:...'))
+validateWithReference(preproc=preprocessor)
+
 from itertools import takewhile, islice, dropwhile
 stdout = filter(str.strip,
                 takewhile(str.strip,
