@@ -661,6 +661,12 @@ class FilePreprocessor:
         version of it."""
     def __processLine__(self, line):
         return line
+    def __processFile__(self, lines):
+        output = []
+        for l in lines:
+            l = self.__processLine__(l)
+            if l: output.append(l)
+        return output
     def __call__(self, input):
         if hasattr(input,"__iter__"):
             lines = input
@@ -668,10 +674,7 @@ class FilePreprocessor:
         else:
             lines = input.splitlines()
             mergeback = True
-        output = []
-        for l in lines:
-            l = self.__processLine__(l)
-            if l: output.append(l)
+        output = self.__processFile__(lines)
         if mergeback: output = '\n'.join(output)
         return output
     def __add__(self, rhs):
@@ -760,6 +763,27 @@ class LineSorter(FilePreprocessor):
             lst.sort()
             line += " ".join(lst)
         return line
+
+class SortGroupOfLines(FilePreprocessor):
+    '''
+    Sort group of lines matching a regular expression
+    '''
+    def __init__(self, exp):
+        self.exp = exp if hasattr(exp, 'match') else re.compile(exp)
+    def __processFile__(self, lines):
+        match = self.exp.match
+        output = []
+        group = []
+        for l in lines:
+            if match(l):
+                group.append(l)
+            else:
+                if group:
+                    group.sort()
+                    output.extend(group)
+                    group = []
+                output.append(l)
+        return output
 
 # Preprocessors for GaudiExamples
 normalizeExamples = maskPointers + normalizeDate
@@ -851,8 +875,8 @@ if ROOT6WorkAroundEnabled('ReadRootmapCheck'):
         ])
 
 normalizeExamples = (lineSkipper + normalizeExamples + skipEmptyLines +
-                     normalizeEOL + LineSorter("Services to release : "))
-
+                     normalizeEOL + LineSorter("Services to release : ") +
+                     SortGroupOfLines(r'^\S+\s+DEBUG Property \[\'Name\':'))
 
 #--------------------- Validation functions/classes ---------------------#
 
