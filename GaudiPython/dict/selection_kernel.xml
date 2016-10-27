@@ -120,9 +120,5 @@
       <!-- We should exclude only the copy constructor, but I did not manage to do it -->
       <!--method pattern="basic_ostream*"/-->
     </class>
-    <class pattern = "std::basic_stringbuf&lt;char*">
-      <!-- assignment operator cannot compile -->
-      <method name="="/>
-    </class>
   </exclusion>
 </lcgdict>
