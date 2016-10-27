@@ -550,7 +550,6 @@ StatusCode MinimalEventLoopMgr::decodeOutStreams()
       m_outStreamList.clear();
       for ( const auto& it : m_outStreamNames.value() ) {
         Gaudi::Utils::TypeNameString item( it, m_outStreamType );
-        DEBMSG << "Creating " << it << endmsg;
         const bool CREATE      = false;
         SmartIF<IAlgorithm> os = algMan->algorithm( item, CREATE );
         if ( os ) {

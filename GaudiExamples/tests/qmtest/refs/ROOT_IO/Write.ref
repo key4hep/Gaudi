@@ -57,11 +57,8 @@ ServiceManager      DEBUG Initializing service EventLoopMgr
 EventLoopMgr        DEBUG Property update for OutputLevel : new value = 1
 EventLoopMgr        DEBUG Service base class initialized successfully
 IncidentSvc         DEBUG Adding [AbortEvent] listener '<unknown>' with priority 0
-EventLoopMgr        DEBUG Creating OutputStreamOutputStream/RootDst
 EventLoopMgr        DEBUG Creating Output Stream OutputStream/RootDst
-EventLoopMgr        DEBUG Creating OutputStreamOutputStream/RootMini
 EventLoopMgr        DEBUG Creating Output Stream OutputStream/RootMini
-EventLoopMgr        DEBUG Creating OutputStreamRecordStream/FileRecords
 EventLoopMgr        DEBUG Creating Output Stream RecordStream/FileRecords
 EventLoopMgr        DEBUG Creating Top Algorithm WriteAlg with name WriteAlg
 EventLoopMgr        DEBUG Creating Top Algorithm ReadAlg with name ReadAlg
