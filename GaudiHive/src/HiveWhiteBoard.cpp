@@ -579,10 +579,10 @@ public:
       oss << name() << "_" << i;
       DataSvc* svc = new DataSvc( oss.str(), serviceLocator() );
       // Percolate properties
-      svc->setProperty( m_rootCLID );
-      svc->setProperty( m_rootName );
-      svc->setProperty( m_forceLeaves );
-      svc->setProperty( m_enableFaultHdlr );
+      svc->setProperty( m_rootCLID ).ignore();
+      svc->setProperty( m_rootName ).ignore();
+      svc->setProperty( m_forceLeaves ).ignore();
+      svc->setProperty( m_enableFaultHdlr ).ignore();
 
       sc = svc->initialize();
       if ( !sc.isSuccess() ) {

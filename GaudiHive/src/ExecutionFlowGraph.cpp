@@ -530,21 +530,20 @@ namespace concurrency
   StatusCode ExecutionFlowGraph::buildAugmentedDataDependenciesRealm()
   {
 
-    StatusCode global_sc( StatusCode::SUCCESS );
+    StatusCode global_sc( StatusCode::SUCCESS, true );
 
     // Create the DataObjects (DO) realm (represented by DataNodes in the graph),
     // connected to DO producers (AlgorithmNodes)
     for (auto algo : m_algoNameToAlgoNodeMap) {
 
-      StatusCode sc;
       auto& outCollection = m_algoNameToAlgoOutputsMap[algo.first];
       for (auto outputTag : outCollection) {
-        sc = addDataNode(outputTag);
+        const auto sc = addDataNode(outputTag);
         if (!sc.isSuccess()) {
           error() << "Extra producer (" << algo.first << ") for DataObject @ "
                   << outputTag
                   << " has been detected: this is not allowed." << endmsg;
-          global_sc = StatusCode::FAILURE;
+          global_sc = sc;
         }
         auto dataNode = getDataNode(outputTag);
         dataNode->addProducerNode(algo.second);

@@ -15,6 +15,9 @@
 // Instantiation of a static factory class used by clients to create instances of this service
 DECLARE_SERVICE_FACTORY(AlgResourcePool)
 
+#define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
+#define DEBUG_MSG ON_DEBUG debug()
+
 //---------------------------------------------------------------------------
 
 // destructor
@@ -101,8 +104,7 @@ StatusCode AlgResourcePool::acquireAlgorithm(const std::string& name, IAlgorithm
   }
 
   if(sc.isFailure())
-    if (msgLevel(MSG::DEBUG))
-      debug() << "No instance of algorithm " << name << " could be retrieved in non-blocking mode" << endmsg;
+    DEBUG_MSG << "No instance of algorithm " << name << " could be retrieved in non-blocking mode" << endmsg;
 
   // if (m_lazyCreation ) {
   //    TODO: fill the lazyCreation part
@@ -164,24 +166,24 @@ StatusCode AlgResourcePool::flattenSequencer(Algorithm* algo, ListAlg& alglist, 
   StatusCode sc = StatusCode::SUCCESS;
 
   std::vector<Algorithm*>* subAlgorithms = algo->subAlgorithms();
-  if ( //we only want to add basic algorithms -> have no subAlgs
-          // and exclude the case of empty GaudiSequencers
+  if ( // we only want to add basic algorithms -> have no subAlgs
+       // and exclude the case of empty GaudiSequencers
        (subAlgorithms->empty() and not (algo->type() == "GaudiSequencer"))
        // we want to add non-empty GaudiAtomicSequencers
        or (algo->type() == "GaudiAtomicSequencer" and not subAlgorithms->empty())){
 
-      debug() << std::string(recursionDepth, ' ') << algo->name() << " is " <<
-              (algo->type() != "GaudiAtomicSequencer" ? "not a sequencer" : "an atomic sequencer")
+    DEBUG_MSG << std::string(recursionDepth, ' ') << algo->name() << " is "
+              << (algo->type() != "GaudiAtomicSequencer" ? "not a sequencer" : "an atomic sequencer")
               << ". Appending it" << endmsg;
 
-      alglist.emplace_back(algo);
-      m_EFGraph->addAlgorithmNode(algo,parentName,false,false);
+    alglist.emplace_back(algo);
+    m_EFGraph->addAlgorithmNode(algo, parentName, false, false).ignore();
     return sc;
   }
 
   // Recursively unroll
   ++recursionDepth;
-  debug() << std::string(recursionDepth, ' ') << algo->name() << " is a sequencer. Flattening it." << endmsg;
+  DEBUG_MSG << std::string(recursionDepth, ' ') << algo->name() << " is a sequencer. Flattening it." << endmsg;
   bool modeOR = false;
   bool allPass = false;
   bool isLazy = false;
@@ -191,7 +193,7 @@ StatusCode AlgResourcePool::flattenSequencer(Algorithm* algo, ListAlg& alglist, 
     isLazy = (algo->getProperty("ShortCircuit").toString() == "True")? true : false;
     if (allPass) isLazy = false; // standard GaudiSequencer behavior on all pass is to execute everything
   }
-  sc = m_EFGraph->addDecisionHubNode(algo,parentName,modeOR,allPass,isLazy);
+  sc = m_EFGraph->addDecisionHubNode(algo, parentName, modeOR, allPass, isLazy);
   if (sc.isFailure()) {
     error() << "Failed to add DecisionHub " << algo->name() << " to execution flow graph" << endmsg;
     return sc;
