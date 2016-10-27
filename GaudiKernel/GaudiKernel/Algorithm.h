@@ -573,6 +573,9 @@ private:
   Gaudi::Property<int> m_errorMax{this, "ErrorMax", 1, "[[deprecated]] max number of errors"};
   Gaudi::Property<int> m_errorCount{this, "ErrorCounter", 0, "[[deprecated]] error counter"};
 
+  Gaudi::Property<DataObjIDColl> m_extInputDataObjs{this, "ExtraInputs", DataObjIDColl{}, "[[deprecated]]"};
+  Gaudi::Property<DataObjIDColl> m_extOutputDataObjs{this, "ExtraOutputs", DataObjIDColl{}, "[[deprecated]]"};
+
   Gaudi::Property<bool> m_auditInit{this, "AuditAlgorithms", false, "[[deprecated]] unused"};
   Gaudi::Property<bool> m_auditorInitialize{this, "AuditInitialize", false, "trigger auditor on initialize()"};
   Gaudi::Property<bool> m_auditorReinitialize{this, "AuditReinitialize", false, "trigger auditor on reinitialize()"};
@@ -597,8 +600,6 @@ private:
   Gaudi::Property<std::vector<std::string>> m_neededResources{
       this, "NeededResources", {}, "named resources needed during event looping"};
 
-  Gaudi::Property<DataObjIDColl> m_extInputDataObjs{this, "ExtraInputs", DataObjIDColl{}, "[[deprecated]]"};
-  Gaudi::Property<DataObjIDColl> m_extOutputDataObjs{this, "ExtraOutputs", DataObjIDColl{}, "[[deprecated]]"};
   Gaudi::Property<bool> m_isIOBound{this, "IsIOBound", false,
                                     "if the algorithm is I/O-bound (in the broad sense of Von Neumann bottleneck)"};
 
