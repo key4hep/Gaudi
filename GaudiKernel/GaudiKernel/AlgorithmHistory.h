@@ -13,7 +13,6 @@
 #include <vector>
 
 class Algorithm;
-class Property;
 class JobHistory;
 
 /** @class AlgorithmHistory AlgorithmHistory.h
@@ -24,15 +23,14 @@ class JobHistory;
  *
  */
 
-class GAUDI_API AlgorithmHistory: public HistoryObj, public IVersHistoryObj {
+class GAUDI_API AlgorithmHistory : public HistoryObj, public IVersHistoryObj
+{
 
-public:  // typedefs
-
+public: // typedefs
   // List of subalgorithm histories. This may change.
   typedef std::vector<const AlgorithmHistory*> HistoryList;
 
-private:  // data
-
+private: // data
   // Algorithm full type.
   std::string m_algorithm_type;
 
@@ -52,19 +50,15 @@ private:  // data
   HistoryList m_subalgorithm_histories;
 
   // Link to jobHistory
-  const JobHistory *m_jobHistory;
+  const JobHistory* m_jobHistory;
 
-public:  // functions
-
+public: // functions
   // Constructor from the algorithm.
-  explicit AlgorithmHistory(const Algorithm& alg, const JobHistory* job);
+  explicit AlgorithmHistory( const Algorithm& alg, const JobHistory* job );
 
   // All-fields Constructor for persistency
-  explicit AlgorithmHistory(const std::string& algVersion,
-			    const std::string& algName,
-			    const std::string& algType,
-			    const PropertyList& props,
-			    const HistoryList& subHists);
+  explicit AlgorithmHistory( const std::string& algVersion, const std::string& algName, const std::string& algType,
+                             const PropertyList& props, const HistoryList& subHists );
   // Destructor.
   virtual ~AlgorithmHistory();
 
@@ -88,22 +82,19 @@ public:  // functions
   const PropertyList& properties() const override { return m_properties; }
 
   // Return the subalgorithm histories.
-  const HistoryList& subalgorithm_histories() const
-    { return m_subalgorithm_histories; }
+  const HistoryList& subalgorithm_histories() const { return m_subalgorithm_histories; }
 
   // Return the jobHistory
   const JobHistory* jobHistory() const { return m_jobHistory; }
 
-
-  void dump(std::ostream &, const bool isXML=false, int indent=0) const override;
+  void dump( std::ostream&, const bool isXML = false, int indent = 0 ) const override;
 
   const std::string& name() const override { return algorithm_name(); }
   const std::string& type() const override { return algorithm_type(); }
   const std::string& version() const override { return algorithm_version(); }
-
 };
 
 // Output stream.
-GAUDI_API std::ostream& operator<<(std::ostream& lhs, const AlgorithmHistory& rhs);
+GAUDI_API std::ostream& operator<<( std::ostream& lhs, const AlgorithmHistory& rhs );
 
 #endif

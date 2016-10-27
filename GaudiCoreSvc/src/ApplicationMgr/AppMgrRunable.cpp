@@ -10,13 +10,6 @@
 
 DECLARE_COMPONENT(AppMgrRunable)
 
-// Standard Constructor
-AppMgrRunable::AppMgrRunable(const std::string& nam, ISvcLocator* svcLoc)
-: base_class(nam, svcLoc)
-{
-  declareProperty("EvtMax", m_evtMax=0xFEEDBABE);
-}
-
 // IService implementation: initialize the service
 StatusCode AppMgrRunable::initialize()   {
   StatusCode sc = Service::initialize();

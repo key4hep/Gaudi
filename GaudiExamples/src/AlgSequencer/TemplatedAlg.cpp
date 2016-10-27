@@ -16,15 +16,6 @@ DECLARE_COMPONENT_WITH_ID(t1,"TAlgIS")
 DECLARE_COMPONENT(t2)
 DECLARE_COMPONENT_WITH_ID(t2,"TAlgDB")
 
-
-template <typename T, typename R>
-TemplatedAlg<T,R>::TemplatedAlg(const std::string& name, ISvcLocator* ploc)
-          : GaudiAlgorithm(name, ploc), m_t(), m_r() {
-//------------------------------------------------------------------------------
-  declareProperty("TProperty", m_t);
-  declareProperty("RProperty", m_r);
-}
-
 //------------------------------------------------------------------------------
 template <typename T, typename R>
 StatusCode TemplatedAlg<T,R>::initialize() {

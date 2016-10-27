@@ -3,25 +3,27 @@
 
 // Include files
 #include "GaudiAlg/GaudiAlgorithm.h"
-#include "GaudiKernel/Property.h"
 #include "GaudiKernel/MsgStream.h"
+#include "GaudiKernel/Property.h"
 
 /** @class ParentAlg
     Trivial Algorithm for tutotial purposes
-    
+
     @author nobody
 */
-class StopperAlg : public GaudiAlgorithm {
+class StopperAlg : public GaudiAlgorithm
+{
 public:
   /// Constructor of this form must be provided
-  StopperAlg(const std::string& name, ISvcLocator* pSvcLocator); 
+  using GaudiAlgorithm::GaudiAlgorithm;
 
   /// Three mandatory member functions of any algorithm
   StatusCode initialize() override;
   StatusCode execute() override;
   StatusCode finalize() override;
+
 private:
-  int  m_stopcount;
+  Gaudi::Property<int> m_stopcount{this, "StopCount", 3};
 };
 
-#endif    // GAUDIEXAMPLE_STOPPERALG_H
+#endif // GAUDIEXAMPLE_STOPPERALG_H

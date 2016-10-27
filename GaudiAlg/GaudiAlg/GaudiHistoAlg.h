@@ -37,7 +37,7 @@
 class GAUDI_API GaudiHistoAlg : public GaudiHistos<GaudiAlgorithm>
 {
 
-protected:
+public:
 
   /** Standard constructor (protected)
    *  @see  GaudiAlgorithm

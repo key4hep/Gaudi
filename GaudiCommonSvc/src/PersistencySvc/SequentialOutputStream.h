@@ -11,36 +11,32 @@
  * @author  M.Frank
  * @version 1.0
  */
-class SequentialOutputStream : public OutputStream     {
-   
- protected:
-   
-   /// OutputStream override: Select the different objects and write them to file 
-   StatusCode writeObjects() override;
+class SequentialOutputStream : public OutputStream
+{
 
- public:
+protected:
+  /// OutputStream override: Select the different objects and write them to file
+  StatusCode writeObjects() override;
 
-   /// Standard algorithm Constructor
-   SequentialOutputStream(const std::string& nam, ISvcLocator* svc);
-   /// Standard Destructor
-   ~SequentialOutputStream() override = default;
+public:
+  using OutputStream::OutputStream;
 
-   StatusCode execute() override;
+  /// Standard Destructor
+  ~SequentialOutputStream() override = default;
 
- private:
+  StatusCode execute() override;
 
-   // Properties
-   unsigned int m_eventsPerFile;
-   unsigned int m_nNumbersAdded;
-   bool m_numericFilename;
+private:
+  Gaudi::Property<unsigned int> m_eventsPerFile{this, "EventsPerFile", std::numeric_limits<unsigned int>::max()};
+  Gaudi::Property<bool> m_numericFilename{this, "NumericFilename", false};
+  Gaudi::Property<unsigned int> m_nNumbersAdded{this, "NumbersAdded", 6};
 
-   // Data members
-   unsigned int m_events = 0;
-   unsigned int m_iFile = 1;
+  // Data members
+  unsigned int m_events = 0;
+  unsigned int m_iFile  = 1;
 
-   // Helper Methods
-   void makeFilename();
-
+  // Helper Methods
+  void makeFilename();
 };
 
 #endif // GAUDISVC_PERSISTENCYSVC_SEQUENTIALOUTPUTSTREAM_H

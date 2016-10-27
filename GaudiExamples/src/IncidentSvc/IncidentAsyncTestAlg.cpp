@@ -10,19 +10,6 @@
 // Static Factory declaration
 DECLARE_COMPONENT(IncidentAsyncTestAlg)
 
-
-//=============================================================================
-IncidentAsyncTestAlg::IncidentAsyncTestAlg(const std::string& name ,
-                                                 ISvcLocator*  pSvcLocator )
-  :Algorithm(name,pSvcLocator)
-{
-  declareProperty("ServiceName", m_serviceName="IncTestSvc" );
-  declareProperty("inpKeys", m_inpKeys);
-  declareProperty("outKeys", m_outKeys);
-
-}
-
-
 //=============================================================================
 StatusCode IncidentAsyncTestAlg::initialize() {
   StatusCode sc = Algorithm::initialize();
@@ -45,7 +32,7 @@ StatusCode IncidentAsyncTestAlg::initialize() {
     declareOutput(m_outputObjHandles.back() );
     i++;
   }
-  
+
   return StatusCode::SUCCESS;
 }
 
@@ -56,13 +43,13 @@ StatusCode IncidentAsyncTestAlg::execute() {
   for (auto & inputHandle: m_inputObjHandles){
     if(!inputHandle->isValid())
       continue;
-    
+
     DataObject* obj = nullptr;
     obj = inputHandle->get();
     if (obj == nullptr)
       logstream << MSG::ERROR << "A read object was a null pointer." << endmsg;
   }
-  
+
   m_service->getData(&data);
   for (auto & outputHandle: m_outputObjHandles){
     if(!outputHandle->isValid())

@@ -1,4 +1,4 @@
-// Include files 
+// Include files
 #include "GaudiKernel/Service.h"
 #include "GaudiKernel/IIncidentListener.h"
 #include "GaudiKernel/IIncidentSvc.h"
@@ -11,7 +11,7 @@
 // including jemmalloc.h is difficult as the malloc signature is not exactly identical
 // to the system one (issue with throw).
 // We therefore declare mallctl here.
-extern "C" 
+extern "C"
 {
   int mallctl(const char *name, void *oldp, size_t *oldlenp, void *newp, size_t newlen);
 }
@@ -21,37 +21,6 @@ extern "C"
 //
 // 2016-01-11 : Ben Couturier
 //-----------------------------------------------------------------------------
-
-//=============================================================================
-// Standard constructor, initializes variables
-//=============================================================================
-JemallocProfileSvc::JemallocProfileSvc(const std::string& name, ISvcLocator* svcLoc):
-  base_class(name, svcLoc), m_eventNumber(0),  m_startFromIncidents({}),
-  m_stopAtIncidents({}), m_hasStartIncident(false), m_hasStopIncident(false),
-  m_profiling(false) {
-  
-  declareProperty("StartFromEventN", m_nStartFromEvent = 0,
-                  "After what event we start profiling. "
-                  );
-
-  declareProperty("StartFromIncidents", m_startFromIncidents = {},
-                  "Incidents that trigger profiling start"
-                  );
-
-  declareProperty("StopAtEventN", m_nStopAtEvent = 0,
-                  "After what event we stop profiling. "
-                  "If 0 than we also profile finalization stage. Default = 0."
-                  );
-
-  declareProperty("StopAtIncidents", m_stopAtIncidents = {},
-                  "Incidents that trigger profiling start"
-                  );
-
-  declareProperty("DumpPeriod", m_dumpPeriod = 100,
-                  "Period for dumping head to a file. Default=100"
-                  );
-
-}
 
 //=============================================================================
 // Initializer
@@ -67,15 +36,15 @@ StatusCode JemallocProfileSvc::initialize() {
     error() << "Cannot retrieve " << serviceName << endmsg;
     return StatusCode::FAILURE;
   }
-  
+
   debug() << "Register to the IncidentSvc" << endmsg;
   m_incidentSvc->addListener(this, IncidentType::BeginEvent);
   m_incidentSvc->addListener(this, IncidentType::EndEvent);
-  for (std::string incident: m_startFromIncidents) 
+  for (std::string incident: m_startFromIncidents)
   {
     m_incidentSvc->addListener(this, incident);
-  }  
-  for (std::string incident: m_stopAtIncidents) 
+  }
+  for (std::string incident: m_stopAtIncidents)
   {
     m_incidentSvc->addListener(this, incident);
   }
@@ -95,7 +64,7 @@ StatusCode JemallocProfileSvc::initialize() {
       info() << "Stop profiling trigger was specified but no start. Defaulting to first events" << endmsg;
       m_nStartFromEvent = 1;
     }
-      
+
 
 
   return StatusCode::SUCCESS;
@@ -117,55 +86,55 @@ StatusCode JemallocProfileSvc::finalize() {
 //=============================================================================
 
 // Handler for incidents
-void JemallocProfileSvc::handle(const Incident& incident) 
+void JemallocProfileSvc::handle(const Incident& incident)
 {
   if (IncidentType::BeginEvent == incident.type())
   {
     handleBegin();
-  } else if (IncidentType::EndEvent == incident.type()) 
+  } else if (IncidentType::EndEvent == incident.type())
   {
     handleEnd();
   }
-  
+
   // If already processing we can ignore the incidents for start
-  if (!m_profiling && m_hasStartIncident) 
+  if (!m_profiling && m_hasStartIncident)
   {
-    for(std::string startincident: m_startFromIncidents) 
+    for(std::string startincident: m_startFromIncidents)
     {
-      if (startincident == incident.type()) 
+      if (startincident == incident.type())
       {
         info() << "Starting Jemalloc profile at incident "
                <<  incident.type() << endmsg;
         startProfiling();
         break;
       }
-    } // Loop on incidents 
+    } // Loop on incidents
   } // If checking incidents to start
 
   // If already processing we can ignore the incidents for start
-  if (m_profiling && m_hasStopIncident) 
+  if (m_profiling && m_hasStopIncident)
   {
-    for(std::string stopincident: m_stopAtIncidents) 
+    for(std::string stopincident: m_stopAtIncidents)
     {
-      if (stopincident == incident.type()) 
+      if (stopincident == incident.type())
       {
         info() << "Stopping Jemalloc profile at incident "
                <<  incident.type() << endmsg;
         stopProfiling();
         break;
       }
-    } // Loop on incidents 
+    } // Loop on incidents
   } // If checking incidents to stop
 
-  
+
 }
 
 // Handler for incidents
 // Called on at begin events
-inline void JemallocProfileSvc::handleBegin() 
-{ 
+inline void JemallocProfileSvc::handleBegin()
+{
   m_eventNumber += 1;
-  
+
   if (m_eventNumber == m_nStartFromEvent)
   {
     startProfiling();
@@ -178,15 +147,15 @@ inline void JemallocProfileSvc::handleEnd()
 {
   if (m_profiling
       && m_eventNumber != m_nStartFromEvent
-      && ((m_eventNumber - m_nStartFromEvent) % m_dumpPeriod == 0)) 
+      && ((m_eventNumber - m_nStartFromEvent) % m_dumpPeriod == 0))
   {
     dumpProfile();
   }
 
-  if (m_eventNumber ==  m_nStopAtEvent) 
+  if (m_eventNumber ==  m_nStopAtEvent)
   {
     stopProfiling();
-  } 
+  }
 }
 
 //=============================================================================
@@ -219,18 +188,11 @@ inline void JemallocProfileSvc::stopProfiling()
  */
 inline void JemallocProfileSvc::dumpProfile()
 {
-    info() << "Dumping Jemalloc profile at event " 
+    info() << "Dumping Jemalloc profile at event "
            <<  m_eventNumber << endmsg;
     mallctl("prof.dump", NULL, NULL, NULL, 0);
 
 }
-
-
-//=============================================================================
-// Destructor
-
-//=============================================================================
- JemallocProfileSvc::~JemallocProfileSvc() {}
 
 //=============================================================================
 // Declaration of the factory

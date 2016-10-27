@@ -2,24 +2,24 @@
 #define GAUDISVC_ServiceManager_H
 
 // Include files
-#include "GaudiKernel/Kernel.h"
-#include "GaudiKernel/ISvcManager.h"
-#include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/IStateful.h"
-#include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/ComponentManager.h"
+#include "GaudiKernel/IStateful.h"
+#include "GaudiKernel/ISvcLocator.h"
+#include "GaudiKernel/ISvcManager.h"
+#include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/Map.h"
-#include <string>
-#include <list>
-#include <vector>
-#include <algorithm>
-#include <memory>
+#include "GaudiKernel/SmartIF.h"
+
 #include "boost/thread.hpp"
+#include <algorithm>
+#include <list>
+#include <memory>
+#include <string>
+#include <vector>
 
 // Forward declarations
 class IService;
 class IMessageSvc;
-class Property;
 
 /** @class ServiceManager ServiceManager.h
 
@@ -33,26 +33,17 @@ class Property;
 
     @author Pere Mato
 */
-class ServiceManager : public extends<ComponentManager,
-                                      ISvcManager,
-                                      ISvcLocator> {
+class ServiceManager : public extends<ComponentManager, ISvcManager, ISvcLocator>
+{
 public:
-
   struct ServiceItem final {
-    ServiceItem(IService *s, long p = 0, bool act = false):
-      service(s), priority(p), active(act) {}
+    ServiceItem( IService* s, long p = 0, bool act = false ) : service( s ), priority( p ), active( act ) {}
     SmartIF<IService> service;
     long priority;
     bool active;
-    inline bool operator==(const std::string &name) const {
-      return service->name() == name;
-    }
-    inline bool operator==(const IService *ptr) const {
-      return service.get() == ptr;
-    }
-    inline bool operator<(const ServiceItem& rhs) const {
-      return priority < rhs.priority;
-    }
+    inline bool operator==( const std::string& name ) const { return service->name() == name; }
+    inline bool operator==( const IService* ptr ) const { return service.get() == ptr; }
+    inline bool operator<( const ServiceItem& rhs ) const { return priority < rhs.priority; }
   };
 
   // typedefs and classes
@@ -60,12 +51,10 @@ public:
   typedef GaudiUtils::Map<std::string, std::string> MapType;
 
   /// default creator
-  ServiceManager(IInterface* application);
+  ServiceManager( IInterface* application );
 
   /// Function needed by CommonMessaging
-  inline SmartIF<ISvcLocator>& serviceLocator() const override {
-    return m_svcLocator;
-  }
+  inline SmartIF<ISvcLocator>& serviceLocator() const override { return m_svcLocator; }
 
   /// virtual destructor
   ~ServiceManager() override;
@@ -74,26 +63,26 @@ public:
   const std::list<IService*>& getServices() const override;
 
   /// implementation of ISvcLocation::existsService
-  bool existsService(const std::string& name) const override;
+  bool existsService( const std::string& name ) const override;
 
   /// implementation of ISvcManager::addService
-  StatusCode addService(IService* svc, int prio = DEFAULT_SVC_PRIORITY) override;
+  StatusCode addService( IService* svc, int prio = DEFAULT_SVC_PRIORITY ) override;
   /// implementation of ISvcManager::addService
-  StatusCode addService(const Gaudi::Utils::TypeNameString& typeName, int prio = DEFAULT_SVC_PRIORITY) override;
+  StatusCode addService( const Gaudi::Utils::TypeNameString& typeName, int prio = DEFAULT_SVC_PRIORITY ) override;
   /// implementation of ISvcManager::removeService
-  StatusCode removeService(IService* svc) override;
+  StatusCode removeService( IService* svc ) override;
   /// implementation of ISvcManager::removeService
-  StatusCode removeService(const std::string& name) override;
+  StatusCode removeService( const std::string& name ) override;
 
   /// implementation of ISvcManager::declareSvcType
-  StatusCode declareSvcType(const std::string& svcname, const std::string& svctype) override;
+  StatusCode declareSvcType( const std::string& svcname, const std::string& svctype ) override;
 
-  /// implementation of ISvcManager::createService 
-  /// NOTE: as this returns a &, we must guarantee 
-  ///       that once created, these SmartIF remain 
+  /// implementation of ISvcManager::createService
+  /// NOTE: as this returns a &, we must guarantee
+  ///       that once created, these SmartIF remain
   ///       pinned in their location, thus constraining
   ///       the underlying implementation...
-  SmartIF<IService>& createService(const Gaudi::Utils::TypeNameString& nametype) override;
+  SmartIF<IService>& createService( const Gaudi::Utils::TypeNameString& nametype ) override;
 
   /// Initialization (from CONFIGURED to INITIALIZED).
   StatusCode initialize() override;
@@ -110,70 +99,75 @@ public:
   StatusCode restart() override;
 
   /// manage priorities of services
-  int getPriority(const std::string& name) const override;
-  StatusCode setPriority(const std::string& name, int pri) override;
+  int getPriority( const std::string& name ) const override;
+  StatusCode setPriority( const std::string& name, int pri ) override;
 
   /// Get the value of the initialization loop check flag.
   bool loopCheckEnabled() const override;
   /// Set the value of the initialization loop check flag.
-  void setLoopCheckEnabled(bool en) override;
+  void setLoopCheckEnabled( bool en ) override;
 
   /// Return the name of the manager (implementation of INamedInterface)
-  const std::string &name() const override {
+  const std::string& name() const override
+  {
     static std::string _name = "ServiceManager";
     return _name;
   }
 
   /// Returns a smart pointer to a service.
-  SmartIF<IService> &service(const Gaudi::Utils::TypeNameString &typeName, const bool createIf = true) override;
+  SmartIF<IService>& service( const Gaudi::Utils::TypeNameString& typeName, const bool createIf = true ) override;
 
   /// Returns a smart pointer to the requested interface of a service.
   template <typename T>
-  inline SmartIF<T> service(const Gaudi::Utils::TypeNameString &typeName, const bool createIf = true) {
-    return SmartIF<T>{service(typeName, createIf)};
+  inline SmartIF<T> service( const Gaudi::Utils::TypeNameString& typeName, const bool createIf = true )
+  {
+    return SmartIF<T>{service( typeName, createIf )};
   }
 
-#if !defined(GAUDI_V22_API) || defined(G22_NEW_SVCLOCATOR)
+#if !defined( GAUDI_V22_API ) || defined( G22_NEW_SVCLOCATOR )
   using ISvcManager::createService;
   using ISvcManager::addService;
 #endif
 
 private:
-
-  inline ListSvc::iterator find(const std::string &name) {
-    boost::lock_guard<boost::recursive_mutex> lck(m_gLock);      
-    return std::find(m_listsvc.begin(), m_listsvc.end(), name);
+  inline ListSvc::iterator find( const std::string& name )
+  {
+    boost::lock_guard<boost::recursive_mutex> lck( m_gLock );
+    return std::find( m_listsvc.begin(), m_listsvc.end(), name );
   }
-  inline ListSvc::const_iterator find(const std::string &name) const {
-    boost::lock_guard<boost::recursive_mutex> lck(m_gLock);      
-    return std::find(m_listsvc.begin(), m_listsvc.end(), name);
+  inline ListSvc::const_iterator find( const std::string& name ) const
+  {
+    boost::lock_guard<boost::recursive_mutex> lck( m_gLock );
+    return std::find( m_listsvc.begin(), m_listsvc.end(), name );
   }
-  inline ListSvc::iterator find(const IService *ptr) {
-    boost::lock_guard<boost::recursive_mutex> lck(m_gLock);      
-    return std::find(m_listsvc.begin(), m_listsvc.end(), ptr);
+  inline ListSvc::iterator find( const IService* ptr )
+  {
+    boost::lock_guard<boost::recursive_mutex> lck( m_gLock );
+    return std::find( m_listsvc.begin(), m_listsvc.end(), ptr );
   }
-  inline ListSvc::const_iterator find(const IService *ptr) const {
-    boost::lock_guard<boost::recursive_mutex> lck(m_gLock);      
-    return std::find(m_listsvc.begin(), m_listsvc.end(), ptr);
+  inline ListSvc::const_iterator find( const IService* ptr ) const
+  {
+    boost::lock_guard<boost::recursive_mutex> lck( m_gLock );
+    return std::find( m_listsvc.begin(), m_listsvc.end(), ptr );
   }
 
 private:
-  ListSvc       m_listsvc;     ///< List of service maintained by ServiceManager
-                               ///  This contains SmartIF<T> for all services -- 
-                               ///  and because there can be SmartIF<T>& 'out there' that
-                               ///  refer to these specific SmarIF<T>, we 
-                               ///  *unfortunately* must guarantee that they _never_ move 
-                               ///  after creation. Hence, we cannot use a plain std::vector
-                               ///  here, as that may cause relocation and/or swapping of 
-                               ///  SmartIF<T>'s, and then the already handed out references
-                               ///  may refer to the wrong item.... Note that we could use
-                               ///  an std::vector<std::unique_ptr<ServiceItem>> (sometimes known
-                               ///  as 'stable vector') as then the individual ServiceItems 
-                               ///  would stay pinned in their original location, but that 
-                               ///  would put ServiceItem on the heap...
-                               ///  And maybe I'm way too paranoid...
-  MapType       m_maptype;     ///< Map of service name and service type
-  bool          m_loopCheck = true;   ///< Check for service initialization loops
+  ListSvc m_listsvc;       ///< List of service maintained by ServiceManager
+                           ///  This contains SmartIF<T> for all services --
+                           ///  and because there can be SmartIF<T>& 'out there' that
+                           ///  refer to these specific SmarIF<T>, we
+                           ///  *unfortunately* must guarantee that they _never_ move
+                           ///  after creation. Hence, we cannot use a plain std::vector
+                           ///  here, as that may cause relocation and/or swapping of
+                           ///  SmartIF<T>'s, and then the already handed out references
+                           ///  may refer to the wrong item.... Note that we could use
+                           ///  an std::vector<std::unique_ptr<ServiceItem>> (sometimes known
+                           ///  as 'stable vector') as then the individual ServiceItems
+                           ///  would stay pinned in their original location, but that
+                           ///  would put ServiceItem on the heap...
+                           ///  And maybe I'm way too paranoid...
+  MapType m_maptype;       ///< Map of service name and service type
+  bool m_loopCheck = true; ///< Check for service initialization loops
 
   /// Pointer to the application IService interface.
   SmartIF<IService> m_appSvc;
@@ -181,18 +175,16 @@ private:
   /// List of pointers to the know services used to implement getServices()
   mutable std::list<IService*> m_listOfPtrs;
 
-  GaudiUtils::Map<InterfaceID, SmartIF<IInterface> > m_defaultImplementations;
+  GaudiUtils::Map<InterfaceID, SmartIF<IInterface>> m_defaultImplementations;
 
   /// Mutex to synchronize shared service initialization between threads
   typedef boost::recursive_mutex Mutex_t;
   typedef boost::lock_guard<Mutex_t> LockGuard_t;
 
   mutable Mutex_t m_gLock;
-  mutable std::map<std::string, std::unique_ptr<Mutex_t> > m_lockMap;
-  
+  mutable std::map<std::string, std::unique_ptr<Mutex_t>> m_lockMap;
 
 private:
   void dump() const;
-
 };
-#endif  // GAUDISVC_ServiceManager_H
+#endif // GAUDISVC_ServiceManager_H

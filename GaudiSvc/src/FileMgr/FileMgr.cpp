@@ -38,19 +38,19 @@ constexpr struct to_name_t {
 } to_name {} ;
 
 constexpr struct select1st_t {
-    template <typename T, typename S> 
+    template <typename T, typename S>
     const T& operator()(const std::pair<T,S>& p) const { return p.first; }
 } select1st {} ;
 
 constexpr struct select2nd_t {
-    template <typename T, typename S> 
+    template <typename T, typename S>
     const S& operator()(const std::pair<T,S>& p) const { return p.second; }
 } select2nd {} ;
 
 template <typename InputIterator, typename OutputIterator, typename UnaryOperation, typename UnaryPredicate>
 OutputIterator transform_if( InputIterator first, InputIterator last,
                              OutputIterator result,
-                             UnaryOperation op, 
+                             UnaryOperation op,
                              UnaryPredicate pred) {
     while (first != last) {
         if (pred(*first)) *result++ = op(*first);
@@ -62,7 +62,7 @@ OutputIterator transform_if( InputIterator first, InputIterator last,
 template <typename InputIterator, typename OutputIterator, typename UnaryOperation, typename UnaryPredicate>
 OutputIterator transform_copy_if( InputIterator first, InputIterator last,
                                   OutputIterator result,
-                                  UnaryOperation op, 
+                                  UnaryOperation op,
                                   UnaryPredicate pred) {
     while (first != last) {
         auto t = op(*first);
@@ -75,27 +75,9 @@ OutputIterator transform_copy_if( InputIterator first, InputIterator last,
 }
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-FileMgr::FileMgr(const std::string& name, ISvcLocator* svc)
-  : base_class( name, svc )
-{
-
-   declareProperty("LogFile",m_logfile="");
-   declareProperty("PrintSummary",m_printSummary=false);
-   declareProperty("LoadROOTHandler", m_loadRootHandler=true);
-   declareProperty("LoadPOSIXHandler", m_loadPosixHandler=true);
-
-   declareProperty("TSSL_UserProxy", m_ssl_proxy="X509");
-   declareProperty("TSSL_CertDir", m_ssl_cert="X509");
-
-   m_lastErrS = "";
-
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
 FileMgr::~FileMgr() {
-    // Where do the new-ed FileAttr get deleted? 
-    // they get pushed into m_descriptors, but m_attr is presumably 
+    // Where do the new-ed FileAttr get deleted?
+    // they get pushed into m_descriptors, but m_attr is presumably
     // where they _also_ should be pushed in order to track ownership...
 }
 
@@ -103,21 +85,6 @@ FileMgr::~FileMgr() {
 
 StatusCode
 FileMgr::initialize() {
-
-  // Super ugly hack to make sure we have the OutputLevel set first, so we
-  // can see DEBUG printouts in update handlers.
-  auto jos = serviceLocator()->service<IJobOptionsSvc>( "JobOptionsSvc", true );
-  const auto *props = ( jos ? jos->getProperties( name() ) : nullptr );
-  if (props) {
-    auto prop = std::find_if( std::begin(*props), std::end(*props),
-                              [&](const Property* p) { 
-                                  return p->name() == "OutputLevel";
-    });
-    if (prop!=std::end(*props)) {
-      setProperty( **prop ).ignore();
-    }
-  }
-
   StatusCode status = Service::initialize();
 
   if (status.isFailure()) {
@@ -327,7 +294,7 @@ FileMgr::deregHandler( const IoTech& tech ) {
 	  << " as it hasn't been registered!"
 	  << endmsg;
     return StatusCode::FAILURE;
-  } 
+  }
 
   m_handlers.erase(itr);
   return StatusCode::SUCCESS;
@@ -445,7 +412,7 @@ FileMgr::open( const IoTech& tech, const std::string& caller,
 
       if (! fa->isShared()) shareable = false;
 
-      //      if ( shareable && accessMatch(fa->flags(),flags) ) 
+      //      if ( shareable && accessMatch(fa->flags(),flags) )
       if ( shareable && fa->flags().match(flags,false) ) {
 
             ON_DEBUG
@@ -501,7 +468,7 @@ FileMgr::open( const IoTech& tech, const std::string& caller,
 
   //@TODO/@FIXME: should this not be pushed into m_attr???
   // eg. m_attr.emplace_back( new FileAttr(fd,fname,desc,tech,flags,ptr,true,shared) );
-  //     FileAttr* fa = m_attr.back().get(); 
+  //     FileAttr* fa = m_attr.back().get();
   FileAttr* fa = new FileAttr(fd,fname,desc,tech,flags,ptr,true,shared);
 
   ON_DEBUG
@@ -595,8 +562,8 @@ FileMgr::close( Fd fd, const std::string& caller ) {
 
   // find how many times this file is open
   auto fitr = m_files.equal_range(fa->name());
-  int i = std::count_if(fitr.first, fitr.second, [&](fileMap::const_reference f) { 
-                        return f.second->fd()==fd; } ); 
+  int i = std::count_if(fitr.first, fitr.second, [&](fileMap::const_reference f) {
+                        return f.second->fd()==fd; } );
 
   ON_VERBOSE
     verbose() << "   ref count: "  << i
@@ -895,7 +862,7 @@ FileMgr::reopen(void* vp, const IoFlags& flags, const std::string& caller) {
 
   reopen_t r = -1;
 
-  auto itr = std::find_if( std::begin(m_files), std::end(m_files), 
+  auto itr = std::find_if( std::begin(m_files), std::end(m_files),
                            [&](fileMap::const_reference f) {
                                return f.second->fptr() == vp ; } );
   if (itr == m_files.end()) {
@@ -1033,7 +1000,7 @@ int
 FileMgr::getFiles(std::vector<std::string>& files, bool op) const {
 
   files.clear();
-  auto not_in_files = [&](const std::string& i) { return std::none_of( std::begin(files), std::end(files), 
+  auto not_in_files = [&](const std::string& i) { return std::none_of( std::begin(files), std::end(files),
                                                                        [&](const std::string& j) { return j==i; } ); };
   transform_copy_if( std::begin(m_files), std::end(m_files), std::back_inserter(files),
                      to_name,
@@ -1071,14 +1038,14 @@ FileMgr::getFiles(const IoTech& tech, vector<string>& files, bool op) const {
   files.clear();
   transform_if( std::begin(m_files), std::end(m_files), std::back_inserter(files),
                 to_name,
-                [&](fileMap::const_reference f) { return f.second->tech() == tech && 
+                [&](fileMap::const_reference f) { return f.second->tech() == tech &&
                                                   std::none_of( std::begin(files), std::end(files), [&](const std::string& j) { return j==f.first; } ); } );
 
   if (!op) {
     transform_if( std::begin(m_oldFiles), std::end(m_oldFiles), std::back_inserter(files),
                   to_name,
                   [&](const FileAttr* f) { return f->tech() == tech &&
-                                                  std::none_of( std::begin(files), std::end(files), [&](const std::string& j) { return j == f->name(); } ) ; } ); 
+                                                  std::none_of( std::begin(files), std::end(files), [&](const std::string& j) { return j == f->name(); } ) ; } );
   }
   return files.size();
 
@@ -1138,7 +1105,7 @@ FileMgr::getFiles(const IoTech& tech, const IoFlags& flags,
 
   files.clear();
 
-  auto matches_tech_and_flags = [&](const FileAttr* f) { return ( f->tech() == tech || tech == UNKNOWN ) 
+  auto matches_tech_and_flags = [&](const FileAttr* f) { return ( f->tech() == tech || tech == UNKNOWN )
                                                              && f->flags() == flags ; } ;
 
   transform_copy_if( std::begin(m_files), std::end(m_files), std::back_inserter(files),
@@ -1160,7 +1127,7 @@ FileMgr::getFiles(const IoTech& tech, const IoFlags& flags,
 int
 FileMgr::getFd(vector<Fd>& fd) const {
 
-  std::transform( std::begin(m_descriptors), std::end(m_descriptors), 
+  std::transform( std::begin(m_descriptors), std::end(m_descriptors),
                   std::back_inserter(fd), select1st );
   return m_descriptors.size();
 
@@ -1195,9 +1162,9 @@ FileMgr::getFd(const IoTech& tech, const IoFlags& flags, vector<Fd>& fd) const {
   fd.clear();
   transform_if( m_descriptors.begin(), m_descriptors.end(),
                 std::back_inserter(fd), select1st,
-                [&](const std::pair<Fd,FileAttr*>& d) { 
+                [&](const std::pair<Fd,FileAttr*>& d) {
                       return (d.second->tech() == tech || tech == UNKNOWN) &&
-                             ( d.second->flags() == flags ); 
+                             ( d.second->flags() == flags );
   } );
   return fd.size();
 }
@@ -1207,9 +1174,9 @@ FileMgr::getFd(const IoTech& tech, const IoFlags& flags, vector<Fd>& fd) const {
 const std::string&
 FileMgr::fname(const Io::Fd& fd) const {
 
-  auto itr = std::find_if( std::begin(m_files), std::end(m_files), 
+  auto itr = std::find_if( std::begin(m_files), std::end(m_files),
                            [&](fileMap::const_reference f) { return f.second->fd() == fd; } );
-  return (itr!=std::end(m_files)) ? itr->second->name() : s_empty; 
+  return (itr!=std::end(m_files)) ? itr->second->name() : s_empty;
 
 }
 
@@ -1218,7 +1185,7 @@ FileMgr::fname(const Io::Fd& fd) const {
 const std::string&
 FileMgr::fname(void* vp) const {
 
-  auto itr = std::find_if( m_files.begin(), m_files.end(), 
+  auto itr = std::find_if( m_files.begin(), m_files.end(),
                           [&](fileMap::const_reference f) {
     return  f.second->fptr() == vp;
   });
@@ -1375,7 +1342,7 @@ FileMgr::regAction(bfcn_action_t bf, const Io::Action& a, const Io::IoTech& t,
 	  << System::typeinfoName(bf.target_type())
 	  << " for tech " << t << endmsg;
 
-  m_actions[t][a].emplace_back(bf, (!d.empty()) ? d 
+  m_actions[t][a].emplace_back(bf, (!d.empty()) ? d
                                                 : System::typeinfoName(bf.target_type()));
   return StatusCode::SUCCESS;
 
@@ -1431,7 +1398,7 @@ FileMgr::execAction( Io::FileAttr* fa, const std::string& caller,
     s2 = execActs(fa, caller, a, itr->second);
   }
 
-  return (s1.isFailure() || s2.isFailure()) ? StatusCode::FAILURE 
+  return (s1.isFailure() || s2.isFailure()) ? StatusCode::FAILURE
                                             : StatusCode::SUCCESS;
 }
 

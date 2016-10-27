@@ -15,7 +15,7 @@
 
 #include "GaudiKernel/IJobOptionsSvc.h"
 
-#include "GaudiKernel/PropertyMgr.h"
+#include "GaudiKernel/PropertyHolder.h"
 #include "GaudiKernel/Service.h"
 
 #include "GaudiKernel/IConverter.h"

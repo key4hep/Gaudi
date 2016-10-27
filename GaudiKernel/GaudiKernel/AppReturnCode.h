@@ -9,30 +9,31 @@
 #include "GaudiKernel/IProperty.h"
 #include "GaudiKernel/Property.h"
 
-namespace Gaudi {
+namespace Gaudi
+{
   /// ApplicationMgr return code definitions.
-  namespace ReturnCode {
+  namespace ReturnCode
+  {
 
-    constexpr int Success                  = 0x00;
+    constexpr int Success = 0x00;
 
-    constexpr int GenericFailure           = 0x01;
+    constexpr int GenericFailure = 0x01;
 
     /// @defgroup loop_stop Loop termination
     /// Error codes for abnormal loop termination.
     /// @{
-    constexpr int FailInput                = 0x02; //< Error opening file
-    constexpr int AlgorithmFailure         = 0x03; //<
-    constexpr int ScheduledStop            = 0x04; //< Loop terminated because of user request
-    constexpr int IncidentFailure          = 0x05; //< Fatal error in Incident handling
-    constexpr int UnhandledException       = 0x06; //<
-    constexpr int CorruptedInput           = 0x10; //< Input file showed a corruption
+    constexpr int FailInput          = 0x02; //< Error opening file
+    constexpr int AlgorithmFailure   = 0x03; //<
+    constexpr int ScheduledStop      = 0x04; //< Loop terminated because of user request
+    constexpr int IncidentFailure    = 0x05; //< Fatal error in Incident handling
+    constexpr int UnhandledException = 0x06; //<
+    constexpr int CorruptedInput     = 0x10; //< Input file showed a corruption
     /// @}
     /// @{
     /// Error codes for operation failures.
-    constexpr int FinalizationFailure      = 0x0b;
+    constexpr int FinalizationFailure = 0x0b;
     /// @}
-    constexpr int SignalOffset             = 0x80; //< Offset for signal-related return codes
-
+    constexpr int SignalOffset = 0x80; //< Offset for signal-related return codes
   }
 
   /**
@@ -47,13 +48,14 @@ namespace Gaudi {
    *
    * @return SUCCESS if it was possible to set the return code or the return code was already set
    */
-  inline StatusCode setAppReturnCode(SmartIF<IProperty> &appmgr, int value, bool force = false) {
-    if (appmgr) {
-      IntegerProperty returnCode("ReturnCode", 0);
-      if (appmgr->getProperty(&returnCode).isSuccess()) {
-        if (returnCode.value() == 0 || force) {
-          returnCode.setValue(value);
-          return appmgr->setProperty(returnCode);
+  inline StatusCode setAppReturnCode( SmartIF<IProperty>& appmgr, int value, bool force = false )
+  {
+    if ( appmgr ) {
+      Gaudi::Property<int> returnCode( "ReturnCode", 0 );
+      if ( appmgr->getProperty( &returnCode ).isSuccess() ) {
+        if ( returnCode.value() == 0 || force ) {
+          returnCode.setValue( value );
+          return appmgr->setProperty( returnCode );
         }
         // Consider is a success if we do already have an error code.
         return StatusCode::SUCCESS;
@@ -67,11 +69,11 @@ namespace Gaudi {
    *
    * @return the return code or 0 if it was not possible to get it
    */
-  inline int getAppReturnCode(const SmartIF<IProperty> &appmgr) {
-    if (appmgr) {
-      IntegerProperty returnCode("ReturnCode", 0);
-      if (appmgr->getProperty(&returnCode).isSuccess())
-        return returnCode.value();
+  inline int getAppReturnCode( const SmartIF<IProperty>& appmgr )
+  {
+    if ( appmgr ) {
+      Gaudi::Property<int> returnCode( "ReturnCode", 0 );
+      if ( appmgr->getProperty( &returnCode ).isSuccess() ) return returnCode.value();
     }
     return 0;
   }

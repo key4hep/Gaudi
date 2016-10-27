@@ -21,15 +21,6 @@
 
 
 //*************************************************************************//
-
-PartPropSvc::PartPropSvc( const std::string& name_, ISvcLocator* svc )
-  : base_class( name_, svc )
-{
-  declareProperty( "InputFile", m_pdtFiles="PDGTABLE.MeV");
-}
-
-//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
-
 StatusCode
 PartPropSvc::initialize() {
 
@@ -51,7 +42,7 @@ PartPropSvc::initialize() {
   for (auto it = tokens.begin(); it != tokens.end(); ++it) {
 
     tokenizer tok2(*it, sep_eq);
-    int nToks(distance(tok2.begin(), tok2.end()));    
+    int nToks(distance(tok2.begin(), tok2.end()));
 
     auto it2 = tok2.begin();
     const std::string fname = *it2;
@@ -138,7 +129,7 @@ PartPropSvc::parseTableType(const std::string& typ)
                               std::make_pair( "HERWIG" , &HepPDT::addHerwigParticles ),
                               std::make_pair( "ISAJET" , &HepPDT::addIsajetParticles ),
                               std::make_pair( "QQ"     , &HepPDT::addQQParticles ) };
-  auto i = std::find_if( std::begin(table), std::end(table), 
+  auto i = std::find_if( std::begin(table), std::end(table),
                          [&](const std::pair<const char*,inputFunPtr>& p)
                          { return typ == p.first; } );
   if ( i == std::end(table) ) {

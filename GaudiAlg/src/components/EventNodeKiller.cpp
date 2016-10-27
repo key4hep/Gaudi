@@ -11,17 +11,6 @@
 // Declaration of the Algorithm Factory
 DECLARE_COMPONENT( EventNodeKiller )
 
-
-//=============================================================================
-// Standard constructor, initializes variables
-//=============================================================================
-EventNodeKiller::EventNodeKiller( const std::string& name,
-                                  ISvcLocator* pSvcLocator)
-  : GaudiAlgorithm ( name , pSvcLocator )
-{
-  declareProperty( "Nodes", m_nodes );
-}
-
 //=============================================================================
 // Main execution
 //=============================================================================

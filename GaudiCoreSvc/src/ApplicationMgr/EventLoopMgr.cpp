@@ -27,19 +27,6 @@ DECLARE_COMPONENT(EventLoopMgr)
 #define VERMSG ON_VERBOSE verbose()
 
 //--------------------------------------------------------------------------------------------
-// Standard Constructor
-//--------------------------------------------------------------------------------------------
-EventLoopMgr::EventLoopMgr(const std::string& nam, ISvcLocator* svcLoc)
-: MinimalEventLoopMgr(nam, svcLoc)
-{
-  // Declare properties
-  declareProperty("HistogramPersistency", m_histPersName );
-  declareProperty("EvtSel", m_evtsel );
-  declareProperty("Warnings",m_warnings=true,
-		  "Set this property to false to suppress warning messages");
-}
-
-//--------------------------------------------------------------------------------------------
 // Standard Destructor
 //--------------------------------------------------------------------------------------------
 EventLoopMgr::~EventLoopMgr()   {

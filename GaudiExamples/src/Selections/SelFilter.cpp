@@ -31,91 +31,65 @@ namespace Gaudi
       virtual StatusCode execute() override
       {
 
-        typedef Gaudi::NamedRange_<Gaudi::Examples::MyTrack::ConstVector>     Range ;
+        typedef Gaudi::NamedRange_<Gaudi::Examples::MyTrack::ConstVector> Range;
 
-        static Rndm::Numbers  flat    ( randSvc () , Rndm::Flat    ( -1 , 1 ) ) ;
+        static Rndm::Numbers flat( randSvc(), Rndm::Flat( -1, 1 ) );
 
-        if      ( exist<Gaudi::Examples::MyTrack::Selection> ( m_input ) )
-        { info() << "Selection at '" << m_input << "'" << endmsg ; }
-        else if ( exist<Gaudi::Examples::MyTrack::Container> ( m_input ) )
-        { info() << "Container at '" << m_input << "'" << endmsg ; }
+        if ( exist<Gaudi::Examples::MyTrack::Selection>( m_input ) ) {
+          info() << "Selection at '" << m_input.value() << "'" << endmsg;
+        } else if ( exist<Gaudi::Examples::MyTrack::Container>( m_input ) ) {
+          info() << "Container at '" << m_input.value() << "'" << endmsg;
+        }
 
-        if ( !exist<Range> ( m_input ) )
-        { err () << "No Range is available at location " << m_input << endmsg ; }
+        if ( !exist<Range>( m_input ) ) {
+          err() << "No Range is available at location " << m_input.value() << endmsg;
+        }
 
         // get input data in 'blind' way
-        Range range = get<Range> ( m_input ) ;
+        Range range = get<Range>( m_input );
 
         // create new selection
-        Gaudi::Examples::MyTrack::Selection* sample =
-          new Gaudi::Examples::MyTrack::Selection()  ;
+        Gaudi::Examples::MyTrack::Selection* sample = new Gaudi::Examples::MyTrack::Selection();
 
-        const double pxCut =     flat () ;
-        const double pyCut =     flat () ;
+        const double pxCut = flat();
+        const double pyCut = flat();
 
         // select particles with 'large' px
-        sample -> insert
-          ( range.begin () ,
-            range.end   () ,
-	    [pxCut](const Gaudi::Examples::MyTrack* track) { return track->px() > pxCut; });
+        sample->insert( range.begin(), range.end(),
+                        [pxCut]( const Gaudi::Examples::MyTrack* track ) { return track->px() > pxCut; } );
 
-        const size_t size = sample -> size() ;
+        const size_t size = sample->size();
 
         // remove the particles with 'small' py
-        sample -> erase( [pyCut](const Gaudi::Examples::MyTrack* track) { return track->py() < pyCut; } );
+        sample->erase( [pyCut]( const Gaudi::Examples::MyTrack* track ) { return track->py() < pyCut; } );
 
-        info () << "Sample size is "
-                << range.size()
-                << "/" << size
-                << "/" << sample -> size()  << endmsg ;
+        info() << "Sample size is " << range.size() << "/" << size << "/" << sample->size() << endmsg;
 
         // register it in TES
-        put ( sample , name() ) ;
+        put( sample, name() );
 
-        return StatusCode::SUCCESS ;
+        return StatusCode::SUCCESS;
       }
       // ======================================================================
     public:
       // ======================================================================
-      /** standard constructor
-       *  @param name the algorithm instance name
-       *  @param pSvc pointer to Service Locator
-       */
-      SelFilter ( const std::string& name ,   //    the algorithm instance name
-                  ISvcLocator*       pSvc )   // pointer to the Service Locator
-        : GaudiAlgorithm ( name , pSvc )
-        , m_input ()
-      {
-        declareProperty
-          ( "Input" , m_input ,
-            "TES location of input container" ) ;
-      }
-      /// virtual (and protected) destructor
-      ~SelFilter() override {}
+      /// Constructor
+      using GaudiAlgorithm::GaudiAlgorithm;
+      /// destructor
+      ~SelFilter() override = default;
       // ======================================================================
     private:
       // ======================================================================
-      /// the default constructor is disabled
-      SelFilter () ;                                  // no default constructor
-      /// copy constructor is disabled
-      SelFilter ( const SelFilter& ) ;                   // no copy constructor
-      /// assignement operator is disabled
-      SelFilter& operator=( const SelFilter& ) ;     // no assignement operator
+      Gaudi::Property<std::string> m_input{this, "Input", "", "TES location of input container"};
       // ======================================================================
-    private:
-      // ======================================================================
-      /// the input  location
-      std::string m_input  ;                             // the input  location
-      // ======================================================================
-    } ;
+    };
     // ========================================================================
   } // end of namespace Gaudi::Examples
 } // end of namespace Gaudi
 // ============================================================================
 /// The factory (needed for instantiation)
 using Gaudi::Examples::SelFilter;
-DECLARE_COMPONENT(SelFilter)
+DECLARE_COMPONENT( SelFilter )
 // ============================================================================
 // The END
 // ============================================================================
-

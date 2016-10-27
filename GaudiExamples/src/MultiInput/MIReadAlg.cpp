@@ -20,12 +20,6 @@ using namespace Gaudi::Examples::MultiInput;
 
 DECLARE_COMPONENT(ReadAlg)
 
-ReadAlg::ReadAlg(const std::string& name, ISvcLocator* pSvcLoc):
-  Algorithm(name, pSvcLoc)  {
-  declareProperty("AddressesFile", m_addressfile,
-      "File containing the address details of the extra data.");
-}
-
 //--------------------------------------------------------------------
 // Initialize
 //--------------------------------------------------------------------
@@ -34,7 +28,7 @@ StatusCode ReadAlg::initialize() {
   if (sc.isFailure()) return sc;
 
   if (msgLevel(MSG::DEBUG))
-    debug() << "Reading " << m_addressfile << endmsg;
+    debug() << "Reading " << m_addressfile.value() << endmsg;
   m_addresses.clear();
   std::ifstream input{m_addressfile};
   while (input.good()) {

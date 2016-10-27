@@ -8,7 +8,7 @@
 #include "GaudiKernel/IToolSvc.h"
 #include "GaudiKernel/IDataStreamTool.h"
 #include "GaudiKernel/IAddressCreator.h"
-#include "GaudiKernel/PropertyMgr.h"
+#include "GaudiKernel/PropertyHolder.h"
 #include "GaudiKernel/EventSelectorDataStream.h"
 
 #include "EventSelector.h"
@@ -16,17 +16,6 @@
 #include <climits>
 
 DECLARE_COMPONENT(EventSelector)
-
-// Standard constructor
-EventSelector::EventSelector(const std::string& name, ISvcLocator* svcloc )
-  : base_class( name, svcloc)
-{
-  declareProperty( "Input",      m_streamSpecs);
-  declareProperty( "FirstEvent", m_firstEvent);
-  declareProperty( "EvtMax",     m_evtMax);
-  declareProperty( "PrintFreq",  m_evtPrintFrequency);
-  declareProperty( "StreamManager",  m_streamManager);
-}
 
 StatusCode
 EventSelector::resetCriteria(const std::string& /* criteria */,
@@ -379,7 +368,7 @@ StatusCode EventSelector::initialize()    {
   auto prio = mgr->getPriority("ToolSvc");
   mgr->setPriority(name(),prio+1).ignore();
 
-  status = m_toolSvc->retrieveTool(m_streamManager.c_str(), m_streamtool, this);
+  status = m_toolSvc->retrieveTool(m_streamManager, m_streamtool, this);
 
   if( status.isFailure() ) {
     error() << "Error initializing "
@@ -442,4 +431,3 @@ StatusCode EventSelector::finalize()    {
 
   return Service::finalize();
 }
-

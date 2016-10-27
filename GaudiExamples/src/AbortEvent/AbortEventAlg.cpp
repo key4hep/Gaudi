@@ -17,22 +17,6 @@
 DECLARE_COMPONENT( AbortEventAlg )
 
 //=============================================================================
-// Standard constructor, initializes variables
-//=============================================================================
-AbortEventAlg::AbortEventAlg( const std::string& name,
-                            ISvcLocator* pSvcLocator)
-  : GaudiAlgorithm ( name , pSvcLocator ),
-  m_counter(0)
-{
-  declareProperty("AbortedEventNumber", m_count = 3,
-                  "At which event to trigger an abort");
-}
-//=============================================================================
-// Destructor
-//=============================================================================
-AbortEventAlg::~AbortEventAlg() {}
-
-//=============================================================================
 // Initialization
 //=============================================================================
 StatusCode AbortEventAlg::initialize() {

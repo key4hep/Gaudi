@@ -14,15 +14,15 @@
 namespace {
 
 constexpr struct select2nd_t  {
-    template<typename S, typename T> 
+    template<typename S, typename T>
     const T& operator()(const std::pair<S,T>& p) const { return p.second; }
 } select2nd {} ;
 
-template <typename InputIterator, typename OutputIterator, 
+template <typename InputIterator, typename OutputIterator,
           typename UnaryOperation, typename UnaryPredicate>
 OutputIterator transform_copy_if( InputIterator first, InputIterator last,
                              OutputIterator result,
-                             UnaryOperation op, 
+                             UnaryOperation op,
                              UnaryPredicate pred) {
     while (first != last) {
         auto val = op(*first);
@@ -40,18 +40,6 @@ DECLARE_COMPONENT(IODataManager)
 enum { S_OK = StatusCode::SUCCESS, S_ERROR=StatusCode::FAILURE };
 
 static std::set<std::string>    s_badFiles;
-
-IODataManager::IODataManager(CSTR nam, ISvcLocator* svcloc)
-  : base_class(nam, svcloc)
-{
-  declareProperty("CatalogType",      m_catalogSvcName="Gaudi::MultiFileCatalog/FileCatalog");
-  declareProperty("UseGFAL",          m_useGFAL = true);
-  declareProperty("QuarantineFiles",  m_quarantine = true);
-  declareProperty("AgeLimit",         m_ageLimit = 2);
-  declareProperty("DisablePFNWarning", m_disablePFNWarning = false,
-                  "if set to True, we will not report when a file "
-                  "is opened by its physical name");
-}
 
 /// IService implementation: Db event selector override
 StatusCode IODataManager::initialize()  {
@@ -197,9 +185,9 @@ StatusCode IODataManager::reconnect(Entry* e)  {
       transform_copy_if( std::begin(m_connectionMap), std::end(m_connectionMap),
                          std::back_inserter(to_retire),
                          select2nd,
-                         [&](Entry* i) { 
+                         [&](Entry* i) {
                             IDataConnection* c = i->connection;
-                            return e->connection!=c && c->isConnected() && 
+                            return e->connection!=c && c->isConnected() &&
                                    !i->keepOpen && c->ageFile() > m_ageLimit;
                          });
       if ( !to_retire.empty() )  {
@@ -227,7 +215,7 @@ IIODataManager::Connection* IODataManager::connection(CSTR dataset) const  {
 
 StatusCode IODataManager::establishConnection(Connection* con)  {
   if ( !con )  return error("Severe logic bug: No connection object avalible.",true);
-  
+
   if ( con->isConnected() )  {
     con->resetAge();
     return S_OK;

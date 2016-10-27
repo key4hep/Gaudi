@@ -22,7 +22,7 @@ StatusCode THistSvc::regHist_i(T* hist, const std::string& id) {
   removeDoubleSlash( idr );
 
   if (idr.find("/") == idr.length()) {
-    m_log << MSG::ERROR << "Badly formed identifier \"" << idr << "\": "
+    error() << "Badly formed identifier \"" << idr << "\": "
         << "Must not end with a /" << endmsg;
     return StatusCode::FAILURE;
   }
@@ -31,7 +31,7 @@ StatusCode THistSvc::regHist_i(T* hist, const std::string& id) {
   TFile *f = nullptr;
   std::string stream,rem;
   if (!findStream(idr, stream, rem, f)) {
-    m_log << MSG::ERROR << "Could not register id: \"" << idr << "\""
+    error() << "Could not register id: \"" << idr << "\""
         << endmsg;
     return StatusCode::FAILURE;
   }
@@ -39,7 +39,7 @@ StatusCode THistSvc::regHist_i(T* hist, const std::string& id) {
   std::string uid = "/" + stream + "/" + rem;
   auto itr = m_uids.find(uid);
   if (itr != m_uids.end()) {
-    m_log << MSG::ERROR << "already registered an object with identifier \""
+    error() << "already registered an object with identifier \""
 	  << idr << "\"" << endmsg;
     return StatusCode::FAILURE;
   }
@@ -48,8 +48,8 @@ StatusCode THistSvc::regHist_i(T* hist, const std::string& id) {
   bool temp = false;
   if ( !f ) {
     temp = true;
-    if (m_log.level() <= MSG::DEBUG)
-      m_log << MSG::DEBUG << "Historgram with id \"" << idr << "\" is temporary"
+    if (msgLevel(MSG::DEBUG))
+      debug() << "Historgram with id \"" << idr << "\" is temporary"
 	    << endmsg;
   }
 
@@ -61,19 +61,19 @@ StatusCode THistSvc::regHist_i(T* hist, const std::string& id) {
   if (!temp && m_files.find(stream)->second.second == READ) {
 
     if (hist != 0) {
-      m_log << MSG::WARNING <<  "Registering id: \"" << idr
+      warning() <<  "Registering id: \"" << idr
 	    << "\" with non zero pointer!" << endmsg;
     }
 
     if (readHist_i(idr,hist).isFailure()) {
-      m_log << MSG::ERROR <<  "Unable to read in hist" << endmsg;
+      error() <<  "Unable to read in hist" << endmsg;
       return StatusCode::FAILURE;
     }
     to = dynamic_cast<TObject*>(hist);
     hid = THistID(uid,temp,to,f,m_files.find(stream)->second.second);
 
   } else if (hist == 0) {
-    m_log << MSG::ERROR << "Unable to read in hist with id: \""
+    error() << "Unable to read in hist with id: \""
 	  << idr << "\"" << endmsg;
     return StatusCode::FAILURE;
 
@@ -81,14 +81,14 @@ StatusCode THistSvc::regHist_i(T* hist, const std::string& id) {
 
     to = dynamic_cast<TObject*>(hist);
     if (to == 0) {
-      m_log << MSG::ERROR << "Could not dcast to TObject. id: \"" << idr
+      error() << "Could not dcast to TObject. id: \"" << idr
 	    << "\"" << endmsg;
       return StatusCode::FAILURE;
     }
 
     auto oitr = m_tobjs.find(to);
     if (oitr != m_tobjs.end()) {
-      m_log << MSG::ERROR << "already registered id: \"" << idr
+      error() << "already registered id: \"" << idr
 	    << "\" with identifier \"" << oitr->second.id << "\"" << endmsg;
       return StatusCode::FAILURE;
     }
@@ -103,7 +103,7 @@ StatusCode THistSvc::regHist_i(T* hist, const std::string& id) {
     } else if ( dynamic_cast<TGraph*>(hist) ) {
       dir->Append(hist);
     } else {
-      m_log << MSG::ERROR << "id: \"" << idr
+      error() << "id: \"" << idr
 	    << "\" is not a TH, TTree, or TGraph. Attaching it to current dir."
 	    << endmsg;
       dir->Append(hist);
@@ -118,8 +118,8 @@ StatusCode THistSvc::regHist_i(T* hist, const std::string& id) {
     fname = f->GetName();
   }
 
-  if (m_log.level() <= MSG::DEBUG) 
-    m_log << MSG::DEBUG << "Registering " << System::typeinfoName(typeid(*hist))
+  if (msgLevel(MSG::DEBUG))
+    debug() << "Registering " << System::typeinfoName(typeid(*hist))
 	  << " title: \"" << hist->GetTitle()
 	  << "\"  id: \"" << uid << "\"  dir: "
       //      << hist->GetDirectory()->GetPath() << "  "
@@ -138,7 +138,7 @@ StatusCode THistSvc::regHist_i(T* hist, const std::string& id) {
 //* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *//
 
 template <typename T>
-StatusCode 
+StatusCode
 THistSvc::getHist_i(const std::string& id, T*& hist, bool quiet) const {
   // id starts with "/": unique
 
@@ -151,7 +151,7 @@ THistSvc::getHist_i(const std::string& id, T*& hist, bool quiet) const {
     auto itr = m_uids.find(id);
     if (itr == m_uids.end()) {
       if (!quiet) {
-	m_log << MSG::ERROR << "Could not locate Hist with id \"" << idr << "\""
+	error() << "Could not locate Hist with id \"" << idr << "\""
 	      << endmsg;
       }
       hist = nullptr;
@@ -162,18 +162,18 @@ THistSvc::getHist_i(const std::string& id, T*& hist, bool quiet) const {
     if (!quiet) {
       hist = dynamic_cast<T*>(hid.obj);
       if ( !hist ) {
-	m_log << MSG::ERROR << "dcast failed, Hist id: \"" << idr << "\"" 
+	error() << "dcast failed, Hist id: \"" << idr << "\""
 	      << endmsg;
 	return StatusCode::FAILURE;
       }
-      if (m_log.level() <= MSG::VERBOSE) {
-	m_log << MSG::VERBOSE << "found unique Hist title: \"" 
+      if (msgLevel(MSG::VERBOSE)) {
+	verbose() << "found unique Hist title: \""
 	      << hist->GetTitle()
 	      << "\"  id: \"" << idr << "\"" << endmsg;
       }
     } else {
-      if (m_log.level() <= MSG::VERBOSE) {
-	m_log << MSG::VERBOSE << "found unique Hist id: \"" << idr 
+      if (msgLevel(MSG::VERBOSE)) {
+	verbose() << "found unique Hist id: \"" << idr
 	      << "\" type: \"" << hid.obj->IsA()->GetName() << "\""
 	      << endmsg;
       }
@@ -189,7 +189,7 @@ THistSvc::getHist_i(const std::string& id, T*& hist, bool quiet) const {
 
 
     if (mitr.first == mitr.second) {
-      m_log << MSG::ERROR << "Could not locate Hist with id \"" << idr << "\""
+      error() << "Could not locate Hist with id \"" << idr << "\""
 	    << endmsg;
       hist = nullptr;
       return StatusCode::FAILURE;
@@ -200,16 +200,16 @@ THistSvc::getHist_i(const std::string& id, T*& hist, bool quiet) const {
 	if (!quiet) {
 	  hist = dynamic_cast<T*>(hid.obj);
 	  if (hist == 0) {
-	    m_log << MSG::ERROR << "dcast failed" << endmsg;
+	    error() << "dcast failed" << endmsg;
 	    return StatusCode::FAILURE;
 	  }
-	  if (m_log.level() <= MSG::VERBOSE) {
-	    m_log << MSG::VERBOSE << "found Hist title: \"" << hist->GetTitle()
+	  if (msgLevel(MSG::VERBOSE)) {
+	    verbose() << "found Hist title: \"" << hist->GetTitle()
 		  << "\"  id: \"" << idr << "\"" << endmsg;
 	  }
 	} else {
-	  if (m_log.level() <= MSG::VERBOSE) {
-	    m_log << MSG::VERBOSE << "found Hist id: \"" << idr << "\" type: \""
+	  if (msgLevel(MSG::VERBOSE)) {
+	    verbose() << "found Hist id: \"" << idr << "\" type: \""
 		  << hid.obj->IsA()->GetName() << "\""
 		  << endmsg;
 	  }
@@ -218,14 +218,14 @@ THistSvc::getHist_i(const std::string& id, T*& hist, bool quiet) const {
       } else {
 	if (!quiet) {
 	  // return failure if trying to GET a single hist
-	  m_log << MSG::ERROR << "Multiple matches with id \"" << idr << "\"."
+	  error() << "Multiple matches with id \"" << idr << "\"."
 		<< " Further specifications required."
 		<< endmsg;
 	  hist = nullptr;
 	  return StatusCode::FAILURE;
 	} else {
 	  // return a SUCCESS if just INQUIRING
-	  m_log << MSG::INFO << "Found multiple matches with id \"" << idr 
+	  info() << "Found multiple matches with id \"" << idr
 	      << "\"" << endmsg;
 	  hist = nullptr;
 	  return StatusCode::SUCCESS;
@@ -254,7 +254,7 @@ THistSvc::readHist_i(const std::string& id, T*& hist) const {
   }
 
   if ( !file ) {
-    m_log << MSG::ERROR << "no associated file found" << endmsg;
+    error() << "no associated file found" << endmsg;
     return StatusCode::FAILURE;
   }
 
@@ -265,7 +265,7 @@ THistSvc::readHist_i(const std::string& id, T*& hist) const {
   fdir2 = fdir;
   while ( (dir=dirname(fdir)) != "" ) {
     if (! gDirectory->GetKey(dir.c_str())) {
-      m_log << MSG::ERROR << "Directory \"" << fdir2 << "\" doesnt exist in "
+      error() << "Directory \"" << fdir2 << "\" doesnt exist in "
 	    << file->GetName() << endmsg;
       return StatusCode::FAILURE;
     }
@@ -276,7 +276,7 @@ THistSvc::readHist_i(const std::string& id, T*& hist) const {
   gDirectory->GetObject(fdir.c_str(), to);
 
   if ( !to ) {
-    m_log << MSG::ERROR << "Could not get obj \"" << fdir << "\" in "
+    error() << "Could not get obj \"" << fdir << "\" in "
 	  << gDirectory->GetPath() << endmsg;
     return StatusCode::FAILURE;
   }
@@ -285,7 +285,7 @@ THistSvc::readHist_i(const std::string& id, T*& hist) const {
 
   hist = dynamic_cast<T*>(to);
   if ( !hist ) {
-    m_log << MSG::ERROR << "Could not convert \"" << idr << "\" to a "
+    error() << "Could not convert \"" << idr << "\" to a "
 	  << System::typeinfoName(typeid(*hist)) << " as is a "
 	  << to->IsA()->GetName()
 	  << endmsg;
@@ -293,8 +293,8 @@ THistSvc::readHist_i(const std::string& id, T*& hist) const {
   }
 
 
-  if (m_log.level() <= MSG::DEBUG) {
-    m_log << MSG::DEBUG << "Read in " << hist->IsA()->GetName() << "  \""
+  if (msgLevel(MSG::DEBUG)) {
+    debug() << "Read in " << hist->IsA()->GetName() << "  \""
 	  << hist->GetName() << "\" from file "
 	  << file->GetName() << endmsg;
     hist->Print();

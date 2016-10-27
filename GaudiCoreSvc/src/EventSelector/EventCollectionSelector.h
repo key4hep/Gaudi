@@ -12,17 +12,18 @@
 #define GAUDISVC_EventCollectionSelector_EventCollectionSelector_H 1
 
 // Include files
-#include "GaudiKernel/Service.h"
 #include "GaudiKernel/GenericAddress.h"
 #include "GaudiKernel/IEvtSelector.h"
 #include "GaudiKernel/NTuple.h"
+#include "GaudiKernel/Service.h"
 
 // Forward declarations
 class INTuple;
 class INTupleSvc;
 class IAddressCreator;
 class EventSelectorDataStream;
-template <class TYPE> class EventIterator;
+template <class TYPE>
+class EventIterator;
 
 /** Definition of class EventCollectionSelector
 
@@ -38,67 +39,60 @@ template <class TYPE> class EventIterator;
    @author Markus Frank
    @version 1.0
 */
-class EventCollectionSelector : public extends<Service,
-                                               IEvtSelector> {
+class EventCollectionSelector : public extends<Service, IEvtSelector>
+{
 public:
-  class MyContextType : public IEvtSelector::Context {
+  class MyContextType : public IEvtSelector::Context
+  {
   public:
-    std::string                    criteria;
-    NTuple::Tuple*                 tuple;
+    std::string criteria;
+    NTuple::Tuple* tuple;
     NTuple::Item<IOpaqueAddress*>* item;
-    IOpaqueAddress*                addressBuffer;
-    MyContextType(NTuple::Tuple* t, NTuple::Item<IOpaqueAddress*>* i)    {
+    IOpaqueAddress* addressBuffer;
+    MyContextType( NTuple::Tuple* t, NTuple::Item<IOpaqueAddress*>* i )
+    {
       addressBuffer = new GenericAddress();
       addressBuffer->addRef();
       tuple = t;
-      item = i;
+      item  = i;
     }
-    MyContextType(MyContextType* ctxt=nullptr)  {
+    MyContextType( MyContextType* ctxt = nullptr )
+    {
       addressBuffer = new GenericAddress();
       addressBuffer->addRef();
-      tuple = (ctxt) ? ctxt->tuple : nullptr;
-      item  = (ctxt) ? ctxt->item : nullptr;
+      tuple = ( ctxt ) ? ctxt->tuple : nullptr;
+      item  = ( ctxt ) ? ctxt->item : nullptr;
     }
-    MyContextType(const MyContextType& ctxt)
-      : IEvtSelector::Context(ctxt)
+    MyContextType( const MyContextType& ctxt ) : IEvtSelector::Context( ctxt )
     {
       addressBuffer = new GenericAddress();
       addressBuffer->addRef();
       tuple = ctxt.tuple;
       item  = ctxt.item;
     }
-    ~MyContextType() override {
-      addressBuffer->release();
-    }
-    void* identifier() const override {
-      return (void*)addressBuffer;
-    }
-    void setAddress(IOpaqueAddress* pAddr);
+    ~MyContextType() override { addressBuffer->release(); }
+    void* identifier() const override { return (void*)addressBuffer; }
+    void setAddress( IOpaqueAddress* pAddr );
   };
+
 protected:
   /// Reference to Tuple service
-  mutable SmartIF<INTupleSvc>      m_tupleSvc;
+  mutable SmartIF<INTupleSvc> m_tupleSvc;
   mutable SmartIF<IAddressCreator> m_pAddrCreator;
-  /// Name of the event collection service name
-  std::string              m_tupleSvcName;
-  /// Authentication string (if needed)
-  std::string              m_authentication;
-  /// Container name
-  std::string              m_cntName;
-  /// Item name
-  std::string              m_itemName;
-  /// Criteria
-  std::string              m_criteria;
-  /// Datafile name
-  std::string              m_database;
-  /// Database type identifier
-  std::string              m_dbType;
-  /// Database service (exclusive property with db type)
-  std::string              m_dbSvc;
-  /// Selector name
-  std::string              m_statement;
-public:
 
+  // Properties
+  Gaudi::Property<std::string> m_tupleSvcName{this, "CnvService", "EvtTupleSvc",
+                                              "name of the event collection service"};
+  Gaudi::Property<std::string> m_authentication{this, "Authentication", "", "authentication string (if needed)"};
+  Gaudi::Property<std::string> m_cntName{this, "Container", "B2PiPi", "container name"};
+  Gaudi::Property<std::string> m_itemName{this, "Item", "Address", "item name"};
+  Gaudi::Property<std::string> m_criteria{this, "Criteria", "", "criteria"};
+  Gaudi::Property<std::string> m_database{this, "DB", "", "datafile name"};
+  Gaudi::Property<std::string> m_dbType{this, "DbType", "", "database type identifier"};
+  Gaudi::Property<std::string> m_dbSvc{this, "DbService", "", "database service (exclusive property with db type)"};
+  Gaudi::Property<std::string> m_statement{this, "Function", "NTuple::Selector", "selector name"};
+
+public:
   /// Service override: Initialize service
   StatusCode initialize() override;
   /// Service override: Finalize Service
@@ -109,21 +103,21 @@ public:
     *
     * @return StatusCode indicating success or failure
     */
-  StatusCode createContext(Context*& refpCtxt) const override;
+  StatusCode createContext( Context*& refpCtxt ) const override;
 
   /// Get next iteration item from the event loop context
   /** @param refCtxt   [IN/OUT]  Reference to the context
     *
     * @return StatusCode indicating success or failure
     */
-  StatusCode next(Context& refCtxt) const override;
+  StatusCode next( Context& refCtxt ) const override;
 
   /// Get next iteration item from the event loop context, but skip jump elements
   /** @param refCtxt   [IN/OUT]  Reference to the context
     *
     * @return StatusCode indicating success or failure
     */
-  StatusCode next(Context& refCtxt,int jump) const override;
+  StatusCode next( Context& refCtxt, int jump ) const override;
 
   /// Get previous iteration item from the event loop context
   /** @param refCtxt   [IN/OUT]  Reference to the context
@@ -131,7 +125,7 @@ public:
     *
     * @return StatusCode indicating success or failure
     */
-  StatusCode previous(Context& refCtxt) const override;
+  StatusCode previous( Context& refCtxt ) const override;
 
   /// Get previous iteration item from the event loop context, but skip jump elements
   /** @param refCtxt   [IN/OUT]  Reference to the context
@@ -139,14 +133,14 @@ public:
     *
     * @return StatusCode indicating success or failure
     */
-  StatusCode previous(Context& refCtxt,int jump) const override;
+  StatusCode previous( Context& refCtxt, int jump ) const override;
 
   /// Rewind the dataset
   /** @param refCtxt   [IN/OUT]  Reference to the context
     *
     * @return StatusCode indicating success or failure
     */
-  StatusCode rewind(Context& refCtxt) const override;
+  StatusCode rewind( Context& refCtxt ) const override;
 
   /// Create new Opaque address corresponding to the current record
   /** @param refCtxt   [IN/OUT]  Reference to the context
@@ -154,14 +148,14 @@ public:
     *
     * @return StatusCode indicating success or failure
     */
-  StatusCode createAddress(const Context& refCtxt, IOpaqueAddress*& refpAddr) const override;
+  StatusCode createAddress( const Context& refCtxt, IOpaqueAddress*& refpAddr ) const override;
 
   /// Release existing event iteration context
   /** @param refCtxt   [IN/OUT]  Reference to the context
     *
     * @return StatusCode indicating success or failure
     */
-  StatusCode releaseContext(Context*& refCtxt) const override;
+  StatusCode releaseContext( Context*& refCtxt ) const override;
 
   /** Will set a new criteria for the selection of the next list of events and will change
     * the state of the context in a way to point to the new list.
@@ -171,33 +165,35 @@ public:
     *
     * @return StatusCode indicating success or failure
     */
-  StatusCode resetCriteria(const std::string& cr,Context& c) const override;
+  StatusCode resetCriteria( const std::string& cr, Context& c ) const override;
 
   /** Access last item in the iteration
     * @param refCtxt [IN/OUT] Reference to the Context object.
     *
     * @return StatusCode indicating success or failure
     */
-  StatusCode last(Context& refCtxt) const override;
+  StatusCode last( Context& refCtxt ) const override;
 
   /// Connect collection to selector
-  virtual StatusCode connectCollection(MyContextType* ctxt) const;
+  virtual StatusCode connectCollection( MyContextType* ctxt ) const;
 
   /// Connect collection's data source to selector
-  virtual StatusCode connectDataSource(const std::string& db, const std::string& typ) const;
+  virtual StatusCode connectDataSource( const std::string& db, const std::string& typ ) const;
   /// Connect to existing N-tuple
-  virtual StatusCode connectTuple(const std::string& nam, const std::string& itName, NTuple::Tuple*& tup, NTuple::Item<IOpaqueAddress*>*& item) const;
+  virtual StatusCode connectTuple( const std::string& nam, const std::string& itName, NTuple::Tuple*& tup,
+                                   NTuple::Item<IOpaqueAddress*>*& item ) const;
   /// Connect selection statement to refine data access
-  virtual StatusCode connectStatement(const std::string& typ, const std::string& crit, INTuple* tuple) const;
+  virtual StatusCode connectStatement( const std::string& typ, const std::string& crit, INTuple* tuple ) const;
   /// Read next record of the N-tuple
-  virtual StatusCode getNextRecord(NTuple::Tuple* tuple)  const;
+  virtual StatusCode getNextRecord( NTuple::Tuple* tuple ) const;
   /// Read next record of the N-tuple
-  virtual StatusCode getPreviousRecord(NTuple::Tuple* tuple)  const;
+  virtual StatusCode getPreviousRecord( NTuple::Tuple* tuple ) const;
 
-  /// Standard Constructor
-  EventCollectionSelector( const std::string& name, ISvcLocator* svcloc );
+  /// inherit constructor
+  using extends::extends;
+
   /// Standard Destructor
   ~EventCollectionSelector() override = default;
 };
 
-#endif  // GAUDISVC_EventCollectionSelector_EventCollectionSelector_H
+#endif // GAUDISVC_EventCollectionSelector_EventCollectionSelector_H
