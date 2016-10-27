@@ -23,13 +23,13 @@ public:
   typedef tbb::concurrent_hash_map<std::string, unsigned int> CHM;
 
   /// the execution of the algorithm
-  virtual StatusCode execute(); // the execution of the algorithm
+  StatusCode execute() override;
   /// Its initialization
-  virtual StatusCode initialize();
+  StatusCode initialize() override;
   /// the finalization of the algorithm
-  virtual StatusCode finalize(); // the finalization of the algorithm
+  StatusCode finalize() override;
 
-  double get_runtime() const { return m_avg_runtime; };
+  double get_runtime() const { return m_avg_runtime; }
 
   CPUCruncher( const std::string& name, // the algorithm instance name
                ISvcLocator* pSvc );     // the Service Locator
