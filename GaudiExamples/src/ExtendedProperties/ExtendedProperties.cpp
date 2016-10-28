@@ -87,7 +87,8 @@ private:
   Gaudi::Property<std::vector<int>> m_21{this, "EmptyVector"};
 
   Gaudi::Property<std::tuple<std::string, int, double>> m_22{this, "TupleStringIntDouble"};
-  Gaudi::Property<std::array<double, 3>> m_23{this, "StdArrayDouble3"};
+  // std::array must be explicitly initialized
+  Gaudi::Property<std::array<double, 3>> m_23{this, "StdArrayDouble3", {0}};
 
   Gaudi::Property<GaudiUtils::Map<std::string, std::string>> m_24{this, "GaudiMapSS"};
 };
