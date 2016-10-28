@@ -284,7 +284,7 @@ private:
 public:
   void addAlg( Algorithm*, EventContext*, pthread_t );
   bool delAlg( Algorithm* );
-  void dumpState();
+  void dumpState() override;
 
 private:
   void dumpState( std::ostringstream& );

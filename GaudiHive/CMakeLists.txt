@@ -15,7 +15,7 @@ if (${APPLE})
 endif (${APPLE})
 
 # Hide some Boost/TBB compile time warnings
-include_directories(SYSTEM ${Boost_INCLUDE_DIRS} ${TBB_INCLUDE_DIRS})
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS} ${TBB_INCLUDE_DIRS})
 
 #---Libraries---------------------------------------------------------------
 gaudi_add_module(GaudiHive

@@ -11,8 +11,10 @@ find_package(PythonLibs)
 find_package(RELAX)
 find_package(TBB)
 
-# Hide some Boost/ROOT/CLHEP/TBB compile time warnings
-include_directories(SYSTEM ${Boost_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS} ${CLHEP_INCLUDE_DIRS} ${TBB_INCLUDE_DIRS})
+# Hide some Boost/ROOT/CLHEP/TBB/HepPDT compile time warnings
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS}
+                           ${CLHEP_INCLUDE_DIRS} ${TBB_INCLUDE_DIRS}
+                           ${HEPPDT_INCLUDE_DIRS})
 
 if(NOT CMAKE_VERSION VERSION_LESS 3.1)
   # FindOpenCL.cmake has been introduced in CMake 3.1.0
