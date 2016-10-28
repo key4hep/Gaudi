@@ -210,8 +210,12 @@ StatusCode AlgTool::sysInitialize()
     if ( !sc ) return sc;
 
     m_state = m_targetState;
-    if ( m_updateDataHandles ) acceptDHVisitor( m_updateDataHandles.get() );
+    if (m_updateDataHandles) acceptDHVisitor(m_updateDataHandles.get());
 
+    // visit all sub-tools, build full set
+    DHHVisitor avis(m_inputDataObjs, m_outputDataObjs);
+    acceptDHVisitor(&avis);
+    
     return sc;
   } );
 }
@@ -229,7 +233,7 @@ StatusCode AlgTool::initialize()
 StatusCode AlgTool::sysStart()
 {
   //-----------------------------------------------------------------------------
-  return attempt( *this, "sysInitialize", [&]() {
+  return attempt( *this, "sysStart", [&]() {
     m_targetState = Gaudi::StateMachine::ChangeState( Gaudi::StateMachine::START, m_state );
     Gaudi::Guards::AuditorGuard guard( this,
                                        // check if we want to audit the initialize
