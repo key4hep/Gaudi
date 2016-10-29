@@ -63,20 +63,6 @@ namespace Gaudi { namespace Examples {
   DECLARE_COMPONENT(CustomPropertiesAlg)
 
   // ============================================================================
-  // Standard constructor, initializes variables
-  // ============================================================================
-  CustomPropertiesAlg::CustomPropertiesAlg(const std::string& name, ISvcLocator* pSvcLocator)
-    : GaudiAlgorithm(name, pSvcLocator)
-  {
-    declareProperty("UnorderedMap", m_unorderedMap);
-  }
-
-  // ============================================================================
-  // Destructor
-  // ============================================================================
-  CustomPropertiesAlg::~CustomPropertiesAlg() {}
-
-  // ============================================================================
   // Initialization
   // ============================================================================
   StatusCode CustomPropertiesAlg::initialize() {

@@ -10,30 +10,28 @@
 #include "GaudiKernel/IMetaDataSvc.h"
 #include "GaudiKernel/Service.h"
 
-namespace Gaudi {
-class MetaDataSvc : public extends<Service, IMetaDataSvc> {
-public:
-	// Standard Constructor.
-	//   Input:  name   String with service name
-	//   Input:  svc    Pointer to service locator interface
-	MetaDataSvc( const std::string& name, ISvcLocator* svc );
+namespace Gaudi
+{
+  class MetaDataSvc : public extends<Service, IMetaDataSvc>
+  {
+  public:
+    using extends::extends;
+    ~MetaDataSvc() override = default;
 
-	// Destructor.
-        ~MetaDataSvc() override;
+    StatusCode start() override;
 
-        StatusCode initialize() override;
-        StatusCode start() override;
-	bool isEnabled() const ;
+    inline bool isEnabled() const { return m_isEnabled; }
 
-	StatusCode collectData();
+    StatusCode collectData();
 
-        MetaData* getMetaData() override;
-        std::map <std::string, std::string> getMetaDataMap() override;
+    MetaData* getMetaData() override;
+    std::map<std::string, std::string> getMetaDataMap() override;
 
-private:
-	bool m_isEnabled;
-	std::map <std::string, std::string> m_metadata;
-};
+  private:
+    Gaudi::Property<bool> m_isEnabled{this, "Enabled", true};
+
+    std::map<std::string, std::string> m_metadata;
+  };
 }
 
 #endif /* GAUDISVC_SRC_METADATASVC_METADATASVC_H_ */

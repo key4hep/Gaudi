@@ -2,17 +2,17 @@
 #define GAUDIGSL_GSLSVC_H 1
 // Include files
 // STD & STL
-#include <vector>
 #include <string>
+#include <vector>
 // GaudiKernel
 #include "GaudiKernel/Service.h"
 // Include files
 // GaudiGSL
-#include "GaudiGSL/IGslSvc.h"
 #include "GaudiGSL/GslError.h"
+#include "GaudiGSL/IGslSvc.h"
 
 // forward declarations
-class IGslErrorHandler                 ; // from GaudiGSL
+class IGslErrorHandler; // from GaudiGSL
 
 /** @class GslSvc GslSvc.h
  *
@@ -80,36 +80,35 @@ class IGslErrorHandler                 ; // from GaudiGSL
  *  @author Vanya Belyaev Ivan.Belyaev@itep.ru
  *  @date   29/04/2002
  */
-class GslSvc: public extends<Service,
-                             IGslSvc> {
+class GslSvc : public extends<Service, IGslSvc>
+{
 public:
-
   /** handle the GSL error
    *  @see IGslSvc
    *  @param err   error
    *  @return status code
    */
-  StatusCode handle ( const GslError& error ) const override;
+  StatusCode handle( const GslError& error ) const override;
 
   /** retrieve the  current GSL error handler
    *  @see IGslSvc
    *  @return current GSL error handler
    */
-  GslErrorHandler  handler ()    const override;
+  GslErrorHandler handler() const override;
 
   /** set new GSL error handler
    *  @see IGslSvc
    *  @param  handler   new GSL error handler
    *  @return GSL error handler
    */
-  GslErrorHandler  setHandler ( GslErrorHandler handler ) const override;
+  GslErrorHandler setHandler( GslErrorHandler handler ) const override;
 
   /** transform GSL error code to Gaudi status code
    *  @see IGslSvc
    *  @param  error GLS error code
    *  @return status code
    */
-  StatusCode    status        ( const int error         ) const override;
+  StatusCode status( const int error ) const override;
 
   /** standard service initialization
    *  @see  Service
@@ -117,7 +116,7 @@ public:
    *  @see IService
    *  @return status code
    */
-  StatusCode    initialize () override;
+  StatusCode initialize() override;
 
   /** standard service finalization
    *  @see  Service
@@ -125,42 +124,28 @@ public:
    *  @see IService
    *  @return status code
    */
-  StatusCode    finalize   () override;
+  StatusCode finalize() override;
 
-  /** Standard constructor
-   *  @see Service
-   *  @param name service name
-   *  @param scv  pointer to service locator
-   */
-  GslSvc ( const std::string& name ,
-           ISvcLocator*       svc  );
+  using extends::extends;
 
   /// destructor, virtual and protected
   ~GslSvc() override = default;
 
 private:
-
   ///  default constructor   is private
   GslSvc();
   ///  copy    constructor   is private
-  GslSvc            ( const GslSvc& );
+  GslSvc( const GslSvc& );
   ///  assignment operator  is private
-  GslSvc& operator= ( const GslSvc& );
+  GslSvc& operator=( const GslSvc& );
 
 private:
+  Gaudi::Property<std::string> m_errorPolicy{this, "ErrorPolicy", "GSL", ""};
+  Gaudi::Property<std::vector<std::string>> m_handlersTypeNames{this, "Handlers", {}, ""};
+  Gaudi::Property<std::vector<int>> m_ignore{this, "IgnoreCodes", {}, "codes to be ignored"};
 
-  /// error policy
-  std::string    m_errorPolicy = "GSL" ;
-
-  /// external handlers
-  typedef std::vector<std::string>       Names               ;
-  Names                                  m_handlersTypeNames ;
-  typedef std::vector<IGslErrorHandler*> Handlers            ;
-  Handlers                               m_handlers          ;
-
-  /// codes to be ignored
-  std::vector<int>                       m_ignore            ;
-
+  typedef std::vector<IGslErrorHandler*> Handlers;
+  Handlers m_handlers;
 };
 
 // ============================================================================

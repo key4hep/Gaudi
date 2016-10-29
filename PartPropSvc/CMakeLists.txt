@@ -5,6 +5,9 @@ gaudi_depends_on_subdirs(GaudiKernel)
 find_package(Boost COMPONENTS regex)
 find_package(HepPDT)
 
+# Hide some HepPDT compile time warnings
+include_directories(SYSTEM ${HEPPDT_INCLUDE_DIRS})
+
 #---Libraries---------------------------------------------------------------
 gaudi_add_module(PartPropSvc src/*.cpp
                  LINK_LIBRARIES GaudiKernel Boost HepPDT

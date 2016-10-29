@@ -3,12 +3,12 @@
 // ============================================================================
 // STD & STL
 // ============================================================================
-#include <vector>
+#include <array>
 #include <map>
 #include <string>
-#include <utility>
 #include <tuple>
-#include <array>
+#include <utility>
+#include <vector>
 
 #include "GaudiKernel/Map.h"
 
@@ -26,7 +26,7 @@
 
 #ifdef __ICC
 // disable icc remark #177: declared but never referenced
-#pragma warning(disable:177)
+#pragma warning( disable : 177 )
 #endif
 
 /** @file
@@ -37,7 +37,6 @@
  *  @date  2006-03-21
  */
 
-
 /** @class ExtendedProperties
  *  simple DEMO-file for "extended properties",
  *  implementation file for class ExtendedProperties
@@ -46,114 +45,57 @@
  *  @date  2006-03-21
  */
 
-class ExtendedProperties
-  : public GaudiAlgorithm
+class ExtendedProperties : public GaudiAlgorithm
 {
 public:
-  StatusCode execute() override ;
+  StatusCode execute() override;
 
-  ExtendedProperties
-  ( const std::string& name ,
-    ISvcLocator*       pSvc )
-    : GaudiAlgorithm ( name , pSvc )
-    , m_1()
-    , m_2()
-    , m_3()
-    , m_4()
-    , m_5()
-    , m_6()
-    , m_7()
-    , m_8()
-    , m_9()
-    , m_10()
-    , m_11()
-    , m_12()
-    , m_13()
-    , m_14()
-    , m_22()
+  ExtendedProperties( const std::string& name, ISvcLocator* pSvc ) : GaudiAlgorithm( name, pSvc )
   {
-    declareProperty ( "PairDD"                   , m_1 ) ;
-
-    declareProperty ( "VectorOfPairsDD"          , m_2 ) ;
-    declareProperty ( "VectorOfVectorsString"    , m_3 ) ;
-    declareProperty ( "VectorOfVectorsDouble"    , m_4 ) ;
-
-    declareProperty ( "MapIntDouble"             , m_5 ) ;
-    declareProperty ( "MapStringString"          , m_6 ) ;
-    declareProperty ( "MapStringInt"             , m_7 ) ;
-    declareProperty ( "MapStringDouble"          , m_8 ) ;
-    declareProperty ( "MapStringVectorOfStrings" , m_9 ) ;
-
-    declareProperty ( "PairII"                   , m_10) ;
-    declareProperty ( "MapStringVectorOfDoubles" , m_11) ;
-    declareProperty ( "MapStringVectorOfInts"    , m_12) ;
-
-    declareProperty ( "MapIntInt"                , m_13) ;
-    declareProperty ( "VectorOfPairsII"          , m_14) ;
-
-    declareProperty ( "MapIntString"             , m_15) ;
-    declareProperty ( "MapUIntString"            , m_16) ;
-
-    declareProperty ( "EmptyMap"                 , m_20) ;
-    declareProperty ( "EmptyVector"              , m_21) ;
-
-    declareProperty ( "TupleStringIntDouble"     , m_22) ;
-    declareProperty ( "StdArrayDouble3"          , m_23) ;
-
-    declareProperty ( "GaudiMapSS"               , m_24) ;
-
-    setProperty ("PropertiesPrint", "true").ignore() ;
+    setProperty( "PropertiesPrint", "true" ).ignore();
 
     m_20["key"] = "value";
-    m_21.push_back(123);
-
+    m_21.value().push_back( 123 );
   }
-  /// destruictor: virtual and protected
-  ~ExtendedProperties() override {}
+  /// destructor
+  ~ExtendedProperties() override = default;
+
 private:
-  // default constructor is disabled
-  ExtendedProperties();
-  // copy constructor is disabled
-  ExtendedProperties ( const ExtendedProperties& );
-  // assignement operator is disabled
-  ExtendedProperties& operator=( const ExtendedProperties& );
-private:
-  std::pair<double,double>               m_1 ;
+  Gaudi::Property<std::pair<double, double>> m_1{this, "PairDD"};
 
-  std::vector<std::pair<double,double> > m_2 ;
-  std::vector<std::vector<std::string> > m_3 ;
-  std::vector<std::vector<double> >      m_4 ;
+  Gaudi::Property<std::vector<std::pair<double, double>>> m_2{this, "VectorOfPairsDD"};
+  Gaudi::Property<std::vector<std::vector<std::string>>> m_3{this, "VectorOfVectorsString"};
+  Gaudi::Property<std::vector<std::vector<double>>> m_4{this, "VectorOfVectorsDouble"};
 
-  std::map<int,double>                   m_5 ;
-  std::map<std::string,std::string>      m_6 ;
-  std::map<std::string,int>              m_7 ;
-  std::map<std::string,double>           m_8 ;
-  std::map<std::string,std::vector<std::string> > m_9 ;
+  Gaudi::Property<std::map<int, double>> m_5{this, "MapIntDouble"};
+  Gaudi::Property<std::map<std::string, std::string>> m_6{this, "MapStringString"};
+  Gaudi::Property<std::map<std::string, int>> m_7{this, "MapStringInt"};
+  Gaudi::Property<std::map<std::string, double>> m_8{this, "MapStringDouble"};
+  Gaudi::Property<std::map<std::string, std::vector<std::string>>> m_9{this, "MapStringVectorOfStrings"};
 
-  std::pair<int,int>  m_10 ;
-  std::map<std::string,std::vector<double> > m_11 ;
-  std::map<std::string,std::vector<int> >    m_12 ;
+  Gaudi::Property<std::pair<int, int>> m_10{this, "PairII"};
+  Gaudi::Property<std::map<std::string, std::vector<double>>> m_11{this, "MapStringVectorOfDoubles"};
+  Gaudi::Property<std::map<std::string, std::vector<int>>> m_12{this, "MapStringVectorOfInts"};
 
-  std::map<int,int>    m_13 ;
-  std::vector<std::pair<int,int> >  m_14 ;
+  Gaudi::Property<std::map<int, int>> m_13{this, "MapIntInt"};
+  Gaudi::Property<std::vector<std::pair<int, int>>> m_14{this, "VectorOfPairsII"};
 
+  Gaudi::Property<std::map<int, std::string>> m_15{this, "MapIntString"};
+  Gaudi::Property<std::map<unsigned int, std::string>> m_16{this, "MapUIntString"};
 
-  std::map<int,std::string>            m_15 ;
-  std::map<unsigned int,std::string>   m_16 ;
+  Gaudi::Property<std::map<std::string, std::string>> m_20{this, "EmptyMap"};
+  Gaudi::Property<std::vector<int>> m_21{this, "EmptyVector"};
 
-  std::map<std::string, std::string>   m_20;
-  std::vector<int> m_21;
+  Gaudi::Property<std::tuple<std::string, int, double>> m_22{this, "TupleStringIntDouble"};
+  // std::array must be explicitly initialized
+  Gaudi::Property<std::array<double, 3>> m_23{this, "StdArrayDouble3", {0}};
 
-  std::tuple<std::string, int, double> m_22;
-  std::array<double, 3> m_23;
-
-  GaudiUtils::Map<std::string, std::string> m_24;
-
+  Gaudi::Property<GaudiUtils::Map<std::string, std::string>> m_24{this, "GaudiMapSS"};
 };
 // ============================================================================
 /// factory
 // ============================================================================
-DECLARE_COMPONENT(ExtendedProperties)
+DECLARE_COMPONENT( ExtendedProperties )
 // ============================================================================
 namespace
 {
@@ -229,49 +171,48 @@ namespace
 // ============================================================================
 StatusCode ExtendedProperties::execute()
 {
-  always() << " My Properties : " << endmsg ;
+  always() << " My Properties : " << endmsg;
 
-  always () << " \t" << _prop ( m_1  ) << endmsg ;
-  always () << " \t" << _prop ( m_2  ) << endmsg ;
-  always () << " \t" << _prop ( m_3  ) << endmsg ;
-  always () << " \t" << _prop ( m_4  ) << endmsg ;
-  always () << " \t" << _prop ( m_5  ) << endmsg ;
-  always () << " \t" << _prop ( m_6  ) << endmsg ;
-  always () << " \t" << _prop ( m_7  ) << endmsg ;
-  always () << " \t" << _prop ( m_8  ) << endmsg ;
-  always () << " \t" << _prop ( m_9  ) << endmsg ;
-  always () << " \t" << _prop ( m_10 ) << endmsg ;
-  always () << " \t" << _prop ( m_11 ) << endmsg ;
-  always () << " \t" << _prop ( m_12 ) << endmsg ;
-  always () << " \t" << _prop ( m_13 ) << endmsg ;
-  always () << " \t" << _prop ( m_14 ) << endmsg ;
-  always () << " \t" << _prop ( m_14 ) << endmsg ;
-  always () << " \t" << _prop ( m_15 ) << endmsg ;
-  always () << " \t" << _prop ( m_16 ) << endmsg ;
+  always() << " \t" << m_1 << endmsg;
+  always() << " \t" << m_2 << endmsg;
+  always() << " \t" << m_3 << endmsg;
+  always() << " \t" << m_4 << endmsg;
+  always() << " \t" << m_5 << endmsg;
+  always() << " \t" << m_6 << endmsg;
+  always() << " \t" << m_7 << endmsg;
+  always() << " \t" << m_8 << endmsg;
+  always() << " \t" << m_9 << endmsg;
+  always() << " \t" << m_10 << endmsg;
+  always() << " \t" << m_11 << endmsg;
+  always() << " \t" << m_12 << endmsg;
+  always() << " \t" << m_13 << endmsg;
+  always() << " \t" << m_14 << endmsg;
+  always() << " \t" << m_14 << endmsg;
+  always() << " \t" << m_15 << endmsg;
+  always() << " \t" << m_16 << endmsg;
 
-  always () << " \t" << SimplePropertyRef<std::map<std::string, std::string> >( "EmptyMap", m_20 ) << endmsg ;
-  always () << " \t" << SimplePropertyRef<std::vector<int> >( "EmptyVector", m_21 ) << endmsg ;
+  always() << " \t" << m_20 << endmsg;
+  always() << " \t" << m_21 << endmsg;
 
-  always () << " \t" << _prop ( m_22 ) << endmsg ;
-  always () << " \t" << _prop ( m_23 ) << endmsg ;
+  always() << " \t" << m_22 << endmsg;
+  always() << " \t" << m_23 << endmsg;
 
-  always () << " \t" << _prop ( m_24 ) << endmsg ;
+  always() << " \t" << m_24 << endmsg;
 
   // some properties could be created from other (convertible) types:
-  SimpleProperty<short>     m1 ( "a" , 0  ) ;
-  SimpleProperty<double>    m2 ( "b" , m1 ) ;
+  Gaudi::Property<short> m1( "a", 0 );
+  Gaudi::Property<double> m2( "b", m1 );
 
   // some properties could be assigned from other (convertible) types
-  SimpleProperty<int>       m3 ( "c" , 0  ) ;
-  m3 = m1 ;
+  Gaudi::Property<int> m3( "c", 0 );
+  m3 = m1;
 
-  float i = 10 ;
-  SimplePropertyRef<float> m4 ( "d" , i )  ;
+  float i = 10;
+  Gaudi::Property<float&> m4( "d", i );
 
-  m4 = 12 ;
+  m4 = 12;
 
-
-  return StatusCode::SUCCESS ;
+  return StatusCode::SUCCESS;
 }
 // ============================================================================
 // The END

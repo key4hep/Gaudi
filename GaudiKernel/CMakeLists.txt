@@ -82,7 +82,10 @@ endif()
 
 gaudi_add_unit_test(AttribStringParser_test tests/src/test_AttribStringParser.cpp
                     LINK_LIBRARIES GaudiKernel)
-gaudi_add_unit_test(test_PropertyMgr tests/src/test_PropertyMgr.cpp
+gaudi_add_unit_test(test_PropertyHolder tests/src/test_PropertyHolder.cpp
+                    LINK_LIBRARIES GaudiKernel
+                    TYPE Boost)
+gaudi_add_unit_test(test_Property tests/src/test_Property.cpp
                     LINK_LIBRARIES GaudiKernel
                     TYPE Boost)
 
@@ -112,3 +115,6 @@ if(GAUDI_HIDE_WARNINGS)
     set_property(TARGET GaudiKernelDict PROPERTY COMPILE_DEFINITIONS _SCL_SECURE_NO_WARNINGS)
   endif()
 endif()
+
+add_executable(profile_Property tests/src/profile_Property.cpp)
+target_link_libraries(profile_Property GaudiKernel)

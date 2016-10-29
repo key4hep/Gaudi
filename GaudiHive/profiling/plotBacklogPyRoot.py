@@ -27,7 +27,7 @@ LegendDrawOpts="lp"
 
 def parseLog(logfilename):
   # a line looks like 
-  #"HiveEventLoopMgr  SUCCESS Event backlog (max= 3, min= 0 ) = 3"
+  #"HiveSlimEventLoopMgr  SUCCESS Event backlog (max= 3, min= 0 ) = 3"
   global NEventsInFlight
   global NThreads
   ifile = open(logfilename,"r")

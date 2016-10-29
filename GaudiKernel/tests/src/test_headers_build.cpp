@@ -8,12 +8,6 @@
 #include "GaudiKernel/VectorMap.h"
 #include "GaudiKernel/HashMap.h"
 
-// PropertyVerifier.cpp
-#include "GaudiKernel/Kernel.h"
-#include "GaudiKernel/PropertyVerifier.h"
-#include <string>
-#include <vector>
-
 // HistoProperty.cpp
 #include "GaudiKernel/HistoProperty.h"
 

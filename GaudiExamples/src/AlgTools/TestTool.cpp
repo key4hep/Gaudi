@@ -16,18 +16,6 @@
 DECLARE_COMPONENT(TestTool)
 
 //=============================================================================
-// Standard constructor, initializes variables
-//=============================================================================
-TestTool::TestTool( const std::string& type,
-                    const std::string& name,
-                    const IInterface* parent )
-  : base_class ( type, name , parent ) {
-
-  declareProperty( "Tools", m_tools );
-
-}
-
-//=============================================================================
 
 StatusCode TestTool::initialize()
 {

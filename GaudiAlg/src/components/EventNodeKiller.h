@@ -1,11 +1,11 @@
-#ifndef EVENTNODEKILLER_H 
+#ifndef EVENTNODEKILLER_H
 #define EVENTNODEKILLER_H 1
 
 // Include files
 // from Gaudi
 #include "GaudiAlg/GaudiAlgorithm.h"
-#include <vector>
 #include <string>
+#include <vector>
 
 /** @class EventNodeKiller EventNodeKiller.h
  *  Algorithm to kill nodes in the event data store. Useful if you want to
@@ -14,16 +14,15 @@
  *  @author Marco Cattaneo
  *  @date   2005-07-14
  */
-class EventNodeKiller : public GaudiAlgorithm {
-public: 
-  /// Standard constructor
-  EventNodeKiller( const std::string& name, ISvcLocator* pSvcLocator );
+class EventNodeKiller : public GaudiAlgorithm
+{
+public:
+  using GaudiAlgorithm::GaudiAlgorithm;
+  ~EventNodeKiller() override = default;
 
-  ~EventNodeKiller( ) override = default; ///< Destructor
-
-  StatusCode execute() override;    ///< Algorithm execution
+  StatusCode execute() override;
 
 private:
-  std::vector<std::string> m_nodes; ///< String property "Nodes"
+  Gaudi::Property<std::vector<std::string>> m_nodes{this, "Nodes"};
 };
 #endif // EVENTNODEKILLER_H

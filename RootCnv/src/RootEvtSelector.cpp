@@ -95,16 +95,6 @@ namespace Gaudi {
 using namespace Gaudi;
 using namespace std;
 
-// Service Constructor
-RootEvtSelector::RootEvtSelector(const string& name,ISvcLocator* svcloc)
-: base_class(name, svcloc), m_rootCLID(CLID_NULL)
-{
-  m_cnvSvcName = "Gaudi::RootCnvSvc/RootCnvSvc";
-  m_persName   = "EventPersistencySvc";
-  declareProperty("EvtPersistencySvc",m_persName="EventPersistencySvc");
-  declareProperty("DbType",m_dummy);
-}
-
 // Helper method to issue error messages
 StatusCode RootEvtSelector::error(const string& msg) const   {
   MsgStream log(msgSvc(), name());

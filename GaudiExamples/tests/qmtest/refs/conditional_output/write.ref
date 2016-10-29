@@ -54,7 +54,6 @@ ServiceManager      DEBUG Initializing service EventLoopMgr
 EventLoopMgr        DEBUG Property update for OutputLevel : new value = 1
 EventLoopMgr        DEBUG Service base class initialized successfully
 IncidentSvc         DEBUG Adding [AbortEvent] listener '<unknown>' with priority 0
-EventLoopMgr        DEBUG Creating OutputStreamOutputStream/OutputStream
 EventLoopMgr        DEBUG Creating Output Stream OutputStream/OutputStream
 EventLoopMgr        DEBUG Creating Top Algorithm GaudiTesting::PutDataObjectAlg with name DataCreator
 DataCreator       VERBOSE ServiceLocatorHelper::service: found service JobOptionsSvc

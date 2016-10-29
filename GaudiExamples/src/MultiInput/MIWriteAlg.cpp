@@ -18,14 +18,6 @@ using namespace Gaudi::Examples::MultiInput;
 
 DECLARE_COMPONENT(WriteAlg)
 
-WriteAlg::WriteAlg(const std::string& name, ISvcLocator* pSvcLoc):
-  Algorithm(name, pSvcLoc), m_runnum(0), m_evtnum(0) {
-  declareProperty("RandomSeeds", m_randomSeeds,
-      "Seeds to be used in the random number generation");
-}
-
-WriteAlg::~WriteAlg() {}
-
 //--------------------------------------------------------------------
 // Initialize
 //--------------------------------------------------------------------

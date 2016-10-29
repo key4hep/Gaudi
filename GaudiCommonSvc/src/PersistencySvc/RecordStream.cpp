@@ -17,7 +17,7 @@ RecordStream::RecordStream(const std::string& name, ISvcLocator* pSvcLocator)
 {
   ///in the baseclass, always fire the incidents by default
   ///in RecordStream this will be set to false, and configurable
-  declareProperty("FireIncidents",      m_fireIncidents=false);
+  declareProperty( "FireIncidents", m_fireIncidents = false, "if to fire incidents for writing opening/closing etc" );
 }
 
 StatusCode RecordStream::finalize() {

@@ -44,49 +44,20 @@ operator<< ( std::ostream& os, const IIoComponentMgr::IoMode::Type& m) {
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-IoComponentMgr::IoComponentMgr( const std::string& name,
-				ISvcLocator* svc )
-: base_class(name,svc), m_log(msgSvc(), name )
-{
-  //
-  // Property declaration
-  //
-  //declareProperty( "Property", m_nProperty );
-
-//   declareProperty ("Registry",
-// 		   m_dict_location = "GaudiMP.IoRegistry.registry",
-// 		   "Location of the python dictionary holding the "
-// 		   "associations: \n"
-// 		   " {component-name:{ 'old-fname' : ['io','new-fname'] }}\n"
-// 		   "\nSyntax: <python-module>.<python-module>.<fct-name> \n"
-// 		   " where fct-name is a function returning the wanted "
-// 		   " dictionary.");
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-IoComponentMgr::~IoComponentMgr()
-{
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 StatusCode
 IoComponentMgr::initialize() {
-  m_log << MSG::DEBUG << "--> initialize()" << endmsg;
+  DEBMSG << "--> initialize()" << endmsg;
 
   if ( Service::initialize().isFailure() ) {
-    m_log << MSG::ERROR << "Unable to initialize Service base class" << endmsg;
+    error() << "Unable to initialize Service base class" << endmsg;
     return StatusCode::FAILURE;
   }
-  m_log.setLevel( m_outputLevel.value() );
 
   IIncidentSvc* p_incSvc(0);
 
   if (service("IncidentSvc", p_incSvc, true).isFailure()) {
-    m_log << MSG::ERROR << "unable to get the IncidentSvc" << endmsg;
+    error() << "unable to get the IncidentSvc" << endmsg;
       return StatusCode::FAILURE;
   } else {
     p_incSvc->addListener( this, IncidentType::BeginOutputFile, 100, true);
@@ -100,7 +71,7 @@ IoComponentMgr::initialize() {
 
 StatusCode
 IoComponentMgr::finalize() {
-  m_log << MSG::DEBUG << "--> finalize()" << endmsg;
+  DEBMSG << "--> finalize()" << endmsg;
 
   return StatusCode::SUCCESS;
 }
@@ -129,7 +100,7 @@ bool
 IoComponentMgr::io_contains (IIoComponent* iocomponent,
 			     const std::string& fname) const
 {
-  m_log << MSG::DEBUG << "--> io_contains()" << endmsg;
+  DEBMSG << "--> io_contains()" << endmsg;
   if ( 0 == iocomponent ) {
     return false;
   }
@@ -146,7 +117,7 @@ IoComponentMgr::io_contains (IIoComponent* iocomponent,
       IoComponentEntry ioe = it->second;
       DEBMSG << "   " << ioe << endmsg;
       if (ioe.m_oldfname == "") {
-	m_log << MSG::ERROR << "IIoComponent " << ioname
+	error() << "IIoComponent " << ioname
 	      << "  has empty old filename" << endmsg;
     return false;
       } else if (ioe.m_oldfname == fname) {
@@ -170,7 +141,7 @@ StatusCode
 IoComponentMgr::io_register (IIoComponent* iocomponent)
 {
   if ( !iocomponent ) {
-    m_log << MSG::ERROR
+    error()
 	  << "io_register (component) received a NULL pointer !" << endmsg;
     return StatusCode::FAILURE;
   }
@@ -183,7 +154,7 @@ IoComponentMgr::io_register (IIoComponent* iocomponent)
     m_ioregistry[ioname] = iocomponent;
     m_iostack.push_back (iocomponent);
   } else {
-    m_log << MSG::INFO << "IoComponent[" << iocomponent->name()
+    info() << "IoComponent[" << iocomponent->name()
 	  <<"] already registered @" << (void*)itr->second << endmsg;
   }
   return StatusCode::SUCCESS;
@@ -214,7 +185,7 @@ IoComponentMgr::io_register (IIoComponent* iocomponent,
 
   if ( !io_hasitem (iocomponent) ) {
     if ( !io_register (iocomponent).isSuccess() ) {
-      m_log << MSG::ERROR
+      error()
 	    << "could not register component [" << iocomponent->name() << "] "
 	    << "with the I/O component manager !"
 	    << endmsg;
@@ -228,12 +199,12 @@ IoComponentMgr::io_register (IIoComponent* iocomponent,
       IoComponentEntry ioe = it->second;
       if (ioe.m_oldfname == fname) {
 	if (ioe.m_iomode == iomode) {
-	  m_log << MSG::INFO << "IoComponent " << ioname
+	  info() << "IoComponent " << ioname
 	  	<< " has already had file " << fname
 	   	<< " registered with i/o mode " << iomode << endmsg;
 	  return StatusCode::SUCCESS;
   } else {
-	  m_log << MSG::WARNING << "IoComponent " << ioname
+	  warning() << "IoComponent " << ioname
 		<< " has already had file " << fname
 		<< " registered with a different i/o mode " << ioe.m_iomode
 		<< " - now trying " << iomode << endmsg;
@@ -268,7 +239,7 @@ IoComponentMgr::io_retrieve (IIoComponent* iocomponent,
   std::string ofname = fname;
   const std::string& ioname = iocomponent->name();
 
-  m_log << MSG::DEBUG << "--> io_retrieve(" << ioname << "," << fname << ")"
+  DEBMSG << "--> io_retrieve(" << ioname << "," << fname << ")"
 	<< endmsg;
 
   iodITR it;
@@ -305,20 +276,19 @@ IoComponentMgr::io_retrieve (IIoComponent* iocomponent,
 StatusCode
 IoComponentMgr::io_reinitialize ()
 {
-  m_log << MSG::DEBUG << "--> io_reinitialize()" << endmsg;
-  m_log << MSG::DEBUG << "reinitializing I/O subsystem..." << endmsg;
-
-  if (m_log.level() <= MSG::DEBUG) {
-    m_log << MSG::DEBUG << "Listing all monitored entries: " << std::endl;
-    DEBMSG << list() << endmsg;
+  ON_DEBUG {
+    debug() << "--> io_reinitialize()" << endmsg;
+    debug() << "reinitializing I/O subsystem..." << endmsg;
+    debug() << "Listing all monitored entries: " << std::endl;
+    debug() << list() << endmsg;
   }
 
   bool allgood = true;
   for ( auto& io : m_iostack ) {
-    m_log << MSG::DEBUG << " [" << io->name() << "]->io_reinit()..." << endmsg;
+    DEBMSG << " [" << io->name() << "]->io_reinit()..." << endmsg;
     if ( !io->io_reinit().isSuccess() ) {
       allgood = false;
-      m_log << MSG::ERROR << "problem in [" << io->name()
+      error() << "problem in [" << io->name()
 	    << "]->io_reinit() !" << endmsg;
     }
     // we are done with this guy... release it
@@ -408,7 +378,7 @@ IoComponentMgr::io_update(IIoComponent* ioc, const std::string& work_dir) {
     default:
       {
 	// Don't know how to deal with either RW or INVALID
-	m_log << MSG::ERROR << "Unable to update IoComponent for the mode " << it->second.m_iomode << endmsg;
+	error() << "Unable to update IoComponent for the mode " << it->second.m_iomode << endmsg;
 	return StatusCode::FAILURE;
       }
     }
@@ -431,7 +401,7 @@ IoComponentMgr::io_update_all (const std::string& work_dir)
         ++io ) {
     if ( !io_update(*io,work_dir).isSuccess() ) {
       allgood = false;
-      m_log << MSG::ERROR << "problem in [" << (*io)->name()
+      error() << "problem in [" << (*io)->name()
             << "]->io_update() !" << endmsg;
     }
   }
@@ -447,24 +417,22 @@ IoComponentMgr::io_update_all (const std::string& work_dir)
 StatusCode
 IoComponentMgr::io_finalize ()
 {
-
-  m_log << MSG::DEBUG << "--> io_finalize()" << endmsg;
-  m_log << MSG::DEBUG << "finalizing I/O subsystem..." << endmsg;
-
-  if (m_log.level() <= MSG::DEBUG) {
-    m_log << MSG::DEBUG << "Listing all monitored entries: " << std::endl;
-    DEBMSG << list() << endmsg;
+  ON_DEBUG {
+    debug() << "--> io_finalize()" << endmsg;
+    debug() << "finalizing I/O subsystem..." << endmsg;
+    debug() << "Listing all monitored entries: " << std::endl;
+    debug() << list() << endmsg;
   }
 
   bool allgood = true;
   for ( IoStack_t::iterator io = m_iostack.begin(), ioEnd = m_iostack.end();
         io != ioEnd;
         ++io ) {
-    m_log << MSG::DEBUG << " [" << (*io)->name() << "]->io_finalize()..."
+    DEBMSG << " [" << (*io)->name() << "]->io_finalize()..."
           << endmsg;
     if ( !(*io)->io_finalize().isSuccess() ) {
       allgood = false;
-      m_log << MSG::ERROR << "problem in [" << (*io)->name()
+      error() << "problem in [" << (*io)->name()
             << "]->io_finalize() !" << endmsg;
     }
   }
@@ -550,14 +518,14 @@ IoComponentMgr::handle ( const Incident& i ) {
 	IIoComponent* c = pit.first->first;
 	IoComponentEntry e = pit.first->second;
 	DEBMSG << "    c: " << c->name() << "  " << e << endmsg;
-	
+
 	++pit.first;
       }
     } else {
       DEBMSG << "  could not find component \"" << fi->source()
 	     << "\"!" << endmsg;
     }
-	
+
 
 
   } else if ( i.type() == IncidentType::BeginOutputFile ) {
@@ -573,7 +541,7 @@ IoComponentMgr::handle ( const Incident& i ) {
 	IIoComponent* c = pit.first->first;
 	IoComponentEntry e = pit.first->second;
 	DEBMSG << "    c: " << c->name() << "  " << e << endmsg;
-	
+
 	++pit.first;
       }
     } else {

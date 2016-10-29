@@ -17,13 +17,7 @@ static const char SEPARATOR = IDataProviderSvc::SEPARATOR;
 TagCollectionStream::TagCollectionStream(const std::string& nam, ISvcLocator* pSvc)
   : OutputStream(nam, pSvc), m_addr{  new GenericAddress() }
 {
-  declareProperty("AddressLeaf",      m_addrLeaf     = "/Event" );
-  declareProperty("AddressColumn",    m_addrColName  = "Address");
-  declareProperty("TagCollectionSvc", m_collSvcName  = "NTupleSvc");
-  declareProperty("ObjectsFirst",     m_objectsFirst = true);
-  declareProperty("Collection",       m_tagName );
 }
-
 
 // Connect address column, if not already connected
 StatusCode TagCollectionStream::connectAddress()  {
@@ -67,8 +61,11 @@ StatusCode TagCollectionStream::initialize() {
       }
     }
     m_output = std::move(tmp);
-    std::string::size_type idx = m_tagName[0]==SEPARATOR ? m_tagName.find(SEPARATOR,1) : 0;
-    log_node = m_tagName.substr(idx,m_tagName.find(SEPARATOR,idx+1));
+    {
+      auto& tag = m_tagName.value();
+      std::string::size_type idx = (tag[0] == SEPARATOR) ? tag.find(SEPARATOR,1) : 0;
+      log_node = tag.substr( idx, tag.find( SEPARATOR, idx + 1 ) );
+    }
     log_file = log_node + " " + m_output + " SHARED='YES'";
   }
   m_addrColumn = nullptr;                           // reset pointer to item column
@@ -81,7 +78,7 @@ StatusCode TagCollectionStream::initialize() {
         logical_name = data_mgr->rootName();
         logical_name += SEPARATOR;
         logical_name += log_node;
-        m_topLeafName = m_addrLeaf.substr(0,m_addrLeaf.find(SEPARATOR,m_addrLeaf[0]=='/' ? 1 : 0));
+        m_topLeafName = m_addrLeaf.value().substr(0,m_addrLeaf.value().find(SEPARATOR,m_addrLeaf[0]=='/' ? 1 : 0));
         m_isTopLeaf   = m_topLeafName == m_addrLeaf;
         if ( src_mgr->isConnected(logical_name) )  return sc;
         sc = src_mgr->connect(log_file);

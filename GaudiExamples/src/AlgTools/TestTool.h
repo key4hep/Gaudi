@@ -10,7 +10,6 @@
 
 #include "ITestTool.h"
 
-
 /** @class TestTool TestTool.h
  *
  *
@@ -18,15 +17,12 @@
  *  @date   2004-03-08
  */
 
-class TestTool : public extends<GaudiTool,
-                                ITestTool> {
+class TestTool : public extends<GaudiTool, ITestTool>
+{
 
 public:
-
   /// Standard constructor
-  TestTool( const std::string& type,
-            const std::string& name,
-            const IInterface* parent);
+  using extends::extends;
 
   /// Initialize method
   StatusCode initialize() override;
@@ -34,13 +30,9 @@ public:
   /// Finalize method
   StatusCode finalize() override;
 
-  virtual ~TestTool() override = default;
+  ~TestTool() override = default;
 
 private:
-
-  // list of tools to test
-  typedef std::vector<std::string> ToolList;
-  ToolList m_tools;
-
+  Gaudi::Property<std::vector<std::string>> m_tools{this, "Tools", {}, "list of tools to test"};
 };
 #endif // TESTTOOL_H

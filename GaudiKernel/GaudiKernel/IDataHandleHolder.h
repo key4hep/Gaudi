@@ -28,11 +28,15 @@ public:
 
    virtual void commitHandles() = 0;
 
+   virtual const DataObjIDColl& inputDataObjs() const = 0;
+   virtual const DataObjIDColl& outputDataObjs() const = 0;
+
    DeclareInterfaceID(IDataHandleHolder,1,0);
 
- protected:
+protected:
    virtual void declareInput(Gaudi::DataHandle*) = 0;
    virtual void declareOutput(Gaudi::DataHandle*) = 0;
+   
 };
 
 class IDataHandleVisitor {

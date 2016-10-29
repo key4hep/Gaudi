@@ -30,44 +30,25 @@ namespace Gaudi
     public:
       // ======================================================================
       /// execute it!
-      StatusCode execute () override ;
+      StatusCode execute() override;
       // ======================================================================
     public:
       // ======================================================================
-      /** Standard constructor
-       *
-       */
-      BoostArrayProperties ( const std::string& name ,    // algorithm instance name
-                             ISvcLocator*       pSvc )    //         service locator
-        : GaudiAlgorithm ( name , pSvc )
-      {
-        //
-        std::fill( m_doubles.begin() , m_doubles.end() , -1 )      ;
-        std::fill( m_strings.begin() , m_strings.end() , "bla-bla" ) ;
-        //
-        declareProperty ( "Doubles" , m_doubles , "Boost-array of doubles" ) ;
-        declareProperty ( "Strings" , m_strings , "Boost-array of strings" ) ;
-      }
+      /// Standard constructor
+      using GaudiAlgorithm::GaudiAlgorithm;
       /// virtual destructor
-      ~BoostArrayProperties() override {}
-      // ======================================================================
-    private:
-      // ======================================================================
-      /// the default constructor is disabled
-      BoostArrayProperties () ;          // the default constructor is disabled
-      /// copy constructor is disabled
-      BoostArrayProperties ( const BoostArrayProperties& ) ;
-      /// assignment operator is disabled
-      BoostArrayProperties& operator=( const BoostArrayProperties& ) ;
+      ~BoostArrayProperties() override = default;
       // ======================================================================
     private:
       // ======================================================================
       /// array  of doubles
-      boost::array<double,5>       m_doubles ;             // array  of doubles
+      Gaudi::Property<boost::array<double, 5>> m_doubles{
+          this, "Doubles", {-1, -1, -1, -1, -1}, "Boost-array of doubles"};
       /// array of strings
-      boost::array<std::string,4>  m_strings ;              // array of strings
+      Gaudi::Property<boost::array<std::string, 4>> m_strings{
+          this, "Strings", {"bla-bla", "bla-bla", "bla-bla", "bla-bla"}, "Boost-array of strings"};
       // ======================================================================
-    } ;
+    };
     // ========================================================================
   } //                                         end of namespace Gaudi::Examples
   // ==========================================================================
@@ -75,20 +56,20 @@ namespace Gaudi
 // ============================================================================
 // execute it!
 // ============================================================================
-StatusCode Gaudi::Examples::BoostArrayProperties::execute ()
+StatusCode Gaudi::Examples::BoostArrayProperties::execute()
 {
-  propsPrint () ;
+  propsPrint();
   //
-  info() << " Doubles : " << Gaudi::Utils::toString ( m_doubles ) << endmsg ;
-  info() << " Strings : " << Gaudi::Utils::toString ( m_strings ) << endmsg ;
+  info() << " Doubles : " << Gaudi::Utils::toString( m_doubles ) << endmsg;
+  info() << " Strings : " << Gaudi::Utils::toString( m_strings ) << endmsg;
   //
-  return StatusCode::SUCCESS ;
+  return StatusCode::SUCCESS;
 }
 // ============================================================================
 /// The Factory
 // ============================================================================
 using Gaudi::Examples::BoostArrayProperties;
-DECLARE_COMPONENT(BoostArrayProperties)
+DECLARE_COMPONENT( BoostArrayProperties )
 // ============================================================================
 // The END
 // ============================================================================

@@ -35,9 +35,9 @@ public:
 	void removeProperty( Property& p );
 
 	/// Property implementation: set property
-  bool assign( const Property& p );
+  bool assign( const Property& p ) override;
 	/// Property implementation: get property
-  bool load( Property& p) const;
+  bool load( Property& p) const override;
 
 	/// Property implementation: set property
   bool assign( const std::string& name, const Property& p );

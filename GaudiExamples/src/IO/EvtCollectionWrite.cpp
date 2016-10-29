@@ -24,20 +24,6 @@ using namespace Gaudi::Examples;
 
 DECLARE_COMPONENT(EvtCollectionWrite)
 
-/**  Algorithm parameters which can be set at run time must be declared.
-     This should be done in the constructor.
-*/
-EvtCollectionWrite::EvtCollectionWrite(const std::string& name, ISvcLocator* pSvcLocator)
-:       Algorithm(name, pSvcLocator),
-  m_evtTupleSvc(0)
-{
-  declareProperty("NumMcTracks", m_nMCcut=50);
-}
-
-// Standard destructor
-EvtCollectionWrite::~EvtCollectionWrite()   {
-}
-
 StatusCode EvtCollectionWrite::initialize()   {
   StatusCode status = service("EvtTupleSvc", m_evtTupleSvc);
   if ( status.isSuccess() )   {
@@ -103,13 +89,11 @@ StatusCode EvtCollectionWrite::execute() {
         log << endmsg;
         log << MSG::INFO << "================ EVENT:" << evt->event() << " RUN:" << evt->run()
             << " ====== N(Track)=" << m_ntrkColl;
-        if ( m_ntrkColl < m_nMCcut )   {
-          log << " FAILED selection (<" << m_nMCcut << ") ============" << endmsg;
+        if ( m_ntrkColl < m_nMCcut.value() )   {
+          log << " FAILED selection (<" << m_nMCcut.value() << ") ============" << endmsg;
         }
         else    {
-          log << " PASSED selection (>=" << m_nMCcut << ") ============" << endmsg;
-        }
-        if ( m_ntrkColl >= m_nMCcut )   {
+          log << " PASSED selection (>=" << m_nMCcut.value() << ") ============" << endmsg;
           return m_evtTupleSvc->writeRecord("/NTUPLES/EvtColl/Dir1/Dir2/Dir3/Collection");
         }
       }

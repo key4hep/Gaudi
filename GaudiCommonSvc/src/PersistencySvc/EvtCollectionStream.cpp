@@ -20,15 +20,6 @@
 // Define the algorithm factory for the standard output data writer
 DECLARE_COMPONENT(EvtCollectionStream)
 
-// Standard Constructor
-EvtCollectionStream::EvtCollectionStream(const std::string& name, ISvcLocator* pSvcLocator)
-: Algorithm(name, pSvcLocator)
-{
-  m_storeName = "TagCollectionSvc";
-  declareProperty("ItemList",   m_itemNames);
-  declareProperty("EvtDataSvc", m_storeName);
-}
-
 // initialize data writer
 StatusCode EvtCollectionStream::initialize() {
   // Use the Job options service to set the Algorithm's parameters
@@ -43,7 +34,7 @@ StatusCode EvtCollectionStream::initialize() {
   clearItems();
   // Take the new item list from the properties.
   for(const auto& i : m_itemNames) addItem( i );
-  info() << "Data source:             " << m_storeName  << endmsg;
+  info() << "Data source:             " << m_storeName.value() << endmsg;
   return StatusCode::SUCCESS;
 }
 

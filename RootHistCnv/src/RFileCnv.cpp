@@ -16,7 +16,6 @@
 #include <map>
 #include <string>
 #include <GaudiKernel/IMetaDataSvc.h>
-#include <GaudiKernel/PropertyMgr.h>
 
 // Instantiation of a static factory class used by clients to create
 // instances of this service
@@ -31,15 +30,13 @@ RootHistCnv::RFileCnv::RFileCnv( ISvcLocator* svc )
 StatusCode RootHistCnv::RFileCnv::initialize()
 {
   // Set compression level property ...
-  std::unique_ptr<PropertyMgr> pmgr ( new PropertyMgr() );
-  pmgr->declareProperty( "GlobalCompression", m_compLevel );
   ISvcLocator * svcLoc = Gaudi::svcLocator();
   auto jobSvc = svcLoc->service<IJobOptionsSvc>("JobOptionsSvc");
-  const StatusCode sc = ( jobSvc &&
-                          jobSvc->setMyProperties("RFileCnv",pmgr.get()) );
+  auto prop = jobSvc->getClientProperty("RFileCnv", "GlobalCompression");
+  if (prop) m_compLevel = prop->toString();
 
   // initialise base class
-  return ( sc && RDirectoryCnv::initialize() );
+  return RDirectoryCnv::initialize();
 }
 //------------------------------------------------------------------------------
 

@@ -71,21 +71,6 @@ EventCollectionContext::EventCollectionContext(const EventCollectionSelector* pS
   m_pAddressBuffer->addRef();
 }
 
-// Standard constructor
-EventCollectionSelector::EventCollectionSelector(const std::string& name, ISvcLocator* svcloc )
-  : base_class(name, svcloc)
-{
-  declareProperty("CnvService",    m_tupleSvcName = "EvtTupleSvc");
-  declareProperty("Authentication",m_authentication= "");
-  declareProperty("Container",     m_cntName  = "B2PiPi");
-  declareProperty("Item",          m_itemName = "Address");
-  declareProperty("Criteria",      m_criteria = "");
-  declareProperty("DB",            m_database = "");
-  declareProperty("DbType",        m_dbType   = "");
-  declareProperty("DbService",     m_dbSvc    = "");
-  declareProperty("Function",      m_statement= "NTuple::Selector");
-}
-
 // IService implementation: Db event selector override
 StatusCode EventCollectionSelector::initialize()    {
   // Initialize base class
@@ -114,7 +99,7 @@ EventCollectionSelector::connectDataSource(const std::string& db, const std::str
   SmartIF<IDataSourceMgr> svc(m_tupleSvc);
   if ( svc && !db.empty()  )   {
     std::string ident = name() + ' ';
-    ident += "DATAFILE='" + m_database.substr(5) + "' ";
+    ident += "DATAFILE='" + m_database.value().substr(5) + "' ";
     if ( !m_dbSvc.empty() )
       ident += "SVC='" + m_dbSvc + "' ";
     else

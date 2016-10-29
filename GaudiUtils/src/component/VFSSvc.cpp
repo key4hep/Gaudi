@@ -7,16 +7,6 @@
 DECLARE_COMPONENT(VFSSvc)
 
 //------------------------------------------------------------------------------
-VFSSvc::VFSSvc(const std::string& name, ISvcLocator* svc):
-  base_class(name,svc)
-{
-  declareProperty("FileAccessTools",m_urlHandlersNames,
-                  "List of tools implementing the IFileAccess interface.");
-
-  declareProperty("FallBackProtocol",m_fallBackProtocol = "file",
-                  "URL prefix to use if the prefix is not present.");
-}
-//------------------------------------------------------------------------------
 StatusCode VFSSvc::initialize() {
   StatusCode sc = Service::initialize();
   if (sc.isFailure()) return sc;
@@ -51,7 +41,7 @@ StatusCode VFSSvc::initialize() {
   // Now let's check if we can handle the fallback protocol
   if ( m_urlHandlers.find(m_fallBackProtocol) == m_urlHandlers.end() ) {
     error() << "No handler specified for fallback protocol prefix "
-        << m_fallBackProtocol << endmsg;
+        << m_fallBackProtocol.value() << endmsg;
     return StatusCode::FAILURE;
   }
 

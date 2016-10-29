@@ -4,7 +4,6 @@
 // from Gaudi
 #include "GaudiAlg/GaudiAlgorithm.h"
 
-
 /** @class RecordOutputStream
   *
   * Simple class that adds an entry to the Transient Event Store to record that
@@ -18,26 +17,24 @@
   * @author Marco Clemencic
   * @date 30/08/2013
   */
-class RecordOutputStream: public GaudiAlgorithm {
+class RecordOutputStream : public GaudiAlgorithm
+{
 public:
-  /// Standard constructor
-  RecordOutputStream(const std::string& name, ISvcLocator* pSvcLocator);
-  ~RecordOutputStream() override; ///< Destructor
+  using GaudiAlgorithm::GaudiAlgorithm;
 
-  StatusCode initialize() override;    ///< Algorithm initialization
-  StatusCode execute   () override;    ///< Algorithm execution
-  StatusCode finalize  () override;    ///< Algorithm finalization
+  ~RecordOutputStream() override = default; ///< Destructor
+
+  StatusCode initialize() override; ///< Algorithm initialization
+  StatusCode execute() override;    ///< Algorithm execution
+  StatusCode finalize() override;   ///< Algorithm finalization
 
   /// Return the path in the Transient Store used to record the triggered
   /// instances.
-  static inline const std::string locationRoot() {
-    return "TriggeredOutputStreams";
-  }
+  static inline const std::string locationRoot() { return "TriggeredOutputStreams"; }
 protected:
 private:
-  /// Name of the OuputStream that should be called when this algorithm is
-  /// triggered.
-  std::string m_streamName;
+  Gaudi::Property<std::string> m_streamName{
+      this, "OutputStreamName", {}, "Name of the OutputStream instance should be triggered."};
 
   /// location of the DataObject flag used to record that this algorithm was
   /// called

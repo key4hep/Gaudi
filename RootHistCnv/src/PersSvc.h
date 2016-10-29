@@ -7,16 +7,17 @@
 // Forward declarations
 class TFile;
 
+namespace RootHistCnv
+{
 
-namespace RootHistCnv {
+  /** @class RootHistCnv::PersSvc PersSvc.h
 
-/** @class RootHistCnv::PersSvc PersSvc.h
+      Persistency service - to store histograms in ROOT format
+      @author Charles Leggett
+  */
 
-    Persistency service - to store histograms in ROOT format
-    @author Charles Leggett
-*/
-
-  class PersSvc : public ConversionSvc {
+  class PersSvc : public ConversionSvc
+  {
   public:
     /// Initialise the service
     StatusCode initialize() override;
@@ -25,22 +26,24 @@ namespace RootHistCnv {
     StatusCode finalize() override;
 
     /// Convert a collection of transient data objects into another representation
-    StatusCode createRep(DataObject* pObject, IOpaqueAddress*& refpAddress) override;
+    StatusCode createRep( DataObject* pObject, IOpaqueAddress*& refpAddress ) override;
 
     /// Standard constructor
-    PersSvc( const std::string& name, ISvcLocator* svc );
+    PersSvc( const std::string& name, ISvcLocator* svc ) : ConversionSvc( name, svc, ROOT_StorageType ) {}
 
     /// Standard destructor
     ~PersSvc() override = default;
 
   private:
-    std::string m_defFileName;  ///< Default file name
+    // undefFileName is defined in PersSvc.cpp
+    Gaudi::Property<std::string> m_defFileName{this, "OutputFile", undefFileName, "default file name"};
+    Gaudi::Property<bool> m_alphaIds{this, "ForceAlphaIds", false, "force alphabetic histograms/ntuple IDs"};
+    Gaudi::Property<bool> m_outputEnabled{this, "OutputEnabled", true, "Flag to enable/disable the output to file."};
+
     std::unique_ptr<TFile> m_hfile; ///< Pointer to the ROOT file
-    bool m_prtWar = false;      ///< Already printed a Warning
-    bool m_alphaIds;            ///< Force alphabetic histograms/ntuple IDs
-    bool m_outputEnabled;       ///< Flag to enable/disable the output to file
+    bool m_prtWar = false;          ///< Already printed a Warning
   };
 
-}    // namespace RootHistCnv
+} // namespace RootHistCnv
 
-#endif    // ROOTHISTCNV_PERSSVC_H
+#endif // ROOTHISTCNV_PERSSVC_H

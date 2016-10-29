@@ -15,27 +15,22 @@
  *  @date   2008-10-22
  */
 
-class TestToolAlgFailure : public GaudiAlgorithm {
+class TestToolAlgFailure : public GaudiAlgorithm
+{
 
 public:
-
   /// Standard constructor
-  TestToolAlgFailure( const std::string& name, ISvcLocator* pSvcLocator );
+  using GaudiAlgorithm::GaudiAlgorithm;
 
-  ~TestToolAlgFailure( ) override; ///< Destructor
+  ~TestToolAlgFailure() override = default; ///< Destructor
 
   StatusCode initialize() override;
   StatusCode execute() override;
   StatusCode finalize() override;
 
 private:
-
-  // list of tools to test
-  typedef std::vector<std::string> ToolList;
-  ToolList m_tools;
-
-  bool m_ignoreFailure;
-
+  Gaudi::Property<std::vector<std::string>> m_tools{this, "Tools", {}, "list of tools to test"};
+  Gaudi::Property<bool> m_ignoreFailure{this, "IgnoreFailure", false};
 };
 
 #endif // TESTTOOLALG_H

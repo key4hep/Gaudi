@@ -4,7 +4,8 @@
 
 from Gaudi.Configuration import *
 from Configurables import Gaudi__RootCnvSvc as RootCnvSvc, GaudiPersistency
-from Configurables import WriteHandleAlg, ReadHandleAlg, HiveWhiteBoard, HiveEventLoopMgr
+from Configurables import WriteHandleAlg, ReadHandleAlg, HiveWhiteBoard, HiveSlimEventLoopMgr
+from Configurables import ForwardSchedulerSvc
 
 # Output setup
 # - DST
@@ -56,13 +57,11 @@ algoparallel = 10
 whiteboard   = HiveWhiteBoard("EventDataSvc",
                               EventSlots = evtslots)
 
-eventloopmgr = HiveEventLoopMgr(MaxEventsParallel = evtslots,
-                                MaxAlgosParallel  = algoparallel,
-                                CloneAlgorithms = True,
-                                DumpQueues = True,
-                                NumThreads = algoparallel,
-                                AlgosDependencies = [[],[product_name],[product_name]])
+slimeventloopmgr = HiveSlimEventLoopMgr()
 
+scheduler = ForwardSchedulerSvc(MaxAlgosInFlight = algoparallel,
+                                ThreadPoolSize = algoparallel,
+                                OutputLevel=WARNING)
 
 # Application setup
 app = ApplicationMgr()
@@ -80,4 +79,4 @@ app.EvtMax   = 50
 app.EvtSel   = "NONE" # do not use any event input
 app.HistogramPersistency = "NONE"
 app.ExtSvc = [whiteboard]
-app.EventLoop = eventloopmgr
+app.EventLoop = slimeventloopmgr

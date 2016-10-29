@@ -84,14 +84,6 @@ namespace {
 StalledEventMonitor::StalledEventMonitor(const std::string& name, ISvcLocator* svcLoc):
   base_class(name, svcLoc) {
 
-  declareProperty("EventTimeout", m_eventTimeout = 600,
-                  "Number of seconds allowed to process a single event (0 to disable the check).");
-
-  declareProperty("MaxTimeoutCount", m_maxTimeoutCount = 0,
-                  "Number timeouts before aborting the execution (0 means never abort).");
-
-  declareProperty("StackTrace", m_stackTrace = false,
-                  "Whether to print the stack-trace on timeout.");
 }
 
 // Initialization of the service.

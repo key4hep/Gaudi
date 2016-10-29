@@ -29,29 +29,12 @@ inline void toupper(std::string &s)
                  (int(*)(int)) toupper);
 }
 
-//
-///////////////////////////////////////////////////////////////////////////
-//
-
-ExceptionSvc::ExceptionSvc( const std::string& nam, ISvcLocator* svc )
-  : base_class( nam, svc )
-  , m_log(msgSvc(), name() )
-{
-  // for exceptions
-  declareProperty( "Catch"      , m_mode_exc_s="ALL" ) ;
-
-  // for return codes
-  declareProperty( "Errors"     , m_mode_err_s="NONE" ) ;
-}
-
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 StatusCode
 ExceptionSvc::initialize() {
   StatusCode status = Service::initialize();
-  m_log.setLevel( m_outputLevel.value() );
-
-  if ( status.isFailure() )  { return status ; }                  // RETURN
+  if ( status.isFailure() )  { return status ; }
 
   string key = m_mode_exc_s.value();
 
@@ -63,8 +46,8 @@ ExceptionSvc::initialize() {
   if (mode == "NONE") {       m_mode_exc = NONE;
   } else if (mode == "ALL") { m_mode_exc = ALL;
   } else {
-    m_log << MSG::ERROR << "Unknown mode for Exception handling: \"" << mode
-	<< "\". Default must be one of \"ALL\" or \"NONE\"" << endmsg;
+    error() << "Unknown mode for Exception handling: \"" << mode
+	          << "\". Default must be one of \"ALL\" or \"NONE\"" << endmsg;
     m_state = Gaudi::StateMachine::OFFLINE;
     return StatusCode::FAILURE;
   }
@@ -92,16 +75,17 @@ ExceptionSvc::initialize() {
     } else if ( VAL == "RETHROW" ) {     m_retCodesExc[TAG] = RETHROW;
     } else if ( VAL == "DEFAULT" ) {     m_retCodesExc[TAG] = DEFAULT;
     } else {
-      m_log << MSG::ERROR << "In JobOpts: unknown return code \"" << VAL
-            << "\" for Algorithm " << TAG << std::endl
-            << "   Must be one of: DEFAULT, SUCCESS, FAILURE, RECOVERABLE, RETHROW"
-            << endmsg;
+      error() << "In JobOpts: unknown return code \"" << VAL
+             << "\" for Algorithm " << TAG << std::endl
+             << "   Must be one of: DEFAULT, SUCCESS, FAILURE, RECOVERABLE, RETHROW"
+             << endmsg;
       m_state = Gaudi::StateMachine::OFFLINE;
       return StatusCode::FAILURE;
     }
 
-    m_log << MSG::DEBUG << "Will catch exceptions thrown by: " << TAG
-	      << " -> action: " << VAL << endmsg;
+    if ( msgLevel( MSG::DEBUG ) )
+      debug() << "Will catch exceptions thrown by: " << TAG
+              << " -> action: " << VAL << endmsg;
 
   }
 
@@ -116,8 +100,8 @@ ExceptionSvc::initialize() {
   if (mode == "NONE") {       m_mode_err = NONE;
   } else if (mode == "ALL") { m_mode_err = ALL;
   } else {
-    m_log << MSG::ERROR << "Unknown mode for Error handling: \"" << mode
-          << "\". Default must be one of \"ALL\" or \"NONE\"" << endmsg;
+    error() << "Unknown mode for Error handling: \"" << mode
+            << "\". Default must be one of \"ALL\" or \"NONE\"" << endmsg;
     m_state = Gaudi::StateMachine::OFFLINE;
     return StatusCode::FAILURE;
   }
@@ -139,16 +123,17 @@ ExceptionSvc::initialize() {
     } else if ( VAL == "FAILURE" ) {     m_retCodesErr[TAG] = FAILURE;
     } else if ( VAL == "RECOVERABLE" ) { m_retCodesErr[TAG] = RECOVERABLE;
     } else {
-      m_log << MSG::ERROR << "In JobOpts: unknown return code \"" << VAL
-            << "\" for Algorithm " << TAG << std::endl
-            << "   Must be one of: SUCCESS, FAILURE, RECOVERABLE"
-            << endmsg;
+      error() << "In JobOpts: unknown return code \"" << VAL
+              << "\" for Algorithm " << TAG << std::endl
+              << "   Must be one of: SUCCESS, FAILURE, RECOVERABLE"
+              << endmsg;
       m_state = Gaudi::StateMachine::OFFLINE;
       return StatusCode::FAILURE;
     }
 
-    m_log << MSG::DEBUG << "Will process Errors returned by: " << TAG
-	      << " -> action: " << VAL << endmsg;
+    if ( msgLevel( MSG::DEBUG ) )
+      debug() << "Will process Errors returned by: " << TAG
+              << " -> action: " << VAL << endmsg;
   }
   return status;
 }
@@ -159,7 +144,8 @@ StatusCode ExceptionSvc::handleErr
 ( const INamedInterface& alg ,
   const StatusCode&      st  ) const
 {
-  m_log << MSG::DEBUG << "Handling Error from " << alg.name() << endmsg;
+  if ( msgLevel( MSG::DEBUG ) )
+    debug() << "Handling Error from " << alg.name() << endmsg;
 
   // is this Alg special?
   auto i = m_retCodesErr.find(alg.name());
@@ -199,7 +185,7 @@ StatusCode ExceptionSvc::process
     case RECOVERABLE: return StatusCode::RECOVERABLE;
     case RETHROW:     throw;
     }
-  } 
+  }
 
   if (m_mode_exc == ALL) { throw; }
   assert (m_mode_exc == NONE);
@@ -210,8 +196,8 @@ StatusCode ExceptionSvc::process
 StatusCode ExceptionSvc::handle
 ( const INamedInterface& alg ) const
 {
-  m_log << MSG::DEBUG << "Handling unknown exception for " << alg.name()
-        << endmsg;
+  if ( msgLevel( MSG::DEBUG ) )
+    debug() << "Handling unknown exception for " << alg.name() << endmsg;
   return process(alg);
 }
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -220,8 +206,9 @@ StatusCode ExceptionSvc::handle
 ( const INamedInterface& alg ,
   const std::exception & exc ) const
 {
-  m_log << MSG::DEBUG << "Handling std:except: \"" << exc.what() << "\" for "
-        << alg.name() << endmsg;
+  if ( msgLevel( MSG::DEBUG ) )
+    debug() << "Handling std:except: \"" << exc.what() << "\" for "
+            << alg.name() << endmsg;
   return process(alg) ;
 }
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -230,8 +217,9 @@ StatusCode ExceptionSvc::handle
 ( const INamedInterface& alg ,
   const GaudiException & exc ) const
 {
-  m_log << MSG::DEBUG << "Handling GaudiException: \"" << exc << "\" for "
-        << alg.name() << endmsg;
+  if ( msgLevel( MSG::DEBUG ) )
+    debug() << "Handling GaudiException: \"" << exc << "\" for "
+            << alg.name() << endmsg;
   return process(alg);
 }
 

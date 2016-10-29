@@ -19,25 +19,6 @@
 // ============================================================================
 
 // ============================================================================
-/** Standard constructor
- *  @param type   tool type (?)
- *  @param name   tool name
- *  @param parent pointer to parent
- */
-// ============================================================================
-GslErrorException::GslErrorException
-( const std::string& type   ,
-  const std::string& name   ,
-  const IInterface*  parent )
-  : base_class ( type, name , parent )
-{
-  declareProperty ( "IgnoreCodes" , m_ignore );
-}
-// ============================================================================
-
-// ============================================================================
-
-// ============================================================================
 /** handle the GSL error
  *  @see IGslErrorHandler
  *  @param error  error to be handled
@@ -51,9 +32,9 @@ StatusCode GslErrorException::handle
   // throw if code is not in the list of codes to be ignored
   if( m_ignore.end() == std::find( m_ignore.begin () ,
                                    m_ignore.end   () ,
-                                   error.code        ) ) { 
+                                   error.code        ) ) {
     throw GaudiException( " GSL ErrorCode=" + std::to_string( error.code ) +
-                          ": '" + error.reason + 
+                          ": '" + error.reason +
                           "' in the file '" + error.file +
                           "' at line " + std::to_string(error.line)
                         , "*GLS Error*" , StatusCode::FAILURE );

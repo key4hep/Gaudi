@@ -36,11 +36,6 @@ GaudiAlgorithm::GaudiAlgorithm ( const std::string&  name        ,
   : GaudiCommon<Algorithm> ( name , pSvcLocator )
 {
   setProperty ( "RegisterForContextService" , true ).ignore() ;
-
-  declareProperty( "VetoObjects", m_vetoObjs,
-                   "Skip execute if one or more of these TES objects exists" );
-  declareProperty( "RequireObjects", m_requireObjs,
-                   "Execute only if one or more of these TES objects exists" );
 }
 // ============================================================================
 // standard initialization method

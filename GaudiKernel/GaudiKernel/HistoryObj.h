@@ -1,13 +1,12 @@
 #ifndef GAUDIKERNEL_HISTORYOBJ_H
 #define GAUDIKERNEL_HISTORYOBJ_H
 
-#include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/ClassID.h"
-#include <string>
-#include <ostream>
-#include <vector>
+#include "GaudiKernel/DataObject.h"
 
-class Property;
+#include <ostream>
+#include <string>
+
 class IVersHistoryObj;
 
 /** @class HistoryObj HistoryObj.h GaudiKernel/HistoryObj.h
@@ -19,25 +18,23 @@ class IVersHistoryObj;
 
 */
 
-class GAUDI_API HistoryObj: public DataObject {
+class GAUDI_API HistoryObj : public DataObject
+{
 public:
-  HistoryObj() = default;
+  HistoryObj()          = default;
   virtual ~HistoryObj() = default;
 
   const CLID& clID() const override { return classID(); }
   static const CLID& classID();
-  static std::string convert_string(const std::string&);
+  static std::string convert_string( const std::string& );
 
-  virtual void dump(std::ostream&, const bool isXML=false,
- 		    int indent=0) const = 0;
+  virtual void dump( std::ostream&, const bool isXML = false, int indent = 0 ) const = 0;
 
- protected:
-  virtual void indent(std::ostream&, int) const;
-
+protected:
+  virtual void indent( std::ostream&, int ) const;
 };
 
 // Output stream.
-GAUDI_API std::ostream& operator<<(std::ostream& lhs, const HistoryObj& rhs);
-
+GAUDI_API std::ostream& operator<<( std::ostream& lhs, const HistoryObj& rhs );
 
 #endif

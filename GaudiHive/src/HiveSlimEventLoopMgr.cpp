@@ -47,36 +47,17 @@ DECLARE_SERVICE_FACTORY(HiveSlimEventLoopMgr)
 HiveSlimEventLoopMgr::HiveSlimEventLoopMgr(const std::string& name, ISvcLocator* svcLoc)
 :  base_class(name, svcLoc), m_appMgrUI(svcLoc)
 {
-  m_histoDataMgrSvc   = 0;
-  m_histoPersSvc      = 0;
-  m_evtDataMgrSvc     = 0;
-  m_whiteboard        = 0;
-  m_evtSelector       = 0;
-  m_evtContext        = 0;
-  m_blackListBS  = nullptr;
-
-  // Declare properties
-  declareProperty("HistogramPersistency", m_histPersName = "");
-  declareProperty("EvtSel", m_evtsel );
-  declareProperty("Warnings",m_warnings=true,
-                  "Set this property to false to suppress warning messages");
-  declareProperty("SchedulerName", m_schedulerName="ForwardSchedulerSvc",
-                  "Name of the scheduler to be used");
-  declareProperty("EventNumberBlackList", m_eventNumberBlacklist);
-
-  m_scheduledStop = false;
-
 }
 
 //--------------------------------------------------------------------------------------------
 // Standard Destructor
 //--------------------------------------------------------------------------------------------
 HiveSlimEventLoopMgr::~HiveSlimEventLoopMgr()   {
-  if( m_histoDataMgrSvc ) m_histoDataMgrSvc->release();
-  if( m_histoPersSvc ) m_histoPersSvc->release();
-  if( m_evtDataMgrSvc ) m_evtDataMgrSvc->release();
-  if( m_whiteboard ) m_whiteboard->release();
-  if( m_evtSelector ) m_evtSelector->release();
+  m_histoDataMgrSvc.reset();
+  m_histoPersSvc.reset();
+  m_evtDataMgrSvc.reset();
+  m_whiteboard.reset();
+  m_evtSelector.reset();
   if( m_evtContext ) delete m_evtContext;
 }
 
@@ -115,7 +96,7 @@ StatusCode HiveSlimEventLoopMgr::initialize()    {
   }
   m_schedulerSvc = serviceLocator()->service(m_schedulerName);
   if ( !m_schedulerSvc.isValid()){
-    fatal() << "Error retrieving SchedulerSvc interface ISchedulerSvc." << endmsg;
+    fatal() << "Error retrieving SchedulerSvc interface IScheduler." << endmsg;
     return StatusCode::FAILURE;
   }
   // Obtain the IProperty of the ApplicationMgr
@@ -351,7 +332,7 @@ StatusCode HiveSlimEventLoopMgr::executeEvent(void* createdEvts_IntPtr)    {
       return StatusCode::RECOVERABLE;
     }
   } else  if(std::binary_search(m_eventNumberBlacklist.begin(),m_eventNumberBlacklist.end(),createdEvts)){
-    
+
     verbose() << "Event " << createdEvts  << " on black list" << endmsg;
     return StatusCode::RECOVERABLE;
   }
@@ -384,7 +365,7 @@ StatusCode HiveSlimEventLoopMgr::executeEvent(void* createdEvts_IntPtr)    {
   verbose() << "Adding event " << evtContext->evt()
             << ", slot " << evtContext->slot()
             << " to the scheduler" << endmsg;
-  
+
   m_incidentSvc->fireIncident(std::unique_ptr<Incident>(new Incident(name(), IncidentType::BeginProcessing,*evtContext)));
 
   StatusCode addEventStatus = m_schedulerSvc->pushNewEvent(evtContext);
@@ -655,13 +636,13 @@ StatusCode HiveSlimEventLoopMgr::drainScheduler(int& finishedEvts){
       fatal() << "Failed event detected on " << thisFinishedEvtContext << endmsg;
       finalSC = StatusCode::FAILURE;
     }
-    //shouldn't these incidents move to the forward scheduler? 
+    //shouldn't these incidents move to the forward scheduler?
     // If we want to consume incidents with an algorithm at the end of the graph
     // we need to add this to forward scheduler lambda action,
     // otherwise we have to do this serially on this thread!
     m_incidentSvc->fireIncident(Incident(name(), IncidentType::EndProcessing,*thisFinishedEvtContext));
     m_incidentSvc->fireIncident(Incident(name(),IncidentType::EndEvent,*thisFinishedEvtContext));
-    
+
     debug() << "Clearing slot " << thisFinishedEvtContext->slot()
             << " (event " << thisFinishedEvtContext->evt()
             << ") of the whiteboard" << endmsg;

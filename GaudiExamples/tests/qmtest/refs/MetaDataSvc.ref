@@ -63,16 +63,22 @@ IAlgManager.Algorithms:Tuple, Tuple2, Tuple3
 ISvcLocator.Services:MessageSvc, JobOptionsSvc, RndmGenSvc.Engine, RndmGenSvc, Gaudi::MetaDataSvc, AppMgrRunable, IncidentSvc, AlgContextSvc, EventPersistencySvc, EventDataSvc, TimelineSvc, RootHistSvc, HistogramPersistencySvc, HistogramDataSvc, NTupleSvc, AlgExecStateSvc, EventLoopMgr, ToolSvc
 JobOptionsSvc.AuditFinalize:False
 JobOptionsSvc.AuditInitialize:False
-JobOptionsSvc.AuditReInitialize:False
-JobOptionsSvc.AuditReStart:False
+JobOptionsSvc.AuditReinitialize:False
+JobOptionsSvc.AuditRestart:False
 JobOptionsSvc.AuditServices:False
 JobOptionsSvc.AuditStart:False
 JobOptionsSvc.AuditStop:False
+JobOptionsSvc.DUMPFILE:
 JobOptionsSvc.OutputLevel:0
+JobOptionsSvc.PATH:../options/job.opts
+JobOptionsSvc.PYTHONACTION:
+JobOptionsSvc.PYTHONPARAMS:
+JobOptionsSvc.SEARCHPATH:...
+JobOptionsSvc.TYPE:NONE
 MessageSvc.AuditFinalize:False
 MessageSvc.AuditInitialize:False
-MessageSvc.AuditReInitialize:False
-MessageSvc.AuditReStart:False
+MessageSvc.AuditReinitialize:False
+MessageSvc.AuditRestart:False
 MessageSvc.AuditServices:False
 MessageSvc.AuditStart:False
 MessageSvc.AuditStop:False
@@ -110,8 +116,8 @@ MessageSvc.warningColorCode:[  ]
 MessageSvc.warningLimit:500
 NTupleSvc.AuditFinalize:False
 NTupleSvc.AuditInitialize:False
-NTupleSvc.AuditReInitialize:False
-NTupleSvc.AuditReStart:False
+NTupleSvc.AuditReinitialize:False
+NTupleSvc.AuditRestart:False
 NTupleSvc.AuditServices:False
 NTupleSvc.AuditStart:False
 NTupleSvc.AuditStop:False
