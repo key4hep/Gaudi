@@ -46,6 +46,12 @@ private:
 
   ToolHandle<IAlgTool> m_myUnusedToolHandle;
 
+  ToolHandle<const IMyTool> m_myConstToolHandle;
+
+  ToolHandle<const IMyTool> m_myCopiedConstToolHandle;
+
+  ToolHandle<IMyTool> m_myCopiedToolHandle;
+
   ToolHandleArray<IMyTool> m_tha;
 
   DataObjectHandle<DataObject> m_tracks;

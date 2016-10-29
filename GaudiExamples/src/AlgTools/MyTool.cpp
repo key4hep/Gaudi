@@ -19,7 +19,7 @@ const std::string& MyTool::message() const
 }
 
 //------------------------------------------------------------------------------
-void MyTool::doIt()
+void MyTool::doIt() const
 //------------------------------------------------------------------------------
 {
   info() << "doIt() has been called" << endmsg;

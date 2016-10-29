@@ -20,7 +20,7 @@ const std::string& MyGaudiTool::message() const
 }
 
 //------------------------------------------------------------------------------
-void MyGaudiTool::doIt()
+void MyGaudiTool::doIt() const
 //------------------------------------------------------------------------------
 {
   info() << "doIt() has been called" << endmsg;
