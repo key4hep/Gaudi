@@ -7,6 +7,7 @@
 
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/Auditor.h"
+#include "GaudiKernel/DataHandleHolderVisitor.h"
 #include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/Guards.h"
 #include "GaudiKernel/Service.h"
@@ -215,7 +216,7 @@ StatusCode AlgTool::sysInitialize()
     // visit all sub-tools, build full set
     DHHVisitor avis(m_inputDataObjs, m_outputDataObjs);
     acceptDHVisitor(&avis);
-    
+
     return sc;
   } );
 }
