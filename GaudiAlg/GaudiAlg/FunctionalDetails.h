@@ -54,20 +54,20 @@ namespace Gaudi { namespace Functional { namespace details {
  
       /// Zips multiple containers together to form a single range
       template< typename... Args >
-      inline decltype(auto) range( Args&... args )
+      inline decltype(auto) range( Args&& ... args )
       {
         //assert( check_sizes( args... ) );
         verifySizes( args... );
-        return ranges::view::zip( args... );
+        return ranges::view::zip( std::forward<Args>(args)... );
       }
       
       /// Zips multiple containers together to form a single const range
       template< typename... Args >
-      inline decltype(auto) const_range( const Args&... args )
+      inline decltype(auto) const_range( Args&& ... args )
       {
         //assert( check_sizes( args... ) );
         verifySizes( args... );
-        return ranges::view::const_( ranges::view::zip( args... ) );
+        return ranges::view::const_( ranges::view::zip( std::forward<Args>(args)... ) );
       }
 
     }
