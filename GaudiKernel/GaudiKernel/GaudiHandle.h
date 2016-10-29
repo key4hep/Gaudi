@@ -175,26 +175,58 @@ class GAUDI_API GaudiHandle: public GaudiHandleBase {
   //
 protected:
   GaudiHandle( std::string myTypeAndName, std::string myComponentType,
-	           std::string myParentName )
+               std::string myParentName )
     : GaudiHandleBase(std::move(myTypeAndName), std::move(myComponentType), std::move(myParentName))
   {}
 
 public:
+
   /** Copy constructor needed for correct ref-counting */
-  GaudiHandle( const GaudiHandle& other )
+  template< typename CT  = T,
+            typename NCT = typename std::remove_const<T>::type >
+  GaudiHandle( const GaudiHandle<NCT>& other,
+               typename std::enable_if< std::is_const<CT>::value &&
+                                        !std::is_same<CT,NCT>::value >::type * = nullptr )
+    : GaudiHandleBase( other ) {
+    m_pObject = other.get();
+    if ( m_pObject ) nonConst(m_pObject)->addRef();
+  }
+
+  /** Copy constructor needed for correct ref-counting */
+  template< typename CT  = T,
+            typename NCT = typename std::remove_const<T>::type >
+  GaudiHandle( const GaudiHandle& other,
+               typename std::enable_if< std::is_same<CT,NCT>::value >::type * = nullptr )
     : GaudiHandleBase( other ) {
     m_pObject = other.m_pObject;
-    if ( m_pObject ) m_pObject->addRef();
+    if ( m_pObject ) nonConst(m_pObject)->addRef();
   }
 
   /** Assignment operator for correct ref-counting */
-  GaudiHandle& operator=( const GaudiHandle& other ) {
+  template< typename CT  = T,
+            typename NCT = typename std::remove_const<T>::type >
+  typename std::enable_if< std::is_const<CT>::value && !std::is_same<CT,NCT>::value, GaudiHandle& >::type
+  operator=( const GaudiHandle<NCT>& other ) {
+    GaudiHandleBase::operator=( other );
+    // release any current tool
+    release().ignore();
+    m_pObject = other.get();
+    // update ref-counting
+    if ( m_pObject ) nonConst(m_pObject)->addRef();
+    return *this;
+  }
+
+  /** Assignment operator for correct ref-counting */
+  template< typename CT  = T,
+            typename NCT = typename std::remove_const<T>::type >
+  typename std::enable_if< std::is_same<CT,NCT>::value, GaudiHandle& >::type
+  operator=( const GaudiHandle& other ) {
     GaudiHandleBase::operator=( other );
     // release any current tool
     release().ignore();
     m_pObject = other.m_pObject;
     // update ref-counting
-    if ( m_pObject ) m_pObject->addRef();
+    if ( m_pObject ) nonConst(m_pObject)->addRef();
     return *this;
   }
 
@@ -286,12 +318,18 @@ protected:
       Can be overridden by the derived class if something else is needed. */
   virtual StatusCode release( T* comp ) const { // not really const, because it updates m_pObject
     // const cast to support T being a const type
-    auto * c = const_cast< typename std::remove_const<T>::type * >(comp);
-    c->release();
+    nonConst(comp)->release();
     return StatusCode::SUCCESS;
   }
 
 private:
+
+  template< class CLASS >
+  typename std::remove_const<CLASS>::type * nonConst( CLASS* p ) const
+  {
+    return const_cast< typename std::remove_const<CLASS>::type * >( p );
+  }
+
   /** Helper function to set default name and type */
   void setDefaultTypeAndName() {
     const std::string& myType = getDefaultType();
