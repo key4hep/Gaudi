@@ -193,10 +193,7 @@ public:
   }
 
   /** Copy constructor needed for correct ref-counting */
-  template< typename CT  = T,
-            typename NCT = typename std::remove_const<T>::type >
-  GaudiHandle( const GaudiHandle& other,
-               typename std::enable_if< std::is_same<CT,NCT>::value >::type * = nullptr )
+  GaudiHandle( const GaudiHandle& other )
     : GaudiHandleBase( other ) {
     m_pObject = other.m_pObject;
     if ( m_pObject ) nonConst(m_pObject)->addRef();
@@ -217,10 +214,7 @@ public:
   }
 
   /** Assignment operator for correct ref-counting */
-  template< typename CT  = T,
-            typename NCT = typename std::remove_const<T>::type >
-  typename std::enable_if< std::is_same<CT,NCT>::value, GaudiHandle& >::type
-  operator=( const GaudiHandle& other ) {
+  GaudiHandle& operator=( const GaudiHandle& other ) {
     GaudiHandleBase::operator=( other );
     // release any current tool
     release().ignore();

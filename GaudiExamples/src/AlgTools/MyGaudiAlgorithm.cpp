@@ -26,6 +26,7 @@ MyGaudiAlgorithm::MyGaudiAlgorithm(const std::string& name, ISvcLocator* ploc)
   //------------------------------------------------------------------------------
    m_myCopiedConstToolHandle = m_myPubToolHandle;
    m_myCopiedToolHandle      = m_myPubToolHandle;
+   m_myCopiedConstToolHandle2 =  m_myConstToolHandle;
    declareProperty("PrivToolHandle", m_myPrivToolHandle);
    declareProperty("PubToolHandle", m_myPubToolHandle);
    declareProperty("GenericToolHandle", m_myGenericToolHandle);
@@ -62,6 +63,7 @@ StatusCode MyGaudiAlgorithm::initialize() {
           m_myConstToolHandle.retrieve() &&
           m_myPubToolHandle.retrieve()  &&
           m_myCopiedConstToolHandle.retrieve()  &&
+          m_myCopiedConstToolHandle2.retrieve() &&
           m_myCopiedToolHandle.retrieve()  &&
           m_myGenericToolHandle.retrieve() ) ) {
     error() << "Unable to retrive one of the ToolHandles" << endmsg;
@@ -100,14 +102,21 @@ StatusCode MyGaudiAlgorithm::execute() {
   m_myPubToolHandle->doIt();
   m_myConstToolHandle->doIt();
 
+  info() << "tools copied assigned via ToolHandle<T>...." << endmsg;
+
   m_myCopiedConstToolHandle->doIt();
   m_myCopiedToolHandle->doIt();
+  m_myCopiedConstToolHandle2->doIt();
+
+  info() << "tools copied constructed via ToolHandle<T>...." << endmsg;
 
   // copy construct some handles
   ToolHandle<const IMyTool> h1( m_myPubToolHandle  );
   ToolHandle<IMyTool>       h2( m_myPrivToolHandle );
+  ToolHandle<const IMyTool> h3( m_myConstToolHandle );
   h1->doIt();
   h2->doIt();
+  h3->doIt();
 
   return StatusCode::SUCCESS;
 }

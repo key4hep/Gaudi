@@ -50,6 +50,8 @@ private:
 
   ToolHandle<const IMyTool> m_myCopiedConstToolHandle;
 
+  ToolHandle<const IMyTool> m_myCopiedConstToolHandle2;
+
   ToolHandle<IMyTool> m_myCopiedToolHandle;
 
   ToolHandleArray<IMyTool> m_tha;
