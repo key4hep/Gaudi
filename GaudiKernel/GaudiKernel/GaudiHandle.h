@@ -233,10 +233,12 @@ public:
   }
 
   /// Return the wrapped pointer, not calling retrieve() if null.
-  typename std::add_const<T>::type * get() const { return m_pObject; }
+  T * get() { return m_pObject; }
 
   /// Return the wrapped pointer, not calling retrieve() if null.
-  T * get() { return m_pObject; }
+  typename std::add_const<T>::type * get() const {
+    return m_pObject;
+  }
 
   /// True if the wrapped pointer is not null.
   bool isSet() const {
