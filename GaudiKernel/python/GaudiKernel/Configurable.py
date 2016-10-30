@@ -679,12 +679,11 @@ class Configurable( object ):
         """
         if not hasattr(self, name):
             return False
-        else:
-            default = self.getDefaultProperty(name)
-            if isinstance(default, (list, dict)):
-                value = getattr(self, name)
-                return value != default
-            return True
+        default = self.getDefaultProperty(name)
+        if isinstance(default, (list, dict, DataObjectHandleBase)):
+            value = getattr(self, name)
+            return value != default
+        return True
 
     def getType( cls ):
         return cls.__name__
