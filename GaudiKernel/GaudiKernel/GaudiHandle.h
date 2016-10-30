@@ -339,7 +339,7 @@ protected:
   /** Load the pointer to the component. Do a retrieve if needed. Throw an exception if
       retrieval fails. */
   void assertObject() const { // not really const, because it may update m_pObject
-    if ( !isValid() ) {
+    if ( UNLIKELY(!isValid()) ) {
       throw GaudiException("Failed to retrieve " + componentType() + ": " + typeAndName(),
 			   componentType() + " retrieve", StatusCode::FAILURE);
     }
