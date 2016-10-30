@@ -221,7 +221,7 @@ public:
   /** Do the real release of the AlgTool. */
   StatusCode release( T* algTool ) const override
   {
-    return m_pToolSvc->releaseTool( nonConst(algTool) );
+    return m_pToolSvc->releaseTool( this->nonConst(algTool) );
   }
 
   std::string typeAndName() const override {
@@ -243,18 +243,8 @@ protected:
   IAlgTool * getAsIAlgTool() override
   {
     // const cast to support T being const
-    return nonConst( GaudiHandle<T>::get() );
+    return this->nonConst( GaudiHandle<T>::get() );
   }
-
-private:
-
-  template< class TOOL >
-  typename std::remove_const<TOOL>::type * nonConst( TOOL* algTool ) const
-  {
-    return const_cast< typename std::remove_const<TOOL>::type * >( algTool );
-  }
-
-protected:
 
   StatusCode i_retrieve(IAlgTool*& algTool) const override 
   {

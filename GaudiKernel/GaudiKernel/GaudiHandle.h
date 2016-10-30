@@ -316,13 +316,14 @@ protected:
     return StatusCode::SUCCESS;
   }
 
-private:
-
+  /// Cast a pointer to a non const type
   template< class CLASS >
   typename std::remove_const<CLASS>::type * nonConst( CLASS* p ) const
   {
     return const_cast< typename std::remove_const<CLASS>::type * >( p );
   }
+
+ private:
 
   /** Helper function to set default name and type */
   void setDefaultTypeAndName() {
@@ -343,10 +344,14 @@ private:
 			   componentType() + " retrieve", StatusCode::FAILURE);
     }
   }
+
+ private:
+
   //
   // Data members
   //
   mutable T* m_pObject = nullptr;
+
 };
 
 
