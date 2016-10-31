@@ -60,7 +60,7 @@ private:
   Gaudi::Property<bool> m_shortCalib{this, "shortCalib", false, "Enable coarse grained calibration"};
   Gaudi::Property<unsigned int> m_rwRepetitions{this, "RwRepetitions", 1, "Increase access to the WB"};
   Gaudi::Property<float> m_sleepFraction{
-      this, "SleepyFraction", 0.0f,
+      this, "SleepFraction", 0.0f,
       "Fraction of time, between 0 and 1, when an algorithm is actually sleeping instead of crunching"};
 
   // To calib only once

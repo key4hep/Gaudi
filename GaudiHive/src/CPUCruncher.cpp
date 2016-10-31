@@ -11,8 +11,13 @@ std::vector<unsigned int> CPUCruncher::m_niters_vect;
 std::vector<double> CPUCruncher::m_times_vect;
 CPUCruncher::CHM CPUCruncher::m_name_ncopies_map;
 
-// DECLARE_ALGORITHM_FACTORY(CPUCruncher)
 DECLARE_COMPONENT( CPUCruncher )
+
+#define ON_DEBUG if (msgLevel(MSG::DEBUG))
+#define DEBUG_MSG ON_DEBUG debug()
+
+#define ON_VERBOSE if (msgLevel(MSG::VERBOSE))
+#define VERBOSE_MSG ON_VERBOSE verbose()
 
 //------------------------------------------------------------------------------
 
@@ -40,6 +45,9 @@ CPUCruncher::~CPUCruncher()
 
 StatusCode CPUCruncher::initialize()
 {
+  auto sc = GaudiAlgorithm::initialize();
+  if ( !sc ) return sc;
+
   if ( m_times_vect.size() == 0 ) calibrate();
 
   // if an algorithm was setup to sleep, for whatever period, it effectively becomes I/O-bound
@@ -53,7 +61,7 @@ StatusCode CPUCruncher::initialize()
 
   int i = 0;
   for ( auto k : m_inpKeys ) {
-    debug() << "adding input key " << k << endmsg;
+    DEBUG_MSG << "adding input key " << k << endmsg;
     m_inputHandles.push_back( new DataObjectHandle<DataObject>( k, Gaudi::DataHandle::Reader, this ) );
     declareProperty( "dummy_in_" + std::to_string( i ), *( m_inputHandles.back() ) );
     i++;
@@ -61,13 +69,13 @@ StatusCode CPUCruncher::initialize()
 
   i = 0;
   for ( auto k : m_outKeys ) {
-    debug() << "adding output key " << k << endmsg;
+    DEBUG_MSG << "adding output key " << k << endmsg;
     m_outputHandles.push_back( new DataObjectHandle<DataObject>( k, Gaudi::DataHandle::Writer, this ) );
     declareProperty( "dummy_out_" + std::to_string( i ), *( m_outputHandles.back() ) );
     i++;
   }
 
-  return StatusCode::SUCCESS;
+  return sc;
 }
 
 /*
@@ -76,37 +84,15 @@ The relation is a sqrt for times greater than 10^-4 seconds.
 */
 void CPUCruncher::calibrate()
 {
-
-  MsgStream log( msgSvc(), name() );
-  m_niters_vect.push_back( 0 );
-  m_niters_vect.push_back( 500 );
-  m_niters_vect.push_back( 600 );
-  m_niters_vect.push_back( 700 );
-  m_niters_vect.push_back( 800 );
-  m_niters_vect.push_back( 1000 );
-  m_niters_vect.push_back( 1300 );
-  m_niters_vect.push_back( 1600 );
-  m_niters_vect.push_back( 2000 );
-  m_niters_vect.push_back( 2300 );
-  m_niters_vect.push_back( 2600 );
-  m_niters_vect.push_back( 3000 );
-  m_niters_vect.push_back( 3300 );
-  m_niters_vect.push_back( 3500 );
-  m_niters_vect.push_back( 3900 );
-  m_niters_vect.push_back( 4200 );
-  m_niters_vect.push_back( 5000 );
-  m_niters_vect.push_back( 6000 );
-  m_niters_vect.push_back( 8000 );
-  m_niters_vect.push_back( 10000 );
-  m_niters_vect.push_back( 12000 );
-  m_niters_vect.push_back( 15000 );
-  m_niters_vect.push_back( 17000 );
-  m_niters_vect.push_back( 20000 );
-  m_niters_vect.push_back( 25000 );
-  m_niters_vect.push_back( 30000 );
-  m_niters_vect.push_back( 35000 );
-  m_niters_vect.push_back( 40000 );
-  m_niters_vect.push_back( 60000 );
+  m_niters_vect = { 0, 500, 600, 700, 800,
+                    1000, 1300, 1600,
+                    2000, 2300, 2600,
+                    3000, 3300, 3500, 3900,
+                    4200, 5000, 6000, 8000,
+                    10000, 12000, 15000, 17000,
+                    20000, 25000,
+                    30000, 35000,
+                    40000, 60000 };
   if ( !m_shortCalib ) {
     m_niters_vect.push_back( 100000 );
     m_niters_vect.push_back( 200000 );
@@ -115,7 +101,7 @@ void CPUCruncher::calibrate()
   m_times_vect.resize( m_niters_vect.size() );
   m_times_vect[0] = 0.;
 
-  log << MSG::INFO << "Starting calibration..." << endmsg;
+  info() << "Starting calibration..." << endmsg;
   for ( unsigned int i = 1; i < m_niters_vect.size(); ++i ) {
     unsigned long niters = m_niters_vect[i];
     unsigned int trials  = 30;
@@ -125,11 +111,11 @@ void CPUCruncher::calibrate()
       auto stop_cali  = tbb::tick_count::now();
       double deltat   = ( stop_cali - start_cali ).seconds();
       m_times_vect[i] = deltat;
-      log << MSG::DEBUG << "Calibration: # iters = " << niters << " => " << deltat << endmsg;
+      DEBUG_MSG << "Calibration: # iters = " << niters << " => " << deltat << endmsg;
       trials--;
     } while ( trials > 0 and m_times_vect[i] < m_times_vect[i - 1] ); // make sure that they are monotonic
   }
-  log << MSG::INFO << "Calibration finished!" << endmsg;
+  info() << "Calibration finished!" << endmsg;
 }
 
 unsigned long CPUCruncher::getNCaliIters( double runtime )
@@ -168,9 +154,6 @@ unsigned long CPUCruncher::getNCaliIters( double runtime )
 
 void CPUCruncher::findPrimes( const unsigned long int n_iterations )
 {
-
-  MsgStream log( msgSvc(), name() );
-
   // Flag to trigger the allocation
   bool is_prime;
 
@@ -214,7 +197,7 @@ void CPUCruncher::findPrimes( const unsigned long int n_iterations )
   // Fool Compiler optimisations:
   for ( unsigned int prime_index = 0; prime_index < primes_size; prime_index++ )
     if ( primes[prime_index] == 4 )
-      log << "This does never happen, but it's necessary too fool aggressive compiler optimisations!" << endmsg;
+      debug() << "This does never happen, but it's necessary too fool aggressive compiler optimisations!" << endmsg;
 
   delete[] primes;
 }
@@ -223,9 +206,6 @@ void CPUCruncher::findPrimes( const unsigned long int n_iterations )
 
 StatusCode CPUCruncher::execute() // the execution of the algorithm
 {
-
-  MsgStream logstream( msgSvc(), name() );
-
   float crunchtime;
 
   if ( m_local_rndm_gen ) {
@@ -283,47 +263,45 @@ StatusCode CPUCruncher::execute() // the execution of the algorithm
   if ( isIOBound() ) {
     // in this block (and not in other places around) msgLevel is checked for the same reason as above, when
     // preparing to sleep several lines above: to reduce as much as possible the overhead around sleeping
-    if ( msgLevel( MSG::DEBUG ) ) logstream << MSG::DEBUG << "Dreaming time will be: " << dreamtime << endmsg;
+    DEBUG_MSG << "Dreaming time will be: " << dreamtime << endmsg;
 
-    if ( msgLevel( MSG::DEBUG ) ) startSleeptbb = tbb::tick_count::now();
+    ON_DEBUG startSleeptbb = tbb::tick_count::now();
     std::this_thread::sleep_for( dreamtime_duration );
-    if ( msgLevel( MSG::DEBUG ) ) endSleeptbb = tbb::tick_count::now();
+    ON_DEBUG endSleeptbb = tbb::tick_count::now();
 
     // actual sleeping time can be longer due to scheduling or resource contention delays
-    if ( msgLevel( MSG::DEBUG ) ) {
+    ON_DEBUG {
       const double actualDreamTime = ( endSleeptbb - startSleeptbb ).seconds();
-      logstream << MSG::DEBUG << "Actual dreaming time was: " << actualDreamTime << "s" << endmsg;
+      debug() << "Actual dreaming time was: " << actualDreamTime << "s" << endmsg;
     }
   } // end of "sleeping block"
 
-  logstream << MSG::DEBUG << "Crunching time will be: " << crunchtime << endmsg;
+  DEBUG_MSG << "Crunching time will be: " << crunchtime << endmsg;
   if ( getContext() )
-    logstream << MSG::DEBUG << "Start event " << getContext()->evt() << " in slot " << getContext()->slot()
+    DEBUG_MSG << "Start event " << getContext()->evt() << " in slot " << getContext()->slot()
               << " on pthreadID " << std::hex << pthread_self() << std::dec << endmsg;
 
+  VERBOSE_MSG << "inputs number: " << m_inputHandles.size() << endmsg;
   for ( auto& inputHandle : m_inputHandles ) {
     if ( !inputHandle->isValid() ) continue;
 
+    VERBOSE_MSG << "get from TS: " << inputHandle->objKey() << endmsg;
     DataObject* obj = nullptr;
     for ( unsigned int i = 0; i < m_rwRepetitions; ++i ) {
       obj = inputHandle->get();
     }
-    if ( obj == nullptr ) logstream << MSG::ERROR << "A read object was a null pointer." << endmsg;
+    if ( obj == nullptr ) error() << "A read object was a null pointer." << endmsg;
   }
 
   const unsigned long n_iters = getNCaliIters( crunchtime );
   findPrimes( n_iters );
 
+  VERBOSE_MSG << "outputs number: " << m_outputHandles.size() << endmsg;
   for ( auto& outputHandle : m_outputHandles ) {
     if ( !outputHandle->isValid() ) continue;
 
+    VERBOSE_MSG << "put to TS: " << outputHandle->objKey() << endmsg;
     outputHandle->put( new DataObject() );
-  }
-
-  for ( auto& inputHandle : m_inputHandles ) {
-    if ( !inputHandle->isValid() ) continue;
-
-    for ( unsigned int i = 1; i < m_rwRepetitions; ++i ) inputHandle->get();
   }
 
   tbb::tick_count endtbb = tbb::tick_count::now();
@@ -331,11 +309,11 @@ StatusCode CPUCruncher::execute() // the execution of the algorithm
   const double actualRuntime = ( endtbb - starttbb ).seconds();
 
   if ( getContext() )
-    logstream << MSG::DEBUG << "Finish event " << getContext()->evt()
+    DEBUG_MSG << "Finish event " << getContext()->evt()
               //      << " on pthreadID " << getContext()->m_thread_id
               << " in " << actualRuntime << " seconds" << endmsg;
 
-  logstream << MSG::DEBUG << "Timing: ExpectedCrunchtime= " << crunchtime << " ExpectedDreamtime= " << dreamtime
+  DEBUG_MSG << "Timing: ExpectedCrunchtime= " << crunchtime << " ExpectedDreamtime= " << dreamtime
             << " ActualTotalRuntime= " << actualRuntime << " Ratio= " << ( crunchtime + dreamtime ) / actualRuntime
             << " Niters= " << n_iters << endmsg;
 
@@ -359,8 +337,8 @@ StatusCode CPUCruncher::finalize() // the finalization of the algorithm
   constexpr double s2ms = 1000.;
   // do not show repetitions
   if ( ninstances != 0 ) {
-    log << MSG::INFO << "Summary: name= " << name() << "\t avg_runtime= " << m_avg_runtime * s2ms
-        << "\t n_clones= " << ninstances << endmsg;
+    info() << "Summary: name= " << name() << "\t avg_runtime= " << m_avg_runtime * s2ms
+           << "\t n_clones= " << ninstances << endmsg;
 
     CHM::accessor name_ninstances;
     m_name_ncopies_map.find( name_ninstances, name() );
