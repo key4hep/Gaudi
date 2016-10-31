@@ -320,12 +320,6 @@ StatusCode CPUCruncher::execute() // the execution of the algorithm
     outputHandle->put( new DataObject() );
   }
 
-  for ( auto& inputHandle : m_inputHandles ) {
-    if ( !inputHandle->isValid() ) continue;
-
-    for ( unsigned int i = 1; i < m_rwRepetitions; ++i ) inputHandle->get();
-  }
-
   tbb::tick_count endtbb = tbb::tick_count::now();
 
   const double actualRuntime = ( endtbb - starttbb ).seconds();
