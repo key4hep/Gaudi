@@ -23,7 +23,8 @@ InertMessageSvc(OutputLevel=INFO)
 
 whiteboard   = HiveWhiteBoard("EventDataSvc",
                               EventSlots = evtslots,
-                              OutputLevel = INFO)
+                              OutputLevel = INFO,
+                              ForceLeaves = True)
 
 slimeventloopmgr = HiveSlimEventLoopMgr(OutputLevel=INFO)
 
@@ -47,7 +48,8 @@ ifIObound = precedence.UniformBooleanValue(False)
 sequencer = precedence.CruncherSequence(timeValue, ifIObound, sleepFraction=0.0,
                                         cfgPath = "lhcb/reco/cf_dependencies.graphml",
                                         dfgPath = "lhcb/reco/data_dependencies.graphml",
-                                        topSequencer = 'GaudiSequencer/BrunelSequencer').get()
+                                        topSequencer = 'GaudiSequencer/BrunelSequencer',
+                                        algoDebug = False).get()
 
 ApplicationMgr( EvtMax = evtMax,
                 EvtSel = 'NONE',
