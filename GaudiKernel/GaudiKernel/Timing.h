@@ -16,6 +16,12 @@
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/SystemBase.h"
 
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <sys/time.h>
+#endif
+
 /** Note: OS specific details for process timing
 
     Entrypoints:
@@ -117,7 +123,14 @@ namespace System  {
       @param typ     Indicator or the unit the time will be returned.
       @return        Requested value in the indicated units.
   */
+
+  /// Get current time in specificed units via template parameter (inlined)
+  template <TimeType T>
+  GAUDI_API longlong currentTime();
+
+  /// Get current time in specificed units
   GAUDI_API longlong currentTime(TimeType typ = milliSec);
+
   /** Retrieve the number of ticks since system startup
       @return        Requested value in the indicated units.
   */
@@ -184,7 +197,7 @@ namespace System  {
 
 }
 
-// implementation of the templated adjustTime
+  // implementation of the templated functions
 namespace System {
   template <>
   inline long long adjustTime<Year>(long long t) {
@@ -226,6 +239,33 @@ namespace System {
   inline long long adjustTime<Native>(long long t) {
     return t;
   }
+
+  // This is frequently used and thus we inline it if possible
+  template <TimeType T>
+  inline longlong currentTime()    {
+#ifdef _WIN32
+    longlong current = 0;
+    ::GetSystemTimeAsFileTime((FILETIME*)&current);
+    return adjustTime<T>(current - UNIX_BASE_TIME);
+#else
+    struct timeval tv;
+    ::gettimeofday(&tv, 0);
+    return adjustTime<T>((tv.tv_sec*1000000 + tv.tv_usec)*10);
+#endif
+  }
+
+  // Define all template versions here to avoid code bloat
+  template longlong currentTime<Year    >();
+  template longlong currentTime<Month   >();
+  template longlong currentTime<Day     >();
+  template longlong currentTime<Hour    >();
+  template longlong currentTime<Min     >();
+  template longlong currentTime<Sec     >();
+  template longlong currentTime<milliSec>();
+  template longlong currentTime<microSec>();
+  template longlong currentTime<nanoSec >();
+  template longlong currentTime<Native  >();
+
 }
 
 #endif    // GAUDIKERNEL_TIMING_H
