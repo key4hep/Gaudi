@@ -150,7 +150,7 @@ public: // accessors
 public:
   // ==========================================================================
   // following methods cannot go in GaudiCommon since they use methods ( evtSvc()
-  // and detDvc() ) that are not members of AlgTool.
+  // and detSvc() ) that are not members of AlgTool.
   // Also some methods seem which are members of the base class do not seem
   // to be found unless forwarding methods are put here ??
   // ==========================================================================
@@ -725,16 +725,17 @@ public:
 public:
   // ==========================================================================
   /// enable/disable summary
-  static bool enableSummary( bool ); // enable/disable summary
+  static bool enableSummary( bool );
   /// is summary enabled?
-  static bool summaryEnabled(); // is summary enabled?
-                                // ==========================================================================
-                                /** Standard constructor
-                                 *  @see AlgTool
-                                 *  @param type tool type (useless)
-                                 *  @param name tool name
-                                 *  @param parent pointer to parent object (service, algorithm or tool)
-                                 */
+  static bool summaryEnabled();
+
+  // ==========================================================================
+  /** Standard constructor
+   *  @see AlgTool
+   *  @param type tool type (useless)
+   *  @param name tool name
+   *  @param parent pointer to parent object (service, algorithm or tool)
+   */
   GaudiTool( const std::string& type, const std::string& name, const IInterface* parent );
 
   /// destructor, virtual and protected
@@ -762,19 +763,19 @@ private:
 private:
   // ==========================================================================
   /// pointer to the N-Tuple service
-  mutable INTupleSvc* m_ntupleSvc = nullptr;
+  mutable SmartIF<INTupleSvc>     m_ntupleSvc;
   /// pointer to the event tag collection service
-  mutable INTupleSvc* m_evtColSvc = nullptr;
+  mutable SmartIF<INTupleSvc>     m_evtColSvc;
   /// pointer to Detector Data Service
-  mutable IDataProviderSvc* m_detSvc = nullptr;
+  mutable SmartIF<IDataProviderSvc> m_detSvc;
   /// pointer to Chrono & Stat Service
-  mutable IChronoStatSvc* m_chronoSvc = nullptr;
+  mutable SmartIF<IChronoStatSvc> m_chronoSvc;
   /// pointer to Incident Service
-  mutable IIncidentSvc* m_incSvc = nullptr;
+  mutable SmartIF<IIncidentSvc>   m_incSvc;
   /// pointer for histogram service
-  mutable IHistogramSvc* m_histoSvc = nullptr;
+  mutable SmartIF<IHistogramSvc>  m_histoSvc;
   // Pointer to the Algorithm Context Service
-  mutable IAlgContextSvc* m_contextSvc = nullptr; ///< Algorithm Context Service
+  mutable SmartIF<IAlgContextSvc> m_contextSvc; ///< Algorithm Context Service
 
   Gaudi::Property<std::string> m_contextSvcName{this, "ContextService", "AlgContextSvc",
                                                 "the name of Algorithm Context Service"};
@@ -792,30 +793,8 @@ private:
 private:
   // ==========================================================================
   /// enable printout of summary?
-  static bool s_enableSummary; // enable printout of summary?
-                               // ==========================================================================
-
-public:
-  using AlgTool::declareProperty;
-  template <class T>
-  Gaudi::Details::PropertyBase* declareProperty( const std::string& name, DataObjectHandle<T>& hndl,
-                                                 const std::string& doc = "none" )
-  {
-
-    if ( hndl.mode() & Gaudi::DataHandle::Reader ) {
-      declareInput( &hndl );
-    }
-
-    if ( hndl.mode() & Gaudi::DataHandle::Writer ) {
-      declareOutput( &hndl );
-    }
-
-    if ( hndl.owner() == 0 ) {
-      hndl.setOwner( this );
-    }
-
-    return PropertyHolder::declareProperty( name, hndl, doc );
-  }
+  static bool s_enableSummary;
+  // ==========================================================================
 };
 // ============================================================================
 

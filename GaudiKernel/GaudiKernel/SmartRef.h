@@ -73,7 +73,6 @@ protected:
   SmartRefBase        m_base;
   /// Pointer to target data object
   mutable const TYPE* m_target = nullptr;
-protected:
 public:
   /// Standard Constructor
   SmartRef()  {

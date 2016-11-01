@@ -16,7 +16,7 @@
 /** @class SharedObjectsContainer GaudiKernel/SharedObjectsContainer.h
  *
  *  Very simple class to represent the container of objects which are
- *  not ownered by the container. This concept seem to be very useful for
+ *  not owned by this container. This concept seem to be very useful for
  *  LHCb HLT, DaVinci, tracking, alignments.
  *
  *  @warning the container is not persistable (on-purpose)
@@ -44,18 +44,23 @@ public:
 public:
   // ==========================================================================
   // the default constructor (creates the empty vector)
-  SharedObjectsContainer ()
-    : ObjectContainerBase(), m_data() {} ;
+  SharedObjectsContainer () = default;
+  // move constructor and move assignement
+  SharedObjectsContainer(SharedObjectsContainer&&) = default;
+  SharedObjectsContainer& operator=(SharedObjectsContainer&&) = default;
   // the constructor from the data
   SharedObjectsContainer ( const ConstVector& data )
-    : ObjectContainerBase(), m_data(data) {}
+    : m_data(data) {}
+  SharedObjectsContainer ( ConstVector&& data )
+    : m_data(std::move(data)) {}
+
   /** the templated constructor from the pair of iterators
    *  @param first 'begin'-iterator of the input sequence
    *  @param last  'last'-iterator of the input sequence
    */
   template <class DATA>
   SharedObjectsContainer(DATA first, DATA last)
-    : ObjectContainerBase(), m_data(first, last) {}
+    : m_data(first, last) {}
   /** the templated constructor from the pair of iterators and the predicate.
    *
    *  Only the elements which satisfy the criteria goes into the container
@@ -81,12 +86,9 @@ public:
    */
   template <class DATA, class PREDICATE>
   SharedObjectsContainer(DATA first, DATA last, const PREDICATE& cut)
-    : ObjectContainerBase(), m_data()
   {
     insert ( first , last , cut ) ;
   }
-  /// destructor
-  ~SharedObjectsContainer() override { m_data.clear() ; }
   // ==========================================================================
 public:
   // ==========================================================================
@@ -169,8 +171,7 @@ public:
     const PREDICATE& cut   )
   {
     m_data.reserve ( m_data.size() + std::distance ( first , last ) ) ;
-    for ( ; first != last ; ++first )
-    { if ( cut ( *first ) ) { m_data.push_back ( *first ) ; } }
+    std::copy_if( first, last, std::back_inserter(m_data), std::cref(cut) );
   }
   /** get from the container all objects which satisfy the certain criteria
    *
@@ -192,9 +193,6 @@ public:
    *
    *  @endcode
    *
-   *  Essentially this functionality is very useful due to
-   *  missing "std::copy_if".
-   *
    *  @param cut the predicate
    *  @param outptut the output iterator
    *  @return the current position of the output itrator (almost useless)
@@ -203,8 +201,7 @@ public:
   OUTPUT get ( const PREDICATE& cut    ,
                OUTPUT           output ) const
   {
-    std::copy_if( begin(), end(), output, std::cref(cut) );
-    return output ;
+    return std::copy_if( begin(), end(), output, std::cref(cut) );
   }
   /// erase the object by iterator
   void erase ( iterator i ) { m_data.erase ( i ) ; }
@@ -322,7 +319,7 @@ public: // ObjectContainerBase methods:
    */
   ContainedObject* containedObject ( long index ) const override
   {
-    if ( 0 > index || !(index < (long) size () ) ) { return 0 ; }    // RETURN
+    if ( 0 > index || !(index < (long) size () ) ) { return nullptr; }    // RETURN
     const ContainedObject* co = m_data[index] ;
     return const_cast<ContainedObject*>( co ) ;
   }

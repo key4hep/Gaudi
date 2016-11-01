@@ -105,7 +105,11 @@ public:
 
   /// Helper to wrap a regular data member and use it as a regular property.
   /// \deprecated Prefer the signatures using a a fully initialized PropertyBase instance.
-  template <class TYPE>
+  template <class TYPE,
+           typename = typename std::enable_if< !std::is_base_of<GaudiHandleBase,TYPE>::value
+                                            && !std::is_base_of<GaudiHandleArrayBase,TYPE>::value
+                                            && !std::is_base_of<DataObjectHandleBase,TYPE>::value
+                                             >::type>
   Gaudi::Details::PropertyBase* declareProperty( const std::string& name, TYPE& value, const std::string& doc = "none" )
   {
     assertUniqueName( name );
@@ -117,11 +121,13 @@ public:
   }
 
   /// \deprecated Kept for backward compatibility, use the non-const version instead, will be removed in v28r1.
-  template <class TYPE>
-  [[deprecated(
-      "Kept for backward compatibility, use the non-const version instead, will be removed in v28r1" )]] Gaudi::
-      Details::PropertyBase*
-      declareProperty( const std::string& name, TYPE& value, const std::string& doc = "none" ) const
+  template <class TYPE,
+            typename = typename std::enable_if< !std::is_base_of<GaudiHandleBase,TYPE>::value
+                                             && !std::is_base_of<GaudiHandleArrayBase,TYPE>::value
+                                             && !std::is_base_of<DataObjectHandleBase,TYPE>::value
+                                              >::type>
+  [[deprecated("Kept for backward compatibility, use the non-const version instead, will be removed in v28r1" )]]
+  Gaudi::Details::PropertyBase* declareProperty( const std::string& name, TYPE& value, const std::string& doc = "none" ) const
   {
     return const_cast<PropertyHolder*>( this )->declareProperty<TYPE>( name, value, doc );
   }
@@ -157,8 +163,7 @@ public:
 
   /// Specializations for various GaudiHandles
   /// \{
-  template <class TYPE>
-  Gaudi::Details::PropertyBase* declareProperty( const std::string& name, ToolHandle<TYPE>& ref,
+  Gaudi::Details::PropertyBase* declareProperty( const std::string& name, GaudiHandleBase& ref,
                                                  const std::string& doc = "none" )
   {
     assertUniqueName( name );
@@ -170,21 +175,7 @@ public:
 
     return p;
   }
-  template <class TYPE>
-  Gaudi::Details::PropertyBase* declareProperty( const std::string& name, ServiceHandle<TYPE>& ref,
-                                                 const std::string& doc = "none" )
-  {
-    assertUniqueName( name );
-    m_todelete.emplace_back( new GaudiHandleProperty( name, ref ) );
-    Gaudi::Details::PropertyBase* p = m_todelete.back().get();
-
-    p->setDocumentation( doc );
-    m_properties.push_back( p );
-
-    return p;
-  }
-  template <class TYPE>
-  Gaudi::Details::PropertyBase* declareProperty( const std::string& name, ToolHandleArray<TYPE>& ref,
+  Gaudi::Details::PropertyBase* declareProperty( const std::string& name, GaudiHandleArrayBase& ref,
                                                  const std::string& doc = "none" )
   {
     assertUniqueName( name );
@@ -196,21 +187,7 @@ public:
 
     return p;
   }
-  template <class TYPE>
-  Gaudi::Details::PropertyBase* declareProperty( const std::string& name, ServiceHandleArray<TYPE>& ref,
-                                                 const std::string& doc = "none" )
-  {
-    assertUniqueName( name );
-    m_todelete.emplace_back( new GaudiHandleArrayProperty( name, ref ) );
-    Gaudi::Details::PropertyBase* p = m_todelete.back().get();
-
-    p->setDocumentation( doc );
-    m_properties.push_back( p );
-
-    return p;
-  }
-  template <class TYPE>
-  Gaudi::Details::PropertyBase* declareProperty( const std::string& name, DataObjectHandle<TYPE>& ref,
+  Gaudi::Details::PropertyBase* declareProperty( const std::string& name, DataObjectHandleBase& ref,
                                                  const std::string& doc = "none" )
   {
     assertUniqueName( name );

@@ -16,10 +16,6 @@ GaudiAtomicSequencer::GaudiAtomicSequencer( const std::string& name,
                                 ISvcLocator* pSvcLocator)
   : GaudiSequencer ( name , pSvcLocator )
 {}
-//=============================================================================
-// Destructor
-//=============================================================================
-GaudiAtomicSequencer::~GaudiAtomicSequencer() {}
 
 //=============================================================================
 // Initialisation. Check parameters

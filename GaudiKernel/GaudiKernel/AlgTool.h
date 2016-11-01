@@ -17,8 +17,10 @@
 #include "GaudiKernel/ToolHandle.h"
 #include <Gaudi/PluginService.h>
 
-#include "GaudiKernel/DataHandle.h"
 #include "GaudiKernel/DataObjIDProperty.h"
+
+#include "GaudiKernel/DataHandle.h"
+#include "GaudiKernel/DataHandleHolderBase.h"
 #include "GaudiKernel/IDataHandleHolder.h"
 
 template <class T>
@@ -44,7 +46,7 @@ class ToolHandleInfo;
  *  @author Pere Mato
  */
 class GAUDI_API AlgTool
-    : public PropertyHolder<CommonMessaging<implements<IAlgTool, IDataHandleHolder, IProperty, IStateful>>>
+    : public DataHandleHolderBase<PropertyHolder<CommonMessaging<implements<IAlgTool, IDataHandleHolder, IProperty, IStateful>>>>
 {
 public:
 #ifndef __REFLEX__
@@ -159,7 +161,6 @@ public:
   using PropertyHolderImpl::declareProperty;
 
   template <class T>
-
   Gaudi::Details::PropertyBase* declareProperty( const std::string& name, ToolHandle<T>& hndl,
                                                  const std::string& doc = "none" )
   {
@@ -187,26 +188,16 @@ public:
     return PropertyHolderImpl::declareProperty( name, hndlArr, doc );
   }
 
-protected:
-  virtual void declareInput( Gaudi::DataHandle* im ) override { m_inputHandles.push_back( im ); }
-
-  virtual void declareOutput( Gaudi::DataHandle* im ) override { m_outputHandles.push_back( im ); }
 public:
-  virtual std::vector<Gaudi::DataHandle*> inputHandles() const override { return m_inputHandles; }
-  virtual std::vector<Gaudi::DataHandle*> outputHandles() const override { return m_outputHandles; }
-
-  virtual const DataObjIDColl& extraInputDeps() const override { return m_extInputDataObjs; }
-  virtual const DataObjIDColl& extraOutputDeps() const override { return m_extOutputDataObjs; }
 
   virtual void acceptDHVisitor( IDataHandleVisitor* ) const override;
+
+  void commitHandles() override;
 
   const DataObjIDColl& inputDataObjs() const override { return m_inputDataObjs; }
   const DataObjIDColl& outputDataObjs() const override { return m_outputDataObjs; }
 
-  void commitHandles() override;
-
 private:
-  std::vector<Gaudi::DataHandle *> m_inputHandles, m_outputHandles;
   DataObjIDColl m_inputDataObjs, m_outputDataObjs;
 
 public:
@@ -363,9 +354,6 @@ private:
   Gaudi::Property<bool> m_auditorFinalize{this, "AuditFinalize", false, "trigger auditor on finalize()"};
   Gaudi::Property<bool> m_auditorReinitialize{this, "AuditReinitialize", false, "trigger auditor on reinitialize()"};
   Gaudi::Property<bool> m_auditorRestart{this, "AuditRestart", false, "trigger auditor on restart()"};
-
-  Gaudi::Property<DataObjIDColl> m_extInputDataObjs{this, "ExtraInputs", DataObjIDColl{}, "[[deprecated]]"};
-  Gaudi::Property<DataObjIDColl> m_extOutputDataObjs{this, "ExtraOutputs", DataObjIDColl{}, "[[deprecated]]"};
 
   std::string m_threadID; ///< Thread Id for Alg Tool
 

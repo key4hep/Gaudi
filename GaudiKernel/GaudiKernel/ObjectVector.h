@@ -59,13 +59,15 @@ public:
 
 public:
   /// Constructors
-  ObjectVector()
-    : m_vector(0) { }
-  ObjectVector( const char* /* name */ )
-    : m_vector(0) { }
-
+  ObjectVector() = default;
   ObjectVector( const ObjectVector<TYPE>& ) = delete;
   ObjectVector& operator=( const ObjectVector<TYPE>& ) = delete;
+  ObjectVector(ObjectVector&& rhs)
+      : ObjectContainerBase(std::move(rhs))
+      , m_vector{std::move(rhs.m_vector)}
+  {
+    std::for_each(begin(), end(), [this](TYPE* obj) {obj->setParent(this);});
+  }
 
   /// Destructor
   ~ObjectVector() override {

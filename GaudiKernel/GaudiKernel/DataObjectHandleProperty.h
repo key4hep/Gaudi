@@ -25,7 +25,6 @@ class GAUDI_API DataObjectHandleProperty : public PropertyWithHandlers
 public:
   DataObjectHandleProperty( const std::string& name, DataObjectHandleBase& ref );
   DataObjectHandleProperty& operator=( const DataObjectHandleBase& value );
-  virtual ~DataObjectHandleProperty();
 
   DataObjectHandleProperty* clone() const override;
   bool load( Property& destination ) const override;
@@ -36,7 +35,7 @@ public:
   const DataObjectHandleBase& value() const;
   bool setValue( const DataObjectHandleBase& value );
 
-  const std::string pythonRepr() const;
+  std::string pythonRepr() const;
 
 private:
   /** Pointer to the real property. Reference would be better,
@@ -52,9 +51,6 @@ namespace Gaudi
   {
   public:
     Property( const std::string& name, DataObjectHandleBase& value ) : ::DataObjectHandleProperty( name, value ) {}
-
-    /// virtual Destructor
-    virtual ~Property() {}
   };
 }
 

@@ -151,6 +151,16 @@ StatusCode MinimalEventLoopMgr::initialize()
     return StatusCode::FAILURE;
   }
 
+  if (m_printCFExp && !m_topAlgList.empty()) {
+    info() << "Control Flow Expression:" << endmsg;
+    std::stringstream expr;
+    auto& first = m_topAlgList.front();
+    for(auto& ialg: m_topAlgList) {
+      if (ialg != first) expr << " >> ";
+      ialg->toControlFlowExpression(expr);
+    }
+    info() << expr.str() << endmsg;
+  }
   return StatusCode::SUCCESS;
 }
 //--------------------------------------------------------------------------------------------
@@ -421,7 +431,7 @@ StatusCode MinimalEventLoopMgr::executeEvent( void* /* par */ )
 
     m_aess->algExecState(ita).setExecuted(true);
     m_aess->algExecState(ita).setExecStatus(sc);
-    
+
     if ( UNLIKELY( !sc.isSuccess() ) ) {
       warning() << "Execution of algorithm " << ita->name() << " failed" << endmsg;
       eventfailed = true;

@@ -8,6 +8,9 @@
 #include <utility>
 #include <vector>
 #include <algorithm>
+// ============================================================================
+// GaudiKernel
+// ============================================================================
 #include "GaudiKernel/Kernel.h"
 // ============================================================================
 /** @file
@@ -28,6 +31,7 @@
 // ============================================================================
 namespace Gaudi
 {
+  // ==========================================================================
   namespace details
   {
     // ========================================================================
@@ -40,7 +44,30 @@ namespace Gaudi
     ( const long   index ,
       const size_t size  ) ;
     // ========================================================================
-  }
+    template <typename T>
+    struct _has_typename_container_ 
+    {
+    private:
+      template <typename T1> static typename T1::Container test(int);
+      template <typename>    static void                   test(...);
+    public:
+      enum { value = !std::is_void<decltype(test<T>(0))>::value };
+    };
+    template <class CONTAINER,bool> struct _container ;
+    template <class CONTAINER>
+    struct _container<CONTAINER,true>  { typedef typename CONTAINER::Container Container ; };
+    template <class CONTAINER>
+    struct _container<CONTAINER,false> { typedef          CONTAINER            Container ; };
+    // ==========================================================================
+    /// helper structure to get container type
+    template <class CONTAINER>
+    struct container 
+    {
+      typedef typename details::_container<CONTAINER,details::_has_typename_container_<CONTAINER>::value>::Container Container ;
+      typedef typename CONTAINER::const_iterator                                                                     Iterator  ;
+    };
+  // =========================================================================
+  } // the end of namespace Gaudi::details 
   // ==========================================================================
   /** @struct RangeBase_ GaudiUtils/Range.h
    *  helper class to simplify the dealing with ranges in Python
@@ -71,33 +98,39 @@ namespace Gaudi
    *  @author Vanya Belyaev Ivan.Belyaev@itep.ru
    *  @date   2002-07-12
    */
-  template <class CONTAINER>
+  template <class CONTAINER, class ITERATOR = typename Gaudi::details::container<CONTAINER>::Iterator>
   class Range_ : public RangeBase_
   {
   public:
     // ========================================================================
-    typedef std::pair<typename CONTAINER::const_iterator,
-                      typename CONTAINER::const_iterator> Base ;
+    typedef std::pair<ITERATOR,ITERATOR> Base ;
     // ========================================================================
   public:
     // ========================================================================
     /// type for actual contained iterator
-    typedef CONTAINER                                  Container              ;
-    typedef typename Container::value_type             value_type             ;
-    typedef typename Container::const_iterator         iterator               ;
-    typedef typename Container::const_iterator         const_iterator         ;
-    typedef typename Container::const_reverse_iterator reverse_iterator       ;
-    typedef typename Container::const_reverse_iterator const_reverse_iterator ;
-    typedef typename Container::const_reference        reference              ;
-    typedef typename Container::const_reference        const_reference        ;
+    typedef typename Gaudi::details::container<CONTAINER>::Container Container  ;
+    //
+    typedef ITERATOR                                  iterator                  ;
+    typedef ITERATOR                                  const_iterator            ;
+    //
+  private:
+    // 
+    typedef typename std::iterator_traits<iterator>  iter_traits                ;
+    //
+  public:
+    //
+    typedef typename iter_traits::value_type          value_type                ;
+    typedef typename iter_traits::reference           reference                 ;
+    typedef typename iter_traits::reference           const_reference           ;
+    //
+    typedef std::reverse_iterator<iterator>           reverse_iterator          ;
+    typedef std::reverse_iterator<iterator>           const_reverse_iterator    ;
     /// internal types
-    typedef std::pair<iterator,iterator>               _Base                  ;
-    typedef Range_<Container>                          _Self                  ;
     // ========================================================================
   public:
     // ========================================================================
     /// default constructor
-    Range_()  = default;
+    Range_() = default;
     /** Constructor
      *  @param ibegin  iterator to begin of the sequence
      *  @param iend    iterator to end   of the sequence
@@ -115,29 +148,36 @@ namespace Gaudi
      * @param ibegin  iterator to begin of empty sequence
      */
     Range_( iterator ibegin       ) : m_base( ibegin , ibegin ) {}
-    /// destructor
-    ~Range_() = default;
+
+    /* Copy constructor 
+     * @param r Range to move
+     */
+    Range_(const Range_ &r ) : m_base(r.m_base) {}
     // ========================================================================
     /// empty sequence ?
-    inline bool   empty () const { return m_base.second == m_base.first  ; }
+    bool      empty () const { return m_base.second == m_base.first  ; }
     /// size of the sequence (number of elements)
-    inline size_t size  () const
+    size_t            size  () const
     { return std::distance ( m_base.first  , m_base.second  ) ; }
     /// access to begin of the sequence (const version )
-    inline iterator begin () const { return m_base.first  ; }
+    iterator          begin () const { return m_base.first  ; }
     /// access to end   of the sequence (const version)
-    inline iterator end   () const { return m_base.second ; }
+    iterator          end   () const { return m_base.second ; }
+    /// access to begin of the sequence (const version )
+    iterator         cbegin () const { return m_base.first  ; }
+    /// access to end   of the sequence (const version)
+    iterator         cend   () const { return m_base.second ; }
     /// access to begin of the reversed sequence (const)
-    inline reverse_iterator rbegin   () const { return reverse_iterator ( end   () ) ; }
+    reverse_iterator rbegin () const { return reverse_iterator ( end   () ) ; }
     /// access to begin of the reversed sequence (const)
-    inline reverse_iterator rend     () const { return reverse_iterator ( begin () ) ; }
+    reverse_iterator rend   () const { return reverse_iterator ( begin () ) ; }
     /// access for the first element (only for non-empty ranges!)
-    inline const_reference front () const { return *begin() ; }
+    const_reference  front  () const { return *begin() ; }
     /// access for the back  element (only for non-empty ranges!)
-    inline const_reference back  () const { return *std::prev( end() ); }
+    const_reference  back   () const { return *std::prev( end() ); }
     // ========================================================================
     /// get a "slice" of a range, in Python style
-    inline Range_ slice( long index1 , long index2 ) const
+    Range_ slice( long index1 , long index2 ) const
     {
       // trivial cases
       if ( empty() || index1 == index2 ) { return Range_() ; } // RETURN
@@ -147,10 +187,10 @@ namespace Gaudi
       // check
       if ( index1 < 0      ) { return  Range_ () ; }            // RETURN
       if ( index2 < index1 ) { return  Range_ () ; }            // RETURN
-
+      
       if ( index1 > (long) size () ) { return  Range_() ; }     // RETURN
       if ( index2 > (long) size () ) { index2  = size() ; }
-
+      
       // construct the slice
       return Range_( std::next ( begin() , index1 ) , 
                      std::next ( begin() , index2 ) ) ;        // RETURN
@@ -161,9 +201,7 @@ namespace Gaudi
      *  @param index the index of the lement to be accessed
      */
     inline const_reference operator () ( const size_t index ) const
-    {
-      return *std::next ( begin() , index ) ;
-    }
+    { return *std::next ( begin() , index ) ; }
     /** non-checked access to the elements by index
      *  (valid only for non-empty sequences)
      *  @param index the index of the lement to be accessed
@@ -185,13 +223,15 @@ namespace Gaudi
   public:
     // ========================================================================
     /// compare with another range
-    bool operator< ( const Range_& right ) const
+    template <class  C, class I>
+    bool operator< ( const Range_<C,I>& right ) const
     {
       return std::lexicographical_compare
         ( begin () , end () , right.begin () , right.end () ) ;
     }
-    /// compare with the base container
-    bool operator< ( const Container& right ) const
+    /// compare with another container
+    template <class ANOTHERCONTAINER>
+    bool operator< ( const ANOTHERCONTAINER& right ) const
     {
       return std::lexicographical_compare
         ( begin () , end () , right.begin () , right.end () ) ;
@@ -204,19 +244,29 @@ namespace Gaudi
     {
       if ( &right        == this    ) { return true  ; } // RETURN
       return right.size() == size() &&  
-             std::equal ( begin () , end () , right.begin() ) ;
+        std::equal ( begin () , end () , right.begin() ) ;
     }
-    /// equality with the base container
-    bool operator==( const Container& right ) const
+    /// equality with another range type 
+    template <class CNT, class IT>
+    bool operator==( const Range_<CNT,IT>& right ) const
+    {
+      return right.size() == size() &&  
+        std::equal ( begin () , end () , right.begin() ) ;
+    }
+    /// compare with another container
+    template <class ANOTHERCONTAINER>    
+    bool operator==( const ANOTHERCONTAINER& right ) const
     {
       return right.size() == size() && 
-             std::equal ( begin () , end () , right.begin() ) ;
+        std::equal ( begin () , end () , right.begin() ) ;
     }
     // ========================================================================
   public:
     // ========================================================================
     /// empty sequence?
     bool operator!        () const { return  empty () ; }
+    /// non-empty sequence?
+    explicit operator bool() const { return !empty () ; }
     // ========================================================================
   public:
     // ========================================================================
@@ -262,7 +312,7 @@ namespace Gaudi
   template <class CONTAINER>
   inline
   Range_<CONTAINER>
-  range ( const CONTAINER& cnt )
+  range ( const CONTAINER& cnt ) 
   { return Range_<CONTAINER>( cnt.begin() , cnt.end() ) ; }
   // ==========================================================================
 } // end of namespace Gaudi

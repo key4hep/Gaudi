@@ -22,6 +22,7 @@
 //  implies that it does meet the requirements for aggregate initializaton,
 //  which allows for {} initialization of its member.
 //
+#include <utility>
 
 #include <utility>
 

@@ -1,8 +1,8 @@
-JobOptionsSvc        INFO # =======> /build1/leggett/git/Gaudi/GaudiExamples/options/Services.opts
+JobOptionsSvc        INFO # =======> /home/marco/Devel/LHCb/workspace/Gaudi/GaudiExamples/options/Services.opts
 JobOptionsSvc        INFO # (12,1): AuditorSvc.Auditors = ["ChronoAuditor"]
-JobOptionsSvc        INFO # =======> /build1/leggett/git/Gaudi/GaudiExamples/options/Common.opts
+JobOptionsSvc        INFO # =======> /home/marco/Devel/LHCb/workspace/Gaudi/GaudiExamples/options/Common.opts
 JobOptionsSvc        INFO # (9,1): ApplicationMgr.StatusCodeCheck = 1
-JobOptionsSvc        INFO # =======> /build1/leggett/git/Gaudi/GaudiExamples/options/AlgTools2.opts
+JobOptionsSvc        INFO # =======> /home/marco/Devel/LHCb/workspace/Gaudi/GaudiExamples/options/AlgTools2.opts
 JobOptionsSvc        INFO # (10,1): ApplicationMgr.TopAlg = ["MyGaudiAlgorithm/MyAlg"]
 JobOptionsSvc        INFO # (13,1): MessageSvc.OutputLevel = 3
 JobOptionsSvc        INFO # (18,1): ApplicationMgr.EvtMax = 10
@@ -23,11 +23,11 @@ JobOptionsSvc        INFO # (44,1): ToolSvc.ToolA.Tools = ["TestTool/ToolB"]
 JobOptionsSvc        INFO # (45,1): ToolSvc.ToolB.Tools = ["TestTool/ToolA"]
 JobOptionsSvc        INFO # (46,1): ToolSvc.ToolA.OutputLevel = 2
 JobOptionsSvc        INFO # (47,1): ToolSvc.ToolB.OutputLevel = 2
-JobOptionsSvc        INFO Job options successfully read in from /build1/leggett/git/Gaudi/GaudiExamples/options/AlgTools2.opts
+JobOptionsSvc        INFO Job options successfully read in from /home/marco/Devel/LHCb/workspace/Gaudi/GaudiExamples/options/AlgTools2.opts
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v4r1)
-                                          running on p05614910w96644.cern.ch on Wed Oct  5 19:56:27 2016
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v27r1)
+                                          running on pcphlbc16 on Tue Nov  1 17:20:32 2016
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
@@ -35,10 +35,10 @@ MyAlg               DEBUG Property update for OutputLevel : new value = 2
 MyAlg               DEBUG Initialize base class GaudiCommon<Algorithm>
 MyAlg               DEBUG could not locate CounterSummarySvc, no counter summary will be made
 MyAlg               DEBUG List of ALL properties of MyGaudiAlgorithm/MyAlg  #properties = 46
-MyAlg               DEBUG Property ['Name': Value] =  'trackSelection':('/Event/MyAnalysis/Tracks')  m: 16  o: MyAlg  opt: 0
-MyAlg               DEBUG Property ['Name': Value] =  'raw':('/Rec/RAW')  m: 4  o: MyAlg  opt: 0
-MyAlg               DEBUG Property ['Name': Value] =  'hits':('/Event/Rec/Hits')  m: 4  o: MyAlg  opt: 0
-MyAlg               DEBUG Property ['Name': Value] =  'tracks':('/Event/Rec/Tracks')  m: 4  o: MyAlg  opt: 0
+MyAlg               DEBUG Property ['Name': Value] =  'trackSelection':/Event/MyAnalysis/Tracks
+MyAlg               DEBUG Property ['Name': Value] =  'raw':/Rec/RAW
+MyAlg               DEBUG Property ['Name': Value] =  'hits':/Event/Rec/Hits
+MyAlg               DEBUG Property ['Name': Value] =  'tracks':/Event/Rec/Tracks
 MyAlg               DEBUG Property ['Name': Value] =  'UnusedToolHandle':TestToolFailing
 MyAlg               DEBUG Property ['Name': Value] =  'GenericToolHandle':MyTool/GenericToolHandle
 MyAlg               DEBUG Property ['Name': Value] =  'PubToolHandle':MyTool/PubToolHandle
@@ -75,12 +75,12 @@ MyAlg               DEBUG Property ['Name': Value] =  'AuditRestart':False
 MyAlg               DEBUG Property ['Name': Value] =  'AuditReinitialize':False
 MyAlg               DEBUG Property ['Name': Value] =  'AuditInitialize':False
 MyAlg               DEBUG Property ['Name': Value] =  'AuditAlgorithms':False
-MyAlg               DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
-MyAlg               DEBUG Property ['Name': Value] =  'ExtraInputs':[]
 MyAlg               DEBUG Property ['Name': Value] =  'ErrorCounter':0
 MyAlg               DEBUG Property ['Name': Value] =  'ErrorMax':1
 MyAlg               DEBUG Property ['Name': Value] =  'Enable':True
 MyAlg               DEBUG Property ['Name': Value] =  'OutputLevel':2
+MyAlg               DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
+MyAlg               DEBUG Property ['Name': Value] =  'ExtraInputs':[]
 MyAlg                INFO initializing....
 ToolSvc.MyTool       INFO intialize() has been called
 ToolSvc.MyTool       INFO Int    = 201
@@ -104,7 +104,7 @@ MyAlg               DEBUG Registering tool ToolSvc.MyGaudiTool
 MyAlg.MyGaudiTool   DEBUG Property update for OutputLevel : new value = 2
 MyAlg.MyGaudiTool   DEBUG Initialize base class GaudiCommon<AlgTool>
 MyAlg.MyGaudiTool   DEBUG could not locate CounterSummarySvc, no counter summary will be made
-MyAlg.MyGaudiTool   DEBUG List of ALL properties of MyGaudiTool/MyAlg.MyGaudiTool  #properties = 26
+MyAlg.MyGaudiTool   DEBUG List of ALL properties of MyGaudiTool/MyAlg.MyGaudiTool  #properties = 28
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'Bool':True
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'String':hundred
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'Double':100.00000
@@ -122,15 +122,17 @@ MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'TypePrint':True
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'StatPrint':True
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'ErrorsPrint':True
-MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
-MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'ExtraInputs':[]
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'AuditRestart':False
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'AuditReinitialize':False
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'AuditFinalize':False
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'AuditStop':False
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'AuditStart':False
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'AuditInitialize':False
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'AuditTools':False
-MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'OutputLevel':2
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'OutputLevel':2
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'ExtraInputs':[]
 MyAlg.MyGaudiTool    INFO intialize() has been called
 MyAlg.MyGaudiTool    INFO Int    = 100
 MyAlg.MyGaudiTool    INFO Double = 100
@@ -173,15 +175,15 @@ MyAlg               DEBUG Adding public ToolHandle tool ToolSvc.PubToolHandle (M
 MyAlg               DEBUG Adding public ToolHandle tool ToolSvc.GenericToolHandle (MyTool)
 MyAlg               DEBUG ToolHandle TestToolFailing not used
 MyAlg               DEBUG Data Deps for MyAlg
-  + INPUT  ('/Rec/RAW')
   + INPUT  ('/Event/Rec/Hits')
   + INPUT  ('/Event/Rec/Tracks')
+  + INPUT  ('/Rec/RAW')
   + OUTPUT ('/Event/MyAnalysis/Tracks')
 ToolSvc.ToolA       DEBUG Property update for OutputLevel : new value = 2
 ToolSvc.ToolA       DEBUG Initialize
 ToolSvc.ToolA       DEBUG Initialize base class GaudiCommon<AlgTool>
 ToolSvc.ToolA       DEBUG could not locate CounterSummarySvc, no counter summary will be made
-ToolSvc.ToolA       DEBUG List of ALL properties of TestTool/ToolSvc.ToolA  #properties = 23
+ToolSvc.ToolA       DEBUG List of ALL properties of TestTool/ToolSvc.ToolA  #properties = 25
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'Tools':[ 'TestTool/ToolB' ]
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'ContextService':AlgContextSvc
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
@@ -196,21 +198,23 @@ ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'TypePrint':True
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'StatPrint':True
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'ErrorsPrint':True
-ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
-ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'ExtraInputs':[]
+ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditRestart':False
+ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditReinitialize':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditFinalize':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditStop':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditStart':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditInitialize':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditTools':False
-ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'OutputLevel':2
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
+ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'OutputLevel':2
+ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
+ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'ExtraInputs':[]
 ToolSvc.ToolA       DEBUG Loading tool ToolB of type TestTool
 ToolSvc.ToolB       DEBUG Property update for OutputLevel : new value = 2
 ToolSvc.ToolB       DEBUG Initialize
 ToolSvc.ToolB       DEBUG Initialize base class GaudiCommon<AlgTool>
 ToolSvc.ToolB       DEBUG could not locate CounterSummarySvc, no counter summary will be made
-ToolSvc.ToolB       DEBUG List of ALL properties of TestTool/ToolSvc.ToolB  #properties = 23
+ToolSvc.ToolB       DEBUG List of ALL properties of TestTool/ToolSvc.ToolB  #properties = 25
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'Tools':[ 'TestTool/ToolA' ]
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'ContextService':AlgContextSvc
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
@@ -225,15 +229,17 @@ ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'TypePrint':True
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'StatPrint':True
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'ErrorsPrint':True
-ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
-ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'ExtraInputs':[]
+ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditRestart':False
+ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditReinitialize':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditFinalize':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditStop':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditStart':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditInitialize':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditTools':False
-ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'OutputLevel':2
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
+ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'OutputLevel':2
+ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
+ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'ExtraInputs':[]
 ToolSvc.ToolB       DEBUG Loading tool ToolA of type TestTool
 ToolSvc.ToolB       DEBUG Registering tool ToolSvc.ToolA
 ToolSvc.ToolA       DEBUG Registering tool ToolSvc.ToolB
@@ -431,8 +437,7 @@ MyAlg.ToolWithName   INFO finalize() has been called
 MyAlg.MyGaudiTool    INFO finalize() has been called
 MyAlg.MyGaudiTool   DEBUG  ==> Finalize the base class GaudiTool
 MyAlg.MyGaudiTool   DEBUG Tools to release :
-MyAlg.MyGaudiTool   DEBUG Services to release : AlgContextSvc
-MyAlg.MyGaudiTool   DEBUG Releasing service 'AlgContextSvc'
+MyAlg.MyGaudiTool   DEBUG Services to release :
 ToolSvc.MyGaudi...   INFO finalize() has been called
 MyAlg.MyTool         INFO finalize() has been called
 ToolSvc.MyTool       INFO finalize() has been called

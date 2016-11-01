@@ -217,6 +217,19 @@ namespace Gaudi
   { return key.__hash__ () ; }
   // ==========================================================================
 } //                                                     end of namespace Gaudi
+// interoperability with std::string and const char*
+inline std::string operator+(const std::string& lhs, const Gaudi::StringKey& rhs) {
+    return lhs + rhs.str();
+}
+inline std::string operator+(const char* lhs, const Gaudi::StringKey& rhs) {
+    return lhs + rhs.str();
+}
+inline std::string operator+(const Gaudi::StringKey& lhs, const std::string& rhs) {
+    return lhs.str() + rhs;
+}
+inline std::string operator+(const Gaudi::StringKey& lhs, const char* rhs) {
+    return lhs.str() + rhs;
+}
 // ============================================================================
 // Streaming  value -> string
 // ============================================================================
@@ -291,9 +304,8 @@ namespace Gaudi
   // ==========================================================================
 } //                                                     end of namespace Gaudi
 // ============================================================================
-#if defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L
 namespace std {
-  /// Implementation of hash function used in C++11 collections like
+  /// specialization of hash function used in C++11 collections like
   /// std::unordered_map
   /// \see https://its.cern.ch/jira/browse/GAUDI-973
   template <>
@@ -303,7 +315,6 @@ namespace std {
     }
   };
 }
-#endif
 // ============================================================================
 #endif // GAUDIKERNEL_STRINGKEY_H
 // ============================================================================

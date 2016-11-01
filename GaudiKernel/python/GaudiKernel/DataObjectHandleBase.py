@@ -1,62 +1,40 @@
 __version__ = "$Revision: 0.1 $"
 __doc__ = """The python module holding python bindings to DataObjectHandle"""
 
-FIELD_SEP = '|'
-ITEM_SEP = '#'
-ADDR_SEP = '&'
-
-# s = "/Path/to/Address|MODE|OPTIONAL|/alt/path/one&/alt/path/two"
+# s = "/Path/to/Address"
 
 class DataObjectHandleBase(object):
     
-    __slots__ = ('Path', 'Mode', 'AlternativePaths', 'Optional')
+    __slots__ = ('Path', )
 
     #define accessTypes
-    READ = 0
-    WRITE = 1
-    UPDATE = 2
     
-    def __init__(self, *args):
+    def __init__(self, path):
         object.__init__(self)
-        
-        #if we have one arg: initiliaze from string        
-        if len(args) is 1:
-            self.fromString(args[0])
-        else:
-            #else the data is given
-            self.fromArray(args)
-            
-    def fromString(self,s):
-        if s == "":
-            return
-        
-        fields = s.split(FIELD_SEP)
-        self.fromArray(fields)
-        
-    def fromArray(self, a):
-        if len(a) != 4:
-            return
+        self.Path = path
 
-        self.Path = a[0]
-        self.Mode = a[1]
-        self.Optional = a[2]
-        self.AlternativePaths = a[3]
-                
+    def __eq__(self, other):
+        """
+        Need especially Configurable.isPropertySet when checked against default.
+        """
+        if isinstance(other, DataObjectHandleBase):
+            return self.Path == other.Path
+        if isinstance(other, basestring):
+            return self.Path == other
+        raise ValueError('Unknown equality check: type=%r, repr=%r'%(type(other), other))
+
+    def __ne__(self, other):
+        """
+        This is mandatory if __eq__ is defined.
+        """
+        return not self==other
+
     def __str__(self):
-
-        s = self.Path + FIELD_SEP + str(int(self.Mode)) + FIELD_SEP
-        s += str(int(self.Optional)) + FIELD_SEP
-
-        for a in self.AlternativePaths:
-            s += ADDR_SEP + a
-        
-        return s
+        return self.Path
                
     def __repr__(self):
-        print "DOHB:__repr__", self.__class__.__name__
-        return "%s(""%s"")" % (self.__class__.__name__, self.__str__())
+        return "%s(\"%s\")" % (self.__class__.__name__, self.__str__())
     
     def toStringProperty(self):
-        print "DOHB:toStringProperty"
         return self.__str__()
             

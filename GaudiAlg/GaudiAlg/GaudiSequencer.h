@@ -63,6 +63,10 @@ protected:
   /** Decode a vector of string. */
   StatusCode decodeNames();
 
+public:
+  /// Produce string represention of the control flow expression.
+  std::ostream& toControlFlowExpression(std::ostream& os) const override;
+
 private:
   /** copy not allowed **/
   GaudiSequencer( const GaudiSequencer& a ) = delete;
@@ -76,6 +80,7 @@ private:
   Gaudi::Property<bool> m_measureTime{this, "MeasureTime", false, "measure time"};
   Gaudi::Property<bool> m_returnOK{this, "ReturnOK", false, "forces the sequencer to return a good status"};
   Gaudi::Property<bool> m_shortCircuit{this, "ShortCircuit", true, "stop processing as soon as possible"};
+  Gaudi::Property<bool> m_invert{this, "Invert", false, "invert the logic result of the sequencer"};
 
   bool m_isInitialized;                       ///< Indicate that we are ready
   std::vector<AlgorithmEntry> m_entries;      ///< List of algorithms to process.
