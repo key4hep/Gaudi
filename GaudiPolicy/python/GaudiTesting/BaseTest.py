@@ -877,7 +877,7 @@ if ROOT6WorkAroundEnabled('ReadRootmapCheck'):
 
 normalizeExamples = (lineSkipper + normalizeExamples + skipEmptyLines +
                      normalizeEOL + LineSorter("Services to release : ") +
-                     SortGroupOfLines(r'^\S+\s+DEBUG Property \[\'Name\':'))
+                     SortGroupOfLines(r'^\S+\s+(DEBUG|SUCCESS) Property \[\'Name\':'))
 
 #--------------------- Validation functions/classes ---------------------#
 
