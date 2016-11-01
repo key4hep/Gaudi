@@ -23,36 +23,6 @@ namespace {
 }
 
 //=============================================================================
-// Standard constructor, initializes variables
-//=============================================================================
-template <class T>
-AnyDataGetAlgorithm<T>::AnyDataGetAlgorithm( const std::string& name,
-                                          ISvcLocator* pSvcLocator)
-  : GaudiAlgorithm ( name , pSvcLocator ),
-    m_ids("/Event/Test/Ids", Gaudi::DataHandle::Reader, this)
-{
-   declareProperty("Location", m_location);
-}
-//=============================================================================
-// Destructor
-//=============================================================================
-template <class T>
-AnyDataGetAlgorithm<T>::~AnyDataGetAlgorithm() {}
-
-//=============================================================================
-// Initialization
-//=============================================================================
-template <class T>
-StatusCode AnyDataGetAlgorithm<T>::initialize() {
-  StatusCode sc = GaudiAlgorithm::initialize(); // must be executed first
-  if ( sc.isFailure() ) return sc;  // error printed already by GaudiAlgorithm
-
-  if ( msgLevel(MSG::DEBUG) ) debug() << "==> Initialize" << endmsg;
-
-  return StatusCode::SUCCESS;
-}
-
-//=============================================================================
 // Main execution
 //=============================================================================
 template <class T>
@@ -77,15 +47,4 @@ StatusCode AnyDataGetAlgorithm<T>::execute() {
   }
   info() << endmsg;
   return StatusCode::SUCCESS;
-}
-
-//=============================================================================
-//  Finalize
-//=============================================================================
-template <class T>
-StatusCode AnyDataGetAlgorithm<T>::finalize() {
-
-  if ( msgLevel(MSG::DEBUG) ) debug() << "==> Finalize" << endmsg;
-
-  return GaudiAlgorithm::finalize();  // must be called after all other actions
 }
