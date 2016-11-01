@@ -45,7 +45,7 @@ public:
    * 
    * @return Number of event stores allocated in the whiteboard
    */
-  virtual size_t getNumberOfStores() = 0;
+  virtual size_t getNumberOfStores() const = 0;
   
   /** Get the latest new data objects registred in store.
    *
