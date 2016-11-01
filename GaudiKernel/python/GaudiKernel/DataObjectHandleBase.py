@@ -37,4 +37,15 @@ class DataObjectHandleBase(object):
     
     def toStringProperty(self):
         return self.__str__()
-            
+
+    def __add__(self,other):
+        self.Path = ':'.join( i + other for i in self.Path.split(':'))
+        return self
+
+    def __radd__(self,other):
+        self.Path = ':'.join( other + i for i in self.Path.split(':'))
+        return self
+
+    def __iadd__(self,other):
+        self.Path = ':'.join( i + other for i in self.Path.split(':'))
+        return self
