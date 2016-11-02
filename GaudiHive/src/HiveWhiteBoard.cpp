@@ -464,7 +464,7 @@ public:
   }
 
   /// Get the number of event slots (copies of DataSvc objects).
-  size_t getNumberOfStores() override { return m_slots; }
+  size_t getNumberOfStores() const override { return m_slots; }
 
   /// Get the list of new DataObjects in the current store.
   StatusCode getNewDataObjects( DataObjIDColl& products ) override
