@@ -85,7 +85,7 @@ namespace Gaudi { namespace Functional {
    ,   m_outputLocations( outputs.second )
    {
        auto p = this->declareProperty( outputs.first, m_outputLocations );
-       p->declareUpdateHandler( [=](Property&) {
+       p->declareUpdateHandler( [=](Gaudi::Details::PropertyBase&) {
            //@FIXME/@TODO: retract any existing handle that is about to be removed...
            // std::for_each( this->m_outputs.begin(), this->m_outputs.end(), [&](auto& h) { this->retractOutput(&h); } );
            if (!this->m_outputs.empty()) {

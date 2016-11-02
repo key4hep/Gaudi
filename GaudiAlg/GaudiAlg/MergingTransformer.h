@@ -49,7 +49,7 @@ namespace Gaudi { namespace Functional {
        // TODO/FIXME: replace vector of string property + call-back with a
        //             vector<handle> property ... as soon as declareProperty can deal with that.
        auto p = this->declareProperty( inputs.first, m_inputLocations );
-       p->declareUpdateHandler( [=](Property&) {
+       p->declareUpdateHandler( [=](Gaudi::Details::PropertyBase&) {
            //@FIXME: if any handles, de-register ('retract') them first!
            // std::for_each( this->m_inputs.begin(), this->m_inputs.end(), [&](auto& h) { this->retractInput(&h); } );
            if (!this->m_inputs.empty()) {
