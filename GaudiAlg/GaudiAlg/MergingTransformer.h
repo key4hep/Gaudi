@@ -50,11 +50,6 @@ namespace Gaudi { namespace Functional {
        //             vector<handle> property ... as soon as declareProperty can deal with that.
        auto p = this->declareProperty( inputs.first, m_inputLocations );
        p->declareUpdateHandler( [=](Gaudi::Details::PropertyBase&) {
-           //@FIXME: if any handles, de-register ('retract') them first!
-           // std::for_each( this->m_inputs.begin(), this->m_inputs.end(), [&](auto& h) { this->retractInput(&h); } );
-           if (!this->m_inputs.empty()) {
-              this->warning() << "DataHandle property about to be updated, some DataHandles are about to run out of scope. This will cause a crash later..." << endmsg;
-           }
            this->m_inputs = details::make_vector_of_handles<decltype(this->m_inputs)>
                             (this, m_inputLocations, Gaudi::DataHandle::Reader);
            if (std::is_pointer<In>::value) { // handle constructor does not (yet) allow to set optional flag... so do it explicitly here...
