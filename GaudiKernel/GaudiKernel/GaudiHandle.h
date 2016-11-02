@@ -198,28 +198,27 @@ public:
     return *this;
   }
 
-  ~GaudiHandle(){
-	  //release();
-  }
-
   /** Retrieve the component. Release existing component if needed. */
   StatusCode retrieve() const { // not really const, because it updates m_pObject
-    if ( m_pObject && release().isFailure() ) return StatusCode::FAILURE;
-    if ( retrieve( m_pObject ).isFailure() ) {
+    StatusCode sc = StatusCode::SUCCESS;
+    if ( m_pObject && release().isFailure() ) { sc = StatusCode::FAILURE; }
+    if ( sc && retrieve( m_pObject ).isFailure() )
+    {
       m_pObject = nullptr;
-      return StatusCode::FAILURE;
+      sc = StatusCode::FAILURE;
     }
-    return StatusCode::SUCCESS;
+    return sc;
   }
 
   /** Release the component. */
   StatusCode release() const { // not really const, because it updates m_pObject
-    if ( m_pObject ) {
-      StatusCode sc = release( m_pObject );
+    StatusCode sc = StatusCode::SUCCESS;
+    if ( m_pObject ) 
+    {
+      sc = release( m_pObject );
       m_pObject = nullptr;
-      return sc;
     }
-    return StatusCode::SUCCESS;
+    return sc;
   }
 
   /// Check if the handle is valid (try to retrive the object is not done yet).
@@ -232,6 +231,9 @@ public:
   operator bool() const { // not really const, because it may update m_pObject
     return isValid();
   }
+
+  /// Return the wrapped pointer, not calling retrieve() if null.
+  T * get() { return m_pObject; }
 
   /// Return the wrapped pointer, not calling retrieve() if null.
   typename std::add_const<T>::type * get() const {
@@ -510,22 +512,25 @@ public:
     return it != end() ? &*it : nullptr;
   }
 
-/** Add a handle with given type and name. Can be overridden in derived class.
-    Return whether addition was successful or not. */
+  /** Add a handle with given type and name. Can be overridden in derived class.
+      Return whether addition was successful or not. */
   using GaudiHandleArrayBase::push_back; // avoid compiler warning
   virtual bool push_back( const T& myHandle ) {
     m_handleArray.push_back( myHandle );
     return true;
   }
-
+  
   /** Retrieve all tools */
-  StatusCode retrieve() {
-    for (auto& i : *this) { 
-	  // stop at first failure
-      if ( i.retrieve().isFailure() ) return StatusCode::FAILURE;
+  StatusCode retrieve() 
+  {
+    StatusCode sc = StatusCode::SUCCESS;
+    for ( auto& i : *this )
+    { 
+      // stop at first failure
+      if ( i.retrieve().isFailure() ) { sc = StatusCode::FAILURE; break; }
     }
-    m_retrieved = true;
-    return StatusCode::SUCCESS;
+    if ( sc ) { m_retrieved = true; }
+    return sc;
   }
 
   /** Release all tools */
