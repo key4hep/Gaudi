@@ -19,7 +19,7 @@ public:
 
   /// IMyTool interface
   const std::string& message() const override;
-  void  doIt() override;
+  void doIt() const override;
 
   /// Overriding initialize and finalize
   StatusCode initialize() override;

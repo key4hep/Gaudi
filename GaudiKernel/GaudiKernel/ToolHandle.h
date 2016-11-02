@@ -120,6 +120,7 @@ class ToolHandle : public BaseToolHandle, public GaudiHandle<T>
   friend class Service;
 
 public:
+
   /** Constructor for a tool with default tool type and name.
       Can be called only if the type T is a concrete tool type (not an interface),
       and you want to use the default name. */
@@ -128,6 +129,17 @@ public:
       GaudiHandle<T>( GaudiHandle<T>::getDefaultType(),
                       toolComponentType(parent),
                       toolParentName(parent) ),
+      m_pToolSvc( "ToolSvc", GaudiHandleBase::parentName() )
+  {  }
+
+  /** Copy constructor from a non const T to const T tool handle */
+  template< typename CT  = T,
+            typename NCT = typename std::remove_const<T>::type >
+  ToolHandle( const ToolHandle<NCT>& other,
+              typename std::enable_if< std::is_const<CT>::value &&
+                                       !std::is_same<CT,NCT>::value >::type * = nullptr )
+    : BaseToolHandle( other.parent(), other.createIf() ),
+      GaudiHandle<CT>( other ),
       m_pToolSvc( "ToolSvc", GaudiHandleBase::parentName() )
   {  }
 
@@ -209,7 +221,7 @@ public:
   /** Do the real release of the AlgTool. */
   StatusCode release( T* algTool ) const override
   {
-    return m_pToolSvc->releaseTool( nonConst(algTool) );
+    return m_pToolSvc->releaseTool( this->nonConst(algTool) );
   }
 
   std::string typeAndName() const override {
@@ -231,24 +243,14 @@ protected:
   IAlgTool * getAsIAlgTool() override
   {
     // const cast to support T being const
-    return nonConst( GaudiHandle<T>::get() );
+    return this->nonConst( GaudiHandle<T>::get() );
   }
-
-private:
-
-  template< class TOOL >
-  typename std::remove_const<TOOL>::type * nonConst( TOOL* algTool ) const
-  {
-    return const_cast< typename std::remove_const<TOOL>::type * >( algTool );
-  }
-
-protected:
 
   StatusCode i_retrieve(IAlgTool*& algTool) const override 
   {
     return m_pToolSvc->retrieve( typeAndName(), IAlgTool::interfaceID(),
-				 algTool,
-				 ToolHandleInfo::parent(), ToolHandleInfo::createIf() );
+                                 algTool,
+                                 ToolHandleInfo::parent(), ToolHandleInfo::createIf() );
   }
 
 private:

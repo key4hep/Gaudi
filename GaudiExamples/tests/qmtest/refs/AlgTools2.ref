@@ -1,8 +1,8 @@
-JobOptionsSvc        INFO # =======> /build1/leggett/git/Gaudi/GaudiExamples/options/Services.opts
+JobOptionsSvc        INFO # =======> /var/clus/usera/jonesc/LHCbCMake/Gaudi/GaudiExamples/options/Services.opts
 JobOptionsSvc        INFO # (12,1): AuditorSvc.Auditors = ["ChronoAuditor"]
-JobOptionsSvc        INFO # =======> /build1/leggett/git/Gaudi/GaudiExamples/options/Common.opts
+JobOptionsSvc        INFO # =======> /var/clus/usera/jonesc/LHCbCMake/Gaudi/GaudiExamples/options/Common.opts
 JobOptionsSvc        INFO # (9,1): ApplicationMgr.StatusCodeCheck = 1
-JobOptionsSvc        INFO # =======> /build1/leggett/git/Gaudi/GaudiExamples/options/AlgTools2.opts
+JobOptionsSvc        INFO # =======> /var/clus/usera/jonesc/LHCbCMake/Gaudi/GaudiExamples/options/AlgTools2.opts
 JobOptionsSvc        INFO # (10,1): ApplicationMgr.TopAlg = ["MyGaudiAlgorithm/MyAlg"]
 JobOptionsSvc        INFO # (13,1): MessageSvc.OutputLevel = 3
 JobOptionsSvc        INFO # (18,1): ApplicationMgr.EvtMax = 10
@@ -23,11 +23,11 @@ JobOptionsSvc        INFO # (44,1): ToolSvc.ToolA.Tools = ["TestTool/ToolB"]
 JobOptionsSvc        INFO # (45,1): ToolSvc.ToolB.Tools = ["TestTool/ToolA"]
 JobOptionsSvc        INFO # (46,1): ToolSvc.ToolA.OutputLevel = 2
 JobOptionsSvc        INFO # (47,1): ToolSvc.ToolB.OutputLevel = 2
-JobOptionsSvc        INFO Job options successfully read in from /build1/leggett/git/Gaudi/GaudiExamples/options/AlgTools2.opts
+JobOptionsSvc        INFO Job options successfully read in from /var/clus/usera/jonesc/LHCbCMake/Gaudi/GaudiExamples/options/AlgTools2.opts
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v4r1)
-                                          running on p05614910w96644.cern.ch on Wed Oct  5 19:56:27 2016
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v27r1)
+                                          running on pcmf on Mon Oct 31 14:20:22 2016
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
@@ -104,7 +104,7 @@ MyAlg               DEBUG Registering tool ToolSvc.MyGaudiTool
 MyAlg.MyGaudiTool   DEBUG Property update for OutputLevel : new value = 2
 MyAlg.MyGaudiTool   DEBUG Initialize base class GaudiCommon<AlgTool>
 MyAlg.MyGaudiTool   DEBUG could not locate CounterSummarySvc, no counter summary will be made
-MyAlg.MyGaudiTool   DEBUG List of ALL properties of MyGaudiTool/MyAlg.MyGaudiTool  #properties = 26
+MyAlg.MyGaudiTool   DEBUG List of ALL properties of MyGaudiTool/MyAlg.MyGaudiTool  #properties = 28
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'Bool':True
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'String':hundred
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'Double':100.00000
@@ -124,13 +124,15 @@ MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'ErrorsPrint':True
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'ExtraInputs':[]
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'AuditRestart':False
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'AuditReinitialize':False
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'AuditFinalize':False
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'AuditStop':False
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'AuditStart':False
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'AuditInitialize':False
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'AuditTools':False
-MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'OutputLevel':2
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'OutputLevel':2
 MyAlg.MyGaudiTool    INFO intialize() has been called
 MyAlg.MyGaudiTool    INFO Int    = 100
 MyAlg.MyGaudiTool    INFO Double = 100
@@ -151,6 +153,11 @@ MyAlg.PrivToolH...   INFO Int    = 100
 MyAlg.PrivToolH...   INFO Double = 100
 MyAlg.PrivToolH...   INFO String = hundred
 MyAlg.PrivToolH...   INFO Bool   = 1
+ToolSvc.ConstGe...   INFO intialize() has been called
+ToolSvc.ConstGe...   INFO Int    = 100
+ToolSvc.ConstGe...   INFO Double = 100
+ToolSvc.ConstGe...   INFO String = hundred
+ToolSvc.ConstGe...   INFO Bool   = 1
 ToolSvc.PubTool...   INFO intialize() has been called
 ToolSvc.PubTool...   INFO Int    = 100
 ToolSvc.PubTool...   INFO Double = 100
@@ -181,7 +188,7 @@ ToolSvc.ToolA       DEBUG Property update for OutputLevel : new value = 2
 ToolSvc.ToolA       DEBUG Initialize
 ToolSvc.ToolA       DEBUG Initialize base class GaudiCommon<AlgTool>
 ToolSvc.ToolA       DEBUG could not locate CounterSummarySvc, no counter summary will be made
-ToolSvc.ToolA       DEBUG List of ALL properties of TestTool/ToolSvc.ToolA  #properties = 23
+ToolSvc.ToolA       DEBUG List of ALL properties of TestTool/ToolSvc.ToolA  #properties = 25
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'Tools':[ 'TestTool/ToolB' ]
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'ContextService':AlgContextSvc
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
@@ -198,19 +205,21 @@ ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'ErrorsPrint':True
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'ExtraInputs':[]
+ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditRestart':False
+ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditReinitialize':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditFinalize':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditStop':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditStart':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditInitialize':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditTools':False
-ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'OutputLevel':2
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
+ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'OutputLevel':2
 ToolSvc.ToolA       DEBUG Loading tool ToolB of type TestTool
 ToolSvc.ToolB       DEBUG Property update for OutputLevel : new value = 2
 ToolSvc.ToolB       DEBUG Initialize
 ToolSvc.ToolB       DEBUG Initialize base class GaudiCommon<AlgTool>
 ToolSvc.ToolB       DEBUG could not locate CounterSummarySvc, no counter summary will be made
-ToolSvc.ToolB       DEBUG List of ALL properties of TestTool/ToolSvc.ToolB  #properties = 23
+ToolSvc.ToolB       DEBUG List of ALL properties of TestTool/ToolSvc.ToolB  #properties = 25
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'Tools':[ 'TestTool/ToolA' ]
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'ContextService':AlgContextSvc
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
@@ -227,13 +236,15 @@ ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'ErrorsPrint':True
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'ExtraInputs':[]
+ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditRestart':False
+ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditReinitialize':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditFinalize':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditStop':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditStart':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditInitialize':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditTools':False
-ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'OutputLevel':2
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
+ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'OutputLevel':2
 ToolSvc.ToolB       DEBUG Loading tool ToolA of type TestTool
 ToolSvc.ToolB       DEBUG Registering tool ToolSvc.ToolA
 ToolSvc.ToolA       DEBUG Registering tool ToolSvc.ToolB
@@ -258,6 +269,16 @@ MyAlg                INFO tools created via ToolHandle<T>....
 MyAlg.PrivToolH...   INFO doIt() has been called
 MyAlg.PrivToolH...  DEBUG doIt() [DEBUG] has been called
 ToolSvc.PubTool...   INFO doIt() has been called
+ToolSvc.ConstGe...   INFO doIt() has been called
+MyAlg                INFO tools copied assigned via ToolHandle<T>....
+ToolSvc.PubTool...   INFO doIt() has been called
+ToolSvc.PubTool...   INFO doIt() has been called
+ToolSvc.ConstGe...   INFO doIt() has been called
+MyAlg                INFO tools copied constructed via ToolHandle<T>....
+ToolSvc.PubTool...   INFO doIt() has been called
+MyAlg.PrivToolH...   INFO doIt() has been called
+MyAlg.PrivToolH...  DEBUG doIt() [DEBUG] has been called
+ToolSvc.ConstGe...   INFO doIt() has been called
 MyAlg                INFO executing....
 MyAlg                INFO tools created with tool<T>...
 ToolSvc.MyTool       INFO doIt() has been called
@@ -274,6 +295,16 @@ MyAlg                INFO tools created via ToolHandle<T>....
 MyAlg.PrivToolH...   INFO doIt() has been called
 MyAlg.PrivToolH...  DEBUG doIt() [DEBUG] has been called
 ToolSvc.PubTool...   INFO doIt() has been called
+ToolSvc.ConstGe...   INFO doIt() has been called
+MyAlg                INFO tools copied assigned via ToolHandle<T>....
+ToolSvc.PubTool...   INFO doIt() has been called
+ToolSvc.PubTool...   INFO doIt() has been called
+ToolSvc.ConstGe...   INFO doIt() has been called
+MyAlg                INFO tools copied constructed via ToolHandle<T>....
+ToolSvc.PubTool...   INFO doIt() has been called
+MyAlg.PrivToolH...   INFO doIt() has been called
+MyAlg.PrivToolH...  DEBUG doIt() [DEBUG] has been called
+ToolSvc.ConstGe...   INFO doIt() has been called
 MyAlg                INFO executing....
 MyAlg                INFO tools created with tool<T>...
 ToolSvc.MyTool       INFO doIt() has been called
@@ -290,6 +321,16 @@ MyAlg                INFO tools created via ToolHandle<T>....
 MyAlg.PrivToolH...   INFO doIt() has been called
 MyAlg.PrivToolH...  DEBUG doIt() [DEBUG] has been called
 ToolSvc.PubTool...   INFO doIt() has been called
+ToolSvc.ConstGe...   INFO doIt() has been called
+MyAlg                INFO tools copied assigned via ToolHandle<T>....
+ToolSvc.PubTool...   INFO doIt() has been called
+ToolSvc.PubTool...   INFO doIt() has been called
+ToolSvc.ConstGe...   INFO doIt() has been called
+MyAlg                INFO tools copied constructed via ToolHandle<T>....
+ToolSvc.PubTool...   INFO doIt() has been called
+MyAlg.PrivToolH...   INFO doIt() has been called
+MyAlg.PrivToolH...  DEBUG doIt() [DEBUG] has been called
+ToolSvc.ConstGe...   INFO doIt() has been called
 MyAlg                INFO executing....
 MyAlg                INFO tools created with tool<T>...
 ToolSvc.MyTool       INFO doIt() has been called
@@ -306,6 +347,16 @@ MyAlg                INFO tools created via ToolHandle<T>....
 MyAlg.PrivToolH...   INFO doIt() has been called
 MyAlg.PrivToolH...  DEBUG doIt() [DEBUG] has been called
 ToolSvc.PubTool...   INFO doIt() has been called
+ToolSvc.ConstGe...   INFO doIt() has been called
+MyAlg                INFO tools copied assigned via ToolHandle<T>....
+ToolSvc.PubTool...   INFO doIt() has been called
+ToolSvc.PubTool...   INFO doIt() has been called
+ToolSvc.ConstGe...   INFO doIt() has been called
+MyAlg                INFO tools copied constructed via ToolHandle<T>....
+ToolSvc.PubTool...   INFO doIt() has been called
+MyAlg.PrivToolH...   INFO doIt() has been called
+MyAlg.PrivToolH...  DEBUG doIt() [DEBUG] has been called
+ToolSvc.ConstGe...   INFO doIt() has been called
 MyAlg                INFO executing....
 MyAlg                INFO tools created with tool<T>...
 ToolSvc.MyTool       INFO doIt() has been called
@@ -322,6 +373,16 @@ MyAlg                INFO tools created via ToolHandle<T>....
 MyAlg.PrivToolH...   INFO doIt() has been called
 MyAlg.PrivToolH...  DEBUG doIt() [DEBUG] has been called
 ToolSvc.PubTool...   INFO doIt() has been called
+ToolSvc.ConstGe...   INFO doIt() has been called
+MyAlg                INFO tools copied assigned via ToolHandle<T>....
+ToolSvc.PubTool...   INFO doIt() has been called
+ToolSvc.PubTool...   INFO doIt() has been called
+ToolSvc.ConstGe...   INFO doIt() has been called
+MyAlg                INFO tools copied constructed via ToolHandle<T>....
+ToolSvc.PubTool...   INFO doIt() has been called
+MyAlg.PrivToolH...   INFO doIt() has been called
+MyAlg.PrivToolH...  DEBUG doIt() [DEBUG] has been called
+ToolSvc.ConstGe...   INFO doIt() has been called
 MyAlg                INFO executing....
 MyAlg                INFO tools created with tool<T>...
 ToolSvc.MyTool       INFO doIt() has been called
@@ -338,6 +399,16 @@ MyAlg                INFO tools created via ToolHandle<T>....
 MyAlg.PrivToolH...   INFO doIt() has been called
 MyAlg.PrivToolH...  DEBUG doIt() [DEBUG] has been called
 ToolSvc.PubTool...   INFO doIt() has been called
+ToolSvc.ConstGe...   INFO doIt() has been called
+MyAlg                INFO tools copied assigned via ToolHandle<T>....
+ToolSvc.PubTool...   INFO doIt() has been called
+ToolSvc.PubTool...   INFO doIt() has been called
+ToolSvc.ConstGe...   INFO doIt() has been called
+MyAlg                INFO tools copied constructed via ToolHandle<T>....
+ToolSvc.PubTool...   INFO doIt() has been called
+MyAlg.PrivToolH...   INFO doIt() has been called
+MyAlg.PrivToolH...  DEBUG doIt() [DEBUG] has been called
+ToolSvc.ConstGe...   INFO doIt() has been called
 MyAlg                INFO executing....
 MyAlg                INFO tools created with tool<T>...
 ToolSvc.MyTool       INFO doIt() has been called
@@ -354,6 +425,16 @@ MyAlg                INFO tools created via ToolHandle<T>....
 MyAlg.PrivToolH...   INFO doIt() has been called
 MyAlg.PrivToolH...  DEBUG doIt() [DEBUG] has been called
 ToolSvc.PubTool...   INFO doIt() has been called
+ToolSvc.ConstGe...   INFO doIt() has been called
+MyAlg                INFO tools copied assigned via ToolHandle<T>....
+ToolSvc.PubTool...   INFO doIt() has been called
+ToolSvc.PubTool...   INFO doIt() has been called
+ToolSvc.ConstGe...   INFO doIt() has been called
+MyAlg                INFO tools copied constructed via ToolHandle<T>....
+ToolSvc.PubTool...   INFO doIt() has been called
+MyAlg.PrivToolH...   INFO doIt() has been called
+MyAlg.PrivToolH...  DEBUG doIt() [DEBUG] has been called
+ToolSvc.ConstGe...   INFO doIt() has been called
 MyAlg                INFO executing....
 MyAlg                INFO tools created with tool<T>...
 ToolSvc.MyTool       INFO doIt() has been called
@@ -370,6 +451,16 @@ MyAlg                INFO tools created via ToolHandle<T>....
 MyAlg.PrivToolH...   INFO doIt() has been called
 MyAlg.PrivToolH...  DEBUG doIt() [DEBUG] has been called
 ToolSvc.PubTool...   INFO doIt() has been called
+ToolSvc.ConstGe...   INFO doIt() has been called
+MyAlg                INFO tools copied assigned via ToolHandle<T>....
+ToolSvc.PubTool...   INFO doIt() has been called
+ToolSvc.PubTool...   INFO doIt() has been called
+ToolSvc.ConstGe...   INFO doIt() has been called
+MyAlg                INFO tools copied constructed via ToolHandle<T>....
+ToolSvc.PubTool...   INFO doIt() has been called
+MyAlg.PrivToolH...   INFO doIt() has been called
+MyAlg.PrivToolH...  DEBUG doIt() [DEBUG] has been called
+ToolSvc.ConstGe...   INFO doIt() has been called
 MyAlg                INFO executing....
 MyAlg                INFO tools created with tool<T>...
 ToolSvc.MyTool       INFO doIt() has been called
@@ -386,6 +477,16 @@ MyAlg                INFO tools created via ToolHandle<T>....
 MyAlg.PrivToolH...   INFO doIt() has been called
 MyAlg.PrivToolH...  DEBUG doIt() [DEBUG] has been called
 ToolSvc.PubTool...   INFO doIt() has been called
+ToolSvc.ConstGe...   INFO doIt() has been called
+MyAlg                INFO tools copied assigned via ToolHandle<T>....
+ToolSvc.PubTool...   INFO doIt() has been called
+ToolSvc.PubTool...   INFO doIt() has been called
+ToolSvc.ConstGe...   INFO doIt() has been called
+MyAlg                INFO tools copied constructed via ToolHandle<T>....
+ToolSvc.PubTool...   INFO doIt() has been called
+MyAlg.PrivToolH...   INFO doIt() has been called
+MyAlg.PrivToolH...  DEBUG doIt() [DEBUG] has been called
+ToolSvc.ConstGe...   INFO doIt() has been called
 MyAlg                INFO executing....
 MyAlg                INFO tools created with tool<T>...
 ToolSvc.MyTool       INFO doIt() has been called
@@ -402,6 +503,16 @@ MyAlg                INFO tools created via ToolHandle<T>....
 MyAlg.PrivToolH...   INFO doIt() has been called
 MyAlg.PrivToolH...  DEBUG doIt() [DEBUG] has been called
 ToolSvc.PubTool...   INFO doIt() has been called
+ToolSvc.ConstGe...   INFO doIt() has been called
+MyAlg                INFO tools copied assigned via ToolHandle<T>....
+ToolSvc.PubTool...   INFO doIt() has been called
+ToolSvc.PubTool...   INFO doIt() has been called
+ToolSvc.ConstGe...   INFO doIt() has been called
+MyAlg                INFO tools copied constructed via ToolHandle<T>....
+ToolSvc.PubTool...   INFO doIt() has been called
+MyAlg.PrivToolH...   INFO doIt() has been called
+MyAlg.PrivToolH...  DEBUG doIt() [DEBUG] has been called
+ToolSvc.ConstGe...   INFO doIt() has been called
 ApplicationMgr       INFO Application Manager Stopped successfully
 MyAlg                INFO finalizing....
 MyAlg               DEBUG Finalize base class GaudiAlgorithm
@@ -451,15 +562,17 @@ ToolSvc.ToolA       DEBUG De-Registering tool ToolSvc.ToolB
 ToolSvc.ToolA       DEBUG The tool 'ToolSvc.ToolB' of type 'TestTool' is released
 ToolSvc.ToolA       DEBUG Services to release :
 ToolSvc.Generic...   INFO finalize() has been called
-ToolSvc.PubTool...   INFO finalize() has been called
 MyAlg.PrivToolH...   INFO finalize() has been called
+ToolSvc.ConstGe...   INFO finalize() has been called
+ToolSvc.PubTool...   INFO finalize() has been called
 MyAlg.ToolWithName   INFO destructor has been called
 MyAlg.MyGaudiTool    INFO destructor has been called
 ToolSvc.MyGaudi...   INFO destructor has been called
 MyAlg.MyTool         INFO destructor has been called
 ToolSvc.MyTool       INFO destructor has been called
 ToolSvc.Generic...   INFO destructor has been called
-ToolSvc.PubTool...   INFO destructor has been called
 MyAlg.PrivToolH...   INFO destructor has been called
+ToolSvc.ConstGe...   INFO destructor has been called
+ToolSvc.PubTool...   INFO destructor has been called
 ApplicationMgr       INFO Application Manager Finalized successfully
 ApplicationMgr       INFO Application Manager Terminated successfully
