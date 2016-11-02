@@ -29,21 +29,21 @@ public:
 
   typedef IAlgExecStateSvc::AlgStateMap_t AlgStateMap_t;
 
-  const AlgExecState& algExecState(const Gaudi::StringKey& algName, 
+  const AlgExecState& algExecState(const Gaudi::StringKey& algName,
                                    const EventContext& ctx) const override;
-  const AlgExecState& algExecState(IAlgorithm* iAlg,     
+  const AlgExecState& algExecState(IAlgorithm* iAlg,
                                    const EventContext& ctx) const override;
-  AlgExecState& algExecState(IAlgorithm* iAlg,     
+  AlgExecState& algExecState(IAlgorithm* iAlg,
                              const EventContext& ctx) override;
   const AlgStateMap_t& algExecStates(const EventContext& ctx) const override;
 
-  
+
   const AlgExecState& algExecState(const Gaudi::StringKey& algName) const override;
   const AlgExecState& algExecState(IAlgorithm* iAlg) const override;
   AlgExecState& algExecState(IAlgorithm* iAlg) override;
   const AlgStateMap_t& algExecStates() const override;
 
-  
+
   void reset(const EventContext& ctx) override;
   void reset() override;
 
@@ -70,17 +70,15 @@ private:
   //  typedef std::map<Gaudi::StringKey, AlgExecState> AlgStateMap_t;
   typedef std::vector< AlgStateMap_t > AlgStates_t;
   AlgStates_t m_algStates;
-  
+
   std::vector< EventStatus::Status > m_eventStatus;
   std::vector< Gaudi::StringKey > m_preInitAlgs;
-
-  bool m_isMT;
 
   void init();
   void checkInit() const;
   std::once_flag m_initFlag;
   bool m_isInit;
-  
+
   std::mutex m_mut;
 };
 

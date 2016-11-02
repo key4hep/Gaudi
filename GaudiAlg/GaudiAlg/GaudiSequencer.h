@@ -77,7 +77,6 @@ private:
   Gaudi::Property<bool> m_returnOK{this, "ReturnOK", false, "forces the sequencer to return a good status"};
   Gaudi::Property<bool> m_shortCircuit{this, "ShortCircuit", true, "stop processing as soon as possible"};
 
-  bool m_isInitialized;                       ///< Indicate that we are ready
   std::vector<AlgorithmEntry> m_entries;      ///< List of algorithms to process.
   ISequencerTimerTool* m_timerTool = nullptr; ///< Pointer to the timer tool
   int m_timer;                                ///< Timer number for the sequencer
