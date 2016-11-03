@@ -27,25 +27,11 @@ namespace {
 //=============================================================================
 AnyDataPutAlgorithm::AnyDataPutAlgorithm( const std::string& name,
                                           ISvcLocator* pSvcLocator)
-  : GaudiAlgorithm ( name , pSvcLocator ),
-    m_ids("/Event/Test/Ids", Gaudi::DataHandle::Writer, this)
+  : GaudiAlgorithm ( name , pSvcLocator )
 {
-   declareProperty("Location", m_loc = "Test");
    for (int i = 0; i < 100; i++) {
      m_id_vec.emplace_back("/Event/Test/Ids" + std::to_string(i), Gaudi::DataHandle::Writer, this);
-   } 
-}
-
-//=============================================================================
-// Initialization
-//=============================================================================
-StatusCode AnyDataPutAlgorithm::initialize() {
-   StatusCode sc = GaudiAlgorithm::initialize(); // must be executed first
-   if ( sc.isFailure() ) return sc;  // error printed already by GaudiAlgorithm
-
-   if ( msgLevel(MSG::DEBUG) ) debug() << "==> Initialize" << endmsg;
-
-   return StatusCode::SUCCESS;
+   }
 }
 
 //=============================================================================
@@ -66,16 +52,6 @@ StatusCode AnyDataPutAlgorithm::execute() {
    for (int i = 0; i < 100; i++) {
      m_id_vec[i].put(std::move(i));
    }
-   
+
    return StatusCode::SUCCESS;
-}
-
-//=============================================================================
-//  Finalize
-//=============================================================================
-StatusCode AnyDataPutAlgorithm::finalize() {
-
-   if ( msgLevel(MSG::DEBUG) ) debug() << "==> Finalize" << endmsg;
-
-   return GaudiAlgorithm::finalize();  // must be called after all other actions
 }

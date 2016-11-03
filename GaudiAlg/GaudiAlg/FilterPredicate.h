@@ -17,7 +17,7 @@ namespace Gaudi { namespace Functional {
        using details::DataHandleMixin<void,std::tuple<In...>,Traits_>::DataHandleMixin;
 
        // derived classes are NOT allowed to implement execute ...
-       StatusCode execute() final
+       StatusCode execute() override final
        { return invoke(std::index_sequence_for<In...>{}); }
 
        // ... instead, they must implement the following operator

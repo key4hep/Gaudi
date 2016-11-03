@@ -7,7 +7,6 @@
 EventCounter::EventCounter(const std::string& name, ISvcLocator* pSvcLocator) :
   Algorithm( name, pSvcLocator)
 {
-    declareProperty( "Frequency", m_frequency=1 );
     m_frequency.verifier().setBounds( 0, 1000 );
 }
 

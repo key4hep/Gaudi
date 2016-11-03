@@ -1,14 +1,18 @@
 # Configuration of some useful (possibly embedded) externals
 
+option(GAUDI_USE_SYSTEM_LIBRARIES
+       "Global option to disable/enable use of internally built externals"
+       YES)
+
 # C++ Guidelines Support Library,
 # see http://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines
 # and https://its.cern.ch/jira/browse/GAUDI-1265
 option(GAUDI_USE_SYSTEM_CPP_GSL
        "If to use the C++ Guidelines Support Library from the system or providing it through Gaudi"
-       NO)
+       ${GAUDI_USE_SYSTEM_LIBRARIES})
 if(NOT GAUDI_USE_SYSTEM_CPP_GSL)
-  set(CPP_GSL_URL https://github.com/Microsoft/GSL)
-  set(CPP_GSL_VERSION 32ca283d)
+  set(CPP_GSL_URL https://github.com/Microsoft/GSL.git)
+  set(CPP_GSL_VERSION b07383ea)
   message(STATUS "Using and shipping ${CPP_GSL_URL} version ${CPP_GSL_VERSION}")
   set(CPP_GSL_DIR ${CMAKE_CURRENT_BINARY_DIR}/ext/GSL)
   if(NOT EXISTS ${CPP_GSL_DIR})
@@ -36,10 +40,10 @@ endif()
 # see https://github.com/ericniebler/range-v3
 option(GAUDI_USE_SYSTEM_RANGES_V3
        "If to use the Ranges-v3 library from the system or providing it through Gaudi"
-       NO)
+       ${GAUDI_USE_SYSTEM_LIBRARIES})
 if(NOT GAUDI_USE_SYSTEM_RANGES_V3)
-  set(RANGES_V3_URL https://github.com/ericniebler/range-v3)
-  set(RANGES_V3_VERSION c01e7d2a)
+  set(RANGES_V3_URL https://github.com/ericniebler/range-v3.git)
+  set(RANGES_V3_VERSION 7c2b10f0)
   message(STATUS "Using and shipping ${RANGES_V3_URL} version ${RANGES_V3_VERSION}")
   set(RANGES_V3_DIR ${CMAKE_CURRENT_BINARY_DIR}/ext/range-v3)
   if(NOT EXISTS ${RANGES_V3_DIR})

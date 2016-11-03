@@ -57,14 +57,10 @@ ParticlePropertySvc::ParticlePropertySvc
 {
   /// @todo: remove reference to LHCb-specific environment variable
   // Redefine the default name:
-  if( System::getEnv("PARAMFILESROOT", m_filename) )
+  if( System::getEnv("PARAMFILESROOT", m_filename.value()) )
   {
-    m_filename += "/data/ParticleTable.txt";
+    m_filename.value() += "/data/ParticleTable.txt";
   }
-  //
-  declareProperty ( "ParticlePropertiesFile" , m_filename  ) ;
-  declareProperty ( "OtherFiles"             , m_other     ) ;
-  declareProperty ( "Particles"              , m_particles ) ;
 }
 // ============================================================================
 /// initialize the service and setProperties
@@ -170,10 +166,10 @@ StatusCode ParticlePropertySvc::push_back
   double             maxWidth )
 {
   //
-  auto i = m_owned.insert(  
+  auto i = m_owned.insert(
     make_unique_<ParticleProperty>( particle , geantId  , jetsetId ,
                                     charge   , mass     , tlife    ,
-                                    evtName  , pythiaId , maxWidth ) 
+                                    evtName  , pythiaId , maxWidth )
   ) ;
   //
   return i.second ? push_back( i.first->get() ) : StatusCode::FAILURE;
@@ -255,7 +251,7 @@ namespace
   template <class MAP>
   void _remove_ ( MAP& m , const ParticleProperty* pp )
   {
-    auto i = std::find_if( m.begin(), m.end(), 
+    auto i = std::find_if( m.begin(), m.end(),
                            [&](typename MAP::const_reference i) { return i.second == pp; } );
     if  ( i != m.end() ) { m.erase ( i ) ; }
   }
@@ -335,11 +331,11 @@ StatusCode ParticlePropertySvc::parse( const std::string& file )
 
     // add a particle property
     sc = push_back( tokens[0], gid, jid,
-                    std::stod( tokens[3] ), 
+                    std::stod( tokens[3] ),
                     std::stod( tokens[4] ) * Gaudi::Units::GeV,
                     std::stod( tokens[5] ) * Gaudi::Units::s,
-                    tokens[6], 
-                    std::stoi( tokens[7] ), 
+                    tokens[6],
+                    std::stoi( tokens[7] ),
                     std::stod( tokens[8] ) * Gaudi::Units::GeV ) ;
 
     if ( sc.isFailure() )
@@ -364,7 +360,7 @@ ParticlePropertySvc::anti ( const ParticleProperty* pp ) const
   if ( !pp ) { return nullptr ; }
   const int     ID = pp->pdgID() ;
   const int antiID = -1 * ID     ;
-  for ( const auto& ap : m_vectpp ) 
+  for ( const auto& ap : m_vectpp )
   {
     if ( ap && antiID == ap->pdgID() ) { return ap ; }          // RETURN
   };

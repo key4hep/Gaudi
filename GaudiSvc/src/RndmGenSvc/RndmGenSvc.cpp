@@ -31,13 +31,6 @@
 // instances of this service
 DECLARE_COMPONENT(RndmGenSvc)
 
-/// Standard Service constructor
-RndmGenSvc::RndmGenSvc(const std::string& nam, ISvcLocator* svc)
-: base_class(nam, svc)
-{
-  declareProperty("Engine", m_engineName = "HepRndm::Engine<CLHEP::RanluxEngine>");
-}
-
 /// Service override: initialization
 StatusCode RndmGenSvc::initialize()   {
   StatusCode status = Service::initialize();
@@ -63,7 +56,7 @@ StatusCode RndmGenSvc::initialize()   {
           if ( status.isSuccess() )   {
             m_engine = engine;
             m_serialize = serial;
-            info() << "Using Random engine:" << m_engineName << endmsg;
+            info() << "Using Random engine:" << m_engineName.value() << endmsg;
           }
         }
       }
@@ -142,4 +135,3 @@ StatusCode RndmGenSvc::seeds(std::vector<long>& seeds)  const  {
   return m_engine ? m_engine->seeds(seeds)
                   : StatusCode::FAILURE;
 }
-

@@ -2,13 +2,13 @@
 #define GAUDI_MTMESSAGESVC_H
 
 // Include files
-#include <string>
 #include <map>
+#include <string>
 
-#include "GaudiKernel/StatusCode.h"
-#include "GaudiKernel/Service.h"
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/Message.h"
+#include "GaudiKernel/Service.h"
+#include "GaudiKernel/StatusCode.h"
 
 // Forward declarations
 class ISvcLocator;
@@ -21,18 +21,18 @@ class ISvcLocator;
 //
 // Author:      Iain Last
 //
-class MTMessageSvc : public extends<Service,
-                                    IMessageSvc> {
+class MTMessageSvc : public extends<Service, IMessageSvc>
+{
 public:
-  typedef std::pair< std::string, std::ostream* > NamedStream;
-  typedef std::multimap< int, NamedStream > StreamMap;
-  typedef std::multimap< StatusCode, Message > MessageMap;
-  typedef std::map< std::string, int > ThresholdMap;
+  typedef std::pair<std::string, std::ostream*> NamedStream;
+  typedef std::multimap<int, NamedStream> StreamMap;
+  typedef std::multimap<StatusCode, Message> MessageMap;
+  typedef std::map<std::string, int> ThresholdMap;
 
   // Default constructor.
   MTMessageSvc( const std::string& name, ISvcLocator* svcloc );
   // Destructor.
-  virtual ~MTMessageSvc() {}
+  ~MTMessageSvc() override = default;
 
   // Implementation of IService::initialize()
   virtual StatusCode initialize();
@@ -43,13 +43,13 @@ public:
   virtual void reportMessage( const Message& message );
 
   // Implementation of IMessageSvc::reportMessage()
-  virtual void reportMessage( const StatusCode& code, const std::string& source = "");
+  virtual void reportMessage( const StatusCode& code, const std::string& source = "" );
 
   // Implementation of IMessageSvc::reportMessage()
-  virtual void reportMessage( const char* source, int type, const char* message);
+  virtual void reportMessage( const char* source, int type, const char* message );
 
   // Implementation of IMessageSvc::reportMessage()
-  virtual void reportMessage( const std::string& source, int type, const std::string& message);
+  virtual void reportMessage( const std::string& source, int type, const std::string& message );
 
   // Implementation of IMessageSvc::insertMessage()
   virtual void insertMessage( const StatusCode& code, const Message& message );
@@ -58,7 +58,7 @@ public:
   virtual void eraseMessage();
 
   // Implementation of IMessageSvc::eraseMessage()
-  virtual void eraseMessage( const StatusCode& code ) ;
+  virtual void eraseMessage( const StatusCode& code );
 
   // Implementation of IMessageSvc::eraseMessage()
   virtual void eraseMessage( const StatusCode& code, const Message& message );
@@ -79,26 +79,22 @@ public:
   virtual void eraseStream( std::ostream* stream );
 
   // Implementation of IMessageSvc::desaultStream()
-  virtual std::ostream* defaultStream() const {
-    return m_defaultStream;
-  }
+  virtual std::ostream* defaultStream() const { return m_defaultStream; }
 
   // Implementation of IMessageSvc::setDefaultStream()
-  virtual void setDefaultStream( std::ostream* stream ) {
-    m_defaultStream = stream;
-  }
+  virtual void setDefaultStream( std::ostream* stream ) { m_defaultStream = stream; }
 
   // Implementation of IMessageSvc::ouputLevel()
-  virtual int outputLevel()   const;
+  virtual int outputLevel() const;
 
   // Implementation of IMessageSvc::ouputLevel()
-  virtual int outputLevel(const std::string& source)   const;
+  virtual int outputLevel( const std::string& source ) const;
 
   // Implementation of IMessageSvc::setOuputLevel()
-  virtual void setOutputLevel(int new_level);
+  virtual void setOutputLevel( int new_level );
 
   // Implementation of IMessageSvc::setOuputLevel()
-  virtual void setOutputLevel(const std::string& source, int new_level);
+  virtual void setOutputLevel( const std::string& source, int new_level );
 
   /** Show whether colors are used
    */
@@ -107,20 +103,26 @@ public:
   /** Get the color codes for various log levels
       @param logLevel Logging level
    */
-  virtual std::string getLogColor(int /* logLevel */) const {
-    return std::string();
-  }
+  virtual std::string getLogColor( int /* logLevel */ ) const { return std::string(); }
 
   virtual int messageCount( MSG::Level /* level */ ) const { return 0; }
 
 private:
-  std::ostream* m_defaultStream;      ///< Pointer to the output stream.
-  Message m_defaultMessage;           ///< Default Message
-  StreamMap m_streamMap;              ///< Stream map
-  MessageMap m_messageMap;            ///< Message map
-  ThresholdMap m_thresholdMap;        ///< Output level threshold map
-  std::string m_defaultFormat;        ///< Default format for the messages
-  std::vector<std::string> m_thresholdProp[MSG::NUM_LEVELS]; ///< Properties controling
+  Gaudi::Property<std::string> m_defaultFormat{this, "Format", "% F%18W%S%7W%R%T %0W%M", ""};
+  std::array<Gaudi::Property<std::vector<std::string>>, MSG::NUM_LEVELS> m_thresholdProp{{{/*ignored*/},
+                                                                                          {this, "setVerbose"},
+                                                                                          {this, "setDebug"},
+                                                                                          {this, "setInfo"},
+                                                                                          {this, "setWarning"},
+                                                                                          {this, "setError"},
+                                                                                          {this, "setFatal"},
+                                                                                          {this, "setAlways"}}};
+
+  std::ostream* m_defaultStream = &std::cout; ///< Pointer to the output stream.
+  Message m_defaultMessage;                   ///< Default Message
+  StreamMap m_streamMap;                      ///< Stream map
+  MessageMap m_messageMap;                    ///< Message map
+  ThresholdMap m_thresholdMap;                ///< Output level threshold map
 };
 
 #endif

@@ -3,6 +3,7 @@
 
 #include "GaudiKernel/IService.h"
 
+#include <pthread.h>
 #include <string>
 
 #include <chrono>
@@ -10,7 +11,7 @@ typedef std::chrono::high_resolution_clock Clock;
 typedef Clock::time_point time_point;
 
 struct TimelineEvent{
-	uint thread;
+	pthread_t thread;
 	uint slot;
 	uint event;
 
@@ -29,8 +30,6 @@ public:
   virtual void registerTimelineEvent(const TimelineEvent & e) = 0;
   virtual bool isEnabled() const = 0;
 
-  /// virtual destructor
-  virtual ~ITimelineSvc() {}
 };
 
 #endif

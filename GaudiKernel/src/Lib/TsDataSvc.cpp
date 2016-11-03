@@ -1393,29 +1393,6 @@ IConversionSvc* TsDataSvc::getDataLoader(IRegistry* /* pReg */)   {
   return m_dataLoader;
 }
 
-/// Standard Constructor
-TsDataSvc::TsDataSvc(const std::string& name,ISvcLocator* svc)
-: base_class(name,svc), m_rootCLID( /*CLID_Event*/ 110),
-  m_rootName( "/Event"), m_root(0)
-{
-  m_dataLoader = 0;
-  m_inhibitMap = 0;
-  m_incidentSvc = 0;
-  m_forceLeaves = false;
-  m_enableFaultHdlr = false;
-  m_enableAccessHdlr = false;
-  m_faultName  = "DataFault";
-  m_accessName = "DataAccess";
-  declareProperty("RootCLID",            m_rootCLID);
-  declareProperty("RootName",            m_rootName);
-  declareProperty("ForceLeaves",         m_forceLeaves);
-  declareProperty("InhibitPathes",       m_inhibitPathes);
-  declareProperty("DataFaultName",       m_faultName);
-  declareProperty("DataAccessName",      m_accessName);
-  declareProperty("EnableFaultHandler",  m_enableFaultHdlr);
-  declareProperty("EnableAccessHandler", m_enableAccessHdlr);
-}
-
 /// Standard Destructor
 TsDataSvc::~TsDataSvc()  {
   setDataLoader(0).ignore();

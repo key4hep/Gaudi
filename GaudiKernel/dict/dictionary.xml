@@ -6,7 +6,7 @@
   <!-- Base classes in GaudiKernel -->
   <class name="IssueSeverity"/>
   <class name="StatusCode"/>
-  <class name="Property">
+  <class name="Gaudi::Details::PropertyBase">
     <field name="m_typeinfo" transient="true"/>
   </class>
   <class name="Gaudi::Time"/>
@@ -286,4 +286,3 @@
     -->
   </exclusion>
 </lcgdict>
-

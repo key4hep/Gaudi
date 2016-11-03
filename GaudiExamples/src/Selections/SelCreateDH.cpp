@@ -32,7 +32,7 @@ namespace Gaudi
     public:
       // ======================================================================
       /// the only one essential method
-      virtual StatusCode execute()
+      StatusCode execute() override
       {
         // some random number generators, just to provide the numbers
         static Rndm::Numbers  gauss   ( randSvc () , Rndm::Gauss   (   0.0 ,   1.0 ) ) ;
@@ -40,13 +40,13 @@ namespace Gaudi
 
         // create the data
         Gaudi::Examples::MyTrack::Container  tracks;
-        
+
         // fill it with some "data"
         for ( int i = 0 ; i < 20 ; ++i )
         {
           // create new track
           info () << "Adding track " << i << endmsg;
-          
+
           Gaudi::Examples::MyTrack* track = new Gaudi::Examples::MyTrack() ;
           // fill it with some "data"
           track -> setPx ( gauss ()           ) ;
@@ -56,17 +56,17 @@ namespace Gaudi
           // insert it into the container
           tracks.insert( track ) ;
         }
-        
+
         // Filtering and creating the subrange
         Range range({ tracks.begin(), tracks.end()});
         Gaudi::Examples::MyTrack::Selection sample;
         const double pxCut =     0 ;
-        
+
         // select particles with positive px
         sample.insert
           ( range.begin () ,
             range.end   () ,
-            [pxCut](const Gaudi::Examples::MyTrack* track) { 
+            [pxCut](const Gaudi::Examples::MyTrack* track) {
             return track->px() > pxCut; });
 
         info() << "Sample size is "
@@ -77,14 +77,14 @@ namespace Gaudi
                << tracks.size() << endmsg ;
 
         // register the container in TES
-        auto ret = m_tracks.put (std::move(tracks));        
+        auto ret = m_tracks.put (std::move(tracks));
         info() << ret << endmsg;
         info() << "After put - tracks size is "
                << tracks.size() << endmsg ;
-        
+
         // register Selection in TES
         m_selectedTracks.put(std::move(sample)) ;
-        
+
         return StatusCode::SUCCESS;
       }
       // ======================================================================

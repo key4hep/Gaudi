@@ -85,7 +85,7 @@ namespace Gaudi { namespace Functional {
    ,   m_outputLocations( outputs.second )
    {
        auto p = this->declareProperty( outputs.first, m_outputLocations );
-       p->declareUpdateHandler( [=](Property&) {
+       p->declareUpdateHandler( [=](Gaudi::Details::PropertyBase&) {
            this->m_outputs = details::make_vector_of_handles<decltype(this->m_outputs)>(this, m_outputLocations, Gaudi::DataHandle::Writer);
            if (details::is_optional<Out>::value) { // handle constructor does not (yet) allow to set optional flag... so do it explicitly here...
                std::for_each( this->m_outputs.begin(), this->m_outputs.end(), [](auto& h) { h.setOptional(true); } );

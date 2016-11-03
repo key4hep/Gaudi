@@ -50,30 +50,14 @@ RootCnvSvc::RootCnvSvc(CSTR nam, ISvcLocator* svc)
 : ConversionSvc( nam, svc, ROOT_StorageType),
   m_setup{ new RootConnectionSetup() }
 {
-  m_classRefs = m_classDO = nullptr;
   m_setup->cacheBranches.push_back("*");
-  declareProperty("IOPerfStats",      m_ioPerfStats);
-  declareProperty("ShareFiles",       m_shareFiles          = "NO");
-  declareProperty("EnableIncident",   m_incidentEnabled     = true);
-  declareProperty("RecordsName",      m_recordName          = "/FileRecords");
   declareProperty("LoadSection",      m_setup->loadSection  = "Event");
-
-  // ROOT Write parameters
-  declareProperty("AutoFlush",        m_autoFlush    = 100);
-  declareProperty("BasketSize",       m_basketSize   = 2*MBYTE);
-  declareProperty("BufferSize",              m_bufferSize   = 2*kBYTE);
-  declareProperty("SplitLevel",       m_splitLevel   = 0);
-  declareProperty("GlobalCompression",m_compression); // empty: do nothing
 
   // ROOT Read parameters: must be shared for the entire file!
   declareProperty("CacheSize",        m_setup->cacheSize    = 10*MBYTE);
   declareProperty("LearnEntries",     m_setup->learnEntries = 10);
   declareProperty("CacheBranches",    m_setup->cacheBranches);
   declareProperty("VetoBranches",     m_setup->vetoBranches);
-}
-
-// Standard destructor
-RootCnvSvc::~RootCnvSvc() {
 }
 
 // Small routine to issue exceptions
@@ -263,7 +247,7 @@ RootCnvSvc::connectDatabase(CSTR dataset, int mode, RootDataConnection** con)  {
       if ( fire_incident )   {
         IOpaqueAddress* pAddr = nullptr;
         string fid = pc->fid();
-        string section = m_recordName[0] == '/' ? m_recordName.substr(1) : m_recordName;
+        string section = m_recordName[0] == '/' ? m_recordName.value().substr(1) : m_recordName.value();
         TBranch* b = pc->getBranch(section,m_recordName);
         if ( b ) {
           const string par[2] = { fid, m_recordName };

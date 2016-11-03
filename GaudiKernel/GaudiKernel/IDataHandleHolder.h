@@ -27,6 +27,9 @@ class GAUDI_API IDataHandleHolder : virtual public INamedInterface {
 
    virtual void commitHandles() = 0;
 
+   virtual const DataObjIDColl& inputDataObjs() const = 0;
+   virtual const DataObjIDColl& outputDataObjs() const = 0;
+
    DeclareInterfaceID(IDataHandleHolder,1,0);
 
    virtual void declare(Gaudi::DataHandle&) = 0;

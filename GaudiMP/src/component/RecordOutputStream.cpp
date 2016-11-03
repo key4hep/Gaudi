@@ -11,21 +11,6 @@
 DECLARE_ALGORITHM_FACTORY(RecordOutputStream)
 
 // ============================================================================
-// Standard constructor, initializes variables
-// ============================================================================
-RecordOutputStream::RecordOutputStream(const std::string& name, ISvcLocator* pSvcLocator)
-  : GaudiAlgorithm(name, pSvcLocator)
-{
-  declareProperty("OutputStreamName", m_streamName,
-                  "Name of the OutputStream instance should be triggered.");
-}
-
-// ============================================================================
-// Destructor
-// ============================================================================
-RecordOutputStream::~RecordOutputStream() {}
-
-// ============================================================================
 // Initialization
 // ============================================================================
 StatusCode RecordOutputStream::initialize() {

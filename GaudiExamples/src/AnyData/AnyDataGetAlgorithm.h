@@ -18,18 +18,15 @@ template<class T>
 class AnyDataGetAlgorithm : public GaudiAlgorithm {
 public:
   /// Standard constructor
-  AnyDataGetAlgorithm(const std::string& name, ISvcLocator* pSvcLocator);
+  AnyDataGetAlgorithm(const std::string& name, ISvcLocator* svcLoc): GaudiAlgorithm(name, svcLoc) {}
 
-  virtual ~AnyDataGetAlgorithm( ); ///< Destructor
-
-  virtual StatusCode initialize();    ///< Algorithm initialization
-  virtual StatusCode execute   ();    ///< Algorithm execution
-  virtual StatusCode finalize  ();    ///< Algorithm finalization
+  StatusCode execute() override;    ///< Algorithm execution
 
 private:
 
-   std::string m_location;
-   AnyDataHandle<std::vector<int>> m_ids;
-   
+   Gaudi::Property<std::string> m_location{this, "Location"};
+
+   AnyDataHandle<std::vector<int>> m_ids{"/Event/Test/Ids", Gaudi::DataHandle::Reader, this};
+
 };
 #endif // ANYDATA_ANADATAGETALGORITHM_H

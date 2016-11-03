@@ -49,7 +49,7 @@ namespace Gaudi { namespace Functional {
        // TODO/FIXME: replace vector of string property + call-back with a
        //             vector<handle> property ... as soon as declareProperty can deal with that.
        auto p = this->declareProperty( inputs.first, m_inputLocations );
-       p->declareUpdateHandler( [=](Property&) {
+       p->declareUpdateHandler( [=](Gaudi::Details::PropertyBase&) {
            this->m_inputs = details::make_vector_of_handles<decltype(this->m_inputs)>
                             (this, m_inputLocations, Gaudi::DataHandle::Reader);
            if (std::is_pointer<In>::value) { // handle constructor does not (yet) allow to set optional flag... so do it explicitly here...

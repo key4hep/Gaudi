@@ -12,6 +12,7 @@
 #include <string>
 #include <cassert>
 #include <functional>
+#include <numeric>
 #include "boost/circular_buffer.hpp"
 #include "boost/algorithm/string/predicate.hpp"
 #include "boost/algorithm/string/erase.hpp"

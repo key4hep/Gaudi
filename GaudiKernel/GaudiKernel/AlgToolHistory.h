@@ -4,7 +4,6 @@
 #include "GaudiKernel/HistoryObj.h"
 #include "GaudiKernel/IVersHistoryObj.h"
 
-class Property;
 class AlgTool;
 class JobHistory;
 
@@ -19,10 +18,10 @@ class JobHistory;
  *
  */
 
-class GAUDI_API AlgToolHistory: public HistoryObj, public IVersHistoryObj {
+class GAUDI_API AlgToolHistory : public HistoryObj, public IVersHistoryObj
+{
 
-private:  // data
-
+private: // data
   // Algtool full type.
   std::string m_type;
 
@@ -33,24 +32,19 @@ private:  // data
   std::string m_name;
 
   // Pointer to the algtool
-  const AlgTool *m_tool;
+  const AlgTool* m_tool;
 
   // Properties.
   PropertyList m_properties;
 
   // Link to jobHistory
-  const JobHistory *m_jobHistory;
+  const JobHistory* m_jobHistory;
 
 public:
+  AlgToolHistory( const AlgTool& alg, const JobHistory* job );
 
-  AlgToolHistory(const AlgTool& alg, const JobHistory* job);
-
-  AlgToolHistory(const std::string& algVersion,
-		 const std::string& algName,
-		 const std::string& algType,
-		 const AlgTool* tool,
-		 const PropertyList& props,
-		 const JobHistory* job);
+  AlgToolHistory( const std::string& algVersion, const std::string& algName, const std::string& algType,
+                  const AlgTool* tool, const PropertyList& props, const JobHistory* job );
 
   // Destructor.
   virtual ~AlgToolHistory() override {}
@@ -59,7 +53,7 @@ public:
   const CLID& clID() const override { return classID(); }
   static const CLID& classID();
 
- // Return the algtool type.
+  // Return the algtool type.
   const std::string& algtool_type() const { return m_type; }
 
   // Return the algtool version.
@@ -77,17 +71,14 @@ public:
   // Return the jobHistory
   const JobHistory* jobHistory() const { return m_jobHistory; }
 
-  void dump(std::ostream &, const bool isXML=false, int indent=0) const override;
+  void dump( std::ostream&, const bool isXML = false, int indent = 0 ) const override;
 
   const std::string& name() const override { return algtool_name(); }
   const std::string& type() const override { return algtool_type(); }
   const std::string& version() const override { return algtool_version(); }
-
-
 };
 
 // Output stream.
-GAUDI_API std::ostream& operator<<(std::ostream& lhs, const AlgToolHistory& rhs);
+GAUDI_API std::ostream& operator<<( std::ostream& lhs, const AlgToolHistory& rhs );
 
 #endif
-

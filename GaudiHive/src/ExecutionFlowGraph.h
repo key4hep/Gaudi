@@ -47,7 +47,7 @@ namespace concurrency {
   public:
     /// Constructor
     ControlFlowNode(ExecutionFlowGraph& graph, unsigned int nodeIndex, const std::string& name) :
-      m_graph(&graph), m_nodeIndex(nodeIndex), m_nodeName(name) {};
+      m_graph(&graph), m_nodeIndex(nodeIndex), m_nodeName(name) {}
     /// Destructor
     virtual ~ControlFlowNode() {}
     /// Initialize
@@ -279,7 +279,7 @@ class ExecutionFlowGraph : public CommonMessaging<IExecutionFlowGraph> {
 public:
     /// Constructor
     ExecutionFlowGraph(const std::string& name, SmartIF<ISvcLocator> svc) :
-     m_headNode(0), m_nodeCounter(0), m_svcLocator(svc), m_name(name), m_initTime(std::chrono::high_resolution_clock::now()),
+     m_headNode(0), m_nodeCounter(0), m_svcLocator(svc), m_name(name), m_initTime(std::chrono::system_clock::now()),
      m_eventSlots(nullptr) {}
     /// Destructor
     ~ExecutionFlowGraph() override {
@@ -330,7 +330,7 @@ public:
     void printState(std::stringstream& output,
                     AlgsExecutionStates& states,
                     const std::vector<int>& node_decisions,
-                    const unsigned int& recursionLevel) const {m_headNode->printState(output,states,node_decisions,recursionLevel);};
+                    const unsigned int& recursionLevel) const {m_headNode->printState(output,states,node_decisions,recursionLevel);}
     ///
     const std::vector<AlgorithmNode*> getDataIndependentNodes() const;
     /// Retrieve name of the service
@@ -338,9 +338,9 @@ public:
     /// Retrieve pointer to service locator
     SmartIF<ISvcLocator>& serviceLocator() const override {return m_svcLocator;}
     ///
-    const std::chrono::system_clock::time_point getInitTime() const {return m_initTime;};
+    const std::chrono::system_clock::time_point getInitTime() const {return m_initTime;}
     ///
-    AlgsExecutionStates& getAlgoStates(const int& slotNum) const {return m_eventSlots->at(slotNum).algsStates;};
+    AlgsExecutionStates& getAlgoStates(const int& slotNum) const {return m_eventSlots->at(slotNum).algsStates;}
     ///
     std::vector<int>& getNodeDecisions(const int& slotNum) const {return m_eventSlots->at(slotNum).controlFlowState;}
     /// Print out all data origins and destinations, as reflected in the EF graph

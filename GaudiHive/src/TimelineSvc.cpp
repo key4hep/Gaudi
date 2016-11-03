@@ -4,24 +4,7 @@
 
 #include <fstream>
 
-TimelineSvc::TimelineSvc(const std::string& name, ISvcLocator* svc )
-  : base_class( name, svc ), m_partial(false)
-{
-
-  declareProperty("TimelineFile", m_timelineFile = "timeline.csv");
-  declareProperty("RecordTimeline", m_isEnabled = false);
-  declareProperty("Partial",m_partial = false);
-
-}
-
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-TimelineSvc::~TimelineSvc() {
-
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
 
 StatusCode
 TimelineSvc::initialize() {
@@ -91,7 +74,7 @@ void TimelineSvc::registerTimelineEvent(const TimelineEvent & e){
         << e.thread << " "
         << e.slot << " "
         << e.event << std::endl;
-    
+
     out.close();
   }
 

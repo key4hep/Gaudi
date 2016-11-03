@@ -16,20 +16,8 @@ DECLARE_COMPONENT(MTMessageSvc)
 // Constructor
 MTMessageSvc::MTMessageSvc( const std::string& name, ISvcLocator* svcloc )
   : base_class( name, svcloc ) {
-  m_defaultStream = &std::cout;
   m_outputLevel   = MSG::NIL;
-  declareProperty( "Format",      m_defaultFormat = "% F%18W%S%7W%R%T %0W%M");
-
-  // Special properties to control output level of individual sources
-  declareProperty( "setVerbose",  m_thresholdProp[MSG::VERBOSE] );
-  declareProperty( "setDebug",    m_thresholdProp[MSG::DEBUG] );
-  declareProperty( "setInfo",     m_thresholdProp[MSG::INFO] );
-  declareProperty( "setWarning",  m_thresholdProp[MSG::WARNING] );
-  declareProperty( "setError",    m_thresholdProp[MSG::ERROR] );
-  declareProperty( "setFatal",    m_thresholdProp[MSG::FATAL] );
-  declareProperty( "setAlways",   m_thresholdProp[MSG::ALWAYS] );
 }
-
 
 /// Initialize Service
 StatusCode MTMessageSvc::initialize() {
@@ -335,4 +323,3 @@ void MTMessageSvc::setOutputLevel(const std::string& source, int level)    {
   }
   pthread_mutex_unlock(&coutmutex);
 }
-

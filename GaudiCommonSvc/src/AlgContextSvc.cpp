@@ -23,16 +23,6 @@
  */
 DECLARE_COMPONENT(AlgContextSvc)
 // ============================================================================
-// Standard Constructor
-// ============================================================================
-AlgContextSvc::AlgContextSvc
-( const std::string& name ,
-  ISvcLocator*       svc  )
-  : base_class ( name , svc  )
-{
-  declareProperty ( "Check" , m_check , "Flag to perform more checks" );
-}
-// ============================================================================
 // standard initialization of the service
 // ============================================================================
 StatusCode AlgContextSvc::initialize ()
@@ -53,7 +43,7 @@ StatusCode AlgContextSvc::initialize ()
     if ( !m_inc )
     {
       error() << "Could not locate 'IncidentSvc'" << endmsg ;
-      return StatusCode::FAILURE ;                                               // RETURN
+      return StatusCode::FAILURE ;
     }
     m_inc -> addListener ( this , IncidentType::BeginEvent ) ;
     m_inc -> addListener ( this , IncidentType::EndEvent   ) ;
@@ -92,7 +82,7 @@ StatusCode AlgContextSvc::setCurrentAlg  ( IAlgorithm* a )
   if ( !a )
   {
     warning() << "IAlgorithm* points to NULL" << endmsg ;
-    return StatusCode::RECOVERABLE ;                              // RETURN
+    return StatusCode::RECOVERABLE ;
   }
   // check whether thread-local algorithm list already exists
   // if not, create it
@@ -101,7 +91,7 @@ StatusCode AlgContextSvc::setCurrentAlg  ( IAlgorithm* a )
   }
   m_algorithms->push_back ( a ) ;
 
-  return StatusCode::SUCCESS ;                                    // RETURN
+  return StatusCode::SUCCESS ;
 }
 // ============================================================================
 // remove the algorithm                       ("pop_back") @see IAlgContextSvc
@@ -117,14 +107,14 @@ StatusCode AlgContextSvc::unSetCurrentAlg ( IAlgorithm* a )
   if ( !a )
   {
     warning() << "IAlgorithm* points to NULL" << endmsg ;
-    return StatusCode::RECOVERABLE ;                              // RETURN
+    return StatusCode::RECOVERABLE ;
   }
     if ( m_algorithms->empty() || m_algorithms->back() != a )
    {
     error() << "Algorithm stack is invalid" << endmsg ;
     return StatusCode::FAILURE ;
   }
-  m_algorithms->pop_back() ;                                      // POP_BACK
+  m_algorithms->pop_back() ;
 
   return StatusCode::SUCCESS ;
 }

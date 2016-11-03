@@ -4,8 +4,8 @@
   <class pattern = "std::unary_function<*>"/>
   <class name    = "GaudiPython::Helper"/>
 
-  <class name    = "std::vector<Property*>" />
-  <class name    = "std::vector<const Property*>"/>
+  <class name    = "std::vector<Gaudi::Details::PropertyBase*>" />
+  <class name    = "std::vector<const Gaudi::Details::PropertyBase*>"/>
   <class name    = "std::vector<std::basic_string<char> >" rootmap="false"/>
   <class name    = "std::vector<std::vector<double> >" rootmap="false"/>
   <class name    = "std::vector<IRegistry*>"/>
@@ -51,15 +51,6 @@
 
   <class name    = "Stat"                   />
   <class pattern = "Chrono*"                 />
-
-  <class pattern = "SimpleProperty<*>"       />
-  <class pattern = "SimplePropertyRef<*>"    />
-  <class pattern = "PropertyWithVerifier<*>" />
-  <class pattern = "PropertyWithValue<*>">
-    <field name="m_value" transient="true"/>
-  </class>
-  <class pattern = "BoundedVerifier<*>"      />
-  <class pattern = "PropertyVerifier<*>"     />
 
   <class pattern = "AIDA::I*"  />
   <class name    = "GaudiPython::PyAlgorithm"/>
@@ -122,10 +113,6 @@
       <method name="="/>
       <!-- We should exclude only the copy constructor, but I did not manage to do it -->
       <!--method pattern="basic_ostream*"/-->
-    </class>
-    <class pattern = "std::basic_stringbuf&lt;char*">
-      <!-- assignment operator cannot compile -->
-      <method name="="/>
     </class>
   </exclusion>
 </lcgdict>

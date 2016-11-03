@@ -5,9 +5,16 @@ gaudi_depends_on_subdirs(GaudiKernel)
 find_package(Boost COMPONENTS system filesystem regex thread python)
 find_package(TBB)
 find_package(PythonLibs)
+find_package(ROOT)
 
-# Hide some Boost compile time warnings
-include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
+# Hide some Boost/ROOT/TBB compile time warnings
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS} ${TBB_INCLUDE_DIRS})
+
+# Only link against the rt library on linux:
+set( extralibs )
+if( UNIX AND NOT APPLE )
+   set( extralibs rt )
+endif()
 
 #---Libraries---------------------------------------------------------------
 gaudi_add_module(GaudiCoreSvc
@@ -16,5 +23,6 @@ gaudi_add_module(GaudiCoreSvc
                  src/IncidentSvc/*.cpp
                  src/JobOptionsSvc/*.cpp
                  src/MessageSvc/*.cpp
-                 LINK_LIBRARIES GaudiKernel Boost TBB rt PythonLibs
+                 src/AlgExecStateSvc/*.cpp
+                 LINK_LIBRARIES GaudiKernel Boost TBB PythonLibs ${extralibs}
                  INCLUDE_DIRS TBB PythonLibs)

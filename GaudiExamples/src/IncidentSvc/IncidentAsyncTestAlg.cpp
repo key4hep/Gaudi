@@ -10,18 +10,6 @@
 // Static Factory declaration
 DECLARE_COMPONENT(IncidentAsyncTestAlg)
 
-
-//=============================================================================
-IncidentAsyncTestAlg::IncidentAsyncTestAlg(const std::string& name ,
-                                                 ISvcLocator*  pSvcLocator )
-  :Algorithm(name,pSvcLocator)
-{
-  declareProperty("ServiceName", m_serviceName="IncTestSvc" );
-  declareProperty("inpKeys", m_inpKeys);
-  declareProperty("outKeys", m_outKeys);
-}
-
-
 //=============================================================================
 StatusCode IncidentAsyncTestAlg::initialize() {
   StatusCode sc = Algorithm::initialize();
@@ -40,7 +28,7 @@ StatusCode IncidentAsyncTestAlg::initialize() {
     m_outputObjHandles.emplace_back( new DataObjectHandle<DataObject>( k, Gaudi::DataHandle::Writer, this ));
     declare(*m_outputObjHandles.back());
   }
-  
+
   return StatusCode::SUCCESS;
 }
 
@@ -50,13 +38,13 @@ StatusCode IncidentAsyncTestAlg::execute() {
   MsgStream logstream(msgSvc(), name());
   for (auto & inputHandle: m_inputObjHandles){
     if(!inputHandle->isValid()) continue;
-    
+
     DataObject* obj = nullptr;
     obj = inputHandle->get();
     if (!obj)
       logstream << MSG::ERROR << "A read object was a null pointer." << endmsg;
   }
-  
+
   m_service->getData(&data);
   for (auto & outputHandle: m_outputObjHandles){
     if(!outputHandle->isValid()) continue;
@@ -71,4 +59,3 @@ StatusCode IncidentAsyncTestAlg::finalize() {
   info() << "Finalizing " << endmsg;
   return Algorithm::finalize();
 }
-

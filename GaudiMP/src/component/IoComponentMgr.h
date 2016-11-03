@@ -33,22 +33,16 @@ class IoComponentMgr: public extends<Service,
   ///////////////////////////////////////////////////////////////////
  public:
 
-  // Copy constructor:
-
-  /// Constructor with parameters:
-  IoComponentMgr( const std::string& name, ISvcLocator* pSvcLocator );
+  /// Inherited constructor:
+  using extends::extends;
 
   /// Destructor:
-  ~IoComponentMgr() override;
-
-  // Assignment operator:
-  //IoComponentMgr &operator=(const IoComponentMgr &alg);
+  ~IoComponentMgr() override = default;
 
   /// Gaudi Service Implementation
   //@{
   StatusCode initialize() override;
   StatusCode finalize() override;
-
   //@}
 
   void handle(const Incident&) override;
@@ -166,11 +160,8 @@ class IoComponentMgr: public extends<Service,
   };
 
 
-
   /// Default constructor:
-  IoComponentMgr();
-
-  mutable MsgStream m_log;
+  IoComponentMgr() = delete;
 
   typedef std::map<std::string, IIoComponent*> IoRegistry_t;
   /// Registry of @c IIoComponents

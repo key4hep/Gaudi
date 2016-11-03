@@ -21,15 +21,15 @@ public:
   /// Standard constructor
   AnyDataPutAlgorithm( const std::string& name, ISvcLocator* pSvcLocator );
 
-  virtual StatusCode initialize();    ///< Algorithm initialization
-  virtual StatusCode execute   ();    ///< Algorithm execution
-  virtual StatusCode finalize  ();    ///< Algorithm finalization
+  StatusCode execute() override;    ///< Algorithm execution
 
 private:
 
-   std::string m_loc;
-   AnyDataHandle<std::vector<int>> m_ids;
+   Gaudi::Property<std::string> m_loc{this, "Location", "Test"};
+
+   AnyDataHandle<std::vector<int>> m_ids{"/Event/Test/Ids", Gaudi::DataHandle::Writer, this};
+
    std::vector<AnyDataHandle<int>> m_id_vec;
-   
+
 };
 #endif // ANYDATA_ANADATAPUTALGORITHM_H

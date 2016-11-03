@@ -2,13 +2,14 @@
 #define GAUDIHIVE_HIVESLIMEVENTLOOPMGR_H 1
 
 // Framework include files
+#include "GaudiKernel/IAlgExecStateSvc.h"
 #include "GaudiKernel/IAlgResourcePool.h"
 #include "GaudiKernel/IEvtSelector.h"
 #include "GaudiKernel/IHiveWhiteBoard.h"
-#include "GaudiKernel/MinimalEventLoopMgr.h"
-#include "GaudiKernel/IScheduler.h"
+#include "GaudiKernel/IIncidentListener.h"
 #include "GaudiKernel/IIncidentSvc.h"
-#include <GaudiKernel/IIncidentListener.h>
+#include "GaudiKernel/IScheduler.h"
+#include "GaudiKernel/MinimalEventLoopMgr.h"
 
 // Standard includes
 #include <functional>
@@ -22,69 +23,67 @@ class IIncidentSvc;
 class IDataManagerSvc;
 class IDataProviderSvc;
 
-class HiveSlimEventLoopMgr: public extends<Service,
-                                           IEventProcessor> {
-  
+class HiveSlimEventLoopMgr : public extends<Service, IEventProcessor>
+{
+
 protected:
+  Gaudi::Property<std::string> m_histPersName{this, "HistogramPersistency", "", ""};
+  Gaudi::Property<std::string> m_evtsel{this, "EvtSel", "", ""};
+  Gaudi::Property<bool> m_warnings{this, "Warnings", true, "Set this property to false to suppress warning messages"};
+  Gaudi::Property<std::string> m_schedulerName{this, "SchedulerName", "ForwardSchedulerSvc",
+                                               "Name of the scheduler to be used"};
+  Gaudi::Property<std::vector<unsigned int>> m_eventNumberBlacklist{this, "EventNumberBlackList", {}, ""};
+
   /// Reference to the Event Data Service's IDataManagerSvc interface
-  SmartIF<IDataManagerSvc>  m_evtDataMgrSvc;
+  SmartIF<IDataManagerSvc> m_evtDataMgrSvc;
   /// Reference to the Event Selector
-  SmartIF<IEvtSelector>     m_evtSelector;
+  SmartIF<IEvtSelector> m_evtSelector;
   /// Event Iterator
-  IEvtSelector::Context*      m_evtContext;
-  /// Event selector
-  std::string       m_evtsel;
+  IEvtSelector::Context* m_evtContext = nullptr;
   /// Reference to the Histogram Data Service
-  SmartIF<IDataManagerSvc>  m_histoDataMgrSvc;
+  SmartIF<IDataManagerSvc> m_histoDataMgrSvc;
   /// Reference to the Histogram Persistency Service
-  SmartIF<IConversionSvc>   m_histoPersSvc;
-  /// Reference to the Whiteboard 
-  SmartIF<IHiveWhiteBoard>  m_whiteboard;
+  SmartIF<IConversionSvc> m_histoPersSvc;
+  /// Reference to the Whiteboard
+  SmartIF<IHiveWhiteBoard> m_whiteboard;
   /// Reference to the Algorithm resource pool
-  SmartIF<IAlgResourcePool>  m_algResourcePool;
-  /// Name of the Hist Pers type
-  std::string       m_histPersName;
+  SmartIF<IAlgResourcePool> m_algResourcePool;
+  /// Reference to the AlgExecStateSvc
+  SmartIF<IAlgExecStateSvc> m_algExecStateSvc;
   /// Property interface of ApplicationMgr
-  SmartIF<IProperty>        m_appMgrProperty;
+  SmartIF<IProperty> m_appMgrProperty;
   /// Flag to avoid to fire the EnvEvent incident twice in a row
   /// (and also not before the first event)
-  bool              m_endEventFired;
-  /// Flag to disable warning messages when using external input
-  bool              m_warnings;
+  bool m_endEventFired = false;
   /// A shortcut for the scheduler
   SmartIF<IScheduler> m_schedulerSvc;
-  /// Clear a slot in the WB 
-  StatusCode clearWBSlot(int evtSlot);
+  /// Clear a slot in the WB
+  StatusCode clearWBSlot( int evtSlot );
   /// Declare the root address of the event
   StatusCode declareEventRootAddress();
   /// Create event context
-  StatusCode createEventContext(EventContext*& eventContext, int createdEvents);
+  StatusCode createEventContext( EventContext*& eventContext, int createdEvents );
   /// Drain the scheduler from all actions that may be queued
-  StatusCode drainScheduler(int& finishedEvents);
-  /// Instance of the incident listener waiting for AbortEvent. 
-  SmartIF< IIncidentListener >  m_abortEventListener;
-  /// Name of the scheduler to be used
-  std::string m_schedulerName;
+  StatusCode drainScheduler( int& finishedEvents );
+  /// Instance of the incident listener waiting for AbortEvent.
+  SmartIF<IIncidentListener> m_abortEventListener;
   /// Scheduled stop of event processing
-  bool                m_scheduledStop;
+  bool m_scheduledStop = false;
   /// Reference to the IAppMgrUI interface of the application manager
-  SmartIF<IAppMgrUI> m_appMgrUI;  
+  SmartIF<IAppMgrUI> m_appMgrUI;
   /// Reference to the incident service
   SmartIF<IIncidentSvc> m_incidentSvc;
-  
-  /// List of events to be skipped. The number is the number in the job.
-  std::vector<unsigned int> m_eventNumberBlacklist;
 
-  //if finite number of evts is processed use bitset
-  boost::dynamic_bitset<> * m_blackListBS;
+  // if finite number of evts is processed use bitset
+  boost::dynamic_bitset<>* m_blackListBS = nullptr;
 
 public:
   /// Standard Constructor
-  HiveSlimEventLoopMgr(const std::string& nam, ISvcLocator* svcLoc);
+  HiveSlimEventLoopMgr( const std::string& nam, ISvcLocator* svcLoc );
   /// Standard Destructor
   ~HiveSlimEventLoopMgr() override;
   /// Create event address using event selector
-  StatusCode getEventRoot(IOpaqueAddress*& refpAddr);    
+  StatusCode getEventRoot( IOpaqueAddress*& refpAddr );
   /// implementation of IService::initialize
   StatusCode initialize() override;
   /// implementation of IService::reinitialize
@@ -94,11 +93,11 @@ public:
   /// implementation of IService::finalize
   StatusCode finalize() override;
   /// implementation of IService::nextEvent
-  StatusCode nextEvent(int maxevt) override;
+  StatusCode nextEvent( int maxevt ) override;
   /// implementation of IEventProcessor::executeEvent(void* par)
-  StatusCode executeEvent(void* par) override;
+  StatusCode executeEvent( void* par ) override;
   /// implementation of IEventProcessor::executeRun()
-  StatusCode executeRun(int maxevt) override;
+  StatusCode executeRun( int maxevt ) override;
   /// implementation of IEventProcessor::stopRun()
   StatusCode stopRun() override;
 };

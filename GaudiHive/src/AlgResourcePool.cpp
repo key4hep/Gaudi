@@ -16,13 +16,8 @@
 // Instantiation of a static factory class used by clients to create instances of this service
 DECLARE_SERVICE_FACTORY(AlgResourcePool)
 
-// constructor
-AlgResourcePool::AlgResourcePool( const std::string& name, ISvcLocator* svc ) :
-  base_class(name,svc), m_available_resources(0), m_EFGraph(0)
-{
-  declareProperty("CreateLazily", m_lazyCreation = false );
-  declareProperty("TopAlg", m_topAlgNames );
-}
+#define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
+#define DEBUG_MSG ON_DEBUG debug()
 
 //---------------------------------------------------------------------------
 
@@ -110,14 +105,12 @@ StatusCode AlgResourcePool::acquireAlgorithm(const std::string& name, IAlgorithm
   }
 
   if(sc.isFailure())
-    if (msgLevel(MSG::DEBUG))
-      debug() << "No instance of algorithm " << name << " could be retrieved in non-blocking mode" << endmsg;
+    DEBUG_MSG << "No instance of algorithm " << name << " could be retrieved in non-blocking mode" << endmsg;
 
-  //  if (m_lazyCreation ) {
-  // TODO: fill the lazyCreation part
-  //}
+  // if (m_lazyCreation ) {
+  //    TODO: fill the lazyCreation part
+  // }
   if (sc.isSuccess()){
-    algo->resetExecuted();
     state_type requirements = m_resource_requirements[algo_id];
     m_resource_mutex.lock();
     if (requirements.is_subset_of(m_available_resources)) {
@@ -181,18 +174,18 @@ StatusCode AlgResourcePool::flattenSequencer(Algorithm* algo, ListAlg& alglist, 
        // we want to add non-empty GaudiAtomicSequencers
        or (algo->type() == "GaudiAtomicSequencer" and not subAlgorithms->empty())){
 
-      debug() << std::string(recursionDepth, ' ') << algo->name() << " is " <<
-              (algo->type() != "GaudiAtomicSequencer" ? "not a sequencer" : "an atomic sequencer")
+    DEBUG_MSG << std::string(recursionDepth, ' ') << algo->name() << " is "
+              << (algo->type() != "GaudiAtomicSequencer" ? "not a sequencer" : "an atomic sequencer")
               << ". Appending it" << endmsg;
 
-      alglist.emplace_back(algo);
-      m_EFGraph->addAlgorithmNode(algo,parentName,false,false);
+    alglist.emplace_back(algo);
+    m_EFGraph->addAlgorithmNode(algo, parentName, false, false).ignore();
     return sc;
   }
 
   // Recursively unroll
   ++recursionDepth;
-  debug() << std::string(recursionDepth, ' ') << algo->name() << " is a sequencer. Flattening it." << endmsg;
+  DEBUG_MSG << std::string(recursionDepth, ' ') << algo->name() << " is a sequencer. Flattening it." << endmsg;
   bool modeOR = false;
   bool allPass = false;
   bool isLazy = false;
@@ -202,7 +195,7 @@ StatusCode AlgResourcePool::flattenSequencer(Algorithm* algo, ListAlg& alglist, 
     isLazy = (algo->getProperty("ShortCircuit").toString() == "True")? true : false;
     if (allPass) isLazy = false; // standard GaudiSequencer behavior on all pass is to execute everything
   }
-  sc = m_EFGraph->addDecisionHubNode(algo,parentName,modeOR,allPass,isLazy);
+  sc = m_EFGraph->addDecisionHubNode(algo, parentName, modeOR, allPass, isLazy);
   if (sc.isFailure()) {
     error() << "Failed to add DecisionHub " << algo->name() << " to execution flow graph" << endmsg;
     return sc;
@@ -327,13 +320,13 @@ StatusCode AlgResourcePool::decodeTopAlgs()    {
     // potentially create clones; if not lazy creation we have to do it now
     if (!m_lazyCreation) {
       for (unsigned int i =1, end =ialgo->cardinality();i<end; ++i){
-        debug() << "type/name to create clone of: " << item_type << "/" 
+        debug() << "type/name to create clone of: " << item_type << "/"
                 << item_name << endmsg;
         IAlgorithm* ialgoClone(nullptr);
         createAlg(item_type,item_name,ialgoClone);
         ialgoClone->setIndex(i);
         if (ialgoClone->sysInitialize().isFailure()) {
-          error() << "unable to initialize Algorithm clone " 
+          error() << "unable to initialize Algorithm clone "
                   << ialgoClone->name() << endmsg;
           sc = StatusCode::FAILURE;
           // FIXME: should we delete this failed clone?

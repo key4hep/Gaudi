@@ -4,8 +4,11 @@ gaudi_depends_on_subdirs(GaudiKernel)
 
 find_package(AIDA REQUIRED)
 find_package(Boost REQUIRED COMPONENTS regex)
-find_package(ROOT REQUIRED COMPONENTS Hist RIO Tree Net)
+find_package(ROOT REQUIRED COMPONENTS Hist RIO Tree Net Matrix Thread MathCore)
 find_package(CLHEP REQUIRED)
+
+# Hide some Boost/ROOT/CLHEP compile time warnings
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS} ${CLHEP_INCLUDE_DIRS})
 
 #---Libraries---------------------------------------------------------------
 SET(GaudiSvc_srcs

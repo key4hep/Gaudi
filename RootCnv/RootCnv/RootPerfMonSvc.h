@@ -10,23 +10,22 @@
 #include <memory>
 // Framework include files
 #include "GaudiKernel/IIncidentListener.h"
+#include "GaudiKernel/IIncidentSvc.h"
 #include "GaudiKernel/Service.h"
 
-#include "TTree.h"
 #include "TFile.h"
+#include "TTree.h"
 
 #include "RootCnv/SysProcStat.h"
 
 // C/C++ include files
 #include <set>
 
-// Forward declarations
-class IIncidentSvc;
-
 /*
  * Gaudi namespace declaration
  */
-namespace Gaudi {
+namespace Gaudi
+{
 
   /** @class RootPerfMonSvc RootPerfMonSvc.h src/RootPerfMonSvc.h
    *
@@ -38,43 +37,44 @@ namespace Gaudi {
    *  @version 1.0
    *  @date    20/12/2009
    */
-  class GAUDI_API RootPerfMonSvc : public Service, virtual public IIncidentListener {
+  class GAUDI_API RootPerfMonSvc : public extends<Service, IIncidentListener>
+  {
   protected:
+    Gaudi::Property<std::string> m_ioPerfStats{this, "IOPerfStats", "",
+                                               "Enable TTree IOperfStats if not empty; otherwise perf stat file name"};
+    // Passed parameters
+    Gaudi::Property<std::string> m_setStreams{this, "Streams", "", ""};
+    Gaudi::Property<std::string> m_basketSize{this, "BasketSize", "", ""};
+    Gaudi::Property<std::string> m_bufferSize{this, "BufferSize", "", ""};
+    Gaudi::Property<std::string> m_splitLevel{this, "SplitLevel", "", ""};
 
     /// Reference to incident service
-    SmartIF<IIncidentSvc>               m_incidentSvc ;
-    /// Property: Enable TTree IOperfStats if not empty; otherwise perf stat file name
-    std::string                 m_ioPerfStats;
+    SmartIF<IIncidentSvc> m_incidentSvc;
     /// Message streamer
-    std::unique_ptr<MsgStream>  m_log;
-    // Passed parameters
-    std::string                 m_setStreams;
-    std::string                 m_basketSize;
-    std::string                 m_bufferSize;
-    std::string                 m_splitLevel;
+    std::unique_ptr<MsgStream> m_log;
     // Reference to a tree with statistics
-    TTree*                      m_perfTree;
+    TTree* m_perfTree;
     // Reference to a file where statistics are persisted
-    std::unique_ptr<TFile>      m_perfFile;
+    std::unique_ptr<TFile> m_perfFile;
     // Reference to all connected output files
-    std::set<std::string>       m_outputs;
+    std::set<std::string> m_outputs;
     // The newest observed values
-    Int_t                       m_eventType;
-    ULong_t                     m_utime, m_stime, m_vsize;
-    Long_t                      m_eventNumber, m_rss, m_time;
+    Int_t m_eventType;
+    ULong_t m_utime, m_stime, m_vsize;
+    Long_t m_eventNumber, m_rss, m_time;
 
     // Types of records
     enum EventType { EVENT = 1, FSR = 2 };
 
     // Adding newest observed values to the tree with statistics
-    virtual void record(EventType eventType);
+    virtual void record( EventType eventType );
 
     /// Helper: Use message streamer
     MsgStream& log() const { return *m_log; }
 
   public:
     /// Standard constructor
-    RootPerfMonSvc(const std::string& name, ISvcLocator* svc);
+    using extends::extends;
 
     /// Standard destructor
     ~RootPerfMonSvc() override = default;
@@ -84,7 +84,7 @@ namespace Gaudi {
      *
      * @return     Status code returning failure.
      */
-    StatusCode error(const std::string& msg);
+    StatusCode error( const std::string& msg );
 
     /// Service overload: initialize the service
     StatusCode initialize() override;
@@ -93,11 +93,11 @@ namespace Gaudi {
     StatusCode finalize() override;
 
     /// IIncidentListener override: Inform that a new incident has occurred
-    void handle(const Incident& incident) override;
+    void handle( const Incident& incident ) override;
 
     // Service overload: Stop the service
     StatusCode stop() override;
   };
 }
 
-#endif  // GAUDIROOTCNV_GAUDIROOTPERFMONSVC_H
+#endif // GAUDIROOTCNV_GAUDIROOTPERFMONSVC_H

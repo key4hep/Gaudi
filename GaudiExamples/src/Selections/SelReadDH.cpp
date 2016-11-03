@@ -28,16 +28,16 @@ namespace Gaudi
     public:
       // ======================================================================
       /// the only one essential method
-      virtual StatusCode execute()
+      StatusCode execute() override
       {
         // Printing out the tracks
         {
-          info() << "=========== Tracks ==========" << endmsg; 
+          info() << "=========== Tracks ==========" << endmsg;
           auto tracks = m_tracks.get();
           int i = 0;
           for(auto t:  *tracks) {
             info() <<  "(" << t->px() << ", " << t->py()
-                   << ", " << t->pz() << ")" 
+                   << ", " << t->pz() << ")"
                    << endmsg;
             i++;
           }
@@ -46,7 +46,7 @@ namespace Gaudi
 
         // Printing out the tracks from the range
         {
-        info() << "=========== Range Tracks ==========" << endmsg; 
+        info() << "=========== Range Tracks ==========" << endmsg;
         const Gaudi::NamedRange_<std::vector<const MyTrack *>> ranget = m_rangeTracks.get();
            auto range = m_rangeTracks.get();
            info() << typeid(ranget).name() << endmsg;
@@ -54,25 +54,25 @@ namespace Gaudi
            int i = 0;
            for(auto t:  ranget) {
              info() <<  "(" << t->px() << ", " << t->py()
-                    << ", " << t->pz() << ")" 
+                    << ", " << t->pz() << ")"
                     << endmsg;
              i++;
              }
              info() << "=========== Range Tracks count: " << i << endmsg;
-           
+
            }
 
          // And then the selection
           {
-           info() << "=========== Selected Tracks ==========" << endmsg;        
+           info() << "=========== Selected Tracks ==========" << endmsg;
            auto selectedTracks = m_selectedTracks.get();
                      int i = 0;
            for(auto t:  selectedTracks) {
              std::cout <<  "(" << t->px() << ", " << t->py()
-                       << ", " << t->pz() << ")" 
+                       << ", " << t->pz() << ")"
                        << std::endl;
              i++;
-             }        
+             }
              info() << "=========== Selected Tracks count: " << i << endmsg;
              }
 
@@ -107,7 +107,7 @@ namespace Gaudi
 
        // ======================================================================
        AnyDataHandle<Gaudi::Examples::MyTrack::Container>  m_tracks;
-      AnyDataHandle<Gaudi::Examples::MyTrack::Range>  m_selectedTracks; 
+       AnyDataHandle<Gaudi::Examples::MyTrack::Range>  m_selectedTracks;
        AnyDataHandle<Gaudi::Examples::MyTrack::Range>  m_rangeTracks;
 
       // ======================================================================

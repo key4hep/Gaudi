@@ -10,17 +10,6 @@
 
 DECLARE_COMPONENT(MyAlgorithm)
 
-// Constructor
-//------------------------------------------------------------------------------
-MyAlgorithm::MyAlgorithm(const std::string& name, ISvcLocator* ploc)
-           : Algorithm(name, ploc) {
-//------------------------------------------------------------------------------
-  declareProperty("ToolWithName", m_privateToolType = "MyTool",
-                  "Type of the tool to use (internal name is ToolWithName)");
-  declareProperty("PrivateToolsOnly", m_privateToolsOnly = false,
-                  "Do not look for public tools.");
-}
-
 //------------------------------------------------------------------------------
 StatusCode MyAlgorithm::initialize() {
 //------------------------------------------------------------------------------

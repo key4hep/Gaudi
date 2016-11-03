@@ -9,6 +9,12 @@ find_package(CLHEP REQUIRED)
 find_package(GSL REQUIRED)
 find_package(PythonLibs)
 find_package(RELAX)
+find_package(TBB)
+
+# Hide some Boost/ROOT/CLHEP/TBB/HepPDT compile time warnings
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS}
+                           ${CLHEP_INCLUDE_DIRS} ${TBB_INCLUDE_DIRS}
+                           ${HEPPDT_INCLUDE_DIRS})
 
 if(NOT CMAKE_VERSION VERSION_LESS 3.1)
   # FindOpenCL.cmake has been introduced in CMake 3.1.0
@@ -134,6 +140,7 @@ gaudi_build_env(UNSET GAUDIAPPNAME
 
 gaudi_add_test(QMTest QMTEST
                ENVIRONMENT
+                 BINARY_TAG=${BINARY_TAG}
                  STDOPTS=${CMAKE_CURRENT_SOURCE_DIR}/options
                  JOBOPTSEARCHPATH+=${CMAKE_CURRENT_SOURCE_DIR}/options
                  JOBOPTSEARCHPATH+=${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest

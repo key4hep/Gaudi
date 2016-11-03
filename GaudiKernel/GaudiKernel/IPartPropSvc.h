@@ -25,10 +25,8 @@ public:
 
   virtual HepPDT::ParticleDataTable* PDT() = 0;
   virtual void setUnknownParticleHandler( HepPDT::ProcessUnknownID*,
-					  const std::string& ) = 0;
+                                          const std::string& ) = 0;
 
-  /// virtual destructor
-  virtual ~IPartPropSvc() = default;
 };
 
 #endif

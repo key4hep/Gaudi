@@ -4,11 +4,10 @@
 #include "GaudiKernel/IDataHandleHolder.h"
 #include "GaudiKernel/DataHandle.h"
 #include "GaudiKernel/GaudiException.h"
+#include "GaudiKernel/Property.h"
 
 #include <unordered_set>
 #include <algorithm>
-
-class PropertyMgr;
 
 namespace {
     template <typename Container>
@@ -22,8 +21,11 @@ namespace {
     }
 }
 
-class GAUDI_API DataHandleHolderBase : virtual public IDataHandleHolder {
+template<class BASE>
+class GAUDI_API DataHandleHolderBase : public extends<BASE, IDataHandleHolder> {
  public:
+
+  using extends<BASE, IDataHandleHolder>::extends;
 
   std::vector<Gaudi::DataHandle*> inputHandles() const override {
       return handles( m_handles, Gaudi::DataHandle::Reader );
@@ -43,18 +45,16 @@ class GAUDI_API DataHandleHolderBase : virtual public IDataHandleHolder {
     // the hndl owner is set in the handl c'tor -- how else can it get here?
     // if (!handle.owner()) handle.setOwner(this);
 
-   if (handle.owner()!=this) {
-     throw GaudiException("Attempt to declare foreign handle with algorithm!",
-                           name(), StatusCode::FAILURE);
+   if (handle.owner() != this) {
+     throw GaudiException("Attempt to declare foreign handle with algorithm!", this->name(), StatusCode::FAILURE);
    }
 
     m_handles.insert(&handle);
   }
 
   void renounce(Gaudi::DataHandle& handle) override {
-   if (handle.owner()!=this) {
-     throw GaudiException("Attempt to renounce foreign handle with algorithm!",
-                           name(), StatusCode::FAILURE);
+   if (handle.owner() != this) {
+     throw GaudiException("Attempt to renounce foreign handle with algorithm!", this->name(), StatusCode::FAILURE);
    }
    m_handles.erase(&handle);
 
@@ -62,18 +62,18 @@ class GAUDI_API DataHandleHolderBase : virtual public IDataHandleHolder {
 
  protected:
 
-  /// initProperties - to be called by the constructor of the children
-  /// once the PropertyManager is available
-  void initDataHandleHolderProperties(PropertyMgr *propertyMgr);
-
   /// initializes all handles - called by the sysInitialize method
   /// of any descendant of this
-  virtual void initDataHandleHolder();
+  void initDataHandleHolder() {
+    for (auto h : m_handles) h->init();
+  }
 
  private:
 
   std::unordered_set<Gaudi::DataHandle*> m_handles;
-  DataObjIDColl m_extInputDataObjs, m_extOutputDataObjs;
+
+  Gaudi::Property<DataObjIDColl> m_extInputDataObjs{this, "ExtraInputs", DataObjIDColl{}, "[[deprecated]]"};
+  Gaudi::Property<DataObjIDColl> m_extOutputDataObjs{this, "ExtraOutputs", DataObjIDColl{}, "[[deprecated]]"};
 
 };
 

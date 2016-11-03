@@ -234,7 +234,7 @@ public:
   }
 
   /// Return the wrapped pointer, not calling retrieve() if null.
-  T* get() const {
+  typename std::add_const<T>::type * get() const {
     return m_pObject;
   }
 
@@ -253,12 +253,14 @@ public:
     return m_pObject;
   }
 
-  T& operator*() const { // not really const, because it may update m_pObject
+  typename std::add_const<T>::type & operator*() const { 
+    // not really const, because it may update m_pObject
     assertObject();
     return *m_pObject;
   }
 
-  T* operator->() const { // not really const, because it may update m_pObject
+  typename std::add_const<T>::type * operator->() const {
+    // not really const, because it may update m_pObject
     assertObject();
     return m_pObject;
   }

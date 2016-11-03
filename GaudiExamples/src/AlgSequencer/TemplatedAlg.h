@@ -3,26 +3,29 @@
 
 // Include files
 #include "GaudiAlg/GaudiAlgorithm.h"
-#include "GaudiKernel/Property.h"
 #include "GaudiKernel/MsgStream.h"
+#include "GaudiKernel/Property.h"
 
 /** @class TemplateAlg
     Trivial Algorithm for tutotial purposes
-    
+
     @author nobody
 */
-template <typename T, typename R> class TemplatedAlg : public GaudiAlgorithm {
+template <typename T, typename R>
+class TemplatedAlg : public GaudiAlgorithm
+{
 public:
   /// Constructor of this form must be provided
-  TemplatedAlg(const std::string& name, ISvcLocator* pSvcLocator); 
+  using GaudiAlgorithm::GaudiAlgorithm;
 
   /// Three mandatory member functions of any algorithm
   StatusCode initialize() override;
   StatusCode execute() override;
   StatusCode finalize() override;
+
 private:
-  T  m_t;
-  R  m_r;
+  Gaudi::Property<T> m_t{this, "TProperty", {}};
+  Gaudi::Property<R> m_r{this, "RProperty", {}};
 };
 
-#endif    // GAUDIEXAMPLE_TEMPLATEDALG_H
+#endif // GAUDIEXAMPLE_TEMPLATEDALG_H

@@ -3,8 +3,8 @@
 // ============================================================================
 // Include files
 // ============================================================================
-#include <vector>
 #include <string>
+#include <vector>
 // ============================================================================
 // GaudiKernel
 // ============================================================================
@@ -18,9 +18,10 @@
 // ============================================================================
 // forward declarations:
 // ============================================================================
-class                   INTupleSvc     ; // GaudiKernel
+class INTupleSvc;
+
 // ============================================================================
-/* @file GaudiAlgorithm.h
+/** @file GaudiAlgorithm.h
  *
  * Header file for class GaudiAlgorithm.
  * The actual code is mainly imported from
@@ -90,7 +91,7 @@ class                   INTupleSvc     ; // GaudiKernel
  *  @date   30/06/2001
  */
 // ============================================================================
-class GAUDI_API GaudiAlgorithm: public GaudiCommon<Algorithm>
+class GAUDI_API GaudiAlgorithm : public GaudiCommon<Algorithm>
 {
 public:
   // ==========================================================================
@@ -106,14 +107,14 @@ public:
    *  @see IAlgorithm
    *  @return status code
    */
-  StatusCode execute   () override;
+  StatusCode execute() override;
   // ==========================================================================
   /** standard finalization method
    *  @see  Algorithm
    *  @see IAlgorithm
    *  @return status code
    */
-  StatusCode finalize  () override;
+  StatusCode finalize() override;
   // ==========================================================================
   /** the generic actions for the execution.
    *  @see  Algorithm
@@ -121,10 +122,9 @@ public:
    *  @see Algorithm::sysExecute
    *  @return status code
    */
-  StatusCode sysExecute () override;
+  StatusCode sysExecute() override;
   // ==========================================================================
 public:
-
   // following methods cannot go in GaudiCommon since they use methods ( evtSvc()
   // and detDvc() ) that are not members of AlgTool.
   // Also some methods seem which are members of the base class do not seem
@@ -162,12 +162,10 @@ public:
    *  @retval StatusCode::SUCCESS Data was successfully placed in the TES.
    *  @retval StatusCode::FAILURE Failed to store data in the TES.
    */
-  inline void put ( IDataProviderSvc*  svc     ,
-                    DataObject*        object  ,
-                    const std::string& address ,
-                    const bool useRootInTES = true ) const
+  inline void put( IDataProviderSvc* svc, DataObject* object, const std::string& address,
+                   const bool useRootInTES = true ) const
   {
-    GaudiCommon<Algorithm>::put ( svc , object , address , useRootInTES ) ;
+    GaudiCommon<Algorithm>::put( svc, object, address, useRootInTES );
   }
 
   /** @brief Register a data object or container into Gaudi Event Transient Store
@@ -201,11 +199,9 @@ public:
    *  @retval StatusCode::SUCCESS Data was successfully placed in the TES.
    *  @retval StatusCode::FAILURE Failed to store data in the TES.
    */
-  inline void put ( DataObject*        object   ,
-                    const std::string& address  ,
-                    const bool useRootInTES = true ) const
+  inline void put( DataObject* object, const std::string& address, const bool useRootInTES = true ) const
   {
-    GaudiCommon<Algorithm>::put ( evtSvc() , object , address , useRootInTES ) ;
+    GaudiCommon<Algorithm>::put( evtSvc(), object, address, useRootInTES );
   }
 
   /** @brief Templated access to the data in Gaudi Transient Store
@@ -240,13 +236,11 @@ public:
    *
    *  @return pointer to the data object
    */
-  template < class TYPE  >
-  inline typename Gaudi::Utils::GetData<TYPE>::return_type
-  get  ( IDataProviderSvc*  svc       ,
-         const std::string& location  ,
-         const bool useRootInTES = true ) const
+  template <class TYPE>
+  inline typename Gaudi::Utils::GetData<TYPE>::return_type get( IDataProviderSvc* svc, const std::string& location,
+                                                                const bool useRootInTES = true ) const
   {
-    return GaudiCommon<Algorithm>::get<TYPE> ( svc , location , useRootInTES ) ;
+    return GaudiCommon<Algorithm>::get<TYPE>( svc, location, useRootInTES );
   }
 
   /** @brief Templated access to the data in Gaudi Transient Store
@@ -282,13 +276,11 @@ public:
    *  @return pointer to the data object.
    *  @retval NULL If data does not exist.
    */
-  template < class TYPE  >
+  template <class TYPE>
   inline typename Gaudi::Utils::GetData<TYPE>::return_type
-  getIfExists ( IDataProviderSvc*  svc       ,
-                const std::string& location  ,
-                const bool useRootInTES = true ) const
+  getIfExists( IDataProviderSvc* svc, const std::string& location, const bool useRootInTES = true ) const
   {
-    return GaudiCommon<Algorithm>::getIfExists<TYPE> ( svc , location , useRootInTES ) ;
+    return GaudiCommon<Algorithm>::getIfExists<TYPE>( svc, location, useRootInTES );
   }
 
   /** @brief Templated access to the data from Gaudi Event Transient Store
@@ -317,12 +309,11 @@ public:
    *
    *  @return         Pointer to the data object
    */
-  template < class TYPE  >
-  inline typename Gaudi::Utils::GetData<TYPE>::return_type
-  get  ( const std::string& location,
-         const bool useRootInTES = true ) const
+  template <class TYPE>
+  inline typename Gaudi::Utils::GetData<TYPE>::return_type get( const std::string& location,
+                                                                const bool useRootInTES = true ) const
   {
-    return GaudiCommon<Algorithm>::get<TYPE> ( evtSvc() , location , useRootInTES ) ;
+    return GaudiCommon<Algorithm>::get<TYPE>( evtSvc(), location, useRootInTES );
   }
 
   /** @brief Templated access to the data in Gaudi Transient Store
@@ -357,12 +348,11 @@ public:
    *  @return pointer to the data object.
    *  @retval NULL If data does not exist.
    */
-  template < class TYPE  >
-  inline typename Gaudi::Utils::GetData<TYPE>::return_type
-  getIfExists ( const std::string& location  ,
-                const bool useRootInTES = true ) const
+  template <class TYPE>
+  inline typename Gaudi::Utils::GetData<TYPE>::return_type getIfExists( const std::string& location,
+                                                                        const bool useRootInTES = true ) const
   {
-    return GaudiCommon<Algorithm>::getIfExists<TYPE> ( evtSvc() , location , useRootInTES ) ;
+    return GaudiCommon<Algorithm>::getIfExists<TYPE>( evtSvc(), location, useRootInTES );
   }
 
   /** @brief Templated access to the detector data from the
@@ -383,11 +373,10 @@ public:
    *  @param location  Detector location/address in Gaudi Transient Store
    *  @return          Pointer to the detector object
    */
-  template < class TYPE  >
-  inline TYPE* getDet ( IDataProviderSvc*  svc        ,
-                        const std::string& location   ) const
+  template <class TYPE>
+  inline TYPE* getDet( IDataProviderSvc* svc, const std::string& location ) const
   {
-    return GaudiCommon<Algorithm>::get<TYPE> ( svc , location , false ) ;
+    return GaudiCommon<Algorithm>::get<TYPE>( svc, location, false );
   }
 
   /** @brief Templated access to the detector data from the
@@ -412,12 +401,11 @@ public:
    *  @return          Pointer to the detector object
    *  @retval NULL If the detector object does not exist.
    */
-  template < class TYPE  >
-  inline typename Gaudi::Utils::GetData<TYPE>::return_type
-  getDetIfExists ( IDataProviderSvc*  svc       ,
-                   const std::string& location  ) const
+  template <class TYPE>
+  inline typename Gaudi::Utils::GetData<TYPE>::return_type getDetIfExists( IDataProviderSvc* svc,
+                                                                           const std::string& location ) const
   {
-    return GaudiCommon<Algorithm>::getIfExists<TYPE> ( svc , location , false ) ;
+    return GaudiCommon<Algorithm>::getIfExists<TYPE>( svc, location, false );
   }
 
   /** @brief Templated access to the detector data from the
@@ -437,10 +425,10 @@ public:
    *  @param location  Detector location/address in Gaudi Transient Store
    *  @return          Pointer to the detector object
    */
-  template < class TYPE  >
-  inline TYPE* getDet ( const std::string& location ) const
+  template <class TYPE>
+  inline TYPE* getDet( const std::string& location ) const
   {
-    return GaudiCommon<Algorithm>::get<TYPE> ( detSvc() , location , false ) ;
+    return GaudiCommon<Algorithm>::get<TYPE>( detSvc(), location, false );
   }
 
   /** @brief Templated access to the detector data from the
@@ -464,11 +452,10 @@ public:
    *  @return          Pointer to the detector object
    *  @retval NULL If the detector object does not exist.
    */
-  template < class TYPE  >
-  inline typename Gaudi::Utils::GetData<TYPE>::return_type
-  getDetIfExists ( const std::string& location ) const
+  template <class TYPE>
+  inline typename Gaudi::Utils::GetData<TYPE>::return_type getDetIfExists( const std::string& location ) const
   {
-    return GaudiCommon<Algorithm>::getIfExists<TYPE> ( detSvc() , location , false ) ;
+    return GaudiCommon<Algorithm>::getIfExists<TYPE>( detSvc(), location, false );
   }
 
   /** @brief Check the existence of a data object or container
@@ -497,12 +484,10 @@ public:
    *  @retval true     Data object or container exists and implements a proper interface
    *  @retval true     Failed to locate the data object or container
    */
-  template < class TYPE  >
-  inline bool  exist    ( IDataProviderSvc*  svc      ,
-                          const std::string& location ,
-                          const bool useRootInTES = true ) const
+  template <class TYPE>
+  inline bool exist( IDataProviderSvc* svc, const std::string& location, const bool useRootInTES = true ) const
   {
-    return GaudiCommon<Algorithm>::exist<TYPE> ( svc , location , useRootInTES ) ;
+    return GaudiCommon<Algorithm>::exist<TYPE>( svc, location, useRootInTES );
   }
 
   /** @brief Check the existence of a data object or container
@@ -530,11 +515,10 @@ public:
    *  @retval true     Data object or container exists and implements a proper interface
    *  @retval true     Failed to locate the data object or container
    */
-  template < class TYPE  >
-  inline bool  exist    ( const std::string& location ,
-                          const bool useRootInTES = true ) const
+  template <class TYPE>
+  inline bool exist( const std::string& location, const bool useRootInTES = true ) const
   {
-    return GaudiCommon<Algorithm>::exist<TYPE> ( evtSvc() , location , useRootInTES ) ;
+    return GaudiCommon<Algorithm>::exist<TYPE>( evtSvc(), location, useRootInTES );
   }
 
   /** @brief Check the existence of detector objects in the Gaudi
@@ -553,11 +537,10 @@ public:
    *  @retval true     Detector object exists and implements a proper interface
    *  @retval false    Failed to locate the data object
    */
-  template < class TYPE  >
-  inline bool  existDet    ( IDataProviderSvc*  svc      ,
-                             const std::string& location ) const
+  template <class TYPE>
+  inline bool existDet( IDataProviderSvc* svc, const std::string& location ) const
   {
-    return GaudiCommon<Algorithm>::exist<TYPE> ( svc , location , false ) ;
+    return GaudiCommon<Algorithm>::exist<TYPE>( svc, location, false );
   }
 
   /** @brief Check the existence of detector objects in the Gaudi
@@ -575,10 +558,10 @@ public:
    *  @retval true     Detector object exists and implements a proper interface
    *  @retval false    Failed to locate the data object
    */
-  template < class TYPE  >
-  inline bool  existDet    ( const std::string& location ) const
+  template <class TYPE>
+  inline bool existDet( const std::string& location ) const
   {
-    return GaudiCommon<Algorithm>::exist<TYPE> ( detSvc() , location , false ) ;
+    return GaudiCommon<Algorithm>::exist<TYPE>( detSvc(), location, false );
   }
 
   /** @brief Get the existing data object from Gaudi Event Transient store.
@@ -608,13 +591,11 @@ public:
    *
    *  @return A valid pointer to the object
    */
-  template < class TYPE , class TYPE2 >
+  template <class TYPE, class TYPE2>
   inline typename Gaudi::Utils::GetData<TYPE>::return_type
-  getOrCreate ( IDataProviderSvc*  svc      ,
-                const std::string& location ,
-                const bool useRootInTES = true ) const
+  getOrCreate( IDataProviderSvc* svc, const std::string& location, const bool useRootInTES = true ) const
   {
-    return GaudiCommon<Algorithm>::getOrCreate<TYPE,TYPE2> ( svc , location , useRootInTES ) ;
+    return GaudiCommon<Algorithm>::getOrCreate<TYPE, TYPE2>( svc, location, useRootInTES );
   }
 
   /** @brief Get the existing data object from Gaudi Event Transient store.
@@ -643,13 +624,13 @@ public:
    *
    *  @return A valid pointer to the object
    */
-  template < class TYPE , class TYPE2 >
-  inline typename Gaudi::Utils::GetData<TYPE>::return_type
-  getOrCreate ( const std::string& location            ,
-                const bool         useRootInTES = true ) const
+  template <class TYPE, class TYPE2>
+  inline typename Gaudi::Utils::GetData<TYPE>::return_type getOrCreate( const std::string& location,
+                                                                        const bool useRootInTES = true ) const
   {
-    return GaudiCommon<Algorithm>::getOrCreate<TYPE,TYPE2> ( evtSvc() , location , useRootInTES ) ;
+    return GaudiCommon<Algorithm>::getOrCreate<TYPE, TYPE2>( evtSvc(), location, useRootInTES );
   }
+
 public:
   // ==========================================================================
   /** Standard constructor (protected)
@@ -657,8 +638,7 @@ public:
    *  @param name           name of the algorithm
    *  @param pSvcLocator    pointer to Service Locator
    */
-  GaudiAlgorithm ( const std::string& name        ,
-                   ISvcLocator*       pSvcLocator );
+  GaudiAlgorithm( const std::string& name, ISvcLocator* pSvcLocator );
   // ==========================================================================
   /// destructor, virtual and protected
   ~GaudiAlgorithm() override = default;
@@ -668,36 +648,27 @@ public:
   /** Access the standard event collection service
    *  @return pointer to the event collection service
    */
-  SmartIF<INTupleSvc>&     evtColSvc  () const;
+  SmartIF<INTupleSvc>& evtColSvc() const;
   // ==========================================================================
   // no default/copy constructor, no assignment -- except that ROOT really
   // wants a default constructor declared. So we define it, and don't implement
-  // it... 
-  GaudiAlgorithm             ( const GaudiAlgorithm& ) = delete;
-  GaudiAlgorithm& operator = ( const GaudiAlgorithm& ) = delete;
-private :
-  GaudiAlgorithm() ;
+  // it...
+  GaudiAlgorithm( const GaudiAlgorithm& ) = delete;
+  GaudiAlgorithm& operator=( const GaudiAlgorithm& ) = delete;
+
+private:
+  GaudiAlgorithm();
   // ==========================================================================
 private:
   // ==========================================================================
   // Pointer to the Event Tag Collection Service
-  mutable SmartIF<INTupleSvc> m_evtColSvc ; ///< Event Tag Collection Service
-  /// skip the event if any of these objects are present in TES
-  std::vector<std::string> m_vetoObjs;
-  /// process the event only if one or more of these objects are present in TES
-  std::vector<std::string> m_requireObjs;
-  // ==========================================================================
+  mutable SmartIF<INTupleSvc> m_evtColSvc; ///< Event Tag Collection Service
 
- public:
-  using Algorithm::declareProperty;
-    Property* declareProperty
-    ( const std::string& name,
-      DataObjectHandleBase&     hndl,
-      const std::string& doc = "none" ) const
-  {
-    return m_propertyMgr->declareProperty(name, hndl, doc);
-  }
-  
+  Gaudi::Property<std::vector<std::string>> m_vetoObjs{
+      this, "VetoObjects", {}, "skip execute if one or more of these TES objects exist"};
+  Gaudi::Property<std::vector<std::string>> m_requireObjs{
+      this, "RequireObjects", {}, "execute only if one or more of these TES objects exist"};
+  // ==========================================================================
 };
 // ============================================================================
 // The END

@@ -20,9 +20,11 @@
 
 //-----------------------------------------------------------------------------
 
-class GAUDI_API  IThreadPoolSvc : virtual public IInterface {
- public:
+class GAUDI_API  IThreadPoolSvc : virtual public IInterface
+{
 
+public:
+  
   /// InterfaceID
   DeclareInterfaceID(IThreadPoolSvc,1,0);
 
@@ -34,9 +36,6 @@ class GAUDI_API  IThreadPoolSvc : virtual public IInterface {
 
   /// Size of the initialized thread pool
   virtual int poolSize() const = 0;
-
-  /// Retrieve a list of thread initialization tools
-  virtual std::vector<IThreadInitTool*> getThreadInitTools() const = 0;
 
 };
 

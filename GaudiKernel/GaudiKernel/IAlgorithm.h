@@ -8,6 +8,8 @@
 
 class IAlgTool;
 class AlgResourcePool;
+class EventContext;
+
 namespace Gaudi {
   class StringKey;
 }
@@ -128,6 +130,7 @@ public:
   virtual StatusCode sysEndRun( ) = 0;
 
   /// Reset the Algorithm executed state for the current event
+  [[deprecated("resetExecuted should be triggered globally via the AlgExecStateSvc, not individually for each Algorithm")]]
   virtual void resetExecuted( ) = 0;
 
   /** Algorithm begin run. This method is called at the beginning of the event loop.
@@ -151,10 +154,16 @@ public:
   /// Set the filter passed flag to the specified state
   virtual void setFilterPassed( bool state ) = 0;
 
+  /// For concurrency
+  /// get the context
+  virtual const EventContext* getContext() const = 0;
+
+  /// set the context
+  virtual void setContext(const EventContext* context) = 0;
+
   /// Produce string represention of the control flow expression.
   virtual std::ostream& toControlFlowExpression(std::ostream& os) const = 0;
 
-protected:
   /// Set instantiation index of Alg
   virtual void setIndex(const unsigned int& idx) = 0;
 

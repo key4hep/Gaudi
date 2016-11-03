@@ -1,7 +1,7 @@
 # define a minimun default version
 set(GAUDI_CXX_STANDARD_DEFAULT "c++11")
 # overriddend depending on the compiler
-if (LCG_COMP STREQUAL "clang" AND LCG_COMPVERS VERSION_EQUAL "37")
+if (LCG_COMP STREQUAL "clang" AND LCG_COMPVERS VERSION_GREATER "36")
   set(GAUDI_CXX_STANDARD_DEFAULT "c++14")
 elseif(LCG_COMP STREQUAL "gcc")
   # Special defaults
@@ -16,8 +16,8 @@ elseif(LCG_COMP STREQUAL "gcc")
   else()
     # C++14 is enable by default on gcc >= 5.1
     set(GAUDI_CXX_STANDARD_DEFAULT "c++14")
-    # we are not ready for the new c++11 ABI (because of llvm in ROOT)
-    add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
+    option(GAUDI_GCC_OLD_ABI "use old gcc ABI for c++11 and above (gcc >= 5.1)"
+           OFF)
   endif()
 endif()
 # special for GaudiHive
@@ -52,6 +52,11 @@ option(GAUDI_CMT_RELEASE
        "use CMT deafult release flags instead of the CMake ones"
        ON)
 
+if (LCG_COMP STREQUAL "gcc" AND LCG_COMPVERS VERSION_GREATER "50")
+  option(GAUDI_SUGGEST_OVERRIDE "enable warnings for missing override keyword" ON)
+endif()
+
+
 if(BINARY_TAG MATCHES "-do0$")
   set(GAUDI_SLOW_DEBUG_DEFAULT ON)
 else()
@@ -67,6 +72,13 @@ endif()
 
 set(GAUDI_CXX_STANDARD "${GAUDI_CXX_STANDARD_DEFAULT}"
     CACHE STRING "Version of the C++ standard to be used.")
+
+# If modern c++ and gcc >= 5.1 and requested, use old ABI compatibility
+if((NOT GAUDI_CXX_STANDARD STREQUAL "c++98") AND
+   (LCG_COMP STREQUAL "gcc" AND NOT LCG_COMPVERS VERSION_LESS "51") AND
+   GAUDI_GCC_OLD_ABI)
+  add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
+endif()
 
 #--- Compilation Flags ---------------------------------------------------------
 if(NOT GAUDI_FLAGS_SET)
@@ -106,7 +118,7 @@ if(NOT GAUDI_FLAGS_SET)
         CACHE STRING "Flags used by the compiler during all build types."
         FORCE)
 
-    if (LCG_COMP STREQUAL "gcc" AND LCG_COMPVERS VERSION_GREATER "50")
+    if (LCG_COMP STREQUAL "gcc" AND LCG_COMPVERS VERSION_GREATER "50" AND GAUDI_SUGGEST_OVERRIDE)
         set(CMAKE_CXX_FLAGS
             "${CMAKE_CXX_FLAGS} -Wsuggest-override"
             CACHE STRING "Flags used by the compiler during all build types."
@@ -193,10 +205,10 @@ if(NOT GAUDI_FLAGS_SET)
 
   if(APPLE)
     # special link options for MacOSX
-    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -flat_namespace -undefined dynamic_lookup"
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -undefined dynamic_lookup"
         CACHE STRING "Flags used by the linker during the creation of dll's."
         FORCE)
-    set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -flat_namespace -undefined dynamic_lookup"
+    set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -undefined dynamic_lookup"
         CACHE STRING "Flags used by the linker during the creation of modules."
         FORCE)
   endif()

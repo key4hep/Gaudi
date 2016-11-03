@@ -13,6 +13,14 @@
 // ============================================================================
 #include "GaudiKernel/Kernel.h"
 
+#if defined(__clang__) || defined(__cling__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winconsistent-missing-override"
+#elif defined(__GNUC__) && __GNUC__ >= 5
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsuggest-override"
+#endif
+
 namespace AIDA { class IFunction ; }
 
 namespace Genfun
@@ -62,6 +70,8 @@ namespace Genfun
       size_t                      m_dim ;
       mutable std::vector<double> m_arg ;
     };
+    /// mandatory macro from CLHEP/GenericFunctions
+    FUNCTION_OBJECT_IMP( AdapterIFunction )
 
     // ========================================================================
     /** @class Adapter2DoubleFunction Adapters.h GaudiMath/Adapters.h
@@ -124,6 +134,8 @@ namespace Genfun
     private:
       Function                 m_func  ;
     };
+    /// mandatory macro from CLHEP/GenericFunctions
+    FUNCTION_OBJECT_IMP( Adapter2DoubleFunction )
 
     // ========================================================================
     /** @class Adapter3DoubleFunction Adapters.h GaudiMath/Adapters.h
@@ -190,6 +202,8 @@ namespace Genfun
     private:
       Function                 m_func  ;
     };
+    /// mandatory macro from CLHEP/GenericFunctions
+    FUNCTION_OBJECT_IMP( Adapter3DoubleFunction )
 
     // ========================================================================
     /** @class SimpleFunction Adapters.h GaudiMath/Adapters.h
@@ -270,10 +284,17 @@ namespace Genfun
       Function3                    m_func3    ;
       mutable std::vector<double>  m_arg3     ;
     };
+    /// From CLHEP/GenericFunctions
+    FUNCTION_OBJECT_IMP( SimpleFunction )
 
   } // end of namespace GaudiMathImeplementation
 } // end of namespace Genfun
 
+#if defined(__clang__) || defined(__cling__)
+#pragma clang diagnostic pop
+#elif defined(__GNUC__) && __GNUC__ >= 5
+#pragma GCC diagnostic pop
+#endif
 
 #endif // GAUDIMATH_FUNADAPTERS_H
 // ============================================================================

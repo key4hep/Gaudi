@@ -19,33 +19,14 @@ DECLARE_COMPONENT(IncidentAsyncTestSvc)
 
 #define DEBMSG ON_DEBUG debug()
 #define VERMSG ON_VERBOSE verbose()
-//=============================================================================
-IncidentAsyncTestSvc::IncidentAsyncTestSvc( const std::string& name,
-					    ISvcLocator* svcloc):base_class(name,svcloc)
-{
-
-  declareProperty("FileOffset", m_fileOffset = 100000000 );
-  declareProperty("EventMultiplier", m_eventMultiplier = 1000 );
-  declareProperty("IncidentNames", m_incidentNames );
-  declareProperty("Priority",m_prio=0);
-  m_name=name;
-}
-
-IncidentAsyncTestSvc::~IncidentAsyncTestSvc(){
-}
 
 StatusCode IncidentAsyncTestSvc::initialize(){
   auto sc=Service::initialize();
   if(sc.isFailure())return sc;
-  sc=setProperties();
-  if(sc.isFailure()){
-    error() <<"Error setting properties!"<<endmsg;
-    return sc;
-  }
-  m_incSvc = service("IncidentSvc",true);
-  if (!m_incSvc) throw GaudiException("Cannot find IncidentSvc",m_name,StatusCode::FAILURE);
+  m_incSvc = service("IncidentSvc", true);
+  if (!m_incSvc) throw GaudiException("Cannot find IncidentSvc", name(), StatusCode::FAILURE);
   m_msgSvc=msgSvc();
-  if(m_incidentNames.value().size()==0){
+  if(m_incidentNames.empty()){
     std::vector<std::string> incNames;
     incNames.push_back(IncidentType::BeginEvent);
     incNames.push_back(IncidentType::EndEvent);
@@ -64,11 +45,10 @@ StatusCode IncidentAsyncTestSvc::finalize(){
 
 //=============================================================================
 void IncidentAsyncTestSvc::handle(const Incident &incident) {
-  MsgStream log( m_msgSvc, m_name );
   if(incident.type()==IncidentType::BeginEvent){
     auto res=m_ctxData.insert(std::make_pair(incident.context(),incident.context().evt()*m_eventMultiplier+m_fileOffset));
     if(!res.second){
-      log << MSG::WARNING << m_name<<" Context already exists for '" << incident.type()
+      warning() << " Context already exists for '" << incident.type()
 	  << "' event="<<incident.context().evt() << endmsg;
     }
   }else if(incident.type()==IncidentType::EndEvent){
@@ -76,24 +56,23 @@ void IncidentAsyncTestSvc::handle(const Incident &incident) {
       std::unique_lock<decltype(m_eraseMutex)>(m_eraseMutex);
       auto res=m_ctxData.unsafe_erase(incident.context());
       if(res==0){
-	log << MSG::WARNING << m_name<<" Context is missing for '" << incident.type()
+	warning() << " Context is missing for '" << incident.type()
 	    << "' event="<<incident.context().evt() << endmsg;
-	
+
       }
     }
-    log << MSG::INFO <<m_name<< " Cleaned up context store for event =" <<incident.context().evt()
+    info() << " Cleaned up context store for event =" <<incident.context().evt()
 	<< " for incident='"<<incident.type() <<"'"<<endmsg;
   }
-  log << MSG::INFO << m_name<<" Handling incident '" << incident.type() << "' at ctx="<<incident.context() << endmsg;
+  info() <<" Handling incident '" << incident.type() << "' at ctx="<<incident.context() << endmsg;
 }
 
 void IncidentAsyncTestSvc::getData(uint64_t* data,EventContext* ctx)const {
-  MsgStream log( m_msgSvc, m_name );
-  log<<MSG::DEBUG<<"Asked for data with context "<<*ctx<<endmsg;
+  debug() <<"Asked for data with context "<<*ctx<<endmsg;
   if(ctx){
     auto cit=m_ctxData.find(*ctx);
     if(cit==m_ctxData.end()){
-      log<<MSG::FATAL<<" data for event "<<ctx->evt()<<" is not initialized yet!. This shouldn't happen!"<<endmsg; 
+      fatal()<<" data for event "<<ctx->evt()<<" is not initialized yet!. This shouldn't happen!"<<endmsg;
       return;
     }
     *data=cit->second;
@@ -101,7 +80,7 @@ void IncidentAsyncTestSvc::getData(uint64_t* data,EventContext* ctx)const {
     const auto& ct=Gaudi::Hive::currentContext();
     auto cit=m_ctxData.find(ct);
     if(cit==m_ctxData.end()){
-      log<<MSG::FATAL<<" data for event "<<ct.evt()<<" is not initialized yet!. This shouldn't happen!"<<endmsg; 
+      fatal()<<" data for event "<<ct.evt()<<" is not initialized yet!. This shouldn't happen!"<<endmsg;
       return;
     }
     *data=cit->second;

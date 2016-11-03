@@ -38,7 +38,7 @@ StatusCode Gaudi::Parsers::parse(float& result, const std::string& input) {
   double tmp{0};
   StatusCode sc = Gaudi::Parsers::parse_(tmp, input);
   result = static_cast<float>(tmp);
-  return std::move(sc);
+  return sc;
 }
 #endif
 PARSERS_DEF_FOR_SINGLE(long double)

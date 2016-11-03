@@ -5,62 +5,57 @@
 
 #include "GaudiAlg/Sequencer.h"
 
+#include "GaudiKernel/Chrono.h"
+#include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/IAlgManager.h"
 #include "GaudiKernel/ISvcLocator.h"
-#include "GaudiKernel/Chrono.h"
 #include "GaudiKernel/Stat.h"
-#include "GaudiKernel/GaudiException.h"
 
-#define ON_DEBUG if (msgLevel(MSG::DEBUG))
-#define ON_VERBOSE if (msgLevel(MSG::VERBOSE))
+#define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
+#define ON_VERBOSE if ( msgLevel( MSG::VERBOSE ) )
 
 /**
  ** Constructor(s)
  **/
-Sequencer::Sequencer( const std::string& name, ISvcLocator* pSvcLocator )
-: Algorithm( name, pSvcLocator )
+Sequencer::Sequencer( const std::string& name, ISvcLocator* pSvcLocator ) : Algorithm( name, pSvcLocator )
 {
-  // Declare Sequencer properties with their defaults
-  declareProperty( "Members", m_names );
-  declareProperty( "BranchMembers", m_branchNames );
-  declareProperty( "StopOverride", m_stopOverride=false );
-
   // Associate action handlers with the "Members" and "BranchMembers" properties
-  m_names.declareUpdateHandler      ( &Sequencer::membershipHandler      , this );
-  m_branchNames.declareUpdateHandler( &Sequencer::branchMembershipHandler, this );
-
+  m_names.declareUpdateHandler( [this]( Gaudi::Details::PropertyBase& ) {
+    if ( isInitialized() ) decodeMemberNames().ignore();
+  } );
+  m_branchNames.declareUpdateHandler( [this]( Gaudi::Details::PropertyBase& ) {
+    if ( isInitialized() ) decodeBranchMemberNames().ignore();
+  } );
 }
 
-StatusCode
-Sequencer::initialize()
+StatusCode Sequencer::initialize()
 {
   StatusCode result = StatusCode::SUCCESS;
 
-
   result = decodeMemberNames();
-  if( result.isFailure() ) {
+  if ( result.isFailure() ) {
     error() << "Unable to configure one or more sequencer members " << endmsg;
     return result;
   }
   result = decodeBranchMemberNames();
-  if( result.isFailure() ) {
+  if ( result.isFailure() ) {
     error() << "Unable to configure one or more branch members " << endmsg;
     return result;
   }
 
   // Loop over all sub-algorithms
-  for (auto& alg : *subAlgorithms() ) {
-    result = alg->sysInitialize( );
-    if( result.isFailure() ) {
+  for ( auto& alg : *subAlgorithms() ) {
+    result = alg->sysInitialize();
+    if ( result.isFailure() ) {
       error() << "Unable to initialize Algorithm " << alg->name() << endmsg;
       return result;
     }
   }
 
   // Loop over all branches
-  for (auto& alg : branchAlgorithms() ) {
-    result = alg->sysInitialize( );
-    if( result.isFailure() ) {
+  for ( auto& alg : branchAlgorithms() ) {
+    result = alg->sysInitialize();
+    if ( result.isFailure() ) {
       error() << "Unable to initialize Algorithm " << alg->name() << endmsg;
       return result;
     }
@@ -69,64 +64,59 @@ Sequencer::initialize()
   return result;
 }
 
-StatusCode
-Sequencer::reinitialize()
+StatusCode Sequencer::reinitialize()
 {
   // Bypass the loop if this sequencer is disabled
-  if ( isEnabled( ) ) {
+  if ( isEnabled() ) {
 
     // Loop over all members calling their reinitialize functions
     // if they are not disabled.
-    for (auto& alg : *subAlgorithms() ) {
-      if ( alg->isEnabled( ) ) alg->reinitialize( ).ignore();
+    for ( auto& alg : *subAlgorithms() ) {
+      if ( alg->isEnabled() ) alg->reinitialize().ignore();
     }
     // Loop over all branch members calling their reinitialize functions
     // if they are not disabled.
-    for (auto& alg : branchAlgorithms() ) {
-      if ( alg->isEnabled( ) ) {
-        alg->reinitialize( ).ignore();
+    for ( auto& alg : branchAlgorithms() ) {
+      if ( alg->isEnabled() ) {
+        alg->reinitialize().ignore();
       }
     }
-
   }
   return StatusCode::SUCCESS;
 }
 
-StatusCode
-Sequencer::execute()
+StatusCode Sequencer::execute()
 {
   StatusCode result = StatusCode::SUCCESS;
-  ON_DEBUG debug() << name( ) << " Sequencer::execute( )" << endmsg;
+  ON_DEBUG debug() << name() << " Sequencer::execute( )" << endmsg;
 
   // Bypass the loop if this sequencer is disabled or has already been executed
-  if ( isEnabled( ) && ! isExecuted( ) ) {
+  if ( isEnabled() && !isExecuted() ) {
     Algorithm* lastAlgorithm;
-    result = execute( *subAlgorithms( ), m_isInverted, lastAlgorithm );
-    if ( result.isSuccess( ) ) {
-      bool passed = filterPassed( );
-      if ( ! passed && ! isStopOverride( ) ) {
+    result = execute( *subAlgorithms(), m_isInverted, lastAlgorithm );
+    if ( result.isSuccess() ) {
+      bool passed = filterPassed();
+      if ( !passed && !isStopOverride() ) {
 
         // Filter failed and stop override not set. Execute the
         // branch if there is one associated with the filter
         // algorithm that failed. Note that the first member on
         // the branch is the failing algorithm and so should
         // be skipped.
-        const auto& theAlgs = branchAlgorithms( );
-        if ( !theAlgs.empty( ) ) {
+        const auto& theAlgs = branchAlgorithms();
+        if ( !theAlgs.empty() ) {
           Algorithm* branchAlgorithm = theAlgs[0];
           if ( lastAlgorithm == branchAlgorithm ) {
 
             // Branch specified - Loop over branch members
-            result = execute( branchAlgorithms( ),
-                              m_isBranchInverted,
-                              lastAlgorithm, 1 );
-            if ( result.isSuccess( ) ) {
+            result = execute( branchAlgorithms(), m_isBranchInverted, lastAlgorithm, 1 );
+            if ( result.isSuccess() ) {
 
               // The final filter passed state will be set true if either
               // of the main or branches passed, otherwise false.
 
               // Save the branch  filter passed state.
-              setBranchFilterPassed( filterPassed( ) ).ignore();
+              setBranchFilterPassed( filterPassed() ).ignore();
             }
           }
         }
@@ -139,40 +129,36 @@ Sequencer::execute()
   return result;
 }
 
-StatusCode
-Sequencer::finalize()
+StatusCode Sequencer::finalize()
 {
   // Loop over all branch members calling their finalize functions
   // if they are not disabled. Note that the Algorithm::sysFinalize
   // function already does this for the main members.
-  for (auto & alg : branchAlgorithms() ) {
-    if (alg->sysFinalize( ).isFailure()) {
-      error() << "Unable to finalize Algorithm "
-          << alg->name() << endmsg;
+  for ( auto& alg : branchAlgorithms() ) {
+    if ( alg->sysFinalize().isFailure() ) {
+      error() << "Unable to finalize Algorithm " << alg->name() << endmsg;
     }
   }
   return StatusCode::SUCCESS;
 }
 
-StatusCode
-Sequencer::start()
+StatusCode Sequencer::start()
 {
   StatusCode result = StatusCode::SUCCESS;
 
-
   // Loop over all sub-algorithms
-  for (auto& alg : *subAlgorithms() ) {
-    result = alg->sysStart( );
-    if( result.isFailure() ) {
+  for ( auto& alg : *subAlgorithms() ) {
+    result = alg->sysStart();
+    if ( result.isFailure() ) {
       error() << "Unable to start Algorithm " << alg->name() << endmsg;
       return result;
     }
   }
 
   // Loop over all branches
-  for (auto& alg : branchAlgorithms() ) {
-    result = alg->sysStart( );
-    if( result.isFailure() ) {
+  for ( auto& alg : branchAlgorithms() ) {
+    result = alg->sysStart();
+    if ( result.isFailure() ) {
       error() << "Unable to start Algorithm " << alg->name() << endmsg;
       return result;
     }
@@ -181,48 +167,44 @@ Sequencer::start()
   return result;
 }
 
-StatusCode
-Sequencer::stop()
+StatusCode Sequencer::stop()
 {
   // Loop over all branch members calling their finalize functions
   // if they are not disabled.
 
-  for (auto& alg : *subAlgorithms() ) {
-    if (alg->sysStop( ).isFailure()) {
-      error() << "Unable to stop Algorithm "
-          << alg->name() << endmsg;
+  for ( auto& alg : *subAlgorithms() ) {
+    if ( alg->sysStop().isFailure() ) {
+      error() << "Unable to stop Algorithm " << alg->name() << endmsg;
     }
   }
 
-  for (auto& alg : branchAlgorithms() ) {
-    if (alg->sysStop( ).isFailure()) {
-      error() << "Unable to stop Algorithm "
-              << alg->name() << endmsg;
+  for ( auto& alg : branchAlgorithms() ) {
+    if ( alg->sysStop().isFailure() ) {
+      error() << "Unable to stop Algorithm " << alg->name() << endmsg;
     }
   }
   return StatusCode::SUCCESS;
 }
 
-StatusCode
-Sequencer::beginRun()
+StatusCode Sequencer::beginRun()
 {
   StatusCode result = StatusCode::SUCCESS;
 
   // Bypass the loop if this sequencer is disabled
-  if ( isEnabled( ) ) {
+  if ( isEnabled() ) {
 
     // Loop over all members calling their sysInitialize functions
     // if they are not disabled. Note that the Algoriithm::sysInitialize
     // function protects this from affecting Algorithms that have already
     // been initialized.
-    for (auto& alg : *subAlgorithms() ) {
-      result = alg->sysInitialize( );
-      if( result.isFailure() ) {
+    for ( auto& alg : *subAlgorithms() ) {
+      result = alg->sysInitialize();
+      if ( result.isFailure() ) {
         error() << "Unable to initialize Algorithm " << alg->name() << endmsg;
         break;
       }
-      result = alg->sysStart( );
-      if( result.isFailure() ) {
+      result = alg->sysStart();
+      if ( result.isFailure() ) {
         error() << "Unable to start Algorithm " << alg->name() << endmsg;
         break;
       }
@@ -230,9 +212,9 @@ Sequencer::beginRun()
 
     // Loop over all members calling their beginRun functions
     // if they are not disabled.
-    for (auto& alg : *subAlgorithms() ) {
-      if ( ! alg->isEnabled( ) ) {
-        alg->beginRun( ).ignore();
+    for ( auto& alg : *subAlgorithms() ) {
+      if ( !alg->isEnabled() ) {
+        alg->beginRun().ignore();
       }
     }
 
@@ -240,14 +222,14 @@ Sequencer::beginRun()
     // if they are not disabled. Note that the Algoriithm::sysInitialize
     // function protects this from affecting Algorithms that have already
     // been initialized.
-    for (auto& alg : branchAlgorithms() ) {
-      result = alg->sysInitialize( );
-      if( result.isFailure() ) {
+    for ( auto& alg : branchAlgorithms() ) {
+      result = alg->sysInitialize();
+      if ( result.isFailure() ) {
         error() << "Unable to initialize Algorithm " << alg->name() << endmsg;
         break;
       }
-      result = alg->sysStart( );
-      if( result.isFailure() ) {
+      result = alg->sysStart();
+      if ( result.isFailure() ) {
         error() << "Unable to start Algorithm " << alg->name() << endmsg;
         break;
       }
@@ -255,196 +237,127 @@ Sequencer::beginRun()
 
     // Loop over all branch members calling their beginRun functions
     // if they are not disabled.
-    for (auto& alg : branchAlgorithms()) {
-      if ( ! alg->isEnabled( ) ) {
-        alg->beginRun( ).ignore();
+    for ( auto& alg : branchAlgorithms() ) {
+      if ( !alg->isEnabled() ) {
+        alg->beginRun().ignore();
       }
     }
   }
   return StatusCode::SUCCESS;
 }
 
-StatusCode
-Sequencer::endRun()
+StatusCode Sequencer::endRun()
 {
   // Bypass the loop if this sequencer is disabled
-  if ( isEnabled( ) ) {
+  if ( isEnabled() ) {
 
     // Loop over all members calling their endRun functions
     // if they are not disabled.
-    for (auto& alg : *subAlgorithms()) {
-      if ( ! alg->isEnabled( ) ) alg->endRun( ).ignore();
+    for ( auto& alg : *subAlgorithms() ) {
+      if ( !alg->isEnabled() ) alg->endRun().ignore();
     }
     // Loop over all branch members calling their endRun functions
     // if they are not disabled.
-    for (auto& alg : branchAlgorithms()) {
-      if ( ! alg->isEnabled( ) ) alg->endRun( ).ignore();
+    for ( auto& alg : branchAlgorithms() ) {
+      if ( !alg->isEnabled() ) alg->endRun().ignore();
     }
   }
   return StatusCode::SUCCESS;
 }
 
-void
-Sequencer::resetExecuted( )
+void Sequencer::resetExecuted()
 {
-  Algorithm::resetExecuted( );
+  Algorithm::resetExecuted();
 
   // Loop over all members calling their resetExecuted functions
   // if they are not disabled.
-  for (auto& alg : *subAlgorithms() ) alg->resetExecuted( );
+  for ( auto& alg : *subAlgorithms() ) alg->resetExecuted();
 
   // Loop over all branch members calling their resetExecuted functions
   // if they are not disabled.
-  for (auto& alg : branchAlgorithms() ) alg->resetExecuted( );
+  for ( auto& alg : branchAlgorithms() ) alg->resetExecuted();
 
   // Reset the branch filter passed flag
   m_branchFilterPassed = false;
 }
 
-bool
-Sequencer::branchFilterPassed( ) const
-{
-  return m_branchFilterPassed;
-}
+bool Sequencer::branchFilterPassed() const { return m_branchFilterPassed; }
 
-StatusCode
-Sequencer::setBranchFilterPassed( bool state )
+StatusCode Sequencer::setBranchFilterPassed( bool state )
 {
   m_branchFilterPassed = state;
   return StatusCode::SUCCESS;
 }
 
-bool
-Sequencer::isStopOverride( ) const
+bool Sequencer::isStopOverride() const { return m_stopOverride.value(); }
+
+StatusCode Sequencer::append( Algorithm* pAlgorithm ) { return append( pAlgorithm, *subAlgorithms() ); }
+
+StatusCode Sequencer::appendToBranch( Algorithm* pAlgorithm ) { return append( pAlgorithm, branchAlgorithms() ); }
+
+StatusCode Sequencer::createAndAppend( const std::string& type, const std::string& name, Algorithm*& pAlgorithm )
 {
-  return m_stopOverride.value( );
+  return createAndAppend( type, name, pAlgorithm, *subAlgorithms() );
 }
 
-StatusCode
-Sequencer::append( Algorithm* pAlgorithm )
+StatusCode Sequencer::createAndAppendToBranch( const std::string& type, const std::string& name,
+                                               Algorithm*& pAlgorithm )
 {
-  return  append( pAlgorithm, *subAlgorithms( ) );
+  return createAndAppend( type, name, pAlgorithm, branchAlgorithms() );
 }
 
-StatusCode
-Sequencer::appendToBranch( Algorithm* pAlgorithm )
-{
-  return  append( pAlgorithm, branchAlgorithms( ) );
-}
+StatusCode Sequencer::remove( Algorithm* pAlgorithm ) { return remove( pAlgorithm->name() ); }
 
-StatusCode
-Sequencer::createAndAppend( const std::string& type,
-                            const std::string& name,
-                            Algorithm*& pAlgorithm )
-{
-  return createAndAppend( type, name, pAlgorithm, *subAlgorithms( ) );
-}
+StatusCode Sequencer::remove( const std::string& algname ) { return remove( algname, *subAlgorithms() ); }
 
-StatusCode
-Sequencer::createAndAppendToBranch( const std::string& type,
-                                    const std::string& name,
-                                    Algorithm*& pAlgorithm )
-{
-  return createAndAppend( type, name, pAlgorithm, branchAlgorithms( ) );
-}
+StatusCode Sequencer::removeFromBranch( Algorithm* pAlgorithm ) { return removeFromBranch( pAlgorithm->name() ); }
 
-StatusCode
-Sequencer::remove( Algorithm* pAlgorithm )
-{
-  return remove( pAlgorithm->name( ) );
-}
+StatusCode Sequencer::removeFromBranch( const std::string& algname ) { return remove( algname, branchAlgorithms() ); }
 
-StatusCode
-Sequencer::remove( const std::string& algname )
-{
-  return remove( algname, *subAlgorithms( ) );
-}
+const std::vector<Algorithm*>& Sequencer::branchAlgorithms() const { return m_branchAlgs; }
 
-StatusCode
-Sequencer::removeFromBranch( Algorithm* pAlgorithm )
-{
-  return removeFromBranch( pAlgorithm->name( ) );
-}
+std::vector<Algorithm*>& Sequencer::branchAlgorithms() { return m_branchAlgs; }
 
-StatusCode
-Sequencer::removeFromBranch( const std::string& algname )
-{
-  return remove( algname, branchAlgorithms( ) );
-}
-
-const std::vector<Algorithm*>&
-Sequencer::branchAlgorithms( ) const {
-  return m_branchAlgs;
-}
-
-std::vector<Algorithm*>&
-Sequencer::branchAlgorithms( ) {
-  return m_branchAlgs;
-}
-
-StatusCode
-Sequencer::decodeMemberNames( )
+StatusCode Sequencer::decodeMemberNames()
 {
   // Decode the membership list
-  return  decodeNames( m_names,
-                        *subAlgorithms( ),
-                        m_isInverted );
+  return decodeNames( m_names, *subAlgorithms(), m_isInverted );
 }
 
-void
-Sequencer::membershipHandler( Property& /* theProp */ )
-{
-  if ( isInitialized() ) decodeMemberNames();
-}
-
-StatusCode
-Sequencer::decodeBranchMemberNames( )
+StatusCode Sequencer::decodeBranchMemberNames()
 {
   // Decode the branch membership list
-  return   decodeNames( m_branchNames,
-                        branchAlgorithms( ),
-                        m_isBranchInverted );
-}
-
-void
-Sequencer::branchMembershipHandler( Property& /* theProp */ )
-{
-  if ( isInitialized() ) decodeBranchMemberNames();
+  return decodeNames( m_branchNames, branchAlgorithms(), m_isBranchInverted );
 }
 
 /**
  ** Protected Member Functions
  **/
 
-StatusCode
-Sequencer::append( Algorithm* pAlgorithm,
-                   std::vector<Algorithm*>& theAlgs )
+StatusCode Sequencer::append( Algorithm* pAlgorithm, std::vector<Algorithm*>& theAlgs )
 {
   // Check that the specified algorithm doesn't already exist in the membership list
-  if (std::find(std::begin(theAlgs),std::end(theAlgs),pAlgorithm)!=std::end(theAlgs)) {
-     return  StatusCode::FAILURE;
+  if ( std::find( std::begin( theAlgs ), std::end( theAlgs ), pAlgorithm ) != std::end( theAlgs ) ) {
+    return StatusCode::FAILURE;
   }
   theAlgs.push_back( pAlgorithm );
   pAlgorithm->addRef();
   return StatusCode::SUCCESS;
 }
 
-StatusCode
-Sequencer::createAndAppend( const std::string& type,
-	                        const std::string& algName,
-	                        Algorithm*& pAlgorithm,
-	                        std::vector<Algorithm*>& theAlgs )
+StatusCode Sequencer::createAndAppend( const std::string& type, const std::string& algName, Algorithm*& pAlgorithm,
+                                       std::vector<Algorithm*>& theAlgs )
 {
-  auto theAlgMgr = serviceLocator()->service<IAlgManager>("ApplicationMgr");
-  if ( !theAlgMgr )  return StatusCode::FAILURE;
+  auto theAlgMgr = serviceLocator()->service<IAlgManager>( "ApplicationMgr" );
+  if ( !theAlgMgr ) return StatusCode::FAILURE;
 
   IAlgorithm* tmp;
   StatusCode result = theAlgMgr->createAlgorithm( type, algName, tmp );
-  if ( result.isSuccess( ) ) {
-    try{
-      pAlgorithm = dynamic_cast<Algorithm*>(tmp);
+  if ( result.isSuccess() ) {
+    try {
+      pAlgorithm = dynamic_cast<Algorithm*>( tmp );
       theAlgs.push_back( pAlgorithm );
-    } catch(...){
+    } catch ( ... ) {
       error() << "Unable to create Algorithm " << algName << endmsg;
       result = StatusCode::FAILURE;
     }
@@ -453,20 +366,18 @@ Sequencer::createAndAppend( const std::string& type,
   return result;
 }
 
-StatusCode
-Sequencer::decodeNames( StringArrayProperty& theNames,
-                        std::vector<Algorithm*>& theAlgs,
-                        std::vector<bool>& theLogic )
+StatusCode Sequencer::decodeNames( Gaudi::Property<std::vector<std::string>>& theNames,
+                                   std::vector<Algorithm*>& theAlgs, std::vector<bool>& theLogic )
 {
   StatusCode result;
-  auto theAlgMgr = serviceLocator()->service<IAlgManager>("ApplicationMgr");
+  auto theAlgMgr = serviceLocator()->service<IAlgManager>( "ApplicationMgr" );
   if ( theAlgMgr ) {
     // Clear the existing list of algorithms
-    theAlgs.clear( );
+    theAlgs.clear();
 
     // Build the list of member algorithms from the contents of the
     // theNames list.
-    for (const auto& n : theNames.value() ) {
+    for ( const auto& n : theNames.value() ) {
 
       // Parse the name for a syntax of the form:
       //
@@ -474,7 +385,7 @@ Sequencer::decodeNames( StringArrayProperty& theNames,
       //
       // Where <name> is the algorithm instance name, and <type> is the
       // algorithm class type (being a subclass of Algorithm).
-      const Gaudi::Utils::TypeNameString typeName(n);
+      const Gaudi::Utils::TypeNameString typeName( n );
       std::string theName = typeName.name();
       std::string theType = typeName.type();
 
@@ -484,30 +395,29 @@ Sequencer::decodeNames( StringArrayProperty& theNames,
       //
       // Where <name> is the algorithm instance name and ":invert"
       // indicates that the filter passed logic is inverted.
-      bool isInverted = false;
+      bool isInverted               = false;
       std::string::size_type invert = theName.find_first_of( ":" );
       // Skip all occurrences of "::" (allow namespaces)
-      while ( std::string::npos != invert
-              && invert < (theName.size() - 1) && theName[invert+1] == ':' )
-        invert = theName.find_first_of( ":", invert+2 );
+      while ( std::string::npos != invert && invert < ( theName.size() - 1 ) && theName[invert + 1] == ':' )
+        invert = theName.find_first_of( ":", invert + 2 );
       if ( std::string::npos != invert ) {
         if ( theName == theType ) {
           // This means that we got something like "Type:invert",
           // so we have to strip the ":invert" from the type too.
           theType = theType.substr( 0, invert );
         }
-        theName = theName.substr( 0, invert );
+        theName    = theName.substr( 0, invert );
         isInverted = true;
       }
       // Check whether the supplied name corresponds to an existing
       // Algorithm object.
-      SmartIF<IAlgorithm>& theIAlg = theAlgMgr->algorithm(theName, false);
-      Algorithm*  theAlgorithm = nullptr;
-      StatusCode status = StatusCode::SUCCESS;
+      SmartIF<IAlgorithm>& theIAlg = theAlgMgr->algorithm( theName, false );
+      Algorithm* theAlgorithm      = nullptr;
+      StatusCode status            = StatusCode::SUCCESS;
       if ( theIAlg ) {
-        try{
-          theAlgorithm = dynamic_cast<Algorithm*>(theIAlg.get());
-        } catch(...){
+        try {
+          theAlgorithm = dynamic_cast<Algorithm*>( theIAlg.get() );
+        } catch ( ... ) {
           warning() << theName << " is not an Algorithm - Failed dynamic cast" << endmsg;
           theAlgorithm = nullptr; // release
         }
@@ -516,7 +426,7 @@ Sequencer::decodeNames( StringArrayProperty& theNames,
 
         // The specified Algorithm already exists - just append it to the membership list.
         status = append( theAlgorithm, theAlgs );
-        if ( status.isSuccess( ) ) {
+        if ( status.isSuccess() ) {
           ON_DEBUG debug() << theName << " already exists - appended to member list" << endmsg;
         } else {
           warning() << theName << " already exists - append failed!!!" << endmsg;
@@ -527,16 +437,15 @@ Sequencer::decodeNames( StringArrayProperty& theNames,
         // The specified name doesn't exist - create a new object of the specified type
         // and append it to the membership list.
         status = createAndAppend( theType, theName, theAlgorithm, theAlgs );
-        if ( status.isSuccess( ) ) {
+        if ( status.isSuccess() ) {
           ON_DEBUG debug() << theName << " doesn't exist - created and appended to member list" << endmsg;
         } else {
           warning() << theName << " doesn't exist - creation failed!!!" << endmsg;
           result = StatusCode::FAILURE;
         }
       }
-      if ( status.isSuccess( ) ) theLogic.push_back( isInverted );
+      if ( status.isSuccess() ) theLogic.push_back( isInverted );
     }
-
   }
   // Print membership list
   if ( result.isSuccess() && theAlgs.size() != 0 ) {
@@ -547,23 +456,20 @@ Sequencer::decodeNames( StringArrayProperty& theNames,
 
       if ( ai != theAlgs.begin() ) info() << ", ";
       auto alg = *ai;
-      if ( alg->name() == System::typeinfoName(typeid(*alg)) )
+      if ( alg->name() == System::typeinfoName( typeid( *alg ) ) )
         info() << alg->name();
       else
-        info() << System::typeinfoName(typeid(*alg)) << "/" << alg->name();
+        info() << System::typeinfoName( typeid( *alg ) ) << "/" << alg->name();
 
-      if (*li) info() << ":invert";
+      if ( *li ) info() << ":invert";
     }
     info() << endmsg;
   }
   return result;
 }
 
-StatusCode
-Sequencer::execute( const std::vector<Algorithm*>& theAlgs,
-                    std::vector<bool>& theLogic,
-                    Algorithm*& lastAlgorithm,
-                    unsigned int first )
+StatusCode Sequencer::execute( const std::vector<Algorithm*>& theAlgs, std::vector<bool>& theLogic,
+                               Algorithm*& lastAlgorithm, unsigned int first )
 {
   StatusCode result = StatusCode::SUCCESS;
 
@@ -571,24 +477,24 @@ Sequencer::execute( const std::vector<Algorithm*>& theAlgs,
   // are (a) not disabled, and (b) aren't already executed. Note that
   // in the latter case the filter state is still examined. Terminate
   // the loop if an algorithm indicates that it's filter didn't pass.
-  unsigned int size = theAlgs.size( );
-  for (unsigned int i = first; i < size; i++) {
+  unsigned int size = theAlgs.size();
+  for ( unsigned int i = first; i < size; i++ ) {
     lastAlgorithm = theAlgs[i];
-    result = executeMember( lastAlgorithm );
-    if ( result.isSuccess( ) ) {
+    result        = executeMember( lastAlgorithm );
+    if ( result.isSuccess() ) {
 
       // Take the filter passed status of this algorithm as my own status.
       // Note that we take into account inverted logic.
-      bool passed = lastAlgorithm->filterPassed( );
-      bool isInverted = theLogic[i];
-      if ( isInverted ) passed = ! passed;
+      bool passed              = lastAlgorithm->filterPassed();
+      bool isInverted          = theLogic[i];
+      if ( isInverted ) passed = !passed;
       setFilterPassed( passed );
 
       // The behaviour when the filter fails depends on the StopOverride property.
       // The default action is to stop processing, but this default can be
       // overridden by setting the "StopOverride" property to true.
-      if ( ! isStopOverride( ) ) {
-        if ( ! passed ) break;
+      if ( !isStopOverride() ) {
+        if ( !passed ) break;
       }
     } else {
       break;
@@ -597,11 +503,11 @@ Sequencer::execute( const std::vector<Algorithm*>& theAlgs,
   return result;
 }
 
-StatusCode
-Sequencer::executeMember( Algorithm* theAlgorithm )
+StatusCode Sequencer::executeMember( Algorithm* theAlgorithm )
 {
   StatusCode result = StatusCode::SUCCESS;
   if ( theAlgorithm->isEnabled( ) ) {
+    theAlgorithm->setContext( getContext() );
     if ( ! theAlgorithm->isExecuted( ) ) {
       result = theAlgorithm->sysExecute( );
 
@@ -613,14 +519,13 @@ Sequencer::executeMember( Algorithm* theAlgorithm )
   return result;
 }
 
-StatusCode
-Sequencer::remove( const std::string& algname, std::vector<Algorithm*>& theAlgs )
+StatusCode Sequencer::remove( const std::string& algname, std::vector<Algorithm*>& theAlgs )
 {
   StatusCode result = StatusCode::FAILURE;
 
   // Test that the algorithm exists in the member list
-  for (auto& alg : theAlgs ) {
-    if ( alg->name( ) == algname ) {
+  for ( auto& alg : theAlgs ) {
+    if ( alg->name() == algname ) {
 
       // Algorithm with specified name exists in the algorithm list - remove it
       // THIS ISN'T IMPLEMENTED YET!!!!

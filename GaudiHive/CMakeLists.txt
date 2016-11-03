@@ -14,8 +14,8 @@ if (${APPLE})
   set (LIBRT_NAME "")
 endif (${APPLE})
 
-# Hide some Boost compile time warnings
-include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
+# Hide some Boost/TBB compile time warnings
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS} ${TBB_INCLUDE_DIRS})
 
 #---Libraries---------------------------------------------------------------
 gaudi_add_module(GaudiHive
@@ -25,10 +25,6 @@ gaudi_add_module(GaudiHive
 
 gaudi_add_test(WhiteBoard
                FRAMEWORK options/testWhiteBoard.py
-               TIMEOUT 120)
-
-gaudi_add_test(CPUCruncher
-               FRAMEWORK options/CPUCruncher.py
                TIMEOUT 120)
 
 gaudi_add_test(WriteWhiteBoard
@@ -56,10 +52,6 @@ gaudi_add_test(ForwardSchedulerStall
                FRAMEWORK options/ForwardSchedulerStall.py
                DEPENDS ForwardScheduler,
                PASSREGEX "Stall detected"
-               TIMEOUT 120)
-
-gaudi_add_test(SequentialSchedulerSimpleTest
-               FRAMEWORK options/SequentialSchedulerSimpleTest.py
                TIMEOUT 120)
 
 gaudi_add_test(GraphSchedulerSimpleTest
