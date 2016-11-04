@@ -120,13 +120,6 @@ namespace System    {
         return m_handle;
       }
     };
-    long                      m_PRIORITYBOOST[2];
-    IO_COUNTERS               m_IO_COUNTERS[2];
-    VM_COUNTERS               m_VM_COUNTERS[2];
-    KERNEL_USER_TIMES         m_KERNEL_USER_TIMES[2];
-    POOLED_USAGE_AND_LIMITS   m_POOLED_USAGE_AND_LIMITS[2];
-    QUOTA_LIMITS              m_QUOTA_LIMITS[2];
-    PROCESS_BASIC_INFORMATION m_PROCESS_BASIC_INFORMATION[2];
   public:
     ProcessDescriptor();
     virtual ~ProcessDescriptor();
@@ -138,5 +131,12 @@ namespace System    {
     long query(long pid, InfoType info, IO_COUNTERS* buffer);
     long query(long pid, InfoType info, long* buffer);
   };
+
+  inline ProcessDescriptor* getProcess() 
+  {
+    static ProcessDescriptor p;
+    return &p;
+  }
+
 }
 #endif //GAUDIKERNEL_PROCESS_H

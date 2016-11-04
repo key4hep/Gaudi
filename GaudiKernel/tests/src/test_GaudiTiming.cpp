@@ -7,6 +7,8 @@
 
 #include "GaudiKernel/Timing.h"
 #include "GaudiKernel/Sleep.h"
+#include "GaudiKernel/Memory.h"
+#include "GaudiKernel/ChronoEntity.h"
 #include <math.h>
 
 // from SPI version of the testdriver
@@ -36,6 +38,8 @@ namespace GaudiKernelTest {
 
     CPPUNIT_TEST( test_adjustTime );
     CPPUNIT_TEST( test_ProcessTime );
+    CPPUNIT_TEST( test_ProcessTimePerf );
+    CPPUNIT_TEST( test_ChronoEntity );
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -90,13 +94,65 @@ namespace GaudiKernelTest {
 
       // light check on the conversion
       CPPUNIT_ASSERT_EQUAL( t1.kernelTime<System::Sec>(), t1.kernelTime<System::milliSec>()/1000 );
-
       // measure the elapsed time
       CPPUNIT_ASSERT_EQUAL( (t1-t0).elapsedTime<System::Sec>(), 1LL );
+
+      // This should result in non-zero user and kernel times
+      t0 = System::getProcessTime();
+      float x = 1.5;
+      long m = 0;
+      for (int i=0; i<10000; i++) { 
+        x *= sin(x) / atan(x) * tanh(x) * sqrt(x);
+        m += System::virtualMemory();
+      }
+      t1 = System::getProcessTime();
+
+      CPPUNIT_ASSERT((t1-t0).userTime<System::microSec>() > 0);
+      CPPUNIT_ASSERT((t1-t0).kernelTime<System::microSec>() > 0);      
+    }
+
+    void test_ProcessTimePerf() {
+      System::ProcessTime t, t0, t1;
+
+      t0 = System::getProcessTime();
+      int N = 1e6;
+      for (int i=0; i<N; i++) {
+        t = System::getProcessTime();
+      }
+      t1 = System::getProcessTime();
+      std::cout << " (" << (t1-t0).elapsedTime<System::nanoSec>()/N << " ns per call)";
+    }
+
+    void test_ChronoEntity() {
+
+      ChronoEntity c1;
+      for (int i=0; i<10; i++) {
+        c1.start();
+        Gaudi::NanoSleep(1e7); // 10ms
+        c1.stop();
+      }
+      CPPUNIT_ASSERT_EQUAL( c1.nOfMeasurements(), 10UL );
+      CPPUNIT_ASSERT_EQUAL( int(c1.eMeanTime()/1000), 10 );
+      CPPUNIT_ASSERT( c1.uMaximalTime()>=c1.uMinimalTime() );
+
+      ChronoEntity c2;
+      c2 += c1;
+      c2 += c1;
+      CPPUNIT_ASSERT( c1 < c2 );
+
+      // Performance
+      ChronoEntity c3;
+      System::ProcessTime t0 = System::getProcessTime();
+      int N = 1e6;
+      for (int i=0; i<N; i++) {
+        c3.start();
+        c3.stop();
+      }
+      System::ProcessTime t1 = System::getProcessTime();
+      std::cout << " (" << (t1-t0).elapsedTime<System::nanoSec>()/N << " ns per stop/start)";    
     }
 
     void setUp() override {}
-
     void tearDown() override {}
 
   };
