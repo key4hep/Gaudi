@@ -34,16 +34,6 @@ namespace Gaudi
     struct _GetType<TYPE&>
     { using return_type = TYPE* ; };
     // ========================================================================
-    /// the template specialization for "ranges"
-    template <class CONTAINER>
-    struct _GetType<Gaudi::Range_<CONTAINER> >
-    { using return_type = Gaudi::Range_<CONTAINER>; };
-    // ========================================================================
-    /// the template specialization for "named ranges"
-    template <class CONTAINER>
-    struct _GetType<Gaudi::NamedRange_<CONTAINER> >
-    { using return_type = Gaudi::NamedRange_<CONTAINER> ; };
-    // ========================================================================
 
 
     // ========================================================================
@@ -71,68 +61,47 @@ namespace Gaudi
     };
 
     /// Some helper methods for the Range/namedRange specialization
-    template <class data_type, typename wrapper_type>
-    inline data_type& unwrap_data(wrapper_type* wrapper) {
-      return *wrapper;
+    template <class container_type,
+              typename std::enable_if<std::is_base_of<DataObject,container_type>::value>::type>
+    inline container_type& unwrap_data(container_type* content_ptr) {
+      return *content_ptr;
     }
 
-    template <class data_type, typename wrapper_type,
-              typename std::enable_if<!std::is_base_of<DataObject,data_type>::value, data_type>::type>
-    inline data_type& unwrap_data(wrapper_type* wrapper) {
-      return wrapper->getData();
+    template <class container_type>//,
+      //typename std::enable_if<!std::is_base_of<DataObject,container_type>::value>::type>
+    inline container_type& unwrap_data(AnyDataWrapper<container_type>* wrapper_ptr) {
+      return wrapper_ptr->getData();
     }
 
-    template <typename return_type, class ITERATOR> return_type make_range(ITERATOR first,
-                                                                           ITERATOR last) {
-      auto _begin = reinterpret_cast<typename return_type::const_iterator*>(&first);
-      auto _end   = reinterpret_cast<typename return_type::const_iterator*>(&last);
-      return return_type(*_begin, *_end);
-    }
-
-    template <class TYPE, typename return_type>
-    inline return_type getData_operator(DataObject *obj) {
+    template <typename range_type>
+    inline range_type getData_operator(DataObject *obj) {
       /// the actual types in the TES
-      using selection_type = typename std::conditional<std::is_base_of<DataObject,typename TYPE::Selection>::value,
-                                                       typename TYPE::Selection,
-                                                       AnyDataWrapper<typename TYPE::Selection>>::type;
-      using container_type = typename std::conditional<std::is_base_of<DataObject,typename TYPE::Container>::value,
-                                                       typename TYPE::Container,
-                                                       AnyDataWrapper<typename TYPE::Container>>::type;
-      const auto tmp = dynamic_cast<selection_type*>(obj);
+      using stored_type = typename std::conditional<std::is_base_of<DataObject, typename range_type::Container>::value,
+                                                    typename range_type::Container,
+                                                    AnyDataWrapper<typename range_type::Container>>::type;
+      const auto tmp = dynamic_cast<stored_type*>(obj);
       if (tmp) {
-        auto& selection = unwrap_data<typename TYPE::Selection, selection_type>(tmp);
-        return return_type(selection.begin(), selection.end());
-      } else {
-        const auto tmpcont = dynamic_cast<container_type*>(obj);
-        if (tmpcont) {
-          auto& container = unwrap_data<typename TYPE::Container, container_type>(tmpcont);
-          return make_range<return_type, decltype(container.begin())>(container.begin(), container.end());
-        }
+        auto& cont = unwrap_data<typename range_type::Container>(tmp);
+        return range_type(cont.begin(), cont.end());
       }
-      return return_type();
+      return range_type();
     }
 
     /// the template specialization for named ranges
-    template <class TYPE>
-    struct GetData<Gaudi::NamedRange_<std::vector<const TYPE*>>> {
-      /// the actual return type
-      using Type = Gaudi::NamedRange_<std::vector<const TYPE*>>;
-      using return_type = typename _GetType<Type>::return_type;
-      ///       *  @param DataObjectHandleBase base
-      inline return_type operator()(DataObject *obj) const {
-        return getData_operator<TYPE, return_type>(obj);
+    template <class container_type>
+    struct GetData<Gaudi::NamedRange_<container_type>> {
+      using range_type = Gaudi::NamedRange_<container_type>;
+      inline range_type operator()(DataObject *obj) const {
+        return getData_operator<range_type>(obj);
       }
     };
 
     /// the template specialization for ranges
-    template <class TYPE>
-    struct GetData<Gaudi::Range_<std::vector<const TYPE*> > > {
-      /// the actual return type
-      using Type = Gaudi::Range_<std::vector<const TYPE*>>;
-      using return_type = typename _GetType<Type>::return_type;
-      ///       *  @param DataObjectHandleBase base
-      inline return_type operator()(DataObject *obj) const {
-        return getData_operator<TYPE, return_type>(obj);
+    template <class container_type>
+    struct GetData<Gaudi::Range_<container_type>> {
+      using range_type = Gaudi::Range_<container_type>;
+      inline range_type operator()(DataObject *obj) const {
+        return getData_operator<range_type>(obj);
       }
     } ;
 
