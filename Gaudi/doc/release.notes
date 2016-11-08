@@ -2,6 +2,34 @@ Package : Gaudi
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+================================ Gaudi v28r0 =================================
+
+! 2016-10-31 - Marco Clemencic (commit b9f002b)
+
+ - minor fixes to failing tests
+
+   - fixed issue in CMake modules test
+   - fixed BrunelScenarioGraphScheduler
+   - clean up CPUCruncher
+    See merge request !227
+
+! 2016-10-12 - Marco Clemencic (commit b5e05a1)
+
+ - improved handling of package version in CMake configuration
+
+   use project version if a package version is not provided
+    See GAUDI-1215.
+    See merge request !175
+
+! 2016-07-25 - Marco Clemencic (commit e3d4b07)
+
+ - remove CMT configuration and related files
+
+   * removed CMT configuration files
+   * adapted scripts not to use CMT
+    Fixes GAUDI-1216 Fixes GAUDI-979
+    See merge request !186
+
 ================================ Gaudi v27r1 =================================
 
 ! 2016-02-15 - commit 4dc9082
