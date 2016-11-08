@@ -2,6 +2,92 @@ Package: GaudiMonitor
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+================================ Gaudi v28r0 =================================
+
+! 2016-10-27 - Gerhard Raven, Marco Clemencic (commit b111898)
+
+ - modernization of Property
+
+   This is a major rewrite of the system of `Property` classes. Started as  the
+   implementation of GAUDI-1214, it continued as a review of
+   `IProperty` and `PropertyMgr`, to end up in a complete rewrite
+   (and optimization) of `PropertyWithValue`.
+
+   * Fixes GAUDI-1214
+    - added missing `declareProperty` signature
+    - added `PropertyHolder` (an updated `PropertyMgr`)
+    - adapted all properties in Gaudi
+   * improved use of `PropertyHolder`
+    - use inheritance instead of composition
+    - removed ~200 (duplicated) lines of code in GaudiKernel
+   * optimization of Property (fixes GAUDI-1229)
+    - use templates and automatic code generation to handle efficiently
+      both value and reference properties
+      - avoid creation of values on the heap (see GAUDI-1229)
+      - removed the *owned* boolean flag
+      - improved usability of properties (e.g. begin/end wrappers for
+        C++11 loops, increment/decrement operators...)
+      - deprecated use of C arrays as properties
+    - merged features of `PropertyWithVerifier`, `SimpleProperty` and
+      `SimplePropertyRef` into `PropertyWithValue`
+    - deduplication of name and doc strings via
+
+   [`boost::string_ref`](http://www.boost.org/doc/libs/1_61_0/libs/utility/doc/html/string_ref.html)
+
+      and a static storage  (see GAUDI-1229)
+   * Fixes GAUDI-1205
+   * add deprecation warnings in service accessors of `Algorithm` (@graven)
+   * renamed `Property` base class to `Gaudi::Details::PropertyBase` and
+   `PropertyWithValue` to `Gaudi::Property`
+    - added backward compatibility type aliases (but not compatible with
+      forward declarations of `class Property`, which should be replaced
+      by `#include "GaudiKernel/PropertyFwd.h"`)
+   * added macro `GAUDI_PROPERTY_v2` to allow easy implementation of
+    backward compatible changes in derived projects (e.g. when user code
+    relied on `DoubleProperty` having a verifier)
+   * Fixes GAUDI-1268
+    The changes are as backward compatible as much as possible (except if you
+   explicitly inherit from `SimpleProperty`, or you forward declared
+   `class Property`, which now are typedefs), but must be validated in the
+   experiment frameworks.
+    See merge request !182
+
+! 2016-10-24 - Marco Clemencic (commit a8d6605)
+
+ - hidden/fixed "missing override" warnings exposed after !192
+
+   - warnings from external headers are hidden declaring the include directories
+   as `-system`
+   - warnings from a couple of new files have been fixed
+   - warnings in `HistogramSvc` are hidden because unavoidable (see f83c3d8e)
+   - warnings related to CLHEP-136 have been hidden with a special trick (see
+   0a238135)
+    See merge request !205
+
+! 2016-10-12 - Marco Clemencic (commit b5e05a1)
+
+ - improved handling of package version in CMake configuration
+
+   use project version if a package version is not provided
+    See GAUDI-1215.
+    See merge request !175
+
+! 2016-10-01 - Marco Clemencic (commit 99b1001)
+
+ - enable missing override warnings (gcc >= 5.1)
+
+   Fixes GAUDI-1241
+    See merge request !192
+
+! 2016-07-25 - Marco Clemencic (commit e3d4b07)
+
+ - remove CMT configuration and related files
+
+   * removed CMT configuration files
+   * adapted scripts not to use CMT
+    Fixes GAUDI-1216 Fixes GAUDI-979
+    See merge request !186
+
 ============================= GaudiMonitor v5r7 ==============================
 
 ! 2016-03-10 - commit 4a18175
