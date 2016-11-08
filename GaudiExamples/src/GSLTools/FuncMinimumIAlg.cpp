@@ -1,5 +1,3 @@
-// $Id: FuncMinimumIAlg.cpp,v 1.4 2006/01/10 19:58:26 hmd Exp $
-
 // Include files
 // from Gaudi
 #include "GaudiKernel/AlgFactory.h"
@@ -14,10 +12,12 @@
 // local
 #include "FuncMinimumIAlg.h"
 
-#ifdef __ICC
-// disable icc warning #327: NULL reference is not allowed
+// disable warning about nullptr dereferencing (icc and clang)
 //   It's a real problem, but here it is used for test purposes
+#ifdef __ICC
 #pragma warning(disable:327)
+#elif __clang__
+#pragma clang diagnostic ignored "-Wnull-dereference"
 #endif
 
 // Handle CLHEP 2.0.x move to CLHEP namespace

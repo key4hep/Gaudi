@@ -14,8 +14,8 @@ namespace Gaudi
     class PropertyBase;
     namespace Property
     {
-      class NullVerifier;
-      class UpdateHandler;
+      struct NullVerifier;
+      struct UpdateHandler;
     }
   }
   template <class TYPE, class VERIFIER, class HANDLERS>

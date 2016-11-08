@@ -363,7 +363,7 @@ namespace Gaudi
 
     /// Construct an anonymous property with default constructed value.
     /// Can be used only if StorageType is default constructible.
-    template <typename = void>
+    template <typename T = StorageType, typename = typename std::enable_if<!std::is_reference<T>::value>::type>
     Property() : Details::PropertyBase( typeid( ValueType ), "", "" ), m_value()
     {
     }

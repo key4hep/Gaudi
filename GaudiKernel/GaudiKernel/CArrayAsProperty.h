@@ -8,7 +8,7 @@
 namespace Gaudi
 {
   template <class TYPE, size_t N, class VERIFIER, class HANDLERS>
-  class Property<TYPE ( & )[N], VERIFIER, HANDLERS> : public Details::PropertyBase
+  class Property<TYPE [N], VERIFIER, HANDLERS> : public Details::PropertyBase
   {
   public:
     // ==========================================================================
@@ -33,26 +33,10 @@ namespace Gaudi
   public:
     // ==========================================================================
     /// the constructor with property name, value and documentation.
-    template <class T = ValueType>
-    inline Property( std::string name, T&& value, std::string doc = "" )
-        : PropertyBase( typeid( ValueType ), std::move( name ), std::move( doc ) ), m_value( std::forward<T>( value ) )
+    inline Property( std::string name, StorageType value, std::string doc = "" )
+        : PropertyBase( typeid( ValueType ), std::move( name ), std::move( doc ) ), m_value( value )
     {
       m_verifier( m_value );
-    }
-
-    /// Construct an anonymous property from a value.
-    /// This constructor is not generated if T is the current type, so that the
-    /// compiler picks up the copy constructor instead of this one.
-    template <class T = ValueType, typename = typename not_copying<T>::type>
-    Property( T&& v ) : PropertyBase( typeid( ValueType ), "", "" ), m_value( std::forward<T>( v ) )
-    {
-    }
-
-    /// Construct an anonymous property with default constructed value.
-    /// Can be used only if StorageType is default constructible.
-    template <typename = void>
-    Property() : PropertyBase( typeid( ValueType ), "", "" ), m_value()
-    {
     }
 
     using PropertyBase::declareReadHandler;
@@ -191,6 +175,11 @@ namespace Gaudi
       m_handlers.useReadHandler( *this );
       Utils::toStream( m_value, out );
     }
+  };
+  template <class TYPE, size_t N, class VERIFIER, class HANDLERS>
+  class Property<TYPE (&) [N], VERIFIER, HANDLERS> : public Property<TYPE [N], VERIFIER, HANDLERS> {
+  public:
+    using Property<TYPE [N], VERIFIER, HANDLERS>::Property;
   };
 }
 #endif

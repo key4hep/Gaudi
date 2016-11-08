@@ -40,7 +40,7 @@ a2.outKeys = ['/Event/a2']
 
 a3 = CPUCruncher("A3",
                  shortCalib=True)
-a3.outKeys = ['/Event/a3','Event/a4']
+a3.outKeys = ['/Event/a3','/Event/a4']
 
 a4 = CPUCruncher("A4",
                  shortCalib=True)
