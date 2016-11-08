@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import sys
+import xml.sax.saxutils as XSS
 import BaseTest as GT
 import logging
 
@@ -48,7 +49,7 @@ def ctest_report(results):
         if key in ignore:
             continue
         hndlr = handler.get(key, id_handler)
-        data = GT.sanitize_for_xml(hndlr(results[key]))
+        data = XSS.escape(GT.sanitize_for_xml(hndlr(results[key])))
         sys.stdout.write(template.format(key, data))
 
 

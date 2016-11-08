@@ -49,14 +49,19 @@ def cleanXml(xmlFileName):
         xmlFile.write(_illegal_xml_chars_Re.sub("", data))
         xmlFile.close()
 
-def formatMeasurementText(txt):
+def formatMeasurementText(txt, escape=False, preformat=True):
     '''
-    Helper to correctly convert plain text to valid HTML (in a <pre> tag).
+    Helper to correctly convert CTest measurements to valid HTML
+    (with or without special character escaping and in an optional <pre> tag).
     '''
-    from xml.sax.saxutils import escape
+    from xml.sax.saxutils import escape as escape_xml
     from codecs import encode
-    return '<pre>{0}</pre>'.format(escape(encode(txt, 'utf-8',
-                                                 'xmlcharrefreplace')))
+    txt = encode(txt, 'utf-8', 'xmlcharrefreplace')
+    if escape:
+        txt = escape_xml(txt)
+    if preformat:
+        txt = '<pre>{0}</pre>'.format(txt)
+    return txt
 
 ## Some regular expression that is going to be used in the next functions
 space_Re = re.compile(r"[ ]")
@@ -686,7 +691,8 @@ def main():
                     value = Results.find("Measurement").find("Value")
                     stdout = open(os.path.join(testCaseDir, "stdout"), "w")
                     if value is not None and value.text is not None :
-                        stdout.write(formatMeasurementText(value.text))
+                        stdout.write(formatMeasurementText(value.text,
+                                                           escape=True))
                     else:
                         stdout.write("<pre></pre>")
                     stdout.close()
