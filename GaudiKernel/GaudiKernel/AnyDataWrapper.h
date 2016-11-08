@@ -24,6 +24,7 @@ public:
    {};
 
    const T& getData() const {return m_data;}
+   T& getData() {return m_data;}
 
 private:
    T m_data;

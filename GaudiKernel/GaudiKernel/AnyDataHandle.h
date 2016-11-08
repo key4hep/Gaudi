@@ -8,7 +8,6 @@
 #include <GaudiKernel/DataObjectHandle.h>
 #include <GaudiKernel/Range.h>
 #include <GaudiKernel/NamedRange.h>
-#include <GaudiKernel/GetDataHelpers.h>
 
 // ============================================================================
 // Default implementation of the AnyDataHandle
