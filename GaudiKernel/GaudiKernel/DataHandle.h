@@ -34,20 +34,18 @@ public:
   };
 
 
-  DataHandle() : m_key("NONE"),  m_owner(0), m_mode(Reader) {};
   DataHandle(const DataObjID& k, Mode a=Reader,
-	     IDataHandleHolder* owner=0): 
+	     IDataHandleHolder* owner=nullptr):
     m_key(k), m_owner(owner), m_mode(a){};
 
-  virtual ~DataHandle(){}
+  virtual ~DataHandle() = default;
 
-  virtual void setOwner(IDataHandleHolder* o) { m_owner = o; }
   virtual IDataHandleHolder* owner() const { return m_owner; }
 
   virtual Mode mode() const { return m_mode; }
 
-  virtual void setKey(const DataObjID& key) { m_key = key; }
-  virtual void updateKey(const std::string& key) { m_key.updateKey(key); }
+  virtual void setKey(const DataObjID& key) const { m_key = key; }
+  virtual void updateKey(const std::string& key) const { m_key.updateKey(key); }
 
   virtual const std::string& objKey() const { return m_key.key(); }
   virtual const DataObjID& fullKey() const { return m_key; }
@@ -55,16 +53,22 @@ public:
   virtual void reset(bool) {};
   virtual StatusCode commit() { return StatusCode::SUCCESS; }
 
-  virtual const std::string pythonRepr() const;
+  virtual std::string pythonRepr() const;
+  virtual void init() {};
 
 protected:
-  virtual void setMode(const Mode& mode) { m_mode = mode; }
 
-  DataObjID               m_key;
-  IDataHandleHolder*      m_owner;
+  /**
+   * The key of the object behind this DataHandle
+   * Although it may look strange to have it mutable, this can actually
+   * change in case the object had alternative names, and it should not
+   * be visible to the end user, for which the Handle is still the same
+   */
+  mutable DataObjID       m_key = { "NONE" };
+  IDataHandleHolder*      m_owner = nullptr;
 
 private:
-  Mode                    m_mode;
+  Mode                    m_mode = Reader;
 
 };
 

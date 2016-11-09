@@ -215,6 +215,10 @@ protected:
   Sequencer( const Sequencer& a ) = delete;
   Sequencer& operator=( const Sequencer& rhs ) = delete;
 
+public:
+  /// Produce string represention of the control flow expression.
+  std::ostream& toControlFlowExpression( std::ostream& os ) const override;
+
 private:
   /**************************
    ** Private Data Members **

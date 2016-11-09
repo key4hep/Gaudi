@@ -5,9 +5,11 @@
 #include "GaudiKernel/ServiceLocatorHelper.h"
 #include "GaudiKernel/GaudiException.h"
 #include "GaudiKernel/Property.h"
-#include "GaudiKernel/Algorithm.h"
-#include "GaudiKernel/AlgTool.h"
+#include "GaudiKernel/GetDataHelpers.h"
+#include "GaudiKernel/AnyDataWrapper.h"
 
+
+#include <type_traits>
 
 //---------------------------------------------------------------------------
 
@@ -26,32 +28,24 @@
 
 template<typename T>
 class DataObjectHandle : public DataObjectHandleBase {
-
 public:
-
-  DataObjectHandle();
-  DataObjectHandle(const DataObjID& k, Gaudi::DataHandle::Mode a,
-		   IDataHandleHolder* o);
-  DataObjectHandle(const std::string& k, Gaudi::DataHandle::Mode a,
-		   IDataHandleHolder* o);
-  
-  virtual ~DataObjectHandle() {}
+  using DataObjectHandleBase::DataObjectHandleBase;
 
   /**
    * Retrieve object from transient data store
    */
-  T* get() { return get(true); }
+  T* get() const { return get(true); }
 
   /**
    * Bypass check of existence of object in transient store
    * Only uses main location of the
    */
-  T* getIfExists() { return get(false); }
+  T* getIfExists() const { return get(false); }
 
   /**
    * Check the existence of the object in the transient store
    */
-  bool exist() { return get(false) != NULL; }
+  bool exist() const { return get(false) != nullptr; }
 
   /**
    * Get object from store or create a new one if it doesn't exist
@@ -61,35 +55,19 @@ public:
   /**
    * Register object in transient store
    */
-  void put (T* object);
+  T* put (T* object);
 
 private:
 
-  T* get(bool mustExist);
+  T* get(bool mustExist) const;
+  mutable bool  m_goodType = false;
+
+  Gaudi::Helpers::GetData<T> m_adapter;
 
 };
 
 //---------------------------------------------------------------------------
-
-template<typename T>
-DataObjectHandle<T>::DataObjectHandle():
-  DataObjectHandleBase() {}
-
-//---------------------------------------------------------------------------
-template<typename T>
-DataObjectHandle<T>::DataObjectHandle(const DataObjID & k,
-				      Gaudi::DataHandle::Mode a,
-				      IDataHandleHolder* owner):
-  DataObjectHandleBase(k,a,owner) {}
-
-template<typename T>
-DataObjectHandle<T>::DataObjectHandle(const std::string & k,
-				      Gaudi::DataHandle::Mode a,
-				      IDataHandleHolder* owner):
-  DataObjectHandleBase(k,a,owner) {} 
-
-//---------------------------------------------------------------------------
-
+//
 /**
  * Try to retrieve from the transient store. If the retrieval succeded and
  * this is the first time we retrieve, perform a dynamic cast to the desired
@@ -98,74 +76,35 @@ DataObjectHandle<T>::DataObjectHandle(const std::string & k,
  * static cast: we do not need the checks of the dynamic cast for every access!
  */
 template<typename T>
-T* DataObjectHandle<T>::get(bool mustExist) {
+T* DataObjectHandle<T>::get(bool mustExist) const {
 
-  if (!m_init) {
-    init();
-  }
+  auto dataObj = fetch();
 
-  //MsgStream log(m_MS,"DataObjectHandle");
-
-  DataObject* dataObjectp = NULL;
-
-  StatusCode sc = m_EDS->retrieveObject(objKey(), dataObjectp);
-
-  T* returnObject = NULL;
-  if ( LIKELY( sc.isSuccess() ) ){
-
-    if (UNLIKELY(!m_goodType)){ // Check type compatibility once
-
-      // DP: can use a gaudi feature?
-      m_goodType = (NULL != dynamic_cast<T*> (dataObjectp));
-      //( typeid(tmp) == typeid(*dataObjectp) ) ;
-
-      T tmp;
-
-      const std::string dataType(typeid(tmp).name());
-
-      if (!m_goodType){
-        std::string errorMsg("The type provided for "+ objKey()
-                             + " is " + dataType
-                             + " and is different form the one of the object in the store.");
-        //log << MSG::ERROR << errorMsg << endmsg;
-        throw GaudiException (errorMsg,"Wrong DataObjectType",StatusCode::FAILURE);
-      }
-      else{
-        //log << MSG::DEBUG <<  "The data type (" <<  dataType
-        //    << ") specified for the handle of " << dataProductName()
-        //    << " is the same of the object in the store. "
-        //    << "From now on the result of a static_cast will be returned." << endmsg;
-      }
+  if (UNLIKELY(!dataObj) ) {
+    if (mustExist) { // Problems in getting from the store
+        throw GaudiException("Cannot retrieve " + objKey() +
+                             " from transient store.",
+                             m_owner ? owner()->name() : "no owner",
+                             StatusCode::FAILURE);
     }
-
-    if (LIKELY(m_goodType)) { // From the second read on, this is safe
-      returnObject = static_cast<T*> (dataObjectp);
-    }
-
+    return nullptr;
   }
-  else if(mustExist){ // Problems in getting from the store
-    throw GaudiException("Cannot retrieve " + objKey() + 
-			 " from transient store.",
-			 m_owner != 0 ? owner()->name() : "no owner",
-			 StatusCode::FAILURE);
-  }
-
-  //  setRead();
-  return returnObject;
+  
+  // Using the 
+  return m_adapter(dataObj);
 }
 
 //---------------------------------------------------------------------------
 template<typename T>
-void DataObjectHandle<T>::put (T *objectp){
-
-  if (!m_init) {
-    init();
+T* DataObjectHandle<T>::put (T *objectp){
+  assert(m_init);
+  StatusCode rc = m_EDS->registerObject(objKey(), objectp);
+  if (!rc.isSuccess()) {
+    throw GaudiException("Error in put of " + objKey(), 
+                         "DataObjectHandle<T>::put",
+                         StatusCode::FAILURE);
   }
-
-  StatusCode sc = m_EDS->registerObject(objKey(), objectp);
-  sc.ignore();
-  // if ( LIKELY( sc.isSuccess() ) )
-  //   setWritten();    
+  return objectp;
 }
 
 //---------------------------------------------------------------------------
@@ -178,22 +117,97 @@ T* DataObjectHandle<T>::getOrCreate (){
 	T* obj = get(false);
 
 	//object exists, we are done
-	if(obj != NULL){
-
+	if(obj){
 		//unlock();
 		return obj;
 	}
 
-	//MsgStream log(m_MS,"DataObjectHandle");
-  //log << MSG::DEBUG << "Object " << objKey() << " does not exist, creating it" << endmsg;
-
 	//create it
-	obj = new T();
-	put(obj);
+	return put(new T{});
 
 	//unlock();
-	return obj;
 }
 
-                    
+//---------------------------------------------------------------------------
+// Specialization for NamedRanges, in that case, we return it by value
+
+template<typename T>
+class DataObjectHandle<Gaudi::NamedRange_<T>> : public DataObjectHandleBase {
+public:
+  using DataObjectHandleBase::DataObjectHandleBase;
+
+  /**
+   * Retrieve object from transient data store
+   */
+  Gaudi::NamedRange_<T> get() const { return get(true); }
+
+private:
+
+  Gaudi::NamedRange_<T> get(bool mustExist) const;
+
+  Gaudi::Helpers::GetData<Gaudi::NamedRange_<T>> m_adapter;
+
+};
+
+template<typename T>
+Gaudi::NamedRange_<T> DataObjectHandle<Gaudi::NamedRange_<T>>::get(bool mustExist) const {
+
+  auto dataObj = fetch();
+
+  if (UNLIKELY(!dataObj) ) {
+    if (mustExist) { // Problems in getting from the store
+        throw GaudiException("Cannot retrieve " + objKey() +
+                             " from transient store.",
+                             m_owner ? owner()->name() : "no owner",
+                             StatusCode::FAILURE);
+    }
+    return Gaudi::NamedRange_<T>();
+  }
+  
+  return m_adapter(dataObj);
+}
+
+//---------------------------------------------------------------------------
+// Specialization for Ranges, in that case, we return it by value
+
+template<typename T>
+class DataObjectHandle<Gaudi::Range_<T>> : public DataObjectHandleBase {
+public:
+  using DataObjectHandleBase::DataObjectHandleBase;
+
+  /**
+   * Retrieve object from transient data store
+   */
+  Gaudi::Range_<T> get() const { return get(true); }
+
+private:
+
+  Gaudi::Range_<T> get(bool mustExist) const;
+
+  Gaudi::Helpers::GetData<Gaudi::Range_<T>> m_adapter;
+
+};
+
+template<typename T>
+Gaudi::Range_<T> DataObjectHandle<Gaudi::Range_<T>>::get(bool mustExist) const {
+
+  auto dataObj = fetch();
+
+  if (UNLIKELY(!dataObj) ) {
+    if (mustExist) { // Problems in getting from the store
+        throw GaudiException("Cannot retrieve " + objKey() +
+                             " from transient store.",
+                             m_owner ? owner()->name() : "no owner",
+                             StatusCode::FAILURE);
+    }
+    return Gaudi::Range_<T>();
+  }
+  
+  return m_adapter(dataObj);
+}
+
+
+//------------------------------------------------------------------------
+
+
 #endif

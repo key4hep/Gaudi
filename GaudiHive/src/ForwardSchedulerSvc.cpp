@@ -6,16 +6,6 @@
 #include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/SvcFactory.h"
 
-// #include "tbb/task.h"
-// #include "boost/thread.hpp"
-
-// // C++
-// #include <unordered_set>
-// #include <algorithm>
-// #include <map>
-// #include <sstream>
-// #include <queue>
-
 // Local
 #include "AlgResourcePool.h"
 #include "AlgoExecutionTask.h"
@@ -30,8 +20,17 @@
 #include <sstream>
 #include <unordered_set>
 
+// Local
+#include "ForwardSchedulerSvc.h"
+#include "AlgoExecutionTask.h"
+#include "AlgResourcePool.h"
+#include "EFGraphVisitors.h"
+#include "IOBoundAlgTask.h"
+
 // External libs
 #include "boost/thread.hpp"
+#include "boost/tokenizer.hpp"
+#include "boost/algorithm/string.hpp"
 #include "tbb/task.h"
 // DP waiting for the TBB service
 #include "tbb/task_scheduler_init.h"
@@ -44,6 +43,7 @@ DECLARE_SERVICE_FACTORY( ForwardSchedulerSvc )
 
 //===========================================================================
 // Infrastructure methods
+
 /**
  * Here, among some "bureaucracy" operations, the scheduler is activated,
  * executing the activate() function in a new thread.
@@ -140,6 +140,27 @@ StatusCode ForwardSchedulerSvc::initialize()
 
   DataObjIDColl globalInp, globalOutp;
 
+  // figure out all outputs
+  for (IAlgorithm* ialgoPtr : algos) {
+    Algorithm* algoPtr = dynamic_cast<Algorithm*>(ialgoPtr);
+    if (!algoPtr) {
+      fatal() << "Could not convert IAlgorithm into Algorithm: this will result in a crash." << endmsg;
+    }
+    for (auto id : algoPtr->outputDataObjs()) {
+        auto r = globalOutp.insert(id);
+        if (!r.second) {
+           warning() << "multiple algorithms declare " << id << " as output! could be a single instance in multiple paths though, or control flow may guarantee only one runs...!" << endmsg;
+        }
+    }
+  }
+  info() << "outputs:\n" ;
+  for (const auto& i : globalOutp ) {
+      info() << i << '\n' ;
+  }
+  info() << endmsg;
+
+
+
   info() << "Data Dependencies for Algorithms:";
 
   std::vector<DataObjIDColl> m_algosDependencies;
@@ -155,12 +176,28 @@ StatusCode ForwardSchedulerSvc::initialize()
     if ( !algoPtr->inputDataObjs().empty() || !algoPtr->outputDataObjs().empty() ) {
       for ( auto id : algoPtr->inputDataObjs() ) {
         info() << "\n    o INPUT  " << id;
+        if (id.key().find(":")!=std::string::npos) {
+            info() << " contains alternatives which require resolution... " << endmsg;
+            auto tokens = boost::tokenizer<boost::char_separator<char>>{id.key(),boost::char_separator<char>{":"}};
+            auto itok = std::find_if( tokens.begin(), tokens.end(),
+                                     [&](const std::string& t) {
+                return globalOutp.find( DataObjID{t} ) != globalOutp.end();
+            } );
+            if (itok!=tokens.end()) {
+                info() << "found matching output for " << *itok << " -- updating scheduler info" << endmsg;
+                id.updateKey(*itok);
+            } else {
+                error() << "failed to find alternate in global output list" << endmsg;
+            }
+        }
         algoDependencies.insert( id );
         globalInp.insert( id );
       }
       for ( auto id : algoPtr->outputDataObjs() ) {
         info() << "\n    o OUTPUT " << id;
-        globalOutp.insert( id );
+        if (id.key().find(":")!=std::string::npos) {
+            info() << " alternatives are NOT allowed for outputs..." << endmsg;
+        }
       }
     } else {
       info() << "\n      none";

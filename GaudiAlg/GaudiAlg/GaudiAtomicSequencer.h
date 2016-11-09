@@ -26,20 +26,12 @@
 class GAUDI_API GaudiAtomicSequencer: public GaudiSequencer {
 public:
   /// Standard constructor
-	GaudiAtomicSequencer( const std::string& name, ISvcLocator* pSvcLocator );
-
-  ~GaudiAtomicSequencer() override; ///< Destructor
+  GaudiAtomicSequencer( const std::string& name, ISvcLocator* pSvcLocator );
 
   StatusCode initialize() override;    ///< Algorithm initialization
 
-protected:
-
-private:
-
-  /** Private copy, copy not allowed **/
-  GaudiAtomicSequencer( const GaudiAtomicSequencer& a );
-
-  /** Private  assignment operator: This is not allowed **/
-  GaudiAtomicSequencer& operator=( const GaudiAtomicSequencer& a );
+  /** copy and assignement are not allowed **/
+  GaudiAtomicSequencer( const GaudiAtomicSequencer& a ) = delete;
+  GaudiAtomicSequencer& operator=( const GaudiAtomicSequencer& a ) = delete;
 };
 #endif // GAUDIATOMICSEQUENCER_H

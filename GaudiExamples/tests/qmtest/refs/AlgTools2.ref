@@ -35,10 +35,10 @@ MyAlg               DEBUG Property update for OutputLevel : new value = 2
 MyAlg               DEBUG Initialize base class GaudiCommon<Algorithm>
 MyAlg               DEBUG could not locate CounterSummarySvc, no counter summary will be made
 MyAlg               DEBUG List of ALL properties of MyGaudiAlgorithm/MyAlg  #properties = 46
-MyAlg               DEBUG Property ['Name': Value] =  'trackSelection':('/Event/MyAnalysis/Tracks')  m: 16  o: MyAlg  opt: 0
-MyAlg               DEBUG Property ['Name': Value] =  'raw':('/Rec/RAW')  m: 4  o: MyAlg  opt: 0
-MyAlg               DEBUG Property ['Name': Value] =  'hits':('/Event/Rec/Hits')  m: 4  o: MyAlg  opt: 0
-MyAlg               DEBUG Property ['Name': Value] =  'tracks':('/Event/Rec/Tracks')  m: 4  o: MyAlg  opt: 0
+MyAlg               DEBUG Property ['Name': Value] =  'trackSelection':/Event/MyAnalysis/Tracks
+MyAlg               DEBUG Property ['Name': Value] =  'raw':/Rec/RAW
+MyAlg               DEBUG Property ['Name': Value] =  'hits':/Event/Rec/Hits
+MyAlg               DEBUG Property ['Name': Value] =  'tracks':/Event/Rec/Tracks
 MyAlg               DEBUG Property ['Name': Value] =  'UnusedToolHandle':TestToolFailing
 MyAlg               DEBUG Property ['Name': Value] =  'GenericToolHandle':MyTool/GenericToolHandle
 MyAlg               DEBUG Property ['Name': Value] =  'PubToolHandle':MyTool/PubToolHandle

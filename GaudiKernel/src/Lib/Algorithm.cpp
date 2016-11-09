@@ -1,3 +1,4 @@
+#include <set>
 #include <algorithm>
 #include <numeric>
 
@@ -176,39 +177,45 @@ StatusCode Algorithm::sysInitialize()
   acceptDHVisitor( &avis );
 
   if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) ) {
+    // sort out DataObjects by path so that logging is reproducable
+    // we define a little helper creating an ordered set from a non ordered one
+    auto sort = [](const DataObjID a, const DataObjID b) -> bool {return a.fullKey() < b.fullKey();};
+    auto orderset = [&sort](const DataObjIDColl& in) -> std::set<DataObjID, decltype(sort)> {
+      return {in.begin(), in.end(), sort};
+    };
+    // Logging
     debug() << "Data Deps for " << name();
-    for ( auto h : m_inputDataObjs ) {
+    for ( auto h : orderset( m_inputDataObjs ) ) {
       debug() << "\n  + INPUT  " << h;
     }
-    for ( auto id : avis.ignoredInpKeys() ) {
+    for ( auto id : orderset( avis.ignoredInpKeys() ) ) {
       debug() << "\n  + INPUT IGNORED " << id;
     }
-    for ( auto h : m_outputDataObjs ) {
+    for ( auto h : orderset( m_outputDataObjs)) {
       debug() << "\n  + OUTPUT " << h;
     }
-    for ( auto id : avis.ignoredOutKeys() ) {
+    for ( auto id : orderset( avis.ignoredOutKeys() ) ) {
       debug() << "\n  + OUTPUT IGNORED " << id;
     }
     debug() << endmsg;
   }
 
+  // initialize handles
+  initDataHandleHolder();
+
   return sc;
 }
 
-void Algorithm::acceptDHVisitor( IDataHandleVisitor* vis ) const
-{
-  vis->visit( this );
+void Algorithm::acceptDHVisitor(IDataHandleVisitor *vis) const {
+
+  vis->visit(this);
 
   // loop through tools
-  for ( auto tool : tools() ) {
-    AlgTool* at = dynamic_cast<AlgTool*>( tool );
-    vis->visit( at );
-  }
+  for ( auto tool : tools() ) vis->visit( dynamic_cast<AlgTool*>( tool ) );
 
   // loop through sub-algs
-  for ( auto alg : *subAlgorithms() ) {
-    vis->visit( alg );
-  }
+  for ( auto alg : *subAlgorithms() ) vis->visit( alg );
+
 }
 
 // IAlgorithm implementation
@@ -572,8 +579,8 @@ StatusCode Algorithm::sysExecute()
 
   if ( status.isFailure() ) {
     // Increment the error count
-    { 
-      std::lock_guard<std::mutex>  lock(m_lock);      
+    {
+      std::lock_guard<std::mutex>  lock(m_lock);
       m_errorCount++;
     }
     // Check if maximum is exeeded
@@ -985,7 +992,7 @@ void Algorithm::commitHandles()
 {
   //-----------------------------------------------------------------------------
 
-  for ( auto h : m_outputHandles ) {
+  for ( auto h : outputHandles() ) {
     h->commit();
   }
 
@@ -1016,4 +1023,8 @@ void Algorithm::deregisterTool( IAlgTool* tool ) const
   } else {
     if ( msgLevel( MSG::DEBUG ) ) debug() << "Could not de-register tool " << tool->name() << endmsg;
   }
+}
+
+std::ostream& Algorithm::toControlFlowExpression(std::ostream& os) const {
+  return os << type() << "('" << name() << "')";
 }

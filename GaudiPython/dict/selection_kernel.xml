@@ -37,9 +37,7 @@
 
   <class pattern = "GaudiAlg::*"              />
   <class name    = "GaudiAlgorithm"           />
-  <class name    = "GaudiHistoAlg"            />
   <class pattern = "GaudiPython::PyAlg<*>"    />
-  <class name    = "GaudiTupleAlg"            />
   <class name    = "Tuples::Tuple"            />
   <class pattern = "GaudiPython::*Decorator*" />
   <class name    = "StatEntity"               />
