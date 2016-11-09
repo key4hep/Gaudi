@@ -17,7 +17,7 @@ public:
   /// Get a message
   virtual const std::string&  message() const = 0;
   /// Do something
-  virtual void  doIt() = 0;
+  virtual void doIt() const = 0;
 };
 
 /** @class IMyOtherTool IMyTool.h

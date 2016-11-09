@@ -1,5 +1,3 @@
-// $Id: EqSolverIAlg.cpp,v 1.5 2006/01/10 19:58:26 hmd Exp $
-
 // Include files
 
 // from Gaudi
@@ -14,11 +12,14 @@
 // local
 #include "EqSolverIAlg.h"
 
-#ifdef __ICC
-// disable icc warning #327: NULL reference is not allowed
+// disable warning about nullptr dereferencing (icc and clang)
 //   It's a real problem, but here it is used for test purposes
+#ifdef __ICC
 #pragma warning(disable:327)
+#elif __clang__
+#pragma clang diagnostic ignored "-Wnull-dereference"
 #endif
+
 
 //-----------------------------------------------------------------------------
 /** @file Implementation file for class : EqSolverIAlg
@@ -38,7 +39,7 @@ using namespace CLHEP;
 // Standard constructor, initializes variables
 //=============================================================================
 EqSolverIAlg::EqSolverIAlg( const std::string& name,
-			ISvcLocator* pSvcLocator)
+                        ISvcLocator* pSvcLocator)
   : Algorithm ( name , pSvcLocator ) {
 
 }

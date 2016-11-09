@@ -1,20 +1,329 @@
 Package : GaudiKernel
 Commit Id: $Format:%H$
 
+================================ Gaudi v28r0 =================================
 
-! 2016-06-02
- - Declare GaudiHive dependent on pytools and declare GraphScheduler.py
-   as a test.
+! 2016-11-08 - Marco Clemencic (commit ec96c27)
 
-! 2016-06-02
- - Adapt GraphScheduler.py to signature of precedence.CruncherSequence.
+ - cleaning up last minute glitches
 
-! 2016-06-01 - (Merge of ae5ce72 and 8c5261b, plus few additional changes
-                on top of the merge)
+   - fixed warnings from clang
+   - fixed issues with ROOT 6.08
+   - minor polishing
+   - minor fixes to tests
+   - fixed GAUDI-1221
+    See merge request !230
 
- - Synchronizing the official master with my private dev/io-bound branch as
-   much as possible before requesting the merge of the dev/io-bound into the
-   official master.
+! 2016-11-02 - Charles Leggett (commit 92567c2)
+
+ - make IHiveWhiteBoard::getNumberOfStores() const
+
+   See merge request !229
+
+! 2016-10-31 - Marco Clemencic (commit b9f002b)
+
+ - minor fixes to failing tests
+
+   - fixed issue in CMake modules test
+   - fixed BrunelScenarioGraphScheduler
+   - clean up CPUCruncher
+    See merge request !227
+
+! 2016-10-28 - Marco Clemencic (commit 7a372bb)
+
+ - fixed a few compilation warnings
+
+   See merge request !221
+
+! 2016-10-27 - Gerhard Raven, Marco Clemencic (commit b111898)
+
+ - modernization of Property
+
+   This is a major rewrite of the system of `Property` classes. Started as  the
+   implementation of GAUDI-1214, it continued as a review of
+   `IProperty` and `PropertyMgr`, to end up in a complete rewrite
+   (and optimization) of `PropertyWithValue`.
+
+   * Fixes GAUDI-1214
+    - added missing `declareProperty` signature
+    - added `PropertyHolder` (an updated `PropertyMgr`)
+    - adapted all properties in Gaudi
+   * improved use of `PropertyHolder`
+    - use inheritance instead of composition
+    - removed ~200 (duplicated) lines of code in GaudiKernel
+   * optimization of Property (fixes GAUDI-1229)
+    - use templates and automatic code generation to handle efficiently
+      both value and reference properties
+      - avoid creation of values on the heap (see GAUDI-1229)
+      - removed the *owned* boolean flag
+      - improved usability of properties (e.g. begin/end wrappers for
+        C++11 loops, increment/decrement operators...)
+      - deprecated use of C arrays as properties
+    - merged features of `PropertyWithVerifier`, `SimpleProperty` and
+      `SimplePropertyRef` into `PropertyWithValue`
+    - deduplication of name and doc strings via
+
+   [`boost::string_ref`](http://www.boost.org/doc/libs/1_61_0/libs/utility/doc/html/string_ref.html)
+
+      and a static storage  (see GAUDI-1229)
+   * Fixes GAUDI-1205
+   * add deprecation warnings in service accessors of `Algorithm` (@graven)
+   * renamed `Property` base class to `Gaudi::Details::PropertyBase` and
+   `PropertyWithValue` to `Gaudi::Property`
+    - added backward compatibility type aliases (but not compatible with
+      forward declarations of `class Property`, which should be replaced
+      by `#include "GaudiKernel/PropertyFwd.h"`)
+   * added macro `GAUDI_PROPERTY_v2` to allow easy implementation of
+    backward compatible changes in derived projects (e.g. when user code
+    relied on `DoubleProperty` having a verifier)
+   * Fixes GAUDI-1268
+    The changes are as backward compatible as much as possible (except if you
+   explicitly inherit from `SimpleProperty`, or you forward declared
+   `class Property`, which now are typedefs), but must be validated in the
+   experiment frameworks.
+    See merge request !182
+
+! 2016-10-26 - Benedikt Hegner (commit 668ce4b)
+
+ - Remove deprecated schedulers
+
+   - remove deprecated RoundRobin, ParallelSequential and Sequential schedulers
+    (see GAUDI-1263)
+   - remove deprecated copy of state machine interface from IAlgManager.
+    This removal has been checked grep'ing the git repo of ATLAS
+
+   See merge request !202
+
+
+! 2016-10-25 - Chris Jones (commit be54ccc)
+
+ - Update GaudiHandle to return const Tool access from const Handle
+
+   via `->` and `*` operators and `get()` method
+    Also removed unused `ThreadPoolSvc::getThreadInitTools()`.
+    See merge request !217
+
+! 2016-10-24 - Attila Krasznahorkay (commit ac4dbc7)
+
+ - Changes to build on MacOS X 10.11
+
+   See merge request !200
+
+
+! 2016-10-24 - Marco Clemencic (commit a8d6605)
+
+ - hidden/fixed "missing override" warnings exposed after !192
+
+   - warnings from external headers are hidden declaring the include directories
+   as `-system`
+   - warnings from a couple of new files have been fixed
+   - warnings in `HistogramSvc` are hidden because unavoidable (see f83c3d8e)
+   - warnings related to CLHEP-136 have been hidden with a special trick (see
+   0a238135)
+    See merge request !205
+
+! 2016-10-19 - Charles Leggett (commit 958570b)
+
+ - Algorithm Execution State Service
+
+   Introduction of AlgExecStateSvc
+    All event state information removed from Algorithm base class
+   (m_filterPassed, m_isExecuted) as it will cause difficulties with re-entrant
+   Algorithms.
+    event success/fail flag removed from EventContext
+    These flags are moved to be under control of a new service, the
+   AlgExecStateSvc, which keeps track of the execution state of all Algorithms,
+   and the Event as a whole.
+    Algorithm status kept in a new class ```AlgExecState``` which has
+   ```
+       bool m_filterPassed  {true};
+       bool m_isExecuted    {false};
+       StatusCode m_execStatus  {StatusCode::FAILURE};
+   ```
+    AlgExecStateSvc holds an AlgExecState for each Algorithm in each Event
+   Slot, as well as an overall ```EventStatus``` for each EventSlot, which can
+   be one of
+
+   ```
+     Invalid = 0,
+     Success = 1,
+     AlgFail = 2,
+     AlgStall = 3,
+     Other = 4
+   ```
+    Algorithms add themselves to the AlgExecStateSvc upon initialization, but
+   the Service's initialization of  the data structures is deferred until the
+   first time ```AlgExecStateSvc::reset()``` is called, at which point it's
+   probably safe to figure out if there's a WhiteBoard, and the number of slots
+   to allocate.
+    The EventLoopMgr should call ```AlgExecStateSvc::reset()``` at the start of
+   each event. If it's a concurrent EventLoopMgr, it should be
+   ```AlgExecStateSvc::reset(EventContext)```, after the EventContext object
+   has been updated to reflect the new event.
+    Also added an EventContext object to the MinimalEventLoopMgr, so that
+   serial/concurrent behaviour is similar.
+    Concurrent queries to the AlgExecStateSvc must contain the EventContext, so
+   the correct EventSlot can be determined. Serial access is via methods that
+   don't have the EventContext as a parameter. For access from Algorithm base
+   class (eg from setFilterPassed, isExecuted, etc), if the EventContext ptr
+   (m_event_context) in the Algorithm is null, we assume we're running
+   serially.
+    See merge request !197
+
+! 2016-10-13 - Illya Shapoval (commit 72a37ca)
+
+ - Refactor the 'precedence' package and add the latest ATLAS MC data
+   reconstruction scenario to the Gaudi Hive portfolio of simulators
+
+   This merge request contains refactoring of the 'precedence' package (used for
+   configuration of Hive execution flow simulations), which makes it experiment
+   independent. Also, it adds the latest ATLAS MC data reconstruction scenario
+   to portfolio of Hive execution flow simulators.
+    See merge request !204
+
+! 2016-10-12 - Marco Clemencic (commit b5e05a1)
+
+ - improved handling of package version in CMake configuration
+
+   use project version if a package version is not provided
+    See GAUDI-1215.
+    See merge request !175
+
+! 2016-10-10 - Marco Clemencic (commit 5df4dde)
+
+ - fix tests failing after mr !178
+
+   See merge request !206
+
+! 2016-10-03 - Illya Shapoval (commit 95cdba1)
+
+ - A prototype of a scheduler for efficient handling of heterogeneous tasks
+
+   The prototype is described in detail in
+   [chapter 4](https://cds.cern.ch/record/2149420).
+    See merge request !178
+
+! 2016-10-01 - Marco Clemencic (commit 99b1001)
+
+ - enable missing override warnings (gcc >= 5.1)
+
+   Fixes GAUDI-1241
+    See merge request !192
+
+! 2016-08-19 - Marco Clemencic (commit f3050c3)
+
+ - Fix compile time warnings
+
+   fixed/hidden all warnings in GCC builds
+    See merge request !189
+
+! 2016-07-25 - Illya Shapoval (commit 6cf6ca2)
+
+ - Resurrect the AthenaScenario test in Gaudi Hive
+
+   The test was broken (produced a stall). This merge request introduces the
+   migration of the test to the graph-based scheduler, which returns the test
+   back to life.
+    See [GAUDI-1239](https://its.cern.ch/jira/browse/GAUDI-1239) for the
+   work/test log.
+    See merge request !190
+
+! 2016-07-25 - Marco Clemencic (commit e3d4b07)
+
+ - remove CMT configuration and related files
+
+   * removed CMT configuration files
+   * adapted scripts not to use CMT
+    Fixes GAUDI-1216 Fixes GAUDI-979
+    See merge request !186
+
+! 2016-07-08 - Marco Clemencic (commit c2d751d)
+
+ - replaced endreq with endmsg in ForwardSchedulerSvc
+
+   See merge request !184
+
+! 2016-06-23 - Sami Kama (commit 3735737)
+
+ - Adding concurrent incident support and example utilization.
+
+   `GaudiExamples/options/AsyncIncidents.py` demonstrates example utilization of
+   asynchronous incident mechanism.
+    Fixes GAUDI-1213
+    See merge request !181
+
+! 2016-05-31 - Charles Leggett (commit c8d7b8b)
+
+ - Propagate failure of event to the EventContext for more cases
+
+   see atlas/Gaudi!21
+    This patch fixes:
+   - setting fail flag in the EventContext for a stall
+   - setting fail flag in the EventContext if an Algorithm
+     throws an exception
+   - don't unset the fail flag in the EventContext when an
+     Algorithm hasn't failed
+    See merge request !165
+
+! 2016-05-18 - Sami Kama (commit 9eeef96)
+
+ - allow build of Gaudi without LCG and fix ThreadPoolSvc
+
+   Allow building of Gaudi with local externals.
+    It also contains a fix to an issue introduced with merge request !160
+   (GAUDI-1212).
+    Fixes GAUDI-1211, GAUDI-1212.
+    See merge request !166
+
+! 2016-05-03 - Charles Leggett (commit 1d3f99c)
+
+ - ThreadPoolSvc: Bugfix/barrier fix
+
+   (from Steve Farrell) see https://gitlab.cern.ch/atlas/Gaudi/merge_requests/17
+
+    This merge fixes a serious undefined behavior condition in ThreadPoolSvc
+   introduced in the thread-tool-terminate merge. The boost::barrier was moved
+   to a function local which could drop out of scope before workers returned
+   from waiting. Now, the barrier is again a class member of the ThreadPoolSvc.
+   Tests are successful. Additionally, I added a safety check in
+   ThreadPoolSvc::terminateTool that returns FAILURE if the pool wasn't actually
+   initialized.
+    Finally, I put the ThreadPoolSvc's raw pointer class members into
+   unique_ptrs for automatic deletion.
+    See merge request !160
+
+! 2016-04-19 - Steve Farrell (commit ff70ca3)
+
+ - Thread tool termination
+
+   This set of changes completes the work started by @leggett in
+   a875c69e3ac6b1d1253e4086daea076860a95e52 on thread initialization tools. Such
+   tools are invoked by the ThreadPoolSvc on each worker thread when the pool is
+   initialized and can be used to setup thread-local workspaces in cases where
+   necessary (e.g. for running multi-threaded Geant4).
+    These commits enable the thread-termination part of those tools for
+   corresponding cleanup/finalization of thread-local memory. This is done
+   primarily by adding a terminatePool method to IThreadPoolSvc which is called
+   at the end of ForwardSchedulerSvc::activate. The ThreadPoolSvc underwent some
+   slight refactoring to support the thread-termination tasks.
+    Also included in this merge request are a number of whitespace and
+   indentation fixes, as well as some added class documentation in the affected
+   classes.
+    See merge request !142
+
+! 2016-04-09 - Charles Leggett (commit 84020b9)
+
+ - Isolate EventContext from Algorithm
+
+   in order to not have re-entrant Algorithms stomp on each others'
+   EventContexts, we need to isolate the EventContext from the Algorithm, and
+   move it to the AlgoExecutionTask. We can then pass the EventContext
+   explicitly to the tbb::task, instead of carrying it via the Algorithm, which
+   would fail for re-entrant Algs. This also requires a change to the signature
+   of ForwardSchedulerSvc::promoteToExecuted.
+    We should also make the EventContext* of the Algorithm const, to prevent any
+   modification from inside the Alg.
+    See merge request !147
 
 =============================== GaudiHive v2r0 ===============================
 

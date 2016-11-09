@@ -43,6 +43,11 @@ if '__main__' == __name__ :
 
     print __doc__ , __author__
 
+    # make sure cling can generate all required methods in Gaudi::Property
+    import cppyy
+    cppyy.gbl.gInterpreter.Declare('#define NO_C_ARRAY_AS_PROPERTY_WARNING')
+    cppyy.gbl.gInterpreter.Declare('#include "GaudiKernel/CArrayAsProperty.h"')
+
     from GaudiPython.Bindings import AppMgr
 
     gaudi = AppMgr()

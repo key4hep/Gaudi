@@ -12,12 +12,12 @@
 
 #include <string>
 #include <stdexcept>
+#include <type_traits>
 
 // class predeclarations
 class IAlgTool;
 class IToolSvc;
 class ServiceHandleProperty;
-
 
 /** @class ServiceHandle ServiceHandle.h GaudiKernel/ServiceHandle.h
 
@@ -41,7 +41,16 @@ public:
   */
   ServiceHandle( const std::string& serviceName, const std::string& theParentName )
     : GaudiHandle<T>(serviceName, "Service", theParentName)
-  {}
+  { }
+
+  /** Copy constructor from a non const T to const T service handle */
+  template< typename CT  = T,
+            typename NCT = typename std::remove_const<T>::type >
+  ServiceHandle( const ServiceHandle<NCT>& other,
+                 typename std::enable_if< std::is_const<CT>::value &&
+                                       !std::is_same<CT,NCT>::value >::type * = nullptr )
+    : GaudiHandle<CT>( other ) 
+  { }
 
   StatusCode initialize(const std::string& serviceName, const std::string& theParentName){
 

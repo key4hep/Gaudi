@@ -25,7 +25,7 @@ if( GAUDI_ATLAS )
 endif()
 
 # Declare project name and version
-gaudi_project(Gaudi future)
+gaudi_project(Gaudi v28r0)
 
 # These tests do not really fit in a subdirectory.
 gaudi_add_test(cmake.EnvConfigTests

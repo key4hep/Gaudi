@@ -82,7 +82,6 @@ private:
   Gaudi::Property<bool> m_shortCircuit{this, "ShortCircuit", true, "stop processing as soon as possible"};
   Gaudi::Property<bool> m_invert{this, "Invert", false, "invert the logic result of the sequencer"};
 
-  bool m_isInitialized;                       ///< Indicate that we are ready
   std::vector<AlgorithmEntry> m_entries;      ///< List of algorithms to process.
   ISequencerTimerTool* m_timerTool = nullptr; ///< Pointer to the timer tool
   int m_timer;                                ///< Timer number for the sequencer

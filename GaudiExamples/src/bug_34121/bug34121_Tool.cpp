@@ -20,7 +20,7 @@ namespace bug_34121
 
     /// IMyTool interface
     const std::string& message() const override;
-    void doIt() override;
+    void doIt() const override;
     /// Overriding initialize and finalize
     StatusCode initialize() override;
     StatusCode finalize() override;
@@ -39,7 +39,7 @@ namespace bug_34121
   }
 
   //------------------------------------------------------------------------------
-  void Tool::doIt()
+  void Tool::doIt() const
   //------------------------------------------------------------------------------
   {
     info() << "Double = " << m_double.value() << endmsg;

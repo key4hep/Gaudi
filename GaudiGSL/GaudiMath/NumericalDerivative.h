@@ -12,7 +12,7 @@
 #include "CLHEP/GenericFunctions/AbsFunction.hh"
 // ============================================================================
 
-#if defined(__clang__) || defined(__cling__)
+#if defined(__clang__) || defined(__CLING__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Winconsistent-missing-override"
 #elif defined(__GNUC__) && __GNUC__ >= 5
@@ -160,7 +160,7 @@ namespace Genfun
   } // end of namespace GaudiMathImplementation
 } // end of namespace GenFun
 
-#if defined(__clang__) || defined(__cling__)
+#if defined(__clang__) || defined(__CLING__)
 #pragma clang diagnostic pop
 #elif defined(__GNUC__) && __GNUC__ >= 5
 #pragma GCC diagnostic pop
