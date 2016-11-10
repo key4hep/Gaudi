@@ -73,7 +73,10 @@ public:
 //   }
 
   /// Allow non const access to the service, even from a const handle...
-  T * get() const { return this->nonConst( get() ); }
+  T * get() const { return this->nonConst( GaudiHandle<T>::get() ); }
+
+  /// Allow non const access to the service, even from a const handle...
+  T * operator->() const { return this->nonConst( GaudiHandle<T>::operator->() ); }
 
 protected:
  /** Do the real retrieval of the Service. */
