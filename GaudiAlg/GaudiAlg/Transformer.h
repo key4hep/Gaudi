@@ -60,7 +60,7 @@ namespace Gaudi { namespace Functional {
        using details::DataHandleMixin<std::tuple<Out...>, std::tuple<In...>,Traits_>::DataHandleMixin;
 
        // derived classes can NOT implement execute
-       StatusCode execute() final
+       StatusCode execute() override final
        { return invoke(std::index_sequence_for<In...>{},std::index_sequence_for<Out...>{}); }
 
        // instead they MUST implement this operator
@@ -97,7 +97,7 @@ namespace Gaudi { namespace Functional {
        using details::DataHandleMixin<std::tuple<Out...>, std::tuple<In...>,Traits_>::DataHandleMixin;
 
        // derived classes can NOT implement execute
-       StatusCode execute() final
+       StatusCode execute() override final
        { return invoke(std::index_sequence_for<In...>{},std::index_sequence_for<Out...>{}); }
 
        // instead they MUST implement this operator

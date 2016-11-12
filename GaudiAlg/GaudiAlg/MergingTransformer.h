@@ -28,7 +28,7 @@ namespace Gaudi { namespace Functional {
                           const KeyValues& inputs, const KeyValue& output);
 
        // derived classes can NOT implement execute
-       StatusCode execute() final;
+       StatusCode execute() override final;
 
        virtual Out operator()(const vector_of_const_<In>& inputs) const = 0;
 

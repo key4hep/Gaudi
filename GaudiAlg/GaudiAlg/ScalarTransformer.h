@@ -11,9 +11,9 @@ template <typename ScalarOp,
           typename TransformerSignature,
           typename Traits_ = Traits::useDefaults> class ScalarTransformer;
     template <typename ScalarOp, typename Out, typename... In, typename Traits_>
-    class ScalarTransformer<ScalarOp,Out(const In&...),Traits_> : public Transformer<Out(const In&...),Traits_> 
+    class ScalarTransformer<ScalarOp,Out(const In&...),Traits_> : public Transformer<Out(const In&...),Traits_>
     {
-    
+
       /// Access the scalar operator
       const ScalarOp& scalarOp() const { return static_cast<const ScalarOp&>(*this); }
 
@@ -21,25 +21,25 @@ template <typename ScalarOp,
 
       /// Call the scalar operator with the objects obtained from the given tuple
       template< typename Tuple, typename Scalar, std::size_t... I >
-      inline decltype(auto) getScalar( const Tuple & t, 
-                                       const Scalar & s, 
+      inline decltype(auto) getScalar( const Tuple & t,
+                                       const Scalar & s,
                                        std::index_sequence<I...> ) const
       {
         return s( details::deref(std::get<I>(t))... );
       }
-   
+
     public:
-      
+
       using Transformer<Out(const In&...),Traits_>::Transformer;
 
       /// The main operator
-      Out operator()(const In&... in) const final 
-      { 
-        const auto inrange = details::zip::const_range(in...); 
-        Out out; 
+      Out operator()(const In&... in) const override final
+      {
+        const auto inrange = details::zip::const_range(in...);
+        Out out;
         out.reserve(inrange.size());
         auto & scalar = scalarOp();
-        for ( const auto && i : inrange ) 
+        for ( const auto && i : inrange )
         { details::insert( out, getScalar( i, scalar, std::index_sequence_for<In...>{} ) ); }
         //details::apply( scalar, out ); // awaiting a post-processor call
         return out;
@@ -53,9 +53,9 @@ template <typename ScalarOp,
           typename Traits_ = Traits::useDefaults> class MultiScalarTransformer;
     template <typename ScalarOp, typename... Out, typename... In, typename Traits_>
     class MultiScalarTransformer<ScalarOp,std::tuple<Out...>(const In&...),Traits_>
-      : public MultiTransformer<std::tuple<Out...>(const In&...),Traits_> 
+      : public MultiTransformer<std::tuple<Out...>(const In&...),Traits_>
     {
-    
+
       /// Access the scalar operator
       const ScalarOp& scalarOp() const { return static_cast<const ScalarOp&>(*this); }
 
@@ -63,8 +63,8 @@ template <typename ScalarOp,
 
       /// Reserve the given size in all output containers
       template< typename Tuple, std::size_t... I >
-      inline void reserve( Tuple & t, 
-                           const std::size_t resSize, 
+      inline void reserve( Tuple & t,
+                           const std::size_t resSize,
                            std::index_sequence<I...> ) const
       {
         std::initializer_list<long unsigned int> { (std::get<I>(t).reserve(resSize),I)... };
@@ -72,8 +72,8 @@ template <typename ScalarOp,
 
       /// Call the scalar operator with the objects obtained from the given tuple
       template< typename Tuple, typename Scalar, std::size_t... I >
-      inline decltype(auto) getScalar( const Tuple & t, 
-                                       const Scalar & s, 
+      inline decltype(auto) getScalar( const Tuple & t,
+                                       const Scalar & s,
                                        std::index_sequence<I...> ) const
       {
         return s( details::deref(std::get<I>(t))... );
@@ -84,22 +84,22 @@ template <typename ScalarOp,
       void insert( InTuple && in, OutTuple & out, std::index_sequence<I...> ) const
       {
         if ( in )
-        { std::initializer_list<long unsigned int> 
+        { std::initializer_list<long unsigned int>
           { ( details::insert( std::get<I>(out), std::move(std::get<I>(*in)) ), I )... }; }
       }
-   
+
     public:
-      
+
       using MultiTransformer<std::tuple<Out...>(const In&...),Traits_>::MultiTransformer;
- 
+
       /// The main operator
       std::tuple<Out...> operator()(const In&... in) const final
       {
-        const auto inrange = details::zip::const_range(in...); 
-        std::tuple<Out...> out; 
+        const auto inrange = details::zip::const_range(in...);
+        std::tuple<Out...> out;
         reserve( out, inrange.size(), std::index_sequence_for<Out...>{} );
         auto & scalar = scalarOp();
-        for ( const auto && i : inrange ) 
+        for ( const auto && i : inrange )
         {
           insert( getScalar( i, scalar, std::index_sequence_for<In...>{} ), out,
                   std::index_sequence_for<Out...>{} );
