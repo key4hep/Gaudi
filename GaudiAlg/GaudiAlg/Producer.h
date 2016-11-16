@@ -10,13 +10,13 @@ namespace Gaudi { namespace Functional {
    template <typename Signature, typename Traits_ = Traits::useDefaults> class Producer;
 
    template <typename... Out, typename Traits_>
-   class Producer<std::tuple<Out...>(),Traits_>
+   class Producer<std::tuple<Out...>(), Traits_>
    : public details::DataHandleMixin<std::tuple<Out...>,void,Traits_> {
    public:
        using details::DataHandleMixin<std::tuple<Out...>,void,Traits_>::DataHandleMixin;
 
        // derived classes are NOT allowed to implement execute ...
-       StatusCode execute() final;
+       StatusCode execute() final
        { return invoke(std::index_sequence_for<Out...>{}); }
 
        // ... instead, they must implement the following operator
