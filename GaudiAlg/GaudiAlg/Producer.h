@@ -45,10 +45,10 @@ namespace Gaudi { namespace Functional {
    {
        using details::DataHandleMixin<std::tuple<Out>,void,Traits_>::DataHandleMixin;
        // derived classes are NOT allowed to implement execute ...
-       StatusCode execute() final {
+       StatusCode execute() override final {
            using details::as_const; using details::put;
            try {
-                put(std::get<0>(this->m_outputs),std::get<0>( as_const(*this)() ));
+                put(std::get<0>(this->m_outputs),as_const(*this)() );
            } catch ( GaudiException& e ) {
                this->error() << "Error during transform: " << e.message() << " returning " << e.code() << endmsg;
                return e.code();
