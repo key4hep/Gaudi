@@ -351,6 +351,8 @@ namespace Gaudi { namespace Functional { namespace details {
        {
          declare_tuple_of_properties( this, inputs, m_inputs );
          declare_tuple_of_properties( this, outputs, m_outputs );
+         // make sure this algorithm is seen as reentrant by Gaudi
+         BaseClass_t<Traits_>::setProperty("Cardinality", 0);
        }
 
        // special cases: forward to the generic case...
@@ -401,6 +403,8 @@ namespace Gaudi { namespace Functional { namespace details {
          m_inputs( make_tuple_of_handles<decltype(m_inputs)>( this, inputs, Gaudi::DataHandle::Reader ) )
        {
          declare_tuple_of_properties( this, inputs, m_inputs );
+         // make sure this algorithm is seen as reentrant by Gaudi
+         BaseClass_t<Traits_>::setProperty("Cardinality", 0);
        }
 
        // special cases: forward to the generic case...
@@ -433,6 +437,8 @@ namespace Gaudi { namespace Functional { namespace details {
          m_outputs( make_tuple_of_handles<decltype(m_outputs)>( this, outputs, Gaudi::DataHandle::Writer ) )
        {
          declare_tuple_of_properties( this, outputs, m_outputs );
+         // make sure this algorithm is seen as reentrant by Gaudi
+         BaseClass_t<Traits_>::setProperty("Cardinality", 0);
        }
 
        // 0 -> 1

@@ -104,6 +104,12 @@ StatusCode AlgResourcePool::acquireAlgorithm(const std::string& name, IAlgorithm
     sc = itQueueIAlgPtr->second->try_pop(algo);
   }
 
+  // Note that reentrant algos are not consumed so we put them
+  // back immediately in the queue at the end of this function.
+  // Now we may still be called again in between and get this
+  // error. In such a case, the Scheduler will retry later.
+  // This is of course not optimal, but should only happen very
+  // seldom and thud won't affect the global efficiency
   if(sc.isFailure())
     DEBUG_MSG << "No instance of algorithm " << name << " could be retrieved in non-blocking mode" << endmsg;
 
@@ -118,9 +124,19 @@ StatusCode AlgResourcePool::acquireAlgorithm(const std::string& name, IAlgorithm
     } else {
       sc = StatusCode::FAILURE;
       error() << "Failure to allocate resources of algorithm " << name << endmsg;
-      itQueueIAlgPtr->second->push(algo);
+      // in case of not reentrant, push it back. Reentrant ones are pushed back
+      // in all cases further down
+      if (0 != algo->cardinality()) {
+        itQueueIAlgPtr->second->push(algo);
+      }
     }
     m_resource_mutex.unlock();
+    info() << "Algo " << name << " asked. Cardinality of it is " << algo->cardinality() << endmsg;
+    if (0 == algo->cardinality()) {
+      info() << "Algo " << name << " was found to be reentrant, puting it back to queue" << endmsg;
+      // push back reentrant algos immediately as it can be reused
+      itQueueIAlgPtr->second->push(algo);
+    }
   }
   return sc;
 }
@@ -137,8 +153,10 @@ StatusCode AlgResourcePool::releaseAlgorithm(const std::string& name, IAlgorithm
   m_available_resources|= m_resource_requirements[algo_id];
   m_resource_mutex.unlock();
 
-  //release algorithm itself
-  m_algqueue_map[algo_id]->push(algo);
+  // release algorithm itself if not reentrant
+  if (0 != algo->cardinality()) {
+    m_algqueue_map[algo_id]->push(algo);
+  }
   return StatusCode::SUCCESS;
  }
 

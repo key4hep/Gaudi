@@ -589,7 +589,7 @@ private:
                                           "flag to enforce the registration for Algorithm Context Service"};
 
   Gaudi::Property<bool> m_isClonable{this, "IsClonable", false, "thread-safe enough for cloning?"};
-  Gaudi::Property<int> m_cardinality{this, "Cardinality", 1, "how many clones to create"};
+  Gaudi::Property<int> m_cardinality{this, "Cardinality", 1, "how many clones to create - 0 means algo is reentrant"};
   Gaudi::Property<std::vector<std::string>> m_neededResources{
       this, "NeededResources", {}, "named resources needed during event looping"};
 
