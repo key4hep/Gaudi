@@ -77,6 +77,7 @@ public:
 
   /// Allow non const access to the service, even from a const handle...
   T* operator->() const { return GaudiHandle<T>::nonConst( GaudiHandle<T>::operator->() ); }
+  T& operator*() const { return * GaudiHandle<T>::nonConst( GaudiHandle<T>::operator->() ); }
 
 protected:
  /** Do the real retrieval of the Service. */
