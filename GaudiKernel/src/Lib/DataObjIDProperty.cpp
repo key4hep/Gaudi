@@ -23,49 +23,49 @@ namespace Gaudi {
       sc = Gaudi::Parsers::parse(prop, s);
 
       if (sc.isSuccess()) {
-	//split the string in 1 or 2 words:
-	typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-	boost::char_separator<char> sep("(), ");
-	tokenizer tokens(prop, sep);
-	int nToks(distance(tokens.begin(), tokens.end()));
-	auto it = tokens.begin();
+        //split the string in 1 or 2 words:
+        typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+        boost::char_separator<char> sep("(), ");
+        tokenizer tokens(prop, sep);
+        int nToks(distance(tokens.begin(), tokens.end()));
+        auto it = tokens.begin();
 
-	if (nToks == 1) {
-	  // Gaudi style /path/to/object
-	  std::string k = *it;
-	  boost::erase_all(k,"'");
-	  v = DataObjID( k );
+        if (nToks == 1) {
+          // Gaudi style /path/to/object
+          std::string k = *it;
+          boost::erase_all(k,"'");
+          v = DataObjID( k );
 
-	} else if (nToks == 2) {
-	  // ATLAS style (clid, 'key') or ('ClassName', 'key')
-	  CLID c(0);
-	  std::string cn(*it);
-	  DataObjID id;
+        } else if (nToks == 2) {
+          // ATLAS style (clid, 'key') or ('ClassName', 'key')
+          CLID c(0);
+          std::string cn(*it);
+          DataObjID id;
 
-	  try {
-	    c = std::stoi(*it);
-	  } catch (const std::invalid_argument& /*e*/)  {
-	    // not a number
-	    boost::erase_all(cn,"'");
-	    c = 0;
-	  }
+          try {
+            c = std::stoi(*it);
+          } catch (const std::invalid_argument& /*e*/)  {
+            // not a number
+            boost::erase_all(cn,"'");
+            c = 0;
+          }
 
-	  ++it;
-	  std::string k = *it;
-	  boost::erase_all(k,"'");
-	  ++it;
+          ++it;
+          std::string k = *it;
+          boost::erase_all(k,"'");
+          ++it;
 
-	  if ( c != 0) {
-	    v = DataObjID(c,k);
-	  } else {
+          if ( c != 0) {
+            v = DataObjID(c,k);
+          } else {
             v = DataObjID(cn,k);
-	  }
-	} else {
-	  std::cerr << "Unable to instantiate a DataObjID from a Property " << s
-		    << " :: Format is bad" << std::endl;
-	  sc = StatusCode::FAILURE;
-	  return sc;
-	}
+          }
+        } else {
+          std::cerr << "Unable to instantiate a DataObjID from a Property " << s
+                    << " :: Format is bad" << std::endl;
+          sc = StatusCode::FAILURE;
+          return sc;
+        }
 
       }
       return sc;
@@ -82,55 +82,58 @@ namespace Gaudi {
 
       if (sc.isSuccess()) {
 
-	// Reset Collection
-	v.clear();
+        // Reset Collection
+        v.clear();
 
-	bool isGaudi(true);
+        bool isGaudi(true);
 
-	// Gaudi style [ '/path/to/data', '/other/data' ] or
-	// ATLAS style [ ('ClassName', 'key') , (ClassID, 'key2') ]
-	if (s.find("(") != std::string::npos) {
-	  isGaudi = false;
-	}
+        // Gaudi style [ '/path/to/data', '/other/data' ] or
+        // ATLAS style [ ('ClassName', 'key') , (ClassID, 'key2') ]
+        if (s.find("(") != std::string::npos) {
+          isGaudi = false;
+        }
 
-    	// split the string in 1 or 2 words:
-    	typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-    	boost::char_separator<char> sep("[](), ");
-    	tokenizer tokens(prop, sep);
-    	auto it = tokens.begin();
+        // split the string in 1 or 2 words:
+        typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+        boost::char_separator<char> sep("[](), ");
+        tokenizer tokens(prop, sep);
+        auto it = tokens.begin();
 
-	CLID c(0);
-	std::string cn;
+        CLID c(0);
+        std::string cn;
 
-    	while (it != tokens.end()) {
+        while (it != tokens.end()) {
 
-	  if (isGaudi) {
-	    v.emplace( DataObjID( *it ) );
-	    ++it;
+          if (isGaudi) {
 
-	  } else {
+            std::string k = *it;
+            boost::erase_all(k, "'");
+            v.emplace( DataObjID( k ) );
+            ++it;
 
-	    try {
-	      c = std::stoi(*it);
-	    } catch (const std::invalid_argument& /*e*/)  {
-	      // class name, not ClassID
-	      cn = *it;
-	      boost::erase_all(cn,"'");
-	      c = 0;
-	    }
+          } else {
 
-	    ++it;
-	    std::string k = *it;
-	    boost::erase_all(k,"'");
-	    ++it;
+            try {
+              c = std::stoi(*it);
+            } catch (const std::invalid_argument& /*e*/)  {
+              // class name, not ClassID
+              cn = *it;
+              boost::erase_all(cn,"'");
+              c = 0;
+            }
 
-	    if ( c != 0) {
-	      v.emplace( DataObjID(c,k) );
-	    } else {
+            ++it;
+            std::string k = *it;
+            boost::erase_all(k,"'");
+            ++it;
+
+            if ( c != 0) {
+              v.emplace( DataObjID(c,k) );
+            } else {
               v.emplace( DataObjID(cn,k) );
-	    }
-	  }
-    	}
+            }
+          }
+        }
       }
       return sc;
     }
@@ -144,9 +147,9 @@ namespace Gaudi {
     std::ostream&
     toStream(const DataObjID& v, std::ostream& o) {
       if (v.clid() == 0) {
-	o << "'" << v.key() << "'";
+        o << "'" << v.key() << "'";
       } else {
-	o << "(" << v.clid() << ",'" << v.key() << "')";
+        o << "(" << v.clid() << ",'" << v.key() << "')";
       }
       return o;
     }
@@ -155,8 +158,8 @@ namespace Gaudi {
     toStream(const DataObjIDColl& v, std::ostream& o) {
       o << "[";
       for (auto &i : v) {
-	toStream(i,o);
-	o << ",";
+        toStream(i,o);
+        o << ",";
       }
       o << "]";
       return o;
