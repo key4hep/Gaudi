@@ -7,17 +7,17 @@
 
 namespace Gaudi { namespace Functional {
 
-   template <typename Signature, typename Traits_ = Traits::useDefaults> class Consumer;
+   template <typename Signature, typename Traits_ = Traits::useDefaults> class Producer;
 
    template <typename... Out, typename Traits_>
-   class Producer<std::tuple<Out...>(),Traits_>
+   class Producer<std::tuple<Out...>(), Traits_>
    : public details::DataHandleMixin<std::tuple<Out...>,void,Traits_> {
    public:
        using details::DataHandleMixin<std::tuple<Out...>,void,Traits_>::DataHandleMixin;
 
        // derived classes are NOT allowed to implement execute ...
-       StatusCode execute() final;
-       { return invoke(std::index_sequence_for<Out..>{}); }
+       StatusCode execute() final
+       { return invoke(std::index_sequence_for<Out...>{}); }
 
        // ... instead, they must implement the following operator
        virtual std::tuple<Out...> operator()() const = 0;
@@ -45,10 +45,10 @@ namespace Gaudi { namespace Functional {
    {
        using details::DataHandleMixin<std::tuple<Out>,void,Traits_>::DataHandleMixin;
        // derived classes are NOT allowed to implement execute ...
-       StatusCode execute() final {
+       StatusCode execute() override final {
            using details::as_const; using details::put;
            try {
-                put(std::get<O>(this->m_outputs),std::get<O>( as_const(*this)() ));
+                put(std::get<0>(this->m_outputs),as_const(*this)() );
            } catch ( GaudiException& e ) {
                this->error() << "Error during transform: " << e.message() << " returning " << e.code() << endmsg;
                return e.code();
