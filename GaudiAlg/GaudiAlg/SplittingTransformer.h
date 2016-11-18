@@ -43,7 +43,7 @@ namespace Gaudi { namespace Functional {
        unsigned int outputLocationSize() const { return m_outputLocations.size(); }
 
        // derived classes can NOT implement execute
-       StatusCode execute() final
+       StatusCode execute() override final
        { return invoke(std::index_sequence_for<In...>{}); }
 
        // TODO/FIXME: how does the callee know in which order to produce the outputs?
