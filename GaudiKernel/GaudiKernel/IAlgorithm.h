@@ -55,6 +55,7 @@ public:
   virtual bool isClonable() const = 0;
 
   /** Cardinality (Maximum number of clones that can exist)
+   *  special value 0 means that algorithm is reentrant
    */
   virtual unsigned int cardinality() const = 0;
 

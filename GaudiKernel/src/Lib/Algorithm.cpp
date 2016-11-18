@@ -150,12 +150,8 @@ StatusCode Algorithm::sysInitialize()
     sc = StatusCode::FAILURE;
   }
 
-  // If Cardinality is 0, bring the value to 1
-  if ( m_cardinality == 0 ) {
-    m_cardinality = 1;
-  }
   // Set IsClonable to true if the Cardinality is greater than one
-  else if ( m_cardinality > 1 ) {
+  if ( m_cardinality > 1 ) {
     m_isClonable = true;
   }
 
