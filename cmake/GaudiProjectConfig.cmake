@@ -1077,6 +1077,11 @@ function(gaudi_resolve_include_dirs variable)
         #message(STATUS "include_package_directories1 include_directories(${to_incl})")
         LIST(APPEND collected ${to_incl})
       endif()
+    elseif(${package} MATCHES "^${CMAKE_SOURCE_DIR}/")
+      # ignore pathes starting with ${CMAKE_SOURCE_DIR} but not caught
+      # by the first elseif. This means that the package targeted is
+      # in a different project, so we already have handled the inludes
+      # at that level
     elseif(IS_ABSOLUTE ${package} AND IS_DIRECTORY ${package})
       #message(STATUS "include_package_directories2 include_directories(${package})")
       LIST(APPEND collected ${package})
