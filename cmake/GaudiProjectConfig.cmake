@@ -402,6 +402,7 @@ macro(gaudi_project project version)
   install(DIRECTORY cmake/ DESTINATION cmake
                            FILES_MATCHING
                            PATTERN "*.cmake"
+                           PATTERN "*.cmake.in"
                            PATTERN "*.py"
                            PATTERN ".svn" EXCLUDE)
   install(PROGRAMS cmake/xenv DESTINATION scripts OPTIONAL)
@@ -3272,3 +3273,6 @@ function(gaudi_generate_project_manifest filename project version)
   message(STATUS "Generating ${fn}")
   file(WRITE ${filename} "${data}")
 endfunction()
+
+# uncomment for instrumentation of cmake
+#include("Instrument")
