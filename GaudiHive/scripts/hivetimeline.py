@@ -4,7 +4,6 @@
 __author__ = "Frank Winklmeier"
 
 import sys
-import os
 import re
 import argparse
 import operator
@@ -80,19 +79,26 @@ def plot(data, showThreads=True, batch=False):
    for d in data:
       y = (threadid[d.thread] if showThreads else d.slot) + 0.4
       alg = d.algorithm
-      if not alg in colors and len(mycolors)>0:         
+      if alg not in colors and len(mycolors)>0:         
          colors[alg] = mycolors.pop(0)
          if len(mycolors)==0:
             print "Too many algorithm to show"
 
       if alg in colors:
+         t0 = d.start - tmin
+         t1 = d.end - tmin
+
+         # Skip lines with 0 pixels (sometimes leads to artifacts)
+         if c.XtoPixel(t1)-c.XtoPixel(t0)==0:
+            continue
+
          # Alg
-         l = ROOT.TLine(d.start-tmin,y,d.end-tmin,y)         
+         l = ROOT.TLine(t0, y, t1, y)         
          l.SetLineColor(colors[alg])
          l.SetLineWidth(30)
 
          # Event
-         l2 = ROOT.TLine(d.start-tmin,y+0.3,d.end-tmin,y+0.3)
+         l2 = ROOT.TLine(t0, y+0.3, t1, y+0.3)
          l2.SetLineColor(evtcolors[d.event % ymax])
          l2.SetLineWidth(10)
          c.lines += [l,l2]
@@ -100,7 +106,7 @@ def plot(data, showThreads=True, batch=False):
          l2.Draw()
          l.Draw()
 
-   # Gloabl event timeline
+   # Global event timeline
    tevt = findEvents(data)
    for k,v in tevt.iteritems():
       m = k % ymax # event modulo
@@ -133,7 +139,6 @@ def plot(data, showThreads=True, batch=False):
    c.t1.SetTextSize(0.04)
    c.t1.Draw()
 
-   ROOT.TLine()
    c.leg.Draw()
    c.Update()
    if not batch: raw_input()
