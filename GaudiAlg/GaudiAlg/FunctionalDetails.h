@@ -259,8 +259,9 @@ namespace Gaudi { namespace Functional { namespace details {
 
      // Op<Args...> if that is a valid type, otherwise Default<Args...>.
     template<template<typename...> class Default,
-             template<typename...> class Op, typename... Args>
-    using detected_or_t_ = detected_or_t<Default<Args...>, Op, Args...>;
+             template<typename...> class Op,
+      typename Tr, typename T>
+      using detected_or_t_ = detected_or_t<Default<Tr, T>, Op, Tr, T>;
 
     ///////////////
     namespace detail2 { // utilities for detected_or_t{,_} usage
