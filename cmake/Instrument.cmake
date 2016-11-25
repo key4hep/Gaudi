@@ -4,9 +4,9 @@
 # cmakeLogToCacheGrind.py script for nice displaying in kcachegrind
 #
 
-MACRO (GETTIME RESULT)
-    EXECUTE_PROCESS(COMMAND "date" "+%s%N" OUTPUT_VARIABLE ${RESULT})
-ENDMACRO (GETTIME)
+macro(GETTIME RESULT)
+    execute_process(COMMAND "date" "+%s%N" OUTPUT_VARIABLE ${RESULT})
+endmacro()
 
 # Instrument a given function
 macro(instrument func)
