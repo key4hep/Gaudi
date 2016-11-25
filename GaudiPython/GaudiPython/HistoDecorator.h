@@ -13,7 +13,7 @@
 #include "GaudiPython/GaudiPython.h"
 #include "GaudiPython/Vector.h"
 // ============================================================================
-class GaudiHistoTool ;
+struct GaudiHistoTool ;
 // ============================================================================
 namespace GaudiPython
 {

@@ -298,9 +298,9 @@ namespace Gaudi { namespace Functional { namespace details {
         template <typename KeyValues, typename Properties,  std::size_t... I>
         void declare_tuple_of_properties_helper(GaudiAlgorithm* owner, const KeyValues& inputs, Properties& props,  std::index_sequence<I...>) {
             // note: be very careful here! Only GaudiAlgorithm has a declareProperty that works with a DataObjectHandleBase.
-            // However, Algorithm does have a template that also matches (unless it is constrained explcitly against matching)
+            // However, Algorithm does have a template that also matches (unless it is constrained explicitly against matching)
             // so if 'owner' is of type Algorithm instead of GaudiAlgortihm, this ends up calling the wrong declareProperty...
-            std::initializer_list<int>{
+          (void) std::initializer_list<int>{
                 ( owner->declareProperty( std::get<I>(inputs).first,
                                           std::get<I>(props)         ),0)...
             };

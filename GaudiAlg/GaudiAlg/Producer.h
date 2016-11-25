@@ -40,9 +40,9 @@ namespace Gaudi { namespace Functional {
    };
 
    template <typename Out, typename Traits_>
-   struct Producer<Out(),Traits_>
-   : details::DataHandleMixin<std::tuple<Out>,void,Traits_>
-   {
+   class Producer<Out(),Traits_>
+   : public details::DataHandleMixin<std::tuple<Out>,void,Traits_> {
+   public:
        using details::DataHandleMixin<std::tuple<Out>,void,Traits_>::DataHandleMixin;
        // derived classes are NOT allowed to implement execute ...
        StatusCode execute() override final {

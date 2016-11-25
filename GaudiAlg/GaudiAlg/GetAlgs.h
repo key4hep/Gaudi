@@ -9,8 +9,8 @@
 // ============================================================================
 class IAlgContextSvc ;
 class GaudiAlgorithm ;
-class GaudiHistoAlg  ;
-class GaudiTupleAlg  ;
+struct GaudiHistoAlg ;
+struct GaudiTupleAlg ;
 class GaudiSequencer ;
 class Sequencer      ;
 // ============================================================================
