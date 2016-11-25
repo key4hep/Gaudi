@@ -11,12 +11,12 @@
  *  The algorithms are treated as an atomic block of operations and are NOT unrolled by
  *  the GaudiHive AlgResourcePool
  *
- *  Default behaviour (ModeOR=False) is to execute all algorithms until one returns 
- *  filterPassed() = False. If ShortCircuit is set to False, then all algorithms 
+ *  Default behaviour (ModeOR=False) is to execute all algorithms until one returns
+ *  filterPassed() = False. If ShortCircuit is set to False, then all algorithms
  *  will be executed.
  *
- *  In OR mode, the logic is opposite. All algorithms until one returns 
- *  filterPassed() = True. To then exit one must onter-intuitively set 
+ *  In OR mode, the logic is opposite. All algorithms until one returns
+ *  filterPassed() = True. To then exit one must onter-intuitively set
  *  ShortCircuit to False. If the default value ShortCircuit=True is left
  *  then all algorithms will be executed.
  *

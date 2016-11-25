@@ -1,7 +1,7 @@
 #include <utility>
 //
 //  make it possible to execute an action at the exit of a scope
-// 
+//
 //  auto f = finally( [](){ std::cout << "end of scope!" << std::endl; } );
 //
 //  the above will execute the provided callable when f goes out of scope,

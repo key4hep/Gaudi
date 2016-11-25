@@ -55,7 +55,7 @@ const T* AnyDataHandle<T>::put (T&& objectp){
 // Specialization for NamedRanges
 
 template<typename T>
-struct AnyDataHandle<Gaudi::NamedRange_<T>> final : 
+struct AnyDataHandle<Gaudi::NamedRange_<T>> final :
   public DataObjectHandle<Gaudi::NamedRange_<T>> {
 
   using DataObjectHandle<Gaudi::NamedRange_<T>>::DataObjectHandle;
@@ -76,7 +76,7 @@ const Gaudi::NamedRange_<T> AnyDataHandle<Gaudi::NamedRange_<T>>::get() const {
 // Specialization for Ranges
 
 template<typename T>
-struct AnyDataHandle<Gaudi::Range_<T>> final : 
+struct AnyDataHandle<Gaudi::Range_<T>> final :
   public DataObjectHandle<Gaudi::Range_<T>> {
 
   using DataObjectHandle<Gaudi::Range_<T>>::DataObjectHandle;

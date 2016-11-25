@@ -11,7 +11,7 @@ namespace Gaudi { namespace Examples {
 
     SelectTracks(const std::string& name, ISvcLocator* pSvc):
       Transformer(name,
-                  pSvc, 
+                  pSvc,
                   { KeyValue("InputData",{"MyTracks"}) },
                   KeyValue("OutputData",{"MyOutTracks"}) ) {
     }
@@ -28,5 +28,5 @@ namespace Gaudi { namespace Examples {
   };
 
   DECLARE_COMPONENT(SelectTracks)
- 
+
 }}

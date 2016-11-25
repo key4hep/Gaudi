@@ -35,7 +35,7 @@ public:
   DataObjectHandleBase(DataObjectHandleBase&&);
   DataObjectHandleBase& operator=(const DataObjectHandleBase&);
 
-  
+
   std::string toString() const;
   std::string pythonRepr() const override;
   void fromString(const std::string& s);

@@ -89,8 +89,8 @@ T* DataObjectHandle<T>::get(bool mustExist) const {
     }
     return nullptr;
   }
-  
-  // Using the 
+
+  // Using the
   return m_adapter(dataObj);
 }
 
@@ -100,7 +100,7 @@ T* DataObjectHandle<T>::put (T *objectp){
   assert(m_init);
   StatusCode rc = m_EDS->registerObject(objKey(), objectp);
   if (!rc.isSuccess()) {
-    throw GaudiException("Error in put of " + objKey(), 
+    throw GaudiException("Error in put of " + objKey(),
                          "DataObjectHandle<T>::put",
                          StatusCode::FAILURE);
   }
@@ -163,7 +163,7 @@ Gaudi::NamedRange_<T> DataObjectHandle<Gaudi::NamedRange_<T>>::get(bool mustExis
     }
     return Gaudi::NamedRange_<T>();
   }
-  
+
   return m_adapter(dataObj);
 }
 
@@ -202,7 +202,7 @@ Gaudi::Range_<T> DataObjectHandle<Gaudi::Range_<T>>::get(bool mustExist) const {
     }
     return Gaudi::Range_<T>();
   }
-  
+
   return m_adapter(dataObj);
 }
 
