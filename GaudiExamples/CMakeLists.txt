@@ -2,19 +2,25 @@ gaudi_subdir(GaudiExamples)
 
 gaudi_depends_on_subdirs(GaudiKernel GaudiUtils GaudiGSL GaudiAlg RootCnv)
 
-find_package(HepPDT REQUIRED)
+find_package(HepPDT)
 find_package(ROOT COMPONENTS Tree RIO Hist Net REQUIRED)
 find_package(Boost COMPONENTS python REQUIRED)
-find_package(CLHEP REQUIRED)
-find_package(GSL REQUIRED)
+find_package(CLHEP)
+find_package(GSL)
 find_package(PythonLibs)
 find_package(RELAX)
 find_package(TBB)
+find_package(CppUnit)
 
 # Hide some Boost/ROOT/CLHEP/TBB/HepPDT compile time warnings
-include_directories(SYSTEM ${Boost_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS}
-                           ${CLHEP_INCLUDE_DIRS} ${TBB_INCLUDE_DIRS}
-                           ${HEPPDT_INCLUDE_DIRS})
+include_directories( SYSTEM ${Boost_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS}
+   ${TBB_INCLUDE_DIRS} )
+if( CLHEP_FOUND )
+   include_directories( SYSTEM ${CLHEP_INCLUDE_DIRS} )
+endif()
+if( HEPPDT_FOUND )
+   include_directories( SYSTEM ${HEPPDT_INCLUDE_DIRS} )
+endif()
 
 if(NOT CMAKE_VERSION VERSION_LESS 3.1)
   # FindOpenCL.cmake has been introduced in CMake 3.1.0
@@ -76,15 +82,16 @@ if(OpenCL_FOUND)
   set(extra_libs ${OpenCL_LIBRARIES})
 endif()
 
-gaudi_add_library(GaudiExamplesLib src/Lib/*.cpp
-                  LINK_LIBRARIES GaudiGSLLib GaudiUtilsLib HepPDT ROOT
-                  INCLUDE_DIRS HepPDT ROOT
-                  PUBLIC_HEADERS GaudiExamples)
+if( HEPPDT_FOUND )
+   gaudi_add_library(GaudiExamplesLib src/Lib/*.cpp
+      LINK_LIBRARIES GaudiGSLLib GaudiUtilsLib HepPDT ROOT
+      INCLUDE_DIRS HepPDT ROOT
+      PUBLIC_HEADERS GaudiExamples)
 
-
-gaudi_add_module(GaudiExamples ${GaudiExamples_srcs}
-                 ${extra_includes}
-                 LINK_LIBRARIES GaudiExamplesLib ${extra_libs})
+   gaudi_add_module(GaudiExamples ${GaudiExamples_srcs}
+      ${extra_includes}
+      LINK_LIBRARIES GaudiExamplesLib ${extra_libs})
+endif()
 
 if (NOT LCG_COMP STREQUAL "clang")
   # we compile SCSAlg.cpp in a special way
@@ -114,14 +121,17 @@ endif()
 gaudi_install_python_modules()
 
 #---Executables-------------------------------------------------------------
-gaudi_add_executable(Allocator src/Allocator/*.cpp
-                     LINK_LIBRARIES GaudiExamplesLib GaudiAlgLib GaudiKernel ROOT CLHEP GSL
-                     INCLUDE_DIRS CLHEP GSL)
-
+if( CLHEP_FOUND AND GSL_FOUND AND TARGET GaudiExamplesLib AND
+      TARGET GaudiAlgLib )
+   gaudi_add_executable(Allocator src/Allocator/*.cpp
+      LINK_LIBRARIES GaudiExamplesLib GaudiAlgLib GaudiKernel ROOT CLHEP GSL
+      INCLUDE_DIRS CLHEP GSL)
+endif()
 
 #---Dictionaries------------------------------------------------------------
-gaudi_add_dictionary(GaudiExamples src/IO/dict.h  src/IO/dict.xml LINK_LIBRARIES GaudiExamplesLib)
-
+if( TARGET GaudiExamplesLib )
+   gaudi_add_dictionary(GaudiExamples src/IO/dict.h  src/IO/dict.xml LINK_LIBRARIES GaudiExamplesLib)
+endif()
 
 #---Tests-------------------------------------------------------------------
 # Ensure that we have the test variables in the build-time environment
@@ -135,20 +145,22 @@ gaudi_build_env(SET     STDOPTS          ${CMAKE_CURRENT_SOURCE_DIR}/options
 gaudi_build_env(UNSET GAUDIAPPNAME
                 UNSET GAUDIAPPVERSION)
 
-gaudi_add_test(QMTest QMTEST
-               ENVIRONMENT
-                 BINARY_TAG=${BINARY_TAG}
-                 STDOPTS=${CMAKE_CURRENT_SOURCE_DIR}/options
-                 JOBOPTSEARCHPATH+=${CMAKE_CURRENT_SOURCE_DIR}/options
-                 JOBOPTSEARCHPATH+=${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest
-                 PYTHONPATH+=${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest)
+if( CPPUNIT_FOUND )
+   gaudi_add_test(QMTest QMTEST
+      ENVIRONMENT
+      BINARY_TAG=${BINARY_TAG}
+      STDOPTS=${CMAKE_CURRENT_SOURCE_DIR}/options
+      JOBOPTSEARCHPATH+=${CMAKE_CURRENT_SOURCE_DIR}/options
+      JOBOPTSEARCHPATH+=${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest
+      PYTHONPATH+=${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest)
 
-gaudi_add_test(WriteAndReadHandle
-               FRAMEWORK options/ROOT_IO/WriteAndReadHandle.py)
+   gaudi_add_test(WriteAndReadHandle
+      FRAMEWORK options/ROOT_IO/WriteAndReadHandle.py)
 
-gaudi_add_test(WriteAndReadHandleError
-               FRAMEWORK options/ROOT_IO/WriteAndReadHandleError.py
-               FAILS)
+   gaudi_add_test(WriteAndReadHandleError
+      FRAMEWORK options/ROOT_IO/WriteAndReadHandleError.py
+      FAILS)
 
-gaudi_add_test(WriteAndReadHandleWhiteBoard
-               FRAMEWORK options/ROOT_IO/WriteAndReadHandleWhiteBoard.py)
+   gaudi_add_test(WriteAndReadHandleWhiteBoard
+      FRAMEWORK options/ROOT_IO/WriteAndReadHandleWhiteBoard.py)
+endif()

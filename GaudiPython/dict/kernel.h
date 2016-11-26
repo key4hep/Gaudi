@@ -43,9 +43,10 @@
 #ifdef __clang__
 #pragma clang diagnostic pop
 #endif
+#ifdef AIDA_FOUND
 #ifdef _WIN32
 #include "AIDA/IAnnotation.h"
-#endif
+#endif // _WIN32
 #include "AIDA/IAxis.h"
 #include "AIDA/IHistogram.h"
 #include "AIDA/IHistogram1D.h"
@@ -53,6 +54,7 @@
 #include "AIDA/IHistogram3D.h"
 #include "AIDA/IProfile1D.h"
 #include "AIDA/IProfile2D.h"
+#endif // AIDA_FOUND
 #undef class
 
 #include "GaudiPython/Helpers.h"
@@ -61,10 +63,15 @@
 #include "GaudiPython/Algorithm.h"
 #include "GaudiPython/CallbackStreamBuf.h"
 #include "GaudiPython/GaudiPython.h"
-#include "GaudiPython/HistoDecorator.h"
+#ifdef AIDA_FOUND
+#   include "GaudiPython/HistoDecorator.h"
+#endif // AIDA_FOUND
 #include "GaudiPython/Interface.h"
 #include "GaudiPython/Printer.h"
-#include "GaudiPython/TupleDecorator.h"
+#include "GaudiPython/Vector.h"
+#ifdef CLHEP_FOUND
+#   include "GaudiPython/TupleDecorator.h"
+#endif // CLHEP_FOUND
 
 #include "GaudiAlg/GaudiAlgorithm.h"
 #include "GaudiAlg/GaudiCommon.h"
@@ -81,10 +88,12 @@
 // Added to avoid warnings about inlined functions never implemented.
 #include "GaudiAlg/GaudiHistos.icpp"
 
-#include "GaudiUtils/Aida2ROOT.h"
-#include "GaudiUtils/HistoDump.h"
-#include "GaudiUtils/HistoStats.h"
-#include "GaudiUtils/HistoStrings.h"
+#ifdef AIDA_FOUND
+#   include "GaudiUtils/Aida2ROOT.h"
+#   include "GaudiUtils/HistoDump.h"
+#   include "GaudiUtils/HistoStats.h"
+#   include "GaudiUtils/HistoStrings.h"
+#endif // AIDA_FOUND
 #include "GaudiUtils/IFileCatalog.h"
 #include "GaudiUtils/IFileCatalogMgr.h"
 #include "GaudiUtils/IIODataManager.h"
@@ -129,11 +138,13 @@ namespace GaudiPython
     std::vector<IAlgTool*> i05_2;
     std::vector<const StatEntity*> i05_3;
     std::vector<GaudiAlg::ID> i05_4;
+#ifdef AIDA_FOUND
     std::vector<AIDA::IHistogram1D*> i05_5;
     std::vector<AIDA::IHistogram2D*> i05_6;
     std::vector<AIDA::IHistogram3D*> i05_7;
     std::vector<AIDA::IProfile1D*> i05_8;
     std::vector<AIDA::IProfile2D*> i05_9;
+#endif // AIDA_FOUND
 
     // Gaudi::IIODataManager              *gu_i1000;
 
