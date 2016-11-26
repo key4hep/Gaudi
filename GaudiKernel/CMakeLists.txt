@@ -42,7 +42,7 @@ if( CPPUNIT_FOUND )
 endif()
 gaudi_add_unit_test(ContextSpecificPtrTest tests/src/test_ContextSpecificPtr.cpp
    LINK_LIBRARIES GaudiKernel TYPE Boost)
-if(CMAKE_SYSTEM_NAME MATCHES Linux)
+if(CMAKE_SYSTEM_NAME MATCHES Linux AND CPPUNIT_FOUND)
   target_link_libraries(test_LockedHandle -Wl,--no-as-needed -ldl -Wl,--as-needed ${Boost_LIBRARIES})
 endif()
 
