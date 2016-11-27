@@ -61,6 +61,7 @@ gaudi_add_module(GaudiUtils ${module_sources}
 
 if( CPPUNIT_FOUND )
    gaudi_add_unit_test(testXMLFileCatalogWrite
+      src/component/createGuidAsString.cpp
       src/component/XMLCatalogTest.cpp
       src/component/XMLFileCatalog.cpp
       LINK_LIBRARIES GaudiKernel XercesC UUID
@@ -69,6 +70,7 @@ if( CPPUNIT_FOUND )
       APPEND PROPERTY COMPILE_DEFINITIONS testXMLFileCatalogWrite=main)
 
    gaudi_add_unit_test(testXMLFileCatalogRead
+      src/component/createGuidAsString.cpp
       src/component/XMLCatalogTest.cpp
       src/component/XMLFileCatalog.cpp
       LINK_LIBRARIES GaudiKernel XercesC UUID
