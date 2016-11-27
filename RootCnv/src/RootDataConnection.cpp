@@ -25,7 +25,7 @@
 #include "TBranch.h"
 #if ROOT_VERSION_CODE >= ROOT_VERSION(5,33,0)
 #include "Compression.h"
-static int s_compressionLevel = ROOT::CompressionSettings(ROOT::kLZMA,6);
+static int s_compressionLevel = ROOT::CompressionSettings(ROOT::kLZMA,4);
 #else
 static int s_compressionLevel = 1;
 #endif

@@ -402,6 +402,7 @@ macro(gaudi_project project version)
   install(DIRECTORY cmake/ DESTINATION cmake
                            FILES_MATCHING
                            PATTERN "*.cmake"
+                           PATTERN "*.cmake.in"
                            PATTERN "*.py"
                            PATTERN ".svn" EXCLUDE)
   install(PROGRAMS cmake/xenv DESTINATION scripts OPTIONAL)
@@ -1074,17 +1075,22 @@ function(gaudi_resolve_include_dirs variable)
       get_target_property(to_incl ${package} SOURCE_DIR)
       if(to_incl)
         #message(STATUS "include_package_directories1 include_directories(${to_incl})")
-        set(collected ${collected} ${to_incl})
+        list(APPEND collected ${to_incl})
       endif()
+    elseif(${package} MATCHES "^${CMAKE_SOURCE_DIR}/")
+      # ignore pathes starting with ${CMAKE_SOURCE_DIR} but not caught
+      # by the first elseif. This means that the package targeted is
+      # in a different project, so we already have handled the inludes
+      # at that level
     elseif(IS_ABSOLUTE ${package} AND IS_DIRECTORY ${package})
       #message(STATUS "include_package_directories2 include_directories(${package})")
-      set(collected ${collected} ${package})
+      list(APPEND collected ${package})
     elseif(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${package})
       #message(STATUS "include_package_directories3 include_directories(${package})")
-      set(collected ${collected} ${CMAKE_CURRENT_SOURCE_DIR}/${package})
+      list(APPEND collected ${CMAKE_CURRENT_SOURCE_DIR}/${package})
     elseif(IS_DIRECTORY ${CMAKE_SOURCE_DIR}/${package}) # package can be the name of a subdir
       #message(STATUS "include_package_directories4 include_directories(${package})")
-      set(collected ${collected} ${CMAKE_SOURCE_DIR}/${package})
+      list(APPEND collected ${CMAKE_SOURCE_DIR}/${package})
     else()
       # ensure that the current directory knows about the package
       find_package(${package} QUIET)
@@ -1105,7 +1111,7 @@ function(gaudi_resolve_include_dirs variable)
         endif()
         # Include the directories
         #message(STATUS "include_package_directories5 include_directories(${${to_incl}})")
-        set(collected ${collected} ${${to_incl}})
+        list(APPEND collected ${${to_incl}})
         set_property(GLOBAL APPEND PROPERTY INCLUDE_PATHS ${${to_incl}})
       endif()
     endif()
@@ -3274,3 +3280,6 @@ function(gaudi_generate_project_manifest filename project version)
   message(STATUS "Generating ${fn}")
   file(WRITE ${filename} "${data}")
 endfunction()
+
+# uncomment for instrumentation of cmake
+#include("Instrument")
