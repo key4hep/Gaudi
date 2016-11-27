@@ -73,20 +73,22 @@
 #   include "GaudiPython/TupleDecorator.h"
 #endif // CLHEP_FOUND
 
+#ifdef AIDA_FOUND
+#   include "GaudiAlg/GaudiHistoAlg.h"
+#   include "GaudiAlg/GaudiTupleAlg.h"
+#   include "GaudiAlg/Print.h"
+    // Added to avoid warnings about inlined functions never implemented.
+#   include "GaudiAlg/GaudiHistos.icpp"
+#endif // AIDA_FOUND
 #include "GaudiAlg/GaudiAlgorithm.h"
 #include "GaudiAlg/GaudiCommon.h"
-#include "GaudiAlg/GaudiHistoAlg.h"
 #include "GaudiAlg/GaudiHistoID.h"
-#include "GaudiAlg/GaudiTupleAlg.h"
 #include "GaudiAlg/IErrorTool.h"
 #include "GaudiAlg/IGenericTool.h"
 #include "GaudiAlg/IHistoTool.h"
 #include "GaudiAlg/ISequencerTimerTool.h"
 #include "GaudiAlg/ITupleTool.h"
-#include "GaudiAlg/Print.h"
 #include "GaudiAlg/Tuple.h"
-// Added to avoid warnings about inlined functions never implemented.
-#include "GaudiAlg/GaudiHistos.icpp"
 
 #ifdef AIDA_FOUND
 #   include "GaudiUtils/Aida2ROOT.h"
@@ -151,8 +153,10 @@ namespace GaudiPython
     GaudiUtils::VectorMap<int, double> i034;
 
     GaudiPython::PyAlg<GaudiAlgorithm> _alg0;
+#ifdef AIDA_FOUND
     GaudiPython::PyAlg<GaudiHistoAlg> _alg1;
     GaudiPython::PyAlg<GaudiTupleAlg> _alg2;
+#endif // AIDA_FOUND
 
     GaudiPython::Matrix _mtrx;
     GaudiPython::Vector _vctr;

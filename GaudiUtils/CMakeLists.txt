@@ -38,7 +38,7 @@ endif()
 set( module_sources src/component/FileReadTool.cpp
    src/component/SignalMonitorSvc.cpp src/component/IODataManager.cpp
    src/component/StalledEventMonitor.cpp src/component/MultiFileCatalog.cpp
-   src/component/VFSSvc.cpp )
+   src/component/VFSSvc.cpp src/component/createGuidAsString.cpp )
 if( XERCESC_FOUND )
    list( APPEND module_sources src/component/XMLCatalogTest.cpp
       src/component/XMLFileCatalog.cpp )
