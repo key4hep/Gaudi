@@ -35,7 +35,7 @@ set( module_sources src/components/ErrorTool.cpp
    src/components/TimingAuditor.cpp src/components/EventNodeKiller.cpp
    src/components/GaudiAlg_entries.cpp src/components/TimerForSequencer.cpp )
 if( AIDA_FOUND )
-   list( APPEND module_sources src/components/HistTool.cpp
+   list( APPEND module_sources src/components/HistoTool.cpp
       src/components/TupleTool.cpp src/components/SequencerTimerTool.cpp )
 endif()
 
