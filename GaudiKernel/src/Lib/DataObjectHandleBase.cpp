@@ -17,7 +17,7 @@ const DataObjID INVALID_DATAOBJID = DataObjID();
 //---------------------------------------------------------------------------
 DataObjectHandleBase::DataObjectHandleBase(DataObjectHandleBase&& other) :
   Gaudi::DataHandle(other), m_EDS(std::move(other.m_EDS)),
-  m_MS(std::move(m_MS)), m_init(other.m_init),
+  m_MS(std::move(other.m_MS)), m_init(other.m_init),
   m_optional(other.m_optional),
   m_wasRead(other.m_wasRead), m_wasWritten(other.m_wasWritten),
   m_searchDone(other.m_searchDone)  {

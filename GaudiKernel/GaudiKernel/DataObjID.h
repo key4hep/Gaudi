@@ -32,7 +32,7 @@
 //---------------------------------------------------------------------------
 
 
-class DataObjID_Hasher;
+struct DataObjID_Hasher;
 class IClassIDSvc;
 
 class DataObjID {
