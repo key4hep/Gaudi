@@ -2,6 +2,7 @@ gaudi_subdir(GaudiExamples)
 
 gaudi_depends_on_subdirs(GaudiKernel GaudiUtils GaudiGSL GaudiAlg RootCnv)
 
+find_package(AIDA)
 find_package(HepPDT)
 find_package(ROOT COMPONENTS Tree RIO Hist Net REQUIRED)
 find_package(Boost COMPONENTS python REQUIRED)
@@ -61,9 +62,6 @@ set(GaudiExamples_srcs
     src/PluginService/*.cpp)
 
 # Add the sources requiring non-standard externals:
-if( AIDA_FOUND AND CLHEP_FOUND )
-   list( APPEND GaudiExamples_srcs src/AIDATuples/*.cpp )
-endif()
 if( AIDA_FOUND AND GSL_FOUND AND CLHEP_FOUND )
    list( APPEND GaudiExamples_srcs src/GSLTools/*.cpp )
 endif()
