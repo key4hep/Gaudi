@@ -28,6 +28,9 @@ if( CPPUNIT_FOUND )
       LINK_LIBRARIES GaudiKernel)
    gaudi_add_unit_test(PathResolver_test tests/src/PathResolver_test.cpp
       LINK_LIBRARIES GaudiKernel)
+   if( GAUDI_BUILD_TESTS )
+      set_property(TEST GaudiKernel.PathResolver_test PROPERTY WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+   endif()
    gaudi_add_unit_test(test_GaudiTime tests/src/test_GaudiTime.cpp
       LINK_LIBRARIES GaudiKernel)
    gaudi_add_unit_test(test_GaudiTiming tests/src/test_GaudiTiming.cpp
@@ -39,12 +42,12 @@ if( CPPUNIT_FOUND )
    gaudi_add_unit_test(SerialTaskQueue_test tests/src/SerialTaskQueue_test.cpp
       LINK_LIBRARIES GaudiKernel TBB)
    gaudi_add_unit_test(test_LockedHandle tests/src/test_LockedHandle.cpp)
+   if(CMAKE_SYSTEM_NAME MATCHES Linux)
+      target_link_libraries(test_LockedHandle -Wl,--no-as-needed -ldl -Wl,--as-needed ${Boost_LIBRARIES})
+   endif()
 endif()
 gaudi_add_unit_test(ContextSpecificPtrTest tests/src/test_ContextSpecificPtr.cpp
    LINK_LIBRARIES GaudiKernel TYPE Boost)
-if(CMAKE_SYSTEM_NAME MATCHES Linux AND CPPUNIT_FOUND)
-  target_link_libraries(test_LockedHandle -Wl,--no-as-needed -ldl -Wl,--as-needed ${Boost_LIBRARIES})
-endif()
 
 # These are a compile-time tests.
 if( CPPUNIT_FOUND )
@@ -59,21 +62,15 @@ if( GAUDI_CPP11 AND CPPUNIT_FOUND )
                       LINK_LIBRARIES GaudiKernel)
 endif()
 
-if( GAUDI_BUILD_TESTS AND CPPUNIT_FOUND )
-  set_property(TEST GaudiKernel.PathResolver_test PROPERTY WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
-endif()
+gaudi_add_test(confdb
+               COMMAND nosetests -v
+               ${CMAKE_CURRENT_SOURCE_DIR}/tests/nose/confdb)
 
-if( CPPUNIT_FOUND )
-   gaudi_add_test(confdb
-      COMMAND nosetests -v
-      ${CMAKE_CURRENT_SOURCE_DIR}/tests/nose/confdb)
+gaudi_add_test(nose
+               COMMAND nosetests -v
+               ${CMAKE_CURRENT_SOURCE_DIR}/tests/nose)
 
-   gaudi_add_test(nose
-      COMMAND nosetests -v
-      ${CMAKE_CURRENT_SOURCE_DIR}/tests/nose)
-endif()
-
-if( GAUDI_BUILD_TESTS AND CPPUNIT_FOUND )
+if( GAUDI_BUILD_TESTS )
   add_library(test_CustomFactory MODULE tests/src/custom_factory.cpp)
   target_link_libraries(test_CustomFactory GaudiPluginService)
   install(TARGETS test_CustomFactory LIBRARY DESTINATION lib OPTIONAL)
