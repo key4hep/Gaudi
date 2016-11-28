@@ -12,7 +12,7 @@ if(ROOT_OVERRIDE_PATH)
 endif()
 
 # Find ROOTSYS
-#  We assume RVersion.h is in $ROOTSYS/include
+#  We assume TROOT.h is in $ROOTSYS/include
 if(NOT ROOT_INCLUDE_DIR)
   find_path(ROOT_INCLUDE_DIR NAMES TROOT.h
             HINTS ${ROOTSYS}/include $ENV{ROOTSYS}/include
