@@ -72,7 +72,7 @@ namespace Gaudi { namespace Functional {
            using details::as_const; using details::put;
            try {
                auto out = as_const(*this)(details::get_from_handle(std::get<I>(this->m_inputs))...);
-               std::initializer_list<int> {
+               (void)std::initializer_list<int> {
                     (put(std::get<O>(this->m_outputs),std::move(std::get<O>(out))),0)...
                };
            } catch ( GaudiException& e ) {
