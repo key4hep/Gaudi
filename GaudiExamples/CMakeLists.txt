@@ -10,7 +10,6 @@ find_package(GSL)
 find_package(PythonLibs)
 find_package(RELAX)
 find_package(TBB)
-find_package(CppUnit)
 
 # Hide some Boost/ROOT/CLHEP/TBB/HepPDT compile time warnings
 include_directories( SYSTEM ${Boost_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS}
@@ -145,22 +144,20 @@ gaudi_build_env(SET     STDOPTS          ${CMAKE_CURRENT_SOURCE_DIR}/options
 gaudi_build_env(UNSET GAUDIAPPNAME
                 UNSET GAUDIAPPVERSION)
 
-if( CPPUNIT_FOUND )
-   gaudi_add_test(QMTest QMTEST
-      ENVIRONMENT
-      BINARY_TAG=${BINARY_TAG}
-      STDOPTS=${CMAKE_CURRENT_SOURCE_DIR}/options
-      JOBOPTSEARCHPATH+=${CMAKE_CURRENT_SOURCE_DIR}/options
-      JOBOPTSEARCHPATH+=${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest
-      PYTHONPATH+=${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest)
+gaudi_add_test(QMTest QMTEST
+               ENVIRONMENT
+               BINARY_TAG=${BINARY_TAG}
+               STDOPTS=${CMAKE_CURRENT_SOURCE_DIR}/options
+               JOBOPTSEARCHPATH+=${CMAKE_CURRENT_SOURCE_DIR}/options
+               JOBOPTSEARCHPATH+=${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest
+               PYTHONPATH+=${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest)
 
-   gaudi_add_test(WriteAndReadHandle
-      FRAMEWORK options/ROOT_IO/WriteAndReadHandle.py)
+gaudi_add_test(WriteAndReadHandle
+               FRAMEWORK options/ROOT_IO/WriteAndReadHandle.py)
 
-   gaudi_add_test(WriteAndReadHandleError
-      FRAMEWORK options/ROOT_IO/WriteAndReadHandleError.py
-      FAILS)
+gaudi_add_test(WriteAndReadHandleError
+               FRAMEWORK options/ROOT_IO/WriteAndReadHandleError.py
+               FAILS)
 
-   gaudi_add_test(WriteAndReadHandleWhiteBoard
-      FRAMEWORK options/ROOT_IO/WriteAndReadHandleWhiteBoard.py)
-endif()
+gaudi_add_test(WriteAndReadHandleWhiteBoard
+               FRAMEWORK options/ROOT_IO/WriteAndReadHandleWhiteBoard.py)
