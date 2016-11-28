@@ -14,21 +14,10 @@ endif()
 
 # The list of sources to build into the module:
 set( module_sources src/*.cpp src/DataSvc/*.cpp
-   src/PersistencySvc/DataSvcFileEntriesTool.cpp
-   src/PersistencySvc/OutputStreamAgent.cpp
-   src/PersistencySvc/DetPersistencySvc.cpp
-   src/PersistencySvc/PersistencySvc.cpp
-   src/PersistencySvc/EvtCollectionStream.cpp
-   src/PersistencySvc/RecordStream.cpp
-   src/PersistencySvc/EvtPersistencySvc.cpp
-   src/PersistencySvc/RunRecordStream.cpp
-   src/PersistencySvc/SequentialOutputStream.cpp
-   src/PersistencySvc/InputCopyStream.cpp
-   src/PersistencySvc/TagCollectionStream.cpp
-   src/PersistencySvc/OutputStream.cpp )
+   src/PersistencySvc/*.cpp )
 if( AIDA_FOUND )
    list( APPEND module_sources src/HistogramSvc/*.cpp
-      src/PersistencySvc/HistogramPersistencySvc.cpp )
+      src/HistogramPersistencySvc/*.cpp )
 endif()
 
 # Hide some Boost/ROOT compile time warnings
