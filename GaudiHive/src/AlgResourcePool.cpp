@@ -131,9 +131,7 @@ StatusCode AlgResourcePool::acquireAlgorithm(const std::string& name, IAlgorithm
       }
     }
     m_resource_mutex.unlock();
-    info() << "Algo " << name << " asked. Cardinality of it is " << algo->cardinality() << endmsg;
     if (0 == algo->cardinality()) {
-      info() << "Algo " << name << " was found to be reentrant, puting it back to queue" << endmsg;
       // push back reentrant algos immediately as it can be reused
       itQueueIAlgPtr->second->push(algo);
     }
