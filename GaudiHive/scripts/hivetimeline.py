@@ -33,9 +33,11 @@ def read(f,regex='.*'):
 def findEvents(data):
    """Find event start/stop times"""
 
-   t = defaultdict(lambda : [sys.maxint, 0])  # start,stop
+   t = defaultdict(lambda : [sys.maxint, 0, -1])  # start,stop,slot
    for d in data:
-      if d.start<t[d.event][0]: t[d.event][0] = d.start
+      if d.start<t[d.event][0]:
+         t[d.event][0] = d.start
+         t[d.event][2] = d.slot
       if d.end>t[d.event][1]: t[d.event][1] = d.end
 
    return t
@@ -104,7 +106,7 @@ def plot(data, showThreads=True, batch=False):
    # Global event timeline
    tevt = findEvents(data)
    for k,v in tevt.iteritems():
-      m = k % ymax # event modulo
+      m = v[2] # slot
       y = ymax+0.06*m+0.05
       l = ROOT.TLine(v[0]-tmin,y,v[1]-tmin,y)
       l.SetLineColor(evtcolors[m])
