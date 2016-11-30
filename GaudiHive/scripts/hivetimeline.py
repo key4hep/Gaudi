@@ -178,7 +178,7 @@ def main():
                        const='timeline.png',
                        help='Save to FILE [%(const)s]')
 
-   parser.add_argument('-n', '--nevtcolors', default=10,
+   parser.add_argument('-n', '--nevtcolors', default=10, type=int,
                        help='Number of colors used for events (10 is default)')
 
    parser.add_argument('-e', '--skipevents', default=0, type=int,
