@@ -70,8 +70,6 @@ def plot(data, showThreads=True, batch=False, nevtcolors=10):
    c.SetRightMargin(0.2)
    c.SetTopMargin(0.1)
    c.SetBottomMargin(0.1)
-   effHeight = 0.8 * height
-   plotOffset = 0.1 * height
    c.coord = ROOT.TH2I('coord',';Time',100,0,tmax-tmin,ymax,0,ymax)
    c.coord.GetYaxis().SetTitle(('Thread' if showThreads else 'Slot'))
    c.coord.GetYaxis().SetTitleOffset(0.6)
@@ -86,7 +84,7 @@ def plot(data, showThreads=True, batch=False, nevtcolors=10):
    setPalette(ymax, nevtcolors)
    mycolors = algcolors
    for d in data:
-      y = (threadid[d.thread] if showThreads else d.slot) + 0.45
+      y = (threadid[d.thread] if showThreads else d.slot)
       alg = d.algorithm
       if alg not in colors and len(mycolors)>0:
          colors[alg] = mycolors.pop(0)
@@ -98,14 +96,12 @@ def plot(data, showThreads=True, batch=False, nevtcolors=10):
          t1 = d.end - tmin
 
          # Alg
-         l = ROOT.TLine(t0, y, t1, y)
-         l.SetLineColor(colors[alg])
-         l.SetLineWidth(int(.8*effHeight/ymax))
+         l = ROOT.TBox(t0, y+.1, t1, y+.8)
+         l.SetFillColor(colors[alg])
 
          # Event
-         l2 = ROOT.TLine(t0, y+0.35, t1, y+0.35)
-         l2.SetLineColor(evtcolors[d.event % nevtcolors])
-         l2.SetLineWidth(int(.1*effHeight/ymax))
+         l2 = ROOT.TBox(t0, y+.8, t1, y+.9)
+         l2.SetFillColor(evtcolors[d.event % nevtcolors])
          c.lines += [l,l2]
 
          l2.Draw()
@@ -113,13 +109,11 @@ def plot(data, showThreads=True, batch=False, nevtcolors=10):
 
    # Global event timeline
    tevt, nbslots = findEvents(data)
-   bheight = 0.09 / nbslots
+   bheight = 0.1
    for k,v in tevt.iteritems():
-      m = v[2] # slot
-      y = ymax+bheight*m+0.6*bheight
-      l = ROOT.TLine(v[0]-tmin,y,v[1]-tmin,y)
-      l.SetLineColor(evtcolors[k % nevtcolors])
-      l.SetLineWidth(int(0.8/ymax*bheight*height/2))
+      y = ymax+bheight*v[2]
+      l = ROOT.TBox(v[0]-tmin,y+0.2*bheight,v[1]-tmin,y+bheight)
+      l.SetFillColor(evtcolors[k % nevtcolors])
       c.lines += [l]
       l.Draw()
 
