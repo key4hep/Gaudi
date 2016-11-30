@@ -21,7 +21,7 @@ def read(f,regex='.*'):
    regex = re.compile(regex)
    for l in open(f,'r'):
       if l.startswith('#'):  # e.g. #start end algorithm thread slot event
-         names = l.lstrip('#').split()   
+         names = l.lstrip('#').split()
          continue
       d = Data()
       for i,f in enumerate(l.split()):
@@ -37,13 +37,12 @@ def findEvents(data):
    for d in data:
       if d.start<t[d.event][0]: t[d.event][0] = d.start
       if d.end>t[d.event][1]: t[d.event][1] = d.end
-      
-   return t
 
+   return t
 
 def setPalette(nevts):
    global algcolors, evtcolors
-   
+
    from ROOT import TColor
    algcolors = range(2,10)+[20,28,29,30,33,38,40]+range(41,50)
    evtcolors = [TColor.GetColor(g,g,g) for g in range(20,255,(255-20)/nevts)]
@@ -56,9 +55,9 @@ def plot(data, showThreads=True, batch=False):
    tmax = max(f.end for f in data)
    slots = 1+max(f.slot for f in data)
    threads = sorted(list(set(f.thread for f in data)))
-   threadid = dict((k,v) for v,k in enumerate(threads))  # map thread : id   
+   threadid = dict((k,v) for v,k in enumerate(threads))  # map thread : id
    ymax = len(threads) if showThreads else slots
-   
+
    c = ROOT.TCanvas('timeline','Timeline',1200,500)
    c.SetLeftMargin(0.05)
    c.SetRightMargin(0.2)
@@ -68,18 +67,18 @@ def plot(data, showThreads=True, batch=False):
    c.coord.GetYaxis().SetTitleOffset(0.6)
    c.coord.SetStats(False)
    c.coord.GetYaxis().SetNdivisions(ymax)
-   
+
    c.Draw()
    c.coord.Draw()
 
    c.lines = []
    colors = {}
    setPalette(ymax)
-   mycolors = algcolors 
+   mycolors = algcolors
    for d in data:
       y = (threadid[d.thread] if showThreads else d.slot) + 0.4
       alg = d.algorithm
-      if alg not in colors and len(mycolors)>0:         
+      if alg not in colors and len(mycolors)>0:
          colors[alg] = mycolors.pop(0)
          if len(mycolors)==0:
             print "Too many algorithm to show"
@@ -88,12 +87,8 @@ def plot(data, showThreads=True, batch=False):
          t0 = d.start - tmin
          t1 = d.end - tmin
 
-         # Skip lines with 0 pixels (sometimes leads to artifacts)
-         if c.XtoPixel(t1)-c.XtoPixel(t0)==0:
-            continue
-
          # Alg
-         l = ROOT.TLine(t0, y, t1, y)         
+         l = ROOT.TLine(t0, y, t1, y)
          l.SetLineColor(colors[alg])
          l.SetLineWidth(30)
 
@@ -116,7 +111,7 @@ def plot(data, showThreads=True, batch=False):
       l.SetLineWidth(5)
       c.lines += [l]
       l.Draw()
-      
+
    # Alg legend
    c.leg = ROOT.TLegend(0.8,0.4,0.98,0.9)
    for alg,cl in sorted(colors.iteritems(),key=operator.itemgetter(1)):
@@ -160,7 +155,7 @@ def main():
    parser.add_argument('--slots', action='store_true', default=False,
                        help='Show slots instead of threads (leads to overlaps!)')
 
-   parser.add_argument('-p', '--print', dest='outfile' , nargs='?', 
+   parser.add_argument('-p', '--print', dest='outfile' , nargs='?',
                        const='timeline.png',
                        help='Save to FILE [%(const)s]')
 
@@ -170,7 +165,7 @@ def main():
    c = plot(data, not args.slots, args.batch)
    if args.outfile:
       c.SaveAs(args.outfile)
-   
+
    return 0
 
 if __name__ == '__main__':
