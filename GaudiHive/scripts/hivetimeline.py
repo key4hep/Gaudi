@@ -53,7 +53,7 @@ def setPalette(nevts, nevtcolors):
    algcolors = range(2,10)+[20,28,29,30,33,38,40]+range(41,50)
    evtcolors = [TColor.GetColor(0,255-g,g) for g in range(20,255,(255-20)/nevtcolors)]
 
-def plot(data, showThreads=True, batch=False, nevtcolors=10):
+def plot(data, showThreads=True, batch=False, nevtcolors=10, width=1200, height=500):
    import ROOT
 
    tmin = min(f.start for f in data)
@@ -63,8 +63,6 @@ def plot(data, showThreads=True, batch=False, nevtcolors=10):
    threadid = dict((k,v) for v,k in enumerate(threads))  # map thread : id
    ymax = len(threads) if showThreads else slots
 
-   height = 500
-   width = 1200
    c = ROOT.TCanvas('timeline','Timeline',width,height)
    c.SetLeftMargin(0.05)
    c.SetRightMargin(0.2)
@@ -186,10 +184,16 @@ def main():
    parser.add_argument('-e', '--skipevents', default=0, type=int,
                        help='Number of events to skip at the start')
 
+   parser.add_argument('-x', '--width', default=1200, type=int,
+                       help='width of the output picture')
+
+   parser.add_argument('-y', '--height', default=500, type=int,
+                       help='height of the output picture')
+
    args = parser.parse_args()
 
    data = read(args.timeline[0], args.select, args.skipevents)
-   c = plot(data, not args.slots, args.batch, args.nevtcolors)
+   c = plot(data, not args.slots, args.batch, args.nevtcolors, args.width, args.height)
    if args.outfile:
       c.SaveAs(args.outfile)
 
