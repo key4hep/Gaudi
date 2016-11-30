@@ -34,23 +34,26 @@ def findEvents(data):
    """Find event start/stop times"""
 
    t = defaultdict(lambda : [sys.maxint, 0, -1])  # start,stop,slot
+   nbslots = 0
    for d in data:
       if d.start<t[d.event][0]:
          t[d.event][0] = d.start
          t[d.event][2] = d.slot
-      if d.end>t[d.event][1]: t[d.event][1] = d.end
+      if d.end>t[d.event][1]:
+         t[d.event][1] = d.end
+      if d.slot > nbslots:
+         nbslots = d.slot
 
-   return t
+   return t, nbslots
 
-def setPalette(nevts):
+def setPalette(nevts, nevtcolors):
    global algcolors, evtcolors
 
    from ROOT import TColor
    algcolors = range(2,10)+[20,28,29,30,33,38,40]+range(41,50)
-   evtcolors = [TColor.GetColor(g,g,g) for g in range(20,255,(255-20)/nevts)]
+   evtcolors = [TColor.GetColor(0,255-g,g) for g in range(20,255,(255-20)/nevtcolors)]
 
-
-def plot(data, showThreads=True, batch=False):
+def plot(data, showThreads=True, batch=False, nevtcolors=10):
    import ROOT
 
    tmin = min(f.start for f in data)
@@ -60,10 +63,15 @@ def plot(data, showThreads=True, batch=False):
    threadid = dict((k,v) for v,k in enumerate(threads))  # map thread : id
    ymax = len(threads) if showThreads else slots
 
-   c = ROOT.TCanvas('timeline','Timeline',1200,500)
+   height = 500
+   width = 1200
+   c = ROOT.TCanvas('timeline','Timeline',width,height)
    c.SetLeftMargin(0.05)
    c.SetRightMargin(0.2)
    c.SetTopMargin(0.1)
+   c.SetBottomMargin(0.1)
+   effHeight = 0.8 * height
+   plotOffset = 0.1 * height
    c.coord = ROOT.TH2I('coord',';Time',100,0,tmax-tmin,ymax,0,ymax)
    c.coord.GetYaxis().SetTitle(('Thread' if showThreads else 'Slot'))
    c.coord.GetYaxis().SetTitleOffset(0.6)
@@ -75,10 +83,10 @@ def plot(data, showThreads=True, batch=False):
 
    c.lines = []
    colors = {}
-   setPalette(ymax)
+   setPalette(ymax, nevtcolors)
    mycolors = algcolors
    for d in data:
-      y = (threadid[d.thread] if showThreads else d.slot) + 0.4
+      y = (threadid[d.thread] if showThreads else d.slot) + 0.45
       alg = d.algorithm
       if alg not in colors and len(mycolors)>0:
          colors[alg] = mycolors.pop(0)
@@ -92,25 +100,26 @@ def plot(data, showThreads=True, batch=False):
          # Alg
          l = ROOT.TLine(t0, y, t1, y)
          l.SetLineColor(colors[alg])
-         l.SetLineWidth(30)
+         l.SetLineWidth(int(.8*effHeight/ymax))
 
          # Event
-         l2 = ROOT.TLine(t0, y+0.3, t1, y+0.3)
-         l2.SetLineColor(evtcolors[d.event % ymax])
-         l2.SetLineWidth(10)
+         l2 = ROOT.TLine(t0, y+0.35, t1, y+0.35)
+         l2.SetLineColor(evtcolors[d.event % nevtcolors])
+         l2.SetLineWidth(int(.1*effHeight/ymax))
          c.lines += [l,l2]
 
          l2.Draw()
          l.Draw()
 
    # Global event timeline
-   tevt = findEvents(data)
+   tevt, nbslots = findEvents(data)
+   bheight = 0.09 / nbslots
    for k,v in tevt.iteritems():
       m = v[2] # slot
-      y = ymax+0.06*m+0.05
+      y = ymax+bheight*m+0.6*bheight
       l = ROOT.TLine(v[0]-tmin,y,v[1]-tmin,y)
-      l.SetLineColor(evtcolors[m])
-      l.SetLineWidth(5)
+      l.SetLineColor(evtcolors[k % nevtcolors])
+      l.SetLineWidth(int(0.8/ymax*bheight*height/2))
       c.lines += [l]
       l.Draw()
 
@@ -123,12 +132,13 @@ def plot(data, showThreads=True, batch=False):
       e.SetFillStyle(1001)
 
    # Event legend
-   for cl in range(ymax):
+   bwidth = 0.18 / nevtcolors
+   for cl in range(nevtcolors):
       l = ROOT.TLine()
       c.lines.append(l)
       l.SetLineWidth(10)
       l.SetLineColor(evtcolors[cl])
-      l.DrawLineNDC(0.807+0.02*cl,0.37,0.807+0.02*(cl+1),0.37)
+      l.DrawLineNDC(0.807+bwidth*cl,0.37,0.807+bwidth*(cl+1),0.37)
 
    c.t1 = ROOT.TText(0.807,0.314,'Events')
    c.t1.SetNDC()
@@ -161,10 +171,13 @@ def main():
                        const='timeline.png',
                        help='Save to FILE [%(const)s]')
 
+   parser.add_argument('-n', '--nevtcolors', default=10,
+                       help='Number of colors used for events (10 is default)')
+
    args = parser.parse_args()
 
    data = read(args.timeline[0], args.select)
-   c = plot(data, not args.slots, args.batch)
+   c = plot(data, not args.slots, args.batch, args.nevtcolors)
    if args.outfile:
       c.SaveAs(args.outfile)
 
