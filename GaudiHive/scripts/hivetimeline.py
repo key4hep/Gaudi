@@ -16,7 +16,7 @@ evtcolors = []
 class Data:
    pass
 
-def read(f,regex='.*'):
+def read(f,regex='.*',skipevents=0):
    data = []
    regex = re.compile(regex)
    for l in open(f,'r'):
@@ -26,8 +26,8 @@ def read(f,regex='.*'):
       d = Data()
       for i,f in enumerate(l.split()):
          setattr(d, names[i], int(f) if f.isdigit() else f)
-      data.append(d)
-
+      if d.event >= skipevents:
+         data.append(d)
    return data
 
 def findEvents(data):
@@ -174,9 +174,12 @@ def main():
    parser.add_argument('-n', '--nevtcolors', default=10,
                        help='Number of colors used for events (10 is default)')
 
+   parser.add_argument('-e', '--skipevents', default=0, type=int,
+                       help='Number of events to skip at the start')
+
    args = parser.parse_args()
 
-   data = read(args.timeline[0], args.select)
+   data = read(args.timeline[0], args.select, args.skipevents)
    c = plot(data, not args.slots, args.batch, args.nevtcolors)
    if args.outfile:
       c.SaveAs(args.outfile)
