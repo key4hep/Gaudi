@@ -110,7 +110,7 @@ namespace Gaudi { namespace Functional {
            try {
                auto out = as_const(*this)(details::get_from_handle(std::get<I>(this->m_inputs))...);
                this->setFilterPassed(std::get<0>(out));
-               std::initializer_list<int> {
+               (void)std::initializer_list<int> {
                     (put(std::get<O>(this->m_outputs),std::move(std::get<O+1>(out))),0)...
                };
            } catch ( GaudiException& e ) {
