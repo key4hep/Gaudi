@@ -198,7 +198,7 @@ private:
   unsigned int m_algosInFlight = 0;
 
   /// Number of algoritms presently in flight
-  unsigned int m_IOBoundAlgosInFlight;
+  unsigned int m_IOBoundAlgosInFlight = 0;
 
   /// Loop on algorithm in the slots and promote them to successive states (-1 means all slots, while empty string
   /// means skipping an update of the Control Flow state)
