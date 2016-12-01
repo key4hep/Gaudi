@@ -77,19 +77,14 @@ endif()
 if( CLHEP_FOUND )
    list( APPEND GaudiExamples_srcs src/TupleEx/*.cpp )
 endif()
-
 if (NOT LCG_COMP STREQUAL "clang")
     list(APPEND GaudiExamples_srcs  src/StatusCodeSvc/special/SCSAlg_no_inline.cpp)
 endif()
-
 if( TARGET RootCnvLib )
   list( APPEND GaudiExamples_srcs src/MultiInput/*.cpp )
 endif()
-
 if( OpenCL_FOUND )
-  list( APPEND GaudiExamples_srcs src/OpenCL/*.cpp )
-  list( APPEND extra_includes ${OpenCL_INCLUDE_DIRS} )
-  list( APPEND extra_libs ${OpenCL_LIBRARIES} )
+   list( APPEND GaudiExamples_srcs src/OpenCL/*.cpp )
 endif()
 
 # Set up the include and linker flags for the examples libraries:
@@ -112,6 +107,10 @@ if( TARGET GaudiGSLLib )
 endif()
 if( TARGET RootCnvLib )
    list( APPEND extra_libs RootCnvLib )
+endif()
+if( OpenCL_FOUND )
+   list( APPEND extra_includes ${OpenCL_INCLUDE_DIRS} )
+   list( APPEND extra_libs ${OpenCL_LIBRARIES} )
 endif()
 
 # Now set up the libraries:
