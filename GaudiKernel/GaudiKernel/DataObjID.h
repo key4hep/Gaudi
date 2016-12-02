@@ -16,7 +16,7 @@
  * Class used to identify an object in the Data Store, with fast lookup
  * using an hash
  *
- * Objects are identified via either a Gaudi style '/path/to/object' key, 
+ * Objects are identified via either a Gaudi style '/path/to/object' key,
  * or ATLAS style (ClassID, 'key') of ('ClassName', 'key')
  *
  * depending on the style, the hash is either a std::hash<string> of the path,
@@ -88,19 +88,19 @@ private:
 
 };
 
-inline DataObjID::DataObjID(const std::string& key): 
-  m_key(key) { 
+inline DataObjID::DataObjID(const std::string& key):
+  m_key(key) {
   hashGen();
 
 }
 
-inline DataObjID::DataObjID(const CLID& clid, const std::string& key): 
+inline DataObjID::DataObjID(const CLID& clid, const std::string& key):
   m_clid(clid), m_key(key) {
   setClassName();
   hashGen();
 }
 
-inline DataObjID::DataObjID(const std::string& className, const std::string& key): 
+inline DataObjID::DataObjID(const std::string& className, const std::string& key):
   m_className(className), m_key(key) {
   setClid();
   hashGen();
@@ -119,7 +119,7 @@ struct DataObjID_Hasher {
 
 typedef std::unordered_set<DataObjID, DataObjID_Hasher> DataObjIDColl;
 
-namespace Gaudi { 
+namespace Gaudi {
   namespace Parsers {
     StatusCode parse(DataObjID&, const std::string&);
     StatusCode parse(DataObjIDColl&, const std::string&);

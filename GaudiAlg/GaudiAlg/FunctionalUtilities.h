@@ -31,7 +31,7 @@ namespace Gaudi { namespace Functional {
 
    inline void updateHandleLocations(IProperty& parent, const std::string& prop, const std::vector<std::string>& newLocs) {
         std::ostringstream ss;
-        GaudiUtils::details::ostream_joiner( ss << '[', newLocs, ", " , 
+        GaudiUtils::details::ostream_joiner( ss << '[', newLocs, ", " ,
                                              [](std::ostream& os, const auto& i)
                                              -> auto& { return os << "'" << i << "'"; } ) << ']';
         auto sc = parent.setProperty(prop,ss.str());

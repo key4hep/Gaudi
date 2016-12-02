@@ -45,7 +45,7 @@ namespace Gaudi
       const size_t size  ) ;
     // ========================================================================
     template <typename T>
-    struct _has_typename_container_ 
+    struct _has_typename_container_
     {
     private:
       template <typename T1> static typename T1::Container test(int);
@@ -61,13 +61,13 @@ namespace Gaudi
     // ==========================================================================
     /// helper structure to get container type
     template <class CONTAINER>
-    struct container 
+    struct container
     {
       typedef typename details::_container<CONTAINER,details::_has_typename_container_<CONTAINER>::value>::Container Container ;
       typedef typename CONTAINER::const_iterator                                                                     Iterator  ;
     };
   // =========================================================================
-  } // the end of namespace Gaudi::details 
+  } // the end of namespace Gaudi::details
   // ==========================================================================
   /** @struct RangeBase_ GaudiUtils/Range.h
    *  helper class to simplify the dealing with ranges in Python
@@ -114,7 +114,7 @@ namespace Gaudi
     typedef ITERATOR                                  const_iterator            ;
     //
   private:
-    // 
+    //
     typedef typename std::iterator_traits<iterator>  iter_traits                ;
     //
   public:
@@ -149,7 +149,7 @@ namespace Gaudi
      */
     Range_( iterator ibegin       ) : m_base( ibegin , ibegin ) {}
 
-    /* Copy constructor 
+    /* Copy constructor
      * @param r Range to move
      */
     Range_(const Range_ &r ) : m_base(r.m_base) {}
@@ -187,12 +187,12 @@ namespace Gaudi
       // check
       if ( index1 < 0      ) { return  Range_ () ; }            // RETURN
       if ( index2 < index1 ) { return  Range_ () ; }            // RETURN
-      
+
       if ( index1 > (long) size () ) { return  Range_() ; }     // RETURN
       if ( index2 > (long) size () ) { index2  = size() ; }
-      
+
       // construct the slice
-      return Range_( std::next ( begin() , index1 ) , 
+      return Range_( std::next ( begin() , index1 ) ,
                      std::next ( begin() , index2 ) ) ;        // RETURN
     }
     // ========================================================================
@@ -243,21 +243,21 @@ namespace Gaudi
     bool operator==( const Range_& right ) const
     {
       if ( &right        == this    ) { return true  ; } // RETURN
-      return right.size() == size() &&  
+      return right.size() == size() &&
         std::equal ( begin () , end () , right.begin() ) ;
     }
-    /// equality with another range type 
+    /// equality with another range type
     template <class CNT, class IT>
     bool operator==( const Range_<CNT,IT>& right ) const
     {
-      return right.size() == size() &&  
+      return right.size() == size() &&
         std::equal ( begin () , end () , right.begin() ) ;
     }
     /// compare with another container
-    template <class ANOTHERCONTAINER>    
+    template <class ANOTHERCONTAINER>
     bool operator==( const ANOTHERCONTAINER& right ) const
     {
-      return right.size() == size() && 
+      return right.size() == size() &&
         std::equal ( begin () , end () , right.begin() ) ;
     }
     // ========================================================================
@@ -312,7 +312,7 @@ namespace Gaudi
   template <class CONTAINER>
   inline
   Range_<CONTAINER>
-  range ( const CONTAINER& cnt ) 
+  range ( const CONTAINER& cnt )
   { return Range_<CONTAINER>( cnt.begin() , cnt.end() ) ; }
   // ==========================================================================
 } // end of namespace Gaudi

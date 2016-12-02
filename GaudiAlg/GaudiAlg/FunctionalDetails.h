@@ -23,7 +23,7 @@ namespace Gaudi { namespace Functional { namespace details {
     // CRJ : Stuff for zipping
     namespace zip
     {
-    
+
       /// Resolve case there is only one container in the range
       template < typename A >
       inline bool check_sizes( const A& ) noexcept { return true; }
@@ -34,7 +34,7 @@ namespace Gaudi { namespace Functional { namespace details {
       {
         return a.size() == b.size();
       }
-      
+
       /// Compare sizes of 3 or more containers
       template < typename A, typename B, typename... C >
       inline bool check_sizes( const A& a, const B& b, const C& ... c ) noexcept
@@ -46,12 +46,12 @@ namespace Gaudi { namespace Functional { namespace details {
       template< typename... Args >
       inline decltype(auto) verifySizes( Args&... args )
       {
-        if ( UNLIKELY( !check_sizes( args... ) ) ) 
-        { throw GaudiException( "Zipped containers have different sizes.", 
+        if ( UNLIKELY( !check_sizes( args... ) ) )
+        { throw GaudiException( "Zipped containers have different sizes.",
                                 "Gaudi::Functional::details::zip::verifySizes",
                                 StatusCode::FAILURE ); }
       }
- 
+
       /// Zips multiple containers together to form a single range
       template< typename... Args >
       inline decltype(auto) range( Args&& ... args )
@@ -60,7 +60,7 @@ namespace Gaudi { namespace Functional { namespace details {
         verifySizes( args... );
         return ranges::view::zip( std::forward<Args>(args)... );
       }
-      
+
       /// Zips multiple containers together to form a single const range
       template< typename... Args >
       inline decltype(auto) const_range( Args&& ... args )

@@ -10,8 +10,8 @@
 /*  @file GaudiTupleAlg.cpp
  *
  *  Implementation file for class : GaudiTupleAlg
- * 
- *  @date 2004-01-23 
+ *
+ *  @date 2004-01-23
  *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
  *  @author Chris Jones   Christopher.Rob.Jones@cern.ch
  */

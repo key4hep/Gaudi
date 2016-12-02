@@ -54,7 +54,7 @@ DataObjectHandleBase::DataObjectHandleBase(const DataObjID& k,
 DataObjectHandleBase::DataObjectHandleBase(const std::string& k,
 				      Gaudi::DataHandle::Mode a,
 				      IDataHandleHolder* owner):
-  DataObjectHandleBase(DataObjID(k), a, owner) 
+  DataObjectHandleBase(DataObjID(k), a, owner)
 {}
 
 //---------------------------------------------------------------------------
