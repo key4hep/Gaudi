@@ -32,11 +32,11 @@ StatusCode AnyDataGetAlgorithm<T>::execute() {
 
   auto base = getIfExists<AnyDataWrapperBase>(m_location);
   if (base) {
-     info() << "Got base from " << m_location << endmsg;
+     info() << "Got base from " << m_location.value() << endmsg;
   }
   const auto i = dynamic_cast<const AnyDataWrapper<T>*>(base);
   if (i) {
-     info() << "Got " << System::typeinfoName(typeid(T)) << " from " << m_location
+     info() << "Got " << System::typeinfoName(typeid(T)) << " from " << m_location.value()
             << ": " << i->getData() << endmsg;
   }
 
