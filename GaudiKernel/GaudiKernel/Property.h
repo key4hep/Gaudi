@@ -156,7 +156,8 @@ namespace Gaudi
         inline TYPE fromString( const std::string& s )
         {
           TYPE tmp;
-          if ( !Gaudi::Parsers::parse( tmp, s ).isSuccess() ) {
+          using Gaudi::Parsers::parse;
+          if ( !parse( tmp, s ).isSuccess() ) {
             throw std::invalid_argument( "cannot parse '" + s + "' to " + System::typeinfoName( typeid( TYPE ) ) );
           }
           return tmp;
@@ -615,7 +616,8 @@ namespace Gaudi
     void toStream( std::ostream& out ) const override
     {
       m_handlers.useReadHandler( *this );
-      Utils::toStream( m_value, out );
+      using Utils::toStream;
+      toStream( m_value, out );
     }
   };
 
