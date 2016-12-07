@@ -12,7 +12,7 @@ namespace Gaudi { namespace Examples {
   class CountSelectedTracks: public Functional::FilterPredicate<bool(const MyTrackVector&)> {
   public:
     CountSelectedTracks(const std::string& name, ISvcLocator* pSvc):
-      FilterPredicate(name, pSvc,
+      FilterPredicate(name, pSvc, 
                       { KeyValue{"InputData",Functional::concat_alternatives("BogusLocation",
                                                                              "MoreBogus",
                                                                              "MyOutTracks")}
@@ -43,5 +43,5 @@ namespace Gaudi { namespace Examples {
   };
 
   DECLARE_COMPONENT(CountSelectedTracks)
-
+ 
 }}

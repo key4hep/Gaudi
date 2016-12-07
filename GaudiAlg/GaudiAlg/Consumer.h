@@ -26,7 +26,7 @@ namespace Gaudi { namespace Functional {
        template <std::size_t... I>
        StatusCode invoke(std::index_sequence<I...>) const {
            try {
-               (*this)(details::get_from_handle(std::get<I>(this->m_inputs))...);
+               (*this)( details::as_const(*std::get<I>(this->m_inputs).get())... );
            } catch ( GaudiException& e ) {
                ( e.code() ? this->warning() : this->error() )
                    << e.message() << endmsg;
