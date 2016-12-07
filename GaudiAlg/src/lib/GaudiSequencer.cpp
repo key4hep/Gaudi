@@ -163,7 +163,6 @@ StatusCode GaudiSequencer::execute()
   for ( auto& entry : m_entries ) {
     Algorithm* myAlg = entry.algorithm();
     if ( ! myAlg->isEnabled() ) continue;
-    myAlg->setContext( getContext() );
     if ( ! myAlg->isExecuted() ) {
 
       if ( m_measureTime ) m_timerTool->start( entry.timer() );
