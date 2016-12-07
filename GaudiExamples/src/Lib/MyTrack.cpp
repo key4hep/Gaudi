@@ -30,6 +30,10 @@ MyTrack::MyTrack(float x, float y, float z)   : m_px(x), m_py(y), m_pz(z)  {
   s_instances.count++;
 }
 
+MyTrack::MyTrack(const MyTrack& t): KeyedObject<int>(t.key()), m_px(t.m_px), m_py(t.m_py), m_pz(t.m_pz) {
+  s_instances.count++;
+}
+
 /// Standard Destructor
 MyTrack::~MyTrack()  {
   s_instances.count--;

@@ -1,4 +1,4 @@
-JobOptionsSvc        INFO # =======> /build1/leggett/git/Gaudi/GaudiExamples/options/Histograms.opts
+JobOptionsSvc        INFO # =======> /home/marco/Devel/LHCb/workspace/Gaudi/GaudiExamples/options/Histograms.opts
 JobOptionsSvc        INFO # (5,1): AuditorSvc.Auditors = ["ChronoAuditor"]
 JobOptionsSvc        INFO # (9,1): MessageSvc.OutputLevel = 3
 JobOptionsSvc        INFO # (20,1): ApplicationMgr.TopAlg += ["GaudiHistoAlgorithm/SimpleHistos"]
@@ -19,13 +19,13 @@ JobOptionsSvc        INFO # (48,1): RootHistSvc.OutputFile = "histo.root"
 JobOptionsSvc        INFO # (57,1): HistogramDataSvc.Input = ["InFile DATAFILE='../data/input.hbook' TYP='HBOOK'"]
 JobOptionsSvc        INFO # (59,1): HistogramDataSvc.Predefined1DHistos = {"/stat/Histos2/2":["TEST2", -100, 200]}
 JobOptionsSvc        INFO # (63,1): HistogramDataSvc.OutputLevel = 2
-JobOptionsSvc        INFO # =======> /build1/leggett/git/Gaudi/GaudiExamples/options/Aida2Root.opts
+JobOptionsSvc        INFO # =======> /home/marco/Devel/LHCb/workspace/Gaudi/GaudiExamples/options/Aida2Root.opts
 JobOptionsSvc        INFO # (3,1): ApplicationMgr.TopAlg += ["Aida2Root"]
-JobOptionsSvc        INFO Job options successfully read in from /build1/leggett/git/Gaudi/GaudiExamples/options/Aida2Root.opts
+JobOptionsSvc        INFO Job options successfully read in from /home/marco/Devel/LHCb/workspace/Gaudi/GaudiExamples/options/Aida2Root.opts
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v4r1)
-                                          running on p05614910w96644.cern.ch on Wed Oct  5 19:55:10 2016
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v27r1)
+                                          running on pcphlbc16 on Tue Nov  1 17:20:17 2016
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 SimpleHistos        DEBUG Property update for OutputLevel : new value = 2
@@ -78,12 +78,12 @@ SimpleHistos        DEBUG Property ['Name': Value] =  'AuditRestart':False
 SimpleHistos        DEBUG Property ['Name': Value] =  'AuditReinitialize':False
 SimpleHistos        DEBUG Property ['Name': Value] =  'AuditInitialize':False
 SimpleHistos        DEBUG Property ['Name': Value] =  'AuditAlgorithms':False
-SimpleHistos        DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
-SimpleHistos        DEBUG Property ['Name': Value] =  'ExtraInputs':[]
 SimpleHistos        DEBUG Property ['Name': Value] =  'ErrorCounter':0
 SimpleHistos        DEBUG Property ['Name': Value] =  'ErrorMax':1
 SimpleHistos        DEBUG Property ['Name': Value] =  'Enable':True
 SimpleHistos        DEBUG Property ['Name': Value] =  'OutputLevel':2
+SimpleHistos        DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
+SimpleHistos        DEBUG Property ['Name': Value] =  'ExtraInputs':[]
 HistogramDataSvc    DEBUG Property update for OutputLevel : new value = 2
 HistogramDataSvc    DEBUG Service base class initialized successfully
 RootHistSvc          INFO Writing ROOT histograms to: histo.root
@@ -144,12 +144,12 @@ Histos2           SUCCESS Property ['Name': Value] =  'AuditRestart':False
 Histos2           SUCCESS Property ['Name': Value] =  'AuditReinitialize':False
 Histos2           SUCCESS Property ['Name': Value] =  'AuditInitialize':False
 Histos2           SUCCESS Property ['Name': Value] =  'AuditAlgorithms':False
-Histos2           SUCCESS Property ['Name': Value] =  'ExtraOutputs':[]
-Histos2           SUCCESS Property ['Name': Value] =  'ExtraInputs':[]
 Histos2           SUCCESS Property ['Name': Value] =  'ErrorCounter':0
 Histos2           SUCCESS Property ['Name': Value] =  'ErrorMax':1
 Histos2           SUCCESS Property ['Name': Value] =  'Enable':True
 Histos2           SUCCESS Property ['Name': Value] =  'OutputLevel':3
+Histos2           SUCCESS Property ['Name': Value] =  'ExtraOutputs':[]
+Histos2           SUCCESS Property ['Name': Value] =  'ExtraInputs':[]
 Aida2Root         SUCCESS List of ALL properties of Aida2Root/Aida2Root  #properties = 57
 Aida2Root         SUCCESS Property ['Name': Value] =  'Profs2D':[ 'SimpleHistos/321' , 'SimpleHistos/2dprof' ]
 Aida2Root         SUCCESS Property ['Name': Value] =  'Profs1D':[ 'SimpleHistos/Expo V Gauss 1DProf' ]
@@ -202,12 +202,12 @@ Aida2Root         SUCCESS Property ['Name': Value] =  'AuditRestart':False
 Aida2Root         SUCCESS Property ['Name': Value] =  'AuditReinitialize':False
 Aida2Root         SUCCESS Property ['Name': Value] =  'AuditInitialize':False
 Aida2Root         SUCCESS Property ['Name': Value] =  'AuditAlgorithms':False
-Aida2Root         SUCCESS Property ['Name': Value] =  'ExtraOutputs':[]
-Aida2Root         SUCCESS Property ['Name': Value] =  'ExtraInputs':[]
 Aida2Root         SUCCESS Property ['Name': Value] =  'ErrorCounter':0
 Aida2Root         SUCCESS Property ['Name': Value] =  'ErrorMax':1
 Aida2Root         SUCCESS Property ['Name': Value] =  'Enable':True
 Aida2Root         SUCCESS Property ['Name': Value] =  'OutputLevel':3
+Aida2Root         SUCCESS Property ['Name': Value] =  'ExtraOutputs':[]
+Aida2Root         SUCCESS Property ['Name': Value] =  'ExtraInputs':[]
 EventLoopMgr      WARNING Unable to locate service "EventSelector"
 EventLoopMgr      WARNING No events will be processed from external input.
 ApplicationMgr       INFO Application Manager Initialized successfully
@@ -438,11 +438,11 @@ EventLoopMgr         INFO Histograms converted successfully according to request
 *****Chrono*****     INFO ****************************************************************************************************
 *****Chrono*****     INFO  The Final CPU consumption ( Chrono ) Table (ordered)
 *****Chrono*****     INFO ****************************************************************************************************
-1DForcedNumericID    INFO Time User   : Tot=   36 [ms] Ave/Min/Max=0.00072(+-0.0268)/    0/    1 [ms] #=49999
-1DAutoID             INFO Time User   : Tot=   45 [ms] Ave/Min/Max=0.0009(+- 0.03)/    0/    1 [ms] #=49999
-1DForcedAlphaID      INFO Time User   : Tot=   47 [ms] Ave/Min/Max=0.00094(+-0.0306)/    0/    1 [ms] #=49999
-1DOldStyle           INFO Time User   : Tot=   53 [ms] Ave/Min/Max=0.00106(+-0.0325)/    0/    1 [ms] #=49999
-ChronoStatSvc        INFO Time User   : Tot= 3.15  [s]                                             #=  1
+1DForcedNumericID    INFO Time User   : Tot=   84 [ms] Ave/Min/Max=0.00168(+-0.082)/    0/    4 [ms] #=49999
+1DAutoID             INFO Time User   : Tot=   88 [ms] Ave/Min/Max=0.00176(+-0.0839)/    0/    4 [ms] #=49999
+1DForcedAlphaID      INFO Time User   : Tot=  112 [ms] Ave/Min/Max=0.00224(+-0.0946)/    0/    4 [ms] #=49999
+1DOldStyle           INFO Time User   : Tot=  116 [ms] Ave/Min/Max=0.00232(+-0.0963)/    0/    4 [ms] #=49999
+ChronoStatSvc        INFO Time User   : Tot= 4.07  [s]                                             #=  1
 *****Chrono*****     INFO ****************************************************************************************************
 ChronoStatSvc.f...   INFO  Service finalized successfully
 HistogramDataSvc    DEBUG  Substituted histograms #1 :

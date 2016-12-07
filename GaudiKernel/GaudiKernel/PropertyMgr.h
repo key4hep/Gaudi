@@ -18,18 +18,6 @@
 
 // ============================================================================
 
-// pre-declaration of GaudiHandles is sufficient
-template <class T>
-class ToolHandle;
-template <class T>
-class ServiceHandle;
-template <class T>
-class ToolHandleArray;
-template <class T>
-class ServiceHandleArray;
-template <class T>
-class DataObjectHandle;
-
 /** @class PropertyMgr PropertyMgr.h GaudiKernel/PropertyMgr.h
  *
  *  Property manager helper class. This class is used by algorithms and services
@@ -56,7 +44,11 @@ public:
 
 public:
   /// Declare a property (templated)
-  template <class TYPE>
+  template <class TYPE,
+           typename = typename std::enable_if< !std::is_base_of<GaudiHandleBase,TYPE>::value
+                                            && !std::is_base_of<GaudiHandleArrayBase,TYPE>::value
+                                            && !std::is_base_of<DataObjectHandleBase,TYPE>::value
+                                             >::type  >
   Gaudi::Details::PropertyBase* declareProperty( const std::string& name, TYPE& value,
                                                  const std::string& doc = "none" );
   /// Declare a property (specialization)
@@ -67,27 +59,20 @@ public:
   template <class TYPE>
   Gaudi::Details::PropertyBase* declareProperty( const std::string& name, Gaudi::Property<TYPE&>& prop,
                                                  const std::string& doc = "none" );
+
   // partial specializations for various GaudiHandles
   /// Declare a property (specialization)
-  template <class TYPE>
-  Gaudi::Details::PropertyBase* declareProperty( const std::string& name, ToolHandle<TYPE>& ref,
-                                                 const std::string& doc = "none" );
+  Gaudi::Details::PropertyBase* declareProperty ( const std::string& name,
+                                                  GaudiHandleBase& ref,
+                                                  const std::string& doc = "none" ) ;
   /// Declare a property (specialization)
-  template <class TYPE>
-  Gaudi::Details::PropertyBase* declareProperty( const std::string& name, ServiceHandle<TYPE>& ref,
-                                                 const std::string& doc = "none" );
+  Gaudi::Details::PropertyBase* declareProperty ( const std::string& name,
+                                                  GaudiHandleArrayBase& ref,
+                                                  const std::string& doc = "none" ) ;
   /// Declare a property (specialization)
-  template <class TYPE>
-  Gaudi::Details::PropertyBase* declareProperty( const std::string& name, ToolHandleArray<TYPE>& ref,
-                                                 const std::string& doc = "none" );
-  /// Declare a property (specialization)
-  template <class TYPE>
-  Gaudi::Details::PropertyBase* declareProperty( const std::string& name, ServiceHandleArray<TYPE>& ref,
-                                                 const std::string& doc = "none" );
-  /// Declare a property (specialization)
-  template <class TYPE>
-  Gaudi::Details::PropertyBase* declareProperty( const std::string& name, DataObjectHandle<TYPE>& ref,
-                                                 const std::string& doc = "none" );
+  Gaudi::Details::PropertyBase* declareProperty ( const std::string& name,
+                                                  DataObjectHandleBase& ref,
+                                                  const std::string& doc = "none" ) ;
   /// Declare a remote property
   Gaudi::Details::PropertyBase* declareRemoteProperty( const std::string& name, IProperty* rsvc,
                                                        const std::string& rname = "" );
@@ -167,9 +152,11 @@ private:
 // ============================================================================
 /// Declare a property (templated)
 // ============================================================================
-template <class TYPE>
-inline Gaudi::Details::PropertyBase* PropertyMgr::declareProperty( const std::string& name, TYPE& value,
-                                                                   const std::string& doc )
+template<class TYPE, typename >
+inline Gaudi::Details::PropertyBase*
+PropertyMgr::declareProperty ( const std::string& name  ,
+                               TYPE&              value,
+                               const std::string& doc )
 {
   assertUniqueName( name );
   m_todelete.emplace_back( new Gaudi::Property<TYPE&>( name, value ) );
@@ -197,7 +184,7 @@ inline Gaudi::Details::PropertyBase* PropertyMgr::declareProperty( const std::st
   return p;
 }
 // ============================================================================
-/// Declare a property (templated)
+/// Declare a property
 // ============================================================================
 template <class TYPE>
 inline Gaudi::Details::PropertyBase*
@@ -207,79 +194,6 @@ PropertyMgr::declareProperty( const std::string& name, Gaudi::Property<TYPE&>& p
   Gaudi::Details::PropertyBase* p = &prop;
   //
   p->setName( name );
-  p->setDocumentation( doc );
-  m_properties.push_back( p );
-  //
-  return p;
-}
-// ============================================================================
-// Declare a property (templated)
-// ============================================================================
-template <class TYPE>
-inline Gaudi::Details::PropertyBase* PropertyMgr::declareProperty( const std::string& name, ToolHandle<TYPE>& ref,
-                                                                   const std::string& doc )
-{
-  assertUniqueName( name );
-  m_todelete.emplace_back( new GaudiHandleProperty( name, ref ) );
-  Gaudi::Details::PropertyBase* p = m_todelete.back().get();
-  //
-  p->setDocumentation( doc );
-  m_properties.push_back( p );
-  //
-  return p;
-}
-// ============================================================================
-template <class TYPE>
-inline Gaudi::Details::PropertyBase* PropertyMgr::declareProperty( const std::string& name, ServiceHandle<TYPE>& ref,
-                                                                   const std::string& doc )
-{
-  assertUniqueName( name );
-  m_todelete.emplace_back( new GaudiHandleProperty( name, ref ) );
-  Gaudi::Details::PropertyBase* p = m_todelete.back().get();
-  //
-  p->setDocumentation( doc );
-  m_properties.push_back( p );
-  //
-  return p;
-}
-// ============================================================================
-template <class TYPE>
-inline Gaudi::Details::PropertyBase* PropertyMgr::declareProperty( const std::string& name, ToolHandleArray<TYPE>& ref,
-                                                                   const std::string& doc )
-{
-  assertUniqueName( name );
-  m_todelete.emplace_back( new GaudiHandleArrayProperty( name, ref ) );
-  Gaudi::Details::PropertyBase* p = m_todelete.back().get();
-  //
-  p->setDocumentation( doc );
-  m_properties.push_back( p );
-  //
-  return p;
-}
-// ============================================================================
-template <class TYPE>
-inline Gaudi::Details::PropertyBase*
-PropertyMgr::declareProperty( const std::string& name, ServiceHandleArray<TYPE>& ref, const std::string& doc )
-{
-  assertUniqueName( name );
-  m_todelete.emplace_back( new GaudiHandleArrayProperty( name, ref ) );
-  Gaudi::Details::PropertyBase* p = m_todelete.back().get();
-  //
-  p->setDocumentation( doc );
-  m_properties.push_back( p );
-  //
-  return p;
-}
-
-// ============================================================================
-template <class TYPE>
-inline Gaudi::Details::PropertyBase* PropertyMgr::declareProperty( const std::string& name, DataObjectHandle<TYPE>& ref,
-                                                                   const std::string& doc )
-{
-  assertUniqueName( name );
-  m_todelete.emplace_back( new DataObjectHandleProperty( name, ref ) );
-  Gaudi::Details::PropertyBase* p = m_todelete.back().get();
-  //
   p->setDocumentation( doc );
   m_properties.push_back( p );
   //

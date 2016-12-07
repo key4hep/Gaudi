@@ -12,6 +12,11 @@ from GaudiKernel.PropertyProxy import PropertyProxy
 from GaudiKernel.GaudiHandles import *
 from GaudiKernel.DataObjectHandleBase import *
 
+from GaudiConfig.ControlFlow import (OrNode, AndNode, OrderedNode,
+                                     ignore, InvertNode,
+                                     ControlFlowLeaf, ControlFlowNode,
+                                     CFTrue, CFFalse)
+
 ### data ---------------------------------------------------------------------
 __all__ = [ 'Configurable',
             'ConfigurableAlgorithm',
@@ -58,7 +63,7 @@ class Error(RuntimeError):
 class PropertyReference(object):
     def __init__(self,propname):
         self.name = propname
-    def __repr__(self):
+    def __str__(self):
         return "@%s"%self.name
     def __resolve__(self):
         # late binding for property references
@@ -674,12 +679,11 @@ class Configurable( object ):
         """
         if not hasattr(self, name):
             return False
-        else:
-            default = self.getDefaultProperty(name)
-            if isinstance(default, (list, dict)):
-                value = getattr(self, name)
-                return value != default
-            return True
+        default = self.getDefaultProperty(name)
+        if isinstance(default, (list, dict, DataObjectHandleBase)):
+            value = getattr(self, name)
+            return value != default
+        return True
 
     def getType( cls ):
         return cls.__name__
@@ -837,9 +841,6 @@ class Configurable( object ):
         postLen = Configurable.printHeaderWidth - preLen - 12 - len(title)# - len(indentStr)
         postLen = max(preLen,postLen)
         return indentStr + '\\%s (End of %s) %s' % (preLen*'-',title,postLen*'-')
-
-    def __repr__( self ):
-        return '<%s at %s>' % (self.getFullJobOptName(),hex(id(self)))
 
     def __str__( self, indent = 0, headerLastIndentUnit=indentUnit ):
         global log  # to print some info depending on output level
@@ -999,6 +1000,41 @@ class ConfigurableAlgorithm( Configurable ):
 
     def getJobOptName( self ):
         return self._jobOptName
+
+    def __repr__(self):
+        return '{0}({1!r})'.format(self.getType(), self.name())
+
+    # mimick the ControlFlowLeaf interface
+    def __and__(self, rhs):
+        if rhs is CFTrue:
+            return self
+        elif rhs is CFFalse:
+            return CFFalse
+        return AndNode(self, rhs)
+
+    def __or__(self, rhs):
+        if rhs is CFFalse:
+            return self
+        elif rhs is CFTrue:
+            return CFTrue
+        return OrNode(self, rhs)
+
+    def __invert__(self):
+        return InvertNode(self)
+
+    def __rshift__(self, rhs):
+        return OrderedNode(self, rhs)
+
+    def visitNode(self, visitor):
+        visitor.enter(self)
+        self._visitSubNodes(visitor)
+        visitor.leave(self)
+
+    def _visitSubNodes(self, visitor):
+        pass
+
+    def __eq__(self, other):
+        return (repr(self) == repr(other))
 
 
 class ConfigurableService( Configurable ):
@@ -1516,3 +1552,152 @@ def purge():
         if basname in sys.modules:
             del sys.modules[basname]
     _included_files.clear()
+
+
+class CreateSequencesVisitor(object):
+    def __init__(self):
+        self.stack = []
+
+    @property
+    def sequence(self):
+        return self.stack[-1]
+
+    def enter(self, visitee):
+        pass
+
+    def _getUniqueName(self, prefix):
+        from Gaudi.Configuration import allConfigurables
+        cnt = 0
+        name = prefix + str(cnt)
+        while name in allConfigurables:
+            cnt += 1
+            name = prefix + str(cnt)
+        return name
+
+    def _newSeq(self, prefix='seq_', **kwargs):
+        from Configurables import GaudiSequencer
+        return GaudiSequencer(self._getUniqueName('seq_'),
+                              **kwargs)
+
+    def leave(self, visitee):
+        stack = self.stack
+        if visitee in (CFTrue, CFFalse):
+            stack.append(self._newSeq(Invert=visitee is CFFalse))
+        elif isinstance(visitee, (ControlFlowLeaf, ConfigurableAlgorithm)):
+            stack.append(visitee)
+        elif isinstance(visitee, (OrNode, AndNode, OrderedNode)):
+            b = stack.pop()
+            a = stack.pop()
+            seq = self._newSeq(Members=[a, b],
+                               ModeOR=isinstance(visitee, OrNode),
+                               ShortCircuit=not isinstance(visitee, OrderedNode),
+                               MeasureTime=True)
+            stack.append(seq)
+        elif isinstance(visitee, ignore):
+            if hasattr(stack[-1], 'IgnoreFilterPassed'):
+                stack[-1].IgnoreFilterPassed = True
+            else:
+                stack.append(self._newSeq(Members=[stack.pop()],
+                                          IgnoreFilterPassed=True))
+        elif isinstance(visitee, InvertNode):
+            if hasattr(stack[-1], 'Invert'):
+                stack[-1].Invert = True
+            else:
+                stack.append(self._newSeq(Members=[stack.pop()],
+                                          Invert=True))
+
+def makeSequences(expression):
+    '''
+    Convert a control flow expression to nested GaudiSequencers.
+    '''
+    if not isinstance(expression, ControlFlowNode):
+        raise ValueError('ControlFlowNode instance expected, got %s' %
+                         type(expression).__name__)
+    visitor = CreateSequencesVisitor()
+    expression.visitNode(visitor)
+    return visitor.sequence
+
+
+class SuperAlgorithm(ControlFlowNode):
+    '''
+    Helper class to use a ControlFlowNode as an algorithm configurable
+    instance.
+    '''
+    def __new__(cls, name=None, **kwargs):
+        if name is None:
+            name = cls.__name__
+        if name in Configurable.allConfigurables:
+            instance = Configurable.allConfigurables[name]
+            assert type(instance) is cls, \
+                ('trying to reuse {0!r} as name of a {1} instance while it''s '
+                 'already used for an instance of {2}').format(
+                     name,
+                     cls.__name__,
+                     type(instance).__name__)
+            return instance
+        else:
+            instance = super(SuperAlgorithm, cls).__new__(cls, name, **kwargs)
+            Configurable.allConfigurables[name] = instance
+            return instance
+
+    def __init__(self, name=None, **kwargs):
+        self._name = name or self.getType()
+        self.graph = self._initGraph()
+        for key in kwargs:
+            setattr(self, key, kwargs[key])
+
+    @property
+    def name(self):  # name is a read only property
+        return self._name
+
+    @classmethod
+    def getType(cls):
+        return cls.__name__
+
+    # required to be registered in allConfigurables
+    def properties(self):
+        pass
+
+    # required to be registered in allConfigurables
+    def isApplicable(self):
+        return False
+
+    # required to be registered in allConfigurables
+    def getGaudiType(self):
+        return 'User'
+
+    def _makeAlg(self, typ, **kwargs):
+        '''
+        Instantiate and algorithm of type 'typ' with a name suitable for use
+        inside a SuperAlgorithm.
+        '''
+        name = '{0}_{1}'.format(self.name, kwargs.pop('name', typ.getType()))
+        return typ(name, **kwargs)
+
+    def _initGraph(self):
+        raise NotImplementedError()
+
+    def __repr__(self):
+        return '{0}({1!r})'.format(self.getType(), self.name)
+
+    def _visitSubNodes(self, visitor):
+        if self.graph:
+            self.graph.visitNode(visitor)
+
+    def __setattr__(self, name, value):
+        super(SuperAlgorithm, self).__setattr__(name, value)
+        if name in ('_name', 'graph'):
+            # do not propagate internal data members
+            return
+
+        class PropSetter(object):
+            def enter(self, node):
+                try:
+                    setattr(node, name, value)
+                except (ValueError, AttributeError):
+                    # ignore type and name mismatch
+                    pass
+            def leave(self, node):
+                pass
+
+        self._visitSubNodes(PropSetter())

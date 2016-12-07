@@ -35,6 +35,8 @@ protected:
   Gaudi::Property<std::vector<std::string>> m_outStreamNames{this, "OutStream", {}, "list of output stream names"};
   Gaudi::Property<std::string> m_outStreamType{this, "OutStreamType", "OutputStream",
                                                "[[deprecated]] default type for OutputStream instances"};
+  Gaudi::Property<bool> m_printCFExp{this, "PrintControlFlowExpression", false,
+                                     "Print the control flow expression representing the content of TopAlg"};
 
   // enums
   enum State { OFFLINE, CONFIGURED, FINALIZED, INITIALIZED };

@@ -4,15 +4,15 @@
 
 using namespace Gaudi;
 
-namespace Gaudi { 
-    
-  const std::string
+namespace Gaudi {
+
+  std::string
   DataHandle::pythonRepr() const {
     std::ostringstream ost;
-    ost << "DataHandle(\""  << fullKey()  <<  "||" 
+    ost << "DataHandle(\""  << fullKey()  <<  "||"
         << std::to_string(mode()) <<  "\")";
     return ost.str();
-}
+  }
 
 }
 

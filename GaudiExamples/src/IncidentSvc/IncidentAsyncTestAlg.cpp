@@ -17,20 +17,16 @@ StatusCode IncidentAsyncTestAlg::initialize() {
   //get service containing event data
   m_service = service(m_serviceName,true);
   //Copied from CPUCruncher.cpp
-  int i=0;
   for (auto k: m_inpKeys) {
     debug() << "adding input key " << k << endmsg;
-    m_inputObjHandles.push_back( new DataObjectHandle<DataObject>( k, Gaudi::DataHandle::Reader, this ));
-    declareInput(m_inputObjHandles.back());
-    i++;
+    m_inputObjHandles.emplace_back( new DataObjectHandle<DataObject>( k, Gaudi::DataHandle::Reader, this ));
+    declare(*m_inputObjHandles.back());
   }
 
-  i = 0;
   for (auto k: m_outKeys) {
     debug() << "adding output key " << k << endmsg;
-    m_outputObjHandles.push_back( new DataObjectHandle<DataObject>( k, Gaudi::DataHandle::Writer, this ));
-    declareOutput(m_outputObjHandles.back() );
-    i++;
+    m_outputObjHandles.emplace_back( new DataObjectHandle<DataObject>( k, Gaudi::DataHandle::Writer, this ));
+    declare(*m_outputObjHandles.back());
   }
 
   return StatusCode::SUCCESS;
@@ -41,19 +37,17 @@ StatusCode IncidentAsyncTestAlg::execute() {
   uint64_t data=0;
   MsgStream logstream(msgSvc(), name());
   for (auto & inputHandle: m_inputObjHandles){
-    if(!inputHandle->isValid())
-      continue;
+    if(!inputHandle->isValid()) continue;
 
     DataObject* obj = nullptr;
     obj = inputHandle->get();
-    if (obj == nullptr)
+    if (!obj)
       logstream << MSG::ERROR << "A read object was a null pointer." << endmsg;
   }
 
   m_service->getData(&data);
   for (auto & outputHandle: m_outputObjHandles){
-    if(!outputHandle->isValid())
-      continue;
+    if(!outputHandle->isValid()) continue;
     outputHandle->put(new DataObject());
   }
   info() << "Read data "<<data << endmsg;
@@ -64,14 +58,4 @@ StatusCode IncidentAsyncTestAlg::execute() {
 StatusCode IncidentAsyncTestAlg::finalize() {
   info() << "Finalizing " << endmsg;
   return Algorithm::finalize();
-}
-
-IncidentAsyncTestAlg::~IncidentAsyncTestAlg(){
-  for (uint i = 0; i < m_inputObjHandles.size(); ++i) {
-		delete m_inputObjHandles[i];
-	}
-
-  for (uint i = 0; i < m_outputObjHandles.size(); ++i) {
-		delete m_outputObjHandles[i];
-	}
 }

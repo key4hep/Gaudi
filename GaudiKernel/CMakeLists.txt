@@ -22,6 +22,10 @@ gaudi_add_unit_test(DirSearchPath_test tests/src/DirSearchPath_test.cpp
                     LINK_LIBRARIES GaudiKernel)
 gaudi_add_unit_test(test_SerializeSTL tests/src/test_SerializeSTL.cpp
                     LINK_LIBRARIES GaudiKernel)
+gaudi_add_unit_test(test_AnyDataObject tests/src/test_AnyDataObject.cpp
+                    LINK_LIBRARIES GaudiKernel)
+gaudi_add_unit_test(test_DataHandleVector tests/src/test_DataHandleVector.cpp
+                    LINK_LIBRARIES GaudiKernel)
 gaudi_add_unit_test(PathResolver_test tests/src/PathResolver_test.cpp
                     LINK_LIBRARIES GaudiKernel)
 gaudi_add_unit_test(test_GaudiTime tests/src/test_GaudiTime.cpp
@@ -45,6 +49,8 @@ endif()
 gaudi_add_unit_test(test_headers_build tests/src/test_headers_build.cpp
                     LINK_LIBRARIES GaudiKernel)
 gaudi_add_unit_test(test_GAUDI-905 tests/src/GAUDI-905.cpp
+                    LINK_LIBRARIES GaudiKernel)
+gaudi_add_unit_test(test_SmartRanges tests/src/test_SmartRanges.cpp
                     LINK_LIBRARIES GaudiKernel)
 
 if(GAUDI_CPP11)

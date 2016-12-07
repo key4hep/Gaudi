@@ -6,8 +6,10 @@
 // D. Piparo: Change to the new thread safe version
 #include "GaudiKernel/IDetDataSvc.h"
 #include "GaudiKernel/IIncidentListener.h"
+#include "GaudiKernel/IRegistry.h"
 #include "GaudiKernel/Time.h"
 #include "GaudiKernel/TsDataSvc.h"
+
 
 // Forward declarations
 class StatusCode;
@@ -59,6 +61,15 @@ private:
   /// Deal with Detector Description initialization
   StatusCode setupDetectorDescription();
 
+  using TsDataSvc::loadObject;
+  StatusCode loadObject( IConversionSvc* pLoader, IRegistry* pNode ) override final {
+    if ( LIKELY( m_allowLoadInRunning || serviceLocator().as<IStateful>()->FSMState() != Gaudi::StateMachine::RUNNING ) ) {
+      return TsDataSvc::loadObject(pLoader, pNode);
+    }
+    error() << "Trying to load " << pNode->identifier() << " while RUNNING" << endmsg;
+    return StatusCode::FAILURE;
+  }
+
 public:
   // Implementation of the IDetDataSvc interface
 
@@ -87,6 +98,10 @@ private:
   Gaudi::Property<bool> m_usePersistency{this, "UsePersistency", false, "control if the persistency is required"};
   Gaudi::Property<std::string> m_persistencySvcName{this, "PersistencySvc", "DetectorPersistencySvc",
                                                     "name of the persistency service"};
+
+  Gaudi::Property<bool> m_allowLoadInRunning{this, "AllowLoadInRunning", true,
+                                             "if set to false, no new object can be loaded while in running state "
+                                             "(updates are still allowed), this forces preloading of the geometry"};
 
   /// Current event time
   Gaudi::Time m_eventTime = 0;

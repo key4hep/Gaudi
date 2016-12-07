@@ -17,6 +17,7 @@
 #include <boost/algorithm/string/replace.hpp>
 #include <limits>
 #include <vector>
+#include <type_traits>
 // ============================================================================
 // GaudiKernel
 // ============================================================================
@@ -29,6 +30,8 @@
 // GaudiAlg
 // ============================================================================
 #include "GaudiAlg/Maps.h"
+#include "GaudiAlg/GaudiTool.h"
+#include "GaudiAlg/GaudiAlgorithm.h"
 // ============================================================================
 // Forward declarations
 namespace AIDA
@@ -2692,14 +2695,22 @@ public: // trivial setters
   // ==========================================================================
 public:
   // ==========================================================================
-  /// Algorithm constructor
-  GaudiHistos( const std::string& name, ISvcLocator* pSvcLocator );
+  /// Algorithm constructor - the SFINAE constraint below ensures that this is
+  /// constructor is only defined if PBASE derives from GaudiAlgorithm
+  template <typename U = PBASE, class = typename std::enable_if<std::is_base_of<GaudiAlgorithm,PBASE>::value,U>::type>
+  GaudiHistos ( const std::string & name,
+                ISvcLocator * pSvcLocator ) : PBASE(name,pSvcLocator) {
+      initGaudiHistosConstructor();
+  }
   // ==========================================================================
-  /// Tool constructor
-  GaudiHistos( const std::string& type, const std::string& name, const IInterface* parent );
-  // ==========================================================================
-  /// Destructor
-  ~GaudiHistos() override = default;
+  /// Tool constructor - SFINAE-ed to insure this constructor is only defined
+  /// if PBASE derives from GaudiTool.
+  template <typename U = PBASE, class = typename std::enable_if<std::is_base_of<GaudiTool,PBASE>::value,U>::type >
+  GaudiHistos ( const std::string& type   ,
+                const std::string& name   ,
+                const IInterface*  parent ) : PBASE(type,name,parent) {
+      initGaudiHistosConstructor();
+  }
   // ==========================================================================
 protected:
   // ==========================================================================

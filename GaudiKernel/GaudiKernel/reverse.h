@@ -22,6 +22,7 @@
 //  implies that it does meet the requirements for aggregate initializaton,
 //  which allows for {} initialization of its member.
 //
+#include <utility>
 
 #include <utility>
 
@@ -38,7 +39,7 @@ reverse_wrapper<T> reverse(T&& iterable) { return { std::forward<T>(iterable) };
 template <typename T>
 auto begin(reverse_wrapper<T>& w) -> decltype(w.iterable.rbegin()) { return w.iterable.rbegin(); }
 template <typename T>
-auto end(reverse_wrapper<T>& w) -> decltype(w.iterable.rend())  { return w.iterable.rend(); } 
+auto end(reverse_wrapper<T>& w) -> decltype(w.iterable.rend())  { return w.iterable.rend(); }
 
 #else
 

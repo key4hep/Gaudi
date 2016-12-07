@@ -29,6 +29,7 @@ set(GaudiExamples_srcs
     src/AbortEvent/*.cpp
     src/AlgSequencer/*.cpp
     src/AlgTools/*.cpp
+    src/AnyData/*.cpp
     src/DataOnDemand/*.cpp
     src/AlgErrAud/*.cpp
     src/GSLTools/*.cpp
@@ -60,7 +61,9 @@ set(GaudiExamples_srcs
     src/FileMgr/*.cpp
     src/testing/*.cpp
     src/IntelProfiler/*.cpp
-    src/PluginService/*.cpp)
+    src/PluginService/*.cpp
+    src/FunctionalAlgorithms/*.cpp
+)
 
 if (NOT LCG_COMP STREQUAL "clang")
     list(APPEND GaudiExamples_srcs  src/StatusCodeSvc/special/SCSAlg_no_inline.cpp)

@@ -11,7 +11,7 @@
  *
  *  Implementation file for class : GaudiTupleTool
  *
- *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru 
+ *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
  *  @author Chris Jones   Christopher.Rob.Jones@cern.ch
  *  @date   2004-06-28
  */
@@ -21,15 +21,6 @@
 // Force creation of templated class
 #include "GaudiAlg/GaudiTuples.icpp"
 template class GaudiTuples<GaudiHistoTool> ;
-// ============================================================================
-
-// ============================================================================
-// Standard constructor
-// ============================================================================
-GaudiTupleTool::GaudiTupleTool( const std::string& type   ,
-                                const std::string& name   ,
-                                const IInterface*  parent )
-  : GaudiTuples<GaudiHistoTool> ( type , name , parent ) { }
 // ============================================================================
 
 // ============================================================================
