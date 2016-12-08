@@ -947,7 +947,6 @@ StatusCode ForwardSchedulerSvc::promoteToScheduled( unsigned int iAlgo, int si )
   StatusCode sc( m_algResourcePool->acquireAlgorithm( algName, ialgoPtr ) );
 
   if ( sc.isSuccess() ) { // if we managed to get an algorithm instance try to schedule it
-    Algorithm* algoPtr = dynamic_cast<Algorithm*>( ialgoPtr ); // DP: expose the setter of the context?
     EventContext* eventContext( m_eventSlots[si].eventContext );
     if ( !eventContext )
       fatal() << "Event context for algorithm " << algName << " is a nullptr (slot " << si << ")" << endmsg;
@@ -999,7 +998,6 @@ StatusCode ForwardSchedulerSvc::promoteToAsyncScheduled( unsigned int iAlgo, int
   StatusCode sc( m_algResourcePool->acquireAlgorithm( algName, ialgoPtr ) );
 
   if ( sc.isSuccess() ) { // if we managed to get an algorithm instance try to schedule it
-    Algorithm* algoPtr = dynamic_cast<Algorithm*>( ialgoPtr ); // DP: expose the setter of the context?
     EventContext* eventContext( m_eventSlots[si].eventContext );
     if ( !eventContext )
       fatal() << "[Asynchronous] Event context for algorithm " << algName << " is a nullptr (slot " << si << ")"

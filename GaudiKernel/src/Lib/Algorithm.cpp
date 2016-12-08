@@ -741,12 +741,12 @@ bool Algorithm::isExecuted() const {
 
 void Algorithm::setExecuted( bool state ) {
   const EventContext& context = Gaudi::Hive::currentContext();
-  algExecStateSvc()->algExecState((IAlgorithm*)this, Gaudi::Hive::currentContext()).setExecuted(state);
+  algExecStateSvc()->algExecState((IAlgorithm*)this, context).setExecuted(state);
 }
 
 void Algorithm::resetExecuted() {
   const EventContext& context = Gaudi::Hive::currentContext();
-  return algExecStateSvc()->algExecState( (IAlgorithm*)this, Gaudi::Hive::currentContext()).reset();
+  return algExecStateSvc()->algExecState( (IAlgorithm*)this, context).reset();
 }
 
 bool Algorithm::isEnabled() const {
@@ -755,12 +755,12 @@ bool Algorithm::isEnabled() const {
 
 bool Algorithm::filterPassed() const {
   const EventContext& context = Gaudi::Hive::currentContext();
-  return algExecStateSvc()->algExecState((IAlgorithm*)this, Gaudi::Hive::currentContext()).filterPassed();
+  return algExecStateSvc()->algExecState((IAlgorithm*)this, context).filterPassed();
 }
 
 void Algorithm::setFilterPassed( bool state ) {
   const EventContext& context = Gaudi::Hive::currentContext();
-  algExecStateSvc()->algExecState((IAlgorithm*)this, Gaudi::Hive::currentContext()).setFilterPassed(state);
+  algExecStateSvc()->algExecState((IAlgorithm*)this, context).setFilterPassed(state);
 }
 
 const std::vector<Algorithm*>* Algorithm::subAlgorithms() const { return &m_subAlgms; }

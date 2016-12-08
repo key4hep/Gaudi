@@ -10,8 +10,6 @@
 
 DECLARE_ALGORITHM_FACTORY(WriteHandleAlg)
 
-//---------------------------------------------------------------------------  
-
 WriteHandleAlg::WriteHandleAlg ( const std::string& name , 
                                  ISvcLocator*pSvc )
 : GaudiAlgorithm ( name , pSvc ),
@@ -23,9 +21,6 @@ WriteHandleAlg::WriteHandleAlg ( const std::string& name ,
       // For Concurrent run
   declareProperty("Output", m_output_handle);
     }
-//---------------------------------------------------------------------------
-
-//---------------------------------------------------------------------------
 
 StatusCode WriteHandleAlg::execute  ()  // the execution of the algorithm 
 {
@@ -42,7 +37,3 @@ StatusCode WriteHandleAlg::execute  ()  // the execution of the algorithm
   return StatusCode::SUCCESS ;
 }
 
-//---------------------------------------------------------------------------
-
-//---------------------------------------------------------------------------
-\
