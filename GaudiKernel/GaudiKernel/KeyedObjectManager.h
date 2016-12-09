@@ -62,6 +62,7 @@ namespace Containers   {
   public:
     /// Standard Constructor
     KeyedObjectManager();
+    KeyedObjectManager(KeyedObjectManager&& other);
     /// Standard Destructor
     virtual ~KeyedObjectManager();
     /// Clear all direct access fields

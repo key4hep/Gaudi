@@ -35,6 +35,7 @@ set(GaudiExamples_srcs
     src/AbortEvent/*.cpp
     src/AlgSequencer/*.cpp
     src/AlgTools/*.cpp
+    src/AnyData/*.cpp
     src/DataOnDemand/*.cpp
     src/AlgErrAud/*.cpp
     src/NTuples/*.cpp
@@ -59,7 +60,8 @@ set(GaudiExamples_srcs
     src/FileMgr/*.cpp
     src/testing/*.cpp
     src/IntelProfiler/*.cpp
-    src/PluginService/*.cpp)
+    src/PluginService/*.cpp
+)
 
 # Add the sources requiring non-standard externals:
 if( AIDA_FOUND AND GSL_FOUND AND CLHEP_FOUND )
@@ -85,6 +87,9 @@ if( TARGET RootCnvLib )
 endif()
 if( OpenCL_FOUND )
    list( APPEND GaudiExamples_srcs src/OpenCL/*.cpp )
+endif()
+if( RANGES_V3_FOUND )
+   list( APPEND GaudiExamples_srcs src/FunctionalAlgorithms/*.cpp )
 endif()
 
 # Set up the include and linker flags for the examples libraries:

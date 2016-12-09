@@ -2,6 +2,7 @@
 #define GAUDIEXAMPLES_INCIDENTASYNCTESTALG_H_
 
 #include "GaudiKernel/Algorithm.h"
+#include "GaudiKernel/DataObjectHandle.h"
 #include <memory>
 
 class IIncidentSvc;
@@ -12,7 +13,6 @@ class IncidentAsyncTestAlg : public Algorithm
 {
 public:
   using Algorithm::Algorithm;
-  ~IncidentAsyncTestAlg() override;
 
   StatusCode initialize() override;
   StatusCode execute() override;
@@ -25,8 +25,9 @@ private:
   Gaudi::Property<std::vector<std::string>> m_inpKeys{this, "inpKeys"};
   Gaudi::Property<std::vector<std::string>> m_outKeys{this, "outKeys"};
   SmartIF<IIncidentAsyncTestSvc> m_service;
-  std::vector<DataObjectHandle<DataObject>*> m_inputObjHandles;
-  std::vector<DataObjectHandle<DataObject>*> m_outputObjHandles;
+  std::vector<std::unique_ptr<DataObjectHandle<DataObject>>> m_inputObjHandles;
+  std::vector<std::unique_ptr<DataObjectHandle<DataObject>>> m_outputObjHandles;
+
 };
 
 #endif /*GAUDIEXAMPLES_INCIDENTREGISTRYTESTALG_H_*/

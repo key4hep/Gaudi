@@ -669,28 +669,6 @@ private:
   Gaudi::Property<std::vector<std::string>> m_requireObjs{
       this, "RequireObjects", {}, "execute only if one or more of these TES objects exist"};
   // ==========================================================================
-
-public:
-  using Algorithm::declareProperty;
-  template <class T>
-  Gaudi::Details::PropertyBase* declareProperty( const std::string& name, DataObjectHandle<T>& hndl,
-                                                 const std::string& doc = "none" )
-  {
-
-    if ( hndl.mode() & Gaudi::DataHandle::Reader ) {
-      this->declareInput( &hndl );
-    }
-
-    if ( hndl.mode() & Gaudi::DataHandle::Writer ) {
-      this->declareOutput( &hndl );
-    }
-
-    if ( hndl.owner() == 0 ) {
-      hndl.setOwner( this );
-    }
-
-    return PropertyHolder::declareProperty( name, hndl, doc );
-  }
 };
 // ============================================================================
 // The END

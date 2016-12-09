@@ -34,38 +34,11 @@
  */
 // ============================================================================
 
-class GAUDI_API GaudiHistoAlg : public GaudiHistos<GaudiAlgorithm>
+struct GAUDI_API GaudiHistoAlg : GaudiHistos<GaudiAlgorithm>
 {
-
-public:
-
-  /** Standard constructor (protected)
-   *  @see  GaudiAlgorithm
-   *  @see       Algorithm
-   *  @param name           name of the algorithm
-   *  @param pSvcLocator    poinetr to Service Locator
-   */
-  GaudiHistoAlg ( const std::string& name,
-                  ISvcLocator*       pSvc );
-
-  /// virtual destructor
-  ~GaudiHistoAlg( ) override;
-
-  /** standard initialization method
-   *  @see  Algorithm
-   *  @see      IAlgorithm
-   *  @return status code
-   */
-  StatusCode initialize () override;
-
-  /** standard finalization method
-   *  @see       Algorithm
-   *  @see      IAlgorithm
-   *  @return status code
-   */
-  StatusCode finalize  () override;
-
-private:
+  using GaudiHistos<GaudiAlgorithm>::GaudiHistos;
+  using GaudiHistos<GaudiAlgorithm>::initialize;
+  using GaudiHistos<GaudiAlgorithm>::finalize;
 
   // delete  default/copy constructor and assignment
   GaudiHistoAlg () = delete;

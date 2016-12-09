@@ -39,8 +39,8 @@
 
 // For concurrency
 #include "GaudiKernel/DataHandle.h"
+#include "GaudiKernel/DataHandleHolderBase.h"
 #include "GaudiKernel/EventContext.h"
-#include "GaudiKernel/IDataHandleHolder.h"
 #include "GaudiKernel/IAlgExecStateSvc.h"
 
 class IAlgTool;
@@ -76,7 +76,7 @@ class ToolHandleInfo;
  *  @date   1998
  */
 class GAUDI_API Algorithm
-    : public PropertyHolder<CommonMessaging<implements<IAlgorithm, IDataHandleHolder, IProperty, IStateful>>>
+    : public DataHandleHolderBase<PropertyHolder<CommonMessaging<implements<IAlgorithm, IDataHandleHolder, IProperty, IStateful>>>>
 {
 public:
 #ifndef __REFLEX__
@@ -439,16 +439,7 @@ public:
 
   // From IDataHandleHolder:
 
-protected:
-  virtual void declareInput( Gaudi::DataHandle* im ) override { m_inputHandles.push_back( im ); }
-  virtual void declareOutput( Gaudi::DataHandle* im ) override { m_outputHandles.push_back( im ); }
-
 public:
-  virtual std::vector<Gaudi::DataHandle*> inputHandles() const override { return m_inputHandles; }
-  virtual std::vector<Gaudi::DataHandle*> outputHandles() const override { return m_outputHandles; }
-
-  virtual const DataObjIDColl& extraInputDeps() const override { return m_extInputDataObjs; }
-  virtual const DataObjIDColl& extraOutputDeps() const override { return m_extOutputDataObjs; }
 
   virtual void acceptDHVisitor( IDataHandleVisitor* ) const override;
 
@@ -458,7 +449,6 @@ public:
   void commitHandles() override;
 
 private:
-  std::vector<Gaudi::DataHandle *> m_inputHandles, m_outputHandles;
   DataObjIDColl m_inputDataObjs, m_outputDataObjs;
 
 public:
@@ -522,6 +512,12 @@ protected:
   /// set instantiation index of Alg
   void setIndex( const unsigned int& idx ) override;
 
+public:
+  /// Produce string represention of the control flow expression.
+  std::ostream& toControlFlowExpression(std::ostream& os) const override;
+
+private:
+
   int maxErrors() const { return m_errorMax; }
 
 private:
@@ -573,9 +569,6 @@ private:
   Gaudi::Property<int> m_errorMax{this, "ErrorMax", 1, "[[deprecated]] max number of errors"};
   Gaudi::Property<int> m_errorCount{this, "ErrorCounter", 0, "[[deprecated]] error counter"};
 
-  Gaudi::Property<DataObjIDColl> m_extInputDataObjs{this, "ExtraInputs", DataObjIDColl{}, "[[deprecated]]"};
-  Gaudi::Property<DataObjIDColl> m_extOutputDataObjs{this, "ExtraOutputs", DataObjIDColl{}, "[[deprecated]]"};
-
   Gaudi::Property<bool> m_auditInit{this, "AuditAlgorithms", false, "[[deprecated]] unused"};
   Gaudi::Property<bool> m_auditorInitialize{this, "AuditInitialize", false, "trigger auditor on initialize()"};
   Gaudi::Property<bool> m_auditorReinitialize{this, "AuditReinitialize", false, "trigger auditor on reinitialize()"};
@@ -596,7 +589,7 @@ private:
                                           "flag to enforce the registration for Algorithm Context Service"};
 
   Gaudi::Property<bool> m_isClonable{this, "IsClonable", false, "thread-safe enough for cloning?"};
-  Gaudi::Property<int> m_cardinality{this, "Cardinality", 1, "how many clones to create"};
+  Gaudi::Property<int> m_cardinality{this, "Cardinality", 1, "how many clones to create - 0 means algo is reentrant"};
   Gaudi::Property<std::vector<std::string>> m_neededResources{
       this, "NeededResources", {}, "named resources needed during event looping"};
 

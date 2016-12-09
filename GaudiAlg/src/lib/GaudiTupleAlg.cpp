@@ -10,8 +10,8 @@
 /*  @file GaudiTupleAlg.cpp
  *
  *  Implementation file for class : GaudiTupleAlg
- * 
- *  @date 2004-01-23 
+ *
+ *  @date 2004-01-23
  *  @author Vanya BELYAEV Ivan.Belyaev@itep.ru
  *  @author Chris Jones   Christopher.Rob.Jones@cern.ch
  */
@@ -22,15 +22,6 @@
 #include "GaudiAlg/GaudiTuples.icpp"
 template class GaudiTuples<GaudiHistoAlg> ;
 // ============================================================================
-
-// ============================================================================
-// Standard constructor
-// ============================================================================
-GaudiTupleAlg::GaudiTupleAlg( const std::string& name ,
-                              ISvcLocator*       svc  )
-  : GaudiTuples<GaudiHistoAlg> ( name , svc ) { }
-// ============================================================================
-
 
 // ============================================================================
 // The END

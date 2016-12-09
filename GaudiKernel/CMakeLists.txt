@@ -26,6 +26,10 @@ if( CPPUNIT_FOUND )
       LINK_LIBRARIES GaudiKernel)
    gaudi_add_unit_test(test_SerializeSTL tests/src/test_SerializeSTL.cpp
       LINK_LIBRARIES GaudiKernel)
+   gaudi_add_unit_test(test_AnyDataObject tests/src/test_AnyDataObject.cpp
+      LINK_LIBRARIES GaudiKernel)
+   gaudi_add_unit_test(test_DataHandleVector tests/src/test_DataHandleVector.cpp
+      LINK_LIBRARIES GaudiKernel)
    gaudi_add_unit_test(PathResolver_test tests/src/PathResolver_test.cpp
       LINK_LIBRARIES GaudiKernel)
    if( GAUDI_BUILD_TESTS )
@@ -49,11 +53,13 @@ endif()
 gaudi_add_unit_test(ContextSpecificPtrTest tests/src/test_ContextSpecificPtr.cpp
    LINK_LIBRARIES GaudiKernel TYPE Boost)
 
-# These are a compile-time tests.
+# These are a compile-time tests:
 if( CPPUNIT_FOUND )
    gaudi_add_unit_test(test_headers_build tests/src/test_headers_build.cpp
       LINK_LIBRARIES GaudiKernel)
    gaudi_add_unit_test(test_GAUDI-905 tests/src/GAUDI-905.cpp
+      LINK_LIBRARIES GaudiKernel)
+   gaudi_add_unit_test(test_SmartRanges tests/src/test_SmartRanges.cpp
       LINK_LIBRARIES GaudiKernel)
 endif()
 

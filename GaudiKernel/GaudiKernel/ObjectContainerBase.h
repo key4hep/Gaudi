@@ -22,9 +22,8 @@ protected:
 
   /// Constructor
   ObjectContainerBase() = default;
-
-  /// Destructor
-  ~ObjectContainerBase() override = default;
+  ObjectContainerBase(ObjectContainerBase&&) = default;
+  ObjectContainerBase& operator=(ObjectContainerBase&&) = default;
 
 public:
 

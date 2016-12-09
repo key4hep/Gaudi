@@ -96,7 +96,7 @@ namespace Gaudi
         : GaudiAlgorithm ( name , pSvc )
       {}
       /// virtual (and protected) destructor
-      ~SelCreate() override = default;
+      virtual ~SelCreate() {}
       // ======================================================================
     private:
       // ======================================================================

@@ -217,6 +217,9 @@ StatusCode AlgTool::sysInitialize()
     DHHVisitor avis(m_inputDataObjs, m_outputDataObjs);
     acceptDHVisitor(&avis);
 
+    // initialize handles
+    initDataHandleHolder(); // this should 'freeze' the handle configuration.
+
     return sc;
   } );
 }
@@ -506,10 +509,7 @@ void AlgTool::acceptDHVisitor( IDataHandleVisitor* vis ) const
   //-----------------------------------------------------------------------------
   vis->visit( this );
 
-  for ( auto tool : tools() ) {
-    AlgTool* at = dynamic_cast<AlgTool*>( tool );
-    vis->visit( at );
-  }
+  for ( auto tool : tools() ) vis->visit( dynamic_cast<AlgTool*>( tool ) );
 }
 
 //-----------------------------------------------------------------------------
@@ -517,12 +517,10 @@ void AlgTool::commitHandles()
 {
   //-----------------------------------------------------------------------------
 
-  for ( auto h : m_outputHandles ) {
-    h->commit();
-  }
+  for ( auto h : outputHandles() ) h->commit();
 
   for ( auto t : m_tools ) {
     AlgTool* at = dynamic_cast<AlgTool*>( t );
-    if ( at != 0 ) at->commitHandles();
+    if ( at ) at->commitHandles();
   }
 }

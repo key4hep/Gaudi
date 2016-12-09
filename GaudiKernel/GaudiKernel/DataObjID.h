@@ -16,7 +16,7 @@
  * Class used to identify an object in the Data Store, with fast lookup
  * using an hash
  *
- * Objects are identified via either a Gaudi style '/path/to/object' key, 
+ * Objects are identified via either a Gaudi style '/path/to/object' key,
  * or ATLAS style (ClassID, 'key') of ('ClassName', 'key')
  *
  * depending on the style, the hash is either a std::hash<string> of the path,
@@ -32,7 +32,7 @@
 //---------------------------------------------------------------------------
 
 
-class DataObjID_Hasher;
+struct DataObjID_Hasher;
 class IClassIDSvc;
 
 class DataObjID {
@@ -57,16 +57,16 @@ public:
 
   friend std::ostream& operator<< (std::ostream& str, const DataObjID& d);
 
-  bool operator< ( const DataObjID& other ) const {
-    return (m_hash < other.m_hash);
+  friend bool operator< (const DataObjID& lhs, const DataObjID& rhs ) {
+    return lhs.m_hash < rhs.m_hash;
   }
 
-  bool operator==( const DataObjID& other ) const {
-    return (m_hash == other.m_hash);
+  friend bool operator==(const DataObjID& lhs,  const DataObjID& rhs ) {
+    return lhs.m_hash == rhs.m_hash;
   }
 
-  bool operator!=( const DataObjID& other ) const {
-    return (m_hash != other.m_hash);
+  friend bool operator!=(const DataObjID& lhs,  const DataObjID& rhs ) {
+    return !( lhs == rhs );
   }
 
 private:
@@ -88,19 +88,19 @@ private:
 
 };
 
-inline DataObjID::DataObjID(const std::string& key): 
-  m_key(key) { 
+inline DataObjID::DataObjID(const std::string& key):
+  m_key(key) {
   hashGen();
 
 }
 
-inline DataObjID::DataObjID(const CLID& clid, const std::string& key): 
+inline DataObjID::DataObjID(const CLID& clid, const std::string& key):
   m_clid(clid), m_key(key) {
   setClassName();
   hashGen();
 }
 
-inline DataObjID::DataObjID(const std::string& className, const std::string& key): 
+inline DataObjID::DataObjID(const std::string& className, const std::string& key):
   m_className(className), m_key(key) {
   setClid();
   hashGen();
@@ -111,16 +111,15 @@ inline void DataObjID::updateKey(const std::string& key) {
   hashGen();
 }
 
-class DataObjID_Hasher {
-public:
+struct DataObjID_Hasher {
   std::size_t operator()(const DataObjID& k) const {
-    return (k.m_hash);
+    return k.m_hash;
   }
 };
 
 typedef std::unordered_set<DataObjID, DataObjID_Hasher> DataObjIDColl;
 
-namespace Gaudi { 
+namespace Gaudi {
   namespace Parsers {
     StatusCode parse(DataObjID&, const std::string&);
     StatusCode parse(DataObjIDColl&, const std::string&);

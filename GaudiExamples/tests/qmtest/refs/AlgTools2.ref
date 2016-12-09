@@ -35,10 +35,10 @@ MyAlg               DEBUG Property update for OutputLevel : new value = 2
 MyAlg               DEBUG Initialize base class GaudiCommon<Algorithm>
 MyAlg               DEBUG could not locate CounterSummarySvc, no counter summary will be made
 MyAlg               DEBUG List of ALL properties of MyGaudiAlgorithm/MyAlg  #properties = 46
-MyAlg               DEBUG Property ['Name': Value] =  'trackSelection':('/Event/MyAnalysis/Tracks')  m: 16  o: MyAlg  opt: 0
-MyAlg               DEBUG Property ['Name': Value] =  'raw':('/Rec/RAW')  m: 4  o: MyAlg  opt: 0
-MyAlg               DEBUG Property ['Name': Value] =  'hits':('/Event/Rec/Hits')  m: 4  o: MyAlg  opt: 0
-MyAlg               DEBUG Property ['Name': Value] =  'tracks':('/Event/Rec/Tracks')  m: 4  o: MyAlg  opt: 0
+MyAlg               DEBUG Property ['Name': Value] =  'trackSelection':/Event/MyAnalysis/Tracks
+MyAlg               DEBUG Property ['Name': Value] =  'raw':/Rec/RAW
+MyAlg               DEBUG Property ['Name': Value] =  'hits':/Event/Rec/Hits
+MyAlg               DEBUG Property ['Name': Value] =  'tracks':/Event/Rec/Tracks
 MyAlg               DEBUG Property ['Name': Value] =  'UnusedToolHandle':TestToolFailing
 MyAlg               DEBUG Property ['Name': Value] =  'GenericToolHandle':MyTool/GenericToolHandle
 MyAlg               DEBUG Property ['Name': Value] =  'PubToolHandle':MyTool/PubToolHandle
@@ -180,9 +180,9 @@ MyAlg               DEBUG Adding public ToolHandle tool ToolSvc.PubToolHandle (M
 MyAlg               DEBUG Adding public ToolHandle tool ToolSvc.GenericToolHandle (MyTool)
 MyAlg               DEBUG ToolHandle TestToolFailing not used
 MyAlg               DEBUG Data Deps for MyAlg
-  + INPUT  ('/Rec/RAW')
   + INPUT  ('/Event/Rec/Hits')
   + INPUT  ('/Event/Rec/Tracks')
+  + INPUT  ('/Rec/RAW')
   + OUTPUT ('/Event/MyAnalysis/Tracks')
 ToolSvc.ToolA       DEBUG Property update for OutputLevel : new value = 2
 ToolSvc.ToolA       DEBUG Initialize
@@ -542,8 +542,7 @@ MyAlg.ToolWithName   INFO finalize() has been called
 MyAlg.MyGaudiTool    INFO finalize() has been called
 MyAlg.MyGaudiTool   DEBUG  ==> Finalize the base class GaudiTool
 MyAlg.MyGaudiTool   DEBUG Tools to release :
-MyAlg.MyGaudiTool   DEBUG Services to release : AlgContextSvc
-MyAlg.MyGaudiTool   DEBUG Releasing service 'AlgContextSvc'
+MyAlg.MyGaudiTool   DEBUG Services to release : 
 ToolSvc.MyGaudi...   INFO finalize() has been called
 MyAlg.MyTool         INFO finalize() has been called
 ToolSvc.MyTool       INFO finalize() has been called

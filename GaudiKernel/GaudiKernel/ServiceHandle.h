@@ -49,7 +49,7 @@ public:
   ServiceHandle( const ServiceHandle<NCT>& other,
                  typename std::enable_if< std::is_const<CT>::value &&
                                        !std::is_same<CT,NCT>::value >::type * = nullptr )
-    : GaudiHandle<CT>( other ) 
+    : GaudiHandle<CT>( other )
   { }
 
   StatusCode initialize(const std::string& serviceName, const std::string& theParentName){
