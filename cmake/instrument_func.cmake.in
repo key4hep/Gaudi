@@ -1,0 +1,7 @@
+macro(@func@)
+  GETTIME(STARTTIME)
+  message("TIMING : STARTIME @func@@arg@ ${STARTTIME}")
+  _@func@(${ARGN})
+  GETTIME(ENDTIME)
+  message("TIMING : ENDTIME @func@@arg@ ${ENDTIME}")
+endmacro()

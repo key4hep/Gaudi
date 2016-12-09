@@ -37,7 +37,7 @@ namespace Gaudi { namespace Functional {
        StatusCode invoke(std::index_sequence<I...>) {
            using details::as_const; using details::put;
            try {
-               put(std::get<0>(this->m_outputs), as_const(*this)(details::get_from_handle(std::get<I>(this->m_inputs))...));
+               put( std::get<0>(this->m_outputs),  as_const(*this)( as_const(*std::get<I>(this->m_inputs).get())... ) );
            } catch ( GaudiException& e ) {
                (e.code() ? this->warning() : this->error() )
                    << e.message() << endmsg;
@@ -71,7 +71,7 @@ namespace Gaudi { namespace Functional {
        StatusCode invoke(std::index_sequence<I...>,std::index_sequence<O...>) {
            using details::as_const; using details::put;
            try {
-               auto out = as_const(*this)(details::get_from_handle(std::get<I>(this->m_inputs))...);
+               auto out = as_const(*this)( as_const(*std::get<I>(this->m_inputs).get())... );
                (void)std::initializer_list<int> {
                     (put(std::get<O>(this->m_outputs),std::move(std::get<O>(out))),0)...
                };
@@ -108,7 +108,7 @@ namespace Gaudi { namespace Functional {
        StatusCode invoke(std::index_sequence<I...>,std::index_sequence<O...>) {
            using details::as_const; using details::put;
            try {
-               auto out = as_const(*this)(details::get_from_handle(std::get<I>(this->m_inputs))...);
+               auto out = as_const(*this)( as_const(*std::get<I>(this->m_inputs).get())... );
                this->setFilterPassed(std::get<0>(out));
                (void)std::initializer_list<int> {
                     (put(std::get<O>(this->m_outputs),std::move(std::get<O+1>(out))),0)...

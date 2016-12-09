@@ -95,13 +95,17 @@ namespace Gaudi
                   ISvcLocator*       pSvc )   // pointer to the Service Locator
         : GaudiAlgorithm ( name , pSvc )
       {}
+      /// virtual (and protected) destructor
+      virtual ~SelCreate() {}
       // ======================================================================
     private:
       // ======================================================================
+      /// the default constructor is disabled
+      SelCreate () ;                                  // no default constructor
       /// copy constructor is disabled
-      SelCreate(const SelCreate&) = delete;
+      SelCreate ( const SelCreate& ) ;                   // no copy constructor
       /// assignement operator is disabled
-      SelCreate& operator=(const SelCreate&) = delete;
+      SelCreate& operator=( const SelCreate& ) ;     // no assignement operator
       // ======================================================================
     } ;
     // ========================================================================
