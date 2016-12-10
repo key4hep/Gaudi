@@ -115,9 +115,6 @@ private:
   /// Fake assignment operator (never implemented).
   MinimalEventLoopMgr& operator=( const MinimalEventLoopMgr& );
 
-  /// EventContext
-  EventContext* m_eventContext;
-
   // number of events processed
   size_t m_nevt {0};
 

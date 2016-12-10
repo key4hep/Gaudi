@@ -21,6 +21,7 @@
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IToolSvc.h"
 #include "GaudiKernel/Kernel.h"
+#include "GaudiKernel/ThreadLocalContext.h"
 
 #include "GaudiKernel/AlgTool.h"
 #include "GaudiKernel/Chrono.h"
@@ -47,9 +48,8 @@ namespace
 }
 
 // Constructor
-Algorithm::Algorithm( const std::string& name, ISvcLocator* pSvcLocator, const std::string& version )
-    : m_event_context( nullptr )
-    , m_name( name )
+Algorithm::Algorithm(const std::string& name, ISvcLocator* pSvcLocator, const std::string& version) :
+      m_name( name )
     , m_version( version )
     , m_index( 0 )
     , // incremented by AlgResourcePool
@@ -513,7 +513,7 @@ StatusCode Algorithm::sysExecute()
   Gaudi::Utils::AlgContext cnt( this, registerContext() ? contextSvc().get() : nullptr );
 
   // HiveWhiteBoard stuff here
-  if ( m_WB.isValid() ) m_WB->selectStore( getContext() ? getContext()->slot() : 0 ).ignore();
+  if ( m_WB.isValid() ) m_WB->selectStore(Gaudi::Hive::currentContext().slot()).ignore();
 
   Gaudi::Guards::AuditorGuard guard( this,
                                      // check if we want to audit the initialize
@@ -521,10 +521,9 @@ StatusCode Algorithm::sysExecute()
 
   TimelineEvent timeline;
   timeline.algorithm = this->name();
-  //  timeline.thread = getContext() ? getContext()->m_thread_id : 0;
   timeline.thread = pthread_self();
-  timeline.slot   = getContext() ? getContext()->slot() : 0;
-  timeline.event  = getContext() ? getContext()->evt() : 0;
+  timeline.slot   = Gaudi::Hive::currentContext().slot();
+  timeline.event  = Gaudi::Hive::currentContext().evt();
 
   try {
 
@@ -736,40 +735,18 @@ unsigned int Algorithm::index() const { return m_index; }
 void Algorithm::setIndex( const unsigned int& idx ) { m_index = idx; }
 
 bool Algorithm::isExecuted() const {
-  if (m_event_context) {
-    if (m_event_context->valid()) {
-      return algExecStateSvc()->algExecState((IAlgorithm*)this, *m_event_context).isExecuted();
-    } else {
-      error() << "EventContext is not valid" << endmsg;
-      return false;
-    }
-  } else {
-    return algExecStateSvc()->algExecState((IAlgorithm*)this).isExecuted();
-  }
+  const EventContext& context = Gaudi::Hive::currentContext();
+  return algExecStateSvc()->algExecState((IAlgorithm*)this, context).isExecuted();
 }
 
 void Algorithm::setExecuted( bool state ) {
-  if (m_event_context) {
-    if (m_event_context->valid()) {
-      algExecStateSvc()->algExecState((IAlgorithm*)this, *m_event_context).setExecuted(state);
-    } else {
-      error() << "EventContext is not valid" << endmsg;
-    }
-  } else {
-    algExecStateSvc()->algExecState((IAlgorithm*)this).setExecuted(state);
-  }
+  const EventContext& context = Gaudi::Hive::currentContext();
+  algExecStateSvc()->algExecState((IAlgorithm*)this, context).setExecuted(state);
 }
 
 void Algorithm::resetExecuted() {
-  if (m_event_context) {
-    if (m_event_context->valid()) {
-      return algExecStateSvc()->algExecState( (IAlgorithm*)this, *m_event_context).reset();
-    } else {
-      error() << "EventContext is not valid" << endmsg;
-    }
-  } else {
-    return algExecStateSvc()->algExecState( (IAlgorithm*)this).reset();
-  }
+  const EventContext& context = Gaudi::Hive::currentContext();
+  return algExecStateSvc()->algExecState( (IAlgorithm*)this, context).reset();
 }
 
 bool Algorithm::isEnabled() const {
@@ -777,28 +754,13 @@ bool Algorithm::isEnabled() const {
 }
 
 bool Algorithm::filterPassed() const {
-  if (m_event_context) {
-    if (m_event_context->valid()) {
-      return algExecStateSvc()->algExecState((IAlgorithm*)this, *m_event_context).filterPassed();
-    } else {
-      error() << "EventContext is not valid" << endmsg;
-      return false;
-    }
-  } else {
-    return algExecStateSvc()->algExecState((IAlgorithm*)this).filterPassed();
-  }
+  const EventContext& context = Gaudi::Hive::currentContext();
+  return algExecStateSvc()->algExecState((IAlgorithm*)this, context).filterPassed();
 }
 
 void Algorithm::setFilterPassed( bool state ) {
-  if (m_event_context) {
-    if (m_event_context->valid()) {
-      algExecStateSvc()->algExecState((IAlgorithm*)this, *m_event_context).setFilterPassed(state);
-    } else {
-      error() << "EventContext is not valid" << endmsg;
-    }
-  } else {
-    algExecStateSvc()->algExecState((IAlgorithm*)this).setFilterPassed(state);
-  }
+  const EventContext& context = Gaudi::Hive::currentContext();
+  algExecStateSvc()->algExecState((IAlgorithm*)this, context).setFilterPassed(state);
 }
 
 const std::vector<Algorithm*>* Algorithm::subAlgorithms() const { return &m_subAlgms; }

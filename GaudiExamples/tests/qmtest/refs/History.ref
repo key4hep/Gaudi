@@ -117,7 +117,7 @@ HistorySvc          DEBUG [mRegistering Service: [96;1mToolSvc[m
 HistorySvc          DEBUG [mRegistering Service: [96;1mEventLoopMgr[m
 HistorySvc          DEBUG [mRegistering Service: [96;1mHistorySvc[m
 HistorySvc           INFO [mRegistered 15 Services[m
-AlgExecStateSvc   VERBOSE reset()[m
+AlgExecStateSvc   VERBOSE reset(0)[m
 AlgExecStateSvc     DEBUG resizing state containers to : 1[m
 AlgExecStateSvc     DEBUG adding alg History to 1 slots[m
 AlgExecStateSvc   VERBOSE dumping state:
@@ -126,7 +126,7 @@ Algs:  1
  - Slot 0
   + History  e: 0 f: 1 sc: FAILURE
 [m
-AlgExecStateSvc   VERBOSE reset()[m
+AlgExecStateSvc   VERBOSE reset(0)[m
 EventLoopMgr        DEBUG ---> Loop Finished -  WSS 39.0156 | total time (skipping 1st evt) 26377 ns[m
 ServiceManager      DEBUG Stopping service HistorySvc[m
 HistorySvc        VERBOSE MessageSvc is Service[m
