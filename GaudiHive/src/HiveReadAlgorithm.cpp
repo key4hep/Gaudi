@@ -1,6 +1,7 @@
 #include "GaudiAlg/GaudiAlgorithm.h"
 #include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/DataStoreItem.h"
+#include "GaudiKernel/ThreadLocalContext.h"
 
 class GAUDI_API HiveReadAlgorithm: public GaudiAlgorithm {
 public:
@@ -19,9 +20,6 @@ StatusCode HiveReadAlgorithm::initialize(){
 
 StatusCode HiveReadAlgorithm::execute()
 {
-  const EventContext* ctxt = getContext();
-  if (ctxt){
-    info() << "Running now for event " << ctxt->evt() << endmsg;
-  }
+  info() << "Running now for event " << Gaudi::Hive::currentContext().evt() << endmsg;
   return evtSvc()->preLoad();
 }
