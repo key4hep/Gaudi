@@ -186,9 +186,9 @@ StatusCode AlgResourcePool::flattenSequencer(Algorithm* algo, ListAlg& alglist, 
   auto isGaudiSequencer = dynamic_cast<GaudiSequencer*> (algo);
   if ( //we only want to add basic algorithms -> have no subAlgs
           // and exclude the case of empty GaudiSequencers
-        (subAlgorithms->empty() and not isGaudiSequencer)
+        (subAlgorithms->empty() && !isGaudiSequencer)
        // we want to add non-empty GaudiAtomicSequencers
-       or (algo->type() == "GaudiAtomicSequencer" and not subAlgorithms->empty())){
+       or (algo->type() == "GaudiAtomicSequencer" && !subAlgorithms->empty())){
 
     DEBUG_MSG << std::string(recursionDepth, ' ') << algo->name() << " is "
               << (algo->type() != "GaudiAtomicSequencer" ? "not a sequencer" : "an atomic sequencer")
@@ -278,10 +278,15 @@ StatusCode AlgResourcePool::decodeTopAlgs()    {
   m_EFGraph->addHeadNode("EVENT LOOP",true,true,false);
 
   // Now we unroll it ----
-  for (auto& algoSmartIF : m_topAlgList){
+  for (auto& algoSmartIF : m_topAlgList) {
     Algorithm* algorithm = dynamic_cast<Algorithm*> (algoSmartIF.get());
     if (!algorithm) fatal() << "Conversion from IAlgorithm to Algorithm failed" << endmsg;
     sc = flattenSequencer(algorithm, m_flatUniqueAlgList, "EVENT LOOP");
+  }
+  // stupid O(N^2) unique-ification..
+  for ( auto i = begin(m_flatUniqueAlgList); i!=end(m_flatUniqueAlgList); ++i ) {
+    auto second = std::find(next(i),end(m_flatUniqueAlgList),*i);
+    if (second!=end(m_flatUniqueAlgList)) m_flatUniqueAlgList.erase(second);
   }
   if (msgLevel(MSG::DEBUG)){
     debug() << "List of algorithms is: " << endmsg;
@@ -319,11 +324,9 @@ StatusCode AlgResourcePool::decodeTopAlgs()    {
     state_type requirements(0);
 
     for (auto& resource_name : ialgo->neededResources()){
-      auto ret = m_resource_indices.insert(std::pair<std::string, unsigned int>(resource_name,resource_counter));
+      auto ret = m_resource_indices.emplace(resource_name,resource_counter);
       // insert successful means == wasn't known before. So increment counter
-      if (ret.second==true) {
-         ++resource_counter;
-      }
+      if (ret.second) ++resource_counter;
       // Resize for every algo according to the found resources
       requirements.resize(resource_counter);
       // in any case the return value holds the proper product index
