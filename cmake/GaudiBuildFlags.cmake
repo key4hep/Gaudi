@@ -66,6 +66,25 @@ option(GAUDI_SLOW_DEBUG
        "turn off all optimizations in debug builds"
        ${GAUDI_SLOW_DEBUG_DEFAULT})
 
+# special architecture flags
+set(GAUDI_ARCH_DEFAULT "")  # safe default
+if(LCG_COMP STREQUAL "gcc" AND LCG_COMPVERS VERSION_GREATER "50" AND
+      LCG_ARCH STREQUAL "x86_64")
+  set(GAUDI_ARCH_DEFAULT "sse4.2")
+else()
+  if (LCG_HOST_ARCH AND LCG_ARCH)
+    # this is valid only in the LCG toolchain context
+    if (LCG_HOST_ARCH STREQUAL "x86_64" AND LCG_ARCH STREQUAL "i686")
+      set(GAUDI_ARCH_DEFAULT "32")
+    elseif(NOT LCG_HOST_ARCH STREQUAL LCG_ARCH)
+      message(FATAL_ERROR "Cannot build for ${LCG_ARCH} on ${LCG_HOST_ARCH}.")
+    endif()
+  endif()
+endif()
+set(GAUDI_ARCH "${GAUDI_ARCH_DEFAULT}"
+    CACHE STRING "Which architecture-specific optimizations to use")
+
+
 if(DEFINED GAUDI_CPP11)
   message(WARNING "GAUDI_CPP11 is an obsolete option, use GAUDI_CXX_STANDARD=c++11 instead")
 endif()
@@ -103,18 +122,21 @@ if(NOT GAUDI_FLAGS_SET)
     endif()
 
   else()
-
+    # special architecture flags
+    if(GAUDI_ARCH)
+      set(arch_opts "-m${GAUDI_ARCH}")
+    endif()
     # Common compilation flags
     set(CMAKE_CXX_FLAGS
-        "-fmessage-length=0 -pipe -Wall -Wextra -Werror=return-type -pthread -pedantic -Wwrite-strings -Wpointer-arith -Woverloaded-virtual -Wno-long-long"
+        "${arch_opts} -fmessage-length=0 -pipe -Wall -Wextra -Werror=return-type -pthread -pedantic -Wwrite-strings -Wpointer-arith -Woverloaded-virtual -Wno-long-long"
         CACHE STRING "Flags used by the compiler during all build types."
         FORCE)
     set(CMAKE_C_FLAGS
-        "-fmessage-length=0 -pipe -Wall -Wextra -Werror=return-type -pthread -pedantic -Wwrite-strings -Wpointer-arith -Wno-long-long"
+        "${arch_opts} -fmessage-length=0 -pipe -Wall -Wextra -Werror=return-type -pthread -pedantic -Wwrite-strings -Wpointer-arith -Wno-long-long"
         CACHE STRING "Flags used by the compiler during all build types."
         FORCE)
     set(CMAKE_Fortran_FLAGS
-        "-fmessage-length=0 -pipe -Wall -Wextra -Werror=return-type -pthread -pedantic -fsecond-underscore"
+        "${arch_opts} -fmessage-length=0 -pipe -Wall -Wextra -Werror=return-type -pthread -pedantic -fsecond-underscore"
         CACHE STRING "Flags used by the compiler during all build types."
         FORCE)
 
@@ -278,18 +300,6 @@ if(NOT GAUDI_V21)
       add_definitions(-D${feature})
     endif()
   endforeach()
-endif()
-
-if (LCG_HOST_ARCH AND LCG_ARCH)
-  # this is valid only in the LCG toolchain context
-  if (LCG_HOST_ARCH STREQUAL x86_64 AND LCG_ARCH STREQUAL i686)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32")
-    set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -m32")
-    set(GCCXML_CXX_FLAGS "${GCCXML_CXX_FLAGS} -m32")
-  elseif(NOT LCG_HOST_ARCH STREQUAL LCG_ARCH)
-    message(FATAL_ERROR "Cannot build for ${LCG_ARCH} on ${LCG_HOST_ARCH}.")
-  endif()
 endif()
 
 #--- Tuning of warnings --------------------------------------------------------
