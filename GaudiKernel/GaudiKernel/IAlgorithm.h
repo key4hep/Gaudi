@@ -155,13 +155,6 @@ public:
   /// Set the filter passed flag to the specified state
   virtual void setFilterPassed( bool state ) = 0;
 
-  /// For concurrency
-  /// get the context
-  virtual const EventContext* getContext() const = 0;
-
-  /// set the context
-  virtual void setContext(const EventContext* context) = 0;
-
   /// Produce string represention of the control flow expression.
   virtual std::ostream& toControlFlowExpression(std::ostream& os) const = 0;
 

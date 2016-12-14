@@ -85,32 +85,19 @@ class GAUDI_API  IAlgExecStateSvc : virtual public IInterface {
                                      const EventContext& ctx) = 0;
 
   // get all the Algorithm Execution States for a given EventContext
-  virtual const AlgStateMap_t& algExecStates(const EventContext& ctx) const = 0;
-  
-
-  // get the Algorithm Execution State for a give Algorithm for slot 0 (ie serial)
-  virtual const AlgExecState& algExecState(const Gaudi::StringKey& algName) const = 0;
-  virtual const AlgExecState& algExecState(IAlgorithm* iAlg) const = 0;
-  virtual AlgExecState& algExecState(IAlgorithm* iAlg) = 0;
-  // get all the Algorithm Execution States for a given EventContext
-  virtual const AlgStateMap_t& algExecStates() const = 0;
+  virtual const AlgStateMap_t& algExecStates(const EventContext& ctx) const = 0;  
 
   virtual void reset(const EventContext& ctx) = 0;
-  virtual void reset() = 0;
 
   virtual void addAlg(IAlgorithm* iAlg) = 0;
   virtual void addAlg(const Gaudi::StringKey& algName) = 0;
 
-  virtual const EventStatus::Status& eventStatus() const = 0;
   virtual const EventStatus::Status& eventStatus(const EventContext& ctx) const = 0;
 
-  virtual void setEventStatus(const EventStatus::Status& sc) = 0;
   virtual void setEventStatus(const EventStatus::Status& sc, const EventContext& ctx) = 0;
 
-  virtual void updateEventStatus(const bool& b) = 0;
   virtual void updateEventStatus(const bool& b, const EventContext& ctx) = 0;
 
-  virtual void dump(std::ostringstream& ost) const = 0;
   virtual void dump(std::ostringstream& ost, const EventContext& ctx) const = 0;
 
 };

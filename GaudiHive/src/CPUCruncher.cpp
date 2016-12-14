@@ -3,6 +3,7 @@
 #include <ctime>
 #include <sys/resource.h>
 #include <sys/times.h>
+#include "GaudiKernel/ThreadLocalContext.h"
 
 #include <tbb/tick_count.h>
 #include <thread>
@@ -277,9 +278,9 @@ StatusCode CPUCruncher::execute() // the execution of the algorithm
   } // end of "sleeping block"
 
   DEBUG_MSG << "Crunching time will be: " << crunchtime << endmsg;
-  if ( getContext() )
-    DEBUG_MSG << "Start event " << getContext()->evt() << " in slot " << getContext()->slot()
-              << " on pthreadID " << std::hex << pthread_self() << std::dec << endmsg;
+  const EventContext& context = Gaudi::Hive::currentContext();
+  DEBUG_MSG << "Start event " << context.evt() << " in slot " << context.slot()
+            << " on pthreadID " << std::hex << pthread_self() << std::dec << endmsg;
 
   VERBOSE_MSG << "inputs number: " << m_inputHandles.size() << endmsg;
   for ( auto& inputHandle : m_inputHandles ) {
@@ -308,10 +309,9 @@ StatusCode CPUCruncher::execute() // the execution of the algorithm
 
   const double actualRuntime = ( endtbb - starttbb ).seconds();
 
-  if ( getContext() )
-    DEBUG_MSG << "Finish event " << getContext()->evt()
-              //      << " on pthreadID " << getContext()->m_thread_id
-              << " in " << actualRuntime << " seconds" << endmsg;
+  DEBUG_MSG << "Finish event " << context.evt()
+    //      << " on pthreadID " << context.m_thread_id
+            << " in " << actualRuntime << " seconds" << endmsg;
 
   DEBUG_MSG << "Timing: ExpectedCrunchtime= " << crunchtime << " ExpectedDreamtime= " << dreamtime
             << " ActualTotalRuntime= " << actualRuntime << " Ratio= " << ( crunchtime + dreamtime ) / actualRuntime

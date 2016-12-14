@@ -37,29 +37,17 @@ public:
                              const EventContext& ctx) override;
   const AlgStateMap_t& algExecStates(const EventContext& ctx) const override;
 
-
-  const AlgExecState& algExecState(const Gaudi::StringKey& algName) const override;
-  const AlgExecState& algExecState(IAlgorithm* iAlg) const override;
-  AlgExecState& algExecState(IAlgorithm* iAlg) override;
-  const AlgStateMap_t& algExecStates() const override;
-
-
   void reset(const EventContext& ctx) override;
-  void reset() override;
 
   void addAlg(IAlgorithm* iAlg) override;
   void addAlg(const Gaudi::StringKey& algName) override;
 
-  const EventStatus::Status& eventStatus() const override;
   const EventStatus::Status& eventStatus(const EventContext& ctx) const override;
 
-  void setEventStatus(const EventStatus::Status& sc) override;
   void setEventStatus(const EventStatus::Status& sc, const EventContext& ctx) override;
 
-  void updateEventStatus(const bool& b) override;
   void updateEventStatus(const bool& b, const EventContext& ctx) override;
 
-  void dump(std::ostringstream& ost) const override;
   void dump(std::ostringstream& ost, const EventContext& ctx) const override;
 
 private:

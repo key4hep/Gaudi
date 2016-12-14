@@ -3,6 +3,7 @@
 #include "GaudiKernel/IAlgManager.h"
 #include "GaudiKernel/EventContext.h"
 #include "GaudiKernel/GaudiException.h"
+#include "GaudiKernel/ThreadLocalContext.h"
 
 #include "GaudiKernel/SvcFactory.h"
 
@@ -78,7 +79,7 @@ AlgExecStateSvc::init() {
 
   if (msgLevel( MSG::VERBOSE )) {
     std::ostringstream ost;
-    dump(ost);
+    dump(ost, Gaudi::Hive::currentContext());
     verbose() << "dumping state:\n" << ost.str() << endmsg;
   }
 
@@ -120,34 +121,6 @@ StatusCode
 AlgExecStateSvc::finalize() {
 
   return StatusCode::SUCCESS;
-
-}
-
-//-----------------------------------------------------------------------------
-
-void
-AlgExecStateSvc::dump(std::ostringstream& ost) const {
-
-  checkInit();
-
-  ost << "Event: " << trans(m_eventStatus.at(0)) << std::endl;
-  ost << "Algs:  " << m_algStates.at(0).size() << std::endl;
-
-  size_t ml(0);
-  for (auto &e : m_algStates.at(0)) {
-    if ( e.first.str().length() > ml ) {
-      ml = e.first.str().length();
-    }
-  }
-
-  for (size_t is =0; is < m_algStates.size(); ++is) {
-    ost << " - Slot " << is << std::endl;
-    const AlgStateMap_t& m = m_algStates.at(is);
-    for (auto &e : m) {
-      ost << "  + " << std::setw(ml) << e.first.str() << "  " << e.second 
-          << std::endl;
-    }
-  }
 
 }
 
@@ -279,60 +252,6 @@ AlgExecStateSvc::algExecStates(const EventContext& ctx) const {
 
 //-----------------------------------------------------------------------------
 
-const AlgExecState& 
-AlgExecStateSvc::algExecState(const Gaudi::StringKey& algName) const {
-
-  checkInit();
-
-  AlgStateMap_t::const_iterator itr = m_algStates.at(0).find( algName );
-
-  if (UNLIKELY( itr == m_algStates.at(0).end() ) ) {
-    throw GaudiException{std::string{"cannot find Alg "} 
-      + algName.str() + " in AlgStateMap", name(), StatusCode::FAILURE};
-  }
-
-  return itr->second;
-
-}
-
-//-----------------------------------------------------------------------------
-
-AlgExecState& 
-AlgExecStateSvc::algExecState(IAlgorithm* iAlg) {
-
-  std::call_once(m_initFlag, &AlgExecStateSvc::init, this);
-
-  AlgStateMap_t::iterator itr = m_algStates.at(0).find( iAlg->nameKey() );
-
-  if (UNLIKELY( itr == m_algStates.at(0).end() ) ) {
-    throw GaudiException{std::string{"cannot find Alg "} 
-      + iAlg->name() + " in AlgStateMap", name(), StatusCode::FAILURE};
-  }
-
-  return itr->second;
-
-}
-
-//-----------------------------------------------------------------------------
-
-const AlgExecState& 
-AlgExecStateSvc::algExecState(IAlgorithm* iAlg) const {
-  checkInit();
-  return algExecState(iAlg->nameKey());
-}
-
-//-----------------------------------------------------------------------------
-
-const IAlgExecStateSvc::AlgStateMap_t& 
-AlgExecStateSvc::algExecStates() const {
-
-  checkInit();
-
-  return m_algStates.at(0);
-}
-
-//-----------------------------------------------------------------------------
-
 const EventStatus::Status&
 AlgExecStateSvc::eventStatus(const EventContext& ctx) const {
   checkInit();
@@ -341,43 +260,10 @@ AlgExecStateSvc::eventStatus(const EventContext& ctx) const {
 
 //-----------------------------------------------------------------------------
 
-const EventStatus::Status&
-AlgExecStateSvc::eventStatus() const {
-  checkInit();
-  return m_eventStatus.at(0);
-}
-
-//-----------------------------------------------------------------------------
-
 void
 AlgExecStateSvc::setEventStatus(const EventStatus::Status& sc, const EventContext& ctx) {
   std::call_once(m_initFlag, &AlgExecStateSvc::init, this);
   m_eventStatus.at(ctx.slot()) = sc;
-}
-
-//-----------------------------------------------------------------------------
-
-void
-AlgExecStateSvc::setEventStatus(const EventStatus::Status& sc) {
-  std::call_once(m_initFlag, &AlgExecStateSvc::init, this);
-  m_eventStatus.at(0) = sc;
-}
-
-//-----------------------------------------------------------------------------
-
-void
-AlgExecStateSvc::updateEventStatus(const bool& fail) {
-  std::call_once(m_initFlag, &AlgExecStateSvc::init, this);
-  if (m_eventStatus.at(0) == EventStatus::Success) {
-    if (fail) 
-      m_eventStatus.at(0) = EventStatus::AlgFail;
-  } else if (m_eventStatus.at(0) == EventStatus::Invalid) {
-    if (! fail) {
-      m_eventStatus.at(0) = EventStatus::Success;
-    } else {
-      m_eventStatus.at(0) = EventStatus::AlgFail;
-    }
-  }
 }
 
 //-----------------------------------------------------------------------------
@@ -412,23 +298,6 @@ AlgExecStateSvc::reset(const EventContext& ctx) {
   }
 
   m_eventStatus.at(ctx.slot()) = EventStatus::Invalid;
-
-}
-
-//-----------------------------------------------------------------------------
-
-void
-AlgExecStateSvc::reset() {
-
-  if (msgLevel(MSG::DEBUG))
-  verbose() << "reset()" << endmsg;
-
-  std::call_once(m_initFlag, &AlgExecStateSvc::init, this);
-  for (auto &e : m_algStates.at(0)) {
-    e.second.reset();
-  }
-
-  m_eventStatus.at(0) = EventStatus::Invalid;
 
 }
 

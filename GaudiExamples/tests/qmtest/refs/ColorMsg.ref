@@ -74,7 +74,7 @@ ApplicationMgr    SUCCESS
 [92;1mServiceManager      DEBUG Starting service HistogramDataSvc[m
 [92;1mServiceManager      DEBUG Starting service EventLoopMgr[m
 [96;1mApplicationMgr       INFO Application Manager Started successfully[m
-[95;4mAlgExecStateSvc   VERBOSE reset()[m
+[95;4mAlgExecStateSvc   VERBOSE reset(0)[m
 [92;1mAlgExecStateSvc     DEBUG resizing state containers to : 1[m
 [92;1mAlgExecStateSvc     DEBUG adding alg ColorMsgAlg to 1 slots[m
 [95;4mAlgExecStateSvc   VERBOSE dumping state:
@@ -95,7 +95,7 @@ Algs:  1
 [96;1mColorMsgAlg          INFO setting....[93;1mthis should be in yellow[91;1m and red[m
 [96;1mColorMsgAlg          INFO multicolor: [94;102;1mthis is blue on green[95;107;1m and purple on white[m
 [96;1mColorMsgAlg          INFO [92;1mThis is green. [93;104;1mThis is in yellow on blue. [m[96;1mThis is back to normal[m
-[95;4mAlgExecStateSvc   VERBOSE reset()[m
+[95;4mAlgExecStateSvc   VERBOSE reset(0)[m
 [98;108;1mColorMsgAlg         FATAL THIS IS A FATAL MESSAGE[m
 [97;101;1mColorMsgAlg         ERROR THIS IS AN ERROR MESSAGE[m
 [98;1mColorMsgAlg       WARNING THIS IS A WARNING MESSAGE[m

@@ -5,6 +5,7 @@
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/SvcFactory.h"
+#include "GaudiKernel/ThreadLocalContext.h"
 
 // Local
 #include "AlgResourcePool.h"
@@ -946,12 +947,10 @@ StatusCode ForwardSchedulerSvc::promoteToScheduled( unsigned int iAlgo, int si )
   StatusCode sc( m_algResourcePool->acquireAlgorithm( algName, ialgoPtr ) );
 
   if ( sc.isSuccess() ) { // if we managed to get an algorithm instance try to schedule it
-    Algorithm* algoPtr = dynamic_cast<Algorithm*>( ialgoPtr ); // DP: expose the setter of the context?
     EventContext* eventContext( m_eventSlots[si].eventContext );
     if ( !eventContext )
       fatal() << "Event context for algorithm " << algName << " is a nullptr (slot " << si << ")" << endmsg;
 
-    algoPtr->setContext( m_eventSlots[si].eventContext );
     ++m_algosInFlight;
     // Avoid to use tbb if the pool size is 1 and run in this thread
     if (-100 != m_threadPoolSize) {
@@ -999,13 +998,11 @@ StatusCode ForwardSchedulerSvc::promoteToAsyncScheduled( unsigned int iAlgo, int
   StatusCode sc( m_algResourcePool->acquireAlgorithm( algName, ialgoPtr ) );
 
   if ( sc.isSuccess() ) { // if we managed to get an algorithm instance try to schedule it
-    Algorithm* algoPtr = dynamic_cast<Algorithm*>( ialgoPtr ); // DP: expose the setter of the context?
     EventContext* eventContext( m_eventSlots[si].eventContext );
     if ( !eventContext )
       fatal() << "[Asynchronous] Event context for algorithm " << algName << " is a nullptr (slot " << si << ")"
               << endmsg;
 
-    algoPtr->setContext( m_eventSlots[si].eventContext );
     ++m_IOBoundAlgosInFlight;
     // Can we use tbb-based overloaded new-operator for a "custom" task (an algorithm wrapper, not derived from tbb::task)? it seems it works..
     IOBoundAlgTask* theTask = new( tbb::task::allocate_root() )
@@ -1050,6 +1047,7 @@ StatusCode ForwardSchedulerSvc::promoteToExecuted( unsigned int iAlgo, int si, I
   if (m_algExecStateSvc->eventStatus(*eventContext) != EventStatus::Success)
     eventFailed(eventContext).ignore();
 
+  Gaudi::Hive::setCurrentContext(eventContext);
   StatusCode sc = m_algResourcePool->releaseAlgorithm( algo->name(), algo );
 
   if ( !sc.isSuccess() ) {

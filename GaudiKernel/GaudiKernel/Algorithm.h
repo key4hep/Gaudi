@@ -426,19 +426,6 @@ public:
     if ( mS ) mS->declareInfo( name, format, var, size, desc, this );
   }
 
-  // ==========================================================================
-public:
-  // ==========================================================================
-
-  // For concurrency
-  /// get the context
-  const EventContext* getContext() const override { return m_event_context; }
-
-  /// set the context
-  void setContext( const EventContext* context ) override { m_event_context = context; }
-
-  // From IDataHandleHolder:
-
 public:
 
   virtual void acceptDHVisitor( IDataHandleVisitor* ) const override;
@@ -505,9 +492,6 @@ protected:
 
   /// Has the Algorithm already been finalized?
   bool isFinalized() const override { return Gaudi::StateMachine::CONFIGURED == m_state; }
-
-  /// Event specific data for multiple event processing
-  const EventContext* m_event_context;
 
   /// set instantiation index of Alg
   void setIndex( const unsigned int& idx ) override;

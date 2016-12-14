@@ -22,7 +22,6 @@ tbb::task* AlgoExecutionTask::execute() {
   }
   
   bool eventfailed=false;
-  this_algo->setContext(m_evtCtx);
   Gaudi::Hive::setCurrentContext( m_evtCtx );
 
   m_schedSvc->addAlg(this_algo, m_evtCtx, pthread_self());
