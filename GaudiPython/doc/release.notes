@@ -2,6 +2,22 @@ Package: GaudiPython
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+================================ Gaudi v28r1 =================================
+
+! 2016-12-07 - many contributors (commit dc1b505)
+
+ - port LHCb MT developments to Gaudi master
+
+   among others we have
+   - `Gaudi::Functional`: base classes to write algorithms as pure functions
+   - `AnyDataWrapper`/`AnyDataHandle`: helper to store any type in the Transient
+   Store (DataSvc)
+   - fixes to `DataObjectHandle`
+   - fixes to `GaudiHive`
+   - new tests and examples
+   - modernization (removed empty destructors, ...)
+    See merge request !245
+
 ================================ Gaudi v28r0 =================================
 
 ! 2016-10-28 - Marco Clemencic (commit f2881a2)
