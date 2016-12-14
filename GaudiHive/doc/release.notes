@@ -1,6 +1,50 @@
 Package : GaudiKernel
 Commit Id: $Format:%H$
 
+================================ Gaudi v28r1 =================================
+
+! 2016-12-07 - Sebastien Ponce (commit 102daf4)
+
+ - Improvements on Hivetimeline script
+
+   In particular :
+    - proper display of slots for the events bars at the top
+    - scalable display, with command line options to change size
+    - option to skip first events (useful for first one where cache are not
+   warm)
+    - worked around ROOT bug of TLines not working properly
+    - allow to change on command line number of colors for the events
+    See merge request !243
+
+! 2016-12-07 - many contributors (commit dc1b505)
+
+ - port LHCb MT developments to Gaudi master
+
+   among others we have
+   - `Gaudi::Functional`: base classes to write algorithms as pure functions
+   - `AnyDataWrapper`/`AnyDataHandle`: helper to store any type in the Transient
+   Store (DataSvc)
+   - fixes to `DataObjectHandle`
+   - fixes to `GaudiHive`
+   - new tests and examples
+   - modernization (removed empty destructors, ...)
+    See merge request !245
+
+! 2016-12-06 - Sebastien Ponce (commit abf1182)
+
+ - Fixed uninitialized variable in the Gaudi Forward Scheduler, leading to
+   random dead lock
+
+   See merge request !244
+
+! 2016-11-30 - Frank Winklmeier (commit ead2d09)
+
+ - Add script to plot timeline as created by TimelineSvc
+
+   The script `hivetimeline.py` makes a nice graphical representation of the
+   timline.cvs file created by the TimlineSvc.
+    See merge request !234
+
 ================================ Gaudi v28r0 =================================
 
 ! 2016-11-08 - Marco Clemencic (commit ec96c27)
