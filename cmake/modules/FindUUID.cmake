@@ -8,7 +8,7 @@
 
 find_path(UUID_INCLUDE_DIR uuid/uuid.h
           HINTS $ENV{UUID_ROOT_DIR}/include ${UUID_ROOT_DIR}/include)
-find_library(UUID_LIBRARIES NAMES uuid
+find_library(UUID_LIBRARIES NAMES uuid System
           HINTS $ENV{UUID_ROOT_DIR}/lib ${UUID_ROOT_DIR}/lib)
 
 set(UUID_INCLUDE_DIRS ${UUID_INCLUDE_DIR})

@@ -2075,7 +2075,9 @@ function(gaudi_add_dictionary dictionary header selection)
 
   # override the genreflex call to wrap it in the right environment
   gaudi_env(PREPEND PATH ${lcg_system_compiler_path}/bin)
-  set(ROOT_genreflex_CMD ${env_cmd} --xml ${env_xml} ${ROOT_genreflex_CMD})
+  if( NOT APPLE ) # On macOS the user has to provide a ROOT version that works on its own.
+     set(ROOT_genreflex_CMD ${env_cmd} --xml ${env_xml} ${ROOT_genreflex_CMD})
+  endif()
 
   # we need to forward the SPLIT_CLASSDEF option to reflex_dictionary()
   if(ARG_SPLIT_CLASSDEF)
