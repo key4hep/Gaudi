@@ -4,6 +4,12 @@ Commit Id: $Format:%H$
 
 ================================ Gaudi v28r1 =================================
 
+! 2016-12-14 - Sebastien Ponce (commit ea582c7)
+
+ - Readded missing accessors dropped with the ranges
+
+   See merge request !250
+
 ! 2016-12-07 - many contributors (commit dc1b505)
 
  - port LHCb MT developments to Gaudi master
