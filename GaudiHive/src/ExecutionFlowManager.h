@@ -1,8 +1,8 @@
 #ifndef EXECUTIONFLOWMANAGER_H_
 #define EXECUTIONFLOWMANAGER_H_
 
-#include "ExecutionFlowGraph.h"
 #include "EFGraphVisitors.h"
+#include "PrecedenceRulesGraph.h"
 
 namespace concurrency {
 
@@ -26,16 +26,16 @@ namespace concurrency {
     ~ExecutionFlowManager() override = default;
     /// Initialize the control flow manager
     /// It greps the topalg list and the index map for the algo names
-    StatusCode initialize(ExecutionFlowGraph* CFGraph,
+    StatusCode initialize(PrecedenceRulesGraph* CFGraph,
                             const std::unordered_map<std::string,unsigned int>& algname_index_map);
-    StatusCode initialize(ExecutionFlowGraph* CFGraph,
+    StatusCode initialize(PrecedenceRulesGraph* CFGraph,
                           const std::unordered_map<std::string,unsigned int>& algname_index_map,
                           std::vector<EventSlot>& eventSlots,
                           const std::string& mode);
     ///
     void simulateExecutionFlow(IGraphVisitor& visitor) const;
     /// Get the flow graph instance
-    inline ExecutionFlowGraph* getExecutionFlowGraph() const {return m_EFGraph;}
+    inline PrecedenceRulesGraph* getExecutionFlowGraph() const {return m_EFGraph;}
     /// A little bit silly, but who cares. ;-)
     bool needsAlgorithmToRun(const unsigned int iAlgo) const;
     /// Update the state of algorithms to controlready, where possible
@@ -70,7 +70,7 @@ namespace concurrency {
   private:
     std::string m_name;
     /// the control flow graph
-    ExecutionFlowGraph* m_EFGraph;
+    PrecedenceRulesGraph* m_EFGraph;
   };
 
 } // namespace concurrency

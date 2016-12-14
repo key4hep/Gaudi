@@ -2,7 +2,7 @@
 #define EFGRAPHVISITORS_H_
 
 #include "IGraphVisitor.h"
-#include "ExecutionFlowGraph.h"
+#include "PrecedenceRulesGraph.h"
 
 namespace concurrency {
 

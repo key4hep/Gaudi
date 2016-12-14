@@ -3,7 +3,7 @@
 namespace concurrency {
 
   //---------------------------------------------------------------------------
-  StatusCode ExecutionFlowManager::initialize(ExecutionFlowGraph* ef_graph,
+  StatusCode ExecutionFlowManager::initialize(PrecedenceRulesGraph* ef_graph,
                                             const std::unordered_map<std::string,unsigned int>& algname_index_map){
     m_EFGraph = ef_graph;
     StatusCode sc = ef_graph->initialize(algname_index_map);
@@ -14,7 +14,7 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  StatusCode ExecutionFlowManager::initialize(ExecutionFlowGraph* ef_graph,
+  StatusCode ExecutionFlowManager::initialize(PrecedenceRulesGraph* ef_graph,
                                             const std::unordered_map<std::string,unsigned int>& algname_index_map,
                                             std::vector<EventSlot>& eventSlots,
                                             const std::string& mode){
