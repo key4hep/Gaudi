@@ -359,12 +359,4 @@ inline std::ostream& operator<<( std::ostream& os, const ToolHandleArray<T>& han
   return operator<<(os, static_cast<const GaudiHandleInfo&>(handle) );
 }
 
-// #ifdef ATLAS
-// template <typename T>
-// [[deprecated("FIXME!! should not call non-const method from a const ToolHandle")]]
-// T* nonConst( const ToolHandle<T>& handle) {
-//   return const_cast<T*> ( handle.operator->() );
-// }
-// #endif
-
 #endif // ! GAUDIKERNEL_TOOLHANDLE_H
