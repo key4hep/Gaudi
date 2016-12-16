@@ -5,6 +5,11 @@ gaudi_depends_on_subdirs(GaudiKernel)
 find_package(Boost COMPONENTS regex)
 find_package(HepPDT)
 
+# If HepPDT is not available, give up on this subdirectory:
+if( NOT HEPPDT_FOUND )
+   return()
+endif()
+
 # Hide some HepPDT compile time warnings
 include_directories(SYSTEM ${HEPPDT_INCLUDE_DIRS})
 

@@ -741,7 +741,7 @@ StatusCode ForwardSchedulerSvc::updateStates( int si, const std::string& algo_na
     }
 
     if (m_dumpIntraEventDynamics) {
-      auto now = std::chrono::high_resolution_clock::now();
+      auto now = std::chrono::system_clock::now();
       std::stringstream s;
       s << algo_name << ", " << thisAlgsStates.sizeOfSubset(State::CONTROLREADY) << ", "
                      << thisAlgsStates.sizeOfSubset(State::DATAREADY) << ", "
