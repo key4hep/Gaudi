@@ -48,8 +48,7 @@ ifIObound = precedence.UniformBooleanValue(False)
 sequencer = precedence.CruncherSequence(timeValue, ifIObound, sleepFraction=0.0,
                                         cfgPath = "lhcb/reco/cf_dependencies.graphml",
                                         dfgPath = "lhcb/reco/data_dependencies.graphml",
-                                        topSequencer = 'GaudiSequencer/BrunelSequencer',
-                                        algoDebug = False).get()
+                                        topSequencer = 'GaudiSequencer/BrunelSequencer').get()
 
 ApplicationMgr( EvtMax = evtMax,
                 EvtSel = 'NONE',
