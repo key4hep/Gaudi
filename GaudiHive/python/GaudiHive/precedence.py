@@ -178,14 +178,15 @@ class CruncherSequence(object):
             if dataName not in self.unique_data_objects:
                 self.unique_data_objects.append(dataName)
 
-            algo.inpKeys.append(dataName)
+            if dataName not in algo.inpKeys: algo.inpKeys.append(dataName)
 
         # Declare data outputs
         for inNode, outNode in self.dfg.out_edges(algo_name):
             dataName = outNode
             if dataName not in self.unique_data_objects:
                 self.unique_data_objects.append(dataName)
-            algo.outKeys.append(dataName)
+            
+            if dataName not in algo.outKeys: algo.outKeys.append(dataName)
 
 
     def _generate_sequence(self, name, seq=None):
