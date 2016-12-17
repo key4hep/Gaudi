@@ -4411,9 +4411,6 @@
       <data key="d1">Exact</data>
       <data key="d2">Aux.</data>
     </edge>
-    <edge source="StreamAODAlg" target="DataHeader_MERGER_NOKEY">
-      <data key="d1">Exact</data>
-    </edge>
     <edge source="StreamAODAlg" target="DataHeader_MERGER_StreamAOD">
       <data key="d1">Exact</data>
     </edge>
