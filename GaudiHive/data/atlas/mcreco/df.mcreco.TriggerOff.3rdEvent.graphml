@@ -31,7 +31,7 @@
     <node id="CaloClusterCellLinkContainer_MERGER_TauShotClusters">
       <data key="d0">DataObject</data>
     </node>
-    <node id="Trk::SegmentCollection_MERGER_TrkStauSegments">
+    <node id="Trk_SRO_SegmentCollection_MERGER_TrkStauSegments">
       <data key="d0">DataObject</data>
     </node>
     <node id="SCT_ID_MERGER_SCT_ID">
@@ -40,7 +40,7 @@
     <node id="xAODandSGTypes_MERGER_BTagging_AntiKt4LCTopo">
       <data key="d0">DataObject</data>
     </node>
-    <node id="Muon::CscPrepDataContainer_MERGER_CSC_Clusters">
+    <node id="Muon_SRO_CscPrepDataContainer_MERGER_CSC_Clusters">
       <data key="d0">DataObject</data>
     </node>
     <node id="xAODandSGTypes_MERGER_BTagging_AntiKt4EMPFlow">
@@ -52,7 +52,7 @@
     <node id="DetailedTrackTruthCollection_MERGER_CombinedMuonTracksTruth">
       <data key="d0">DataObject</data>
     </node>
-    <node id="InDet::DRMap_MERGER_dRMap">
+    <node id="InDet_SRO_DRMap_MERGER_dRMap">
       <data key="d0">DataObject</data>
     </node>
     <node id="ResolvedTracksDetailedTruthMakerAlg">
@@ -64,7 +64,7 @@
     <node id="CaloCalibrationHitContainer_MERGER_LArCalibrationHitInactive">
       <data key="d0">DataObject</data>
     </node>
-    <node id="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetEMNPFlow">
+    <node id="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetEMNPFlow">
       <data key="d0">DataObject</data>
     </node>
     <node id="ResolvedForwardTracksDetailedTruthMakerAlg">
@@ -82,7 +82,7 @@
     <node id="xAODandSGTypes_MERGER_JetInputTruthParticles">
       <data key="d0">DataObject</data>
     </node>
-    <node id="fastjet::ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt10LCTopoJetsFinder">
+    <node id="fastjet_SRO_ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt10LCTopoJetsFinder">
       <data key="d0">DataObject</data>
     </node>
     <node id="DetailedTrackTruthMakerAlg">
@@ -139,7 +139,7 @@
     <node id="TileRawChannelContainer_MERGER_TileRawChannelCnt">
       <data key="d0">DataObject</data>
     </node>
-    <node id="Muon::TgcCoinDataContainer_MERGER_TrigT1CoinDataCollectionPriorBC">
+    <node id="Muon_SRO_TgcCoinDataContainer_MERGER_TrigT1CoinDataCollectionPriorBC">
       <data key="d0">DataObject</data>
     </node>
     <node id="xAODandSGTypes_MERGER_METMap_EMTopo">
@@ -166,7 +166,7 @@
     <node id="MuonSimDataCollection_MERGER_MDT_SDO">
       <data key="d0">DataObject</data>
     </node>
-    <node id="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetGhostWBosons">
+    <node id="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetGhostWBosons">
       <data key="d0">DataObject</data>
     </node>
     <node id="EDnpfIsoForwardAlg">
@@ -217,7 +217,7 @@
     <node id="xAODandSGTypes_MERGER_V0KshortVertices">
       <data key="d0">DataObject</data>
     </node>
-    <node id="fastjet::ClusterSequence_MERGER_ClusterSequence_JetFinder_CamKt12TruthWZJetsFinder">
+    <node id="fastjet_SRO_ClusterSequence_MERGER_ClusterSequence_JetFinder_CamKt12TruthWZJetsFinder">
       <data key="d0">DataObject</data>
     </node>
     <node id="xAODandSGTypes_MERGER_TruthLabelCQuarksFinal">
@@ -232,7 +232,7 @@
     <node id="EgammaRecContainer_MERGER_ElectronSuperRecCollection">
       <data key="d0">DataObject</data>
     </node>
-    <node id="Muon::MdtPrepDataContainer_MERGER_MDT_DriftCircles">
+    <node id="Muon_SRO_MdtPrepDataContainer_MERGER_MDT_DriftCircles">
       <data key="d0">DataObject</data>
     </node>
     <node id="xAODandSGTypes_MERGER_MET_Truth">
@@ -250,7 +250,7 @@
     <node id="ResolvedTracksTruthCollectionSelectorAlg">
       <data key="d0">GaudiAlgorithm</data>
     </node>
-    <node id="InDet::InDetLowBetaContainer_MERGER_InDetLowBetaCandidates">
+    <node id="InDet_SRO_InDetLowBetaContainer_MERGER_InDetLowBetaCandidates">
       <data key="d0">DataObject</data>
     </node>
     <node id="InDetAmbiguitySolverForwardTracksAlg">
@@ -277,7 +277,7 @@
     <node id="TrackCollection_MERGER_SiSPSeededTracks">
       <data key="d0">DataObject</data>
     </node>
-    <node id="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetTruth">
+    <node id="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetTruth">
       <data key="d0">DataObject</data>
     </node>
     <node id="xAODandSGTypes_MERGER_PhotonSuperClusters">
@@ -307,13 +307,13 @@
     <node id="DataHeader_MERGER_NOKEY">
       <data key="d0">DataObject</data>
     </node>
-    <node id="Muon::RpcCoinDataContainer_MERGER_RPC_triggerHits">
+    <node id="Muon_SRO_RpcCoinDataContainer_MERGER_RPC_triggerHits">
       <data key="d0">DataObject</data>
     </node>
     <node id="xAODandSGTypes_MERGER_BTagging_AntiKt4EMTopo">
       <data key="d0">DataObject</data>
     </node>
-    <node id="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetGhostTQuarksFinal">
+    <node id="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetGhostTQuarksFinal">
       <data key="d0">DataObject</data>
     </node>
     <node id="EmTowerBldrAlg">
@@ -397,7 +397,7 @@
     <node id="xAODandSGTypes_MERGER_TauSecondaryVertices">
       <data key="d0">DataObject</data>
     </node>
-    <node id="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetLCTopo">
+    <node id="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetLCTopo">
       <data key="d0">DataObject</data>
     </node>
     <node id="JetTrackAlg_forDiTausAlg">
@@ -439,7 +439,7 @@
     <node id="MuonPatternCombinationCollection_MERGER_MuonHoughPatternCombinations">
       <data key="d0">DataObject</data>
     </node>
-    <node id="Muon::TgcPrepDataContainer_MERGER_TGC_MeasurementsAllBCs">
+    <node id="Muon_SRO_TgcPrepDataContainer_MERGER_TGC_MeasurementsAllBCs">
       <data key="d0">DataObject</data>
     </node>
     <node id="InDetTRT_TrackSegmentsFinderAlg">
@@ -490,7 +490,7 @@
     <node id="InDetTRT_SeededAmbiguitySolverAlg">
       <data key="d0">GaudiAlgorithm</data>
     </node>
-    <node id="Muon::RpcCoinDataContainer_MERGER_RPC_Measurements">
+    <node id="Muon_SRO_RpcCoinDataContainer_MERGER_RPC_Measurements">
       <data key="d0">DataObject</data>
     </node>
     <node id="JetTrackAlg_forTausAlg">
@@ -535,7 +535,7 @@
     <node id="CreateLumiBlockCollectionFromFileAlg">
       <data key="d0">GaudiAlgorithm</data>
     </node>
-    <node id="fastjet::ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt2PV0TrackJetsFinder">
+    <node id="fastjet_SRO_ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt2PV0TrackJetsFinder">
       <data key="d0">DataObject</data>
     </node>
     <node id="InDetCopyAlg">
@@ -574,7 +574,7 @@
     <node id="xAODandSGTypes_MERGER_Muons">
       <data key="d0">DataObject</data>
     </node>
-    <node id="jet::LabelIndex_MERGER_PseudoJetLabelMap">
+    <node id="jet_SRO_LabelIndex_MERGER_PseudoJetLabelMap">
       <data key="d0">DataObject</data>
     </node>
     <node id="xAODandSGTypes_MERGER_PrimaryVertices">
@@ -628,7 +628,7 @@
     <node id="EventStreamInfo_MERGER_StreamESD">
       <data key="d0">DataObject</data>
     </node>
-    <node id="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetEMTopo">
+    <node id="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetEMTopo">
       <data key="d0">DataObject</data>
     </node>
     <node id="xAODandSGTypes_MERGER_AntiKt4EMTopoJets">
@@ -643,7 +643,7 @@
     <node id="StauCreatorAlg">
       <data key="d0">GaudiAlgorithm</data>
     </node>
-    <node id="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetGhostCHadronsInitial">
+    <node id="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetGhostCHadronsInitial">
       <data key="d0">DataObject</data>
     </node>
     <node id="MuonCreatorAlg">
@@ -676,7 +676,7 @@
     <node id="MuGirlStauAlg">
       <data key="d0">GaudiAlgorithm</data>
     </node>
-    <node id="InDet::SiClusterContainer_MERGER_PixelClusters">
+    <node id="InDet_SRO_SiClusterContainer_MERGER_PixelClusters">
       <data key="d0">DataObject</data>
     </node>
     <node id="RpcRdoToRpcPrepDataAlg">
@@ -715,16 +715,16 @@
     <node id="MuonInsideOutRecoAlg">
       <data key="d0">GaudiAlgorithm</data>
     </node>
-    <node id="InDet::PixelClusterContainer_MERGER_PixelClusters">
+    <node id="InDet_SRO_PixelClusterContainer_MERGER_PixelClusters">
       <data key="d0">DataObject</data>
     </node>
     <node id="MuonSpectrometerTracksTruthAlg">
       <data key="d0">GaudiAlgorithm</data>
     </node>
-    <node id="fastjet::ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt4EMTopoJetsFinder">
+    <node id="fastjet_SRO_ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt4EMTopoJetsFinder">
       <data key="d0">DataObject</data>
     </node>
-    <node id="Muon::TgcCoinDataContainer_MERGER_TrigT1CoinDataCollection">
+    <node id="Muon_SRO_TgcCoinDataContainer_MERGER_TrigT1CoinDataCollection">
       <data key="d0">DataObject</data>
     </node>
     <node id="McEventCollection_MERGER_TruthEvent">
@@ -736,7 +736,7 @@
     <node id="xAODandSGTypes_MERGER_TruthLabelPartons">
       <data key="d0">DataObject</data>
     </node>
-    <node id="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetGhostHBosons">
+    <node id="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetGhostHBosons">
       <data key="d0">DataObject</data>
     </node>
     <node id="xAODandSGTypes_MERGER_AntiKt10LCTopoJets">
@@ -772,13 +772,13 @@
     <node id="eflowOverlapRemoval_EMAlg">
       <data key="d0">GaudiAlgorithm</data>
     </node>
-    <node id="Trk::SegmentCollection_MERGER_TrkMuonSegments">
+    <node id="Trk_SRO_SegmentCollection_MERGER_TrkMuonSegments">
       <data key="d0">DataObject</data>
     </node>
     <node id="InDetPixelPrdAssociationTrackParticlesAlg">
       <data key="d0">GaudiAlgorithm</data>
     </node>
-    <node id="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetGhostTausFinal">
+    <node id="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetGhostTausFinal">
       <data key="d0">DataObject</data>
     </node>
     <node id="xAODandSGTypes_MERGER_BTagging_AntiKt4TrackSecVtx">
@@ -787,10 +787,10 @@
     <node id="LArCollisionTimeAlg">
       <data key="d0">GaudiAlgorithm</data>
     </node>
-    <node id="jet::TrackVertexAssociation_MERGER_JetTrackVtxAssoc">
+    <node id="jet_SRO_TrackVertexAssociation_MERGER_JetTrackVtxAssoc">
       <data key="d0">DataObject</data>
     </node>
-    <node id="jet::TrackVertexAssociation_MERGER_JetTrackVtxAssoc_forTaus">
+    <node id="jet_SRO_TrackVertexAssociation_MERGER_JetTrackVtxAssoc_forTaus">
       <data key="d0">DataObject</data>
     </node>
     <node id="DetailedTrackTruthCollection_MERGER_SiSPSeededPixelTracksDetailedTruth">
@@ -811,10 +811,10 @@
     <node id="xAODandSGTypes_MERGER_InDetTrackParticles">
       <data key="d0">DataObject</data>
     </node>
-    <node id="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_LCOriginTopoClustersPseudoJet">
+    <node id="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_LCOriginTopoClustersPseudoJet">
       <data key="d0">DataObject</data>
     </node>
-    <node id="InDet::PixelGangedClusterAmbiguities_MERGER_PixelClusterAmbiguitiesMap">
+    <node id="InDet_SRO_PixelGangedClusterAmbiguities_MERGER_PixelClusterAmbiguitiesMap">
       <data key="d0">DataObject</data>
     </node>
     <node id="TrackTruthCollection_MERGER_ResolvedTRTSeededTracksTruthCollection">
@@ -826,7 +826,7 @@
     <node id="DetailedTrackTruthCollection_MERGER_SiSpSeededForwardTracksDetailedTruth">
       <data key="d0">DataObject</data>
     </node>
-    <node id="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetGhostTracks">
+    <node id="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetGhostTracks">
       <data key="d0">DataObject</data>
     </node>
     <node id="xAODandSGTypes_MERGER_xaodMuonSegments">
@@ -856,7 +856,7 @@
     <node id="IOVMetaDataContainer_MERGER__Simulation_Parameters">
       <data key="d0">DataObject</data>
     </node>
-    <node id="jet::TrackVertexAssociation_MERGER_JetTrackVtxAssoc_forDiTaus">
+    <node id="jet_SRO_TrackVertexAssociation_MERGER_JetTrackVtxAssoc_forDiTaus">
       <data key="d0">DataObject</data>
     </node>
     <node id="InDetSiSpTrackFinderAlg">
@@ -865,10 +865,10 @@
     <node id="CaloClusterCellLinkContainer_MERGER_MuonClusterCollection">
       <data key="d0">DataObject</data>
     </node>
-    <node id="InDet::SCT_ClusterContainer_MERGER_SCT_Clusters">
+    <node id="InDet_SRO_SCT_ClusterContainer_MERGER_SCT_Clusters">
       <data key="d0">DataObject</data>
     </node>
-    <node id="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetTracks">
+    <node id="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetTracks">
       <data key="d0">DataObject</data>
     </node>
     <node id="xAODandSGTypes_MERGER_AntiKt4TruthJets">
@@ -889,7 +889,7 @@
     <node id="MuonSimDataCollection_MERGER_STGC_SDO">
       <data key="d0">DataObject</data>
     </node>
-    <node id="Muon::CscStripPrepDataContainer_MERGER_CSC_Measurements">
+    <node id="Muon_SRO_CscStripPrepDataContainer_MERGER_CSC_Measurements">
       <data key="d0">DataObject</data>
     </node>
     <node id="TrackTruthCollection_MERGER_SiSpSeededForwardTracksTruthCollection">
@@ -901,7 +901,7 @@
     <node id="xAODandSGTypes_MERGER_METRecoGoodTrackParticles">
       <data key="d0">DataObject</data>
     </node>
-    <node id="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetGhostBHadronsInitial">
+    <node id="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetGhostBHadronsInitial">
       <data key="d0">DataObject</data>
     </node>
     <node id="TrackCollection_MERGER_SiSPSeededPixelTracks">
@@ -910,10 +910,10 @@
     <node id="ExtrapolatedMuonTracksTruthAlg">
       <data key="d0">GaudiAlgorithm</data>
     </node>
-    <node id="Muon::TgcPrepDataContainer_MERGER_TGC_MeasurementsNextBC">
+    <node id="Muon_SRO_TgcPrepDataContainer_MERGER_TGC_MeasurementsNextBC">
       <data key="d0">DataObject</data>
     </node>
-    <node id="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetGhostPartons">
+    <node id="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetGhostPartons">
       <data key="d0">DataObject</data>
     </node>
     <node id="METMakerAlg_AntiKt4LCTopoAlg">
@@ -922,7 +922,7 @@
     <node id="TruthParticleContainer_MERGER_SpclMC">
       <data key="d0">DataObject</data>
     </node>
-    <node id="fastjet::ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt4EMPFlowJetsFinder">
+    <node id="fastjet_SRO_ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt4EMPFlowJetsFinder">
       <data key="d0">DataObject</data>
     </node>
     <node id="CscThresholdClusterBuilderAlg">
@@ -940,7 +940,7 @@
     <node id="xAODandSGTypes_MERGER_TauShotParticleFlowObjects">
       <data key="d0">DataObject</data>
     </node>
-    <node id="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetGhostAntiKt3TrackJet">
+    <node id="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetGhostAntiKt3TrackJet">
       <data key="d0">DataObject</data>
     </node>
     <node id="xAODandSGTypes_MERGER_EMOriginTopoClusters">
@@ -967,7 +967,7 @@
     <node id="TileMuContainer_MERGER_TileMuObj">
       <data key="d0">DataObject</data>
     </node>
-    <node id="Rec::TrackParticleContainer_MERGER_TrackParticleCandidate">
+    <node id="Rec_SRO_TrackParticleContainer_MERGER_TrackParticleCandidate">
       <data key="d0">DataObject</data>
     </node>
     <node id="ExtendedTracksTruthCollectionSelectorAlg">
@@ -1018,7 +1018,7 @@
     <node id="DataVector&lt;INavigable4Momentum&gt;_MERGER_SpclMC">
       <data key="d0">DataObject</data>
     </node>
-    <node id="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetGhostAntiKt2TrackJet">
+    <node id="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetGhostAntiKt2TrackJet">
       <data key="d0">DataObject</data>
     </node>
     <node id="xAODandSGTypes_MERGER_METMap_EMTopoRegions">
@@ -1039,7 +1039,7 @@
     <node id="xAODandSGTypes_MERGER_TauHadronicParticleFlowObjects">
       <data key="d0">DataObject</data>
     </node>
-    <node id="fastjet::ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt10TruthWZJetsFinder">
+    <node id="fastjet_SRO_ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt10TruthWZJetsFinder">
       <data key="d0">DataObject</data>
     </node>
     <node id="TrackRecordCollection_MERGER_CaloEntryLayer">
@@ -1063,7 +1063,7 @@
     <node id="PixelPrdAssociationTracksDetailedTruthMakerAlg">
       <data key="d0">GaudiAlgorithm</data>
     </node>
-    <node id="fastjet::ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt3PV0TrackJetsFinder">
+    <node id="fastjet_SRO_ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt3PV0TrackJetsFinder">
       <data key="d0">DataObject</data>
     </node>
     <node id="DataVector&lt;INavigable4Momentum&gt;_MERGER_LArTowerEM">
@@ -1090,7 +1090,7 @@
     <node id="TrackTruthCollection_MERGER_ExtendedTracksPixelPrdAssociationTruthCollection">
       <data key="d0">DataObject</data>
     </node>
-    <node id="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetGhostTruth">
+    <node id="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetGhostTruth">
       <data key="d0">DataObject</data>
     </node>
     <node id="TrackTruthCollection_MERGER_CombinedMuonTracksTruth">
@@ -1102,10 +1102,10 @@
     <node id="PRD_MultiTruthCollection_MERGER_TGC_TruthMap">
       <data key="d0">DataObject</data>
     </node>
-    <node id="Muon::TgcPrepDataContainer_MERGER_TGC_MeasurementsPriorBC">
+    <node id="Muon_SRO_TgcPrepDataContainer_MERGER_TGC_MeasurementsPriorBC">
       <data key="d0">DataObject</data>
     </node>
-    <node id="fastjet::ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt10TruthJetsFinder">
+    <node id="fastjet_SRO_ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt10TruthJetsFinder">
       <data key="d0">DataObject</data>
     </node>
     <node id="InDetTrackParticlesAlg">
@@ -1114,7 +1114,7 @@
     <node id="xAODandSGTypes_MERGER_CamKt12TruthJets">
       <data key="d0">DataObject</data>
     </node>
-    <node id="Trk::SegmentCollection_MERGER_MuonSegments">
+    <node id="Trk_SRO_SegmentCollection_MERGER_MuonSegments">
       <data key="d0">DataObject</data>
     </node>
     <node id="TrackExtensionMap_MERGER_ExtendedTracksMapPixelPrdAssociation">
@@ -1162,7 +1162,7 @@
     <node id="InDetTRT_StandaloneTrackFinderAlg">
       <data key="d0">GaudiAlgorithm</data>
     </node>
-    <node id="Trk::SegmentCollection_MERGER_NCB_MuonSegments">
+    <node id="Trk_SRO_SegmentCollection_MERGER_NCB_MuonSegments">
       <data key="d0">DataObject</data>
     </node>
     <node id="xAODandSGTypes_MERGER_METMap_Calo">
@@ -1189,13 +1189,13 @@
     <node id="xAODandSGTypes_MERGER_EventInfo">
       <data key="d0">DataObject</data>
     </node>
-    <node id="InDet::PixelGangedClusterAmbiguities_MERGER_SplitClusterAmbiguityMap">
+    <node id="InDet_SRO_PixelGangedClusterAmbiguities_MERGER_SplitClusterAmbiguityMap">
       <data key="d0">DataObject</data>
     </node>
     <node id="RpcPadContainer_MERGER_RPCPAD">
       <data key="d0">DataObject</data>
     </node>
-    <node id="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetEMPFlow">
+    <node id="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetEMPFlow">
       <data key="d0">DataObject</data>
     </node>
     <node id="DetailedTrackTruthCollection_MERGER_ResolvedPixelPrdAssociationTracksDetailedTruth">
@@ -1318,7 +1318,7 @@
     <node id="xAODandSGTypes_MERGER_MSDisplacedVertex">
       <data key="d0">DataObject</data>
     </node>
-    <node id="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetGhostMuonSegment">
+    <node id="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetGhostMuonSegment">
       <data key="d0">DataObject</data>
     </node>
     <node id="xAODandSGTypes_MERGER_FTK_TrackParticleContainerRefit">
@@ -1339,7 +1339,7 @@
     <node id="xAODandSGTypes_MERGER_METMap_Track">
       <data key="d0">DataObject</data>
     </node>
-    <node id="Muon::TgcPrepDataContainer_MERGER_TGC_Measurements">
+    <node id="Muon_SRO_TgcPrepDataContainer_MERGER_TGC_Measurements">
       <data key="d0">DataObject</data>
     </node>
     <node id="xAODandSGTypes_MERGER_BTagging_AntiKt10TruthWZJFVtx">
@@ -1351,13 +1351,13 @@
     <node id="PRD_MultiTruthCollection_MERGER_STGC_TruthMap">
       <data key="d0">DataObject</data>
     </node>
-    <node id="InDet::SiClusterContainer_MERGER_SCT_Clusters">
+    <node id="InDet_SRO_SiClusterContainer_MERGER_SCT_Clusters">
       <data key="d0">DataObject</data>
     </node>
     <node id="MuonSystemExtensionCollection_MERGER_MuonSystemExtensionCollection">
       <data key="d0">DataObject</data>
     </node>
-    <node id="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetGhostBQuarksFinal">
+    <node id="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetGhostBQuarksFinal">
       <data key="d0">DataObject</data>
     </node>
     <node id="InDetSegmentDriftCircleAssValidationAlg">
@@ -1366,7 +1366,7 @@
     <node id="xAODandSGTypes_MERGER_ParticleFlowIsoForwardEventShape">
       <data key="d0">DataObject</data>
     </node>
-    <node id="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetGhostZBosons">
+    <node id="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetGhostZBosons">
       <data key="d0">DataObject</data>
     </node>
     <node id="xAODandSGTypes_MERGER_CombinedStauTrackParticles">
@@ -1438,10 +1438,10 @@
     <node id="SiSPSeededPixelTracksDetailedTruthMakerAlg">
       <data key="d0">GaudiAlgorithm</data>
     </node>
-    <node id="Muon::TgcCoinDataContainer_MERGER_TrigT1CoinDataCollectionNextBC">
+    <node id="Muon_SRO_TgcCoinDataContainer_MERGER_TrigT1CoinDataCollectionNextBC">
       <data key="d0">DataObject</data>
     </node>
-    <node id="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetGhostBHadronsFinal">
+    <node id="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetGhostBHadronsFinal">
       <data key="d0">DataObject</data>
     </node>
     <node id="LArClusterMakerAlg">
@@ -1462,22 +1462,22 @@
     <node id="TrackCollection_MERGER_ExtendedTracks">
       <data key="d0">DataObject</data>
     </node>
-    <node id="fastjet::ClusterSequence_MERGER_ClusterSequence_JetFinder_CamKt12TruthJetsFinder">
+    <node id="fastjet_SRO_ClusterSequence_MERGER_ClusterSequence_JetFinder_CamKt12TruthJetsFinder">
       <data key="d0">DataObject</data>
     </node>
-    <node id="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_EMOriginTopoClustersPseudoJet">
+    <node id="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_EMOriginTopoClustersPseudoJet">
       <data key="d0">DataObject</data>
     </node>
     <node id="MBTSCollisionTime_MERGER_MBTSCollisionTime">
       <data key="d0">DataObject</data>
     </node>
-    <node id="fastjet::ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt4LCTopoJetsFinder">
+    <node id="fastjet_SRO_ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt4LCTopoJetsFinder">
       <data key="d0">DataObject</data>
     </node>
     <node id="xAODandSGTypes_MERGER_MuonSpectrometerTrackParticles">
       <data key="d0">DataObject</data>
     </node>
-    <node id="fastjet::ClusterSequence_MERGER_ClusterSequence_JetFinder_CamKt12LCTopoJetsFinder">
+    <node id="fastjet_SRO_ClusterSequence_MERGER_ClusterSequence_JetFinder_CamKt12LCTopoJetsFinder">
       <data key="d0">DataObject</data>
     </node>
     <node id="TrackTruthCollectionSelectorAlg">
@@ -1510,7 +1510,7 @@
     <node id="InDetTRTonly_PRD_AssociationAlg">
       <data key="d0">GaudiAlgorithm</data>
     </node>
-    <node id="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetGhostCQuarksFinal">
+    <node id="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetGhostCQuarksFinal">
       <data key="d0">DataObject</data>
     </node>
     <node id="xAODandSGTypes_MERGER_CaloTopoCluster">
@@ -1597,7 +1597,7 @@
     <node id="xAODandSGTypes_MERGER_AntiKt10TruthJets">
       <data key="d0">DataObject</data>
     </node>
-    <node id="fastjet::ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt4PV0TrackJetsFinder">
+    <node id="fastjet_SRO_ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt4PV0TrackJetsFinder">
       <data key="d0">DataObject</data>
     </node>
     <node id="CaloCellContainer_MERGER_AODCellContainer">
@@ -1618,13 +1618,13 @@
     <node id="xAODandSGTypes_MERGER_CamKt12LCTopoJets">
       <data key="d0">DataObject</data>
     </node>
-    <node id="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetGhostCHadronsFinal">
+    <node id="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetGhostCHadronsFinal">
       <data key="d0">DataObject</data>
     </node>
     <node id="InDetSegmentPRD_AssociationAlg">
       <data key="d0">GaudiAlgorithm</data>
     </node>
-    <node id="Trk::SegmentCollection_MERGER_TRTSegments">
+    <node id="Trk_SRO_SegmentCollection_MERGER_TRTSegments">
       <data key="d0">DataObject</data>
     </node>
     <node id="MuonPRD_MultiTruthMakerAlg">
@@ -1642,7 +1642,7 @@
     <node id="xAODandSGTypes_MERGER_MET_Core_AntiKt4EMTopo">
       <data key="d0">DataObject</data>
     </node>
-    <node id="fastjet::ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt4TruthWZJetsFinder">
+    <node id="fastjet_SRO_ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt4TruthWZJetsFinder">
       <data key="d0">DataObject</data>
     </node>
     <node id="xAODandSGTypes_MERGER_TauNeutralParticleFlowObjects">
@@ -1654,7 +1654,7 @@
     <node id="DetailedTrackTruthCollection_MERGER_MuonSpectrometerTracksTruth">
       <data key="d0">DataObject</data>
     </node>
-    <node id="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetGhostAntiKt4TrackJet">
+    <node id="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetGhostAntiKt4TrackJet">
       <data key="d0">DataObject</data>
     </node>
     <node id="CscRawDataContainer_MERGER_CSCRDO">
@@ -1663,7 +1663,7 @@
     <node id="EDpfIsoCentralAlg">
       <data key="d0">GaudiAlgorithm</data>
     </node>
-    <node id="Muon::RpcPrepDataContainer_MERGER_RPC_Measurements">
+    <node id="Muon_SRO_RpcPrepDataContainer_MERGER_RPC_Measurements">
       <data key="d0">DataObject</data>
     </node>
     <node id="DetailedTrackTruthCollection_MERGER_ResolvedForwardTracksDetailedTruth">
@@ -1675,7 +1675,7 @@
     <node id="SpacePointContainer_MERGER_OverlapSpacePoints">
       <data key="d0">DataObject</data>
     </node>
-    <node id="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetTruthWZ">
+    <node id="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetTruthWZ">
       <data key="d0">DataObject</data>
     </node>
     <node id="DetailedTrackTruthCollection_MERGER_TRTSeededTracksDetailedTruth">
@@ -1711,7 +1711,7 @@
     <node id="xAODandSGTypes_MERGER_egammaTruthParticles">
       <data key="d0">DataObject</data>
     </node>
-    <node id="fastjet::ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt4TruthJetsFinder">
+    <node id="fastjet_SRO_ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt4TruthJetsFinder">
       <data key="d0">DataObject</data>
     </node>
     <node id="TrackRecordCollection_MERGER_MuonExitLayer">
@@ -1723,7 +1723,7 @@
     <node id="FrameworkAlg">
       <data key="d0">FakeAlgorithm</data>
     </node>
-    <node id="InDet::TRT_DriftCircleContainer_MERGER_TRT_DriftCircles">
+    <node id="InDet_SRO_TRT_DriftCircleContainer_MERGER_TRT_DriftCircles">
       <data key="d0">DataObject</data>
     </node>
     <node id="TileLookForMuAlg">
@@ -1755,22 +1755,22 @@
       <data key="d1">Exact</data>
       <data key="d2">Aux.</data>
     </edge>
-    <edge source="Muon::CscPrepDataContainer_MERGER_CSC_Clusters" target="MuonSegmentMakerAlg">
+    <edge source="Muon_SRO_CscPrepDataContainer_MERGER_CSC_Clusters" target="MuonSegmentMakerAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="Muon::CscPrepDataContainer_MERGER_CSC_Clusters" target="MuonCombinedAlg">
+    <edge source="Muon_SRO_CscPrepDataContainer_MERGER_CSC_Clusters" target="MuonCombinedAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="Muon::CscPrepDataContainer_MERGER_CSC_Clusters" target="MuonPRD_MultiTruthMakerAlg">
+    <edge source="Muon_SRO_CscPrepDataContainer_MERGER_CSC_Clusters" target="MuonPRD_MultiTruthMakerAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="Muon::CscPrepDataContainer_MERGER_CSC_Clusters" target="MuonInsideOutRecoAlg">
+    <edge source="Muon_SRO_CscPrepDataContainer_MERGER_CSC_Clusters" target="MuonInsideOutRecoAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="Muon::CscPrepDataContainer_MERGER_CSC_Clusters" target="StreamESDAlg">
+    <edge source="Muon_SRO_CscPrepDataContainer_MERGER_CSC_Clusters" target="StreamESDAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="Muon::CscPrepDataContainer_MERGER_CSC_Clusters" target="MuonSegmentMaker_NCBAlg">
+    <edge source="Muon_SRO_CscPrepDataContainer_MERGER_CSC_Clusters" target="MuonSegmentMaker_NCBAlg">
       <data key="d1">Exact</data>
     </edge>
     <edge source="xAODandSGTypes_MERGER_BTagging_AntiKt4EMPFlow" target="StreamAODAlg">
@@ -1792,10 +1792,10 @@
     <edge source="DetailedTrackTruthCollection_MERGER_CombinedMuonTracksTruth" target="CombinedMuonTracksSelectorAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="InDet::DRMap_MERGER_dRMap" target="InDetAmbiguitySolverAlg">
+    <edge source="InDet_SRO_DRMap_MERGER_dRMap" target="InDetAmbiguitySolverAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="InDet::DRMap_MERGER_dRMap" target="InDetAmbiguitySolverForwardTracksAlg">
+    <edge source="InDet_SRO_DRMap_MERGER_dRMap" target="InDetAmbiguitySolverForwardTracksAlg">
       <data key="d1">Exact</data>
     </edge>
     <edge source="ResolvedTracksDetailedTruthMakerAlg" target="DetailedTrackTruthCollection_MERGER_ResolvedTracksDetailedTruth">
@@ -1812,7 +1812,7 @@
     <edge source="CaloCalibrationHitContainer_MERGER_LArCalibrationHitInactive" target="CaloTopoClusterAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetEMNPFlow" target="EDnpfIsoForwardAlg">
+    <edge source="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetEMNPFlow" target="EDnpfIsoForwardAlg">
       <data key="d1">Exact</data>
     </edge>
     <edge source="ResolvedForwardTracksDetailedTruthMakerAlg" target="DetailedTrackTruthCollection_MERGER_ResolvedForwardTracksDetailedTruth">
@@ -1893,7 +1893,7 @@
       <data key="d1">Exact</data>
       <data key="d2">Aux.</data>
     </edge>
-    <edge source="MuonSegmentMakerAlg" target="Trk::SegmentCollection_MERGER_MuonSegments">
+    <edge source="MuonSegmentMakerAlg" target="Trk_SRO_SegmentCollection_MERGER_MuonSegments">
       <data key="d1">Exact</data>
     </edge>
     <edge source="MuonSegmentMakerAlg" target="MuonSegmentCombinationCollection_MERGER_MooreSegmentCombinations">
@@ -2096,7 +2096,7 @@
     <edge source="InDetTRT_ExtensionAlg" target="TrackExtensionMap_MERGER_ExtendedTracksMap">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="EDnpfIsoCentralAlg" target="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetEMNPFlow">
+    <edge source="EDnpfIsoCentralAlg" target="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetEMNPFlow">
       <data key="d1">Exact</data>
     </edge>
     <edge source="EDnpfIsoCentralAlg" target="xAODandSGTypes_MERGER_NeutralParticleFlowIsoCentralEventShape">
@@ -2136,28 +2136,28 @@
       <data key="d1">Exact</data>
       <data key="d2">Aux.</data>
     </edge>
-    <edge source="Muon::MdtPrepDataContainer_MERGER_MDT_DriftCircles" target="MuonCombinedAlg">
+    <edge source="Muon_SRO_MdtPrepDataContainer_MERGER_MDT_DriftCircles" target="MuonCombinedAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="Muon::MdtPrepDataContainer_MERGER_MDT_DriftCircles" target="MuonSegmentMakerAlg">
+    <edge source="Muon_SRO_MdtPrepDataContainer_MERGER_MDT_DriftCircles" target="MuonSegmentMakerAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="Muon::MdtPrepDataContainer_MERGER_MDT_DriftCircles" target="MuonPRD_MultiTruthMakerAlg">
+    <edge source="Muon_SRO_MdtPrepDataContainer_MERGER_MDT_DriftCircles" target="MuonPRD_MultiTruthMakerAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="Muon::MdtPrepDataContainer_MERGER_MDT_DriftCircles" target="MuonInsideOutRecoAlg">
+    <edge source="Muon_SRO_MdtPrepDataContainer_MERGER_MDT_DriftCircles" target="MuonInsideOutRecoAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="Muon::MdtPrepDataContainer_MERGER_MDT_DriftCircles" target="MSVertexRecoAlg">
+    <edge source="Muon_SRO_MdtPrepDataContainer_MERGER_MDT_DriftCircles" target="MSVertexRecoAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="Muon::MdtPrepDataContainer_MERGER_MDT_DriftCircles" target="StreamESDAlg">
+    <edge source="Muon_SRO_MdtPrepDataContainer_MERGER_MDT_DriftCircles" target="StreamESDAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="Muon::MdtPrepDataContainer_MERGER_MDT_DriftCircles" target="MuonCreatorAlg">
+    <edge source="Muon_SRO_MdtPrepDataContainer_MERGER_MDT_DriftCircles" target="MuonCreatorAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="Muon::MdtPrepDataContainer_MERGER_MDT_DriftCircles" target="MuPatTrackBuilderAlg">
+    <edge source="Muon_SRO_MdtPrepDataContainer_MERGER_MDT_DriftCircles" target="MuPatTrackBuilderAlg">
       <data key="d1">Exact</data>
     </edge>
     <edge source="xAODandSGTypes_MERGER_MET_Truth" target="StreamAODAlg">
@@ -2274,7 +2274,7 @@
     <edge source="TrackExtensionMap_MERGER_ExtendedTracksMap" target="InDetExtensionProcessorAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="MuonSegmentMaker_NCBAlg" target="Trk::SegmentCollection_MERGER_NCB_MuonSegments">
+    <edge source="MuonSegmentMaker_NCBAlg" target="Trk_SRO_SegmentCollection_MERGER_NCB_MuonSegments">
       <data key="d1">Exact</data>
     </edge>
     <edge source="MuonSegmentMaker_NCBAlg" target="MuonSegmentCombinationCollection_MERGER_NCB_MooreSegmentCombinations">
@@ -2361,7 +2361,7 @@
       <data key="d3">Aux.-vxTrackAtVertex</data>
       <data key="d1">Exact</data>
     </edge>
-    <edge source="JetTrackAlg_forDiTausAlg" target="jet::TrackVertexAssociation_MERGER_JetTrackVtxAssoc_forDiTaus">
+    <edge source="JetTrackAlg_forDiTausAlg" target="jet_SRO_TrackVertexAssociation_MERGER_JetTrackVtxAssoc_forDiTaus">
       <data key="d1">Exact</data>
     </edge>
     <edge source="xAODandSGTypes_MERGER_TruthParticles" target="InDetForwardTrackParticlesAlg">
@@ -2436,7 +2436,7 @@
     <edge source="TrackRecordFilterAlg" target="TrackRecordCollection_MERGER_MuonEntryLayerFilter">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="InDetTRT_TrackSegmentsFinderAlg" target="Trk::SegmentCollection_MERGER_TRTSegments">
+    <edge source="InDetTRT_TrackSegmentsFinderAlg" target="Trk_SRO_SegmentCollection_MERGER_TRTSegments">
       <data key="d1">Exact</data>
     </edge>
     <edge source="xAODandSGTypes_MERGER_TauPi0Clusters" target="StreamAODAlg">
@@ -2505,16 +2505,16 @@
     <edge source="TrackRecordCollection_MERGER_MuonEntryLayer" target="TrackRecordFilterAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="CscRdoToCscPrepDataAlg" target="Muon::CscStripPrepDataContainer_MERGER_CSC_Measurements">
+    <edge source="CscRdoToCscPrepDataAlg" target="Muon_SRO_CscStripPrepDataContainer_MERGER_CSC_Measurements">
       <data key="d1">Exact</data>
     </edge>
     <edge source="InDetTRT_SeededAmbiguitySolverAlg" target="TrackCollection_MERGER_ResolvedTRTSeededTracks">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="Muon::RpcCoinDataContainer_MERGER_RPC_Measurements" target="RpcRdoToRpcPrepDataAlg">
+    <edge source="Muon_SRO_RpcCoinDataContainer_MERGER_RPC_Measurements" target="RpcRdoToRpcPrepDataAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="JetTrackAlg_forTausAlg" target="jet::TrackVertexAssociation_MERGER_JetTrackVtxAssoc_forTaus">
+    <edge source="JetTrackAlg_forTausAlg" target="jet_SRO_TrackVertexAssociation_MERGER_JetTrackVtxAssoc_forTaus">
       <data key="d1">Exact</data>
     </edge>
     <edge source="LUCID_RawDataContainer_MERGER_Lucid_RawData" target="BackgroundWordFillerAlg">
@@ -2630,7 +2630,7 @@
     <edge source="TrackCollection_MERGER_ExtendedTracksPixelPrdAssociation" target="InDetRecStatisticsAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="InDetSCT_ClusterizationAlg" target="InDet::SCT_ClusterContainer_MERGER_SCT_Clusters">
+    <edge source="InDetSCT_ClusterizationAlg" target="InDet_SRO_SCT_ClusterContainer_MERGER_SCT_Clusters">
       <data key="d1">Exact</data>
     </edge>
     <edge source="TrackCollection_MERGER_ResolvedPixelPrdAssociationTracks" target="InDetTrackClusterAssValidationAlg">
@@ -2690,13 +2690,13 @@
     <edge source="xAODandSGTypes_MERGER_Muons" target="eflowEMCaloObjectBuilderAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="jet::LabelIndex_MERGER_PseudoJetLabelMap" target="EDnpfIsoCentralAlg">
+    <edge source="jet_SRO_LabelIndex_MERGER_PseudoJetLabelMap" target="EDnpfIsoCentralAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="jet::LabelIndex_MERGER_PseudoJetLabelMap" target="jetalgAlg">
+    <edge source="jet_SRO_LabelIndex_MERGER_PseudoJetLabelMap" target="jetalgAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="jet::LabelIndex_MERGER_PseudoJetLabelMap" target="EDpfIsoCentralAlg">
+    <edge source="jet_SRO_LabelIndex_MERGER_PseudoJetLabelMap" target="EDpfIsoCentralAlg">
       <data key="d1">Exact</data>
     </edge>
     <edge source="xAODandSGTypes_MERGER_PrimaryVertices" target="TauRecVariablesProcessorAlg">
@@ -2742,10 +2742,10 @@
     <edge source="xAODandSGTypes_MERGER_PrimaryVertices" target="MuonCaloTagAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="InDetPixelClusterizationAlg" target="InDet::PixelGangedClusterAmbiguities_MERGER_PixelClusterAmbiguitiesMap">
+    <edge source="InDetPixelClusterizationAlg" target="InDet_SRO_PixelGangedClusterAmbiguities_MERGER_PixelClusterAmbiguitiesMap">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="InDetPixelClusterizationAlg" target="InDet::PixelClusterContainer_MERGER_PixelClusters">
+    <edge source="InDetPixelClusterizationAlg" target="InDet_SRO_PixelClusterContainer_MERGER_PixelClusters">
       <data key="d1">Exact</data>
     </edge>
     <edge source="MuonStandaloneDetailedTrackTruthMakerAlg" target="DetailedTrackTruthCollection_MERGER_MuonSpectrometerTracksTruth">
@@ -2816,10 +2816,10 @@
     <edge source="EventStreamInfo_MERGER_StreamESD" target="StreamESDAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetEMTopo" target="EDtpIsoForwardAlg">
+    <edge source="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetEMTopo" target="EDtpIsoForwardAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetEMTopo" target="jetalgAlg">
+    <edge source="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetEMTopo" target="jetalgAlg">
       <data key="d1">Exact</data>
     </edge>
     <edge source="xAODandSGTypes_MERGER_AntiKt4EMTopoJets" target="BeamBackgroundFillerAlg">
@@ -2853,7 +2853,7 @@
       <data key="d1">Exact</data>
       <data key="d2">Aux.</data>
     </edge>
-    <edge source="StauCreatorAlg" target="Trk::SegmentCollection_MERGER_TrkStauSegments">
+    <edge source="StauCreatorAlg" target="Trk_SRO_SegmentCollection_MERGER_TrkStauSegments">
       <data key="d1">Exact</data>
     </edge>
     <edge source="StauCreatorAlg" target="TrackCollection_MERGER_CombinedStauTracks">
@@ -2901,7 +2901,7 @@
       <data key="d1">Exact</data>
       <data key="d2">Aux.</data>
     </edge>
-    <edge source="MuonCreatorAlg" target="Trk::SegmentCollection_MERGER_TrkMuonSegments">
+    <edge source="MuonCreatorAlg" target="Trk_SRO_SegmentCollection_MERGER_TrkMuonSegments">
       <data key="d1">Exact</data>
     </edge>
     <edge source="MuonCreatorAlg" target="TrackCollection_MERGER_ExtrapolatedMuonTracks">
@@ -2981,16 +2981,16 @@
     <edge source="MdtCsmContainer_MERGER_MDTCSM" target="MdtRdoToMdtPrepDataAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="InDet::SiClusterContainer_MERGER_PixelClusters" target="InDetPRD_MultiTruthMakerSiAlg">
+    <edge source="InDet_SRO_SiClusterContainer_MERGER_PixelClusters" target="InDetPRD_MultiTruthMakerSiAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="InDet::SiClusterContainer_MERGER_PixelClusters" target="InDetTrackClusterAssValidationAlg">
+    <edge source="InDet_SRO_SiClusterContainer_MERGER_PixelClusters" target="InDetTrackClusterAssValidationAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="RpcRdoToRpcPrepDataAlg" target="Muon::RpcCoinDataContainer_MERGER_RPC_triggerHits">
+    <edge source="RpcRdoToRpcPrepDataAlg" target="Muon_SRO_RpcCoinDataContainer_MERGER_RPC_triggerHits">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="RpcRdoToRpcPrepDataAlg" target="Muon::RpcPrepDataContainer_MERGER_RPC_Measurements">
+    <edge source="RpcRdoToRpcPrepDataAlg" target="Muon_SRO_RpcPrepDataContainer_MERGER_RPC_Measurements">
       <data key="d1">Exact</data>
     </edge>
     <edge source="xAODandSGTypes_MERGER_CaloCalTopoClusters" target="BeamBackgroundFillerAlg">
@@ -3049,7 +3049,7 @@
     <edge source="MuonInsideOutRecoAlg" target="MuonSystemExtensionCollection_MERGER_MuonSystemExtensionCollection">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="InDet::PixelClusterContainer_MERGER_PixelClusters" target="StreamESDAlg">
+    <edge source="InDet_SRO_PixelClusterContainer_MERGER_PixelClusters" target="StreamESDAlg">
       <data key="d1">Exact</data>
     </edge>
     <edge source="McEventCollection_MERGER_TruthEvent" target="MuonCombinedDetailedTrackTruthMakerAlg">
@@ -3173,7 +3173,7 @@
     <edge source="LArCollisionTimeAlg" target="LArCollisionTime_MERGER_LArCollisionTime">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="jet::TrackVertexAssociation_MERGER_JetTrackVtxAssoc_forTaus" target="TauCoreBuilderAlg">
+    <edge source="jet_SRO_TrackVertexAssociation_MERGER_JetTrackVtxAssoc_forTaus" target="TauCoreBuilderAlg">
       <data key="d1">Exact</data>
     </edge>
     <edge source="DetailedTrackTruthCollection_MERGER_SiSPSeededPixelTracksDetailedTruth" target="SiSPSeededPixelTracksTruthCollectionSelectorAlg">
@@ -3244,34 +3244,34 @@
     <edge source="xAODandSGTypes_MERGER_InDetTrackParticles" target="eflowEMCaloObjectBuilderAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="InDet::PixelGangedClusterAmbiguities_MERGER_PixelClusterAmbiguitiesMap" target="InDetPRD_AssociationForwardTracksAlg">
+    <edge source="InDet_SRO_PixelGangedClusterAmbiguities_MERGER_PixelClusterAmbiguitiesMap" target="InDetPRD_AssociationForwardTracksAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="InDet::PixelGangedClusterAmbiguities_MERGER_PixelClusterAmbiguitiesMap" target="InDetPRD_AssociationPixelPrdAssociationAlg">
+    <edge source="InDet_SRO_PixelGangedClusterAmbiguities_MERGER_PixelClusterAmbiguitiesMap" target="InDetPRD_AssociationPixelPrdAssociationAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="InDet::PixelGangedClusterAmbiguities_MERGER_PixelClusterAmbiguitiesMap" target="InDetTrackCollectionMerger_pixAlg">
+    <edge source="InDet_SRO_PixelGangedClusterAmbiguities_MERGER_PixelClusterAmbiguitiesMap" target="InDetTrackCollectionMerger_pixAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="InDet::PixelGangedClusterAmbiguities_MERGER_PixelClusterAmbiguitiesMap" target="InDetTrackCollectionMergerAlg">
+    <edge source="InDet_SRO_PixelGangedClusterAmbiguities_MERGER_PixelClusterAmbiguitiesMap" target="InDetTrackCollectionMergerAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="InDet::PixelGangedClusterAmbiguities_MERGER_PixelClusterAmbiguitiesMap" target="InDetAmbiguitySolverAlg">
+    <edge source="InDet_SRO_PixelGangedClusterAmbiguities_MERGER_PixelClusterAmbiguitiesMap" target="InDetAmbiguitySolverAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="InDet::PixelGangedClusterAmbiguities_MERGER_PixelClusterAmbiguitiesMap" target="InDetAmbiguitySolverPixelPrdAssociationAlg">
+    <edge source="InDet_SRO_PixelGangedClusterAmbiguities_MERGER_PixelClusterAmbiguitiesMap" target="InDetAmbiguitySolverPixelPrdAssociationAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="InDet::PixelGangedClusterAmbiguities_MERGER_PixelClusterAmbiguitiesMap" target="InDetTRTonly_PRD_AssociationAlg">
+    <edge source="InDet_SRO_PixelGangedClusterAmbiguities_MERGER_PixelClusterAmbiguitiesMap" target="InDetTRTonly_PRD_AssociationAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="InDet::PixelGangedClusterAmbiguities_MERGER_PixelClusterAmbiguitiesMap" target="InDetTRT_SeededAmbiguitySolverAlg">
+    <edge source="InDet_SRO_PixelGangedClusterAmbiguities_MERGER_PixelClusterAmbiguitiesMap" target="InDetTRT_SeededAmbiguitySolverAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="InDet::PixelGangedClusterAmbiguities_MERGER_PixelClusterAmbiguitiesMap" target="InDetSegmentPRD_AssociationAlg">
+    <edge source="InDet_SRO_PixelGangedClusterAmbiguities_MERGER_PixelClusterAmbiguitiesMap" target="InDetSegmentPRD_AssociationAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="InDet::PixelGangedClusterAmbiguities_MERGER_PixelClusterAmbiguitiesMap" target="InDetAmbiguitySolverForwardTracksAlg">
+    <edge source="InDet_SRO_PixelGangedClusterAmbiguities_MERGER_PixelClusterAmbiguitiesMap" target="InDetAmbiguitySolverForwardTracksAlg">
       <data key="d1">Exact</data>
     </edge>
     <edge source="TrackTruthCollection_MERGER_ResolvedTRTSeededTracksTruthCollection" target="InDetRecStatisticsAlg">
@@ -3362,7 +3362,7 @@
     <edge source="CaloClusterCellLinkContainer_MERGER_MuonClusterCollection" target="StreamAODAlg">
       <data key="d6">_links</data>
     </edge>
-    <edge source="InDet::SCT_ClusterContainer_MERGER_SCT_Clusters" target="StreamESDAlg">
+    <edge source="InDet_SRO_SCT_ClusterContainer_MERGER_SCT_Clusters" target="StreamESDAlg">
       <data key="d1">Exact</data>
     </edge>
     <edge source="xAODandSGTypes_MERGER_AntiKt4TruthJets" target="StreamAODAlg">
@@ -3384,16 +3384,16 @@
     <edge source="MuonSimDataCollection_MERGER_STGC_SDO" target="MuonPRD_MultiTruthMakerAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="Muon::CscStripPrepDataContainer_MERGER_CSC_Measurements" target="MuonSegmentMakerAlg">
+    <edge source="Muon_SRO_CscStripPrepDataContainer_MERGER_CSC_Measurements" target="MuonSegmentMakerAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="Muon::CscStripPrepDataContainer_MERGER_CSC_Measurements" target="CscThresholdClusterBuilderAlg">
+    <edge source="Muon_SRO_CscStripPrepDataContainer_MERGER_CSC_Measurements" target="CscThresholdClusterBuilderAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="Muon::CscStripPrepDataContainer_MERGER_CSC_Measurements" target="MuonCombinedAlg">
+    <edge source="Muon_SRO_CscStripPrepDataContainer_MERGER_CSC_Measurements" target="MuonCombinedAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="Muon::CscStripPrepDataContainer_MERGER_CSC_Measurements" target="MuonSegmentMaker_NCBAlg">
+    <edge source="Muon_SRO_CscStripPrepDataContainer_MERGER_CSC_Measurements" target="MuonSegmentMaker_NCBAlg">
       <data key="d1">Exact</data>
     </edge>
     <edge source="TrackTruthCollection_MERGER_SiSpSeededForwardTracksTruthCollection" target="InDetRecStatisticsAlg">
@@ -3423,14 +3423,14 @@
     <edge source="TrackCollection_MERGER_SiSPSeededPixelTracks" target="InDetRecStatisticsAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="Muon::TgcPrepDataContainer_MERGER_TGC_MeasurementsNextBC" target="MuonSegmentMakerAlg">
+    <edge source="Muon_SRO_TgcPrepDataContainer_MERGER_TGC_MeasurementsNextBC" target="MuonSegmentMakerAlg">
       <data key="d1">Exact</data>
     </edge>
     <edge source="METMakerAlg_AntiKt4LCTopoAlg" target="xAODandSGTypes_MERGER_MET_Reference_AntiKt4LCTopo">
       <data key="d1">Exact</data>
       <data key="d2">Aux.</data>
     </edge>
-    <edge source="CscThresholdClusterBuilderAlg" target="Muon::CscPrepDataContainer_MERGER_CSC_Clusters">
+    <edge source="CscThresholdClusterBuilderAlg" target="Muon_SRO_CscPrepDataContainer_MERGER_CSC_Clusters">
       <data key="d1">Exact</data>
     </edge>
     <edge source="METReconstructionAlg" target="xAODandSGTypes_MERGER_MET_LocHadTopo">
@@ -3533,7 +3533,7 @@
     <edge source="TileMuContainer_MERGER_TileMuObj" target="StreamAODAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="Rec::TrackParticleContainer_MERGER_TrackParticleCandidate" target="InDetLowBetaTrkAlgorithmAlg">
+    <edge source="Rec_SRO_TrackParticleContainer_MERGER_TrackParticleCandidate" target="InDetLowBetaTrkAlgorithmAlg">
       <data key="d1">Exact</data>
     </edge>
     <edge source="ExtendedTracksTruthCollectionSelectorAlg" target="TrackTruthCollection_MERGER_ExtendedTracksTruthCollection">
@@ -3683,10 +3683,10 @@
     <edge source="PRD_MultiTruthCollection_MERGER_TGC_TruthMap" target="MuonStandaloneDetailedTrackTruthMakerAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="Muon::TgcPrepDataContainer_MERGER_TGC_MeasurementsPriorBC" target="MuonSegmentMakerAlg">
+    <edge source="Muon_SRO_TgcPrepDataContainer_MERGER_TGC_MeasurementsPriorBC" target="MuonSegmentMakerAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="Muon::TgcPrepDataContainer_MERGER_TGC_MeasurementsPriorBC" target="StreamESDAlg">
+    <edge source="Muon_SRO_TgcPrepDataContainer_MERGER_TGC_MeasurementsPriorBC" target="StreamESDAlg">
       <data key="d1">Exact</data>
     </edge>
     <edge source="InDetTrackParticlesAlg" target="xAODandSGTypes_MERGER_InDetTrackParticles">
@@ -3697,13 +3697,13 @@
       <data key="d1">Exact</data>
       <data key="d2">Aux.</data>
     </edge>
-    <edge source="Trk::SegmentCollection_MERGER_MuonSegments" target="BeamBackgroundFillerAlg">
+    <edge source="Trk_SRO_SegmentCollection_MERGER_MuonSegments" target="BeamBackgroundFillerAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="Trk::SegmentCollection_MERGER_MuonSegments" target="MuonSegmentCnvAlg">
+    <edge source="Trk_SRO_SegmentCollection_MERGER_MuonSegments" target="MuonSegmentCnvAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="Trk::SegmentCollection_MERGER_MuonSegments" target="MuPatTrackBuilderAlg">
+    <edge source="Trk_SRO_SegmentCollection_MERGER_MuonSegments" target="MuPatTrackBuilderAlg">
       <data key="d1">Exact</data>
     </edge>
     <edge source="TrackExtensionMap_MERGER_ExtendedTracksMapPixelPrdAssociation" target="InDetExtensionProcessorPixelPrdAssociationAlg">
@@ -3757,25 +3757,25 @@
     <edge source="CaloCalibrationHitContainer_MERGER_LArCalibrationHitDeadMaterial" target="CaloTopoClusterAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="TgcRdoToTgcPrepDataAlg" target="Muon::TgcCoinDataContainer_MERGER_TrigT1CoinDataCollection">
+    <edge source="TgcRdoToTgcPrepDataAlg" target="Muon_SRO_TgcCoinDataContainer_MERGER_TrigT1CoinDataCollection">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="TgcRdoToTgcPrepDataAlg" target="Muon::TgcPrepDataContainer_MERGER_TGC_MeasurementsNextBC">
+    <edge source="TgcRdoToTgcPrepDataAlg" target="Muon_SRO_TgcPrepDataContainer_MERGER_TGC_MeasurementsNextBC">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="TgcRdoToTgcPrepDataAlg" target="Muon::TgcPrepDataContainer_MERGER_TGC_MeasurementsAllBCs">
+    <edge source="TgcRdoToTgcPrepDataAlg" target="Muon_SRO_TgcPrepDataContainer_MERGER_TGC_MeasurementsAllBCs">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="TgcRdoToTgcPrepDataAlg" target="Muon::TgcCoinDataContainer_MERGER_TrigT1CoinDataCollectionNextBC">
+    <edge source="TgcRdoToTgcPrepDataAlg" target="Muon_SRO_TgcCoinDataContainer_MERGER_TrigT1CoinDataCollectionNextBC">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="TgcRdoToTgcPrepDataAlg" target="Muon::TgcCoinDataContainer_MERGER_TrigT1CoinDataCollectionPriorBC">
+    <edge source="TgcRdoToTgcPrepDataAlg" target="Muon_SRO_TgcCoinDataContainer_MERGER_TrigT1CoinDataCollectionPriorBC">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="TgcRdoToTgcPrepDataAlg" target="Muon::TgcPrepDataContainer_MERGER_TGC_Measurements">
+    <edge source="TgcRdoToTgcPrepDataAlg" target="Muon_SRO_TgcPrepDataContainer_MERGER_TGC_Measurements">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="TgcRdoToTgcPrepDataAlg" target="Muon::TgcPrepDataContainer_MERGER_TGC_MeasurementsPriorBC">
+    <edge source="TgcRdoToTgcPrepDataAlg" target="Muon_SRO_TgcPrepDataContainer_MERGER_TGC_MeasurementsPriorBC">
       <data key="d1">Exact</data>
     </edge>
     <edge source="InDetExtensionProcessorPixelPrdAssociationAlg" target="TrackCollection_MERGER_ExtendedTracksPixelPrdAssociation">
@@ -3784,10 +3784,10 @@
     <edge source="InDetTRT_StandaloneTrackFinderAlg" target="TrackCollection_MERGER_TRTStandaloneTracks">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="Trk::SegmentCollection_MERGER_NCB_MuonSegments" target="BeamBackgroundFillerAlg">
+    <edge source="Trk_SRO_SegmentCollection_MERGER_NCB_MuonSegments" target="BeamBackgroundFillerAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="Trk::SegmentCollection_MERGER_NCB_MuonSegments" target="MuonSegmentCnvAlg_NCBAlg">
+    <edge source="Trk_SRO_SegmentCollection_MERGER_NCB_MuonSegments" target="MuonSegmentCnvAlg_NCBAlg">
       <data key="d1">Exact</data>
     </edge>
     <edge source="CaloTopoClusterAlg" target="xAODandSGTypes_MERGER_CaloTopoCluster">
@@ -3808,10 +3808,10 @@
       <data key="d3">Aux.-vxTrackAtVertex</data>
       <data key="d1">Exact</data>
     </edge>
-    <edge source="EDtpIsoCentralAlg" target="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetEMTopo">
+    <edge source="EDtpIsoCentralAlg" target="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetEMTopo">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="EDtpIsoCentralAlg" target="jet::LabelIndex_MERGER_PseudoJetLabelMap">
+    <edge source="EDtpIsoCentralAlg" target="jet_SRO_LabelIndex_MERGER_PseudoJetLabelMap">
       <data key="d1">Exact</data>
     </edge>
     <edge source="EDtpIsoCentralAlg" target="xAODandSGTypes_MERGER_TopoClusterIsoCentralEventShape">
@@ -3861,19 +3861,19 @@
     <edge source="xAODandSGTypes_MERGER_EventInfo" target="AllExecutedEventsAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="InDet::PixelGangedClusterAmbiguities_MERGER_SplitClusterAmbiguityMap" target="InDetAmbiguitySolverAlg">
+    <edge source="InDet_SRO_PixelGangedClusterAmbiguities_MERGER_SplitClusterAmbiguityMap" target="InDetAmbiguitySolverAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="InDet::PixelGangedClusterAmbiguities_MERGER_SplitClusterAmbiguityMap" target="InDetAmbiguitySolverForwardTracksAlg">
+    <edge source="InDet_SRO_PixelGangedClusterAmbiguities_MERGER_SplitClusterAmbiguityMap" target="InDetAmbiguitySolverForwardTracksAlg">
       <data key="d1">Exact</data>
     </edge>
     <edge source="RpcPadContainer_MERGER_RPCPAD" target="RpcRdoToRpcPrepDataAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetEMPFlow" target="EDpfIsoForwardAlg">
+    <edge source="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetEMPFlow" target="EDpfIsoForwardAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetEMPFlow" target="jetalgAlg">
+    <edge source="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetEMPFlow" target="jetalgAlg">
       <data key="d1">Exact</data>
     </edge>
     <edge source="DetailedTrackTruthCollection_MERGER_ResolvedPixelPrdAssociationTracksDetailedTruth" target="ResolvedPixelPrdAssociationTracksTruthCollectionSelectorAlg">
@@ -3888,7 +3888,7 @@
     <edge source="CscSimDataCollection_MERGER_CSC_SDO" target="MuonPRD_MultiTruthMakerAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="InDetTRT_RIO_MakerAlg" target="InDet::TRT_DriftCircleContainer_MERGER_TRT_DriftCircles">
+    <edge source="InDetTRT_RIO_MakerAlg" target="InDet_SRO_TRT_DriftCircleContainer_MERGER_TRT_DriftCircles">
       <data key="d1">Exact</data>
     </edge>
     <edge source="xAODandSGTypes_MERGER_LArClusterEM7_11Nocorr" target="CaloCellMakerFromClusterAlg">
@@ -4097,22 +4097,22 @@
     <edge source="BcmCollisionTime_MERGER_BcmCollisionTime" target="BackgroundWordFillerAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="Muon::TgcPrepDataContainer_MERGER_TGC_Measurements" target="MuonSegmentMakerAlg">
+    <edge source="Muon_SRO_TgcPrepDataContainer_MERGER_TGC_Measurements" target="MuonSegmentMakerAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="Muon::TgcPrepDataContainer_MERGER_TGC_Measurements" target="MuonCombinedAlg">
+    <edge source="Muon_SRO_TgcPrepDataContainer_MERGER_TGC_Measurements" target="MuonCombinedAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="Muon::TgcPrepDataContainer_MERGER_TGC_Measurements" target="MuonPRD_MultiTruthMakerAlg">
+    <edge source="Muon_SRO_TgcPrepDataContainer_MERGER_TGC_Measurements" target="MuonPRD_MultiTruthMakerAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="Muon::TgcPrepDataContainer_MERGER_TGC_Measurements" target="MuonInsideOutRecoAlg">
+    <edge source="Muon_SRO_TgcPrepDataContainer_MERGER_TGC_Measurements" target="MuonInsideOutRecoAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="Muon::TgcPrepDataContainer_MERGER_TGC_Measurements" target="StreamESDAlg">
+    <edge source="Muon_SRO_TgcPrepDataContainer_MERGER_TGC_Measurements" target="StreamESDAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="Muon::TgcPrepDataContainer_MERGER_TGC_Measurements" target="MuPatTrackBuilderAlg">
+    <edge source="Muon_SRO_TgcPrepDataContainer_MERGER_TGC_Measurements" target="MuPatTrackBuilderAlg">
       <data key="d1">Exact</data>
     </edge>
     <edge source="xAODandSGTypes_MERGER_BTagging_AntiKt10TruthWZJFVtx" target="StreamAODAlg">
@@ -4128,10 +4128,10 @@
     <edge source="PRD_MultiTruthCollection_MERGER_STGC_TruthMap" target="MuonTruthDecorationAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="InDet::SiClusterContainer_MERGER_SCT_Clusters" target="InDetPRD_MultiTruthMakerSiAlg">
+    <edge source="InDet_SRO_SiClusterContainer_MERGER_SCT_Clusters" target="InDetPRD_MultiTruthMakerSiAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="InDet::SiClusterContainer_MERGER_SCT_Clusters" target="InDetTrackClusterAssValidationAlg">
+    <edge source="InDet_SRO_SiClusterContainer_MERGER_SCT_Clusters" target="InDetTrackClusterAssValidationAlg">
       <data key="d1">Exact</data>
     </edge>
     <edge source="MuonSystemExtensionCollection_MERGER_MuonSystemExtensionCollection" target="MuGirlStauAlg">
@@ -4184,7 +4184,7 @@
     <edge source="TrackTruthCollection_MERGER_MuonSpectrometerTracksTruth" target="MuonSpectrometerTracksTruthAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="InDetLowBetaTrkAlgorithmAlg" target="InDet::InDetLowBetaContainer_MERGER_InDetLowBetaCandidates">
+    <edge source="InDetLowBetaTrkAlgorithmAlg" target="InDet_SRO_InDetLowBetaContainer_MERGER_InDetLowBetaCandidates">
       <data key="d1">Exact</data>
     </edge>
     <edge source="DataHeader_MERGER_Full" target="MuonSegmentMakerAlg">
@@ -4638,10 +4638,10 @@
     <edge source="xAODandSGTypes_MERGER_AntiKt4LCTopoJets" target="TauCoreBuilderAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="jetalgAlg" target="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetTracks">
+    <edge source="jetalgAlg" target="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetTracks">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="jetalgAlg" target="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetGhostMuonSegment">
+    <edge source="jetalgAlg" target="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetGhostMuonSegment">
       <data key="d1">Exact</data>
     </edge>
     <edge source="jetalgAlg" target="xAODandSGTypes_MERGER_AntiKt4TruthJets">
@@ -4661,27 +4661,27 @@
     <edge source="jetalgAlg" target="xAODandSGTypes_MERGER_TruthLabelCHadronsFinal">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="jetalgAlg" target="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetGhostBHadronsInitial">
+    <edge source="jetalgAlg" target="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetGhostBHadronsInitial">
       <data key="d1">Exact</data>
     </edge>
     <edge source="jetalgAlg" target="xAODandSGTypes_MERGER_BTagging_AntiKt10TruthWZJFVtx">
       <data key="d1">Exact</data>
       <data key="d2">Aux.</data>
     </edge>
-    <edge source="jetalgAlg" target="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetGhostTQuarksFinal">
+    <edge source="jetalgAlg" target="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetGhostTQuarksFinal">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="jetalgAlg" target="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetGhostBQuarksFinal">
+    <edge source="jetalgAlg" target="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetGhostBQuarksFinal">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="jetalgAlg" target="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetGhostZBosons">
+    <edge source="jetalgAlg" target="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetGhostZBosons">
       <data key="d1">Exact</data>
     </edge>
     <edge source="jetalgAlg" target="xAODandSGTypes_MERGER_BTagging_AntiKt4EMPFlowSecVtx">
       <data key="d1">Exact</data>
       <data key="d2">Aux.</data>
     </edge>
-    <edge source="jetalgAlg" target="fastjet::ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt4EMPFlowJetsFinder">
+    <edge source="jetalgAlg" target="fastjet_SRO_ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt4EMPFlowJetsFinder">
       <data key="d1">Exact</data>
     </edge>
     <edge source="jetalgAlg" target="xAODandSGTypes_MERGER_BTagging_AntiKt10TruthWZSecVtx">
@@ -4700,7 +4700,7 @@
       <data key="d1">Exact</data>
       <data key="d2">Aux.</data>
     </edge>
-    <edge source="jetalgAlg" target="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetGhostAntiKt3TrackJet">
+    <edge source="jetalgAlg" target="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetGhostAntiKt3TrackJet">
       <data key="d1">Exact</data>
     </edge>
     <edge source="jetalgAlg" target="xAODandSGTypes_MERGER_BTagging_AntiKt2TrackSecVtx">
@@ -4738,20 +4738,20 @@
     <edge source="jetalgAlg" target="xAODandSGTypes_MERGER_JetSelectedTracks_LooseTrackJets">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="jetalgAlg" target="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetGhostAntiKt4TrackJet">
+    <edge source="jetalgAlg" target="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetGhostAntiKt4TrackJet">
       <data key="d1">Exact</data>
     </edge>
     <edge source="jetalgAlg" target="xAODandSGTypes_MERGER_BTagging_AntiKt4EMPFlowJFVtx">
       <data key="d1">Exact</data>
       <data key="d2">Aux.</data>
     </edge>
-    <edge source="jetalgAlg" target="fastjet::ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt4TruthWZJetsFinder">
+    <edge source="jetalgAlg" target="fastjet_SRO_ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt4TruthWZJetsFinder">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="jetalgAlg" target="fastjet::ClusterSequence_MERGER_ClusterSequence_JetFinder_CamKt12TruthJetsFinder">
+    <edge source="jetalgAlg" target="fastjet_SRO_ClusterSequence_MERGER_ClusterSequence_JetFinder_CamKt12TruthJetsFinder">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="jetalgAlg" target="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetGhostBHadronsFinal">
+    <edge source="jetalgAlg" target="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetGhostBHadronsFinal">
       <data key="d1">Exact</data>
     </edge>
     <edge source="jetalgAlg" target="xAODandSGTypes_MERGER_TruthLabelCHadronsInitial">
@@ -4769,42 +4769,42 @@
       <data key="d1">Exact</data>
       <data key="d2">Aux.</data>
     </edge>
-    <edge source="jetalgAlg" target="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetGhostAntiKt2TrackJet">
+    <edge source="jetalgAlg" target="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetGhostAntiKt2TrackJet">
       <data key="d1">Exact</data>
     </edge>
     <edge source="jetalgAlg" target="xAODandSGTypes_MERGER_BTagging_AntiKt4TrackJFVtx">
       <data key="d1">Exact</data>
       <data key="d2">Aux.</data>
     </edge>
-    <edge source="jetalgAlg" target="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_EMOriginTopoClustersPseudoJet">
+    <edge source="jetalgAlg" target="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_EMOriginTopoClustersPseudoJet">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="jetalgAlg" target="fastjet::ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt10LCTopoJetsFinder">
+    <edge source="jetalgAlg" target="fastjet_SRO_ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt10LCTopoJetsFinder">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="jetalgAlg" target="fastjet::ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt4LCTopoJetsFinder">
+    <edge source="jetalgAlg" target="fastjet_SRO_ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt4LCTopoJetsFinder">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="jetalgAlg" target="fastjet::ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt10TruthWZJetsFinder">
+    <edge source="jetalgAlg" target="fastjet_SRO_ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt10TruthWZJetsFinder">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="jetalgAlg" target="fastjet::ClusterSequence_MERGER_ClusterSequence_JetFinder_CamKt12LCTopoJetsFinder">
+    <edge source="jetalgAlg" target="fastjet_SRO_ClusterSequence_MERGER_ClusterSequence_JetFinder_CamKt12LCTopoJetsFinder">
       <data key="d1">Exact</data>
     </edge>
     <edge source="jetalgAlg" target="xAODandSGTypes_MERGER_BTagging_AntiKt4TruthWZSecVtx">
       <data key="d1">Exact</data>
       <data key="d2">Aux.</data>
     </edge>
-    <edge source="jetalgAlg" target="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetGhostCHadronsInitial">
+    <edge source="jetalgAlg" target="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetGhostCHadronsInitial">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="jetalgAlg" target="fastjet::ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt3PV0TrackJetsFinder">
+    <edge source="jetalgAlg" target="fastjet_SRO_ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt3PV0TrackJetsFinder">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="jetalgAlg" target="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetGhostWBosons">
+    <edge source="jetalgAlg" target="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetGhostWBosons">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="jetalgAlg" target="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetGhostCQuarksFinal">
+    <edge source="jetalgAlg" target="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetGhostCQuarksFinal">
       <data key="d1">Exact</data>
     </edge>
     <edge source="jetalgAlg" target="xAODandSGTypes_MERGER_JetInputTruthParticlesNoWZ">
@@ -4813,7 +4813,7 @@
     <edge source="jetalgAlg" target="xAODandSGTypes_MERGER_TruthLabelCQuarksFinal">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="jetalgAlg" target="fastjet::ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt10TruthJetsFinder">
+    <edge source="jetalgAlg" target="fastjet_SRO_ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt10TruthJetsFinder">
       <data key="d1">Exact</data>
     </edge>
     <edge source="jetalgAlg" target="xAODandSGTypes_MERGER_CamKt12TruthJets">
@@ -4831,13 +4831,13 @@
       <data key="d1">Exact</data>
       <data key="d2">Aux.</data>
     </edge>
-    <edge source="jetalgAlg" target="fastjet::ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt2PV0TrackJetsFinder">
+    <edge source="jetalgAlg" target="fastjet_SRO_ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt2PV0TrackJetsFinder">
       <data key="d1">Exact</data>
     </edge>
     <edge source="jetalgAlg" target="xAODandSGTypes_MERGER_JetSelectedTracks">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="jetalgAlg" target="fastjet::ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt4PV0TrackJetsFinder">
+    <edge source="jetalgAlg" target="fastjet_SRO_ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt4PV0TrackJetsFinder">
       <data key="d1">Exact</data>
     </edge>
     <edge source="jetalgAlg" target="xAODandSGTypes_MERGER_TruthLabelHBosons">
@@ -4851,10 +4851,10 @@
       <data key="d2">Aux.</data>
       <data key="d1">Exact</data>
     </edge>
-    <edge source="jetalgAlg" target="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetGhostTruth">
+    <edge source="jetalgAlg" target="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetGhostTruth">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="jetalgAlg" target="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetTruth">
+    <edge source="jetalgAlg" target="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetTruth">
       <data key="d1">Exact</data>
     </edge>
     <edge source="jetalgAlg" target="xAODandSGTypes_MERGER_AntiKt3PV0TrackJets">
@@ -4869,10 +4869,10 @@
       <data key="d1">Exact</data>
       <data key="d2">Aux.</data>
     </edge>
-    <edge source="jetalgAlg" target="fastjet::ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt4EMTopoJetsFinder">
+    <edge source="jetalgAlg" target="fastjet_SRO_ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt4EMTopoJetsFinder">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="jetalgAlg" target="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetGhostPartons">
+    <edge source="jetalgAlg" target="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetGhostPartons">
       <data key="d1">Exact</data>
     </edge>
     <edge source="jetalgAlg" target="xAODandSGTypes_MERGER_AntiKt4EMPFlowJets">
@@ -4893,7 +4893,7 @@
       <data key="d1">Exact</data>
       <data key="d2">Aux.</data>
     </edge>
-    <edge source="jetalgAlg" target="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetGhostHBosons">
+    <edge source="jetalgAlg" target="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetGhostHBosons">
       <data key="d1">Exact</data>
     </edge>
     <edge source="jetalgAlg" target="xAODandSGTypes_MERGER_AntiKt10LCTopoJets">
@@ -4904,13 +4904,13 @@
       <data key="d1">Exact</data>
       <data key="d2">Aux.</data>
     </edge>
-    <edge source="jetalgAlg" target="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetGhostCHadronsFinal">
+    <edge source="jetalgAlg" target="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetGhostCHadronsFinal">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="jetalgAlg" target="fastjet::ClusterSequence_MERGER_ClusterSequence_JetFinder_CamKt12TruthWZJetsFinder">
+    <edge source="jetalgAlg" target="fastjet_SRO_ClusterSequence_MERGER_ClusterSequence_JetFinder_CamKt12TruthWZJetsFinder">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="jetalgAlg" target="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetGhostTausFinal">
+    <edge source="jetalgAlg" target="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetGhostTausFinal">
       <data key="d1">Exact</data>
     </edge>
     <edge source="jetalgAlg" target="xAODandSGTypes_MERGER_AntiKt10TruthWZJets">
@@ -4924,7 +4924,7 @@
     <edge source="jetalgAlg" target="xAODandSGTypes_MERGER_TruthLabelBQuarksFinal">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="jetalgAlg" target="jet::TrackVertexAssociation_MERGER_JetTrackVtxAssoc">
+    <edge source="jetalgAlg" target="jet_SRO_TrackVertexAssociation_MERGER_JetTrackVtxAssoc">
       <data key="d1">Exact</data>
     </edge>
     <edge source="jetalgAlg" target="xAODandSGTypes_MERGER_TruthLabelTausFinal">
@@ -4944,23 +4944,23 @@
       <data key="d1">Exact</data>
       <data key="d2">Aux.</data>
     </edge>
-    <edge source="jetalgAlg" target="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_LCOriginTopoClustersPseudoJet">
+    <edge source="jetalgAlg" target="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_LCOriginTopoClustersPseudoJet">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="jetalgAlg" target="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetTruthWZ">
+    <edge source="jetalgAlg" target="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetTruthWZ">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="jetalgAlg" target="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetGhostTracks">
+    <edge source="jetalgAlg" target="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetGhostTracks">
       <data key="d1">Exact</data>
     </edge>
     <edge source="jetalgAlg" target="xAODandSGTypes_MERGER_BTagging_AntiKt2TrackJFVtx">
       <data key="d1">Exact</data>
       <data key="d2">Aux.</data>
     </edge>
-    <edge source="jetalgAlg" target="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetLCTopo">
+    <edge source="jetalgAlg" target="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetLCTopo">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="jetalgAlg" target="fastjet::ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt4TruthJetsFinder">
+    <edge source="jetalgAlg" target="fastjet_SRO_ClusterSequence_MERGER_ClusterSequence_JetFinder_AntiKt4TruthJetsFinder">
       <data key="d1">Exact</data>
     </edge>
     <edge source="xAODandSGTypes_MERGER_AntiKt3PV0TrackJets" target="StreamAODAlg">
@@ -5006,7 +5006,7 @@
       <data key="d1">Exact</data>
       <data key="d2">Aux.</data>
     </edge>
-    <edge source="Trk::SegmentCollection_MERGER_TRTSegments" target="InDetSegmentDriftCircleAssValidationAlg">
+    <edge source="Trk_SRO_SegmentCollection_MERGER_TRTSegments" target="InDetSegmentDriftCircleAssValidationAlg">
       <data key="d1">Exact</data>
     </edge>
     <edge source="MuonPRD_MultiTruthMakerAlg" target="PRD_MultiTruthCollection_MERGER_RPC_TruthMap">
@@ -5062,23 +5062,23 @@
     <edge source="CscRawDataContainer_MERGER_CSCRDO" target="CscRdoToCscPrepDataAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="EDpfIsoCentralAlg" target="std::vector&lt;fastjet::PseudoJet&gt;_MERGER_PseudoJetEMPFlow">
+    <edge source="EDpfIsoCentralAlg" target="std_SRO_vector&lt;fastjet_SRO_PseudoJet&gt;_MERGER_PseudoJetEMPFlow">
       <data key="d1">Exact</data>
     </edge>
     <edge source="EDpfIsoCentralAlg" target="xAODandSGTypes_MERGER_ParticleFlowIsoCentralEventShape">
       <data key="d2">Aux.</data>
       <data key="d1">Exact</data>
     </edge>
-    <edge source="Muon::RpcPrepDataContainer_MERGER_RPC_Measurements" target="MuonInsideOutRecoAlg">
+    <edge source="Muon_SRO_RpcPrepDataContainer_MERGER_RPC_Measurements" target="MuonInsideOutRecoAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="Muon::RpcPrepDataContainer_MERGER_RPC_Measurements" target="MuonCombinedAlg">
+    <edge source="Muon_SRO_RpcPrepDataContainer_MERGER_RPC_Measurements" target="MuonCombinedAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="Muon::RpcPrepDataContainer_MERGER_RPC_Measurements" target="MuonPRD_MultiTruthMakerAlg">
+    <edge source="Muon_SRO_RpcPrepDataContainer_MERGER_RPC_Measurements" target="MuonPRD_MultiTruthMakerAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="Muon::RpcPrepDataContainer_MERGER_RPC_Measurements" target="MuonSegmentMakerAlg">
+    <edge source="Muon_SRO_RpcPrepDataContainer_MERGER_RPC_Measurements" target="MuonSegmentMakerAlg">
       <data key="d1">Exact</data>
     </edge>
     <edge source="DetailedTrackTruthCollection_MERGER_ResolvedForwardTracksDetailedTruth" target="ResolvedForwardTracksTruthCollectionSelectorAlg">
@@ -5124,7 +5124,7 @@
       <data key="d1">Exact</data>
       <data key="d2">Aux.</data>
     </edge>
-    <edge source="MdtRdoToMdtPrepDataAlg" target="Muon::MdtPrepDataContainer_MERGER_MDT_DriftCircles">
+    <edge source="MdtRdoToMdtPrepDataAlg" target="Muon_SRO_MdtPrepDataContainer_MERGER_MDT_DriftCircles">
       <data key="d1">Exact</data>
     </edge>
     <edge source="xAODandSGTypes_MERGER_GSFConversionVertices" target="egammaTrackSlimmerAlg">
@@ -5178,7 +5178,7 @@
     <edge source="FrameworkAlg" target="CaloClusterContainer_MERGER_MuonClusterCollection" />
     <edge source="FrameworkAlg" target="LUCID_DigitContainer_MERGER_Lucid_Digits" />
     <edge source="FrameworkAlg" target="PRD_MultiTruthCollection_MERGER_MM_TruthMap" />
-    <edge source="FrameworkAlg" target="Rec::TrackParticleContainer_MERGER_TrackParticleCandidate" />
+    <edge source="FrameworkAlg" target="Rec_SRO_TrackParticleContainer_MERGER_TrackParticleCandidate" />
     <edge source="FrameworkAlg" target="DataHeader_MERGER_Full" />
     <edge source="FrameworkAlg" target="xAODandSGTypes_MERGER_TruthPileupEvents" />
     <edge source="FrameworkAlg" target="CscSimDataCollection_MERGER_CSC_SDO" />
@@ -5193,7 +5193,7 @@
     <edge source="FrameworkAlg" target="CaloCalibrationHitContainer_MERGER_TileCalibHitInactiveCell" />
     <edge source="FrameworkAlg" target="TgcRdoContainer_MERGER_TGCRDO" />
     <edge source="FrameworkAlg" target="xAODandSGTypes_MERGER_V0LambdaVertices" />
-    <edge source="FrameworkAlg" target="Muon::RpcCoinDataContainer_MERGER_RPC_Measurements" />
+    <edge source="FrameworkAlg" target="Muon_SRO_RpcCoinDataContainer_MERGER_RPC_Measurements" />
     <edge source="FrameworkAlg" target="SCT_ID_MERGER_SCT_ID" />
     <edge source="FrameworkAlg" target="MuonSimDataCollection_MERGER_STGC_SDO" />
     <edge source="FrameworkAlg" target="MuonSimDataCollection_MERGER_RPC_SDO" />
@@ -5213,7 +5213,7 @@
     <edge source="FrameworkAlg" target="CaloCalibrationHitContainer_MERGER_LArCalibrationHitDeadMaterial" />
     <edge source="FrameworkAlg" target="MuonSimDataCollection_MERGER_TGC_SDO" />
     <edge source="FrameworkAlg" target="EventInfo_MERGER_McEventInfo" />
-    <edge source="FrameworkAlg" target="InDet::DRMap_MERGER_dRMap" />
+    <edge source="FrameworkAlg" target="InDet_SRO_DRMap_MERGER_dRMap" />
     <edge source="FrameworkAlg" target="DataHeader_MERGER_basic_" />
     <edge source="FrameworkAlg" target="MuonSimDataCollection_MERGER_MDT_SDO" />
     <edge source="FrameworkAlg" target="EventStreamInfo_MERGER_StreamESD" />
@@ -5223,7 +5223,7 @@
     <edge source="FrameworkAlg" target="TRT_ID_MERGER_TRT_ID" />
     <edge source="FrameworkAlg" target="xAODandSGTypes_MERGER_FTK_VertexContainer" />
     <edge source="FrameworkAlg" target="xAODandSGTypes_MERGER_MuonSpectrometerOnlyTrackParticles" />
-    <edge source="FrameworkAlg" target="InDet::SiClusterContainer_MERGER_SCT_Clusters" />
+    <edge source="FrameworkAlg" target="InDet_SRO_SiClusterContainer_MERGER_SCT_Clusters" />
     <edge source="FrameworkAlg" target="xAODandSGTypes_MERGER_FTK_VertexContainerRefit" />
     <edge source="FrameworkAlg" target="xAODandSGTypes_MERGER_FTK_TrackParticleContainer" />
     <edge source="FrameworkAlg" target="McEventCollection_MERGER_TruthEvent" />
@@ -5235,34 +5235,34 @@
     <edge source="FrameworkAlg" target="xAODandSGTypes_MERGER_V0UnconstrVertices" />
     <edge source="FrameworkAlg" target="DataVector&lt;INavigable4Momentum&gt;_MERGER_LArTowerEM" />
     <edge source="FrameworkAlg" target="DataVector&lt;INavigable4Momentum&gt;_MERGER_SpclMC" />
-    <edge source="FrameworkAlg" target="InDet::SiClusterContainer_MERGER_PixelClusters" />
+    <edge source="FrameworkAlg" target="InDet_SRO_SiClusterContainer_MERGER_PixelClusters" />
     <edge source="FrameworkAlg" target="CaloCalibrationHitContainer_MERGER_LArCalibrationHitActive" />
     <edge source="FrameworkAlg" target="TrackRecordCollection_MERGER_CaloEntryLayer" />
-    <edge source="FrameworkAlg" target="InDet::PixelGangedClusterAmbiguities_MERGER_SplitClusterAmbiguityMap" />
+    <edge source="FrameworkAlg" target="InDet_SRO_PixelGangedClusterAmbiguities_MERGER_SplitClusterAmbiguityMap" />
     <edge source="FrameworkAlg" target="TrackRecordCollection_MERGER_MuonExitLayer" />
     <edge source="FrameworkAlg" target="IOVMetaDataContainer_MERGER__Simulation_Parameters" />
-    <edge source="InDet::TRT_DriftCircleContainer_MERGER_TRT_DriftCircles" target="RawInfoSummaryForTagWriterAlg">
+    <edge source="InDet_SRO_TRT_DriftCircleContainer_MERGER_TRT_DriftCircles" target="RawInfoSummaryForTagWriterAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="InDet::TRT_DriftCircleContainer_MERGER_TRT_DriftCircles" target="InDetTRT_SeededTrackFinderAlg">
+    <edge source="InDet_SRO_TRT_DriftCircleContainer_MERGER_TRT_DriftCircles" target="InDetTRT_SeededTrackFinderAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="InDet::TRT_DriftCircleContainer_MERGER_TRT_DriftCircles" target="InDetTrackCollectionMergerAlg">
+    <edge source="InDet_SRO_TRT_DriftCircleContainer_MERGER_TRT_DriftCircles" target="InDetTrackCollectionMergerAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="InDet::TRT_DriftCircleContainer_MERGER_TRT_DriftCircles" target="InDetTRT_ExtensionAlg">
+    <edge source="InDet_SRO_TRT_DriftCircleContainer_MERGER_TRT_DriftCircles" target="InDetTRT_ExtensionAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="InDet::TRT_DriftCircleContainer_MERGER_TRT_DriftCircles" target="InDetTRT_PRD_MultiTruthMakerAlg">
+    <edge source="InDet_SRO_TRT_DriftCircleContainer_MERGER_TRT_DriftCircles" target="InDetTRT_PRD_MultiTruthMakerAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="InDet::TRT_DriftCircleContainer_MERGER_TRT_DriftCircles" target="StreamESDAlg">
+    <edge source="InDet_SRO_TRT_DriftCircleContainer_MERGER_TRT_DriftCircles" target="StreamESDAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="InDet::TRT_DriftCircleContainer_MERGER_TRT_DriftCircles" target="InDetTRT_ExtensionPixelPrdAssociationAlg">
+    <edge source="InDet_SRO_TRT_DriftCircleContainer_MERGER_TRT_DriftCircles" target="InDetTRT_ExtensionPixelPrdAssociationAlg">
       <data key="d1">Exact</data>
     </edge>
-    <edge source="InDet::TRT_DriftCircleContainer_MERGER_TRT_DriftCircles" target="InDetSegmentDriftCircleAssValidationAlg">
+    <edge source="InDet_SRO_TRT_DriftCircleContainer_MERGER_TRT_DriftCircles" target="InDetSegmentDriftCircleAssValidationAlg">
       <data key="d1">Exact</data>
     </edge>
     <edge source="TileLookForMuAlg" target="TileMuContainer_MERGER_TileMuObj">
