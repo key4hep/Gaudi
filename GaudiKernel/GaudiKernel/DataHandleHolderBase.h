@@ -42,8 +42,7 @@ class GAUDI_API DataHandleHolderBase : public extends<BASE, IDataHandleHolder> {
   }
 
   void declare(Gaudi::DataHandle& handle) override {
-    // the hndl owner is set in the handl c'tor -- how else can it get here?
-    // if (!handle.owner()) handle.setOwner(this);
+    if (!handle.owner()) handle.setOwner(this);
 
    if (handle.owner() != this) {
      throw GaudiException("Attempt to declare foreign handle with algorithm!", this->name(), StatusCode::FAILURE);

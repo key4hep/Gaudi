@@ -40,6 +40,7 @@ public:
 
   virtual ~DataHandle() = default;
 
+  virtual void setOwner(IDataHandleHolder* o) { m_owner = o; }
   virtual IDataHandleHolder* owner() const { return m_owner; }
 
   virtual Mode mode() const { return m_mode; }
