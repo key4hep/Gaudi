@@ -290,7 +290,7 @@ AlgExecStateSvc     DEBUG adding alg OddEvents to 1 slots
 AlgExecStateSvc     DEBUG adding alg EvenEvents to 1 slots
 AlgExecStateSvc   VERBOSE dumping state:
 Event: Invalid
-Algs:  4
+Algs: 4
  - Slot 0
   +    OddEvents  e: 0 f: 1 sc: FAILURE
   + OutputStream  e: 0 f: 1 sc: FAILURE
@@ -333,7 +333,7 @@ DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
 OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x2489cd0, 0x24984c0, 0x2d7f7e0, 0x1df2580]
-AlgExecStateSvc   VERBOSE reset(00)
+AlgExecStateSvc   VERBOSE reset(0)
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
