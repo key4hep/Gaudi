@@ -7,6 +7,12 @@
 
 ================================ Gaudi v28r1 =================================
 
+! 2016-12-14 - Sebastien Ponce (commit efc88ab)
+
+ - Context fixes
+
+   See merge request !248
+
 ! 2016-12-07 - many contributors (commit dc1b505)
 
  - port LHCb MT developments to Gaudi master
