@@ -55,7 +55,7 @@ public:
   virtual StatusCode commit() { return StatusCode::SUCCESS; }
 
   virtual std::string pythonRepr() const;
-  virtual void init() {};
+  virtual bool init() { return true; }
 
 protected:
 
