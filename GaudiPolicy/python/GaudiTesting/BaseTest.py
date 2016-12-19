@@ -791,8 +791,6 @@ for w,o,r in [
               #("TIMER.TIMER",r"[0-9]", "0"), # Normalize time output
               ("TIMER.TIMER",r"\s+[+-]?[0-9]+[0-9.]*", " 0"), # Normalize time output
               ("release all pending",r"^.*/([^/]*:.*)",r"\1"),
-              ("^#[0-9]+ +0x########",r"\[.*/([^/]*.*)\]",r"[\1]"),  # normalize paths to libraries in ErrorLogExample
-              ("^#[0-9]+ +0x########",r"^#[0-9]+ +",r"##  "),  # normalize paths to libraries in ErrorLogExample
               ("^#.*file",r"file '.*[/\\]([^/\\]*)$",r"file '\1"),
               ("^JobOptionsSvc.*options successfully read in from",r"read in from .*[/\\]([^/\\]*)$",r"file \1"), # normalize path to options
               # Normalize UUID, except those ending with all 0s (i.e. the class IDs)
@@ -822,7 +820,6 @@ lineSkipper = LineSkipper(["//GP:",
                            "DataListenerSvc      INFO XML written to file:",
                            "[INFO]","[WARNING]",
                            "DEBUG No writable file catalog found which contains FID:",
-                           "0 local", # hack for ErrorLogExample
                            "DEBUG Service base class initialized successfully", # changed between v20 and v21
                            "DEBUG Incident  timing:", # introduced with patch #3487
                            "INFO  'CnvServices':[", # changed the level of the message from INFO to DEBUG
@@ -832,8 +829,6 @@ lineSkipper = LineSkipper(["//GP:",
                                         r"^JobOptionsSvc        INFO *$",
                                         r"^# ", # Ignore python comments
                                         r"(Always|SUCCESS)\s*(Root f|[^ ]* F)ile version:", # skip the message reporting the version of the root file
-                                        r"0x[0-9a-fA-F#]+ *Algorithm::sysInitialize\(\) *\[", # hack for ErrorLogExample
-                                        r"0x[0-9a-fA-F#]* *__gxx_personality_v0 *\[", # hack for ErrorLogExample
                                         r"File '.*.xml' does not exist",
                                         r"INFO Refer to dataset .* by its file ID:",
                                         r"INFO Referring to dataset .* by its file ID:",
