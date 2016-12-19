@@ -791,7 +791,8 @@ for w,o,r in [
               #("TIMER.TIMER",r"[0-9]", "0"), # Normalize time output
               ("TIMER.TIMER",r"\s+[+-]?[0-9]+[0-9.]*", " 0"), # Normalize time output
               ("release all pending",r"^.*/([^/]*:.*)",r"\1"),
-              ("0x########",r"\[.*/([^/]*.*)\]",r"[\1]"),
+              ("^#[0-9]+ +0x########",r"\[.*/([^/]*.*)\]",r"[\1]"),  # normalize paths to libraries in ErrorLogExample
+              ("^#[0-9]+ +0x########",r"^#[0-9]+ +",r"##  "),  # normalize paths to libraries in ErrorLogExample
               ("^#.*file",r"file '.*[/\\]([^/\\]*)$",r"file '\1"),
               ("^JobOptionsSvc.*options successfully read in from",r"read in from .*[/\\]([^/\\]*)$",r"file \1"), # normalize path to options
               # Normalize UUID, except those ending with all 0s (i.e. the class IDs)
@@ -829,7 +830,7 @@ lineSkipper = LineSkipper(["//GP:",
                            'SIGXCPU',
                            ],regexps = [
                                         r"^JobOptionsSvc        INFO *$",
-                                        r"^#", # Ignore python comments
+                                        r"^# ", # Ignore python comments
                                         r"(Always|SUCCESS)\s*(Root f|[^ ]* F)ile version:", # skip the message reporting the version of the root file
                                         r"0x[0-9a-fA-F#]+ *Algorithm::sysInitialize\(\) *\[", # hack for ErrorLogExample
                                         r"0x[0-9a-fA-F#]* *__gxx_personality_v0 *\[", # hack for ErrorLogExample
