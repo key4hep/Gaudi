@@ -57,7 +57,7 @@ public:
 
   StatusCode stop() override;
 
-  virtual concurrency::PrecedenceRulesGraph* getExecutionFlowGraph() const { return m_PRGraph; }
+  virtual concurrency::PrecedenceRulesGraph* getPRGraph() const { return m_PRGraph; }
 
 private:
   typedef tbb::concurrent_bounded_queue<IAlgorithm*> concurrentQueueIAlgPtr;

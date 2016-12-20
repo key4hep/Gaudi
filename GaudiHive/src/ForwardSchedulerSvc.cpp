@@ -251,7 +251,7 @@ StatusCode ForwardSchedulerSvc::initialize()
   }
   const AlgResourcePool* algPool = dynamic_cast<const AlgResourcePool*>( m_algResourcePool.get() );
   sc =
-      m_efManager.initialize( algPool->getExecutionFlowGraph(), m_algname_index_map, m_eventSlots, m_optimizationMode );
+      m_efManager.initialize( algPool->getPRGraph(), m_algname_index_map, m_eventSlots, m_optimizationMode );
   unsigned int controlFlowNodeNumber = m_efManager.getExecutionFlowGraph()->getControlFlowNodeCounter();
 
   // Shortcut for the message service
