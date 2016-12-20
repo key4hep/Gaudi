@@ -252,7 +252,7 @@ StatusCode ForwardSchedulerSvc::initialize()
   const AlgResourcePool* algPool = dynamic_cast<const AlgResourcePool*>( m_algResourcePool.get() );
   sc =
       m_efManager.initialize( algPool->getPRGraph(), m_algname_index_map, m_eventSlots, m_optimizationMode );
-  unsigned int controlFlowNodeNumber = m_efManager.getExecutionFlowGraph()->getControlFlowNodeCounter();
+  unsigned int controlFlowNodeNumber = m_efManager.getPrecedenceRulesGraph()->getControlFlowNodeCounter();
 
   // Shortcut for the message service
   SmartIF<IMessageSvc> messageSvc( serviceLocator() );
@@ -665,8 +665,8 @@ StatusCode ForwardSchedulerSvc::updateStates( int si, const std::string& algo_na
     // now update DATAREADY to SCHEDULED
     if ( !m_optimizationMode.empty() ) {
       auto comp_nodes = [this]( const uint& i, const uint& j ) {
-        return ( m_efManager.getExecutionFlowGraph()->getAlgorithmNode( index2algname( i ) )->getRank() <
-                 m_efManager.getExecutionFlowGraph()->getAlgorithmNode( index2algname( j ) )->getRank() );
+        return ( m_efManager.getPrecedenceRulesGraph()->getAlgorithmNode( index2algname( i ) )->getRank() <
+                 m_efManager.getPrecedenceRulesGraph()->getAlgorithmNode( index2algname( j ) )->getRank() );
       };
       std::priority_queue<uint, std::vector<uint>, std::function<bool( const uint&, const uint& )>> buffer(
           comp_nodes, std::vector<uint>() );
@@ -702,7 +702,7 @@ StatusCode ForwardSchedulerSvc::updateStates( int si, const std::string& algo_na
       while ( !buffer.empty() ) {
         bool IOBound = false;
         if ( m_useIOBoundAlgScheduler )
-          IOBound = m_efManager.getExecutionFlowGraph()->getAlgorithmNode( index2algname( buffer.top() ) )->isIOBound();
+          IOBound = m_efManager.getPrecedenceRulesGraph()->getAlgorithmNode( index2algname( buffer.top() ) )->isIOBound();
 
         if ( !IOBound )
           partial_sc = promoteToScheduled( buffer.top(), iSlot );
@@ -725,7 +725,7 @@ StatusCode ForwardSchedulerSvc::updateStates( int si, const std::string& algo_na
 
         bool IOBound = false;
         if ( m_useIOBoundAlgScheduler )
-          IOBound = m_efManager.getExecutionFlowGraph()->getAlgorithmNode( index2algname( algIndex ) )->isIOBound();
+          IOBound = m_efManager.getPrecedenceRulesGraph()->getAlgorithmNode( index2algname( algIndex ) )->isIOBound();
 
         if ( !IOBound )
           partial_sc = promoteToScheduled( algIndex, iSlot );
@@ -746,7 +746,7 @@ StatusCode ForwardSchedulerSvc::updateStates( int si, const std::string& algo_na
       s << algo_name << ", " << thisAlgsStates.sizeOfSubset(State::CONTROLREADY) << ", "
                      << thisAlgsStates.sizeOfSubset(State::DATAREADY) << ", "
                      << thisAlgsStates.sizeOfSubset(State::SCHEDULED) << ", "
-                     << std::chrono::duration_cast<std::chrono::nanoseconds> (now - m_efManager.getExecutionFlowGraph()->getInitTime()).count()
+                     << std::chrono::duration_cast<std::chrono::nanoseconds> (now - m_efManager.getPrecedenceRulesGraph()->getInitTime()).count()
                      << "\n";
       auto threads = (m_threadPoolSize != -1) ? std::to_string(m_threadPoolSize)
                                               : std::to_string(tbb::task_scheduler_init::default_num_threads());

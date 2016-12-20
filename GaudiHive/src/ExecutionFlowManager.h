@@ -12,7 +12,7 @@ namespace concurrency {
 
   /**@class ExecutionFlowManager ExecutionFlowManager.h GaudiHive/src/ExecutionFlowManager.h
    *
-   *  Manage the execution flow using an execution flow graph
+   *  Manage the execution flow using a graph of task precedence rules
    *  Once initialized, the graph is const and can be shared across events
    *
    *  @author  Benedikt Hegner
@@ -35,7 +35,7 @@ namespace concurrency {
     ///
     void simulateExecutionFlow(IGraphVisitor& visitor) const;
     /// Get the flow graph instance
-    inline PrecedenceRulesGraph* getExecutionFlowGraph() const {return m_EFGraph;}
+    inline PrecedenceRulesGraph* getPrecedenceRulesGraph() const {return m_EFGraph;}
     /// A little bit silly, but who cares. ;-)
     bool needsAlgorithmToRun(const unsigned int iAlgo) const;
     /// Update the state of algorithms to controlready, where possible
