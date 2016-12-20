@@ -21,21 +21,21 @@ namespace concurrency {
   class ExecutionFlowManager  : public CommonMessaging<IExecutionFlowManager> {
   public:
     /// Constructor
-    ExecutionFlowManager() : m_name("ExecutionFlowManager"), m_EFGraph(0) {};
+    ExecutionFlowManager() : m_name("ExecutionFlowManager"), m_PRGraph(0) {};
     /// Destructor
     ~ExecutionFlowManager() override = default;
     /// Initialize the control flow manager
     /// It greps the topalg list and the index map for the algo names
-    StatusCode initialize(PrecedenceRulesGraph* CFGraph,
+    StatusCode initialize(PrecedenceRulesGraph* graph,
                             const std::unordered_map<std::string,unsigned int>& algname_index_map);
-    StatusCode initialize(PrecedenceRulesGraph* CFGraph,
+    StatusCode initialize(PrecedenceRulesGraph* graph,
                           const std::unordered_map<std::string,unsigned int>& algname_index_map,
                           std::vector<EventSlot>& eventSlots,
                           const std::string& mode);
     ///
     void simulateExecutionFlow(IGraphVisitor& visitor) const;
     /// Get the flow graph instance
-    inline PrecedenceRulesGraph* getPrecedenceRulesGraph() const {return m_EFGraph;}
+    inline PrecedenceRulesGraph* getPrecedenceRulesGraph() const {return m_PRGraph;}
     /// A little bit silly, but who cares. ;-)
     bool needsAlgorithmToRun(const unsigned int iAlgo) const;
     /// Update the state of algorithms to controlready, where possible
@@ -60,17 +60,17 @@ namespace concurrency {
     void printEventState(std::stringstream& ss,
                          AlgsExecutionStates& states,
                          const std::vector<int>& node_decisions,
-                         const unsigned int& recursionLevel) const {m_EFGraph->printState(ss,states,node_decisions,recursionLevel);}
+                         const unsigned int& recursionLevel) const {m_PRGraph->printState(ss,states,node_decisions,recursionLevel);}
     /// Promote all algorithms, ready to be executed, to DataReady state
     void touchReadyAlgorithms(IGraphVisitor& visitor) const;
     /// Retrieve name of the service
     const std::string& name() const override {return m_name;}
     /// Retrieve pointer to service locator
-    SmartIF<ISvcLocator>& serviceLocator() const override {return m_EFGraph->serviceLocator();}
+    SmartIF<ISvcLocator>& serviceLocator() const override {return m_PRGraph->serviceLocator();}
   private:
     std::string m_name;
-    /// the control flow graph
-    PrecedenceRulesGraph* m_EFGraph;
+    /// the graph of precedence rules
+    PrecedenceRulesGraph* m_PRGraph;
   };
 
 } // namespace concurrency

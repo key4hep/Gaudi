@@ -3,10 +3,10 @@
 namespace concurrency {
 
   //---------------------------------------------------------------------------
-  StatusCode ExecutionFlowManager::initialize(PrecedenceRulesGraph* ef_graph,
+  StatusCode ExecutionFlowManager::initialize(PrecedenceRulesGraph* graph,
                                             const std::unordered_map<std::string,unsigned int>& algname_index_map){
-    m_EFGraph = ef_graph;
-    StatusCode sc = ef_graph->initialize(algname_index_map);
+    m_PRGraph = graph;
+    StatusCode sc = graph->initialize(algname_index_map);
     if (!sc.isSuccess())
       error() << "Could not initialize the flow graph." << endmsg;
 
@@ -14,12 +14,12 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  StatusCode ExecutionFlowManager::initialize(PrecedenceRulesGraph* ef_graph,
+  StatusCode ExecutionFlowManager::initialize(PrecedenceRulesGraph* graph,
                                             const std::unordered_map<std::string,unsigned int>& algname_index_map,
                                             std::vector<EventSlot>& eventSlots,
                                             const std::string& mode){
-    m_EFGraph = ef_graph;
-    StatusCode sc = ef_graph->initialize(algname_index_map, eventSlots);
+    m_PRGraph = graph;
+    StatusCode sc = graph->initialize(algname_index_map, eventSlots);
     if (!sc.isSuccess()) {
       error() << "Could not initialize the execution flow graph." << endmsg;
       return sc;
@@ -28,19 +28,19 @@ namespace concurrency {
     // Rank algorithms if any known optimization mode is supplied
     if (mode == "PCE") {
       auto ranker = concurrency::RankerByProductConsumption();
-      m_EFGraph->rankAlgorithms(ranker);
+      m_PRGraph->rankAlgorithms(ranker);
     } else if (mode == "COD") {
       auto ranker = concurrency::RankerByCummulativeOutDegree();
-      m_EFGraph->rankAlgorithms(ranker);
+      m_PRGraph->rankAlgorithms(ranker);
     } else if (mode == "E") {
       auto ranker = concurrency::RankerByEccentricity();
-      m_EFGraph->rankAlgorithms(ranker);
+      m_PRGraph->rankAlgorithms(ranker);
     } else if (mode == "T") {
       auto ranker = concurrency::RankerByTiming();
-      m_EFGraph->rankAlgorithms(ranker);
+      m_PRGraph->rankAlgorithms(ranker);
     } else if (mode == "DRE") {
       auto ranker = concurrency::RankerByDataRealmEccentricity();
-      m_EFGraph->rankAlgorithms(ranker);
+      m_PRGraph->rankAlgorithms(ranker);
     } else if (!mode.empty()){
       error() << "Requested optimization mode '" << mode << "' is not known." << endmsg;
       sc = StatusCode::FAILURE;
@@ -52,7 +52,7 @@ namespace concurrency {
   //---------------------------------------------------------------------------
   void ExecutionFlowManager::simulateExecutionFlow(IGraphVisitor& visitor) const {
 
-    std::vector<int>& nodeDecisions = m_EFGraph->getNodeDecisions(0);
+    std::vector<int>& nodeDecisions = m_PRGraph->getNodeDecisions(0);
 
     std::vector<int> fixedNodeDecisions;
     int cntr = 0;
@@ -61,8 +61,8 @@ namespace concurrency {
       cntr += 1;
       int prevAlgosNum = visitor.m_nodesSucceeded;
       debug() << "  Proceeding with iteration #" << cntr << endmsg;
-      fixedNodeDecisions = m_EFGraph->getNodeDecisions(0);
-      m_EFGraph->m_headNode->accept(visitor);
+      fixedNodeDecisions = m_PRGraph->getNodeDecisions(0);
+      m_PRGraph->m_headNode->accept(visitor);
       if ( fixedNodeDecisions == nodeDecisions) {
         error() << "  No progress on iteration " << cntr << " detected" << endmsg;
         debug() << nodeDecisions << endmsg;
@@ -86,7 +86,7 @@ namespace concurrency {
     info() << "Asymptotical concurrency speedup depth: " << (float) visitor.m_nodesSucceeded / (float) counters.size() << endmsg;
 
     // Reset algorithm states and node decisions
-    m_EFGraph->getAlgoStates(0).reset();
+    m_PRGraph->getAlgoStates(0).reset();
     nodeDecisions.assign(nodeDecisions.size(),-1);
 
   }
@@ -94,7 +94,7 @@ namespace concurrency {
   //---------------------------------------------------------------------------
   void ExecutionFlowManager::updateEventState(AlgsExecutionStates& algo_states,
                                             std::vector<int>& node_decisions) const {
-    m_EFGraph->updateEventState(algo_states, node_decisions);
+    m_PRGraph->updateEventState(algo_states, node_decisions);
   }
 
   //---------------------------------------------------------------------------
@@ -102,36 +102,36 @@ namespace concurrency {
                                           const int& slotNum,
                                           AlgsExecutionStates& algo_states,
                                           std::vector<int>& node_decisions) const {
-    m_EFGraph->updateDecision(algo_name, slotNum, algo_states, node_decisions);
+    m_PRGraph->updateDecision(algo_name, slotNum, algo_states, node_decisions);
   }
 
   //---------------------------------------------------------------------------
   void ExecutionFlowManager::promoteToControlReadyState(AlgsExecutionStates& algo_states,
                                                       std::vector<int>& node_decisions,
                                                       const int& slotNum) const {
-    m_EFGraph->m_headNode->promoteToControlReadyState(slotNum, algo_states, node_decisions);
+    m_PRGraph->m_headNode->promoteToControlReadyState(slotNum, algo_states, node_decisions);
   }
 
   //---------------------------------------------------------------------------
   bool ExecutionFlowManager::algoDataDependenciesSatisfied(const std::string& algo_name, const int& slotNum) const {
-    return m_EFGraph->getAlgorithmNode(algo_name)->dataDependenciesSatisfied(slotNum);
+    return m_PRGraph->getAlgorithmNode(algo_name)->dataDependenciesSatisfied(slotNum);
   }
 
   //---------------------------------------------------------------------------
   bool ExecutionFlowManager::rootDecisionResolved(const std::vector<int>& node_decisions) const {
 
-    return (-1 != node_decisions[m_EFGraph->m_headNode->getNodeIndex()]) ? true : false;
+    return (-1 != node_decisions[m_PRGraph->m_headNode->getNodeIndex()]) ? true : false;
   }
 
   //---------------------------------------------------------------------------
   void ExecutionFlowManager::touchReadyAlgorithms(IGraphVisitor& visitor) const {
 
-    //auto& states = m_EFGraph->getAlgoStates(visitor.m_slotNum);
-    //auto& decisions = m_EFGraph->getNodeDecisions(visitor.m_slotNum);
+    //auto& states = m_PRGraph->getAlgoStates(visitor.m_slotNum);
+    //auto& decisions = m_PRGraph->getNodeDecisions(visitor.m_slotNum);
 
-    //m_EFGraph->m_headNode->promoteToControlReadyState(slotNum,states,decisions);
+    //m_PRGraph->m_headNode->promoteToControlReadyState(slotNum,states,decisions);
 
-    m_EFGraph->m_headNode->accept(visitor);
+    m_PRGraph->m_headNode->accept(visitor);
 
   }
 }
