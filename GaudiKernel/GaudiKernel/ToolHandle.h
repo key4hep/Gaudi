@@ -232,6 +232,30 @@ public:
 
   T * get() { return GaudiHandle<T>::get(); }
 
+  // Allow access to non-const Tool methods of const ToolHandle
+  #ifdef ALLOW_TOOLHANDLE_NONCONSTNESS
+  T * operator->() { 
+    return GaudiHandle<T>::operator->(); 
+  }
+  T & operator*()  { 
+    return * ( GaudiHandle<T>::operator->() ); 
+  }
+
+  T * operator->() const { 
+    return GaudiHandle<T>::nonConst( GaudiHandle<T>::operator->() ); 
+  }
+  T & operator*() const { 
+    return * ( GaudiHandle<T>::nonConst(GaudiHandle<T>::operator->()) ); 
+  }
+  #endif
+
+  #ifdef ATLAS
+[[deprecated("FIXME!! should not call non-const method from a const ToolHandle")]]
+  ToolHandle<T>& unConst() const {
+  return const_cast<ToolHandle<T>&> (*this);
+  }
+  #endif
+
 protected:
 
   const IAlgTool * getAsIAlgTool() const override
@@ -334,6 +358,5 @@ template <class T>
 inline std::ostream& operator<<( std::ostream& os, const ToolHandleArray<T>& handle ) {
   return operator<<(os, static_cast<const GaudiHandleInfo&>(handle) );
 }
-
 
 #endif // ! GAUDIKERNEL_TOOLHANDLE_H

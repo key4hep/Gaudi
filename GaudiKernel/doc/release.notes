@@ -2,6 +2,58 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+================================ Gaudi v28r1 =================================
+
+! 2016-12-07 - Gerhard Raven (commit 291ba41)
+
+ - Allow ADL lookup of parse and toStream
+
+   Currently, if one introduces a `Gaudi::Property<T>`, then there must be a
+   corresponding `StatusCode Gaudi::Parsers::parse(T&,const std::string&)` in
+   the namespace `Gaudi::Parsers` and a corresponding `void
+   Gaudi::Utils::toStream(const T&, std::stream&)` in the namespace
+   `Gaudi::Utils`.
+    This patch explicitly enables
+   [ADL](http://en.cppreference.com/w/cpp/language/adl) lookup (with a fall-back
+   to `Gaudi::Parser::parse` and `Gaudi::Utils::toStream`) so that it is
+   sufficient to either define `parse` and `toStream` in the namespace in which
+   `T` is defined, or add them as `friend` functions to `T`.
+    See merge request !242
+
+! 2016-12-07 - many contributors (commit dc1b505)
+
+ - port LHCb MT developments to Gaudi master
+
+   among others we have
+   - `Gaudi::Functional`: base classes to write algorithms as pure functions
+   - `AnyDataWrapper`/`AnyDataHandle`: helper to store any type in the Transient
+   Store (DataSvc)
+   - fixes to `DataObjectHandle`
+   - fixes to `GaudiHive`
+   - new tests and examples
+   - modernization (removed empty destructors, ...)
+    See merge request !245
+
+! 2016-11-25 - Charles Leggett (commit b3d9e7e)
+
+ - avoid infinite recursion when de-reffing ServiceHandle
+
+   See merge request !235
+
+! 2016-11-10 - Chris Jones (commit bad2bf3)
+
+ - Add accessor to ServiceHandle to allow non const access to service, even from
+   a const handle
+
+   See the discussion in gaudi/Gaudi!225
+    I am not completely sure what I think of this. I am not completely sold on
+   the idea, but can see Services are different beasts to tools.
+    I submit this for discussion and testing by Atlas( @leggett I've tested it
+   in as far as Gaudi compiles but as in LHCb we have no use case that requires
+   it, cannot go much future. It would be good if this MR could be tested
+   against Atlas *before* merging this time ;))
+    See merge request !233
+
 ================================ Gaudi v28r0 =================================
 
 ! 2016-11-08 - Marco Clemencic (commit ec96c27)

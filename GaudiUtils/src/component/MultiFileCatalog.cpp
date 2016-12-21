@@ -1,15 +1,11 @@
 #include "MultiFileCatalog.h"
+#include "createGuidAsString.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/strcasecmp.h"
 #include <Gaudi/PluginService.h>
 #include <algorithm>
 #include <functional>
 #include <stdexcept>
-
-namespace Gaudi
-{
-  std::string createGuidAsString();
-}
 
 using namespace Gaudi;
 using namespace std;
