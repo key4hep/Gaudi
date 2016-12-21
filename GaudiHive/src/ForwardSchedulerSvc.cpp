@@ -10,7 +10,7 @@
 // Local
 #include "AlgResourcePool.h"
 #include "AlgoExecutionTask.h"
-#include "EFGraphVisitors.h"
+#include "PRGraphVisitors.h"
 #include "ForwardSchedulerSvc.h"
 #include "IOBoundAlgTask.h"
 
@@ -20,13 +20,6 @@
 #include <queue>
 #include <sstream>
 #include <unordered_set>
-
-// Local
-#include "ForwardSchedulerSvc.h"
-#include "AlgoExecutionTask.h"
-#include "AlgResourcePool.h"
-#include "EFGraphVisitors.h"
-#include "IOBoundAlgTask.h"
 
 // External libs
 #include "boost/thread.hpp"
@@ -299,7 +292,7 @@ StatusCode ForwardSchedulerSvc::finalize()
     return StatusCode::FAILURE;
   }
 
-  // m_efManager.getExecutionFlowGraph()->dumpExecutionPlan();
+  // m_efManager.getPrecedenceRulesGraph()->dumpExecutionPlan();
 
   return sc;
 }
@@ -676,7 +669,7 @@ StatusCode ForwardSchedulerSvc::updateStates( int si, const std::string& algo_na
       /*std::stringstream s;
       auto buffer2 = buffer;
       while (!buffer2.empty()) {
-        s << m_efManager.getExecutionFlowGraph()->getAlgorithmNode(index2algname(buffer2.top()))->getRank() << ", ";
+        s << m_efManager.getPrecedenceRulesGraph()->getAlgorithmNode(index2algname(buffer2.top()))->getRank() << ", ";
         buffer2.pop();
       }
       info() << "DRBuffer is: [ " << s.str() << " ]  <--" << algo_name << " executed" << endmsg;*/
@@ -991,7 +984,7 @@ StatusCode ForwardSchedulerSvc::promoteToAsyncScheduled( unsigned int iAlgo, int
 
   if ( m_IOBoundAlgosInFlight == m_maxIOBoundAlgosInFlight ) return StatusCode::FAILURE;
 
-  // bool IOBound = m_efManager.getExecutionFlowGraph()->getAlgorithmNode(algName)->isIOBound();
+  // bool IOBound = m_efManager.getPrecedenceRulesGraph()->getAlgorithmNode(algName)->isIOBound();
 
   const std::string& algName( index2algname( iAlgo ) );
   IAlgorithm* ialgoPtr = nullptr;

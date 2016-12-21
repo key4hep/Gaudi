@@ -1,7 +1,7 @@
 #ifndef EXECUTIONFLOWMANAGER_H_
 #define EXECUTIONFLOWMANAGER_H_
 
-#include "EFGraphVisitors.h"
+#include "PRGraphVisitors.h"
 #include "PrecedenceRulesGraph.h"
 
 namespace concurrency {
