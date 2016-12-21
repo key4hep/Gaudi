@@ -245,8 +245,8 @@ inline MsgStream& endmsg(MsgStream& s) {
   return s.doOutput();
 }
 #if defined(GAUDI_V20_COMPAT) && !defined(G21_NO_ENDREQ)
-/// \deprecated Provided for backward compatibility. User endmsg instead. Will be removed in v28r1, see https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/79
-[[deprecated("will be removed in v28r1, use endmsg instead, see https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/79")]]
+/// \deprecated Provided for backward compatibility. User endmsg instead. Will be removed in v29r0, see https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/79
+[[deprecated("will be removed in v29r0, use endmsg instead, see https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/79")]]
 inline MsgStream& endreq(MsgStream& s) {
   return s.doOutput();
 }

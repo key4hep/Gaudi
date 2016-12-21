@@ -1,5 +1,5 @@
 #ifndef NO_C_ARRAY_AS_PROPERTY_WARNING
-#warning deprecated header (will be removed in Gaudi v28r1), think about using std::array<T,N> instead of T[N]
+#warning deprecated header (will be removed in Gaudi v29r0), think about using std::array<T,N> instead of T[N]
 #endif
 #ifndef GAUDIKERNEL_CARRAYASPROPERTY_H
 #define GAUDIKERNEL_CARRAYASPROPERTY_H
@@ -99,7 +99,7 @@ namespace Gaudi
     /// Accessor to verifier.
     VerifierType& verifier() { return m_verifier; }
 
-    /// Backward compatibility \deprecated will be removed in v28r1
+    /// Backward compatibility \deprecated will be removed in v29r0
     /// @{
     const ValueType& value() const { return *this; }
     ValueType& value() { return const_cast<ValueType&>( (const ValueType&)*this ); }

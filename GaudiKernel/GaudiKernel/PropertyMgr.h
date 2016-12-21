@@ -27,9 +27,9 @@
  *  @author Paul Maley
  *  @author David Quarrie
  *
- *  \deprecated will be removed in v28r1, consider using PropertyHolder instead
+ *  \deprecated will be removed in v29r0, consider using PropertyHolder instead
  */
-class GAUDI_API[[deprecated( "will be removed in v28r1, consider using PropertyHolder instead" )]] PropertyMgr
+class GAUDI_API[[deprecated( "will be removed in v29r0, consider using PropertyHolder instead" )]] PropertyMgr
     : public implements<IProperty>
 {
 public:
