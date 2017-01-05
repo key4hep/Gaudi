@@ -266,11 +266,11 @@ StatusCode ForwardSchedulerSvc::initialize()
           return StatusCode::FAILURE;
         }
         
-        debug() << "setting \"Load\" Property of DataLoader Alg to "
+        debug() << "setting \"ExtraOutputs\" Property of DataLoader Alg to "
                 << ust.str() << endmsg;
 
-        if (dataAlg->setProperty("Load", ust.str()).isFailure()) {
-          fatal() << "Unable to set Property \"Load\" of DataLoader Algorithm"
+        if (dataAlg->setProperty("ExtraOutputs", ust.str()).isFailure()) {
+          fatal() << "Unable to set Property \"ExtraOutputs\" of DataLoader Algorithm"
                   << endmsg;
           return StatusCode::FAILURE;
         }
