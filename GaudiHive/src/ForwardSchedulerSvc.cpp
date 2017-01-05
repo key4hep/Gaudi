@@ -210,34 +210,78 @@ StatusCode ForwardSchedulerSvc::initialize()
   // Fill the containers to convert algo names to index
   m_algname_vect.reserve( algsNumber );
   unsigned int index = 0;
+  IAlgorithm* dataLoaderAlg( nullptr );
   for ( IAlgorithm* algo : algos ) {
     const std::string& name   = algo->name();
     m_algname_index_map[name] = index;
     m_algname_vect.emplace_back( name );
+    if (algo->name() == "DataLoader") {
+      dataLoaderAlg = algo;
+    }
     index++;
   }
 
   // Check if we have unmet global input dependencies
   if ( m_checkDeps ) {
+    std::ostringstream ust;
+    ust << "[";
     DataObjIDColl unmetDep;
     for ( auto o : globalInp ) {
       if ( globalOutp.find( o ) == globalOutp.end() ) {
         unmetDep.insert( o );
+        ust << o << ",";
       }
     }
+    ust << "]";
 
     if ( unmetDep.size() > 0 ) {
-      fatal() << "The following unmet INPUT data dependencies were found: ";
+
+      std::ostringstream ost;
       for ( auto& o : unmetDep ) {
-        fatal() << "\n   o " << o << "    required by Algorithm: ";
+        ost << "\n   o " << o << "    required by Algorithm: ";
         for ( size_t i = 0; i < m_algosDependencies.size(); ++i ) {
           if ( m_algosDependencies[i].find( o ) != m_algosDependencies[i].end() ) {
-            fatal() << "\n       * " << m_algname_vect[i];
+            ost << "\n       * " << m_algname_vect[i];
           }
         }
       }
-      fatal() << endmsg;
+
+      if ( m_useDataLoader ) {
+        // Find the DataLoader Alg
+        if (dataLoaderAlg == nullptr) {
+          fatal() << "No DataLoader Algorithm found, and unmet INPUT dependencies "
+                  << "detected:\n" << ost.str() << endmsg;
       return StatusCode::FAILURE;
+        }
+
+        info() << "Will attribute the following unmet INPUT dependencies to \""
+               << dataLoaderAlg->type() << "/" << dataLoaderAlg->name() 
+               << "\" Algorithm"
+               << ost.str() << endmsg;
+
+        // Set the property Load of DataLoader Alg
+        Algorithm *dataAlg = dynamic_cast<Algorithm*>(dataLoaderAlg);
+        if ( !dataAlg ) {
+          fatal() << "Unable to dcast DataLoader IAlg to Algorithm" << endmsg;
+          return StatusCode::FAILURE;
+        }
+        
+        debug() << "setting \"Load\" Property of DataLoader Alg to "
+                << ust.str() << endmsg;
+
+        if (dataAlg->setProperty("Load", ust.str()).isFailure()) {
+          fatal() << "Unable to set Property \"Load\" of DataLoader Algorithm"
+                  << endmsg;
+          return StatusCode::FAILURE;
+        }
+
+      } else {
+        fatal() << "Auto DataLoading not requested, "
+                << "and the following unmet INPUT dependencies were found:" 
+                << ost.str() << endmsg;
+        return StatusCode::FAILURE;
+      }
+
     } else {
       info() << "No unmet INPUT data dependencies were found" << endmsg;
     }
