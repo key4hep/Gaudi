@@ -223,16 +223,12 @@ StatusCode ForwardSchedulerSvc::initialize()
 
   // Check if we have unmet global input dependencies
   if ( m_checkDeps ) {
-    std::ostringstream ust;
-    ust << "[";
     DataObjIDColl unmetDep;
     for ( auto o : globalInp ) {
       if ( globalOutp.find( o ) == globalOutp.end() ) {
         unmetDep.insert( o );
-        ust << o << ",";
       }
     }
-    ust << "]";
 
     if ( unmetDep.size() > 0 ) {
 
@@ -265,11 +261,14 @@ StatusCode ForwardSchedulerSvc::initialize()
           fatal() << "Unable to dcast DataLoader IAlg to Algorithm" << endmsg;
           return StatusCode::FAILURE;
         }
-        
-        debug() << "setting \"ExtraOutputs\" Property of DataLoader Alg to "
-                << ust.str() << endmsg;
 
-        if (dataAlg->setProperty("ExtraOutputs", ust.str()).isFailure()) {
+        Gaudi::Property<DataObjIDColl> pdl{dataAlg,"DataLoad",unmetDep,""};
+
+        debug() << "setting \"ExtraOutputs\" Property of DataLoader Alg to "
+                << pdl.toString()
+                << endmsg;
+
+        if (dataAlg->setProperty("ExtraOutputs", pdl.toString()).isFailure()) {
           fatal() << "Unable to set Property \"ExtraOutputs\" of DataLoader Algorithm"
                   << endmsg;
           return StatusCode::FAILURE;
