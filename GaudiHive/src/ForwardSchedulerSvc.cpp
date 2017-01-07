@@ -215,7 +215,7 @@ StatusCode ForwardSchedulerSvc::initialize()
     const std::string& name   = algo->name();
     m_algname_index_map[name] = index;
     m_algname_vect.emplace_back( name );
-    if (algo->name() == "DataLoader") {
+    if (algo->name() == m_useDataLoader) {
       dataLoaderAlg = algo;
     }
     index++;
@@ -242,12 +242,13 @@ StatusCode ForwardSchedulerSvc::initialize()
         }
       }
 
-      if ( m_useDataLoader ) {
+      if ( m_useDataLoader != "" ) {
         // Find the DataLoader Alg
         if (dataLoaderAlg == nullptr) {
-          fatal() << "No DataLoader Algorithm found, and unmet INPUT dependencies "
+          fatal() << "No DataLoader Algorithm \"" << m_useDataLoader.value()
+                  << "\" found, and unmet INPUT dependencies "
                   << "detected:\n" << ost.str() << endmsg;
-      return StatusCode::FAILURE;
+          return StatusCode::FAILURE;
         }
 
         info() << "Will attribute the following unmet INPUT dependencies to \""
@@ -258,20 +259,16 @@ StatusCode ForwardSchedulerSvc::initialize()
         // Set the property Load of DataLoader Alg
         Algorithm *dataAlg = dynamic_cast<Algorithm*>(dataLoaderAlg);
         if ( !dataAlg ) {
-          fatal() << "Unable to dcast DataLoader IAlg to Algorithm" << endmsg;
+          fatal() << "Unable to dcast DataLoader \"" << m_useDataLoader.value()
+                  << "\" IAlg to Algorithm" << endmsg;
           return StatusCode::FAILURE;
         }
 
-        Gaudi::Property<DataObjIDColl> pdl{dataAlg,"DataLoad",unmetDep,""};
-
-        debug() << "setting \"ExtraOutputs\" Property of DataLoader Alg to "
-                << pdl.toString()
-                << endmsg;
-
-        if (dataAlg->setProperty("ExtraOutputs", pdl.toString()).isFailure()) {
-          fatal() << "Unable to set Property \"ExtraOutputs\" of DataLoader Algorithm"
+        for (auto& id : unmetDep) {
+          debug() << "adding OUTPUT dep \"" << id << "\" to "
+                  << dataLoaderAlg->type() << "/" << dataLoaderAlg->name() 
                   << endmsg;
-          return StatusCode::FAILURE;
+          dataAlg->addDependency(id, Gaudi::DataHandle::Writer);
         }
 
       } else {
