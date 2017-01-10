@@ -1,14 +1,14 @@
 #ifndef GAUDIHIVE_ALGRESOURCEPOOL_H
 #define GAUDIHIVE_ALGRESOURCEPOOL_H
 
-// Include files
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/IAlgManager.h"
 #include "GaudiKernel/IAlgResourcePool.h"
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/Service.h"
-
 // TODO: include here is only a workaround
+#include "PrecedenceRulesGraph.h"
+
 #include <atomic>
 #include <bitset>
 #include <list>
@@ -18,8 +18,6 @@
 
 // External libs
 #include "boost/dynamic_bitset.hpp"
-
-#include "PrecedenceRulesGraph.h"
 #include "tbb/concurrent_queue.h"
 
 /** @class AlgResourcePool AlgResourcePool.h GaudiHive/AlgResourcePool.h
