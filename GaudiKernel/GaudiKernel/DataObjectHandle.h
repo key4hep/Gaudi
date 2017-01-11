@@ -95,8 +95,8 @@ T* DataObjectHandle<T>::get(bool mustExist) const {
     if (UNLIKELY(!m_goodType)) {
 
       std::string errorMsg("The type provided for "+ objKey()
-                           + " is " + typeid(T).name()
-                           + " and is different form the one of the object in the store.");
+                           + " is " + System::typeinfoName(typeid(T))
+                           + " and is different from the one of the object in the store.");
       //log << MSG::ERROR << errorMsg << endmsg;
       throw GaudiException (errorMsg,"Wrong DataObjectType",StatusCode::FAILURE);
     }
