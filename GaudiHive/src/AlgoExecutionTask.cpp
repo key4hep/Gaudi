@@ -35,7 +35,7 @@ tbb::task* AlgoExecutionTask::execute() {
   StatusCode sc(StatusCode::FAILURE);
   try {
     RetCodeGuard rcg(appmgr, Gaudi::ReturnCode::UnhandledException);
-    sc = m_algorithm->sysExecute();
+    sc = m_algorithm->sysExecute(*m_evtCtx);
     if (UNLIKELY(!sc.isSuccess()))  {
       log << MSG::WARNING << "Execution of algorithm " 
           << m_algorithm->name() << " failed" << endmsg;

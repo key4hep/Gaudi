@@ -35,7 +35,7 @@ StatusCode IOBoundAlgTask::execute() {
     RetCodeGuard rcg(appmgr, Gaudi::ReturnCode::UnhandledException);
     log << MSG::DEBUG << "Starting execution of algorithm " << m_algorithm->name() 
         << endmsg;
-    sc = m_algorithm->sysExecute();
+    sc = m_algorithm->sysExecute(*m_evtCtx);
     if (UNLIKELY(!sc.isSuccess()))  {
       log << MSG::WARNING << "Execution of algorithm " 
           << m_algorithm->name() << " failed" << endmsg;

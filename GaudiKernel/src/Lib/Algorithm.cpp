@@ -223,10 +223,6 @@ StatusCode Algorithm::sysStart()
 
   m_targetState = Gaudi::StateMachine::ChangeState( Gaudi::StateMachine::START, m_state );
 
-  // TODO: (MCl) where shoud we do this? initialize or start?
-  // Reset Error count
-  m_errorCount = 0;
-
   // lock the context service
   Gaudi::Utils::AlgContext cnt( this, registerContext() ? contextSvc().get() : nullptr );
 
@@ -341,9 +337,6 @@ StatusCode Algorithm::sysRestart()
     return StatusCode::FAILURE;
   }
 
-  // Reset Error count
-  m_errorCount = 0;
-
   // lock the context service
   Gaudi::Utils::AlgContext cnt( this, registerContext() ? contextSvc().get() : nullptr );
 
@@ -390,9 +383,6 @@ StatusCode Algorithm::sysBeginRun()
 
   // Bypass the beginRun if the algorithm is disabled.
   if ( !isEnabled() ) return StatusCode::SUCCESS;
-
-  // Reset Error count
-  m_errorCount = 0;
 
   // lock the context service
   Gaudi::Utils::AlgContext cnt( this, registerContext() ? contextSvc().get() : nullptr );
@@ -450,9 +440,6 @@ StatusCode Algorithm::sysEndRun()
   // Bypass the endRun if the algorithm is disabled.
   if ( !isEnabled() ) return StatusCode::SUCCESS;
 
-  // Reset Error count
-  m_errorCount = 0;
-
   // lock the context service
   Gaudi::Utils::AlgContext cnt( this, registerContext() ? contextSvc().get() : nullptr );
 
@@ -496,6 +483,14 @@ StatusCode Algorithm::endRun() { return StatusCode::SUCCESS; }
 
 StatusCode Algorithm::sysExecute()
 {
+  return sysExecute( Gaudi::Hive::currentContext() );
+}
+
+StatusCode Algorithm::sysExecute(const EventContext& ctx)
+{
+
+  m_event_context = ctx;
+
   if ( !isEnabled() ) {
     if ( msgLevel( MSG::VERBOSE ) ) {
       verbose() << ".sysExecute(): is not enabled. Skip execution" << endmsg;
@@ -522,8 +517,8 @@ StatusCode Algorithm::sysExecute()
   TimelineEvent timeline;
   timeline.algorithm = this->name();
   timeline.thread = pthread_self();
-  timeline.slot   = Gaudi::Hive::currentContext().slot();
-  timeline.event  = Gaudi::Hive::currentContext().evt();
+  timeline.slot   = ctx.slot();
+  timeline.event  = ctx.evt();
 
   try {
 
@@ -574,15 +569,16 @@ StatusCode Algorithm::sysExecute()
 
   if ( status.isFailure() ) {
     // Increment the error count
-    {
-      std::lock_guard<std::mutex>  lock(m_lock);
-      m_errorCount++;
-    }
+    unsigned int nerr = m_aess->incrementErrorCount( this );
     // Check if maximum is exeeded
-    if ( m_errorCount < m_errorMax ) {
-      warning() << "Continuing from error (cnt=" << m_errorCount << ", max=" << m_errorMax << ")" << endmsg;
+    if ( nerr < m_errorMax ) {
+      warning() << "Continuing from error (cnt=" << nerr << ", max=" 
+                << m_errorMax << ")" << endmsg;
       // convert to success
       status = StatusCode::SUCCESS;
+    } else {
+      error() << "Maximum number of errors (" << m_errorMax << ") reached."
+              << endmsg;
     }
   }
   return status;
@@ -985,4 +981,10 @@ void Algorithm::deregisterTool( IAlgTool* tool ) const
 
 std::ostream& Algorithm::toControlFlowExpression(std::ostream& os) const {
   return os << type() << "('" << name() << "')";
+}
+
+
+unsigned int
+Algorithm::errorCount() const {
+  return m_aess->algErrorCount(static_cast<const IAlgorithm*>(this));
 }

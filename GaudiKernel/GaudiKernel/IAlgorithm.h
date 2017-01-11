@@ -105,6 +105,7 @@ public:
 
   /// System execution. This method invokes the execute() method of a concrete algorithm
   virtual StatusCode sysExecute() = 0;
+  virtual StatusCode sysExecute(const EventContext&) = 0;
 
   /** System stop. This method invokes the stop() method of a concrete
       algorithm and the stop() methods of all of that algorithm's sub algorithms.
@@ -157,6 +158,9 @@ public:
 
   /// Produce string represention of the control flow expression.
   virtual std::ostream& toControlFlowExpression(std::ostream& os) const = 0;
+
+  /// For concurrency: get the EventContext
+  virtual const EventContext& getContext() const = 0;
 
   /// Set instantiation index of Alg
   virtual void setIndex(const unsigned int& idx) = 0;

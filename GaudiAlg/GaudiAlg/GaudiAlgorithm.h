@@ -123,6 +123,7 @@ public:
    *  @return status code
    */
   StatusCode sysExecute() override;
+  StatusCode sysExecute(const EventContext& ctx) override;
   // ==========================================================================
 public:
   // following methods cannot go in GaudiCommon since they use methods ( evtSvc()

@@ -250,6 +250,7 @@ StatusCode MinimalEventLoopMgr::restart()
 
   // Restart all the TopAlgs.
   for ( auto& ita : m_topAlgList ) {
+    m_aess->resetErrorCount(ita);
     sc = ita->sysRestart();
     if ( !sc.isSuccess() ) {
       error() << "Unable to restart Algorithm: " << ita->name() << endmsg;
@@ -257,6 +258,7 @@ StatusCode MinimalEventLoopMgr::restart()
     }
   }
   for ( auto& ita : m_outStreamList ) {
+    m_aess->resetErrorCount(ita);
     sc = ita->sysRestart();
     if ( !sc.isSuccess() ) {
       error() << "Unable to restart Output Stream: " << ita->name() << endmsg;
@@ -412,7 +414,7 @@ StatusCode MinimalEventLoopMgr::executeEvent( void* /* par */ )
         break;
       }
       RetCodeGuard rcg( appmgr, Gaudi::ReturnCode::UnhandledException );
-      sc = ita->sysExecute();
+      sc = ita->sysExecute(context);
       rcg.ignore(); // disarm the guard
     } catch ( const GaudiException& Exception ) {
       fatal() << ".executeEvent(): Exception with tag=" << Exception.tag() << " thrown by " << ita->name() << endmsg;

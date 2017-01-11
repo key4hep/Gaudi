@@ -48,6 +48,10 @@ public:
 
   void updateEventStatus(const bool& b, const EventContext& ctx) override;
 
+  unsigned int algErrorCount(const IAlgorithm* iAlg) const;
+  void resetErrorCount(const IAlgorithm* iAlg);
+  unsigned int incrementErrorCount(const IAlgorithm* iAlg);
+
   void dump(std::ostringstream& ost, const EventContext& ctx) const override;
 
 private:
@@ -61,6 +65,9 @@ private:
 
   std::vector< EventStatus::Status > m_eventStatus;
   std::vector< Gaudi::StringKey > m_preInitAlgs;
+
+  typedef std::map< Gaudi::StringKey, std::atomic<unsigned int> > AlgErrorMap_t;
+  AlgErrorMap_t m_errorCount;
 
   void init();
   void checkInit() const;
