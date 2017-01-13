@@ -1,4 +1,5 @@
-#include "ExecutionFlowGraph.h"
+#include "PrecedenceRulesGraph.h"
+
 #include "GaudiKernel/DataHandleHolderVisitor.h"
 
 namespace concurrency
@@ -417,7 +418,7 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  StatusCode ExecutionFlowGraph::initialize( const std::unordered_map<std::string, unsigned int>& algname_index_map )
+  StatusCode PrecedenceRulesGraph::initialize( const std::unordered_map<std::string, unsigned int>& algname_index_map )
   {
 
     m_headNode->initialize( algname_index_map );
@@ -430,7 +431,7 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  StatusCode ExecutionFlowGraph::initialize( const std::unordered_map<std::string, unsigned int>& algname_index_map,
+  StatusCode PrecedenceRulesGraph::initialize( const std::unordered_map<std::string, unsigned int>& algname_index_map,
                                              std::vector<EventSlot>& eventSlots )
   {
 
@@ -448,7 +449,7 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  void ExecutionFlowGraph::registerIODataObjects( const Algorithm* algo )
+  void PrecedenceRulesGraph::registerIODataObjects( const Algorithm* algo )
   {
 
     const std::string& algoName = algo->name();
@@ -474,7 +475,7 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  StatusCode ExecutionFlowGraph::buildDataDependenciesRealm()
+  StatusCode PrecedenceRulesGraph::buildDataDependenciesRealm()
   {
 
     StatusCode global_sc( StatusCode::SUCCESS );
@@ -527,7 +528,7 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  StatusCode ExecutionFlowGraph::buildAugmentedDataDependenciesRealm()
+  StatusCode PrecedenceRulesGraph::buildAugmentedDataDependenciesRealm()
   {
 
     StatusCode global_sc( StatusCode::SUCCESS, true );
@@ -586,7 +587,7 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  StatusCode ExecutionFlowGraph::addAlgorithmNode( Algorithm* algo, const std::string& parentName, bool inverted,
+  StatusCode PrecedenceRulesGraph::addAlgorithmNode( Algorithm* algo, const std::string& parentName, bool inverted,
                                                    bool allPass )
   {
 
@@ -623,14 +624,14 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  AlgorithmNode* ExecutionFlowGraph::getAlgorithmNode( const std::string& algoName ) const
+  AlgorithmNode* PrecedenceRulesGraph::getAlgorithmNode( const std::string& algoName ) const
   {
 
     return m_algoNameToAlgoNodeMap.at( algoName );
   }
 
   //---------------------------------------------------------------------------
-  StatusCode ExecutionFlowGraph::addDataNode( const DataObjID& dataPath )
+  StatusCode PrecedenceRulesGraph::addDataNode( const DataObjID& dataPath )
   {
 
     StatusCode sc;
@@ -652,14 +653,14 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  DataNode* ExecutionFlowGraph::getDataNode( const DataObjID& dataPath ) const
+  DataNode* PrecedenceRulesGraph::getDataNode( const DataObjID& dataPath ) const
   {
 
     return m_dataPathToDataNodeMap.at( dataPath );
   }
 
   //---------------------------------------------------------------------------
-  StatusCode ExecutionFlowGraph::addDecisionHubNode( Algorithm* decisionHubAlgo, const std::string& parentName,
+  StatusCode PrecedenceRulesGraph::addDecisionHubNode( Algorithm* decisionHubAlgo, const std::string& parentName,
                                                      bool modeOR, bool allPass, bool isLazy )
   {
 
@@ -696,7 +697,7 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  void ExecutionFlowGraph::addHeadNode( const std::string& headName, bool modeOR, bool allPass, bool isLazy )
+  void PrecedenceRulesGraph::addHeadNode( const std::string& headName, bool modeOR, bool allPass, bool isLazy )
   {
 
     auto itH = m_decisionNameToDecisionHubMap.find( headName );
@@ -710,13 +711,13 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  void ExecutionFlowGraph::updateEventState( AlgsExecutionStates& algo_states, std::vector<int>& node_decisions ) const
+  void PrecedenceRulesGraph::updateEventState( AlgsExecutionStates& algo_states, std::vector<int>& node_decisions ) const
   {
     m_headNode->updateState( algo_states, node_decisions );
   }
 
   //---------------------------------------------------------------------------
-  void ExecutionFlowGraph::updateDecision( const std::string& algo_name, const int& slotNum,
+  void PrecedenceRulesGraph::updateDecision( const std::string& algo_name, const int& slotNum,
                                            AlgsExecutionStates& algo_states, std::vector<int>& node_decisions ) const
   {
     //if (msgLevel(MSG::DEBUG))
@@ -725,7 +726,7 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  void ExecutionFlowGraph::rankAlgorithms( IGraphVisitor& ranker ) const
+  void PrecedenceRulesGraph::rankAlgorithms( IGraphVisitor& ranker ) const
   {
 
     info() << "Starting ranking by data outputs .. " << endmsg;
@@ -739,7 +740,7 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  const std::vector<AlgorithmNode*> ExecutionFlowGraph::getDataIndependentNodes() const
+  const std::vector<AlgorithmNode*> PrecedenceRulesGraph::getDataIndependentNodes() const
   {
 
     std::vector<AlgorithmNode*> result;
@@ -754,7 +755,7 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  std::string ExecutionFlowGraph::dumpDataFlow() const
+  std::string PrecedenceRulesGraph::dumpDataFlow() const
   {
 
     const char idt[] = "      ";
@@ -782,7 +783,7 @@ namespace concurrency
 
   //---------------------------------------------------------------------------
 
-  void ExecutionFlowGraph::dumpExecutionPlan()
+  void PrecedenceRulesGraph::dumpExecutionPlan()
   {
     std::ofstream myfile;
     myfile.open( "ExecutionPlan.graphml", std::ios::app );
@@ -798,7 +799,7 @@ namespace concurrency
     myfile.close();
   }
 
-  void ExecutionFlowGraph::addEdgeToExecutionPlan( const AlgorithmNode* u, const AlgorithmNode* v )
+  void PrecedenceRulesGraph::addEdgeToExecutionPlan( const AlgorithmNode* u, const AlgorithmNode* v )
   {
 
     boost::AlgoVertex source;

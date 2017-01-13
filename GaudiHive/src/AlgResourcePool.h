@@ -1,17 +1,14 @@
 #ifndef GAUDIHIVE_ALGRESOURCEPOOL_H
 #define GAUDIHIVE_ALGRESOURCEPOOL_H
 
-// Include files
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/IAlgManager.h"
 #include "GaudiKernel/IAlgResourcePool.h"
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/Service.h"
-
 // TODO: include here is only a workaround
-#include "ExecutionFlowGraph.h"
+#include "PrecedenceRulesGraph.h"
 
-// std includes
 #include <atomic>
 #include <bitset>
 #include <list>
@@ -58,7 +55,7 @@ public:
 
   StatusCode stop() override;
 
-  virtual concurrency::ExecutionFlowGraph* getExecutionFlowGraph() const { return m_EFGraph; }
+  virtual concurrency::PrecedenceRulesGraph* getPRGraph() const { return m_PRGraph; }
 
 private:
   typedef tbb::concurrent_bounded_queue<IAlgorithm*> concurrentQueueIAlgPtr;
@@ -101,7 +98,7 @@ private:
   std::list<IAlgorithm*> m_topAlgPtrList;
 
   /// OMG yet another hack
-  concurrency::ExecutionFlowGraph* m_EFGraph = nullptr;
+  concurrency::PrecedenceRulesGraph* m_PRGraph = nullptr;
 };
 
 #endif // GAUDIHIVE_ALGRESOURCEPOOL_H

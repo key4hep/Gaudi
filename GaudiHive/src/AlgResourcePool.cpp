@@ -29,7 +29,7 @@ AlgResourcePool::~AlgResourcePool() {
     delete queue;
   }
 
-  delete m_EFGraph;
+  delete m_PRGraph;
 }
 
 //---------------------------------------------------------------------------
@@ -49,10 +49,10 @@ StatusCode AlgResourcePool::initialize(){
     m_topAlgNames.assign(appMgrProps->getProperty("TopAlg"));
   }
 
-  // XXX: Prepare empty Control Flow graph
-  const std::string& name = "ExecutionFlowGraph";
+  // Prepare empty graph of precedence rules
+  const std::string& name = "PrecedenceRulesGraph";
   SmartIF<ISvcLocator> svc = serviceLocator();
-  m_EFGraph = new concurrency::ExecutionFlowGraph(name, svc);
+  m_PRGraph = new concurrency::PrecedenceRulesGraph(name, svc);
 
   sc = decodeTopAlgs();
   if (sc.isFailure())
@@ -195,7 +195,7 @@ StatusCode AlgResourcePool::flattenSequencer(Algorithm* algo, ListAlg& alglist, 
               << ". Appending it" << endmsg;
 
     alglist.emplace_back(algo);
-    m_EFGraph->addAlgorithmNode(algo, parentName, false, false).ignore();
+    m_PRGraph->addAlgorithmNode(algo, parentName, false, false).ignore();
     return sc;
   }
 
@@ -211,9 +211,9 @@ StatusCode AlgResourcePool::flattenSequencer(Algorithm* algo, ListAlg& alglist, 
     isLazy = (algo->getProperty("ShortCircuit").toString() == "True")? true : false;
     if (allPass) isLazy = false; // standard GaudiSequencer behavior on all pass is to execute everything
   }
-  sc = m_EFGraph->addDecisionHubNode(algo, parentName, modeOR, allPass, isLazy);
+  sc = m_PRGraph->addDecisionHubNode(algo, parentName, modeOR, allPass, isLazy);
   if (sc.isFailure()) {
-    error() << "Failed to add DecisionHub " << algo->name() << " to execution flow graph" << endmsg;
+    error() << "Failed to add DecisionHub " << algo->name() << " to graph of precedence rules" << endmsg;
     return sc;
   }
 
@@ -274,8 +274,8 @@ StatusCode AlgResourcePool::decodeTopAlgs()    {
   }
   // Top Alg list filled ----
 
-  // start forming the control flow graph by adding the head node
-  m_EFGraph->addHeadNode("EVENT LOOP",true,true,false);
+  // start forming the graph of precedence rules by adding the head decision hub
+  m_PRGraph->addHeadNode("EVENT LOOP",true,true,false);
 
   // Now we unroll it ----
   for (auto& algoSmartIF : m_topAlgList){
@@ -353,7 +353,7 @@ StatusCode AlgResourcePool::decodeTopAlgs()    {
       }
     }
 
-    m_EFGraph->attachAlgorithmsToNodes<concurrentQueueIAlgPtr>(item_name,*queue);
+    m_PRGraph->attachAlgorithmsToNodes<concurrentQueueIAlgPtr>(item_name,*queue);
 
   }
 
