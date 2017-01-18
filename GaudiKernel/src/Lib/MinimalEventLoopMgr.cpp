@@ -99,6 +99,9 @@ StatusCode MinimalEventLoopMgr::initialize()
   // The state is changed at this moment to allow decodeXXXX() to do something
   m_state = INITIALIZED;
 
+  // Get WhiteBoard interface if implemented by EventDataSvc
+  m_WB = service( "EventDataSvc" );
+
   // setup the default EventContext with slot 0
   Gaudi::Hive::setCurrentContextId(Gaudi::Hive::ContextIdType(0));
 
@@ -400,6 +403,10 @@ StatusCode MinimalEventLoopMgr::executeEvent( void* /* par */ )
 
   // Set event number in the context
   Gaudi::Hive::setCurrentContextEvt(m_nevt);
+
+  // select the appropriate store
+  if (m_WB.isValid())
+    m_WB->selectStore(context.slot()).ignore();
 
   // Get the IProperty interface of the ApplicationMgr to pass it to RetCodeGuard
   const auto appmgr = serviceLocator()->as<IProperty>();

@@ -10,6 +10,7 @@
 #include "GaudiKernel/IIncidentListener.h"
 #include "GaudiKernel/IIncidentSvc.h"
 #include "GaudiKernel/Service.h"
+#include "GaudiKernel/IHiveWhiteBoard.h"
 
 // STL include files
 #include <list>
@@ -114,6 +115,9 @@ private:
   MinimalEventLoopMgr( const MinimalEventLoopMgr& );
   /// Fake assignment operator (never implemented).
   MinimalEventLoopMgr& operator=( const MinimalEventLoopMgr& );
+
+  ///< Event data service (whiteboard)
+  SmartIF<IHiveWhiteBoard> m_WB;
 
   // number of events processed
   size_t m_nevt {0};

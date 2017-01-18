@@ -507,9 +507,6 @@ StatusCode Algorithm::sysExecute(const EventContext& ctx)
   // lock the context service
   Gaudi::Utils::AlgContext cnt( this, registerContext() ? contextSvc().get() : nullptr );
 
-  // HiveWhiteBoard stuff here
-  if ( m_WB.isValid() ) m_WB->selectStore(Gaudi::Hive::currentContext().slot()).ignore();
-
   Gaudi::Guards::AuditorGuard guard( this,
                                      // check if we want to audit the initialize
                                      ( m_auditorExecute ) ? auditorSvc().get() : nullptr, IAuditor::Execute, status );
