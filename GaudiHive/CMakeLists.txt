@@ -52,14 +52,14 @@ gaudi_add_test(ForwardSchedulerStall
                PASSREGEX "Stall detected"
                TIMEOUT 120)
 
-gaudi_add_test(GraphSchedulerSimpleTest
-               FRAMEWORK options/GraphSchedulerSimpleTest.py
+gaudi_add_test(AvalancheSchedulerSimpleTest
+               FRAMEWORK options/AvalancheSchedulerSimpleTest.py
                TIMEOUT 120)
 
-gaudi_add_test(BrunelScenarioGraphScheduler
-               FRAMEWORK options/BrunelScenarioGraphScheduler.py
+gaudi_add_test(BrunelScenarioAvalancheScheduler
+               FRAMEWORK options/BrunelScenarioAvalancheScheduler.py
                TIMEOUT 120)
-set_property(TEST GaudiHive.BrunelScenarioGraphScheduler PROPERTY SKIP_RETURN_CODE 77)
+set_property(TEST GaudiHive.BrunelScenarioAvalancheScheduler PROPERTY SKIP_RETURN_CODE 77)
 
 gaudi_add_test(AtlasMCRecoScenario
                FRAMEWORK options/AtlasMCRecoScenario.py
