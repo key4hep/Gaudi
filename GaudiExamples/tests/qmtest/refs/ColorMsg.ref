@@ -79,7 +79,7 @@ ApplicationMgr    SUCCESS
 [92;1mAlgExecStateSvc     DEBUG adding alg ColorMsgAlg to 1 slots[m
 [95;4mAlgExecStateSvc   VERBOSE dumping state:
 Event: Invalid
-Algs:  1
+Algs: 1
  - Slot 0
   + ColorMsgAlg  e: 0 f: 1 sc: FAILURE
 [m

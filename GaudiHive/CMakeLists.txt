@@ -2,7 +2,6 @@ gaudi_subdir(GaudiHive)
 
 gaudi_depends_on_subdirs(GaudiKernel GaudiAlg GaudiCommonSvc GaudiCoreSvc)
 
-find_package(AIDA)
 find_package(Boost COMPONENTS system filesystem graph)
 find_package(ROOT COMPONENTS Hist RIO)
 find_package(TBB)
@@ -21,7 +20,7 @@ include_directories(SYSTEM ${Boost_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS} ${TBB_INCL
 gaudi_add_module(GaudiHive
                         *.cpp
                         LINK_LIBRARIES GaudiKernel Boost ROOT TBB GaudiAlgLib  ${LIBRT_NAME}
-                        INCLUDE_DIRS Boost ROOT AIDA TBB)
+                        INCLUDE_DIRS Boost ROOT TBB)
 
 gaudi_add_test(WhiteBoard
                FRAMEWORK options/testWhiteBoard.py
@@ -42,7 +41,6 @@ gaudi_add_test(ReadAndWriteWhiteBoard
                TIMEOUT 120)
 
 # Test the Scheduler
-
 gaudi_add_test(ForwardScheduler
                FRAMEWORK options/ForwardSchedulerSimpleTest.py
                DEPENDS WhiteBoard
@@ -62,6 +60,11 @@ gaudi_add_test(BrunelScenarioGraphScheduler
                FRAMEWORK options/BrunelScenarioGraphScheduler.py
                TIMEOUT 120)
 set_property(TEST GaudiHive.BrunelScenarioGraphScheduler PROPERTY SKIP_RETURN_CODE 77)
+
+gaudi_add_test(AtlasMCRecoScenario
+               FRAMEWORK options/AtlasMCRecoScenario.py
+               TIMEOUT 120)
+set_property(TEST GaudiHive.AtlasMCRecoScenario PROPERTY SKIP_RETURN_CODE 77)
 
 # Test the AtomicSequencer
 gaudi_add_test(AtomicSequencer

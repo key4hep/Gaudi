@@ -6,6 +6,11 @@ find_package(AIDA)
 find_package(ROOT COMPONENTS RIO Hist Matrix Tree Thread MathCore Net)
 find_package(Boost)
 
+# If AIDA is missing, don't build this module:
+if( NOT AIDA_FOUND )
+   return()
+endif()
+
 # Hide some ROOT compile time warnings
 include_directories(SYSTEM ${ROOT_INCLUDE_DIRS})
 

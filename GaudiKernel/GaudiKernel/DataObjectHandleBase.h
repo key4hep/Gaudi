@@ -56,7 +56,7 @@ protected:
   void setRead(bool wasRead=true) {m_wasRead = wasRead;}
   void setWritten(bool wasWritten=true) {m_wasWritten = wasWritten;}
 
-  void init() override;
+  bool init() override;
 
   DataObject* fetch() const;
 

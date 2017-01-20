@@ -40,6 +40,7 @@ public:
 
   virtual ~DataHandle() = default;
 
+  virtual void setOwner(IDataHandleHolder* o) { m_owner = o; }
   virtual IDataHandleHolder* owner() const { return m_owner; }
 
   virtual Mode mode() const { return m_mode; }
@@ -54,7 +55,7 @@ public:
   virtual StatusCode commit() { return StatusCode::SUCCESS; }
 
   virtual std::string pythonRepr() const;
-  virtual void init() {};
+  virtual bool init() { return true; }
 
 protected:
 

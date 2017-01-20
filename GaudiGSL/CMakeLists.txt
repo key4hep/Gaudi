@@ -2,9 +2,17 @@ gaudi_subdir(GaudiGSL)
 
 gaudi_depends_on_subdirs(GaudiAlg)
 
-find_package(CLHEP REQUIRED)
-find_package(GSL REQUIRED)
+find_package(CLHEP)
+find_package(GSL)
 find_package(ROOT)
+
+# If any of the non-essential externals is missing, give up on building
+# these targets.
+if( NOT CLHEP_FOUND OR NOT GSL_FOUND )
+   message( STATUS "Requirements for GaudiGSL not found. "
+      "Not building package" )
+   return()
+endif()
 
 # Hide some CLHEP/ROOT compile time warnings
 include_directories(SYSTEM ${CLHEP_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS})

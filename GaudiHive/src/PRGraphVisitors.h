@@ -1,8 +1,8 @@
-#ifndef EFGRAPHVISITORS_H_
-#define EFGRAPHVISITORS_H_
+#ifndef PRGRAPHVISITORS_H_
+#define PRGRAPHVISITORS_H_
 
 #include "IGraphVisitor.h"
-#include "ExecutionFlowGraph.h"
+#include "PrecedenceRulesGraph.h"
 
 namespace concurrency {
 
@@ -198,7 +198,7 @@ namespace concurrency {
       }
 
       /// Depth-first node parser to calculate node eccentricity
-      /// (only within the data realm of the execution flow graph)
+      /// (only within the data realm of the precedence rules graph)
       void recursiveVisit(AlgorithmNode& node);
 
       uint m_currentDepth;
@@ -210,4 +210,4 @@ namespace concurrency {
 
 
 
-#endif /* EFGRAPHVISITORS_H_ */
+#endif /* PRGRAPHVISITORS_H_ */

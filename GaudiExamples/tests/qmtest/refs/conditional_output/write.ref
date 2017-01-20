@@ -282,7 +282,7 @@ ServiceManager      DEBUG Starting service HistogramPersistencySvc
 ServiceManager      DEBUG Starting service HistogramDataSvc
 ServiceManager      DEBUG Starting service EventLoopMgr
 ApplicationMgr       INFO Application Manager Started successfully
-AlgExecStateSvc   VERBOSE reset()
+AlgExecStateSvc   VERBOSE reset(0)
 AlgExecStateSvc     DEBUG resizing state containers to : 1
 AlgExecStateSvc     DEBUG adding alg OutputStream to 1 slots
 AlgExecStateSvc     DEBUG adding alg DataCreator to 1 slots
@@ -290,7 +290,7 @@ AlgExecStateSvc     DEBUG adding alg OddEvents to 1 slots
 AlgExecStateSvc     DEBUG adding alg EvenEvents to 1 slots
 AlgExecStateSvc   VERBOSE dumping state:
 Event: Invalid
-Algs:  4
+Algs: 4
  - Slot 0
   +    OddEvents  e: 0 f: 1 sc: FAILURE
   + OutputStream  e: 0 f: 1 sc: FAILURE
@@ -305,63 +305,63 @@ DataCreator          INFO Adding 'D'
 OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x2489cd0, 0x24984c0, 0x2d7f7e0, 0x1df2580]
 FileCatalog         DEBUG No writable file catalog found which contains FID:9C1C172E-258B-E611-A98C-001E67ABF0AC
 IODataManager        INFO Referring to dataset ConditionalOutput.dst by its file ID:9C1C172E-258B-E611-A98C-001E67ABF0AC
-AlgExecStateSvc   VERBOSE reset()
+AlgExecStateSvc   VERBOSE reset(0)
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
 OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x3a82ee0, 0x247b180, 0x2e0bb00, 0x2e29d30]
-AlgExecStateSvc   VERBOSE reset()
+AlgExecStateSvc   VERBOSE reset(0)
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
 OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x2489cd0, 0x24984c0, 0x2d7f7e0, 0x1df2580]
-AlgExecStateSvc   VERBOSE reset()
+AlgExecStateSvc   VERBOSE reset(0)
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
 OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x3a82ee0, 0x247b180, 0x2e0bb00, 0x2e29d30]
-AlgExecStateSvc   VERBOSE reset()
+AlgExecStateSvc   VERBOSE reset(0)
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
 OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x2489cd0, 0x24984c0, 0x2d7f7e0, 0x1df2580]
-AlgExecStateSvc   VERBOSE reset()
+AlgExecStateSvc   VERBOSE reset(0)
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
 OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x3a82ee0, 0x247b180, 0x2e0bb00, 0x2e29d30]
-AlgExecStateSvc   VERBOSE reset()
+AlgExecStateSvc   VERBOSE reset(0)
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
 OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x2489cd0, 0x24984c0, 0x2d7f7e0, 0x1df2580]
-AlgExecStateSvc   VERBOSE reset()
+AlgExecStateSvc   VERBOSE reset(0)
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
 OutputStream        DEBUG Algorithm 'EvenEvents' fired. Adding [0x3a82ee0, 0x247b180, 0x2e0bb00, 0x2e29d30]
-AlgExecStateSvc   VERBOSE reset()
+AlgExecStateSvc   VERBOSE reset(0)
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'
 DataCreator          INFO Adding 'C'
 DataCreator          INFO Adding 'D'
 OutputStream        DEBUG Algorithm 'OddEvents' fired. Adding [0x2489cd0, 0x24984c0, 0x2d7f7e0, 0x1df2580]
-AlgExecStateSvc   VERBOSE reset()
+AlgExecStateSvc   VERBOSE reset(0)
 DataCreator          INFO Adding 4 objects to EventDataSvc
 DataCreator          INFO Adding 'A'
 DataCreator          INFO Adding 'B'

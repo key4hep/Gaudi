@@ -135,12 +135,12 @@ DataObjectHandleBase::fromString(const std::string& s) {
 
 //---------------------------------------------------------------------------
 
-void
+bool
 DataObjectHandleBase::init() {
 
   assert(!m_init);
 
-  if (!owner()) return;
+  if (!owner()) return false;
 
   setRead(false);
   setWritten(false);
@@ -161,6 +161,7 @@ DataObjectHandleBase::init() {
     }
   }
   m_init = true;
+  return true;
 }
 
 //---------------------------------------------------------------------------
