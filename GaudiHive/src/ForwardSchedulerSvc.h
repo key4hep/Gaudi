@@ -28,8 +28,10 @@
 
 // External libs
 #include "tbb/concurrent_queue.h"
+#include "tbb/task.h"
 
 typedef AlgsExecutionStates::State State;
+typedef std::function<StatusCode()> action;
 
 //---------------------------------------------------------------------------
 
@@ -225,17 +227,28 @@ private:
 
   // Actions management -----------------------------------------------------
 
-  typedef std::function<StatusCode()> action;
-
   /// Queue where closures are stored and picked for execution
   tbb::concurrent_bounded_queue<action> m_actionsQueue;
 
+  // helper task to enqueue the scheduler's actions (closures)
+  struct enqueueSchedulerActionTask: public tbb::task {
+
+    std::function<StatusCode()> m_closure;
+    SmartIF<ForwardSchedulerSvc> m_scheduler;
+
+    enqueueSchedulerActionTask(ForwardSchedulerSvc* scheduler, std::function<StatusCode()> _closure) :
+      m_closure(_closure), m_scheduler(scheduler) {}
+
+    tbb::task* execute() override {
+      m_scheduler->m_actionsQueue.push(m_closure);
+      return nullptr;
+    }
+  };
+
+  // ------------------------------------------------------------------------
+
   /// Member to take care of the control flow
   concurrency::ExecutionFlowManager m_efManager;
-
-  // Needed to queue actions on algorithm finishing and decrement algos in flight
-  friend class AlgoExecutionTask;
-  friend class IOBoundAlgTask;
 
   // Service for thread pool initialization
   SmartIF<IThreadPoolSvc> m_threadPoolSvc;

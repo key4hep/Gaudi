@@ -25,7 +25,6 @@
 #include "boost/thread.hpp"
 #include "boost/tokenizer.hpp"
 #include "boost/algorithm/string.hpp"
-#include "tbb/task.h"
 // DP waiting for the TBB service
 #include "tbb/task_scheduler_init.h"
 
@@ -945,16 +944,32 @@ StatusCode ForwardSchedulerSvc::promoteToScheduled( unsigned int iAlgo, int si )
       fatal() << "Event context for algorithm " << algName << " is a nullptr (slot " << si << ")" << endmsg;
 
     ++m_algosInFlight;
+    auto promote2ExecutedClosure = std::bind(&ForwardSchedulerSvc::promoteToExecuted,
+                                             this,
+                                             iAlgo,
+                                             eventContext->slot(),
+                                             ialgoPtr,
+                                             eventContext);
     // Avoid to use tbb if the pool size is 1 and run in this thread
     if (-100 != m_threadPoolSize) {
-      tbb::task* t = new( tbb::task::allocate_root() )
-        AlgoExecutionTask(ialgoPtr, iAlgo, eventContext, serviceLocator(),
-                          this, m_algExecStateSvc);
-      tbb::task::enqueue( *t);
+
+      // this parent task is needed to promote an Algorithm as EXECUTED,
+      // it will be started as soon as the child task (see below) is completed
+      tbb::task* triggerAlgoStateUpdate = new(tbb::task::allocate_root())
+                                enqueueSchedulerActionTask(this, promote2ExecutedClosure);
+      // setting parent's refcount to 1 is made here only for consistency
+      // (in this case since it is not scheduled explicitly and there it has only one child task)
+      triggerAlgoStateUpdate->set_ref_count(1);
+      // the child task that executes an Algorithm
+      tbb::task* algoTask = new(triggerAlgoStateUpdate->allocate_child())
+                            AlgoExecutionTask(ialgoPtr, iAlgo, eventContext, serviceLocator(), m_algExecStateSvc);
+      // schedule the algoTask
+      tbb::task::enqueue( *algoTask);
+
     } else {
-      AlgoExecutionTask theTask(ialgoPtr, iAlgo, eventContext,
-                                serviceLocator(), this, m_algExecStateSvc);
+      AlgoExecutionTask theTask(ialgoPtr, iAlgo, eventContext, serviceLocator(), m_algExecStateSvc);
       theTask.execute();
+      promote2ExecutedClosure();
     }
 
     if ( msgLevel( MSG::DEBUG ) )
@@ -999,8 +1014,7 @@ StatusCode ForwardSchedulerSvc::promoteToAsyncScheduled( unsigned int iAlgo, int
     ++m_IOBoundAlgosInFlight;
     // Can we use tbb-based overloaded new-operator for a "custom" task (an algorithm wrapper, not derived from tbb::task)? it seems it works..
     IOBoundAlgTask* theTask = new( tbb::task::allocate_root() )
-      IOBoundAlgTask(ialgoPtr, iAlgo, eventContext, serviceLocator(),
-                     this, m_algExecStateSvc);
+      IOBoundAlgTask(ialgoPtr, iAlgo, eventContext, serviceLocator(), m_algExecStateSvc);
     m_IOBoundAlgScheduler->push(*theTask);
 
     if (msgLevel(MSG::DEBUG))
