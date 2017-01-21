@@ -1,3 +1,8 @@
+// Local
+#include "AlgResourcePool.h"
+#include "AlgoExecutionTask.h"
+#include "ForwardSchedulerSvc.h"
+
 // Framework includes
 #include "GaudiAlg/GaudiAlgorithm.h"
 #include "GaudiKernel/Algorithm.h" // will be IAlgorithm if context getter promoted to interface
@@ -6,13 +11,6 @@
 #include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/ThreadLocalContext.h"
-
-// Local
-#include "AlgResourcePool.h"
-#include "AlgoExecutionTask.h"
-#include "PRGraphVisitors.h"
-#include "ForwardSchedulerSvc.h"
-#include "IOBoundAlgTask.h"
 
 // C++
 #include <algorithm>
@@ -42,8 +40,7 @@ DECLARE_SERVICE_FACTORY( ForwardSchedulerSvc )
  * executing the activate() function in a new thread.
  * In addition the algorithms list is acquired from the algResourcePool.
 **/
-StatusCode ForwardSchedulerSvc::initialize()
-{
+StatusCode ForwardSchedulerSvc::initialize() {
 
   // Initialise mother class (read properties, ...)
   StatusCode sc( Service::initialize() );
@@ -104,12 +101,6 @@ StatusCode ForwardSchedulerSvc::initialize()
     }
   }
 
-  // Get dedicated scheduler for I/O-bound algorithms
-  if ( m_useIOBoundAlgScheduler ) {
-    m_IOBoundAlgScheduler = serviceLocator()->service( m_IOBoundAlgSchedulerSvcName );
-    if ( !m_IOBoundAlgScheduler.isValid() )
-      fatal() << "Error retrieving IOBoundSchedulerAlgSvc interface IAccelerator." << endmsg;
-  }
   // Align the two quantities
   m_maxEventsInFlight = numberOfWBSlots;
 
@@ -235,15 +226,8 @@ StatusCode ForwardSchedulerSvc::initialize()
     }
   }
 
-  // prepare the control flow part
-  if ( m_CFNext ) m_DFNext = true; // force usage of new data flow machinery when new control flow is used
-  if ( !m_CFNext && !m_optimizationMode.empty() ) {
-    fatal() << "Execution optimization is only available with the graph-based execution flow management" << endmsg;
-    return StatusCode::FAILURE;
-  }
   const AlgResourcePool* algPool = dynamic_cast<const AlgResourcePool*>( m_algResourcePool.get() );
-  sc =
-      m_efManager.initialize( algPool->getPRGraph(), m_algname_index_map, m_eventSlots, m_optimizationMode );
+  sc = m_efManager.initialize( algPool->getPRGraph(), m_algname_index_map);
   unsigned int controlFlowNodeNumber = m_efManager.getPrecedenceRulesGraph()->getControlFlowNodeCounter();
 
   // Shortcut for the message service
@@ -260,12 +244,6 @@ StatusCode ForwardSchedulerSvc::initialize()
   info() << " o Number of algorithms in flight: " << m_maxAlgosInFlight << endmsg;
   info() << " o TBB thread pool size: " << m_threadPoolSize << endmsg;
 
-  // Simulating execution flow by only analyzing the graph topology and logic
-  if ( m_simulateExecution ) {
-    auto vis = concurrency::RunSimulator( 0 );
-    m_efManager.simulateExecutionFlow( vis );
-  }
-
   return sc;
 }
 //---------------------------------------------------------------------------
@@ -273,8 +251,7 @@ StatusCode ForwardSchedulerSvc::initialize()
 /**
  * Here the scheduler is deactivated and the thread joined.
 **/
-StatusCode ForwardSchedulerSvc::finalize()
-{
+StatusCode ForwardSchedulerSvc::finalize() {
 
   StatusCode sc( Service::finalize() );
   if ( !sc.isSuccess() ) warning() << "Base class could not be finalized" << endmsg;
@@ -306,8 +283,7 @@ StatusCode ForwardSchedulerSvc::finalize()
  * The scheduler is initialised here since this method runs in a separate
  * thread and spawns the tasks (through the execution of the lambdas)
  **/
-void ForwardSchedulerSvc::activate()
-{
+void ForwardSchedulerSvc::activate() {
 
   if (msgLevel(MSG::DEBUG))
     debug() << "ForwardSchedulerSvc::activate()" << endmsg;
@@ -350,8 +326,7 @@ void ForwardSchedulerSvc::activate()
  *  2) Flip the status flag m_isActive to false
  * This second action is the last one to be executed by the scheduler.
  */
-StatusCode ForwardSchedulerSvc::deactivate()
-{
+StatusCode ForwardSchedulerSvc::deactivate() {
 
   if ( m_isActive == ACTIVE ) {
     // Drain the scheduler
@@ -371,12 +346,13 @@ StatusCode ForwardSchedulerSvc::deactivate()
 //===========================================================================
 // Utils and shortcuts
 
-inline const std::string& ForwardSchedulerSvc::index2algname( unsigned int index ) { return m_algname_vect[index]; }
+inline const std::string& ForwardSchedulerSvc::index2algname( unsigned int index ) {
+  return m_algname_vect[index];
+}
 
 //---------------------------------------------------------------------------
 
-inline unsigned int ForwardSchedulerSvc::algname2index( const std::string& algoname )
-{
+inline unsigned int ForwardSchedulerSvc::algname2index( const std::string& algoname ) {
   unsigned int index = m_algname_index_map[algoname];
   return index;
 }
@@ -389,8 +365,7 @@ inline unsigned int ForwardSchedulerSvc::algname2index( const std::string& algon
  *  2) At least one slot is free. An action which resets the slot and kicks
  * off its update is queued.
  */
-StatusCode ForwardSchedulerSvc::pushNewEvent( EventContext* eventContext )
-{
+StatusCode ForwardSchedulerSvc::pushNewEvent( EventContext* eventContext ) {
 
   if ( m_first ) {
     m_first = false;
@@ -420,11 +395,6 @@ StatusCode ForwardSchedulerSvc::pushNewEvent( EventContext* eventContext )
 
     info() << "Executing event " << eventContext->evt() << " on slot " << thisSlotNum << endmsg;
     thisSlot.reset( eventContext );
-    // XXX: CF tests
-    if ( m_CFNext ) {
-      auto vis = concurrency::Trigger( thisSlotNum );
-      m_efManager.touchReadyAlgorithms( vis );
-    }
 
     return this->updateStates( thisSlotNum );
   }; // end of lambda
@@ -440,8 +410,7 @@ StatusCode ForwardSchedulerSvc::pushNewEvent( EventContext* eventContext )
 }
 
 //---------------------------------------------------------------------------
-StatusCode ForwardSchedulerSvc::pushNewEvents( std::vector<EventContext*>& eventContexts )
-{
+StatusCode ForwardSchedulerSvc::pushNewEvents( std::vector<EventContext*>& eventContexts ) {
   StatusCode sc;
   for ( auto context : eventContexts ) {
     sc = pushNewEvent( context );
@@ -451,15 +420,15 @@ StatusCode ForwardSchedulerSvc::pushNewEvents( std::vector<EventContext*>& event
 }
 
 //---------------------------------------------------------------------------
-unsigned int ForwardSchedulerSvc::freeSlots() { return std::max( m_freeSlots.load(), 0 ); }
+unsigned int ForwardSchedulerSvc::freeSlots() {
+  return std::max( m_freeSlots.load(), 0 );
+}
 
 //---------------------------------------------------------------------------
 /**
  * Update the states for all slots until nothing is left to do.
 */
-StatusCode ForwardSchedulerSvc::m_drain()
-{
-
+StatusCode ForwardSchedulerSvc::m_drain() {
   unsigned int slotNum = 0;
   for ( auto& thisSlot : m_eventSlots ) {
     if ( not thisSlot.algsStates.allAlgsExecuted() and not thisSlot.complete ) {
@@ -474,8 +443,7 @@ StatusCode ForwardSchedulerSvc::m_drain()
 /**
 * Get a finished event or block until one becomes available.
 */
-StatusCode ForwardSchedulerSvc::popFinishedEvent( EventContext*& eventContext )
-{
+StatusCode ForwardSchedulerSvc::popFinishedEvent( EventContext*& eventContext ) {
   // debug() << "popFinishedEvent: queue size: " << m_finishedEvents.size() << endmsg;
   if ( m_freeSlots.load() == m_maxEventsInFlight or m_isActive == INACTIVE ) {
     // debug() << "freeslots: " << m_freeSlots << "/" << m_maxEventsInFlight
@@ -497,8 +465,7 @@ StatusCode ForwardSchedulerSvc::popFinishedEvent( EventContext*& eventContext )
 /**
 * Try to get a finished event, if not available just return a failure
 */
-StatusCode ForwardSchedulerSvc::tryPopFinishedEvent( EventContext*& eventContext )
-{
+StatusCode ForwardSchedulerSvc::tryPopFinishedEvent( EventContext*& eventContext ) {
   if ( m_finishedEvents.try_pop( eventContext ) ) {
     if ( msgLevel( MSG::DEBUG ) )
       debug() << "Try Pop successful slot " << eventContext->slot() << "(event " << eventContext->evt() << ")"
@@ -515,8 +482,7 @@ StatusCode ForwardSchedulerSvc::tryPopFinishedEvent( EventContext*& eventContext
  * It dumps the state of the scheduler, drains the actions (without executing
  * them) and events in the queues and returns a failure.
 */
-StatusCode ForwardSchedulerSvc::eventFailed( EventContext* eventContext )
-{
+StatusCode ForwardSchedulerSvc::eventFailed( EventContext* eventContext ) {
 
   // Set the number of slots available to an error code
   m_freeSlots.store( 0 );
@@ -562,8 +528,7 @@ StatusCode ForwardSchedulerSvc::eventFailed( EventContext* eventContext )
  * * No algorithms have been signed off by the data flow
  * * No algorithms have been scheduled
 */
-StatusCode ForwardSchedulerSvc::updateStates( int si, const std::string& algo_name )
-{
+StatusCode ForwardSchedulerSvc::updateStates( int si ) {
 
   m_updateNeeded = true;
 
@@ -609,13 +574,7 @@ StatusCode ForwardSchedulerSvc::updateStates( int si, const std::string& algo_na
     AlgsExecutionStates& thisAlgsStates = thisSlot.algsStates;
 
     // Take care of the control ready update
-    // XXX: CF tests
-    if ( !m_CFNext ) {
-      m_efManager.updateEventState( thisAlgsStates, thisSlot.controlFlowState );
-    } else {
-      if ( !algo_name.empty() )
-        m_efManager.updateDecision( algo_name, iSlot, thisAlgsStates, thisSlot.controlFlowState );
-    }
+    m_efManager.updateEventState( thisAlgsStates, thisSlot.controlFlowState );
 
     // DF note: all this this is a loop over all algs and applies CR->DR and DR->SCHD transistions
     /*for (unsigned int iAlgo=0;iAlgo<m_algname_vect.size();++iAlgo){
@@ -640,112 +599,30 @@ StatusCode ForwardSchedulerSvc::updateStates( int si, const std::string& algo_na
 
     StatusCode partial_sc( StatusCode::FAILURE, true );
     // first update CONTROLREADY to DATAREADY
-    if ( !m_CFNext ) {
-      for ( auto it = thisAlgsStates.begin( AlgsExecutionStates::State::CONTROLREADY );
-            it != thisAlgsStates.end( AlgsExecutionStates::State::CONTROLREADY ); ++it ) {
+    for ( auto it = thisAlgsStates.begin( AlgsExecutionStates::State::CONTROLREADY );
+          it != thisAlgsStates.end( AlgsExecutionStates::State::CONTROLREADY ); ++it ) {
 
-        uint algIndex = *it;
-        partial_sc = promoteToDataReady(algIndex, iSlot);
-        if (partial_sc.isFailure())
-          if (msgLevel(MSG::VERBOSE))
-            verbose() << "Could not apply transition from "
-                      << AlgsExecutionStates::stateNames[AlgsExecutionStates::State::CONTROLREADY]
-                      << " for algorithm " << index2algname(algIndex) << " on processing slot " << iSlot << endmsg;
-      }
+      uint algIndex = *it;
+      partial_sc = promoteToDataReady(algIndex, iSlot);
+      if (partial_sc.isFailure())
+        if (msgLevel(MSG::VERBOSE))
+          verbose() << "Could not apply transition from "
+                    << AlgsExecutionStates::stateNames[AlgsExecutionStates::State::CONTROLREADY]
+                    << " for algorithm " << index2algname(algIndex) << " on processing slot " << iSlot << endmsg;
     }
 
     // now update DATAREADY to SCHEDULED
-    if ( !m_optimizationMode.empty() ) {
-      auto comp_nodes = [this]( const uint& i, const uint& j ) {
-        return ( m_efManager.getPrecedenceRulesGraph()->getAlgorithmNode( index2algname( i ) )->getRank() <
-                 m_efManager.getPrecedenceRulesGraph()->getAlgorithmNode( index2algname( j ) )->getRank() );
-      };
-      std::priority_queue<uint, std::vector<uint>, std::function<bool( const uint&, const uint& )>> buffer(
-          comp_nodes, std::vector<uint>() );
-      for ( auto it = thisAlgsStates.begin( AlgsExecutionStates::State::DATAREADY );
-            it != thisAlgsStates.end( AlgsExecutionStates::State::DATAREADY ); ++it )
-        buffer.push( *it );
-      /*std::stringstream s;
-      auto buffer2 = buffer;
-      while (!buffer2.empty()) {
-        s << m_efManager.getPrecedenceRulesGraph()->getAlgorithmNode(index2algname(buffer2.top()))->getRank() << ", ";
-        buffer2.pop();
-      }
-      info() << "DRBuffer is: [ " << s.str() << " ]  <--" << algo_name << " executed" << endmsg;*/
+    for ( auto it = thisAlgsStates.begin( AlgsExecutionStates::State::DATAREADY );
+          it != thisAlgsStates.end( AlgsExecutionStates::State::DATAREADY ); ++it ) {
+      uint algIndex = *it;
 
-      /*while (!buffer.empty()) {
-        partial_sc = promoteToScheduled(buffer.top(), iSlot);
-        if (partial_sc.isFailure()) {
-          if (msgLevel(MSG::VERBOSE))
-            verbose() << "Could not apply transition from "
-                      << AlgsExecutionStates::stateNames[AlgsExecutionStates::State::DATAREADY]
-                      << " for algorithm " << index2algname(buffer.top()) << " on processing slot " << iSlot << endmsg;
-          if (m_useIOBoundAlgScheduler) {
-            partial_sc = promoteToAsyncScheduled(buffer.top(), iSlot);
-            if (msgLevel(MSG::VERBOSE))
-              if (partial_sc.isFailure())
-                verbose() << "[Asynchronous] Could not apply transition from "
-                          << AlgsExecutionStates::stateNames[AlgsExecutionStates::State::DATAREADY]
-                          << " for algorithm " << index2algname(buffer.top()) << " on processing slot " << iSlot << endmsg;
-          }
-        }
-        buffer.pop();
-      }*/
-      while ( !buffer.empty() ) {
-        bool IOBound = false;
-        if ( m_useIOBoundAlgScheduler )
-          IOBound = m_efManager.getPrecedenceRulesGraph()->getAlgorithmNode( index2algname( buffer.top() ) )->isIOBound();
+      partial_sc = promoteToScheduled( algIndex, iSlot );
 
-        if ( !IOBound )
-          partial_sc = promoteToScheduled( buffer.top(), iSlot );
-        else
-          partial_sc = promoteToAsyncScheduled( buffer.top(), iSlot );
-
-        if (msgLevel(MSG::VERBOSE))
-          if (partial_sc.isFailure())
-            verbose() << "Could not apply transition from "
-                      << AlgsExecutionStates::stateNames[AlgsExecutionStates::State::DATAREADY]
-                      << " for algorithm " << index2algname(buffer.top()) << " on processing slot " << iSlot << endmsg;
-
-        buffer.pop();
-      }
-
-    } else {
-      for ( auto it = thisAlgsStates.begin( AlgsExecutionStates::State::DATAREADY );
-            it != thisAlgsStates.end( AlgsExecutionStates::State::DATAREADY ); ++it ) {
-        uint algIndex = *it;
-
-        bool IOBound = false;
-        if ( m_useIOBoundAlgScheduler )
-          IOBound = m_efManager.getPrecedenceRulesGraph()->getAlgorithmNode( index2algname( algIndex ) )->isIOBound();
-
-        if ( !IOBound )
-          partial_sc = promoteToScheduled( algIndex, iSlot );
-        else
-          partial_sc = promoteToAsyncScheduled( algIndex, iSlot );
-
-        if (msgLevel(MSG::VERBOSE))
-          if (partial_sc.isFailure())
-            verbose() << "Could not apply transition from "
-                      << AlgsExecutionStates::stateNames[AlgsExecutionStates::State::DATAREADY]
-                      << " for algorithm " << index2algname(algIndex) << " on processing slot " << iSlot << endmsg;
-      }
-    }
-
-    if (m_dumpIntraEventDynamics) {
-      auto now = std::chrono::system_clock::now();
-      std::stringstream s;
-      s << algo_name << ", " << thisAlgsStates.sizeOfSubset(State::CONTROLREADY) << ", "
-                     << thisAlgsStates.sizeOfSubset(State::DATAREADY) << ", "
-                     << thisAlgsStates.sizeOfSubset(State::SCHEDULED) << ", "
-                     << std::chrono::duration_cast<std::chrono::nanoseconds> (now - m_efManager.getPrecedenceRulesGraph()->getInitTime()).count()
-                     << "\n";
-      auto threads = (m_threadPoolSize != -1) ? std::to_string(m_threadPoolSize)
-                                              : std::to_string(tbb::task_scheduler_init::default_num_threads());
-      std::ofstream myfile;
-      myfile.open( "IntraEventConcurrencyDynamics_" + threads + "T.csv", std::ios::app );
-      myfile << s.str();
-      myfile.close();
+      if (msgLevel(MSG::VERBOSE))
+        if (partial_sc.isFailure())
+          verbose() << "Could not apply transition from "
+                    << AlgsExecutionStates::stateNames[AlgsExecutionStates::State::DATAREADY]
+                    << " for algorithm " << index2algname(algIndex) << " on processing slot " << iSlot << endmsg;
     }
 
     // Not complete because this would mean that the slot is already free!
@@ -793,12 +670,11 @@ StatusCode ForwardSchedulerSvc::updateStates( int si, const std::string& algo_na
  * no algorithm is in flight and no algorithm has all of its dependencies
  * satisfied.
 */
-StatusCode ForwardSchedulerSvc::isStalled( int iSlot )
-{
+StatusCode ForwardSchedulerSvc::isStalled( int iSlot ) {
   // Get the slot
   EventSlot& thisSlot = m_eventSlots[iSlot];
 
-  if ( m_actionsQueue.empty() && m_algosInFlight == 0 && m_IOBoundAlgosInFlight == 0 &&
+  if ( m_actionsQueue.empty() && m_algosInFlight == 0 &&
        ( !thisSlot.algsStates.algsPresent( AlgsExecutionStates::DATAREADY ) ) ) {
 
     info() << "About to declare a stall" << endmsg;
@@ -818,8 +694,7 @@ StatusCode ForwardSchedulerSvc::isStalled( int iSlot )
  * in order to be inspected.
  * The dependencies of each algo are printed and the missing ones specified.
 **/
-void ForwardSchedulerSvc::dumpSchedulerState( int iSlot )
-{
+void ForwardSchedulerSvc::dumpSchedulerState( int iSlot ) {
 
   // To have just one big message
   std::ostringstream outputMessageStream;
@@ -890,8 +765,7 @@ void ForwardSchedulerSvc::dumpSchedulerState( int iSlot )
 
 //---------------------------------------------------------------------------
 
-StatusCode ForwardSchedulerSvc::promoteToControlReady( unsigned int iAlgo, int si )
-{
+StatusCode ForwardSchedulerSvc::promoteToControlReady( unsigned int iAlgo, int si ) {
 
   // Do the control flow
   StatusCode sc = m_eventSlots[si].algsStates.updateState(iAlgo,AlgsExecutionStates::CONTROLREADY);
@@ -905,15 +779,9 @@ StatusCode ForwardSchedulerSvc::promoteToControlReady( unsigned int iAlgo, int s
 
 //---------------------------------------------------------------------------
 
-StatusCode ForwardSchedulerSvc::promoteToDataReady( unsigned int iAlgo, int si )
-{
+StatusCode ForwardSchedulerSvc::promoteToDataReady( unsigned int iAlgo, int si ) {
 
-  StatusCode sc;
-  if ( !m_DFNext ) {
-    sc = m_eventSlots[si].dataFlowMgr.canAlgorithmRun( iAlgo );
-  } else {
-    sc = m_efManager.algoDataDependenciesSatisfied( index2algname( iAlgo ), si );
-  }
+  StatusCode sc = m_eventSlots[si].dataFlowMgr.canAlgorithmRun( iAlgo );
 
   StatusCode updateSc( StatusCode::FAILURE );
   if ( sc == StatusCode::SUCCESS )
@@ -929,8 +797,7 @@ StatusCode ForwardSchedulerSvc::promoteToDataReady( unsigned int iAlgo, int si )
 
 //---------------------------------------------------------------------------
 
-StatusCode ForwardSchedulerSvc::promoteToScheduled( unsigned int iAlgo, int si )
-{
+StatusCode ForwardSchedulerSvc::promoteToScheduled( unsigned int iAlgo, int si ) {
 
   if ( m_algosInFlight == m_maxAlgosInFlight ) return StatusCode::FAILURE;
 
@@ -944,6 +811,7 @@ StatusCode ForwardSchedulerSvc::promoteToScheduled( unsigned int iAlgo, int si )
       fatal() << "Event context for algorithm " << algName << " is a nullptr (slot " << si << ")" << endmsg;
 
     ++m_algosInFlight;
+    // prepare a scheduler action to run once the algorithm is executed
     auto promote2ExecutedClosure = std::bind(&ForwardSchedulerSvc::promoteToExecuted,
                                              this,
                                              iAlgo,
@@ -994,56 +862,8 @@ StatusCode ForwardSchedulerSvc::promoteToScheduled( unsigned int iAlgo, int si )
 
 //---------------------------------------------------------------------------
 
-StatusCode ForwardSchedulerSvc::promoteToAsyncScheduled( unsigned int iAlgo, int si )
-{
-
-  if ( m_IOBoundAlgosInFlight == m_maxIOBoundAlgosInFlight ) return StatusCode::FAILURE;
-
-  // bool IOBound = m_efManager.getPrecedenceRulesGraph()->getAlgorithmNode(algName)->isIOBound();
-
-  const std::string& algName( index2algname( iAlgo ) );
-  IAlgorithm* ialgoPtr = nullptr;
-  StatusCode sc( m_algResourcePool->acquireAlgorithm( algName, ialgoPtr ) );
-
-  if ( sc.isSuccess() ) { // if we managed to get an algorithm instance try to schedule it
-    EventContext* eventContext( m_eventSlots[si].eventContext );
-    if ( !eventContext )
-      fatal() << "[Asynchronous] Event context for algorithm " << algName << " is a nullptr (slot " << si << ")"
-              << endmsg;
-
-    ++m_IOBoundAlgosInFlight;
-    // Can we use tbb-based overloaded new-operator for a "custom" task (an algorithm wrapper, not derived from tbb::task)? it seems it works..
-    IOBoundAlgTask* theTask = new( tbb::task::allocate_root() )
-      IOBoundAlgTask(ialgoPtr, iAlgo, eventContext, serviceLocator(), m_algExecStateSvc);
-    m_IOBoundAlgScheduler->push(*theTask);
-
-    if (msgLevel(MSG::DEBUG))
-      debug() << "[Asynchronous] Algorithm " << algName << " was submitted on event "
-              << eventContext->evt() << " in slot " << si
-              << ". algorithms scheduled are " << m_IOBoundAlgosInFlight << endmsg;
-
-    StatusCode updateSc( m_eventSlots[si].algsStates.updateState( iAlgo, AlgsExecutionStates::SCHEDULED ) );
-
-    if (updateSc.isSuccess())
-      if (msgLevel(MSG::VERBOSE))
-        verbose() << "[Asynchronous] Promoting " << index2algname(iAlgo)
-                  << " to SCHEDULED on slot " << si << endmsg;
-    return updateSc;
-  } else {
-    if ( msgLevel( MSG::DEBUG ) )
-      debug() << "[Asynchronous] Could not acquire instance for algorithm " << index2algname( iAlgo ) << " on slot "
-              << si << endmsg;
-    return sc;
-  }
-}
-
-//---------------------------------------------------------------------------
-/**
- * The call to this method is triggered only from within the AlgoExecutionTask.
-*/
 StatusCode ForwardSchedulerSvc::promoteToExecuted( unsigned int iAlgo, int si, IAlgorithm* algo,
-                                                   EventContext* eventContext )
-{
+                                                   EventContext* eventContext ) {
 
   // Put back the instance
   Algorithm* castedAlgo = dynamic_cast<Algorithm*>( algo ); // DP: expose context getter in IAlgo?
@@ -1066,30 +886,26 @@ StatusCode ForwardSchedulerSvc::promoteToExecuted( unsigned int iAlgo, int si, I
   m_algosInFlight--;
 
   EventSlot& thisSlot = m_eventSlots[si];
-  // XXX: CF tests
-  if ( !m_DFNext ) {
-    // Update the catalog: some new products may be there
-    m_whiteboard->selectStore( eventContext->slot() ).ignore();
 
-    // update prods in the dataflow
-    // DP: Handles could be used. Just update what the algo wrote
-    DataObjIDColl new_products;
-    m_whiteboard->getNewDataObjects( new_products ).ignore();
-    for ( const auto& new_product : new_products )
-      if ( msgLevel( MSG::DEBUG ) ) debug() << "Found in WB [" << si << "]: " << new_product << endmsg;
-    thisSlot.dataFlowMgr.updateDataObjectsCatalog( new_products );
-  }
+  // Update the catalog: some new products may be there
+  m_whiteboard->selectStore( eventContext->slot() ).ignore();
+
+  // update prods in the dataflow
+  // DP: Handles could be used. Just update what the algo wrote
+  DataObjIDColl new_products;
+  m_whiteboard->getNewDataObjects( new_products ).ignore();
+  for ( const auto& new_product : new_products )
+    if ( msgLevel( MSG::DEBUG ) ) debug() << "Found in WB [" << si << "]: " << new_product << endmsg;
+  thisSlot.dataFlowMgr.updateDataObjectsCatalog( new_products );
 
   if ( msgLevel( MSG::DEBUG ) )
     debug() << "Algorithm " << algo->name() << " executed in slot " << si << ". Algorithms scheduled are "
             << m_algosInFlight << endmsg;
 
   // Limit number of updates
-  if ( m_CFNext )
-    m_updateNeeded = true; // XXX: CF tests: with the new CF traversal the if clause below has to be removed
   if ( m_updateNeeded ) {
     // Schedule an update of the status of the algorithms
-    auto updateAction = std::bind( &ForwardSchedulerSvc::updateStates, this, -1, algo->name() );
+    auto updateAction = std::bind( &ForwardSchedulerSvc::updateStates, this, -1);
     m_actionsQueue.push( updateAction );
     m_updateNeeded = false;
   }
@@ -1113,94 +929,15 @@ StatusCode ForwardSchedulerSvc::promoteToExecuted( unsigned int iAlgo, int si, I
   return sc;
 }
 
-//---------------------------------------------------------------------------
-/**
- * The call to this method is triggered only from within the IOBoundAlgTask.
-*/
-StatusCode ForwardSchedulerSvc::promoteToAsyncExecuted( unsigned int iAlgo, int si, IAlgorithm* algo,
-                                                        EventContext* eventContext )
-{
-
-  // Put back the instance
-  Algorithm* castedAlgo = dynamic_cast<Algorithm*>( algo ); // DP: expose context getter in IAlgo?
-  if ( !castedAlgo ) fatal() << "[Asynchronous] The casting did not succeed!" << endmsg;
-  // EventContext* eventContext = castedAlgo->getContext();
-
-  // Check if the execution failed
-  if (m_algExecStateSvc->eventStatus(*eventContext) != EventStatus::Success)
-    eventFailed(eventContext).ignore();
-
-  StatusCode sc = m_algResourcePool->releaseAlgorithm( algo->name(), algo );
-
-  if ( !sc.isSuccess() ) {
-    error() << "[Asynchronous]  [Event " << eventContext->evt() << ", Slot " << eventContext->slot() << "] "
-            << "Instance of algorithm " << algo->name() << " could not be properly put back." << endmsg;
-    return StatusCode::FAILURE;
-  }
-
-  m_IOBoundAlgosInFlight--;
-
-  EventSlot& thisSlot = m_eventSlots[si];
-  // XXX: CF tests
-  if ( !m_DFNext ) {
-    // Update the catalog: some new products may be there
-    m_whiteboard->selectStore( eventContext->slot() ).ignore();
-
-    // update prods in the dataflow
-    // DP: Handles could be used. Just update what the algo wrote
-    DataObjIDColl new_products;
-    m_whiteboard->getNewDataObjects(new_products).ignore();
-    for (const auto& new_product : new_products)
-      if (msgLevel(MSG::DEBUG))
-        debug() << "Found in WB [" << si << "]: " << new_product << endmsg;
-    thisSlot.dataFlowMgr.updateDataObjectsCatalog(new_products);
-  }
-
-  if (msgLevel(MSG::DEBUG))
-    debug() << "[Asynchronous] Algorithm " << algo->name() << " executed in slot " << si
-            << ". Algorithms scheduled are " << m_IOBoundAlgosInFlight << endmsg;
-
-  // Limit number of updates
-  if ( m_CFNext )
-    m_updateNeeded = true; // XXX: CF tests: with the new CF traversal the if clause below has to be removed
-  if ( m_updateNeeded ) {
-    // Schedule an update of the status of the algorithms
-    auto updateAction = std::bind( &ForwardSchedulerSvc::updateStates, this, -1, algo->name() );
-    m_actionsQueue.push( updateAction );
-    m_updateNeeded = false;
-  }
-
-  if (msgLevel(MSG::DEBUG))
-    debug() << "[Asynchronous] Trying to handle execution result of "
-            << index2algname(iAlgo) << " on slot " << si << endmsg;
-  State state;
-  if ( algo->filterPassed() ) {
-    state = State::EVTACCEPTED;
-  } else {
-    state = State::EVTREJECTED;
-  }
-
-  sc = thisSlot.algsStates.updateState( iAlgo, state );
-
-  if (sc.isSuccess())
-    if (msgLevel(MSG::VERBOSE))
-      verbose() << "[Asynchronous] Promoting " << index2algname(iAlgo) << " on slot "
-                << si << " to " << AlgsExecutionStates::stateNames[state] << endmsg;
-
-  return sc;
-}
-
 //===========================================================================
-void ForwardSchedulerSvc::addAlg( Algorithm* a, EventContext* e, pthread_t t )
-{
+void ForwardSchedulerSvc::addAlg( Algorithm* a, EventContext* e, pthread_t t ) {
 
   std::lock_guard<std::mutex> lock( m_ssMut );
   m_sState.push_back( SchedulerState( a, e, t ) );
 }
 
 //===========================================================================
-bool ForwardSchedulerSvc::delAlg( Algorithm* a )
-{
+bool ForwardSchedulerSvc::delAlg( Algorithm* a ) {
 
   std::lock_guard<std::mutex> lock( m_ssMut );
 
@@ -1216,8 +953,7 @@ bool ForwardSchedulerSvc::delAlg( Algorithm* a )
 }
 
 //===========================================================================
-void ForwardSchedulerSvc::dumpState( std::ostringstream& ost )
-{
+void ForwardSchedulerSvc::dumpState( std::ostringstream& ost ) {
 
   std::lock_guard<std::mutex> lock( m_ssMut );
 
@@ -1227,8 +963,7 @@ void ForwardSchedulerSvc::dumpState( std::ostringstream& ost )
 }
 
 //===========================================================================
-void ForwardSchedulerSvc::dumpState()
-{
+void ForwardSchedulerSvc::dumpState() {
 
   std::lock_guard<std::mutex> lock( m_ssMut );
 
