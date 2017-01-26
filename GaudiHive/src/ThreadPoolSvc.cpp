@@ -1,6 +1,7 @@
 #include "ThreadPoolSvc.h"
 
 #include "GaudiKernel/SvcFactory.h"
+#include "GaudiKernel/ConcurrencyFlags.h"
 #include "ThreadInitTask.h"
 
 #include "tbb/task_scheduler_init.h"
@@ -116,6 +117,22 @@ ThreadPoolSvc::initPool(const int& poolSize) {
     m_barrier = std::unique_ptr<boost::barrier>( new boost::barrier(thePoolSize) );
 
   }
+
+  // Set global concurrency flags
+  if (m_threadPoolSize > 0) {
+    Gaudi::Concurrency::ConcurrencyFlags::setNumThreads(m_threadPoolSize);
+  } else if (m_threadPoolSize == 0) {
+    // Not sure why this would happen...
+    Gaudi::Concurrency::ConcurrencyFlags::setNumThreads(1);
+  } else if (m_threadPoolSize == -1) {
+    Gaudi::Concurrency::ConcurrencyFlags::setNumThreads(1);
+  } else if (m_threadPoolSize == -100) {
+    Gaudi::Concurrency::ConcurrencyFlags::setNumThreads(1);
+  } else {
+    warning() << "No idea what a theadPoolSize of " << m_threadPoolSize << " means..."
+              << endmsg;
+    Gaudi::Concurrency::ConcurrencyFlags::setNumThreads(1);
+  }  
 
   // Launch the init tool tasks
   const bool terminate = false;
