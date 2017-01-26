@@ -22,6 +22,9 @@ namespace Gaudi {
       static GAUDI_API std::size_t numThreads() {return n_threads; }
       static GAUDI_API std::size_t numConcurrentEvents() { return n_concEvts; }
       static GAUDI_API std::size_t numProcs() { return n_procs; }
+      static GAUDI_API bool concurrent() { 
+        return ( (n_threads+n_concEvts+n_procs == 0) ? false : true );
+      }
 
     private:
 
