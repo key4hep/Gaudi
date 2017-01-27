@@ -9,7 +9,7 @@
 preproc = (normalizeExamples +
            LineSkipper(["0 local"],
                        regexps=[r"0x[0-9a-fA-F#]+ *Algorithm::sysInitialize\(\) *\[",
-                                r"0x[0-9a-fA-F#]* *__gxx_personality_v0 *\["]) +
+                                r"0x[0-9a-fA-F#]* *(__gxx_personality_v0|pthread_once|_start) *\["]) +
            RegexpReplacer(r"(?&lt;=\s)\S+ErrorLogTest\.cpp:", "ErrorLogTest.cpp:", "ErrorLogTest.cpp:") +
            RegexpReplacer(r"\[.*/([^/]*.*)\]", r"[\1]", r"^#[0-9]+ +0x########") +  # normalize paths to libraries
            RegexpReplacer(r"^#[0-9]+ +", r"#N  ", "^#[0-9]+ +0x########")  # normalize stack levels count
