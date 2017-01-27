@@ -123,7 +123,6 @@ public:
    *  For sub-algorithms either the sysExecute() method or execute() method
    *  must be EXPLICITLY invoked by  the parent algorithm.
    */
-  StatusCode sysExecute() override;
   StatusCode sysExecute(const EventContext& ctx) override;
 
   /** System stop. This method invokes the stop() method of a concrete

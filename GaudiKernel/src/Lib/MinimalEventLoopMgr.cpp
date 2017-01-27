@@ -457,7 +457,7 @@ StatusCode MinimalEventLoopMgr::executeEvent( void* /* par */ )
     state.setExecuted(false);
     state.setFilterPassed(true);
     StatusCode sc;
-    sc = ito->sysExecute();
+    sc = ito->sysExecute(context);
     state.setExecStatus(sc);
     if ( UNLIKELY( !sc.isSuccess() ) ) {
       warning() << "Execution of output stream " << ito->name() << " failed" << endmsg;

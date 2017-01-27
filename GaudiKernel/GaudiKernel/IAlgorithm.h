@@ -104,7 +104,6 @@ public:
   virtual StatusCode sysRestart() = 0;
 
   /// System execution. This method invokes the execute() method of a concrete algorithm
-  virtual StatusCode sysExecute() = 0;
   virtual StatusCode sysExecute(const EventContext&) = 0;
 
   /** System stop. This method invokes the stop() method of a concrete

@@ -481,11 +481,6 @@ StatusCode Algorithm::sysEndRun()
 
 StatusCode Algorithm::endRun() { return StatusCode::SUCCESS; }
 
-StatusCode Algorithm::sysExecute()
-{
-  return sysExecute( Gaudi::Hive::currentContext() );
-}
-
 StatusCode Algorithm::sysExecute(const EventContext& ctx)
 {
 

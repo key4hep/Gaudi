@@ -91,10 +91,6 @@ SmartIF<INTupleSvc>& GaudiAlgorithm::evtColSvc() const
  *  @return status code
  */
 // ============================================================================
-StatusCode GaudiAlgorithm::sysExecute () {
-  return this->sysExecute(Gaudi::Hive::currentContext());
-}
-
 StatusCode GaudiAlgorithm::sysExecute (const EventContext& evtCtx)
 {
   IAlgContextSvc* ctx = nullptr ;
