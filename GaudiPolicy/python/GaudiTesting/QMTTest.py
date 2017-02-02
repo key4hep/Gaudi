@@ -73,11 +73,15 @@ class QMTTest(BaseTest):
                     return apply(self.callable, args, kwargs)
 
             # local names to be exposed in the script
+            stdout_ref = self._expandReferenceFileName(self.reference)
+            stderr_ref = self._expandReferenceFileName(self.error_reference)
             exported_symbols = {"self": self,
                                 "stdout": stdout,
                                 "stderr": stderr,
                                 "result": result,
                                 "causes": self.causes,
+                                "reference": stdout_ref,
+                                "error_reference": stderr_ref,
                                 "findReferenceBlock":
                                     CallWrapper(self.findReferenceBlock,
                                                 {"stdout": stdout,
