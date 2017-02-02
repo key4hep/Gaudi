@@ -103,6 +103,9 @@ public:
   */
   virtual StatusCode sysRestart() = 0;
 
+  /// sysExecute changed to accept the EventContext as argument
+#define GAUDI_SYSEXECUTE_WITHCONTEXT 1
+
   /// System execution. This method invokes the execute() method of a concrete algorithm
   virtual StatusCode sysExecute(const EventContext&) = 0;
 

@@ -48,9 +48,9 @@ public:
 
   void updateEventStatus(const bool& b, const EventContext& ctx) override;
 
-  unsigned int algErrorCount(const IAlgorithm* iAlg) const;
-  void resetErrorCount(const IAlgorithm* iAlg);
-  unsigned int incrementErrorCount(const IAlgorithm* iAlg);
+  unsigned int algErrorCount(const IAlgorithm* iAlg) const override;
+  void resetErrorCount(const IAlgorithm* iAlg) override;
+  unsigned int incrementErrorCount(const IAlgorithm* iAlg) override;
 
   void dump(std::ostringstream& ost, const EventContext& ctx) const override;
 
