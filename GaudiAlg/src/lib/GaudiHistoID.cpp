@@ -17,33 +17,6 @@
 // ============================================================================
 #include "GaudiAlg/GaudiHistoID.h"
 // ============================================================================
-// Boost
-// ============================================================================
-#include "boost/functional/hash.hpp"
-// ============================================================================
-// Implicit constructor from a numeric ID
-// ============================================================================
-GaudiAlg::ID::ID ( const GaudiAlg::ID::NumericID id ) 
-  : m_nID  ( id ) 
-  , m_hash ( boost::hash_value ( id ) ) 
-{}
-// ============================================================================
-// Implicit constructor from a literal ID
-// ============================================================================
-GaudiAlg::ID::ID ( const GaudiAlg::ID::LiteralID& id ) 
-  : m_nID ( -1 ) 
-  , m_aID ( id ) 
-  , m_hash ( boost::hash_value ( m_aID ) ) 
-{}
-// ============================================================================
-// Implicit constructor from a literal ID
-// ============================================================================
-GaudiAlg::ID::ID ( const char* id  ) 
-  : m_nID  ( -1 ) 
-  , m_aID  ( id ) 
-  , m_hash ( boost::hash_value ( m_aID ) ) 
-{}
-// ============================================================================
 GaudiAlg::ID::LiteralID GaudiAlg::ID::idAsString() const
 {
   std::ostringstream s ;
