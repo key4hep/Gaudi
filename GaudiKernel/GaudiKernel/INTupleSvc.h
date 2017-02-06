@@ -199,8 +199,6 @@ public:
   */
   virtual StatusCode readRecord(DataObject* pParent, const std::string& relPath) = 0;
 
-  /// virtual destructor
-  virtual ~INTupleSvc() = default;
 };
 
 #endif // INTERFACES_INTUPLESVC_H

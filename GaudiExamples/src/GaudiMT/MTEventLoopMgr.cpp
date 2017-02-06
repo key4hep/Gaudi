@@ -18,17 +18,6 @@
 DECLARE_COMPONENT(MTEventLoopMgr);
 
 //--------------------------------------------------------------------------------------------
-// Standard Constructor
-//--------------------------------------------------------------------------------------------
-MTEventLoopMgr::MTEventLoopMgr(const std::string& nam, ISvcLocator* svcLoc)
-: MinimalEventLoopMgr(nam, svcLoc)
-{
-  // Declare properties
-  declareProperty("HistogramPersistency", m_histPersName );
-  declareProperty( "EvtSel", m_evtsel );
-}
-
-//--------------------------------------------------------------------------------------------
 // Standard Destructor
 //--------------------------------------------------------------------------------------------
 MTEventLoopMgr::~MTEventLoopMgr()   {

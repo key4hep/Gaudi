@@ -33,7 +33,7 @@ namespace RootHistCnv {
     };
   public:
     /// Create the transient representation of an object.
-    virtual StatusCode createObj(IOpaqueAddress* pAddr, DataObject*& refpObj) {
+    StatusCode createObj(IOpaqueAddress* pAddr, DataObject*& refpObj) override {
       refpObj = DataObjFactory::create(objType());
       RootObjAddress *r = dynamic_cast<RootObjAddress*>(pAddr);
       Q* h = dynamic_cast<Q*>(refpObj);
@@ -58,11 +58,11 @@ namespace RootHistCnv {
       return error("Cannot create histogram - invalid address.");
     }
     /// Update the transient object from the other representation.
-    virtual StatusCode updateObj(IOpaqueAddress* /* pAddr */, DataObject* /* pObj */)  {
+    StatusCode updateObj(IOpaqueAddress* /* pAddr */, DataObject* /* pObj */) override  {
       return StatusCode::SUCCESS;
     }
     /// Create the persistent representation of the histogram object.
-    virtual TObject* createPersistent(DataObject* pObj)   {
+    TObject* createPersistent(DataObject* pObj) override   {
       Q* h = dynamic_cast<Q*>(pObj);
       if ( 0 != h ) {
         T *r = dynamic_cast<T*>(h->representation());
@@ -86,7 +86,7 @@ namespace RootHistCnv {
     static const CLID& classID();
     /// Standard constructor
     RHistogramCnv(ISvcLocator* svc) : RConverter(classID(), svc) {}
-    virtual ~RHistogramCnv() = default;
+    ~RHistogramCnv() override = default;
   };
 }       // namespace RootHistCnv
 #endif  // ROOTHISTCNV_RHISTOGRAMCNV_H

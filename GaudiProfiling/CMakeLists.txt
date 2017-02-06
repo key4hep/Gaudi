@@ -1,4 +1,4 @@
-gaudi_subdir(GaudiProfiling v2r9)
+gaudi_subdir(GaudiProfiling)
 
 gaudi_depends_on_subdirs(GaudiKernel GaudiAlg)
 
@@ -6,9 +6,15 @@ if (CMAKE_SYSTEM_NAME MATCHES Linux)
 
 find_package(Boost COMPONENTS python)
 find_package(PythonLibs)
-find_package(unwind REQUIRED)
-find_package(gperftools REQUIRED)
+find_package(unwind)
+find_package(gperftools)
 find_package(IntelAmplifier)
+
+# Hide some Boost/libunwind compile time warnings
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
+if( UNWIND_FOUND )
+   include_directories( SYSTEM ${UNWIND_INCLUDE_DIRS} )
+endif()
 
 #---Components--------------------------------------------------------------
 include_directories(src/component)
@@ -28,7 +34,7 @@ if(UNWIND_FOUND AND CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
   gaudi_add_executable(GaudiGenProfilingHtml src/app/pfm_gen_analysis.cpp
                        LINK_LIBRARIES z GaudiKernel)
 else()
-  message(WARNING "The module GaudiProfiling is disabled (unsupported architecture ${CMAKE_SYSTEM_PROCESSOR}).")
+  message(WARNING "The module GaudiProfiling is disabled (architecture ${CMAKE_SYSTEM_PROCESSOR}).")
 endif()
 
 

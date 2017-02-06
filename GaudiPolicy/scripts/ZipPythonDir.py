@@ -117,14 +117,16 @@ def checkEncoding(fileObj):
 
 ## Make a zip file out of a directory containing python modules
 def zipdir(directory, no_pyc = False):
+    filename = os.path.realpath(directory + ".zip")
     log = logging.getLogger("zipdir")
     if not os.path.isdir(directory):
-        raise OSError(20, "Not a directory", directory)
+        log.warning('directory %s missing, creating empty .zip file', directory)
+        open(filename, "ab").close()
+        return
     msg = "Zipping directory '%s'"
     if no_pyc:
         msg += " (without pre-compilation)"
     log.info(msg, directory)
-    filename = os.path.realpath(directory + ".zip")
 
     # Open the file in read an update mode
     if os.path.exists(filename):

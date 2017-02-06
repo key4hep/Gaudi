@@ -1,20 +1,28 @@
-gaudi_subdir(GaudiMP v3r5)
+gaudi_subdir(GaudiMP)
 
 gaudi_depends_on_subdirs(GaudiKernel GaudiAlg)
 
-find_package(ROOT)
+find_package(ROOT COMPONENTS Net RIO Thread)
 find_package(PythonLibs)
+find_package(AIDA)
 
-# Hide some Boost compile time warnings
+# The list of sources to build into the module:
+set( module_sources src/component/IoComponentMgr.cpp )
+if( AIDA_FOUND )
+   list( APPEND module_sources src/component/RecordOutputStream.cpp
+      src/component/ReplayOutputStream.cpp )
+endif()
+
+# Hide some Boost/ROOT compile time warnings
 find_package(Boost)
-include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS})
 
 #---Libraries---------------------------------------------------------------
 gaudi_add_library(GaudiMPLib src/Lib/*.cpp
                   LINK_LIBRARIES GaudiKernel PythonLibs ROOT
                   INCLUDE_DIRS ROOT PythonLibs
                   PUBLIC_HEADERS GaudiMP)
-gaudi_add_module(GaudiMP src/component/*.cpp
+gaudi_add_module(GaudiMP ${module_sources}
                  LINK_LIBRARIES GaudiMPLib PythonLibs ROOT GaudiAlgLib)
 
 #---Dictionaries------------------------------------------------------------

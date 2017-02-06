@@ -1,6 +1,7 @@
 // Framework include files
 #include "GaudiKernel/DataStoreItem.h"
 #include "GaudiKernel/MsgStream.h"
+#include "GaudiKernel/ThreadLocalContext.h"
 
 // Example related include files
 #include "ReadHandleAlg.h"
@@ -25,7 +26,7 @@ StatusCode ReadHandleAlg::execute() {
   
   Collision* c = m_inputHandle.get();
 
-  const int evtNum = ( getContext() ? getContext()->evt() : -1 );
+  const int evtNum = Gaudi::Hive::currentContext().evt();
 
   info() << "Event " << evtNum << " Collision number " <<  c->collision() << endmsg;
   

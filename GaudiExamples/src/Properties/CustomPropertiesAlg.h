@@ -6,27 +6,31 @@
 
 #include <unordered_map>
 
-namespace Gaudi { namespace Examples {
-  /** @class CustomPropertiesAlg CustomPropertiesAlg.h Properties/CustomPropertiesAlg.h
-   *
-   * Example on how to use custom property types.
-   *
-   * @author Marco Clemencic
-   * @date 14/11/2014
-   */
-  class CustomPropertiesAlg: public GaudiAlgorithm {
-  public:
-    /// Standard constructor
-    CustomPropertiesAlg(const std::string& name, ISvcLocator* pSvcLocator);
-    virtual ~CustomPropertiesAlg(); ///< Destructor
+namespace Gaudi
+{
+  namespace Examples
+  {
+    /** @class CustomPropertiesAlg CustomPropertiesAlg.h Properties/CustomPropertiesAlg.h
+     *
+     * Example on how to use custom property types.
+     *
+     * @author Marco Clemencic
+     * @date 14/11/2014
+     */
+    class CustomPropertiesAlg : public GaudiAlgorithm
+    {
+    public:
+      /// Standard constructor
+      using GaudiAlgorithm::GaudiAlgorithm;
+      ~CustomPropertiesAlg() override = default; ///< Destructor
 
-    virtual StatusCode initialize();    ///< Algorithm initialization
-    virtual StatusCode execute   ();    ///< Algorithm execution
-    virtual StatusCode finalize  ();    ///< Algorithm finalization
-  protected:
-  private:
-    std::unordered_map<std::string, std::string> m_unorderedMap;
-  };
-}}
+      StatusCode initialize() override; ///< Algorithm initialization
+      StatusCode execute() override;    ///< Algorithm execution
+      StatusCode finalize() override;   ///< Algorithm finalization
+    private:
+      Gaudi::Property<std::unordered_map<std::string, std::string>> m_unorderedMap{this, "UnorderedMap"};
+    };
+  }
+}
 
 #endif // PROPERTIES_CUSTOMPROPERTIESALG_H

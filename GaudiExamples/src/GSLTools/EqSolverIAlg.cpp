@@ -1,5 +1,3 @@
-// $Id: EqSolverIAlg.cpp,v 1.5 2006/01/10 19:58:26 hmd Exp $
-
 // Include files
 
 // from Gaudi
@@ -14,11 +12,14 @@
 // local
 #include "EqSolverIAlg.h"
 
-#ifdef __ICC
-// disable icc warning #327: NULL reference is not allowed
+// disable warning about nullptr dereferencing (icc and clang)
 //   It's a real problem, but here it is used for test purposes
+#ifdef __ICC
 #pragma warning(disable:327)
+#elif __clang__
+#pragma clang diagnostic ignored "-Wnull-dereference"
 #endif
+
 
 //-----------------------------------------------------------------------------
 /** @file Implementation file for class : EqSolverIAlg
@@ -38,7 +39,7 @@ using namespace CLHEP;
 // Standard constructor, initializes variables
 //=============================================================================
 EqSolverIAlg::EqSolverIAlg( const std::string& name,
-			ISvcLocator* pSvcLocator)
+                        ISvcLocator* pSvcLocator)
   : Algorithm ( name , pSvcLocator ) {
 
 }
@@ -57,28 +58,28 @@ class Function1 : virtual public AIDA::IFunction
 public:
   typedef std::vector<double> argument ;
 public:
-  Function1 () {};
-  virtual ~Function1 () {};
-  double value ( const argument& x ) const { return x[0] - 1; }
-  int dimension () const { return 3; }
-  bool setTitle(const std::string& ) { return false; }
-  std::string title(void) const {return "";}
-  bool isEqual(const AIDA::IFunction&) const { return false; }
-  const std::vector<double>& gradient(const std::vector<double>&) const { return m_values;}
-  bool providesGradient(void) const { return false; }
-  std::string variableName(int) const  { return ""; }
-  std::vector<std::string> variableNames(void) const {return m_names;}
-  bool setParameters(const std::vector<double> &) {return true;}
-  const std::vector<double>& parameters(void) const {return m_values;}
-  int numberOfParameters(void) const {return 0;}
-  std::vector<std::string> parameterNames() const {return m_names;}
-  bool setParameter(const std::string&, double){return false;}
-  double parameter(const std::string&) const { return 0.0;}
-  int indexOfParameter(const std::string&) const {return 0;}
-  const AIDA::IAnnotation& annotation(void) const {return *(AIDA::IAnnotation*)0;}
-  AIDA::IAnnotation& annotation(void){return *(AIDA::IAnnotation*)0;}
-  std::string codeletString(void) const {return "";}
-  void* cast(const std::string &) const { return 0; }
+  Function1 () {}
+  ~Function1 () override {}
+  double value ( const argument& x ) const override { return x[0] - 1; }
+  int dimension () const override { return 3; }
+  bool setTitle(const std::string& ) override { return false; }
+  std::string title(void) const override {return "";}
+  bool isEqual(const AIDA::IFunction&) const override { return false; }
+  const std::vector<double>& gradient(const std::vector<double>&) const override { return m_values;}
+  bool providesGradient(void) const override { return false; }
+  std::string variableName(int) const override  { return ""; }
+  std::vector<std::string> variableNames(void) const override {return m_names;}
+  bool setParameters(const std::vector<double> &) override {return true;}
+  const std::vector<double>& parameters(void) const override {return m_values;}
+  int numberOfParameters(void) const override {return 0;}
+  std::vector<std::string> parameterNames() const override {return m_names;}
+  bool setParameter(const std::string&, double) override {return false;}
+  double parameter(const std::string&) const override { return 0.0;}
+  int indexOfParameter(const std::string&) const override {return 0;}
+  const AIDA::IAnnotation& annotation(void) const override {return *(AIDA::IAnnotation*)0;}
+  AIDA::IAnnotation& annotation(void) override {return *(AIDA::IAnnotation*)0;}
+  std::string codeletString(void) const override {return "";}
+  void* cast(const std::string &) const override { return 0; }
 private:
   std::string              m_version ;
   std::string              m_label   ;
@@ -92,28 +93,28 @@ class Function2 : virtual public AIDA::IFunction
 public:
   typedef std::vector<double> argument ;
 public:
-  Function2 () {};
-  virtual ~Function2 () {};
-  double value ( const argument& x ) const { return x[1] - 1; }
-  int dimension () const { return 3; }
-  bool setTitle(const std::string& ) { return false; }
-  std::string title(void) const {return "";}
-  bool isEqual(const AIDA::IFunction&) const { return false; }
-  const std::vector<double>& gradient(const std::vector<double>&) const { return m_values;}
-  bool providesGradient(void) const { return false; }
-  std::string variableName(int) const  { return ""; }
-  std::vector<std::string> variableNames(void) const {return m_names;}
-  bool setParameters(const std::vector<double> &) {return true;}
-  const std::vector<double>& parameters(void) const {return m_values;}
-  int numberOfParameters(void) const {return 0;}
-  std::vector<std::string> parameterNames() const {return m_names;}
-  bool setParameter(const std::string&, double){return false;}
-  double parameter(const std::string&) const { return 0.0;}
-  int indexOfParameter(const std::string&) const {return 0;}
-  const AIDA::IAnnotation& annotation(void) const {return *(AIDA::IAnnotation*)0;}
-  AIDA::IAnnotation& annotation(void){return *(AIDA::IAnnotation*)0;}
-  std::string codeletString(void) const {return "";}
-  void* cast(const std::string &) const { return 0; }
+  Function2 () {}
+  ~Function2 () override {}
+  double value ( const argument& x ) const override { return x[1] - 1; }
+  int dimension () const override { return 3; }
+  bool setTitle(const std::string& ) override { return false; }
+  std::string title(void) const override {return "";}
+  bool isEqual(const AIDA::IFunction&) const override { return false; }
+  const std::vector<double>& gradient(const std::vector<double>&) const override { return m_values;}
+  bool providesGradient(void) const override { return false; }
+  std::string variableName(int) const  override { return ""; }
+  std::vector<std::string> variableNames(void) const override {return m_names;}
+  bool setParameters(const std::vector<double> &) override {return true;}
+  const std::vector<double>& parameters(void) const override {return m_values;}
+  int numberOfParameters(void) const override {return 0;}
+  std::vector<std::string> parameterNames() const override {return m_names;}
+  bool setParameter(const std::string&, double) override {return false;}
+  double parameter(const std::string&) const override { return 0.0;}
+  int indexOfParameter(const std::string&) const override {return 0;}
+  const AIDA::IAnnotation& annotation(void) const override {return *(AIDA::IAnnotation*)0;}
+  AIDA::IAnnotation& annotation(void) override {return *(AIDA::IAnnotation*)0;}
+  std::string codeletString(void) const override {return "";}
+  void* cast(const std::string &) const override { return 0; }
 private:
   std::string              m_version ;
   std::string              m_label   ;
@@ -127,28 +128,28 @@ class Function3 : virtual public AIDA::IFunction
 public:
   typedef std::vector<double> argument ;
 public:
-  Function3 () {};
-  virtual ~Function3 () {};
-  double value ( const argument& x ) const { return x[2] - 1; }
-  int dimension () const { return 3; }
-  bool setTitle(const std::string& ) { return false; }
-  std::string title(void) const {return "";}
-  bool isEqual(const AIDA::IFunction&) const { return false; }
-  const std::vector<double>& gradient(const std::vector<double>&) const { return m_values;}
-  bool providesGradient(void) const { return false; }
-  std::string variableName(int) const  { return ""; }
-  std::vector<std::string> variableNames(void) const {return m_names;}
-  bool setParameters(const std::vector<double> &) {return true;}
-  const std::vector<double>& parameters(void) const {return m_values;}
-  int numberOfParameters(void) const {return 0;}
-  std::vector<std::string> parameterNames() const {return m_names;}
-  bool setParameter(const std::string&, double){return false;}
-  double parameter(const std::string&) const { return 0.0;}
-  int indexOfParameter(const std::string&) const {return 0;}
-  const AIDA::IAnnotation& annotation(void) const {return *(AIDA::IAnnotation*)0;}
-  AIDA::IAnnotation& annotation(void){return *(AIDA::IAnnotation*)0;}
-  std::string codeletString(void) const {return "";}
-  void* cast(const std::string &) const { return 0; }
+  Function3 () {}
+  virtual ~Function3 () override {}
+  double value ( const argument& x ) const override { return x[2] - 1; }
+  int dimension () const override { return 3; }
+  bool setTitle(const std::string& ) override { return false; }
+  std::string title(void) const override {return "";}
+  bool isEqual(const AIDA::IFunction&) const override { return false; }
+  const std::vector<double>& gradient(const std::vector<double>&) const override { return m_values;}
+  bool providesGradient(void) const override { return false; }
+  std::string variableName(int) const  override { return ""; }
+  std::vector<std::string> variableNames(void) const override {return m_names;}
+  bool setParameters(const std::vector<double> &) override {return true;}
+  const std::vector<double>& parameters(void) const override {return m_values;}
+  int numberOfParameters(void) const override {return 0;}
+  std::vector<std::string> parameterNames() const override {return m_names;}
+  bool setParameter(const std::string&, double) override {return false;}
+  double parameter(const std::string&) const override { return 0.0;}
+  int indexOfParameter(const std::string&) const override {return 0;}
+  const AIDA::IAnnotation& annotation(void) const override {return *(AIDA::IAnnotation*)0;}
+  AIDA::IAnnotation& annotation(void) override {return *(AIDA::IAnnotation*)0;}
+  std::string codeletString(void) const override {return "";}
+  void* cast(const std::string &) const override { return 0; }
 private:
   std::string              m_version ;
   std::string              m_label   ;

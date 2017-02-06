@@ -9,6 +9,14 @@
 // ============================================================================
 #include "GaudiKernel/Kernel.h"
 
+#if defined(__clang__) || defined(__CLING__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winconsistent-missing-override"
+#elif defined(__GNUC__) && __GNUC__ >= 5
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsuggest-override"
+#endif
+
 namespace Genfun // due to CLHEP
 {
   namespace GaudiMathImplementation
@@ -40,20 +48,20 @@ namespace Genfun // due to CLHEP
       Constant ( const Constant& right ) ;
 
       /// destructor
-      virtual ~Constant();
+      ~Constant() override;
 
     public:
 
       /// dimensionality of the problem
-      virtual unsigned int dimensionality         () const { return m_DIM   ; }
+      unsigned int dimensionality         () const override { return m_DIM   ; }
       /// Does this function have an analytic derivative?
-      virtual bool  hasAnalyticDerivative         () const { return true    ; }
+      bool  hasAnalyticDerivative         () const override { return true    ; }
       /// Function value
-      virtual double operator()  ( double          ) const { return m_value ; }
+      double operator()  ( double          ) const override { return m_value ; }
       /// Function value
-      virtual double operator()  ( const Argument& ) const { return m_value ; }
+      double operator()  ( const Argument& ) const override { return m_value ; }
       /// Derivatives
-      virtual Derivative partial ( unsigned int i  ) const ;
+      Derivative partial ( unsigned int i  ) const override ;
 
     private:
 
@@ -71,6 +79,12 @@ namespace Genfun // due to CLHEP
 
   } // end of namespace GaudiMathImplementation
 } // end of namespace Genfun
+
+#if defined(__clang__) || defined(__CLING__)
+#pragma clang diagnostic pop
+#elif defined(__GNUC__) && __GNUC__ >= 5
+#pragma GCC diagnostic pop
+#endif
 
 // ============================================================================
 // The END

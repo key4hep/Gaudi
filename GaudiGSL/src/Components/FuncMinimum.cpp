@@ -44,27 +44,6 @@ FuncMinimum::FuncMinimumMisc::FuncMinimumMisc
       m_grad.push_back (fun.clone());
     }
 }
-// ============================================================================
-
-//=============================================================================
-// Standard constructor, initializes variables
-//=============================================================================
-FuncMinimum::FuncMinimum( const std::string& type,
-                          const std::string& name,
-                          const IInterface* parent )
-  : base_class      ( type, name , parent )
-{
-  /// declare type of the algorithm for multidimensional minimization
-  declareProperty ( "Algorithm", m_algType       );
-  /// declare maximum of iteration
-  declareProperty ( "Iteration", m_max_iter      );
-  /// declare the absolute tolerance for the Euclidean norm of the gradient
-  declareProperty ( "Gradient" , m_norm_gradient );
-  /// declare the size of the first trial step
-  declareProperty ( "Step_size", m_step_size     );
-  /// declare the accuracy of the line minimization
-  declareProperty ( "Tol"      , m_tol           );
-}
 //=============================================================================
 namespace
 {
@@ -97,14 +76,14 @@ namespace
     for ( unsigned int i = 0; i < v->size; ++i) {
        arg[i] = gsl_vector_get (v, i);
      }
-    
 
-    for( unsigned int i = 0 ; i < df->size ; ++i ) 
+
+    for( unsigned int i = 0 ; i < df->size ; ++i )
      {
        Genfun::GENFUNCTION f = *(grad[i]);
        gsl_vector_set ( df, i, f(arg) );
      }
-    
+
 
   }
 
@@ -230,7 +209,7 @@ StatusCode FuncMinimum::minimum (const IFuncMinimum::GenFunc&   func  ,
 
   if (sc.isFailure())
     {
-      return Error ( "MINIMUM IS NOT FOUND. StatusCode =  '"  
+      return Error ( "MINIMUM IS NOT FOUND. StatusCode =  '"
                    + std::to_string( sc.getCode() ) +  '\'',
                      sc );
     }

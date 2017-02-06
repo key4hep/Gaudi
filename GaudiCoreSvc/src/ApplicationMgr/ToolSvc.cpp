@@ -12,6 +12,7 @@
 #include <string>
 #include <cassert>
 #include <functional>
+#include <numeric>
 #include "boost/circular_buffer.hpp"
 #include "boost/algorithm/string/predicate.hpp"
 #include "boost/algorithm/string/erase.hpp"
@@ -48,6 +49,14 @@ ToolSvc::ToolSvc( const std::string& name, ISvcLocator* svc )
   //------------------------------------------------------------------------------
   : base_class( name, svc) { }
 
+ToolSvc::~ToolSvc()
+{
+  // tell the remaining observers that we're gone, and forget about unregistering..
+  std::for_each( std::begin(m_observers), std::end(m_observers),
+                 [&]( IToolSvc::Observer* obs )
+                 { obs->setUnregister( { } ); }
+               );
+}
 //------------------------------------------------------------------------------
 StatusCode ToolSvc::initialize()
   //------------------------------------------------------------------------------
@@ -711,7 +720,7 @@ unsigned long ToolSvc::minimumToolRefCount() const
 //------------------------------------------------------------------------------
 {
   auto i = std::min_element( std::begin(m_instancesTools), std::end(m_instancesTools),
-                             [](const IAlgTool* lhs, const IAlgTool* rhs) { 
+                             [](const IAlgTool* lhs, const IAlgTool* rhs) {
               return lhs->refCount() < rhs->refCount();
   } );
   return i!=std::end(m_instancesTools) ? (*i)->refCount() : 0;
@@ -720,17 +729,16 @@ unsigned long ToolSvc::minimumToolRefCount() const
 //------------------------------------------------------------------------------
 void ToolSvc::registerObserver(IToolSvc::Observer* obs) {
 //------------------------------------------------------------------------------
-  std::lock_guard<CallMutex> lock(m_mut);
   if ( !obs )
     throw GaudiException( "Received NULL pointer", this->name() + "::registerObserver", StatusCode::FAILURE );
-  m_observers.push_back(obs);
-}
 
-//------------------------------------------------------------------------------
-void ToolSvc::unRegisterObserver(IToolSvc::Observer* obs) {
   std::lock_guard<CallMutex> lock(m_mut);
-  auto i = std::find(m_observers.begin(),m_observers.end(),obs);
-  if (i!=m_observers.end()) m_observers.erase(i);
+  obs->setUnregister( [this,obs]() {
+    std::lock_guard<CallMutex> lock(m_mut);
+    auto i = std::find(m_observers.begin(),m_observers.end(),obs);
+    if (i!=m_observers.end()) m_observers.erase(i);
+  } );
+  m_observers.push_back(obs);
 }
 
 //------------------------------------------------------------------------------

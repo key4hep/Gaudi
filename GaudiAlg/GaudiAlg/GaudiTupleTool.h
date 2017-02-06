@@ -38,24 +38,10 @@
  */
 // ============================================================================
 
-class GAUDI_API GaudiTupleTool: public GaudiTuples<GaudiHistoTool>
+struct  GAUDI_API GaudiTupleTool: GaudiTuples<GaudiHistoTool>
 {
 
-protected:
-
-  /** standard constructor
-   *  @see GaudiTool
-   *  @see   AlgTool
-   *  @param type tool type
-   *  @param name tool name
-   *  @param parent pointer to the parent component
-   */
-  GaudiTupleTool( const std::string& type   ,
-                  const std::string& name   ,
-                  const IInterface*  parent );
-
-  /// destructor
-  ~GaudiTupleTool() override = default;
+  using GaudiTuples<GaudiHistoTool>::GaudiTuples;
 
   GaudiTupleTool() = delete;
   GaudiTupleTool           ( const GaudiTupleTool& ) = delete;

@@ -12,6 +12,14 @@
 #include "CLHEP/GenericFunctions/AbsFunction.hh"
 // ============================================================================
 
+#if defined(__clang__) || defined(__CLING__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winconsistent-missing-override"
+#elif defined(__GNUC__) && __GNUC__ >= 5
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsuggest-override"
+#endif
+
 namespace Genfun
 {
   namespace GaudiMathImplementation
@@ -89,22 +97,22 @@ namespace Genfun
       NumericalDerivative
       ( const NumericalDerivative&   right    ) ;
 
-      /// virtual destructor
-      virtual ~NumericalDerivative () = default;
+      /// destructor
+      ~NumericalDerivative () override = default;
 
       /// dimensionality of the problem
-      virtual unsigned int dimensionality() const { return m_DIM ; }
+      unsigned int dimensionality() const override { return m_DIM ; }
 
       /// Function value
-      virtual double operator() ( double          argument ) const ;
+      double operator() ( double          argument ) const override ;
       /// Function value
-      virtual double operator() ( const Argument& argument ) const ;
+      double operator() ( const Argument& argument ) const override ;
 
       /// Does this function have an analytic derivative?
-      virtual bool hasAnalyticDerivative() const { return true ;}
+      bool hasAnalyticDerivative() const override { return true ;}
 
       /// Derivatives
-      virtual Derivative partial ( unsigned int index ) const;
+      Derivative partial ( unsigned int index ) const override;
 
     public:
 
@@ -146,9 +154,17 @@ namespace Genfun
       mutable double     m_result    ;
       mutable double     m_error     ;
     };
+    /// From CLHEP/GenericFunctions
+    FUNCTION_OBJECT_IMP( NumericalDerivative )
 
   } // end of namespace GaudiMathImplementation
 } // end of namespace GenFun
+
+#if defined(__clang__) || defined(__CLING__)
+#pragma clang diagnostic pop
+#elif defined(__GNUC__) && __GNUC__ >= 5
+#pragma GCC diagnostic pop
+#endif
 
 // ============================================================================
 // The END

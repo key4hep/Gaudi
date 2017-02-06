@@ -18,23 +18,6 @@
 DECLARE_COMPONENT(HistoTimingAlg)
 
 //=============================================================================
-// Standard constructor, initializes variables
-//=============================================================================
-  HistoTimingAlg::HistoTimingAlg( const std::string& name,
-                                  ISvcLocator* pSvcLocator)
-    : GaudiHistoAlg ( name , pSvcLocator )
-{
-  declareProperty( "UseLookup", m_useGaudiAlg = false );
-  declareProperty( "NumHistos", m_nHistos = 20 );
-  declareProperty( "NumTracks", m_nTracks = 30 );
-}
-
-//=============================================================================
-// Destructor
-//=============================================================================
-HistoTimingAlg::~HistoTimingAlg() {}
-
-//=============================================================================
 // Initialization
 //=============================================================================
 StatusCode HistoTimingAlg::initialize()

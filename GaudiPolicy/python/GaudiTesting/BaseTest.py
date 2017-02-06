@@ -661,6 +661,12 @@ class FilePreprocessor:
         version of it."""
     def __processLine__(self, line):
         return line
+    def __processFile__(self, lines):
+        output = []
+        for l in lines:
+            l = self.__processLine__(l)
+            if l: output.append(l)
+        return output
     def __call__(self, input):
         if hasattr(input,"__iter__"):
             lines = input
@@ -668,10 +674,7 @@ class FilePreprocessor:
         else:
             lines = input.splitlines()
             mergeback = True
-        output = []
-        for l in lines:
-            l = self.__processLine__(l)
-            if l: output.append(l)
+        output = self.__processFile__(lines)
         if mergeback: output = '\n'.join(output)
         return output
     def __add__(self, rhs):
@@ -761,6 +764,27 @@ class LineSorter(FilePreprocessor):
             line += " ".join(lst)
         return line
 
+class SortGroupOfLines(FilePreprocessor):
+    '''
+    Sort group of lines matching a regular expression
+    '''
+    def __init__(self, exp):
+        self.exp = exp if hasattr(exp, 'match') else re.compile(exp)
+    def __processFile__(self, lines):
+        match = self.exp.match
+        output = []
+        group = []
+        for l in lines:
+            if match(l):
+                group.append(l)
+            else:
+                if group:
+                    group.sort()
+                    output.extend(group)
+                    group = []
+                output.append(l)
+        return output
+
 # Preprocessors for GaudiExamples
 normalizeExamples = maskPointers + normalizeDate
 for w,o,r in [
@@ -780,6 +804,8 @@ for w,o,r in [
               (None, r'Service reference count check:', r'Looping over all active services...'),
               # Change of property name in Algorithm (GAUDI-1030)
               (None, r"Property(.*)'ErrorCount':", r"Property\1'ErrorCounter':"),
+              # Ignore count of declared properties (anyway they are all printed)
+              (None, r"^(.*(DEBUG|SUCCESS) List of ALL properties of .*#properties = )\d+", r"\1NN"),
               ]: #[ ("TIMER.TIMER","[0-9]+[0-9.]*", "") ]
     normalizeExamples += RegexpReplacer(o,r,w)
 
@@ -834,6 +860,13 @@ lineSkipper = LineSkipper(["//GP:",
                                         r"SUCCESS\s*Booked \d+ Histogram\(s\)",
                                         r"^ \|",
                                         r"^ ID=",
+                                        # Ignore added/removed properties
+                                        r"Property(.*)'Audit(Algorithm|Tool|Service)s':",
+                                        r"Property(.*)'AuditRe(start|initialize)':", # these were missing in tools
+                                        r"Property(.*)'IsIOBound':",
+                                        # ignore uninteresting/obsolete messages
+                                        r"Property update for OutputLevel : new value =",
+                                        r"EventLoopMgr\s*DEBUG Creating OutputStream",
                                         ] )
 
 if ROOT6WorkAroundEnabled('ReadRootmapCheck'):
@@ -843,8 +876,8 @@ if ROOT6WorkAroundEnabled('ReadRootmapCheck'):
         ])
 
 normalizeExamples = (lineSkipper + normalizeExamples + skipEmptyLines +
-                     normalizeEOL + LineSorter("Services to release : "))
-
+                     normalizeEOL + LineSorter("Services to release : ") +
+                     SortGroupOfLines(r'^\S+\s+(DEBUG|SUCCESS) Property \[\'Name\':'))
 
 #--------------------- Validation functions/classes ---------------------#
 
@@ -856,11 +889,13 @@ class ReferenceFileValidator:
         self.preproc = preproc
 
     def __call__(self,stdout, result) :
-        causes=[]
+        causes = []
         if os.path.isfile(self.reffile):
-            orig=open(self.reffile).xreadlines()
+            orig = open(self.reffile).xreadlines()
             if self.preproc:
                 orig = self.preproc(orig)
+                result[self.result_key + '.preproc.orig'] = \
+                    result.Quote('\n'.join(map(str.strip, orig)))
         else:
             orig = []
         new = stdout.splitlines()
@@ -875,6 +910,8 @@ class ReferenceFileValidator:
                 Legend:
                 -) reference file
                 +) standard output of the test""")
+            result[self.result_key + '.preproc.new'] = \
+                result.Quote('\n'.join(map(str.strip, new)))
             causes.append(self.cause)
         return causes
 
@@ -1113,4 +1150,3 @@ def isWinPlatform(self):
        """
    platform = GetPlatform(self)
    return "winxp" in platform or platform.startswith("win")
-

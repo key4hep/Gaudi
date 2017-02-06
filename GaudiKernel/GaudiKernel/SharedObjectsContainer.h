@@ -16,7 +16,7 @@
 /** @class SharedObjectsContainer GaudiKernel/SharedObjectsContainer.h
  *
  *  Very simple class to represent the container of objects which are
- *  not ownered by the container. This concept seem to be very useful for
+ *  not owned by this container. This concept seem to be very useful for
  *  LHCb HLT, DaVinci, tracking, alignments.
  *
  *  @warning the container is not persistable (on-purpose)
@@ -44,18 +44,23 @@ public:
 public:
   // ==========================================================================
   // the default constructor (creates the empty vector)
-  SharedObjectsContainer ()
-    : ObjectContainerBase(), m_data() {} ;
+  SharedObjectsContainer () = default;
+  // move constructor and move assignement
+  SharedObjectsContainer(SharedObjectsContainer&&) = default;
+  SharedObjectsContainer& operator=(SharedObjectsContainer&&) = default;
   // the constructor from the data
   SharedObjectsContainer ( const ConstVector& data )
-    : ObjectContainerBase(), m_data(data) {}
+    : m_data(data) {}
+  SharedObjectsContainer ( ConstVector&& data )
+    : m_data(std::move(data)) {}
+
   /** the templated constructor from the pair of iterators
    *  @param first 'begin'-iterator of the input sequence
    *  @param last  'last'-iterator of the input sequence
    */
   template <class DATA>
   SharedObjectsContainer(DATA first, DATA last)
-    : ObjectContainerBase(), m_data(first, last) {}
+    : m_data(first, last) {}
   /** the templated constructor from the pair of iterators and the predicate.
    *
    *  Only the elements which satisfy the criteria goes into the container
@@ -81,17 +86,14 @@ public:
    */
   template <class DATA, class PREDICATE>
   SharedObjectsContainer(DATA first, DATA last, const PREDICATE& cut)
-    : ObjectContainerBase(), m_data()
   {
     insert ( first , last , cut ) ;
   }
-  /// destructor
-  virtual ~SharedObjectsContainer() { m_data.clear() ; }
   // ==========================================================================
 public:
   // ==========================================================================
   /// Retrieve the unique class ID (virtual)
-  virtual const CLID& clID() const
+  const CLID& clID() const override
   { return SharedObjectsContainer<TYPE>::classID(); }
   /// Retrieve the unuqie class ID (static)
   static const CLID& classID()
@@ -169,8 +171,7 @@ public:
     const PREDICATE& cut   )
   {
     m_data.reserve ( m_data.size() + std::distance ( first , last ) ) ;
-    for ( ; first != last ; ++first )
-    { if ( cut ( *first ) ) { m_data.push_back ( *first ) ; } }
+    std::copy_if( first, last, std::back_inserter(m_data), std::cref(cut) );
   }
   /** get from the container all objects which satisfy the certain criteria
    *
@@ -192,9 +193,6 @@ public:
    *
    *  @endcode
    *
-   *  Essentially this functionality is very useful due to
-   *  missing "std::copy_if".
-   *
    *  @param cut the predicate
    *  @param outptut the output iterator
    *  @return the current position of the output itrator (almost useless)
@@ -203,8 +201,7 @@ public:
   OUTPUT get ( const PREDICATE& cut    ,
                OUTPUT           output ) const
   {
-    std::copy_if( begin(), end(), output, std::cref(cut) );
-    return output ;
+    return std::copy_if( begin(), end(), output, std::cref(cut) );
   }
   /// erase the object by iterator
   void erase ( iterator i ) { m_data.erase ( i ) ; }
@@ -312,7 +309,7 @@ public:
   /** Distance of a given object from the beginning of its container
    *  @param object the object to be checked
    */
-  virtual long index( const ContainedObject* object ) const
+  long index( const ContainedObject* object ) const override
   {
     auto _i = std::find ( begin() , end() , object ) ;
     return end() != _i ? ( _i - begin() ) : -1 ;                  // RETURN
@@ -321,19 +318,19 @@ public:
    *  @param index th eindex to be checked
    *  @return the object
    */
-  virtual ContainedObject* containedObject ( long index ) const
+  ContainedObject* containedObject ( long index ) const override
   {
-    if ( 0 > index || !(index < (long) size () ) ) { return 0 ; }    // RETURN
+    if ( 0 > index || !(index < (long) size () ) ) { return nullptr; }    // RETURN
     const ContainedObject* co = m_data[index] ;
     return const_cast<ContainedObject*>( co ) ;
   }
   /// Number of objects in the container
-  virtual size_type numberOfObjects() const { return m_data.size() ; }
+  size_type numberOfObjects() const override { return m_data.size() ; }
   /** Virtual functions (forwards to the concrete container definitions)
    *  Add an object to the container. On success the object's index is
    *  returned.
    */
-  virtual long add ( ContainedObject* object)
+  long add ( ContainedObject* object) override
   {
     if ( !object ) { return -1 ; }                           // RETURN
     TYPE* _obj = dynamic_cast<TYPE*> ( object ) ;
@@ -346,7 +343,7 @@ public:
    *  from the container, but the object itself will remain alive).
    *  If the object was found it's index is returned.
    */
-  virtual long remove ( ContainedObject* value )
+  long remove ( ContainedObject* value ) override
   {
     auto _i = std::find ( begin() , end() , value ) ;
     if ( end() == _i ) { return -1 ; }                          // RETURN

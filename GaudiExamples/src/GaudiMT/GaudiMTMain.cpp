@@ -64,7 +64,7 @@ void* work (void* counter)
   std::string value ;
   SmartIF<IProperty> propMgr ( m_pesaAppMgr );
   if( !propMgr ) {
-    COUTTHREAD(" Fatal error while retrieving Gaudi PropertyMgr ")
+    COUTTHREAD(" Fatal error while retrieving Gaudi PropertyHolder ")
   } else {
     StatusCode sc = propMgr->getProperty( "EventLoop", value );
     if( sc.isFailure() ) {

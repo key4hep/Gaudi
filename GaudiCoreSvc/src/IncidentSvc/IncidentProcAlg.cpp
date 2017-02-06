@@ -2,6 +2,7 @@
 #include "GaudiKernel/IIncidentListener.h"
 #include "GaudiKernel/Incident.h"
 #include "IncidentProcAlg.h"
+#include "GaudiKernel/ThreadLocalContext.h"
 DECLARE_COMPONENT(IncidentProcAlg)
 
 #define ON_DEBUG if (msgLevel(MSG::DEBUG))
@@ -39,9 +40,10 @@ StatusCode IncidentProcAlg::initialize() {
 
 //=============================================================================
 StatusCode IncidentProcAlg::execute() {
-  auto incPack=m_incSvc->getIncidents(getContext());
+  const EventContext& context = Gaudi::Hive::currentContext();
+  auto incPack=m_incSvc->getIncidents(&context);
   MsgStream log(msgSvc(), name());  
-  log<<MSG::DEBUG<<" Number of Incidents to process = "<<incPack.incidents.size()<<" Context= "<<getContext()<<endmsg;
+  log<<MSG::DEBUG<<" Number of Incidents to process = "<<incPack.incidents.size()<<" Context= "<<Gaudi::Hive::currentContext()<<endmsg;
   while(incPack.incidents.size()){
     if(incPack.incidents.size()!=incPack.listeners.size()){
       log<<MSG::WARNING<<" Size of fired incidents and listeners do not match!"<<endmsg;
@@ -73,7 +75,7 @@ StatusCode IncidentProcAlg::execute() {
 	// check wheter one of the listeners is singleShot
       }
     }
-    incPack=std::move(m_incSvc->getIncidents(getContext()));
+    incPack=m_incSvc->getIncidents(&context);
   }
 
   return StatusCode::SUCCESS;

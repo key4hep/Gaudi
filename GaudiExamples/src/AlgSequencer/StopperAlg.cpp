@@ -10,14 +10,6 @@
 
 DECLARE_COMPONENT(StopperAlg)
 
-// Constructor
-//------------------------------------------------------------------------------
-StopperAlg::StopperAlg(const std::string& name, ISvcLocator* ploc)
-          : GaudiAlgorithm(name, ploc) {
-//------------------------------------------------------------------------------
-  declareProperty("StopCount", m_stopcount);
-}
-
 //------------------------------------------------------------------------------
 StatusCode StopperAlg::initialize() {
 //------------------------------------------------------------------------------

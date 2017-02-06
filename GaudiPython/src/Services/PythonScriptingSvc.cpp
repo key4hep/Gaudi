@@ -1,8 +1,8 @@
 #include "Python.h"
 
 // Include Files
-#include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/ISvcLocator.h"
+#include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/SmartIF.h"
 
 #include "PythonScriptingSvc.h"
@@ -11,24 +11,25 @@
 #include <sstream>
 
 // Special for Unixes
-#if defined(__linux)
-  #include "dlfcn.h"
+#if defined( __linux )
+#include "dlfcn.h"
 #endif
 
 // Instantiation of a static factory class used by clients to create
 //  instances of this service
-DECLARE_COMPONENT(PythonScriptingSvc)
+DECLARE_COMPONENT( PythonScriptingSvc )
 
 //----------------------------------------------------------------------------------
 PythonScriptingSvc::PythonScriptingSvc( const std::string& name, ISvcLocator* svc )
-//----------------------------------------------------------------------------------
-: base_class(name, svc) {
+    //----------------------------------------------------------------------------------
+    : base_class( name, svc )
+{
   // Declare the startup script Property
   declareProperty( "StartupScript", m_startupScript = "" );
 }
 
 //----------------------------------------------------------------------------------
-PythonScriptingSvc::~PythonScriptingSvc() { }
+PythonScriptingSvc::~PythonScriptingSvc() {}
 //----------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------
@@ -39,23 +40,22 @@ StatusCode PythonScriptingSvc::initialize()
   StatusCode sc = Service::initialize();
   if ( sc.isFailure() ) return sc;
 
-
   // Setup startup script. If none is explicitly specified, then
   // use the ApplicationMgr JobOptionsPath property as long as
   // the JobOptionsType property is set to "NONE".
-  if( m_startupScript.empty() ) {
+  if ( m_startupScript.empty() ) {
     auto prpMgr = serviceLocator()->as<IProperty>();
-    if ( prpMgr )   {
-      StringProperty tmp;
-      tmp.assign(prpMgr->getProperty("JobOptionsType"));
-      if ( tmp.value( ) == "NONE" ) {
-        tmp.assign(prpMgr->getProperty("JobOptionsPath"));
+    if ( prpMgr ) {
+      Gaudi::Property<std::string> tmp;
+      tmp.assign( prpMgr->getProperty( "JobOptionsType" ) );
+      if ( tmp.value() == "NONE" ) {
+        tmp.assign( prpMgr->getProperty( "JobOptionsPath" ) );
         m_startupScript = tmp;
       }
     }
   }
 
-  char* progName[] = { const_cast<char*>("GaudiPython") };
+  char* progName[] = {const_cast<char*>( "GaudiPython" )};
 
   // Initialize the Python interpreter.  Required.
   Py_Initialize();
@@ -63,18 +63,17 @@ StatusCode PythonScriptingSvc::initialize()
   PySys_SetArgv( 1, progName );
   // Get the Python version
   std::string fullversion = Py_GetVersion();
-  std::string version( fullversion, 0, fullversion.find_first_of(' '));
-  std::string vers(version, 0, version.find_first_of('.',version.find_first_of('.')+1));
+  std::string version( fullversion, 0, fullversion.find_first_of( ' ' ) );
+  std::string vers( version, 0, version.find_first_of( '.', version.find_first_of( '.' ) + 1 ) );
   info() << "Python version: [" << vers << "]" << endmsg;
 
-#if defined(__linux)
+#if defined( __linux )
   // This is hack to make global the python symbols
   // which are needed by the other python modules
   // (eg. readline, math, etc,) libraries.
   std::string libname = "libpython" + vers + ".so";
-  dlopen(libname.c_str(), RTLD_GLOBAL | RTLD_LAZY);
+  dlopen( libname.c_str(), RTLD_GLOBAL | RTLD_LAZY );
 #endif
-
 
   // Startup commands
   PyRun_SimpleString( "from gaudimodule import *" );
@@ -84,10 +83,10 @@ StatusCode PythonScriptingSvc::initialize()
   PyRun_SimpleString( "def Service(n): return g.service(n)" );
   PyRun_SimpleString( "def Algorithm(n): return g.algorithm(n)" );
   PyRun_SimpleString( "def Property(n): return g.service(n)" );
-  // For command-line completion (unix only)
+// For command-line completion (unix only)
 #if !defined( _WIN32 )
-  PyRun_SimpleString( "import rlcompleter");
-  PyRun_SimpleString( "rlcompleter.readline.parse_and_bind('tab: complete')");
+  PyRun_SimpleString( "import rlcompleter" );
+  PyRun_SimpleString( "rlcompleter.readline.parse_and_bind('tab: complete')" );
 #endif
   return StatusCode::SUCCESS;
 }
@@ -112,19 +111,18 @@ StatusCode PythonScriptingSvc::run()
   if ( !m_startupScript.empty() ) {
     std::ifstream file{m_startupScript};
     std::stringstream stream;
-    if( file ) {
+    if ( file ) {
       std::string buffer;
-      file.seekg(0, std::ios::end);
-      buffer.reserve(file.tellg());
-      file.seekg(0, std::ios::beg);
-      buffer.assign((std::istreambuf_iterator<char>{file}),
-                     std::istreambuf_iterator<char>{});
+      file.seekg( 0, std::ios::end );
+      buffer.reserve( file.tellg() );
+      file.seekg( 0, std::ios::beg );
+      buffer.assign( ( std::istreambuf_iterator<char>{file} ), std::istreambuf_iterator<char>{} );
       file.close();
       PyRun_SimpleString( buffer.c_str() );
     } else {
       warning() << "Python startup file " << m_startupScript << " not found" << endmsg;
     }
   }
-  PyRun_InteractiveLoop(stdin, "\0");
+  PyRun_InteractiveLoop( stdin, "\0" );
   return StatusCode::SUCCESS;
 }

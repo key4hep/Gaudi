@@ -1,39 +1,50 @@
 before_script:
-  - . /afs/cern.ch/lhcb/software/releases/LBSCRIPTS/dev/InstallArea/scripts/LbLogin.sh
+  - . /cvmfs/lhcb.cern.ch/lib/LbLogin.sh
   - unset VERBOSE
-  - export PATH=/afs/cern.ch/sw/lcg/contrib/ninja/1.4.0/x86_64-slc6:${PATH}
-  - echo 'set(CMAKE_USE_CCACHE ON CACHE BOOL "")' >> cache_preload.cmake
-
-stages:
-  - build
-  - test
-  - deploy
+  - export PATH=/cvmfs/lhcb.cern.ch/lib/contrib/ninja/1.4.0/x86_64-slc6:${PATH}
+  - export CMAKE_PREFIX_PATH=/cvmfs/sft.cern.ch/lcg/releases
 
 build:
   stage: build
-  tags:
-    - slc6
   script:
+    - echo 'set(CMAKE_USE_CCACHE ON CACHE BOOL "")' >> cache_preload.cmake
     - make
+    - mv build.${CMTCONFIG} build
   tags:
     - slc6
+  artifacts:
+    paths:
+      - build/
 
 coding-conventions:
   stage: test
-  tags:
-    - slc6
   script:
+    - mv build build.${CMTCONFIG}
     - make apply-formatting
     - git diff --stat
-
-doxygen:
-  stage: deploy
   tags:
     - slc6
+
+doxygen:
+  stage: test
   script:
-    - make
+    - mv build build.${CMTCONFIG}
     - make doc
     - mv build.${CMTCONFIG}/doxygen .
+  tags:
+    - slc6
   artifacts:
     paths:
       - doxygen/
+
+test:
+  stage: test
+  script:
+    - mv build build.${CMTCONFIG}
+    - make test ARGS='-j4'
+    - mv build.${CMTCONFIG}/html test_report
+  tags:
+    - slc6
+  artifacts:
+    paths:
+      - test_report/

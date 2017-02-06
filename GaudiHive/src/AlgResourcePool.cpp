@@ -5,6 +5,7 @@
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/ThreadGaudi.h"
+#include "GaudiAlg/GaudiSequencer.h"
 
 // C++
 #include <functional>
@@ -15,13 +16,8 @@
 // Instantiation of a static factory class used by clients to create instances of this service
 DECLARE_SERVICE_FACTORY(AlgResourcePool)
 
-// constructor
-AlgResourcePool::AlgResourcePool( const std::string& name, ISvcLocator* svc ) :
-  base_class(name,svc), m_available_resources(0), m_EFGraph(0)
-{
-  declareProperty("CreateLazily", m_lazyCreation = false );
-  declareProperty("TopAlg", m_topAlgNames );
-}
+#define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
+#define DEBUG_MSG ON_DEBUG debug()
 
 //---------------------------------------------------------------------------
 
@@ -33,7 +29,7 @@ AlgResourcePool::~AlgResourcePool() {
     delete queue;
   }
 
-  delete m_EFGraph;
+  delete m_PRGraph;
 }
 
 //---------------------------------------------------------------------------
@@ -53,10 +49,10 @@ StatusCode AlgResourcePool::initialize(){
     m_topAlgNames.assign(appMgrProps->getProperty("TopAlg"));
   }
 
-  // XXX: Prepare empty Control Flow graph
-  const std::string& name = "ExecutionFlowGraph";
+  // Prepare empty graph of precedence rules
+  const std::string& name = "PrecedenceRulesGraph";
   SmartIF<ISvcLocator> svc = serviceLocator();
-  m_EFGraph = new concurrency::ExecutionFlowGraph(name, svc);
+  m_PRGraph = new concurrency::PrecedenceRulesGraph(name, svc);
 
   sc = decodeTopAlgs();
   if (sc.isFailure())
@@ -108,15 +104,19 @@ StatusCode AlgResourcePool::acquireAlgorithm(const std::string& name, IAlgorithm
     sc = itQueueIAlgPtr->second->try_pop(algo);
   }
 
+  // Note that reentrant algos are not consumed so we put them
+  // back immediately in the queue at the end of this function.
+  // Now we may still be called again in between and get this
+  // error. In such a case, the Scheduler will retry later.
+  // This is of course not optimal, but should only happen very
+  // seldom and thud won't affect the global efficiency
   if(sc.isFailure())
-    if (msgLevel(MSG::DEBUG))
-      debug() << "No instance of algorithm " << name << " could be retrieved in non-blocking mode" << endmsg;
+    DEBUG_MSG << "No instance of algorithm " << name << " could be retrieved in non-blocking mode" << endmsg;
 
-  //  if (m_lazyCreation ) {
-  // TODO: fill the lazyCreation part
-  //}
+  // if (m_lazyCreation ) {
+  //    TODO: fill the lazyCreation part
+  // }
   if (sc.isSuccess()){
-    algo->resetExecuted();
     state_type requirements = m_resource_requirements[algo_id];
     m_resource_mutex.lock();
     if (requirements.is_subset_of(m_available_resources)) {
@@ -124,9 +124,17 @@ StatusCode AlgResourcePool::acquireAlgorithm(const std::string& name, IAlgorithm
     } else {
       sc = StatusCode::FAILURE;
       error() << "Failure to allocate resources of algorithm " << name << endmsg;
-      itQueueIAlgPtr->second->push(algo);
+      // in case of not reentrant, push it back. Reentrant ones are pushed back
+      // in all cases further down
+      if (0 != algo->cardinality()) {
+        itQueueIAlgPtr->second->push(algo);
+      }
     }
     m_resource_mutex.unlock();
+    if (0 == algo->cardinality()) {
+      // push back reentrant algos immediately as it can be reused
+      itQueueIAlgPtr->second->push(algo);
+    }
   }
   return sc;
 }
@@ -143,8 +151,10 @@ StatusCode AlgResourcePool::releaseAlgorithm(const std::string& name, IAlgorithm
   m_available_resources|= m_resource_requirements[algo_id];
   m_resource_mutex.unlock();
 
-  //release algorithm itself
-  m_algqueue_map[algo_id]->push(algo);
+  // release algorithm itself if not reentrant
+  if (0 != algo->cardinality()) {
+    m_algqueue_map[algo_id]->push(algo);
+  }
   return StatusCode::SUCCESS;
  }
 
@@ -173,36 +183,37 @@ StatusCode AlgResourcePool::flattenSequencer(Algorithm* algo, ListAlg& alglist, 
   StatusCode sc = StatusCode::SUCCESS;
 
   std::vector<Algorithm*>* subAlgorithms = algo->subAlgorithms();
+  auto isGaudiSequencer = dynamic_cast<GaudiSequencer*> (algo);
   if ( //we only want to add basic algorithms -> have no subAlgs
           // and exclude the case of empty GaudiSequencers
-       (subAlgorithms->empty() and not (algo->type() == "GaudiSequencer"))
+        (subAlgorithms->empty() and not isGaudiSequencer)
        // we want to add non-empty GaudiAtomicSequencers
        or (algo->type() == "GaudiAtomicSequencer" and not subAlgorithms->empty())){
 
-      debug() << std::string(recursionDepth, ' ') << algo->name() << " is " <<
-              (algo->type() != "GaudiAtomicSequencer" ? "not a sequencer" : "an atomic sequencer")
+    DEBUG_MSG << std::string(recursionDepth, ' ') << algo->name() << " is "
+              << (algo->type() != "GaudiAtomicSequencer" ? "not a sequencer" : "an atomic sequencer")
               << ". Appending it" << endmsg;
 
-      alglist.emplace_back(algo);
-      m_EFGraph->addAlgorithmNode(algo,parentName,false,false);
+    alglist.emplace_back(algo);
+    m_PRGraph->addAlgorithmNode(algo, parentName, false, false).ignore();
     return sc;
   }
 
   // Recursively unroll
   ++recursionDepth;
-  debug() << std::string(recursionDepth, ' ') << algo->name() << " is a sequencer. Flattening it." << endmsg;
+  DEBUG_MSG << std::string(recursionDepth, ' ') << algo->name() << " is a sequencer. Flattening it." << endmsg;
   bool modeOR = false;
   bool allPass = false;
   bool isLazy = false;
-  if ("GaudiSequencer" == algo->type()) {
+  if ( isGaudiSequencer ) {
     modeOR  = (algo->getProperty("ModeOR").toString() == "True")? true : false;
     allPass = (algo->getProperty("IgnoreFilterPassed").toString() == "True")? true : false;
     isLazy = (algo->getProperty("ShortCircuit").toString() == "True")? true : false;
     if (allPass) isLazy = false; // standard GaudiSequencer behavior on all pass is to execute everything
   }
-  sc = m_EFGraph->addDecisionHubNode(algo,parentName,modeOR,allPass,isLazy);
+  sc = m_PRGraph->addDecisionHubNode(algo, parentName, modeOR, allPass, isLazy);
   if (sc.isFailure()) {
-    error() << "Failed to add DecisionHub " << algo->name() << " to execution flow graph" << endmsg;
+    error() << "Failed to add DecisionHub " << algo->name() << " to graph of precedence rules" << endmsg;
     return sc;
   }
 
@@ -263,8 +274,8 @@ StatusCode AlgResourcePool::decodeTopAlgs()    {
   }
   // Top Alg list filled ----
 
-  // start forming the control flow graph by adding the head node
-  m_EFGraph->addHeadNode("EVENT LOOP",true,true,false);
+  // start forming the graph of precedence rules by adding the head decision hub
+  m_PRGraph->addHeadNode("EVENT LOOP",true,true,false);
 
   // Now we unroll it ----
   for (auto& algoSmartIF : m_topAlgList){
@@ -325,13 +336,13 @@ StatusCode AlgResourcePool::decodeTopAlgs()    {
     // potentially create clones; if not lazy creation we have to do it now
     if (!m_lazyCreation) {
       for (unsigned int i =1, end =ialgo->cardinality();i<end; ++i){
-        debug() << "type/name to create clone of: " << item_type << "/" 
+        debug() << "type/name to create clone of: " << item_type << "/"
                 << item_name << endmsg;
         IAlgorithm* ialgoClone(nullptr);
         createAlg(item_type,item_name,ialgoClone);
         ialgoClone->setIndex(i);
         if (ialgoClone->sysInitialize().isFailure()) {
-          error() << "unable to initialize Algorithm clone " 
+          error() << "unable to initialize Algorithm clone "
                   << ialgoClone->name() << endmsg;
           sc = StatusCode::FAILURE;
           // FIXME: should we delete this failed clone?
@@ -342,7 +353,7 @@ StatusCode AlgResourcePool::decodeTopAlgs()    {
       }
     }
 
-    m_EFGraph->attachAlgorithmsToNodes<concurrentQueueIAlgPtr>(item_name,*queue);
+    m_PRGraph->attachAlgorithmsToNodes<concurrentQueueIAlgPtr>(item_name,*queue);
 
   }
 

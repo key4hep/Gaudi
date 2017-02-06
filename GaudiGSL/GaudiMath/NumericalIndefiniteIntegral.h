@@ -22,6 +22,14 @@
 #include "gsl/gsl_integration.h"
 
 
+#if defined(__clang__) || defined(__CLING__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winconsistent-missing-override"
+#elif defined(__GNUC__) && __GNUC__ >= 5
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsuggest-override"
+#endif
+
 /// forward declaration
 
 namespace Genfun
@@ -269,23 +277,23 @@ namespace Genfun
       ( const NumericalIndefiniteIntegral& ) ;
 
       /// destructor
-      virtual ~NumericalIndefiniteIntegral() = default;
+      ~NumericalIndefiniteIntegral() override = default;
 
     public:
 
       /// dimensionality of the problem
-      virtual unsigned int dimensionality() const { return m_DIM ; }
+      unsigned int dimensionality() const override { return m_DIM ; }
 
       /// Function value
-      virtual double operator() ( double          argument ) const ;
+      double operator() ( double          argument ) const override;
       /// Function value
-      virtual double operator() ( const Argument& argument ) const ;
+      double operator() ( const Argument& argument ) const override;
 
       /// Does this function have an analytic derivative?
-      virtual bool hasAnalyticDerivative() const { return true ;}
+      bool hasAnalyticDerivative() const override { return true ;}
 
       /// Derivatives
-      virtual Genfun::Derivative partial ( unsigned int index ) const;
+      Genfun::Derivative partial ( unsigned int index ) const override;
 
     public:
 
@@ -389,9 +397,17 @@ namespace Genfun
       mutable  Argument                   m_argument ;
 
     };
+    /// From CLHEP/GenericFunctions
+    FUNCTION_OBJECT_IMP( NumericalIndefiniteIntegral )
 
   } // end of namespace GaudiMathImplementation
 } // end of namespace Genfun
+
+#if defined(__clang__) || defined(__CLING__)
+#pragma clang diagnostic pop
+#elif defined(__GNUC__) && __GNUC__ >= 5
+#pragma GCC diagnostic pop
+#endif
 
 // ============================================================================
 // The END

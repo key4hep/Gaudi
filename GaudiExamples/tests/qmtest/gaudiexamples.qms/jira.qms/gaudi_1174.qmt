@@ -13,21 +13,23 @@ MessageSvc(countInactive=True)
 <argument name="validator"><text>
 findReferenceBlock('''
 Listing sources of Unprotected and Unseen messages
-==================================================
- Message Source             |   Level |    Count
-----------------------------+---------+-----------
- MyAlg.MyGaudiTool          |   DEBUG |       10
- MyAlg.MyTool               |   DEBUG |       10
- MyAlg.ToolWithName         |   DEBUG |       10
- MyGaudiAlg.MyGaudiTool     |   DEBUG |       10
- MyGaudiAlg.MyTool          |   DEBUG |       10
- MyGaudiAlg.PrivToolHandle  |   DEBUG |       10
- MyGaudiAlg.ToolWithName    |   DEBUG |       10
- TestToolAlg                |   DEBUG |       13
- ToolSvc.MyGaudiTool        |   DEBUG |       20
- ToolSvc.MyTool             |   DEBUG |       20
- ToolSvc.TestPubToolHandle  |   DEBUG |       10
-==================================================
+=======================================================
+ Message Source                  |   Level |    Count
+---------------------------------+---------+-----------
+ MyAlg.MyGaudiTool               |   DEBUG |       10
+ MyAlg.MyTool                    |   DEBUG |       10
+ MyAlg.ToolWithName              |   DEBUG |       10
+ MyGaudiAlg.MyGaudiTool          |   DEBUG |       10
+ MyGaudiAlg.MyTool               |   DEBUG |       10
+ MyGaudiAlg.PrivToolHandle       |   DEBUG |       20
+ MyGaudiAlg.ToolWithName         |   DEBUG |       10
+ TestToolAlg                     |   DEBUG |       13
+ ToolSvc.ConstGenericToolHandle  |   DEBUG |       30
+ ToolSvc.MyGaudiTool             |   DEBUG |       20
+ ToolSvc.MyTool                  |   DEBUG |       20
+ ToolSvc.PubToolHandle           |   DEBUG |       20
+ ToolSvc.TestPubToolHandle       |   DEBUG |       20
+=======================================================
 ''')
 </text></argument>
 </extension>

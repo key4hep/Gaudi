@@ -12,22 +12,6 @@
 // Declaration of the Algorithm Factory
 DECLARE_COMPONENT( ReadTES )
 
-
-//=============================================================================
-// Standard constructor, initializes variables
-//=============================================================================
-ReadTES::ReadTES( const std::string& name,
-                  ISvcLocator* pSvcLocator)
-  : GaudiAlgorithm ( name , pSvcLocator )
-{
-  m_locations.clear();
-  declareProperty( "Locations", m_locations, "Locations to read" );
-}
-//=============================================================================
-// Destructor
-//=============================================================================
-ReadTES::~ReadTES() {}
-
 //=============================================================================
 // Initialization
 //=============================================================================
@@ -49,10 +33,9 @@ StatusCode ReadTES::execute() {
 
   if ( msgLevel(MSG::DEBUG) ) debug() << "==> Execute" << endmsg;
 
-  for ( std::vector<std::string>::iterator it  = m_locations.begin();
-                                           it != m_locations.end(); it++ ) {
-    DataObject* pTES = get<DataObject>( *it );
-    info() << "Found object " << *it << " at " << pTES << endmsg;
+  for ( auto& loc: m_locations ) {
+    DataObject* pTES = get<DataObject>( loc );
+    info() << "Found object " << loc << " at " << pTES << endmsg;
   }
 
   return StatusCode::SUCCESS;

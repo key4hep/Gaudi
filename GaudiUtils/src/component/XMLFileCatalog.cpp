@@ -15,6 +15,7 @@
 #include "GaudiKernel/Service.h"
 #include <Gaudi/PluginService.h>
 
+#include "createGuidAsString.h"
 #include "XMLFileCatalog.h"
 
 #include <fstream>
@@ -22,9 +23,6 @@
 #include <stdexcept>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include "uuid/uuid.h"
-
-#include <boost/format.hpp>
 
 using namespace xercesc;
 using namespace Gaudi;
@@ -104,17 +102,17 @@ namespace {
     /// Constructor
     ErrHandler(IMessageSvc* m) : m_msg(m) {}
     /// Reset errors (Noop)
-    void resetErrors()                          {      }
+    void resetErrors() override                          {      }
     /// Warnings callback. Ignore them
-    void warning(const SAXParseException& /* e */)    {     }
+    void warning(const SAXParseException& /* e */) override    {     }
     /// Error handler
-    void error(const SAXParseException& e);
+    void error(const SAXParseException& e) override;
     /// Fatal error handler
-    void fatalError(const SAXParseException& e);
-    virtual ~ErrHandler() {}
+    void fatalError(const SAXParseException& e) override;
+    ~ErrHandler() override {}
   };
   struct DTDRedirect : public EntityResolver  {
-    InputSource* resolveEntity(const XMLCh* const /* pubId */, const XMLCh* const /* sysId */)  {
+    InputSource* resolveEntity(const XMLCh* const /* pubId */, const XMLCh* const /* sysId */) override {
       static const char* dtdID = "redirectinmem.dtd";
       static const char* dtd = \
         "\
@@ -139,7 +137,7 @@ namespace {
       static const size_t len = strlen(dtd);
       return new MemBufInputSource((const XMLByte*)dtd,len,dtdID,false);
     }
-    virtual ~DTDRedirect() = default;
+    ~DTDRedirect() override = default;
   };
 
   void ErrHandler::error(const SAXParseException& e)  {
@@ -184,23 +182,6 @@ namespace {
   const XMLTag Attr_metaValue  ( "att_value");
 }
 
-/// Create file identifier using UUID mechanism
-std::string Gaudi::createGuidAsString()  {
-  uuid_t uuid;
-  ::uuid_generate_time(uuid);
-  struct Guid {
-    unsigned int   Data1;
-    unsigned short Data2;
-    unsigned short Data3;
-    unsigned char  Data4[8];
-  } *g = (Guid*)&uuid;
-
-  boost::format text("%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X");
-  text % g->Data1 % g->Data2 % g->Data3;
-  for (int i = 0; i < 8; ++i)
-    text % (unsigned short)g->Data4[i];
-  return text.str();
-}
 // ----------------------------------------------------------------------------
 XMLFileCatalog::XMLFileCatalog(CSTR uri, IMessageSvc* m)
 : m_rdOnly(false),m_update(false),m_doc(0),

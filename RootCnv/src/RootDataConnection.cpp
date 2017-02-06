@@ -25,13 +25,14 @@
 #include "TBranch.h"
 #if ROOT_VERSION_CODE >= ROOT_VERSION(5,33,0)
 #include "Compression.h"
-static int s_compressionLevel = ROOT::CompressionSettings(ROOT::kLZMA,6);
+static int s_compressionLevel = ROOT::CompressionSettings(ROOT::kLZMA,4);
 #else
 static int s_compressionLevel = 1;
 #endif
 
 // C/C++ include files
 #include <stdexcept>
+#include <numeric>
 
 using namespace Gaudi;
 using namespace std;
@@ -213,9 +214,9 @@ RootDataConnection::Tool* RootDataConnection::makeTool()   {
 /// Connect the file in READ mode
 StatusCode RootDataConnection::connectRead()  {
   m_file.reset( TFile::Open(m_pfn.c_str()) );
-  if ( !m_file || m_file->IsZombie() ) { 
-      m_file.reset(); 
-      return StatusCode::FAILURE; 
+  if ( !m_file || m_file->IsZombie() ) {
+      m_file.reset();
+      return StatusCode::FAILURE;
   }
   StatusCode sc = StatusCode::FAILURE;
   msgSvc() << MSG::DEBUG << "Opened file " << m_pfn << " in mode READ. [" << m_fid << "]" << endmsg << MSG::DEBUG;
@@ -552,14 +553,14 @@ int RootDataConnection::loadObj(CSTR section, CSTR cnt, unsigned long entry, Dat
 }
 
 /// Load references object
-int RootDataConnection::loadRefs(const std::string& section, const std::string& cnt, 
+int RootDataConnection::loadRefs(const std::string& section, const std::string& cnt,
                                  unsigned long entry, RootObjectRefs& refs)
 {
-  int nbytes = m_tool->loadRefs(section,cnt,entry,refs); 
+  int nbytes = m_tool->loadRefs(section,cnt,entry,refs);
 #if ROOT_VERSION_CODE >= ROOT_VERSION(5,33,0)
   if ( nbytes < 0 )   {
     // This is definitely an error:
-    // -- Either branch not preesent at all or 
+    // -- Either branch not preesent at all or
     // -- ROOT I/O error, which issues -1
     IIncidentSvc* inc = m_setup->incidentSvc();
     if ( inc ) {
@@ -623,7 +624,7 @@ void RootDataConnection::makeRef(CSTR name, long clid, int tech, CSTR dbase, CST
   if ( !cnt.empty() ) {
     auto icnt = std::find_if( m_conts.begin(),m_conts.end(),
                               [&](const std::string& i) { return i == cnt; } );
-    ccnt = std::distance(m_conts.begin(),icnt); 
+    ccnt = std::distance(m_conts.begin(),icnt);
     if ( icnt == m_conts.end() ) m_conts.push_back(cnt);
   }
 

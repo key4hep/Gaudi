@@ -22,6 +22,14 @@
 // ============================================================================
 #include "GaudiKernel/Kernel.h"
 
+#if defined(__clang__) || defined(__CLING__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winconsistent-missing-override"
+#elif defined(__GNUC__) && __GNUC__ >= 5
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsuggest-override"
+#endif
+
 namespace Genfun
 {
   namespace GaudiMathImplementation
@@ -43,13 +51,13 @@ namespace Genfun
       /// copy constructor
       GSLFunctionWithError ( const GSLFunctionWithError& ) ;
       /// destructor
-      virtual ~GSLFunctionWithError ()  = default;
+      ~GSLFunctionWithError () override  = default;
       /// the main method
-      virtual double operator() (       double    x ) const ;
-      virtual double operator() ( const Argument& x ) const ;
-      virtual bool         hasAnalyticDerivative () const { return true ; }
-      virtual unsigned int dimensionality        () const { return    1 ; }
-      Genfun::Derivative partial ( unsigned int i ) const ;
+      double operator() (       double    x ) const override;
+      double operator() ( const Argument& x ) const override;
+      bool         hasAnalyticDerivative () const override { return true ; }
+      unsigned int dimensionality        () const override { return    1 ; }
+      Genfun::Derivative partial ( unsigned int i ) const override;
 
       /// get the function itself
       Function             function () const ;
@@ -66,6 +74,8 @@ namespace Genfun
       Function        m_function ;
       std::unique_ptr<gsl_sf_result>  m_result   ;
     };
+    /// mandatory macro from CLHEP/GenericFunctions
+    FUNCTION_OBJECT_IMP( GSLFunctionWithError )
 
     class GAUDI_API GSLFunctionWithMode : public AbsFunction
     {
@@ -82,13 +92,13 @@ namespace Genfun
       /// copy constructor
       GSLFunctionWithMode ( const GSLFunctionWithMode& ) ;
       /// destructor
-      virtual ~GSLFunctionWithMode () = default;
+      ~GSLFunctionWithMode () override = default;
       /// the main method
-      virtual double operator() (       double    x ) const ;
-      virtual double operator() ( const Argument& x ) const ;
-      virtual bool         hasAnalyticDerivative () const { return true ; }
-      virtual unsigned int dimensionality        () const { return    1 ; }
-      Genfun::Derivative partial ( unsigned int i ) const ;
+      double operator() (       double    x ) const override;
+      double operator() ( const Argument& x ) const override;
+      bool         hasAnalyticDerivative () const override { return true ; }
+      unsigned int dimensionality        () const override { return    1 ; }
+      Genfun::Derivative partial ( unsigned int i ) const override ;
       /// get the function itself
       Function             function () const ;
       /// get the current mode
@@ -102,6 +112,8 @@ namespace Genfun
       Function        m_function ;
       gsl_mode_t*     m_mode     ;
     };
+    /// mandatory macro from CLHEP/GenericFunctions
+    FUNCTION_OBJECT_IMP( GSLFunctionWithMode )
 
     class GAUDI_API GSLFunctionWithModeAndError : public AbsFunction
     {
@@ -120,13 +132,13 @@ namespace Genfun
       /// copy constructor
       GSLFunctionWithModeAndError ( const GSLFunctionWithModeAndError& ) ;
       /// destructor
-      virtual ~GSLFunctionWithModeAndError () = default;
+      ~GSLFunctionWithModeAndError () override = default;
       /// the main method
-      virtual double operator() (       double    x ) const ;
-      virtual double operator() ( const Argument& x ) const ;
-      virtual bool         hasAnalyticDerivative () const { return true ; }
-      virtual unsigned int dimensionality        () const { return    1 ; }
-      Genfun::Derivative partial ( unsigned int i ) const ;
+      double operator() (       double    x ) const override;
+      double operator() ( const Argument& x ) const override;
+      bool         hasAnalyticDerivative () const override { return true ; }
+      unsigned int dimensionality        () const override { return    1 ; }
+      Genfun::Derivative partial ( unsigned int i ) const override;
       /// get the function itself
       Function             function () const ;
       /// get the current mode
@@ -146,9 +158,17 @@ namespace Genfun
       std::unique_ptr<gsl_mode_t>     m_mode     ;
       std::unique_ptr<gsl_sf_result>  m_result   ;
     };
+    /// mandatory macro from CLHEP/GenericFunctions
+    FUNCTION_OBJECT_IMP( GSLFunctionWithModeAndError )
 
   } // end of namespace GaudiMath Implemnentation
 } // end of namespace Genfun
+
+#if defined(__clang__) || defined(__CLING__)
+#pragma clang diagnostic pop
+#elif defined(__GNUC__) && __GNUC__ >= 5
+#pragma GCC diagnostic pop
+#endif
 
 #endif // GAUDIMATH_GSLFUNADAPTERS_H
 // ============================================================================

@@ -1,39 +1,43 @@
-#ifndef VALGRIND_CALLGRINDPROFILE_H 
+#ifndef VALGRIND_CALLGRINDPROFILE_H
 #define VALGRIND_CALLGRINDPROFILE_H 1
 
-// Include files 
+// Include files
 // from Gaudi
 #include "GaudiAlg/GaudiAlgorithm.h"
 
-
 /** @class CallgrindProfile CallgrindProfile.h valgrind/CallgrindProfile.h
- *  
+ *
  * Algorithm to enable/disable the profiling by Callgrind at given events.
  *
  *  @author Ben Couturier
  *  @date   2014-08-22
  */
-class CallgrindProfile : public GaudiAlgorithm {
-public: 
-  /// Standard constructor
-  CallgrindProfile( const std::string& name, ISvcLocator* pSvcLocator );
+class CallgrindProfile : public GaudiAlgorithm
+{
+public:
+  using GaudiAlgorithm::GaudiAlgorithm;
 
-  virtual ~CallgrindProfile( ); ///< Destructor
+  ~CallgrindProfile() override = default; ///< Destructor
 
-  virtual StatusCode initialize();    ///< Algorithm initialization
-  virtual StatusCode execute   ();    ///< Algorithm execution
-  virtual StatusCode finalize  ();    ///< Algorithm finalization
-
-protected:
+  StatusCode initialize() override; ///< Algorithm initialization
+  StatusCode execute() override;    ///< Algorithm execution
+  StatusCode finalize() override;   ///< Algorithm finalization
 
 private:
-  int m_nStartFromEvent; // Event to start profiling at
-  int m_nStopAtEvent;  // Event to stop profiling at
-  int m_nDumpAtEvent; // Event at which to dump the stats (Destructor by default)
-  int m_nZeroAtEvent; //Event at which to zero the stats
-  int m_eventNumber;   // Current event number
-  bool m_profiling; // Whether valgrind is profiling or not
-  bool m_dumpDone;  // Whether the counters were dumped
-  std::string m_dumpName; // Name to pass to the dump macro
+  Gaudi::Property<int> m_nStartFromEvent{this, "StartFromEventN", 1, "After what event we start profiling."};
+  Gaudi::Property<int> m_nStopAtEvent{
+      this, "StopAtEventN", 0,
+      "After what event we stop profiling. If 0 than we also profile finalization stage. Default = 0."};
+  Gaudi::Property<int> m_nDumpAtEvent{
+      this, "DumpAtEventN", 0,
+      "After what event we stop profiling. If 0 than we also profile finalization stage. Default = 0."};
+  Gaudi::Property<int> m_nZeroAtEvent{
+      this, "ZeroAtEventN", 0,
+      "After what event we stop profiling. If 0 than we also profile finalization stage. Default = 0."};
+  Gaudi::Property<std::string> m_dumpName{this, "DumpName", "", "Label for the callgrind dump"};
+
+  int m_eventNumber = 0;     // Current event number
+  bool m_profiling  = false; // Whether valgrind is profiling or not
+  bool m_dumpDone   = false; // Whether the counters were dumped
 };
 #endif // VALGRIND_CALLGRINDPROFILE_H

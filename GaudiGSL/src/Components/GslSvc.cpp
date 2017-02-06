@@ -28,25 +28,6 @@
 // ============================================================================
 DECLARE_COMPONENT(GslSvc)
 // ============================================================================
-
-// ============================================================================
-/** Standard constructor
- *  @param name service name
- *  @param scv  pointer to service locator
- */
-// ============================================================================
-GslSvc::GslSvc( const std::string& name ,
-                ISvcLocator*       svc  )
-  : base_class ( name , svc )
-{
-  declareProperty( "ErrorPolicy" , m_errorPolicy       ) ;
-  declareProperty( "Handlers"    , m_handlersTypeNames ) ;
-  declareProperty( "IgnoreCodes" , m_ignore            ) ;
-}
-// ============================================================================
-// ============================================================================
-
-// ============================================================================
 /** standard service initialization
  *  @see  Service
  *  @see IService

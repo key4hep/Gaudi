@@ -66,27 +66,6 @@ EqSolver::EqSolverMisc::~EqSolverMisc()
 }
 // ============================================================================
 
-//=============================================================================
-// Standard constructor, initializes variables
-//=============================================================================
-EqSolver::EqSolver( const std::string& type,
-                    const std::string& name,
-                    const IInterface* parent )
-  : base_class      ( type, name , parent )
-  , m_algType       ( "fdfsolver_hybridsj" )
-  , m_max_iter      ( 1000                 )
-  , m_norm_residual ( 1.0e-7               )
-  , m_type          ( nullptr                    )
-
-{
-  /// declare type of the algorithm for root finding
-  declareProperty ( "Algorithm", m_algType       );
-  /// declare maximum of iteration
-  declareProperty ( "Iteration", m_max_iter      );
-  /// declare the absolute error bound for the residual value
-  declareProperty ( "Residual" , m_norm_residual );
-}
-
 namespace
 {
   using namespace Genfun;

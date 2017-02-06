@@ -4,10 +4,12 @@
 // Base classes
 //#include "GaudiKernel/DataSvc.h"
 // D. Piparo: Change to the new thread safe version
-#include "GaudiKernel/TsDataSvc.h"
 #include "GaudiKernel/IDetDataSvc.h"
 #include "GaudiKernel/IIncidentListener.h"
+#include "GaudiKernel/IRegistry.h"
 #include "GaudiKernel/Time.h"
+#include "GaudiKernel/TsDataSvc.h"
+
 
 // Forward declarations
 class StatusCode;
@@ -21,20 +23,17 @@ class IAddressCreator;
     allows concurrent retrieval of DataObjects.
 
     @author Marco Clemencic (previous author unknown)
-    @author Danilo Piparo 
+    @author Danilo Piparo
 
-*///--------------------------------------------------------------------------
+*/ //--------------------------------------------------------------------------
 
-class DetDataSvc  : public extends<TsDataSvc,
-                                   IDetDataSvc,
-                                   IIncidentListener>
+class DetDataSvc : public extends<TsDataSvc, IDetDataSvc, IIncidentListener>
 {
 
   // unhides DataSvc updateObject methods
   using TsDataSvc::updateObject;
 
 public:
-
   // Overloaded DataSvc methods
 
   /// Initialize the service
@@ -53,7 +52,7 @@ public:
   StatusCode updateObject( DataObject* toUpdate ) override;
 
   /// Standard Constructor
-  DetDataSvc(const std::string& name, ISvcLocator* svc);
+  DetDataSvc( const std::string& name, ISvcLocator* svc );
 
   /// Standard Destructor
   ~DetDataSvc() override = default;
@@ -62,8 +61,16 @@ private:
   /// Deal with Detector Description initialization
   StatusCode setupDetectorDescription();
 
-public:
+  using TsDataSvc::loadObject;
+  StatusCode loadObject( IConversionSvc* pLoader, IRegistry* pNode ) override final {
+    if ( LIKELY( m_allowLoadInRunning || serviceLocator().as<IStateful>()->FSMState() != Gaudi::StateMachine::RUNNING ) ) {
+      return TsDataSvc::loadObject(pLoader, pNode);
+    }
+    error() << "Trying to load " << pNode->identifier() << " while RUNNING" << endmsg;
+    return StatusCode::FAILURE;
+  }
 
+public:
   // Implementation of the IDetDataSvc interface
 
   /// Check if the event time has been set.
@@ -77,35 +84,30 @@ public:
   void setEventTime( const Gaudi::Time& time ) override;
 
 public:
-
   // Implementation of the IIncidentListener interface
 
   /// Inform that a new incident has occured
   void handle( const Incident& ) override;
 
 private:
+  Gaudi::Property<int> m_detStorageType{this, "DetStorageType", XML_StorageType,
+                                        "Detector Data Persistency Storage type"};
+  Gaudi::Property<std::string> m_detDbLocation{this, "DetDbLocation", "empty",
+                                               "location of detector Db (filename,URL)"};
+  Gaudi::Property<std::string> m_detDbRootName{this, "DetDbRootName", "dd", "name of the root node of the detector"};
+  Gaudi::Property<bool> m_usePersistency{this, "UsePersistency", false, "control if the persistency is required"};
+  Gaudi::Property<std::string> m_persistencySvcName{this, "PersistencySvc", "DetectorPersistencySvc",
+                                                    "name of the persistency service"};
 
-  /// Detector Data Persistency Storage type
-  int              m_detStorageType = XML_StorageType;
-
-  /// Location of detector Db (filename,URL)
-  std::string      m_detDbLocation = "empty";
-
-  /// Name of the root node of the detector
-  std::string      m_detDbRootName = "dd";
-
-  /// Name of the persistency service.
-  std::string      m_persistencySvcName = "DetectorPersistencySvc";
-
-  /// Flag to control if the persistency is required
-  bool             m_usePersistency = false;
+  Gaudi::Property<bool> m_allowLoadInRunning{this, "AllowLoadInRunning", true,
+                                             "if set to false, no new object can be loaded while in running state "
+                                             "(updates are still allowed), this forces preloading of the geometry"};
 
   /// Current event time
-  Gaudi::Time        m_eventTime = 0;
+  Gaudi::Time m_eventTime = 0;
 
   /// Address Creator to be used
   SmartIF<IAddressCreator> m_addrCreator = nullptr;
-
 };
 
 #endif // DETECTORDATASVC_DETDATASVC_H

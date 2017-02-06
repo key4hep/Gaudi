@@ -1,8 +1,9 @@
 #ifndef GAUDIKERNEL_MESSAGE_H
 #define GAUDIKERNEL_MESSAGE_H
 
-#include <string>
+#include "GaudiKernel/Kernel.h" // for GAUDI_API
 #include <iostream>
+#include <string>
 
 /** @class Message Message.h GaudiKernel/Message.h
 
@@ -11,16 +12,17 @@
 
     @author Iain Last
 */
-class GAUDI_API Message final {
+class GAUDI_API Message final
+{
 public:
   /// Default constructor
   Message();
 
   /// Constructor.
-  Message ( const char* src, int type, const char* msg );
+  Message( const char* src, int type, const char* msg );
 
   /// Constructor.
-  Message ( std::string src, int type, std::string msg );
+  Message( std::string src, int type, std::string msg );
 
   /// Default destructor.
   ~Message() = default;
@@ -56,19 +58,19 @@ public:
   const std::string& getTimeFormat() const;
 
   /// Get the default time format string
-  static const std::string getDefaultTimeFormat() ;
+  static const std::string getDefaultTimeFormat();
 
   /// Set the time format string.
   void setTimeFormat( std::string timeFormat ) const;
 
   /// Needed to build maps
-  bool operator < ( const Message& test );
+  bool operator<( const Message& test );
 
   /// Insert the message into a stream.
-  friend std::ostream& operator << ( std::ostream& stream, const Message& msg );
+  friend std::ostream& operator<<( std::ostream& stream, const Message& msg );
 
   /// Insert the message into a stream.
-  friend bool operator == ( const Message& a, const Message& b );
+  friend bool operator==( const Message& a, const Message& b );
 
 private:
   /// Called when an invalid format string is encountered.
@@ -151,7 +153,10 @@ private:
   static const char WIDTH = 'W';
 
   /// The default message format.
-  //static const char* Message::DEFAULT_FORMAT = "% F%67W%L#############################################################################\n-----------------------------------------------------------------------------\nMessage follows...\nSource  : %S\nType    : %T\nMessage : %M\nEnd of message.\n-----------------------------------------------------------------------------\n";
+  // static const char* Message::DEFAULT_FORMAT = "%
+  // F%67W%L#############################################################################\n-----------------------------------------------------------------------------\nMessage
+  // follows...\nSource  : %S\nType    : %T\nMessage : %M\nEnd of
+  // message.\n-----------------------------------------------------------------------------\n";
   static constexpr const char* DEFAULT_FORMAT = "% F%18W%S%7W%R%T %0W%M";
 
   /// The default time format.
@@ -159,7 +164,7 @@ private:
   static constexpr const char* DEFAULT_TIME_FORMAT = "%Y-%m-%d %H:%M:%S,%f";
 
   /// For slot and event number from EventContext
-  static const char SLOT = 's';
+  static const char SLOT   = 's';
   static const char EVTNUM = 'e';
   static const char THREAD = 'X';
 
@@ -169,9 +174,9 @@ private:
 };
 
 /// Insert the message into a stream.
-GAUDI_API std::ostream& operator << ( std::ostream& stream, const Message& msg );
+GAUDI_API std::ostream& operator<<( std::ostream& stream, const Message& msg );
 
 /// Insert the message into a stream.
-GAUDI_API bool operator == ( const Message& a, const Message& b );
+GAUDI_API bool operator==( const Message& a, const Message& b );
 
 #endif

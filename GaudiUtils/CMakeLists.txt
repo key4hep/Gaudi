@@ -1,4 +1,4 @@
-gaudi_subdir(GaudiUtils v6r2)
+gaudi_subdir(GaudiUtils)
 
 gaudi_depends_on_subdirs(GaudiKernel)
 
@@ -11,34 +11,73 @@ endif (${APPLE})
 find_package(ROOT COMPONENTS RIO Hist ${XMLIO_PACKAGE_NAME} Thread Matrix MathCore)
 find_package(XercesC)
 find_package(UUID)
+find_package(CppUnit)
 
-# Hide some Boost compile time warnings
-include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
+# Decide whether to link against AIDA:
+set( aida_lib )
+if( AIDA_FOUND )
+   set( aida_lib AIDA )
+endif()
+
+# Decide whether to link against XercesC:
+set( xercesc_lib )
+if( XERCESC_FOUND )
+   set( xercesc_lib XercesC )
+endif()
+
+# The list of sources to build into the library:
+set( lib_sources src/Lib/QuasiRandom.cpp )
+if( AIDA_FOUND )
+   list( APPEND lib_sources src/Lib/Aida2ROOT.cpp src/Lib/HistoLabels.cpp
+      src/Lib/HistoStrings.cpp src/Lib/Histo2String.cpp src/Lib/HistoParsers.cpp
+      src/Lib/HistoTableFormat.cpp src/Lib/HistoDump.cpp src/Lib/HistoStats.cpp
+      src/Lib/HistoXML.cpp )
+endif()
+
+# The list of sources to build into the module:
+set( module_sources src/component/FileReadTool.cpp
+   src/component/SignalMonitorSvc.cpp src/component/IODataManager.cpp
+   src/component/StalledEventMonitor.cpp src/component/MultiFileCatalog.cpp
+   src/component/VFSSvc.cpp src/component/createGuidAsString.cpp )
+if( XERCESC_FOUND )
+   list( APPEND module_sources src/component/XMLCatalogTest.cpp
+      src/component/XMLFileCatalog.cpp )
+endif()
+
+# Hide some Boost/ROOT/XercesC compile time warnings
+include_directories( SYSTEM ${Boost_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS} )
+if( XERCESC_FOUND )
+   include_directories( SYSTEM ${XERCESC_INCLUDE_DIRS} )
+endif()
 
 #---Libraries---------------------------------------------------------------
-gaudi_add_library(GaudiUtilsLib src/Lib/*.cpp
+gaudi_add_library(GaudiUtilsLib ${lib_sources}
                   LINK_LIBRARIES GaudiKernel ROOT
-                  INCLUDE_DIRS ROOT AIDA
+                  INCLUDE_DIRS ROOT ${aida_lib}
                   PUBLIC_HEADERS GaudiUtils)
-gaudi_add_module(GaudiUtils src/component/*.cpp
-                 LINK_LIBRARIES GaudiUtilsLib XercesC UUID
-                 INCLUDE_DIRS XercesC UUID)
+gaudi_add_module(GaudiUtils ${module_sources}
+                 LINK_LIBRARIES GaudiUtilsLib ${xercesc_lib} UUID
+                 INCLUDE_DIRS ${xercesc_lib} UUID)
 
-gaudi_add_unit_test(testXMLFileCatalogWrite
-                      src/component/XMLCatalogTest.cpp
-                      src/component/XMLFileCatalog.cpp
-                    LINK_LIBRARIES GaudiKernel XercesC UUID
-                    INCLUDE_DIRS XercesC UUID)
-set_property(TARGET testXMLFileCatalogWrite
-             APPEND PROPERTY COMPILE_DEFINITIONS testXMLFileCatalogWrite=main)
+if( CPPUNIT_FOUND )
+   gaudi_add_unit_test(testXMLFileCatalogWrite
+      src/component/createGuidAsString.cpp
+      src/component/XMLCatalogTest.cpp
+      src/component/XMLFileCatalog.cpp
+      LINK_LIBRARIES GaudiKernel XercesC UUID
+      INCLUDE_DIRS XercesC UUID)
+   set_property(TARGET testXMLFileCatalogWrite
+      APPEND PROPERTY COMPILE_DEFINITIONS testXMLFileCatalogWrite=main)
 
-gaudi_add_unit_test(testXMLFileCatalogRead
-                      src/component/XMLCatalogTest.cpp
-                      src/component/XMLFileCatalog.cpp
-                    LINK_LIBRARIES GaudiKernel XercesC UUID
-                    INCLUDE_DIRS XercesC UUID)
-set_property(TARGET testXMLFileCatalogRead
-             APPEND PROPERTY COMPILE_DEFINITIONS testXMLFileCatalogRead=main)
+   gaudi_add_unit_test(testXMLFileCatalogRead
+      src/component/createGuidAsString.cpp
+      src/component/XMLCatalogTest.cpp
+      src/component/XMLFileCatalog.cpp
+      LINK_LIBRARIES GaudiKernel XercesC UUID
+      INCLUDE_DIRS XercesC UUID)
+   set_property(TARGET testXMLFileCatalogRead
+      APPEND PROPERTY COMPILE_DEFINITIONS testXMLFileCatalogRead=main)
 
-set_property(TEST GaudiUtils.testXMLFileCatalogRead
-             PROPERTY DEPENDS GaudiUtils.testXMLFileCatalogWrite)
+   set_property(TEST GaudiUtils.testXMLFileCatalogRead
+      PROPERTY DEPENDS GaudiUtils.testXMLFileCatalogWrite)
+endif()

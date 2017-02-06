@@ -1,179 +1,185 @@
+#ifndef NO_C_ARRAY_AS_PROPERTY_WARNING
+#warning deprecated header (will be removed in Gaudi v29r0), think about using std::array<T,N> instead of T[N]
+#endif
 #ifndef GAUDIKERNEL_CARRAYASPROPERTY_H
-#define GAUDIKERNEL_CARRAYASPROPERTY_H 1
-// ============================================================================
-// Include files
-// ============================================================================
-// STD & STL
-// ============================================================================
-#include <algorithm>
-// ============================================================================
-// GauidKernel
-// ============================================================================
-#include "GaudiKernel/PropertyTypeTraits.h"
-#include "GaudiKernel/PropertyVerifier.h"
-// ============================================================================
-/** \file
- *  Collection of utilities, which allows to use C-arrays
- *  as property for Gaudi-components:
- *
- *  - streamers
- *  - parsers
- *  - property type traits
- *  - property verifiers
- *
- *  @attention this file must be "included" before GaudiKernel/Property.h
- *
- *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
- *  @date 2009-09-16
- */
-// ============================================================================
-// 1) Streamers : value  -> string , done in GausiKernel/ToStream.h
-// ============================================================================
-// 2) Parsers   : string -> value  , done in GaudiKernel/Parsers.h
-// ============================================================================
-// 3) assignments and copy
-// ============================================================================
+#define GAUDIKERNEL_CARRAYASPROPERTY_H
+#include "GaudiKernel/Property.h"
+
 namespace Gaudi
 {
-  // ==========================================================================
-  namespace Utils
+  template <class TYPE, size_t N, class VERIFIER, class HANDLERS>
+  class Property<TYPE [N], VERIFIER, HANDLERS> : public Details::PropertyBase
   {
-    // ========================================================================
-    template <class T, unsigned int N>
-    struct PropertyTypeTraits<T(&)[N]>
+  public:
+    // ==========================================================================
+    /// Hosted type
+    using StorageType  = TYPE ( & )[N];
+    using ValueType    = typename std::remove_reference<StorageType>::type;
+    using VerifierType = VERIFIER;
+    using HandlersType = HANDLERS;
+
+  private:
+    /// Storage.
+    StorageType m_value;
+    VerifierType m_verifier;
+    HandlersType m_handlers;
+    /// helper typedefs for SFINAE
+    /// @{
+    template <class T>
+    using is_this_type = std::is_same<Property, typename std::remove_reference<T>::type>;
+    template <class T>
+    using not_copying = std::enable_if<!is_this_type<T>::value>;
+    /// @}
+  public:
+    // ==========================================================================
+    /// the constructor with property name, value and documentation.
+    inline Property( std::string name, StorageType value, std::string doc = "" )
+        : PropertyBase( typeid( ValueType ), std::move( name ), std::move( doc ) ), m_value( value )
     {
-      // ======================================================================
-      typedef       T(&Type) [N] ;
-      typedef       T(&PRef) [N] ;
-      typedef       T(*PVal) [N] ;
-      typedef const T(&CRef) [N] ;
-      typedef const T(*CVal) [N] ;
-      // ======================================================================
-    public:
-      // ======================================================================
-      /// some kind of "default" constructor
-      static PVal new_ () { return new T[N] ; }
-      /// some kind of "copy" constructor
-      static PVal new_ ( Type right )
-        {
-          PVal tmp = new_ () ;
-          assign ( tmp , right ) ;
-          return tmp ;
-        }
-      /// some kind of "smart"-pseudo-constructor
-      static PVal copy ( PVal* right , const bool  own )
-        {
-          if ( !own ) { return right ; }
-          return new_ ( *right ) ;
-        }
-      /// "smart" pseudo-destructor
-      static void dele   ( PVal right , const bool own )
-        { if ( own ) { delete[] right ; } }
-      // ======================================================================
-      // assigenements
-      static void assign ( Type v1 , PRef v2 ) { std::copy ( v2 , v2 + N , v1 ) ; }
-      static void assign ( Type v1 , CRef v2 ) { std::copy ( v2 , v2 + N , v1 ) ; }
-      /// comparison (needed for bounded verifier)
-      static bool less   ( Type v1 , Type v2 )
-        { return std::lexicographical_compare ( v1 , v1 + N , v2 , v2 + N ) ; }
-      static bool less   ( Type v1 , CRef v2 )
-        { return std::lexicographical_compare ( v1 , v1 + N , v2 , v2 + N ) ; }
-      static bool less   ( CRef v1 , CRef v2 )
-        { return std::lexicographical_compare ( v1 , v1 + N , v2 , v2 + N ) ; }
-      static bool less   ( CRef v1 , Type v2 )
-        { return std::lexicographical_compare ( v1 , v1 + N , v2 , v2 + N ) ; }
-      // ======================================================================
-    } ;
-    // ========================================================================
-    /// specialization for arrays
-    template <class T, unsigned int N>
-    struct PropertyTypeTraits<T[N]> : public PropertyTypeTraits<T(&)[N]>
-    {} ;
-    // ========================================================================
-    /// specialiation for const-arrays
-    template <class T, unsigned int N>
-    struct PropertyTypeTraits< const T(&)[N]>
-    {} ;
-    /// specialisation for C-strings
-    template <unsigned int N>
-    struct PropertyTypeTraits<char(&)[N]>
-    {} ;
-    // ========================================================================
-  } //                                            end of namespace Gaudi::Utils
-  // ==========================================================================
-} //                                                     end of namespace Gaudi
-// ============================================================================
-// property verifier
-// ============================================================================
-/// specialization of Bounded verifier for for C-arrays
-template< class T, unsigned int N>
-class BoundedVerifier<T[N]> : PropertyVerifier<T[N]>
-{
-  // ==========================================================================
-  typedef Gaudi::Utils::PropertyTypeTraits<T[N]>  Traits ;
-  // Abstract derived class
-  // ==========================================================================
-public:
-  /// Constructors
-  BoundedVerifier()
-    : m_hasLowerBound ( false )
-    , m_hasUpperBound ( false )
-  {}
-  /// Destructor
-  virtual ~BoundedVerifier() = default;
-
-  /// Check if the value is within bounds
-  bool isValid ( const typename Traits::CVal value ) const
-  {
-    return
-      ( ( m_hasLowerBound && Traits::less ( *value , m_lowerBound ) ) ? false : true )
-      &&
-      ( ( m_hasUpperBound && Traits::less ( m_upperBound , *value ) ) ? false : true ) ;
-  }
-  /// Return if it has a lower bound
-  bool        hasLower() const { return m_hasLowerBound; }
-  /// Return if it has a lower bound
-  bool        hasUpper() const { return m_hasUpperBound; }
-  /// Return the lower bound value
-  typename Traits::CRef lower()    const { return m_lowerBound; }
-  /// Return the upper bound value
-  typename Traits::CRef upper()    const { return m_upperBound; }
-
-  /// Set lower bound value
-  void setLower( typename Traits::CRef value ) { m_hasLowerBound = true; Traits::assign ( m_lowerBound , value ) ; }
-  /// Set upper bound value
-  void setUpper( typename Traits::CRef value ) { m_hasUpperBound = true; Traits::assign ( m_upperBound , value ) ; }
-  /// Clear lower bound value
-  void clearLower()  { m_hasLowerBound = false; }
-  /// Clear upper bound value
-  void clearUpper()  { m_hasUpperBound = false; }
-
-  /// Set both bounds (lower and upper) at the same time
-  void setBounds( typename Traits::CRef lower, typename Traits::CRef upper)
-    {
-      setLower( lower );
-      setUpper( upper );
-  }
-
-  /// Clear both bounds (lower and upper) at the same time
-  void clearBounds()
-    {
-      clearLower();
-      clearUpper();
+      m_verifier( m_value );
     }
 
- private:
-  // ==========================================================================
-  /// Data and Function Members for This Class Implementation.
-  /// Data members
-  bool    m_hasLowerBound  ;
-  bool    m_hasUpperBound  ;
-  const T m_lowerBound [N] ;
-  const T m_upperBound [N] ;
-  // ==========================================================================
-};
-// ============================================================================
-// The END
-// ============================================================================
-#endif // GAUDIKERNEL_CARRAYASPROPERTY_H
-// ============================================================================
+    using PropertyBase::declareReadHandler;
+    using PropertyBase::declareUpdateHandler;
+
+    /// set new callback for reading
+    PropertyBase& declareReadHandler( std::function<void( PropertyBase& )> fun ) override
+    {
+      m_handlers.setReadHandler( std::move( fun ) );
+      return *this;
+    }
+    /// set new callback for update
+    PropertyBase& declareUpdateHandler( std::function<void( PropertyBase& )> fun ) override
+    {
+      m_handlers.setUpdateHandler( std::move( fun ) );
+      return *this;
+    }
+
+    /// get a reference to the readCallBack
+    const std::function<void( PropertyBase& )> readCallBack() const override { return m_handlers.getReadHandler(); }
+    /// get a reference to the updateCallBack
+    const std::function<void( PropertyBase& )> updateCallBack() const override { return m_handlers.getUpdateHandler(); }
+
+    /// manual trigger for callback for update
+    bool useUpdateHandler() override
+    {
+      m_handlers.useUpdateHandler( *this );
+      return true;
+    }
+
+    /// Automatic conversion to value (const reference).
+    operator const ValueType&() const
+    {
+      m_handlers.useReadHandler( *this );
+      return m_value;
+    }
+    // /// Automatic conversion to value (reference).
+    // operator ValueType& () {
+    //   useReadHandler();
+    //   return m_value;
+    // }
+
+    /// Assignment from value.
+    Property& operator=( const ValueType& v )
+    {
+      m_verifier( v );
+      for ( size_t i = 0; i != N; ++i ) {
+        m_value[i] = v[i];
+      }
+      m_handlers.useUpdateHandler( *this );
+      return *this;
+    }
+
+    /// Copy constructor.
+    // Property(const Property& other):
+    //   PropertyBase(other), value(other.m_value) {}
+
+    /// Accessor to verifier.
+    const VerifierType& verifier() const { return m_verifier; }
+    /// Accessor to verifier.
+    VerifierType& verifier() { return m_verifier; }
+
+    /// Backward compatibility \deprecated will be removed in v29r0
+    /// @{
+    const ValueType& value() const { return *this; }
+    ValueType& value() { return const_cast<ValueType&>( (const ValueType&)*this ); }
+    bool setValue( const ValueType& v )
+    {
+      *this = v;
+      return true;
+    }
+    bool set( const ValueType& v )
+    {
+      *this = v;
+      return true;
+    }
+    PropertyBase* clone() const override { return new Property( *this ); }
+    /// @}
+
+    /// @name Helpers for easy use of string and vector properties.
+    /// @{
+    /// They are instantiated only if they are implemented in the wrapped class.
+    inline size_t size() const { return N; }
+    inline bool empty() const { return false; }
+    template <class T = const ValueType>
+    inline decltype( std::declval<T>()[typename T::key_type{}] ) operator[]( const typename T::key_type& key ) const
+    {
+      return value()[key];
+    }
+    template <class T = ValueType>
+    inline decltype( std::declval<T>()[typename T::key_type{}] ) operator[]( const typename T::key_type& key )
+    {
+      return value()[key];
+    }
+    /// @}
+    // ==========================================================================
+  public:
+    /// get the value from another property
+    bool assign( const PropertyBase& source ) override
+    {
+      // Is the property of "the same" type?
+      const Property* p = dynamic_cast<const Property*>( &source );
+      if ( p ) {
+        *this = p->value();
+      } else {
+        this->fromString( source.toString() ).ignore();
+      }
+      return true;
+    }
+    /// set value to another property
+    bool load( PropertyBase& dest ) const override
+    {
+      // delegate to the 'opposite' method
+      return dest.assign( *this );
+    }
+    /// string -> value
+    StatusCode fromString( const std::string& source ) override
+    {
+      ValueType tmp;
+      if ( Parsers::parse( tmp, source ).isSuccess() ) {
+        *this = tmp;
+      } else {
+        throw std::invalid_argument( "cannot parse '" + source + "' to " + this->type() );
+      }
+      return StatusCode::SUCCESS;
+    }
+    /// value  -> string
+    std::string toString() const override
+    {
+      m_handlers.useReadHandler( *this );
+      return Utils::toString( m_value );
+    }
+    /// value  -> stream
+    void toStream( std::ostream& out ) const override
+    {
+      m_handlers.useReadHandler( *this );
+      Utils::toStream( m_value, out );
+    }
+  };
+  template <class TYPE, size_t N, class VERIFIER, class HANDLERS>
+  class Property<TYPE (&) [N], VERIFIER, HANDLERS> : public Property<TYPE [N], VERIFIER, HANDLERS> {
+  public:
+    using Property<TYPE [N], VERIFIER, HANDLERS>::Property;
+  };
+}
+#endif

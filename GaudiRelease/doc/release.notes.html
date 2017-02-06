@@ -5,157 +5,106 @@
 <title>Gaudi Release Notes</title>
 </head>
 <body>
-<h1><a name="v27r1">Gaudi v27r1</a> (2016-03-11)</h1>
+<h1><a name="v28r1">Gaudi v28r1</a> (2016-12-14)</h1>
 Package Coordinators: Marco Clemencic, Charles Leggett, Benedikt Hegner
-<h2>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=84">LCG_84</a></h2>
+<h2>Externals version: <a href="http://lcgsoft.web.cern.ch/lcgsoft/release/87/">LCG_87</a></h2>
+
+<h2>Highlights</h2>
+<p>This minor release of Gaudi is mainly intented to pick up a new version of ROOT (6.08/02)
+  and introduce a first version of the Gaudi::Functional framework.</p>
+<p>The full list of changes can be found on <a href="https://gitlab.cern.ch/gaudi/Gaudi/merge_requests?milestone_title=v28r1">Gitlab</a>.</p>
+
+<p>You can find on <a href=" https://its.cern.ch/jira/secure/ReleaseNote.jspa?projectId=14707&version=26725">JIRA</a>
+  the list of tickets closed in this release.</p>
+
+<h1><a name="v28r0">Gaudi v28r0</a> (2016-11-08)</h1>
+Package Coordinators: Marco Clemencic, Charles Leggett, Benedikt Hegner
+<h2>Externals version: <a href="http://lcgsoft.web.cern.ch/lcgsoft/release/86/">LCG_86</a></h2>
+
+<h2>Highlights</h2>
+<p>This major release of Gaudi features several changes.</p>
+<p>Together with usual minor fixes, improvements and clean ups, we have the
+  following major changes:
+  <ul>
+    <li>dropped support for CMT builds</li>
+    <li>mimumum required C++ standard is not C++14</li>
+    <li>rewrite of components property classes</li>
+  </ul>
+  The full list of changes can be found on <a href="https://gitlab.cern.ch/gaudi/Gaudi/merge_requests?milestone_title=v28r0">Gitlab</a>.
+</p>
+<p>Here follows a list of JIRA tickets closed in this release.</p>
+
 
 <h2>        Bug
 </h2>
 <ul>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1168'>GAUDI-1168</a>] -         MinimalDataObjectHandle AccessType UPDATE conflicts with C macro in dim.h
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-979'>GAUDI-979</a>] -         remove dependency on CMT in GaudiRelease/cmt/update_versions.py
 </li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1174'>GAUDI-1174</a>] -         Many new unprotected DEBUG messages detected in Gaudi v27r0
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1148'>GAUDI-1148</a>] -         dictionaries dependencies on headers ignored
 </li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1177'>GAUDI-1177</a>] -         QMTest fails in python/GaudiTesting/BaseTest.py&quot;, line 1012, in parseHistosSummary  for COLORED MessageSvc
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1209'>GAUDI-1209</a>] -         THistSvc::getHists always empty
 </li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1178'>GAUDI-1178</a>] -         flag -DGOD_NOALLOC is used in optimized builds
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1210'>GAUDI-1210</a>] -         build failure when using ROOT master
 </li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1179'>GAUDI-1179</a>] -         gaudirun.py cannot parse old options with &#39;;&#39; in a string.
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1212'>GAUDI-1212</a>] -         Boost barrier should be created with appropriate number when thread pool size is negative/default
 </li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1182'>GAUDI-1182</a>] -         static_assert in ToolHandle is too restrictive for current ATLAS code
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1240'>GAUDI-1240</a>] -         quick-merge should not fail if destination directory is missing
 </li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1183'>GAUDI-1183</a>] -         ToolHandle changes from GAUDI-1116 are breaking LHCb code
-</li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1184'>GAUDI-1184</a>] -         Errors during initialization of cloned Algorithms not property handled
-</li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1185'>GAUDI-1185</a>] -         CommonMessaging::m_level not initialized when needed
-</li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1189'>GAUDI-1189</a>] -         fix warning about use of __int128 in GaudiPython dictionary
-</li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1192'>GAUDI-1192</a>] -         unprotected debug messages in the latest version of Gaudi
-</li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1196'>GAUDI-1196</a>] -         officially support CentOS 7 in HepToolsMacros.cmake
-</li>
-</ul>
-
-<h2>        Improvement
-</h2>
-<ul>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1116'>GAUDI-1116</a>] -         DataHandles for Hive
-</li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1146'>GAUDI-1146</a>] -         Improve CommonMessaging, and use it where possible
-</li>
-</ul>
-
-<h2>        Task
-</h2>
-<ul>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1122'>GAUDI-1122</a>] -         remove globalTimeOffset() and corresponding GlobalTimeOffset property from GaudiCommon
-</li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1171'>GAUDI-1171</a>] -         Excessive printout in GaudiPython.TupleUtils module
-</li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1181'>GAUDI-1181</a>] -         new commonMessaging interface not backward compatible
-</li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1195'>GAUDI-1195</a>] -         update required HEPTools/LCG version to 84
-</li>
-</ul>
-
-<hr/>
-<h1><a name="v27r0">Gaudi v27r0</a> (2016-01-22)</h1>
-Package Coordinators: Marco Clemencic, Charles Leggett, Benedikt Hegner
-<h2>Externals version: <a href="http://lcgsoft.cern.ch/index.py?page=cfg_overview&cfg=83">LCG_83</a></h2>
-
-<h2>        Bug
-</h2>
-<ul>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1068'>GAUDI-1068</a>] -         Undefined behavior in DataObject?
-</li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1108'>GAUDI-1108</a>] -         ObjectVector and ObjectList copy constructor will result in double delete...
-</li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1109'>GAUDI-1109</a>] -         RootCnv does not compile with 6.02.08
-</li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1110'>GAUDI-1110</a>] -         GaudiPluginService does not compile with CMT
-</li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1113'>GAUDI-1113</a>] -         name &#39;locker&#39; is not defined in merge_files.py
-</li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1115'>GAUDI-1115</a>] -         duplicated genreflex selection rules
-</li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1117'>GAUDI-1117</a>] -         unknown OS warning on CernVM/CentOS during CMake configuration
-</li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1119'>GAUDI-1119</a>] -         PartPropSvc does not parse inputs properly after upgrade to boost::regex
-</li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1121'>GAUDI-1121</a>] -         option parser cannot parse -10000000000.0 as float with Boost 1.59
-</li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1126'>GAUDI-1126</a>] -         Gaudi performance issue with Incident.h
-</li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1127'>GAUDI-1127</a>] -         undefined reference to `ServiceHandle&lt;IToolSvc&gt;::retrieve(IToolSvc*&amp;) const (gcc 4.9 only!)
-</li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1151'>GAUDI-1151</a>] -         incorrect reference counting of CounterSummarySvc
-</li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1155'>GAUDI-1155</a>] -         (LHCb) DaVinci build fails after merge of &#39;hive&#39; branch
-</li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1157'>GAUDI-1157</a>] -         compilation with clang broken after the merge of &#39;hive&#39; branch
-</li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1163'>GAUDI-1163</a>] -         Add missing header to GaudiKernel/DataSvc.h
-</li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1166'>GAUDI-1166</a>] -         DataSvc::objectLeaves not emptying the destination container
-</li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1167'>GAUDI-1167</a>] -         GaudiGSL components missing after the merge of &#39;hive&#39; into &#39;master&#39;
-</li>
-</ul>
-
-<h2>        Improvement
-</h2>
-<ul>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1118'>GAUDI-1118</a>] -         More modernization changes
-</li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1123'>GAUDI-1123</a>] -         Improve CMake files to allow compilation with clang 3.7
-</li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1129'>GAUDI-1129</a>] -         changes to build Gaudi in ATLAS CMake nightlies
-</li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1154'>GAUDI-1154</a>] -         add constructor from std::initializer_list to GaudiUtils::VectorMap
-</li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1158'>GAUDI-1158</a>] -         Speed up Configurable.isPropertySet
-</li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1159'>GAUDI-1159</a>] -         add support for std::array in SerializeSTL
-</li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1160'>GAUDI-1160</a>] -         change return type of Property::declare{Read,Update}Handler from void to Property&amp;
-</li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1162'>GAUDI-1162</a>] -         return the just-added tool from addTool
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1268'>GAUDI-1268</a>] -         ATLAS GAUDI memory leaks
 </li>
 </ul>
 
 <h2>        New Feature
 </h2>
 <ul>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1165'>GAUDI-1165</a>] -         Allow override of CPack settings
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1265'>GAUDI-1265</a>] -         add (optionally) an implementation of the &quot;Guidelines Support Library&quot;
+</li>
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1266'>GAUDI-1266</a>] -         add (optionally) Eric Niebler&#39;s range-v3 (headers only) library
 </li>
 </ul>
 
 <h2>        Task
 </h2>
 <ul>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-978'>GAUDI-978</a>] -         Merge the dev/hive branch of Gaudi on master
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-982'>GAUDI-982</a>] -         integrate GPyTest in the Gaudi testing framework
 </li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1055'>GAUDI-1055</a>] -         Allow use of Python configurables and components at build time.
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1170'>GAUDI-1170</a>] -         replace the custom target unsafe-install with standard install/fast
 </li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1111'>GAUDI-1111</a>] -         remove dependency on Boost from GaudiPluginService
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1202'>GAUDI-1202</a>] -         remove references to GCCXML
 </li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1112'>GAUDI-1112</a>] -         remove RootOnTes from GaudiCommon
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1211'>GAUDI-1211</a>] -         Build with local externals
 </li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1124'>GAUDI-1124</a>] -         remove use of &quot;#pragma once&quot;
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1215'>GAUDI-1215</a>] -         modify the CMake configuration framework to work without package versions
 </li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1128'>GAUDI-1128</a>] -         change IInspector enum names
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1216'>GAUDI-1216</a>] -         remove CMT configuration files
 </li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1130'>GAUDI-1130</a>] -         fixes to support native build on Ubuntu 15.10
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1225'>GAUDI-1225</a>] -         produce deprecation warnings for endreq and messageService
 </li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1153'>GAUDI-1153</a>] -         fixes to prepare_gaudi_release.py
+</ul>
+
+<h2>        Improvement
+</h2>
+<ul>
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1077'>GAUDI-1077</a>] -         hide compile time warnings from Boost declaring those headers as &quot;system headers&quot;
 </li>
-<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1169'>GAUDI-1169</a>] -         Change LCG version to 83
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1221'>GAUDI-1221</a>] -         ZipPythonDir.py crashes if there is not python directory in InstallArea
+</li>
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1247'>GAUDI-1247</a>] -         modify cmake Makefile wrapper to use &quot;cmake --build&quot; instead of make or ninja
+</li>
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1263'>GAUDI-1263</a>] -         Drop deprecated test schedulers
+</li>
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1267'>GAUDI-1267</a>] -         do not enforce version numbers of used projects
+</li>
+</ul>
+
+<h2>        Question
+</h2>
+<ul>
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1187'>GAUDI-1187</a>] -         Should I make GaudiParallelizer&#39;s destructor noexcept ?
 </li>
 </ul>
 
 <hr/>
-<a href="release.notes.v26.html">Older versions</a>
+<a href="release.notes.v27.html">Older versions</a>
 </body>
 </html>

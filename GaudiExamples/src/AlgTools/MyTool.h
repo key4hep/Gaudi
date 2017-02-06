@@ -11,30 +11,29 @@
  *  @author Pere Mato
  *  @date   14/10/2001
  */
-class MyTool : public extends<AlgTool,
-                              IMyTool> {
+class MyTool : public extends<AlgTool, IMyTool>
+{
 public:
-
   /// Standard Constructor
-  MyTool(const std::string& type,
-                const std::string& name,
-                const IInterface* parent);
+  using extends::extends;
 
   /// IMyTool interface
-  virtual const std::string&  message() const;
-  virtual void  doIt();
+  const std::string& message() const override;
+  void doIt() const override;
+
   /// Overriding initialize and finalize
-  virtual StatusCode initialize();
-  virtual StatusCode finalize();
+  StatusCode initialize() override;
+  StatusCode finalize() override;
 
 protected:
   /// Standard destructor
-   virtual ~MyTool( );
+   ~MyTool() override;
+
 private:
   /// Properties
-  int          m_int;
-  double       m_double;
-  std::string  m_string;
-  bool         m_bool;
- };
+  Gaudi::Property<int> m_int{this, "Int", 100};
+  Gaudi::Property<double> m_double{this, "Double", 100.};
+  Gaudi::Property<std::string> m_string{this, "String", "hundred"};
+  Gaudi::Property<bool> m_bool{this, "Bool", true};
+};
 #endif // GAUDIEXANMPLES_MYTOOL_H

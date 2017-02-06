@@ -11,12 +11,14 @@
 #include "Axis.h"
 #include "TFile.h"
 
-
-#ifdef __clang__
-#pragma clang diagnostic push
 // Hide warning message:
 // warning: 'XYZ' overrides a member function but is not marked 'override'
+#ifdef __clang__
+#pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Winconsistent-missing-override"
+#elif defined(__GNUC__) && __GNUC__ >= 5
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsuggest-override"
 #endif
 
 namespace Gaudi {
@@ -127,7 +129,7 @@ namespace Gaudi {
     // overwrite reset
     bool  reset (  ) override;
     /// Introspection method
-    void * cast(const std::string & className) const;
+    void * cast(const std::string & className) const override;
     /// The AIDA user-level unterface leaf class type
     const std::string& userLevelClassType() const { return m_classType; }
     /// Get the Histogram's dimension.
@@ -366,6 +368,8 @@ namespace Gaudi {
 
 #ifdef __clang__
 #pragma clang diagnostic pop
+#elif defined(__GNUC__) && __GNUC__ >= 5
+#pragma GCC diagnostic pop
 #endif
 
 #endif // GAUDIPI_GENERIC2D_H

@@ -14,7 +14,7 @@ endif()
 # Find ROOTSYS
 #  We assume TROOT.h is in $ROOTSYS/include
 if(NOT ROOT_INCLUDE_DIR)
-  find_path(ROOT_INCLUDE_DIR TROOT.h
+  find_path(ROOT_INCLUDE_DIR NAMES TROOT.h
             HINTS ${ROOTSYS}/include $ENV{ROOTSYS}/include
             PATH_SUFFIXES root root/include
             ${ROOT_OVERRIDE_PATH})
@@ -31,7 +31,7 @@ endif()
 
 set(ROOT_INCLUDE_DIRS ${ROOT_INCLUDE_DIR})
 
-if(NOT ROOT_VERSION_STRING)
+if(NOT ROOT_VERSION_STRING AND ROOT_INCLUDE_DIR)
   file(STRINGS ${ROOT_INCLUDE_DIR}/RVersion.h _RVersion REGEX "define *ROOT_RELEASE ")
   string(REGEX MATCH "\"(([0-9]+)\\.([0-9]+)/([0-9]+)([a-z]*|-rc[0-9]+))\"" _RVersion ${_RVersion})
   set(ROOT_VERSION_STRING ${CMAKE_MATCH_1} CACHE INTERNAL "Version of ROOT")

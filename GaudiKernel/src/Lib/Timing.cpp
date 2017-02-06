@@ -77,20 +77,19 @@ longlong System::tickCount()    {
 
 /// Retrieve current system time
 longlong System::currentTime(TimeType typ)    {
-  longlong current = 0;
-#ifdef _WIN32
-  ::GetSystemTimeAsFileTime((FILETIME*)&current);
-  current -= UNIX_BASE_TIME;
-#else
-  struct timeval tv;
-  struct timezone tz;
-  ::gettimeofday(&tv, &tz);
-  current  = tv.tv_sec;
-  current *= 1000000;
-  current += tv.tv_usec;
-  current *= 10;
-#endif
-  return adjustTime(typ, current);
+  switch( typ )   {
+  case Year    :  return currentTime<Year    >();
+  case Month   :  return currentTime<Month   >();
+  case Day     :  return currentTime<Day     >();
+  case Hour    :  return currentTime<Hour    >();
+  case Min     :  return currentTime<Min     >();
+  case Sec     :  return currentTime<Sec     >();
+  case milliSec:  return currentTime<milliSec>();
+  case microSec:  return currentTime<microSec>();
+  case nanoSec :  return currentTime<nanoSec >();
+  case Native  :  return currentTime<Native  >();
+  }
+  return currentTime<Native>();
 }
 
 /// Units of time since system startup and begin of epoche
@@ -180,8 +179,10 @@ namespace System {
     if (getProcess()->query(pid, Times, &info)) {
       return ProcessTime(info.KernelTime,
                          info.UserTime,
-                         currentTime(Native) - info.CreateTime);
+                         currentTime<Native>() - info.CreateTime);
     }
     return ProcessTime(); // return 0s in case of problems
   }
 }
+
+

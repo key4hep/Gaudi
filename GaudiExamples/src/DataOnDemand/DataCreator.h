@@ -8,17 +8,19 @@
     Trivial Algorithm for test purposes
     @author nobody
 */
-class DataCreator : public GaudiAlgorithm {
+class DataCreator : public GaudiAlgorithm
+{
 public:
   /// Constructor of this form must be provided
-  DataCreator(const std::string& name, ISvcLocator* pSvcLocator); 
+  using GaudiAlgorithm::GaudiAlgorithm;
 
   /// Three mandatory member functions of any algorithm
-  StatusCode initialize();
-  StatusCode execute();
-  StatusCode finalize();
+  StatusCode initialize() override;
+  StatusCode execute() override;
+  StatusCode finalize() override;
+
 private:
-  std::string m_data;
+  Gaudi::Property<std::string> m_data{this, "Data", "/Event/Unknown"};
 };
 
-#endif    // GAUDIEXAMPLE_HELLOWORLD_H
+#endif // GAUDIEXAMPLE_HELLOWORLD_H

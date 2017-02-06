@@ -2,6 +2,115 @@ Package : ParticleProp
 Package manager : Charles Leggett
 Commit Id: $Format:%H$
 
+================================ Gaudi v28r1 =================================
+
+! 2016-12-14 - Attila Krasznahorkay (commit a42ff2a)
+
+ - CMake configuration changes to build Gaudi with optional externals missing
+
+   In the last days I experimented a bit with teaching Gaudi how to build when
+   only ROOT, Boost and TBB are available to it. This is the result. As far as I
+   can tell the code builds in the same way as the current master branch when
+   all possible externals are available. (All the ones available in a full ATLAS
+   offline build at least.) And I'm also able to build the project in these
+   modes:
+     * On Ubuntu 16.04 with the system provided Boost and TBB versions, against
+   a privately built ROOT 6 version.
+     * On macOS Sierra against privately built Boost, ROOT and TBB versions.
+   Both when building the project completely on its own, and when building it
+   against an ATLAS externals project.
+    Some notes:
+     * The code uses C++14 expressions in quite a few places by now. So I raised
+   the default C++ standard to C++14. This is the default in ATLAS builds since
+   a while, I only saw this as an issue when building Gaudi "on its own" with a
+   very minimal configuration command.
+     * While the code advertises that it still has support for ROOT 5, it's not
+   able to build against it since a wile. Since the updates I put in for TLS
+   variables on macOS. (The macros used there are ROOT 6 only.) And this update
+   makes things even worse. As the code now relies on not providing the
+   definition of some classes to the dictionary generator in GaudiPython that
+   are not available. (Because AIDA or XercesC is missing.) While ROOT 6 handles
+   this with just a build warning, ROOT 5's genreflex treats this with an ERROR
+   message. That I was unable to get rid of.
+    So, extended testing is clearly necessary, the configuration code could
+   definitely be fine tuned as I probably turned off the build of more source
+   files than absolutely necessary, but I think we should move ahead with such a
+   configuration organisation.
+    See merge request !241
+
+================================ Gaudi v28r0 =================================
+
+! 2016-10-28 - Marco Clemencic (commit 7a372bb)
+
+ - fixed a few compilation warnings
+
+   See merge request !221
+
+! 2016-10-27 - Gerhard Raven, Marco Clemencic (commit b111898)
+
+ - modernization of Property
+
+   This is a major rewrite of the system of `Property` classes. Started as  the
+   implementation of GAUDI-1214, it continued as a review of
+   `IProperty` and `PropertyMgr`, to end up in a complete rewrite
+   (and optimization) of `PropertyWithValue`.
+
+   * Fixes GAUDI-1214
+    - added missing `declareProperty` signature
+    - added `PropertyHolder` (an updated `PropertyMgr`)
+    - adapted all properties in Gaudi
+   * improved use of `PropertyHolder`
+    - use inheritance instead of composition
+    - removed ~200 (duplicated) lines of code in GaudiKernel
+   * optimization of Property (fixes GAUDI-1229)
+    - use templates and automatic code generation to handle efficiently
+      both value and reference properties
+      - avoid creation of values on the heap (see GAUDI-1229)
+      - removed the *owned* boolean flag
+      - improved usability of properties (e.g. begin/end wrappers for
+        C++11 loops, increment/decrement operators...)
+      - deprecated use of C arrays as properties
+    - merged features of `PropertyWithVerifier`, `SimpleProperty` and
+      `SimplePropertyRef` into `PropertyWithValue`
+    - deduplication of name and doc strings via
+
+   [`boost::string_ref`](http://www.boost.org/doc/libs/1_61_0/libs/utility/doc/html/string_ref.html)
+
+      and a static storage  (see GAUDI-1229)
+   * Fixes GAUDI-1205
+   * add deprecation warnings in service accessors of `Algorithm` (@graven)
+   * renamed `Property` base class to `Gaudi::Details::PropertyBase` and
+   `PropertyWithValue` to `Gaudi::Property`
+    - added backward compatibility type aliases (but not compatible with
+      forward declarations of `class Property`, which should be replaced
+      by `#include "GaudiKernel/PropertyFwd.h"`)
+   * added macro `GAUDI_PROPERTY_v2` to allow easy implementation of
+    backward compatible changes in derived projects (e.g. when user code
+    relied on `DoubleProperty` having a verifier)
+   * Fixes GAUDI-1268
+    The changes are as backward compatible as much as possible (except if you
+   explicitly inherit from `SimpleProperty`, or you forward declared
+   `class Property`, which now are typedefs), but must be validated in the
+   experiment frameworks.
+    See merge request !182
+
+! 2016-10-12 - Marco Clemencic (commit b5e05a1)
+
+ - improved handling of package version in CMake configuration
+
+   use project version if a package version is not provided
+    See GAUDI-1215.
+    See merge request !175
+
+! 2016-07-25 - Marco Clemencic (commit e3d4b07)
+
+ - remove CMT configuration and related files
+
+   * removed CMT configuration files
+   * adapted scripts not to use CMT
+    Fixes GAUDI-1216 Fixes GAUDI-979
+    See merge request !186
+
 ============================== PartPropSvc v7r1 ==============================
 
 ! 2016-03-10 - commit 4a18175

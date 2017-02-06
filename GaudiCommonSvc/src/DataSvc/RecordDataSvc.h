@@ -2,9 +2,8 @@
 #define DATASVC_RECORDDATASVC_H
 
 #include "GaudiKernel/DataSvc.h"
-#include "GaudiKernel/IIncidentListener.h"
 #include "GaudiKernel/IConversionSvc.h"
-
+#include "GaudiKernel/IIncidentListener.h"
 
 /** @class RecordDataSvc RecordDataSvc.h
  *
@@ -22,37 +21,36 @@
  *   @author  M.Frank
  *   @version 1.0
  */
-class RecordDataSvc  : public extends<DataSvc,
-                                      IIncidentListener> {
- public:
+class RecordDataSvc : public extends<DataSvc, IIncidentListener>
+{
+public:
   StatusCode initialize() override;
   StatusCode finalize() override;
 
   /// IIncidentListener override: Inform that a new incident has occured
-  void handle(const Incident& incident) override;
+  void handle( const Incident& incident ) override;
 
   /// Standard Constructor
-  RecordDataSvc(const std::string& name, ISvcLocator* svc);
+  RecordDataSvc( const std::string& name, ISvcLocator* svc );
 
   /// Standard Destructor
   ~RecordDataSvc() override = default;
 
- protected:
+protected:
   /// Load new record into the data store if necessary
-  void registerRecord(const std::string& data, IOpaqueAddress* pAddr);
+  void registerRecord( const std::string& data, IOpaqueAddress* pAddr );
 
   /// Load dependent records into memory
-  void loadRecords(IRegistry* pReg);
+  void loadRecords( IRegistry* pReg );
 
- protected:
-  /// Property: autoload of records (default: true)
-  bool            m_autoLoad;
-  ///Property:  name of incident to be fired if new record arrives
-  std::string     m_incidentName;
-  /// Property: name of the "save" incident
-  std::string     m_saveIncidentName;
-  /// Property: name of the persistency service
-  std::string     m_persSvcName;
+protected:
+  Gaudi::Property<bool> m_autoLoad{this, "AutoLoad", true, "autoload of records"};
+  Gaudi::Property<std::string> m_incidentName{this, "IncidentName", "",
+                                              "name of incident to be fired if new record arrives"};
+  Gaudi::Property<std::string> m_saveIncidentName{this, "SaveIncident", "SAVE_RECORD", "name of the 'save' incident"};
+  Gaudi::Property<std::string> m_persSvcName{this, "PersistencySvc", "PersistencySvc/RecordPersistencySvc",
+                                             "name of the persistency service"};
+
   /// Pending new file incidents
   std::vector<std::string> m_incidents;
   /// Reference to the main data conversion service

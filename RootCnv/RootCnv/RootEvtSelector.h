@@ -17,13 +17,14 @@
 #define GAUDIROOTCNV_ROOTEVTSELECTOR_H 1
 
 // Framework include files
-#include "GaudiKernel/Service.h"
 #include "GaudiKernel/IEvtSelector.h"
+#include "GaudiKernel/Service.h"
 
 /*
  *  Gaudi namespace declaration
  */
-namespace Gaudi {
+namespace Gaudi
+{
 
   // Forward declarations
   class RootCnvSvc;
@@ -36,50 +37,50 @@ namespace Gaudi {
    *  @version 1.0
    *  @date    20/12/2009
    */
-  class GAUDI_API RootEvtSelector : public extends<Service,
-                                                   IEvtSelector> {
+  class GAUDI_API RootEvtSelector : public extends<Service, IEvtSelector>
+  {
 
     /// Helper method to issue error messages
-    StatusCode error(const std::string& msg)  const;
-  public:
+    StatusCode error( const std::string& msg ) const;
 
+  public:
     /// Service Constructor
-    RootEvtSelector(const std::string& name, ISvcLocator* svcloc);
+    using extends::extends;
 
     /// Standard destructor
-    virtual ~RootEvtSelector() = default;
+    ~RootEvtSelector() override = default;
 
     /// IService implementation: Db event selector override
-    virtual StatusCode initialize();
+    StatusCode initialize() override;
 
     /// IService implementation: Service finalization
-    virtual StatusCode finalize();
+    StatusCode finalize() override;
 
     /// Create a new event loop context
     /** @param refpCtxt   [IN/OUT]  Reference to pointer to store the context
      *
      * @return StatusCode indicating success or failure
      */
-    virtual StatusCode createContext(Context*& refpCtxt) const;
+    StatusCode createContext( Context*& refpCtxt ) const override;
 
     /** Access last item in the iteration
      * @param refContext [IN/OUT] Reference to the Context object.
      */
-    virtual StatusCode last(Context& refContext) const;
+    StatusCode last( Context& refContext ) const override;
 
     /// Get next iteration item from the event loop context
     /** @param refCtxt   [IN/OUT]  Reference to the context
      *
      * @return StatusCode indicating success or failure
      */
-    virtual StatusCode next(Context& refCtxt) const;
+    StatusCode next( Context& refCtxt ) const override;
 
     /// Get next iteration item from the event loop context, but skip jump elements
     /** @param refCtxt   [IN/OUT]  Reference to the context
      *
      * @return StatusCode indicating success or failure
      */
-    virtual StatusCode next(Context& refCtxt,int jump) const;
+    StatusCode next( Context& refCtxt, int jump ) const override;
 
     /// Get previous iteration item from the event loop context
     /** @param refCtxt   [IN/OUT]  Reference to the context
@@ -87,7 +88,7 @@ namespace Gaudi {
      *
      * @return StatusCode indicating success or failure
      */
-    virtual StatusCode previous(Context& refCtxt) const;
+    StatusCode previous( Context& refCtxt ) const override;
 
     /// Get previous iteration item from the event loop context, but skip jump elements
     /** @param refCtxt   [IN/OUT]  Reference to the context
@@ -95,28 +96,28 @@ namespace Gaudi {
      *
      * @return StatusCode indicating success or failure
      */
-    virtual StatusCode previous(Context& refCtxt,int jump) const;
+    StatusCode previous( Context& refCtxt, int jump ) const override;
 
     /// Rewind the dataset
     /** @param refCtxt   [IN/OUT]  Reference to the context
      *
      * @return StatusCode indicating success or failure
      */
-    virtual StatusCode rewind(Context& refCtxt) const;
+    StatusCode rewind( Context& refCtxt ) const override;
 
     /// Create new Opaque address corresponding to the current record
     /** @param refCtxt   [IN/OUT]  Reference to the context
      *
      * @return StatusCode indicating success or failure
      */
-    virtual StatusCode createAddress(const Context& refCtxt, IOpaqueAddress*&) const;
+    StatusCode createAddress( const Context& refCtxt, IOpaqueAddress*& ) const override;
 
     /// Release existing event iteration context
     /** @param refCtxt   [IN/OUT]  Reference to the context
      *
      * @return StatusCode indicating success or failure
      */
-    virtual StatusCode releaseContext(Context*& refCtxt) const;
+    StatusCode releaseContext( Context*& refCtxt ) const override;
 
     /** Will set a new criteria for the selection of the next list of events and will change
      *  the state of the context in a way to point to the new list.
@@ -124,23 +125,25 @@ namespace Gaudi {
      * @param cr The new criteria string.
      * @param c Reference pointer to the Context object.
      */
-    virtual StatusCode resetCriteria(const std::string& cr,Context& c)const;
+    StatusCode resetCriteria( const std::string& cr, Context& c ) const override;
+
   protected:
     // Data Members
     /// Reference to the corresponding conversion service
-    mutable RootCnvSvc*             m_dbMgr;
+    mutable RootCnvSvc* m_dbMgr;
     /// Class id of root node to create opaque address
-    CLID                            m_rootCLID;
-    /// Property; Name of the persistency service to search for conversion service.
-    std::string                     m_persName;
+    CLID m_rootCLID = CLID_NULL;
+
+    Gaudi::Property<std::string> m_persName{this, "EvtPersistencySvc", "EventPersistencySvc",
+                                            "Name of the persistency service to search for conversion service"};
+    Gaudi::Property<std::string> m_dummy{this, "DbType", "", "dummy property to fake backwards compatibility"};
+
     /// Property; Name of the concversion service used to create opaque addresses
-    std::string                     m_cnvSvcName;
+    std::string m_cnvSvcName = "Gaudi::RootCnvSvc/RootCnvSvc";
     /// Property: Name of the ROOT entry name
-    std::string                     m_rootName;
+    std::string m_rootName;
     /// Property: File criteria to define item iteration
-    std::string                     m_criteria;
-    /// Property: dummy to fake backwards compatibility
-    std::string                     m_dummy;
+    std::string m_criteria;
   };
 }
-#endif  // GAUDIROOTCNV_ROOTEVTSELECTOR_H
+#endif // GAUDIROOTCNV_ROOTEVTSELECTOR_H

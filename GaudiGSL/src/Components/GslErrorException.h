@@ -6,8 +6,8 @@
 // from GaudiKernel
 #include "GaudiKernel/AlgTool.h"
 // from GaudiGSL
-#include "GaudiGSL/IGslErrorHandler.h"
 #include "GaudiGSL/GslError.h"
+#include "GaudiGSL/IGslErrorHandler.h"
 // forward declaration
 
 /** @class GslErrorException GslErrorException.h
@@ -23,10 +23,9 @@
  *  @date   30/04/2002
  */
 
-class GslErrorException: public extends<AlgTool,
-                                        IGslErrorHandler> {
+class GslErrorException : public extends<AlgTool, IGslErrorHandler>
+{
 public:
-
   /** handle the GSL error
    *  @see IGslErrorHandler
    *  @param error  error to be handled
@@ -35,24 +34,14 @@ public:
    */
   StatusCode handle( const GslError& error ) const override;
 
-  /** Standard constructor
-   *  @param type   tool type (?)
-   *  @param name   tool name
-   *  @param parent pointer to parent
-   */
-  GslErrorException
-  ( const std::string& type   ,
-    const std::string& name   ,
-    const IInterface*  parent );
+  /// Inherited constructor
+  using extends::extends;
 
   /// destructor (protected and virtual)
-  ~GslErrorException( ) override = default;
+  ~GslErrorException() override = default;
 
 private:
-
-  /// codes to be ignored:
-  std::vector<int>    m_ignore ;
-
+  Gaudi::Property<std::vector<int>> m_ignore{this, "IgnoreCodes", {}, "codes to be ignored"};
 };
 
 // ============================================================================

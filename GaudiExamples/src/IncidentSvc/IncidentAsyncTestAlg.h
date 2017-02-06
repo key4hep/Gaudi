@@ -2,32 +2,32 @@
 #define GAUDIEXAMPLES_INCIDENTASYNCTESTALG_H_
 
 #include "GaudiKernel/Algorithm.h"
+#include "GaudiKernel/DataObjectHandle.h"
 #include <memory>
 
 class IIncidentSvc;
 class IncidentListener;
 class IIncidentAsyncTestSvc;
 
-class IncidentAsyncTestAlg: public Algorithm
+class IncidentAsyncTestAlg : public Algorithm
 {
 public:
-  IncidentAsyncTestAlg(const std::string& name ,
-		       ISvcLocator*       pSvcLocator );
-  ~IncidentAsyncTestAlg() override;
-  
+  using Algorithm::Algorithm;
+
   StatusCode initialize() override;
   StatusCode execute() override;
   StatusCode finalize() override;
-  
-  static std::string &incident();
-  
+
+  static std::string& incident();
+
 private:
-  std::string m_serviceName;
+  Gaudi::Property<std::string> m_serviceName{this, "ServiceName", "IncTestSvc"};
+  Gaudi::Property<std::vector<std::string>> m_inpKeys{this, "inpKeys"};
+  Gaudi::Property<std::vector<std::string>> m_outKeys{this, "outKeys"};
   SmartIF<IIncidentAsyncTestSvc> m_service;
-  std::vector<std::string> m_inpKeys, m_outKeys;
-  std::vector<DataObjectHandle<DataObject> *> m_inputObjHandles;
-  std::vector<DataObjectHandle<DataObject> *> m_outputObjHandles;
-  
+  std::vector<std::unique_ptr<DataObjectHandle<DataObject>>> m_inputObjHandles;
+  std::vector<std::unique_ptr<DataObjectHandle<DataObject>>> m_outputObjHandles;
+
 };
 
 #endif /*GAUDIEXAMPLES_INCIDENTREGISTRYTESTALG_H_*/

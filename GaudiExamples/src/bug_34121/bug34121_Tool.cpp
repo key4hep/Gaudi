@@ -1,90 +1,66 @@
 // Framework include files
-#include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/GaudiException.h"
+#include "GaudiKernel/MsgStream.h"
 
-#include "GaudiKernel/AlgTool.h"
 #include "../AlgTools/IMyTool.h"
+#include "GaudiKernel/AlgTool.h"
 
 // Accessing data:
 #include "GaudiKernel/PhysicalConstants.h"
 
-namespace bug_34121 {
+namespace bug_34121
+{ // see https://its.cern.ch/jira/browse/GAUDI-200
 
-// Tool example
-class Tool : public AlgTool,
-                      virtual public IMyTool {
-public:
+  // Tool example
+  class Tool : public extends<AlgTool, IMyTool>
+  {
+  public:
+    /// Standard Constructor
+    using extends::extends;
 
-  /// Standard Constructor
-  Tool(const std::string& type,
-                const std::string& name,
-                const IInterface* parent);
+    /// IMyTool interface
+    const std::string& message() const override;
+    void doIt() const override;
+    /// Overriding initialize and finalize
+    StatusCode initialize() override;
+    StatusCode finalize() override;
 
-  /// IMyTool interface
-  virtual const std::string&  message() const;
-  virtual void  doIt();
-  /// Overriding initialize and finalize
-  virtual StatusCode initialize();
-  virtual StatusCode finalize();
+  private:
+    /// Properties
+    Gaudi::Property<double> m_double{this, "Double", 100.};
+  };
 
-protected:
-  /// Standard destructor
-  virtual ~Tool( );
+  //------------------------------------------------------------------------------
+  const std::string& Tool::message() const
+  //------------------------------------------------------------------------------
+  {
+    static const std::string msg( "It works!!!" );
+    return msg;
+  }
 
-private:
-  /// Properties
-  double       m_double;
-};
+  //------------------------------------------------------------------------------
+  void Tool::doIt() const
+  //------------------------------------------------------------------------------
+  {
+    info() << "Double = " << m_double.value() << endmsg;
+  }
 
-//------------------------------------------------------------------------------
-Tool::Tool( const std::string& type,
-                              const std::string& name,
-                              const IInterface* parent )
-//------------------------------------------------------------------------------
-: AlgTool( type, name, parent ) {
+  //------------------------------------------------------------------------------
+  StatusCode Tool::initialize()
+  //------------------------------------------------------------------------------
+  {
+    info() << "Initialize" << endmsg;
+    info() << "Double = " << m_double.value() << endmsg;
+    return StatusCode::SUCCESS;
+  }
+  //------------------------------------------------------------------------------
+  StatusCode Tool::finalize()
+  //------------------------------------------------------------------------------
+  {
+    info() << "Finalize" << endmsg;
+    return StatusCode::SUCCESS;
+  }
 
-  // declare my special interface
-  declareInterface<IMyTool>(this);
-
-  // declare properties
-  declareProperty( "Double", m_double = 100.);
-}
-
-//------------------------------------------------------------------------------
-const std::string&  Tool::message() const
-//------------------------------------------------------------------------------
-{
-  static const std::string msg("It works!!!");
-  return msg;
-}
-
-//------------------------------------------------------------------------------
-void  Tool::doIt()
-//------------------------------------------------------------------------------
-{
-  info() << "Double = " << m_double << endmsg;
-}
-
-//------------------------------------------------------------------------------
-StatusCode  Tool::initialize()
-//------------------------------------------------------------------------------
-{
-  info() << "Initialize" << endmsg;
-  info() << "Double = " << m_double << endmsg;
-  return StatusCode::SUCCESS;
-}
-//------------------------------------------------------------------------------
-StatusCode  Tool::finalize()
-//------------------------------------------------------------------------------
-{
-  info() << "Finalize" << endmsg;
-  return StatusCode::SUCCESS;
-}
-
-//------------------------------------------------------------------------------
-Tool::~Tool( ) {}
-//------------------------------------------------------------------------------
-
-// Declaration of the AlgTool Factory
-DECLARE_COMPONENT(Tool)
+  // Declaration of the AlgTool Factory
+  DECLARE_COMPONENT( Tool )
 } // namespace bug_34121

@@ -734,9 +734,6 @@ public:
     const std::string& parentDir,
     const std::string& subDir  ) = 0;
 
-  /// virtual destructor
-  virtual ~IHistogramSvc() = default;
-
   /// Avoids a compiler warning about hidden functions.
   using IDataProviderSvc::registerObject;
   using IDataProviderSvc::unregisterObject;

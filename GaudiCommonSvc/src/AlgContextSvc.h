@@ -6,11 +6,11 @@
 // ============================================================================
 // GaudiKernel
 // ============================================================================
-#include "GaudiKernel/StatusCode.h"
 #include "GaudiKernel/IAlgContextSvc.h"
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/IIncidentListener.h"
 #include "GaudiKernel/Service.h"
+#include "GaudiKernel/StatusCode.h"
 #include <boost/thread.hpp>
 // ============================================================================
 // Forward declarations
@@ -25,52 +25,49 @@ class IIncidentSvc;
  *  @author incident listening  removed by Benedikt Hegner
  *  @date 2007-03-07 (modified)
  */
-class AlgContextSvc: public extends<Service,
-                                    IAlgContextSvc,
-                                    IIncidentListener>
+class AlgContextSvc : public extends<Service, IAlgContextSvc, IIncidentListener>
 {
 public:
   /// set     the currently executing algorithm  ("push_back") @see IAlgContextSvc
-  StatusCode     setCurrentAlg  ( IAlgorithm* a )  override ;
+  StatusCode setCurrentAlg( IAlgorithm* a ) override;
   /// remove the algorithm                       ("pop_back") @see IAlgContextSvc
-  StatusCode   unSetCurrentAlg  ( IAlgorithm* a )  override ;
+  StatusCode unSetCurrentAlg( IAlgorithm* a ) override;
   /// accessor to current algorithm: @see IAlgContextSvc
-  IAlgorithm*       currentAlg  () const  override ;
+  IAlgorithm* currentAlg() const override;
   /// get the stack of executed algorithms @see IAlgContextSvc
-  const IAlgContextSvc::Algorithms& algorithms  () const override
-  { return *m_algorithms ; }
+  const IAlgContextSvc::Algorithms& algorithms() const override { return *m_algorithms; }
 public:
   /// handle incident @see IIncidentListener
-  void handle ( const Incident& ) override;
+  void handle( const Incident& ) override;
+
 public:
   /// standard initialization of the service @see IService
-  StatusCode initialize () override;
+  StatusCode initialize() override;
   /// standard finalization  of the service  @see IService
-  StatusCode finalize   () override;
+  StatusCode finalize() override;
+
 public:
-  /// Standard Constructor @see Service
-  AlgContextSvc
-  ( const std::string& name ,
-    ISvcLocator*       svc  ) ;
+  using extends::extends;
   /// Standard Destructor
   ~AlgContextSvc() override = default;
+
 private:
   // default/copy constructor & asignment are deleted
-  AlgContextSvc () = delete  ;
-  AlgContextSvc ( const AlgContextSvc& ) = delete ;
+  AlgContextSvc()                       = delete;
+  AlgContextSvc( const AlgContextSvc& ) = delete;
   AlgContextSvc& operator=( const AlgContextSvc& ) = delete;
+
 private:
   // the stack of current algorithms
   boost::thread_specific_ptr<IAlgContextSvc::Algorithms> m_algorithms; ///< the stack of current algorithms
   // pointer to Incident Service
-  SmartIF<IIncidentSvc>     m_inc      = nullptr  ; ///< pointer to Incident Service
-  // flag to perform more checking
-  bool                       m_check    = true   ;
-} ;
+  SmartIF<IIncidentSvc> m_inc = nullptr; ///< pointer to Incident Service
+
+  Gaudi::Property<bool> m_check{this, "Check", true, "Flag to perform more checks"};
+};
 
 // ============================================================================
 // The END
 // ============================================================================
 #endif // GAUDISVC_ALGCONTEXTSVC_H
 // ============================================================================
-

@@ -1,4 +1,3 @@
-// $Id: IHiveWhiteBoard.h,v 1.1 2004/07/06 10:17:40 mato Exp $
 #ifndef GAUDIKERNEL_IHIVEWHITEBOARD_H
 #define GAUDIKERNEL_IHIVEWHITEBOARD_H
 
@@ -46,7 +45,7 @@ public:
    * 
    * @return Number of event stores allocated in the whiteboard
    */
-  virtual size_t getNumberOfStores() = 0;
+  virtual size_t getNumberOfStores() const = 0;
   
   /** Get the latest new data objects registred in store.
    *

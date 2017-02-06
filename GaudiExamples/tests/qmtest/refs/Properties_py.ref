@@ -1,11 +1,12 @@
-# --> Including file '/afs/cern.ch/work/l/leggett/GaudiSrc/hive/git/DataObjID/Gaudi.3/GaudiExamples/options/Properties.py'
-# --> Including file '/afs/cern.ch/work/l/leggett/GaudiSrc/hive/git/DataObjID/Gaudi.3/GaudiExamples/options/optsub1/dummy1.opts'
+# setting LC_ALL to "C"
+# --> Including file '/home/marcocle/Devel/workspace/Gaudi/GaudiExamples/options/Properties.py'
+# --> Including file '/home/marcocle/Devel/workspace/Gaudi/GaudiExamples/options/optsub1/dummy1.opts'
 # Dummy1.Property=true;
-# --> Including file '/afs/cern.ch/work/l/leggett/GaudiSrc/hive/git/DataObjID/Gaudi.3/GaudiExamples/options/optsub2/dummy2.opts'
+# --> Including file '/home/marcocle/Devel/workspace/Gaudi/GaudiExamples/options/optsub2/dummy2.opts'
 # Dummy2.Property=true;
-# <-- End of file '/afs/cern.ch/work/l/leggett/GaudiSrc/hive/git/DataObjID/Gaudi.3/GaudiExamples/options/optsub2/dummy2.opts'
-# <-- End of file '/afs/cern.ch/work/l/leggett/GaudiSrc/hive/git/DataObjID/Gaudi.3/GaudiExamples/options/optsub1/dummy1.opts'
-# <-- End of file '/afs/cern.ch/work/l/leggett/GaudiSrc/hive/git/DataObjID/Gaudi.3/GaudiExamples/options/Properties.py'
+# <-- End of file '/home/marcocle/Devel/workspace/Gaudi/GaudiExamples/options/optsub2/dummy2.opts'
+# <-- End of file '/home/marcocle/Devel/workspace/Gaudi/GaudiExamples/options/optsub1/dummy1.opts'
+# <-- End of file '/home/marcocle/Devel/workspace/Gaudi/GaudiExamples/options/Properties.py'
 # applying configuration of GaudiExamplesCommonConf
 # /***** User GaudiExamplesCommonConf/GaudiExamplesCommonConf ****************************************
 # |-OutputLevel = 3  (default: 3)
@@ -13,12 +14,11 @@
 # \----- (End of User GaudiExamplesCommonConf/GaudiExamplesCommonConf) -------------------------------
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v3r5)
-                                          running on p05614910w96644.cern.ch on Wed Oct 21 20:04:12 2015
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v4r1)
+                                          running on pclhcb117 on Fri Jun 24 17:52:46 2016
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
-EventLoopMgr        DEBUG Property update for OutputLevel : new value = 2
 EventLoopMgr        DEBUG Service base class initialized successfully
 EventLoopMgr        DEBUG Creating Top Algorithm PropertyAlg with name PropertyAlg
 PropertyAlg          INFO Before Initialization......
@@ -131,7 +131,7 @@ ApplicationMgr       INFO Application Manager Initialized successfully
 ApplicationMgr       INFO Application Manager Started successfully
 PropertyAlg          INFO executing....
 PropertyProxy        INFO executing....
-EventLoopMgr         INFO ---> Loop Finished -  WSS 51.9219 | total time (skipping 1st evt) 123471 ns
+EventLoopMgr        DEBUG ---> Loop Finished -  WSS 55.8086 | total time (skipping 1st evt) 78452 ns
 ApplicationMgr       INFO Application Manager Stopped successfully
 PropertyAlg          INFO finalizing....
 PropertyProxy        INFO finalizing....

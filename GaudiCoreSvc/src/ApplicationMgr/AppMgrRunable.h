@@ -2,8 +2,8 @@
 #define GAUDISVC_APPMGRRUNABLE_H 1
 
 // Framework includes
-#include "GaudiKernel/Service.h"
 #include "GaudiKernel/IRunable.h"
+#include "GaudiKernel/Service.h"
 
 // Forward declarations
 class IAppMgrUI;
@@ -25,17 +25,16 @@ class IAppMgrUI;
    @author Markus Frank
    @version 1.0
 */
-class AppMgrRunable : public extends<Service,
-                                     IRunable> {
+class AppMgrRunable : public extends<Service, IRunable>
+{
 protected:
   /// Reference to application manager UI
-  IAppMgrUI*    m_appMgrUI = nullptr;
-  /// Number of events to be processed
-  int           m_evtMax;
+  IAppMgrUI* m_appMgrUI = nullptr;
+  Gaudi::Property<int> m_evtMax{this, "EvtMax", 0xFEEDBABE, "number of events to be processed"};
 
 public:
-  /// Standard Constructor
-  AppMgrRunable(const std::string& nam, ISvcLocator* svcLoc);
+  /// inherit contructor
+  using extends::extends;
   /// Standard Destructor
   ~AppMgrRunable() override = default;
 

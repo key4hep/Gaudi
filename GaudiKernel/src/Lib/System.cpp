@@ -19,6 +19,8 @@
 #include <sstream>
 #include <typeinfo>
 #include <memory>
+#include <regex>
+#include <array>
 
 #include "GaudiKernel/System.h"
 #include "instrset.h"
@@ -294,11 +296,11 @@ const std::string System::getErrorString(unsigned long error)    {
   return errString;
 }
 
-const std::string System::typeinfoName( const std::type_info& tinfo) {
-  return typeinfoName(tinfo.name());
+const std::string System::typeinfoName( const std::type_info& tinfo ) {
+  return typeinfoName( tinfo.name() );
 }
 
-const std::string System::typeinfoName( const char* class_name) {
+const std::string System::typeinfoName( const char* class_name ) {
   std::string result;
 #ifdef _WIN32
   long off = 0;
@@ -335,87 +337,18 @@ const std::string System::typeinfoName( const char* class_name) {
   }
 
 #elif defined(__linux) || defined(__APPLE__)
-    if ( ::strlen(class_name) == 1 ) {
-      // See http://www.realitydiluted.com/mirrors/reality.sgi.com/dehnert_engr/cxx/abi.pdf
-      // for details
-      switch(class_name[0]) {
-      case 'v':
-        result = "void";
-        break;
-      case 'w':
-        result = "wchar_t";
-        break;
-      case 'b':
-        result = "bool";
-        break;
-      case 'c':
-        result = "char";
-        break;
-      case 'a':
-        result = "signed char";
-        break;
-      case 'h':
-        result = "unsigned char";
-        break;
-      case 's':
-        result = "short";
-        break;
-      case 't':
-        result = "unsigned short";
-        break;
-      case 'i':
-        result = "int";
-        break;
-      case 'j':
-        result = "unsigned int";
-        break;
-      case 'l':
-        result = "long";
-        break;
-      case 'm':
-        result = "unsigned long";
-        break;
-      case 'x':
-        result = "long long";
-        break;
-      case 'y':
-        result = "unsigned long long";
-        break;
-      case 'n':
-        result = "__int128";
-        break;
-      case 'o':
-        result = "unsigned __int128";
-        break;
-      case 'f':
-        result = "float";
-        break;
-      case 'd':
-        result = "double";
-        break;
-      case 'e':
-        result = "long double";
-        break;
-      case 'g':
-        result = "__float128";
-        break;
-      case 'z':
-        result = "ellipsis";
-        break;
-      }
-    }
-    else  {
-      int   status;
-      auto realname = std::unique_ptr<char,decltype(free)*>( abi::__cxa_demangle(class_name, nullptr, nullptr, &status), std::free );
-      if (!realname) return class_name;
-      result = std::string{realname.get()};
-      /// substitute ', ' with ','
-      std::string::size_type pos = result.find(", ");
-      while( std::string::npos != pos ) {
-        result.replace( pos , 2 , "," ) ;
-        pos = result.find(", ");
-      }
-    }
+  int   status;
+  auto realname = std::unique_ptr<char,decltype(free)*>( abi::__cxa_demangle(class_name, nullptr, nullptr, &status), std::free );
+  if (!realname) return class_name;
+#if _GLIBCXX_USE_CXX11_ABI
+  static const std::regex cxx11_string{"std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > ?"};
+  result = std::regex_replace( realname.get(), cxx11_string, "std::string" );
+#else
+  result = std::string{realname.get()};
+#endif
+  // substitute ', ' with ','
+  static const std::regex comma_space{", "};
+  result = std::regex_replace( result, comma_space, "," );
 #endif
   return result;
 }

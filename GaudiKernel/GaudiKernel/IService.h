@@ -35,9 +35,6 @@ public:
   /// Re-start the Service
   virtual StatusCode sysRestart() = 0;
 
-  /// virtual destructor
-  virtual ~IService() = default;
-
 protected:
   virtual void setServiceManager(ISvcManager*) = 0;
 };

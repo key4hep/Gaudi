@@ -21,17 +21,6 @@ using namespace std;
 namespace bf = boost::filesystem;
 
 //=============================================================================
-SequentialOutputStream::SequentialOutputStream( const string& name,
-						ISvcLocator* svc )
-: OutputStream( name, svc )
-{
-   declareProperty( "EventsPerFile", m_eventsPerFile
-		    = std::numeric_limits< unsigned int>::max() );
-   declareProperty( "NumericFilename", m_numericFilename = false );
-   declareProperty( "NumbersAdded", m_nNumbersAdded = 6 );
-}
-
-//=============================================================================
 StatusCode SequentialOutputStream::writeObjects()
 {
    try {

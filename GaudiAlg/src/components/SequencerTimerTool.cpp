@@ -30,11 +30,6 @@ DECLARE_COMPONENT(SequencerTimerTool)
 {
   declareInterface<ISequencerTimerTool>(this);
 
-  declareProperty( "shots"        , m_shots );
-  declareProperty( "Normalised"   , m_normalised = false );
-  declareProperty( "GlobalTiming" , m_globalTiming = false );
-  declareProperty( "NameSize"     , m_headerSize = 30,
-                   "Number of characters to be used in algorithm name column" );
   // Histograms are disabled by default in this tool.
   setProperty("HistoProduce", false).ignore();
 }
@@ -81,7 +76,7 @@ StatusCode SequencerTimerTool::finalize ( )
          << line << endmsg;
 
   std::string lastName;
-  for ( const auto& timr : m_timerList) 
+  for ( const auto& timr : m_timerList)
   {
     if ( lastName == timr.name() ) continue; // suppress duplicate
     lastName = timr.name();

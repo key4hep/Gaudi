@@ -13,31 +13,33 @@ DECLARE_COMPONENT(MyGaudiAlgorithm)
 //------------------------------------------------------------------------------
 MyGaudiAlgorithm::MyGaudiAlgorithm(const std::string& name, ISvcLocator* ploc)
   : GaudiAlgorithm(name, ploc),
-  m_myPrivToolHandle("MyTool/PrivToolHandle",this),
+  m_myPrivToolHandle("MyTool/PrivToolHandle", this),
   m_myPubToolHandle("MyTool/PubToolHandle"),
   m_myGenericToolHandle("MyTool/GenericToolHandle"),
   m_myUnusedToolHandle("TestToolFailing"),
-  m_tracks("/Event/Rec/Tracks",Gaudi::DataHandle::Reader, this),
-  m_hits("/Event/Rec/Hits",Gaudi::DataHandle::Reader,this),
-  m_raw("/Rec/RAW",Gaudi::DataHandle::Reader,this),
-  m_selectedTracks("/Event/MyAnalysis/Tracks",Gaudi::DataHandle::Writer,this)
+  m_myConstToolHandle("MyTool/ConstGenericToolHandle"),
+  m_tracks("/Event/Rec/Tracks", Gaudi::DataHandle::Reader, this),
+  m_hits("/Event/Rec/Hits", Gaudi::DataHandle::Reader, this),
+  m_raw("/Rec/RAW", Gaudi::DataHandle::Reader, this),
+  m_selectedTracks("/Event/MyAnalysis/Tracks", Gaudi::DataHandle::Writer, this)
  {
   //------------------------------------------------------------------------------
-  declareProperty("ToolWithName", m_privateToolType = "MyTool",
-                  "Type of the tool to use (internal name is ToolWithName)");
-  declareProperty("PrivToolHandle", m_myPrivToolHandle);
-  declareProperty("PubToolHandle", m_myPubToolHandle);
-  declareProperty("GenericToolHandle", m_myGenericToolHandle);
-  declareProperty("UnusedToolHandle", m_myUnusedToolHandle);
-
-  declareProperty("tracks", m_tracks, "the tracks");
-  declareProperty("hits", m_hits, "the hits");
-  declareProperty("raw", m_raw, "the raw stuff");
-
-  declareProperty("trackSelection", m_selectedTracks, "the selected tracks");
-
-  // declarePrivateTool(m_myPrivToolHandle, "MyTool/PrivToolHandle");
-  // declarePublicTool(m_myPubToolHandle, "MyTool/PubToolHandle");
+   m_myCopiedConstToolHandle = m_myPubToolHandle;
+   m_myCopiedToolHandle      = m_myPubToolHandle;
+   m_myCopiedConstToolHandle2 =  m_myConstToolHandle;
+   declareProperty("PrivToolHandle", m_myPrivToolHandle);
+   declareProperty("PubToolHandle", m_myPubToolHandle);
+   declareProperty("GenericToolHandle", m_myGenericToolHandle);
+   declareProperty("UnusedToolHandle", m_myUnusedToolHandle);
+   
+   declareProperty("tracks", m_tracks, "the tracks");
+   declareProperty("hits", m_hits, "the hits");
+   declareProperty("raw", m_raw, "the raw stuff");
+   
+   declareProperty("trackSelection", m_selectedTracks, "the selected tracks");
+   
+   // declarePrivateTool(m_myPrivToolHandle, "MyTool/PrivToolHandle");
+   // declarePublicTool(m_myPubToolHandle, "MyTool/PubToolHandle");
 
 }
 
@@ -58,7 +60,11 @@ StatusCode MyGaudiAlgorithm::initialize() {
   m_privateOtherInterface = tool<IMyOtherTool>("MyGaudiTool", this);
   // force initialization of tool handles
   if ( ! (m_myPrivToolHandle.retrieve() &&
+          m_myConstToolHandle.retrieve() &&
           m_myPubToolHandle.retrieve()  &&
+          m_myCopiedConstToolHandle.retrieve()  &&
+          m_myCopiedConstToolHandle2.retrieve() &&
+          m_myCopiedToolHandle.retrieve()  &&
           m_myGenericToolHandle.retrieve() ) ) {
     error() << "Unable to retrive one of the ToolHandles" << endmsg;
     return StatusCode::FAILURE;
@@ -94,6 +100,34 @@ StatusCode MyGaudiAlgorithm::execute() {
 
   m_myPrivToolHandle->doIt();
   m_myPubToolHandle->doIt();
+  m_myConstToolHandle->doIt();
+
+  info() << "tools copied assigned via ToolHandle<T>...." << endmsg;
+
+  m_myCopiedConstToolHandle->doIt();
+  m_myCopiedToolHandle->doIt();
+  m_myCopiedConstToolHandle2->doIt();
+
+  info() << "tools copied constructed via ToolHandle<T>...." << endmsg;
+
+  // copy construct some handles
+  ToolHandle<const IMyTool> h1( m_myPubToolHandle  );
+  ToolHandle<IMyTool>       h2( m_myPrivToolHandle );
+  ToolHandle<const IMyTool> h3( m_myConstToolHandle );
+  h1->doIt();
+  h2->doIt();
+  h3->doIt();
+
+  #ifdef ATLAS
+  // test nonConst enforcement
+  const ToolHandle<IMyOtherTool> hc1( m_privateOtherInterface );
+  // this should work without any warnings/errors
+  #ifdef ALLOW_TOOLHANDLE_NONCONSTNESS
+  hc1->doItAgain();
+  #endif
+  // this should cause a compile time deprecation warning
+  hc1.unConst()->doItAgain();
+  #endif
 
   return StatusCode::SUCCESS;
 }

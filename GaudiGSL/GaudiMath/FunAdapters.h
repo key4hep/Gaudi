@@ -13,6 +13,14 @@
 // ============================================================================
 #include "GaudiKernel/Kernel.h"
 
+#if defined(__clang__) || defined(__CLING__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winconsistent-missing-override"
+#elif defined(__GNUC__) && __GNUC__ >= 5
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsuggest-override"
+#endif
+
 namespace AIDA { class IFunction ; }
 
 namespace Genfun
@@ -41,18 +49,18 @@ namespace Genfun
       /// copy constructor
       AdapterIFunction ( const AdapterIFunction& );
       /// desctructor
-      virtual ~AdapterIFunction() ;
+      ~AdapterIFunction() override;
 
-      virtual double operator() ( double a          ) const ;
+      double operator() ( double a          ) const override;
 
-      virtual double operator() ( const Argument& x ) const;
+      double operator() ( const Argument& x ) const override;
 
-      virtual unsigned int dimensionality () const { return m_dim ; }
+      unsigned int dimensionality () const override { return m_dim ; }
 
       /// Does this function have an analytic derivative?
-      virtual bool  hasAnalyticDerivative() const { return true ; }
+      bool  hasAnalyticDerivative() const override { return true ; }
       /// Derivatives
-      virtual Genfun::Derivative partial( unsigned int i  ) const ;
+      Genfun::Derivative partial( unsigned int i  ) const override;
 
     private:
       AdapterIFunction();
@@ -62,6 +70,8 @@ namespace Genfun
       size_t                      m_dim ;
       mutable std::vector<double> m_arg ;
     };
+    /// mandatory macro from CLHEP/GenericFunctions
+    FUNCTION_OBJECT_IMP( AdapterIFunction )
 
     // ========================================================================
     /** @class Adapter2DoubleFunction Adapters.h GaudiMath/Adapters.h
@@ -102,18 +112,18 @@ namespace Genfun
       Adapter2DoubleFunction ( Function func );
       /// copy coinstructor
       Adapter2DoubleFunction ( const Adapter2DoubleFunction& );
-      /// virtual destructor
-      virtual ~Adapter2DoubleFunction () ;
+      /// destructor
+      ~Adapter2DoubleFunction () override;
 
-      virtual double operator() (       double    x ) const ;
+      double operator() (       double    x ) const override;
 
-      virtual double operator() ( const Argument& x ) const ;
+      double operator() ( const Argument& x ) const override;
 
-      virtual unsigned int dimensionality() const { return 2    ; }
+      unsigned int dimensionality() const override { return 2    ; }
       /// Does this function have an analytic derivative?
-      virtual bool  hasAnalyticDerivative() const { return true ; }
+      bool  hasAnalyticDerivative() const override { return true ; }
       /// Derivatives
-      virtual Genfun::Derivative partial( unsigned int i  ) const ;
+      Genfun::Derivative partial( unsigned int i  ) const override;
     public:
       double operator() ( const double x , const double y ) const ;
     private:
@@ -124,6 +134,8 @@ namespace Genfun
     private:
       Function                 m_func  ;
     };
+    /// mandatory macro from CLHEP/GenericFunctions
+    FUNCTION_OBJECT_IMP( Adapter2DoubleFunction )
 
     // ========================================================================
     /** @class Adapter3DoubleFunction Adapters.h GaudiMath/Adapters.h
@@ -166,18 +178,18 @@ namespace Genfun
       Adapter3DoubleFunction ( Function func );
       /// copy coinstructor
       Adapter3DoubleFunction ( const Adapter3DoubleFunction& );
-      /// virtual destructor
-      virtual ~Adapter3DoubleFunction () ;
+      /// destructor
+      ~Adapter3DoubleFunction () override ;
 
-      virtual double operator() (       double    x ) const ;
+      double operator() (       double    x ) const override ;
 
-      virtual double operator() ( const Argument& x ) const ;
+      double operator() ( const Argument& x ) const override ;
 
-      virtual unsigned int dimensionality() const { return 3    ; }
+      unsigned int dimensionality() const override { return 3    ; }
       /// Does this function have an analytic derivative?
-      virtual bool  hasAnalyticDerivative() const { return true ; }
+      bool  hasAnalyticDerivative() const override { return true ; }
       /// Derivatives
-      virtual Genfun::Derivative partial( unsigned int i  ) const ;
+      Genfun::Derivative partial( unsigned int i  ) const override ;
     public:
       double operator() ( const double x ,
                           const double y ,
@@ -190,6 +202,8 @@ namespace Genfun
     private:
       Function                 m_func  ;
     };
+    /// mandatory macro from CLHEP/GenericFunctions
+    FUNCTION_OBJECT_IMP( Adapter3DoubleFunction )
 
     // ========================================================================
     /** @class SimpleFunction Adapters.h GaudiMath/Adapters.h
@@ -236,19 +250,19 @@ namespace Genfun
       SimpleFunction ( const SimpleFunction& ) ;
 
       // destructor
-      virtual ~SimpleFunction() = default;
+      ~SimpleFunction() override = default;
     public:
 
       /// dimensionality of the problem
-      virtual unsigned int dimensionality         () const { return m_DIM   ; }
+      unsigned int dimensionality         () const override { return m_DIM   ; }
       /// Does this function have an analytic derivative?
-      virtual bool  hasAnalyticDerivative         () const { return true    ; }
+      bool  hasAnalyticDerivative         () const override { return true    ; }
       /// Function value
-      virtual double             operator()  ( double          ) const ;
+      double             operator()  ( double          ) const override ;
       /// Function value
-      virtual double             operator()  ( const Argument& ) const ;
+      double             operator()  ( const Argument& ) const override ;
       /// Derivatives
-      virtual Genfun::Derivative partial     ( unsigned int i  ) const ;
+      Genfun::Derivative partial     ( unsigned int i  ) const override ;
 
     private:
 
@@ -270,10 +284,17 @@ namespace Genfun
       Function3                    m_func3    ;
       mutable std::vector<double>  m_arg3     ;
     };
+    /// From CLHEP/GenericFunctions
+    FUNCTION_OBJECT_IMP( SimpleFunction )
 
   } // end of namespace GaudiMathImeplementation
 } // end of namespace Genfun
 
+#if defined(__clang__) || defined(__CLING__)
+#pragma clang diagnostic pop
+#elif defined(__GNUC__) && __GNUC__ >= 5
+#pragma GCC diagnostic pop
+#endif
 
 #endif // GAUDIMATH_FUNADAPTERS_H
 // ============================================================================

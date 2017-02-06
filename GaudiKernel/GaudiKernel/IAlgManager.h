@@ -59,26 +59,6 @@ public:
   /// Return the list of Algorithms
   virtual const std::vector<IAlgorithm*>& getAlgorithms() const = 0;
 
-#if !defined(GAUDI_V22_API) || defined(G22_NEW_SVCLOCATOR)
-  /// Initializes the list of "managed" algorithms
-  virtual StatusCode initializeAlgorithms() { return initialize(); }
-
-  /// Starts the list of "managed" algorithms
-  virtual StatusCode startAlgorithms() { return start(); }
-
-  /// Stops the list of "managed" algorithms
-  virtual StatusCode stopAlgorithms() { return stop(); }
-
-  /// Finalizes the list of "managed" algorithms
-  virtual StatusCode finalizeAlgorithms() { return finalize(); }
-
-  /// Initializes the list of "managed" algorithms
-  virtual StatusCode reinitializeAlgorithms() { return reinitialize(); }
-
-  /// Starts the list of "managed" algorithms
-  virtual StatusCode restartAlgorithms() { return restart(); }
-#endif
-
   /// Returns a smart pointer to a service.
   virtual SmartIF<IAlgorithm> &algorithm(const Gaudi::Utils::TypeNameString &typeName, const bool createIf = true) = 0;
 

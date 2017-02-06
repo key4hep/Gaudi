@@ -2,6 +2,156 @@ package GaudiPolicy
 package manager: Marco Clemencic
 Commit Id: $Format:%H$
 
+================================ Gaudi v28r1 =================================
+
+! 2016-12-07 - many contributors (commit dc1b505)
+
+ - port LHCb MT developments to Gaudi master
+
+   among others we have
+   - `Gaudi::Functional`: base classes to write algorithms as pure functions
+   - `AnyDataWrapper`/`AnyDataHandle`: helper to store any type in the Transient
+   Store (DataSvc)
+   - fixes to `DataObjectHandle`
+   - fixes to `GaudiHive`
+   - new tests and examples
+   - modernization (removed empty destructors, ...)
+    See merge request !245
+
+================================ Gaudi v28r0 =================================
+
+! 2016-11-08 - Marco Clemencic (commit 4beb4ef)
+
+ - Correctly handle special chars in CTest output
+
+   fixes LBCORE-1229
+
+   See merge request !231
+
+! 2016-11-08 - Marco Clemencic (commit ec96c27)
+
+ - cleaning up last minute glitches
+
+   - fixed warnings from clang
+   - fixed issues with ROOT 6.08
+   - minor polishing
+   - minor fixes to tests
+   - fixed GAUDI-1221
+    See merge request !230
+
+! 2016-10-27 - Gerhard Raven, Marco Clemencic (commit b111898)
+
+ - modernization of Property
+
+   This is a major rewrite of the system of `Property` classes. Started as  the
+   implementation of GAUDI-1214, it continued as a review of
+   `IProperty` and `PropertyMgr`, to end up in a complete rewrite
+   (and optimization) of `PropertyWithValue`.
+
+   * Fixes GAUDI-1214
+    - added missing `declareProperty` signature
+    - added `PropertyHolder` (an updated `PropertyMgr`)
+    - adapted all properties in Gaudi
+   * improved use of `PropertyHolder`
+    - use inheritance instead of composition
+    - removed ~200 (duplicated) lines of code in GaudiKernel
+   * optimization of Property (fixes GAUDI-1229)
+    - use templates and automatic code generation to handle efficiently
+      both value and reference properties
+      - avoid creation of values on the heap (see GAUDI-1229)
+      - removed the *owned* boolean flag
+      - improved usability of properties (e.g. begin/end wrappers for
+        C++11 loops, increment/decrement operators...)
+      - deprecated use of C arrays as properties
+    - merged features of `PropertyWithVerifier`, `SimpleProperty` and
+      `SimplePropertyRef` into `PropertyWithValue`
+    - deduplication of name and doc strings via
+
+   [`boost::string_ref`](http://www.boost.org/doc/libs/1_61_0/libs/utility/doc/html/string_ref.html)
+
+      and a static storage  (see GAUDI-1229)
+   * Fixes GAUDI-1205
+   * add deprecation warnings in service accessors of `Algorithm` (@graven)
+   * renamed `Property` base class to `Gaudi::Details::PropertyBase` and
+   `PropertyWithValue` to `Gaudi::Property`
+    - added backward compatibility type aliases (but not compatible with
+      forward declarations of `class Property`, which should be replaced
+      by `#include "GaudiKernel/PropertyFwd.h"`)
+   * added macro `GAUDI_PROPERTY_v2` to allow easy implementation of
+    backward compatible changes in derived projects (e.g. when user code
+    relied on `DoubleProperty` having a verifier)
+   * Fixes GAUDI-1268
+    The changes are as backward compatible as much as possible (except if you
+   explicitly inherit from `SimpleProperty`, or you forward declared
+   `class Property`, which now are typedefs), but must be validated in the
+   experiment frameworks.
+    See merge request !182
+
+! 2016-10-12 - Marco Clemencic (commit b5e05a1)
+
+ - improved handling of package version in CMake configuration
+
+   use project version if a package version is not provided
+    See GAUDI-1215.
+    See merge request !175
+
+! 2016-10-10 - Marco Clemencic (commit 5df4dde)
+
+ - fix tests failing after mr !178
+
+   See merge request !206
+
+! 2016-07-26 - Marco Clemencic (commit b1c2124)
+
+ - modified quick-merge to create the destination directory if missing
+
+   Fixes GAUDI-1240
+    See merge request !191
+
+! 2016-07-25 - Marco Clemencic (commit e3d4b07)
+
+ - remove CMT configuration and related files
+
+   * removed CMT configuration files
+   * adapted scripts not to use CMT
+    Fixes GAUDI-1216 Fixes GAUDI-979
+    See merge request !186
+
+! 2016-06-23 - Ben Couturier (commit 175bec5)
+
+ - Fixed manifest.xml generation for external tcmalloc for LCG >= 84
+
+   Fixed project_manifest.py to map dependency to tcmalloc (still used in CMT
+   config) to the new name of the package (gperftools). This is a temporary
+   hack needed to generate the RPM dependencies correctly.
+    See merge request !180
+
+! 2016-06-10 - Marco Clemencic (commit 79fe8bc)
+
+ - Remove references to GCCXML
+
+   Fixes GAUDI-1202
+    See merge request !148
+
+! 2016-05-18 - Sami Kama (commit 9eeef96)
+
+ - allow build of Gaudi without LCG and fix ThreadPoolSvc
+
+   Allow building of Gaudi with local externals.
+    It also contains a fix to an issue introduced with merge request !160
+   (GAUDI-1212).
+    Fixes GAUDI-1211, GAUDI-1212.
+    See merge request !166
+
+! 2016-04-14 - Marco Clemencic (commit 0873424)
+
+ - improvements to CTestXML2HTML
+
+   - added CPU info summary to test annotations (see LBCORE-869)
+   - fixed lookup of `manifest.xml`
+   - minor fixes
+    See merge request !150
+
 ============================= GaudiPolicy v15r8 ==============================
 
 ! 2016-02-15 - commit 46a5bd4

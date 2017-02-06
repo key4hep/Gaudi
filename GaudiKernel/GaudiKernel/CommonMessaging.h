@@ -21,39 +21,36 @@
  *
  */
 
-#define generate_has_( method, args )                     \
-    template <typename T, typename SFINAE = void>         \
-    struct has_ ## method : std::false_type {};           \
-    template <typename T>                                 \
-    struct has_ ## method<T, is_valid_t<decltype(std::declval<const T&>().method args)>> : std::true_type {};
-
-#define generate_add_(method, ret, args )                 \
-    template <typename Base, bool> struct add_ ## method; \
-    template <typename Base>                              \
-    struct add_ ## method <Base,false> : public Base {    \
-        using Base::Base;                                 \
-    };                                                    \
-    template <typename Base>                              \
-    struct add_ ## method <Base, true> : public Base {    \
-        using Base::Base;                                 \
-        virtual ~add_ ## method () = default;             \
-        virtual ret method args const = 0;                \
+#define generate_( method, ret, args )               \
+                                                     \
+    template <typename T, typename SFINAE = void>    \
+    struct has_ ## method : std::false_type {};      \
+    template <typename T>                            \
+    struct has_ ## method<T, is_valid_t<decltype(std::declval<const T&>().method args)>> : std::true_type {}; \
+                                                     \
+    template <typename Base>                         \
+    struct add_ ## method : public Base {            \
+        using Base::Base;                            \
+        virtual ~add_ ## method () = default;        \
+        virtual ret method args const = 0;           \
     };
 
 namespace implementation_detail {
-    template <typename> struct void_t { typedef void type; };
+    template <typename> struct void_t { using type = void; };
     template <typename T> using is_valid_t = typename void_t<T>::type;
 
-    generate_has_( name, ()  )
-    generate_add_( name, const std::string&, () )
-    generate_has_( serviceLocator, () )
-    generate_add_( serviceLocator, SmartIF<ISvcLocator>&, () )
+    generate_( name, const std::string&, () )
+    generate_( serviceLocator, SmartIF<ISvcLocator>&, () )
 }
-#undef generate_has_
-#undef generate_add_
+#undef generate_
 
-template <typename Base> using add_name = implementation_detail::add_name< Base, ! implementation_detail::has_name<Base>::value >;
-template <typename Base> using add_serviceLocator = implementation_detail::add_serviceLocator< Base, ! implementation_detail::has_serviceLocator<Base>::value >;
+template <typename Base> using add_name = typename std::conditional<implementation_detail::has_name<Base>::value,
+                                                                    Base,
+                                                                    implementation_detail::add_name< Base>>::type;
+template <typename Base> using add_serviceLocator = typename std::conditional<implementation_detail::has_serviceLocator<Base>::value,
+                                                                              Base,
+                                                                              implementation_detail::add_serviceLocator< Base>>::type;
+
 
 template <typename Base> class CommonMessaging;
 
@@ -79,9 +76,9 @@ public:
   /** The standard message service.
    *  Returns a pointer to the standard message service.
    *  (Alias to msgSvc())
-   *  \deprecated Will be removed in v28r1, see https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/80
+   *  \deprecated Will be removed in v29r0, see https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/80
    */
-  [[deprecated("will be removed in v28r1, use msgSvc() instead, see https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/80")]]
+  [[deprecated("will be removed in v29r0, use msgSvc() instead, see https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/80")]]
   inline SmartIF<IMessageSvc>& messageService() const {
     return msgSvc();
   }
@@ -188,7 +185,9 @@ protected:
   /// This function is meant to be called by the update handler of the OutputLevel property.
   void updateMsgStreamOutputLevel(int level) {
     if (level != MSG::NIL && level != m_level) {
-      msgSvc()->setOutputLevel(this->name(), level);
+      if (msgSvc()) {
+        msgSvc()->setOutputLevel(this->name(), level);
+      }
       if (m_msgStream) m_msgStream->setLevel(level);
       if (UNLIKELY(MSG::Level(level) <= MSG::DEBUG))
         debug() << "Property update for OutputLevel : new value = " << level << endmsg;

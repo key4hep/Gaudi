@@ -8,6 +8,8 @@
 
 class IAlgTool;
 class AlgResourcePool;
+class EventContext;
+
 namespace Gaudi {
   class StringKey;
 }
@@ -39,27 +41,28 @@ public:
    */
   virtual const std::string& type() const = 0;
   virtual void  setType(const std::string& ) = 0;
-  
+
   /** StringKey rep of name
    */
   virtual const Gaudi::StringKey& nameKey() const = 0;
 
   /** The index of the algorithm
-   */  
+   */
   virtual unsigned int index() const = 0;
-  
+
   /** Specify if the algorithm is clonable
-   */ 
+   */
   virtual bool isClonable() const = 0;
-  
+
   /** Cardinality (Maximum number of clones that can exist)
-   */ 
+   *  special value 0 means that algorithm is reentrant
+   */
   virtual unsigned int cardinality() const = 0;
 
   /** Named, non thread-safe resources used during event processing
    */
   virtual const std::vector<std::string>& neededResources() const = 0;
-    
+
   /** The action to be performed by the algorithm on an event. This method is
       invoked once per event for top level algorithms by the application manager.
   */
@@ -128,6 +131,7 @@ public:
   virtual StatusCode sysEndRun( ) = 0;
 
   /// Reset the Algorithm executed state for the current event
+  [[deprecated("resetExecuted should be triggered globally via the AlgExecStateSvc, not individually for each Algorithm")]]
   virtual void resetExecuted( ) = 0;
 
   /** Algorithm begin run. This method is called at the beginning of the event loop.
@@ -151,7 +155,9 @@ public:
   /// Set the filter passed flag to the specified state
   virtual void setFilterPassed( bool state ) = 0;
 
- protected:
+  /// Produce string represention of the control flow expression.
+  virtual std::ostream& toControlFlowExpression(std::ostream& os) const = 0;
+
   /// Set instantiation index of Alg
   virtual void setIndex(const unsigned int& idx) = 0;
 

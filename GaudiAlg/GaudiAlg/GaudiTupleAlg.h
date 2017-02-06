@@ -38,23 +38,11 @@
  */
 // ============================================================================
 
-class GAUDI_API GaudiTupleAlg: public GaudiTuples<GaudiHistoAlg>
+struct GAUDI_API GaudiTupleAlg: GaudiTuples<GaudiHistoAlg>
 {
-
-protected:
-
-  /** standard constructor
-   *  @see GaudiHistoAlg
-   *  @see GaudiAlgorithm
-   *  @see      Algorithm
-   *  @see   IAlgFactory
-   */
-  GaudiTupleAlg( const std::string&  name ,
-                 ISvcLocator* svc  );
-
-  /// destructor
-  ~GaudiTupleAlg() override = default;
-
+  using GaudiTuples<GaudiHistoAlg>::GaudiTuples;
+  using GaudiTuples<GaudiHistoAlg>::initialize;
+  using GaudiTuples<GaudiHistoAlg>::finalize;
 
   GaudiTupleAlg () = delete;
   GaudiTupleAlg           ( const  GaudiTupleAlg& ) = delete;

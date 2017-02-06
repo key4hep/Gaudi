@@ -4,26 +4,32 @@
 // Framework include files
 #include "GaudiKernel/Algorithm.h"
 
-namespace Gaudi {
-  namespace Examples {
-    namespace MultiInput {
+namespace Gaudi
+{
+  namespace Examples
+  {
+    namespace MultiInput
+    {
       /** Simple algorithm used to produce dummy data in the transient store.
        * Modified (reduced) version of the IO example WriteAlg. */
-      class WriteAlg : public Algorithm {
+      class WriteAlg : public Algorithm
+      {
       public:
         /// Constructor: A constructor of this form must be provided.
-        WriteAlg(const std::string& name, ISvcLocator* pSvcLoc);
+        using Algorithm::Algorithm;
         /// Standard Destructor
-        virtual ~WriteAlg();
+        ~WriteAlg() override = default;
         /// Initialize
-        virtual StatusCode initialize();
+        StatusCode initialize() override;
         /// Finalize
-        virtual StatusCode finalize();
+        StatusCode finalize() override;
         /// Event callback
-        virtual StatusCode execute();
+        StatusCode execute() override;
+
       private:
-        int m_runnum, m_evtnum;
-        std::vector<long> m_randomSeeds;
+        int m_runnum = 0, m_evtnum = 0;
+        Gaudi::Property<std::vector<long>> m_randomSeeds{
+            this, "RandomSeeds", {}, "Seeds to be used in the random number generation"};
       };
     }
   }

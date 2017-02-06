@@ -73,24 +73,23 @@ protected:
   SmartRefBase        m_base;
   /// Pointer to target data object
   mutable const TYPE* m_target = nullptr;
-protected:
 public:
   /// Standard Constructor
   SmartRef()  {
-    m_base.m_hintID = INVALID; 
+    m_base.m_hintID = INVALID;
     m_base.m_linkID = INVALID;
     _setEnvironment(0, 0);
   }
   /// Standard Constructor with initialisation
   SmartRef(TYPE* pObject)  {
-    m_base.m_hintID = INVALID; 
+    m_base.m_hintID = INVALID;
     m_base.m_linkID = INVALID;
     m_target = pObject;
     _setEnvironment(0, 0);
   }
   /// Standard Constructor with initialisation from const object
   SmartRef(const TYPE* pObject)  {
-    m_base.m_hintID = INVALID; 
+    m_base.m_hintID = INVALID;
     m_base.m_linkID = INVALID;
     m_target = const_cast<TYPE*>(pObject);
     _setEnvironment(0, 0);
@@ -222,11 +221,11 @@ public:
     m_base.m_linkID = c.m_base.m_linkID;
     return _setEnvironment(c.m_base.m_data, c.m_base.m_contd);  }
   /// Assignment
-  SmartRef<TYPE>& operator=(TYPE* pObject)   {  
-    m_target = pObject;    
+  SmartRef<TYPE>& operator=(TYPE* pObject)   {
+    m_target = pObject;
     m_base.m_hintID = INVALID;
     m_base.m_linkID = INVALID;
-    return *this;  
+    return *this;
   }
   /// Dereference operator
   TYPE& operator*()                 {  return *SmartRef<TYPE>::target(); }
@@ -266,7 +265,7 @@ public:
 //
 
 /// Access to the object
-template <class TYPE> inline 
+template <class TYPE> inline
 TYPE* SmartRef<TYPE>::target()  {
   if ( !m_target )    {
     m_target = dynamic_cast<const TYPE*>(m_base.accessData(m_target));
@@ -275,7 +274,7 @@ TYPE* SmartRef<TYPE>::target()  {
 }
 
 /// Access to the object  (CONST)
-template <class TYPE> inline 
+template <class TYPE> inline
 const TYPE* SmartRef<TYPE>::target()  const  {
   if ( !m_target )    {
     m_target = dynamic_cast<const TYPE*>(m_base.accessData(m_target));
@@ -284,14 +283,14 @@ const TYPE* SmartRef<TYPE>::target()  const  {
 }
 
 /// Write the reference to the stream buffer (needed due to stupid G++ compiler)
-template <class TYPE> inline 
+template <class TYPE> inline
 StreamBuffer& SmartRef<TYPE>::writeRef (StreamBuffer& s)    const   {
   m_base.writeObject(m_target, s);
   return s;
 }
 
 /// Read the reference from the stream buffer (needed due to stupid G++ compiler)
-template <class TYPE> inline 
+template <class TYPE> inline
 StreamBuffer& SmartRef<TYPE>::readRef (StreamBuffer& s)   {
   m_target = dynamic_cast<TYPE*>( m_base.readObject(m_target, s) );
   return s;
@@ -304,7 +303,7 @@ bool operator == (const SmartRef<TYPE>& ref, int)   {
 }
 
 /// Friend helper to check for object existence (will load object)
-template <class TYPE> inline 
+template <class TYPE> inline
 bool operator == (int, const SmartRef<TYPE>& ref)   {
   return ref.target() == nullptr;
 }
@@ -316,7 +315,7 @@ bool operator != (const SmartRef<TYPE>& ref, int)   {
 }
 
 /// Friend helper to check for object existence (will load object)
-template <class TYPE> inline 
+template <class TYPE> inline
 bool operator != (int, const SmartRef<TYPE>& ref)   {
   return ref.target() != nullptr;
 }

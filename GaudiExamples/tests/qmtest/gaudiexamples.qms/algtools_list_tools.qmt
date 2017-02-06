@@ -27,8 +27,10 @@ expected = ['ToolSvc.MyTool',
             'MyGaudiAlg.PrivToolHandle',
             'ToolSvc.TestPubToolHandle',
             'ToolSvc.GenericToolHandle',
+            'ToolSvc.ConstGenericToolHandle',
             'ToolSvc.ToolA',
             'ToolSvc.ToolB',
+            'ToolSvc.PubToolHandle'
             ]
 expected.sort()
 

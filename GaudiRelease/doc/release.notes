@@ -2,6 +2,38 @@ Package: GaudiRelease
 Maintainer: Marco Clemencic
 Commit Id: $Format:%H$
 
+================================ Gaudi v28r1 =================================
+
+
+================================ Gaudi v28r0 =================================
+
+! 2016-10-12 - Marco Clemencic (commit b5e05a1)
+
+ - improved handling of package version in CMake configuration
+
+   use project version if a package version is not provided
+    See GAUDI-1215.
+    See merge request !175
+
+! 2016-07-25 - Marco Clemencic (commit e3d4b07)
+
+ - remove CMT configuration and related files
+
+   * removed CMT configuration files
+   * adapted scripts not to use CMT
+    Fixes GAUDI-1216 Fixes GAUDI-979
+    See merge request !186
+
+! 2016-03-22 - Marco Clemencic (commit d0ae829)
+
+ - updates to Doxygen documentation
+
+   - added release instructions
+   - updated Jemalloc instructions
+   - fixed issue with duplicated entries
+   - enable automatic Doxygen generation via GitLab-CI
+    See merge request !140
+
 ============================= GaudiRelease v27r1 =============================
 
 ! 2016-03-10 - commit 2de9290

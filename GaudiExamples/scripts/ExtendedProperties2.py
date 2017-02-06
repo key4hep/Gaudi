@@ -45,6 +45,12 @@ if '__main__' == __name__ :
 
     print __doc__ , __author__
 
+    # make sure cling can generate all required methods in Gaudi::Property
+    import cppyy
+    for h in ("GaudiKernel/SVectorAsProperty.h",
+              "GaudiKernel/VectorsAsProperty.h"):
+        cppyy.gbl.gInterpreter.Declare('#include "%s"' % h)
+
     from GaudiPython.Bindings import AppMgr
 
     gaudi = AppMgr()

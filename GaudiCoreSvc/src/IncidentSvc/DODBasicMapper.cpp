@@ -30,19 +30,6 @@ namespace Gaudi {
 // ----------------------------------------------------------------------------
 DECLARE_COMPONENT(DODBasicMapper)
 
-// ============================================================================
-// Standard constructor, initializes variables
-// ============================================================================
-DODBasicMapper::DODBasicMapper(const std::string& type, const std::string& name, const IInterface* parent)
-  : base_class(type, name, parent)
-{
-  declareProperty("Nodes", m_nodeMap,
-                  "Map of the type of nodes to be associated to paths (path -> data_type).");
-  declareProperty("Algorithms", m_algMap,
-                  "Map of algorithms to be used to produce entries (path -> alg_name).");
-}
-
-
 Gaudi::Utils::TypeNameString DODBasicMapper::algorithmForPath(const std::string & path)
 {
   auto alg = m_algMap.find(path);

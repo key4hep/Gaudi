@@ -16,23 +16,6 @@
 DECLARE_COMPONENT(TestToolAlgFailure)
 
 //=============================================================================
-// Standard constructor, initializes variables
-//=============================================================================
-TestToolAlgFailure::TestToolAlgFailure( const std::string& name,
-                            ISvcLocator* pSvcLocator)
-  : GaudiAlgorithm ( name , pSvcLocator ) {
-
-  declareProperty( "Tools", m_tools );
-  declareProperty( "IgnoreFailure", m_ignoreFailure = false);
-
-}
-
-//=============================================================================
-// Destructor
-//=============================================================================
-TestToolAlgFailure::~TestToolAlgFailure() {}
-
-//=============================================================================
 // Initialisation. Check parameters
 //=============================================================================
 StatusCode TestToolAlgFailure::initialize() {
@@ -43,11 +26,10 @@ StatusCode TestToolAlgFailure::initialize() {
 
   // setup tool registry
   //IAlgTool * mytool;
-  for ( ToolList::iterator it = m_tools.begin();
-        it != m_tools.end(); ++it ) {
-    info() << "Loading tool " << *it << endmsg;
+  for ( const auto& i :m_tools ) {
+    info() << "Loading tool " << i << endmsg;
     try {
-      /* mytool = */ tool<IAlgTool>( *it );
+      /* mytool = */ tool<IAlgTool>( i );
       info() << "Tool loaded successfully" << endmsg;
     } catch (GaudiException &e) {
       if ( m_ignoreFailure ) {

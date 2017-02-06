@@ -1,14 +1,15 @@
 #include "GaudiAlg/GaudiAlgorithm.h"
 #include "GaudiKernel/AlgFactory.h"
 #include "GaudiKernel/DataStoreItem.h"
+#include "GaudiKernel/ThreadLocalContext.h"
 
 class GAUDI_API HiveReadAlgorithm: public GaudiAlgorithm {
 public:
   HiveReadAlgorithm( const std::string& name, ISvcLocator* pSvcLocator ) :  GaudiAlgorithm(name, pSvcLocator) {}
-  virtual ~HiveReadAlgorithm() {}
-  StatusCode initialize();
-  StatusCode execute();
-  StatusCode finalize() {return StatusCode::SUCCESS;}
+  ~HiveReadAlgorithm() override {}
+  StatusCode initialize() override;
+  StatusCode execute() override;
+  StatusCode finalize() override {return StatusCode::SUCCESS;}
 };
 
 DECLARE_ALGORITHM_FACTORY(HiveReadAlgorithm)
@@ -19,9 +20,6 @@ StatusCode HiveReadAlgorithm::initialize(){
 
 StatusCode HiveReadAlgorithm::execute()
 {
-  const EventContext* ctxt = getContext();
-  if (ctxt){
-    info() << "Running now for event " << ctxt->evt() << endmsg;
-  }
+  info() << "Running now for event " << Gaudi::Hive::currentContext().evt() << endmsg;
   return evtSvc()->preLoad();
 }
