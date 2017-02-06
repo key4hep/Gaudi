@@ -62,7 +62,7 @@ function(lcg_find_host_os)
       endif()
       if(release_file MATCHES Ubuntu)
         set(os ubuntu)
-        string(REGEX REPLACE ".*Ubuntu ([0-9]+)[.]([0-9]+).*" "\\1.\\2" osvers "${issue}")
+        string(REGEX REPLACE ".*Ubuntu ([0-9]+)[.]([0-9]+).*" "\\1.\\2" osvers "${release_file}")
       elseif(release_file MATCHES "Fedora|Scientific Linux( CERN)?|CentOS") # RedHat-like distributions
         if(CMAKE_MATCH_0 STREQUAL "Scientific Linux CERN")
           set(os slc)
