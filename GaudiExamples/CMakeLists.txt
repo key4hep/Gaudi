@@ -129,22 +129,22 @@ gaudi_add_module( GaudiExamples ${GaudiExamples_srcs}
    ${ROOT_LIBRARIES} ${extra_libs} )
 
 if (NOT LCG_COMP STREQUAL "clang")
-  # we compile SCSAlg.cpp in a special way
-  # FIXME: this is to be compatible with CMT
-  set_property(SOURCE src/StatusCodeSvc/SCSAlg.cpp
-               PROPERTY COMPILE_DEFINITIONS special_fncUnchecked2)
-
   find_file(StatusCodeHeader NAMES GaudiKernel/StatusCode.h
             PATHS ${CMAKE_SOURCE_DIR}/GaudiKernel
             HINTS ${Gaudi_DIR}/include)
   if(NOT StatusCodeHeader)
-    message(FATAL_ERROR "Cannot file StatusCode.h for the StatusCodeSvc test")
+    message(FATAL_ERROR "Cannot find file StatusCode.h for the StatusCodeSvc test")
   endif()
 
   message(STATUS "creating hacked version of ${StatusCodeHeader}")
   file(READ ${StatusCodeHeader} StatusCodeHeaderData)
   string(REPLACE "~StatusCode" "~StatusCode(); void _dummy" StatusCodeHeaderData "${StatusCodeHeaderData}")
-  file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/HackedStatusCode.h" "${StatusCodeHeaderData}")
+  if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/HackedStatusCode.h")
+    file(READ "${CMAKE_CURRENT_BINARY_DIR}/HackedStatusCode.h" StatusCodeHeaderData_previous)
+  endif()
+  if(NOT StatusCodeHeaderData_previous STREQUAL StatusCodeHeaderData)
+    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/HackedStatusCode.h" "${StatusCodeHeaderData}")
+  endif()
 endif()
 
 if(Boost_PYTHON_FOUND)
@@ -175,10 +175,6 @@ gaudi_build_env(SET     STDOPTS          ${CMAKE_CURRENT_SOURCE_DIR}/options
                 PREPEND JOBOPTSEARCHPATH ${CMAKE_CURRENT_SOURCE_DIR}/options
                 PREPEND JOBOPTSEARCHPATH ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest
                 PREPEND PYTHONPATH       ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest)
-
-# FIXME: these variables must be unset in the tests for compatibility with CMT
-gaudi_build_env(UNSET GAUDIAPPNAME
-                UNSET GAUDIAPPVERSION)
 
 gaudi_add_test(QMTest QMTEST
                ENVIRONMENT

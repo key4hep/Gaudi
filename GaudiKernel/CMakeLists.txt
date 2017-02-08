@@ -132,3 +132,11 @@ endif()
 
 add_executable(profile_Property tests/src/profile_Property.cpp)
 target_link_libraries(profile_Property GaudiKernel)
+
+find_program(gdb_command NAMES gdb)
+if(gdb_command)
+  get_filename_component(gdb_bindir "${gdb_command}" PATH)
+  gaudi_env(PREPEND PATH ${gdb_bindir})
+else()
+  message(WARNING "gdb not found, you will not be able to have stack traces for problems")
+endif()
