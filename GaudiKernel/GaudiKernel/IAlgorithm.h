@@ -31,7 +31,7 @@ public:
   friend AlgResourcePool;
 
   /// InterfaceID
-  DeclareInterfaceID(IAlgorithm,5,0);
+  DeclareInterfaceID(IAlgorithm,6,0);
 
   /** The version of the algorithm
    */
