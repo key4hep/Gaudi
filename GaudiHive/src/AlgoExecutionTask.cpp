@@ -31,11 +31,15 @@ tbb::task* AlgoExecutionTask::execute() {
   
   SmartIF<IMessageSvc> messageSvc (m_serviceLocator);
   MsgStream log(messageSvc, "AlgoExecutionTask");
-  
+
+  // select the appropriate store
+  this_algo->whiteboard()->selectStore(m_evtCtx->valid() ? 
+                                       m_evtCtx->slot() : 0).ignore();
+
   StatusCode sc(StatusCode::FAILURE);
   try {
     RetCodeGuard rcg(appmgr, Gaudi::ReturnCode::UnhandledException);
-    sc = m_algorithm->sysExecute();
+    sc = m_algorithm->sysExecute(*m_evtCtx);
     if (UNLIKELY(!sc.isSuccess()))  {
       log << MSG::WARNING << "Execution of algorithm " 
           << m_algorithm->name() << " failed" << endmsg;

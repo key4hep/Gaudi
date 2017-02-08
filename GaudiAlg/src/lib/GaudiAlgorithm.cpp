@@ -6,6 +6,7 @@
 // ============================================================================
 #include "GaudiKernel/IAlgContextSvc.h"
 #include "GaudiKernel/DataObject.h"
+#include "GaudiKernel/ThreadLocalContext.h"
 // ============================================================================
 // GaudiAlg
 // ============================================================================
@@ -90,7 +91,7 @@ SmartIF<INTupleSvc>& GaudiAlgorithm::evtColSvc() const
  *  @return status code
  */
 // ============================================================================
-StatusCode GaudiAlgorithm::sysExecute ()
+StatusCode GaudiAlgorithm::sysExecute (const EventContext& evtCtx)
 {
   IAlgContextSvc* ctx = nullptr ;
   if ( registerContext() ) { ctx = contextSvc() ; }
@@ -113,7 +114,7 @@ StatusCode GaudiAlgorithm::sysExecute ()
                            [&](const std::string& loc) { return this->exist<DataObject>(loc); } );
 
   // execute the generic method:
-  if( doIt ) return Algorithm::sysExecute() ;
+  if( doIt ) return Algorithm::sysExecute(evtCtx) ;
   return StatusCode::SUCCESS;
 }
 // ============================================================================

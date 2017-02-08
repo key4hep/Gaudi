@@ -123,7 +123,7 @@ public:
    *  For sub-algorithms either the sysExecute() method or execute() method
    *  must be EXPLICITLY invoked by  the parent algorithm.
    */
-  StatusCode sysExecute() override;
+  StatusCode sysExecute(const EventContext& ctx) override;
 
   /** System stop. This method invokes the stop() method of a concrete
       algorithm and the stop() methods of all of that algorithm's sub algorithms.
@@ -220,7 +220,7 @@ public:
   void setFilterPassed( bool state ) override;
 
   /// Get the number of failures of the algorithm.
-  inline int errorCount() const { return m_errorCount; }
+  unsigned int errorCount() const;
 
   /// Access a service by name, creating it if it doesn't already exist.
   template <class T>
@@ -427,6 +427,11 @@ public:
   }
 
 public:
+  // For concurrency
+  /// get the context
+  const EventContext& getContext() const override { return m_event_context; }
+
+public:
 
   virtual void acceptDHVisitor( IDataHandleVisitor* ) const override;
 
@@ -502,13 +507,14 @@ public:
 
 private:
 
-  int maxErrors() const { return m_errorMax; }
+  unsigned int maxErrors() const { return m_errorMax; }
 
 private:
   Gaudi::StringKey m_name;            ///< Algorithm's name for identification
   std::string m_type;                 ///< Algorithm's type
   std::string m_version;              ///< Algorithm's version
   unsigned int m_index;               ///< Algorithm's index
+  EventContext m_event_context;
   std::vector<Algorithm*> m_subAlgms; ///< Sub algorithms
 
   // tools used by algorithm
@@ -550,8 +556,7 @@ private:
   Gaudi::Property<int> m_outputLevel{this, "OutputLevel", MSG::NIL, "output level"};
   Gaudi::Property<bool> m_isEnabled{this, "Enable", true, "should the algorithm be executed or not"};
 
-  Gaudi::Property<int> m_errorMax{this, "ErrorMax", 1, "[[deprecated]] max number of errors"};
-  Gaudi::Property<int> m_errorCount{this, "ErrorCounter", 0, "[[deprecated]] error counter"};
+  Gaudi::Property<unsigned int> m_errorMax{this, "ErrorMax", 1, "[[deprecated]] max number of errors"};
 
   Gaudi::Property<bool> m_auditInit{this, "AuditAlgorithms", false, "[[deprecated]] unused"};
   Gaudi::Property<bool> m_auditorInitialize{this, "AuditInitialize", false, "trigger auditor on initialize()"};
