@@ -85,9 +85,6 @@ class BaseTest(object):
         self.stack_trace = None
         self.basedir = os.getcwd()
 
-    def validator(self, stdout='',stderr=''):
-        pass
-
     def run(self):
         logging.debug('running test %s', self.name)
 
@@ -253,20 +250,11 @@ class BaseTest(object):
     #-------------------------------------------------#
 
     def ValidateOutput(self, stdout, stderr, result):
-        # checking if default validation or not
-        if self.validator is not BaseTest.validator:
-            self.validator(stdout, stderr, result, self.causes,
-                           self.reference, self.error_reference)
-        else:
-            if self.stderr == '':
-                self.validateWithReference(stdout, stderr, result, causes)
-            elif stderr.strip() != self.stderr.strip():
-                self.causes.append('standard error')
-
-
-        return result, causes
-
-
+        if not self.stderr:
+            self.validateWithReference(stdout, stderr, result, self.causes)
+        elif stderr.strip() != self.stderr.strip():
+            self.causes.append('standard error')
+        return result, self.causes
 
     def findReferenceBlock(self,reference=None, stdout=None, result=None, causes=None, signature_offset=0, signature=None, id = None):
         """
