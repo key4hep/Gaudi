@@ -64,6 +64,17 @@ endif
 
 BUILDDIR := $(CURDIR)/build.$(BINARY_TAG)
 
+ifneq ($(wildcard $(BUILDDIR)/Makefile),)
+  # force the use of GNU Make if the build was using it
+  USE_MAKE := 1
+endif
+ifneq ($(wildcard $(BUILDDIR)/build.ninja),)
+  ifeq ($(NINJA),)
+    # make sure we have ninja if we configured with it
+    $(error $(BUILDDIR) was configured for Ninja, but it is not in the path)
+  endif
+endif
+
 ifneq ($(NINJA),)
   ifeq ($(USE_MAKE),)
     ifeq ($(shell grep "FORTRAN\|NO_NINJA" CMakeLists.txt),)
