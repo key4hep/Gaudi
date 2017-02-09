@@ -789,8 +789,6 @@ for w,o,r in [
               (None, r"e([-+])0([0-9][0-9])", r"e\1\2"),
               # Output line changed in Gaudi v24
               (None, r'Service reference count check:', r'Looping over all active services...'),
-              # Change of property name in Algorithm (GAUDI-1030)
-              (None, r"Property(.*)'ErrorCount':", r"Property\1'ErrorCounter':"),
               # Ignore count of declared properties (anyway they are all printed)
               (None, r"^(.*(DEBUG|SUCCESS) List of ALL properties of .*#properties = )\d+", r"\1NN"),
               ]: #[ ("TIMER.TIMER","[0-9]+[0-9.]*", "") ]
@@ -848,6 +846,7 @@ lineSkipper = LineSkipper(["//GP:",
                                         r"Property(.*)'Audit(Algorithm|Tool|Service)s':",
                                         r"Property(.*)'AuditRe(start|initialize)':", # these were missing in tools
                                         r"Property(.*)'IsIOBound':",
+                                        r"Property(.*)'ErrorCount(er)?':", # removed with gaudi/Gaudi!273
                                         # ignore uninteresting/obsolete messages
                                         r"Property update for OutputLevel : new value =",
                                         r"EventLoopMgr\s*DEBUG Creating OutputStream",
