@@ -193,3 +193,7 @@ gaudi_add_test(WriteAndReadHandleError
 
 gaudi_add_test(WriteAndReadHandleWhiteBoard
                FRAMEWORK options/ROOT_IO/WriteAndReadHandleWhiteBoard.py)
+
+gaudi_add_test(nose
+               COMMAND nosetests -v
+               ${CMAKE_CURRENT_SOURCE_DIR}/tests/nose)
