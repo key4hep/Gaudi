@@ -1,6 +1,11 @@
 #ifndef GAUDIHIVE_AVALANCHESCHEDULERSVC_H
 #define GAUDIHIVE_AVALANCHESCHEDULERSVC_H
 
+// Local includes
+#include "AlgsExecutionStates.h"
+#include "EventSlot.h"
+#include "ExecutionFlowManager.h"
+
 // Framework include files
 #include "GaudiKernel/IAccelerator.h"
 #include "GaudiKernel/IAlgExecStateSvc.h"
@@ -10,12 +15,6 @@
 #include "GaudiKernel/IScheduler.h"
 #include "GaudiKernel/IThreadPoolSvc.h"
 #include "GaudiKernel/Service.h"
-
-// Local includes
-#include "AlgsExecutionStates.h"
-#include "DataFlowManager.h"
-#include "EventSlot.h"
-#include "ExecutionFlowManager.h"
 
 // C++ include files
 #include <functional>
@@ -74,34 +73,27 @@ private:
   enum ActivationState { INACTIVE = 0, ACTIVE = 1, FAILURE = 2 };
 
   Gaudi::Property<int> m_maxEventsInFlight{this, "MaxEventsInFlight", 0,
-                                           "Maximum number of event processed simultaneously"};
-  Gaudi::Property<int> m_threadPoolSize{
-      this, "ThreadPoolSize", -1,
-      "Size of the threadpool initialised by TBB; a value of -1 gives TBB the freedom to choose"};
-  Gaudi::Property<std::string> m_whiteboardSvcName{this, "WhiteboardSvc", "EventDataSvc", "The whiteboard name"};
-  Gaudi::Property<std::string> m_IOBoundAlgSchedulerSvcName{this, "IOBoundAlgSchedulerSvc", "IOBoundAlgSchedulerSvc"};
+    "Maximum number of event processed simultaneously"};
+  Gaudi::Property<int> m_threadPoolSize{this, "ThreadPoolSize", -1,
+    "Size of the threadpool initialised by TBB; a value of -1 gives TBB the freedom to choose"};
+  Gaudi::Property<std::string> m_whiteboardSvcName{this, "WhiteboardSvc", "EventDataSvc",
+    "The whiteboard name"};
+  Gaudi::Property<std::string> m_IOBoundAlgSchedulerSvcName{this, "IOBoundAlgSchedulerSvc",
+    "IOBoundAlgSchedulerSvc"};
   Gaudi::Property<unsigned int> m_maxAlgosInFlight{this, "MaxAlgosInFlight", 1,
-                                                   "[[deprecated]] Taken from the whiteboard"};
-
+    "[[deprecated]] Taken from the whiteboard"};
   Gaudi::Property<unsigned int> m_maxIOBoundAlgosInFlight{this, "MaxIOBoundAlgosInFlight", 0,
-                                                          "Maximum number of simultaneous I/O-bound algorithms"};
-  // XXX: CF tests. Temporary property to switch between ControlFlow implementations
-  Gaudi::Property<bool> m_CFNext{this, "useGraphFlowManagement", false,
-                                 "Temporary property to switch between ControlFlow implementations"};
-  // XXX: CF tests. Temporary property to switch between DataFlow implementations
-  Gaudi::Property<bool> m_DFNext{this, "DataFlowManagerNext", false,
-                                 "Temporary property to switch between DataFlow implementations"};
-  Gaudi::Property<bool> m_simulateExecution{
-      this, "SimulateExecution", false,
-      "Flag to perform single-pass simulation of execution flow before the actual execution"};
+    "Maximum number of simultaneous I/O-bound algorithms"};
+  Gaudi::Property<bool> m_simulateExecution{this, "SimulateExecution", false,
+    "Flag to perform single-pass simulation of execution flow before the actual execution"};
   Gaudi::Property<std::string> m_optimizationMode{this, "Optimizer", "",
-                                                  "The following modes are currently available: PCE, COD, DRE,  E"};
+    "The following modes are currently available: PCE, COD, DRE,  E"};
   Gaudi::Property<bool> m_dumpIntraEventDynamics{this, "DumpIntraEventDynamics", false,
-                                                 "Dump intra-event concurrency dynamics to csv file"};
+    "Dump intra-event concurrency dynamics to csv file"};
   Gaudi::Property<bool> m_useIOBoundAlgScheduler{this, "PreemptiveIOBoundTasks", false,
-                                                 "Turn on preemptive way of scheduling of I/O-bound algorithms"};
-  Gaudi::Property<std::vector<std::vector<std::string>>> m_algosDependencies{
-      this, "AlgosDependencies", {}, "[[deprecated]]"};
+    "Turn on preemptive way of scheduling of I/O-bound algorithms"};
+  Gaudi::Property<std::vector<std::vector<std::string>>> m_algosDependencies{this, "AlgosDependencies", {},
+    "[[deprecated]]"};
   Gaudi::Property<bool> m_checkDeps{this, "CheckDependencies", false, "[[deprecated]]"};
 
   // Utils and shortcuts ----------------------------------------------------
@@ -159,8 +151,8 @@ private:
   /// Number of algoritms presently in flight
   unsigned int m_IOBoundAlgosInFlight = 0;
 
-  /// Loop on algorithm in the slots and promote them to successive states (-1 means all slots, while empty string
-  /// means skipping an update of the Control Flow state)
+  /// Loop on algorithm in the slots and promote them to successive states
+  /// (-1 means all slots, while empty string means skipping an update of the Control Flow state)
   StatusCode updateStates( int si = -1, const std::string& algo_name = std::string() );
 
   /// Algorithm promotion: Accepted by the control flow

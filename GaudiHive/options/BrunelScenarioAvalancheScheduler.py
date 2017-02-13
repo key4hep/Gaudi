@@ -32,8 +32,6 @@ scheduler = AvalancheSchedulerSvc(MaxEventsInFlight = evtslots,
                                   MaxAlgosInFlight = algosInFlight,
                                   ThreadPoolSize = algosInFlight,
                                   OutputLevel = DEBUG,
-                                  useGraphFlowManagement = True,
-                                  DataFlowManagerNext = True,
                                   Optimizer = "DRE",
                                   PreemptiveIOBoundTasks = False,
                                   DumpIntraEventDynamics = False)

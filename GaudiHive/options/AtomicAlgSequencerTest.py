@@ -1,6 +1,6 @@
 from Gaudi.Configuration import *
 from Configurables import (HiveWhiteBoard, HiveSlimEventLoopMgr,
-                           ForwardSchedulerSvc, AlgResourcePool,
+                           AvalancheSchedulerSvc, AlgResourcePool,
                            CPUCruncher,
                            ContextEventCounterPtr,
                            ContextEventCounterData,
@@ -36,9 +36,8 @@ slimeventloopmgr = HiveSlimEventLoopMgr(OutputLevel=DEBUG)
 # threads in the pool. The default value is -1, which is for TBB equivalent
 # to take over the whole machine.
 
-scheduler = ForwardSchedulerSvc(MaxAlgosInFlight = algosInFlight,
+scheduler = AvalancheSchedulerSvc(MaxAlgosInFlight = algosInFlight,
                                 ThreadPoolSize = algosInFlight,
-                                useGraphFlowManagement = True,
                                 OutputLevel=DEBUG)
 
 #-------------------------------------------------------------------------------

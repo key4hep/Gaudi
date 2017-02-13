@@ -65,7 +65,6 @@ slimeventloopmgr = HiveSlimEventLoopMgr(SchedulerName = "AvalancheSchedulerSvc",
 
 scheduler = AvalancheSchedulerSvc(MaxAlgosInFlight = algosInFlight,
                                   ThreadPoolSize = algosInFlight,
-                                  useGraphFlowManagement = True,
                                   OutputLevel=WARNING)
 
 #-------------------------------------------------------------------------------
