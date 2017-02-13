@@ -155,9 +155,7 @@ private:
   /// (-1 means all slots, while empty string means skipping an update of the Control Flow state)
   StatusCode updateStates( int si = -1, const std::string& algo_name = std::string() );
 
-  /// Algorithm promotion: Accepted by the control flow
-  StatusCode promoteToControlReady( unsigned int iAlgo, int si );
-  StatusCode promoteToDataReady( unsigned int iAlgo, int si );
+  /// Algorithm promotion
   StatusCode promoteToScheduled( unsigned int iAlgo, int si );
   StatusCode promoteToAsyncScheduled( unsigned int iAlgo, int si ); // tests of an asynchronous scheduler
   StatusCode promoteToExecuted( unsigned int iAlgo, int si, IAlgorithm* algo, EventContext* );

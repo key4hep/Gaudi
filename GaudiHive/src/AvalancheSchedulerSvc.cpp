@@ -818,38 +818,6 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot ) {
 
 //---------------------------------------------------------------------------
 
-StatusCode AvalancheSchedulerSvc::promoteToControlReady( unsigned int iAlgo, int si ) {
-
-  // Do the control flow
-  StatusCode sc = m_eventSlots[si].algsStates.updateState(iAlgo,AlgsExecutionStates::CONTROLREADY);
-  if (sc.isSuccess())
-    if (msgLevel(MSG::VERBOSE))
-      verbose() << "Promoting " << index2algname(iAlgo) << " to CONTROLREADY on slot "
-                << si << endmsg;
-
-  return sc;
-}
-
-//---------------------------------------------------------------------------
-
-StatusCode AvalancheSchedulerSvc::promoteToDataReady( unsigned int iAlgo, int si ) {
-
-  StatusCode sc = m_efManager.algoDataDependenciesSatisfied( index2algname( iAlgo ), si );
-
-  StatusCode updateSc( StatusCode::FAILURE );
-  if ( sc == StatusCode::SUCCESS )
-    updateSc = m_eventSlots[si].algsStates.updateState( iAlgo, AlgsExecutionStates::DATAREADY );
-
-  if (updateSc.isSuccess())
-    if (msgLevel(MSG::VERBOSE))
-      verbose() << "Promoting " << index2algname(iAlgo) << " to DATAREADY on slot "
-                << si<< endmsg;
-
-  return updateSc;
-}
-
-//---------------------------------------------------------------------------
-
 StatusCode AvalancheSchedulerSvc::promoteToScheduled( unsigned int iAlgo, int si ) {
 
   if ( m_algosInFlight == m_maxAlgosInFlight ) return StatusCode::FAILURE;
