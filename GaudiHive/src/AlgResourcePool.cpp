@@ -285,8 +285,11 @@ StatusCode AlgResourcePool::decodeTopAlgs()    {
   }
   // stupid O(N^2) unique-ification..
   for ( auto i = begin(m_flatUniqueAlgList); i!=end(m_flatUniqueAlgList); ++i ) {
-    auto second = std::find(next(i),end(m_flatUniqueAlgList),*i);
-    if (second!=end(m_flatUniqueAlgList)) m_flatUniqueAlgList.erase(second);
+    auto n = next(i);
+    while ( n!=end(m_flatUniqueAlgList) ) {
+        if (*n==*i) n = m_flatUniqueAlgList.erase(n);
+        else ++n;
+    }
   }
   if (msgLevel(MSG::DEBUG)){
     debug() << "List of algorithms is: " << endmsg;
