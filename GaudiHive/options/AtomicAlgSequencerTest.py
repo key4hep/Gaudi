@@ -4,7 +4,7 @@ from Configurables import (HiveWhiteBoard, HiveSlimEventLoopMgr,
                            CPUCruncher,
                            ContextEventCounterPtr,
                            ContextEventCounterData,
-                           GaudiAtomicSequencer)
+                           GaudiSequencer)
 
 # metaconfig -------------------------------------------------------------------
 # It's confortable to collect the relevant parameters at the top of the optionfile
@@ -75,9 +75,10 @@ for algo in [a1, a2, a3, a4]:
 for algo in [a3]:
   algo.Cardinality = cardinality
 
-seq = GaudiAtomicSequencer("CriticalSection",
-                           Members=[a1,a2,a4],
-                           OutputLevel=VERBOSE)
+seq = GaudiSequencer("CriticalSection",
+                     Members=[a1,a2,a4],
+                     Atomic=True,
+                     OutputLevel=VERBOSE)
 
 # Application Manager ----------------------------------------------------------
 # We put everything together and change the type of message service
