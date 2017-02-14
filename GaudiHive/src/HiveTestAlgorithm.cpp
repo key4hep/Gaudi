@@ -1,6 +1,7 @@
 #include "GaudiHive/HiveTestAlgorithm.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/AlgFactory.h"
+#include "GaudiKernel/ThreadLocalContext.h"
 
 #include <atomic>
 
@@ -51,7 +52,7 @@ StatusCode
 HiveTestAlgorithm::execute()
 {
   ++m_total;
-  int evt = getContext()->evt();
+  int evt = Gaudi::Hive::currentContext().evt();
 
   info() << ":HiveTestAlgorithm::getting inputs... " << evt << endmsg;
 

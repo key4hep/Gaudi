@@ -1,10 +1,10 @@
-# --> Including file '/build1/leggett/git/Gaudi/GaudiExamples/options/GaudiCommonTests.opts'
-# --> Including file '/build1/leggett/git/Gaudi/GaudiExamples/options/Common.opts'
-# --> Including file '/build1/leggett/git/Gaudi/GaudiExamples/options/Services.opts'
+# --> Including file '/build1/leggett/git/leggett/Gaudi/GaudiExamples/options/GaudiCommonTests.opts'
+# --> Including file '/build1/leggett/git/leggett/Gaudi/GaudiExamples/options/Common.opts'
+# --> Including file '/build1/leggett/git/leggett/Gaudi/GaudiExamples/options/Services.opts'
 # AuditorSvc.Auditors = { "ChronoAuditor" };
-# <-- End of file '/build1/leggett/git/Gaudi/GaudiExamples/options/Services.opts'
+# <-- End of file '/build1/leggett/git/leggett/Gaudi/GaudiExamples/options/Services.opts'
 # ApplicationMgr.StatusCodeCheck = true;
-# <-- End of file '/build1/leggett/git/Gaudi/GaudiExamples/options/Common.opts'
+# <-- End of file '/build1/leggett/git/leggett/Gaudi/GaudiExamples/options/Common.opts'
 # EventDataSvc.ForceLeaves = true;
 # EventDataSvc.RootCLID    =    1;
 # MessageSvc.OutputLevel     =  3;
@@ -17,20 +17,20 @@
 # ApplicationMgr.EvtMax    = 1;
 # ApplicationMgr.EvtSel   = "NONE";
 # ApplicationMgr.HistogramPersistency = "NONE";
-# <-- End of file '/build1/leggett/git/Gaudi/GaudiExamples/options/GaudiCommonTests.opts'
-# --> Including file '/tmp/leggett/tmp5quz_5.py'
-# <-- End of file '/tmp/leggett/tmp5quz_5.py'
+# <-- End of file '/build1/leggett/git/leggett/Gaudi/GaudiExamples/options/GaudiCommonTests.opts'
+# --> Including file '/tmp/leggett/tmpU6xINU.py'
+# <-- End of file '/tmp/leggett/tmpU6xINU.py'
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v4r1)
-                                          running on p05614910w96644.cern.ch on Thu Oct  6 21:36:46 2016
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v28r1)
+                                          running on p05614910w96644.cern.ch on Wed Jan 18 01:44:05 2017
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
 Test1               DEBUG Property update for OutputLevel : new value = 2
 Test1               DEBUG Initialize base class GaudiCommon<Algorithm>
 Test1               DEBUG could not locate CounterSummarySvc, no counter summary will be made
-Test1               DEBUG List of ALL properties of GaudiCommonTests/Test1  #properties = 37
+Test1               DEBUG List of ALL properties of GaudiCommonTests/Test1  #properties = 36
 Test1               DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
 Test1               DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
 Test1               DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
@@ -62,7 +62,6 @@ Test1               DEBUG Property ['Name': Value] =  'AuditRestart':False
 Test1               DEBUG Property ['Name': Value] =  'AuditReinitialize':False
 Test1               DEBUG Property ['Name': Value] =  'AuditInitialize':False
 Test1               DEBUG Property ['Name': Value] =  'AuditAlgorithms':False
-Test1               DEBUG Property ['Name': Value] =  'ErrorCounter':0
 Test1               DEBUG Property ['Name': Value] =  'ErrorMax':1
 Test1               DEBUG Property ['Name': Value] =  'Enable':True
 Test1               DEBUG Property ['Name': Value] =  'OutputLevel':2
@@ -74,7 +73,7 @@ Test1               DEBUG Data Deps for Test1
 Test2               DEBUG Property update for OutputLevel : new value = 2
 Test2               DEBUG Initialize base class GaudiCommon<Algorithm>
 Test2               DEBUG could not locate CounterSummarySvc, no counter summary will be made
-Test2               DEBUG List of ALL properties of GaudiCommonTests/Test2  #properties = 37
+Test2               DEBUG List of ALL properties of GaudiCommonTests/Test2  #properties = 36
 Test2               DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
 Test2               DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
 Test2               DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
@@ -106,7 +105,6 @@ Test2               DEBUG Property ['Name': Value] =  'AuditRestart':False
 Test2               DEBUG Property ['Name': Value] =  'AuditReinitialize':False
 Test2               DEBUG Property ['Name': Value] =  'AuditInitialize':False
 Test2               DEBUG Property ['Name': Value] =  'AuditAlgorithms':False
-Test2               DEBUG Property ['Name': Value] =  'ErrorCounter':0
 Test2               DEBUG Property ['Name': Value] =  'ErrorMax':1
 Test2               DEBUG Property ['Name': Value] =  'Enable':True
 Test2               DEBUG Property ['Name': Value] =  'OutputLevel':2

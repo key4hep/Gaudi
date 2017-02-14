@@ -8,8 +8,8 @@ from GaudiHive import precedence
 
 # metaconfig
 evtslots = 1
-evtMax = 3
-algosInFlight = 8
+evtMax = 1
+algosInFlight = 4
 
 
 InertMessageSvc(OutputLevel=INFO)
@@ -41,8 +41,7 @@ ifIObound = precedence.UniformBooleanValue(False)
 sequencer = precedence.CruncherSequence(timeValue, ifIObound, sleepFraction=0.0,
                                         cfgPath = "atlas/mcreco/cf.mcreco.TriggerOff.graphml",
                                         dfgPath = "atlas/mcreco/df.mcreco.TriggerOff.3rdEvent.graphml",
-                                        topSequencer = 'AthSequencer/AthMasterSeq',
-                                        showStat=True).get()
+                                        topSequencer = 'AthSequencer/AthMasterSeq').get()
 
 ApplicationMgr( EvtMax = evtMax,
                 EvtSel = 'NONE',

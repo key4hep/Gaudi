@@ -21,6 +21,7 @@
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IToolSvc.h"
 #include "GaudiKernel/Kernel.h"
+#include "GaudiKernel/ThreadLocalContext.h"
 
 #include "GaudiKernel/AlgTool.h"
 #include "GaudiKernel/Chrono.h"
@@ -47,9 +48,8 @@ namespace
 }
 
 // Constructor
-Algorithm::Algorithm( const std::string& name, ISvcLocator* pSvcLocator, const std::string& version )
-    : m_event_context( nullptr )
-    , m_name( name )
+Algorithm::Algorithm(const std::string& name, ISvcLocator* pSvcLocator, const std::string& version) :
+      m_name( name )
     , m_version( version )
     , m_index( 0 )
     , // incremented by AlgResourcePool
@@ -223,10 +223,6 @@ StatusCode Algorithm::sysStart()
 
   m_targetState = Gaudi::StateMachine::ChangeState( Gaudi::StateMachine::START, m_state );
 
-  // TODO: (MCl) where shoud we do this? initialize or start?
-  // Reset Error count
-  m_errorCount = 0;
-
   // lock the context service
   Gaudi::Utils::AlgContext cnt( this, registerContext() ? contextSvc().get() : nullptr );
 
@@ -341,9 +337,6 @@ StatusCode Algorithm::sysRestart()
     return StatusCode::FAILURE;
   }
 
-  // Reset Error count
-  m_errorCount = 0;
-
   // lock the context service
   Gaudi::Utils::AlgContext cnt( this, registerContext() ? contextSvc().get() : nullptr );
 
@@ -390,9 +383,6 @@ StatusCode Algorithm::sysBeginRun()
 
   // Bypass the beginRun if the algorithm is disabled.
   if ( !isEnabled() ) return StatusCode::SUCCESS;
-
-  // Reset Error count
-  m_errorCount = 0;
 
   // lock the context service
   Gaudi::Utils::AlgContext cnt( this, registerContext() ? contextSvc().get() : nullptr );
@@ -450,9 +440,6 @@ StatusCode Algorithm::sysEndRun()
   // Bypass the endRun if the algorithm is disabled.
   if ( !isEnabled() ) return StatusCode::SUCCESS;
 
-  // Reset Error count
-  m_errorCount = 0;
-
   // lock the context service
   Gaudi::Utils::AlgContext cnt( this, registerContext() ? contextSvc().get() : nullptr );
 
@@ -494,8 +481,11 @@ StatusCode Algorithm::sysEndRun()
 
 StatusCode Algorithm::endRun() { return StatusCode::SUCCESS; }
 
-StatusCode Algorithm::sysExecute()
+StatusCode Algorithm::sysExecute(const EventContext& ctx)
 {
+
+  m_event_context = ctx;
+
   if ( !isEnabled() ) {
     if ( msgLevel( MSG::VERBOSE ) ) {
       verbose() << ".sysExecute(): is not enabled. Skip execution" << endmsg;
@@ -512,19 +502,15 @@ StatusCode Algorithm::sysExecute()
   // lock the context service
   Gaudi::Utils::AlgContext cnt( this, registerContext() ? contextSvc().get() : nullptr );
 
-  // HiveWhiteBoard stuff here
-  if ( m_WB.isValid() ) m_WB->selectStore( getContext() ? getContext()->slot() : 0 ).ignore();
-
   Gaudi::Guards::AuditorGuard guard( this,
                                      // check if we want to audit the initialize
                                      ( m_auditorExecute ) ? auditorSvc().get() : nullptr, IAuditor::Execute, status );
 
   TimelineEvent timeline;
   timeline.algorithm = this->name();
-  //  timeline.thread = getContext() ? getContext()->m_thread_id : 0;
   timeline.thread = pthread_self();
-  timeline.slot   = getContext() ? getContext()->slot() : 0;
-  timeline.event  = getContext() ? getContext()->evt() : 0;
+  timeline.slot   = ctx.slot();
+  timeline.event  = ctx.evt();
 
   try {
 
@@ -575,15 +561,16 @@ StatusCode Algorithm::sysExecute()
 
   if ( status.isFailure() ) {
     // Increment the error count
-    {
-      std::lock_guard<std::mutex>  lock(m_lock);
-      m_errorCount++;
-    }
+    unsigned int nerr = m_aess->incrementErrorCount( this );
     // Check if maximum is exeeded
-    if ( m_errorCount < m_errorMax ) {
-      warning() << "Continuing from error (cnt=" << m_errorCount << ", max=" << m_errorMax << ")" << endmsg;
+    if ( nerr < m_errorMax ) {
+      warning() << "Continuing from error (cnt=" << nerr << ", max=" 
+                << m_errorMax << ")" << endmsg;
       // convert to success
       status = StatusCode::SUCCESS;
+    } else {
+      error() << "Maximum number of errors (" << m_errorMax << ") reached."
+              << endmsg;
     }
   }
   return status;
@@ -736,40 +723,18 @@ unsigned int Algorithm::index() const { return m_index; }
 void Algorithm::setIndex( const unsigned int& idx ) { m_index = idx; }
 
 bool Algorithm::isExecuted() const {
-  if (m_event_context) {
-    if (m_event_context->valid()) {
-      return algExecStateSvc()->algExecState((IAlgorithm*)this, *m_event_context).isExecuted();
-    } else {
-      error() << "EventContext is not valid" << endmsg;
-      return false;
-    }
-  } else {
-    return algExecStateSvc()->algExecState((IAlgorithm*)this).isExecuted();
-  }
+  const EventContext& context = Gaudi::Hive::currentContext();
+  return algExecStateSvc()->algExecState((IAlgorithm*)this, context).isExecuted();
 }
 
 void Algorithm::setExecuted( bool state ) {
-  if (m_event_context) {
-    if (m_event_context->valid()) {
-      algExecStateSvc()->algExecState((IAlgorithm*)this, *m_event_context).setExecuted(state);
-    } else {
-      error() << "EventContext is not valid" << endmsg;
-    }
-  } else {
-    algExecStateSvc()->algExecState((IAlgorithm*)this).setExecuted(state);
-  }
+  const EventContext& context = Gaudi::Hive::currentContext();
+  algExecStateSvc()->algExecState((IAlgorithm*)this, context).setExecuted(state);
 }
 
 void Algorithm::resetExecuted() {
-  if (m_event_context) {
-    if (m_event_context->valid()) {
-      return algExecStateSvc()->algExecState( (IAlgorithm*)this, *m_event_context).reset();
-    } else {
-      error() << "EventContext is not valid" << endmsg;
-    }
-  } else {
-    return algExecStateSvc()->algExecState( (IAlgorithm*)this).reset();
-  }
+  const EventContext& context = Gaudi::Hive::currentContext();
+  return algExecStateSvc()->algExecState( (IAlgorithm*)this, context).reset();
 }
 
 bool Algorithm::isEnabled() const {
@@ -777,28 +742,13 @@ bool Algorithm::isEnabled() const {
 }
 
 bool Algorithm::filterPassed() const {
-  if (m_event_context) {
-    if (m_event_context->valid()) {
-      return algExecStateSvc()->algExecState((IAlgorithm*)this, *m_event_context).filterPassed();
-    } else {
-      error() << "EventContext is not valid" << endmsg;
-      return false;
-    }
-  } else {
-    return algExecStateSvc()->algExecState((IAlgorithm*)this).filterPassed();
-  }
+  const EventContext& context = Gaudi::Hive::currentContext();
+  return algExecStateSvc()->algExecState((IAlgorithm*)this, context).filterPassed();
 }
 
 void Algorithm::setFilterPassed( bool state ) {
-  if (m_event_context) {
-    if (m_event_context->valid()) {
-      algExecStateSvc()->algExecState((IAlgorithm*)this, *m_event_context).setFilterPassed(state);
-    } else {
-      error() << "EventContext is not valid" << endmsg;
-    }
-  } else {
-    algExecStateSvc()->algExecState((IAlgorithm*)this).setFilterPassed(state);
-  }
+  const EventContext& context = Gaudi::Hive::currentContext();
+  algExecStateSvc()->algExecState((IAlgorithm*)this, context).setFilterPassed(state);
 }
 
 const std::vector<Algorithm*>* Algorithm::subAlgorithms() const { return &m_subAlgms; }
@@ -1023,4 +973,10 @@ void Algorithm::deregisterTool( IAlgTool* tool ) const
 
 std::ostream& Algorithm::toControlFlowExpression(std::ostream& os) const {
   return os << type() << "('" << name() << "')";
+}
+
+
+unsigned int
+Algorithm::errorCount() const {
+  return m_aess->algErrorCount(static_cast<const IAlgorithm*>(this));
 }

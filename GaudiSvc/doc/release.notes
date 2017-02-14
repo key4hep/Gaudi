@@ -2,6 +2,56 @@ Package: GaudiSvc
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+================================ Gaudi v28r1 =================================
+
+! 2016-12-14 - Attila Krasznahorkay (commit a42ff2a)
+
+ - CMake configuration changes to build Gaudi with optional externals missing
+
+   In the last days I experimented a bit with teaching Gaudi how to build when
+   only ROOT, Boost and TBB are available to it. This is the result. As far as I
+   can tell the code builds in the same way as the current master branch when
+   all possible externals are available. (All the ones available in a full ATLAS
+   offline build at least.) And I'm also able to build the project in these
+   modes:
+     * On Ubuntu 16.04 with the system provided Boost and TBB versions, against
+   a privately built ROOT 6 version.
+     * On macOS Sierra against privately built Boost, ROOT and TBB versions.
+   Both when building the project completely on its own, and when building it
+   against an ATLAS externals project.
+    Some notes:
+     * The code uses C++14 expressions in quite a few places by now. So I raised
+   the default C++ standard to C++14. This is the default in ATLAS builds since
+   a while, I only saw this as an issue when building Gaudi "on its own" with a
+   very minimal configuration command.
+     * While the code advertises that it still has support for ROOT 5, it's not
+   able to build against it since a wile. Since the updates I put in for TLS
+   variables on macOS. (The macros used there are ROOT 6 only.) And this update
+   makes things even worse. As the code now relies on not providing the
+   definition of some classes to the dictionary generator in GaudiPython that
+   are not available. (Because AIDA or XercesC is missing.) While ROOT 6 handles
+   this with just a build warning, ROOT 5's genreflex treats this with an ERROR
+   message. That I was unable to get rid of.
+    So, extended testing is clearly necessary, the configuration code could
+   definitely be fine tuned as I probably turned off the build of more source
+   files than absolutely necessary, but I think we should move ahead with such a
+   configuration organisation.
+    See merge request !241
+
+! 2016-12-07 - many contributors (commit dc1b505)
+
+ - port LHCb MT developments to Gaudi master
+
+   among others we have
+   - `Gaudi::Functional`: base classes to write algorithms as pure functions
+   - `AnyDataWrapper`/`AnyDataHandle`: helper to store any type in the Transient
+   Store (DataSvc)
+   - fixes to `DataObjectHandle`
+   - fixes to `GaudiHive`
+   - new tests and examples
+   - modernization (removed empty destructors, ...)
+    See merge request !245
+
 ================================ Gaudi v28r0 =================================
 
 ! 2016-10-27 - Gerhard Raven, Marco Clemencic (commit b111898)

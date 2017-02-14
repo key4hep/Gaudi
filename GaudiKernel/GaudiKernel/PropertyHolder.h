@@ -120,13 +120,13 @@ public:
     return p;
   }
 
-  /// \deprecated Kept for backward compatibility, use the non-const version instead, will be removed in v28r1.
+  /// \deprecated Kept for backward compatibility, use the non-const version instead, will be removed in v29r0.
   template <class TYPE,
             typename = typename std::enable_if< !std::is_base_of<GaudiHandleBase,TYPE>::value
                                              && !std::is_base_of<GaudiHandleArrayBase,TYPE>::value
                                              && !std::is_base_of<DataObjectHandleBase,TYPE>::value
                                               >::type>
-  [[deprecated("Kept for backward compatibility, use the non-const version instead, will be removed in v28r1" )]]
+  [[deprecated("Kept for backward compatibility, use the non-const version instead, will be removed in v29r0" )]]
   Gaudi::Details::PropertyBase* declareProperty( const std::string& name, TYPE& value, const std::string& doc = "none" ) const
   {
     return const_cast<PropertyHolder*>( this )->declareProperty<TYPE>( name, value, doc );

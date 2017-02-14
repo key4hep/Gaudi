@@ -1,7 +1,7 @@
 import os, sys, random, string, json
 import networkx as nx
 
-from Gaudi.Configuration import INFO, DEBUG
+from Gaudi.Configuration import INFO
 from Configurables import GaudiSequencer, CPUCruncher
 
 
@@ -122,7 +122,7 @@ class CruncherSequence(object):
 
     unique_data_objects = []
 
-    def __init__(self, timeValue, IOboolValue, sleepFraction, cfgPath, dfgPath, topSequencer, showStat=False, algoDebug = False):
+    def __init__(self, timeValue, IOboolValue, sleepFraction, cfgPath, dfgPath, topSequencer, showStat=False, outputLevel = INFO):
         """
         Keyword arguments:
         timeValue -- timeValue object to set algorithm execution time
@@ -139,7 +139,7 @@ class CruncherSequence(object):
         self.cfg = nx.read_graphml(_buildFilePath(cfgPath))
         self.dfg = nx.read_graphml(_buildFilePath(dfgPath))
 
-        self.algoDebug = algoDebug
+        self.outputLevel = outputLevel
 
         # Generate control flow part
         self.sequencer = self._generate_sequence(topSequencer)
@@ -178,14 +178,15 @@ class CruncherSequence(object):
             if dataName not in self.unique_data_objects:
                 self.unique_data_objects.append(dataName)
 
-            algo.inpKeys.append(dataName)
+            if dataName not in algo.inpKeys: algo.inpKeys.append(dataName)
 
         # Declare data outputs
         for inNode, outNode in self.dfg.out_edges(algo_name):
             dataName = outNode
             if dataName not in self.unique_data_objects:
                 self.unique_data_objects.append(dataName)
-            algo.outKeys.append(dataName)
+            
+            if dataName not in algo.outKeys: algo.outKeys.append(dataName)
 
 
     def _generate_sequence(self, name, seq=None):
@@ -232,11 +233,11 @@ class CruncherSequence(object):
 
                 avgRuntime, varRuntime = self.timeValue.get(algo_name)
                 algo_daughter = CPUCruncher(algo_name,
-                                OutputLevel = DEBUG if self.algoDebug else INFO,
-                                shortCalib = True,
-                                varRuntime = varRuntime,
-                                avgRuntime = avgRuntime,
-                                SleepFraction = self.sleepFraction if self.IOboolValue.get() else 0.)
+                                            OutputLevel = self.outputLevel,
+                                            shortCalib = True,
+                                            varRuntime = varRuntime,
+                                            avgRuntime = avgRuntime,
+                                            SleepFraction = self.sleepFraction if self.IOboolValue.get() else 0.)
 
                 self._declare_data_deps(algo_name, algo_daughter)
 

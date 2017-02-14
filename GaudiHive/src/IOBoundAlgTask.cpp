@@ -20,7 +20,6 @@ StatusCode IOBoundAlgTask::execute() {
   }
 
   bool eventfailed=false;
-  this_algo->setContext(m_evtCtx);
   Gaudi::Hive::setCurrentContext( m_evtCtx );
 
   m_schedSvc->addAlg(this_algo, m_evtCtx, pthread_self());
@@ -31,12 +30,16 @@ StatusCode IOBoundAlgTask::execute() {
   SmartIF<IMessageSvc> messageSvc (m_serviceLocator);
   MsgStream log(messageSvc, "AccelAlgoExecutionTask");
 
+  // select the appropriate store
+  this_algo->whiteboard()->selectStore(m_evtCtx->valid() ? 
+                                       m_evtCtx->slot() : 0).ignore();
+
   StatusCode sc(StatusCode::FAILURE);
   try {
     RetCodeGuard rcg(appmgr, Gaudi::ReturnCode::UnhandledException);
     log << MSG::DEBUG << "Starting execution of algorithm " << m_algorithm->name() 
         << endmsg;
-    sc = m_algorithm->sysExecute();
+    sc = m_algorithm->sysExecute(*m_evtCtx);
     if (UNLIKELY(!sc.isSuccess()))  {
       log << MSG::WARNING << "Execution of algorithm " 
           << m_algorithm->name() << " failed" << endmsg;

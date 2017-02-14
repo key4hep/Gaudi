@@ -511,6 +511,13 @@ macro(gaudi_project project version)
 
   # - collect environment from externals
   gaudi_external_project_environment()
+  if(PYTHONINTERP_FOUND)
+    # in some cases PYTHONHOME is need so it's better to set it
+    get_filename_component(_py_home "${PYTHON_EXECUTABLE}" PATH)
+    get_filename_component(_py_home "${_py_home}" PATH)
+    set(project_environment ${project_environment}
+        SET PYTHONHOME ${_py_home})
+  endif()
 
   # - include directories
   get_property(include_paths GLOBAL PROPERTY INCLUDE_PATHS)
@@ -2075,7 +2082,9 @@ function(gaudi_add_dictionary dictionary header selection)
 
   # override the genreflex call to wrap it in the right environment
   gaudi_env(PREPEND PATH ${lcg_system_compiler_path}/bin)
-  set(ROOT_genreflex_CMD ${env_cmd} --xml ${env_xml} ${ROOT_genreflex_CMD})
+  if( NOT APPLE ) # On macOS the user has to provide a ROOT version that works on its own.
+     set(ROOT_genreflex_CMD ${env_cmd} --xml ${env_xml} ${ROOT_genreflex_CMD})
+  endif()
 
   # we need to forward the SPLIT_CLASSDEF option to reflex_dictionary()
   if(ARG_SPLIT_CLASSDEF)
@@ -3196,7 +3205,8 @@ function(gaudi_generate_project_manifest filename project version)
     # - compile a list of the paths required at runtime
     #message(STATUS "project_environment -> ${project_environment}")
     set(required_paths)
-    foreach(path ${project_environment})
+    get_property(extra_required_paths GLOBAL PROPERTY GAUDI_REQUIRED_PATHS)
+    foreach(path ${project_environment} ${extra_required_paths})
       #message(STATUS "maybe path -> ${path}")
       if(EXISTS "${path}")
         get_filename_component(path "${path}" REALPATH)
