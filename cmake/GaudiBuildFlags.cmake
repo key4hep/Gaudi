@@ -1,16 +1,22 @@
+# parse binary tag
+include(BinaryTagUtils)
+parse_binary_tag()
+check_compiler()
+
+
 # define a minimun default version
 set(GAUDI_CXX_STANDARD_DEFAULT "c++14")
 # overriddend depending on the compiler
-if (LCG_COMP STREQUAL "clang" AND LCG_COMPVERS VERSION_GREATER "36")
+if (BINARY_TAG_COMP_NAME STREQUAL "clang" AND BINARY_TAG_COMP_VERSION VERSION_GREATER "3.6")
   set(GAUDI_CXX_STANDARD_DEFAULT "c++14")
-elseif(LCG_COMP STREQUAL "gcc")
+elseif(BINARY_TAG_COMP_NAME STREQUAL "gcc")
   # Special defaults
-  if (LCG_COMPVERS VERSION_LESS "47")
+  if (BINARY_TAG_COMP_VERSION VERSION_LESS "4.7")
     set(GAUDI_CXX_STANDARD_DEFAULT "c++98")
-  elseif(LCG_COMPVERS VERSION_LESS "49")
+  elseif(BINARY_TAG_COMP_VERSION VERSION_LESS "4.9")
     # C++11 is enable by default on 4.7 <= gcc < 4.9
     set(GAUDI_CXX_STANDARD_DEFAULT "c++11")
-  elseif(LCG_COMPVERS VERSION_LESS "51")
+  elseif(BINARY_TAG_COMP_VERSION VERSION_LESS "5.1")
     # C++1y (C++14 preview) is enable by default on 4.9 <= gcc < 5.1
     set(GAUDI_CXX_STANDARD_DEFAULT "c++1y")
   else()
@@ -52,7 +58,7 @@ option(GAUDI_CMT_RELEASE
        "use CMT deafult release flags instead of the CMake ones"
        ON)
 
-if (LCG_COMP STREQUAL "gcc" AND LCG_COMPVERS VERSION_GREATER "50")
+if (BINARY_TAG_COMP_NAME STREQUAL "gcc" AND BINARY_TAG_COMP_VERSION VERSION_GREATER "5.0")
   option(GAUDI_SUGGEST_OVERRIDE "enable warnings for missing override keyword" ON)
 endif()
 
@@ -67,9 +73,9 @@ option(GAUDI_SLOW_DEBUG
        ${GAUDI_SLOW_DEBUG_DEFAULT})
 
 # special architecture flags
-set(GAUDI_ARCH_DEFAULT "")  # safe default
-if(LCG_COMP STREQUAL "gcc" AND LCG_COMPVERS VERSION_GREATER "50" AND
-      LCG_ARCH STREQUAL "x86_64")
+set(GAUDI_ARCH_DEFAULT ${BINARY_TAG_MICROARCH})
+if(BINARY_TAG_COMP_NAME STREQUAL "gcc" AND BINARY_TAG_COMP_VERSION VERSION_GREATER "5.0" AND
+   BINARY_TAG_ARCH STREQUAL "x86_64")
   set(GAUDI_ARCH_DEFAULT "sse4.2")
 else()
   if (LCG_HOST_ARCH AND LCG_ARCH)
@@ -94,7 +100,7 @@ set(GAUDI_CXX_STANDARD "${GAUDI_CXX_STANDARD_DEFAULT}"
 
 # If modern c++ and gcc >= 5.1 and requested, use old ABI compatibility
 if((NOT GAUDI_CXX_STANDARD STREQUAL "c++98") AND
-   (LCG_COMP STREQUAL "gcc" AND NOT LCG_COMPVERS VERSION_LESS "51") AND
+   (BINARY_TAG_COMP_NAME STREQUAL "gcc" AND NOT BINARY_TAG_COMP_VERSION VERSION_LESS "5.1") AND
    GAUDI_GCC_OLD_ABI)
   add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
 endif()
@@ -123,9 +129,10 @@ if(NOT GAUDI_FLAGS_SET)
 
   else()
     # special architecture flags
-    if(GAUDI_ARCH)
-      set(arch_opts "-m${GAUDI_ARCH}")
-    endif()
+    set(arch_opts)
+    foreach(_arch_opt ${GAUDI_ARCH})
+      set(arch_opts "${arch_opts} -m${_arch_opt}")  
+    endforeach()
     # Common compilation flags
     set(CMAKE_CXX_FLAGS
         "${arch_opts} -fmessage-length=0 -pipe -Wall -Wextra -Werror=return-type -pthread -pedantic -Wwrite-strings -Wpointer-arith -Woverloaded-virtual -Wno-long-long"
@@ -140,7 +147,7 @@ if(NOT GAUDI_FLAGS_SET)
         CACHE STRING "Flags used by the compiler during all build types."
         FORCE)
 
-    if (LCG_COMP STREQUAL "gcc" AND LCG_COMPVERS VERSION_GREATER "50" AND GAUDI_SUGGEST_OVERRIDE)
+    if (BINARY_TAG_COMP_NAME STREQUAL "gcc" AND BINARY_TAG_COMP_VERSION VERSION_GREATER "5.0" AND GAUDI_SUGGEST_OVERRIDE)
         set(CMAKE_CXX_FLAGS
             "${CMAKE_CXX_FLAGS} -Wsuggest-override"
             CACHE STRING "Flags used by the compiler during all build types."
@@ -160,7 +167,7 @@ if(NOT GAUDI_FLAGS_SET)
           FORCE)
     endif()
 
-    if (LCG_COMP STREQUAL "gcc" AND LCG_COMPVERS VERSION_GREATER "47")
+    if (BINARY_TAG_COMP_NAME STREQUAL "gcc" AND BINARY_TAG_COMP_VERSION VERSION_GREATER "4.7")
       # Use -Og with Debug builds in gcc >= 4.8
       set(CMAKE_CXX_FLAGS_DEBUG "-Og -g"
           CACHE STRING "Flags used by the compiler during Debug builds."
@@ -262,7 +269,8 @@ if(APPLE)
 endif()
 
 #--- Special build flags -------------------------------------------------------
-if ((GAUDI_V21 OR G21_HIDE_SYMBOLS) AND (LCG_COMP STREQUAL gcc AND LCG_COMPVERS MATCHES "4[0-9]"))
+if ((GAUDI_V21 OR G21_HIDE_SYMBOLS) AND (BINARY_TAG_COMP_NAME STREQUAL "gcc" AND
+                                         NOT BINARY_TAG_COMP_VERSION VERSION_LESS "4.0"))
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden -fvisibility-inlines-hidden")
 endif()
 
@@ -280,7 +288,7 @@ else()
   endif()
 endif()
 
-if(LCG_COMP STREQUAL clang AND LCG_COMPVERS MATCHES "37")
+if(BINARY_TAG_COMP_NAME STREQUAL "clang" AND BINARY_TAG_COMP_VERSION VERSION_EQUAL "3.7")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --gcc-toolchain=${lcg_system_compiler_path}")
 endif()
 
@@ -291,7 +299,8 @@ if(NOT GAUDI_V21)
     add_definitions(-DGAUDI_V20_COMPAT)
   endif()
   # special case
-  if(G21_HIDE_SYMBOLS AND (LCG_COMP STREQUAL gcc AND LCG_COMPVERS MATCHES "^4"))
+  if(G21_HIDE_SYMBOLS AND (BINARY_TAG_COMP_NAME STREQUAL "gcc" AND
+                           NOT BINARY_TAG_COMP_VERSION VERSION_LESS "4.0"))
     add_definitions(-DG21_HIDE_SYMBOLS)
   endif()
   #
@@ -304,16 +313,16 @@ endif()
 
 #--- Tuning of warnings --------------------------------------------------------
 if(GAUDI_HIDE_WARNINGS)
-  if(LCG_COMP MATCHES clang)
+  if(BINARY_TAG_COMP_NAME STREQUAL "clang")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Qunused-arguments -Wno-deprecated -Wno-overloaded-virtual -Wno-char-subscripts -Wno-unused-parameter -Wno-unused-local-typedefs -Wno-missing-braces")
   else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated -Wno-empty-body")
-    if(LCG_COMPVERS VERSION_GREATER "47")
+    if(BINARY_TAG_COMP_VERSION VERSION_GREATER "4.7")
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-local-typedefs")
     endif()
   endif()
 else()
-  if(LCG_COMP STREQUAL gcc AND NOT LCG_COMPVERS VERSION_LESS "50")
+  if(BINARY_TAG_COMP_NAME STREQUAL "gcc" AND NOT BINARY_TAG_COMP_VERSION VERSION_LESS "5.0")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wsuggest-override")
   endif()
 endif()
@@ -332,7 +341,7 @@ add_definitions(-DBOOST_FILESYSTEM_VERSION=3)
 #        and http://stackoverflow.com/a/20440238/504346
 add_definitions(-DBOOST_SPIRIT_USE_PHOENIX_V3)
 
-if(LCG_COMP STREQUAL gcc AND LCG_COMPVERS STREQUAL 43)
+if(BINARY_TAG_COMP_NAME STREQUAL "gcc" AND BINARY_TAG_COMP_VERSION VERSION_EQUAL "4.3")
   # The -pedantic flag gives problems on GCC 4.3.
   string(REPLACE "-pedantic" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
   string(REPLACE "-pedantic" "" CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}")
