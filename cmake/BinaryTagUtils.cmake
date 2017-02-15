@@ -80,13 +80,13 @@ macro(parse_binary_tag)
     set(${_variable}_COMP_VERSION "")
   endif()
 
-  foreach(_n ${_variable}
-             ${_variable}_ARCH ${_variable}_MICROARCH
-             ${_variable}_OS
-             ${_variable}_COMP ${_variable}_COMP_NAME ${_variable}_COMP_VERSION
-             ${_variable}_TYPE)
-    message(STATUS "${_n} -> ${${_n}}")
-  endforeach()
+#  foreach(_n ${_variable}
+#             ${_variable}_ARCH ${_variable}_MICROARCH
+#             ${_variable}_OS
+#             ${_variable}_COMP ${_variable}_COMP_NAME ${_variable}_COMP_VERSION
+#             ${_variable}_TYPE)
+#    message(STATUS "${_n} -> ${${_n}}")
+#  endforeach()
 endmacro()
 
 
