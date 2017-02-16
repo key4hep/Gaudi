@@ -26,13 +26,6 @@
 #include "EventSlot.h"
 #include "ExecutionFlowManager.h"
 
-// C++ include files
-#include <functional>
-#include <string>
-#include <thread>
-#include <unordered_map>
-#include <vector>
-
 // External libs
 #include "tbb/concurrent_queue.h"
 

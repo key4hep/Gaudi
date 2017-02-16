@@ -1,8 +1,8 @@
-JobOptionsSvc        INFO # =======> /build1/leggett/git/Gaudi/GaudiExamples/options/Services.opts
+JobOptionsSvc        INFO # =======> /build1/leggett/git/leggett/Gaudi/GaudiExamples/options/Services.opts
 JobOptionsSvc        INFO # (12,1): AuditorSvc.Auditors = ["ChronoAuditor"]
-JobOptionsSvc        INFO # =======> /build1/leggett/git/Gaudi/GaudiExamples/options/Common.opts
+JobOptionsSvc        INFO # =======> /build1/leggett/git/leggett/Gaudi/GaudiExamples/options/Common.opts
 JobOptionsSvc        INFO # (9,1): ApplicationMgr.StatusCodeCheck = 1
-JobOptionsSvc        INFO # =======> /build1/leggett/git/Gaudi/GaudiExamples/options/History.opts
+JobOptionsSvc        INFO # =======> /build1/leggett/git/leggett/Gaudi/GaudiExamples/options/History.opts
 JobOptionsSvc        INFO # (10,1): ApplicationMgr.TopAlg = ["History"]
 JobOptionsSvc        INFO # (11,1): ApplicationMgr.ActivateHistory = 1
 JobOptionsSvc        INFO # (16,1): MessageSvc.OutputLevel = 1
@@ -17,41 +17,34 @@ JobOptionsSvc        INFO # (27,1): FastHistorySvc.Dump = 1
 JobOptionsSvc        INFO # (28,1): FastHistorySvc.OutputFile = "history.dat"
 JobOptionsSvc        INFO # (35,1): ApplicationMgr.EvtMax = 2
 JobOptionsSvc        INFO # (36,1): ApplicationMgr.EvtSel = "NONE"
-JobOptionsSvc        INFO Job options successfully read in from /build1/leggett/git/Gaudi/GaudiExamples/options/History.opts
+JobOptionsSvc        INFO Job options successfully read in from /build1/leggett/git/leggett/Gaudi/GaudiExamples/options/History.opts
 ApplicationMgr      DEBUG Getting my own properties[m
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v4r1)
-                                          running on p05614910w96644.cern.ch on Wed Oct  5 20:00:21 2016
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v28r1)
+                                          running on p05614910w96644.cern.ch on Fri Jan 27 19:47:03 2017
 ====================================================================================================================================[m
 ApplicationMgr       INFO Application Manager Configured successfully[m
 ServiceManager      DEBUG Initializing service StatusCodeSvc[m
-StatusCodeSvc       DEBUG Property update for OutputLevel : new value = 2[m
 StatusCodeSvc       DEBUG Service base class initialized successfully[m
 StatusCodeSvc        INFO initialize[m
 ServiceManager      DEBUG Initializing service AppMgrRunable[m
-AppMgrRunable       DEBUG Property update for OutputLevel : new value = 1[m
 AppMgrRunable       DEBUG Service base class initialized successfully[m
 ServiceManager      DEBUG Initializing service EventLoopMgr[m
-EventLoopMgr        DEBUG Property update for OutputLevel : new value = 1[m
 EventLoopMgr        DEBUG Service base class initialized successfully[m
-IncidentSvc         DEBUG Property update for OutputLevel : new value = 2[m
 IncidentSvc         DEBUG Service base class initialized successfully[m
 IncidentSvc         DEBUG Adding [AbortEvent] listener '<unknown>' with priority 0[m
-EventLoopMgr        DEBUG Creating Top Algorithm History with name History[m
-EventDataSvc        DEBUG Property update for OutputLevel : new value = 1[m
 EventDataSvc        DEBUG Service base class initialized successfully[m
 EventDataSvc      VERBOSE ServiceLocatorHelper::service: found service IncidentSvc[m
-EventPersistenc...  DEBUG Property update for OutputLevel : new value = 1[m
 EventPersistenc...  DEBUG Service base class initialized successfully[m
+EventLoopMgr      VERBOSE ServiceLocatorHelper::service: found service EventDataSvc[m
+EventLoopMgr        DEBUG Creating Top Algorithm History with name History[m
 History           VERBOSE ServiceLocatorHelper::service: found service EventDataSvc[m
-TimelineSvc         DEBUG Property update for OutputLevel : new value = 1[m
 TimelineSvc         DEBUG Service base class initialized successfully[m
 TimelineSvc         DEBUG initialize[m
 History           VERBOSE ServiceLocatorHelper::service: found service TimelineSvc[m
 History           VERBOSE ServiceLocatorHelper::service: found service HistorySvc[m
 History              INFO got historySvc: HistorySvc[m
-AlgExecStateSvc     DEBUG Property update for OutputLevel : new value = 1[m
 AlgExecStateSvc     DEBUG Service base class initialized successfully[m
 History           VERBOSE ServiceLocatorHelper::service: found service AlgExecStateSvc[m
 AlgExecStateSvc     DEBUG preInit: will add Alg History later[m
@@ -60,7 +53,6 @@ History             DEBUG output handles: 0[m
 History             DEBUG Data Deps for History[m
 [93;1mEventLoopMgr      WARNING Unable to locate service "EventSelector" [m
 [93;1mEventLoopMgr      WARNING No events will be processed from external input.[m
-HistogramDataSvc    DEBUG Property update for OutputLevel : new value = 1[m
 HistogramDataSvc    DEBUG Service base class initialized successfully[m
 HistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service IncidentSvc[m
 HistogramPersis...  DEBUG  'CnvServices':[ 'RootHistSvc' ][m
@@ -68,17 +60,14 @@ HistogramPersis...  DEBUG Service base class initialized successfully[m
 [93;1mHistogramPersis...WARNING Histograms saving not required.[m
 HistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service HistogramPersistencySvc[m
 ServiceManager      DEBUG Initializing service HistorySvc[m
-HistorySvc          DEBUG Property update for OutputLevel : new value = 1[m
 HistorySvc          DEBUG Service base class initialized successfully[m
 HistorySvc          DEBUG Initializing HistorySvc[m
-AlgContextSvc       DEBUG Property update for OutputLevel : new value = 1[m
 AlgContextSvc       DEBUG Service base class initialized successfully[m
 AlgContextSvc     VERBOSE ServiceLocatorHelper::service: found service IncidentSvc[m
 IncidentSvc         DEBUG Adding [BeginEvent] listener 'AlgContextSvc' with priority 0[m
 IncidentSvc         DEBUG Adding [EndEvent] listener 'AlgContextSvc' with priority 0[m
 HistorySvc        VERBOSE ServiceLocatorHelper::service: found service AlgContextSvc[m
 HistorySvc        VERBOSE ServiceLocatorHelper::service: found service IncidentSvc[m
-ToolSvc             DEBUG Property update for OutputLevel : new value = 1[m
 ToolSvc             DEBUG Service base class initialized successfully[m
 IncidentSvc         DEBUG Adding [BeginEvent] listener 'HistorySvc' with priority -9223372036854775808[m
 ApplicationMgr       INFO Application Manager Initialized successfully[m
@@ -127,7 +116,7 @@ Algs: 1
   + History  e: 0 f: 1 sc: FAILURE
 [m
 AlgExecStateSvc   VERBOSE reset(0)[m
-EventLoopMgr        DEBUG ---> Loop Finished -  WSS 39.0156 | total time (skipping 1st evt) 26377 ns[m
+EventLoopMgr        DEBUG ---> Loop Finished -  WSS 46.0273 | total time (skipping 1st evt) 31410 ns[m
 ServiceManager      DEBUG Stopping service HistorySvc[m
 HistorySvc        VERBOSE MessageSvc is Service[m
 HistorySvc        VERBOSE JobOptionsSvc is Service[m
