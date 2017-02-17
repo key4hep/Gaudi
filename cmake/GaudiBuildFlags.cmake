@@ -182,13 +182,13 @@ if(NOT GAUDI_FLAGS_SET)
           FORCE)
     endif()
 
-    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g -DNDEBUG"
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELEASE} -g"
         CACHE STRING "Flags used by the compiler during Release with Debug Info builds."
         FORCE)
-    set(CMAKE_C_FLAGS_RELWITHDEBINFO "-O2 -g -DNDEBUG"
+    set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELEASE} -g"
         CACHE STRING "Flags used by the compiler during Release with Debug Info builds."
         FORCE)
-    set(CMAKE_Fortran_FLAGS_RELWITHDEBINFO "-O2 -g -DNDEBUG"
+    set(CMAKE_Fortran_FLAGS_RELWITHDEBINFO "${CMAKE_Fortran_FLAGS_RELEASE} -g"
         CACHE STRING "Flags used by the compiler during Release with Debug Info builds."
         FORCE)
 
