@@ -32,8 +32,66 @@ typedef std::function<StatusCode()> action;
 
 //---------------------------------------------------------------------------
 
-/**@class AvalancheSchedulerSvc AvalancheSchedulerSvc.h GaudiKernel/AvalancheSchedulerSvc.h
+/**@class AvalancheSchedulerSvc AvalancheSchedulerSvc.h
  *
+ *  # Introduction
+ *
+ *  The scheduler is named after its ability to generically maximize the average
+ *  intra-event task occupancy by inducing avalanche-like concurrency disclosure
+ *  waves in conditions of arbitrary intra-event task precedence constraints
+ *  (see section 3.2 of http://cern.ch/go/7Jn7).
+ *
+ *
+ *  # Task precedence management
+ *
+ *  The scheduler is driven by *graph-based* task precedence management. When
+ *  compared to approach used in the ForwardSchedulerSvc, the following advantages
+ *  can be emphasized:
+ *
+ *   (1) Faster decision making (thus lower concurrency disclosure downtime);
+ *   (2) Capacity for proactive task scheduling decision making.
+ *
+ *  Point (2) allowed to implement a number of generic, non-intrusive intra-event
+ *  throughput maximization scheduling strategies.
+ *
+ *
+ *  # Scheduling principles
+ *
+ *   o Task scheduling prerequisites
+ *
+ *     A task is scheduled ASA all following conditions are met:
+ *     - if a control flow (CF) graph traversal reaches the task;
+ *     - when all data flow (DF) dependencies of the task are satisfied;
+ *     - when the DF-ready task pool parsing mechanism (*) considers it, and:
+ *       - a free (or re-entrant) algorithm instance to run within the task is
+ *         available;
+ *       - there is a free computational resource to run the task.
+ *
+ *   o (*) Avalanche induction strategies
+ *
+ *     The scheduler is able to maximize the intra-event throughput by applying
+ *     several search strategies within the pool, prioritizing tasks according
+ *     to the following types of precedence rules graph asymmetries:
+ *
+ *      (A) Local task-to-data asymmetry;
+ *      (B) Local task-to-task asymmetry;
+ *      (C) Global task-to-task asymmetry.
+ *
+ *
+ *   o Other mechanisms of throughput maximization
+ *
+ *     The scheduler is able to maximize the overall throughput of data processing
+ *     by scheduling the CPU-blocking tasks efficiently. The mechanism can be
+ *     applied to the following types of tasks:
+ *     - I/O-bound tasks;
+ *     - tasks with computation offloading (accelerators, GPGPUs, clouds,
+ *       quantum computing devices..joke);
+ *     - synchronization-bound tasks.
+ *
+ *
+ *  # Credits
+ *  Historically, the AvalancheSchedulerSvc branched off the ForwardSchedulerSvc
+ *  and in many ways built its success on ideas and code of the latter.
  *
  *
  *  @author  Illya Shapoval
