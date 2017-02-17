@@ -511,6 +511,13 @@ macro(gaudi_project project version)
 
   # - collect environment from externals
   gaudi_external_project_environment()
+  if(PYTHONINTERP_FOUND)
+    # in some cases PYTHONHOME is need so it's better to set it
+    get_filename_component(_py_home "${PYTHON_EXECUTABLE}" PATH)
+    get_filename_component(_py_home "${_py_home}" PATH)
+    set(project_environment ${project_environment}
+        SET PYTHONHOME ${_py_home})
+  endif()
 
   # - include directories
   get_property(include_paths GLOBAL PROPERTY INCLUDE_PATHS)
@@ -3198,7 +3205,8 @@ function(gaudi_generate_project_manifest filename project version)
     # - compile a list of the paths required at runtime
     #message(STATUS "project_environment -> ${project_environment}")
     set(required_paths)
-    foreach(path ${project_environment})
+    get_property(extra_required_paths GLOBAL PROPERTY GAUDI_REQUIRED_PATHS)
+    foreach(path ${project_environment} ${extra_required_paths})
       #message(STATUS "maybe path -> ${path}")
       if(EXISTS "${path}")
         get_filename_component(path "${path}" REALPATH)

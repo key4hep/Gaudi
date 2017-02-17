@@ -51,14 +51,6 @@ void __attribute__ ((noinline)) SCSAlg::fncUnchecked() {
 
 }
 
-#ifndef special_fncUnchecked2
-void __attribute__ ((noinline)) SCSAlg::fncUnchecked2() {
-
-  test();
-
-}
-#endif
-
 void SCSAlg::fncIgnored() {
   // Ignore all unchecked StatusCode instances in the current scope.
   StatusCode::ScopedDisableChecking _sc_ignore;
