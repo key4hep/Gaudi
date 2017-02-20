@@ -16,7 +16,7 @@ class Tests(CMakeTestScripts):
         os.environ['CMAKE_PREFIX_PATH'] = join(self.base_dir, 'data', 'projects')
         #os.environ['CMTPROJECTPATH'] = ''
         #os.environ['CMAKE_PREFIX_PATH'] = join(self.base_dir, 'data', 'projects')
-        os.environ['CMTCONFIG'] = 'x86_64-slc0-gcc99-opt'
+        os.environ['BINARY_TAG'] = 'x86_64-slc0-gcc99-opt'
 
     tests = ['no_use', 'simple_use', 'chain', 'diamond',
              'with_tools', 'with_chained_tools',
