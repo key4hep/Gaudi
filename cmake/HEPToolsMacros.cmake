@@ -12,7 +12,7 @@
 #  - LCG_SYSTEM: by default it is derived from BINARY_TAG, but it can be set
 #                explicitly to a compatible supported platform if the default
 #                one is not supported.
-#                E.g.: if BINARY_TAG is x86_64-ubuntu12.04-gcc46-opt, LCG_SYSTEM
+#                E.g.: if BINARY_TAG is x86_64-ubuntu1204-gcc46-opt, LCG_SYSTEM
 #                      should be set to x86_64-slc6-gcc46.
 ################################################################################
 
@@ -62,7 +62,7 @@ function(lcg_find_host_os)
       endif()
       if(release_file MATCHES Ubuntu)
         set(os ubuntu)
-        string(REGEX REPLACE ".*Ubuntu ([0-9]+)[.]([0-9]+).*" "\\1.\\2" osvers "${release_file}")
+        string(REGEX REPLACE ".*Ubuntu ([0-9]+)[.]([0-9]+).*" "\\1\\2" osvers "${release_file}")
       elseif(release_file MATCHES "Fedora|Scientific Linux( CERN)?|CentOS") # RedHat-like distributions
         if(CMAKE_MATCH_0 STREQUAL "Scientific Linux CERN")
           set(os slc)
