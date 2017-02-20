@@ -50,6 +50,10 @@ set(BINARY_TAG "x86_64-mv-gcc7-opt")
 parse_binary_tag(BINARY_TAG "x86_64-override-gcc7-opt")
 assert_strequal(BINARY_TAG "x86_64-override-gcc7-opt")
 
+prepare("not defined")
+parse_binary_tag()
+assert(BINARY_TAG)
+
 test_parsing("plain" "x86_64-centos7-gcc7-opt")
 assert_strequal(BINARY_TAG_ARCH         "x86_64"  ) 
 assert_strequal(BINARY_TAG_MICROARCH    ""        )

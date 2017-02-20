@@ -45,7 +45,8 @@
 #   .. note::
 #
 #     If no argument is passed and :variable:`BINARY_TAG` is not set we try to guess
-#     it from the environment variables ``BINARY_TAG`` and ``CMTCONFIG``.
+#     it from the environment variables ``BINARY_TAG`` and ``CMTCONFIG``, or from
+#     system inspection.
 #
 macro(parse_binary_tag)
   # parse arguments
@@ -62,6 +63,11 @@ macro(parse_binary_tag)
     endif()
     if(NOT BINARY_TAG)
       set(BINARY_TAG $ENV{CMTCONFIG})
+    endif()
+    if(NOT BINARY_TAG)
+      include(HEPToolsMacros)
+      lcg_detect_host_platform()
+      set(BINARY_TAG ${LCG_HOST_SYSTEM}-opt)
     endif()
   endif()
 
