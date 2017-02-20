@@ -2,7 +2,15 @@
 # BinaryTagUtils
 # --------------
 #
-# Utilities to work with the BINARY_TAG special variable.
+# Utilities to work with the :variable:`BINARY_TAG` special variable.
+#
+#
+# .. variable:: BINARY_TAG
+#
+#   Variable used to identify the target platform for a build. It is also used
+#   to tune build paramenters, like changing from Release to Debug builds.
+#
+#   See https://github.com/HEP-SF/documents/tree/master/HSF-TN/draft-2015-NAM
 #
 #
 # .. command:: parse_binary_tag
@@ -48,6 +56,13 @@ macro(parse_binary_tag)
     endif()
   else()
     set(_variable BINARY_TAG)
+    # try to get a value from the environment
+    if(NOT BINARY_TAG)
+      set(BINARY_TAG $ENV{BINARY_TAG})
+    endif()
+    if(NOT BINARY_TAG)
+      set(BINARY_TAG $ENV{CMTCONFIG})
+    endif()
   endif()
 
   string(REGEX MATCHALL "[^-]+" _out "${${_variable}}")
