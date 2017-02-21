@@ -18,7 +18,7 @@ namespace concurrency {
     for (auto child : node.getDaughters()) {
       int& childDecision = child->m_graph->getNodeDecisions(m_slotNum)[child->getNodeIndex()];
 
-      if (childDecision == 1 && node.m_modeOR && node.m_isLazy) {
+      if (childDecision == 1 && node.m_modeOR && node.m_modePromptDecision) {
         node.m_graph->getNodeDecisions(m_slotNum)[node.getNodeIndex()] = 1;
         return true;
       }
@@ -101,7 +101,7 @@ namespace concurrency {
     for (auto child : node.getDaughters()) {
       int& childDecision = child->m_graph->getNodeDecisions(m_slotNum)[child->getNodeIndex()];
 
-      if (childDecision == 1 && node.m_modeOR && node.m_isLazy) {
+      if (childDecision == 1 && node.m_modeOR && node.m_modePromptDecision) {
         node.m_graph->getNodeDecisions(m_slotNum)[node.getNodeIndex()] = 1;
         return true;
       }
@@ -171,7 +171,7 @@ namespace concurrency {
       else
         foundNegativeChild = true;
 
-      if (node.m_isLazy) {
+      if (node.m_modePromptDecision) {
         if (node.m_modeOR && foundPositiveChild) {
           decision = 1;
           break;

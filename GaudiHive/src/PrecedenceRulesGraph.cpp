@@ -64,13 +64,13 @@ namespace concurrency
   {
     // check whether we already had a result earlier
     //    if (-1 != node_decisions[m_nodeIndex] ) { return node_decisions[m_nodeIndex]; }
-    int decision           = ( ( m_allPass && m_isLazy ) ? 1 : -1 );
+    int decision           = ( ( m_allPass && m_modePromptDecision ) ? 1 : -1 );
     bool hasUndecidedChild = false;
     for ( auto daughter : m_children ) {
-      if ( m_isLazy && ( -1 != decision || hasUndecidedChild ) ) {
+      if ( m_modePromptDecision && ( -1 != decision || hasUndecidedChild ) ) {
         node_decisions[m_nodeIndex] = decision;
         return decision;
-      } // if lazy return once result is known already or we can't fully evaluate right now because one daugther
+      } // if prompt decision, return once result is known already or we can't fully evaluate right now because one daugther
       // decision is missing still
       auto res = daughter->updateState( states, node_decisions );
       if ( -1 == res ) {
@@ -104,17 +104,17 @@ namespace concurrency
                                      const AlgorithmNode* requestor ) const
   {
 
-    int decision           = ( ( m_allPass && m_isLazy ) ? 1 : -1 );
+    int decision           = ( ( m_allPass && m_modePromptDecision ) ? 1 : -1 );
     bool keepGoing         = true;
     bool hasUndecidedChild = false;
     // std::cout << "++++++++++++++++++++BEGIN(UPDATING)++++++++++++++++++++" << std::endl;
     // std::cout << "UPDATING DAUGHTERS of DECISION NODE: " << m_nodeName << std::endl;
 
     for ( auto daughter : m_children ) {
-      // if lazy return once result is known already or we can't fully evaluate
+      // if prompt decision, return once result is known already or we can't fully evaluate
       // right now because one daughter decision is missing still
       // std::cout << "----UPDATING DAUGHTER: " << daughter->getNodeName() << std::endl;
-      if ( m_isLazy && !keepGoing ) {
+      if ( m_modePromptDecision && !keepGoing ) {
         node_decisions[m_nodeIndex] = decision;
         // std::cout << "STOPPING ITERATION OVER (UPDATING) DECISION NODE CHILDREN: " << m_nodeName << std::endl;
         break;
@@ -179,8 +179,8 @@ namespace concurrency
       auto res = node_decisions[daughter->getNodeIndex()];
       if ( -1 == res ) {
         daughter->promoteToControlReadyState( slotNum, states, node_decisions );
-        if ( m_isLazy ) return true;
-      } else if ( m_isLazy ) {
+        if ( m_modePromptDecision ) return true;
+      } else if ( m_modePromptDecision ) {
         if ( ( false == m_modeOR && res == 0 ) || ( true == m_modeOR && res == 1 ) ) return true;
       }
     }
@@ -679,7 +679,7 @@ namespace concurrency
 
   //---------------------------------------------------------------------------
   StatusCode PrecedenceRulesGraph::addDecisionHubNode( Algorithm* decisionHubAlgo, const std::string& parentName,
-		                                              bool modeConcurrent, bool modeOR, bool allPass, bool isLazy )
+		                                              bool modeConcurrent, bool modePromptDecision, bool modeOR, bool allPass)
   {
 
     StatusCode sc = StatusCode::SUCCESS;
@@ -696,7 +696,7 @@ namespace concurrency
         decisionHubNode = itA->second;
       } else {
         decisionHubNode =
-            new concurrency::DecisionNode( *this, m_nodeCounter, decisionHubName, modeConcurrent, modeOR, allPass, isLazy );
+            new concurrency::DecisionNode( *this, m_nodeCounter, decisionHubName, modeConcurrent, modePromptDecision, modeOR, allPass);
         ++m_nodeCounter;
         m_decisionNameToDecisionHubMap[decisionHubName] = decisionHubNode;
         if (msgLevel(MSG::DEBUG))
@@ -715,14 +715,14 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  void PrecedenceRulesGraph::addHeadNode( const std::string& headName, bool modeConcurrent, bool modeOR, bool allPass, bool isLazy )
+  void PrecedenceRulesGraph::addHeadNode( const std::string& headName, bool modeConcurrent, bool modePromptDecision, bool modeOR, bool allPass)
   {
 
     auto itH = m_decisionNameToDecisionHubMap.find( headName );
     if ( itH != m_decisionNameToDecisionHubMap.end() ) {
       m_headNode = itH->second;
     } else {
-      m_headNode = new concurrency::DecisionNode( *this, m_nodeCounter, headName, modeConcurrent, modeOR, allPass, isLazy );
+      m_headNode = new concurrency::DecisionNode( *this, m_nodeCounter, headName, modeConcurrent, modePromptDecision, modeOR, allPass );
       ++m_nodeCounter;
       m_decisionNameToDecisionHubMap[headName] = m_headNode;
     }
