@@ -65,9 +65,7 @@ macro(parse_binary_tag)
       set(BINARY_TAG $ENV{CMTCONFIG})
     endif()
     if(NOT BINARY_TAG)
-      include(HEPToolsMacros)
-      lcg_detect_host_platform()
-      set(BINARY_TAG ${LCG_HOST_SYSTEM}-opt)
+      get_host_binary_tag(BINARY_TAG)
     endif()
   endif()
 
@@ -139,4 +137,39 @@ function(check_compiler)
       endif()
     endif()
   endif()
+endfunction()
+
+set(_GET_HOST_BINARY_TAG_SCRIPT "${CMAKE_CURRENT_LIST_DIR}/get_host_binary_tag.py" CACHE INTERNAL "")
+#.rst
+# .. command:: get_host_binary_tag
+#
+#   Usage::
+#
+#       get_host_binary_tag(<variable> [<type>])
+#
+#   Compute host binary tag according to the rules defined in
+#   https://github.com/HEP-SF/documents/tree/master/HSF-TN/draft-2015-NAM
+#   and store it in the specified variable.
+#
+#   The argument ``<type>`` can be used a build type different from the default (opt).
+#
+function(get_host_binary_tag variable)
+  if(ARGC GREATER 1)
+    set(type ${ARGV1})
+  else()
+    set(type opt)
+  endif()
+  if(NOT HOST_BINARY_TAG)
+    find_package(PythonInterp QUIET)
+    if(NOT PYTHONINTERP_FOUND)
+      message(FATAL_ERROR "Python interpreter required to get host binary tag")
+    endif()
+    execute_process(COMMAND ${PYTHON_EXECUTABLE} "${_GET_HOST_BINARY_TAG_SCRIPT}"
+                    OUTPUT_VARIABLE HOST_BINARY_TAG
+                    OUTPUT_STRIP_TRAILING_WHITESPACE)
+    set(HOST_BINARY_TAG ${HOST_BINARY_TAG} CACHE STRING "BINARY_TAG of the host")
+    mark_as_advanced(HOST_BINARY_TAG)
+  endif()
+  string(REGEX REPLACE "-opt\\$" "-${type}" value "${HOST_BINARY_TAG}")
+  set(${variable} ${value} PARENT_SCOPE)
 endfunction()
