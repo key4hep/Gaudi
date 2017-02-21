@@ -160,6 +160,7 @@ endif()
 #---------------------------------------------------------------------------------------------------
 include(CMakeParseArguments)
 include(CMakeFunctionalUtils)
+include(BinaryTagUtils)
 
 find_package(PythonInterp)
 
@@ -298,6 +299,22 @@ macro(gaudi_project project version)
   set(used_data_packages)
   set(inherited_data_packages)
   set(inherited_data_packages_decl)
+
+  parse_binary_tag()
+  # set LCG platform ids
+  set(LCG_SYSTEM ${BINARY_TAG_ARCH}-${BINARY_TAG_OS}-${BINARY_TAG_COMP}
+      CACHE STRING "Platform id of the target system or a compatible one.")
+  set(LCG_platform ${LCG_SYSTEM}-${BINARY_TAG_TYPE}
+      CACHE STRING "Platform ID for the AA project binaries.")
+  set(LCG_system   ${LCG_SYSTEM}-opt
+      CACHE STRING "Platform ID for the external libraries.")
+  mark_as_advanced(LCG_SYSTEM LCG_platform LCG_system)
+
+  # Report the platform ids.
+  message(STATUS "Target system: ${BINARY_TAG}")
+  message(STATUS "CMake build type: ${CMAKE_BUILD_TYPE}")
+  message(STATUS "Host system: ${HOST_BINARY_TAG}")
+  message(STATUS "LCG system: ${LCG_SYSTEM}")
 
   # Locate and import used projects.
   if(PROJECT_USE)
