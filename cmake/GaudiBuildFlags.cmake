@@ -38,6 +38,13 @@ else()
 endif()
 
 
+# Report the platform ids.
+message(STATUS "Target system:    ${BINARY_TAG}")
+message(STATUS "CMake build type: ${CMAKE_BUILD_TYPE}")
+message(STATUS "Host system:      ${HOST_BINARY_TAG}")
+message(STATUS "LCG system:       ${LCG_SYSTEM}")
+
+
 # define a minimun default version
 set(GAUDI_CXX_STANDARD_DEFAULT "c++14")
 # overriddend depending on the compiler

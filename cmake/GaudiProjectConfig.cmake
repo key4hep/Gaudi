@@ -310,12 +310,6 @@ macro(gaudi_project project version)
       CACHE STRING "Platform ID for the external libraries.")
   mark_as_advanced(LCG_SYSTEM LCG_platform LCG_system)
 
-  # Report the platform ids.
-  message(STATUS "Target system: ${BINARY_TAG}")
-  message(STATUS "CMake build type: ${CMAKE_BUILD_TYPE}")
-  message(STATUS "Host system: ${HOST_BINARY_TAG}")
-  message(STATUS "LCG system: ${LCG_SYSTEM}")
-
   # Locate and import used projects.
   if(PROJECT_USE)
     _gaudi_use_other_projects(${PROJECT_USE})
@@ -433,6 +427,7 @@ macro(gaudi_project project version)
   #--- Global actions for the project
   #message(STATUS "CMAKE_MODULE_PATH -> ${CMAKE_MODULE_PATH}")
   include(GaudiBuildFlags)
+
   # Generate the version header for the project.
   string(TOUPPER ${project} _proj)
   if(versheader_cmd)
