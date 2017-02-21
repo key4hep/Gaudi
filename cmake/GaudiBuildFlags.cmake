@@ -4,6 +4,32 @@ parse_binary_tag()
 check_compiler()
 
 
+# Convert BINARY_TAG_TYPE to CMAKE_BUILD_TYPE
+if(BINARY_TAG_TYPE STREQUAL "opt")
+  set(_BT_CMAKE_BUILD_TYPE Release)
+elseif(BINARY_TAG_TYPE STREQUAL "dbg")
+  set(_BT_CMAKE_BUILD_TYPE Debug)
+elseif(BINARY_TAG_TYPE STREQUAL "cov")
+  set(_BT_CMAKE_BUILD_TYPE Coverage)
+elseif(BINARY_TAG_TYPE STREQUAL "pro")
+  set(_BT_CMAKE_BUILD_TYPE Profile)
+#elseif(BINARY_TAG_TYPE STREQUAL "o2g")
+#  set(CMAKE_BUILD_TYPE RelWithDebInfo)
+#elseif(BINARY_TAG_TYPE STREQUAL "min")
+#  set(CMAKE_BUILD_TYPE MinSizeRel)
+else()
+  message(FATAL_ERROR "BINARY_TAG build type ${BINARY_TAG_TYPE} not supported.")
+endif()
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE ${_BT_CMAKE_BUILD_TYPE} CACHE STRING
+      "Choose the type of build, options are: empty, Debug, Release, Coverage, Profile, RelWithDebInfo, MinSizeRel.")
+else()
+  if(NOT _BT_CMAKE_BUILD_TYPE STREQUAL CMAKE_BUILD_TYPE)
+    message(WARNING "CMAKE_BUILD_TYPE set to ${CMAKE_BUILD_TYPE}, but BINARY_TAG build type ${BINARY_TAG_TYPE} implies ${_BT_CMAKE_BUILD_TYPE}")
+  endif()
+endif()
+
+
 # define a minimun default version
 set(GAUDI_CXX_STANDARD_DEFAULT "c++14")
 # overriddend depending on the compiler

@@ -215,25 +215,6 @@ function(lcg_get_target_platform)
     set(LCG_COMPVERS "")
   endif()
 
-  # Convert LCG_BUILD_TYPE to CMAKE_BUILD_TYPE
-  if(LCG_BUILD_TYPE STREQUAL "opt")
-    set(type Release)
-  elseif(LCG_BUILD_TYPE STREQUAL "dbg")
-    set(type Debug)
-  elseif(LCG_BUILD_TYPE STREQUAL "cov")
-    set(type Coverage)
-  elseif(LCG_BUILD_TYPE STREQUAL "pro")
-    set(type Profile)
-#  elseif(LCG_BUILD_TYPE STREQUAL "o2g")
-#    set(type RelWithDebInfo)
-#  elseif(LCG_BUILD_TYPE STREQUAL "min")
-#    set(type MinSizeRel)
-  else()
-    message(FATAL_ERROR "LCG build type ${type} not supported.")
-  endif()
-  set(CMAKE_BUILD_TYPE ${type} CACHE STRING
-      "Choose the type of build, options are: empty, Debug, Release, Coverage, Profile, RelWithDebInfo, MinSizeRel.")
-
   # architecture
   set(CMAKE_SYSTEM_PROCESSOR ${LCG_ARCH} PARENT_SCOPE)
 
