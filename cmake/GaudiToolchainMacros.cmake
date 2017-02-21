@@ -38,10 +38,8 @@ endmacro()
 ## Initialize common variables.
 macro(init)
     init_search_path()
-    if(NOT BINARY_TAG)
-        include(HEPToolsMacros)
-        lcg_get_target_platform()
-    endif()
+    include(BinaryTagUtils)
+    parse_binary_tag()
 endmacro()
 
 

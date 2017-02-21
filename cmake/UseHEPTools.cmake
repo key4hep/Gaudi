@@ -10,17 +10,22 @@ include(${CMAKE_CURRENT_LIST_DIR}/BinaryTagUtils.cmake)
 # WARNING: this macro must be called from a toolchain file
 #
 macro(use_heptools heptools_version)
-  # Deduce the LCG configuration tag from the system
-  lcg_detect_host_platform()
-  lcg_get_target_platform()
+  get_host_binary_tag(LCG_system)
   parse_binary_tag()
+  compatible_binary_tags(_compatible_tags)
+
+  set(_info_names)
+  foreach(_tag ${_compatible_tags})
+    list(APPEND _info_names LCG_externals_${_tag}.txt)
+  endforeach()
+  if(LCG_SYSTEM)
+    list(APPEND _info_names LCG_externals_${LCG_SYSTEM}-${BINARY_TAG_TYPE}.txt
+                            LCG_externals_${LCG_SYSTEM}-opt.txt)
+  endif()
 
   # Find the toolchain description
   find_file(LCG_TOOLCHAIN_INFO
-            NAMES LCG_externals_${BINARY_TAG}.txt
-                  LCG_externals_${BINARY_TAG_ARCH}-${BINARY_TAG_OS}-${BINARY_TAG_COMP}-${BINARY_TAG_TYPE}.txt
-                  LCG_externals_${LCG_platform}.txt
-                  LCG_externals_${LCG_system}.txt
+            NAMES ${_info_names}
             HINTS ENV CMTPROJECTPATH
             PATH_SUFFIXES LCG_${heptools_version})
 
