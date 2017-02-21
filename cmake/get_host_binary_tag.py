@@ -31,7 +31,7 @@ def _Darwin_os():
     return 'macos' + ''.join(version[:2])
 
 def _Windows_os():
-    return 'win' + ''.join(platform.win32_ver()[1][:2])
+    return 'win' + platform.win32_ver()[1].split('.', 1)[0]
 
 def _unknown_os():
     return 'unknown'
@@ -50,4 +50,8 @@ def _compiler_version(cmd=os.environ.get('CC', 'cc')):
 def compiler_id():
     return _compiler_version()
 
-print('-'.join([platform.machine(), os_id(), compiler_id(), 'opt']))
+arch = platform.machine()
+if arch == 'AMD64':  # this is what we get on Windows
+    arch = 'x86_64'
+
+print('-'.join([arch, os_id(), compiler_id(), 'opt']))
