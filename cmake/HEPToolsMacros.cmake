@@ -191,9 +191,6 @@ function(lcg_get_target_platform)
   set(LCG_BUILD_TYPE ${type} CACHE STRING "Type of build (LCG id).")
 
   set(LCG_TARGET ${arch}-${os}-${comp})
-  if(NOT LCG_SYSTEM)
-    set(LCG_SYSTEM ${arch}-${os}-${comp} CACHE STRING "Platform id of the target system or a compatible one.")
-  endif()
 
   # Convert the components of the tag in the equivalents of LCG_HOST_*,
   # but transient
@@ -228,24 +225,6 @@ function(lcg_get_target_platform)
   else()
     set(CMAKE_SYSTEM_NAME ${CMAKE_HOST_SYSTEM_NAME})
     message(WARNING "OS ${LCG_OS} is not a known platform, assuming it's a ${CMAKE_SYSTEM_NAME}.")
-  endif()
-
-  # set default platform ids
-  set(LCG_platform ${LCG_SYSTEM}-${LCG_BUILD_TYPE} CACHE STRING "Platform ID for the AA project binaries.")
-  set(LCG_system   ${LCG_SYSTEM}-opt               CACHE STRING "Platform ID for the external libraries.")
-
-  mark_as_advanced(LCG_platform LCG_system)
-
-  # Report the platform ids.
-  message(STATUS "Target system: ${LCG_TARGET}")
-  message(STATUS "Build type: ${LCG_BUILD_TYPE}")
-
-  if(LCG_HOST_SYSTEM AND NOT LCG_HOST_SYSTEM STREQUAL LCG_TARGET)
-    message(STATUS "Host system: ${LCG_HOST_SYSTEM}")
-  endif()
-
-  if(NOT LCG_TARGET STREQUAL LCG_SYSTEM)
-    message(STATUS "Use LCG system: ${LCG_SYSTEM}")
   endif()
 
   # copy variables to parent scope
