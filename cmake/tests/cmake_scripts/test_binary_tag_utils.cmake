@@ -15,6 +15,12 @@ macro(test_parsing msg tag)
   parse_binary_tag(BINARY_TAG ${tag})
 endmacro()
 
+macro(test_compatible tag)
+  prepare("test compatible tags for ${tag}")
+  parse_binary_tag(BINARY_TAG ${tag})
+  compatible_binary_tags(out)
+endmacro()
+
 include(BinaryTagUtils)
 
 message(STATUS "testing parse_binary_tag()")
@@ -98,3 +104,21 @@ assert_strequal(BINARY_TAG_COMP         "gcc7"    )
 assert_strequal(BINARY_TAG_COMP_NAME    "gcc"     )
 assert_strequal(BINARY_TAG_COMP_VERSION "7"       )
 assert_strequal(BINARY_TAG_TYPE         "opt"     )
+
+
+message(STATUS "testing compatible_binary_tags(variable)")
+
+test_compatible("x86_64-centos7-gcc7-opt" )
+assert_strequal(out "${BINARY_TAG}")
+
+test_compatible("x86_64-centos7-gcc7-dbg" )
+assert_strequal(out "${BINARY_TAG};x86_64-centos7-gcc7-opt")
+
+test_compatible("x86_64-centos7-gcc7-any" )
+assert_strequal(out "${BINARY_TAG};x86_64-centos7-gcc7-opt")
+
+test_compatible("x86_64+avx2-centos7-gcc7-opt" )
+assert_strequal(out "${BINARY_TAG};x86_64-centos7-gcc7-opt")
+
+test_compatible("x86_64+avx2-centos7-gcc7-dbg" )
+assert_strequal(out "${BINARY_TAG};x86_64+avx2-centos7-gcc7-opt;x86_64-centos7-gcc7-dbg;x86_64-centos7-gcc7-opt")

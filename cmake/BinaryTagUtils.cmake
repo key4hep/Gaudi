@@ -173,3 +173,22 @@ function(get_host_binary_tag variable)
   string(REGEX REPLACE "-opt\\$" "-${type}" value "${HOST_BINARY_TAG}")
   set(${variable} ${value} PARENT_SCOPE)
 endfunction()
+
+#.rst
+# .. command:: compatible_binary_tags
+#
+#   Usage::
+#
+#       compatible_binary_tags(<variable>)
+#
+#   Set ``<variable>`` to a prioritized list of usable binary tags.
+#
+function(compatible_binary_tags variable)
+  parse_binary_tag()
+  string(REPLACE "-${BINARY_TAG_TYPE}" "-opt" btopt "${BINARY_TAG}")
+  set(out ${BINARY_TAG} ${btopt}
+          ${BINARY_TAG_ARCH}-${BINARY_TAG_OS}-${BINARY_TAG_COMP}-${BINARY_TAG_TYPE}
+          ${BINARY_TAG_ARCH}-${BINARY_TAG_OS}-${BINARY_TAG_COMP}-opt)
+  list(REMOVE_DUPLICATES out)
+  set(${variable} ${out} PARENT_SCOPE)
+endfunction()
