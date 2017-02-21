@@ -6,7 +6,7 @@ use_heptools(123)
 
 include(TestMacros)
 
-get_filename_component(base_dir data/heptools ABSOLUTE)
+get_filename_component(base_dir data/heptools/LCG_123 ABSOLUTE)
 
 assert_strequal(cxx_compiler_names lcg-g++-4.8.2)
 

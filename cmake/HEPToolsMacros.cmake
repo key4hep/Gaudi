@@ -386,15 +386,6 @@ macro(lcg_set_external name hash version dir)
           # ROOT is special
           set(ROOT_home ${ROOT_home} ${ROOT_home}/root)
         endif()
-        if(NOT LCG_platform STREQUAL LCG_system)
-          # For AA projects we want to be able to fall back on non-debug builds.
-          if(NOT ${name} STREQUAL ROOT)
-            set(${name}_home ${${name}_home} ${${name}_base}/${LCG_system})
-          else()
-            # ROOT is special
-            set(ROOT_home ${ROOT_home} ${ROOT_base}/${LCG_system} ${ROOT_base}/${LCG_system}/root)
-          endif()
-        endif()
         list(APPEND LCG_projects ${name})
     elseif("${name}" STREQUAL "cmaketools" AND
            NOT EXISTS "${cmaketools_home}/CMakeToolsConfig.cmake")
