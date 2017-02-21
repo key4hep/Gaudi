@@ -18,7 +18,9 @@ def clean():
 
 def build():
     global build_log, build_returncode, build_err
-    os.environ['BINARY_TAG'] = 'x86_64-slc0-gcc99-opt'
+    for v in ('BINARY_TAG', 'CMTCONFIG'):
+        if v in os.environ:
+            del os.environ[v]
     build_proc = Popen(['make', 'VERBOSE=1'], cwd=base_dir,
                        stdout=PIPE, stderr=PIPE)
     build_log, build_err = build_proc.communicate()

@@ -1,6 +1,13 @@
 # parse binary tag
 include(BinaryTagUtils)
-parse_binary_tag()
+if(NOT BINARY_TAG_COMP)
+  parse_binary_tag()
+endif()
+if(NOT HOST_BINARY_TAG_ARCH)
+  get_host_binary_tag(HOST_BINARY_TAG)
+  parse_binary_tag(HOST_BINARY_TAG)
+endif()
+
 check_compiler()
 
 
@@ -158,7 +165,7 @@ if(NOT GAUDI_FLAGS_SET)
     # special architecture flags
     set(arch_opts)
     foreach(_arch_opt ${GAUDI_ARCH})
-      set(arch_opts "${arch_opts} -m${_arch_opt}")  
+      set(arch_opts "${arch_opts} -m${_arch_opt}")
     endforeach()
     # Common compilation flags
     set(CMAKE_CXX_FLAGS
