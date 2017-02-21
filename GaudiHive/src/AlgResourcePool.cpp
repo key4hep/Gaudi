@@ -237,7 +237,7 @@ StatusCode AlgResourcePool::flattenSequencer(Algorithm* algo, ListAlg& alglist, 
     isLazy = (algo->getProperty("StopOverride").toString() == "True")? false : true;
 
   }
-  sc = m_PRGraph->addDecisionHubNode(algo, parentName, modeOR, allPass, isLazy);
+  sc = m_PRGraph->addDecisionHubNode(algo, parentName, true, modeOR, allPass, isLazy);
   if (sc.isFailure()) {
     error() << "Failed to add DecisionHub " << algo->name() << " to graph of precedence rules" << endmsg;
     return sc;
@@ -301,7 +301,7 @@ StatusCode AlgResourcePool::decodeTopAlgs()    {
   // Top Alg list filled ----
 
   // start forming the graph of precedence rules by adding the head decision hub
-  m_PRGraph->addHeadNode("EVENT LOOP",true,true,false);
+  m_PRGraph->addHeadNode("EVENT LOOP",true,true,true,false);
 
   // Now we unroll it ----
   for (auto& algoSmartIF : m_topAlgList) {

@@ -86,68 +86,150 @@ namespace concurrency {
 
 
   //---------------------------------------------------------------------------
-    bool Trigger::visitEnter(DecisionNode& node) const {
+  bool Trigger::visitEnter(DecisionNode& node) const {
 
-      if (node.m_graph->getNodeDecisions(m_slotNum)[node.getNodeIndex()] != 1)
-        return true;
+    if (node.m_graph->getNodeDecisions(m_slotNum)[node.getNodeIndex()] != -1)
       return false;
-    }
+    return true;
+  }
 
-    //---------------------------------------------------------------------------
-    bool Trigger::visit(DecisionNode& node) {
+  //---------------------------------------------------------------------------
+  bool Trigger::visit(DecisionNode& node) {
 
-      //std::cout << "1-st level Decision: " << node.getNodeName() << std::endl;
-      bool allChildDecisionsResolved = true;
-      for (auto child : node.getDaughters()) {
-        int& childDecision = child->m_graph->getNodeDecisions(m_slotNum)[child->getNodeIndex()];
+    //std::cout << "1-st level Decision: " << node.getNodeName() << std::endl;
+    bool allChildDecisionsResolved = true;
+    for (auto child : node.getDaughters()) {
+      int& childDecision = child->m_graph->getNodeDecisions(m_slotNum)[child->getNodeIndex()];
 
-        if (childDecision == 1 && node.m_modeOR && node.m_isLazy) {
-          node.m_graph->getNodeDecisions(m_slotNum)[node.getNodeIndex()] = 1;
-          return true;
-        }
-
-        if (childDecision == -1) {
-          allChildDecisionsResolved = false;
-        }
+      if (childDecision == 1 && node.m_modeOR && node.m_isLazy) {
+        node.m_graph->getNodeDecisions(m_slotNum)[node.getNodeIndex()] = 1;
+        return true;
       }
 
-      if (allChildDecisionsResolved)
-        node.m_graph->getNodeDecisions(m_slotNum)[node.getNodeIndex()] = 1;
-
-      return allChildDecisionsResolved;
+      if (childDecision == -1) {
+        allChildDecisionsResolved = false;
+      }
     }
 
-    //---------------------------------------------------------------------------
-    bool Trigger::visitLeave(DecisionNode& node) const {
+    if (allChildDecisionsResolved)
+      node.m_graph->getNodeDecisions(m_slotNum)[node.getNodeIndex()] = 1;
 
-      if (node.m_graph->getNodeDecisions(m_slotNum)[node.getNodeIndex()] != 1)
-        return true;
+    return allChildDecisionsResolved;
+  }
+
+
+
+  //---------------------------------------------------------------------------
+  bool Trigger::visitEnter(AlgorithmNode& node) const {
+
+    if (node.m_graph->getNodeDecisions(m_slotNum)[node.getNodeIndex()] != -1)
       return false;
-    }
+    return true;
+  }
+
+  //--------------------------------------------------------------------------
+  bool Trigger::visit(AlgorithmNode& node) {
+
+    bool result = false;
+
+    auto& decisions = node.m_graph->getNodeDecisions(m_slotNum);
+    auto& states = node.m_graph->getAlgoStates(m_slotNum);
+
+    // Try to shift an algorithm with I->CF, and then, if successful, with CF->DF
+    if (node.promoteToControlReadyState(m_slotNum,states,decisions))
+      result = node.promoteToDataReadyState(m_slotNum);
+
+    //returns true only when an algorithm is DF-ready
+    // i.e., the visitor reached its final goal with the algorithm
+    return result;
+  }
 
 
+  //---------------------------------------------------------------------------
+  bool Supervisor::visitEnter(DecisionNode& node) const {
 
-    //---------------------------------------------------------------------------
-    bool Trigger::visitEnter(AlgorithmNode& node) const {
-
-      if (node.m_graph->getNodeDecisions(m_slotNum)[node.getNodeIndex()] != 1)
-        return true;
+    if (node.m_graph->getNodeDecisions(m_slotNum)[node.getNodeIndex()] != -1)
       return false;
+    return true;
+  }
+
+  //---------------------------------------------------------------------------
+  bool Supervisor::visit(DecisionNode& node) {
+
+    bool foundNonResolvedChild = false;
+    bool foundNegativeChild = false;
+    bool foundPositiveChild = false;
+    int decision = -1;
+
+    for (auto child : node.getDaughters()) {
+      int& childDecision = child->m_graph->getNodeDecisions(m_slotNum)[child->getNodeIndex()];
+
+      if (childDecision == -1)
+        foundNonResolvedChild = true;
+      else if (childDecision == 1)
+        foundPositiveChild = true;
+      else
+        foundNegativeChild = true;
+
+      if (node.m_isLazy) {
+        if (node.m_modeOR && foundPositiveChild) {
+          decision = 1;
+          break;
+        } else if (!node.m_modeOR && foundNegativeChild) {
+          decision = 0;
+          break;
+        }
+      } else {
+        if (foundNonResolvedChild)
+          break;
+      }
+    } // end monitoring children
+
+    if (!foundNonResolvedChild && decision == -1) {
+      if (node.m_modeOR) // OR
+        if (foundPositiveChild) decision = 1;
+        else decision = 0;
+      else // AND
+        if (foundNegativeChild) decision = 0;
+        else decision = 1;
     }
 
-    //--------------------------------------------------------------------------
-    bool Trigger::visit(AlgorithmNode& node) {
+    if (node.m_allPass && !foundNonResolvedChild)
+      decision = 1;
 
-      bool result = false;
-
-      auto& decisions = node.m_graph->getNodeDecisions(m_slotNum);
-      auto& states = node.m_graph->getAlgoStates(m_slotNum);
-
-      if (node.promoteToControlReadyState(m_slotNum,states,decisions))
-        result = node.promoteToDataReadyState(m_slotNum);
-
-      return result;
+    if (decision != -1) {
+      node.m_graph->getNodeDecisions(m_slotNum)[node.getNodeIndex()] = decision;
+      return true;
     }
+    return false;
+  }
+
+
+
+  //---------------------------------------------------------------------------
+  bool Supervisor::visitEnter(AlgorithmNode& node) const {
+
+    if (node.m_graph->getNodeDecisions(m_slotNum)[node.getNodeIndex()] != -1)
+      return false;
+    return true;
+  }
+
+  //--------------------------------------------------------------------------
+  bool Supervisor::visit(AlgorithmNode& node) {
+
+    bool result = false;
+
+    auto& decisions = node.m_graph->getNodeDecisions(m_slotNum);
+    auto& states = node.m_graph->getAlgoStates(m_slotNum);
+
+    // Try to shift an algorithm with I->CF, and then, if successful, with CF->DF
+    if (node.promoteToControlReadyState(m_slotNum,states,decisions))
+      result = node.promoteToDataReadyState(m_slotNum);
+
+    //returns true only when an algorithm is DF-ready
+    // i.e., the visitor reached its final goal with the algorithm
+    return result;
+  }
 
 
     //--------------------------------------------------------------------------

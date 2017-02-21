@@ -1,4 +1,5 @@
 #include "PrecedenceRulesGraph.h"
+#include "PRGraphVisitors.h"
 
 #include "GaudiKernel/DataHandleHolderVisitor.h"
 
@@ -192,16 +193,28 @@ namespace concurrency
   {
 
     if ( visitor.visitEnter( *this ) ) {
+      // try to aggregate a decision
       bool result = visitor.visit( *this );
-      if ( result ) return visitor.visitLeave( *this );
 
-      for ( auto child : m_children ) {
-        bool keepGoing = child->accept( visitor );
-        if ( m_isLazy && !keepGoing ) return false; // break;
+      // if a decision was made for this node, propagate the result upwards
+      if ( result ) {
+        for ( auto parent : m_parents ) {
+          parent->accept( visitor );
+        }
+        return false;
       }
+
+      // if no decision can be made yet, request further information downwards
+      for ( auto child : m_children ) {
+        bool result = child->accept( visitor );
+        if (!m_modeConcurrent)
+          if ( result ) break; //stop on first unresolved child if its decision hub is sequential
+      }
+
+      return true; // visitor was accepted to try to aggregate the node's decision
     }
 
-    return true;
+    return false; // visitor was rejected (since the decision node has an aggregated decision already)
   }
 
   //---------------------------------------------------------------------------
@@ -380,7 +393,12 @@ namespace concurrency
       for ( auto output : m_outputs )
         for ( auto consumer : output->getConsumers() ) consumer->promoteToDataReadyState( slotNum, requestor );
 
-      for ( auto p : m_parents ) p->updateDecision( slotNum, states, node_decisions, requestor );
+      auto vis = concurrency::Supervisor( slotNum );
+      for ( auto p : m_parents ) {
+        //p->updateDecision( slotNum, states, node_decisions, requestor );
+        p->accept(vis);
+      }
+
     }
   }
 
@@ -389,11 +407,11 @@ namespace concurrency
   {
 
     if ( visitor.visitEnter( *this ) ) {
-      bool result = visitor.visit( *this );
-      if ( result ) return false;
+      visitor.visit( *this );
+      return true; // visitor was accepted to promote the algorithm
     }
 
-    return true;
+    return false; // visitor was rejected (since the algorithm already produced a decision)
   }
 
   //---------------------------------------------------------------------------
@@ -616,7 +634,7 @@ namespace concurrency
       algoNode->addParentNode( parentNode );
     } else {
       sc = StatusCode::FAILURE;
-      error() << "DecisionHubNode " << parentName << ", meant to be used as parent, is not registered in the EFG."
+      error() << "Decision hub node " << parentName << ", requested to be parent, is not registered."
               << endmsg;
     }
 
@@ -661,7 +679,7 @@ namespace concurrency
 
   //---------------------------------------------------------------------------
   StatusCode PrecedenceRulesGraph::addDecisionHubNode( Algorithm* decisionHubAlgo, const std::string& parentName,
-                                                     bool modeOR, bool allPass, bool isLazy )
+		                                              bool modeConcurrent, bool modeOR, bool allPass, bool isLazy )
   {
 
     StatusCode sc = StatusCode::SUCCESS;
@@ -678,18 +696,18 @@ namespace concurrency
         decisionHubNode = itA->second;
       } else {
         decisionHubNode =
-            new concurrency::DecisionNode( *this, m_nodeCounter, decisionHubName, modeOR, allPass, isLazy );
+            new concurrency::DecisionNode( *this, m_nodeCounter, decisionHubName, modeConcurrent, modeOR, allPass, isLazy );
         ++m_nodeCounter;
         m_decisionNameToDecisionHubMap[decisionHubName] = decisionHubNode;
         if (msgLevel(MSG::DEBUG))
-          debug() << "DecisionHubNode " << decisionHubName << " added @ " << decisionHubNode << endmsg;
+          debug() << "Decision hub node " << decisionHubName << " added @ " << decisionHubNode << endmsg;
       }
 
       parentNode->addDaughterNode( decisionHubNode );
       decisionHubNode->addParentNode( parentNode );
     } else {
       sc = StatusCode::FAILURE;
-      error() << "DecisionHubNode " << parentName << ", meant to be used as parent, is not registered in the EFG."
+      error() << "Decision hub node " << parentName << ", requested to be parent, is not registered."
               << endmsg;
     }
 
@@ -697,14 +715,14 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  void PrecedenceRulesGraph::addHeadNode( const std::string& headName, bool modeOR, bool allPass, bool isLazy )
+  void PrecedenceRulesGraph::addHeadNode( const std::string& headName, bool modeConcurrent, bool modeOR, bool allPass, bool isLazy )
   {
 
     auto itH = m_decisionNameToDecisionHubMap.find( headName );
     if ( itH != m_decisionNameToDecisionHubMap.end() ) {
       m_headNode = itH->second;
     } else {
-      m_headNode = new concurrency::DecisionNode( *this, m_nodeCounter, headName, modeOR, allPass, isLazy );
+      m_headNode = new concurrency::DecisionNode( *this, m_nodeCounter, headName, modeConcurrent, modeOR, allPass, isLazy );
       ++m_nodeCounter;
       m_decisionNameToDecisionHubMap[headName] = m_headNode;
     }

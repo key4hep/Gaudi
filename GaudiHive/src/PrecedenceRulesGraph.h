@@ -86,9 +86,9 @@ namespace concurrency {
   class DecisionNode : public ControlFlowNode {
   public:
     /// Constructor
-    DecisionNode(PrecedenceRulesGraph& graph, unsigned int nodeIndex, const std::string& name, bool modeOR, bool allPass, bool isLazy) :
+    DecisionNode(PrecedenceRulesGraph& graph, unsigned int nodeIndex, const std::string& name, bool modeConcurrent, bool modeOR, bool allPass, bool isLazy) :
       ControlFlowNode(graph, nodeIndex, name),
-      m_modeOR(modeOR), m_allPass(allPass), m_isLazy(isLazy), m_children()
+	  m_modeConcurrent(modeConcurrent), m_modeOR(modeOR), m_allPass(allPass), m_isLazy(isLazy), m_children()
       {}
     /// Destructor
     ~DecisionNode() override;
@@ -119,6 +119,8 @@ namespace concurrency {
                             const std::vector<int>& node_decisions,
                             const unsigned int& recursionLevel) const override;
   public:
+    /// Whether all daughters will be evaluated concurrently or sequentially
+    bool m_modeConcurrent;
     /// Whether acting as "and" (false) or "or" node (true)
     bool m_modeOR;
     /// Whether always passing regardless of daughter results
@@ -296,7 +298,7 @@ public:
     /// Build data dependency realm WITH data object nodes participating
     StatusCode buildAugmentedDataDependenciesRealm();
     /// Add a node, which has no parents
-    void addHeadNode(const std::string& headName, bool modeOR, bool allPass, bool isLazy);
+    void addHeadNode(const std::string& headName, bool modeConcurrent, bool modeOR, bool allPass, bool isLazy);
     /// Add algorithm node
     StatusCode addAlgorithmNode(Algorithm* daughterAlgo, const std::string& parentName, bool inverted, bool allPass);
     /// Attach pointers to real Algorithms (and their clones) to Algorithm nodes of the graph
@@ -313,7 +315,7 @@ public:
     /// Get DataNode by DataObject path using graph index
     DataNode* getDataNode(const DataObjID& dataPath) const;
     /// Add a node, which aggregates decisions of direct daughter nodes
-    StatusCode addDecisionHubNode(Algorithm* daughterAlgo, const std::string& parentName, bool modeOR, bool allPass, bool isLazy);
+    StatusCode addDecisionHubNode(Algorithm* daughterAlgo, const std::string& parentName, bool modeConcurrent, bool modeOR, bool allPass, bool isLazy);
     /// Get total number of graph nodes
     unsigned int getControlFlowNodeCounter() const {return m_nodeCounter;}
     /// XXX CF tests. Is needed for older CF implementation
