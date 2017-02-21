@@ -301,13 +301,13 @@ StatusCode AlgResourcePool::decodeTopAlgs()    {
   // Top Alg list filled ----
 
   // start forming the graph of precedence rules by adding the head decision hub
-  m_PRGraph->addHeadNode("EVENT LOOP",true,true,true,false);
+  m_PRGraph->addHeadNode("RootDecisionHub",true,true,true,false);
 
   // Now we unroll it ----
   for (auto& algoSmartIF : m_topAlgList) {
     Algorithm* algorithm = dynamic_cast<Algorithm*> (algoSmartIF.get());
     if (!algorithm) fatal() << "Conversion from IAlgorithm to Algorithm failed" << endmsg;
-    sc = flattenSequencer(algorithm, m_flatUniqueAlgList, "EVENT LOOP");
+    sc = flattenSequencer(algorithm, m_flatUniqueAlgList, "RootDecisionHub");
   }
   // stupid O(N^2) unique-ification..
   for ( auto i = begin(m_flatUniqueAlgList); i!=end(m_flatUniqueAlgList); ++i ) {
