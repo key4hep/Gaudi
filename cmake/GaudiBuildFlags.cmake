@@ -14,7 +14,7 @@ check_compiler()
 # Convert BINARY_TAG_TYPE to CMAKE_BUILD_TYPE
 if(BINARY_TAG_TYPE STREQUAL "opt")
   set(_BT_CMAKE_BUILD_TYPE Release)
-elseif(BINARY_TAG_TYPE STREQUAL "dbg")
+elseif(BINARY_TAG_TYPE MATCHES "^dbg|do0$")
   set(_BT_CMAKE_BUILD_TYPE Debug)
 elseif(BINARY_TAG_TYPE STREQUAL "cov")
   set(_BT_CMAKE_BUILD_TYPE Coverage)
@@ -104,11 +104,7 @@ if (BINARY_TAG_COMP_NAME STREQUAL "gcc" AND BINARY_TAG_COMP_VERSION VERSION_GREA
 endif()
 
 
-if(BINARY_TAG MATCHES "-do0$")
-  set(GAUDI_SLOW_DEBUG_DEFAULT ON)
-else()
-  set(GAUDI_SLOW_DEBUG_DEFAULT OFF)
-endif()
+string(COMPARE EQUAL "${BINARY_TAG_TYPE}" "do0" GAUDI_SLOW_DEBUG_DEFAULT)
 option(GAUDI_SLOW_DEBUG
        "turn off all optimizations in debug builds"
        ${GAUDI_SLOW_DEBUG_DEFAULT})
