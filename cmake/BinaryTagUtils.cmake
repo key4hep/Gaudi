@@ -196,8 +196,16 @@ function(compatible_binary_tags variable)
   endif()
   list(APPEND types opt)
 
-  string(REGEX REPLACE "-.*" "" archs "${BINARY_TAG}")
-  list(APPEND archs ${BINARY_TAG_ARCH})
+  # prepare the list of archs as 'main_arch' followed by microach flags
+  # e.g: arch+ma1+ma2+ma3 -> arch+ma1+ma2+ma3 arch+ma1+ma2 arch+ma1 arch
+  set(archs)
+  set(subarch)
+  foreach(ma ${BINARY_TAG_MICROARCH})
+    list(APPEND archs "${BINARY_TAG_ARCH}${subarch}")
+    set(subarch "${subarch}+${ma}")
+  endforeach()
+  list(APPEND archs "${BINARY_TAG_ARCH}${subarch}")
+  list(REVERSE archs)
 
   set(out)
   foreach(a ${archs})

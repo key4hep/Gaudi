@@ -136,3 +136,6 @@ assert_strequal(compatible "${BINARY_TAG};x86_64-centos7-gcc7-opt")
 
 test_compatible("x86_64+avx2-centos7-gcc7-dbg")
 assert_strequal(compatible "${BINARY_TAG};x86_64+avx2-centos7-gcc7-opt;x86_64-centos7-gcc7-dbg;x86_64-centos7-gcc7-opt")
+
+test_compatible("x86_64+avx2+fma-centos7-gcc7-opt")
+assert_strequal(compatible "${BINARY_TAG};x86_64+avx2-centos7-gcc7-opt;x86_64-centos7-gcc7-opt")
