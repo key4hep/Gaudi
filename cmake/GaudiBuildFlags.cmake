@@ -29,7 +29,7 @@ else()
 endif()
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE ${_BT_CMAKE_BUILD_TYPE} CACHE STRING
-      "Choose the type of build, options are: empty, Debug, Release, Coverage, Profile, RelWithDebInfo, MinSizeRel."
+      "Choose the type of build, options are: Release, Debug, Coverage, Profile, RelWithDebInfo, MinSizeRel."
       FORCE)
 else()
   if(NOT _BT_CMAKE_BUILD_TYPE STREQUAL CMAKE_BUILD_TYPE)
@@ -108,6 +108,44 @@ string(COMPARE EQUAL "${BINARY_TAG_TYPE}" "do0" GAUDI_SLOW_DEBUG_DEFAULT)
 option(GAUDI_SLOW_DEBUG
        "turn off all optimizations in debug builds"
        ${GAUDI_SLOW_DEBUG_DEFAULT})
+
+# set optimization flags
+string(TOUPPER "${CMAKE_BUILD_TYPE}" _up_bt)
+foreach(_subtype ${BINARY_TAG_SUBTYPE})
+  if(_subtype MATCHES "^[oO]([0-3sg]|fast)$")
+    set(_opt_level_${_up_bt} "-O${CMAKE_MATCH_1}")
+    #message(STATUS "setting _opt_level_${_up_bt} -> ${_opt_level_${_up_bt}}")
+  endif()
+endforeach()
+
+if(_opt_level_RELWITHDEBINFO)
+  # RelWithDebInfo shared the flags with Release
+  set(_opt_level_RELEASE "${_opt_level_RELWITHDEBINFO}")
+endif()
+
+# default optimization levels
+if(NOT _opt_level_RELEASE)
+  if(GAUDI_CMT_RELEASE)
+    set(_opt_level_RELEASE "-O2")
+  else()
+    set(_opt_level_RELEASE "-O3")
+  endif()
+  # RelWithDebInfo shared the flags with Release
+  set(_opt_level_RELWITHDEBINFO "${_opt_level_RELEASE}")
+endif()
+if(_opt_level_DEBUG)
+  if(NOT GAUDI_SLOW_DEBUG AND
+     (BINARY_TAG_COMP_NAME STREQUAL "gcc" AND NOT BINARY_TAG_COMP_VERSION VERSION_LESS "4.8"))
+    # Use -Og with Debug builds in gcc >= 4.8 (if not disabled)
+    set(_opt_level_DEBUG "-Og")
+  else()
+    set(_opt_level_DEBUG "-O0")
+  endif()
+endif()
+
+if(_opt_level_${_up_bt})
+  message(STATUS "Optimization:     ${_opt_level_${_up_bt}}")
+endif()
 
 # special architecture flags
 set(GAUDI_ARCH_DEFAULT)
@@ -192,31 +230,26 @@ if(NOT GAUDI_FLAGS_SET)
             FORCE)
     endif()
 
-    # Build type compilation flags (if different from default or uknown to CMake)
-    if(GAUDI_CMT_RELEASE)
-      set(CMAKE_CXX_FLAGS_RELEASE "-O2 -DNDEBUG"
-          CACHE STRING "Flags used by the compiler during release builds."
-          FORCE)
-      set(CMAKE_C_FLAGS_RELEASE "-O2 -DNDEBUG"
-          CACHE STRING "Flags used by the compiler during release builds."
-          FORCE)
-      set(CMAKE_Fortran_FLAGS_RELEASE "-O2 -DNDEBUG"
-          CACHE STRING "Flags used by the compiler during release builds."
-          FORCE)
-    endif()
+    # Build type compilation flags
+    set(CMAKE_CXX_FLAGS_RELEASE "${_opt_level_RELEASE} -DNDEBUG"
+        CACHE STRING "Flags used by the compiler during release builds."
+        FORCE)
+    set(CMAKE_C_FLAGS_RELEASE "${_opt_level_RELEASE} -DNDEBUG"
+        CACHE STRING "Flags used by the compiler during release builds."
+        FORCE)
+    set(CMAKE_Fortran_FLAGS_RELEASE "${_opt_level_RELEASE} -DNDEBUG"
+        CACHE STRING "Flags used by the compiler during release builds."
+        FORCE)
 
-    if (BINARY_TAG_COMP_NAME STREQUAL "gcc" AND BINARY_TAG_COMP_VERSION VERSION_GREATER "4.7")
-      # Use -Og with Debug builds in gcc >= 4.8
-      set(CMAKE_CXX_FLAGS_DEBUG "-Og -g"
-          CACHE STRING "Flags used by the compiler during Debug builds."
-          FORCE)
-      set(CMAKE_C_FLAGS_DEBUG "-Og -g"
-          CACHE STRING "Flags used by the compiler during Debug builds."
-          FORCE)
-      set(CMAKE_Fortran_FLAGS_DEBUG "-Og -g"
-          CACHE STRING "Flags used by the compiler during Debug builds."
-          FORCE)
-    endif()
+    set(CMAKE_CXX_FLAGS_DEBUG "${_opt_level_DEBUG} -g"
+        CACHE STRING "Flags used by the compiler during Debug builds."
+        FORCE)
+    set(CMAKE_C_FLAGS_DEBUG "${_opt_level_DEBUG} -g"
+        CACHE STRING "Flags used by the compiler during Debug builds."
+        FORCE)
+    set(CMAKE_Fortran_FLAGS_DEBUG "${_opt_level_DEBUG} -g"
+        CACHE STRING "Flags used by the compiler during Debug builds."
+        FORCE)
 
     set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELEASE} -g"
         CACHE STRING "Flags used by the compiler during Release with Debug Info builds."
@@ -363,12 +396,6 @@ else()
   if(BINARY_TAG_COMP_NAME STREQUAL "gcc" AND NOT BINARY_TAG_COMP_VERSION VERSION_LESS "5.0")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wsuggest-override")
   endif()
-endif()
-
-if(GAUDI_SLOW_DEBUG)
-  string(REPLACE "-Og" "-O0" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
-  string(REPLACE "-Og" "-O0" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
-  string(REPLACE "-Og" "-O0" CMAKE_Fortran_FLAGS_DEBUG "${CMAKE_Fortran_FLAGS_DEBUG}")
 endif()
 
 #--- Special flags -------------------------------------------------------------
