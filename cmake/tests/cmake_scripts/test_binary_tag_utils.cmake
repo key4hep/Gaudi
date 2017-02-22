@@ -114,6 +114,8 @@ assert_strequal(BINARY_TAG_COMP_NAME    "gcc"     )
 assert_strequal(BINARY_TAG_COMP_VERSION "7"       )
 assert_strequal(BINARY_TAG_TYPE         "opt"     )
 
+test_parsing("reset of microarch" "x86_64-centos7-gcc7-opt")
+assert_strequal(BINARY_TAG_MICROARCH    ""        )
 
 message(STATUS "testing compatible_binary_tags(variable)")
 
