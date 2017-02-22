@@ -184,11 +184,21 @@ endfunction()
 #   Set ``<variable>`` to a prioritized list of usable binary tags.
 #
 function(compatible_binary_tags variable)
-  parse_binary_tag()
-  string(REPLACE "-${BINARY_TAG_TYPE}" "-opt" btopt "${BINARY_TAG}")
-  set(out ${BINARY_TAG} ${btopt}
-          ${BINARY_TAG_ARCH}-${BINARY_TAG_OS}-${BINARY_TAG_COMP}-${BINARY_TAG_TYPE}
-          ${BINARY_TAG_ARCH}-${BINARY_TAG_OS}-${BINARY_TAG_COMP}-opt)
+  if(NOT BINARY_TAG_TYPE)
+    parse_binary_tag()
+  endif()
+  set(types ${BINARY_TAG_TYPE} opt)
+
+  string(REGEX REPLACE "-.*" "" archs "${BINARY_TAG}")
+  list(APPEND archs ${BINARY_TAG_ARCH})
+
+  set(out)
+  foreach(a ${archs})
+    foreach(t ${types})
+      list(APPEND out "${a}-${BINARY_TAG_OS}-${BINARY_TAG_COMP}-${t}")
+    endforeach()
+  endforeach()
+
   list(REMOVE_DUPLICATES out)
   set(${variable} ${out} PARENT_SCOPE)
 endfunction()
