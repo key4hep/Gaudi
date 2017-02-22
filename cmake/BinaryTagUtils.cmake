@@ -39,6 +39,7 @@
 #   * ``<variable-name>_COMP_NAME``
 #   * ``<variable-name>_COMP_VERSION``
 #   * ``<variable-name>_TYPE``
+#   * ``<variable-name>_SUBTYPE``
 #
 #   If the ``<binary-tag-string>`` is specified, then ``<variable-name>`` is set too.
 #
@@ -100,6 +101,14 @@ macro(parse_binary_tag)
   else()
     set(${_variable}_COMP_NAME    ${${_variable}_COMP})
     set(${_variable}_COMP_VERSION "")
+  endif()
+
+  if(${_variable}_TYPE MATCHES "\\+")
+    string(REGEX MATCHALL "[^+]+" ${_variable}_SUBTYPE "${${_variable}_TYPE}")
+    list(GET ${_variable}_SUBTYPE 0 ${_variable}_TYPE)
+    list(REMOVE_AT ${_variable}_SUBTYPE 0)
+  else()
+    set(${_variable}_SUBTYPE)
   endif()
 
 #  foreach(_n ${_variable}
@@ -194,7 +203,9 @@ function(compatible_binary_tags variable)
   if(BINARY_TAG_TYPE STREQUAL "do0")
     list(APPEND types dbg)
   endif()
-  list(APPEND types opt)
+  if(NOT BINARY_TAG_TYPE STREQUAL "opt")
+    list(APPEND types opt)
+  endif()
 
   # prepare the list of archs as 'main_arch' followed by microach flags
   # e.g: arch+ma1+ma2+ma3 -> arch+ma1+ma2+ma3 arch+ma1+ma2 arch+ma1 arch
@@ -207,9 +218,24 @@ function(compatible_binary_tags variable)
   list(APPEND archs "${BINARY_TAG_ARCH}${subarch}")
   list(REVERSE archs)
 
+  # prepare the list of build sub-types (if needed)
+  set(subtypes)
+  if(BINARY_TAG_SUBTYPE)
+    set(subtype)
+    foreach(st ${BINARY_TAG_SUBTYPE})
+      set(subtype "${subtype}+${st}")
+      list(APPEND subtypes "${subtype}")
+    endforeach()
+    list(REVERSE subtypes)
+  endif()
+
   set(out)
   foreach(a ${archs})
     foreach(t ${types})
+      foreach(st ${subtypes})
+        list(APPEND out "${a}-${BINARY_TAG_OS}-${BINARY_TAG_COMP}-${t}${st}")
+      endforeach()
+      # the list of subtypes might be empty, so we explicitly add the simple tag
       list(APPEND out "${a}-${BINARY_TAG_OS}-${BINARY_TAG_COMP}-${t}")
     endforeach()
   endforeach()
