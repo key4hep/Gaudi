@@ -226,6 +226,8 @@ StatusCode AlgResourcePool::flattenSequencer(Algorithm* algo, ListAlg& alglist, 
   bool modeOR = false;
   bool allPass = false;
   bool isLazy = false;
+  bool modeSequential = false;
+
   if ( isGaudiSequencer ) {
     modeOR  = (algo->getProperty("ModeOR").toString() == "True")? true : false;
     allPass = (algo->getProperty("IgnoreFilterPassed").toString() == "True")? true : false;
@@ -235,9 +237,10 @@ StatusCode AlgResourcePool::flattenSequencer(Algorithm* algo, ListAlg& alglist, 
     modeOR  = (algo->getProperty("ModeOR").toString() == "True")? true : false;
     allPass = (algo->getProperty("IgnoreFilterPassed").toString() == "True")? true : false;
     isLazy = (algo->getProperty("StopOverride").toString() == "True")? false : true;
-
+    if (algo->hasProperty("Sequential"))
+      modeSequential = (algo->getProperty("Sequential").toString() == "True")? true : false;
   }
-  sc = m_PRGraph->addDecisionHubNode(algo, parentName, true, isLazy, modeOR, allPass);
+  sc = m_PRGraph->addDecisionHubNode(algo, parentName, !modeSequential, isLazy, modeOR, allPass);
   if (sc.isFailure()) {
     error() << "Failed to add DecisionHub " << algo->name() << " to graph of precedence rules" << endmsg;
     return sc;
