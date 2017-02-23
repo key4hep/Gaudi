@@ -6,6 +6,7 @@
 #include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/ThreadLocalContext.h"
+#include "GaudiKernel/ConcurrencyFlags.h"
 
 // Local
 #include "AlgResourcePool.h"
@@ -104,6 +105,9 @@ StatusCode ForwardSchedulerSvc::initialize()
                 << "). Setting the number of events in flight to " << numberOfWBSlots << endmsg;
     }
   }
+
+  // set global concurrency flags
+  Gaudi::Concurrency::ConcurrencyFlags::setNumConcEvents( numberOfWBSlots );
 
   // Get dedicated scheduler for I/O-bound algorithms
   if ( m_useIOBoundAlgScheduler ) {
