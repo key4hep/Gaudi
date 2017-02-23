@@ -189,10 +189,12 @@ StatusCode AlgResourcePool::flattenSequencer(Algorithm* algo, ListAlg& alglist, 
   if (algo->hasProperty("Members")) {
     if (algo->hasProperty("ShortCircuit")) {
       isGaudiSequencer = true;
-      isAtomicSeq = (algo->getProperty("Atomic").toString() == "True");
+      isAtomicSeq = ( algo->hasProperty("Atomic") && 
+                      (algo->getProperty("Atomic").toString() == "True") );
     } else if (algo->hasProperty("StopOverride")) {
       isAthSequencer = true;
-      isAtomicSeq = (algo->getProperty("Atomic").toString() == "True");
+      isAtomicSeq = ( algo->hasProperty("Atomic") && 
+                      (algo->getProperty("Atomic").toString() == "True") );
     }      
   }
 
