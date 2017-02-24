@@ -1,6 +1,7 @@
 #include "ThreadPoolSvc.h"
 
 #include "GaudiKernel/SvcFactory.h"
+#include "GaudiKernel/ConcurrencyFlags.h"
 #include "ThreadInitTask.h"
 
 #include "tbb/task_scheduler_init.h"
@@ -113,8 +114,12 @@ ThreadPoolSvc::initPool(const int& poolSize) {
     if (msgLevel(MSG::DEBUG)){
       debug() << "creating barrier of size " << thePoolSize << endmsg;
     }
+    Gaudi::Concurrency::ConcurrencyFlags::setNumThreads(thePoolSize);
+
     m_barrier = std::unique_ptr<boost::barrier>( new boost::barrier(thePoolSize) );
 
+  } else {
+    Gaudi::Concurrency::ConcurrencyFlags::setNumThreads(1);
   }
 
   // Launch the init tool tasks
