@@ -10,7 +10,11 @@ include(${CMAKE_CURRENT_LIST_DIR}/BinaryTagUtils.cmake)
 # WARNING: this macro must be called from a toolchain file
 #
 macro(use_heptools heptools_version)
+  # get_host_binary_tag tries to find PythonInterp if PYTHON_EXECUTABLE
+  # is not set, but here it's too early because we didn't set CMAKE_PREFIX_PATH yet
+  set(PYTHON_EXECUTABLE /usr/bin/env python)
   get_host_binary_tag(LCG_system)
+  set(PYTHON_EXECUTABLE)
   parse_binary_tag()
   compatible_binary_tags(_compatible_tags)
 
