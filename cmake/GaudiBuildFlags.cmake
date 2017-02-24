@@ -209,6 +209,9 @@ if(NOT GAUDI_FLAGS_SET)
     # special architecture flags
     set(arch_opts)
     foreach(_arch_opt ${GAUDI_ARCH})
+      if(_arch_opt STREQUAL "native")
+        set(_arch_opt "arch=native")
+      endif()
       set(arch_opts "${arch_opts} -m${_arch_opt}")
     endforeach()
     # Common compilation flags
