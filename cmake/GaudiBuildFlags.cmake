@@ -133,7 +133,7 @@ if(NOT _opt_level_RELEASE)
   # RelWithDebInfo shared the flags with Release
   set(_opt_level_RELWITHDEBINFO "${_opt_level_RELEASE}")
 endif()
-if(_opt_level_DEBUG)
+if(NOT _opt_level_DEBUG)
   if(NOT GAUDI_SLOW_DEBUG AND
      (BINARY_TAG_COMP_NAME STREQUAL "gcc" AND NOT BINARY_TAG_COMP_VERSION VERSION_LESS "4.8"))
     # Use -Og with Debug builds in gcc >= 4.8 (if not disabled)
