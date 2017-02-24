@@ -12,7 +12,6 @@ namespace concurrency {
 
     virtual bool visitEnter(DecisionNode&) const = 0;
     virtual bool visit(DecisionNode&) = 0;
-    virtual bool visitLeave(DecisionNode&) const = 0;
 
     virtual bool visitEnter(AlgorithmNode&) const = 0;
     virtual bool visit(AlgorithmNode& node) = 0;

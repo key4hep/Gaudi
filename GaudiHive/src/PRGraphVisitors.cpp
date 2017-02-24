@@ -348,15 +348,6 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  bool RunSimulator::visitLeave(DecisionNode& node) const {
-
-    if (node.m_graph->getNodeDecisions(m_slotNum)[node.getNodeIndex()] != 1)
-      return true;
-    return false;
-  }
-
-
-  //---------------------------------------------------------------------------
   bool RunSimulator::visitEnter(AlgorithmNode& node) const {
 
     if (node.m_graph->getNodeDecisions(m_slotNum)[node.getNodeIndex()] != 1)

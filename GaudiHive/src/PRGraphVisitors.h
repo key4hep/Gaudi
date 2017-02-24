@@ -20,8 +20,6 @@ namespace concurrency {
 
     bool visit(DecisionNode& node) override;
 
-    bool visitLeave(DecisionNode& node) const override;
-
 
     bool visitEnter(AlgorithmNode& node) const override;
 
@@ -49,8 +47,6 @@ namespace concurrency {
 
       bool visit(DecisionNode& node) override;
 
-      bool visitLeave(DecisionNode& /*node*/) const override {return true;};
-
 
       bool visitEnter(AlgorithmNode& node) const override;
 
@@ -76,8 +72,6 @@ namespace concurrency {
 
       bool visit(DecisionNode& node) override;
 
-      bool visitLeave(DecisionNode& /*node*/) const override {return true;};
-
 
       bool visitEnter(AlgorithmNode& node) const override;
 
@@ -100,9 +94,7 @@ namespace concurrency {
 
       bool visitEnter(DecisionNode&) const override {return true;}
 
-      bool visit(DecisionNode&) override {return true;}\
-
-      bool visitLeave(DecisionNode&) const override {return true;}
+      bool visit(DecisionNode&) override {return true;}
 
 
       bool visitEnter(AlgorithmNode&) const override {return true;}
@@ -127,8 +119,6 @@ namespace concurrency {
       bool visitEnter(DecisionNode&) const override {return true;}
 
       bool visit(DecisionNode&) override {return true;}
-
-      bool visitLeave(DecisionNode&) const override {return true;}
 
 
       bool visitEnter(AlgorithmNode&) const override {return true;}
@@ -156,8 +146,6 @@ namespace concurrency {
 
       bool visit(DecisionNode&) override {return true;}
 
-      bool visitLeave(DecisionNode&) const override {return true;}
-
 
       bool visitEnter(AlgorithmNode&) const override {return true;}
 
@@ -181,8 +169,6 @@ namespace concurrency {
       bool visitEnter(DecisionNode&) const override {return true;}
 
       bool visit(DecisionNode&) override {return true;}
-
-      bool visitLeave(DecisionNode&) const override {return true;}
 
 
       bool visitEnter(AlgorithmNode&) const override {return true;}
@@ -209,8 +195,6 @@ namespace concurrency {
       bool visitEnter(DecisionNode&) const override {return true;}
 
       bool visit(DecisionNode&) override {return true;}
-
-      bool visitLeave(DecisionNode&) const override {return true;}
 
 
       bool visitEnter(AlgorithmNode&) const override {return true;}
