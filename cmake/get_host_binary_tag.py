@@ -22,7 +22,18 @@ def _Linux_os():
         if 'CERN' in open('/etc/%s-release' % dist_name).read():
             dist_name = 'slc'
         dist_version = dist_version.split('.', 1)[0]
-    elif dist_name == 'ubuntu':
+    elif dist_name == 'debian':
+        # there's a problem with vanilla Python not recognizing Ubuntu
+        # see https://sft.its.cern.ch/jira/browse/SPI-961
+        try:
+            for l in open('/etc/lsb-release'):
+                if l.startswith('DISTRIB_ID='):
+                    dist_name = l.strip()[11:].lower()
+                elif l.startswith('DISTRIB_RELEASE='):
+                    dist_version = l.strip()[16:]
+        except:
+            pass  # lsb-release is missing
+    if dist_name == 'ubuntu':
         dist_version = dist_version.replace('.', '')
     return dist_name + dist_version
 
