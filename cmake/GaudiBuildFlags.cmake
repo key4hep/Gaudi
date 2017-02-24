@@ -113,8 +113,10 @@ option(GAUDI_SLOW_DEBUG
 string(TOUPPER "${CMAKE_BUILD_TYPE}" _up_bt)
 foreach(_subtype ${BINARY_TAG_SUBTYPE})
   if(_subtype MATCHES "^[oO]([0-3sg]|fast)$")
-    set(_opt_level_${_up_bt} "-O${CMAKE_MATCH_1}")
+    set(_opt_level_${_up_bt} "${_opt_level_${_up_bt}} -O${CMAKE_MATCH_1}")
     #message(STATUS "setting _opt_level_${_up_bt} -> ${_opt_level_${_up_bt}}")
+  elseif(_subtype STREQUAL "g")
+    set(_opt_level_${_up_bt} "${_opt_level_${_up_bt}} -g")
   endif()
 endforeach()
 
