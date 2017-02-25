@@ -241,7 +241,7 @@ inline StreamBuffer& operator>>(StreamBuffer &s, Gaudi::Time &t)  {
 
 // make sure that "namespace  Gaudi { using ::operator<; }" continues to compile...
 // to be removed once all instances of the above have been removed from user code...
-class backwards_compatibility_hack_time_timespan {};
+class backwards_compatibility_hack_time_timespan {backwards_compatibility_hack_time_timespan()=delete; };
 inline bool operator<(backwards_compatibility_hack_time_timespan,backwards_compatibility_hack_time_timespan) {
     return false;
 }
