@@ -1,6 +1,9 @@
 #include "PRGraphVisitors.h"
+#include "AlgsExecutionStates.h"
 
 namespace concurrency {
+
+  typedef AlgsExecutionStates::State State;
 
   //---------------------------------------------------------------------------
   bool Trigger::visitEnter(DecisionNode& node) const {
@@ -49,15 +52,39 @@ namespace concurrency {
 
     bool result = false;
 
-    auto& decisions = node.m_graph->getNodeDecisions(m_slotNum);
     auto& states = node.m_graph->getAlgoStates(m_slotNum);
+    auto algoIndex = node.getAlgoIndex();
+    auto& state = states[algoIndex];
 
-    // Try to shift an algorithm with I->CF, and then, if successful, with CF->DF
-    if (node.promoteToControlReadyState(m_slotNum,states,decisions))
-      result = node.promoteToDataReadyState(m_slotNum);
+    // Promote with INITIAL->CR
+    if ( State::INITIAL == state )
+      states.updateState( node.getAlgoIndex(), State::CONTROLREADY ).ignore();
 
-    //returns true only when an algorithm is DF-ready
-    // i.e., the visitor reached its final goal with the algorithm
+    // Try to promote with CR->DR
+    if ( State::CONTROLREADY == state ) {
+      result = true; //return true if an algorithm has no data inputs
+      for ( auto dataNode : node.getInputDataNodes() ) {
+        // return false if the input has no producers at all (normally this case must be
+        // forbidden, and must be invalidated at configuration time)
+        result = false;
+        for ( auto algoNode : dataNode->getProducers() )
+          if ( State::EVTACCEPTED == states[algoNode->getAlgoIndex()] ) {
+            result = true;
+            break; // skip checking other producers if one was found to be executed
+          }
+
+        if (!result) break; // skip checking other inputs if this input was not produced yet
+      }
+
+      if (result)
+        states.updateState( algoIndex, State::DATAREADY ).ignore();
+
+    } else {
+      result = true;
+    }
+
+    // returns true only when an algorithm is not lower than DR in its FSM
+    // i.e., the visitor has done everything it could with this algorithm
     return result;
   }
 
@@ -136,15 +163,39 @@ namespace concurrency {
 
     bool result = false;
 
-    auto& decisions = node.m_graph->getNodeDecisions(m_slotNum);
     auto& states = node.m_graph->getAlgoStates(m_slotNum);
+    auto algoIndex = node.getAlgoIndex();
+    auto& state = states[algoIndex];
 
-    // Try to shift an algorithm with I->CF, and then, if successful, with CF->DF
-    if (node.promoteToControlReadyState(m_slotNum,states,decisions))
-      result = node.promoteToDataReadyState(m_slotNum);
+    // Promote with INITIAL->CR
+    if ( State::INITIAL == state )
+      states.updateState( node.getAlgoIndex(), State::CONTROLREADY ).ignore();
 
-    //returns true only when an algorithm is DF-ready
-    // i.e., the visitor reached its final goal with the algorithm
+    // Try to promote with CR->DR
+    if ( State::CONTROLREADY == state ) {
+      result = true; //return true if an algorithm has no data inputs
+      for ( auto dataNode : node.getInputDataNodes() ) {
+        // return false if the input has no producers at all (normally this case must be
+        // forbidden, and must be invalidated at configuration time)
+        result = false;
+        for ( auto algoNode : dataNode->getProducers() )
+          if ( State::EVTACCEPTED == states[algoNode->getAlgoIndex()] ) {
+            result = true;
+            break; // skip checking other producers if one was found to be executed
+          }
+
+        if (!result) break; // skip checking other inputs if this input was not produced yet
+      }
+
+      if (result)
+        states.updateState( algoIndex, State::DATAREADY ).ignore();
+
+    } else {
+      result = true;
+    }
+
+    // returns true only when an algorithm is not lower than DR in its FSM
+    // i.e., the visitor has done everything it could with this algorithm
     return result;
   }
 
