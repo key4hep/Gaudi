@@ -187,7 +187,6 @@ namespace concurrency {
     bool isIOBound() const {return m_isIOBound;}
     /// Method to check whether the Algorithm has its all data dependency satisfied
     bool dataDependenciesSatisfied(const int& slotNum) const;
-    bool dataDependenciesSatisfied(AlgsExecutionStates& states) const;
     /// Method to set algos to CONTROLREADY, if possible
     int updateState(AlgsExecutionStates& states,
                             std::vector<int>& node_decisions) const override;

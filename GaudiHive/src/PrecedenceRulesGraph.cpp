@@ -312,26 +312,6 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  bool AlgorithmNode::dataDependenciesSatisfied( AlgsExecutionStates& states ) const
-  {
-
-    bool result = true;
-    for ( auto dataNode : m_inputs ) {
-
-      result = false;
-      for ( auto algoNode : dataNode->getProducers() )
-        if ( State::EVTACCEPTED == states[algoNode->getAlgoIndex()] ) {
-          result = true;
-          break;
-        }
-
-      if ( !result ) break;
-    }
-
-    return result;
-  }
-
-  //---------------------------------------------------------------------------
   void AlgorithmNode::printState( std::stringstream& output, AlgsExecutionStates& states,
                                   const std::vector<int>& node_decisions, const unsigned int& recursionLevel ) const
   {
