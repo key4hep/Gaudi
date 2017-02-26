@@ -349,12 +349,12 @@ namespace concurrency
 
   //---------------------------------------------------------------------------
   void AlgorithmNode::updateDecision( const int& slotNum, AlgsExecutionStates& states, std::vector<int>& node_decisions,
-                                      const AlgorithmNode* requestor ) const
+                                      const AlgorithmNode* /*requestor*/ ) const
   {
 
     const State& state = states[m_algoIndex];
     int decision       = -1;
-    requestor          = this;
+    //requestor          = this;
 
     // now derive the proper result to pass back
     if ( true == m_allPass ) {
@@ -370,8 +370,11 @@ namespace concurrency
     node_decisions[m_nodeIndex] = decision;
 
     if ( -1 != decision ) {
+      auto promoter = DataReadyPromoter(slotNum);
       for ( auto output : m_outputs )
-        for ( auto consumer : output->getConsumers() ) consumer->promoteToDataReadyState( slotNum, requestor );
+        for ( auto consumer : output->getConsumers() )
+          if (State::CONTROLREADY == states[consumer->getAlgoIndex()])
+            consumer->accept(promoter);
 
       auto vis = concurrency::Supervisor( slotNum );
       for ( auto p : m_parents ) {

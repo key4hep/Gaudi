@@ -5,6 +5,33 @@ namespace concurrency {
 
   typedef AlgsExecutionStates::State State;
 
+  //--------------------------------------------------------------------------
+  bool DataReadyPromoter::visit(AlgorithmNode& node) {
+
+    bool result = true; // return true if an algorithm has no data inputs
+
+    auto& states = node.m_graph->getAlgoStates(m_slotNum);
+
+    for ( auto dataNode : node.getInputDataNodes() ) {
+      // return false if the input has no producers at all (normally this case must be
+      // forbidden, and must be invalidated at configuration time)
+      result = false;
+      for ( auto algoNode : dataNode->getProducers() )
+        if ( State::EVTACCEPTED == states[algoNode->getAlgoIndex()] ) {
+          result = true;
+          break; // skip checking other producers if one was found to be executed
+        }
+
+      if (!result) break; // skip checking other inputs if this input was not produced yet
+    }
+
+    if (result)
+      states.updateState( node.getAlgoIndex(), State::DATAREADY ).ignore();
+
+    // return true only if an algorithm is promoted to DR
+    return result;
+  }
+
   //---------------------------------------------------------------------------
   bool Trigger::visitEnter(DecisionNode& node) const {
 
@@ -53,8 +80,7 @@ namespace concurrency {
     bool result = false;
 
     auto& states = node.m_graph->getAlgoStates(m_slotNum);
-    auto algoIndex = node.getAlgoIndex();
-    auto& state = states[algoIndex];
+    auto& state = states[node.getAlgoIndex()];
 
     // Promote with INITIAL->CR
     if ( State::INITIAL == state )
@@ -62,28 +88,13 @@ namespace concurrency {
 
     // Try to promote with CR->DR
     if ( State::CONTROLREADY == state ) {
-      result = true; //return true if an algorithm has no data inputs
-      for ( auto dataNode : node.getInputDataNodes() ) {
-        // return false if the input has no producers at all (normally this case must be
-        // forbidden, and must be invalidated at configuration time)
-        result = false;
-        for ( auto algoNode : dataNode->getProducers() )
-          if ( State::EVTACCEPTED == states[algoNode->getAlgoIndex()] ) {
-            result = true;
-            break; // skip checking other producers if one was found to be executed
-          }
-
-        if (!result) break; // skip checking other inputs if this input was not produced yet
-      }
-
-      if (result)
-        states.updateState( algoIndex, State::DATAREADY ).ignore();
-
+      auto promoter = DataReadyPromoter(m_slotNum);
+      result = promoter.visit(node);
     } else {
       result = true;
     }
 
-    // returns true only when an algorithm is not lower than DR in its FSM
+    // return true only when an algorithm is not lower than DR in its FSM
     // i.e., the visitor has done everything it could with this algorithm
     return result;
   }
@@ -148,8 +159,6 @@ namespace concurrency {
     return false;
   }
 
-
-
   //---------------------------------------------------------------------------
   bool Supervisor::visitEnter(AlgorithmNode& node) const {
 
@@ -164,8 +173,7 @@ namespace concurrency {
     bool result = false;
 
     auto& states = node.m_graph->getAlgoStates(m_slotNum);
-    auto algoIndex = node.getAlgoIndex();
-    auto& state = states[algoIndex];
+    auto& state = states[node.getAlgoIndex()];
 
     // Promote with INITIAL->CR
     if ( State::INITIAL == state )
@@ -173,32 +181,16 @@ namespace concurrency {
 
     // Try to promote with CR->DR
     if ( State::CONTROLREADY == state ) {
-      result = true; //return true if an algorithm has no data inputs
-      for ( auto dataNode : node.getInputDataNodes() ) {
-        // return false if the input has no producers at all (normally this case must be
-        // forbidden, and must be invalidated at configuration time)
-        result = false;
-        for ( auto algoNode : dataNode->getProducers() )
-          if ( State::EVTACCEPTED == states[algoNode->getAlgoIndex()] ) {
-            result = true;
-            break; // skip checking other producers if one was found to be executed
-          }
-
-        if (!result) break; // skip checking other inputs if this input was not produced yet
-      }
-
-      if (result)
-        states.updateState( algoIndex, State::DATAREADY ).ignore();
-
+      auto promoter = DataReadyPromoter(m_slotNum);
+      result = promoter.visit(node);
     } else {
       result = true;
     }
 
-    // returns true only when an algorithm is not lower than DR in its FSM
+    // return true only when an algorithm is not lower than DR in its FSM
     // i.e., the visitor has done everything it could with this algorithm
     return result;
   }
-
 
   //--------------------------------------------------------------------------
   bool RankerByProductConsumption::visit(AlgorithmNode& node) {
@@ -413,10 +405,11 @@ namespace concurrency {
     AlgsExecutionStates& states = node.m_graph->getAlgoStates(m_slotNum);
     int& decision = decisions[node.getNodeIndex()];
 
+    auto dataPromoter = DataReadyPromoter(m_slotNum);
+
     if (State::INITIAL == states[node.getAlgoIndex()]) {
       states.updateState(node.getAlgoIndex(), State::CONTROLREADY);
-      if (node.dataDependenciesSatisfied(m_slotNum)) {
-        states.updateState(node.getAlgoIndex(), State::DATAREADY);
+      if (dataPromoter.visit(node)) {
         states.updateState(node.getAlgoIndex(), State::SCHEDULED);
         states.updateState(node.getAlgoIndex(), State::EVTACCEPTED);
         decision = 1;
@@ -424,8 +417,7 @@ namespace concurrency {
         //std::cout << "Algorithm decided: " << node.getNodeName() << std::endl;
         return true;
       }
-    } else if (State::CONTROLREADY == states[node.getAlgoIndex()] && node.dataDependenciesSatisfied(m_slotNum)) {
-      states.updateState(node.getAlgoIndex(), State::DATAREADY);
+    } else if (State::CONTROLREADY == states[node.getAlgoIndex()] && dataPromoter.visit(node)) {
       states.updateState(node.getAlgoIndex(), State::SCHEDULED);
       states.updateState(node.getAlgoIndex(), State::EVTACCEPTED);
       decision = 1;
