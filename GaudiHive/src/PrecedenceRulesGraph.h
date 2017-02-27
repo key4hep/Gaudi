@@ -165,6 +165,8 @@ namespace concurrency {
     const std::vector<AlgorithmNode*>& getSupplierNodes() const {return m_suppliers;}
     /// Get all consumer nodes
     const std::vector<AlgorithmNode*>& getConsumerNodes() const {return m_consumers;}
+    /// Get all parent decision hubs
+    const std::vector<DecisionNode*>& getParentDecisionHubs() const {return m_parents;}
 
     /// Associate an AlgorithmNode, which is a data supplier for this one
     void addOutputDataNode(DataNode* node);
@@ -185,6 +187,10 @@ namespace concurrency {
     void setIOBound(bool value) { m_isIOBound = value;}
     /// Check if algorithm is I/O-bound
     bool isIOBound() const {return m_isIOBound;}
+    /// Check if positive control flow decision is enforced
+    bool isOptimist() const {return m_allPass;};
+    /// Check if control flow logic is always inverted
+    bool isLiar() const {return m_inverted;};
     /// Method to check whether the Algorithm has its all data dependency satisfied
     bool dataDependenciesSatisfied(const int& slotNum) const;
     /// Method to set algos to CONTROLREADY, if possible

@@ -719,11 +719,13 @@ namespace concurrency
 
   //---------------------------------------------------------------------------
   void PrecedenceRulesGraph::updateDecision( const std::string& algo_name, const int& slotNum,
-                                           AlgsExecutionStates& algo_states, std::vector<int>& node_decisions ) const
+                                           AlgsExecutionStates& /*algo_states*/, std::vector<int>& /*node_decisions*/ ) const
   {
     //if (msgLevel(MSG::DEBUG))
     //  debug() << "(UPDATING)Setting decision of algorithm " << algo_name << " and propagating it upwards.." << endmsg;
-    getAlgorithmNode( algo_name )->updateDecision( slotNum, algo_states, node_decisions );
+    //getAlgorithmNode( algo_name )->updateDecision( slotNum, algo_states, node_decisions );
+    auto updater = DecisionUpdater(slotNum);
+    getAlgorithmNode( algo_name )->accept(updater);
   }
 
   //---------------------------------------------------------------------------

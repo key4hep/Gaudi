@@ -29,6 +29,29 @@ namespace concurrency {
 
   };
 
+  class DecisionUpdater : public IGraphVisitor {
+    public:
+      /// Constructor
+      DecisionUpdater(const int& slotNum) {
+        m_nodesSucceeded = 0;
+        m_slotNum = slotNum;
+      };
+      /// Destructor
+      ~DecisionUpdater() override {}
+
+      bool visitEnter(DecisionNode&) const override {return true;};
+
+      bool visit(DecisionNode&) override {return true;};
+
+      bool visitEnter(AlgorithmNode&) const override {return true;};
+
+      bool visit(AlgorithmNode& node) override;
+
+
+      void reset() override { m_nodesSucceeded = 0; }
+
+  };
+
   /** A visitor, performing full top-down traversals of a graph
    *
    */

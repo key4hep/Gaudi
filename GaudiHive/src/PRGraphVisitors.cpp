@@ -32,6 +32,39 @@ namespace concurrency {
     return result;
   }
 
+  //--------------------------------------------------------------------------
+  bool DecisionUpdater::visit(AlgorithmNode& node) {
+
+    auto& states = node.m_graph->getAlgoStates(m_slotNum);
+    const State& state = states[node.getAlgoIndex()];
+    int decision = -1;
+
+    if ( true == node.isOptimist() )
+      decision = 1;
+    else if ( State::EVTACCEPTED == state )
+      decision = !node.isLiar();
+    else if ( State::EVTREJECTED == state )
+      decision = node.isLiar();
+
+    if ( -1 != decision ) {
+
+      node.m_graph->getNodeDecisions(m_slotNum)[node.getNodeIndex()] = decision;
+
+      auto promoter = DataReadyPromoter(m_slotNum);
+      for ( auto consumer : node.getConsumerNodes() )
+        if (State::CONTROLREADY == states[consumer->getAlgoIndex()])
+          consumer->accept(promoter);
+
+      auto vis = concurrency::Supervisor( m_slotNum );
+      for ( auto p : node.getParentDecisionHubs() )
+        p->accept(vis);
+
+      return true; // return true only if the algorithm produced a decision
+    }
+
+    return false;
+  }
+
   //---------------------------------------------------------------------------
   bool Trigger::visitEnter(DecisionNode& node) const {
 
