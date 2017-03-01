@@ -215,19 +215,19 @@ void IncidentSvc::i_fireIncident( const Incident&    incident     ,
     }
     catch( const GaudiException& exc ) {
       error() << "Exception with tag=" << exc.tag() << " is caught"
-                 " handling incident" << m_currentIncidentType << endmsg;
+                 " handling incident " << *m_currentIncidentType << endmsg;
       error() <<  exc  << endmsg;
       if ( listener.rethrow ) { throw exc; }
     }
     catch( const std::exception& exc ) {
      error() << "Standard std::exception is caught"
-          " handling incident" << m_currentIncidentType << endmsg;
+                " handling incident " << *m_currentIncidentType << endmsg;
       error() << exc.what()  << endmsg;
       if ( listener.rethrow ) { throw exc; }
     }
     catch(...) {
       error() << "UNKNOWN Exception is caught"
-          " handling incident" << m_currentIncidentType << endmsg;
+                 " handling incident " << *m_currentIncidentType << endmsg;
       if ( listener.rethrow ) { throw; }
     }
     // check wheter one of the listeners is singleShot
@@ -258,7 +258,7 @@ void IncidentSvc::fireIncident( const Incident& incident )
 // ============================================================================
 void IncidentSvc::fireIncident( std::unique_ptr<Incident> incident )
 {
-  
+
   DEBMSG<<"Async incident '"<<incident->type()<<"' fired on context "<<incident->context()<<endmsg;
   auto ctx=incident->context();
   auto res=m_firedIncidents.insert(std::make_pair(ctx,IncQueue_t()));
@@ -293,13 +293,13 @@ IIncidentSvc::IncidentPack IncidentSvc::getIncidents(const EventContext* ctx){
     auto incs=m_firedIncidents.find(*ctx);
     if(incs!=m_firedIncidents.end()){
       Incident* inc(0);
-      
-      DEBMSG<<"Collecting listeners fired on context "<<*ctx<<endmsg;      
+
+      DEBMSG << "Collecting listeners fired on context " << *ctx << endmsg;
       while(incs->second.try_pop(inc)){
-	std::vector<IIncidentListener*> ls;
-	getListeners(ls,inc->type());
-	p.incidents.emplace_back(std::move(inc));
-	p.listeners.emplace_back(std::move(ls));
+        std::vector<IIncidentListener*> ls;
+        getListeners(ls,inc->type());
+        p.incidents.emplace_back(std::move(inc));
+        p.listeners.emplace_back(std::move(ls));
       }
     }
   }
