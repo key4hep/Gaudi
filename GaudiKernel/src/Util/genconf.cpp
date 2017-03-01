@@ -780,7 +780,7 @@ void configGenerator::pythonizeValue( const PropertyBase* p, string& pvalue, str
     ptype  = "DataObjectHandleBase";
   } else {
     std::ostringstream v_str;
-    v_str.setf( std::ios::fixed ); // to correctly display floats
+    v_str.setf( std::ios::showpoint ); // to correctly display floats
     p->toStream( v_str );
     pvalue = v_str.str();
     ptype  = "list";
