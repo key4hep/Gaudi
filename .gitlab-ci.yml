@@ -15,6 +15,7 @@ build:
   artifacts:
     paths:
       - build/
+    expire_in: 1 week
 
 doxygen:
   stage: test
@@ -27,6 +28,7 @@ doxygen:
   artifacts:
     paths:
       - doxygen/
+    expire_in: 1 week
 
 test:
   stage: test
@@ -39,3 +41,4 @@ test:
   artifacts:
     paths:
       - test_report/
+    expire_in: 1 week
