@@ -24,6 +24,10 @@ namespace concurrency {
 
       bool visit(AlgorithmNode& node) override;
 
+      bool visitEnter(DataNode& node) const override;
+
+      bool visit(DataNode& node) override;
+
 
       void reset() override { m_nodesSucceeded = 0; }
 
@@ -46,6 +50,10 @@ namespace concurrency {
       bool visitEnter(AlgorithmNode&) const override {return true;};
 
       bool visit(AlgorithmNode& node) override;
+
+      bool visitEnter(DataNode&) const override {return true;};
+
+      bool visit(DataNode&) override {return true;};
 
 
       void reset() override { m_nodesSucceeded = 0; }
@@ -73,6 +81,10 @@ namespace concurrency {
 
       bool visit(AlgorithmNode& node) override;
 
+      bool visitEnter(DataNode&) const override {return true;};
+
+      bool visit(DataNode&) override {return true;};
+
 
       void reset() override { m_nodesSucceeded = 0; }
 
@@ -96,6 +108,10 @@ namespace concurrency {
       bool visitEnter(AlgorithmNode& node) const override;
 
       bool visit(AlgorithmNode& node) override;
+
+      bool visitEnter(DataNode&) const override {return true;};
+
+      bool visit(DataNode&) override {return true;};
 
 
       void reset() override { m_nodesSucceeded = 0; }
@@ -121,6 +137,10 @@ namespace concurrency {
 
       bool visit(AlgorithmNode& node) override;
 
+      bool visitEnter(DataNode&) const override {return true;};
+
+      bool visit(DataNode&) override {return true;};
+
 
       void reset() override { m_nodesSucceeded = 0; }
 
@@ -143,6 +163,10 @@ namespace concurrency {
       bool visitEnter(AlgorithmNode&) const override {return true;}
 
       bool visit(AlgorithmNode& node) override;
+
+      bool visitEnter(DataNode&) const override {return true;};
+
+      bool visit(DataNode&) override {return true;};
 
 
       void reset() override { m_nodesSucceeded = 0; }
@@ -169,6 +193,10 @@ namespace concurrency {
 
       bool visit(AlgorithmNode& node) override;
 
+      bool visitEnter(DataNode&) const override {return true;};
+
+      bool visit(DataNode&) override {return true;};
+
 
       void reset() override { m_nodesSucceeded = 0; }
 
@@ -191,6 +219,10 @@ namespace concurrency {
       bool visitEnter(AlgorithmNode&) const override {return true;}
 
       bool visit(AlgorithmNode& node) override;
+
+      bool visitEnter(DataNode&) const override {return true;};
+
+      bool visit(DataNode&) override {return true;};
 
 
       void reset() override { m_nodesSucceeded = 0; }
@@ -216,6 +248,10 @@ namespace concurrency {
       bool visitEnter(AlgorithmNode&) const override {return true;}
 
       bool visit(AlgorithmNode& node) override;
+
+      bool visitEnter(DataNode&) const override {return true;};
+
+      bool visit(DataNode&) override {return true;};
 
 
       void reset() override {
@@ -250,6 +286,10 @@ namespace concurrency {
     bool visitEnter(AlgorithmNode& node) const override;
 
     bool visit(AlgorithmNode& node) override;
+
+    bool visitEnter(DataNode&) const override {return true;};
+
+    bool visit(DataNode&) override {return true;};
 
 
     void reset() override { m_nodesSucceeded = 0; }

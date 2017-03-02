@@ -9,18 +9,11 @@ namespace concurrency {
   bool DataReadyPromoter::visit(AlgorithmNode& node) {
 
     bool result = true; // return true if an algorithm has no data inputs
-
     auto& states = node.m_graph->getAlgoStates(m_slotNum);
 
     for ( auto dataNode : node.getInputDataNodes() ) {
-      // return false if the input has no producers at all (normally this case must be
-      // forbidden, and must be invalidated at configuration time)
-      result = false;
-      for ( auto algoNode : dataNode->getProducers() )
-        if ( State::EVTACCEPTED == states[algoNode->getAlgoIndex()] ) {
-          result = true;
-          break; // skip checking other producers if one was found to be executed
-        }
+
+      result = visit(*dataNode);
 
       if (!result) break; // skip checking other inputs if this input was not produced yet
     }
@@ -29,6 +22,27 @@ namespace concurrency {
       states.updateState( node.getAlgoIndex(), State::DATAREADY ).ignore();
 
     // return true only if an algorithm is promoted to DR
+    return result;
+  }
+
+  //--------------------------------------------------------------------------
+  bool DataReadyPromoter::visitEnter(DataNode&) const {
+    return true;
+  }
+
+  //--------------------------------------------------------------------------
+  bool DataReadyPromoter::visit(DataNode& node) {
+
+    bool result = false; // return false if the input has no producers at all
+    auto& states = node.m_graph->getAlgoStates(m_slotNum);
+
+    for ( auto algoNode : node.getProducers() )
+      if ( State::EVTACCEPTED == states[algoNode->getAlgoIndex()] ) {
+        result = true;
+        break; // skip checking other producers if one was found to be executed
+      }
+
+    // return true only if this DataNode is produced
     return result;
   }
 

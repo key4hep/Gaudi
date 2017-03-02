@@ -5,6 +5,7 @@ namespace concurrency {
 
   class DecisionNode;
   class AlgorithmNode;
+  class DataNode;
 
   class IGraphVisitor {
   public:
@@ -14,7 +15,10 @@ namespace concurrency {
     virtual bool visit(DecisionNode&) = 0;
 
     virtual bool visitEnter(AlgorithmNode&) const = 0;
-    virtual bool visit(AlgorithmNode& node) = 0;
+    virtual bool visit(AlgorithmNode&) = 0;
+
+    virtual bool visitEnter(DataNode&) const = 0;
+    virtual bool visit(DataNode&) = 0;
 
     virtual void reset() = 0;
 

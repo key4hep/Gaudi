@@ -246,10 +246,16 @@ namespace concurrency {
 class DataNode {
 public:
     /// Constructor
-    DataNode(PrecedenceRulesGraph& /*graph*/, const DataObjID& path): m_data_object_path(path) {}
+    DataNode(PrecedenceRulesGraph& graph, const DataObjID& path): m_graph(&graph), m_data_object_path(path) {}
     /// Destructor
     ~DataNode() {}
     const DataObjID& getPath() {return m_data_object_path;}
+    /// Entry point for a visitor
+    bool accept(IGraphVisitor& visitor) {
+      if (visitor.visitEnter(*this))
+        return visitor.visit(*this);
+      return true;
+    }
     /// Associate an AlgorithmNode, which is a data supplier for this one
     void addProducerNode(AlgorithmNode* node) {
       if (std::find(m_producers.begin(),m_producers.end(),node) == m_producers.end())
@@ -264,6 +270,8 @@ public:
     const std::vector<AlgorithmNode*>& getProducers() const {return m_producers;}
     /// Get all data object consumers
     const std::vector<AlgorithmNode*>& getConsumers() const {return m_consumers;}
+public:
+    PrecedenceRulesGraph* m_graph;
 private:
     DataObjID m_data_object_path;
     std::vector<AlgorithmNode*> m_producers;
