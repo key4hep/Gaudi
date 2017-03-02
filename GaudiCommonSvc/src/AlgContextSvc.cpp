@@ -132,8 +132,11 @@ IAlgorithm* AlgContextSvc::currentAlg  () const
 // ============================================================================
 void AlgContextSvc::handle ( const Incident& ) {
   if ( m_algorithms.get() && !m_algorithms->empty() ) {
-    error() << "Non-empty stack of algorithms #"
-            << m_algorithms->size() << endmsg ;
+    //skip Incident processing algorithm endevent incident
+    if((m_algorithms->size()!=1) || (m_algorithms->back()->type()!="IncidentProcAlg")){
+      error() << "Non-empty stack of algorithms #"
+	      << m_algorithms->size() << endmsg ;
+    }
   }
 }
 // ============================================================================
