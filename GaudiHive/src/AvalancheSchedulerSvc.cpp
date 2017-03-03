@@ -259,7 +259,7 @@ StatusCode AvalancheSchedulerSvc::initialize() {
 
   // Simulating execution flow by only analyzing the graph topology and logic
   if ( m_simulateExecution ) {
-    auto vis = concurrency::RunSimulator( 0 );
+    auto vis = concurrency::RunSimulator( m_eventSlots[0] );
     m_efManager.simulateExecutionFlow( vis );
   }
 
@@ -416,7 +416,7 @@ StatusCode AvalancheSchedulerSvc::pushNewEvent( EventContext* eventContext ) {
     thisSlot.reset( eventContext );
 
     // promote to CR and DR the initial set of algorithms
-    auto vis = concurrency::Trigger( thisSlotNum );
+    auto vis = concurrency::Trigger( m_eventSlots[thisSlotNum] );
     m_efManager.touchReadyAlgorithms( vis );
 
     return this->updateStates( thisSlotNum );

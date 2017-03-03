@@ -9,9 +9,9 @@ namespace concurrency {
   class DataReadyPromoter : public IGraphVisitor {
     public:
       /// Constructor
-      DataReadyPromoter(const int& slotNum) {
+      DataReadyPromoter(EventSlot& slot) {
         m_nodesSucceeded = 0;
-        m_slotNum = slotNum;
+        m_slot = &slot;
       };
       /// Destructor
       ~DataReadyPromoter() override {}
@@ -36,9 +36,9 @@ namespace concurrency {
   class DecisionUpdater : public IGraphVisitor {
     public:
       /// Constructor
-      DecisionUpdater(const int& slotNum) {
+      DecisionUpdater(EventSlot& slot) {
         m_nodesSucceeded = 0;
-        m_slotNum = slotNum;
+        m_slot = &slot;
       };
       /// Destructor
       ~DecisionUpdater() override {}
@@ -66,9 +66,9 @@ namespace concurrency {
   class Trigger : public IGraphVisitor {
     public:
       /// Constructor
-      Trigger(const int& slotNum) {
+      Trigger(EventSlot& slot) {
         m_nodesSucceeded = 0;
-        m_slotNum = slotNum;
+        m_slot = &slot;
       };
       /// Destructor
       ~Trigger() override {}
@@ -94,9 +94,9 @@ namespace concurrency {
   class Supervisor : public IGraphVisitor {
     public:
       /// Constructor
-	  Supervisor(const int& slotNum) {
+	  Supervisor(EventSlot& slot) {
         m_nodesSucceeded = 0;
-        m_slotNum = slotNum;
+        m_slot = &slot;
       };
       /// Destructor
       ~Supervisor() override {}
@@ -123,7 +123,7 @@ namespace concurrency {
       /// Constructor
       RankerByProductConsumption() {
         m_nodesSucceeded = 0;
-        m_slotNum = -1;
+        m_slot = nullptr;
       };
       /// Destructor
       ~RankerByProductConsumption() override {}
@@ -151,7 +151,7 @@ namespace concurrency {
       /// Constructor
       RankerByCummulativeOutDegree() {
         m_nodesSucceeded = 0;
-        m_slotNum = -1;
+        m_slot = nullptr;
       };
       /// Destructor
       ~RankerByCummulativeOutDegree() override {}
@@ -180,7 +180,7 @@ namespace concurrency {
       /// Constructor
       RankerByTiming() {
         m_nodesSucceeded = 0;
-        m_slotNum = -1;
+        m_slot = nullptr;
       };
       /// Destructor
       ~RankerByTiming() override {}
@@ -207,7 +207,7 @@ namespace concurrency {
       /// Constructor
       RankerByEccentricity() {
         m_nodesSucceeded = 0;
-        m_slotNum = -1;
+        m_slot = nullptr;
       };
       /// Destructor
       ~RankerByEccentricity() override {}
@@ -234,7 +234,7 @@ namespace concurrency {
       /// Constructor
       RankerByDataRealmEccentricity() {
         m_nodesSucceeded = 0;
-        m_slotNum = -1;
+        m_slot = nullptr;
         m_currentDepth = 0;
         m_maxKnownDepth = 0;
       };
@@ -272,9 +272,9 @@ namespace concurrency {
   class RunSimulator : public IGraphVisitor {
   public:
     /// Constructor
-    RunSimulator(const int& slotNum) {
+    RunSimulator(EventSlot& slot) {
       m_nodesSucceeded = 0;
-      m_slotNum = slotNum;
+      m_slot = &slot;
     };
     /// Destructor
     ~RunSimulator() override {}

@@ -1,6 +1,8 @@
 #ifndef IGRAPHVISITOR_H_
 #define IGRAPHVISITOR_H_
 
+#include "EventSlot.h"
+
 namespace concurrency {
 
   class DecisionNode;
@@ -24,7 +26,7 @@ namespace concurrency {
 
   public:
     int m_nodesSucceeded;
-    int m_slotNum;
+    EventSlot* m_slot;
   };
 }
 

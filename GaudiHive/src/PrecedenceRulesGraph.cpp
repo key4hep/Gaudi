@@ -370,13 +370,14 @@ namespace concurrency
     node_decisions[m_nodeIndex] = decision;
 
     if ( -1 != decision ) {
-      auto promoter = DataReadyPromoter(slotNum);
+      auto& slot = (*m_graph->m_eventSlots)[slotNum];
+      auto promoter = DataReadyPromoter(slot);
       for ( auto output : m_outputs )
         for ( auto consumer : output->getConsumers() )
           if (State::CONTROLREADY == states[consumer->getAlgoIndex()])
             consumer->accept(promoter);
 
-      auto vis = concurrency::Supervisor( slotNum );
+      auto vis = concurrency::Supervisor(slot);
       for ( auto p : m_parents ) {
         //p->updateDecision( slotNum, states, node_decisions, requestor );
         p->accept(vis);
@@ -724,7 +725,8 @@ namespace concurrency
     //if (msgLevel(MSG::DEBUG))
     //  debug() << "(UPDATING)Setting decision of algorithm " << algo_name << " and propagating it upwards.." << endmsg;
     //getAlgorithmNode( algo_name )->updateDecision( slotNum, algo_states, node_decisions );
-    auto updater = DecisionUpdater(slotNum);
+    auto& slot = (*m_eventSlots)[slotNum];
+    auto updater = DecisionUpdater(slot);
     getAlgorithmNode( algo_name )->accept(updater);
   }
 

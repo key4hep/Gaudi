@@ -9,7 +9,6 @@ namespace concurrency {
   bool DataReadyPromoter::visit(AlgorithmNode& node) {
 
     bool result = true; // return true if an algorithm has no data inputs
-    auto& states = node.m_graph->getAlgoStates(m_slotNum);
 
     for ( auto dataNode : node.getInputDataNodes() ) {
 
@@ -19,7 +18,7 @@ namespace concurrency {
     }
 
     if (result)
-      states.updateState( node.getAlgoIndex(), State::DATAREADY ).ignore();
+      m_slot->algsStates.updateState( node.getAlgoIndex(), State::DATAREADY ).ignore();
 
     // return true only if an algorithm is promoted to DR
     return result;
@@ -34,10 +33,9 @@ namespace concurrency {
   bool DataReadyPromoter::visit(DataNode& node) {
 
     bool result = false; // return false if the input has no producers at all
-    auto& states = node.m_graph->getAlgoStates(m_slotNum);
 
     for ( auto algoNode : node.getProducers() )
-      if ( State::EVTACCEPTED == states[algoNode->getAlgoIndex()] ) {
+      if ( State::EVTACCEPTED == m_slot->algsStates[algoNode->getAlgoIndex()] ) {
         result = true;
         break; // skip checking other producers if one was found to be executed
       }
@@ -49,7 +47,7 @@ namespace concurrency {
   //--------------------------------------------------------------------------
   bool DecisionUpdater::visit(AlgorithmNode& node) {
 
-    auto& states = node.m_graph->getAlgoStates(m_slotNum);
+    auto& states = m_slot->algsStates;
     const State& state = states[node.getAlgoIndex()];
     int decision = -1;
 
@@ -62,14 +60,14 @@ namespace concurrency {
 
     if ( -1 != decision ) {
 
-      node.m_graph->getNodeDecisions(m_slotNum)[node.getNodeIndex()] = decision;
+      m_slot->controlFlowState[node.getNodeIndex()] = decision;
 
-      auto promoter = DataReadyPromoter(m_slotNum);
+      auto promoter = DataReadyPromoter(*m_slot);
       for ( auto consumer : node.getConsumerNodes() )
         if (State::CONTROLREADY == states[consumer->getAlgoIndex()])
           consumer->accept(promoter);
 
-      auto vis = concurrency::Supervisor( m_slotNum );
+      auto vis = concurrency::Supervisor( *m_slot );
       for ( auto p : node.getParentDecisionHubs() )
         p->accept(vis);
 
@@ -82,7 +80,7 @@ namespace concurrency {
   //---------------------------------------------------------------------------
   bool Trigger::visitEnter(DecisionNode& node) const {
 
-    if (node.m_graph->getNodeDecisions(m_slotNum)[node.getNodeIndex()] != -1)
+    if (m_slot->controlFlowState[node.getNodeIndex()] != -1)
       return false;
     return true;
   }
@@ -91,12 +89,14 @@ namespace concurrency {
   bool Trigger::visit(DecisionNode& node) {
 
     //std::cout << "1-st level Decision: " << node.getNodeName() << std::endl;
+    auto& cfDecisions = m_slot->controlFlowState;
+
     bool allChildDecisionsResolved = true;
     for (auto child : node.getDaughters()) {
-      int& childDecision = child->m_graph->getNodeDecisions(m_slotNum)[child->getNodeIndex()];
+      int& childDecision = cfDecisions[child->getNodeIndex()];
 
       if (childDecision == 1 && node.m_modeOR && node.m_modePromptDecision) {
-        node.m_graph->getNodeDecisions(m_slotNum)[node.getNodeIndex()] = 1;
+        cfDecisions[node.getNodeIndex()] = 1;
         return true;
       }
 
@@ -106,7 +106,7 @@ namespace concurrency {
     }
 
     if (allChildDecisionsResolved)
-      node.m_graph->getNodeDecisions(m_slotNum)[node.getNodeIndex()] = 1;
+      cfDecisions[node.getNodeIndex()] = 1;
 
     return allChildDecisionsResolved;
   }
@@ -116,7 +116,7 @@ namespace concurrency {
   //---------------------------------------------------------------------------
   bool Trigger::visitEnter(AlgorithmNode& node) const {
 
-    if (node.m_graph->getNodeDecisions(m_slotNum)[node.getNodeIndex()] != -1)
+    if (m_slot->controlFlowState[node.getNodeIndex()] != -1)
       return false;
     return true;
   }
@@ -126,7 +126,7 @@ namespace concurrency {
 
     bool result = false;
 
-    auto& states = node.m_graph->getAlgoStates(m_slotNum);
+    auto& states = m_slot->algsStates;
     auto& state = states[node.getAlgoIndex()];
 
     // Promote with INITIAL->CR
@@ -135,7 +135,7 @@ namespace concurrency {
 
     // Try to promote with CR->DR
     if ( State::CONTROLREADY == state ) {
-      auto promoter = DataReadyPromoter(m_slotNum);
+      auto promoter = DataReadyPromoter(*m_slot);
       result = promoter.visit(node);
     } else {
       result = true;
@@ -150,7 +150,7 @@ namespace concurrency {
   //---------------------------------------------------------------------------
   bool Supervisor::visitEnter(DecisionNode& node) const {
 
-    if (node.m_graph->getNodeDecisions(m_slotNum)[node.getNodeIndex()] != -1)
+    if (m_slot->controlFlowState[node.getNodeIndex()] != -1)
       return false;
     return true;
   }
@@ -164,7 +164,7 @@ namespace concurrency {
     int decision = -1;
 
     for (auto child : node.getDaughters()) {
-      int& childDecision = child->m_graph->getNodeDecisions(m_slotNum)[child->getNodeIndex()];
+      int& childDecision = m_slot->controlFlowState[child->getNodeIndex()];
 
       if (childDecision == -1)
         foundNonResolvedChild = true;
@@ -200,7 +200,7 @@ namespace concurrency {
       decision = 1;
 
     if (decision != -1) {
-      node.m_graph->getNodeDecisions(m_slotNum)[node.getNodeIndex()] = decision;
+      m_slot->controlFlowState[node.getNodeIndex()] = decision;
       return true;
     }
     return false;
@@ -209,7 +209,7 @@ namespace concurrency {
   //---------------------------------------------------------------------------
   bool Supervisor::visitEnter(AlgorithmNode& node) const {
 
-    if (node.m_graph->getNodeDecisions(m_slotNum)[node.getNodeIndex()] != -1)
+    if (m_slot->controlFlowState[node.getNodeIndex()] != -1)
       return false;
     return true;
   }
@@ -219,7 +219,7 @@ namespace concurrency {
 
     bool result = false;
 
-    auto& states = node.m_graph->getAlgoStates(m_slotNum);
+    auto& states = m_slot->algsStates;
     auto& state = states[node.getAlgoIndex()];
 
     // Promote with INITIAL->CR
@@ -228,7 +228,7 @@ namespace concurrency {
 
     // Try to promote with CR->DR
     if ( State::CONTROLREADY == state ) {
-      auto promoter = DataReadyPromoter(m_slotNum);
+      auto promoter = DataReadyPromoter(*m_slot);
       result = promoter.visit(node);
     } else {
       result = true;
@@ -408,7 +408,7 @@ namespace concurrency {
   //---------------------------------------------------------------------------
   bool RunSimulator::visitEnter(DecisionNode& node) const {
 
-    if (node.m_graph->getNodeDecisions(m_slotNum)[node.getNodeIndex()] != 1)
+    if (m_slot->controlFlowState[node.getNodeIndex()] != 1)
       return true;
     return false;
   }
@@ -419,10 +419,10 @@ namespace concurrency {
     //std::cout << "1-st level Decision: " << node.getNodeName() << std::endl;
     bool allChildDecisionsResolved = true;
     for (auto child : node.getDaughters()) {
-      int& childDecision = child->m_graph->getNodeDecisions(m_slotNum)[child->getNodeIndex()];
+      int& childDecision = m_slot->controlFlowState[child->getNodeIndex()];
 
       if (childDecision == 1 && node.m_modeOR && node.m_modePromptDecision) {
-        node.m_graph->getNodeDecisions(m_slotNum)[node.getNodeIndex()] = 1;
+        m_slot->controlFlowState[node.getNodeIndex()] = 1;
         return true;
       }
 
@@ -432,7 +432,7 @@ namespace concurrency {
     }
 
     if (allChildDecisionsResolved)
-      node.m_graph->getNodeDecisions(m_slotNum)[node.getNodeIndex()] = 1;
+      m_slot->controlFlowState[node.getNodeIndex()] = 1;
 
     return allChildDecisionsResolved;
   }
@@ -440,7 +440,7 @@ namespace concurrency {
   //---------------------------------------------------------------------------
   bool RunSimulator::visitEnter(AlgorithmNode& node) const {
 
-    if (node.m_graph->getNodeDecisions(m_slotNum)[node.getNodeIndex()] != 1)
+    if (m_slot->controlFlowState[node.getNodeIndex()] != 1)
       return true;
     return false;
   }
@@ -448,11 +448,10 @@ namespace concurrency {
   //--------------------------------------------------------------------------
   bool RunSimulator::visit(AlgorithmNode& node) {
 
-    std::vector<int>& decisions = node.m_graph->getNodeDecisions(m_slotNum);
-    AlgsExecutionStates& states = node.m_graph->getAlgoStates(m_slotNum);
-    int& decision = decisions[node.getNodeIndex()];
+    auto& states = m_slot->algsStates;
+    int& decision = m_slot->controlFlowState[node.getNodeIndex()];
 
-    auto dataPromoter = DataReadyPromoter(m_slotNum);
+    auto dataPromoter = DataReadyPromoter(*m_slot);
 
     if (State::INITIAL == states[node.getAlgoIndex()]) {
       states.updateState(node.getAlgoIndex(), State::CONTROLREADY);

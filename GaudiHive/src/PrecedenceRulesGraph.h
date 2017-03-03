@@ -384,11 +384,11 @@ private:
     mutable SmartIF<ISvcLocator> m_svcLocator;
     const std::string m_name;
     const std::chrono::system_clock::time_point m_initTime;
-    ///
-    std::vector<EventSlot>* m_eventSlots;
     /// temporary items to experiment with execution planning
     boost::ExecPlan m_ExecPlan;
     std::map<std::string,boost::AlgoVertex> m_exec_plan_map;
+public:
+    std::vector<EventSlot>* m_eventSlots;
   };
 
 
