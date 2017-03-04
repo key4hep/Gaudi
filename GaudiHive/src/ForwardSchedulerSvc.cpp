@@ -11,6 +11,7 @@
 #include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/ThreadLocalContext.h"
+#include "GaudiKernel/ConcurrencyFlags.h"
 
 // C++
 #include <algorithm>
@@ -100,6 +101,9 @@ StatusCode ForwardSchedulerSvc::initialize() {
                 << "). Setting the number of events in flight to " << numberOfWBSlots << endmsg;
     }
   }
+
+  // set global concurrency flags
+  Gaudi::Concurrency::ConcurrencyFlags::setNumConcEvents( numberOfWBSlots );
 
   // Align the two quantities
   m_maxEventsInFlight = numberOfWBSlots;

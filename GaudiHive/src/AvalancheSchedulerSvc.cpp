@@ -12,6 +12,7 @@
 #include "GaudiKernel/IDataManagerSvc.h"
 #include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/ThreadLocalContext.h"
+#include "GaudiKernel/ConcurrencyFlags.h"
 
 // C++
 #include <algorithm>
@@ -88,6 +89,13 @@ StatusCode AvalancheSchedulerSvc::initialize() {
     return StatusCode::FAILURE;
   }
 
+  // Get dedicated scheduler for I/O-bound algorithms
+  if ( m_useIOBoundAlgScheduler ) {
+    m_IOBoundAlgScheduler = serviceLocator()->service( m_IOBoundAlgSchedulerSvcName );
+    if ( !m_IOBoundAlgScheduler.isValid() )
+      fatal() << "Error retrieving IOBoundSchedulerAlgSvc interface IAccelerator." << endmsg;
+  }
+
   // Check the MaxEventsInFlight parameters and react
   // Deprecated for the moment
   size_t numberOfWBSlots = m_whiteboard->getNumberOfStores();
@@ -102,17 +110,14 @@ StatusCode AvalancheSchedulerSvc::initialize() {
     }
   }
 
-  // Get dedicated scheduler for I/O-bound algorithms
-  if ( m_useIOBoundAlgScheduler ) {
-    m_IOBoundAlgScheduler = serviceLocator()->service( m_IOBoundAlgSchedulerSvcName );
-    if ( !m_IOBoundAlgScheduler.isValid() )
-      fatal() << "Error retrieving IOBoundSchedulerAlgSvc interface IAccelerator." << endmsg;
-  }
   // Align the two quantities
   m_maxEventsInFlight = numberOfWBSlots;
 
   // Set the number of free slots
   m_freeSlots = m_maxEventsInFlight;
+
+  // set global concurrency flags
+  Gaudi::Concurrency::ConcurrencyFlags::setNumConcEvents( numberOfWBSlots );
 
   if ( m_algosDependencies.size() != 0 ) {
     warning() << " ##### Property AlgosDependencies is deprecated and ignored."
