@@ -21,7 +21,7 @@ StatusCode VFSSvc::initialize() {
   IAlgTool *tool;
   for(const auto& i : m_urlHandlersNames) {
     // retrieve the tool and the pointer to the interface
-    sc = m_toolSvc->retrieve(i,IAlgTool::interfaceID(),tool,nullptr,true);
+    sc = m_toolSvc->retrieve(i, IAlgTool::interfaceID(), tool, nullptr, true);
     if (sc.isFailure()){
       error() << "Cannot get tool " << i << endmsg;
       return sc;
@@ -35,7 +35,7 @@ StatusCode VFSSvc::initialize() {
     // We do not need to increase the reference count for the IFileAccess interface
     // because we hold the tool by its IAlgTool interface.
     // loop over the list of supported protocols and add them to the map (for quick access)
-    for ( const auto& prot : hndlr->protocols() ) m_urlHandlers[prot] = hndlr.get();
+    for ( const auto& prot : hndlr->protocols() ) m_urlHandlers[prot].emplace_back( hndlr.get() );
   }
 
   // Now let's check if we can handle the fallback protocol
@@ -66,21 +66,28 @@ StatusCode VFSSvc::finalize() {
 }
 //------------------------------------------------------------------------------
 std::unique_ptr<std::istream> VFSSvc::open(const std::string &url){
-
   // get the url prefix endpos
   auto pos = url.find("://");
 
-  if (std::string::npos == pos) { // no url prefix
-    return m_urlHandlers[m_fallBackProtocol]->open(url);
+  if (std::string::npos == pos) {
+    // no url prefix, try fallback protocol
+    return  VFSSvc::open(m_fallBackProtocol + url);
   }
 
-  std::string url_prefix(url,0,pos);
+  std::string url_prefix(url, 0, pos);
   if ( m_urlHandlers.find(url_prefix) == m_urlHandlers.end() ) {
     // if we do not have a handler for the URL prefix,
-    // use the fall back one and pass only the path
-    return m_urlHandlers[m_fallBackProtocol]->open(url.substr(pos+3));
+    // use the fall back one
+    return  VFSSvc::open(m_fallBackProtocol + url.substr(pos + 3));
   }
-  return m_urlHandlers[url_prefix]->open(url);
+
+  std::unique_ptr<std::istream> out; // this might help RVO
+  // try the hendlers for the protocol one after the other until one succeds
+  for( auto hndlr: m_urlHandlers[url_prefix] ) {
+    out = hndlr->open(url);
+    if ( out ) break;
+  }
+  return out;
 }
 //------------------------------------------------------------------------------
 namespace {
