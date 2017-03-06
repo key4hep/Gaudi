@@ -74,8 +74,9 @@ std::unique_ptr<std::istream> VFSSvc::open(const std::string &url){
     return  VFSSvc::open(m_fallBackProtocol + "://" + url);
   }
 
-  std::string url_prefix(url, 0, pos);
-  if ( m_urlHandlers.find(url_prefix) == m_urlHandlers.end() ) {
+  const std::string url_prefix(url, 0, pos);
+  const auto handlers = m_urlHandlers.find(url_prefix);
+  if ( handlers == m_urlHandlers.end() ) {
     // if we do not have a handler for the URL prefix,
     // use the fall back one
     return  VFSSvc::open(m_fallBackProtocol + url.substr(pos));
@@ -83,7 +84,7 @@ std::unique_ptr<std::istream> VFSSvc::open(const std::string &url){
 
   std::unique_ptr<std::istream> out; // this might help RVO
   // try the hendlers for the protocol one after the other until one succeds
-  for( auto hndlr: m_urlHandlers[url_prefix] ) {
+  for( auto hndlr: handlers->second ) {
     out = hndlr->open(url);
     if ( out ) break;
   }
