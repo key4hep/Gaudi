@@ -71,14 +71,14 @@ std::unique_ptr<std::istream> VFSSvc::open(const std::string &url){
 
   if (std::string::npos == pos) {
     // no url prefix, try fallback protocol
-    return  VFSSvc::open(m_fallBackProtocol + url);
+    return  VFSSvc::open(m_fallBackProtocol + "://" + url);
   }
 
   std::string url_prefix(url, 0, pos);
   if ( m_urlHandlers.find(url_prefix) == m_urlHandlers.end() ) {
     // if we do not have a handler for the URL prefix,
     // use the fall back one
-    return  VFSSvc::open(m_fallBackProtocol + url.substr(pos + 3));
+    return  VFSSvc::open(m_fallBackProtocol + url.substr(pos));
   }
 
   std::unique_ptr<std::istream> out; // this might help RVO
