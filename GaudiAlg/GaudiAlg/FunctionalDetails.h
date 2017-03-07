@@ -22,24 +22,22 @@
 
 namespace Gaudi { namespace Functional { namespace details {
 
-    // CRJ : Stuff for zipping
+    /// Range Zipping utilties
     namespace zip
     {
 
       /// Print the parameter
       template <typename OS, typename Arg>
-      void printSizes(OS& out, Arg&& arg)
+      OS& printSizes( OS& out, Arg&& arg ) noexcept
       {
-        out << System::typeinfoName(typeid(Arg)) << " = " << std::forward<Arg>(arg).size();
+        return out << System::typeinfoName(typeid(Arg)) << "=" << std::forward<Arg>(arg).size();
       }
 
       /// Print the parameters
       template <typename OS, typename Arg, typename... Args>
-      void printSizes(OS& out, Arg&& arg, Args&&... args)
+      void printSizes( OS& out, Arg&& arg, Args&&... args ) noexcept
       {
-        printSizes(out,arg); 
-        out << ","; 
-        printSizes(out,args...);
+        return printSizes( printSizes(out,arg) << ", "  , args... );
       }
 
       /// Resolve case there is only one container in the range
