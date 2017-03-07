@@ -199,7 +199,6 @@ private:
 
   std::map<std::string, std::shared_ptr<std::ostream>> m_loggedStreams;
 
-  void initColors( Gaudi::Details::PropertyBase& prop );
   void setupColors( Gaudi::Details::PropertyBase& prop );
   void setupLimits( Gaudi::Details::PropertyBase& prop );
   void setupThreshold( Gaudi::Details::PropertyBase& prop );

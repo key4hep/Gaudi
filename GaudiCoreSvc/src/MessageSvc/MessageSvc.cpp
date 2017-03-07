@@ -72,9 +72,6 @@ static const std::string levelNames[MSG::NUM_LEVELS] = {"NIL",     "VERBOSE", "D
 // Constructor
 MessageSvc::MessageSvc( const std::string& name, ISvcLocator* svcloc ) : base_class( name, svcloc )
 {
-
-  m_color.declareUpdateHandler( &MessageSvc::initColors, this );
-
   m_inactCount.declareUpdateHandler( &MessageSvc::setupInactCount, this );
 
 #ifndef NDEBUG
@@ -88,6 +85,10 @@ MessageSvc::MessageSvc( const std::string& name, ISvcLocator* svcloc ) : base_cl
     m_thresholdProp[ic].declareUpdateHandler( &MessageSvc::setupThreshold, this );
   }
 
+  m_logColors[MSG::FATAL].set({"blue", "red"});
+  m_logColors[MSG::ERROR].set({"white", "red"});
+  m_logColors[MSG::WARNING].set({"yellow"});
+
   std::fill( std::begin( m_msgCount ), std::end( m_msgCount ), 0 );
 }
 
@@ -96,11 +97,7 @@ MessageSvc::MessageSvc( const std::string& name, ISvcLocator* svcloc ) : base_cl
 /// Initialize Service
 StatusCode MessageSvc::initialize()
 {
-  StatusCode sc;
-  sc = Service::initialize();
-  if ( sc.isFailure() ) return sc;
-  // Set my own properties
-  sc = setProperties();
+  StatusCode sc = Service::initialize();
   if ( sc.isFailure() ) return sc;
 
 #ifdef _WIN32
@@ -124,38 +121,8 @@ StatusCode MessageSvc::reinitialize()
 
 //#############################################################################
 
-void MessageSvc::initColors( Gaudi::Details::PropertyBase& /*prop*/ )
-{
-
-  if ( m_color ) {
-    static const std::array<std::pair<MSG::Level, std::vector<std::string>>, 3> tbl{
-        {{MSG::FATAL, {{"[94;101;1m"}}}, {MSG::ERROR, {{"[97;101;1m"}}}, {MSG::WARNING, {{"[93;1m"}}}}};
-
-    for ( const auto& p : tbl ) {
-      auto& lC = m_logColors[p.first];
-      if ( lC.value().empty() ) {
-        lC.set( p.second );
-      } else {
-        MessageSvc::setupColors( lC );
-      }
-    }
-
-  } else {
-
-    // reset all color codes;
-    for ( int ic = 0; ic < MSG::NUM_LEVELS; ++ic ) {
-      m_logColors[ic].set( {} );
-    }
-  }
-}
-
-//#############################################################################
-
 void MessageSvc::setupColors( Gaudi::Details::PropertyBase& prop )
 {
-
-  if ( !m_color ) return;
-
   static const std::array<std::pair<const char*, MSG::Level>, 7> tbl{{{"fatalColorCode", MSG::FATAL},
                                                                       {"errorColorCode", MSG::ERROR},
                                                                       {"warningColorCode", MSG::WARNING},
