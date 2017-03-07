@@ -37,9 +37,8 @@ namespace Gaudi { namespace Functional { namespace details {
       template <typename OS, typename Arg, typename... Args>
       OS& printSizes( OS& out, Arg&& arg, Args&&... args ) noexcept
       {
-        printSizes(out,arg); 
-        out << ", "; 
-        printSizes(out,args...);
+        printSizes(out,arg);
+        return printSizes(out,args...) << ", ";
       }
 
       /// Resolve case there is only one container in the range
