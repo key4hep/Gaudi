@@ -1,13 +1,11 @@
-
-#pragma once
+#ifndef FUNCTIONAL_DETAILS_H
+#define FUNCTIONAL_DETAILS_H
 
 #include <type_traits>
 #include <stdexcept>
 #include <cassert>
-#include <sstream>
 
 // TODO: fwd declare instead?
-#include "GaudiKernel/System.h"
 #include "GaudiKernel/DataObjectHandle.h"
 #include "GaudiKernel/AnyDataHandle.h"
 #include "GaudiKernel/GaudiException.h"
@@ -22,23 +20,23 @@
 
 namespace Gaudi { namespace Functional { namespace details {
 
-    /// Range Zipping utilites
+    // CRJ : Stuff for zipping
     namespace zip
     {
 
       /// Print the parameter
       template <typename OS, typename Arg>
-      OS& printSizes( OS& out, Arg&& arg ) noexcept
+      void printSizes(OS& out, Arg&& arg)
       {
-        return out << System::typeinfoName(typeid(Arg)) << "=" << std::forward<Arg>(arg).size();
+        out << System::typeinfoName(typeid(Arg)) << " = " << std::forward<Arg>(arg).size();
       }
-
       /// Print the parameters
       template <typename OS, typename Arg, typename... Args>
-      OS& printSizes( OS& out, Arg&& arg, Args&&... args ) noexcept
+      void printSizes(OS& out, Arg&& arg, Args&&... args)
       {
-        printSizes(out,arg);
-        return printSizes(out,args...) << ", ";
+        printSizes(out,arg); 
+        out << ","; 
+        printSizes(out,args...);
       }
 
       /// Resolve case there is only one container in the range
@@ -61,7 +59,7 @@ namespace Gaudi { namespace Functional { namespace details {
 
       /// Verify the data container sizes have the same sizes
       template< typename... Args >
-      inline void verifySizes( Args&... args )
+      inline decltype(auto) verifySizes( Args&... args )
       {
         if ( UNLIKELY( !check_sizes( args... ) ) )
         { 
@@ -474,3 +472,5 @@ namespace Gaudi { namespace Functional { namespace details {
    /////////////////
 
 } } }
+
+#endif
