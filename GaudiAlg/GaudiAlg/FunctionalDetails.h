@@ -1,11 +1,13 @@
-#ifndef FUNCTIONAL_DETAILS_H
-#define FUNCTIONAL_DETAILS_H
+
+#pragma once
 
 #include <type_traits>
 #include <stdexcept>
 #include <cassert>
+#include <sstream>
 
 // TODO: fwd declare instead?
+#include "GaudiKernel/System.h"
 #include "GaudiKernel/DataObjectHandle.h"
 #include "GaudiKernel/AnyDataHandle.h"
 #include "GaudiKernel/GaudiException.h"
@@ -23,6 +25,22 @@ namespace Gaudi { namespace Functional { namespace details {
     // CRJ : Stuff for zipping
     namespace zip
     {
+
+      /// Print the parameter
+      template <typename OS, typename Arg>
+      void printSizes(OS& out, Arg&& arg)
+      {
+        out << System::typeinfoName(typeid(Arg)) << " = " << std::forward<Arg>(arg).size();
+      }
+
+      /// Print the parameters
+      template <typename OS, typename Arg, typename... Args>
+      void printSizes(OS& out, Arg&& arg, Args&&... args)
+      {
+        printSizes(out,arg); 
+        out << ","; 
+        printSizes(out,args...);
+      }
 
       /// Resolve case there is only one container in the range
       template < typename A >
@@ -44,12 +62,17 @@ namespace Gaudi { namespace Functional { namespace details {
 
       /// Verify the data container sizes have the same sizes
       template< typename... Args >
-      inline decltype(auto) verifySizes( Args&... args )
+      inline void verifySizes( Args&... args )
       {
         if ( UNLIKELY( !check_sizes( args... ) ) )
-        { throw GaudiException( "Zipped containers have different sizes.",
+        { 
+          std::ostringstream mess;
+          mess << "Zipped containers have different sizes : ";
+          printSizes(mess,args...);
+          throw GaudiException( mess.str(),
                                 "Gaudi::Functional::details::zip::verifySizes",
-                                StatusCode::FAILURE ); }
+                                StatusCode::FAILURE ); 
+        }
       }
 
       /// Zips multiple containers together to form a single range
@@ -452,5 +475,3 @@ namespace Gaudi { namespace Functional { namespace details {
    /////////////////
 
 } } }
-
-#endif
