@@ -123,42 +123,37 @@ StatusCode MessageSvc::reinitialize()
 
 void MessageSvc::setupColors( Gaudi::Details::PropertyBase& prop )
 {
-  static const std::array<std::pair<const char*, MSG::Level>, 7> tbl{{{"fatalColorCode", MSG::FATAL},
-                                                                      {"errorColorCode", MSG::ERROR},
-                                                                      {"warningColorCode", MSG::WARNING},
-                                                                      {"infoColorCode", MSG::INFO},
-                                                                      {"debugColorCode", MSG::DEBUG},
-                                                                      {"verboseColorCode", MSG::VERBOSE},
-                                                                      {"alwaysColorCode", MSG::ALWAYS}}};
-
-  auto i = std::find_if( std::begin( tbl ), std::end( tbl ),
-                         [&]( const std::pair<const char*, MSG::Level>& t ) { return prop.name() == t.first; } );
-  if ( i == std::end( tbl ) ) {
-    std::cout << "ERROR: Unknown message color parameter: " << prop.name() << std::endl;
-    return;
+  const std::string& pname = prop.name();
+  int level;
+  if ( pname == "fatalColorCode"   ) level = MSG::FATAL   ; else
+  if ( pname == "errorColorCode"   ) level = MSG::ERROR   ; else
+  if ( pname == "warningColorCode" ) level = MSG::WARNING ; else
+  if ( pname == "infoColorCode"    ) level = MSG::INFO    ; else
+  if ( pname == "debugColorCode"   ) level = MSG::DEBUG   ; else
+  if ( pname == "verboseColorCode" ) level = MSG::VERBOSE ; else
+  if ( pname == "alwaysColorCode"  ) level = MSG::ALWAYS  ; else {
+    throw GaudiException( "ERROR: Unknown message color parameter: " + pname,
+                          name(), StatusCode::FAILURE );
   }
-  int ic = i->second;
 
-  std::string code;
-  auto itr = m_logColors[ic].value().begin();
+  auto& code = m_logColorCodes[level];
 
-  if ( m_logColors[ic].value().size() == 1 ) {
+  const auto& col_desc = m_logColors[level].value();
 
-    if ( itr->empty() ) {
+  if ( col_desc.size() == 1 ) {
+    const std::string& desc = col_desc[0];
+    if ( desc.empty() ) {
       code = "";
-    } else if ( itr->compare( 0, 1, "[" ) == 0 ) {
-      code = "\033" + *itr;
+    } else if ( desc[0] == '[' ) {
+      code = "\033" + desc;
     } else {
-      code = "\033[" + colTrans( *itr, 90 ) + ";1m";
+      code = "\033[" + colTrans( desc, 90 ) + ";1m";
     }
-
-  } else if ( m_logColors[ic].value().size() == 2 ) {
-    auto itr2 = itr + 1;
-
-    code = "\033[" + colTrans( *itr, 90 ) + ";" + colTrans( *itr2, 100 ) + ";1m";
+  } else if ( col_desc.size() == 2 ) {
+    code = "\033[" + colTrans( col_desc[0], 90 ) + ";" + colTrans( col_desc[1], 100 ) + ";1m";
+  } else { // empty desc: no color
+    code = "";
   }
-
-  m_logColorCodes[ic] = code;
 }
 //#############################################################################
 
