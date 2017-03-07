@@ -35,7 +35,7 @@ namespace Gaudi { namespace Functional { namespace details {
 
       /// Print the parameters
       template <typename OS, typename Arg, typename... Args>
-      void printSizes( OS& out, Arg&& arg, Args&&... args ) noexcept
+      OS& printSizes( OS& out, Arg&& arg, Args&&... args ) noexcept
       {
         return printSizes( printSizes(out,arg) << ", "  , args... );
       }
