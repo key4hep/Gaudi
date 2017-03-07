@@ -22,7 +22,7 @@
 
 namespace Gaudi { namespace Functional { namespace details {
 
-    /// Range Zipping utilties
+    /// Range Zipping utilites
     namespace zip
     {
 
