@@ -45,6 +45,21 @@ namespace
   {
     return erase_if( c, std::move( range.first ), std::move( range.second ), std::forward<Predicate>( pred ) );
   }
+
+  std::string colTrans( const std::string& col, int offset )
+  {
+    int icol = 0;
+    if ( col == "black"  ) icol = MSG::BLACK  ; else
+    if ( col == "red"    ) icol = MSG::RED    ; else
+    if ( col == "green"  ) icol = MSG::GREEN  ; else
+    if ( col == "yellow" ) icol = MSG::YELLOW ; else
+    if ( col == "blue"   ) icol = MSG::BLUE   ; else
+    if ( col == "purple" ) icol = MSG::PURPLE ; else
+    if ( col == "cyan"   ) icol = MSG::CYAN   ; else
+    if ( col == "white"  ) icol = MSG::WHITE  ; else
+      icol = 8;
+    return std::to_string( icol + offset );
+  }
 }
 
 // Instantiation of a static factory class used by clients to create
@@ -91,20 +106,6 @@ StatusCode MessageSvc::initialize()
 #ifdef _WIN32
   m_color = false;
 #endif
-
-  // NOTE: m_colMap is used _before_ it is filled here,
-  //      i.e. while it is still empty.
-  //      Moving this initialization 'up' by eg. just
-  //      having a 'static const' colMap does not leave
-  //      the results invariant...
-  m_colMap["black"]  = MSG::BLACK;
-  m_colMap["red"]    = MSG::RED;
-  m_colMap["green"]  = MSG::GREEN;
-  m_colMap["yellow"] = MSG::YELLOW;
-  m_colMap["blue"]   = MSG::BLUE;
-  m_colMap["purple"] = MSG::PURPLE;
-  m_colMap["cyan"]   = MSG::CYAN;
-  m_colMap["white"]  = MSG::WHITE;
 
   // make sure the map of logged stream names is initialized
   setupLogStreams();
@@ -370,14 +371,6 @@ StatusCode MessageSvc::finalize()
 #endif
 
   return StatusCode::SUCCESS;
-}
-
-//#############################################################################
-std::string MessageSvc::colTrans( std::string col, int offset )
-{
-  auto itr = m_colMap.find( col );
-  int icol = offset + ( ( itr != m_colMap.end() ) ? itr->second : 8 );
-  return std::to_string( icol );
 }
 
 //#############################################################################

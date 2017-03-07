@@ -195,10 +195,6 @@ private:
 
   std::map<std::string, MsgAry> m_sourceMap, m_inactiveMap;
 
-  std::string colTrans( std::string, int );
-  typedef std::map<std::string, MSG::Color> ColorMap;
-  ColorMap m_colMap;
-
   std::array<int, MSG::NUM_LEVELS> m_msgCount;
 
   std::map<std::string, std::shared_ptr<std::ostream>> m_loggedStreams;
