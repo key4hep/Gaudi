@@ -26,17 +26,17 @@ namespace Gaudi { namespace Functional { namespace details {
 
       /// Print the parameter
       template <typename OS, typename Arg>
-      void printSizes(OS& out, Arg&& arg)
+      OS& printSizes(OS& out, Arg&& arg)
       {
-        out << System::typeinfoName(typeid(Arg)) << " = " << std::forward<Arg>(arg).size();
+        out << "SizeOf'" << System::typeinfoName(typeid(Arg)) 
+            << "'=" << std::forward<Arg>(arg).size();
       }
+
       /// Print the parameters
       template <typename OS, typename Arg, typename... Args>
-      void printSizes(OS& out, Arg&& arg, Args&&... args)
+      OS& printSizes(OS& out, Arg&& arg, Args&&... args)
       {
-        printSizes(out,arg); 
-        out << ","; 
-        printSizes(out,args...);
+        return printSizes(out,arg) << ", " << printSizes(out,args...);
       }
 
       /// Resolve case there is only one container in the range
