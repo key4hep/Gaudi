@@ -18,6 +18,7 @@
 #include "IGraphVisitor.h"
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/CommonMessaging.h"
+#include "GaudiKernel/ICondSvc.h"
 
 #include "CPUCruncher.h"
 
@@ -272,11 +273,22 @@ public:
     const std::vector<AlgorithmNode*>& getConsumers() const {return m_consumers;}
 public:
     PrecedenceRulesGraph* m_graph;
-private:
     DataObjID m_data_object_path;
     std::vector<AlgorithmNode*> m_producers;
     std::vector<AlgorithmNode*> m_consumers;
   };
+
+class ConditionNode : public DataNode {
+public:
+  /// Constructor
+  ConditionNode(PrecedenceRulesGraph& graph, const DataObjID& path, SmartIF<ICondSvc> condSvc):
+    DataNode(graph, path), m_condSvc(condSvc) {}
+  /// Destructor
+  ~ConditionNode() {}
+public:
+  // Service for Conditions handling
+  SmartIF<ICondSvc> m_condSvc;
+};
 
   typedef std::unordered_map<std::string,AlgorithmNode*> AlgoNodesMap;
   typedef std::unordered_map<std::string,DecisionNode*> DecisionHubsMap;

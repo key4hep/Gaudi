@@ -1,6 +1,8 @@
 #include "PRGraphVisitors.h"
 #include "AlgsExecutionStates.h"
 
+#include "GaudiKernel/DataObjID.h"
+
 namespace concurrency {
 
   typedef AlgsExecutionStates::State State;
@@ -8,13 +10,17 @@ namespace concurrency {
   //--------------------------------------------------------------------------
   bool DataReadyPromoter::visit(AlgorithmNode& node) {
 
-    bool result = true; // return true if an algorithm has no data inputs
+    bool result = true; // return true if this algorithm has no data inputs
 
     for ( auto dataNode : node.getInputDataNodes() ) {
 
-      result = visit(*dataNode);
+      if (visitEnter(*dataNode)) {
+        result = visit(*dataNode);
 
-      if (!result) break; // skip checking other inputs if this input was not produced yet
+        // With ConditionNodes, one may decide NOT to break here so that associated
+        // ConditionAlgorithms are scheduled ASAP. This behavior can be made configurable
+        if (!result) break; // skip checking other inputs if this input was not produced yet
+      }
     }
 
     if (result)
@@ -31,8 +37,10 @@ namespace concurrency {
 
   //--------------------------------------------------------------------------
   bool DataReadyPromoter::visit(DataNode& node) {
+    /* Implements 'observer' strategy, i.e., only check if producer of this DataNode
+     * has been already executed or not */
 
-    bool result = false; // return false if the input has no producers at all
+    bool result = false; // return false if this DataNode has no producers at all
 
     for ( auto algoNode : node.getProducers() )
       if ( State::EVTACCEPTED == m_slot->algsStates[algoNode->getAlgoIndex()] ) {
@@ -43,6 +51,35 @@ namespace concurrency {
     // return true only if this DataNode is produced
     return result;
   }
+
+  //--------------------------------------------------------------------------
+  bool DataReadyPromoter::visitEnter(ConditionNode& node) const {
+
+    DataObjIDColl validIDs;
+    node.m_condSvc->getValidIDs(m_slot->eventContext, validIDs);
+
+    auto foundIt = validIDs.find(node.getPath());
+    if (foundIt != validIDs.end())
+      return false; // do not enter this ConditionNode if it was already produced
+
+    return true;
+  }
+
+  //--------------------------------------------------------------------------
+  bool DataReadyPromoter::visit(ConditionNode& node) {
+    /* Implements 'requester' strategy, i.e., requests this ConditionNode to be loaded
+     * by its associated ConditionAlgorithm */
+
+    for (auto condAlg : node.getProducers()) {
+      m_slot->algsStates.updateState( condAlg->getAlgoIndex(), State::CONTROLREADY ).ignore();
+      visit(*condAlg);
+    }
+
+    // this method is called if, and only if, this ConditionNode is not yet produced.
+    // thus, by definition, this ConditionNode is not yet available at this moment
+    return false;
+  }
+
 
   //--------------------------------------------------------------------------
   bool DecisionUpdater::visit(AlgorithmNode& node) {
