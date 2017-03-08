@@ -15,7 +15,7 @@ if( AIDA_FOUND )
 endif()
 
 # The list of sources to build into the module:
-list(APPEND histo_svc_sources "")
+set(histo_svc_sources)
 set( module_sources src/*.cpp src/DataSvc/*.cpp
    src/PersistencySvc/*.cpp )
 if( AIDA_FOUND )
