@@ -26,7 +26,7 @@ namespace Gaudi { namespace Functional { namespace details {
 
       /// Print the parameter
       template <typename OS, typename Arg>
-      OS& printSizes(OS& out, Arg&& arg)
+      void printSizes(OS& out, Arg&& arg)
       {
         out << "SizeOf'" << System::typeinfoName(typeid(Arg)) 
             << "'=" << std::forward<Arg>(arg).size();
@@ -34,9 +34,9 @@ namespace Gaudi { namespace Functional { namespace details {
 
       /// Print the parameters
       template <typename OS, typename Arg, typename... Args>
-      OS& printSizes(OS& out, Arg&& arg, Args&&... args)
+      void printSizes(OS& out, Arg&& arg, Args&&... args)
       {
-        return printSizes(out,arg) << ", " << printSizes(out,args...);
+        printSizes(out,arg); out << ", "; printSizes(out,args...);
       }
 
       /// Resolve case there is only one container in the range
