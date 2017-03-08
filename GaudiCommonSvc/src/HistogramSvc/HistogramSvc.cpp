@@ -9,34 +9,26 @@
 // coming from TString.h
 #pragma warning( disable : 4996 )
 #endif
-// ============================================================================
-// Include files
-// ============================================================================
-// STD&STL
-// ============================================================================
+
+// STD & STL
 #include <cstdlib>
 #include <sstream>
 #include <stdexcept>
-// ============================================================================
+
 // GaudiKernel
-// ============================================================================
 #include "GaudiKernel/AttribStringParser.h"
 #include "GaudiKernel/DataObject.h"
 #include "GaudiKernel/GenericAddress.h"
 #include "GaudiKernel/IConversionSvc.h"
 #include "GaudiKernel/Property.h"
-// ============================================================================
+
 // Local
-// ============================================================================
-#include "HistogramSvc.h"
-// ============================================================================
-// Instantiation of a factory class used by clients
-DECLARE_COMPONENT( HistogramSvc )
-// ============================================================================
-using namespace AIDA;
-// ============================================================================
+#include <GaudiCommonSvc/HistogramSvc.h>
+#include "GaudiPI.h"
+
 namespace
 {
+  using namespace AIDA;
   using std::string;
 
   inline string histoAddr( const string& name )
@@ -369,12 +361,12 @@ AIDA::IHistogram1D* HistogramSvc::book( DataObject* pPar, const string& rel,
                                         const string& title, int nx, double lowx, double upx )
 {
   if ( m_defs1D.empty() ) {
-    return i_book( pPar, rel, title, Gaudi::createH1D( title, BINS( x ) ) );
+    return i_book( pPar, rel, title, Gaudi::createH1D( title, nx, lowx, upx ) );
   }
   string hn = histoAddr( pPar, rel );
   auto ifound    = m_defs1D.find( hn );
   if ( m_defs1D.end() == ifound ) {
-    return i_book( pPar, rel, title, Gaudi::createH1D( title, BINS( x ) ) );
+    return i_book( pPar, rel, title, Gaudi::createH1D( title, nx, lowx, upx ) );
   }
   if ( msgLevel( MSG::DEBUG ) ) {
     debug() << " Redefine the parameters for the histogram '" + hn + "' to be " << ifound->second << endmsg;
@@ -2102,7 +2094,7 @@ AIDA::IProfile2D* HistogramSvc::createProfile2D( const std::string& name, const 
                                                  int nx, double lowx, double upx,
                                                  int ny, double lowy, double upy,
                                                  const std::string& /*opt*/ )
-{   
+{
   return bookProf( name, tit, nx, lowx, upx, ny, lowy, upy );
 }
 

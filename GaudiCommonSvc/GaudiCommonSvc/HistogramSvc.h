@@ -18,12 +18,11 @@
 /// @FIXME: AIDA interfaces visibility
 #include "AIDA/IAnnotation.h"
 #include "AIDA/IHistogramFactory.h"
-#include "AIDA_visibility_hack.h"
 // ============================================================================
 // local (+PI)
 // ============================================================================
+#include "HistogramUtility.h"
 #include "Axis.h"
-#include "GaudiPI.h"
 #include "TH1.h"
 #include "TH2.h"
 #include "TH3.h"
@@ -47,9 +46,6 @@ namespace detail {
   }
 }
 
-// ============================================================================
-// Forward declarations
-#define BINS( x ) n##x, low##x, up##x
 // ============================================================================
 /** @class HistogramSvc HistogramSvc.h
  *
@@ -411,10 +407,12 @@ public:
                          to the object with respect to the parent node
       @param hID         Histogram identifier (int) of the histogram
       @param title       Title property of the histogram
-      @param DBINS(x/y)  Macro for bin definition in X/Y. Expands to:
-                         int nx:    Number of bins on the axis X/Y
-                         double lx: Lower histogram edge on the axis X/Y
-                         double ux: Upper histogram edge on the axis X/Y
+      @param nx          Number of bins on the X-axis
+      @param lx          Lower histogram edge on the X-axis
+      @param ux          Upper histogram edge on the X-axis
+      @param ny          Number of bins on the Y-axis
+      @param ly          Lower histogram edge on the Y-axis
+      @param uy          Upper histogram edge on the Y-axis
   */
   AIDA::IHistogram2D* book( const std::string& full, const std::string& title,
                             int nx, double lowx, double upx,
@@ -459,10 +457,12 @@ public:
                          to the object with respect to the parent node
       @param hID         Histogram identifier (int) of the histogram
       @param title       Title property of the histogram
-      @param DBINS(x/y)  Macro for bin definition in X/Y. Expands to:
-                         int nx:    Number of bins on the axis X/Y
-                         double lx: Lower histogram edge on the axis X/Y
-                         double ux: Upper histogram edge on the axis X/Y
+      @param nx          Number of bins on the X-axis
+      @param lx          Lower histogram edge on the X-axis
+      @param ux          Upper histogram edge on the X-axis
+      @param ny          Number of bins on the Y-axis
+      @param ly          Lower histogram edge on the Y-axis
+      @param uy          Upper histogram edge on the Y-axis
   */
   virtual AIDA::IProfile2D* bookProf( const std::string& full,
                                       const std::string& title,
@@ -1191,7 +1191,7 @@ public:
   AIDA::IHistogram3D* createCopy( DataObject* pPar, const std::string& rel,
                                   const AIDA::IHistogram3D& h );
 
-   
+
   AIDA::IProfile1D* createProfile1D( const std::string& name, const std::string& tit,
                                      int nx, double lowx, double upx,
                                      const std::string& opt ) override;

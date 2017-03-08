@@ -1,7 +1,5 @@
 #ifndef GAUDISVC_GENERIC3D_H
 #define GAUDISVC_GENERIC3D_H 1
-/// @FIXME: AIDA interfaces visibility
-#include "AIDA_visibility_hack.h"
 
 #include "Axis.h"
 #include "TFile.h"

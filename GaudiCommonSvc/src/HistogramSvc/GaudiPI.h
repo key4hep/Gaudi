@@ -1,16 +1,14 @@
 #ifndef GAUDISVC_GAUDIPI_H
 #define GAUDISVC_GAUDIPI_H
-/// @FIXME: AIDA interfaces visibility
-#include "AIDA_visibility_hack.h"
 
 #include <vector>
 #include <utility>
-#include "AIDA/IHistogram1D.h"
-#include "AIDA/IHistogram2D.h"
-#include "AIDA/IHistogram3D.h"
-#include "AIDA/IProfile1D.h"
-#include "AIDA/IProfile2D.h"
-#include "GaudiKernel/HistogramBase.h"
+#include <AIDA/IHistogram1D.h>
+#include <AIDA/IHistogram2D.h>
+#include <AIDA/IHistogram3D.h>
+#include <AIDA/IProfile1D.h>
+#include <AIDA/IProfile2D.h>
+#include <GaudiKernel/HistogramBase.h>
 
 class DataObject;
 class TH2D;
@@ -18,14 +16,6 @@ class TH2D;
 namespace Gaudi {
   typedef std::vector<double> Edges;
 
-  template <class Q, class T> T* getRepresentation(const Q& hist)  {
-    T* result = nullptr;
-    const HistogramBase *p = dynamic_cast<const HistogramBase*>(&hist);
-    if ( p )  {
-      result = dynamic_cast<T*>(p->representation());
-    }
-    return result;
-  }
   /// Copy constructor
   std::pair<DataObject*,AIDA::IHistogram1D*> createH1D(const AIDA::IHistogram1D& hist);
   /// Creator for 1D histogram with fixed bins

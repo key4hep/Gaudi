@@ -10,12 +10,20 @@
 #pragma warning(disable:4996)
 #endif
 #include <array>
-#include "H2D.h"
-#include "H1D.h"
-#include "P1D.h"
-#include "TH1D.h"
-#include "TProfile.h"
-#include "GaudiKernel/ObjectFactory.h"
+#include <GaudiKernel/ObjectFactory.h>
+#include <GaudiCommonSvc/HistogramUtility.h>
+#include <GaudiCommonSvc/H2D.h>
+#include <GaudiCommonSvc/H1D.h>
+#include <GaudiCommonSvc/P1D.h>
+#include <TH2D.h>
+#include <TProfile.h>
+#include "GaudiPI.h"
+
+namespace {
+   using AIDA::IProfile1D;
+   using AIDA::IHistogram1D;
+   using AIDA::IHistogram2D;
+}
 
 std::pair<DataObject*,IHistogram2D*> Gaudi::createH2D(const std::string & title,int binsX,double iminX,double imaxX,int binsY,double iminY,double imaxY) {
   auto p = new Histogram2D(new TH2D(title.c_str(),title.c_str(),binsX, iminX, imaxX, binsY, iminY, imaxY));
@@ -114,7 +122,7 @@ namespace Gaudi {
   }
 }
 
-Gaudi::Histogram2D::Histogram2D() 
+Gaudi::Histogram2D::Histogram2D()
     : Base( new TH2D() )
 {
   m_rep->Sumw2();
@@ -123,7 +131,7 @@ Gaudi::Histogram2D::Histogram2D()
   m_rep->SetDirectory(nullptr);
 }
 
-Gaudi::Histogram2D::Histogram2D(TH2D* rep)  
+Gaudi::Histogram2D::Histogram2D(TH2D* rep)
 {
   adoptRepresentation(rep);
   m_sumwx = m_sumwy = 0;
@@ -237,9 +245,6 @@ void Gaudi::Histogram2D::copyFromAida(const IHistogram2D& h) {
                                   sumwxy }};
   m_rep->PutStats(stat.data());
 }
-
-typedef Gaudi::Histogram2D H2D;
-DECLARE_DATAOBJECT_FACTORY(H2D)
 
 #ifdef __ICC
 // re-enable icc remark #1572

@@ -1,8 +1,6 @@
 /* Emacs: -*- C++ -*- */
 #ifndef GAUDISVC_ANNOTATION_H
 #define GAUDISVC_ANNOTATION_H 1
-/// @FIXME: AIDA interfaces visibility
-#include "AIDA_visibility_hack.h"
 
 // Include files
 #include <vector>
@@ -18,11 +16,6 @@ namespace AIDA {
 class  Annotation  : virtual public IAnnotation {
 
 public:
-  /// Constructor
-  Annotation() = default;
-
-  /// Destructor
-  ~Annotation() override = default;
 
   /// Add a key/value pair with a given sticky.
   bool addItem( const std::string & key,
@@ -114,7 +107,7 @@ inline bool AIDA::Annotation::removeItem( const std::string & key )  {
 inline std::string AIDA::Annotation::value( const std::string & key) const
 {
   auto iKey = m_identifiers.find( key );
-  return iKey != m_identifiers.end() ? m_annotationItems[ iKey->second ].m_value 
+  return iKey != m_identifiers.end() ? m_annotationItems[ iKey->second ].m_value
                                      : emptyString;
 }
 
