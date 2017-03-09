@@ -3,7 +3,6 @@
 
 #include "IGraphVisitor.h"
 #include "PrecedenceRulesGraph.h"
-#include "GaudiKernel/ICondSvc.h"
 
 namespace concurrency {
 

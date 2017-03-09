@@ -2,6 +2,7 @@
 #include "AlgsExecutionStates.h"
 
 #include "GaudiKernel/DataObjID.h"
+#include "GaudiKernel/ICondSvc.h"
 
 namespace concurrency {
 
@@ -55,12 +56,8 @@ namespace concurrency {
   //--------------------------------------------------------------------------
   bool DataReadyPromoter::visitEnter(ConditionNode& node) const {
 
-    DataObjIDColl validIDs;
-    node.m_condSvc->getValidIDs(m_slot->eventContext, validIDs);
-
-    auto foundIt = validIDs.find(node.getPath());
-    if (foundIt != validIDs.end())
-      return false; // do not enter this ConditionNode if it was already produced
+    if (node.m_condSvc->isValidID(*(m_slot->eventContext), node.getPath()))
+      return false; // do not enter this ConditionNode if the condition has bee already loaded
 
     return true;
   }
