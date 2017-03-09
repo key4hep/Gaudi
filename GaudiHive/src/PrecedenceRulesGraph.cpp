@@ -640,10 +640,26 @@ namespace concurrency
       dataNode = itD->second;
       sc = StatusCode::SUCCESS;
     } else {
-      dataNode                          = new concurrency::DataNode( *this, dataPath );
+      SmartIF<ICondSvc> condSvc;
+      condSvc = serviceLocator()->service("CondSvc");
+      if (!condSvc.isValid()) {
+        dataNode = new concurrency::DataNode(*this, dataPath);
+      } else {
+        if (condSvc->isRegistered(dataPath)) {
+          dataNode = new concurrency::ConditionNode(*this, dataPath, condSvc);
+          if (msgLevel(MSG::DEBUG))
+            debug() << "  ConditionNode for " << dataPath << " added @ " << dataNode << endmsg;
+        } else {
+          dataNode = new concurrency::DataNode(*this, dataPath);
+        }
+      }
+
       m_dataPathToDataNodeMap[dataPath] = dataNode;
+
       if (msgLevel(MSG::DEBUG))
-        debug() << "  DataNode for " << dataPath << " added @ " << dataNode << endmsg;
+        if (!condSvc.isValid())
+          debug() << "  DataNode for " << dataPath << " added @ " << dataNode << endmsg;
+
       sc = StatusCode::SUCCESS;
     }
 
