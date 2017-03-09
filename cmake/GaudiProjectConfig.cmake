@@ -160,6 +160,7 @@ endif()
 #---------------------------------------------------------------------------------------------------
 include(CMakeParseArguments)
 include(CMakeFunctionalUtils)
+include(BinaryTagUtils)
 
 find_package(PythonInterp)
 
@@ -299,6 +300,16 @@ macro(gaudi_project project version)
   set(inherited_data_packages)
   set(inherited_data_packages_decl)
 
+  parse_binary_tag()
+  # set LCG platform ids
+  set(LCG_SYSTEM ${BINARY_TAG_ARCH}-${BINARY_TAG_OS}-${BINARY_TAG_COMP}
+      CACHE STRING "Platform id of the target system or a compatible one.")
+  set(LCG_platform ${LCG_SYSTEM}-${BINARY_TAG_TYPE}
+      CACHE STRING "Platform ID for the AA project binaries.")
+  set(LCG_system   ${LCG_SYSTEM}-opt
+      CACHE STRING "Platform ID for the external libraries.")
+  mark_as_advanced(LCG_SYSTEM LCG_platform LCG_system)
+
   # Locate and import used projects.
   if(PROJECT_USE)
     _gaudi_use_other_projects(${PROJECT_USE})
@@ -416,6 +427,7 @@ macro(gaudi_project project version)
   #--- Global actions for the project
   #message(STATUS "CMAKE_MODULE_PATH -> ${CMAKE_MODULE_PATH}")
   include(GaudiBuildFlags)
+
   # Generate the version header for the project.
   string(TOUPPER ${project} _proj)
   if(versheader_cmd)
@@ -808,7 +820,7 @@ macro(_gaudi_use_other_projects)
         if(heptools_version)
           if(NOT heptools_version STREQUAL ${other_project}_heptools_version)
             if(${other_project}_heptools_version)
-              set(hint_message "with the option '-DCMAKE_TOOLCHAIN_FILE=.../heptools-${${other_project}_heptools_version}.cmake'")
+              set(hint_message "with the option '-DCMAKE_TOOLCHAIN_FILE=...'")
             else()
               set(hint_message "without the option '-DCMAKE_TOOLCHAIN_FILE=...'")
             endif()

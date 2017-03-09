@@ -79,7 +79,7 @@ endif()
 if( CLHEP_FOUND )
    list( APPEND GaudiExamples_srcs src/TupleEx/*.cpp )
 endif()
-if (NOT LCG_COMP STREQUAL "clang")
+if (NOT BINARY_TAG_COMP_NAME STREQUAL "clang")
     list(APPEND GaudiExamples_srcs  src/StatusCodeSvc/special/SCSAlg_no_inline.cpp)
 endif()
 if( TARGET RootCnvLib )
@@ -128,7 +128,7 @@ gaudi_add_module( GaudiExamples ${GaudiExamples_srcs}
    LINK_LIBRARIES GaudiKernel GaudiAlgLib GaudiUtilsLib GaudiExamplesLib
    ${ROOT_LIBRARIES} ${extra_libs} )
 
-if (NOT LCG_COMP STREQUAL "clang")
+if (NOT BINARY_TAG_COMP_NAME STREQUAL "clang")
   find_file(StatusCodeHeader NAMES GaudiKernel/StatusCode.h
             PATHS ${CMAKE_SOURCE_DIR}/GaudiKernel
             HINTS ${Gaudi_DIR}/include)
