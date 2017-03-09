@@ -82,9 +82,6 @@ option(G21_HIDE_SYMBOLS
 option(G21_NEW_INTERFACES
        "disable backward-compatibility hacks in IInterface and InterfaceID"
        OFF)
-option(G21_NO_ENDREQ
-       "disable the 'endreq' stream modifier (use 'endmsg' instead)"
-       OFF)
 option(G21_NO_DEPRECATED
        "remove deprecated methods and functions"
        OFF)
@@ -380,7 +377,7 @@ if(NOT GAUDI_V21)
     add_definitions(-DG21_HIDE_SYMBOLS)
   endif()
   #
-  foreach (feature G21_NEW_INTERFACES G21_NO_ENDREQ G21_NO_DEPRECATED G22_NEW_SVCLOCATOR)
+  foreach (feature G21_NEW_INTERFACES G21_NO_DEPRECATED G22_NEW_SVCLOCATOR)
     if (${feature})
       add_definitions(-D${feature})
     endif()
