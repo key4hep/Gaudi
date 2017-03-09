@@ -111,6 +111,7 @@ function(_internal_find_projects projects_var tools_var config_file)
                      PATH_SUFFIXES .
                                    ${name}/${version}
                                    ${name_upper}/${name_upper}_${version}
+                                   ${name_upper}/${version}
                                    ${name}_${version}
                                    ${name})
         # recursion

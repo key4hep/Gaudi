@@ -657,12 +657,9 @@ __path__ = [d for d in [os.path.join(d, '${pypack}') for d in sys.path if d]
             if (d.startswith('${CMAKE_BINARY_DIR}') or
                 d.startswith('${CMAKE_SOURCE_DIR}')) and
                (os.path.exists(d) or 'python.zip' in d)]
+if os.path.exists('${CMAKE_SOURCE_DIR}/${package}/python/${pypack}/__init__.py'):
+    execfile('${CMAKE_SOURCE_DIR}/${package}/python/${pypack}/__init__.py')
 ")
-        if(EXISTS ${CMAKE_SOURCE_DIR}/${package}/python/${pypack}/__init__.py)
-          file(READ ${CMAKE_SOURCE_DIR}/${package}/python/${pypack}/__init__.py _py_init_content)
-          file(APPEND ${CMAKE_BINARY_DIR}/python/${pypack}/__init__.py
-               "${_py_init_content}")
-        endif()
       endforeach()
     endif()
 
@@ -797,11 +794,11 @@ macro(_gaudi_use_other_projects)
     if(NOT ${other_project}_FOUND)
       string(TOUPPER ${other_project} other_project_upcase)
       set(suffixes)
-      foreach(_s1 ${other_project}
-                  ${other_project}/${other_project_version}
-                  ${other_project_upcase}/${other_project_version}
+      foreach(_s1 ${other_project}/${other_project_version}
                   ${other_project_upcase}/${other_project_upcase}_${other_project_version}
-                  ${other_project_upcase})
+                  ${other_project_upcase}/${other_project_version}
+                  ${other_project}_${other_project_version}
+                  ${other_project})
         foreach(_s2 "" "/InstallArea")
           foreach(_s3 "" "/${BINARY_TAG}" "/${LCG_platform}" "/${LCG_system}")
             set(suffixes ${suffixes} ${_s1}${_s2}${_s3})
