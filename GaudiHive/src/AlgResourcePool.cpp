@@ -182,17 +182,39 @@ StatusCode AlgResourcePool::flattenSequencer(Algorithm* algo, ListAlg& alglist, 
 
   StatusCode sc = StatusCode::SUCCESS;
 
-  std::vector<Algorithm*>* subAlgorithms = algo->subAlgorithms();
-  auto isGaudiSequencer = dynamic_cast<GaudiSequencer*> (algo);
-  if ( //we only want to add basic algorithms -> have no subAlgs
-          // and exclude the case of empty GaudiSequencers
-        (subAlgorithms->empty() and not isGaudiSequencer)
-       // we want to add non-empty GaudiAtomicSequencers
-       or (algo->type() == "GaudiAtomicSequencer" and not subAlgorithms->empty())){
+  bool isGaudiSequencer(false);
+  bool isAthSequencer(false);
+  bool isAtomicSeq(false);
 
-    DEBUG_MSG << std::string(recursionDepth, ' ') << algo->name() << " is "
-              << (algo->type() != "GaudiAtomicSequencer" ? "not a sequencer" : "an atomic sequencer")
-              << ". Appending it" << endmsg;
+  if (algo->hasProperty("Members")) {
+    if (algo->hasProperty("ShortCircuit")) {
+      isGaudiSequencer = true;
+      isAtomicSeq = ( algo->hasProperty("Atomic") && 
+                      (algo->getProperty("Atomic").toString() == "True") );
+    } else if (algo->hasProperty("StopOverride")) {
+      isAthSequencer = true;
+      isAtomicSeq = ( algo->hasProperty("Atomic") && 
+                      (algo->getProperty("Atomic").toString() == "True") );
+    }      
+  }
+
+  std::vector<Algorithm*>* subAlgorithms = algo->subAlgorithms();
+  if ( //we only want to add basic algorithms -> have no subAlgs
+      // and exclude the case of empty GaudiSequencers
+      (subAlgorithms->empty() and not (isGaudiSequencer 
+                                       || isAthSequencer) )
+      // we want to add non-empty AtomicSequencers
+      or (isAtomicSeq and not subAlgorithms->empty())
+       ){
+    
+    debug() << std::string(recursionDepth, ' ') << algo->name() << " is ";
+    if (isAtomicSeq) {
+      debug() << "an atomic sequencer";
+    } else {
+      debug() << "not a sequencer";
+    }
+    debug() << ". Appending it" << endmsg;
+
 
     alglist.emplace_back(algo);
     m_PRGraph->addAlgorithmNode(algo, parentName, false, false).ignore();
@@ -210,6 +232,11 @@ StatusCode AlgResourcePool::flattenSequencer(Algorithm* algo, ListAlg& alglist, 
     allPass = (algo->getProperty("IgnoreFilterPassed").toString() == "True")? true : false;
     isLazy = (algo->getProperty("ShortCircuit").toString() == "True")? true : false;
     if (allPass) isLazy = false; // standard GaudiSequencer behavior on all pass is to execute everything
+  } else if (isAthSequencer ) {
+    modeOR  = (algo->getProperty("ModeOR").toString() == "True")? true : false;
+    allPass = (algo->getProperty("IgnoreFilterPassed").toString() == "True")? true : false;
+    isLazy = (algo->getProperty("StopOverride").toString() == "True")? false : true;
+
   }
   sc = m_PRGraph->addDecisionHubNode(algo, parentName, modeOR, allPass, isLazy);
   if (sc.isFailure()) {
