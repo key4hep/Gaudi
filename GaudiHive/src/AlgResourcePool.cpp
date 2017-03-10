@@ -189,32 +189,31 @@ StatusCode AlgResourcePool::flattenSequencer(Algorithm* algo, ListAlg& alglist, 
   if (algo->hasProperty("Members")) {
     if (algo->hasProperty("ShortCircuit")) {
       isGaudiSequencer = true;
-      isAtomicSeq = ( algo->hasProperty("Atomic") && 
+      isAtomicSeq = ( algo->hasProperty("Atomic") &&
                       (algo->getProperty("Atomic").toString() == "True") );
     } else if (algo->hasProperty("StopOverride")) {
       isAthSequencer = true;
-      isAtomicSeq = ( algo->hasProperty("Atomic") && 
+      isAtomicSeq = ( algo->hasProperty("Atomic") &&
                       (algo->getProperty("Atomic").toString() == "True") );
-    }      
+    }
   }
 
   std::vector<Algorithm*>* subAlgorithms = algo->subAlgorithms();
   if ( //we only want to add basic algorithms -> have no subAlgs
-      // and exclude the case of empty GaudiSequencers
-      (subAlgorithms->empty() and not (isGaudiSequencer 
-                                       || isAthSequencer) )
-      // we want to add non-empty AtomicSequencers
-      or (isAtomicSeq and not subAlgorithms->empty())
-       ){
-    
-    debug() << std::string(recursionDepth, ' ') << algo->name() << " is ";
-    if (isAtomicSeq) {
-      debug() << "an atomic sequencer";
-    } else {
-      debug() << "not a sequencer";
-    }
-    debug() << ". Appending it" << endmsg;
+       // and exclude the case of empty sequencers
+       (subAlgorithms->empty() && !(isGaudiSequencer || isAthSequencer))
+       // we want to add non-empty atomic sequencers
+       or (isAtomicSeq && !subAlgorithms->empty()) ) {
 
+    ON_DEBUG {
+      debug() << std::string(recursionDepth, ' ') << algo->name() << " is ";
+      if (isAtomicSeq) {
+        debug() << "an atomic sequencer";
+      } else {
+        debug() << "not a sequencer";
+      }
+      debug() << ". Appending it" << endmsg;
+    }
 
     alglist.emplace_back(algo);
     m_PRGraph->addAlgorithmNode(algo, parentName, false, false).ignore();
@@ -305,10 +304,18 @@ StatusCode AlgResourcePool::decodeTopAlgs()    {
   m_PRGraph->addHeadNode("EVENT LOOP",true,true,false);
 
   // Now we unroll it ----
-  for (auto& algoSmartIF : m_topAlgList){
+  for (auto& algoSmartIF : m_topAlgList) {
     Algorithm* algorithm = dynamic_cast<Algorithm*> (algoSmartIF.get());
     if (!algorithm) fatal() << "Conversion from IAlgorithm to Algorithm failed" << endmsg;
     sc = flattenSequencer(algorithm, m_flatUniqueAlgList, "EVENT LOOP");
+  }
+  // stupid O(N^2) unique-ification..
+  for ( auto i = begin(m_flatUniqueAlgList); i!=end(m_flatUniqueAlgList); ++i ) {
+    auto n = next(i);
+    while ( n!=end(m_flatUniqueAlgList) ) {
+        if (*n==*i) n = m_flatUniqueAlgList.erase(n);
+        else ++n;
+    }
   }
   if (msgLevel(MSG::DEBUG)){
     debug() << "List of algorithms is: " << endmsg;
@@ -346,11 +353,9 @@ StatusCode AlgResourcePool::decodeTopAlgs()    {
     state_type requirements(0);
 
     for (auto& resource_name : ialgo->neededResources()){
-      auto ret = m_resource_indices.insert(std::pair<std::string, unsigned int>(resource_name,resource_counter));
+      auto ret = m_resource_indices.emplace(resource_name,resource_counter);
       // insert successful means == wasn't known before. So increment counter
-      if (ret.second==true) {
-         ++resource_counter;
-      }
+      if (ret.second) ++resource_counter;
       // Resize for every algo according to the found resources
       requirements.resize(resource_counter);
       // in any case the return value holds the proper product index
