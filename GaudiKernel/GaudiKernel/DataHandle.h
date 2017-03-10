@@ -36,7 +36,12 @@ public:
 
   DataHandle(const DataObjID& k, Mode a=Reader,
 	     IDataHandleHolder* owner=nullptr):
-    m_key(k), m_owner(owner), m_mode(a){};
+    m_key(k), m_owner(owner), m_mode(a) {};
+
+  DataHandle(const DataObjID& k, const bool& isCond, Mode a=Reader,
+	     IDataHandleHolder* owner=nullptr):
+    m_key(k), m_owner(owner), m_mode(a), m_isCond(isCond) {};
+
 
   virtual ~DataHandle() = default;
 
@@ -57,6 +62,9 @@ public:
   virtual std::string pythonRepr() const;
   virtual bool init() { return true; }
 
+  // is this a ConditionHandle?
+  virtual bool isCondition() const { return m_isCond; }
+
 protected:
 
   /**
@@ -70,6 +78,7 @@ protected:
 
 private:
   Mode                    m_mode = Reader;
+  bool                    m_isCond = false;
 
 };
 
