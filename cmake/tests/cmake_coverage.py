@@ -55,8 +55,18 @@ def get_ranges(numbers):
         yield group[0], group[-1]
 
 def get_active_lines(filename):
+    bracket_comment_open = re.compile(r'#\[(=*)\[')
+    bracket_close = None
     for i, l in enumerate(open(filename)):
         l = l.strip()
+        if bracket_close:
+            if bracket_close in l:
+                bracket_close = None  # last line of the bracket comment
+            continue  # this line is part of a bracket comment
+        b = bracket_comment_open.match(l)
+        if b:
+            bracket_close = ']{0}]'.format(b.group(1))
+            continue  # first line of a bracket comment
         if l and not l.startswith('#') and not l.startswith('end'):
             yield i+1
 

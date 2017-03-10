@@ -55,6 +55,30 @@ StatEntity::StatEntity
   , m_se_nEntriesBeforeReset ( -1      )
 {}
 // ============================================================================
+// The copy contructor, non default because of atomics
+// ============================================================================
+StatEntity::StatEntity
+( const StatEntity& other )
+  : m_se_nEntries            ( other.m_se_nEntries )
+  , m_se_accumulatedFlag     ( other.m_se_accumulatedFlag )
+  , m_se_accumulatedFlag2    ( other.m_se_accumulatedFlag2 )
+  , m_se_minimalFlag         ( other.m_se_minimalFlag )
+  , m_se_maximalFlag         ( other.m_se_maximalFlag )
+  , m_se_nEntriesBeforeReset ( other.m_se_nEntriesBeforeReset )
+{}
+// ============================================================================
+// The copy contructor, non default because of atomics
+// ============================================================================
+StatEntity& StatEntity::operator=
+( const StatEntity& other ) {
+  m_se_nEntries = other.m_se_nEntries;
+  m_se_accumulatedFlag = other.m_se_accumulatedFlag;
+  m_se_accumulatedFlag2 = other.m_se_accumulatedFlag2;
+  m_se_minimalFlag = other.m_se_minimalFlag;
+  m_se_maximalFlag = other.m_se_maximalFlag;
+  m_se_nEntriesBeforeReset = other.m_se_nEntriesBeforeReset;
+  return *this;
+}// ============================================================================
 // the internal format description
 // ============================================================================
 const std::string& StatEntity::format()
@@ -148,6 +172,7 @@ double StatEntity::efficiencyErr () const
 // ============================================================================
 StatEntity& StatEntity::operator+=( const StatEntity& other )
 {
+  std::lock_guard<std::mutex> guard(m_mutex);
   m_se_nEntries         += other.m_se_nEntries ;
   m_se_accumulatedFlag  += other.m_se_accumulatedFlag  ;
   m_se_accumulatedFlag2 += other.m_se_accumulatedFlag2 ;
@@ -185,6 +210,7 @@ bool StatEntity::operator< ( const StatEntity& se ) const
 // ============================================================================
 unsigned long StatEntity::add ( const double Flag )
 {
+  std::lock_guard<std::mutex> guard(m_mutex);
   //
   if      ( 0 <  m_se_nEntriesBeforeReset ) { --m_se_nEntriesBeforeReset; }
   else if ( 0 == m_se_nEntriesBeforeReset ) { reset(); } ///< reset everything
@@ -205,6 +231,7 @@ unsigned long StatEntity::add ( const double Flag )
 // ============================================================================
 void StatEntity::reset()
 {
+  std::lock_guard<std::mutex> guard(m_mutex);
   //
   m_se_nEntries            =        0 ;
   m_se_accumulatedFlag     =        0 ;

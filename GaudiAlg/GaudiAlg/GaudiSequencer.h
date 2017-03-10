@@ -75,7 +75,8 @@ private:
   GaudiSequencer& operator=( const GaudiSequencer& a ) = delete;
 
   Gaudi::Property<std::vector<std::string>> m_names{this, "Members", {}, "list of algorithms"};
-  Gaudi::Property<bool> m_modeOR{this, "ModeOR", false, "use OR loginc instead of AND"};
+  Gaudi::Property<bool> m_atomic{this, "Atomic", false, "Atomic sequence: don't unroll in MT"};
+  Gaudi::Property<bool> m_modeOR{this, "ModeOR", false, "use OR logic instead of AND"};
   Gaudi::Property<bool> m_ignoreFilter{this, "IgnoreFilterPassed", false, "always continue"};
   Gaudi::Property<bool> m_measureTime{this, "MeasureTime", false, "measure time"};
   Gaudi::Property<bool> m_returnOK{this, "ReturnOK", false, "forces the sequencer to return a good status"};

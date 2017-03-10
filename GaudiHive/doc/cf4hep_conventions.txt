@@ -144,7 +144,7 @@ But it is important to try to get a similar look, for an easier maintenance, as 
 
 1. Each block is indented by two spaces. It starts by an opening brace on the line of the control statement, and end by a closing brace alone on its line, with optionally a comment indicating which block is closed. In case of "if ( ) {" statement, the closing brace may be followed on the same line by an "else {" or "else if ( ) {" clause.
    if ( 1 < x ) {
-     log << MSG::INFO << "x>1" << endreq; 
+     log << MSG::INFO << "x>1" << endmsg;
    } // x greater than 1 
 
 2. One can also put a short single line statement on the same line, like:

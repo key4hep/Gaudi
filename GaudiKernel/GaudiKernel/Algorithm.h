@@ -435,13 +435,7 @@ public:
 
   virtual void acceptDHVisitor( IDataHandleVisitor* ) const override;
 
-  const DataObjIDColl& inputDataObjs() const override { return m_inputDataObjs; }
-  const DataObjIDColl& outputDataObjs() const override { return m_outputDataObjs; }
-
   void commitHandles() override;
-
-private:
-  DataObjIDColl m_inputDataObjs, m_outputDataObjs;
 
 public:
   void registerTool( IAlgTool* tool ) const;

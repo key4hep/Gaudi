@@ -7,6 +7,7 @@
 // ============================================================================
 #include <string>
 #include <iostream>
+#include <mutex>
 // ============================================================================
 // Gaudi
 // ============================================================================
@@ -83,6 +84,10 @@ public:
                const double        flag2   ,
                const double        minFlag ,
                const double        maxFlag ) ;
+  /// copy constructor
+  StatEntity ( const StatEntity& );
+  /// assignment operator
+  StatEntity& operator= ( const StatEntity& );
   /// destructor
   ~StatEntity () = default;
   // ==========================================================================
@@ -439,6 +444,8 @@ private:
   double                       m_se_maximalFlag       ;
   // DR number of calls before reset
   long                         m_se_nEntriesBeforeReset ;
+  // Mutex to protect calls of add/reset/operator++
+  std::mutex                   m_mutex; 
   // ==========================================================================
 };
 // ============================================================================

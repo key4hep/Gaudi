@@ -136,7 +136,10 @@ private:
                                                  "Turn on preemptive way of scheduling of I/O-bound algorithms"};
   Gaudi::Property<std::vector<std::vector<std::string>>> m_algosDependencies{
       this, "AlgosDependencies", {}, "[[deprecated]]"};
-  Gaudi::Property<bool> m_checkDeps{this, "CheckDependencies", false, "[[deprecated]]"};
+  Gaudi::Property<bool> m_checkDeps{this, "CheckDependencies", false, 
+      "Runtime check of Algorithm Data Dependencies"};
+  Gaudi::Property<std::string> m_useDataLoader{this, "DataLoaderAlg", "",
+      "Attribute unmet input dependencies to this DataLoader Algorithm"};
 
   // Utils and shortcuts ----------------------------------------------------
 

@@ -747,9 +747,10 @@ typedef Gaudi::Property<std::vector<std::string>&> StringArrayPropertyRef;
 
 /// Helper class to simplify the migration old properties deriving directly from
 /// PropertyBase.
+template <typename Handler = typename Gaudi::Details::Property::UpdateHandler>
 class PropertyWithHandlers : public Gaudi::Details::PropertyBase
 {
-  Gaudi::Details::Property::ReadUpdateHandler m_handlers;
+  Handler m_handlers;
 
 public:
   using PropertyBase::PropertyBase;
@@ -790,7 +791,7 @@ class GaudiHandleBase;
 // definition is not needed. The rest goes into the .cpp file.
 // The goal is to decouple the header files, to avoid that the whole
 // world depends on GaudiHandle.h
-class GAUDI_API GaudiHandleProperty : public PropertyWithHandlers
+class GAUDI_API GaudiHandleProperty : public PropertyWithHandlers<>
 {
 public:
   GaudiHandleProperty( std::string name, GaudiHandleBase& ref );
@@ -830,7 +831,7 @@ private:
 // forward-declaration is sufficient here
 class GaudiHandleArrayBase;
 
-class GAUDI_API GaudiHandleArrayProperty : public PropertyWithHandlers
+class GAUDI_API GaudiHandleArrayProperty : public PropertyWithHandlers<>
 {
 public:
   GaudiHandleArrayProperty( std::string name, GaudiHandleArrayBase& ref );
