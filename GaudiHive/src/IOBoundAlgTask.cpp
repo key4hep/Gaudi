@@ -1,14 +1,14 @@
-#include <functional>
+// local includes
+#include "IOBoundAlgTask.h"
+#include "RetCodeGuard.h"
 
 // Framework
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/IProperty.h"
 #include "GaudiKernel/ContextSpecificPtr.h"
-#include "IOBoundAlgTask.h"
 
-// local includes
-#include "RetCodeGuard.h"
+#include <functional>
 
 StatusCode IOBoundAlgTask::execute() {
 
@@ -22,7 +22,8 @@ StatusCode IOBoundAlgTask::execute() {
   bool eventfailed=false;
   Gaudi::Hive::setCurrentContext( m_evtCtx );
 
-  m_schedSvc->addAlg(this_algo, m_evtCtx, pthread_self());
+  // TODO reproduce the commented out functionality in a different service
+  //m_schedSvc->addAlg(this_algo, m_evtCtx, pthread_self());
 
   // Get the IProperty interface of the ApplicationMgr to pass it to RetCodeGuard
   const SmartIF<IProperty> appmgr(m_serviceLocator);
@@ -74,19 +75,8 @@ StatusCode IOBoundAlgTask::execute() {
   m_aess->algExecState(ialg,*m_evtCtx).setExecStatus(sc);
   m_aess->updateEventStatus(eventfailed,*m_evtCtx);
 
-
-  // Push in the scheduler queue an action to be performed
-  auto action_promote2Executed = std::bind(&ForwardSchedulerSvc::promoteToAsyncExecuted,
-                                           m_schedSvc,
-                                           m_algoIndex,
-                                           m_evtCtx->slot(),
-                                           m_algorithm,
-                                           m_evtCtx);
-
-  // TODO Expose a method to push actions in IScheduler?
-  m_schedSvc->m_actionsQueue.push(action_promote2Executed);
-
-  m_schedSvc->delAlg(this_algo);
+  // TODO reproduce the commented out functionality in a different service
+  //m_schedSvc->delAlg(this_algo);
 
   Gaudi::Hive::setCurrentContextEvt(-1);
 

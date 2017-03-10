@@ -1,13 +1,13 @@
-#ifndef GAUDIHIVE_FORWARDSCHEDULERSVC_H
-#define GAUDIHIVE_FORWARDSCHEDULERSVC_H
+#ifndef GAUDIHIVE_AVALANCHESCHEDULERSVC_H
+#define GAUDIHIVE_AVALANCHESCHEDULERSVC_H
 
 // Local includes
 #include "AlgsExecutionStates.h"
-#include "DataFlowManager.h"
 #include "EventSlot.h"
 #include "ExecutionFlowManager.h"
 
 // Framework include files
+#include "GaudiKernel/IAccelerator.h"
 #include "GaudiKernel/IAlgExecStateSvc.h"
 #include "GaudiKernel/IAlgResourcePool.h"
 #include "GaudiKernel/IHiveWhiteBoard.h"
@@ -32,62 +32,79 @@ typedef std::function<StatusCode()> action;
 
 //---------------------------------------------------------------------------
 
-/**@class ForwardSchedulerSvc ForwardSchedulerSvc.h GaudiKernel/ForwardSchedulerSvc.h
+/**@class AvalancheSchedulerSvc AvalancheSchedulerSvc.h
  *
- *  The SchedulerSvc implements the IScheduler interface. It manages all the
- *  execution states of the algorithms and interacts with the TBB runtime for
- *  the algorithm tasks submission. A state machine takes care of the tracking
- *  of the execution state of the algorithms.
+ *  # Introduction
  *
- *  This is a forward scheduler: an algorithm is scheduled for execution as soon
- *  as its data dependencies are available in the whiteboard, and as soon as a
- *  worker thread becomes available. The scheduler has no means for automatic
- *  intra-event throughput maximization. Consider the AvalancheScheduler if you
- *  need those.
- *
- *  # Algorithms management
- *  The activate() method runs in a separate thread. It checks a TBB concurrent
- *  bounded queue of closures in a loop via the Pop method. This allows not to
- *  use a cpu entirely to check the presence of new actions to be taken. In
- *  other words, the asynchronous actions are serialised via the actions queue.
- *  Once a task terminates, a call to the promoteToExecuted method will be
- *  pushed into the actions queue. The promoteToExecuted method also triggers
- *  a call to the updateStates method, which brushes all algorithms, checking if
- *  their state can be changed. It's indeed possible that upon termination of an
- *  algorithm, the control flow and/or the data flow allow the submission of
- *  more algorithms.
- *
- *  ## Algorithms dependencies
- *  There are two ways of declaring algorithms dependencies. One which is only
- *  temporarly available to ease developments consists in declaring them through
- *  AlgosDependencies property as a list of list. The order of these sublist
- *  must be the same one of the algorithms in the TopAlg list.
- *  The second one consists in declaring the data dependencies directly within
- *  the algorithms via data object handles.
- *
- *  # Events management
- *  The scheduler accepts events to be processed (in the form of eventContexts)
- *  and releases processed events. This flow is implemented through three
- *  methods:
- *  * pushNewEvent: to make an event available to the scheduler.
- *  * tryPopFinishedEvent: to retrieve an event from the scheduler
- *  * popFinishedEvent: to retrieve an event from the scheduler (blocking)
- *
- * Please refer to the full documentation of the methods for more details.
+ *  The scheduler is named after its ability to generically maximize the average
+ *  intra-event task occupancy by inducing avalanche-like concurrency disclosure
+ *  waves in conditions of arbitrary intra-event task precedence constraints
+ *  (see section 3.2 of http://cern.ch/go/7Jn7).
  *
  *
- *  @author  Danilo Piparo
- *  @author  Benedikt Hegner
- *  @version 1.1
+ *  # Task precedence management
+ *
+ *  The scheduler is driven by *graph-based* task precedence management. When
+ *  compared to approach used in the ForwardSchedulerSvc, the following advantages
+ *  can be emphasized:
+ *
+ *   (1) Faster decision making (thus lower concurrency disclosure downtime);
+ *   (2) Capacity for proactive task scheduling decision making.
+ *
+ *  Point (2) allowed to implement a number of generic, non-intrusive intra-event
+ *  throughput maximization scheduling strategies.
+ *
+ *
+ *  # Scheduling principles
+ *
+ *   o Task scheduling prerequisites
+ *
+ *     A task is scheduled ASA all following conditions are met:
+ *     - if a control flow (CF) graph traversal reaches the task;
+ *     - when all data flow (DF) dependencies of the task are satisfied;
+ *     - when the DF-ready task pool parsing mechanism (*) considers it, and:
+ *       - a free (or re-entrant) algorithm instance to run within the task is
+ *         available;
+ *       - there is a free computational resource to run the task.
+ *
+ *   o (*) Avalanche induction strategies
+ *
+ *     The scheduler is able to maximize the intra-event throughput by applying
+ *     several search strategies within the pool, prioritizing tasks according
+ *     to the following types of precedence rules graph asymmetries:
+ *
+ *      (A) Local task-to-data asymmetry;
+ *      (B) Local task-to-task asymmetry;
+ *      (C) Global task-to-task asymmetry.
+ *
+ *
+ *   o Other mechanisms of throughput maximization
+ *
+ *     The scheduler is able to maximize the overall throughput of data processing
+ *     by scheduling the CPU-blocking tasks efficiently. The mechanism can be
+ *     applied to the following types of tasks:
+ *     - I/O-bound tasks;
+ *     - tasks with computation offloading (accelerators, GPGPUs, clouds,
+ *       quantum computing devices..joke);
+ *     - synchronization-bound tasks.
+ *
+ *
+ *  # Credits
+ *  Historically, the AvalancheSchedulerSvc branched off the ForwardSchedulerSvc
+ *  and in many ways built its success on ideas and code of the latter.
+ *
+ *
+ *  @author  Illya Shapoval
+ *  @version 1.0
  */
-class ForwardSchedulerSvc : public extends<Service, IScheduler>
+class AvalancheSchedulerSvc : public extends<Service, IScheduler>
 {
 public:
   /// Constructor
   using extends::extends;
 
   /// Destructor
-  ~ForwardSchedulerSvc() override = default;
+  ~AvalancheSchedulerSvc() override = default;
 
   /// Initialise
   StatusCode initialize() override;
@@ -114,18 +131,28 @@ private:
   enum ActivationState { INACTIVE = 0, ACTIVE = 1, FAILURE = 2 };
 
   Gaudi::Property<int> m_maxEventsInFlight{this, "MaxEventsInFlight", 0,
-                                           "Maximum number of event processed simultaneously"};
+    "Maximum number of event processed simultaneously"};
   Gaudi::Property<int> m_threadPoolSize{this, "ThreadPoolSize", -1,
     "Size of the threadpool initialised by TBB; a value of -1 gives TBB the freedom to choose"};
-  Gaudi::Property<std::string> m_whiteboardSvcName{this, "WhiteboardSvc", "EventDataSvc", "The whiteboard name"};
+  Gaudi::Property<std::string> m_whiteboardSvcName{this, "WhiteboardSvc", "EventDataSvc",
+    "The whiteboard name"};
+  Gaudi::Property<std::string> m_IOBoundAlgSchedulerSvcName{this, "IOBoundAlgSchedulerSvc",
+    "IOBoundAlgSchedulerSvc"};
   Gaudi::Property<unsigned int> m_maxAlgosInFlight{this, "MaxAlgosInFlight", 1,
-                                                   "[[deprecated]] Taken from the whiteboard"};
-  Gaudi::Property<std::vector<std::vector<std::string>>> m_algosDependencies{
-      this, "AlgosDependencies", {}, "[[deprecated]]"};
-  Gaudi::Property<bool> m_checkDeps{this, "CheckDependencies", false, 
-      "Runtime check of Algorithm Data Dependencies"};
-  Gaudi::Property<std::string> m_useDataLoader{this, "DataLoaderAlg", "",
-      "Attribute unmet input dependencies to this DataLoader Algorithm"};
+    "[[deprecated]] Taken from the whiteboard"};
+  Gaudi::Property<unsigned int> m_maxIOBoundAlgosInFlight{this, "MaxIOBoundAlgosInFlight", 0,
+    "Maximum number of simultaneous I/O-bound algorithms"};
+  Gaudi::Property<bool> m_simulateExecution{this, "SimulateExecution", false,
+    "Flag to perform single-pass simulation of execution flow before the actual execution"};
+  Gaudi::Property<std::string> m_optimizationMode{this, "Optimizer", "",
+    "The following modes are currently available: PCE, COD, DRE,  E"};
+  Gaudi::Property<bool> m_dumpIntraEventDynamics{this, "DumpIntraEventDynamics", false,
+    "Dump intra-event concurrency dynamics to csv file"};
+  Gaudi::Property<bool> m_useIOBoundAlgScheduler{this, "PreemptiveIOBoundTasks", false,
+    "Turn on preemptive way of scheduling of I/O-bound algorithms"};
+  Gaudi::Property<std::vector<std::vector<std::string>>> m_algosDependencies{this, "AlgosDependencies", {},
+    "[[deprecated]]"};
+  Gaudi::Property<bool> m_checkDeps{this, "CheckDependencies", false, "[[deprecated]]"};
 
   // Utils and shortcuts ----------------------------------------------------
 
@@ -156,6 +183,9 @@ private:
   /// A shortcut to the whiteboard
   SmartIF<IHiveWhiteBoard> m_whiteboard;
 
+  /// A shortcut to IO-bound algorithm scheduler
+  SmartIF<IAccelerator> m_IOBoundAlgScheduler;
+
   /// Vector of events slots
   std::vector<EventSlot> m_eventSlots;
 
@@ -176,15 +206,19 @@ private:
   /// Number of algoritms presently in flight
   unsigned int m_algosInFlight = 0;
 
-  /// Loop on algorithm in the slots and promote them to successive states (-1 means all slots, while empty string
-  /// means skipping an update of the Control Flow state)
-  StatusCode updateStates( int si = -1 );
+  /// Number of algoritms presently in flight
+  unsigned int m_IOBoundAlgosInFlight = 0;
 
-  /// Algorithm promotion: Accepted by the control flow
-  StatusCode promoteToControlReady( unsigned int iAlgo, int si );
-  StatusCode promoteToDataReady( unsigned int iAlgo, int si );
+  /// Loop on algorithm in the slots and promote them to successive states
+  /// (-1 means all slots, while empty string means skipping an update of the Control Flow state)
+  StatusCode updateStates( int si = -1, const std::string& algo_name = std::string() );
+
+  /// Algorithm promotion
   StatusCode promoteToScheduled( unsigned int iAlgo, int si );
+  StatusCode promoteToAsyncScheduled( unsigned int iAlgo, int si ); // tests of an asynchronous scheduler
   StatusCode promoteToExecuted( unsigned int iAlgo, int si, IAlgorithm* algo, EventContext* );
+  StatusCode promoteToAsyncExecuted( unsigned int iAlgo, int si, IAlgorithm* algo,
+                                     EventContext* ); // tests of an asynchronous scheduler
   StatusCode promoteToFinished( unsigned int iAlgo, int si );
 
   /// Check if the scheduling is in a stall
@@ -212,9 +246,9 @@ private:
   struct enqueueSchedulerActionTask: public tbb::task {
 
     std::function<StatusCode()> m_closure;
-    SmartIF<ForwardSchedulerSvc> m_scheduler;
+    SmartIF<AvalancheSchedulerSvc> m_scheduler;
 
-    enqueueSchedulerActionTask(ForwardSchedulerSvc* scheduler, std::function<StatusCode()> _closure) :
+    enqueueSchedulerActionTask(AvalancheSchedulerSvc* scheduler, std::function<StatusCode()> _closure) :
       m_closure(_closure), m_scheduler(scheduler) {}
 
     tbb::task* execute() override {
@@ -274,4 +308,4 @@ private:
   void dumpState( std::ostringstream& );
 };
 
-#endif // GAUDIHIVE_FORWARDSCHEDULERSVC_H
+#endif // GAUDIHIVE_AVALANCHESCHEDULERSVC_H

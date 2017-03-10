@@ -8,7 +8,7 @@ The components are:
  slot"), accessible in a thread safe way, keeps a catalogue of the products
  written on each processing slot. The number of slots in the whiteboard
  determines also the number of events processed simultaneously by the scheduler.
- o ForwardSchedulerSvc: state machine of the algorithms interfaced with the
+ o AvalancheSchedulerSvc: state machine of the algorithms interfaced with the
  TBB runtime. It is responsible for the submission of the algorithms. An
  algorithm is marked ready for submission when its needed input is available.
  It deals the asynchronous termination of algorithms with a "receiver" thread
@@ -28,7 +28,7 @@ entity to test it. It's an algorithm that simply wastes cpu.
 '''
 from Gaudi.Configuration import *
 from Configurables import (HiveWhiteBoard, HiveSlimEventLoopMgr,
-                           ForwardSchedulerSvc, AlgResourcePool,
+                           AvalancheSchedulerSvc, AlgResourcePool,
                            CPUCruncher,
                            ContextEventCounterPtr,
                            ContextEventCounterData)
@@ -54,7 +54,7 @@ whiteboard   = HiveWhiteBoard("EventDataSvc",
 # It's called slim since it has less functionalities overall than the good-old
 # event loop manager. Here we just set its outputlevel to DEBUG.
 
-slimeventloopmgr = HiveSlimEventLoopMgr(OutputLevel=DEBUG)
+slimeventloopmgr = HiveSlimEventLoopMgr(SchedulerName = "AvalancheSchedulerSvc", OutputLevel=DEBUG)
 
 #-------------------------------------------------------------------------------
 
@@ -63,10 +63,9 @@ slimeventloopmgr = HiveSlimEventLoopMgr(OutputLevel=DEBUG)
 # threads in the pool. The default value is -1, which is for TBB equivalent
 # to take over the whole machine.
 
-scheduler = ForwardSchedulerSvc(MaxAlgosInFlight = algosInFlight,
-                                ThreadPoolSize = algosInFlight,
-                                useGraphFlowManagement = True,
-                                OutputLevel=WARNING)
+scheduler = AvalancheSchedulerSvc(MaxAlgosInFlight = algosInFlight,
+                                  ThreadPoolSize = algosInFlight,
+                                  OutputLevel=WARNING)
 
 #-------------------------------------------------------------------------------
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env gaudirun.py
 
 from Gaudi.Configuration import *
-from Configurables import HiveWhiteBoard, HiveSlimEventLoopMgr, ForwardSchedulerSvc, AlgResourcePool
+from Configurables import HiveWhiteBoard, HiveSlimEventLoopMgr, AvalancheSchedulerSvc, AlgResourcePool
 
 # convenience machinery for assembling custom graphs of algorithm precedence rules (w/ CPUCrunchers as algorithms)
 from GaudiHive import precedence
@@ -18,17 +18,15 @@ whiteboard   = HiveWhiteBoard("EventDataSvc",
                               EventSlots = evtslots,
                               OutputLevel = INFO)
 
-slimeventloopmgr = HiveSlimEventLoopMgr(OutputLevel=DEBUG)
+slimeventloopmgr = HiveSlimEventLoopMgr(SchedulerName = "AvalancheSchedulerSvc", OutputLevel=DEBUG)
 
-scheduler = ForwardSchedulerSvc(MaxEventsInFlight = evtslots,
-                                MaxAlgosInFlight = algosInFlight,
-                                ThreadPoolSize = algosInFlight,
-                                OutputLevel = DEBUG,
-                                useGraphFlowManagement = True,
-                                DataFlowManagerNext = True,
-                                #Optimizer = "DRE",
-                                PreemptiveIOBoundTasks = False,
-                                DumpIntraEventDynamics = False)
+scheduler = AvalancheSchedulerSvc(MaxEventsInFlight = evtslots,
+                                  MaxAlgosInFlight = algosInFlight,
+                                  ThreadPoolSize = algosInFlight,
+                                  OutputLevel = DEBUG,
+                                  #Optimizer = "DRE",
+                                  PreemptiveIOBoundTasks = False,
+                                  DumpIntraEventDynamics = False)
 
 AlgResourcePool(OutputLevel = DEBUG)
 
