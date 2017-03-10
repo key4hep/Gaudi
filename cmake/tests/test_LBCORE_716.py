@@ -18,10 +18,12 @@ def clean():
 
 def build():
     global build_log, build_returncode, build_err
+    for v in ('BINARY_TAG', 'CMTCONFIG'):
+        if v in os.environ:
+            del os.environ[v]
     build_proc = Popen(['make', 'VERBOSE=1'], cwd=base_dir,
                        stdout=PIPE, stderr=PIPE)
-    build_log, _err = build_proc.communicate()
-    build_err=_err
+    build_log, build_err = build_proc.communicate()
     build_returncode = build_proc.returncode
 
 def setup():
