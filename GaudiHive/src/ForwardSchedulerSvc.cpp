@@ -207,10 +207,14 @@ StatusCode ForwardSchedulerSvc::initialize()
   // Fill the containers to convert algo names to index
   m_algname_vect.reserve( algsNumber );
   unsigned int index = 0;
+  IAlgorithm* dataLoaderAlg( nullptr );
   for ( IAlgorithm* algo : algos ) {
     const std::string& name   = algo->name();
     m_algname_index_map[name] = index;
     m_algname_vect.emplace_back( name );
+    if (algo->name() == m_useDataLoader) {
+      dataLoaderAlg = algo;
+    }
     index++;
   }
 
@@ -224,17 +228,53 @@ StatusCode ForwardSchedulerSvc::initialize()
     }
 
     if ( unmetDep.size() > 0 ) {
-      fatal() << "The following unmet INPUT data dependencies were found: ";
+
+      std::ostringstream ost;
       for ( auto& o : unmetDep ) {
-        fatal() << "\n   o " << o << "    required by Algorithm: ";
+        ost << "\n   o " << o << "    required by Algorithm: ";
         for ( size_t i = 0; i < m_algosDependencies.size(); ++i ) {
           if ( m_algosDependencies[i].find( o ) != m_algosDependencies[i].end() ) {
-            fatal() << "\n       * " << m_algname_vect[i];
+            ost << "\n       * " << m_algname_vect[i];
           }
         }
       }
-      fatal() << endmsg;
-      return StatusCode::FAILURE;
+
+      if ( m_useDataLoader != "" ) {
+        // Find the DataLoader Alg
+        if (dataLoaderAlg == nullptr) {
+          fatal() << "No DataLoader Algorithm \"" << m_useDataLoader.value()
+                  << "\" found, and unmet INPUT dependencies "
+                  << "detected:\n" << ost.str() << endmsg;
+          return StatusCode::FAILURE;
+        }
+
+        info() << "Will attribute the following unmet INPUT dependencies to \""
+               << dataLoaderAlg->type() << "/" << dataLoaderAlg->name() 
+               << "\" Algorithm"
+               << ost.str() << endmsg;
+
+        // Set the property Load of DataLoader Alg
+        Algorithm *dataAlg = dynamic_cast<Algorithm*>(dataLoaderAlg);
+        if ( !dataAlg ) {
+          fatal() << "Unable to dcast DataLoader \"" << m_useDataLoader.value()
+                  << "\" IAlg to Algorithm" << endmsg;
+          return StatusCode::FAILURE;
+        }
+
+        for (auto& id : unmetDep) {
+          debug() << "adding OUTPUT dep \"" << id << "\" to "
+                  << dataLoaderAlg->type() << "/" << dataLoaderAlg->name() 
+                  << endmsg;
+          dataAlg->addDependency(id, Gaudi::DataHandle::Writer);
+        }
+
+      } else {
+        fatal() << "Auto DataLoading not requested, "
+                << "and the following unmet INPUT dependencies were found:" 
+                << ost.str() << endmsg;
+        return StatusCode::FAILURE;
+      }
+
     } else {
       info() << "No unmet INPUT data dependencies were found" << endmsg;
     }
