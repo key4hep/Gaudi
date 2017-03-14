@@ -106,7 +106,7 @@ protected:
     template <class R, class S, class T1, class T2>
     static R* act( R* res, const S& b, void ( T1::*pmf )( const T2*, Double_t ), Double_t scale )
     {
-      const auto h1 = Gaudi::getRepresentation<R, T1>( *res );
+      auto h1 = Gaudi::getRepresentation<R, T1>( *res );
       const auto h2 = Gaudi::getRepresentation<R, T2>( b );
       if ( h1 && h2 ) {
         ( h1->*pmf )( h2, scale );
@@ -117,7 +117,7 @@ protected:
     template <class R, class S, class T1, class T2>
     static R* act( R* res, const S& b, Bool_t ( T1::*pmf )( const T2*, Double_t ), Double_t scale )
     {
-      const auto h1 = Gaudi::getRepresentation<R, T1>( *res );
+      auto h1 = Gaudi::getRepresentation<R, T1>( *res );
       const auto h2 = Gaudi::getRepresentation<R, T2>( b );
       if ( h1 && h2 ) {
         ( h1->*pmf )( h2, scale );
@@ -128,7 +128,7 @@ protected:
     template <class R, class S, class T1, class T2>
     static R* act( R* res, const S& b, void ( T1::*pmf )( const T2* ) )
     {
-      const auto h1 = Gaudi::getRepresentation<R, T1>( *res );
+      auto h1 = Gaudi::getRepresentation<R, T1>( *res );
       const auto h2 = Gaudi::getRepresentation<R, T2>( b );
       if ( h1 && h2 ) {
         ( h1->*pmf )( h2 );
@@ -139,7 +139,7 @@ protected:
     template <class R, class S, class T1, class T2>
     static R* act( R* res, const S& b, Bool_t ( T1::*pmf )( const T2* ) )
     {
-      const auto h1 = Gaudi::getRepresentation<R, T1>( *res );
+      auto h1 = Gaudi::getRepresentation<R, T1>( *res );
       const auto h2 = Gaudi::getRepresentation<R, T2>( b );
       if ( h1 && h2 ) {
         ( h1->*pmf )( h2 );
