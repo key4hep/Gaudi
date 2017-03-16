@@ -3,23 +3,25 @@
 namespace Gaudi {
   namespace Hive {
     class FetchDataFromFile final: public GaudiAlgorithm {
-      StringArrayProperty m_dataKeys;
-      std::vector<DataObjectHandle<DataObject>> m_outputHandles;
     public:
-      FetchDataFromFile(const std::string& name, ISvcLocator* svcLoc):
-        GaudiAlgorithm(name, svcLoc)
-      {
-        declareProperty("DataKeys", m_dataKeys, "list of objects to be read from file");
-      }
+      using GaudiAlgorithm::GaudiAlgorithm;
       StatusCode initialize() override {
         StatusCode sc = GaudiAlgorithm::initialize();
         if (sc) {
           // this is a hack to reuse the automatic dependencies declaration
-          for (auto k: m_dataKeys.value()) {
-            debug() << "adding data key " << k << endmsg;
-            evtSvc()->addPreLoadItem(k);
-            // note: the DataObjectHandleBase constructor will 'declare' the handle
-            m_outputHandles.emplace_back( k, Gaudi::DataHandle::Writer, this );
+          for (auto k: m_dataKeys) {
+            addDependency(k, Gaudi::DataHandle::Writer);
+          }
+        }
+        return sc;
+      }
+      StatusCode start() override {
+        StatusCode sc = GaudiAlgorithm::start();
+        if ( sc ) {
+          for( const auto& k: outputDataObjs() ) {
+            if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) )
+              debug() << "adding data key " << k << endmsg;
+            evtSvc()->addPreLoadItem( k.key() );
           }
         }
         return sc;
@@ -27,8 +29,11 @@ namespace Gaudi {
       StatusCode execute() override {
         return evtSvc()->preLoad();
       }
+    private:
+      Gaudi::Property<std::vector<std::string>> m_dataKeys{ this, "DataKeys", {},
+        "list of objects to be read from file" };
     };
   }
 }
 using Gaudi::Hive::FetchDataFromFile;
-DECLARE_COMPONENT(FetchDataFromFile)
+DECLARE_COMPONENT( FetchDataFromFile )
