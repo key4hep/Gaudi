@@ -91,9 +91,9 @@ MessageSvc.debugColorCode:[  ]
 MessageSvc.debugLimit:500
 MessageSvc.defaultLimit:500
 MessageSvc.enableSuppression:False
-MessageSvc.errorColorCode:[  ]
+MessageSvc.errorColorCode:[ 'white' , 'red' ]
 MessageSvc.errorLimit:500
-MessageSvc.fatalColorCode:[  ]
+MessageSvc.fatalColorCode:[ 'blue' , 'red' ]
 MessageSvc.fatalLimit:500
 MessageSvc.infoColorCode:[  ]
 MessageSvc.infoLimit:500
@@ -112,7 +112,7 @@ MessageSvc.tracedInactiveSources:[  ]
 MessageSvc.useColors:False
 MessageSvc.verboseColorCode:[  ]
 MessageSvc.verboseLimit:500
-MessageSvc.warningColorCode:[  ]
+MessageSvc.warningColorCode:[ 'yellow' ]
 MessageSvc.warningLimit:500
 NTupleSvc.AuditFinalize:False
 NTupleSvc.AuditInitialize:False

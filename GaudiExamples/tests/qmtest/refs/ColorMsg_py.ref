@@ -1,27 +1,29 @@
-JobOptionsSvc        INFO # =======> /home/marco/Devel/LHCb/workspace/Gaudi/GaudiExamples/options/Services.opts
-JobOptionsSvc        INFO # (12,1): AuditorSvc.Auditors = ["ChronoAuditor"]
-JobOptionsSvc        INFO # =======> /home/marco/Devel/LHCb/workspace/Gaudi/GaudiExamples/options/Common.opts
-JobOptionsSvc        INFO # (9,1): ApplicationMgr.StatusCodeCheck = 1
-JobOptionsSvc        INFO # =======> /home/marco/Devel/LHCb/workspace/Gaudi/GaudiExamples/options/ColorMsg.opts
-JobOptionsSvc        INFO # (10,1): ApplicationMgr.TopAlg = ["ColorMsgAlg"]
-JobOptionsSvc        INFO # (16,1): MessageSvc.OutputLevel = 1
-JobOptionsSvc        INFO # (17,1): MessageSvc.useColors = 1
-JobOptionsSvc        INFO # (18,1): MessageSvc.fatalColorCode = ["blue", "red"]
-JobOptionsSvc        INFO # (19,1): MessageSvc.errorColorCode = ["[97;101;1m"]
-JobOptionsSvc        INFO # (20,1): MessageSvc.warningColorCode = ["yellow"]
-JobOptionsSvc        INFO # (21,1): MessageSvc.infoColorCode = ["[96;1m"]
-JobOptionsSvc        INFO # (22,1): MessageSvc.debugColorCode = ["[92;1m"]
-JobOptionsSvc        INFO # (23,1): MessageSvc.verboseColorCode = ["[95;4m"]
-JobOptionsSvc        INFO # (31,1): ApplicationMgr.EvtMax = 2
-JobOptionsSvc        INFO # (32,1): ApplicationMgr.EvtSel = "NONE"
-JobOptionsSvc        INFO Job options successfully read in from /home/marco/Devel/LHCb/workspace/Gaudi/GaudiExamples/options/ColorMsg.opts
-[92;1mApplicationMgr      DEBUG Getting my own properties[m
+# setting LC_ALL to "C"
+# --> Including file '/home/marco/Devel/LHCb/workspace/Gaudi/GaudiExamples/options/ColorMsg.opts'
+# --> Including file '/home/marco/Devel/LHCb/workspace/Gaudi/GaudiExamples/options/Common.opts'
+# --> Including file '/home/marco/Devel/LHCb/workspace/Gaudi/GaudiExamples/options/Services.opts'
+# AuditorSvc.Auditors = { "ChronoAuditor" };
+# <-- End of file '/home/marco/Devel/LHCb/workspace/Gaudi/GaudiExamples/options/Services.opts'
+# ApplicationMgr.StatusCodeCheck = true;
+# <-- End of file '/home/marco/Devel/LHCb/workspace/Gaudi/GaudiExamples/options/Common.opts'
+# ApplicationMgr.TopAlg = { "ColorMsgAlg"};
+# MessageSvc.OutputLevel      = 1;
+# MessageSvc.useColors        = true;
+# MessageSvc.fatalColorCode   = { "blue", "red" };
+# MessageSvc.errorColorCode   = { "[97;101;1m" };
+# MessageSvc.warningColorCode = { "yellow" };
+# MessageSvc.infoColorCode    = { "[96;1m" };
+# MessageSvc.debugColorCode   = { "[92;1m" };
+# MessageSvc.verboseColorCode = { "[95;4m" };
+# ApplicationMgr.EvtMax = 2;
+# ApplicationMgr.EvtSel = "NONE";
+# <-- End of file '/home/marco/Devel/LHCb/workspace/Gaudi/GaudiExamples/options/ColorMsg.opts'
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr (GaudiCoreSvc v28r1)
-                                          running on pcphlbc16 on Tue Mar  7 10:58:03 2017
-====================================================================================================================================[m
-[96;1mApplicationMgr       INFO Application Manager Configured successfully[m
+                                          running on pcphlbc16 on Tue Mar  7 13:08:55 2017
+====================================================================================================================================
+ApplicationMgr       INFO Application Manager Configured successfully
 [92;1mServiceManager      DEBUG Initializing service StatusCodeSvc[m
 [92;1mStatusCodeSvc       DEBUG Service base class initialized successfully[m
 [96;1mStatusCodeSvc        INFO initialize[m
@@ -100,7 +102,7 @@ Algs: 1
 [96;1mColorMsgAlg          INFO setting....[93;1mthis should be in yellow[91;1m and red[m
 [96;1mColorMsgAlg          INFO multicolor: [94;102;1mthis is blue on green[95;107;1m and purple on white[m
 [96;1mColorMsgAlg          INFO [92;1mThis is green. [93;104;1mThis is in yellow on blue. [m[96;1mThis is back to normal[m
-[92;1mEventLoopMgr        DEBUG ---> Loop Finished -  WSS 41.7031 | total time (skipping 1st evt) 45484 ns[m
+[92;1mEventLoopMgr        DEBUG ---> Loop Finished -  WSS 53.9258 | total time (skipping 1st evt) 41617 ns[m
 [92;1mServiceManager      DEBUG Stopping service EventLoopMgr[m
 [92;1mServiceManager      DEBUG Stopping service HistogramDataSvc[m
 [92;1mServiceManager      DEBUG Stopping service HistogramPersistencySvc[m

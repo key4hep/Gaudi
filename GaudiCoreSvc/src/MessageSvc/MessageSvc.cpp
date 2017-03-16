@@ -45,6 +45,21 @@ namespace
   {
     return erase_if( c, std::move( range.first ), std::move( range.second ), std::forward<Predicate>( pred ) );
   }
+
+  std::string colTrans( const std::string& col, int offset )
+  {
+    int icol = 0;
+    if ( col == "black"  ) icol = MSG::BLACK  ; else
+    if ( col == "red"    ) icol = MSG::RED    ; else
+    if ( col == "green"  ) icol = MSG::GREEN  ; else
+    if ( col == "yellow" ) icol = MSG::YELLOW ; else
+    if ( col == "blue"   ) icol = MSG::BLUE   ; else
+    if ( col == "purple" ) icol = MSG::PURPLE ; else
+    if ( col == "cyan"   ) icol = MSG::CYAN   ; else
+    if ( col == "white"  ) icol = MSG::WHITE  ; else
+      icol = 8;
+    return std::to_string( icol + offset );
+  }
 }
 
 // Instantiation of a static factory class used by clients to create
@@ -57,9 +72,6 @@ static const std::string levelNames[MSG::NUM_LEVELS] = {"NIL",     "VERBOSE", "D
 // Constructor
 MessageSvc::MessageSvc( const std::string& name, ISvcLocator* svcloc ) : base_class( name, svcloc )
 {
-
-  m_color.declareUpdateHandler( &MessageSvc::initColors, this );
-
   m_inactCount.declareUpdateHandler( &MessageSvc::setupInactCount, this );
 
 #ifndef NDEBUG
@@ -73,6 +85,10 @@ MessageSvc::MessageSvc( const std::string& name, ISvcLocator* svcloc ) : base_cl
     m_thresholdProp[ic].declareUpdateHandler( &MessageSvc::setupThreshold, this );
   }
 
+  m_logColors[MSG::FATAL].set({"blue", "red"});
+  m_logColors[MSG::ERROR].set({"white", "red"});
+  m_logColors[MSG::WARNING].set({"yellow"});
+
   std::fill( std::begin( m_msgCount ), std::end( m_msgCount ), 0 );
 }
 
@@ -81,30 +97,12 @@ MessageSvc::MessageSvc( const std::string& name, ISvcLocator* svcloc ) : base_cl
 /// Initialize Service
 StatusCode MessageSvc::initialize()
 {
-  StatusCode sc;
-  sc = Service::initialize();
-  if ( sc.isFailure() ) return sc;
-  // Set my own properties
-  sc = setProperties();
+  StatusCode sc = Service::initialize();
   if ( sc.isFailure() ) return sc;
 
 #ifdef _WIN32
   m_color = false;
 #endif
-
-  // NOTE: m_colMap is used _before_ it is filled here,
-  //      i.e. while it is still empty.
-  //      Moving this initialization 'up' by eg. just
-  //      having a 'static const' colMap does not leave
-  //      the results invariant...
-  m_colMap["black"]  = MSG::BLACK;
-  m_colMap["red"]    = MSG::RED;
-  m_colMap["green"]  = MSG::GREEN;
-  m_colMap["yellow"] = MSG::YELLOW;
-  m_colMap["blue"]   = MSG::BLUE;
-  m_colMap["purple"] = MSG::PURPLE;
-  m_colMap["cyan"]   = MSG::CYAN;
-  m_colMap["white"]  = MSG::WHITE;
 
   // make sure the map of logged stream names is initialized
   setupLogStreams();
@@ -123,74 +121,39 @@ StatusCode MessageSvc::reinitialize()
 
 //#############################################################################
 
-void MessageSvc::initColors( Gaudi::Details::PropertyBase& /*prop*/ )
-{
-
-  if ( m_color ) {
-    static const std::array<std::pair<MSG::Level, std::vector<std::string>>, 3> tbl{
-        {{MSG::FATAL, {{"[94;101;1m"}}}, {MSG::ERROR, {{"[97;101;1m"}}}, {MSG::WARNING, {{"[93;1m"}}}}};
-
-    for ( const auto& p : tbl ) {
-      auto& lC = m_logColors[p.first];
-      if ( lC.value().empty() ) {
-        lC.set( p.second );
-      } else {
-        MessageSvc::setupColors( lC );
-      }
-    }
-
-  } else {
-
-    // reset all color codes;
-    for ( int ic = 0; ic < MSG::NUM_LEVELS; ++ic ) {
-      m_logColors[ic].set( {} );
-    }
-  }
-}
-
-//#############################################################################
-
 void MessageSvc::setupColors( Gaudi::Details::PropertyBase& prop )
 {
-
-  if ( !m_color ) return;
-
-  static const std::array<std::pair<const char*, MSG::Level>, 7> tbl{{{"fatalColorCode", MSG::FATAL},
-                                                                      {"errorColorCode", MSG::ERROR},
-                                                                      {"warningColorCode", MSG::WARNING},
-                                                                      {"infoColorCode", MSG::INFO},
-                                                                      {"debugColorCode", MSG::DEBUG},
-                                                                      {"verboseColorCode", MSG::VERBOSE},
-                                                                      {"alwaysColorCode", MSG::ALWAYS}}};
-
-  auto i = std::find_if( std::begin( tbl ), std::end( tbl ),
-                         [&]( const std::pair<const char*, MSG::Level>& t ) { return prop.name() == t.first; } );
-  if ( i == std::end( tbl ) ) {
-    std::cout << "ERROR: Unknown message color parameter: " << prop.name() << std::endl;
-    return;
+  const std::string& pname = prop.name();
+  int level;
+  if ( pname == "fatalColorCode"   ) level = MSG::FATAL   ; else
+  if ( pname == "errorColorCode"   ) level = MSG::ERROR   ; else
+  if ( pname == "warningColorCode" ) level = MSG::WARNING ; else
+  if ( pname == "infoColorCode"    ) level = MSG::INFO    ; else
+  if ( pname == "debugColorCode"   ) level = MSG::DEBUG   ; else
+  if ( pname == "verboseColorCode" ) level = MSG::VERBOSE ; else
+  if ( pname == "alwaysColorCode"  ) level = MSG::ALWAYS  ; else {
+    throw GaudiException( "ERROR: Unknown message color parameter: " + pname,
+                          name(), StatusCode::FAILURE );
   }
-  int ic = i->second;
 
-  std::string code;
-  auto itr = m_logColors[ic].value().begin();
+  auto& code = m_logColorCodes[level];
 
-  if ( m_logColors[ic].value().size() == 1 ) {
+  const auto& col_desc = m_logColors[level].value();
 
-    if ( itr->empty() ) {
+  if ( col_desc.size() == 1 ) {
+    const std::string& desc = col_desc[0];
+    if ( desc.empty() ) {
       code = "";
-    } else if ( itr->compare( 0, 1, "[" ) == 0 ) {
-      code = "\033" + *itr;
+    } else if ( desc[0] == '[' ) {
+      code = "\033" + desc;
     } else {
-      code = "\033[" + colTrans( *itr, 90 ) + ";1m";
+      code = "\033[" + colTrans( desc, 90 ) + ";1m";
     }
-
-  } else if ( m_logColors[ic].value().size() == 2 ) {
-    auto itr2 = itr + 1;
-
-    code = "\033[" + colTrans( *itr, 90 ) + ";" + colTrans( *itr2, 100 ) + ";1m";
+  } else if ( col_desc.size() == 2 ) {
+    code = "\033[" + colTrans( col_desc[0], 90 ) + ";" + colTrans( col_desc[1], 100 ) + ";1m";
+  } else { // empty desc: no color
+    code = "";
   }
-
-  m_logColorCodes[ic] = code;
 }
 //#############################################################################
 
@@ -370,14 +333,6 @@ StatusCode MessageSvc::finalize()
 #endif
 
   return StatusCode::SUCCESS;
-}
-
-//#############################################################################
-std::string MessageSvc::colTrans( std::string col, int offset )
-{
-  auto itr = m_colMap.find( col );
-  int icol = offset + ( ( itr != m_colMap.end() ) ? itr->second : 8 );
-  return std::to_string( icol );
 }
 
 //#############################################################################

@@ -195,15 +195,10 @@ private:
 
   std::map<std::string, MsgAry> m_sourceMap, m_inactiveMap;
 
-  std::string colTrans( std::string, int );
-  typedef std::map<std::string, MSG::Color> ColorMap;
-  ColorMap m_colMap;
-
   std::array<int, MSG::NUM_LEVELS> m_msgCount;
 
   std::map<std::string, std::shared_ptr<std::ostream>> m_loggedStreams;
 
-  void initColors( Gaudi::Details::PropertyBase& prop );
   void setupColors( Gaudi::Details::PropertyBase& prop );
   void setupLimits( Gaudi::Details::PropertyBase& prop );
   void setupThreshold( Gaudi::Details::PropertyBase& prop );
