@@ -1,10 +1,10 @@
 #ifndef GAUDISVC_P1D_H
 #define GAUDISVC_P1D_H
 
-#include "GaudiKernel/DataObject.h"
-#include "GaudiPI.h"
+#include <AIDA/IProfile1D.h>
+#include <GaudiKernel/DataObject.h>
+#include <TProfile.h>
 #include "Generic1D.h"
-#include "TProfile.h"
 
 /*
  *    Gaudi namespace
@@ -26,8 +26,7 @@ namespace Gaudi {
     Profile1D();
     /// Standard constructor with initialization. The histogram representation will be adopted
     Profile1D(TProfile* rep);
-    /// Destructor.
-    ~Profile1D() override = default;
+
     /// Fill the Profile1D with a value and the corresponding weight.
     bool fill(double x, double y, double weight = 1.) override;
     virtual bool setBinContents(int i, int entries,double height,double error, double spread, double centre);

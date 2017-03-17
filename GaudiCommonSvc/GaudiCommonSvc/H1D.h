@@ -1,10 +1,10 @@
 #ifndef HISTOGRAMSVC_H1D_H
 #define HISTOGRAMSVC_H1D_H 1
 
-#include "GaudiKernel/DataObject.h"
+#include <AIDA/IHistogram1D.h>
+#include <GaudiKernel/DataObject.h>
+#include <TH1D.h>
 #include "Generic1D.h"
-#include "GaudiPI.h"
-#include "TH1D.h"
 
 namespace Gaudi {
 
@@ -26,8 +26,7 @@ namespace Gaudi {
     Histogram1D();
     /// Standard constructor with initialization. The histogram representation will be adopted
     Histogram1D(TH1D* rep);
-    /// Destructor.
-    ~Histogram1D() override =default;
+
     /// Adopt ROOT histogram representation
     void adoptRepresentation(TObject*rep) override;
     /// set bin content (entries and centre are not used )

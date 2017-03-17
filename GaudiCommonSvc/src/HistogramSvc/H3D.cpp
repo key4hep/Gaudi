@@ -10,51 +10,14 @@
 #pragma warning(disable:4996)
 #endif
 
-#include "GaudiKernel/DataObject.h"
-#include "GaudiKernel/ObjectFactory.h"
+#include <GaudiKernel/DataObject.h>
+#include <GaudiKernel/ObjectFactory.h>
+#include <GaudiCommonSvc/Generic3D.h>
+#include <GaudiCommonSvc/HistogramUtility.h>
+#include <GaudiCommonSvc/H3D.h>
+
 #include "GaudiPI.h"
-#include "Generic3D.h"
 #include "TH3D.h"
-
-namespace Gaudi {
-
-  /**@class Histogram3D
-    *
-    * AIDA implementation for 2 D histograms using ROOT THD2
-    *
-    * @author  M.Frank
-    */
-  class GAUDI_API Histogram3D : public DataObject, public Generic3D<AIDA::IHistogram3D,TH3D>   {
-  public:
-    /// Standard Constructor
-    Histogram3D();
-    /// Standard Constructor
-    Histogram3D(TH3D* rep);
-    /// Destructor.
-    ~Histogram3D() override = default;
-    /// Fill bin content
-    bool fill ( double x, double y, double z, double weight) override;
-    /// Fast filling method for a given bin. It can be also the over/underflow bin
-    virtual bool setBinContents( int i, int j, int k, int entries,double height,double error,double centreX, double centreY, double centreZ );
-    /// Sets the rms of the histogram.
-    virtual bool setRms(double rmsX, double rmsY, double rmsZ);
-    // overwrite reset
-    bool reset() override;
-    /// Introspection method
-    void* cast(const std::string & className) const override;
-    /// Create new histogram from any AIDA based histogram
-    void  copyFromAida(const AIDA::IHistogram3D & h);
-    /// Retrieve reference to class defininition identifier
-    const CLID& clID() const override { return classID(); }
-    static const CLID& classID()     { return CLID_H3D; }
-
-  protected:
-    // cache sumwx and sumwy  when setting contents since I don't have bin mean
-    double m_sumwx = 0;
-    double m_sumwy = 0;
-    double m_sumwz = 0;
-  };
-}
 
 namespace Gaudi {
   template <>
@@ -91,7 +54,7 @@ std::pair<DataObject*,AIDA::IHistogram3D*> Gaudi::createH3D(const AIDA::IHistogr
   return {n,n};
 }
 
-Gaudi::Histogram3D::Histogram3D() 
+Gaudi::Histogram3D::Histogram3D()
 : Base( new TH3D() )
 {
   setTitle("");
@@ -270,6 +233,3 @@ void Gaudi::Histogram3D::copyFromAida(const AIDA::IHistogram3D & h) {
 // re-enable icc remark #1572
 #pragma warning(pop)
 #endif
-
-typedef Gaudi::Histogram3D H3D;
-DECLARE_DATAOBJECT_FACTORY(H3D)

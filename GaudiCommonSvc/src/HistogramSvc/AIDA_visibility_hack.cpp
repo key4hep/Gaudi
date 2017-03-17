@@ -12,8 +12,31 @@
 #pragma clang diagnostic ignored "-Wunused-variable"
 #endif
 
-/// @FIXME: AIDA interfaces visibility
-#include "AIDA_visibility_hack.h"
+// For the GAUDI_API macro
+#include "GaudiKernel/Kernel.h"
+
+// To avoid breaking STL
+#include <string>
+#include <vector>
+
+// Force visibility of the classes
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wkeyword-macro"
+#endif
+#define class class GAUDI_API
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+#include <AIDA/IBaseHistogram.h>
+#include <AIDA/IHistogram1D.h>
+#include <AIDA/IHistogram2D.h>
+#include <AIDA/IHistogram3D.h>
+#include <AIDA/IProfile1D.h>
+#include <AIDA/IProfile2D.h>
+#include <AIDA/IAnnotation.h>
+#include <AIDA/IAxis.h>
+#undef class
 
 #include <typeinfo>
 

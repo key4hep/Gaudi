@@ -11,8 +11,10 @@
 #endif
 
 #include <cmath>
-#include "P1D.h"
-#include "GaudiKernel/ObjectFactory.h"
+#include <GaudiCommonSvc/P1D.h>
+#include <GaudiKernel/ObjectFactory.h>
+#include <GaudiCommonSvc/HistogramUtility.h>
+#include "GaudiPI.h"
 
 std::pair<DataObject*,AIDA::IProfile1D*> Gaudi::createProf1D
 ( const std::string& title ,
@@ -67,13 +69,13 @@ namespace Gaudi {
   }
 }
 
-Gaudi::Profile1D::Profile1D() 
+Gaudi::Profile1D::Profile1D()
  : Base( new TProfile() )
 {
   init("",false);
 }
 
-Gaudi::Profile1D::Profile1D(TProfile* rep)  
+Gaudi::Profile1D::Profile1D(TProfile* rep)
   : Base( rep)
 {
   init(m_rep->GetTitle());
@@ -113,6 +115,3 @@ bool Gaudi::Profile1D::fill ( double x, double y, double weight )  {
   (weight == 1.) ? m_rep->Fill(x,y) : m_rep->Fill(x,y,weight);
   return true;
 }
-
-typedef Gaudi::Profile1D P1D;
-DECLARE_DATAOBJECT_FACTORY(P1D)
