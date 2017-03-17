@@ -92,10 +92,6 @@ option(GAUDI_V22
        "enable some API extensions"
        OFF)
 
-option(GAUDI_CMT_RELEASE
-       "use CMT deafult release flags instead of the CMake ones"
-       ON)
-
 if (BINARY_TAG_COMP_NAME STREQUAL "gcc" AND BINARY_TAG_COMP_VERSION VERSION_GREATER "5.0")
   option(GAUDI_SUGGEST_OVERRIDE "enable warnings for missing override keyword" ON)
 endif()
@@ -124,11 +120,7 @@ endif()
 
 # default optimization levels
 if(NOT _opt_level_RELEASE)
-  if(GAUDI_CMT_RELEASE)
-    set(_opt_level_RELEASE "-O2")
-  else()
-    set(_opt_level_RELEASE "-O3")
-  endif()
+  set(_opt_level_RELEASE "-O3")
   # RelWithDebInfo shared the flags with Release
   set(_opt_level_RELWITHDEBINFO "${_opt_level_RELEASE}")
 endif()
@@ -192,15 +184,6 @@ if(NOT GAUDI_FLAGS_SET)
     set(CMAKE_C_FLAGS_DEBUG "/D_NDEBUG /MD /Zi /Ob0 /Od /RTC1"
         CACHE STRING "Flags used by the compiler during debug builds."
         FORCE)
-
-    if(GAUDI_CMT_RELEASE)
-      set(CMAKE_CXX_FLAGS_RELEASE "/O2"
-          CACHE STRING "Flags used by the compiler during release builds."
-          FORCE)
-      set(CMAKE_C_FLAGS_RELEASE "/O2"
-          CACHE STRING "Flags used by the compiler during release builds."
-          FORCE)
-    endif()
 
   else()
     # special architecture flags
