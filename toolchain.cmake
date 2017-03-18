@@ -1,7 +1,8 @@
 # Special wrapper to load the declared version of the heptools toolchain.
 set(heptools_version 88)
 
-if(ENV{HEPTOOLS_VERSION})
+cmake_minimum_required(VERSION 2.8.5)
+if($ENV{HEPTOOLS_VERSION})
   set(heptools_version $ENV{HEPTOOLS_VERSION})
 endif()
 
