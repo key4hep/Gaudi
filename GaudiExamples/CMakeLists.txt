@@ -11,6 +11,8 @@ find_package(GSL)
 find_package(PythonLibs)
 find_package(RELAX)
 find_package(TBB)
+# ROOT runtime
+find_package(PNG)
 
 # Hide some Boost/ROOT/CLHEP/TBB/HepPDT compile time warnings
 include_directories( SYSTEM ${Boost_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS}
