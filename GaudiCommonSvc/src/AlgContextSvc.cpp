@@ -10,12 +10,15 @@
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/IIncidentSvc.h"
+#include "GaudiKernel/ConcurrencyFlags.h"
+
 // ============================================================================
 /** @file
  *  Implementation firl for class AlgContextSvc
  *  @author ATLAS Collaboration
  *  @author modified by Vanya BELYAEV ibelyaev@physics.syr.edu
- *  @date 2007-03-05 (modified)
+ *  @author modified by Sami Kama
+ *  @date 2017-03-17 (modified)
  */
 // ============================================================================
 /** Instantiation of a static factory class used by clients to create
@@ -37,6 +40,15 @@ StatusCode AlgContextSvc::initialize ()
     m_inc.reset();
   }
   // perform more checks?
+  auto numSlots=Gaudi::Concurrency::ConcurrencyFlags::numConcurrentEvents();
+  numSlots=(1>numSlots)?1:numSlots;
+  if(numSlots>1000){
+    warning()<<"Num Slots are greater than 1000. Is this correct? numSlots="<<
+      numSlots<<endmsg;
+    numSlots=1000;
+  }
+  m_inEvtLoop.resize(numSlots,0);
+
   if ( m_check )
   {
     m_inc = Service::service ( "IncidentSvc" , true ) ;
@@ -84,6 +96,9 @@ StatusCode AlgContextSvc::setCurrentAlg  ( IAlgorithm* a )
     warning() << "IAlgorithm* points to NULL" << endmsg ;
     return StatusCode::RECOVERABLE ;
   }
+  auto currSlot=a->getContext().slot();
+  if(!m_inEvtLoop[currSlot]) return StatusCode::SUCCESS;
+
   // check whether thread-local algorithm list already exists
   // if not, create it
   if ( ! m_algorithms.get()) {
@@ -104,11 +119,14 @@ StatusCode AlgContextSvc::unSetCurrentAlg ( IAlgorithm* a )
     m_algorithms.reset( new IAlgContextSvc::Algorithms() );
   }
 
-  if ( !a )
-  {
+  if ( !a ){
     warning() << "IAlgorithm* points to NULL" << endmsg ;
     return StatusCode::RECOVERABLE ;
   }
+  auto currSlot=a->getContext().slot();
+
+  if(!m_inEvtLoop[currSlot]) return StatusCode::SUCCESS;  
+
     if ( m_algorithms->empty() || m_algorithms->back() != a )
    {
     error() << "Algorithm stack is invalid" << endmsg ;
@@ -130,7 +148,13 @@ IAlgorithm* AlgContextSvc::currentAlg  () const
 // ============================================================================
 // handle incident @see IIncidentListener
 // ============================================================================
-void AlgContextSvc::handle ( const Incident& ) {
+void AlgContextSvc::handle ( const Incident& inc ) {
+  //some false sharing is possible but it should be negligable
+  if(inc.type()=="BeginEvent"){
+    m_inEvtLoop[inc.context().slot()]=1;
+  }else if(inc.type()=="EndEvent"){
+    m_inEvtLoop[inc.context().slot()]=0;
+  }
   if ( m_algorithms.get() && !m_algorithms->empty() ) {
     //skip incident processing algorithm endevent incident
     if((m_algorithms->size()!=1) || ((m_algorithms->back()->type()!="IncidentProcAlg") && (m_algorithms->back()->type()!="AthIncFirerAlg"))){

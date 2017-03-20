@@ -4,6 +4,8 @@
 // ============================================================================
 // Include files
 // ============================================================================
+#include <vector>
+// ============================================================================
 // GaudiKernel
 // ============================================================================
 #include "GaudiKernel/IAlgContextSvc.h"
@@ -12,6 +14,7 @@
 #include "GaudiKernel/Service.h"
 #include "GaudiKernel/StatusCode.h"
 #include <boost/thread.hpp>
+
 // ============================================================================
 // Forward declarations
 // ============================================================================
@@ -64,6 +67,7 @@ private:
   SmartIF<IIncidentSvc> m_inc = nullptr; ///< pointer to Incident Service
 
   Gaudi::Property<bool> m_check{this, "Check", true, "Flag to perform more checks"};
+  std::vector<int> m_inEvtLoop;
 };
 
 // ============================================================================
