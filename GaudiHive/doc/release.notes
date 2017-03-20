@@ -1,6 +1,106 @@
 Package : GaudiKernel
 Commit Id: $Format:%H$
 
+================================ Gaudi v28r2 =================================
+
+! 2017-03-20 - Illya Shapoval (commit f9e62de)
+
+ - Merge branch 'scheduler-sequential' into 'master'
+
+   Sequential scheduling of an algorithm set (native support)
+    See merge request !305
+
+! 2017-03-16 - Marco Clemencic (commit 44bbb22)
+
+ - updated FetchDataFromFile algorithm
+
+   See merge request !300
+
+! 2017-03-10 - Illya Shapoval (commit 51aa3b1)
+
+ - Merge branch 'schedulers-cleanup' into 'master'
+
+   Add AvalancheSchedulerSvc and clean up the ForwardSchedulerSvc
+    See merge request !288
+
+! 2017-03-10 - Gerhard Raven (commit 34c34b8)
+
+ - Merge branch 'make_unique_alglist_unique' into 'master'
+
+   Make sure that entries in m_flatUniqueAlgList are actually unique
+
+   See merge request !255
+
+   Conflicts:
+   GaudiHive/src/AlgResourcePool.cpp
+
+
+! 2017-03-10 - Charles Leggett (commit 1c2b2e1)
+
+ - Merge branch 'dev/combSeq' into 'master'
+
+   Support for AthSequencers in Scheduler
+    See merge request !287
+
+! 2017-03-10 - Charles Leggett (commit 6d9a472)
+
+ - Merge branch 'dev/AutoDataLoad' into 'master'
+
+   Attribute unmet INPUT dependencies to a DataLoader Algorithm
+    See merge request !269
+
+! 2017-03-10 - Gerhard Raven (commit f3d7bff)
+
+ - remove all references to endreq
+
+   See merge request !79
+
+! 2017-02-23 - Charles Leggett (commit 215f2b1)
+
+ - added ConcurrencyFlags class
+
+   The static ConcurrencyFlags allows easy access to information about the
+   number of threads, concurrent events, and processes.
+    For running in serial, numThreads == 0, numConcEvents == 0, numProcs == 0,
+   useful to distinguish between running serial, and running MT with 1 thread,
+   or MP with 1 process.
+    See merge request !277
+
+! 2017-02-13 - Charles Leggett (commit 34172fa)
+
+ - cleanup duplicate includes in ForwardSchedulerSvc.h
+
+   See merge request !286
+
+! 2017-02-08 - Charles Leggett (commit 09859bd)
+
+ - add sysExecute(EventContext) and extract errorCount from Algorithm base class
+
+   We need to extract the `m_errorCount` variable from the Algorithm base class,
+    as it's not important on a per-instance basis, but rather on a job level.
+   This is moved to the AlgExecStateSvc.
+    This merge request also adds an explicit `IAlgorithm::sysExecute(const
+   EventContext&)`, which should become the standard entry point to
+   `Algorithm::execute`. This sets the local m_event_context variable, so
+   derived classes can get quick access to the current context instead of going
+   through the slower thead local `Gaudi::Hive::currentContext()`.
+    Note that `IAlgorithm::sysExecute()` has been removed, to avoid "overloaded
+   virtual" compiler errors, and should be replaced in all clients with
+   `IAlgorithm::sysExecute(EventContext)`, or if the context is not immediately
+   available, with `IAlgorithm::sysExecute(Gaudi::Hive::currentContext())`.
+    All this is being done in preparation to re-introduce the ReEntrantAlgorithm
+   class from merge !177 (see also !274)
+    See merge request !273
+
+! 2017-01-13 - Illya Shapoval (commit 2cb0c7b)
+
+ - Change of terminology within the graph-based scheduler
+
+   This is a minor MR that introduces more accurate terminology within the
+   graph-based scheduler. In particular, the `ExecutionFlowGraph` is renamed to
+   `PrecedenceRulesGraph`.
+    See merge request !266
+
 ================================ Gaudi v28r1 =================================
 
 ! 2016-12-14 - Attila Krasznahorkay (commit a42ff2a)
