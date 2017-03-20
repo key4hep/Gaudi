@@ -2,6 +2,28 @@ Package: GaudiMP
 Package manager : Sebastien Binet
 Commit Id: $Format:%H$
 
+================================ Gaudi v28r2 =================================
+
+! 2017-02-08 - Charles Leggett (commit 09859bd)
+
+ - add sysExecute(EventContext) and extract errorCount from Algorithm base class
+
+   We need to extract the `m_errorCount` variable from the Algorithm base class,
+    as it's not important on a per-instance basis, but rather on a job level.
+   This is moved to the AlgExecStateSvc.
+    This merge request also adds an explicit `IAlgorithm::sysExecute(const
+   EventContext&)`, which should become the standard entry point to
+   `Algorithm::execute`. This sets the local m_event_context variable, so
+   derived classes can get quick access to the current context instead of going
+   through the slower thead local `Gaudi::Hive::currentContext()`.
+    Note that `IAlgorithm::sysExecute()` has been removed, to avoid "overloaded
+   virtual" compiler errors, and should be replaced in all clients with
+   `IAlgorithm::sysExecute(EventContext)`, or if the context is not immediately
+   available, with `IAlgorithm::sysExecute(Gaudi::Hive::currentContext())`.
+    All this is being done in preparation to re-introduce the ReEntrantAlgorithm
+   class from merge !177 (see also !274)
+    See merge request !273
+
 ================================ Gaudi v28r1 =================================
 
 ! 2016-12-14 - Attila Krasznahorkay (commit a42ff2a)
