@@ -57,6 +57,7 @@ set(GaudiExamples_srcs
     src/SvcInitLoop/*.cpp
     src/StringKeys/*.cpp
     src/StatusCodeSvc/SCSAlg.cpp
+    src/StatusCodeSvc/special/SCSAlg_no_inline.cpp
     src/FileMgr/*.cpp
     src/testing/*.cpp
     src/IntelProfiler/*.cpp
@@ -78,9 +79,6 @@ if( HEPPDT_FOUND )
 endif()
 if( CLHEP_FOUND )
    list( APPEND GaudiExamples_srcs src/TupleEx/*.cpp )
-endif()
-if (NOT BINARY_TAG_COMP_NAME STREQUAL "clang")
-    list(APPEND GaudiExamples_srcs  src/StatusCodeSvc/special/SCSAlg_no_inline.cpp)
 endif()
 if( TARGET RootCnvLib )
   list( APPEND GaudiExamples_srcs src/MultiInput/*.cpp )
@@ -128,23 +126,21 @@ gaudi_add_module( GaudiExamples ${GaudiExamples_srcs}
    LINK_LIBRARIES GaudiKernel GaudiAlgLib GaudiUtilsLib GaudiExamplesLib
    ${ROOT_LIBRARIES} ${extra_libs} )
 
-if (NOT BINARY_TAG_COMP_NAME STREQUAL "clang")
-  find_file(StatusCodeHeader NAMES GaudiKernel/StatusCode.h
-            PATHS ${CMAKE_SOURCE_DIR}/GaudiKernel
-            HINTS ${Gaudi_DIR}/include)
-  if(NOT StatusCodeHeader)
-    message(FATAL_ERROR "Cannot find file StatusCode.h for the StatusCodeSvc test")
-  endif()
+find_file(StatusCodeHeader NAMES GaudiKernel/StatusCode.h
+          PATHS ${CMAKE_SOURCE_DIR}/GaudiKernel
+          HINTS ${Gaudi_DIR}/include)
+if(NOT StatusCodeHeader)
+  message(FATAL_ERROR "Cannot find file StatusCode.h for the StatusCodeSvc test")
+endif()
 
-  message(STATUS "creating hacked version of ${StatusCodeHeader}")
-  file(READ ${StatusCodeHeader} StatusCodeHeaderData)
-  string(REPLACE "~StatusCode" "~StatusCode(); void _dummy" StatusCodeHeaderData "${StatusCodeHeaderData}")
-  if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/HackedStatusCode.h")
-    file(READ "${CMAKE_CURRENT_BINARY_DIR}/HackedStatusCode.h" StatusCodeHeaderData_previous)
-  endif()
-  if(NOT StatusCodeHeaderData_previous STREQUAL StatusCodeHeaderData)
-    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/HackedStatusCode.h" "${StatusCodeHeaderData}")
-  endif()
+message(STATUS "creating hacked version of ${StatusCodeHeader}")
+file(READ ${StatusCodeHeader} StatusCodeHeaderData)
+string(REPLACE "~StatusCode" "__attribute__ ((noinline)) ~StatusCode" StatusCodeHeaderData "${StatusCodeHeaderData}")
+if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/HackedStatusCode.h")
+  file(READ "${CMAKE_CURRENT_BINARY_DIR}/HackedStatusCode.h" StatusCodeHeaderData_previous)
+endif()
+if(NOT StatusCodeHeaderData_previous STREQUAL StatusCodeHeaderData)
+  file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/HackedStatusCode.h" "${StatusCodeHeaderData}")
 endif()
 
 if(Boost_PYTHON_FOUND)
