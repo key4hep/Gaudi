@@ -184,36 +184,21 @@ StatusCode AlgResourcePool::flattenSequencer(Algorithm* algo, ListAlg& alglist, 
 
   bool isGaudiSequencer(false);
   bool isAthSequencer(false);
-  bool isAtomicSeq(false);
 
   if (algo->hasProperty("Members")) {
-    if (algo->hasProperty("ShortCircuit")) {
+    if (algo->hasProperty("ShortCircuit"))
       isGaudiSequencer = true;
-      isAtomicSeq = ( algo->hasProperty("Atomic") &&
-                      (algo->getProperty("Atomic").toString() == "True") );
-    } else if (algo->hasProperty("StopOverride")) {
+    else if (algo->hasProperty("StopOverride"))
       isAthSequencer = true;
-      isAtomicSeq = ( algo->hasProperty("Atomic") &&
-                      (algo->getProperty("Atomic").toString() == "True") );
-    }
   }
 
   std::vector<Algorithm*>* subAlgorithms = algo->subAlgorithms();
   if ( //we only want to add basic algorithms -> have no subAlgs
        // and exclude the case of empty sequencers
-       (subAlgorithms->empty() && !(isGaudiSequencer || isAthSequencer))
-       // we want to add non-empty atomic sequencers
-       or (isAtomicSeq && !subAlgorithms->empty()) ) {
+       (subAlgorithms->empty() && !(isGaudiSequencer || isAthSequencer)) ) {
 
-    ON_DEBUG {
-      debug() << std::string(recursionDepth, ' ') << algo->name() << " is ";
-      if (isAtomicSeq) {
-        debug() << "an atomic sequencer";
-      } else {
-        debug() << "not a sequencer";
-      }
-      debug() << ". Appending it" << endmsg;
-    }
+    DEBUG_MSG << std::string(recursionDepth, ' ') << algo->name()
+              << " is not a sequencer. Appending it" << endmsg;
 
     alglist.emplace_back(algo);
     m_PRGraph->addAlgorithmNode(algo, parentName, false, false).ignore();
@@ -226,21 +211,23 @@ StatusCode AlgResourcePool::flattenSequencer(Algorithm* algo, ListAlg& alglist, 
   bool modeOR = false;
   bool allPass = false;
   bool isLazy = false;
-  bool modeSequential = false;
+  bool isSequential = false;
 
   if ( isGaudiSequencer ) {
     modeOR  = (algo->getProperty("ModeOR").toString() == "True")? true : false;
     allPass = (algo->getProperty("IgnoreFilterPassed").toString() == "True")? true : false;
     isLazy = (algo->getProperty("ShortCircuit").toString() == "True")? true : false;
     if (allPass) isLazy = false; // standard GaudiSequencer behavior on all pass is to execute everything
+    isSequential = (algo->hasProperty("Sequential") &&
+                   (algo->getProperty("Sequential").toString() == "True") );
   } else if (isAthSequencer ) {
     modeOR  = (algo->getProperty("ModeOR").toString() == "True")? true : false;
     allPass = (algo->getProperty("IgnoreFilterPassed").toString() == "True")? true : false;
     isLazy = (algo->getProperty("StopOverride").toString() == "True")? false : true;
-    if (algo->hasProperty("Sequential"))
-      modeSequential = (algo->getProperty("Sequential").toString() == "True")? true : false;
+    isSequential = (algo->hasProperty("Sequential") &&
+                   (algo->getProperty("Sequential").toString() == "True") );
   }
-  sc = m_PRGraph->addDecisionHubNode(algo, parentName, !modeSequential, isLazy, modeOR, allPass);
+  sc = m_PRGraph->addDecisionHubNode(algo, parentName, !isSequential, isLazy, modeOR, allPass);
   if (sc.isFailure()) {
     error() << "Failed to add DecisionHub " << algo->name() << " to graph of precedence rules" << endmsg;
     return sc;
