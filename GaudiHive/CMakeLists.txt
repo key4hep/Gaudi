@@ -66,9 +66,9 @@ gaudi_add_test(AtlasMCRecoScenario
                TIMEOUT 120)
 set_property(TEST GaudiHive.AtlasMCRecoScenario PROPERTY SKIP_RETURN_CODE 77)
 
-# Test the AtomicSequencer
-gaudi_add_test(AtomicSequencer
-               FRAMEWORK options/AtomicAlgSequencerTest.py
+# Test the SequentialSequencer
+gaudi_add_test(SequentialSequencer
+               FRAMEWORK options/SequentialAlgSequencerTest.py
                DEPENDS WhiteBoard
                TIMEOUT 120)
 

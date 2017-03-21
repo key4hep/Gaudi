@@ -847,7 +847,7 @@ lineSkipper = LineSkipper(["//GP:",
                                         r"Property(.*)'AuditRe(start|initialize)':", # these were missing in tools
                                         r"Property(.*)'IsIOBound':",
                                         r"Property(.*)'ErrorCount(er)?':", # removed with gaudi/Gaudi!273
-                                        r"Property(.*)'Atomic':",  # added with gaudi/Gaudi!287
+                                        r"Property(.*)'Sequential':",  # added with gaudi/Gaudi!306
                                         # ignore uninteresting/obsolete messages
                                         r"Property update for OutputLevel : new value =",
                                         r"EventLoopMgr\s*DEBUG Creating OutputStream",

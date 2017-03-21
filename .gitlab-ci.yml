@@ -1,7 +1,7 @@
 before_script:
-  - . /cvmfs/lhcb.cern.ch/lib/LbLogin.sh
-  - unset VERBOSE
-  - export PATH=/cvmfs/lhcb.cern.ch/lib/contrib/ninja/1.4.0/x86_64-slc6:${PATH}
+  - export BINARY_TAG=x86_64-slc6-gcc62-opt
+  - export PATH=/cvmfs/sft.cern.ch/lcg/contrib/CMake/3.7.0/Linux-x86_64/bin:/cvmfs/sft.cern.ch/lcg/contrib/ninja/1.7.1/x86_64-slc6:/cvmfs/sft.cern.ch/lcg/releases/Python/2.7.13-597a5/${BINARY_TAG}/bin:${PATH}
+  - export PATH=/cvmfs/lhcb.cern.ch/lib/lhcb/LBSCRIPTS/dev/InstallArea/scripts:${PATH}
   - export CMAKE_PREFIX_PATH=/cvmfs/sft.cern.ch/lcg/releases
 
 build:
@@ -9,22 +9,24 @@ build:
   script:
     - echo 'set(CMAKE_USE_CCACHE ON CACHE BOOL "")' >> cache_preload.cmake
     - make
-    - mv build.${CMTCONFIG} build
+    - mv build.${BINARY_TAG} build
   tags:
     - slc6
   artifacts:
     paths:
       - build/
-    expire_in: 1 week
+    expire_in: 1 day
 
 doxygen:
   stage: test
   script:
-    - mv build build.${CMTCONFIG}
+    - mv build build.${BINARY_TAG}
     - make doc
-    - mv build.${CMTCONFIG}/doxygen .
+    - mv build.${BINARY_TAG}/doxygen .
   tags:
     - slc6
+  only:
+    - master
   artifacts:
     paths:
       - doxygen/
@@ -33,9 +35,9 @@ doxygen:
 test:
   stage: test
   script:
-    - mv build build.${CMTCONFIG}
+    - mv build build.${BINARY_TAG}
     - make test ARGS='-j4'
-    - mv build.${CMTCONFIG}/html test_report
+    - mv build.${BINARY_TAG}/html test_report
   tags:
     - slc6
   artifacts:
