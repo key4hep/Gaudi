@@ -65,7 +65,7 @@ def formatMeasurementText(txt, escape=False, preformat=True):
 
 ## Some regular expression that is going to be used in the next functions
 space_Re = re.compile(r"[ ]")
-illegal_web_chars_Re = re.compile(r"[<>,\'\"#]")
+illegal_web_chars_Re = re.compile(r"[<>\'\"#]")
 brackets_Re = re.compile(r"[\[\]\{\}\(\)]")
 def cleanWebChar(data):
     """ Removes HTML/JSON special characters """
@@ -662,7 +662,7 @@ def main():
                 for NamedMeasurement in Results.getiterator("NamedMeasurement") :
 
                     summary["fields"].append(cleanSpace(cleanWebChar(NamedMeasurement.get("name"))))  # remove the space character
-                    if NamedMeasurement.get("name") == "Cause" : # or NamedMeasurement.get("name") == "Pass Reason" :
+                    if NamedMeasurement.get("name") == "Causes" : # or NamedMeasurement.get("name") == "Pass Reason" :
                         if NamedMeasurement.find("Value") is not None and NamedMeasurement.find("Value").text is not None :
                             summary["cause"] = cleanWebChar(NamedMeasurement.find("Value").text)
 
