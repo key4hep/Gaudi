@@ -8,8 +8,8 @@ Commit Id: $Format:%H$
 
  - Merge branch 'update-test-exclusions' into 'master'
 
-   Hide new proprty "Atomic" in tests
-    See merge request !301
+   Hide new property "Sequential" in tests
+    See merge request !306
 
 ! 2017-03-01 - Marco Clemencic (commit bf940c1)
 

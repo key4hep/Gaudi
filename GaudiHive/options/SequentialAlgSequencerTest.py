@@ -76,7 +76,7 @@ for algo in [a3]:
 
 seq = GaudiSequencer("CriticalSection",
                      Members=[a1,a2,a4],
-                     Atomic=True,
+                     Sequential=True,
                      OutputLevel=VERBOSE)
 
 # Application Manager ----------------------------------------------------------
