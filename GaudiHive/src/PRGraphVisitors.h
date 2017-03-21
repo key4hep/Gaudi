@@ -49,7 +49,34 @@ namespace concurrency {
 
       bool visit(DecisionNode& node) override;
 
-      bool visitLeave(DecisionNode& node) const override;
+      bool visitLeave(DecisionNode& /*node*/) const override {return true;};
+
+
+      bool visitEnter(AlgorithmNode& node) const override;
+
+      bool visit(AlgorithmNode& node) override;
+
+
+      void reset() override { m_nodesSucceeded = 0; }
+
+    };
+
+
+  class Supervisor : public IGraphVisitor {
+    public:
+      /// Constructor
+	  Supervisor(const int& slotNum) {
+        m_nodesSucceeded = 0;
+        m_slotNum = slotNum;
+      };
+      /// Destructor
+      ~Supervisor() override {}
+
+      bool visitEnter(DecisionNode& node) const override;
+
+      bool visit(DecisionNode& node) override;
+
+      bool visitLeave(DecisionNode& /*node*/) const override {return true;};
 
 
       bool visitEnter(AlgorithmNode& node) const override;

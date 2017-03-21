@@ -2,6 +2,23 @@ Package: GaudiUtils
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+================================ Gaudi v28r2 =================================
+
+! 2017-03-10 - Chris Jones (commit b0466c4)
+
+ - Merge branch 'HistoStats-PreventFPEs' into 'master'
+
+   Fix HistoStats in GaudiUtils to prevent floating point exceptions due to
+   'bad' return values
+    See merge request !270
+
+! 2017-03-10 - Marco Clemencic (commit 245c497)
+
+ - Merge branch 'improve-vfssvc' into 'master'
+
+   allow multiple handlers for a protocol in VFSSvc
+    See merge request !295
+
 ================================ Gaudi v28r1 =================================
 
 ! 2016-12-14 - Attila Krasznahorkay (commit a42ff2a)
