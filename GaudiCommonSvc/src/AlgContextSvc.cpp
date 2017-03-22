@@ -116,7 +116,7 @@ StatusCode AlgContextSvc::setCurrentAlg  ( IAlgorithm* a )
     warning() << "IAlgorithm* points to NULL" << endmsg ;
     return StatusCode::RECOVERABLE ;
   }
-  if(m_bypassInc){
+  if(!m_bypassInc){
     auto currSlot=a->getContext().slot();
     if(currSlot==EventContext::INVALID_CONTEXT_ID)currSlot=0;
     if(!m_inEvtLoop[currSlot]) return StatusCode::SUCCESS;
@@ -145,18 +145,19 @@ StatusCode AlgContextSvc::unSetCurrentAlg ( IAlgorithm* a )
     warning() << "IAlgorithm* points to NULL" << endmsg ;
     return StatusCode::RECOVERABLE ;
   }
-  if(m_bypassInc){
+
+  if(!m_bypassInc){
     auto currSlot=a->getContext().slot();
     if(currSlot==EventContext::INVALID_CONTEXT_ID) currSlot=0;
     if(!m_inEvtLoop[currSlot]) return StatusCode::SUCCESS;  
   }
-    if ( m_algorithms->empty() || m_algorithms->back() != a )
-   {
-    error() << "Algorithm stack is invalid" << endmsg ;
-    return StatusCode::FAILURE ;
+  if(a->type()!="IncidentProcAlg"){
+    if ( m_algorithms->empty() || m_algorithms->back() != a ){
+      error() << "Algorithm stack is invalid" << endmsg ;
+      return StatusCode::FAILURE ;
+    }
+    m_algorithms->pop_back() ;
   }
-  if(a->type()!="IncidentProcAlg")  m_algorithms->pop_back() ;
-
   return StatusCode::SUCCESS ;
 }
 // ============================================================================
@@ -184,7 +185,7 @@ void AlgContextSvc::handle ( const Incident& inc ) {
   }
   if ( m_algorithms.get() && !m_algorithms->empty() ) {
     //skip incident processing algorithm endevent incident
-    if((m_algorithms->size()!=1) || ((m_algorithms->back()->type()!="IncidentProcAlg") && (m_algorithms->back()->type()!="AthIncFirerAlg"))){
+    if((m_algorithms->size()!=1) || (m_algorithms->back()->type()!="IncidentProcAlg")){
       error() << "Non-empty stack of algorithms #"
 	      << m_algorithms->size() << endmsg ;
     }
