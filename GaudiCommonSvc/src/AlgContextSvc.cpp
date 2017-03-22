@@ -46,6 +46,7 @@ StatusCode AlgContextSvc::initialize ()
     warning()<<"Num Slots are greater than 1000. Is this correct? numSlots="<<
       numSlots<<endmsg;
     numSlots=1000;
+    warning()<<"Setting numSlots to "<<numSlots<<endmsg;
   }
   m_inEvtLoop.resize(numSlots,0);
 
@@ -67,6 +68,25 @@ StatusCode AlgContextSvc::initialize ()
   }
   return StatusCode::SUCCESS ;
 }
+
+// implementation of start
+// needs to be removed once we have a proper service 
+// for getting configuration information at initialization time
+// S. Kama 
+StatusCode AlgContextSvc::start(){
+  auto sc=Service::start();
+  auto numSlots=Gaudi::Concurrency::ConcurrencyFlags::numConcurrentEvents();
+  numSlots=(1>numSlots)?1:numSlots;
+  if(numSlots>1000){
+    warning()<<"Num Slots are greater than 1000. Is this correct? numSlots="<<
+      numSlots<<endmsg;
+    numSlots=1000;
+  }
+  m_inEvtLoop.resize(numSlots,0);
+  
+  return sc;
+}
+
 // ============================================================================
 // standard finalization  of the service  @see IService
 // ============================================================================
@@ -96,15 +116,17 @@ StatusCode AlgContextSvc::setCurrentAlg  ( IAlgorithm* a )
     warning() << "IAlgorithm* points to NULL" << endmsg ;
     return StatusCode::RECOVERABLE ;
   }
-  auto currSlot=a->getContext().slot();
-  if(!m_inEvtLoop[currSlot]) return StatusCode::SUCCESS;
-
+  if(m_bypassInc){
+    auto currSlot=a->getContext().slot();
+    if(currSlot==EventContext::INVALID_CONTEXT_ID)currSlot=0;
+    if(!m_inEvtLoop[currSlot]) return StatusCode::SUCCESS;
+  }
   // check whether thread-local algorithm list already exists
   // if not, create it
   if ( ! m_algorithms.get()) {
     m_algorithms.reset( new IAlgContextSvc::Algorithms() );
   }
-  m_algorithms->push_back ( a ) ;
+  if(a->type()!="IncidentProcAlg")  m_algorithms->push_back ( a ) ;
 
   return StatusCode::SUCCESS ;
 }
@@ -123,16 +145,17 @@ StatusCode AlgContextSvc::unSetCurrentAlg ( IAlgorithm* a )
     warning() << "IAlgorithm* points to NULL" << endmsg ;
     return StatusCode::RECOVERABLE ;
   }
-  auto currSlot=a->getContext().slot();
-
-  if(!m_inEvtLoop[currSlot]) return StatusCode::SUCCESS;  
-
+  if(m_bypassInc){
+    auto currSlot=a->getContext().slot();
+    if(currSlot==EventContext::INVALID_CONTEXT_ID) currSlot=0;
+    if(!m_inEvtLoop[currSlot]) return StatusCode::SUCCESS;  
+  }
     if ( m_algorithms->empty() || m_algorithms->back() != a )
    {
     error() << "Algorithm stack is invalid" << endmsg ;
     return StatusCode::FAILURE ;
   }
-  m_algorithms->pop_back() ;
+  if(a->type()!="IncidentProcAlg")  m_algorithms->pop_back() ;
 
   return StatusCode::SUCCESS ;
 }
@@ -150,10 +173,14 @@ IAlgorithm* AlgContextSvc::currentAlg  () const
 // ============================================================================
 void AlgContextSvc::handle ( const Incident& inc ) {
   //some false sharing is possible but it should be negligable
+  auto currSlot=inc.context().slot();
+  if (currSlot==EventContext::INVALID_CONTEXT_ID){
+    currSlot=0;
+  }
   if(inc.type()=="BeginEvent"){
-    m_inEvtLoop[inc.context().slot()]=1;
+    m_inEvtLoop[currSlot]=1;
   }else if(inc.type()=="EndEvent"){
-    m_inEvtLoop[inc.context().slot()]=0;
+    m_inEvtLoop[currSlot]=0;
   }
   if ( m_algorithms.get() && !m_algorithms->empty() ) {
     //skip incident processing algorithm endevent incident
