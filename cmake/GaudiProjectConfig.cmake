@@ -2090,7 +2090,9 @@ function(gaudi_add_dictionary dictionary header selection)
       -D_Instantiations=${dictionary}_Instantiations)
 
   # override the genreflex call to wrap it in the right environment
-  gaudi_env(PREPEND PATH ${lcg_system_compiler_path}/bin)
+  if(lcg_system_compiler_path)
+    gaudi_env(PREPEND PATH ${lcg_system_compiler_path}/bin)
+  endif()
   if( NOT APPLE ) # On macOS the user has to provide a ROOT version that works on its own.
      set(ROOT_genreflex_CMD ${env_cmd} --xml ${env_xml} ${ROOT_genreflex_CMD})
   endif()
