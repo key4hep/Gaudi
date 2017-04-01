@@ -1,8 +1,5 @@
 // Include files
 
-// From Gaudi
-#include "GaudiKernel/SvcFactory.h"
-// local
 #include "InertMessageSvc.h"
 
 // ----------------------------------------------------------------------------
@@ -10,7 +7,7 @@
 //
 // 12/02/2013: Danilo Piparo
 // ----------------------------------------------------------------------------
-DECLARE_SERVICE_FACTORY( InertMessageSvc )
+DECLARE_COMPONENT( InertMessageSvc )
 
 //---------------------------------------------------------------------------
 

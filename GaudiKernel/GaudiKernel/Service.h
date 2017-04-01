@@ -193,33 +193,4 @@ protected:
   mutable SmartIF<IAuditorSvc> m_pAuditorSvc;
 };
 
-#ifndef GAUDI_NEW_PLUGIN_SERVICE
-template <class T>
-class SvcFactory
-{
-public:
-#ifndef __REFLEX__
-  template <typename S, typename... Args>
-  static typename S::ReturnType create( Args&&... args )
-  {
-    return new T( std::forward<Args>( args )... );
-  }
-#endif
-};
-
-// Macros to declare component factories
-#define DECLARE_SERVICE_FACTORY( x ) DECLARE_FACTORY_WITH_CREATOR( x, SvcFactory<x>, Service::Factory )
-#define DECLARE_NAMED_SERVICE_FACTORY( x, n )                                                                          \
-  DECLARE_FACTORY_WITH_CREATOR_AND_ID( x, SvcFactory<x>, #n, Service::Factory )
-#define DECLARE_NAMESPACE_SERVICE_FACTORY( n, x ) DECLARE_SERVICE_FACTORY( n::x )
-
-#else
-
-// macros to declare factories
-#define DECLARE_SERVICE_FACTORY( x ) DECLARE_COMPONENT( x )
-#define DECLARE_NAMED_SERVICE_FACTORY( x, n ) DECLARE_COMPONENT_WITH_ID( x, #n )
-#define DECLARE_NAMESPACE_SERVICE_FACTORY( n, x ) DECLARE_COMPONENT( n::x )
-
-#endif
-
 #endif // GAUDIKERNEL_SERVICE_H

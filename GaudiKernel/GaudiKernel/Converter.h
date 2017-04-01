@@ -153,32 +153,7 @@ inline std::ostream& operator<<( std::ostream& s, const ConverterID& id )
   return s << "CNV_" << id.m_stype << "_" << id.m_clid;
 }
 
-#ifndef GAUDI_NEW_PLUGIN_SERVICE
-template <class T>
-class CnvFactory final
-{
-public:
-#ifndef __REFLEX__
-  template <typename S, typename... Args>
-  static typename S::ReturnType create( Args&&... a1 )
-  {
-    return new T( std::forward<Args>( a1 )... );
-  }
-#endif
-};
-
 // Macro to declare component factories
-#define DECLARE_CONVERTER_FACTORY( x )                                                                                 \
-  DECLARE_FACTORY_WITH_CREATOR_AND_ID( x, CnvFactory<x>, ConverterID( x::storageType(), x::classID() ),                \
-                                       Converter::Factory )
-#define DECLARE_NAMESPACE_CONVERTER_FACTORY( n, x ) DECLARE_CONVERTER_FACTORY( n::x )
-
-#else
-
-// Macro to declare component factories
-#define DECLARE_CONVERTER_FACTORY( x ) DECLARE_COMPONENT_WITH_ID( x, ConverterID( x::storageType(), x::classID() ) )
-#define DECLARE_NAMESPACE_CONVERTER_FACTORY( n, x ) DECLARE_CONVERTER_FACTORY( n::x )
-
-#endif
+#define DECLARE_CONVERTER( x ) DECLARE_COMPONENT_WITH_ID( x, ConverterID( x::storageType(), x::classID() ) )
 
 #endif // GAUDIKERNEL_CONVERTER_H

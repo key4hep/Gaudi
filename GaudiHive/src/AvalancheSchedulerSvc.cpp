@@ -26,7 +26,7 @@
 #include "tbb/task_scheduler_init.h"
 
 // Instantiation of a static factory class used by clients to create instances of this service
-DECLARE_SERVICE_FACTORY( AvalancheSchedulerSvc )
+DECLARE_COMPONENT( AvalancheSchedulerSvc )
 
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
 #define ON_VERBOSE if ( msgLevel( MSG::VERBOSE ) )

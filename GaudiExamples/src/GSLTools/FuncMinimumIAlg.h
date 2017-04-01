@@ -24,7 +24,6 @@ class FuncMinimumIAlg : public Algorithm
 {
 
 public:
-  /// Standard constructor
   using Algorithm::Algorithm;
 
   StatusCode initialize() override; ///< Algorithm initialization

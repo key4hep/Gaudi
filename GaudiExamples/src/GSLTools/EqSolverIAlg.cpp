@@ -228,4 +228,4 @@ StatusCode EqSolverIAlg::finalize()
 
 //=============================================================================
 // Declaration of the Algorithm Factory
-DECLARE_ALGORITHM_FACTORY( EqSolverIAlg )
+DECLARE_COMPONENT( EqSolverIAlg )

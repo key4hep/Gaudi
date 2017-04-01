@@ -10,25 +10,12 @@
 #include "GaudiKernel/Algorithm.h" // will be IAlgorithm if context getter promoted to interface
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/IDataManagerSvc.h"
-#include "GaudiKernel/SvcFactory.h"
 
 // Local
 #include "IOBoundAlgSchedulerSvc.h"
 
 // Instantiation of a static factory class used by clients to create instances of this service
-DECLARE_SERVICE_FACTORY( IOBoundAlgSchedulerSvc )
-
-//===========================================================================
-// Infrastructure methods
-
-IOBoundAlgSchedulerSvc::IOBoundAlgSchedulerSvc( const std::string& name, ISvcLocator* svcLoc )
-    : base_class( name, svcLoc ), m_isActive( false )
-{
-}
-
-//---------------------------------------------------------------------------
-IOBoundAlgSchedulerSvc::~IOBoundAlgSchedulerSvc() {}
-//---------------------------------------------------------------------------
+DECLARE_COMPONENT( IOBoundAlgSchedulerSvc )
 
 /**
  * Here, among some "bureaucracy" operations, the scheduler is activated,

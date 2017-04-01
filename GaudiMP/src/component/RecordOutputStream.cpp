@@ -8,7 +8,7 @@
 //
 // 30/08/2013: Marco Clemencic
 // ----------------------------------------------------------------------------
-DECLARE_ALGORITHM_FACTORY( RecordOutputStream )
+DECLARE_COMPONENT( RecordOutputStream )
 
 // ============================================================================
 // Initialization

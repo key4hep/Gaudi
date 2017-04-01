@@ -11,12 +11,11 @@
 
 /** @class AlgExecStateSvc
   * @brief A service that keeps track of the execution state of Algorithm
-  *  *
+  *
   */
 class AlgExecStateSvc : public extends<Service, IAlgExecStateSvc>
 {
 public:
-  /// Constructor
   using extends::extends;
 
   typedef IAlgExecStateSvc::AlgStateMap_t AlgStateMap_t;

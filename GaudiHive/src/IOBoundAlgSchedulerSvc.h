@@ -22,14 +22,10 @@
  *  @author  Illya Shapoval
  *  @version 1.0
  */
-class IOBoundAlgSchedulerSvc : public extends1<Service, IAccelerator>
+class IOBoundAlgSchedulerSvc : public extends<Service, IAccelerator>
 {
 public:
-  /// Constructor
-  IOBoundAlgSchedulerSvc( const std::string& name, ISvcLocator* svc );
-
-  /// Destructor
-  ~IOBoundAlgSchedulerSvc() override;
+  using extends::extends;
 
   /// Initialise
   StatusCode initialize() override;

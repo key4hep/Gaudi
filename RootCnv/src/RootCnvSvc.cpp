@@ -21,7 +21,6 @@
 #include "GaudiKernel/LinkManager.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/System.h"
-#include "GaudiUtils/IIODataManager.h"
 #include "RootCnv/RootAddress.h"
 #include "RootCnv/RootConverter.h"
 #include "RootCnv/RootDataConnection.h"

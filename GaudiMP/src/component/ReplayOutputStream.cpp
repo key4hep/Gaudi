@@ -17,7 +17,7 @@
 //
 // 30/08/2013: Marco Clemencic
 // ----------------------------------------------------------------------------
-DECLARE_ALGORITHM_FACTORY( ReplayOutputStream )
+DECLARE_COMPONENT( ReplayOutputStream )
 
 namespace
 {

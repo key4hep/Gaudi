@@ -13,7 +13,6 @@
 #include "GaudiKernel/Incident.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/SmartIF.h"
-#include "GaudiKernel/SvcFactory.h"
 
 #include "HistogramAgent.h"
 
@@ -30,7 +29,7 @@
 #include <chrono>
 
 // Instantiation of a static factory class used by clients to create instances of this service
-DECLARE_SERVICE_FACTORY( HiveSlimEventLoopMgr )
+DECLARE_COMPONENT( HiveSlimEventLoopMgr )
 
 #define ON_DEBUG if ( UNLIKELY( outputLevel() <= MSG::DEBUG ) )
 #define ON_VERBOSE if ( UNLIKELY( outputLevel() <= MSG::VERBOSE ) )

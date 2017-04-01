@@ -3,18 +3,11 @@
 #include "PRGraphVisitors.h"
 
 #include "GaudiKernel/Algorithm.h"
-#include "GaudiKernel/SvcFactory.h"
 
 #define ON_DEBUG if ( msgLevel( MSG::DEBUG ) )
 #define ON_VERBOSE if ( msgLevel( MSG::VERBOSE ) )
 
-DECLARE_SERVICE_FACTORY( PrecedenceSvc )
-
-// ============================================================================
-// Standard constructor, initializes variables
-// ============================================================================
-
-PrecedenceSvc::PrecedenceSvc( const std::string& name, ISvcLocator* svcLoc ) : base_class( name, svcLoc ) {}
+DECLARE_COMPONENT( PrecedenceSvc )
 
 // ============================================================================
 // Initialization

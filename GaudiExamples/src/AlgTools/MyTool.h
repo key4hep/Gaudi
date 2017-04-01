@@ -25,7 +25,6 @@ public:
   StatusCode initialize() override;
   StatusCode finalize() override;
 
-protected:
   /// Standard destructor
   ~MyTool() override;
 

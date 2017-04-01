@@ -161,9 +161,6 @@ public:
   // From IIoComponent
   StatusCode io_reinit() override;
 
-protected:
-  ~THistSvc() override = default;
-
 private:
   typedef std::recursive_mutex THistSvcMutex_t;
   typedef std::mutex histMut_t;

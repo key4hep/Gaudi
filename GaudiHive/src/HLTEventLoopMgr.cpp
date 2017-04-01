@@ -35,7 +35,7 @@
 #include "GaudiHive/HLTEventLoopMgr.h"
 
 // Instantiation of a static factory class used by clients to create instances of this service
-DECLARE_SERVICE_FACTORY( HLTEventLoopMgr )
+DECLARE_COMPONENT( HLTEventLoopMgr )
 
 namespace
 {

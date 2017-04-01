@@ -10,7 +10,6 @@
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/Service.h"
 #include "GaudiKernel/SmartIF.h"
-#include "GaudiKernel/SvcFactory.h"
 #include "GaudiKernel/TypeNameString.h"
 #include "Rtypes.h"
 #include "ThreadLocalStorage.h"
@@ -721,4 +720,4 @@ public:
 
 // Instantiation of a static factory class used by clients to create
 // instances of this service
-DECLARE_SERVICE_FACTORY( HiveWhiteBoard )
+DECLARE_COMPONENT( HiveWhiteBoard )
