@@ -579,6 +579,10 @@ private:
   Gaudi::Property<bool> m_isIOBound{this, "IsIOBound", false,
                                     "if the algorithm is I/O-bound (in the broad sense of Von Neumann bottleneck)"};
 
+  // The default should be changed to "false" for v29
+  Gaudi::Property<bool> m_filterCircDeps{this,"FilterCircularDependencies", true,
+      "filter out circular data dependencies"};
+
   std::mutex   m_lock;             ///< for re-entrant Algs
 
   bool m_filterPassed = true;  ///< Filter passed flag
