@@ -11,7 +11,7 @@ namespace concurrency {
 
   class IGraphVisitor {
   public:
-    virtual ~IGraphVisitor() {};
+    virtual ~IGraphVisitor() = default;
 
     virtual bool visitEnter(DecisionNode&) const = 0;
     virtual bool visit(DecisionNode&) = 0;

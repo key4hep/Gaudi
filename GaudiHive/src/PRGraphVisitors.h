@@ -13,8 +13,6 @@ namespace concurrency {
         m_nodesSucceeded = 0;
         m_slot = &slot;
       };
-      /// Destructor
-      ~DataReadyPromoter() override {}
 
       bool visitEnter(DecisionNode&) const override {return true;};
 
@@ -40,8 +38,6 @@ namespace concurrency {
         m_nodesSucceeded = 0;
         m_slot = &slot;
       };
-      /// Destructor
-      ~DecisionUpdater() override {}
 
       bool visitEnter(DecisionNode&) const override {return true;};
 
@@ -70,8 +66,6 @@ namespace concurrency {
         m_nodesSucceeded = 0;
         m_slot = &slot;
       };
-      /// Destructor
-      ~Trigger() override {}
 
       bool visitEnter(DecisionNode& node) const override;
 
@@ -98,8 +92,6 @@ namespace concurrency {
         m_nodesSucceeded = 0;
         m_slot = &slot;
       };
-      /// Destructor
-      ~Supervisor() override {}
 
       bool visitEnter(DecisionNode& node) const override;
 
@@ -125,8 +117,6 @@ namespace concurrency {
         m_nodesSucceeded = 0;
         m_slot = nullptr;
       };
-      /// Destructor
-      ~RankerByProductConsumption() override {}
 
 
       bool visitEnter(DecisionNode&) const override {return true;}
@@ -153,8 +143,6 @@ namespace concurrency {
         m_nodesSucceeded = 0;
         m_slot = nullptr;
       };
-      /// Destructor
-      ~RankerByCummulativeOutDegree() override {}
 
       bool visitEnter(DecisionNode&) const override {return true;}
 
@@ -182,8 +170,6 @@ namespace concurrency {
         m_nodesSucceeded = 0;
         m_slot = nullptr;
       };
-      /// Destructor
-      ~RankerByTiming() override {}
 
       bool visitEnter(DecisionNode&) const override {return true;}
 
@@ -209,8 +195,6 @@ namespace concurrency {
         m_nodesSucceeded = 0;
         m_slot = nullptr;
       };
-      /// Destructor
-      ~RankerByEccentricity() override {}
 
       bool visitEnter(DecisionNode&) const override {return true;}
 
@@ -238,8 +222,6 @@ namespace concurrency {
         m_currentDepth = 0;
         m_maxKnownDepth = 0;
       };
-      /// Destructor
-      ~RankerByDataRealmEccentricity() override {}
 
       bool visitEnter(DecisionNode&) const override {return true;}
 
@@ -276,8 +258,6 @@ namespace concurrency {
       m_nodesSucceeded = 0;
       m_slot = &slot;
     };
-    /// Destructor
-    ~RunSimulator() override {}
 
     bool visitEnter(DecisionNode& node) const override;
 
