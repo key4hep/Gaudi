@@ -150,9 +150,9 @@ StatusCode Algorithm::sysInitialize()
     sc = StatusCode::FAILURE;
   }
 
-  // Set IsClonable to true if the Cardinality is greater than one
-  if ( m_cardinality > 1 ) {
-    m_isClonable = true;
+  // Set Cardinality to 1 if unClonable
+  if ( ! m_isClonable ) {
+    m_cardinality = 1;
   }
 
   algExecStateSvc()->addAlg( this );

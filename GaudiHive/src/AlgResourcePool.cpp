@@ -337,7 +337,12 @@ StatusCode AlgResourcePool::decodeTopAlgs()    {
 
     queue->push(ialgo);
     m_algList.push_back(ialgo);
-    m_n_of_allowed_instances[algo_id] = ialgo->cardinality();
+    if (ialgo->isClonable()) {
+      m_n_of_allowed_instances[algo_id] = ialgo->cardinality();
+    } else {
+      debug() << "Alg " << ialgo->name() << " is not clonable" << endmsg;
+      m_n_of_allowed_instances[algo_id] = 1;
+    }
     m_n_of_created_instances[algo_id] = 1;
 
     state_type requirements(0);
@@ -357,7 +362,7 @@ StatusCode AlgResourcePool::decodeTopAlgs()    {
 
     // potentially create clones; if not lazy creation we have to do it now
     if (!m_lazyCreation) {
-      for (unsigned int i =1, end =ialgo->cardinality();i<end; ++i){
+      for (unsigned int i =1, end =m_n_of_allowed_instances[algo_id];i<end; ++i){
         debug() << "type/name to create clone of: " << item_type << "/"
                 << item_name << endmsg;
         IAlgorithm* ialgoClone(nullptr);
