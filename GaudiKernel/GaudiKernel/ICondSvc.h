@@ -22,6 +22,8 @@
  *  @version 2.0
  */
 
+class ConditionSlotFuture;
+class IConditionIOSvc;
 
 class GAUDI_API ICondSvc: virtual public IService {
 public:
@@ -31,8 +33,7 @@ public:
 
   /// register dependency between an Algorithm and the Condition Handle it creates
   /// dbKey is an optional key to further identify the object in the backend dB
-  virtual StatusCode regHandle(IAlgorithm* alg, const Gaudi::DataHandle& id, 
-                               const std::string& dBkey) = 0;
+  virtual StatusCode regHandle(IAlgorithm* alg, const Gaudi::DataHandle& id) = 0;
 
   /// retrieve collection of condition object IDs that are not valid for a specific Event
   virtual bool getInvalidIDs(const EventContext& ctx, DataObjIDColl& ids) = 0;
@@ -58,6 +59,15 @@ public:
 
   /// dump the condition store
   virtual void dump(std::ostringstream& ost) const = 0;
+
+
+  /// Asynchronously setup conditions
+  ConditionSlotFuture startConditionSetup(const EventContext& ctx) = 0;
+
+  /// register an IConditionIOSvc (alternative to Algorithm processing of 
+  /// Conditions)
+  StatusCode registerConditionIOSvc(IConditionIOSvc *ioService) = 0;
+
 
 };
 
