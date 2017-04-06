@@ -14,21 +14,14 @@ namespace concurrency {
         m_slot = &slot;
       };
 
-      bool visitEnter(DecisionNode&) const override {return true;};
-
-      bool visit(DecisionNode&) override {return true;};
-
-      bool visitEnter(AlgorithmNode&) const override {return true;};
+      using IGraphVisitor::visit;
+      using IGraphVisitor::visitEnter;
 
       bool visit(AlgorithmNode& node) override;
 
       bool visitEnter(DataNode& node) const override;
 
       bool visit(DataNode& node) override;
-
-
-      void reset() override { m_nodesSucceeded = 0; }
-
   };
 
   class DecisionUpdater : public IGraphVisitor {
@@ -39,21 +32,9 @@ namespace concurrency {
         m_slot = &slot;
       };
 
-      bool visitEnter(DecisionNode&) const override {return true;};
-
-      bool visit(DecisionNode&) override {return true;};
-
-      bool visitEnter(AlgorithmNode&) const override {return true;};
+      using IGraphVisitor::visit;
 
       bool visit(AlgorithmNode& node) override;
-
-      bool visitEnter(DataNode&) const override {return true;};
-
-      bool visit(DataNode&) override {return true;};
-
-
-      void reset() override { m_nodesSucceeded = 0; }
-
   };
 
   /** A visitor, performing full top-down traversals of a graph
@@ -67,6 +48,9 @@ namespace concurrency {
         m_slot = &slot;
       };
 
+      using IGraphVisitor::visit;
+      using IGraphVisitor::visitEnter;
+
       bool visitEnter(DecisionNode& node) const override;
 
       bool visit(DecisionNode& node) override;
@@ -74,14 +58,6 @@ namespace concurrency {
       bool visitEnter(AlgorithmNode& node) const override;
 
       bool visit(AlgorithmNode& node) override;
-
-      bool visitEnter(DataNode&) const override {return true;};
-
-      bool visit(DataNode&) override {return true;};
-
-
-      void reset() override { m_nodesSucceeded = 0; }
-
   };
 
 
@@ -93,6 +69,9 @@ namespace concurrency {
         m_slot = &slot;
       };
 
+      using IGraphVisitor::visit;
+      using IGraphVisitor::visitEnter;
+
       bool visitEnter(DecisionNode& node) const override;
 
       bool visit(DecisionNode& node) override;
@@ -100,14 +79,6 @@ namespace concurrency {
       bool visitEnter(AlgorithmNode& node) const override;
 
       bool visit(AlgorithmNode& node) override;
-
-      bool visitEnter(DataNode&) const override {return true;};
-
-      bool visit(DataNode&) override {return true;};
-
-
-      void reset() override { m_nodesSucceeded = 0; }
-
   };
 
   class RankerByProductConsumption : public IGraphVisitor {
@@ -118,22 +89,9 @@ namespace concurrency {
         m_slot = nullptr;
       };
 
-
-      bool visitEnter(DecisionNode&) const override {return true;}
-
-      bool visit(DecisionNode&) override {return true;}
-
-      bool visitEnter(AlgorithmNode&) const override {return true;}
+      using IGraphVisitor::visit;
 
       bool visit(AlgorithmNode& node) override;
-
-      bool visitEnter(DataNode&) const override {return true;};
-
-      bool visit(DataNode&) override {return true;};
-
-
-      void reset() override { m_nodesSucceeded = 0; }
-
   };
 
   class RankerByCummulativeOutDegree : public IGraphVisitor {
@@ -144,20 +102,9 @@ namespace concurrency {
         m_slot = nullptr;
       };
 
-      bool visitEnter(DecisionNode&) const override {return true;}
-
-      bool visit(DecisionNode&) override {return true;}
-
-      bool visitEnter(AlgorithmNode&) const override {return true;}
+      using IGraphVisitor::visit;
 
       bool visit(AlgorithmNode& node) override;
-
-      bool visitEnter(DataNode&) const override {return true;};
-
-      bool visit(DataNode&) override {return true;};
-
-
-      void reset() override { m_nodesSucceeded = 0; }
 
       void runThroughAdjacents(boost::graph_traits<boost::ExecPlan>::vertex_descriptor vertex, boost::ExecPlan graph);
 
@@ -171,21 +118,9 @@ namespace concurrency {
         m_slot = nullptr;
       };
 
-      bool visitEnter(DecisionNode&) const override {return true;}
-
-      bool visit(DecisionNode&) override {return true;}
-
-      bool visitEnter(AlgorithmNode&) const override {return true;}
+      using IGraphVisitor::visit;
 
       bool visit(AlgorithmNode& node) override;
-
-      bool visitEnter(DataNode&) const override {return true;};
-
-      bool visit(DataNode&) override {return true;};
-
-
-      void reset() override { m_nodesSucceeded = 0; }
-
   };
 
   class RankerByEccentricity : public IGraphVisitor {
@@ -196,21 +131,9 @@ namespace concurrency {
         m_slot = nullptr;
       };
 
-      bool visitEnter(DecisionNode&) const override {return true;}
-
-      bool visit(DecisionNode&) override {return true;}
-
-      bool visitEnter(AlgorithmNode&) const override {return true;}
+      using IGraphVisitor::visit;
 
       bool visit(AlgorithmNode& node) override;
-
-      bool visitEnter(DataNode&) const override {return true;};
-
-      bool visit(DataNode&) override {return true;};
-
-
-      void reset() override { m_nodesSucceeded = 0; }
-
   };
 
   class RankerByDataRealmEccentricity : public IGraphVisitor {
@@ -223,18 +146,9 @@ namespace concurrency {
         m_maxKnownDepth = 0;
       };
 
-      bool visitEnter(DecisionNode&) const override {return true;}
-
-      bool visit(DecisionNode&) override {return true;}
-
-      bool visitEnter(AlgorithmNode&) const override {return true;}
+      using IGraphVisitor::visit;
 
       bool visit(AlgorithmNode& node) override;
-
-      bool visitEnter(DataNode&) const override {return true;};
-
-      bool visit(DataNode&) override {return true;};
-
 
       void reset() override {
         m_nodesSucceeded = 0;
@@ -259,6 +173,9 @@ namespace concurrency {
       m_slot = &slot;
     };
 
+    using IGraphVisitor::visit;
+    using IGraphVisitor::visitEnter;
+
     bool visitEnter(DecisionNode& node) const override;
 
     bool visit(DecisionNode& node) override;
@@ -266,14 +183,6 @@ namespace concurrency {
     bool visitEnter(AlgorithmNode& node) const override;
 
     bool visit(AlgorithmNode& node) override;
-
-    bool visitEnter(DataNode&) const override {return true;};
-
-    bool visit(DataNode&) override {return true;};
-
-
-    void reset() override { m_nodesSucceeded = 0; }
-
   };
 
 }
