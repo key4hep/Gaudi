@@ -161,6 +161,11 @@ StatusCode Algorithm::sysInitialize()
   //// build list of data dependencies
   //
 
+  // ignore this step if we're a Sequence
+  if (this->hasProperty("IgnoreFilterPassed")) {
+    return sc;
+  }  
+
   if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) ) {
     debug() << "input handles: " << inputHandles().size() << endmsg;
     debug() << "output handles: " << outputHandles().size() << endmsg;
