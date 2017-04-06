@@ -213,6 +213,9 @@ public:
   /// Is this algorithm enabled or disabled?
   bool isEnabled() const override;
 
+  /// Are we a Sequence?
+  bool isSequence() const override { return false; }
+
   /// Did this algorithm pass or fail its filter criterion for the last event?
   bool filterPassed() const override;
 
