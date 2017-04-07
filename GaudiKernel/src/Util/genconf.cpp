@@ -12,17 +12,9 @@
 // disable icc warning #279: controlling expression is constant
 // ... a lot of noise produced by the boost/filesystem/operations.hpp
 #pragma warning( disable : 279 )
-// Avoid icc remark #193: zero used for undefined preprocessing identifier "_MSC_VER"
-#if !defined( _WIN32 ) && !defined( _MSC_VER )
-#define _MSC_VER 0
-#endif
 #endif
 
 #include "boost/program_options.hpp"
-// the hack for remark #193 is needed only for program_options and breaks regex.
-#if defined( __ICC ) && !defined( _WIN32 ) && ( _MSC_VER == 0 )
-#undef _MSC_VER
-#endif
 
 // Include files----------------------------------------------------------------
 #include "boost/algorithm/string/case_conv.hpp"
