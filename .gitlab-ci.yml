@@ -1,3 +1,8 @@
+stages:
+  - build
+  - test
+  - deploy
+
 before_script:
   - export BINARY_TAG=x86_64-slc6-gcc62-opt
   - export PATH=/cvmfs/sft.cern.ch/lcg/contrib/CMake/3.7.0/Linux-x86_64/bin:/cvmfs/sft.cern.ch/lcg/contrib/ninja/1.7.1/x86_64-slc6:/cvmfs/sft.cern.ch/lcg/releases/Python/2.7.13-597a5/${BINARY_TAG}/bin:${PATH}
@@ -30,13 +35,16 @@ doxygen:
   script:
     - mv build build.${BINARY_TAG}
     - make doc
-    - mv build.${BINARY_TAG}/doxygen .
+    - rm -rf public
+    - mkdir -p public
+    - mv build.${BINARY_TAG}/doxygen/html public/${CI_BUILD_REF_NAME}
   only:
     - master
+    - tags
   artifacts:
     paths:
-      - doxygen/
-    expire_in: 1 week
+      - public
+    expire_in: 1 day
 
 test:
   image: lhcbdev/slc6-build-cvmfs:latest
@@ -47,5 +55,21 @@ test:
     - mv build.${BINARY_TAG}/html test_report
   artifacts:
     paths:
-      - test_report/
+      - test_report
     expire_in: 1 week
+
+# see https://gitlab.cern.ch/gitlabci-examples/deploy_eos for the details
+# of the configuration
+deploy-doxygen:
+  stage: deploy
+  only:
+    - master
+    - tags
+  image: gitlab-registry.cern.ch/ci-tools/ci-web-deployer:latest
+  script:
+    # Script that performs the deploy to EOS. Makes use of the variables defined in the project
+    # It will copy the generated content to the folder in EOS
+    - deploy-eos
+  # do not run any globally defined before_script or after_script for this step
+  before_script: []
+  after_script: []
