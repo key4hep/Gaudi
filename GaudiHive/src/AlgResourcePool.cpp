@@ -347,6 +347,7 @@ StatusCode AlgResourcePool::decodeTopAlgs()    {
         warning() << "Overriding UnClonability of Algorithm " << ialgo->name() 
                   << endmsg;
         m_n_of_allowed_instances[algo_id] = ialgo->cardinality();
+      }
     }
     m_n_of_created_instances[algo_id] = 1;
 
