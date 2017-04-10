@@ -249,10 +249,10 @@ ProcStats::ProcStats():valid(false)
 #if defined(__linux__) or defined(__APPLE__)
   pg_size = sysconf(_SC_PAGESIZE); // getpagesize();
 
-  fname = "/proc/" + std::to_string(getpid()) + "/stat"; 
+  fname = "/proc/" + std::to_string(getpid()) + "/stat";
 
   fd.open( fname.c_str(), O_RDONLY );
-  if(!fd) 
+  if(!fd)
   {
     cerr << "Failed to open " << fname << endl;
     return;
@@ -281,7 +281,7 @@ bool ProcStats::fetch(procInfo& f)
 
   if(cnt>0)
   {
-    buf[cnt]='\0';
+    buf[std::min( static_cast<std::size_t>( cnt ), sizeof( buf ) - 1 )] = '\0';
 
     sscanf(buf,
         //1  2  3  4  5  6  7  8  9  10  1   2   3   4   5   6   7   8   9   20  1   2   3   4   5   6   7   8   9   30  1   2   3   4   5
