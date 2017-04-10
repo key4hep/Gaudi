@@ -4,7 +4,7 @@ before_script:
   - export LCG_release_area=/cvmfs/sft.cern.ch/lcg/releases
   - export LCG_hostos=x86_64-slc6
   - export PATH=/cvmfs/lhcb.cern.ch/lib/lhcb/LBSCRIPTS/dev/InstallArea/scripts:${PATH}
-  - export CMAKE_PREFIX_PATH=/cvmfs/sft.cern.ch/lcg/releases
+  - export CMAKE_PREFIX_PATH=/cvmfs/sft.cern.ch/lcg/releases:/cvmfs/projects.cern.ch/intelsw/psxe/linux/x86_64/2017/vtune_amplifier_xe
 
 build:
   image: lhcbdev/slc6-build-cvmfs:latest
