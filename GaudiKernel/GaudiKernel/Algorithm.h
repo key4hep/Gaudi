@@ -545,7 +545,7 @@ protected:
   /// Hook for for derived classes to provide a custom visitor for data handles.
   std::unique_ptr<IDataHandleVisitor> m_updateDataHandles;
   
-  bool m_isClonable {true};
+  bool m_isClonable {false};
 
 private:
   // Properties
