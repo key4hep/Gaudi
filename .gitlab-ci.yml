@@ -37,7 +37,9 @@ doxygen:
     - make doc
     - rm -rf public
     - mkdir -p public
-    - mv build.${BINARY_TAG}/doxygen/html public/${CI_BUILD_REF_NAME}
+    - mv build.${BINARY_TAG}/doxygen/html ${CI_BUILD_REF_NAME}
+    - yum install -y zip
+    - zip -r public/${CI_BUILD_REF_NAME}.zip ${CI_BUILD_REF_NAME}
   only:
     - master
     - tags
