@@ -37,30 +37,6 @@ namespace concurrency {
       bool visit(AlgorithmNode& node) override;
   };
 
-  /** A visitor, performing full top-down traversals of a graph
-   *
-   */
-  class Trigger : public IGraphVisitor {
-    public:
-      /// Constructor
-      Trigger(EventSlot& slot) {
-        m_nodesSucceeded = 0;
-        m_slot = &slot;
-      };
-
-      using IGraphVisitor::visit;
-      using IGraphVisitor::visitEnter;
-
-      bool visitEnter(DecisionNode& node) const override;
-
-      bool visit(DecisionNode& node) override;
-
-      bool visitEnter(AlgorithmNode& node) const override;
-
-      bool visit(AlgorithmNode& node) override;
-  };
-
-
   class Supervisor : public IGraphVisitor {
     public:
       /// Constructor

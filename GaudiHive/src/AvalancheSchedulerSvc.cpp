@@ -416,7 +416,7 @@ StatusCode AvalancheSchedulerSvc::pushNewEvent( EventContext* eventContext ) {
     thisSlot.reset( eventContext );
 
     // promote to CR and DR the initial set of algorithms
-    auto vis = concurrency::Trigger( m_eventSlots[thisSlotNum] );
+    auto vis = concurrency::Supervisor( m_eventSlots[thisSlotNum] );
     m_efManager.touchReadyAlgorithms( vis );
 
     return this->updateStates( thisSlotNum );
