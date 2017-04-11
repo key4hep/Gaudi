@@ -1,6 +1,19 @@
+cmake_minimum_required(VERSION 2.8.12)
+
+if(std_library_path)
+  # FindDoxygen.cmake needs to call the doxygen command at configuration time
+  set(ENV{LD_LIBRARY_PATH} "${std_library_path}:$ENV{LD_LIBRARY_PATH}")
+endif()
+
 find_package(Doxygen)
 
 if(DOXYGEN_FOUND)
+  # make sure we have the right environment (for heptools installation)
+  if(DOXYGEN_DOT_EXECUTABLE)
+    get_filename_component(graphviz_bin "${DOXYGEN_DOT_EXECUTABLE}" DIRECTORY)
+    set(graphviz_env -p PATH=${graphviz_bin} -p LD_LIBRARY_PATH=${graphviz_bin}/../lib)
+  endif()
+
   # directories used in the include search path during compilation
   set(DOXYGEN_INCLUDE_DIRS)
   foreach(package ${packages})
@@ -40,7 +53,7 @@ Release notes of the packages:
 
   # run Doxygen to generate the documentation
   add_custom_target(run-doxygen
-                    COMMAND ${env_cmd} --xml ${env_xml}
+                    COMMAND ${env_cmd} --xml ${env_xml} ${graphviz_env}
                             ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
                     COMMENT "Running Doxygen...")
 
