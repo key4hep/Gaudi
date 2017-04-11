@@ -188,12 +188,13 @@ namespace concurrency {
     } // end monitoring children
 
     if (!foundNonResolvedChild && decision == -1) {
-      if (node.m_modeOR) // OR
+      if (node.m_modeOR) { // OR
         if (foundPositiveChild) decision = 1;
         else decision = 0;
-      else // AND
+      } else { // AND
         if (foundNegativeChild) decision = 0;
         else decision = 1;
+      }
     }
 
     if (node.m_allPass && !foundNonResolvedChild)
