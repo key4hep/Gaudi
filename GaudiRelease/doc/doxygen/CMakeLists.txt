@@ -78,7 +78,7 @@ Release notes of the packages:
     add_dependencies(run-doxygen install-MathJax)
     set(MATHJAX_RELPATH "../mathjax")
   else()
-    set(MATHJAX_RELPATH "http://cdn.mathjax.org/mathjax/latest")
+    set(MATHJAX_RELPATH "https://cdn.mathjax.org/mathjax/latest")
   endif()
 
   option(DOXYGEN_WITH_CPPREFERENCE_LINKS
