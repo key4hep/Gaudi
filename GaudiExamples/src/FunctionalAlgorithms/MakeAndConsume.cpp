@@ -14,7 +14,7 @@ public:
                KeyValue("OutputLocation", {"MyInt"})) {}
 
     int operator()() const override {
-        info() << "executing IntDataProducer" << endmsg;
+        info() << "executing IntDataProducer, storing 7 into " << outputLocation() << endmsg;
         return 7;
     }
 
@@ -30,7 +30,8 @@ public:
                KeyValue("InputLocation", {"MyInt"})) {}
 
     void operator()(const int& input) const override {
-        info() << "executing IntDataConsumer: " << input << endmsg;
+        info() << "executing IntDataConsumer, consuming " << input
+               << " from " << inputLocation() << endmsg;
     }
 
 
@@ -46,12 +47,36 @@ public:
               KeyValue("OutputLocation", {"MyFloat"})) {}
 
     float operator() (const int& input) const override {
-        info() << "Converting: " << input << endmsg;
+      info() << "Converting: " << input << " from " << inputLocation()
+             << " and storing it into " << outputLocation() << endmsg;
         return float(input);
     }
 };
 
 DECLARE_COMPONENT(IntToFloatData)
+
+class IntIntToFloatFloatData : public Gaudi::Functional::MultiTransformer
+    <std::tuple<float, float>(const int&, const int&)> {
+public:
+    IntIntToFloatFloatData(const std::string& name, ISvcLocator* svcLoc)
+            : MultiTransformer(name, svcLoc,
+                               {KeyValue("InputLocation1", {"MyInt"}),
+                                KeyValue("InputLocation2", {"MyOtherInt"})},
+                               {KeyValue("OutputLocation1", {"MyMultiFloat1"}),
+                                KeyValue("OutputLocation1", {"MyMultiFloat2"})}) {}
+
+    std::tuple<float, float> operator() (const int& input1, const int& input2) const override {
+        info() << "Number of inputs : " << inputLocationSize()
+               << ", number of outputs : " << outputLocationSize() << endmsg;
+        info() << "Converting " << input1 << " from " << inputLocation<0>()
+               << " and " << input2 << " from " << inputLocation<1>() << endmsg;
+        info() << "Storing results into " << outputLocation<0>()
+               << " and " << outputLocation<1>() << endmsg;
+        return std::make_tuple(float(input1), float(input2));
+    }
+};
+
+DECLARE_COMPONENT(IntIntToFloatFloatData)
 
 class FloatDataConsumer : public Gaudi::Functional::Consumer<void(const float&)> {
 public:
