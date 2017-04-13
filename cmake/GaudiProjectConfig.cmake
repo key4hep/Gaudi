@@ -889,12 +889,22 @@ function(_gaudi_highest_version output)
     #message(STATUS "_gaudi_highest_version: initial -> ${result}")
     string(REGEX MATCHALL "[0-9]+" result_digits ${result})
     list(LENGTH result_digits result_length)
+    # handle special case of version without digits (e.g. 'head')
+    if(result_length EQUAL 0)
+      set(result v0r0)
+      set(result_length 2)
+      set(result_digits 0 0)
+    endif()
 
     foreach(candidate ${ARGN})
       # convert the version to a list of numbers
       #message(STATUS "_gaudi_highest_version: candidate -> ${candidate}")
       string(REGEX MATCHALL "[0-9]+" candidate_digits ${candidate})
       list(LENGTH candidate_digits candidate_length)
+      # handle special case of version without digits (e.g. 'head')
+      if(candidate_length EQUAL 0)
+        continue()
+      endif()
 
       # get the upper limit of the loop over the elements
       # (note: in case of equality after the loop, the one with more elements
