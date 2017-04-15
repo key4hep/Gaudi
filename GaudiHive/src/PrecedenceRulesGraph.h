@@ -165,6 +165,8 @@ namespace concurrency {
     const std::vector<AlgorithmNode*>& getSupplierNodes() const {return m_suppliers;}
     /// Get all consumer nodes
     const std::vector<AlgorithmNode*>& getConsumerNodes() const {return m_consumers;}
+    /// Get all parent decision hubs
+    const std::vector<DecisionNode*>& getParentDecisionHubs() const {return m_parents;}
 
     /// Associate an AlgorithmNode, which is a data supplier for this one
     void addOutputDataNode(DataNode* node);
@@ -185,9 +187,12 @@ namespace concurrency {
     void setIOBound(bool value) { m_isIOBound = value;}
     /// Check if algorithm is I/O-bound
     bool isIOBound() const {return m_isIOBound;}
+    /// Check if positive control flow decision is enforced
+    bool isOptimist() const {return m_allPass;};
+    /// Check if control flow logic is always inverted
+    bool isLiar() const {return m_inverted;};
     /// Method to check whether the Algorithm has its all data dependency satisfied
     bool dataDependenciesSatisfied(const int& slotNum) const;
-    bool dataDependenciesSatisfied(AlgsExecutionStates& states) const;
     /// Method to set algos to CONTROLREADY, if possible
     int updateState(AlgsExecutionStates& states,
                             std::vector<int>& node_decisions) const override;
@@ -241,10 +246,16 @@ namespace concurrency {
 class DataNode {
 public:
     /// Constructor
-    DataNode(PrecedenceRulesGraph& /*graph*/, const DataObjID& path): m_data_object_path(path) {}
+    DataNode(PrecedenceRulesGraph& graph, const DataObjID& path): m_graph(&graph), m_data_object_path(path) {}
     /// Destructor
     ~DataNode() {}
     const DataObjID& getPath() {return m_data_object_path;}
+    /// Entry point for a visitor
+    bool accept(IGraphVisitor& visitor) {
+      if (visitor.visitEnter(*this))
+        return visitor.visit(*this);
+      return true;
+    }
     /// Associate an AlgorithmNode, which is a data supplier for this one
     void addProducerNode(AlgorithmNode* node) {
       if (std::find(m_producers.begin(),m_producers.end(),node) == m_producers.end())
@@ -259,6 +270,8 @@ public:
     const std::vector<AlgorithmNode*>& getProducers() const {return m_producers;}
     /// Get all data object consumers
     const std::vector<AlgorithmNode*>& getConsumers() const {return m_consumers;}
+public:
+    PrecedenceRulesGraph* m_graph;
 private:
     DataObjID m_data_object_path;
     std::vector<AlgorithmNode*> m_producers;
@@ -371,11 +384,11 @@ private:
     mutable SmartIF<ISvcLocator> m_svcLocator;
     const std::string m_name;
     const std::chrono::system_clock::time_point m_initTime;
-    ///
-    std::vector<EventSlot>* m_eventSlots;
     /// temporary items to experiment with execution planning
     boost::ExecPlan m_ExecPlan;
     std::map<std::string,boost::AlgoVertex> m_exec_plan_map;
+public:
+    std::vector<EventSlot>* m_eventSlots;
   };
 
 

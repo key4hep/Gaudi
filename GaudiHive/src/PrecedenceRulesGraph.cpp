@@ -312,26 +312,6 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  bool AlgorithmNode::dataDependenciesSatisfied( AlgsExecutionStates& states ) const
-  {
-
-    bool result = true;
-    for ( auto dataNode : m_inputs ) {
-
-      result = false;
-      for ( auto algoNode : dataNode->getProducers() )
-        if ( State::EVTACCEPTED == states[algoNode->getAlgoIndex()] ) {
-          result = true;
-          break;
-        }
-
-      if ( !result ) break;
-    }
-
-    return result;
-  }
-
-  //---------------------------------------------------------------------------
   void AlgorithmNode::printState( std::stringstream& output, AlgsExecutionStates& states,
                                   const std::vector<int>& node_decisions, const unsigned int& recursionLevel ) const
   {
@@ -369,12 +349,12 @@ namespace concurrency
 
   //---------------------------------------------------------------------------
   void AlgorithmNode::updateDecision( const int& slotNum, AlgsExecutionStates& states, std::vector<int>& node_decisions,
-                                      const AlgorithmNode* requestor ) const
+                                      const AlgorithmNode* /*requestor*/ ) const
   {
 
     const State& state = states[m_algoIndex];
     int decision       = -1;
-    requestor          = this;
+    //requestor          = this;
 
     // now derive the proper result to pass back
     if ( true == m_allPass ) {
@@ -390,10 +370,14 @@ namespace concurrency
     node_decisions[m_nodeIndex] = decision;
 
     if ( -1 != decision ) {
+      auto& slot = (*m_graph->m_eventSlots)[slotNum];
+      auto promoter = DataReadyPromoter(slot);
       for ( auto output : m_outputs )
-        for ( auto consumer : output->getConsumers() ) consumer->promoteToDataReadyState( slotNum, requestor );
+        for ( auto consumer : output->getConsumers() )
+          if (State::CONTROLREADY == states[consumer->getAlgoIndex()])
+            consumer->accept(promoter);
 
-      auto vis = concurrency::Supervisor( slotNum );
+      auto vis = concurrency::Supervisor(slot);
       for ( auto p : m_parents ) {
         //p->updateDecision( slotNum, states, node_decisions, requestor );
         p->accept(vis);
@@ -736,11 +720,14 @@ namespace concurrency
 
   //---------------------------------------------------------------------------
   void PrecedenceRulesGraph::updateDecision( const std::string& algo_name, const int& slotNum,
-                                           AlgsExecutionStates& algo_states, std::vector<int>& node_decisions ) const
+                                           AlgsExecutionStates& /*algo_states*/, std::vector<int>& /*node_decisions*/ ) const
   {
     //if (msgLevel(MSG::DEBUG))
     //  debug() << "(UPDATING)Setting decision of algorithm " << algo_name << " and propagating it upwards.." << endmsg;
-    getAlgorithmNode( algo_name )->updateDecision( slotNum, algo_states, node_decisions );
+    //getAlgorithmNode( algo_name )->updateDecision( slotNum, algo_states, node_decisions );
+    auto& slot = (*m_eventSlots)[slotNum];
+    auto updater = DecisionUpdater(slot);
+    getAlgorithmNode( algo_name )->accept(updater);
   }
 
   //---------------------------------------------------------------------------
