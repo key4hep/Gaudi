@@ -11,6 +11,23 @@ std::map<AlgsExecutionStates::State,std::string> AlgsExecutionStates::stateNames
     {ERROR,"ERROR"}
     };
 
+StatusCode AlgsExecutionStates::forceState(unsigned int iAlgo,State newState) {
+
+  MsgStream log(m_MS, "AlgExecutionStates");
+  const unsigned int states_size = m_states.size();
+
+  if (iAlgo>=states_size){
+    log << MSG::ERROR  << "Index out of bound ("
+        << iAlgo << " and the size of the states vector is "
+        << states_size << ")" << endmsg;
+
+    return StatusCode::FAILURE;
+  }
+
+  m_states[iAlgo] = newState;
+  return StatusCode::SUCCESS;
+}
+
 StatusCode AlgsExecutionStates::updateState(unsigned int iAlgo,State newState) {
 
 	MsgStream log(m_MS, "AlgExecutionStates");

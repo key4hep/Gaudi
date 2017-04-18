@@ -48,6 +48,7 @@ public:
     ~AlgsExecutionStates(){};
 
     StatusCode updateState(unsigned int iAlgo,State newState);
+    StatusCode forceState(unsigned int iAlgo,State newState);
 
     void reset(){m_states.assign(m_states.size(),INITIAL);};
 
