@@ -63,7 +63,7 @@ public:
                                {KeyValue("InputLocation1", {"MyInt"}),
                                 KeyValue("InputLocation2", {"MyOtherInt"})},
                                {KeyValue("OutputLocation1", {"MyMultiFloat1"}),
-                                KeyValue("OutputLocation1", {"MyMultiFloat2"})}) {}
+                                KeyValue("OutputLocation2", {"MyMultiFloat2"})}) {}
 
     std::tuple<float, float> operator() (const int& input1, const int& input2) const override {
         info() << "Number of inputs : " << inputLocationSize()
