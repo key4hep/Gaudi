@@ -141,13 +141,6 @@ StatusCode AvalancheSchedulerSvc::initialize() {
         }
     }
   }
-  info() << "outputs:\n" ;
-  for (const auto& i : globalOutp ) {
-      info() << i << '\n' ;
-  }
-  info() << endmsg;
-
-
 
   info() << "Data Dependencies for Algorithms:";
 

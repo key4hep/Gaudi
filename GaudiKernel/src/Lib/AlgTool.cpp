@@ -221,7 +221,7 @@ StatusCode AlgTool::sysInitialize()
     }
     for (auto &h: inputHandles()) {
       if (!h->objKey().empty() && out.find(h->fullKey()) != out.end()) {
-        error() << "Explicit circular data depedency found for id "
+        error() << "Explicit circular data dependency found for id "
                 << h->fullKey() << endmsg;
         sc = StatusCode::FAILURE;
       }

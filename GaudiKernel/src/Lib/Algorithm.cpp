@@ -179,7 +179,7 @@ StatusCode Algorithm::sysInitialize()
   }
   for (auto &h: inputHandles()) {
     if (!h->objKey().empty() && out.find(h->fullKey()) != out.end()) {
-      error() << "Explicit circular data depedency detected for id "
+      error() << "Explicit circular data dependency detected for id "
               << h->fullKey() << endmsg;
       sc = StatusCode::FAILURE;
     }
