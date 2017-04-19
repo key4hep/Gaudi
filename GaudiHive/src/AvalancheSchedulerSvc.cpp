@@ -197,10 +197,14 @@ StatusCode AvalancheSchedulerSvc::initialize() {
   // Fill the containers to convert algo names to index
   m_algname_vect.reserve( algsNumber );
   unsigned int index = 0;
+  IAlgorithm* dataLoaderAlg( nullptr );
   for ( IAlgorithm* algo : algos ) {
     const std::string& name   = algo->name();
     m_algname_index_map[name] = index;
     m_algname_vect.emplace_back( name );
+    if (algo->name() == m_useDataLoader) {
+      dataLoaderAlg = algo;
+    }
     index++;
   }
 
@@ -288,7 +292,7 @@ StatusCode AvalancheSchedulerSvc::initialize() {
     info() << std::endl
            << "========== Algorithm and Sequence Configuration =========="
            << std::endl << std::endl;
-    info() << m_efg->printConfiguration() << endmsg;
+    info() << m_efg->dumpControlFlow() << endmsg;
   }
 
   if (m_showDataFlow) {
@@ -564,7 +568,8 @@ StatusCode AvalancheSchedulerSvc::m_drain() {
 */
 StatusCode AvalancheSchedulerSvc::popFinishedEvent( EventContext*& eventContext ) {
   // debug() << "popFinishedEvent: queue size: " << m_finishedEvents.size() << endmsg;
-  if ( m_freeSlots.load() == m_maxEventsInFlight or m_isActive == INACTIVE ) {
+  if ( m_freeSlots.load() == (int) m_maxEventsInFlight or 
+       m_isActive == INACTIVE ) {
     // debug() << "freeslots: " << m_freeSlots << "/" << m_maxEventsInFlight
     //      << " active: " << m_isActive << endmsg;
     return StatusCode::FAILURE;
