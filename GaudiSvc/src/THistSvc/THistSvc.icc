@@ -49,7 +49,7 @@ StatusCode THistSvc::regHist_i(T* hist, const std::string& id) {
   if ( !f ) {
     temp = true;
     if (msgLevel(MSG::DEBUG))
-      debug() << "Historgram with id \"" << idr << "\" is temporary"
+      debug() << "Histogram with id \"" << idr << "\" is temporary"
 	    << endmsg;
   }
 
@@ -58,57 +58,60 @@ StatusCode THistSvc::regHist_i(T* hist, const std::string& id) {
   THistID hid;
 
   // check to see if this hist is to be read in;
-  if (!temp && m_files.find(stream)->second.second == READ) {
+  auto itrFile = m_files.find(stream);
+  if (itrFile != m_files.end()) {
+    if (!temp && itrFile->second.second == READ) {
 
-    if (hist != 0) {
-      warning() <<  "Registering id: \"" << idr
-	    << "\" with non zero pointer!" << endmsg;
-    }
+      if (hist != 0) {
+        warning() <<  "Registering id: \"" << idr
+                  << "\" with non zero pointer!" << endmsg;
+      }
 
-    if (readHist_i(idr,hist).isFailure()) {
-      error() <<  "Unable to read in hist" << endmsg;
+      if (readHist_i(idr,hist).isFailure()) {
+        error() <<  "Unable to read in hist" << endmsg;
+        return StatusCode::FAILURE;
+      }
+      to = dynamic_cast<TObject*>(hist);
+      hid = THistID(uid,temp,to,f,itrFile->second.second);
+
+    } else if (hist == 0) {
+      error() << "Unable to read in hist with id: \""
+              << idr << "\"" << endmsg;
       return StatusCode::FAILURE;
-    }
-    to = dynamic_cast<TObject*>(hist);
-    hid = THistID(uid,temp,to,f,m_files.find(stream)->second.second);
 
-  } else if (hist == 0) {
-    error() << "Unable to read in hist with id: \""
-	  << idr << "\"" << endmsg;
-    return StatusCode::FAILURE;
-
-  } else {
-
-    to = dynamic_cast<TObject*>(hist);
-    if (to == 0) {
-      error() << "Could not dcast to TObject. id: \"" << idr
-	    << "\"" << endmsg;
-      return StatusCode::FAILURE;
-    }
-
-    auto oitr = m_tobjs.find(to);
-    if (oitr != m_tobjs.end()) {
-      error() << "already registered id: \"" << idr
-	    << "\" with identifier \"" << oitr->second.id << "\"" << endmsg;
-      return StatusCode::FAILURE;
-    }
-
-    hid = THistID(uid,temp,to,f,m_files.find(stream)->second.second);
-    TDirectory* dir = changeDir(hid);
-
-    if ( dynamic_cast<TTree*>(hist) ) {
-      dynamic_cast<TTree*>(hist)->SetDirectory(dir);
-    } else if ( dynamic_cast<TH1*>(hist) ) {
-      dynamic_cast<TH1*>(hist)->SetDirectory(dir);
-    } else if ( dynamic_cast<TGraph*>(hist) ) {
-      dir->Append(hist);
     } else {
-      error() << "id: \"" << idr
-	    << "\" is not a TH, TTree, or TGraph. Attaching it to current dir."
-	    << endmsg;
-      dir->Append(hist);
-    }
 
+      to = dynamic_cast<TObject*>(hist);
+      if (to == 0) {
+        error() << "Could not dcast to TObject. id: \"" << idr
+                << "\"" << endmsg;
+        return StatusCode::FAILURE;
+      }
+
+      auto oitr = m_tobjs.find(to);
+      if (oitr != m_tobjs.end()) {
+        error() << "already registered id: \"" << idr
+                << "\" with identifier \"" << oitr->second.id << "\"" << endmsg;
+        return StatusCode::FAILURE;
+      }
+
+      hid = THistID(uid,temp,to,f,itrFile->second.second);
+      TDirectory* dir = changeDir(hid);
+
+      if ( dynamic_cast<TTree*>(hist) ) {
+        dynamic_cast<TTree*>(hist)->SetDirectory(dir);
+      } else if ( dynamic_cast<TH1*>(hist) ) {
+        dynamic_cast<TH1*>(hist)->SetDirectory(dir);
+      } else if ( dynamic_cast<TGraph*>(hist) ) {
+        dir->Append(hist);
+      } else {
+        error() << "id: \"" << idr
+                << "\" is not a TH, TTree, or TGraph. Attaching it to current dir."
+                << endmsg;
+        dir->Append(hist);
+      }
+
+    }
   }
 
   std::string fname;
