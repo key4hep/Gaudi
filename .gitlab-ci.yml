@@ -35,9 +35,9 @@ doxygen:
     - make BUILDDIR=build doc
     - rm -rf public
     - mkdir -p public
-    - mv build/doxygen/html ${CI_BUILD_REF_NAME}
+    - mv build/doxygen/html ${CI_COMMIT_REF_NAME}
     - yum install -y zip
-    - zip -r public/${CI_BUILD_REF_NAME}.zip ${CI_BUILD_REF_NAME}
+    - zip -r public/${CI_COMMIT_REF_NAME}.zip ${CI_COMMIT_REF_NAME}
   only:
     - master
     - tags
