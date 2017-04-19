@@ -16,8 +16,6 @@ class GAUDI_API ICondSvc: virtual public IService {
 public:
   DeclareInterfaceID(ICondSvc, 1, 0);
 
-  typedef float dbData_t;
-
   virtual ~ICondSvc() = default;
 
   virtual StatusCode regHandle(IAlgorithm* alg, const Gaudi::DataHandle& id, 
@@ -29,10 +27,6 @@ public:
                              DataObjIDColl& invalidIDs) = 0;
 
   virtual bool isValidID(const EventContext& ctx, const DataObjID& id) const = 0;
-
-  // virtual std::set<std::string> getUnchangedAlgs( const DataObjIDColl& ids) = 0;
-  // virtual StatusCode getRange(const std::string&, const EventContext& ctx, 
-  //                             EventIDRange& rng, dbData_t&) const = 0;
 
   virtual const std::set<IAlgorithm*>& condAlgs() const = 0;
 
