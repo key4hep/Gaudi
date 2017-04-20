@@ -437,7 +437,8 @@ StatusCode ForwardSchedulerSvc::pushNewEvent( EventContext* eventContext ) {
       return StatusCode::FAILURE;
     }
 
-    info() << "Executing event " << eventContext->evt() << " on slot " << thisSlotNum << endmsg;
+    debug() << "Executing event " << eventContext->evt() << " on slot " 
+            << thisSlotNum << endmsg;
     thisSlot.reset( eventContext );
 
     return this->updateStates( thisSlotNum );

@@ -457,7 +457,8 @@ StatusCode AvalancheSchedulerSvc::pushNewEvent( EventContext* eventContext ) {
       return StatusCode::FAILURE;
     }
 
-    info() << "Executing event " << eventContext->evt() << " on slot " << thisSlotNum << endmsg;
+    debug() << "Executing event " << eventContext->evt() << " on slot " 
+            << thisSlotNum << endmsg;
     thisSlot.reset( eventContext );
 
     // check Condition Algs and data
