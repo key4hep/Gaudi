@@ -281,6 +281,8 @@ StatusCode AvalancheSchedulerSvc::initialize() {
   info() << " o Number of events in flight: " << m_maxEventsInFlight << endmsg;
   info() << " o TBB thread pool size: " << m_threadPoolSize << endmsg;
 
+  m_efg = algPool->getPRGraph();
+
   if (m_showControlFlow) {
     info() << std::endl
            << "========== Algorithm and Sequence Configuration =========="
