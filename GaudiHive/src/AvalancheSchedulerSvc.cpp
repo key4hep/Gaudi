@@ -107,7 +107,7 @@ StatusCode AvalancheSchedulerSvc::initialize() {
       fatal() << "Error retrieving IOBoundSchedulerAlgSvc interface IAccelerator." << endmsg;
   }
 
-  // Set the MaxEventsInFlight parameters and from the number or WB stores
+  // Set the MaxEventsInFlight parameters from the number of WB stores
   m_maxEventsInFlight = m_whiteboard->getNumberOfStores();
 
   // Set the number of free slots
@@ -142,50 +142,64 @@ StatusCode AvalancheSchedulerSvc::initialize() {
     }
   }
 
-  info() << "Data Dependencies for Algorithms:";
+  std::ostringstream ostdd;
+  ostdd << "Data Dependencies for Algorithms:";
 
   std::vector<DataObjIDColl> m_algosDependencies;
   for ( IAlgorithm* ialgoPtr : algos ) {
     Algorithm* algoPtr = dynamic_cast<Algorithm*>( ialgoPtr );
-    if ( nullptr == algoPtr )
-      fatal() << "Could not convert IAlgorithm into Algorithm: this will result in a crash." << endmsg;
+    if ( nullptr == algoPtr ) {
+      fatal() << "Could not convert IAlgorithm into Algorithm for "
+              << ialgoPtr->name() 
+              << ": this will result in a crash." << endmsg;
+      return StatusCode::FAILURE;
+    }
 
-    info() << "\n  " << algoPtr->name();
+    ostdd << "\n  " << algoPtr->name();
 
-    // FIXME
     DataObjIDColl algoDependencies;
     if ( !algoPtr->inputDataObjs().empty() || !algoPtr->outputDataObjs().empty() ) {
       for ( auto id : algoPtr->inputDataObjs() ) {
-        info() << "\n    o INPUT  " << id;
+        ostdd << "\n    o INPUT  " << id;
         if (id.key().find(":")!=std::string::npos) {
-            info() << " contains alternatives which require resolution... " << endmsg;
+            ostdd << " contains alternatives which require resolution...\n"; 
             auto tokens = boost::tokenizer<boost::char_separator<char>>{id.key(),boost::char_separator<char>{":"}};
             auto itok = std::find_if( tokens.begin(), tokens.end(),
                                      [&](const std::string& t) {
                 return globalOutp.find( DataObjID{t} ) != globalOutp.end();
             } );
             if (itok!=tokens.end()) {
-                info() << "found matching output for " << *itok << " -- updating scheduler info" << endmsg;
+                ostdd << "found matching output for " << *itok 
+                      << " -- updating scheduler info\n";
                 id.updateKey(*itok);
             } else {
-                error() << "failed to find alternate in global output list" << endmsg;
+                error() << "failed to find alternate in global output list" 
+                        << " for id: " << id << " in Alg " << algoPtr->name()
+                        << endmsg;
+                m_showDataDeps = true;
             }
         }
         algoDependencies.insert( id );
         globalInp.insert( id );
       }
       for ( auto id : algoPtr->outputDataObjs() ) {
-        info() << "\n    o OUTPUT " << id;
+        ostdd << "\n    o OUTPUT " << id;
         if (id.key().find(":")!=std::string::npos) {
-            info() << " alternatives are NOT allowed for outputs..." << endmsg;
+          error() << " in Alg " << algoPtr->name() 
+                  << " alternatives are NOT allowed for outputs! id: " 
+                  << id << endmsg;
+          m_showDataDeps = true;
         }
       }
     } else {
-      info() << "\n      none";
+      ostdd << "\n      none";
     }
     m_algosDependencies.emplace_back( algoDependencies );
   }
-  info() << endmsg;
+
+  if ( m_showDataDeps ) {
+    info() << ostdd.str() << endmsg;
+  }
 
   // Fill the containers to convert algo names to index
   m_algname_vect.reserve( algsNumber );
@@ -276,6 +290,10 @@ StatusCode AvalancheSchedulerSvc::initialize() {
                        EventSlot( m_algosDependencies, algsNumber, controlFlowNodeNumber, messageSvc ) );
   std::for_each( m_eventSlots.begin(), m_eventSlots.end(), []( EventSlot& slot ) { slot.complete = true; } );
 
+  if (m_threadPoolSize > 1) {
+    m_maxAlgosInFlight = (size_t) m_threadPoolSize;
+  }
+
   // Clearly inform about the level of concurrency
   info() << "Concurrency level information:" << endmsg;
   info() << " o Number of events in flight: " << m_maxEventsInFlight << endmsg;
@@ -296,11 +314,6 @@ StatusCode AvalancheSchedulerSvc::initialize() {
            << std::endl;
     info() << m_efg->dumpDataFlow() << endmsg;
   }
-
-  // if (m_enableCondSvc) {
-  //   info() << "\n\n --------- Dumping Conditions Registry ---------" << endmsg;
-  //   m_condSvc->dump();
-  // }
 
   // Simulating execution flow by only analyzing the graph topology and logic
   if ( m_simulateExecution ) {
@@ -471,19 +484,19 @@ StatusCode AvalancheSchedulerSvc::pushNewEvent( EventContext* eventContext ) {
       if (validIDs.size() > 0) {
         std::set<concurrency::AlgorithmNode*> uca; // unchanged algs;
 
-        info() << " listing all valid IDs for " << eventContext->eventID()
+        debug() << " listing all valid IDs for " << eventContext->eventID()
                << ": ";
         for (auto id : validIDs) {
-          info() << std::endl << "  - " << id << "  producer:";
+          debug() << std::endl << "  - " << id << "  producer:";
 
           auto prods = m_efg->getDataNode(id)->getProducers();
           for (auto pr : prods) {
-            info() << " " << pr->getNodeName();
+            debug() << " " << pr->getNodeName();
             bool add = true;
             for (auto odn : pr->getOutputDataNodes()) {
               if (invalidIDs.find( odn->getPath() ) != invalidIDs.end() ) {
                 add = false;
-                info() << " [ " << odn->getPath() << " invalid]";
+                debug() << " [ " << odn->getPath() << " invalid]";
               }
             }
             if (add) {
@@ -491,22 +504,22 @@ StatusCode AvalancheSchedulerSvc::pushNewEvent( EventContext* eventContext ) {
             }
           }
         }
-        info() <<  endmsg;
+        debug() <<  endmsg;
 
         thisSlot.dataFlowMgr.updateDataObjectsCatalog( validIDs );
 
-        info () << "Unchanged Algs " << eventContext->eventID() << ": "
+        debug () << "Unchanged Algs " << eventContext->eventID() << ": "
                 << uca.size();
         for (auto an : uca) {
           unsigned int idx = algname2index(an->getNodeName());
-          info () << std::endl << " + " << an->getNodeName()
+          debug () << std::endl << " + " << an->getNodeName()
                   << "[" << idx << "]  dp: ";
           for (auto dn : an->getOutputDataNodes()) {
-            info() << " " << dn->getPath();
+            debug() << " " << dn->getPath();
           }
           thisSlot.algsStates.forceState(idx,State::EVTACCEPTED);
         }
-        info() << endmsg;
+        debug() << endmsg;
       }
     }
 
@@ -920,6 +933,8 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot ) {
 //---------------------------------------------------------------------------
 
 StatusCode AvalancheSchedulerSvc::promoteToScheduled( unsigned int iAlgo, int si ) {
+
+  if ( m_algosInFlight == m_maxAlgosInFlight ) return StatusCode::FAILURE;
 
   const std::string& algName( index2algname( iAlgo ) );
   IAlgorithm* ialgoPtr = nullptr;

@@ -68,6 +68,17 @@ StatusCode ForwardSchedulerSvc::initialize() {
     }
   }
 
+  if (m_enableCondSvc) {
+    // Get hold of the CondSvc
+    m_condSvc = serviceLocator()->service("CondSvc");
+    if (!m_condSvc.isValid())  {
+      warning() << "No CondSvc found, or not enabled. "
+                << "Will not manage CondAlgorithms"
+                << endmsg;
+      m_enableCondSvc = false;
+    }
+  }
+
   // Get the algo resource pool
   m_algResourcePool = serviceLocator()->service( "AlgResourcePool" );
   if ( !m_algResourcePool.isValid() ) {
@@ -141,58 +152,65 @@ StatusCode ForwardSchedulerSvc::initialize() {
         }
     }
   }
-  info() << "outputs:\n" ;
-  for (const auto& i : globalOutp ) {
-      info() << i << '\n' ;
-  }
-  info() << endmsg;
 
-
-
-  info() << "Data Dependencies for Algorithms:";
+  std::ostringstream ostdd;
+  ostdd << "Data Dependencies for Algorithms:";
 
   std::vector<DataObjIDColl> m_algosDependencies;
   for ( IAlgorithm* ialgoPtr : algos ) {
     Algorithm* algoPtr = dynamic_cast<Algorithm*>( ialgoPtr );
-    if ( nullptr == algoPtr )
-      fatal() << "Could not convert IAlgorithm into Algorithm: this will result in a crash." << endmsg;
+    if ( nullptr == algoPtr ) {
+      fatal() << "Could not convert IAlgorithm into Algorithm for "
+              << ialgoPtr->name() 
+              << ": this will result in a crash." << endmsg;
+      return StatusCode::FAILURE;
+    }
 
-    info() << "\n  " << algoPtr->name();
+    ostdd << "\n  " << algoPtr->name();
 
-    // FIXME
     DataObjIDColl algoDependencies;
     if ( !algoPtr->inputDataObjs().empty() || !algoPtr->outputDataObjs().empty() ) {
       for ( auto id : algoPtr->inputDataObjs() ) {
-        info() << "\n    o INPUT  " << id;
+        ostdd << "\n    o INPUT  " << id;
         if (id.key().find(":")!=std::string::npos) {
-            info() << " contains alternatives which require resolution... " << endmsg;
+            ostdd << " contains alternatives which require resolution...\n"; 
             auto tokens = boost::tokenizer<boost::char_separator<char>>{id.key(),boost::char_separator<char>{":"}};
             auto itok = std::find_if( tokens.begin(), tokens.end(),
                                      [&](const std::string& t) {
                 return globalOutp.find( DataObjID{t} ) != globalOutp.end();
             } );
             if (itok!=tokens.end()) {
-                info() << "found matching output for " << *itok << " -- updating scheduler info" << endmsg;
+                ostdd << "found matching output for " << *itok 
+                      << " -- updating scheduler info\n";
                 id.updateKey(*itok);
             } else {
-                error() << "failed to find alternate in global output list" << endmsg;
+                error() << "failed to find alternate in global output list" 
+                        << " for id: " << id << " in Alg " << algoPtr->name()
+                        << endmsg;
+                m_showDataDeps = true;
             }
         }
         algoDependencies.insert( id );
         globalInp.insert( id );
       }
       for ( auto id : algoPtr->outputDataObjs() ) {
-        info() << "\n    o OUTPUT " << id;
+        ostdd << "\n    o OUTPUT " << id;
         if (id.key().find(":")!=std::string::npos) {
-            info() << " alternatives are NOT allowed for outputs..." << endmsg;
+          error() << " in Alg " << algoPtr->name() 
+                  << " alternatives are NOT allowed for outputs! id: " 
+                  << id << endmsg;
+          m_showDataDeps = true;
         }
       }
     } else {
-      info() << "\n      none";
+      ostdd << "\n      none";
     }
     m_algosDependencies.emplace_back( algoDependencies );
   }
-  info() << endmsg;
+
+  if ( m_showDataDeps ) {
+    info() << ostdd.str() << endmsg;
+  }
 
   // Fill the containers to convert algo names to index
   m_algname_vect.reserve( algsNumber );
@@ -287,6 +305,22 @@ StatusCode ForwardSchedulerSvc::initialize() {
   info() << " o Number of events in flight: " << m_maxEventsInFlight << endmsg;
   info() << " o Number of algorithms in flight: " << m_maxAlgosInFlight << endmsg;
   info() << " o TBB thread pool size: " << m_threadPoolSize << endmsg;
+
+  m_efg = algPool->getPRGraph();
+
+  if (m_showControlFlow) {
+    info() << std::endl
+           << "========== Algorithm and Sequence Configuration =========="
+           << std::endl << std::endl;
+    info() << m_efg->dumpControlFlow() << endmsg;
+  }
+
+  if (m_showDataFlow) {
+    info() << std::endl
+           << "======================= Data Flow ========================"
+           << std::endl;
+    info() << m_efg->dumpDataFlow() << endmsg;
+  }
 
   return sc;
 }
@@ -440,6 +474,55 @@ StatusCode ForwardSchedulerSvc::pushNewEvent( EventContext* eventContext ) {
     debug() << "Executing event " << eventContext->evt() << " on slot " 
             << thisSlotNum << endmsg;
     thisSlot.reset( eventContext );
+
+    // check Condition Algs and data
+
+    DataObjIDColl validIDs, invalidIDs;
+    if (m_enableCondSvc &&
+        m_condSvc->condAlgs().size() != 0 &&
+        m_condSvc->getIDValidity(*eventContext,validIDs,invalidIDs)) {
+
+      if (validIDs.size() > 0) {
+        std::set<concurrency::AlgorithmNode*> uca; // unchanged algs;
+
+        debug() << " listing all valid IDs for " << eventContext->eventID()
+               << ": ";
+        for (auto id : validIDs) {
+          debug() << std::endl << "  - " << id << "  producer:";
+
+          auto prods = m_efg->getDataNode(id)->getProducers();
+          for (auto pr : prods) {
+            debug() << " " << pr->getNodeName();
+            bool add = true;
+            for (auto odn : pr->getOutputDataNodes()) {
+              if (invalidIDs.find( odn->getPath() ) != invalidIDs.end() ) {
+                add = false;
+                debug() << " [ " << odn->getPath() << " invalid]";
+              }
+            }
+            if (add) {
+              uca.insert( pr );
+            }
+          }
+        }
+        debug() <<  endmsg;
+
+        thisSlot.dataFlowMgr.updateDataObjectsCatalog( validIDs );
+
+        debug () << "Unchanged Algs " << eventContext->eventID() << ": "
+                << uca.size();
+        for (auto an : uca) {
+          unsigned int idx = algname2index(an->getNodeName());
+          debug () << std::endl << " + " << an->getNodeName()
+                  << "[" << idx << "]  dp: ";
+          for (auto dn : an->getOutputDataNodes()) {
+            debug() << " " << dn->getPath();
+          }
+          thisSlot.algsStates.forceState(idx,State::EVTACCEPTED);
+        }
+        debug() << endmsg;
+      }
+    }
 
     return this->updateStates( thisSlotNum );
   }; // end of lambda

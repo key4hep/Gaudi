@@ -151,19 +151,20 @@ private:
   Gaudi::Property<bool> m_checkDeps{this, "CheckDependencies", false,
       "Runtime check of Algorithm Data Dependencies"};
 
-
   Gaudi::Property<std::string> m_useDataLoader{this, "DataLoaderAlg", "",
       "Attribute unmet input dependencies to this DataLoader Algorithm"};
  
   Gaudi::Property<bool> m_enableCondSvc{this, "EnableConditions", false, 
       "Enable ConditionsSvc"};
 
+  Gaudi::Property<bool> m_showDataDeps{this, "ShowDataDependencies", true,
+      "Show the INPUT and OUTPUT data dependencies of Algorithms"};
+
   Gaudi::Property<bool> m_showDataFlow{this, "ShowDataFlow", false,
       "Show the configuration of DataFlow between Algorithms"};
   
   Gaudi::Property<bool> m_showControlFlow{this, "ShowControlFlow", false,
       "Show the configuration of all Algorithms and Sequences"};
-
 
   // Utils and shortcuts ----------------------------------------------------
 
@@ -276,6 +277,7 @@ private:
   // Service for thread pool initialization
   SmartIF<IThreadPoolSvc> m_threadPoolSvc;
   size_t m_maxEventsInFlight {0};
+  size_t m_maxAlgosInFlight {1};
 
   // Service for Conditions handling
   SmartIF<ICondSvc> m_condSvc;
