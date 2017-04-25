@@ -518,6 +518,7 @@ StatusCode AvalancheSchedulerSvc::pushNewEvent( EventContext* eventContext ) {
             debug() << " " << dn->getPath();
           }
           thisSlot.algsStates.forceState(idx,State::EVTACCEPTED);
+          thisSlot.controlFlowState[an->getNodeIndex()] = 1;
         }
         debug() << endmsg;
       }
