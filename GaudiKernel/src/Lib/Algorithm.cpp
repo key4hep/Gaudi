@@ -161,16 +161,56 @@ StatusCode Algorithm::sysInitialize()
   //// build list of data dependencies
   //
 
+  // ignore this step if we're a Sequence
+  if (this->isSequence()) {
+    return sc;
+  }
+
   if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) ) {
     debug() << "input handles: " << inputHandles().size() << endmsg;
     debug() << "output handles: " << outputHandles().size() << endmsg;
   }
+
+  // check for explicit circular data dependencies in declared handles
+  DataObjIDColl out;
+  for (auto &h : outputHandles()) {
+    if (!h->objKey().empty())
+      out.emplace(h->fullKey());
+  }
+  for (auto &h: inputHandles()) {
+    if (!h->objKey().empty() && out.find(h->fullKey()) != out.end()) {
+      error() << "Explicit circular data dependency detected for id "
+              << h->fullKey() << endmsg;
+      sc = StatusCode::FAILURE;
+    }
+  }
+
+  if ( !sc ) return sc;
 
   if ( m_updateDataHandles ) acceptDHVisitor( m_updateDataHandles.get() );
 
   // visit all sub-algs and tools, build full set
   DHHVisitor avis( m_inputDataObjs, m_outputDataObjs );
   acceptDHVisitor( &avis );
+
+
+  // check for implicit circular data deps from child Algs/AlgTools
+  for (auto &h: m_outputDataObjs) {
+    auto i = m_inputDataObjs.find(h);
+    if (i != m_inputDataObjs.end()) {
+      if (m_filterCircDeps) {
+        warning() << "Implicit circular data dependency detected for id "
+                  << h << endmsg;
+        m_inputDataObjs.erase(i);
+      } else {
+        error() << "Implicit circular data dependency detected for id "
+                << h << endmsg;
+        sc = StatusCode::FAILURE;
+      }
+    }
+  }
+
+  if ( !sc ) return sc;
 
   if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) ) {
     // sort out DataObjects by path so that logging is reproducable

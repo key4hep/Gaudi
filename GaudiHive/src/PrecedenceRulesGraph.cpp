@@ -456,21 +456,17 @@ namespace concurrency
 
     const std::string& algoName = algo->name();
 
-    DataObjIDColl inputObjs, outputObjs;
-    DHHVisitor avis( inputObjs, outputObjs );
-    algo->acceptDHVisitor( &avis );
-
-    m_algoNameToAlgoInputsMap[algoName] = inputObjs;
-    m_algoNameToAlgoOutputsMap[algoName] = outputObjs;
+    m_algoNameToAlgoInputsMap[algoName] = algo->inputDataObjs();
+    m_algoNameToAlgoOutputsMap[algoName] = algo->outputDataObjs();
 
     if (msgLevel(MSG::DEBUG)) {
       debug() << "Inputs of " << algoName << ": ";
-      for (auto tag : inputObjs)
+      for (auto tag : algo->inputDataObjs())
         debug() << tag << " | ";
       debug() << endmsg;
 
       debug() << "Outputs of " << algoName << ": ";
-      for (auto tag : outputObjs)
+      for (auto tag : algo->outputDataObjs())
         debug() << tag << " | ";
       debug() << endmsg;
     }
