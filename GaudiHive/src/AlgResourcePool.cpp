@@ -340,17 +340,21 @@ StatusCode AlgResourcePool::decodeTopAlgs()    {
     if (ialgo->isClonable()) {
       m_n_of_allowed_instances[algo_id] = ialgo->cardinality();
     } else {
-      if (! m_overrideUnClonable) {
-        warning() << "Algorithm " << ialgo->name() 
-                  << " is un-Clonable but Cardinality is set to " 
-                  << ialgo->cardinality()
-                  << ". Setting Cardinality to 1"
-                  << endmsg;
+      if (ialgo->cardinality() == 1) {
         m_n_of_allowed_instances[algo_id] = 1;
       } else {
-        warning() << "Overriding UnClonability of Algorithm " << ialgo->name() 
-                  << endmsg;
-        m_n_of_allowed_instances[algo_id] = ialgo->cardinality();
+        if (! m_overrideUnClonable) {
+          warning() << "Algorithm " << ialgo->name() 
+                    << " is un-Clonable but Cardinality is set to " 
+                    << ialgo->cardinality()
+                    << ". Setting Cardinality to 1"
+                    << endmsg;
+          m_n_of_allowed_instances[algo_id] = 1;
+        } else {
+          warning() << "Overriding UnClonability of Algorithm " << ialgo->name() 
+                    << endmsg;
+          m_n_of_allowed_instances[algo_id] = ialgo->cardinality();
+        }
       }
     }
     m_n_of_created_instances[algo_id] = 1;
