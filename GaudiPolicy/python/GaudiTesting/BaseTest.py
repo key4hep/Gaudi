@@ -848,6 +848,8 @@ lineSkipper = LineSkipper(["//GP:",
                                         r"Property(.*)'IsIOBound':",
                                         r"Property(.*)'ErrorCount(er)?':", # removed with gaudi/Gaudi!273
                                         r"Property(.*)'Sequential':",  # added with gaudi/Gaudi!306
+                                        r"Property(.*)'FilterCircularDependencies':", # added with gaudi/Gaudi!314
+                                        r"Property(.*)'IsClonable':", # removed with gaudi/Gaudi!316
                                         # ignore uninteresting/obsolete messages
                                         r"Property update for OutputLevel : new value =",
                                         r"EventLoopMgr\s*DEBUG Creating OutputStream",
