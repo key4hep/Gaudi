@@ -855,12 +855,12 @@ StatusCode AvalancheSchedulerSvc::promoteToScheduled( unsigned int iAlgo, int si
       triggerAlgoStateUpdate->set_ref_count(1);
       // the child task that executes an Algorithm
       tbb::task* algoTask = new(triggerAlgoStateUpdate->allocate_child())
-                            AlgoExecutionTask(ialgoPtr, iAlgo, eventContext, serviceLocator(), m_algExecStateSvc);
+                            AlgoExecutionTask(ialgoPtr, eventContext, serviceLocator(), m_algExecStateSvc);
       // schedule the algoTask
       tbb::task::enqueue( *algoTask);
 
     } else {
-      AlgoExecutionTask theTask(ialgoPtr, iAlgo, eventContext, serviceLocator(), m_algExecStateSvc);
+      AlgoExecutionTask theTask(ialgoPtr, eventContext, serviceLocator(), m_algExecStateSvc);
       theTask.execute();
       promote2ExecutedClosure();
     }

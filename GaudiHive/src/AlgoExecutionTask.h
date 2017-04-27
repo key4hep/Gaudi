@@ -14,20 +14,17 @@
 class AlgoExecutionTask: public tbb::task {
 public:
   AlgoExecutionTask(IAlgorithm* algorithm, 
-                    unsigned int algoIndex, 
                     EventContext* ctx,
                     ISvcLocator* svcLocator,
                     IAlgExecStateSvc* aem):
     m_algorithm(algorithm),
     m_evtCtx(ctx),
-    m_algoIndex(algoIndex),
     m_aess(aem),
     m_serviceLocator(svcLocator){};
   tbb::task* execute() override;
 private:  
   SmartIF<IAlgorithm> m_algorithm;
   EventContext* m_evtCtx;
-  const unsigned int m_algoIndex;
   IAlgExecStateSvc *m_aess;
   SmartIF<ISvcLocator> m_serviceLocator;
 };
