@@ -150,11 +150,6 @@ StatusCode Algorithm::sysInitialize()
     sc = StatusCode::FAILURE;
   }
 
-  // Set Cardinality to 1 if unClonable
-  if ( ! m_isClonable ) {
-    m_cardinality = 1;
-  }
-
   algExecStateSvc()->addAlg( this );
 
   //
