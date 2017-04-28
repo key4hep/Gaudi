@@ -18,7 +18,7 @@ the [list of classes](annotated.html) or via the [class hierarchy](hierarchy.htm
     since the previous release.</td></tr>
 <tr><th>Supported Platforms</th><td>Scientific Linux CERN 6 with gcc-4.8 (released with debug and non debug
     versions, 64 bits only, with C++11 enabled)</td></tr>
-<tr><th>Download</th><td>[Sources][source-tar]</td></tr>
+<tr><th>Download</th><td>[Sources (on gitlab.cern.ch)][sources]</td></tr>
 <tr><th>Documentation</th><td>%Gaudi Developers Guide [v9][gug-html]
     ([.pdf][gug-pdf], [.pdf 2up (for printing)][gug-2up-pdf])</td></tr>
 </table>
@@ -26,7 +26,7 @@ the [list of classes](annotated.html) or via the [class hierarchy](hierarchy.htm
 
 See also: \ref externaldocs (from [LCG version @heptools_version@][lcg-details])
 
-[source-tar]: http://lhcbproject.web.cern.ch/lhcbproject/dist/GAUDI/GAUDI_GAUDI_@CMAKE_PROJECT_VERSION@.tar.gz
+[sources]: https://gitlab.cern.ch/gaudi/Gaudi/tags
 
 [gug-html]: http://cern.ch/lhcb-comp/Frameworks/Gaudi/Gaudi_v9/GUG/Output/GUG.htm
 [gug-pdf]: http://cern.ch/lhcb-comp/Frameworks/Gaudi/Gaudi_v9/GUG/GUG.pdf
