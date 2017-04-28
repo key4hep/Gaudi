@@ -11,7 +11,7 @@ the [list of classes](annotated.html) or via the [class hierarchy](hierarchy.htm
 
 
 <table>
-<tr><th>Version</th><td>@CMAKE_PROJECT_VERSION@</td></tr>
+<tr><th>Version</th><td>@DOC_PROJECT_VERSION@</td></tr>
 <tr><th>Description</th><td>Details of the constituent package versions are
     available in the [detailed release notes](@ref release_notes_main)<br/>
     The [project release notes](release.notes.html) contain a summary of changes
