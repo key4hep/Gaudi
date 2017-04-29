@@ -107,7 +107,8 @@ Release notes of the packages:
   # define the project version to show in the mainpage
   message(STATUS "----> $ENV{CI_COMMIT_REF_NAME} ($ENV{CI_COMMIT_SHA})")
   if(DEFINED ENV{CI_COMMIT_REF_NAME})
-    set(DOC_PROJECT_VERSION "$ENV{CI_COMMIT_REF_NAME} ($ENV{CI_COMMIT_SHA})")
+    string(SUBSTRING "$ENV{CI_COMMIT_SHA}" 0 8 CI_COMMIT_SHA)
+    set(DOC_PROJECT_VERSION "$ENV{CI_COMMIT_REF_NAME} (${CI_COMMIT_SHA})")
   elseif(EXISTS "${CMAKE_SOURCE_DIR}/.git")
     execute_process(COMMAND git describe --tags
                     WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
@@ -117,6 +118,7 @@ Release notes of the packages:
                     WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
                     OUTPUT_VARIABLE GIT_COMMIT_SHA
                     OUTPUT_STRIP_TRAILING_WHITESPACE)
+    string(SUBSTRING "${GIT_COMMIT_SHA}" 0 8 GIT_COMMIT_SHA)
     set(DOC_PROJECT_VERSION "${GIT_DESCRIBE_VERSION} (${GIT_COMMIT_SHA})")
   else()
     set(DOC_PROJECT_VERSION "${CMAKE_PROJECT_VERSION}")
