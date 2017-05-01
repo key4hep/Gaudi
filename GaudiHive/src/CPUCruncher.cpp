@@ -30,6 +30,8 @@ CPUCruncher::CPUCruncher( const std::string& name, // the algorithm instance nam
   declareProperty( "NIterationsVect", m_niters_vect, "Number of iterations for the calibration." );
   declareProperty( "NTimesVect", m_times_vect, "Number of seconds for the calibration." );
 
+  Algorithm::m_isClonable = true;
+
   // Register the algo in the static concurrent hash map in order to
   // monitor the # of copies
   CHM::accessor name_ninstances;

@@ -30,7 +30,7 @@ StatusCodeSvc        INFO initialize
 Test1               DEBUG Property update for OutputLevel : new value = 2
 Test1               DEBUG Initialize base class GaudiCommon<Algorithm>
 Test1               DEBUG could not locate CounterSummarySvc, no counter summary will be made
-Test1               DEBUG List of ALL properties of GaudiCommonTests/Test1  #properties = 36
+Test1               DEBUG List of ALL properties of GaudiCommonTests/Test1  #properties = 35
 Test1               DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
 Test1               DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
 Test1               DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
@@ -48,7 +48,6 @@ Test1               DEBUG Property ['Name': Value] =  'ErrorsPrint':True
 Test1               DEBUG Property ['Name': Value] =  'IsIOBound':False
 Test1               DEBUG Property ['Name': Value] =  'NeededResources':[  ]
 Test1               DEBUG Property ['Name': Value] =  'Cardinality':1
-Test1               DEBUG Property ['Name': Value] =  'IsClonable':False
 Test1               DEBUG Property ['Name': Value] =  'RegisterForContextService':True
 Test1               DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
 Test1               DEBUG Property ['Name': Value] =  'Timeline':False
@@ -73,7 +72,7 @@ Test1               DEBUG Data Deps for Test1
 Test2               DEBUG Property update for OutputLevel : new value = 2
 Test2               DEBUG Initialize base class GaudiCommon<Algorithm>
 Test2               DEBUG could not locate CounterSummarySvc, no counter summary will be made
-Test2               DEBUG List of ALL properties of GaudiCommonTests/Test2  #properties = 36
+Test2               DEBUG List of ALL properties of GaudiCommonTests/Test2  #properties = 35
 Test2               DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
 Test2               DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
 Test2               DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
@@ -91,7 +90,6 @@ Test2               DEBUG Property ['Name': Value] =  'ErrorsPrint':True
 Test2               DEBUG Property ['Name': Value] =  'IsIOBound':False
 Test2               DEBUG Property ['Name': Value] =  'NeededResources':[  ]
 Test2               DEBUG Property ['Name': Value] =  'Cardinality':1
-Test2               DEBUG Property ['Name': Value] =  'IsClonable':False
 Test2               DEBUG Property ['Name': Value] =  'RegisterForContextService':True
 Test2               DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
 Test2               DEBUG Property ['Name': Value] =  'Timeline':False

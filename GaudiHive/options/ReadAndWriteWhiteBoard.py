@@ -34,7 +34,6 @@ loader = HiveReadAlgorithm("Loader",
                            )
 
 reader = ReadHandleAlg ("Reader",
-                         IsClonable=True,
                          OutputLevel=INFO,
                          NeededResources=["ROOTIO"])
 reader.Input.Path=product_name

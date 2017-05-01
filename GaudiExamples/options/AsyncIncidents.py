@@ -53,14 +53,12 @@ AITestSvc2=IncidentAsyncTestSvc("IncidentAwareService2",
                                 Priority=1)
 AITestAlg1=IncidentAsyncTestAlg("IncidentAwareTestAlg1",
                                 ServiceName="IncidentAwareService1",
-                                IsClonable=True,
                                 Cardinality=5,
                                 inpKeys=['/Event/DAQ/ODIN']
                             )
 
 AITestAlg2=IncidentAsyncTestAlg("IncidentAwareTestAlg2",
                                 ServiceName="IncidentAwareService2",
-                                IsClonable=False,
                                 Cardinality=1,
                                 inpKeys=['/Event/Hlt/DecReports']
                             )
