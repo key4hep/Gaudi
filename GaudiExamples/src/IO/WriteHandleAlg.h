@@ -20,6 +20,7 @@ class WriteHandleAlg : public GaudiAlgorithm {
     friend class AlgFactory<WriteHandleAlg> ;
 
   public:
+    bool isClonable() const override { return true; }
 
     /// the execution of the algorithm
     StatusCode execute  () override ; // the execution of the algorithm

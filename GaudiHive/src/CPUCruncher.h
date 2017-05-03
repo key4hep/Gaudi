@@ -22,6 +22,8 @@ class CPUCruncher : public GaudiAlgorithm
 public:
   typedef tbb::concurrent_hash_map<std::string, unsigned int> CHM;
 
+  bool isClonable() const override { return true; }
+
   /// the execution of the algorithm
   StatusCode execute() override;
   /// Its initialization

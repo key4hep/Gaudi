@@ -477,8 +477,8 @@ private:
   void initToolHandles() const;
 
 public:
-  /// Specifies the clonability of the algorithm
-  bool isClonable() const override { return m_isClonable; }
+  // /// Specifies the clonability of the algorithm
+  // bool isClonable() const override { return false; }
 
   /// Return the cardinality
   unsigned int cardinality() const override { return m_cardinality; }
@@ -545,8 +545,6 @@ protected:
   /// Hook for for derived classes to provide a custom visitor for data handles.
   std::unique_ptr<IDataHandleVisitor> m_updateDataHandles;
   
-  bool m_isClonable {false};
-
 private:
   // Properties
   Gaudi::Property<int> m_outputLevel{this, "OutputLevel", MSG::NIL, "output level"};
