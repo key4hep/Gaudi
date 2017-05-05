@@ -53,11 +53,11 @@ class GAUDI_API ConversionSvc: public extends<Service,
   public:
     WorkerEntry(const CLID& cl, IConverter* cnv)
       : m_class(cl), m_converter(cnv)       {
-          if (m_converter) m_converter->addRef();
+      if (m_converter) m_converter->addRef();
     }
 
     ~WorkerEntry() {
-          if (m_converter) m_converter->release();
+      if (m_converter) m_converter->release();
     }
 
     WorkerEntry(WorkerEntry&& orig) noexcept
@@ -66,10 +66,9 @@ class GAUDI_API ConversionSvc: public extends<Service,
     }
 
     WorkerEntry& operator=(WorkerEntry&& orig) noexcept {
-        m_class = orig.m_class;
-        if (m_converter) m_converter->release();
-        m_converter = std::exchange( orig.m_converter, nullptr );
-        return *this;
+      m_class = orig.m_class;
+      std::swap( m_converter, orig.m_converter );
+      return *this;
     }
 
     WorkerEntry(const WorkerEntry& copy) = delete;
@@ -78,6 +77,7 @@ class GAUDI_API ConversionSvc: public extends<Service,
     IConverter*     converter()  {
       return m_converter;
     }
+
     const CLID&     clID()  const {
       return m_class;
     }
