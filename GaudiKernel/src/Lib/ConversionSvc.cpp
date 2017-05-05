@@ -9,6 +9,11 @@
 #include "GaudiKernel/ConversionSvc.h"
 #include "GaudiKernel/Converter.h"
 
+namespace {
+
+auto CnvTest = [](CLID clid) { return [clid](const auto& i)
+                                      { return i.clID() == clid; }; };
+
 enum CnvSvcAction   {
   CREATE_OBJ,
   FILL_OBJ_REFS,
@@ -20,75 +25,73 @@ enum CnvSvcAction   {
   UPDATE_REP_REFS
 };
 
+}
+
 StatusCode ConversionSvc::makeCall(int typ,
                                    bool ignore_add,
                                    bool ignore_obj,
                                    bool update,
                                    IOpaqueAddress*& pAddress,
                                    DataObject*& pObject)      {
-  if ( pAddress || ignore_add )    {
-    if ( pObject  || ignore_obj )    {
-      const CLID&  obj_class =
-        ( pObject && !ignore_obj) ? pObject->clID()
-        : ( pAddress && !ignore_add)
-        ? pAddress->clID()
-        : CLID_NULL;
-      IConverter*  cnv  = converter(obj_class);
-      if ( !cnv && pObject ) {
-        //Give it a try to autoload the class (dictionary) for which the converter is needed
-        loadConverter( pObject);
-        cnv  = converter(obj_class);
-      }
-
-      StatusCode status(StatusCode::FAILURE,true);
-      if ( cnv )   {
-        switch(typ)   {
-        case CREATE_OBJ:
-          pObject = nullptr;
-          status = cnv->createObj(pAddress, pObject);
-          break;
-        case FILL_OBJ_REFS:
-          status = cnv->fillObjRefs(pAddress, pObject);
-          break;
-        case UPDATE_OBJ:
-          status = cnv->updateObj(pAddress, pObject);
-          break;
-        case UPDATE_OBJ_REFS:
-          status = cnv->updateObjRefs(pAddress, pObject);
-          break;
-        case CREATE_REP:
-          pAddress = nullptr;
-          status = cnv->createRep(pObject, pAddress);
-          break;
-        case FILL_REP_REFS:
-          status = cnv->fillRepRefs(pAddress, pObject);
-          break;
-        case UPDATE_REP:
-          status = cnv->updateRep(pAddress, pObject);
-          break;
-        case UPDATE_REP_REFS:
-          status = cnv->updateRepRefs(pAddress, pObject);
-          break;
-        default:
-          status = StatusCode::FAILURE;
-          break;
-        }
-        if ( status.isSuccess() && update )   {
-          status = updateServiceState(pAddress);
-        }
-        return status;
-      }
-      status.ignore();
-      info() << "No converter for object ";
-      if ( pObject )   {
-        msgStream() << System::typeinfoName(typeid(*pObject));
-      }
-      msgStream() << "  CLID= " << obj_class << endmsg;
-      return NO_CONVERTER;
-    }
-    return INVALID_OBJECT;
+  if ( !pAddress && !ignore_add ) return INVALID_ADDRESS;
+  if ( !pObject  && !ignore_obj ) return INVALID_OBJECT;
+  const CLID&  obj_class =
+    ( pObject && !ignore_obj) ? pObject->clID()
+    : ( pAddress && !ignore_add)
+    ? pAddress->clID()
+    : CLID_NULL;
+  IConverter* cnv = converter(obj_class);
+  if ( !cnv && pObject ) {
+    //Give it a try to autoload the class (dictionary) for which the converter is needed
+    loadConverter( pObject);
+    cnv  = converter(obj_class);
   }
-  return INVALID_ADDRESS;
+
+  StatusCode status(StatusCode::FAILURE,true);
+  if ( cnv ) {
+    switch(typ)   {
+    case CREATE_OBJ:
+      pObject = nullptr;
+      status = cnv->createObj(pAddress, pObject);
+      break;
+    case FILL_OBJ_REFS:
+      status = cnv->fillObjRefs(pAddress, pObject);
+      break;
+    case UPDATE_OBJ:
+      status = cnv->updateObj(pAddress, pObject);
+      break;
+    case UPDATE_OBJ_REFS:
+      status = cnv->updateObjRefs(pAddress, pObject);
+      break;
+    case CREATE_REP:
+      pAddress = nullptr;
+      status = cnv->createRep(pObject, pAddress);
+      break;
+    case FILL_REP_REFS:
+      status = cnv->fillRepRefs(pAddress, pObject);
+      break;
+    case UPDATE_REP:
+      status = cnv->updateRep(pAddress, pObject);
+      break;
+    case UPDATE_REP_REFS:
+      status = cnv->updateRepRefs(pAddress, pObject);
+      break;
+    default:
+      status = StatusCode::FAILURE;
+      break;
+    }
+    if ( status.isSuccess() && update )   {
+      status = updateServiceState(pAddress);
+    }
+    return status;
+  }
+  status.ignore();
+  info() << "No converter for object ";
+  if ( pObject )   {
+    msgStream() << System::typeinfoName(typeid(*pObject));
+  }
+  msgStream() << "  CLID= " << obj_class << endmsg;
+  return NO_CONVERTER;
 }
 
 void ConversionSvc::loadConverter(DataObject*) {
@@ -140,19 +143,15 @@ StatusCode ConversionSvc::updateRepRefs(IOpaqueAddress* pAddress, DataObject* pO
 }
 
 /// Retrieve converter from list
-IConverter* ConversionSvc::converter(const CLID& clid)     {
+IConverter* ConversionSvc::converter(const CLID& clid) {
   IConverter* cnv = nullptr;
   auto i = std::find_if(m_workers.begin(),m_workers.end(),CnvTest(clid));
-  if ( i != m_workers.end() )      {
-    cnv = i->converter();
-  }
-  if ( !cnv )     {
+  if ( i != m_workers.end() ) cnv = i->converter();
+  if ( !cnv ) {
     StatusCode status = addConverter(clid);
-    if ( status.isSuccess() )   {
+    if ( status.isSuccess() ) {
       i = std::find_if(m_workers.begin(),m_workers.end(),CnvTest(clid));
-      if ( i != m_workers.end() )      {
-        cnv = i->converter();
-      }
+      if ( i != m_workers.end() )  cnv = i->converter();
     }
   }
   return cnv;
@@ -162,7 +161,7 @@ IConverter* ConversionSvc::converter(const CLID& clid)     {
 StatusCode ConversionSvc::setDataProvider(IDataProviderSvc* pDataSvc)    {
   if ( !pDataSvc ) return StatusCode::SUCCESS; //Atlas does not use DataSvc
   m_dataSvc = pDataSvc;
-  for(auto& i : m_workers ) {
+  for(auto& i : m_workers) {
     IConverter* cnv = i.converter();
     if ( cnv && cnv->setDataProvider(m_dataSvc).isFailure()) {
       error() << "setting Data Provider" << endmsg;
@@ -179,11 +178,11 @@ SmartIF<IDataProviderSvc>& ConversionSvc::dataProvider()  const   {
 /// Set address creator facility
 StatusCode ConversionSvc::setAddressCreator(IAddressCreator* creator)   {
   m_addressCreator = creator;
-  for(auto& i : m_workers ) {
+  for (auto& i : m_workers) {
     auto* cnv = i.converter();
     if ( cnv )   {
       if (cnv->setAddressCreator(m_addressCreator).isFailure()) {
-	error() << "setting Address Creator"  << endmsg;
+        error() << "setting Address Creator"  << endmsg;
       }
     }
   }
@@ -206,22 +205,22 @@ SmartIF<IConversionSvc>& ConversionSvc::conversionSvc()    const   {
 }
 
 /// Add converter object to conversion service.
-StatusCode ConversionSvc::addConverter(const CLID& clid)  {
+StatusCode ConversionSvc::addConverter(const CLID& clid) {
   // First look for the more specific converter
   long typ = repSvcType();
   IConverter* pConverter = createConverter(typ, clid, nullptr);
-  if ( pConverter )    {
+  if ( pConverter ) {
     StatusCode status = configureConverter( typ, clid, pConverter );
-    if ( status.isSuccess() )   {
+    if ( status.isSuccess() ) {
       status = initializeConverter( typ, clid, pConverter );
-      if ( status.isSuccess() )   {
+      if ( status.isSuccess() ) {
         status = activateConverter( typ, clid, pConverter );
-        if ( status.isSuccess() )   {
+        if ( status.isSuccess() ) {
           long conv_typ  = pConverter->repSvcType();
           const CLID&   conv_clid = pConverter->objType();
           typ      = (typ<0xFF) ? typ : typ&0xFFFFFF00;
           conv_typ = (conv_typ<0xFF) ? conv_typ : conv_typ&0xFFFFFF00;
-          if ( conv_typ == typ && conv_clid == clid )   {
+          if ( conv_typ == typ && conv_clid == clid ) {
             return addConverter(pConverter);
           }
         }
@@ -238,7 +237,6 @@ StatusCode ConversionSvc::addConverter(IConverter* pConverter)    {
     const CLID& clid = pConverter->objType();
     removeConverter(clid).ignore();
     m_workers.emplace_back(clid, pConverter);
-    pConverter->addRef();
     return StatusCode::SUCCESS;
   }
   return NO_CONVERTER;
@@ -248,30 +246,28 @@ StatusCode ConversionSvc::addConverter(IConverter* pConverter)    {
 StatusCode ConversionSvc::removeConverter(const CLID& clid)  {
 
   auto i = std::partition( std::begin(m_workers), std::end(m_workers),
-                           std::not1( CnvTest{clid} ) );
+                           [f=CnvTest(clid)](const WorkerEntry& we)
+                           { return !f(we); } );
   if ( i == std::end(m_workers) ) return NO_CONVERTER;
   std::for_each( i, std::end(m_workers), []( WorkerEntry& w ) {
         w.converter()->finalize().ignore();
-        w.converter()->release();
   });
   m_workers.erase( i, std::end(m_workers) );
   return StatusCode::SUCCESS;
 }
 
 /// Initialize the service.
-StatusCode ConversionSvc::initialize()     {
-  StatusCode status = Service::initialize();
-  return status;
+StatusCode ConversionSvc::initialize() {
+  return Service::initialize();
 }
 
 /// stop the service.
-StatusCode ConversionSvc::finalize()      {
+StatusCode ConversionSvc::finalize() {
   // Release all workers.
   for ( auto& i : m_workers ) {
     if ( i.converter()->finalize().isFailure() ) {
       error() << "finalizing worker" << endmsg;
     }
-    i.converter()->release();
   }
   m_workers.clear();
   // release interfaces
@@ -296,8 +292,8 @@ IConverter* ConversionSvc::createConverter(long typ,
 
 /// Configure the freshly created converter
 StatusCode ConversionSvc::configureConverter(long /* typ */,
-                                              const CLID& /* clid */,
-                                              IConverter* pConverter)    {
+                                             const CLID& /* clid */,
+                                             IConverter* pConverter)    {
   if ( !pConverter ) return NO_CONVERTER;
   pConverter->setConversionSvc(this).ignore();
   pConverter->setAddressCreator(m_addressCreator).ignore();
@@ -317,8 +313,8 @@ StatusCode ConversionSvc::initializeConverter(long /* typ */,
 StatusCode ConversionSvc::activateConverter(long /* typ */,
                                             const CLID& /* clid */,
                                             IConverter* pConverter)    {
-  return pConverter ? StatusCode{StatusCode::SUCCESS}
-                    : NO_CONVERTER;
+  return pConverter ? StatusCode::SUCCESS
+                    : StatusCode(NO_CONVERTER);
 }
 
 /// Retrieve the class type of objects the converter produces.
@@ -366,7 +362,7 @@ StatusCode ConversionSvc::convertAddress( const IOpaqueAddress* /* pAddress */,
 }
 
 /// Convert an address in string form to object form
-StatusCode ConversionSvc::createAddress( long /* svc_type */,
+StatusCode ConversionSvc::createAddress(long /* svc_type */,
                                         const CLID& /* clid */,
                                         const std::string& /* refAddress */,
                                         IOpaqueAddress*& refpAddress)
@@ -377,16 +373,10 @@ StatusCode ConversionSvc::createAddress( long /* svc_type */,
 
 /// Standard Constructor
 ConversionSvc::ConversionSvc(const std::string& name, ISvcLocator* svc, long type)
- : base_class(name, svc),
-   m_cnvSvc(static_cast<IConversionSvc*>(this))
+: base_class(name, svc),
+  m_cnvSvc(this)
 {
   m_type            = type;
   m_dataSvc         = nullptr;
   setAddressCreator(this).ignore();
-}
-
-/// Standard Destructor
-ConversionSvc::~ConversionSvc()   {
-  // Release all workers.
-  for ( auto & i : m_workers ) i.converter()->release();
 }
