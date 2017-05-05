@@ -34,7 +34,7 @@ StatusCodeSvc        INFO initialize
 MyAlg               DEBUG Property update for OutputLevel : new value = 2
 MyAlg               DEBUG Initialize base class GaudiCommon<Algorithm>
 MyAlg               DEBUG could not locate CounterSummarySvc, no counter summary will be made
-MyAlg               DEBUG List of ALL properties of MyGaudiAlgorithm/MyAlg  #properties = 45
+MyAlg               DEBUG List of ALL properties of MyGaudiAlgorithm/MyAlg  #properties = 44
 MyAlg               DEBUG Property ['Name': Value] =  'trackSelection':/Event/MyAnalysis/Tracks
 MyAlg               DEBUG Property ['Name': Value] =  'raw':/Rec/RAW
 MyAlg               DEBUG Property ['Name': Value] =  'hits':/Event/Rec/Hits
@@ -61,7 +61,6 @@ MyAlg               DEBUG Property ['Name': Value] =  'ErrorsPrint':True
 MyAlg               DEBUG Property ['Name': Value] =  'IsIOBound':False
 MyAlg               DEBUG Property ['Name': Value] =  'NeededResources':[  ]
 MyAlg               DEBUG Property ['Name': Value] =  'Cardinality':1
-MyAlg               DEBUG Property ['Name': Value] =  'IsClonable':False
 MyAlg               DEBUG Property ['Name': Value] =  'RegisterForContextService':True
 MyAlg               DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
 MyAlg               DEBUG Property ['Name': Value] =  'Timeline':False

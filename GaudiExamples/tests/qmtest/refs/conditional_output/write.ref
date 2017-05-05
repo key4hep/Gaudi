@@ -72,7 +72,7 @@ TimelineSvc         DEBUG initialize
 DataCreator       VERBOSE ServiceLocatorHelper::service: found service TimelineSvc
 DataCreator         DEBUG Initialize base class GaudiCommon<Algorithm>
 DataCreator         DEBUG could not locate CounterSummarySvc, no counter summary will be made
-DataCreator         DEBUG List of ALL properties of GaudiTesting::PutDataObjectAlg/DataCreator  #properties = 38
+DataCreator         DEBUG List of ALL properties of GaudiTesting::PutDataObjectAlg/DataCreator  #properties = 37
 DataCreator         DEBUG Property ['Name': Value] =  'DataSvc':EventDataSvc
 DataCreator         DEBUG Property ['Name': Value] =  'Paths':[ 'A' , 'B' , 'C' , 'D' ]
 DataCreator         DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
@@ -92,7 +92,6 @@ DataCreator         DEBUG Property ['Name': Value] =  'ErrorsPrint':True
 DataCreator         DEBUG Property ['Name': Value] =  'IsIOBound':False
 DataCreator         DEBUG Property ['Name': Value] =  'NeededResources':[  ]
 DataCreator         DEBUG Property ['Name': Value] =  'Cardinality':1
-DataCreator         DEBUG Property ['Name': Value] =  'IsClonable':False
 DataCreator         DEBUG Property ['Name': Value] =  'RegisterForContextService':True
 DataCreator         DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
 DataCreator         DEBUG Property ['Name': Value] =  'Timeline':False
@@ -124,7 +123,7 @@ OddEvents         VERBOSE ServiceLocatorHelper::service: found service EventData
 OddEvents         VERBOSE ServiceLocatorHelper::service: found service TimelineSvc
 OddEvents           DEBUG Initialize base class GaudiCommon<Algorithm>
 OddEvents           DEBUG could not locate CounterSummarySvc, no counter summary will be made
-OddEvents           DEBUG List of ALL properties of GaudiTesting::OddEventsFilter/OddEvents  #properties = 36
+OddEvents           DEBUG List of ALL properties of GaudiTesting::OddEventsFilter/OddEvents  #properties = 35
 OddEvents           DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
 OddEvents           DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
 OddEvents           DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
@@ -142,7 +141,6 @@ OddEvents           DEBUG Property ['Name': Value] =  'ErrorsPrint':True
 OddEvents           DEBUG Property ['Name': Value] =  'IsIOBound':False
 OddEvents           DEBUG Property ['Name': Value] =  'NeededResources':[  ]
 OddEvents           DEBUG Property ['Name': Value] =  'Cardinality':1
-OddEvents           DEBUG Property ['Name': Value] =  'IsClonable':False
 OddEvents           DEBUG Property ['Name': Value] =  'RegisterForContextService':True
 OddEvents           DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
 OddEvents           DEBUG Property ['Name': Value] =  'Timeline':False
@@ -172,7 +170,7 @@ EvenEvents        VERBOSE ServiceLocatorHelper::service: found service EventData
 EvenEvents        VERBOSE ServiceLocatorHelper::service: found service TimelineSvc
 EvenEvents          DEBUG Initialize base class GaudiCommon<Algorithm>
 EvenEvents          DEBUG could not locate CounterSummarySvc, no counter summary will be made
-EvenEvents          DEBUG List of ALL properties of GaudiTesting::EvenEventsFilter/EvenEvents  #properties = 36
+EvenEvents          DEBUG List of ALL properties of GaudiTesting::EvenEventsFilter/EvenEvents  #properties = 35
 EvenEvents          DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
 EvenEvents          DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
 EvenEvents          DEBUG Property ['Name': Value] =  'StatEntityList':[  ]
@@ -190,7 +188,6 @@ EvenEvents          DEBUG Property ['Name': Value] =  'ErrorsPrint':True
 EvenEvents          DEBUG Property ['Name': Value] =  'IsIOBound':False
 EvenEvents          DEBUG Property ['Name': Value] =  'NeededResources':[  ]
 EvenEvents          DEBUG Property ['Name': Value] =  'Cardinality':1
-EvenEvents          DEBUG Property ['Name': Value] =  'IsClonable':False
 EvenEvents          DEBUG Property ['Name': Value] =  'RegisterForContextService':True
 EvenEvents          DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
 EvenEvents          DEBUG Property ['Name': Value] =  'Timeline':False

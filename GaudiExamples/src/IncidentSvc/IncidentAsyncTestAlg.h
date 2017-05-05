@@ -18,6 +18,8 @@ public:
   StatusCode execute() override;
   StatusCode finalize() override;
 
+  bool isClonable() const override { return true; }
+
   static std::string& incident();
 
 private:

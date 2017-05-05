@@ -480,8 +480,8 @@ private:
   void initToolHandles() const;
 
 public:
-  /// Specifies the clonability of the algorithm
-  bool isClonable() const override { return m_isClonable; }
+  // /// Specifies the clonability of the algorithm
+  // bool isClonable() const override { return false; }
 
   /// Return the cardinality
   unsigned int cardinality() const override { return m_cardinality; }
@@ -547,7 +547,7 @@ private:
 protected:
   /// Hook for for derived classes to provide a custom visitor for data handles.
   std::unique_ptr<IDataHandleVisitor> m_updateDataHandles;
-
+  
 private:
   // Properties
   Gaudi::Property<int> m_outputLevel{this, "OutputLevel", MSG::NIL, "output level"};
@@ -574,7 +574,6 @@ private:
   Gaudi::Property<bool> m_registerContext{this, "RegisterForContextService", false,
                                           "flag to enforce the registration for Algorithm Context Service"};
 
-  Gaudi::Property<bool> m_isClonable{this, "IsClonable", false, "thread-safe enough for cloning?"};
   Gaudi::Property<int> m_cardinality{this, "Cardinality", 1, "how many clones to create - 0 means algo is reentrant"};
   Gaudi::Property<std::vector<std::string>> m_neededResources{
       this, "NeededResources", {}, "named resources needed during event looping"};

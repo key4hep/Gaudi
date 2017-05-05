@@ -41,13 +41,11 @@ product_name="MyCollision"
 
 writer = WriteHandleAlg("Writer",
                         OutputLevel=DEBUG,
-                        UseHandle=True,
-                        IsClonable=True)
+                        UseHandle=True)
 writer.Output.Path = "/Event/"+product_name
 
 reader = ReadHandleAlg("Reader",
-                       OutputLevel=DEBUG,
-                       IsClonable=True)
+                       OutputLevel=DEBUG)
 reader.Input.Path = product_name
 
 

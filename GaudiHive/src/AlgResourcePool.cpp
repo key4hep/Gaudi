@@ -337,7 +337,26 @@ StatusCode AlgResourcePool::decodeTopAlgs()    {
 
     queue->push(ialgo);
     m_algList.push_back(ialgo);
-    m_n_of_allowed_instances[algo_id] = ialgo->cardinality();
+    if (ialgo->isClonable()) {
+      m_n_of_allowed_instances[algo_id] = ialgo->cardinality();
+    } else {
+      if (ialgo->cardinality() == 1) {
+        m_n_of_allowed_instances[algo_id] = 1;
+      } else {
+        if (! m_overrideUnClonable) {
+          info() << "Algorithm " << ialgo->name() 
+                 << " is un-Clonable but Cardinality was set to " 
+                 << ialgo->cardinality()
+                 << ". Only creating 1 instance" << endmsg;
+          m_n_of_allowed_instances[algo_id] = 1;
+        } else {
+          warning() << "Overriding UnClonability of Algorithm " 
+                    << ialgo->name() << ". Setting Cardinality to "
+                    << ialgo->cardinality() << endmsg;
+          m_n_of_allowed_instances[algo_id] = ialgo->cardinality();
+        }
+      }
+    }
     m_n_of_created_instances[algo_id] = 1;
 
     state_type requirements(0);
@@ -357,7 +376,7 @@ StatusCode AlgResourcePool::decodeTopAlgs()    {
 
     // potentially create clones; if not lazy creation we have to do it now
     if (!m_lazyCreation) {
-      for (unsigned int i =1, end =ialgo->cardinality();i<end; ++i){
+      for (unsigned int i =1, end =m_n_of_allowed_instances[algo_id];i<end; ++i){
         debug() << "type/name to create clone of: " << item_type << "/"
                 << item_name << endmsg;
         IAlgorithm* ialgoClone(nullptr);

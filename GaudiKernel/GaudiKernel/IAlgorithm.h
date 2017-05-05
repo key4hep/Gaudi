@@ -52,7 +52,7 @@ public:
 
   /** Specify if the algorithm is clonable
    */
-  virtual bool isClonable() const = 0;
+  virtual bool isClonable() const { return false; }
 
   /** Cardinality (Maximum number of clones that can exist)
    *  special value 0 means that algorithm is reentrant
