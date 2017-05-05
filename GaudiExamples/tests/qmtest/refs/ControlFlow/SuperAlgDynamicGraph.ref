@@ -31,7 +31,7 @@ seq_2                INFO Member list: Prescaler/s2_Prescaler, EventCounter/s2_C
 s2_Prescaler        DEBUG Property update for OutputLevel : new value = 2
 s2_Prescaler        DEBUG Initialize base class GaudiCommon<Algorithm>
 s2_Prescaler        DEBUG could not locate CounterSummarySvc, no counter summary will be made
-s2_Prescaler        DEBUG List of ALL properties of Prescaler/s2_Prescaler  #properties = 37
+s2_Prescaler        DEBUG List of ALL properties of Prescaler/s2_Prescaler  #properties = 36
 s2_Prescaler        DEBUG Property ['Name': Value] =  'PercentPass':75.000000
 s2_Prescaler        DEBUG Property ['Name': Value] =  'RequireObjects':[  ]
 s2_Prescaler        DEBUG Property ['Name': Value] =  'VetoObjects':[  ]
@@ -49,7 +49,6 @@ s2_Prescaler        DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 s2_Prescaler        DEBUG Property ['Name': Value] =  'ErrorsPrint':True
 s2_Prescaler        DEBUG Property ['Name': Value] =  'NeededResources':[  ]
 s2_Prescaler        DEBUG Property ['Name': Value] =  'Cardinality':1
-s2_Prescaler        DEBUG Property ['Name': Value] =  'IsClonable':False
 s2_Prescaler        DEBUG Property ['Name': Value] =  'RegisterForContextService':True
 s2_Prescaler        DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
 s2_Prescaler        DEBUG Property ['Name': Value] =  'Timeline':False

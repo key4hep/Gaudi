@@ -30,7 +30,7 @@ RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
 RndmGenSvc.Engine    INFO Current Seed:1234567 Luxury:3
 RndmGenSvc           INFO Using Random engine:HepRndm::Engine<CLHEP::RanluxEngine>
 EvtTupleSvc          INFO Added stream file:PFN:EvtColsEx.tags as EVTCOLS
-Fill              SUCCESS List of ALL properties of Gaudi::Examples::EvtColAlg/Fill  #properties = 65
+Fill              SUCCESS List of ALL properties of Gaudi::Examples::EvtColAlg/Fill  #properties = 64
 Fill              SUCCESS Property ['Name': Value] =  'EvtColDir':Fill
 Fill              SUCCESS Property ['Name': Value] =  'EvtColTopDir':
 Fill              SUCCESS Property ['Name': Value] =  'EvtColLUN':EVTCOLS
@@ -77,7 +77,6 @@ Fill              SUCCESS Property ['Name': Value] =  'ErrorsPrint':True
 Fill              SUCCESS Property ['Name': Value] =  'IsIOBound':False
 Fill              SUCCESS Property ['Name': Value] =  'NeededResources':[  ]
 Fill              SUCCESS Property ['Name': Value] =  'Cardinality':1
-Fill              SUCCESS Property ['Name': Value] =  'IsClonable':False
 Fill              SUCCESS Property ['Name': Value] =  'RegisterForContextService':True
 Fill              SUCCESS Property ['Name': Value] =  'MonitorService':MonitorSvc
 Fill              SUCCESS Property ['Name': Value] =  'Timeline':False

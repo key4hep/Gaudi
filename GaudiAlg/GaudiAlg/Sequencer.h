@@ -93,6 +93,11 @@ public:
    **/
 
   /**
+   ** Identify as a Sequence
+   **/
+  bool isSequence() const override final { return true; }
+
+  /**
    ** Was the branch filter passed for the last event?
    **/
   virtual bool branchFilterPassed() const;

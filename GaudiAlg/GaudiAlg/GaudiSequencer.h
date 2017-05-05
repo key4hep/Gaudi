@@ -38,6 +38,8 @@ public:
   StatusCode beginRun() override; ///< Algorithm beginRun
   StatusCode endRun() override;   ///< Algorithm endRun
 
+  bool isSequence() const override final { return true; }
+
   /** for asynchronous changes in the list of algorithms */
   void membershipHandler( Gaudi::Details::PropertyBase& theProp );
 

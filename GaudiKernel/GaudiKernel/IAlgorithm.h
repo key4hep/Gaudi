@@ -52,7 +52,7 @@ public:
 
   /** Specify if the algorithm is clonable
    */
-  virtual bool isClonable() const = 0;
+  virtual bool isClonable() const { return false; }
 
   /** Cardinality (Maximum number of clones that can exist)
    *  special value 0 means that algorithm is reentrant
@@ -151,6 +151,9 @@ public:
 
   /// Is this algorithm enabled or disabled?
   virtual bool isEnabled( ) const = 0;
+
+  /// Are we a Sequence?
+  virtual bool isSequence() const = 0;
 
   /// Did this algorithm pass or fail its filter criterion for the last event?
   virtual bool filterPassed( ) const = 0;

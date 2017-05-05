@@ -210,8 +210,8 @@ StatusCode CPUCruncher::execute() // the execution of the algorithm
   float crunchtime;
 
   if ( m_local_rndm_gen ) {
-    /* This will disappear with a thread safe random number generator svc
-     * Use box mueller to generate gaussian randoms
+    /* This will disappear with a thread safe random number generator service.
+     * Use basic Box-Muller to generate Gaussian random numbers.
      * The quality is not good for in depth study given that the generator is a
      * linear congruent.
      * Throw away basically a free number: we are in a cpu cruncher after all.
@@ -227,7 +227,7 @@ StatusCode CPUCruncher::execute() // the execution of the algorithm
       unsigned int seed = std::clock();
 
       auto getUnifRandom = []( unsigned int& seed ) -> double {
-        // from numerical recipies
+        // from "Numerical Recipes"
         constexpr unsigned int m = 232;
         constexpr unsigned int a = 1664525;
         constexpr unsigned int c = 1013904223;
@@ -236,11 +236,17 @@ StatusCode CPUCruncher::execute() // the execution of the algorithm
         return unif;
       };
 
-      const double unif1  = getUnifRandom( seed );
-      const double unif2  = getUnifRandom( seed );
+      double unif1, unif2;
+      do {
+        unif1  = getUnifRandom( seed );
+        unif2  = getUnifRandom( seed );
+      } while (unif1 == 0.);
+
       const double normal = sqrt( -2. * log( unif1 ) ) * cos( 2 * M_PI * unif2 );
+
       return normal * sigma + mean;
     };
+
     crunchtime = fabs( getGausRandom( m_avg_runtime * ( 1. - m_sleepFraction ), m_var_runtime ) );
     // End Of temp block
   } else {

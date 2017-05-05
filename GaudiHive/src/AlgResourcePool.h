@@ -81,6 +81,8 @@ private:
   Gaudi::Property<bool> m_lazyCreation{this, "CreateLazily", false, ""};
   Gaudi::Property<std::vector<std::string>> m_topAlgNames{
       this, "TopAlg", {}, "names of the algorithms to be passed to the algorithm manager"};
+  Gaudi::Property<bool> m_overrideUnClonable{this, "OverrideUnClonable", false, 
+      "override the Un-Clonability of Algorithms. Use with caution!"};
 
   /// The list of all algorithms created withing the Pool which are not top
   ListAlg m_algList;

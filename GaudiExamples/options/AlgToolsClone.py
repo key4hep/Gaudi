@@ -9,8 +9,7 @@ GaudiExamplesCommonConf()
 
 myalg = MyAlgorithm('MyAlg',
                     PrivateToolsOnly = True,
-                    Cardinality = 20,
-                    IsClonable = True)
+                    Cardinality = 20)
 
 ToolSvc(OutputLevel = INFO )
 

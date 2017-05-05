@@ -26,6 +26,8 @@ public:
   /// Constructor: A constructor of this form must be provided.
   ReadHandleAlg(const std::string& nam, ISvcLocator* pSvc);
 
+  bool isClonable() const override { return true; }
+
   /// Standard Destructor
   ~ReadHandleAlg() override = default;
 
