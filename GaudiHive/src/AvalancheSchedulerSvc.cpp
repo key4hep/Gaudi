@@ -906,7 +906,7 @@ StatusCode AvalancheSchedulerSvc::promoteToAsyncScheduled( unsigned int iAlgo, i
     ++m_IOBoundAlgosInFlight;
     // Can we use tbb-based overloaded new-operator for a "custom" task (an algorithm wrapper, not derived from tbb::task)? it seems it works..
     IOBoundAlgTask* theTask = new( tbb::task::allocate_root() )
-      IOBoundAlgTask(ialgoPtr, iAlgo, eventContext, serviceLocator(), m_algExecStateSvc);
+      IOBoundAlgTask(ialgoPtr, eventContext, serviceLocator(), m_algExecStateSvc);
     m_IOBoundAlgScheduler->push(*theTask);
 
     if (msgLevel(MSG::DEBUG))
