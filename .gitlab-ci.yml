@@ -1,46 +1,74 @@
+stages:
+  - build
+  - test
+  - deploy
+
 before_script:
   - export BINARY_TAG=x86_64-slc6-gcc62-opt
+  - export LCG_hostos=x86_64-slc6
   - export PATH=/cvmfs/sft.cern.ch/lcg/contrib/CMake/3.7.0/Linux-x86_64/bin:/cvmfs/sft.cern.ch/lcg/contrib/ninja/1.7.1/x86_64-slc6:/cvmfs/sft.cern.ch/lcg/releases/Python/2.7.13-597a5/${BINARY_TAG}/bin:${PATH}
+  - export LCG_release_area=/cvmfs/sft.cern.ch/lcg/releases
   - export PATH=/cvmfs/lhcb.cern.ch/lib/lhcb/LBSCRIPTS/dev/InstallArea/scripts:${PATH}
-  - export CMAKE_PREFIX_PATH=/cvmfs/sft.cern.ch/lcg/releases
+  - export CMAKE_PREFIX_PATH=/cvmfs/sft.cern.ch/lcg/releases:/cvmfs/projects.cern.ch/intelsw/psxe/linux/x86_64/2017/vtune_amplifier_xe
+  - export CCACHE_DIR=${PWD}/.ccache
 
 build:
+  image: lhcbdev/slc6-build-cvmfs:latest
   stage: build
   script:
+    - curl -o artifacts.zip --location ${CI_PROJECT_URL}/builds/artifacts/master/download?job=build
+    - unzip -q artifacts.zip '.ccache/*' || true
+    - /cvmfs/sft.cern.ch/lcg/releases/ccache/3.3.4-e92e5/${BINARY_TAG}/bin/ccache -z
     - echo 'set(CMAKE_USE_CCACHE ON CACHE BOOL "")' >> cache_preload.cmake
-    - make
-    - mv build.${BINARY_TAG} build
-  tags:
-    - slc6
+    - make BUILDDIR=build
+    - /cvmfs/sft.cern.ch/lcg/releases/ccache/3.3.4-e92e5/${BINARY_TAG}/bin/ccache -s
   artifacts:
     paths:
-      - build/
-    expire_in: 1 day
+      - build
+      - .ccache
+    expire_in: 1 week
 
 doxygen:
+  image: lhcbdev/slc6-build-cvmfs:latest
   stage: test
   script:
-    - mv build build.${BINARY_TAG}
-    - make doc
-    - mv build.${BINARY_TAG}/doxygen .
-  tags:
-    - slc6
+    - make BUILDDIR=build doc
+    - rm -rf public
+    - mkdir -p public/doxygen
+    - mv build/doxygen/html ${CI_COMMIT_REF_NAME}
+    - yum install -y zip
+    - zip -r public/doxygen/${CI_COMMIT_REF_NAME}.zip ${CI_COMMIT_REF_NAME}
   only:
     - master
+    - tags
   artifacts:
     paths:
-      - doxygen/
-    expire_in: 1 week
+      - public
+    expire_in: 1 day
 
 test:
+  image: lhcbdev/slc6-build-cvmfs:latest
   stage: test
   script:
-    - mv build build.${BINARY_TAG}
-    - make test ARGS='-j4'
-    - mv build.${BINARY_TAG}/html test_report
-  tags:
-    - slc6
+    - make BUILDDIR=build test ARGS='-j4'
+    - mv build/html test_report
   artifacts:
     paths:
-      - test_report/
+      - test_report
     expire_in: 1 week
+
+# see https://gitlab.cern.ch/gitlabci-examples/deploy_eos for the details
+# of the configuration
+deploy-doxygen:
+  stage: deploy
+  only:
+    - master
+    - tags
+  image: gitlab-registry.cern.ch/ci-tools/ci-web-deployer:latest
+  script:
+    # Script that performs the deploy to EOS. Makes use of the variables defined in the project
+    # It will copy the generated content to the folder in EOS
+    - deploy-eos
+  # do not run any globally defined before_script or after_script for this step
+  before_script: []
+  after_script: []

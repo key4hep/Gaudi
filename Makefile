@@ -95,7 +95,7 @@ ifneq ($(USE_NINJA),)
 else
   BUILD_CONF_FILE := Makefile
 endif
-BUILD_CMD := $(CMAKE) --build build.$(BINARY_TAG) --target
+BUILD_CMD := $(CMAKE) --build $(BUILDDIR) --target
 
 # default target
 all:
