@@ -147,7 +147,7 @@ public:
 
   // ---- Function useful for dealing with sub-algorithms
   /// Set the executed flag to the specified state
-  virtual void setExecuted( bool state ) = 0;
+  virtual void setExecuted( bool state ) const = 0;
 
   /// Is this algorithm enabled or disabled?
   virtual bool isEnabled( ) const = 0;
@@ -159,7 +159,7 @@ public:
   virtual bool filterPassed( ) const = 0;
 
   /// Set the filter passed flag to the specified state
-  virtual void setFilterPassed( bool state ) = 0;
+  virtual void setFilterPassed( bool state ) const = 0;
 
   /// Produce string represention of the control flow expression.
   virtual std::ostream& toControlFlowExpression(std::ostream& os) const = 0;
