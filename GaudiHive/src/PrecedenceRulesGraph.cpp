@@ -591,31 +591,35 @@ namespace concurrency
 
     StatusCode sc = StatusCode::SUCCESS;
 
+    // Create new, or fetch existent, AlgorithmNode
     auto& algoName = algo->name();
-
-    auto itP = m_decisionNameToDecisionHubMap.find( parentName );
-    concurrency::DecisionNode* parentNode;
-    if ( itP != m_decisionNameToDecisionHubMap.end() ) {
-      parentNode = itP->second;
-      auto itA   = m_algoNameToAlgoNodeMap.find( algoName );
-      concurrency::AlgorithmNode* algoNode;
-      if ( itA != m_algoNameToAlgoNodeMap.end() ) {
-        algoNode = itA->second;
-      } else {
-        algoNode = new concurrency::AlgorithmNode( *this, m_nodeCounter, algoName, inverted, allPass, algo->isIOBound() );
-        ++m_nodeCounter;
-        m_algoNameToAlgoNodeMap[algoName] = algoNode;
-        if (msgLevel(MSG::DEBUG))
-          debug() << "AlgoNode " << algoName << " added @ " << algoNode << endmsg;
-        registerIODataObjects(algo);
-      }
-
-      parentNode->addDaughterNode( algoNode );
-      algoNode->addParentNode( parentNode );
+    auto itA   = m_algoNameToAlgoNodeMap.find( algoName );
+    concurrency::AlgorithmNode* algoNode;
+    if ( itA != m_algoNameToAlgoNodeMap.end() ) {
+      algoNode = itA->second;
     } else {
-      sc = StatusCode::FAILURE;
-      error() << "Decision hub node " << parentName << ", requested to be parent, is not registered."
-              << endmsg;
+      algoNode = new concurrency::AlgorithmNode( *this, m_nodeCounter, algoName, inverted, allPass, algo->isIOBound() );
+      ++m_nodeCounter;
+      m_algoNameToAlgoNodeMap[algoName] = algoNode;
+      if (msgLevel(MSG::DEBUG))
+        debug() << "AlgoNode " << algoName << " added @ " << algoNode << endmsg;
+      registerIODataObjects(algo);
+    }
+
+    // Attach AlgorithmNode to its CF decision hub, or leave it detached if so requested
+    if (!parentName.empty()) {
+      auto itP = m_decisionNameToDecisionHubMap.find( parentName );
+      if ( itP != m_decisionNameToDecisionHubMap.end() ) {
+        auto parentNode = itP->second;
+        parentNode->addDaughterNode( algoNode );
+        algoNode->addParentNode( parentNode );
+      } else {
+        sc = StatusCode::FAILURE;
+        error() << "Decision hub node " << parentName << ", requested to be parent, is not registered."
+                << endmsg;
+      }
+    } else {
+      info() << "AlgoNode " << algoName << " requested not to participate in the CF realm, so be it.";
     }
 
     return sc;
