@@ -151,12 +151,17 @@ StatusCode AlgContextSvc::unSetCurrentAlg ( IAlgorithm* a )
     if(currSlot==EventContext::INVALID_CONTEXT_ID) currSlot=0;
     if(!m_inEvtLoop[currSlot]) return StatusCode::SUCCESS;  
   }
+
   if(a->type()!="IncidentProcAlg"){
-    if ( m_algorithms->empty() || m_algorithms->back() != a ){
-      error() << "Algorithm stack is invalid" << endmsg ;
-      return StatusCode::FAILURE ;
+    // if ( m_algorithms->empty() || m_algorithms->back() != a ){
+    //   error() << "Algorithm stack is invalid" << endmsg ;
+    //   return StatusCode::FAILURE ;
+    // }
+    if(!m_algorithms->empty()){
+      if(m_algorithms->back()==a){
+	m_algorithms->pop_back() ;
+      }
     }
-    m_algorithms->pop_back() ;
   }
   return StatusCode::SUCCESS ;
 }
