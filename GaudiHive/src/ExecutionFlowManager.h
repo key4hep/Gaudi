@@ -31,7 +31,8 @@ namespace concurrency {
     StatusCode initialize(PrecedenceRulesGraph* graph,
                           const std::unordered_map<std::string,unsigned int>& algname_index_map,
                           std::vector<EventSlot>& eventSlots,
-                          const std::string& mode);
+                          const std::string& mode,
+                          bool enableCondSvc);
     ///
     void simulateExecutionFlow(IGraphVisitor& visitor) const;
     /// Get the flow graph instance

@@ -129,9 +129,9 @@ namespace concurrency {
     bool m_modeOR;
     /// Whether always passing regardless of daughter results
     bool m_allPass;
-  private:
     /// All direct daughter nodes in the tree
     std::vector<ControlFlowNode*> m_children;
+  private:
     /// XXX: CF tests. All direct parent nodes in the tree
     std::vector<DecisionNode*> m_parents;
   };
@@ -213,6 +213,9 @@ namespace concurrency {
                             AlgsExecutionStates& states,
                             const std::vector<int>& node_decisions,
                             const unsigned int& recursionLevel) const override;
+  public:
+    /// XXX: CF tests
+    std::vector<DecisionNode*> m_parents;
   private:
     /// The index of the algorithm
     unsigned int m_algoIndex;
@@ -222,8 +225,6 @@ namespace concurrency {
     bool m_inverted;
     /// Whether the selection result is relevant or always "pass"
     bool m_allPass;
-    /// XXX: CF tests
-    std::vector<DecisionNode*> m_parents;
 
     /// Vectors, used in data dependencies realm
     /// AlgorithmNodes that represent algorithms producing an input needed for the algorithm
@@ -316,7 +317,7 @@ public:
     /// Initialize graph
     StatusCode initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map);
     StatusCode initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map,
-                          std::vector<EventSlot>& eventSlots);
+                          std::vector<EventSlot>& eventSlots, bool enableCondSvc);
     /// Register algorithm in the Data Dependency index
     void registerIODataObjects(const Algorithm* algo);
     /// Build data dependency realm WITHOUT data object nodes: just interconnect algorithm nodes directly
@@ -394,13 +395,14 @@ private:
     AlgoOutputsMap m_algoNameToAlgoOutputsMap;
     /// Total number of nodes in the graph
     unsigned int m_nodeCounter;
-    /// Service locator (needed to access the MessageSvc)
+    /// Service locator
     mutable SmartIF<ISvcLocator> m_svcLocator;
     const std::string m_name;
     const std::chrono::system_clock::time_point m_initTime;
     /// temporary items to experiment with execution planning
     boost::ExecPlan m_ExecPlan;
     std::map<std::string,boost::AlgoVertex> m_exec_plan_map;
+    bool m_conditionsRealmEnabled{false};
 public:
     std::vector<EventSlot>* m_eventSlots;
 

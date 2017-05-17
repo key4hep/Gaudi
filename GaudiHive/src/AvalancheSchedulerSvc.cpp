@@ -298,7 +298,7 @@ StatusCode AvalancheSchedulerSvc::initialize() {
     fatal() << "Unable to dcast algResourcePool" << endmsg;
     return StatusCode::FAILURE;
   }
-  sc = m_efManager.initialize( algPool->getPRGraph(), m_algname_index_map, m_eventSlots, m_optimizationMode );
+  sc = m_efManager.initialize( algPool->getPRGraph(), m_algname_index_map, m_eventSlots, m_optimizationMode, m_enableCondSvc );
   unsigned int controlFlowNodeNumber = m_efManager.getPrecedenceRulesGraph()->getControlFlowNodeCounter();
 
   // Shortcut for the message service
