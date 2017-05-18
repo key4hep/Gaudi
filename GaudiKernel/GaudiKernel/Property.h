@@ -336,7 +336,7 @@ namespace Gaudi
   public:
     // ==========================================================================
     /// the constructor with property name, value and documentation.
-    template <class T = ValueType>
+    template <class T = StorageType>
     inline Property( std::string name, T&& value, std::string doc = "" )
         : Details::PropertyBase( typeid( ValueType ), std::move( name ), std::move( doc ) )
         , m_value( std::forward<T>( value ) )
@@ -345,9 +345,9 @@ namespace Gaudi
     }
     /// Autodeclaring constructor with property name, value and documentation.
     /// @note the use std::enable_if is required to avoid ambiguities
-    template <class OWNER, class T = ValueType,
+    template <class OWNER,
               typename = typename std::enable_if<std::is_base_of<IProperty, OWNER>::value>::type,
-              typename = typename std::enable_if<std::is_default_constructible<T>::value>::type>
+              typename = typename std::enable_if<std::is_default_constructible<ValueType>::value>::type>
     inline Property( OWNER* owner, std::string name )
         : Property( std::move( name ), ValueType{}, "" )
     {
@@ -357,7 +357,7 @@ namespace Gaudi
 
     /// Autodeclaring constructor with property name, value and documentation.
     /// @note the use std::enable_if is required to avoid ambiguities
-    template <class OWNER, class T = ValueType,
+    template <class OWNER, class T = StorageType,
               typename = typename std::enable_if<std::is_base_of<IProperty, OWNER>::value>::type>
     inline Property( OWNER* owner, std::string name, T&& value, std::string doc = "" )
         : Property( std::move( name ), std::forward<T>( value ), std::move( doc ) )
@@ -369,7 +369,7 @@ namespace Gaudi
     /// Construct an anonymous property from a value.
     /// This constructor is not generated if T is the current type, so that the
     /// compiler picks up the copy constructor instead of this one.
-    template <class T = ValueType, typename = typename not_copying<T>::type>
+    template <class T, typename = typename not_copying<T>::type>
     Property( T&& v ) : Details::PropertyBase( typeid( ValueType ), "", "" ), m_value( std::forward<T>( v ) )
     {
     }
