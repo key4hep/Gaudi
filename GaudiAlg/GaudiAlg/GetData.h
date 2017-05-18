@@ -13,6 +13,7 @@
 // ============================================================================
 #include "GaudiKernel/Range.h"
 #include "GaudiKernel/NamedRange.h"
+#include "GaudiKernel/AnyDataWrapper.h"
 // ============================================================================
 // Forward declaration
 // ============================================================================
@@ -54,17 +55,49 @@ namespace Gaudi
     { typedef Gaudi::NamedRange_<CONTAINER> return_type ; };
     // ========================================================================
     /** Helper function to provide the minimal lookup and cast functionality
-     * of SmartDataPtr used in the helper classes.
+     *  of SmartDataPtr used in the helper classes.
+     *  This version is dealing with the general case, where AnyDataWrapper cannot be used
      */
-    template <class TYPE>
+    template <class TYPE, typename std::enable_if<!std::is_constructible<TYPE>::value,void*>::type=nullptr>
     inline
     typename _GetType<TYPE>::return_type getFromTS(IDataProviderSvc*  service  ,
                                                    const std::string& location ) {
       DataObject *obj = nullptr;
       // Return the casted pointer if the retrieve was successful or nullptr otherwise.
-      return service->retrieveObject(location, obj).isSuccess() ?
-             dynamic_cast<typename _GetType<TYPE>::return_type>(obj) :
-             nullptr;
+      StatusCode sc = service->retrieveObject(location, obj);
+      if (sc.isSuccess()) {
+        typename _GetType<TYPE>::return_type tobj = dynamic_cast<typename _GetType<TYPE>::return_type>(obj);
+        return tobj;
+      } else {
+        return nullptr;
+      }
+    }
+    // ========================================================================
+    /** Helper function to provide the minimal lookup and cast functionality
+     *  of SmartDataPtr used in the helper classes.
+     *  This version allows the use of AnyDataWrapper but restricts to the case
+     *  where TYPE is constructible
+     */
+    template <class TYPE, typename std::enable_if<std::is_constructible<TYPE>::value,void*>::type=nullptr>
+    inline
+    typename _GetType<TYPE>::return_type getFromTS(IDataProviderSvc*  service  ,
+                                                   const std::string& location ) {
+      DataObject *obj = nullptr;
+      // Return the casted pointer if the retrieve was successful or nullptr otherwise.
+      StatusCode sc = service->retrieveObject(location, obj);
+      if (sc.isSuccess()) {
+        typename _GetType<TYPE>::return_type tobj = dynamic_cast<typename _GetType<TYPE>::return_type>(obj);
+        if (!tobj) {
+          // try with AnyDataWrapper
+          AnyDataWrapper<TYPE>* tobj2 = dynamic_cast<AnyDataWrapper<TYPE>*>(obj);
+          if (tobj2) {
+            tobj = &(tobj2->getData());
+          }
+        }
+        return tobj;
+      } else {
+        return nullptr;
+      }
     }
     // ========================================================================
     /** @struct GetData GaudiUtils/GetData.h
