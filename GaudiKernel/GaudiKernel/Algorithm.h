@@ -195,7 +195,7 @@ public:
   bool isExecuted() const override;
 
   /// Set the executed flag to the specified state
-  void setExecuted( bool state ) override;
+  void setExecuted( bool state ) const override;
 
   /** Reset the executed state of the Algorithm for the duration
    *  of the current event.
@@ -220,7 +220,7 @@ public:
   bool filterPassed() const override;
 
   /// Set the filter passed flag to the specified state
-  void setFilterPassed( bool state ) override;
+  void setFilterPassed( bool state ) const override;
 
   /// Get the number of failures of the algorithm.
   unsigned int errorCount() const;
