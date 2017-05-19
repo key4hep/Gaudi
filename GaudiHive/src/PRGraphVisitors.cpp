@@ -15,13 +15,11 @@ namespace concurrency {
 
     for ( auto dataNode : node.getInputDataNodes() ) {
 
-      if (visitEnter(*dataNode)) {
-        result = visit(*dataNode);
+      result = dataNode->accept(*this);
 
-        // With ConditionNodes, one may decide NOT to break here so that associated
-        // ConditionAlgorithms are scheduled ASAP. This behavior can be made configurable
-        if (!result) break; // skip checking other inputs if this input was not produced yet
-      }
+      // With ConditionNodes, one may decide NOT to break here so that associated
+      // ConditionAlgorithms are scheduled ASAP. This behavior can be made configurable
+      if (!result) break; // skip checking other inputs if this input was not produced yet
     }
 
     if (result)
