@@ -250,10 +250,11 @@ public:
     /// Constructor
     DataNode(PrecedenceRulesGraph& graph, const DataObjID& path): m_graph(&graph), m_data_object_path(path) {}
     /// Destructor
-    ~DataNode() {}
+    virtual ~DataNode() = default;
     const DataObjID& getPath() {return m_data_object_path;}
+
     /// Entry point for a visitor
-    bool accept(IGraphVisitor& visitor) {
+    virtual bool accept(IGraphVisitor& visitor) {
       if (visitor.visitEnter(*this))
         return visitor.visit(*this);
       return true;
@@ -272,6 +273,7 @@ public:
     const std::vector<AlgorithmNode*>& getProducers() const {return m_producers;}
     /// Get all data object consumers
     const std::vector<AlgorithmNode*>& getConsumers() const {return m_consumers;}
+
 public:
     PrecedenceRulesGraph* m_graph;
     DataObjID m_data_object_path;
@@ -284,8 +286,15 @@ public:
   /// Constructor
   ConditionNode(PrecedenceRulesGraph& graph, const DataObjID& path, SmartIF<ICondSvc> condSvc):
     DataNode(graph, path), m_condSvc(condSvc) {}
-  /// Destructor
-  ~ConditionNode() {}
+
+  /// Need to hide the (identical) base method with this one so that
+  /// visitEnter(ConditionNode&) and visit(ConditionNode&) are called
+  bool accept(IGraphVisitor& visitor) override {
+    if (visitor.visitEnter(*this))
+      return visitor.visit(*this);
+    return true;
+  }
+
 public:
   // Service for Conditions handling
   SmartIF<ICondSvc> m_condSvc;
