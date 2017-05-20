@@ -394,26 +394,23 @@ namespace Genfun
     private:
 
       std::unique_ptr<const AbsFunction>  m_function ;
-      size_t                              m_DIM      ;
+      size_t                              m_DIM = 0  ;
       size_t                              m_index    ;
 
-      double                              m_a        ;
-      double                              m_b        ;
-      bool                                m_ia       ;
-      bool                                m_ib       ;
+      double                              m_a  = -std::numeric_limits<double>::infinity();
+      double                              m_b  = std::numeric_limits<double>::infinity();
 
       GaudiMath::Integration::Type        m_type     ;
       GaudiMath::Integration::Category    m_category ;
       GaudiMath::Integration::KronrodRule m_rule     ;
 
       Points                              m_points   ;
-      std::unique_ptr<double[]>           m_pdata    ;
 
       double                              m_epsabs   ;
       double                              m_epsrel   ;
 
-      mutable double                      m_result   ;
-      mutable double                      m_error    ;
+      mutable double                      m_result = -std::numeric_limits<double>::infinity();
+      mutable double                      m_error  = std::numeric_limits<double>::infinity();
 
       size_t                              m_size     ;
       mutable std::unique_ptr<_Workspace,gsl_ws_deleter> m_ws;

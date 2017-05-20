@@ -6,6 +6,10 @@
   <class pattern="Genfun::GaudiMath*">
     <field name="m_ws" transient="true"/>
   </class>
+  <class name="Genfun::GaudiMathImplementation::SplineBase">
+    <field name = "m_spline" transient = "true"/>
+    <field name = "m_accel" transient = "true"/>
+  </class>
   </selection>
 
   <exclusion>
@@ -17,5 +21,6 @@
     <!-- There are causing troubles on Windows (VC9) -->
     <class pattern="gsl_interp*"/>
     <class name="gsl_spline"/>
+    <class name="Genfun::GaudiMathImplementation::details::gsl_deleter"/>
   </exclusion>
 </lcgdict>

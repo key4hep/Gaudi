@@ -14,9 +14,8 @@ class IGslSvc;  // from GaudiGSL
  *  @author Vanya Belyaev Ivan.Belyaev@itep.ru
  *  @date   29/04/2002
  */
-class GAUDI_API GaudiGSL
+struct GAUDI_API GaudiGSL
 {
-public:
 
   /** static accessor to Gaudi GSL Service
    *  @return (const) pointer to Gaudi GSL Service
@@ -27,10 +26,6 @@ public:
    *  @return (const) pointer to Gaudi GSL Service
    */
   static const IGslSvc*   setGslSvc ( const IGslSvc* value ) ;
-
-private:
-
-  static const IGslSvc* s_gslSvc ;
 
 };
 

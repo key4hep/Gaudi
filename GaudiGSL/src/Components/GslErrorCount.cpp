@@ -19,21 +19,6 @@ DECLARE_COMPONENT(GslErrorCount)
 // ============================================================================
 
 // ============================================================================
-/** Standard constructor
- *  @param type   tool type (?)
- *  @param name   tool name
- *  @param parent pointer to parent
- */
-// ============================================================================
-GslErrorCount::GslErrorCount
-( const std::string& type   ,
-  const std::string& name   ,
-  const IInterface*  parent )
-  : base_class ( type, name , parent )
-{}
-// ============================================================================
-
-// ============================================================================
 /** standard finalization of Tool
  *  @see  AlgTool
  *  @see IAlgTool
@@ -43,20 +28,18 @@ GslErrorCount::GslErrorCount
 StatusCode GslErrorCount::finalize   ()
 {
   // printout the Error table
-  MsgStream log( msgSvc() , name() );
   const std::string stars( 78 , '*' );
-  log << MSG::INFO  << stars << endmsg ;
-  log << MSG::ERROR <<  m_counters.size() << " GSL errors handled" << endmsg ;
-  for( const auto& error : m_counters )
-    {
-      log << MSG::ERROR
+  info()  << stars << endmsg ;
+  AlgTool::error() <<  m_counters.size() << " GSL errors handled" << endmsg ;
+  for( const auto& error : m_counters ) {
+      AlgTool::error()
           << " #times "   << error.second
           << " GSL code " << error.first.code
           << " Message '" << error.first.reason << "'"
           << " File '"    << error.first.file   << "'"
           << " Line "     << error.first.line   << endmsg ;
-    }
-  log << MSG::INFO << stars << endmsg ;
+  }
+  info() << stars << endmsg ;
   // clear the counters
   m_counters.clear();
   // finalize the base class

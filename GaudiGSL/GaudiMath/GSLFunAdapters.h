@@ -110,7 +110,7 @@ namespace Genfun
       GSLFunctionWithMode& operator=( const GSLFunctionWithError & ) ;
     private:
       Function        m_function ;
-      gsl_mode_t*     m_mode     ;
+      std::unique_ptr<gsl_mode_t>     m_mode     ;
     };
     /// mandatory macro from CLHEP/GenericFunctions
     FUNCTION_OBJECT_IMP( GSLFunctionWithMode )

@@ -41,9 +41,6 @@ public:
 
   /// Overriding initialize
   StatusCode initialize() override;
-  StatusCode finalize() override;
-
-  ~FuncMinimum() override = default; ///< Destructor
 
   class FuncMinimumMisc final
   {

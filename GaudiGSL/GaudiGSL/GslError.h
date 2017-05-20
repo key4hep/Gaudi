@@ -4,6 +4,7 @@
 #include "GaudiKernel/Kernel.h"
 // STD & STL
 #include <string>
+#include <tuple>
 
 /** @struct GslError GslError.h
  *
@@ -30,15 +31,10 @@ public:
             const int    c = 0  )
     : reason ( std::move(r) ) , file   ( std::move(f) ) , line   ( l ) , code   ( c ) {};
   /// comparison (ordering) criteria
-  bool operator<( const GslError& right ) const
+  friend bool operator<( const GslError& left, const GslError& right )
   {
-    return
-      code         < right.code   ? true  :
-      right.code   <       code   ? false :
-      reason       < right.reason ? true  :
-      right.reason <       reason ? false :
-      file         < right.file   ? true  :
-      right.file   <       file   ? false : line < right.line ;
+    return std::tie( left.code, left.reason, left.file, left.line )
+         < std::tie( right.code, right.reason, right.file, right.line );
   };
 };
 

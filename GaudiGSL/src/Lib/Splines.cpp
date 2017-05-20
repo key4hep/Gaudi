@@ -33,26 +33,10 @@ namespace Genfun
     ( const SplineBase::Data1D&            x    ,
       const SplineBase::Data1D&            y    ,
       const GaudiMath::Interpolation::Type type )
-      : m_init      ( false    )
-      , m_dim       ( x.size() )
-      , m_x         ( new double[ x.size() ] )
-      , m_y         ( new double[ y.size() ] )
-      , m_spline    ( nullptr )
-      , m_accel     ( nullptr )
+      : m_x         ( x )
+      , m_y         ( y )
       , m_type      ( type )
     {
-#ifdef WIN32
-// Disable the warning
-//    C4996: 'std::copy': Function call with parameters that may be unsafe
-// The parameters are checked
-#pragma warning(push)
-#pragma warning(disable:4996)
-#endif
-      std::copy( x.begin() , x.end() , m_x.get() ) ;
-      std::copy( y.begin() , y.end() , m_y.get() ) ;
-#ifdef WIN32
-#pragma warning(pop)
-#endif
 
     }
     // ========================================================================
@@ -66,51 +50,22 @@ namespace Genfun
     SplineBase::SplineBase
     ( const SplineBase::Data2D&            data ,
       const GaudiMath::Interpolation::Type type )
-      : m_init      ( false       )
-      , m_dim       ( data.size() )
-      , m_x         ( new double[ data.size() ] )
-      , m_y         ( new double[ data.size() ] )
-      , m_type      ( type )
+      : m_type      ( type )
     {
-      double*  _x = m_x.get() ;
-      double*  _y = m_y.get() ;
-      for( const auto& i : data )
-      {
-        *_x = i.first  ; ++_x ;
-        *_y = i.second ; ++_y ;
+      m_x.reserve(data.size());
+      m_y.reserve(data.size());
+      for( const auto& i : data ) {
+        m_x.push_back( i.first  );
+        m_y.push_back( i.second );
       }
     }
     // ========================================================================
 
-    // ========================================================================
-    /// copy constructor
-    // ========================================================================
-    SplineBase::SplineBase ( const SplineBase& right )
-      : m_init      ( false       )
-      , m_dim       ( right.m_dim )
-      , m_x         ( new double[ right.m_dim ] )
-      , m_y         ( new double[ right.m_dim ] )
-      , m_type      ( right.m_type )
-    {
-      std::copy_n(right.m_x.get(),m_dim,m_x.get());
-      std::copy_n(right.m_y.get(),m_dim,m_y.get());
-    }
-    // ========================================================================
-
-    // ========================================================================
-    /// destructor
-    // ========================================================================
-    SplineBase::~SplineBase()
-    {
-      if ( m_spline ) { gsl_spline_free       ( m_spline ) ; }
-      if ( m_accel  ) { gsl_interp_accel_free ( m_accel  ) ; }
-    }
-    // ========================================================================
 
     // ========================================================================
     void SplineBase::initialize() const
     {
-      if ( m_init ) { return ; }                                 // RETURN
+      if ( m_spline ) { return ; }                                 // RETURN
 
       const gsl_interp_type* T = nullptr ;
 
@@ -132,13 +87,12 @@ namespace Genfun
         T = gsl_interp_cspline           ; break ;
       };
 
-      m_spline = gsl_spline_alloc( T , m_dim ) ;
+      m_spline.reset( gsl_spline_alloc( T , m_x.size() ) );
+      gsl_spline_init( m_spline.get() , m_x.data() , m_y.data() , m_x.size() ) ;
+      m_accel.reset( gsl_interp_accel_alloc() );
 
-      gsl_spline_init( m_spline , m_x.get() , m_y.get() , m_dim ) ;
+      if (!m_accel) m_spline.reset();
 
-      m_accel  = gsl_interp_accel_alloc() ;
-
-      m_init   = true ;
 
     }
     // ========================================================================
@@ -146,24 +100,24 @@ namespace Genfun
     // ========================================================================
     double SplineBase::eval  ( const double x ) const
     {
-      if ( !m_init ) { initialize() ; }
-      return gsl_spline_eval ( m_spline , x , m_accel );
+      if ( !m_spline ) { initialize() ; }
+      return gsl_spline_eval ( m_spline.get() , x , m_accel.get() );
     }
     // ========================================================================
 
     // ========================================================================
     double SplineBase::deriv  ( const double x ) const
     {
-      if ( !m_init ) { initialize() ; }
-      return gsl_spline_eval_deriv  ( m_spline , x , m_accel );
+      if ( !m_spline ) { initialize() ; }
+      return gsl_spline_eval_deriv  ( m_spline.get() , x , m_accel.get() );
     }
     // ========================================================================
 
     // ========================================================================
     double SplineBase::deriv2 ( const double x ) const
     {
-      if ( !m_init ) { initialize() ; }
-      return gsl_spline_eval_deriv2 ( m_spline , x , m_accel );
+      if ( !m_spline ) { initialize() ; }
+      return gsl_spline_eval_deriv2 ( m_spline.get() , x , m_accel.get() );
     }
     // ========================================================================
 
@@ -171,8 +125,8 @@ namespace Genfun
     double SplineBase::integ  ( const double a ,
                                 const double b ) const
     {
-      if ( !m_init ) { initialize() ; }
-      return gsl_spline_eval_integ ( m_spline , a , b , m_accel ) ;
+      if ( !m_spline ) { initialize() ; }
+      return gsl_spline_eval_integ ( m_spline.get() , a , b , m_accel.get() ) ;
     }
     // ========================================================================
 
@@ -248,22 +202,6 @@ namespace Genfun
       : AbsFunction ()
       , m_spline    ( right )
     {}
-    // ========================================================================
-
-    // ========================================================================
-    /// copy constructor
-    // ========================================================================
-    GSLSpline::GSLSpline
-    ( const GSLSpline& right )
-      : AbsFunction ()
-      , m_spline    ( right  )
-    {}
-    // ========================================================================
-
-    // ========================================================================
-    /// destructor
-    // ========================================================================
-    GSLSpline::~GSLSpline() = default;
     // ========================================================================
 
     // ========================================================================
@@ -373,12 +311,6 @@ namespace Genfun
     // ========================================================================
 
     // ========================================================================
-    /// destructor
-    // ========================================================================
-    GSLSplineDeriv::~GSLSplineDeriv(){}
-    // ========================================================================
-
-    // ========================================================================
     double GSLSplineDeriv::operator() (       double    x ) const
     { return m_spline.deriv ( x    ) ; }
     // ========================================================================
@@ -472,22 +404,6 @@ namespace Genfun
       : AbsFunction ()
       , m_spline    ( right )
     {}
-    // ========================================================================
-
-    // ========================================================================
-    /// copy constructor
-    // ========================================================================
-    GSLSplineDeriv2::GSLSplineDeriv2
-    ( const GSLSplineDeriv2& right )
-      : AbsFunction ()
-      , m_spline    ( right  )
-    {}
-    // ========================================================================
-
-    // ========================================================================
-    /// destructor
-    // ========================================================================
-    GSLSplineDeriv2::~GSLSplineDeriv2(){}
     // ========================================================================
 
     // ========================================================================
@@ -591,23 +507,6 @@ namespace Genfun
       , m_spline    ( right )
       , m_low       ( low   )
     {}
-    // ========================================================================
-
-    // ========================================================================
-    /// copy constructor
-    // ========================================================================
-    GSLSplineInteg::GSLSplineInteg
-    ( const GSLSplineInteg& right )
-      : AbsFunction ()
-      , m_spline    ( right       )
-      , m_low       ( right.m_low )
-    {}
-    // ========================================================================
-
-    // ========================================================================
-    /// destructor
-    // ========================================================================
-    GSLSplineInteg::~GSLSplineInteg(){}
     // ========================================================================
 
     // ========================================================================
