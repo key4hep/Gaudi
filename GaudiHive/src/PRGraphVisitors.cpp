@@ -74,10 +74,10 @@ namespace concurrency {
     /* Implements 'requester' strategy, i.e., requests this ConditionNode to be loaded
      * by its associated ConditionAlgorithm */
 
-    for (auto condAlg : node.getProducers()) {
-      m_slot->algsStates.updateState( condAlg->getAlgoIndex(), State::CONTROLREADY ).ignore();
-      visit(*condAlg);
-    }
+    auto promoter = Supervisor(*m_slot);
+
+    for (auto condAlg : node.getProducers())
+      condAlg->accept(promoter);
 
     // this method is called if, and only if, this ConditionNode is not yet produced.
     // thus, by definition, this ConditionNode is not yet available at this moment
