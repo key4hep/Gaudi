@@ -9,6 +9,15 @@ namespace concurrency {
   typedef AlgsExecutionStates::State State;
 
   //--------------------------------------------------------------------------
+  bool DataReadyPromoter::visitEnter(AlgorithmNode& node) const {
+
+    if (State::CONTROLREADY != m_slot->algsStates[node.getAlgoIndex()])
+      return false;
+
+    return true;
+  }
+
+  //--------------------------------------------------------------------------
   bool DataReadyPromoter::visit(AlgorithmNode& node) {
 
     bool result = true; // return true if this algorithm has no data inputs
@@ -95,10 +104,8 @@ namespace concurrency {
       m_slot->controlFlowState[node.getNodeIndex()] = decision;
 
       auto promoter = DataReadyPromoter(*m_slot);
-      for ( auto output : node.getOutputDataNodes() )
-        for ( auto consumer : output->getConsumers() )
-          if (State::CONTROLREADY == states[consumer->getAlgoIndex()])
-            consumer->accept(promoter);
+      for ( auto consumer : node.getConsumerNodes() )
+        consumer->accept(promoter);
 
       auto vis = concurrency::Supervisor( *m_slot );
       for ( auto p : node.getParentDecisionHubs() )

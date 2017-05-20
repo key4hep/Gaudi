@@ -374,8 +374,7 @@ namespace concurrency
       auto promoter = DataReadyPromoter(slot);
       for ( auto output : m_outputs )
         for ( auto consumer : output->getConsumers() )
-          if (State::CONTROLREADY == states[consumer->getAlgoIndex()])
-            consumer->accept(promoter);
+          consumer->accept(promoter);
 
       auto vis = concurrency::Supervisor(slot);
       for ( auto p : m_parents ) {

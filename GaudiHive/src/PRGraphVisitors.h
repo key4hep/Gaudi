@@ -17,6 +17,8 @@ namespace concurrency {
       using IGraphVisitor::visit;
       using IGraphVisitor::visitEnter;
 
+      bool visitEnter(AlgorithmNode& node) const override;
+
       bool visit(AlgorithmNode& node) override;
 
       bool visitEnter(DataNode& node) const override;
