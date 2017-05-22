@@ -361,6 +361,8 @@ public:
     std::vector<int>& getNodeDecisions(const int& slotNum) const {return m_eventSlots->at(slotNum).controlFlowState;}
     /// Print out all data origins and destinations, as reflected in the EF graph
     std::string dumpDataFlow() const;
+    /// Print out control flow of Algorithms and Sequences
+    std::string dumpControlFlow() const;
     /// dump to file encountered execution plan
     void dumpExecutionPlan();
     /// set cause-effect connection between two algorithms in the execution plan
@@ -389,6 +391,11 @@ private:
     std::map<std::string,boost::AlgoVertex> m_exec_plan_map;
 public:
     std::vector<EventSlot>* m_eventSlots;
+
+    void dumpControlFlow(std::ostringstream&, ControlFlowNode*,
+                         const int&) const;
+
+
   };
 
 

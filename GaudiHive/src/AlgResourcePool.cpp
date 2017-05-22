@@ -185,7 +185,7 @@ StatusCode AlgResourcePool::flattenSequencer(Algorithm* algo, ListAlg& alglist, 
   bool isGaudiSequencer(false);
   bool isAthSequencer(false);
 
-  if (algo->hasProperty("Members")) {
+  if (algo->isSequence() ) {
     if (algo->hasProperty("ShortCircuit"))
       isGaudiSequencer = true;
     else if (algo->hasProperty("StopOverride"))

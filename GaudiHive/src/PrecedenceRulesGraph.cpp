@@ -755,6 +755,44 @@ namespace concurrency
     return result;
   }
 
+  std::string PrecedenceRulesGraph::dumpControlFlow() const {
+    std::ostringstream ost;
+    dumpControlFlow(ost,m_headNode,0);
+    return ost.str();
+  }
+  
+  void PrecedenceRulesGraph::dumpControlFlow(std::ostringstream& ost,
+                                             ControlFlowNode* node,
+                                             const int& indent) const {
+    ost << std::string(indent*2, ' ');
+    DecisionNode  *dn = dynamic_cast<DecisionNode*> (node);
+    AlgorithmNode *an = dynamic_cast<AlgorithmNode*> (node);
+    if ( dn != 0 ) {
+      if (node != m_headNode) {
+        ost << node->getNodeName() << " [Seq] ";
+        ost << ( (dn->m_modeConcurrent) ? " [Concurrent] " : " [Sequential] " );
+        ost << ( (dn->m_modePromptDecision) ? " [Prompt] " : "" );
+        ost << ( (dn->m_modeOR) ? " [OR] " : "" );
+        ost << ( (dn->m_allPass) ? " [PASS] " : "" );
+        ost << "\n";
+      }
+      const std::vector<ControlFlowNode*>& dth = dn->getDaughters();
+      for (std::vector<ControlFlowNode*>::const_iterator itr= dth.begin();
+           itr != dth.end(); ++itr) {      
+        dumpControlFlow(ost,*itr,indent+1);
+      }
+    } else if (an != 0) {
+      ost << node->getNodeName() << " [Alg] ";
+      if (an != 0) {
+        auto ar = an->getAlgorithmRepresentatives();
+        ost << " [n= " << ar.at(0)->cardinality() << "]";
+        ost << ( (! ar.at(0)->isClonable()) ? " [unclonable] " : "" );
+      }
+      ost << "\n";
+    }
+
+  }
+
   //---------------------------------------------------------------------------
   std::string PrecedenceRulesGraph::dumpDataFlow() const
   {

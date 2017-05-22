@@ -127,6 +127,13 @@ private:
   Gaudi::Property<std::string> m_useDataLoader{this, "DataLoaderAlg", "",
       "Attribute unmet input dependencies to this DataLoader Algorithm"};
 
+  Gaudi::Property<bool> m_showDataDeps{this, "ShowDataDependencies", true,
+      "Show the INPUT and OUTPUT data dependencies of Algorithms"};
+  Gaudi::Property<bool> m_showDataFlow{this, "ShowDataFlow", false,
+      "Show the configuration of DataFlow between Algorithms"};
+    Gaudi::Property<bool> m_showControlFlow{this, "ShowControlFlow", false,
+      "Show the configuration of all Algorithms and Sequences"};
+
   // Utils and shortcuts ----------------------------------------------------
 
   /// Activate scheduler
@@ -272,6 +279,7 @@ public:
 
 private:
   void dumpState( std::ostringstream& );
+  concurrency::PrecedenceRulesGraph* m_efg;
 };
 
 #endif // GAUDIHIVE_FORWARDSCHEDULERSVC_H

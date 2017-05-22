@@ -38,7 +38,7 @@ from Configurables import (HiveWhiteBoard, HiveSlimEventLoopMgr,
 evtslots = 23
 evtMax = 50
 cardinality=10
-algosInFlight=10
+threads=10
 #-------------------------------------------------------------------------------
 
 # The configuration of the whiteboard ------------------------------------------
@@ -63,8 +63,7 @@ slimeventloopmgr = HiveSlimEventLoopMgr(SchedulerName = "AvalancheSchedulerSvc",
 # threads in the pool. The default value is -1, which is for TBB equivalent
 # to take over the whole machine.
 
-scheduler = AvalancheSchedulerSvc(MaxAlgosInFlight = algosInFlight,
-                                  ThreadPoolSize = algosInFlight,
+scheduler = AvalancheSchedulerSvc(ThreadPoolSize = threads,
                                   OutputLevel=WARNING)
 
 #-------------------------------------------------------------------------------
