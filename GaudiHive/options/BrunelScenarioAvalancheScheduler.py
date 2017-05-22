@@ -28,9 +28,7 @@ whiteboard   = HiveWhiteBoard("EventDataSvc",
 
 slimeventloopmgr = HiveSlimEventLoopMgr(SchedulerName = "AvalancheSchedulerSvc", OutputLevel=INFO)
 
-scheduler = AvalancheSchedulerSvc(MaxEventsInFlight = evtslots,
-                                  MaxAlgosInFlight = algosInFlight,
-                                  ThreadPoolSize = algosInFlight,
+scheduler = AvalancheSchedulerSvc(ThreadPoolSize = algosInFlight,
                                   OutputLevel = DEBUG,
                                   Optimizer = "DRE",
                                   PreemptiveIOBoundTasks = False,
