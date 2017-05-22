@@ -345,9 +345,9 @@ namespace Gaudi
     }
     /// Autodeclaring constructor with property name, value and documentation.
     /// @note the use std::enable_if is required to avoid ambiguities
-    template <class OWNER,
+    template <class OWNER, class T = ValueType,
               typename = typename std::enable_if<std::is_base_of<IProperty, OWNER>::value>::type,
-              typename = typename std::enable_if<std::is_default_constructible<ValueType>::value>::type>
+              typename = typename std::enable_if<std::is_default_constructible<T>::value>::type>
     inline Property( OWNER* owner, std::string name )
         : Property( std::move( name ), ValueType{}, "" )
     {
