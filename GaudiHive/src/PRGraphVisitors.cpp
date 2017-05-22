@@ -63,9 +63,10 @@ namespace concurrency {
       m_slot->controlFlowState[node.getNodeIndex()] = decision;
 
       auto promoter = DataReadyPromoter(*m_slot);
-      for ( auto consumer : node.getConsumerNodes() )
-        if (State::CONTROLREADY == states[consumer->getAlgoIndex()])
-          consumer->accept(promoter);
+      for ( auto output : node.getOutputDataNodes() )
+        for ( auto consumer : output->getConsumers() )
+          if (State::CONTROLREADY == states[consumer->getAlgoIndex()])
+            consumer->accept(promoter);
 
       auto vis = concurrency::Supervisor( *m_slot );
       for ( auto p : node.getParentDecisionHubs() )
