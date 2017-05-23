@@ -34,6 +34,51 @@ std::list<AvalancheSchedulerSvc::SchedulerState> AvalancheSchedulerSvc::m_sState
 // Instantiation of a static factory class used by clients to create instances of this service
 DECLARE_SERVICE_FACTORY( AvalancheSchedulerSvc )
 
+
+namespace {
+struct comp_nodes
+{
+  comp_nodes (concurrency::ExecutionFlowManager& man,
+              const std::vector<std::string>& names)
+    : m_man (man),
+      m_names (names)
+  {
+  }
+  bool operator() (uint i, uint j) const
+  {
+    return (m_man.getPrecedenceRulesGraph()->getAlgorithmNode(m_names[i])->getRank() <
+            m_man.getPrecedenceRulesGraph()->getAlgorithmNode(m_names[j])->getRank());
+  }
+
+private:
+  concurrency::ExecutionFlowManager& m_man;
+  const std::vector<std::string> m_names;
+};
+
+
+struct DataObjIDSorter
+{
+  bool operator() (const DataObjID* a, const DataObjID* b)
+  {
+    return a->fullKey() < b->fullKey();
+  }
+};
+
+// Sort a DataObjIDColl in a well-defined, reproducible manner.
+// Used for making debugging dumps.
+std::vector<const DataObjID*> sortedDataObjIDColl (const DataObjIDColl& coll)
+{
+  std::vector<const DataObjID*> v;
+  v.reserve( coll.size() );
+  for( const DataObjID& id : coll )
+    v.push_back( &id );
+  std::sort( v.begin(), v.end(), DataObjIDSorter() );
+  return v;
+}
+
+
+}
+
 //===========================================================================
 // Infrastructure methods
 
@@ -159,7 +204,8 @@ StatusCode AvalancheSchedulerSvc::initialize() {
 
     DataObjIDColl algoDependencies;
     if ( !algoPtr->inputDataObjs().empty() || !algoPtr->outputDataObjs().empty() ) {
-      for ( auto id : algoPtr->inputDataObjs() ) {
+      for ( const DataObjID* idp : sortedDataObjIDColl (algoPtr->inputDataObjs()) ) {
+        DataObjID id = *idp;
         ostdd << "\n    o INPUT  " << id;
         if (id.key().find(":")!=std::string::npos) {
             ostdd << " contains alternatives which require resolution...\n"; 
@@ -182,12 +228,12 @@ StatusCode AvalancheSchedulerSvc::initialize() {
         algoDependencies.insert( id );
         globalInp.insert( id );
       }
-      for ( auto id : algoPtr->outputDataObjs() ) {
-        ostdd << "\n    o OUTPUT " << id;
-        if (id.key().find(":")!=std::string::npos) {
+      for ( const DataObjID* id : sortedDataObjIDColl (algoPtr->outputDataObjs()) ) {
+        ostdd << "\n    o OUTPUT " << *id;
+        if (id->key().find(":")!=std::string::npos) {
           error() << " in Alg " << algoPtr->name() 
                   << " alternatives are NOT allowed for outputs! id: " 
-                  << id << endmsg;
+                  << *id << endmsg;
           m_showDataDeps = true;
         }
       }
@@ -227,10 +273,10 @@ StatusCode AvalancheSchedulerSvc::initialize() {
     if ( unmetDep.size() > 0 ) {
 
       std::ostringstream ost;
-      for ( auto& o : unmetDep ) {
-        ost << "\n   o " << o << "    required by Algorithm: ";
+      for ( const DataObjID* o : sortedDataObjIDColl (unmetDep) ) {
+        ost << "\n   o " << *o << "    required by Algorithm: ";
         for ( size_t i = 0; i < m_algosDependencies.size(); ++i ) {
-          if ( m_algosDependencies[i].find( o ) != m_algosDependencies[i].end() ) {
+          if ( m_algosDependencies[i].find( *o ) != m_algosDependencies[i].end() ) {
             ost << "\n       * " << m_algname_vect[i];
           }
         }
