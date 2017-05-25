@@ -634,7 +634,7 @@ namespace concurrency
     auto itP = m_decisionNameToDecisionHubMap.find( parentName );
     if ( itP != m_decisionNameToDecisionHubMap.end() ) {
       auto parentNode = itP->second;
-      debug() << "  .. attaching AlgorithmNode '" << algo->name() << "' to DecisionNode '"
+      debug() << "Attaching AlgorithmNode '" << algo->name() << "' to DecisionNode '"
               << parentName << "'" << endmsg;
       parentNode->addDaughterNode( algoNode );
       algoNode->addParentNode( parentNode );
