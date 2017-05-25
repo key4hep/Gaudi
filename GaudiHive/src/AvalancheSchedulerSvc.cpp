@@ -36,26 +36,6 @@ DECLARE_SERVICE_FACTORY( AvalancheSchedulerSvc )
 
 
 namespace {
-struct comp_nodes
-{
-  comp_nodes (concurrency::ExecutionFlowManager& man,
-              const std::vector<std::string>& names)
-    : m_man (man),
-      m_names (names)
-  {
-  }
-  bool operator() (uint i, uint j) const
-  {
-    return (m_man.getPrecedenceRulesGraph()->getAlgorithmNode(m_names[i])->getRank() <
-            m_man.getPrecedenceRulesGraph()->getAlgorithmNode(m_names[j])->getRank());
-  }
-
-private:
-  concurrency::ExecutionFlowManager& m_man;
-  const std::vector<std::string> m_names;
-};
-
-
 struct DataObjIDSorter
 {
   bool operator() (const DataObjID* a, const DataObjID* b)
