@@ -1659,8 +1659,6 @@ StatusCode THistSvc::io_reinit()
   // file descriptors have been swept under the rug...
   gErrorIgnoreLevel = kFatal;
 
-  typedef std::map<std::string, std::pair<TFile*, Mode>> FileReg_t;
-
   for ( auto& ifile : m_files ) {
     TFile* f          = ifile.second.first;
     std::string fname = f->GetName();

@@ -486,7 +486,6 @@ void* KeyedObjectManager< __A >::erase(long key,
                                                    const void* obj)
 {
   typedef std::vector<long> id_type;
-  typedef id_type::iterator id_iter;
   if ( 0 == m_direct )    {
     onDirty();
     return erase(key, obj);
@@ -539,7 +538,6 @@ long KeyedObjectManager< __A >::erase(seq_type::iterator beg,
                                                   seq_type::iterator end)
 {
   typedef std::vector<long> id_type;
-  typedef id_type::iterator id_iter;
   if ( beg == m_seq->begin() && end == m_seq->end() )   {
     clear();
     return OBJ_ERASED;
