@@ -73,6 +73,7 @@ deploy-doxygen:
     - tags
   image: gitlab-registry.cern.ch/ci-tools/ci-web-deployer:latest
   script:
+    - test -z "$EOS_ACCOUNT_USERNAME" -o -z "$EOS_ACCOUNT_PASSWORD" -o -z "$EOS_PATH" && exit 0 || true
     # Script that performs the deploy to EOS. Makes use of the variables defined in the project
     # It will copy the generated content to the folder in EOS
     - deploy-eos
