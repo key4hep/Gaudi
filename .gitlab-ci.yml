@@ -36,6 +36,7 @@ doxygen:
     - cvmfs
   stage: test
   script:
+    - find build -type f -exec touch -d $(date +@%s) \{} \;
     - make BUILDDIR=build doc
     - rm -rf public
     - mkdir -p public/doxygen
@@ -55,6 +56,7 @@ test:
     - cvmfs
   stage: test
   script:
+    - find build -type f -exec touch -d $(date +@%s) \{} \;
     - make BUILDDIR=build test ARGS='-j4'
     - mv build/html test_report
   artifacts:
