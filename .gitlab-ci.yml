@@ -13,7 +13,9 @@ before_script:
   - export CCACHE_DIR=${PWD}/.ccache
 
 build:
-  image: lhcbdev/slc6-build-cvmfs:latest
+  image: lhcbdev/slc6-build:latest
+  tags:
+    - cvmfs
   stage: build
   script:
     - curl -o artifacts.zip --location ${CI_PROJECT_URL}/builds/artifacts/master/download?job=build
@@ -29,14 +31,15 @@ build:
     expire_in: 1 week
 
 doxygen:
-  image: lhcbdev/slc6-build-cvmfs:latest
+  image: lhcbdev/slc6-build:latest
+  tags:
+    - cvmfs
   stage: test
   script:
     - make BUILDDIR=build doc
     - rm -rf public
     - mkdir -p public/doxygen
     - mv build/doxygen/html ${CI_COMMIT_REF_SLUG}
-    - yum install -y zip
     - zip -r public/doxygen/${CI_COMMIT_REF_SLUG}.zip ${CI_COMMIT_REF_SLUG}
   only:
     - master
@@ -47,7 +50,9 @@ doxygen:
     expire_in: 1 day
 
 test:
-  image: lhcbdev/slc6-build-cvmfs:latest
+  image: lhcbdev/slc6-build:latest
+  tags:
+    - cvmfs
   stage: test
   script:
     - make BUILDDIR=build test ARGS='-j4'
