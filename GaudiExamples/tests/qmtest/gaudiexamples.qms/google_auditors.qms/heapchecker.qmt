@@ -7,6 +7,12 @@
 </set></argument>
 <argument name="environment"><set><text>HEAPCHECK=local</text></set></argument>
 <argument name="options"><text>
+# Skip test when running inside GitLab-CI (no ptrace capabilities)
+import os
+import sys
+if 'CI' in os.environ:
+    sys.exit(77)
+
 # Options of the test job
 from Gaudi.Configuration import *
 from Configurables import GaudiExamplesCommonConf, HelloWorld
