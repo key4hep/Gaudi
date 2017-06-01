@@ -16,33 +16,41 @@ endif()
 set_paths_from_projects(${tools} ${projects})
 
 # set legacy variables for backward compatibility
-if(NOT LCG_SYSTEM)
-  set(LCG_SYSTEM ${BINARY_TAG_ARCH}-${BINARY_TAG_OS}-${BINARY_TAG_COMP}
-      CACHE STRING "Platform id of the target system or a compatible one.")
-  mark_as_advanced(LCG_SYSTEM LCG_platform LCG_system)
-endif()
-set(LCG_ARCH "${BINARY_TAG_ARCH}")
-set(LCG_HOST_ARCH "${HOST_BINARY_TAG_ARCH}")
-set(LCG_COMP "${BINARY_TAG_COMP_NAME}")
-string(REPLACE "." "" LCG_COMPVERS "${BINARY_TAG_COMP_VERSION}")
-set(LCG_BUILD_TYPE ${BINARY_TAG_TYPE})
-set(LCG_platform ${LCG_SYSTEM}-${BINARY_TAG_TYPE})
-set(LCG_system   ${LCG_SYSTEM}-opt)
-
 find_package(GaudiProject QUIET)
 if(NOT EXISTS "${GaudiProject_DIR}/BinaryTagUtils.cmake")
-  # Convert LCG_BUILD_TYPE to CMAKE_BUILD_TYPE
-  if(LCG_BUILD_TYPE STREQUAL "opt")
-    set(type Release)
-  elseif(LCG_BUILD_TYPE STREQUAL "dbg")
-    set(type Debug)
-  elseif(LCG_BUILD_TYPE STREQUAL "cov")
-    set(type Coverage)
-  elseif(LCG_BUILD_TYPE STREQUAL "pro")
-    set(type Profile)
-  else()
-    message(FATAL_ERROR "LCG build type ${type} not supported.")
+  # with newer versions of Gaudi these variables are set after the toolchain,
+  # but we have to set them here for old versions
+
+  # if we actually found an LCG info file, we use the informations from there
+  if(LCG_TOOLCHAIN_INFO)
+    string(REGEX MATCH ".*/LCG_externals_(.+)\\.txt" out "${LCG_TOOLCHAIN_INFO}")
+    set(LCG_platform ${CMAKE_MATCH_1})
+
+    # set LCG_ARCH, LCG_COMP and LCG_TYPE
+    parse_binary_tag(LCG "${CMAKE_MATCH_1}")
+
+    set(LCG_HOST_ARCH "${HOST_BINARY_TAG_ARCH}")
+    set(LCG_SYSTEM ${LCG_ARCH}-${LCG_OS}-${LCG_COMP})
+    set(LCG_system ${LCG_SYSTEM}-opt)
+    set(LCG_BUILD_TYPE ${LCG_TYPE})
+
+    # match old-style LCG_COMP value
+    set(LCG_COMP "${BINARY_TAG_COMP_NAME}")
+    string(REPLACE "." "" LCG_COMPVERS "${BINARY_TAG_COMP_VERSION}")
+
+    # Convert LCG_BUILD_TYPE to CMAKE_BUILD_TYPE
+    if(LCG_BUILD_TYPE STREQUAL "opt")
+      set(type Release)
+    elseif(LCG_BUILD_TYPE STREQUAL "dbg")
+      set(type Debug)
+    elseif(LCG_BUILD_TYPE STREQUAL "cov")
+      set(type Coverage)
+    elseif(LCG_BUILD_TYPE STREQUAL "pro")
+      set(type Profile)
+    else()
+      message(FATAL_ERROR "LCG build type ${type} not supported.")
+    endif()
+    set(CMAKE_BUILD_TYPE ${type} CACHE STRING
+        "Choose the type of build, options are: empty, Debug, Release, Coverage, Profile, RelWithDebInfo, MinSizeRel.")
   endif()
-  set(CMAKE_BUILD_TYPE ${type} CACHE STRING
-      "Choose the type of build, options are: empty, Debug, Release, Coverage, Profile, RelWithDebInfo, MinSizeRel.")
 endif()

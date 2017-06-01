@@ -302,13 +302,20 @@ macro(gaudi_project project version)
 
   parse_binary_tag()
   # set LCG platform ids
-  set(LCG_SYSTEM ${BINARY_TAG_ARCH}-${BINARY_TAG_OS}-${BINARY_TAG_COMP}
-      CACHE STRING "Platform id of the target system or a compatible one.")
-  set(LCG_platform ${LCG_SYSTEM}-${BINARY_TAG_TYPE}
-      CACHE STRING "Platform ID for the AA project binaries.")
-  set(LCG_system   ${LCG_SYSTEM}-opt
-      CACHE STRING "Platform ID for the external libraries.")
-  mark_as_advanced(LCG_SYSTEM LCG_platform LCG_system)
+  if(LCG_TOOLCHAIN_INFO)
+    string(REGEX MATCH ".*/LCG_externals_(.+)\\.txt" out "${LCG_TOOLCHAIN_INFO}")
+    set(LCG_platform ${CMAKE_MATCH_1})
+    # set LCG_ARCH, LCG_OS and LCG_COMP
+    parse_binary_tag(LCG "${LCG_platform}")
+    set(LCG_SYSTEM ${LCG_ARCH}-${LCG_OS}-${LCG_COMP})
+  else()
+    # no LCG toolchain
+    set(LCG_SYSTEM ${BINARY_TAG_ARCH}-${BINARY_TAG_OS}-${BINARY_TAG_COMP})
+    set(LCG_platform ${LCG_SYSTEM}-${BINARY_TAG_TYPE})
+  endif()
+  set(LCG_system   ${LCG_SYSTEM}-opt)
+  set(LCG_HOST_ARCH "${HOST_BINARY_TAG_ARCH}")
+  string(REPLACE "." "" LCG_COMPVERS "${BINARY_TAG_COMP_VERSION}")
 
   # Locate and import used projects.
   if(PROJECT_USE)
