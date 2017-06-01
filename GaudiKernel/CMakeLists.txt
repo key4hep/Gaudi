@@ -59,8 +59,6 @@ if( CPPUNIT_FOUND )
       LINK_LIBRARIES GaudiKernel)
    gaudi_add_unit_test(test_GAUDI-905 tests/src/GAUDI-905.cpp
       LINK_LIBRARIES GaudiKernel)
-   gaudi_add_unit_test(test_SmartRanges tests/src/test_SmartRanges.cpp
-      LINK_LIBRARIES GaudiKernel)
 endif()
 
 if( GAUDI_CPP11 AND CPPUNIT_FOUND )
