@@ -29,8 +29,6 @@ class GAUDI_API ICondSvc: virtual public IService {
 public:
   DeclareInterfaceID(ICondSvc, 1, 0);
 
-  virtual ~ICondSvc() = default;
-
   /// register dependency between an Algorithm and the Condition Handle it creates
   virtual StatusCode regHandle(IAlgorithm* alg, const Gaudi::DataHandle& id) = 0;
 
