@@ -32,16 +32,15 @@ public:
   virtual ~ICondSvc() = default;
 
   /// register dependency between an Algorithm and the Condition Handle it creates
-  /// dbKey is an optional key to further identify the object in the backend dB
   virtual StatusCode regHandle(IAlgorithm* alg, const Gaudi::DataHandle& id) = 0;
 
-  /// check to see if a specific condition object ID is valid
+  /// check to see if a specific condition object ID is valid for this event
   virtual bool isValidID(const EventContext& ctx, const DataObjID& id) const = 0;
 
   /// get list of all registered condition Algorithms
   virtual const std::set<IAlgorithm*>& condAlgs() const = 0;
 
-  /// query if a specific Algorithm is a condition Algorithm
+  /// query if a specific Algorithm is a registered condition Algorithm
   virtual bool isRegistered(IAlgorithm* alg) const = 0;
 
   /// query if a condition Object ID is registered
