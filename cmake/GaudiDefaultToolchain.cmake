@@ -53,4 +53,12 @@ if(NOT EXISTS "${GaudiProject_DIR}/BinaryTagUtils.cmake")
     set(CMAKE_BUILD_TYPE ${type} CACHE STRING
         "Choose the type of build, options are: empty, Debug, Release, Coverage, Profile, RelWithDebInfo, MinSizeRel.")
   endif()
+elseif(EXISTS "${GaudiProject_DIR}/../GaudiConfig.cmake")
+  # Special workaround for Gaudi v28r2
+  file(READ "${GaudiProject_DIR}/../GaudiConfig.cmake" out)
+  if(out MATCHES "Gaudi_VERSION v28r2")
+    string(REGEX MATCH ".*/LCG_externals_(.+)\\.txt" out "${LCG_TOOLCHAIN_INFO}")
+    set(LCG_platform ${CMAKE_MATCH_1}
+        CACHE STRING "Platform ID for the AA project binaries.")
+  endif()
 endif()
