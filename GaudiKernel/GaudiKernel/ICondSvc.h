@@ -35,21 +35,14 @@ public:
   /// dbKey is an optional key to further identify the object in the backend dB
   virtual StatusCode regHandle(IAlgorithm* alg, const Gaudi::DataHandle& id) = 0;
 
-  /// retrieve collection of condition object IDs that are not valid for a specific Event
-  virtual bool getInvalidIDs(const EventContext& ctx, DataObjIDColl& ids) = 0;
-
-  /// retrieve collection of condition object IDs that valid for a specific Event
-  virtual bool getValidIDs(const EventContext& ctx, DataObjIDColl& ids) = 0;
-
-  /// retrieve all condition object IDs, separated by validity
-  virtual bool getIDValidity(const EventContext& ctx, DataObjIDColl& validIDs,
-                             DataObjIDColl& invalidIDs) = 0;
-
   /// check to see if a specific condition object ID is valid
   virtual bool isValidID(const EventContext& ctx, const DataObjID& id) const = 0;
 
   /// get list of all registered condition Algorithms
   virtual const std::set<IAlgorithm*>& condAlgs() const = 0;
+
+  /// query if a specific Algorithm is a condition Algorithm
+  virtual bool isRegistered(IAlgorithm* alg) const = 0;
 
   /// query if a condition Object ID is registered
   virtual bool isRegistered(const DataObjID& id) const = 0;
@@ -62,11 +55,11 @@ public:
 
 
   /// Asynchronously setup conditions
-  ConditionSlotFuture startConditionSetup(const EventContext& ctx) = 0;
+  virtual ConditionSlotFuture* startConditionSetup(const EventContext& ctx) = 0;
 
   /// register an IConditionIOSvc (alternative to Algorithm processing of 
   /// Conditions)
-  StatusCode registerConditionIOSvc(IConditionIOSvc *ioService) = 0;
+  virtual StatusCode registerConditionIOSvc(IConditionIOSvc *ioService) = 0;
 
 
 };
