@@ -48,7 +48,7 @@ public:
   virtual const DataObjIDColl& conditionIDs() const = 0;
 
   /// dump the condition store
-  virtual void dump(std::ostringstream& ost) const = 0;
+  virtual void dump(std::ostream& ost) const = 0;
 
 
   /// Asynchronously setup conditions
