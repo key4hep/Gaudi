@@ -5,7 +5,7 @@
 #include <unistd.h>
 #include <limits>
 #include "GaudiKernel/EventIDBase.h"
-#include <experimental/any>
+#include <boost/any.hpp>
 
 /** @class EventContext EventContext.h GaudiKernel/EventContext.h
  *
@@ -75,13 +75,13 @@ public:
   }
 
   template <typename T>
-  T& getExtended() {
-    return std::experimental::any_cast<T>(&m_extended);
+  T* getExtended() {
+    return boost::any_cast<T>(&m_extended);
   }
 
   template <typename T>
-  const T& getExtended() const {
-    return std::experimental::any_cast<T>(&m_extended);
+  const T* getExtended() const {
+    return boost::any_cast<T>(&m_extended);
   }
 
   const std::type_info& getExtendedType() const {
@@ -94,7 +94,7 @@ private:
   ContextID_t  m_evt_slot {INVALID_CONTEXT_ID};
   bool m_valid {false};
 
-  std::experimental::any m_extended;
+  boost::any m_extended;
 
   EventIDBase m_eid {};
 };
