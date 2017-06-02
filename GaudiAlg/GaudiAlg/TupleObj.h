@@ -12,6 +12,7 @@
 #include <limits>
 #include <array>
 #include <functional>
+#include <numeric>
 #include <sstream>
 // ============================================================================
 // GaudiKernel
@@ -817,6 +818,39 @@ namespace Tuples
     // ========================================================================
   public:
     // ========================================================================
+    /** Set the values for several columns simultaneously, for the same object
+     *  Non-existing columns will be automatically created
+     *  and appended to the ntuple.
+     *
+     *  @code
+     *
+     *  Gaudi::XYZPoint p;
+     *  tuple->columns( { { "X", &Gaudi::XYZPoint::X },
+     *                    { "Y", &Gaudi::XYZPoint::Y },
+     *                    { "Z", &Gaudi::XYZPoint::Z } }, p );
+     *
+     *  @endcode
+     *
+     *  @warning *ALL* columns are assumed to be of type <tt>float</tt>
+     *
+     *  @author Gerhard Raven
+     */
+    template <typename Value,
+              typename Fun  = std::function<float(const Value&)>,
+              typename Item = std::pair<std::string,Fun>>
+    StatusCode columns( const std::initializer_list<Item>& items,
+                        const Value& value ) {
+        using std::begin; using std::end;
+        return std::accumulate( begin(items), end(items),
+                                StatusCode{StatusCode::SUCCESS},
+                                [&](StatusCode sc, const Item& i) {
+                                    return column( i.first, i.second(value) ) && sc;
+                                } );
+    }
+    // =======================================================================
+    // ========================================================================
+  public:
+    // ========================================================================
     /** Set the values for several columns simultaneously.
      *  Number of columns is arbitrary, but it should not
      *  be less than number of blank or comma separated tags
@@ -1079,11 +1113,11 @@ namespace Tuples
     template <typename Iterator,
               typename Fun  = std::function<float(detail::const_ref_t<Iterator>)>,
               typename Item = std::pair<std::string,Fun>>
-    StatusCode farray ( const std::vector<Item>& items ,
-                        Iterator                 first ,
-                        Iterator                 last  ,
-                        const std::string&       length,
-                        size_t                   maxv  )
+    StatusCode farray ( const std::initializer_list<Item>& items ,
+                        Iterator                  first ,
+                        Iterator                  last  ,
+                        const std::string&        length,
+                        size_t                    maxv  )
     {
       if ( invalid () ) { return InvalidTuple     ; }
       if ( rowWise () ) { return InvalidOperation ; }
@@ -1108,6 +1142,7 @@ namespace Tuples
       *len = std::distance(first,last);
 
       // get the arrays themselves
+      // TODO: replace with std::array once std::initializer_list::size is constexpr
       std::vector<FArray*> vars; vars.reserve(items.size());
       std::transform( items.begin(), items.end(), std::back_inserter(vars),
                       [&](const Item& item) { return this->fArray(item.first,len); } );
@@ -1848,19 +1883,14 @@ namespace Tuples
      *  @date 2006-11-26
      */
     template <class TYPE,class TAG>
-    StatusCode column
-    ( const std::string& name ,
-      const ROOT::Math::DisplacementVector3D<TYPE,TAG>& v )
+    StatusCode column ( const std::string& name ,
+                        const ROOT::Math::DisplacementVector3D<TYPE,TAG>& v )
     {
-      if ( invalid() ) { return InvalidTuple ; }
-      /// fill separate columns
-      StatusCode sc1 = this -> column ( name + "X" , v.X () ) ;
-      StatusCode sc2 = this -> column ( name + "Y" , v.Y () ) ;
-      StatusCode sc3 = this -> column ( name + "Z" , v.Z () ) ;
-      return
-        sc1.isFailure () ? sc1 :
-        sc2.isFailure () ? sc2 :
-        sc3.isFailure () ? sc3 : StatusCode(StatusCode::SUCCESS) ;
+      return this->columns(
+                      { { name + "X", &ROOT::Math::DisplacementVector3D<TYPE,TAG>::X },
+                        { name + "Y", &ROOT::Math::DisplacementVector3D<TYPE,TAG>::Y },
+                        { name + "Z", &ROOT::Math::DisplacementVector3D<TYPE,TAG>::Z } },
+                      v );
     }
     // =======================================================================
     /** Useful shortcut to put 3D-Vector directly into N-Tuple:
@@ -1884,15 +1914,11 @@ namespace Tuples
     ( const std::string& name ,
       const ROOT::Math::PositionVector3D<TYPE,TAG>& v )
     {
-      if ( invalid() ) { return InvalidTuple ; }
-      /// fill separate columns
-      StatusCode sc1 = this -> column ( name + "X" , v.X () ) ;
-      StatusCode sc2 = this -> column ( name + "Y" , v.Y () ) ;
-      StatusCode sc3 = this -> column ( name + "Z" , v.Z () ) ;
-      return
-        sc1.isFailure () ? sc1 :
-        sc2.isFailure () ? sc2 :
-        sc3.isFailure () ? sc3 : StatusCode(StatusCode::SUCCESS) ;
+      return this->columns(
+                      { { name + "X", &ROOT::Math::PositionVector3D<TYPE,TAG>::X },
+                        { name + "Y", &ROOT::Math::PositionVector3D<TYPE,TAG>::Y },
+                        { name + "Z", &ROOT::Math::PositionVector3D<TYPE,TAG>::Z } },
+                      v );
     }
     // =======================================================================
     /** shortcut to put Smatrix into N-tuple:
