@@ -50,8 +50,13 @@ def _unknown_os():
 os_id = globals().get('_%s_os' % platform.system(), _unknown_os)
 
 def _compiler_version(cmd=os.environ.get('CC', 'cc')):
+    # prevent interference from localization
+    env = dict(os.environ)
+    env['LC_ALL'] = 'C'
     m = re.search(r'(gcc|clang|icc|LLVM) version (\d+)\.(\d+)',
-                  check_output([cmd, '-v'], stderr=STDOUT))
+                  check_output([cmd, '-v'], stderr=STDOUT, env=env))
+    if not m:  # prevent crashes if the compiler is not supported
+        return 'unknown'
     comp = 'clang' if m.group(1) == 'LLVM' else m.group(1)
     vers = m.group(2)
     if (comp == 'gcc' and int(vers) < 7) or comp == 'clang':
