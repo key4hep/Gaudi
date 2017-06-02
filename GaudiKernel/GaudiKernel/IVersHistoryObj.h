@@ -1,6 +1,7 @@
 #ifndef GAUDIKERNEL_IVERSHISTORYOBJ_H
 #define GAUDIKERNEL_IVERSHISTORYOBJ_H
 
+#include "GaudiKernel/Kernel.h" // GAUDI_API
 #include "GaudiKernel/PropertyFwd.h"
 #include <string>
 #include <vector>
