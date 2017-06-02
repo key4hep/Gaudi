@@ -277,13 +277,13 @@ if(NOT GAUDI_FLAGS_SET)
 
   #--- Link shared flags -------------------------------------------------------
   if (CMAKE_SYSTEM_NAME MATCHES Linux)
-    set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--no-as-needed -Wl,--no-undefined  -Wl,-z,max-page-size=0x1000"
+    set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--as-needed -Wl,--no-undefined  -Wl,-z,max-page-size=0x1000"
         CACHE STRING "Flags used by the linker during the creation of dll's."
         FORCE)
-    set(CMAKE_MODULE_LINKER_FLAGS "-Wl,--no-as-needed -Wl,--no-undefined  -Wl,-z,max-page-size=0x1000"
+    set(CMAKE_MODULE_LINKER_FLAGS "-Wl,--as-needed -Wl,--no-undefined  -Wl,-z,max-page-size=0x1000"
         CACHE STRING "Flags used by the linker during the creation of modules."
         FORCE)
-    set(CMAKE_EXE_LINKER_FLAGS "-Wl,--no-as-needed -Wl,--no-undefined  -Wl,-z,max-page-size=0x1000"
+    set(CMAKE_EXE_LINKER_FLAGS "-Wl,--as-needed -Wl,--no-undefined  -Wl,-z,max-page-size=0x1000"
         CACHE STRING "Flags used by the linker during the creation of executables."
         FORCE)
   endif()
