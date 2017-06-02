@@ -10,6 +10,7 @@
 
 // Include files
 #include "RootCnv/RootStatCnv.h"
+#include "RootCnv/RootAddress.h"
 
 // Forward declarations
 class INTuple;

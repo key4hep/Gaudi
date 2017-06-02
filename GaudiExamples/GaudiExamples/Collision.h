@@ -4,6 +4,7 @@
 // Include files
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/DataObject.h"
+#include "GaudiKernel/StreamBuffer.h"
 
 
 namespace Gaudi {

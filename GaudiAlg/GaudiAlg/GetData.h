@@ -7,7 +7,10 @@
 // ============================================================================
 #include "GaudiKernel/IDataProviderSvc.h"
 #include "GaudiKernel/SmartDataPtr.h"
+#include "GaudiKernel/IMessageSvc.h"
+#include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/IRegistry.h"
+#include "GaudiKernel/StatusCode.h"
 // ============================================================================
 // GaudiUtils
 // ============================================================================

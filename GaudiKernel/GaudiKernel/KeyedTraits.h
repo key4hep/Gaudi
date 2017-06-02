@@ -4,6 +4,7 @@
 #define CHECK_KEYED_CONTAINER
 
 // Include files
+#include "GaudiKernel/Kernel.h" // GAUDI_API
 #include <vector>
 
 // Forward declarations

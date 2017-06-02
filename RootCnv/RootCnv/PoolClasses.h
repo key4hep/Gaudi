@@ -1,5 +1,9 @@
 
 // The following two classes are the interfaces to facilitate reading POOL formatted ROOT files:
+#include <string>
+#include <utility>
+#include <vector>
+#include "GaudiKernel/Kernel.h" // GAUDI_API
 
 /*
  *   POOL namespace declaration

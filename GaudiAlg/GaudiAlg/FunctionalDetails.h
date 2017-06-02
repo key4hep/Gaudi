@@ -4,6 +4,7 @@
 #include <type_traits>
 #include <stdexcept>
 #include <cassert>
+#include <sstream>
 
 // TODO: fwd declare instead?
 #include "GaudiKernel/DataObjectHandle.h"
