@@ -1,6 +1,7 @@
 stages:
   - build
   - test
+  - check
   - deploy
 
 before_script:
@@ -57,12 +58,25 @@ test:
   stage: test
   script:
     - find build -type f -exec touch -d $(date +@%s) \{} \;
-    - make BUILDDIR=build test ARGS='-j4'
+    - mkdir -p build/html
+    - ( make BUILDDIR=build test ARGS='-j4' || touch build/html/tests_failed ) | tee build/ctest.log
     - mv build/html test_report
+    - mv build/ctest.log test_report
   artifacts:
     paths:
       - test_report
     expire_in: 1 week
+
+test_report:
+  stage: check
+  script:
+    - if [ -e test_report/tests_failed ] ; then
+    # this prints all lines starting with a white space after and including "The following tests...", excluding lines with "Not Run"
+    -   awk '/^[^[:space:]]/{do_print=0}; /The following tests FAILED:/{do_print=1}; do_print&&!/Not Run/{print}' test_report/ctest.log
+    -   exit 1
+    - else
+    -   echo tests successful
+    - fi
 
 # see https://gitlab.cern.ch/gitlabci-examples/deploy_eos for the details
 # of the configuration
