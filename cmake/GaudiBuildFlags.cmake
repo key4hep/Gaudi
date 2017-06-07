@@ -102,40 +102,35 @@ option(GAUDI_SLOW_DEBUG
        "turn off all optimizations in debug builds"
        ${GAUDI_SLOW_DEBUG_DEFAULT})
 
-# set optimization flags
+# set optimization flags (_opt_level_* and _opt_ext_*)
+# - default optimization levels
+set(_opt_level_RELEASE "-O3")
+set(_opt_ext_RELEASE "-DNDEBUG")
+if(NOT GAUDI_SLOW_DEBUG AND
+   (BINARY_TAG_COMP_NAME STREQUAL "gcc" AND NOT BINARY_TAG_COMP_VERSION VERSION_LESS "4.8"))
+  # Use -Og with Debug builds in gcc >= 4.8 (if not disabled)
+  set(_opt_level_DEBUG "-Og")
+else()
+  set(_opt_level_DEBUG "-O0")
+endif()
+set(_opt_ext_DEBUG "-g")
+# (RelWithDebInfo shares the flags with Release)
+set(_opt_level_RELWITHDEBINFO "${_opt_level_RELEASE}")
+set(_opt_ext_RELWITHDEBINFO "${_opt_ext_RELEASE} -g")
+
+# - parse subtype flags
 string(TOUPPER "${CMAKE_BUILD_TYPE}" _up_bt)
 foreach(_subtype ${BINARY_TAG_SUBTYPE})
   if(_subtype MATCHES "^[oO]([0-3sg]|fast)$")
-    set(_opt_level_${_up_bt} "${_opt_level_${_up_bt}} -O${CMAKE_MATCH_1}")
+    set(_opt_level_${_up_bt} "-O${CMAKE_MATCH_1}")
     #message(STATUS "setting _opt_level_${_up_bt} -> ${_opt_level_${_up_bt}}")
   elseif(_subtype STREQUAL "g")
-    set(_opt_level_${_up_bt} "${_opt_level_${_up_bt}} -g")
+    set(_opt_ext_${_up_bt} "${_opt_ext_${_up_bt}} -g")
   endif()
 endforeach()
 
-if(_opt_level_RELWITHDEBINFO)
-  # RelWithDebInfo shared the flags with Release
-  set(_opt_level_RELEASE "${_opt_level_RELWITHDEBINFO}")
-endif()
-
-# default optimization levels
-if(NOT _opt_level_RELEASE)
-  set(_opt_level_RELEASE "-O3")
-  # RelWithDebInfo shared the flags with Release
-  set(_opt_level_RELWITHDEBINFO "${_opt_level_RELEASE}")
-endif()
-if(NOT _opt_level_DEBUG)
-  if(NOT GAUDI_SLOW_DEBUG AND
-     (BINARY_TAG_COMP_NAME STREQUAL "gcc" AND NOT BINARY_TAG_COMP_VERSION VERSION_LESS "4.8"))
-    # Use -Og with Debug builds in gcc >= 4.8 (if not disabled)
-    set(_opt_level_DEBUG "-Og")
-  else()
-    set(_opt_level_DEBUG "-O0")
-  endif()
-endif()
-
 if(_opt_level_${_up_bt})
-  message(STATUS "Optimization:     ${_opt_level_${_up_bt}}")
+  message(STATUS "Optimization:     ${_opt_level_${_up_bt}} ${_opt_ext_${_up_bt}}")
 endif()
 
 # special architecture flags
@@ -156,7 +151,6 @@ else()
 endif()
 set(GAUDI_ARCH "${GAUDI_ARCH_DEFAULT}"
     CACHE STRING "Which architecture-specific optimizations to use")
-
 
 if(DEFINED GAUDI_CPP11)
   message(WARNING "GAUDI_CPP11 is an obsolete option, use GAUDI_CXX_STANDARD=c++11 instead")
@@ -216,33 +210,33 @@ if(NOT GAUDI_FLAGS_SET)
     endif()
 
     # Build type compilation flags
-    set(CMAKE_CXX_FLAGS_RELEASE "${_opt_level_RELEASE} -DNDEBUG"
+    set(CMAKE_CXX_FLAGS_RELEASE "${_opt_level_RELEASE} ${_opt_ext_RELEASE}"
         CACHE STRING "Flags used by the compiler during release builds."
         FORCE)
-    set(CMAKE_C_FLAGS_RELEASE "${_opt_level_RELEASE} -DNDEBUG"
+    set(CMAKE_C_FLAGS_RELEASE "${_opt_level_RELEASE} ${_opt_ext_RELEASE}"
         CACHE STRING "Flags used by the compiler during release builds."
         FORCE)
-    set(CMAKE_Fortran_FLAGS_RELEASE "${_opt_level_RELEASE} -DNDEBUG"
+    set(CMAKE_Fortran_FLAGS_RELEASE "${_opt_level_RELEASE} ${_opt_ext_RELEASE}"
         CACHE STRING "Flags used by the compiler during release builds."
         FORCE)
 
-    set(CMAKE_CXX_FLAGS_DEBUG "${_opt_level_DEBUG} -g"
+    set(CMAKE_CXX_FLAGS_DEBUG "${_opt_level_DEBUG} ${_opt_ext_DEBUG}"
         CACHE STRING "Flags used by the compiler during Debug builds."
         FORCE)
-    set(CMAKE_C_FLAGS_DEBUG "${_opt_level_DEBUG} -g"
+    set(CMAKE_C_FLAGS_DEBUG "${_opt_level_DEBUG} ${_opt_ext_DEBUG}"
         CACHE STRING "Flags used by the compiler during Debug builds."
         FORCE)
-    set(CMAKE_Fortran_FLAGS_DEBUG "${_opt_level_DEBUG} -g"
+    set(CMAKE_Fortran_FLAGS_DEBUG "${_opt_level_DEBUG} ${_opt_ext_DEBUG}"
         CACHE STRING "Flags used by the compiler during Debug builds."
         FORCE)
 
-    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELEASE} -g"
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${_opt_level_RELWITHDEBINFO} ${_opt_ext_RELWITHDEBINFO}"
         CACHE STRING "Flags used by the compiler during Release with Debug Info builds."
         FORCE)
-    set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELEASE} -g"
+    set(CMAKE_C_FLAGS_RELWITHDEBINFO "${_opt_level_RELWITHDEBINFO} ${_opt_ext_RELWITHDEBINFO}"
         CACHE STRING "Flags used by the compiler during Release with Debug Info builds."
         FORCE)
-    set(CMAKE_Fortran_FLAGS_RELWITHDEBINFO "${CMAKE_Fortran_FLAGS_RELEASE} -g"
+    set(CMAKE_Fortran_FLAGS_RELWITHDEBINFO "${_opt_level_RELWITHDEBINFO} ${_opt_ext_RELWITHDEBINFO}"
         CACHE STRING "Flags used by the compiler during Release with Debug Info builds."
         FORCE)
 
