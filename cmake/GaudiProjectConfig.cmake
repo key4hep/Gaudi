@@ -2338,6 +2338,9 @@ function(gaudi_add_test name)
                        --common-tmpdir ${CMAKE_CURRENT_BINARY_DIR}/tests_tmp
                        --workdir ${qmtest_root_dir}
                        ${CMAKE_CURRENT_SOURCE_DIR}/tests/qmtest/${qmt_file})
+      if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/tests_tmp)
+        file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/tests_tmp)
+      endif()
       gaudi_add_test(${qmt_name}
                      COMMAND ${test_cmd}
                      WORKING_DIRECTORY ${qmtest_root_dir}
