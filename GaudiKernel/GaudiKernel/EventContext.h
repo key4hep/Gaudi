@@ -70,22 +70,22 @@ public:
   }
 
   template <typename T>
-  void setExtended(const T& t) {
-    m_extended = t;
+  void setExtension(const T& t) {
+    m_extension = t;
   }
 
   template <typename T>
-  T* getExtended() {
-    return boost::any_cast<T>(&m_extended);
+  T* getExtension() {
+    return boost::any_cast<T>(&m_extension);
   }
 
   template <typename T>
-  const T* getExtended() const {
-    return boost::any_cast<T>(&m_extended);
+  const T* getExtension() const {
+    return boost::any_cast<T>(&m_extension);
   }
 
-  const std::type_info& getExtendedType() const {
-    return m_extended.type();
+  const std::type_info& getExtensionType() const {
+    return m_extension.type();
   }
 
 
@@ -94,7 +94,7 @@ private:
   ContextID_t  m_evt_slot {INVALID_CONTEXT_ID};
   bool m_valid {false};
 
-  boost::any m_extended;
+  boost::any m_extension;
 
   EventIDBase m_eid {};
 };
