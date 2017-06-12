@@ -100,6 +100,9 @@ gaudi_add_unit_test(test_PropertyHolder tests/src/test_PropertyHolder.cpp
 gaudi_add_unit_test(test_Property tests/src/test_Property.cpp
                     LINK_LIBRARIES GaudiKernel
                     TYPE Boost)
+gaudi_add_unit_test(test_IssueSeverity tests/src/test_IssueSeverity.cpp
+                    LINK_LIBRARIES GaudiKernel
+                    TYPE Boost)
 
 #---Dictionaries------------------------------------------------------------
 gaudi_add_dictionary(GaudiKernel dict/dictionary.h  dict/dictionary.xml LINK_LIBRARIES GaudiKernel)

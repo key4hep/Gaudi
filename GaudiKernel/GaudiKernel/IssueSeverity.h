@@ -14,24 +14,6 @@ class StatusCode;
 
 class IIssueLogger;
 
-// namespace IS {
-//   enum Level {
-//     NIL = 0,
-//     VERBOSE,
-//     DEBUG,
-//     DEBUG1,
-//     DEBUG2,
-//     DEBUG3,
-//     INFO,
-//     WARNING,
-//     RECOVERABLE,
-//     ERROR,
-//     FATAL,
-//     ALWAYS,
-//     NUM_LEVELS
-//   };
-// }
-
 
 #ifdef _WIN32
 #ifdef ERROR
@@ -116,20 +98,18 @@ inline IssueSeverity::IssueSeverity(IssueSeverity::Level level, std::string msg)
 
 inline IssueSeverity::IssueSeverity( IssueSeverity&& rhs ) noexcept {
   m_file = std::move(rhs.m_file);
-  m_msg   = std::move(rhs.m_msg);
+  m_msg = std::move(rhs.m_msg);
   m_line = rhs.m_line;
   m_level = rhs.m_level;
-  m_reported = rhs.m_reported;
-  rhs.m_reported = true;
+  m_reported = std::exchange( rhs.m_reported, true );
 }
 
 inline IssueSeverity& IssueSeverity::operator=(IssueSeverity&& rhs) noexcept {
-  m_file = rhs.m_file;
-  m_msg   = rhs.m_level;
+  m_file = std::move(rhs.m_file);
+  m_msg = std::move(rhs.m_msg);
   m_line = rhs.m_line;
   m_level = rhs.m_level;
-  m_reported = rhs.m_reported;
-  rhs.m_reported = true;
+  m_reported = std::exchange( rhs.m_reported, true );
   return *this;
 }
 
