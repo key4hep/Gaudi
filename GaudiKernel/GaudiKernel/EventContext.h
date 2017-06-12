@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <limits>
 #include "GaudiKernel/EventIDBase.h"
+#include <boost/any.hpp>
 
 /** @class EventContext EventContext.h GaudiKernel/EventContext.h
  *
@@ -19,8 +20,6 @@
  * @author Danilo Piparo, Charles Leggett
  * @date 2012
  **/
-
-class IProxyDict;
 
 class EventContext{
 public:
@@ -40,7 +39,6 @@ public:
   ContextEvt_t evt() const { return m_evt_num; }
   ContextID_t slot() const { return m_evt_slot; }
   bool valid() const {return m_valid;}
-  IProxyDict* proxy() const { return m_proxy; }
   const EventIDBase& eventID() const { return m_eid; }
 
   void set(const ContextEvt_t& e=0, const ContextID_t& s=INVALID_CONTEXT_ID) {
@@ -71,8 +69,23 @@ public:
     m_eid = e;
   }
 
-  void setProxy(IProxyDict* prx) {
-    m_proxy = prx;
+  template <typename T>
+  void setExtension(const T& t) {
+    m_extension = t;
+  }
+
+  template <typename T>
+  T* getExtension() {
+    return boost::any_cast<T>(&m_extension);
+  }
+
+  template <typename T>
+  const T* getExtension() const {
+    return boost::any_cast<T>(&m_extension);
+  }
+
+  const std::type_info& getExtensionType() const {
+    return m_extension.type();
   }
 
 
@@ -81,7 +94,7 @@ private:
   ContextID_t  m_evt_slot {INVALID_CONTEXT_ID};
   bool m_valid {false};
 
-  IProxyDict* m_proxy {0};
+  boost::any m_extension;
 
   EventIDBase m_eid {};
 };
