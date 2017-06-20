@@ -835,10 +835,10 @@ namespace Tuples
      *
      *  @author Gerhard Raven
      */
-    template <typename Value,
+    template <typename Value, template <typename,typename...> class Container = std::initializer_list,
               typename Fun  = std::function<float(const Value&)>,
               typename Item = std::pair<std::string,Fun>>
-    StatusCode columns( const std::initializer_list<Item>& items,
+    StatusCode columns( const Container<Item>& items,
                         const Value& value ) {
         using std::begin; using std::end;
         return std::accumulate( begin(items), end(items),
