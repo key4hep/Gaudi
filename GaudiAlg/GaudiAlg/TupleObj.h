@@ -1110,10 +1110,11 @@ namespace Tuples
      *  @param maxv     maximal length of the array
      *  @return status code
      */
-    template <typename Iterator,
+    template <typename Iterator, template <typename,typename...> class Container = std::initializer_list,
               typename Fun  = std::function<float(detail::const_ref_t<Iterator>)>,
-              typename Item = std::pair<std::string,Fun>>
-    StatusCode farray ( const std::initializer_list<Item>& items ,
+              typename Item = std::pair<std::string,Fun>,
+              typename = std::enable_if_t<!std::is_same<std::string,Container<Item>>::value >>
+    StatusCode farray ( const Container<Item>&    items ,
                         Iterator                  first ,
                         Iterator                  last  ,
                         const std::string&        length,
@@ -1127,7 +1128,7 @@ namespace Tuples
         using GaudiUtils::details::ostream_joiner;
         std::ostringstream os;
         ostream_joiner( os, items, ",",
-                        [](std::ostream& os, const Item& i) -> std::ostream&
+                        [](std::ostream& os, const auto& i) -> std::ostream&
                         { return os << i.first; } );
         Warning( "farray('" + os.str()
                + "'): array overflow, skipping extra entries").ignore() ;
@@ -1142,26 +1143,19 @@ namespace Tuples
       *len = std::distance(first,last);
 
       // get the arrays themselves
-      // TODO: replace with std::array once std::initializer_list::size is constexpr
       std::vector<FArray*> vars; vars.reserve(items.size());
       std::transform( items.begin(), items.end(), std::back_inserter(vars),
-                      [&](const Item& item) { return this->fArray(item.first,len); } );
+                      [&](const auto& item) { return this->fArray(item.first,len); } );
       if ( std::any_of( vars.begin(), vars.end(), [](const FArray* f) { return !f; } ) ) {
         return InvalidColumn ;
       }
 
       // fill the array
-      size_t index = 0;
-      while( first != last ) {
-        auto var = vars.begin();
+      for(size_t index = 0; first != last; ++first,++index ) {
         auto item = items.begin();
-        while ( var != vars.end() ) {
-          (**var)[index] = item->second(*first);
-          ++var;
-          ++item;
+        for( auto& var : vars ) {
+          (*var)[index] = (item++)->second(*first);
         }
-        ++index;
-        ++first;
       }
 
       return StatusCode::SUCCESS ;
@@ -1853,17 +1847,11 @@ namespace Tuples
     ( const std::string& name ,
       const ROOT::Math::LorentzVector<TYPE>& v )
     {
-      if ( invalid() ) { return InvalidTuple ; }
-      // fill all separate columns:
-      StatusCode sc1 = this -> column ( name + "E" , v.E  () ) ;
-      StatusCode sc2 = this -> column ( name + "X" , v.Px () ) ;
-      StatusCode sc3 = this -> column ( name + "Y" , v.Py () ) ;
-      StatusCode sc4 = this -> column ( name + "Z" , v.Pz () ) ;
-      return
-        sc1.isFailure () ? sc1 :
-        sc2.isFailure () ? sc2 :
-        sc3.isFailure () ? sc3 :
-        sc4.isFailure () ? sc4 : StatusCode(StatusCode::SUCCESS) ;
+      return columns( { { name + "E" , &ROOT::Math::LorentzVector<TYPE>::E  },
+                        { name + "X" , &ROOT::Math::LorentzVector<TYPE>::Px },
+                        { name + "Y" , &ROOT::Math::LorentzVector<TYPE>::Py },
+                        { name + "Z" , &ROOT::Math::LorentzVector<TYPE>::Pz } },
+                      v );
     }
     // =======================================================================
     /** Useful shortcut to put 3D-Vector directly into N-Tuple:
