@@ -294,6 +294,10 @@ StatusCode AvalancheSchedulerSvc::initialize() {
 
   // prepare the control flow part
   const AlgResourcePool* algPool = dynamic_cast<const AlgResourcePool*>( m_algResourcePool.get() );
+  if ( !algPool ) {
+    fatal() << "Unable to dcast algResourcePool" << endmsg;
+    return StatusCode::FAILURE;
+  }
   sc = m_efManager.initialize( algPool->getPRGraph(), m_algname_index_map, m_eventSlots, m_optimizationMode );
   unsigned int controlFlowNodeNumber = m_efManager.getPrecedenceRulesGraph()->getControlFlowNodeCounter();
 
@@ -908,8 +912,10 @@ StatusCode AvalancheSchedulerSvc::promoteToScheduled( unsigned int iAlgo, int si
 
   if ( sc.isSuccess() ) { // if we managed to get an algorithm instance try to schedule it
     EventContext* eventContext( m_eventSlots[si].eventContext );
-    if ( !eventContext )
+    if ( !eventContext ) {
       fatal() << "Event context for algorithm " << algName << " is a nullptr (slot " << si << ")" << endmsg;
+      return StatusCode::FAILURE;
+    }
 
     ++m_algosInFlight;
     auto promote2ExecutedClosure = std::bind(&AvalancheSchedulerSvc::promoteToExecuted,
@@ -974,9 +980,11 @@ StatusCode AvalancheSchedulerSvc::promoteToAsyncScheduled( unsigned int iAlgo, i
 
   if ( sc.isSuccess() ) { // if we managed to get an algorithm instance try to schedule it
     EventContext* eventContext( m_eventSlots[si].eventContext );
-    if ( !eventContext )
+    if ( !eventContext ) {
       fatal() << "[Asynchronous] Event context for algorithm " << algName << " is a nullptr (slot " << si << ")"
               << endmsg;
+      return StatusCode::FAILURE;
+    }        
 
     ++m_IOBoundAlgosInFlight;
     // Can we use tbb-based overloaded new-operator for a "custom" task (an algorithm wrapper, not derived from tbb::task)? it seems it works..
