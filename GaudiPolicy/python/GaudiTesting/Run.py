@@ -142,9 +142,18 @@ def main():
         fileToExec = imp.Test()
         results = fileToExec.run()
     elif filename.endswith(".qmt"):
-        from QMTTest import QMTTest
-        fileToTest = QMTTest(filename)
-        results = fileToTest.run()
+        # Check which class should be used to instantiate QMTests
+        # by default it is QMTTest but this can be overwritten via the environment
+        try:
+            test_module = os.environ.get('GAUDI_QMTEST_MODULE', 'GaudiTesting.QMTTest')
+            test_class = os.environ.get('GAUDI_QMTEST_CLASS', 'QMTTest')
+            exec 'from {} import {} as test_class'.format(test_module, test_class)
+            fileToTest = test_class(filename)
+            results = fileToTest.run()
+        except Exception, e:
+            logging.error('Exception caught when trying to instantiate qmt test python object')
+            logging.error(e)
+            return 1
 
     report = globals()[opts.report + '_report']
     report(results)
