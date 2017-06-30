@@ -1,3 +1,6 @@
+#ifndef GAUDIAUD_COMMONAUDITOR_H
+#define GAUDIAUD_COMMONAUDITOR_H
+
 #include "GaudiKernel/Auditor.h"
 
 /// Base class with common functionalities shared by few auditor implementations.
@@ -54,3 +57,5 @@ protected:
   Gaudi::Property<std::vector<std::string>> m_customTypes{
       this, "CustomEventTypes", {}, "[[deprecated]] use EventTypes instead"};
 };
+
+#endif // GAUDIAUD_COMMONAUDITOR_H
