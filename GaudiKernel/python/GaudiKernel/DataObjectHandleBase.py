@@ -21,6 +21,8 @@ class DataObjectHandleBase(object):
             return self.Path == other.Path
         if isinstance(other, basestring):
             return self.Path == other
+        if other is None:
+            return False
         raise ValueError('Unknown equality check: type=%r, repr=%r'%(type(other), other))
 
     def __ne__(self, other):
