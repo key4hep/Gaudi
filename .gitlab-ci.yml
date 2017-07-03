@@ -1,6 +1,7 @@
 stages:
   - build
   - test
+  - check
   - deploy
 
 before_script:
@@ -13,7 +14,9 @@ before_script:
   - export CCACHE_DIR=${PWD}/.ccache
 
 build:
-  image: lhcbdev/slc6-build-cvmfs:latest
+  image: lhcbdev/slc6-build:latest
+  tags:
+    - cvmfs
   stage: build
   script:
     - curl -o artifacts.zip --location ${CI_PROJECT_URL}/builds/artifacts/master/download?job=build
@@ -29,15 +32,17 @@ build:
     expire_in: 1 week
 
 doxygen:
-  image: lhcbdev/slc6-build-cvmfs:latest
+  image: lhcbdev/slc6-build:latest
+  tags:
+    - cvmfs
   stage: test
   script:
+    - find build -type f -exec touch -d $(date +@%s) \{} \;
     - make BUILDDIR=build doc
     - rm -rf public
     - mkdir -p public/doxygen
     - mv build/doxygen/html ${CI_COMMIT_REF_SLUG}
-    - yum install -y zip
-    - zip -r public/doxygen/${CI_COMMIT_REF_SLUG}.zip ${CI_COMMIT_REF_SLUG}
+    - zip -r -q public/doxygen/${CI_COMMIT_REF_SLUG}.zip ${CI_COMMIT_REF_SLUG}
   only:
     - master
     - tags
@@ -47,15 +52,31 @@ doxygen:
     expire_in: 1 day
 
 test:
-  image: lhcbdev/slc6-build-cvmfs:latest
+  image: lhcbdev/slc6-build:latest
+  tags:
+    - cvmfs
   stage: test
   script:
-    - make BUILDDIR=build test ARGS='-j4'
+    - find build -type f -exec touch -d $(date +@%s) \{} \;
+    - mkdir -p build/html
+    - ( make BUILDDIR=build test ARGS='-j4' || touch build/html/tests_failed ) | tee build/ctest.log
     - mv build/html test_report
+    - mv build/ctest.log test_report
   artifacts:
     paths:
       - test_report
     expire_in: 1 week
+
+test_report:
+  stage: check
+  script:
+    - if [ -e test_report/tests_failed ] ; then
+    # this prints all lines starting with a white space after and including "The following tests...", excluding lines with "Not Run"
+    -   awk '/^[^[:space:]]/{do_print=0}; /The following tests FAILED:/{do_print=1}; do_print&&!/Not Run/{print}' test_report/ctest.log
+    -   exit 1
+    - else
+    -   echo tests successful
+    - fi
 
 # see https://gitlab.cern.ch/gitlabci-examples/deploy_eos for the details
 # of the configuration
@@ -66,6 +87,7 @@ deploy-doxygen:
     - tags
   image: gitlab-registry.cern.ch/ci-tools/ci-web-deployer:latest
   script:
+    - test -z "$EOS_ACCOUNT_USERNAME" -o -z "$EOS_ACCOUNT_PASSWORD" -o -z "$EOS_PATH" && exit 0 || true
     # Script that performs the deploy to EOS. Makes use of the variables defined in the project
     # It will copy the generated content to the folder in EOS
     - deploy-eos
