@@ -127,7 +127,8 @@ class EmptyDirsRemover(ListProcessor):
     def process(self, variable, value):
         from os.path import isdir
         from os import listdir, access
-        return [s for s in value if s.endswith('.zip') or (isdir(s) and access(s,os.R_OK) and listdir(s))]
+        return [s for s in value if s.endswith('.zip') or 
+                (isdir(s) and access(s, os.R_OK) and listdir(s))]
 
 class UsePythonZip(ListProcessor):
     '''
