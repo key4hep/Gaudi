@@ -675,7 +675,7 @@ int configGenerator::genComponent( const std::string& libName, const std::string
     m_pyBuf << "    '" << pname << "' : " << pvalue << ", # " << ptype << "\n";
 
     if ( ( *it )->documentation() != "none" ) {
-      propDoc[pname] = ( *it )->documentation();
+      propDoc[pname] = ( *it )->documentation() + " [" + (*it)->ownerTypeName() + "]";
     }
   }
   m_pyBuf << "  }\n";
