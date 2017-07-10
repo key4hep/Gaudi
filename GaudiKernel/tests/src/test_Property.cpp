@@ -153,7 +153,6 @@ BOOST_AUTO_TEST_CASE( implicit_conversion )
 BOOST_AUTO_TEST_CASE( copy_constructor )
 {
   {
-    // std::cout << "copy_constructor " << std::endl;
     Gaudi::Property<std::string> orig{"name", "value", "doc"};
     Gaudi::Property<std::string> dest( orig );
     BOOST_CHECK( dest.name() == "name" );
@@ -161,7 +160,6 @@ BOOST_AUTO_TEST_CASE( copy_constructor )
     BOOST_CHECK( dest.documentation() == "doc [unknown owner type]" );
   }
   {
-    // std::cout << "copy_constructor " << std::endl;
     std::string data{"value"};
     Gaudi::Property<std::string&> orig{"name", data, "doc"};
     Gaudi::Property<std::string&> dest( orig );
@@ -174,7 +172,6 @@ BOOST_AUTO_TEST_CASE( copy_constructor )
 }
 BOOST_AUTO_TEST_CASE( move_constructor )
 {
-  // std::cout << "move_contructor " << std::endl;
   Gaudi::Property<std::string> orig{"name", "value", "doc"};
   Gaudi::Property<std::string> dest( std::move( orig ) );
   BOOST_CHECK( dest.name() == "name" );
@@ -183,7 +180,6 @@ BOOST_AUTO_TEST_CASE( move_constructor )
 }
 BOOST_AUTO_TEST_CASE( copy_assignment )
 {
-  // std::cout << "copy_assignment " << std::endl;
   Gaudi::Property<std::string> orig{"name", "value", "doc"};
   Gaudi::Property<std::string> dest = orig;
   BOOST_CHECK( dest.name() == "name" );
@@ -192,7 +188,6 @@ BOOST_AUTO_TEST_CASE( copy_assignment )
 }
 BOOST_AUTO_TEST_CASE( move_assignment )
 {
-  // std::cout << "move_assignment " << std::endl;
   Gaudi::Property<std::string> orig{"name", "value", "doc"};
   Gaudi::Property<std::string> dest = std::move( orig );
   BOOST_CHECK( dest.name() == "name" );
