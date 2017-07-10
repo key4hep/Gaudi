@@ -462,13 +462,12 @@ namespace Gaudi { namespace Functional { namespace details {
 
    /////////////////
    template <typename Fun, typename Container, typename... Args >
-   constexpr void apply(const Fun&, Container&, Args... )
+   constexpr void applyPostProcessing(const Fun&, Container&, Args... )
    { static_assert(sizeof...(Args)==0,"Args should not be used!");}
 
-   // TODO/FIXME: overload ambiguity if output container type == input container type
    template <typename Fun, typename Container>
-   auto apply(const Fun& fun, Container& c)  -> decltype(fun(c),void())
-   { fun(c); }
+   auto applyPostProcessing(const Fun& fun, Container& c) -> decltype(fun.postprocess(c),void())
+   { fun.postprocess(c); }
 
    /////////////////
 
