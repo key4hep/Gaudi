@@ -16,7 +16,6 @@ IIssueLogger* IssueSeverity::m_ers(nullptr);
 IssueSeverity::~IssueSeverity() {
   if (!m_reported) {
     report();
-    // do stuff
   }
 }
 
