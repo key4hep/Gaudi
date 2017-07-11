@@ -589,6 +589,37 @@ namespace Gaudi
       m_value -= other;
       return *this;
     }
+    /// Helpers for DataHandles and derived classes
+    template <class T = const ValueType>
+    inline decltype( std::declval<T>().key() ) key() const
+    {
+      return value().key();
+    }
+    template <class T = const ValueType>
+    inline decltype( std::declval<T>().objKey() ) objKey() const
+    {
+      return value().objKey();
+    }
+    template <class T = const ValueType>
+    inline decltype( std::declval<T>().fullKey() ) fullKey() const
+    {
+      return value().fullKey();
+    }
+    template <class T = ValueType>
+    inline decltype( std::declval<T>().initialize() ) initialize() 
+    {
+      return value().initialize();
+    }
+    template <class T = ValueType>
+    inline decltype( std::declval<T>().makeHandles() ) makeHandles() const
+    {
+      return value().makeHandles();
+    }
+    template <class ARG, class T = ValueType>
+    inline decltype( std::declval<T>().makeHandles()[ARG{}] ) makeHandles(const ARG& arg) const
+    {
+      return value().makeHandles(arg);
+    }
     /// @}
     // ==========================================================================
   public:
