@@ -153,6 +153,9 @@ private:
   Gaudi::Property<std::string> m_useDataLoader{this, "DataLoaderAlg", "",
       "Attribute unmet input dependencies to this DataLoader Algorithm"};
  
+  Gaudi::Property<bool> m_enableCondSvc{this, "EnableConditions", false,
+      "Enable ConditionsSvc"};
+
   Gaudi::Property<bool> m_showDataDeps{this, "ShowDataDependencies", true,
       "Show the INPUT and OUTPUT data dependencies of Algorithms"};
 
@@ -208,6 +211,9 @@ private:
 
   /// Algorithm execution state manager
   SmartIF<IAlgExecStateSvc> m_algExecStateSvc;
+
+  /// A shortcut to service for Conditions handling
+  SmartIF<ICondSvc> m_condSvc;
 
   // States management ------------------------------------------------------
 

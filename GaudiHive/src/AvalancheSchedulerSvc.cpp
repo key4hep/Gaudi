@@ -94,6 +94,17 @@ StatusCode AvalancheSchedulerSvc::initialize() {
     }
   }
 
+  if (m_enableCondSvc) {
+    // Get hold of the CondSvc
+    m_condSvc = serviceLocator()->service("CondSvc");
+    if (!m_condSvc.isValid())  {
+      warning() << "No CondSvc found, or not enabled. "
+                << "Will not manage CondAlgorithms"
+                << endmsg;
+      m_enableCondSvc = false;
+    }
+  }
+
   // Get the algo resource pool
   m_algResourcePool = serviceLocator()->service( "AlgResourcePool" );
   if ( !m_algResourcePool.isValid() ) {
