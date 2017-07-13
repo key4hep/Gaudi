@@ -28,7 +28,7 @@ if(NOT CMAKE_VERSION VERSION_LESS 3.1)
   # FindOpenCL.cmake has been introduced in CMake 3.1.0
   find_package(OpenCL)
   if(NOT OpenCL_FOUND)
-    message(WARNING "OpenCL not found, not building OpenCLAlg example.")
+    message(STATUS "OpenCL not found, not building OpenCLAlg example.")
   endif()
 endif()
 
