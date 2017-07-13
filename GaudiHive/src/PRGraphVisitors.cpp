@@ -34,11 +34,13 @@ namespace concurrency {
 
     bool result = false; // return false if the input has no producers at all
 
-    for ( auto algoNode : node.getProducers() )
-      if ( State::EVTACCEPTED == m_slot->algsStates[algoNode->getAlgoIndex()] ) {
+    for ( auto algoNode : node.getProducers() ) {
+      const auto& state = m_slot->algsStates[algoNode->getAlgoIndex()];
+      if ( State::EVTACCEPTED == state || State::EVTREJECTED == state ) {
         result = true;
         break; // skip checking other producers if one was found to be executed
       }
+    }
 
     // return true only if this DataNode is produced
     return result;
