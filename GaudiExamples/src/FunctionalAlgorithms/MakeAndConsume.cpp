@@ -12,7 +12,7 @@ struct IntDataProducer : Gaudi::Functional::Producer<int(),BaseClass_t> {
 
     IntDataProducer(const std::string& name, ISvcLocator* svcLoc)
              : Producer( name, svcLoc,
-               KeyValue("OutputLocation", "MyInt")) {}
+               KeyValue("OutputLocation", "/Event/MyInt")) {}
 
     int operator()() const override {
         info() << "executing IntDataProducer, storing 7 into " << outputLocation() << endmsg;
@@ -26,7 +26,7 @@ struct IntDataConsumer : Gaudi::Functional::Consumer<void(const int&),BaseClass_
 
     IntDataConsumer(const std::string& name, ISvcLocator* svcLoc)
              : Consumer( name, svcLoc,
-               KeyValue("InputLocation", "MyInt")) {}
+               KeyValue("InputLocation", "/Event/MyInt")) {}
 
     void operator()(const int& input) const override {
         info() << "executing IntDataConsumer, consuming " << input
@@ -40,8 +40,8 @@ struct IntToFloatData : Gaudi::Functional::Transformer<float(const int&), BaseCl
 
     IntToFloatData(const std::string& name, ISvcLocator* svcLoc)
             : Transformer(name, svcLoc,
-              KeyValue("InputLocation", "MyInt"),
-              KeyValue("OutputLocation", "MyFloat")) {}
+              KeyValue("InputLocation", "/Event/MyInt"),
+              KeyValue("OutputLocation", "/Event/MyFloat")) {}
 
     float operator() (const int& input) const override {
       info() << "Converting: " << input << " from " << inputLocation()
@@ -57,10 +57,10 @@ class IntIntToFloatFloatData : public Gaudi::Functional::MultiTransformer
 public:
     IntIntToFloatFloatData(const std::string& name, ISvcLocator* svcLoc)
             : MultiTransformer(name, svcLoc,
-                               {KeyValue("InputLocation1", {"MyInt"}),
-                                KeyValue("InputLocation2", {"MyOtherInt"})},
-                               {KeyValue("OutputLocation1", {"MyMultiFloat1"}),
-                                KeyValue("OutputLocation2", {"MyMultiFloat2"})}) {}
+                               {KeyValue("InputLocation1", {"/Event/MyInt"}),
+                                KeyValue("InputLocation2", {"/Event/MyOtherInt"})},
+                               {KeyValue("OutputLocation1", {"/Event/MyMultiFloat1"}),
+                                KeyValue("OutputLocation2", {"/Event/MyMultiFloat2"})}) {}
 
     std::tuple<float, float> operator() (const int& input1, const int& input2) const override {
         info() << "Number of inputs : " << inputLocationSize()
@@ -79,7 +79,7 @@ struct FloatDataConsumer : Gaudi::Functional::Consumer<void(const float&), BaseC
 
     FloatDataConsumer(const std::string& name, ISvcLocator* svcLoc)
              : Consumer( name, svcLoc,
-               KeyValue("InputLocation", "MyFloat")) {}
+               KeyValue("InputLocation", "/Event/MyFloat")) {}
 
     void operator()(const float& input) const override {
         info() << "executing FloatDataConsumer: " << input << endmsg;

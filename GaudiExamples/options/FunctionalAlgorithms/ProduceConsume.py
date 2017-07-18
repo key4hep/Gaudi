@@ -13,7 +13,7 @@ from Configurables import Gaudi__Examples__IntIntToFloatFloatData as IntIntToFlo
 app = ApplicationMgr()
 # - Algorithms
 OtherIntDataProducer = IntDataProducer('OtherIntDataProducer')
-OtherIntDataProducer.OutputLocation = "MyOtherInt";
+OtherIntDataProducer.OutputLocation = "/Event/MyOtherInt";
 app.TopAlg = [ IntDataProducer("IntDataProducer"), OtherIntDataProducer,
                IntDataConsumer("IntDataConsumer"), IntToFloatData("IntToFloatData"),
                IntIntToFloatFloatData("IntIntToFloatFloatData"), FloatDataConsumer("FloatDataConsumer") ]
