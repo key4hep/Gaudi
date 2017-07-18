@@ -86,7 +86,7 @@ StatusCode EventSelectorDataStream::initialize()
     case 'C':
       svc    = "EvtTupleSvc";
       isData = false;
-    /* no break */
+      /* FALLTHROUGH */
     case 'E':
       hash = attrib.value.find( '#' );
       if ( hash > 0 ) {
