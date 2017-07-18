@@ -825,21 +825,22 @@ namespace Tuples
      *  @code
      *
      *  Gaudi::XYZPoint p;
-     *  tuple->columns( { { "X", &Gaudi::XYZPoint::X },
-     *                    { "Y", &Gaudi::XYZPoint::Y },
-     *                    { "Z", &Gaudi::XYZPoint::Z } }, p );
+     *  tuple->columns<float>( { { "X", &Gaudi::XYZPoint::X },
+     *                           { "Y", &Gaudi::XYZPoint::Y },
+     *                           { "Z", &Gaudi::XYZPoint::Z } }, p );
      *
      *  @endcode
      *
-     *  @warning *ALL* columns are assumed to be of type <tt>float</tt>
+     *  @warning *ALL* columns are assumed to be of the same (specified!) type
      *
      *  @author Gerhard Raven
      */
-    template <typename Value, template <typename,typename...> class Container = std::initializer_list,
-              typename Fun  = std::function<float(const Value&)>,
+    template <typename TYPE,
+              typename Value, template <typename,typename...> class Container = std::initializer_list,
+              typename Fun  = std::function<TYPE(const Value&)>,
               typename Item = std::pair<std::string,Fun>>
-    StatusCode columns( const Container<Item>& items,
-                        const Value& value ) {
+    StatusCode columns(const Container<Item>& items,
+                       const Value& value ) {
         using std::begin; using std::end;
         return std::accumulate( begin(items), end(items),
                                 StatusCode{StatusCode::SUCCESS},
@@ -1847,11 +1848,11 @@ namespace Tuples
     ( const std::string& name ,
       const ROOT::Math::LorentzVector<TYPE>& v )
     {
-      return columns( { { name + "E" , &ROOT::Math::LorentzVector<TYPE>::E  },
-                        { name + "X" , &ROOT::Math::LorentzVector<TYPE>::Px },
-                        { name + "Y" , &ROOT::Math::LorentzVector<TYPE>::Py },
-                        { name + "Z" , &ROOT::Math::LorentzVector<TYPE>::Pz } },
-                      v );
+      return columns<typename TYPE::Scalar>( { { name + "E" , &ROOT::Math::LorentzVector<TYPE>::E  },
+                                               { name + "X" , &ROOT::Math::LorentzVector<TYPE>::Px },
+                                               { name + "Y" , &ROOT::Math::LorentzVector<TYPE>::Py },
+                                               { name + "Z" , &ROOT::Math::LorentzVector<TYPE>::Pz } },
+                                               v );
     }
     // =======================================================================
     /** Useful shortcut to put 3D-Vector directly into N-Tuple:
@@ -1874,7 +1875,7 @@ namespace Tuples
     StatusCode column ( const std::string& name ,
                         const ROOT::Math::DisplacementVector3D<TYPE,TAG>& v )
     {
-      return this->columns(
+      return this->columns<typename TYPE::Scalar>(
                       { { name + "X", &ROOT::Math::DisplacementVector3D<TYPE,TAG>::X },
                         { name + "Y", &ROOT::Math::DisplacementVector3D<TYPE,TAG>::Y },
                         { name + "Z", &ROOT::Math::DisplacementVector3D<TYPE,TAG>::Z } },
@@ -1902,7 +1903,7 @@ namespace Tuples
     ( const std::string& name ,
       const ROOT::Math::PositionVector3D<TYPE,TAG>& v )
     {
-      return this->columns(
+      return this->columns<typename TYPE::Scalar>(
                       { { name + "X", &ROOT::Math::PositionVector3D<TYPE,TAG>::X },
                         { name + "Y", &ROOT::Math::PositionVector3D<TYPE,TAG>::Y },
                         { name + "Z", &ROOT::Math::PositionVector3D<TYPE,TAG>::Z } },
