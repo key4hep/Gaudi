@@ -7,6 +7,7 @@
 // ============================================================================
 #include <algorithm>
 #include <array>
+#include "GaudiKernel/ToStream.h"
 // ============================================================================
 /** @file
  *  Collection of utilities, which allows to use class std::array
@@ -36,22 +37,6 @@ namespace Gaudi
       const std::string& open  ,                       //               opening
       const std::string& close ,                       //               closing
       const std::string& delim ) ;                     //             delimiter
-    // ========================================================================
-    /** printout of class std::array
-     *  The format is "Python's tuple"
-     *  @param  obj (INPUT)  the arary to be printed
-     *  @param  s   (UPDATE) the actual stream
-     *  @return the updated stream
-     *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
-     *  @date 2009-09-16
-     */
-    template <class TYPE, std::size_t N>
-    inline std::ostream& toStream
-    ( const std::array<TYPE,N>& obj , std::ostream& s )
-    {
-      return toStream
-        ( obj.begin () , obj.end   () , s , " ( "  , " )"   , " , "  ) ;
-    }
     // ========================================================================
   } //                                            end of namespace Gaudi::Utils
   // ==========================================================================

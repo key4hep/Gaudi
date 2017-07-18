@@ -8,6 +8,7 @@
 // ============================================================================
 #include <iostream>
 #include <iomanip>
+#include <array>
 #include <vector>
 #include <map>
 #include <set>
@@ -252,28 +253,20 @@ namespace Gaudi
      *  @date 2009-10-05
      */
     template <class TYPE, unsigned int N>
-    std::ostream& toStream (       TYPE(&obj)[N] , std::ostream& s )
-    {
-      return toStream ( obj , obj + N , s , "( " , " )" , " , " ) ;
-    }
-    // ========================================================================
-    /** the specialization for C-arrays, a'la python tuple
-     *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
-     *  @date 2009-10-05
-     */
-    template <class TYPE, unsigned int N>
     std::ostream& toStream ( const TYPE(&obj)[N] , std::ostream& s )
     {
       return toStream ( obj , obj + N , s , "( " , " )" , " , " ) ;
     }
     // ========================================================================
-    /** the specialization for C-string, a'la python tuple
+    /** the specialization for std::array, a'la python tuple
      *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
-     *  @date 2009-10-05
+     *  @date 2009-09-16
      */
-    template <unsigned int N>
-    std::ostream& toStream (       char (&obj)[N] , std::ostream& s )
-    { return toStream ( std::string ( obj , obj+N ) , s ) ; }
+    template <class TYPE, std::size_t N>
+    std::ostream& toStream ( const std::array<TYPE,N>& obj , std::ostream& s )
+    {
+      return toStream ( begin(obj) , end(obj) , s , "( " , " )" , " , " ) ;
+    }
     // ========================================================================
     /** the specialization for C-string, a'la python tuple
      *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
