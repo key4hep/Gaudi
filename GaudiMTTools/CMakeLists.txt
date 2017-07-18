@@ -11,8 +11,8 @@ if( NOT AIDA_FOUND )
    return()
 endif()
 
-# Hide some TBB compile time warnings
-include_directories(SYSTEM ${TBB_INCLUDE_DIRS})
+# Hide some TBB and Boost compile time warnings
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS} ${TBB_INCLUDE_DIRS})
 
 gaudi_add_module(GaudiMTTools *.cpp
                  LINK_LIBRARIES GaudiAlgLib Boost TBB
