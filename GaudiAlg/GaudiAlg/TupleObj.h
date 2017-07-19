@@ -20,6 +20,7 @@
 #include "GaudiKernel/NTuple.h"
 #include "GaudiKernel/VectorMap.h"
 #include "GaudiKernel/SerializeSTL.h"
+#include "GaudiKernel/invoke.h"
 // ============================================================================
 // GaudiAlg
 // ============================================================================
@@ -33,7 +34,6 @@
 #include "Math/Vector4D.h"
 #include "Math/SVector.h"
 #include "Math/SMatrix.h"
-
 // ============================================================================
 // forward declaration
 // ============================================================================
@@ -255,11 +255,10 @@ namespace Tuples
      *  @param clid  CLID_ColumnWiseTuple or CLID_RowWiseTuple
      *  @param type the type of the tuple
      */
-    TupleObj
-    ( std::string           name                          ,
-      NTuple::Tuple*        tuple                         ,
-      const CLID&           clid = CLID_ColumnWiseTuple   ,
-      const Tuples::Type    type = Tuples::NTUPLE         ) ;
+    TupleObj ( std::string           name                          ,
+               NTuple::Tuple*        tuple                         ,
+               const CLID&           clid = CLID_ColumnWiseTuple   ,
+               const Tuples::Type    type = Tuples::NTUPLE         ) ;
     // ========================================================================
   protected:
     // ========================================================================
@@ -283,8 +282,7 @@ namespace Tuples
      *  @param  value the value of the variable
      *  @return status code
      */
-    StatusCode column ( const std::string& name   ,
-                        float              value  );
+    StatusCode column ( const std::string& name   , float  value  );
     // ========================================================================
   public:
     // ========================================================================
@@ -304,8 +302,7 @@ namespace Tuples
      *  @param  value    the value of the variable
      *  @return status code
      */
-    StatusCode column ( const std::string& name   ,
-                        double             value  );
+    StatusCode column ( const std::string& name   , double  value  );
     // ========================================================================
   public:
     // ========================================================================
@@ -324,8 +321,7 @@ namespace Tuples
      *  @param value  the value of the variable
      *  @return status code
      */
-    StatusCode column ( const std::string&   name  ,
-                        short                value );
+    StatusCode column ( const std::string&   name  , short value );
     // ========================================================================
     /** Set the value for selected tuple column.
      *  If the column does not exist yet, it will be
@@ -366,8 +362,7 @@ namespace Tuples
      *  @param value  the value of the variable
      *  @return status code
      */
-    StatusCode column ( const std::string& name  ,
-                        unsigned short     value );
+    StatusCode column ( const std::string& name  , unsigned short     value );
     // ========================================================================
     /** Set the value for selected tuple column.
      *  If the column does not exist yet, it will be
@@ -408,8 +403,7 @@ namespace Tuples
      *  @param value  the value of the variable
      *  @return status code
      */
-    StatusCode column ( const std::string& name  ,
-                        char               value );
+    StatusCode column ( const std::string& name  , char               value );
     // ========================================================================
     /** Set the value for selected tuple column.
      *  If the column does not exist yet, it will be
@@ -450,8 +444,7 @@ namespace Tuples
      *  @param value  the value of the variable
      *  @return status code
      */
-    StatusCode column ( const std::string& name  ,
-                        unsigned char      value );
+    StatusCode column ( const std::string& name  , unsigned char      value );
     // ========================================================================
     /** Set the value for selected tuple column.
      *  If the column does not exist yet, it will be
@@ -492,8 +485,7 @@ namespace Tuples
      *  @param value  value of the variable
      *  @return status code
      */
-    StatusCode column ( const std::string& name  ,
-                        int                value );
+    StatusCode column ( const std::string& name  , int                value );
     // ========================================================================
     /** Set the value for selected tuple column.
      *  If the column does not exist yet, it will be
@@ -534,8 +526,7 @@ namespace Tuples
      *  @param value  value of the variable
      *  @return status code
      */
-    StatusCode column ( const std::string& name  ,
-                        unsigned int       value );
+    StatusCode column ( const std::string& name  , unsigned int       value );
     // ========================================================================
     /** Set the value for selected tuple column.
      *  If the column does not exist yet, it will be
@@ -577,8 +568,7 @@ namespace Tuples
      *  @param value   the value of the variable
      *  @return status code
      */
-    StatusCode column ( const std::string& name  ,
-                        long               value );
+    StatusCode column ( const std::string& name  , long               value );
     // ========================================================================
     /** Set the value for selected tuple column.
      *  If the column does not exist yet, it will be
@@ -620,8 +610,7 @@ namespace Tuples
      *  @param value  the value of the variable
      *  @return status code
      */
-    StatusCode column ( const std::string& name  ,
-                        unsigned long      value );
+    StatusCode column ( const std::string& name  , unsigned long      value );
     // ========================================================================
     /** Set the value for selected tuple column.
      *  If the column does not exist yet, it will be
@@ -662,8 +651,7 @@ namespace Tuples
      *  @param value  value of the variable
      *  @return status code
      */
-    StatusCode column ( const std::string& name  ,
-                        long long          value );
+    StatusCode column ( const std::string& name  , long long          value );
     // ========================================================================
     /** Set the value for selected tuple column.
      *  If the column does not exist yet, it will be
@@ -704,8 +692,7 @@ namespace Tuples
      *  @param value  value of the variable
      *  @return status code
      */
-    StatusCode column ( const std::string& name  ,
-                        unsigned long long value );
+    StatusCode column ( const std::string& name  , unsigned long long value );
     // ========================================================================
     /** Set the value for selected tuple column.
      *  If the column does not exist yet, it will be
@@ -746,14 +733,11 @@ namespace Tuples
      *  @param value  the value of tve variable
      *  @return status code
      */
-    StatusCode column ( const std::string& name  ,
-                        signed char        value )
+    StatusCode column ( const std::string& name, signed char value )
     {
-      return column
-        ( name  ,
-          value ,
-          std::numeric_limits<signed char>::min() ,
-          std::numeric_limits<signed char>::max() ) ;
+      return column ( name  , value ,
+                      std::numeric_limits<signed char>::min() ,
+                      std::numeric_limits<signed char>::max() ) ;
     }
     // ========================================================================
   public:
@@ -825,30 +809,40 @@ namespace Tuples
      *  @code
      *
      *  Gaudi::XYZPoint p;
-     *  tuple->columns<float>( { { "X", &Gaudi::XYZPoint::X },
-     *                           { "Y", &Gaudi::XYZPoint::Y },
-     *                           { "Z", &Gaudi::XYZPoint::Z } }, p );
+     *  tuple->columns( p, std::make_pair( "X", &Gaudi::XYZPoint::X),
+     *                     std::make_pair( "Y", &Gaudi::XYZPoint::Y),
+     *                     std::make_pair( "Z", &Gaudi::XYZPoint::Z) );
      *
      *  @endcode
      *
-     *  @warning *ALL* columns are assumed to be of the same (specified!) type
+     *  @warning the type of column is set (implicitly) by the type returned by the 'callable'
+     *           for that column, i.e. in the above the return type of eg. `Gaudi::XYZPoint::X()`
      *
      *  @author Gerhard Raven
      */
-    template <typename TYPE,
-              typename Value, template <typename,typename...> class Container = std::initializer_list,
-              typename Fun  = std::function<TYPE(const Value&)>,
-              typename Item = std::pair<std::string,Fun>>
-    StatusCode columns(const Container<Item>& items,
-                       const Value& value ) {
-        using std::begin; using std::end;
-        return std::accumulate( begin(items), end(items),
-                                StatusCode{StatusCode::SUCCESS},
-                                [&](StatusCode sc, const Item& i) {
-                                    return column( i.first, i.second(value) ) && sc;
-                                } );
+private:
+    template <typename Tuple, typename Value, std::size_t... I>
+    StatusCode columns_helper( const Value& value, const Tuple& tup, std::index_sequence<I...>) {
+        auto scs = std::initializer_list<StatusCode>{
+            this->column(std::get<I>(tup).first, Gaudi::invoke(std::get<I>(tup).second,value))...
+        };
+        auto is_ok = [](const StatusCode& sc) -> bool { return sc; };
+        auto i = std::find_if_not(begin(scs), end(scs), is_ok );
+        if (i!=end(scs)) {
+            // avoid unchecked StatusCodes...
+            std::for_each(std::next(i),end(scs),is_ok);
+            return *i;
+        }
+        return StatusCode::SUCCESS;
     }
-    // =======================================================================
+
+public:
+    template <typename Value, typename... Args>
+    StatusCode columns(Value&& value, Args&&... args ) {
+        return columns_helper(std::forward<Value>(value),
+                              std::forward_as_tuple(std::forward<Args>(args)...),
+                              std::index_sequence_for<Args...>{});
+    }
     // ========================================================================
   public:
     // ========================================================================
@@ -1844,15 +1838,12 @@ namespace Tuples
      *  @date 2006-11-26
      */
     template <class TYPE>
-    StatusCode column
-    ( const std::string& name ,
-      const ROOT::Math::LorentzVector<TYPE>& v )
+    StatusCode column ( const std::string& name , const ROOT::Math::LorentzVector<TYPE>& v )
     {
-      return columns<typename TYPE::Scalar>( { { name + "E" , &ROOT::Math::LorentzVector<TYPE>::E  },
-                                               { name + "X" , &ROOT::Math::LorentzVector<TYPE>::Px },
-                                               { name + "Y" , &ROOT::Math::LorentzVector<TYPE>::Py },
-                                               { name + "Z" , &ROOT::Math::LorentzVector<TYPE>::Pz } },
-                                               v );
+      return columns( v, std::make_pair( name + "E", &ROOT::Math::LorentzVector<TYPE>::E ),
+                         std::make_pair( name + "X", &ROOT::Math::LorentzVector<TYPE>::Px),
+                         std::make_pair( name + "Y", &ROOT::Math::LorentzVector<TYPE>::Py),
+                         std::make_pair( name + "Z", &ROOT::Math::LorentzVector<TYPE>::Pz) );
     }
     // =======================================================================
     /** Useful shortcut to put 3D-Vector directly into N-Tuple:
@@ -1875,11 +1866,9 @@ namespace Tuples
     StatusCode column ( const std::string& name ,
                         const ROOT::Math::DisplacementVector3D<TYPE,TAG>& v )
     {
-      return this->columns<typename TYPE::Scalar>(
-                      { { name + "X", &ROOT::Math::DisplacementVector3D<TYPE,TAG>::X },
-                        { name + "Y", &ROOT::Math::DisplacementVector3D<TYPE,TAG>::Y },
-                        { name + "Z", &ROOT::Math::DisplacementVector3D<TYPE,TAG>::Z } },
-                      v );
+      return this->columns( v, std::make_pair( name + "X", &ROOT::Math::DisplacementVector3D<TYPE,TAG>::X ),
+                               std::make_pair( name + "Y", &ROOT::Math::DisplacementVector3D<TYPE,TAG>::Y ),
+                               std::make_pair( name + "Z", &ROOT::Math::DisplacementVector3D<TYPE,TAG>::Z ) );
     }
     // =======================================================================
     /** Useful shortcut to put 3D-Vector directly into N-Tuple:
@@ -1903,11 +1892,10 @@ namespace Tuples
     ( const std::string& name ,
       const ROOT::Math::PositionVector3D<TYPE,TAG>& v )
     {
-      return this->columns<typename TYPE::Scalar>(
-                      { { name + "X", &ROOT::Math::PositionVector3D<TYPE,TAG>::X },
-                        { name + "Y", &ROOT::Math::PositionVector3D<TYPE,TAG>::Y },
-                        { name + "Z", &ROOT::Math::PositionVector3D<TYPE,TAG>::Z } },
-                      v );
+      return this->columns( v,
+                        std::make_pair( name + "X", &ROOT::Math::PositionVector3D<TYPE,TAG>::X ),
+                        std::make_pair( name + "Y", &ROOT::Math::PositionVector3D<TYPE,TAG>::Y ),
+                        std::make_pair( name + "Z", &ROOT::Math::PositionVector3D<TYPE,TAG>::Z ) );
     }
     // =======================================================================
     /** shortcut to put Smatrix into N-tuple:
