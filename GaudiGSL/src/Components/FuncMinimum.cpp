@@ -1,7 +1,7 @@
 // Include files
 
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
 // from Gaudi
 #include "GaudiKernel/MsgStream.h"
 //from GSL
@@ -38,11 +38,10 @@ FuncMinimum::FuncMinimumMisc::FuncMinimumMisc
 {
   const size_t N = func.dimensionality () ;
 
-  for( size_t i = 0 ; i < N ; ++i )
-    {
+  for( size_t i = 0 ; i < N ; ++i ) {
       Genfun::GENFUNCTION fun = func.partial(i);
       m_grad.push_back (fun.clone());
-    }
+  }
 }
 //=============================================================================
 namespace
@@ -75,14 +74,12 @@ namespace
 
     for ( unsigned int i = 0; i < v->size; ++i) {
        arg[i] = gsl_vector_get (v, i);
-     }
+    }
 
-
-    for( unsigned int i = 0 ; i < df->size ; ++i )
-     {
+    for( unsigned int i = 0 ; i < df->size ; ++i ) {
        Genfun::GENFUNCTION f = *(grad[i]);
        gsl_vector_set ( df, i, f(arg) );
-     }
+    }
 
 
   }
@@ -134,31 +131,27 @@ StatusCode FuncMinimum::minimum (const IFuncMinimum::GenFunc&   func  ,
   gsl_multimin_fdfminimizer_set ( s, &function,
                                   &vect.vector, m_step_size, m_tol);
 
-  for( iter = 0 ; iter < m_max_iter ; ++iter )
-    {
+  for( iter = 0 ; iter < m_max_iter ; ++iter ) {
       status = gsl_multimin_fdfminimizer_iterate (s);
 
-      if ( status )
-        {
+      if ( status ) {
           return Error
             ("Error from gsl_multimin_fdfminimizer_iterate '"
              + std::string(gsl_strerror(status)) + "'") ;
-        }
+      }
 
       status = gsl_multimin_test_gradient (s->gradient,
                                            m_norm_gradient);
 
 
       if ( status != GSL_CONTINUE ) { break; }
-    }
+  }
 
-  for (unsigned int i = 0; i < vect.vector.size; ++i)
-    {
+  for (unsigned int i = 0; i < vect.vector.size; ++i) {
       gsl_vector_set (&vect.vector, i, gsl_vector_get (s->x, i));
-    }
+  }
 
-  if (status == GSL_SUCCESS)
-    {
+  if (status == GSL_SUCCESS) {
       debug()
           << "We stopped in the method on the " << iter
           << " iteration (we have maximum "     << m_max_iter
@@ -168,28 +161,23 @@ StatusCode FuncMinimum::minimum (const IFuncMinimum::GenFunc&   func  ,
           << gsl_blas_dnrm2 (s->gradient)
           << " by the absolute tolerance = "
           << m_norm_gradient << endmsg;
-    }
-  else if (status == GSL_CONTINUE && iter <= m_max_iter )
-    {
+  } else if (status == GSL_CONTINUE && iter <= m_max_iter ) {
       return Error ( "Method finished with '"
                      + std::string(gsl_strerror(status))
                      +  "' error" );
-    }
-  else
-    {
+  } else {
       return Error ( "Method finished with '" +
                      std::string(gsl_strerror(status))
                      +  "' error" );
-    }
+  }
 
   gsl_multimin_fdfminimizer_free (s);
 
-  if (status)
-    {
+  if (status) {
       return Error ( "Method finished with '"
                      + std::string(gsl_strerror(status))
                      +  "' error" );
-    }
+  }
 
   return StatusCode::SUCCESS;
 }
@@ -207,36 +195,24 @@ StatusCode FuncMinimum::minimum (const IFuncMinimum::GenFunc&   func  ,
   /// Find minimum of our function
   StatusCode sc = minimum (func, arg) ;
 
-  if (sc.isFailure())
-    {
+  if (sc.isFailure()) {
       return Error ( "MINIMUM IS NOT FOUND. StatusCode =  '"
                    + std::to_string( sc.getCode() ) +  '\'',
                      sc );
-    }
-  else
-    {
-      HepSymMatrix cov(arg.dimension(), 0);
-      for (unsigned int i = 0; i < arg.dimension(); ++i)
-        {
-          Genfun::GENFUNCTION f = func.partial(i);
-          for (unsigned int j = i; j < arg.dimension(); ++j)
-            {
-              Genfun::GENFUNCTION fij = f.partial(j);
-              cov(i+1, j+1) = 0.5 * fij(arg);
-            }
-        }
+  }
+  HepSymMatrix cov(arg.dimension(), 0);
+  for (unsigned int i = 0; i < arg.dimension(); ++i) {
+      auto f = func.partial(i);
+      for (unsigned int j = i; j < arg.dimension(); ++j) {
+          auto fij = f.partial(j);
+          cov(i+1, j+1) = 0.5 * fij(arg);
+      }
+  }
 
-      int inv;
-      covar = cov.inverse(inv);
-      if ( inv != 0)
-        {
-          return Error
-            ("Matrix of Error is not complete successful");
-        }
-
-      return StatusCode::SUCCESS;
-    }
-
+  int inv;
+  covar = cov.inverse(inv);
+  return inv == 0 ? StatusCode::SUCCESS
+                  : Error ("Matrix of Error is not complete successful");
 }
 
 //=============================================================================
@@ -245,59 +221,38 @@ StatusCode  FuncMinimum::initialize()
 {
   StatusCode sc = GaudiTool::initialize() ;
 
-  if ( sc.isFailure() )
-    {
+  if ( sc.isFailure() ) {
       return Error ("Could not initialize base class GaudiTool", sc);
-    }
+  }
 
   /// The algorithm for multidimensional minimization
-  if(       "conjugate_fr" == m_algType )
-    {
+  if(       "conjugate_fr" == m_algType ) {
       m_type = gsl_multimin_fdfminimizer_conjugate_fr     ;
       debug()
           << "Minimization algorithm to be used: "
           << "'gsl_multimin_fdfminimizer_conjugate_fr'"
           << endmsg;
-    }
-  else if ( "conjugate_pr" == m_algType )
-    {
+  } else if ( "conjugate_pr" == m_algType ) {
       m_type = gsl_multimin_fdfminimizer_conjugate_pr     ;
       debug()
           << "Minimization algorithm to be used: "
           << "'gsl_multimin_fdfminimizer_conjugate_pr'"
           << endmsg;
-    }
-  else if ( "vector_bfgs" == m_algType )
-    {
+  } else if ( "vector_bfgs" == m_algType ) {
       m_type = gsl_multimin_fdfminimizer_vector_bfgs      ;
       debug()
           << "Minimization algorithm to be used: " <<
           "'gsl_multimin_fdfminimizer_vector_bfgs'" << endmsg;
-    }
-  else if ( "steepest_descent" == m_algType )
-    {
+  } else if ( "steepest_descent" == m_algType ) {
       m_type = gsl_multimin_fdfminimizer_steepest_descent ;
       debug()
           << "Minimization algorithm to be used: "
           << "'gsl_multimin_fdfminimizer_steepest_descent'"
           << endmsg;
-    }
-  else
-    {
+  } else {
       return Error(" Unknown algorithm type '" + m_algType + "'");
-    }
+  }
 
-  return StatusCode::SUCCESS;
-}
-//=============================================================================
-StatusCode FuncMinimum::finalize   ()
-{
-  StatusCode sc = GaudiTool::finalize() ;
-
-  if ( sc.isFailure() )
-    {
-      return Error("Could not finalize base class GaudiTool", sc);
-    }
   return StatusCode::SUCCESS;
 }
 //=============================================================================

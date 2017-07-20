@@ -90,13 +90,8 @@ namespace Genfun
       , m_category  ( GaudiMath::Integration::Finite      )
       , m_rule      ( rule                                )
       //
-      , m_points    (                                     )
-      //
       , m_epsabs    ( epsabs                              )
       , m_epsrel    ( epsrel                              )
-      //
-      , m_result    ( GSL_NEGINF                          )
-      , m_error     ( GSL_POSINF                          )
       //
       , m_size      ( size                                )
       , m_argument  ( function.dimensionality()           )
@@ -140,15 +135,11 @@ namespace Genfun
       , m_epsabs    ( epsabs  )
       , m_epsrel    ( epsrel  )
       //
-      , m_result    ( GSL_NEGINF                          )
-      , m_error     ( GSL_POSINF                          )
-      //
       , m_size      ( size                                )
       , m_argument  ( function.dimensionality()           )
     {
       if ( m_index >= m_DIM )
         { Exception("::constructor: invalid variable index") ; }
-      m_pdata.reset(  new double[ 2 + m_points.size() ] );
       m_points.push_back( a ) ;
       std::sort( m_points.begin() , m_points.end() ) ;
       m_points.erase ( std::unique( m_points.begin () ,
@@ -180,11 +171,8 @@ namespace Genfun
       , m_type      ( GaudiMath::Integration::    Other )
       , m_category  ( GaudiMath::Integration:: Infinite )
       , m_rule      ( GaudiMath::Integration::    Fixed )
-      , m_points    (            )
       , m_epsabs    ( epsabs     )
       , m_epsrel    ( epsrel     )
-      , m_result    ( GSL_NEGINF )
-      , m_error     ( GSL_POSINF )
       , m_size      ( size       )
       , m_argument  ( function.dimensionality()           )
     {
@@ -199,7 +187,7 @@ namespace Genfun
     // ========================================================================
     NumericalIndefiniteIntegral::
     NumericalIndefiniteIntegral( const NumericalIndefiniteIntegral& right )
-      : AbsFunction ()
+      : AbsFunction()
       , m_function  ( right.m_function->clone() )
       , m_DIM       ( right.m_DIM      )
       , m_index     ( right.m_index    )
@@ -211,12 +199,9 @@ namespace Genfun
       , m_points    ( right.m_points   )
       , m_epsabs    ( right.m_epsabs   )
       , m_epsrel    ( right.m_epsrel   )
-      , m_result    ( GSL_NEGINF       )
-      , m_error     ( GSL_POSINF       )
       , m_size      ( right.m_size     )
       , m_argument  ( right.m_argument )
     {
-      m_pdata.reset( new double[ 2 + m_points.size() ] ) ;
     }
     // ========================================================================
 
@@ -258,18 +243,16 @@ namespace Genfun
     Genfun::Derivative
     NumericalIndefiniteIntegral::partial ( unsigned int idx ) const
     {
-      if      ( idx >= m_DIM   )
-        { Exception ( "::partial(i): invalid variable index " ) ; };
-      if      ( idx != m_index )
-        {
-          const AbsFunction& aux = NumericalDerivative( *this , idx ) ;
-          return Genfun::FunctionNoop( &aux ) ;
-        }
-      else if ( GaudiMath::Integration::VariableLowLimit == limit () )
-        {
-          const AbsFunction& aux = -1 * function() ;
-          return Genfun::FunctionNoop( &aux ) ;
-        }
+      if ( idx >= m_DIM   ) {
+          Exception ( "::partial(i): invalid variable index " ) ;
+      };
+      if ( idx != m_index ) {
+        const AbsFunction& aux = NumericalDerivative( *this , idx ) ;
+        return Genfun::FunctionNoop( &aux ) ;
+      } else if ( GaudiMath::Integration::VariableLowLimit == limit () ) {
+        const AbsFunction& aux = -1 * function() ;
+        return Genfun::FunctionNoop( &aux ) ;
+      }
       const AbsFunction& aux = function() ;
       return Genfun::FunctionNoop( &aux ) ;
     }
@@ -277,19 +260,19 @@ namespace Genfun
     // ========================================================================
     /// evaluate the function
     // ========================================================================
-    double NumericalIndefiniteIntegral::operator()
-      ( const Argument& argument ) const
+    double NumericalIndefiniteIntegral::operator()( const Argument& argument ) const
     {
       // reset the result and the error
       m_result = GSL_NEGINF ;
       m_error  = GSL_POSINF ;
 
       // check the argument
-      if( argument.dimension() != m_DIM )
-        { Exception ( "operator(): invalid argument size " ) ; };
+      if( argument.dimension() != m_DIM ) {
+          Exception ( "operator(): invalid argument size " ) ;
+      };
 
       // copy the argument
-      {for( size_t i  = 0 ; i < m_DIM ; ++i ){ m_argument[i] = argument[i];}}
+      for( size_t i  = 0 ; i < m_DIM ; ++i ){ m_argument[i] = argument[i];}
 
       // create the helper object
       GSL_Helper helper( *m_function , m_argument , m_index );
@@ -301,22 +284,19 @@ namespace Genfun
       _Function F1    ;
       F1.fn      = &F ;
 
-      if        (  GaudiMath::Integration::Infinite         == category () )
-        { return   QAGI ( &F1 ) ; }                                // RETURN
-      else if   (  GaudiMath::Integration::Singular         == category () )
-        { return   QAGP ( &F1 ) ; }                                // RETURN
-      else if   (  GaudiMath::Integration::Finite           == category () )
-        if      (  GaudiMath::Integration::NonAdaptive      == type     () )
-          { return QNG  ( &F1 ) ; }                                // RETURN
-        else if (  GaudiMath::Integration::Adaptive         == type     () )
-          { return QAG  ( &F1 ) ; }                                // RETURN
-        else if (  GaudiMath::Integration::AdaptiveSingular == type     () )
-          { return QAGS ( &F1 ) ; }                                // RETURN
-        else
-          { Exception ( "::operator(): invalid type "  ); }
-      else
-        { Exception ( "::operator(): invalid category "  ); }
-
+      switch (category() ) {
+        case GaudiMath::Integration::Infinite : return QAGI( &F1 ) ;
+        case GaudiMath::Integration::Singular : return QAGP( &F1 ) ;
+        case GaudiMath::Integration::Finite :
+          switch (type()) {
+            case GaudiMath::Integration::NonAdaptive : return QNG( &F1 ) ;
+            case GaudiMath::Integration::Adaptive    : return QAG( &F1 ) ;
+            case GaudiMath::Integration::AdaptiveSingular : return QAGS( &F1 ) ;
+            default: Exception ( "::operator(): invalid type "  );
+          }
+          break;
+        default : Exception ( "::operator(): invalid category "  );
+      }
       return 0 ;
     }
     // ========================================================================
@@ -327,7 +307,7 @@ namespace Genfun
     NumericalIndefiniteIntegral::_Workspace*
     NumericalIndefiniteIntegral::allocate() const
     {
-      if ( !m_ws ) { 
+      if ( !m_ws ) {
         m_ws.reset(  new _Workspace()  );
         m_ws->ws = gsl_integration_workspace_alloc( size () );
         if ( !m_ws->ws ) { Exception ( "allocate()::invalid workspace" ) ; };
@@ -350,8 +330,7 @@ namespace Genfun
       allocate() ;
 
       int ierror = 0 ;
-      switch ( limit() )
-        {
+      switch ( limit() ) {
         case GaudiMath::Integration::VariableLowLimit  :
           ierror = gsl_integration_qagiu ( F->fn     , x        ,
                                            m_epsabs  , m_epsrel ,
@@ -364,7 +343,7 @@ namespace Genfun
                                            &m_result , &m_error ) ; break ;
         default :
           Exception ( "::QAGI: invalid mode" ) ;
-        };
+      };
 
       if( ierror ) { gsl_error( "NumericalIndefiniteIntegral::QAGI" ,
                                 __FILE__ , __LINE__ , ierror ) ;}
@@ -381,38 +360,33 @@ namespace Genfun
       if( !F ) { Exception("QAGP::invalid function") ; }
 
       const double x = m_argument[m_index] ;
-      if ( m_a == x  )
-        {
+      if ( m_a == x  ) {
           m_result = 0    ;
           m_error  = 0    ;   // EXACT !
           return m_result ;
-        }
+      }
 
       // no known singular points ?
       if( points().empty() ) { return QAGS( F ) ; }
 
       // integration limits
-      const double a = std::min ( m_a , x ) ;
-      const double b = std::max ( m_a , x ) ;
+      const auto limits = std::minmax( m_a, x );
 
       // "active" singular points
-      auto lower = std::lower_bound( points().begin(), points().end(), a ) ;
-      auto upper = std::upper_bound( points().begin(), points().end(), b ) ;
+      auto lower = std::lower_bound( points().begin(), points().end(), limits.first ) ;
+      auto upper = std::upper_bound( points().begin(), points().end(), limits.second ) ;
 
-      Points pnts ( upper - lower ) ;
-      std::copy( lower , upper , pnts.begin() );
-      if ( *lower != a       ) { pnts.insert( pnts.begin () , a ) ; }
-      if ( *upper != b       ) { pnts.insert( pnts.end   () , b ) ; }
-      std::copy( pnts.begin() , pnts.end() , m_pdata.get() );
-      const size_t npts = pnts.size() ;
+      Points pnts; pnts.reserve( std::distance(lower,upper) );
+      std::copy( lower , upper , std::back_inserter(pnts) );
+      if ( *lower != limits.first  ) { pnts.insert( pnts.begin () , limits.first ) ; }
+      if ( *upper != limits.second ) { pnts.insert( pnts.end   () , limits.second ) ; }
 
       // use GSL
-      int ierror =
-        gsl_integration_qagp ( F->fn                ,
-                               m_pdata.get()   , npts     ,
-                               m_epsabs  , m_epsrel ,
-                               size ()   , ws()->ws ,
-                               &m_result , &m_error ) ;
+      int ierror = gsl_integration_qagp( F->fn                ,
+                                         pnts.data(), pnts.size(),
+                                         m_epsabs  , m_epsrel ,
+                                         size ()   , ws()->ws ,
+                                         &m_result , &m_error ) ;
 
       if( ierror ) { gsl_error( "NumericalIndefiniteIntegral::QAGI " ,
                                 __FILE__ , __LINE__ , ierror ) ; }
@@ -435,12 +409,11 @@ namespace Genfun
       if( !F ) { Exception("QNG::invalid function") ; }
 
       const double x = m_argument[m_index] ;
-      if ( m_a == x  )
-        {
-          m_result = 0    ;
-          m_error  = 0    ;   // EXACT !
-          return m_result ;
-        }
+      if ( m_a == x  ) {
+        m_result = 0    ;
+        m_error  = 0    ;   // EXACT !
+        return m_result ;
+      }
 
       // integration limits
       const double a = std::min ( m_a , x ) ;
@@ -484,12 +457,11 @@ namespace Genfun
       allocate () ;
 
       // integration limits
-      const double a = std::min ( m_a , x ) ;
-      const double b = std::max ( m_a , x ) ;
+      const auto limits = std::minmax( m_a, x );
 
       int ierror =
         gsl_integration_qag ( F->fn                    ,
-                              a         ,            b ,
+                              limits.first, limits.second,
                               m_epsabs  ,     m_epsrel ,
                               size   () , (int) rule() , ws ()->ws ,
                               &m_result ,     &m_error             );
@@ -515,23 +487,21 @@ namespace Genfun
       if( !F ) { Exception("QAG::invalid function") ; }
 
       const double x = m_argument[m_index] ;
-      if ( m_a == x  )
-        {
+      if ( m_a == x  ) {
           m_result = 0    ;
           m_error  = 0    ;   // EXACT !
           return m_result ;
-        }
+      }
 
       // allocate workspace
       allocate () ;
 
       // integration limits
-      const double a = std::min ( m_a , x ) ;
-      const double b = std::max ( m_a , x ) ;
+      const auto limits = std::minmax( m_a, x );
 
       int ierror =
         gsl_integration_qags ( F->fn                ,
-                               a         , b        ,
+                               limits.first, limits.second,
                                m_epsabs  , m_epsrel ,
                                size   () , ws()->ws ,
                                &m_result , &m_error );
@@ -548,10 +518,8 @@ namespace Genfun
       return m_result ;
     }
     // ========================================================================
-
   } // end of namespace GaudiMathImplementation
 } // end of namespace Genfun
-
 
 // ============================================================================
 // The END

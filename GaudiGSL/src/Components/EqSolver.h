@@ -35,9 +35,6 @@ public:
 
   /// Overriding initialize
   StatusCode initialize() override;
-  StatusCode finalize() override;
-
-  ~EqSolver() override; ///< Destructor
 
   class EqSolverMisc
   {

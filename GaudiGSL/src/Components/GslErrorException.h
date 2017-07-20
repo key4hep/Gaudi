@@ -37,9 +37,6 @@ public:
   /// Inherited constructor
   using extends::extends;
 
-  /// destructor (protected and virtual)
-  ~GslErrorException() override = default;
-
 private:
   Gaudi::Property<std::vector<int>> m_ignore{this, "IgnoreCodes", {}, "codes to be ignored"};
 };

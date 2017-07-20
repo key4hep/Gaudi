@@ -3,8 +3,8 @@
 // ============================================================================
 // STD & STL
 // ============================================================================
-#include <math.h>
-#include <stdio.h>
+#include <cmath>
+#include <cstdio>
 // ============================================================================
 // GaudiMath
 // ============================================================================
@@ -40,7 +40,6 @@ int main()
 
   const GaudiMath::Function& mysin = Genfun::Sin();
 
-
   for( double x = 0 * Gaudi::Units::degree ;
        x <= 360 * Gaudi::Units::degree ;
        x += 15 * Gaudi::Units::degree ) {
@@ -49,32 +48,29 @@ int main()
 	    x / Gaudi::Units::degree  , value , value-(1-cos(x)) );
   }
 
-
   const GaudiMath::Function& myfun = Genfun::Gaussian();
 
   std::cout
     << " integral from gauss1 =  "
     << GaudiMath::Integral( myfun , 0.0 , GaudiMath::Integration::Infinity )
-    << std::endl << " integral from gauss2 =  "
+    << "\n integral from gauss2 =  "
     << GaudiMath::Integral( myfun , GaudiMath::Integration::Infinity ,0.0  )
-    << std::endl << " integral from gauss3 =  "
+    << "\n integral from gauss3 =  "
     << GaudiMath::Integral( myfun                             ,
                             GaudiMath::Integration::Infinity  ,
                             GaudiMath::Integration::Infinity  )
-    << std::endl << " integral from gauss4 =  "
+    << "\n integral from gauss4 =  "
     << GaudiMath::Integral( myfun , GaudiMath::Integration::Infinity , 1.0  )
-    << std::endl << " integral from gauss5 =  "
+    << "\n integral from gauss5 =  "
     << GaudiMath::Integral( myfun , GaudiMath::Integration::Infinity , 4.0  )
-    << std::endl << " integral from gauss6 =  "
+    << "\n integral from gauss6 =  "
     << GaudiMath::Integral( myfun , GaudiMath::Integration::Infinity , 9.0  )
-    << std::endl << " integral from gauss7 =  "
+    << "\n integral from gauss7 =  "
     << GaudiMath::Integral( myfun , GaudiMath::Integration::Infinity , 16.0  )
-    << std::endl << " integral from gauss8 =  "
+    << "\n integral from gauss8 =  "
     << GaudiMath::Integral( myfun , GaudiMath::Integration::Infinity , 25.0  )
-    << std::endl ;
+    << "\n";
 
-
-  exit(0);
 }
 
 // ============================================================================

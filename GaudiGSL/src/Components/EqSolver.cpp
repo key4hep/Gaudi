@@ -34,19 +34,16 @@ EqSolver::EqSolverMisc::EqSolverMisc
   EqSolver::Arg&             arg   )
   : m_argum ( arg    )
   , m_eqs   ( &funcs )
-  , m_jac   ()
 {
   const size_t N = funcs.size () ;
-  for( size_t i = 0 ; i < N ; ++i )
-    {
+  for( size_t i = 0 ; i < N ; ++i ) {
       Equations last;
-      for( size_t j = 0 ; j < N ; ++j )
-        {
+      for( size_t j = 0 ; j < N ; ++j ) {
           Genfun::GENFUNCTION fij = funcs[i]->partial(j);
           last.push_back( fij.clone() ) ;
-        }
+      }
       m_jac.push_back( last );
-    }
+  }
 }
 // ============================================================================
 
@@ -56,11 +53,10 @@ EqSolver::EqSolverMisc::~EqSolverMisc()
   while( !m_jac.empty() )
     {
       Equations& last = m_jac.back() ;
-      while( !last.empty() )
-        {
+      while( !last.empty() ) {
           delete last.back() ;
           last.pop_back () ;
-        }
+      }
       m_jac.pop_back();
     }
 }
@@ -81,16 +77,12 @@ namespace
     const EqSolver::Equations& eqs = *(local->equations()) ;
     Argument&                  arg = local->argument()  ;
 
-    {for ( unsigned int i = 0; i < v->size; ++i)
-      {
+    for ( unsigned int i = 0; i < v->size; ++i) {
         arg[i] = gsl_vector_get (v, i);
-      }
     }
 
-    {for ( unsigned int i = 0; i < v->size; ++i)
-      {
+    for ( unsigned int i = 0; i < v->size; ++i) {
         gsl_vector_set(f, i, (*eqs[i])(arg));
-      }
     }
     return GSL_SUCCESS;
   }
@@ -107,20 +99,16 @@ namespace
     const EqSolver::Jacobi&     jac = local -> jacobi()    ;
     Argument&                   arg = local -> argument()  ;
 
-    {for ( unsigned int i = 0; i < v->size; ++i)
-      {
+    for ( unsigned int i = 0; i < v->size; ++i) {
         arg[i] = gsl_vector_get (v, i);
-      }
     }
 
-    {for( unsigned int i = 0 ; i < v->size ; ++i )
-      {
-        for (unsigned int j = 0; j < v->size; ++j)
-          {
+
+    for( unsigned int i = 0 ; i < v->size ; ++i ) {
+       for (unsigned int j = 0; j < v->size; ++j) {
             Genfun::GENFUNCTION  f = *(jac[i][j]) ;
             gsl_matrix_set      ( df , i , j , f ( arg ) ) ;
-          }
-      }
+       }
     }
     return GSL_SUCCESS;
   }
@@ -139,21 +127,16 @@ namespace
     const EqSolver::Jacobi&     jac = local->jacobi()    ;
     Argument&                   arg = local->argument()  ;
 
-    {for ( unsigned int i = 0; i < v->size; ++i)
-      {
+    for ( unsigned int i = 0; i < v->size; ++i) {
         arg[i] = gsl_vector_get (v, i);
-      }
     }
 
-    {for( unsigned int i = 0 ; i < v->size ; ++i )
-      {
+    for( unsigned int i = 0 ; i < v->size ; ++i ) {
         gsl_vector_set(f, i, (*eqs[i])(arg ) ) ;
-        for (unsigned int j = 0; j < v->size; ++j)
-          {
+        for (unsigned int j = 0; j < v->size; ++j) {
             Genfun::GENFUNCTION  f1 = *(jac[i][j]) ;
             gsl_matrix_set      ( df , i , j , f1(arg) ) ;
-          }
-      }
+        }
     }
     return GSL_SUCCESS;
   }
@@ -172,12 +155,10 @@ StatusCode EqSolver::solver (const Equations&  funcs ,
 
   gsl_vector_view vect = gsl_vector_view_array ( &arg[0] ,
                                                  arg.dimension() );
-  MsgStream log( msgSvc(), name() );
-
   EqSolverMisc local (funcs, arg);
 
   const gsl_multiroot_fdfsolver_type *T = m_type;
-  gsl_multiroot_fdfsolver *s;
+  gsl_multiroot_fdfsolver *s = nullptr;
   int    status = 0 ;
   size_t iter   = 0 ;
 
@@ -187,133 +168,95 @@ StatusCode EqSolver::solver (const Equations&  funcs ,
   function.df = &dfun_gsl;
   function.fdf = &fdfun_gsl;
   function.n = vect.vector.size;
-  function.params = (void*) &local;
+  function.params = &local;
 
   s = gsl_multiroot_fdfsolver_alloc(T, vect.vector.size);
   gsl_multiroot_fdfsolver_set (s, &function, &vect.vector);
 
-  for (iter = 0; iter < m_max_iter; ++iter)
-    {
+  for (iter = 0; iter < m_max_iter; ++iter) {
       status = gsl_multiroot_fdfsolver_iterate (s);
-      if (status)
-        {
+      if (status) {
           return Error
             ("Error from gsl_gsl_multiroot_fdfsolver_iterate '"
              + std::string(gsl_strerror(status)) + "'") ;
-        }
+      }
 
       status = gsl_multiroot_test_residual (s->f,
                                             m_norm_residual);
 
       if ( status != GSL_CONTINUE ) { break; }
-    }
+  }
 
-  for (unsigned int i = 0; i < vect.vector.size; ++i)
-    {
+  for (unsigned int i = 0; i < vect.vector.size; ++i) {
       gsl_vector_set (&vect.vector, i, gsl_vector_get (s->x, i));
-    }
+  }
 
-  if (status == GSL_SUCCESS)
-    {
-      log << MSG::DEBUG
+  if (status == GSL_SUCCESS) {
+      debug()
           << "We stopped in the method on the " << iter
           << " iteration (we have maximum "     << m_max_iter
           << " iterations)"                     << endmsg;
-    }
-  else if (status == GSL_CONTINUE && iter <= m_max_iter )
-    {
+  } else if (status == GSL_CONTINUE && iter <= m_max_iter ) {
       return Error ( "Method finished with '"
                      + std::string(gsl_strerror(status))
                      +  "' error" );
-    }
-  else
-    {
+  } else {
       return Error ( "Method finished with '" +
                      std::string(gsl_strerror(status))
                      +  "' error" );
-    }
+  }
 
   gsl_multiroot_fdfsolver_free (s);
 
-  if (status)
-    {
+  if (status) {
       return Error ( "Method finished with '"
                      + std::string(gsl_strerror(status))
                      +  "' error" );
-    }
+  }
 
   return GSL_SUCCESS;
 }
 
 //=============================================================================
 StatusCode  EqSolver::initialize()
-
 {
   StatusCode sc = GaudiTool::initialize() ;
-
-  MsgStream log( msgSvc() , name() ) ;
-
-  if( sc.isFailure() )
-    {
+  if( sc.isFailure() ) {
       return Error ("Could not initiliaze base class GaudiTool", sc);
-    }
+  }
+
   /* The algorithm for multiional root-finding
      (solving nonlinear systems with n equations in n unknowns)*/
 
-  if(       "fdfsolver_hybridsj" == m_algType )
-    {
+  if(       "fdfsolver_hybridsj" == m_algType ) {
       m_type = gsl_multiroot_fdfsolver_hybridsj  ;
-      log << MSG::DEBUG
-          << "Root findind algoritms to be used: "
+      debug()
+          << "Root finding algorithm to be used: "
           << "'gsl_multiroot_fdfsolver_hybridsj'"
           << endmsg;
-    }
-  else if ( "fdfsolver_hybridj" == m_algType )
-    {
+  } else if ( "fdfsolver_hybridj" == m_algType ) {
       m_type = gsl_multiroot_fdfsolver_hybridj   ;
-      log << MSG::DEBUG
-          << "Root findind algoritms to be used: "
+      debug()
+          << "Root finding algorithm to be used: "
           << "'gsl_multiroot_fdfsolver_hybridj'"
           << endmsg;
-    }
-  else if ( "fdfsolver_newton" == m_algType )
-    {
+  } else if ( "fdfsolver_newton" == m_algType ) {
       m_type = gsl_multiroot_fdfsolver_newton    ;
-      log << MSG::DEBUG
-          << "Root findind algoritms to be used: "
+      debug()
+          << "Root findind algorithm to be used: "
           << "'gsl_multiroot_fdfsolver_newton'"
           << endmsg;
-    }
-  else if ( "fdfsolver_gnewton" == m_algType )
-    {
+  } else if ( "fdfsolver_gnewton" == m_algType ) {
       m_type = gsl_multiroot_fdfsolver_gnewton   ;
-      log << MSG::DEBUG
-          << "Root findind algoritms to be used: "
+      debug()
+          << "Root findind algorithm to be used: "
           << "'gsl_multiroot_fdfsolver_gnewton'"
           << endmsg;
-    }
-  else
-    {
-      return Error(" Unknown algorith type '"
+  } else {
+      return Error(" Unknown algorithm type '"
                    + std::string(m_algType) + "'");
-     }
+  }
 
   return StatusCode::SUCCESS;
 }
-//=============================================================================
-StatusCode EqSolver::finalize   ()
-{
-  StatusCode sc = GaudiTool::finalize() ;
-
-  MsgStream log( msgSvc() , name() ) ;
-
-  if ( sc.isFailure() )
-    {
-      return Error("Could not finaliaze base class GaudiTool", sc);
-    }
-  return StatusCode::SUCCESS;
-}
-//=============================================================================
-EqSolver::~EqSolver( ) ///< Destructor
-{}
 //=============================================================================

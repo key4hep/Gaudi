@@ -40,24 +40,14 @@ public:
   StatusCode finalize   () override ;
 
   /** Standard constructor
-   *  @param type   tool type (?)
-   *  @param name   tool name
-   *  @param parent pointer to parent
    */
-  GslErrorCount
-  ( const std::string& type   ,
-    const std::string& name   ,
-    const IInterface*  parent );
-
-  /// destructor (protected and virtual)
-  ~GslErrorCount( ) override = default;
+  using base_class::base_class;
 
 private:
 
   /// container of error counters
   typedef std::map<GslError,unsigned int>  Counters ;
   mutable Counters m_counters ;
-
 
 };
 

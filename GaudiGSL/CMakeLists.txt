@@ -5,6 +5,8 @@ gaudi_depends_on_subdirs(GaudiAlg)
 find_package(CLHEP)
 find_package(GSL)
 find_package(ROOT)
+find_package(Boost)
+
 
 # If any of the non-essential externals is missing, give up on building
 # these targets.
@@ -15,7 +17,7 @@ if( NOT CLHEP_FOUND OR NOT GSL_FOUND )
 endif()
 
 # Hide some CLHEP/ROOT compile time warnings
-include_directories(SYSTEM ${CLHEP_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS})
+include_directories(SYSTEM ${CLHEP_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
 
 #---Libraries---------------------------------------------------------------
 gaudi_add_library(GaudiGSLLib src/Lib/*.cpp

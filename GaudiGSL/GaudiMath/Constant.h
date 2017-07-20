@@ -44,13 +44,6 @@ namespace Genfun // due to CLHEP
       Constant ( const double value ,
                  const size_t dim   ) ;
 
-      /// copy constructor
-      Constant ( const Constant& right ) ;
-
-      /// destructor
-      ~Constant() override;
-
-    public:
 
       /// dimensionality of the problem
       unsigned int dimensionality         () const override { return m_DIM   ; }
@@ -63,12 +56,8 @@ namespace Genfun // due to CLHEP
       /// Derivatives
       Derivative partial ( unsigned int i  ) const override ;
 
-    private:
-
-      // the default constructor  is disabled
-      Constant() ;
       // the assignement operator is disabled
-      Constant& operator=( const Constant& );
+      Constant& operator=( const Constant& ) = delete;
 
     private:
 
