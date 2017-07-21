@@ -43,6 +43,7 @@ macro(use_heptools heptools_version)
     else()
       set(LCG_releases_base ${LCG_releases})
     endif()
+    set(ENV{LCG_releases_base} ${LCG_releases_base})
 
     file(STRINGS ${LCG_TOOLCHAIN_INFO} _lcg_infos)
 
