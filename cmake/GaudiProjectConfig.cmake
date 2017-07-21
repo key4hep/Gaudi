@@ -2958,8 +2958,10 @@ function(_gaudi_find_standard_lib libname var)
   execute_process(COMMAND ${_cmd} OUTPUT_VARIABLE cpplib)
   get_filename_component(cpplib ${cpplib} REALPATH)
   get_filename_component(cpplib ${cpplib} PATH)
-  # Special hack for the way gcc is installed onf AFS at CERN.
-  string(REPLACE "contrib/gcc" "external/gcc" cpplib ${cpplib})
+  if(cpplib MATCHES "^/afs")
+    # Special hack for the way gcc is installed on AFS at CERN.
+    string(REPLACE "contrib/gcc" "external/gcc" cpplib ${cpplib})
+  endif()
   #message(STATUS "${libname} lib dir -> ${cpplib}")
   set(${var} ${cpplib} PARENT_SCOPE)
 endfunction()
