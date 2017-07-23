@@ -48,23 +48,12 @@ message(STATUS "LCG system:       ${LCG_SYSTEM}")
 # define a minimun default version
 set(GAUDI_CXX_STANDARD_DEFAULT "c++14")
 # overriddend depending on the compiler
-if (BINARY_TAG_COMP_NAME STREQUAL "clang" AND BINARY_TAG_COMP_VERSION VERSION_GREATER "3.6")
-  set(GAUDI_CXX_STANDARD_DEFAULT "c++14")
+if (BINARY_TAG_COMP_NAME STREQUAL "clang" AND NOT BINARY_TAG_COMP_VERSION VERSION_LESS "3.9")
+  set(GAUDI_CXX_STANDARD_DEFAULT "c++1z")
 elseif(BINARY_TAG_COMP_NAME STREQUAL "gcc")
   # Special defaults
-  if (BINARY_TAG_COMP_VERSION VERSION_LESS "4.7")
-    set(GAUDI_CXX_STANDARD_DEFAULT "c++98")
-  elseif(BINARY_TAG_COMP_VERSION VERSION_LESS "4.9")
-    # C++11 is enable by default on 4.7 <= gcc < 4.9
-    set(GAUDI_CXX_STANDARD_DEFAULT "c++11")
-  elseif(BINARY_TAG_COMP_VERSION VERSION_LESS "5.1")
-    # C++1y (C++14 preview) is enable by default on 4.9 <= gcc < 5.1
-    set(GAUDI_CXX_STANDARD_DEFAULT "c++1y")
-  else()
-    # C++14 is enable by default on gcc >= 5.1
-    set(GAUDI_CXX_STANDARD_DEFAULT "c++14")
-    option(GAUDI_GCC_OLD_ABI "use old gcc ABI for c++11 and above (gcc >= 5.1)"
-           OFF)
+  if (NOT BINARY_TAG_COMP_VERSION VERSION_LESS "7.0")
+    set(GAUDI_CXX_STANDARD_DEFAULT "c++17")
   endif()
 endif()
 # special for GaudiHive
@@ -106,9 +95,8 @@ option(GAUDI_SLOW_DEBUG
 # - default optimization levels
 set(_opt_level_RELEASE "-O3")
 set(_opt_ext_RELEASE "-DNDEBUG")
-if(NOT GAUDI_SLOW_DEBUG AND
-   (BINARY_TAG_COMP_NAME STREQUAL "gcc" AND NOT BINARY_TAG_COMP_VERSION VERSION_LESS "4.8"))
-  # Use -Og with Debug builds in gcc >= 4.8 (if not disabled)
+if(NOT GAUDI_SLOW_DEBUG AND BINARY_TAG_COMP_NAME STREQUAL "gcc")
+  # Use -Og with Debug builds in gcc (if not disabled)
   set(_opt_level_DEBUG "-Og")
 else()
   set(_opt_level_DEBUG "-O0")
@@ -384,12 +372,6 @@ add_definitions(-DBOOST_FILESYSTEM_VERSION=3)
 #        see http://stackoverflow.com/q/20721486
 #        and http://stackoverflow.com/a/20440238/504346
 add_definitions(-DBOOST_SPIRIT_USE_PHOENIX_V3)
-
-if(BINARY_TAG_COMP_NAME STREQUAL "gcc" AND BINARY_TAG_COMP_VERSION VERSION_EQUAL "4.3")
-  # The -pedantic flag gives problems on GCC 4.3.
-  string(REPLACE "-pedantic" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-  string(REPLACE "-pedantic" "" CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}")
-endif()
 
 if(GAUDI_ATLAS)
   # FIXME: this macro is used in ATLAS to simplify the migration to Gaudi v25,
