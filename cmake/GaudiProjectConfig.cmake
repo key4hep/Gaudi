@@ -302,13 +302,20 @@ macro(gaudi_project project version)
 
   parse_binary_tag()
   # set LCG platform ids
-  set(LCG_SYSTEM ${BINARY_TAG_ARCH}-${BINARY_TAG_OS}-${BINARY_TAG_COMP}
-      CACHE STRING "Platform id of the target system or a compatible one.")
-  set(LCG_platform ${LCG_SYSTEM}-${BINARY_TAG_TYPE}
-      CACHE STRING "Platform ID for the AA project binaries.")
-  set(LCG_system   ${LCG_SYSTEM}-opt
-      CACHE STRING "Platform ID for the external libraries.")
-  mark_as_advanced(LCG_SYSTEM LCG_platform LCG_system)
+  if(LCG_TOOLCHAIN_INFO)
+    string(REGEX MATCH ".*/LCG_externals_(.+)\\.txt" out "${LCG_TOOLCHAIN_INFO}")
+    set(LCG_platform ${CMAKE_MATCH_1})
+    # set LCG_ARCH, LCG_OS and LCG_COMP
+    parse_binary_tag(LCG "${LCG_platform}")
+    set(LCG_SYSTEM ${LCG_ARCH}-${LCG_OS}-${LCG_COMP})
+  else()
+    # no LCG toolchain
+    set(LCG_SYSTEM ${BINARY_TAG_ARCH}-${BINARY_TAG_OS}-${BINARY_TAG_COMP})
+    set(LCG_platform ${LCG_SYSTEM}-${BINARY_TAG_TYPE})
+  endif()
+  set(LCG_system   ${LCG_SYSTEM}-opt)
+  set(LCG_HOST_ARCH "${HOST_BINARY_TAG_ARCH}")
+  string(REPLACE "." "" LCG_COMPVERS "${BINARY_TAG_COMP_VERSION}")
 
   # Locate and import used projects.
   if(PROJECT_USE)
@@ -889,12 +896,22 @@ function(_gaudi_highest_version output)
     #message(STATUS "_gaudi_highest_version: initial -> ${result}")
     string(REGEX MATCHALL "[0-9]+" result_digits ${result})
     list(LENGTH result_digits result_length)
+    # handle special case of version without digits (e.g. 'head')
+    if(result_length EQUAL 0)
+      set(result v0r0)
+      set(result_length 2)
+      set(result_digits 0 0)
+    endif()
 
     foreach(candidate ${ARGN})
       # convert the version to a list of numbers
       #message(STATUS "_gaudi_highest_version: candidate -> ${candidate}")
       string(REGEX MATCHALL "[0-9]+" candidate_digits ${candidate})
       list(LENGTH candidate_digits candidate_length)
+      # handle special case of version without digits (e.g. 'head')
+      if(candidate_length EQUAL 0)
+        continue()
+      endif()
 
       # get the upper limit of the loop over the elements
       # (note: in case of equality after the loop, the one with more elements
@@ -982,7 +999,7 @@ function(gaudi_find_data_package name)
 
     set(candidate_version)
     set(candidate_path)
-    foreach(prefix ${projects_search_path} ${CMAKE_PREFIX_PATH} ${env_prefix_path})
+    foreach(prefix ${CMAKE_PREFIX_PATH} ${env_prefix_path} ${projects_search_path})
       foreach(suffix "" ${ARGN})
         #message(STATUS "gaudi_find_data_package: check ${prefix}/${suffix}/${name}")
         if(IS_DIRECTORY ${prefix}/${suffix}/${name})
@@ -1269,6 +1286,7 @@ endmacro()
 macro(_gaudi_ignored_listfile var filename)
   set(${var} FALSE)
   foreach(p ${ARGN})
+    string(REPLACE "+" "\\+" p "${p}")
     if("${filename}" MATCHES "${p}/.*CMakeLists.txt")
       #message(STATUS "ignoring ${filename}")
       set(${var} TRUE)
@@ -2940,8 +2958,10 @@ function(_gaudi_find_standard_lib libname var)
   execute_process(COMMAND ${_cmd} OUTPUT_VARIABLE cpplib)
   get_filename_component(cpplib ${cpplib} REALPATH)
   get_filename_component(cpplib ${cpplib} PATH)
-  # Special hack for the way gcc is installed onf AFS at CERN.
-  string(REPLACE "contrib/gcc" "external/gcc" cpplib ${cpplib})
+  if(cpplib MATCHES "^/afs")
+    # Special hack for the way gcc is installed on AFS at CERN.
+    string(REPLACE "contrib/gcc" "external/gcc" cpplib ${cpplib})
+  endif()
   #message(STATUS "${libname} lib dir -> ${cpplib}")
   set(${var} ${cpplib} PARENT_SCOPE)
 endfunction()

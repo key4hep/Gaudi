@@ -105,7 +105,6 @@ Release notes of the packages:
   string(REGEX REPLACE "\\..*" "" XercesC_major_version "${XercesC_config_version}")
 
   # define the project version to show in the mainpage
-  message(STATUS "----> $ENV{CI_COMMIT_REF_NAME} ($ENV{CI_COMMIT_SHA})")
   if(DEFINED ENV{CI_COMMIT_REF_NAME})
     string(SUBSTRING "$ENV{CI_COMMIT_SHA}" 0 8 CI_COMMIT_SHA)
     set(DOC_PROJECT_VERSION "$ENV{CI_COMMIT_REF_NAME} (${CI_COMMIT_SHA})")

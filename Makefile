@@ -62,6 +62,9 @@ ifndef BINARY_TAG
   endif
 endif
 
+ifeq ($(BINARY_TAG)$(BUILDDIR),)
+$(error one of BINARY_TAG, CMTCONFIG or BUILDDIR must be defined)
+endif
 BUILDDIR := $(CURDIR)/build.$(BINARY_TAG)
 
 ifneq ($(wildcard $(BUILDDIR)/Makefile),)

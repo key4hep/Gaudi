@@ -26,12 +26,6 @@ macro(use_heptools heptools_version)
     list(APPEND _info_names LCG_externals_${LCG_SYSTEM}-${BINARY_TAG_TYPE}.txt
                             LCG_externals_${LCG_SYSTEM}-opt.txt)
   endif()
-  if(NOT LCG_SYSTEM)
-    # set LCG_SYSTEM ids (for backward compatibility)
-    set(LCG_SYSTEM ${BINARY_TAG_ARCH}-${BINARY_TAG_OS}-${BINARY_TAG_COMP}
-        CACHE STRING "Platform id of the target system or a compatible one.")
-    mark_as_advanced(LCG_SYSTEM LCG_platform LCG_system)
-  endif()
 
   # Find the toolchain description
   find_file(LCG_TOOLCHAIN_INFO
@@ -49,6 +43,7 @@ macro(use_heptools heptools_version)
     else()
       set(LCG_releases_base ${LCG_releases})
     endif()
+    set(ENV{LCG_releases_base} ${LCG_releases_base})
 
     file(STRINGS ${LCG_TOOLCHAIN_INFO} _lcg_infos)
 
