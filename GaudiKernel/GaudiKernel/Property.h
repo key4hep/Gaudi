@@ -152,7 +152,11 @@ namespace Gaudi
     {
       template <class TYPE>
       struct StringConverter {
-        inline std::string toString( const TYPE& v ) { return Gaudi::Utils::toString( v ); }
+        inline std::string toString( const TYPE& v )
+        {
+            using Gaudi::Utils::toString;
+            return toString( v );
+        }
         inline TYPE fromString( const std::string& s )
         {
           TYPE tmp;
@@ -178,9 +182,10 @@ namespace Gaudi
       struct BoundedVerifier {
         void operator()( const TYPE& value ) const
         {
+          using Gaudi::Utils::toString;
           // throw the exception if the limit is defined and value is outside
           if ( ( m_hasLowerBound && ( value < m_lowerBound ) ) || ( m_hasUpperBound && ( m_upperBound < value ) ) )
-            throw std::out_of_range( "value " + Gaudi::Utils::toString( value ) + " outside range" );
+            throw std::out_of_range( "value " + toString( value ) + " outside range" );
         }
 
         /// Return if it has a lower bound
@@ -1137,8 +1142,9 @@ namespace Gaudi
     template <class TYPE>
     StatusCode setProperty( IProperty* component, const std::string& name, const TYPE& value, const std::string& doc )
     {
+      using Gaudi::Utils::toString;
       return component && hasProperty( component, name )
-                 ? Gaudi::Utils::setProperty( component, name, Gaudi::Utils::toString( value ), doc )
+                 ? Gaudi::Utils::setProperty( component, name, toString( value ), doc )
                  : StatusCode::FAILURE;
     }
     // ========================================================================

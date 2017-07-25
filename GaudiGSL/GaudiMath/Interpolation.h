@@ -23,6 +23,7 @@ namespace GaudiMath
       };
 
      StatusCode parse(Type&, const std::string&);
+     std::string  toString(const Type&);
      std::ostream& toStream(const Type&, std::ostream&);
      inline std::ostream& operator<<(std::ostream& os, const Type& t) { return toStream(t,os); }
 
