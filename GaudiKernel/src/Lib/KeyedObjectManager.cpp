@@ -315,8 +315,8 @@ long Containers::KeyedObjectManager<T>::erase(seq_type::iterator beg,
   }
   else  {
     for ( auto j=beg; j != end; ++j)  {
-      auto& m = m_setup.s->m;
-      auto  i = std::find_if(m.begin(),m.end(),FND(*j));
+//      auto& m = m_setup.s->m;
+      auto  i = std::find_if(m_setup.s->m.begin(),m_setup.s->m.end(),FND(*j));
       if ( i != m_setup.s->m.end() ) {
         m_setup.s->m.erase(i);
         continue;
