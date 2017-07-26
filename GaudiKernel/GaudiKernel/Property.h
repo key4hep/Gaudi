@@ -39,7 +39,7 @@ namespace Gaudi
       /// property name
       const std::string name() const { return m_name.to_string(); }
       /// property documentation
-      std::string documentation() const { return m_documentation.to_string() + " [" + ownerTypeName() + "]"; }
+      std::string documentation() const { return m_documentation.to_string(); }
       /// property type-info
       const std::type_info* type_info() const { return m_typeinfo; }
       /// property type
