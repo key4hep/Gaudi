@@ -606,7 +606,7 @@ namespace Gaudi
       return value().fullKey();
     }
     template <class T = ValueType>
-    inline decltype( std::declval<T>().initialize() ) initialize() 
+    inline decltype( std::declval<T>().initialize() ) initialize()
     {
       return value().initialize();
     }
@@ -616,7 +616,7 @@ namespace Gaudi
       return value().makeHandles();
     }
     template <class ARG, class T = ValueType>
-    inline decltype( std::declval<T>().makeHandles()[ARG{}] ) makeHandles(const ARG& arg) const
+    inline decltype( std::declval<T>().makeHandles( std::declval<ARG>() ) ) makeHandles(const ARG& arg) const
     {
       return value().makeHandles(arg);
     }
