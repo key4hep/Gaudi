@@ -59,6 +59,30 @@ endif()
 # special for GaudiHive
 set(GAUDI_CPP11_DEFAULT ON)
 
+# Detect the version of the C++ standard used to compile ROOT
+# and, if found, use it as default standard for the build.
+if(NOT ROOT_CXX_STANDARD)
+  find_package(ROOT QUIET)
+  if(ROOT_FOUND)
+    file(STRINGS ${ROOT_INCLUDE_DIR}/RConfigure.h _RConfigure REGEX "define R__")
+    foreach(rconfig_line IN LISTS _RConfigure)
+      if(rconfig_line MATCHES "R__USE_CXX([^ ]+)")
+        set(ROOT_CXX_STANDARD "c++${CMAKE_MATCH_1}")
+      endif()
+    endforeach()
+    if(ROOT_CXX_STANDARD)
+      set(ROOT_CXX_STANDARD "${ROOT_CXX_STANDARD}" CACHE INTERNAL
+          "C++ standard used by ROOT")
+      mark_as_advanced(ROOT_CXX_STANDARD)
+    endif()
+    set(_RConfigure)
+    set(rconfig_line)
+  endif()
+endif()
+if(ROOT_CXX_STANDARD)
+  set(GAUDI_CXX_STANDARD_DEFAULT "${ROOT_CXX_STANDARD}")
+endif()
+
 #--- Gaudi Build Options -------------------------------------------------------
 # Build options that map to compile time features
 #
@@ -146,6 +170,9 @@ endif()
 
 set(GAUDI_CXX_STANDARD "${GAUDI_CXX_STANDARD_DEFAULT}"
     CACHE STRING "Version of the C++ standard to be used.")
+if(ROOT_CXX_STANDARD AND NOT ROOT_CXX_STANDARD STREQUAL GAUDI_CXX_STANDARD)
+  message(WARNING "Requested ${GAUDI_CXX_STANDARD} but ROOT was compiled with ${ROOT_CXX_STANDARD}")
+endif()
 
 # If modern c++ and gcc >= 5.1 and requested, use old ABI compatibility
 if((NOT GAUDI_CXX_STANDARD STREQUAL "c++98") AND
