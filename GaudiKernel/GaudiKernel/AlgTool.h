@@ -192,8 +192,15 @@ public:
   Gaudi::Details::PropertyBase* declareProperty( const std::string& name, ToolHandleArray<T>& hndlArr,
                                                  const std::string& doc = "none" )
   {
-    m_toolHandleArrays.push_back( &hndlArr );
+    addToolsArray( hndlArr );
     return PropertyHolderImpl::declareProperty( name, hndlArr, doc );
+  }
+
+
+  template <class T>
+  void addToolsArray( ToolHandleArray<T>& hndlArr )
+  {
+    m_toolHandleArrays.push_back( &hndlArr );
   }
 
 public:

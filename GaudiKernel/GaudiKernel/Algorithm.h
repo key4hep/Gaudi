@@ -380,7 +380,7 @@ public:
   Gaudi::Details::PropertyBase* declareProperty( const std::string& name, ToolHandleArray<T>& hndlArr,
                                                  const std::string& doc = "none" )
   {
-    m_toolHandleArrays.push_back( &hndlArr );
+    addToolsArray( hndlArr );
     return PropertyHolderImpl::declareProperty( name, hndlArr, doc );
   }
 
@@ -460,6 +460,12 @@ public:
     m_toolHandles.push_back( &handle );
 
     return sc;
+  }
+
+  template <class T>
+  void addToolsArray( ToolHandleArray<T>& hndlArr )
+  {
+    m_toolHandleArrays.push_back( &hndlArr );
   }
 
   const std::vector<IAlgTool*>& tools() const;
@@ -547,7 +553,7 @@ private:
 protected:
   /// Hook for for derived classes to provide a custom visitor for data handles.
   std::unique_ptr<IDataHandleVisitor> m_updateDataHandles;
-  
+
 private:
   // Properties
   Gaudi::Property<int> m_outputLevel{this, "OutputLevel", MSG::NIL, "output level"};
