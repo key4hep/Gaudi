@@ -41,20 +41,18 @@ private:
 
   IMyOtherTool* m_privateOtherInterface = nullptr;
 
-  ToolHandle<IMyTool> m_myPrivToolHandle;
-  ToolHandle<IMyTool> m_myPubToolHandle;
+  ToolHandle<IMyTool> m_myPrivToolHandle{this, "PrivToolHandle", "MyTool"};
+  PublicToolHandle<IMyTool> m_myPubToolHandle{this, "PubToolHandle", "MyTool"};
 
-  ToolHandle<IAlgTool> m_myGenericToolHandle;
+  PublicToolHandle<IAlgTool> m_myGenericToolHandle{this, "GenericToolHandle", "MyTool"};
 
-  ToolHandle<IAlgTool> m_myUnusedToolHandle;
+  ToolHandle<IAlgTool> m_myUnusedToolHandle{this, "UnusedToolHandle", "TestToolFailing"};
 
-  ToolHandle<const IMyTool> m_myConstToolHandle;
+  PublicToolHandle<const IMyTool> m_myConstToolHandle{"MyTool/ConstGenericToolHandle"};
 
-  ToolHandle<const IMyTool> m_myCopiedConstToolHandle;
-
-  ToolHandle<const IMyTool> m_myCopiedConstToolHandle2;
-
-  ToolHandle<IMyTool> m_myCopiedToolHandle;
+  PublicToolHandle<const IMyTool> m_myCopiedConstToolHandle;
+  PublicToolHandle<const IMyTool> m_myCopiedConstToolHandle2;
+  PublicToolHandle<IMyTool> m_myCopiedToolHandle;
 
   ToolHandleArray<IMyTool> m_tha;
 
@@ -63,6 +61,7 @@ private:
   DataObjectHandle<DataObject> m_raw;
 
   DataObjectHandle<DataObject> m_selectedTracks;
+
 };
 
 #endif // GAUDIEXAMPLE_MYALGORITHM_H

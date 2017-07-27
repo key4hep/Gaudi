@@ -13,11 +13,6 @@ DECLARE_COMPONENT(MyGaudiAlgorithm)
 //------------------------------------------------------------------------------
 MyGaudiAlgorithm::MyGaudiAlgorithm(const std::string& name, ISvcLocator* ploc)
   : GaudiAlgorithm(name, ploc),
-  m_myPrivToolHandle("MyTool/PrivToolHandle", this),
-  m_myPubToolHandle("MyTool/PubToolHandle"),
-  m_myGenericToolHandle("MyTool/GenericToolHandle"),
-  m_myUnusedToolHandle("TestToolFailing"),
-  m_myConstToolHandle("MyTool/ConstGenericToolHandle"),
   m_tracks("/Event/Rec/Tracks", Gaudi::DataHandle::Reader, this),
   m_hits("/Event/Rec/Hits", Gaudi::DataHandle::Reader, this),
   m_raw("/Rec/RAW", Gaudi::DataHandle::Reader, this),
@@ -27,20 +22,12 @@ MyGaudiAlgorithm::MyGaudiAlgorithm(const std::string& name, ISvcLocator* ploc)
    m_myCopiedConstToolHandle = m_myPubToolHandle;
    m_myCopiedToolHandle      = m_myPubToolHandle;
    m_myCopiedConstToolHandle2 =  m_myConstToolHandle;
-   declareProperty("PrivToolHandle", m_myPrivToolHandle);
-   declareProperty("PubToolHandle", m_myPubToolHandle);
-   declareProperty("GenericToolHandle", m_myGenericToolHandle);
-   declareProperty("UnusedToolHandle", m_myUnusedToolHandle);
-   
+
    declareProperty("tracks", m_tracks, "the tracks");
    declareProperty("hits", m_hits, "the hits");
    declareProperty("raw", m_raw, "the raw stuff");
-   
-   declareProperty("trackSelection", m_selectedTracks, "the selected tracks");
-   
-   // declarePrivateTool(m_myPrivToolHandle, "MyTool/PrivToolHandle");
-   // declarePublicTool(m_myPubToolHandle, "MyTool/PubToolHandle");
 
+   declareProperty("trackSelection", m_selectedTracks, "the selected tracks");
 }
 
 //------------------------------------------------------------------------------
@@ -58,6 +45,7 @@ StatusCode MyGaudiAlgorithm::initialize() {
   m_privateGTool = tool<IMyTool>("MyGaudiTool",this);
   m_privateToolWithName = tool<IMyTool>(m_privateToolType, "ToolWithName", this);
   m_privateOtherInterface = tool<IMyOtherTool>("MyGaudiTool", this);
+
   // force initialization of tool handles
   if ( ! (m_myPrivToolHandle.retrieve() &&
           m_myConstToolHandle.retrieve() &&

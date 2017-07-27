@@ -39,7 +39,7 @@ MyAlg               DEBUG Property ['Name': Value] =  'trackSelection':/Event/My
 MyAlg               DEBUG Property ['Name': Value] =  'raw':/Rec/RAW
 MyAlg               DEBUG Property ['Name': Value] =  'hits':/Event/Rec/Hits
 MyAlg               DEBUG Property ['Name': Value] =  'tracks':/Event/Rec/Tracks
-MyAlg               DEBUG Property ['Name': Value] =  'UnusedToolHandle':TestToolFailing
+MyAlg               DEBUG Property ['Name': Value] =  'UnusedToolHandle':TestToolFailing/UnusedToolHandle
 MyAlg               DEBUG Property ['Name': Value] =  'GenericToolHandle':MyTool/GenericToolHandle
 MyAlg               DEBUG Property ['Name': Value] =  'PubToolHandle':MyTool/PubToolHandle
 MyAlg               DEBUG Property ['Name': Value] =  'PrivToolHandle':MyTool/PrivToolHandle
@@ -176,7 +176,7 @@ MyAlg               DEBUG output handles: 1
 MyAlg               DEBUG Adding private ToolHandle tool MyAlg.PrivToolHandle (MyTool)
 MyAlg               DEBUG Adding public ToolHandle tool ToolSvc.PubToolHandle (MyTool)
 MyAlg               DEBUG Adding public ToolHandle tool ToolSvc.GenericToolHandle (MyTool)
-MyAlg               DEBUG ToolHandle TestToolFailing not used
+MyAlg               DEBUG ToolHandle TestToolFailing/UnusedToolHandle not used
 MyAlg               DEBUG Data Deps for MyAlg
   + INPUT  ('/Event/Rec/Hits')
   + INPUT  ('/Event/Rec/Tracks')
@@ -540,7 +540,7 @@ MyAlg.ToolWithName   INFO finalize() has been called
 MyAlg.MyGaudiTool    INFO finalize() has been called
 MyAlg.MyGaudiTool   DEBUG  ==> Finalize the base class GaudiTool
 MyAlg.MyGaudiTool   DEBUG Tools to release :
-MyAlg.MyGaudiTool   DEBUG Services to release : 
+MyAlg.MyGaudiTool   DEBUG Services to release :
 ToolSvc.MyGaudi...   INFO finalize() has been called
 MyAlg.MyTool         INFO finalize() has been called
 ToolSvc.MyTool       INFO finalize() has been called
