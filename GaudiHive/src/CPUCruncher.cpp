@@ -323,6 +323,8 @@ StatusCode CPUCruncher::execute() // the execution of the algorithm
             << " ActualTotalRuntime= " << actualRuntime << " Ratio= " << ( crunchtime + dreamtime ) / actualRuntime
             << " Niters= " << n_iters << endmsg;
 
+  setFilterPassed(!m_invertCFD);
+
   return StatusCode::SUCCESS;
 }
 
