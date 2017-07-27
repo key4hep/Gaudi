@@ -56,11 +56,11 @@ private:
 
   ToolHandleArray<IMyTool> m_tha;
 
-  DataObjectHandle<DataObject> m_tracks;
-  DataObjectHandle<DataObject> m_hits;
-  DataObjectHandle<DataObject> m_raw;
+  DataObjectReadHandle<DataObject> m_tracks{this, "tracks", "/Event/Rec/Tracks", "the tracks"};
+  DataObjectReadHandle<DataObject> m_hits{this, "hits", "/Event/Rec/Hits", "the hits"};
+  DataObjectReadHandle<DataObject> m_raw{this, "raw", "/Rec/RAW", "the raw stuff"};
 
-  DataObjectHandle<DataObject> m_selectedTracks;
+  DataObjectWriteHandle<DataObject> m_selectedTracks{this, "trackSelection", "/Event/MyAnalysis/Tracks", "the selected tracks"};
 
 };
 

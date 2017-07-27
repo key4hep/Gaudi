@@ -12,22 +12,12 @@ DECLARE_COMPONENT(MyGaudiAlgorithm)
 // Constructor
 //------------------------------------------------------------------------------
 MyGaudiAlgorithm::MyGaudiAlgorithm(const std::string& name, ISvcLocator* ploc)
-  : GaudiAlgorithm(name, ploc),
-  m_tracks("/Event/Rec/Tracks", Gaudi::DataHandle::Reader, this),
-  m_hits("/Event/Rec/Hits", Gaudi::DataHandle::Reader, this),
-  m_raw("/Rec/RAW", Gaudi::DataHandle::Reader, this),
-  m_selectedTracks("/Event/MyAnalysis/Tracks", Gaudi::DataHandle::Writer, this)
- {
+  : GaudiAlgorithm(name, ploc)
+{
   //------------------------------------------------------------------------------
    m_myCopiedConstToolHandle = m_myPubToolHandle;
    m_myCopiedToolHandle      = m_myPubToolHandle;
    m_myCopiedConstToolHandle2 =  m_myConstToolHandle;
-
-   declareProperty("tracks", m_tracks, "the tracks");
-   declareProperty("hits", m_hits, "the hits");
-   declareProperty("raw", m_raw, "the raw stuff");
-
-   declareProperty("trackSelection", m_selectedTracks, "the selected tracks");
 }
 
 //------------------------------------------------------------------------------

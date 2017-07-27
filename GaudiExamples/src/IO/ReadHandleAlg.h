@@ -20,16 +20,12 @@ using namespace Gaudi::Examples;
 
 class ReadHandleAlg : public GaudiAlgorithm {
 
-  DataObjectHandle<Collision> m_inputHandle;
+  DataObjectReadHandle<Collision> m_inputHandle{this, "Input", "/Event/MyCollision"};
 
 public:
-  /// Constructor: A constructor of this form must be provided.
-  ReadHandleAlg(const std::string& nam, ISvcLocator* pSvc);
+  ReadHandleAlg(const std::string& n, ISvcLocator* l): GaudiAlgorithm(n, l) {}
 
   bool isClonable() const override { return true; }
-
-  /// Standard Destructor
-  ~ReadHandleAlg() override = default;
 
   /// Event callback
   StatusCode execute() override;
