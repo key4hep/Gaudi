@@ -63,6 +63,43 @@ private:
 
 };
 
+template<typename T>
+struct DataObjectReadHandle : public DataObjectHandle<T> {
+  DataObjectReadHandle(const DataObjID& k, IDataHandleHolder* owner):
+    DataObjectHandle<T>{k, Gaudi::DataHandle::Reader, owner} {}
+  DataObjectReadHandle(const std::string& k, IDataHandleHolder* owner):
+    DataObjectReadHandle{DataObjID{k}, owner} {}
+
+  DataObjectReadHandle(const DataObjectReadHandle&) = delete;
+  DataObjectReadHandle(DataObjectReadHandle&&) = default;
+
+  /// Autodeclaring constructor with property name, mode, key and documentation.
+  /// @note the use std::enable_if is required to avoid ambiguities
+  template <class OWNER, class K,
+            typename = typename std::enable_if<std::is_base_of<IProperty, OWNER>::value>::type>
+  inline DataObjectReadHandle( OWNER* owner,
+                               std::string name, const K& key = {}, std::string doc = "" )
+      : DataObjectHandle<T>( owner, Gaudi::DataHandle::Reader, std::move(name), key, std::move(doc) ) {}
+};
+template<typename T>
+struct DataObjectWriteHandle : public DataObjectHandle<T> {
+  DataObjectWriteHandle(const DataObjID& k, IDataHandleHolder* owner):
+    DataObjectHandle<T>{k, Gaudi::DataHandle::Writer, owner} {}
+  DataObjectWriteHandle(const std::string& k, IDataHandleHolder* owner):
+    DataObjectWriteHandle{DataObjID{k}, owner} {}
+
+  DataObjectWriteHandle(const DataObjectWriteHandle&) = delete;
+  DataObjectWriteHandle(DataObjectWriteHandle&&) = default;
+
+  /// Autodeclaring constructor with property name, mode, key and documentation.
+  /// @note the use std::enable_if is required to avoid ambiguities
+  template <class OWNER, class K,
+            typename = typename std::enable_if<std::is_base_of<IProperty, OWNER>::value>::type>
+  inline DataObjectWriteHandle( OWNER* owner,
+                                std::string name, const K& key = {}, std::string doc = "" )
+      : DataObjectHandle<T>( owner, Gaudi::DataHandle::Writer, std::move(name), key, std::move(doc) ) {}
+};
+
 //---------------------------------------------------------------------------
 //
 /**
