@@ -35,6 +35,8 @@ set(CMAKE_INCLUDE_DIRECTORIES_BEFORE ON)
 #set(CMAKE_SKIP_BUILD_RPATH TRUE)
 set(CMAKE_MACOSX_RPATH OFF)
 
+option(CMAKE_EXPORT_COMPILE_COMMANDS "Generate compile_commands.json file" ON)
+
 # Regular expression used to parse version strings in LHCb and ATLAS.
 # It handles versions strings like "vXrY[pZ[aN]]" and "1.2.3.4"
 set(GAUDI_VERSION_REGEX "v?([0-9]+)[r.]([0-9]+)([p.]([0-9]+)(([a-z.])([0-9]+))?)?")
