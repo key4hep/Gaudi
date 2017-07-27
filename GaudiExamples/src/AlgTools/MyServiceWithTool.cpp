@@ -13,7 +13,7 @@ namespace GaudiTesting {
     SvcWithTool(const std::string& name, ISvcLocator *pSvcLocator):
       Service(name, pSvcLocator) {
 
-    	declarePublicTool(m_tool);
+      declareTool(m_tool);
 
     }
     ~SvcWithTool() override = default;
