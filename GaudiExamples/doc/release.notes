@@ -2,6 +2,78 @@ Package GaudiExamples
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+================================ Gaudi v28r3 =================================
+
+! 2017-07-28 - Marco Clemencic (commit 3cd763ce)
+
+ - Merge branch 'tool-and-data-handles-constructor' into 'master'
+
+   Autodeclaring constructors for ToolHandle and DataObjectHandle
+
+   See merge request !374
+
+! 2017-07-26 - Charles Leggett, Marco Clemencic, charles leggett (commit fd03aaf7)
+
+ - Merge branch 'dev/PropertyDoc' into 'master'
+
+   make Property::documentation() return the actual documentation string
+
+   See merge request !363
+
+
+! 2017-07-18 - Gerhard Raven (commit e3661bd0)
+
+ - Merge branch 'allow-algorithm-as-functional-base' into 'master'
+
+   prefix event store locations in GaudiExamples' MakeAndConsume with "/Event/"
+
+   See merge request !370
+
+! 2017-07-18 - Carl Suster (commit 7db3da0d)
+
+ - Merge branch 'patch-1' into 'master'
+
+   Demote 'OpenCL not found' message WARNING -> STATUS
+
+   See merge request !367
+
+! 2017-07-18 - Gerhard Raven (commit 49c12028)
+
+ - Merge branch 'allow-algorithm-as-functional-base' into 'master'
+
+   Allow Algorithm as baseclass of Gaudi::Functional algorithms
+
+   See merge request !326
+
+! 2017-07-03 - Marco Clemencic (commit 13902574)
+
+ - Merge branch 'master' into 'master'
+
+   Fixes to Gitlab-CI configuration
+
+   See merge request !350
+
+! 2017-06-02 - Paul Seyfert (commit acb3ca5e)
+
+ - Merge branch 'pseyfert_IWYU' into 'master'
+
+   make exported headers self contained
+    See merge request !348
+
+! 2017-05-19 - Sebastien Ponce (commit 3e387b53)
+
+ - Merge branch 'MoreFunctionalTests' into 'master'
+
+   Improved testing coverage of functionnal code
+    See merge request !320
+
+! 2017-05-05 - Charles Leggett, leggett (commit db47610f)
+
+ - Merge branch 'dev/Clonable' into 'master'
+
+   Algorithm clonability should be explicitly set by Alg author
+    See merge request !316
+
 ================================ Gaudi v28r2 =================================
 
 ! 2017-03-20 - Gerhard Raven, Marco Clemencic (commit 04cfad9)

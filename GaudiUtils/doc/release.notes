@@ -2,6 +2,15 @@ Package: GaudiUtils
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+================================ Gaudi v28r3 =================================
+
+! 2017-06-02 - Paul Seyfert (commit acb3ca5e)
+
+ - Merge branch 'pseyfert_IWYU' into 'master'
+
+   make exported headers self contained
+    See merge request !348
+
 ================================ Gaudi v28r2 =================================
 
 ! 2017-03-10 - Chris Jones (commit b0466c4)

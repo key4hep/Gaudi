@@ -5,6 +5,16 @@
 # Commit Id: $Format:%H$
 ################################################################################
 
+================================ Gaudi v28r3 =================================
+
+! 2017-03-29 - Marco Clemencic (commit f1a1e30d)
+
+ - Merge branch 'GAUDI-1277' into 'master'
+
+   Removed unnecessary methods of EventIterator
+    Closes GAUDI-1277
+    See merge request !311
+
 ================================ Gaudi v28r2 =================================
 
 ! 2017-03-16 - Marco Clemencic (commit e27fee6)

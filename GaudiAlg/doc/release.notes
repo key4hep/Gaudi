@@ -2,6 +2,61 @@ Package: GaudiAlg
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+================================ Gaudi v28r3 =================================
+
+! 2017-07-26 - Sebastien Ponce (commit 98ceba03)
+
+ - Merge branch 'sponce_ScalarTransformerPostprocessing' into 'master'
+
+   Reallowed global postprocessing in ScalarTransformer
+
+   See merge request !364
+
+! 2017-07-20 - Gerhard Raven (commit bcdd986d)
+
+ - Merge branch 'augment_tupleobj' into 'master'
+
+   Augment TupleObj
+
+   See merge request !352
+
+! 2017-07-18 - Gerhard Raven (commit 49c12028)
+
+ - Merge branch 'allow-algorithm-as-functional-base' into 'master'
+
+   Allow Algorithm as baseclass of Gaudi::Functional algorithms
+
+   See merge request !326
+
+! 2017-06-02 - Paul Seyfert (commit acb3ca5e)
+
+ - Merge branch 'pseyfert_IWYU' into 'master'
+
+   make exported headers self contained
+    See merge request !348
+
+! 2017-05-19 - Chris Jones (commit 8b38c49d)
+
+ - Merge branch 'GaudiFunctional-RangeZipSizeCheckImprovedErrorMessage' into
+   'master'
+
+   Gaudi functional range zip - size check improved error message
+    See merge request !297
+
+! 2017-05-18 - Sebastien Ponce (commit 231089d2)
+
+ - Merge branch 'FixedGetData' into 'master'
+
+   Fixed retrieval of data from TES in case AnyDataWrapper is used
+    See merge request !328
+
+! 2017-04-20 - Charles Leggett, leggett (commit 0d7cf453)
+
+ - Merge branch 'dev/isSeq' into 'master'
+
+   Add flag to Algorithm to identify a Sequence
+    See merge request !317
+
 ================================ Gaudi v28r2 =================================
 
 ! 2017-03-10 - Charles Leggett (commit 1c2b2e1)

@@ -2,6 +2,24 @@ Package: GaudiAud
 Package manager : David Quarrie, Marco Clemencic
 Commit Id: $Format:%H$
 
+================================ Gaudi v28r3 =================================
+
+! 2017-07-03 - Paul Seyfert (commit c2e904ca)
+
+ - Merge branch 'pseyfert_includeguard' into 'master'
+
+   add include guard to CommonAuditor.h
+
+   See merge request !361
+
+! 2017-04-10 - Marco Clemencic (commit 397bec44)
+
+ - Merge branch 'coverity-fix' into 'master'
+
+   Fixed potential buffer overflow
+    Closes GAUDI-1296
+    See merge request !309
+
 ================================ Gaudi v28r2 =================================
 
 
