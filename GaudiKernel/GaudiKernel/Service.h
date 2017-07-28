@@ -126,53 +126,24 @@ public:
     return service( svcType + "/" + svcName, psvc );
   }
 
-  /** Declare used Private tool
-         *
-         *  @param handle ToolHandle<T>
-         *  @param toolTypeAndName
-         *  @param parent, default public tool
-         *  @param create if necessary, default true
-         */
+  /** Declare used tool
+   *
+   *  @param handle ToolHandle<T>
+   *  @param toolTypeAndName
+   *  @param parent, default public tool
+   *  @param create if necessary, default true
+   */
   template <class T>
-  StatusCode declarePrivateTool( ToolHandle<T>& handle, std::string toolTypeAndName = "", bool createIf = true )
+  StatusCode declareTool( ToolHandle<T>& handle, std::string toolTypeAndName = "", bool createIf = true )
   {
 
-    if ( toolTypeAndName == "" ) toolTypeAndName = System::typeinfoName( typeid( T ) );
+    if ( toolTypeAndName == "" ) toolTypeAndName = handle.typeAndName();
 
-    StatusCode sc = handle.initialize( toolTypeAndName, this, createIf );
-
-    if ( sc.isSuccess() ) {
-      if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) )
-        debug() << "Handle for private tool" << toolTypeAndName << " successfully created and stored." << endmsg;
-    } else {
-
-      error() << "Handle for private tool" << toolTypeAndName << " could not be created." << endmsg;
-    }
-
-    return sc;
-  }
-
-  /** Declare used Public tool
- *
- *  @param handle ToolHandle<T>
- *  @param toolTypeAndName
- *  @param parent, default public tool
- *  @param create if necessary, default true
- */
-  template <class T>
-  StatusCode declarePublicTool( ToolHandle<T>& handle, std::string toolTypeAndName = "", bool createIf = true )
-  {
-
-    if ( toolTypeAndName == "" ) toolTypeAndName = System::typeinfoName( typeid( T ) );
-
-    StatusCode sc = handle.initialize( toolTypeAndName, 0, createIf );
-
-    if ( sc.isSuccess() ) {
-      if ( UNLIKELY( msgLevel( MSG::DEBUG ) ) )
-        debug() << "Handle for public tool" << toolTypeAndName << " successfully created and stored." << endmsg;
-    } else {
-
-      error() << "Handle for public tool" << toolTypeAndName << " could not be created." << endmsg;
+    StatusCode sc = handle.initialize( toolTypeAndName, handle.isPublic() ? nullptr : this, createIf );
+    if ( UNLIKELY( !sc ) ) {
+      throw GaudiException{std::string{"Cannot create handle for "} + ( handle.isPublic() ? "public" : "private" ) +
+                               " tool " + toolTypeAndName,
+                           name(), sc};
     }
 
     return sc;

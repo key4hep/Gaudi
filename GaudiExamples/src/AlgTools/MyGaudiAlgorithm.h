@@ -41,28 +41,27 @@ private:
 
   IMyOtherTool* m_privateOtherInterface = nullptr;
 
-  ToolHandle<IMyTool> m_myPrivToolHandle;
-  ToolHandle<IMyTool> m_myPubToolHandle;
+  ToolHandle<IMyTool> m_myPrivToolHandle{this, "PrivToolHandle", "MyTool"};
+  PublicToolHandle<IMyTool> m_myPubToolHandle{this, "PubToolHandle", "MyTool"};
 
-  ToolHandle<IAlgTool> m_myGenericToolHandle;
+  PublicToolHandle<IAlgTool> m_myGenericToolHandle{this, "GenericToolHandle", "MyTool"};
 
-  ToolHandle<IAlgTool> m_myUnusedToolHandle;
+  ToolHandle<IAlgTool> m_myUnusedToolHandle{this, "UnusedToolHandle", "TestToolFailing"};
 
-  ToolHandle<const IMyTool> m_myConstToolHandle;
+  PublicToolHandle<const IMyTool> m_myConstToolHandle{"MyTool/ConstGenericToolHandle"};
 
-  ToolHandle<const IMyTool> m_myCopiedConstToolHandle;
-
-  ToolHandle<const IMyTool> m_myCopiedConstToolHandle2;
-
-  ToolHandle<IMyTool> m_myCopiedToolHandle;
+  PublicToolHandle<const IMyTool> m_myCopiedConstToolHandle;
+  PublicToolHandle<const IMyTool> m_myCopiedConstToolHandle2;
+  PublicToolHandle<IMyTool> m_myCopiedToolHandle;
 
   ToolHandleArray<IMyTool> m_tha;
 
-  DataObjectHandle<DataObject> m_tracks;
-  DataObjectHandle<DataObject> m_hits;
-  DataObjectHandle<DataObject> m_raw;
+  DataObjectReadHandle<DataObject> m_tracks{this, "tracks", "/Event/Rec/Tracks", "the tracks"};
+  DataObjectReadHandle<DataObject> m_hits{this, "hits", "/Event/Rec/Hits", "the hits"};
+  DataObjectReadHandle<DataObject> m_raw{this, "raw", "/Rec/RAW", "the raw stuff"};
 
-  DataObjectHandle<DataObject> m_selectedTracks;
+  DataObjectWriteHandle<DataObject> m_selectedTracks{this, "trackSelection", "/Event/MyAnalysis/Tracks", "the selected tracks"};
+
 };
 
 #endif // GAUDIEXAMPLE_MYALGORITHM_H
