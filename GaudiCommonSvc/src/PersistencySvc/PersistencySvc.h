@@ -81,14 +81,14 @@ protected:
   };
   typedef std::map<long, ServiceEntry> Services;
   /*
-    class SvcTest : public std::unary_function<ServiceEntry, bool>   {
+    class SvcTest final {
     public:
       SvcTest(long test) : m_test(test)    {
       }
-      bool operator()( const ServiceEntry& testee )  {
-          return m_test == testee.svcType() ? true : false;
+      bool operator()( const ServiceEntry& testee ) const {
+          return m_test == testee.svcType();
       }
-    protected:
+    private:
          long m_test;
     };
   */
