@@ -1,4 +1,4 @@
-#ifndef ALGTOOLS_EQSOLVERPALG_H 
+#ifndef ALGTOOLS_EQSOLVERPALG_H
 #define ALGTOOLS_EQSOLVERPALG_H 1
 
 // Include files
@@ -9,7 +9,7 @@
 #include "GaudiKernel/MsgStream.h"
 
 /// Forward references
-class IEqSolver;
+struct IEqSolver;
 
 //-----------------------------------------------------------------------------
 /**  @class EqSolverPAlg EqSolver.h

@@ -9,7 +9,7 @@
 #include "GaudiKernel/Sleep.h"
 #include "GaudiKernel/Memory.h"
 #include "GaudiKernel/ChronoEntity.h"
-#include <math.h>
+#include <cmath>
 
 // from SPI version of the testdriver
 #include <cppunit/extensions/TestFactoryRegistry.h>
@@ -133,7 +133,7 @@ namespace GaudiKernelTest {
       }
       CPPUNIT_ASSERT_EQUAL( c1.nOfMeasurements(), 10UL );
       // average time may be affected by the load of the machine
-      CPPUNIT_ASSERT( abs(c1.eMeanTime()/1000 - 10.) < 1. );
+      CPPUNIT_ASSERT( std::abs(int(c1.eMeanTime()/1000) - 10) < 1 );
       CPPUNIT_ASSERT( c1.uMaximalTime()>=c1.uMinimalTime() );
 
       ChronoEntity c2;

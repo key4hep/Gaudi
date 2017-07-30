@@ -599,6 +599,7 @@ StatusCode RootNTupleCnv::createRep(DataObject* pObj, IOpaqueAddress*& pAddr)  {
           case 2:
             sprintf(text,"[%ld]",it->dim(0));
             tmp = text;
+            /* FALLTHROUGH */
           case 1:
             if ( it->hasIndex() )   {
               INTupleItem* itm = it->indexItem();
