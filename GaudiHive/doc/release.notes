@@ -1,6 +1,96 @@
 Package : GaudiKernel
 Commit Id: $Format:%H$
 
+================================ Gaudi v28r3 =================================
+
+! 2017-07-28 - Illya Shapoval (commit 866890ef)
+
+ - Merge branch 'extend-DR-criterion' into 'master'
+
+   Extend the criterion of data dependency resolution
+
+   Promote an algorithm to DATAREADY if all its data supplying algorithms were
+   executed, regardless of EVTACCEPTED or EVTREJECTED state.
+
+   See merge request !368
+
+! 2017-07-26 - Alessio Gianelle (commit bc7941fc)
+
+ - Merge branch 'coverity' into 'master'
+
+   Fixed coverity issues:
+
+   * KeyedObjectManager.cpp
+    * 64154: Iterator container mismatch
+    * 64281: Invalid iterator comparison
+   * ProcessDescriptor.cpp
+    * 64293: Out-of-bounds write
+   * AvalancheSchedulerSvc.cpp
+    * 94135: Dereference after null check
+    * 94134: Dereference after null check
+    * 94669: Unchecked dynamic_cast
+   * HiveTestAlgorithm.cpp
+    * 82289: Unchecked dynamic_cast
+
+   See merge request !357
+
+! 2017-05-30 - scott snyder (commit edf8447c)
+
+ - Merge branch 'DataObjIDSort-master-20170525' into 'master'
+
+   Sort scheduler debugging dumps in a well-defined order
+    See merge request !343
+
+! 2017-05-22 - Charles Leggett (commit a0ab6887)
+
+ - Merge branch 'dev/AvalancheSchedProps' into 'master'
+
+   Update Properties of AvalancheSchedulerSvc
+    See merge request !322
+
+! 2017-05-22 - Illya Shapoval (commit dfa35537)
+
+ - Merge branch 'fix-df-trav' into 'master'
+
+   Fix tunnel data-ready notifications
+    See merge request !333
+
+! 2017-05-19 - Sebastien Ponce (commit c7c1a663)
+
+ - Merge branch 'AlgoExecutionTaskClangFix' into 'master'
+
+   Dropped unused algoindex from AlgoExecutionTask
+    See merge request !324
+
+! 2017-05-05 - Illya Shapoval (commit 995157c5)
+
+ - Merge branch 'fix-cRUNch-smearing' into 'master'
+
+   Fix the cRUNch TIME smearing engine of CPUCruncher algorithms
+    See merge request !323
+
+! 2017-05-05 - Charles Leggett, leggett (commit db47610f)
+
+ - Merge branch 'dev/Clonable' into 'master'
+
+   Algorithm clonability should be explicitly set by Alg author
+    See merge request !316
+
+! 2017-04-26 - Charles Leggett (commit 752218d2)
+
+ - Merge branch 'dev/dev/CircDataDeps' into 'master'
+
+   filter circular data dependencies
+    See merge request !314
+
+! 2017-04-15 - Illya Shapoval (commit a9d90326)
+
+ - Merge branch 'prgraph-traversals-refactor-upstr' into 'master'
+
+   Move from recursive pattern to hierarchical visitor one in traversals of the
+   graph of precedence rules
+    See merge request !308
+
 ================================ Gaudi v28r2 =================================
 
 ! 2017-03-20 - Illya Shapoval (commit f9e62de)

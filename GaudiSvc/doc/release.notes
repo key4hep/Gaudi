@@ -2,6 +2,15 @@ Package: GaudiSvc
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+================================ Gaudi v28r3 =================================
+
+! 2017-05-30 - scott snyder (commit 418b25f5)
+
+ - Merge branch 'clang-warn-20170525' into 'master'
+
+   Fix some clang compilation warnings: unused variables, parameters, typedefs.
+    See merge request !344
+
 ================================ Gaudi v28r2 =================================
 
 ! 2017-02-08 - Charles Leggett (commit 09859bd)

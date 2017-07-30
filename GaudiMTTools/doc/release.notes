@@ -4,6 +4,16 @@
 ! Purpose     : The package for Gaudi multithreading tools and machinery
 !-----------------------------------------------------------------------------
 
+================================ Gaudi v28r3 =================================
+
+! 2017-07-18 - Sebastien Ponce (commit f96f51c0)
+
+ - Merge branch 'ignoreBoostWarnings' into 'master'
+
+   Ignore some warnings coming from the Boost library
+
+   See merge request !354
+
 ================================ Gaudi v28r2 =================================
 
 ! 2017-02-08 - Charles Leggett (commit 09859bd)

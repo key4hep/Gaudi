@@ -2,6 +2,31 @@ package GaudiPolicy
 package manager: Marco Clemencic
 Commit Id: $Format:%H$
 
+================================ Gaudi v28r3 =================================
+
+! 2017-07-05 - Sebastien Ponce (commit 7f14dda8)
+
+ - Merge branch 'QMTestObjects' into 'master'
+
+   Allowed to inherit from default QMTTest object
+
+   See merge request !360
+
+! 2017-07-03 - Marco Clemencic (commit 13902574)
+
+ - Merge branch 'master' into 'master'
+
+   Fixes to Gitlab-CI configuration
+
+   See merge request !350
+
+! 2017-04-27 - Marco Clemencic (commit d1575d9f)
+
+ - Merge branch 'hide-new-property-in-tests' into 'master'
+
+   Hide base class property changes
+    See merge request !325
+
 ================================ Gaudi v28r2 =================================
 
 ! 2017-03-20 - Marco Clemencic (commit 7be9d45)
