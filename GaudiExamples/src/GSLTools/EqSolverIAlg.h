@@ -10,7 +10,7 @@
 #include "GaudiKernel/MsgStream.h"
 
 /// Forward references
-class IEqSolver;
+struct IEqSolver;
 
 //-----------------------------------------------------------------------------
 /**  @class EqSolverIAlg EqSolver.h

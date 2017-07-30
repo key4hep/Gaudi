@@ -12,7 +12,7 @@
 #include "GaudiGSL/IGslSvc.h"
 
 // forward declarations
-class IGslErrorHandler; // from GaudiGSL
+struct IGslErrorHandler; // from GaudiGSL
 
 /** @class GslSvc GslSvc.h
  *

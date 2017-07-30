@@ -4,7 +4,7 @@
 // Include files
 #include "GaudiKernel/Kernel.h"
 
-class IGslSvc;  // from GaudiGSL
+struct IGslSvc;  // from GaudiGSL
 
 /** @class GaudiGSL GaudiGSL.h GaudiGSL/GaudiGSL.h
  *
