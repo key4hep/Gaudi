@@ -497,106 +497,40 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  StatusCode PrecedenceRulesGraph::buildDataDependenciesRealm()
-  {
-
-    StatusCode global_sc( StatusCode::SUCCESS );
-
-    for ( auto algo : m_algoNameToAlgoNodeMap ) {
-
-      auto targetNode = m_algoNameToAlgoNodeMap[algo.first];
-
-      // Find producers for all the inputs of the target node
-      auto& targetInCollection = m_algoNameToAlgoInputsMap[algo.first];
-      for (auto inputTag : targetInCollection) {
-        for (auto producer : m_algoNameToAlgoOutputsMap) {
-          auto& outputs = m_algoNameToAlgoOutputsMap[producer.first];
-          for (auto outputTag : outputs) {
-            if (inputTag == outputTag) {
-              auto& known_producers = targetNode->getSupplierNodes();
-              auto valid_producer   = m_algoNameToAlgoNodeMap[producer.first];
-              auto& known_consumers = valid_producer->getConsumerNodes();
-              if ( std::find( known_producers.begin(), known_producers.end(), valid_producer ) ==
-                   known_producers.end() )
-                targetNode->addSupplierNode( valid_producer );
-              if ( std::find( known_consumers.begin(), known_consumers.end(), targetNode ) == known_consumers.end() )
-                valid_producer->addConsumerNode( targetNode );
-            }
-          }
-        }
-      }
-
-      // Find consumers for all the outputs of the target node
-      auto& targetOutCollection = m_algoNameToAlgoOutputsMap[algo.first];
-      for (auto outputTag : targetOutCollection) {
-        for (auto consumer : m_algoNameToAlgoInputsMap) {
-          auto& inputs = m_algoNameToAlgoInputsMap[consumer.first];
-          for (auto inputTag : inputs) {
-            if (inputTag == outputTag) {
-              auto& known_consumers = targetNode->getConsumerNodes();
-              auto valid_consumer   = m_algoNameToAlgoNodeMap[consumer.first];
-              auto& known_producers = valid_consumer->getSupplierNodes();
-              if ( std::find( known_producers.begin(), known_producers.end(), targetNode ) == known_producers.end() )
-                valid_consumer->addSupplierNode( targetNode );
-              if ( std::find( known_consumers.begin(), known_consumers.end(), valid_consumer ) ==
-                   known_consumers.end() )
-                targetNode->addConsumerNode( valid_consumer );
-            }
-          }
-        }
-      }
-    }
-    return global_sc;
-  }
-
-  //---------------------------------------------------------------------------
   StatusCode PrecedenceRulesGraph::buildAugmentedDataDependenciesRealm()
   {
 
     StatusCode global_sc( StatusCode::SUCCESS, true );
 
-    // Create the DataObjects (DO) realm (represented by DataNodes in the graph),
-    // connected to DO producers (AlgorithmNodes)
+    // Production of DataNodes by AlgorithmNodes (DataNodes are created here)
     for (auto algo : m_algoNameToAlgoNodeMap) {
 
-      auto& outCollection = m_algoNameToAlgoOutputsMap[algo.first];
-      for (auto outputTag : outCollection) {
-        const auto sc = addDataNode(outputTag);
+      auto& outputs = m_algoNameToAlgoOutputsMap[algo.first];
+      for (auto output : outputs) {
+        const auto sc = addDataNode(output);
         if (!sc.isSuccess()) {
           error() << "Extra producer (" << algo.first << ") for DataObject @ "
-                  << outputTag
+                  << output
                   << " has been detected: this is not allowed." << endmsg;
           global_sc = sc;
         }
-        auto dataNode = getDataNode(outputTag);
+        auto dataNode = getDataNode(output);
         dataNode->addProducerNode(algo.second);
         algo.second->addOutputDataNode(dataNode);
       }
     }
 
-    // Connect previously created DO realm to DO consumers (AlgorithmNodes)
+    // Consumption of DataNodes by AlgorithmNodes
     for ( auto algo : m_algoNameToAlgoNodeMap ) {
-      auto& inCollection = m_algoNameToAlgoInputsMap[algo.first];
-      for (auto inputTag : inCollection) {
+
+      for (auto input : m_algoNameToAlgoInputsMap[algo.first]) {
+
         DataNode* dataNode = nullptr;
-        auto primaryPath = inputTag;
-        auto itP = m_dataPathToDataNodeMap.find(primaryPath);
-        if (itP != m_dataPathToDataNodeMap.end()) {
-          dataNode = getDataNode(primaryPath);
-          //if (!inCollection[inputTag].alternativeDataProductNames().empty())
-          //  warning() << "Dropping all alternative data dependencies in the graph, but '" << primaryPath
-          //            << "', for algorithm " << algo.first << endmsg;
-          //} else {
-          //  for (auto alterPath : inCollection[inputTag].alternativeDataProductNames()) {
-          //    auto itAP = m_dataPathToDataNodeMap.find(alterPath);
-          //    if (itAP != m_dataPathToDataNodeMap.end()) {
-          //      dataNode = getDataNode(alterPath);
-          //      warning() << "Dropping all alternative data dependencies in the graph, but '" << alterPath
-          //                << "', for algorithm " << algo.first << endmsg;
-          //      break;
-          //    }
-          //}
-        }
+
+        auto itP = m_dataPathToDataNodeMap.find(input);
+
+        if (itP != m_dataPathToDataNodeMap.end())
+          dataNode = getDataNode(input);
 
         if (dataNode) {
           dataNode->addConsumerNode(algo.second);

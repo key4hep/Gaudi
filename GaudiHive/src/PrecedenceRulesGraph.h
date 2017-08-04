@@ -329,8 +329,6 @@ public:
                           std::vector<EventSlot>& eventSlots, bool enableCondSvc);
     /// Register algorithm in the Data Dependency index
     void registerIODataObjects(const Algorithm* algo);
-    /// Build data dependency realm WITHOUT data object nodes: just interconnect algorithm nodes directly
-    StatusCode buildDataDependenciesRealm();
     /// Build data dependency realm WITH data object nodes participating
     StatusCode buildAugmentedDataDependenciesRealm();
     /// Add a node, which has no parents
