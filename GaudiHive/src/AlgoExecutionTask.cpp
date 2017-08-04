@@ -39,6 +39,7 @@ tbb::task* AlgoExecutionTask::execute() {
   StatusCode sc(StatusCode::FAILURE);
   try {
     RetCodeGuard rcg(appmgr, Gaudi::ReturnCode::UnhandledException);
+    m_aess->algExecState(ialg,*m_evtCtx).setExecState(AlgExecState::State::Executing);
     sc = m_algorithm->sysExecute(*m_evtCtx);
     if (UNLIKELY(!sc.isSuccess()))  {
       log << MSG::WARNING << "Execution of algorithm " 
@@ -68,8 +69,7 @@ tbb::task* AlgoExecutionTask::execute() {
   // DP it is important to propagate the failure of an event.
   // We need to stop execution when this happens so that execute run can 
   // then receive the FAILURE
-  m_aess->algExecState(ialg,*m_evtCtx).setExecuted(true);
-  m_aess->algExecState(ialg,*m_evtCtx).setExecStatus(sc);
+  m_aess->algExecState(ialg,*m_evtCtx).setExecState(AlgExecState::State::Done, sc);
   m_aess->updateEventStatus(eventfailed,*m_evtCtx);
 
   // TODO reproduce the commented out functionality in a different service

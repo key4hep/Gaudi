@@ -27,34 +27,41 @@ class EventContext;
 class AlgExecState {
 public:
 
-  AlgExecState() : m_filterPassed(true), m_isExecuted(false), 
-                   m_execStatus(StatusCode(StatusCode::FAILURE,true)) {}
-
+  enum State {
+    None = 0,
+    Executing = 1,
+    Done = 2
+  };
+        
   bool filterPassed() const { return m_filterPassed; }
-  bool isExecuted() const { return m_isExecuted; }
+  State execState() const { return m_execState; }
   const StatusCode& execStatus() const { return m_execStatus; }
 
   void setFilterPassed(bool f = true) { m_filterPassed = f; }
-  void setExecuted(bool e = true) { m_isExecuted = e; }
+  void setExecState(State s) { m_execState = s; }
+  void setExecState(State s, const StatusCode& sc) { 
+    m_execState = s;
+    m_execStatus = sc; 
+  }
   void setExecStatus(const StatusCode& sc = StatusCode::SUCCESS) { 
-    m_execStatus = sc; }
-
+    m_execStatus = sc; 
+  }
   void reset() { 
     m_filterPassed = true; 
-    m_isExecuted = false; 
+    m_execState = State::None;
     m_execStatus = StatusCode(StatusCode::FAILURE,true); 
   }
 
 private:
 
-  bool m_filterPassed;
-  bool m_isExecuted;
-  StatusCode m_execStatus;  
+  bool m_filterPassed{true};
+  State  m_execState{State::None};
+  StatusCode m_execStatus{StatusCode(StatusCode::FAILURE,true)};
 
 };
 
 inline std::ostream& operator<< (std::ostream&  ost, const AlgExecState& s) {
-  return ost << "e: " << s.isExecuted() << " f: " << s.filterPassed()
+  return ost << "e: " << s.execState() << " f: " << s.filterPassed()
              << " sc: " << s.execStatus();
 }
 
