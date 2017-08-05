@@ -335,8 +335,6 @@ StatusCode ForwardSchedulerSvc::finalize() {
     return StatusCode::FAILURE;
   }
 
-  // m_efManager.getPrecedenceRulesGraph()->dumpExecutionPlan();
-
   return sc;
 }
 //---------------------------------------------------------------------------

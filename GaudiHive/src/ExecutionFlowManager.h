@@ -49,12 +49,6 @@ namespace concurrency {
                         std::vector<int>& node_decisions) const;
     /// XXX: CF tests.
     void updateEventState(AlgsExecutionStates& algo_states) const;
-    /// XXX: CF tests
-    void promoteToControlReadyState(AlgsExecutionStates& algo_states,
-                                    std::vector<int>& node_decisions,
-                                    const int& slotNum=-1) const;
-    /// Check all data dependencies of an algorithm are satisfied
-    bool algoDataDependenciesSatisfied(const std::string& algo_name, const int& slotNum) const;
     /// Check whether root decision was resolved
     bool rootDecisionResolved(const std::vector<int>& node_decisions) const;
     /// Print the state of the control flow for a given event

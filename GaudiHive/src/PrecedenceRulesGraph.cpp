@@ -100,95 +100,6 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  void DecisionNode::updateDecision( const int& slotNum, AlgsExecutionStates& states, std::vector<int>& node_decisions,
-                                     const AlgorithmNode* requestor ) const
-  {
-
-    int decision           = ( ( m_allPass && m_modePromptDecision ) ? 1 : -1 );
-    bool keepGoing         = true;
-    bool hasUndecidedChild = false;
-    // std::cout << "++++++++++++++++++++BEGIN(UPDATING)++++++++++++++++++++" << std::endl;
-    // std::cout << "UPDATING DAUGHTERS of DECISION NODE: " << m_nodeName << std::endl;
-
-    for ( auto daughter : m_children ) {
-      // if prompt decision, return once result is known already or we can't fully evaluate
-      // right now because one daughter decision is missing still
-      // std::cout << "----UPDATING DAUGHTER: " << daughter->getNodeName() << std::endl;
-      if ( m_modePromptDecision && !keepGoing ) {
-        node_decisions[m_nodeIndex] = decision;
-        // std::cout << "STOPPING ITERATION OVER (UPDATING) DECISION NODE CHILDREN: " << m_nodeName << std::endl;
-        break;
-        // return;
-      }
-
-      // modified
-      int& res = node_decisions[daughter->getNodeIndex()];
-      if ( -1 == res ) {
-        hasUndecidedChild = true;
-        if ( typeid( *daughter ) != typeid( concurrency::DecisionNode ) ) {
-          auto algod = (AlgorithmNode*)daughter;
-          algod->promoteToControlReadyState( slotNum, states, node_decisions );
-          bool result             = algod->promoteToDataReadyState( slotNum, requestor );
-          if ( result ) keepGoing = false;
-        } else {
-          daughter->updateDecision( slotNum, states, node_decisions, requestor );
-        }
-
-        // "and"-mode (once first result false, the overall decision is false)
-      } else if ( false == m_modeOR && res == 0 ) {
-        decision  = 0;
-        keepGoing = false;
-        // "or"-mode  (once first result true, the overall decision is true)
-      } else if ( true == m_modeOR && res == 1 ) {
-        decision  = 1;
-        keepGoing = false;
-      }
-    }
-
-    // what to do with yet undefined answers depends on whether AND or OR mode applies
-    if ( !hasUndecidedChild && -1 == decision ) {
-      // OR mode: all results known, and none true -> reject
-      if ( true == m_modeOR ) {
-        decision = 0;
-        // AND mode: all results known, and no false -> accept
-      } else {
-        decision = 1;
-      }
-    }
-
-    // in all other cases I stay with previous decisions
-    node_decisions[m_nodeIndex] = decision;
-
-    // propagate decision upwards through the decision graph
-    if ( -1 != decision )
-      for ( auto p : m_parents ) p->updateDecision( slotNum, states, node_decisions, requestor );
-
-    // std::cout << "++++++++++++++++++++END(UPDATING)++++++++++++++++++++" << std::endl;
-  }
-
-  //---------------------------------------------------------------------------
-  bool DecisionNode::promoteToControlReadyState( const int& slotNum, AlgsExecutionStates& states,
-                                                 std::vector<int>& node_decisions ) const
-  {
-    // std::cout << "REACHED DECISNODE " << m_nodeName << std::endl;
-    if ( -1 != node_decisions[m_nodeIndex] ) {
-      return true;
-    }
-
-    for ( auto daughter : m_children ) {
-      auto res = node_decisions[daughter->getNodeIndex()];
-      if ( -1 == res ) {
-        daughter->promoteToControlReadyState( slotNum, states, node_decisions );
-        if ( m_modePromptDecision ) return true;
-      } else if ( m_modePromptDecision ) {
-        if ( ( false == m_modeOR && res == 0 ) || ( true == m_modeOR && res == 1 ) ) return true;
-      }
-    }
-
-    return true;
-  }
-
-  //---------------------------------------------------------------------------
   bool DecisionNode::accept( IGraphVisitor& visitor )
   {
 
@@ -234,84 +145,6 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  bool AlgorithmNode::promoteToControlReadyState( const int& /*slotNum*/, AlgsExecutionStates& states,
-                                                  std::vector<int>& /*node_decisions*/ ) const
-  {
-
-    auto& state = states[m_algoIndex];
-    bool result = false;
-
-    if ( State::INITIAL == state ) {
-      states.updateState( m_algoIndex, State::CONTROLREADY ).ignore();
-      // std::cout << "----> UPDATING ALGORITHM to CONTROLREADY: " << m_algoName << std::endl;
-      result = true;
-    } else if ( State::CONTROLREADY == state ) {
-      result = true;
-    }
-
-    return result;
-  }
-
-  //---------------------------------------------------------------------------
-  bool AlgorithmNode::promoteToDataReadyState( const int& slotNum, const AlgorithmNode* /*requestor*/ ) const
-  {
-
-    auto& states = m_graph->getAlgoStates( slotNum );
-    auto& state  = states[m_algoIndex];
-    bool result  = false;
-
-    if ( State::CONTROLREADY == state ) {
-      if ( dataDependenciesSatisfied( slotNum ) ) {
-        // std::cout << "----> UPDATING ALGORITHM to DATAREADY: " << m_algoName << std::endl;
-        states.updateState( m_algoIndex, State::DATAREADY ).ignore();
-        result = true;
-
-        // m_graph->addEdgeToExecutionPlan(requestor, this);
-
-        /*
-        auto xtime = std::chrono::high_resolution_clock::now();
-        std::stringstream s;
-        s << getNodeName() << ", "
-          << (xtime-m_graph->getInitTime()).count() << "\n";
-        std::ofstream myfile;
-        myfile.open("DRTiming.csv", std::ios::app);
-        myfile << s.str();
-        myfile.close();
-        */
-      }
-    } else if ( State::DATAREADY == state ) {
-      result = true;
-    } else if ( State::SCHEDULED == state ) {
-      result = true;
-    }
-
-    return result;
-  }
-
-  //---------------------------------------------------------------------------
-  bool AlgorithmNode::dataDependenciesSatisfied( const int& slotNum ) const
-  {
-
-    bool result = true; //return true if an algorithm has no data inputs
-    auto& states = m_graph->getAlgoStates( slotNum );
-
-    for ( auto dataNode : m_inputs ) {
-      // return false if the input has no producers at all (normally this case must be
-      // forbidden, and must be invalidated at configuration time)
-      result = false;
-      for ( auto algoNode : dataNode->getProducers() )
-        if ( State::EVTACCEPTED == states[algoNode->getAlgoIndex()] ) {
-          result = true;
-          break; // skip checking other producers if one was found to be executed
-        }
-
-      if (!result) break; // skip checking other inputs if this input was not produced yet
-    }
-
-    return result;
-  }
-
-  //---------------------------------------------------------------------------
   void AlgorithmNode::printState( std::stringstream& output, AlgsExecutionStates& states,
                                   const std::vector<int>& node_decisions, const unsigned int& recursionLevel ) const
   {
@@ -345,44 +178,6 @@ namespace concurrency
     }
     node_decisions[m_nodeIndex] = decision;
     return decision;
-  }
-
-  //---------------------------------------------------------------------------
-  void AlgorithmNode::updateDecision( const int& slotNum, AlgsExecutionStates& states, std::vector<int>& node_decisions,
-                                      const AlgorithmNode* /*requestor*/ ) const
-  {
-
-    const State& state = states[m_algoIndex];
-    int decision       = -1;
-    //requestor          = this;
-
-    // now derive the proper result to pass back
-    if ( true == m_allPass ) {
-      decision = 1;
-    } else if ( State::EVTACCEPTED == state ) {
-      decision = !m_inverted;
-    } else if ( State::EVTREJECTED == state ) {
-      decision = m_inverted;
-    } else {
-      decision = -1; // result not known yet
-    }
-
-    node_decisions[m_nodeIndex] = decision;
-
-    if ( -1 != decision ) {
-      auto& slot = (*m_graph->m_eventSlots)[slotNum];
-      auto promoter = DataReadyPromoter(slot);
-      for ( auto output : m_outputs )
-        for ( auto consumer : output->getConsumers() )
-          consumer->accept(promoter);
-
-      auto vis = concurrency::Supervisor(slot);
-      for ( auto p : m_parents ) {
-        //p->updateDecision( slotNum, states, node_decisions, requestor );
-        p->accept(vis);
-      }
-
-    }
   }
 
   //---------------------------------------------------------------------------
@@ -423,7 +218,6 @@ namespace concurrency
   {
 
     m_headNode->initialize( algname_index_map );
-    // StatusCode sc = buildDataDependenciesRealm();
     StatusCode sc = buildAugmentedDataDependenciesRealm();
 
     if ( !sc.isSuccess() ) error() << "Could not build the data dependency realm." << endmsg;
@@ -450,15 +244,19 @@ namespace concurrency
         concurrency::AlgorithmNode* algoNode;
         if ( itA != m_algoNameToAlgoNodeMap.end() ) {
           algoNode = itA->second;
-          debug() << "Detaching condition algorithm '" << algo->name() << "' from the CF realm.." << endmsg;
+          debug() << "Detaching condition algorithm '" << algo->name()
+                  << "' from the CF realm.." << endmsg;
           for (auto parent : algoNode->getParentDecisionHubs()) {
-            parent->m_children.erase(std::remove(parent->m_children.begin(), parent->m_children.end(), algoNode),
+            parent->m_children.erase(std::remove(parent->m_children.begin(),
+                                                 parent->m_children.end(),
+                                                 algoNode),
                                      parent->m_children.end());
           }
           algoNode->m_parents.clear();
 
         } else {
-          warning() << "Algorithm '" << algo->name() << "' is not registered in the graph" << endmsg;
+          warning() << "Algorithm '" << algo->name()
+                    << "' is not registered in the graph" << endmsg;
         }
       }
     }
@@ -695,7 +493,7 @@ namespace concurrency
   {
     //if (msgLevel(MSG::DEBUG))
     //  debug() << "(UPDATING)Setting decision of algorithm " << algo_name << " and propagating it upwards.." << endmsg;
-    //getAlgorithmNode( algo_name )->updateDecision( slotNum, algo_states, node_decisions );
+
     auto& slot = (*m_eventSlots)[slotNum];
     auto updater = DecisionUpdater(slot);
     getAlgorithmNode( algo_name )->accept(updater);
@@ -713,21 +511,6 @@ namespace concurrency
       if (msgLevel(MSG::DEBUG))
         debug() << "  ... rank of " << pair.first << ": " << pair.second->getRank() << endmsg;
     }
-  }
-
-  //---------------------------------------------------------------------------
-  const std::vector<AlgorithmNode*> PrecedenceRulesGraph::getDataIndependentNodes() const
-  {
-
-    std::vector<AlgorithmNode*> result;
-
-    for (auto node : m_algoNameToAlgoInputsMap) {
-      DataObjIDColl collection = (node.second);
-      if (collection.empty())
-        result.push_back(getAlgorithmNode(node.first));
-    }
-
-    return result;
   }
 
   std::string PrecedenceRulesGraph::dumpControlFlow() const {

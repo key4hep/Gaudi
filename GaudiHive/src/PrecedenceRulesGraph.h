@@ -56,10 +56,6 @@ namespace concurrency {
     ///
     virtual bool accept(IGraphVisitor& visitor) = 0;
     /// XXX: CF tests. Method to set algos to CONTROLREADY, if possible
-    virtual bool promoteToControlReadyState(const int& slotNum,
-                                            AlgsExecutionStates& states,
-                                            std::vector<int>& node_decisions) const = 0;
-    /// XXX: CF tests. Method to set algos to CONTROLREADY, if possible
     virtual int updateState(AlgsExecutionStates& states,
                             std::vector<int>& node_decisions) const = 0;
     /// Print a string representing the control flow state
@@ -70,10 +66,7 @@ namespace concurrency {
     /// XXX: CF tests.
     const unsigned int& getNodeIndex() const { return m_nodeIndex; }
     const std::string& getNodeName() const { return m_nodeName; }
-    virtual void updateDecision(const int& slotNum,
-                                AlgsExecutionStates& states,
-                                std::vector<int>& node_decisions,
-                                const AlgorithmNode* requestor = nullptr) const = 0;
+
   public:
     PrecedenceRulesGraph* m_graph;
   protected:
@@ -96,15 +89,6 @@ namespace concurrency {
     /// Initialize
     void initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map) override;
     bool accept(IGraphVisitor& visitor) override;
-    /// XXX: CF tests. Method to set algos to CONTROLREADY, if possible
-    bool promoteToControlReadyState(const int& slotNum,
-                                            AlgsExecutionStates& states,
-                                            std::vector<int>& node_decisions) const override;
-    /// XXX: CF tests
-    void updateDecision(const int& slotNum,
-                                AlgsExecutionStates& states,
-                                std::vector<int>& node_decisions,
-                                const AlgorithmNode* requestor = nullptr) const override;
     /// Method to set algos to CONTROLREADY, if possible
     int updateState(AlgsExecutionStates& states,
                             std::vector<int>& node_decisions) const override;
@@ -192,22 +176,9 @@ namespace concurrency {
     bool isOptimist() const {return m_allPass;};
     /// Check if control flow logic is always inverted
     bool isLiar() const {return m_inverted;};
-    /// Method to check whether the Algorithm has its all data dependency satisfied
-    bool dataDependenciesSatisfied(const int& slotNum) const;
     /// Method to set algos to CONTROLREADY, if possible
     int updateState(AlgsExecutionStates& states,
                             std::vector<int>& node_decisions) const override;
-    /// XXX: CF tests
-    bool promoteToControlReadyState(const int& slotNum,
-                                            AlgsExecutionStates& states,
-                                            std::vector<int>& node_decisions) const override;
-    ///
-    bool promoteToDataReadyState(const int& slotNum, const AlgorithmNode* requestor = nullptr) const;
-    /// XXX: CF tests
-    void updateDecision(const int& slotNum,
-                                AlgsExecutionStates& states,
-                                std::vector<int>& node_decisions,
-                                const AlgorithmNode* requestor = nullptr) const override;
     /// Print a string representing the control flow state
     void printState(std::stringstream& output,
                             AlgsExecutionStates& states,
@@ -367,8 +338,6 @@ public:
                     AlgsExecutionStates& states,
                     const std::vector<int>& node_decisions,
                     const unsigned int& recursionLevel) const {m_headNode->printState(output,states,node_decisions,recursionLevel);}
-    ///
-    const std::vector<AlgorithmNode*> getDataIndependentNodes() const;
     /// Retrieve name of the service
     const std::string& name() const override {return m_name;}
     /// Retrieve pointer to service locator

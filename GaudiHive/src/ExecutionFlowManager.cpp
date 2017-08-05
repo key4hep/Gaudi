@@ -107,18 +107,6 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  void ExecutionFlowManager::promoteToControlReadyState(AlgsExecutionStates& algo_states,
-                                                      std::vector<int>& node_decisions,
-                                                      const int& slotNum) const {
-    m_PRGraph->m_headNode->promoteToControlReadyState(slotNum, algo_states, node_decisions);
-  }
-
-  //---------------------------------------------------------------------------
-  bool ExecutionFlowManager::algoDataDependenciesSatisfied(const std::string& algo_name, const int& slotNum) const {
-    return m_PRGraph->getAlgorithmNode(algo_name)->dataDependenciesSatisfied(slotNum);
-  }
-
-  //---------------------------------------------------------------------------
   bool ExecutionFlowManager::rootDecisionResolved(const std::vector<int>& node_decisions) const {
 
     return (-1 != node_decisions[m_PRGraph->m_headNode->getNodeIndex()]) ? true : false;
@@ -126,11 +114,6 @@ namespace concurrency {
 
   //---------------------------------------------------------------------------
   void ExecutionFlowManager::touchReadyAlgorithms(IGraphVisitor& visitor) const {
-
-    //auto& states = m_PRGraph->getAlgoStates(visitor.m_slotNum);
-    //auto& decisions = m_PRGraph->getNodeDecisions(visitor.m_slotNum);
-
-    //m_PRGraph->m_headNode->promoteToControlReadyState(slotNum,states,decisions);
 
     m_PRGraph->m_headNode->accept(visitor);
 
