@@ -759,13 +759,13 @@ void Algorithm::setIndex( const unsigned int& idx ) { m_index = idx; }
 
 bool Algorithm::isExecuted() const {
   const EventContext& context = Gaudi::Hive::currentContext();
-  return algExecStateSvc()->algExecState((IAlgorithm*)this, context).execState()==AlgExecState::State::Done;
+  return algExecStateSvc()->algExecState((IAlgorithm*)this, context).state()==AlgExecState::State::Done;
 }
 
 void Algorithm::setExecuted( bool state ) const {
   const EventContext& context = Gaudi::Hive::currentContext();
   AlgExecState::State s = state ? AlgExecState::State::None : AlgExecState::State::Done;
-  algExecStateSvc()->algExecState(const_cast<IAlgorithm*>((const IAlgorithm*)this), context).setExecState(s);
+  algExecStateSvc()->algExecState(const_cast<IAlgorithm*>((const IAlgorithm*)this), context).setState(s);
 }
 
 void Algorithm::resetExecuted() {

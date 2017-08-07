@@ -34,34 +34,30 @@ public:
   };
         
   bool filterPassed() const { return m_filterPassed; }
-  State execState() const { return m_execState; }
+  State state() const { return m_state; }
   const StatusCode& execStatus() const { return m_execStatus; }
 
   void setFilterPassed(bool f = true) { m_filterPassed = f; }
-  void setExecState(State s) { m_execState = s; }
-  void setExecState(State s, const StatusCode& sc) { 
-    m_execState = s;
+  void setState(State s) { m_state = s; }
+  void setState(State s, const StatusCode& sc) { 
+    m_state = s;
     m_execStatus = sc; 
   }
   void setExecStatus(const StatusCode& sc = StatusCode::SUCCESS) { 
     m_execStatus = sc; 
   }
-  void reset() { 
-    m_filterPassed = true; 
-    m_execState = State::None;
-    m_execStatus = StatusCode(StatusCode::FAILURE,true); 
-  }
+  void reset() { *this = AlgExecState{}; }
 
 private:
 
   bool m_filterPassed{true};
-  State  m_execState{State::None};
+  State  m_state{State::None};
   StatusCode m_execStatus{StatusCode(StatusCode::FAILURE,true)};
 
 };
 
 inline std::ostream& operator<< (std::ostream&  ost, const AlgExecState& s) {
-  return ost << "e: " << s.execState() << " f: " << s.filterPassed()
+  return ost << "e: " << s.state() << " f: " << s.filterPassed()
              << " sc: " << s.execStatus();
 }
 

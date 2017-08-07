@@ -413,7 +413,7 @@ StatusCode MinimalEventLoopMgr::executeEvent( void* /* par */ )
   // Call the execute() method of all top algorithms
   for ( auto& ita : m_topAlgList ) {
     StatusCode sc( StatusCode::FAILURE );
-    AlgExecState& state = m_aess->algExecState(ita, context);
+    AlgExecState& algState = m_aess->algExecState(ita, context);
     try {
       if ( UNLIKELY( m_abortEvent ) ) {
         DEBMSG << "AbortEvent incident fired by " << m_abortEventSource << endmsg;
@@ -422,7 +422,7 @@ StatusCode MinimalEventLoopMgr::executeEvent( void* /* par */ )
         break;
       }
       RetCodeGuard rcg( appmgr, Gaudi::ReturnCode::UnhandledException );
-      state.setExecState(AlgExecState::State::Executing);
+      algState.setState(AlgExecState::State::Executing);
       sc = ita->sysExecute(context);
       rcg.ignore(); // disarm the guard
     } catch ( const GaudiException& Exception ) {
@@ -435,8 +435,8 @@ StatusCode MinimalEventLoopMgr::executeEvent( void* /* par */ )
       fatal() << ".executeEvent(): UNKNOWN Exception thrown by " << ita->name() << endmsg;
     }
 
-    state.setExecState(AlgExecState::State::Done);
-    state.setExecStatus(sc);
+    algState.setState(AlgExecState::State::Done);
+    algState.setExecStatus(sc);
 
     if ( UNLIKELY( !sc.isSuccess() ) ) {
       warning() << "Execution of algorithm " << ita->name() << " failed" << endmsg;
@@ -455,10 +455,10 @@ StatusCode MinimalEventLoopMgr::executeEvent( void* /* par */ )
   // Call the execute() method of all output streams
   for ( auto& ito : m_outStreamList ) {
     AlgExecState& state = m_aess->algExecState(ito, context);
-    state.setExecState(AlgExecState::State::Executing);
+    state.setState(AlgExecState::State::Executing);
     state.setFilterPassed(true);
     StatusCode sc = ito->sysExecute(context);
-    state.setExecState(AlgExecState::State::Done, sc);
+    state.setState(AlgExecState::State::Done, sc);
     if ( UNLIKELY( !sc.isSuccess() ) ) {
       warning() << "Execution of output stream " << ito->name() << " failed" << endmsg;
       eventfailed = true;
