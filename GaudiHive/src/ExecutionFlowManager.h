@@ -1,7 +1,7 @@
 #ifndef EXECUTIONFLOWMANAGER_H_
 #define EXECUTIONFLOWMANAGER_H_
 
-#include "PRGraphVisitors.h"
+#include "IGraphVisitor.h"
 #include "PrecedenceRulesGraph.h"
 
 namespace concurrency {
@@ -30,7 +30,6 @@ namespace concurrency {
                             const std::unordered_map<std::string,unsigned int>& algname_index_map);
     StatusCode initialize(PrecedenceRulesGraph* graph,
                           const std::unordered_map<std::string,unsigned int>& algname_index_map,
-                          std::vector<EventSlot>& eventSlots,
                           const std::string& mode,
                           bool enableCondSvc);
     ///
@@ -43,10 +42,7 @@ namespace concurrency {
     void updateEventState(AlgsExecutionStates & algo_states,
                           std::vector<int>& node_decisions) const;
     ///
-    void updateDecision(const std::string& algo_name,
-                        const int& slotNum,
-                        AlgsExecutionStates& states,
-                        std::vector<int>& node_decisions) const;
+    void updateDecision(const std::string& algo_name, IGraphVisitor& visitor) const;
     /// XXX: CF tests.
     void updateEventState(AlgsExecutionStates& algo_states) const;
     /// Check whether root decision was resolved

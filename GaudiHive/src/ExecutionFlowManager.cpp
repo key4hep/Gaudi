@@ -1,4 +1,5 @@
 #include "ExecutionFlowManager.h"
+#include "PRGraphVisitors.h"
 
 namespace concurrency {
 
@@ -16,11 +17,11 @@ namespace concurrency {
   //---------------------------------------------------------------------------
   StatusCode ExecutionFlowManager::initialize(PrecedenceRulesGraph* graph,
                                             const std::unordered_map<std::string,unsigned int>& algname_index_map,
-                                            std::vector<EventSlot>& eventSlots,
                                             const std::string& mode,
                                             bool enableCondSvc){
     m_PRGraph = graph;
-    StatusCode sc = graph->initialize(algname_index_map, eventSlots, enableCondSvc);
+    StatusCode sc = graph->initialize(algname_index_map, enableCondSvc);
+
     if (!sc.isSuccess()) {
       error() << "Could not initialize the execution flow graph." << endmsg;
       return sc;
@@ -53,7 +54,7 @@ namespace concurrency {
   //---------------------------------------------------------------------------
   void ExecutionFlowManager::simulateExecutionFlow(IGraphVisitor& visitor) const {
 
-    std::vector<int>& nodeDecisions = m_PRGraph->getNodeDecisions(0);
+    std::vector<int>& nodeDecisions = visitor.m_slot->controlFlowState;
 
     std::vector<int> fixedNodeDecisions;
     int cntr = 0;
@@ -62,7 +63,7 @@ namespace concurrency {
       cntr += 1;
       int prevAlgosNum = visitor.m_nodesSucceeded;
       debug() << "  Proceeding with iteration #" << cntr << endmsg;
-      fixedNodeDecisions = m_PRGraph->getNodeDecisions(0);
+      fixedNodeDecisions = visitor.m_slot->controlFlowState;
       m_PRGraph->m_headNode->accept(visitor);
       if ( fixedNodeDecisions == nodeDecisions) {
         error() << "  No progress on iteration " << cntr << " detected" << endmsg;
@@ -87,7 +88,7 @@ namespace concurrency {
     info() << "Asymptotical concurrency speedup depth: " << (float) visitor.m_nodesSucceeded / (float) counters.size() << endmsg;
 
     // Reset algorithm states and node decisions
-    m_PRGraph->getAlgoStates(0).reset();
+    visitor.m_slot->algsStates.reset();
     nodeDecisions.assign(nodeDecisions.size(),-1);
 
   }
@@ -100,10 +101,8 @@ namespace concurrency {
 
   //---------------------------------------------------------------------------
   void ExecutionFlowManager::updateDecision(const std::string& algo_name,
-                                          const int& slotNum,
-                                          AlgsExecutionStates& algo_states,
-                                          std::vector<int>& node_decisions) const {
-    m_PRGraph->updateDecision(algo_name, slotNum, algo_states, node_decisions);
+                                            IGraphVisitor& visitor) const {
+    m_PRGraph->updateDecision(algo_name, visitor);
   }
 
   //---------------------------------------------------------------------------

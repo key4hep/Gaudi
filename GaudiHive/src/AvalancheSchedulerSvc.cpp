@@ -309,7 +309,8 @@ StatusCode AvalancheSchedulerSvc::initialize() {
     fatal() << "Unable to dcast algResourcePool" << endmsg;
     return StatusCode::FAILURE;
   }
-  sc = m_efManager.initialize( algPool->getPRGraph(), m_algname_index_map, m_eventSlots, m_optimizationMode, m_enableCondSvc );
+
+  sc = m_efManager.initialize( algPool->getPRGraph(), m_algname_index_map, m_optimizationMode, m_enableCondSvc );
   unsigned int controlFlowNodeNumber = m_efManager.getPrecedenceRulesGraph()->getControlFlowNodeCounter();
 
   // Shortcut for the message service
@@ -673,9 +674,10 @@ StatusCode AvalancheSchedulerSvc::updateStates( int si, const std::string& algo_
     AlgsExecutionStates& thisAlgsStates = thisSlot.algsStates;
 
     // Take care of the control ready update
-    if ( !algo_name.empty() )
-      m_efManager.updateDecision( algo_name, iSlot, thisAlgsStates, thisSlot.controlFlowState );
-
+    if ( !algo_name.empty() ) {
+      auto visitor = concurrency::DecisionUpdater(thisSlot);
+      m_efManager.updateDecision( algo_name, visitor );
+    }
     StatusCode partial_sc( StatusCode::FAILURE, true );
     // first update CONTROLREADY to DATAREADY
 

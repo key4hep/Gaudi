@@ -288,8 +288,8 @@ class PrecedenceRulesGraph : public CommonMessaging<IPrecedenceRulesGraph> {
 public:
     /// Constructor
     PrecedenceRulesGraph(const std::string& name, SmartIF<ISvcLocator> svc) :
-     m_headNode(0), m_nodeCounter(0), m_svcLocator(svc), m_name(name), m_initTime(std::chrono::system_clock::now()),
-     m_eventSlots(nullptr) {}
+     m_headNode(0), m_nodeCounter(0), m_svcLocator(svc), m_name(name),
+     m_initTime(std::chrono::system_clock::now()) {}
     /// Destructor
     ~PrecedenceRulesGraph() override {
       if (m_headNode != 0) delete m_headNode;
@@ -297,7 +297,7 @@ public:
     /// Initialize graph
     StatusCode initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map);
     StatusCode initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map,
-                          std::vector<EventSlot>& eventSlots, bool enableCondSvc);
+                          bool enableCondSvc);
     /// Register algorithm in the Data Dependency index
     void registerIODataObjects(const Algorithm* algo);
     /// Build data dependency realm WITH data object nodes participating
@@ -327,10 +327,7 @@ public:
     void updateEventState(AlgsExecutionStates& states,
                           std::vector<int>& node_decisions) const;
     /// A method to update algorithm node decision, and propagate it upwards
-    void updateDecision(const std::string& algo_name,
-                        const int& slotNum,
-                        AlgsExecutionStates& states,
-                        std::vector<int>& node_decisions) const;
+    void updateDecision(const std::string& algo_name, IGraphVisitor& visitor) const;
     /// Rank Algorithm nodes by the number of data outputs
     void rankAlgorithms(IGraphVisitor& ranker) const;
     /// Print a string representing the control flow state
@@ -344,10 +341,6 @@ public:
     SmartIF<ISvcLocator>& serviceLocator() const override {return m_svcLocator;}
     ///
     const std::chrono::system_clock::time_point getInitTime() const {return m_initTime;}
-    ///
-    AlgsExecutionStates& getAlgoStates(const int& slotNum) const {return m_eventSlots->at(slotNum).algsStates;}
-    ///
-    std::vector<int>& getNodeDecisions(const int& slotNum) const {return m_eventSlots->at(slotNum).controlFlowState;}
     /// Print out all data origins and destinations, as reflected in the EF graph
     std::string dumpDataFlow() const;
     /// Print out control flow of Algorithms and Sequences
@@ -356,6 +349,8 @@ public:
     void dumpExecutionPlan();
     /// set cause-effect connection between two algorithms in the execution plan
     void addEdgeToExecutionPlan(const AlgorithmNode* u, const AlgorithmNode* v);
+    ///
+    void dumpControlFlow(std::ostringstream&, ControlFlowNode*, const int&) const;
 
 private:
     /// the head node of the control flow graph; may want to have multiple ones once supporting trigger paths
@@ -379,12 +374,6 @@ private:
     boost::ExecPlan m_ExecPlan;
     std::map<std::string,boost::AlgoVertex> m_exec_plan_map;
     bool m_conditionsRealmEnabled{false};
-public:
-    std::vector<EventSlot>* m_eventSlots;
-
-    void dumpControlFlow(std::ostringstream&, ControlFlowNode*,
-                         const int&) const;
-
 
   };
 

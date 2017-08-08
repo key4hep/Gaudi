@@ -227,10 +227,8 @@ namespace concurrency
 
   //---------------------------------------------------------------------------
   StatusCode PrecedenceRulesGraph::initialize( const std::unordered_map<std::string, unsigned int>& algname_index_map,
-                                               std::vector<EventSlot>& eventSlots, bool enableCondSvc )
+                                               bool enableCondSvc )
   {
-
-    m_eventSlots = &eventSlots;
     m_conditionsRealmEnabled = enableCondSvc;
 
     m_headNode->initialize( algname_index_map );
@@ -261,7 +259,6 @@ namespace concurrency
       }
     }
 
-    // StatusCode sc = buildDataDependenciesRealm();
     StatusCode sc = buildAugmentedDataDependenciesRealm();
 
     if ( !sc.isSuccess() ) error() << "Could not build the data dependency realm." << endmsg;
@@ -488,15 +485,9 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  void PrecedenceRulesGraph::updateDecision( const std::string& algo_name, const int& slotNum,
-                                           AlgsExecutionStates& /*algo_states*/, std::vector<int>& /*node_decisions*/ ) const
+  void PrecedenceRulesGraph::updateDecision( const std::string& algo_name, IGraphVisitor& visitor) const
   {
-    //if (msgLevel(MSG::DEBUG))
-    //  debug() << "(UPDATING)Setting decision of algorithm " << algo_name << " and propagating it upwards.." << endmsg;
-
-    auto& slot = (*m_eventSlots)[slotNum];
-    auto updater = DecisionUpdater(slot);
-    getAlgorithmNode( algo_name )->accept(updater);
+    getAlgorithmNode( algo_name )->accept(visitor);
   }
 
   //---------------------------------------------------------------------------
