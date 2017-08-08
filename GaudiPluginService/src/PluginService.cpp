@@ -154,9 +154,12 @@ namespace Gaudi { namespace PluginService {
       REG_SCOPE_LOCK
       if (m_initialized) return;
       m_initialized = true;
-#ifdef WIN32
+#if defined(_WIN32)
       const char* envVar = "PATH";
       const char sep = ';';
+#elif defined(__APPLE__)
+      const char* envVar = "DYLD_LIBRARY_PATH";
+      const char sep = ':';
 #else
       const char* envVar = "LD_LIBRARY_PATH";
       const char sep = ':';

@@ -53,7 +53,7 @@ class BootstrapHelper(object):
             return self.lib.py_helper_printAlgsSequences(self.ptr)
 
     def __init__(self):
-        from ctypes import PyDLL, c_void_p, c_bool, c_char_p, c_int
+        from ctypes import PyDLL, util, c_void_p, c_bool, c_char_p, c_int
         # Helper class to avoid void* to int conversion
         # (see http://stackoverflow.com/questions/17840144)
         class IInterface_p(c_void_p):
@@ -61,8 +61,7 @@ class BootstrapHelper(object):
                 return "IInterface_p(0x%x)" % (0 if self.value is None
                                                else self.value)
         self.log = logging.getLogger('BootstrapHelper')
-
-        libname = 'libGaudiKernel.so'
+        libname = util.find_library('GaudiKernel')
         self.log.debug('loading GaudiKernel (%s)', libname)
 
         # FIXME: note that we need PyDLL instead of CDLL if the calls to
