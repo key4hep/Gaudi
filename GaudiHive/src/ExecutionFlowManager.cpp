@@ -102,7 +102,7 @@ namespace concurrency {
   //---------------------------------------------------------------------------
   void ExecutionFlowManager::updateDecision(const std::string& algo_name,
                                             IGraphVisitor& visitor) const {
-    m_PRGraph->updateDecision(algo_name, visitor);
+    m_PRGraph->accept(algo_name, visitor);
   }
 
   //---------------------------------------------------------------------------

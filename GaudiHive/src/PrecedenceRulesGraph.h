@@ -327,7 +327,7 @@ public:
     void updateEventState(AlgsExecutionStates& states,
                           std::vector<int>& node_decisions) const;
     /// A method to update algorithm node decision, and propagate it upwards
-    void updateDecision(const std::string& algo_name, IGraphVisitor& visitor) const;
+    void accept(const std::string& algo_name, IGraphVisitor& visitor) const;
     /// Rank Algorithm nodes by the number of data outputs
     void rankAlgorithms(IGraphVisitor& ranker) const;
     /// Print a string representing the control flow state

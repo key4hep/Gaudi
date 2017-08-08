@@ -485,7 +485,7 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  void PrecedenceRulesGraph::updateDecision( const std::string& algo_name, IGraphVisitor& visitor) const
+  void PrecedenceRulesGraph::accept( const std::string& algo_name, IGraphVisitor& visitor) const
   {
     getAlgorithmNode( algo_name )->accept(visitor);
   }
