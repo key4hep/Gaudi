@@ -61,7 +61,7 @@ class BootstrapHelper(object):
                 return "IInterface_p(0x%x)" % (0 if self.value is None
                                                else self.value)
         self.log = logging.getLogger('BootstrapHelper')
-        libname = util.find_library('GaudiKernel')
+        libname = util.find_library('GaudiKernel') or 'libGaudiKernel.so'
         self.log.debug('loading GaudiKernel (%s)', libname)
 
         # FIXME: note that we need PyDLL instead of CDLL if the calls to
