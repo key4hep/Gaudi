@@ -369,7 +369,7 @@ public:
   Gaudi::Details::PropertyBase* declareProperty( const std::string& name, ToolHandle<T>& hndl,
                                                  const std::string& doc = "none" )
   {
-    this->declareTool( hndl ).ignore();
+    this->declareTool( hndl, hndl.typeAndName() ).ignore();
     return PropertyHolderImpl::declareProperty( name, hndl, doc );
   }
 
@@ -445,10 +445,8 @@ public:
   void deregisterTool( IAlgTool* tool ) const;
 
   template <class T>
-  StatusCode declareTool( ToolHandle<T>& handle, std::string toolTypeAndName = "", bool createIf = true )
+  StatusCode declareTool( ToolHandle<T>& handle, std::string toolTypeAndName, bool createIf = true )
   {
-
-    if ( toolTypeAndName == "" ) toolTypeAndName = handle.typeAndName();
 
     StatusCode sc = handle.initialize( toolTypeAndName, handle.isPublic() ? nullptr : this, createIf );
     if ( UNLIKELY( !sc ) ) {

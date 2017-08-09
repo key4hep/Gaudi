@@ -187,16 +187,13 @@ public:
   /// @note the use std::enable_if is required to avoid ambiguities
   template <class OWNER,
             typename = typename std::enable_if<std::is_base_of<IProperty, OWNER>::value>::type>
-  inline ToolHandle( OWNER* owner, std::string name, std::string toolType = "", std::string doc = "" )
+  inline ToolHandle( OWNER* owner, std::string name, std::string toolType, std::string doc = "" )
       : ToolHandle( owner )
   {
     // convert name and type to a valid type/name string
-    // - if type is not specified use only name
     // - if type does not contain '/' use type/name
     // - otherwise type is already a type/name string
-    if ( toolType.empty() ) {
-      toolType = name;
-    } else if ( toolType.find( '/' ) == std::string::npos ) {
+    if ( !toolType.empty() and toolType.find( '/' ) == std::string::npos ) {
       toolType += '/';
       toolType += name;
     }
@@ -330,16 +327,13 @@ public:
   /// @note the use std::enable_if is required to avoid ambiguities
   template <class OWNER,
             typename = typename std::enable_if<std::is_base_of<IProperty, OWNER>::value>::type>
-  inline PublicToolHandle( OWNER* owner, std::string name, std::string toolType = "", std::string doc = "" )
+  inline PublicToolHandle( OWNER* owner, std::string name, std::string toolType, std::string doc = "" )
       : PublicToolHandle()
   {
     // convert name and type to a valid type/name string
-    // - if type is not specified use only name
     // - if type does not contain '/' use type/name
     // - otherwise type is already a type/name string
-    if ( toolType.empty() ) {
-      toolType = name;
-    } else if ( toolType.find( '/' ) == std::string::npos ) {
+    if ( !toolType.empty() and toolType.find( '/' ) == std::string::npos ) {
       toolType += '/';
       toolType += name;
     }

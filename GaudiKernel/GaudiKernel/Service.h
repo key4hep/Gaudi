@@ -134,10 +134,8 @@ public:
    *  @param create if necessary, default true
    */
   template <class T>
-  StatusCode declareTool( ToolHandle<T>& handle, std::string toolTypeAndName = "", bool createIf = true )
+  StatusCode declareTool( ToolHandle<T>& handle, std::string toolTypeAndName, bool createIf = true )
   {
-
-    if ( toolTypeAndName == "" ) toolTypeAndName = handle.typeAndName();
 
     StatusCode sc = handle.initialize( toolTypeAndName, handle.isPublic() ? nullptr : this, createIf );
     if ( UNLIKELY( !sc ) ) {
