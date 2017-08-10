@@ -278,13 +278,12 @@ public:
   typedef std::unordered_map<std::string, DataObjIDColl > AlgoInputsMap;
   typedef std::unordered_map<std::string, DataObjIDColl > AlgoOutputsMap;
 
-class ExecutionFlowManager;
+
 struct IPrecedenceRulesGraph {
   virtual ~IPrecedenceRulesGraph() = default;
 };
 
 class PrecedenceRulesGraph : public CommonMessaging<IPrecedenceRulesGraph> {
-  friend ExecutionFlowManager;
 public:
     /// Constructor
     PrecedenceRulesGraph(const std::string& name, SmartIF<ISvcLocator> svc) :
@@ -304,6 +303,8 @@ public:
     StatusCode buildAugmentedDataDependenciesRealm();
     /// Add a node, which has no parents
     void addHeadNode(const std::string& headName, bool modeConcurrent, bool modePromptDecision, bool modeOR, bool allPass);
+    /// Get head node
+    DecisionNode* getHeadNode() const { return m_headNode; };
     /// Add algorithm node
     StatusCode addAlgorithmNode(Algorithm* daughterAlgo, const std::string& parentName, bool inverted, bool allPass);
     /// Attach pointers to real Algorithms (and their clones) to Algorithm nodes of the graph

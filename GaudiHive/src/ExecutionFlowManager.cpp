@@ -64,7 +64,7 @@ namespace concurrency {
       int prevAlgosNum = visitor.m_nodesSucceeded;
       debug() << "  Proceeding with iteration #" << cntr << endmsg;
       fixedNodeDecisions = visitor.m_slot->controlFlowState;
-      m_PRGraph->m_headNode->accept(visitor);
+      m_PRGraph->getHeadNode()->accept(visitor);
       if ( fixedNodeDecisions == nodeDecisions) {
         error() << "  No progress on iteration " << cntr << " detected" << endmsg;
         debug() << nodeDecisions << endmsg;
@@ -108,13 +108,13 @@ namespace concurrency {
   //---------------------------------------------------------------------------
   bool ExecutionFlowManager::rootDecisionResolved(const std::vector<int>& node_decisions) const {
 
-    return (-1 != node_decisions[m_PRGraph->m_headNode->getNodeIndex()]) ? true : false;
+    return (-1 != node_decisions[m_PRGraph->getHeadNode()->getNodeIndex()]) ? true : false;
   }
 
   //---------------------------------------------------------------------------
   void ExecutionFlowManager::touchReadyAlgorithms(IGraphVisitor& visitor) const {
 
-    m_PRGraph->m_headNode->accept(visitor);
+    m_PRGraph->getHeadNode()->accept(visitor);
 
   }
 }
