@@ -125,7 +125,7 @@ static unsigned long loadWithoutEnvironment( const std::string& name,
    bool hasShlibSuffix = false;
    for( const char* suffix : SHLIB_SUFFIXES ) {
       const size_t len = strlen( suffix );
-      if( dllName.compare( dllName.length() - len, len, suffix ) != 0 ) {
+      if( dllName.compare( dllName.length() - len, len, suffix ) == 0 ) {
          hasShlibSuffix = true;
          break;
       }
