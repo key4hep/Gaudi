@@ -125,9 +125,10 @@ namespace concurrency {
   class AlgorithmNode : public ControlFlowNode {
   public:
     /// Constructor
-    AlgorithmNode(PrecedenceRulesGraph& graph, unsigned int nodeIndex, const std::string& algoName, bool inverted, bool allPass, bool IOBound) :
+    AlgorithmNode(PrecedenceRulesGraph& graph, unsigned int nodeIndex, unsigned int algoIndex,
+                  const std::string& algoName, bool inverted, bool allPass, bool IOBound) :
       ControlFlowNode(graph, nodeIndex, algoName),
-      m_algoIndex(0),m_algoName(algoName),m_inverted(inverted),m_allPass(allPass),m_rank(-1),m_isIOBound(IOBound)
+      m_algoIndex(algoIndex),m_algoName(algoName),m_inverted(inverted),m_allPass(allPass),m_rank(-1),m_isIOBound(IOBound)
       {};
     /// Destructor
     ~AlgorithmNode();
@@ -287,7 +288,7 @@ class PrecedenceRulesGraph : public CommonMessaging<IPrecedenceRulesGraph> {
 public:
     /// Constructor
     PrecedenceRulesGraph(const std::string& name, SmartIF<ISvcLocator> svc) :
-     m_headNode(0), m_nodeCounter(0), m_svcLocator(svc), m_name(name),
+     m_headNode(0), m_nodeCounter(0), m_algoCounter(0), m_svcLocator(svc), m_name(name),
      m_initTime(std::chrono::system_clock::now()) {}
     /// Destructor
     ~PrecedenceRulesGraph() override {
@@ -367,7 +368,9 @@ private:
     AlgoOutputsMap m_algoNameToAlgoOutputsMap;
     /// Total number of nodes in the graph
     unsigned int m_nodeCounter;
-    /// Service locator
+    /// Total number of algorithm nodes in the graph
+    unsigned int m_algoCounter;
+    /// Service locator (needed to access the MessageSvc)
     mutable SmartIF<ISvcLocator> m_svcLocator;
     const std::string m_name;
     const std::chrono::system_clock::time_point m_initTime;

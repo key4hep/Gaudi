@@ -351,8 +351,9 @@ namespace concurrency
     if ( itA != m_algoNameToAlgoNodeMap.end() ) {
       algoNode = itA->second;
     } else {
-      algoNode = new concurrency::AlgorithmNode( *this, m_nodeCounter, algoName, inverted, allPass, algo->isIOBound() );
+      algoNode = new concurrency::AlgorithmNode( *this, m_nodeCounter, m_algoCounter, algoName, inverted, allPass, algo->isIOBound() );
       ++m_nodeCounter;
+      ++m_algoCounter;
       m_algoNameToAlgoNodeMap[algoName] = algoNode;
       if (msgLevel(MSG::DEBUG))
         debug() << "AlgorithmNode '" << algoName << "' added @ " << algoNode << endmsg;
@@ -365,6 +366,7 @@ namespace concurrency
       auto parentNode = itP->second;
       debug() << "Attaching AlgorithmNode '" << algo->name() << "' to DecisionNode '"
               << parentName << "'" << endmsg;
+
       parentNode->addDaughterNode( algoNode );
       algoNode->addParentNode( parentNode );
     } else {

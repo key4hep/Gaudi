@@ -1,7 +1,6 @@
 #include "AvalancheSchedulerSvc.h"
 #include "AlgResourcePool.h"
 #include "AlgoExecutionTask.h"
-#include "PRGraphVisitors.h"
 #include "IOBoundAlgTask.h"
 
 // Framework includes
@@ -109,6 +108,18 @@ StatusCode AvalancheSchedulerSvc::initialize() {
   m_algResourcePool = serviceLocator()->service( "AlgResourcePool" );
   if ( !m_algResourcePool.isValid() ) {
     fatal() << "Error retrieving AlgoResourcePool" << endmsg;
+    return StatusCode::FAILURE;
+  }
+  const AlgResourcePool* algPool = dynamic_cast<const AlgResourcePool*>( m_algResourcePool.get() );
+  if ( !algPool ) {
+    fatal() << "Unable to dcast algResourcePool" << endmsg;
+    return StatusCode::FAILURE;
+  }
+
+  // Get the algo resource pool
+  m_precSvc = serviceLocator()->service( "PrecedenceSvc" );
+  if ( !m_precSvc.isValid() ) {
+    fatal() << "Error retrieving PrecedenceSvc" << endmsg;
     return StatusCode::FAILURE;
   }
 
@@ -228,17 +239,16 @@ StatusCode AvalancheSchedulerSvc::initialize() {
   }
 
   // Fill the containers to convert algo names to index
-  m_algname_vect.reserve( algsNumber );
-  unsigned int index = 0;
+  m_algname_vect.resize(algsNumber);
   IAlgorithm* dataLoaderAlg( nullptr );
   for ( IAlgorithm* algo : algos ) {
     const std::string& name   = algo->name();
+    auto index = algPool->getPRGraph()->getAlgorithmNode(name)->getAlgoIndex();
     m_algname_index_map[name] = index;
-    m_algname_vect.emplace_back( name );
+    m_algname_vect.at(index) = name;
     if (algo->name() == m_useDataLoader) {
       dataLoaderAlg = algo;
     }
-    index++;
   }
 
   // Check if we have unmet global input dependencies
@@ -303,23 +313,17 @@ StatusCode AvalancheSchedulerSvc::initialize() {
     }
   }
 
-  // prepare the control flow part
-  const AlgResourcePool* algPool = dynamic_cast<const AlgResourcePool*>( m_algResourcePool.get() );
-  if ( !algPool ) {
-    fatal() << "Unable to dcast algResourcePool" << endmsg;
-    return StatusCode::FAILURE;
-  }
-
-  sc = m_efManager.initialize( algPool->getPRGraph(), m_algname_index_map, m_optimizationMode, m_enableCondSvc );
-  unsigned int controlFlowNodeNumber = m_efManager.getPrecedenceRulesGraph()->getControlFlowNodeCounter();
-
   // Shortcut for the message service
   SmartIF<IMessageSvc> messageSvc( serviceLocator() );
-  if ( !messageSvc.isValid() ) error() << "Error retrieving MessageSvc interface IMessageSvc." << endmsg;
+  if ( !messageSvc.isValid() )
+    error() << "Error retrieving MessageSvc interface IMessageSvc." << endmsg;
 
   m_eventSlots.assign( m_maxEventsInFlight,
-                       EventSlot( m_algosDependencies, algsNumber, controlFlowNodeNumber, messageSvc ) );
-  std::for_each( m_eventSlots.begin(), m_eventSlots.end(), []( EventSlot& slot ) { slot.complete = true; } );
+                       EventSlot( m_algosDependencies, algsNumber,
+                                  algPool->getPRGraph()->getControlFlowNodeCounter(),
+                                  messageSvc ) );
+  std::for_each( m_eventSlots.begin(), m_eventSlots.end(),
+                 []( EventSlot& slot ) { slot.complete = true; } );
 
   if (m_threadPoolSize > 1) {
     m_maxAlgosInFlight = (size_t) m_threadPoolSize;
@@ -330,27 +334,15 @@ StatusCode AvalancheSchedulerSvc::initialize() {
   info() << " o Number of events in flight: " << m_maxEventsInFlight << endmsg;
   info() << " o TBB thread pool size: " << m_threadPoolSize << endmsg;
 
-  m_efg = algPool->getPRGraph();
+  if (m_showControlFlow)
+    m_precSvc->dumpControlFlow();
 
-  if (m_showControlFlow) {
-    info() << std::endl
-           << "========== Algorithm and Sequence Configuration =========="
-           << std::endl << std::endl;
-    info() << m_efg->dumpControlFlow() << endmsg;
-  }
+  if (m_showDataFlow)
+    m_precSvc->dumpDataFlow();
 
-  if (m_showDataFlow) {
-    info() << std::endl
-           << "======================= Data Flow ========================"
-           << std::endl;
-    info() << m_efg->dumpDataFlow() << endmsg;
-  }
-
-  // Simulating execution flow by only analyzing the graph topology and logic
-  if ( m_simulateExecution ) {
-    auto vis = concurrency::RunSimulator( m_eventSlots[0] );
-    m_efManager.simulateExecutionFlow( vis );
-  }
+  // Simulate execution flow
+  if (m_simulateExecution)
+    m_precSvc->simulate(m_eventSlots[0]);
 
   return sc;
 }
@@ -376,7 +368,7 @@ StatusCode AvalancheSchedulerSvc::finalize() {
     return StatusCode::FAILURE;
   }
 
-  // m_efManager.getPrecedenceRulesGraph()->dumpExecutionPlan();
+  //m_precSvc->dumpPrecedenceTrace();
 
   return sc;
 }
@@ -506,8 +498,7 @@ StatusCode AvalancheSchedulerSvc::pushNewEvent( EventContext* eventContext ) {
     thisSlot.reset( eventContext );
 
     // promote to CR and DR the initial set of algorithms
-    auto vis = concurrency::Supervisor( m_eventSlots[thisSlotNum] );
-    m_efManager.touchReadyAlgorithms( vis );
+    m_precSvc->iterate(thisSlot);
 
     return this->updateStates( thisSlotNum );
   }; // end of lambda
@@ -673,19 +664,17 @@ StatusCode AvalancheSchedulerSvc::updateStates( int si, const std::string& algo_
     auto& thisSlot                      = m_eventSlots[iSlot];
     AlgsExecutionStates& thisAlgsStates = thisSlot.algsStates;
 
-    // Take care of the control ready update
-    if ( !algo_name.empty() ) {
-      auto visitor = concurrency::DecisionUpdater(thisSlot);
-      m_efManager.updateDecision( algo_name, visitor );
-    }
-    StatusCode partial_sc( StatusCode::FAILURE, true );
-    // first update CONTROLREADY to DATAREADY
+    // Perform the I->CR->DR transitions
+    if ( !algo_name.empty() )
+      m_precSvc->iterate(thisSlot, algo_name);
 
-    // now update DATAREADY to SCHEDULED
+    StatusCode partial_sc( StatusCode::FAILURE, true );
+
+    // Perform DR->SCHEDULED
     if ( !m_optimizationMode.empty() ) {
       auto comp_nodes = [this]( const uint& i, const uint& j ) {
-        return ( m_efManager.getPrecedenceRulesGraph()->getAlgorithmNode( index2algname( i ) )->getRank() <
-                 m_efManager.getPrecedenceRulesGraph()->getAlgorithmNode( index2algname( j ) )->getRank() );
+        return (m_precSvc->getPriority(index2algname(i)) <
+                m_precSvc->getPriority(index2algname(j)));
       };
       std::priority_queue<uint, std::vector<uint>, std::function<bool( const uint&, const uint& )>> buffer(
           comp_nodes, std::vector<uint>() );
@@ -695,7 +684,7 @@ StatusCode AvalancheSchedulerSvc::updateStates( int si, const std::string& algo_
       /*std::stringstream s;
       auto buffer2 = buffer;
       while (!buffer2.empty()) {
-        s << m_efManager.getPrecedenceRulesGraph()->getAlgorithmNode(index2algname(buffer2.top()))->getRank() << ", ";
+        s << m_precSvc->getPriority(index2algname(buffer2.top())) << ", ";
         buffer2.pop();
       }
       info() << "DRBuffer is: [ " << s.str() << " ]  <--" << algo_name << " executed" << endmsg;*/
@@ -721,7 +710,7 @@ StatusCode AvalancheSchedulerSvc::updateStates( int si, const std::string& algo_
       while ( !buffer.empty() ) {
         bool IOBound = false;
         if ( m_useIOBoundAlgScheduler )
-          IOBound = m_efManager.getPrecedenceRulesGraph()->getAlgorithmNode( index2algname( buffer.top() ) )->isIOBound();
+          IOBound = m_precSvc->isBlocking(index2algname(buffer.top()));
 
         if ( !IOBound )
           partial_sc = promoteToScheduled( buffer.top(), iSlot );
@@ -744,7 +733,7 @@ StatusCode AvalancheSchedulerSvc::updateStates( int si, const std::string& algo_
 
         bool IOBound = false;
         if ( m_useIOBoundAlgScheduler )
-          IOBound = m_efManager.getPrecedenceRulesGraph()->getAlgorithmNode( index2algname( algIndex ) )->isIOBound();
+          IOBound = m_precSvc->isBlocking(index2algname(algIndex));
 
         if ( !IOBound )
           partial_sc = promoteToScheduled( algIndex, iSlot );
@@ -760,13 +749,11 @@ StatusCode AvalancheSchedulerSvc::updateStates( int si, const std::string& algo_
     }
 
     if (m_dumpIntraEventDynamics) {
-      auto now = std::chrono::system_clock::now();
       std::stringstream s;
       s << algo_name << ", " << thisAlgsStates.sizeOfSubset(State::CONTROLREADY) << ", "
                      << thisAlgsStates.sizeOfSubset(State::DATAREADY) << ", "
                      << thisAlgsStates.sizeOfSubset(State::SCHEDULED) << ", "
-                     << std::chrono::duration_cast<std::chrono::nanoseconds> (now - m_efManager.getPrecedenceRulesGraph()->getInitTime()).count()
-                     << "\n";
+                     << std::chrono::high_resolution_clock::now().time_since_epoch().count() << "\n";
       auto threads = (m_threadPoolSize != -1) ? std::to_string(m_threadPoolSize)
                                               : std::to_string(tbb::task_scheduler_init::default_num_threads());
       std::ofstream myfile;
@@ -776,7 +763,7 @@ StatusCode AvalancheSchedulerSvc::updateStates( int si, const std::string& algo_
     }
 
     // Not complete because this would mean that the slot is already free!
-    if ( !thisSlot.complete && m_efManager.rootDecisionResolved( thisSlot.controlFlowState ) &&
+    if ( !thisSlot.complete && m_precSvc->CFRulesResolved(thisSlot) &&
          !thisSlot.algsStates.algsPresent( AlgsExecutionStates::CONTROLREADY ) &&
          !thisSlot.algsStates.algsPresent( AlgsExecutionStates::DATAREADY ) &&
          !thisSlot.algsStates.algsPresent( AlgsExecutionStates::SCHEDULED ) ) {
@@ -790,12 +777,10 @@ StatusCode AvalancheSchedulerSvc::updateStates( int si, const std::string& algo_
           debug() << "Event " << thisSlot.eventContext->evt() << " finished (slot "
                   << thisSlot.eventContext->slot() << ")." << endmsg;
       }
+
       // now let's return the fully evaluated result of the control flow
-      if ( msgLevel( MSG::DEBUG ) ) {
-        std::stringstream ss;
-        m_efManager.printEventState( ss, thisSlot.algsStates, thisSlot.controlFlowState, 0 );
-        debug() << ss.str() << endmsg;
-      }
+      if ( msgLevel( MSG::DEBUG ) )
+        debug() << m_precSvc->printState(thisSlot) << endmsg;
 
       thisSlot.eventContext = nullptr;
     } else {
@@ -901,10 +886,7 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot ) {
 
       // Snapshot of the ControlFlow
       outputMessageStream << "\nControl Flow:" << std::endl;
-      std::stringstream cFlowStateStringStream;
-      m_efManager.printEventState( cFlowStateStringStream, thisSlot.algsStates, thisSlot.controlFlowState, 0 );
-
-      outputMessageStream << cFlowStateStringStream.str() << std::endl;
+      outputMessageStream << m_precSvc->printState(thisSlot) << std::endl;
     }
   }
 
@@ -985,7 +967,7 @@ StatusCode AvalancheSchedulerSvc::promoteToAsyncScheduled( unsigned int iAlgo, i
 
   if ( m_IOBoundAlgosInFlight == m_maxIOBoundAlgosInFlight ) return StatusCode::FAILURE;
 
-  // bool IOBound = m_efManager.getPrecedenceRulesGraph()->getAlgorithmNode(algName)->isIOBound();
+  // bool IOBound = m_precSvc->isBlocking(algName);
 
   const std::string& algName( index2algname( iAlgo ) );
   IAlgorithm* ialgoPtr = nullptr;
