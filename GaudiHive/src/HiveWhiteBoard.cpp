@@ -39,7 +39,14 @@ namespace
     SmartIF<IDataManagerSvc> dataManager;
     DataObjIDColl newDataObjects;
     int eventNumber = -1;
+
+    // allow acces 'by type' -- used in fwd
+    template <typename T> T* get();
   };
+  template <> IDataProviderSvc* Partition::get<IDataProviderSvc>()
+  { return dataProvider.get(); }
+  template <> IDataManagerSvc* Partition::get<IDataManagerSvc>()
+  { return dataManager.get(); }
 
   template <typename T>
   class Synced {
@@ -57,6 +64,11 @@ namespace
              (auto& p) -> decltype(auto)
              { return p.with_lock( f ); };
   }
+  // call f(T) for each element in a container of Synced<T>
+  template <typename ContainerOfSynced, typename Fun>
+  void for_(ContainerOfSynced& c, Fun&& f) {
+    std::for_each(begin(c),end(c),with_lock(std::forward<Fun>(f)));
+  }
 
   class DataAgent : virtual public IDataStoreAgent
   {
@@ -69,7 +81,6 @@ namespace
       return true;
     }
   };
-
 }
 
 TTHREAD_TLS( Synced<Partition>* ) s_current = nullptr;
@@ -83,28 +94,17 @@ namespace {
     struct arg_helper<Ret(T::*)(Arg) const>
     { using type = Arg; };
     template <typename lambda>
-    using argument_t = std::decay_t<typename arg_helper<lambda>::type>;
-
-    template <typename T> T* get(Partition&);
-    template <> IDataProviderSvc* get<IDataProviderSvc>(Partition& p)
-    { return p.dataProvider.get(); }
-    template <> IDataManagerSvc* get<IDataManagerSvc>(Partition& p)
-    { return p.dataManager.get(); }
+    using argument_t = typename arg_helper<lambda>::type;
   }
 
   template <typename Fun>
   StatusCode fwd( Fun f ) {
     if (!s_current) return IDataProviderSvc::INVALID_ROOT;
-    return s_current->with_lock( [&](Partition& partition) {
-      auto *p = detail::get<detail::argument_t<Fun>>(partition);
-      return p ? f(*p)
-               : static_cast<StatusCode>(IDataProviderSvc::INVALID_ROOT);
+    return s_current->with_lock( [&](Partition& p) {
+      auto *svc = p.get<std::decay_t<detail::argument_t<Fun>>>();
+      return svc ? f(*svc)
+                 : static_cast<StatusCode>(IDataProviderSvc::INVALID_ROOT);
     } );
-  }
-
-  template <typename SyncedContainer, typename Fun>
-  void for_(SyncedContainer& c, Fun&& f) {
-    std::for_each(begin(c),end(c),with_lock(std::forward<Fun>(f)));
   }
 }
 
