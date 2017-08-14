@@ -178,6 +178,11 @@ bool PrecedenceSvc::CFRulesResolved(EventSlot& slot) const {
 }
 
 // ============================================================================
+void PrecedenceSvc::dumpPrecedenceTrace() const {
+  m_PRGraph->dumpExecutionPlan();
+}
+
+// ============================================================================
 // Finalize
 // ============================================================================
 StatusCode PrecedenceSvc::finalize() {

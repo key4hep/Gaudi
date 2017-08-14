@@ -47,6 +47,9 @@ public:
   virtual void dumpDataFlow() const = 0;
   virtual const std::string printState(EventSlot&) const = 0;
 
+  /// Dump precedence trace
+  virtual void dumpPrecedenceTrace() const = 0;
+
 };
 
 #endif /* GAUDIHIVE_IPRECEDENCESVC_H_ */

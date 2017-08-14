@@ -60,6 +60,9 @@ public:
   void dumpDataFlow() const override;
   const std::string printState(EventSlot&) const override;
 
+  /// Dump precedence trace
+  void dumpPrecedenceTrace() const override;
+
 private:
   /// the graph of precedence rules
   concurrency::PrecedenceRulesGraph* m_PRGraph=nullptr;
