@@ -764,7 +764,7 @@ bool Algorithm::isExecuted() const {
 
 void Algorithm::setExecuted( bool state ) const {
   const EventContext& context = Gaudi::Hive::currentContext();
-  AlgExecState::State s = state ? AlgExecState::State::None : AlgExecState::State::Done;
+  AlgExecState::State s = state ? AlgExecState::State::Done : AlgExecState::State::None;
   algExecStateSvc()->algExecState(const_cast<IAlgorithm*>((const IAlgorithm*)this), context).setState(s);
 }
 
