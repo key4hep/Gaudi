@@ -1,4 +1,5 @@
 #include "PrecedenceSvc.h"
+#include "EventSlot.h"
 #include "PRGraphVisitors.h"
 #include "AlgResourcePool.h"
 
@@ -77,57 +78,27 @@ StatusCode PrecedenceSvc::initialize() {
 }
 
 // ============================================================================
-StatusCode PrecedenceSvc::iterate(EventSlot& slot) {
+StatusCode PrecedenceSvc::iterate(EventSlot& slot, const Cause& cause) {
 
-  ON_VERBOSE verbose() << "Triggering top-down traversal at the root node" << endmsg;
-
-  auto visitor = concurrency::Supervisor(slot);
-  m_PRGraph->getHeadNode()->accept(visitor);
-
-  return StatusCode::SUCCESS;
-}
-
-// ============================================================================
-StatusCode PrecedenceSvc::iterate(EventSlot& slot, const std::string& algoName) {
-
-  ON_VERBOSE verbose() << "Triggering bottom-up traversal at node '" << algoName
-                       <<"'" << endmsg;
-
-  auto visitor = concurrency::DecisionUpdater(slot);
-  m_PRGraph->accept(algoName, visitor);
+  if (Cause::source::Task == cause.m_source) {
+    ON_VERBOSE verbose() << "Triggering bottom-up traversal at node '"
+                         << cause.m_sourceName <<"'" << endmsg;
+    auto visitor = concurrency::DecisionUpdater(slot,cause);
+    m_PRGraph->getAlgorithmNode(cause.m_sourceName)->accept(visitor);
+  } else {
+    ON_VERBOSE verbose() << "Triggering top-down traversal at the root node" << endmsg;
+    auto visitor = concurrency::Supervisor(slot,cause);
+    m_PRGraph->getHeadNode()->accept(visitor);
+  }
 
   return StatusCode::SUCCESS;
-}
-
-// ============================================================================
-void PrecedenceSvc::dumpControlFlow() const {
-
-  info() << std::endl
-         << "==================== Control Flow Configuration =================="
-         << std::endl << std::endl;
-  info() << m_PRGraph->dumpControlFlow() << endmsg;
-
-}
-// ============================================================================
-void PrecedenceSvc::dumpDataFlow() const {
-  info() << std::endl
-         << "===================== Data Flow Configuration ===================="
-         << std::endl;
-  info() << m_PRGraph->dumpDataFlow() << endmsg;
-}
-
-// ============================================================================
-const std::string PrecedenceSvc::printState(EventSlot& slot) const {
-
-  std::stringstream ss;
-  m_PRGraph->printState(ss, slot.algsStates, slot.controlFlowState, 0);
-  return ss.str();
 }
 
 // ============================================================================
 StatusCode PrecedenceSvc::simulate(EventSlot& slot) const {
 
-  auto visitor = concurrency::RunSimulator( slot );
+  Cause cs = {Cause::source::Root, "RootDecisionHub"};
+  auto visitor = concurrency::RunSimulator( slot, cs );
 
   auto& nodeDecisions = slot.controlFlowState;
 
@@ -175,6 +146,31 @@ StatusCode PrecedenceSvc::simulate(EventSlot& slot) const {
 // ============================================================================
 bool PrecedenceSvc::CFRulesResolved(EventSlot& slot) const {
   return (-1 != slot.controlFlowState[m_PRGraph->getHeadNode()->getNodeIndex()] ? true : false);
+}
+
+// ============================================================================
+void PrecedenceSvc::dumpControlFlow() const {
+
+  info() << std::endl
+         << "==================== Control Flow Configuration =================="
+         << std::endl << std::endl;
+  info() << m_PRGraph->dumpControlFlow() << endmsg;
+
+}
+// ============================================================================
+void PrecedenceSvc::dumpDataFlow() const {
+  info() << std::endl
+         << "===================== Data Flow Configuration ===================="
+         << std::endl;
+  info() << m_PRGraph->dumpDataFlow() << endmsg;
+}
+
+// ============================================================================
+const std::string PrecedenceSvc::printState(EventSlot& slot) const {
+
+  std::stringstream ss;
+  m_PRGraph->printState(ss, slot.algsStates, slot.controlFlowState, 0);
+  return ss.str();
 }
 
 // ============================================================================

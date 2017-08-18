@@ -498,7 +498,8 @@ StatusCode AvalancheSchedulerSvc::pushNewEvent( EventContext* eventContext ) {
     thisSlot.reset( eventContext );
 
     // promote to CR and DR the initial set of algorithms
-    m_precSvc->iterate(thisSlot);
+    Cause cs = {Cause::source::Root, "RootDecisionHub"};
+    m_precSvc->iterate(thisSlot, cs);
 
     return this->updateStates( thisSlotNum );
   }; // end of lambda
@@ -665,8 +666,10 @@ StatusCode AvalancheSchedulerSvc::updateStates( int si, const std::string& algo_
     AlgsExecutionStates& thisAlgsStates = thisSlot.algsStates;
 
     // Perform the I->CR->DR transitions
-    if ( !algo_name.empty() )
-      m_precSvc->iterate(thisSlot, algo_name);
+    if ( !algo_name.empty() ) {
+      Cause cs = {Cause::source::Task, algo_name};
+      m_precSvc->iterate(thisSlot, cs);
+    }
 
     StatusCode partial_sc( StatusCode::FAILURE, true );
 

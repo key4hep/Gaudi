@@ -1,7 +1,7 @@
 #ifndef IGRAPHVISITOR_H_
 #define IGRAPHVISITOR_H_
 
-#include "EventSlot.h"
+class EventSlot;
 
 namespace concurrency {
 
@@ -29,8 +29,8 @@ namespace concurrency {
     virtual void reset() {m_nodesSucceeded = 0;};
 
   public:
-    int m_nodesSucceeded;
-    EventSlot* m_slot;
+    int m_nodesSucceeded {0};
+    EventSlot* m_slot {nullptr};
   };
 }
 

@@ -9,9 +9,9 @@ namespace concurrency {
   class DataReadyPromoter : public IGraphVisitor {
     public:
       /// Constructor
-      DataReadyPromoter(EventSlot& slot) {
-        m_nodesSucceeded = 0;
+      DataReadyPromoter(EventSlot& slot, const Cause& cause) {
         m_slot = &slot;
+        m_cause = cause;
       };
 
       using IGraphVisitor::visit;
@@ -29,29 +29,31 @@ namespace concurrency {
 
       bool visit(ConditionNode&) override;
 
+      Cause m_cause;
   };
 
   class DecisionUpdater : public IGraphVisitor {
     public:
       /// Constructor
-      DecisionUpdater(EventSlot& slot) {
-        m_nodesSucceeded = 0;
+      DecisionUpdater(EventSlot& slot, const Cause& cause) {
         m_slot = &slot;
+        m_cause = cause;
       };
 
       using IGraphVisitor::visit;
 
       bool visit(AlgorithmNode& node) override;
 
+      Cause m_cause;
   };
 
 
   class Supervisor : public IGraphVisitor {
     public:
       /// Constructor
-	  Supervisor(EventSlot& slot) {
-        m_nodesSucceeded = 0;
+	  Supervisor(EventSlot& slot, const Cause& cause) {
         m_slot = &slot;
+        m_cause = cause;
       };
 
       using IGraphVisitor::visit;
@@ -65,15 +67,13 @@ namespace concurrency {
 
       bool visit(AlgorithmNode& node) override;
 
+      Cause m_cause;
   };
 
   class RankerByProductConsumption : public IGraphVisitor {
     public:
       /// Constructor
-      RankerByProductConsumption() {
-        m_nodesSucceeded = 0;
-        m_slot = nullptr;
-      };
+      RankerByProductConsumption() {};
 
       using IGraphVisitor::visit;
 
@@ -84,10 +84,7 @@ namespace concurrency {
   class RankerByCummulativeOutDegree : public IGraphVisitor {
     public:
       /// Constructor
-      RankerByCummulativeOutDegree() {
-        m_nodesSucceeded = 0;
-        m_slot = nullptr;
-      };
+      RankerByCummulativeOutDegree() {};
 
       using IGraphVisitor::visit;
 
@@ -100,10 +97,7 @@ namespace concurrency {
   class RankerByTiming : public IGraphVisitor {
     public:
       /// Constructor
-      RankerByTiming() {
-        m_nodesSucceeded = 0;
-        m_slot = nullptr;
-      };
+      RankerByTiming() {};
 
       using IGraphVisitor::visit;
 
@@ -114,10 +108,7 @@ namespace concurrency {
   class RankerByEccentricity : public IGraphVisitor {
     public:
       /// Constructor
-      RankerByEccentricity() {
-        m_nodesSucceeded = 0;
-        m_slot = nullptr;
-      };
+      RankerByEccentricity() {};
 
       using IGraphVisitor::visit;
 
@@ -129,8 +120,6 @@ namespace concurrency {
     public:
       /// Constructor
       RankerByDataRealmEccentricity() {
-        m_nodesSucceeded = 0;
-        m_slot = nullptr;
         m_currentDepth = 0;
         m_maxKnownDepth = 0;
       };
@@ -140,7 +129,6 @@ namespace concurrency {
       bool visit(AlgorithmNode& node) override;
 
       void reset() override {
-        m_nodesSucceeded = 0;
         m_currentDepth = 0;
         m_maxKnownDepth = 0;
       }
@@ -157,9 +145,9 @@ namespace concurrency {
   class RunSimulator : public IGraphVisitor {
   public:
     /// Constructor
-    RunSimulator(EventSlot& slot) {
-      m_nodesSucceeded = 0;
+    RunSimulator(EventSlot& slot, const Cause& cause) {
       m_slot = &slot;
+      m_cause = cause;
     };
 
     using IGraphVisitor::visit;
@@ -173,10 +161,9 @@ namespace concurrency {
 
     bool visit(AlgorithmNode& node) override;
 
+    Cause m_cause;
   };
 
 }
-
-
 
 #endif /* PRGRAPHVISITORS_H_ */

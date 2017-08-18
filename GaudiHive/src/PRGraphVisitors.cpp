@@ -76,7 +76,7 @@ namespace concurrency {
     /* Implements 'requester' strategy, i.e., requests this ConditionNode to be loaded
      * by its associated ConditionAlgorithm */
 
-    auto promoter = Supervisor(*m_slot);
+    auto promoter = Supervisor(*m_slot, m_cause);
 
     for (auto condAlg : node.getProducers())
       condAlg->accept(promoter);
@@ -105,11 +105,11 @@ namespace concurrency {
 
       m_slot->controlFlowState[node.getNodeIndex()] = decision;
 
-      auto promoter = DataReadyPromoter(*m_slot);
+      auto promoter = DataReadyPromoter(*m_slot, m_cause);
       for ( auto consumer : node.getConsumerNodes() )
         consumer->accept(promoter);
 
-      auto vis = concurrency::Supervisor( *m_slot );
+      auto vis = concurrency::Supervisor(*m_slot, m_cause);
       for ( auto p : node.getParentDecisionHubs() )
         p->accept(vis);
 
@@ -201,7 +201,7 @@ namespace concurrency {
 
     // Try to promote with CR->DR
     if ( State::CONTROLREADY == state ) {
-      auto promoter = DataReadyPromoter(*m_slot);
+      auto promoter = DataReadyPromoter(*m_slot, m_cause);
       result = promoter.visit(node);
     } else {
       result = true;
@@ -424,7 +424,7 @@ namespace concurrency {
     auto& states = m_slot->algsStates;
     int& decision = m_slot->controlFlowState[node.getNodeIndex()];
 
-    auto dataPromoter = DataReadyPromoter(*m_slot);
+    auto dataPromoter = DataReadyPromoter(*m_slot, m_cause);
 
     if (State::INITIAL == states[node.getAlgoIndex()]) {
       states.updateState(node.getAlgoIndex(), State::CONTROLREADY);

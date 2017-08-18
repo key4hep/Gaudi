@@ -8,9 +8,6 @@
 #include "GaudiKernel/Service.h"
 #include "GaudiKernel/IAlgResourcePool.h"
 
-#include <string>
-
-class EventSlot;
 
 /** @class PrecedenceSvc PrecedenceSvc.h GaudiHive/PrecedenceSvc.h
   *
@@ -36,14 +33,13 @@ public:
   StatusCode finalize() override;
 
   /// Infer the precedence effect caused by an execution flow event
-  StatusCode iterate(EventSlot&) override;
-  StatusCode iterate(EventSlot&, const std::string&) override;
-
-  /// Check if the root CF decision is resolved
-  bool CFRulesResolved(EventSlot&) const override;
+  StatusCode iterate(EventSlot&, const Cause&) override;
 
   /// Simulate execution flow
   StatusCode simulate(EventSlot&) const override;
+
+  /// Check if the root CF decision is resolved
+  bool CFRulesResolved(EventSlot&) const override;
 
   /// Get priority of an algorithm
   uint getPriority(const std::string& name) const override {

@@ -39,6 +39,13 @@ namespace boost {
   typedef graph_traits<ExecPlan>::vertex_descriptor AlgoVertex;
 }
 
+struct Cause {
+  enum class source {Root, Task};
+
+  source m_source;
+  std::string m_sourceName;
+};
+
 namespace concurrency {
 
   typedef AlgsExecutionStates::State State;

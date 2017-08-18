@@ -6,6 +6,7 @@
 #include <string>
 
 class EventSlot;
+struct Cause;
 
 //-----------------------------------------------------------------------------
 
@@ -19,6 +20,7 @@ class EventSlot;
 
 //-----------------------------------------------------------------------------
 
+
 class GAUDI_API  IPrecedenceSvc : virtual public IInterface {
 
 public:
@@ -27,14 +29,13 @@ public:
   DeclareInterfaceID(IPrecedenceSvc,1,0);
 
   /// Infer the precedence effect caused by an execution flow event
-  virtual StatusCode iterate(EventSlot&) = 0;
-  virtual StatusCode iterate(EventSlot&, const std::string&) = 0;
-
-  /// Check if control flow rules are resolved
-  virtual bool CFRulesResolved(EventSlot&) const = 0;
+  virtual StatusCode iterate(EventSlot&, const Cause&) = 0;
 
   /// Simulate execution flow
   virtual StatusCode simulate(EventSlot&) const = 0;
+
+  /// Check if control flow rules are resolved
+  virtual bool CFRulesResolved(EventSlot&) const = 0;
 
   /// Get task priority
   virtual uint getPriority(const std::string&) const = 0;
