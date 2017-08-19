@@ -368,8 +368,6 @@ StatusCode AvalancheSchedulerSvc::finalize() {
     return StatusCode::FAILURE;
   }
 
-  //m_precSvc->dumpPrecedenceTrace();
-
   return sc;
 }
 //---------------------------------------------------------------------------

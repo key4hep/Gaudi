@@ -63,7 +63,9 @@ private:
   /// the graph of precedence rules
   concurrency::PrecedenceRulesGraph* m_PRGraph=nullptr;
   Gaudi::Property<std::string> m_mode{this, "TaskPriorityRule", "",
-                                      "Task avalanche induction strategy"};
+                                      "Task avalanche induction strategy."};
+  Gaudi::Property<std::string> m_dumpPrecTraceFile{this, "PrecedenceTraceFile", "",
+                             "File name to dump the task precedence trace to."};
   /// A shortcut to the algorithm resource pool
   SmartIF<IAlgResourcePool> m_algResourcePool;
 

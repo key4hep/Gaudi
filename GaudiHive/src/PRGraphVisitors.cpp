@@ -31,8 +31,13 @@ namespace concurrency {
       if (!result) break; // skip checking other inputs if this input was not produced yet
     }
 
-    if (result)
+    if (result) {
       m_slot->algsStates.updateState( node.getAlgoIndex(), State::DATAREADY ).ignore();
+
+      auto sourceNode = (m_cause.m_source == Cause::source::Task) ?
+          node.m_graph->getAlgorithmNode(m_cause.m_sourceName) : nullptr;
+      node.m_graph->addEdgeToExecutionPlan(sourceNode, &node);
+    }
 
     // return true only if an algorithm is promoted to DR
     return result;

@@ -182,5 +182,9 @@ void PrecedenceSvc::dumpPrecedenceTrace() const {
 // Finalize
 // ============================================================================
 StatusCode PrecedenceSvc::finalize() {
+
+  if (!m_dumpPrecTraceFile.empty())
+    dumpPrecedenceTrace();
+
   return Service::finalize();
 }
