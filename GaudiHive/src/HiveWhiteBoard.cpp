@@ -93,6 +93,9 @@ namespace {
     template <typename T, typename Ret, typename Arg>
     struct arg_helper<Ret(T::*)(Arg) const>
     { using type = Arg; };
+
+    // given a unary lambda whose argument is of type Arg_t,
+    // argument_t<lambda> will be equal to Arg_t
     template <typename lambda>
     using argument_t = typename arg_helper<lambda>::type;
   }
