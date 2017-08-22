@@ -14,7 +14,6 @@
 
 // fwk includes
 #include "AlgsExecutionStates.h"
-#include "EventSlot.h"
 #include "IGraphVisitor.h"
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/CommonMessaging.h"
