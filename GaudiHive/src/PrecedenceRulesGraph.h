@@ -11,6 +11,7 @@
 
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/graphml.hpp>
+#include <boost/filesystem.hpp>
 
 // fwk includes
 #include "AlgsExecutionStates.h"
@@ -354,7 +355,7 @@ public:
     /// Print out control flow of Algorithms and Sequences
     std::string dumpControlFlow() const;
     /// dump to file encountered execution plan
-    void dumpExecutionPlan();
+    void dumpExecutionPlan(const boost::filesystem::path&);
     /// set cause-effect connection between two algorithms in the execution plan
     void addEdgeToExecutionPlan(const AlgorithmNode* u, const AlgorithmNode* v);
     ///

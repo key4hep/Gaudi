@@ -49,7 +49,7 @@ public:
   virtual const std::string printState(EventSlot&) const = 0;
 
   /// Dump precedence trace
-  virtual void dumpPrecedenceTrace() const = 0;
+  virtual void dumpPrecedenceTrace(EventSlot&) const = 0;
 
 };
 

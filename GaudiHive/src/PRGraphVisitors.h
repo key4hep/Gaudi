@@ -10,8 +10,8 @@ namespace concurrency {
   class DataReadyPromoter : public IGraphVisitor {
     public:
       /// Constructor
-      DataReadyPromoter(EventSlot& slot, const Cause& cause) :
-        m_slot(&slot), m_cause(cause) {};
+      DataReadyPromoter(EventSlot& slot, const Cause& cause, bool ifTrace = false) :
+        m_slot(&slot), m_cause(cause), m_trace(ifTrace) {};
 
       using IGraphVisitor::visit;
       using IGraphVisitor::visitEnter;
@@ -30,13 +30,14 @@ namespace concurrency {
 
       EventSlot* m_slot;
       Cause m_cause;
+      bool m_trace;
   };
 
   class DecisionUpdater : public IGraphVisitor {
     public:
       /// Constructor
-      DecisionUpdater(EventSlot& slot, const Cause& cause) :
-        m_slot(&slot), m_cause(cause) {};
+      DecisionUpdater(EventSlot& slot, const Cause& cause, bool ifTrace = false) :
+        m_slot(&slot), m_cause(cause), m_trace(ifTrace) {};
 
       using IGraphVisitor::visit;
 
@@ -44,14 +45,15 @@ namespace concurrency {
 
       EventSlot* m_slot;
       Cause m_cause;
+      bool m_trace;
   };
 
 
   class Supervisor : public IGraphVisitor {
     public:
       /// Constructor
-	  Supervisor(EventSlot& slot, const Cause& cause) :
-        m_slot(&slot), m_cause(cause) {};
+	  Supervisor(EventSlot& slot, const Cause& cause, bool ifTrace = false) :
+        m_slot(&slot), m_cause(cause), m_trace(ifTrace) {};
 
       using IGraphVisitor::visit;
       using IGraphVisitor::visitEnter;
@@ -66,6 +68,7 @@ namespace concurrency {
 
       EventSlot* m_slot;
       Cause m_cause;
+      bool m_trace;
   };
 
   class RankerByProductConsumption : public IGraphVisitor {

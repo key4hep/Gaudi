@@ -573,10 +573,10 @@ namespace concurrency
 
   //---------------------------------------------------------------------------
 
-  void PrecedenceRulesGraph::dumpExecutionPlan()
+  void PrecedenceRulesGraph::dumpExecutionPlan(const boost::filesystem::path& fileName)
   {
-    std::ofstream myfile;
-    myfile.open( "ExecutionPlan.graphml", std::ios::app );
+    boost::filesystem::ofstream myfile;
+    myfile.open( fileName, std::ios::app );
 
     boost::dynamic_properties dp;
     dp.property( "name", boost::get( &boost::AlgoNodeStruct::m_name, m_ExecPlan ) );

@@ -8,7 +8,6 @@
 #define ON_DEBUG if (msgLevel(MSG::DEBUG))
 #define ON_VERBOSE if (msgLevel(MSG::VERBOSE))
 
-
 DECLARE_SERVICE_FACTORY(PrecedenceSvc)
 
 // ============================================================================
@@ -68,10 +67,21 @@ StatusCode PrecedenceSvc::initialize() {
     m_PRGraph->rankAlgorithms(ranker);
   } else if (!m_mode.empty()) {
     error() << "Requested prioritization rule '" << m_mode << "' is unknown." << endmsg;
-    sc = StatusCode::FAILURE;
+    return StatusCode::FAILURE;
   }
 
   ON_DEBUG debug() << m_PRGraph->dumpDataFlow() << endmsg;
+
+  ON_DEBUG {
+    if (m_dumpPrecTrace) { // prepare a directory to dump precedence analysis files to
+      if(!boost::filesystem::create_directory(m_dumpDirName)) {
+        error() << "Could not create directory " << m_dumpDirName << "required "
+                   "for task precedence tracing" << endmsg;
+        return StatusCode::FAILURE;
+      }
+    }
+  }
+
   info() << "PrecedenceSvc initialized successfully" << endmsg;
 
   return sc;
@@ -80,16 +90,21 @@ StatusCode PrecedenceSvc::initialize() {
 // ============================================================================
 StatusCode PrecedenceSvc::iterate(EventSlot& slot, const Cause& cause) {
 
+  bool ifTrace = false;
+  ON_DEBUG if (m_dumpPrecTrace) ifTrace = true; // enable precedence analysis
+
   if (Cause::source::Task == cause.m_source) {
     ON_VERBOSE verbose() << "Triggering bottom-up traversal at node '"
                          << cause.m_sourceName <<"'" << endmsg;
-    auto visitor = concurrency::DecisionUpdater(slot,cause);
+    auto visitor = concurrency::DecisionUpdater(slot,cause,ifTrace);
     m_PRGraph->getAlgorithmNode(cause.m_sourceName)->accept(visitor);
   } else {
     ON_VERBOSE verbose() << "Triggering top-down traversal at the root node" << endmsg;
-    auto visitor = concurrency::Supervisor(slot,cause);
+    auto visitor = concurrency::Supervisor(slot,cause,ifTrace);
     m_PRGraph->getHeadNode()->accept(visitor);
   }
+
+  ON_DEBUG if (m_dumpPrecTrace) if(CFRulesResolved(slot)) dumpPrecedenceTrace(slot);
 
   return StatusCode::SUCCESS;
 }
@@ -174,17 +189,26 @@ const std::string PrecedenceSvc::printState(EventSlot& slot) const {
 }
 
 // ============================================================================
-void PrecedenceSvc::dumpPrecedenceTrace() const {
-  m_PRGraph->dumpExecutionPlan();
+void PrecedenceSvc::dumpPrecedenceTrace(EventSlot& slot) const {
+
+  std::string fileName;
+  if (m_dumpPrecTraceFile.empty()) {
+    const auto& eventID = slot.eventContext->eventID();
+    fileName = "trace.evt-" + std::to_string(eventID.event_number()) + "." +
+               "run-" + std::to_string(eventID.run_number()) + ".graphml";
+  } else {
+    fileName = m_dumpPrecTraceFile;
+  }
+
+  boost::filesystem::path pth{m_dumpDirName};
+  pth.append(fileName);
+
+  m_PRGraph->dumpExecutionPlan(pth);
 }
 
 // ============================================================================
 // Finalize
 // ============================================================================
 StatusCode PrecedenceSvc::finalize() {
-
-  if (!m_dumpPrecTraceFile.empty())
-    dumpPrecedenceTrace();
-
   return Service::finalize();
 }

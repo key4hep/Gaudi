@@ -8,6 +8,8 @@
 #include "GaudiKernel/Service.h"
 #include "GaudiKernel/IAlgResourcePool.h"
 
+#include <boost/filesystem.hpp>
+
 
 /** @class PrecedenceSvc PrecedenceSvc.h GaudiHive/PrecedenceSvc.h
   *
@@ -56,18 +58,28 @@ public:
   void dumpDataFlow() const override;
   const std::string printState(EventSlot&) const override;
 
-  /// Dump precedence trace
-  void dumpPrecedenceTrace() const override;
+  /// Dump precedence trace (the service must be in precedence tracing mode)
+  void dumpPrecedenceTrace(EventSlot&) const override;
 
 private:
-  /// the graph of precedence rules
-  concurrency::PrecedenceRulesGraph* m_PRGraph=nullptr;
-  Gaudi::Property<std::string> m_mode{this, "TaskPriorityRule", "",
-                                      "Task avalanche induction strategy."};
-  Gaudi::Property<std::string> m_dumpPrecTraceFile{this, "PrecedenceTraceFile", "",
-                             "File name to dump the task precedence trace to."};
   /// A shortcut to the algorithm resource pool
   SmartIF<IAlgResourcePool> m_algResourcePool;
+  /// A shortcut to graph of precedence rules
+  concurrency::PrecedenceRulesGraph* m_PRGraph=nullptr;
+  /// Scheduling strategy
+  Gaudi::Property<std::string> m_mode{this, "TaskPriorityRule", "",
+                                      "Task avalanche induction strategy."};
+  /// Precedence analysis facilities
+  boost::filesystem::path m_dumpDirName{boost::filesystem::unique_path(
+                            boost::filesystem::path("precedence.analysis.%%%%"))};
+  Gaudi::Property<bool> m_dumpPrecTrace{this, "DumpPrecedenceTrace", false,
+                                "Dump task precedence traces for each event."
+                                "The service must be in DEBUG mode for this switch "
+                                "to have effect."};
+  Gaudi::Property<std::string> m_dumpPrecTraceFile{this, "PrecedenceTraceFile", "",
+           "Override default name of the GRAPHML trace file. NOTE: if more than "
+           "1 event is processed, the setting forces creation of a single file "
+           "with cumulative precedence trace."};
 
 };
 

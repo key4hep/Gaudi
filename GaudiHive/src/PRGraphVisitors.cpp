@@ -34,9 +34,11 @@ namespace concurrency {
     if (result) {
       m_slot->algsStates.updateState( node.getAlgoIndex(), State::DATAREADY ).ignore();
 
-      auto sourceNode = (m_cause.m_source == Cause::source::Task) ?
-          node.m_graph->getAlgorithmNode(m_cause.m_sourceName) : nullptr;
-      node.m_graph->addEdgeToExecutionPlan(sourceNode, &node);
+      if (m_trace) {
+        auto sourceNode = (m_cause.m_source == Cause::source::Task) ?
+                node.m_graph->getAlgorithmNode(m_cause.m_sourceName) : nullptr;
+        node.m_graph->addEdgeToExecutionPlan(sourceNode, &node);
+      }
     }
 
     // return true only if an algorithm is promoted to DR
@@ -110,11 +112,11 @@ namespace concurrency {
 
       m_slot->controlFlowState[node.getNodeIndex()] = decision;
 
-      auto promoter = DataReadyPromoter(*m_slot, m_cause);
+      auto promoter = DataReadyPromoter(*m_slot, m_cause, m_trace);
       for ( auto consumer : node.getConsumerNodes() )
         consumer->accept(promoter);
 
-      auto vis = concurrency::Supervisor(*m_slot, m_cause);
+      auto vis = concurrency::Supervisor(*m_slot, m_cause, m_trace);
       for ( auto p : node.getParentDecisionHubs() )
         p->accept(vis);
 
@@ -206,7 +208,7 @@ namespace concurrency {
 
     // Try to promote with CR->DR
     if ( State::CONTROLREADY == state ) {
-      auto promoter = DataReadyPromoter(*m_slot, m_cause);
+      auto promoter = DataReadyPromoter(*m_slot, m_cause, m_trace);
       result = promoter.visit(node);
     } else {
       result = true;
