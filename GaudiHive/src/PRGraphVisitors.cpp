@@ -248,20 +248,19 @@ namespace concurrency {
     boost::ExecPlan execPlan;
 
     boost::dynamic_properties dp;
-    dp.property("name", boost::get(&boost::AlgoNodeStruct::m_name, execPlan));
-    dp.property("index", boost::get(&boost::AlgoNodeStruct::m_index, execPlan));
-    dp.property("dataRank", boost::get(&boost::AlgoNodeStruct::m_rank, execPlan));
-    dp.property("runtime", boost::get(&boost::AlgoNodeStruct::m_runtime, execPlan));
+    dp.property("name", boost::get(&boost::AlgoProps::m_name, execPlan));
+    dp.property("index", boost::get(&boost::AlgoProps::m_index, execPlan));
+    dp.property("dataRank", boost::get(&boost::AlgoProps::m_rank, execPlan));
+    dp.property("runtime", boost::get(&boost::AlgoProps::m_runtime, execPlan));
 
     boost::read_graphml(myfile, execPlan, dp);
 
     typedef boost::graph_traits<boost::ExecPlan>::vertex_iterator itV;
     std::pair<itV, itV> vp;
-    typedef boost::graph_traits<boost::ExecPlan>::vertex_descriptor AlgoVertex;
 
     for (vp = boost::vertices(execPlan); vp.first != vp.second; ++vp.first) {
-      AlgoVertex v = *vp.first;
-      auto index = boost::get(&boost::AlgoNodeStruct::m_name, execPlan);
+      boost::AlgoVertex v = *vp.first;
+      auto index = boost::get(&boost::AlgoProps::m_name, execPlan);
       if (index[v] == node.getNodeName()) {
         runThroughAdjacents(v,execPlan);
         float rank = m_nodesSucceeded;
@@ -296,22 +295,21 @@ namespace concurrency {
     boost::ExecPlan execPlan;
 
     boost::dynamic_properties dp;
-    dp.property("name", boost::get(&boost::AlgoNodeStruct::m_name, execPlan));
-    dp.property("index", boost::get(&boost::AlgoNodeStruct::m_index, execPlan));
-    dp.property("dataRank", boost::get(&boost::AlgoNodeStruct::m_rank, execPlan));
-    dp.property("runtime", boost::get(&boost::AlgoNodeStruct::m_runtime, execPlan));
+    dp.property("name", boost::get(&boost::AlgoProps::m_name, execPlan));
+    dp.property("index", boost::get(&boost::AlgoProps::m_index, execPlan));
+    dp.property("dataRank", boost::get(&boost::AlgoProps::m_rank, execPlan));
+    dp.property("runtime", boost::get(&boost::AlgoProps::m_runtime, execPlan));
 
     boost::read_graphml(myfile, execPlan, dp);
 
     typedef boost::graph_traits<boost::ExecPlan>::vertex_iterator itV;
     std::pair<itV, itV> vp;
-    typedef boost::graph_traits<boost::ExecPlan>::vertex_descriptor AlgoVertex;
 
     for (vp = boost::vertices(execPlan); vp.first != vp.second; ++vp.first) {
-      AlgoVertex v = *vp.first;
-      auto index = boost::get(&boost::AlgoNodeStruct::m_name, execPlan);
+      boost::AlgoVertex v = *vp.first;
+      auto index = boost::get(&boost::AlgoProps::m_name, execPlan);
       if (index[v] == node.getNodeName()) {
-        auto index_runtime = boost::get(&boost::AlgoNodeStruct::m_runtime, execPlan);
+        auto index_runtime = boost::get(&boost::AlgoProps::m_runtime, execPlan);
         float rank = index_runtime[v];
         node.setRank(rank);
         //std::cout << "Rank of " << index[v] << " is " << rank << std::endl;
@@ -329,20 +327,19 @@ namespace concurrency {
     boost::ExecPlan execPlan;
 
     boost::dynamic_properties dp;
-    dp.property("name", boost::get(&boost::AlgoNodeStruct::m_name, execPlan));
-    dp.property("Eccentricity", boost::get(&boost::AlgoNodeStruct::m_eccentricity, execPlan));
+    dp.property("name", boost::get(&boost::AlgoProps::m_name, execPlan));
+    dp.property("Eccentricity", boost::get(&boost::AlgoProps::m_eccentricity, execPlan));
 
     boost::read_graphml(myfile, execPlan, dp);
 
     typedef boost::graph_traits<boost::ExecPlan>::vertex_iterator itV;
     std::pair<itV, itV> vp;
-    typedef boost::graph_traits<boost::ExecPlan>::vertex_descriptor AlgoVertex;
 
     for (vp = boost::vertices(execPlan); vp.first != vp.second; ++vp.first) {
-      AlgoVertex v = *vp.first;
-      auto index = boost::get(&boost::AlgoNodeStruct::m_name, execPlan);
+      boost::AlgoVertex v = *vp.first;
+      auto index = boost::get(&boost::AlgoProps::m_name, execPlan);
       if (index[v] == node.getNodeName()) {
-        auto index_eccentricity = boost::get(&boost::AlgoNodeStruct::m_eccentricity, execPlan);
+        auto index_eccentricity = boost::get(&boost::AlgoProps::m_eccentricity, execPlan);
         float rank = index_eccentricity[v];
         node.setRank(rank);
         //std::cout << "Rank of " << index[v] << " is " << rank << std::endl;

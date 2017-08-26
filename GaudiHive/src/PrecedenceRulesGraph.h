@@ -24,18 +24,18 @@
 
 namespace boost {
 
-  struct AlgoNodeStruct {
-    AlgoNodeStruct () {}
-    AlgoNodeStruct (const std::string& name, const int index = -1, const int& rank = -1, const double& runtime = -1, const double& eccentricity = -1.0) :
-      m_name(name), m_index(index), m_rank(rank), m_runtime(runtime), m_eccentricity(eccentricity) {}
+  struct AlgoProps {
+    AlgoProps () {}
+    AlgoProps (const std::string& name, int index, int rank, double runtime) :
+      m_name(name), m_index(index), m_rank(rank), m_runtime(runtime) {}
     std::string m_name;
-    int m_index;
-    int m_rank;
-    double m_runtime;
-    double m_eccentricity;
+    int m_index{-1};
+    int m_rank{-1};
+    double m_runtime{-1.0};
+    int m_eccentricity{-1};
   };
 
-  typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::bidirectionalS, AlgoNodeStruct> ExecPlan;
+  typedef adjacency_list<vecS, vecS, bidirectionalS, AlgoProps> ExecPlan;
   typedef graph_traits<ExecPlan>::vertex_descriptor AlgoVertex;
 }
 

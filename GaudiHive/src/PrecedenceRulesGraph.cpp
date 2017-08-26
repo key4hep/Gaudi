@@ -579,10 +579,10 @@ namespace concurrency
     myfile.open( fileName, std::ios::app );
 
     boost::dynamic_properties dp;
-    dp.property( "name", boost::get( &boost::AlgoNodeStruct::m_name, m_ExecPlan ) );
-    dp.property( "index", boost::get( &boost::AlgoNodeStruct::m_index, m_ExecPlan ) );
-    dp.property( "rank", boost::get( &boost::AlgoNodeStruct::m_rank, m_ExecPlan ) );
-    dp.property( "runtime", boost::get( &boost::AlgoNodeStruct::m_runtime, m_ExecPlan ) );
+    dp.property( "name", boost::get( &boost::AlgoProps::m_name, m_ExecPlan ) );
+    dp.property( "index", boost::get( &boost::AlgoProps::m_index, m_ExecPlan ) );
+    dp.property( "rank", boost::get( &boost::AlgoProps::m_rank, m_ExecPlan ) );
+    dp.property( "runtime", boost::get( &boost::AlgoProps::m_runtime, m_ExecPlan ) );
 
     boost::write_graphml( myfile, m_ExecPlan, dp );
 
@@ -599,7 +599,7 @@ namespace concurrency
       if ( itT != m_exec_plan_map.end() ) {
         source = itT->second;
       } else {
-        source                   = boost::add_vertex( boost::AlgoNodeStruct( "ENTRY", -999, -999, 0 ), m_ExecPlan );
+        source                   = boost::add_vertex( boost::AlgoProps( "ENTRY", -999, -999, 0 ), m_ExecPlan );
         m_exec_plan_map["ENTRY"] = source;
       }
     } else {
@@ -620,7 +620,7 @@ namespace concurrency
             runtime = 1.;
           }
         }
-        source = boost::add_vertex( boost::AlgoNodeStruct( u->getNodeName(), u->getAlgoIndex(), u->getRank(), runtime ),
+        source = boost::add_vertex( boost::AlgoProps( u->getNodeName(), u->getAlgoIndex(), u->getRank(), runtime ),
                                     m_ExecPlan );
         m_exec_plan_map[u->getNodeName()] = source;
       }
@@ -644,7 +644,7 @@ namespace concurrency
           runtime = 1.;
         }
       }
-      target = boost::add_vertex( boost::AlgoNodeStruct( v->getNodeName(), v->getAlgoIndex(), v->getRank(), runtime ),
+      target = boost::add_vertex( boost::AlgoProps( v->getNodeName(), v->getAlgoIndex(), v->getRank(), runtime ),
                                   m_ExecPlan );
       m_exec_plan_map[v->getNodeName()] = target;
     }
