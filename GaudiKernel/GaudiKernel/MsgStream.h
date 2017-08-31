@@ -109,11 +109,11 @@ public:
     m_level = MSG::Level(level);
   }
   /// Retrieve output level
-  MSG::Level level()   {
+  MSG::Level level() const {
     return m_level;
   }
   /// Retrieve current stream output level
-  MSG::Level currentLevel()   {
+  MSG::Level currentLevel() const {
     return m_currLevel;
   }
   /// Activate MsgStream
