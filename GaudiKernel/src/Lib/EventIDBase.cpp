@@ -27,7 +27,7 @@ EventIDBase::EventIDBase(number_type run_number,
   m_event_number         (event_number),
   m_time_stamp           (time_stamp),
   m_time_stamp_ns_offset (time_stamp_ns_offset),
-  m_lumiBlock            (lumi_block),
+  m_lumi_block           (lumi_block),
   m_bunch_crossing_id    (bunch_crossing_id)
 {
   if (m_run_number != UNDEFNUM && m_event_number != UNDEFEVT) {
@@ -41,8 +41,12 @@ EventIDBase::EventIDBase(number_type run_number,
     }
   }
 
-  if (m_lumiBlock != UNDEFNUM && m_event_number != UNDEFEVT) {
+  if (m_lumi_block != UNDEFNUM && m_event_number != UNDEFEVT) {
     setLE();
+  }
+
+  if (m_run_number != UNDEFNUM && m_lumi_block != UNDEFNUM) {
+    setRL();
   }
 
 }
@@ -63,6 +67,11 @@ EventIDBase::isTimeStamp() const {
 bool
 EventIDBase::isLumiEvent() const {
   return ( m_type & LumiEvent );
+}
+
+bool
+EventIDBase::isRunLumi() const {
+  return ( m_type & RunLumi );
 }
 
 bool
