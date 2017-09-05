@@ -45,12 +45,12 @@ public:
 
   /// Get priority of an algorithm
   uint getPriority(const std::string& name) const override {
-    return (int) m_PRGraph->getAlgorithmNode(name)->getRank();
+    return (int) m_PRGraph.getAlgorithmNode(name)->getRank();
   }
 
   /// Check if a task is CPU-blocking
   bool isBlocking(const std::string& name) const override {
-    return m_PRGraph->getAlgorithmNode(name)->isIOBound();
+    return m_PRGraph.getAlgorithmNode(name)->isIOBound();
   }
 
   /// Dump precedence rules
@@ -59,13 +59,17 @@ public:
   const std::string printState(EventSlot&) const override;
 
   /// Dump precedence trace (the service must be in precedence tracing mode)
-  void dumpPrecedenceTrace(EventSlot&) const override;
+  void dumpPrecedenceTrace(EventSlot&) override;
+
+private:
+  StatusCode assembleCFRules(Algorithm*, const std::string&,
+                             unsigned int recursionDepth = 0);
 
 private:
   /// A shortcut to the algorithm resource pool
   SmartIF<IAlgResourcePool> m_algResourcePool;
-  /// A shortcut to graph of precedence rules
-  concurrency::PrecedenceRulesGraph* m_PRGraph=nullptr;
+  /// Graph of precedence rules
+  concurrency::PrecedenceRulesGraph m_PRGraph{"PrecedenceRulesGraph", serviceLocator()};
   /// Scheduling strategy
   Gaudi::Property<std::string> m_mode{this, "TaskPriorityRule", "",
                                       "Task avalanche induction strategy."};

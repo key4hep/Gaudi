@@ -4,6 +4,7 @@
 #include "AlgResourcePool.h"
 
 #include "GaudiKernel/SvcFactory.h"
+#include "GaudiKernel/Algorithm.h"
 
 #define ON_DEBUG if (msgLevel(MSG::DEBUG))
 #define ON_VERBOSE if (msgLevel(MSG::VERBOSE))
@@ -30,47 +31,54 @@ StatusCode PrecedenceSvc::initialize() {
   }
 
   // Get the algo resource pool
-  m_algResourcePool = serviceLocator()->service( "AlgResourcePool" );
-  if (!m_algResourcePool.isValid()) {
-    fatal() << "Error retrieving AlgoResourcePool" << endmsg;
-    return StatusCode::FAILURE;
-  }
-  const AlgResourcePool* algPool = dynamic_cast<const AlgResourcePool*>(m_algResourcePool.get());
-  m_PRGraph = algPool->getPRGraph();
+  m_algResourcePool = serviceLocator()->service("AlgResourcePool");
+   if (!m_algResourcePool.isValid()) {
+     fatal() << "Error retrieving AlgoResourcePool" << endmsg;
+     return StatusCode::FAILURE;
+   }
 
-  if (!m_PRGraph) {
-    fatal() << "No graph supplied, the service failed to initialize" << endmsg;
-    return StatusCode::FAILURE;
+  // create the root CF node
+  m_PRGraph.addHeadNode("RootDecisionHub",true,false,true,true);
+  // assemble the CF rules
+  for (const auto& ialgoPtr : m_algResourcePool->getTopAlgList()) {
+    auto algorithm = dynamic_cast<Algorithm*> (ialgoPtr);
+    if (!algorithm) fatal() << "Conversion from IAlgorithm to Algorithm failed" << endmsg;
+    sc = assembleCFRules(algorithm, "RootDecisionHub");
+    if (sc.isFailure()) {
+      fatal() << "Could not decode the TopAlg list when assembling the CF rules" << endmsg;
+      return sc;
+    }
   }
 
-  sc = m_PRGraph->buildAugmentedDataDependenciesRealm();
+
+  sc = m_PRGraph.buildAugmentedDataDependenciesRealm();
   if (sc.isFailure()) {
-    fatal() << "Could not assemble the data dependency realm." << endmsg;
+    fatal() << "Could not assemble the data dependency realm" << endmsg;
     return sc;
   }
 
   // Rank algorithms if a prioritization rule is supplied
   if (m_mode == "PCE") {
     auto ranker = concurrency::RankerByProductConsumption();
-    m_PRGraph->rankAlgorithms(ranker);
+    m_PRGraph.rankAlgorithms(ranker);
   } else if (m_mode == "COD") {
     auto ranker = concurrency::RankerByCummulativeOutDegree();
-    m_PRGraph->rankAlgorithms(ranker);
+    m_PRGraph.rankAlgorithms(ranker);
   } else if (m_mode == "E") {
     auto ranker = concurrency::RankerByEccentricity();
-    m_PRGraph->rankAlgorithms(ranker);
+    m_PRGraph.rankAlgorithms(ranker);
   } else if (m_mode == "T") {
     auto ranker = concurrency::RankerByTiming();
-    m_PRGraph->rankAlgorithms(ranker);
+    m_PRGraph.rankAlgorithms(ranker);
   } else if (m_mode == "DRE") {
     auto ranker = concurrency::RankerByDataRealmEccentricity();
-    m_PRGraph->rankAlgorithms(ranker);
+    m_PRGraph.rankAlgorithms(ranker);
   } else if (!m_mode.empty()) {
-    error() << "Requested prioritization rule '" << m_mode << "' is unknown." << endmsg;
+    error() << "Requested prioritization rule '" << m_mode << "' is unknown" << endmsg;
     return StatusCode::FAILURE;
   }
 
-  ON_DEBUG debug() << m_PRGraph->dumpDataFlow() << endmsg;
+  ON_DEBUG debug() << m_PRGraph.dumpDataFlow() << endmsg;
 
   ON_DEBUG {
     if (m_dumpPrecTrace) { // prepare a directory to dump precedence analysis files to
@@ -88,6 +96,72 @@ StatusCode PrecedenceSvc::initialize() {
 }
 
 // ============================================================================
+StatusCode PrecedenceSvc::assembleCFRules(Algorithm* algo,
+                                          const std::string& parentName,
+                                          unsigned int recursionDepth) {
+  StatusCode sc = StatusCode::SUCCESS;
+
+    bool isGaudiSequencer(false);
+    bool isAthSequencer(false);
+
+    if (algo->isSequence()) {
+      if (algo->hasProperty("ShortCircuit"))
+        isGaudiSequencer = true;
+      else if (algo->hasProperty("StopOverride"))
+        isAthSequencer = true;
+    }
+
+    std::vector<Algorithm*>* subAlgorithms = algo->subAlgorithms();
+    if ( //we only want to add basic algorithms -> have no subAlgs
+         // and exclude the case of empty sequencers
+         (subAlgorithms->empty() && !(isGaudiSequencer || isAthSequencer))) {
+
+      ON_DEBUG debug() << std::string(recursionDepth, ' ') << algo->name()
+                       << " is not a sequencer. Appending it" << endmsg;
+      sc = m_PRGraph.addAlgorithmNode(algo, parentName, false, false);
+      return sc;
+    }
+
+    // Recursively unroll
+    ++recursionDepth;
+    ON_DEBUG debug() << std::string(recursionDepth, ' ') << algo->name()
+                     << " is a sequencer. Flattening it." << endmsg;
+    bool modeOR = false;
+    bool allPass = false;
+    bool isLazy = false;
+    bool isSequential = false;
+
+    if (isGaudiSequencer) {
+      modeOR  = (algo->getProperty("ModeOR").toString() == "True")? true : false;
+      allPass = (algo->getProperty("IgnoreFilterPassed").toString() == "True")? true : false;
+      isLazy  = (algo->getProperty("ShortCircuit").toString() == "True")? true : false;
+      if (allPass) isLazy = false; // standard GaudiSequencer behavior on all pass is to execute everything
+      isSequential = (algo->hasProperty("Sequential") &&
+                     (algo->getProperty("Sequential").toString() == "True"));
+    } else if (isAthSequencer) {
+      modeOR  = (algo->getProperty("ModeOR").toString() == "True")? true : false;
+      allPass = (algo->getProperty("IgnoreFilterPassed").toString() == "True")? true : false;
+      isLazy = (algo->getProperty("StopOverride").toString() == "True")? false : true;
+      isSequential = (algo->hasProperty("Sequential") &&
+                     (algo->getProperty("Sequential").toString() == "True"));
+    }
+    sc = m_PRGraph.addDecisionHubNode(algo, parentName, !isSequential, isLazy, modeOR, allPass);
+    if (sc.isFailure()) {
+      error() << "Failed to add DecisionHub " << algo->name() << " to graph of precedence rules" << endmsg;
+      return sc;
+    }
+
+    for (Algorithm* subalgo : *subAlgorithms) {
+      sc = assembleCFRules(subalgo,algo->name(),recursionDepth);
+      if (sc.isFailure()) {
+        error() << "Algorithm " << subalgo->name() << " could not be flattened" << endmsg;
+        return sc;
+      }
+    }
+    return sc;
+}
+
+// ============================================================================
 StatusCode PrecedenceSvc::iterate(EventSlot& slot, const Cause& cause) {
 
   bool ifTrace = false;
@@ -97,11 +171,11 @@ StatusCode PrecedenceSvc::iterate(EventSlot& slot, const Cause& cause) {
     ON_VERBOSE verbose() << "Triggering bottom-up traversal at node '"
                          << cause.m_sourceName <<"'" << endmsg;
     auto visitor = concurrency::DecisionUpdater(slot,cause,ifTrace);
-    m_PRGraph->getAlgorithmNode(cause.m_sourceName)->accept(visitor);
+    m_PRGraph.getAlgorithmNode(cause.m_sourceName)->accept(visitor);
   } else {
     ON_VERBOSE verbose() << "Triggering top-down traversal at the root node" << endmsg;
     auto visitor = concurrency::Supervisor(slot,cause,ifTrace);
-    m_PRGraph->getHeadNode()->accept(visitor);
+    m_PRGraph.getHeadNode()->accept(visitor);
   }
 
   ON_DEBUG if (m_dumpPrecTrace) if(CFRulesResolved(slot)) dumpPrecedenceTrace(slot);
@@ -126,7 +200,7 @@ StatusCode PrecedenceSvc::simulate(EventSlot& slot) const {
     int prevAlgosNum = visitor.m_nodesSucceeded;
     debug() << "  Proceeding with iteration #" << cntr << endmsg;
     prevNodeDecisions = slot.controlFlowState;
-    m_PRGraph->getHeadNode()->accept(visitor);
+    m_PRGraph.getHeadNode()->accept(visitor);
     if ( prevNodeDecisions == nodeDecisions) {
       error() << "  No progress on iteration " << cntr
               << " detected, node decisions are:" << nodeDecisions << endmsg;
@@ -160,7 +234,7 @@ StatusCode PrecedenceSvc::simulate(EventSlot& slot) const {
 
 // ============================================================================
 bool PrecedenceSvc::CFRulesResolved(EventSlot& slot) const {
-  return (-1 != slot.controlFlowState[m_PRGraph->getHeadNode()->getNodeIndex()] ? true : false);
+  return (-1 != slot.controlFlowState[m_PRGraph.getHeadNode()->getNodeIndex()] ? true : false);
 }
 
 // ============================================================================
@@ -169,7 +243,7 @@ void PrecedenceSvc::dumpControlFlow() const {
   info() << std::endl
          << "==================== Control Flow Configuration =================="
          << std::endl << std::endl;
-  info() << m_PRGraph->dumpControlFlow() << endmsg;
+  info() << m_PRGraph.dumpControlFlow() << endmsg;
 
 }
 // ============================================================================
@@ -177,19 +251,19 @@ void PrecedenceSvc::dumpDataFlow() const {
   info() << std::endl
          << "===================== Data Flow Configuration ===================="
          << std::endl;
-  info() << m_PRGraph->dumpDataFlow() << endmsg;
+  info() << m_PRGraph.dumpDataFlow() << endmsg;
 }
 
 // ============================================================================
 const std::string PrecedenceSvc::printState(EventSlot& slot) const {
 
   std::stringstream ss;
-  m_PRGraph->printState(ss, slot.algsStates, slot.controlFlowState, 0);
+  m_PRGraph.printState(ss, slot.algsStates, slot.controlFlowState, 0);
   return ss.str();
 }
 
 // ============================================================================
-void PrecedenceSvc::dumpPrecedenceTrace(EventSlot& slot) const {
+void PrecedenceSvc::dumpPrecedenceTrace(EventSlot& slot) {
 
   std::string fileName;
   if (m_dumpPrecTraceFile.empty()) {
@@ -203,7 +277,7 @@ void PrecedenceSvc::dumpPrecedenceTrace(EventSlot& slot) const {
   boost::filesystem::path pth{m_dumpDirName};
   pth.append(fileName);
 
-  m_PRGraph->dumpExecutionPlan(pth);
+  m_PRGraph.dumpExecutionPlan(pth);
 }
 
 // ============================================================================

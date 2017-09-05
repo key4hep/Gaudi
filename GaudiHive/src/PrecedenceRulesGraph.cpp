@@ -511,7 +511,7 @@ namespace concurrency
     dumpControlFlow(ost,m_headNode,0);
     return ost.str();
   }
-  
+
   void PrecedenceRulesGraph::dumpControlFlow(std::ostringstream& ost,
                                              ControlFlowNode* node,
                                              const int& indent) const {
@@ -529,7 +529,7 @@ namespace concurrency
       }
       const std::vector<ControlFlowNode*>& dth = dn->getDaughters();
       for (std::vector<ControlFlowNode*>::const_iterator itr= dth.begin();
-           itr != dth.end(); ++itr) {      
+           itr != dth.end(); ++itr) {
         dumpControlFlow(ost,*itr,indent+1);
       }
     } else if (an != 0) {
