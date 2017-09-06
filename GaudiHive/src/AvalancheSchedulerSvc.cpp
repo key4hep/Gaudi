@@ -110,16 +110,16 @@ StatusCode AvalancheSchedulerSvc::initialize() {
     fatal() << "Error retrieving AlgoResourcePool" << endmsg;
     return StatusCode::FAILURE;
   }
-  const AlgResourcePool* algPool = dynamic_cast<const AlgResourcePool*>( m_algResourcePool.get() );
-  if ( !algPool ) {
-    fatal() << "Unable to dcast algResourcePool" << endmsg;
-    return StatusCode::FAILURE;
-  }
 
   // Get the algo resource pool
   m_precSvc = serviceLocator()->service( "PrecedenceSvc" );
   if ( !m_precSvc.isValid() ) {
     fatal() << "Error retrieving PrecedenceSvc" << endmsg;
+    return StatusCode::FAILURE;
+  }
+  const PrecedenceSvc* precSvc = dynamic_cast<const PrecedenceSvc*>( m_precSvc.get() );
+  if ( !precSvc ) {
+    fatal() << "Unable to dcast PrecedenceSvc" << endmsg;
     return StatusCode::FAILURE;
   }
 
@@ -243,7 +243,7 @@ StatusCode AvalancheSchedulerSvc::initialize() {
   IAlgorithm* dataLoaderAlg( nullptr );
   for ( IAlgorithm* algo : algos ) {
     const std::string& name   = algo->name();
-    auto index = algPool->getPRGraph()->getAlgorithmNode(name)->getAlgoIndex();
+    auto index = precSvc->getRules()->getAlgorithmNode(name)->getAlgoIndex();
     m_algname_index_map[name] = index;
     m_algname_vect.at(index) = name;
     if (algo->name() == m_useDataLoader) {
@@ -320,7 +320,7 @@ StatusCode AvalancheSchedulerSvc::initialize() {
 
   m_eventSlots.assign( m_maxEventsInFlight,
                        EventSlot( m_algosDependencies, algsNumber,
-                                  algPool->getPRGraph()->getControlFlowNodeCounter(),
+                                  precSvc->getRules()->getControlFlowNodeCounter(),
                                   messageSvc ) );
   std::for_each( m_eventSlots.begin(), m_eventSlots.end(),
                  []( EventSlot& slot ) { slot.complete = true; } );

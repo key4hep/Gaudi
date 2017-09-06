@@ -61,6 +61,9 @@ public:
   /// Dump precedence trace (the service must be in precedence tracing mode)
   void dumpPrecedenceTrace(EventSlot&) override;
 
+  /// Precedence rules accessor
+  const concurrency::PrecedenceRulesGraph* getRules() const {return &m_PRGraph;};
+
 private:
   StatusCode assembleCFRules(Algorithm*, const std::string&,
                              unsigned int recursionDepth = 0);

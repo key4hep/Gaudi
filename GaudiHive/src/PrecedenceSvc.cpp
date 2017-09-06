@@ -37,6 +37,9 @@ StatusCode PrecedenceSvc::initialize() {
      return StatusCode::FAILURE;
    }
 
+  info() << "Assembling CF and DF task precedence rules" << endmsg;
+
+  ON_DEBUG debug() << "Assembling CF precedence realm:" << endmsg;
   // create the root CF node
   m_PRGraph.addHeadNode("RootDecisionHub",true,false,true,true);
   // assemble the CF rules
@@ -45,15 +48,15 @@ StatusCode PrecedenceSvc::initialize() {
     if (!algorithm) fatal() << "Conversion from IAlgorithm to Algorithm failed" << endmsg;
     sc = assembleCFRules(algorithm, "RootDecisionHub");
     if (sc.isFailure()) {
-      fatal() << "Could not decode the TopAlg list when assembling the CF rules" << endmsg;
+      fatal() << "Could not assemble the CF precedence realm" << endmsg;
       return sc;
     }
   }
 
-
+  ON_DEBUG debug() << "Assembling DF precedence realm:" << endmsg;
   sc = m_PRGraph.buildAugmentedDataDependenciesRealm();
   if (sc.isFailure()) {
-    fatal() << "Could not assemble the data dependency realm" << endmsg;
+    fatal() << "Could not assemble the DF precedence realm" << endmsg;
     return sc;
   }
 
@@ -101,64 +104,65 @@ StatusCode PrecedenceSvc::assembleCFRules(Algorithm* algo,
                                           unsigned int recursionDepth) {
   StatusCode sc = StatusCode::SUCCESS;
 
-    bool isGaudiSequencer(false);
-    bool isAthSequencer(false);
+  ++recursionDepth;
 
-    if (algo->isSequence()) {
-      if (algo->hasProperty("ShortCircuit"))
-        isGaudiSequencer = true;
-      else if (algo->hasProperty("StopOverride"))
-        isAthSequencer = true;
-    }
+  bool isGaudiSequencer(false);
+  bool isAthSequencer(false);
 
-    std::vector<Algorithm*>* subAlgorithms = algo->subAlgorithms();
-    if ( //we only want to add basic algorithms -> have no subAlgs
-         // and exclude the case of empty sequencers
-         (subAlgorithms->empty() && !(isGaudiSequencer || isAthSequencer))) {
+  if (algo->isSequence()) {
+    if (algo->hasProperty("ShortCircuit"))
+      isGaudiSequencer = true;
+    else if (algo->hasProperty("StopOverride"))
+      isAthSequencer = true;
+  }
 
-      ON_DEBUG debug() << std::string(recursionDepth, ' ') << algo->name()
-                       << " is not a sequencer. Appending it" << endmsg;
-      sc = m_PRGraph.addAlgorithmNode(algo, parentName, false, false);
-      return sc;
-    }
+  std::vector<Algorithm*>* subAlgorithms = algo->subAlgorithms();
+  if ( //we only want to add basic algorithms -> have no subAlgs
+       // and exclude the case of empty sequencers
+       (subAlgorithms->empty() && !(isGaudiSequencer || isAthSequencer))) {
 
-    // Recursively unroll
-    ++recursionDepth;
-    ON_DEBUG debug() << std::string(recursionDepth, ' ') << algo->name()
-                     << " is a sequencer. Flattening it." << endmsg;
-    bool modeOR = false;
-    bool allPass = false;
-    bool isLazy = false;
-    bool isSequential = false;
-
-    if (isGaudiSequencer) {
-      modeOR  = (algo->getProperty("ModeOR").toString() == "True")? true : false;
-      allPass = (algo->getProperty("IgnoreFilterPassed").toString() == "True")? true : false;
-      isLazy  = (algo->getProperty("ShortCircuit").toString() == "True")? true : false;
-      if (allPass) isLazy = false; // standard GaudiSequencer behavior on all pass is to execute everything
-      isSequential = (algo->hasProperty("Sequential") &&
-                     (algo->getProperty("Sequential").toString() == "True"));
-    } else if (isAthSequencer) {
-      modeOR  = (algo->getProperty("ModeOR").toString() == "True")? true : false;
-      allPass = (algo->getProperty("IgnoreFilterPassed").toString() == "True")? true : false;
-      isLazy = (algo->getProperty("StopOverride").toString() == "True")? false : true;
-      isSequential = (algo->hasProperty("Sequential") &&
-                     (algo->getProperty("Sequential").toString() == "True"));
-    }
-    sc = m_PRGraph.addDecisionHubNode(algo, parentName, !isSequential, isLazy, modeOR, allPass);
-    if (sc.isFailure()) {
-      error() << "Failed to add DecisionHub " << algo->name() << " to graph of precedence rules" << endmsg;
-      return sc;
-    }
-
-    for (Algorithm* subalgo : *subAlgorithms) {
-      sc = assembleCFRules(subalgo,algo->name(),recursionDepth);
-      if (sc.isFailure()) {
-        error() << "Algorithm " << subalgo->name() << " could not be flattened" << endmsg;
-        return sc;
-      }
-    }
+    ON_DEBUG debug() << std::string(recursionDepth, ' ') << "Algorithm '"
+                     << algo->name() << "' discovered" << endmsg;
+    sc = m_PRGraph.addAlgorithmNode(algo, parentName, false, false);
     return sc;
+  }
+
+  // Recursively unroll
+  ON_DEBUG debug() << std::string(recursionDepth, ' ') << "Decision hub '" << algo->name()
+                   << "' discovered" << endmsg;
+  bool modeOR = false;
+  bool allPass = false;
+  bool isLazy = false;
+  bool isSequential = false;
+
+  if (isGaudiSequencer) {
+    modeOR  = (algo->getProperty("ModeOR").toString() == "True")? true : false;
+    allPass = (algo->getProperty("IgnoreFilterPassed").toString() == "True")? true : false;
+    isLazy  = (algo->getProperty("ShortCircuit").toString() == "True")? true : false;
+    if (allPass) isLazy = false; // standard GaudiSequencer behavior on all pass is to execute everything
+    isSequential = (algo->hasProperty("Sequential") &&
+                   (algo->getProperty("Sequential").toString() == "True"));
+  } else if (isAthSequencer) {
+    modeOR  = (algo->getProperty("ModeOR").toString() == "True")? true : false;
+    allPass = (algo->getProperty("IgnoreFilterPassed").toString() == "True")? true : false;
+    isLazy = (algo->getProperty("StopOverride").toString() == "True")? false : true;
+    isSequential = (algo->hasProperty("Sequential") &&
+                   (algo->getProperty("Sequential").toString() == "True"));
+  }
+  sc = m_PRGraph.addDecisionHubNode(algo, parentName, !isSequential, isLazy, modeOR, allPass);
+  if (sc.isFailure()) {
+    error() << "Failed to add DecisionHub " << algo->name() << " to graph of precedence rules" << endmsg;
+    return sc;
+  }
+
+  for (Algorithm* subalgo : *subAlgorithms) {
+    sc = assembleCFRules(subalgo,algo->name(),recursionDepth);
+    if (sc.isFailure()) {
+      error() << "Algorithm " << subalgo->name() << " could not be flattened" << endmsg;
+      return sc;
+    }
+  }
+  return sc;
 }
 
 // ============================================================================

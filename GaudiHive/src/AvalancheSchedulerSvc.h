@@ -4,7 +4,7 @@
 // Local includes
 #include "AlgsExecutionStates.h"
 #include "EventSlot.h"
-#include "IPrecedenceSvc.h"
+#include "PrecedenceSvc.h"
 
 // Framework include files
 #include "GaudiKernel/IAccelerator.h"
