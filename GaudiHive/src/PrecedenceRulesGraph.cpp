@@ -278,16 +278,16 @@ namespace concurrency
     m_algoNameToAlgoInputsMap[algoName] = algo->inputDataObjs();
     m_algoNameToAlgoOutputsMap[algoName] = algo->outputDataObjs();
 
-    if (msgLevel(MSG::DEBUG)) {
-      debug() << "Inputs of " << algoName << ": ";
+    if (msgLevel(MSG::VERBOSE)) {
+      verbose() << "    Inputs of " << algoName << ": ";
       for (auto tag : algo->inputDataObjs())
-        debug() << tag << " | ";
-      debug() << endmsg;
+        verbose() << tag << " | ";
+      verbose() << endmsg;
 
-      debug() << "Outputs of " << algoName << ": ";
+      verbose() << "    Outputs of " << algoName << ": ";
       for (auto tag : algo->outputDataObjs())
-        debug() << tag << " | ";
-      debug() << endmsg;
+        verbose() << tag << " | ";
+      verbose() << endmsg;
     }
   }
 
@@ -366,7 +366,6 @@ namespace concurrency
       auto parentNode = itP->second;
       debug() << "Attaching AlgorithmNode '" << algo->name() << "' to DecisionNode '"
               << parentName << "'" << endmsg;
-
       parentNode->addDaughterNode( algoNode );
       algoNode->addParentNode( parentNode );
     } else {
@@ -399,23 +398,22 @@ namespace concurrency
     } else {
       if (!m_conditionsRealmEnabled) {
         dataNode = new concurrency::DataNode(*this, dataPath);
-        if (msgLevel(MSG::DEBUG))
-          debug() << "  DataNode for " << dataPath << " added @ " << dataNode << endmsg;
+        if (msgLevel(MSG::VERBOSE))
+          verbose() << "  DataNode for " << dataPath << " added @ " << dataNode << endmsg;
       } else {
         SmartIF<ICondSvc> condSvc {serviceLocator()->service("CondSvc",false)};
         if (condSvc->isRegistered(dataPath)) {
           dataNode = new concurrency::ConditionNode(*this, dataPath, condSvc);
-          if (msgLevel(MSG::DEBUG))
-            debug() << "  ConditionNode for " << dataPath << " added @ " << dataNode << endmsg;
+          if (msgLevel(MSG::VERBOSE))
+            verbose() << "  ConditionNode for " << dataPath << " added @ " << dataNode << endmsg;
         } else {
           dataNode = new concurrency::DataNode(*this, dataPath);
-          if (msgLevel(MSG::DEBUG))
-            debug() << "  DataNode for " << dataPath << " added @ " << dataNode << endmsg;
+          if (msgLevel(MSG::VERBOSE))
+            verbose() << "  DataNode for " << dataPath << " added @ " << dataNode << endmsg;
         }
       }
 
       m_dataPathToDataNodeMap[dataPath] = dataNode;
-
       sc = StatusCode::SUCCESS;
     }
 
@@ -451,8 +449,8 @@ namespace concurrency
             new concurrency::DecisionNode( *this, m_nodeCounter, decisionHubName, modeConcurrent, modePromptDecision, modeOR, allPass);
         ++m_nodeCounter;
         m_decisionNameToDecisionHubMap[decisionHubName] = decisionHubNode;
-        if (msgLevel(MSG::DEBUG))
-          debug() << "Decision hub node " << decisionHubName << " added @ " << decisionHubNode << endmsg;
+        if (msgLevel(MSG::VERBOSE))
+          verbose() << "Decision hub node " << decisionHubName << " added @ " << decisionHubNode << endmsg;
       }
 
       parentNode->addDaughterNode( decisionHubNode );
