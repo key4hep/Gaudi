@@ -1,5 +1,4 @@
 #include "AvalancheSchedulerSvc.h"
-#include "AlgResourcePool.h"
 #include "AlgoExecutionTask.h"
 #include "IOBoundAlgTask.h"
 
