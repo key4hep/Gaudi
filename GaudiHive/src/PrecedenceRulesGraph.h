@@ -132,10 +132,12 @@ namespace concurrency {
   class AlgorithmNode : public ControlFlowNode {
   public:
     /// Constructor
-    AlgorithmNode(PrecedenceRulesGraph& graph, unsigned int nodeIndex, unsigned int algoIndex,
-                  const std::string& algoName, bool inverted, bool allPass, bool IOBound) :
-      ControlFlowNode(graph, nodeIndex, algoName),
-      m_algoIndex(algoIndex),m_algoName(algoName),m_inverted(inverted),m_allPass(allPass),m_rank(-1),m_isIOBound(IOBound)
+    AlgorithmNode(PrecedenceRulesGraph& graph, Algorithm* algoPtr,
+                  unsigned int nodeIndex, unsigned int algoIndex, bool inverted,
+                  bool allPass) :
+      ControlFlowNode(graph, nodeIndex, algoPtr->name()),
+      m_algoIndex(algoIndex),m_algoName(algoPtr->name()),m_inverted(inverted),
+      m_allPass(allPass),m_rank(-1),m_algorithm(algoPtr),m_isIOBound(algoPtr->isIOBound())
       {};
     /// Destructor
     ~AlgorithmNode();
@@ -150,10 +152,8 @@ namespace concurrency {
     void addSupplierNode(AlgorithmNode* node) { m_suppliers.push_back(node); }
     /// Associate an AlgorithmNode, which is a data consumer of this one
     void addConsumerNode(AlgorithmNode* node) { m_consumers.push_back(node); }
-    /// Attach Algorithm representative
-    void attachAlgorithm(IAlgorithm* ialgo) { m_representatives.push_back(ialgo); }
     /// get Algorithm representatives
-    const std::vector<IAlgorithm*>& getAlgorithmRepresentatives () const { return m_representatives; }
+    Algorithm* getAlgorithm () const { return m_algorithm; }
     /// Get all supplier nodes
     const std::vector<AlgorithmNode*>& getSupplierNodes() const {return m_suppliers;}
     /// Get all consumer nodes
@@ -218,8 +218,8 @@ namespace concurrency {
     std::vector<DataNode*> m_inputs;
     /// Algorithm rank of any kind
     float m_rank;
-    /// Representatives (including clones) of the node
-    std::vector<IAlgorithm*> m_representatives;
+    /// Algorithm representative behind the AlgorithmNode
+    Algorithm* m_algorithm;
     /// If an algorithm is I/O-bound (in the broad sense of Von Neumann bottleneck)
     bool m_isIOBound;
   };
@@ -315,13 +315,6 @@ public:
     DecisionNode* getHeadNode() const { return m_headNode; };
     /// Add algorithm node
     StatusCode addAlgorithmNode(Algorithm* daughterAlgo, const std::string& parentName, bool inverted, bool allPass);
-    /// Attach pointers to real Algorithms (and their clones) to Algorithm nodes of the graph
-    template<class T>
-    void attachAlgorithmsToNodes(const std::string& algo_name, const T& container) {
-      auto node = getAlgorithmNode(algo_name);
-      for (auto ialgoIt = container.unsafe_begin(); ialgoIt != container.unsafe_end(); ++ialgoIt)
-        node->attachAlgorithm(*ialgoIt);
-    }
     /// Get the AlgorithmNode from by algorithm name using graph index
     AlgorithmNode* getAlgorithmNode(const std::string& algoName) const;
     /// Add DataNode that represents DataObject

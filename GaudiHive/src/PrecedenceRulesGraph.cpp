@@ -338,8 +338,9 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  StatusCode PrecedenceRulesGraph::addAlgorithmNode( Algorithm* algo, const std::string& parentName, bool inverted,
-                                                   bool allPass )
+  StatusCode PrecedenceRulesGraph::addAlgorithmNode(Algorithm* algo,
+                                                    const std::string& parentName,
+                                                    bool inverted, bool allPass)
   {
 
     StatusCode sc = StatusCode::SUCCESS;
@@ -351,12 +352,13 @@ namespace concurrency
     if ( itA != m_algoNameToAlgoNodeMap.end() ) {
       algoNode = itA->second;
     } else {
-      algoNode = new concurrency::AlgorithmNode( *this, m_nodeCounter, m_algoCounter, algoName, inverted, allPass, algo->isIOBound() );
+      algoNode = new concurrency::AlgorithmNode(*this,algo,m_nodeCounter,
+                                                m_algoCounter,inverted,allPass);
       ++m_nodeCounter;
       ++m_algoCounter;
       m_algoNameToAlgoNodeMap[algoName] = algoNode;
-      if (msgLevel(MSG::DEBUG))
-        debug() << "AlgorithmNode '" << algoName << "' added @ " << algoNode << endmsg;
+      if (msgLevel(MSG::VERBOSE))
+        verbose() << "AlgorithmNode '" << algoName << "' added @ " << algoNode << endmsg;
       registerIODataObjects(algo);
     }
 
@@ -370,7 +372,7 @@ namespace concurrency
       algoNode->addParentNode( parentNode );
     } else {
       sc = StatusCode::FAILURE;
-      error() << "Requested DecisionNode '" << parentName << "' was not registered"
+      error() << "Requested DecisionNode '" << parentName << "' was not found"
               << endmsg;
     }
 
@@ -533,9 +535,9 @@ namespace concurrency
     } else if (an != 0) {
       ost << node->getNodeName() << " [Alg] ";
       if (an != 0) {
-        auto ar = an->getAlgorithmRepresentatives();
-        ost << " [n= " << ar.at(0)->cardinality() << "]";
-        ost << ( (! ar.at(0)->isClonable()) ? " [unclonable] " : "" );
+        auto ar = an->getAlgorithm();
+        ost << " [n= " << ar->cardinality() << "]";
+        ost << ( (! ar->isClonable()) ? " [unclonable] " : "" );
       }
       ost << "\n";
     }
@@ -605,19 +607,16 @@ namespace concurrency
       if ( itS != m_exec_plan_map.end() ) {
         source = itS->second;
       } else {
-        auto alg = dynamic_cast<Algorithm*>( u->getAlgorithmRepresentatives()[0] );
-        if ( alg == 0 ) {
-          fatal() << "could not convert IAlgorithm to Algorithm!" << endmsg;
-        } else {
-          try {
-            const Gaudi::Details::PropertyBase& p = alg->getProperty( "AvgRuntime" );
-            runtime = std::stof( p.toString() );
-          } catch(...) {
-            if (msgLevel(MSG::DEBUG))
-              debug() << "no AvgRuntime for " << alg->name() << endmsg;
-            runtime = 1.;
-          }
+        auto alg = u->getAlgorithm();
+        try {
+          const Gaudi::Details::PropertyBase& p = alg->getProperty( "AvgRuntime" );
+          runtime = std::stof( p.toString() );
+        } catch(...) {
+          if (msgLevel(MSG::DEBUG))
+            debug() << "no AvgRuntime for " << alg->name() << endmsg;
+          runtime = 1.;
         }
+
         source = boost::add_vertex( boost::AlgoProps( u->getNodeName(), u->getAlgoIndex(), u->getRank(), runtime ),
                                     m_ExecPlan );
         m_exec_plan_map[u->getNodeName()] = source;
@@ -629,19 +628,16 @@ namespace concurrency
     if ( itP != m_exec_plan_map.end() ) {
       target = itP->second;
     } else {
-      auto alg = dynamic_cast<Algorithm*>( v->getAlgorithmRepresentatives()[0] );
-      if ( alg == 0 ) {
-        fatal() << "could not convert IAlgorithm to Algorithm!" << endmsg;
-      } else {
-        try {
-          const Gaudi::Details::PropertyBase& p = alg->getProperty( "AvgRuntime" );
-          runtime = std::stof( p.toString() );
-        } catch(...) {
-          if (msgLevel(MSG::DEBUG))
-            debug() << "no AvgRuntime for " << alg->name() << endmsg;
-          runtime = 1.;
-        }
+      auto alg = v->getAlgorithm();
+      try {
+        const Gaudi::Details::PropertyBase& p = alg->getProperty( "AvgRuntime" );
+        runtime = std::stof( p.toString() );
+      } catch(...) {
+        if (msgLevel(MSG::DEBUG))
+          debug() << "no AvgRuntime for " << alg->name() << endmsg;
+        runtime = 1.;
       }
+
       target = boost::add_vertex( boost::AlgoProps( v->getNodeName(), v->getAlgoIndex(), v->getRank(), runtime ),
                                   m_ExecPlan );
       m_exec_plan_map[v->getNodeName()] = target;

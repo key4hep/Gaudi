@@ -410,11 +410,6 @@ StatusCode AlgResourcePool::decodeTopAlgs()    {
       }
     }
 
-    // Only ForwardScheduler requires assembling the graph in AlgResourcePool.
-    // The AvalancheScheduler relies on the graph that is assembled by the PrecedenceSvc
-    if (serviceLocator()->existsService("ForwardSchedulerSvc"))
-      m_PRGraph->attachAlgorithmsToNodes<concurrentQueueIAlgPtr>(item_name,*queue);
-
   }
 
   // Now resize all the requirement bitsets to the same size
