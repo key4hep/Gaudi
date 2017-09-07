@@ -14,7 +14,7 @@ myalg = MyAlgorithm('MyAlg',
 ToolSvc(OutputLevel = INFO )
 
 algResourcePool = AlgResourcePool(OutputLevel = INFO)
-slimeventloopmgr = HiveSlimEventLoopMgr(OutputLevel=INFO)
+slimeventloopmgr = HiveSlimEventLoopMgr(SchedulerName="AvalancheSchedulerSvc", OutputLevel=INFO)
 whiteboard   = HiveWhiteBoard("EventDataSvc")
 
 ApplicationMgr( EvtMax = 1,
