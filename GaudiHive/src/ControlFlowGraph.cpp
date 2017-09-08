@@ -1,6 +1,8 @@
 #include "ControlFlowGraph.h"
+#include <algorithm>
 
 namespace concurrency {
+
   namespace recursive_CF {
 
   //---------------------------------------------------------------------------
@@ -29,35 +31,31 @@ namespace concurrency {
     for ( auto daughter : m_children ) daughter->initialize( algname_index_map );
   }
 
-  //---------------------------------------------------------------------------
-  void DecisionNode::addParentNode( DecisionNode* node )
-  {
-
-    if ( std::find( m_parents.begin(), m_parents.end(), node ) == m_parents.end() ) m_parents.push_back( node );
-  }
-
   //--------------------------------------------------------------------------
   void DecisionNode::addDaughterNode( ControlFlowNode* node )
   {
 
-    if ( std::find( m_children.begin(), m_children.end(), node ) == m_children.end() ) m_children.push_back( node );
+    if ( std::find( m_children.begin(), m_children.end(), node ) == m_children.end() )
+      m_children.push_back( node );
   }
 
   //---------------------------------------------------------------------------
   void DecisionNode::printState( std::stringstream& output, AlgsExecutionStates& states,
-                                 const std::vector<int>& node_decisions, const unsigned int& recursionLevel ) const
+                                 const std::vector<int>& node_decisions,
+                                 const unsigned int& recursionLevel ) const
   {
 
     output << std::string( recursionLevel, ' ' ) << m_nodeName << " (" << m_nodeIndex << ")"
-           << ", w/ decision: " << stateToString( node_decisions[m_nodeIndex] ) << "(" << node_decisions[m_nodeIndex]
-           << ")" << std::endl;
+           << ", w/ decision: " << stateToString( node_decisions[m_nodeIndex] )
+           << "(" << node_decisions[m_nodeIndex] << ")" << std::endl;
     for ( auto daughter : m_children ) {
       daughter->printState( output, states, node_decisions, recursionLevel + 2 );
     }
   }
 
   //---------------------------------------------------------------------------
-  int DecisionNode::updateState( AlgsExecutionStates& states, std::vector<int>& node_decisions ) const
+  int DecisionNode::updateState( AlgsExecutionStates& states,
+                                std::vector<int>& node_decisions ) const
   {
     // check whether we already had a result earlier
     //    if (-1 != node_decisions[m_nodeIndex] ) { return node_decisions[m_nodeIndex]; }
@@ -67,8 +65,8 @@ namespace concurrency {
       if ( m_modePromptDecision && ( -1 != decision || hasUndecidedChild ) ) {
         node_decisions[m_nodeIndex] = decision;
         return decision;
-      } // if prompt decision, return once result is known already or we can't fully evaluate right now because one daugther
-      // decision is missing still
+      } // if prompt decision, return once result is known already or we can't
+      // fully evaluate right now because one daugther decision is missing still
       auto res = daughter->updateState( states, node_decisions );
       if ( -1 == res ) {
         hasUndecidedChild = true;
@@ -105,16 +103,19 @@ namespace concurrency {
 
   //---------------------------------------------------------------------------
   void AlgorithmNode::printState( std::stringstream& output, AlgsExecutionStates& states,
-                                  const std::vector<int>& node_decisions, const unsigned int& recursionLevel ) const
+                                  const std::vector<int>& node_decisions,
+                                  const unsigned int& recursionLevel ) const
   {
-    output << std::string( recursionLevel, ' ' ) << m_nodeName << " (" << m_nodeIndex << ")"
-           << ", w/ decision: " << stateToString( node_decisions[m_nodeIndex] ) << "(" << node_decisions[m_nodeIndex]
-           << ")"
-           << ", in state: " << AlgsExecutionStates::stateNames[states[m_algoIndex]] << std::endl;
+    output << std::string( recursionLevel, ' ' ) << m_nodeName << " ("
+           << m_nodeIndex << ")" << ", w/ decision: "
+           << stateToString( node_decisions[m_nodeIndex] )
+           << "(" << node_decisions[m_nodeIndex] << ")" << ", in state: "
+           << AlgsExecutionStates::stateNames[states[m_algoIndex]] << std::endl;
   }
 
   //---------------------------------------------------------------------------
-  int AlgorithmNode::updateState( AlgsExecutionStates& states, std::vector<int>& node_decisions ) const
+  int AlgorithmNode::updateState( AlgsExecutionStates& states,
+                                  std::vector<int>& node_decisions ) const
   {
     // check whether we already had a result earlier
     //    if (-1 != node_decisions[m_nodeIndex] ) { return node_decisions[m_nodeIndex]; }
@@ -140,13 +141,6 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  void AlgorithmNode::addParentNode( DecisionNode* node )
-  {
-
-    if ( std::find( m_parents.begin(), m_parents.end(), node ) == m_parents.end() ) m_parents.push_back( node );
-  }
-
-  //---------------------------------------------------------------------------
   void ControlFlowGraph::initialize( const std::unordered_map<std::string, unsigned int>& algname_index_map )
   {
     m_headNode->initialize( algname_index_map );
@@ -154,8 +148,8 @@ namespace concurrency {
 
   //---------------------------------------------------------------------------
   StatusCode ControlFlowGraph::addAlgorithmNode(Algorithm* algo,
-                                                    const std::string& parentName,
-                                                    bool inverted, bool allPass)
+                                                const std::string& parentName,
+                                                bool inverted, bool allPass)
   {
 
     StatusCode sc = StatusCode::SUCCESS;
@@ -181,7 +175,6 @@ namespace concurrency {
       }
 
       parentNode->addDaughterNode( algoNode );
-      algoNode->addParentNode( parentNode );
     } else {
       sc = StatusCode::FAILURE;
       error() << "Decision hub node " << parentName
@@ -192,15 +185,11 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  AlgorithmNode* ControlFlowGraph::getAlgorithmNode( const std::string& algoName ) const
-  {
-
-    return m_algoNameToAlgoNodeMap.at( algoName );
-  }
-
-  //---------------------------------------------------------------------------
-  StatusCode ControlFlowGraph::addDecisionHubNode( Algorithm* decisionHubAlgo, const std::string& parentName,
-		                                              bool modeConcurrent, bool modePromptDecision, bool modeOR, bool allPass)
+  StatusCode ControlFlowGraph::addDecisionHubNode(Algorithm* decisionHubAlgo,
+                                                  const std::string& parentName,
+		                                          bool modeConcurrent,
+		                                          bool modePromptDecision,
+		                                          bool modeOR, bool allPass)
   {
 
     StatusCode sc = StatusCode::SUCCESS;
@@ -217,50 +206,64 @@ namespace concurrency {
         decisionHubNode = itA->second;
       } else {
         decisionHubNode =
-            new concurrency::recursive_CF::DecisionNode( *this, m_nodeCounter, decisionHubName, modeConcurrent, modePromptDecision, modeOR, allPass);
+            new concurrency::recursive_CF::DecisionNode(*this, m_nodeCounter,
+                                                        decisionHubName,
+                                                        modeConcurrent,
+                                                        modePromptDecision,
+                                                        modeOR, allPass);
         ++m_nodeCounter;
         m_decisionNameToDecisionHubMap[decisionHubName] = decisionHubNode;
         if (msgLevel(MSG::VERBOSE))
-          verbose() << "Decision hub node " << decisionHubName << " added @ " << decisionHubNode << endmsg;
+          verbose() << "Decision hub node " << decisionHubName
+                    << " added @ " << decisionHubNode << endmsg;
       }
 
       parentNode->addDaughterNode( decisionHubNode );
-      decisionHubNode->addParentNode( parentNode );
     } else {
       sc = StatusCode::FAILURE;
-      error() << "Decision hub node " << parentName << ", requested to be parent, is not registered."
-              << endmsg;
+      error() << "Decision hub node " << parentName
+              << ", requested to be parent, is not registered." << endmsg;
     }
 
     return sc;
   }
 
   //---------------------------------------------------------------------------
-  void ControlFlowGraph::addHeadNode( const std::string& headName, bool modeConcurrent, bool modePromptDecision, bool modeOR, bool allPass)
+  void ControlFlowGraph::addHeadNode(const std::string& headName,
+                                     bool modeConcurrent,
+                                     bool modePromptDecision,
+                                     bool modeOR, bool allPass)
   {
 
     auto itH = m_decisionNameToDecisionHubMap.find( headName );
     if ( itH != m_decisionNameToDecisionHubMap.end() ) {
       m_headNode = itH->second;
     } else {
-      m_headNode = new concurrency::recursive_CF::DecisionNode( *this, m_nodeCounter, headName, modeConcurrent, modePromptDecision, modeOR, allPass );
+      m_headNode = new concurrency::recursive_CF::DecisionNode(*this, m_nodeCounter,
+                                                               headName,
+                                                               modeConcurrent,
+                                                               modePromptDecision,
+                                                               modeOR, allPass );
       ++m_nodeCounter;
       m_decisionNameToDecisionHubMap[headName] = m_headNode;
     }
   }
 
   //---------------------------------------------------------------------------
-  void ControlFlowGraph::updateEventState( AlgsExecutionStates& algo_states, std::vector<int>& node_decisions ) const
+  void ControlFlowGraph::updateEventState( AlgsExecutionStates& algo_states,
+                                           std::vector<int>& node_decisions ) const
   {
     m_headNode->updateState( algo_states, node_decisions );
   }
 
+  //---------------------------------------------------------------------------
   std::string ControlFlowGraph::dumpControlFlow() const {
     std::ostringstream ost;
     dumpControlFlow(ost,m_headNode,0);
     return ost.str();
   }
 
+  //---------------------------------------------------------------------------
   void ControlFlowGraph::dumpControlFlow(std::ostringstream& ost,
                                              ControlFlowNode* node,
                                              const int& indent) const {

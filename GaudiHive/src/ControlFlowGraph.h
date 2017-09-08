@@ -3,14 +3,13 @@
 
 // std includes
 #include <vector>
-#include <algorithm>
 #include <unordered_map>
-#include <chrono>
-#include <fstream>
 #include <sstream>
 
-// fwk includes
+// local includes
 #include "AlgsExecutionStates.h"
+
+// Framework includes
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/CommonMessaging.h"
 
@@ -18,7 +17,6 @@
 namespace concurrency {
 
   namespace recursive_CF {
-
 
   typedef AlgsExecutionStates::State State;
   class ControlFlowGraph;
@@ -32,7 +30,7 @@ namespace concurrency {
     virtual ~ControlFlowNode() {}
     /// Initialize
     virtual void initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map) = 0;
-    /// XXX: CF tests. Method to set algos to CONTROLREADY, if possible
+    /// Method to set algos to CONTROLREADY, if possible
     virtual int updateState(AlgsExecutionStates& states,
                             std::vector<int>& node_decisions) const = 0;
     /// Print a string representing the control flow state
@@ -40,8 +38,9 @@ namespace concurrency {
                             AlgsExecutionStates& states,
                             const std::vector<int>& node_decisions,
                             const unsigned int& recursionLevel) const = 0;
-    /// XXX: CF tests.
+    /// Get node index
     const unsigned int& getNodeIndex() const { return m_nodeIndex; }
+    /// Get node name
     const std::string& getNodeName() const { return m_nodeName; }
 
   public:
@@ -57,9 +56,12 @@ namespace concurrency {
   class DecisionNode : public ControlFlowNode {
   public:
     /// Constructor
-    DecisionNode(ControlFlowGraph& graph, unsigned int nodeIndex, const std::string& name, bool modeConcurrent, bool modePromptDecision, bool modeOR, bool allPass) :
+    DecisionNode(ControlFlowGraph& graph, unsigned int nodeIndex,
+                 const std::string& name, bool modeConcurrent,
+                 bool modePromptDecision, bool modeOR, bool allPass) :
       ControlFlowNode(graph, nodeIndex, name),
-	  m_modeConcurrent(modeConcurrent), m_modePromptDecision(modePromptDecision), m_modeOR(modeOR), m_allPass(allPass), m_children()
+	  m_modeConcurrent(modeConcurrent), m_modePromptDecision(modePromptDecision),
+	  m_modeOR(modeOR), m_allPass(allPass), m_children()
       {}
     /// Destructor
     ~DecisionNode() override;
@@ -67,9 +69,7 @@ namespace concurrency {
     void initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map) override;
     /// Method to set algos to CONTROLREADY, if possible
     int updateState(AlgsExecutionStates& states,
-                            std::vector<int>& node_decisions) const override;
-    /// XXX: CF tests. Method to add a parent node
-    void addParentNode(DecisionNode* node);
+                    std::vector<int>& node_decisions) const override;
     /// Add a daughter node
     void addDaughterNode(ControlFlowNode* node);
     ///
@@ -92,11 +92,7 @@ namespace concurrency {
   private:
     /// All direct daughter nodes in the tree
     std::vector<ControlFlowNode*> m_children;
-    /// XXX: CF tests. All direct parent nodes in the tree
-    std::vector<DecisionNode*> m_parents;
   };
-
-  class DataNode;
 
   class AlgorithmNode : public ControlFlowNode {
   public:
@@ -106,21 +102,12 @@ namespace concurrency {
                   bool allPass) :
       ControlFlowNode(graph, nodeIndex, algoPtr->name()),
       m_algoIndex(algoIndex),m_algoName(algoPtr->name()),m_inverted(inverted),
-      m_allPass(allPass),m_algorithm(algoPtr)
-      {};
-    /// Destructor
-    ~AlgorithmNode() {};
+      m_allPass(allPass),m_algorithm(algoPtr) {};
+
     /// Initialize
     void initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map) override;
-    /// XXX: CF tests. Method to add a parent node
-    void addParentNode(DecisionNode* node);
     /// get Algorithm representatives
     Algorithm* getAlgorithm () const { return m_algorithm; }
-    /// Get all parent decision hubs
-    const std::vector<DecisionNode*>& getParentDecisionHubs() const {return m_parents;}
-
-    /// XXX: CF tests
-    const unsigned int& getAlgoIndex() const { return m_algoIndex; }
     /// Method to set algos to CONTROLREADY, if possible
     int updateState(AlgsExecutionStates& states,
                             std::vector<int>& node_decisions) const override;
@@ -138,8 +125,6 @@ namespace concurrency {
     bool m_inverted;
     /// Whether the selection result is relevant or always "pass"
     bool m_allPass;
-    /// XXX: CF tests
-    std::vector<DecisionNode*> m_parents;
     /// Algorithm representative behind the AlgorithmNode
     Algorithm* m_algorithm;
   };
@@ -157,33 +142,40 @@ class ControlFlowGraph : public CommonMessaging<IControlFlowGraph> {
 public:
     /// Constructor
     ControlFlowGraph(const std::string& name, SmartIF<ISvcLocator> svc) :
-     m_headNode(0), m_nodeCounter(0), m_algoCounter(0), m_svcLocator(svc), m_name(name) {}
+     m_svcLocator(svc), m_name(name) {}
     /// Destructor
     ~ControlFlowGraph() override {
       if (m_headNode != 0) delete m_headNode;
     }
+
     /// Initialize graph
     void initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map);
     /// Add a node, which has no parents
-    void addHeadNode(const std::string& headName, bool modeConcurrent, bool modePromptDecision, bool modeOR, bool allPass);
+    void addHeadNode(const std::string& headName, bool modeConcurrent,
+                     bool modePromptDecision, bool modeOR, bool allPass);
     /// Get head node
     DecisionNode* getHeadNode() const { return m_headNode; };
     /// Add algorithm node
-    StatusCode addAlgorithmNode(Algorithm* daughterAlgo, const std::string& parentName, bool inverted, bool allPass);
-    /// Get the AlgorithmNode from by algorithm name using graph index
-    AlgorithmNode* getAlgorithmNode(const std::string& algoName) const;
+    StatusCode addAlgorithmNode(Algorithm* daughterAlgo,
+                                const std::string& parentName,
+                                bool inverted, bool allPass);
     /// Add a node, which aggregates decisions of direct daughter nodes
-    StatusCode addDecisionHubNode(Algorithm* daughterAlgo, const std::string& parentName, bool modeConcurrent, bool modePromptDecision, bool modeOR, bool allPass);
+    StatusCode addDecisionHubNode(Algorithm* daughterAlgo,
+                                  const std::string& parentName,
+                                  bool modeConcurrent,
+                                  bool modePromptDecision, bool modeOR,
+                                  bool allPass);
     /// Get total number of graph nodes
     unsigned int getControlFlowNodeCounter() const {return m_nodeCounter;}
-    /// XXX CF tests. Is needed for older CF implementation
+    /// Start revision of states and decisions
     void updateEventState(AlgsExecutionStates& states,
                           std::vector<int>& node_decisions) const;
     /// Print a string representing the control flow state
     void printState(std::stringstream& output,
                     AlgsExecutionStates& states,
                     const std::vector<int>& node_decisions,
-                    const unsigned int& recursionLevel) const {m_headNode->printState(output,states,node_decisions,recursionLevel);}
+                    const unsigned int& recursionLevel) const
+    {m_headNode->printState(output,states,node_decisions,recursionLevel);}
     /// Retrieve name of the service
     const std::string& name() const override {return m_name;}
     /// Retrieve pointer to service locator
@@ -195,15 +187,15 @@ public:
 
 private:
     /// the head node of the control flow graph; may want to have multiple ones once supporting trigger paths
-    DecisionNode* m_headNode;
+    DecisionNode* m_headNode{nullptr};
     /// Index: map of algorithm's name to AlgorithmNode
     AlgoNodesMap m_algoNameToAlgoNodeMap;
     /// Index: map of decision's name to DecisionHub
     DecisionHubsMap m_decisionNameToDecisionHubMap;
     /// Total number of nodes in the graph
-    unsigned int m_nodeCounter;
+    unsigned int m_nodeCounter{0};
     /// Total number of algorithm nodes in the graph
-    unsigned int m_algoCounter;
+    unsigned int m_algoCounter{0};
     /// Service locator (needed to access the MessageSvc)
     mutable SmartIF<ISvcLocator> m_svcLocator;
     const std::string m_name;
