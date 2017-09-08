@@ -54,7 +54,7 @@ StatusCode PrecedenceSvc::initialize() {
   }
 
   ON_DEBUG debug() << "Assembling DF precedence realm:" << endmsg;
-  sc = m_PRGraph.buildAugmentedDataDependenciesRealm();
+  sc = m_PRGraph.buildDataDependenciesRealm();
   if (sc.isFailure()) {
     fatal() << "Could not assemble the DF precedence realm" << endmsg;
     return sc;

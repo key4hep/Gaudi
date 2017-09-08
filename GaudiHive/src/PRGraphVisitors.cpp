@@ -113,11 +113,12 @@ namespace concurrency {
       m_slot->controlFlowState[node.getNodeIndex()] = decision;
 
       auto promoter = DataReadyPromoter(*m_slot, m_cause, m_trace);
-      for ( auto consumer : node.getConsumerNodes() )
-        consumer->accept(promoter);
+      for ( const auto& output : node.getOutputDataNodes() )
+        for ( auto& consumer : output->getConsumers() )
+          consumer->accept(promoter);
 
       auto vis = concurrency::Supervisor(*m_slot, m_cause, m_trace);
-      for ( auto p : node.getParentDecisionHubs() )
+      for ( auto& p : node.getParentDecisionHubs() )
         p->accept(vis);
 
       return true; // return true only if the algorithm produced a decision
