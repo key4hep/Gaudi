@@ -1,5 +1,4 @@
 #include "ControlFlowGraph.h"
-#include "GaudiKernel/DataHandleHolderVisitor.h"
 
 namespace concurrency {
   namespace recursive_CF {
@@ -98,15 +97,6 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  AlgorithmNode::~AlgorithmNode()
-  {
-
-    for ( auto node : m_outputs ) {
-      delete node;
-    }
-  }
-
-  //---------------------------------------------------------------------------
   void AlgorithmNode::initialize( const std::unordered_map<std::string, unsigned int>& algname_index_map )
   {
 
@@ -157,100 +147,9 @@ namespace concurrency {
   }
 
   //---------------------------------------------------------------------------
-  void AlgorithmNode::addOutputDataNode( DataNode* node )
+  void ControlFlowGraph::initialize( const std::unordered_map<std::string, unsigned int>& algname_index_map )
   {
-
-    if ( std::find( m_outputs.begin(), m_outputs.end(), node ) == m_outputs.end() ) m_outputs.push_back( node );
-  }
-
-  //---------------------------------------------------------------------------
-  void AlgorithmNode::addInputDataNode( DataNode* node )
-  {
-
-    if ( std::find( m_inputs.begin(), m_inputs.end(), node ) == m_inputs.end() ) m_inputs.push_back( node );
-  }
-
-  //---------------------------------------------------------------------------
-  StatusCode ControlFlowGraph::initialize( const std::unordered_map<std::string, unsigned int>& algname_index_map )
-  {
-
     m_headNode->initialize( algname_index_map );
-    StatusCode sc = buildAugmentedDataDependenciesRealm();
-
-    if ( !sc.isSuccess() ) error() << "Could not build the data dependency realm." << endmsg;
-
-    if (msgLevel(MSG::DEBUG))
-      debug() << dumpDataFlow() << endmsg;
-
-    return sc;
-  }
-
-  //---------------------------------------------------------------------------
-  void ControlFlowGraph::registerIODataObjects( const Algorithm* algo )
-  {
-
-    const std::string& algoName = algo->name();
-
-    m_algoNameToAlgoInputsMap[algoName] = algo->inputDataObjs();
-    m_algoNameToAlgoOutputsMap[algoName] = algo->outputDataObjs();
-
-    if (msgLevel(MSG::VERBOSE)) {
-      verbose() << "    Inputs of " << algoName << ": ";
-      for (auto tag : algo->inputDataObjs())
-        verbose() << tag << " | ";
-      verbose() << endmsg;
-
-      verbose() << "    Outputs of " << algoName << ": ";
-      for (auto tag : algo->outputDataObjs())
-        verbose() << tag << " | ";
-      verbose() << endmsg;
-    }
-  }
-
-  //---------------------------------------------------------------------------
-  StatusCode ControlFlowGraph::buildAugmentedDataDependenciesRealm()
-  {
-
-    StatusCode global_sc( StatusCode::SUCCESS, true );
-
-    // Production of DataNodes by AlgorithmNodes (DataNodes are created here)
-    for (auto algo : m_algoNameToAlgoNodeMap) {
-
-      auto& outputs = m_algoNameToAlgoOutputsMap[algo.first];
-      for (auto output : outputs) {
-        const auto sc = addDataNode(output);
-        if (!sc.isSuccess()) {
-          error() << "Extra producer (" << algo.first << ") for DataObject @ "
-                  << output
-                  << " has been detected: this is not allowed." << endmsg;
-          global_sc = sc;
-        }
-        auto dataNode = getDataNode(output);
-        dataNode->addProducerNode(algo.second);
-        algo.second->addOutputDataNode(dataNode);
-      }
-    }
-
-    // Consumption of DataNodes by AlgorithmNodes
-    for ( auto algo : m_algoNameToAlgoNodeMap ) {
-
-      for (auto input : m_algoNameToAlgoInputsMap[algo.first]) {
-
-        DataNode* dataNode = nullptr;
-
-        auto itP = m_dataPathToDataNodeMap.find(input);
-
-        if (itP != m_dataPathToDataNodeMap.end())
-          dataNode = getDataNode(input);
-
-        if (dataNode) {
-          dataNode->addConsumerNode(algo.second);
-          algo.second->addInputDataNode(dataNode);
-        }
-      }
-    }
-
-    return global_sc;
   }
 
   //---------------------------------------------------------------------------
@@ -279,7 +178,6 @@ namespace concurrency {
         m_algoNameToAlgoNodeMap[algoName] = algoNode;
         if (msgLevel(MSG::VERBOSE))
           verbose() << "AlgoNode " << algoName << " added @ " << algoNode << endmsg;
-        registerIODataObjects(algo);
       }
 
       parentNode->addDaughterNode( algoNode );
@@ -298,35 +196,6 @@ namespace concurrency {
   {
 
     return m_algoNameToAlgoNodeMap.at( algoName );
-  }
-
-  //---------------------------------------------------------------------------
-  StatusCode ControlFlowGraph::addDataNode( const DataObjID& dataPath )
-  {
-
-    StatusCode sc;
-
-    auto itD = m_dataPathToDataNodeMap.find( dataPath );
-    concurrency::recursive_CF::DataNode* dataNode;
-    if ( itD != m_dataPathToDataNodeMap.end() ) {
-      dataNode = itD->second;
-      sc = StatusCode::SUCCESS;
-    } else {
-      dataNode                          = new concurrency::recursive_CF::DataNode( *this, dataPath );
-      m_dataPathToDataNodeMap[dataPath] = dataNode;
-      if (msgLevel(MSG::VERBOSE))
-        verbose() << "  DataNode for " << dataPath << " added @ " << dataNode << endmsg;
-      sc = StatusCode::SUCCESS;
-    }
-
-    return sc;
-  }
-
-  //---------------------------------------------------------------------------
-  DataNode* ControlFlowGraph::getDataNode( const DataObjID& dataPath ) const
-  {
-
-    return m_dataPathToDataNodeMap.at( dataPath );
   }
 
   //---------------------------------------------------------------------------
@@ -424,108 +293,5 @@ namespace concurrency {
 
   }
 
-  //---------------------------------------------------------------------------
-  std::string ControlFlowGraph::dumpDataFlow() const
-  {
-
-    const char idt[] = "      ";
-    std::ostringstream ost;
-
-    ost << "\n" << idt << "====================================\n";
-    ost << idt << "Data origins and destinations:\n";
-    ost << idt << "====================================\n";
-
-    for ( auto& pair : m_dataPathToDataNodeMap ) {
-
-      for ( auto algoNode : pair.second->getProducers() ) ost << idt << "  " << algoNode->getNodeName() << "\n";
-
-      ost << idt << "  V\n";
-      ost << idt << "  o " << pair.first << "\n";
-      ost << idt << "  V\n";
-
-      for ( auto algoNode : pair.second->getConsumers() ) ost << idt << "  " << algoNode->getNodeName() << "\n";
-
-      ost << idt << "====================================\n";
-    }
-
-    return ost.str();
-  }
-
-  //---------------------------------------------------------------------------
-
-  void ControlFlowGraph::dumpExecutionPlan(const boost::filesystem::path& fileName)
-  {
-    boost::filesystem::ofstream myfile;
-    myfile.open( fileName, std::ios::app );
-
-    boost::dynamic_properties dp;
-    dp.property( "name", boost::get( &boost::AlgoProps__::m_name, m_ExecPlan ) );
-    dp.property( "index", boost::get( &boost::AlgoProps__::m_index, m_ExecPlan ) );
-    dp.property( "rank", boost::get( &boost::AlgoProps__::m_rank, m_ExecPlan ) );
-    dp.property( "runtime", boost::get( &boost::AlgoProps__::m_runtime, m_ExecPlan ) );
-
-    boost::write_graphml( myfile, m_ExecPlan, dp );
-
-    myfile.close();
-  }
-
-  void ControlFlowGraph::addEdgeToExecutionPlan( const AlgorithmNode* u, const AlgorithmNode* v )
-  {
-
-    boost::AlgoVertex source;
-    float runtime( 0. );
-    if ( u == nullptr ) {
-      auto itT = m_exec_plan_map.find( "ENTRY" );
-      if ( itT != m_exec_plan_map.end() ) {
-        source = itT->second;
-      } else {
-        source                   = boost::add_vertex( boost::AlgoProps__( "ENTRY", -999, -999, 0 ), m_ExecPlan );
-        m_exec_plan_map["ENTRY"] = source;
-      }
-    } else {
-      auto itS = m_exec_plan_map.find( u->getNodeName() );
-      if ( itS != m_exec_plan_map.end() ) {
-        source = itS->second;
-      } else {
-        auto alg = u->getAlgorithm();
-        try {
-          const Gaudi::Details::PropertyBase& p = alg->getProperty( "AvgRuntime" );
-          runtime = std::stof( p.toString() );
-        } catch(...) {
-          if (msgLevel(MSG::DEBUG))
-            debug() << "no AvgRuntime for " << alg->name() << endmsg;
-          runtime = 1.;
-        }
-
-        source = boost::add_vertex( boost::AlgoProps__( u->getNodeName(), u->getAlgoIndex(), u->getRank(), runtime ),
-                                    m_ExecPlan );
-        m_exec_plan_map[u->getNodeName()] = source;
-      }
-    }
-
-    boost::AlgoVertex target;
-    auto itP = m_exec_plan_map.find( v->getNodeName() );
-    if ( itP != m_exec_plan_map.end() ) {
-      target = itP->second;
-    } else {
-      auto alg = v->getAlgorithm();
-      try {
-        const Gaudi::Details::PropertyBase& p = alg->getProperty( "AvgRuntime" );
-        runtime = std::stof( p.toString() );
-      } catch(...) {
-        if (msgLevel(MSG::DEBUG))
-          debug() << "no AvgRuntime for " << alg->name() << endmsg;
-        runtime = 1.;
-      }
-
-      target = boost::add_vertex( boost::AlgoProps__( v->getNodeName(), v->getAlgoIndex(), v->getRank(), runtime ),
-                                  m_ExecPlan );
-      m_exec_plan_map[v->getNodeName()] = target;
-    }
-
-    if (msgLevel(MSG::DEBUG))
-      debug() << "Edge added to execution plan" << endmsg;
-    boost::add_edge(source, target, m_ExecPlan);
-  }
   }  // namespace
 } // namespace

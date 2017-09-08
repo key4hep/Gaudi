@@ -278,7 +278,7 @@ StatusCode ForwardSchedulerSvc::initialize() {
   }
 
   const AlgResourcePool* algPool = dynamic_cast<const AlgResourcePool*>( m_algResourcePool.get() );
-  sc = m_efManager.initialize( algPool->getCFGraph(), m_algname_index_map);
+  m_efManager.initialize( algPool->getCFGraph(), m_algname_index_map);
   unsigned int controlFlowNodeNumber = m_efManager.getCFGraph()->getControlFlowNodeCounter();
 
   // Shortcut for the message service
@@ -305,10 +305,10 @@ StatusCode ForwardSchedulerSvc::initialize() {
   }
 
   if (m_showDataFlow) {
-    info() << std::endl
-           << "======================= Data Flow ========================"
-           << std::endl;
-    info() << m_efg->dumpDataFlow() << endmsg;
+    warning() << "A 1-level data flow dump requested, but this feature is not supported"
+              << " by the ForwardScheduler any more. Use the AvalancheScheduler"
+              << " to dump as 1-level data flow, so the complete data flow graph."
+              << endmsg;
   }
 
   return sc;

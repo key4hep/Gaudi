@@ -5,14 +5,10 @@ namespace concurrency {
  namespace recursive_CF {
 
   //---------------------------------------------------------------------------
-  StatusCode ExecutionFlowManager::initialize(ControlFlowGraph* graph,
-                                              const std::unordered_map<std::string,unsigned int>& algname_index_map) {
+  void ExecutionFlowManager::initialize(ControlFlowGraph* graph,
+                                        const std::unordered_map<std::string,unsigned int>& algname_index_map) {
     m_CFGraph = graph;
-    StatusCode sc = graph->initialize(algname_index_map);
-    if (!sc.isSuccess())
-      error() << "Could not initialize the flow graph." << endmsg;
-
-    return sc;
+    graph->initialize(algname_index_map);
   }
 
   void ExecutionFlowManager::updateEventState(AlgsExecutionStates& algo_states,

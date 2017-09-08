@@ -27,7 +27,7 @@ namespace concurrency {
     ~ExecutionFlowManager() override = default;
     /// Initialize the control flow manager
     /// It greps the topalg list and the index map for the algo names
-    StatusCode initialize(ControlFlowGraph* graph,
+    void initialize(ControlFlowGraph* graph,
                           const std::unordered_map<std::string,unsigned int>& algname_index_map);
     /// Get the flow graph instance
     inline ControlFlowGraph* getCFGraph() const {return m_CFGraph;}
