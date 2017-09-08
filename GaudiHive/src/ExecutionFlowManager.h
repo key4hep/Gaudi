@@ -1,10 +1,11 @@
 #ifndef EXECUTIONFLOWMANAGER_H_
 #define EXECUTIONFLOWMANAGER_H_
 
-#include "IGraphVisitor.h"
-#include "PrecedenceRulesGraph.h"
+#include "ControlFlowGraph.h"
 
 namespace concurrency {
+
+  namespace recursive_CF {
 
   struct IExecutionFlowManager {
     virtual ~IExecutionFlowManager() {}
@@ -21,15 +22,15 @@ namespace concurrency {
   class ExecutionFlowManager  : public CommonMessaging<IExecutionFlowManager> {
   public:
     /// Constructor
-    ExecutionFlowManager() : m_name("ExecutionFlowManager"), m_PRGraph(0) {};
+    ExecutionFlowManager() : m_name("ExecutionFlowManager"), m_CFGraph(0) {};
     /// Destructor
     ~ExecutionFlowManager() override = default;
     /// Initialize the control flow manager
     /// It greps the topalg list and the index map for the algo names
-    StatusCode initialize(PrecedenceRulesGraph* graph,
+    StatusCode initialize(ControlFlowGraph* graph,
                           const std::unordered_map<std::string,unsigned int>& algname_index_map);
     /// Get the flow graph instance
-    inline PrecedenceRulesGraph* getPrecedenceRulesGraph() const {return m_PRGraph;}
+    inline ControlFlowGraph* getCFGraph() const {return m_CFGraph;}
     /// Update states and decisions of algorithms
     void updateEventState(AlgsExecutionStates & algo_states,
                           std::vector<int>& node_decisions) const;
@@ -40,17 +41,17 @@ namespace concurrency {
                          AlgsExecutionStates& states,
                          const std::vector<int>& node_decisions,
                          const unsigned int& recursionLevel) const {
-      m_PRGraph->printState(ss,states,node_decisions,recursionLevel);}
+      m_CFGraph->printState(ss,states,node_decisions,recursionLevel);}
     /// Retrieve name of the service
     const std::string& name() const override {return m_name;}
     /// Retrieve pointer to service locator
-    SmartIF<ISvcLocator>& serviceLocator() const override {return m_PRGraph->serviceLocator();}
+    SmartIF<ISvcLocator>& serviceLocator() const override {return m_CFGraph->serviceLocator();}
   private:
     std::string m_name;
-    /// the graph of precedence rules
-    PrecedenceRulesGraph* m_PRGraph;
+    /// the control flow graph
+    ControlFlowGraph* m_CFGraph;
   };
-
+  } // namespace recursive_CF
 } // namespace concurrency
 
 #endif /* EXECUTIONFLOWMANAGER_H_ */

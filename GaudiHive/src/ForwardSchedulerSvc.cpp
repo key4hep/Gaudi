@@ -278,8 +278,8 @@ StatusCode ForwardSchedulerSvc::initialize() {
   }
 
   const AlgResourcePool* algPool = dynamic_cast<const AlgResourcePool*>( m_algResourcePool.get() );
-  sc = m_efManager.initialize( algPool->getPRGraph(), m_algname_index_map);
-  unsigned int controlFlowNodeNumber = m_efManager.getPrecedenceRulesGraph()->getControlFlowNodeCounter();
+  sc = m_efManager.initialize( algPool->getCFGraph(), m_algname_index_map);
+  unsigned int controlFlowNodeNumber = m_efManager.getCFGraph()->getControlFlowNodeCounter();
 
   // Shortcut for the message service
   SmartIF<IMessageSvc> messageSvc( serviceLocator() );
@@ -295,7 +295,7 @@ StatusCode ForwardSchedulerSvc::initialize() {
   info() << " o Number of algorithms in flight: " << m_maxAlgosInFlight << endmsg;
   info() << " o TBB thread pool size: " << m_threadPoolSize << endmsg;
 
-  m_efg = algPool->getPRGraph();
+  m_efg = algPool->getCFGraph();
 
   if (m_showControlFlow) {
     info() << std::endl

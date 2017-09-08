@@ -29,7 +29,7 @@ AlgResourcePool::~AlgResourcePool() {
     delete queue;
   }
 
-  delete m_PRGraph;
+  delete m_CFGraph;
 }
 
 //---------------------------------------------------------------------------
@@ -49,13 +49,13 @@ StatusCode AlgResourcePool::initialize(){
     m_topAlgNames.assign(appMgrProps->getProperty("TopAlg"));
   }
 
-  // Prepare empty graph of precedence rules
+  // Prepare empty control flow graph
   // (Only ForwardScheduler requires assembling the graph in AlgResourcePool.
   //  The AvalancheScheduler relies on the graph that is assembled by the PrecedenceSvc)
   if (serviceLocator()->existsService("ForwardSchedulerSvc")) {
-    const std::string& name = "PrecedenceRulesGraph";
+    const std::string& name = "ControlFlowGraph";
     SmartIF<ISvcLocator> svc = serviceLocator();
-    m_PRGraph = new concurrency::PrecedenceRulesGraph(name, svc);
+    m_CFGraph = new concurrency::recursive_CF::ControlFlowGraph(name, svc);
   }
 
   sc = decodeTopAlgs();
@@ -205,7 +205,7 @@ StatusCode AlgResourcePool::flattenSequencer(Algorithm* algo, ListAlg& alglist, 
     // Only ForwardScheduler requires assembling the graph in AlgResourcePool.
     // The AvalancheScheduler relies on the graph that is assembled by the PrecedenceSvc
     if (serviceLocator()->existsService("ForwardSchedulerSvc")) {
-      m_PRGraph->addAlgorithmNode(algo, parentName, false, false).ignore();
+      m_CFGraph->addAlgorithmNode(algo, parentName, false, false).ignore();
       DEBUG_MSG << std::string(recursionDepth, ' ') << algo->name()
                 << " is not a sequencer. Appending it" << endmsg;
     }
@@ -239,9 +239,9 @@ StatusCode AlgResourcePool::flattenSequencer(Algorithm* algo, ListAlg& alglist, 
       isSequential = (algo->hasProperty("Sequential") &&
                      (algo->getProperty("Sequential").toString() == "True") );
     }
-    sc = m_PRGraph->addDecisionHubNode(algo, parentName, !isSequential, isLazy, modeOR, allPass);
+    sc = m_CFGraph->addDecisionHubNode(algo, parentName, !isSequential, isLazy, modeOR, allPass);
     if (sc.isFailure()) {
-      error() << "Failed to add DecisionHub " << algo->name() << " to graph of precedence rules" << endmsg;
+      error() << "Failed to add DecisionHub " << algo->name() << " to control flow graph" << endmsg;
       return sc;
     }
   }
@@ -303,11 +303,11 @@ StatusCode AlgResourcePool::decodeTopAlgs()    {
   }
   // Top Alg list filled ----
 
-  // start forming the graph of precedence rules by adding the head decision hub
+  // start forming the control flow graph by adding the head decision hub
   // Only ForwardScheduler requires assembling the graph in AlgResourcePool.
   // The AvalancheScheduler relies on the graph that is assembled by the PrecedenceSvc
   if (serviceLocator()->existsService("ForwardSchedulerSvc"))
-    m_PRGraph->addHeadNode("RootDecisionHub",true,false,true,true);
+    m_CFGraph->addHeadNode("RootDecisionHub",true,false,true,true);
 
   // Now we unroll it ----
   for (auto& algoSmartIF : m_topAlgList) {
