@@ -11,6 +11,7 @@
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/graphml.hpp>
 #include <boost/filesystem.hpp>
+#include "boost/variant.hpp"
 
 // fwk includes
 #include "AlgsExecutionStates.h"
@@ -34,6 +35,59 @@ namespace boost {
 
   typedef adjacency_list<vecS, vecS, bidirectionalS, AlgoProps> ExecPlan;
   typedef graph_traits<ExecPlan>::vertex_descriptor AlgoVertex;
+
+  struct AlgoProperties {
+    AlgoProperties (Algorithm* algo, uint nodeIndex, uint algoIndex, bool inverted, bool allPass) :
+      m_name(algo->name()), m_nodeIndex(nodeIndex), m_algoIndex(algoIndex), m_algorithm(algo),
+      m_inverted(inverted), m_allPass(allPass), m_isIOBound(algo->isIOBound()) {}
+
+    std::string m_name;
+    uint m_nodeIndex;
+    uint m_algoIndex;
+    int m_rank{-1};
+    /// Algorithm representative behind the AlgorithmNode
+    Algorithm* m_algorithm;
+
+    /// Whether the selection result is negated or not
+    bool m_inverted;
+    /// Whether the selection result is relevant or always "pass"
+    bool m_allPass;
+    /// If an algorithm is blocking
+    bool m_isIOBound;
+  };
+
+  struct DecisionHubProperties {
+    DecisionHubProperties (const std::string& name, uint nodeIndex,
+                           bool modeConcurrent, bool modePromptDecision,
+                           bool modeOR, bool allPass) :
+      m_name(name), m_index(nodeIndex), m_modeConcurrent(modeConcurrent),
+      m_modePromptDecision(modePromptDecision), m_modeOR(modeOR),
+      m_allPass(allPass) {}
+
+    std::string m_name;
+    uint m_index;
+
+    /// Whether all daughters will be evaluated concurrently or sequentially
+    bool m_modeConcurrent;
+    /// Whether to evaluate the hub decision ASA its child decisions allow to do that.
+    /// Applicable to both concurrent and sequential cases.
+    bool  m_modePromptDecision;
+    /// Whether acting as "and" (false) or "or" node (true)
+    bool m_modeOR;
+    /// Whether always passing regardless of daughter results
+    bool m_allPass;
+  };
+
+  struct DataProperties {
+    DataProperties (const DataObjID& id) : m_id(id) {}
+
+    DataObjID m_id;
+  };
+
+  using VertexProps = boost::variant<AlgoProperties, DecisionHubProperties, DataProperties>;
+  typedef adjacency_list<vecS, vecS, bidirectionalS, VertexProps> PRGraph;
+  typedef graph_traits<PRGraph>::vertex_descriptor Vertex;
+
 }
 
 struct Cause {
@@ -382,6 +436,8 @@ namespace concurrency {
     boost::ExecPlan m_ExecPlan;
     std::map<std::string,boost::AlgoVertex> m_exec_plan_map;
     bool m_conditionsRealmEnabled{false};
+
+    ///
 
   };
 
