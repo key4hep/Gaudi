@@ -22,9 +22,9 @@
 
 namespace boost {
 
-  struct AlgoProps {
-    AlgoProps () {}
-    AlgoProps (const std::string& name, int index, int rank, double runtime) :
+  struct AlgoTraceProps {
+    AlgoTraceProps () {}
+    AlgoTraceProps (const std::string& name, int index, int rank, double runtime) :
       m_name(name), m_index(index), m_rank(rank), m_runtime(runtime) {}
     std::string m_name;
     int m_index{-1};
@@ -33,11 +33,11 @@ namespace boost {
     int m_eccentricity{-1};
   };
 
-  typedef adjacency_list<vecS, vecS, bidirectionalS, AlgoProps> ExecPlan;
-  typedef graph_traits<ExecPlan>::vertex_descriptor AlgoVertex;
+  using PrecTrace = adjacency_list<vecS, vecS, bidirectionalS, AlgoTraceProps>;
+  using AlgoTraceVertex = graph_traits<PrecTrace>::vertex_descriptor;
 
-  struct AlgoProperties {
-    AlgoProperties (Algorithm* algo, uint nodeIndex, uint algoIndex, bool inverted, bool allPass) :
+  struct AlgoProps {
+    AlgoProps (Algorithm* algo, uint nodeIndex, uint algoIndex, bool inverted, bool allPass) :
       m_name(algo->name()), m_nodeIndex(nodeIndex), m_algoIndex(algoIndex), m_algorithm(algo),
       m_inverted(inverted), m_allPass(allPass), m_isIOBound(algo->isIOBound()) {}
 
@@ -56,10 +56,10 @@ namespace boost {
     bool m_isIOBound;
   };
 
-  struct DecisionHubProperties {
-    DecisionHubProperties (const std::string& name, uint nodeIndex,
-                           bool modeConcurrent, bool modePromptDecision,
-                           bool modeOR, bool allPass) :
+  struct DecisionHubProps {
+    DecisionHubProps (const std::string& name, uint nodeIndex,
+                      bool modeConcurrent, bool modePromptDecision,
+                      bool modeOR, bool allPass) :
       m_name(name), m_index(nodeIndex), m_modeConcurrent(modeConcurrent),
       m_modePromptDecision(modePromptDecision), m_modeOR(modeOR),
       m_allPass(allPass) {}
@@ -78,15 +78,15 @@ namespace boost {
     bool m_allPass;
   };
 
-  struct DataProperties {
-    DataProperties (const DataObjID& id) : m_id(id) {}
+  struct DataProps {
+    DataProps (const DataObjID& id) : m_id(id) {}
 
     DataObjID m_id;
   };
 
-  using VertexProps = boost::variant<AlgoProperties, DecisionHubProperties, DataProperties>;
-  typedef adjacency_list<vecS, vecS, bidirectionalS, VertexProps> PRGraph;
-  typedef graph_traits<PRGraph>::vertex_descriptor Vertex;
+  using VertexProps = boost::variant<AlgoProps, DecisionHubProps, DataProps>;
+  using PRGraph = adjacency_list<vecS, vecS, bidirectionalS, VertexProps>;
+  using PRVertex = graph_traits<PRGraph>::vertex_descriptor;
 
 }
 
@@ -99,7 +99,7 @@ struct Cause {
 
 namespace concurrency {
 
-  typedef AlgsExecutionStates::State State;
+  using State = AlgsExecutionStates::State;
   class PrecedenceRulesGraph;
 
   // ==========================================================================
@@ -323,12 +323,12 @@ namespace concurrency {
 
 
   // ==========================================================================
-  typedef std::unordered_map<std::string,AlgorithmNode*> AlgoNodesMap;
-  typedef std::unordered_map<std::string,DecisionNode*> DecisionHubsMap;
-  typedef std::unordered_map<DataObjID,DataNode*,DataObjID_Hasher> DataNodesMap;
+  using AlgoNodesMap = std::unordered_map<std::string,AlgorithmNode*> ;
+  using DecisionHubsMap = std::unordered_map<std::string,DecisionNode*>;
+  using DataNodesMap = std::unordered_map<DataObjID,DataNode*,DataObjID_Hasher> ;
 
-  typedef std::unordered_map<std::string, DataObjIDColl > AlgoInputsMap;
-  typedef std::unordered_map<std::string, DataObjIDColl > AlgoOutputsMap;
+  using AlgoInputsMap = std::unordered_map<std::string, DataObjIDColl >;
+  using AlgoOutputsMap = std::unordered_map<std::string, DataObjIDColl >;
 
   struct IPrecedenceRulesGraph {
     virtual ~IPrecedenceRulesGraph() = default;
@@ -401,10 +401,10 @@ namespace concurrency {
     std::string dumpDataFlow() const;
     /// Print out control flow of Algorithms and Sequences
     std::string dumpControlFlow() const;
-    /// dump to file encountered execution plan
-    void dumpExecutionPlan(const boost::filesystem::path&);
-    /// set cause-effect connection between two algorithms in the execution plan
-    void addEdgeToExecutionPlan(const AlgorithmNode* u, const AlgorithmNode* v);
+    /// dump to file the precedence trace
+    void dumpPrecTrace(const boost::filesystem::path&);
+    /// set cause-effect connection between two algorithms in the precedence trace
+    void addEdgeToPrecTrace(const AlgorithmNode* u, const AlgorithmNode* v);
     ///
     void dumpControlFlow(std::ostringstream&, ControlFlowNode*, const int&) const;
 
@@ -432,12 +432,12 @@ namespace concurrency {
 
     const std::chrono::system_clock::time_point m_initTime;
 
-    /// temporary items to experiment with execution planning
-    boost::ExecPlan m_ExecPlan;
-    std::map<std::string,boost::AlgoVertex> m_exec_plan_map;
-    bool m_conditionsRealmEnabled{false};
+    /// facilities for algorithm precedence tracing
+    boost::PrecTrace m_precTrace;
+    std::map<std::string,boost::AlgoTraceVertex> m_prec_trace_map;
 
-    ///
+    /// Enable conditions realm of precedence rules
+    bool m_conditionsRealmEnabled{false};
 
   };
 

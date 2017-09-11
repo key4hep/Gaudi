@@ -509,39 +509,39 @@ namespace concurrency
 
   //---------------------------------------------------------------------------
 
-  void PrecedenceRulesGraph::dumpExecutionPlan(const boost::filesystem::path& fileName)
+  void PrecedenceRulesGraph::dumpPrecTrace(const boost::filesystem::path& fileName)
   {
     boost::filesystem::ofstream myfile;
     myfile.open( fileName, std::ios::app );
 
     boost::dynamic_properties dp;
-    dp.property( "name", boost::get( &boost::AlgoProps::m_name, m_ExecPlan ) );
-    dp.property( "index", boost::get( &boost::AlgoProps::m_index, m_ExecPlan ) );
-    dp.property( "rank", boost::get( &boost::AlgoProps::m_rank, m_ExecPlan ) );
-    dp.property( "runtime", boost::get( &boost::AlgoProps::m_runtime, m_ExecPlan ) );
+    dp.property( "name", boost::get( &boost::AlgoTraceProps::m_name, m_precTrace ) );
+    dp.property( "index", boost::get( &boost::AlgoTraceProps::m_index, m_precTrace ) );
+    dp.property( "rank", boost::get( &boost::AlgoTraceProps::m_rank, m_precTrace ) );
+    dp.property( "runtime", boost::get( &boost::AlgoTraceProps::m_runtime, m_precTrace ) );
 
-    boost::write_graphml( myfile, m_ExecPlan, dp );
+    boost::write_graphml( myfile, m_precTrace, dp );
 
     myfile.close();
   }
 
-  void PrecedenceRulesGraph::addEdgeToExecutionPlan( const AlgorithmNode* u,
-                                                     const AlgorithmNode* v )
+  void PrecedenceRulesGraph::addEdgeToPrecTrace( const AlgorithmNode* u,
+                                                 const AlgorithmNode* v )
   {
 
-    boost::AlgoVertex source;
+    boost::AlgoTraceVertex source;
     float runtime( 0. );
     if ( u == nullptr ) {
-      auto itT = m_exec_plan_map.find( "ENTRY" );
-      if ( itT != m_exec_plan_map.end() ) {
+      auto itT = m_prec_trace_map.find( "ENTRY" );
+      if ( itT != m_prec_trace_map.end() ) {
         source = itT->second;
       } else {
-        source = boost::add_vertex( boost::AlgoProps("ENTRY",-999,-999,0),m_ExecPlan);
-        m_exec_plan_map["ENTRY"] = source;
+        source = boost::add_vertex( boost::AlgoTraceProps("ENTRY",-999,-999,0),m_precTrace);
+        m_prec_trace_map["ENTRY"] = source;
       }
     } else {
-      auto itS = m_exec_plan_map.find( u->getNodeName() );
-      if ( itS != m_exec_plan_map.end() ) {
+      auto itS = m_prec_trace_map.find( u->getNodeName() );
+      if ( itS != m_prec_trace_map.end() ) {
         source = itS->second;
       } else {
         auto alg = u->getAlgorithm();
@@ -554,18 +554,18 @@ namespace concurrency
           runtime = 1.;
         }
 
-        source = boost::add_vertex(boost::AlgoProps(u->getNodeName(),
-                                                    u->getAlgoIndex(),
-                                                    u->getRank(),
-                                                    runtime ),
-                                   m_ExecPlan);
-        m_exec_plan_map[u->getNodeName()] = source;
+        source = boost::add_vertex(boost::AlgoTraceProps(u->getNodeName(),
+                                                         u->getAlgoIndex(),
+                                                         u->getRank(),
+                                                         runtime ),
+                                   m_precTrace);
+        m_prec_trace_map[u->getNodeName()] = source;
       }
     }
 
-    boost::AlgoVertex target;
-    auto itP = m_exec_plan_map.find( v->getNodeName() );
-    if ( itP != m_exec_plan_map.end() ) {
+    boost::AlgoTraceVertex target;
+    auto itP = m_prec_trace_map.find( v->getNodeName() );
+    if ( itP != m_prec_trace_map.end() ) {
       target = itP->second;
     } else {
       auto alg = v->getAlgorithm();
@@ -578,17 +578,17 @@ namespace concurrency
         runtime = 1.;
       }
 
-      target = boost::add_vertex(boost::AlgoProps(v->getNodeName(),
-                                                  v->getAlgoIndex(),
-                                                  v->getRank(),
-                                                  runtime ),
-                                 m_ExecPlan);
-      m_exec_plan_map[v->getNodeName()] = target;
+      target = boost::add_vertex(boost::AlgoTraceProps(v->getNodeName(),
+                                                       v->getAlgoIndex(),
+                                                       v->getRank(),
+                                                       runtime ),
+                                 m_precTrace);
+      m_prec_trace_map[v->getNodeName()] = target;
     }
 
     if (msgLevel(MSG::DEBUG))
       debug() << "Edge added to execution plan" << endmsg;
-    boost::add_edge(source, target, m_ExecPlan);
+    boost::add_edge(source, target, m_precTrace);
   }
 
 } // namespace
