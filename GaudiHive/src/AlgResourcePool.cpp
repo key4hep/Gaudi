@@ -298,7 +298,7 @@ StatusCode AlgResourcePool::decodeTopAlgs()    {
       algoSmartIF = algo;
     }
     // Init and start
-    algoSmartIF->sysInitialize();
+    algoSmartIF->sysInitialize().ignore();
     m_topAlgList.push_back(algoSmartIF);
   }
   // Top Alg list filled ----
