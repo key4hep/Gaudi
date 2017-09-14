@@ -17,11 +17,18 @@ namespace concurrency {
       using IGraphVisitor::visit;
       using IGraphVisitor::visitEnter;
 
+      bool visitEnter(AlgorithmNode& node) const override;
+
       bool visit(AlgorithmNode& node) override;
 
       bool visitEnter(DataNode& node) const override;
 
       bool visit(DataNode& node) override;
+
+      bool visitEnter(ConditionNode&) const override;
+
+      bool visit(ConditionNode&) override;
+
   };
 
   class DecisionUpdater : public IGraphVisitor {
@@ -35,7 +42,9 @@ namespace concurrency {
       using IGraphVisitor::visit;
 
       bool visit(AlgorithmNode& node) override;
+
   };
+
 
   class Supervisor : public IGraphVisitor {
     public:
@@ -55,6 +64,7 @@ namespace concurrency {
       bool visitEnter(AlgorithmNode& node) const override;
 
       bool visit(AlgorithmNode& node) override;
+
   };
 
   class RankerByProductConsumption : public IGraphVisitor {
@@ -68,6 +78,7 @@ namespace concurrency {
       using IGraphVisitor::visit;
 
       bool visit(AlgorithmNode& node) override;
+
   };
 
   class RankerByCummulativeOutDegree : public IGraphVisitor {
@@ -97,6 +108,7 @@ namespace concurrency {
       using IGraphVisitor::visit;
 
       bool visit(AlgorithmNode& node) override;
+
   };
 
   class RankerByEccentricity : public IGraphVisitor {
@@ -110,6 +122,7 @@ namespace concurrency {
       using IGraphVisitor::visit;
 
       bool visit(AlgorithmNode& node) override;
+
   };
 
   class RankerByDataRealmEccentricity : public IGraphVisitor {
@@ -159,6 +172,7 @@ namespace concurrency {
     bool visitEnter(AlgorithmNode& node) const override;
 
     bool visit(AlgorithmNode& node) override;
+
   };
 
 }

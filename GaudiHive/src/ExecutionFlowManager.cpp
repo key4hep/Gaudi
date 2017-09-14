@@ -17,9 +17,10 @@ namespace concurrency {
   StatusCode ExecutionFlowManager::initialize(PrecedenceRulesGraph* graph,
                                             const std::unordered_map<std::string,unsigned int>& algname_index_map,
                                             std::vector<EventSlot>& eventSlots,
-                                            const std::string& mode){
+                                            const std::string& mode,
+                                            bool enableCondSvc){
     m_PRGraph = graph;
-    StatusCode sc = graph->initialize(algname_index_map, eventSlots);
+    StatusCode sc = graph->initialize(algname_index_map, eventSlots, enableCondSvc);
     if (!sc.isSuccess()) {
       error() << "Could not initialize the execution flow graph." << endmsg;
       return sc;

@@ -1,19 +1,33 @@
 #include "PRGraphVisitors.h"
 #include "AlgsExecutionStates.h"
 
+#include "GaudiKernel/DataObjID.h"
+#include "GaudiKernel/ICondSvc.h"
+
 namespace concurrency {
 
   typedef AlgsExecutionStates::State State;
 
   //--------------------------------------------------------------------------
+  bool DataReadyPromoter::visitEnter(AlgorithmNode& node) const {
+
+    if (State::CONTROLREADY != m_slot->algsStates[node.getAlgoIndex()])
+      return false;
+
+    return true;
+  }
+
+  //--------------------------------------------------------------------------
   bool DataReadyPromoter::visit(AlgorithmNode& node) {
 
-    bool result = true; // return true if an algorithm has no data inputs
+    bool result = true; // return true if this algorithm has no data inputs
 
     for ( auto dataNode : node.getInputDataNodes() ) {
 
-      result = visit(*dataNode);
+      result = dataNode->accept(*this);
 
+      // With ConditionNodes, one may decide NOT to break here so that associated
+      // ConditionAlgorithms are scheduled ASAP. This behavior can be made configurable
       if (!result) break; // skip checking other inputs if this input was not produced yet
     }
 
@@ -31,8 +45,10 @@ namespace concurrency {
 
   //--------------------------------------------------------------------------
   bool DataReadyPromoter::visit(DataNode& node) {
+    /* Implements 'observer' strategy, i.e., only check if producer of this DataNode
+     * has been already executed or not */
 
-    bool result = false; // return false if the input has no producers at all
+    bool result = false; // return false if this DataNode has no producers at all
 
     for ( auto algoNode : node.getProducers() ) {
       const auto& state = m_slot->algsStates[algoNode->getAlgoIndex()];
@@ -45,6 +61,31 @@ namespace concurrency {
     // return true only if this DataNode is produced
     return result;
   }
+
+  //--------------------------------------------------------------------------
+  bool DataReadyPromoter::visitEnter(ConditionNode& node) const {
+
+    if (node.m_condSvc->isValidID(*(m_slot->eventContext), node.getPath()))
+      return false; // do not enter this ConditionNode if the condition has bee already loaded
+
+    return true;
+  }
+
+  //--------------------------------------------------------------------------
+  bool DataReadyPromoter::visit(ConditionNode& node) {
+    /* Implements 'requester' strategy, i.e., requests this ConditionNode to be loaded
+     * by its associated ConditionAlgorithm */
+
+    auto promoter = Supervisor(*m_slot);
+
+    for (auto condAlg : node.getProducers())
+      condAlg->accept(promoter);
+
+    // this method is called if, and only if, this ConditionNode is not yet produced.
+    // thus, by definition, this ConditionNode is not yet available at this moment
+    return false;
+  }
+
 
   //--------------------------------------------------------------------------
   bool DecisionUpdater::visit(AlgorithmNode& node) {
@@ -65,10 +106,8 @@ namespace concurrency {
       m_slot->controlFlowState[node.getNodeIndex()] = decision;
 
       auto promoter = DataReadyPromoter(*m_slot);
-      for ( auto output : node.getOutputDataNodes() )
-        for ( auto consumer : output->getConsumers() )
-          if (State::CONTROLREADY == states[consumer->getAlgoIndex()])
-            consumer->accept(promoter);
+      for ( auto consumer : node.getConsumerNodes() )
+        consumer->accept(promoter);
 
       auto vis = concurrency::Supervisor( *m_slot );
       for ( auto p : node.getParentDecisionHubs() )

@@ -374,8 +374,7 @@ namespace concurrency
       auto promoter = DataReadyPromoter(slot);
       for ( auto output : m_outputs )
         for ( auto consumer : output->getConsumers() )
-          if (State::CONTROLREADY == states[consumer->getAlgoIndex()])
-            consumer->accept(promoter);
+          consumer->accept(promoter);
 
       auto vis = concurrency::Supervisor(slot);
       for ( auto p : m_parents ) {
@@ -434,11 +433,36 @@ namespace concurrency
 
   //---------------------------------------------------------------------------
   StatusCode PrecedenceRulesGraph::initialize( const std::unordered_map<std::string, unsigned int>& algname_index_map,
-                                             std::vector<EventSlot>& eventSlots )
+                                               std::vector<EventSlot>& eventSlots, bool enableCondSvc )
   {
 
     m_eventSlots = &eventSlots;
+    m_conditionsRealmEnabled = enableCondSvc;
+
     m_headNode->initialize( algname_index_map );
+
+    // Detach condition algorithms from the CF realm
+    if (m_conditionsRealmEnabled) {
+      SmartIF<ICondSvc> condSvc {serviceLocator()->service("CondSvc",false)};
+      auto& condAlgs = condSvc->condAlgs();
+      for (const auto algo : condAlgs) {
+        auto itA   = m_algoNameToAlgoNodeMap.find( algo->name() );
+        concurrency::AlgorithmNode* algoNode;
+        if ( itA != m_algoNameToAlgoNodeMap.end() ) {
+          algoNode = itA->second;
+          debug() << "Detaching condition algorithm '" << algo->name() << "' from the CF realm.." << endmsg;
+          for (auto parent : algoNode->getParentDecisionHubs()) {
+            parent->m_children.erase(std::remove(parent->m_children.begin(), parent->m_children.end(), algoNode),
+                                     parent->m_children.end());
+          }
+          algoNode->m_parents.clear();
+
+        } else {
+          warning() << "Algorithm '" << algo->name() << "' is not registered in the graph" << endmsg;
+        }
+      }
+    }
+
     // StatusCode sc = buildDataDependenciesRealm();
     StatusCode sc = buildAugmentedDataDependenciesRealm();
 
@@ -591,30 +615,32 @@ namespace concurrency
 
     StatusCode sc = StatusCode::SUCCESS;
 
+    // Create new, or fetch existent, AlgorithmNode
     auto& algoName = algo->name();
+    auto itA   = m_algoNameToAlgoNodeMap.find( algoName );
+    concurrency::AlgorithmNode* algoNode;
+    if ( itA != m_algoNameToAlgoNodeMap.end() ) {
+      algoNode = itA->second;
+    } else {
+      algoNode = new concurrency::AlgorithmNode( *this, m_nodeCounter, algoName, inverted, allPass, algo->isIOBound() );
+      ++m_nodeCounter;
+      m_algoNameToAlgoNodeMap[algoName] = algoNode;
+      if (msgLevel(MSG::DEBUG))
+        debug() << "AlgorithmNode '" << algoName << "' added @ " << algoNode << endmsg;
+      registerIODataObjects(algo);
+    }
 
+    // Attach AlgorithmNode to its CF decision hub
     auto itP = m_decisionNameToDecisionHubMap.find( parentName );
-    concurrency::DecisionNode* parentNode;
     if ( itP != m_decisionNameToDecisionHubMap.end() ) {
-      parentNode = itP->second;
-      auto itA   = m_algoNameToAlgoNodeMap.find( algoName );
-      concurrency::AlgorithmNode* algoNode;
-      if ( itA != m_algoNameToAlgoNodeMap.end() ) {
-        algoNode = itA->second;
-      } else {
-        algoNode = new concurrency::AlgorithmNode( *this, m_nodeCounter, algoName, inverted, allPass, algo->isIOBound() );
-        ++m_nodeCounter;
-        m_algoNameToAlgoNodeMap[algoName] = algoNode;
-        if (msgLevel(MSG::DEBUG))
-          debug() << "AlgoNode " << algoName << " added @ " << algoNode << endmsg;
-        registerIODataObjects(algo);
-      }
-
+      auto parentNode = itP->second;
+      debug() << "Attaching AlgorithmNode '" << algo->name() << "' to DecisionNode '"
+              << parentName << "'" << endmsg;
       parentNode->addDaughterNode( algoNode );
       algoNode->addParentNode( parentNode );
     } else {
       sc = StatusCode::FAILURE;
-      error() << "Decision hub node " << parentName << ", requested to be parent, is not registered."
+      error() << "Requested DecisionNode '" << parentName << "' was not registered"
               << endmsg;
     }
 
@@ -640,10 +666,25 @@ namespace concurrency
       dataNode = itD->second;
       sc = StatusCode::SUCCESS;
     } else {
-      dataNode                          = new concurrency::DataNode( *this, dataPath );
+      if (!m_conditionsRealmEnabled) {
+        dataNode = new concurrency::DataNode(*this, dataPath);
+        if (msgLevel(MSG::DEBUG))
+          debug() << "  DataNode for " << dataPath << " added @ " << dataNode << endmsg;
+      } else {
+        SmartIF<ICondSvc> condSvc {serviceLocator()->service("CondSvc",false)};
+        if (condSvc->isRegistered(dataPath)) {
+          dataNode = new concurrency::ConditionNode(*this, dataPath, condSvc);
+          if (msgLevel(MSG::DEBUG))
+            debug() << "  ConditionNode for " << dataPath << " added @ " << dataNode << endmsg;
+        } else {
+          dataNode = new concurrency::DataNode(*this, dataPath);
+          if (msgLevel(MSG::DEBUG))
+            debug() << "  DataNode for " << dataPath << " added @ " << dataNode << endmsg;
+        }
+      }
+
       m_dataPathToDataNodeMap[dataPath] = dataNode;
-      if (msgLevel(MSG::DEBUG))
-        debug() << "  DataNode for " << dataPath << " added @ " << dataNode << endmsg;
+
       sc = StatusCode::SUCCESS;
     }
 
