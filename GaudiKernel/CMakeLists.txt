@@ -48,6 +48,8 @@ if( CPPUNIT_FOUND )
    gaudi_add_unit_test(test_LockedHandle tests/src/test_LockedHandle.cpp)
    if(CMAKE_SYSTEM_NAME MATCHES Linux)
       target_link_libraries(test_LockedHandle -Wl,--no-as-needed -ldl -Wl,--as-needed ${Boost_LIBRARIES})
+   else()
+      target_link_libraries(test_LockedHandle ${Boost_LIBRARIES})
    endif()
 endif()
 gaudi_add_unit_test(ContextSpecificPtrTest tests/src/test_ContextSpecificPtr.cpp

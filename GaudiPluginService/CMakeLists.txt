@@ -22,8 +22,8 @@ set_directory_properties(PROPERTIES CONFIGURABLE_USER_MODULES None)
 gaudi_install_python_modules()
 
 # Application
-gaudi_add_executable(listcomponents src/listcomponents.cpp src/PluginService.cpp)
-target_link_libraries(listcomponents ${CMAKE_DL_LIBS})
+gaudi_add_executable(listcomponents src/listcomponents.cpp)
+target_link_libraries(listcomponents GaudiPluginService ${CMAKE_DL_LIBS})
 
 # Hide some Boost compile time warnings
 find_package(Boost)

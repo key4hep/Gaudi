@@ -35,9 +35,8 @@
   #include "windows.h"
   #undef NOMSG
   #undef NOGDI
-  static const char* SHLIB_SUFFIX = ".dll";
+  static const std::array< const char*, 1 > SHLIB_SUFFIXES = { ".dll" };
 #else  // UNIX...: first the EGCS stuff, then the OS dependent includes
-  static const char* SHLIB_SUFFIX = ".so";
   #include <errno.h>
   #include <string.h>
   #include "sys/times.h"
@@ -56,9 +55,15 @@ struct HMODULE {
   long           numSym;
   shl_symbol*    sym;
 };
-#endif
+#endif // HPUX or not...
 
-#endif
+#ifdef __APPLE__
+  static const std::array< const char*, 2 > SHLIB_SUFFIXES = { ".dylib", ".so" };
+#else
+  static const std::array< const char*, 1 > SHLIB_SUFFIXES = { ".so" };
+#endif // __APPLE__
+
+#endif // Windows or Unix...
 
 // Note: __attribute__ is a GCC keyword available since GCC 3.4
 #ifdef __GNUC__
@@ -106,20 +111,34 @@ static unsigned long doLoad(const std::string& name, System::ImageHandle* handle
   return 1;
 }
 
-static unsigned long loadWithoutEnvironment(const std::string& name, System::ImageHandle* handle)    {
+static unsigned long loadWithoutEnvironment( const std::string& name,
+                                             System::ImageHandle* handle ) {
 
-  std::string dllName = name;
-  long len = strlen(SHLIB_SUFFIX);
+   // If the name is empty, don't do anything complicated.
+   if( name.length() == 0 ) {
+      return doLoad( name, handle );
+   }
 
-  // Add the suffix at the end of the library name only if necessary
-  // FIXME: cure the logic
-  if ((dllName.length() != 0) &&
-      ::strncasecmp(dllName.data()+dllName.length()-len, SHLIB_SUFFIX, len) != 0) {
-    dllName += SHLIB_SUFFIX;
-  }
+   // Check if the specified name has a shared library suffix already. If it
+   // does, don't bother the name any more.
+   std::string dllName = name;
+   bool hasShlibSuffix = false;
+   for( const char* suffix : SHLIB_SUFFIXES ) {
+      const size_t len = strlen( suffix );
+      if( dllName.compare( dllName.length() - len, len, suffix ) == 0 ) {
+         hasShlibSuffix = true;
+         break;
+      }
+   }
 
-  // Load the library
-  return doLoad(dllName, handle);
+   // If it doesn't have a shared library suffix on it, add the "default" shared
+   // library suffix to the name.
+   if( ! hasShlibSuffix ) {
+      dllName += SHLIB_SUFFIXES[ 0 ];
+   }
+
+   // Load the library.
+   return doLoad( dllName, handle );
 }
 
 /// Load dynamic link library
@@ -137,19 +156,30 @@ unsigned long System::loadDynamicLib(const std::string& name, ImageHandle* handl
     } else {
       // build the dll name
       std::string dllName = name;
-      // if the lib name contains '/' we can assume is the path to a file
-      // (relative or absolute), otherwise it might be a logical library name
-      // (i.e. without 'lib' and '.so')
-      if (dllName.find('/') == std::string::npos) {
+      // Add a possible "lib" prefix to the name on unix platforms. But only if
+      // it's not an absolute path name.
 #if defined(__linux) || defined(__APPLE__)
-        if (dllName.compare(0, 3, "lib") != 0)
-          dllName = "lib" + dllName;
-#endif
-        if (dllName.find(SHLIB_SUFFIX) == std::string::npos)
-          dllName += SHLIB_SUFFIX;
+      if( ( dllName.find( '/' ) == std::string::npos ) &&
+          ( dllName.compare( 0, 3, "lib" ) != 0 ) ) {
+         dllName = "lib" + dllName;
       }
-      // try to locate the dll using the standard PATH
-      res = loadWithoutEnvironment(dllName, handle);
+#endif // unix
+      // Now try loading the library with all possible suffixes supported by the
+      // platform.
+      for( const char* suffix : SHLIB_SUFFIXES ) {
+         // Add the suffix if necessary.
+         std::string libName = dllName;
+         const size_t len = strlen( suffix );
+         if( dllName.compare( dllName.length() - len, len, suffix ) != 0 ) {
+            libName += suffix;
+         }
+         // Try to load the library.
+         res = loadWithoutEnvironment( libName, handle );
+         // If the load succeeded, stop here.
+         if( res == 1 ) {
+            break;
+         }
+      }
     }
     if ( res != 1 ) {
 #if defined(__linux) || defined(__APPLE__)

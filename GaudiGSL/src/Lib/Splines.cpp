@@ -132,7 +132,11 @@ namespace Genfun
 
 
     // ========================================================================
-    FUNCTION_OBJECT_IMP( GSLSpline )
+    //FUNCTION_OBJECT_IMP( GSLSpline )
+    GSLSpline* GSLSpline::clone() const
+    {
+      return new GSLSpline(*this);
+    }
     // ========================================================================
 
     // ========================================================================
@@ -228,7 +232,11 @@ namespace Genfun
     // ========================================================================
 
     // ========================================================================
-    FUNCTION_OBJECT_IMP( GSLSplineDeriv )
+    //FUNCTION_OBJECT_IMP( GSLSplineDeriv )
+    GSLSplineDeriv* GSLSplineDeriv::clone() const
+    {
+      return new GSLSplineDeriv(*this);
+    }
     // ========================================================================
 
     // ========================================================================
@@ -334,7 +342,12 @@ namespace Genfun
     // ========================================================================
 
     // ========================================================================
-    FUNCTION_OBJECT_IMP( GSLSplineDeriv2 )
+    //FUNCTION_OBJECT_IMP( GSLSplineDeriv2 )
+    GSLSplineDeriv2* GSLSplineDeriv2::clone() const
+    {
+      return new GSLSplineDeriv2(*this);
+    }
+
     // ========================================================================
 
     // ========================================================================
@@ -431,7 +444,11 @@ namespace Genfun
 
 
     // ========================================================================
-    FUNCTION_OBJECT_IMP( GSLSplineInteg )
+    //FUNCTION_OBJECT_IMP( GSLSplineInteg )
+    GSLSplineInteg* GSLSplineInteg::clone() const
+    {
+      return new GSLSplineInteg(*this);
+    }
     // ========================================================================
 
     // ========================================================================
