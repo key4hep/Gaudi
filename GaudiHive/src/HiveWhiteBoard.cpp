@@ -14,6 +14,7 @@
 #include "GaudiKernel/TypeNameString.h"
 #include "Rtypes.h"
 #include "ThreadLocalStorage.h"
+#include "tbb/mutex.h"
 #include "tbb/recursive_mutex.h"
 
 // Interfaces
@@ -28,9 +29,6 @@
 #include "GaudiKernel/ISvcLocator.h"
 #include "GaudiKernel/ISvcManager.h"
 
-// Forward declarations
-
-typedef tbb::recursive_mutex wbMutex;
 
 namespace
 {
@@ -48,15 +46,15 @@ namespace
   template <> IDataManagerSvc* Partition::get<IDataManagerSvc>()
   { return dataManager.get(); }
 
-  template <typename T>
+  template <typename T, typename Mutex = tbb::mutex>
   class Synced {
       T m_obj;
-      mutable wbMutex m_mtx;
+      mutable Mutex m_mtx;
   public:
       template <typename F> auto with_lock(F&& f) -> decltype(auto)
-      { wbMutex::scoped_lock lock; lock.acquire( m_mtx ); return f(m_obj); }
+      { typename Mutex::scoped_lock lock; lock.acquire( m_mtx ); return f(m_obj); }
       template <typename F> auto with_lock(F&& f) const -> decltype(auto)
-      { wbMutex::scoped_lock lock; lock.acquire( m_mtx ); return f(m_obj); }
+      { typename Mutex::scoped_lock lock; lock.acquire( m_mtx ); return f(m_obj); }
   };
   // transform an f(T) into an f(Synced<T>)
   template <typename Fun> auto with_lock(Fun&& f) {
