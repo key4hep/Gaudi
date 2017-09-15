@@ -28,13 +28,6 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  void DecisionNode::initialize( const std::unordered_map<std::string, unsigned int>& algname_index_map )
-  {
-
-    for ( auto daughter : m_children ) daughter->initialize( algname_index_map );
-  }
-
-  //---------------------------------------------------------------------------
   void DecisionNode::addParentNode( DecisionNode* node )
   {
 
@@ -104,13 +97,6 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  void AlgorithmNode::initialize( const std::unordered_map<std::string, unsigned int>& algname_index_map )
-  {
-
-    m_algoIndex = algname_index_map.at( m_algoName );
-  }
-
-  //---------------------------------------------------------------------------
   void AlgorithmNode::printState( std::stringstream& output, AlgsExecutionStates& states,
                                   const std::vector<int>& node_decisions,
                                   const unsigned int& recursionLevel ) const
@@ -159,16 +145,21 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  StatusCode PrecedenceRulesGraph::initialize( const std::unordered_map<std::string, unsigned int>& algname_index_map,
-                                               bool enableCondSvc )
+  StatusCode PrecedenceRulesGraph::initialize()
   {
-    m_conditionsRealmEnabled = enableCondSvc;
 
-    m_headNode->initialize( algname_index_map );
+    if (serviceLocator()->existsService("CondSvc")) {
+      SmartIF<ICondSvc> condSvc {serviceLocator()->service("CondSvc")};
+      if (condSvc.isValid())  {
+        info() << "CondSvc found. DF precedence rules will be augmented with 'Conditions'"
+               << endmsg;
+        m_conditionsRealmEnabled = true;
+      }
+    }
 
     // Detach condition algorithms from the CF realm
     if (m_conditionsRealmEnabled) {
-      SmartIF<ICondSvc> condSvc {serviceLocator()->service("CondSvc",false)};
+      SmartIF<ICondSvc> condSvc {serviceLocator()->service("CondSvc", false)};
       auto& condAlgs = condSvc->condAlgs();
       for (const auto algo : condAlgs) {
         auto itA   = m_algoNameToAlgoNodeMap.find( algo->name() );
@@ -299,8 +290,9 @@ namespace concurrency
     auto itP = m_decisionNameToDecisionHubMap.find( parentName );
     if ( itP != m_decisionNameToDecisionHubMap.end() ) {
       auto parentNode = itP->second;
-      debug() << "Attaching AlgorithmNode '" << algo->name() << "' to DecisionNode '"
-              << parentName << "'" << endmsg;
+      if (msgLevel(MSG::VERBOSE))
+        verbose() << "Attaching AlgorithmNode '" << algo->name() << "' to DecisionNode '"
+                << parentName << "'" << endmsg;
       parentNode->addDaughterNode( algoNode );
       algoNode->addParentNode( parentNode );
     } else {

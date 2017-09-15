@@ -58,8 +58,6 @@ namespace concurrency {
     /// Destructor
     virtual ~ControlFlowNode() {}
 
-    /// Initialize
-    virtual void initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map) = 0;
     /// Visitor entry point
     virtual bool accept(IGraphVisitor& visitor) = 0;
     /// Print a string representing the control flow state
@@ -96,8 +94,6 @@ namespace concurrency {
     /// Destructor
     ~DecisionNode() override;
 
-    /// Initialize
-    void initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map) override;
     /// Visitor entry point
     bool accept(IGraphVisitor& visitor) override;
     /// Add a parent node
@@ -143,8 +139,6 @@ namespace concurrency {
     /// Destructor
     ~AlgorithmNode();
 
-    /// Initialize
-    void initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map) override;
     /// Visitor entry point
     bool accept(IGraphVisitor& visitor) override;
 
@@ -298,8 +292,7 @@ namespace concurrency {
     }
 
     /// Initialize graph
-    StatusCode initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map,
-                          bool enableCondSvc);
+    StatusCode initialize();
 
     /// A method to update algorithm node decision, and propagate it upwards
     void accept(const std::string& algo_name, IGraphVisitor& visitor) const;

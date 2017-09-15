@@ -110,7 +110,7 @@ StatusCode AvalancheSchedulerSvc::initialize() {
     return StatusCode::FAILURE;
   }
 
-  // Get the algo resource pool
+  // Get the precedence service
   m_precSvc = serviceLocator()->service( "PrecedenceSvc" );
   if ( !m_precSvc.isValid() ) {
     fatal() << "Error retrieving PrecedenceSvc" << endmsg;
