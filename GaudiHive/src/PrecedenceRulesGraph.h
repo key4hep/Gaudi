@@ -11,7 +11,7 @@
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/graphml.hpp>
 #include <boost/filesystem.hpp>
-#include "boost/variant.hpp"
+#include <boost/variant.hpp>
 
 // fwk includes
 #include "AlgsExecutionStates.h"
@@ -36,59 +36,140 @@ namespace boost {
   using PrecTrace = adjacency_list<vecS, vecS, bidirectionalS, AlgoTraceProps>;
   using AlgoTraceVertex = graph_traits<PrecTrace>::vertex_descriptor;
 
-  struct AlgoProps {
-    AlgoProps (Algorithm* algo, uint nodeIndex, uint algoIndex, bool inverted, bool allPass) :
-      m_name(algo->name()), m_nodeIndex(nodeIndex), m_algoIndex(algoIndex), m_algorithm(algo),
-      m_inverted(inverted), m_allPass(allPass), m_isIOBound(algo->isIOBound()) {}
+  //===========================================================================
+  namespace prules {
+    struct AlgoProps {
+      AlgoProps() {}
+      AlgoProps (Algorithm* algo, uint nodeIndex, uint algoIndex, bool inverted, bool allPass) :
+        m_name(algo->name()), m_nodeIndex(nodeIndex), m_algoIndex(algoIndex), m_algorithm(algo),
+        m_inverted(inverted), m_allPass(allPass), m_isIOBound(algo->isIOBound()) {}
 
-    std::string m_name;
-    uint m_nodeIndex;
-    uint m_algoIndex;
-    int m_rank{-1};
-    /// Algorithm representative behind the AlgorithmNode
-    Algorithm* m_algorithm;
+      std::string m_name;
+      uint m_nodeIndex;
+      uint m_algoIndex;
+      int m_rank{-1};
+      /// Algorithm representative behind the AlgorithmNode
+      Algorithm* m_algorithm;
 
-    /// Whether the selection result is negated or not
-    bool m_inverted;
-    /// Whether the selection result is relevant or always "pass"
-    bool m_allPass;
-    /// If an algorithm is blocking
-    bool m_isIOBound;
-  };
+      /// Whether the selection result is negated or not
+      bool m_inverted;
+      /// Whether the selection result is relevant or always "pass"
+      bool m_allPass;
+      /// If an algorithm is blocking
+      bool m_isIOBound;
+    };
 
-  struct DecisionHubProps {
-    DecisionHubProps (const std::string& name, uint nodeIndex,
-                      bool modeConcurrent, bool modePromptDecision,
-                      bool modeOR, bool allPass) :
-      m_name(name), m_index(nodeIndex), m_modeConcurrent(modeConcurrent),
-      m_modePromptDecision(modePromptDecision), m_modeOR(modeOR),
-      m_allPass(allPass) {}
+    struct DecisionHubProps {
+      DecisionHubProps (const std::string& name, uint nodeIndex,
+                        bool modeConcurrent, bool modePromptDecision,
+                        bool modeOR, bool allPass) :
+        m_name(name), m_index(nodeIndex), m_modeConcurrent(modeConcurrent),
+        m_modePromptDecision(modePromptDecision), m_modeOR(modeOR),
+        m_allPass(allPass) {}
 
-    std::string m_name;
-    uint m_index;
+      std::string m_name;
+      uint m_index;
 
-    /// Whether all daughters will be evaluated concurrently or sequentially
-    bool m_modeConcurrent;
-    /// Whether to evaluate the hub decision ASA its child decisions allow to do that.
-    /// Applicable to both concurrent and sequential cases.
-    bool  m_modePromptDecision;
-    /// Whether acting as "and" (false) or "or" node (true)
-    bool m_modeOR;
-    /// Whether always passing regardless of daughter results
-    bool m_allPass;
-  };
+      /// Whether all daughters will be evaluated concurrently or sequentially
+      bool m_modeConcurrent;
+      /// Whether to evaluate the hub decision ASA its child decisions allow to do that.
+      /// Applicable to both concurrent and sequential cases.
+      bool  m_modePromptDecision;
+      /// Whether acting as "and" (false) or "or" node (true)
+      bool m_modeOR;
+      /// Whether always passing regardless of daughter results
+      bool m_allPass;
+    };
 
-  struct DataProps {
-    DataProps (const DataObjID& id) : m_id(id) {}
+    struct DataProps {
+      DataProps (const DataObjID& id) : m_id(id) {}
 
-    DataObjID m_id;
-  };
+      DataObjID m_id;
+    };
 
-  using VertexProps = boost::variant<AlgoProps, DecisionHubProps, DataProps>;
-  using PRGraph = adjacency_list<vecS, vecS, bidirectionalS, VertexProps>;
-  using PRVertex = graph_traits<PRGraph>::vertex_descriptor;
+    // Vertex unpacking ========================================================
 
-}
+    struct VertexName : static_visitor<std::string> {
+      std::string operator()(const AlgoProps& props) const { return props.m_name; }
+
+      std::string operator()(const DecisionHubProps& props) const { return props.m_name; }
+
+      std::string operator()(const DataProps& props) const { return props.m_id.fullKey(); }
+    };
+
+    struct GroupMode : static_visitor<std::string> {
+      std::string operator()(const AlgoProps&) const { return ""; }
+
+      std::string operator()(const DecisionHubProps& props) const {
+        return props.m_modeConcurrent ? "Concurrent" : "Sequential"; }
+
+      std::string operator()(const DataProps&) const { return ""; }
+    };
+
+    struct GroupLogic : static_visitor<std::string> {
+      std::string operator()(const AlgoProps&) const { return ""; }
+
+      std::string operator()(const DecisionHubProps& props) const {
+        return props.m_modeOR ? "OR" : "AND"; }
+
+      std::string operator()(const DataProps&) const { return ""; }
+    };
+
+    struct GroupDecision : static_visitor<std::string> {
+      std::string operator()(const AlgoProps&) const { return ""; }
+
+      std::string operator()(const DecisionHubProps& props) const {
+        return props.m_modePromptDecision ? "Early" : "Late"; }
+
+      std::string operator()(const DataProps&) const { return ""; }
+    };
+
+    struct InvertedDecision : static_visitor<std::string> {
+      std::string operator()(const AlgoProps& props) const {
+        return props.m_inverted ? "Inverted" : "Non-inverted"; }
+
+      std::string operator()(const DecisionHubProps&) const { return ""; }
+
+      std::string operator()(const DataProps&) const { return ""; }
+    };
+
+    struct AllPass : static_visitor<std::string> {
+      std::string operator()(const AlgoProps& props) const {
+        return props.m_allPass ? "Optimist" : "Realist"; }
+
+      std::string operator()(const DecisionHubProps& props) const {
+        return props.m_allPass ? "Optimist" : "Realist"; }
+
+      std::string operator()(const DataProps&) const { return ""; }
+    };
+
+    struct Operations : static_visitor<std::string> {
+      std::string operator()(const AlgoProps& props) const {
+        return props.m_isIOBound ? "IO-bound" : "CPU-bound"; }
+
+      std::string operator()(const DecisionHubProps&) const { return ""; }
+
+      std::string operator()(const DataProps&) const { return ""; }
+    };
+
+    static inline std::ostream& operator<<(std::ostream& os, const AlgoProps&) {
+      return os << "Algo";
+    }
+    static inline std::ostream& operator<<(std::ostream& os, const DecisionHubProps&) {
+      return os << "DecisionHub";
+    }
+    static inline std::ostream& operator<<(std::ostream& os, const DataProps&) {
+      return os << "Data";
+    }
+
+    //=========================================================================
+
+    using VariantVertexProps = boost::variant<AlgoProps, DecisionHubProps, DataProps>;
+    using PRGraph = adjacency_list<vecS, vecS, bidirectionalS, VariantVertexProps>;
+    using PRVertexDesc = graph_traits<PRGraph>::vertex_descriptor;
+
+  } // namespace prules
+} // namespace boost
 
 struct Cause {
   enum class source {Root, Task};
@@ -101,6 +182,22 @@ namespace concurrency {
 
   using State = AlgsExecutionStates::State;
   class PrecedenceRulesGraph;
+
+  using boost::prules::PRVertexDesc;
+  using boost::prules::AlgoProps;
+  using boost::prules::DecisionHubProps;
+  using boost::prules::DataProps;
+  using boost::prules::VariantVertexProps;
+
+  using boost::prules::VertexName;
+  using boost::prules::GroupMode;
+  using boost::prules::GroupLogic;
+  using boost::prules::GroupDecision;
+  using boost::prules::InvertedDecision;
+  using boost::prules::AllPass;
+  using boost::prules::Operations;
+
+  using boost::prules::PRGraph;
 
   // ==========================================================================
   class ControlFlowNode {
@@ -397,10 +494,15 @@ namespace concurrency {
       m_headNode->printState(output,states,node_decisions,recursionLevel);
     }
 
+    /// BGL-based facilities
+    PRVertexDesc node(const std::string&) const;
+
     /// Print out all data origins and destinations, as reflected in the EF graph
     std::string dumpDataFlow() const;
     /// Print out control flow of Algorithms and Sequences
     std::string dumpControlFlow() const;
+    /// dump to file the precedence rules
+    void dumpPrecRules(const boost::filesystem::path&);
     /// dump to file the precedence trace
     void dumpPrecTrace(const boost::filesystem::path&);
     /// set cause-effect connection between two algorithms in the precedence trace
@@ -435,6 +537,8 @@ namespace concurrency {
     /// facilities for algorithm precedence tracing
     boost::PrecTrace m_precTrace;
     std::map<std::string,boost::AlgoTraceVertex> m_prec_trace_map;
+    /// BGL-based graph of precedence rules
+    PRGraph m_PRGraph;
 
     /// Enable conditions realm of precedence rules
     bool m_conditionsRealmEnabled{false};

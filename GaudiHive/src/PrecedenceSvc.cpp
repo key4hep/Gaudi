@@ -84,7 +84,8 @@ StatusCode PrecedenceSvc::initialize() {
   ON_DEBUG debug() << m_PRGraph.dumpDataFlow() << endmsg;
 
   ON_DEBUG {
-    if (m_dumpPrecTrace) { // prepare a directory to dump precedence analysis files to
+    // prepare a directory to dump precedence analysis files to.
+    if (m_dumpPrecTrace or m_dumpPrecRules) {
       if(!boost::filesystem::create_directory(m_dumpDirName)) {
         error() << "Could not create directory " << m_dumpDirName << "required "
                    "for task precedence tracing" << endmsg;
@@ -288,5 +289,14 @@ void PrecedenceSvc::dumpPrecedenceTrace(EventSlot& slot) {
 // Finalize
 // ============================================================================
 StatusCode PrecedenceSvc::finalize() {
+
+  ON_DEBUG if (m_dumpPrecRules) {
+
+    boost::filesystem::path pth{m_dumpDirName};
+    pth.append("precedence.rules.graphml");
+
+    m_PRGraph.dumpPrecRules(pth);
+  }
+
   return Service::finalize();
 }

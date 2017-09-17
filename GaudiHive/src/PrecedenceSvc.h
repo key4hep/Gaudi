@@ -87,6 +87,10 @@ private:
            "Override default name of the GRAPHML trace file. NOTE: if more than "
            "1 event is processed, the setting forces creation of a single file "
            "with cumulative precedence trace."};
+  Gaudi::Property<bool> m_dumpPrecRules{this, "DumpPrecedenceRules", false,
+                                        "Dump task precedence rules. The service "
+                                        "must be in DEBUG mode for this switch "
+                                        "to have effect."};
 
 };
 
