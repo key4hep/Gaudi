@@ -38,6 +38,7 @@ coding-conventions:
   stage: test
   script:
     - export LCG_release_area=${LCG_release_area}:/cvmfs/lhcb.cern.ch/lib/lcg/external
+    - pip install autopep8 argparse
     - make BUILDDIR=build apply-formatting
     - git diff --stat --exit-code
 
