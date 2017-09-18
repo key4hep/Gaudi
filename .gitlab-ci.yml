@@ -37,6 +37,7 @@ coding-conventions:
     - cvmfs
   stage: test
   script:
+    - export LCG_release_area=${LCG_release_area}:/cvmfs/lhcb.cern.ch/lib/lcg/external
     - make BUILDDIR=build apply-formatting
     - git diff --stat --exit-code
 
