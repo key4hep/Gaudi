@@ -278,8 +278,8 @@ StatusCode ForwardSchedulerSvc::initialize() {
   }
 
   const AlgResourcePool* algPool = dynamic_cast<const AlgResourcePool*>( m_algResourcePool.get() );
-  sc = m_efManager.initialize( algPool->getPRGraph(), m_algname_index_map);
-  unsigned int controlFlowNodeNumber = m_efManager.getPrecedenceRulesGraph()->getControlFlowNodeCounter();
+  m_efManager.initialize( algPool->getCFGraph(), m_algname_index_map);
+  unsigned int controlFlowNodeNumber = m_efManager.getCFGraph()->getControlFlowNodeCounter();
 
   // Shortcut for the message service
   SmartIF<IMessageSvc> messageSvc( serviceLocator() );
@@ -295,7 +295,7 @@ StatusCode ForwardSchedulerSvc::initialize() {
   info() << " o Number of algorithms in flight: " << m_maxAlgosInFlight << endmsg;
   info() << " o TBB thread pool size: " << m_threadPoolSize << endmsg;
 
-  m_efg = algPool->getPRGraph();
+  m_efg = algPool->getCFGraph();
 
   if (m_showControlFlow) {
     info() << std::endl
@@ -305,10 +305,10 @@ StatusCode ForwardSchedulerSvc::initialize() {
   }
 
   if (m_showDataFlow) {
-    info() << std::endl
-           << "======================= Data Flow ========================"
-           << std::endl;
-    info() << m_efg->dumpDataFlow() << endmsg;
+    warning() << "A 1-level data flow dump requested, but this feature is not supported"
+              << " by the ForwardScheduler any more. Use the AvalancheScheduler"
+              << " to dump as 1-level data flow, so the complete data flow graph."
+              << endmsg;
   }
 
   return sc;
@@ -334,8 +334,6 @@ StatusCode ForwardSchedulerSvc::finalize() {
     error() << "problems in scheduler thread" << endmsg;
     return StatusCode::FAILURE;
   }
-
-  // m_efManager.getPrecedenceRulesGraph()->dumpExecutionPlan();
 
   return sc;
 }

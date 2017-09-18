@@ -7,7 +7,7 @@
 #include "GaudiKernel/IAlgorithm.h"
 #include "GaudiKernel/Service.h"
 // TODO: include here is only a workaround
-#include "PrecedenceRulesGraph.h"
+#include "ControlFlowGraph.h"
 
 #include <atomic>
 #include <bitset>
@@ -55,7 +55,7 @@ public:
 
   StatusCode stop() override;
 
-  virtual concurrency::PrecedenceRulesGraph* getPRGraph() const { return m_PRGraph; }
+  concurrency::recursive_CF::ControlFlowGraph* getCFGraph() const { return m_CFGraph; }
 
 private:
   typedef tbb::concurrent_bounded_queue<IAlgorithm*> concurrentQueueIAlgPtr;
@@ -100,7 +100,7 @@ private:
   std::list<IAlgorithm*> m_topAlgPtrList;
 
   /// OMG yet another hack
-  concurrency::PrecedenceRulesGraph* m_PRGraph = nullptr;
+  concurrency::recursive_CF::ControlFlowGraph* m_CFGraph = nullptr;
 };
 
 #endif // GAUDIHIVE_ALGRESOURCEPOOL_H
