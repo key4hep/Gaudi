@@ -40,6 +40,7 @@ StatusCode IOBoundAlgTask::execute() {
     RetCodeGuard rcg(appmgr, Gaudi::ReturnCode::UnhandledException);
     log << MSG::DEBUG << "Starting execution of algorithm " << m_algorithm->name() 
         << endmsg;
+    m_aess->algExecState(ialg,*m_evtCtx).setState(AlgExecState::State::Executing);
     sc = m_algorithm->sysExecute(*m_evtCtx);
     if (UNLIKELY(!sc.isSuccess()))  {
       log << MSG::WARNING << "Execution of algorithm " 
@@ -71,8 +72,7 @@ StatusCode IOBoundAlgTask::execute() {
   // DP it is important to propagate the failure of an event.
   // We need to stop execution when this happens so that execute run can
   // then receive the FAILURE
-  m_aess->algExecState(ialg,*m_evtCtx).setExecuted(true);
-  m_aess->algExecState(ialg,*m_evtCtx).setExecStatus(sc);
+  m_aess->algExecState(ialg,*m_evtCtx).setState(AlgExecState::State::Done, sc);
   m_aess->updateEventStatus(eventfailed,*m_evtCtx);
 
   // TODO reproduce the commented out functionality in a different service
