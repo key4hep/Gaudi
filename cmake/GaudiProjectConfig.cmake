@@ -47,10 +47,12 @@ endif()
 
 find_program(ccache_cmd NAMES ccache ccache-swig)
 find_program(distcc_cmd distcc)
-find_program(clang_format_cmd NAMES lcg-clang-format-3.9 clang-format-3.9
-                                    lcg-clang-format-3.8 clang-format-3.8
-                                    lcg-clang-format-3.7 clang-format-3.7
-                                    clang-format)
+set(_clang_format_names)
+foreach(_clang_version 5.0 4.0 3.9 3.8 3.7)
+  list(APPEND _clang_format_names lcg-clang-format-${_clang_version} clang-format-${_clang_version})
+endforeach()
+list(APPEND _clang_format_names clang-format)
+find_program(clang_format_cmd NAMES ${_clang_format_names})
 mark_as_advanced(ccache_cmd distcc_cmd clang_format_cmd)
 
 if(ccache_cmd)
