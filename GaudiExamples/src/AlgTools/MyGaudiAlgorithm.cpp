@@ -12,8 +12,12 @@ DECLARE_COMPONENT(MyGaudiAlgorithm)
 // Constructor
 //------------------------------------------------------------------------------
 MyGaudiAlgorithm::MyGaudiAlgorithm(const std::string& name, ISvcLocator* ploc)
-  : GaudiAlgorithm(name, ploc)
+  : GaudiAlgorithm(name, ploc),
+  m_legacyToolHandle("MyTool/LegacyToolHandle", this)
 {
+  // Keep at least one old-style ToolHandle property to test compilation
+   declareProperty("LegacyToolHandle", m_legacyToolHandle);
+
   //------------------------------------------------------------------------------
    m_myCopiedConstToolHandle = m_myPubToolHandle;
    m_myCopiedToolHandle      = m_myPubToolHandle;

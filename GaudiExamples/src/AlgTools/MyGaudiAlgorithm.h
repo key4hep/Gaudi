@@ -41,6 +41,8 @@ private:
 
   IMyOtherTool* m_privateOtherInterface = nullptr;
 
+  ToolHandle<IMyTool> m_legacyToolHandle;
+
   ToolHandle<IMyTool> m_myPrivToolHandle{this, "PrivToolHandle", "MyTool"};
   PublicToolHandle<IMyTool> m_myPubToolHandle{this, "PubToolHandle", "MyTool"};
 
