@@ -5,6 +5,7 @@
 #include "GaudiAlg/GaudiAlgorithm.h"
 #include "GaudiKernel/HashMap.h"
 #include "GaudiKernel/SmartIF.h"
+#include "GaudiKernel/ThreadLocalContext.h"
 
 class IAlgManager;
 class IDataManagerSvc;
@@ -55,7 +56,7 @@ private:
       SmartIF<IAlgorithm>& alg = m_ptr->m_outputStreams[name];
       if ( alg ) {
         if ( !alg->isExecuted() ) {
-          alg->sysExecute();
+          alg->sysExecute(Gaudi::Hive::currentContext());
         } else {
           m_ptr->warning() << name << " already executed for the current event" << endmsg;
         }

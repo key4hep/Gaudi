@@ -1,8 +1,8 @@
-JobOptionsSvc        INFO # =======> /var/clus/usera/jonesc/LHCbCMake/Gaudi/GaudiExamples/options/Services.opts
+JobOptionsSvc        INFO # =======> /build1/leggett/git/leggett/Gaudi/GaudiExamples/options/Services.opts
 JobOptionsSvc        INFO # (12,1): AuditorSvc.Auditors = ["ChronoAuditor"]
-JobOptionsSvc        INFO # =======> /var/clus/usera/jonesc/LHCbCMake/Gaudi/GaudiExamples/options/Common.opts
+JobOptionsSvc        INFO # =======> /build1/leggett/git/leggett/Gaudi/GaudiExamples/options/Common.opts
 JobOptionsSvc        INFO # (9,1): ApplicationMgr.StatusCodeCheck = 1
-JobOptionsSvc        INFO # =======> /var/clus/usera/jonesc/LHCbCMake/Gaudi/GaudiExamples/options/AlgTools2.opts
+JobOptionsSvc        INFO # =======> /build1/leggett/git/leggett/Gaudi/GaudiExamples/options/AlgTools2.opts
 JobOptionsSvc        INFO # (10,1): ApplicationMgr.TopAlg = ["MyGaudiAlgorithm/MyAlg"]
 JobOptionsSvc        INFO # (13,1): MessageSvc.OutputLevel = 3
 JobOptionsSvc        INFO # (18,1): ApplicationMgr.EvtMax = 10
@@ -23,23 +23,23 @@ JobOptionsSvc        INFO # (44,1): ToolSvc.ToolA.Tools = ["TestTool/ToolB"]
 JobOptionsSvc        INFO # (45,1): ToolSvc.ToolB.Tools = ["TestTool/ToolA"]
 JobOptionsSvc        INFO # (46,1): ToolSvc.ToolA.OutputLevel = 2
 JobOptionsSvc        INFO # (47,1): ToolSvc.ToolB.OutputLevel = 2
-JobOptionsSvc        INFO Job options successfully read in from /var/clus/usera/jonesc/LHCbCMake/Gaudi/GaudiExamples/options/AlgTools2.opts
+JobOptionsSvc        INFO Job options successfully read in from /build1/leggett/git/leggett/Gaudi/GaudiExamples/options/AlgTools2.opts
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v27r1)
-                                          running on pcmf on Mon Oct 31 14:20:22 2016
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v28r1)
+                                          running on p05614910w96644.cern.ch on Tue Jan 17 22:49:10 2017
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 StatusCodeSvc        INFO initialize
 MyAlg               DEBUG Property update for OutputLevel : new value = 2
 MyAlg               DEBUG Initialize base class GaudiCommon<Algorithm>
 MyAlg               DEBUG could not locate CounterSummarySvc, no counter summary will be made
-MyAlg               DEBUG List of ALL properties of MyGaudiAlgorithm/MyAlg  #properties = 46
+MyAlg               DEBUG List of ALL properties of MyGaudiAlgorithm/MyAlg  #properties = 44
 MyAlg               DEBUG Property ['Name': Value] =  'trackSelection':/Event/MyAnalysis/Tracks
 MyAlg               DEBUG Property ['Name': Value] =  'raw':/Rec/RAW
 MyAlg               DEBUG Property ['Name': Value] =  'hits':/Event/Rec/Hits
 MyAlg               DEBUG Property ['Name': Value] =  'tracks':/Event/Rec/Tracks
-MyAlg               DEBUG Property ['Name': Value] =  'UnusedToolHandle':TestToolFailing
+MyAlg               DEBUG Property ['Name': Value] =  'UnusedToolHandle':TestToolFailing/UnusedToolHandle
 MyAlg               DEBUG Property ['Name': Value] =  'GenericToolHandle':MyTool/GenericToolHandle
 MyAlg               DEBUG Property ['Name': Value] =  'PubToolHandle':MyTool/PubToolHandle
 MyAlg               DEBUG Property ['Name': Value] =  'PrivToolHandle':MyTool/PrivToolHandle
@@ -61,7 +61,6 @@ MyAlg               DEBUG Property ['Name': Value] =  'ErrorsPrint':True
 MyAlg               DEBUG Property ['Name': Value] =  'IsIOBound':False
 MyAlg               DEBUG Property ['Name': Value] =  'NeededResources':[  ]
 MyAlg               DEBUG Property ['Name': Value] =  'Cardinality':1
-MyAlg               DEBUG Property ['Name': Value] =  'IsClonable':False
 MyAlg               DEBUG Property ['Name': Value] =  'RegisterForContextService':True
 MyAlg               DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
 MyAlg               DEBUG Property ['Name': Value] =  'Timeline':False
@@ -75,12 +74,11 @@ MyAlg               DEBUG Property ['Name': Value] =  'AuditRestart':False
 MyAlg               DEBUG Property ['Name': Value] =  'AuditReinitialize':False
 MyAlg               DEBUG Property ['Name': Value] =  'AuditInitialize':False
 MyAlg               DEBUG Property ['Name': Value] =  'AuditAlgorithms':False
-MyAlg               DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
-MyAlg               DEBUG Property ['Name': Value] =  'ExtraInputs':[]
-MyAlg               DEBUG Property ['Name': Value] =  'ErrorCounter':0
 MyAlg               DEBUG Property ['Name': Value] =  'ErrorMax':1
 MyAlg               DEBUG Property ['Name': Value] =  'Enable':True
 MyAlg               DEBUG Property ['Name': Value] =  'OutputLevel':2
+MyAlg               DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
+MyAlg               DEBUG Property ['Name': Value] =  'ExtraInputs':[]
 MyAlg                INFO initializing....
 ToolSvc.MyTool       INFO intialize() has been called
 ToolSvc.MyTool       INFO Int    = 201
@@ -122,8 +120,6 @@ MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'TypePrint':True
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'StatPrint':True
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'ErrorsPrint':True
-MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
-MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'ExtraInputs':[]
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'AuditRestart':False
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'AuditReinitialize':False
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'AuditFinalize':False
@@ -133,6 +129,8 @@ MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'AuditInitialize':False
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'AuditTools':False
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
 MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'OutputLevel':2
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
+MyAlg.MyGaudiTool   DEBUG Property ['Name': Value] =  'ExtraInputs':[]
 MyAlg.MyGaudiTool    INFO intialize() has been called
 MyAlg.MyGaudiTool    INFO Int    = 100
 MyAlg.MyGaudiTool    INFO Double = 100
@@ -178,7 +176,7 @@ MyAlg               DEBUG output handles: 1
 MyAlg               DEBUG Adding private ToolHandle tool MyAlg.PrivToolHandle (MyTool)
 MyAlg               DEBUG Adding public ToolHandle tool ToolSvc.PubToolHandle (MyTool)
 MyAlg               DEBUG Adding public ToolHandle tool ToolSvc.GenericToolHandle (MyTool)
-MyAlg               DEBUG ToolHandle TestToolFailing not used
+MyAlg               DEBUG ToolHandle TestToolFailing/UnusedToolHandle not used
 MyAlg               DEBUG Data Deps for MyAlg
   + INPUT  ('/Event/Rec/Hits')
   + INPUT  ('/Event/Rec/Tracks')
@@ -203,8 +201,6 @@ ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'TypePrint':True
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'StatPrint':True
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'ErrorsPrint':True
-ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
-ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'ExtraInputs':[]
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditRestart':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditReinitialize':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditFinalize':False
@@ -214,6 +210,8 @@ ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditInitialize':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'AuditTools':False
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
 ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'OutputLevel':2
+ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
+ToolSvc.ToolA       DEBUG Property ['Name': Value] =  'ExtraInputs':[]
 ToolSvc.ToolA       DEBUG Loading tool ToolB of type TestTool
 ToolSvc.ToolB       DEBUG Property update for OutputLevel : new value = 2
 ToolSvc.ToolB       DEBUG Initialize
@@ -234,8 +232,6 @@ ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'TypePrint':True
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'StatPrint':True
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'PropertiesPrint':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'ErrorsPrint':True
-ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
-ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'ExtraInputs':[]
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditRestart':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditReinitialize':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditFinalize':False
@@ -245,6 +241,8 @@ ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditInitialize':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'AuditTools':False
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'MonitorService':MonitorSvc
 ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'OutputLevel':2
+ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'ExtraOutputs':[]
+ToolSvc.ToolB       DEBUG Property ['Name': Value] =  'ExtraInputs':[]
 ToolSvc.ToolB       DEBUG Loading tool ToolA of type TestTool
 ToolSvc.ToolB       DEBUG Registering tool ToolSvc.ToolA
 ToolSvc.ToolA       DEBUG Registering tool ToolSvc.ToolB
@@ -542,7 +540,7 @@ MyAlg.ToolWithName   INFO finalize() has been called
 MyAlg.MyGaudiTool    INFO finalize() has been called
 MyAlg.MyGaudiTool   DEBUG  ==> Finalize the base class GaudiTool
 MyAlg.MyGaudiTool   DEBUG Tools to release :
-MyAlg.MyGaudiTool   DEBUG Services to release : 
+MyAlg.MyGaudiTool   DEBUG Services to release :
 ToolSvc.MyGaudi...   INFO finalize() has been called
 MyAlg.MyTool         INFO finalize() has been called
 ToolSvc.MyTool       INFO finalize() has been called

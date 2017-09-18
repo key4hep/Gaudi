@@ -12,7 +12,7 @@
 #include "GaudiGSL/IGslSvc.h"
 
 // forward declarations
-class IGslErrorHandler; // from GaudiGSL
+struct IGslErrorHandler; // from GaudiGSL
 
 /** @class GslSvc GslSvc.h
  *
@@ -83,6 +83,13 @@ class IGslErrorHandler; // from GaudiGSL
 class GslSvc : public extends<Service, IGslSvc>
 {
 public:
+
+  using extends::extends;
+
+  ///  no copy constructor / assignment
+  GslSvc( const GslSvc& ) = delete;
+  GslSvc& operator=( const GslSvc& ) = delete;
+
   /** handle the GSL error
    *  @see IGslSvc
    *  @param err   error
@@ -126,26 +133,12 @@ public:
    */
   StatusCode finalize() override;
 
-  using extends::extends;
-
-  /// destructor, virtual and protected
-  ~GslSvc() override = default;
-
-private:
-  ///  default constructor   is private
-  GslSvc();
-  ///  copy    constructor   is private
-  GslSvc( const GslSvc& );
-  ///  assignment operator  is private
-  GslSvc& operator=( const GslSvc& );
-
 private:
   Gaudi::Property<std::string> m_errorPolicy{this, "ErrorPolicy", "GSL", ""};
   Gaudi::Property<std::vector<std::string>> m_handlersTypeNames{this, "Handlers", {}, ""};
   Gaudi::Property<std::vector<int>> m_ignore{this, "IgnoreCodes", {}, "codes to be ignored"};
 
-  typedef std::vector<IGslErrorHandler*> Handlers;
-  Handlers m_handlers;
+  std::vector<IGslErrorHandler*> m_handlers;
 };
 
 // ============================================================================

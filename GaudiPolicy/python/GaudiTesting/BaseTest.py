@@ -85,9 +85,6 @@ class BaseTest(object):
         self.stack_trace = None
         self.basedir = os.getcwd()
 
-    def validator(self, stdout='',stderr=''):
-        pass
-
     def run(self):
         logging.debug('running test %s', self.name)
 
@@ -253,20 +250,11 @@ class BaseTest(object):
     #-------------------------------------------------#
 
     def ValidateOutput(self, stdout, stderr, result):
-        # checking if default validation or not
-        if self.validator is not BaseTest.validator:
-            self.validator(stdout, stderr, result, self.causes,
-                           self.reference, self.error_reference)
-        else:
-            if self.stderr == '':
-                self.validateWithReference(stdout, stderr, result, causes)
-            elif stderr.strip() != self.stderr.strip():
-                self.causes.append('standard error')
-
-
-        return result, causes
-
-
+        if not self.stderr:
+            self.validateWithReference(stdout, stderr, result, self.causes)
+        elif stderr.strip() != self.stderr.strip():
+            self.causes.append('standard error')
+        return result, self.causes
 
     def findReferenceBlock(self,reference=None, stdout=None, result=None, causes=None, signature_offset=0, signature=None, id = None):
         """
@@ -791,7 +779,6 @@ for w,o,r in [
               #("TIMER.TIMER",r"[0-9]", "0"), # Normalize time output
               ("TIMER.TIMER",r"\s+[+-]?[0-9]+[0-9.]*", " 0"), # Normalize time output
               ("release all pending",r"^.*/([^/]*:.*)",r"\1"),
-              ("0x########",r"\[.*/([^/]*.*)\]",r"[\1]"),
               ("^#.*file",r"file '.*[/\\]([^/\\]*)$",r"file '\1"),
               ("^JobOptionsSvc.*options successfully read in from",r"read in from .*[/\\]([^/\\]*)$",r"file \1"), # normalize path to options
               # Normalize UUID, except those ending with all 0s (i.e. the class IDs)
@@ -802,8 +789,6 @@ for w,o,r in [
               (None, r"e([-+])0([0-9][0-9])", r"e\1\2"),
               # Output line changed in Gaudi v24
               (None, r'Service reference count check:', r'Looping over all active services...'),
-              # Change of property name in Algorithm (GAUDI-1030)
-              (None, r"Property(.*)'ErrorCount':", r"Property\1'ErrorCounter':"),
               # Ignore count of declared properties (anyway they are all printed)
               (None, r"^(.*(DEBUG|SUCCESS) List of ALL properties of .*#properties = )\d+", r"\1NN"),
               ]: #[ ("TIMER.TIMER","[0-9]+[0-9.]*", "") ]
@@ -821,7 +806,6 @@ lineSkipper = LineSkipper(["//GP:",
                            "DataListenerSvc      INFO XML written to file:",
                            "[INFO]","[WARNING]",
                            "DEBUG No writable file catalog found which contains FID:",
-                           "0 local", # hack for ErrorLogExample
                            "DEBUG Service base class initialized successfully", # changed between v20 and v21
                            "DEBUG Incident  timing:", # introduced with patch #3487
                            "INFO  'CnvServices':[", # changed the level of the message from INFO to DEBUG
@@ -829,10 +813,8 @@ lineSkipper = LineSkipper(["//GP:",
                            'SIGXCPU',
                            ],regexps = [
                                         r"^JobOptionsSvc        INFO *$",
-                                        r"^#", # Ignore python comments
+                                        r"^# ", # Ignore python comments
                                         r"(Always|SUCCESS)\s*(Root f|[^ ]* F)ile version:", # skip the message reporting the version of the root file
-                                        r"0x[0-9a-fA-F#]+ *Algorithm::sysInitialize\(\) *\[", # hack for ErrorLogExample
-                                        r"0x[0-9a-fA-F#]* *__gxx_personality_v0 *\[", # hack for ErrorLogExample
                                         r"File '.*.xml' does not exist",
                                         r"INFO Refer to dataset .* by its file ID:",
                                         r"INFO Referring to dataset .* by its file ID:",
@@ -864,6 +846,10 @@ lineSkipper = LineSkipper(["//GP:",
                                         r"Property(.*)'Audit(Algorithm|Tool|Service)s':",
                                         r"Property(.*)'AuditRe(start|initialize)':", # these were missing in tools
                                         r"Property(.*)'IsIOBound':",
+                                        r"Property(.*)'ErrorCount(er)?':", # removed with gaudi/Gaudi!273
+                                        r"Property(.*)'Sequential':",  # added with gaudi/Gaudi!306
+                                        r"Property(.*)'FilterCircularDependencies':", # added with gaudi/Gaudi!314
+                                        r"Property(.*)'IsClonable':", # removed with gaudi/Gaudi!316
                                         # ignore uninteresting/obsolete messages
                                         r"Property update for OutputLevel : new value =",
                                         r"EventLoopMgr\s*DEBUG Creating OutputStream",

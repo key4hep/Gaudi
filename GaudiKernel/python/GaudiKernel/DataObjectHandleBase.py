@@ -21,6 +21,8 @@ class DataObjectHandleBase(object):
             return self.Path == other.Path
         if isinstance(other, basestring):
             return self.Path == other
+        if other is None:
+            return False
         raise ValueError('Unknown equality check: type=%r, repr=%r'%(type(other), other))
 
     def __ne__(self, other):
@@ -39,12 +41,12 @@ class DataObjectHandleBase(object):
         return self.__str__()
 
     def __add__(self,other):
-        self.Path = ':'.join( i + other for i in self.Path.split(':'))
-        return self
+        path = ':'.join( i + other for i in self.Path.split(':'))
+        return DataObjectHandleBase(path)
 
     def __radd__(self,other):
-        self.Path = ':'.join( other + i for i in self.Path.split(':'))
-        return self
+        path = ':'.join( other + i for i in self.Path.split(':'))
+        return DataObjectHandleBase(path)
 
     def __iadd__(self,other):
         self.Path = ':'.join( i + other for i in self.Path.split(':'))

@@ -1,4 +1,4 @@
-#ifndef ALGTOOLS_FUNCMINIMUMPALG_H 
+#ifndef ALGTOOLS_FUNCMINIMUMPALG_H
 #define ALGTOOLS_FUNCMINIMUMPALG_H 1
 
 // Include files
@@ -10,7 +10,7 @@
 
 
 /// Forward references
-class IFuncMinimum;
+struct IFuncMinimum;
 
 //-----------------------------------------------------------------------------
 /**  @class FuncMinimumPAlg FuncMinimumPAlg.h

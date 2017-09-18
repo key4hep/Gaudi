@@ -39,7 +39,7 @@ namespace Gaudi
       /// property name
       const std::string name() const { return m_name.to_string(); }
       /// property documentation
-      std::string documentation() const { return m_documentation.to_string() + " [" + ownerTypeName() + "]"; }
+      std::string documentation() const { return m_documentation.to_string(); }
       /// property type-info
       const std::type_info* type_info() const { return m_typeinfo; }
       /// property type
@@ -152,7 +152,11 @@ namespace Gaudi
     {
       template <class TYPE>
       struct StringConverter {
-        inline std::string toString( const TYPE& v ) { return Gaudi::Utils::toString( v ); }
+        inline std::string toString( const TYPE& v )
+        {
+            using Gaudi::Utils::toString;
+            return toString( v );
+        }
         inline TYPE fromString( const std::string& s )
         {
           TYPE tmp;
@@ -178,9 +182,10 @@ namespace Gaudi
       struct BoundedVerifier {
         void operator()( const TYPE& value ) const
         {
+          using Gaudi::Utils::toString;
           // throw the exception if the limit is defined and value is outside
           if ( ( m_hasLowerBound && ( value < m_lowerBound ) ) || ( m_hasUpperBound && ( m_upperBound < value ) ) )
-            throw std::out_of_range( "value " + Gaudi::Utils::toString( value ) + " outside range" );
+            throw std::out_of_range( "value " + toString( value ) + " outside range" );
         }
 
         /// Return if it has a lower bound
@@ -336,7 +341,7 @@ namespace Gaudi
   public:
     // ==========================================================================
     /// the constructor with property name, value and documentation.
-    template <class T = ValueType>
+    template <class T = StorageType>
     inline Property( std::string name, T&& value, std::string doc = "" )
         : Details::PropertyBase( typeid( ValueType ), std::move( name ), std::move( doc ) )
         , m_value( std::forward<T>( value ) )
@@ -346,8 +351,20 @@ namespace Gaudi
     /// Autodeclaring constructor with property name, value and documentation.
     /// @note the use std::enable_if is required to avoid ambiguities
     template <class OWNER, class T = ValueType,
+              typename = typename std::enable_if<std::is_base_of<IProperty, OWNER>::value>::type,
+              typename = typename std::enable_if<std::is_default_constructible<T>::value>::type>
+    inline Property( OWNER* owner, std::string name )
+        : Property( std::move( name ), ValueType{}, "" )
+    {
+      owner->declareProperty( *this );
+      setOwnerType<OWNER>();
+    }
+
+    /// Autodeclaring constructor with property name, value and documentation.
+    /// @note the use std::enable_if is required to avoid ambiguities
+    template <class OWNER, class T = StorageType,
               typename = typename std::enable_if<std::is_base_of<IProperty, OWNER>::value>::type>
-    inline Property( OWNER* owner, std::string name, T&& value = ValueType{}, std::string doc = "" )
+    inline Property( OWNER* owner, std::string name, T&& value, std::string doc = "" )
         : Property( std::move( name ), std::forward<T>( value ), std::move( doc ) )
     {
       owner->declareProperty( *this );
@@ -357,7 +374,7 @@ namespace Gaudi
     /// Construct an anonymous property from a value.
     /// This constructor is not generated if T is the current type, so that the
     /// compiler picks up the copy constructor instead of this one.
-    template <class T = ValueType, typename = typename not_copying<T>::type>
+    template <class T, typename = typename not_copying<T>::type>
     Property( T&& v ) : Details::PropertyBase( typeid( ValueType ), "", "" ), m_value( std::forward<T>( v ) )
     {
     }
@@ -577,6 +594,37 @@ namespace Gaudi
       m_value -= other;
       return *this;
     }
+    /// Helpers for DataHandles and derived classes
+    template <class T = const ValueType>
+    inline decltype( std::declval<T>().key() ) key() const
+    {
+      return value().key();
+    }
+    template <class T = const ValueType>
+    inline decltype( std::declval<T>().objKey() ) objKey() const
+    {
+      return value().objKey();
+    }
+    template <class T = const ValueType>
+    inline decltype( std::declval<T>().fullKey() ) fullKey() const
+    {
+      return value().fullKey();
+    }
+    template <class T = ValueType>
+    inline decltype( std::declval<T>().initialize() ) initialize()
+    {
+      return value().initialize();
+    }
+    template <class T = ValueType>
+    inline decltype( std::declval<T>().makeHandles() ) makeHandles() const
+    {
+      return value().makeHandles();
+    }
+    template <class ARG, class T = ValueType>
+    inline decltype( std::declval<T>().makeHandles( std::declval<ARG>() ) ) makeHandles(const ARG& arg) const
+    {
+      return value().makeHandles(arg);
+    }
     /// @}
     // ==========================================================================
   public:
@@ -735,9 +783,10 @@ typedef Gaudi::Property<std::vector<std::string>&> StringArrayPropertyRef;
 
 /// Helper class to simplify the migration old properties deriving directly from
 /// PropertyBase.
+template <typename Handler = typename Gaudi::Details::Property::UpdateHandler>
 class PropertyWithHandlers : public Gaudi::Details::PropertyBase
 {
-  Gaudi::Details::Property::ReadUpdateHandler m_handlers;
+  Handler m_handlers;
 
 public:
   using PropertyBase::PropertyBase;
@@ -778,7 +827,7 @@ class GaudiHandleBase;
 // definition is not needed. The rest goes into the .cpp file.
 // The goal is to decouple the header files, to avoid that the whole
 // world depends on GaudiHandle.h
-class GAUDI_API GaudiHandleProperty : public PropertyWithHandlers
+class GAUDI_API GaudiHandleProperty : public PropertyWithHandlers<>
 {
 public:
   GaudiHandleProperty( std::string name, GaudiHandleBase& ref );
@@ -818,7 +867,7 @@ private:
 // forward-declaration is sufficient here
 class GaudiHandleArrayBase;
 
-class GAUDI_API GaudiHandleArrayProperty : public PropertyWithHandlers
+class GAUDI_API GaudiHandleArrayProperty : public PropertyWithHandlers<>
 {
 public:
   GaudiHandleArrayProperty( std::string name, GaudiHandleArrayBase& ref );
@@ -1124,8 +1173,9 @@ namespace Gaudi
     template <class TYPE>
     StatusCode setProperty( IProperty* component, const std::string& name, const TYPE& value, const std::string& doc )
     {
+      using Gaudi::Utils::toString;
       return component && hasProperty( component, name )
-                 ? Gaudi::Utils::setProperty( component, name, Gaudi::Utils::toString( value ), doc )
+                 ? Gaudi::Utils::setProperty( component, name, toString( value ), doc )
                  : StatusCode::FAILURE;
     }
     // ========================================================================

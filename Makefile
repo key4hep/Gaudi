@@ -62,7 +62,21 @@ ifndef BINARY_TAG
   endif
 endif
 
+ifeq ($(BINARY_TAG)$(BUILDDIR),)
+$(error one of BINARY_TAG, CMTCONFIG or BUILDDIR must be defined)
+endif
 BUILDDIR := $(CURDIR)/build.$(BINARY_TAG)
+
+ifneq ($(wildcard $(BUILDDIR)/Makefile),)
+  # force the use of GNU Make if the build was using it
+  USE_MAKE := 1
+endif
+ifneq ($(wildcard $(BUILDDIR)/build.ninja),)
+  ifeq ($(NINJA),)
+    # make sure we have ninja if we configured with it
+    $(error $(BUILDDIR) was configured for Ninja, but it is not in the path)
+  endif
+endif
 
 ifneq ($(NINJA),)
   ifeq ($(USE_MAKE),)
@@ -84,7 +98,7 @@ ifneq ($(USE_NINJA),)
 else
   BUILD_CONF_FILE := Makefile
 endif
-BUILD_CMD := $(CMAKE) --build build.$(BINARY_TAG) --target
+BUILD_CMD := $(CMAKE) --build $(BUILDDIR) --target
 
 # default target
 all:

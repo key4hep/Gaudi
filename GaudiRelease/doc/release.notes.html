@@ -5,6 +5,82 @@
 <title>Gaudi Release Notes</title>
 </head>
 <body>
+<h1><a name="v28r3">Gaudi v28r3</a> (2017-07-31)</h1>
+Package Coordinators: Marco Clemencic, Charles Leggett, Benedikt Hegner
+<h2>Externals version: <a href="http://lcgsoft.web.cern.ch/lcgsoft/release/89/">LCG_89</a></h2>
+
+<h2>Highlights</h2>
+<p>This release includes several bug fixes and improvements, like
+<ul>
+<li>improvements for multithreading</li>
+<li>code modernization and clean up</li>
+<li>fixes to build infrastructure and documentation</li>
+<li></li>
+</ul></p>
+
+<p>The full list of changes can be found on <a href="https://gitlab.cern.ch/gaudi/Gaudi/merge_requests?milestone_title=v28r3&scope=all&state=merged">Gitlab</a>.</p>
+
+<p>Follows a list of <a href=" https://its.cern.ch/jira/secure/ReleaseNote.jspa?projectId=14707&version=27675">JIRA tickets closed in this release</a>.</p>
+
+<h2>        Bug
+</h2>
+<ul>
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1277'>GAUDI-1277</a>] -         EvtSelectorContext has an unnecessary explicitly defaulted copy assignment
+</li>
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1296'>GAUDI-1296</a>] -         potential buffer overflow
+</li>
+<li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1299'>GAUDI-1299</a>] -         gaudi_ignore mecahnism broken by &#39;+&#39; in CMTCONFIG
+</li>
+</ul>
+
+
+<h1><a name="v28r2">Gaudi v28r2</a> (2017-03-21)</h1>
+Package Coordinators: Marco Clemencic, Charles Leggett, Benedikt Hegner
+<h2>Externals version: <a href="http://lcgsoft.web.cern.ch/lcgsoft/release/88/">LCG_88</a></h2>
+
+<h2>Highlights</h2>
+<p>This minor release of Gaudi is mainly a bugfix release, nevertherless it features some new features, like
+<ul>
+<li>support for BINARY_TAG extensions for microarchitecture and optimizations (<a href="https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/289">gaudi/Gaudi!289</a>)</li>
+<li>improvements to the graph scheduler</li>
+<li>change of default optimization level to -O3</li>
+<li>changed the signature of Algorithm::sysExecute (<a href="https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/273">gaudi/Gaudi!273</a>)</li>
+</ul></p>
+
+
+<p>The full list of changes can be found on <a href="https://gitlab.cern.ch/gaudi/Gaudi/merge_requests?milestone_title=v28r2&scope=all&state=merged">Gitlab</a>.</p>
+
+<p>Follows a list of <a href=" https://its.cern.ch/jira/secure/ReleaseNote.jspa?projectId=14707&version=26725">JIRA tickets closed in this release</a>.</p>
+
+  <h2>        Bug
+  </h2>
+  <ul>
+  <li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1280'>GAUDI-1280</a>] -         guess_heptools_version should not look into other platforms
+  </li>
+  <li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1287'>GAUDI-1287</a>] -         the Makefile wrapper around cmake does not respect the build tool used in the configuration
+  </li>
+  <li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1290'>GAUDI-1290</a>] -         inconsitency in the (Python) representation of configurables
+  </li>
+  <li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1293'>GAUDI-1293</a>] -         MessageSvc colors not consistent between Gaudi.exe and gaudirun.py
+  </li>
+  </ul>
+
+  <h2>        Task
+  </h2>
+  <ul>
+  <li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1279'>GAUDI-1279</a>] -         fix/clean up special test on status code checking (GaudiExamples)
+  </li>
+  <li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1288'>GAUDI-1288</a>] -         add dependency to GDB in Gaudi
+  </li>
+  </ul>
+
+  <h2>        Improvement
+  </h2>
+  <ul>
+  <li>[<a href='https://its.cern.ch/jira/browse/GAUDI-1276'>GAUDI-1276</a>] -         Do we really need read handles inside Property?
+  </li>
+  </ul>
+
 <h1><a name="v28r1">Gaudi v28r1</a> (2016-12-14)</h1>
 Package Coordinators: Marco Clemencic, Charles Leggett, Benedikt Hegner
 <h2>Externals version: <a href="http://lcgsoft.web.cern.ch/lcgsoft/release/87/">LCG_87</a></h2>
@@ -12,7 +88,7 @@ Package Coordinators: Marco Clemencic, Charles Leggett, Benedikt Hegner
 <h2>Highlights</h2>
 <p>This minor release of Gaudi is mainly intented to pick up a new version of ROOT (6.08/02)
   and introduce a first version of the Gaudi::Functional framework.</p>
-<p>The full list of changes can be found on <a href="https://gitlab.cern.ch/gaudi/Gaudi/merge_requests?milestone_title=v28r1">Gitlab</a>.</p>
+<p>The full list of changes can be found on <a href="https://gitlab.cern.ch/gaudi/Gaudi/merge_requests?milestone_title=v28r1&scope=all&state=merged">Gitlab</a>.</p>
 
 <p>You can find on <a href=" https://its.cern.ch/jira/secure/ReleaseNote.jspa?projectId=14707&version=26725">JIRA</a>
   the list of tickets closed in this release.</p>
@@ -30,7 +106,7 @@ Package Coordinators: Marco Clemencic, Charles Leggett, Benedikt Hegner
     <li>mimumum required C++ standard is not C++14</li>
     <li>rewrite of components property classes</li>
   </ul>
-  The full list of changes can be found on <a href="https://gitlab.cern.ch/gaudi/Gaudi/merge_requests?milestone_title=v28r0">Gitlab</a>.
+  The full list of changes can be found on <a href="https://gitlab.cern.ch/gaudi/Gaudi/merge_requests?milestone_title=v28r0&scope=all&state=merged">Gitlab</a>.
 </p>
 <p>Here follows a list of JIRA tickets closed in this release.</p>
 

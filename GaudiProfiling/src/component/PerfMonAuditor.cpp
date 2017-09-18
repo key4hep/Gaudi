@@ -541,32 +541,20 @@ void PerfMonAuditor::pausepm()
 void PerfMonAuditor::finalizepm()
 {
    info() << "start of finalizepm ucn:" << used_counters_number << endmsg;
-   char filename[MAX_OUTPUT_FILENAME_LENGTH];
-   char to_cat[50];
-   FILE *outfile;
    for(int i=0; i<used_counters_number; i++)
    {
-    bzero(filename, MAX_OUTPUT_FILENAME_LENGTH);
-    sprintf(filename, "%s_%s", prefix_cstr, event_cstr[i]);
-    for(int j=0; j<(int)strlen(filename); j++)
-    {
-     if(filename[j]==':')
-     {
-      filename[j]='-';
-     }
-    }
-    bzero(to_cat, 50);
-    if(inv[i])
-    {
-     strcpy(to_cat, "_INV_1");
-    }
-    if(cmask[i]>0)
-    {
-     sprintf(to_cat, "%s_CMASK_%d", to_cat, cmask[i]);
-    }
-    sprintf(filename, "%s%s.txt", filename, to_cat);
+    std::string filename = prefix_cstr;
+    filename += '_';
+    filename += event_cstr[i];
+
+    for(auto& c: filename) if ( c == ':' ) c = '-';
+
+    if(inv[i]) filename += "_INV_1";
+    if(cmask[i]>0) filename += "_CMASK_" + std::to_string(cmask[i]);
+    filename += ".txt";
+
     info() << "Filename:" << filename << endmsg;
-    outfile = fopen(filename, "w");
+    FILE* outfile = fopen(filename.c_str(), "w");
     if(nehalem)
     {
      fprintf(outfile, "NHM ");
@@ -911,32 +899,20 @@ void PerfMonAuditor::stop_smpl()
    // and then dumps the new found information into gzipped output files, to be processed later
 void PerfMonAuditor::finalize_smpl()
 {
-   char filename[MAX_OUTPUT_FILENAME_LENGTH];
-   bzero(filename, MAX_OUTPUT_FILENAME_LENGTH);
-   char to_cat[50];
-   gzFile outfile;
    int err;
    for(int i=0; i<used_counters_number; i++)
    {
-    sprintf(filename, "%s_%s", prefix_cstr, event_cstr[i]);
-    for(int j=0; j<(int)strlen(filename); j++)
-    {
-     if(filename[j]==':')
-     {
-      filename[j]='-';
-     }
-    }
-    bzero(to_cat, 50);
-    if(inv[i])
-    {
-     strcpy(to_cat, "_INV_1");
-    }
-    if(cmask[i]>0)
-    {
-     sprintf(to_cat, "%s_CMASK_%d", to_cat, cmask[i]);
-    }
-    sprintf(filename, "%s%s.txt.gz", filename, to_cat);
-    outfile = gzopen(filename, "wb");
+    std::string filename = prefix_cstr;
+    filename += '_';
+    filename += event_cstr[i];
+
+    for(auto& c: filename) if ( c == ':' ) c = '-';
+
+    if(inv[i]) filename += "_INV_1";
+    if(cmask[i]>0) filename += "_CMASK_" + std::to_string(cmask[i]);
+    filename += ".txt.gz";
+
+    gzFile outfile = gzopen(filename.c_str(), "wb");
     if(outfile!=NULL)
     {
      if(nehalem)

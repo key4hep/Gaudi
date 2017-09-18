@@ -3,7 +3,7 @@
 
 // Framework includes
 #include "GaudiKernel/EventContext.h"
-
+#include "AlgsExecutionStates.h"
 #include "DataFlowManager.h"
 
 // Event slots management -------------------------------------------------

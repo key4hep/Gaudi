@@ -1,50 +1,105 @@
+stages:
+  - build
+  - test
+  - check
+  - deploy
+
 before_script:
-  - . /cvmfs/lhcb.cern.ch/lib/LbLogin.sh
-  - unset VERBOSE
-  - export PATH=/cvmfs/lhcb.cern.ch/lib/contrib/ninja/1.4.0/x86_64-slc6:${PATH}
-  - export CMAKE_PREFIX_PATH=/cvmfs/sft.cern.ch/lcg/releases
+  - export BINARY_TAG=x86_64-slc6-gcc62-opt
+  - export LCG_hostos=x86_64-slc6
+  - export PATH=/cvmfs/sft.cern.ch/lcg/contrib/CMake/3.7.0/Linux-x86_64/bin:/cvmfs/sft.cern.ch/lcg/contrib/ninja/1.7.1/x86_64-slc6:/cvmfs/sft.cern.ch/lcg/releases/Python/2.7.13-597a5/${BINARY_TAG}/bin:${PATH}
+  - export LCG_release_area=/cvmfs/sft.cern.ch/lcg/releases
+  - export PATH=/cvmfs/lhcb.cern.ch/lib/lhcb/LBSCRIPTS/dev/InstallArea/scripts:${PATH}
+  - export CMAKE_PREFIX_PATH=/cvmfs/sft.cern.ch/lcg/releases:/cvmfs/projects.cern.ch/intelsw/psxe/linux/x86_64/2017/vtune_amplifier_xe
+  - export CCACHE_DIR=${PWD}/.ccache
 
 build:
+  image: lhcbdev/slc6-build:latest
+  tags:
+    - cvmfs
   stage: build
   script:
+    - curl -o artifacts.zip --location ${CI_PROJECT_URL}/builds/artifacts/master/download?job=build
+    - unzip -q artifacts.zip '.ccache/*' || true
+    - /cvmfs/sft.cern.ch/lcg/releases/ccache/3.3.4-e92e5/${BINARY_TAG}/bin/ccache -z
     - echo 'set(CMAKE_USE_CCACHE ON CACHE BOOL "")' >> cache_preload.cmake
-    - make
-    - mv build.${CMTCONFIG} build
-  tags:
-    - slc6
+    - make BUILDDIR=build
+    - /cvmfs/sft.cern.ch/lcg/releases/ccache/3.3.4-e92e5/${BINARY_TAG}/bin/ccache -s
   artifacts:
     paths:
-      - build/
+      - build
+      - .ccache
+    expire_in: 1 week
 
 coding-conventions:
+  image: lhcbdev/slc6-build:latest
+  tags:
+    - cvmfs
   stage: test
   script:
-    - mv build build.${CMTCONFIG}
-    - make apply-formatting
+    - make BUILDDIR=build apply-formatting
     - git diff --stat
-  tags:
-    - slc6
 
 doxygen:
+  image: lhcbdev/slc6-build:latest
+  tags:
+    - cvmfs
   stage: test
   script:
-    - mv build build.${CMTCONFIG}
-    - make doc
-    - mv build.${CMTCONFIG}/doxygen .
-  tags:
-    - slc6
+    - find build -type f -exec touch -d $(date +@%s) \{} \;
+    - make BUILDDIR=build doc
+    - rm -rf public
+    - mkdir -p public/doxygen
+    - mv build/doxygen/html ${CI_COMMIT_REF_SLUG}
+    - zip -r -q public/doxygen/${CI_COMMIT_REF_SLUG}.zip ${CI_COMMIT_REF_SLUG}
+  only:
+    - master
+    - tags
   artifacts:
     paths:
-      - doxygen/
+      - public
+    expire_in: 1 day
 
 test:
+  image: lhcbdev/slc6-build:latest
+  tags:
+    - cvmfs
   stage: test
   script:
-    - mv build build.${CMTCONFIG}
-    - make test ARGS='-j4'
-    - mv build.${CMTCONFIG}/html test_report
-  tags:
-    - slc6
+    - find build -type f -exec touch -d $(date +@%s) \{} \;
+    - mkdir -p build/html
+    - ( make BUILDDIR=build test ARGS='-j4' || touch build/html/tests_failed ) | tee build/ctest.log
+    - mv build/html test_report
+    - mv build/ctest.log test_report
   artifacts:
     paths:
-      - test_report/
+      - test_report
+    expire_in: 1 week
+
+test_report:
+  stage: check
+  script:
+    - if [ -e test_report/tests_failed ] ; then
+    # this prints all lines starting with a white space after and including "The following tests...", excluding lines with "Not Run"
+    -   awk '/^[^[:space:]]/{do_print=0}; /The following tests FAILED:/{do_print=1}; do_print&&!/Not Run/{print}' test_report/ctest.log
+    -   exit 1
+    - else
+    -   echo tests successful
+    - fi
+
+# see https://gitlab.cern.ch/gitlabci-examples/deploy_eos for the details
+# of the configuration
+deploy-doxygen:
+  stage: deploy
+  only:
+    - master
+    - tags
+  image: gitlab-registry.cern.ch/ci-tools/ci-web-deployer:latest
+  script:
+    - test -z "$EOS_ACCOUNT_USERNAME" -o -z "$EOS_ACCOUNT_PASSWORD" -o -z "$EOS_PATH" && exit 0 || true
+    # Script that performs the deploy to EOS. Makes use of the variables defined in the project
+    # It will copy the generated content to the folder in EOS
+    - deploy-eos
+  # do not run any globally defined before_script or after_script for this step
+  before_script: []
+  after_script: []

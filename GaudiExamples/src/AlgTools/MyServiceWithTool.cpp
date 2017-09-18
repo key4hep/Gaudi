@@ -9,32 +9,10 @@ namespace GaudiTesting {
    */
   class SvcWithTool: public Service {
   public:
-    /// Standard Constructor
-    SvcWithTool(const std::string& name, ISvcLocator *pSvcLocator):
-      Service(name, pSvcLocator) {
-
-    	declarePublicTool(m_tool);
-
-    }
-    ~SvcWithTool() override = default;
-
-    StatusCode initialize() override {
-      return Service::initialize();
-    }
-    StatusCode start() override {
-      return Service::start();
-    }
-    StatusCode stop() override {
-      return Service::stop();
-    }
-    StatusCode finalize() override {
-      return Service::finalize();
-    }
+    using Service::Service;
 
   private:
-
-    ToolHandle<IMyTool> m_tool;
-
+    PublicToolHandle<IMyTool> m_tool{this, "MyTool", "MyTool"};
   };
 
   DECLARE_COMPONENT(SvcWithTool)

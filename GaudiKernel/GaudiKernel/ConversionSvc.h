@@ -4,7 +4,7 @@
 // Include files
 #include <vector>
 #include <algorithm>
-#include <functional>
+#include <utility>
 #include "GaudiKernel/Kernel.h"
 #include "GaudiKernel/Service.h"
 #include "GaudiKernel/IConversionSvc.h"
@@ -47,43 +47,51 @@ class GAUDI_API ConversionSvc: public extends<Service,
                                               IConversionSvc,
                                               IAddressCreator>
 {
-public:
   class WorkerEntry final {
-  private:
     CLID        m_class;
     IConverter* m_converter;
   public:
     WorkerEntry(const CLID& cl, IConverter* cnv)
       : m_class(cl), m_converter(cnv)       {
+      if (m_converter) m_converter->addRef();
     }
-    WorkerEntry(const WorkerEntry& copy)
-      : m_class(copy.m_class), m_converter(copy.m_converter)    {
+
+    ~WorkerEntry() {
+      if (m_converter) m_converter->release();
     }
-    WorkerEntry& operator = (const WorkerEntry& copy)   {
-      m_class     = copy.m_class;
-      m_converter = copy.m_converter;
+
+    WorkerEntry(WorkerEntry&& orig) noexcept
+    : m_class{ orig.m_class },
+      m_converter{ std::exchange( orig.m_converter, nullptr ) } {
+    }
+
+    WorkerEntry& operator=(WorkerEntry&& orig) noexcept {
+      m_class = orig.m_class;
+      std::swap( m_converter, orig.m_converter );
       return *this;
     }
+
+    WorkerEntry(const WorkerEntry& copy) = delete;
+    WorkerEntry& operator = (const WorkerEntry& copy) = delete;
+
     IConverter*     converter()  {
       return m_converter;
     }
+
     const CLID&     clID()  const {
       return m_class;
     }
   };
 
-  class CnvTest : public std::unary_function<WorkerEntry, bool>   {
-  private:
-    const CLID m_test;
-  public:
-    CnvTest(const CLID& test) : m_test(test)    {
-    }
-    bool operator()( const WorkerEntry& testee ) const {
-        return m_test == testee.clID();
-    }
-  };
 
 public:
+  /// Standard Constructor
+  ConversionSvc(const std::string& name, ISvcLocator* svc, long type);
+
+  /// disable copy and assignment
+  ConversionSvc(const ConversionSvc&) = delete;
+  ConversionSvc& operator= (const ConversionSvc&) = delete;
+
 
   /// Initialize the service.
   StatusCode initialize() override;
@@ -184,12 +192,7 @@ public:
   /// Update state of the service
   virtual StatusCode updateServiceState(IOpaqueAddress* pAddress);
 
-  /// Standard Constructor
-  ConversionSvc(const std::string& name, ISvcLocator* svc, long type);
-
 protected:
-  /// Standard Destructor
-  virtual ~ConversionSvc();
 
   /// Create new Converter using factory
   virtual IConverter* createConverter(long typ, const CLID& clid, const ICnvFactory* fac);
@@ -230,10 +233,5 @@ protected:
   /// List of conversion workers
   std::vector<WorkerEntry> m_workers;
 
-private:
-  /// Fake copy constructor (never implemented).
-  ConversionSvc(const ConversionSvc&);
-  /// Fake assignment operator (never implemented).
-  ConversionSvc& operator= (const ConversionSvc&);
 };
 #endif // GAUDIKERNEL_CONVERSIONSVC_H

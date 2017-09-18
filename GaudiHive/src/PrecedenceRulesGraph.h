@@ -18,6 +18,7 @@
 #include "IGraphVisitor.h"
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/CommonMessaging.h"
+#include "GaudiKernel/ICondSvc.h"
 
 #include "CPUCruncher.h"
 
@@ -86,9 +87,9 @@ namespace concurrency {
   class DecisionNode : public ControlFlowNode {
   public:
     /// Constructor
-    DecisionNode(PrecedenceRulesGraph& graph, unsigned int nodeIndex, const std::string& name, bool modeOR, bool allPass, bool isLazy) :
+    DecisionNode(PrecedenceRulesGraph& graph, unsigned int nodeIndex, const std::string& name, bool modeConcurrent, bool modePromptDecision, bool modeOR, bool allPass) :
       ControlFlowNode(graph, nodeIndex, name),
-      m_modeOR(modeOR), m_allPass(allPass), m_isLazy(isLazy), m_children()
+	  m_modeConcurrent(modeConcurrent), m_modePromptDecision(modePromptDecision), m_modeOR(modeOR), m_allPass(allPass), m_children()
       {}
     /// Destructor
     ~DecisionNode() override;
@@ -119,15 +120,18 @@ namespace concurrency {
                             const std::vector<int>& node_decisions,
                             const unsigned int& recursionLevel) const override;
   public:
+    /// Whether all daughters will be evaluated concurrently or sequentially
+    bool m_modeConcurrent;
+    /// Whether to evaluate the hub decision ASA its child decisions allow to do that.
+    /// Applicable to both concurrent and sequential cases.
+    bool  m_modePromptDecision;
     /// Whether acting as "and" (false) or "or" node (true)
     bool m_modeOR;
     /// Whether always passing regardless of daughter results
     bool m_allPass;
-    /// Whether to evaluate lazily - i.e. whether to stop once result known
-    bool  m_isLazy;
-  private:
     /// All direct daughter nodes in the tree
     std::vector<ControlFlowNode*> m_children;
+  private:
     /// XXX: CF tests. All direct parent nodes in the tree
     std::vector<DecisionNode*> m_parents;
   };
@@ -162,6 +166,8 @@ namespace concurrency {
     const std::vector<AlgorithmNode*>& getSupplierNodes() const {return m_suppliers;}
     /// Get all consumer nodes
     const std::vector<AlgorithmNode*>& getConsumerNodes() const {return m_consumers;}
+    /// Get all parent decision hubs
+    const std::vector<DecisionNode*>& getParentDecisionHubs() const {return m_parents;}
 
     /// Associate an AlgorithmNode, which is a data supplier for this one
     void addOutputDataNode(DataNode* node);
@@ -182,9 +188,12 @@ namespace concurrency {
     void setIOBound(bool value) { m_isIOBound = value;}
     /// Check if algorithm is I/O-bound
     bool isIOBound() const {return m_isIOBound;}
+    /// Check if positive control flow decision is enforced
+    bool isOptimist() const {return m_allPass;};
+    /// Check if control flow logic is always inverted
+    bool isLiar() const {return m_inverted;};
     /// Method to check whether the Algorithm has its all data dependency satisfied
     bool dataDependenciesSatisfied(const int& slotNum) const;
-    bool dataDependenciesSatisfied(AlgsExecutionStates& states) const;
     /// Method to set algos to CONTROLREADY, if possible
     int updateState(AlgsExecutionStates& states,
                             std::vector<int>& node_decisions) const override;
@@ -204,6 +213,9 @@ namespace concurrency {
                             AlgsExecutionStates& states,
                             const std::vector<int>& node_decisions,
                             const unsigned int& recursionLevel) const override;
+  public:
+    /// XXX: CF tests
+    std::vector<DecisionNode*> m_parents;
   private:
     /// The index of the algorithm
     unsigned int m_algoIndex;
@@ -213,8 +225,6 @@ namespace concurrency {
     bool m_inverted;
     /// Whether the selection result is relevant or always "pass"
     bool m_allPass;
-    /// XXX: CF tests
-    std::vector<DecisionNode*> m_parents;
 
     /// Vectors, used in data dependencies realm
     /// AlgorithmNodes that represent algorithms producing an input needed for the algorithm
@@ -238,10 +248,17 @@ namespace concurrency {
 class DataNode {
 public:
     /// Constructor
-    DataNode(PrecedenceRulesGraph& /*graph*/, const DataObjID& path): m_data_object_path(path) {}
+    DataNode(PrecedenceRulesGraph& graph, const DataObjID& path): m_graph(&graph), m_data_object_path(path) {}
     /// Destructor
-    ~DataNode() {}
+    virtual ~DataNode() = default;
     const DataObjID& getPath() {return m_data_object_path;}
+
+    /// Entry point for a visitor
+    virtual bool accept(IGraphVisitor& visitor) {
+      if (visitor.visitEnter(*this))
+        return visitor.visit(*this);
+      return true;
+    }
     /// Associate an AlgorithmNode, which is a data supplier for this one
     void addProducerNode(AlgorithmNode* node) {
       if (std::find(m_producers.begin(),m_producers.end(),node) == m_producers.end())
@@ -256,11 +273,32 @@ public:
     const std::vector<AlgorithmNode*>& getProducers() const {return m_producers;}
     /// Get all data object consumers
     const std::vector<AlgorithmNode*>& getConsumers() const {return m_consumers;}
-private:
+
+public:
+    PrecedenceRulesGraph* m_graph;
     DataObjID m_data_object_path;
     std::vector<AlgorithmNode*> m_producers;
     std::vector<AlgorithmNode*> m_consumers;
   };
+
+class ConditionNode : public DataNode {
+public:
+  /// Constructor
+  ConditionNode(PrecedenceRulesGraph& graph, const DataObjID& path, SmartIF<ICondSvc> condSvc):
+    DataNode(graph, path), m_condSvc(condSvc) {}
+
+  /// Need to hide the (identical) base method with this one so that
+  /// visitEnter(ConditionNode&) and visit(ConditionNode&) are called
+  bool accept(IGraphVisitor& visitor) override {
+    if (visitor.visitEnter(*this))
+      return visitor.visit(*this);
+    return true;
+  }
+
+public:
+  // Service for Conditions handling
+  SmartIF<ICondSvc> m_condSvc;
+};
 
   typedef std::unordered_map<std::string,AlgorithmNode*> AlgoNodesMap;
   typedef std::unordered_map<std::string,DecisionNode*> DecisionHubsMap;
@@ -288,7 +326,7 @@ public:
     /// Initialize graph
     StatusCode initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map);
     StatusCode initialize(const std::unordered_map<std::string,unsigned int>& algname_index_map,
-                          std::vector<EventSlot>& eventSlots);
+                          std::vector<EventSlot>& eventSlots, bool enableCondSvc);
     /// Register algorithm in the Data Dependency index
     void registerIODataObjects(const Algorithm* algo);
     /// Build data dependency realm WITHOUT data object nodes: just interconnect algorithm nodes directly
@@ -296,7 +334,7 @@ public:
     /// Build data dependency realm WITH data object nodes participating
     StatusCode buildAugmentedDataDependenciesRealm();
     /// Add a node, which has no parents
-    void addHeadNode(const std::string& headName, bool modeOR, bool allPass, bool isLazy);
+    void addHeadNode(const std::string& headName, bool modeConcurrent, bool modePromptDecision, bool modeOR, bool allPass);
     /// Add algorithm node
     StatusCode addAlgorithmNode(Algorithm* daughterAlgo, const std::string& parentName, bool inverted, bool allPass);
     /// Attach pointers to real Algorithms (and their clones) to Algorithm nodes of the graph
@@ -313,7 +351,7 @@ public:
     /// Get DataNode by DataObject path using graph index
     DataNode* getDataNode(const DataObjID& dataPath) const;
     /// Add a node, which aggregates decisions of direct daughter nodes
-    StatusCode addDecisionHubNode(Algorithm* daughterAlgo, const std::string& parentName, bool modeOR, bool allPass, bool isLazy);
+    StatusCode addDecisionHubNode(Algorithm* daughterAlgo, const std::string& parentName, bool modeConcurrent, bool modePromptDecision, bool modeOR, bool allPass);
     /// Get total number of graph nodes
     unsigned int getControlFlowNodeCounter() const {return m_nodeCounter;}
     /// XXX CF tests. Is needed for older CF implementation
@@ -345,6 +383,8 @@ public:
     std::vector<int>& getNodeDecisions(const int& slotNum) const {return m_eventSlots->at(slotNum).controlFlowState;}
     /// Print out all data origins and destinations, as reflected in the EF graph
     std::string dumpDataFlow() const;
+    /// Print out control flow of Algorithms and Sequences
+    std::string dumpControlFlow() const;
     /// dump to file encountered execution plan
     void dumpExecutionPlan();
     /// set cause-effect connection between two algorithms in the execution plan
@@ -364,15 +404,21 @@ private:
     AlgoOutputsMap m_algoNameToAlgoOutputsMap;
     /// Total number of nodes in the graph
     unsigned int m_nodeCounter;
-    /// Service locator (needed to access the MessageSvc)
+    /// Service locator
     mutable SmartIF<ISvcLocator> m_svcLocator;
     const std::string m_name;
     const std::chrono::system_clock::time_point m_initTime;
-    ///
-    std::vector<EventSlot>* m_eventSlots;
     /// temporary items to experiment with execution planning
     boost::ExecPlan m_ExecPlan;
     std::map<std::string,boost::AlgoVertex> m_exec_plan_map;
+    bool m_conditionsRealmEnabled{false};
+public:
+    std::vector<EventSlot>* m_eventSlots;
+
+    void dumpControlFlow(std::ostringstream&, ControlFlowNode*,
+                         const int&) const;
+
+
   };
 
 

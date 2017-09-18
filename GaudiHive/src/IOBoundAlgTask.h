@@ -9,8 +9,6 @@
 #include "GaudiKernel/EventContext.h"
 #include "GaudiKernel/IAlgExecStateSvc.h"
 
-#include "ForwardSchedulerSvc.h"
-
 /**@class IOBoundAlgTask IOBoundAlgTask.h GaudiHive/src/IOBoundAlgTask.h
  *
  *  Wrapper around I/O-bound Gaudi-algorithms. It may also cover the accelerator-targeted algorithms.
@@ -23,15 +21,11 @@
 class IOBoundAlgTask : public IAlgTask {
 public:
   IOBoundAlgTask(IAlgorithm* algorithm,
-                 unsigned int algoIndex,
                  EventContext* ctx,
                  ISvcLocator* svcLocator,
-                 ForwardSchedulerSvc* schedSvc,
                  IAlgExecStateSvc* aem):
     m_algorithm(algorithm),
     m_evtCtx(ctx),
-    m_algoIndex(algoIndex),
-    m_schedSvc(schedSvc),
     m_aess(aem),
     m_serviceLocator(svcLocator) {}
 
@@ -42,9 +36,6 @@ public:
 private:
   SmartIF<IAlgorithm> m_algorithm;
   EventContext* m_evtCtx;
-  const unsigned int m_algoIndex;
-  // For the callbacks on task finishing
-  SmartIF<ForwardSchedulerSvc> m_schedSvc; // TODO consider using it through its interface (IScheduler?)
   IAlgExecStateSvc *m_aess;
   SmartIF<ISvcLocator> m_serviceLocator;
 };

@@ -24,10 +24,9 @@ namespace CLHEP {
  *  @date   2002-09-14
  */
 
-class GAUDI_API IFuncMinimum: virtual public IAlgTool {
-public:
+struct GAUDI_API IFuncMinimum: extend_interfaces<IAlgTool> {
   /// InterfaceID
-  DeclareInterfaceID(IFuncMinimum,2,0);
+  DeclareInterfaceID(IFuncMinimum,3,0);
 
   /// Function which we minimize (@see CLHEP/GenericFunctions/AbsFunction.hh)
   typedef Genfun::AbsFunction GenFunc   ;

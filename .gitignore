@@ -32,6 +32,7 @@ DoxyWarnings.log
 .cproject
 .settings
 .pydevproject
+.vscode
 
 .build/
 build-dir/

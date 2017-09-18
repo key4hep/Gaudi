@@ -2,6 +2,44 @@ Package: GaudiRelease
 Maintainer: Marco Clemencic
 Commit Id: $Format:%H$
 
+================================ Gaudi v28r3 =================================
+
+! 2017-07-23 - Marco Clemencic (commit 50e6bfa0)
+
+ - Merge branch 'fixes-to-cmake-modules' into 'master'
+
+   Fixes to CMake modules
+
+   - improved inherited heptools version lookup
+   - fixed backward compatibility issue
+   - fixed GAUDI-1299 (fix ignore of subdirectories if binary tag contains `+`)
+   - fixed issue with data package lookup for versions without digits
+   - fixed content of `manifest.xml` for special platform `*-do0`
+   - protected AFS workaround to avoid problems with CMVFS
+   - improve relocatability of compiler path (via `LCG_releases_base` env var)
+   - removed a few hacks for old versions of gcc
+   - enable c++17 for gcc >= 7
+
+   See merge request !312
+
+
+! 2017-05-10 - Marco Clemencic (commit 5b0f4894)
+
+ - Merge branch 'gitlab-pages-doxygen' into 'master'
+
+   improvements to Doxygen pages
+    See merge request !330
+
+! 2017-05-10 - Marco Clemencic (commit 155509ff)
+
+ - Merge branch 'gitlab-pages-doxygen' into 'master'
+
+   Improve Gitlab-CI configuration and deploy Doxygen to EOSWEB
+    See merge request !319
+
+================================ Gaudi v28r2 =================================
+
+
 ================================ Gaudi v28r1 =================================
 
 

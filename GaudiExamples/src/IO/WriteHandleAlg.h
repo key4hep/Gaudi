@@ -16,36 +16,18 @@ using namespace Gaudi::Examples;
 //------------------------------------------------------------------------------
 
 class WriteHandleAlg : public GaudiAlgorithm {
+public:
+  WriteHandleAlg(const std::string& n, ISvcLocator* l): GaudiAlgorithm(n, l) {}
 
-    friend class AlgFactory<WriteHandleAlg> ;
+  bool isClonable() const override { return true; }
 
-  public:
+  /// the execution of the algorithm
+  StatusCode execute() override;
 
-    /// the execution of the algorithm
-    StatusCode execute  () override ; // the execution of the algorithm
+private:
+  Gaudi::Property<bool> m_useHandle{this, "UseHandle", true, "Specify the usage of the handle to write"};
 
-  protected:
-
-    WriteHandleAlg
-    ( const std::string& name , // the algorithm instance name
-      ISvcLocator*       pSvc ); // the Service Locator
-
-    /// virtual & protected desctrustor
-    ~WriteHandleAlg() override = default;
-
-  private:
-
-    /// the default constructor is disabled
-    WriteHandleAlg () ;                              // no default constructor
-    /// the copy constructor is disabled
-    WriteHandleAlg            ( const WriteHandleAlg& ) ; // no copy constructor
-    /// the assignement operator is disabled
-    WriteHandleAlg& operator= ( const WriteHandleAlg& ) ; // no assignement
-
-    DataObjectHandle<Collision> m_output_handle;
-
-    bool m_useHandle;
-
-  };
+  DataObjectWriteHandle<Collision> m_output_handle{this, "Output", "/Event/MyCollision"};
+};
 
 #endif

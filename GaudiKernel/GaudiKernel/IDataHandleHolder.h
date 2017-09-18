@@ -4,13 +4,10 @@
 #include "GaudiKernel/IInterface.h"
 #include "GaudiKernel/INamedInterface.h"
 #include "GaudiKernel/DataObjID.h"
+#include "GaudiKernel/DataHandle.h"
 
 #include <vector>
 #include <set>
-
-namespace Gaudi {
-  class DataHandle;
-}
 
 class IDataHandleVisitor;
 
@@ -29,6 +26,8 @@ class GAUDI_API IDataHandleHolder : virtual public INamedInterface {
 
    virtual const DataObjIDColl& inputDataObjs() const = 0;
    virtual const DataObjIDColl& outputDataObjs() const = 0;
+
+   virtual void addDependency(const DataObjID&, const Gaudi::DataHandle::Mode&) = 0;
 
    DeclareInterfaceID(IDataHandleHolder,1,0);
 

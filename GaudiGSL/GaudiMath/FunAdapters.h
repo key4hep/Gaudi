@@ -4,6 +4,7 @@
 // Include files
 // ============================================================================
 #include <memory>
+#include <boost/variant.hpp>
 // ============================================================================
 // from CLHEP
 // ============================================================================
@@ -20,6 +21,58 @@
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wsuggest-override"
 #endif
+
+
+namespace detail {
+#if  __cplusplus > 201402L
+
+// C++17 version: https://godbolt.org/g/2vAZQt
+template <typename... lambda_ts>
+struct composer_t : lambda_ts...
+{
+  template <typename... T>
+  composer_t(T&&... t) : lambda_ts(std::forward<T>(t))...  {}
+
+  using lambda_ts::operator()...;
+};
+
+#else
+
+template <typename... lambda_ts>
+struct composer_t;
+
+template <typename lambda_t>
+struct composer_t<lambda_t> : lambda_t {
+  composer_t(const lambda_t& lambda): lambda_t{lambda} { }
+  composer_t(lambda_t&& lambda): lambda_t{std::move(lambda)} { }
+
+  using lambda_t::operator();
+};
+
+template <typename lambda_t, typename... more_lambda_ts>
+struct composer_t<lambda_t, more_lambda_ts...> : lambda_t, composer_t<more_lambda_ts...> {
+  using super_t = composer_t<more_lambda_ts...>;
+  template <typename... lambda_ts>
+  composer_t(const lambda_t& lambda, lambda_ts&&... more_lambdas): lambda_t{lambda}, super_t{std::forward<lambda_ts>(more_lambdas)...} { }
+  template <typename... lambda_ts>
+  composer_t(lambda_t&& lambda, lambda_ts&&... more_lambdas): lambda_t{std::move(lambda)}, super_t{std::forward<lambda_ts>(more_lambdas)...} { }
+  using lambda_t::operator();
+  using super_t::operator();
+};
+#endif
+
+template <typename... lambda_ts>
+composer_t<std::decay_t<lambda_ts>...>
+compose(lambda_ts&&... lambdas)
+{ return {std::forward<lambda_ts>(lambdas)...}; }
+
+
+auto dispatch_variant = [](auto&& variant, auto&&... lambdas) -> decltype(auto) {
+  return boost::apply_visitor( compose( std::forward<decltype(lambdas)>(lambdas)... ),
+                               std::forward<decltype(variant)>(variant) );
+};
+
+}
 
 namespace AIDA { class IFunction ; }
 
@@ -47,27 +100,22 @@ namespace Genfun
        */
       AdapterIFunction ( const AIDA::IFunction& fun) ;
       /// copy constructor
-      AdapterIFunction ( const AdapterIFunction& );
-      /// desctructor
-      ~AdapterIFunction() override;
+      AdapterIFunction ( const AdapterIFunction& ) = default;
 
       double operator() ( double a          ) const override;
 
       double operator() ( const Argument& x ) const override;
 
-      unsigned int dimensionality () const override { return m_dim ; }
+      unsigned int dimensionality () const override { return m_arg.size() ; }
 
       /// Does this function have an analytic derivative?
       bool  hasAnalyticDerivative() const override { return true ; }
       /// Derivatives
       Genfun::Derivative partial( unsigned int i  ) const override;
 
-    private:
-      AdapterIFunction();
-      AdapterIFunction& operator=(const AdapterIFunction&);
+      AdapterIFunction& operator=(const AdapterIFunction&) = delete;
     private:
       const AIDA::IFunction*      m_fun ;
-      size_t                      m_dim ;
       mutable std::vector<double> m_arg ;
     };
     /// mandatory macro from CLHEP/GenericFunctions
@@ -110,10 +158,8 @@ namespace Genfun
     public:
       /// constructor
       Adapter2DoubleFunction ( Function func );
-      /// copy coinstructor
-      Adapter2DoubleFunction ( const Adapter2DoubleFunction& );
-      /// destructor
-      ~Adapter2DoubleFunction () override;
+      /// copy constructor
+      Adapter2DoubleFunction ( const Adapter2DoubleFunction& ) = default;
 
       double operator() (       double    x ) const override;
 
@@ -126,13 +172,11 @@ namespace Genfun
       Genfun::Derivative partial( unsigned int i  ) const override;
     public:
       double operator() ( const double x , const double y ) const ;
-    private:
-      // default constructor is disabled
-      Adapter2DoubleFunction();
+
       // assigmenet operator is disabled
-      Adapter2DoubleFunction& operator = ( const Adapter2DoubleFunction&);
+      Adapter2DoubleFunction& operator = ( const Adapter2DoubleFunction&) = delete;
     private:
-      Function                 m_func  ;
+      Function                 m_func = nullptr ;
     };
     /// mandatory macro from CLHEP/GenericFunctions
     FUNCTION_OBJECT_IMP( Adapter2DoubleFunction )
@@ -177,9 +221,7 @@ namespace Genfun
       /// constructor
       Adapter3DoubleFunction ( Function func );
       /// copy coinstructor
-      Adapter3DoubleFunction ( const Adapter3DoubleFunction& );
-      /// destructor
-      ~Adapter3DoubleFunction () override ;
+      Adapter3DoubleFunction ( const Adapter3DoubleFunction& ) = default;
 
       double operator() (       double    x ) const override ;
 
@@ -195,12 +237,10 @@ namespace Genfun
                           const double y ,
                           const double z ) const ;
     private:
-      // default constructor is disabled
-      Adapter3DoubleFunction();
       // assignment operator is disabled
       Adapter3DoubleFunction& operator = ( const Adapter3DoubleFunction&);
     private:
-      Function                 m_func  ;
+      Function                 m_func = nullptr ;
     };
     /// mandatory macro from CLHEP/GenericFunctions
     FUNCTION_OBJECT_IMP( Adapter3DoubleFunction )
@@ -219,8 +259,6 @@ namespace Genfun
       typedef double (*Function1)( const double               ) ;
       typedef double (*Function2)( const double*              ) ;
       typedef double (*Function3)( const std::vector<double>& ) ;
-    protected:
-      enum Case { TrivialArg , ArrayArg , VectorArg } ;
     public:
       /// From CLHEP/GenericFunctions
       FUNCTION_OBJECT_DEF( SimpleFunction )
@@ -246,15 +284,14 @@ namespace Genfun
       SimpleFunction ( Function3    func ,
                        const size_t dim ) ;
 
-      /// copy constructor
-      SimpleFunction ( const SimpleFunction& ) ;
-
-      // destructor
-      ~SimpleFunction() override = default;
     public:
 
       /// dimensionality of the problem
-      unsigned int dimensionality         () const override { return m_DIM   ; }
+      unsigned int dimensionality         () const override {
+        return detail::dispatch_variant( m_func,
+               [](Function1) { return 1ul; },
+               [&](auto) { return m_arg.size(); } );
+      }
       /// Does this function have an analytic derivative?
       bool  hasAnalyticDerivative         () const override { return true    ; }
       /// Function value
@@ -266,23 +303,8 @@ namespace Genfun
 
     private:
 
-      // the default constructor  is disabled
-      SimpleFunction() ;
-      // the assignment operator is disabled
-      SimpleFunction& operator=(const SimpleFunction& );
-
-    private:
-
-      Case                         m_case     ;
-      size_t                       m_DIM      ;
-
-      Function1                    m_func1    ;
-
-      Function2                    m_func2    ;
-      std::unique_ptr<double[]>    m_arg2     ;
-
-      Function3                    m_func3    ;
-      mutable std::vector<double>  m_arg3     ;
+      boost::variant<Function1,Function2,Function3> m_func;
+      mutable std::vector<double>  m_arg     ;
     };
     /// From CLHEP/GenericFunctions
     FUNCTION_OBJECT_IMP( SimpleFunction )

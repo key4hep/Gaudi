@@ -23,8 +23,7 @@ namespace Genfun    /// CLHEP
  *  @date   2003-07-07
  */
 
-class GAUDI_API IEqSolver : virtual public IAlgTool {
-public:
+struct GAUDI_API IEqSolver : extend_interfaces<IAlgTool> {
   /// InterfaceID
   DeclareInterfaceID(IEqSolver,2,0);
 

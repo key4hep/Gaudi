@@ -14,7 +14,6 @@ JobOptionsSvc        INFO # (34,1): ToolSvc.MyAudTool.OutputLevel = 3
 JobOptionsSvc        INFO # (35,1): MyAudAlgorithm.OutputLevel = 2
 JobOptionsSvc        INFO Job options successfully read in from /afs/cern.ch/work/m/marcocle/workspace/Gaudi/GaudiExamples/options/AlgErrAud.opts
 MessageSvc ERROR: cannot suppress ALWAYS messages
-MessageSvc ERROR: cannot suppress ALWAYS messages
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
                                                    Welcome to ApplicationMgr (GaudiCoreSvc v4r0)

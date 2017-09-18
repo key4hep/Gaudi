@@ -13,10 +13,9 @@ class GslError ;
  *  @author Vanya Belyaev Ivan.Belyaev@itep.ru
  *  @date   29/04/2002
  */
-class GAUDI_API IGslSvc : virtual public IService {
-public:
+struct GAUDI_API IGslSvc : extend_interfaces<IService> {
   /// InterfaceID
-  DeclareInterfaceID(IGslSvc,2,0);
+  DeclareInterfaceID(IGslSvc,3,0);
 
   /** type definition of "standard" GSL error handler functions
    *  @param reason error reason (message)
@@ -54,11 +53,6 @@ public:
    *  @return status code
    */
   virtual StatusCode    status        ( const int error      ) const = 0 ;
-
-protected:
-
-  /// destructor (virtual and protected)
-  virtual ~IGslSvc(){}
 
 };
 

@@ -1,16 +1,15 @@
-// Framework
+// local includes
 #include "AlgoExecutionTask.h"
+#include "RetCodeGuard.h"
+
+// Framework
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/IMessageSvc.h"
 #include "GaudiKernel/IProperty.h"
 #include "GaudiKernel/ThreadLocalContext.h"
 #include "GaudiKernel/IAlgExecStateSvc.h"
 
-// C++
 #include <functional>
-
-// local includes
-#include "RetCodeGuard.h"
 
 tbb::task* AlgoExecutionTask::execute() {
 
@@ -24,18 +23,23 @@ tbb::task* AlgoExecutionTask::execute() {
   bool eventfailed=false;
   Gaudi::Hive::setCurrentContext( m_evtCtx );
 
-  m_schedSvc->addAlg(this_algo, m_evtCtx, pthread_self());
+  // TODO reproduce the commented out functionality in a different service
+  //m_schedSvc->addAlg(this_algo, m_evtCtx, pthread_self());
 
   // Get the IProperty interface of the ApplicationMgr to pass it to RetCodeGuard
   const SmartIF<IProperty> appmgr(m_serviceLocator);
   
   SmartIF<IMessageSvc> messageSvc (m_serviceLocator);
   MsgStream log(messageSvc, "AlgoExecutionTask");
-  
+
+  // select the appropriate store
+  this_algo->whiteboard()->selectStore(m_evtCtx->valid() ? 
+                                       m_evtCtx->slot() : 0).ignore();
+
   StatusCode sc(StatusCode::FAILURE);
   try {
     RetCodeGuard rcg(appmgr, Gaudi::ReturnCode::UnhandledException);
-    sc = m_algorithm->sysExecute();
+    sc = m_algorithm->sysExecute(*m_evtCtx);
     if (UNLIKELY(!sc.isSuccess()))  {
       log << MSG::WARNING << "Execution of algorithm " 
           << m_algorithm->name() << " failed" << endmsg;
@@ -67,18 +71,9 @@ tbb::task* AlgoExecutionTask::execute() {
   m_aess->algExecState(ialg,*m_evtCtx).setExecuted(true);
   m_aess->algExecState(ialg,*m_evtCtx).setExecStatus(sc);
   m_aess->updateEventStatus(eventfailed,*m_evtCtx);
-  
-  // Push in the scheduler queue an action to be performed 
-  auto action_promote2Executed = std::bind(&ForwardSchedulerSvc::promoteToExecuted,
-                                           m_schedSvc, 
-                                           m_algoIndex, 
-                                           m_evtCtx->slot(),
-                                           m_algorithm,
-                                           m_evtCtx);
 
-  m_schedSvc->m_actionsQueue.push(action_promote2Executed);    
-
-  m_schedSvc->delAlg(this_algo);
+  // TODO reproduce the commented out functionality in a different service
+  //m_schedSvc->delAlg(this_algo);
 
   Gaudi::Hive::setCurrentContextEvt(-1);
 

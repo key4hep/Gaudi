@@ -123,7 +123,7 @@ public:
    *  For sub-algorithms either the sysExecute() method or execute() method
    *  must be EXPLICITLY invoked by  the parent algorithm.
    */
-  StatusCode sysExecute() override;
+  StatusCode sysExecute(const EventContext& ctx) override;
 
   /** System stop. This method invokes the stop() method of a concrete
       algorithm and the stop() methods of all of that algorithm's sub algorithms.
@@ -195,7 +195,7 @@ public:
   bool isExecuted() const override;
 
   /// Set the executed flag to the specified state
-  void setExecuted( bool state ) override;
+  void setExecuted( bool state ) const override;
 
   /** Reset the executed state of the Algorithm for the duration
    *  of the current event.
@@ -213,14 +213,17 @@ public:
   /// Is this algorithm enabled or disabled?
   bool isEnabled() const override;
 
+  /// Are we a Sequence?
+  bool isSequence() const override { return false; }
+
   /// Did this algorithm pass or fail its filter criterion for the last event?
   bool filterPassed() const override;
 
   /// Set the filter passed flag to the specified state
-  void setFilterPassed( bool state ) override;
+  void setFilterPassed( bool state ) const override;
 
   /// Get the number of failures of the algorithm.
-  inline int errorCount() const { return m_errorCount; }
+  unsigned int errorCount() const;
 
   /// Access a service by name, creating it if it doesn't already exist.
   template <class T>
@@ -377,7 +380,7 @@ public:
   Gaudi::Details::PropertyBase* declareProperty( const std::string& name, ToolHandleArray<T>& hndlArr,
                                                  const std::string& doc = "none" )
   {
-    m_toolHandleArrays.push_back( &hndlArr );
+    addToolsArray( hndlArr );
     return PropertyHolderImpl::declareProperty( name, hndlArr, doc );
   }
 
@@ -427,16 +430,15 @@ public:
   }
 
 public:
+  // For concurrency
+  /// get the context
+  const EventContext& getContext() const override { return m_event_context; }
+
+public:
 
   virtual void acceptDHVisitor( IDataHandleVisitor* ) const override;
 
-  const DataObjIDColl& inputDataObjs() const override { return m_inputDataObjs; }
-  const DataObjIDColl& outputDataObjs() const override { return m_outputDataObjs; }
-
   void commitHandles() override;
-
-private:
-  DataObjIDColl m_inputDataObjs, m_outputDataObjs;
 
 public:
   void registerTool( IAlgTool* tool ) const;
@@ -460,6 +462,12 @@ public:
     return sc;
   }
 
+  template <class T>
+  void addToolsArray( ToolHandleArray<T>& hndlArr )
+  {
+    m_toolHandleArrays.push_back( &hndlArr );
+  }
+
   const std::vector<IAlgTool*>& tools() const;
 
   // Return the I/O-boundness flag
@@ -478,8 +486,8 @@ private:
   void initToolHandles() const;
 
 public:
-  /// Specifies the clonability of the algorithm
-  bool isClonable() const override { return m_isClonable; }
+  // /// Specifies the clonability of the algorithm
+  // bool isClonable() const override { return false; }
 
   /// Return the cardinality
   unsigned int cardinality() const override { return m_cardinality; }
@@ -502,13 +510,14 @@ public:
 
 private:
 
-  int maxErrors() const { return m_errorMax; }
+  unsigned int maxErrors() const { return m_errorMax; }
 
 private:
   Gaudi::StringKey m_name;            ///< Algorithm's name for identification
   std::string m_type;                 ///< Algorithm's type
   std::string m_version;              ///< Algorithm's version
   unsigned int m_index;               ///< Algorithm's index
+  EventContext m_event_context;
   std::vector<Algorithm*> m_subAlgms; ///< Sub algorithms
 
   // tools used by algorithm
@@ -550,8 +559,7 @@ private:
   Gaudi::Property<int> m_outputLevel{this, "OutputLevel", MSG::NIL, "output level"};
   Gaudi::Property<bool> m_isEnabled{this, "Enable", true, "should the algorithm be executed or not"};
 
-  Gaudi::Property<int> m_errorMax{this, "ErrorMax", 1, "[[deprecated]] max number of errors"};
-  Gaudi::Property<int> m_errorCount{this, "ErrorCounter", 0, "[[deprecated]] error counter"};
+  Gaudi::Property<unsigned int> m_errorMax{this, "ErrorMax", 1, "[[deprecated]] max number of errors"};
 
   Gaudi::Property<bool> m_auditInit{this, "AuditAlgorithms", false, "[[deprecated]] unused"};
   Gaudi::Property<bool> m_auditorInitialize{this, "AuditInitialize", false, "trigger auditor on initialize()"};
@@ -572,13 +580,16 @@ private:
   Gaudi::Property<bool> m_registerContext{this, "RegisterForContextService", false,
                                           "flag to enforce the registration for Algorithm Context Service"};
 
-  Gaudi::Property<bool> m_isClonable{this, "IsClonable", false, "thread-safe enough for cloning?"};
   Gaudi::Property<int> m_cardinality{this, "Cardinality", 1, "how many clones to create - 0 means algo is reentrant"};
   Gaudi::Property<std::vector<std::string>> m_neededResources{
       this, "NeededResources", {}, "named resources needed during event looping"};
 
   Gaudi::Property<bool> m_isIOBound{this, "IsIOBound", false,
                                     "if the algorithm is I/O-bound (in the broad sense of Von Neumann bottleneck)"};
+
+  // The default should be changed to "false" for v29
+  Gaudi::Property<bool> m_filterCircDeps{this,"FilterCircularDependencies", true,
+      "filter out circular data dependencies"};
 
   std::mutex   m_lock;             ///< for re-entrant Algs
 

@@ -109,11 +109,11 @@ public:
     m_level = MSG::Level(level);
   }
   /// Retrieve output level
-  MSG::Level level()   {
+  MSG::Level level() const {
     return m_level;
   }
   /// Retrieve current stream output level
-  MSG::Level currentLevel()   {
+  MSG::Level currentLevel() const {
     return m_currLevel;
   }
   /// Activate MsgStream
@@ -244,13 +244,6 @@ public:
 inline MsgStream& endmsg(MsgStream& s) {
   return s.doOutput();
 }
-#if defined(GAUDI_V20_COMPAT) && !defined(G21_NO_ENDREQ)
-/// \deprecated Provided for backward compatibility. User endmsg instead. Will be removed in v29r0, see https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/79
-[[deprecated("will be removed in v29r0, use endmsg instead, see https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/79")]]
-inline MsgStream& endreq(MsgStream& s) {
-  return s.doOutput();
-}
-#endif
 
 /// MsgStream format utility "a la sprintf(...)"
 GAUDI_API std::string format(const char*, ... );

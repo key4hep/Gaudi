@@ -842,6 +842,9 @@ class Configurable( object ):
         postLen = max(preLen,postLen)
         return indentStr + '\\%s (End of %s) %s' % (preLen*'-',title,postLen*'-')
 
+    def __repr__(self):
+        return '{0}({1!r})'.format(self.__class__.__name__, self.name())
+
     def __str__( self, indent = 0, headerLastIndentUnit=indentUnit ):
         global log  # to print some info depending on output level
         indentStr = indent*Configurable.indentUnit
@@ -1000,9 +1003,6 @@ class ConfigurableAlgorithm( Configurable ):
 
     def getJobOptName( self ):
         return self._jobOptName
-
-    def __repr__(self):
-        return '{0}({1!r})'.format(self.getType(), self.name())
 
     # mimick the ControlFlowLeaf interface
     def __and__(self, rhs):

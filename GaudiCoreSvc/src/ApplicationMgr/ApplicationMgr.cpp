@@ -139,19 +139,19 @@ StatusCode ApplicationMgr::i_startup()
   auto msgsvc = svcManager()->createService( Gaudi::Utils::TypeNameString( "MessageSvc", m_messageSvcType ) );
   if ( !msgsvc ) {
     fatal() << "Error creating MessageSvc of type " << m_messageSvcType << endmsg;
-    return sc;
+    return StatusCode::FAILURE;
   }
   // Create the Job Options service
   auto jobsvc = svcManager()->createService( Gaudi::Utils::TypeNameString( "JobOptionsSvc", m_jobOptionsSvcType ) );
   if ( !jobsvc ) {
     fatal() << "Error creating JobOptionsSvc" << endmsg;
-    return sc;
+    return StatusCode::FAILURE;
   }
 
   auto jobOptsIProp = jobsvc.as<IProperty>();
   if ( !jobOptsIProp ) {
     fatal() << "Error locating JobOptionsSvc" << endmsg;
-    return sc;
+    return StatusCode::FAILURE;
   }
   sc = jobOptsIProp->setProperty( Gaudi::Property<std::string>( "TYPE", m_jobOptionsType ) );
   if ( !sc.isSuccess() ) {
@@ -217,12 +217,12 @@ StatusCode ApplicationMgr::i_startup()
   m_messageSvc = m_svcLocator->service( "MessageSvc" );
   if ( !m_messageSvc ) {
     fatal() << "Error retrieving MessageSvc." << endmsg;
-    return sc;
+    return StatusCode::FAILURE;
   }
   m_jobOptionsSvc = m_svcLocator->service( "JobOptionsSvc" );
   if ( !m_jobOptionsSvc ) {
     fatal() << "Error retrieving JobOptionsSvc." << endmsg;
-    return sc;
+    return StatusCode::FAILURE;
   }
 
   return sc;

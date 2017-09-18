@@ -25,6 +25,8 @@ public:
   StatusCode execute() override;
   StatusCode finalize() override;
 
+  bool isClonable() const override { return true; }
+
 private:
   Gaudi::Property<std::string> m_privateToolType{this, "ToolWithName", "MyTool",
                                                  "Type of the tool to use (internal name is ToolWithName)"};

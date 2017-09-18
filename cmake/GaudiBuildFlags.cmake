@@ -1,27 +1,87 @@
+# parse binary tag
+include(BinaryTagUtils)
+if(NOT BINARY_TAG_COMP)
+  parse_binary_tag()
+endif()
+if(NOT HOST_BINARY_TAG_ARCH)
+  get_host_binary_tag(HOST_BINARY_TAG)
+  parse_binary_tag(HOST_BINARY_TAG)
+endif()
+
+check_compiler()
+
+
+# Convert BINARY_TAG_TYPE to CMAKE_BUILD_TYPE
+if(BINARY_TAG_TYPE STREQUAL "opt")
+  set(_BT_CMAKE_BUILD_TYPE Release)
+elseif(BINARY_TAG_TYPE MATCHES "^dbg|do0$")
+  set(_BT_CMAKE_BUILD_TYPE Debug)
+elseif(BINARY_TAG_TYPE STREQUAL "cov")
+  set(_BT_CMAKE_BUILD_TYPE Coverage)
+elseif(BINARY_TAG_TYPE STREQUAL "pro")
+  set(_BT_CMAKE_BUILD_TYPE Profile)
+#elseif(BINARY_TAG_TYPE STREQUAL "o2g")
+#  set(CMAKE_BUILD_TYPE RelWithDebInfo)
+#elseif(BINARY_TAG_TYPE STREQUAL "min")
+#  set(CMAKE_BUILD_TYPE MinSizeRel)
+else()
+  message(FATAL_ERROR "BINARY_TAG build type ${BINARY_TAG_TYPE} not supported.")
+endif()
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE ${_BT_CMAKE_BUILD_TYPE} CACHE STRING
+      "Choose the type of build, options are: Release, Debug, Coverage, Profile, RelWithDebInfo, MinSizeRel."
+      FORCE)
+else()
+  if(NOT _BT_CMAKE_BUILD_TYPE STREQUAL CMAKE_BUILD_TYPE)
+    message(WARNING "CMAKE_BUILD_TYPE set to ${CMAKE_BUILD_TYPE}, but BINARY_TAG build type ${BINARY_TAG_TYPE} implies ${_BT_CMAKE_BUILD_TYPE}")
+  endif()
+endif()
+
+
+# Report the platform ids.
+message(STATUS "Target system:    ${BINARY_TAG}")
+message(STATUS "CMake build type: ${CMAKE_BUILD_TYPE}")
+message(STATUS "Host system:      ${HOST_BINARY_TAG}")
+message(STATUS "LCG system:       ${LCG_SYSTEM}")
+
+
 # define a minimun default version
 set(GAUDI_CXX_STANDARD_DEFAULT "c++14")
 # overriddend depending on the compiler
-if (LCG_COMP STREQUAL "clang" AND LCG_COMPVERS VERSION_GREATER "36")
-  set(GAUDI_CXX_STANDARD_DEFAULT "c++14")
-elseif(LCG_COMP STREQUAL "gcc")
+if (BINARY_TAG_COMP_NAME STREQUAL "clang" AND NOT BINARY_TAG_COMP_VERSION VERSION_LESS "3.9")
+  set(GAUDI_CXX_STANDARD_DEFAULT "c++1z")
+elseif(BINARY_TAG_COMP_NAME STREQUAL "gcc")
   # Special defaults
-  if (LCG_COMPVERS VERSION_LESS "47")
-    set(GAUDI_CXX_STANDARD_DEFAULT "c++98")
-  elseif(LCG_COMPVERS VERSION_LESS "49")
-    # C++11 is enable by default on 4.7 <= gcc < 4.9
-    set(GAUDI_CXX_STANDARD_DEFAULT "c++11")
-  elseif(LCG_COMPVERS VERSION_LESS "51")
-    # C++1y (C++14 preview) is enable by default on 4.9 <= gcc < 5.1
-    set(GAUDI_CXX_STANDARD_DEFAULT "c++1y")
-  else()
-    # C++14 is enable by default on gcc >= 5.1
-    set(GAUDI_CXX_STANDARD_DEFAULT "c++14")
-    option(GAUDI_GCC_OLD_ABI "use old gcc ABI for c++11 and above (gcc >= 5.1)"
-           OFF)
+  if (NOT BINARY_TAG_COMP_VERSION VERSION_LESS "7.0")
+    set(GAUDI_CXX_STANDARD_DEFAULT "c++17")
   endif()
 endif()
 # special for GaudiHive
 set(GAUDI_CPP11_DEFAULT ON)
+
+# Detect the version of the C++ standard used to compile ROOT
+# and, if found, use it as default standard for the build.
+if(NOT ROOT_CXX_STANDARD)
+  find_package(ROOT QUIET)
+  if(ROOT_FOUND)
+    file(STRINGS ${ROOT_INCLUDE_DIR}/RConfigure.h _RConfigure REGEX "define R__")
+    foreach(rconfig_line IN LISTS _RConfigure)
+      if(rconfig_line MATCHES "R__USE_CXX([^ ]+)")
+        set(ROOT_CXX_STANDARD "c++${CMAKE_MATCH_1}")
+      endif()
+    endforeach()
+    if(ROOT_CXX_STANDARD)
+      set(ROOT_CXX_STANDARD "${ROOT_CXX_STANDARD}" CACHE INTERNAL
+          "C++ standard used by ROOT")
+      mark_as_advanced(ROOT_CXX_STANDARD)
+    endif()
+    set(_RConfigure)
+    set(rconfig_line)
+  endif()
+endif()
+if(ROOT_CXX_STANDARD)
+  set(GAUDI_CXX_STANDARD_DEFAULT "${ROOT_CXX_STANDARD}")
+endif()
 
 #--- Gaudi Build Options -------------------------------------------------------
 # Build options that map to compile time features
@@ -35,9 +95,6 @@ option(G21_HIDE_SYMBOLS
 option(G21_NEW_INTERFACES
        "disable backward-compatibility hacks in IInterface and InterfaceID"
        OFF)
-option(G21_NO_ENDREQ
-       "disable the 'endreq' stream modifier (use 'endmsg' instead)"
-       OFF)
 option(G21_NO_DEPRECATED
        "remove deprecated methods and functions"
        OFF)
@@ -48,42 +105,64 @@ option(GAUDI_V22
        "enable some API extensions"
        OFF)
 
-option(GAUDI_CMT_RELEASE
-       "use CMT deafult release flags instead of the CMake ones"
-       ON)
-
-if (LCG_COMP STREQUAL "gcc" AND LCG_COMPVERS VERSION_GREATER "50")
+if (BINARY_TAG_COMP_NAME STREQUAL "gcc" AND BINARY_TAG_COMP_VERSION VERSION_GREATER "5.0")
   option(GAUDI_SUGGEST_OVERRIDE "enable warnings for missing override keyword" ON)
 endif()
 
 
-if(BINARY_TAG MATCHES "-do0$")
-  set(GAUDI_SLOW_DEBUG_DEFAULT ON)
-else()
-  set(GAUDI_SLOW_DEBUG_DEFAULT OFF)
-endif()
+string(COMPARE EQUAL "${BINARY_TAG_TYPE}" "do0" GAUDI_SLOW_DEBUG_DEFAULT)
 option(GAUDI_SLOW_DEBUG
        "turn off all optimizations in debug builds"
        ${GAUDI_SLOW_DEBUG_DEFAULT})
 
+# set optimization flags (_opt_level_* and _opt_ext_*)
+# - default optimization levels
+set(_opt_level_RELEASE "-O3")
+set(_opt_ext_RELEASE "-DNDEBUG")
+if(NOT GAUDI_SLOW_DEBUG AND BINARY_TAG_COMP_NAME STREQUAL "gcc")
+  # Use -Og with Debug builds in gcc (if not disabled)
+  set(_opt_level_DEBUG "-Og")
+else()
+  set(_opt_level_DEBUG "-O0")
+endif()
+set(_opt_ext_DEBUG "-g")
+# (RelWithDebInfo shares the flags with Release)
+set(_opt_level_RELWITHDEBINFO "${_opt_level_RELEASE}")
+set(_opt_ext_RELWITHDEBINFO "${_opt_ext_RELEASE} -g")
+
+# - parse subtype flags
+string(TOUPPER "${CMAKE_BUILD_TYPE}" _up_bt)
+foreach(_subtype ${BINARY_TAG_SUBTYPE})
+  if(_subtype MATCHES "^[oO]([0-3sg]|fast)$")
+    set(_opt_level_${_up_bt} "-O${CMAKE_MATCH_1}")
+    #message(STATUS "setting _opt_level_${_up_bt} -> ${_opt_level_${_up_bt}}")
+  elseif(_subtype STREQUAL "g")
+    set(_opt_ext_${_up_bt} "${_opt_ext_${_up_bt}} -g")
+  endif()
+endforeach()
+
+if(_opt_level_${_up_bt})
+  message(STATUS "Optimization:     ${_opt_level_${_up_bt}} ${_opt_ext_${_up_bt}}")
+endif()
+
 # special architecture flags
-set(GAUDI_ARCH_DEFAULT "")  # safe default
-if(LCG_COMP STREQUAL "gcc" AND LCG_COMPVERS VERSION_GREATER "50" AND
-      LCG_ARCH STREQUAL "x86_64")
+set(GAUDI_ARCH_DEFAULT)
+if(BINARY_TAG_MICROARCH)
+  set(GAUDI_ARCH_DEFAULT ${BINARY_TAG_MICROARCH})
+elseif(BINARY_TAG_COMP_NAME STREQUAL "gcc" AND BINARY_TAG_COMP_VERSION VERSION_GREATER "5.0" AND
+   BINARY_TAG_ARCH STREQUAL "x86_64")
   set(GAUDI_ARCH_DEFAULT "sse4.2")
 else()
-  if (LCG_HOST_ARCH AND LCG_ARCH)
-    # this is valid only in the LCG toolchain context
-    if (LCG_HOST_ARCH STREQUAL "x86_64" AND LCG_ARCH STREQUAL "i686")
+  if (NOT HOST_BINARY_TAG_ARCH STREQUAL BINARY_TAG_ARCH)
+    if (HOST_BINARY_TAG_ARCH STREQUAL "x86_64" AND BINARY_TAG_ARCH STREQUAL "i686")
       set(GAUDI_ARCH_DEFAULT "32")
-    elseif(NOT LCG_HOST_ARCH STREQUAL LCG_ARCH)
-      message(FATAL_ERROR "Cannot build for ${LCG_ARCH} on ${LCG_HOST_ARCH}.")
+    else()
+      message(FATAL_ERROR "Cannot build for ${BINARY_TAG_ARCH} on ${HOST_BINARY_TAG_ARCH}.")
     endif()
   endif()
 endif()
 set(GAUDI_ARCH "${GAUDI_ARCH_DEFAULT}"
     CACHE STRING "Which architecture-specific optimizations to use")
-
 
 if(DEFINED GAUDI_CPP11)
   message(WARNING "GAUDI_CPP11 is an obsolete option, use GAUDI_CXX_STANDARD=c++11 instead")
@@ -91,10 +170,13 @@ endif()
 
 set(GAUDI_CXX_STANDARD "${GAUDI_CXX_STANDARD_DEFAULT}"
     CACHE STRING "Version of the C++ standard to be used.")
+if(ROOT_CXX_STANDARD AND NOT ROOT_CXX_STANDARD STREQUAL GAUDI_CXX_STANDARD)
+  message(WARNING "Requested ${GAUDI_CXX_STANDARD} but ROOT was compiled with ${ROOT_CXX_STANDARD}")
+endif()
 
 # If modern c++ and gcc >= 5.1 and requested, use old ABI compatibility
 if((NOT GAUDI_CXX_STANDARD STREQUAL "c++98") AND
-   (LCG_COMP STREQUAL "gcc" AND NOT LCG_COMPVERS VERSION_LESS "51") AND
+   (BINARY_TAG_COMP_NAME STREQUAL "gcc" AND NOT BINARY_TAG_COMP_VERSION VERSION_LESS "5.1") AND
    GAUDI_GCC_OLD_ABI)
   add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
 endif()
@@ -112,20 +194,15 @@ if(NOT GAUDI_FLAGS_SET)
         CACHE STRING "Flags used by the compiler during debug builds."
         FORCE)
 
-    if(GAUDI_CMT_RELEASE)
-      set(CMAKE_CXX_FLAGS_RELEASE "/O2"
-          CACHE STRING "Flags used by the compiler during release builds."
-          FORCE)
-      set(CMAKE_C_FLAGS_RELEASE "/O2"
-          CACHE STRING "Flags used by the compiler during release builds."
-          FORCE)
-    endif()
-
   else()
     # special architecture flags
-    if(GAUDI_ARCH)
-      set(arch_opts "-m${GAUDI_ARCH}")
-    endif()
+    set(arch_opts)
+    foreach(_arch_opt ${GAUDI_ARCH})
+      if(_arch_opt STREQUAL "native")
+        set(_arch_opt "arch=native")
+      endif()
+      set(arch_opts "${arch_opts} -m${_arch_opt}")
+    endforeach()
     # Common compilation flags
     set(CMAKE_CXX_FLAGS
         "${arch_opts} -fmessage-length=0 -pipe -Wall -Wextra -Werror=return-type -pthread -pedantic -Wwrite-strings -Wpointer-arith -Woverloaded-virtual -Wno-long-long"
@@ -140,46 +217,41 @@ if(NOT GAUDI_FLAGS_SET)
         CACHE STRING "Flags used by the compiler during all build types."
         FORCE)
 
-    if (LCG_COMP STREQUAL "gcc" AND LCG_COMPVERS VERSION_GREATER "50" AND GAUDI_SUGGEST_OVERRIDE)
+    if (BINARY_TAG_COMP_NAME STREQUAL "gcc" AND BINARY_TAG_COMP_VERSION VERSION_GREATER "5.0" AND GAUDI_SUGGEST_OVERRIDE)
         set(CMAKE_CXX_FLAGS
             "${CMAKE_CXX_FLAGS} -Wsuggest-override"
             CACHE STRING "Flags used by the compiler during all build types."
             FORCE)
     endif()
 
-    # Build type compilation flags (if different from default or uknown to CMake)
-    if(GAUDI_CMT_RELEASE)
-      set(CMAKE_CXX_FLAGS_RELEASE "-O2 -DNDEBUG"
-          CACHE STRING "Flags used by the compiler during release builds."
-          FORCE)
-      set(CMAKE_C_FLAGS_RELEASE "-O2 -DNDEBUG"
-          CACHE STRING "Flags used by the compiler during release builds."
-          FORCE)
-      set(CMAKE_Fortran_FLAGS_RELEASE "-O2 -DNDEBUG"
-          CACHE STRING "Flags used by the compiler during release builds."
-          FORCE)
-    endif()
+    # Build type compilation flags
+    set(CMAKE_CXX_FLAGS_RELEASE "${_opt_level_RELEASE} ${_opt_ext_RELEASE}"
+        CACHE STRING "Flags used by the compiler during release builds."
+        FORCE)
+    set(CMAKE_C_FLAGS_RELEASE "${_opt_level_RELEASE} ${_opt_ext_RELEASE}"
+        CACHE STRING "Flags used by the compiler during release builds."
+        FORCE)
+    set(CMAKE_Fortran_FLAGS_RELEASE "${_opt_level_RELEASE} ${_opt_ext_RELEASE}"
+        CACHE STRING "Flags used by the compiler during release builds."
+        FORCE)
 
-    if (LCG_COMP STREQUAL "gcc" AND LCG_COMPVERS VERSION_GREATER "47")
-      # Use -Og with Debug builds in gcc >= 4.8
-      set(CMAKE_CXX_FLAGS_DEBUG "-Og -g"
-          CACHE STRING "Flags used by the compiler during Debug builds."
-          FORCE)
-      set(CMAKE_C_FLAGS_DEBUG "-Og -g"
-          CACHE STRING "Flags used by the compiler during Debug builds."
-          FORCE)
-      set(CMAKE_Fortran_FLAGS_DEBUG "-Og -g"
-          CACHE STRING "Flags used by the compiler during Debug builds."
-          FORCE)
-    endif()
+    set(CMAKE_CXX_FLAGS_DEBUG "${_opt_level_DEBUG} ${_opt_ext_DEBUG}"
+        CACHE STRING "Flags used by the compiler during Debug builds."
+        FORCE)
+    set(CMAKE_C_FLAGS_DEBUG "${_opt_level_DEBUG} ${_opt_ext_DEBUG}"
+        CACHE STRING "Flags used by the compiler during Debug builds."
+        FORCE)
+    set(CMAKE_Fortran_FLAGS_DEBUG "${_opt_level_DEBUG} ${_opt_ext_DEBUG}"
+        CACHE STRING "Flags used by the compiler during Debug builds."
+        FORCE)
 
-    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g -DNDEBUG"
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${_opt_level_RELWITHDEBINFO} ${_opt_ext_RELWITHDEBINFO}"
         CACHE STRING "Flags used by the compiler during Release with Debug Info builds."
         FORCE)
-    set(CMAKE_C_FLAGS_RELWITHDEBINFO "-O2 -g -DNDEBUG"
+    set(CMAKE_C_FLAGS_RELWITHDEBINFO "${_opt_level_RELWITHDEBINFO} ${_opt_ext_RELWITHDEBINFO}"
         CACHE STRING "Flags used by the compiler during Release with Debug Info builds."
         FORCE)
-    set(CMAKE_Fortran_FLAGS_RELWITHDEBINFO "-O2 -g -DNDEBUG"
+    set(CMAKE_Fortran_FLAGS_RELWITHDEBINFO "${_opt_level_RELWITHDEBINFO} ${_opt_ext_RELWITHDEBINFO}"
         CACHE STRING "Flags used by the compiler during Release with Debug Info builds."
         FORCE)
 
@@ -262,7 +334,8 @@ if(APPLE)
 endif()
 
 #--- Special build flags -------------------------------------------------------
-if ((GAUDI_V21 OR G21_HIDE_SYMBOLS) AND (LCG_COMP STREQUAL gcc AND LCG_COMPVERS MATCHES "4[0-9]"))
+if ((GAUDI_V21 OR G21_HIDE_SYMBOLS) AND (BINARY_TAG_COMP_NAME STREQUAL "gcc" AND
+                                         NOT BINARY_TAG_COMP_VERSION VERSION_LESS "4.0"))
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden -fvisibility-inlines-hidden")
 endif()
 
@@ -280,7 +353,7 @@ else()
   endif()
 endif()
 
-if(LCG_COMP STREQUAL clang AND LCG_COMPVERS MATCHES "37")
+if(BINARY_TAG_COMP_NAME STREQUAL "clang" AND BINARY_TAG_COMP_VERSION VERSION_EQUAL "3.7")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --gcc-toolchain=${lcg_system_compiler_path}")
 endif()
 
@@ -291,11 +364,12 @@ if(NOT GAUDI_V21)
     add_definitions(-DGAUDI_V20_COMPAT)
   endif()
   # special case
-  if(G21_HIDE_SYMBOLS AND (LCG_COMP STREQUAL gcc AND LCG_COMPVERS MATCHES "^4"))
+  if(G21_HIDE_SYMBOLS AND (BINARY_TAG_COMP_NAME STREQUAL "gcc" AND
+                           NOT BINARY_TAG_COMP_VERSION VERSION_LESS "4.0"))
     add_definitions(-DG21_HIDE_SYMBOLS)
   endif()
   #
-  foreach (feature G21_NEW_INTERFACES G21_NO_ENDREQ G21_NO_DEPRECATED G22_NEW_SVCLOCATOR)
+  foreach (feature G21_NEW_INTERFACES G21_NO_DEPRECATED G22_NEW_SVCLOCATOR)
     if (${feature})
       add_definitions(-D${feature})
     endif()
@@ -304,24 +378,18 @@ endif()
 
 #--- Tuning of warnings --------------------------------------------------------
 if(GAUDI_HIDE_WARNINGS)
-  if(LCG_COMP MATCHES clang)
+  if(BINARY_TAG_COMP_NAME STREQUAL "clang")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Qunused-arguments -Wno-deprecated -Wno-overloaded-virtual -Wno-char-subscripts -Wno-unused-parameter -Wno-unused-local-typedefs -Wno-missing-braces")
   else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated -Wno-empty-body")
-    if(LCG_COMPVERS VERSION_GREATER "47")
+    if(BINARY_TAG_COMP_VERSION VERSION_GREATER "4.7")
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-local-typedefs")
     endif()
   endif()
 else()
-  if(LCG_COMP STREQUAL gcc AND NOT LCG_COMPVERS VERSION_LESS "50")
+  if(BINARY_TAG_COMP_NAME STREQUAL "gcc" AND NOT BINARY_TAG_COMP_VERSION VERSION_LESS "5.0")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wsuggest-override")
   endif()
-endif()
-
-if(GAUDI_SLOW_DEBUG)
-  string(REPLACE "-Og" "-O0" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
-  string(REPLACE "-Og" "-O0" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
-  string(REPLACE "-Og" "-O0" CMAKE_Fortran_FLAGS_DEBUG "${CMAKE_Fortran_FLAGS_DEBUG}")
 endif()
 
 #--- Special flags -------------------------------------------------------------
@@ -331,16 +399,6 @@ add_definitions(-DBOOST_FILESYSTEM_VERSION=3)
 #        see http://stackoverflow.com/q/20721486
 #        and http://stackoverflow.com/a/20440238/504346
 add_definitions(-DBOOST_SPIRIT_USE_PHOENIX_V3)
-
-if((LCG_COMP STREQUAL gcc AND LCG_COMPVERS MATCHES "47|max") OR GAUDI_CPP11)
-  set(GCCXML_CXX_FLAGS "${GCCXML_CXX_FLAGS} -D__STRICT_ANSI__")
-endif()
-
-if(LCG_COMP STREQUAL gcc AND LCG_COMPVERS STREQUAL 43)
-  # The -pedantic flag gives problems on GCC 4.3.
-  string(REPLACE "-pedantic" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-  string(REPLACE "-pedantic" "" CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}")
-endif()
 
 if(GAUDI_ATLAS)
   # FIXME: this macro is used in ATLAS to simplify the migration to Gaudi v25,

@@ -9,44 +9,13 @@
 // coming from TString.h
 #pragma warning(disable:4996)
 #endif
-#include "GaudiKernel/DataObject.h"
-#include "GaudiKernel/ObjectFactory.h"
+#include <GaudiKernel/DataObject.h>
+#include <GaudiKernel/ObjectFactory.h>
+#include <GaudiCommonSvc/HistogramUtility.h>
+#include <GaudiCommonSvc/P2D.h>
+#include <TProfile2D.h>
+#include <TH2D.h>
 #include "GaudiPI.h"
-#include "Generic2D.h"
-#include "TProfile2D.h"
-#include "TH2D.h"
-
-namespace Gaudi {
-
-  /**@class Profile2D
-    *
-    * AIDA implementation for 2 D profiles using ROOT TProfile2D
-    *
-    * @author  M.Frank
-    */
-  class GAUDI_API Profile2D : public DataObject, public Generic2D<AIDA::IProfile2D,TProfile2D>   {
-  public:
-    /// Default Constructor
-    Profile2D()  : Base( new TProfile2D() )
-    {
-      m_classType = "IProfile2D";
-      m_rep->SetErrorOption("s");
-      m_rep->SetDirectory(nullptr);
-    }
-    /// Default Constructor with representation object
-    Profile2D(TProfile2D* rep);
-    /// Destructor.
-    ~Profile2D() override = default;
-    /// Fill bin content
-    bool fill(double x,double y,double z,double weight) override  {
-      m_rep->Fill(x,y,z,weight);
-      return true;
-    }
-    /// Retrieve reference to class defininition identifier
-    const CLID& clID() const override { return classID(); }
-    static const CLID& classID()     { return CLID_ProfileH2; }
-  };
-}
 
 namespace Gaudi {
   template <>
@@ -101,6 +70,3 @@ Gaudi::Profile2D::Profile2D(TProfile2D* rep)    {
   adoptRepresentation(rep);
   m_sumEntries = 0;
 }
-
-typedef Gaudi::Profile2D P2D;
-DECLARE_DATAOBJECT_FACTORY(P2D)

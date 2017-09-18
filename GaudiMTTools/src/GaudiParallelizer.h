@@ -3,6 +3,7 @@
 // Include files
 // from Gaudi
 #include "GaudiAlg/GaudiAlgorithm.h"
+#include "GaudiKernel/ThreadLocalContext.h"
 
 #include <boost/bind.hpp>
 #include <tbb/task_group.h>
@@ -55,7 +56,7 @@ protected:
     void run( GaudiParallelizer& prlzr )
     {
       if ( prlzr.m_measureTime ) prlzr.m_timerTool->start( timer() );
-      m_returncode = m_algorithm->sysExecute();
+      m_returncode = m_algorithm->sysExecute(Gaudi::Hive::currentContext());
       if ( prlzr.m_measureTime ) prlzr.m_timerTool->stop( timer() );
       algorithm()->setExecuted( true );
     }

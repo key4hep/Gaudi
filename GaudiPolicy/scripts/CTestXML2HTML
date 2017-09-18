@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 import os
+import sys
 import json
 import re
 import shutil
@@ -65,7 +66,7 @@ def formatMeasurementText(txt, escape=False, preformat=True):
 
 ## Some regular expression that is going to be used in the next functions
 space_Re = re.compile(r"[ ]")
-illegal_web_chars_Re = re.compile(r"[<>,\'\"#]")
+illegal_web_chars_Re = re.compile(r"[<>\'\"#]")
 brackets_Re = re.compile(r"[\[\]\{\}\(\)]")
 def cleanWebChar(data):
     """ Removes HTML/JSON special characters """
@@ -564,7 +565,7 @@ def main():
     # Initialisation of the test organizer
     organizer_all = TestOrganizer("index.html?test=all_results",os.path.join(output,"all_results"))
     organizer_failed = TestOrganizer("index.html?test=results",os.path.join(output,"results"))
-
+    failures_count = {'FAIL': 0, 'ERROR': 0}
 
     # process each file
     for fileName in inputs :
@@ -657,12 +658,14 @@ def main():
                 organizer_all.classify(Test)
                 if summary["outcome"] != "PASS":
                     organizer_failed.classify(Test)
+                if summary['outcome'] in failures_count:
+                    failures_count[summary['outcome']] += 1
 
                 # Fill the summary fields
                 for NamedMeasurement in Results.getiterator("NamedMeasurement") :
 
                     summary["fields"].append(cleanSpace(cleanWebChar(NamedMeasurement.get("name"))))  # remove the space character
-                    if NamedMeasurement.get("name") == "Cause" : # or NamedMeasurement.get("name") == "Pass Reason" :
+                    if NamedMeasurement.get("name") == "Causes" : # or NamedMeasurement.get("name") == "Pass Reason" :
                         if NamedMeasurement.find("Value") is not None and NamedMeasurement.find("Value").text is not None :
                             summary["cause"] = cleanWebChar(NamedMeasurement.find("Value").text)
 
@@ -743,7 +746,10 @@ def main():
             organizer_all.write()
             organizer_failed.write()
 
-
+    if sum(failures_count.values()):
+        print 'Some tests failed:'
+        print '\n'.join('  %s: %s' % i for i in failures_count.items())
+        sys.exit(1)
 
     #print " End of the program"
     #progEndTime = datetime.now()

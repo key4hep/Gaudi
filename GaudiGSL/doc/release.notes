@@ -4,6 +4,27 @@
 ! Commit Id   : $Format:%H$
 ! =============================================================================
 
+================================ Gaudi v28r3 =================================
+
+! 2017-07-26 - Gerhard Raven (commit e6fc7ad5)
+
+ - Merge branch 'allow-adl-lookup-of-toString' into 'master'
+
+   allow ADL of `toString` in Property
+
+   See merge request !372
+
+! 2017-07-20 - Gerhard Raven (commit 6884e49a)
+
+ - Merge branch 'modernize-gaudigsl' into 'master'
+
+   Modernize GaudiGSL
+
+   See merge request !335
+
+================================ Gaudi v28r2 =================================
+
+
 ================================ Gaudi v28r1 =================================
 
 ! 2016-12-14 - Attila Krasznahorkay (commit a42ff2a)

@@ -17,15 +17,12 @@
  *  @author Marco Clemencic
  *  @date   2005-12-14
  */
-class GAUDI_API TimeException: public GaudiException {
-public:
+struct GAUDI_API TimeException: GaudiException {
   // Standard constructor
   TimeException( std::string Message = "unspecified exception",
                  std::string Tag = "*Gaudi::Time*",
                  StatusCode  Code = StatusCode::FAILURE ):
     GaudiException(std::move(Message),std::move(Tag),std::move(Code)) {}
-  /// Destructor needed to match the signature of GaudiException::~GaudiException().
-  virtual ~TimeException() throw() {}
 };
 
 struct tm;
@@ -58,21 +55,23 @@ namespace Gaudi {
   public:
     typedef longlong ValueType;
 
-    TimeSpan (void);
-    TimeSpan (Time t);
-    TimeSpan (ValueType nsecs);
-    TimeSpan (ValueType secs, int nsecs);
-    TimeSpan (int days, int hours, int mins, int secs, int nsecs);
+    /** Initialize an empty (zero) time difference.  */
+    TimeSpan() = default;
 
-    int  days (void) const;
-    int  hours (void) const;
-    int  minutes (void) const;
-    ValueType  seconds (void) const;
+    TimeSpan(Time t);
+    TimeSpan(ValueType nsecs);
+    TimeSpan(ValueType secs, int nsecs);
+    TimeSpan(int days, int hours, int mins, int secs, int nsecs);
 
-    int  lastHours (void) const;
-    int  lastMinutes (void) const;
-    int  lastSeconds (void) const;
-    int  lastNSeconds (void) const;
+    int  days() const;
+    int  hours() const;
+    int  minutes() const;
+    ValueType  seconds() const;
+
+    int  lastHours() const;
+    int  lastMinutes() const;
+    int  lastSeconds() const;
+    int  lastNSeconds() const;
 
     TimeSpan &  operator+= (const TimeSpan &x);
     TimeSpan &  operator-= (const TimeSpan &x);
@@ -80,10 +79,34 @@ namespace Gaudi {
     TimeSpan &  operator/= (const TimeSpan &n);
     TimeSpan &  operator%= (const TimeSpan &n);
 
-    ValueType  ns (void) const;
+    ValueType  ns() const;
+
+    friend bool operator== (const Gaudi::TimeSpan &t1, const Gaudi::TimeSpan &t2)
+    { return t1.ns() == t2.ns(); }
+
+    friend bool operator!= (const Gaudi::TimeSpan &t1, const Gaudi::TimeSpan &t2)
+    { return t1.ns() != t2.ns(); }
+
+    friend bool operator< (const Gaudi::TimeSpan &t1, const Gaudi::TimeSpan &t2)
+    { return t1.ns() < t2.ns(); }
+
+    friend bool operator<= (const Gaudi::TimeSpan &t1, const Gaudi::TimeSpan &t2)
+    { return t1.ns() <= t2.ns(); }
+
+    friend bool operator> (const Gaudi::TimeSpan &t1, const Gaudi::TimeSpan &t2)
+    { return t1.ns() > t2.ns(); }
+
+    friend bool operator>= (const Gaudi::TimeSpan &t1, const Gaudi::TimeSpan &t2)
+    { return t1.ns() >= t2.ns(); }
+
+    friend Gaudi::TimeSpan operator+ (const Gaudi::TimeSpan &ts1, const Gaudi::TimeSpan &ts2)
+    { return Gaudi::TimeSpan (ts1.ns() + ts2.ns()); }
+
+    friend Gaudi::TimeSpan operator- (const Gaudi::TimeSpan &ts1, const Gaudi::TimeSpan &ts2)
+    { return Gaudi::TimeSpan (ts1.ns() - ts2.ns()); }
 
   private:
-    ValueType  m_nsecs; //< The span length.
+    ValueType  m_nsecs = 0; //< The span length.
   };
 
 
@@ -240,22 +263,24 @@ namespace Gaudi {
     /** Nanoseconds in one second.  */
     static const ValueType SEC_NSECS = 1000000000;
 
-    Time (void);
-    Time (TimeSpan ts);
-    Time (ValueType nsecs);
-    Time (ValueType secs, int nsecs);
-    Time (int year, int month, int day, int hour, int min, int sec,
-          ValueType nsecs, bool local = true);
+    /** Initialize an empty (zero) time value.  */
+    Time() = default;
+
+    Time(TimeSpan ts);
+    Time(ValueType nsecs);
+    Time(ValueType secs, int nsecs);
+    Time(int year, int month, int day, int hour, int min, int sec,
+         ValueType nsecs, bool local = true);
     // implicit copy constructor
     // implicit assignment operator
     // implicit destructor
 
     /// Returns the minimum time.
-    static Time epoch   (void);
+    static Time epoch();
     /// Returns the maximum time.
-    static Time max     (void);
+    static Time max();
     /// Returns the current time.
-    static Time  current (void);
+    static Time  current();
 # ifdef WIN32
     static Time  from    (const FILETIME *systime);
 # endif
@@ -271,7 +296,7 @@ namespace Gaudi {
     int       hour    (bool local) const;
     int       minute  (bool local) const;
     int       second  (bool local) const;
-    int       nsecond (void) const;
+    int       nsecond () const;
     int       weekday (bool local) const;
     bool      isdst   (bool local) const;
 
@@ -281,7 +306,7 @@ namespace Gaudi {
     Time &  operator+= (const TimeSpan &x);
     Time &  operator-= (const TimeSpan &x);
 
-    ValueType  ns (void) const;
+    ValueType  ns() const;
 
     std::string  format (bool local, std::string spec = "%c") const;
     std::string  nanoformat (size_t minwidth = 1, size_t maxwidth = 9) const;
@@ -292,8 +317,26 @@ namespace Gaudi {
     static unsigned toDosDate (Time time);
     static Time  fromDosDate (unsigned dosDate);
 
+    friend bool operator== (const Gaudi::Time &t1, const Gaudi::Time &t2)
+    { return t1.ns() == t2.ns(); }
+
+    friend bool operator!= (const Gaudi::Time &t1, const Gaudi::Time &t2)
+    { return t1.ns() != t2.ns(); }
+
+    friend bool operator< (const Gaudi::Time &t1, const Gaudi::Time &t2)
+    { return t1.ns() < t2.ns(); }
+
+    friend bool operator<= (const Gaudi::Time &t1, const Gaudi::Time &t2)
+    { return t1.ns() <= t2.ns(); }
+
+    friend bool operator> (const Gaudi::Time &t1, const Gaudi::Time &t2)
+    { return t1.ns() > t2.ns(); }
+
+    friend bool operator>= (const Gaudi::Time &t1, const Gaudi::Time &t2)
+    { return t1.ns() >= t2.ns(); }
+
   private:
-    ValueType  m_nsecs; //< Time value as nsecs from #epoch().
+    ValueType  m_nsecs = 0; //< Time value as nsecs from #epoch().
 
     inline void TimeAssert(bool cond, const std::string &msg = "time assertion failed") const {
       if (!cond) throw TimeException(msg);

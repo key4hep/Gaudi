@@ -9,7 +9,7 @@
 #include "GaudiKernel/Sleep.h"
 #include "GaudiKernel/Memory.h"
 #include "GaudiKernel/ChronoEntity.h"
-#include <math.h>
+#include <cmath>
 
 // from SPI version of the testdriver
 #include <cppunit/extensions/TestFactoryRegistry.h>
@@ -101,14 +101,14 @@ namespace GaudiKernelTest {
       t0 = System::getProcessTime();
       float x = 1.5;
       long m = 0;
-      for (int i=0; i<10000; i++) { 
+      for (int i=0; i<10000; i++) {
         x *= sin(x) / atan(x) * tanh(x) * sqrt(x);
         m += System::virtualMemory();
       }
       t1 = System::getProcessTime();
 
       CPPUNIT_ASSERT((t1-t0).userTime<System::microSec>() > 0);
-      CPPUNIT_ASSERT((t1-t0).kernelTime<System::microSec>() > 0);      
+      CPPUNIT_ASSERT((t1-t0).kernelTime<System::microSec>() > 0);
     }
 
     void test_ProcessTimePerf() {
@@ -132,7 +132,8 @@ namespace GaudiKernelTest {
         c1.stop();
       }
       CPPUNIT_ASSERT_EQUAL( c1.nOfMeasurements(), 10UL );
-      CPPUNIT_ASSERT_EQUAL( int(c1.eMeanTime()/1000), 10 );
+      // average time may be affected by the load of the machine
+      CPPUNIT_ASSERT( std::abs(int(c1.eMeanTime()/1000) - 10) < 1 );
       CPPUNIT_ASSERT( c1.uMaximalTime()>=c1.uMinimalTime() );
 
       ChronoEntity c2;
@@ -149,7 +150,7 @@ namespace GaudiKernelTest {
         c3.stop();
       }
       System::ProcessTime t1 = System::getProcessTime();
-      std::cout << " (" << (t1-t0).elapsedTime<System::nanoSec>()/N << " ns per stop/start)";    
+      std::cout << " (" << (t1-t0).elapsedTime<System::nanoSec>()/N << " ns per stop/start)";
     }
 
     void setUp() override {}

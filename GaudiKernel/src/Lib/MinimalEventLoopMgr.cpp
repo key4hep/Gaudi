@@ -99,6 +99,9 @@ StatusCode MinimalEventLoopMgr::initialize()
   // The state is changed at this moment to allow decodeXXXX() to do something
   m_state = INITIALIZED;
 
+  // Get WhiteBoard interface if implemented by EventDataSvc
+  m_WB = service( "EventDataSvc" );
+
   // setup the default EventContext with slot 0
   Gaudi::Hive::setCurrentContextId(Gaudi::Hive::ContextIdType(0));
 
@@ -250,6 +253,7 @@ StatusCode MinimalEventLoopMgr::restart()
 
   // Restart all the TopAlgs.
   for ( auto& ita : m_topAlgList ) {
+    m_aess->resetErrorCount(ita);
     sc = ita->sysRestart();
     if ( !sc.isSuccess() ) {
       error() << "Unable to restart Algorithm: " << ita->name() << endmsg;
@@ -257,6 +261,7 @@ StatusCode MinimalEventLoopMgr::restart()
     }
   }
   for ( auto& ita : m_outStreamList ) {
+    m_aess->resetErrorCount(ita);
     sc = ita->sysRestart();
     if ( !sc.isSuccess() ) {
       error() << "Unable to restart Output Stream: " << ita->name() << endmsg;
@@ -399,6 +404,10 @@ StatusCode MinimalEventLoopMgr::executeEvent( void* /* par */ )
   // Set event number in the context
   Gaudi::Hive::setCurrentContextEvt(m_nevt);
 
+  // select the appropriate store
+  if (m_WB.isValid())
+    m_WB->selectStore(context.slot()).ignore();
+
   // Get the IProperty interface of the ApplicationMgr to pass it to RetCodeGuard
   const auto appmgr = serviceLocator()->as<IProperty>();
   // Call the execute() method of all top algorithms
@@ -412,7 +421,7 @@ StatusCode MinimalEventLoopMgr::executeEvent( void* /* par */ )
         break;
       }
       RetCodeGuard rcg( appmgr, Gaudi::ReturnCode::UnhandledException );
-      sc = ita->sysExecute();
+      sc = ita->sysExecute(context);
       rcg.ignore(); // disarm the guard
     } catch ( const GaudiException& Exception ) {
       fatal() << ".executeEvent(): Exception with tag=" << Exception.tag() << " thrown by " << ita->name() << endmsg;
@@ -448,7 +457,7 @@ StatusCode MinimalEventLoopMgr::executeEvent( void* /* par */ )
     state.setExecuted(false);
     state.setFilterPassed(true);
     StatusCode sc;
-    sc = ito->sysExecute();
+    sc = ito->sysExecute(context);
     state.setExecStatus(sc);
     if ( UNLIKELY( !sc.isSuccess() ) ) {
       warning() << "Execution of output stream " << ito->name() << " failed" << endmsg;

@@ -3,6 +3,7 @@
 
 // STL include files
 #include <string>
+#include <vector>
 #include <typeinfo>
 
 // Framework include files

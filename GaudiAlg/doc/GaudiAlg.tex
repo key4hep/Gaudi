@@ -348,8 +348,8 @@ standard {\scbf{STL}} output streams
     StatusCode MyAlg::execute() 
     {
       ...
-      if( 0 >  a ) { err()     << " 'a' is negative !" << endreq    ; }
-      if( 0 == a ) { warn()    << " 'a' is zero !"     << endreq    ; }
+      if( 0 >  a ) { err()     << " 'a' is negative !" << endmsg    ; }
+      if( 0 == a ) { warn()    << " 'a' is zero !"     << endmsg    ; }
       // to be compared with 
       if( 0 >  a ) { std::cerr << " 'a' is negative !" << std::endl ; }
       if( 0 == a ) { std::cout << " 'a' is zero !"     << std::endl ; }

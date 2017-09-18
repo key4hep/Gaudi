@@ -184,6 +184,9 @@ AlgExecStateSvc::addAlg(const Gaudi::StringKey& alg) {
     for (size_t i = 0; i<m_algStates.size(); ++i) {
       m_algStates.at(i)[alg] = s;
     }
+
+    m_errorCount[alg] = 0;
+    
   }
 
   if (msgLevel(MSG::DEBUG))
@@ -299,6 +302,48 @@ AlgExecStateSvc::reset(const EventContext& ctx) {
 
   m_eventStatus.at(ctx.slot()) = EventStatus::Invalid;
 
+}
+
+//-----------------------------------------------------------------------------
+
+unsigned int 
+AlgExecStateSvc::algErrorCount(const IAlgorithm* iAlg) const {
+  AlgErrorMap_t::const_iterator itr = m_errorCount.find( iAlg->nameKey() );
+  
+  if (itr != m_errorCount.end()) {    
+    return itr->second;
+  } else {
+    error() << "Unable to find Algorithm \"" << iAlg->name() << "\" in map"
+            << " of ErrorCounts" << endmsg;
+    return 0;
+  }
+}
+
+//-----------------------------------------------------------------------------
+
+void 
+AlgExecStateSvc::resetErrorCount(const IAlgorithm* iAlg) {
+  AlgErrorMap_t::iterator itr = m_errorCount.find( iAlg->nameKey() );
+  if (itr != m_errorCount.end()) {
+    itr->second = 0;
+  } else {
+    error() << "Unable to find Algorithm \"" << iAlg->name() << "\" in map"
+            << " of ErrorCounts" << endmsg;
+  }
+}
+
+//-----------------------------------------------------------------------------
+
+unsigned int 
+AlgExecStateSvc::incrementErrorCount(const IAlgorithm* iAlg) {
+  AlgErrorMap_t::iterator itr = m_errorCount.find( iAlg->nameKey() );
+  if (itr != m_errorCount.end()) {
+    return (++(itr->second));
+  } else {
+    error() << "Unable to find Algorithm \"" << iAlg->name() << "\" in map"
+            << " of ErrorCounts" << endmsg;
+    return 0;
+  }
 }
 
 //-----------------------------------------------------------------------------

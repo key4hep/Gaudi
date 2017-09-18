@@ -52,7 +52,7 @@ private:
   std::vector<std::string> m_protocols;
 
   /// Map of the tools handling the known protocols.
-  GaudiUtils::HashMap<std::string, IFileAccess*> m_urlHandlers;
+  GaudiUtils::HashMap<std::string, std::vector<IFileAccess*>> m_urlHandlers;
 
   /// Handle to the tool service.
   SmartIF<IToolSvc> m_toolSvc;

@@ -262,7 +262,7 @@ class Environment(object):
         XMLfile = xmlModule.XMLFile()
         fileName = self._locate(fileName)
         if fileName in self.loadedFiles:
-            self.log.debug('ignore %s: already loaded', fileName)
+            self.log.info('ignore %s: already loaded', fileName)
             return # ignore recursion
         self.log.debug('loading %s', fileName)
         self.loadedFiles.add(fileName)
@@ -378,4 +378,3 @@ class Environment(object):
 
     def __len__(self):
         return len(self.variables.keys())
-

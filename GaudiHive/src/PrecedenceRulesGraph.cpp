@@ -1,4 +1,5 @@
 #include "PrecedenceRulesGraph.h"
+#include "PRGraphVisitors.h"
 
 #include "GaudiKernel/DataHandleHolderVisitor.h"
 
@@ -63,13 +64,13 @@ namespace concurrency
   {
     // check whether we already had a result earlier
     //    if (-1 != node_decisions[m_nodeIndex] ) { return node_decisions[m_nodeIndex]; }
-    int decision           = ( ( m_allPass && m_isLazy ) ? 1 : -1 );
+    int decision           = ( ( m_allPass && m_modePromptDecision ) ? 1 : -1 );
     bool hasUndecidedChild = false;
     for ( auto daughter : m_children ) {
-      if ( m_isLazy && ( -1 != decision || hasUndecidedChild ) ) {
+      if ( m_modePromptDecision && ( -1 != decision || hasUndecidedChild ) ) {
         node_decisions[m_nodeIndex] = decision;
         return decision;
-      } // if lazy return once result is known already or we can't fully evaluate right now because one daugther
+      } // if prompt decision, return once result is known already or we can't fully evaluate right now because one daugther
       // decision is missing still
       auto res = daughter->updateState( states, node_decisions );
       if ( -1 == res ) {
@@ -103,17 +104,17 @@ namespace concurrency
                                      const AlgorithmNode* requestor ) const
   {
 
-    int decision           = ( ( m_allPass && m_isLazy ) ? 1 : -1 );
+    int decision           = ( ( m_allPass && m_modePromptDecision ) ? 1 : -1 );
     bool keepGoing         = true;
     bool hasUndecidedChild = false;
     // std::cout << "++++++++++++++++++++BEGIN(UPDATING)++++++++++++++++++++" << std::endl;
     // std::cout << "UPDATING DAUGHTERS of DECISION NODE: " << m_nodeName << std::endl;
 
     for ( auto daughter : m_children ) {
-      // if lazy return once result is known already or we can't fully evaluate
+      // if prompt decision, return once result is known already or we can't fully evaluate
       // right now because one daughter decision is missing still
       // std::cout << "----UPDATING DAUGHTER: " << daughter->getNodeName() << std::endl;
-      if ( m_isLazy && !keepGoing ) {
+      if ( m_modePromptDecision && !keepGoing ) {
         node_decisions[m_nodeIndex] = decision;
         // std::cout << "STOPPING ITERATION OVER (UPDATING) DECISION NODE CHILDREN: " << m_nodeName << std::endl;
         break;
@@ -178,8 +179,8 @@ namespace concurrency
       auto res = node_decisions[daughter->getNodeIndex()];
       if ( -1 == res ) {
         daughter->promoteToControlReadyState( slotNum, states, node_decisions );
-        if ( m_isLazy ) return true;
-      } else if ( m_isLazy ) {
+        if ( m_modePromptDecision ) return true;
+      } else if ( m_modePromptDecision ) {
         if ( ( false == m_modeOR && res == 0 ) || ( true == m_modeOR && res == 1 ) ) return true;
       }
     }
@@ -192,16 +193,28 @@ namespace concurrency
   {
 
     if ( visitor.visitEnter( *this ) ) {
+      // try to aggregate a decision
       bool result = visitor.visit( *this );
-      if ( result ) return visitor.visitLeave( *this );
 
-      for ( auto child : m_children ) {
-        bool keepGoing = child->accept( visitor );
-        if ( m_isLazy && !keepGoing ) return false; // break;
+      // if a decision was made for this node, propagate the result upwards
+      if ( result ) {
+        for ( auto parent : m_parents ) {
+          parent->accept( visitor );
+        }
+        return false;
       }
+
+      // if no decision can be made yet, request further information downwards
+      for ( auto child : m_children ) {
+        bool result = child->accept( visitor );
+        if (!m_modeConcurrent)
+          if ( result ) break; //stop on first unresolved child if its decision hub is sequential
+      }
+
+      return true; // visitor was accepted to try to aggregate the node's decision
     }
 
-    return true;
+    return false; // visitor was rejected (since the decision node has an aggregated decision already)
   }
 
   //---------------------------------------------------------------------------
@@ -299,26 +312,6 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  bool AlgorithmNode::dataDependenciesSatisfied( AlgsExecutionStates& states ) const
-  {
-
-    bool result = true;
-    for ( auto dataNode : m_inputs ) {
-
-      result = false;
-      for ( auto algoNode : dataNode->getProducers() )
-        if ( State::EVTACCEPTED == states[algoNode->getAlgoIndex()] ) {
-          result = true;
-          break;
-        }
-
-      if ( !result ) break;
-    }
-
-    return result;
-  }
-
-  //---------------------------------------------------------------------------
   void AlgorithmNode::printState( std::stringstream& output, AlgsExecutionStates& states,
                                   const std::vector<int>& node_decisions, const unsigned int& recursionLevel ) const
   {
@@ -356,12 +349,12 @@ namespace concurrency
 
   //---------------------------------------------------------------------------
   void AlgorithmNode::updateDecision( const int& slotNum, AlgsExecutionStates& states, std::vector<int>& node_decisions,
-                                      const AlgorithmNode* requestor ) const
+                                      const AlgorithmNode* /*requestor*/ ) const
   {
 
     const State& state = states[m_algoIndex];
     int decision       = -1;
-    requestor          = this;
+    //requestor          = this;
 
     // now derive the proper result to pass back
     if ( true == m_allPass ) {
@@ -377,10 +370,18 @@ namespace concurrency
     node_decisions[m_nodeIndex] = decision;
 
     if ( -1 != decision ) {
+      auto& slot = (*m_graph->m_eventSlots)[slotNum];
+      auto promoter = DataReadyPromoter(slot);
       for ( auto output : m_outputs )
-        for ( auto consumer : output->getConsumers() ) consumer->promoteToDataReadyState( slotNum, requestor );
+        for ( auto consumer : output->getConsumers() )
+          consumer->accept(promoter);
 
-      for ( auto p : m_parents ) p->updateDecision( slotNum, states, node_decisions, requestor );
+      auto vis = concurrency::Supervisor(slot);
+      for ( auto p : m_parents ) {
+        //p->updateDecision( slotNum, states, node_decisions, requestor );
+        p->accept(vis);
+      }
+
     }
   }
 
@@ -389,11 +390,11 @@ namespace concurrency
   {
 
     if ( visitor.visitEnter( *this ) ) {
-      bool result = visitor.visit( *this );
-      if ( result ) return false;
+      visitor.visit( *this );
+      return true; // visitor was accepted to promote the algorithm
     }
 
-    return true;
+    return false; // visitor was rejected (since the algorithm already produced a decision)
   }
 
   //---------------------------------------------------------------------------
@@ -432,11 +433,36 @@ namespace concurrency
 
   //---------------------------------------------------------------------------
   StatusCode PrecedenceRulesGraph::initialize( const std::unordered_map<std::string, unsigned int>& algname_index_map,
-                                             std::vector<EventSlot>& eventSlots )
+                                               std::vector<EventSlot>& eventSlots, bool enableCondSvc )
   {
 
     m_eventSlots = &eventSlots;
+    m_conditionsRealmEnabled = enableCondSvc;
+
     m_headNode->initialize( algname_index_map );
+
+    // Detach condition algorithms from the CF realm
+    if (m_conditionsRealmEnabled) {
+      SmartIF<ICondSvc> condSvc {serviceLocator()->service("CondSvc",false)};
+      auto& condAlgs = condSvc->condAlgs();
+      for (const auto algo : condAlgs) {
+        auto itA   = m_algoNameToAlgoNodeMap.find( algo->name() );
+        concurrency::AlgorithmNode* algoNode;
+        if ( itA != m_algoNameToAlgoNodeMap.end() ) {
+          algoNode = itA->second;
+          debug() << "Detaching condition algorithm '" << algo->name() << "' from the CF realm.." << endmsg;
+          for (auto parent : algoNode->getParentDecisionHubs()) {
+            parent->m_children.erase(std::remove(parent->m_children.begin(), parent->m_children.end(), algoNode),
+                                     parent->m_children.end());
+          }
+          algoNode->m_parents.clear();
+
+        } else {
+          warning() << "Algorithm '" << algo->name() << "' is not registered in the graph" << endmsg;
+        }
+      }
+    }
+
     // StatusCode sc = buildDataDependenciesRealm();
     StatusCode sc = buildAugmentedDataDependenciesRealm();
 
@@ -454,21 +480,17 @@ namespace concurrency
 
     const std::string& algoName = algo->name();
 
-    DataObjIDColl inputObjs, outputObjs;
-    DHHVisitor avis( inputObjs, outputObjs );
-    algo->acceptDHVisitor( &avis );
-
-    m_algoNameToAlgoInputsMap[algoName] = inputObjs;
-    m_algoNameToAlgoOutputsMap[algoName] = outputObjs;
+    m_algoNameToAlgoInputsMap[algoName] = algo->inputDataObjs();
+    m_algoNameToAlgoOutputsMap[algoName] = algo->outputDataObjs();
 
     if (msgLevel(MSG::DEBUG)) {
       debug() << "Inputs of " << algoName << ": ";
-      for (auto tag : inputObjs)
+      for (auto tag : algo->inputDataObjs())
         debug() << tag << " | ";
       debug() << endmsg;
 
       debug() << "Outputs of " << algoName << ": ";
-      for (auto tag : outputObjs)
+      for (auto tag : algo->outputDataObjs())
         debug() << tag << " | ";
       debug() << endmsg;
     }
@@ -593,30 +615,32 @@ namespace concurrency
 
     StatusCode sc = StatusCode::SUCCESS;
 
+    // Create new, or fetch existent, AlgorithmNode
     auto& algoName = algo->name();
+    auto itA   = m_algoNameToAlgoNodeMap.find( algoName );
+    concurrency::AlgorithmNode* algoNode;
+    if ( itA != m_algoNameToAlgoNodeMap.end() ) {
+      algoNode = itA->second;
+    } else {
+      algoNode = new concurrency::AlgorithmNode( *this, m_nodeCounter, algoName, inverted, allPass, algo->isIOBound() );
+      ++m_nodeCounter;
+      m_algoNameToAlgoNodeMap[algoName] = algoNode;
+      if (msgLevel(MSG::DEBUG))
+        debug() << "AlgorithmNode '" << algoName << "' added @ " << algoNode << endmsg;
+      registerIODataObjects(algo);
+    }
 
+    // Attach AlgorithmNode to its CF decision hub
     auto itP = m_decisionNameToDecisionHubMap.find( parentName );
-    concurrency::DecisionNode* parentNode;
     if ( itP != m_decisionNameToDecisionHubMap.end() ) {
-      parentNode = itP->second;
-      auto itA   = m_algoNameToAlgoNodeMap.find( algoName );
-      concurrency::AlgorithmNode* algoNode;
-      if ( itA != m_algoNameToAlgoNodeMap.end() ) {
-        algoNode = itA->second;
-      } else {
-        algoNode = new concurrency::AlgorithmNode( *this, m_nodeCounter, algoName, inverted, allPass, algo->isIOBound() );
-        ++m_nodeCounter;
-        m_algoNameToAlgoNodeMap[algoName] = algoNode;
-        if (msgLevel(MSG::DEBUG))
-          debug() << "AlgoNode " << algoName << " added @ " << algoNode << endmsg;
-        registerIODataObjects(algo);
-      }
-
+      auto parentNode = itP->second;
+      debug() << "Attaching AlgorithmNode '" << algo->name() << "' to DecisionNode '"
+              << parentName << "'" << endmsg;
       parentNode->addDaughterNode( algoNode );
       algoNode->addParentNode( parentNode );
     } else {
       sc = StatusCode::FAILURE;
-      error() << "DecisionHubNode " << parentName << ", meant to be used as parent, is not registered in the EFG."
+      error() << "Requested DecisionNode '" << parentName << "' was not registered"
               << endmsg;
     }
 
@@ -642,10 +666,25 @@ namespace concurrency
       dataNode = itD->second;
       sc = StatusCode::SUCCESS;
     } else {
-      dataNode                          = new concurrency::DataNode( *this, dataPath );
+      if (!m_conditionsRealmEnabled) {
+        dataNode = new concurrency::DataNode(*this, dataPath);
+        if (msgLevel(MSG::DEBUG))
+          debug() << "  DataNode for " << dataPath << " added @ " << dataNode << endmsg;
+      } else {
+        SmartIF<ICondSvc> condSvc {serviceLocator()->service("CondSvc",false)};
+        if (condSvc->isRegistered(dataPath)) {
+          dataNode = new concurrency::ConditionNode(*this, dataPath, condSvc);
+          if (msgLevel(MSG::DEBUG))
+            debug() << "  ConditionNode for " << dataPath << " added @ " << dataNode << endmsg;
+        } else {
+          dataNode = new concurrency::DataNode(*this, dataPath);
+          if (msgLevel(MSG::DEBUG))
+            debug() << "  DataNode for " << dataPath << " added @ " << dataNode << endmsg;
+        }
+      }
+
       m_dataPathToDataNodeMap[dataPath] = dataNode;
-      if (msgLevel(MSG::DEBUG))
-        debug() << "  DataNode for " << dataPath << " added @ " << dataNode << endmsg;
+
       sc = StatusCode::SUCCESS;
     }
 
@@ -661,7 +700,7 @@ namespace concurrency
 
   //---------------------------------------------------------------------------
   StatusCode PrecedenceRulesGraph::addDecisionHubNode( Algorithm* decisionHubAlgo, const std::string& parentName,
-                                                     bool modeOR, bool allPass, bool isLazy )
+		                                              bool modeConcurrent, bool modePromptDecision, bool modeOR, bool allPass)
   {
 
     StatusCode sc = StatusCode::SUCCESS;
@@ -678,18 +717,18 @@ namespace concurrency
         decisionHubNode = itA->second;
       } else {
         decisionHubNode =
-            new concurrency::DecisionNode( *this, m_nodeCounter, decisionHubName, modeOR, allPass, isLazy );
+            new concurrency::DecisionNode( *this, m_nodeCounter, decisionHubName, modeConcurrent, modePromptDecision, modeOR, allPass);
         ++m_nodeCounter;
         m_decisionNameToDecisionHubMap[decisionHubName] = decisionHubNode;
         if (msgLevel(MSG::DEBUG))
-          debug() << "DecisionHubNode " << decisionHubName << " added @ " << decisionHubNode << endmsg;
+          debug() << "Decision hub node " << decisionHubName << " added @ " << decisionHubNode << endmsg;
       }
 
       parentNode->addDaughterNode( decisionHubNode );
       decisionHubNode->addParentNode( parentNode );
     } else {
       sc = StatusCode::FAILURE;
-      error() << "DecisionHubNode " << parentName << ", meant to be used as parent, is not registered in the EFG."
+      error() << "Decision hub node " << parentName << ", requested to be parent, is not registered."
               << endmsg;
     }
 
@@ -697,14 +736,14 @@ namespace concurrency
   }
 
   //---------------------------------------------------------------------------
-  void PrecedenceRulesGraph::addHeadNode( const std::string& headName, bool modeOR, bool allPass, bool isLazy )
+  void PrecedenceRulesGraph::addHeadNode( const std::string& headName, bool modeConcurrent, bool modePromptDecision, bool modeOR, bool allPass)
   {
 
     auto itH = m_decisionNameToDecisionHubMap.find( headName );
     if ( itH != m_decisionNameToDecisionHubMap.end() ) {
       m_headNode = itH->second;
     } else {
-      m_headNode = new concurrency::DecisionNode( *this, m_nodeCounter, headName, modeOR, allPass, isLazy );
+      m_headNode = new concurrency::DecisionNode( *this, m_nodeCounter, headName, modeConcurrent, modePromptDecision, modeOR, allPass );
       ++m_nodeCounter;
       m_decisionNameToDecisionHubMap[headName] = m_headNode;
     }
@@ -718,11 +757,14 @@ namespace concurrency
 
   //---------------------------------------------------------------------------
   void PrecedenceRulesGraph::updateDecision( const std::string& algo_name, const int& slotNum,
-                                           AlgsExecutionStates& algo_states, std::vector<int>& node_decisions ) const
+                                           AlgsExecutionStates& /*algo_states*/, std::vector<int>& /*node_decisions*/ ) const
   {
     //if (msgLevel(MSG::DEBUG))
     //  debug() << "(UPDATING)Setting decision of algorithm " << algo_name << " and propagating it upwards.." << endmsg;
-    getAlgorithmNode( algo_name )->updateDecision( slotNum, algo_states, node_decisions );
+    //getAlgorithmNode( algo_name )->updateDecision( slotNum, algo_states, node_decisions );
+    auto& slot = (*m_eventSlots)[slotNum];
+    auto updater = DecisionUpdater(slot);
+    getAlgorithmNode( algo_name )->accept(updater);
   }
 
   //---------------------------------------------------------------------------
@@ -752,6 +794,44 @@ namespace concurrency
     }
 
     return result;
+  }
+
+  std::string PrecedenceRulesGraph::dumpControlFlow() const {
+    std::ostringstream ost;
+    dumpControlFlow(ost,m_headNode,0);
+    return ost.str();
+  }
+  
+  void PrecedenceRulesGraph::dumpControlFlow(std::ostringstream& ost,
+                                             ControlFlowNode* node,
+                                             const int& indent) const {
+    ost << std::string(indent*2, ' ');
+    DecisionNode  *dn = dynamic_cast<DecisionNode*> (node);
+    AlgorithmNode *an = dynamic_cast<AlgorithmNode*> (node);
+    if ( dn != 0 ) {
+      if (node != m_headNode) {
+        ost << node->getNodeName() << " [Seq] ";
+        ost << ( (dn->m_modeConcurrent) ? " [Concurrent] " : " [Sequential] " );
+        ost << ( (dn->m_modePromptDecision) ? " [Prompt] " : "" );
+        ost << ( (dn->m_modeOR) ? " [OR] " : "" );
+        ost << ( (dn->m_allPass) ? " [PASS] " : "" );
+        ost << "\n";
+      }
+      const std::vector<ControlFlowNode*>& dth = dn->getDaughters();
+      for (std::vector<ControlFlowNode*>::const_iterator itr= dth.begin();
+           itr != dth.end(); ++itr) {      
+        dumpControlFlow(ost,*itr,indent+1);
+      }
+    } else if (an != 0) {
+      ost << node->getNodeName() << " [Alg] ";
+      if (an != 0) {
+        auto ar = an->getAlgorithmRepresentatives();
+        ost << " [n= " << ar.at(0)->cardinality() << "]";
+        ost << ( (! ar.at(0)->isClonable()) ? " [unclonable] " : "" );
+      }
+      ost << "\n";
+    }
+
   }
 
   //---------------------------------------------------------------------------

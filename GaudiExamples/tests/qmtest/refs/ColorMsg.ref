@@ -1,8 +1,8 @@
-JobOptionsSvc        INFO # =======> /build1/leggett/git/Gaudi/GaudiExamples/options/Services.opts
+JobOptionsSvc        INFO # =======> /home/marco/Devel/LHCb/workspace/Gaudi/GaudiExamples/options/Services.opts
 JobOptionsSvc        INFO # (12,1): AuditorSvc.Auditors = ["ChronoAuditor"]
-JobOptionsSvc        INFO # =======> /build1/leggett/git/Gaudi/GaudiExamples/options/Common.opts
+JobOptionsSvc        INFO # =======> /home/marco/Devel/LHCb/workspace/Gaudi/GaudiExamples/options/Common.opts
 JobOptionsSvc        INFO # (9,1): ApplicationMgr.StatusCodeCheck = 1
-JobOptionsSvc        INFO # =======> /build1/leggett/git/Gaudi/GaudiExamples/options/ColorMsg.opts
+JobOptionsSvc        INFO # =======> /home/marco/Devel/LHCb/workspace/Gaudi/GaudiExamples/options/ColorMsg.opts
 JobOptionsSvc        INFO # (10,1): ApplicationMgr.TopAlg = ["ColorMsgAlg"]
 JobOptionsSvc        INFO # (16,1): MessageSvc.OutputLevel = 1
 JobOptionsSvc        INFO # (17,1): MessageSvc.useColors = 1
@@ -14,53 +14,45 @@ JobOptionsSvc        INFO # (22,1): MessageSvc.debugColorCode = ["[92;1m"]
 JobOptionsSvc        INFO # (23,1): MessageSvc.verboseColorCode = ["[95;4m"]
 JobOptionsSvc        INFO # (31,1): ApplicationMgr.EvtMax = 2
 JobOptionsSvc        INFO # (32,1): ApplicationMgr.EvtSel = "NONE"
-JobOptionsSvc        INFO Job options successfully read in from /build1/leggett/git/Gaudi/GaudiExamples/options/ColorMsg.opts
+JobOptionsSvc        INFO Job options successfully read in from /home/marco/Devel/LHCb/workspace/Gaudi/GaudiExamples/options/ColorMsg.opts
 [92;1mApplicationMgr      DEBUG Getting my own properties[m
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v4r1)
-                                          running on p05614910w96644.cern.ch on Wed Oct  5 19:57:26 2016
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v28r1)
+                                          running on pcphlbc16 on Tue Mar  7 10:58:03 2017
 ====================================================================================================================================[m
 [96;1mApplicationMgr       INFO Application Manager Configured successfully[m
 [92;1mServiceManager      DEBUG Initializing service StatusCodeSvc[m
-[92;1mStatusCodeSvc       DEBUG Property update for OutputLevel : new value = 1[m
 [92;1mStatusCodeSvc       DEBUG Service base class initialized successfully[m
 [96;1mStatusCodeSvc        INFO initialize[m
 [92;1mServiceManager      DEBUG Initializing service AppMgrRunable[m
-[92;1mAppMgrRunable       DEBUG Property update for OutputLevel : new value = 1[m
 [92;1mAppMgrRunable       DEBUG Service base class initialized successfully[m
 [92;1mServiceManager      DEBUG Initializing service EventLoopMgr[m
-[92;1mEventLoopMgr        DEBUG Property update for OutputLevel : new value = 1[m
 [92;1mEventLoopMgr        DEBUG Service base class initialized successfully[m
-[92;1mIncidentSvc         DEBUG Property update for OutputLevel : new value = 1[m
 [92;1mIncidentSvc         DEBUG Service base class initialized successfully[m
 [92;1mIncidentSvc         DEBUG Adding [AbortEvent] listener '<unknown>' with priority 0[m
-[92;1mEventLoopMgr        DEBUG Creating Top Algorithm ColorMsgAlg with name ColorMsgAlg[m
-[92;1mEventDataSvc        DEBUG Property update for OutputLevel : new value = 1[m
 [92;1mEventDataSvc        DEBUG Service base class initialized successfully[m
 [95;4mEventDataSvc      VERBOSE ServiceLocatorHelper::service: found service IncidentSvc[m
-[92;1mEventPersistenc...  DEBUG Property update for OutputLevel : new value = 1[m
 [92;1mEventPersistenc...  DEBUG Service base class initialized successfully[m
+[95;4mEventLoopMgr      VERBOSE ServiceLocatorHelper::service: found service EventDataSvc[m
+[92;1mEventLoopMgr        DEBUG Creating Top Algorithm ColorMsgAlg with name ColorMsgAlg[m
 [95;4mColorMsgAlg       VERBOSE ServiceLocatorHelper::service: found service EventDataSvc[m
-[92;1mTimelineSvc         DEBUG Property update for OutputLevel : new value = 1[m
 [92;1mTimelineSvc         DEBUG Service base class initialized successfully[m
 [92;1mTimelineSvc         DEBUG initialize[m
 [95;4mColorMsgAlg       VERBOSE ServiceLocatorHelper::service: found service TimelineSvc[m
-[92;1mAlgExecStateSvc     DEBUG Property update for OutputLevel : new value = 1[m
 [92;1mAlgExecStateSvc     DEBUG Service base class initialized successfully[m
 [95;4mColorMsgAlg       VERBOSE ServiceLocatorHelper::service: found service AlgExecStateSvc[m
 [92;1mAlgExecStateSvc     DEBUG preInit: will add Alg ColorMsgAlg later[m
 [92;1mColorMsgAlg         DEBUG input handles: 0[m
 [92;1mColorMsgAlg         DEBUG output handles: 0[m
 [92;1mColorMsgAlg         DEBUG Data Deps for ColorMsgAlg[m
-[98;1mEventLoopMgr      WARNING Unable to locate service "EventSelector" [m
-[98;1mEventLoopMgr      WARNING No events will be processed from external input.[m
-[92;1mHistogramDataSvc    DEBUG Property update for OutputLevel : new value = 1[m
+[93;1mEventLoopMgr      WARNING Unable to locate service "EventSelector" [m
+[93;1mEventLoopMgr      WARNING No events will be processed from external input.[m
 [92;1mHistogramDataSvc    DEBUG Service base class initialized successfully[m
 [95;4mHistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service IncidentSvc[m
 [92;1mHistogramPersis...  DEBUG  'CnvServices':[ 'RootHistSvc' ][m
 [92;1mHistogramPersis...  DEBUG Service base class initialized successfully[m
-[98;1mHistogramPersis...WARNING Histograms saving not required.[m
+[93;1mHistogramPersis...WARNING Histograms saving not required.[m
 [95;4mHistogramDataSvc  VERBOSE ServiceLocatorHelper::service: found service HistogramPersistencySvc[m
 [96;1mApplicationMgr       INFO Application Manager Initialized successfully[m
 [92;1mServiceManager      DEBUG Starting service StatusCodeSvc[m
@@ -83,32 +75,32 @@ Algs: 1
  - Slot 0
   + ColorMsgAlg  e: 0 f: 1 sc: FAILURE
 [m
-[98;108;1mColorMsgAlg         FATAL THIS IS A FATAL MESSAGE[m
+[94;101;1mColorMsgAlg         FATAL THIS IS A FATAL MESSAGE[m
 [97;101;1mColorMsgAlg         ERROR THIS IS AN ERROR MESSAGE[m
-[98;1mColorMsgAlg       WARNING THIS IS A WARNING MESSAGE[m
+[93;1mColorMsgAlg       WARNING THIS IS A WARNING MESSAGE[m
 [96;1mColorMsgAlg          INFO THIS IS A INFO MESSAGE[m
 [92;1mColorMsgAlg         DEBUG THIS IS A DEBUG MESSAGE[m
 [95;4mColorMsgAlg       VERBOSE THIS IS A VERBOSE MESSAGE[m
 [97;101;1mColorMsgAlg         ERROR this is another[92;1m error [m[97;101;1mmessage[m
-[98;1mColorMsgAlg       WARNING This is another[95;1m warning [m[98;1mmessage[m
+[93;1mColorMsgAlg       WARNING This is another[95;1m warning [m[93;1mmessage[m
 [96;1mColorMsgAlg          INFO testing colour[m
 [96;1mColorMsgAlg          INFO setting....[93;1mthis should be in yellow[91;1m and red[m
 [96;1mColorMsgAlg          INFO multicolor: [94;102;1mthis is blue on green[95;107;1m and purple on white[m
 [96;1mColorMsgAlg          INFO [92;1mThis is green. [93;104;1mThis is in yellow on blue. [m[96;1mThis is back to normal[m
 [95;4mAlgExecStateSvc   VERBOSE reset(0)[m
-[98;108;1mColorMsgAlg         FATAL THIS IS A FATAL MESSAGE[m
+[94;101;1mColorMsgAlg         FATAL THIS IS A FATAL MESSAGE[m
 [97;101;1mColorMsgAlg         ERROR THIS IS AN ERROR MESSAGE[m
-[98;1mColorMsgAlg       WARNING THIS IS A WARNING MESSAGE[m
+[93;1mColorMsgAlg       WARNING THIS IS A WARNING MESSAGE[m
 [96;1mColorMsgAlg          INFO THIS IS A INFO MESSAGE[m
 [92;1mColorMsgAlg         DEBUG THIS IS A DEBUG MESSAGE[m
 [95;4mColorMsgAlg       VERBOSE THIS IS A VERBOSE MESSAGE[m
 [97;101;1mColorMsgAlg         ERROR this is another[92;1m error [m[97;101;1mmessage[m
-[98;1mColorMsgAlg       WARNING This is another[95;1m warning [m[98;1mmessage[m
+[93;1mColorMsgAlg       WARNING This is another[95;1m warning [m[93;1mmessage[m
 [96;1mColorMsgAlg          INFO testing colour[m
 [96;1mColorMsgAlg          INFO setting....[93;1mthis should be in yellow[91;1m and red[m
 [96;1mColorMsgAlg          INFO multicolor: [94;102;1mthis is blue on green[95;107;1m and purple on white[m
 [96;1mColorMsgAlg          INFO [92;1mThis is green. [93;104;1mThis is in yellow on blue. [m[96;1mThis is back to normal[m
-[92;1mEventLoopMgr        DEBUG ---> Loop Finished -  WSS 38.5352 | total time (skipping 1st evt) 80322 ns[m
+[92;1mEventLoopMgr        DEBUG ---> Loop Finished -  WSS 41.7031 | total time (skipping 1st evt) 45484 ns[m
 [92;1mServiceManager      DEBUG Stopping service EventLoopMgr[m
 [92;1mServiceManager      DEBUG Stopping service HistogramDataSvc[m
 [92;1mServiceManager      DEBUG Stopping service HistogramPersistencySvc[m

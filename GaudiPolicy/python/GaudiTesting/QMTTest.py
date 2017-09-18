@@ -73,39 +73,44 @@ class QMTTest(BaseTest):
                     return apply(self.callable, args, kwargs)
 
             # local names to be exposed in the script
-            exported_symbols = {"self":self,
-                                "stdout":stdout,
-                                "stderr":stderr,
-                                "result":result,
-                                "causes":self.causes,
+            stdout_ref = self._expandReferenceFileName(self.reference)
+            stderr_ref = self._expandReferenceFileName(self.error_reference)
+            exported_symbols = {"self": self,
+                                "stdout": stdout,
+                                "stderr": stderr,
+                                "result": result,
+                                "causes": self.causes,
+                                "reference": stdout_ref,
+                                "error_reference": stderr_ref,
                                 "findReferenceBlock":
-                                    CallWrapper(self.findReferenceBlock, {"stdout":stdout,
-                                                                     "result":result,
-                                                                     "causes":self.causes}),
+                                    CallWrapper(self.findReferenceBlock,
+                                                {"stdout": stdout,
+                                                 "result": result,
+                                                 "causes": self.causes}),
                                 "validateWithReference":
-                                    CallWrapper(self.validateWithReference, {"stdout":stdout,
-                                                                        "stderr":stderr,
-                                                                        "result":result,
-                                                                        "causes":self.causes}),
+                                    CallWrapper(self.validateWithReference,
+                                                {"stdout": stdout,
+                                                 "stderr": stderr,
+                                                 "result": result,
+                                                 "causes": self.causes}),
                                 "countErrorLines":
-                                    CallWrapper(self.countErrorLines, {"stdout":stdout,
-                                                                  "result":result,
-                                                                  "causes":self.causes}),
+                                    CallWrapper(self.countErrorLines,
+                                                {"stdout": stdout,
+                                                 "result": result,
+                                                 "causes": self.causes}),
                                 "checkTTreesSummaries":
-                                    CallWrapper(self.CheckTTreesSummaries, {"stdout":stdout,
-                                                                       "result":result,
-                                                                       "causes":self.causes}),
+                                    CallWrapper(self.CheckTTreesSummaries,
+                                                {"stdout": stdout,
+                                                 "result": result,
+                                                 "causes": self.causes}),
                                 "checkHistosSummaries":
-                                    CallWrapper(self.CheckHistosSummaries, {"stdout":stdout,
-                                                                       "result":result,
-                                                                       "causes":self.causes})
+                                    CallWrapper(self.CheckHistosSummaries,
+                                                {"stdout": stdout,
+                                                 "result": result,
+                                                 "causes": self.causes})
                                 }
             #print self.validator
             exec self.validator in globals(), exported_symbols
+            return result, self.causes
         else:
-            if self.stderr == '':
-                self.validateWithReference(stdout, stderr, result, self.causes)
-            elif stderr.strip() != self.stderr.strip():
-                self.causes.append('standard error')
-
-        return result, self.causes
+            return super(QMTTest, self).ValidateOutput(stdout, stderr, result)

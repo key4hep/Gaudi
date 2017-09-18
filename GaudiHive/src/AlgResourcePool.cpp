@@ -182,17 +182,23 @@ StatusCode AlgResourcePool::flattenSequencer(Algorithm* algo, ListAlg& alglist, 
 
   StatusCode sc = StatusCode::SUCCESS;
 
-  std::vector<Algorithm*>* subAlgorithms = algo->subAlgorithms();
-  auto isGaudiSequencer = dynamic_cast<GaudiSequencer*> (algo);
-  if ( //we only want to add basic algorithms -> have no subAlgs
-          // and exclude the case of empty GaudiSequencers
-        (subAlgorithms->empty() and not isGaudiSequencer)
-       // we want to add non-empty GaudiAtomicSequencers
-       or (algo->type() == "GaudiAtomicSequencer" and not subAlgorithms->empty())){
+  bool isGaudiSequencer(false);
+  bool isAthSequencer(false);
 
-    DEBUG_MSG << std::string(recursionDepth, ' ') << algo->name() << " is "
-              << (algo->type() != "GaudiAtomicSequencer" ? "not a sequencer" : "an atomic sequencer")
-              << ". Appending it" << endmsg;
+  if (algo->isSequence() ) {
+    if (algo->hasProperty("ShortCircuit"))
+      isGaudiSequencer = true;
+    else if (algo->hasProperty("StopOverride"))
+      isAthSequencer = true;
+  }
+
+  std::vector<Algorithm*>* subAlgorithms = algo->subAlgorithms();
+  if ( //we only want to add basic algorithms -> have no subAlgs
+       // and exclude the case of empty sequencers
+       (subAlgorithms->empty() && !(isGaudiSequencer || isAthSequencer)) ) {
+
+    DEBUG_MSG << std::string(recursionDepth, ' ') << algo->name()
+              << " is not a sequencer. Appending it" << endmsg;
 
     alglist.emplace_back(algo);
     m_PRGraph->addAlgorithmNode(algo, parentName, false, false).ignore();
@@ -205,13 +211,23 @@ StatusCode AlgResourcePool::flattenSequencer(Algorithm* algo, ListAlg& alglist, 
   bool modeOR = false;
   bool allPass = false;
   bool isLazy = false;
+  bool isSequential = false;
+
   if ( isGaudiSequencer ) {
     modeOR  = (algo->getProperty("ModeOR").toString() == "True")? true : false;
     allPass = (algo->getProperty("IgnoreFilterPassed").toString() == "True")? true : false;
     isLazy = (algo->getProperty("ShortCircuit").toString() == "True")? true : false;
     if (allPass) isLazy = false; // standard GaudiSequencer behavior on all pass is to execute everything
+    isSequential = (algo->hasProperty("Sequential") &&
+                   (algo->getProperty("Sequential").toString() == "True") );
+  } else if (isAthSequencer ) {
+    modeOR  = (algo->getProperty("ModeOR").toString() == "True")? true : false;
+    allPass = (algo->getProperty("IgnoreFilterPassed").toString() == "True")? true : false;
+    isLazy = (algo->getProperty("StopOverride").toString() == "True")? false : true;
+    isSequential = (algo->hasProperty("Sequential") &&
+                   (algo->getProperty("Sequential").toString() == "True") );
   }
-  sc = m_PRGraph->addDecisionHubNode(algo, parentName, modeOR, allPass, isLazy);
+  sc = m_PRGraph->addDecisionHubNode(algo, parentName, !isSequential, isLazy, modeOR, allPass);
   if (sc.isFailure()) {
     error() << "Failed to add DecisionHub " << algo->name() << " to graph of precedence rules" << endmsg;
     return sc;
@@ -275,13 +291,21 @@ StatusCode AlgResourcePool::decodeTopAlgs()    {
   // Top Alg list filled ----
 
   // start forming the graph of precedence rules by adding the head decision hub
-  m_PRGraph->addHeadNode("EVENT LOOP",true,true,false);
+  m_PRGraph->addHeadNode("RootDecisionHub",true,false,true,true);
 
   // Now we unroll it ----
-  for (auto& algoSmartIF : m_topAlgList){
+  for (auto& algoSmartIF : m_topAlgList) {
     Algorithm* algorithm = dynamic_cast<Algorithm*> (algoSmartIF.get());
     if (!algorithm) fatal() << "Conversion from IAlgorithm to Algorithm failed" << endmsg;
-    sc = flattenSequencer(algorithm, m_flatUniqueAlgList, "EVENT LOOP");
+    sc = flattenSequencer(algorithm, m_flatUniqueAlgList, "RootDecisionHub");
+  }
+  // stupid O(N^2) unique-ification..
+  for ( auto i = begin(m_flatUniqueAlgList); i!=end(m_flatUniqueAlgList); ++i ) {
+    auto n = next(i);
+    while ( n!=end(m_flatUniqueAlgList) ) {
+        if (*n==*i) n = m_flatUniqueAlgList.erase(n);
+        else ++n;
+    }
   }
   if (msgLevel(MSG::DEBUG)){
     debug() << "List of algorithms is: " << endmsg;
@@ -313,17 +337,34 @@ StatusCode AlgResourcePool::decodeTopAlgs()    {
 
     queue->push(ialgo);
     m_algList.push_back(ialgo);
-    m_n_of_allowed_instances[algo_id] = ialgo->cardinality();
+    if (ialgo->isClonable()) {
+      m_n_of_allowed_instances[algo_id] = ialgo->cardinality();
+    } else {
+      if (ialgo->cardinality() == 1) {
+        m_n_of_allowed_instances[algo_id] = 1;
+      } else {
+        if (! m_overrideUnClonable) {
+          info() << "Algorithm " << ialgo->name() 
+                 << " is un-Clonable but Cardinality was set to " 
+                 << ialgo->cardinality()
+                 << ". Only creating 1 instance" << endmsg;
+          m_n_of_allowed_instances[algo_id] = 1;
+        } else {
+          warning() << "Overriding UnClonability of Algorithm " 
+                    << ialgo->name() << ". Setting Cardinality to "
+                    << ialgo->cardinality() << endmsg;
+          m_n_of_allowed_instances[algo_id] = ialgo->cardinality();
+        }
+      }
+    }
     m_n_of_created_instances[algo_id] = 1;
 
     state_type requirements(0);
 
     for (auto& resource_name : ialgo->neededResources()){
-      auto ret = m_resource_indices.insert(std::pair<std::string, unsigned int>(resource_name,resource_counter));
+      auto ret = m_resource_indices.emplace(resource_name,resource_counter);
       // insert successful means == wasn't known before. So increment counter
-      if (ret.second==true) {
-         ++resource_counter;
-      }
+      if (ret.second) ++resource_counter;
       // Resize for every algo according to the found resources
       requirements.resize(resource_counter);
       // in any case the return value holds the proper product index
@@ -335,7 +376,7 @@ StatusCode AlgResourcePool::decodeTopAlgs()    {
 
     // potentially create clones; if not lazy creation we have to do it now
     if (!m_lazyCreation) {
-      for (unsigned int i =1, end =ialgo->cardinality();i<end; ++i){
+      for (unsigned int i =1, end =m_n_of_allowed_instances[algo_id];i<end; ++i){
         debug() << "type/name to create clone of: " << item_type << "/"
                 << item_name << endmsg;
         IAlgorithm* ialgoClone(nullptr);

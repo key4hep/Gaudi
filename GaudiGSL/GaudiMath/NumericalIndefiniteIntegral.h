@@ -383,13 +383,12 @@ namespace Genfun
       GaudiMath::Integration::KronrodRule m_rule     ;
 
       Points                              m_points   ;
-      std::unique_ptr<double[]>           m_pdata    ;
 
       double                              m_epsabs   ;
       double                              m_epsrel   ;
 
-      mutable double                      m_result   ;
-      mutable double                      m_error    ;
+      mutable double                      m_result = GSL_NEGINF;
+      mutable double                      m_error  = GSL_POSINF;
 
       size_t                              m_size     ;
       mutable std::unique_ptr<_Workspace,gsl_ws_deleter> m_ws       ;

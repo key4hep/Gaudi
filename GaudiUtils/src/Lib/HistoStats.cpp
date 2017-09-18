@@ -31,9 +31,9 @@ namespace
 {
   // ==========================================================================
   /// define local "bad" value 
-  const double s_bad      = -1 * std::numeric_limits<double>::max() ;
+  const double s_bad      = std::numeric_limits<float>::lowest() ;
   /// define local "bad" value 
-  const long   s_long_bad =      std::numeric_limits<int>::min() ;
+  const long   s_long_bad = std::numeric_limits<int>::min() ;
   // ==========================================================================
 }
 // ============================================================================
@@ -49,37 +49,34 @@ double Gaudi::Utils::HistoStats::moment
   const unsigned int        order ,  
   const double              value ) 
 {
-  if ( 0 == histo ) { return s_bad ; }                       // RETURN
+  if ( !histo     ) { return s_bad ; }                       // RETURN
   if ( 0 == order ) { return 1.0   ; }                       // RETURN
   if ( 1 == order ) { return mean( histo ) - value ; }       // RETURN
   if ( 2 == order ) 
   {
-    const double _r =         rms  ( histo ) ;
-    const double _d = value - mean ( histo ) ;
-    return _r *_r + _d * _d ;                            // RETURN
+    const auto _r =         rms  ( histo ) ;
+    const auto _d = value - mean ( histo ) ;
+    return std::pow(_r,2) + std::pow(_d,2) ;                 // RETURN
   }
-  const double n = nEff ( histo )  ;
-  if ( 0 >= n     ) { return 0.0   ; }                    // RETURN 
-  
-  const int _order = (int) order ;
+  const auto n = nEff ( histo )  ;
+  if ( 0 >= n     ) { return 0.0   ; }                   // RETURN 
   
   // get the exis 
-  const AIDA::IAxis& axis = histo -> axis () ;
+  const auto & axis = histo -> axis () ;
   // number of bins 
-  const int nBins = axis.bins() ;
-  double result = 0 ;
-  double weight = 0 ;
+  const auto nBins = axis.bins() ;
+  double result{0}, weight{0};
   // loop over all bins 
   for ( int i = 0 ; i < nBins ; ++i ) 
   {
-    const double lE   = axis . binLowerEdge ( i ) ;
-    const double uE   = axis . binUpperEdge ( i ) ;
+    const auto lE   = axis . binLowerEdge ( i ) ;
+    const auto uE   = axis . binUpperEdge ( i ) ;
     //
-    const double yBin = histo -> binHeight    ( i ) ;   // bin weight 
-    const double xBin = 0.5 * ( lE + uE ) ;             // bin center 
+    const auto yBin = histo -> binHeight  ( i ) ;   // bin weight 
+    const double xBin = 0.5 * ( lE + uE ) ;         // bin center 
     //
     weight += yBin ;
-    result += yBin * std::pow ( xBin - value , _order ) ;
+    result += yBin * std::pow ( xBin - value , order ) ;
   }    
   if ( 0 != weight ) { result /= weight ; }
   return result ;
@@ -96,15 +93,13 @@ double Gaudi::Utils::HistoStats::momentErr
 ( const AIDA::IHistogram1D* histo , 
   const unsigned int        order ) 
 {
-  if ( 0 == histo ) { return s_bad ; }                   // RETURN 
-  const double n = nEff ( histo ) ;
+  if ( !histo     ) { return s_bad ; }                   // RETURN 
+  const auto n = nEff ( histo ) ;
   if ( 0 >= n     ) { return 0.0   ; }                   // RETURN
-  const double a2o = moment ( histo , 2 * order ) ;      // a(2o)
-  const double ao  = moment ( histo ,     order ) ;      // a(o) 
-  double result = a2o - ao*ao ;
-  result        /= n ;
-  result = std::max ( 0.0 , result ) ;
-  return std:: sqrt ( result ) ;                            // RETURN  
+  const auto a2o = moment ( histo , 2 * order ) ;      // a(2o)
+  const auto ao  = moment ( histo ,     order ) ;      // a(o) 
+  const auto result = std::max ( 0.0 , ( a2o - std::pow(ao,2) ) / n ) ;
+  return std::sqrt ( result ) ;                            // RETURN  
 }
 // ============================================================================
 /*  evaluate the central momentum (around the mean value) 
@@ -118,13 +113,12 @@ double Gaudi::Utils::HistoStats::centralMoment
 ( const AIDA::IHistogram1D* histo , 
   const unsigned int        order ) 
 {
-  if ( 0 == histo ) { return s_bad ; }                        // RETURN
+  if ( !histo     ) { return s_bad ; }                        // RETURN
   if ( 0 == order ) { return 1.0   ; }                        // RETURN
   if ( 1 == order ) { return 0.0   ; }                        // RETURN
   if ( 2 == order ) 
   {
-    const double sigma = histo->rms() ;
-    return sigma * sigma ;                                    // RETURN
+    return std::pow( histo->rms(), 2 );                       // RETURN
   }
   // delegate the actual evaluation to another method:
   return moment ( histo , order , mean ( histo ) ) ;
@@ -143,21 +137,19 @@ double Gaudi::Utils::HistoStats::centralMomentErr
 ( const AIDA::IHistogram1D* histo , 
   const unsigned int        order ) 
 {
-  if ( 0 == histo ) { return s_bad ; }                    // RETURN
-  const double n    = nEff ( histo ) ;
+  if ( !histo     ) { return s_bad ; }                    // RETURN
+  const auto n    = nEff ( histo ) ;
   if ( 0 >= n     ) { return 0.0   ; }                    // RETURN
-  const double mu2  = centralMoment ( histo , 2             ) ; // mu(2)
-  const double muo  = centralMoment ( histo ,     order     ) ; // mu(o)
-  const double mu2o = centralMoment ( histo , 2 * order     ) ; // mu(2o)
-  const double muom = centralMoment ( histo ,     order - 1 ) ; // mu(o-1)
-  const double muop = centralMoment ( histo ,     order + 1 ) ; // mu(o+1)
-  double result  =  mu2o  ;
-  result        -=  2.0   * order * muom * muop ;
-  result        -=  muo   * muo   ;
-  result        +=  order * order * mu2  * muom * muom ;
-  result        /=  n     ;
-  result = std::max ( 0.0 , result ) ;
-  return std:: sqrt ( result ) ;                            // RETURN
+  const auto mu2  = centralMoment ( histo , 2             ) ; // mu(2)
+  const auto muo  = centralMoment ( histo ,     order     ) ; // mu(o)
+  const auto mu2o = centralMoment ( histo , 2 * order     ) ; // mu(2o)
+  const auto muom = centralMoment ( histo ,     order - 1 ) ; // mu(o-1)
+  const auto muop = centralMoment ( histo ,     order + 1 ) ; // mu(o+1)
+  const auto result = ( mu2o 
+                        - ( 2.0   * order * muom * muop )
+                        -  std::pow(muo,2)  
+                        + ( order * order * mu2  * muom * muom ) ) / n ;
+  return std::sqrt ( std::max ( 0.0 , result ) ) ;           // RETURN
 }
 // ============================================================================
 // get the skewness for the histogram 
@@ -165,9 +157,9 @@ double Gaudi::Utils::HistoStats::centralMomentErr
 double Gaudi::Utils::HistoStats::skewness        
 ( const AIDA::IHistogram1D* histo ) 
 {
-  if ( 0 == histo ) { return s_bad ; }                      // RETURN
-  const double mu3 = centralMoment ( histo , 3 ) ;
-  const double s3  = std::pow ( rms ( histo ) , 3 ) ;
+  if ( !histo )      { return s_bad ; }                      // RETURN
+  const auto mu3 = centralMoment ( histo , 3 ) ;
+  const auto s3  = std::pow ( rms ( histo ) , 3 ) ;
   return ( std::fabs(s3)>0 ? mu3/s3 : 0.0 );
 }
 // ============================================================================
@@ -176,12 +168,10 @@ double Gaudi::Utils::HistoStats::skewness
 double Gaudi::Utils::HistoStats::skewnessErr 
 ( const AIDA::IHistogram1D* histo ) 
 {
-  if ( 0 == histo ) { return s_bad ; }                     // RETURN 
-  const double n = nEff ( histo ) ;
+  if ( !histo     ) { return s_bad ; }                     // RETURN 
+  const auto n = nEff ( histo ) ;
   if ( 2 > n      ) { return 0.0   ; }                     // RETURN
-  double result = 6 ;
-  result *= ( n - 2 )  ;
-  result /= ( n + 1 ) * ( n + 3 ) ;    
+  const auto result = 6.0 * ( n - 2 ) / ( ( n + 1 ) * ( n + 3 ) );    
   return std::sqrt ( result ) ;  
 }
 // ============================================================================
@@ -190,9 +180,9 @@ double Gaudi::Utils::HistoStats::skewnessErr
 double Gaudi::Utils::HistoStats::kurtosis          
 ( const AIDA::IHistogram1D* histo ) 
 {
-  if ( 0 == histo ) { return s_bad ; }                    // RETURN 
-  const double mu4 = centralMoment ( histo , 4 ) ;
-  const double s4  = std::pow ( rms ( histo ) , 4 ) ;
+  if ( !histo ) { return s_bad ; }                    // RETURN 
+  const auto mu4 = centralMoment ( histo , 4 ) ;
+  const auto s4  = std::pow ( rms ( histo ) , 4 ) ;
   return ( std::fabs(s4)>0 ? mu4/s4 - 3.0 : 0.0 );
 }
 // ============================================================================
@@ -201,10 +191,10 @@ double Gaudi::Utils::HistoStats::kurtosis
 double Gaudi::Utils::HistoStats::kurtosisErr 
 ( const AIDA::IHistogram1D* histo ) 
 {
-  if ( 0 == histo ) { return s_bad ; }                    // RETURN 
-  const double n = nEff ( histo ) ;
-  if ( 3 > n      ) { return 0.0 ; }                      // RETURN   
-  double result = 24 * n ;
+  if ( !histo ) { return s_bad ; }                    // RETURN 
+  const auto n = nEff ( histo ) ;
+  if ( 3 > n  ) { return 0.0 ; }                      // RETURN   
+  auto result = 24.0 * n ;
   result *= ( n - 2 ) * ( n - 3 ) ;
   result /= ( n + 1 ) * ( n + 1 ) ;
   result /= ( n + 3 ) * ( n + 5 ) ;
@@ -216,8 +206,7 @@ double Gaudi::Utils::HistoStats::kurtosisErr
 double Gaudi::Utils::HistoStats::nEff 
 ( const AIDA::IHistogram1D* histo ) 
 {
-  if ( 0 == histo ) { return s_bad ; }
-  return histo -> equivalentBinEntries () ;
+  return ( histo ? histo->equivalentBinEntries() : s_bad );
 }
 // ============================================================================
 // get the mean value for the histogram 
@@ -225,8 +214,7 @@ double Gaudi::Utils::HistoStats::nEff
 double Gaudi::Utils::HistoStats::mean              
 ( const AIDA::IHistogram1D* histo ) 
 {
-  if ( 0 == histo ) { return s_bad ; }
-  return histo -> mean() ;    
+  return ( histo ? histo -> mean() : s_bad );
 }
 // ============================================================================
 // get an error in the mean value 
@@ -234,9 +222,9 @@ double Gaudi::Utils::HistoStats::mean
 double Gaudi::Utils::HistoStats::meanErr 
 ( const AIDA::IHistogram1D* histo ) 
 {
-  if ( 0 == histo ) { return s_bad ; }
-  const double n = nEff ( histo ) ;
-  return 0 >= n ? 0.0 : rms ( histo ) / std::sqrt ( n ) ;
+  if ( !histo ) { return s_bad ; }
+  const auto n = nEff ( histo ) ;
+  return ( 0 >= n ? 0.0 : rms ( histo ) / std::sqrt ( n ) );
 }
 // ============================================================================
 // get the rms value for the histogram 
@@ -244,8 +232,7 @@ double Gaudi::Utils::HistoStats::meanErr
 double Gaudi::Utils::HistoStats::rms
 ( const AIDA::IHistogram1D* histo ) 
 {
-  if ( 0 == histo ) { return s_bad ; }
-  return histo -> rms () ;    
+  return ( histo ? histo -> rms () : s_bad );
 }
 // ============================================================================
 // get the error in rms 
@@ -253,14 +240,13 @@ double Gaudi::Utils::HistoStats::rms
 double Gaudi::Utils::HistoStats::rmsErr  
 ( const AIDA::IHistogram1D* histo ) 
 {
-  if ( 0 == histo ) { return s_bad ; }  
-  const double n = nEff ( histo ) ;    
+  if ( !histo ) { return s_bad ; }  
+  const auto n = nEff ( histo ) ;    
   if ( 1 >=  n ) { return 0.0 ; }
-  double result = 2 + kurtosis ( histo ) ;
-  result += 2.0 /( n - 1 ) ;
+  auto result = 2.0 + kurtosis ( histo ) ;
+  result += 2.0 / ( n - 1 ) ;
   result /= 4.0 * n ;
-  result = std::max ( result , 0.0 ) ;
-  return histo -> rms() * std::sqrt ( result ) ;
+  return histo -> rms() * std::sqrt ( std::max ( result , 0.0 ) ) ;
 }
 // ============================================================================
 // get an error in the sum bin height ("in range integral")
@@ -268,20 +254,18 @@ double Gaudi::Utils::HistoStats::rmsErr
 double Gaudi::Utils::HistoStats::sumBinHeightErr
 ( const AIDA::IHistogram1D* histo ) 
 {
-  if ( 0 == histo ) { return s_bad ; }  
+  if ( !histo ) { return s_bad ; }  
   //
   double error2 = 0 ;
   // get the exis 
-  const AIDA::IAxis& axis = histo -> axis () ;
+  const auto & axis = histo -> axis () ;
   // number of bins 
-  const int nBins = axis.bins() ;
+  const auto nBins = axis.bins() ;
   // loop over all bins 
   for ( int i = 0 ; i < nBins ; ++i ) 
   {
-    // get the error in each bin 
-    const double berr = histo->binError ( i ) ;
-    // accumulate the errors: 
-    error2 += berr * berr ;    
+    // accumulate the errors in each bin
+    error2 += std::pow( histo->binError(i), 2 ) ;    
   } 
   return std::sqrt ( error2 ) ;
 }
@@ -291,15 +275,15 @@ double Gaudi::Utils::HistoStats::sumBinHeightErr
 double Gaudi::Utils::HistoStats::sumAllBinHeightErr
 ( const AIDA::IHistogram1D* histo ) 
 {
-  if ( 0 == histo ) { return s_bad ; }  
+  if ( !histo ) { return s_bad ; }  
   //
-  const double error = sumBinHeightErr( histo ) ;
+  const auto error = sumBinHeightErr( histo ) ;
   if ( 0 > error ) { return s_bad ; }
   ///
-  const double err1 = histo->binError ( AIDA::IAxis::UNDERFLOW_BIN ) ;
-  const double err2 = histo->binError ( AIDA::IAxis::OVERFLOW_BIN  ) ;
+  const auto err1 = histo->binError ( AIDA::IAxis::UNDERFLOW_BIN ) ;
+  const auto err2 = histo->binError ( AIDA::IAxis::OVERFLOW_BIN  ) ;
   //
-  return std::sqrt ( error * error + err1 * err1 + err2 * err2 ) ;
+  return std::sqrt ( std::pow(error,2) + std::pow(err1,2) + std::pow(err2,2) ) ;
 }
 // ============================================================================
 // the fraction of overflow entries  (useful for shape comparison)
@@ -307,17 +291,14 @@ double Gaudi::Utils::HistoStats::sumAllBinHeightErr
 double Gaudi::Utils::HistoStats::overflowEntriesFrac
 ( const AIDA::IHistogram1D* histo     ) 
 {
-  if ( 0 == histo ) { return s_bad ; }                                // REUTRN  
-  const long overflow = histo -> binEntries ( AIDA::IAxis::OVERFLOW_BIN )  ;
+  if ( !histo ) { return s_bad ; }                                    // REUTRN  
+  const auto overflow = histo -> binEntries ( AIDA::IAxis::OVERFLOW_BIN )  ;
   if ( 0 == overflow ) { return 0 ; }                                 // REUTRN 
-  const long all      = histo->allEntries() ;
+  const auto all      = histo->allEntries() ;
   if ( 0 == all      ) { return 0 ; }                  // "CONVENTION?"  RETURN 
   if ( 0 >  all      ) { return s_bad ; }     // Lets be a bit paranoic, RETURN
   //
-  double _tmp = (double) overflow ;
-  _tmp /= all ;
-  //
-  return _tmp ;
+  return (double) overflow / (double) all;
 }
 // ============================================================================
 // the fraction of underflow entries  (useful for shape comparison)
@@ -325,17 +306,14 @@ double Gaudi::Utils::HistoStats::overflowEntriesFrac
 double Gaudi::Utils::HistoStats::underflowEntriesFrac
 ( const AIDA::IHistogram1D* histo     ) 
 {
-  if ( 0 == histo ) { return s_bad ; }                                // REUTRN  
-  const long underflow = histo -> binEntries ( AIDA::IAxis::UNDERFLOW_BIN )  ;
+  if ( !histo ) { return s_bad ; }                                    // REUTRN  
+  const auto underflow = histo -> binEntries ( AIDA::IAxis::UNDERFLOW_BIN )  ;
   if ( 0 == underflow ) { return 0 ; }                                // REUTRN 
-  const long all      = histo->allEntries() ;
+  const auto all      = histo->allEntries() ;
   if ( 0 == all      ) { return 0 ; }                  // "CONVENTION?"  RETURN 
   if ( 0 >  all      ) { return s_bad ; }     // Lets be a bit paranoic, RETURN
   //
-  double _tmp = (double) underflow ;
-  _tmp /= all ;
-  //
-  return _tmp ;
+  return (double) underflow / (double) all;
 }
 // ============================================================================
 // the fraction of overflow integral (useful for shape comparison)
@@ -343,13 +321,13 @@ double Gaudi::Utils::HistoStats::underflowEntriesFrac
 double Gaudi::Utils::HistoStats::overflowIntegralFrac
 ( const AIDA::IHistogram1D* histo     ) 
 {
-  if ( 0 == histo ) { return s_bad ; }                                // REUTRN  
-  const double overflow = histo -> binHeight ( AIDA::IAxis::OVERFLOW_BIN )  ;
+  if ( !histo ) { return s_bad ; }                                    // REUTRN  
+  const auto overflow = histo -> binHeight ( AIDA::IAxis::OVERFLOW_BIN )  ;
   if ( 0 == overflow ) { return 0 ; }                                 // REUTRN
-  const double all      = histo -> sumAllBinHeights() ;
+  const auto all      = histo -> sumAllBinHeights() ;
   if ( 0 == all      ) { return 0 ; }                  // "CONVENTION?"  RETURN 
   //
-  return overflow / all ;
+  return (double)overflow / (double)all ;
 }
 // ============================================================================
 // the fraction of underflow entries  (useful for shape comparison)
@@ -357,13 +335,13 @@ double Gaudi::Utils::HistoStats::overflowIntegralFrac
 double Gaudi::Utils::HistoStats::underflowIntegralFrac
 ( const AIDA::IHistogram1D* histo     ) 
 {
-  if ( 0 == histo ) { return s_bad ; }                                // REUTRN  
-  const double underflow = histo -> binHeight ( AIDA::IAxis::UNDERFLOW_BIN )  ;
+  if ( !histo ) { return s_bad ; }                                    // REUTRN  
+  const auto underflow = histo -> binHeight ( AIDA::IAxis::UNDERFLOW_BIN )  ;
   if ( 0 == underflow ) { return 0 ; }                                // REUTRN 
-  const double all      = histo -> sumAllBinHeights() ;
+  const auto all      = histo -> sumAllBinHeights() ;
   if ( 0 == all      ) { return 0 ; }                  // "CONVENTION?"  RETURN 
   //
-  return underflow / all ; 
+  return (double)underflow / (double)all ; 
 }
 // ============================================================================
 // error on fraction of overflow entries  (useful for shape comparison)
@@ -371,18 +349,18 @@ double Gaudi::Utils::HistoStats::underflowIntegralFrac
 double Gaudi::Utils::HistoStats::overflowEntriesFracErr 
 ( const AIDA::IHistogram1D* histo ) 
 {
-  if ( 0 == histo ) { return s_bad ; } // RETURN 
+  if ( !histo ) { return s_bad ; } // RETURN 
   // 
-  const double overflow = histo -> binEntries ( AIDA::IAxis::OVERFLOW_BIN );
-  const double all      = histo -> allEntries () ;
+  const auto overflow = histo -> binEntries ( AIDA::IAxis::OVERFLOW_BIN );
+  const auto all      = histo -> allEntries () ;
   //
   if ( 0 > overflow || 0 >= all || overflow > all ) { return s_bad ; }
   // 
-  const double n  = std::max ( overflow , 1.0 ) ;
+  const double n  = std::max ( (double)overflow , 1.0 ) ;
   const double N  = all ;
   const double n1 = std::max ( N - n , 1.0 ) ;
   //
-  return std::sqrt ( n * n1 / N ) / N ; // use the binomial formula 
+  return std::sqrt ( n * ( n1 / N ) ) / N ; // use the binomial formula 
 }
 // ============================================================================
 // error on fraction of underflow entries  (useful for shape comparison)
@@ -390,18 +368,18 @@ double Gaudi::Utils::HistoStats::overflowEntriesFracErr
 double Gaudi::Utils::HistoStats::underflowEntriesFracErr 
 ( const AIDA::IHistogram1D* histo ) 
 {
-  if ( 0 == histo ) { return s_bad ; } // RETURN 
+  if ( !histo ) { return s_bad ; } // RETURN 
   // 
-  const double underflow = histo -> binEntries ( AIDA::IAxis::UNDERFLOW_BIN );
-  const double all       = histo -> allEntries () ;
+  const auto underflow = histo -> binEntries ( AIDA::IAxis::UNDERFLOW_BIN );
+  const auto all       = histo -> allEntries () ;
   //
   if ( 0 > underflow || 0 >= all || underflow > all ) { return s_bad ; }
   // 
-  const double n  = std::max ( underflow , 1.0 ) ;
+  const double n  = std::max ( (double)underflow , 1.0 ) ;
   const double N  = all ;
   const double n1 = std::max ( N - n , 1.0 ) ;
   //
-  return std::sqrt ( n * n1 / N ) / N ; // use the binomial formula 
+  return std::sqrt ( n * ( n1 / N ) ) / N ; // use the binomial formula 
 }
 // ============================================================================
 // the error on fraction of overflow intergal 
@@ -409,20 +387,21 @@ double Gaudi::Utils::HistoStats::underflowEntriesFracErr
 double Gaudi::Utils::HistoStats::overflowIntegralFracErr 
 ( const AIDA::IHistogram1D* histo     ) 
 {
-  if ( 0 == histo ) { return s_bad ; }                                // RETURN
+  if ( !histo ) { return s_bad ; }                                    // RETURN
   //
-  const double all       = histo -> sumAllBinHeights () ;
+  const auto all       = histo -> sumAllBinHeights () ;
   if ( 0 == all       ) { return s_bad ; }                            // RETURN 
-  const double overflow  = histo -> binHeight ( AIDA::IAxis::OVERFLOW_BIN )  ;
-  const double oErr      = histo -> binError  ( AIDA::IAxis::OVERFLOW_BIN )  ;
+  const auto overflow  = histo -> binHeight ( AIDA::IAxis::OVERFLOW_BIN )  ;
+  const auto oErr      = histo -> binError  ( AIDA::IAxis::OVERFLOW_BIN )  ;
   if ( 0 > oErr       ) { return s_bad ; }                            // RETURN 
-  const double aErr      = sumAllBinHeightErr ( histo ) ;
+  const auto aErr      = sumAllBinHeightErr ( histo ) ;
   if ( 0 > aErr       ) { return s_bad ; }                            // RETURN 
   //
-  double error2  = oErr * oErr ;
-  error2        += aErr * aErr * overflow * overflow / all / all ;
-  error2        /=  all *  all ;
-  
+  double error2  = std::pow((double)oErr,2) ;
+  error2        += ( std::pow((double)aErr,2) * 
+                     std::pow((double)overflow,2) / std::pow((double)all,2) );
+  error2        /= std::pow((double)all,2) ;
+  //
   return std::sqrt ( error2 ) ;
 }
 // ============================================================================
@@ -431,19 +410,20 @@ double Gaudi::Utils::HistoStats::overflowIntegralFracErr
 double Gaudi::Utils::HistoStats::underflowIntegralFracErr 
 ( const AIDA::IHistogram1D* histo     ) 
 {
-  if ( 0 == histo ) { return s_bad ; }                                // RETURN
+  if ( !histo ) { return s_bad ; }                                    // RETURN
   //
-  const double all       = histo -> sumAllBinHeights () ;
+  const auto all       = histo -> sumAllBinHeights () ;
   if ( 0 == all       ) { return s_bad ; }                            // RETURN 
-  const double underflow  = histo -> binHeight ( AIDA::IAxis::UNDERFLOW_BIN )  ;
-  const double oErr       = histo -> binError  ( AIDA::IAxis::UNDERFLOW_BIN )  ;
+  const auto underflow  = histo -> binHeight ( AIDA::IAxis::UNDERFLOW_BIN )  ;
+  const auto oErr       = histo -> binError  ( AIDA::IAxis::UNDERFLOW_BIN )  ;
   if ( 0 > oErr       ) { return s_bad ; }                            // RETURN 
-  const double aErr      = sumAllBinHeightErr ( histo ) ;
+  const auto aErr      = sumAllBinHeightErr ( histo ) ;
   if ( 0 > aErr       ) { return s_bad ; }                            // RETURN 
   //
-  double error2  = oErr * oErr ;
-  error2        += aErr * aErr * underflow * underflow / all / all ;
-  error2        /=  all *  all ;
+  double error2  = std::pow((double)oErr,2) ;
+  error2        += ( std::pow((double)aErr,2) *
+                     std::pow((double)underflow,2) / std::pow((double)all,2) );
+  error2        /= std::pow((double)all,2) ;
   //
   return std::sqrt ( error2 ) ;
 }
@@ -460,14 +440,14 @@ long Gaudi::Utils::HistoStats::nEntries
 ( const AIDA::IHistogram1D* histo , 
   const int                 imax  ) 
 {
-  if ( 0 == histo ) { return s_long_bad ; }                            // RETURN 
+  if ( !histo ) { return s_long_bad ; }                            // RETURN 
   if ( 0 > imax   ) { return 0          ; }                            // RETURN 
   long result = histo -> binEntries( AIDA::IAxis::UNDERFLOW_BIN )  ;
   
   // get the exis 
-  const AIDA::IAxis& axis = histo -> axis () ;
+  const auto& axis = histo -> axis () ;
   // number of bins 
-  const int nBins = axis.bins() ;
+  const auto nBins = axis.bins() ;
   // loop over all bins 
   for ( int i = 0 ; i < nBins ; ++i ) 
   { if ( i < imax ) { result += histo->binEntries ( i ) ; } }
@@ -491,7 +471,7 @@ long Gaudi::Utils::HistoStats::nEntries
   const int                 imin  ,         //     minimal bin number (included) 
   const int                 imax  )         // maximal bin number (not included) 
 {
-  if ( 0 == histo   ) { return s_long_bad ; }                         // RETURN 
+  if ( !histo   )     { return s_long_bad ; }                         // RETURN 
   if ( imin == imax ) { return 0          ; }                         // RETURN 
   if ( imax < imin  ) { return nEntries  ( histo , imax ,imin ) ; }   // RETURN 
   //
@@ -499,15 +479,15 @@ long Gaudi::Utils::HistoStats::nEntries
   if ( 0 > imin  ) 
   { result += histo -> binEntries( AIDA::IAxis::UNDERFLOW_BIN )  ; }
   // get the exis 
-  const AIDA::IAxis& axis = histo -> axis () ;
+  const auto& axis = histo -> axis () ;
   // number of bins 
-  const int nBins = axis.bins() ;
+  const auto nBins = axis.bins() ;
   if ( nBins  < imin ) { return 0 ; }                                 // RETURN 
   // loop over all bins 
   for ( int i = 0 ; i < nBins ; ++i ) 
   { if ( imin <= i && i < imax ) { result += histo->binEntries ( i ) ; } }
   //  
-  if ( nBins  < imax )
+  if ( nBins < imax )
   { result += histo -> binEntries( AIDA::IAxis::OVERFLOW_BIN ) ; }
   //
   return result ;                                                      // RETURN 
@@ -525,15 +505,15 @@ double Gaudi::Utils::HistoStats::nEntriesFrac
 ( const AIDA::IHistogram1D* histo , 
   const int                 imax  ) 
 {
-  if ( 0 == histo   ) { return s_bad ; }                              // RETURN
+  if ( !histo       ) { return s_bad ; }                              // RETURN
   //
-  const double N = histo->allEntries () ;
+  const auto N = histo->allEntries () ;
   if ( 0 >= N       ) { return s_bad ; }                              // RETURN 
-  const long   n = nEntries ( histo , imax ) ;
+  const auto n = nEntries ( histo , imax ) ;
   if ( 0 >  n       ) { return s_bad ; }                              // RETURN 
   if ( n >  N       ) { return s_bad ; }                              // RETURN 
   //
-  return n / N ;                                                      // REUTRN 
+  return (double)n / (double)N ;                                      // REUTRN 
 }
 // ============================================================================
 /*  get fraction of entries in histogram form the certain 
@@ -549,14 +529,14 @@ double Gaudi::Utils::HistoStats::nEntriesFrac
   const int                 imin  ,        //     minimal bin number (included) 
   const int                 imax  )        // maximal bin number (not included) 
 {
-  if ( 0 == histo   ) { return s_bad ; }                              // RETURN
-  const double N = histo->allEntries () ;
+  if ( !histo       ) { return s_bad ; }                              // RETURN
+  const auto N = histo->allEntries () ;
   if ( 0 >= N       ) { return s_bad ; }                              // RETURN 
-  const long   n = nEntries ( histo , imin , imax ) ;
+  const auto n = nEntries ( histo , imin , imax ) ;
   if ( 0 >  n       ) { return s_bad ; }                              // RETURN 
   if ( n >  N       ) { return s_bad ; }                              // RETURN 
   //
-  return n / N ;                                                      // REUTRN 
+  return (double)n / (double)N ;                                      // REUTRN 
 }
 // ============================================================================
 /*  get the (binominal) error for the fraction of entries 
@@ -571,18 +551,18 @@ double Gaudi::Utils::HistoStats::nEntriesFracErr
 ( const AIDA::IHistogram1D* histo , 
   const int                 imax  ) 
 {
-  if ( 0 == histo   ) { return s_bad ; }                              // RETURN
+  if ( !histo       ) { return s_bad ; }                              // RETURN
   //
-  const double N = histo->allEntries () ;
+  const auto N = histo->allEntries () ;
   if ( 0 >= N       ) { return s_bad ; }                              // RETURN 
-  const long   n = nEntries ( histo , imax ) ;
+  const auto n = nEntries ( histo , imax ) ;
   if ( 0 >  n       ) { return s_bad ; }                              // RETURN 
   if ( n >  N       ) { return s_bad ; }                              // RETURN 
   //
   const double _n1 = std::max ( (double)       n   , 1.0 ) ;
-  const double _n2 = std::max (          ( N - n ) , 1.0 ) ;
+  const double _n2 = std::max ( (double) ( N - n ) , 1.0 ) ;
   //
-  return std::sqrt ( _n1 * _n2 / N ) / N ;                             // RETURN 
+  return std::sqrt ( _n1 * ( _n2 / N ) ) / N ;                             // RETURN 
 }
 // ============================================================================
 /*  get the (binomial) error for the fraction of entries in histogram 
@@ -598,18 +578,18 @@ double Gaudi::Utils::HistoStats::nEntriesFracErr
   const int                 imin  ,        //     minimal bin number (included) 
   const int                 imax  )        // maximal bin number (not included) 
 {
-  if ( 0 == histo   ) { return s_bad ; }                              // RETURN
+  if ( !histo       ) { return s_bad ; }                              // RETURN
   //
-  const double N = histo->allEntries () ;
+  const auto N = histo->allEntries () ;
   if ( 0 >= N       ) { return s_bad ; }                              // RETURN 
-  const long   n = nEntries ( histo , imin , imax ) ;
+  const auto n = nEntries ( histo , imin , imax ) ;
   if ( 0 >  n       ) { return s_bad ; }                              // RETURN 
   if ( n >  N       ) { return s_bad ; }                              // RETURN 
   //
   const double _n1 = std::max ( (double)       n   , 1.0 ) ;
-  const double _n2 = std::max (          ( N - n ) , 1.0 ) ;
+  const double _n2 = std::max ( (double) ( N - n ) , 1.0 ) ;
   //
-  return std::sqrt ( _n1 * _n2 / N ) / N ;                             // RETURN 
+  return std::sqrt ( _n1 * ( _n2 / N ) ) / N ;                             // RETURN 
 }
 // ============================================================================
 // The END 

@@ -65,7 +65,5 @@ int main()
             mycos ( x ) - i4( x ));
   }
 
-  exit(0);
-
 }
 

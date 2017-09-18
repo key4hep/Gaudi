@@ -19,9 +19,12 @@
  *  @date   30/04/2002
  */
 
-class GslErrorPrint: public extends<AlgTool,
-                                    IGslErrorHandler> {
-public:
+struct GslErrorPrint: extends<AlgTool,
+                              IGslErrorHandler> {
+
+  /** Standard constructor
+   */
+  using extends::extends;
 
   /** handle the GSL error
    *  @see IGslErrorHandler
@@ -30,19 +33,6 @@ public:
    *  @return status code
    */
   StatusCode handle( const GslError& error ) const override;
-
-  /** Standard constructor
-   *  @param type   tool type (?)
-   *  @param name   tool name
-   *  @param parent pointer to parent
-   */
-  GslErrorPrint
-  ( const std::string& type   ,
-    const std::string& name   ,
-    const IInterface*  parent );
-
-  /// destructor (protected and virtual)
-  ~GslErrorPrint( ) override = default;
 
 };
 

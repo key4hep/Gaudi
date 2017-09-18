@@ -44,6 +44,7 @@ MsgStream::MsgStream(IMessageSvc* svc, int)
 : m_service(svc)
 {
   setLevel( svc ?  svc->outputLevel() : MSG::INFO );
+  m_currLevel = m_level;
   m_useColors = ( svc ? svc->useColor() : false );
 #ifndef NDEBUG
   m_inactCounter = svc ? Gaudi::Cast<IInactiveMessageCounter>(svc) : 0;
@@ -55,6 +56,7 @@ MsgStream::MsgStream(IMessageSvc* svc, std::string source, int)
   m_source(std::move(source))
 {
   setLevel( svc ? svc->outputLevel(m_source) : MSG::INFO );
+  m_currLevel = m_level;
   m_useColors = ( svc &&  svc->useColor() );
 #ifndef NDEBUG
   m_inactCounter = svc ? Gaudi::Cast<IInactiveMessageCounter>(svc) : 0;

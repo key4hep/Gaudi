@@ -49,7 +49,7 @@ private:
 
   bool m_filterPassed;
   bool m_isExecuted;
-  StatusCode m_execStatus;
+  StatusCode m_execStatus;  
 
 };
 
@@ -97,6 +97,10 @@ class GAUDI_API  IAlgExecStateSvc : virtual public IInterface {
   virtual void setEventStatus(const EventStatus::Status& sc, const EventContext& ctx) = 0;
 
   virtual void updateEventStatus(const bool& b, const EventContext& ctx) = 0;
+
+  virtual unsigned int algErrorCount(const IAlgorithm* iAlg) const = 0;
+  virtual void resetErrorCount(const IAlgorithm* iAlg) = 0;
+  virtual unsigned int incrementErrorCount(const IAlgorithm* iAlg) = 0;
 
   virtual void dump(std::ostringstream& ost, const EventContext& ctx) const = 0;
 

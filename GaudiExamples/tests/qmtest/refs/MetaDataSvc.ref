@@ -1,9 +1,9 @@
-# --> Including file '/afs/cern.ch/work/l/leggett/GaudiSrc/git/leggett/Gaudi/GaudiExamples/options/TupleEx.py'
-# <-- End of file '/afs/cern.ch/work/l/leggett/GaudiSrc/git/leggett/Gaudi/GaudiExamples/options/TupleEx.py'
+# --> Including file '/build1/leggett/git/leggett/Gaudi/GaudiExamples/options/TupleEx.py'
+# <-- End of file '/build1/leggett/git/leggett/Gaudi/GaudiExamples/options/TupleEx.py'
 ApplicationMgr    SUCCESS
 ====================================================================================================================================
-                                                   Welcome to ApplicationMgr (GaudiCoreSvc v4r1)
-                                          running on p05614910w96644.cern.ch on Thu Aug 18 20:53:41 2016
+                                                   Welcome to ApplicationMgr (GaudiCoreSvc v28r1)
+                                          running on p05614910w96644.cern.ch on Fri Jan 27 20:52:08 2017
 ====================================================================================================================================
 ApplicationMgr       INFO Application Manager Configured successfully
 RndmGenSvc.Engine    INFO Generator engine type:CLHEP::RanluxEngine
@@ -60,7 +60,7 @@ ApplicationMgr.SvcMapping:[ 'EvtDataSvc/EventDataSvc' , 'DetDataSvc/DetectorData
 ApplicationMgr.SvcOptMapping:[  ]
 ApplicationMgr.TopAlg:[ 'TupleAlg/Tuple' , 'TupleAlg2/Tuple2' , 'TupleAlg3/Tuple3' ]
 IAlgManager.Algorithms:Tuple, Tuple2, Tuple3
-ISvcLocator.Services:MessageSvc, JobOptionsSvc, RndmGenSvc.Engine, RndmGenSvc, Gaudi::MetaDataSvc, AppMgrRunable, IncidentSvc, AlgContextSvc, EventPersistencySvc, EventDataSvc, TimelineSvc, RootHistSvc, HistogramPersistencySvc, HistogramDataSvc, NTupleSvc, AlgExecStateSvc, EventLoopMgr, ToolSvc
+ISvcLocator.Services:MessageSvc, JobOptionsSvc, RndmGenSvc.Engine, RndmGenSvc, Gaudi::MetaDataSvc, AppMgrRunable, IncidentSvc, EventPersistencySvc, EventDataSvc, AlgContextSvc, TimelineSvc, RootHistSvc, HistogramPersistencySvc, HistogramDataSvc, NTupleSvc, AlgExecStateSvc, EventLoopMgr, ToolSvc
 JobOptionsSvc.AuditFinalize:False
 JobOptionsSvc.AuditInitialize:False
 JobOptionsSvc.AuditReinitialize:False
@@ -73,7 +73,7 @@ JobOptionsSvc.OutputLevel:0
 JobOptionsSvc.PATH:../options/job.opts
 JobOptionsSvc.PYTHONACTION:
 JobOptionsSvc.PYTHONPARAMS:
-JobOptionsSvc.SEARCHPATH:...
+JobOptionsSvc.SEARCHPATH:/build1/leggett/git/leggett/Gaudi/GaudiExamples/tests/qmtest:/build1/leggett/git/leggett/Gaudi/GaudiExamples/options
 JobOptionsSvc.TYPE:NONE
 MessageSvc.AuditFinalize:False
 MessageSvc.AuditInitialize:False
@@ -91,9 +91,9 @@ MessageSvc.debugColorCode:[  ]
 MessageSvc.debugLimit:500
 MessageSvc.defaultLimit:500
 MessageSvc.enableSuppression:False
-MessageSvc.errorColorCode:[  ]
+MessageSvc.errorColorCode:[ 'white' , 'red' ]
 MessageSvc.errorLimit:500
-MessageSvc.fatalColorCode:[  ]
+MessageSvc.fatalColorCode:[ 'blue' , 'red' ]
 MessageSvc.fatalLimit:500
 MessageSvc.infoColorCode:[  ]
 MessageSvc.infoLimit:500
@@ -112,7 +112,7 @@ MessageSvc.tracedInactiveSources:[  ]
 MessageSvc.useColors:False
 MessageSvc.verboseColorCode:[  ]
 MessageSvc.verboseLimit:500
-MessageSvc.warningColorCode:[  ]
+MessageSvc.warningColorCode:[ 'yellow' ]
 MessageSvc.warningLimit:500
 NTupleSvc.AuditFinalize:False
 NTupleSvc.AuditInitialize:False
@@ -368,7 +368,7 @@ TFile: name=TupleEx.root, title=Gaudi Trees, option=CREATE
 *............................................................................*
 ******************************************************************************
 *Tree    :5         : Variable-size arrays/vectors                           *
-*Entries :       10 : Total =            4354 bytes  File  Size =       1626 *
+*Entries :       10 : Total =            4354 bytes  File  Size =       1630 *
 *        :          : Tree compression factor =   1.00                       *
 ******************************************************************************
 *Br    0 :Len1      : Len1/I                                                 *
@@ -434,7 +434,7 @@ TFile: name=TupleEx.root, title=Gaudi Trees, option=CREATE
 *............................................................................*
 ******************************************************************************
 *Tree    :typesCW   : Types Test Column Wise                                 *
-*Entries :       10 : Total =            8990 bytes  File  Size =       2701 *
+*Entries :       10 : Total =            8990 bytes  File  Size =       2713 *
 *        :          : Tree compression factor =   1.00                       *
 ******************************************************************************
 *Br    0 :bool      : bool/O                                                 *
@@ -495,7 +495,7 @@ TFile: name=TupleEx.root, title=Gaudi Trees, option=CREATE
 *............................................................................*
 ******************************************************************************
 *Tree    :typesRW   : Types Test Row Wise                                    *
-*Entries :       10 : Total =            8984 bytes  File  Size =       2694 *
+*Entries :       10 : Total =            8984 bytes  File  Size =       2710 *
 *        :          : Tree compression factor =   1.00                       *
 ******************************************************************************
 *Br    0 :bool      : bool/O                                                 *

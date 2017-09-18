@@ -9,10 +9,11 @@
 // coming from TString.h
 #pragma warning(disable:4996)
 #endif
-#include "H1D.h"
+#include <GaudiKernel/StreamBuffer.h>
+#include <GaudiKernel/ObjectFactory.h>
+#include <GaudiCommonSvc/H1D.h>
+#include <GaudiCommonSvc/HistogramUtility.h>
 #include "GaudiPI.h"
-#include "GaudiKernel/StreamBuffer.h"
-#include "GaudiKernel/ObjectFactory.h"
 
 std::pair<DataObject*,AIDA::IHistogram1D*> Gaudi::createH1D(const std::string& title,int nBins,double xlow, double xup)  {
   auto p = new Histogram1D(new TH1D(title.c_str(),title.c_str(),nBins,xlow,xup));
@@ -54,7 +55,7 @@ namespace Gaudi {
   }
 }
 
-Gaudi::Histogram1D::Histogram1D()  
+Gaudi::Histogram1D::Histogram1D()
     : Base( new TH1D() )
 {
   init("",false);
@@ -285,6 +286,3 @@ StreamBuffer& Gaudi::Histogram1D::serialize(StreamBuffer& s) const {
   s << stats[0] << stats[1] << stats[2] << stats[3];
   return s;
 }
-
-typedef Gaudi::Histogram1D H1D;
-DECLARE_DATAOBJECT_FACTORY(H1D)

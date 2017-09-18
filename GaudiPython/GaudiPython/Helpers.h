@@ -3,7 +3,11 @@
 
 #include "Python.h"
 
-// Framework
+#include "GaudiKernel/DataObject.h"
+#include "GaudiKernel/IDataProviderSvc.h"
+#include "GaudiKernel/IHistogramSvc.h"
+#include "GaudiKernel/ISvcLocator.h"
+#include "GaudiKernel/IToolSvc.h"
 #include "GaudiKernel/IAlgManager.h"
 #include "GaudiKernel/IAlgTool.h"
 #include "GaudiKernel/IAlgorithm.h"
@@ -20,6 +24,7 @@ namespace AIDA
   class IProfile1D;
   class IProfile2D;
 }
+
 
 #if PY_VERSION_HEX < 0x02050000
 // Note (MCl):

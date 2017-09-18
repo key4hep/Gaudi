@@ -31,9 +31,10 @@ if( AIDA_FOUND )
    list( APPEND lib_sources src/Lib/HistoDecorator.cpp )
 endif()
 
-# Hide some ROOT compile time warnings
+# Hide some ROOT and Boost compile time warnings
+find_package(Boost)
 find_package(ROOT)
-include_directories( SYSTEM ${ROOT_INCLUDE_DIRS} )
+include_directories( SYSTEM ${Boost_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS} )
 if( CLHEP_FOUND )
    include_directories( SYSTEM ${CLHEP_INCLUDE_DIRS} )
 endif()

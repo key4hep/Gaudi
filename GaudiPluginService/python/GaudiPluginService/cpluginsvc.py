@@ -35,7 +35,7 @@ def _get_filename():
     name = platform.system()
 
     fname = {
-        'Darwin':  "libGaudiPluginService.so", # or .dylib ? FIXME
+        'Darwin':  "libGaudiPluginService.dylib",
         'Windows': "libGaudiPluginService.dll",
         'Linux':   "libGaudiPluginService.so",
         }[name]

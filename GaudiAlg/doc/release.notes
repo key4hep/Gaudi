@@ -2,6 +2,103 @@ Package: GaudiAlg
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+================================ Gaudi v28r3 =================================
+
+! 2017-07-26 - Sebastien Ponce (commit 98ceba03)
+
+ - Merge branch 'sponce_ScalarTransformerPostprocessing' into 'master'
+
+   Reallowed global postprocessing in ScalarTransformer
+
+   See merge request !364
+
+! 2017-07-20 - Gerhard Raven (commit bcdd986d)
+
+ - Merge branch 'augment_tupleobj' into 'master'
+
+   Augment TupleObj
+
+   See merge request !352
+
+! 2017-07-18 - Gerhard Raven (commit 49c12028)
+
+ - Merge branch 'allow-algorithm-as-functional-base' into 'master'
+
+   Allow Algorithm as baseclass of Gaudi::Functional algorithms
+
+   See merge request !326
+
+! 2017-06-02 - Paul Seyfert (commit acb3ca5e)
+
+ - Merge branch 'pseyfert_IWYU' into 'master'
+
+   make exported headers self contained
+    See merge request !348
+
+! 2017-05-19 - Chris Jones (commit 8b38c49d)
+
+ - Merge branch 'GaudiFunctional-RangeZipSizeCheckImprovedErrorMessage' into
+   'master'
+
+   Gaudi functional range zip - size check improved error message
+    See merge request !297
+
+! 2017-05-18 - Sebastien Ponce (commit 231089d2)
+
+ - Merge branch 'FixedGetData' into 'master'
+
+   Fixed retrieval of data from TES in case AnyDataWrapper is used
+    See merge request !328
+
+! 2017-04-20 - Charles Leggett, leggett (commit 0d7cf453)
+
+ - Merge branch 'dev/isSeq' into 'master'
+
+   Add flag to Algorithm to identify a Sequence
+    See merge request !317
+
+================================ Gaudi v28r2 =================================
+
+! 2017-03-10 - Charles Leggett (commit 1c2b2e1)
+
+ - Merge branch 'dev/combSeq' into 'master'
+
+   Support for AthSequencers in Scheduler
+    See merge request !287
+
+! 2017-03-10 - Gerhard Raven (commit f3d7bff)
+
+ - remove all references to endreq
+
+   See merge request !79
+
+! 2017-03-01 - Chris Jones, Marco Clemencic (commit 22ec1aa)
+
+ - Merge branch 'GaudiAlg-HistoIDOptimisation' into 'master'
+
+   GaudiAlg::ID optimisation
+    See merge request !283
+
+! 2017-02-08 - Charles Leggett (commit 09859bd)
+
+ - add sysExecute(EventContext) and extract errorCount from Algorithm base class
+
+   We need to extract the `m_errorCount` variable from the Algorithm base class,
+    as it's not important on a per-instance basis, but rather on a job level.
+   This is moved to the AlgExecStateSvc.
+    This merge request also adds an explicit `IAlgorithm::sysExecute(const
+   EventContext&)`, which should become the standard entry point to
+   `Algorithm::execute`. This sets the local m_event_context variable, so
+   derived classes can get quick access to the current context instead of going
+   through the slower thead local `Gaudi::Hive::currentContext()`.
+    Note that `IAlgorithm::sysExecute()` has been removed, to avoid "overloaded
+   virtual" compiler errors, and should be replaced in all clients with
+   `IAlgorithm::sysExecute(EventContext)`, or if the context is not immediately
+   available, with `IAlgorithm::sysExecute(Gaudi::Hive::currentContext())`.
+    All this is being done in preparation to re-introduce the ReEntrantAlgorithm
+   class from merge !177 (see also !274)
+    See merge request !273
+
 ================================ Gaudi v28r1 =================================
 
 ! 2016-12-14 - Sebastien Ponce (commit ea582c7)

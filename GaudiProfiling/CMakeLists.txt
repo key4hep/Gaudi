@@ -73,8 +73,11 @@ endif()
 # Intel VTune profiler
 #-----------------------------------
 if(INTELAMPLIFIER_FOUND)
-  gaudi_add_module(IntelProfiler src/component/intel/*.cpp
+  gaudi_add_module(IntelProfiler src/component/intel/IntelProfilerAuditor.cpp
                    LINK_LIBRARIES ${INTELAMPLIFIER_LIBITTNOTIFY} GaudiKernel
+                   INCLUDE_DIRS ${INTELAMPLIFIER_INCLUDE_DIRS})
+  gaudi_add_module(GaudiIntelProfiling src/component/intel/IntelProfile.cpp
+                   LINK_LIBRARIES ${INTELAMPLIFIER_LIBITTNOTIFY} GaudiKernel GaudiAlgLib
                    INCLUDE_DIRS ${INTELAMPLIFIER_INCLUDE_DIRS})
 else()
   message(WARNING "VTune libraries not found, the module IntelProfiler is disabled")

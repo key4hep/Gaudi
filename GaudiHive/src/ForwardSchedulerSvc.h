@@ -1,17 +1,13 @@
 #ifndef GAUDIHIVE_FORWARDSCHEDULERSVC_H
 #define GAUDIHIVE_FORWARDSCHEDULERSVC_H
 
-#include <functional>
-#include <string>
-#include <thread>
-#include <unordered_map>
-#include <vector>
-
-// External libs
-#include "tbb/concurrent_queue.h"
+// Local includes
+#include "AlgsExecutionStates.h"
+#include "DataFlowManager.h"
+#include "EventSlot.h"
+#include "ExecutionFlowManager.h"
 
 // Framework include files
-#include "GaudiKernel/IAccelerator.h"
 #include "GaudiKernel/IAlgExecStateSvc.h"
 #include "GaudiKernel/IAlgResourcePool.h"
 #include "GaudiKernel/IHiveWhiteBoard.h"
@@ -19,12 +15,6 @@
 #include "GaudiKernel/IScheduler.h"
 #include "GaudiKernel/IThreadPoolSvc.h"
 #include "GaudiKernel/Service.h"
-
-// Local includes
-#include "AlgsExecutionStates.h"
-#include "DataFlowManager.h"
-#include "EventSlot.h"
-#include "ExecutionFlowManager.h"
 
 // C++ include files
 #include <functional>
@@ -35,8 +25,10 @@
 
 // External libs
 #include "tbb/concurrent_queue.h"
+#include "tbb/task.h"
 
 typedef AlgsExecutionStates::State State;
+typedef std::function<StatusCode()> action;
 
 //---------------------------------------------------------------------------
 
@@ -46,8 +38,13 @@ typedef AlgsExecutionStates::State State;
  *  execution states of the algorithms and interacts with the TBB runtime for
  *  the algorithm tasks submission. A state machine takes care of the tracking
  *  of the execution state of the algorithms.
- *  This is a forward scheduler: algorithms are scheduled for execution as soon
- *  as their data dependencies are available in the whiteboard.
+ *
+ *  This is a forward scheduler: an algorithm is scheduled for execution as soon
+ *  as its data dependencies are available in the whiteboard, and as soon as a
+ *  worker thread becomes available. The scheduler has no means for automatic
+ *  intra-event throughput maximization. Consider the AvalancheScheduler if you
+ *  need those.
+ *
  *  # Algorithms management
  *  The activate() method runs in a separate thread. It checks a TBB concurrent
  *  bounded queue of closures in a loop via the Pop method. This allows not to
@@ -59,6 +56,7 @@ typedef AlgsExecutionStates::State State;
  *  their state can be changed. It's indeed possible that upon termination of an
  *  algorithm, the control flow and/or the data flow allow the submission of
  *  more algorithms.
+ *
  *  ## Algorithms dependencies
  *  There are two ways of declaring algorithms dependencies. One which is only
  *  temporarly available to ease developments consists in declaring them through
@@ -66,6 +64,7 @@ typedef AlgsExecutionStates::State State;
  *  must be the same one of the algorithms in the TopAlg list.
  *  The second one consists in declaring the data dependencies directly within
  *  the algorithms via data object handles.
+ *
  *  # Events management
  *  The scheduler accepts events to be processed (in the form of eventContexts)
  *  and releases processed events. This flow is implemented through three
@@ -116,34 +115,24 @@ private:
 
   Gaudi::Property<int> m_maxEventsInFlight{this, "MaxEventsInFlight", 0,
                                            "Maximum number of event processed simultaneously"};
-  Gaudi::Property<int> m_threadPoolSize{
-      this, "ThreadPoolSize", -1,
-      "Size of the threadpool initialised by TBB; a value of -1 gives TBB the freedom to choose"};
+  Gaudi::Property<int> m_threadPoolSize{this, "ThreadPoolSize", -1,
+    "Size of the threadpool initialised by TBB; a value of -1 gives TBB the freedom to choose"};
   Gaudi::Property<std::string> m_whiteboardSvcName{this, "WhiteboardSvc", "EventDataSvc", "The whiteboard name"};
-  Gaudi::Property<std::string> m_IOBoundAlgSchedulerSvcName{this, "IOBoundAlgSchedulerSvc", "IOBoundAlgSchedulerSvc"};
   Gaudi::Property<unsigned int> m_maxAlgosInFlight{this, "MaxAlgosInFlight", 1,
                                                    "[[deprecated]] Taken from the whiteboard"};
-
-  Gaudi::Property<unsigned int> m_maxIOBoundAlgosInFlight{this, "MaxIOBoundAlgosInFlight", 0,
-                                                          "Maximum number of simultaneous I/O-bound algorithms"};
-  // XXX: CF tests. Temporary property to switch between ControlFlow implementations
-  Gaudi::Property<bool> m_CFNext{this, "useGraphFlowManagement", false,
-                                 "Temporary property to switch between ControlFlow implementations"};
-  // XXX: CF tests. Temporary property to switch between DataFlow implementations
-  Gaudi::Property<bool> m_DFNext{this, "DataFlowManagerNext", false,
-                                 "Temporary property to switch between DataFlow implementations"};
-  Gaudi::Property<bool> m_simulateExecution{
-      this, "SimulateExecution", false,
-      "Flag to perform single-pass simulation of execution flow before the actual execution"};
-  Gaudi::Property<std::string> m_optimizationMode{this, "Optimizer", "",
-                                                  "The following modes are currently available: PCE, COD, DRE,  E"};
-  Gaudi::Property<bool> m_dumpIntraEventDynamics{this, "DumpIntraEventDynamics", false,
-                                                 "Dump intra-event concurrency dynamics to csv file"};
-  Gaudi::Property<bool> m_useIOBoundAlgScheduler{this, "PreemptiveIOBoundTasks", false,
-                                                 "Turn on preemptive way of scheduling of I/O-bound algorithms"};
   Gaudi::Property<std::vector<std::vector<std::string>>> m_algosDependencies{
       this, "AlgosDependencies", {}, "[[deprecated]]"};
-  Gaudi::Property<bool> m_checkDeps{this, "CheckDependencies", false, "[[deprecated]]"};
+  Gaudi::Property<bool> m_checkDeps{this, "CheckDependencies", false, 
+      "Runtime check of Algorithm Data Dependencies"};
+  Gaudi::Property<std::string> m_useDataLoader{this, "DataLoaderAlg", "",
+      "Attribute unmet input dependencies to this DataLoader Algorithm"};
+
+  Gaudi::Property<bool> m_showDataDeps{this, "ShowDataDependencies", true,
+      "Show the INPUT and OUTPUT data dependencies of Algorithms"};
+  Gaudi::Property<bool> m_showDataFlow{this, "ShowDataFlow", false,
+      "Show the configuration of DataFlow between Algorithms"};
+    Gaudi::Property<bool> m_showControlFlow{this, "ShowControlFlow", false,
+      "Show the configuration of all Algorithms and Sequences"};
 
   // Utils and shortcuts ----------------------------------------------------
 
@@ -174,9 +163,6 @@ private:
   /// A shortcut to the whiteboard
   SmartIF<IHiveWhiteBoard> m_whiteboard;
 
-  /// A shortcut to IO-bound algorithm scheduler
-  SmartIF<IAccelerator> m_IOBoundAlgScheduler;
-
   /// Vector of events slots
   std::vector<EventSlot> m_eventSlots;
 
@@ -197,21 +183,15 @@ private:
   /// Number of algoritms presently in flight
   unsigned int m_algosInFlight = 0;
 
-  /// Number of algoritms presently in flight
-  unsigned int m_IOBoundAlgosInFlight = 0;
-
   /// Loop on algorithm in the slots and promote them to successive states (-1 means all slots, while empty string
   /// means skipping an update of the Control Flow state)
-  StatusCode updateStates( int si = -1, const std::string& algo_name = std::string() );
+  StatusCode updateStates( int si = -1 );
 
   /// Algorithm promotion: Accepted by the control flow
   StatusCode promoteToControlReady( unsigned int iAlgo, int si );
   StatusCode promoteToDataReady( unsigned int iAlgo, int si );
   StatusCode promoteToScheduled( unsigned int iAlgo, int si );
-  StatusCode promoteToAsyncScheduled( unsigned int iAlgo, int si ); // tests of an asynchronous scheduler
   StatusCode promoteToExecuted( unsigned int iAlgo, int si, IAlgorithm* algo, EventContext* );
-  StatusCode promoteToAsyncExecuted( unsigned int iAlgo, int si, IAlgorithm* algo,
-                                     EventContext* ); // tests of an asynchronous scheduler
   StatusCode promoteToFinished( unsigned int iAlgo, int si );
 
   /// Check if the scheduling is in a stall
@@ -232,17 +212,28 @@ private:
 
   // Actions management -----------------------------------------------------
 
-  typedef std::function<StatusCode()> action;
-
   /// Queue where closures are stored and picked for execution
   tbb::concurrent_bounded_queue<action> m_actionsQueue;
 
+  // helper task to enqueue the scheduler's actions (closures)
+  struct enqueueSchedulerActionTask: public tbb::task {
+
+    std::function<StatusCode()> m_closure;
+    SmartIF<ForwardSchedulerSvc> m_scheduler;
+
+    enqueueSchedulerActionTask(ForwardSchedulerSvc* scheduler, std::function<StatusCode()> _closure) :
+      m_closure(_closure), m_scheduler(scheduler) {}
+
+    tbb::task* execute() override {
+      m_scheduler->m_actionsQueue.push(m_closure);
+      return nullptr;
+    }
+  };
+
+  // ------------------------------------------------------------------------
+
   /// Member to take care of the control flow
   concurrency::ExecutionFlowManager m_efManager;
-
-  // Needed to queue actions on algorithm finishing and decrement algos in flight
-  friend class AlgoExecutionTask;
-  friend class IOBoundAlgTask;
 
   // Service for thread pool initialization
   SmartIF<IThreadPoolSvc> m_threadPoolSvc;
@@ -288,6 +279,7 @@ public:
 
 private:
   void dumpState( std::ostringstream& );
+  concurrency::PrecedenceRulesGraph* m_efg;
 };
 
 #endif // GAUDIHIVE_FORWARDSCHEDULERSVC_H

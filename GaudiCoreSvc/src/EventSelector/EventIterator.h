@@ -86,11 +86,7 @@ public:
   /// Standard constructor
   EvtSelectorContext( const IEvtSelector* selector )
   : m_pSelector(selector) { }
-  /// Standard Destructor
-  ~EvtSelectorContext() override = default;
 
-  /// Copy constructor
-  virtual EvtSelectorContext& operator=(const EvtSelectorContext&) = default;
   /// Stream identifier
   virtual IDataStreamTool::size_type ID()   const {
     return m_streamID;

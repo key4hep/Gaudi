@@ -22,7 +22,7 @@ class AlgTool;
 class Service;
 
 /** General info and helper functions for toolhandles and arrays */
-class ToolHandleInfo 
+class ToolHandleInfo
 {
 
 protected:
@@ -49,7 +49,7 @@ public:
   {
     return parent ? "PrivateTool" : "PublicTool";
   }
-  
+
   static std::string toolParentName(const IInterface* parent)
   {
     auto * pNamed = ( parent ? dynamic_cast<const INamedInterface*>(parent) : nullptr );
@@ -90,13 +90,13 @@ public:
   const IAlgTool * get() const { return getAsIAlgTool(); }
 
   IAlgTool *       get()       { return getAsIAlgTool(); }
-  
+
   virtual std::string typeAndName() const = 0;
-  
+
 protected:
-  
+
   virtual const IAlgTool * getAsIAlgTool() const = 0;
-  
+
   virtual IAlgTool * getAsIAlgTool() = 0;
 
 };
@@ -125,7 +125,7 @@ public:
       Can be called only if the type T is a concrete tool type (not an interface),
       and you want to use the default name. */
   ToolHandle(const IInterface* parent = nullptr, bool createIf = true)
-    : BaseToolHandle(parent,createIf),
+    : BaseToolHandle(parent, createIf),
       GaudiHandle<T>( GaudiHandle<T>::getDefaultType(),
                       toolComponentType(parent),
                       toolParentName(parent) ),
@@ -176,12 +176,34 @@ public:
 #endif
   ToolHandle(const std::string& toolTypeAndName,
              const IInterface* parent = nullptr, bool createIf = true )
-    : BaseToolHandle(parent,createIf),
+    : BaseToolHandle(parent, createIf),
       GaudiHandle<T>( toolTypeAndName,
                       toolComponentType(parent),
                       toolParentName(parent) ),
       m_pToolSvc( "ToolSvc", GaudiHandleBase::parentName() )
   {  }
+
+  /// Autodeclaring constructor with property name, tool type/name and documentation.
+  /// @note the use std::enable_if is required to avoid ambiguities
+  template <class OWNER,
+            typename = typename std::enable_if<std::is_base_of<IProperty, OWNER>::value>::type>
+  inline ToolHandle( OWNER* owner, std::string name, std::string toolType = "", std::string doc = "" )
+      : ToolHandle( owner )
+  {
+    // convert name and type to a valid type/name string
+    // - if type is not specified use only name
+    // - if type does not contain '/' use type/name
+    // - otherwise type is already a type/name string
+    if ( toolType.empty() ) {
+      toolType = name;
+    } else if ( toolType.find( '/' ) == std::string::npos ) {
+      toolType += '/';
+      toolType += name;
+    }
+    owner->declareTool( *this, std::move(toolType) ).ignore();
+    auto p = owner->OWNER::PropertyHolderImpl::declareProperty( std::move(name), *this, std::move(doc) );
+    p->template setOwnerType<OWNER>();
+  }
 
 public:
 
@@ -234,18 +256,18 @@ public:
 
   // Allow access to non-const Tool methods of const ToolHandle
   #ifdef ALLOW_TOOLHANDLE_NONCONSTNESS
-  T * operator->() { 
-    return GaudiHandle<T>::operator->(); 
+  T * operator->() {
+    return GaudiHandle<T>::operator->();
   }
-  T & operator*()  { 
-    return * ( GaudiHandle<T>::operator->() ); 
+  T & operator*()  {
+    return * ( GaudiHandle<T>::operator->() );
   }
 
-  T * operator->() const { 
-    return GaudiHandle<T>::nonConst( GaudiHandle<T>::operator->() ); 
+  T * operator->() const {
+    return GaudiHandle<T>::nonConst( GaudiHandle<T>::operator->() );
   }
-  T & operator*() const { 
-    return * ( GaudiHandle<T>::nonConst(GaudiHandle<T>::operator->()) ); 
+  T & operator*() const {
+    return * ( GaudiHandle<T>::nonConst(GaudiHandle<T>::operator->()) );
   }
   #endif
 
@@ -270,7 +292,7 @@ protected:
     return this->nonConst( GaudiHandle<T>::get() );
   }
 
-  StatusCode i_retrieve(IAlgTool*& algTool) const override 
+  StatusCode i_retrieve(IAlgTool*& algTool) const override
   {
     return m_pToolSvc->retrieve( typeAndName(), IAlgTool::interfaceID(),
                                  algTool,
@@ -282,6 +304,49 @@ private:
   // Private data members
   //
   mutable ServiceHandle<IToolSvc> m_pToolSvc;
+};
+
+/** Helper class to construct ToolHandle instances for public tools via the
+ *  auto registering constructor.
+ */
+template< class T >
+class PublicToolHandle: public ToolHandle<T> {
+public:
+  PublicToolHandle(bool createIf = true): ToolHandle<T>(nullptr, createIf) {}
+  PublicToolHandle(const char* toolTypeAndName, bool createIf = true):
+    PublicToolHandle{std::string{toolTypeAndName}, createIf} {}
+  PublicToolHandle(const std::string& toolTypeAndName, bool createIf = true ):
+    ToolHandle<T>(toolTypeAndName, nullptr, createIf) {}
+
+  /// Copy constructor from a non const T to const T tool handle
+  template< typename CT  = T,
+            typename NCT = typename std::remove_const<T>::type >
+  PublicToolHandle( const PublicToolHandle<NCT>& other,
+                    typename std::enable_if< std::is_const<CT>::value &&
+                                             !std::is_same<CT,NCT>::value >::type * = nullptr ):
+    ToolHandle<T>( static_cast<const ToolHandle<NCT>&>( other ) ) {}
+
+  /// Autodeclaring constructor with property name, tool type/name and documentation.
+  /// @note the use std::enable_if is required to avoid ambiguities
+  template <class OWNER,
+            typename = typename std::enable_if<std::is_base_of<IProperty, OWNER>::value>::type>
+  inline PublicToolHandle( OWNER* owner, std::string name, std::string toolType = "", std::string doc = "" )
+      : PublicToolHandle()
+  {
+    // convert name and type to a valid type/name string
+    // - if type is not specified use only name
+    // - if type does not contain '/' use type/name
+    // - otherwise type is already a type/name string
+    if ( toolType.empty() ) {
+      toolType = name;
+    } else if ( toolType.find( '/' ) == std::string::npos ) {
+      toolType += '/';
+      toolType += name;
+    }
+    owner->declareTool( *this, std::move(toolType) ).ignore();
+    auto p = owner->OWNER::PropertyHolderImpl::declareProperty( std::move(name), *this, std::move(doc) );
+    p->template setOwnerType<OWNER>();
+  }
 };
 
 //-------------------------------------------------------------------------//
@@ -311,7 +376,7 @@ public:
       @param createIf : passed on to ToolHandle, so has the same meaning as for ToolHandle
   */
   ToolHandleArray( const std::vector< std::string >& myTypesAndNames,
-                   const IInterface* parent = 0, bool createIf = true )
+                   const IInterface* parent = nullptr, bool createIf = true )
     : ToolHandleInfo( parent, createIf ),
       GaudiHandleArray< ToolHandle<T> >( myTypesAndNames,
                                          ToolHandleInfo::toolComponentType(parent),
@@ -322,7 +387,7 @@ public:
       @param parent   : passed on to ToolHandle, so has the same meaning as for ToolHandle
       @param createIf : passed on to ToolHandle, so has the same meaning as for ToolHandle
   */
-  ToolHandleArray( const IInterface* parent = 0, bool createIf = true )
+  ToolHandleArray( const IInterface* parent = nullptr, bool createIf = true )
     : ToolHandleInfo( parent, createIf ),
       GaudiHandleArray< ToolHandle<T> >( ToolHandleInfo::toolComponentType(parent),
                                          ToolHandleInfo::toolParentName(parent) )
@@ -345,6 +410,41 @@ public:
     return push_back( myHandle.typeAndName() );
   }
 
+  /// Autodeclaring constructor with property name, tool type/name and documentation.
+  /// @note the use std::enable_if is required to avoid ambiguities
+  template <class OWNER,
+            typename = typename std::enable_if<std::is_base_of<IProperty, OWNER>::value>::type>
+  inline ToolHandleArray( OWNER* owner, std::string name, const std::vector< std::string >& typesAndNames = {}, std::string doc = "" )
+      : ToolHandleArray( typesAndNames, owner )
+  {
+    owner->addToolsArray( *this );
+    auto p = owner->OWNER::PropertyHolderImpl::declareProperty( std::move(name), *this, std::move(doc) );
+    p->template setOwnerType<OWNER>();
+  }
+
+};
+
+/** Helper class to construct ToolHandle instances for public tools via the
+ *  auto registering constructor.
+ */
+template< class T >
+class PublicToolHandleArray: public ToolHandleArray<T> {
+public:
+  PublicToolHandleArray(bool createIf = true): ToolHandleArray<T>(nullptr, createIf) {}
+  PublicToolHandleArray(const std::vector< std::string >& typesAndNames, bool createIf = true ):
+    ToolHandleArray<T>(typesAndNames, nullptr, createIf) {}
+
+  /// Autodeclaring constructor with property name, tool type/name and documentation.
+  /// @note the use std::enable_if is required to avoid ambiguities
+  template <class OWNER,
+            typename = typename std::enable_if<std::is_base_of<IProperty, OWNER>::value>::type>
+  inline PublicToolHandleArray( OWNER* owner, std::string name, const std::vector< std::string >& typesAndNames = {}, std::string doc = "" )
+      : PublicToolHandleArray( typesAndNames )
+  {
+    owner->addToolsArray( *this );
+    auto p = owner->OWNER::PropertyHolderImpl::declareProperty( std::move(name), *this, std::move(doc) );
+    p->template setOwnerType<OWNER>();
+  }
 };
 
 

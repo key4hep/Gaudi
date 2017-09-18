@@ -6,190 +6,138 @@
 
 namespace concurrency {
 
-  class RunSimulator : public IGraphVisitor {
-  public:
-    /// Constructor
-    RunSimulator(const int& slotNum) {
-      m_nodesSucceeded = 0;
-      m_slotNum = slotNum;
-    };
-    /// Destructor
-    ~RunSimulator() override {}
-
-    bool visitEnter(DecisionNode& node) const override;
-
-    bool visit(DecisionNode& node) override;
-
-    bool visitLeave(DecisionNode& node) const override;
-
-
-    bool visitEnter(AlgorithmNode& node) const override;
-
-    bool visit(AlgorithmNode& node) override;
-
-
-    void reset() override { m_nodesSucceeded = 0; }
-
-  };
-
-  /** A visitor, performing full top-down traversals of a graph
-   *
-   */
-  class Trigger : public IGraphVisitor {
+  class DataReadyPromoter : public IGraphVisitor {
     public:
       /// Constructor
-      Trigger(const int& slotNum) {
+      DataReadyPromoter(EventSlot& slot) {
         m_nodesSucceeded = 0;
-        m_slotNum = slotNum;
+        m_slot = &slot;
       };
-      /// Destructor
-      ~Trigger() override {}
 
-      bool visitEnter(DecisionNode& node) const override;
-
-      bool visit(DecisionNode& node) override;
-
-      bool visitLeave(DecisionNode& node) const override;
-
+      using IGraphVisitor::visit;
+      using IGraphVisitor::visitEnter;
 
       bool visitEnter(AlgorithmNode& node) const override;
 
       bool visit(AlgorithmNode& node) override;
 
+      bool visitEnter(DataNode& node) const override;
 
-      void reset() override { m_nodesSucceeded = 0; }
+      bool visit(DataNode& node) override;
 
-    };
+      bool visitEnter(ConditionNode&) const override;
+
+      bool visit(ConditionNode&) override;
+
+  };
+
+  class DecisionUpdater : public IGraphVisitor {
+    public:
+      /// Constructor
+      DecisionUpdater(EventSlot& slot) {
+        m_nodesSucceeded = 0;
+        m_slot = &slot;
+      };
+
+      using IGraphVisitor::visit;
+
+      bool visit(AlgorithmNode& node) override;
+
+  };
+
+
+  class Supervisor : public IGraphVisitor {
+    public:
+      /// Constructor
+	  Supervisor(EventSlot& slot) {
+        m_nodesSucceeded = 0;
+        m_slot = &slot;
+      };
+
+      using IGraphVisitor::visit;
+      using IGraphVisitor::visitEnter;
+
+      bool visitEnter(DecisionNode& node) const override;
+
+      bool visit(DecisionNode& node) override;
+
+      bool visitEnter(AlgorithmNode& node) const override;
+
+      bool visit(AlgorithmNode& node) override;
+
+  };
 
   class RankerByProductConsumption : public IGraphVisitor {
     public:
       /// Constructor
       RankerByProductConsumption() {
         m_nodesSucceeded = 0;
-        m_slotNum = -1;
+        m_slot = nullptr;
       };
-      /// Destructor
-      ~RankerByProductConsumption() override {}
 
-      bool visitEnter(DecisionNode&) const override {return true;}
-
-      bool visit(DecisionNode&) override {return true;}\
-
-      bool visitLeave(DecisionNode&) const override {return true;}
-
-
-      bool visitEnter(AlgorithmNode&) const override {return true;}
+      using IGraphVisitor::visit;
 
       bool visit(AlgorithmNode& node) override;
 
-
-      void reset() override { m_nodesSucceeded = 0; }
-
-      };
+  };
 
   class RankerByCummulativeOutDegree : public IGraphVisitor {
     public:
       /// Constructor
       RankerByCummulativeOutDegree() {
         m_nodesSucceeded = 0;
-        m_slotNum = -1;
+        m_slot = nullptr;
       };
-      /// Destructor
-      ~RankerByCummulativeOutDegree() override {}
 
-      bool visitEnter(DecisionNode&) const override {return true;}
-
-      bool visit(DecisionNode&) override {return true;}
-
-      bool visitLeave(DecisionNode&) const override {return true;}
-
-
-      bool visitEnter(AlgorithmNode&) const override {return true;}
+      using IGraphVisitor::visit;
 
       bool visit(AlgorithmNode& node) override;
 
-
-      void reset() override { m_nodesSucceeded = 0; }
-
       void runThroughAdjacents(boost::graph_traits<boost::ExecPlan>::vertex_descriptor vertex, boost::ExecPlan graph);
 
-      };
+  };
 
   class RankerByTiming : public IGraphVisitor {
     public:
       /// Constructor
       RankerByTiming() {
         m_nodesSucceeded = 0;
-        m_slotNum = -1;
+        m_slot = nullptr;
       };
-      /// Destructor
-      ~RankerByTiming() override {}
 
-      bool visitEnter(DecisionNode&) const override {return true;}
-
-      bool visit(DecisionNode&) override {return true;}
-
-      bool visitLeave(DecisionNode&) const override {return true;}
-
-
-      bool visitEnter(AlgorithmNode&) const override {return true;}
+      using IGraphVisitor::visit;
 
       bool visit(AlgorithmNode& node) override;
 
-
-      void reset() override { m_nodesSucceeded = 0; }
-
-      };
+  };
 
   class RankerByEccentricity : public IGraphVisitor {
     public:
       /// Constructor
       RankerByEccentricity() {
         m_nodesSucceeded = 0;
-        m_slotNum = -1;
+        m_slot = nullptr;
       };
-      /// Destructor
-      ~RankerByEccentricity() override {}
 
-      bool visitEnter(DecisionNode&) const override {return true;}
-
-      bool visit(DecisionNode&) override {return true;}
-
-      bool visitLeave(DecisionNode&) const override {return true;}
-
-
-      bool visitEnter(AlgorithmNode&) const override {return true;}
+      using IGraphVisitor::visit;
 
       bool visit(AlgorithmNode& node) override;
 
-
-      void reset() override { m_nodesSucceeded = 0; }
-
-      };
+  };
 
   class RankerByDataRealmEccentricity : public IGraphVisitor {
     public:
       /// Constructor
       RankerByDataRealmEccentricity() {
         m_nodesSucceeded = 0;
-        m_slotNum = -1;
+        m_slot = nullptr;
         m_currentDepth = 0;
         m_maxKnownDepth = 0;
       };
-      /// Destructor
-      ~RankerByDataRealmEccentricity() override {}
 
-      bool visitEnter(DecisionNode&) const override {return true;}
-
-      bool visit(DecisionNode&) override {return true;}
-
-      bool visitLeave(DecisionNode&) const override {return true;}
-
-
-      bool visitEnter(AlgorithmNode&) const override {return true;}
+      using IGraphVisitor::visit;
 
       bool visit(AlgorithmNode& node) override;
-
 
       void reset() override {
         m_nodesSucceeded = 0;
@@ -204,7 +152,28 @@ namespace concurrency {
       uint m_currentDepth;
       uint m_maxKnownDepth;
 
-      };
+  };
+
+  class RunSimulator : public IGraphVisitor {
+  public:
+    /// Constructor
+    RunSimulator(EventSlot& slot) {
+      m_nodesSucceeded = 0;
+      m_slot = &slot;
+    };
+
+    using IGraphVisitor::visit;
+    using IGraphVisitor::visitEnter;
+
+    bool visitEnter(DecisionNode& node) const override;
+
+    bool visit(DecisionNode& node) override;
+
+    bool visitEnter(AlgorithmNode& node) const override;
+
+    bool visit(AlgorithmNode& node) override;
+
+  };
 
 }
 

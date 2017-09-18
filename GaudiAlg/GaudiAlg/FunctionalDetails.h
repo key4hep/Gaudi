@@ -4,11 +4,13 @@
 #include <type_traits>
 #include <stdexcept>
 #include <cassert>
+#include <sstream>
 
 // TODO: fwd declare instead?
 #include "GaudiKernel/DataObjectHandle.h"
 #include "GaudiKernel/AnyDataHandle.h"
 #include "GaudiKernel/GaudiException.h"
+#include "GaudiKernel/Algorithm.h"
 #include "GaudiAlg/GaudiAlgorithm.h"
 
 // Boost
@@ -23,6 +25,21 @@ namespace Gaudi { namespace Functional { namespace details {
     // CRJ : Stuff for zipping
     namespace zip
     {
+
+      /// Print the parameter
+      template <typename OS, typename Arg>
+      void printSizes(OS& out, Arg&& arg)
+      {
+        out << "SizeOf'" << System::typeinfoName(typeid(Arg)) 
+            << "'=" << std::forward<Arg>(arg).size();
+      }
+
+      /// Print the parameters
+      template <typename OS, typename Arg, typename... Args>
+      void printSizes(OS& out, Arg&& arg, Args&&... args)
+      {
+        printSizes(out,arg); out << ", "; printSizes(out,args...);
+      }
 
       /// Resolve case there is only one container in the range
       template < typename A >
@@ -47,9 +64,14 @@ namespace Gaudi { namespace Functional { namespace details {
       inline decltype(auto) verifySizes( Args&... args )
       {
         if ( UNLIKELY( !check_sizes( args... ) ) )
-        { throw GaudiException( "Zipped containers have different sizes.",
+        { 
+          std::ostringstream mess;
+          mess << "Zipped containers have different sizes : ";
+          printSizes(mess,args...);
+          throw GaudiException( mess.str(),
                                 "Gaudi::Functional::details::zip::verifySizes",
-                                StatusCode::FAILURE ); }
+                                StatusCode::FAILURE ); 
+        }
       }
 
       /// Zips multiple containers together to form a single range
@@ -279,13 +301,10 @@ namespace Gaudi { namespace Functional { namespace details {
             return std::make_tuple( element_t<I,Tuple>{std::get<I>(initvalue).second, m, o} ... );
         }
         template <typename KeyValues, typename Properties,  std::size_t... I>
-        void declare_tuple_of_properties_helper(GaudiAlgorithm* owner, const KeyValues& inputs, Properties& props,  std::index_sequence<I...>) {
-            // note: be very careful here! Only GaudiAlgorithm has a declareProperty that works with a DataObjectHandleBase.
-            // However, Algorithm does have a template that also matches (unless it is constrained explicitly against matching)
-            // so if 'owner' is of type Algorithm instead of GaudiAlgortihm, this ends up calling the wrong declareProperty...
+        void declare_tuple_of_properties_helper(Algorithm& owner, const KeyValues& inputs, Properties& props,  std::index_sequence<I...>) {
           (void) std::initializer_list<int>{
-                ( owner->declareProperty( std::get<I>(inputs).first,
-                                          std::get<I>(props)         ),0)...
+                ( owner.declareProperty( std::get<I>(inputs).first,
+                                         std::get<I>(props)         ),0)...
             };
         }
     }
@@ -296,9 +315,9 @@ namespace Gaudi { namespace Functional { namespace details {
     }
 
     template <typename KeyValues, typename Properties>
-    void declare_tuple_of_properties(GaudiAlgorithm* owner, const KeyValues& inputs, Properties& props) {
-        static_assert( std::tuple_size<KeyValues>::value == std::tuple_size<Properties>::value, "Inconsistent lengths" );
+    void declare_tuple_of_properties(Algorithm& owner, const KeyValues& inputs, Properties& props) {
         constexpr auto N = std::tuple_size<KeyValues>::value;
+        static_assert( N == std::tuple_size<Properties>::value, "Inconsistent lengths" );
         details2::declare_tuple_of_properties_helper( owner, inputs, props, std::make_index_sequence<N>{} );
     }
 
@@ -318,8 +337,8 @@ namespace Gaudi { namespace Functional { namespace details {
 
    template <typename... Out, typename... In, typename Traits_>
    class DataHandleMixin<std::tuple<Out...>, std::tuple<In...>,Traits_> : public BaseClass_t<Traits_> {
-       static_assert( std::is_base_of<GaudiAlgorithm, BaseClass_t<Traits_>>::value,
-                      "BaseClass must inherit from GaudiAlgorithm");
+       static_assert( std::is_base_of<Algorithm, BaseClass_t<Traits_>>::value,
+                      "BaseClass must inherit from Algorithm");
    public:
        using KeyValue = std::pair<std::string, std::string>;
        constexpr static std::size_t N_in = sizeof...(In);
@@ -327,14 +346,14 @@ namespace Gaudi { namespace Functional { namespace details {
 
        // generic constructor:  N -> M
        DataHandleMixin(const std::string& name, ISvcLocator* pSvcLocator,
-                     const std::array<KeyValue,N_in>& inputs,
-                     const std::array<KeyValue,N_out>& outputs)
+                       const std::array<KeyValue,N_in>& inputs,
+                       const std::array<KeyValue,N_out>& outputs)
        : BaseClass_t<Traits_>( name , pSvcLocator ),
          m_inputs( make_tuple_of_handles<decltype(m_inputs)>( this, inputs, Gaudi::DataHandle::Reader ) ),
          m_outputs( make_tuple_of_handles<decltype(m_outputs)>( this, outputs, Gaudi::DataHandle::Writer ) )
        {
-         declare_tuple_of_properties( this, inputs, m_inputs );
-         declare_tuple_of_properties( this, outputs, m_outputs );
+         declare_tuple_of_properties( *this, inputs, m_inputs );
+         declare_tuple_of_properties( *this, outputs, m_outputs );
          // make sure this algorithm is seen as reentrant by Gaudi
          BaseClass_t<Traits_>::setProperty("Cardinality", 0);
        }
@@ -374,8 +393,8 @@ namespace Gaudi { namespace Functional { namespace details {
 
    template <typename... In, typename Traits_>
    class DataHandleMixin<void, std::tuple<In...>,Traits_> : public BaseClass_t<Traits_> {
-       static_assert( std::is_base_of<GaudiAlgorithm, BaseClass_t<Traits_>>::value,
-                      "BaseClass must inherit from GaudiAlgorithm");
+       static_assert( std::is_base_of<Algorithm, BaseClass_t<Traits_>>::value,
+                      "BaseClass must inherit from Algorithm");
    public:
        using KeyValue = std::pair<std::string, std::string>;
        constexpr static std::size_t N_in = sizeof...(In);
@@ -386,7 +405,7 @@ namespace Gaudi { namespace Functional { namespace details {
        : BaseClass_t<Traits_>( name , pSvcLocator ),
          m_inputs( make_tuple_of_handles<decltype(m_inputs)>( this, inputs, Gaudi::DataHandle::Reader ) )
        {
-         declare_tuple_of_properties( this, inputs, m_inputs );
+         declare_tuple_of_properties( *this, inputs, m_inputs );
          // make sure this algorithm is seen as reentrant by Gaudi
          BaseClass_t<Traits_>::setProperty("Cardinality", 0);
        }
@@ -408,8 +427,8 @@ namespace Gaudi { namespace Functional { namespace details {
 
    template <typename... Out, typename Traits_>
    class DataHandleMixin<std::tuple<Out...>, void,Traits_> : public BaseClass_t<Traits_> {
-       static_assert( std::is_base_of<GaudiAlgorithm, BaseClass_t<Traits_>>::value,
-                      "BaseClass must inherit from GaudiAlgorithm");
+       static_assert( std::is_base_of<Algorithm, BaseClass_t<Traits_>>::value,
+                      "BaseClass must inherit from Algorithm");
    public:
        using KeyValue = std::pair<std::string, std::string>;
        constexpr static std::size_t N_out = sizeof...(Out);
@@ -420,7 +439,7 @@ namespace Gaudi { namespace Functional { namespace details {
        : BaseClass_t<Traits_>( name , pSvcLocator ),
          m_outputs( make_tuple_of_handles<decltype(m_outputs)>( this, outputs, Gaudi::DataHandle::Writer ) )
        {
-         declare_tuple_of_properties( this, outputs, m_outputs );
+         declare_tuple_of_properties( *this, outputs, m_outputs );
          // make sure this algorithm is seen as reentrant by Gaudi
          BaseClass_t<Traits_>::setProperty("Cardinality", 0);
        }
@@ -441,13 +460,12 @@ namespace Gaudi { namespace Functional { namespace details {
 
    /////////////////
    template <typename Fun, typename Container, typename... Args >
-   constexpr void apply(const Fun&, Container&, Args... )
+   constexpr void applyPostProcessing(const Fun&, Container&, Args... )
    { static_assert(sizeof...(Args)==0,"Args should not be used!");}
 
-   // TODO/FIXME: overload ambiguity if output container type == input container type
    template <typename Fun, typename Container>
-   auto apply(const Fun& fun, Container& c)  -> decltype(fun(c),void())
-   { fun(c); }
+   auto applyPostProcessing(const Fun& fun, Container& c) -> decltype(fun.postprocess(c),void())
+   { fun.postprocess(c); }
 
    /////////////////
 

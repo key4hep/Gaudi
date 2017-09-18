@@ -2,6 +2,382 @@ Package : GaudiKernel
 Package manager : Marco Clemencic
 Commit Id: $Format:%H$
 
+================================ Gaudi v28r3 =================================
+
+! 2017-07-28 - Marco Clemencic (commit 3cd763ce)
+
+ - Merge branch 'tool-and-data-handles-constructor' into 'master'
+
+   Autodeclaring constructors for ToolHandle and DataObjectHandle
+
+   See merge request !374
+
+! 2017-07-27 - Marco Clemencic (commit 84f92c31)
+
+ - Merge branch 'cmake-updates' into 'master'
+
+   minor updates/fixes
+
+   See merge request !373
+
+! 2017-07-26 - Marco Clemencic, charles leggett (commit 22f22a3b)
+
+ - Merge branch 'dev/PropHelpers' into 'master'
+
+   Property helpers for DataHandles and derived classes
+
+   See merge request !365# Please enter a commit message to explain why this
+   merge is necessary,
+
+
+! 2017-07-26 - Gerhard Raven (commit e6fc7ad5)
+
+ - Merge branch 'allow-adl-lookup-of-toString' into 'master'
+
+   allow ADL of `toString` in Property
+
+   See merge request !372
+
+! 2017-07-26 - Charles Leggett, Marco Clemencic, charles leggett (commit fd03aaf7)
+
+ - Merge branch 'dev/PropertyDoc' into 'master'
+
+   make Property::documentation() return the actual documentation string
+
+   See merge request !363
+
+
+! 2017-07-26 - Alessio Gianelle (commit bc7941fc)
+
+ - Merge branch 'coverity' into 'master'
+
+   Fixed coverity issues:
+
+   * KeyedObjectManager.cpp
+    * 64154: Iterator container mismatch
+    * 64281: Invalid iterator comparison
+   * ProcessDescriptor.cpp
+    * 64293: Out-of-bounds write
+   * AvalancheSchedulerSvc.cpp
+    * 94135: Dereference after null check
+    * 94134: Dereference after null check
+    * 94669: Unchecked dynamic_cast
+   * HiveTestAlgorithm.cpp
+    * 82289: Unchecked dynamic_cast
+
+   See merge request !357
+
+! 2017-07-26 - Rosen Matev (commit 9752f2f2)
+
+ - Merge branch 'fix-DataObjectHandleBase' into 'master'
+
+   Do not modify DataObjectHandleBase python binding on add
+
+   See merge request !342
+
+! 2017-07-26 - Charles Leggett, leggett (commit 42dba200)
+
+ - Merge branch 'dev/ICondSvc' into 'master'
+
+   added ICondSvc to GaudiKernel
+
+   See merge request !315
+
+! 2017-07-20 - Gerhard Raven (commit bcdd986d)
+
+ - Merge branch 'augment_tupleobj' into 'master'
+
+   Augment TupleObj
+
+   See merge request !352
+
+! 2017-07-18 - leggett (commit a9c96160)
+
+ - Merge branch 'dev/scott/gcc7warn' into 'master'
+
+   Fix a couple gcc7 compilation warnings
+
+   See merge request !339
+
+! 2017-07-18 - Gerhard Raven (commit bafc770b)
+
+ - Merge branch 'refactor-tostream-array' into 'master'
+
+   Add toStream specialization for std::array into ToStream.h
+
+   See merge request !334
+
+! 2017-07-10 - Graeme Stewart (commit 878c38fa)
+
+ - Merge branch 'issueseverity-fix2' into 'master'
+
+   IssueSeverity fix and add tests
+
+   See merge request !355
+
+! 2017-07-03 - Marco Clemencic (commit 13902574)
+
+ - Merge branch 'master' into 'master'
+
+   Fixes to Gitlab-CI configuration
+
+   See merge request !350
+
+! 2017-07-03 - Olli Lupton (commit 3d435670)
+
+ - Merge branch 'patch-1' into 'master'
+
+   Implement DataObjectHandleBase comparison with None.
+
+   See merge request !358
+
+! 2017-06-12 - charles leggett, leggett (commit 887b198e)
+
+ - Merge branch 'dev/EventContextExt' into 'master'
+
+   extend EventContext via std::any
+    See merge request !345
+
+! 2017-06-02 - Paul Seyfert (commit acb3ca5e)
+
+ - Merge branch 'pseyfert_IWYU' into 'master'
+
+   make exported headers self contained
+    See merge request !348
+
+! 2017-06-02 - Marco Clemencic (commit fa5a92b3)
+
+ - Merge branch 'remove-smartranges' into 'master'
+
+   Remove GaudiKernel/SmartRanges.h
+    See merge request !351
+
+! 2017-05-30 - scott snyder (commit 418b25f5)
+
+ - Merge branch 'clang-warn-20170525' into 'master'
+
+   Fix some clang compilation warnings: unused variables, parameters, typedefs.
+    See merge request !344
+
+! 2017-05-24 - leggett (commit 5e3ddb9b)
+
+ - Merge branch 'dev/scott/msgstr' into 'master'
+
+   Fix uninitialized MsgStream member
+    See merge request !341
+
+! 2017-05-22 - Marco Clemencic (commit c0bbff91)
+
+ - Merge branch 'fix-for-clang' into 'master'
+
+   Fixed error introduced with !332
+    See merge request !336
+
+! 2017-05-19 - Gerhard Raven (commit 4281114a)
+
+ - Merge branch 'allow_adl_in_time' into 'master'
+
+   enable ADL lookup for binary Time,Time and TimeSpan,TimeSpan operators
+    See merge request !290
+
+! 2017-05-19 - Gerhard Raven (commit c8d3b362)
+
+ - Merge branch 'modernize-conversionsvc' into 'master'
+
+   Modernize ConversionSvc
+    See merge request !327
+
+! 2017-05-18 - Marco Clemencic (commit f6f3b30a)
+
+ - Merge branch 'fix-property-template-args' into 'master'
+
+   Modified some Property template args to fix tests with ROOT master
+    See merge request !332
+
+! 2017-05-18 - charles leggett (commit 8e4e81d1)
+
+ - Merge branch 'dev/reEntFilt' into 'master'
+
+   make Algorithm::setFilterPassed const
+    See merge request !331
+
+! 2017-05-05 - Charles Leggett, leggett (commit db47610f)
+
+ - Merge branch 'dev/Clonable' into 'master'
+
+   Algorithm clonability should be explicitly set by Alg author
+    See merge request !316
+
+! 2017-04-26 - Charles Leggett (commit 752218d2)
+
+ - Merge branch 'dev/dev/CircDataDeps' into 'master'
+
+   filter circular data dependencies
+    See merge request !314
+
+! 2017-04-20 - Charles Leggett, leggett (commit 0d7cf453)
+
+ - Merge branch 'dev/isSeq' into 'master'
+
+   Add flag to Algorithm to identify a Sequence
+    See merge request !317
+
+! 2017-04-10 - Omar Awile (commit 63ccffed)
+
+ - Merge branch 'icc-fixes' into 'master'
+
+   Fixes to build Gaudi with the Intel compiler
+    Closes GAUDI-1297 and GAUDI-1298
+    See merge request !318
+
+================================ Gaudi v28r2 =================================
+
+! 2017-03-20 - Gerhard Raven, Marco Clemencic (commit 04cfad9)
+
+ - Merge branch 'fix-clang-compilation' into 'master'
+
+   fixed compilation with Clang
+    See merge request !294
+
+! 2017-03-10 - Charles Leggett (commit 865caee)
+
+ - Merge branch 'dev/condHandle' into 'master'
+
+   DataHandle: add flag to identify Conditions
+    See merge request !293
+
+! 2017-03-10 - Illya Shapoval (commit 51aa3b1)
+
+ - Merge branch 'schedulers-cleanup' into 'master'
+
+   Add AvalancheSchedulerSvc and clean up the ForwardSchedulerSvc
+    See merge request !288
+
+! 2017-03-10 - Charles Leggett (commit 6d9a472)
+
+ - Merge branch 'dev/AutoDataLoad' into 'master'
+
+   Attribute unmet INPUT dependencies to a DataLoader Algorithm
+    See merge request !269
+
+! 2017-03-10 - Gerhard Raven (commit f3d7bff)
+
+ - remove all references to endreq
+
+   See merge request !79
+
+! 2017-03-09 - Gerhard Raven (commit 691af74)
+
+ - Make the Handler configuration of Property policy driven
+
+   Closes GAUDI-1276
+    See merge request !267
+
+! 2017-03-09 - Marco Clemencic (commit 6d7927b)
+
+ - Merge branch 'fix-cmake-config' into 'master'
+
+   fixes to CMake modules
+    Closes LBCORE-1304
+    See merge request !298
+
+! 2017-03-08 - Sebastien Ponce (commit 4228bfb)
+
+ - Made StatEntity more thread safe
+
+   See merge request !275
+
+! 2017-03-07 - Gerhard Raven (commit c250ab5)
+
+ - Merge branch 'do-not-require-property-valuetype-default-constructible' into
+   'master'
+
+   do not require Gaudi::Property::ValueType to be default constructible
+    See merge request !271
+
+! 2017-03-01 - Gerhard Raven (commit a32b381)
+
+ - Merge branch 'use-showpoint-in-genconf' into 'master'
+
+   use std::showpoint instead of std::fixed to print numbers
+    See merge request !254
+
+! 2017-02-23 - Charles Leggett (commit 215f2b1)
+
+ - added ConcurrencyFlags class
+
+   The static ConcurrencyFlags allows easy access to information about the
+   number of threads, concurrent events, and processes.
+    For running in serial, numThreads == 0, numConcEvents == 0, numProcs == 0,
+   useful to distinguish between running serial, and running MT with 1 thread,
+   or MP with 1 process.
+    See merge request !277
+
+! 2017-02-13 - Marco Clemencic (commit 099cad6)
+
+ - consistent repr for Python Configurables
+
+   fixes GAUDI-1290
+    See merge request !285
+
+! 2017-02-08 - Charles Leggett (commit 09859bd)
+
+ - add sysExecute(EventContext) and extract errorCount from Algorithm base class
+
+   We need to extract the `m_errorCount` variable from the Algorithm base class,
+    as it's not important on a per-instance basis, but rather on a job level.
+   This is moved to the AlgExecStateSvc.
+    This merge request also adds an explicit `IAlgorithm::sysExecute(const
+   EventContext&)`, which should become the standard entry point to
+   `Algorithm::execute`. This sets the local m_event_context variable, so
+   derived classes can get quick access to the current context instead of going
+   through the slower thead local `Gaudi::Hive::currentContext()`.
+    Note that `IAlgorithm::sysExecute()` has been removed, to avoid "overloaded
+   virtual" compiler errors, and should be replaced in all clients with
+   `IAlgorithm::sysExecute(EventContext)`, or if the context is not immediately
+   available, with `IAlgorithm::sysExecute(Gaudi::Hive::currentContext())`.
+    All this is being done in preparation to re-introduce the ReEntrantAlgorithm
+   class from merge !177 (see also !274)
+    See merge request !273
+
+! 2017-02-08 - Marco Clemencic (commit 817be0f)
+
+ - misc CMake fixes
+
+   - fixes GAUDI-1279
+   - fixes GAUDI-1288
+    See merge request !282
+
+! 2017-01-19 - Charles Leggett (commit 453ab80)
+
+ - Fix DataHandleHolderVisitor
+
+   See merge request !268
+
+! 2017-01-11 - Chris Jones (commit 8daf40a)
+
+ - Data object handle demangle name in error
+
+   Small improvement to `DataObjectHandle` to use System::typeinfoName to
+   extract the type when issuing a mis-match error message. Results in the type
+   being de-mangled from something like
+
+   ``` ERROR The type provided for /Event/Rec/Track/BestRichDown is
+   14AnyDataWrapperIN5Gaudi6Range_ISt6vectorIPKN4LHCb5TrackESaIS6_EEN9__gnu_cxx17__normal_iteratorIPKS6_S8_EEEEE
+   and is different form the one of the object in the store.
+   ```
+    to
+
+   ``` ERROR The type provided for /Event/Rec/Track/BestRichDown is
+   AnyDataWrapper<Gaudi::Range_<std::vector<LHCb::Track
+   const*,std::allocator<LHCb::Track const*>
+   >,__gnu_cxx::__normal_iterator<LHCb::Track const*
+   const*,std::vector<LHCb::Track const*,std::allocator<LHCb::Track const*> > >
+   > > and is different from the one of the object in the store.
+   ```
+    Chris
+    See merge request !272
+
 ================================ Gaudi v28r1 =================================
 
 ! 2016-12-14 - Attila Krasznahorkay (commit a42ff2a)

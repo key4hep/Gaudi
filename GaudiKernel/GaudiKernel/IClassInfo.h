@@ -3,6 +3,7 @@
 
 // Experiment specific include files
 #include "GaudiKernel/Kernel.h"
+#include "GaudiKernel/ClassID.h"
 
 /** @class IClassInfo IClassInfo.h GaudiKernel/IClassInfo.h
 

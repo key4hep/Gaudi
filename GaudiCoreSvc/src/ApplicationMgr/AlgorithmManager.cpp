@@ -6,6 +6,7 @@
 #include "GaudiKernel/System.h"
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/TypeNameString.h"
+#include "GaudiKernel/IAlgExecStateSvc.h"
 #include <iostream>
 #ifndef _WIN32
 #include <errno.h>
@@ -191,10 +192,19 @@ StatusCode AlgorithmManager::reinitialize() {
 }
 
 StatusCode AlgorithmManager::restart() {
+  SmartIF<IAlgExecStateSvc> m_aess;
+  m_aess = serviceLocator()->service("AlgExecStateSvc");
+  if( !m_aess.isValid() ) {
+    fatal() << "Error retrieving AlgExecStateSvc" << endmsg;
+    return StatusCode::FAILURE;
+  }
+
   StatusCode rc;
+
   for (auto& it : m_algs ) {
     if (!it.managed) continue;
     rc = it.algorithm->sysRestart();
+    m_aess->resetErrorCount(it.algorithm);
     if( rc.isFailure() ){
       this->error() << "Unable to re-initialize algorithm: " << it.algorithm->name() << endmsg;
       return rc;

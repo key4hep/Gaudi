@@ -58,6 +58,10 @@ HiveTestAlgorithm::execute()
 
   for(auto& handle : m_inputHandles) {
     auto obj = dynamic_cast<MyObject*>(handle->get());
+    if ( !obj ) {
+      fatal() << "Unable to dcast inputHandles object" << endmsg;
+      return StatusCode::FAILURE;
+    }
     info() << "Got data with value " << obj->getData() << endmsg;
   }
 

@@ -31,7 +31,7 @@ public:
   friend AlgResourcePool;
 
   /// InterfaceID
-  DeclareInterfaceID(IAlgorithm,5,0);
+  DeclareInterfaceID(IAlgorithm,6,0);
 
   /** The version of the algorithm
    */
@@ -52,7 +52,7 @@ public:
 
   /** Specify if the algorithm is clonable
    */
-  virtual bool isClonable() const = 0;
+  virtual bool isClonable() const { return false; }
 
   /** Cardinality (Maximum number of clones that can exist)
    *  special value 0 means that algorithm is reentrant
@@ -103,8 +103,11 @@ public:
   */
   virtual StatusCode sysRestart() = 0;
 
+  /// sysExecute changed to accept the EventContext as argument
+#define GAUDI_SYSEXECUTE_WITHCONTEXT 1
+
   /// System execution. This method invokes the execute() method of a concrete algorithm
-  virtual StatusCode sysExecute() = 0;
+  virtual StatusCode sysExecute(const EventContext&) = 0;
 
   /** System stop. This method invokes the stop() method of a concrete
       algorithm and the stop() methods of all of that algorithm's sub algorithms.
@@ -144,19 +147,25 @@ public:
 
   // ---- Function useful for dealing with sub-algorithms
   /// Set the executed flag to the specified state
-  virtual void setExecuted( bool state ) = 0;
+  virtual void setExecuted( bool state ) const = 0;
 
   /// Is this algorithm enabled or disabled?
   virtual bool isEnabled( ) const = 0;
+
+  /// Are we a Sequence?
+  virtual bool isSequence() const = 0;
 
   /// Did this algorithm pass or fail its filter criterion for the last event?
   virtual bool filterPassed( ) const = 0;
 
   /// Set the filter passed flag to the specified state
-  virtual void setFilterPassed( bool state ) = 0;
+  virtual void setFilterPassed( bool state ) const = 0;
 
   /// Produce string represention of the control flow expression.
   virtual std::ostream& toControlFlowExpression(std::ostream& os) const = 0;
+
+  /// For concurrency: get the EventContext
+  virtual const EventContext& getContext() const = 0;
 
   /// Set instantiation index of Alg
   virtual void setIndex(const unsigned int& idx) = 0;

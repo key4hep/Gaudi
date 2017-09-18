@@ -5,9 +5,6 @@
 
 namespace Gaudi {
 
-  /** Initialize an empty (zero) time value.  */
-  inline Time::Time (void): m_nsecs(0) {}
-
   /** Initialize time to @a nsecs nanoseconds since 00:00:00 on January
       1, 1970 in UTC.  */
   inline Time::Time (ValueType nsecs): m_nsecs(nsecs) {
@@ -29,7 +26,7 @@ namespace Gaudi {
 
   /** Return the time as nanoseconds since 00:00:00 on January 1, 1970
       in UTC.  */
-  inline Time::ValueType Time::ns (void) const {
+  inline Time::ValueType Time::ns() const {
     return m_nsecs;
   }
 
@@ -50,12 +47,12 @@ namespace Gaudi {
   }
 
   /** Return the time for the epoch (= zero time).  */
-  inline Time Time::epoch (void) {
+  inline Time Time::epoch() {
     return 0LL;
   }
 
   /** Return the maximum time.  */
-  inline Time Time::max (void) {
+  inline Time Time::max() {
     return 0x7fffffffffffffffLL;
   }
 
@@ -69,8 +66,6 @@ namespace Gaudi {
   //////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////
-  /** Initialize an empty (zero) time difference.  */
-  inline TimeSpan::TimeSpan (void): m_nsecs(0) {}
 
   /** Initialize a time span from #Time @a t. */
   inline TimeSpan::TimeSpan (Time t): m_nsecs (t.m_nsecs) {}
@@ -105,51 +100,51 @@ namespace Gaudi {
   }
 
   /** Get the number of complete days in the span.  */
-  inline int TimeSpan::days (void) const {
+  inline int TimeSpan::days() const {
     return int(m_nsecs / Time::SEC_NSECS / Time::SECS_PER_DAY);
   }
 
   /** Get the number of complete hours in the span.  */
-  inline int TimeSpan::hours (void) const {
+  inline int TimeSpan::hours() const {
     return int(m_nsecs / Time::SEC_NSECS / Time::SECS_PER_HOUR);
   }
 
   /** Get the number of complete minutes in the span.  */
-  inline int TimeSpan::minutes (void) const {
+  inline int TimeSpan::minutes() const {
     return int(m_nsecs / Time::SEC_NSECS / 60);
   }
 
   /** Get the number of complete seconds in the span.  */
-  inline TimeSpan::ValueType TimeSpan::seconds (void) const {
+  inline TimeSpan::ValueType TimeSpan::seconds() const {
     return m_nsecs / Time::SEC_NSECS;
   }
 
   /** Return the time span as nanoseconds.  */
-  inline TimeSpan::ValueType TimeSpan::ns (void) const {
+  inline TimeSpan::ValueType TimeSpan::ns() const {
     return m_nsecs;
   }
 
   /** Get the number of complete hours in the last incomplete day of the
       span.  */
-  inline int TimeSpan::lastHours (void) const {
+  inline int TimeSpan::lastHours() const {
     return hours () - days () * 24;
   }
 
   /** Get the number of complete minutes in the last incomplete hour of
       the span.  */
-  inline int TimeSpan::lastMinutes (void) const {
+  inline int TimeSpan::lastMinutes() const {
     return minutes () - hours () * 60;
   }
 
   /** Get the number of complete seconds in the last incomplete minute
       of the span. */
-  inline int TimeSpan::lastSeconds (void) const {
+  inline int TimeSpan::lastSeconds() const {
     return int(seconds() - ( (ValueType)minutes() * (ValueType)60 ));
   }
 
   /** Get the number of nanoseconds in the last incomplete second
       of the span. */
-  inline int TimeSpan::lastNSeconds (void) const {
+  inline int TimeSpan::lastNSeconds() const {
     return int(m_nsecs % Time::SEC_NSECS);
   }
 
@@ -209,41 +204,6 @@ inline Gaudi::Time operator- (const Gaudi::Time &t, const Gaudi::TimeSpan &ts) {
   return Gaudi::Time (t.ns() - ts.ns());
 }
 
-//inline Gaudi::TimeSpan operator* (const Gaudi::Time &t, const Gaudi::TimeSpan &ts) {
-//  return Gaudi::TimeSpan (t.ns() * ts.ns());
-//}
-
-//inline Gaudi::TimeSpan operator/ (const Gaudi::Time &t, const Gaudi::TimeSpan &ts) {
-//  return Gaudi::TimeSpan (t.ns() / ts.ns());
-//}
-
-//inline Gaudi::TimeSpan operator% (const Gaudi::Time &t, const Gaudi::TimeSpan &ts) {
-//  return Gaudi::TimeSpan (t.ns() % ts.ns());
-//}
-
-inline bool operator== (const Gaudi::Time &t1, const Gaudi::Time &t2) {
-  return t1.ns() == t2.ns();
-}
-
-inline bool operator!= (const Gaudi::Time &t1, const Gaudi::Time &t2) {
-  return t1.ns() != t2.ns();
-}
-
-inline bool operator< (const Gaudi::Time &t1, const Gaudi::Time &t2) {
-  return t1.ns() < t2.ns();
-}
-
-inline bool operator<= (const Gaudi::Time &t1, const Gaudi::Time &t2) {
-  return t1.ns() <= t2.ns();
-}
-
-inline bool operator> (const Gaudi::Time &t1, const Gaudi::Time &t2) {
-  return t1.ns() > t2.ns();
-}
-
-inline bool operator>= (const Gaudi::Time &t1, const Gaudi::Time &t2) {
-  return t1.ns() >= t2.ns();
-}
 
 inline bool operator! (const Gaudi::Time &t) {
   return ! t.ns();
@@ -259,50 +219,6 @@ inline Gaudi::TimeSpan operator+ (const Gaudi::TimeSpan &ts) {
 
 inline Gaudi::TimeSpan operator- (const Gaudi::TimeSpan &ts) {
   return Gaudi::TimeSpan (-ts.ns());
-}
-
-inline Gaudi::TimeSpan operator+ (const Gaudi::TimeSpan &ts1, const Gaudi::TimeSpan &ts2) {
-  return Gaudi::TimeSpan (ts1.ns() + ts2.ns());
-}
-
-inline Gaudi::TimeSpan operator- (const Gaudi::TimeSpan &ts1, const Gaudi::TimeSpan &ts2) {
-  return Gaudi::TimeSpan (ts1.ns() - ts2.ns());
-}
-
-//inline Gaudi::TimeSpan operator* (const Gaudi::TimeSpan &ts1, const Gaudi::TimeSpan &ts2) {
-//  return Gaudi::TimeSpan (ts1.ns() * ts2.ns());
-//}
-
-//inline Gaudi::TimeSpan operator/ (const Gaudi::TimeSpan &ts1, const Gaudi::TimeSpan &ts2) {
-//  return Gaudi::TimeSpan (ts1.ns() / ts2.ns());
-//}
-
-//inline Gaudi::TimeSpan operator% (const Gaudi::TimeSpan &ts1, const Gaudi::TimeSpan &ts2) {
-//  return Gaudi::TimeSpan (ts1.ns() % ts2.ns());
-//}
-
-inline bool operator== (const Gaudi::TimeSpan &t1, const Gaudi::TimeSpan &t2) {
-  return t1.ns() == t2.ns();
-}
-
-inline bool operator!= (const Gaudi::TimeSpan &t1, const Gaudi::TimeSpan &t2) {
-  return t1.ns() != t2.ns();
-}
-
-inline bool operator< (const Gaudi::TimeSpan &t1, const Gaudi::TimeSpan &t2) {
-  return t1.ns() < t2.ns();
-}
-
-inline bool operator<= (const Gaudi::TimeSpan &t1, const Gaudi::TimeSpan &t2) {
-  return t1.ns() <= t2.ns();
-}
-
-inline bool operator> (const Gaudi::TimeSpan &t1, const Gaudi::TimeSpan &t2) {
-  return t1.ns() > t2.ns();
-}
-
-inline bool operator>= (const Gaudi::TimeSpan &t1, const Gaudi::TimeSpan &t2) {
-  return t1.ns() >= t2.ns();
 }
 
 inline bool operator! (const Gaudi::TimeSpan &ts) {
@@ -321,6 +237,13 @@ inline StreamBuffer& operator>>(StreamBuffer &s, Gaudi::Time &t)  {
   s >> tmp;
   t = Gaudi::Time(tmp);
   return s;
+}
+
+// make sure that "namespace  Gaudi { using ::operator<; }" continues to compile...
+// to be removed once all instances of the above have been removed from user code...
+class backwards_compatibility_hack_time_timespan {backwards_compatibility_hack_time_timespan()=delete; };
+inline bool operator<(backwards_compatibility_hack_time_timespan,backwards_compatibility_hack_time_timespan) {
+    return false;
 }
 
 #endif

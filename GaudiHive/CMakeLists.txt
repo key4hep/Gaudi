@@ -18,9 +18,9 @@ include_directories(SYSTEM ${Boost_INCLUDE_DIRS} ${ROOT_INCLUDE_DIRS} ${TBB_INCL
 
 #---Libraries---------------------------------------------------------------
 gaudi_add_module(GaudiHive
-                        *.cpp
-                        LINK_LIBRARIES GaudiKernel Boost ROOT TBB GaudiAlgLib  ${LIBRT_NAME}
-                        INCLUDE_DIRS Boost ROOT TBB)
+                 *.cpp
+                 LINK_LIBRARIES GaudiKernel Boost ROOT TBB GaudiAlgLib  ${LIBRT_NAME}
+                 INCLUDE_DIRS Boost ROOT TBB)
 
 gaudi_add_test(WhiteBoard
                FRAMEWORK options/testWhiteBoard.py
@@ -52,24 +52,27 @@ gaudi_add_test(ForwardSchedulerStall
                PASSREGEX "Stall detected"
                TIMEOUT 120)
 
-gaudi_add_test(GraphSchedulerSimpleTest
-               FRAMEWORK options/GraphSchedulerSimpleTest.py
+gaudi_add_test(AvalancheSchedulerSimpleTest
+               FRAMEWORK options/AvalancheSchedulerSimpleTest.py
                TIMEOUT 120)
 
-gaudi_add_test(BrunelScenarioGraphScheduler
-               FRAMEWORK options/BrunelScenarioGraphScheduler.py
+gaudi_add_test(BrunelScenarioAvalancheScheduler
+               FRAMEWORK options/BrunelScenarioAvalancheScheduler.py
                TIMEOUT 120)
-set_property(TEST GaudiHive.BrunelScenarioGraphScheduler PROPERTY SKIP_RETURN_CODE 77)
+set_property(TEST GaudiHive.BrunelScenarioAvalancheScheduler PROPERTY SKIP_RETURN_CODE 77)
 
 gaudi_add_test(AtlasMCRecoScenario
                FRAMEWORK options/AtlasMCRecoScenario.py
                TIMEOUT 120)
 set_property(TEST GaudiHive.AtlasMCRecoScenario PROPERTY SKIP_RETURN_CODE 77)
 
-# Test the AtomicSequencer
-gaudi_add_test(AtomicSequencer
-               FRAMEWORK options/AtomicAlgSequencerTest.py
+gaudi_add_test(SequentialSequencer
+               FRAMEWORK options/SequentialAlgSequencerTest.py
                DEPENDS WhiteBoard
+               TIMEOUT 120)
+
+gaudi_add_test(ControlFlowBranching+CrossBranchDataFlow
+               FRAMEWORK options/ControlFlowBranching+CrossBranchDataFlow.py
                TIMEOUT 120)
 
 # BugFixes

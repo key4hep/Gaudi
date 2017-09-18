@@ -1,5 +1,6 @@
 
 include(${CMAKE_CURRENT_LIST_DIR}/HEPToolsMacros.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/BinaryTagUtils.cmake)
 
 # use_heptools(heptools_version)
 #
@@ -9,18 +10,26 @@ include(${CMAKE_CURRENT_LIST_DIR}/HEPToolsMacros.cmake)
 # WARNING: this macro must be called from a toolchain file
 #
 macro(use_heptools heptools_version)
-  # Deduce the LCG configuration tag from the system
-  lcg_detect_host_platform()
-  lcg_get_target_platform()
+  # get_host_binary_tag tries to find PythonInterp if PYTHON_EXECUTABLE
+  # is not set, but here it's too early because we didn't set CMAKE_PREFIX_PATH yet
+  set(PYTHON_EXECUTABLE /usr/bin/env python)
+  get_host_binary_tag(LCG_system)
+  set(PYTHON_EXECUTABLE)
+  parse_binary_tag()
+  compatible_binary_tags(_compatible_tags)
+
+  set(_info_names)
+  foreach(_tag ${_compatible_tags})
+    list(APPEND _info_names LCG_externals_${_tag}.txt)
+  endforeach()
+  if(LCG_SYSTEM)
+    list(APPEND _info_names LCG_externals_${LCG_SYSTEM}-${BINARY_TAG_TYPE}.txt
+                            LCG_externals_${LCG_SYSTEM}-opt.txt)
+  endif()
 
   # Find the toolchain description
   find_file(LCG_TOOLCHAIN_INFO
-            NAMES LCG_${heptools_version}_${BINARY_TAG}.txt
-                  LCG_${heptools_version}_${LCG_platform}.txt
-                  LCG_${heptools_version}_${LCG_system}.txt
-                  LCG_externals_${BINARY_TAG}.txt
-                  LCG_externals_${LCG_platform}.txt
-                  LCG_externals_${LCG_system}.txt
+            NAMES ${_info_names}
             HINTS ENV CMTPROJECTPATH
             PATH_SUFFIXES LCG_${heptools_version})
 
@@ -34,6 +43,7 @@ macro(use_heptools heptools_version)
     else()
       set(LCG_releases_base ${LCG_releases})
     endif()
+    set(ENV{LCG_releases_base} ${LCG_releases_base})
 
     file(STRINGS ${LCG_TOOLCHAIN_INFO} _lcg_infos)
 
@@ -73,30 +83,7 @@ macro(use_heptools heptools_version)
     #    CACHE FILEPATH "The CMake toolchain file" FORCE)
 
   else()
-
-    # try old toolchain style
-
-    # Remove the reference to this file from the cache.
-    unset(CMAKE_TOOLCHAIN_FILE CACHE)
-
-    # Find the actual toolchain file.
-    find_file(CMAKE_TOOLCHAIN_FILE
-              NAMES heptools-${heptools_version}.cmake
-              HINTS ENV CMTPROJECTPATH
-              PATHS ${CMAKE_CURRENT_LIST_DIR}/cmake/toolchain
-              PATH_SUFFIXES toolchain)
-
-    if(NOT CMAKE_TOOLCHAIN_FILE)
-      message(FATAL_ERROR "Cannot find heptools ${heptools_version}.")
-    endif()
-
-    # Reset the cache variable to have proper documentation.
-    set(CMAKE_TOOLCHAIN_FILE ${CMAKE_TOOLCHAIN_FILE}
-        CACHE FILEPATH "The CMake toolchain file" FORCE)
-
-    message(STATUS "Using heptools version ${heptools_version}")
-    include(${CMAKE_TOOLCHAIN_FILE})
-
+    message(FATAL_ERROR "Cannot find heptools ${heptools_version}.")
   endif()
 
 endmacro()

@@ -15,7 +15,7 @@ endif()
 # The list of sources to build into the library:
 set( lib_sources src/lib/EventCounter.cpp
    src/lib/GaudiSequencer.cpp src/lib/GaudiAlgorithm.cpp src/lib/GaudiTool.cpp
-   src/lib/GaudiAtomicSequencer.cpp src/lib/Prescaler.cpp
+   src/lib/Prescaler.cpp
    src/lib/GaudiCommon.icpp src/lib/Sequencer.cpp src/lib/GetAlg.cpp
    src/lib/Tuple.cpp src/lib/GaudiHistoID.cpp src/lib/TupleObj.cpp )
 if( AIDA_FOUND )

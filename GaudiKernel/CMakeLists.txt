@@ -48,6 +48,8 @@ if( CPPUNIT_FOUND )
    gaudi_add_unit_test(test_LockedHandle tests/src/test_LockedHandle.cpp)
    if(CMAKE_SYSTEM_NAME MATCHES Linux)
       target_link_libraries(test_LockedHandle -Wl,--no-as-needed -ldl -Wl,--as-needed ${Boost_LIBRARIES})
+   else()
+      target_link_libraries(test_LockedHandle ${Boost_LIBRARIES})
    endif()
 endif()
 gaudi_add_unit_test(ContextSpecificPtrTest tests/src/test_ContextSpecificPtr.cpp
@@ -58,8 +60,6 @@ if( CPPUNIT_FOUND )
    gaudi_add_unit_test(test_headers_build tests/src/test_headers_build.cpp
       LINK_LIBRARIES GaudiKernel)
    gaudi_add_unit_test(test_GAUDI-905 tests/src/GAUDI-905.cpp
-      LINK_LIBRARIES GaudiKernel)
-   gaudi_add_unit_test(test_SmartRanges tests/src/test_SmartRanges.cpp
       LINK_LIBRARIES GaudiKernel)
 endif()
 
@@ -102,6 +102,9 @@ gaudi_add_unit_test(test_PropertyHolder tests/src/test_PropertyHolder.cpp
 gaudi_add_unit_test(test_Property tests/src/test_Property.cpp
                     LINK_LIBRARIES GaudiKernel
                     TYPE Boost)
+gaudi_add_unit_test(test_IssueSeverity tests/src/test_IssueSeverity.cpp
+                    LINK_LIBRARIES GaudiKernel
+                    TYPE Boost)
 
 #---Dictionaries------------------------------------------------------------
 gaudi_add_dictionary(GaudiKernel dict/dictionary.h  dict/dictionary.xml LINK_LIBRARIES GaudiKernel)
@@ -132,3 +135,17 @@ endif()
 
 add_executable(profile_Property tests/src/profile_Property.cpp)
 target_link_libraries(profile_Property GaudiKernel)
+
+find_program(gdb_command NAMES gdb)
+if(gdb_command)
+  get_filename_component(gdb_bindir "${gdb_command}" PATH)
+  # check if gdb was found in $ENV{PATH}
+  file(TO_CMAKE_PATH "$ENV{PATH}" envpath)
+  list(FIND envpath ${gdb_bindir} idx)
+  if(idx LESS 0)
+    # it's not in the standard PATH, so we have to add it
+    gaudi_env(PREPEND PATH ${gdb_bindir})
+  endif()
+else()
+  message(WARNING "gdb not found, you will not be able to have stack traces for problems")
+endif()
