@@ -115,6 +115,8 @@ option(GAUDI_SLOW_DEBUG
        "turn off all optimizations in debug builds"
        ${GAUDI_SLOW_DEBUG_DEFAULT})
 
+option(GAUDI_DIAGNOTICS_COLOR "enable colors in compiler diagnostics" OFF)
+
 # set optimization flags (_opt_level_* and _opt_ext_*)
 # - default optimization levels
 set(_opt_level_RELEASE "-O3")
@@ -393,6 +395,12 @@ else()
   if(BINARY_TAG_COMP_NAME STREQUAL "gcc" AND NOT BINARY_TAG_COMP_VERSION VERSION_LESS "5.0")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wsuggest-override")
   endif()
+endif()
+
+if(GAUDI_DIAGNOTICS_COLOR)
+  foreach(_language CXX C Fortran)
+    set(CMAKE_${_language}_FLAGS "${CMAKE_${_language}_FLAGS} -fdiagnostics-color")
+  endforeach()
 endif()
 
 #--- Special flags -------------------------------------------------------------
