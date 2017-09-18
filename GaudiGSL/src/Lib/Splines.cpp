@@ -130,15 +130,6 @@ namespace Genfun
     }
     // ========================================================================
 
-
-    // ========================================================================
-    //FUNCTION_OBJECT_IMP( GSLSpline )
-    GSLSpline* GSLSpline::clone() const
-    {
-      return new GSLSpline(*this);
-    }
-    // ========================================================================
-
     // ========================================================================
     /** constructor from vectors and type
      *
@@ -228,14 +219,6 @@ namespace Genfun
       }
       const AbsFunction& aux = GSLSplineDeriv( *this ) ;
       return Genfun::FunctionNoop( &aux ) ;
-    }
-    // ========================================================================
-
-    // ========================================================================
-    //FUNCTION_OBJECT_IMP( GSLSplineDeriv )
-    GSLSplineDeriv* GSLSplineDeriv::clone() const
-    {
-      return new GSLSplineDeriv(*this);
     }
     // ========================================================================
 
@@ -342,15 +325,6 @@ namespace Genfun
     // ========================================================================
 
     // ========================================================================
-    //FUNCTION_OBJECT_IMP( GSLSplineDeriv2 )
-    GSLSplineDeriv2* GSLSplineDeriv2::clone() const
-    {
-      return new GSLSplineDeriv2(*this);
-    }
-
-    // ========================================================================
-
-    // ========================================================================
     /** constructor from vectors and type
      *
      *  @code
@@ -439,15 +413,6 @@ namespace Genfun
       }
       const AbsFunction& aux = GaudiMath::Derivative( *this , i ) ;
       return Genfun::FunctionNoop( &aux ) ;
-    }
-    // ========================================================================
-
-
-    // ========================================================================
-    //FUNCTION_OBJECT_IMP( GSLSplineInteg )
-    GSLSplineInteg* GSLSplineInteg::clone() const
-    {
-      return new GSLSplineInteg(*this);
     }
     // ========================================================================
 
