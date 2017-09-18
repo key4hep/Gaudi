@@ -38,7 +38,7 @@ coding-conventions:
   stage: test
   script:
     - make BUILDDIR=build apply-formatting
-    - git diff --stat
+    - git diff --stat --exit-code
 
 doxygen:
   image: lhcbdev/slc6-build:latest

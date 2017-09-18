@@ -14,9 +14,9 @@ For Python code we try to follow the rules described in [PEP-8](https://www.pyth
 The tool [autopep8](https://pypi.python.org/pypi/autopep8) can be used to fix the
 code, and if available it is used by the same helpers that we provide for `clang-format`.
 
-To avoid massive changes that are only changing the format of files, we
-encourage developers and contributors to apply the format rules to the files
-they modify.
+To avoid that the rules are not followed, an automatic test is run on the
+merge requests to verify that they were applied, so developers and contributors
+are encouraged to apply the format rules to the files they modify.
 
 
 Formatting the code
@@ -39,3 +39,7 @@ something like:
 
     cd gaudi_src_dir
     gaudi_build_dir/apply_formatting $(git diff --name-only origin/master HEAD)
+
+
+It's also possible to apply the formatting rules to all the files in the project
+with the special build target `apply-formatting`.
