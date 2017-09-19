@@ -57,7 +57,7 @@ public:
 private:
   //
   /// @class eqPath compare paths name
-  struct eqPath : public std::unary_function<const path&,bool> {
+  struct eqPath {
     eqPath(const path& ref) : m_ref(ref) {}
     bool operator() (const path& p) const {
       return p.string() == m_ref.string();

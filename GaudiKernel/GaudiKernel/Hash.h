@@ -5,7 +5,8 @@
 // ============================================================================
 // STD & STL
 // ============================================================================
-#include <functional>
+#include <cstddef>
+#include <numeric>
 // ============================================================================
 // Boost
 // ============================================================================
@@ -25,16 +26,15 @@ namespace GaudiUtils
   //  }
   //  @endcode
   template <class T>
-  struct GenericHash : public std::unary_function<T,std::size_t>
+  struct GenericHash
   {
     // ========================================================================
     /// the generic hash function
     inline std::size_t operator() ( const T& key ) const {
-      std::size_t res = 0 ;
-      std::size_t len = sizeof(T) ;
       const char* p = reinterpret_cast<const char*>( &key );
-      while( len-- ) { res = ( res << 1 ) ^ *p; ++p; }
-      return res;
+      return std::accumulate( p, p + sizeof(T), std::size_t{0},
+                              [](std::size_t res, const char& c)
+                              { return ( res << 1 ) ^ c; } );
     }
     // ========================================================================
   };
@@ -93,7 +93,7 @@ namespace GaudiUtils
    * @date 2005-10-07
    */
   template <class T>
-  struct Hash : public std::unary_function<T,std::size_t>
+  struct Hash
   {
     // ========================================================================
     /// the hash-function
@@ -103,7 +103,7 @@ namespace GaudiUtils
   // ==========================================================================
   /// the partial specialization for pointers
   template <class T>
-  struct Hash<T*> : public std::unary_function<const T*,std::size_t>
+  struct Hash<T*>
   {
     // ========================================================================
     /// the hash-function
@@ -113,7 +113,7 @@ namespace GaudiUtils
   // ==========================================================================
   /// generic specialization for arrays
   template <class T, unsigned N>
-  struct Hash<T(&)[N]> : public std::unary_function<T(&)[N],std::size_t>
+  struct Hash<T(&)[N]>
   {
     // ========================================================================
     /// the hash-function
@@ -123,7 +123,7 @@ namespace GaudiUtils
   } ;
   /// generic specialization for arrays
   template <class T, unsigned N>
-  struct Hash<const T(&)[N]> : public std::unary_function<const T(&)[N],std::size_t>
+  struct Hash<const T(&)[N]>
   {
     // ========================================================================
     /// the hash-function
