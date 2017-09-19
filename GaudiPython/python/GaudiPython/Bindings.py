@@ -74,7 +74,7 @@ else:
     # forward to the actual implementation of GaudiPython::Helper::toArray<T>
     toArray = lambda typ: getattr(Helper,"toArray<%s>"%typ)
 
-#----Convenient accessors to PyROOT functionality ---------------------------------------
+# ----Convenient accessors to PyROOT functionality ----------------------------
 ROOT            = cppyy.libPyROOT
 makeNullPointer = cppyy.libPyROOT.MakeNullPointer
 setOwnership    = cppyy.libPyROOT.SetOwnership
@@ -82,7 +82,7 @@ setOwnership    = cppyy.libPyROOT.SetOwnership
 def deprecation(message):
     warnings.warn('GaudiPython: '+ message, DeprecationWarning, stacklevel=3)
 
-#----InterfaceCast class ----------------------------------------------------------------
+# ----InterfaceCast class -----------------------------------------------------
 class InterfaceCast(object) :
     """ Helper class to obtain the adequate interface from a component
         by using the Gaudi queryInterface() mechanism """
@@ -104,7 +104,7 @@ class InterfaceCast(object) :
                 traceback.print_stack()
         return None
     cast = __call__
-#---Interface class (for backward compatibility)-----------------------------------------
+# ---Interface class (for backward compatibility)------------------------------
 class Interface(InterfaceCast) :
     def __init__(self, t ):
         deprecation('Use InterfaceCast class instead')
@@ -112,7 +112,7 @@ class Interface(InterfaceCast) :
     def cast(self, obj) :
         return self(obj)
 
-#----load dictionary function using Gaudi function---------------------------------------
+# ----load dictionary function using Gaudi function----------------------------
 def loaddict(dict) :
     """ Load a LCG dictionary using various mechanisms"""
     if Helper.loadDynamicLib(dict) == 1 : return
@@ -122,7 +122,7 @@ def loaddict(dict) :
         except:
             raise ImportError, 'Error loading dictionary library'
 
-#---get a class (by loading modules if needed)--------------------------------------------
+# ---get a class (by loading modules if needed)--------------------------------
 def getClass( name , libs = [] ) :
     """
     Function to retrieve a certain C++ class by name and to load dictionary if requested
@@ -147,7 +147,7 @@ def getClass( name , libs = [] ) :
     # return None ( or raise exception? I do not know...  )
     return None
 
-#----PropertyEntry class---------------------------------------------------------------------
+# ----PropertyEntry class------------------------------------------------------
 class PropertyEntry(object) :
     """ holds the value and the documentation string of a property """
     def __init__(self, prop) :
@@ -182,7 +182,7 @@ class PropertyEntry(object) :
     def hasDoc(self):
         return len(self.__doc__)>0 and self.__doc__ != 'none'
 
-#----iProperty class---------------------------------------------------------------------
+# ----iProperty class----------------------------------------------------------
 class iProperty(object) :
     """ Python equivalent to the C++ Property interface """
     def __init__(self, name, ip = None) :
@@ -289,7 +289,7 @@ class iProperty(object) :
     def name(self) :
         return self._name
 
-#----iService class---------------------------------------------------------------------
+# ----iService class-----------------------------------------------------------
 class iService(iProperty) :
     """ Python equivalent to IProperty interface """
     def __init__(self, name, isvc = None ) :
@@ -309,7 +309,7 @@ class iService(iProperty) :
         if self._isvc: return True
         else :         return False
 
-#----iAlgorithm class---------------------------------------------------------------------
+# ----iAlgorithm class---------------------------------------------------------
 class iAlgorithm(iProperty) :
     """ Python equivalent to IAlgorithm interface """
     def __init__(self, name, ialg = None ) :
@@ -334,7 +334,7 @@ class iAlgorithm(iProperty) :
     sysReinitialize = lambda self : self.__call_interface_method__("_ialg","sysReinitialize")
     sysRestart      = lambda self : self.__call_interface_method__("_ialg","sysRestart")
 
-#----iAlgTool class---------------------------------------------------------------------
+# ----iAlgTool class-----------------------------------------------------------
 class iAlgTool(iProperty) :
     """ Python equivalent to IAlgTool interface (not completed yet) """
     def __init__(self, name, itool = None ) :
@@ -353,7 +353,7 @@ class iAlgTool(iProperty) :
         if self._itool : return self._itool.name()
         else : return self._name
 
-#----iDataSvc class---------------------------------------------------------------------
+# ----iDataSvc class-----------------------------------------------------------
 class iDataSvc(iService) :
     def __init__(self, name, idp) :
         iService.__init__(self, name, idp )
@@ -478,7 +478,7 @@ class iDataSvc(iService) :
         return self._idm.clearStore()
 
 
-#----iHistogramSvc class---------------------------------------------------------------------
+# ----iHistogramSvc class------------------------------------------------------
 class iHistogramSvc(iDataSvc) :
     def __init__(self, name, ihs) :
         self.__dict__['_ihs'] = InterfaceCast(gbl.IHistogramSvc)(ihs)
@@ -547,7 +547,7 @@ class iHistogramSvc(iDataSvc) :
         fun = gbl.Gaudi.Utils.Aida2ROOT.aida2root
         return fun( self.getAsAIDA( path ) )
 
-#----iNTupleSvc class---------------------------------------------------------------------
+# ----iNTupleSvc class---------------------------------------------------------
 class iNTupleSvc(iDataSvc) :
     RowWiseTuple    = 42
     ColumnWiseTuple = 43
@@ -571,7 +571,7 @@ class iNTupleSvc(iDataSvc) :
         return iDataSvc.__getitem__( self , path )
 
 
-#----iToolSvc class---------------------------------------------------------------------
+# ----iToolSvc class-----------------------------------------------------------
 class iToolSvc(iService) :
     def __init__(self, name, its) :
         self.__dict__['_its'] = InterfaceCast(gbl.IToolSvc)(its)
@@ -604,7 +604,7 @@ class iToolSvc(iService) :
         if type(itool) is iAlgTool :
             self._its.releaseTool(itool._itool)
 
-#----iJopOptSvc class-------------------------------------------------------------------
+# ----iJopOptSvc class---------------------------------------------------------
 class iJobOptSvc(iService) :
     """
     Python-image of C++ class IJobOptionsSvc
@@ -643,7 +643,7 @@ class iJobOptSvc(iService) :
         all = self.getProperties ( component )
         return all.get( name.upper() , None )     # RETURN
 
-#----iEventSelector class------------------------------------------------------------------
+# ----iEventSelector class-----------------------------------------------------
 class iEventSelector(iService):
     def __init__(self):
         iService.__init__(self, 'EventSelector', Helper.service(gbl.Gaudi.svcLocator(),'EventSelector'))
@@ -658,7 +658,7 @@ class iEventSelector(iService):
         # It is not possible to reinitialize EventSelector only
         self.g.service('EventLoopMgr').reinitialize()
 
-#----AppMgr class---------------------------------------------------------------------
+# ----AppMgr class-------------------------------------------------------------
 class AppMgr(iService) :
     def __new__ ( cls, *args, **kwargs ):
         global _gaudi
@@ -1031,7 +1031,7 @@ class AppMgr(iService) :
     toolSvc = toolsvc
     partSvc = partsvc
 
-#--------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 def _getFIDandEvents( pfn ):
     tfile = gbl.TFile.Open(pfn)
     if not tfile : raise 'Cannot open ROOT file ', pfn
@@ -1044,7 +1044,7 @@ def _getFIDandEvents( pfn ):
     tfile.Close()
     return fid, nevt
 
-#--------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 def getComponentProperties( name ):
     """ Get all the properties of a component as a Python dictionary.
         The component is instantiated using the component library
@@ -1097,7 +1097,7 @@ def _copyFactoriesFromList(factories) :
         factories.push_back(factory)
     return result
 
-#----CallbackStreamBuf----------------------------------------------------------------
+# ----CallbackStreamBuf--------------------------------------------------------
 #    Used for redirecting C++ messages to python
 _CallbackStreamBufBase = gbl.GaudiPython.CallbackStreamBuf
 class CallbackStreamBuf (_CallbackStreamBufBase):
@@ -1109,7 +1109,7 @@ class CallbackStreamBuf (_CallbackStreamBufBase):
         self.callback(string)
         return 0
 
-#----PyAlgorithm----------------------------------------------------------------------
+# ----PyAlgorithm--------------------------------------------------------------
 # Used to implement Algorithms in Python
 _PyAlgorithm = gbl.GaudiPython.PyAlgorithm
 class PyAlgorithm (_PyAlgorithm) :
@@ -1131,7 +1131,7 @@ class PyAlgorithm (_PyAlgorithm) :
     def beginRun(self) : return 1
     def endRun(self) : return 1
 
-#----Enable tab completion------------------------------------------------------------
+# ----Enable tab completion----------------------------------------------------
 try:
     import rlcompleter, readline
     readline.parse_and_bind("tab: complete")

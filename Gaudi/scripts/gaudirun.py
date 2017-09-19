@@ -47,7 +47,7 @@ def setLibraryPreload(newpreload):
     to_load = [libname
                for libname in newpreload
                if libname not in set(preload)]
-    
+
     if to_load:
         preload += to_load
         preload = ":".join(preload)
@@ -66,7 +66,8 @@ def rationalizepath(path):
         path = os.path.realpath(path)
     return path
 
-# variable used to keep alive the temporary option files extracted from the .qmt
+# variable used to keep alive the temporary option files extracted
+# from the .qmt
 _qmt_tmp_opt_files = []
 def getArgsFromQmt(qmtfile):
     '''
@@ -211,7 +212,7 @@ if __name__ == "__main__":
                            'memory)')
     parser.add_option("--run-info-file", type="string",
                       help="Save gaudi process information to the file specified (in JSON format)")
-    
+
     parser.set_defaults(options = [],
                         tcmalloc = False,
                         profilerName = '',
@@ -295,7 +296,7 @@ if __name__ == "__main__":
         profilerName = opts.profilerName
         profilerExecName = ""
         profilerOutput = opts.profilerOutput or (profilerName + ".output")
-        
+
         # To restart the application removing the igprof option and prepending the string
         args = getArgsWithoutoProfilerInfo(sys.argv)
 
@@ -361,7 +362,7 @@ if __name__ == "__main__":
         to_reload = []
         if opts.preload:
             to_reload = setLibraryPreload(opts.preload)
-                
+
         if profilerExecName:
             # We profile python
             profilerOptions += " python"
@@ -491,5 +492,5 @@ if __name__ == "__main__":
             logging.info("Saving run info to: %s" % opts.run_info_file)
             with open(opts.run_info_file, "w") as f:
                 json.dump(run_info, f)
-        
+
         sys.exit(retcode)

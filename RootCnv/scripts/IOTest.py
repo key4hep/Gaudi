@@ -18,7 +18,7 @@ from GaudiKernel import *
 input_file = 'castor://castorlhcb.cern.ch//castor/cern.ch/grid/lhcb/LHCb/Collision11/SEMILEPTONIC.DST/00012569/0000/00012569_00000004_1.semileptonic.dst?svcClass=lhcbdisk'
 input_file = 'root://castorlhcb.cern.ch//castor/cern.ch/grid//lhcb/data/2010/BHADRON.DST/00008399/0000/00008399_00001052_1.bhadron.dst?svcClass=lhcbdisk'
 
-#------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 def storeExplorer(load=1,freq=0.0001,name='StoreExplorerAlg'):
   from Configurables import StoreExplorerAlg
   alg                = StoreExplorerAlg(name)
@@ -26,12 +26,12 @@ def storeExplorer(load=1,freq=0.0001,name='StoreExplorerAlg'):
   alg.PrintFreq      = freq
   return alg
 
-#------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 if len(sys.argv)>1:
   input_file = sys.argv[1]
 
-appConf = ApplicationMgr(OutputLevel = INFO) 
+appConf = ApplicationMgr(OutputLevel = INFO)
 appConf.HistogramPersistency  = "NONE";
 appConf.ExtSvc.append('Gaudi::IODataManager/IODataManager')
 appConf.ExtSvc.append('Gaudi::RootCnvSvc/RootCnvSvc')
@@ -76,9 +76,9 @@ def update():
 
 def printDelta(s0,s1):
  for s in s1:
-  if s=='time':  print '%15s : %10.2F sec'%(s,(s1[s]-s0[s])) 
-  else:          print '%15s : %10.2F MB'%(s,(s1[s]-s0[s])/1.E6) 
-  
+  if s=='time':  print '%15s : %10.2F sec'%(s,(s1[s]-s0[s]))
+  else:          print '%15s : %10.2F MB'%(s,(s1[s]-s0[s])/1.E6)
+
 import GaudiPython
 appMgr = GaudiPython.AppMgr()
 sel    = appMgr.evtsel()
@@ -100,4 +100,4 @@ while 1>0:
  if N > 100000: break
 end = update()
 print 'Read %d events'%N
-printDelta(start,end) 
+printDelta(start,end)

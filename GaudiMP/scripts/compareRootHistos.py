@@ -14,68 +14,68 @@ histos = ['TH1D', 'TH1F', 'TH2D', 'TH2F', 'TProfile']
 ref = 'REFERENCE'
 test = 'TEST'
 
-# =================================================================================================
+# =============================================================================
 # Method   : rec( o, path=None, lst=None )
-# 
+#
 # @param o    : a ROOT object
 # @param path : a string like a transient store path; ie '/stat/CaloPIDs/ECALPIDE'
 # @param lst  : a list to hold (path, object) tuples
-# 
+#
 # function    : recursively pull apart a ROOT file, making a list of (path, TObject) tuples
 #               This is done by GetListOfKeys method, which lets one work down through directories
 #               until you hit the Histo at the end of the path.  The list of tuples is returned
-# 
+#
 def rec( o, path=None, lst=None ) :
   if not path : path = '/stat' ; lst = []
   else        : path = path + '/' + o.GetName()
   lst.append( (path,o) )
-  if 'GetListOfKeys' in dir(o) : 
+  if 'GetListOfKeys' in dir(o) :
     keys = o.GetListOfKeys()
     for k in keys :
       name =  k.GetName()
-      rec( o.Get(name), path, lst ) 
+      rec( o.Get(name), path, lst )
   else :
     pass
   return lst
-# =================================================================================================
+# =============================================================================
 
-# =================================================================================================
+# =============================================================================
 # Method   : composition( t )
-# 
+#
 # @param t : a tuple of ( type, d ) where type is either 'REFERENCE' or 'TEST'
-#            and d is a dictionary of ROOT objects, with each key = ROOT path 
-# 
+#            and d is a dictionary of ROOT objects, with each key = ROOT path
+#
 # function : deduce the composition, (objects/histos) counts
 #
 def composition( t ) :
-  typ, d = t 
+  typ, d = t
   hists = 0 ; objs = 0
-  for k in d.keys() : 
+  for k in d.keys() :
     if d[k].__class__.__name__ in histos : hists += 1
     else                                 : objs  += 1
   return objs, hists
-# =================================================================================================
-  
-# =================================================================================================
+# =============================================================================
+
+# =============================================================================
 # Method        : comparePaths( t1, t2 )
-# 
+#
 # @param t1, t2 : a tuple of ( type, d ) where type is either 'REFERENCE' or 'TEST'
-#                 and d is a dictionary of ROOT objects, with each key = ROOT path 
-# 
+#                 and d is a dictionary of ROOT objects, with each key = ROOT path
+#
 # function      : compare the paths between the two histo files.  If the files are identical, they
 #                 should have the same set of paths.  The Test file should definitely have the
 #                 same paths as the Reference.  Perhaps the Reference file will have some more paths due
 #                 to extra histos added as part of Application Sequencer finalisation
 #                 Arguments t1 and t2 are checked and the test/reference auto-detected
-# 
-def comparePaths( t1, t2 ) : 
+#
+def comparePaths( t1, t2 ) :
   if   t1[0]  == ref : ds = t1[1] ; dp = t2[1]
   elif t2[0]  == ref : ds = t2[1] ; dp = t1[1]
   else : print 'Neither tuple is Reference Root file reference?' ; return
-  
+
   dsks = ds.keys() ; dpks = dp.keys()
   dsks.sort()      ; dpks.sort()
-  
+
   sset = set( dsks )
   pset = set( dpks )
   os, hs = composition( (ref, ds) )
@@ -88,7 +88,7 @@ def comparePaths( t1, t2 ) :
   matching = sset.intersection(pset)
   matchingHistos = 0
   for n in matching :
-    if ds[n].__class__.__name__ in histos : matchingHistos += 1    
+    if ds[n].__class__.__name__ in histos : matchingHistos += 1
   print '\nMatching paths                 : %i'%( len(matching) )
   uSer = sset - pset
   # work out histos unique to test file
@@ -96,21 +96,21 @@ def comparePaths( t1, t2 ) :
   for n in uSer :
     if ds[n].__class__.__name__ in histos : uniqueReferenceHistos += 1
   print 'Paths unique to Reference file : %i ( %i Histos )'%( len(uSer), uniqueReferenceHistos )
-  if uSer : 
+  if uSer :
     for n in uSer : print '\t%s : \t%s'%( ds[n], n )
   uPar = pset - sset
   uniqueTestHistos = 0
   for n in uPar :
     if dp[n].__class__.__name__ in histos : uniqueTestHistos += 1
   print 'Paths unique to Test file : %i ( %i Histos )'%( len(uPar), uniqueTestHistos )
-  if uPar : 
+  if uPar :
     for n in uPar : print '\t%s : \t%s'%( dp[n], n )
   print 'Matching Histos to test : %i'%( matchingHistos )
   print '='*80 + '\n'
   return ( ((os,hs),(op,hp)), (uSer, uniqueReferenceHistos), (uPar, uniqueTestHistos), matchingHistos )
-# =================================================================================================  
+# =============================================================================
 
-# =================================================================================================
+# =============================================================================
 # Method        : bin2binIdentity(h1,h2)
 #
 # @param h1, h2 : The two histogtams to compare
@@ -131,14 +131,14 @@ def bin2binIdentity(h1,h2):
     h2bin=h2.GetBinContent(ibin)
     diffbins+= (h1bin!=h2bin)
   return diffbins
-  
 
-# =================================================================================================
+
+# =============================================================================
 # Method        : compareHistos( t1, t2 )
-# 
+#
 # @param t1, t2 : a tuple of ( type, d ) where type is either 'REFERENCE' or 'TEST'
-#                 and d is a dictionary of ROOT objects, with each key = ROOT path 
-# 
+#                 and d is a dictionary of ROOT objects, with each key = ROOT path
+#
 # function      : compare the histograms in Reference/Test ROOT files.  First, go through each
 #                 dict to collect the histos (ignore TDirectory objects, etc).  Then the histos
 #                 in the test file (experimental) are compared to their equivalents in the
@@ -148,11 +148,11 @@ def bin2binIdentity(h1,h2):
 #                 3) If integrals are equal, check the KolmogorovTest() ; should be 1
 #                 4) If identity flag is there and KS test is performed, perform bin2bin identity test
 #                 Arguments t1 and t2 are checked and the test/reference auto-detected
-# 
+#
 def compareHistos(t1, t2, state, checkBin2BinIdentity) :
-  
+
   ( ((referenceObjects,referenceHistos),(parallObjects, parallHistos)), (uniqueSerPaths,uniqueSerHistos), (uniqueParPaths,uniqueParHistos), mh ) = state
- 
+
   # deduce which one is test, which reference
   if   t1[0]  == ref : ds = t1[1] ; dp = t2[1]
   elif t2[0]  == ref : ds = t2[1] ; dp = t1[1]
@@ -163,16 +163,16 @@ def compareHistos(t1, t2, state, checkBin2BinIdentity) :
   hcs = 0 ; sHistos = []
 
   omit = [re.compile(regex) for regex in gRegexBlackList]
-  
+
   # find the histos in the reference file
-  for k in ds.keys() : 
+  for k in ds.keys() :
     if not any(regex.search(k)!=None for regex in omit):
       if ds[k].__class__.__name__ in histos : hcs += 1 ; sHistos.append( k )
   # same for test
   for k in dp.keys() :
     if not any(regex.search(k)!=None for regex in omit):
       if dp[k].__class__.__name__ in histos : hcp += 1 ; pHistos.append( k )
-      
+
 
   cEntries   = 0 ; xEntries   = 0 ; diffEntries   = []
   cIntegrals = 0 ; xIntegrals = 0 ; diffIntegrals = []
@@ -182,7 +182,7 @@ def compareHistos(t1, t2, state, checkBin2BinIdentity) :
   kTestResults={}
   notfound   = 0 ; integralMatch = 0 ; otherTest = 0 ; zeroIntegralMatch = 0
   for h in sHistos :
-    if h in pHistos : 
+    if h in pHistos :
       # matching histos to check
       cEntries += 1
       sh = ds[h] ; ph = dp[h]
@@ -202,56 +202,56 @@ def compareHistos(t1, t2, state, checkBin2BinIdentity) :
           failedIdentity += 1
           diffIdentity.append(h)
           identityDiffBins[h]=diffBins
-      if (bool(sint) and bool(pint)) and ( sBinError>0 and pBinError>0 ) : 
+      if (bool(sint) and bool(pint)) and ( sBinError>0 and pBinError>0 ) :
         kTested += 1
         kTest = sh.KolmogorovTest(ph)
         kTestResults [h] = kTest
-        if int(kTest) : passedKol += 1 
-        else          : failedKol += 1 ; diffKols.append(h) # ; print 'KTest result : ', kTest        
-      else : 
+        if int(kTest) : passedKol += 1
+        else          : failedKol += 1 ; diffKols.append(h) # ; print 'KTest result : ', kTest
+      else :
         # try the integral test?
         otherTest += 1
-        if all((sint, pint)) and (sint==pint) : 
+        if all((sint, pint)) and (sint==pint) :
           integralMatch += 1
         elif (sint==pint) :
           zeroIntegralMatch += 1
-        else : 
+        else :
             diffIntegrals.append( h )
             xIntegrals += 1
     else :
       notfound += 1 ; print 'not found? ', h
 
-  # report on Failed Entry-Checks      
+  # report on Failed Entry-Checks
   print '\n\n'+'-'*80
   print 'Summary of histos with different Entries'
   print '-'*80
   if diffEntries :
-    diffEntries.sort()  
-    for e in diffEntries : print '\t\t\t%s:\t%i != %i'%( e, int(ds[e].GetEntries()), int(dp[e].GetEntries()) )  
+    diffEntries.sort()
+    for e in diffEntries : print '\t\t\t%s:\t%i != %i'%( e, int(ds[e].GetEntries()), int(dp[e].GetEntries()) )
   print '-'*80
-  
-  # report on Failed Kolmogorov Tests    
+
+  # report on Failed Kolmogorov Tests
   print '\n\n'+'-'*60
   print 'Summary of histos which failed Kolmogorov Test'
   print '-'*60
   if diffKols :
-    diffKols.sort()  
-    for e in diffKols : 
+    diffKols.sort()
+    for e in diffKols :
       result = kTestResults[e] # DP Calculated twice ARGH!!
-      print '%s\t\t%s :\tK-Test Result :\t %5.16f'%( ds[e].ClassName(), e, result )  
+      print '%s\t\t%s :\tK-Test Result :\t %5.16f'%( ds[e].ClassName(), e, result )
   print '-'*60
-  
+
   # report on Failed Integral Checks
   print '\n\n'+'-'*60
   print 'Summary of histos which failed Integral Check'
   print '-'*60
   if diffIntegrals :
     diffIntegrals.sort()
-    for e in diffIntegrals : 
+    for e in diffIntegrals :
       diff = dp[e].Integral()-ds[e].Integral()
       pc   = (diff*100)/ds[e].Integral()
       print '%s\t\t%s:\t Diff = %5.6f\tPercent Diff to Reference : %5.6f '%( ds[e].ClassName(), e, diff, pc  )
-  print '-'*60 + '\n' 
+  print '-'*60 + '\n'
   print '='*80 + '\n'
 
   # Report on failed bin2bin identity
@@ -265,7 +265,7 @@ def compareHistos(t1, t2, state, checkBin2BinIdentity) :
       for e in diffIdentity:
         print '%s\t\t%s: %i different bins'%( ds[e].ClassName(), e, identityDiffBins[e])
       print '-'*80
-  
+
   print '\n' + '='*80
   print 'Comparison : Reference/Test ROOT Histo files'
   print '\n\t\tReference\tTest'
@@ -277,8 +277,8 @@ def compareHistos(t1, t2, state, checkBin2BinIdentity) :
   print 'Objects/Histos unique to Test File : %i / %i'%( len(uniqueParPaths)-uniqueParHistos, uniqueParHistos )
   print '\nMatching Histograms valid for Comparison : %i'%( mh )
   print '\nOmissions\' patterns : '
-  for entry in gRegexBlackList : print '\t%s'%( entry ) 
-  print '\nHistograms for Comparison (after Omissions) : %i'%( mh-len(gRegexBlackList) )  
+  for entry in gRegexBlackList : print '\t%s'%( entry )
+  print '\nHistograms for Comparison (after Omissions) : %i'%( mh-len(gRegexBlackList) )
   print '\n\tHISTOGRAM TESTS : '
   print '\t\tKOLMOGOROV TEST      : %i'%( kTested )
   print '\t\tINTEGRAL TEST        : %i'%( otherTest )
@@ -286,19 +286,19 @@ def compareHistos(t1, t2, state, checkBin2BinIdentity) :
   if checkBin2BinIdentity:
     print '\t\tBIN2BIN TEST         : %i'%( passedIdentity )
   print '\t\t                       ____'
-  print '\t\tTested               : %i'%( cEntries )  
+  print '\t\tTested               : %i'%( cEntries )
 
   print '\n\tDISCREPANCIES : '
   print '\t\tK-Test      : %i'%( failedKol  )
-  print '\t\tIntegrals   : %i'%( xIntegrals )    
-  print '\t\tEntries     : %i'%( xEntries   )  
+  print '\t\tIntegrals   : %i'%( xIntegrals )
+  print '\t\tEntries     : %i'%( xEntries   )
   retval = failedKol+xIntegrals+xEntries+failedIdentity
   if retval!=0:
     print '\nThe two sets of histograms were not identical'
   print '\n'+'='*80
-  return retval  
+  return retval
 
-# =================================================================================================
+# =============================================================================
 
 def extractBlacklist(listString):
   global gRegexBlackList
@@ -308,7 +308,7 @@ def extractBlacklist(listString):
   else:
     gBlackList =[]
 
-# =================================================================================================
+# =============================================================================
 
 if __name__ == '__main__' :
   usage = "usage: %prog testFile.root referenceFile.root [options]"
@@ -325,14 +325,14 @@ if __name__ == '__main__' :
     print "Wrong number of rootfiles. Usage:"
     print usage
     sys.exit(1)
-  
+
   extractBlacklist(options.blacklist)
-  
+
   testFile,referenceFile=args
 
   tfs = TFile( testFile, 'REC' ) ; print 'opening Test File : %s'%( testFile )
   tfp = TFile( referenceFile, 'REC' ) ; print 'opening Reference File : %s'%( referenceFile )
-  
+
   # get structure of TFiles in a list of (path, object) tuples
   lref = rec(tfs) ; ltest = rec(tfp)
   # make a dictionary of lser and lpar.  keys=paths
@@ -340,18 +340,17 @@ if __name__ == '__main__' :
   dtest = dict( [(n, o) for n, o in ltest] )
   # make a tuple of (type, dict) where type is either 'reference' or 'test'
   ts = ( ref, dref )  ; tp = ( test, dtest )
-  
+
   # check objs/histos in each file
   composition( ts ) ; composition( tp )
-  
+
   # compare paths from each file
   state = comparePaths( ts, tp )
-  
+
   # compare histos from each file
   retval =compareHistos( ts, tp, state, checkBin2BinIdentity=options.bin2bin )
-  
+
   # finished with TFiles
   tfs.Close()     ; tfp.Close()
- 
-  sys.exit(retval)
 
+  sys.exit(retval)

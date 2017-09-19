@@ -185,5 +185,3 @@ class SshSession(object) :
     def __del__(self):
         self.session.close()
         print 'killed ppserver in ', self.host
-
-# == EOF ====================================================================================
