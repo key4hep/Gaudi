@@ -233,7 +233,7 @@ private:
   // ------------------------------------------------------------------------
 
   /// Member to take care of the control flow
-  concurrency::ExecutionFlowManager m_efManager;
+  concurrency::recursive_CF::ExecutionFlowManager m_efManager;
 
   // Service for thread pool initialization
   SmartIF<IThreadPoolSvc> m_threadPoolSvc;
@@ -279,7 +279,7 @@ public:
 
 private:
   void dumpState( std::ostringstream& );
-  concurrency::PrecedenceRulesGraph* m_efg;
+  concurrency::recursive_CF::ControlFlowGraph* m_efg;
 };
 
 #endif // GAUDIHIVE_FORWARDSCHEDULERSVC_H

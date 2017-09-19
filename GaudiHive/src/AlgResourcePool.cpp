@@ -29,7 +29,7 @@ AlgResourcePool::~AlgResourcePool() {
     delete queue;
   }
 
-  delete m_PRGraph;
+  delete m_CFGraph;
 }
 
 //---------------------------------------------------------------------------
@@ -49,10 +49,14 @@ StatusCode AlgResourcePool::initialize(){
     m_topAlgNames.assign(appMgrProps->getProperty("TopAlg"));
   }
 
-  // Prepare empty graph of precedence rules
-  const std::string& name = "PrecedenceRulesGraph";
-  SmartIF<ISvcLocator> svc = serviceLocator();
-  m_PRGraph = new concurrency::PrecedenceRulesGraph(name, svc);
+  // Prepare empty control flow graph
+  // (Only ForwardScheduler requires assembling the graph in AlgResourcePool.
+  //  The AvalancheScheduler relies on the graph that is assembled by the PrecedenceSvc)
+  if (serviceLocator()->existsService("ForwardSchedulerSvc")) {
+    const std::string& name = "ControlFlowGraph";
+    SmartIF<ISvcLocator> svc = serviceLocator();
+    m_CFGraph = new concurrency::recursive_CF::ControlFlowGraph(name, svc);
+  }
 
   sc = decodeTopAlgs();
   if (sc.isFailure())
@@ -197,40 +201,49 @@ StatusCode AlgResourcePool::flattenSequencer(Algorithm* algo, ListAlg& alglist, 
        // and exclude the case of empty sequencers
        (subAlgorithms->empty() && !(isGaudiSequencer || isAthSequencer)) ) {
 
-    DEBUG_MSG << std::string(recursionDepth, ' ') << algo->name()
-              << " is not a sequencer. Appending it" << endmsg;
-
     alglist.emplace_back(algo);
-    m_PRGraph->addAlgorithmNode(algo, parentName, false, false).ignore();
+    // Only ForwardScheduler requires assembling the graph in AlgResourcePool.
+    // The AvalancheScheduler relies on the graph that is assembled by the PrecedenceSvc
+    if (serviceLocator()->existsService("ForwardSchedulerSvc")) {
+      m_CFGraph->addAlgorithmNode(algo, parentName, false, false).ignore();
+      DEBUG_MSG << std::string(recursionDepth, ' ') << algo->name()
+                << " is not a sequencer. Appending it" << endmsg;
+    }
     return sc;
   }
 
   // Recursively unroll
   ++recursionDepth;
-  DEBUG_MSG << std::string(recursionDepth, ' ') << algo->name() << " is a sequencer. Flattening it." << endmsg;
-  bool modeOR = false;
-  bool allPass = false;
-  bool isLazy = false;
-  bool isSequential = false;
 
-  if ( isGaudiSequencer ) {
-    modeOR  = (algo->getProperty("ModeOR").toString() == "True")? true : false;
-    allPass = (algo->getProperty("IgnoreFilterPassed").toString() == "True")? true : false;
-    isLazy = (algo->getProperty("ShortCircuit").toString() == "True")? true : false;
-    if (allPass) isLazy = false; // standard GaudiSequencer behavior on all pass is to execute everything
-    isSequential = (algo->hasProperty("Sequential") &&
-                   (algo->getProperty("Sequential").toString() == "True") );
-  } else if (isAthSequencer ) {
-    modeOR  = (algo->getProperty("ModeOR").toString() == "True")? true : false;
-    allPass = (algo->getProperty("IgnoreFilterPassed").toString() == "True")? true : false;
-    isLazy = (algo->getProperty("StopOverride").toString() == "True")? false : true;
-    isSequential = (algo->hasProperty("Sequential") &&
-                   (algo->getProperty("Sequential").toString() == "True") );
-  }
-  sc = m_PRGraph->addDecisionHubNode(algo, parentName, !isSequential, isLazy, modeOR, allPass);
-  if (sc.isFailure()) {
-    error() << "Failed to add DecisionHub " << algo->name() << " to graph of precedence rules" << endmsg;
-    return sc;
+  // Only ForwardScheduler requires assembling the graph in AlgResourcePool.
+  // The AvalancheScheduler relies on the graph that is assembled by the PrecedenceSvc
+  if (serviceLocator()->existsService("ForwardSchedulerSvc")) {
+    DEBUG_MSG << std::string(recursionDepth, ' ') << algo->name() << " is a sequencer. Flattening it." << endmsg;
+
+    bool modeOR = false;
+    bool allPass = false;
+    bool isLazy = false;
+    bool isSequential = false;
+
+    if ( isGaudiSequencer ) {
+      modeOR  = (algo->getProperty("ModeOR").toString() == "True")? true : false;
+      allPass = (algo->getProperty("IgnoreFilterPassed").toString() == "True")? true : false;
+      isLazy = (algo->getProperty("ShortCircuit").toString() == "True")? true : false;
+      if (allPass) isLazy = false; // standard GaudiSequencer behavior on all pass is to execute everything
+      isSequential = (algo->hasProperty("Sequential") &&
+                     (algo->getProperty("Sequential").toString() == "True") );
+    } else if (isAthSequencer ) {
+      modeOR  = (algo->getProperty("ModeOR").toString() == "True")? true : false;
+      allPass = (algo->getProperty("IgnoreFilterPassed").toString() == "True")? true : false;
+      isLazy = (algo->getProperty("StopOverride").toString() == "True")? false : true;
+      isSequential = (algo->hasProperty("Sequential") &&
+                     (algo->getProperty("Sequential").toString() == "True") );
+    }
+    sc = m_CFGraph->addDecisionHubNode(algo, parentName, !isSequential, isLazy, modeOR, allPass);
+    if (sc.isFailure()) {
+      error() << "Failed to add DecisionHub " << algo->name() << " to control flow graph" << endmsg;
+      return sc;
+    }
   }
 
   for (Algorithm* subalgo : *subAlgorithms ) {
@@ -285,13 +298,16 @@ StatusCode AlgResourcePool::decodeTopAlgs()    {
       algoSmartIF = algo;
     }
     // Init and start
-    algoSmartIF->sysInitialize();
+    algoSmartIF->sysInitialize().ignore();
     m_topAlgList.push_back(algoSmartIF);
   }
   // Top Alg list filled ----
 
-  // start forming the graph of precedence rules by adding the head decision hub
-  m_PRGraph->addHeadNode("RootDecisionHub",true,false,true,true);
+  // start forming the control flow graph by adding the head decision hub
+  // Only ForwardScheduler requires assembling the graph in AlgResourcePool.
+  // The AvalancheScheduler relies on the graph that is assembled by the PrecedenceSvc
+  if (serviceLocator()->existsService("ForwardSchedulerSvc"))
+    m_CFGraph->addHeadNode("RootDecisionHub",true,false,true,true);
 
   // Now we unroll it ----
   for (auto& algoSmartIF : m_topAlgList) {
@@ -344,13 +360,13 @@ StatusCode AlgResourcePool::decodeTopAlgs()    {
         m_n_of_allowed_instances[algo_id] = 1;
       } else {
         if (! m_overrideUnClonable) {
-          info() << "Algorithm " << ialgo->name() 
-                 << " is un-Clonable but Cardinality was set to " 
+          info() << "Algorithm " << ialgo->name()
+                 << " is un-Clonable but Cardinality was set to "
                  << ialgo->cardinality()
                  << ". Only creating 1 instance" << endmsg;
           m_n_of_allowed_instances[algo_id] = 1;
         } else {
-          warning() << "Overriding UnClonability of Algorithm " 
+          warning() << "Overriding UnClonability of Algorithm "
                     << ialgo->name() << ". Setting Cardinality to "
                     << ialgo->cardinality() << endmsg;
           m_n_of_allowed_instances[algo_id] = ialgo->cardinality();
@@ -393,8 +409,6 @@ StatusCode AlgResourcePool::decodeTopAlgs()    {
         }
       }
     }
-
-    m_PRGraph->attachAlgorithmsToNodes<concurrentQueueIAlgPtr>(item_name,*queue);
 
   }
 

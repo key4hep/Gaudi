@@ -1,8 +1,6 @@
 #ifndef IGRAPHVISITOR_H_
 #define IGRAPHVISITOR_H_
 
-#include "EventSlot.h"
-
 namespace concurrency {
 
   class DecisionNode;
@@ -26,11 +24,8 @@ namespace concurrency {
     virtual bool visitEnter(ConditionNode&) const {return true;};
     virtual bool visit(ConditionNode&) {return true;};
 
-    virtual void reset() {m_nodesSucceeded = 0;};
+    virtual void reset() {};
 
-  public:
-    int m_nodesSucceeded;
-    EventSlot* m_slot;
   };
 }
 

@@ -31,8 +31,15 @@ namespace concurrency {
       if (!result) break; // skip checking other inputs if this input was not produced yet
     }
 
-    if (result)
+    if (result) {
       m_slot->algsStates.updateState( node.getAlgoIndex(), State::DATAREADY ).ignore();
+
+      if (m_trace) {
+        auto sourceNode = (m_cause.m_source == Cause::source::Task) ?
+                node.m_graph->getAlgorithmNode(m_cause.m_sourceName) : nullptr;
+        node.m_graph->addEdgeToExecutionPlan(sourceNode, &node);
+      }
+    }
 
     // return true only if an algorithm is promoted to DR
     return result;
@@ -76,7 +83,7 @@ namespace concurrency {
     /* Implements 'requester' strategy, i.e., requests this ConditionNode to be loaded
      * by its associated ConditionAlgorithm */
 
-    auto promoter = Supervisor(*m_slot);
+    auto promoter = Supervisor(*m_slot, m_cause);
 
     for (auto condAlg : node.getProducers())
       condAlg->accept(promoter);
@@ -105,12 +112,13 @@ namespace concurrency {
 
       m_slot->controlFlowState[node.getNodeIndex()] = decision;
 
-      auto promoter = DataReadyPromoter(*m_slot);
-      for ( auto consumer : node.getConsumerNodes() )
-        consumer->accept(promoter);
+      auto promoter = DataReadyPromoter(*m_slot, m_cause, m_trace);
+      for ( const auto& output : node.getOutputDataNodes() )
+        for ( auto& consumer : output->getConsumers() )
+          consumer->accept(promoter);
 
-      auto vis = concurrency::Supervisor( *m_slot );
-      for ( auto p : node.getParentDecisionHubs() )
+      auto vis = concurrency::Supervisor(*m_slot, m_cause, m_trace);
+      for ( auto& p : node.getParentDecisionHubs() )
         p->accept(vis);
 
       return true; // return true only if the algorithm produced a decision
@@ -201,7 +209,7 @@ namespace concurrency {
 
     // Try to promote with CR->DR
     if ( State::CONTROLREADY == state ) {
-      auto promoter = DataReadyPromoter(*m_slot);
+      auto promoter = DataReadyPromoter(*m_slot, m_cause, m_trace);
       result = promoter.visit(node);
     } else {
       result = true;
@@ -241,20 +249,19 @@ namespace concurrency {
     boost::ExecPlan execPlan;
 
     boost::dynamic_properties dp;
-    dp.property("name", boost::get(&boost::AlgoNodeStruct::m_name, execPlan));
-    dp.property("index", boost::get(&boost::AlgoNodeStruct::m_index, execPlan));
-    dp.property("dataRank", boost::get(&boost::AlgoNodeStruct::m_rank, execPlan));
-    dp.property("runtime", boost::get(&boost::AlgoNodeStruct::m_runtime, execPlan));
+    dp.property("name", boost::get(&boost::AlgoProps::m_name, execPlan));
+    dp.property("index", boost::get(&boost::AlgoProps::m_index, execPlan));
+    dp.property("dataRank", boost::get(&boost::AlgoProps::m_rank, execPlan));
+    dp.property("runtime", boost::get(&boost::AlgoProps::m_runtime, execPlan));
 
     boost::read_graphml(myfile, execPlan, dp);
 
     typedef boost::graph_traits<boost::ExecPlan>::vertex_iterator itV;
     std::pair<itV, itV> vp;
-    typedef boost::graph_traits<boost::ExecPlan>::vertex_descriptor AlgoVertex;
 
     for (vp = boost::vertices(execPlan); vp.first != vp.second; ++vp.first) {
-      AlgoVertex v = *vp.first;
-      auto index = boost::get(&boost::AlgoNodeStruct::m_name, execPlan);
+      boost::AlgoVertex v = *vp.first;
+      auto index = boost::get(&boost::AlgoProps::m_name, execPlan);
       if (index[v] == node.getNodeName()) {
         runThroughAdjacents(v,execPlan);
         float rank = m_nodesSucceeded;
@@ -289,22 +296,21 @@ namespace concurrency {
     boost::ExecPlan execPlan;
 
     boost::dynamic_properties dp;
-    dp.property("name", boost::get(&boost::AlgoNodeStruct::m_name, execPlan));
-    dp.property("index", boost::get(&boost::AlgoNodeStruct::m_index, execPlan));
-    dp.property("dataRank", boost::get(&boost::AlgoNodeStruct::m_rank, execPlan));
-    dp.property("runtime", boost::get(&boost::AlgoNodeStruct::m_runtime, execPlan));
+    dp.property("name", boost::get(&boost::AlgoProps::m_name, execPlan));
+    dp.property("index", boost::get(&boost::AlgoProps::m_index, execPlan));
+    dp.property("dataRank", boost::get(&boost::AlgoProps::m_rank, execPlan));
+    dp.property("runtime", boost::get(&boost::AlgoProps::m_runtime, execPlan));
 
     boost::read_graphml(myfile, execPlan, dp);
 
     typedef boost::graph_traits<boost::ExecPlan>::vertex_iterator itV;
     std::pair<itV, itV> vp;
-    typedef boost::graph_traits<boost::ExecPlan>::vertex_descriptor AlgoVertex;
 
     for (vp = boost::vertices(execPlan); vp.first != vp.second; ++vp.first) {
-      AlgoVertex v = *vp.first;
-      auto index = boost::get(&boost::AlgoNodeStruct::m_name, execPlan);
+      boost::AlgoVertex v = *vp.first;
+      auto index = boost::get(&boost::AlgoProps::m_name, execPlan);
       if (index[v] == node.getNodeName()) {
-        auto index_runtime = boost::get(&boost::AlgoNodeStruct::m_runtime, execPlan);
+        auto index_runtime = boost::get(&boost::AlgoProps::m_runtime, execPlan);
         float rank = index_runtime[v];
         node.setRank(rank);
         //std::cout << "Rank of " << index[v] << " is " << rank << std::endl;
@@ -322,20 +328,19 @@ namespace concurrency {
     boost::ExecPlan execPlan;
 
     boost::dynamic_properties dp;
-    dp.property("name", boost::get(&boost::AlgoNodeStruct::m_name, execPlan));
-    dp.property("Eccentricity", boost::get(&boost::AlgoNodeStruct::m_eccentricity, execPlan));
+    dp.property("name", boost::get(&boost::AlgoProps::m_name, execPlan));
+    dp.property("Eccentricity", boost::get(&boost::AlgoProps::m_eccentricity, execPlan));
 
     boost::read_graphml(myfile, execPlan, dp);
 
     typedef boost::graph_traits<boost::ExecPlan>::vertex_iterator itV;
     std::pair<itV, itV> vp;
-    typedef boost::graph_traits<boost::ExecPlan>::vertex_descriptor AlgoVertex;
 
     for (vp = boost::vertices(execPlan); vp.first != vp.second; ++vp.first) {
-      AlgoVertex v = *vp.first;
-      auto index = boost::get(&boost::AlgoNodeStruct::m_name, execPlan);
+      boost::AlgoVertex v = *vp.first;
+      auto index = boost::get(&boost::AlgoProps::m_name, execPlan);
       if (index[v] == node.getNodeName()) {
-        auto index_eccentricity = boost::get(&boost::AlgoNodeStruct::m_eccentricity, execPlan);
+        auto index_eccentricity = boost::get(&boost::AlgoProps::m_eccentricity, execPlan);
         float rank = index_eccentricity[v];
         node.setRank(rank);
         //std::cout << "Rank of " << index[v] << " is " << rank << std::endl;
@@ -424,7 +429,7 @@ namespace concurrency {
     auto& states = m_slot->algsStates;
     int& decision = m_slot->controlFlowState[node.getNodeIndex()];
 
-    auto dataPromoter = DataReadyPromoter(*m_slot);
+    auto dataPromoter = DataReadyPromoter(*m_slot, m_cause);
 
     if (State::INITIAL == states[node.getAlgoIndex()]) {
       states.updateState(node.getAlgoIndex(), State::CONTROLREADY);

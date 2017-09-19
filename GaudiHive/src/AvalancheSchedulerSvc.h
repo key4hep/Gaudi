@@ -4,17 +4,19 @@
 // Local includes
 #include "AlgsExecutionStates.h"
 #include "EventSlot.h"
-#include "ExecutionFlowManager.h"
+#include "PrecedenceSvc.h"
 
 // Framework include files
 #include "GaudiKernel/IAccelerator.h"
 #include "GaudiKernel/IAlgExecStateSvc.h"
 #include "GaudiKernel/IAlgResourcePool.h"
+#include "GaudiKernel/ICondSvc.h"
 #include "GaudiKernel/IHiveWhiteBoard.h"
 #include "GaudiKernel/IRunable.h"
 #include "GaudiKernel/IScheduler.h"
 #include "GaudiKernel/IThreadPoolSvc.h"
 #include "GaudiKernel/Service.h"
+#include "GaudiKernel/Algorithm.h"
 
 // C++ include files
 #include <functional>
@@ -191,6 +193,9 @@ private:
   /// Vector to bookkeep the information necessary to the index2name conversion
   std::vector<std::string> m_algname_vect;
 
+  /// A shortcut to the Precedence Service
+  SmartIF<IPrecedenceSvc> m_precSvc;
+
   /// A shortcut to the whiteboard
   SmartIF<IHiveWhiteBoard> m_whiteboard;
 
@@ -273,9 +278,6 @@ private:
 
   // ------------------------------------------------------------------------
 
-  /// Member to take care of the control flow
-  concurrency::ExecutionFlowManager m_efManager;
-
   // Service for thread pool initialization
   SmartIF<IThreadPoolSvc> m_threadPoolSvc;
   size_t m_maxEventsInFlight {0};
@@ -321,7 +323,6 @@ public:
 
 private:
   void dumpState( std::ostringstream& );
-  concurrency::PrecedenceRulesGraph* m_efg;
 
 };
 
