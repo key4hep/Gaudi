@@ -159,7 +159,7 @@ namespace Gaudi
         }
         inline TYPE fromString( const std::string& s )
         {
-          TYPE tmp;
+          TYPE tmp{};
           using Gaudi::Parsers::parse;
           if ( !parse( tmp, s ).isSuccess() ) {
             throw std::invalid_argument( "cannot parse '" + s + "' to " + System::typeinfoName( typeid( TYPE ) ) );
