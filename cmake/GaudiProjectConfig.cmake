@@ -790,7 +790,7 @@ for f in \"$@\" ; do
   if(autopep8_cmd)
     add_custom_target(apply-formatting-python
       COMMAND ${autopep8_cmd}
-                  --recursive --in-place ${CMAKE_SOURCE_DIR}
+                  --recursive --in-place --exclude ${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}
       COMMENT "Applying coding conventions to Python sources"
     )
     add_dependencies(apply-formatting apply-formatting-python)
