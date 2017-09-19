@@ -18,7 +18,6 @@
 // Boost
 // ============================================================================
 #include "boost/format.hpp"
-#include "boost/static_assert.hpp"
 #include "boost/algorithm/string/case_conv.hpp"
 // ============================================================================
 
@@ -33,6 +32,8 @@
 #endif
 
 
+
+
 /** @file
  *  Implementation file for class StatEntity
  *  @date 26/06/2001
@@ -41,42 +42,25 @@
 // ============================================================================
 // The full contructor from all important values
 // ============================================================================
-StatEntity::StatEntity
-( const unsigned long entries ,
-  const double        flag    ,
-  const double        flag2   ,
-  const double        minFlag ,
-  const double        maxFlag )
-  : m_se_nEntries            ( entries )
-  , m_se_accumulatedFlag     ( flag    )
-  , m_se_accumulatedFlag2    ( flag2   )
-  , m_se_minimalFlag         ( minFlag )
-  , m_se_maximalFlag         ( maxFlag )
-  , m_se_nEntriesBeforeReset ( -1      )
+StatEntity::StatEntity ( const unsigned long entries ,
+                         const double        flag    ,
+                         const double        flag2   ,
+                         const double        minFlag ,
+                         const double        maxFlag )
+  : m_se{  entries, flag, flag2, minFlag, maxFlag }
 {}
 // ============================================================================
 // The copy contructor, non default because of atomics
 // ============================================================================
-StatEntity::StatEntity
-( const StatEntity& other )
-  : m_se_nEntries            ( other.m_se_nEntries )
-  , m_se_accumulatedFlag     ( other.m_se_accumulatedFlag )
-  , m_se_accumulatedFlag2    ( other.m_se_accumulatedFlag2 )
-  , m_se_minimalFlag         ( other.m_se_minimalFlag )
-  , m_se_maximalFlag         ( other.m_se_maximalFlag )
-  , m_se_nEntriesBeforeReset ( other.m_se_nEntriesBeforeReset )
+StatEntity::StatEntity( const StatEntity& other )
+  : m_se{ other.m_se }
 {}
 // ============================================================================
-// The copy contructor, non default because of atomics
+// The assignment operator, non default because of atomics
 // ============================================================================
-StatEntity& StatEntity::operator=
-( const StatEntity& other ) {
-  m_se_nEntries = other.m_se_nEntries;
-  m_se_accumulatedFlag = other.m_se_accumulatedFlag;
-  m_se_accumulatedFlag2 = other.m_se_accumulatedFlag2;
-  m_se_minimalFlag = other.m_se_minimalFlag;
-  m_se_maximalFlag = other.m_se_maximalFlag;
-  m_se_nEntriesBeforeReset = other.m_se_nEntriesBeforeReset;
+StatEntity& StatEntity::operator= ( const StatEntity& other ) {
+  std::lock_guard<std::mutex> guard(m_mutex);
+  m_se = other.m_se;
   return *this;
 }// ============================================================================
 // the internal format description
@@ -84,9 +68,9 @@ StatEntity& StatEntity::operator=
 const std::string& StatEntity::format()
 {
   // check for "X" or "L"
-  BOOST_STATIC_ASSERT(((sizeof(unsigned long)==4)||(sizeof(unsigned long)==8)));
+  static_assert(((sizeof(unsigned long)==4)||(sizeof(unsigned long)==8)),"check for X or L");
   // check for "D"
-  BOOST_STATIC_ASSERT((sizeof(double)==8))        ; ///< check for "D"
+  static_assert((sizeof(double)==8),"check for D")        ; ///< check for "D"
   //
   static const std::string s_fmt =
     ( ( 8 == sizeof(unsigned long) ) ?"X:1;" : "L:1;" ) + std::string("D:4") ;
@@ -101,67 +85,85 @@ int StatEntity::size  ()
   return s_size ;
 }
 // ============================================================================
+//t
+// ============================================================================
+unsigned long StatEntity::se::add( double Flag )
+{
+  if      ( 0 <  nEntriesBeforeReset ) { --nEntriesBeforeReset; }
+  else if ( 0 == nEntriesBeforeReset ) { *this = {}; } ///< reset everything
+  /// accumulate the flag
+  accumulatedFlag   += Flag        ; // accumulate the flag
+  /// evaluate min/max
+  minimalFlag = std::min ( minimalFlag , Flag ) ; // evaluate min/max
+  maximalFlag = std::max ( maximalFlag , Flag ) ; // evaluate min/max
+  // accumulate statistics, but avoid FPE for small flags...
+  static double s_min1 = 2 * ::sqrt ( std::numeric_limits<double>::min() ) ;
+  if ( s_min1 < Flag || -s_min1 > Flag )
+  { accumulatedFlag2  += Flag * Flag ; }// accumulate statistics:
+  //
+  return ++nEntries ;
+}
+// ============================================================================
 // mean value of flag
 // ============================================================================
-double StatEntity::mean   () const
+double StatEntity::se::mean   () const
 {
-  if ( 0 >= nEntries() ) { return 0 ;}
-  const long double f1 = m_se_accumulatedFlag ;
-  const long double f2 = m_se_nEntries ;
-  return f1 / f2 ;
+  const long double f1 = accumulatedFlag ;
+  const long double f2 = nEntries ;
+  return nEntries >0 ? f1 / f2 : 0 ;
 }
 // ============================================================================
 // r.m.s of flag
 // ============================================================================
-double StatEntity::rms    () const
+double StatEntity::se::rms    () const
 {
-  if ( 0 >= nEntries() ) { return 0 ; }
-  const long double f1  = m_se_accumulatedFlag  ;
-  const long double f2  = f1 / nEntries () ;
-  const long double f3  = m_se_accumulatedFlag2 ;
-  const long double f4  = f3 / nEntries () ;
+  if ( 0 >= nEntries ) { return 0 ; }
+  const long double f1  = accumulatedFlag  ;
+  const long double f2  = f1 / nEntries    ;
+  const long double f3  = accumulatedFlag2 ;
+  const long double f4  = f3 / nEntries    ;
   const long double result = f4 - f2 * f2  ;
   return ( 0 > result ) ? 0 : ::sqrtl ( result ) ;
 }
 // ============================================================================
 // error in mean value of flag
 // ============================================================================
-double StatEntity::meanErr() const
+double StatEntity::se::meanErr() const
 {
-  if ( 0 >= nEntries () ) { return 0 ; }
-  const long double f1  = m_se_accumulatedFlag  ;
-  const long double f2  = f1 / nEntries () ;
-  const long double f3  = m_se_accumulatedFlag2 ;
-  const long double f4  = f3 / nEntries () ;
+  if ( 0 >= nEntries ) { return 0 ; }
+  const long double f1  = accumulatedFlag  ;
+  const long double f2  = f1 / nEntries    ;
+  const long double f3  = accumulatedFlag2 ;
+  const long double f4  = f3 / nEntries    ;
   const long double result = f4 - f2 * f2  ;
   if ( 0 > result      ) { return 0 ; }
   //
-  return ::sqrtl ( result / nEntries () ) ;
+  return ::sqrtl ( result / nEntries    ) ;
 }
 // ============================================================================
 // interprete the content as efficiency
 // ============================================================================
-double StatEntity::efficiency    () const
+double StatEntity::se::efficiency    () const
 {
-  if ( 1 > nEntries () || 0 > sum() || sum() > nEntries() ) { return -1 ; }
-  const long double fMin = min () ;
+  if ( 1 > nEntries  || 0 > accumulatedFlag || accumulatedFlag > nEntries ) { return -1 ; }
+  const long double fMin = minimalFlag ;
   if ( 0 != fMin && 1 != fMin ) { return -1 ; }
-  const long double fMax = max () ;
+  const long double fMax = maximalFlag  ;
   if ( 0 != fMax && 1 != fMax ) { return -1 ; }
   return mean() ;
 }
 // ============================================================================
 // evaluate the binomial error in efficiency
 // ============================================================================
-double StatEntity::efficiencyErr () const
+double StatEntity::se::efficiencyErr () const
 {
   if ( 0 > efficiency() ) { return -1 ; }
   //
-  long double n1 = sum () ;
+  long double n1 = accumulatedFlag ;
   // treat properly the bins with eff=0
   if ( 0 == n1 ) { n1 = 1 ; } ///< @attention treat properly the bins with eff=0
-  const long double n3 = nEntries  () ;
-  long double       n2 = n3 - flag () ;
+  const long double n3 = nEntries   ;
+  long double       n2 = n3 - accumulatedFlag ;
   // treat properly the bins with eff=100%
   if ( 1 > fabsl( n2 ) ) { n2 = 1 ; } ///< @attention treat properly the bins with eff=100%
   //
@@ -173,58 +175,16 @@ double StatEntity::efficiencyErr () const
 StatEntity& StatEntity::operator+=( const StatEntity& other )
 {
   std::lock_guard<std::mutex> guard(m_mutex);
-  m_se_nEntries         += other.m_se_nEntries ;
-  m_se_accumulatedFlag  += other.m_se_accumulatedFlag  ;
-  m_se_accumulatedFlag2 += other.m_se_accumulatedFlag2 ;
-  m_se_minimalFlag = std::min ( m_se_minimalFlag , other.m_se_minimalFlag ) ;
-  m_se_maximalFlag = std::max ( m_se_maximalFlag , other.m_se_maximalFlag ) ;
-  //
+  m_se += other.m_se;
   return *this ;
-}
-// ============================================================================
-/// comparison
-// ============================================================================
-bool StatEntity::operator< ( const StatEntity& se ) const
-{
-  if      ( &se == this                     ) { return false ; }
-  else if ( nEntries () <   se.nEntries ()  ) { return true  ; }
-  else if ( nEntries () ==  se.nEntries () &&
-            sum      () <   se.sum      ()  ) { return true  ; }
-  else if ( nEntries () ==  se.nEntries () &&
-            sum      () ==  se.sum      () &&
-            min      () <   se.min      ()  ) { return true  ; }
-  else if ( nEntries () ==  se.nEntries () &&
-            sum      () ==  se.sum      () &&
-            min      () ==  se.min      () &&
-            max      () <   se.max      ()  ) { return true  ; }
-  else if ( nEntries () ==  se.nEntries () &&
-            sum      () ==  se.flag     () &&
-            min      () ==  se.min      () &&
-            max      () ==  se.max      () &&
-            sum2     () <   se.sum2     ()  ) { return true  ; }
-  ///
-  return false;
 }
 // ============================================================================
 // increment a flag
 // ============================================================================
-unsigned long StatEntity::add ( const double Flag )
+unsigned long StatEntity::add ( const double flag )
 {
   std::lock_guard<std::mutex> guard(m_mutex);
-  //
-  if      ( 0 <  m_se_nEntriesBeforeReset ) { --m_se_nEntriesBeforeReset; }
-  else if ( 0 == m_se_nEntriesBeforeReset ) { reset(); } ///< reset everything
-  /// accumulate the flag
-  m_se_accumulatedFlag   += Flag        ; // accumulate the flag
-  /// evaluate min/max
-  m_se_minimalFlag = std::min ( m_se_minimalFlag , Flag ) ; // evaluate min/max
-  m_se_maximalFlag = std::max ( m_se_maximalFlag , Flag ) ; // evaluate min/max
-  // accumulate statistics, but avoid FPE for small flags...
-  static const double s_min1 = 2 * ::sqrt ( std::numeric_limits<double>::min() ) ;
-  if ( s_min1 < Flag || -s_min1 > Flag )
-  { m_se_accumulatedFlag2  += Flag * Flag ; }// accumulate statistics:
-  //
-  return ++m_se_nEntries ;
+  return m_se.add(flag);
 }
 // ============================================================================
 // reset all quantities
@@ -232,19 +192,16 @@ unsigned long StatEntity::add ( const double Flag )
 void StatEntity::reset()
 {
   std::lock_guard<std::mutex> guard(m_mutex);
-  //
-  m_se_nEntries            =        0 ;
-  m_se_accumulatedFlag     =        0 ;
-  m_se_minimalFlag         =       std::numeric_limits<double>::max() ;
-  m_se_maximalFlag         =  -1 * std::numeric_limits<double>::max() ;
-  m_se_accumulatedFlag2    =        0 ;
-  m_se_nEntriesBeforeReset =       -1 ; // ?
+  m_se = {};
 }
 // ============================================================================
 /// DR specify number of entry before reset
 // ============================================================================
 void StatEntity::setnEntriesBeforeReset(unsigned long nEntriesBeforeReset )
-{ m_se_nEntriesBeforeReset = nEntriesBeforeReset; }
+{
+    std::lock_guard<std::mutex> guard(m_mutex);
+    m_se.nEntriesBeforeReset = nEntriesBeforeReset;
+}
 // ============================================================================
 // representation as string
 // ============================================================================
@@ -264,6 +221,13 @@ std::ostream& StatEntity::print ( std::ostream& o ) const
   boost::format fmt2 ( " Mean=%|#10.4g| +- %|-#10.5g| Min/Max=%|#10.4g|/%|-#10.4g|" ) ;
   o << fmt2 % mean() % rms() % min() % max() ;
   return o ;
+}
+// ============================================================================
+/// comparison
+// ============================================================================
+bool operator<( const StatEntity& lhs, const StatEntity& rhs )
+{
+  return lhs.m_se < rhs.m_se;
 }
 // ============================================================================
 // external operator for addition of StatEntity and a number

@@ -67,7 +67,7 @@ class GAUDI_API StatEntity final
 public:
   // ==========================================================================
   /// the default constructor
-  StatEntity  () { reset() ; }
+  StatEntity  () = default;
   /* The full constructor from all important values:
    * @attention it need to be coherent with
    *            the actual structure of the class
@@ -88,27 +88,25 @@ public:
   StatEntity ( const StatEntity& );
   /// assignment operator
   StatEntity& operator= ( const StatEntity& );
-  /// destructor
-  ~StatEntity () = default;
   // ==========================================================================
 public: // the basic quantities
   // ==========================================================================
-  /// getters
-  const unsigned long& nEntries () const { return m_se_nEntries         ; }
+  /// getters -- no synchronization!
+  const unsigned long& nEntries () const { return m_se.nEntries         ; }
   /// accumulated value
-  const double&        sum      () const { return m_se_accumulatedFlag  ; }
+  const double&        sum      () const { return m_se.accumulatedFlag  ; }
   /// accumulated value**2
-  const double&        sum2     () const { return m_se_accumulatedFlag2 ; }
+  const double&        sum2     () const { return m_se.accumulatedFlag2 ; }
   /// mean value of counter
-  double               mean     () const ;
+  double               mean     () const { return m_se.mean(); }
   /// r.m.s of value
-  double               rms      () const ;
+  double               rms      () const { return m_se.rms(); }
   /// error in mean value of counter
-  double               meanErr  () const ;
+  double               meanErr  () const { return m_se.meanErr(); }
   /// minimal value
-  const double&        min      () const { return m_se_minimalFlag ; }
+  const double&        min      () const { return m_se.minimalFlag ; }
   /// maximal value
-  const double&        max      () const { return m_se_maximalFlag ; }
+  const double&        max      () const { return m_se.maximalFlag ; }
   // ==========================================================================
 public:
   // ==========================================================================
@@ -144,7 +142,7 @@ public:
    *  @see StatEntity::eff
    *  @see StatEntity::efficiencyErr
    */
-  double efficiency () const ;
+  double efficiency () const { return m_se.efficiency(); }
   /** Interpret the counter as some measure of efficiency and evaluate the
    *  uncertainty of this efficiency using <b>binomial</b> estimate.
    *  The efficiency is calculated as the ratio of the weight
@@ -181,7 +179,7 @@ public:
    *  @see StatEntity::effErr
    *  @see StatEntity::flagMeanErr
    */
-  double efficiencyErr () const ;
+  double efficiencyErr () const { return m_se.efficiencyErr(); }
   /// shortcut, @see StatEntity::efficiency
   double eff           () const { return efficiency    () ; }
   /// shortcut, @see StatEntity::efficiencyErr
@@ -354,7 +352,7 @@ public: // operators
 public:
   // ==========================================================================
   /// comparison
-  bool operator<( const StatEntity& se ) const ;
+  GAUDI_API friend bool operator<( const StatEntity& lhs, const StatEntity& rhs );
   /** add a value
    *  @param Flag value to be added
    *  @return number of entries
@@ -365,7 +363,7 @@ public:
   /// DR specify number of entry before reset
   void setnEntriesBeforeReset ( unsigned long nEntriesBeforeReset );
   /// representation as string
-  std::string   toString () const;
+  std::string toString() const;
   /** printout  to std::ostream
    *  @param s the reference to the output stream
    */
@@ -433,33 +431,60 @@ public:
    */
   static int                size  () ;
   // ==========================================================================
+  // ============================================================================
+  /// external operator for addition of StatEntity and a number
+  GAUDI_API friend StatEntity operator+( const StatEntity& entity , const double      value  ) ;
+  /// external operator for addition of StatEntity and a number
+  GAUDI_API friend StatEntity operator+( const double      value  , const StatEntity& entity ) ;
+  /// external operator for addition of StatEntity and a number
+  GAUDI_API friend StatEntity operator+( const StatEntity& entity , const StatEntity& value  ) ;
+  /// external operator for subtraction of StatEntity and a number
+  GAUDI_API friend StatEntity operator-( const StatEntity& entity , const double      value  ) ;
+  /// external printout operator to std::ostream
+  GAUDI_API friend std::ostream& operator<<( std::ostream& stream , const StatEntity& entity ) ;
+  // ============================================================================
 private:
   // ==========================================================================
-  /// number of calls
-  unsigned long                m_se_nEntries          ;
-  /// accumulated flag
-  double                       m_se_accumulatedFlag   ;
-  double                       m_se_accumulatedFlag2  ;
-  double                       m_se_minimalFlag       ;
-  double                       m_se_maximalFlag       ;
-  // DR number of calls before reset
-  long                         m_se_nEntriesBeforeReset ;
-  // Mutex to protect calls of add/reset/operator++
-  std::mutex                   m_mutex; 
+  struct se {
+    /// number of calls
+    unsigned long                nEntries         = 0;
+    /// accumulated flag
+    double                       accumulatedFlag  = 0;
+    double                       accumulatedFlag2 = 0;
+    double                       minimalFlag      = std::numeric_limits<double>::max() ;
+    double                       maximalFlag      =  -1 * std::numeric_limits<double>::max() ;
+    // DR number of calls before reset
+    long                         nEntriesBeforeReset = -1 ; // ?
+
+    se& operator+=(const struct se& other) {
+        nEntries         += other.nEntries ;
+        accumulatedFlag  += other.accumulatedFlag  ;
+        accumulatedFlag2 += other.accumulatedFlag2 ;
+        minimalFlag = std::min ( minimalFlag , other.minimalFlag ) ;
+        maximalFlag = std::max ( maximalFlag , other.maximalFlag ) ;
+        return *this;
+    }
+
+    unsigned long add( double Flag ) ;
+    double mean() const;
+    double rms() const;
+    double meanErr() const;
+    double efficiency() const;
+    double efficiencyErr () const;
+
+    friend bool operator<(const struct se& lhs, const struct se& rhs) {
+      auto order = [](const auto& s) { return std::tie( s.nEntries,
+                                                        s.accumulatedFlag,
+                                                        s.minimalFlag,
+                                                        s.maximalFlag,
+                                                        s.accumulatedFlag2 ); };
+      return order(lhs) < order(rhs);
+    };
+  } m_se = {};
+  // Mutex to protect calls of add/reset/operator++, i.e. all _writes_ to (but not reads from!) m_se;
+  std::mutex                   m_mutex;
   // ==========================================================================
 };
-// ============================================================================
-/// external operator for addition of StatEntity and a number
-GAUDI_API StatEntity operator+( const StatEntity& entity , const double      value  ) ;
-/// external operator for addition of StatEntity and a number
-GAUDI_API StatEntity operator+( const double      value  , const StatEntity& entity ) ;
-/// external operator for addition of StatEntity and a number
-GAUDI_API StatEntity operator+( const StatEntity& entity , const StatEntity& value  ) ;
-/// external operator for subtraction of StatEntity and a number
-GAUDI_API StatEntity operator-( const StatEntity& entity , const double      value  ) ;
-/// external printout operator to std::ostream
-GAUDI_API std::ostream& operator<<( std::ostream& stream , const StatEntity& entity ) ;
-// ============================================================================
 namespace Gaudi
 {
   // ==========================================================================
