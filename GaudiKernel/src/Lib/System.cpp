@@ -371,7 +371,7 @@ const std::string System::typeinfoName( const char* class_name ) {
   auto realname = std::unique_ptr<char,decltype(free)*>( abi::__cxa_demangle(class_name, nullptr, nullptr, &status), std::free );
   if (!realname) return class_name;
 #if _GLIBCXX_USE_CXX11_ABI
-  static const std::regex cxx11_string{"std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > ?"};
+  static const std::regex cxx11_string{"std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >( (?=>))?"};
   result = std::regex_replace( realname.get(), cxx11_string, "std::string" );
 #else
   result = std::string{realname.get()};
