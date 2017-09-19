@@ -115,6 +115,8 @@ option(GAUDI_SLOW_DEBUG
        "turn off all optimizations in debug builds"
        ${GAUDI_SLOW_DEBUG_DEFAULT})
 
+option(GAUDI_DIAGNOTICS_COLOR "enable colors in compiler diagnostics" OFF)
+
 # set optimization flags (_opt_level_* and _opt_ext_*)
 # - default optimization levels
 set(_opt_level_RELEASE "-O3")
@@ -181,10 +183,12 @@ if((NOT GAUDI_CXX_STANDARD STREQUAL "c++98") AND
   add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
 endif()
 
-#--- Compilation Flags ---------------------------------------------------------
-if(NOT GAUDI_FLAGS_SET)
-  #message(STATUS "Setting cached build flags")
+# summary of options affecting cached build flags
+set(GAUDI_FLAGS_OPTIONS "${BINARY_TAG};${GAUDI_ARCH};${GAUDI_SLOW_DEBUG};${GAUDI_SUGGEST_OVERRIDE}")
 
+#--- Compilation Flags ---------------------------------------------------------
+if(NOT GAUDI_FLAGS_SET EQUAL GAUDI_FLAGS_OPTIONS)
+  #message(STATUS "Setting cached build flags")
   if(MSVC90)
 
     set(CMAKE_CXX_FLAGS_DEBUG "/D_NDEBUG /MD /Zi /Ob0 /Od /RTC1"
@@ -308,8 +312,9 @@ if(NOT GAUDI_FLAGS_SET)
   endif()
 
   # prevent resetting of the flags
-  set(GAUDI_FLAGS_SET ON
-      CACHE INTERNAL "flag to check if the compilation flags have already been set")
+  set(GAUDI_FLAGS_SET "${GAUDI_FLAGS_OPTIONS}"
+      CACHE INTERNAL "flag to check if the compilation flags have already been set"
+      FORCE)
 endif()
 
 
@@ -390,6 +395,12 @@ else()
   if(BINARY_TAG_COMP_NAME STREQUAL "gcc" AND NOT BINARY_TAG_COMP_VERSION VERSION_LESS "5.0")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wsuggest-override")
   endif()
+endif()
+
+if(GAUDI_DIAGNOTICS_COLOR)
+  foreach(_language CXX C Fortran)
+    set(CMAKE_${_language}_FLAGS "${CMAKE_${_language}_FLAGS} -fdiagnostics-color")
+  endforeach()
 endif()
 
 #--- Special flags -------------------------------------------------------------
