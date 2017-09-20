@@ -23,7 +23,10 @@
 #include <array>
 
 #include "GaudiKernel/System.h"
-#include "instrset.h"
+
+#define VCL_NAMESPACE Gaudi
+#include "instrset_detect.cpp"
+#undef VCL_NAMESPACE
 
 #ifdef _WIN32
   #define strcasecmp  _stricmp
@@ -383,7 +386,7 @@ const std::string System::typeinfoName( const char* class_name ) {
   return result;
 }
 
-namespace { 
+namespace {
     std::string init_hostName()  {
         std::array<char,512> buffer;
         std::fill_n(buffer.begin(),buffer.size(),0);
@@ -461,13 +464,11 @@ const std::string& System::machineType() {
   return mach;
 }
 
+
 int System::instructionsetLevel() {
-  return Gaudi::instrset_detect();
+  using namespace Gaudi;
+  return instrset_detect();
 }
-
-
-
-
 
 
 /// User login name
