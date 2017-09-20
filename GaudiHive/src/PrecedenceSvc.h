@@ -80,6 +80,9 @@ private:
   /// Scheduling strategy
   Gaudi::Property<std::string> m_mode{this, "TaskPriorityRule", "",
                                       "Task avalanche induction strategy."};
+  /// Scheduling strategy
+  Gaudi::Property<bool> m_ignoreDFRules{this, "IgnoreDFRules", false,
+                                        "Ignore the data flow rules."};
   /// Precedence analysis facilities
   boost::filesystem::path m_dumpDirName{boost::filesystem::unique_path(
                             boost::filesystem::path("precedence.analysis.%%%%"))};

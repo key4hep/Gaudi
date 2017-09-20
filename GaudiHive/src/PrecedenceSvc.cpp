@@ -30,6 +30,17 @@ StatusCode PrecedenceSvc::initialize() {
     return sc;
   }
 
+  ON_DEBUG {
+    // prepare a directory to dump precedence analysis files to.
+    if (m_dumpPrecTrace or m_dumpPrecRules) {
+      if(!boost::filesystem::create_directory(m_dumpDirName)) {
+        error() << "Could not create directory " << m_dumpDirName << "required "
+                   "for task precedence tracing" << endmsg;
+        return StatusCode::FAILURE;
+      }
+    }
+  }
+
   // Get the algo resource pool
   m_algResourcePool = serviceLocator()->service("AlgResourcePool");
    if (!m_algResourcePool.isValid()) {
@@ -51,6 +62,12 @@ StatusCode PrecedenceSvc::initialize() {
       fatal() << "Could not assemble the CF precedence realm" << endmsg;
       return sc;
     }
+  }
+
+  if (m_ignoreDFRules) {
+    warning() << "Ignoring DF precedence rules, disabling all associated features"
+              << endmsg;
+    return StatusCode::SUCCESS;
   }
 
   ON_DEBUG debug() << "Assembling DF precedence realm:" << endmsg;
@@ -82,17 +99,6 @@ StatusCode PrecedenceSvc::initialize() {
   }
 
   ON_DEBUG debug() << m_PRGraph.dumpDataFlow() << endmsg;
-
-  ON_DEBUG {
-    // prepare a directory to dump precedence analysis files to.
-    if (m_dumpPrecTrace or m_dumpPrecRules) {
-      if(!boost::filesystem::create_directory(m_dumpDirName)) {
-        error() << "Could not create directory " << m_dumpDirName << "required "
-                   "for task precedence tracing" << endmsg;
-        return StatusCode::FAILURE;
-      }
-    }
-  }
 
   if (sc.isSuccess()) info() << "PrecedenceSvc initialized successfully" << endmsg;
 
