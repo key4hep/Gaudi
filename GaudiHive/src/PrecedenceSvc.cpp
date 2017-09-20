@@ -287,7 +287,7 @@ void PrecedenceSvc::dumpPrecedenceRules(EventSlot& slot) {
   boost::filesystem::path pth{m_dumpDirName};
   pth.append(fileName);
 
-  m_PRGraph.dumpPrecRules(pth);
+  m_PRGraph.dumpPrecRules(pth,slot);
 }
 
 // ============================================================================

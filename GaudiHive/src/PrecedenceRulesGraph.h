@@ -16,9 +16,12 @@
 // fwk includes
 #include "AlgsExecutionStates.h"
 #include "IGraphVisitor.h"
+#include "EventSlot.h"
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/CommonMessaging.h"
 #include "GaudiKernel/ICondSvc.h"
+#include "GaudiKernel/ITimelineSvc.h"
+
 
 namespace boost {
 
@@ -40,9 +43,11 @@ namespace boost {
   namespace prules {
     struct AlgoProps {
       AlgoProps() {}
-      AlgoProps (Algorithm* algo, uint nodeIndex, uint algoIndex, bool inverted, bool allPass) :
-        m_name(algo->name()), m_nodeIndex(nodeIndex), m_algoIndex(algoIndex), m_algorithm(algo),
-        m_inverted(inverted), m_allPass(allPass), m_isIOBound(algo->isIOBound()) {}
+      AlgoProps (Algorithm* algo, uint nodeIndex, uint algoIndex, bool inverted,
+                 bool allPass) :
+        m_name(algo->name()), m_nodeIndex(nodeIndex), m_algoIndex(algoIndex),
+        m_algorithm(algo), m_inverted(inverted), m_allPass(allPass),
+        m_isIOBound(algo->isIOBound()) {}
 
       std::string m_name;
       uint m_nodeIndex;
@@ -57,18 +62,19 @@ namespace boost {
       bool m_allPass;
       /// If an algorithm is blocking
       bool m_isIOBound;
+
     };
 
     struct DecisionHubProps {
       DecisionHubProps (const std::string& name, uint nodeIndex,
                         bool modeConcurrent, bool modePromptDecision,
                         bool modeOR, bool allPass) :
-        m_name(name), m_index(nodeIndex), m_modeConcurrent(modeConcurrent),
+        m_name(name), m_nodeIndex(nodeIndex), m_modeConcurrent(modeConcurrent),
         m_modePromptDecision(modePromptDecision), m_modeOR(modeOR),
         m_allPass(allPass) {}
 
       std::string m_name;
-      uint m_index;
+      uint m_nodeIndex;
 
       /// Whether all daughters will be evaluated concurrently or sequentially
       bool m_modeConcurrent;
@@ -115,7 +121,7 @@ namespace boost {
       std::string operator()(const DataProps&) const { return ""; }
     };
 
-    struct GroupDecision : static_visitor<std::string> {
+    struct GroupExit : static_visitor<std::string> {
       std::string operator()(const AlgoProps&) const { return ""; }
 
       std::string operator()(const DecisionHubProps& props) const {
@@ -124,7 +130,7 @@ namespace boost {
       std::string operator()(const DataProps&) const { return ""; }
     };
 
-    struct InvertedDecision : static_visitor<std::string> {
+    struct DecisionNegation : static_visitor<std::string> {
       std::string operator()(const AlgoProps& props) const {
         return props.m_inverted ? "Inverted" : "Non-inverted"; }
 
@@ -141,6 +147,126 @@ namespace boost {
         return props.m_allPass ? "Optimist" : "Realist"; }
 
       std::string operator()(const DataProps&) const { return ""; }
+    };
+
+    struct CFDecision : static_visitor<std::string> {
+      CFDecision(const EventSlot& slot) : m_slot(slot) {}
+
+      std::string operator()(const AlgoProps& props) const {
+        return std::to_string(m_slot.controlFlowState.at(props.m_nodeIndex)); }
+
+      std::string operator()(const DecisionHubProps& props) const {
+        return std::to_string(m_slot.controlFlowState.at(props.m_nodeIndex)); }
+
+      std::string operator()(const DataProps&) const {
+        return ""; }
+
+      EventSlot m_slot;
+    };
+
+    struct FSMState : static_visitor<std::string> {
+      FSMState(const EventSlot& slot) : m_slot(slot) {}
+
+      std::string operator()(const AlgoProps& props) const {
+        using State = AlgsExecutionStates::State;
+        State state = m_slot.algsStates[props.m_algoIndex];
+        switch(state)
+        {
+          case State::INITIAL      : return "INITIAL";
+          case State::CONTROLREADY : return "CONTROLREADY";
+          case State::DATAREADY    : return "DATAREADY";
+          case State::EVTACCEPTED  : return "EVTACCEPTED";
+          case State::EVTREJECTED  : return "EVTREJECTED";
+          case State::ERROR        : return "ERROR";
+          default                  : return "UKNOWN";
+        }
+      }
+
+      std::string operator()(const DecisionHubProps&) const {
+        return ""; }
+
+      std::string operator()(const DataProps&) const {
+        return ""; }
+
+      EventSlot m_slot;
+    };
+
+    struct StartTime : static_visitor<std::string> {
+      StartTime(SmartIF<ITimelineSvc> timelineSvc) : m_timelineSvc(timelineSvc) {}
+
+      std::string operator() (const AlgoProps& props) const {
+
+        std::string startTime = "UKNOWN";
+
+        if (m_timelineSvc.isValid()) {
+
+          TimelineEvent te;
+          te.algorithm = props.m_name;
+          m_timelineSvc->getTimelineEvent(te);
+          startTime = std::to_string(std::chrono::duration_cast<std::chrono::nanoseconds>
+                                           (te.start.time_since_epoch()).count());
+        }
+
+        return startTime;
+      }
+
+      std::string operator()(const DecisionHubProps&) const { return ""; }
+
+      std::string operator()(const DataProps&) const { return ""; }
+
+      SmartIF<ITimelineSvc> m_timelineSvc;
+    };
+
+    struct EndTime : static_visitor<std::string> {
+      EndTime(SmartIF<ITimelineSvc> timelineSvc) : m_timelineSvc(timelineSvc) {}
+
+      std::string operator() (const AlgoProps& props) const {
+
+        std::string endTime = "UKNOWN";
+
+        if (m_timelineSvc.isValid()) {
+
+          TimelineEvent te;
+          te.algorithm = props.m_name;
+          m_timelineSvc->getTimelineEvent(te);
+          endTime = std::to_string(std::chrono::duration_cast<std::chrono::nanoseconds>
+                                           (te.end.time_since_epoch()).count());
+        }
+
+        return endTime;
+      }
+
+      std::string operator()(const DecisionHubProps&) const { return ""; }
+
+      std::string operator()(const DataProps&) const { return ""; }
+
+      SmartIF<ITimelineSvc> m_timelineSvc;
+    };
+    
+    struct Duration : static_visitor<std::string> {
+      Duration(SmartIF<ITimelineSvc> timelineSvc) : m_timelineSvc(timelineSvc) {}
+
+      std::string operator() (const AlgoProps& props) const {
+
+        std::string time = "UKNOWN";
+
+        if (m_timelineSvc.isValid()) {
+
+          TimelineEvent te;
+          te.algorithm = props.m_name;
+          m_timelineSvc->getTimelineEvent(te);
+          time = std::to_string(std::chrono::duration_cast<std::chrono::nanoseconds>
+                                  (te.end - te.start).count());
+        }
+
+        return time;
+      }
+
+      std::string operator()(const DecisionHubProps&) const { return ""; }
+
+      std::string operator()(const DataProps&) const { return ""; }
+
+      SmartIF<ITimelineSvc> m_timelineSvc;
     };
 
     struct Operations : static_visitor<std::string> {
@@ -192,10 +318,15 @@ namespace concurrency {
   using boost::prules::VertexName;
   using boost::prules::GroupMode;
   using boost::prules::GroupLogic;
-  using boost::prules::GroupDecision;
-  using boost::prules::InvertedDecision;
+  using boost::prules::GroupExit;
+  using boost::prules::DecisionNegation;
   using boost::prules::AllPass;
   using boost::prules::Operations;
+  using boost::prules::CFDecision;
+  using boost::prules::FSMState;
+  using boost::prules::StartTime;
+  using boost::prules::EndTime;
+  using boost::prules::Duration;
 
   using boost::prules::PRGraph;
 
@@ -502,7 +633,7 @@ namespace concurrency {
     /// Print out control flow of Algorithms and Sequences
     std::string dumpControlFlow() const;
     /// dump to file the precedence rules
-    void dumpPrecRules(const boost::filesystem::path&);
+    void dumpPrecRules(const boost::filesystem::path&, const EventSlot& slot);
     /// dump to file the precedence trace
     void dumpPrecTrace(const boost::filesystem::path&);
     /// set cause-effect connection between two algorithms in the precedence trace

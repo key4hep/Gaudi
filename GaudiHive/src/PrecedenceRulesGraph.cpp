@@ -566,7 +566,8 @@ namespace concurrency
 
   //---------------------------------------------------------------------------
 
-  void PrecedenceRulesGraph::dumpPrecRules(const boost::filesystem::path& fileName)
+  void PrecedenceRulesGraph::dumpPrecRules(const boost::filesystem::path& fileName,
+                                           const EventSlot& slot)
   {
     boost::filesystem::ofstream myfile;
     myfile.open( fileName, std::ios::app );
@@ -589,22 +590,50 @@ namespace concurrency
        [](VariantVertexProps const& v) {return boost::apply_visitor(GroupLogic(), v);},
        boost::get(boost::vertex_bundle, m_PRGraph)));
 
-    dp.property("InvertedDecision", boost::make_transform_value_property_map(
-       [](VariantVertexProps const& v) {return boost::apply_visitor(InvertedDecision(), v);},
+    dp.property("Decision Negation", boost::make_transform_value_property_map(
+       [](VariantVertexProps const& v) {return boost::apply_visitor(DecisionNegation(), v);},
        boost::get(boost::vertex_bundle, m_PRGraph)));
 
-    dp.property("AllPass", boost::make_transform_value_property_map(
+    dp.property("Negative Decision Inversion", boost::make_transform_value_property_map(
        [](VariantVertexProps const& v) {return boost::apply_visitor(AllPass(), v);},
        boost::get(boost::vertex_bundle, m_PRGraph)));
 
-    dp.property("PromptDecision", boost::make_transform_value_property_map(
-       [](VariantVertexProps const& v) {return boost::apply_visitor(GroupDecision(), v);},
+    dp.property("Exit Policy", boost::make_transform_value_property_map(
+       [](VariantVertexProps const& v) {return boost::apply_visitor(GroupExit(), v);},
        boost::get(boost::vertex_bundle, m_PRGraph)));
 
     dp.property("Operations", boost::make_transform_value_property_map(
        [](VariantVertexProps const& v) {return boost::apply_visitor(Operations(), v);},
        boost::get(boost::vertex_bundle, m_PRGraph)));
 
+    dp.property("CF Decision", boost::make_transform_value_property_map(
+       [&slot](VariantVertexProps const& v) {
+         return boost::apply_visitor(CFDecision(slot),v);},
+                                  boost::get(boost::vertex_bundle, m_PRGraph)));
+
+    dp.property("Algorithm State", boost::make_transform_value_property_map(
+       [&slot](VariantVertexProps const& v) {
+         return boost::apply_visitor(FSMState(slot),v);},
+                                  boost::get(boost::vertex_bundle, m_PRGraph)));
+
+    SmartIF<ITimelineSvc> timelineSvc = m_svcLocator->service<ITimelineSvc>("TimelineSvc");
+    if (timelineSvc.isValid()) {
+      dp.property("Start Time (epoch ns)", boost::make_transform_value_property_map(
+             [&timelineSvc](VariantVertexProps const& v) {
+               return boost::apply_visitor(StartTime(timelineSvc), v);
+             }, boost::get(boost::vertex_bundle, m_PRGraph)));
+      dp.property("End Time (epoch ns)", boost::make_transform_value_property_map(
+             [&timelineSvc](VariantVertexProps const& v) {
+               return boost::apply_visitor(EndTime(timelineSvc), v);
+             }, boost::get(boost::vertex_bundle, m_PRGraph)));
+      dp.property("Duration (ns)", boost::make_transform_value_property_map(
+             [&timelineSvc](VariantVertexProps const& v) {
+               return boost::apply_visitor(Duration(timelineSvc), v);
+             }, boost::get(boost::vertex_bundle, m_PRGraph)));
+    } else {
+      warning() << "Failed to get the TimelineSvc, timing will not be added to "
+                << "the task precedence rules dump" << endmsg;
+    }
 
     boost::write_graphml( myfile, m_PRGraph, dp );
 
