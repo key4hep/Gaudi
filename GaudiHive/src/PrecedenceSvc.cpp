@@ -183,7 +183,10 @@ StatusCode PrecedenceSvc::iterate(EventSlot& slot, const Cause& cause) {
     m_PRGraph.getHeadNode()->accept(visitor);
   }
 
-  ON_DEBUG if (m_dumpPrecTrace) if(CFRulesResolved(slot)) dumpPrecedenceTrace(slot);
+  ON_DEBUG {
+    if (m_dumpPrecTrace) if(CFRulesResolved(slot)) dumpPrecedenceTrace(slot);
+    if (m_dumpPrecRules) if(CFRulesResolved(slot)) dumpPrecedenceRules(slot);
+  }
 
   return StatusCode::SUCCESS;
 }
@@ -268,7 +271,29 @@ const std::string PrecedenceSvc::printState(EventSlot& slot) const {
 }
 
 // ============================================================================
+void PrecedenceSvc::dumpPrecedenceRules(EventSlot& slot) {
+
+  ON_DEBUG debug() << "Dumping temporal precedence rules" << endmsg;
+
+  std::string fileName;
+  if (m_dumpPrecRulesFile.empty()) {
+    const auto& eventID = slot.eventContext->eventID();
+    fileName = "rules.evt-" + std::to_string(eventID.event_number()) + "." +
+               "run-" + std::to_string(eventID.run_number()) + ".graphml";
+  } else {
+    fileName = m_dumpPrecRulesFile;
+  }
+
+  boost::filesystem::path pth{m_dumpDirName};
+  pth.append(fileName);
+
+  m_PRGraph.dumpPrecRules(pth);
+}
+
+// ============================================================================
 void PrecedenceSvc::dumpPrecedenceTrace(EventSlot& slot) {
+
+  ON_DEBUG debug() << "Dumping temporal precedence trace" << endmsg;
 
   std::string fileName;
   if (m_dumpPrecTraceFile.empty()) {
@@ -289,14 +314,5 @@ void PrecedenceSvc::dumpPrecedenceTrace(EventSlot& slot) {
 // Finalize
 // ============================================================================
 StatusCode PrecedenceSvc::finalize() {
-
-  ON_DEBUG if (m_dumpPrecRules) {
-
-    boost::filesystem::path pth{m_dumpDirName};
-    pth.append("precedence.rules.graphml");
-
-    m_PRGraph.dumpPrecRules(pth);
-  }
-
   return Service::finalize();
 }

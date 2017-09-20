@@ -58,7 +58,11 @@ public:
   void dumpDataFlow() const override;
   const std::string printState(EventSlot&) const override;
 
-  /// Dump precedence trace (the service must be in precedence tracing mode)
+  /// Dump precedence rules (available only in DEBUG mode, and must be enabled
+  /// with the corresponding service property)
+  void dumpPrecedenceRules(EventSlot&) override;
+  /// Dump precedence trace (available only in DEBUG mode, and must be enabled
+  /// with the corresponding service property)
   void dumpPrecedenceTrace(EventSlot&) override;
 
   /// Precedence rules accessor
@@ -91,6 +95,8 @@ private:
                                         "Dump task precedence rules. The service "
                                         "must be in DEBUG mode for this switch "
                                         "to have effect."};
+  Gaudi::Property<std::string> m_dumpPrecRulesFile{this, "PrecedenceRulesFile", "",
+           "Override default name of the GRAPHML precedence rules file."};
 
 };
 

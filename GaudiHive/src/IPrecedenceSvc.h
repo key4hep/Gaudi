@@ -48,6 +48,8 @@ public:
   virtual void dumpDataFlow() const = 0;
   virtual const std::string printState(EventSlot&) const = 0;
 
+  /// Dump precedence rules
+  virtual void dumpPrecedenceRules(EventSlot&) = 0;
   /// Dump precedence trace
   virtual void dumpPrecedenceTrace(EventSlot&) = 0;
 
