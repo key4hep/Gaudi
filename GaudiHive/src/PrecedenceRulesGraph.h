@@ -49,19 +49,19 @@ namespace boost {
         m_algorithm(algo), m_inverted(inverted), m_allPass(allPass),
         m_isIOBound(algo->isIOBound()) {}
 
-      std::string m_name;
-      uint m_nodeIndex;
-      uint m_algoIndex;
+      std::string m_name{""};
+      int m_nodeIndex{-1};
+      int m_algoIndex{-1};
       int m_rank{-1};
       /// Algorithm representative behind the AlgorithmNode
-      Algorithm* m_algorithm;
+      Algorithm* m_algorithm{nullptr};
 
       /// Whether the selection result is negated or not
-      bool m_inverted;
+      bool m_inverted{false};
       /// Whether the selection result is relevant or always "pass"
-      bool m_allPass;
+      bool m_allPass{false};
       /// If an algorithm is blocking
-      bool m_isIOBound;
+      bool m_isIOBound{false};
 
     };
 
