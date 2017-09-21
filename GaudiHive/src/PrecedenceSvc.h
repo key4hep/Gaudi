@@ -58,7 +58,11 @@ public:
   void dumpDataFlow() const override;
   const std::string printState(EventSlot&) const override;
 
-  /// Dump precedence trace (the service must be in precedence tracing mode)
+  /// Dump precedence rules (available only in DEBUG mode, and must be enabled
+  /// with the corresponding service property)
+  void dumpPrecedenceRules(EventSlot&) override;
+  /// Dump precedence trace (available only in DEBUG mode, and must be enabled
+  /// with the corresponding service property)
   void dumpPrecedenceTrace(EventSlot&) override;
 
   /// Precedence rules accessor
@@ -76,6 +80,9 @@ private:
   /// Scheduling strategy
   Gaudi::Property<std::string> m_mode{this, "TaskPriorityRule", "",
                                       "Task avalanche induction strategy."};
+  /// Scheduling strategy
+  Gaudi::Property<bool> m_ignoreDFRules{this, "IgnoreDFRules", false,
+                                        "Ignore the data flow rules."};
   /// Precedence analysis facilities
   boost::filesystem::path m_dumpDirName{boost::filesystem::unique_path(
                             boost::filesystem::path("precedence.analysis.%%%%"))};
@@ -87,6 +94,12 @@ private:
            "Override default name of the GRAPHML trace file. NOTE: if more than "
            "1 event is processed, the setting forces creation of a single file "
            "with cumulative precedence trace."};
+  Gaudi::Property<bool> m_dumpPrecRules{this, "DumpPrecedenceRules", false,
+                                        "Dump task precedence rules. The service "
+                                        "must be in DEBUG mode for this switch "
+                                        "to have effect."};
+  Gaudi::Property<std::string> m_dumpPrecRulesFile{this, "PrecedenceRulesFile", "",
+           "Override default name of the GRAPHML precedence rules file."};
 
 };
 

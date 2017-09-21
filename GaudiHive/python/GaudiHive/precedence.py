@@ -122,7 +122,8 @@ class CruncherSequence(object):
 
     unique_data_objects = []
 
-    def __init__(self, timeValue, IOboolValue, sleepFraction, cfgPath, dfgPath, topSequencer, showStat=False, outputLevel = INFO):
+    def __init__(self, timeValue, IOboolValue, sleepFraction, cfgPath, dfgPath, topSequencer, 
+                 showStat=False, timeline = False, outputLevel = INFO):
         """
         Keyword arguments:
         timeValue -- timeValue object to set algorithm execution time
@@ -138,6 +139,8 @@ class CruncherSequence(object):
 
         self.cfg = nx.read_graphml(_buildFilePath(cfgPath))
         self.dfg = nx.read_graphml(_buildFilePath(dfgPath))
+        
+        self.enableTimeline = timeline
 
         self.outputLevel = outputLevel
 
@@ -237,7 +240,8 @@ class CruncherSequence(object):
                                             shortCalib = True,
                                             varRuntime = varRuntime,
                                             avgRuntime = avgRuntime,
-                                            SleepFraction = self.sleepFraction if self.IOboolValue.get() else 0.)
+                                            SleepFraction = self.sleepFraction if self.IOboolValue.get() else 0.,
+                                            Timeline = self.enableTimeline)
 
                 self._declare_data_deps(algo_name, algo_daughter)
 

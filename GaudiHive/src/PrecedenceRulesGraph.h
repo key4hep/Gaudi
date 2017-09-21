@@ -11,30 +11,289 @@
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/graphml.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/variant.hpp>
 
 // fwk includes
 #include "AlgsExecutionStates.h"
 #include "IGraphVisitor.h"
+#include "EventSlot.h"
 #include "GaudiKernel/Algorithm.h"
 #include "GaudiKernel/CommonMessaging.h"
 #include "GaudiKernel/ICondSvc.h"
+#include "GaudiKernel/ITimelineSvc.h"
 
-namespace boost {
 
-  struct AlgoProps {
-    AlgoProps () {}
-    AlgoProps (const std::string& name, int index, int rank, double runtime) :
+namespace precedence {
+  using boost::static_visitor;
+
+  // Precedence trace utilities ==============================================
+  struct AlgoTraceProps {
+    AlgoTraceProps () {}
+    AlgoTraceProps (const std::string& name, int index, int rank, double runtime) :
       m_name(name), m_index(index), m_rank(rank), m_runtime(runtime) {}
     std::string m_name;
     int m_index{-1};
     int m_rank{-1};
-    double m_runtime{-1.0};
+    int m_runtime{-1}; //ns
     int m_eccentricity{-1};
   };
 
-  typedef adjacency_list<vecS, vecS, bidirectionalS, AlgoProps> ExecPlan;
-  typedef graph_traits<ExecPlan>::vertex_descriptor AlgoVertex;
-}
+  using PrecTrace = boost::adjacency_list<boost::vecS, boost::vecS, boost::bidirectionalS, AlgoTraceProps>;
+  using AlgoTraceVertex = boost::graph_traits<PrecTrace>::vertex_descriptor;
+
+  // Precedence rules utilities ==============================================
+    struct AlgoProps {
+      AlgoProps() {}
+      AlgoProps (Algorithm* algo, uint nodeIndex, uint algoIndex, bool inverted,
+                 bool allPass) :
+        m_name(algo->name()), m_nodeIndex(nodeIndex), m_algoIndex(algoIndex),
+        m_algorithm(algo), m_inverted(inverted), m_allPass(allPass),
+        m_isIOBound(algo->isIOBound()) {}
+
+      std::string m_name{""};
+      int m_nodeIndex{-1};
+      int m_algoIndex{-1};
+      int m_rank{-1};
+      /// Algorithm representative behind the AlgorithmNode
+      Algorithm* m_algorithm{nullptr};
+
+      /// Whether the selection result is negated or not
+      bool m_inverted{false};
+      /// Whether the selection result is relevant or always "pass"
+      bool m_allPass{false};
+      /// If an algorithm is blocking
+      bool m_isIOBound{false};
+
+    };
+
+    struct DecisionHubProps {
+      DecisionHubProps (const std::string& name, uint nodeIndex,
+                        bool modeConcurrent, bool modePromptDecision,
+                        bool modeOR, bool allPass) :
+        m_name(name), m_nodeIndex(nodeIndex), m_modeConcurrent(modeConcurrent),
+        m_modePromptDecision(modePromptDecision), m_modeOR(modeOR),
+        m_allPass(allPass) {}
+
+      std::string m_name;
+      uint m_nodeIndex;
+
+      /// Whether all daughters will be evaluated concurrently or sequentially
+      bool m_modeConcurrent;
+      /// Whether to evaluate the hub decision ASA its child decisions allow to do that.
+      /// Applicable to both concurrent and sequential cases.
+      bool  m_modePromptDecision;
+      /// Whether acting as "and" (false) or "or" node (true)
+      bool m_modeOR;
+      /// Whether always passing regardless of daughter results
+      bool m_allPass;
+    };
+
+    struct DataProps {
+      DataProps (const DataObjID& id) : m_id(id) {}
+
+      DataObjID m_id;
+    };
+
+    // Vertex unpacking ========================================================
+
+    struct VertexName : static_visitor<std::string> {
+      std::string operator()(const AlgoProps& props) const { return props.m_name; }
+
+      std::string operator()(const DecisionHubProps& props) const { return props.m_name; }
+
+      std::string operator()(const DataProps& props) const { return props.m_id.fullKey(); }
+    };
+
+    struct GroupMode : static_visitor<std::string> {
+      std::string operator()(const AlgoProps&) const { return ""; }
+
+      std::string operator()(const DecisionHubProps& props) const {
+        return props.m_modeConcurrent ? "Concurrent" : "Sequential"; }
+
+      std::string operator()(const DataProps&) const { return ""; }
+    };
+
+    struct GroupLogic : static_visitor<std::string> {
+      std::string operator()(const AlgoProps&) const { return ""; }
+
+      std::string operator()(const DecisionHubProps& props) const {
+        return props.m_modeOR ? "OR" : "AND"; }
+
+      std::string operator()(const DataProps&) const { return ""; }
+    };
+
+    struct GroupExit : static_visitor<std::string> {
+      std::string operator()(const AlgoProps&) const { return ""; }
+
+      std::string operator()(const DecisionHubProps& props) const {
+        return props.m_modePromptDecision ? "Early" : "Late"; }
+
+      std::string operator()(const DataProps&) const { return ""; }
+    };
+
+    struct DecisionNegation : static_visitor<std::string> {
+      std::string operator()(const AlgoProps& props) const {
+        return props.m_inverted ? "Inverted" : "Non-inverted"; }
+
+      std::string operator()(const DecisionHubProps&) const { return ""; }
+
+      std::string operator()(const DataProps&) const { return ""; }
+    };
+
+    struct AllPass : static_visitor<std::string> {
+      std::string operator()(const AlgoProps& props) const {
+        return props.m_allPass ? "Optimist" : "Realist"; }
+
+      std::string operator()(const DecisionHubProps& props) const {
+        return props.m_allPass ? "Optimist" : "Realist"; }
+
+      std::string operator()(const DataProps&) const { return ""; }
+    };
+
+    struct CFDecision : static_visitor<std::string> {
+      CFDecision(const EventSlot& slot) : m_slot(slot) {}
+
+      std::string operator()(const AlgoProps& props) const {
+        return std::to_string(m_slot.controlFlowState.at(props.m_nodeIndex)); }
+
+      std::string operator()(const DecisionHubProps& props) const {
+        return std::to_string(m_slot.controlFlowState.at(props.m_nodeIndex)); }
+
+      std::string operator()(const DataProps&) const { return ""; }
+
+      EventSlot m_slot;
+    };
+
+    struct FSMState : static_visitor<std::string> {
+      FSMState(const EventSlot& slot) : m_slot(slot) {}
+
+      std::string operator()(const AlgoProps& props) const {
+        using State = AlgsExecutionStates::State;
+        State state = m_slot.algsStates[props.m_algoIndex];
+        switch(state)
+        {
+          case State::INITIAL      : return "INITIAL";
+          case State::CONTROLREADY : return "CONTROLREADY";
+          case State::DATAREADY    : return "DATAREADY";
+          case State::EVTACCEPTED  : return "EVTACCEPTED";
+          case State::EVTREJECTED  : return "EVTREJECTED";
+          case State::ERROR        : return "ERROR";
+          default                  : return "UKNOWN";
+        }
+      }
+
+      std::string operator()(const DecisionHubProps&) const { return ""; }
+
+      std::string operator()(const DataProps&) const { return ""; }
+
+      EventSlot m_slot;
+    };
+
+    struct StartTime : static_visitor<std::string> {
+      StartTime(SmartIF<ITimelineSvc> timelineSvc) : m_timelineSvc(timelineSvc) {}
+
+      std::string operator() (const AlgoProps& props) const {
+
+        std::string startTime = "UKNOWN";
+
+        if (m_timelineSvc.isValid()) {
+
+          TimelineEvent te{};
+          te.algorithm = props.m_name;
+          m_timelineSvc->getTimelineEvent(te);
+          startTime = std::to_string(std::chrono::duration_cast<std::chrono::nanoseconds>
+                                           (te.start.time_since_epoch()).count());
+        }
+
+        return startTime;
+      }
+
+      std::string operator()(const DecisionHubProps&) const { return ""; }
+
+      std::string operator()(const DataProps&) const { return ""; }
+
+      SmartIF<ITimelineSvc> m_timelineSvc;
+    };
+
+    struct EndTime : static_visitor<std::string> {
+      EndTime(SmartIF<ITimelineSvc> timelineSvc) : m_timelineSvc(timelineSvc) {}
+
+      std::string operator() (const AlgoProps& props) const {
+
+        std::string endTime = "UKNOWN";
+
+        if (m_timelineSvc.isValid()) {
+
+          TimelineEvent te{};
+          te.algorithm = props.m_name;
+          m_timelineSvc->getTimelineEvent(te);
+          endTime = std::to_string(std::chrono::duration_cast<std::chrono::nanoseconds>
+                                           (te.end.time_since_epoch()).count());
+        }
+
+        return endTime;
+      }
+
+      std::string operator()(const DecisionHubProps&) const { return ""; }
+
+      std::string operator()(const DataProps&) const { return ""; }
+
+      SmartIF<ITimelineSvc> m_timelineSvc;
+    };
+    
+    struct Duration : static_visitor<std::string> {
+      Duration(SmartIF<ITimelineSvc> timelineSvc) : m_timelineSvc(timelineSvc) {}
+
+      std::string operator() (const AlgoProps& props) const {
+
+        std::string time = "UKNOWN";
+
+        if (m_timelineSvc.isValid()) {
+
+          TimelineEvent te;
+          te.algorithm = props.m_name;
+          m_timelineSvc->getTimelineEvent(te);
+          time = std::to_string(std::chrono::duration_cast<std::chrono::nanoseconds>
+                                  (te.end - te.start).count());
+        }
+
+        return time;
+      }
+
+      std::string operator()(const DecisionHubProps&) const { return ""; }
+
+      std::string operator()(const DataProps&) const { return ""; }
+
+      SmartIF<ITimelineSvc> m_timelineSvc;
+    };
+
+    struct Operations : static_visitor<std::string> {
+      std::string operator()(const AlgoProps& props) const {
+        return props.m_isIOBound ? "IO-bound" : "CPU-bound"; }
+
+      std::string operator()(const DecisionHubProps&) const { return ""; }
+
+      std::string operator()(const DataProps&) const { return ""; }
+    };
+
+    static inline std::ostream& operator<<(std::ostream& os, const AlgoProps&) {
+      return os << "Algo";
+    }
+    static inline std::ostream& operator<<(std::ostream& os, const DecisionHubProps&) {
+      return os << "DecisionHub";
+    }
+    static inline std::ostream& operator<<(std::ostream& os, const DataProps&) {
+      return os << "Data";
+    }
+
+    //=========================================================================
+
+    using VariantVertexProps = boost::variant<AlgoProps, DecisionHubProps, DataProps>;
+    using PRGraph = boost::adjacency_list<boost::vecS, boost::vecS,
+                                          boost::bidirectionalS, VariantVertexProps>;
+    using PRVertexDesc = boost::graph_traits<PRGraph>::vertex_descriptor;
+
+} // namespace prules
 
 struct Cause {
   enum class source {Root, Task};
@@ -45,8 +304,14 @@ struct Cause {
 
 namespace concurrency {
 
-  typedef AlgsExecutionStates::State State;
+  using State = AlgsExecutionStates::State;
   class PrecedenceRulesGraph;
+
+  using precedence::PRVertexDesc;
+  using precedence::AlgoProps;
+  using precedence::DecisionHubProps;
+  using precedence::DataProps;
+  using precedence::VariantVertexProps;
 
   // ==========================================================================
   class ControlFlowNode {
@@ -269,12 +534,12 @@ namespace concurrency {
 
 
   // ==========================================================================
-  typedef std::unordered_map<std::string,AlgorithmNode*> AlgoNodesMap;
-  typedef std::unordered_map<std::string,DecisionNode*> DecisionHubsMap;
-  typedef std::unordered_map<DataObjID,DataNode*,DataObjID_Hasher> DataNodesMap;
+  using AlgoNodesMap = std::unordered_map<std::string,AlgorithmNode*> ;
+  using DecisionHubsMap = std::unordered_map<std::string,DecisionNode*>;
+  using DataNodesMap = std::unordered_map<DataObjID,DataNode*,DataObjID_Hasher> ;
 
-  typedef std::unordered_map<std::string, DataObjIDColl > AlgoInputsMap;
-  typedef std::unordered_map<std::string, DataObjIDColl > AlgoOutputsMap;
+  using AlgoInputsMap = std::unordered_map<std::string, DataObjIDColl >;
+  using AlgoOutputsMap = std::unordered_map<std::string, DataObjIDColl >;
 
   struct IPrecedenceRulesGraph {
     virtual ~IPrecedenceRulesGraph() = default;
@@ -343,14 +608,19 @@ namespace concurrency {
       m_headNode->printState(output,states,node_decisions,recursionLevel);
     }
 
+    /// BGL-based facilities
+    PRVertexDesc node(const std::string&) const;
+
     /// Print out all data origins and destinations, as reflected in the EF graph
     std::string dumpDataFlow() const;
     /// Print out control flow of Algorithms and Sequences
     std::string dumpControlFlow() const;
-    /// dump to file encountered execution plan
-    void dumpExecutionPlan(const boost::filesystem::path&);
-    /// set cause-effect connection between two algorithms in the execution plan
-    void addEdgeToExecutionPlan(const AlgorithmNode* u, const AlgorithmNode* v);
+    /// dump to file the precedence rules
+    void dumpPrecRules(const boost::filesystem::path&, const EventSlot& slot);
+    /// dump to file the precedence trace
+    void dumpPrecTrace(const boost::filesystem::path&);
+    /// set cause-effect connection between two algorithms in the precedence trace
+    void addEdgeToPrecTrace(const AlgorithmNode* u, const AlgorithmNode* v);
     ///
     void dumpControlFlow(std::ostringstream&, ControlFlowNode*, const int&) const;
 
@@ -378,9 +648,13 @@ namespace concurrency {
 
     const std::chrono::system_clock::time_point m_initTime;
 
-    /// temporary items to experiment with execution planning
-    boost::ExecPlan m_ExecPlan;
-    std::map<std::string,boost::AlgoVertex> m_exec_plan_map;
+    /// facilities for algorithm precedence tracing
+    precedence::PrecTrace m_precTrace;
+    std::map<std::string,precedence::AlgoTraceVertex> m_prec_trace_map;
+    /// BGL-based graph of precedence rules
+    precedence::PRGraph m_PRGraph;
+
+    /// Enable conditions realm of precedence rules
     bool m_conditionsRealmEnabled{false};
 
   };

@@ -37,7 +37,7 @@ namespace concurrency {
       if (m_trace) {
         auto sourceNode = (m_cause.m_source == Cause::source::Task) ?
                 node.m_graph->getAlgorithmNode(m_cause.m_sourceName) : nullptr;
-        node.m_graph->addEdgeToExecutionPlan(sourceNode, &node);
+        node.m_graph->addEdgeToPrecTrace(sourceNode, &node);
       }
     }
 
@@ -246,22 +246,25 @@ namespace concurrency {
     std::ifstream myfile;
     myfile.open("InputExecutionPlan.graphml", std::ios::in);
 
-    boost::ExecPlan execPlan;
+    precedence::PrecTrace execPlan;
+
+    using precedence::AlgoTraceProps;
+    using boost::get;
 
     boost::dynamic_properties dp;
-    dp.property("name", boost::get(&boost::AlgoProps::m_name, execPlan));
-    dp.property("index", boost::get(&boost::AlgoProps::m_index, execPlan));
-    dp.property("dataRank", boost::get(&boost::AlgoProps::m_rank, execPlan));
-    dp.property("runtime", boost::get(&boost::AlgoProps::m_runtime, execPlan));
+    dp.property("name", get(&AlgoTraceProps::m_name, execPlan));
+    dp.property("index", get(&AlgoTraceProps::m_index, execPlan));
+    dp.property("dataRank", get(&AlgoTraceProps::m_rank, execPlan));
+    dp.property("runtime", get(&AlgoTraceProps::m_runtime, execPlan));
 
     boost::read_graphml(myfile, execPlan, dp);
 
-    typedef boost::graph_traits<boost::ExecPlan>::vertex_iterator itV;
+    typedef boost::graph_traits<precedence::PrecTrace>::vertex_iterator itV;
     std::pair<itV, itV> vp;
 
     for (vp = boost::vertices(execPlan); vp.first != vp.second; ++vp.first) {
-      boost::AlgoVertex v = *vp.first;
-      auto index = boost::get(&boost::AlgoProps::m_name, execPlan);
+      precedence::AlgoTraceVertex v = *vp.first;
+      auto index = get(&AlgoTraceProps::m_name, execPlan);
       if (index[v] == node.getNodeName()) {
         runThroughAdjacents(v,execPlan);
         float rank = m_nodesSucceeded;
@@ -275,10 +278,10 @@ namespace concurrency {
   }
 
   //--------------------------------------------------------------------------
-  void RankerByCummulativeOutDegree::runThroughAdjacents(boost::graph_traits<boost::ExecPlan>::vertex_descriptor vertex,
-                                                         boost::ExecPlan graph) {
-    typename boost::graph_traits<boost::ExecPlan>::adjacency_iterator itVB;
-    typename boost::graph_traits<boost::ExecPlan>::adjacency_iterator itVE;
+  void RankerByCummulativeOutDegree::runThroughAdjacents(boost::graph_traits<precedence::PrecTrace>::vertex_descriptor vertex,
+                                                         precedence::PrecTrace graph) {
+    typename boost::graph_traits<precedence::PrecTrace>::adjacency_iterator itVB;
+    typename boost::graph_traits<precedence::PrecTrace>::adjacency_iterator itVE;
 
     for (boost::tie(itVB, itVE) = adjacent_vertices(vertex, graph); itVB != itVE; ++itVB) {
       m_nodesSucceeded += 1;
@@ -293,24 +296,26 @@ namespace concurrency {
     std::ifstream myfile;
     myfile.open("InputExecutionPlan.graphml", std::ios::in);
 
-    boost::ExecPlan execPlan;
+    precedence::PrecTrace execPlan;
+    using precedence::AlgoTraceProps;
+    using boost::get;
 
     boost::dynamic_properties dp;
-    dp.property("name", boost::get(&boost::AlgoProps::m_name, execPlan));
-    dp.property("index", boost::get(&boost::AlgoProps::m_index, execPlan));
-    dp.property("dataRank", boost::get(&boost::AlgoProps::m_rank, execPlan));
-    dp.property("runtime", boost::get(&boost::AlgoProps::m_runtime, execPlan));
+    dp.property("name", get(&AlgoTraceProps::m_name, execPlan));
+    dp.property("index", get(&AlgoTraceProps::m_index, execPlan));
+    dp.property("dataRank", get(&AlgoTraceProps::m_rank, execPlan));
+    dp.property("runtime", get(&AlgoTraceProps::m_runtime, execPlan));
 
     boost::read_graphml(myfile, execPlan, dp);
 
-    typedef boost::graph_traits<boost::ExecPlan>::vertex_iterator itV;
+    typedef boost::graph_traits<precedence::PrecTrace>::vertex_iterator itV;
     std::pair<itV, itV> vp;
 
     for (vp = boost::vertices(execPlan); vp.first != vp.second; ++vp.first) {
-      boost::AlgoVertex v = *vp.first;
-      auto index = boost::get(&boost::AlgoProps::m_name, execPlan);
+      precedence::AlgoTraceVertex v = *vp.first;
+      auto index = get(&AlgoTraceProps::m_name, execPlan);
       if (index[v] == node.getNodeName()) {
-        auto index_runtime = boost::get(&boost::AlgoProps::m_runtime, execPlan);
+        auto index_runtime = get(&AlgoTraceProps::m_runtime, execPlan);
         float rank = index_runtime[v];
         node.setRank(rank);
         //std::cout << "Rank of " << index[v] << " is " << rank << std::endl;
@@ -325,22 +330,24 @@ namespace concurrency {
     std::ifstream myfile;
     myfile.open("Eccentricity.graphml", std::ios::in);
 
-    boost::ExecPlan execPlan;
+    precedence::PrecTrace execPlan;
 
     boost::dynamic_properties dp;
-    dp.property("name", boost::get(&boost::AlgoProps::m_name, execPlan));
-    dp.property("Eccentricity", boost::get(&boost::AlgoProps::m_eccentricity, execPlan));
+    using boost::get;
+
+    dp.property("name", get(&precedence::AlgoTraceProps::m_name, execPlan));
+    dp.property("Eccentricity", get(&precedence::AlgoTraceProps::m_eccentricity, execPlan));
 
     boost::read_graphml(myfile, execPlan, dp);
 
-    typedef boost::graph_traits<boost::ExecPlan>::vertex_iterator itV;
+    typedef boost::graph_traits<precedence::PrecTrace>::vertex_iterator itV;
     std::pair<itV, itV> vp;
 
     for (vp = boost::vertices(execPlan); vp.first != vp.second; ++vp.first) {
-      boost::AlgoVertex v = *vp.first;
-      auto index = boost::get(&boost::AlgoProps::m_name, execPlan);
+      precedence::AlgoTraceVertex v = *vp.first;
+      auto index = get(&precedence::AlgoTraceProps::m_name, execPlan);
       if (index[v] == node.getNodeName()) {
-        auto index_eccentricity = boost::get(&boost::AlgoProps::m_eccentricity, execPlan);
+        auto index_eccentricity = get(&precedence::AlgoTraceProps::m_eccentricity, execPlan);
         float rank = index_eccentricity[v];
         node.setRank(rank);
         //std::cout << "Rank of " << index[v] << " is " << rank << std::endl;

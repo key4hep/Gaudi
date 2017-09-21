@@ -17,7 +17,8 @@ public:
   StatusCode reinitialize() override;
   StatusCode finalize() override;
 
-  void registerTimelineEvent( const TimelineEvent& e ) override;
+  void registerTimelineEvent(const TimelineEvent&) override;
+  void getTimelineEvent(TimelineEvent&) const override;
 
   bool isEnabled() const override { return m_isEnabled; }
 
@@ -30,7 +31,10 @@ private:
   void outputTimeline();
 
   Gaudi::Property<std::string> m_timelineFile{this, "TimelineFile", "timeline.csv", ""};
-  Gaudi::Property<bool> m_isEnabled{this, "RecordTimeline", false, ""};
+  Gaudi::Property<bool> m_isEnabled{this, "RecordTimeline", false,
+    "Enable recording of the timeline events"};
+  Gaudi::Property<bool> m_dumpTimeline{this, "DumpTimeline", false,
+    "Enable dumping of the timeline events"};
   Gaudi::Property<bool> m_partial{this, "Partial", false, ""};
 
   tbb::concurrent_vector<TimelineEvent> m_events;

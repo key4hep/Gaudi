@@ -30,6 +30,17 @@ StatusCode PrecedenceSvc::initialize() {
     return sc;
   }
 
+  ON_DEBUG {
+    // prepare a directory to dump precedence analysis files to.
+    if (m_dumpPrecTrace || m_dumpPrecRules) {
+      if(!boost::filesystem::create_directory(m_dumpDirName)) {
+        error() << "Could not create directory " << m_dumpDirName << "required "
+                   "for task precedence tracing" << endmsg;
+        return StatusCode::FAILURE;
+      }
+    }
+  }
+
   // Get the algo resource pool
   m_algResourcePool = serviceLocator()->service("AlgResourcePool");
    if (!m_algResourcePool.isValid()) {
@@ -51,6 +62,12 @@ StatusCode PrecedenceSvc::initialize() {
       fatal() << "Could not assemble the CF precedence realm" << endmsg;
       return sc;
     }
+  }
+
+  if (m_ignoreDFRules) {
+    warning() << "Ignoring DF precedence rules, disabling all associated features"
+              << endmsg;
+    return StatusCode::SUCCESS;
   }
 
   ON_DEBUG debug() << "Assembling DF precedence realm:" << endmsg;
@@ -82,16 +99,6 @@ StatusCode PrecedenceSvc::initialize() {
   }
 
   ON_DEBUG debug() << m_PRGraph.dumpDataFlow() << endmsg;
-
-  ON_DEBUG {
-    if (m_dumpPrecTrace) { // prepare a directory to dump precedence analysis files to
-      if(!boost::filesystem::create_directory(m_dumpDirName)) {
-        error() << "Could not create directory " << m_dumpDirName << "required "
-                   "for task precedence tracing" << endmsg;
-        return StatusCode::FAILURE;
-      }
-    }
-  }
 
   if (sc.isSuccess()) info() << "PrecedenceSvc initialized successfully" << endmsg;
 
@@ -182,7 +189,10 @@ StatusCode PrecedenceSvc::iterate(EventSlot& slot, const Cause& cause) {
     m_PRGraph.getHeadNode()->accept(visitor);
   }
 
-  ON_DEBUG if (m_dumpPrecTrace) if(CFRulesResolved(slot)) dumpPrecedenceTrace(slot);
+  ON_DEBUG {
+    if (m_dumpPrecTrace) if(CFRulesResolved(slot)) dumpPrecedenceTrace(slot);
+    if (m_dumpPrecRules) if(CFRulesResolved(slot)) dumpPrecedenceRules(slot);
+  }
 
   return StatusCode::SUCCESS;
 }
@@ -267,7 +277,44 @@ const std::string PrecedenceSvc::printState(EventSlot& slot) const {
 }
 
 // ============================================================================
+void PrecedenceSvc::dumpPrecedenceRules(EventSlot& slot) {
+
+  if (!m_dumpPrecRules || !msgLevel(MSG::DEBUG)) {
+    info() << "No temporal and topological aspects of execution flow were traced. "
+           << "To get them traced, please set DumpPrecedenceRules "
+           << "property to True *and* put the whole application in DEBUG "
+           << "logging mode" << endmsg;
+    return;
+  }
+
+  ON_DEBUG debug() << "Dumping temporal precedence rules" << endmsg;
+
+  std::string fileName;
+  if (m_dumpPrecRulesFile.empty()) {
+    const auto& eventID = slot.eventContext->eventID();
+    fileName = "rules.evt-" + std::to_string(eventID.event_number()) + "." +
+               "run-" + std::to_string(eventID.run_number()) + ".graphml";
+  } else {
+    fileName = m_dumpPrecRulesFile;
+  }
+
+  boost::filesystem::path pth{m_dumpDirName};
+  pth.append(fileName);
+
+  m_PRGraph.dumpPrecRules(pth,slot);
+}
+
+// ============================================================================
 void PrecedenceSvc::dumpPrecedenceTrace(EventSlot& slot) {
+
+  if (!m_dumpPrecTrace || !msgLevel(MSG::DEBUG)) {
+    info() << "Task precedence was not traced. To get it traced, please set "
+           << "DumpPrecedenceTrace property to True *and* put the "
+           << "whole application in DEBUG logging mode" << endmsg;
+    return;
+  }
+
+  ON_DEBUG debug() << "Dumping temporal precedence trace" << endmsg;
 
   std::string fileName;
   if (m_dumpPrecTraceFile.empty()) {
@@ -281,7 +328,7 @@ void PrecedenceSvc::dumpPrecedenceTrace(EventSlot& slot) {
   boost::filesystem::path pth{m_dumpDirName};
   pth.append(fileName);
 
-  m_PRGraph.dumpExecutionPlan(pth);
+  m_PRGraph.dumpPrecTrace(pth);
 }
 
 // ============================================================================
