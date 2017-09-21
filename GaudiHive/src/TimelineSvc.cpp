@@ -45,7 +45,7 @@ TimelineSvc::reinitialize() {
 StatusCode
 TimelineSvc::finalize() {
 
-  if (m_dumpTimeline and m_events.size() > 0) {
+  if (m_dumpTimeline && m_events.size() > 0) {
     MsgStream log( msgSvc(), name() );
 
     log << MSG::INFO << "Outputting timeline with " << m_events.size()

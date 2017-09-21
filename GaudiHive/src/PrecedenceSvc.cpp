@@ -32,7 +32,7 @@ StatusCode PrecedenceSvc::initialize() {
 
   ON_DEBUG {
     // prepare a directory to dump precedence analysis files to.
-    if (m_dumpPrecTrace or m_dumpPrecRules) {
+    if (m_dumpPrecTrace || m_dumpPrecRules) {
       if(!boost::filesystem::create_directory(m_dumpDirName)) {
         error() << "Could not create directory " << m_dumpDirName << "required "
                    "for task precedence tracing" << endmsg;
@@ -279,7 +279,7 @@ const std::string PrecedenceSvc::printState(EventSlot& slot) const {
 // ============================================================================
 void PrecedenceSvc::dumpPrecedenceRules(EventSlot& slot) {
 
-  if (!m_dumpPrecRules or !msgLevel(MSG::DEBUG)) {
+  if (!m_dumpPrecRules || !msgLevel(MSG::DEBUG)) {
     info() << "No temporal and topological aspects of execution flow were traced. "
            << "To get them traced, please set DumpPrecedenceRules "
            << "property to True *and* put the whole application in DEBUG "
@@ -307,7 +307,7 @@ void PrecedenceSvc::dumpPrecedenceRules(EventSlot& slot) {
 // ============================================================================
 void PrecedenceSvc::dumpPrecedenceTrace(EventSlot& slot) {
 
-  if (!m_dumpPrecTrace or !msgLevel(MSG::DEBUG)) {
+  if (!m_dumpPrecTrace || !msgLevel(MSG::DEBUG)) {
     info() << "Task precedence was not traced. To get it traced, please set "
            << "DumpPrecedenceTrace property to True *and* put the "
            << "whole application in DEBUG logging mode" << endmsg;
