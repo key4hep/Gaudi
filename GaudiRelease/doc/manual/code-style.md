@@ -38,7 +38,7 @@ apply the formatting rules to all files modified between two commits one can do
 something like:
 
     cd gaudi_src_dir
-    gaudi_build_dir/apply_formatting $(git diff --name-only origin/master HEAD)
+    gaudi_build_dir/apply-formatting $(git diff --name-only origin/master HEAD)
 
 
 It's also possible to apply the formatting rules to all the files in the project
