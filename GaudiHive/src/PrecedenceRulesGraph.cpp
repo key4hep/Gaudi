@@ -468,7 +468,7 @@ namespace concurrency
 
     for (auto vp = vertices(m_PRGraph); vp.first != vp.second; ++vp.first) {
       PRVertexDesc v = *vp.first;
-      if (boost::apply_visitor(VertexName(),m_PRGraph[v]) == name) {
+      if (boost::apply_visitor(precedence::VertexName(),m_PRGraph[v]) == name) {
         target = v;
         break;
       }
@@ -575,62 +575,67 @@ namespace concurrency
     //Declare properties to dump
     boost::dynamic_properties dp;
 
-    dp.property("Entity", boost::make_transform_value_property_map(
+    using boost::make_transform_value_property_map;
+    using boost::apply_visitor;
+    using boost::get;
+    using boost::vertex_bundle;
+
+    dp.property("Entity", make_transform_value_property_map(
        [](VariantVertexProps const& v) { return boost::lexical_cast<std::string>(v); },
-       boost::get(boost::vertex_bundle, m_PRGraph)));
+       get(vertex_bundle, m_PRGraph)));
 
-    dp.property("Name", boost::make_transform_value_property_map(
-       [](VariantVertexProps const& v) {return boost::apply_visitor(VertexName(), v);},
-       boost::get(boost::vertex_bundle, m_PRGraph)));
+    dp.property("Name", make_transform_value_property_map(
+       [](VariantVertexProps const& v) {return apply_visitor(precedence::VertexName(), v);},
+       get(vertex_bundle, m_PRGraph)));
 
-    dp.property("Mode", boost::make_transform_value_property_map(
-       [](VariantVertexProps const& v) {return boost::apply_visitor(GroupMode(), v);},
-       boost::get(boost::vertex_bundle, m_PRGraph)));
+    dp.property("Mode", make_transform_value_property_map(
+       [](VariantVertexProps const& v) {return apply_visitor(precedence::GroupMode(), v);},
+       get(vertex_bundle, m_PRGraph)));
 
-    dp.property("Logic", boost::make_transform_value_property_map(
-       [](VariantVertexProps const& v) {return boost::apply_visitor(GroupLogic(), v);},
-       boost::get(boost::vertex_bundle, m_PRGraph)));
+    dp.property("Logic", make_transform_value_property_map(
+       [](VariantVertexProps const& v) {return apply_visitor(precedence::GroupLogic(), v);},
+       get(vertex_bundle, m_PRGraph)));
 
-    dp.property("Decision Negation", boost::make_transform_value_property_map(
-       [](VariantVertexProps const& v) {return boost::apply_visitor(DecisionNegation(), v);},
-       boost::get(boost::vertex_bundle, m_PRGraph)));
+    dp.property("Decision Negation", make_transform_value_property_map(
+       [](VariantVertexProps const& v) {return apply_visitor(precedence::DecisionNegation(), v);},
+       get(vertex_bundle, m_PRGraph)));
 
-    dp.property("Negative Decision Inversion", boost::make_transform_value_property_map(
-       [](VariantVertexProps const& v) {return boost::apply_visitor(AllPass(), v);},
-       boost::get(boost::vertex_bundle, m_PRGraph)));
+    dp.property("Negative Decision Inversion", make_transform_value_property_map(
+       [](VariantVertexProps const& v) {return apply_visitor(precedence::AllPass(), v);},
+       get(vertex_bundle, m_PRGraph)));
 
-    dp.property("Exit Policy", boost::make_transform_value_property_map(
-       [](VariantVertexProps const& v) {return boost::apply_visitor(GroupExit(), v);},
-       boost::get(boost::vertex_bundle, m_PRGraph)));
+    dp.property("Exit Policy", make_transform_value_property_map(
+       [](VariantVertexProps const& v) {return apply_visitor(precedence::GroupExit(), v);},
+       get(vertex_bundle, m_PRGraph)));
 
-    dp.property("Operations", boost::make_transform_value_property_map(
-       [](VariantVertexProps const& v) {return boost::apply_visitor(Operations(), v);},
-       boost::get(boost::vertex_bundle, m_PRGraph)));
+    dp.property("Operations", make_transform_value_property_map(
+       [](VariantVertexProps const& v) {return apply_visitor(precedence::Operations(), v);},
+       get(vertex_bundle, m_PRGraph)));
 
-    dp.property("CF Decision", boost::make_transform_value_property_map(
+    dp.property("CF Decision", make_transform_value_property_map(
        [&slot](VariantVertexProps const& v) {
-         return boost::apply_visitor(CFDecision(slot),v);},
-                                  boost::get(boost::vertex_bundle, m_PRGraph)));
+         return apply_visitor(precedence::CFDecision(slot),v);},
+                              get(vertex_bundle, m_PRGraph)));
 
-    dp.property("Algorithm State", boost::make_transform_value_property_map(
+    dp.property("Algorithm State", make_transform_value_property_map(
        [&slot](VariantVertexProps const& v) {
-         return boost::apply_visitor(FSMState(slot),v);},
-                                  boost::get(boost::vertex_bundle, m_PRGraph)));
+         return apply_visitor(precedence::FSMState(slot),v);},
+                              get(vertex_bundle, m_PRGraph)));
 
     SmartIF<ITimelineSvc> timelineSvc = m_svcLocator->service<ITimelineSvc>("TimelineSvc",false);
     if (timelineSvc.isValid()) {
-      dp.property("Start Time (epoch ns)", boost::make_transform_value_property_map(
+      dp.property("Start Time (epoch ns)", make_transform_value_property_map(
              [&timelineSvc](VariantVertexProps const& v) {
-               return boost::apply_visitor(StartTime(timelineSvc), v);
-             }, boost::get(boost::vertex_bundle, m_PRGraph)));
-      dp.property("End Time (epoch ns)", boost::make_transform_value_property_map(
+               return apply_visitor(precedence::StartTime(timelineSvc), v);
+             }, get(vertex_bundle, m_PRGraph)));
+      dp.property("End Time (epoch ns)", make_transform_value_property_map(
              [&timelineSvc](VariantVertexProps const& v) {
-               return boost::apply_visitor(EndTime(timelineSvc), v);
-             }, boost::get(boost::vertex_bundle, m_PRGraph)));
-      dp.property("Runtime (ns)", boost::make_transform_value_property_map(
+               return apply_visitor(precedence::EndTime(timelineSvc), v);
+             }, get(vertex_bundle, m_PRGraph)));
+      dp.property("Runtime (ns)", make_transform_value_property_map(
              [&timelineSvc](VariantVertexProps const& v) {
-               return boost::apply_visitor(Duration(timelineSvc), v);
-             }, boost::get(boost::vertex_bundle, m_PRGraph)));
+               return apply_visitor(precedence::Duration(timelineSvc), v);
+             }, get(vertex_bundle, m_PRGraph)));
     } else {
       warning() << "Failed to get the TimelineSvc, timing will not be added to "
                 << "the task precedence rules dump" << endmsg;
@@ -654,7 +659,7 @@ namespace concurrency
                 << "the task precedence trace dump" << endmsg;
     } else {
 
-      typedef boost::graph_traits<PRGraph>::vertex_iterator vertex_iter;
+      typedef boost::graph_traits<precedence::PRGraph>::vertex_iterator vertex_iter;
       std::pair<vertex_iter, vertex_iter> vp;
       for (vp = vertices(m_precTrace); vp.first != vp.second; ++vp.first) {
         TimelineEvent te{};
@@ -668,9 +673,11 @@ namespace concurrency
 
     // Declare properties to dump
     boost::dynamic_properties dp;
-    dp.property( "Name", boost::get( &boost::AlgoTraceProps::m_name, m_precTrace ) );
-    dp.property( "Rank", boost::get( &boost::AlgoTraceProps::m_rank, m_precTrace ) );
-    dp.property( "Runtime", boost::get( &boost::AlgoTraceProps::m_runtime, m_precTrace ) );
+    using boost::get;
+    using precedence::AlgoTraceProps;
+    dp.property( "Name", get( &AlgoTraceProps::m_name, m_precTrace ) );
+    dp.property( "Rank", get( &AlgoTraceProps::m_rank, m_precTrace ) );
+    dp.property( "Runtime", get( &AlgoTraceProps::m_runtime, m_precTrace ) );
 
     boost::write_graphml( myfile, m_precTrace, dp );
 
@@ -684,14 +691,14 @@ namespace concurrency
     std::string u_name = u==nullptr ? "ENTRY" : u->getNodeName();
     std::string v_name = v->getNodeName();
 
-    boost::AlgoTraceVertex source;
+    precedence::AlgoTraceVertex source;
 
     if ( u == nullptr ) {
       auto itT = m_prec_trace_map.find( "ENTRY" );
       if ( itT != m_prec_trace_map.end() ) {
         source = itT->second;
       } else {
-        source = boost::add_vertex( boost::AlgoTraceProps("ENTRY",-1,-1,-1.0),m_precTrace);
+        source = boost::add_vertex( precedence::AlgoTraceProps("ENTRY",-1,-1,-1.0),m_precTrace);
         m_prec_trace_map["ENTRY"] = source;
       }
     } else {
@@ -700,7 +707,7 @@ namespace concurrency
         source = itS->second;
       } else {
 
-        source = boost::add_vertex(boost::AlgoTraceProps(u_name,
+        source = boost::add_vertex(precedence::AlgoTraceProps(u_name,
                                                          u->getAlgoIndex(),
                                                          u->getRank(),
                                                          -1 ),
@@ -709,17 +716,17 @@ namespace concurrency
       }
     }
 
-    boost::AlgoTraceVertex target;
+    precedence::AlgoTraceVertex target;
 
     auto itP = m_prec_trace_map.find( v_name );
     if ( itP != m_prec_trace_map.end() ) {
       target = itP->second;
     } else {
 
-      target = boost::add_vertex(boost::AlgoTraceProps(v_name,
-                                                       v->getAlgoIndex(),
-                                                       v->getRank(),
-                                                       -1 ),
+      target = boost::add_vertex(precedence::AlgoTraceProps(v_name,
+                                                        v->getAlgoIndex(),
+                                                        v->getRank(),
+                                                        -1 ),
                                  m_precTrace);
       m_prec_trace_map[v_name] = target;
     }

@@ -23,8 +23,10 @@
 #include "GaudiKernel/ITimelineSvc.h"
 
 
-namespace boost {
+namespace precedence {
+  using boost::static_visitor;
 
+  // Precedence trace utilities ==============================================
   struct AlgoTraceProps {
     AlgoTraceProps () {}
     AlgoTraceProps (const std::string& name, int index, int rank, double runtime) :
@@ -36,11 +38,10 @@ namespace boost {
     int m_eccentricity{-1};
   };
 
-  using PrecTrace = adjacency_list<vecS, vecS, bidirectionalS, AlgoTraceProps>;
-  using AlgoTraceVertex = graph_traits<PrecTrace>::vertex_descriptor;
+  using PrecTrace = boost::adjacency_list<boost::vecS, boost::vecS, boost::bidirectionalS, AlgoTraceProps>;
+  using AlgoTraceVertex = boost::graph_traits<PrecTrace>::vertex_descriptor;
 
-  //===========================================================================
-  namespace prules {
+  // Precedence rules utilities ==============================================
     struct AlgoProps {
       AlgoProps() {}
       AlgoProps (Algorithm* algo, uint nodeIndex, uint algoIndex, bool inverted,
@@ -158,8 +159,7 @@ namespace boost {
       std::string operator()(const DecisionHubProps& props) const {
         return std::to_string(m_slot.controlFlowState.at(props.m_nodeIndex)); }
 
-      std::string operator()(const DataProps&) const {
-        return ""; }
+      std::string operator()(const DataProps&) const { return ""; }
 
       EventSlot m_slot;
     };
@@ -182,11 +182,9 @@ namespace boost {
         }
       }
 
-      std::string operator()(const DecisionHubProps&) const {
-        return ""; }
+      std::string operator()(const DecisionHubProps&) const { return ""; }
 
-      std::string operator()(const DataProps&) const {
-        return ""; }
+      std::string operator()(const DataProps&) const { return ""; }
 
       EventSlot m_slot;
     };
@@ -291,11 +289,11 @@ namespace boost {
     //=========================================================================
 
     using VariantVertexProps = boost::variant<AlgoProps, DecisionHubProps, DataProps>;
-    using PRGraph = adjacency_list<vecS, vecS, bidirectionalS, VariantVertexProps>;
-    using PRVertexDesc = graph_traits<PRGraph>::vertex_descriptor;
+    using PRGraph = boost::adjacency_list<boost::vecS, boost::vecS,
+                                          boost::bidirectionalS, VariantVertexProps>;
+    using PRVertexDesc = boost::graph_traits<PRGraph>::vertex_descriptor;
 
-  } // namespace prules
-} // namespace boost
+} // namespace prules
 
 struct Cause {
   enum class source {Root, Task};
@@ -309,26 +307,11 @@ namespace concurrency {
   using State = AlgsExecutionStates::State;
   class PrecedenceRulesGraph;
 
-  using boost::prules::PRVertexDesc;
-  using boost::prules::AlgoProps;
-  using boost::prules::DecisionHubProps;
-  using boost::prules::DataProps;
-  using boost::prules::VariantVertexProps;
-
-  using boost::prules::VertexName;
-  using boost::prules::GroupMode;
-  using boost::prules::GroupLogic;
-  using boost::prules::GroupExit;
-  using boost::prules::DecisionNegation;
-  using boost::prules::AllPass;
-  using boost::prules::Operations;
-  using boost::prules::CFDecision;
-  using boost::prules::FSMState;
-  using boost::prules::StartTime;
-  using boost::prules::EndTime;
-  using boost::prules::Duration;
-
-  using boost::prules::PRGraph;
+  using precedence::PRVertexDesc;
+  using precedence::AlgoProps;
+  using precedence::DecisionHubProps;
+  using precedence::DataProps;
+  using precedence::VariantVertexProps;
 
   // ==========================================================================
   class ControlFlowNode {
@@ -666,10 +649,10 @@ namespace concurrency {
     const std::chrono::system_clock::time_point m_initTime;
 
     /// facilities for algorithm precedence tracing
-    boost::PrecTrace m_precTrace;
-    std::map<std::string,boost::AlgoTraceVertex> m_prec_trace_map;
+    precedence::PrecTrace m_precTrace;
+    std::map<std::string,precedence::AlgoTraceVertex> m_prec_trace_map;
     /// BGL-based graph of precedence rules
-    PRGraph m_PRGraph;
+    precedence::PRGraph m_PRGraph;
 
     /// Enable conditions realm of precedence rules
     bool m_conditionsRealmEnabled{false};
