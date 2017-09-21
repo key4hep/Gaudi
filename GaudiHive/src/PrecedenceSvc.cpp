@@ -279,6 +279,14 @@ const std::string PrecedenceSvc::printState(EventSlot& slot) const {
 // ============================================================================
 void PrecedenceSvc::dumpPrecedenceRules(EventSlot& slot) {
 
+  if (!m_dumpPrecRules or !msgLevel(MSG::DEBUG)) {
+    info() << "No temporal and topological aspects of execution flow were traced. "
+           << "To get them traced, please set DumpPrecedenceRules "
+           << "property to True *and* put the whole application in DEBUG "
+           << "logging mode" << endmsg;
+    return;
+  }
+
   ON_DEBUG debug() << "Dumping temporal precedence rules" << endmsg;
 
   std::string fileName;
@@ -298,6 +306,13 @@ void PrecedenceSvc::dumpPrecedenceRules(EventSlot& slot) {
 
 // ============================================================================
 void PrecedenceSvc::dumpPrecedenceTrace(EventSlot& slot) {
+
+  if (!m_dumpPrecTrace or !msgLevel(MSG::DEBUG)) {
+    info() << "Task precedence was not traced. To get it traced, please set "
+           << "DumpPrecedenceTrace property to True *and* put the "
+           << "whole application in DEBUG logging mode" << endmsg;
+    return;
+  }
 
   ON_DEBUG debug() << "Dumping temporal precedence trace" << endmsg;
 
