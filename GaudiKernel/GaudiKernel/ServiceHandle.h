@@ -52,6 +52,18 @@ public:
     : GaudiHandle<CT>( other )
   { }
 
+  /// Autodeclaring constructor with property name, service type/name and documentation.
+  /// @note the use std::enable_if is required to avoid ambiguities
+  template <class OWNER,
+            typename = typename std::enable_if<std::is_base_of<IProperty, OWNER>::value>::type>
+  inline ServiceHandle( OWNER* owner, std::string PropName,
+                        std::string svcName, std::string doc = "" )
+    : ServiceHandle( svcName, owner->name() )
+  {
+    auto p = owner->OWNER::PropertyHolderImpl::declareProperty( std::move(PropName), *this, std::move(doc) );
+    p->template setOwnerType<OWNER>();
+  }
+
   StatusCode initialize(const std::string& serviceName, const std::string& theParentName){
 
 	  	GaudiHandleBase::setTypeAndName(serviceName);
