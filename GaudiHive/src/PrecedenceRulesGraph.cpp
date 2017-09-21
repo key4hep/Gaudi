@@ -572,6 +572,7 @@ namespace concurrency
     boost::filesystem::ofstream myfile;
     myfile.open( fileName, std::ios::app );
 
+    //Declare properties to dump
     boost::dynamic_properties dp;
 
     dp.property("Entity", boost::make_transform_value_property_map(
@@ -616,7 +617,7 @@ namespace concurrency
          return boost::apply_visitor(FSMState(slot),v);},
                                   boost::get(boost::vertex_bundle, m_PRGraph)));
 
-    SmartIF<ITimelineSvc> timelineSvc = m_svcLocator->service<ITimelineSvc>("TimelineSvc");
+    SmartIF<ITimelineSvc> timelineSvc = m_svcLocator->service<ITimelineSvc>("TimelineSvc",false);
     if (timelineSvc.isValid()) {
       dp.property("Start Time (epoch ns)", boost::make_transform_value_property_map(
              [&timelineSvc](VariantVertexProps const& v) {
@@ -626,7 +627,7 @@ namespace concurrency
              [&timelineSvc](VariantVertexProps const& v) {
                return boost::apply_visitor(EndTime(timelineSvc), v);
              }, boost::get(boost::vertex_bundle, m_PRGraph)));
-      dp.property("Duration (ns)", boost::make_transform_value_property_map(
+      dp.property("Runtime (ns)", boost::make_transform_value_property_map(
              [&timelineSvc](VariantVertexProps const& v) {
                return boost::apply_visitor(Duration(timelineSvc), v);
              }, boost::get(boost::vertex_bundle, m_PRGraph)));
@@ -646,11 +647,30 @@ namespace concurrency
     boost::filesystem::ofstream myfile;
     myfile.open( fileName, std::ios::app );
 
+    // Fill runtimes (as this could not be done on the fly during trace assembling)
+    SmartIF<ITimelineSvc> timelineSvc = m_svcLocator->service<ITimelineSvc>("TimelineSvc",false);
+    if (!timelineSvc.isValid()) {
+      warning() << "Failed to get the TimelineSvc, timing will not be added to "
+                << "the task precedence trace dump" << endmsg;
+    } else {
+
+      typedef boost::graph_traits<PRGraph>::vertex_iterator vertex_iter;
+      std::pair<vertex_iter, vertex_iter> vp;
+      for (vp = vertices(m_precTrace); vp.first != vp.second; ++vp.first) {
+        TimelineEvent te{};
+        te.algorithm = m_precTrace[*vp.first].m_name;
+        timelineSvc->getTimelineEvent(te);
+        int runtime = std::chrono::duration_cast<std::chrono::nanoseconds>
+                                                    (te.end - te.start).count();
+        m_precTrace[*vp.first].m_runtime = runtime;
+      }
+    }
+
+    // Declare properties to dump
     boost::dynamic_properties dp;
-    dp.property( "name", boost::get( &boost::AlgoTraceProps::m_name, m_precTrace ) );
-    dp.property( "index", boost::get( &boost::AlgoTraceProps::m_index, m_precTrace ) );
-    dp.property( "rank", boost::get( &boost::AlgoTraceProps::m_rank, m_precTrace ) );
-    dp.property( "runtime", boost::get( &boost::AlgoTraceProps::m_runtime, m_precTrace ) );
+    dp.property( "Name", boost::get( &boost::AlgoTraceProps::m_name, m_precTrace ) );
+    dp.property( "Rank", boost::get( &boost::AlgoTraceProps::m_rank, m_precTrace ) );
+    dp.property( "Runtime", boost::get( &boost::AlgoTraceProps::m_runtime, m_precTrace ) );
 
     boost::write_graphml( myfile, m_precTrace, dp );
 
@@ -661,63 +681,53 @@ namespace concurrency
                                                  const AlgorithmNode* v )
   {
 
+    std::string u_name = u==nullptr ? "ENTRY" : u->getNodeName();
+    std::string v_name = v->getNodeName();
+
     boost::AlgoTraceVertex source;
-    float runtime( 0. );
+
     if ( u == nullptr ) {
       auto itT = m_prec_trace_map.find( "ENTRY" );
       if ( itT != m_prec_trace_map.end() ) {
         source = itT->second;
       } else {
-        source = boost::add_vertex( boost::AlgoTraceProps("ENTRY",-999,-999,0),m_precTrace);
+        source = boost::add_vertex( boost::AlgoTraceProps("ENTRY",-1,-1,-1.0),m_precTrace);
         m_prec_trace_map["ENTRY"] = source;
       }
     } else {
-      auto itS = m_prec_trace_map.find( u->getNodeName() );
+      auto itS = m_prec_trace_map.find( u_name );
       if ( itS != m_prec_trace_map.end() ) {
         source = itS->second;
       } else {
-        auto alg = u->getAlgorithm();
-        try {
-          const Gaudi::Details::PropertyBase& p = alg->getProperty( "AvgRuntime" );
-          runtime = std::stof( p.toString() );
-        } catch(...) {
-          ON_DEBUG debug() << "no AvgRuntime for " << alg->name() << endmsg;
-          runtime = 1.;
-        }
 
-        source = boost::add_vertex(boost::AlgoTraceProps(u->getNodeName(),
+        source = boost::add_vertex(boost::AlgoTraceProps(u_name,
                                                          u->getAlgoIndex(),
                                                          u->getRank(),
-                                                         runtime ),
+                                                         -1 ),
                                    m_precTrace);
-        m_prec_trace_map[u->getNodeName()] = source;
+        m_prec_trace_map[u_name] = source;
       }
     }
 
     boost::AlgoTraceVertex target;
-    auto itP = m_prec_trace_map.find( v->getNodeName() );
+
+    auto itP = m_prec_trace_map.find( v_name );
     if ( itP != m_prec_trace_map.end() ) {
       target = itP->second;
     } else {
-      auto alg = v->getAlgorithm();
-      try {
-        const Gaudi::Details::PropertyBase& p = alg->getProperty( "AvgRuntime" );
-        runtime = std::stof( p.toString() );
-      } catch(...) {
-        ON_DEBUG debug() << "no AvgRuntime for " << alg->name() << endmsg;
-        runtime = 1.;
-      }
 
-      target = boost::add_vertex(boost::AlgoTraceProps(v->getNodeName(),
+      target = boost::add_vertex(boost::AlgoTraceProps(v_name,
                                                        v->getAlgoIndex(),
                                                        v->getRank(),
-                                                       runtime ),
+                                                       -1 ),
                                  m_precTrace);
-      m_prec_trace_map[v->getNodeName()] = target;
+      m_prec_trace_map[v_name] = target;
     }
 
-    ON_DEBUG debug() << "Edge added to execution plan" << endmsg;
     boost::add_edge(source, target, m_precTrace);
+
+    ON_DEBUG debug() << u_name << "-->" << v_name << " precedence trait added"
+                     << endmsg;
   }
 
 } // namespace

@@ -32,7 +32,7 @@ namespace boost {
     std::string m_name;
     int m_index{-1};
     int m_rank{-1};
-    double m_runtime{-1.0};
+    int m_runtime{-1}; //ns
     int m_eccentricity{-1};
   };
 
@@ -200,7 +200,7 @@ namespace boost {
 
         if (m_timelineSvc.isValid()) {
 
-          TimelineEvent te;
+          TimelineEvent te{};
           te.algorithm = props.m_name;
           m_timelineSvc->getTimelineEvent(te);
           startTime = std::to_string(std::chrono::duration_cast<std::chrono::nanoseconds>
@@ -226,7 +226,7 @@ namespace boost {
 
         if (m_timelineSvc.isValid()) {
 
-          TimelineEvent te;
+          TimelineEvent te{};
           te.algorithm = props.m_name;
           m_timelineSvc->getTimelineEvent(te);
           endTime = std::to_string(std::chrono::duration_cast<std::chrono::nanoseconds>
