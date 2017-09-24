@@ -1,8 +1,11 @@
+#!/usr/bin/env python
+'''
+This script allows to parse a log file coming from the instrumentation of the
+Gaudi cmake process (See Instrument.cmake) and create an other file
+understandable by kcachegrind for easy visualization of where we spend time in
+cmake.
+'''
 import sys
-
-'''This script allows to parse a log file coming from the instrumentation of the Gaudi cmake
-   process (See Instrument.cmake) and create an other file understandable by kcachegrind for
-   easy visualization of where we spend time in cmake'''
 
 def usage():
     print "Invalid arguments\nProper syntax is :\n  %s <log file> <callgrind file>" % sys.argv[0]

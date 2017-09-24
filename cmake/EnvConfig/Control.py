@@ -274,7 +274,9 @@ class Environment(object):
         variables = XMLfile.variable(fileName, namespace=namespace)
         for i, (action, args) in enumerate(variables):
             if action not in self.actions:
-                self.log.error('Node {0}: No action taken with var "{1}". Probably wrong action argument: "{2}".'.format(i, args[0], action))
+                self.log.error(('Node {0}: No action taken with var "{1}". '
+                                'Probably wrong action argument: "{2}".')
+                               .format(i, args[0], action))
             else:
                 self.actions[action](*args) # pylint: disable=W0142
         # restore the old value of ${.}
