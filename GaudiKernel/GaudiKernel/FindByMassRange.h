@@ -8,8 +8,6 @@
 
 
 /** @class FindByMassRange FindByMassRange.h GaudiKernel/FindByMassRange.h
-    The function object must be derived from
-    std::unary_function< IParticlePropertySvc::value_type ,bool >
     IParticlePropertySvc::value_type is a typedef that defines the
     internal service storage type that is returned when an iterator
     is dereferenced. In this case it corresponds to
@@ -17,8 +15,6 @@
     stores all its data in a map. The string will be the map's key
     (usually the particle name) and the pointer is a pointer to the
     ParticleProperty object.
-    The bool template argument states that operator() returns
-    true or false.
 
     The data is accessed in the following manner:
     const IParticlePropertySvc::value_type& pp_ref;
@@ -27,7 +23,7 @@
 
     @author Ian Last
 */
-class GAUDI_API FindByMassRange: public std::unary_function< ParticleProperty* ,bool > {
+class GAUDI_API FindByMassRange {
 
 public:
 

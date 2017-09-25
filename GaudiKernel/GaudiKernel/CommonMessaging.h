@@ -13,6 +13,7 @@
 #include "GaudiKernel/MsgStream.h"
 #include "GaudiKernel/SmartIF.h"
 #include "GaudiKernel/GaudiException.h"
+#include <boost/thread/tss.hpp>
 
 #include <memory>
 #include <utility>
@@ -72,21 +73,9 @@ public:
     return m_msgsvc;
   }
 
-#if defined(GAUDI_V20_COMPAT) && !defined(G21_NO_DEPRECATED)
-  /** The standard message service.
-   *  Returns a pointer to the standard message service.
-   *  (Alias to msgSvc())
-   *  \deprecated Will be removed in v29r0, see https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/80
-   */
-  [[deprecated("will be removed in v29r0, use msgSvc() instead, see https://gitlab.cern.ch/gaudi/Gaudi/merge_requests/80")]]
-  inline SmartIF<IMessageSvc>& messageService() const {
-    return msgSvc();
-  }
-#endif
-
   /// Return an uninitialized MsgStream.
   inline MsgStream& msgStream() const {
-    if (UNLIKELY((m_createMsgStream))) create_msgStream();
+    if (UNLIKELY((!m_msgStream.get()))) create_msgStream();
     return *m_msgStream;
   }
 
@@ -133,8 +122,11 @@ public:
 
   /// get the output level from the embedded MsgStream
   inline MSG::Level msgLevel() const {
-    if (UNLIKELY(!m_msgStream)) create_msgStream();
-    return m_level;
+    if (UNLIKELY((! m_msgStream.get() ))) create_msgStream();
+    if (UNLIKELY((! m_level.get() ))) {
+      return MSG::NIL;
+    } 
+    return *m_level;
   }
 
   /// Backward compatibility function for getting the output level
@@ -147,11 +139,10 @@ private:
   template <typename Base> friend class CommonMessaging;
 
   /// The predefined message stream
-  mutable std::unique_ptr<MsgStream> m_msgStream;
+  mutable boost::thread_specific_ptr<MsgStream> m_msgStream;
 
-  mutable MSG::Level m_level = MSG::NIL;
-  /// Flag to trigger a new MsgStream
-  mutable bool m_createMsgStream = true;
+  //  mutable MSG::Level m_level = MSG::NIL;
+  mutable boost::thread_specific_ptr< MSG::Level > m_level;
 
   /// Pointer to the message service;
   mutable SmartIF<IMessageSvc> m_msgsvc;
@@ -176,22 +167,22 @@ private:
   void create_msgStream() const override final {
       auto& ms = msgSvc();
       m_msgStream.reset(new MsgStream(ms, this->name()));
-      m_createMsgStream = (!ms.isValid() || !m_msgStream);
-      m_level = m_msgStream ? m_msgStream->level() : MSG::NIL;
+      m_level.reset( new MSG::Level(m_msgStream.get() ? m_msgStream->level() : MSG::NIL) );
   }
 
 protected:
   /// Update the output level of the cached MsgStream.
   /// This function is meant to be called by the update handler of the OutputLevel property.
   void updateMsgStreamOutputLevel(int level) {
-    if (level != MSG::NIL && level != m_level) {
+    if (!m_msgStream.get()) { create_msgStream(); }
+    if (level != MSG::NIL && level != *m_level) {
       if (msgSvc()) {
         msgSvc()->setOutputLevel(this->name(), level);
       }
-      if (m_msgStream) m_msgStream->setLevel(level);
+      if (m_msgStream.get()) m_msgStream->setLevel(level);
       if (UNLIKELY(MSG::Level(level) <= MSG::DEBUG))
         debug() << "Property update for OutputLevel : new value = " << level << endmsg;
-      m_level = MSG::Level(level);
+      *m_level = MSG::Level(level);
     }
   }
 

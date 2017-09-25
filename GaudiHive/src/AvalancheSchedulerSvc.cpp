@@ -843,9 +843,13 @@ void AvalancheSchedulerSvc::dumpSchedulerState( int iSlot ) {
                       << std::endl;
 
   int slotCount = -1;
-  for ( auto thisSlot : m_eventSlots ) {
+  for ( auto& thisSlot : m_eventSlots ) {
     slotCount++;
     if ( thisSlot.complete ) continue;
+
+    // dump temporal and topological precedence analysis (if enabled in the PrecedenceSvc)
+    if ( msgLevel( MSG::DEBUG ) )
+      m_precSvc->dumpPrecedenceRules(thisSlot);
 
     outputMessageStream << "-----------  slot: " << thisSlot.eventContext->slot()
                         << "  event: " << thisSlot.eventContext->evt() << " -----------" << std::endl;

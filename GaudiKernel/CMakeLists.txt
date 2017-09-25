@@ -14,6 +14,32 @@ if( CPPUNIT_FOUND )
    include_directories( SYSTEM ${CPPUNIT_INCLUDE_DIRS} )
 endif()
 
+# Look for VectorClass required header
+find_path(VectorClass_INCLUDE_DIR NAMES instrset_detect.cpp)
+if(VectorClass_INCLUDE_DIR AND NOT VectorClass_VERSION)
+  # check that the version is good enough
+  set(VectorClass_VERSION 0.0)
+  file(STRINGS ${VectorClass_INCLUDE_DIR}/instrset.h _vectorclass_guard REGEX "define +INSTRSET_H +[0-9]+")
+  list(GET _vectorclass_guard 0 _vectorclass_guard)
+  if(_vectorclass_guard MATCHES "INSTRSET_H +([0-9]+)")
+    string(REGEX REPLACE "([0-9]+)([0-9][0-9])" "\\1.\\2" VectorClass_VERSION "${CMAKE_MATCH_1}")
+  endif()
+  set(VectorClass_VERSION "${VectorClass_VERSION}" CACHE INTERNAL "")
+endif()
+if(NOT VectorClass_INCLUDE_DIR OR VectorClass_VERSION VERSION_LESS 1.25)
+  if(VectorClass_INCLUDE_DIR)
+    message(STATUS "Found VectorClass instrset_detect ${VectorClass_VERSION} at ${VectorClass_INCLUDE_DIR}")
+  endif()
+  message(WARNING "using internal VectorClass instrset_detect")
+  set(VectorClass_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/contrib" CACHE PATH "" FORCE)
+  set(VectorClass_VERSION "1.25" CACHE INTERNAL "" FORCE)
+endif()
+mark_as_advanced(VectorClass_INCLUDE_DIR)
+message(STATUS "Using VectorClass instrset_detect ${VectorClass_VERSION} at ${VectorClass_INCLUDE_DIR}")
+
+include_directories(${VectorClass_INCLUDE_DIR})
+
+
 #---Libraries---------------------------------------------------------------
 gaudi_add_library(GaudiKernel src/Lib/*.cpp
                   LINK_LIBRARIES ${CMAKE_DL_LIBS} Boost ROOT TBB GaudiPluginService

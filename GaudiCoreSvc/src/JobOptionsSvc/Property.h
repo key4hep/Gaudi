@@ -17,13 +17,13 @@ class Property final {
 // ----------------------------------------------------------------------------
  public:
 // ----------------------------------------------------------------------------
-	struct LessThen : std::binary_function<Property, Property, bool> {
+	struct LessThen {
 		bool operator()(const Property& first, const Property& second) const {
 			return first.FullName() < second.FullName();
 		}
 	};
 
- class Equal : std::unary_function<Property, bool>  {
+ class Equal {
   public:
     Equal(const std::string& short_name): short_name_(short_name){}
     bool operator()(const Property& property) const {

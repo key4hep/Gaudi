@@ -66,6 +66,11 @@ gaudi_add_test(AtlasMCRecoScenario
                TIMEOUT 120)
 set_property(TEST GaudiHive.AtlasMCRecoScenario PROPERTY SKIP_RETURN_CODE 77)
 
+gaudi_add_test(AtlasMCRecoFullPrecedenceDump
+               FRAMEWORK options/AtlasMCRecoFullPrecedenceDump.py
+               TIMEOUT 120)
+set_property(TEST GaudiHive.AtlasMCRecoFullPrecedenceDump PROPERTY SKIP_RETURN_CODE 77)
+
 gaudi_add_test(SequentialSequencer
                FRAMEWORK options/SequentialAlgSequencerTest.py
                DEPENDS WhiteBoard

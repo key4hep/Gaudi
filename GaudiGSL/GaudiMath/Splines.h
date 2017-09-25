@@ -147,7 +147,7 @@ namespace Genfun
       typedef SplineBase::Data1D Data1D ;
       typedef SplineBase::Data2D Data2D ;
     public:
-      /// mandatory macro from CLHEP/GenericFunctions
+      // mandatory macro from CLHEP/GenericFunctions
       FUNCTION_OBJECT_DEF( GSLSpline )
     public:
       /** constructor from vectors and type
@@ -269,6 +269,8 @@ namespace Genfun
       // the actual spline function
       SplineBase m_spline ;
     };
+    // mandatory macro from CLHEP/GenericFunctions
+    FUNCTION_OBJECT_IMP( GSLSpline )
 
     class GAUDI_API GSLSplineDeriv : public AbsFunction
     {
@@ -276,7 +278,7 @@ namespace Genfun
       typedef SplineBase::Data1D Data1D ;
       typedef SplineBase::Data2D Data2D ;
     public:
-      /// mandatory macro from CLHEP/GenericFunctions
+      // mandatory macro from CLHEP/GenericFunctions
       FUNCTION_OBJECT_DEF( GSLSplineDeriv )
     public:
       /** constructor from vectors and type
@@ -406,6 +408,8 @@ namespace Genfun
       // the actual spline function
       SplineBase m_spline ;
     };
+    // mandatory macro from CLHEP/GenericFunctions
+    FUNCTION_OBJECT_IMP( GSLSplineDeriv )
 
     class GAUDI_API GSLSplineDeriv2 : public AbsFunction
     {
@@ -413,7 +417,7 @@ namespace Genfun
       typedef SplineBase::Data1D Data1D ;
       typedef SplineBase::Data2D Data2D ;
     public:
-      /// mandatory macro from CLHEP/GenericFunctions
+      // mandatory macro from CLHEP/GenericFunctions
       FUNCTION_OBJECT_DEF( GSLSplineDeriv2 )
     public:
       /** constructor from vectors and type
@@ -541,6 +545,8 @@ namespace Genfun
       // the actual spline function
       SplineBase m_spline ;
     };
+    // mandatory macro from CLHEP/GenericFunctions
+    FUNCTION_OBJECT_IMP( GSLSplineDeriv2 )
 
 
     class GAUDI_API GSLSplineInteg : public AbsFunction
@@ -549,7 +555,7 @@ namespace Genfun
       typedef SplineBase::Data1D Data1D ;
       typedef SplineBase::Data2D Data2D ;
     public:
-      /// mandatory macro from CLHEP/GenericFunctions
+      // mandatory macro from CLHEP/GenericFunctions
       FUNCTION_OBJECT_DEF( GSLSplineInteg )
     public:
       /** constructor from vectors and type
@@ -687,6 +693,8 @@ namespace Genfun
       SplineBase m_spline ;
       double     m_low    ;
     };
+    // mandatory macro from CLHEP/GenericFunctions
+    FUNCTION_OBJECT_IMP( GSLSplineInteg )
 
   }
 }

@@ -29,7 +29,7 @@ void WatchdogThread::start() {
     // Initialize the first "last ping"
     ping();
     // Start a new thread telling it to call the member function i_run()
-    m_thread.reset(new boost::thread(std::mem_fun(&WatchdogThread::i_run), this));
+    m_thread = std::make_unique<boost::thread>(std::mem_fn(&WatchdogThread::i_run), this);
   }
 }
 

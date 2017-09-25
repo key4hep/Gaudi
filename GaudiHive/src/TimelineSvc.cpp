@@ -45,13 +45,13 @@ TimelineSvc::reinitialize() {
 StatusCode
 TimelineSvc::finalize() {
 
-  if (m_events.size() > 0) {
+  if (m_dumpTimeline && m_events.size() > 0) {
     MsgStream log( msgSvc(), name() );
 
-    log << MSG::INFO << "Outputting timeline with " << m_events.size() << " entries to file " << m_timelineFile << endmsg;
+    log << MSG::INFO << "Outputting timeline with " << m_events.size()
+        << " entries to file " << m_timelineFile << endmsg;
 
     outputTimeline();
-
   }
 
   return StatusCode::SUCCESS;
@@ -62,7 +62,7 @@ TimelineSvc::finalize() {
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void TimelineSvc::registerTimelineEvent(const TimelineEvent & e){
+void TimelineSvc::registerTimelineEvent(const TimelineEvent& e){
 
 	m_events.push_back(e);
 
@@ -76,6 +76,17 @@ void TimelineSvc::registerTimelineEvent(const TimelineEvent & e){
         << e.event << std::endl;
 
     out.close();
+  }
+
+}
+
+void TimelineSvc::getTimelineEvent (TimelineEvent& e) const {
+
+  for (const auto& candidate : m_events) {
+    if (candidate.algorithm == e.algorithm) {
+      e = candidate;
+      break;
+    }
   }
 
 }

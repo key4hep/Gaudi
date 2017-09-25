@@ -2,8 +2,12 @@
 #include "PRGraphVisitors.h"
 
 #include <fstream>
+#include <boost/property_map/transform_value_property_map.hpp>
 
 #include "GaudiKernel/DataHandleHolderVisitor.h"
+
+#define ON_DEBUG if (msgLevel(MSG::DEBUG))
+#define ON_VERBOSE if (msgLevel(MSG::VERBOSE))
 
 namespace concurrency
 {
@@ -187,8 +191,7 @@ namespace concurrency
 
     if ( !sc.isSuccess() ) error() << "Could not build the data dependency realm." << endmsg;
 
-    if (msgLevel(MSG::DEBUG))
-      debug() << dumpDataFlow() << endmsg;
+    ON_DEBUG debug() << dumpDataFlow() << endmsg;
 
     return sc;
   }
@@ -202,7 +205,7 @@ namespace concurrency
     m_algoNameToAlgoInputsMap[algoName] = algo->inputDataObjs();
     m_algoNameToAlgoOutputsMap[algoName] = algo->outputDataObjs();
 
-    if (msgLevel(MSG::VERBOSE)) {
+    ON_VERBOSE {
       verbose() << "    Inputs of " << algoName << ": ";
       for (auto tag : algo->inputDataObjs())
         verbose() << tag << " | ";
@@ -236,6 +239,11 @@ namespace concurrency
         auto dataNode = getDataNode(output);
         dataNode->addProducerNode(algo.second);
         algo.second->addOutputDataNode(dataNode);
+        ON_DEBUG { // Mirror the action above in the BGL-based graph
+          boost::add_edge(node(algo.second->getNodeName()),
+                          node(output.fullKey()),
+                          m_PRGraph);
+        }
       }
     }
 
@@ -254,6 +262,11 @@ namespace concurrency
         if (dataNode) {
           dataNode->addConsumerNode(algo.second);
           algo.second->addInputDataNode(dataNode);
+          ON_DEBUG { // Mirror the action above in the BGL-based graph
+            boost::add_edge(node(input.fullKey()),
+                            node(algo.second->getNodeName()),
+                            m_PRGraph);
+          }
         }
       }
     }
@@ -278,11 +291,18 @@ namespace concurrency
     } else {
       algoNode = new concurrency::AlgorithmNode(*this,algo,m_nodeCounter,
                                                 m_algoCounter,inverted,allPass);
+      ON_DEBUG { // Mirror the action above in the BGL-based graph
+        auto source = boost::add_vertex(AlgoProps(algo,m_nodeCounter,
+                                                  m_algoCounter,inverted,
+                                                  allPass),
+                                        m_PRGraph);
+        boost::add_edge(source, node(parentName), m_PRGraph);
+      }
       ++m_nodeCounter;
       ++m_algoCounter;
       m_algoNameToAlgoNodeMap[algoName] = algoNode;
-      if (msgLevel(MSG::VERBOSE))
-        verbose() << "AlgorithmNode '" << algoName << "' added @ " << algoNode << endmsg;
+      ON_VERBOSE verbose() << "AlgoNode " << algoName << " added @ "
+                                   << algoNode << endmsg;
       registerIODataObjects(algo);
     }
 
@@ -290,9 +310,9 @@ namespace concurrency
     auto itP = m_decisionNameToDecisionHubMap.find( parentName );
     if ( itP != m_decisionNameToDecisionHubMap.end() ) {
       auto parentNode = itP->second;
-      if (msgLevel(MSG::VERBOSE))
-        verbose() << "Attaching AlgorithmNode '" << algo->name() << "' to DecisionNode '"
-                << parentName << "'" << endmsg;
+      ON_VERBOSE verbose() << "Attaching AlgorithmNode '" << algo->name()
+                           << "' to DecisionNode '" << parentName << "'" << endmsg;
+
       parentNode->addDaughterNode( algoNode );
       algoNode->addParentNode( parentNode );
     } else {
@@ -325,23 +345,27 @@ namespace concurrency
     } else {
       if (!m_conditionsRealmEnabled) {
         dataNode = new concurrency::DataNode(*this, dataPath);
-        if (msgLevel(MSG::VERBOSE))
-          verbose() << "  DataNode for " << dataPath << " added @ " << dataNode << endmsg;
+        ON_VERBOSE verbose() << "  DataNode for " << dataPath << " added @ "
+                             << dataNode << endmsg;
       } else {
         SmartIF<ICondSvc> condSvc {serviceLocator()->service("CondSvc",false)};
         if (condSvc->isRegistered(dataPath)) {
           dataNode = new concurrency::ConditionNode(*this, dataPath, condSvc);
-          if (msgLevel(MSG::VERBOSE))
-            verbose() << "  ConditionNode for " << dataPath << " added @ " << dataNode << endmsg;
+          ON_VERBOSE verbose() << "  ConditionNode for " << dataPath
+                               << " added @ " << dataNode << endmsg;
         } else {
           dataNode = new concurrency::DataNode(*this, dataPath);
-          if (msgLevel(MSG::VERBOSE))
-            verbose() << "  DataNode for " << dataPath << " added @ " << dataNode << endmsg;
+          ON_VERBOSE verbose() << "  DataNode for " << dataPath
+                               << " added @ " << dataNode << endmsg;
         }
       }
 
       m_dataPathToDataNodeMap[dataPath] = dataNode;
+
       sc = StatusCode::SUCCESS;
+      ON_DEBUG { // Mirror the action above in the BGL-based graph
+        boost::add_vertex(DataProps(dataPath),m_PRGraph);
+      }
     }
 
     return sc;
@@ -379,11 +403,22 @@ namespace concurrency
             new concurrency::DecisionNode(*this,m_nodeCounter,decisionHubName,
                                           modeConcurrent,modePromptDecision,
                                           modeOR,allPass);
-        ++m_nodeCounter;
         m_decisionNameToDecisionHubMap[decisionHubName] = decisionHubNode;
-        if (msgLevel(MSG::VERBOSE))
-          verbose() << "Decision hub node " << decisionHubName << " added @ "
-                    << decisionHubNode << endmsg;
+
+        ON_DEBUG { // Mirror the action above in the BGL-based graph
+          auto source = boost::add_vertex(DecisionHubProps(decisionHubName,
+                                                           m_nodeCounter,
+                                                           modeConcurrent,
+                                                           modePromptDecision,
+                                                           modeOR, allPass),
+                                          m_PRGraph);
+          boost::add_edge(source, node(parentName), m_PRGraph);
+        }
+
+        ++m_nodeCounter;
+
+        ON_VERBOSE verbose() << "Decision hub node " << decisionHubName
+                             << " added @ " << decisionHubNode << endmsg;
       }
 
       parentNode->addDaughterNode( decisionHubNode );
@@ -413,9 +448,33 @@ namespace concurrency
                                                  headName, modeConcurrent,
                                                  modePromptDecision, modeOR,
                                                  allPass );
-      ++m_nodeCounter;
       m_decisionNameToDecisionHubMap[headName] = m_headNode;
+
+      ON_DEBUG { // Mirror the action above in the BGL-based graph
+        boost::add_vertex(DecisionHubProps(headName,m_nodeCounter,modeConcurrent,
+                                           modePromptDecision,modeOR,allPass),
+                          m_PRGraph);
+      }
+
+      ++m_nodeCounter;
     }
+
+  }
+
+  //---------------------------------------------------------------------------
+  PRVertexDesc PrecedenceRulesGraph::node(const std::string& name) const {
+
+    PRVertexDesc target{};
+
+    for (auto vp = vertices(m_PRGraph); vp.first != vp.second; ++vp.first) {
+      PRVertexDesc v = *vp.first;
+      if (boost::apply_visitor(precedence::VertexName(),m_PRGraph[v]) == name) {
+        target = v;
+        break;
+      }
+    }
+
+    return target;
   }
 
   //---------------------------------------------------------------------------
@@ -431,12 +490,10 @@ namespace concurrency
 
     info() << "Starting ranking by data outputs .. " << endmsg;
     for (auto& pair : m_algoNameToAlgoNodeMap) {
-      if (msgLevel(MSG::DEBUG))
-        debug() << "  Ranking " << pair.first << "... " << endmsg;
+      ON_DEBUG debug() << "  Ranking " << pair.first << "... " << endmsg;
       pair.second->accept(ranker);
-      if (msgLevel(MSG::DEBUG))
-        debug() << "  ... rank of " << pair.first << ": " << pair.second->getRank()
-                << endmsg;
+      ON_DEBUG debug() << "  ... rank of " << pair.first << ": "
+                       << pair.second->getRank() << endmsg;
     }
   }
 
@@ -509,86 +566,175 @@ namespace concurrency
 
   //---------------------------------------------------------------------------
 
-  void PrecedenceRulesGraph::dumpExecutionPlan(const boost::filesystem::path& fileName)
+  void PrecedenceRulesGraph::dumpPrecRules(const boost::filesystem::path& fileName,
+                                           const EventSlot& slot)
   {
     boost::filesystem::ofstream myfile;
     myfile.open( fileName, std::ios::app );
 
+    //Declare properties to dump
     boost::dynamic_properties dp;
-    dp.property( "name", boost::get( &boost::AlgoProps::m_name, m_ExecPlan ) );
-    dp.property( "index", boost::get( &boost::AlgoProps::m_index, m_ExecPlan ) );
-    dp.property( "rank", boost::get( &boost::AlgoProps::m_rank, m_ExecPlan ) );
-    dp.property( "runtime", boost::get( &boost::AlgoProps::m_runtime, m_ExecPlan ) );
 
-    boost::write_graphml( myfile, m_ExecPlan, dp );
+    using boost::make_transform_value_property_map;
+    using boost::apply_visitor;
+    using boost::get;
+    using boost::vertex_bundle;
+
+    dp.property("Entity", make_transform_value_property_map(
+       [](VariantVertexProps const& v) { return boost::lexical_cast<std::string>(v); },
+       get(vertex_bundle, m_PRGraph)));
+
+    dp.property("Name", make_transform_value_property_map(
+       [](VariantVertexProps const& v) {return apply_visitor(precedence::VertexName(), v);},
+       get(vertex_bundle, m_PRGraph)));
+
+    dp.property("Mode", make_transform_value_property_map(
+       [](VariantVertexProps const& v) {return apply_visitor(precedence::GroupMode(), v);},
+       get(vertex_bundle, m_PRGraph)));
+
+    dp.property("Logic", make_transform_value_property_map(
+       [](VariantVertexProps const& v) {return apply_visitor(precedence::GroupLogic(), v);},
+       get(vertex_bundle, m_PRGraph)));
+
+    dp.property("Decision Negation", make_transform_value_property_map(
+       [](VariantVertexProps const& v) {return apply_visitor(precedence::DecisionNegation(), v);},
+       get(vertex_bundle, m_PRGraph)));
+
+    dp.property("Negative Decision Inversion", make_transform_value_property_map(
+       [](VariantVertexProps const& v) {return apply_visitor(precedence::AllPass(), v);},
+       get(vertex_bundle, m_PRGraph)));
+
+    dp.property("Exit Policy", make_transform_value_property_map(
+       [](VariantVertexProps const& v) {return apply_visitor(precedence::GroupExit(), v);},
+       get(vertex_bundle, m_PRGraph)));
+
+    dp.property("Operations", make_transform_value_property_map(
+       [](VariantVertexProps const& v) {return apply_visitor(precedence::Operations(), v);},
+       get(vertex_bundle, m_PRGraph)));
+
+    dp.property("CF Decision", make_transform_value_property_map(
+       [&slot](VariantVertexProps const& v) {
+         return apply_visitor(precedence::CFDecision(slot),v);},
+                              get(vertex_bundle, m_PRGraph)));
+
+    dp.property("Algorithm State", make_transform_value_property_map(
+       [&slot](VariantVertexProps const& v) {
+         return apply_visitor(precedence::FSMState(slot),v);},
+                              get(vertex_bundle, m_PRGraph)));
+
+    SmartIF<ITimelineSvc> timelineSvc = m_svcLocator->service<ITimelineSvc>("TimelineSvc",false);
+    if (timelineSvc.isValid()) {
+      dp.property("Start Time (epoch ns)", make_transform_value_property_map(
+             [&timelineSvc](VariantVertexProps const& v) {
+               return apply_visitor(precedence::StartTime(timelineSvc), v);
+             }, get(vertex_bundle, m_PRGraph)));
+      dp.property("End Time (epoch ns)", make_transform_value_property_map(
+             [&timelineSvc](VariantVertexProps const& v) {
+               return apply_visitor(precedence::EndTime(timelineSvc), v);
+             }, get(vertex_bundle, m_PRGraph)));
+      dp.property("Runtime (ns)", make_transform_value_property_map(
+             [&timelineSvc](VariantVertexProps const& v) {
+               return apply_visitor(precedence::Duration(timelineSvc), v);
+             }, get(vertex_bundle, m_PRGraph)));
+    } else {
+      warning() << "Failed to get the TimelineSvc, timing will not be added to "
+                << "the task precedence rules dump" << endmsg;
+    }
+
+    boost::write_graphml( myfile, m_PRGraph, dp );
 
     myfile.close();
   }
 
-  void PrecedenceRulesGraph::addEdgeToExecutionPlan( const AlgorithmNode* u,
-                                                     const AlgorithmNode* v )
+  //---------------------------------------------------------------------------
+  void PrecedenceRulesGraph::dumpPrecTrace(const boost::filesystem::path& fileName)
+  {
+    boost::filesystem::ofstream myfile;
+    myfile.open( fileName, std::ios::app );
+
+    // Fill runtimes (as this could not be done on the fly during trace assembling)
+    SmartIF<ITimelineSvc> timelineSvc = m_svcLocator->service<ITimelineSvc>("TimelineSvc",false);
+    if (!timelineSvc.isValid()) {
+      warning() << "Failed to get the TimelineSvc, timing will not be added to "
+                << "the task precedence trace dump" << endmsg;
+    } else {
+
+      typedef boost::graph_traits<precedence::PRGraph>::vertex_iterator vertex_iter;
+      std::pair<vertex_iter, vertex_iter> vp;
+      for (vp = vertices(m_precTrace); vp.first != vp.second; ++vp.first) {
+        TimelineEvent te{};
+        te.algorithm = m_precTrace[*vp.first].m_name;
+        timelineSvc->getTimelineEvent(te);
+        int runtime = std::chrono::duration_cast<std::chrono::nanoseconds>
+                                                    (te.end - te.start).count();
+        m_precTrace[*vp.first].m_runtime = runtime;
+      }
+    }
+
+    // Declare properties to dump
+    boost::dynamic_properties dp;
+    using boost::get;
+    using precedence::AlgoTraceProps;
+    dp.property( "Name", get( &AlgoTraceProps::m_name, m_precTrace ) );
+    dp.property( "Rank", get( &AlgoTraceProps::m_rank, m_precTrace ) );
+    dp.property( "Runtime", get( &AlgoTraceProps::m_runtime, m_precTrace ) );
+
+    boost::write_graphml( myfile, m_precTrace, dp );
+
+    myfile.close();
+  }
+
+  void PrecedenceRulesGraph::addEdgeToPrecTrace( const AlgorithmNode* u,
+                                                 const AlgorithmNode* v )
   {
 
-    boost::AlgoVertex source;
-    float runtime( 0. );
+    std::string u_name = u==nullptr ? "ENTRY" : u->getNodeName();
+    std::string v_name = v->getNodeName();
+
+    precedence::AlgoTraceVertex source;
+
     if ( u == nullptr ) {
-      auto itT = m_exec_plan_map.find( "ENTRY" );
-      if ( itT != m_exec_plan_map.end() ) {
+      auto itT = m_prec_trace_map.find( "ENTRY" );
+      if ( itT != m_prec_trace_map.end() ) {
         source = itT->second;
       } else {
-        source = boost::add_vertex( boost::AlgoProps("ENTRY",-999,-999,0),m_ExecPlan);
-        m_exec_plan_map["ENTRY"] = source;
+        source = boost::add_vertex( precedence::AlgoTraceProps("ENTRY",-1,-1,-1.0),m_precTrace);
+        m_prec_trace_map["ENTRY"] = source;
       }
     } else {
-      auto itS = m_exec_plan_map.find( u->getNodeName() );
-      if ( itS != m_exec_plan_map.end() ) {
+      auto itS = m_prec_trace_map.find( u_name );
+      if ( itS != m_prec_trace_map.end() ) {
         source = itS->second;
       } else {
-        auto alg = u->getAlgorithm();
-        try {
-          const Gaudi::Details::PropertyBase& p = alg->getProperty( "AvgRuntime" );
-          runtime = std::stof( p.toString() );
-        } catch(...) {
-          if (msgLevel(MSG::DEBUG))
-            debug() << "no AvgRuntime for " << alg->name() << endmsg;
-          runtime = 1.;
-        }
 
-        source = boost::add_vertex(boost::AlgoProps(u->getNodeName(),
-                                                    u->getAlgoIndex(),
-                                                    u->getRank(),
-                                                    runtime ),
-                                   m_ExecPlan);
-        m_exec_plan_map[u->getNodeName()] = source;
+        source = boost::add_vertex(precedence::AlgoTraceProps(u_name,
+                                                         u->getAlgoIndex(),
+                                                         u->getRank(),
+                                                         -1 ),
+                                   m_precTrace);
+        m_prec_trace_map[u_name] = source;
       }
     }
 
-    boost::AlgoVertex target;
-    auto itP = m_exec_plan_map.find( v->getNodeName() );
-    if ( itP != m_exec_plan_map.end() ) {
+    precedence::AlgoTraceVertex target;
+
+    auto itP = m_prec_trace_map.find( v_name );
+    if ( itP != m_prec_trace_map.end() ) {
       target = itP->second;
     } else {
-      auto alg = v->getAlgorithm();
-      try {
-        const Gaudi::Details::PropertyBase& p = alg->getProperty( "AvgRuntime" );
-        runtime = std::stof( p.toString() );
-      } catch(...) {
-        if (msgLevel(MSG::DEBUG))
-          debug() << "no AvgRuntime for " << alg->name() << endmsg;
-        runtime = 1.;
-      }
 
-      target = boost::add_vertex(boost::AlgoProps(v->getNodeName(),
-                                                  v->getAlgoIndex(),
-                                                  v->getRank(),
-                                                  runtime ),
-                                 m_ExecPlan);
-      m_exec_plan_map[v->getNodeName()] = target;
+      target = boost::add_vertex(precedence::AlgoTraceProps(v_name,
+                                                        v->getAlgoIndex(),
+                                                        v->getRank(),
+                                                        -1 ),
+                                 m_precTrace);
+      m_prec_trace_map[v_name] = target;
     }
 
-    if (msgLevel(MSG::DEBUG))
-      debug() << "Edge added to execution plan" << endmsg;
-    boost::add_edge(source, target, m_ExecPlan);
+    boost::add_edge(source, target, m_precTrace);
+
+    ON_DEBUG debug() << u_name << "-->" << v_name << " precedence trait added"
+                     << endmsg;
   }
 
 } // namespace

@@ -87,8 +87,8 @@ namespace concurrency {
       bool visit(AlgorithmNode&) override;
       void reset() override {m_nodesSucceeded = 0;};
 
-      void runThroughAdjacents(boost::graph_traits<boost::ExecPlan>::vertex_descriptor,
-                               boost::ExecPlan);
+      void runThroughAdjacents(boost::graph_traits<precedence::PrecTrace>::vertex_descriptor,
+                               precedence::PrecTrace);
 
 
       int m_nodesSucceeded{0};

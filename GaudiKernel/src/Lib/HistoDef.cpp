@@ -126,7 +126,7 @@ Gaudi::Histos::book
   const Gaudi::Histo1DDef& hist )
 {
   return svc ? svc -> book( path , hist.title() , hist.bins() ,
-                                   hist.lowEdge() , hist.lowEdge() )
+                                   hist.lowEdge() , hist.highEdge() )
              : nullptr;
 }
 // ============================================================================
@@ -145,7 +145,7 @@ Gaudi::Histos::book
   const Gaudi::Histo1DDef& hist )
 {
   return svc ? svc -> book ( dir , id  , hist.title() , hist.bins() ,
-                             hist.lowEdge() , hist.lowEdge() )
+                             hist.lowEdge() , hist.highEdge() )
              : nullptr;
 }
 // ============================================================================
@@ -164,7 +164,7 @@ Gaudi::Histos::book
   const Gaudi::Histo1DDef& hist )
 {
   return svc ? svc -> book ( dir , id  , hist.title() , hist.bins() ,
-                             hist.lowEdge() , hist.lowEdge() )
+                             hist.lowEdge() , hist.highEdge() )
              : nullptr;
 }
 // ============================================================================

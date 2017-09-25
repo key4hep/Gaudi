@@ -786,6 +786,7 @@ RECURSIVE              = YES
 # run.
 
 EXCLUDE                = @CMAKE_SOURCE_DIR@/GaudiRelease/doc/GaudiHive-release-notes.md
+EXCLUDE               += @CMAKE_SOURCE_DIR@/ReleaseNotes
 EXCLUDE               += @CMAKE_SOURCE_DIR@/InstallArea
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or
